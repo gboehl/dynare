@@ -113,9 +113,9 @@ GoldenSectionSearch::init_bracket(OneDFunction &f, double x1, double &x2, double
       // now we know that f1, f2, and fb are finite
       if (std::isfinite(fbsym))
         {
-          // we have four numbers f1, fb, f2, fbsym, we test for the
-          // following combinations to find the bracket:
-          // [f1,f2,fbsym], [f1,fb,fbsym] and [f1,fb,fbsym]
+          /* we have four numbers f1, fb, f2, fbsym, we test for the following
+             combinations to find the bracket: [f1,f2,fbsym], [f1,fb,fbsym] and
+             [f1,fb,fbsym] */
           if (f1 > f2 && f2 < fbsym)
             {
               bracket_found = true;
@@ -135,8 +135,8 @@ GoldenSectionSearch::init_bracket(OneDFunction &f, double x1, double &x2, double
               // choose the smallest value in case we end
               if (f1 > fbsym)
                 {
-                  // the smallest value is on the other end, we do
-                  // not want to continue
+                  /* the smallest value is on the other end, we do not want to
+                     continue */
                   b = bsym;
                   return false;
                 }
@@ -148,9 +148,9 @@ GoldenSectionSearch::init_bracket(OneDFunction &f, double x1, double &x2, double
         }
       else
         {
-          // we have only three numbers, we test for the bracket,
-          // and if not found, we set b as potential result and
-          // shorten x2 as potential init value for next cycle
+          /* we have only three numbers, we test for the bracket, and if not
+             found, we set b as potential result and shorten x2 as potential
+             init value for next cycle */
           if (f1 > fb && fb < f2)
             bracket_found = true;
           else
@@ -172,8 +172,8 @@ GoldenSectionSearch::init_bracket(OneDFunction &f, double x1, double &x2, double
   return bracket_found;
 }
 
-/** This moves x2 toward to x1 until the function at x2 is finite and
- * b as a golden section between x1 and x2 yields also finite f. */
+/* This moves x2 toward to x1 until the function at x2 is finite and b as a
+   golden section between x1 and x2 yields also finite f. */
 bool
 GoldenSectionSearch::search_for_finite(OneDFunction &f, double x1, double &x2, double &b)
 {

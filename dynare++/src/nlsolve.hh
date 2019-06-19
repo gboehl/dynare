@@ -38,25 +38,22 @@ namespace ogu
   class GoldenSectionSearch
   {
   protected:
-    /** This should not be greater than DBL_EPSILON^(1/2). */
     constexpr static double tol = 1.e-4;
-    /** This is equal to the golden section ratio. */
+    /* This is equal to the golden section ratio. */
     static double golden;
   public:
     static double search(OneDFunction &f, double x1, double x2);
   protected:
-    /** This initializes a bracket by moving x2 and b (as a golden
-     * section of x1,x2) so that f(x1)>f(b) && f(b)<f(x2). The point
-     * x1 is not moved, since it is considered as reliable and f(x1)
-     * is supposed to be finite. If initialization of a bracket
-     * succeeded, then [x1, b, x2] is the bracket and true is
-     * returned. Otherwise, b is the minimum found and false is
-     * returned. */
+    /* This initializes a bracket by moving x2 and b (as a golden section of
+       x1,x2) so that f(x1)>f(b) && f(b)<f(x2). The point x1 is not moved,
+       since it is considered as reliable and f(x1) is supposed to be finite.
+       If initialization of a bracket succeeded, then [x1,b,x2] is the bracket
+       and true is returned. Otherwise, b is the minimum found and false is
+       returned. */
     static bool init_bracket(OneDFunction &f, double x1, double &x2, double &b);
-    /** This supposes that f(x1) is finite and it moves x2 toward x1
-     * until x2 and b (as a golden section of x1,x2) are finite. If
-     * succeeded, the routine returns true and x2, and b. Otherwise,
-     * it returns false. */
+    /* This supposes that f(x1) is finite and it moves x2 toward x1 until x2
+       and b (as a golden section of x1,x2) are finite. If succeeded, the
+       routine returns true and x2, and b. Otherwise, it returns false. */
     static bool search_for_finite(OneDFunction &f, double x1, double &x2, double &b);
   };
 
@@ -67,9 +64,9 @@ namespace ogu
     virtual ~VectorFunction() = default;
     virtual int inDim() const = 0;
     virtual int outDim() const = 0;
-    /** Check dimensions of eval parameters. */
+    /* Check dimensions of eval parameters. */
     void check_for_eval(const ConstVector &in, Vector &out) const;
-    /** Evaluate the vector function. */
+    /* Evaluate the vector function. */
     virtual void eval(const ConstVector &in, Vector &out) = 0;
   };
 
@@ -103,13 +100,12 @@ namespace ogu
       xnewton.zeros(); xcauchy.zeros(); x.zeros();
     }
     ~NLSolver() override = default;
-    /** Returns true if the problem has converged. xx as input is the
-     * starting value, as output it is a solution. */
+    /* Returns true if the problem has converged. xx as input is the starting
+       value, as output it is a solution. */
     bool solve(Vector &xx, int &iter);
-    /** To implement OneDFunction interface. It returns
-     * func(xx)^T*func(xx), where
-     * xx=x+lambda*xcauchy+(1-lambda)*xnewton. It is non-const only
-     * because it calls func, x, xnewton, xcauchy is not changed. */
+    /* To implement OneDFunction interface. It returns func(xx)ᵀ·func(xx),
+       where xx=x+lambda·xcauchy+(1−lambda)·xnewton. It is non-const only
+       because it calls func, x, xnewton, xcauchy is not changed. */
     double eval(double lambda) override;
   };
 };

@@ -51,8 +51,8 @@ ForwSubstBuilder::ForwSubstBuilder(DynareModel &m)
   // unassign all variables with lead greater than 1
   unassign_gt_1_leads();
 
-  // forget the derivatives in the tree because some variables could
-  // have been unassigned
+  /* Forget the derivatives in the tree because some variables could have been
+     unassigned */
   model.eqs.getTree().forget_derivative_maps();
 
   info.num_new_terms += model.getParser().getTree().get_num_op();
@@ -97,11 +97,9 @@ ForwSubstBuilder::substitute_for_term(int t, int i, int j)
           auxt = model.eqs.add_nulary(name);
           // add AUXLD_*_*_{ll+1} = AUXLD_*_*_{ll}(+1)
           model.eqs.add_formula(model.eqs.add_binary(ogp::code_t::MINUS, auxt, lastauxt_lead));
-          // add substitution to the map; todo: this
-          // works well because in the context where
-          // aux_map is used the timing doesn't matter,
-          // however, it is misleading, needs to be
-          // changed
+          /* add substitution to the map; TODO: this works well because in the
+             context where aux_map is used the timing doesn't matter, however,
+             it is misleading, needs to be changed */
           aux_map.emplace(name, lagt);
         }
 

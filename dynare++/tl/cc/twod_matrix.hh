@@ -20,15 +20,14 @@
 
 // Matrix interface.
 
-/* Here we make an interface to 2-dimensional matrix defined in the
-   Sylvester module. That abstraction provides an interface to BLAS. The
-   main purpose of this file is to only make its subclass in order to
-   keep the tensor library and Sylvester module independent. So here is
-   mainly renaming of methods.
+/* Here we make an interface to 2-dimensional matrix defined in the Sylvester
+   module. That abstraction provides an interface to BLAS. The main purpose of
+   this file is to only make its subclass in order to keep the tensor library
+   and Sylvester module independent. So here is mainly renaming of methods.
 
-   Similarly as in the Sylvester module we declare two classes
-   |TwoDMatrix| and |ConstTwoDMatrix|. The only purpose of the latter is
-   to allow submatrix construction from const reference arguments. */
+   Similarly as in the Sylvester module we declare two classes TwoDMatrix and
+   ConstTwoDMatrix. The only purpose of the latter is to allow submatrix
+   construction from const reference arguments. */
 
 #ifndef TWOD_MATRIX_H
 #define TWOD_MATRIX_H
@@ -42,10 +41,6 @@
 
 class TwoDMatrix;
 
-/* We make two obvious constructors, and then a constructor making
-   submatrix of subsequent columns. We also rename
-   |GeneralMatrix::nrows()| and |GeneralMatrix::ncols()|. */
-
 class ConstTwoDMatrix : public ConstGeneralMatrix
 {
 public:
@@ -55,12 +50,18 @@ public:
   }
   ConstTwoDMatrix(const ConstTwoDMatrix &m) = default;
   ConstTwoDMatrix(ConstTwoDMatrix &&m) = default;
+
   // Implicit conversion from TwoDMatrix is ok, since it's cheap
   ConstTwoDMatrix(const TwoDMatrix &m);
+
+  // Constructors creating a submatrix of consecutive columns
   ConstTwoDMatrix(const TwoDMatrix &m, int first_col, int num);
   ConstTwoDMatrix(const ConstTwoDMatrix &m, int first_col, int num);
+
+  // Constructors creating a submatrix of consecutive rows
   ConstTwoDMatrix(int first_row, int num, const TwoDMatrix &m);
   ConstTwoDMatrix(int first_row, int num, const ConstTwoDMatrix &m);
+
   ConstTwoDMatrix(const ConstTwoDMatrix &m, int first_row, int first_col, int rows, int cols)
     : ConstGeneralMatrix(m, first_row, first_col, rows, cols)
   {
@@ -77,12 +78,6 @@ public:
 
   void writeMat(mat_t *fd, const std::string &vname) const;
 };
-
-/* Here we do the same as for |ConstTwoDMatrix| plus define
-   methods for copying and adding rows and columns.
-
-   Also we have |save| method which dumps the matrix to a file with a
-   given name. The file can be read by Scilab {\tt fscanfMat} function. */
 
 class TwoDMatrix : public GeneralMatrix
 {
@@ -154,7 +149,7 @@ public:
   TwoDMatrix &operator=(TwoDMatrix &&m) = default;
   TwoDMatrix &operator=(const ConstTwoDMatrix &m);
 
-  // |TwoDMatrix| row methods declarations
+  // TwoDMatrix row methods declarations
   void copyRow(int from, int to);
   void copyRow(const ConstTwoDMatrix &m, int from, int to);
   void
@@ -179,7 +174,7 @@ public:
     addRow(d, ConstTwoDMatrix(m), from, to);
   }
 
-  // |TwoDMatrix| column methods declarations
+  // TwoDMatrix column methods declarations
   void copyColumn(int from, int to);
   void copyColumn(const ConstTwoDMatrix &m, int from, int to);
   void
@@ -204,7 +199,9 @@ public:
     addColumn(d, ConstTwoDMatrix(m), from, to);
   }
 
+  // Saves the matrix to a text file
   void save(const std::string &fname) const;
+
   void
   writeMat(mat_t *fd, const std::string &vname) const
   {

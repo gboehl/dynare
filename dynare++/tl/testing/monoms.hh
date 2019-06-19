@@ -51,7 +51,7 @@ public:
   Monom(int len); // generate a random monom
   Monom(int len, int item); // generate monom whose items are the given item
   double deriv(const IntSequence &vars) const;
-  // this = this*m^ex (in monomial sense)
+  // this = this·mᵉˣ (in monomial sense)
   void multiplyWith(int ex, const Monom &m);
   void print() const;
 };
@@ -71,16 +71,15 @@ public:
   void print() const;
 };
 
-//class Monom3Vector;
 class Monom2Vector
 {
   int ny, nu;
   int len;
   std::vector<Monom> y, u;
 public:
-  // generate random vector of monom two vector
+  // Generate random vector of monom two vector
   Monom2Vector(int nyy, int nuu, int l);
-  // calculate g(x(y,u))
+  // Calculate g(x(y,u))
   Monom2Vector(const Monom1Vector &g, const Monom2Vector &xmon);
   ~Monom2Vector() = default;
   void deriv(const Symmetry &s, const IntSequence &c, Vector &out) const;
@@ -95,13 +94,13 @@ class Monom4Vector
   int nx1, nx2, nx3, nx4;
   std::vector<Monom> x1, x2, x3, x4;
 public:
-  /* random for g(y,u,sigma) */
+  /* Random for g(y,u,σ) */
   Monom4Vector(int l, int ny, int nu);
-  /* random for G(y,u,u',sigma) */
+  /* Random for G(y,u,u′,σ) */
   Monom4Vector(int l, int ny, int nu, int nup);
-  /* random for f(y+,y,y-,u) */
+  /* Random for f(y⁺,y,y⁻,u) */
   Monom4Vector(int l, int nbigg, int ng, int ny, int nu);
-  /* substitution f(G(y,u,u',sigma),g(y,u,sigma),y,u) */
+  /* Substitution f(G(y,u,u′,σ),g(y,u,σ),y,u) */
   Monom4Vector(const Monom4Vector &f, const Monom4Vector &bigg,
                const Monom4Vector &g);
   ~Monom4Vector() = default;

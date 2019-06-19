@@ -400,7 +400,7 @@ TestRunnable::unfold_zcont(int nf, int ny, int nu, int nup, int nbigg,
   IntSequence nvs{ny, nu, nup, 1};
   double maxnorm = 0.0;
 
-  // form ZContainer
+  // Form ZContainer
   UnfoldedZContainer zc(&uG_cont, nbigg, &ug_cont, ng, ny, nu);
 
   for (int d = 2; d <= dim; d++)
@@ -1124,12 +1124,12 @@ main()
   all_tests.push_back(std::make_unique<UnfoldZCont>());
 
   /* Initialize library. We do it for each test individually instead of
-     computing the maximum dimension and number of variables, because otherwise it
-     does not pass the check on maximum problem size. */
+     computing the maximum dimension and number of variables, because otherwise
+     it does not pass the check on maximum problem size. */
   for (const auto &test : all_tests)
     TLStatic::init(test->dim, test->nvar);
 
-  // launch the tests
+  // Launch the tests
   int success = 0;
   for (const auto &test : all_tests)
     {

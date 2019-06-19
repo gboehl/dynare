@@ -24,7 +24,7 @@
 #include <iostream>
 #include <iomanip>
 
-/* This constructs a product iterator corresponding to index $(j0,0\ldots,0)$. */
+/* This constructs a product iterator corresponding to index (j0,0,…,0). */
 
 prodpit::prodpit(const ProductQuadrature &q, int j0, int l)
   : prodq(q), level(l), npoints(q.uquad.numPoints(l)),
@@ -51,7 +51,6 @@ prodpit::operator==(const prodpit &ppit) const
 prodpit &
 prodpit::operator++()
 {
-  // todo: throw if |prodq==NULL| or |jseq==NULL| or |sig==NULL| or |end_flag==true|
   int i = prodq.dimen()-1;
   jseq[i]++;
   while (i >= 0 && jseq[i] == npoints)
@@ -77,8 +76,6 @@ prodpit::operator++()
 void
 prodpit::setPointAndWeight()
 {
-  // todo: raise if |prodq==NULL| or |jseq==NULL| or |sig==NULL| or
-  // |p==NULL| or |end_flag==true|
   w = 1.0;
   for (int i = 0; i < prodq.dimen(); i++)
     {
@@ -107,26 +104,26 @@ prodpit::print() const
 ProductQuadrature::ProductQuadrature(int d, const OneDQuadrature &uq)
   : QuadratureImpl<prodpit>(d), uquad(uq)
 {
-  // todo: check |d>=1|
+  // TODO: check d≥1
 }
 
-/* This calls |prodpit| constructor to return an iterator which points
-   approximatelly at |ti|-th portion out of |tn| portions. First we find
+/* This calls prodpit constructor to return an iterator which points
+   approximatelly at ‘ti’-th portion out of ‘tn’ portions. First we find
    out how many points are in the level, and then construct an interator
-   $(j0,0,\ldots,0)$ where $j0=$|ti*npoints/tn|. */
+   (j0,0,…,0) where j0=ti·npoints/tn. */
 
 prodpit
 ProductQuadrature::begin(int ti, int tn, int l) const
 {
-  // todo: raise is |l<dimen()|
-  // todo: check |l<=uquad.numLevels()|
+  // TODO: raise if l<dimen()
+  // TODO: check l ≤ uquad.numLevels()
   int npoints = uquad.numPoints(l);
   return prodpit(*this, ti*npoints/tn, l);
 }
 
-/* This just starts at the first level and goes to a higher level as
-   long as a number of evaluations (which is $n_k^d$ for $k$ being the
-   level) is less than the given number of evaluations. */
+/* This just starts at the first level and goes to a higher level as long as a
+   number of evaluations (which is nₖᵈ for k being the level) is less than the
+   given number of evaluations. */
 
 void
 ProductQuadrature::designLevelForEvals(int max_evals, int &lev, int &evals) const
@@ -143,5 +140,4 @@ ProductQuadrature::designLevelForEvals(int max_evals, int &lev, int &evals) cons
   while (lev < uquad.numLevels()-2 && evals < max_evals);
   lev--;
   evals = last_evals;
-
 }

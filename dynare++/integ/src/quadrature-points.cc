@@ -54,7 +54,7 @@ QuadParams::QuadParams(int argc, char **argv)
 {
   if (argc == 1)
     {
-      // print the help and exit
+      // Print the help and exit
       std::cerr << "Usage: " << argv[0] << " [--max-level INTEGER] [--discard-weight FLOAT] [--vcov FILENAME] OUTPUT_FILENAME" << std::endl;
       std::exit(EXIT_FAILURE);
     }
@@ -131,7 +131,7 @@ main(int argc, char **argv)
 {
   QuadParams params(argc, argv);
 
-  // open output file for writing
+  // Open output file for writing
   std::ofstream fout{params.outname, std::ios::out | std::ios::trunc};
   if (fout.fail())
     {
@@ -146,26 +146,26 @@ main(int argc, char **argv)
       buffer << f.rdbuf();
       std::string contents{buffer.str()};
 
-      // parse the vcov matrix
+      // Parse the vcov matrix
       ogp::MatrixParser mp;
       mp.parse(contents);
       if (mp.nrows() != mp.ncols())
         throw ogu::Exception(__FILE__, __LINE__,
                              "VCOV matrix not square");
-      // and put to the GeneralMatrix
+      // And put to the GeneralMatrix
       GeneralMatrix vcov(mp.nrows(), mp.ncols());
       vcov.zeros();
       for (ogp::MPIterator it = mp.begin(); it != mp.end(); ++it)
         vcov.get(it.row(), it.col()) = *it;
 
-      // calculate the factor A of vcov, so that A*A^T=VCOV
+      // Calculate the factor A of vcov, so that A·Aᵀ=VCOV
       GeneralMatrix A(vcov.nrows(), vcov.nrows());
       SymSchurDecomp ssd(vcov);
       ssd.getFactor(A);
 
-      // construct Gauss-Hermite quadrature
+      // Construct Gauss-Hermite quadrature
       GaussHermite ghq;
-      // construct Smolyak quadrature
+      // Construct Smolyak quadrature
       int level = params.max_level;
       SmolyakQuadrature sq(vcov.nrows(), level, ghq);
 
@@ -173,11 +173,11 @@ main(int argc, char **argv)
                 << "Maximum level:            " << level << std::endl
                 << "Total number of nodes:    " << sq.numEvals(level) << std::endl;
 
-      // put the points to the vector
+      // Put the points to the vector
       std::vector<std::unique_ptr<Vector>> points;
       for (smolpit qit = sq.start(level); qit != sq.end(level); ++qit)
         points.push_back(std::make_unique<Vector>(const_cast<const Vector &>(qit.point())));
-      // sort and uniq
+      // Sort and uniq
       std::sort(points.begin(), points.end(), [](auto &a, auto &b) { return a.get() < b.get(); });
       auto new_end = std::unique(points.begin(), points.end());
       points.erase(new_end, points.end());
@@ -185,7 +185,7 @@ main(int argc, char **argv)
       std::cout << "Duplicit nodes removed:   " << static_cast<unsigned long>(sq.numEvals(level)-points.size())
                 << std::endl;
 
-      // calculate weights and mass
+      // Calculate weights and mass
       double mass = 0.0;
       std::vector<double> weights;
       for (auto & point : points)
@@ -194,7 +194,7 @@ main(int argc, char **argv)
           mass += weights.back();
         }
 
-      // calculate discarded mass
+      // Calculate discarded mass
       double discard_mass = 0.0;
       for (double weight : weights)
         if (weight/mass < params.discard_weight)
@@ -202,7 +202,7 @@ main(int argc, char **argv)
 
       std::cout << "Total mass discarded:     " << std::fixed << discard_mass/mass << std::endl;
 
-      // dump the results
+      // Dump the results
       int npoints = 0;
       double upscale_weight = 1/(mass-discard_mass);
       Vector x(vcov.nrows());
@@ -210,11 +210,11 @@ main(int argc, char **argv)
       for (int i = 0; i < static_cast<int>(weights.size()); i++)
         if (weights[i]/mass >= params.discard_weight)
           {
-            // print the upscaled weight
+            // Print the upscaled weight
             fout << std::setw(20) << upscale_weight*weights[i];
-            // multiply point with the factor A and sqrt(2)
+            // Multiply point with the factor A and √2
             A.multVec(0.0, x, std::sqrt(2.), *(points[i]));
-            // print the coordinates
+            // Print the coordinates
             for (int j = 0; j < x.length(); j++)
               fout << ' ' << std::setw(20) << x[j];
             fout << std::endl;

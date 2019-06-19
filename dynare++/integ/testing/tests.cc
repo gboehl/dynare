@@ -40,8 +40,8 @@
 #include <memory>
 #include <cstdlib>
 
-// evaluates unfolded (Dx)^k power, where x is a vector, D is a
-// Cholesky factor (lower triangular)
+/* Evaluates unfolded (Dx)ᵏ power, where x is a vector, D is a Cholesky factor
+   (lower triangular) */
 class MomentFunction : public VectorFunction
 {
   GeneralMatrix D;
@@ -109,9 +109,8 @@ TensorPower::eval(const Vector &point, const ParameterSignal &sig, Vector &out)
   out.add(1.0, ypow.getData());
 }
 
-// evaluates (1+1/d)^d*(x_1*...*x_d)^(1/d), its integral over <0,1>^d
-// is 1.0, and its variation grows exponetially
-// d = dim
+/* Evaluates (1+1/d)ᵈ(x₁·…·x_d)^(1/d), its integral over [0,1]ᵈ
+   is 1.0, and its variation grows exponentially */
 class Function1 : public VectorFunction
 {
   int dim;
@@ -148,8 +147,8 @@ Function1::eval(const Vector &point, const ParameterSignal &sig, Vector &out)
   out[0] = r;
 }
 
-// evaluates Function1 but with transformation x_i=0.5(y_i+1)
-// this makes the new function integrate over <-1,1>^d to 1.0
+// Evaluates Function1 but with transformation xᵢ=0.5(yᵢ+1)
+// This makes the new function integrate over [−1,1]ᵈ to 1.0
 class Function1Trans : public Function1
 {
 public:
@@ -177,9 +176,8 @@ Function1Trans::eval(const Vector &point, const ParameterSignal &sig, Vector &ou
   out.mult(pow(0.5, indim()));
 }
 
-// WallTimer class. Constructor saves the wall time, destructor
-// cancels the current time from the saved, and prints the message
-// with time information
+/* WallTimer class. Constructor saves the wall time, destructor cancels the
+ current time from the saved, and prints the message with time information */
 class WallTimer
 {
   std::string mes;
@@ -208,7 +206,7 @@ class TestRunnable
 public:
   const std::string name;
   int dim; // dimension of the solved problem
-  int nvar; // number of variable of the solved problem
+  int nvar; // number of variables of the solved problem
   TestRunnable(std::string name_arg, int d, int nv)
     : name{move(name_arg)}, dim(d), nvar(nv)
   {
@@ -252,15 +250,15 @@ TestRunnable::test() const
 bool
 TestRunnable::smolyak_normal_moments(const GeneralMatrix &m, int imom, int level)
 {
-  // first make m*m' and then Cholesky factor
+  // First make m·mᵀ and then Cholesky factor
   GeneralMatrix msq(m * transpose(m));
 
-  // make vector function
+  // Make vector function
   int dim = m.nrows();
   TensorPower tp(dim, imom);
   GaussConverterFunction func(tp, msq);
 
-  // smolyak quadrature
+  // Smolyak quadrature
   Vector smol_out(UFSTensor::calcMaxOffset(dim, imom));
   {
     WallTimer tim("\tSmolyak quadrature time:         ");
@@ -270,7 +268,7 @@ TestRunnable::smolyak_normal_moments(const GeneralMatrix &m, int imom, int level
     std::cout << "\tNumber of Smolyak evaluations:    " << quad.numEvals(level) << std::endl;
   }
 
-  // check against theoretical moments
+  // Check against theoretical moments
   UNormalMoments moments(imom, msq);
   smol_out.add(-1.0, moments.get(Symmetry{imom}).getData());
   std::cout << "\tError:                         " << std::setw(16) << std::setprecision(12) << smol_out.getMax() << std::endl;
@@ -280,15 +278,15 @@ TestRunnable::smolyak_normal_moments(const GeneralMatrix &m, int imom, int level
 bool
 TestRunnable::product_normal_moments(const GeneralMatrix &m, int imom, int level)
 {
-  // first make m*m' and then Cholesky factor
+  // First make m·mᵀ and then Cholesky factor
   GeneralMatrix msq(m * transpose(m));
 
-  // make vector function
+  // Make vector function
   int dim = m.nrows();
   TensorPower tp(dim, imom);
   GaussConverterFunction func(tp, msq);
 
-  // product quadrature
+  // Product quadrature
   Vector prod_out(UFSTensor::calcMaxOffset(dim, imom));
   {
     WallTimer tim("\tProduct quadrature time:         ");
@@ -298,7 +296,7 @@ TestRunnable::product_normal_moments(const GeneralMatrix &m, int imom, int level
     std::cout << "\tNumber of product evaluations:    " << quad.numEvals(level) << std::endl;
   }
 
-  // check against theoretical moments
+  // Check against theoretical moments
   UNormalMoments moments(imom, msq);
   prod_out.add(-1.0, moments.get(Symmetry{imom}).getData());
   std::cout << "\tError:                         " << std::setw(16) << std::setprecision(12) << prod_out.getMax() << std::endl;
@@ -350,7 +348,6 @@ TestRunnable::qmc_cube(const VectorFunction &func, double res, double tol, int l
     WallTimer tim("\tQuasi-Monte Carlo (Warnock scrambling) time:  ");
     WarnockPerScheme wps;
     QMCarloCubeQuadrature qmc(func.indim(), level, wps);
-    //		qmc.savePoints("warnock.txt", level);
     qmc.integrate(func, level, sthread::detach_thread_group::max_parallel_threads, r);
     error1 = std::max(res - r[0], r[0] - res);
     std::cout << "\tQuasi-Monte Carlo (Warnock scrambling) error: " << std::setw(16) << std::setprecision(12) << error1 << std::endl;
@@ -360,7 +357,6 @@ TestRunnable::qmc_cube(const VectorFunction &func, double res, double tol, int l
     WallTimer tim("\tQuasi-Monte Carlo (reverse scrambling) time:  ");
     ReversePerScheme rps;
     QMCarloCubeQuadrature qmc(func.indim(), level, rps);
-    //		qmc.savePoints("reverse.txt", level);
     qmc.integrate(func, level, sthread::detach_thread_group::max_parallel_threads, r);
     error2 = std::max(res - r[0], r[0] - res);
     std::cout << "\tQuasi-Monte Carlo (reverse scrambling) error: " << std::setw(16) << std::setprecision(12) << error2 << std::endl;
@@ -370,7 +366,6 @@ TestRunnable::qmc_cube(const VectorFunction &func, double res, double tol, int l
     WallTimer tim("\tQuasi-Monte Carlo (no scrambling) time:       ");
     IdentityPerScheme ips;
     QMCarloCubeQuadrature qmc(func.indim(), level, ips);
-    //		qmc.savePoints("identity.txt", level);
     qmc.integrate(func, level, sthread::detach_thread_group::max_parallel_threads, r);
     error3 = std::max(res - r[0], r[0] - res);
     std::cout << "\tQuasi-Monte Carlo (no scrambling) error:      " << std::setw(16) << std::setprecision(12) << error3 << std::endl;
@@ -466,7 +461,7 @@ public:
   }
 };
 
-// note that here we pass 1,1 to tls since smolyak has its own PascalTriangle
+// Note that here we pass 1,1 to tls since smolyak has its own PascalTriangle
 class F1GaussLegendre : public TestRunnable
 {
 public:
@@ -505,7 +500,7 @@ int
 main()
 {
   std::vector<std::unique_ptr<TestRunnable>> all_tests;
-  // fill in vector of all tests
+  // Fill in vector of all tests
   all_tests.push_back(std::make_unique<SmolyakNormalMom1>());
   all_tests.push_back(std::make_unique<SmolyakNormalMom2>());
   all_tests.push_back(std::make_unique<ProductNormalMom1>());
@@ -513,7 +508,7 @@ main()
   all_tests.push_back(std::make_unique<F1GaussLegendre>());
   all_tests.push_back(std::make_unique<F1QuasiMCarlo>());
 
-  // find maximum dimension and maximum nvar
+  // Find maximum dimension and maximum nvar
   int dmax = 0;
   int nvmax = 0;
   for (const auto &test : all_tests)
@@ -523,7 +518,7 @@ main()
     }
   TLStatic::init(dmax, nvmax); // initialize library
 
-  // launch the tests
+  // Launch the tests
   int success = 0;
   for (const auto &test : all_tests)
     {

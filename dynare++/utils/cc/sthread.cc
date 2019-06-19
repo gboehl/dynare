@@ -24,7 +24,7 @@
 
 namespace sthread
 {
-  /* We set the default value for |max_parallel_threads| to half the number of
+  /* We set the default value for ‘max_parallel_threads’ to half the number of
      logical CPUs */
   int
   default_threads_number()
@@ -34,10 +34,10 @@ namespace sthread
 
   int detach_thread_group::max_parallel_threads = default_threads_number();
 
-  /* We cycle through all threads in the group, and in each cycle we wait
-     for the change in the |counter|. If the counter indicates less than
-     maximum parallel threads running, then a new thread is run, and the
-     iterator in the list is moved.
+  /* We cycle through all threads in the group, and in each cycle we wait for
+     the change in the ‘counter’. If the counter indicates less than maximum
+     parallel threads running, then a new thread is run, and the iterator in
+     the list is moved.
 
      At the end we have to wait for all thread to finish. */
   void
@@ -49,7 +49,7 @@ namespace sthread
       {
         counter++;
         std::thread th{[&, it] {
-            // The "it" variable is captured by value, because otherwise the iterator may move
+            // The ‘it’ variable is captured by value, because otherwise the iterator may move
             (*it)->operator()(mut_threads);
             std::unique_lock<std::mutex> lk2{mut_cv};
             counter--;

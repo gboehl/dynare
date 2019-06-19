@@ -54,7 +54,7 @@ PascalRow::prolong(const PascalRow &prev)
 void
 PascalRow::prolongFirst(int n)
 {
-  // todo: check n = 1;
+  // TODO: check n = 1
   for (int i = static_cast<int>(size())+2; i <= n; i++)
     push_back(i);
 }
@@ -71,7 +71,7 @@ PascalRow::print() const
 
 namespace PascalTriangle
 {
-  namespace // Anonymous namespace that is a functional equivalent of "private"
+  namespace // Anonymous namespace that is a functional equivalent of “private”
   {
     std::vector<PascalRow> tr(1);
     std::mutex mut; // For protecting the triangle from concurrent modifications
@@ -92,7 +92,7 @@ namespace PascalTriangle
   void
   ensure(int n, int k)
   {
-    // add along n
+    // Add along n
     if (n > max_n())
       {
         std::lock_guard<std::mutex> lk{mut};
@@ -115,7 +115,7 @@ namespace PascalTriangle
   int
   noverk(int n, int k)
   {
-    // todo: rais if out of bounds
+    // TODO: raise exception if out of bounds
     if (n-k < k)
       k = n-k;
     if (k == 0)

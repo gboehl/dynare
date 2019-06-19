@@ -51,9 +51,9 @@ public:
   {
     return names[i];
   }
-  /** This for each string of the input vector calculates its index
-   * in the names. And returns the resulting vector of indices. If
-   * the name cannot be found, then an exception is raised. */
+  /* This for each string of the input vector calculates its index in the
+     names. And returns the resulting vector of indices. If the name cannot be
+     found, then an exception is raised. */
   std::vector<int> selectIndices(const std::vector<std::string> &ns) const;
 };
 
@@ -112,8 +112,8 @@ class Dynare : public DynamicModel
   std::unique_ptr<ogp::FormulaDerEvaluator> fde;
   const double ss_tol;
 public:
-  /** Parses the given model file and uses the given order to
-   * override order from the model file (if it is != -1). */
+  /* Parses the given model file and uses the given order to
+     override order from the model file (if it is ≠ −1). */
   Dynare(const std::string &modname, int ord, double sstol, Journal &jr);
   /** Parses the given equations with explicitly given names. */
   Dynare(const std::vector<std::string> &endo,
@@ -121,7 +121,7 @@ public:
          const std::vector<std::string> &par,
          const std::string &equations, int ord,
          double sstol, Journal &jr);
-  /** Makes a deep copy of the object. */
+  /* Makes a deep copy of the object. */
   Dynare(const Dynare &dyn);
   Dynare(Dynare &&) = default;
   std::unique_ptr<DynamicModel>

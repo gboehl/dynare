@@ -192,8 +192,8 @@ DynareModel::check_model() const
     throw DynareException(__FILE__, __LINE__, "Model has " + std::to_string(eqs.nformulas())
                           + " equations for " + std::to_string(atoms.ny()) + " endogenous variables");
 
-  // check whether all nulary terms of all formulas in eqs are
-  // either constant or assigned to a name
+  /* check whether all nulary terms of all formulas in eqs are either constant
+     or assigned to a name */
   for (int i = 0; i < eqs.nformulas(); i++)
     {
       int ft = eqs.formula(i);
@@ -295,12 +295,11 @@ DynareModel::get_nonlinear_subterms(int t) const
 void
 DynareModel::substitute_atom_for_term(const string &name, int ll, int t)
 {
-  // if the term t is itself a named atom (parameter, exo, endo),
-  // then we have to unassign it first
+  /* if the term t is itself a named atom (parameter, exo, endo), then we have
+     to unassign it first */
   if (atoms.is_named_atom(t))
     atoms.unassign_variable(atoms.name(t), atoms.lead(t), t);
-  // assign allocated tree index
-  // for the term now to name(ll)
+  /* assign allocated tree index for the term now to name(ll) */
   atoms.assign_variable(name, ll, t);
   // make operation t nulary in operation tree
   eqs.nularify(t);
@@ -311,8 +310,8 @@ DynareModel::final_job()
 {
   if (t_plobjective != -1 && t_pldiscount != -1)
     {
-      // at this moment include all equations and all variables; in
-      // future we will exclude purely exogenous processes; todo:
+      /* at this moment include all equations and all variables; in future we
+         will exclude purely exogenous processes; TODO */
       PlannerBuilder::Tvarset vset;
       for (int i = 0; i < atoms.ny(); i++)
         vset.insert(atoms.get_endovars()[i]);
@@ -320,8 +319,7 @@ DynareModel::final_job()
       for (int i = 0; i < eqs.nformulas(); i++)
         eset.push_back(i);
 
-      // construct the planner builder, this adds a lot of stuff to
-      // the model
+      // construct the planner builder, this adds a lot of stuff to the model
       pbuilder = std::make_unique<PlannerBuilder>(*this, vset, eset);
     }
 
@@ -334,8 +332,8 @@ DynareModel::final_job()
   old_atoms = std::make_unique<DynareDynamicAtoms>(atoms);
   // construct empty substitutions from old_atoms to atoms
   atom_substs = std::make_unique<ogp::AtomSubstitutions>(*old_atoms, atoms);
-  // do the actual substitution, it will also call
-  // parsing_finished for atoms which creates internal orderings
+  /* do the actual substitution, it will also call parsing_finished for atoms
+     which creates internal orderings */
   atoms.substituteAllLagsAndExo1Leads(eqs, *atom_substs);
 }
 
@@ -505,8 +503,7 @@ DynareParser::add_name(string name, int flag)
 void
 DynareParser::error(string mes)
 {
-  // throwing zero offset since this exception will be caugth at
-  // constructor
+  // throwing zero offset since this exception will be caugth at constructor
   throw ogp::ParserException(std::move(mes), 0);
 }
 
@@ -523,12 +520,11 @@ DynareParser::print() const
             << "initval position: " << initval_beg << ' ' << initval_end << '\n';
 }
 
-/** A global symbol for passing info to the DynareParser from
- * parser. */
+/* A global symbol for passing info to the DynareParser from parser. */
 DynareParser *dynare_parser;
 
-/** The declarations of functions defined in dynglob_ll.cc and
- * dynglob_tab.cc generated from dynglob.lex and dynglob.y */
+/* The declarations of functions defined in dynglob_ll.cc and dynglob_tab.cc
+   generated from dynglob.lex and dynglob.y */
 void *dynglob__scan_string(const char *);
 void dynglob__destroy_buffer(void *);
 void dynglob_parse();
@@ -601,13 +597,13 @@ DynareParser::calc_init()
       (*init_vals)[i] = aae.get_value(atoms.get_endovars()[outer]);
     }
 
-  // if the planner's FOCs have been added, then add estimate of
-  // Lagrange multipliers to the vector
+  /* if the planner's FOCs have been added, then add estimate of Lagrange
+     multipliers to the vector */
   if (pbuilder)
     MultInitSS mis(*pbuilder, *param_vals, *init_vals);
 
-  // if forward substitution builder has been created, we have to
-  // its substitutions and evaluate them
+  /* if forward substitution builder has been created, we have to its
+     substitutions and evaluate them */
   if (fbuilder)
     ogdyn::DynareSteadySubstitutions dss(atoms, eqs.getTree(),
                                          fbuilder->get_aux_map(), *param_vals, *init_vals);
@@ -664,8 +660,8 @@ NLSelector::operator()(int t) const
         return false;
       else
         return true;
-      // DIVIDE is linear if the denominator is constant, or if
-      // the nominator is zero
+      /* DIVIDE is linear if the denominator is constant, or if the nominator
+         is zero */
       if (op.getCode() == ogp::code_t::DIVIDE
           && (op.getOp1() == ogp::OperationTree::zero
               || model.is_constant_term(op.getOp2())))

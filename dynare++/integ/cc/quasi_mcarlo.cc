@@ -25,9 +25,9 @@
 #include <iomanip>
 #include <array>
 
-/* Here in the constructor, we have to calculate a maximum length of
-   |coeff| array for a given |base| and given maximum |maxn|. After
-   allocation, we calculate the coefficients. */
+/* Here in the constructor, we have to calculate a maximum length of ‘coeff’
+   array for a given ‘base’ and given maximum ‘maxn’. After allocation, we
+   calculate the coefficients. */
 
 RadicalInverse::RadicalInverse(int n, int b, int mxn)
   : num(n), base(b), maxn(mxn),
@@ -44,23 +44,26 @@ RadicalInverse::RadicalInverse(int n, int b, int mxn)
   while (nr > 0);
 }
 
-/* This evaluates the radical inverse. If there was no permutation, we have to calculate
-   $$
-   {c_0\over b}+{c_1\over b^2}+\ldots+{c_j\over b^{j+1}}
-   $$
-   which is evaluated as
-   $$
-   \left(\ldots\left(\left({c_j\over b}\cdot{1\over b}+{c_{j-1}\over b}\right)
-   \cdot{1\over b}+{c_{j-2}\over b}\right)
-   \ldots\right)\cdot{1\over b}+{c_0\over b}
-   $$
-   Now with permutation $\pi$, we have
-   $$
-   \left(\ldots\left(\left({\pi(c_j)\over b}\cdot{1\over b}+
-   {\pi(c_{j-1})\over b}\right)\cdot{1\over b}+
-   {\pi(c_{j-2})\over b}\right)
-   \ldots\right)\cdot{1\over b}+{\pi(c_0)\over b}
-   $$ */
+/* This evaluates the radical inverse. If there was no permutation, we have to
+   calculate:
+
+    c₀   c₁        cⱼ
+    ── + ── + … + ────
+     b   b²       bʲ⁺¹
+
+   which is evaluated as:
+
+    ⎛ ⎛⎛cⱼ 1   cⱼ₋₁⎞ 1   cⱼ₋₂⎞ ⎞ 1   c₀
+    ⎢…⎢⎢──·─ + ────⎥·─ + ────⎥…⎥·─ + ──
+    ⎝ ⎝⎝ b b     b ⎠ b     b ⎠ ⎠ b    b
+
+
+   Now with permutation π, we have:
+
+    ⎛ ⎛⎛π(cⱼ) 1   π(cⱼ₋₁)⎞ 1   π(cⱼ₋₂)⎞ ⎞ 1   π(c₀)
+    ⎢…⎢⎢─────·─ + ───────⎥·─ + ───────⎥…⎥·─ + ─────
+    ⎝ ⎝⎝  b   b       b  ⎠ b       b  ⎠ ⎠ b     b
+*/
 
 double
 RadicalInverse::eval(const PermutationScheme &p) const
@@ -79,7 +82,7 @@ RadicalInverse::eval(const PermutationScheme &p) const
 void
 RadicalInverse::increase()
 {
-  // todo: raise if |num+1 > maxn|
+  // TODO: raise if num+1 > maxn
   num++;
   int i = 0;
   coeff[i]++;
@@ -100,8 +103,8 @@ RadicalInverse::print() const
   coeff.print();
 }
 
-/* Here we have the first 170 primes. This means that we are not able
-   to integrate dimensions greater than 170. */
+/* Here we have the first 170 primes. This means that we are not able to
+   integrate dimensions greater than 170. */
 
 std::array<int, 170> HaltonSequence::primes = {
   2,     3,     5,     7,    11,    13,    17,    19,    23,    29,
@@ -123,21 +126,21 @@ std::array<int, 170> HaltonSequence::primes = {
   947,   953,   967,   971,   977,   983,   991,   997,  1009,  1013
 };
 
-/* This takes first |dim| primes and constructs |dim| radical inverses
-   and calls |eval|. */
+/* This takes first ‘dim’ primes and constructs ‘dim’ radical inverses and
+   calls eval(). */
 
 HaltonSequence::HaltonSequence(int n, int mxn, int dim, const PermutationScheme &p)
   : num(n), maxn(mxn), per(p), pt(dim)
 {
-  // todo: raise if |dim > num_primes|
-  // todo: raise if |n > mxn|
+  // TODO: raise if dim > num_primes
+  // TODO: raise if n > mxn
   for (int i = 0; i < dim; i++)
     ri.emplace_back(num, primes[i], maxn);
   eval();
 }
 
-/* This calls |RadicalInverse::increase| for all radical inverses and
-   calls |eval|. */
+/* This calls RadicalInverse::increase() for all radical inverses and calls
+   eval(). */
 
 void
 HaltonSequence::increase()
@@ -149,7 +152,7 @@ HaltonSequence::increase()
     eval();
 }
 
-/* This sets point |pt| to radical inverse evaluations in each dimension. */
+/* This sets point ‘pt’ to radical inverse evaluations in each dimension. */
 void
 HaltonSequence::eval()
 {
@@ -187,7 +190,6 @@ qmcpit::operator==(const qmcpit &qpit) const
 qmcpit &
 qmcpit::operator++()
 {
-  // todo: raise if |halton == null || qmcq == NULL|
   halton.increase();
   return *this;
 }
@@ -198,14 +200,12 @@ qmcpit::weight() const
   return 1.0/spec.level();
 }
 
-/* Clear from code. */
 int
 WarnockPerScheme::permute(int i, int base, int c) const
 {
   return (c+i) % base;
 }
 
-/* Clear from code. */
 int
 ReversePerScheme::permute(int i, int base, int c) const
 {

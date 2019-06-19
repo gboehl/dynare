@@ -179,7 +179,7 @@ Dynare::solveDeterministicSteady(Vector &steady)
                           "Could not obtain convergence in non-linear solver");
 }
 
-// evaluate system at given y_t=y_{t+1}=y_{t-1}, and given shocks x_t
+// Evaluate system at given yₜ=yₜ₊₁=yₜ₋₁, and given shocks xₜ
 void
 Dynare::evaluateSystem(Vector &out, const ConstVector &yy, const Vector &xx)
 {
@@ -188,9 +188,8 @@ Dynare::evaluateSystem(Vector &out, const ConstVector &yy, const Vector &xx)
   evaluateSystem(out, yym, yy, yyp, xx);
 }
 
-// evaluate system at given y^*_{t-1}, y_t, y^{**}_{t+1} and at
-// exogenous x_t, all three vectors yym, yy, and yyp have the
-// respective lengths of y^*_{t-1}, y_t, y^{**}_{t+1}
+/* Evaluate system at given y*ₜ₋₁, yₜ, y**ₜ₊₁ and at exogenous xₜ, all three
+   vectors yym, yy, and yyp have the respective lengths of y*ₜ₋₁, yₜ, y**ₜ₊₁ */
 void
 Dynare::evaluateSystem(Vector &out, const ConstVector &yym, const ConstVector &yy,
                        const ConstVector &yyp, const Vector &xx)
@@ -317,8 +316,8 @@ DynareEvalLoader::DynareEvalLoader(const ogp::FineAtoms &a, Vector &out)
     throw DynareException(__FILE__, __LINE__, "Wrong length of out vector in DynareEvalLoader constructor");
 }
 
-/** This clears the container of model derivatives and initializes it
- * inserting empty sparse tensors up to the given order. */
+/* This clears the container of model derivatives and initializes it inserting
+   empty sparse tensors up to the given order. */
 DynareDerEvalLoader::DynareDerEvalLoader(const ogp::FineAtoms &a,
                                          TensorContainer<FSSparseTensor> &mod_ders,
                                          int order)

@@ -20,8 +20,8 @@
 
 /*
   along shocks: m    mult    max_evals
-  ellipse:      m    mult    max_evals  (10*m) (0.5*mult)
-  simul:        m            max_evals  (10*m)
+  ellipse:      m    mult    max_evals  (10·m) (0.5·mult)
+  simul:        m            max_evals  (10·m)
 
   --check-scale 2.0 --check-evals 1000 --check-num 10 --check PES
 */
@@ -45,7 +45,7 @@ struct DynareParams
   std::string prefix;
   int seed;
   int order;
-  /** Tolerance used for steady state calcs. */
+  /* Tolerance used for steady state calcs. */
   double ss_tol;
   bool check_along_path;
   bool check_along_shocks;
@@ -53,9 +53,9 @@ struct DynareParams
   int check_evals;
   int check_num;
   double check_scale;
-  /** Flag for doing IRFs even if the irf_list is empty. */
+  /* Flag for doing IRFs even if the irf_list is empty. */
   bool do_irfs_all;
-  /** List of shocks for which IRF will be calculated. */
+  /* List of shocks for which IRF will be calculated. */
   std::vector<std::string> irf_list;
   bool do_centralize;
   double qz_criterium;
@@ -95,8 +95,8 @@ private:
                   check_evals, check_scale, check_num, noirfs, irfs,
                   help, version, centralize, no_centralize, qz_criterium};
   void processCheckFlags(const std::string &flags);
-  /** This gathers strings from argv[optind] and on not starting
-   * with '-' to the irf_list. It stops one item before the end,
-   * since this is the model file. */
+  /* This gathers strings from argv[optind] and on not starting with '-' to the
+     irf_list. It stops one item before the end, since this is the model
+     file. */
   void processIRFList(int argc, char **argv);
 };

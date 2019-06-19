@@ -24,9 +24,9 @@
 #include <iostream>
 #include <iomanip>
 
-/* This constructs a beginning of |isum| summand in |smolq|. We must be
-   careful here, since |isum| can be past-the-end, so no reference to
-   vectors in |smolq| by |isum| must be done in this case. */
+/* This constructs a beginning of ‘isum’ summand in ‘smolq’. We must be careful
+   here, since ‘isum’ can be past-the-end, so no reference to vectors in
+   ‘smolq’ by ‘isum’ must be done in this case. */
 
 smolpit::smolpit(const SmolyakQuadrature &q, unsigned int isum)
   : smolq(q), isummand(isum),
@@ -44,14 +44,13 @@ smolpit::operator==(const smolpit &spit) const
   return &smolq == &spit.smolq && isummand == spit.isummand && jseq == spit.jseq;
 }
 
-/* We first try to increase index within the current summand. If we are
-   at maximum, we go to a subsequent summand. Note that in this case all
-   indices in |jseq| will be zero, so no change is needed. */
+/* We first try to increase index within the current summand. If we are at
+   maximum, we go to a subsequent summand. Note that in this case all indices
+   in ‘jseq’ will be zero, so no change is needed. */
 
 smolpit &
 smolpit::operator++()
 {
-  // todo: throw if |smolq==NULL| or |jseq==NULL| or |sig==NULL|
   const IntSequence &levpts = smolq.levpoints[isummand];
   int i = smolq.dimen()-1;
   jseq[i]++;
@@ -73,14 +72,13 @@ smolpit::operator++()
   return *this;
 }
 
-/* Here we set the point coordinates according to |jseq| and
-   |isummand|. Also the weight is set here. */
+/* Here we set the point coordinates according to ‘jseq’ and
+   ‘isummand’. Also the weight is set here. */
 
 void
 smolpit::setPointAndWeight()
 {
-  // todo: raise if |smolq==NULL| or |jseq==NULL| or |sig==NULL| or
-  // |p==NULL| or |isummand>=smolq.numSummands()|
+  // todo: raise if isummand ≥ smolq.numSummands()
   int l = smolq.level;
   int d = smolq.dimen();
   int sumk = (smolq.levels[isummand]).sum();
@@ -114,21 +112,19 @@ smolpit::print() const
   std::cout.flags(ff);
 }
 
-/* Here is the constructor of |SmolyakQuadrature|. We have to setup
-   |levels|, |levpoints| and |cumevals|. We have to go through all
-   $d$-dimensional sequences $k$, such that $l\leq \vert k\vert\leq
-   l+d-1$ and all $k_i$ are positive integers. This is equivalent to
-   going through all $k$ such that $l-d\leq\vert k\vert\leq l-1$ and all
-   $k_i$ are non-negative integers. This is equivalent to going through
-   $d+1$ dimensional sequences $(k,x)$ such that $\vert(k,x)\vert =l-1$
-   and $x=0,\ldots,d-1$. The resulting sequence of positive integers is
-   obtained by adding $1$ to all $k_i$. */
+/* Here is the constructor of SmolyakQuadrature. We have to setup ‘levels’,
+   ‘levpoints’ and ‘cumevals’. We have to go through all d-dimensional
+   sequences k, such that l≤|k|≤l+d−1 and all kᵢ are positive integers. This is
+   equivalent to going through all k such that l−d≤|k|≤l−1 and all kᵢ are
+   non-negative integers. This is equivalent to going through d+1 dimensional
+   sequences (k,x) such that |(k,x)|=l−1 and x=0,…,d−1. The resulting sequence
+   of positive integers is obtained by adding 1 to all kᵢ. */
 
 SmolyakQuadrature::SmolyakQuadrature(int d, int l, const OneDQuadrature &uq)
   : QuadratureImpl<smolpit>(d), level(l), uquad(uq)
 {
-  // todo: check |l>1|, |l>=d|
-  // todo: check |l>=uquad.miLevel()|, |l<=uquad.maxLevel()|
+  // TODO: check l>1, l≥d
+  // TODO: check l≥uquad.miLevel(), l≤uquad.maxLevel()
   int cum = 0;
   for (const auto &si : SymmetrySet(l-1, d+1))
     {
@@ -147,10 +143,10 @@ SmolyakQuadrature::SmolyakQuadrature(int d, int l, const OneDQuadrature &uq)
     }
 }
 
-/* Here we return a number of evalutions of the quadrature for the
-   given level. If the given level is the current one, we simply return
-   the maximum cumulative number of evaluations. Otherwise we call costly
-   |calcNumEvaluations| method. */
+/* Here we return a number of evalutions of the quadrature for the given level.
+   If the given level is the current one, we simply return the maximum
+   cumulative number of evaluations. Otherwise we call costly
+   calcNumEvaluations() method. */
 
 int
 SmolyakQuadrature::numEvals(int l) const
@@ -161,14 +157,14 @@ SmolyakQuadrature::numEvals(int l) const
     return cumevals[numSummands()-1];
 }
 
-/* This divides all the evaluations to |tn| approximately equal groups,
-   and returns the beginning of the specified group |ti|. The granularity
-   of divisions are summands as listed by |levels|. */
+/* This divides all the evaluations to ‘tn’ approximately equal groups, and
+   returns the beginning of the specified group ‘ti’. The granularity of
+   divisions are summands as listed by ‘levels’. */
 
 smolpit
 SmolyakQuadrature::begin(int ti, int tn, int l) const
 {
-  // todo: raise is |level!=l|
+  // TODO: raise is level≠l
   if (ti == tn)
     return smolpit(*this, numSummands());
 
@@ -180,9 +176,9 @@ SmolyakQuadrature::begin(int ti, int tn, int l) const
   return smolpit(*this, isum);
 }
 
-/* This is the same in a structure as |@<|SmolyakQuadrature| constructor@>|.
-   We have to go through all summands and calculate
-   a number of evaluations in each summand. */
+/* This is the same in a structure as SmolyakQuadrature constructor. We have to
+   go through all summands and calculate a number of evaluations in each
+   summand. */
 
 int
 SmolyakQuadrature::calcNumEvaluations(int lev) const
@@ -203,8 +199,8 @@ SmolyakQuadrature::calcNumEvaluations(int lev) const
   return cum;
 }
 
-/* This returns a maximum level such that the number of evaluations is
-   less than the given number. */
+/* This returns a maximum level such that the number of evaluations is less
+   than the given number. */
 
 void
 SmolyakQuadrature::designLevelForEvals(int max_evals, int &lev, int &evals) const

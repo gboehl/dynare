@@ -37,9 +37,9 @@ namespace ogdyn
   using std::vector;
   using std::string;
 
-  /** A definition of a type mapping a string to an integer. Used as
-   * a substitution map, saying what names are substituted for what
-   * expressions represented by tree indices. */
+  /* A definition of a type mapping a string to an integer. Used as a
+     substitution map, saying what names are substituted for what expressions
+     represented by tree indices. */
   using Tsubstmap = map<string, int>;
 
   class DynareStaticAtoms : public ogp::StaticAtoms
@@ -51,14 +51,13 @@ namespace ogdyn
     }
     DynareStaticAtoms(const DynareStaticAtoms &a) = default;
     ~DynareStaticAtoms() override = default;
-    /** This registers a unique varname identifier. It throws an
-     * exception if the variable name is duplicate. It checks the
-     * uniqueness and then it calls StaticAtoms::register_name. */
+    /* This registers a unique varname identifier. It throws an exception if
+       the variable name is duplicate. It checks the uniqueness and then it
+       calls StaticAtoms::register_name. */
     void register_name(string name) override;
   protected:
-    /** This returns a tree index of the given variable, and if
-     * the variable has not been registered, it throws an
-     * exception. */
+    /* This returns a tree index of the given variable, and if the variable has
+       not been registered, it throws an exception. */
     int check_variable(const string &name) const override;
   };
 
@@ -68,52 +67,50 @@ namespace ogdyn
     enum class atype {endovar, exovar, param};
   protected:
     using Tatypemap = map<string, atype>;
-    /** The map assigining a type to each name. */
+    /* The map assigining a type to each name. */
     Tatypemap atom_type;
   public:
     DynareDynamicAtoms()
       : ogp::SAtoms()
     {
     }
-    /** This parses a variable of the forms: varname(+3),
-     * varname(3), varname, varname(-3), varname(0), varname(+0),
-     * varname(-0). */
+    /* This parses a variable of the forms: varname(+3), varname(3), varname,
+       varname(-3), varname(0), varname(+0), varname(-0). */
     void parse_variable(const string &in, std::string &out, int &ll) const override;
-    /** Registers unique name of endogenous variable. */
+    /* Registers unique name of endogenous variable. */
     void register_uniq_endo(string name) override;
-    /** Registers unique name of exogenous variable. */
+    /* Registers unique name of exogenous variable. */
     void register_uniq_exo(string name) override;
-    /** Registers unique name of parameter. */
+    /* Registers unique name of parameter. */
     void register_uniq_param(string name) override;
-    /** Return true if the name is a given type. */
+    /* Return true if the name is a given type. */
     bool is_type(const string &name, atype tp) const;
-    /** Debug print. */
+    /* Debug print. */
     void print() const override;
-    /** Implement NularyStringConvertor::convert. */
+    /* Implement NularyStringConvertor::convert. */
     std::string convert(int t) const override;
   };
 
-  /** This class represents the atom values for dynare, where
-   * exogenous variables can occur only at time t, and endogenous at
-   * times t-1, t, and t+1. */
+  /* This class represents the atom values for dynare, where exogenous
+     variables can occur only at time t, and endogenous at times t−1, t, and
+     t+1. */
   class DynareAtomValues : public ogp::AtomValues
   {
   protected:
-    /** Reference to the atoms (we suppose that they are only at
-     * t-1,t,t+1. */
+    /* Reference to the atoms (we suppose that they are only at t−1,t,t+1. */
     const ogp::FineAtoms &atoms;
-    /** De facto reference to the values of parameters. */
+    /* De facto reference to the values of parameters. */
     const ConstVector paramvals;
-    /** De facto reference to the values of endogenous at time t-1. Only
-     * predetermined and both part. */
+    /* De facto reference to the values of endogenous at time t−1. Only
+       predetermined and both part. */
     const ConstVector yym;
-    /** De facto reference to the values of endogenous at time t. Ordering
-     * given by the atoms. */
+    /* De facto reference to the values of endogenous at time t. Ordering given
+       by the atoms. */
     const ConstVector yy;
-    /** De facto reference to the values of endogenous at time t+1. Only
-     * both and forward looking part. */
+    /* De facto reference to the values of endogenous at time t+1. Only both
+       and forward looking part. */
     const ConstVector yyp;
-    /** De facto reference to the values of exogenous at time t. */
+    /* De facto reference to the values of exogenous at time t. */
     const ConstVector xx;
   public:
     DynareAtomValues(const ogp::FineAtoms &a, const Vector &pvals, const Vector &ym,
@@ -129,20 +126,20 @@ namespace ogdyn
     void setValues(ogp::EvalTree &et) const override;
   };
 
-  /** This class represents the atom values at the steady state. It
-   * makes only appropriate subvector yym and yyp of the y vector,
-   * makes a vector of zero exogenous variables and uses
-   * DynareAtomValues with more general interface. */
+  /* This class represents the atom values at the steady state. It makes only
+     appropriate subvector yym and yyp of the y vector, makes a vector of zero
+     exogenous variables and uses DynareAtomValues with more general
+     interface. */
   class DynareSteadyAtomValues : public ogp::AtomValues
   {
   protected:
-    /** Subvector of yy. */
+    /* Subvector of yy. */
     const ConstVector yym;
-    /** Subvector of yy. */
+    /* Subvector of yy. */
     const ConstVector yyp;
-    /** Vector of zeros for exogenous variables. */
+    /* Vector of zeros for exogenous variables. */
     Vector xx;
-    /** Atom values using this yym, yyp and xx. */
+    /* Atom values using this yym, yyp and xx. */
     DynareAtomValues av;
   public:
     DynareSteadyAtomValues(const ogp::FineAtoms &a, const Vector &pvals, const Vector &y)
@@ -163,21 +160,19 @@ namespace ogdyn
   class DynareStaticSteadyAtomValues : public ogp::AtomValues
   {
   protected:
-    /** Reference to static atoms over which the tree, where the
-     * values go, is defined. */
+    /* Reference to static atoms over which the tree, where the values go, is
+       defined. */
     const ogp::StaticFineAtoms &atoms_static;
-    /** Reference to dynamic atoms for which the class gets input
-     * data. */
+    /* Reference to dynamic atoms for which the class gets input data. */
     const ogp::FineAtoms &atoms;
-    /** De facto reference to input data, this is a vector of
-     * endogenous variables in internal ordering of the dynamic
-     * atoms. */
+    /* De facto reference to input data, this is a vector of endogenous
+       variables in internal ordering of the dynamic atoms. */
     ConstVector yy;
-    /** De facto reference to input parameters corresponding to
-     * ordering defined by the dynamic atoms. */
+    /* De facto reference to input parameters corresponding to ordering defined
+       by the dynamic atoms. */
     ConstVector paramvals;
   public:
-    /** Construct the object. */
+    /* Construct the object. */
     DynareStaticSteadyAtomValues(const ogp::FineAtoms &a, const ogp::StaticFineAtoms &sa,
                                  const Vector &pvals, const Vector &yyy)
       : atoms_static(sa),
@@ -186,18 +181,17 @@ namespace ogdyn
         paramvals(pvals)
     {
     }
-    /** Set the values to the tree defined over the static atoms. */
+    /* Set the values to the tree defined over the static atoms. */
     void setValues(ogp::EvalTree &et) const override;
   };
 
-  /** This class takes a vector of endogenous variables and a
-   * substitution map. It supposes that variables at the right hand
-   * sides of the substitutions are set in the endogenous vector. It
-   * evaluates the substitutions and if the variables corresponding
-   * to left hand sides are not set in the endogenous vector it sets
-   * them to calculated values. If a variable is already set, it
-   * does not override its value. It has no methods, everything is
-   * done in the constructor. */
+  /* This class takes a vector of endogenous variables and a substitution map.
+     It supposes that variables at the right hand sides of the substitutions
+     are set in the endogenous vector. It evaluates the substitutions and if
+     the variables corresponding to left hand sides are not set in the
+     endogenous vector it sets them to calculated values. If a variable is
+     already set, it does not override its value. It has no methods, everything
+     is done in the constructor. */
   class DynareSteadySubstitutions : public ogp::FormulaEvalLoader
   {
   protected:
@@ -213,11 +207,10 @@ namespace ogdyn
     vector<int> right_hand_sides;
   };
 
-  /** This class is a static version of DynareSteadySustitutions. It
-   * works for static atoms and static tree and substitution map
-   * over the static tree. It also needs dynamic version of the
-   * atoms, since it defines ordering of the vectors pvals, and
-   * yy. */
+  /* This class is a static version of DynareSteadySustitutions. It works for
+     static atoms and static tree and substitution map over the static tree. It
+     also needs dynamic version of the atoms, since it defines ordering of the
+     vectors pvals, and yy. */
   class DynareStaticSteadySubstitutions : public ogp::FormulaEvalLoader
   {
   protected:

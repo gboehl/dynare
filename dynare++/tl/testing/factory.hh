@@ -41,7 +41,7 @@ class Factory
   void fillMatrix(TwoDMatrix &m);
 public:
   double get();
-  // this can be used with UGSTensor, FGSTensor
+  // This can be used with UGSTensor, FGSTensor
   template <class _Ttype>
   std::unique_ptr<_Ttype>
   make(int r, const Symmetry &s, const IntSequence &nvs)
@@ -52,7 +52,7 @@ public:
     return res;
   }
 
-  // this can be used with FFSTensor, UFSTensor, FRTensor, URTensor
+  // This can be used with FFSTensor, UFSTensor, FRTensor, URTensor
   template <class _Ttype>
   std::unique_ptr<_Ttype>
   make(int r, int nv, int dim)
@@ -71,10 +71,10 @@ public:
     _Ctype res(symnum);
     for (int dim = 1; dim <= maxdim; dim++)
       if (symnum == 1)
-        // full symmetry
+        // Full symmetry
         res.insert(make<_Ttype>(r, Symmetry{dim}, nvs));
       else
-        // general symmetry
+        // General symmetry
         for (int i = 0; i <= dim; i++)
           res.insert(make<_Ttype>(r, Symmetry{i, dim-i}, nvs));
     return res;

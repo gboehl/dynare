@@ -23,10 +23,10 @@
 #include "tl_static.hh"
 #include "pascal_triangle.hh"
 
-/* Here we increment a given sequence within full symmetry given by
-   |nv|, which is number of variables in each dimension. The underlying
-   tensor is unfolded, so we increase the rightmost by one, and if it is
-   |nv| we zero it and increase the next one to the left. */
+/* Here we increment a given sequence within full symmetry given by ‘nv’, which
+   is number of variables in each dimension. The underlying tensor is unfolded,
+   so we increase the rightmost by one, and if it is ‘nv’ we zero it and
+   increase the next one to the left. */
 
 void
 UTensor::increment(IntSequence &v, int nv)
@@ -42,7 +42,7 @@ UTensor::increment(IntSequence &v, int nv)
     }
 }
 
-/* This is dual to |UTensor::increment(IntSequence& v, int nv)|. */
+/* This is dual to UTensor::increment(IntSequence& v, int nv). */
 
 void
 UTensor::decrement(IntSequence &v, int nv)
@@ -58,11 +58,10 @@ UTensor::decrement(IntSequence &v, int nv)
     }
 }
 
-/* Here we increment index for general symmetry for unfolded
-   storage. The sequence |nvmx| assigns for each coordinate a number of
-   variables. Since the storage is unfolded, we do not need information
-   about what variables are symmetric, everything necessary is given by
-   |nvmx|. */
+/* Here we increment index for general symmetry for unfolded storage. The
+   sequence ‘nvmx’ assigns for each coordinate a number of variables. Since the
+   storage is unfolded, we do not need information about what variables are
+   symmetric, everything necessary is given by ‘nvmx’. */
 
 void
 UTensor::increment(IntSequence &v, const IntSequence &nvmx)
@@ -78,8 +77,8 @@ UTensor::increment(IntSequence &v, const IntSequence &nvmx)
     }
 }
 
-/* This is a dual code to |UTensor::increment(IntSequence& v, const
-   IntSequence& nvmx)|. */
+/* This is a dual code to UTensor::increment(IntSequence& v, const IntSequence&
+   nvmx). */
 
 void
 UTensor::decrement(IntSequence &v, const IntSequence &nvmx)
@@ -95,8 +94,8 @@ UTensor::decrement(IntSequence &v, const IntSequence &nvmx)
     }
 }
 
-/* Here we return an offset for a given coordinates of unfolded full
-   symmetry tensor. This is easy. */
+/* Here we return an offset for a given coordinates of unfolded full symmetry
+   tensor. This is easy. */
 
 int
 UTensor::getOffset(const IntSequence &v, int nv)
@@ -124,12 +123,11 @@ UTensor::getOffset(const IntSequence &v, const IntSequence &nvmx)
   return res;
 }
 
-/* Decrementing of coordinates of folded index is not that easy. Note
-   that if a trailing part of coordinates is $(b, a, a, a)$ (for
-   instance) with $b<a$, then a preceding coordinates are $(b, a-1, n-1,
-   n-1)$, where $n$ is a number of variables |nv|. So we find the left
-   most element which is equal to the last element, decrease it by one,
-   and then set all elements to the right to $n-1$. */
+/* Decrementing of coordinates of folded index is not that easy. Note that if a
+   trailing part of coordinates is (b,a,a,a) (for instance) with b<a, then a
+   preceding coordinates are (b,a−1,n−1,n−1), where n is a number of variables
+   ‘nv’. So we find the left most element which is equal to the last element,
+   decrease it by one, and then set all elements to the right to n−1. */
 
 void
 FTensor::decrement(IntSequence &v, int nv)

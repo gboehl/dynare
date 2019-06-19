@@ -21,29 +21,29 @@
 // Quadrature.
 
 /* This file defines an interface for one dimensional (non-nested) quadrature
-   |OneDQuadrature|, and a parent for all multi-dimensional
-   quadratures. This parent class |Quadrature| presents a general concept of
-   quadrature, this is
-   $$\int f(x){\rm d}x \approx\sum_{i=1}^N w_ix_i$$
-   The class |Quadrature| just declares this concept. The concept is
-   implemented by class |QuadratureImpl| which paralelizes the
-   summation. All implementations therefore wishing to use the parallel
-   implementation should inherit from |QuadratureImpl| and integration is
-   done.
+   OneDQuadrature, and a parent for all multi-dimensional quadratures. This
+   parent class Quadrature presents a general concept of quadrature, this is
 
-   The integration concept relies on a point iterator, which goes through
-   all $x_i$ and $w_i$ for $i=1,\ldots,N$. All the iterators must be able
-   to go through only a portion of the set $i=1,\ldots,N$. This enables
-   us to implement paralelism, for two threads for example, one iterator
-   goes from the beginning to the (approximately) half, and the other
-   goes from the half to the end.
+                 N
+    ∫ f(x)dx  ≃  ∑  wᵢxᵢ
+                ⁱ⁼¹
 
-   Besides this concept of the general quadrature, this file defines also
-   one dimensional quadrature, which is basically a scheme of points and
-   weights for different levels. The class |OneDQuadrature| is a parent
-   of all such objects, the classes |GaussHermite| and |GaussLegendre|
-   are specific implementations for Gauss--Hermite and Gauss--Legendre
-   quadratures resp. */
+   The class Quadrature just declares this concept. The concept is implemented
+   by class QuadratureImpl which paralelizes the summation. All implementations
+   therefore wishing to use the parallel implementation should inherit from
+   QuadratureImpl and integration is done.
+
+   The integration concept relies on a point iterator, which goes through all
+   xᵢ and wᵢ for i=1,…,N. All the iterators must be able to go through only a
+   portion of the set i=1,…,N. This enables us to implement paralelism, for two
+   threads for example, one iterator goes from the beginning to the
+   (approximately) half, and the other goes from the half to the end.
+
+   Besides this concept of the general quadrature, this file defines also one
+   dimensional quadrature, which is basically a scheme of points and weights
+   for different levels. The class OneDQuadrature is a parent of all such
+   objects, the classes GaussHermite and GaussLegendre are specific
+   implementations for Gauss-Hermite and Gauss-Legendre quadratures resp. */
 
 #ifndef QUADRATURE_H
 #define QUADRATURE_H
@@ -56,10 +56,10 @@
 #include "int_sequence.hh"
 #include "sthread.hh"
 
-/* This pure virtual class represents a concept of one-dimensional
-   (non-nested) quadrature. So, one dimensional quadrature must return
-   number of levels, number of points in a given level, and then a point
-   and a weight in a given level and given order. */
+/* This pure virtual class represents a concept of one-dimensional (non-nested)
+   quadrature. So, one dimensional quadrature must return number of levels,
+   number of points in a given level, and then a point and a weight in a given
+   level and given order. */
 
 class OneDQuadrature
 {
@@ -71,18 +71,17 @@ public:
   virtual double weight(int lelel, int i) const = 0;
 };
 
-/* This is a general concept of multidimensional quadrature. at this
-   general level, we maintain only a dimension, and declare virtual
-   functions for integration. The function take two forms; first takes a
-   constant |VectorFunction| as an argument, creates locally
-   |VectorFunctionSet| and do calculation, second one takes as an
-   argument |VectorFunctionSet|.
+/* This is a general concept of multidimensional quadrature. at this general
+   level, we maintain only a dimension, and declare virtual functions for
+   integration. The function take two forms; first takes a constant
+   VectorFunction as an argument, creates locally VectorFunctionSet and do
+   calculation, second one takes as an argument VectorFunctionSet.
 
-   Part of the interface is a method returning a number of evaluations
-   for a specific level. Note two things: this assumes that the number of
-   evaluations is known apriori and thus it is not applicable for
-   adaptive quadratures, second for Monte Carlo type of quadrature, the
-   level is a number of evaluations. */
+   Part of the interface is a method returning a number of evaluations for a
+   specific level. Note two things: this assumes that the number of evaluations
+   is known apriori and thus it is not applicable for adaptive quadratures,
+   second for Monte Carlo type of quadrature, the level is a number of
+   evaluations. */
 
 class Quadrature
 {
@@ -104,11 +103,11 @@ public:
   virtual int numEvals(int level) const = 0;
 };
 
-/* This is just an integration worker, which works over a given
-   |QuadratureImpl|. It also needs the function, level, a specification
-   of the subgroup of points, and output vector.
+/* This is just an integration worker, which works over a given QuadratureImpl.
+   It also needs the function, level, a specification of the subgroup of
+   points, and output vector.
 
-   See |@<|QuadratureImpl| class declaration@>| for details. */
+   See QuadratureImpl class declaration for details. */
 
 template <typename _Tpit>
 class QuadratureImpl;
@@ -129,14 +128,13 @@ public:
   {
   }
 
-  /* This integrates the given portion of the integral. We obtain first
-     and last iterators for the portion (|beg| and |end|). Then we iterate
-     through the portion. and finally we add the intermediate result to the
-     result |outvec|.
+  /* This integrates the given portion of the integral. We obtain first and
+     last iterators for the portion (‘beg’ and ‘end’). Then we iterate through
+     the portion. and finally we add the intermediate result to the result
+     ‘outvec’.
 
-     This method just everything up as it is coming. This might be imply
-     large numerical errors, perhaps in future I will implement something
-     smarter. */
+     This method just everything up as it is coming. This might be imply large
+     numerical errors, perhaps in future something smarter should be implemented. */
 
   void
   operator()(std::mutex &mut) override
@@ -147,8 +145,8 @@ public:
     tmpall.zeros();
     Vector tmp(outvec.length());
 
-    // note that since beg came from begin, it has empty signal
-    // and first evaluation gets no signal
+    /* Note that since ‘beg’ came from begin(), it has empty signal and first
+       evaluation gets no signal */
     for (_Tpit run = beg; run != end; ++run)
       {
         func.eval(run.point(), run.signal(), tmp);
@@ -162,13 +160,13 @@ public:
   }
 };
 
-/* This is the class which implements the integration. The class is
-   templated by the iterator type. We declare a method |begin| returning
-   an iterator to the beginnning of the |ti|-th portion out of total |tn|
-   portions for a given level.
+/* This is the class which implements the integration. The class is templated
+   by the iterator type. We declare a method begin() returning an iterator to
+   the beginnning of the ‘ti’-th portion out of total ‘tn’ portions for a given
+   level.
 
-   In addition, we define a method which saves all the points to a given
-   file. Only for debugging purposes. */
+   In addition, we define a method which saves all the points to a given file.
+   Only for debugging purposes. */
 
 template <typename _Tpit>
 class QuadratureImpl : public Quadrature
@@ -183,8 +181,8 @@ public:
   void
   integrate(VectorFunctionSet &fs, int level, Vector &out) const override
   {
-    // todo: out.length()==func.outdim()
-    // todo: dim == func.indim()
+    // TODO: out.length()==func.outdim()
+    // TODO: dim == func.indim()
     out.zeros();
     sthread::detach_thread_group gr;
     for (int ti = 0; ti < fs.getNum(); ti++)
@@ -207,7 +205,7 @@ public:
     std::ofstream fd{fname, std::ios::out | std::ios::trunc};
     if (fd.fail())
       {
-        // todo: raise
+        // TODO: raise
         std::cerr << "Cannot open file " << fname << " for writing." << std::endl;
         exit(EXIT_FAILURE);
       }
@@ -238,16 +236,16 @@ protected:
   virtual _Tpit begin(int ti, int tn, int level) const = 0;
 };
 
-/* This is only an interface to a precalculated data in file {\tt
-   precalc\_quadrature.dat} which is basically C coded static data. It
-   implements |OneDQuadrature|. The data file is supposed to define the
-   following data: number of levels, array of number of points at each
-   level, an array of weights and array of points. The both latter array
-   store data level by level. An offset for a specific level is stored in
-   |offsets| integer sequence.
+/* This is only an interface to a precalculated data in file
+   precalc_quadrature.hh which is basically C coded static data. It implements
+   OneDQuadrature. The data file is supposed to define the following data:
+   number of levels, array of number of points at each level, an array of
+   weights and array of points. The both latter array store data level by
+   level. An offset for a specific level is stored in ‘offsets’ integer
+   sequence.
 
-   The implementing subclasses just fill the necessary data from the
-   file, the rest is calculated here. */
+   The implementing subclasses just fill the necessary data from the file, the
+   rest is calculated here. */
 
 class OneDPrecalcQuadrature : public OneDQuadrature
 {
@@ -289,17 +287,21 @@ protected:
   void calcOffsets();
 };
 
-/* Just precalculated Gauss--Hermite quadrature. This quadrature integrates exactly integrals
-   $$\int_{-\infty}^{\infty} x^ke^{-x^2}{\rm d}x$$
-   for level $k$.
+/* Just precalculated Gauss-Hermite quadrature. This quadrature integrates
+   exactly integrals
 
-   Note that if pluging this one-dimensional quadrature to product or
-   Smolyak rule in order to integrate a function $f$ through normally
-   distributed inputs, one has to wrap $f$ to
-   |GaussConverterFunction| and apply the product or Smolyak rule to the
-   new function.
+     +∞
+      ∫ xᵏe^{−x²}dx
+     −∞
 
-   Check {\tt precalc\_quadrature.dat} for available levels. */
+   for level k.
+
+   Note that if pluging this one-dimensional quadrature to product or Smolyak
+   rule in order to integrate a function f through normally distributed inputs,
+   one has to wrap f to GaussConverterFunction and apply the product or Smolyak
+   rule to the new function.
+
+   Check precalc_quadrature.hh for available levels. */
 
 class GaussHermite : public OneDPrecalcQuadrature
 {
@@ -307,11 +309,16 @@ public:
   GaussHermite();
 };
 
-/* Just precalculated Gauss--Legendre quadrature. This quadrature integrates exactly integrals
-   $$\int_0^1x^k{\rm d}x$$
-   for level $k$.
+/* Just precalculated Gauss-Legendre quadrature. This quadrature integrates
+   exactly integrals
 
-   Check {\tt precalc\_quadrature.dat} for available levels. */
+      ₁
+      ∫ xᵏdx
+      ⁰     
+
+   for level k.
+
+   Check precalc_quadrature.hh for available levels. */
 
 class GaussLegendre : public OneDPrecalcQuadrature
 {

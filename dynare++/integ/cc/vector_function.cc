@@ -25,16 +25,16 @@
 #include <cmath>
 #include <algorithm>
 
-/* Just an easy constructor of sequence of booleans defaulting to
-   change everywhere. */
+/* Just an easy constructor of sequence of booleans defaulting to change
+   everywhere. */
 
 ParameterSignal::ParameterSignal(int n)
   : data(n, true)
 {
 }
 
-/* This sets |false| (no change) before a given parameter, and |true|
-   (change) after the given parameter (including). */
+/* This sets ‘false’ (no change) before a given parameter, and ‘true’ (change)
+   after the given parameter (including). */
 
 void
 ParameterSignal::signalAfter(int l)
@@ -56,8 +56,8 @@ VectorFunctionSet::VectorFunctionSet(const VectorFunction &f, int n)
     }
 }
 
-/* This constructs a function set with shallow copy in the first and
-   hard copies in others. */
+/* This constructs a function set with shallow copy in the first and hard
+   copies in others. */
 VectorFunctionSet::VectorFunctionSet(VectorFunction &f, int n)
   : funcs(n)
 {
@@ -71,25 +71,23 @@ VectorFunctionSet::VectorFunctionSet(VectorFunction &f, int n)
 }
 
 
-/* Here we construct the object from the given function $f$ and given
-   variance-covariance matrix $\Sigma=$|vcov|. The matrix $A$ is
-   calculated as lower triangular and yields $\Sigma=AA^T$. */
+/* Here we construct the object from the given function f and given
+   variance-covariance matrix Σ=vcov. The matrix A is calculated as lower
+   triangular and yields Σ=AAᵀ. */
 
 GaussConverterFunction::GaussConverterFunction(VectorFunction &f, const GeneralMatrix &vcov)
   : VectorFunction(f), func(&f), A(vcov.nrows(), vcov.nrows()),
     multiplier(calcMultiplier())
 {
-  // todo: raise if |A.nrows() != indim()|
+  // TODO: raise if A.nrows() ≠ indim()
   calcCholeskyFactor(vcov);
 }
 
-/* Here we construct the object in the same way, however we mark the
-   function as to be deleted. */
 GaussConverterFunction::GaussConverterFunction(std::unique_ptr<VectorFunction> f, const GeneralMatrix &vcov)
   : VectorFunction(*f), func_storage{move(f)}, func{func_storage.get()}, A(vcov.nrows(), vcov.nrows()),
     multiplier(calcMultiplier())
 {
-  // todo: raise if |A.nrows() != indim()|
+  // TODO: raise if A.nrows() ≠ indim()
   calcCholeskyFactor(vcov);
 }
 
@@ -100,11 +98,12 @@ GaussConverterFunction::GaussConverterFunction(const GaussConverterFunction &f)
 }
 
 /* Here we evaluate the function
-   $g(y)={1\over\sqrt{\pi^n}}f\left(\sqrt{2}Ay\right)$. Since the matrix $A$ is lower
-   triangular, the change signal for the function $f$ will look like
-   $(0,\ldots,0,1,\ldots,1)$ where the first $1$ is in the same position
-   as the first change in the given signal |sig| of the input
-   $y=$|point|. */
+
+    g(y) = 1/√(πⁿ) f(√2·Ay).
+
+   Since the matrix A is lower triangular, the change signal for the function f
+   will look like (0,…,0,1,…,1) where the first 1 is in the same position as
+   the first change in the given signal ‘sig’ of the input y=point. */
 
 void
 GaussConverterFunction::eval(const Vector &point, const ParameterSignal &sig, Vector &out)
@@ -125,7 +124,7 @@ GaussConverterFunction::eval(const Vector &point, const ParameterSignal &sig, Ve
   out.mult(multiplier);
 }
 
-/* This returns $1\over\sqrt{\pi^n}$. */
+/* This returns 1/√(πⁿ). */
 
 double
 GaussConverterFunction::calcMultiplier() const
@@ -145,5 +144,5 @@ GaussConverterFunction::calcCholeskyFactor(const GeneralMatrix &vcov)
 
   lapack_int info;
   dpotrf("L", &rows, A.base(), &lda, &info);
-  // todo: raise if |info!=1|
+  // TODO: raise if info≠1
 }

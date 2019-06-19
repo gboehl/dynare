@@ -168,7 +168,7 @@ Monom2Vector::Monom2Vector(const Monom1Vector &g, const Monom2Vector &xmon)
     }
 
   for (int i = 0; i < len; i++)
-    // multiply from xmon
+    // Multiply from xmon
     for (int j = 0; j < g.nx; j++)
       {
         int ex = g.x[i].operator[](j);
@@ -285,7 +285,7 @@ Monom4Vector::Monom4Vector(const Monom4Vector &f, const Monom4Vector &bigg,
 
   for (int i = 0; i < len; i++)
     {
-      // multiply from G (first argument)
+      // Multiply from G (first argument)
       for (int j = 0; j < f.nx1; j++)
         {
           int ex = f.x1[i].operator[](j);
@@ -294,7 +294,7 @@ Monom4Vector::Monom4Vector(const Monom4Vector &f, const Monom4Vector &bigg,
           x3[i].multiplyWith(ex, bigg.x3[j]);
           x4[i].multiplyWith(ex, bigg.x4[j]);
         }
-      // multiply from g (second argument)
+      // Multiply from g (second argument)
       for (int j = 0; j < f.nx2; j++)
         {
           int ex = f.x2[i].operator[](j);
@@ -302,9 +302,9 @@ Monom4Vector::Monom4Vector(const Monom4Vector &f, const Monom4Vector &bigg,
           x2[i].multiplyWith(ex, g.x2[j]);
           x4[i].multiplyWith(ex, g.x4[j]);
         }
-      // add y as third argument of f
+      // Add y as third argument of f
       x1[i].add(1, f.x3[i]);
-      // add u as fourth argument of f
+      // Add u as fourth argument of f
       x2[i].add(1, f.x4[i]);
     }
 }

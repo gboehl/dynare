@@ -155,19 +155,18 @@ PlannerBuilder::shift_derivatives_of_f()
               diff_f(yi, fi, ll-minlag)
                 = model.eqs.add_substitution(diff_f(yi, fi, ll-minlag), subst);
             }
-        // now do it for lags, these are put as leads under
-        // expectations after time t, so we have to introduce
-        // auxiliary variables at time t, and make leads of them here
+        /* now do it for lags, these are put as leads under expectations after
+           time t, so we have to introduce auxiliary variables at time t, and
+           make leads of them here */
         for (int ll = minlag; ll < 0; ll++)
           {
             int ft = diff_f(yi, fi, ll-minlag);
             if (ft != ogp::OperationTree::zero)
               {
-                // if the ft term has a lead, than we need to
-                // introduce an auxiliary variable z_t, define it
-                // as E_t[ft] and put z_{t-ll} to the
-                // equation. Otherwise, we just put leaded ft to
-                // the equation directly.
+                /* if the ft term has a lead, than we need to introduce an
+                   auxiliary variable zₜ, define it as 𝔼ₜ[ft] and put z_{t-ll}
+                   to the equation. Otherwise, we just put leaded ft to the
+                   equation directly. */
                 int ft_maxlead, ft_minlag;
                 model.termspan(ft, ft_maxlead, ft_minlag);
                 if (ft_maxlead > 0)
@@ -187,11 +186,10 @@ PlannerBuilder::shift_derivatives_of_f()
                   }
                 else
                   {
-                    // no auxiliary variable is needed and the
-                    // term ft can be leaded in place
+                    /* no auxiliary variable is needed and the term ft can be
+                       leaded in place */
                     model.variable_shift_map(model.eqs.nulary_of_term(ft), -ll, subst);
-                    diff_f(yi, fi, ll-minlag)
-                      = model.eqs.add_substitution(ft, subst);
+                    diff_f(yi, fi, ll-minlag) = model.eqs.add_substitution(ft, subst);
                   }
               }
           }
@@ -291,7 +289,7 @@ PlannerBuilder::lagrange_mult_f()
 void
 PlannerBuilder::form_equations()
 {
-  // add planner's FOCs
+  // add planner’s FOCs
   for (int yi = 0; yi < diff_f.dim1(); yi++)
     {
       int eq = ogp::OperationTree::zero;
@@ -344,10 +342,9 @@ MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy
                                              builder.static_tree,
                                              builder.static_aux_map, pvals, yy);
 
-  // gather all the terms from builder.diff_b_static and
-  // builder.diff_f_static to the vector, the ordering is important,
-  // since the index of this vector will have to be decoded to the
-  // position in b and F.
+  /* gather all the terms from builder.diff_b_static and builder.diff_f_static
+     to the vector, the ordering is important, since the index of this vector
+     will have to be decoded to the position in b and F. */
   vector<int> terms;
   for (int yi = 0; yi < builder.diff_b_static.nrows(); yi++)
     for (int l = 0; l < builder.diff_b_static.ncols(); l++)
@@ -357,8 +354,8 @@ MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy
       for (int l = 0; l < builder.diff_f_static.dim3(); l++)
         terms.push_back(builder.diff_f_static(yi, fi, l));
 
-  // evaluate the terms, it will call a series of load(i,res), which
-  // sum the results through lags/leads to b and F
+  /* evaluate the terms, it will call a series of load(i,res), which sum the
+     results through lags/leads to b and F */
   DynareStaticSteadyAtomValues dssav(builder.model.atoms, builder.static_atoms, pvals, yy);
   ogp::FormulaCustomEvaluator fe(builder.static_tree, terms);
   fe.eval(dssav, *this);
@@ -378,8 +375,7 @@ MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy
       if (!std::isfinite(yy[iy]))
         yy[iy] = lambda[fi];
 
-      // go through all substitutions of the multiplier and set them
-      // as well
+      /* go through all substitutions of the multiplier and set them as well */
       if (builder.model.atom_substs)
         {
           const ogp::AtomSubstitutions::Toldnamemap &old2new
@@ -404,8 +400,8 @@ MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy
 void
 MultInitSS::load(int i, double res)
 {
-  // we can afford it, since the evaluator sets res to exact zero if
-  // the term is zero
+  /* we can afford it, since the evaluator sets res to exact zero if the term
+     is zero */
   if (res == 0)
     return;
   // decode i and add to either b or F

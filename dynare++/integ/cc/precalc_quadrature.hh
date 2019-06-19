@@ -18,25 +18,25 @@
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// The file contains one dimensional quadrature points and weights for
-// a few quadratures. The format of data is clear. There is a class
-// OneDPrecalcQuadrature which implements an interface OneDQuadrature
-// using the data of this format.
+// The file contains one dimensional quadrature points and weights for a few
+// quadratures. The format of data is clear. There is a class
+// OneDPrecalcQuadrature which implements an interface OneDQuadrature using the
+// data of this format.
 
 // Gauss-Hermite quadrature; prefix gh
 
-// number of levels
+// Number of levels
 static const int gh_num_levels = 26;
 
-// number of points in each level
+// Number of points in each level
 static const int gh_num_points[] = {
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 	30, 32, 40, 50, 60, 64
 };
 
-// weights, starting with the first level
+// Weights, starting with the first level
 static const double gh_weights[] = {
-    // weights 1 = sqrt(pi)
+        // weights 1 = √π
 	1.77245385090551588191942755656782537698745727539062,
 	// weights 2
 	0.886226925452758013649083741671e+00,
@@ -550,7 +550,7 @@ static const double gh_weights[] = {
 	0.553570653584e-48
 };
 
-// points, starting with the first level
+// Points, starting with the first level
 static const double gh_points[] = {
 	// points 1
 	0.0,
@@ -1068,16 +1068,16 @@ static const double gh_points[] = {
 
 // Gauss-Legendre quadrature; prefix gl
 
-// number of levels
+// Number of levels
 static const int gl_num_levels = 22;
 
-// number of points in each level
+// Number of points in each level
 static const int gl_num_points[] = {
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 	32, 64
 };
 
-// weights, starting with the first level
+// Weights, starting with the first level
 static const double gl_weights[] = {
 	// weight 1
 	2.0e+00,
@@ -1409,7 +1409,7 @@ static const double gl_weights[] = {
 	0.178328072169643294729607914497e-02
 };
 
-// points, starting with the first level
+// Points, starting with the first level
 static const double gl_points[] = {
 	// points 1
 	0.0e+00,
