@@ -1,4 +1,5 @@
-function [initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic, y] = simul_backward_model_init(varargin)
+function [initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic, y] = ...
+    simul_backward_model_init(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations)
 
 % Initialization of the routines simulating backward models.    
 
@@ -18,12 +19,6 @@ function [initialconditions, samplesize, innovations, DynareOptions, DynareModel
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-
-initialconditions = varargin{1};
-samplesize = varargin{2};
-DynareOptions = varargin{3};
-DynareModel = varargin{4};
-DynareOutput = varargin{5};
 
 % Test if the model is backward.
 if DynareModel.maximum_lead
@@ -150,7 +145,7 @@ if missinginitialcondition
     error('Please fix the dseries object used for setting the initial conditions!')
 end
 
-if nargin<6 || isempty(varargin{6}) 
+if nargin<6 || isempty(innovations)
     % Set the covariance matrix of the structural innovations.
     variances = diag(DynareModel.Sigma_e);
     number_of_shocks = length(DynareModel.Sigma_e);
@@ -174,7 +169,6 @@ if nargin<6 || isempty(varargin{6})
     DynareOutput.exo_simul(:,positive_var_indx) = DynareOutput.bnlms.shocks;
     innovations = DynareOutput.exo_simul;
 else
-    innovations = varargin{6};
     DynareOutput.exo_simul = innovations; % innovations
 end
 

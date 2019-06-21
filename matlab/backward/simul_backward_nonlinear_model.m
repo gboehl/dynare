@@ -1,4 +1,4 @@
-function simulations = simul_backward_nonlinear_model(varargin)
+function simulations = simul_backward_nonlinear_model(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations)
 
 % Simulates a stochastic non linear backward looking model with arbitrary precision (a deterministic solver is used).
 %
@@ -38,16 +38,20 @@ function simulations = simul_backward_nonlinear_model(varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if M_.maximum_lead
-    error('Model defined in %s.mod is not backward.', M_.fname)
+if DynareModel.maximum_lead
+    error('Model defined in %s.mod is not backward.', DynareModel.fname)
 end
 
-if M_.maximum_lag
-    error('Model defined in %s.mod is not backward.', M_.fname)
+if ~DynareModel.maximum_lag
+    error('Model defined in %s.mod is not backward.', DynareModel.fname)
+end
+
+if nargin<6
+    innovations = [];
 end
 
 [initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, ~, ~, iy1, ~, model_dynamic] = ...
-    simul_backward_model_init(varargin{:});
+    simul_backward_model_init(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations);
 
 [ysim, xsim] = simul_backward_nonlinear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
 
