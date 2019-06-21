@@ -146,7 +146,7 @@ Section "Documentation and examples (Dynare and Dynare++)"
  File /r ..\doc\manual\build\html\*
 
  SetOutPath $INSTDIR\doc\dynare++
- File ..\dynare++\doc\dynare++-tutorial.pdf ..\dynare++\doc\dynare++-ramsey.pdf ..\dynare++\sylv\sylvester.pdf ..\dynare++\tl\tl.pdf
+ File ..\dynare++\doc\*.pdf
 
  CreateShortcut "${SMLOC}\Documentation.lnk" "$INSTDIR\doc"
 
