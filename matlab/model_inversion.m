@@ -15,7 +15,7 @@ function [endogenousvariables, exogenousvariables] = model_inversion(constraints
 %
 % REMARKS
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,7 +44,7 @@ if ~isdseries(exogenousvariables)
     error('model_inversion: Second input argument must be a dseries object!')
 end
 
-if ~isdseries(initialconditions)
+if ~isempty(initialconditions) && ~isdseries(initialconditions)
     error('model_inversion: Third input argument must be a dseries object!')
 end
 
@@ -68,8 +68,10 @@ if exogenousvariables.vobs>constraints.vobs
     observed_exogenous_variables_flag = true;
 end
 
-% Add auxiliary variables in initialconditions object.
-[initialconditions, info] = checkdatabase(initialconditions, DynareModel, true, false);
+if DynareModel.maximum_lag
+    % Add auxiliary variables in initialconditions object.
+    initialconditions = checkdatabase(initialconditions, DynareModel, true, false);
+end
 
 % Get the list of endogenous and exogenous variables.
 endo_names = DynareModel.endo_names;
@@ -77,10 +79,17 @@ exo_names = DynareModel.exo_names;
 
 % Use specidalized routine if the model is backward looking.
 if ~DynareModel.maximum_lead
-    [endogenousvariables, exogenousvariables] = ...
-        backward_model_inversion(constraints, exogenousvariables, initialconditions, ...
-                                 endo_names, exo_names, freeinnovations, ...
-                                 DynareModel, DynareOptions, DynareOutput);
+    if DynareModel.maximum_lag
+        [endogenousvariables, exogenousvariables] = ...
+            backward_model_inversion(constraints, exogenousvariables, initialconditions, ...
+                                     endo_names, exo_names, freeinnovations, ...
+                                     DynareModel, DynareOptions, DynareOutput);
+    else
+        [endogenousvariables, exogenousvariables] = ...
+            static_model_inversion(constraints, exogenousvariables, ...
+                                     endo_names, exo_names, freeinnovations, ...
+                                     DynareModel, DynareOptions, DynareOutput);
+    end
     return
 end
 
