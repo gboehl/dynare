@@ -87,17 +87,15 @@ model_dtransf = str2func('dynamic_backward_model_for_inversion');
 
 % Initialization of the returned simulations (endogenous variables).
 Y = NaN(DynareModel.endo_nbr, nobs(constraints));
-
 Y = [transpose(initialconditions{DynareModel.endo_names{:}}(constraints.dates(1)-1).data), Y];
 for i=1:nyctrl
     Y(controlledendogenousvariables_id(i),2:end) = transpose(constraints.data(:,i));
 end
 
 % Exogenous variables.
-X = exogenousvariables.data; %{exo_names{:}}(constraints.dates(1)-max(1,DynareModel.orig_maximum_exo_lag):constraints.dates(end)).data;
+X = exogenousvariables.data;
 
 % Inversion of the model, solvers for the free endogenous and exogenous variables (call a Newton-like algorithm in each period).
-
 ity = 2;
 itx = find(exogenousvariables.dates==constraints.dates(1));
 DynareOptions.solve_algo=4;
