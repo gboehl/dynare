@@ -321,7 +321,7 @@ by the ``dynare`` command.
     .. option:: -I<<path>>
 
         Defines a path to search for files to be included by the
-        macroprocessor (using the ``@#include`` command). Multiple
+        macro-processor (using the ``@#include`` command). Multiple
         ``-I`` flags can be passed on the command line. The paths will
         be searched in the order that the ``-I`` flags are passed and
         the first matching file will be used. The flags passed here
