@@ -157,3 +157,7 @@ stoch_simul;
 @#error "String comparison"
 @#endif
 
+@#define f(x) = x + "C"
+@#if "A" + f("B") != "ABC"
+@#error "Problem with String concatenation"
+@#endif
