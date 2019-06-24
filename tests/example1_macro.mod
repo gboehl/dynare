@@ -161,3 +161,6 @@ stoch_simul;
 @#if "A" + f("B") != "ABC"
 @#error "Problem with String concatenation"
 @#endif
+
+@#echomacrovars(save)
+@#echomacrovars
