@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright © 2009-2017 Dynare Team
+dnl Copyright © 2009-2019 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -135,6 +135,7 @@ AC_CONFIG_FILES([Makefile
                  ms_sbvar/Makefile
                  block_kalman_filter/Makefile
 		 sobol/Makefile
-		 local_state_space_iterations/Makefile])
+		 local_state_space_iterations/Makefile
+                 perfect_foresight_problem/Makefile])
 
 AC_OUTPUT

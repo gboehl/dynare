@@ -176,26 +176,23 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
 end
 
 
-if ~isreal(oo_.endo_simul(:)) % can only happen without bytecode
-    y0 = real(oo_.endo_simul(:,1));
-    yT = real(oo_.endo_simul(:,periods+2));
-    yy  = real(oo_.endo_simul(:,2:periods+1));
-    illi = M_.lead_lag_incidence';
-    [i_cols,~,i_cols_j] = find(illi(:));
-    illi = illi(:,2:3);
-    [i_cols_J1,~,i_cols_1] = find(illi(:));
-    i_cols_T = nonzeros(M_.lead_lag_incidence(1:2,:)');
-    if periods==1
-        i_cols_0 = nonzeros(M_.lead_lag_incidence(2,:)');
-        i_cols_J0 = find(M_.lead_lag_incidence(2,:)');
+if ~isreal(oo_.endo_simul(:)) % cannot happen with bytecode or the perfect_foresight_problem DLL
+    if M_.maximum_lag > 0
+        y0 = real(oo_.endo_simul(:, M_.maximum_lag));
     else
-        i_cols_0 = [];
-        i_cols_J0 = [];
+        y0 = NaN(ny, 1);
     end
-    residuals = perfect_foresight_problem(yy(:),str2func([M_.fname '.dynamic']), y0, yT, ...
-                                          oo_.exo_simul,M_.params,oo_.steady_state, ...
-                                          M_.maximum_lag, periods, M_.endo_nbr, i_cols, ...
-                                          i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0);
+    if M_.maximum_lead > 0
+        yT = real(oo_.endo_simul(:, M_.maximum_lag+periods+1));
+    else
+        yT = NaN(ny, 1);
+    end
+    yy = real(oo_.endo_simul(:,M_.maximum_lag+(1:periods)));
+    model_dynamic_g1_nz = str2func([M_.fname,'.dynamic_g1_nz']);
+    [nzij_pred, nzij_current, nzij_fwrd] = model_dynamic_g1_nz();
+
+    residuals = perfect_foresight_problem(yy(:), M_.fname, sum(M_.dynamic_tmp_nbr(1:2)), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_.endo_nbr, M_.maximum_lag, M_.maximum_endo_lag, M_.lead_lag_incidence, nzij_pred, nzij_current, nzij_fwrd, M_.has_external_function, options_.use_dll);
+
     if max(abs(residuals))< options_.dynatol.f
         oo_.deterministic_simulation.status = 1;
         oo_.endo_simul=real(oo_.endo_simul);

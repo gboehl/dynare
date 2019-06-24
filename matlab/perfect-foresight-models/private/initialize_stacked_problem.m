@@ -70,8 +70,16 @@ elseif (options.solve_algo == 11)
     end
 end
 
-y0 = endogenousvariables(:,M.maximum_lag);
-yT = endogenousvariables(:,M.maximum_lag+periods+1);
+if M.maximum_lag > 0
+    y0 = endogenousvariables(:, M.maximum_lag);
+else
+    y0 = NaN(ny, 1);
+end
+if M.maximum_lead > 0
+    yT = endogenousvariables(:, M.maximum_lag+periods+1);
+else
+    yT = NaN(ny, 1);
+end
 z = endogenousvariables(:,M.maximum_lag+(1:periods));
 illi = M.lead_lag_incidence';
 [i_cols,~,i_cols_j] = find(illi(:));

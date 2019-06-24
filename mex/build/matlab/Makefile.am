@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS = -I ../../../m4
 
 if DO_SOMETHING
-SUBDIRS = mjdgges kronecker bytecode block_kalman_filter sobol local_state_space_iterations
+SUBDIRS = mjdgges kronecker bytecode block_kalman_filter sobol local_state_space_iterations perfect_foresight_problem
 
 # libdynare++ must come before gensylv, k_order_perturbation, dynare_simul_
 if HAVE_MATIO
