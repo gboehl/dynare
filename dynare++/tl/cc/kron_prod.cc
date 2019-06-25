@@ -373,7 +373,7 @@ KronProdAll::multRows(const IntSequence &irows) const
         last = std::make_unique<Vector>(*row);
     }
 
-  return std::move(last);
+  return last;
 }
 
 /* This permutes the matrices so that the new ordering would minimize memory
