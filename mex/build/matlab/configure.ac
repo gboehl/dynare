@@ -129,14 +129,6 @@ else
    BUILD_MS_SBVAR_MEX_MATLAB="no (missing GSL)"
 fi
 
-AC_ARG_ENABLE([openmp], AS_HELP_STRING([--enable-openmp], [use OpenMP for parallelization of some MEX files]), [
-  if test "$enable_openmp" = yes; then
-    CPPFLAGS="$CPPFLAGS -DUSE_OMP"
-    CFLAGS="$CFLAGS -fopenmp"
-    CXXFLAGS="$CXXFLAGS -fopenmp"
-  fi
-])
-
 AC_ARG_WITH([m2html], AS_HELP_STRING([--with-m2html=DIR], [specify installation directory of M2HTML]), [
 M2HTML=$withval
 BUILD_M2HTML=yes

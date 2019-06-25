@@ -103,14 +103,6 @@ else
    BUILD_MS_SBVAR_MEX_OCTAVE="no (missing GSL or MatIO library)"
 fi
 
-AC_ARG_ENABLE([openmp], AS_HELP_STRING([--enable-openmp], [use OpenMP for parallelization of some MEX files]), [
-  if test "x$enable_openmp" = "xyes"; then
-    CPPFLAGS="$CPPFLAGS -DUSE_OMP"
-    CFLAGS="$CFLAGS -fopenmp"
-    CXXFLAGS="$CXXFLAGS -fopenmp"
-  fi
-])
-
 AC_MSG_NOTICE([
 
 Dynare is now configured for building the following components...

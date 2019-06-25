@@ -127,11 +127,8 @@ To remove debugging information for MATLAB MEX functions, the analogous call wou
 ./configure MATLAB_MEX_CFLAGS="-O3" MATLAB_MEX_CXXFLAGS="-O3"
 ```
 
-If you want to give a try to the parallelized versions of some mex files (`A_times_B_kronecker_C` and `sparse_hessian_times_B_kronecker_C` used to get the reduced form of the second order approximation of the model) you can add the `--enable-openmp` flag, for instance:
-```
-./configure --with-matlab=/usr/local/MATLAB/R2019a MATLAB_VERSION=9.6 --enable-openmp
-```
-If the configuration goes well, the script will tell you which components are correctly configured and will be built.
+If the configuration goes well, the script will tell you which components are
+correctly configured and will be built.
 
 Note that it is possible that some MEX files cannot be compiled, due to missing
 build dependencies. If you find no way of installing the missing dependencies,

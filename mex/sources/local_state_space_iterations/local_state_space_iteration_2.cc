@@ -28,9 +28,7 @@
 #include <dynmex.h>
 #include <dynblas.h>
 
-#ifdef USE_OMP
-# include <omp.h>
-#endif
+#include <omp.h>
 
 #define FIRST_ORDER_LOOP 1// Comment out this line to use mkl-blas instead of loops when computing ghx*yhat and ghu*epsilon
 
@@ -67,9 +65,7 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
   std::vector<int> jj1, jj2, jj3;// vector indices for ghuu
   set_vector_of_indices(n, m, ii1, ii2, ii3);
   set_vector_of_indices(q, m, jj1, jj2, jj3);
-#ifdef USE_OMP
-# pragma omp parallel for num_threads(number_of_threads)
-#endif
+#pragma omp parallel for num_threads(number_of_threads)
   for (int particle = 0; particle < s; particle++)
     {
       int particle_ = particle*m;
@@ -155,9 +151,7 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
   std::vector<int> jj1, jj2, jj3;// vector indices for ghuu
   set_vector_of_indices(n, m, ii1, ii2, ii3);
   set_vector_of_indices(q, m, jj1, jj2, jj3);
-#ifdef USE_OMP
-# pragma omp parallel for num_threads(number_of_threads)
-#endif
+#pragma omp parallel for num_threads(number_of_threads)
   for (int particle = 0; particle < s; particle++)
     {
       int particle_ = particle*m;

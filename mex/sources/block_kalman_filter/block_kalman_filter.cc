@@ -19,9 +19,8 @@
 
 #include <cmath>
 #include <algorithm>
-#ifdef USE_OMP
-# include <omp.h>
-#endif
+#include <omp.h>
+
 #include "block_kalman_filter.hh"
 
 #define BLAS
@@ -372,7 +371,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
 
           //v = Y(:,t) - a(mf)
           int i_i = 0;
-          //#pragma omp parallel for shared(v, i_i, d_index) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
+          //#pragma omp parallel for shared(v, i_i, d_index)
           for (auto i = d_index.begin(); i != d_index.end(); i++)
             {
               //mexPrintf("i_i=%d, omp_get_max_threads()=%d\n",i_i,omp_get_max_threads());
@@ -383,7 +382,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
           //F  = P(mf,mf) + H;
           i_i = 0;
           if (H_size == 1)
-            //#pragma omp parallel for shared(iF, F, i_i) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
+            //#pragma omp parallel for shared(iF, F, i_i)
             for (auto i = d_index.begin(); i != d_index.end(); i++, i_i++)
               {
                 int j_j = 0;
@@ -391,7 +390,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
                   iF[i_i + j_j * size_d_index] = F[i_i + j_j * size_d_index] = P[mf[*i] + mf[*j] * n] + H[0];
               }
           else
-            //#pragma omp parallel for shared(iF, F, P, H, mf, i_i) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
+            //#pragma omp parallel for shared(iF, F, P, H, mf, i_i)
             for (auto i = d_index.begin(); i != d_index.end(); i++, i_i++)
               {
                 int j_j = 0;
@@ -502,9 +501,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
             mexPrintf("dgetri failure with error %d\n", static_cast<int>(info));
 
           //lik(t) = log(dF)+transpose(v)*iF*v;
-#ifdef USE_OMP
-# pragma omp parallel for shared(v_pp) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-#endif
+#pragma omp parallel for shared(v_pp)
           for (int i = 0; i < size_d_index; i++)
             {
               double res = 0.0;
@@ -522,9 +519,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
 
           if (missing_observations)
               //K      = P(:,mf)*iF;
-#ifdef USE_OMP
-# pragma omp parallel for shared(P_mf) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-#endif
+#pragma omp parallel for shared(P_mf)
             for (int i = 0; i < n; i++)
               {
                 int j_j = 0;
@@ -538,9 +533,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
               for (int j = 0; j < pp; j++)
                 P_mf[i + j * n] = P[i + mf[j] * n];
 
-#ifdef USE_OMP
-# pragma omp parallel for shared(K) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-#endif
+#pragma omp parallel for shared(K)
           for (int i = 0; i < n; i++)
             for (int j = 0; j < size_d_index; j++)
               {
@@ -552,9 +545,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
               }
 
           //a      = T*(a+K*v);
-#ifdef USE_OMP
-# pragma omp parallel for shared(v_n) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-#endif
+#pragma omp parallel for shared(v_n)
           for (int i = pure_obs; i < n; i++)
             {
               double res = 0.0;
@@ -563,9 +554,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
               v_n[i] = res + a[i];
             }
 
-#ifdef USE_OMP
-# pragma omp parallel for shared(a) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-#endif
+#pragma omp parallel for shared(a)
           for (int i = 0; i < n; i++)
             {
               double res = 0.0;
@@ -578,24 +567,20 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
             {
               //P      = T*(P-K*P(mf,:))*transpose(T)+QQ;
               int i_i = 0;
-              //#pragma omp parallel for shared(P_mf) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
+              //#pragma omp parallel for shared(P_mf)
               for (auto i = d_index.begin(); i != d_index.end(); i++, i_i++)
                 for (int j = pure_obs; j < n; j++)
                   P_mf[i_i + j * size_d_index] = P[mf[*i] + j * n];
             }
           else
             //P      = T*(P-K*P(mf,:))*transpose(T)+QQ;
-#ifdef USE_OMP
-# pragma omp parallel for shared(P_mf) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-#endif
+#pragma omp parallel for shared(P_mf)
             for (int i = 0; i < pp; i++)
               for (int j = pure_obs; j < n; j++)
                 P_mf[i + j * pp] = P[mf[i] + j * n];
 
 #ifdef BLAS
-# ifdef USE_OMP
-#  pragma omp parallel for shared(K_P) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-# endif
+# pragma omp parallel for shared(K_P)
           for (int i = 0; i < n; i++)
             for (int j = i; j < n; j++)
               {
@@ -733,9 +718,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
             }
 
 # else
-#  ifdef USE_OMP
-#   pragma omp parallel for shared(K_P) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-#  endif
+#  pragma omp parallel for shared(K_P)
           for (int i = pure_obs; i < n; i++)
             {
               unsigned int i1 = i - pure_obs;
@@ -750,9 +733,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
                 }
             }
 
-#  ifdef USE_OMP
-#   pragma omp parallel for shared(P_t_t1) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-#  endif
+#  pragma omp parallel for shared(P_t_t1)
           for (int i = pure_obs; i < n; i++)
             {
               unsigned int i1 = i - pure_obs;
@@ -766,9 +747,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
 
           fill_n(tmp, 0, n * n_state);
 
-#  ifdef USE_OMP
-#   pragma omp parallel for shared(tmp) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-#  endif
+#  pragma omp parallel for shared(tmp)
           for (int i = 0; i < n; i++)
             {
               int max_k = i_nz_state_var[i];
@@ -785,9 +764,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
           fill_n(P, 0, n * n);
 
           int n_n_obs = -n * pure_obs;
-#  ifdef USE_OMP
-#   pragma omp parallel for shared(P) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-#  endif
+#  pragma omp parallel for shared(P)
           for (int i = 0; i < n; i++)
             {
               for (int j = i; j < n; j++)
@@ -802,9 +779,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
                 }
             }
 
-#  ifdef USE_OMP
-#   pragma omp parallel for shared(P) num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
-#  endif
+#  pragma omp parallel for shared(P)
           for (int i = 0; i < n; i++)
             {
               for (int j = i; j < n; j++)

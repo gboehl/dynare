@@ -27,9 +27,7 @@
 
 #include <dynmex.h>
 
-#ifdef USE_OMP
-# include <omp.h>
-#endif
+#include <omp.h>
 
 #define DEBUG_OMP 0
 
@@ -42,9 +40,7 @@ sparse_hessian_times_B_kronecker_B(const mwIndex *isparseA, const mwIndex *jspar
   **   This loop is splitted into two nested loops because we use the
   **   symmetric pattern of the hessian matrix.
   */
-#if USE_OMP
-# pragma omp parallel for num_threads(number_of_threads)
-#endif
+#pragma omp parallel for num_threads(number_of_threads)
   for (mwIndex j1B = 0; j1B < static_cast<mwIndex>(nB); j1B++)
     {
 #if DEBUG_OMP
@@ -95,9 +91,7 @@ sparse_hessian_times_B_kronecker_C(const mwIndex *isparseA, const mwIndex *jspar
   /*
   **   Loop over the columns of B⊗B (or of the result matrix D).
   */
-#if USE_OMP
-# pragma omp parallel for num_threads(number_of_threads)
-#endif
+#pragma omp parallel for num_threads(number_of_threads)
   for (mwIndex jj = 0; jj < static_cast<mwIndex>(nB*nC); jj++) // column of B⊗C index.
     {
       // Uncomment the following line to check if all processors are used.

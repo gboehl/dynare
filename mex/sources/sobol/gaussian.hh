@@ -2,7 +2,7 @@
 **
 ** Pseudo code of the algorithm is given at http://home.online.no/~pjacklam/notes/invnorm
 **
-** Copyright © 2010-2017 Dynare Team
+** Copyright © 2010-2019 Dynare Team
 **
 ** This file is part of Dynare.
 **
@@ -26,17 +26,14 @@
 #include <limits>
 #include <algorithm>
 
+#include <omp.h>
+
 #include <dynblas.h>
 
 using namespace std;
 
 constexpr double lb = .02425;
 constexpr double ub = .97575;
-
-#ifdef USE_OMP
-# include <omp.h>
-#endif
-#define DEBUG_OMP 0
 
 template<typename T>
 T
@@ -125,9 +122,7 @@ template<typename T>
 void
 icdfm(int n, T *U)
 {
-#if USE_OMP
-# pragma omp parallel for num_threads(omp_get_num_threads())
-#endif
+#pragma omp parallel for
   for (int i = 0; i < n; i++)
     U[i] = icdf(U[i]);
   return;
@@ -152,9 +147,7 @@ void
 usphere(int d, int n, T *U)
 {
   icdfm(n*d, U);
-#if USE_OMP
-# pragma omp parallel for num_threads(omp_get_num_threads())
-#endif
+#pragma omp parallel for
   for (int j = 0; j < n; j++)// sequence index.
     {
       int k = j*d;
@@ -173,9 +166,7 @@ void
 usphereRadius(int d, int n, double radius, T *U)
 {
   icdfm(n*d, U);
-#if USE_OMP
-# pragma omp parallel for num_threads(omp_get_num_threads())
-#endif
+#pragma omp parallel for
   for (int j = 0; j < n; j++)// sequence index.
     {
       int k = j*d;

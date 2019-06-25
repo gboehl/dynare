@@ -1923,7 +1923,7 @@ dynSparseMatrix::Init_GE(int periods, int y_kmin, int y_kmax, int Size, map<pair
       NbNZCol[i] = 0;
     }
   int nnz = 0;
-  //pragma omp parallel for num_threads(atoi(getenv("DYNARE_NUM_THREADS"))) ordered private(it4, ti_y_kmin, ti_y_kmax, eq, var, lag) schedule(dynamic)
+  //pragma omp parallel for ordered private(it4, ti_y_kmin, ti_y_kmax, eq, var, lag) schedule(dynamic)
   for (t = 0; t < periods; t++)
     {
       ti_y_kmin = -min(t, y_kmin);
@@ -2710,7 +2710,7 @@ dynSparseMatrix::Sparse_mult_SAT_B(mxArray *A_m, mxArray *B_m)
   //unsigned int nze_A = 0;
   unsigned int C_col = 0;
   C_j[C_col] = 0;
-  //#pragma omp parallel for num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
+  //#pragma omp parallel for
   for (unsigned int j = 0; j < n_B; j++)
     {
       for (unsigned int i = 0; i < n_A; i++)
@@ -5371,7 +5371,7 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
             bc[nb_eq_todo++] = first;
           first = first->NZE_C_N;
         }
-      //pragma omp parallel for num_threads(atoi(getenv("DYNARE_NUM_THREADS")))
+      //pragma omp parallel for
       for (int j = 0; j < nb_eq_todo; j++)
         {
           first = bc[j];
@@ -5704,7 +5704,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                     bc[nb_eq_todo++] = first;
                   first = first->NZE_C_N;
                 }
-              //#pragma omp parallel for num_threads(atoi(getenv("DYNARE_NUM_THREADS"))) shared(nb_var_piva, first_piva, nopa, save_op) reduction(+:nop)
+              //#pragma omp parallel for shared(nb_var_piva, first_piva, nopa, save_op) reduction(+:nop)
               for (int j = 0; j < nb_eq_todo; j++)
                 {
                   t_save_op_s *save_op_s_l;
@@ -5873,7 +5873,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                     bc[nb_eq_todo++] = first;
                   first = first->NZE_C_N;
                 }
-              //#pragma omp parallel for num_threads(atoi(getenv("DYNARE_NUM_THREADS"))) shared(nb_var_piva, first_piva, nopa, save_op) reduction(+:nop)
+              //#pragma omp parallel for shared(nb_var_piva, first_piva, nopa, save_op) reduction(+:nop)
               for (int j = 0; j < nb_eq_todo; j++)
                 {
                   NonZeroElem *first = bc[j];
