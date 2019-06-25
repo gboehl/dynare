@@ -18,7 +18,7 @@
  */
 
 /*
- * This mex file computes A*kron(B,C) or A*kron(B,B) without explicitely building kron(B,C) or kron(B,B), so that
+ * This mex file computes A·(B⊗C) or A·(B⊗B) without explicitly building B⊗C or B⊗B, so that
  * one can consider large matrices B and/or C.
  */
 
@@ -127,14 +127,14 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   size_t mB = mxGetM(prhs[1]);
   size_t nB = mxGetN(prhs[1]);
   size_t mC, nC;
-  if (nrhs == 4) // A*kron(B,C) is to be computed.
+  if (nrhs == 4) // A·(B⊗C) is to be computed.
     {
       mC = mxGetM(prhs[2]);
       nC = mxGetN(prhs[2]);
       if (mB*mC != nA)
         DYN_MEX_FUNC_ERR_MSG_TXT("Input dimension error!");
     }
-  else // A*kron(B,B) is to be computed.
+  else // A·(B⊗B) is to be computed.
     {
       if (mB*mB != nA)
         DYN_MEX_FUNC_ERR_MSG_TXT("Input dimension error!");

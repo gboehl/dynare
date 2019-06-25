@@ -18,9 +18,9 @@
  */
 
 /*
- * This mex file computes A*kron(B,C) or A*kron(B,B) without explicitly building kron(B,C) or kron(B,B), so that
- * one can consider large matrices A, B and/or C, and assuming that A is a the hessian of a dsge model
- * (dynare format). This mex file should not be used outside dr1.m.
+ * This mex file computes A·(B⊗C) or A·(B⊗B) without explicitly building B⊗C or B⊗B, so that
+ * one can consider large matrices A, B and/or C, and assuming that A is a the hessian of a DSGE model
+ * (dynare format). This mex file should not be used outside dyn_second_order_solver.m.
  */
 
 #include <algorithm>
@@ -38,7 +38,7 @@ sparse_hessian_times_B_kronecker_B(const mwIndex *isparseA, const mwIndex *jspar
                                    const double *B, double *D, size_t mA, size_t nA, size_t mB, size_t nB, int number_of_threads)
 {
   /*
-  **   Loop over the columns of kron(B,B) (or of the result matrix D).
+  **   Loop over the columns of B⊗B (or of the result matrix D).
   **   This loop is splitted into two nested loops because we use the
   **   symmetric pattern of the hessian matrix.
   */
@@ -52,13 +52,13 @@ sparse_hessian_times_B_kronecker_B(const mwIndex *isparseA, const mwIndex *jspar
 #endif
       for (mwIndex j2B = j1B; j2B < static_cast<mwIndex>(nB); j2B++)
         {
-          mwIndex jj = j1B*nB+j2B; // column of kron(B,B) index.
+          mwIndex jj = j1B*nB+j2B; // column of B⊗B index.
           mwIndex iv = 0;
           int nz_in_column_ii_of_A = 0;
           mwIndex k1 = 0;
           mwIndex k2 = 0;
           /*
-          ** Loop over the rows of kron(B,B) (column jj).
+          ** Loop over the rows of B⊗B (column jj).
           */
           for (mwIndex ii = 0; ii < static_cast<mwIndex>(nA); ii++)
             {
@@ -93,12 +93,12 @@ sparse_hessian_times_B_kronecker_C(const mwIndex *isparseA, const mwIndex *jspar
                                    size_t mA, size_t nA, size_t mB, size_t nB, size_t mC, size_t nC, int number_of_threads)
 {
   /*
-  **   Loop over the columns of kron(B,B) (or of the result matrix D).
+  **   Loop over the columns of B⊗B (or of the result matrix D).
   */
 #if USE_OMP
 # pragma omp parallel for num_threads(number_of_threads)
 #endif
-  for (mwIndex jj = 0; jj < static_cast<mwIndex>(nB*nC); jj++) // column of kron(B,C) index.
+  for (mwIndex jj = 0; jj < static_cast<mwIndex>(nB*nC); jj++) // column of B⊗C index.
     {
       // Uncomment the following line to check if all processors are used.
 #if DEBUG_OMP
@@ -111,7 +111,7 @@ sparse_hessian_times_B_kronecker_C(const mwIndex *isparseA, const mwIndex *jspar
       mwIndex iv = 0;
       int nz_in_column_ii_of_A = 0;
       /*
-      ** Loop over the rows of kron(B,C) (column jj).
+      ** Loop over the rows of B⊗C (column jj).
       */
       for (mwIndex ii = 0; ii < static_cast<mwIndex>(nA); ii++)
         {
@@ -153,14 +153,14 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   size_t mB = mxGetM(prhs[1]);
   size_t nB = mxGetN(prhs[1]);
   size_t mC, nC;
-  if (nrhs == 4) // A*kron(B,C) is to be computed.
+  if (nrhs == 4) // A·(B⊗C) is to be computed.
     {
       mC = mxGetM(prhs[2]);
       nC = mxGetN(prhs[2]);
       if (mB*mC != nA)
         DYN_MEX_FUNC_ERR_MSG_TXT("Input dimension error!");
     }
-  else // A*kron(B,B) is to be computed.
+  else // A·(B⊗B) is to be computed.
     {
       if (mB*mB != nA)
         DYN_MEX_FUNC_ERR_MSG_TXT("Input dimension error!");
