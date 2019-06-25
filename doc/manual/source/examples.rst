@@ -44,7 +44,7 @@ description, please refer to the comments inside the files themselves.
 
     Multi-country RBC model with time to build, presented in *Backus,
     Kehoe and Kydland (1992)*. The file shows how to use Dynare’s
-    macro-processor.
+    macro processor.
 
 ``agtrend.mod``
 

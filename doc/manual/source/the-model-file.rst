@@ -50,7 +50,7 @@ observed:
 * MODEL_EXPRESSION (sometimes MODEL_EXP) indicates a mathematical
   expression valid in the model description (see :ref:`expr` and
   :ref:`model-decl`);
-* MACRO_EXPRESSION designates an expression of the macro-processor
+* MACRO_EXPRESSION designates an expression of the macro processor
   (see :ref:`macro-exp`);
 * VARIABLE_NAME (sometimes VAR_NAME) indicates a variable name
   starting with an alphabetical character and can’t contain:
@@ -281,7 +281,7 @@ for declaring variables and parameters are described below.
     is typically used when flipping some variables for steady state
     calibration: typically a separate model file is used for
     calibration, which includes the list of variable declarations with
-    the macro-processor, and flips some variable.
+    the macro processor, and flips some variable.
 
     *Example*
 
@@ -3899,7 +3899,7 @@ block decomposition of the model (see :opt:`block`).
     information.
 
     Only one instance of ``varobs`` is allowed in a model file. If one
-    needs to declare observed variables in a loop, the macro-processor
+    needs to declare observed variables in a loop, the macro processor
     can be used as shown in the second example below.
 
     *Example*
@@ -3911,7 +3911,7 @@ block decomposition of the model (see :opt:`block`).
         Declares endogenous variables ``C``, ``y`` and ``rr`` as
         observed variables.
 
-    *Example* (with a macro-processor loop)
+    *Example* (with a macro processor loop)
 
         ::
 
@@ -10272,50 +10272,51 @@ Dynare has comments to plot the results of a simulation and to save the results.
 
 .. _macro-proc-lang:
 
-Macro-processing language
+Macro processing language
 =========================
 
-It is possible to use “macro” commands in the ``.mod`` file for doing
-the following tasks: including modular source files, replicating
-blocks of equations through loops, conditionally executing some code,
-writing indexed sums or products inside equations...
+It is possible to use “macro” commands in the ``.mod`` file for performing
+tasks such as: including modular source files, replicating blocks of equations
+through loops, conditionally executing some code, writing indexed sums or
+products inside equations...
 
-The Dynare macro-language provides a new set of *macro-commands* which
-can be inserted inside ``.mod`` files. It features:
+The Dynare macro-language provides a new set of *macro-commands* which can be
+used in ``.mod`` files. It features:
 
     * File inclusion
-    * Loops (for structure)
+    * Loops (``for`` structure)
     * Conditional inclusion (``if/then/else`` structures)
     * Expression substitution
 
-Technically, this macro language is totally independent of the basic
+This macro-language is totally independent of the basic
 Dynare language, and is processed by a separate component of the
 Dynare pre-processor. The macro processor transforms a ``.mod`` file
 with macros into a ``.mod`` file without macros (doing
 expansions/inclusions), and then feeds it to the Dynare parser. The
-key point to understand is that the macro-processor only does text
+key point to understand is that the macro processor only does text
 substitution (like the C preprocessor or the PHP language). Note that
-it is possible to see the output of the macro-processor by using the
+it is possible to see the output of the macro processor by using the
 ``savemacro`` option of the ``dynare`` command (see :ref:`dyn-invoc`).
 
-The macro-processor is invoked by placing *macro directives* in the
+The macro processor is invoked by placing *macro directives* in the
 ``.mod`` file. Directives begin with an at-sign followed by a pound
 sign (``@#``). They produce no output, but give instructions to the
-macro-processor. In most cases, directives occupy exactly one line of
-text. In case of need, two backslashes (``\\``) at the end of the line
+macro processor. In most cases, directives occupy exactly one line of
+text. If needed, two backslashes (``\\``) at the end of the line
 indicate that the directive is continued on the next line. The main
 directives are:
 
     * ``@#includepath``, paths to search for files that are to be included,
     * ``@#include``, for file inclusion,
-    * ``@#define``, for defining a macro-processor variable,
+    * ``@#define``, for defining a macro processor variable,
     * ``@#if, @#ifdef, @#ifndef, @#else, @#endif`` for conditional statements,
     * ``@#for, @#endfor`` for constructing loops.
 
-The macro-processor maintains its own list of variables (distinct of
-model variables and of MATLAB/Octave variables). These macro-variables
-are assigned using the ``@#define`` directive, and can be of four
-types: integer, character string, array of integers, array of strings.
+The macro processor maintains its own list of variables (distinct from model
+variables and MATLAB/Octave variables). These macro-variables are assigned
+using the ``@#define`` directive and can be of the following basic types:
+boolean, double, string, tuple, function, and array (of any of the previous
+types).
 
 
 .. _macro-exp:
@@ -10323,23 +10324,22 @@ types: integer, character string, array of integers, array of strings.
 Macro expressions
 -----------------
 
-It is possible to construct macro-expressions which can be assigned to
+It is possible to construct macro-expressions that can be assigned to
 macro-variables or used within a macro-directive. The expressions are
-constructed using literals of five basic types (integers, strings,
-arrays of strings, arrays of integers, and string functions), macro-variables names and
-standard operators.
+constructed using literals of the basic types (boolean, double, string, tuple,
+function, array), macro-variable names, and standard operators.
 
-String literals have to be enclosed between **double** quotes (like
-``"name"``). Arrays are enclosed within brackets, and their elements
-are separated by commas (like ``[1,2,3]`` or ``["US", "EA"]``).
+String literals have to be enclosed by **double** quotes (like
+``"name"``). Arrays are enclosed by brackets, and their elements are separated
+by commas (like ``[1,[2,3],4]`` or ``["US", "EA"]``). Tuples are enclosed by
+parenthesis and elements separated by commas (like ``(a,b,c)`` or ``(1,2,3)``).
 
-Note that there is no boolean type: *false* is represented by integer
-zero and *true* is any non-null integer. Further note that, as the
-macro-processor cannot handle non-integer real numbers, integer
-division results in the quotient with the fractional part truncated
-(hence, :math:`5/3=3/3=1`).
+The following operators can be used on booleans:
 
-The following operators can be used on integers:
+    * Comparison operators: ``==, !=``
+    * Logical operators: ``&&, ||, !``
+
+The following operators can be used on doubles:
 
     * Arithmetic operators: ``+, -, *, /``
     * Comparison operators: ``<, >, <=, >=, ==, !=``
@@ -10347,40 +10347,44 @@ The following operators can be used on integers:
     * Integer ranges, using the following syntax:
       ``INTEGER1:INTEGER2`` (for example, ``1:4`` is equivalent to
       integer array ``[1,2,3,4]``)
+    * Functions: ``max, min, mod, exp, ln, log10, sin, cos, tan, asin, acos,
+      atan, sqrt, cbrt, sign, floor, ceil, trunc, erf, erfc, gamma, lgamma,
+      round, normpdf, normcdf``
 
 The following operators can be used on strings:
 
-    * Comparison operators: ``==, !=``
+    * Comparison operators: ``<, >, <=, >=, ==, !=``
     * Concatenation of two strings: ``+``
     * Extraction of substrings: if ``s`` is a string, then ``s[3]`` is
       a string containing only the third character of ``s``, and
       ``s[4:6]`` contains the characters from 4th to 6th
+    * Function: ``length``
+
+The following operators can be used on tuples:
+
+    * Comparison operators: ``==, !=``
+    * Functions: ``empty, length``
 
 The following operators can be used on arrays:
 
-    * Dereferencing: if ``v`` is an array, then ``v[2]`` is its 2nd element.
-    * Concatenation of two arrays: ``+``.
+    * Comparison operators: ``==, !=``
+    * Dereferencing: if ``v`` is an array, then ``v[2]`` is its 2nd element
+    * Concatenation of two arrays: ``+``
     * Difference ``-``: returns the first operand from which the
       elements of the second operand have been removed.
-    * Extraction of sub-arrays: e.g. ``v[4:6]``.
+    * Cartesian product of two arrays: ``*``
+    * Cartesian product of one array N times: ``^N``
+    * Extraction of sub-arrays: e.g. ``v[4:6]``
     * Testing membership of an array: ``in`` operator (for example:
       ``"b"`` in ``["a", "b", "c"]`` returns ``1``)
-    * Getting the length of an array: ``length`` operator (for
-      example: ``length(["a", "b", "c"])`` returns ``3`` and, hence,
-      ``1:length(["a", "b", "c"])`` is equivalent to integer array
-      ``[1,2,3]``)
+    * Functions: ``empty, sum, length``
 
-The following operators can be used on string functions:
-
-    * Comparison operators: ``==``, ``!=``
-    * Concatenation of two strings: ``+``
-
-Macro-expressions can be used at two places:
+Macro-expressions can be used in two places:
 
     * Inside macro directives, directly;
     * In the body of the ``.mod`` file, between an at-sign and curly
       braces (like ``@{expr}``): the macro processor will substitute
-      the expression with its value.
+      the expression with its value
 
 In the following, MACRO_EXPRESSION designates an expression
 constructed as explained above.
@@ -10391,30 +10395,34 @@ Macro directives
 
 .. macrodir:: @#includepath "PATH"
               @#includepath MACRO_VARIABLE
+              @#includepath MACRO_EXPRESSION
 
-    |br| This directive adds the colon-separated paths contained in PATH to
-    the list of those to search when looking for a ``.mod`` file
-    specified by ``@#include``. Note that these paths are added
-    *after* any paths passed using :opt:`-I <-I\<\<path\>\>>`.
+    |br| This directive adds the path contained in PATH to the list of those to
+    search when looking for a ``.mod`` file specified by ``@#include``. If
+    provided with a MACRO_VARIABLE or MACRO_EXPRESSION argument, the argument
+    must evaluate to a string. Note that these paths are added *after* any
+    paths passed using :opt:`-I <-I\<\<path\>\>>`.
 
     *Example*
 
         ::
 
-            @#includepath "/path/to/folder/containing/modfiles:/path/to/another/folder"
+            @#includepath "/path/to/folder/containing/modfiles"
             @#includepath folders_containing_mod_files
 
 
 .. macrodir:: @#include "FILENAME"
               @#include MACRO_VARIABLE
+              @#include MACRO_EXPRESSION
 
-    |br| This directive simply includes the content of another file at the
-    place where it is inserted. It is exactly equivalent to a
-    copy/paste of the content of the included file. Note that it is
-    possible to nest includes (i.e. to include a file from an included
-    file). The file will be searched for in the current directory. If
-    it is not found, the file will be searched for in the folders
-    provided by :opt:`-I <-I\<\<path\>\>>` and ``@#includepath``.
+    |br| This directive simply includes the content of another file in its
+    place; it is exactly equivalent to a copy/paste of the content of the
+    included file. If provided with a MACRO_VARIABLE or MACRO_EXPRESSION
+    argument, the argument must evaluate to a string. Note that it is possible
+    to nest includes (i.e. to include a file from an included file). The file
+    will be searched for in the current directory. If it is not found, the file
+    will be searched for in the folders provided by :opt:`-I <-I\<\<path\>\>>`
+    and ``@#includepath``.
 
     *Example*
 
@@ -10425,6 +10433,7 @@ Macro directives
 
 
 .. macrodir:: @#define MACRO_VARIABLE = MACRO_EXPRESSION
+              @#define MACRO_FUNCTION = MACRO_EXPRESSION
 
     |br| Defines a macro-variable or macro function.
 
@@ -10432,31 +10441,34 @@ Macro directives
 
         ::
 
-            @#define x = 5                    // Integer
+            @#define x = 5                    // Double
             @#define y = "US"                 // String
-            @#define v = [ 1, 2, 4 ]          // Integer array
+            @#define v = [ 1, 2, 4 ]          // Double array
             @#define w = [ "US", "EA" ]       // String array
+            @#define u = [ 1, ["EA"] ]        // Mixed array
             @#define z = 3 + v[2]             // Equals 5
             @#define t = ("US" in w)          // Equals 1 (true)
-            @#define f(x) = " + @{x} + @{y}"  // Defines a function 'f' with argument 'x'
-                                              // that resturns the string ' + @{x} + US'
+            @#define f(x) = " " + x + y       // Function `f` with argument `x`
+                                              // returns the string ' ' + x + 'US'
 
     *Example*
 
         ::
 
-            @#define x = [ "B", "C" ]
+            @#define x = 1
+            @#define y = [ "B", "C" ]
             @#define i = 2
-            @#define f(x) = " + @{x}"
+            @#define f(x) = x + " + " + y[i]
+            @#define i = 1
 
             model;
-              A = @{x[i]+f("D")};
+              A = @{y[i] + f("D")};
             end;
 
         The latter is strictly equivalent to::
 
             model;
-              A = C + D;
+              A = BD + B;
             end;
 
 
@@ -10466,19 +10478,23 @@ Macro directives
               @#else
               @#endif
 
-    |br| Conditional inclusion of some part of the ``.mod`` file. The
-    lines between ``@#if``, ``@#ifdef`` or ``@#ifndef`` and the next
-    ``@#else`` or ``@#endif`` is executed only if the condition
-    evaluates to a non-null integer. The ``@#else`` branch is optional
-    and, if present, is only evaluated if the condition evaluates to
-    ``0``.
+    |br| Conditional inclusion of some part of the ``.mod`` file. The lines
+    between ``@#if``, ``@#ifdef``, or ``@#ifndef`` and the next ``@#else`` or
+    ``@#endif`` is executed only if the condition evaluates to ``true``. The
+    ``@#else`` branch is optional and, if present, is only evaluated if the
+    condition evaluates to ``false``.
+
+    Note that when using ``@#ifdef``, the condition will evaluate to ``true``
+    if the MACRO_VARIABLE has been previously defined, regardless of its
+    value. Conversely, ``@#ifndef`` will evaluate to true if the MACRO_VARIABLE
+    has not yet been defined.
 
     *Example*
 
         Choose between two alternative monetary policy rules using a
         macro-variable::
 
-            @#define linear_mon_pol = 0 // or 1
+            @#define linear_mon_pol = false // 0 would be treated the same
             ...
             model;
             @#if linear_mon_pol
@@ -10489,14 +10505,22 @@ Macro directives
             ...
             end;
 
+        This would result in::
+
+            ...
+            model;
+              i = i(-1)^w * i_ss^(1-w) * (pie/piestar)^w2;
+            ...
+            end;
+
     *Example*
 
-        Choose between two alternative monetary policy rules using a
-        macro-variable. As ``linear_mon_pol`` was not previously defined
-        in this example, the second equation will be chosen::
+        Choose between two alternative monetary policy rules. In this example,
+        as ``linear_mon_pol`` was not previously defined, the first equation
+        will be chosen::
 
             model;
-            @#ifdef linear_mon_pol
+            @#ifndef linear_mon_pol
               i = w*i(-1) + (1-w)*i_ss + w2*(pie-piestar);
             @#else
               i = i(-1)^w * i_ss^(1-w) * (pie/piestar)^w2;
@@ -10504,8 +10528,18 @@ Macro directives
             ...
             end;
 
+        This would result in::
+
+            ...
+            model;
+              i = w*i(-1) + (1-w)*i_ss + w2*(pie-piestar);
+            ...
+            end;
+
+
 
 .. macrodir:: @#for MACRO_VARIABLE in MACRO_EXPRESSION
+              @#for MACRO_TUPLE in MACRO_EXPRESSION
               @#endfor
 
     |br| Loop construction for replicating portions of the ``.mod``
@@ -10529,6 +10563,23 @@ Macro directives
               GDP_foreign = A * K_foreign^a * L_foreign^(1-a);
             end;
 
+    *Example*
+
+        ::
+
+            model;
+            @#for (i, j) in [("GDP", "home"), ("GDP", "foreign")]
+              @{i}_@{j} = A * K_@{j}^a * L_@{j}^(1-a);
+            @#endfor
+            end;
+
+        The latter is equivalent to::
+
+            model;
+              GDP_home = A * K_home^a * L_home^(1-a);
+              GDP_foreign = A * K_foreign^a * L_foreign^(1-a);
+            end;
+
 
 .. macrodir:: @#echo MACRO_EXPRESSION
 
@@ -10541,12 +10592,12 @@ Macro directives
     |br| Asks the preprocessor to display some error message on standard
     output and to abort. The argument must evaluate to a string.
 
-.. macrodir:: @#echomacrovars MACRO_EXPRESSION
-              @#echomacrovars(save) MACRO_EXPRESSION
+.. macrodir:: @#echomacrovars
+              @#echomacrovars(save)
 
     |br| Asks the preprocessor to display the value of all macro
     variables up until this point. If the ``save`` option is passed,
-    theh values of the macro variables are saved to
+    then values of the macro variables are saved to
     ``options_.macrovars_line_<<line_numbers>>``.
 
 Typical usages
@@ -10562,24 +10613,23 @@ Example setup:
 
 ``modeldesc.mod``
 
-    Contains variable declarations, model equations and shocks declarations.
+    Contains variable declarations, model equations, and shocks declarations.
 
 ``simul.mod``
 
-    Includes ``modeldesc.mod``, calibrates parameters and runs
+    Includes ``modeldesc.mod``, calibrates parameter,s and runs
     stochastic simulations.
 
 ``estim.mod``
 
-    Includes ``modeldesc.mod``, declares priors on parameters and runs
+    Includes ``modeldesc.mod``, declares priors on parameters, and runs
     Bayesian estimation.
 
-Dynare can be called on ``simul.mod`` and ``estim.mod``, but it makes
+Dynare can be called on ``simul.mod`` and ``estim.mod`` but it makes
 no sense to run it on ``modeldesc.mod``.
 
-The main advantage is that it is no longer needed to manually
-copy/paste the whole model (at the beginning) or changes to the model
-(during development).
+The main advantage is that you don't have to copy/paste the whole model (at the
+beginning) or changes to the model (during development).
 
 
 Indexed sums of products
@@ -10593,7 +10643,7 @@ The following example shows how to construct a moving average::
     ...
     model;
     ...
-    MA_x = 1/@{2*window+1}*(
+    MA_x = @{1/(2*window+1)}*(
     @#for i in -window:window
             +x(@{i})
     @#endfor
@@ -10601,13 +10651,13 @@ The following example shows how to construct a moving average::
     ...
     end;
 
-After macro-processing, this is equivalent to::
+After macro processing, this is equivalent to::
 
     var x MA_x;
     ...
     model;
     ...
-    MA_x = 1/5*(
+    MA_x = 0.2*(
             +x(-2)
             +x(-1)
             +x(0)
@@ -10648,8 +10698,8 @@ Here is a skeleton example for a multi-country model::
 Endogeneizing parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-When doing the steady state calibration of the model, it may be useful
-to consider a parameter as an endogenous (and vice-versa).
+When calibrating the model, it may be useful to consider a parameter as an
+endogenous variable (and vice-versa).
 
 For example, suppose production is defined by a CES function:
 
@@ -10657,17 +10707,17 @@ For example, suppose production is defined by a CES function:
 
            y = \left(\alpha^{1/\xi} \ell^{1-1/\xi}+(1-\alpha)^{1/\xi}k^{1-1/\xi}\right)^{\xi/(\xi-1)}
 
-The labor share in GDP is defined as:
+and the labor share in GDP is defined as:
 
     .. math::
 
         \textrm{lab\_rat} = (w \ell)/(p y)
 
-In the model, :math:`\alpha` is a (share) parameter, and ``lab_rat``
-is an endogenous variable.
+In the model, :math:`\alpha` is a (share) parameter and ``lab_rat`` is an
+endogenous variable.
 
 It is clear that calibrating :math:`\alpha` is not straightforward;
-but on the contrary, we have real world data for ``lab_rat``, and it
+on the contrary, we have real world data for ``lab_rat`` and it
 is clear that these two variables are economically linked.
 
 The solution is to use a method called *variable flipping*, which
@@ -10686,11 +10736,11 @@ An implementation could consist of the following files:
     look like::
 
         @#if steady
-        var alpha;
-         parameter lab_rat;
+          var alpha;
+          parameter lab_rat;
         @#else
-         parameter alpha;
-         var lab_rat;
+          parameter alpha;
+          var lab_rat;
         @#endif
 
 ``steady.mod``
@@ -10718,11 +10768,11 @@ An implementation could consist of the following files:
     computes the simulations.
 
 
-MATLAB/Octave loops versus macro-processor loops
+MATLAB/Octave loops versus macro processor loops
 ------------------------------------------------
 
-Suppose you have a model with a parameter :math:`\rho`, and you want
-to make simulations for three values: :math:`\rho = 0.8, 0.9,
+Suppose you have a model with a parameter :math:`\rho` and you want
+to run simulations for three values: :math:`\rho = 0.8, 0.9,
 1`. There are several ways of doing this:
 
 *With a MATLAB/Octave loop*
@@ -10738,7 +10788,7 @@ to make simulations for three values: :math:`\rho = 0.8, 0.9,
     Here the loop is not unrolled, MATLAB/Octave manages the
     iterations. This is interesting when there are a lot of iterations.
 
-*With a macro-processor loop (case 1)*
+*With a macro processor loop (case 1)*
 
     ::
 
@@ -10749,23 +10799,21 @@ to make simulations for three values: :math:`\rho = 0.8, 0.9,
         @#endfor
 
     This is very similar to the previous example, except that the loop
-    is unrolled. The macro-processor manages the loop index but not
+    is unrolled. The macro processor manages the loop index but not
     the data array (``rhos``).
 
-*With a macro-processor loop (case 2)*
+*With a macro processor loop (case 2)*
 
     ::
 
-        @#for rho_val in [ "0.8", "0.9", "1"]
+        @#for rho_val in [ 0.8, 0.9, 1]
           rho = @{rho_val};
           stoch_simul(order=1);
         @#endfor
 
-    The advantage of this method is that it uses a shorter syntax,
-    since list of values directly given in the loop construct. Note
-    that values are given as character strings (the macro-processor
-    does not know floating point values). The inconvenience is that
-    you can not reuse an array stored in a MATLAB/Octave variable.
+    The advantage of this method is that it uses a shorter syntax, since the list
+    of values is directly given in the loop construct. The inconvenience is that
+    you can not reuse the macro array in MATLAB/Octave.
 
 
 Verbatim inclusion

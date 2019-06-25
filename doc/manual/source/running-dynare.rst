@@ -141,22 +141,22 @@ by the ``dynare`` command.
     .. option:: savemacro[=FILENAME]
 
         Instructs ``dynare`` to save the intermediary file which is
-        obtained after macro-processing (see :ref:`macro-proc-lang`);
+        obtained after macro processing (see :ref:`macro-proc-lang`);
         the saved output will go in the file specified, or if no file
         is specified in ``FILENAME-macroexp.mod``
 
     .. option:: onlymacro
 
         Instructs the preprocessor to only perform the
-        macro-processing step, and stop just after. Mainly useful for
-        debugging purposes or for using the macro-processor
+        macro processing step, and stop just after. Useful for
+        debugging purposes or for using the macro processor
         independently of the rest of Dynare toolbox.
 
     .. option:: nolinemacro
 
-        Instructs the macro-preprocessor to omit line numbering
+        Instructs the macro preprocessor to omit line numbering
         information in the intermediary ``.mod`` file created after
-        the macro-processing step. Useful in conjunction with
+        the macro processing step. Useful in conjunction with
         :opt:`savemacro <savemacro[=FILENAME]>` when one wants that to reuse the intermediary
         ``.mod`` file, without having it cluttered by line numbering
         directives.
@@ -321,7 +321,7 @@ by the ``dynare`` command.
     .. option:: -I<<path>>
 
         Defines a path to search for files to be included by the
-        macro-processor (using the ``@#include`` command). Multiple
+        macro processor (using the ``@#include`` command). Multiple
         ``-I`` flags can be passed on the command line. The paths will
         be searched in the order that the ``-I`` flags are passed and
         the first matching file will be used. The flags passed here
