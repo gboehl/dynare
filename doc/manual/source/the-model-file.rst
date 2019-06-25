@@ -10324,20 +10324,31 @@ types).
 Macro expressions
 -----------------
 
+Macro-expressions can be used in two places:
+
+    * Inside macro directives, directly;
+    * In the body of the ``.mod`` file, between an at-sign and curly
+      braces (like ``@{expr}``): the macro processor will substitute
+      the expression with its value
+
 It is possible to construct macro-expressions that can be assigned to
 macro-variables or used within a macro-directive. The expressions are
 constructed using literals of the basic types (boolean, double, string, tuple,
-function, array), macro-variable names, and standard operators.
+array), comprehensions, macro-variables, macro-functions, and standard
+operators.
 
-String literals have to be enclosed by **double** quotes (like
-``"name"``). Arrays are enclosed by brackets, and their elements are separated
-by commas (like ``[1,[2,3],4]`` or ``["US", "EA"]``). Tuples are enclosed by
-parenthesis and elements separated by commas (like ``(a,b,c)`` or ``(1,2,3)``).
+.. note::
+   Elsewhere in the manual, MACRO_EXPRESSION designates an expression
+   constructed as explained in this section.
+
+.. rubric:: Boolean
 
 The following operators can be used on booleans:
 
     * Comparison operators: ``==, !=``
     * Logical operators: ``&&, ||, !``
+
+.. rubric:: Double
 
 The following operators can be used on doubles:
 
@@ -10349,7 +10360,11 @@ The following operators can be used on doubles:
       integer array ``[1,2,3,4]``)
     * Functions: ``max, min, mod, exp, ln, log10, sin, cos, tan, asin, acos,
       atan, sqrt, cbrt, sign, floor, ceil, trunc, erf, erfc, gamma, lgamma,
-      round, normpdf, normcdf``. NB `log` can be used instead of `ln`
+      round, normpdf, normcdf``. NB ``log`` can be used instead of ``ln``
+
+.. rubric:: String
+
+String literals have to be enclosed by **double** quotes (like ``"name"``).
 
 The following operators can be used on strings:
 
@@ -10360,10 +10375,21 @@ The following operators can be used on strings:
       ``s[4:6]`` contains the characters from 4th to 6th
     * Function: ``length``
 
+.. rubric:: Tuple
+
+Tuples are enclosed by parenthesis and elements separated by commas (like
+``(a,b,c)`` or ``(1,2,3)``).
+
 The following operators can be used on tuples:
 
     * Comparison operators: ``==, !=``
     * Functions: ``empty, length``
+
+
+.. rubric:: Array
+
+Arrays are enclosed by brackets, and their elements are separated
+by commas (like ``[1,[2,3],4]`` or ``["US", "EA"]``).
 
 The following operators can be used on arrays:
 
@@ -10379,15 +10405,73 @@ The following operators can be used on arrays:
       ``"b"`` in ``["a", "b", "c"]`` returns ``1``)
     * Functions: ``empty, sum, length``
 
-Macro-expressions can be used in two places:
+.. rubric:: Comprehension
 
-    * Inside macro directives, directly;
-    * In the body of the ``.mod`` file, between an at-sign and curly
-      braces (like ``@{expr}``): the macro processor will substitute
-      the expression with its value
+Comprehension syntax is a shorthand way to make arrays from other arrays. There
+are three different ways the comprehension syntax can be employed: `filtering`,
+`mapping`, and `filtering and mapping`.
 
-In the following, MACRO_EXPRESSION designates an expression
-constructed as explained above.
+**Filtering**
+
+Filtering allows one to choose those elements from an array for which a certain
+condition hold.
+
+    *Example*
+
+    Create a new array, choosing the even numbers from the array ``1:5``::
+
+      [ i in 1:5 when mod(i,2) == 0 ]
+
+    would result in::
+
+      [2, 4]
+
+**Mapping**
+
+Mapping allows you to apply a transformation to every element of an array.
+
+    *Example*
+
+    Create a new array, squaring all elements of the array ``1:5``::
+
+      [ i^2 for i in 1:5 ]
+
+    would result in::
+
+      [1, 4, 9, 16, 25]
+
+**Filtering and Mapping**
+
+Combining the two preceding ideas would allow one to apply a transformation to
+every selected element of an array.
+
+    *Example*
+
+    Create a new array, squaring all even elements of the array ``1:5``::
+
+      [ i^2 for i in 1:5 when mod(i,2) == 0]
+
+    would result in::
+
+      [4, 16]
+
+    *Further Examples*
+    ::
+
+      [ (j, i+1) for (i,j) in (1:2)^2 ]
+      [ (j, i+1) for (i,j) in (1:2)*(1:2) when i < j ]
+
+    would result in::
+
+      [(1, 2), (2, 2), (1, 3), (2, 3)]
+      [(2, 2)]
+
+.. rubric:: Function
+
+Functions can be defined in the macro processor using the ``@#define``
+directive (see below). A function is evaluated at the time it is invoked, not
+at define time. Functions can be included in expressions and the operators that
+can be combined with them depend on their return type.
 
 
 Macro directives
@@ -10428,6 +10512,7 @@ Macro directives
 
             @#include "modelcomponent.mod"
             @#include location_of_modfile
+
 
 
 .. macrodir:: @#define MACRO_VARIABLE = MACRO_EXPRESSION
@@ -10488,13 +10573,13 @@ Macro directives
     has not yet been defined.
 
     Note that if a double appears as the result of the MACRO_EXPRESSION, it
-    will be interpreted as a boolean; a value of 0 is interpreted as `false`,
-    otherwise it is interpreted as `true`. Further note that because of the
+    will be interpreted as a boolean; a value of ``0`` is interpreted as ``false``,
+    otherwise it is interpreted as ``true``. Further note that because of the
     imprecision of doubles, extra care must be taken when testing them in the
-    MACRO_EXPRESSION. For example, `exp(log(5)) == 5` will evaluate to
-    `false`. Hence, when comparing double values, you should generally use a
-    zero tolerance around the value desired, e.g. `exp(log(5)) > 5-1e-14 &&
-    exp(log(5)) < 5+1e-14`
+    MACRO_EXPRESSION. For example, ``exp(log(5)) == 5`` will evaluate to
+    ``false``. Hence, when comparing double values, you should generally use a
+    zero tolerance around the value desired, e.g. ``exp(log(5)) > 5-1e-14 &&
+    exp(log(5)) < 5+1e-14``
 
     *Example*
 
@@ -10524,8 +10609,8 @@ Macro directives
 
         Choose between two alternative monetary policy rules using a
         macro-variable. The only difference between this example and the
-        previous one is the use of `@#ifdef` instead of `@#if`. Even though
-        ``linear_mon_pol`` contains the value `false` because `@#ifdef` only
+        previous one is the use of ``@#ifdef`` instead of ``@#if``. Even though
+        ``linear_mon_pol`` contains the value ``false`` because ``@#ifdef`` only
         checks that the variable has been defined, the linear monetary policy
         is output::
 

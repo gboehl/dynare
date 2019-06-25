@@ -167,5 +167,29 @@ stoch_simul;
 @#error "Problem with String concatenation"
 @#endif
 
+@#define z = [[i,"A",i:j,j] for (i,j) in (1:3)^2 when i < j]
+@#if z != [[1, "A", [1, 2], 2], [1, "A", [1, 2, 3], 3], [2, "A", [2, 3], 3]]
+@#error "Problem with array comprehension"
+@#endif
+
+@#if [(i,j) in (1:2)^2 when i<j] != [(1, 2)]
+@#error "Problem with set comprehension"
+@#endif
+
+@#define f(x) = [(j,i+1) for (i,j) in x^2]
+@#if f(1:2) != [(1, 2), (2, 2), (1, 3), (2, 3)]
+@#error "Problem with functional comprehension"
+@#endif
+
+@#if [(j,i+1) for (i,j) in (1:2)*(1:2) when i < j] != [(2, 2)]
+@#error "Problem with functional comprehension"
+@#endif
+
+@#if exp(log(5)) > 5-1e-14 && exp(log(5)) < 5+1e-14
+
+@#else
+@#error "Numeric comparison incorrect"
+@#endif
+
 @#echomacrovars(save)
 @#echomacrovars
