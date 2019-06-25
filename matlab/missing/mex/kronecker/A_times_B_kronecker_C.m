@@ -1,7 +1,7 @@
-function [D, err] = A_times_B_kronecker_C(A,B,C,fake)
+function [D, err] = A_times_B_kronecker_C(A,B,C)
 
 %@info:
-%! @deftypefn {Function File} {[@var{D}, @var{err}] =} A_times_B_kronecker_C (@var{A},@var{B},@var{C},@var{fake})
+%! @deftypefn {Function File} {[@var{D}, @var{err}] =} A_times_B_kronecker_C (@var{A},@var{B},@var{C})
 %! @anchor{kronecker/A_times_B_kronecker_C}
 %! @sp 1
 %! Computes A*kron(B,C).
@@ -15,8 +15,6 @@ function [D, err] = A_times_B_kronecker_C(A,B,C,fake)
 %! mB*nB matrix of doubles.
 %! @item C
 %! mC*nC matrix of doubles.
-%! @item fake
-%! Anything you want, just a fake parameter (because the mex version admits a last argument specifying the number of threads to be used in parallel mode).
 %! @end table
 %! @sp 2
 %! @strong{Outputs}

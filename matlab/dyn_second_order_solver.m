@@ -1,7 +1,7 @@
-function dr = dyn_second_order_solver(jacobia,hessian_mat,dr,M_,threads_ABC,threads_BC)
+function dr = dyn_second_order_solver(jacobia,hessian_mat,dr,M_,threads_BC)
 
 %@info:
-%! @deftypefn {Function File} {@var{dr} =} dyn_second_order_solver (@var{jacobia},@var{hessian_mat},@var{dr},@var{M_},@var{threads_ABC},@var{threads_BC})
+%! @deftypefn {Function File} {@var{dr} =} dyn_second_order_solver (@var{jacobia},@var{hessian_mat},@var{dr},@var{M_},@var{threads_BC})
 %! @anchor{dyn_second_order_solver}
 %! @sp 1
 %! Computes the second order reduced form of the DSGE model
@@ -17,8 +17,6 @@ function dr = dyn_second_order_solver(jacobia,hessian_mat,dr,M_,threads_ABC,thre
 %! Matlab's structure describing the reduced form solution of the model.
 %! @item M_
 %! Matlab's structure describing the model (initialized by @code{dynare}).
-%! @item threads_ABC
-%! Integer controlling number of threads in A_times_B_kronecker_C
 %! @item threads_BC
 %! Integer controlling number of threads in sparse_hessian_times_B_kronecker_C
 %! @end table
@@ -125,7 +123,7 @@ hu1 = [hu;zeros(np-nspred,M_.exo_nbr)];
 [nrhx,nchx] = size(Gy);
 [nrhu1,nchu1] = size(hu1);
 
-[abcOut,err] = A_times_B_kronecker_C(dr.ghxx,Gy,hu1,threads_ABC);
+[abcOut,err] = A_times_B_kronecker_C(dr.ghxx,Gy,hu1);
 mexErrCheck('A_times_B_kronecker_C', err);
 B1 = B*abcOut;
 rhs = -[rhs; zeros(n-M_.endo_nbr,size(rhs,2))]-B1;
@@ -139,7 +137,7 @@ dr.ghxu = A\rhs;
 [rhs, err] = sparse_hessian_times_B_kronecker_C(hessian_mat,zu,threads_BC);
 mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
 
-[B1, err] = A_times_B_kronecker_C(B*dr.ghxx,hu1,threads_ABC);
+[B1, err] = A_times_B_kronecker_C(B*dr.ghxx,hu1);
 mexErrCheck('A_times_B_kronecker_C', err);
 rhs = -[rhs; zeros(n-M_.endo_nbr,size(rhs,2))]-B1;
 

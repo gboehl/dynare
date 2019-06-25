@@ -268,7 +268,6 @@ else
     if local_order > 1
         % Second order
         dr = dyn_second_order_solver(jacobia_,hessian1,dr,M_,...
-                                     options_.threads.kronecker.A_times_B_kronecker_C,...
                                      options_.threads.kronecker.sparse_hessian_times_B_kronecker_C);
 
         % reordering second order derivatives, used for deterministic

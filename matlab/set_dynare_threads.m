@@ -37,8 +37,6 @@ if ~isint(n)
 end
 
 switch mexname
-  case 'A_times_B_kronecker_C'
-    options_.threads.kronecker.A_times_B_kronecker_C = n;
   case 'sparse_hessian_times_B_kronecker_C'
     options_.threads.kronecker.sparse_hessian_times_B_kronecker_C = n;
   case 'local_state_space_iteration_2'

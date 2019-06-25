@@ -54,20 +54,20 @@ ys = oo.dr.ys;
 %second order terms
 Uyy = full(Uyy);
 
-[Uyygygy, err] = A_times_B_kronecker_C(Uyy,gy,gy,options.threads.kronecker.A_times_B_kronecker_C);
+[Uyygygy, err] = A_times_B_kronecker_C(Uyy,gy,gy);
 mexErrCheck('A_times_B_kronecker_C', err);
-[Uyygugu, err] = A_times_B_kronecker_C(Uyy,gu,gu,options.threads.kronecker.A_times_B_kronecker_C);
+[Uyygugu, err] = A_times_B_kronecker_C(Uyy,gu,gu);
 mexErrCheck('A_times_B_kronecker_C', err);
-[Uyygygu, err] = A_times_B_kronecker_C(Uyy,gy,gu,options.threads.kronecker.A_times_B_kronecker_C);
+[Uyygygu, err] = A_times_B_kronecker_C(Uyy,gy,gu);
 mexErrCheck('A_times_B_kronecker_C', err);
 
 Wbar =U/(1-beta); %steady state welfare
 Wy = Uy*gy/(eye(nspred)-beta*Gy);
 Wu = Uy*gu+beta*Wy*Gu;
 Wyy = Uyygygy/(eye(nspred*nspred)-beta*kron(Gy,Gy));
-[Wyygugu, err] = A_times_B_kronecker_C(Wyy,Gu,Gu,options.threads.kronecker.A_times_B_kronecker_C);
+[Wyygugu, err] = A_times_B_kronecker_C(Wyy,Gu,Gu);
 mexErrCheck('A_times_B_kronecker_C', err);
-[Wyygygu,err] = A_times_B_kronecker_C(Wyy,Gy,Gu,options.threads.kronecker.A_times_B_kronecker_C);
+[Wyygygu,err] = A_times_B_kronecker_C(Wyy,Gy,Gu);
 mexErrCheck('A_times_B_kronecker_C', err);
 Wuu = Uyygugu+beta*Wyygugu;
 Wyu = Uyygygu+beta*Wyygygu;
@@ -90,19 +90,19 @@ end
 yhat1 = yhat1(dr.order_var(nstatic+(1:nspred)),1)-dr.ys(dr.order_var(nstatic+(1:nspred)));
 u = oo.exo_simul(1,:)';
 
-[Wyyyhatyhat1, err] = A_times_B_kronecker_C(Wyy,yhat1,yhat1,options.threads.kronecker.A_times_B_kronecker_C);
+[Wyyyhatyhat1, err] = A_times_B_kronecker_C(Wyy,yhat1,yhat1);
 mexErrCheck('A_times_B_kronecker_C', err);
-[Wuuuu, err] = A_times_B_kronecker_C(Wuu,u,u,options.threads.kronecker.A_times_B_kronecker_C);
+[Wuuuu, err] = A_times_B_kronecker_C(Wuu,u,u);
 mexErrCheck('A_times_B_kronecker_C', err);
-[Wyuyhatu1, err] = A_times_B_kronecker_C(Wyu,yhat1,u,options.threads.kronecker.A_times_B_kronecker_C);
+[Wyuyhatu1, err] = A_times_B_kronecker_C(Wyu,yhat1,u);
 mexErrCheck('A_times_B_kronecker_C', err);
 planner_objective_value(1) = Wbar+Wy*yhat1+Wu*u+Wyuyhatu1 ...
     + 0.5*(Wyyyhatyhat1 + Wuuuu+Wss);
 if options.ramsey_policy
     yhat2 = yhat2(dr.order_var(nstatic+(1:nspred)),1)-dr.ys(dr.order_var(nstatic+(1:nspred)));
-    [Wyyyhatyhat2, err] = A_times_B_kronecker_C(Wyy,yhat2,yhat2,options.threads.kronecker.A_times_B_kronecker_C);
+    [Wyyyhatyhat2, err] = A_times_B_kronecker_C(Wyy,yhat2,yhat2);
     mexErrCheck('A_times_B_kronecker_C', err);
-    [Wyuyhatu2, err] = A_times_B_kronecker_C(Wyu,yhat2,u,options.threads.kronecker.A_times_B_kronecker_C);
+    [Wyuyhatu2, err] = A_times_B_kronecker_C(Wyu,yhat2,u);
     mexErrCheck('A_times_B_kronecker_C', err);
     planner_objective_value(2) = Wbar+Wy*yhat2+Wu*u+Wyuyhatu2 ...
         + 0.5*(Wyyyhatyhat2 + Wuuuu+Wss);

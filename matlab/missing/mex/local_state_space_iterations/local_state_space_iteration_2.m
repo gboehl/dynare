@@ -79,12 +79,12 @@ function [y,y_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,gh
 %           frederic DOT karame AT univ DASH evry DOT fr
 
 if nargin==9
-    pruning = 0; numthreads = a;
+    pruning = 0;
     if nargout>1
         error('local_state_space_iteration_2:: Numbers of input and output argument are inconsistent!')
     end
 elseif nargin==11
-    pruning = 1; numthreads = c; yhat_ = a; ss = b;
+    pruning = 1; yhat_ = a; ss = b;
     if nargout~=2
         error('local_state_space_iteration_2:: Numbers of input and output argument are inconsistent!')
     end
@@ -92,22 +92,20 @@ else
     error('local_state_space_iteration_2:: Wrong number of input arguments!')
 end
 
-number_of_threads = numthreads;
-
 switch pruning
   case 0
     for i =1:size(yhat,2)
         y(:,i) = constant + ghx*yhat(:,i) + ghu*epsilon(:,i) ...
-                 + A_times_B_kronecker_C(.5*ghxx,yhat(:,i),number_of_threads)  ...
-                 + A_times_B_kronecker_C(.5*ghuu,epsilon(:,i),number_of_threads) ...
-                 + A_times_B_kronecker_C(ghxu,yhat(:,i),epsilon(:,i),number_of_threads);
+                 + A_times_B_kronecker_C(.5*ghxx,yhat(:,i))  ...
+                 + A_times_B_kronecker_C(.5*ghuu,epsilon(:,i)) ...
+                 + A_times_B_kronecker_C(ghxu,yhat(:,i),epsilon(:,i));
     end
   case 1
     for i =1:size(yhat,2)
         y(:,i) = constant + ghx*yhat(:,i) + ghu*epsilon(:,i) ...
-                 + A_times_B_kronecker_C(.5*ghxx,yhat_(:,i),number_of_threads)  ...
-                 + A_times_B_kronecker_C(.5*ghuu,epsilon(:,i),number_of_threads) ...
-                 + A_times_B_kronecker_C(ghxu,yhat_(:,i),epsilon(:,i),number_of_threads);
+                 + A_times_B_kronecker_C(.5*ghxx,yhat_(:,i))  ...
+                 + A_times_B_kronecker_C(.5*ghuu,epsilon(:,i)) ...
+                 + A_times_B_kronecker_C(ghxu,yhat_(:,i),epsilon(:,i));
     end
     y_ = ghx*yhat_+ghu*epsilon;
     y_ = bsxfun(@plus,y_,ss);

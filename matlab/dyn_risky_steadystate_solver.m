@@ -183,7 +183,6 @@ else
         print_info(info,options.noprint,options);
     end
     dr = dyn_second_order_solver(d1,d2,dr,M,...
-                                 options.threads.kronecker.A_times_B_kronecker_C,...
                                  options.threads.kronecker.sparse_hessian_times_B_kronecker_C);
 end
 
@@ -274,7 +273,6 @@ if info
 end
 
 dr_np = dyn_second_order_solver(d1_np,d2_np,dr_np,pm.M_np,...
-                                options.threads.kronecker.A_times_B_kronecker_C,...
                                 options.threads.kronecker.sparse_hessian_times_B_kronecker_C);
 end
 
@@ -312,7 +310,6 @@ if isfield(options,'portfolio') && options.portfolio == 1
     end
 
     dr_np = dyn_second_order_solver(d1_np,d2_np,dr_np,pm.M_np,...
-                                    options.threads.kronecker.A_times_B_kronecker_C,...
                                     options.threads.kronecker.sparse_hessian_times_B_kronecker_C);
 end
 
