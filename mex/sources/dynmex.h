@@ -1,5 +1,5 @@
 /*
- * Copyright © 2009-2014 Dynare Team
+ * Copyright © 2009-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -38,6 +38,10 @@
       plhs[i] = mxCreateDoubleScalar(1);        \
     return;                                     \
   } while (0)
+#endif
+
+#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION < 0x0805
+# define mxIsScalar(x) (mxGetM(x) == 1 && mxGetN(x) == 1)
 #endif
 
 #endif
