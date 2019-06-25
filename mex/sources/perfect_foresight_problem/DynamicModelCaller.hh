@@ -21,6 +21,15 @@
 #include <memory>
 #include <limits>
 
+#if defined(_WIN32) || defined(__CYGWIN32__)
+# ifndef NOMINMAX
+#  define NOMINMAX // Do not define "min" and "max" macros
+# endif
+# include <windows.h>
+#else
+# include <dlfcn.h> // unix/linux DLL (.so) handling routines
+#endif
+
 class DynamicModelCaller
 {
 public:
@@ -39,7 +48,11 @@ public:
 class DynamicModelDllCaller : public DynamicModelCaller
 {
 private:
+#if defined(_WIN32) || defined(__CYGWIN32__)
+  static HINSTANCE dynamic_mex;
+#else
   static void *dynamic_mex;
+#endif
   using dynamic_tt_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, double *T);
   using dynamic_deriv_fct = void (*) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *deriv);
   static dynamic_tt_fct residual_tt_fct, g1_tt_fct;

@@ -17,15 +17,6 @@
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(_WIN32) || defined(__CYGWIN32__)
-# ifndef NOMINMAX
-#  define NOMINMAX // Do not define "min" and "max" macros
-# endif
-# include <windows.h>
-#else
-# include <dlfcn.h> // unix/linux DLL (.so) handling routines
-#endif
-
 #include <dynmex.h>
 
 #include "DynamicModelCaller.hh"
@@ -34,7 +25,11 @@
 
 std::string DynamicModelCaller::error_msg;
 
+#if defined(_WIN32) || defined(__CYGWIN32__)
+HINSTANCE DynamicModelDllCaller::dynamic_mex{nullptr};
+#else
 void *DynamicModelDllCaller::dynamic_mex{nullptr};
+#endif
 DynamicModelDllCaller::dynamic_tt_fct DynamicModelDllCaller::residual_tt_fct{nullptr}, DynamicModelDllCaller::g1_tt_fct{nullptr};
 DynamicModelDllCaller::dynamic_deriv_fct DynamicModelDllCaller::residual_fct{nullptr}, DynamicModelDllCaller::g1_fct{nullptr};
 
