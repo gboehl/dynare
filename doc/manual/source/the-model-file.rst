@@ -10341,7 +10341,7 @@ The following operators can be used on booleans:
 
 The following operators can be used on doubles:
 
-    * Arithmetic operators: ``+, -, *, /``
+    * Arithmetic operators: ``+, -, *, /, ^``
     * Comparison operators: ``<, >, <=, >=, ==, !=``
     * Logical operators: ``&&, ||, !``
     * Integer ranges, using the following syntax:
@@ -10349,7 +10349,7 @@ The following operators can be used on doubles:
       integer array ``[1,2,3,4]``)
     * Functions: ``max, min, mod, exp, ln, log10, sin, cos, tan, asin, acos,
       atan, sqrt, cbrt, sign, floor, ceil, trunc, erf, erfc, gamma, lgamma,
-      round, normpdf, normcdf``
+      round, normpdf, normcdf``. NB `log` can be used instead of `ln`
 
 The following operators can be used on strings:
 
@@ -10394,14 +10394,13 @@ Macro directives
 ----------------
 
 .. macrodir:: @#includepath "PATH"
-              @#includepath MACRO_VARIABLE
               @#includepath MACRO_EXPRESSION
 
     |br| This directive adds the path contained in PATH to the list of those to
     search when looking for a ``.mod`` file specified by ``@#include``. If
-    provided with a MACRO_VARIABLE or MACRO_EXPRESSION argument, the argument
-    must evaluate to a string. Note that these paths are added *after* any
-    paths passed using :opt:`-I <-I\<\<path\>\>>`.
+    provided with a MACRO_EXPRESSION argument, the argument must evaluate to a
+    string. Note that these paths are added *after* any paths passed using
+    :opt:`-I <-I\<\<path\>\>>`.
 
     *Example*
 
@@ -10412,17 +10411,16 @@ Macro directives
 
 
 .. macrodir:: @#include "FILENAME"
-              @#include MACRO_VARIABLE
               @#include MACRO_EXPRESSION
 
     |br| This directive simply includes the content of another file in its
     place; it is exactly equivalent to a copy/paste of the content of the
-    included file. If provided with a MACRO_VARIABLE or MACRO_EXPRESSION
-    argument, the argument must evaluate to a string. Note that it is possible
-    to nest includes (i.e. to include a file from an included file). The file
-    will be searched for in the current directory. If it is not found, the file
-    will be searched for in the folders provided by :opt:`-I <-I\<\<path\>\>>`
-    and ``@#includepath``.
+    included file. If provided with a MACRO_EXPRESSION argument, the argument
+    must evaluate to a string. Note that it is possible to nest includes
+    (i.e. to include a file from an included file). The file will be searched
+    for in the current directory. If it is not found, the file will be searched
+    for in the folders provided by :opt:`-I <-I\<\<path\>\>>` and
+    ``@#includepath``.
 
     *Example*
 
@@ -10489,6 +10487,15 @@ Macro directives
     value. Conversely, ``@#ifndef`` will evaluate to true if the MACRO_VARIABLE
     has not yet been defined.
 
+    Note that if a double appears as the result of the MACRO_EXPRESSION, it
+    will be interpreted as a boolean; a value of 0 is interpreted as `false`,
+    otherwise it is interpreted as `true`. Further note that because of the
+    imprecision of doubles, extra care must be taken when testing them in the
+    MACRO_EXPRESSION. For example, `exp(log(5)) == 5` will evaluate to
+    `false`. Hence, when comparing double values, you should generally use a
+    zero tolerance around the value desired, e.g. `exp(log(5)) > 5-1e-14 &&
+    exp(log(5)) < 5+1e-14`
+
     *Example*
 
         Choose between two alternative monetary policy rules using a
@@ -10515,12 +10522,17 @@ Macro directives
 
     *Example*
 
-        Choose between two alternative monetary policy rules. In this example,
-        as ``linear_mon_pol`` was not previously defined, the first equation
-        will be chosen::
+        Choose between two alternative monetary policy rules using a
+        macro-variable. The only difference between this example and the
+        previous one is the use of `@#ifdef` instead of `@#if`. Even though
+        ``linear_mon_pol`` contains the value `false` because `@#ifdef` only
+        checks that the variable has been defined, the linear monetary policy
+        is output::
 
+            @#define linear_mon_pol = false // 0 would be treated the same
+            ...
             model;
-            @#ifndef linear_mon_pol
+            @#ifdef linear_mon_pol
               i = w*i(-1) + (1-w)*i_ss + w2*(pie-piestar);
             @#else
               i = i(-1)^w * i_ss^(1-w) * (pie/piestar)^w2;
