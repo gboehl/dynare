@@ -14,7 +14,8 @@ EXTRA_DIST = \
 	local_state_space_iterations \
 	gensylv \
 	dynare_simul_ \
-	perfect_foresight_problem
+	perfect_foresight_problem \
+	num_procs
 
 clean-local:
 	rm -rf `find mex/sources -name *.o`

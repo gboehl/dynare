@@ -128,6 +128,7 @@ AC_CONFIG_FILES([Makefile
                  block_kalman_filter/Makefile
 		 sobol/Makefile
 		 local_state_space_iterations/Makefile
-                 perfect_foresight_problem/Makefile])
+                 perfect_foresight_problem/Makefile
+                 num_procs/Makefile])
 
 AC_OUTPUT
