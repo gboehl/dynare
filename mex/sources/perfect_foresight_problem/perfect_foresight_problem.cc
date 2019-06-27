@@ -28,8 +28,8 @@
 void
 mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  if (nlhs < 1 || nlhs > 2 || nrhs != 18)
-    mexErrMsgTxt("Must have 18 input arguments and 1 or 2 output arguments");
+  if (nlhs < 1 || nlhs > 2 || nrhs != 19)
+    mexErrMsgTxt("Must have 19 input arguments and 1 or 2 output arguments");
   bool compute_jacobian = nlhs == 2;
 
   // Give explicit names to input arguments
@@ -51,6 +51,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   const mxArray *nzij_fwrd_mx = prhs[15];
   const mxArray *has_external_function_mx = prhs[16];
   const mxArray *use_dll_mx = prhs[17];
+  const mxArray *num_threads_mx = prhs[18];
 
   // Check input and map it to local variables
   if (!(mxIsChar(basename_mx) && mxGetM(basename_mx) == 1))
@@ -131,6 +132,10 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mexErrMsgTxt("use_dll should be a logical scalar");
   bool use_dll = static_cast<bool>(mxGetScalar(use_dll_mx));
 
+  if (!(mxIsScalar(num_threads_mx) && mxIsNumeric(num_threads_mx)))
+    mexErrMsgTxt("num_threads should be a numeric scalar");
+  int num_threads = static_cast<int>(mxGetScalar(num_threads_mx));
+
   // Allocate output matrices
   plhs[0] = mxCreateDoubleMatrix(periods*ny, 1, mxREAL);
   double *stacked_residual = mxGetPr(plhs[0]);
@@ -178,7 +183,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   /* Parallelize the main loop, if use_dll and no external function (to avoid
      parallel calls to MATLAB) */
-#pragma omp parallel if (use_dll && !has_external_function)
+#pragma omp parallel num_threads(num_threads) if (use_dll && !has_external_function)
   {
     // Allocate (thread-private) model evaluator (which allocates space for temporaries)
     std::unique_ptr<DynamicModelCaller> m;

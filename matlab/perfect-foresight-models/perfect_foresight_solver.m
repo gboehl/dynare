@@ -191,7 +191,7 @@ if ~isreal(oo_.endo_simul(:)) % cannot happen with bytecode or the perfect_fores
     model_dynamic_g1_nz = str2func([M_.fname,'.dynamic_g1_nz']);
     [nzij_pred, nzij_current, nzij_fwrd] = model_dynamic_g1_nz();
 
-    residuals = perfect_foresight_problem(yy(:), M_.fname, sum(M_.dynamic_tmp_nbr(1:2)), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_.endo_nbr, M_.maximum_lag, M_.maximum_endo_lag, M_.lead_lag_incidence, nzij_pred, nzij_current, nzij_fwrd, M_.has_external_function, options_.use_dll);
+    residuals = perfect_foresight_problem(yy(:), M_.fname, sum(M_.dynamic_tmp_nbr(1:2)), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_.endo_nbr, M_.maximum_lag, M_.maximum_endo_lag, M_.lead_lag_incidence, nzij_pred, nzij_current, nzij_fwrd, M_.has_external_function, options_.use_dll, options_.threads.perfect_foresight_problem);
 
     if max(abs(residuals))< options_.dynatol.f
         oo_.deterministic_simulation.status = 1;

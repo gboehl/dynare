@@ -56,7 +56,7 @@ else
     model_dynamic_g1_nz = str2func([M.fname,'.dynamic_g1_nz']);
     [nzij_pred, nzij_current, nzij_fwrd] = model_dynamic_g1_nz();
 
-    [y, check] = dynare_solve(@perfect_foresight_problem,z(:), options, M.fname, sum(M.dynamic_tmp_nbr(1:2)), y0, yT, exogenousvariables, M.params, steadystate, options.periods, M.endo_nbr, M.maximum_lag, M.maximum_endo_lag, M.lead_lag_incidence, nzij_pred, nzij_current, nzij_fwrd, M.has_external_function, options.use_dll);
+    [y, check] = dynare_solve(@perfect_foresight_problem,z(:), options, M.fname, sum(M.dynamic_tmp_nbr(1:2)), y0, yT, exogenousvariables, M.params, steadystate, options.periods, M.endo_nbr, M.maximum_lag, M.maximum_endo_lag, M.lead_lag_incidence, nzij_pred, nzij_current, nzij_fwrd, M.has_external_function, options.use_dll, options.threads.perfect_foresight_problem);
 end
 
 if all(imag(y)<.1*options.dynatol.x)
