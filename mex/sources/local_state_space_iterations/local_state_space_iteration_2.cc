@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <tuple>
 
 #include <dynmex.h>
 #include <dynblas.h>
@@ -32,13 +33,11 @@
 
 #define FIRST_ORDER_LOOP 1// Comment out this line to use mkl-blas instead of loops when computing ghx*yhat and ghu*epsilon
 
-void
-set_vector_of_indices(int n, int r, std::vector<int> &v1, std::vector<int> &v2, std::vector<int> &v3)
+std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>
+set_vector_of_indices(int n, int r)
 {
   int m = n*(n+1)/2;
-  v1.resize(m, 0);
-  v2.resize(m, 0);
-  v3.resize(m, 0);
+  std::vector<int> v1(m, 0), v2(m, 0), v3(m, 0);
   for (int i = 0, index = 0, jndex = 0; i < n; i++)
     {
       jndex += i;
@@ -49,6 +48,7 @@ set_vector_of_indices(int n, int r, std::vector<int> &v1, std::vector<int> &v2, 
           v3[index] = jndex*r;
         }
     }
+  return { v1, v2, v3 };
 }
 
 void
@@ -62,9 +62,9 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
   const blas_int ONE = 1;
 #endif
   std::vector<int> ii1, ii2, ii3;// vector indices for ghxx
+  std::tie(ii1, ii2, ii3) = set_vector_of_indices(n, m);
   std::vector<int> jj1, jj2, jj3;// vector indices for ghuu
-  set_vector_of_indices(n, m, ii1, ii2, ii3);
-  set_vector_of_indices(q, m, jj1, jj2, jj3);
+  std::tie(jj1, jj2, jj3) = set_vector_of_indices(q, m);
 #pragma omp parallel for num_threads(number_of_threads)
   for (int particle = 0; particle < s; particle++)
     {
@@ -148,9 +148,9 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
   const blas_int ONE = 1;
 #endif
   std::vector<int> ii1, ii2, ii3;// vector indices for ghxx
+  std::tie(ii1, ii2, ii3) = set_vector_of_indices(n, m);
   std::vector<int> jj1, jj2, jj3;// vector indices for ghuu
-  set_vector_of_indices(n, m, ii1, ii2, ii3);
-  set_vector_of_indices(q, m, jj1, jj2, jj3);
+  std::tie(jj1, jj2, jj3) = set_vector_of_indices(q, m);
 #pragma omp parallel for num_threads(number_of_threads)
   for (int particle = 0; particle < s; particle++)
     {
