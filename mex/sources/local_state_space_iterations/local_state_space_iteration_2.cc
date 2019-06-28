@@ -221,13 +221,15 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     prhs[8] yhat_         [double]  [OPTIONAL] n×s array, time t particles (pruning additional latent variables).
     prhs[9] ss            [double]  [OPTIONAL] m×1 array, steady state for the union of the states and the observed variables (needed for the pruning mode).
     
+    prhs[9 or 11]         [double]  num of threads
+
     plhs[0] y             [double]  n×s array, time t+1 particles.
     plhs[1] y_            [double]  n×s array, time t+1 particles for the pruning latent variables.
   */
 
   // Check the number of input and output.
   if (nrhs != 9 && nrhs != 11)
-    mexErrMsgTxt("Eight or ten input arguments are required.");
+    mexErrMsgTxt("Nine or eleven input arguments are required.");
 
   if (nlhs > 2)
     mexErrMsgTxt("Too many output arguments.");
