@@ -178,7 +178,7 @@ KordpDynare::LLxSteady(const Vector &yS, Vector &llxSteady)
    In Dynare, the ordering is (x⁻, x, x⁺, u).
    In Dynare++, the ordering is (y⁺, y, y⁻, u).
 
-   dr_order is typically equal to M_.order_var.
+   dr_order is typically equal to oo_.dr.order_var.
 */
 void
 KordpDynare::computeJacobianPermutation(const std::vector<int> &dr_order)
