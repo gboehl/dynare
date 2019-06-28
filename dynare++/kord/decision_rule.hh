@@ -180,6 +180,7 @@ public:
 protected:
   void fillTensors(const _Tg &g, double sigma);
   void centralize(const DecisionRuleImpl &dr);
+public:
   void eval(emethod em, Vector &out, const ConstVector &v) const override;
 };
 

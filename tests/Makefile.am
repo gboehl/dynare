@@ -373,7 +373,8 @@ MODFILES = \
 	bgp/solow-1/solow.mod \
 	bgp/nk-1/nk.mod \
 	bgp/ramsey-1/ramsey.mod \
-	dynare-command-options/ramst.mod
+	dynare-command-options/ramst.mod \
+	particle/local_state_space_iteration_k_test.mod
 
 PARTICLEFILES = \
 	particle/dsge_base2.mod \

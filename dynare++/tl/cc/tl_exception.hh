@@ -71,8 +71,8 @@ class TLException
 {
   const std::string fname;
   int lnum;
-  const std::string message;
 public:
+  const std::string message;
   TLException(std::string fname_arg, int lnum_arg, std::string message_arg)
     : fname{std::move(fname_arg)},
       lnum{lnum_arg},

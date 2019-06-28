@@ -71,6 +71,7 @@ options_.huge_number = 1e7;
 % Default number of threads for parallelized mex files.
 options_.threads.kronecker.sparse_hessian_times_B_kronecker_C = num_procs;
 options_.threads.local_state_space_iteration_2 = 1;
+options_.threads.local_state_space_iteration_k = 1;
 options_.threads.perfect_foresight_problem = num_procs;
 options_.threads.k_order_perturbation = max(1, num_procs/2);
 
