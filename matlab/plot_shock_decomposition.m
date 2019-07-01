@@ -437,6 +437,7 @@ switch type
             if isstruct(q2a.aux) && ischar(q2a.aux.y)
                 opts=options_;
                 opts.plot_shock_decomp.type='qoq';
+                opts.plot_shock_decomp.use_shock_groups=[];
                 [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,opts,q2a.aux.y);
                 q2a.aux.y=y_aux;
                 q2a.aux.yss=steady_state_aux;
