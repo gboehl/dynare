@@ -10357,7 +10357,10 @@ The following operators can be used on doubles:
     * Logical operators: ``&&, ||, !``
     * Integer ranges, using the following syntax:
       ``INTEGER1:INTEGER2`` (for example, ``1:4`` is equivalent to
-      integer array ``[1,2,3,4]``)
+      integer array ``[1,2,3,4]``).
+
+      .. versionchanged:: 4.6
+         Before this change, you needed brackets around the arguments to the colon operator (e.g. ``[1:4]``)
     * Functions: ``max, min, mod, exp, ln, log10, sin, cos, tan, asin, acos,
       atan, sqrt, cbrt, sign, floor, ceil, trunc, erf, erfc, gamma, lgamma,
       round, normpdf, normcdf``. NB ``log`` can be used instead of ``ln``
