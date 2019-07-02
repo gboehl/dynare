@@ -325,6 +325,11 @@ if options_.plot_shock_decomp.use_shock_groups
             M_.endo_names_tex = endo_names_tex;
         else
             % here we know we only have one variable to handle
+            if isstruct(q2a.aux) && ischar(q2a.aux.y)
+                steady_state_aux  = get_mean(q2a.aux.y);
+                q2a.aux.y=repmat(steady_state_aux,16,1);
+                q2a.aux.yss=steady_state_aux;
+            end
             [~, yssa, ~, gyssa] = ...
                 quarterly2annual(repmat(steady_state,16,1),steady_state,q2a.GYTREND0,q2a.type,q2a.islog,q2a.aux);
             if q2a.plot==1
