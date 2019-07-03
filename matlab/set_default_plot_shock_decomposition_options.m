@@ -11,7 +11,7 @@ function options = set_default_plot_shock_decomposition_options(options)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,4 +48,6 @@ options.plot_shock_decomp.vintage = 0; % 0 pool realtime/conditional; int:
                                        % decompositions
 options.plot_shock_decomp.plot_init_date = [];
 options.plot_shock_decomp.plot_end_date = [];
+options.plot_shock_decomp.diff = false;
+options.plot_shock_decomp.flip = false;
 end

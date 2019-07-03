@@ -11,7 +11,7 @@ function options = set_default_initial_condition_decomposition_options(options)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,4 +34,6 @@ options.initial_condition_decomp.write_xls = 0;
 options.initial_condition_decomp.type = '';
 options.initial_condition_decomp.plot_init_date = [];
 options.initial_condition_decomp.plot_end_date = [];
+options.initial_condition_decomp.diff = false;
+options.initial_condition_decomp.flip = false;
 end
