@@ -10360,7 +10360,10 @@ The following operators can be used on doubles:
       integer array ``[1,2,3,4]``).
 
       .. versionchanged:: 4.6
-         Before this change, you needed brackets around the arguments to the colon operator (e.g. ``[1:4]``)
+         Previously, putting brackets around the arguments to the colon
+         operator (e.g. ``[1:4]``) had now effect. Now, ``[1:4]`` will create
+         an array containing a single element, itself an array (i.e. it is
+         equivalent to ``[ [1, 2, 3, 4] ]``)
     * Functions: ``max, min, mod, exp, log, log10, sin, cos, tan, asin, acos,
       atan, sqrt, cbrt, sign, floor, ceil, trunc, erf, erfc, gamma, lgamma,
       round, normpdf, normcdf``. NB ``ln`` can be used instead of ``log``
