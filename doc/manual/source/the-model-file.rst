@@ -10361,9 +10361,9 @@ The following operators can be used on doubles:
 
       .. versionchanged:: 4.6
          Before this change, you needed brackets around the arguments to the colon operator (e.g. ``[1:4]``)
-    * Functions: ``max, min, mod, exp, ln, log10, sin, cos, tan, asin, acos,
+    * Functions: ``max, min, mod, exp, log, log10, sin, cos, tan, asin, acos,
       atan, sqrt, cbrt, sign, floor, ceil, trunc, erf, erfc, gamma, lgamma,
-      round, normpdf, normcdf``. NB ``log`` can be used instead of ``ln``
+      round, normpdf, normcdf``. NB ``ln`` can be used instead of ``log``
 
 .. rubric:: String
 
