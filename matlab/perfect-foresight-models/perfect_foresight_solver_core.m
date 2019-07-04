@@ -39,6 +39,10 @@ if options_.linear_approximation && ~(isequal(options_.stack_solve_algo,0) || is
     error('perfect_foresight_solver: Option linear_approximation is only available with option stack_solve_algo equal to 0 or 7.')
 end
 
+if options_.endogenous_terminal_period && options_.stack_solve_algo ~= 0
+    error('perfect_foresight_solver: option endogenous_terminal_period is only available with option stack_solve_algo equal to 0')
+end
+
 if options_.linear && (isequal(options_.stack_solve_algo, 0) || isequal(options_.stack_solve_algo, 7))
     options_.linear_approximation = true;
 end
