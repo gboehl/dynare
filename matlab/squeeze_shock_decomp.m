@@ -18,8 +18,9 @@ end
 i_var = varlist_indices(sd_vlist,M_.endo_names);
 
 options_.shock_decomp.i_var = i_var;
-oo_.shock_decomposition = oo_.shock_decomposition(i_var,:,:);
-
+if isfield (oo_,'shock_decomposition')
+    oo_.shock_decomposition = oo_.shock_decomposition(i_var,:,:);
+end
 if isfield (oo_,'realtime_conditional_shock_decomposition')
     oo_.realtime_conditional_shock_decomposition = ...
         my_squeeze(oo_.realtime_conditional_shock_decomposition, i_var);
