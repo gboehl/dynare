@@ -59,15 +59,12 @@ if verbose
     skipline()
 end
 
-model_dynamic_g1_nz = str2func([M.fname,'.dynamic_g1_nz']);
-[nzij_pred, nzij_current, nzij_fwrd] = model_dynamic_g1_nz();
-
 h1 = clock;
 
 for iter = 1:options.simul.maxit
     h2 = clock;
 
-    [res, A] = perfect_foresight_problem(y, M.fname, sum(M.dynamic_tmp_nbr(1:2)), y0, yT, exogenousvariables, M.params, steadystate, periods, ny, M.maximum_lag, M.maximum_endo_lag, M.lead_lag_incidence, nzij_pred, nzij_current, nzij_fwrd, M.has_external_function, options.use_dll, options.threads.perfect_foresight_problem);
+    [res, A] = perfect_foresight_problem(y, y0, yT, exogenousvariables, M.params, steadystate, periods, M, options);
 
     if options.endogenous_terminal_period && iter > 1
         for it = 1:periods

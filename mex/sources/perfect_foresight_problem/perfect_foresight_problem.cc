@@ -28,86 +28,78 @@
 void
 mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  if (nlhs < 1 || nlhs > 2 || nrhs != 19)
-    mexErrMsgTxt("Must have 19 input arguments and 1 or 2 output arguments");
+  if (nlhs < 1 || nlhs > 2 || nrhs != 9)
+    mexErrMsgTxt("Must have 9 input arguments and 1 or 2 output arguments");
   bool compute_jacobian = nlhs == 2;
 
   // Give explicit names to input arguments
   const mxArray *y_mx = prhs[0];
-  const mxArray *basename_mx = prhs[1];
-  const mxArray *ntt_mx = prhs[2];
-  const mxArray *y0_mx = prhs[3];
-  const mxArray *yT_mx = prhs[4];
-  const mxArray *exo_path_mx = prhs[5];
-  const mxArray *params_mx = prhs[6];
-  const mxArray *steady_state_mx = prhs[7];
-  const mxArray *periods_mx = prhs[8];
-  const mxArray *ny_mx = prhs[9];
-  const mxArray *maximum_lag_mx = prhs[10];
-  const mxArray *maximum_endo_lag_mx = prhs[11];
-  const mxArray *lead_lag_incidence_mx = prhs[12];
-  const mxArray *nzij_pred_mx = prhs[13];
-  const mxArray *nzij_current_mx = prhs[14];
-  const mxArray *nzij_fwrd_mx = prhs[15];
-  const mxArray *has_external_function_mx = prhs[16];
-  const mxArray *use_dll_mx = prhs[17];
-  const mxArray *num_threads_mx = prhs[18];
+  const mxArray *y0_mx = prhs[1];
+  const mxArray *yT_mx = prhs[2];
+  const mxArray *exo_path_mx = prhs[3];
+  const mxArray *params_mx = prhs[4];
+  const mxArray *steady_state_mx = prhs[5];
+  const mxArray *periods_mx = prhs[6];
+  const mxArray *M_mx = prhs[7];
+  const mxArray *options_mx = prhs[8];
 
-  // Check input and map it to local variables
-  if (!(mxIsChar(basename_mx) && mxGetM(basename_mx) == 1))
-    mexErrMsgTxt("basename should be a character string");
-  char *basename = mxArrayToString(basename_mx);
+  // Extract various fields from M_
+  const mxArray *basename_mx = mxGetField(M_mx, 0, "fname");
+  if (!(basename_mx && mxIsChar(basename_mx) && mxGetM(basename_mx) == 1))
+    mexErrMsgTxt("M_.fname should be a character string");
+  std::string basename{mxArrayToString(basename_mx)};
 
-  if (!(mxIsScalar(ntt_mx) && mxIsNumeric(ntt_mx)))
-    mexErrMsgTxt("ntt should be a numeric scalar");
-  size_t ntt = mxGetScalar(ntt_mx);
+  const mxArray *endo_nbr_mx = mxGetField(M_mx, 0, "endo_nbr");
+  if (!(endo_nbr_mx && mxIsScalar(endo_nbr_mx) && mxIsNumeric(endo_nbr_mx)))
+    mexErrMsgTxt("M_.endo_nbr should be a numeric scalar");
+  mwIndex ny = static_cast<mwIndex>(mxGetScalar(endo_nbr_mx));
 
-  if (!(mxIsScalar(periods_mx) && mxIsNumeric(periods_mx)))
-    mexErrMsgTxt("periods should be a numeric scalar");
-  mwIndex periods = static_cast<mwIndex>(mxGetScalar(periods_mx));
-
-  if (!(mxIsScalar(ny_mx) && mxIsNumeric(ny_mx)))
-    mexErrMsgTxt("ny should be a numeric scalar");
-  mwIndex ny = static_cast<mwIndex>(mxGetScalar(ny_mx));
-
-  if (!(mxIsScalar(maximum_lag_mx) && mxIsNumeric(maximum_lag_mx)))
-    mexErrMsgTxt("maximum_lag should be a numeric scalar");
+  const mxArray *maximum_lag_mx = mxGetField(M_mx, 0, "maximum_lag");
+  if (!(maximum_lag_mx && mxIsScalar(maximum_lag_mx) && mxIsNumeric(maximum_lag_mx)))
+    mexErrMsgTxt("M_.maximum_lag should be a numeric scalar");
   mwIndex maximum_lag = static_cast<mwIndex>(mxGetScalar(maximum_lag_mx));
 
-  if (!(mxIsScalar(maximum_endo_lag_mx) && mxIsNumeric(maximum_endo_lag_mx)))
-    mexErrMsgTxt("maximum_endo_lag should be a numeric scalar");
+  const mxArray *maximum_endo_lag_mx = mxGetField(M_mx, 0, "maximum_endo_lag");
+  if (!(maximum_endo_lag_mx && mxIsScalar(maximum_endo_lag_mx) && mxIsNumeric(maximum_endo_lag_mx)))
+    mexErrMsgTxt("M_.maximum_endo_lag should be a numeric scalar");
   mwIndex maximum_endo_lag = static_cast<mwIndex>(mxGetScalar(maximum_endo_lag_mx));
 
-  if (!(mxIsDouble(y_mx) && mxGetM(y_mx) == static_cast<size_t>(ny*periods) && mxGetN(y_mx) == 1))
-    mexErrMsgTxt("y should be a double precision column-vector of ny*periods elements");
-  const double *y = mxGetPr(y_mx);
+  const mxArray *dynamic_tmp_nbr_mx = mxGetField(M_mx, 0, "dynamic_tmp_nbr");
+  if (!(dynamic_tmp_nbr_mx && mxIsDouble(dynamic_tmp_nbr_mx) && mxGetNumberOfElements(dynamic_tmp_nbr_mx) >= 2))
+    mexErrMsgTxt("M_.dynamic_tmp_nbr should be a double array of at least 2 elements");
+  size_t ntt = mxGetPr(dynamic_tmp_nbr_mx)[0] + mxGetPr(dynamic_tmp_nbr_mx)[1];
 
-  if (!(mxIsDouble(y0_mx) && mxGetM(y0_mx) == static_cast<size_t>(ny) && mxGetN(y0_mx) == 1))
-    mexErrMsgTxt("y0 should be a double precision column-vector of ny elements");
-  const double *y0 = mxGetPr(y0_mx);
-
-  if (!(mxIsDouble(yT_mx) && mxGetM(yT_mx) == static_cast<size_t>(ny) && mxGetN(yT_mx) == 1))
-    mexErrMsgTxt("yT should be a double precision column-vector of ny elements");
-  const double *yT = mxGetPr(yT_mx);
-
-  if (!(mxIsDouble(exo_path_mx) && mxGetM(exo_path_mx) >= static_cast<size_t>(periods+maximum_lag)))
-    mexErrMsgTxt("exo_path should be a double precision matrix with at least periods+maximum_lag rows");
-  mwIndex nx = static_cast<mwIndex>(mxGetN(exo_path_mx));
-  size_t nb_row_x = mxGetM(exo_path_mx);
-  const double *exo_path = mxGetPr(exo_path_mx);
-
-  if (!(mxIsDouble(params_mx) && mxGetN(params_mx) == 1))
-    mexErrMsgTxt("params should be a double precision column-vector");
-  const double *params = mxGetPr(params_mx);
-
-  if (!(mxIsDouble(steady_state_mx) && mxGetN(steady_state_mx) == 1))
-    mexErrMsgTxt("steady_state should be a double precision column-vector");
-  const double *steady_state = mxGetPr(steady_state_mx);
-
-  if (!(mxIsDouble(lead_lag_incidence_mx) && mxGetM(lead_lag_incidence_mx) == static_cast<size_t>(2+maximum_endo_lag)
+  const mxArray *lead_lag_incidence_mx = mxGetField(M_mx, 0, "lead_lag_incidence");
+  if (!(lead_lag_incidence_mx && mxIsDouble(lead_lag_incidence_mx) && mxGetM(lead_lag_incidence_mx) == static_cast<size_t>(2+maximum_endo_lag)
         && mxGetN(lead_lag_incidence_mx) == static_cast<size_t>(ny)))
-    mexErrMsgTxt("lead_lag_incidence should be a double precision matrix with 2+maximum_endo_lag rows and endo_nbr columns");
+    mexErrMsgTxt("M_.lead_lag_incidence should be a double precision matrix with 2+M_.maximum_endo_lag rows and M_.endo_nbr columns");
   const double *lead_lag_incidence = mxGetPr(lead_lag_incidence_mx);
+
+  const mxArray *has_external_function_mx = mxGetField(M_mx, 0, "has_external_function");
+  if (!(has_external_function_mx && mxIsLogicalScalar(has_external_function_mx)))
+    mexErrMsgTxt("M_.has_external_function should be a logical scalar");
+  bool has_external_function = static_cast<bool>(mxGetScalar(has_external_function_mx));
+
+  // Extract various fields from options_
+  const mxArray *use_dll_mx = mxGetField(options_mx, 0, "use_dll");
+  if (!(use_dll_mx && mxIsLogicalScalar(use_dll_mx)))
+    mexErrMsgTxt("options_.use_dll should be a logical scalar");
+  bool use_dll = static_cast<bool>(mxGetScalar(use_dll_mx));
+
+  const mxArray *threads_mx = mxGetField(options_mx, 0, "threads");
+  if (!threads_mx)
+    mexErrMsgTxt("Can't find field options_.threads");
+  const mxArray *num_threads_mx = mxGetField(threads_mx, 0, "perfect_foresight_problem");
+  if (!(num_threads_mx && mxIsScalar(num_threads_mx) && mxIsNumeric(num_threads_mx)))
+    mexErrMsgTxt("options_.threads.perfect_foresight_problem should be a numeric scalar");
+  int num_threads = static_cast<int>(mxGetScalar(num_threads_mx));
+
+  // Call <model>.dynamic_g1_nz
+  mxArray *g1_nz_plhs[3];
+  mexCallMATLAB(3, g1_nz_plhs, 0, nullptr, (basename + ".dynamic_g1_nz").c_str());
+  const mxArray *nzij_pred_mx = g1_nz_plhs[0];
+  const mxArray *nzij_current_mx = g1_nz_plhs[1];
+  const mxArray *nzij_fwrd_mx = g1_nz_plhs[2];
 
   if (!(mxIsInt32(nzij_pred_mx) && mxGetN(nzij_pred_mx) == 2))
     mexErrMsgTxt("nzij_pred should be an int32 matrix with 2 columns");
@@ -136,17 +128,36 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   const int32_T *nzij_fwrd = static_cast<const int32_T *>(mxGetData(nzij_fwrd_mx));
 #endif
 
-  if (!(mxIsLogicalScalar(has_external_function_mx)))
-    mexErrMsgTxt("has_external_function should be a logical scalar");
-  bool has_external_function = static_cast<bool>(mxGetScalar(has_external_function_mx));
+  // Check other input and map it to local variables
+  if (!(mxIsScalar(periods_mx) && mxIsNumeric(periods_mx)))
+    mexErrMsgTxt("periods should be a numeric scalar");
+  mwIndex periods = static_cast<mwIndex>(mxGetScalar(periods_mx));
 
-  if (!(mxIsLogicalScalar(use_dll_mx)))
-    mexErrMsgTxt("use_dll should be a logical scalar");
-  bool use_dll = static_cast<bool>(mxGetScalar(use_dll_mx));
+  if (!(mxIsDouble(y_mx) && mxGetM(y_mx) == static_cast<size_t>(ny*periods) && mxGetN(y_mx) == 1))
+    mexErrMsgTxt("y should be a double precision column-vector of M_.endo_nbr*periods elements");
+  const double *y = mxGetPr(y_mx);
 
-  if (!(mxIsScalar(num_threads_mx) && mxIsNumeric(num_threads_mx)))
-    mexErrMsgTxt("num_threads should be a numeric scalar");
-  int num_threads = static_cast<int>(mxGetScalar(num_threads_mx));
+  if (!(mxIsDouble(y0_mx) && mxGetM(y0_mx) == static_cast<size_t>(ny) && mxGetN(y0_mx) == 1))
+    mexErrMsgTxt("y0 should be a double precision column-vector of M_.endo_nbr elements");
+  const double *y0 = mxGetPr(y0_mx);
+
+  if (!(mxIsDouble(yT_mx) && mxGetM(yT_mx) == static_cast<size_t>(ny) && mxGetN(yT_mx) == 1))
+    mexErrMsgTxt("yT should be a double precision column-vector of M_.endo_nbr elements");
+  const double *yT = mxGetPr(yT_mx);
+
+  if (!(mxIsDouble(exo_path_mx) && mxGetM(exo_path_mx) >= static_cast<size_t>(periods+maximum_lag)))
+    mexErrMsgTxt("exo_path should be a double precision matrix with at least periods+M_.maximum_lag rows");
+  mwIndex nx = static_cast<mwIndex>(mxGetN(exo_path_mx));
+  size_t nb_row_x = mxGetM(exo_path_mx);
+  const double *exo_path = mxGetPr(exo_path_mx);
+
+  if (!(mxIsDouble(params_mx) && mxGetN(params_mx) == 1))
+    mexErrMsgTxt("params should be a double precision column-vector");
+  const double *params = mxGetPr(params_mx);
+
+  if (!(mxIsDouble(steady_state_mx) && mxGetN(steady_state_mx) == 1))
+    mexErrMsgTxt("steady_state should be a double precision column-vector");
+  const double *steady_state = mxGetPr(steady_state_mx);
 
   // Allocate output matrices
   plhs[0] = mxCreateDoubleMatrix(periods*ny, 1, mxREAL);

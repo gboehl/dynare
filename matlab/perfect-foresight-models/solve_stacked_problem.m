@@ -53,10 +53,7 @@ if (options.solve_algo == 10 || options.solve_algo == 11)% mixed complementarity
                               i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
                               eq_index);
 else
-    model_dynamic_g1_nz = str2func([M.fname,'.dynamic_g1_nz']);
-    [nzij_pred, nzij_current, nzij_fwrd] = model_dynamic_g1_nz();
-
-    [y, check] = dynare_solve(@perfect_foresight_problem,z(:), options, M.fname, sum(M.dynamic_tmp_nbr(1:2)), y0, yT, exogenousvariables, M.params, steadystate, options.periods, M.endo_nbr, M.maximum_lag, M.maximum_endo_lag, M.lead_lag_incidence, nzij_pred, nzij_current, nzij_fwrd, M.has_external_function, options.use_dll, options.threads.perfect_foresight_problem);
+    [y, check] = dynare_solve(@perfect_foresight_problem,z(:), options, y0, yT, exogenousvariables, M.params, steadystate, options.periods, M, options);
 end
 
 if all(imag(y)<.1*options.dynatol.x)
