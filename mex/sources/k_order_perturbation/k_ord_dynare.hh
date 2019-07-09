@@ -86,8 +86,8 @@ public:
   const int nYss;     // = nboth + nforw
   const int nY;       // = nstat + npred + nboth + nforw
   const int nJcols;   // nb of jacobian columns = nExog+nY+nYs+nYss
-  const Vector &NNZD; /* the total number of non-zero derivative elements
-                         where hessian is 2nd : NNZD(order=2) */
+  const ConstVector &NNZD; /* the total number of non-zero derivative elements
+                              where hessian is 2nd : NNZD(order=2) */
   const int nSteps;
   const int nOrder;
 private:
@@ -99,7 +99,7 @@ private:
   TensorContainer<FSSparseTensor> md; // Model derivatives, in Dynare++ form
   DynareNameList dnl, denl;
   DynareStateNameList dsnl;
-  const TwoDMatrix &ll_Incidence;
+  const ConstTwoDMatrix &ll_Incidence;
   std::vector<int> dynppToDyn; // Maps Dynare++ jacobian variable indices to Dynare ones
   std::vector<int> dynToDynpp; // Maps Dynare jacobian variable indices to Dynare++ ones
 
@@ -108,10 +108,10 @@ public:
   KordpDynare(const std::vector<std::string> &endo,
               const std::vector<std::string> &exo, int num_exo, int num_par,
               Vector &ySteady, TwoDMatrix &vCov, Vector &params, int nstat, int nPred,
-              int nforw, int nboth, const Vector &NNZD,
+              int nforw, int nboth, const ConstVector &NNZD,
               int nSteps, int ord,
               Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg,
-              const std::vector<int> &varOrder, const TwoDMatrix &ll_Incidence);
+              const std::vector<int> &varOrder, const ConstTwoDMatrix &ll_Incidence);
 
   int
   nstat() const override

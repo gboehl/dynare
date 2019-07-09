@@ -54,7 +54,12 @@ DynareMxArrayToString(const mxArray *mxFldp)
   assert(mxIsCell(mxFldp));
   std::vector<std::string> r;
   for (size_t i = 0; i < mxGetNumberOfElements(mxFldp); i++)
-    r.emplace_back(mxArrayToString(mxGetCell(mxFldp, i)));
+    {
+      const mxArray *cell_mx = mxGetCell(mxFldp, i);
+      if (!(cell_mx && mxIsChar(cell_mx)))
+        mexErrMsgTxt("Cell is not a character array");
+      r.emplace_back(mxArrayToString(cell_mx));
+    }
 
   return r;
 }
@@ -77,108 +82,120 @@ extern "C" {
   mexFunction(int nlhs, mxArray *plhs[],
               int nrhs, const mxArray *prhs[])
   {
-    if (nrhs < 3 || nlhs < 2)
-      DYN_MEX_FUNC_ERR_MSG_TXT("Must have at least 3 input parameters and takes at least 2 output parameters.");
+    if (nrhs < 3 || nlhs < 2 || nlhs > 3)
+      DYN_MEX_FUNC_ERR_MSG_TXT("Must have at least 3 input parameters and takes 2 or 3 output parameters.");
 
-    const mxArray *dr = prhs[0];
-    const mxArray *M_ = prhs[1];
-    const mxArray *options_ = prhs[2];
-    bool use_dll = mxGetScalar(mxGetField(options_, 0, "use_dll")) != 0;
+    // Give explicit names to input arguments
+    const mxArray *dr_mx = prhs[0];
+    const mxArray *M_mx = prhs[1];
+    const mxArray *options_mx = prhs[2];
 
-    mxArray *mFname = mxGetField(M_, 0, "fname");
-    if (!mxIsChar(mFname))
-      DYN_MEX_FUNC_ERR_MSG_TXT("Input must be of type char.");
+    auto get_int_field = [](const mxArray *struct_mx, const std::string &fieldname)
+                         {
+                           mxArray *field_mx = mxGetField(struct_mx, 0, fieldname.c_str());
+                           if (!(field_mx && mxIsScalar(field_mx) && mxIsNumeric(field_mx)))
+                             mexErrMsgTxt(("Field `" + fieldname + "' should be a numeric scalar").c_str());
+                           return static_cast<int>(mxGetScalar(field_mx));
+                         };
 
-    std::string fName = mxArrayToString(mFname);
-
-    int kOrder;
-    mxArray *mxFldp = mxGetField(options_, 0, "order");
-    if (!mxIsNumeric(mxFldp))
-      DYN_MEX_FUNC_ERR_MSG_TXT("options_.order must be a numeric value");
-    kOrder = static_cast<int>(mxGetScalar(mxFldp));
+    // Extract various fields from options_
+    const int kOrder = get_int_field(options_mx, "order");
     if (kOrder < 1)
       DYN_MEX_FUNC_ERR_MSG_TXT("options_.order must be at least 1");
 
+    const mxArray *use_dll_mx = mxGetField(options_mx, 0, "use_dll");
+    if (!(use_dll_mx && mxIsLogicalScalar(use_dll_mx)))
+      DYN_MEX_FUNC_ERR_MSG_TXT("options_.use_dll should be a logical scalar");
+    bool use_dll = static_cast<bool>(mxGetScalar(use_dll_mx));
+
     double qz_criterium = 1+1e-6;
-    mxFldp = mxGetField(options_, 0, "qz_criterium");
-    if (mxGetNumberOfElements(mxFldp) > 0 && mxIsNumeric(mxFldp))
-      qz_criterium = mxGetScalar(mxFldp);
+    const mxArray *qz_criterium_mx = mxGetField(options_mx, 0, "qz_criterium");
+    if (qz_criterium_mx && mxIsScalar(qz_criterium_mx) && mxIsNumeric(qz_criterium_mx))
+      qz_criterium = mxGetScalar(qz_criterium_mx);
 
-    mxFldp = mxGetField(M_, 0, "params");
-    Vector modParams{mxFldp};
+    // Extract various fields from M_
+    const mxArray *fname_mx = mxGetField(M_mx, 0, "fname");
+    if (!(fname_mx && mxIsChar(fname_mx) && mxGetM(fname_mx) == 1))
+      DYN_MEX_FUNC_ERR_MSG_TXT("M_.fname should be a character string");
+    std::string fname{mxArrayToString(fname_mx)};
+
+    const mxArray *params_mx = mxGetField(M_mx, 0, "params");
+    if (!(params_mx && mxIsDouble(params_mx)))
+      DYN_MEX_FUNC_ERR_MSG_TXT("M_.params should be a double precision array");
+    Vector modParams{ConstVector{params_mx}};
     if (!modParams.isFinite())
-      DYN_MEX_FUNC_ERR_MSG_TXT("The parameters vector contains NaN or Inf");
+      DYN_MEX_FUNC_ERR_MSG_TXT("M_.params contains NaN or Inf");
 
-    mxFldp = mxGetField(M_, 0, "Sigma_e");
-    int dim = static_cast<int>(mxGetN(mxFldp));
-    TwoDMatrix vCov(dim, dim, Vector{mxFldp});
+    const mxArray *sigma_e_mx = mxGetField(M_mx, 0, "Sigma_e");
+    if (!(sigma_e_mx && mxIsDouble(sigma_e_mx) && mxGetM(sigma_e_mx) == mxGetN(sigma_e_mx)))
+      DYN_MEX_FUNC_ERR_MSG_TXT("M_.Sigma_e should be a double precision square matrix");
+    TwoDMatrix vCov{ConstTwoDMatrix{sigma_e_mx}};
     if (!vCov.isFinite())
-      DYN_MEX_FUNC_ERR_MSG_TXT("The covariance matrix of shocks contains NaN or Inf");
+      DYN_MEX_FUNC_ERR_MSG_TXT("M_.Sigma_e contains NaN or Inf");
 
-    mxFldp = mxGetField(dr, 0, "ys");  // and not in order of dr.order_var
-    Vector ySteady{mxFldp};
-    if (!ySteady.isFinite())
-      DYN_MEX_FUNC_ERR_MSG_TXT("The steady state vector contains NaN or Inf");
+    const int nStat = get_int_field(M_mx, "nstatic");
+    const int nPred = get_int_field(M_mx, "npred");
+    const int nBoth = get_int_field(M_mx, "nboth");
+    const int nForw = get_int_field(M_mx, "nfwrd");
 
-    mxFldp = mxGetField(M_, 0, "nstatic");
-    const int nStat = static_cast<int>(mxGetScalar(mxFldp));
-    mxFldp = mxGetField(M_, 0, "npred");
-    const int nPred = static_cast<int>(mxGetScalar(mxFldp));
-    mxFldp = mxGetField(M_, 0, "nboth");
-    const int nBoth = static_cast<int>(mxGetScalar(mxFldp));
-    mxFldp = mxGetField(M_, 0, "nfwrd");
-    const int nForw = static_cast<int>(mxGetScalar(mxFldp));
+    const int nExog = get_int_field(M_mx, "exo_nbr");
+    const int nEndo = get_int_field(M_mx, "endo_nbr");
+    const int nPar = get_int_field(M_mx, "param_nbr");
 
-    mxFldp = mxGetField(M_, 0, "exo_nbr");
-    const int nExog = static_cast<int>(mxGetScalar(mxFldp));
-    mxFldp = mxGetField(M_, 0, "endo_nbr");
-    const int nEndo = static_cast<int>(mxGetScalar(mxFldp));
-    mxFldp = mxGetField(M_, 0, "param_nbr");
-    const int nPar = static_cast<int>(mxGetScalar(mxFldp));
+    const mxArray *lead_lag_incidence_mx = mxGetField(M_mx, 0, "lead_lag_incidence");
+    if (!(lead_lag_incidence_mx && mxIsDouble(lead_lag_incidence_mx) && mxGetM(lead_lag_incidence_mx) == 3
+          && mxGetN(lead_lag_incidence_mx) == static_cast<size_t>(nEndo)))
+      DYN_MEX_FUNC_ERR_MSG_TXT("M_.lead_lag_incidence should be a double precision matrix with 3 rows and M_.endo_nbr columns");
+    ConstTwoDMatrix llincidence{lead_lag_incidence_mx};
 
-    mxFldp = mxGetField(dr, 0, "order_var");
-    dim = static_cast<int>(mxGetM(mxFldp));
-    if (dim != nEndo)
-      DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect size of dr.order_var");
-    std::vector<int> dr_order(nEndo);
-    std::transform(mxGetPr(mxFldp), mxGetPr(mxFldp)+dim, dr_order.begin(),
-                   [](double x) { return static_cast<int>(x)-1; });
-
-    // the lag, current and lead blocks of the jacobian respectively
-    TwoDMatrix llincidence(mxGetField(M_, 0, "lead_lag_incidence"));
-    if (llincidence.nrows() != 3 || llincidence.ncols() != nEndo)
-      DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect size of M_.lead_lag_incidence");
-
-    mxFldp = mxGetField(M_, 0, "NNZDerivatives");
-    Vector NNZD{mxFldp};
-    if (NNZD[kOrder-1] == -1)
+    const mxArray *nnzderivatives_mx = mxGetField(M_mx, 0, "NNZDerivatives");
+    if (!(nnzderivatives_mx && mxIsDouble(nnzderivatives_mx)))
+      DYN_MEX_FUNC_ERR_MSG_TXT("M_.NNZDerivatives should be a double precision array");
+    ConstVector NNZD{nnzderivatives_mx};
+    if (NNZD.length() < kOrder || NNZD[kOrder-1] == -1)
       DYN_MEX_FUNC_ERR_MSG_TXT("The derivatives were not computed for the required order. Make sure that you used the right order option inside the `stoch_simul' command");
 
-    mxFldp = mxGetField(M_, 0, "endo_names");
-    std::vector<std::string> endoNames = DynareMxArrayToString(mxFldp);
+    const mxArray *endo_names_mx = mxGetField(M_mx, 0, "endo_names");
+    if (!(endo_names_mx && mxIsCell(endo_names_mx) && mxGetNumberOfElements(endo_names_mx) == static_cast<size_t>(nEndo)))
+      DYN_MEX_FUNC_ERR_MSG_TXT("M_.endo_names should be a cell array of M_.endo_nbr elements");
+    std::vector<std::string> endoNames = DynareMxArrayToString(endo_names_mx);
 
-    mxFldp = mxGetField(M_, 0, "exo_names");
-    std::vector<std::string> exoNames = DynareMxArrayToString(mxFldp);
+    const mxArray *exo_names_mx = mxGetField(M_mx, 0, "exo_names");
+    if (!(exo_names_mx && mxIsCell(exo_names_mx) && mxGetNumberOfElements(exo_names_mx) == static_cast<size_t>(nExog)))
+      DYN_MEX_FUNC_ERR_MSG_TXT("M_.exo_names should be a cell array of M_.exo_nbr elements");
+    std::vector<std::string> exoNames = DynareMxArrayToString(exo_names_mx);
 
-    if (nEndo != static_cast<int>(endoNames.size()) || nExog != static_cast<int>(exoNames.size()))
-      DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect size of M_.endo_names or M_.exo_names");
+    const mxArray *dynamic_tmp_nbr_mx = mxGetField(M_mx, 0, "dynamic_tmp_nbr");
+    if (!(dynamic_tmp_nbr_mx && mxIsDouble(dynamic_tmp_nbr_mx) && mxGetNumberOfElements(dynamic_tmp_nbr_mx) >= static_cast<size_t>(kOrder+1)))
+      DYN_MEX_FUNC_ERR_MSG_TXT("M_.dynamic_tmp_nbr should be a double precision array with strictly more elements than the order of derivation");
+    int ntt = std::accumulate(mxGetPr(dynamic_tmp_nbr_mx), mxGetPr(dynamic_tmp_nbr_mx)+kOrder+1, 0);
 
-    mxFldp = mxGetField(M_, 0, "dynamic_tmp_nbr");
-    if (static_cast<int>(mxGetM(mxFldp)) < kOrder+1 || mxGetN(mxFldp) != 1)
-      DYN_MEX_FUNC_ERR_MSG_TXT("Incorrect size of M_.dynamic_tmp_nbr");
-    int ntt = std::accumulate(mxGetPr(mxFldp), mxGetPr(mxFldp)+kOrder+1, 0);
+    // Extract various fields from dr
+    const mxArray *ys_mx = mxGetField(dr_mx, 0, "ys");  // and not in order of dr.order_var
+    if (!(ys_mx && mxIsDouble(ys_mx)))
+      DYN_MEX_FUNC_ERR_MSG_TXT("dr.ys should be a double precision array");
+    Vector ySteady{ConstVector{ys_mx}};
+    if (!ySteady.isFinite())
+      DYN_MEX_FUNC_ERR_MSG_TXT("dr.ys contains NaN or Inf");
+
+    const mxArray *order_var_mx = mxGetField(dr_mx, 0, "order_var");
+    if (!(order_var_mx && mxIsDouble(order_var_mx) && mxGetNumberOfElements(order_var_mx) == static_cast<size_t>(nEndo)))
+      DYN_MEX_FUNC_ERR_MSG_TXT("dr.order_var should be a double precision array of M_.endo_nbr elements");
+    std::vector<int> dr_order(nEndo);
+    std::transform(mxGetPr(order_var_mx), mxGetPr(order_var_mx)+nEndo, dr_order.begin(),
+                   [](double x) { return static_cast<int>(x)-1; });
 
     const int nSteps = 0; // Dynare++ solving steps, for time being default to 0 = deterministic steady state
 
     try
       {
-        Journal journal(fName + ".jnl");
+        Journal journal(fname + ".jnl");
 
         std::unique_ptr<DynamicModelAC> dynamicModelFile;
         if (use_dll)
-          dynamicModelFile = std::make_unique<DynamicModelDLL>(fName, ntt, kOrder);
+          dynamicModelFile = std::make_unique<DynamicModelDLL>(fname, ntt, kOrder);
         else
-          dynamicModelFile = std::make_unique<DynamicModelMFile>(fName, ntt);
+          dynamicModelFile = std::make_unique<DynamicModelMFile>(fname, ntt);
 
         // intiate tensor library
         TLStatic::init(kOrder, nStat+2*nPred+3*nBoth+2*nForw+nExog);

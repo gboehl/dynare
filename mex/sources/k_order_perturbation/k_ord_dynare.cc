@@ -28,10 +28,10 @@
 KordpDynare::KordpDynare(const std::vector<std::string> &endo,
                          const std::vector<std::string> &exo, int nexog, int npar,
                          Vector &ysteady, TwoDMatrix &vcov, Vector &inParams, int nstat,
-                         int npred, int nforw, int nboth, const Vector &nnzd,
+                         int npred, int nforw, int nboth, const ConstVector &nnzd,
                          int nsteps, int norder,
                          Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg,
-                         const std::vector<int> &dr_order, const TwoDMatrix &llincidence) :
+                         const std::vector<int> &dr_order, const ConstTwoDMatrix &llincidence) :
   nStat{nstat}, nBoth{nboth}, nPred{npred}, nForw{nforw}, nExog{nexog}, nPar{npar},
   nYs{npred + nboth}, nYss{nboth + nforw}, nY{nstat + npred + nboth + nforw},
   nJcols{nExog+nY+nYs+nYss}, NNZD{nnzd}, nSteps{nsteps},
