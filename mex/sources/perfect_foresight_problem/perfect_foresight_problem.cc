@@ -112,17 +112,29 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (!(mxIsInt32(nzij_pred_mx) && mxGetN(nzij_pred_mx) == 2))
     mexErrMsgTxt("nzij_pred should be an int32 matrix with 2 columns");
   size_t nnz_pred = mxGetM(nzij_pred_mx);
+#if MX_HAS_INTERLEAVED_COMPLEX
+  const int32_T *nzij_pred = mxGetInt32s(nzij_pred_mx);
+#else
   const int32_T *nzij_pred = static_cast<const int32_T *>(mxGetData(nzij_pred_mx));
+#endif
 
   if (!(mxIsInt32(nzij_current_mx) && mxGetN(nzij_current_mx) == 2))
     mexErrMsgTxt("nzij_current should be an int32 matrix with 2 columns");
   size_t nnz_current = mxGetM(nzij_current_mx);
+#if MX_HAS_INTERLEAVED_COMPLEX
+  const int32_T *nzij_current = mxGetInt32s(nzij_current_mx);
+#else
   const int32_T *nzij_current = static_cast<const int32_T *>(mxGetData(nzij_current_mx));
+#endif
 
   if (!(mxIsInt32(nzij_fwrd_mx) && mxGetN(nzij_fwrd_mx) == 2))
     mexErrMsgTxt("nzij_fwrd should be an int32 matrix with 2 columns");
   size_t nnz_fwrd = mxGetM(nzij_fwrd_mx);
+#if MX_HAS_INTERLEAVED_COMPLEX
+  const int32_T *nzij_fwrd = mxGetInt32s(nzij_fwrd_mx);
+#else
   const int32_T *nzij_fwrd = static_cast<const int32_T *>(mxGetData(nzij_fwrd_mx));
+#endif
 
   if (!(mxIsLogicalScalar(has_external_function_mx)))
     mexErrMsgTxt("has_external_function should be a logical scalar");

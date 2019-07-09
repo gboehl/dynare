@@ -64,7 +64,7 @@ mexFunction(int nlhs, mxArray *plhs[],
   double *t = mxGetPr(plhs[2]);
   double *z = mxGetPr(plhs[3]);
   double *sdim = mxGetPr(plhs[4]);
-#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0904
+#if MX_HAS_INTERLEAVED_COMPLEX
   mxComplexDouble *gev = mxGetComplexDoubles(plhs[5]);
 #else
   double *gev_r = mxGetPr(plhs[5]);
@@ -127,7 +127,7 @@ mexFunction(int nlhs, mxArray *plhs[],
   for (size_t i = 0; i < n1; i++)
     {
       if (std::abs(alpha_r[i]) > zhreshold || std::abs(beta[i]) > zhreshold)
-#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0904
+#if MX_HAS_INTERLEAVED_COMPLEX
         gev[i].real = alpha_r[i] / beta[i];
 #else
         gev_r[i] = alpha_r[i] / beta[i];
@@ -140,13 +140,13 @@ mexFunction(int nlhs, mxArray *plhs[],
             *info = -30;
         }
       if (alpha_i[i] == 0.0 && beta[i] == 0.0)
-#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0904
+#if MX_HAS_INTERLEAVED_COMPLEX
         gev[i].imag = 0.0;
 #else
         gev_i[i] = 0.0;
 #endif
       else
-#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0904
+#if MX_HAS_INTERLEAVED_COMPLEX
         gev[i].imag = alpha_i[i] / beta[i];
 #else
         gev_i[i] = alpha_i[i] / beta[i];

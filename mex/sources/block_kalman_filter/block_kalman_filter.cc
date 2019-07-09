@@ -169,10 +169,10 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
       pP = mxDuplicateArray(prhs[7]);
       pY = mxDuplicateArray(prhs[8]);
       start = mxGetScalar(prhs[9]);
-      mfd = static_cast<double *>(mxGetData(prhs[10]));
+      mfd = mxGetPr(prhs[10]);
       kalman_tol = mxGetScalar(prhs[11]);
       riccati_tol = mxGetScalar(prhs[12]);
-      nz_state_var = static_cast<double *>(mxGetData(prhs[13]));
+      nz_state_var = mxGetPr(prhs[13]);
       n_diag = mxGetScalar(prhs[14]);
       pure_obs = mxGetScalar(prhs[15]);
     }
@@ -190,10 +190,10 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
       n   = mxGetN(pT);           // Number of state variables.
       pp   = mxGetM(pY);          // Maximum number of observed variables.
       smpl = mxGetN(pY);          // Sample size.          ;
-      mfd = static_cast<double *>(mxGetData(prhs[7]));
+      mfd = mxGetPr(prhs[7]);
       kalman_tol = mxGetScalar(prhs[8]);
       riccati_tol = mxGetScalar(prhs[9]);
-      nz_state_var = static_cast<double *>(mxGetData(prhs[10]));
+      nz_state_var = mxGetPr(prhs[10]);
       n_diag = mxGetScalar(prhs[11]);
       pure_obs = mxGetScalar(prhs[12]);
     }
@@ -363,7 +363,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
         {
           // retrieve the d_index
           pd_index = mxGetCell(pdata_index, t);
-          dd_index = static_cast<double *>(mxGetData(pd_index));
+          dd_index = mxGetPr(pd_index);
           size_d_index = mxGetM(pd_index);
           d_index.resize(size_d_index);
           for (int i = 0; i < size_d_index; i++)

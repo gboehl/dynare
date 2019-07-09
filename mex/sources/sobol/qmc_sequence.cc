@@ -179,7 +179,11 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (nlhs >= 2)
     {
       plhs[1] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
+#if MX_HAS_INTERLEAVED_COMPLEX
+      *mxGetInt64s(plhs[1]) = seed_out;
+#else
       *(static_cast<int64_T *>(mxGetData(plhs[1]))) = seed_out;
+#endif
     }
   if (nlhs >= 3)
     plhs[2] = mxCreateDoubleScalar(0);
