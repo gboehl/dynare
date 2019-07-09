@@ -113,6 +113,14 @@ extern "C" {
     if (qz_criterium_mx && mxIsScalar(qz_criterium_mx) && mxIsNumeric(qz_criterium_mx))
       qz_criterium = mxGetScalar(qz_criterium_mx);
 
+    const mxArray *threads_mx = mxGetField(options_mx, 0, "threads");
+    if (!threads_mx)
+      DYN_MEX_FUNC_ERR_MSG_TXT("Can't find field options_.threads");
+    const mxArray *num_threads_mx = mxGetField(threads_mx, 0, "k_order_perturbation");
+    if (!(num_threads_mx && mxIsScalar(num_threads_mx) && mxIsNumeric(num_threads_mx)))
+      DYN_MEX_FUNC_ERR_MSG_TXT("options_.threads.k_order_perturbation be a numeric scalar");
+    int num_threads = static_cast<int>(mxGetScalar(num_threads_mx));
+
     // Extract various fields from M_
     const mxArray *fname_mx = mxGetField(M_mx, 0, "fname");
     if (!(fname_mx && mxIsChar(fname_mx) && mxGetM(fname_mx) == 1))
@@ -199,6 +207,9 @@ extern "C" {
 
         // intiate tensor library
         TLStatic::init(kOrder, nStat+2*nPred+3*nBoth+2*nForw+nExog);
+
+        // Set number of parallel threads
+        sthread::detach_thread_group::max_parallel_threads = num_threads;
 
         // make KordpDynare object
         KordpDynare dynare(endoNames, exoNames, nExog, nPar,

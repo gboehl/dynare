@@ -42,6 +42,8 @@ switch mexname
     options_.threads.local_state_space_iteration_2 = n;
   case 'perfect_foresight_problem'
     options_.threads.perfect_foresight_problem = n;
+  case 'k_order_perturbation'
+    options_.threads.k_order_perturbation = n;
   otherwise
     message = [ mexname ' is not a known parallel mex file.' ];
     message_id  = 'Dynare:Threads:UnknownParallelMex';
