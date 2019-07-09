@@ -35,12 +35,12 @@
 
 class KordpDynare;
 
-// instantiations of pure abstract class NameList in dynamic_model.h
+// Trivial implementation of pure abstract class NameList in dynamic_model.h
 class DynareNameList : public NameList
 {
   std::vector<std::string> names;
 public:
-  DynareNameList(const KordpDynare &dynare, std::vector<std::string> names_arg);
+  DynareNameList(std::vector<std::string> names_arg);
   int
   getNum() const override
   {

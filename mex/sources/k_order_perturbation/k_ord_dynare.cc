@@ -36,7 +36,7 @@ KordpDynare::KordpDynare(const std::vector<std::string> &endo,
   nYs{npred + nboth}, nYss{nboth + nforw}, nY{nstat + npred + nboth + nforw},
   nJcols{nExog+nY+nYs+nYss}, NNZD{nnzd}, nSteps{nsteps},
   nOrder{norder}, journal{jr}, ySteady{ysteady}, params{inParams}, vCov{vcov},
-  md{1}, dnl{*this, endo}, denl{*this, exo}, dsnl{*this, dnl, denl},
+  md{1}, dnl{endo}, denl{exo}, dsnl{*this, dnl, denl},
   ll_Incidence{llincidence},
   dynamicModelFile{std::move(dynamicModelFile_arg)}
 {
@@ -223,7 +223,7 @@ KordpDynare::push_back_md(const mxArray *m)
   dyn_md.emplace_back(ConstTwoDMatrix{m});
 }
 
-DynareNameList::DynareNameList(const KordpDynare &dynare, std::vector<std::string> names_arg)
+DynareNameList::DynareNameList(std::vector<std::string> names_arg)
   : names(std::move(names_arg))
 {
 }
