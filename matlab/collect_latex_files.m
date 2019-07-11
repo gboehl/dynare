@@ -8,7 +8,7 @@ function collect_latex_files
 %   - The packages loaded enable pdflatex to run
 %   - The _dynamic and _static TeX-model files are not included as they are standalone TeX-files
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,17 +40,24 @@ fprintf(fid,'%s \n','\usepackage{breqn}');
 fprintf(fid,'%s \n','\usepackage{float,morefloats,caption}');
 fprintf(fid,'%s \n','\begin{document}');
 
-%% Root directory
+%% Include LaTeX files from root directory
 TeX_Files=dir([M_.fname,'*.tex']);
 for ii=1:length(TeX_Files)
     [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
-    if ~strcmp(TeX_Files(ii).name,f_name_binder) && ...
-            ~strcmp(TeX_Files(ii).name,[M_.fname,'_dynamic.tex']) && ...
-            ~strcmp(TeX_Files(ii).name,[M_.fname,'_static.tex']) && ...
-            ~strcmp(TeX_Files(ii).name,[M_.fname,'_original.tex']) && ...
-            ~strcmp(TeX_Files(ii).name,[M_.fname,'_steady_state.tex']) && ...
-            ~strcmp(TeX_Files(ii).name,[M_.fname,'_TeX_binder.tex'])
+    if ~strcmp(TeX_Files(ii).name,f_name_binder)
         fprintf(fid,'%s \n',['\include{',f_name,'}']);
+    end
+end
+
+%% Include LaTeX files from <fname>/latex/ directory, except the standalone ones
+TeX_Files=dir([M_.dname filesep 'latex' filesep '*.tex']);
+for ii=1:length(TeX_Files)
+    [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
+    if ~strcmp(f_name, 'dynamic') && ...
+            ~strcmp(f_name, 'static') && ...
+            ~strcmp(f_name, 'original') && ...
+            ~strcmp(f_name, 'steady_state')
+        fprintf(fid,'%s \n',['\include{' M_.dname '/latex/' f_name '}']);
     end
 end
 
