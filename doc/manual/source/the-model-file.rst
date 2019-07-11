@@ -1046,8 +1046,8 @@ equations using the ``write_latex_static_model`` command.
     containing the LaTeX document header information.
 
     If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create
-    a file called ``FILENAME_original.tex``, which includes a file
-    called ``FILENAME_original_content.tex`` (also created by Dynare)
+    a file called ``FILENAME/latex/original.tex``, which includes a file
+    called ``FILENAME/latex/original_content.tex`` (also created by Dynare)
     containing the list of all the original model equations.
 
     If LaTeX names were given for variables and parameters
@@ -1075,8 +1075,8 @@ equations using the ``write_latex_static_model`` command.
     header information.
 
     If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create
-    a file called ``FILENAME_dynamic.tex``, which includes a file
-    called ``FILENAME_dynamic_content.tex`` (also created by Dynare)
+    a file called ``FILENAME/latex/dynamic.tex``, which includes a file
+    called ``FILENAME/latex/dynamic_content.tex`` (also created by Dynare)
     containing the list of all the dynamic model equations.
 
     If LaTeX names were given for variables and parameters
@@ -1122,8 +1122,8 @@ equations using the ``write_latex_static_model`` command.
     document header information.
 
     If your ``.mod`` file is ``FILENAME.mod``, then Dynare will create
-    a file called ``FILENAME_static.tex``, which includes a file
-    called ``FILENAME_static_content.tex`` (also created by Dynare)
+    a file called ``FILENAME/latex/static.tex``, which includes a file
+    called ``FILENAME/latex/static_content.tex`` (also created by Dynare)
     containing the list of all the steady state model equations.
 
     If LaTeX names were given for variables and parameters
@@ -1157,9 +1157,9 @@ equations using the ``write_latex_static_model`` command.
     information.
 
     If your ``.mod`` file is ``FILENAME.mod``, then Dynare
-    will create a file called ``FILENAME_steady_state.tex``,
+    will create a file called ``FILENAME/latex/steady_state.tex``,
     which includes a file called
-    ``FILENAME_steady_state_content.tex`` (also created by
+    ``FILENAME/latex/steady_state_content.tex`` (also created by
     Dynare) containing the list of all the steady state model
     equations.
 
