@@ -1,10 +1,16 @@
-function dr = dyn_second_order_solver(jacobia,hessian_mat,dr,M_,threads_BC)
+function dr = dyn_second_order_solver(jacobia,hessian_mat,dr,M,threads_BC)
 
 %@info:
 %! @deftypefn {Function File} {@var{dr} =} dyn_second_order_solver (@var{jacobia},@var{hessian_mat},@var{dr},@var{M_},@var{threads_BC})
 %! @anchor{dyn_second_order_solver}
 %! @sp 1
-%! Computes the second order reduced form of the DSGE model
+%! Computes the second order reduced form of the DSGE model, for details please refer to
+%! * Juillard and Kamenik (2004): Solving Stochastic Dynamic Equilibrium Models: A k-Order Perturbation Approach
+%! * Kamenik (2005) - Solving SDGE Models: A New Algorithm for the Sylvester Equation
+%! Note that this function makes use of the fact that Dynare internally transforms the model
+%! so that there is only one lead and one lag on endogenous variables and, in the case of a stochastic model, 
+%! no leads/lags on exogenous variables. See the manual for more details.
+%  Auxiliary variables
 %! @sp 2
 %! @strong{Inputs}
 %! @sp 1
@@ -30,7 +36,7 @@ function dr = dyn_second_order_solver(jacobia,hessian_mat,dr,M_,threads_BC)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,130 +57,75 @@ dr.ghxx = [];
 dr.ghuu = [];
 dr.ghxu = [];
 dr.ghs2 = [];
-Gy = dr.Gy;
 
-kstate = dr.kstate;
-nstatic = M_.nstatic;
-nfwrd = M_.nfwrd;
-nspred = M_.nspred;
-nboth = M_.nboth;
-nsfwrd = M_.nsfwrd;
-order_var = dr.order_var;
-nd = size(kstate,1);
-lead_lag_incidence = M_.lead_lag_incidence;
+k1 = nonzeros(M.lead_lag_incidence(:,dr.order_var)');
+kk1 = [k1; length(k1)+(1:M.exo_nbr+M.exo_det_nbr)'];
+nk = size(kk1,1);
+kk2 = reshape(1:nk^2,nk,nk);
+ic = [ M.nstatic+(1:M.nspred) M.endo_nbr+(1:size(dr.ghx,2)-M.nspred) ]';
 
-np = nd - nsfwrd;
+klag  = M.lead_lag_incidence(1,dr.order_var); %columns are in DR order
+kcurr = M.lead_lag_incidence(2,dr.order_var); %columns are in DR order
+klead = M.lead_lag_incidence(3,dr.order_var); %columns are in DR order
 
-k1 = nonzeros(lead_lag_incidence(:,order_var)');
-kk = [k1; length(k1)+(1:M_.exo_nbr+M_.exo_det_nbr)'];
-nk = size(kk,1);
-kk1 = reshape([1:nk^2],nk,nk);
-kk1 = kk1(kk,kk);
-% reordering second order derivatives
-hessian_mat = hessian_mat(:,kk1(:));
-
-zx = zeros(np,np);
-zu=zeros(np,M_.exo_nbr);
-zx(1:np,:)=eye(np);
-k0 = [1:M_.endo_nbr];
-gx1 = dr.ghx;
-hu = dr.ghu(nstatic+[1:nspred],:);
-k0 = find(lead_lag_incidence(M_.maximum_endo_lag+1,order_var)');
-zx = [zx; gx1(k0,:)];
-zu = [zu; dr.ghu(k0,:)];
-k1 = find(lead_lag_incidence(M_.maximum_endo_lag+2,order_var)');
-zu = [zu; gx1(k1,:)*hu];
-zx = [zx; gx1(k1,:)*Gy];
-zx=[zx; zeros(M_.exo_nbr,np);zeros(M_.exo_det_nbr,np)];
-zu=[zu; eye(M_.exo_nbr);zeros(M_.exo_det_nbr,M_.exo_nbr)];
-[nrzx,nczx] = size(zx);
-
-[rhs, err] = sparse_hessian_times_B_kronecker_C(hessian_mat,zx,threads_BC);
+%% ghxx
+A = zeros(M.endo_nbr,M.endo_nbr);
+A(:,kcurr~=0) = jacobia(:,nonzeros(kcurr));
+A(:,ic) = A(:,ic) + jacobia(:,nonzeros(klead))*dr.ghx(klead~=0,:);
+B = zeros(M.endo_nbr,M.endo_nbr);
+B(:,M.nstatic+M.npred+1:end) = jacobia(:,nonzeros(klead));
+C = dr.ghx(ic,:);
+zx = [eye(length(ic));
+      dr.ghx(kcurr~=0,:);
+      dr.ghx(klead~=0,:)*dr.ghx(ic,:);
+      zeros(M.exo_nbr,length(ic));
+      zeros(M.exo_det_nbr,length(ic))];
+zu = [zeros(length(ic),M.exo_nbr);
+      dr.ghu(kcurr~=0,:);
+      dr.ghx(klead~=0,:)*dr.ghu(ic,:);
+      eye(M.exo_nbr);
+      zeros(M.exo_det_nbr,M.exo_nbr)];
+[rhs, err] = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(kk1,kk1)),zx,threads_BC); %hessian_mat: reordering to DR order
 mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
 rhs = -rhs;
-
-%lhs
-n = M_.endo_nbr+sum(kstate(:,2) > M_.maximum_endo_lag+1 & kstate(:,2) < M_.maximum_endo_lag+M_.maximum_endo_lead+1);
-A = zeros(M_.endo_nbr,M_.endo_nbr);
-B = zeros(M_.endo_nbr,M_.endo_nbr);
-A(:,k0) = jacobia(:,nonzeros(lead_lag_incidence(M_.maximum_endo_lag+1,order_var)));
-% variables with the highest lead
-k1 = find(kstate(:,2) == M_.maximum_endo_lag+2);
-% Jacobian with respect to the variables with the highest lead
-fyp = jacobia(:,kstate(k1,3)+nnz(M_.lead_lag_incidence(M_.maximum_endo_lag+1,:)));
-B(:,nstatic+M_.npred+1:end) = fyp;
-[~,k1,k2] = find(M_.lead_lag_incidence(M_.maximum_endo_lag+M_.maximum_endo_lead+1,order_var));
-A(1:M_.endo_nbr,nstatic+1:nstatic+nspred)=...
-    A(1:M_.endo_nbr,nstatic+[1:nspred])+fyp*gx1(k1,1:nspred);
-C = Gy;
-D = [rhs; zeros(n-M_.endo_nbr,size(rhs,2))];
-
-
-[err, dr.ghxx] = gensylv(2,A,B,C,D);
+[err, dr.ghxx] = gensylv(2,A,B,C,rhs);
 mexErrCheck('gensylv', err);
 
-%ghxu
+
+%% ghxu
 %rhs
-hu = dr.ghu(nstatic+1:nstatic+nspred,:);
-[rhs, err] = sparse_hessian_times_B_kronecker_C(hessian_mat,zx,zu,threads_BC);
+[rhs, err] = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(kk1,kk1)),zx,zu,threads_BC); %hessian_mat: reordering to DR order
 mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-
-hu1 = [hu;zeros(np-nspred,M_.exo_nbr)];
-[nrhx,nchx] = size(Gy);
-[nrhu1,nchu1] = size(hu1);
-
-[abcOut,err] = A_times_B_kronecker_C(dr.ghxx,Gy,hu1);
+[abcOut,err] = A_times_B_kronecker_C(dr.ghxx, dr.ghx(ic,:), dr.ghu(ic,:));
 mexErrCheck('A_times_B_kronecker_C', err);
-B1 = B*abcOut;
-rhs = -[rhs; zeros(n-M_.endo_nbr,size(rhs,2))]-B1;
-
-
+rhs = -rhs-B*abcOut;
 %lhs
 dr.ghxu = A\rhs;
 
-%ghuu
+%% ghuu
 %rhs
-[rhs, err] = sparse_hessian_times_B_kronecker_C(hessian_mat,zu,threads_BC);
+[rhs, err] = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(kk1,kk1)),zu,threads_BC); %hessian_mat: reordering to DR order
 mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-
-[B1, err] = A_times_B_kronecker_C(B*dr.ghxx,hu1);
+[B1, err] = A_times_B_kronecker_C(B*dr.ghxx,dr.ghu(ic,:));
 mexErrCheck('A_times_B_kronecker_C', err);
-rhs = -[rhs; zeros(n-M_.endo_nbr,size(rhs,2))]-B1;
-
+rhs = -rhs-B1;
 %lhs
 dr.ghuu = A\rhs;
 
-% dr.ghs2
+%% ghs2
 % derivatives of F with respect to forward variables
-% reordering predetermined variables in diminishing lag order
-O1 = zeros(M_.endo_nbr,nstatic);
-O2 = zeros(M_.endo_nbr,M_.endo_nbr-nstatic-nspred);
-LHS = zeros(M_.endo_nbr,M_.endo_nbr);
-LHS(:,k0) = jacobia(:,nonzeros(lead_lag_incidence(M_.maximum_endo_lag+1,order_var)));
-RHS = zeros(M_.endo_nbr,M_.exo_nbr^2);
-gu = dr.ghu;
-guu = dr.ghuu;
-E = eye(M_.endo_nbr);
-kh = reshape([1:nk^2],nk,nk);
-kp = sum(kstate(:,2) <= M_.maximum_endo_lag+1);
-E1 = [eye(nspred); zeros(kp-nspred,nspred)];
-H = E1;
-hxx = dr.ghxx(nstatic+[1:nspred],:);
-[~,k2a,k2] = find(M_.lead_lag_incidence(M_.maximum_endo_lag+2,order_var));
-k3 = nnz(M_.lead_lag_incidence(1:M_.maximum_endo_lag+1,:))+(1:M_.nsfwrd)';
-[B1, err] = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kh(k3,k3)),gu(k2a,:),threads_BC);
+O1 = zeros(M.endo_nbr,M.nstatic);
+O2 = zeros(M.endo_nbr,M.nfwrd);
+LHS = zeros(M.endo_nbr,M.endo_nbr);
+LHS(:,kcurr~=0) = jacobia(:,nonzeros(kcurr));
+RHS = zeros(M.endo_nbr,M.exo_nbr^2);
+E = eye(M.endo_nbr);
+[B1, err] = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(nonzeros(klead),nonzeros(klead))), dr.ghu(klead~=0,:),threads_BC); %hessian_mat:focus only on forward variables and reorder to DR order
 mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-RHS = RHS + jacobia(:,k2)*guu(k2a,:)+B1;
-
+RHS = RHS + jacobia(:,nonzeros(klead))*dr.ghuu(klead~=0,:)+B1;
 % LHS
-LHS = LHS + jacobia(:,k2)*(E(k2a,:)+[O1(k2a,:) dr.ghx(k2a,:)*H O2(k2a,:)]);
-
-RHS = RHS*M_.Sigma_e(:);
+LHS = LHS + jacobia(:,nonzeros(klead))*(E(klead~=0,:)+[O1(klead~=0,:) dr.ghx(klead~=0,:) O2(klead~=0,:)]);
+RHS = RHS*M.Sigma_e(:);
 dr.fuu = RHS;
-%RHS = -RHS-dr.fbias;
 RHS = -RHS;
 dr.ghs2 = LHS\RHS;
-
-% deterministic exogenous variables
-if M_.exo_det_nbr > 0
-end
