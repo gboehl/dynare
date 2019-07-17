@@ -146,6 +146,9 @@ xlist = [xlist; elist(i2,:)];
 xlist=[xlist(idx,1) xlist(idx,2)];   % We do not test that the tags are the same.
 elist = elist(i1,:);
 
+% Remove endogenous variables from list of exogenous variables (if any).
+xlist = setdiff(xlist, elist);
+
 % Print all cherry-picked models in one mod-file.
 [filepath, filename, fileext] = fileparts(ofile);
 if ~isempty(filepath) && ~exist(filepath, 'dir')
