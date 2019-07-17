@@ -46,9 +46,9 @@ for i=1:length(eqtags)
     [pnames, enames, xnames] = get_variables_and_parameters_in_equation(LHS, RHS, M_);
     % Load parameter values.
     if ~isempty(pnames)
-        commands = sprintf('%s = %s;', pnames{1}, num2str(M_.params(strcmp(pnames{1},M_.param_names)), 16));
+        commands = sprintf('%s = %s;', pnames{1}, num2str(M_.params(strcmp(pnames{1}, M_.param_names)), 16));
         for j=2:length(pnames)
-            commands = sprintf('%s %s = %s;', commands, pnames{i}, num2str(M_.params(strcmp(pnames{i},M_.param_names)), 16));
+            commands = sprintf('%s %s = %s;', commands, pnames{j}, num2str(M_.params(strcmp(pnames{j}, M_.param_names)), 16));
         end
         eval(commands)
     end
