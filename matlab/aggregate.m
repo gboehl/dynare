@@ -161,7 +161,7 @@ else
 end
 fprintf(fid, 'var\n');
 for i=1:rows(elist)
-    if isempty(elist{i,2})
+    if size(elist,2)==1 || isempty(elist{i,2})
         fprintf(fid, '\t%s\n', elist{i,1});
     else
         fprintf(fid, '\t%s %s\n', elist{i,1}, elist{i,2});
@@ -180,7 +180,7 @@ if ~isempty(xlist)
     fprintf(fid, '\n\n');
     fprintf(fid, 'varexo\n');
     for i=1:rows(xlist)
-        if isempty(xlist{i,2})
+        if size(xlist,2)==1 || isempty(xlist{i,2})
             fprintf(fid, '\t%s\n', xlist{i,1});
         else
             fprintf(fid, '\t%s %s\n', xlist{i,1}, xlist{i,2});
