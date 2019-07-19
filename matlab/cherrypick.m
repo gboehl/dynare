@@ -143,7 +143,7 @@ for i=1:length(eqtags)
         pnames = union(pnames, expectation_pnames);
         enames = union(enames, expectation_enames);
         enames = union(enames, lhs);
-        fprintf(fid, '[name=''eq:%s'']\n', lhs);
+        fprintf(fid, '[name=''%s'']\n', lhs);
         fprintf(fid, '%s = %s;\n\n', lhs, rhs);
     end
     % Update pnames, enames and xnames if PAC with growth neutrality correction.
