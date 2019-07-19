@@ -200,7 +200,7 @@ end
 fprintf(fid, 'end;');
 fclose(fid);
 
-warning off MATLAB:subscripting:noSubscriptsSpecified
+warning on MATLAB:subscripting:noSubscriptsSpecified
 
 
 function b = isequationtag(str)
