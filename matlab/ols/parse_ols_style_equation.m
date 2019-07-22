@@ -91,7 +91,7 @@ for i = 1:length(terms)
                 || (strcmp(node_to_parse.type, 'exogenous') && any(strcmp(ds.name, node_to_parse.name)))
             % Subtract VariableNode from LHS
             % NB: treat exogenous that exist in ds as endogenous
-            lhssub = lhssub + evalNode(ds, node_to_parse, line, dseries());
+            lhssub = lhssub + evalNode(ds, node_to_parse, line, dseries())*node_sign;
         else
             parsing_error('unexpected variable type found', line, node_to_parse);
         end
