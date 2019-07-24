@@ -107,6 +107,18 @@ if nargin>8 && initialize==1
     return
 end
 
+% Determine the total number of available CPUs, and the number of threads
+% to run on each CPU.
+
+[nCPU, totCPU, nBlockPerCPU, totSlaves] = distributeJobs(Parallel, fBlock, nBlock);
+
+parallel_recover = 0;
+
+if isfield(Parallel_info,'parallel_recover') && Parallel_info.parallel_recover
+    parallel_recover = 1;
+end
+
+if parallel_recover ==0
 if isfield(Parallel_info,'local_files')
     if isempty(NamFileInput)
         NamFileInput=Parallel_info.local_files;
@@ -147,9 +159,9 @@ if isHybridMatlabOctave || isoctave
     end
 end
 
-if Strategy==1
-    totCPU=0;
-end
+% if Strategy==1
+%     totCPU=0;
+% end
 
 
 % Determine my hostname and my working directory.
@@ -179,11 +191,6 @@ switch Strategy
     closeSlave(Parallel,PRCDir,-1);
 end
 
-
-% Determine the total number of available CPUs, and the number of threads
-% to run on each CPU.
-
-[nCPU, totCPU, nBlockPerCPU, totSlaves] = distributeJobs(Parallel, fBlock, nBlock);
 for j=1:totSlaves
     PRCDirSnapshot{j}={};
 end
@@ -768,8 +775,13 @@ while (ForEver)
     end
 
 end
-
-
+else
+    
+    for j=1:totSlaves
+        PRCDirSnapshot{j}={};
+    end
+    flag_CloseAllSlaves = 0;   
+end
 % Load and format remote output.
 iscrash = 0;
 PRCDirSnapshot=dynareParallelGetNewFiles(PRCDir,Parallel(1:totSlaves),PRCDirSnapshot);
