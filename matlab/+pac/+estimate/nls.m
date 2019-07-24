@@ -190,7 +190,8 @@ else
         % Nothing to do here.
       case 'lsqnonlin'
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = .0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = 0.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),2)  = 1.0;
       case 'fmincon'
         if isoctave
             error('Optimization algorithm ''fmincon'' is not available under Octave')
@@ -199,7 +200,8 @@ else
         end
         minalgo = 1;
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = .0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = 0.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),2)  = 1.0;
       case 'fminunc'
         if isoctave && ~user_has_octave_forge_package('optim')
             error('Optimization algorithm ''fminunc'' requires the optim package')
@@ -221,7 +223,8 @@ else
       case 'annealing'
         minalgo = 2;
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = .0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = 0.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),2)  = 1.0;
         parameter_names = fieldnames(params);
       case 'particleswarm'
         if isoctave
@@ -231,7 +234,8 @@ else
         end
         minalgo = 12;
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = .0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = 0.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = 1.0;
         parameter_names = fieldnames(params);
       otherwise
         msg = sprintf('%s is not an implemented optimization routine.\n', optimizer);
