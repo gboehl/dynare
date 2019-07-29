@@ -1,6 +1,19 @@
 function histvalf(fname)
+%function histvalf(fname)
+% Sets initial values for simulation using values contained in `fname`, a
+% file possibly created by a call to `smoother2histval`
+%
+% INPUTS
+%    fname:                       name of file containing initial values
+%
+% OUTPUTS
+%    none
+%
+% SPECIAL REQUIREMENTS
+%    none
 
-% Copyright (C) 2014-2018 Dynare Team
+
+% Copyright (C) 2014-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -19,7 +32,7 @@ function histvalf(fname)
 
 global M_ oo_ ex0_
 
-if ~exist(fname)
+if ~exist(fname, 'file')
     error(['Can''t find datafile: ' fname ]);
 end
 
@@ -79,10 +92,10 @@ for i = 1:length(outvars)
             if isempty(k)
                 warning(['smoother2histval: output variable ' ov '(' lead_lag ') does not exist.'])
             else
-                oo_.exo_simul((M_.maximum_lag-M_.maximum_endo_lag+1):M_.maximum_lag, k) = getfield(S, ov_);
+                oo_.exo_simul((M_.maximum_lag-M_.maximum_endo_lag+1):M_.maximum_lag, k) = S.(ov_);
             end
             continue
         end
     end
-    M_.endo_histval(j, :) = getfield(S, ov_);
+    M_.endo_histval(j, :) = S.(ov_);
 end
