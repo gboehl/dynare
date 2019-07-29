@@ -70,6 +70,11 @@ dynareroot = dynare_config('', preprocessoroutput);
 
 warning_config()
 
+% For OpenMP on Mac
+if ismac
+    setenv('KMP_DUPLICATE_LIB_OK', 'TRUE');
+end
+
 if isoctave
     % The supported_octave_version.m file is not in git nor in the source
     % package, it is manually added in binary packages distributed on dynare.org

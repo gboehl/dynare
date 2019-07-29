@@ -2,7 +2,12 @@ mex_PROGRAMS = local_state_space_iteration_2
 
 nodist_local_state_space_iteration_2_SOURCES = local_state_space_iteration_2.cc
 
+if MACOS
+local_state_space_iteration_2_CXXFLAGS = $(AM_CXXFLAGS) -Xpreprocessor -fopenmp
+local_state_space_iteration_2_LDADD = -lomp
+else
 local_state_space_iteration_2_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
+endif
 
 BUILT_SOURCES = $(nodist_local_state_space_iteration_2_SOURCES)
 CLEANFILES = $(nodist_local_state_space_iteration_2_SOURCES)

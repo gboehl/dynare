@@ -3,7 +3,12 @@ mex_PROGRAMS = qmc_sequence
 TOPDIR = $(top_srcdir)/../../sources/sobol
 
 qmc_sequence_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR)
+if MACOS
+qmc_sequence_CXXFLAGS = $(AM_CXXFLAGS) -Xpreprocessor -fopenmp
+qmc_sequence_LDADD = -lomp
+else
 qmc_sequence_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
+endif
 
 nodist_qmc_sequence_SOURCES = qmc_sequence.cc
 

@@ -64,8 +64,10 @@ AX_PROG_LN_S
 AC_PROG_MKDIR_P
 AM_PROG_AR
 
+build_mac=no
 case ${host_os} in
   *darwin*)
+    build_mac=yes
     string=$($CXX --version)
     if test "${string#*clang}" != "$string"; then
       CXXFLAGS="$CXXFLAGS -stdlib=libc++"
@@ -78,6 +80,8 @@ case ${host_os} in
 esac
 
 AX_CXX11_THREAD
+
+AM_CONDITIONAL([MACOS], [test "$build_mac" = "yes"])
 
 # Check for dlopen(), needed by k_order_perturbation DLL
 AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])

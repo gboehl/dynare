@@ -3,7 +3,13 @@ mex_PROGRAMS = block_kalman_filter
 TOPDIR = $(top_srcdir)/../../sources/block_kalman_filter
 
 block_kalman_filter_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR)
+
+if MACOS
+block_kalman_filter_CXXFLAGS = $(AM_CXXFLAGS) -Xpreprocessor -fopenmp
+block_kalman_filter_LDADD = -lomp
+else
 block_kalman_filter_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
+endif
 
 nodist_block_kalman_filter_SOURCES = block_kalman_filter.cc
 
