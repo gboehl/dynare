@@ -615,6 +615,10 @@ MODEL_EXPRESSION and EXPRESSION:
 
     Square root.
 
+.. function:: cbrt(x)
+
+    Cubic root.
+
 .. function:: sign(x)
 
     Signum function, defined as:
