@@ -10359,15 +10359,18 @@ The following operators can be used on doubles:
     * Arithmetic operators: ``+, -, *, /, ^``
     * Comparison operators: ``<, >, <=, >=, ==, !=``
     * Logical operators: ``&&, ||, !``
-    * Integer ranges, using the following syntax:
+    * Integer ranges with an increment of ``1``:
       ``INTEGER1:INTEGER2`` (for example, ``1:4`` is equivalent to
-      integer array ``[1,2,3,4]``).
+      integer array ``[1, 2, 3, 4]``).
 
       .. versionchanged:: 4.6
          Previously, putting brackets around the arguments to the colon
-         operator (e.g. ``[1:4]``) had now effect. Now, ``[1:4]`` will create
+         operator (e.g. ``[1:4]``) had no effect. Now, ``[1:4]`` will create
          an array containing a single element, itself an array (i.e. it is
          equivalent to ``[ [1, 2, 3, 4] ]``)
+    * Integer ranges with user-defined increment:
+      ``INTEGER1:INTEGER2:INTEGER3`` (for example, ``6:-2.1:-1`` is equivalent to
+      integer array ``[6, 3.9, 1.8, -0.3]``).
     * Functions: ``max, min, mod, exp, log, log10, sin, cos, tan, asin, acos,
       atan, sqrt, cbrt, sign, floor, ceil, trunc, erf, erfc, gamma, lgamma,
       round, normpdf, normcdf``. NB ``ln`` can be used instead of ``log``
