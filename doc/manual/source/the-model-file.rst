@@ -10480,6 +10480,55 @@ at define time. Functions can be included in expressions and the operators that
 can be combined with them depend on their return type.
 
 
+.. rubric:: Casting between types
+
+Variables and literals of one type can be cast into another type. Some type
+changes are straightforward (e.g. changing a `double` to a `string`) whereas
+others have certain requirements (e.g. to cast an `array` to a `double` it must
+be a one element array containing a type that can be cast to `double`).
+
+    *Examples*
+
++----------------------------------+------------+
+| **Code**                         | **Output** |
++==================================+============+
+| ``(bool) -3.9``                  | ``true``   |
++----------------------------------+------------+
+| ``(bool) 0``                     | ``false``  |
++----------------------------------+------------+
+| ``(int) 3.9``                    | ``3``      |
++----------------------------------+------------+
+| ``(double) "3.9"``               | ``3.9``    |
++----------------------------------+------------+
+| ``(tuple) [3.9]``                | ``(3.9)``  |
++----------------------------------+------------+
+| ``(array) 3.9``                  | ``[3.9]``  |
++----------------------------------+------------+
+| ``(double) [3.9]``               | ``3.9``    |
++----------------------------------+------------+
+| ``(double) "3.9 in a string"``   | ``3.9``    |
++----------------------------------+------------+
+| ``(double) "a string with 3.9"`` | ``error``  |
++----------------------------------+------------+
+| ``(double) [3.9, 3.9]``          | ``error``  |
++----------------------------------+------------+
+
+Casts can be used in expressions:
+
+    *Examples*
+
++---------------------------+------------+
+| **Code**                  | **Output** |
++===========================+============+
+| ``(bool) 0 && true``      | ``false``  |
++---------------------------+------------+
+| ``(double) "1" + 2``      | ``3``      |
++---------------------------+------------+
+| ``(string) (3 + 4)``      | ``"7"``    |
++---------------------------+------------+
+| ``(array) 5 + (array) 6`` | ``[5, 6]`` |
++---------------------------+------------+
+
 Macro directives
 ----------------
 
