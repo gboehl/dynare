@@ -10319,7 +10319,7 @@ directives are:
 The macro processor maintains its own list of variables (distinct from model
 variables and MATLAB/Octave variables). These macro-variables are assigned
 using the ``@#define`` directive and can be of the following basic types:
-boolean, double, string, tuple, function, and array (of any of the previous
+boolean, real, string, tuple, function, and array (of any of the previous
 types).
 
 
@@ -10337,7 +10337,7 @@ Macro-expressions can be used in two places:
 
 It is possible to construct macro-expressions that can be assigned to
 macro-variables or used within a macro-directive. The expressions are
-constructed using literals of the basic types (boolean, double, string, tuple,
+constructed using literals of the basic types (boolean, real, string, tuple,
 array), comprehensions, macro-variables, macro-functions, and standard
 operators.
 
@@ -10352,25 +10352,21 @@ The following operators can be used on booleans:
     * Comparison operators: ``==, !=``
     * Logical operators: ``&&, ||, !``
 
-.. rubric:: Double
+.. rubric:: Real
 
-The following operators can be used on doubles:
+The following operators can be used on reals:
 
     * Arithmetic operators: ``+, -, *, /, ^``
     * Comparison operators: ``<, >, <=, >=, ==, !=``
     * Logical operators: ``&&, ||, !``
-    * Integer ranges with an increment of ``1``:
-      ``INTEGER1:INTEGER2`` (for example, ``1:4`` is equivalent to
-      integer array ``[1, 2, 3, 4]``).
+    * Ranges with an increment of ``1``: ``REAL1:REAL2`` (for example, ``1:4``
+      is equivalent to real array ``[1, 2, 3, 4]``).
 
-      .. versionchanged:: 4.6
-         Previously, putting brackets around the arguments to the colon
-         operator (e.g. ``[1:4]``) had no effect. Now, ``[1:4]`` will create
-         an array containing a single element, itself an array (i.e. it is
-         equivalent to ``[ [1, 2, 3, 4] ]``)
-    * Integer ranges with user-defined increment:
-      ``INTEGER1:INTEGER2:INTEGER3`` (for example, ``6:-2.1:-1`` is equivalent to
-      integer array ``[6, 3.9, 1.8, -0.3]``).
+      .. versionchanged:: 4.6 Previously, putting brackets around the arguments
+         to the colon operator (e.g. ``[1:4]``) had no effect. Now, ``[1:4]``
+         will create an array containing an array (i.e. ``[ [1, 2, 3, 4] ]``).
+    * Ranges with user-defined increment: ``REAL1:REAL2:REAL3`` (for example,
+      ``6:-2.1:-1`` is equivalent to real array ``[6, 3.9, 1.8, -0.3]``).
     * Functions: ``max, min, mod, exp, log, log10, sin, cos, tan, asin, acos,
       atan, sqrt, cbrt, sign, floor, ceil, trunc, erf, erfc, gamma, lgamma,
       round, normpdf, normcdf``. NB ``ln`` can be used instead of ``log``
@@ -10402,7 +10398,7 @@ The following operators can be used on tuples:
 .. rubric:: Array
 
 Arrays are enclosed by brackets, and their elements are separated
-by commas (like ``[1,[2,3],4]`` or ``["US", "EA"]``).
+by commas (like ``[1,[2,3],4]`` or ``["US", "FR"]``).
 
 The following operators can be used on arrays:
 
@@ -10490,9 +10486,9 @@ can be combined with them depend on their return type.
 .. rubric:: Casting between types
 
 Variables and literals of one type can be cast into another type. Some type
-changes are straightforward (e.g. changing a `double` to a `string`) whereas
-others have certain requirements (e.g. to cast an `array` to a `double` it must
-be a one element array containing a type that can be cast to `double`).
+changes are straightforward (e.g. changing a `real` to a `string`) whereas
+others have certain requirements (e.g. to cast an `array` to a `real` it must
+be a one element array containing a type that can be cast to `real`).
 
     *Examples*
 
@@ -10503,17 +10499,17 @@ be a one element array containing a type that can be cast to `double`).
 +----------------------------------+------------+
 | ``(bool) 0``                     | ``false``  |
 +----------------------------------+------------+
-| ``(double) "2.2"``               | ``2.2``    |
+| ``(real) "2.2"``                 | ``2.2``    |
 +----------------------------------+------------+
 | ``(tuple) [3.3]``                | ``(3.3)``  |
 +----------------------------------+------------+
 | ``(array) 4.4``                  | ``[4.4]``  |
 +----------------------------------+------------+
-| ``(double) [5.5]``               | ``5.5``    |
+| ``(real) [5.5]``                 | ``5.5``    |
 +----------------------------------+------------+
-| ``(double) [6.6, 7.7]``          | ``error``  |
+| ``(real) [6.6, 7.7]``            | ``error``  |
 +----------------------------------+------------+
-| ``(double) "8.8 in a string"``   | ``error``  |
+| ``(real) "8.8 in a string"``     | ``error``  |
 +----------------------------------+------------+
 
 Casts can be used in expressions:
@@ -10525,7 +10521,7 @@ Casts can be used in expressions:
 +===========================+============+
 | ``(bool) 0 && true``      | ``false``  |
 +---------------------------+------------+
-| ``(double) "1" + 2``      | ``3``      |
+| ``(real) "1" + 2``        | ``3``      |
 +---------------------------+------------+
 | ``(string) (3 + 4)``      | ``"7"``    |
 +---------------------------+------------+
@@ -10582,9 +10578,9 @@ Macro directives
 
         ::
 
-            @#define x = 5                    // Double
+            @#define x = 5                    // Real
             @#define y = "US"                 // String
-            @#define v = [ 1, 2, 4 ]          // Double array
+            @#define v = [ 1, 2, 4 ]          // Real array
             @#define w = [ "US", "EA" ]       // String array
             @#define u = [ 1, ["EA"] ]        // Mixed array
             @#define z = 3 + v[2]             // Equals 5
@@ -10630,12 +10626,12 @@ Macro directives
     value. Conversely, ``@#ifndef`` will evaluate to true if the MACRO_VARIABLE
     has not yet been defined.
 
-    Note that if a double appears as the result of the MACRO_EXPRESSION, it
+    Note that if a real appears as the result of the MACRO_EXPRESSION, it
     will be interpreted as a boolean; a value of ``0`` is interpreted as ``false``,
     otherwise it is interpreted as ``true``. Further note that because of the
-    imprecision of doubles, extra care must be taken when testing them in the
+    imprecision of reals, extra care must be taken when testing them in the
     MACRO_EXPRESSION. For example, ``exp(log(5)) == 5`` will evaluate to
-    ``false``. Hence, when comparing double values, you should generally use a
+    ``false``. Hence, when comparing real values, you should generally use a
     zero tolerance around the value desired, e.g. ``exp(log(5)) > 5-1e-14 &&
     exp(log(5)) < 5+1e-14``
 
