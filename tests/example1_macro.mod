@@ -191,5 +191,13 @@ stoch_simul;
 @#error "Numeric comparison incorrect"
 @#endif
 
+@#if ([1] + (array)(real) "2") != [1, 2]
+@#error "Cast error"
+@#endif
+
+@#if -3:-1.5:3 != [] || 3:-1:-0.1 != [3, 2, 1, 0]
+@#error "Range error"
+@#endif
+
 @#echomacrovars(save)
 @#echomacrovars
