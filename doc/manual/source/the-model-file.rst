@@ -10482,6 +10482,23 @@ directive (see below). A function is evaluated at the time it is invoked, not
 at define time. Functions can be included in expressions and the operators that
 can be combined with them depend on their return type.
 
+.. rubric:: Checking variable type
+
+Given a variable name or literal, you can check the type it evaluates to using
+the following functions: ``isboolean``, ``isreal``, ``isstring``, ``istuple``,
+and ``isarray``.
+
+    *Examples*
+
++---------------------+------------+
+| **Code**            | **Output** |
++=====================+============+
+| ``isboolean(0)``    | ``false``  |
++---------------------+------------+
+| ``isboolean(true)`` | ``true``   |
++---------------------+------------+
+| ``isreal("str")``   | ``false``  |
++---------------------+------------+
 
 .. rubric:: Casting between types
 
