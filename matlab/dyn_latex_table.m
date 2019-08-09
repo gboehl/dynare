@@ -1,8 +1,7 @@
 function dyn_latex_table(M_, options_, title, LaTeXtitle, headers, labels, values, label_width, val_width, val_precis, optional_header)
+%function dyn_latex_table(M_, options_, title, LaTeXtitle, headers, labels, values, label_width, val_width, val_precis, optional_header)
 
-%function dyn_latex_table(M_,options_,title,LaTeXtitle,headers,labels,values,label_width,val_width,val_precis,optional_header)
-
-% Copyright (C) 2015-2018 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -21,6 +20,10 @@ function dyn_latex_table(M_, options_, title, LaTeXtitle, headers, labels, value
 
 if options_.noprint
     return
+end
+
+if length(headers) < 2
+    error('headers length must be >= 2')
 end
 
 OutputDirectoryName = CheckPath('Output',M_.dname);
@@ -52,13 +55,10 @@ value_format = sprintf('%%%d.%df', val_width, val_precis);
 header_string_format = sprintf('$%%%ds$', val_width);
 
 % Create and print header string
-if length(headers)>0
-    header_string = sprintf(label_format_leftbound, strrep(headers{1}, '\', '\\'));
-    header_code_string = 'l';
-    for i=2:length(headers)
-        header_string = [header_string '\t & \t ' sprintf(header_string_format, strrep(headers{i},'\','\\'))];
-        header_code_string = [header_code_string 'c'];
-    end
+header_string = sprintf(label_format_leftbound, strrep(headers{1}, '\', '\\'));
+header_code_string = ['l' repmat('c', 1, length(headers)-1)];
+for i=2:length(headers)
+    header_string = [header_string '\t & \t ' sprintf(header_string_format, strrep(headers{i},'\','\\'))];
 end
 header_string = [header_string '\\\\\n'];
 
@@ -70,7 +70,7 @@ fprintf(fidTeX, ['%% ' datestr(now,0) ', created by ' stack(2).file]);
 fprintf(fidTeX, ' \n');
 fprintf(fidTeX, ' \n');
 fprintf(fidTeX, '\\begin{center}\n');
-fprintf(fidTeX, ['\\begin{longtable}{%s} \n'], header_code_string);
+fprintf(fidTeX, '\\begin{longtable}{%s} \n', header_code_string);
 fprintf(fidTeX, ['\\caption{',title,'}\\\\\n ']);
 
 fprintf(fidTeX, ['\\label{Table:',LaTeXtitle,'}\\\\\n']);
