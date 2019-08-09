@@ -67,11 +67,9 @@ for i = 1:nrows
     end
     if ~isempty(o.tableSubSectionHeader)
         fprintf(fid, '\\textbf{%s}', o.tableSubSectionHeader);
-        for i=1:ncols-1
-            fprintf(fid, ' &');
-        end
+        fprintf(fid, '%s', repmat(' &', 1, ncols-1));
         fprintf(fid, '\\\\%%\n');
-        return;
+        return
     end
     if o.tableAlignRight
         fprintf(fid, '\\multicolumn{1}{r}{');
