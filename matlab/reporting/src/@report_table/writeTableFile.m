@@ -169,14 +169,19 @@ if ~is_data_table
         end
     end
 else
-    fprintf(fid, '\\begin{tabular}{|');
+    fprintf(fid, '\\begin{tabular}{');
+    if o.showVlines
+        fprintf(fid, '|');
+    end
     for i = 1:length(o.column_names)
         if isempty(o.column_names{i})
             fprintf(fid, 'l');
         else
             fprintf(fid, 'r');
         end
-        fprintf(fid, '|');
+        if o.showVlines
+            fprintf(fid, '|');
+        end
     end
     fprintf(fid,'}');
 end
