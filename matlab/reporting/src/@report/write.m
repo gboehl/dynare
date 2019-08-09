@@ -11,7 +11,7 @@ function o = write(o)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,7 +33,7 @@ if fid == -1
     error(['@report.write: ' msg]);
 end
 
-fprintf(fid, '%% Report Object\n');
+fprintf(fid, '%% Report Object written %s\n', datestr(now));
 fprintf(fid, '\\documentclass[11pt]{article}\n');
 
 fprintf(fid, '\\usepackage[%spaper,margin=%f%s', o.paper, o.margin, o.marginUnit);

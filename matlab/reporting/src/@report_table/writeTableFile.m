@@ -15,7 +15,7 @@ function o = writeTableFile(o, pg, sec, row, col)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,7 +50,7 @@ if fid == -1
     error(['@report_table.writeTableFile: ' msg]);
 end
 
-fprintf(fid, '%% Report_Table Object\n');
+fprintf(fid, '%% Report_Table Object written %s\n', datestr(now));
 fprintf(fid, '\\setlength{\\parindent}{6pt}\n');
 fprintf(fid, '\\setlength{\\tabcolsep}{4pt}\n');
 

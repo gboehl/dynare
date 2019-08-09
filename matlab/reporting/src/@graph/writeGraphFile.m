@@ -15,7 +15,7 @@ function o = writeGraphFile(o, pg, sec, row, col)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -49,6 +49,7 @@ if fid == -1
     error(['@graph.writeGraphFile: ' msg]);
 end
 
+fprintf(fid, '%% Graph Object written %s\n', datestr(now));
 fprintf(fid, '\\begin{tikzpicture}[baseline');
 if ~isempty(o.miscTikzPictureOptions)
     fprintf(fid, ',%s', o.miscTikzPictureOptions);

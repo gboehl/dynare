@@ -14,7 +14,7 @@ function o = write(o, fid, pg, sec)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,7 +32,7 @@ function o = write(o, fid, pg, sec)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(fid ~= -1);
-fprintf(fid, '%% Section Object\n');
+fprintf(fid, '%% Section Object written %s\n', datestr(now));
 if isempty(o.elements)
     warning(['reporting:section.write(): trying to print a section ' ...
              'with no elements. Perhaps you forgot to overwrite the report object.']);
