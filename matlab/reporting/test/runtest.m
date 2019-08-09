@@ -1,4 +1,4 @@
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -20,8 +20,7 @@ addpath('../dates/src')
 addpath('../dseries/src')
 addpath('../src')
 
-initialize_dates_toolbox;
-initialize_dseries_toolbox;
+initialize_dseries_class;
 
 db_a = dseries('db_a.csv');
 db_q = dseries('db_q.csv');
