@@ -8,9 +8,9 @@ function [ys,check] = NK_baseline_steadystate(ys,exo)
 %   - exo       [vector] vector of values for the exogenous variables
 %
 % Output: 
-%   - ys        [vector] vector of steady state values fpr the the endogenous variables
+%   - ys        [vector] vector of steady state values for the the endogenous variables
 %   - check     [scalar] set to 0 if steady state computation worked and to
-%                    1 of not (allows to impos restriction on parameters)
+%                    1 of not (allows to impose restrictions on parameters)
 
 global M_ 
 
@@ -28,7 +28,7 @@ check = 0;
 
 options=optimset(); % set options for numerical solver
 
-% the steady state computation follows FV (2006), section 4.1
+% the steady state computation follows FVRR (2006), section 4.1
 PI=PIbar;
 u=1;
 q=1;
