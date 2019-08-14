@@ -72,7 +72,7 @@ A number of tools and libraries are needed in order to recompile everything. You
 - [GNU Octave](http://www.octave.org), with the development headers (if you
   want to compile the MEX for Octave)
 - [Boost libraries](http://www.boost.org), version 1.36 or later (with the filesystem library compiled)
-- [Bison](http://www.gnu.org/software/bison/), version 3.0 or later (only if you get the source through Git)
+- [Bison](http://www.gnu.org/software/bison/), version 3.2 or later (only if you get the source through Git)
 - [Flex](http://flex.sourceforge.net/), version 2.5.4 or later (only if you get the source through Git)
 - [Autoconf](http://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git)
 - [Automake](http://www.gnu.org/software/automake/), version 1.11.2 or later (only if you get the source through Git)
