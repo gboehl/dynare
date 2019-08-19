@@ -95,9 +95,9 @@ e = 0;
 u = 0;
 end;
 
-@#define DEFINED=0
+@#define DEFINEDvar=0
 
-@#ifndef DEFINED
+@#ifndef DEFINEDvar
 @#error "IFNDEF PROBLEM"
 @#else
 shocks;
@@ -107,10 +107,22 @@ var e, u = phi*0.009*0.009;
 end;
 @#endif
 
-@#ifdef DEFINED
+@#ifdef DEFINEDvar
 stoch_simul;
+@#elseif true
+@#error "ELSEIF PROBLEM"
 @#else
 @#error "IFDEF PROBLEM"
+@#endif
+
+@#if false
+@#error "IF ERROR"
+@#elseif false
+@#error "ELSEIF ERROR"
+@#elseif defined(DEFINEDvar)
+@#echo "Good"
+@#else
+@#error "ELSE ERROR"
 @#endif
 
 @#define a = 1

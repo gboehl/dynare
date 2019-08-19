@@ -10313,7 +10313,7 @@ directives are:
     * ``@#includepath``, paths to search for files that are to be included,
     * ``@#include``, for file inclusion,
     * ``@#define``, for defining a macro processor variable,
-    * ``@#if, @#ifdef, @#ifndef, @#else, @#endif`` for conditional statements,
+    * ``@#if, @#ifdef, @#ifndef, @#elseif, @#else, @#endif`` for conditional statements,
     * ``@#for, @#endfor`` for constructing loops.
 
 The macro processor maintains its own list of variables (distinct from model
@@ -10629,19 +10629,28 @@ Macro directives
 .. macrodir:: @#if MACRO_EXPRESSION
               @#ifdef MACRO_VARIABLE
               @#ifndef MACRO_VARIABLE
+              @#elseif MACRO_EXPRESSION
               @#else
               @#endif
 
     |br| Conditional inclusion of some part of the ``.mod`` file. The lines
-    between ``@#if``, ``@#ifdef``, or ``@#ifndef`` and the next ``@#else`` or
-    ``@#endif`` is executed only if the condition evaluates to ``true``. The
-    ``@#else`` branch is optional and, if present, is only evaluated if the
-    condition evaluates to ``false``.
+    between ``@#if``, ``@#ifdef``, or ``@#ifndef`` and the next ``@#elseif``,
+    ``@#else`` or ``@#endif`` is executed only if the condition evaluates to
+    ``true``. Following the ``@#if`` body, you can zero or more ``@#elseif``
+    branches. An ``@#elseif`` condition is only evaluated if the preceding
+    ``@#if`` or ``@#elseif`` condition evaluated to ``false``. The ``@#else``
+    branch is optional and is only evaluated if all ``@#if`` and ``@#elseif``
+    statements evaluate to false.
 
     Note that when using ``@#ifdef``, the condition will evaluate to ``true``
     if the MACRO_VARIABLE has been previously defined, regardless of its
     value. Conversely, ``@#ifndef`` will evaluate to true if the MACRO_VARIABLE
     has not yet been defined.
+
+    Note that when using ``@#elseif`` you can check whether or not a variable
+    has been defined by using the ``defined`` operator. Hence, to enter the
+    body of an ``@#elseif`` branch if the variable ``X`` has not been defined,
+    you would write: ``@#elseif !defined(X)``.
 
     Note that if a real appears as the result of the MACRO_EXPRESSION, it
     will be interpreted as a boolean; a value of ``0`` is interpreted as ``false``,
