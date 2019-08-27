@@ -803,7 +803,7 @@ The dseries class
         data file specified by *FILENAME*, a string passed as
         input. Valid file types are ``.m``, ``.mat``, ``.csv`` and
         ``.xls/.xlsx`` (Octave only supports ``.xlsx`` files and the
-        `io <http://octave.sourceforge.net/io/>`_ package from
+        `io <http://octave.sourceforge.net/io/>`__ package from
         Octave-Forge must be installed). A typical ``.m`` file will
         have the following form::
 

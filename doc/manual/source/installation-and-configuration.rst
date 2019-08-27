@@ -8,7 +8,7 @@ Software requirements
 =====================
 
 Packaged versions of Dynare are available for Windows 7/8/10,
-`Debian GNU/Linux <http://www.debian.org/>`_, `Ubuntu`_ and macOS 10.8
+`Debian GNU/Linux <http://www.debian.org/>`__, `Ubuntu`_ and macOS 10.8
 or later. Dynare should work on other systems, but some compilation
 steps are necessary in that case.
 
@@ -82,7 +82,7 @@ settings (see :ref:`words-warning`).
 
 To install Dynare for Octave, first install Homebrew following the
 instructions on their site: `https://brew.sh/
-<https://brew.sh/>`_. Then install Octave, issuing the command ``brew
+<https://brew.sh/>`__. Then install Octave, issuing the command ``brew
 install octave`` at the Terminal prompt. You can then install the
 latest stable version of Dynare by typing ``brew install dynare`` at
 the Terminal prompt. You can also pass options to the installation
@@ -98,7 +98,7 @@ unpack it somewhere.
 
 Then you will need to recompile the pre-processor and the dynamic
 loadable libraries. Please refer to `README.md
-<https://git.dynare.org/Dynare/dynare/blob/master/README.md>`_.
+<https://git.dynare.org/Dynare/dynare/blob/master/README.md>`__.
 
 .. _compil-install:
 
@@ -129,7 +129,7 @@ Prerequisites on macOS
 
 If you are using MATLAB under macOS, you should install the latest
 version of XCode: `see instructions on the Dynare wiki
-<https://git.dynare.org/Dynare/dynare/wikis/Install-on-MacOS>`_.
+<https://git.dynare.org/Dynare/dynare/wikis/Install-on-MacOS>`__.
 
 
 Configuration

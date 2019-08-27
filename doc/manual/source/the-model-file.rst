@@ -2167,7 +2167,7 @@ Finding the steady state with Dynare nonlinear solver
                 using the solver. Due to licence restrictions, you have
                 to download the solver’s most current version yourself
                 from `http://pages.cs.wisc.edu/~ferris/path.html
-                <http://pages.cs.wisc.edu/~ferris/path.html>`_ and
+                <http://pages.cs.wisc.edu/~ferris/path.html>`__ and
                 place it in Matlab’s search path.
 
        |br| Default value is ``4``.
@@ -3288,7 +3288,7 @@ Computing the stochastic solution
        command. Note that if ``varobs`` is not present or contains all
        endogenous variables, then this is the full information case
        and this option has no effect. More references can be found
-       `here <http://www.dynare.org/DynareWiki/PartialInformation>`_ .
+       `here <http://www.dynare.org/DynareWiki/PartialInformation>`__ .
 
     .. option:: sylvester = OPTION
 
@@ -3300,7 +3300,7 @@ Computing the stochastic solution
                 Uses the default solver for Sylvester equations
                 (``gensylv``) based on Ondra Kamenik’s algorithm (see
                 `here
-                <http://www.dynare.org/documentation-and-support/dynarepp/sylvester.pdf/at_download/file>`_
+                <http://www.dynare.org/documentation-and-support/dynarepp/sylvester.pdf/at_download/file>`__
                 for more information).
 
            ``fixed_point``
@@ -4286,7 +4286,7 @@ block decomposition of the model (see :opt:`block`).
 
        The datafile: a ``.m`` file, a ``.mat`` file, a ``.csv`` file,
        or a ``.xls/.xlsx`` file (under Octave, the `io
-       <http://octave.sourceforge.net/io/>`_ package from Octave-Forge
+       <http://octave.sourceforge.net/io/>`__ package from Octave-Forge
        is required for the ``.csv`` and ``.xlsx`` formats and the
        ``.xls`` file extension is not supported). Note that the base
        name (i.e. without extension) of the datafile has to be
@@ -4654,7 +4654,7 @@ block decomposition of the model (see :opt:`block`).
                 Uses ``fminunc`` optimization routine (available under
                 MATLAB if the Optimization Toolbox is installed;
                 available under Octave if the `optim
-                <http://octave.sourceforge.net/optim/>`_ package from
+                <http://octave.sourceforge.net/optim/>`__ package from
                 Octave-Forge is installed).
 
            ``4``
@@ -5763,7 +5763,7 @@ block decomposition of the model (see :opt:`block`).
                (``dlyapchol``). This method is fast for large scale
                models (available under MATLAB if the Control System
                Toolbox is installed; available under Octave if the
-               `control <http://octave.sourceforge.net/control/>`_
+               `control <http://octave.sourceforge.net/control/>`__
                package from Octave-Forge is installed)
 
        Default value is ``default``.
@@ -9537,7 +9537,7 @@ below.
 .. command:: sbvar (OPTIONS...);
 
     |br| To be documented. For now, see the wiki:
-    `<https://www.dynare.org/DynareWiki/SbvarOptions>`_
+    `<https://www.dynare.org/DynareWiki/SbvarOptions>`__
 
     *Options*
 
@@ -9602,7 +9602,7 @@ below.
         RESTRICTION EQUATION INTEGER, EXPRESSION = EXPRESSION;
 
     To be documented. For now, see the wiki:
-    `<http://www.dynare.org/DynareWiki/MarkovSwitchingInterface>`_
+    `<http://www.dynare.org/DynareWiki/MarkovSwitchingInterface>`__
 
 
 .. command:: ms_estimation (OPTIONS...);
@@ -11223,7 +11223,7 @@ Misc commands
 .. [#f6] See :opt:`forecast <forecast = INTEGER>` for more information.
 
 .. [#f7] In case of Excel not being installed,
-         `<https://mathworks.com/matlabcentral/fileexchange/38591-xlwrite--generate-xls-x--files-without-excel-on-mac-linux-win>`_
+         `<https://mathworks.com/matlabcentral/fileexchange/38591-xlwrite--generate-xls-x--files-without-excel-on-mac-linux-win>`__
          may be helpful.
 
 .. [#f8] See option :ref:`conf_sig <confsig>` to change the size of
@@ -11237,4 +11237,4 @@ Misc commands
           :math:`A^+`.
 
 .. [#f11] An example can be found at
-          `<https://git.dynare.org/Dynare/dynare/blob/master/tests/ms-dsge/test_ms_dsge.mod>`_.
+          `<https://git.dynare.org/Dynare/dynare/blob/master/tests/ms-dsge/test_ms_dsge.mod>`__.
