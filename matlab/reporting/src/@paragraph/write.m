@@ -31,7 +31,7 @@ function o = write(o, fid)
 
 assert(fid ~= -1);
 fprintf(fid, '%% Paragraph Object written %s\n', datestr(now));
-fprintnf(fid, '\\multicolumn{1}{p{\\linewidth}}{%%\n');
+fprintf(fid, '\\multicolumn{1}{p{\\linewidth}}{%%\n');
 if o.cols ~= 1
     bc = '';
     if o.balancedCols
