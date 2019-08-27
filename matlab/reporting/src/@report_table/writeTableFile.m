@@ -1,5 +1,5 @@
-function o = writeTableFile(o, pg, sec, row, col)
-%function o = writeTableFile(o, pg, sec, row, col)
+function tableName = writeTableFile(o, pg, sec, row, col)
+%function tableName = writeTableFile(o, pg, sec, row, col)
 % Write a Report_Table object
 %
 % INPUTS
@@ -10,7 +10,7 @@ function o = writeTableFile(o, pg, sec, row, col)
 %   col [integer] this col number
 %
 % OUTPUTS
-%   o   [report_table]    report_table object
+%   tableName   [string]    name of table written
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -36,16 +36,16 @@ ne = length(o.series);
 is_data_table = ~isempty(o.table_data);
 if ne == 0 && ~is_data_table
     warning('@report_table.write: no series to plot, returning');
-    return;
+    return
 end
 
 if isempty(o.tableName)
-    o.tableName = sprintf('%s/table_pg%d_sec%d_row%d_col%d.tex', o.tableDirName, pg, sec, row, col);
+    tableName = sprintf('%s/table_pg%d_sec%d_row%d_col%d.tex', o.tableDirName, pg, sec, row, col);
 else
-    o.tableName = [o.tableDirName '/' o.tableName];
+    tableName = [o.tableDirName '/' o.tableName];
 end
 
-[fid, msg] = fopen(o.tableName, 'w');
+[fid, msg] = fopen(tableName, 'w');
 if fid == -1
     error(['@report_table.writeTableFile: ' msg]);
 end
@@ -60,7 +60,6 @@ fprintf(fid, '\\setlength{\\tabcolsep}{4pt}\n');
 %         GDP Germany
 % this example would be two lh columns, with GDP Europe spanning both
 nlhc = 1;
-
 if ~is_data_table
     fprintf(fid, '\\begin{tabular}{@{}l');
     if isempty(o.range)

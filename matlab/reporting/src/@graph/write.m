@@ -1,5 +1,5 @@
-function o = write(o, fid, pg, sec, row, col)
-%function o = write(o, fid, pg, sec, row, col)
+function write(o, fid, pg, sec, row, col)
+%function write(o, fid, pg, sec, row, col)
 % Write a Graph object
 %
 % INPUTS
@@ -16,7 +16,7 @@ function o = write(o, fid, pg, sec, row, col)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,6 +34,6 @@ function o = write(o, fid, pg, sec, row, col)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(fid ~= -1);
-o = writeGraphFile(o, pg, sec, row, col);
-fprintf(fid, '\\input{%s}', o.graphName);
+graphName = writeGraphFile(o, pg, sec, row, col);
+fprintf(fid, '\\input{%s}', graphName);
 end

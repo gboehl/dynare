@@ -1,11 +1,10 @@
 function o = addParagraph(o, varargin)
 %function o = addParagraph(o, varargin)
-% Add a paragraph to the Cell Array of elements in this section
+% Add a paragraph
 %
 % INPUTS
-%   1 args => add empty paragraph
-%   2 args => add given paragraph
-%   3 args => add paragraph at index
+%   o          [section] section object
+%   varargin             arguments to paragraph()
 %
 % OUTPUTS
 %   updated page object
@@ -13,7 +12,7 @@ function o = addParagraph(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright (C) 2014-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,12 +30,10 @@ function o = addParagraph(o, varargin)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(o.cols == 1, ...
-       ['@addParagraph: you can only add a paragraph to a Section that ' ...
-        'contains one column']);
-for i=1:length(o.elements)
+       '@addParagraph: you can only add a paragraph to a Section that contains one column');
+for i = 1:length(o.elements)
     assert(isa(o.elements{i}, 'paragraph'), ...
-           ['@addParagraph: you can only add a paragraph to a Section that ' ...
-            'contains only paragraphs']);
+           '@addParagraph: you can only add a paragraph to a Section that contains only paragraphs');
 end
 o.elements{end+1} = paragraph(varargin{:});
 end

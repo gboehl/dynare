@@ -1,17 +1,18 @@
-function tf = allCellsAreDatesRange(dcell)
-%function tf = allCellsAreDatesRange(dcell)
-% Determines if all the elements of dcell are a range of dates
+function o = addData(o, varargin)
+%function o = addData(o, varargin)
+% Add a series
 %
 % INPUTS
-%   dcell     cell of dates
+%   o          [section] section object
+%   varargin             arguments to report_series()
 %
 % OUTPUTS
-%   tf        true if every entry of dcell is a range of dates
+%   updated section object
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014-2015 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,12 +29,11 @@ function tf = allCellsAreDatesRange(dcell)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(iscell(dcell));
-tf = true;
-for i=1:length(dcell)
-    if ~(isdates(dcell{i}) && dcell{i}.ndat >= 2)
-        tf = false;
-        return;
-    end
-end
+assert(~isempty(o.elements), ...
+    '@section.addData: Before adding data, you must add either a table');
+assert(~isa(o.elements{1}, 'paragraph'), ...
+    '@section.addSeries: A section that contains a paragraph cannot contain a graph or a table');
+assert(isa(o.elements{end}, 'report_table'), ...
+    '@report.addData: you can only add data to a report_table object');
+o.elements{end}.addData(varargin{:});
 end

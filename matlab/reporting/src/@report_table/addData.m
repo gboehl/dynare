@@ -1,5 +1,16 @@
 function o = addData(o, varargin)
-% function o = addData(o, varargin)
+%function o = addData(o, varargin)
+% Add a series
+%
+% INPUTS
+%   o          [report_table] report_table object
+%   varargin                  arguments to report_data()
+%
+% OUTPUTS
+%   updated section object
+%
+% SPECIAL REQUIREMENTS
+%   none
 
 % Copyright (C) 2019 Dynare Team
 %

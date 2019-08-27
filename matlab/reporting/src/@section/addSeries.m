@@ -1,13 +1,13 @@
 function o = addSeries(o, varargin)
 %function o = addSeries(o, varargin)
-% Add a graph to the current section of the current page in the report
+% Add a series
 %
 % INPUTS
-%   o          [report]  report object
+%   o          [section] section object
 %   varargin             arguments to report_series()
 %
 % OUTPUTS
-%   o          [report]  updated report object
+%   updated section object
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -29,8 +29,11 @@ function o = addSeries(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(~isempty(o.pages), ...
-       ['@report.addSeries: Before adding a series, you must add a page, ' ...
-        'section, and either a graph or a table.']);
-o.pages{end}.addSeries(varargin{:});
+assert(~isempty(o.elements), ...
+    '@section.addSeries: Before adding a series, you must add either a graph or a table');
+assert(~isa(o.elements{1}, 'paragraph'), ...
+    '@section.addSeries: A section that contains a paragraph cannot contain a graph or a table');
+assert(isa(o.elements{end}, 'graph') || isa(o.elements{end}, 'report_table'), ...
+    '@report.addSeries: you can only add a series to a report_table or graph object');
+o.elements{end}.addSeries(varargin{:});
 end

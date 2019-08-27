@@ -15,11 +15,8 @@
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-addpath('../dynare/matlab/utilities/general')
-addpath('../dseries/src')
-addpath('../src')
-
-initialize_dseries_class;
+initialize_dseries_class();
+initialize_reporting_toolbox();
 
 db_a = dseries('db_a.csv');
 db_q = dseries('db_q.csv');

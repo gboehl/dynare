@@ -1,10 +1,10 @@
 function o = addParagraph(o, varargin)
 %function o = addParagraph(o, varargin)
-% Add a paragraph to the current section of the current page in the report
+% Add a paragraph
 %
 % INPUTS
 %   o          [report]  report object
-%   varargin             arguments to @section/addGraph.m
+%   varargin             arguments to paragraph()
 %
 % OUTPUTS
 %   o          [report]  updated report object
@@ -12,7 +12,7 @@ function o = addParagraph(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,10 +29,7 @@ function o = addParagraph(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(length(o.pages) > 0, ...
+assert(~isempty(o.pages) > 0, ...
        '@report.addParagraph: Before adding a paragraph, you must add a page and a section.');
-assert(length(o.pages{end}.sections) > 0, ...
-       '@report.addParagraph: Before adding a paragraph, you must add a section.');
-o.pages{end}.sections{end} = ...
-    o.pages{end}.sections{end}.addParagraph(varargin{:});
+o.pages{end}.addParagraph(varargin{:});
 end

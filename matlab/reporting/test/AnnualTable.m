@@ -1,5 +1,5 @@
 function rep = AnnualTable(rep, db_a, dc_a, seriesRootName, arange)
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,17 +18,17 @@ function rep = AnnualTable(rep, db_a, dc_a, seriesRootName, arange)
 
 shortNames = {'US', 'EU', 'JA', 'EA6', 'LA6', 'RC6'};
 longNames  = {'Coca Cola', 'Kinder Bueno', 'Pizza', ...
-              'Vegetarianism Is Good', 'OS X', 'Dothraki'};
+    'Vegetarianism Is Good', 'OS X', 'Dothraki'};
 
-rep = rep.addSeries('tableSubSectionHeader', 'A group', ...
-                    'tableRowColor', 'red!22');
-for i=1:length(shortNames)
+rep.addSeries('tableSubSectionHeader', 'A group', ...
+    'tableRowColor', 'red!22');
+for i = 1:length(shortNames)
     db_a = db_a.tex_rename([seriesRootName shortNames{i}], longNames{i});
-    rep = rep.addSeries('data', db_a{[seriesRootName shortNames{i}]});
+    rep.addSeries('data', db_a{[seriesRootName shortNames{i}]});
     delta = dc_a{[seriesRootName shortNames{i}]}-db_a{[seriesRootName shortNames{i}]};
     delta = delta.tex_rename('$\Delta$');
-    rep = rep.addSeries('data', delta, ...
-                        'tableShowMarkers', true, ...
-                        'tableAlignRight', true);
+    rep.addSeries('data', delta, ...
+        'tableShowMarkers', true, ...
+        'tableAlignRight', true);
 end
 end

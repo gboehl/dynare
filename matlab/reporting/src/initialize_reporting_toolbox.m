@@ -1,17 +1,9 @@
-function display(o)
-%function display(o)
-% Display a Report_Series object
+function initialize_reporting_toolbox()
+%function initialize_reporting_toolbox()
 %
-% INPUTS
-%   o   [report_series] report_series object
+% Function to set the necessary paths for the Reporting toolbox
 %
-% OUTPUTS
-%   none
-%
-% SPECIAL REQUIREMENTS
-%   none
-
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,5 +20,9 @@ function display(o)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-display_reporting_object(o);
+% Find reporting source directory
+reporting_src_root = strrep(which('initialize_reporting_toolbox'), 'initialize_reporting_toolbox.m', '');
+
+% Add path to reporting source
+addpath([reporting_src_root filesep '..' filesep 'macros']);
 end

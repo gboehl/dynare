@@ -1,17 +1,18 @@
-function display(o)
-%function display(o)
-% Display a Paragraph object
+function o = addParagraph(o, varargin)
+%function o = addParagraph(o, varargin)
+% Add a series
 %
 % INPUTS
-%   o   [paragraph] paragraph object
+%   o          [page]    page object
+%   varargin             arguments to paragraph()
 %
 % OUTPUTS
-%   none
+%   updated section object
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014-2015 Dynare Team
+% Copyright (C) 2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,5 +29,7 @@ function display(o)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-display_reporting_object(o);
+assert(~isempty(o.sections), ...
+       '@page.addParagraph: Before adding a paragraph, you must add a section.');
+o.sections{end}.addParagraph(varargin{:});
 end

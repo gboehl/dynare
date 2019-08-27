@@ -1,5 +1,4 @@
 before_script:
-  - git clone https://git.dynare.org/Dynare/dynare.git
   - git clone https://git.dynare.org/Dynare/dseries.git
 
 testsuite_matlab:

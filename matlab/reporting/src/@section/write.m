@@ -1,5 +1,5 @@
-function o = write(o, fid, pg, sec)
-%function o = write(o, fid, pg, sec)
+function write(o, fid, pg, sec)
+%function write(o, fid, pg, sec)
 % Write Section object
 %
 % INPUTS
@@ -71,7 +71,7 @@ for i=1:ne
         if col ~= o.cols
             fprintf(fid, '\\end{tabular}}\\\\\n');
             fprintf(fid, '%% End Section Object\n\n');
-            return;
+            return
         end
     else
         if isa(o.elements{i}, 'paragraph')

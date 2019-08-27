@@ -1,10 +1,10 @@
 function o = addVspace(o, varargin)
 %function o = addVspace(o, varargin)
-% Add a vspace to the Cell Array of vspaces in the report
+% Add a vspace
 %
 % INPUTS
-%   1 args => add empty vspace
-%   2 args => add given vspace
+%   o          [section] section object
+%   varargin             arguments to vspace()
 %
 % OUTPUTS
 %   updated section object
@@ -29,9 +29,9 @@ function o = addVspace(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-for i=1:length(o.elements)
-    assert(~isa(o.elements{i}, 'paragraph'), ...
-           '@addVspace: A Section that contains a Paragraph cannot contain a Vspace');
+if ~isempty(o.elements)
+    assert(~isa(o.elements{1}, 'paragraph'), ...
+        '@section.addSeries: A section that contains a paragraph cannot contain a graph or a table');
 end
 o.elements{end+1} = vspace(varargin{:});
 end

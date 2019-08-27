@@ -1,17 +1,18 @@
-function display(o)
-%function display(o)
-% Display a Page object
+function o = addGraph(o, varargin)
+%function o = addGraph(o, varargin)
+% Add a report_table
 %
 % INPUTS
-%   o   [page] page object
+%   o          [page]    page object
+%   varargin             arguments to graph()
 %
 % OUTPUTS
-%   none
+%   updated section object
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,5 +29,7 @@ function display(o)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-display_reporting_object(o);
+assert(~isempty(o.sections), ...
+       '@page.addGraph: Before adding a graph, you must add a section.');
+o.sections{end}.addGraph(varargin{:});
 end

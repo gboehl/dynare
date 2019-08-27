@@ -1,11 +1,11 @@
-function o = writeSeriesForGraph(o, fid, xrange, series_num)
-%function o = writeSeriesForGraph(o, fid, xrange, series_num)
+function writeSeriesForGraph(o, fid, xrange, series_num)
+%function writeSeriesForGraph(o, fid, xrange, series_num)
 % Print a TikZ line
 %
 % INPUTS
-%   o       [report_series]    series object
-%   xrange  [dates]            range of x values for line
-%   series_num [int]           the number of this series in the total number of series passed to this graph
+%   o          [report_series]    series object
+%   xrange     [dates]            range of x values for line
+%   series_num [int]              the number of this series in the total number of series passed to this graph
 %
 % OUTPUTS
 %   NONE
@@ -13,7 +13,7 @@ function o = writeSeriesForGraph(o, fid, xrange, series_num)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright (C) 2014-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

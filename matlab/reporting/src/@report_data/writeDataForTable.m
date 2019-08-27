@@ -1,5 +1,5 @@
-function o = writeDataForTable(o, fid, precision)
-%function o = writeDataForTable(o, fid, precision)
+function writeDataForTable(o, fid, precision)
+%function writeDataForTable(o, fid, precision)
 % Write Table Data
 %
 % INPUTS

@@ -1,5 +1,5 @@
-function o = writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
-%function o = writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
+function writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
+%function writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
 % Write Table Row
 %
 % INPUTS
@@ -17,7 +17,7 @@ function o = writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

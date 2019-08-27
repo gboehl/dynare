@@ -1,5 +1,5 @@
-function o = write(o, fid, pg)
-%function o = write(o, fid, pg)
+function write(o, fid, pg)
+%function write(o, fid, pg)
 % Write a Page object
 %
 % INPUTS
@@ -40,7 +40,7 @@ end
 for i=1:length(o.footnote)
     fprintf(fid, '\\blfootnote{\\tiny %d. %s}', i, o.footnote{i});
 end
-fprintf(fid,'\n');
+fprintf(fid, '\n');
 
 if ~isempty(o.latex)
     if ~exist(o.pageDirName, 'dir')
@@ -58,17 +58,16 @@ if ~isempty(o.latex)
     fprintf(fid, '\\input{%s}', pagename);
 else
     fprintf(fid, '\\begin{tabular}[t]{c}\n');
-    for i=1:length(o.title)
+    for i = 1:length(o.title)
         if isint(o.titleTruncate)
             if length(o.title{i}) > o.titleTruncate
                 o.title{i} = o.title{i}(1:o.titleTruncate);
             end
         end
-        fprintf(fid,'\\multicolumn{1}{c}{%s %s}\\\\\n', o.titleFormat{i}, o.title{i});
+        fprintf(fid, '\\multicolumn{1}{c}{%s %s}\\\\\n', o.titleFormat{i}, o.title{i});
     end
 
-    nps = length(o.sections);
-    for i=1:nps
+    for i = 1:length(o.sections)
         o.sections{i}.write(fid, pg, i);
     end
     fprintf(fid, '\\end{tabular}\n');

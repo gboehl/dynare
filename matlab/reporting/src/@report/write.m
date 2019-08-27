@@ -84,8 +84,7 @@ end
 fprintf(fid, '\\pgfplotsset{tick scale binop={\\times},\ntrim axis left}\n');
 fprintf(fid, '\\centering\n');
 
-nps = length(o.pages);
-for i=1:nps
+for i = 1:length(o.pages)
     if o.showOutput
         fprintf(1, 'Writing Page: %d\n', i);
     end

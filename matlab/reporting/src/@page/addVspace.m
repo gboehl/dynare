@@ -1,7 +1,18 @@
-function B = subsasgn(A, S, V)
-% function B = subsasgn(A, S, V)
+function o = addVspace(o, varargin)
+%function o = addVspace(o, varargin)
+% Add a vspace
+%
+% INPUTS
+%   o          [page]    page object
+%   varargin             arguments to vspace()
+%
+% OUTPUTS
+%   updated section object
+%
+% SPECIAL REQUIREMENTS
+%   none
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,28 +29,7 @@ function B = subsasgn(A, S, V)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-B = A;
-if length(S) > 1
-    for i=1:(length(S)-1)
-        B = subsref(B, S(i));
-    end
-    B = subsasgn(B, S(end), V);
-    B = subsasgn(A, S(1:(end-1)), B);
-    return
-end
-
-switch S.type
-  case '.'
-    switch S.subs
-      case fieldnames(A)
-        B.(S.subs) = V;
-      otherwise
-        error(['@report_table.subsasgn: field ' S.subs 'does not exist in the report_table class'])
-    end
-  case '{}'
-    assert(isint(S.subs{1}));
-    B{S.subs{1}} = V;
-  otherwise
-    error('@report_table.subsasgn: syntax error')
-end
+assert(~isempty(o.sections), ...
+       '@page.addVspace: Before adding a vspace, you must add a section.');
+o.sections{end}.addVspace(varargin{:});
 end

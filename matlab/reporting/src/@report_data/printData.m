@@ -1,4 +1,4 @@
-function o = printData(o, fid, data, precision)
+function printData(o, fid, data, precision)
 %function printData(o, fid, dser, precision)
 % function to print a row of data, contained in data
 %

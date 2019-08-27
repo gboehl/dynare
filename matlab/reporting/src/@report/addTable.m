@@ -4,7 +4,7 @@ function o = addTable(o, varargin)
 %
 % INPUTS
 %   o          [report]  report object
-%   varargin             arguments to @section/addTable.m
+%   varargin             arguments to report_table()
 %
 % OUTPUTS
 %   o          [report]  updated report object
@@ -29,10 +29,7 @@ function o = addTable(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(length(o.pages) > 0, ...
+assert(~isempty(o.pages), ...
        '@report.addTable: Before adding a table, you must add a page and a section.');
-assert(length(o.pages{end}.sections) > 0, ...
-       '@report.addTable: Before adding a table, you must add a section.');
-o.pages{end}.sections{end} = ...
-    o.pages{end}.sections{end}.addTable(varargin{:});
+o.pages{end}.addTable(varargin{:});
 end

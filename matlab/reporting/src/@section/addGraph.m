@@ -1,11 +1,10 @@
 function o = addGraph(o, varargin)
 %function o = addGraph(o, varargin)
-% Add a graph to the Cell Array of graphs in the report
+% Add a graph
 %
 % INPUTS
-%   1 args => add empty graph
-%   2 args => add given graph
-%   3 args => add graph at index
+%   o          [section] section object
+%   varargin             arguments to graph()
 %
 % OUTPUTS
 %   updated section object
@@ -13,7 +12,7 @@ function o = addGraph(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,9 +29,9 @@ function o = addGraph(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-for i=1:length(o.elements)
-    assert(~isa(o.elements{i}, 'paragraph'), ...
-           '@addGraph: A Section that contains a Paragraph cannot contain a Graph');
+if ~isempty(o.elements)
+    assert(~isa(o.elements{1}, 'paragraph'), ...
+        '@section.addSeries: A section that contains a paragraph cannot contain a graph or a table');
 end
 o.elements{end+1} = graph(varargin{:});
 end

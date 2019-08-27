@@ -5,7 +5,7 @@ all: check-octave check-matlab
 
 check-octave:
 	@cd test ;\
-	$(OCTAVE) --silent --no-history runtest.m && [ -f report.pdf ]
+	$(OCTAVE) --no-init-file --silent --no-history --eval "addpath([pwd() '/../dseries/src']); addpath([pwd() '/../src']); runtest;" && [ -f report.pdf ]
 
 check-matlab:
-	@$(MATLAB) -nosplash -nodisplay -r "cd test; runtest; quit" && [ -f test/report.pdf ]
+	@$(MATLAB) -nosplash -nodisplay -r "addpath dseries/src; addpath src; cd test; runtest; quit" && [ -f test/report.pdf ]

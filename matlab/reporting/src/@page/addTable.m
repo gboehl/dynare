@@ -1,7 +1,18 @@
-function tf = areParensNext(S)
-%function tf = areParensNext(S)
+function o = addTable(o, varargin)
+%function o = addTable(o, varargin)
+% Add a report_table
+%
+% INPUTS
+%   o          [page]    page object
+%   varargin             arguments to report_table()
+%
+% OUTPUTS
+%   updated section object
+%
+% SPECIAL REQUIREMENTS
+%   none
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,9 +29,7 @@ function tf = areParensNext(S)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if length(S) > 1 && strcmp(S(2).type, '()')
-    tf = true;
-else
-    tf = false;
-end
+assert(~isempty(o.sections), ...
+       '@page.addTable: Before adding a table, you must add a section.');
+o.sections{end}.addTable(varargin{:});
 end

@@ -1,6 +1,6 @@
 function o = addPage(o, varargin)
 %function o = addPage(o, varargin)
-% Add a page to the report
+% Add a page
 %
 % INPUTS
 %   o          [report]  report object

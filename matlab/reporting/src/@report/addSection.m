@@ -1,10 +1,10 @@
 function o = addSection(o, varargin)
 %function o = addSection(o, varargin)
-% Add a section to the current page in the report
+% Add a section
 %
 % INPUTS
 %   o          [report]  report object
-%   varargin             arguments to @section/addGraph.m
+%   varargin             arguments to section()
 %
 % OUTPUTS
 %   o          [report]  updated report object
@@ -12,7 +12,7 @@ function o = addSection(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,7 +29,7 @@ function o = addSection(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(length(o.pages) > 0, ...
+assert(~isempty(o.pages) > 0, ...
        '@report.addSection: Before adding a section, you must add a page.');
-o.pages{end} = o.pages{end}.addSection(varargin{:});
+o.pages{end}.addSection(varargin{:});
 end

@@ -1,10 +1,10 @@
 function o = addData(o, varargin)
 %function o = addData(o, varargin)
-% Add data to the current section of the current page in the report
+% Add data
 %
 % INPUTS
 %   o          [report]  report object
-%   varargin             arguments to @report_table/addData
+%   varargin             arguments to report_data()
 %
 % OUTPUTS
 %   o          [report]  updated report object
@@ -29,17 +29,7 @@ function o = addData(o, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(~isempty(o.pages) , ...
-       ['@report.addData: Before adding data, you must add a page, ' ...
-        'section, and a table.']);
-assert(~isempty(o.pages{end}.sections) , ...
-       ['@report.addData: Before adding data, you must add a section and ' ...
-        'a table']);
-assert(~isempty(o.pages{end}.sections{end}.elements), ...
-       '@report.addData: Before adding data, you must add a table');
-assert(isa(o.pages{end}.sections{end}.elements{end}, 'report_table'), ...
-       '@report.addData: you can only add data to a report_table object');
-
-o.pages{end}.sections{end}.elements{end} = ...
-    o.pages{end}.sections{end}.elements{end}.addData(varargin{:});
+assert(~isempty(o.pages), ...
+       '@report.addData: Before adding data, you must add a page, section, and a table.');
+o.pages{end}.addData(varargin{:});
 end

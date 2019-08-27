@@ -1,11 +1,10 @@
-function p = addSection(p, varargin)
-%function p = addSection(p, varargin)
-% Add a section to the Cell Array of sections in the report
+function o = addSection(o, varargin)
+%function o = addSection(o, varargin)
+% Add a section
 %
 % INPUTS
-%   1 args => add empty section
-%   2 args => add given section
-%   3 args => add section at index
+%   o          [page]    page object
+%   varargin             arguments to section()
 %
 % OUTPUTS
 %   updated page object
@@ -13,7 +12,7 @@ function p = addSection(p, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,5 +29,5 @@ function p = addSection(p, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-p.sections{end+1} = section(varargin{:});
+o.sections{end+1} = section(varargin{:});
 end

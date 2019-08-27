@@ -1,5 +1,5 @@
-function o = write(o, fid)
-%function o = write(o, fid)
+function write(o, fid)
+%function write(o, fid)
 % Write Paragraph object
 %
 % INPUTS
