@@ -20,8 +20,6 @@ Permission is granted to copy, distribute and/or modify this document under the 
 
 A copy of the license can be found at `http://www.gnu.org/licenses/fdl.txt <http://www.gnu.org/licenses/fdl.txt>`_. 
 
-Table of contents:
-
 .. toctree::
    :numbered:
    :maxdepth: 4
