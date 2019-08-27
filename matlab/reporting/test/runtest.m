@@ -16,7 +16,6 @@
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 addpath('../dynare/matlab/utilities/general')
-addpath('../dates/src')
 addpath('../dseries/src')
 addpath('../src')
 
