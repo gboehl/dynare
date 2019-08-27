@@ -10716,7 +10716,9 @@ Macro directives
 
 
 .. macrodir:: @#for MACRO_VARIABLE in MACRO_EXPRESSION
+              @#for MACRO_VARIABLE in MACRO_EXPRESSION when MACRO_EXPRESSION
               @#for MACRO_TUPLE in MACRO_EXPRESSION
+              @#for MACRO_TUPLE in MACRO_EXPRESSION when MACRO_EXPRESSION
               @#endfor
 
     |br| Loop construction for replicating portions of the ``.mod``
@@ -10745,7 +10747,7 @@ Macro directives
         ::
 
             model;
-            @#for (i, j) in [("GDP", "home"), ("GDP", "foreign")]
+            @#for (i, j) in ["GDP"] * ["home", "foreign"]
               @{i}_@{j} = A * K_@{j}^a * L_@{j}^(1-a);
             @#endfor
             end;
@@ -10755,6 +10757,27 @@ Macro directives
             model;
               GDP_home = A * K_home^a * L_home^(1-a);
               GDP_foreign = A * K_foreign^a * L_foreign^(1-a);
+            end;
+
+    *Example*
+
+        ::
+
+            @#define countries = ["US", "FR", "JA"]
+            @#define nth_co = "US"
+            model;
+            @#for co in countries when co != nth_co
+              (1+i_@{co}) = (1+i_@{nth_co}) * E_@{co}(+1) / E_@{co};
+            @#endfor
+              E_@{nth_co} = 1;
+            end;
+
+        The latter is equivalent to::
+
+            model;
+              (1+i_FR) = (1+i_US) * E_FR(+1) / E_FR;
+              (1+i_JA) = (1+i_US) * E_JA(+1) / E_JA;
+              E_US = 1;
             end;
 
 
@@ -10770,12 +10793,31 @@ Macro directives
     output and to abort. The argument must evaluate to a string.
 
 .. macrodir:: @#echomacrovars
-              @#echomacrovars(save)
+              @#echomacrovars MACRO_VARIABLE_LIST
+              @#echomacrovars(save) MACRO_VARIABLE_LIST
 
-    |br| Asks the preprocessor to display the value of all macro
-    variables up until this point. If the ``save`` option is passed,
-    then values of the macro variables are saved to
-    ``options_.macrovars_line_<<line_numbers>>``.
+    |br| Asks the preprocessor to display the value of all macro variables up
+    until this point. If the ``save`` option is passed, then values of the
+    macro variables are saved to
+    ``options_.macrovars_line_<<line_numbers>>``. If ``NAME_LIST`` is passed,
+    only display/save variables and functions with that name.
+
+    *Example*
+
+        ::
+
+            @#define A = 1
+            @#define B = 2
+            @#define C(x) = x*2
+            @#echomacrovars A C D
+
+        The output of the command above is::
+
+            Macro Variables:
+              A = 1
+            Macro Functions:
+              C(x) = (x * 2)
+
 
 Typical usages
 --------------
