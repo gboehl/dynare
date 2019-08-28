@@ -193,14 +193,20 @@ by the ``dynare`` command.
 
         Suppresses all warnings.
 
-    .. option:: json = parse|transform|compute
+    .. option:: json = parse|check|transform|compute
 
-        Causes the preprocessor to output a version of the ``.mod``
-        file in JSON format.
+        Causes the preprocessor to output a version of the ``.mod`` file in
+        JSON format. When the JSON output is created depends on the value
+        passed. These values represent various steps of processing in the
+        preprocessor.
 
-        If ``parse`` is passed, the output will be written after the
-        parsing of the ``.mod`` file to a file called
-        ``FILENAME.json``.
+        If ``parse`` is passed, the output will be written after the parsing of
+        the ``.mod`` file to a file called ``FILENAME.json`` but before file
+        has been checked (e.g. if there are unused exogenous in the model
+        block, the JSON output will be created before the preprocessor exits).
+
+        If ``check`` is passed, the output will be written to a file called
+        ``FILENAME.json`` after the model has been checked.
 
         If ``transform`` is passed, the JSON output of the transformed
         model (maximum lead of 1, minimum lag of -1, expectation
