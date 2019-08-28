@@ -47,7 +47,7 @@ o.header = '';
 if nargin == 1
     assert(isa(varargin{1}, 'report'), ['@report.report: with one arg, ' ...
                         'you must pass a report object']);
-    r = varargin{1};
+    o = varargin{1};
     return;
 elseif nargin > 1
     if round(nargin/2) ~= nargin/2
