@@ -12,7 +12,7 @@ function o = write(o, fid)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,14 +31,8 @@ function o = write(o, fid)
 
 assert(fid ~= -1);
 
-for i=1:o.number
-    fprintf(fid, ' \\par \\medskip ');
-end
-
+fprintf(fid, repmat(' \\par \\medskip ', 1, o.number));
 if o.hline > 0
-    fprintf(fid, '\\\\\n');
-    for i=1:o.hline
-        fprintf(fid, '\\midrule');
-    end
+    fprintf(fid, ['\\\\\n' repmat('\\midrule', 1, o.hline)]);
 end
 end
