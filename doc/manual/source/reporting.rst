@@ -496,8 +496,8 @@ and a clarifying example.
 
     .. option:: titleFormat, STRING
 
-        Same as :opt:`titleFormat <titleFormat, STRING |
-        CELL_ARRAY_STRINGS>`, just for tables. Default: ``\large``.
+        Same as :opt:`titleFormat <titleFormat, STRING | CELL_ARRAY_STRINGS>`,
+        just for tables. Default: ``\large``.
 
     .. option:: vlineAfter, dates | CELL_ARRAY_DATES
 
