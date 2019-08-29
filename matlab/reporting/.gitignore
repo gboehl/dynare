@@ -5,6 +5,7 @@
 *.log
 *.out
 *.tex
+*.csv
 *synctex.gz
 .DS_Store
 test/tmpRepDir
