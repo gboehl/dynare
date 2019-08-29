@@ -393,7 +393,7 @@ and a clarifying example.
 
     .. option:: xTickLabelAnchor, STRING
 
-        Where to anchor the x tick label. Default: ```south'``.
+        Where to anchor the x tick label. Default: ```east'``.
 
     .. option:: xTickLabelRotation, DOUBLE
 
@@ -414,11 +414,11 @@ and a clarifying example.
     .. option:: yTickLabelFixed, BOOLEAN
 
         Round the y tick labels to a fixed number of decimal places,
-        given by ``yTickLabelPrecision``. Default: ``.true``.
+        given by ``yTickLabelPrecision``. Default: ``true``.
 
     .. option:: yTickLabelPrecision, INTEGER
 
-        The precision with which to report the ``yTickLabel``. Default: ``1``.
+        The precision with which to report the ``yTickLabel``. Default: ``0``.
 
     .. option:: yTickLabelScaled, BOOLEAN
 
