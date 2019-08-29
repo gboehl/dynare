@@ -32,7 +32,7 @@ function write(o, fid, pg)
 
 assert(fid ~= -1);
 
-fprintf(fid, '\n%% Page Object written %s\n', datestr(now));
+fprintf(fid, '\n%% Page Number %d written %s\n', pg, datestr(now));
 if strcmpi(o.orientation, 'landscape')
     fprintf(fid, '\\begin{landscape}\n');
 end
