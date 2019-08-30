@@ -74,7 +74,4 @@ classdef report_data < handle
     methods (Access = ?report_table, Hidden = true)
         writeDataForTable(o, fid, precision)
     end
-    methods (Access = private)
-        printData(o, fid, data, precision)
-    end
 end
