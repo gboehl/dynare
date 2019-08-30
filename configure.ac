@@ -119,7 +119,6 @@ AC_CONFIG_FILES([Makefile
                  doc/dseries-and-reporting/Makefile
                  tests/Makefile
                  matlab/dynare_version.m
-                 windows/dynare-version.nsi
                  dynare++/Makefile
                  dynare++/parser/cc/Makefile
                  dynare++/sylv/Makefile

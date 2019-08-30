@@ -2,13 +2,6 @@
 # Uses "NullSoft Scriptable Installer System", aka NSIS (see http://nsis.sourceforge.net)
 # NSIS can be run from both Windows and Linux (see "nsis" package in Debian)
 
-# How to build the installer:
-# - build: the preprocessor, the MEX binaries (for MATLAB and for Octave), and the documentation (PDF files + HTML manual)
-# - run "makensis dynare.nsi" to create the installer
-# - if there is no failure, this will create a file "dynare-VERSION-win.exe" in the current directory
-
-!include dynare-version.nsi
-
 SetCompressor /SOLID lzma
 
 Name "Dynare ${VERSION}"
@@ -25,7 +18,7 @@ InstallDir "c:\dynare\${VERSION}"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
-!define MUI_FINISHPAGE_LINK_LOCATION http://www.dynare.org
+!define MUI_FINISHPAGE_LINK_LOCATION https://www.dynare.org
 !define MUI_FINISHPAGE_LINK "Go to Dynare homepage"
 !define MUI_FINISHPAGE_SHOWREADME $INSTDIR\README.txt
 !insertmacro MUI_PAGE_FINISH
@@ -108,13 +101,13 @@ SectionGroupEnd
 SectionGroup "MEX files for Octave"
 
 Section "MEX files for Octave 5.1.0 (MinGW, 64bit)"
- SetOutPath $INSTDIR\mex\octave
- File ..\mex\octave\*
+ SetOutPath $INSTDIR\mex\octave\win64
+ File ..\mex\octave\win64\*
 SectionEnd
 
 Section "MEX files for Octave 5.1.0 (MinGW, 32bit)"
- SetOutPath $INSTDIR\mex\octave32
- File ..\mex\octave32\*
+ SetOutPath $INSTDIR\mex\octave\win32
+ File ..\mex\octave\win32\*
 SectionEnd
 
 SectionGroupEnd
@@ -123,12 +116,12 @@ SectionGroup "MinGW compiler (needed for use_dll option under MATLAB)"
 
 Section "MinGW for 32-bit MATLAB"
  SetOutPath $INSTDIR\mingw32
- File /r mingw32\*
+ File /r deps\mingw32\*
 SectionEnd
 
 Section "MinGW for 64-bit MATLAB"
  SetOutPath $INSTDIR\mingw64
- File /r mingw64\*
+ File /r deps\mingw64\*
 SectionEnd
 
 SectionGroupEnd
@@ -140,7 +133,7 @@ SectionEnd
 
 Section "Documentation and examples (Dynare and Dynare++)"
  SetOutPath $INSTDIR\doc
- File ..\doc\manual\build\latex\dynare-manual.pdf ..\doc\guide.pdf ..\doc\bvar-a-la-sims.pdf ..\doc\dr.pdf ..\doc\macroprocessor\macroprocessor.pdf ..\doc\preprocessor\preprocessor.pdf ..\doc\parallel\parallel.pdf ..\doc\gsa\gsa.pdf ..\doc\dseries-and-reporting\dseriesReporting.pdf
+ File ..\doc\manual\build\latex\dynare-manual.pdf ..\doc\guide.pdf ..\doc\bvar-a-la-sims.pdf ..\doc\dr.pdf ..\preprocessor\doc\macroprocessor\macroprocessor.pdf ..\preprocessor\doc\preprocessor\preprocessor.pdf ..\doc\parallel\parallel.pdf ..\doc\gsa\gsa.pdf ..\doc\dseries-and-reporting\dseriesReporting.pdf
 
  SetOutPath $INSTDIR\doc\dynare-manual.html
  File /r ..\doc\manual\build\html\*

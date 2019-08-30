@@ -1,0 +1,69 @@
+--- OpenBLAS-0.3.6/Makefile.rule	2019-04-29 19:22:19.000000000 +0200
++++ OpenBLAS-0.3.6-w32/Makefile.rule	2019-06-13 11:02:50.665872965 +0200
+@@ -15,7 +15,7 @@
+ # TARGET = PENRYN
+ 
+ # If you want to support multiple architecture in one binary
+-# DYNAMIC_ARCH = 1
++DYNAMIC_ARCH = 1
+ 
+ # If you want the full list of x86_64 architectures supported in DYNAMIC_ARCH
+ # mode (including individual optimizied codes for PENRYN, DUNNINGTON, OPTERON,
+@@ -24,10 +24,10 @@
+ 
+ # C compiler including binary type(32bit / 64bit). Default is gcc.
+ # Don't use Intel Compiler or PGI, it won't generate right codes as I expect.
+-# CC = gcc
++CC = i686-w64-mingw32-gcc
+ 
+ # Fortran compiler. Default is g77.
+-# FC = gfortran
++FC = i686-w64-mingw32-gfortran
+ 
+ # Even you can specify cross compiler. Meanwhile, please set HOSTCC.
+ 
+@@ -45,7 +45,7 @@
+ 
+ 
+ # If you use the cross compiler, please set this host compiler.
+-# HOSTCC = gcc
++HOSTCC = gcc
+ 
+ # If you need 32bit binary, define BINARY=32, otherwise define BINARY=64
+ # Please note that AVX is not available on 32-bit.
+@@ -56,7 +56,7 @@
+ # specify it.
+ # For force setting for single threaded, specify USE_THREAD = 0
+ # For force setting for multi  threaded, specify USE_THREAD = 1
+-# USE_THREAD = 0
++USE_THREAD = 1
+ 
+ # If you're going to use this library with OpenMP, please comment it in.
+ # This flag is always set for POWER8. Don't set USE_OPENMP = 0 if you're targeting POWER8.
+@@ -82,7 +82,7 @@
+ # value (eg. 32-256) if you expect your users to use that many threads. Due to the way
+ # some internal structures are allocated, using a large NUM_THREADS value has a RAM
+ # footprint penalty, even if users reduce the actual number of threads at runtime.
+-# NUM_THREADS = 24
++NUM_THREADS = 2
+ 
+ # If you have enabled USE_OPENMP and your application would call
+ # OpenBLAS's calculation API from multiple threads, please comment this in.
+@@ -95,7 +95,7 @@
+ # NO_STATIC = 1
+ 
+ # If you don't need to generate the shared library, please comment this in.
+-# NO_SHARED = 1
++NO_SHARED = 1
+ 
+ # If you don't need the CBLAS interface, please comment this in.
+ # NO_CBLAS = 1
+@@ -109,7 +109,7 @@
+ # NO_LAPACK = 1
+ 
+ # If you don't need LAPACKE (C Interface to LAPACK), please comment this in.
+-# NO_LAPACKE = 1
++NO_LAPACKE = 1
+ 
+ # Build LAPACK Deprecated functions since LAPACK 3.6.0
+ BUILD_LAPACK_DEPRECATED = 1

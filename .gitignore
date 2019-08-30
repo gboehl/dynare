@@ -124,6 +124,8 @@ doc/internals/ltxpng
 
 # Windows
 /windows/dynare-version.nsi
+!/windows/Makefile
+!/windows/deps/Makefile
 
 # MacOS stuff
 .DS_Store

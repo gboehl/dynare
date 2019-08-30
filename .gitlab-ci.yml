@@ -2,6 +2,11 @@ variables:
   GIT_SUBMODULE_STRATEGY: normal
   TERM: linux
 
+stages:
+  - build
+  - test_and_pkg
+  - deploy
+
 build_binaries:
   stage: build
   script:
@@ -36,10 +41,34 @@ build_doc:
   artifacts:
     paths:
       - doc/manual/build/
+      - doc/*.pdf
+      - doc/*/*.pdf
+      - dynare++/doc/*.pdf
+      - preprocessor/doc/*/*.pdf
     expire_in: 1 week
 
+pkg_windows:
+  stage: test_and_pkg
+  script:
+    - ln -s ~/tarballs windows/deps/
+    - make -C windows
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - windows/deps/sources32/
+      - windows/deps/sources64/
+      - windows/deps/lib32/
+      - windows/deps/lib64/
+  artifacts:
+    paths:
+      - windows/exe/*
+      - windows/zip/*
+    expire_in: 1 week
+  dependencies:
+    - build_doc
+
 .test_matlab_template:
-  stage: test
+  stage: test_and_pkg
   artifacts:
     paths:
       - tests/*.m.log
@@ -73,7 +102,7 @@ test_old_matlab:
   when: manual
 
 test_octave:
-  stage: test
+  stage: test_and_pkg
   variables:
     OPENBLAS_NUM_THREADS: 1
   script:
@@ -97,7 +126,7 @@ test_octave:
   when: manual
 
 test_dynare++:
-  stage: test
+  stage: test_and_pkg
   script:
     - autoreconf -si
     - ./configure --disable-matlab --disable-octave

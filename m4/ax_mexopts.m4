@@ -57,7 +57,7 @@ case ${MATLAB_ARCH} in
     # against libwinpthread DLL (which is pulled in by libstdc++, even without
     # using threads, since we are using the POSIX threads version of MinGW)
     MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -shared -L$MATLAB/bin/${MATLAB_ARCH} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,-Bdynamic,--no-whole-archive"
-    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP $(pwd)/$srcdir/mex.def"
+    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP \$(abs_top_srcdir)/mex.def"
     MATLAB_LIBS="-lmex -lmx -lmat -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
     ;;
@@ -68,7 +68,7 @@ case ${MATLAB_ARCH} in
     MATLAB_CXXFLAGS="$MATLAB_CFLAGS"
     MATLAB_FFLAGS="-fexceptions -fbackslash -arch x86_64"
     MATLAB_LDFLAGS_NOMAP="-Wl,-twolevel_namespace -undefined error -arch x86_64 -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
-    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,$(pwd)/$srcdir/mexFunction-MacOSX.map"
+    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,\$(abs_top_srcdir)/mexFunction-MacOSX.map"
     MATLAB_LIBS="-L$MATLAB/bin/maci64 -lmx -lmex -lmat -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
     ;;

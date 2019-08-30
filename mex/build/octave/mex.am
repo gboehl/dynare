@@ -23,7 +23,7 @@ all-local: $(PROGRAMS)
 	$(MKDIR_P) $(top_srcdir)/../../octave
 	cd $(top_srcdir)/../../octave && \
 	for p in $(PROGRAMS); do \
-		$(LN_S) -f $(abs_srcdir)/$$p $$p; \
+		$(LN_S) -f $(abs_builddir)/$$p $$p; \
 	done
 
 clean-local:

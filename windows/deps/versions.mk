@@ -1,0 +1,47 @@
+BOOST_VERSION = 1_70_0
+GSL_VERSION = 2.5
+MATIO_VERSION = 1.5.15
+OPENBLAS_VERSION = 0.3.6
+SLICOT_VERSION = 5.0+20101122
+ZLIB_VERSION = 1.2.11
+
+OCTAVE_VERSION = 5.1.0
+OCTAVE_W32_BUILD =
+OCTAVE_W64_BUILD =
+
+MATLAB32_VERSION = 20181204
+MATLAB64_VERSION = 20181204
+
+## MinGW packages
+# Determine the versions by:
+# - first running: pacman -Sy
+# - and then with appropriate queries using: pacman -Ss <regex>
+
+# pacman -Ss mingw-w64-.*-gcc$
+MINGW32_GCC_VERSION = 9.1.0-2
+MINGW64_GCC_VERSION = 9.1.0-2
+
+# pacman -Ss mingw-w64-.*-gmp$
+MINGW32_GMP_VERSION = 6.1.2-1
+MINGW64_GMP_VERSION = 6.1.2-1
+
+# pacman -Ss mingw-w64-.*-binutils
+MINGW32_BINUTILS_VERSION = 2.30-6
+MINGW64_BINUTILS_VERSION = 2.30-6
+
+# pacman -Ss mingw-w64-.*-headers-git
+MINGW32_HEADERS_VERSION = 7.0.0.5449.a0647123-1
+MINGW64_HEADERS_VERSION = 7.0.0.5449.a0647123-1
+
+# pacman -Ss mingw-w64-.*-crt-git
+MINGW32_CRT_VERSION = 7.0.0.5449.a0647123-1
+MINGW64_CRT_VERSION = 7.0.0.5449.a0647123-1
+
+# pacman -Ss mingw-w64-.*-winpthreads-git
+MINGW32_WINPTHREADS_VERSION = 7.0.0.5447.a2d94c81-1
+MINGW64_WINPTHREADS_VERSION = 7.0.0.5447.a2d94c81-1
+
+# pacman -Ss mingw-w64-.*-libwinpthread-git
+# NB: "thread" is singular here
+MINGW32_LIBWINPTHREAD_VERSION = 7.0.0.5447.a2d94c81-1
+MINGW64_LIBWINPTHREAD_VERSION = 7.0.0.5447.a2d94c81-1

@@ -1,6 +1,6 @@
 function mexpath = add_path_to_mex_files(dynareroot, modifypath)
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,13 +22,34 @@ if nargin<2
 end
 
 if isoctave
-    if ispc() && strcmpi(computer(), 'i686-w64-mingw32')
-        mexpath = {[dynareroot '../mex/octave32/']};
+    % Add specific paths for Dynare Windows package
+    if ispc
+        if strcmpi(computer(), 'i686-w64-mingw32')
+            tmp = [dynareroot '../mex/octave/win32/'];
+            if exist(tmp, 'dir')
+                mexpath = tmp;
+                if modifypath
+                    addpath(mexpath);
+                end
+            end
+        else
+            tmp = [dynareroot '../mex/octave/win64/'];
+            if exist(tmp, 'dir')
+                mexpath = tmp;
+                if modifypath
+                    addpath(mexpath);
+                end
+            end
+        end
+    end
+    % Add generic MATLAB path (with higher priority than the previous ones)
+    if exist('mexpath')
+        mexpath = { mexpath; [dynareroot '../mex/octave/'] };
     else
-        mexpath = {[dynareroot '../mex/octave/']};
+        mexpath = { [dynareroot '../mex/octave/'] };
     end
     if modifypath
-        addpath(mexpath{1});
+        addpath([dynareroot '../mex/octave/']);
     end
 else
     % Add win32 specific paths for Dynare Windows package
