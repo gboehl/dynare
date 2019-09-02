@@ -1,13 +1,14 @@
-function graphName = writeGraphFile(o, pg, sec, row, col)
-%function graphName = writeGraphFile(o, pg, sec, row, col)
+function graphName = writeGraphFile(o, pg, sec, row, col, rep_dir)
+%function graphName = writeGraphFile(o, pg, sec, row, col, rep_dir)
 % Write the tikz file that contains the graph
 %
 % INPUTS
-%   o   [graph]   graph object
-%   pg  [integer] this page number
-%   sec [integer] this section number
-%   row [integer] this row number
-%   col [integer] this col number
+%   o         [graph]   graph object
+%   pg        [integer] this page number
+%   sec       [integer] this section number
+%   row       [integer] this row number
+%   col       [integer] this col number
+%   rep_dir   [string]  directory containing report.tex
 %
 % OUTPUTS
 %   graphName   [string] name of graph written
@@ -38,13 +39,16 @@ if ne < 1
     return
 end
 
+if exist([rep_dir filesep o.graphDirName], 'file') ~= 7
+    mkdir([rep_dir filesep o.graphDirName])
+end
 if isempty(o.graphName)
-    graphName = sprintf('%s/graph_pg%d_sec%d_row%d_col%d.tex', o.graphDirName, pg, sec, row, col);
+    graphName = sprintf([o.graphDirName filesep 'graph_pg%d_sec%d_row%d_col%d.tex'], pg, sec, row, col);
 else
-    graphName = [o.graphDirName '/' o.graphName];
+    graphName = [o.graphDirName filesep o.graphName];
 end
 
-[fid, msg] = fopen(graphName, 'w');
+[fid, msg] = fopen([rep_dir filesep graphName], 'w');
 if fid == -1
     error(['@graph.writeGraphFile: ' msg]);
 end

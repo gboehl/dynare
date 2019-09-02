@@ -28,7 +28,10 @@ function o = write(o)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-[fid, msg] = fopen(o.fileName, 'w');
+if exist(o.directory, 'file') ~= 7
+    mkdir(o.directory)
+end
+[fid, msg] = fopen([o.directory filesep o.fileName], 'w');
 if fid == -1
     error(['@report.write: ' msg]);
 end
@@ -88,7 +91,7 @@ for i = 1:length(o.pages)
     if o.showOutput
         fprintf(1, 'Writing Page: %d\n', i);
     end
-    o.pages{i}.write(fid, i);
+    o.pages{i}.write(fid, i, o.directory);
 end
 
 fprintf(fid, '\\end{document}\n');

@@ -13,7 +13,7 @@ function o = compile(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -57,7 +57,7 @@ assert(ischar(opts.compiler), '@report.compile: compiler file must be a string')
 assert(islogical(opts.showReport), '@report.compile: showReport must be either true or false');
 assert(islogical(opts.showOutput), '@report.compile: showOutput must be either true or false');
 
-if ~exist(o.fileName, 'file')
+if exist([o.directory filesep o.fileName], 'file') ~= 2
     o.write();
 end
 
@@ -90,6 +90,8 @@ if isempty(opts.compiler)
     end
 end
 
+orig_dir = pwd;
+cd(o.directory)
 options = '-synctex=1 -halt-on-error';
 if opts.showOutput
     if isoctave
@@ -104,6 +106,7 @@ end
 [~, rfn, ~] = fileparts(o.fileName);
 
 if status ~= 0
+    cd(orig_dir)
     error(['@report.compile: There was an error in compiling ' rfn '.pdf.' ...
            '  ' opts.compiler ' returned the error code: ' num2str(status)]);
 end
@@ -115,6 +118,7 @@ if o.showOutput || opts.showOutput
     disp('');
 end
 if opts.showReport && ~isoctave
-    open([pwd filesep rfn '.pdf']);
+    open([rfn '.pdf']);
 end
+cd(orig_dir)
 end

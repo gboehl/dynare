@@ -148,18 +148,15 @@ classdef report_table < handle
             end
             o.data = '';
             o.seriesToUse = '';
-            if ~exist(o.tableDirName, 'file')
-                mkdir(o.tableDirName);
-            end
         end
     end
     methods (Access = ?section, Hidden = true)
         o = addData(o, varargin)
         o = addSeries(o, varargin)
-        write(o, fid, pg, sec, row, col)
+        write(o, fid, pg, sec, row, col, rep_dir)
     end
     methods (Access = private)
-        o = writeTableFile(o, pg, sec, row, col)
+        o = writeTableFile(o, pg, sec, row, col, rep_dir)
     end
 end
 

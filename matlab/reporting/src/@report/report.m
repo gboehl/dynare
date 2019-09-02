@@ -21,6 +21,7 @@ classdef report < handle
         pages = {}
     end
     properties (SetAccess = private)
+        directory = '.'          % Directory in which to write/compile the report. Default: '.'
         title = ''               % Report Title. Default: none.
         orientation = 'portrait' % Paper orientation: Default: `portrait'.
         paper = 'a4'             % Paper size. Default: `a4'.
@@ -77,6 +78,7 @@ classdef report < handle
             end
 
             % Check options provided by user
+            assert(ischar(o.directory), '@report.report: directory must be a string');
             assert(ischar(o.title), '@report.report: title must be a string');
             assert(ischar(o.fileName), '@report.report: fileName must be a string');
             assert(ischar(o.compiler), '@report.report: compiler file must be a string');

@@ -1,14 +1,15 @@
-function write(o, fid, pg, sec, row, col)
-%function write(o, fid, pg, sec, row, col)
+function write(o, fid, pg, sec, row, col, rep_dir)
+%function write(o, fid, pg, sec, row, col, rep_dir)
 % Write a Table object
 %
 % INPUTS
-%   o   [table]   table object
-%   fid [integer] file id
-%   pg  [integer] this page number
-%   sec [integer] this section number
-%   row [integer] this row number
-%   col [integer] this col number
+%   o         [table]   table object
+%   fid       [integer] file id
+%   pg        [integer] this page number
+%   sec       [integer] this section number
+%   row       [integer] this row number
+%   col       [integer] this col number
+%   rep_dir   [string]  directory containing report.tex
 %
 % OUTPUTS
 %   o   [table] table object
@@ -34,6 +35,6 @@ function write(o, fid, pg, sec, row, col)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(fid ~= -1);
-tableName = writeTableFile(o, pg, sec, row, col);
+tableName = writeTableFile(o, pg, sec, row, col, rep_dir);
 fprintf(fid, '\\input{%s}', tableName);
 end

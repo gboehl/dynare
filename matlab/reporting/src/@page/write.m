@@ -1,11 +1,12 @@
-function write(o, fid, pg)
-%function write(o, fid, pg)
+function write(o, fid, pg, rep_dir)
+%function write(o, fid, pg, rep_dir)
 % Write a Page object
 %
 % INPUTS
 %   o              [page]     page object
 %   fid            [integer]  file id
 %   pg             [integer]  this page number
+%   rep_dir        [string]   directory containing report.tex
 %
 % OUTPUTS
 %   o              [page]     page object
@@ -46,7 +47,11 @@ if ~isempty(o.latex)
     if ~exist(o.pageDirName, 'dir')
         mkdir(o.pageDirName)
     end
-    pagename = [o.pageDirName '/page_' num2str(pg) '.tex'];
+    dir = [rep_dir filesep o.pageDirName];
+    if exist(dir, 'file') ~= 7
+        mkdir(dir)
+    end
+    pagename = [dir filesep 'page_' num2str(pg) '.tex'];
     [fidp, msg] = fopen(pagename, 'w');
     if fidp == -1
         error(['@page.write: ' msg]);
@@ -68,7 +73,7 @@ else
     end
 
     for i = 1:length(o.sections)
-        o.sections{i}.write(fid, pg, i);
+        o.sections{i}.write(fid, pg, i, rep_dir);
     end
     fprintf(fid, '\\end{tabular}\n');
 end

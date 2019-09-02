@@ -1,14 +1,15 @@
-function write(o, fid, pg, sec, row, col)
-%function write(o, fid, pg, sec, row, col)
+function write(o, fid, pg, sec, row, col, rep_dir)
+%function write(o, fid, pg, sec, row, col, rep_dir)
 % Write a Graph object
 %
 % INPUTS
-%   o   [graph]   graph object
-%   fid [integer] file id
-%   pg  [integer] this page number
-%   sec [integer] this section number
-%   row [integer] this row number
-%   col [integer] this col number
+%   o         [graph]   graph object
+%   fid       [integer] file id
+%   pg        [integer] this page number
+%   sec       [integer] this section number
+%   row       [integer] this row number
+%   col       [integer] this col number
+%   rep_dir   [string]  directory containing report.tex
 %
 % OUTPUTS
 %   o   [graph] graph object
@@ -34,6 +35,6 @@ function write(o, fid, pg, sec, row, col)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 assert(fid ~= -1);
-graphName = writeGraphFile(o, pg, sec, row, col);
+graphName = writeGraphFile(o, pg, sec, row, col, rep_dir);
 fprintf(fid, '\\input{%s}', graphName);
 end

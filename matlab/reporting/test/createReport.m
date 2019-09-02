@@ -34,7 +34,7 @@ longNames  = {'Coca Cola', 'Kinder Bueno', 'Pizza', ...
               'Vegetarianism Is Good', 'OS X', 'Dothraki'};
 
 %% Begin Report
-rep = report();
+rep = report('directory', 'my/report/dir');
 
 
 %% Page 1: GDP
@@ -107,7 +107,7 @@ rep.addVspace('number', 2);
 
 % Table 2
 rep.addTable('title', 'Output Gap', 'range', larange, ...
-                   'vlineAfter', dates('2011y'));
+                   'vlineAfter', dates('2011y'), 'tableDirName', 'page4table2');
 db_a = db_a.tex_rename('Y_WORLD', 'World');
 rep.addSeries('data', db_a{'Y_WORLD'});
 delta = db_a{'Y_WORLD'}-dc_a{'Y_WORLD'};

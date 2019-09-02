@@ -117,7 +117,7 @@ classdef page < handle
         o = addSection(o, varargin)
         o = addVspace(o, varargin)
         o = addTable(o, varargin)
-        write(o, fid, pg)
+        write(o, fid, pg, rep_dir)
         lastIndex = end(o, k, n)
         ns = numSections(p)
     end

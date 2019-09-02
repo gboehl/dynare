@@ -1,5 +1,5 @@
-function write(o, fid, pg, sec)
-%function write(o, fid, pg, sec)
+function write(o, fid, pg, sec, rep_dir)
+%function write(o, fid, pg, sec, rep_dir)
 % Write Section object
 %
 % INPUTS
@@ -7,6 +7,7 @@ function write(o, fid, pg, sec)
 %   fid       [integer] file id
 %   pg        [integer] this page number
 %   sec       [integer] this section number
+%   rep_dir   [string]  directory containing report.tex
 %
 % OUTPUTS
 %   o         [section] section object
@@ -77,7 +78,7 @@ for i=1:ne
         if isa(o.elements{i}, 'paragraph')
             o.elements{i}.write(fid);
         else
-            o.elements{i}.write(fid, pg, sec, row, col);
+            o.elements{i}.write(fid, pg, sec, row, col, rep_dir);
         end
         if col ~= o.cols
             fprintf(fid, ' & ');

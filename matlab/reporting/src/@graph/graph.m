@@ -203,18 +203,15 @@ classdef graph < handle
             end
             o.seriesToUse = '';
             o.data = '';
-            if ~exist(o.graphDirName, 'file')
-                mkdir(o.graphDirName);
-            end
         end
     end
     methods (Access = ?section, Hidden = true)
         o = addSeries(o, varargin)
-        write(o, fid, pg, sec, row, col)
+        write(o, fid, pg, sec, row, col, rep_dir)
     end
     methods (Access = private)
         % Methods defined in separate files
         lastIndex = end(o, k, n)
-        graphName = writeGraphFile(o, pg, sec, row, col)
+        graphName = writeGraphFile(o, pg, sec, row, col, rep_dir)
     end
 end

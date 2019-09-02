@@ -81,6 +81,6 @@ classdef section < handle
          o = addVspace(o, varargin)
          lastIndex = end(o, k, n)
          n = numElements(o)
-         write(o, fid, pg, sec)
+         write(o, fid, pg, sec, rep_dir)
     end
 end

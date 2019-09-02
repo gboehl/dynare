@@ -1,13 +1,14 @@
-function tableName = writeTableFile(o, pg, sec, row, col)
-%function tableName = writeTableFile(o, pg, sec, row, col)
+function tableName = writeTableFile(o, pg, sec, row, col, rep_dir)
+%function tableName = writeTableFile(o, pg, sec, row, col, rep_dir)
 % Write a Report_Table object
 %
 % INPUTS
-%   o   [report_table]    report_table object
-%   pg  [integer] this page number
-%   sec [integer] this section number
-%   row [integer] this row number
-%   col [integer] this col number
+%   o         [report_table]  report_table object
+%   pg        [integer]       this page number
+%   sec       [integer]       this section number
+%   row       [integer]       this row number
+%   col       [integer]       this col number
+%   rep_dir   [string]        directory containing report.tex
 %
 % OUTPUTS
 %   tableName   [string]    name of table written
@@ -39,13 +40,16 @@ if ne == 0 && ~is_data_table
     return
 end
 
+if exist([rep_dir filesep o.tableDirName], 'file') ~= 7
+    mkdir([rep_dir filesep o.tableDirName])
+end
 if isempty(o.tableName)
-    tableName = sprintf('%s/table_pg%d_sec%d_row%d_col%d.tex', o.tableDirName, pg, sec, row, col);
+    tableName = sprintf([o.tableDirName filesep 'table_pg%d_sec%d_row%d_col%d.tex'], pg, sec, row, col);
 else
-    tableName = [o.tableDirName '/' o.tableName];
+    tableName = [o.tableDirName filesep o.tableName];
 end
 
-[fid, msg] = fopen(tableName, 'w');
+[fid, msg] = fopen([rep_dir filesep tableName], 'w');
 if fid == -1
     error(['@report_table.writeTableFile: ' msg]);
 end
