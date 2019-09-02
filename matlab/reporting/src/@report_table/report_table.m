@@ -195,7 +195,7 @@ tf = true;
 for i=1:length(dcell)
     if ~(isdates(dcell{i}) && dcell{i}.ndat >= 2)
         tf = false;
-        return;
+        return
     end
 end
 end
@@ -235,7 +235,7 @@ tf = true;
 for i=1:length(dcell)
     if ~isdates(dcell{i})
         tf = false;
-        return;
+        return
     end
 end
 end

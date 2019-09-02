@@ -86,7 +86,7 @@ if ~isempty(o.tableSubSectionHeader)
         fprintf(fid, ' &');
     end
     fprintf(fid, '\\\\%%\n');
-    return;
+    return
 end
 if o.tableAlignRight
     fprintf(fid, '\\multicolumn{1}{r}{');
