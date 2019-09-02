@@ -29,7 +29,6 @@ function write(o, fid)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(fid ~= -1);
 fprintf(fid, '%% Paragraph Object written %s\n', datestr(now));
 fprintf(fid, '\\multicolumn{1}{p{\\linewidth}}{%%\n');
 if o.cols ~= 1

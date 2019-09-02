@@ -31,10 +31,6 @@ function writeDataForTable(o, fid, precision)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Validate options passed to function
-assert(fid ~= -1);
-assert(isint(precision));
-
 %% Validate options provided by user
 assert(ischar(o.tableSubSectionHeader), '@report_data.writeDataForTable: tableSubSectionHeader must be a string');
 if isempty(o.tableSubSectionHeader)

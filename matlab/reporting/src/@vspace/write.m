@@ -29,8 +29,6 @@ function o = write(o, fid)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(fid ~= -1);
-
 fprintf(fid, repmat(' \\par \\medskip ', 1, o.number));
 if o.hline > 0
     fprintf(fid, ['\\\\\n' repmat('\\midrule', 1, o.hline)]);

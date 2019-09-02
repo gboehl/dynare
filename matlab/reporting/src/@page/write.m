@@ -31,8 +31,6 @@ function write(o, fid, pg, rep_dir)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(fid ~= -1);
-
 fprintf(fid, '\n%% Page Number %d written %s\n', pg, datestr(now));
 if strcmpi(o.orientation, 'landscape')
     fprintf(fid, '\\begin{landscape}\n');

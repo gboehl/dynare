@@ -35,7 +35,6 @@ function writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 %% Validate options passed to function
-assert(fid ~= -1);
 for i=1:length(dates)
     assert(isdates(dates{i}));
 end

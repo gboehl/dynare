@@ -32,7 +32,6 @@ function write(o, fid, pg, sec, rep_dir)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(fid ~= -1);
 fprintf(fid, '%% Section Object written %s\n', datestr(now));
 if isempty(o.elements)
     warning(['reporting:section.write(): trying to print a section ' ...

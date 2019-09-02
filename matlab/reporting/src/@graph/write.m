@@ -34,7 +34,6 @@ function write(o, fid, pg, sec, row, col, rep_dir)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(fid ~= -1);
 graphName = writeGraphFile(o, pg, sec, row, col, rep_dir);
 fprintf(fid, '\\input{%s}', graphName);
 end
