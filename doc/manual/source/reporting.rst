@@ -870,3 +870,7 @@ bottom of the page displays a centered table::
     %% Write & Compile Report
     rep.write();
     rep.compile();
+
+Once compiled, the report looks like:
+
+.. image:: _static/report.png
