@@ -51,6 +51,7 @@ if fid == -1
 end
 
 fprintf(fid, '%% Report_Table Object written %s\n', datestr(now));
+fprintf(fid, '\\begin{tabular}[t]{l}\n');
 fprintf(fid, '\\setlength{\\parindent}{6pt}\n');
 fprintf(fid, '\\setlength{\\tabcolsep}{4pt}\n');
 
@@ -227,7 +228,9 @@ else
     o.table_data{1}.writeDataForTable(fid, o.precision);
 end
 fprintf(fid, '\\bottomrule\n');
-fprintf(fid, '\\end{tabular}\\setlength{\\parindent}{0pt}\n \\par \\medskip\n\n');
+fprintf(fid, '\\end{tabular}\n');
+fprintf(fid, '\\end{tabular}\n');
+fprintf(fid, '\\setlength{\\parindent}{0pt}\n \\par \\medskip\n\n');
 fprintf(fid, '%% End Report_Table Object\n');
 if fclose(fid) == -1
     error('@report_table.writeTableFile: closing %s\n', o.filename);
