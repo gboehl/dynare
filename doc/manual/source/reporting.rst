@@ -28,7 +28,7 @@ highest to lowest): ``Report``, ``Page``, ``Section``,
 ``Graph/Table/Vspace``, ``Series``. For simplicity of syntax, we
 abstract away from these classes, allowing you to operate directly on
 a ``Report`` object, while maintaining the names of these classes in
-the ``Report`` Class methods you will use.
+the ``Report`` class methods you will use.
 
 The report is created sequentially, command by command, hence the
 order of the commands matters. When an object of a certain hierarchy
@@ -39,7 +39,7 @@ added to this ``Page`` until another ``Page`` is added to the report
 (via :repmeth:`addPage`). This will become more clear with the example
 at the end of the section.
 
-Options to the methods are passed differently than those to Dynare
+Options to methods are passed differently than those to Dynare
 commands. They take the form of named options to Matlab functions
 where the arguments come in pairs
 (e.g. ``function_name(`option_1_name', `option_1_value',
@@ -831,39 +831,40 @@ bottom of the page displays a centered table::
     rep = report();
 
     %% Page 1
-    rep = rep.addPage(`title', {`My Page Title', `My Page Subtitle'}, ...
-                      `titleFormat', {`\large\bfseries', `\large'});
+    rep.addPage('title', {'My Page Title', 'My Page Subtitle'}, ...
+                'titleFormat', {'\large\bfseries', '\large'});
 
     % Section 1
-    rep = rep.addSection(`cols', 2);
-    rep = rep.addGraph(`title', `Graph (1,1)', `showLegend', true, ...
-                       `xrange', dates(`2007q1'):dates(`2013q4'), ...
-                       `shade', dates(`2012q2'):dates(`2013q4'));
-    rep = rep.addSeries(`data', dsq{`SERIES1'}, `graphLineColor', `blue', ...
-                        `graphLineWidth', 1);
-    rep = rep.addSeries(`data', dsq{`SERIES2'}, `graphLineColor', `green', ...
-                        `graphLineStyle', '--', `graphLineWidth', 1.5);
-    rep = rep.addGraph(`title', `Graph (1,2)', `showLegend', true, ...
-                       `xrange', dates(`2007q1'):dates(`2013q4'), ...
-                       `shade', dates(`2012q2'):dates(`2013q4'));
-    rep = rep.addSeries(`data', dsq{`SERIES3'}, `graphLineColor', `blue', ...
-                        `graphLineWidth', 1);
-    rep = rep.addSeries(`data', dsq{`SERIES4'}, `graphLineColor', `green', ...
-                        `graphLineStyle', '--', `graphLineWidth', 1.5);
+    rep.addSection('cols', 2);
+
+    rep.addGraph('title', 'Graph Column 1', 'showLegend', true, ...
+                'xrange', dates('2007q1'):dates('2013q4'), ...
+                'shade', dates('2012q2'):dates('2013q4'));
+    rep.addSeries('data', dsq{'GROWTH_US'}, 'graphLineColor', 'blue', ...
+                'graphLineStyle', 'loosely dashed', 'graphLineWidth', 1);
+    rep.addSeries('data', dsq{'GROWTH_EU'}, 'graphLineColor', 'green', ...
+                'graphLineWidth', 1.5);
+
+    rep.addGraph('title', 'Graph Column 2', 'showLegend', true, ...
+                'xrange', dates('2007q1'):dates('2013q4'), ...
+                'shade', dates('2012q2'):dates('2013q4'));
+    rep.addSeries('data', dsq{'GROWTH_JA'}, 'graphLineColor', 'blue', ...
+                'graphLineWidth', 1);
+    rep.addSeries('data', dsq{'GROWTH_RC6'}, 'graphLineColor', 'green', ...
+                'graphLineStyle', 'dashdotdotted', 'graphLineWidth', 1.5);
 
     % Section 2
-    rep = rep.addSection();
-    rep = rep.addTable(`title', `Table 1', ...
-                       `range', dates(`2012Y'):dates(`2014Y'));
-    shortNames = {`US', `EU'};
-    longNames  = {`United States', `Euro Area'};
+    rep.addVspace('number', 15);
+    rep.addSection();
+    rep.addTable('title', 'Table 1', 'range', dates('2012Y'):dates('2014Y'));
+    shortNames = {'US', 'EU'};
+    longNames  = {'United States', 'Euro Area'};
     for i=1:length(shortNames)
-        rep = rep.addSeries(`data', dsa{[`GDP_' shortNames{i}]});
-        delta = dsa{[`GDP_' shortNames{i}]}-dsca{[`GDP_' shortNames{i}]};
-        delta = delta.tex_rename(`$\Delta$');
-        rep = rep.addSeries(`data', delta, ...
-                            `tableShowMarkers', true, ...
-                            `tableAlignRight', true);
+        rep.addSeries('data', dsa{['GROWTH_' shortNames{i}]});
+        delta = dsa{['GROWTH_' shortNames{i}]}-dsca{['GROWTH_' shortNames{i}]};
+        delta.tex_rename_('$\Delta$');
+        rep.addSeries('data', delta, ...
+                    'tableShowMarkers', true, 'tableAlignRight', true);
     end
 
     %% Write & Compile Report
