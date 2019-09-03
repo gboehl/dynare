@@ -26,20 +26,21 @@ WGET_OPTIONS := --no-verbose --no-use-server-timestamps --retry-connrefused --re
 	clean-gsl-src clean-gsl-tar clean-gsl-all clean-libgsl\
 	clean-slicot-src clean-slicot-tar clean-slicot-all clean-libslicot \
 	clean-matio-src clean-matio-tar clean-matio-all clean-libmatio\
-	clean-zlib-src clean-zlib-tar clean-zlib-src clean-libzlib\
+	clean-zlib-src clean-zlib-tar clean-zlib-src clean-libzlib \
+	clean-x13as-tar clean-x13as-src clean-x13as-bin clean-x13as-all \
 	clean-src clean-all clean-lib clean-tar \
 	build build-openblas build-slicot build-matio build-boost build-gsl \
 	octave matlab mingw
 
 all: build octave matlab mingw
 
-build: build-openblas build-slicot build-matio build-boost build-gsl
+build: build-openblas build-slicot build-matio build-boost build-gsl build-x13as
 
-clean-lib: clean-libopenblas clean-libgsl clean-libzlib clean-libmatio clean-libslicot clean-libboost clean-matlab clean-octave clean-mingw
+clean-lib: clean-libopenblas clean-libgsl clean-libzlib clean-libmatio clean-libslicot clean-libboost clean-matlab clean-octave clean-mingw clean-x13as-bin
 
-clean-src: clean-openblas-src clean-boost-src clean-gsl-src clean-matio-src clean-slicot-src clean-zlib-src
+clean-src: clean-openblas-src clean-boost-src clean-gsl-src clean-matio-src clean-slicot-src clean-zlib-src clean-x13as-src
 
-clean-tar: clean-openblas-tar clean-boost-tar clean-gsl-tar clean-matio-tar clean-slicot-tar clean-zlib-tar
+clean-tar: clean-openblas-tar clean-boost-tar clean-gsl-tar clean-matio-tar clean-slicot-tar clean-zlib-tar clean-x13as-tar
 
 clean-all: clean-lib clean-src clean-tar
 
@@ -451,3 +452,41 @@ clean-mingw:
 	rm -rf mingw64
 	rm -f tarballs/mingw-w64-i686-*.tar.xz
 	rm -f tarballs/mingw-w64-x86_64-*.tar.xz
+
+#
+# X13AS
+#
+
+tarballs/x13assrc_V$(X13AS_VERSION).tar.gz:
+	mkdir -p tarballs
+	wget $(WGET_OPTIONS) -O $@ https://www.census.gov/ts/x13as/unix/x13assrc_V$(X13AS_VERSION).tar.gz
+
+sources%/x13as-$(X13AS_VERSION): tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
+	mkdir -p $@
+	tar xf $< --directory $@
+
+lib32/x13as/x13as.exe: sources32/x13as-$(X13AS_VERSION)
+	make -C $< -f makefile.gf FC=i686-w64-mingw32-gfortran LINKER=i686-w64-mingw32-gfortran FFLAGS="-O2" PROGRAM=x13as.exe
+	i686-w64-mingw32-strip $</x13as.exe
+	mkdir -p $(dir $@)
+	cp $</x13as.exe $@
+
+lib64/x13as/x13as.exe: sources64/x13as-$(X13AS_VERSION)
+	make -C $< -f makefile.gf FC=x86_64-w64-mingw32-gfortran LINKER=x86_64-w64-mingw32-gfortran FFLAGS="-O2" PROGRAM=x13as.exe
+	x86_64-w64-mingw32-strip $</x13as.exe
+	mkdir -p $(dir $@)
+	cp $</x13as.exe $@
+
+build-x13as: lib32/x13as/x13as.exe lib64/x13as/x13as.exe
+
+clean-x13as-tar:
+	rm -f tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
+
+clean-x13as-src:
+	rm -rf sources32/x13as-$(X13AS_VERSION)
+	rm -rf sources64/x13as-$(X13AS_VERSION)
+
+clean-x13as-bin:
+	rm -rf lib32/x13as lib64/x13as
+
+clean-x13as-all: clean-x13as-tar clean-x13as-src clean-x13as-bin

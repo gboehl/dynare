@@ -261,6 +261,10 @@ mkdir "$ZIPDIR"/mex
 cp -pr mex/octave/ "$ZIPDIR"/mex
 cp -pr mex/matlab/ "$ZIPDIR"/mex
 cp -pr matlab "$ZIPDIR"
+mkdir -p "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/32
+cp -p windows/deps/lib32/x13as/x13as.exe "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/32
+mkdir -p "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
+cp -p windows/deps/lib64/x13as/x13as.exe "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
 cp -pr examples "$ZIPDIR"
 cp -pr scripts "$ZIPDIR"
 mkdir "$ZIPDIR"/dynare++
