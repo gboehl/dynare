@@ -39,8 +39,8 @@ if ne < 1
     return
 end
 
-if exist([rep_dir filesep o.graphDirName], 'file') ~= 7
-    mkdir([rep_dir filesep o.graphDirName])
+if exist([rep_dir filesep o.graphDirName], 'dir') ~= 7
+    mkdir([rep_dir filesep o.graphDirName]);
 end
 if isempty(o.graphName)
     graphName = sprintf([o.graphDirName filesep 'graph_pg%d_sec%d_row%d_col%d.tex'], pg, sec, row, col);

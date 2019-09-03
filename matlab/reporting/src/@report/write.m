@@ -28,8 +28,8 @@ function o = write(o)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if exist(o.directory, 'file') ~= 7
-    mkdir(o.directory)
+if exist(o.directory, 'dir') ~= 7
+    mkdir(o.directory);
 end
 [fid, msg] = fopen([o.directory filesep o.fileName], 'w');
 if fid == -1
