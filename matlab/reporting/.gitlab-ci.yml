@@ -7,7 +7,7 @@ testsuite_matlab:
     - make check-matlab
   artifacts:
     paths:
-      - test/report.pdf
+      - test/my/report/dir/report.pdf
 
 testsuite_octave:
   stage: test
@@ -15,4 +15,4 @@ testsuite_octave:
     - make check-octave
   artifacts:
     paths:
-      - test/report.pdf
+      - test/my/report/dir/report.pdf
