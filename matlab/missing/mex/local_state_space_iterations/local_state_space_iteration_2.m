@@ -207,14 +207,14 @@ end
 %$     cd(path_to_mex);
 %$     tar('local_state_space_iteration_2.tar',['local_state_space_iteration_2.' mexext]);
 %$     cd(where_am_i_coming_from);
-%$     dynare_config([],0);
+%$     dynare_config();
 %$     y1b = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
 %$     [y2b,y2b_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
 %$     cd(path_to_mex);
 %$     untar('local_state_space_iteration_2.tar');
 %$     delete('local_state_space_iteration_2.tar');
 %$     cd(where_am_i_coming_from);
-%$     dynare_config([],0);
+%$     dynare_config();
 %$     % Check the results.
 %$     t(1) = dassert(y1a,y1b);
 %$     t(2) = dassert(y2a,y2b);

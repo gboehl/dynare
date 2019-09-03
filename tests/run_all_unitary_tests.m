@@ -1,4 +1,4 @@
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,7 +17,7 @@
 
 top_test_dir = getenv('TOP_TEST_DIR');
 addpath([top_test_dir filesep '..' filesep 'matlab']);
-dynare_config([], 0);
+dynare_config();
 
 if isoctave
     load_octave_packages

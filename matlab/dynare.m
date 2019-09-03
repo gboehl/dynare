@@ -16,7 +16,7 @@ function dynare(fname, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,7 +66,7 @@ end
 check_matlab_path(change_path_flag);
 
 % Detect if MEX files are present; if not, use alternative M-files
-dynareroot = dynare_config('', preprocessoroutput);
+dynareroot = dynare_config();
 
 warning_config()
 
