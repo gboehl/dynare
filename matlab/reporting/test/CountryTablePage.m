@@ -52,14 +52,14 @@ for i = 1:length(seriesNames)
             any(strcmp(seriesNames{i}{1}, notForOtherThree))
         continue
     end
-    db_q = db_q.tex_rename_([seriesNames{i}{1} countryAbbr], seriesNames{i}{2});
+    db_q.tex_rename_([seriesNames{i}{1} countryAbbr], seriesNames{i}{2});
     rep.addSeries('data', db_q{[seriesNames{i}{1} countryAbbr]}, ...
         'tableDataRhs', db_a{[seriesNames{i}{1} countryAbbr]});
     delta = db_q{[seriesNames{i}{1} countryAbbr]}-dc_q{[seriesNames{i}{1} countryAbbr]};
-    delta = delta.tex_rename_('$\Delta$');
+    delta.tex_rename_('$\Delta$');
     
     deltaa = db_a{[seriesNames{i}{1} countryAbbr]}-dc_a{[seriesNames{i}{1} countryAbbr]};
-    deltaa = deltaa.tex_rename_('$\Delta$');
+    deltaa.tex_rename_('$\Delta$');
     rep.addSeries('data', delta, ...
         'tableShowMarkers', true, ...
         'tableRowIndent', 2, ...

@@ -57,7 +57,7 @@ for i=1:length(seriesNames)
     end
     rep.addSeries('data', db_q{[seriesNames{i}{1} countryAbbr]});
     delta = db_q{[seriesNames{i}{1} countryAbbr]}-dc_q{[seriesNames{i}{1} countryAbbr]};
-    delta = delta.tex_rename_('$\Delta$');
+    delta.tex_rename_('$\Delta$');
     rep.addSeries('data', delta, ...
         'tableShowMarkers', true, ...
         'tableAlignRight', true);
