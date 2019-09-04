@@ -116,7 +116,7 @@ build_windows_matlab_mex_32 ()
 		     --with-gsl="$LIB32"/Gsl \
 		     --with-matio="$LIB32"/matIO \
 		     --with-slicot="$LIB32"/Slicot/without-underscore \
-		     --with-matlab="$LIB32"/matlab/R2009b \
+		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab32/R2009b \
 		     MATLAB_VERSION=R2009b \
 		     MEXEXT=mexw32 \
 		     PACKAGE_VERSION="$VERSION" \
@@ -137,7 +137,7 @@ build_windows_matlab_mex_64_a ()
 		     --with-gsl="$LIB64"/Gsl \
 		     --with-matio="$LIB64"/matIO \
 		     --with-slicot="$LIB64"/Slicot/without-underscore \
-		     --with-matlab="$LIB64"/matlab/R2009b \
+		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab64/R2009b \
 		     MATLAB_VERSION=R2009b \
 		     MEXEXT=mexw64 \
 		     PACKAGE_VERSION="$VERSION" \
@@ -158,7 +158,7 @@ build_windows_matlab_mex_64_b ()
 		     --with-gsl="$LIB64"/Gsl \
 		     --with-matio="$LIB64"/matIO \
 		     --with-slicot="$LIB64"/Slicot/without-underscore \
-		     --with-matlab="$LIB64"/matlab/R2018a \
+		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab64/R2018a \
 		     MATLAB_VERSION=R2018a \
 		     MEXEXT=mexw64 \
 		     PACKAGE_VERSION="$VERSION" \

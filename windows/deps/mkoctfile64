@@ -11,7 +11,7 @@ set -e
 
 # Get path to the mkoctfile shell script
 MKOCTFILE_PATH=$(dirname $(readlink -f "$0"))
-OCTAVE_PREFIX="$MKOCTFILE_PATH/lib64/octave/mingw64"
+OCTAVE_PREFIX="$MKOCTFILE_PATH/octave64/mingw64"
 
 # Get Octave version
 current_octave_version=$(grep "^OCTAVE_VERSION" "$MKOCTFILE_PATH/versions.mk")

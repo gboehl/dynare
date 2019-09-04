@@ -385,29 +385,29 @@ tarballs/octave-${OCTAVE_VERSION}-w64${OCTAVE_W64_BUILD}.7z:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://ftp.gnu.org/gnu/octave/windows/$(notdir $@)
 
-lib32/octave/mingw32/octave-cli.exe: tarballs/octave-${OCTAVE_VERSION}-w32${OCTAVE_W32_BUILD}.7z
-	rm -rf lib32/octave
-	7zr x -olib32 $< > /dev/null
-	mv lib32/octave-${OCTAVE_VERSION}-w32 lib32/octave
+octave32: tarballs/octave-${OCTAVE_VERSION}-w32${OCTAVE_W32_BUILD}.7z
+	rm -rf $@
+	7zr x $< > /dev/null
+	mv octave-${OCTAVE_VERSION}-w32 $@
 	# Clean up MinGW stuff that interferes with our cross-compiler
-	cd lib32/octave/mingw32/lib && rm -f libadvapi32.a libkernel32.a libmingw32.a libmingwex.a libmoldname.a libmsvcrt.a libpthread.dll.a libshell32.a libuser32.a
-	cd lib32/octave/mingw32/include && rm -f $$(grep -l "This file is part of the mingw-w64 runtime package" *.h)
+	cd $@/mingw32/lib && rm -f libadvapi32.a libkernel32.a libmingw32.a libmingwex.a libmoldname.a libmsvcrt.a libpthread.dll.a libshell32.a libuser32.a
+	cd $@/mingw32/include && rm -f $$(grep -l "This file is part of the mingw-w64 runtime package" *.h)
 	touch $@
 
-lib64/octave/mingw64/octave-cli.exe: tarballs/octave-${OCTAVE_VERSION}-w64${OCTAVE_W64_BUILD}.7z
-	rm -rf lib64/octave
-	7zr x -olib64 $< > /dev/null
-	mv lib64/octave-${OCTAVE_VERSION}-w64 lib64/octave
+octave64: tarballs/octave-${OCTAVE_VERSION}-w64${OCTAVE_W64_BUILD}.7z
+	rm -rf $@
+	7zr x $< > /dev/null
+	mv octave-${OCTAVE_VERSION}-w64 $@
 	# Clean up MinGW stuff that interferes with our cross-compiler
-	cd lib64/octave/mingw64/lib && rm -f libadvapi32.a libkernel32.a libmingw32.a libmingwex.a libmoldname.a libmsvcrt.a libpthread.dll.a libshell32.a libuser32.a
-	cd lib64/octave/mingw64/include && rm -f $$(grep -l "This file is part of the mingw-w64 runtime package" *.h)
+	cd $@/mingw64/lib && rm -f libadvapi32.a libkernel32.a libmingw32.a libmingwex.a libmoldname.a libmsvcrt.a libpthread.dll.a libshell32.a libuser32.a
+	cd $@/mingw64/include && rm -f $$(grep -l "This file is part of the mingw-w64 runtime package" *.h)
 	touch $@
 
-octave: lib32/octave/mingw32/octave-cli.exe lib64/octave/mingw64/octave-cli.exe
+octave: octave32 octave64
 
 clean-octave:
-	rm -rf lib32/octave
-	rm -rf lib64/octave
+	rm -rf octave32
+	rm -rf octave64
 	rm -f tarballs/octave-${OCTAVE_VERSION}-w64${OCTAVE_W64_BUILD}.7z
 	rm -f tarballs/octave-${OCTAVE_VERSION}-w32${OCTAVE_W32_BUILD}.7z
 
@@ -421,25 +421,25 @@ tarballs/matlab%.tar.xz:
 	gpg --output $@ --decrypt $@.gpg
 	rm $@.gpg
 
-lib32/matlab/R2009b/bin/win32/MATLAB.exe: tarballs/matlab32-$(MATLAB32_VERSION).tar.xz
-	rm -rf lib32/matlab
-	mkdir -p lib32/matlab
-	tar xf $< --directory lib32/matlab --strip-components=1
+matlab32: tarballs/matlab32-$(MATLAB32_VERSION).tar.xz
+	rm -rf $@
+	mkdir -p $@
+	tar xf $< --directory $@ --strip-components=1
 	touch $@
 
-lib64/matlab/R2009b/bin/win64/MATLAB.exe: tarballs/matlab64-$(MATLAB64_VERSION).tar.xz
-	rm -rf lib64/matlab
-	mkdir -p lib64/matlab
-	tar xf $< --directory lib64/matlab --strip-components=1
+matlab64: tarballs/matlab64-$(MATLAB64_VERSION).tar.xz
+	rm -rf $@
+	mkdir -p $@
+	tar xf $< --directory $@ --strip-components=1
 	touch $@
 
-matlab: lib32/matlab/R2009b/bin/win32/MATLAB.exe lib64/matlab/R2009b/bin/win64/MATLAB.exe
+matlab: matlab32 matlab64
 
 clean-matlab:
 	rm -f tarballs/matlab32.tar.xz
 	rm -f tarballs/matlab64.tar.xz
-	rm -rf lib32/matlab
-	rm -rf lib64/matlab
+	rm -rf matlab32
+	rm -rf matlab64
 
 #
 # Embedded MinGW (for use_dll)

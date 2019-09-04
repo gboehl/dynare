@@ -59,6 +59,9 @@ pkg_windows:
       - windows/deps/sources64/
       - windows/deps/lib32/
       - windows/deps/lib64/
+      # We do not cache mingw{32,64}, octave{32,64} and matlab{32,64}, because
+      # those are simply extracted from a tarball. It would be a waste of space
+      # and of (re-compression) time.
   artifacts:
     paths:
       - windows/exe/*
