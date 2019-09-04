@@ -146,10 +146,10 @@ deploy_manual_unstable:
   only:
     - master@Dynare/dynare
   tags:
-    - secure
+    - restricted
   dependencies:
     - build_doc
   script:
     - rm -rf doc/manual/build/html/_static/mathjax
     - ln -s /usr/share/javascript/mathjax doc/manual/build/html/_static/mathjax
-    - rsync --recursive --links --delete --compress doc/manual/build/html/ dynbot@eris.dynare.org:/srv/www.dynare.org/manual-unstable/
+    - rsync --recursive --links --delete doc/manual/build/html/ /srv/www.dynare.org/manual-unstable/
