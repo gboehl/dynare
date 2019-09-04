@@ -220,8 +220,7 @@ cd "$ROOT_DIRECTORY"
 export TMP_DIRECTORY ROOT_DIRECTORY LIB32 LIB64 VERSION NTHREADS
 export -f "${TASKS[@]}"
 parallel "set -ex;shopt -s globstar;" ::: "${TASKS[@]}"
-# Clean up bogus symlinks left by parallel builds of MEX
-rm -f ../mex/matlab/*.mexw32 ../mex/matlab/*.mexw64 ../mex/octave/*.mex
+
 # Add supported_octave_version.m (see matlab/dynare.m)
 while read -r line
 do
