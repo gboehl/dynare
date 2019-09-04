@@ -282,4 +282,4 @@ cp -p dynare++/doc/*.pdf "$ZIPDIR"/doc/dynare++
 
 mkdir -p "$ROOT_DIRECTORY"/zip
 cd "$TMP_DIRECTORY"
-zip -9 -r "$ROOT_DIRECTORY"/zip/"$BASENAME"-win.zip "$ZIPNAME"
+zip -9 --quiet --recurse-paths "$ROOT_DIRECTORY"/zip/"$BASENAME"-win.zip "$ZIPNAME"
