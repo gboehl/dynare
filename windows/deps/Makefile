@@ -52,13 +52,15 @@ tarballs/openblas-${OPENBLAS_VERSION}.tar.gz:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://github.com/xianyi/OpenBLAS/archive/v${OPENBLAS_VERSION}.tar.gz
 
-sources32/OpenBLAS-${OPENBLAS_VERSION}: tarballs/openblas-${OPENBLAS_VERSION}.tar.gz
+sources32/OpenBLAS-${OPENBLAS_VERSION}: tarballs/openblas-${OPENBLAS_VERSION}.tar.gz patches/openblas-w32.patch
 	mkdir -p sources32
+	rm -rf sources32/OpenBLAS-*
 	tar xf $< --directory sources32
 	patch $@/Makefile.rule < patches/openblas-w32.patch
 
-sources64/OpenBLAS-${OPENBLAS_VERSION}: tarballs/openblas-${OPENBLAS_VERSION}.tar.gz
+sources64/OpenBLAS-${OPENBLAS_VERSION}: tarballs/openblas-${OPENBLAS_VERSION}.tar.gz patches/openblas-w64.patch
 	mkdir -p sources64
+	rm -rf sources64/OpenBLAS-*
 	tar xf $< --directory sources64
 	patch $@/Makefile.rule < patches/openblas-w64.patch
 
@@ -99,11 +101,13 @@ tarballs/boost_${BOOST_VERSION}.tar.bz2:
 
 sources32/boost_${BOOST_VERSION}: tarballs/boost_${BOOST_VERSION}.tar.bz2
 	mkdir -p sources32
+	rm -rf sources32/boost_*
 	tar xf $< --directory sources32
 	echo "using gcc : mingw : i686-w64-mingw32-g++ ;" > $@/user-config.jam
 
 sources64/boost_${BOOST_VERSION}: tarballs/boost_${BOOST_VERSION}.tar.bz2
 	mkdir -p sources64
+	rm -rf sources64/boost_*
 	tar xf $< --directory sources64
 	echo "using gcc : mingw : x86_64-w64-mingw32-g++ ;" > $@/user-config.jam
 
@@ -140,10 +144,12 @@ tarballs/gsl-${GSL_VERSION}.tar.gz:
 
 sources32/gsl-${GSL_VERSION}: tarballs/gsl-${GSL_VERSION}.tar.gz
 	mkdir -p sources32
+	rm -rf sources32/gsl-*
 	tar xf $< --directory sources32
 
 sources64/gsl-${GSL_VERSION}: tarballs/gsl-${GSL_VERSION}.tar.gz
 	mkdir -p sources64
+	rm -rf sources64/gsl-*
 	tar xf $< --directory sources64
 
 lib32/Gsl/lib/libgsl.a: sources32/gsl-${GSL_VERSION}
@@ -179,11 +185,13 @@ tarballs/matio-${MATIO_VERSION}.tar.gz:
 
 sources32/matio-${MATIO_VERSION}: tarballs/matio-${MATIO_VERSION}.tar.gz
 	mkdir -p sources32
+	rm -rf sources32/matio-*
 	tar xf $< --directory sources32
 	touch $@
 
 sources64/matio-${MATIO_VERSION}: tarballs/matio-${MATIO_VERSION}.tar.gz
 	mkdir -p sources64
+	rm -rf sources64/matio-*
 	tar xf $< --directory sources64
 	touch $@
 
@@ -226,32 +234,38 @@ tarballs/slicot-$(SLICOT_VERSION).tar.gz:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://deb.debian.org/debian/pool/main/s/slicot/slicot_$(SLICOT_VERSION).orig.tar.gz
 
-sources32/slicot-$(SLICOT_VERSION)-without-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
+sources32/slicot-$(SLICOT_VERSION)-without-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-32-without-underscore.patch
+	rm -rf sources32/slicot-*-without-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	patch $@/make.inc < patches/slicot-32-without-underscore.patch
 
-sources32/slicot-$(SLICOT_VERSION)-with-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
+sources32/slicot-$(SLICOT_VERSION)-with-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-32-with-underscore.patch
+	rm -rf sources32/slicot-*-with-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	patch $@/make.inc < patches/slicot-32-with-underscore.patch
 
-sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz
+sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-64-with-32bit-integer.patch
+	rm -rf sources64/slicot-*-with-32bit-integer
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	patch $@/make.inc < patches/slicot-64-with-32bit-integer.patch
 
-sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz
+sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-64-with-64bit-integer.patch
+	rm -rf sources64/slicot-*-with-64bit-integer
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	patch $@/make.inc < patches/slicot-64-with-64bit-integer.patch
 
-sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
+sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-64-with-32bit-integer-and-underscore.patch
+	rm -rf sources64/slicot-*-with-32bit-integer-and-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	patch $@/make.inc < patches/slicot-64-with-32bit-integer-and-underscore.patch
 
-sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
+sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-64-with-64bit-integer-and-underscore.patch
+	rm -rf sources64/slicot-*-with-64bit-integer-and-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	patch $@/make.inc < patches/slicot-64-with-64bit-integer-and-underscore.patch
@@ -326,11 +340,13 @@ tarballs/zlib-${ZLIB_VERSION}.tar.xz:
 
 sources32/zlib-${ZLIB_VERSION}: tarballs/zlib-${ZLIB_VERSION}.tar.xz
 	mkdir -p sources32
+	rm -rf sources32/zlib-*
 	tar xf $< --directory sources32
 	touch $@
 
 sources64/zlib-${ZLIB_VERSION}: tarballs/zlib-${ZLIB_VERSION}.tar.xz
 	mkdir -p sources64
+	rm -rf sources64/zlib-*
 	tar xf $< --directory sources64
 	touch $@
 
@@ -461,7 +477,13 @@ tarballs/x13assrc_V$(X13AS_VERSION).tar.gz:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://www.census.gov/ts/x13as/unix/x13assrc_V$(X13AS_VERSION).tar.gz
 
-sources%/x13as-$(X13AS_VERSION): tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
+sources32/x13as-$(X13AS_VERSION): tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
+	rm -rf sources32/x13as-*
+	mkdir -p $@
+	tar xf $< --directory $@
+
+sources64/x13as-$(X13AS_VERSION): tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
+	rm -rf sources64/x13as-*
 	mkdir -p $@
 	tar xf $< --directory $@
 
