@@ -69,6 +69,11 @@ and a clarifying example.
             * Windows: the result of findtexmf ``--file-type=exe pdflatex``.
             * macOS and Linux: the result of ``which pdflatex``.
 
+    .. option:: directory, FILENAME
+
+       The path to the directory you want the report created in. Default:
+       current directory.
+
     .. option:: showDate, BOOLEAN
 
         Display the date and time when the report was
@@ -127,18 +132,19 @@ and a clarifying example.
         page. Alows the user to create a page to be included in the
         report by passing :math:`\text{\LaTeX}` code directly. If this option is
         passed, the page itself will be saved in the :opt:`pageDirName
-        <pageDirName, STRING>` directory in the form ``page_X.tex``
+        <pageDirName, FILENAME>` directory in the form ``page_X.tex``
         where X refers to the page number. Default: ``empty``.
 
     .. option:: orientation, `landscape' | `portrait'
 
         See :opt:`orientation <orientation, `landscape' | `portrait'>`.
 
-    .. option:: pageDirName, STRING
+    .. option:: pageDirName, FILENAME
 
-        The name of the folder in which to store this page. Only used
-        when the :opt:`latex <latex, STRING>` command is
-        passed. Default: ``tmpRepDir``.
+        The name of the folder in which to store this page. Directory given is
+        relative to the `directory` option of the report class. Only used when
+        the :opt:`latex <latex, STRING>` command is passed. Default:
+        ``tmpRepDir``.
 
     .. option:: paper, `a4' | `letter'
 
@@ -201,9 +207,10 @@ and a clarifying example.
         graphed line(s). 'L'`` means that there is an axis to the left
         and bottom of the graphed line(s). Default: ```box'``.
 
-    .. option:: graphDirName, STRING
+    .. option:: graphDirName, FILENAME
 
-        The name of the folder in which to store this figure. Default:
+        The name of the folder in which to store this figure. Directory given
+        is relative to the `directory` option of the report class. Default:
         ``tmpRepDir``.
 
     .. option:: graphName, STRING
@@ -353,7 +360,7 @@ and a clarifying example.
 
         Whether or not to write a CSV file with only the plotted
         data. The file will be saved in the directory specified by
-        :opt:`graphDirName <graphDirName, STRING>` with the same base
+        :opt:`graphDirName <graphDirName, FILENAME>` with the same base
         name as specified by :opt:`graphName <graphName, STRING>` with
         the ending ``.csv``. Default: ``false``.
 
@@ -480,9 +487,10 @@ and a clarifying example.
 
         See :opt:`seriesToUse <seriesToUse, CELL_ARRAY_STRINGS>`.
 
-    .. option:: tableDirName, STRING
+    .. option:: tableDirName, FILENAME
 
-        The name of the folder in which to store this table. Default:
+        The name of the folder in which to store this table. Directory given is
+        relative to the `directory` option of the report class. Default:
         ``tmpRepDir``.
 
     .. option:: tableName, STRING
@@ -520,7 +528,7 @@ and a clarifying example.
         Whether or not to write a CSV file containing the data
         displayed in the table. The file will be saved in the
         directory specified by :opt:`tableDirName <tableDirName,
-        STRING>` with the same base name as specified by
+        FILENAME>` with the same base name as specified by
         :opt:`tableName <tableName, STRING>` with the ending
         ``.csv``. Default: ``false``.
 
