@@ -484,7 +484,7 @@ EXPRESSION.
 
 Unlike MATLAB or Octave expressions, Dynare expressions are
 necessarily scalar ones: they cannot contain matrices or evaluate to
-matrices [#f1]_.
+matrices. [#f1]_
 
 Expressions can be constructed using integers (INTEGER), floating
 point numbers (DOUBLE), parameter names (PARAMETER_NAME), variable
@@ -6071,7 +6071,7 @@ block decomposition of the model (see :opt:`block`).
 
             ``HPDinf``
 
-                Lower bound of a 90% HPD interval [#f3]_.
+                Lower bound of a 90% HPD interval. [#f3]_
 
             ``HPDsup``
 
@@ -9405,7 +9405,7 @@ Markov-switching SBVAR
 
 Given a list of variables, observed variables and a data file, Dynare
 can be used to solve a Markov-switching SBVAR model according to
-*Sims, Waggoner and Zha (2008)* [#f10]_ . Having done this, you can
+*Sims, Waggoner and Zha (2008)*. [#f10]_ Having done this, you can
 create forecasts and compute the marginal data density, regime
 probabilities, IRFs, and variance decomposition of the model.
 
