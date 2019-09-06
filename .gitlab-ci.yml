@@ -61,6 +61,18 @@ build_doc:
       - preprocessor/doc/*/*.pdf
     expire_in: 1 week
 
+pkg_source:
+  stage: test_and_pkg
+  script:
+    - 'for f in configure.ac preprocessor/configure.ac mex/build/matlab/configure.ac mex/build/octave/configure.ac; do sed -i "s/^AC_INIT(\[\(.*\)\],\s*\[\(.*\)\])/AC_INIT([\1], [$VERSION])/" $f; done'
+    - autoreconf -si
+    - ./configure
+    - make dist
+  artifacts:
+    paths:
+      - dynare-*.tar.xz
+    expire_in: 1 week
+
 pkg_windows:
   stage: test_and_pkg
   script:
