@@ -182,3 +182,18 @@ deploy_manual_unstable:
     - rm -rf doc/manual/build/html/_static/mathjax
     - ln -s /usr/share/javascript/mathjax doc/manual/build/html/_static/mathjax
     - rsync --recursive --links --delete doc/manual/build/html/ /srv/www.dynare.org/manual-unstable/
+
+deploy_snapshot_unstable:
+  stage: deploy
+  only:
+    - master@Dynare/dynare
+  tags:
+    - restricted
+  dependencies:
+    - pkg_source
+    - pkg_windows
+  script:
+    - cp *.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
+    - cd windows/exe/ && cp * /srv/www.dynare.org/snapshot/windows/ && ln -sf * /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe && cd ../..
+    - cd windows/zip/ && cp * /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf * /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip && cd ../..
+    - cd /srv/www.dynare.org/snapshot/ && ./list-snapshots-in-json-file.sh
