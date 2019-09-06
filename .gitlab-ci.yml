@@ -2,6 +2,20 @@ variables:
   GIT_SUBMODULE_STRATEGY: normal
   TERM: linux
 
+# The next stanza creates the version number used for the source tarball and the
+# binary packages. Here are the following possible cases:
+# - if VERSION was already set (when manually running a pipeline), use it
+# - if we are in the official Dynare repository:
+#   + if on a tag: use the tag
+#   + if on master: use 4.6-unstable-$TIMESTAMP-$COMMIT
+#   + on another branch: use $BRANCH-$TIMESTAMP-$COMMIT
+# - if in a personal repository: use $USER-$TIMESTAMP-$COMMIT
+before_script:
+  - '[ -z "$VERSION" ] && [ "$CI_PROJECT_NAMESPACE" = Dynare ] && [ -n "$CI_COMMIT_TAG" ] && export VERSION="$CI_COMMIT_TAG"'
+  - '[ -z "$VERSION" ] && [ "$CI_PROJECT_NAMESPACE" = Dynare ] && [ "$CI_COMMIT_REF_NAME" = master ] && export VERSION="4.6-unstable-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA"'
+  - '[ -z "$VERSION" ] && [ "$CI_PROJECT_NAMESPACE" = Dynare ] && export VERSION="$CI_COMMIT_REF_NAME-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA"'
+  - '[ -z "$VERSION" ] && export VERSION="$CI_PROJECT_NAMESPACE-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA"'
+
 stages:
   - build
   - test_and_pkg

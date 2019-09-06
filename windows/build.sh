@@ -40,25 +40,15 @@ trap cleanup EXIT
 # Set the number of threads
 NTHREADS=$(nproc)
 
-# Set Dynare version
-if [[ -n $CI_COMMIT_TAG ]]; then
-    # Official release tagged through Gitlab
-    VERSION=$CI_COMMIT_TAG
-    VERSION_SHORT=$VERSION
-else
+# Set Dynare version, if not already set by Gitlab CI
+if [[ -z $VERSION ]]; then
     VERSION=$(grep '^AC_INIT(' ../configure.ac | sed 's/AC_INIT(\[dynare\], \[\(.*\)\])/\1/')
-    if [[ -n $CI_COMMIT_SHA ]]; then
-        VERSION_SHORT=$VERSION-$CI_COMMIT_SHORT_SHA
-        VERSION=$VERSION-$CI_COMMIT_SHA
-    elif [[ -d ../.git/ ]]; then
-        VERSION_SHORT=$VERSION-$(git rev-parse --short HEAD)
-        VERSION=$VERSION-$(git rev-parse HEAD)
-    else
-        VERSION_SHORT=$VERSION
+    if [[ -d ../.git/ ]]; then
+        VERSION=$VERSION-$(git rev-parse --short HEAD)
     fi
 fi
 
-BASENAME=dynare-$VERSION_SHORT
+BASENAME=dynare-$VERSION
 
 # Set directories for dependencies
 LIB32="$ROOT_DIRECTORY"/deps/lib32
