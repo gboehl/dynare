@@ -24,7 +24,7 @@ or after a semicolon, it will parse the rest of that line as native
 Matlab code, even if there are more statements separated by semicolons
 present. To prevent cryptic error messages, it is strongly recommended
 to always only put one statement/command into each line and start a
-new line after each semicolon.
+new line after each semicolon. [#feol]_
 
 Most Dynare commands have arguments and several accept options,
 indicated in parentheses after the command keyword. Several options
@@ -11197,6 +11197,18 @@ Misc commands
 .. _AIM website: http://www.federalreserve.gov/Pubs/oss/oss4/aimindex.html
 
 .. rubric:: Footnotes
+
+.. [#feol] A ``.mod`` file must have lines that end with a line feed character,
+           which is not commonly visible in text editors. Files created on
+           Windows and Unix-based systems have always conformed to this
+           requirement, as have files created on OS X and macOS. Files created
+           on old, pre-OS X Macs used carriage returns as end of line
+           characters. If you get a Dynare parsing error of the form ``ERROR:
+           <<mod file>>: line 1, cols 341-347: syntax error,...`` and there's
+           more than one line in your ``.mod`` file, know that it uses the
+           carriage return as an end of line character. To get more helpful
+           error messages, the carriage returns should be changed to line
+           feeds.
 
 .. [#f1] Note that arbitrary MATLAB or Octave expressions can be put
          in a ``.mod`` file, but those expressions have to be on
