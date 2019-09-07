@@ -52,13 +52,13 @@ tarballs/openblas-${OPENBLAS_VERSION}.tar.gz:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://github.com/xianyi/OpenBLAS/archive/v${OPENBLAS_VERSION}.tar.gz
 
-sources32/OpenBLAS-${OPENBLAS_VERSION}: tarballs/openblas-${OPENBLAS_VERSION}.tar.gz patches/openblas-w32.patch
+sources32/OpenBLAS-${OPENBLAS_VERSION}: tarballs/openblas-${OPENBLAS_VERSION}.tar.gz
 	mkdir -p sources32
 	rm -rf sources32/OpenBLAS-*
 	tar xf $< --directory sources32
 	patch $@/Makefile.rule < patches/openblas-w32.patch
 
-sources64/OpenBLAS-${OPENBLAS_VERSION}: tarballs/openblas-${OPENBLAS_VERSION}.tar.gz patches/openblas-w64.patch
+sources64/OpenBLAS-${OPENBLAS_VERSION}: tarballs/openblas-${OPENBLAS_VERSION}.tar.gz
 	mkdir -p sources64
 	rm -rf sources64/OpenBLAS-*
 	tar xf $< --directory sources64
@@ -234,37 +234,37 @@ tarballs/slicot-$(SLICOT_VERSION).tar.gz:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://deb.debian.org/debian/pool/main/s/slicot/slicot_$(SLICOT_VERSION).orig.tar.gz
 
-sources32/slicot-$(SLICOT_VERSION)-without-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-32-without-underscore.patch
+sources32/slicot-$(SLICOT_VERSION)-without-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources32/slicot-*-without-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	patch $@/make.inc < patches/slicot-32-without-underscore.patch
 
-sources32/slicot-$(SLICOT_VERSION)-with-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-32-with-underscore.patch
+sources32/slicot-$(SLICOT_VERSION)-with-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources32/slicot-*-with-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	patch $@/make.inc < patches/slicot-32-with-underscore.patch
 
-sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-64-with-32bit-integer.patch
+sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources64/slicot-*-with-32bit-integer
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	patch $@/make.inc < patches/slicot-64-with-32bit-integer.patch
 
-sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-64-with-64bit-integer.patch
+sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources64/slicot-*-with-64bit-integer
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	patch $@/make.inc < patches/slicot-64-with-64bit-integer.patch
 
-sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-64-with-32bit-integer-and-underscore.patch
+sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources64/slicot-*-with-32bit-integer-and-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	patch $@/make.inc < patches/slicot-64-with-32bit-integer-and-underscore.patch
 
-sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz patches/slicot-64-with-64bit-integer-and-underscore.patch
+sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources64/slicot-*-with-64bit-integer-and-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
