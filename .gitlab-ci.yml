@@ -196,4 +196,4 @@ deploy_snapshot_unstable:
     - cp *.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
     - cd windows/exe/ && cp * /srv/www.dynare.org/snapshot/windows/ && ln -sf * /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe && cd ../..
     - cd windows/zip/ && cp * /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf * /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip && cd ../..
-    - cd /srv/www.dynare.org/snapshot/ && ./list-snapshots-in-json-file.sh
+    - ~/update-snapshot-list.sh
