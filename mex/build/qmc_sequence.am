@@ -4,6 +4,7 @@ TOPDIR = $(top_srcdir)/../../sources/sobol
 
 qmc_sequence_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR)
 qmc_sequence_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
+qmc_sequence_LDFLAGS = $(AM_LDFLAGS) $(OPENMP_LDFLAGS)
 
 nodist_qmc_sequence_SOURCES = qmc_sequence.cc
 

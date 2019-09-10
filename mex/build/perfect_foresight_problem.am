@@ -6,6 +6,7 @@ nodist_perfect_foresight_problem_SOURCES = perfect_foresight_problem.cc DynamicM
 
 perfect_foresight_problem_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR)
 perfect_foresight_problem_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
+perfect_foresight_problem_LDFLAGS = $(AM_LDFLAGS) $(OPENMP_LDFLAGS)
 perfect_foresight_problem_LDADD = $(LIBADD_DLOPEN)
 
 BUILT_SOURCES = $(nodist_perfect_foresight_problem_SOURCES)

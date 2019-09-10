@@ -59,6 +59,8 @@ case ${MATLAB_ARCH} in
     MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -shared -L$MATLAB/bin/${MATLAB_ARCH} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,-Bdynamic,--no-whole-archive"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP \$(abs_top_srcdir)/mex.def"
     MATLAB_LIBS="-lmex -lmx -lmat -lmwlapack -lmwblas"
+    # Hack for static linking of libgomp, needed for OpenMP
+    OPENMP_LDFLAGS="-Wl,-Bstatic,--whole-archive -lgomp -Wl,-Bdynamic,--no-whole-archive"
     ax_mexopts_ok="yes"
     ;;
   maci | maci64)
@@ -132,4 +134,5 @@ AC_SUBST([MATLAB_CFLAGS])
 AC_SUBST([MATLAB_CXXFLAGS])
 AC_SUBST([MATLAB_LDFLAGS])
 AC_SUBST([MATLAB_LIBS])
+AC_SUBST([OPENMP_LDFLAGS])
 ])

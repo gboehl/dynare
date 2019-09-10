@@ -4,6 +4,7 @@ nodist_sparse_hessian_times_B_kronecker_C_SOURCES = sparse_hessian_times_B_krone
 nodist_A_times_B_kronecker_C_SOURCES = A_times_B_kronecker_C.cc
 
 sparse_hessian_times_B_kronecker_C_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
+sparse_hessian_times_B_kronecker_C_LDFLAGS = $(AM_LDFLAGS) $(OPENMP_LDFLAGS)
 
 BUILT_SOURCES = $(nodist_sparse_hessian_times_B_kronecker_C_SOURCES) $(nodist_A_times_B_kronecker_C_SOURCES)
 CLEANFILES = $(nodist_sparse_hessian_times_B_kronecker_C_SOURCES) $(nodist_A_times_B_kronecker_C_SOURCES)

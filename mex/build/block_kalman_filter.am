@@ -4,6 +4,7 @@ TOPDIR = $(top_srcdir)/../../sources/block_kalman_filter
 
 block_kalman_filter_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR)
 block_kalman_filter_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
+block_kalman_filter_LDFLAGS = $(AM_LDFLAGS) $(OPENMP_LDFLAGS)
 
 nodist_block_kalman_filter_SOURCES = block_kalman_filter.cc
 

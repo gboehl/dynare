@@ -3,6 +3,7 @@ mex_PROGRAMS = local_state_space_iteration_2
 nodist_local_state_space_iteration_2_SOURCES = local_state_space_iteration_2.cc
 
 local_state_space_iteration_2_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
+local_state_space_iteration_2_LDFLAGS = $(AM_LDFLAGS) $(OPENMP_LDFLAGS)
 
 BUILT_SOURCES = $(nodist_local_state_space_iteration_2_SOURCES)
 CLEANFILES = $(nodist_local_state_space_iteration_2_SOURCES)
