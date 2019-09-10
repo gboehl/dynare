@@ -11,7 +11,7 @@ function oo_=disp_moments(y,var_list,M_,options_,oo_)
 % OUTPUTS
 %   oo_                 [structure]    Dynare's results structure,
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -166,7 +166,7 @@ if ~options_.nodecomposition
             temp_shock_mat=zeros(size(shock_mat));
             temp_shock_mat(:,i_exo_var(shock_iter))=shock_mat(:,i_exo_var(shock_iter));
             temp_shock_mat(:,i_exo_var) = temp_shock_mat(:,i_exo_var)*chol_S;
-            y_sim_one_shock = simult_(y0,oo_.dr,temp_shock_mat,options_.order);
+            y_sim_one_shock = simult_(M_,options_,y0,oo_.dr,temp_shock_mat,options_.order);
             y_sim_one_shock=y_sim_one_shock(ivar,1+options_.drop+1:end)';
             y_sim_one_shock=get_filtered_time_series(y_sim_one_shock,mean(y_sim_one_shock),options_);
             oo_.variance_decomposition(:,i_exo_var(shock_iter))=var(y_sim_one_shock)./s2*100;            

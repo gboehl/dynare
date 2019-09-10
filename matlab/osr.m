@@ -62,4 +62,4 @@ if ~options_.noprint
 end
 osr_res = osr1(i_params,i_var,W);
 
-stoch_simul(var_list);
+[~, oo_, options_] = stoch_simul(M_, options_, oo_, var_list);

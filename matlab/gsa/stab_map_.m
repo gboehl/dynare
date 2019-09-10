@@ -495,7 +495,7 @@ else
         options_.nomoments=1;
         options_.irf=0;
         options_.noprint=1;
-        stoch_simul([]);
+        [~, oo_, options_] = stoch_simul(M_, options_, oo_, []);
         %T=zeros(size(dr_.ghx,1),size(dr_.ghx,2)+size(dr_.ghu,2),length(istable));
         ntrans=length(istable);
         yys=NaN(length(ys_),ntrans);

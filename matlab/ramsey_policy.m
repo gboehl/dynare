@@ -1,6 +1,6 @@
 function info = ramsey_policy(var_list)
 
-% Copyright (C) 2007-2018 Dynare Team
+% Copyright (C) 2007-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,7 +39,7 @@ else
     end
 end
 
-info = stoch_simul(var_list);
+[info, oo_, options_] = stoch_simul(M_, options_, oo_, var_list);
 
 oo_.steady_state = oo_.dr.ys;
 

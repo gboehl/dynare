@@ -45,7 +45,7 @@ function [y_out,DynareResults] =simult(y0, dr,DynareModel,DynareOptions,DynareRe
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2012 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -82,7 +82,7 @@ for i=1:replic
         % independently of the length of the simulation
         DynareResults.exo_simul(:,i_exo_var) = randn(nxs,DynareOptions.periods)'*chol_S;
     end
-    y_ = simult_(y0,dr,DynareResults.exo_simul,order);
+    y_ = simult_(DynareModel,DynareOptions,y0,dr,DynareResults.exo_simul,order);
     % elimninating initial value
     y_ = y_(:,2:end);
     if replic > 1

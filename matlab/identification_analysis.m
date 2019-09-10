@@ -303,7 +303,7 @@ if info(1) == 0 %no errors in solution
                 end
                 analytic_derivation              = options_.analytic_derivation;
                 options_.analytic_derivation     = -2; %this sets asy_Hess=1 in dsge_likelihood.m                
-                info = stoch_simul(options_.varobs);
+                [info, oo_, options_] = stoch_simul(M_, options_, oo_, options_.varobs);
                 dataset_ = dseries(oo_.endo_simul(options_.varobs_id,100+1:end)',dates('1Q1'), options_.varobs); %get information on moments
                 derivatives_info.no_DLIK = 1;
                 bounds = prior_bounds(bayestopt_, options_.prior_trunc); %reset bounds as lb and ub must only be operational during mode-finding

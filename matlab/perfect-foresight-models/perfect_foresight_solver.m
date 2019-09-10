@@ -208,7 +208,7 @@ end
 
 skipline()
 
-dyn2vec;
+dyn2vec(M_, oo_, options_);
 
 if ~isdates(options_.initial_period) && isnan(options_.initial_period)
     initial_period = dates(1,1);

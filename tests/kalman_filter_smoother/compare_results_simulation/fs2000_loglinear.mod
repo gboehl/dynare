@@ -17,7 +17,7 @@
  */
 
 /*
- * Copyright (C) 2004-2018 Dynare Team
+ * Copyright (C) 2004-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -153,7 +153,7 @@ iorder=1;
 % if options_.loglinear
 %     y0=exp(y0);
 % end
-y_=simult_(y0,dr,ex_,iorder);
+y_=simult_(M_,options_,y0,dr,ex_,iorder);
 
 fsdat_simul_logged;
 

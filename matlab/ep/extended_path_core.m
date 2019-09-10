@@ -4,7 +4,7 @@ function [y, info_convergence, endogenousvariablespaths] = extended_path_core(pe
                                                   debug,bytecode_flag,order,M,pfm,algo,solve_algo,stack_solve_algo,...
                                                   olmmcp,options,oo,initialguess)
 
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright (C) 2016-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -24,7 +24,7 @@ function [y, info_convergence, endogenousvariablespaths] = extended_path_core(pe
 ep = options.ep;
 
 if init% Compute first order solution (Perturbation)...
-    endo_simul = simult_(initial_conditions,oo.dr,exo_simul(2:end,:),1);
+    endo_simul = simult_(M,options,initial_conditions,oo.dr,exo_simul(2:end,:),1);
 else
     if nargin==20 && ~isempty(initialguess)
         % Note that the first column of initialguess should be equal to initial_conditions.

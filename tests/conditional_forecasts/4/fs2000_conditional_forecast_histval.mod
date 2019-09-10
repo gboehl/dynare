@@ -98,7 +98,7 @@ shock_matrix = zeros(options_cond_fcst_.periods ,M_.exo_nbr); %create shock matr
 shock_matrix(1:5,strmatch('e_a',M_.exo_names,'exact')) = cond_forecast.forecasts.controlled_exo_variables.Mean.e_a; %set controlled shocks to their values
 shock_matrix(1:5,strmatch('e_m',M_.exo_names,'exact')) = cond_forecast.forecasts.controlled_exo_variables.Mean.e_m; %set controlled shocks to their values
 
-y_simult = simult_(initial_condition_states,oo_.dr,shock_matrix,1);
+y_simult = simult_(M_,options_,initial_condition_states,oo_.dr,shock_matrix,1);
 
 if max(abs(y_simult(strmatch('k',M_.endo_names,'exact'),:)'-cond_forecast.forecasts.cond.Mean.k))>1e-8
     error('Unconditional Forecasts do not match')

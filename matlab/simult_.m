@@ -1,8 +1,10 @@
-function y_=simult_(y0,dr,ex_,iorder)
+function y_=simult_(M_,options_,y0,dr,ex_,iorder)
 % Simulates the model using a perturbation approach, given the path for the exogenous variables and the
 % decision rules.
 %
 % INPUTS
+%    M_       [struct]   model
+%    options_ [struct]   options
 %    y0       [double]   n*1 vector, initial value (n is the number of declared endogenous variables plus the number
 %                        of auxilliary variables for lags and leads); must be in declaration order, i.e. as in M_.endo_names
 %    dr       [struct]   matlab's structure where the reduced form solution of the model is stored.
@@ -15,7 +17,7 @@ function y_=simult_(y0,dr,ex_,iorder)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,8 +33,6 @@ function y_=simult_(y0,dr,ex_,iorder)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-
-global M_ options_
 
 iter = size(ex_,1);
 endo_nbr = M_.endo_nbr;

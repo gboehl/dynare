@@ -22,7 +22,7 @@ function [yf,int_width,int_width_ME]=forcst(dr,y0,horizon,var_list,M_,oo_,option
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2018 Dynare Team
+% Copyright (C) 2003-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,7 +40,7 @@ function [yf,int_width,int_width_ME]=forcst(dr,y0,horizon,var_list,M_,oo_,option
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 oo_=make_ex_(M_,options_,oo_);
-yf = simult_(y0,dr,zeros(horizon,M_.exo_nbr),1);
+yf = simult_(M_,options_,y0,dr,zeros(horizon,M_.exo_nbr),1);
 nstatic = M_.nstatic;
 nspred = M_.nspred;
 nc = size(dr.ghx,2);

@@ -1,4 +1,4 @@
-function info = stoch_simul(var_list)
+function [info, oo_, options_] = stoch_simul(M_, options_, oo_, var_list)
 
 % Copyright (C) 2001-2019 Dynare Team
 %
@@ -16,8 +16,6 @@ function info = stoch_simul(var_list)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-
-global M_ options_ oo_
 
 % Test if the order of approximation is nonzero (the preprocessor tests if order is non negative).
 if isequal(options_.order,0)
@@ -90,7 +88,7 @@ else
         oo_.steady_state=exp(oo_.steady_state);
         options_.logged_steady_state=0;
     end
-    [oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
+    [~,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
 end
 
 if options_.loglinear && isfield(oo_.dr,'ys') && options_.logged_steady_state==0 %log steady state for correct display of decision rule
@@ -182,7 +180,7 @@ if options_.periods > 0 && ~PI_PCL_solver
     [ys, oo_] = simult(y0,oo_.dr,M_,options_,oo_);
     oo_.endo_simul = ys;
     if ~options_.minimal_workspace
-        dyn2vec;
+        dyn2vec(M_, oo_, options_);
     end
 end
 
@@ -222,10 +220,10 @@ if options_.irf
                 y=PCL_Part_info_irf (0, PCL_varobs, i_var, M_, oo_.dr, options_.irf, i);
             else
                 if options_.order>1 && options_.relative_irf % normalize shock to 0.01 before IRF generation for GIRFs; multiply with 100 later
-                    y=irf(oo_.dr,cs(M_.exo_names_orig_ord,i)./cs(i,i)/100, options_.irf, options_.drop, ...
+                    y=irf(M_, options_, oo_.dr,cs(M_.exo_names_orig_ord,i)./cs(i,i)/100, options_.irf, options_.drop, ...
                           options_.replic, options_.order);
                 else %for linear model, rescaling is done later
-                    y=irf(oo_.dr,cs(M_.exo_names_orig_ord,i), options_.irf, options_.drop, ...
+                    y=irf(M_, options_, oo_.dr,cs(M_.exo_names_orig_ord,i), options_.irf, options_.drop, ...
                           options_.replic, options_.order);
                 end
             end
