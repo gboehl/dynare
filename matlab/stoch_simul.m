@@ -24,6 +24,10 @@ if isequal(options_.order,0)
     error('stoch_simul:: The order of the Taylor approximation cannot be 0!')
 end
 
+if M_.exo_nbr==0
+    error('stoch_simul:: does not support having no varexo in the model. As a workaround you could define a dummy exogenous variable.')
+end
+
 test_for_deep_parameters_calibration(M_);
 
 dr = oo_.dr;
