@@ -132,6 +132,11 @@ else
         options_.qz_criterium = 1+1e-6;
     end
 end
+
+if M_.exo_nbr==0
+    error('dynare_sensitivity does not support having no varexo in the model. As a workaround you could define a dummy exogenous variable.')
+end
+
 [make,my,day,punk,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
 
 options_gsa = set_default_option(options_gsa,'identification',0);
