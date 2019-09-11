@@ -193,7 +193,7 @@ deploy_snapshot_unstable:
     - pkg_source
     - pkg_windows
   script:
-    - cp *.tar.xz /srv/www.dynare.org/snapshot/source/
-    - cp windows/exe/* /srv/www.dynare.org/snapshot/windows/
-    - cp windows/zip/* /srv/www.dynare.org/snapshot/windows-zip/
+    - cp *.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
+    - f=windows/exe/* && cp $f /srv/www.dynare.org/snapshot/windows/ && ln -sf ${f##*/} /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe
+    - f=windows/zip/* && cp $f /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf ${f##*/} /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip
     - ~/update-snapshot-list.sh
