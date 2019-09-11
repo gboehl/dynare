@@ -248,8 +248,7 @@ if options_.irf
             for j = 1:nvar
                 assignin('base',[M_.endo_names{i_var(j)} '_' M_.exo_names{i}],...
                          y(i_var(j),:)');
-                eval(['oo_.irfs.' M_.endo_names{i_var(j)} '_' ...
-                      M_.exo_names{i} ' = y(i_var(j),:);']);
+                oo_.irfs.([M_.endo_names{i_var(j)} '_' M_.exo_names{i}]) = y(i_var(j),:);
                 if max(abs(y(i_var(j),:))) >= options_.impulse_responses.plot_threshold
                     irfs  = cat(1,irfs,y(i_var(j),:));
                     if isempty(mylist)

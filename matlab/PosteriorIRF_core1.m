@@ -239,9 +239,7 @@ while fpar<B
             stock_irf_bvardsge(:,:,:,IRUN) = reshape(tmp_dsgevar,options_.irf,dataset_.vobs,M_.exo_nbr);
         else
             stock_irf_bvardsge(:,:,:,IRUN) = reshape(tmp_dsgevar,options_.irf,dataset_.vobs,M_.exo_nbr);
-            instr = [MhDirectoryName '/' M_.fname '_irf_bvardsge' ...
-                     int2str(NumberOfIRFfiles_dsgevar) '.mat stock_irf_bvardsge;'];
-            eval(['save ' instr]);
+            save([MhDirectoryName '/' M_.fname '_irf_bvardsge' int2str(NumberOfIRFfiles_dsgevar) '.mat'], 'stock_irf_bvardsge');
             if RemoteFlag==1
                 OutputFileName_bvardsge = [OutputFileName_bvardsge; {[MhDirectoryName filesep], [M_.fname '_irf_bvardsge' int2str(NumberOfIRFfiles_dsgevar) '.mat']}];
             end
@@ -255,9 +253,7 @@ while fpar<B
             stock_irf_dsge = stock_irf_dsge(:,:,:,1:irun);
             if MAX_nirfs_dsgevar && (fpar == B || IRUN == B)
                 stock_irf_bvardsge = stock_irf_bvardsge(:,:,:,1:IRUN);
-                instr = [MhDirectoryName '/' M_.fname '_irf_bvardsge' ...
-                         int2str(NumberOfIRFfiles_dsgevar) '.mat stock_irf_bvardsge;'];
-                eval(['save ' instr]);
+                save([MhDirectoryName '/' M_.fname '_irf_bvardsge' int2str(NumberOfIRFfiles_dsgevar) '.mat'], 'stock_irf_bvardsge');
                 NumberOfIRFfiles_dsgevar = NumberOfIRFfiles_dsgevar+1;
                 if RemoteFlag==1
                     OutputFileName_bvardsge = [OutputFileName_bvardsge; {[MhDirectoryName filesep], [M_.fname '_irf_bvardsge' int2str(NumberOfIRFfiles_dsgevar) '.mat']}];
