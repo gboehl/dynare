@@ -34,8 +34,7 @@ FaaDiBruno::calculate(const StackContainer<FGSTensor> &cont,
   out.zeros();
   for (int l = 1; l <= out.dimen(); l++)
     {
-      int max, mem_mb, p_size_mb;
-      std::tie(max, mem_mb, p_size_mb) = estimRefinement(out.getDims(), out.nrows(), l);
+      auto [max, mem_mb, p_size_mb] = estimRefinement(out.getDims(), out.nrows(), l);
       FoldedFineContainer fine_cont(cont, max);
       fine_cont.multAndAdd(l, f, out);
       JournalRecord recc(journal);
@@ -73,8 +72,7 @@ FaaDiBruno::calculate(const StackContainer<UGSTensor> &cont,
   out.zeros();
   for (int l = 1; l <= out.dimen(); l++)
     {
-      int max, mem_mb, p_size_mb;
-      std::tie(max, mem_mb, p_size_mb) = estimRefinement(out.getDims(), out.nrows(), l);
+      auto [max, mem_mb, p_size_mb] = estimRefinement(out.getDims(), out.nrows(), l);
       UnfoldedFineContainer fine_cont(cont, max);
       fine_cont.multAndAdd(l, f, out);
       JournalRecord recc(journal);

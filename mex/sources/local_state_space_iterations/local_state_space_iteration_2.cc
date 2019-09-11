@@ -61,10 +61,8 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
   const double one = 1.0;
   const blas_int ONE = 1;
 #endif
-  std::vector<int> ii1, ii2, ii3;// vector indices for ghxx
-  std::tie(ii1, ii2, ii3) = set_vector_of_indices(n, m);
-  std::vector<int> jj1, jj2, jj3;// vector indices for ghuu
-  std::tie(jj1, jj2, jj3) = set_vector_of_indices(q, m);
+  auto [ii1, ii2, ii3] = set_vector_of_indices(n, m); // vector indices for ghxx
+  auto [jj1, jj2, jj3] = set_vector_of_indices(q, m); // vector indices for ghuu
 #pragma omp parallel for num_threads(number_of_threads)
   for (int particle = 0; particle < s; particle++)
     {
@@ -147,10 +145,8 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
   const double one = 1.0;
   const blas_int ONE = 1;
 #endif
-  std::vector<int> ii1, ii2, ii3;// vector indices for ghxx
-  std::tie(ii1, ii2, ii3) = set_vector_of_indices(n, m);
-  std::vector<int> jj1, jj2, jj3;// vector indices for ghuu
-  std::tie(jj1, jj2, jj3) = set_vector_of_indices(q, m);
+  auto [ii1, ii2, ii3] = set_vector_of_indices(n, m); // vector indices for ghxx
+  auto [jj1, jj2, jj3] = set_vector_of_indices(q, m); // vector indices for ghuu
 #pragma omp parallel for num_threads(number_of_threads)
   for (int particle = 0; particle < s; particle++)
     {

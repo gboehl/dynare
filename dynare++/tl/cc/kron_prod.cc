@@ -86,8 +86,7 @@ KronProdDimens::KronProdDimens(const KronProdDimens &kd, int i)
 void
 KronProd::checkDimForMult(const ConstTwoDMatrix &in, const TwoDMatrix &out) const
 {
-  int my_rows, my_cols;
-  std::tie(my_rows, my_cols) = kpd.getRC();
+  auto [my_rows, my_cols] = kpd.getRC();
   TL_RAISE_IF(in.nrows() != out.nrows() || in.ncols() != my_rows,
               "Wrong dimensions for KronProd in KronProd::checkDimForMult");
 }
@@ -231,8 +230,7 @@ KronProdIAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
   int id_cols = kpd.cols[0];
 
   KronProdAI akronid(*this);
-  int in_bl_width, out_bl_width;
-  std::tie(in_bl_width, out_bl_width) = akronid.kpd.getRC();
+  auto [in_bl_width, out_bl_width] = akronid.kpd.getRC();
 
   for (int i = 0; i < id_cols; i++)
     {
