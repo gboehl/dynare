@@ -125,6 +125,22 @@ doc/internals/ltxpng
 # Windows
 !/windows/Makefile
 !/windows/deps/Makefile
+windows/deps/.BUILDINFO
+windows/deps/.MTREE
+windows/deps/.PKGINFO
+windows/deps/lib32/
+windows/deps/lib64/
+windows/deps/matlab32/
+windows/deps/matlab64/
+windows/deps/mingw32/
+windows/deps/mingw64/
+windows/deps/octave32/
+windows/deps/octave64/
+windows/deps/sources32/
+windows/deps/sources64/
+windows/deps/tarballs/
+windows/exe/
+windows/zip/
 
 # MacOS stuff
 .DS_Store
@@ -152,3 +168,5 @@ octave-workspace
 
 # VERSION generated file
 VERSION
+
+matlab/supported_octave_version.m
