@@ -66,12 +66,12 @@ a 32-bit Octave.
 A number of tools and libraries are needed in order to recompile everything. You don't necessarily need to install everything, depending on what you want to compile.
 
 - A POSIX compliant shell and an implementation of Make (mandatory)
-- The [GNU Compiler Collection](http://gcc.gnu.org/), version 6 or later, with
+- The [GNU Compiler Collection](http://gcc.gnu.org/), version 8 or later, with
   gcc, g++ and gfortran (mandatory)
 - MATLAB (if you want to compile the MEX for MATLAB)
 - [GNU Octave](http://www.octave.org), with the development headers (if you
   want to compile the MEX for Octave)
-- [Boost libraries](http://www.boost.org), version 1.36 or later (with the filesystem library compiled)
+- [Boost libraries](http://www.boost.org), version 1.36 or later
 - [Bison](http://www.gnu.org/software/bison/), version 3.2 or later (only if you get the source through Git)
 - [Flex](http://flex.sourceforge.net/), version 2.5.4 or later (only if you get the source through Git)
 - [Autoconf](http://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git)
@@ -219,7 +219,7 @@ All the prerequisites are packaged:
 - `build-essential` (for gcc, g++ and make)
 - `gfortran`
 - `liboctave-dev`
-- `libboost-graph-dev` and `libboost-filesystem-dev`
+- `libboost-graph-dev`
 - `libgsl-dev`
 - `libmatio-dev`
 - `libslicot-dev` and `libslicot-pic`
@@ -242,7 +242,7 @@ All the prerequisites are packaged:
 
 You can install them all at once with:
 ```
-apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-filesystem-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-generic-extra lmodern python3-sphinx libjs-mathjax doxygen
+apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-generic-extra lmodern python3-sphinx libjs-mathjax doxygen
 ```
 
 ## Windows
@@ -280,7 +280,7 @@ autoreconf -si
 ```
 - Configure Dynare:
 ```
-./configure --with-boost-system=boost_system-mt --with-boost-filesystem=boost_filesystem-mt --with-slicot=/usr/local --with-matlab=<…> MATLAB_VERSION=<…> --disable-octave
+./configure --with-slicot=/usr/local --with-matlab=<…> MATLAB_VERSION=<…> --disable-octave
 ```
 where the path and version of MATLAB are specified. Note that you should use
 the MSYS2 notation and not put spaces in the MATLAB path, so you probably want
