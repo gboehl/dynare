@@ -17,6 +17,11 @@ function [info, oo_, options_] = discretionary_policy(M_, options_, oo_, var_lis
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+if options_.loglinear
+    % Ensure it's ok to ignore options_ returned from stoch_simul. #1197
+    error('discretionary_policy is not compatible with `loglinear` option set to 1')
+end
+
 origorder = options_.order;
 options_.discretionary_policy = 1;
 options_.order = 1;
