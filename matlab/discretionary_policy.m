@@ -28,11 +28,10 @@ if ~options_.noprint
     disp_steady_state(M_,oo_)
     for i=M_.orig_endo_nbr:M_.endo_nbr
         if strmatch('mult_', M_.endo_names{i})
-            disp(sprintf('%s \t\t %g', M_.endo_names{i}, oo_.dr.ys(i)));
+            fprintf('%s \t\t %g\n', M_.endo_names{i}, oo_.dr.ys(i));
         end
     end
 end
-
 
 oo_.planner_objective_value = evaluate_planner_objective(M_,options_,oo_);
 

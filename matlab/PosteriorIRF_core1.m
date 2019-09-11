@@ -23,7 +23,7 @@ function myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 %
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright (C) 2006-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -70,10 +70,8 @@ NumberOfIRFfiles_dsgevar=myinputs.NumberOfIRFfiles_dsgevar;
 ifil2=myinputs.ifil2;
 
 if options_.dsge_var
-    gend=myinputs.gend;
     nvobs=myinputs.nvobs;
     NumberOfParametersPerEquation = myinputs.NumberOfParametersPerEquation;
-    NumberOfLags = myinputs.NumberOfLags;
     NumberOfLagsTimesNvobs = myinputs.NumberOfLagsTimesNvobs;
     Companion_matrix = myinputs.Companion_matrix;
     stock_irf_bvardsge = zeros(options_.irf,nvobs,M_.exo_nbr,MAX_nirfs_dsgevar);
@@ -194,7 +192,7 @@ while fpar<B
     end
     if MAX_nirfs_dsgevar
         IRUN = IRUN+1;
-        [fval,info,~,~,~,~,~,PHI,SIGMAu,iXX] =  dsge_var_likelihood(deep',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+        [~,~,~,~,~,~,~,PHI,SIGMAu,iXX] =  dsge_var_likelihood(deep',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
         dsge_prior_weight = M_.params(strmatch('dsge_prior_weight', M_.param_names));
         DSGE_PRIOR_WEIGHT = floor(dataset_.nobs*(1+dsge_prior_weight));
         SIGMA_inv_upper_chol = chol(inv(SIGMAu*dataset_.nobs*(dsge_prior_weight+1)));
@@ -216,7 +214,7 @@ while fpar<B
         if dsge_prior_weight > 0
             Atheta(oo_.dr.order_var,M_.exo_names_orig_ord) = oo_.dr.ghu*sqrt(M_.Sigma_e);
             A0 = Atheta(bayestopt_.mfys,:);
-            [OMEGAstar,SIGMAtr] = qr2(A0');
+            OMEGAstar = qr2(A0');
         end
         SIGMAu_chol = chol(SIGMAu_draw)';
         SIGMAtrOMEGA = SIGMAu_chol*OMEGAstar';
@@ -245,7 +243,6 @@ while fpar<B
             end
             NumberOfIRFfiles_dsgevar = NumberOfIRFfiles_dsgevar+1;
             IRUN =0;
-            stock_irf_dsgevar = zeros(options_.irf,dataset_.vobs,M_.exo_nbr,MAX_nirfs_dsgevar);
         end
     end
     if irun == MAX_nirfs_dsge || irun == B || fpar == B

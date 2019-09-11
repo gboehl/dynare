@@ -16,7 +16,7 @@ function osr_res = osr1(i_params,i_var,weights)
 %   Uses Newton-type optimizer csminwel to directly solve quadratic
 %   osr-problem
 %
-% Copyright (C) 2005-2018 Dynare Team
+% Copyright (C) 2005-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,10 +35,6 @@ function osr_res = osr1(i_params,i_var,weights)
 
 global M_ oo_ options_ it_
 
-klen = M_.maximum_lag + M_.maximum_lead + 1;
-iyv = M_.lead_lag_incidence';
-iyv = iyv(:);
-iyr0 = find(iyv) ;
 it_ = M_.maximum_lag + 1 ;
 
 osr_res.error_indicator = 1; %initialize indicator
@@ -84,8 +80,6 @@ if isfield(options_.osr,'maxit') || isfield(options_.osr,'tolf')
     end
 end
 
-exe =zeros(M_.exo_nbr,1);
-
 oo_.dr = set_state_space(oo_.dr,M_,options_);
 
 
@@ -99,7 +93,7 @@ inv_order_var = oo_.dr.inv_order_var;
 %extract unique entries of covariance
 i_var=unique(i_var);
 %% do initial checks
-[loss,info,exit_flag,vx]=osr_obj(t0,i_params,inv_order_var(i_var),weights(i_var,i_var));
+[loss,info]=osr_obj(t0,i_params,inv_order_var(i_var),weights(i_var,i_var));
 if info~=0
     print_info(info, options_.noprint, options_);
 else
@@ -129,7 +123,7 @@ else
         error('OSR: OSR with bounds on parameters requires a constrained optimizer, i.e. opt_algo= 1,2,5, or 9.')
     end
     %%do actual optimization
-    [p, f, exitflag] = dynare_minimize_objective(str2func('osr_obj'),t0,options_.osr.opt_algo,options_,M_.osr.param_bounds,M_.param_names(i_params),[],[], i_params,...
+    [p, f] = dynare_minimize_objective(str2func('osr_obj'),t0,options_.osr.opt_algo,options_,M_.osr.param_bounds,M_.param_names(i_params),[],[], i_params,...
                                                  inv_order_var(i_var),weights(i_var,i_var));
 end
 
@@ -144,9 +138,9 @@ if ~options_.noprint
     disp('OPTIMAL VALUE OF THE PARAMETERS:')
     skipline()
     for i=1:np
-        disp(sprintf('%16s %16.6g\n', M_.param_names{i_params(i)}, p(i)))
+        fprintf('%16s %16.6g\n\n', M_.param_names{i_params(i)}, p(i));
     end
-    disp(sprintf('Objective function : %16.6g\n',f));
+    fprintf('Objective function : %16.6g\n\n',f);
     skipline()
 end
 [oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);

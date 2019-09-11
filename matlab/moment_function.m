@@ -15,7 +15,7 @@ function [g,grad,hess,flag] = moment_function(xparams,sample_moments,dataset,opt
 % SPECIAL REQUIREMENTS
 %  The user has to provide a file where the moment conditions are defined.
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -92,7 +92,7 @@ else% parallel mode.
         error('The parallel version of SMM estimation is not implemented for non unix platforms!')
     end
     job_number = 1;% Remark. First job is for the master.
-    [Junk,hostname] = unix('hostname --fqdn');
+    [~,hostname] = unix('hostname --fqdn');
     hostname = deblank(hostname);
     for i=1:length(parallel)
         machine = deblank(parallel(i).machine);
