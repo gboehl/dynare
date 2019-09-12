@@ -193,8 +193,8 @@ deploy_snapshot_unstable:
     - pkg_source
     - pkg_windows
   script:
-    - f=windows/exe/* && osslsigncode sign -pkcs12 ~/dynare-object-signing.p12 -n Dynare -i https://www.dynare.org -in $f -out $f.signed && mv $f.signed $f
+    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/dynare-object-signing.p12 -n Dynare -i https://www.dynare.org -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
     - cp *.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
-    - f=windows/exe/* && cp $f /srv/www.dynare.org/snapshot/windows/ && ln -sf ${f##*/} /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe
-    - f=windows/zip/* && cp $f /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf ${f##*/} /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip
+    - f=(windows/exe/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe
+    - f=(windows/zip/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip
     - ~/update-snapshot-list.sh
