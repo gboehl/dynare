@@ -128,7 +128,7 @@ if nargout>1
         maxerror = oo_.deterministic_simulation.error;
     else
         if options_.bytecode
-            [chck, residuals, ~]= bytecode('dynamic','evaluate', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1);
+            [~, residuals]= bytecode('dynamic','evaluate', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1);
         else
             if M_.maximum_lag > 0
                 y0 = oo_.endo_simul(:, M_.maximum_lag);
