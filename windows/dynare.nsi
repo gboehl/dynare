@@ -15,6 +15,8 @@ InstallDir "c:\dynare\${VERSION}"
 
 !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of Dynare ${VERSION}.$\n$\nDynare is distributed under the GNU General Public License (GPL) version 3.$\n$\nIf you accept the license, click Next button to continue the installation."
 !insertmacro MUI_PAGE_WELCOME
+!define MUI_COMPONENTSPAGE_NODESC
+!define MUI_COMPONENTSPAGE_TEXT_TOP "Choose the components you want to install.$\nIf you know whether your version of MATLAB or Octave is 64-bit or 32-bit, you can uncheck the component that you don’t need in order to save disk space."
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -42,6 +44,7 @@ InstallDir "c:\dynare\${VERSION}"
  Goto +2
  SetShellVarContext all
 !macroend
+
 
 Section "Dynare core (preprocessor and M-files)"
  SectionIn RO
@@ -85,12 +88,8 @@ Section "Dynare core (preprocessor and M-files)"
  WriteRegDWORD SHELL_CONTEXT "${REGLOC}" "NoRepair" 1
 SectionEnd
 
-SectionGroup "MEX files for MATLAB"
 
-Section "MEX files for MATLAB 32-bit, version 7.9 to 8.6 (R2009b to R2015b)"
- SetOutPath $INSTDIR\mex\matlab\win32-7.9-8.6
- File ..\mex\matlab\win32-7.9-8.6\*.mexw32
-SectionEnd
+SectionGroup "Dynare support for 64-bit MATLAB and Octave"
 
 Section "MEX files for MATLAB 64-bit, version 7.9 to 9.3 (R2009b to R2017b)"
  SetOutPath $INSTDIR\mex\matlab\win64-7.9-9.3
@@ -102,62 +101,67 @@ Section "MEX files for MATLAB 64-bit, version 9.4 to 9.7 (R2018a to R2019b)"
  File ..\mex\matlab\win64-9.4-9.7\*.mexw64
 SectionEnd
 
-SectionGroupEnd
-
-SectionGroup "MEX files for Octave"
-
-Section "MEX files for Octave 5.1.0 (MinGW, 64bit)"
+Section "MEX files for Octave 5.1.0 (64-bit)"
  SetOutPath $INSTDIR\mex\octave\win64
  File ..\mex\octave\win64\*
 SectionEnd
 
-Section "MEX files for Octave 5.1.0 (MinGW, 32bit)"
- SetOutPath $INSTDIR\mex\octave\win32
- File ..\mex\octave\win32\*
-SectionEnd
-
-SectionGroupEnd
-
-SectionGroup "MinGW compiler (needed for use_dll option under MATLAB)"
-
-Section "MinGW for 32-bit MATLAB"
- SetOutPath $INSTDIR\mingw32
- File /r deps\mingw32\*
-SectionEnd
-
-Section "MinGW for 64-bit MATLAB"
+Section "MinGW compiler for MATLAB 64-bit"
  SetOutPath $INSTDIR\mingw64
  File /r deps\mingw64\*
 SectionEnd
 
 SectionGroupEnd
 
-Section "Dynare++ (standalone executable)"
- SetOutPath $INSTDIR\dynare++
- File ..\dynare++\src\dynare++.exe
+
+SectionGroup "Dynare support for 32-bit MATLAB and Octave"
+
+Section "MEX files for MATLAB 32-bit, version 7.9 to 8.6 (R2009b to R2015b)"
+ SetOutPath $INSTDIR\mex\matlab\win32-7.9-8.6
+ File ..\mex\matlab\win32-7.9-8.6\*.mexw32
 SectionEnd
 
-Section "Documentation and examples (Dynare and Dynare++)"
+Section "MEX files for Octave 5.1.0 (32-bit)"
+ SetOutPath $INSTDIR\mex\octave\win32
+ File ..\mex\octave\win32\*
+SectionEnd
+
+Section "MinGW compiler for MATLAB 32-bit"
+ SetOutPath $INSTDIR\mingw32
+ File /r deps\mingw32\*
+SectionEnd
+
+SectionGroupEnd
+
+
+Section "Documentation and examples"
  SetOutPath $INSTDIR\doc
  File ..\doc\manual\build\latex\dynare-manual.pdf ..\doc\guide.pdf ..\doc\bvar-a-la-sims.pdf ..\doc\dr.pdf ..\preprocessor\doc\macroprocessor\macroprocessor.pdf ..\preprocessor\doc\preprocessor\preprocessor.pdf ..\doc\parallel\parallel.pdf ..\doc\gsa\gsa.pdf ..\doc\dseries-and-reporting\dseriesReporting.pdf
 
  SetOutPath $INSTDIR\doc\dynare-manual.html
  File /r ..\doc\manual\build\html\*
 
- SetOutPath $INSTDIR\doc\dynare++
- File ..\dynare++\doc\*.pdf
-
  CreateShortcut "${SMLOC}\Documentation.lnk" "$INSTDIR\doc"
 
  SetOutPath $INSTDIR\examples
  File ..\examples\*.mod ..\examples\*.m
 
+ CreateShortcut "${SMLOC}\Examples.lnk" "$INSTDIR\examples"
+SectionEnd
+
+
+Section /o "Dynare++ (standalone executable)"
+
+ SetOutPath $INSTDIR\dynare++
+ File ..\dynare++\src\dynare++.exe
+
+ SetOutPath $INSTDIR\doc\dynare++
+ File ..\dynare++\doc\*.pdf
+
  SetOutPath $INSTDIR\examples\dynare++
  File ..\examples\dynare++\example1.mod ..\examples\dynare++\README.txt
-
- CreateShortcut "${SMLOC}\Examples.lnk" "$INSTDIR\examples"
-
 SectionEnd
+
 
 Section "Uninstall"
 !insertmacro DETERMINE_CONTEXT
