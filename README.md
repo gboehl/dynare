@@ -342,7 +342,7 @@ folder where you want Dynare installed.
 - `cd dynare`
 - `PATH="/usr/local/opt/bison/bin:/usr/local/opt/flex/bin:$PATH"`
 - `autoreconf -si`
-- `./configure --disable-octave --with-matlab=/Applications/MATLAB_R2017b.app MATLAB_VERSION=R2017b`, adjusting the MATLAB path and version to accord with your local installation. If you don't have MATLAB, simply type `./configure --disable-octave`
+- `CC=gcc-9 CXX=g++-9 ./configure --disable-octave --with-matlab=/Applications/MATLAB_R2019a.app MATLAB_VERSION=R2019a --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local`, adjusting the MATLAB path and version to accord with your local installation. If you don't have MATLAB, simply remove `--with-matlab=/Applications/MATLAB_R2019a.app MATLAB_VERSION=R2019a` from the above command
 - `make -j`
 - **(Optional)** To then build mex files for Octave, run
      - `cd mex/build/octave`
