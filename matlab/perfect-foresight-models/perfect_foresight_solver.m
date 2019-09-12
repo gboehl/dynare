@@ -65,10 +65,10 @@ oo_ = perfect_foresight_solver_core(M_,options_,oo_);
 % If simulation failed try homotopy.
 if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
 
-    skipline()
-    disp('Simulation of the perfect foresight model failed!')
-    disp('Switching to a homotopy method...')
-    skipline()
+    if ~options_.noprint
+        fprintf('\nSimulation of the perfect foresight model failed!')
+        fprintf('Switching to a homotopy method...\n')
+    end
 
     if ~M_.maximum_lag
         disp('Homotopy not implemented for purely forward models!')
@@ -105,9 +105,10 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
     success_counter = 0;
     iteration = 0;
 
-    fprintf('Iter. \t | Lambda \t | status \t | Max. residual\n')
-    fprintf('++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
-
+    if ~options_.noprint
+        fprintf('Iter. \t | Lambda \t | status \t | Max. residual\n')
+        fprintf('++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
+    end
     while (step > options_.dynatol.x)
 
         if ~isequal(step,1)
@@ -148,7 +149,9 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
         if oo_.deterministic_simulation.status == 1
             current_weight = new_weight;
             if current_weight >= 1
-                fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'succeeded', me)
+                if ~options_.noprint
+                    fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'succeeded', me)
+                end
                 break
             end
             success_counter = success_counter + 1;
@@ -156,21 +159,26 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
                 success_counter = 0;
                 step = step * 2;
             end
-            fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'succeeded', me)
+            if ~options_.noprint
+                fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'succeeded', me)
+            end
         else
             % If solver failed, then go back.
             oo_.endo_simul = saved_endo_simul;
             success_counter = 0;
             step = step / 2;
-            if isreal(me)
-                fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'failed', me)
-            else
-                fprintf('%i \t | %1.5f \t | %s \t | %s\n', iteration, new_weight, 'failed', 'Complex')
+            if ~options_.noprint
+                if isreal(me)
+                    fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'failed', me)
+                else
+                    fprintf('%i \t | %1.5f \t | %s \t | %s\n', iteration, new_weight, 'failed', 'Complex')
+                end
             end
         end
     end
-    fprintf('++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
-    skipline()
+    if ~options_.noprint
+        fprintf('++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
+    end
     options_.verbosity = oldverbositylevel;
     warning(warning_old_state);
 end
@@ -201,12 +209,12 @@ if ~isreal(oo_.endo_simul(:)) % cannot happen with bytecode or the perfect_fores
 end
 
 if oo_.deterministic_simulation.status == 1
-    disp('Perfect foresight solution found.')
+    if ~options_.noprint
+        fprintf('Perfect foresight solution found.\n\n')
+    end
 else
-    disp('Failed to solve perfect foresight model')
+    fprintf('Failed to solve perfect foresight model\n\n')
 end
-
-skipline()
 
 dyn2vec(M_, oo_, options_);
 

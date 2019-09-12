@@ -30,7 +30,7 @@ function [endogenousvariables, info] = sim1(endogenousvariables, exogenousvariab
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-verbose = options.verbosity;
+verbose = options.verbosity && ~options.noprint;
 
 ny = M.endo_nbr;
 periods = options.periods;
@@ -105,7 +105,7 @@ for iter = 1:options.simul.maxit
     end
     if any(isnan(dy)) || any(isinf(dy))
         if verbose
-            display_critical_variables(reshape(dy,[ny periods])', M);
+            display_critical_variables(reshape(dy,[ny periods])', M, options.noprint);
         end
     end
     y = y + dy;
@@ -128,7 +128,7 @@ if stop
             skipline()
             fprintf('Total time of simulation: %g.\n', etime(clock,h1))
             disp('Simulation terminated with NaN or Inf in the residuals or endogenous variables.')
-            display_critical_variables(reshape(dy,[ny periods])', M);
+            display_critical_variables(reshape(dy,[ny periods])', M, options.noprint);
             disp('There is most likely something wrong with your model. Try model_diagnostics or another simulation method.')
             printline(105)
         end
@@ -188,7 +188,9 @@ if flag == 0
     return
 end
 
-disp( relres );
+if ~options.noprint
+    disp( relres );
+end
 
 if verbose
     fprintf('Initial bicgstab failed, trying alternative start point.\n');
@@ -241,7 +243,11 @@ if flag ~= 0 && verbose
     fprintf('WARNING : Failed to find a solution to the linear system\n');
 end
 
-function display_critical_variables(dyy, M)
+function display_critical_variables(dyy, M, noprint)
+
+if noprint
+    return
+end
 
 if any(isnan(dyy))
     indx = find(any(isnan(dyy)));

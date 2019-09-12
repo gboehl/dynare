@@ -2730,6 +2730,14 @@ speed-up on large models.
        attempts to take a step that is smaller than ``tolx``. Default:
        ``1e-5``
 
+    .. option:: noprint
+
+       Don’t print anything. Useful for loops.
+
+    .. option:: print
+
+       Print results (opposite of ``noprint``).
+
     .. option:: stack_solve_algo = INTEGER
 
        Algorithm used for computing the solution. Possible values are:
@@ -3164,11 +3172,11 @@ Computing the stochastic solution
 
     .. option:: noprint
 
-       Don’t print anything. Useful for loops.
+       See :opt:`noprint`.
 
     .. option:: print
 
-       Print results (opposite of ``noprint``).
+       See :opt:`print`.
 
     .. option:: order = INTEGER
 
