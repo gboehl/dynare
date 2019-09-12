@@ -65,6 +65,7 @@ end
 
 [i_var, nvar, index_uniques] = varlist_indices(var_list, M_.endo_names);
 var_list=var_list(index_uniques);
+oo_.var_list = var_list;
 
 iter_ = max(options_.periods,1);
 if M_.exo_nbr > 0

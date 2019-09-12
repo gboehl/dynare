@@ -3407,8 +3407,8 @@ Computing the stochastic solution
 
     *Output*
 
-    This command sets ``oo_.dr``, ``oo_.mean``, ``oo_.var`` and
-    ``oo_.autocorr``, which are described below.
+    This command sets ``oo_.dr``, ``oo_.mean``, ``oo_.var``, ``oo_.var_list``,
+    and ``oo_.autocorr``, which are described below.
 
     If the ``periods`` option is present, sets ``oo_.skewness``,
     ``oo_.kurtosis``, and ``oo_.endo_simul`` (see
@@ -3464,6 +3464,10 @@ Computing the stochastic solution
     theoretical variance if the ``periods`` option is not present (or
     an approximation thereof for ``order=2``), and simulated variance
     otherwise. The variables are arranged in declaration order.
+
+.. matvar:: oo_.var_list
+
+    The list of variables for which results are displayed.
 
 .. matvar:: oo_.skewness
 
