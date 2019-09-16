@@ -84,11 +84,21 @@ else
     end
     % Add OS X 64bits specific paths for Dynare Mac package
     if strcmp(computer, 'MACI64')
-        tmp = [dynareroot '../mex/matlab/osx/'];
-        if exist(tmp, 'dir')
-            mexpath = tmp;
-            if modifypath && exist(mexpath, 'dir')
-                addpath(mexpath);
+        if matlab_ver_less_than('9.4')
+            tmp = [dynareroot '../mex/matlab/64bit-8.7-9.3/'];
+            if exist(tmp, 'dir')
+                mexpath = tmp;
+                if modifypath
+                    addpath(mexpath);
+                end
+            end
+        else
+            tmp = [dynareroot '../mex/matlab/64bit-9.4-9.7'];
+            if exist(tmp, 'dir')
+                mexpath = tmp;
+                if modifypath
+                    addpath(mexpath);
+                end
             end
         end
     end
