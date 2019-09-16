@@ -28,7 +28,7 @@ EXTRA_DIST = \
 	CONTRIBUTING.md \
 	windows/dynare.nsi \
 	windows/README.txt \
-	osx \
+	macOS \
 	examples \
 	scripts \
 	.dir-locals.el

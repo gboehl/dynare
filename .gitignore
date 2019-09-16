@@ -144,6 +144,7 @@ windows/zip/
 
 # MacOS stuff
 .DS_Store
+macOS/pkg/
 
 # Emacs stuff
 scripts/dynare.elc
