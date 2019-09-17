@@ -71,7 +71,7 @@ Section "Dynare core (preprocessor and M-files)"
  File /r ..\contrib\*.m
 
  SetOutPath $INSTDIR\scripts
- File /r ..\scripts\*
+ File ..\scripts\dynare.el
 
  WriteUninstaller $INSTDIR\uninstall.exe
 

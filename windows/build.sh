@@ -257,7 +257,8 @@ cp -p windows/deps/lib32/x13as/x13as.exe "$ZIPDIR"/matlab/modules/dseries/extern
 mkdir -p "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
 cp -p windows/deps/lib64/x13as/x13as.exe "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
 cp -pr examples "$ZIPDIR"
-cp -pr scripts "$ZIPDIR"
+mkdir -p "$ZIPDIR"/scripts
+cp -p scripts/dynare.el "$ZIPDIR"/scripts
 mkdir "$ZIPDIR"/dynare++
 cp -p dynare++/src/dynare++.exe "$ZIPDIR"/dynare++
 mkdir -p "$ZIPDIR"/doc/dynare++
