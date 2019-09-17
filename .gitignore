@@ -143,6 +143,8 @@ windows/deps/sources64/
 windows/deps/tarballs/
 windows/exe/
 windows/zip/
+dynare++/32-bit/
+dynare++/64-bit/
 
 # MacOS stuff
 .DS_Store

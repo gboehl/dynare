@@ -62,12 +62,12 @@ cd ..
 # Autoreconf if needed
 [[ -f configure ]] || autoreconf -si
 
-## Compile preprocessor (32-bit), Dynare++ (32-bit) and documentation
-./configure --host=i686-w64-mingw32 \
-	    --with-boost="$LIB32_MSYS2" \
-	    --with-blas="$LIB32_MSYS2"/lib/libopenblas.a \
-	    --with-lapack="$LIB32_MSYS2"/lib/libopenblas.a \
-	    --with-matio="$LIB32_MSYS2" \
+## Compile preprocessor (64-bit), Dynare++ (64-bit) and documentation
+./configure --host=x86_64-w64-mingw32 \
+	    --with-boost="$LIB64_MSYS2" \
+	    --with-blas="$LIB64_MSYS2"/lib/libopenblas.a \
+	    --with-lapack="$LIB64_MSYS2"/lib/libopenblas.a \
+	    --with-matio="$LIB64_MSYS2" \
 	    --disable-octave \
 	    --disable-matlab \
 	    PACKAGE_VERSION="$VERSION" \
@@ -78,20 +78,30 @@ if [[ -z $CI ]]; then
     make -j"$NTHREADS" pdf html
 fi
 make -j"$NTHREADS"
-i686-w64-mingw32-strip matlab/preprocessor32/dynare_m.exe
-i686-w64-mingw32-strip dynare++/src/dynare++.exe
+x86_64-w64-mingw32-strip matlab/preprocessor64/dynare_m.exe
+x86_64-w64-mingw32-strip dynare++/src/dynare++.exe
+mkdir -p dynare++/64-bit/
+cp dynare++/src/dynare++.exe dynare++/64-bit/
 
-## Compile 64-bit preprocessor
-cd preprocessor
-make -C src clean # We don't want to clean the doc
-./configure --host=x86_64-w64-mingw32 \
-	    --with-boost="$LIB64_MSYS2" \
+## Compile 32-bit preprocessor and Dynare++
+# We do not want to clean the doc
+for d in preprocessor/src dynare++/integ dynare++/kord dynare++/parser/cc dynare++/src dynare++/sylv dynare++/tl dynare++/utils/cc; do
+    make -C "$d" clean
+done
+./configure --host=i686-w64-mingw32 \
+	    --with-boost="$LIB32_MSYS2" \
+	    --with-blas="$LIB32_MSYS2"/lib/libopenblas.a \
+	    --with-lapack="$LIB32_MSYS2"/lib/libopenblas.a \
+	    --with-matio="$LIB32_MSYS2" \
+	    --disable-octave \
+	    --disable-matlab \
 	    PACKAGE_VERSION="$VERSION" \
 	    PACKAGE_STRING="dynare $VERSION"
 make -j"$NTHREADS"
-x86_64-w64-mingw32-strip src/dynare_m.exe
-mkdir -p ../matlab/preprocessor64
-mv src/dynare_m.exe ../matlab/preprocessor64
+i686-w64-mingw32-strip matlab/preprocessor32/dynare_m.exe
+i686-w64-mingw32-strip dynare++/src/dynare++.exe
+mkdir -p dynare++/32-bit/
+cp dynare++/src/dynare++.exe dynare++/32-bit/
 
 ## Define functions for building MEX files
 
@@ -260,7 +270,7 @@ cp -pr examples "$ZIPDIR"
 mkdir -p "$ZIPDIR"/scripts
 cp -p scripts/dynare.el "$ZIPDIR"/scripts
 mkdir "$ZIPDIR"/dynare++
-cp -p dynare++/src/dynare++.exe "$ZIPDIR"/dynare++
+cp -pr dynare++/32-bit/ dynare++/64-bit/ "$ZIPDIR"/dynare++
 mkdir -p "$ZIPDIR"/doc/dynare++
 mkdir -p "$ZIPDIR"/doc/dynare-manual.html
 cp -pr doc/manual/build/html/* "$ZIPDIR"/doc/dynare-manual.html
