@@ -72,6 +72,7 @@ pkg_source:
     paths:
       - dynare-*.tar.xz
     expire_in: 1 week
+  dependencies: []
 
 pkg_windows:
   stage: test_and_pkg
