@@ -21,210 +21,24 @@ ROOT_PATH = $(realpath .)
 
 WGET_OPTIONS := --no-verbose --no-use-server-timestamps --retry-connrefused --retry-on-host-error
 
-.PHONY: clean-openblas-src clean-openblas-tar clean-openblas-all clean-libopenblas \
-	clean-boost-src clean-boost-tar clean-boost-all clean-libboost \
-	clean-gsl-src clean-gsl-tar clean-gsl-all clean-libgsl\
-	clean-slicot-src clean-slicot-tar clean-slicot-all clean-libslicot \
-	clean-matio-src clean-matio-tar clean-matio-all clean-libmatio\
-	clean-zlib-src clean-zlib-tar clean-zlib-src clean-libzlib \
-	clean-x13as-tar clean-x13as-src clean-x13as-bin clean-x13as-all \
-	clean-src clean-all clean-lib clean-tar \
-	build build-openblas build-slicot build-matio build-boost build-gsl \
-	octave matlab mingw
+.PHONY: all build octave matlab msys2 \
+	build build-slicot build-x13as \
+	clean-lib clean-libslicot clean-matlab clean-octave clean-msys2 clean-x13as-bin \
+	clean-src clean-slicot-src clean-x13as-src \
+	clean-tar clean-slicot-tar clean-x13as-tar \
+	clean-all clean-lib clean-src clean-tar
 
-all: build octave matlab mingw
+all: build octave matlab msys2
 
-build: build-openblas build-slicot build-matio build-boost build-gsl build-x13as
+build: build-slicot build-x13as
 
-clean-lib: clean-libopenblas clean-libgsl clean-libzlib clean-libmatio clean-libslicot clean-libboost clean-matlab clean-octave clean-mingw clean-x13as-bin
+clean-lib: clean-libslicot clean-matlab clean-octave clean-msys2 clean-x13as-bin
 
-clean-src: clean-openblas-src clean-boost-src clean-gsl-src clean-matio-src clean-slicot-src clean-zlib-src clean-x13as-src
+clean-src: clean-slicot-src clean-x13as-src
 
-clean-tar: clean-openblas-tar clean-boost-tar clean-gsl-tar clean-matio-tar clean-slicot-tar clean-zlib-tar clean-x13as-tar
+clean-tar: clean-slicot-tar clean-x13as-tar
 
 clean-all: clean-lib clean-src clean-tar
-
-#
-# OpenBLAS library
-#
-
-tarballs/openblas-${OPENBLAS_VERSION}.tar.gz:
-	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ https://github.com/xianyi/OpenBLAS/archive/v${OPENBLAS_VERSION}.tar.gz
-
-sources32/OpenBLAS-${OPENBLAS_VERSION}: tarballs/openblas-${OPENBLAS_VERSION}.tar.gz
-	mkdir -p sources32
-	rm -rf sources32/OpenBLAS-*
-	tar xf $< --directory sources32
-	patch $@/Makefile.rule < patches/openblas-w32.patch
-
-sources64/OpenBLAS-${OPENBLAS_VERSION}: tarballs/openblas-${OPENBLAS_VERSION}.tar.gz
-	mkdir -p sources64
-	rm -rf sources64/OpenBLAS-*
-	tar xf $< --directory sources64
-	patch $@/Makefile.rule < patches/openblas-w64.patch
-
-lib32/OpenBLAS/libopenblas.a: sources32/OpenBLAS-${OPENBLAS_VERSION}
-	make -C $<
-	i686-w64-mingw32-strip --strip-debug $</libopenblasp-r${OPENBLAS_VERSION}.a
-	mkdir -p $(dir $@)
-	cp $</libopenblasp-r${OPENBLAS_VERSION}.a $@
-
-lib64/OpenBLAS/libopenblas.a: sources64/OpenBLAS-${OPENBLAS_VERSION}
-	make -C $<
-	x86_64-w64-mingw32-strip --strip-debug $</libopenblasp-r${OPENBLAS_VERSION}.a
-	mkdir -p $(dir $@)
-	cp $</libopenblasp-r${OPENBLAS_VERSION}.a $@
-
-build-openblas: lib32/OpenBLAS/libopenblas.a lib64/OpenBLAS/libopenblas.a
-
-clean-openblas-tar:
-	rm -f tarballs/openblas-${OPENBLAS_VERSION}.tar.gz
-
-clean-openblas-src:
-	rm -rf sources32/OpenBLAS-${OPENBLAS_VERSION}
-	rm -rf sources64/OpenBLAS-${OPENBLAS_VERSION}
-
-clean-libopenblas:
-	rm -rf lib32/OpenBLAS
-	rm -rf lib64/OpenBLAS
-
-clean-openblas-all: clean-openblas-src clean-openblas-tar clean-libopenblas
-
-#
-# Boost library
-#
-
-tarballs/boost_${BOOST_VERSION}.tar.bz2:
-	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ https://dl.bintray.com/boostorg/release/$(subst _,.,${BOOST_VERSION})/source/$(notdir $@)
-
-sources32/boost_${BOOST_VERSION}: tarballs/boost_${BOOST_VERSION}.tar.bz2
-	mkdir -p sources32
-	rm -rf sources32/boost_*
-	tar xf $< --directory sources32
-	echo "using gcc : mingw : i686-w64-mingw32-g++ ;" > $@/user-config.jam
-
-sources64/boost_${BOOST_VERSION}: tarballs/boost_${BOOST_VERSION}.tar.bz2
-	mkdir -p sources64
-	rm -rf sources64/boost_*
-	tar xf $< --directory sources64
-	echo "using gcc : mingw : x86_64-w64-mingw32-g++ ;" > $@/user-config.jam
-
-lib32/Boost: sources32/boost_${BOOST_VERSION}
-	rm -rf lib32/Boost
-	cd $< && ./bootstrap.sh --with-libraries=system,filesystem --prefix=${ROOT_PATH}/lib32/Boost && ./b2 -a -q --user-config=user-config.jam toolset=gcc-mingw target-os=windows address-model=32 variant=release install
-
-lib64/Boost: sources64/boost_${BOOST_VERSION}
-	rm -rf lib64/Boost
-	cd $< && ./bootstrap.sh --with-libraries=system,filesystem --prefix=${ROOT_PATH}/lib64/Boost && ./b2 -a -q --user-config=user-config.jam toolset=gcc-mingw target-os=windows address-model=64 variant=release install
-
-build-boost: lib32/Boost lib64/Boost
-
-clean-boost-tar:
-	rm -f tarballs/boost_${BOOST_VERSION}.tar.bz2
-
-clean-boost-src:
-	rm -rf sources32/boost_${BOOST_VERSION}
-	rm -rf sources64/boost_${BOOST_VERSION}
-
-clean-libboost:
-	rm -rf lib32/Boost
-	rm -rf lib64/Boost
-
-clean-boost-all: clean-boost-src clean-boost-tar clean-libboost
-
-#
-# Gsl
-#
-
-tarballs/gsl-${GSL_VERSION}.tar.gz:
-	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ https://ftp.gnu.org/gnu/gsl/$(notdir $@)
-
-sources32/gsl-${GSL_VERSION}: tarballs/gsl-${GSL_VERSION}.tar.gz
-	mkdir -p sources32
-	rm -rf sources32/gsl-*
-	tar xf $< --directory sources32
-
-sources64/gsl-${GSL_VERSION}: tarballs/gsl-${GSL_VERSION}.tar.gz
-	mkdir -p sources64
-	rm -rf sources64/gsl-*
-	tar xf $< --directory sources64
-
-lib32/Gsl/lib/libgsl.a: sources32/gsl-${GSL_VERSION}
-	rm -rf lib32/Gsl
-	cd $< && ./configure --host=i686-w64-mingw32 --prefix=${ROOT_PATH}/lib32/Gsl --disable-shared --enable-static && make && make install
-
-lib64/Gsl/lib/libgsl.a: sources64/gsl-${GSL_VERSION}
-	rm -rf lib64/Gsl
-	cd $< && ./configure --host=x86_64-w64-mingw32 --prefix=${ROOT_PATH}/lib64/Gsl --disable-shared --enable-static && make && make install
-
-build-gsl: lib32/Gsl/lib/libgsl.a lib64/Gsl/lib/libgsl.a
-
-clean-gsl-tar:
-	rm -f tarballs/gsl-${GSL_VERSION}.tar.gz
-
-clean-gsl-src:
-	rm -rf sources32/gsl-${GSL_VERSION}
-	rm -rf sources64/gsl-${GSL_VERSION}
-
-clean-libgsl:
-	rm -rf lib32/Gsl
-	rm -rf lib64/Gsl
-
-clean-gsl-all: clean-gsl-src clean-gsl-tar clean-libgsl
-
-#
-# matIO
-#
-
-tarballs/matio-${MATIO_VERSION}.tar.gz:
-	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ https://sourceforge.net/projects/matio/files/matio/${MATIO_VERSION}/$(notdir $@)/download
-
-sources32/matio-${MATIO_VERSION}: tarballs/matio-${MATIO_VERSION}.tar.gz
-	mkdir -p sources32
-	rm -rf sources32/matio-*
-	tar xf $< --directory sources32
-	touch $@
-
-sources64/matio-${MATIO_VERSION}: tarballs/matio-${MATIO_VERSION}.tar.gz
-	mkdir -p sources64
-	rm -rf sources64/matio-*
-	tar xf $< --directory sources64
-	touch $@
-
-# The "ac_cv_va_copy=C99" argument is a workaround for https://github.com/tbeu/matio/issues/78
-
-lib32/matIO/lib/libmatio.a: sources32/matio-${MATIO_VERSION} lib32/Zlib/lib/libz.a
-	rm -rf lib32/matIO
-	cd $< && ./configure --host=i686-w64-mingw32 --disable-shared --with-zlib=${ROOT_PATH}/lib32/Zlib --prefix=${ROOT_PATH}/lib32/matIO ac_cv_va_copy=C99 && make install
-	ln -sf ${ROOT_PATH}/lib32/Zlib/include/zconf.h ${ROOT_PATH}/lib32/matIO/include/zconf.h
-	ln -sf ${ROOT_PATH}/lib32/Zlib/include/zlib.h ${ROOT_PATH}/lib32/matIO/include/zlib.h
-	ln -sf ${ROOT_PATH}/lib32/Zlib/lib/libz.a ${ROOT_PATH}/lib32/matIO/lib/libz.a
-
-lib64/matIO/lib/libmatio.a: sources64/matio-${MATIO_VERSION} lib64/Zlib/lib/libz.a
-	rm -rf lib64/matIO
-	cd $< && ./configure --host=x86_64-w64-mingw32 --disable-shared --with-zlib=${ROOT_PATH}/lib64/Zlib --prefix=${ROOT_PATH}/lib64/matIO ac_cv_va_copy=C99 && make install
-	ln -sf ${ROOT_PATH}/lib64/Zlib/include/zconf.h ${ROOT_PATH}/lib64/matIO/include/zconf.h
-	ln -sf ${ROOT_PATH}/lib64/Zlib/include/zlib.h ${ROOT_PATH}/lib64/matIO/include/zlib.h
-	ln -sf ${ROOT_PATH}/lib64/Zlib/lib/libz.a ${ROOT_PATH}/lib64/matIO/lib/libz.a
-
-build-matio: build-zlib lib32/matIO/lib/libmatio.a lib64/matIO/lib/libmatio.a
-
-clean-matio-tar:
-	rm -f tarballs/matio-${MATIO_VERSION}.tar.gz
-
-clean-matio-src:
-	rm -rf sources32/matio-${MATIO_VERSION}
-	rm -rf sources64/matio-${MATIO_VERSION}
-
-clean-libmatio:
-	rm -rf lib32/matIO
-	rm -rf lib64/matIO
-
-clean-matio-all: clean-matio-src clean-matio-tar clean-libmatio
 
 #
 # Slicot
@@ -331,49 +145,6 @@ clean-libslicot:
 clean-slicot-all: clean-slicot-src clean-slicot-tar clean-libslicot
 
 #
-# Zlib
-#
-
-tarballs/zlib-${ZLIB_VERSION}.tar.xz:
-	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ https://zlib.net/$(notdir $@)
-
-sources32/zlib-${ZLIB_VERSION}: tarballs/zlib-${ZLIB_VERSION}.tar.xz
-	mkdir -p sources32
-	rm -rf sources32/zlib-*
-	tar xf $< --directory sources32
-	touch $@
-
-sources64/zlib-${ZLIB_VERSION}: tarballs/zlib-${ZLIB_VERSION}.tar.xz
-	mkdir -p sources64
-	rm -rf sources64/zlib-*
-	tar xf $< --directory sources64
-	touch $@
-
-lib32/Zlib/lib/libz.a: sources32/zlib-${ZLIB_VERSION}
-	rm -rf lib32/Zlib
-	cd $< && CC=i686-w64-mingw32-gcc ./configure --static --prefix=${ROOT_PATH}/lib32/Zlib && make install
-
-lib64/Zlib/lib/libz.a: sources64/zlib-${ZLIB_VERSION}
-	rm -rf lib64/Zlib
-	cd $< && CC=x86_64-w64-mingw32-gcc ./configure --static --prefix=${ROOT_PATH}/lib64/Zlib && make install
-
-build-zlib: lib32/Zlib/lib/libz.a lib64/Zlib/lib/libz.a
-
-clean-zlib-tar:
-	rm -f tarballs/zlib-${ZLIB_VERSION}.tar.xz
-
-clean-zlib-src:
-	rm -rf sources32/zlib-${ZLIB_VERSION}
-	rm -rf sources64/zlib-${ZLIB_VERSION}
-
-clean-libzlib:
-	rm -rf lib32/Zlib
-	rm -rf lib64/Zlib
-
-clean-zlib-all: clean-zlib-src clean-zlib-tar clean-libzlib
-
-#
 # Octave
 #
 
@@ -442,10 +213,24 @@ clean-matlab:
 	rm -rf matlab64
 
 #
-# Embedded MinGW (for use_dll)
+# Stuff downloaded from MSYS2:
+# - several build dependencies
+# - the embedded MinGW compiler (for use_dll)
 #
 
-mingw: mingw32 mingw64
+msys2: lib32-msys2 lib64-msys2 mingw32 mingw64
+
+lib32-msys2: tarballs/mingw-w64-i686-boost-$(MINGW32_BOOST_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-gsl-$(MINGW32_GSL_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-openblas-$(MINGW32_OPENBLAS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-matio-$(MINGW32_MATIO_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-zlib-$(MINGW32_ZLIB_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-hdf5-$(MINGW32_HDF5_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-szip-$(MINGW32_SZIP_VERSION)-any.pkg.tar.xz
+	rm -rf $@
+	mkdir $@
+	for f in $^; do tar xf $$f --directory $@ --strip-components 1; done
+	touch $@
+
+lib64-msys2: tarballs/mingw-w64-x86_64-boost-$(MINGW64_BOOST_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-gsl-$(MINGW64_GSL_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-openblas-$(MINGW64_OPENBLAS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-matio-$(MINGW64_MATIO_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-hdf5-$(MINGW64_HDF5_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-szip-$(MINGW64_SZIP_VERSION)-any.pkg.tar.xz
+	rm -rf $@
+	mkdir $@
+	for f in $^; do tar xf $$f --directory $@ --strip-components 1; done
+	touch $@
 
 mingw32: tarballs/mingw-w64-i686-gcc-$(MINGW32_GCC_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-gmp-$(MINGW32_GMP_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-binutils-$(MINGW32_BINUTILS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-headers-git-$(MINGW32_HEADERS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-crt-git-$(MINGW32_CRT_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-winpthreads-git-$(MINGW32_WINPTHREADS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-libwinpthread-git-$(MINGW32_LIBWINPTHREAD_VERSION)-any.pkg.tar.xz
 	rm -rf $@
@@ -463,7 +248,9 @@ tarballs/mingw-w64-i686-%-any.pkg.tar.xz:
 tarballs/mingw-w64-x86_64-%-any.pkg.tar.xz:
 	wget $(WGET_OPTIONS) -O $@ http://repo.msys2.org/mingw/x86_64/$(notdir $@)
 
-clean-mingw:
+clean-msys2:
+	rm -rf lib32-msys2
+	rm -rf lib64-msys2
 	rm -rf mingw32
 	rm -rf mingw64
 	rm -f tarballs/mingw-w64-i686-*.tar.xz

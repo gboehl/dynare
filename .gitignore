@@ -130,6 +130,8 @@ windows/deps/.MTREE
 windows/deps/.PKGINFO
 windows/deps/lib32/
 windows/deps/lib64/
+windows/deps/lib32-msys2/
+windows/deps/lib64-msys2/
 windows/deps/matlab32/
 windows/deps/matlab64/
 windows/deps/mingw32/

@@ -53,6 +53,8 @@ BASENAME=dynare-$VERSION
 # Set directories for dependencies
 LIB32="$ROOT_DIRECTORY"/deps/lib32
 LIB64="$ROOT_DIRECTORY"/deps/lib64
+LIB32_MSYS2="$ROOT_DIRECTORY"/deps/lib32-msys2
+LIB64_MSYS2="$ROOT_DIRECTORY"/deps/lib64-msys2
 
 # Go to source root directory
 cd ..
@@ -62,10 +64,10 @@ cd ..
 
 ## Compile preprocessor (32-bit), Dynare++ (32-bit) and documentation
 ./configure --host=i686-w64-mingw32 \
-	    --with-boost="$LIB32"/Boost \
-	    --with-blas="$LIB32"/OpenBLAS/libopenblas.a \
-	    --with-lapack="$LIB32"/OpenBLAS/libopenblas.a \
-	    --with-matio="$LIB32"/matIO \
+	    --with-boost="$LIB32_MSYS2" \
+	    --with-blas="$LIB32_MSYS2"/lib/libopenblas.a \
+	    --with-lapack="$LIB32_MSYS2"/lib/libopenblas.a \
+	    --with-matio="$LIB32_MSYS2" \
 	    --disable-octave \
 	    --disable-matlab \
 	    PACKAGE_VERSION="$VERSION" \
@@ -83,7 +85,7 @@ i686-w64-mingw32-strip dynare++/src/dynare++.exe
 cd preprocessor
 make -C src clean # We don't want to clean the doc
 ./configure --host=x86_64-w64-mingw32 \
-	    --with-boost="$LIB64"/Boost \
+	    --with-boost="$LIB64_MSYS2" \
 	    PACKAGE_VERSION="$VERSION" \
 	    PACKAGE_STRING="dynare $VERSION"
 make -j"$NTHREADS"
@@ -103,8 +105,8 @@ build_windows_matlab_mex_32 ()
     cd "$TMP_DIRECTORY"/matlab-win32/
     "$ROOT_DIRECTORY"/../mex/build/matlab/configure \
                      --host=i686-w64-mingw32 \
-		     --with-gsl="$LIB32"/Gsl \
-		     --with-matio="$LIB32"/matIO \
+		     --with-gsl="$LIB32_MSYS2" \
+		     --with-matio="$LIB32_MSYS2" \
 		     --with-slicot="$LIB32"/Slicot/without-underscore \
 		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab32/R2009b \
 		     MATLAB_VERSION=R2009b \
@@ -124,8 +126,8 @@ build_windows_matlab_mex_64_a ()
     cd "$TMP_DIRECTORY"/matlab-win64-a/
     "$ROOT_DIRECTORY"/../mex/build/matlab/configure \
                      --host=x86_64-w64-mingw32 \
-		     --with-gsl="$LIB64"/Gsl \
-		     --with-matio="$LIB64"/matIO \
+		     --with-gsl="$LIB64_MSYS2" \
+		     --with-matio="$LIB64_MSYS2" \
 		     --with-slicot="$LIB64"/Slicot/without-underscore \
 		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab64/R2009b \
 		     MATLAB_VERSION=R2009b \
@@ -145,8 +147,8 @@ build_windows_matlab_mex_64_b ()
     cd "$TMP_DIRECTORY"/matlab-win64-b/
     "$ROOT_DIRECTORY"/../mex/build/matlab/configure \
                      --host=x86_64-w64-mingw32 \
-		     --with-gsl="$LIB64"/Gsl \
-		     --with-matio="$LIB64"/matIO \
+		     --with-gsl="$LIB64_MSYS2" \
+		     --with-matio="$LIB64_MSYS2" \
 		     --with-slicot="$LIB64"/Slicot/without-underscore \
 		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab64/R2018a \
 		     MATLAB_VERSION=R2018a \
@@ -166,8 +168,8 @@ build_windows_octave_mex_32 ()
     cd "$TMP_DIRECTORY"/octave-32/
     "$ROOT_DIRECTORY"/../mex/build/octave/configure \
                      --host=i686-w64-mingw32 \
-                     --with-gsl="$LIB32"/Gsl \
-                     --with-matio="$LIB32"/matIO \
+                     --with-gsl="$LIB32_MSYS2" \
+                     --with-matio="$LIB32_MSYS2" \
                      --with-slicot="$LIB32"/Slicot/with-underscore \
                      MKOCTFILE="$ROOT_DIRECTORY"/deps/mkoctfile32 \
                      PACKAGE_VERSION="$VERSION" \
@@ -185,8 +187,8 @@ build_windows_octave_mex_64 ()
     cd "$TMP_DIRECTORY"/octave-64/
     "$ROOT_DIRECTORY"/../mex/build/octave/configure \
                      --host=x86_64-w64-mingw32 \
-                     --with-gsl="$LIB64"/Gsl \
-                     --with-matio="$LIB64"/matIO \
+                     --with-gsl="$LIB64_MSYS2" \
+                     --with-matio="$LIB64_MSYS2" \
                      --with-slicot="$LIB64"/Slicot/with-underscore \
                      MKOCTFILE="$ROOT_DIRECTORY"/deps/mkoctfile64 \
                      PACKAGE_VERSION="$VERSION" \
