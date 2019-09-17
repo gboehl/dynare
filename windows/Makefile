@@ -28,7 +28,7 @@ clean-deps:
 	make -C deps clean-all
 
 clean:
-	rm -rf exe/ zip/
+	rm -rf exe/ 7z/ zip/
 
 clean-all: clean-deps clean
 

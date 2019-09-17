@@ -142,6 +142,7 @@ windows/deps/sources32/
 windows/deps/sources64/
 windows/deps/tarballs/
 windows/exe/
+windows/7z/
 windows/zip/
 dynare++/32-bit/
 dynare++/64-bit/
