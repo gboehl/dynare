@@ -1,13 +1,3 @@
-if isoctave() && octave_ver_less_than('3.8')
-   return
-end
-
-if ~isoctave() && ~matlab_ver_less_than('8.4')
-   websave('data_ca1_xls.xlsx','http://www.dynare.org/Datasets/data_ca1_xls.xlsx', weboptions('Timeout', 30))
-else
-   urlwrite('http://www.dynare.org/Datasets/data_ca1_xls.xlsx','data_ca1_xls.xlsx')
-end
-
 var y y_s R pie dq pie_s de A y_obs pie_obs R_obs;
 varexo e_R e_q e_ys e_pies e_A;
 
@@ -72,5 +62,3 @@ stderr e_pies,inv_gamma_pdf,1.88,0.9827;
 end;
 
 estimation(datafile=data_ca1_xls,first_obs=8,nobs=[76 79],mh_nblocks=1,prefilter=1,mh_jscale=0.5,mh_replic=2000,forecast=8) y_obs R_obs pie_obs dq de;
-
-delete('data_ca1_xls.xlsx')

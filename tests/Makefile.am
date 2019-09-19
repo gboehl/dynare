@@ -795,6 +795,7 @@ EXTRA_DIST = \
 	block_bytecode/run_ls2003.m \
 	bvar_a_la_sims/bvar_sample.m \
 	dates/fsdat_simul.m \
+	dates/data_uav.xlsx \
 	external_function/extFunDeriv.m \
 	external_function/extFunNoDerivs.m \
 	external_function/extFunWithFirstAndSecondDerivs.m \
@@ -828,6 +829,8 @@ EXTRA_DIST = \
 	ms-sbvar/archive-files/specification_2v.dat \
 	ms-sbvar/archive-files/specification_2v2c.dat \
 	recursive/data_ca1.m \
+	recursive/data_ca1_csv.csv \
+	recursive/data_ca1_xls.xlsx \
 	kalman_filter_smoother/fsdat_simul.m \
 	kalman/lik_init/fs2000_common.inc \
 	kalman/lik_init/fs2000_ns_common.inc \
@@ -840,7 +843,9 @@ EXTRA_DIST = \
 	identification/as2007/as2007_steadystate.m \
 	estimation/fsdat_simul.m \
 	ep/mean_preserving_spread.m \
+	decision_rules/example1_results_dyn_432.mat \
 	decision_rules/third_order/comparison_policy_functions_dynare_mathematica.m \
+	decision_rules/third_order/FV_2011_policyfunctions.mat \
 	shock_decomposition/example1_calib_shock_decomp_data.mat \
 	shock_decomposition/fsdat_simul.m \
 	smoother2histval/fsdat_simul.m \
@@ -863,7 +868,8 @@ EXTRA_DIST = \
 	optimizers/optimizer_function_wrapper.m \
 	optimizers/fs2000.common.inc \
 	estimation/MH_recover/fs2000.common.inc \
-	prior_posterior_function/posterior_function_demo.m
+	prior_posterior_function/posterior_function_demo.m \
+	deterministic_simulations/lola_data.mat
 
 
 if HAVE_MATLAB

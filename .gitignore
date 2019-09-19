@@ -11,8 +11,6 @@
 \#*\#
 TAGS
 *.mat
-*.xls
-*.xlsx
 
 # Build system rules
 .deps

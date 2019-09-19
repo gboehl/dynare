@@ -39,12 +39,6 @@ end;
 
 varobs log_nn;
 
-if ~isoctave() && ~matlab_ver_less_than('8.4')
-   websave('data_uav.xlsx','http://www.dynare.org/Datasets/data_uav.xlsx', weboptions('Timeout', 30))
-else
-   urlwrite('http://www.dynare.org/Datasets/data_uav.xlsx','data_uav.xlsx')
-end
-
 %reading Excel sheet from column A on creates quarterly dseries starting in
 %1950
 estimation(first_obs=2,datafile=data_uav, xls_sheet=Tabelle1, xls_range=a1:b54, mh_replic=2, mh_nblocks=1, mh_jscale=1.1, mh_drop=0.8, plot_priors=0, smoother) log_nn nn hh ;
@@ -53,5 +47,3 @@ shock_decomposition( parameter_set=posterior_median ) nn hh;
 %reading Excel sheet from column B on creates annual dseries starting with 1
 estimation(first_obs=2,datafile=data_uav, xls_sheet=Tabelle1, xls_range=b1:b54, mh_replic=2, mh_nblocks=1, mh_jscale=1.1, mh_drop=0.8, plot_priors=0, smoother) log_nn nn hh ;
 shock_decomposition( parameter_set=posterior_median ) nn hh;
-
-delete('data_uav.xlsx')

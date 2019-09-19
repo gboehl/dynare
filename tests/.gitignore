@@ -36,9 +36,11 @@ wsOct
 !/block_bytecode/run_ls2003.m
 !/bvar_a_la_sims/bvar_sample.m
 !/conditional_forecasts/2/fsdat_simul.m
-!/data/test.xlsx
 !/dates/fsdat_simul.m
+!/decision_rules/example1_results_dyn_432.mat
+!/decision_rules/third_order/FV_2011_policyfunctions.mat
 !/decision_rules/third_order/comparison_policy_functions_dynare_mathematica.m
+!/deterministic_simulations/lola_data.mat
 !/ep/ar_steadystate.m
 !/ep/exact_solution.m
 !/ep/mean_preserving_spread.m
