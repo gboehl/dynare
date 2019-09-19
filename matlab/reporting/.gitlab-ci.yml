@@ -1,7 +1,7 @@
 before_script:
   - git clone https://git.dynare.org/Dynare/dseries.git
 
-testsuite_matlab:
+test_matlab:
   stage: test
   script:
     - make check-matlab
@@ -9,7 +9,17 @@ testsuite_matlab:
     paths:
       - test/my/report/dir/report.pdf
 
-testsuite_octave:
+test_old_matlab:
+  stage: test
+  variables:
+    MATLAB: /usr/local/MATLAB/R2009b/bin/matlab
+  script:
+    - make check-matlab
+  artifacts:
+    paths:
+      - test/my/report/dir/report.pdf
+
+test_octave:
   stage: test
   script:
     - make check-octave

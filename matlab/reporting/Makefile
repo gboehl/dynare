@@ -1,5 +1,5 @@
-OCTAVE=octave-cli
-MATLAB=`which matlab`
+OCTAVE ?= octave-cli
+MATLAB ?= $(shell which matlab)
 
 all: check-octave check-matlab
 
