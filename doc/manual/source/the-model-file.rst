@@ -7730,10 +7730,10 @@ the :comm:`bvar_forecast` command.
 
     It is however possible to have different number of controlled
     periods for different variables. In that case, the order of
-    declaration of endogenenous controlled variables and of
-    controlled_varexo matters: if the second endogenous variable is
+    declaration of endogenous controlled variables and of
+    ``controlled_varexo`` matters: if the second endogenous variable is
     controlled for less periods than the first one, the second
-    controlled_varexo isn't set for the last periods.
+    ``controlled_varexo`` isn't set for the last periods.
 
     In case of the presence of ``observation_trends``, the specified
     controlled path for these variables needs to include the trend
