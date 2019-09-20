@@ -2,6 +2,9 @@
 
 set -ex
 
+# Set the number of threads
+NTHREADS=$(nproc)
+
 ##
 ## Clone Dynare
 ##
@@ -22,9 +25,8 @@ fi
 cd "$ROOTDIR"
 [[ -f configure ]] || autoreconf -si
 CC=gcc-9 CXX=g++-9 ./configure --with-matlab=/Applications/MATLAB_R2016b.app MATLAB_VERSION=R2016b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local --disable-octave PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
-make -j
-make -j pdf
-make -j html
+    make -j"$NTHREADS" pdf html
+make -j"$NTHREADS"
 
 
 ##
@@ -73,7 +75,7 @@ cp     "$ROOTDIR"/dynare++/src/dynare++                              "$PKGFILES"
 cd "$ROOTDIR"/mex/build/matlab
 make clean
 CC=gcc-9 CXX=g++-9 ./configure --with-matlab=/Applications/MATLAB_R2019b.app MATLAB_VERSION=R2019b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
-make -j
+make -j"$NTHREADS"
 cd "$ROOTDIR"/macOS
 cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.7
 
