@@ -25,7 +25,11 @@ fi
 cd "$ROOTDIR"
 [[ -f configure ]] || autoreconf -si
 CC=gcc-9 CXX=g++-9 ./configure --with-matlab=/Applications/MATLAB_R2016b.app MATLAB_VERSION=R2016b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local --disable-octave PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
+if [[ -z $CI ]]; then
+    # If not in Gitlab CI, clean the source and build the doc
+    make clean
     make -j"$NTHREADS" pdf html
+fi
 make -j"$NTHREADS"
 
 
