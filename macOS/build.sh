@@ -6,7 +6,7 @@ set -ex
 NTHREADS=$(nproc)
 
 ##
-## Clone Dynare
+## Find Dynare Version
 ##
 ROOTDIR=$(pwd)/..
 if [[ -z $VERSION ]]; then
