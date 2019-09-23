@@ -220,3 +220,4 @@ deploy_snapshot_unstable:
     - f=(windows/zip/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip
     - f=(macOS/pkg/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/macos/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/macos/dynare-latest-macos.pkg
     - ~/update-snapshot-list.sh
+    - curl -X POST -F token="$WEBSITE_PIPELINE_TRIGGER_TOKEN" -F ref=master https://git.dynare.org/api/v4/projects/40/trigger/pipeline
