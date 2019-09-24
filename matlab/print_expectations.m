@@ -307,23 +307,28 @@ for i=1:maxlag
         end
         if isequal(id, 1)
             if isequal(expectationmodelkind, 'pac') && growth_correction
+                if numel(expectationmodel.growth_type) > 1 || ...
+                   expectationmodel.growth_constant(1) ~= 1 || ...
+                   expectationmodel.growth_param_id(1) ~= 0
+                    error('Linear combinations in growth parameter are not yet supported')
+                end
                 pgrowth = M_.params(expectationmodel.growth_neutrality_param_index);
                 vgrowth = expectationmodel.growth_str;
-                switch expectationmodel.growth_type
+                switch expectationmodel.growth_type{1}
                   case 'parameter'
                     vgrowth = M_.params(strcmp(vgrowth, M_.param_names));
                   otherwise
                     vgrowth = regexprep(vgrowth, '\<(?!diff\>)\<(?!log\>)\<(?!\d\>)\w+', 'dbase.$0');
                 end
                 if parameter>=0
-                    switch expectationmodel.growth_type
+                    switch expectationmodel.growth_type{1}
                       case 'parameter'
                         expression = sprintf('%s*%s+%s*%s', num2str(pgrowth, '%1.16f'), num2str(vgrowth, '%1.16f'), num2str(parameter, '%1.16f'), variable);
                       otherwise
                         expression = sprintf('%s*%s+%s*%s', num2str(pgrowth, '%1.16f'), vgrowth, num2str(parameter, '%1.16f'), variable);
                     end
                 else
-                    switch expectationmodel.growth_type
+                    switch expectationmodel.growth_type{1}
                       case 'parameter'
                         expression = sprintf('%s*%s-%s*%s', num2str(pgrowth, '%1.16f'), num2str(vgrowth, '%1.16f'), num2str(-parameter, '%1.16f'), variable);
                       otherwise

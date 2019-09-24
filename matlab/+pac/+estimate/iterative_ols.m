@@ -418,15 +418,20 @@ function [PacExpectations, Model] = UpdatePacExpectationsData(dataPAC0, dataPAC1
     % Add correction for growth neutrality if required.
     correction = 0;
     if isfield(Model.pac.(pacmodl), 'growth_type')
-        switch Model.pac.(pacmodl).growth_type
+        if numel(Model.pac.(pacmodl).growth_type) > 1 || ...
+           Model.pac.(pacmodl).growth_constant(1) ~= 1 || ...
+           Model.pac.(pacmodl).growth_param_id(1) ~= 0
+            error('Linear combinations in growth parameter are not yet supported')
+        end
+        switch Model.pac.(pacmodl).growth_type{1}
           case 'parameter'
-            correction = Model.params(Model.pac.(pacmodl).growth_index)*Model.params(Model.pac.(pacmodl).growth_neutrality_param_index);
+            correction = Model.params(Model.pac.(pacmodl).growth_index(1))*Model.params(Model.pac.(pacmodl).growth_neutrality_param_index);
           case 'exogenous'
-            GrowthVariable = data{Model.exo_names{Model.pac.(pacmodl).growth_index}};
+            GrowthVariable = data{Model.exo_names{Model.pac.(pacmodl).growth_index(1)}};
             GrowthVariable = GrowthVariable(range).data;
             correction = GrowthVariable*Model.params(Model.pac.(pacmodl).growth_neutrality_param_index);
           case 'endogenous'
-            GrowthVariable = data{Model.endo_names{Model.pac.(pacmodl).growth_index}}.lag(abs(Model.pac.(pacmodl).growth_lag));
+            GrowthVariable = data{Model.endo_names{Model.pac.(pacmodl).growth_index(1)}}.lag(abs(Model.pac.(pacmodl).growth_lag(1)));
             GrowthVariable = GrowthVariable(range).data;
             correction = GrowthVariable*Model.params(Model.pac.(pacmodl).growth_neutrality_param_index);
           otherwise
