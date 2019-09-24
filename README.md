@@ -329,7 +329,6 @@ compile. They should be entered at the command prompt in Terminal.app.
 - `brew install automake bison flex boost fftw gcc gsl hdf5 libmatio metis veclibfort`
 - **(Optional)** To compile Dynare mex files for use on Octave:
     - `brew install octave`
-    - `brew install suite-sparse`
 - **(Optional)** To compile Dynare documentation
      - Install the latest version of [MacTeX](http://www.tug.org/mactex/), deselecting the option to install Ghostscript
      - `brew install doxygen latex2html`
@@ -346,5 +345,5 @@ folder where you want Dynare installed.
 - `make -j`
 - **(Optional)** To then build mex files for Octave, run
      - `cd mex/build/octave`
-     - `./configure CXXFLAGS="-std=c++0x"`
+     - `CC=gcc-9 CXX=g++-9 ./configure --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local LDFLAGS=-L/usr/local/lib`
      - `make -j`
