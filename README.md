@@ -308,7 +308,7 @@ currently not supported.
 ## macOS
 
 To simply use a snapshot of Dynare, you have two choices. On MATLAB, you can
-use the [snapshot build](https://www.dynare.org/snapshot/macosx/) provided by
+use the [snapshot build](https://www.dynare.org/snapshot/macos/) provided by
 Dynare. On Octave, you can simply install [Homebrew](https://brew.sh/) and run
 ```brew install dynare --HEAD``` (See the Install Dynare (unstable) section of
 [this webpage](https://archives.dynare.org/DynareWiki/InstallOnMacOSX) for more
