@@ -40,6 +40,7 @@ NAME=dynare-"$VERSION"
 PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p "$PKGFILES"/mex/matlab/maci64-8.7-9.3
 mkdir    "$PKGFILES"/mex/matlab/maci64-9.4-9.7
+mkdir    "$PKGFILES"/mex/octave
 mkdir -p "$PKGFILES"/doc/dynare++
 mkdir    "$PKGFILES"/dynare++
 mkdir    "$PKGFILES"/scripts
@@ -80,8 +81,16 @@ cd "$ROOTDIR"/mex/build/matlab
 make clean
 CC=gcc-9 CXX=g++-9 ./configure --with-matlab=/Applications/MATLAB_R2019b.app MATLAB_VERSION=R2019b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
 make -j"$NTHREADS"
-cd "$ROOTDIR"/macOS
 cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.7
+
+
+##
+## Create mex for Octave
+##
+cd "$ROOTDIR"/mex/build/octave
+CC=gcc-9 CXX=g++-9 ./configure --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local LDFLAGS=-L/usr/local/lib PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
+make -j"$NTHREADS"
+cp -L  "$ROOTDIR"/mex/octave/*                                       "$PKGFILES"/mex/octave
 
 
 ##
