@@ -16,6 +16,7 @@ TAGS
 .deps
 Makefile
 Makefile.in
+confdefs.h
 configure
 config.log
 config.status
