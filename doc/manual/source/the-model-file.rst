@@ -3166,7 +3166,7 @@ Computing the stochastic solution
 
        Specify the file format(s) for graphs saved to disk. Possible
        values are ``eps`` (the default), ``pdf``, ``fig`` and ``none``
-       (under Octave, only ``eps`` and ``none`` are available). If the
+       (under Octave, ``fig`` is unavailable). If the
        file format is set equal to ``none``, the graphs are displayed
        but not saved to the disk.
 
