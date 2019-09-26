@@ -25,6 +25,7 @@ wsOct
 /pac/var-6/example/model/pac-expectations/*
 /pac/var-5/example/model/pac-expectations/*
 /pac/trend-component-14/example/model/pac-expectations/*
+!/ecb/aggregate/test_aggregate_routine.m
 
 !/internals/tests.m
 !/fs2000_ssfile_aux.m
