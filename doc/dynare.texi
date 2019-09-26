@@ -10746,6 +10746,7 @@ plotted in levels.
 
 @end deffn
 
+
 @deffn Command dynatype (@var{FILENAME}) [@var{VARIABLE_NAME}@dots{}];
 This command prints the listed variables in a text file named
 @var{FILENAME}. If no @var{VARIABLE_NAME} is listed, all endogenous

@@ -64,6 +64,7 @@ for k=1:length(options.convergence.geweke.taper_steps)+1
     sum_of_weights=sum(1./(NSE.^2),2);
     pooled_mean=sum(means./(NSE.^2),2)./sum_of_weights;
     pooled_NSE=1./sqrt(sum_of_weights);
+
     test_stat=diff_Means.^2./sum(NSE.^2,2);
     p = 1-chi2cdf(test_stat,1);
     results_struct.pooled_mean(:,k) = pooled_mean;

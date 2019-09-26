@@ -1,5 +1,4 @@
 function [info, info_irf, info_moment, data_irf, data_moment] = endogenous_prior_restrictions(T,R,Model,DynareOptions,DynareResults)
-
 % Check for prior (sign) restrictions on irf's and theoretical moments
 %
 % INPUTS

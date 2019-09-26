@@ -66,7 +66,7 @@ for it=1:npar
 
 
     % -------------------------------------------------------
-   % 1. DRAW Z = ln[f(X0)] - EXP(1) where EXP(1)=-ln(U(0,1))
+    % 1. DRAW Z = ln[f(X0)] - EXP(1) where EXP(1)=-ln(U(0,1))
     %    THIS DEFINES THE SLICE S={x: z < ln(f(x))}
     % -------------------------------------------------------
     fxold = -feval(objective_function,theta,varargin{:});

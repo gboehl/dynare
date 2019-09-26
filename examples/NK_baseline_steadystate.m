@@ -17,8 +17,8 @@ global M_
 % read out parameters to access them with their name
 NumberOfParameters = M_.param_nbr;
 for ii = 1:NumberOfParameters
-    paramname = M_.param_names{ii};
-    eval([ paramname ' = M_.params(' int2str(ii) ');']);
+  paramname = M_.param_names{ii};
+  eval([ paramname ' = M_.params(' int2str(ii) ');']);
 end
 % initialize indicator
 check = 0;
@@ -69,8 +69,8 @@ vw=(1-thetaw)/(1-thetaw*PI^((1-chiw)*eta)*mu_z^eta)*PIstarw^(-eta);
 tempvaromega=alppha/(1-alppha)*w/r*mu_z*mu_I;
 
 [ld,fval,exitflag]=fzero(@(ld)(1-betta*thetaw*mu_z^(eta-1)*PI^(-(1-chiw)*(1-eta)))/(1-betta*thetaw*mu_z^(eta*(1+gammma))*PI^(eta*(1-chiw)*(1+gammma)))...
-                         -(eta-1)/eta*wstar/(varpsi*PIstarw^(-eta*gammma)*ld^gammma)*((1-h*mu_z^(-1))^(-1)-betta*h*(mu_z-h)^(-1))*...
-                         ((mu_A*mu_z^(-1)*vp^(-1)*tempvaromega^alppha-tempvaromega*(1-(1-delta)*(mu_z*mu_I)^(-1)))*ld-vp^(-1)*Phi)^(-1),0.25,options);
+-(eta-1)/eta*wstar/(varpsi*PIstarw^(-eta*gammma)*ld^gammma)*((1-h*mu_z^(-1))^(-1)-betta*h*(mu_z-h)^(-1))*...
+((mu_A*mu_z^(-1)*vp^(-1)*tempvaromega^alppha-tempvaromega*(1-(1-delta)*(mu_z*mu_I)^(-1)))*ld-vp^(-1)*Phi)^(-1),0.25,options);
 if exitflag <1
     %indicate the SS computation was not sucessful; this would also be detected by Dynare
     %setting the indicator here shows how to use this functionality to

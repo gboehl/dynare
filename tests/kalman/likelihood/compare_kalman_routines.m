@@ -187,3 +187,4 @@ else
         disp(['percentage dev. = ' num2str((LIK3/LIK2-1)*100)])        
     end
 end
+    

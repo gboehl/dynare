@@ -21,4 +21,4 @@ end
 
 if (regime(end)==1)
     warning('Increase nperiods');
-endx
+end

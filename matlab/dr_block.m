@@ -685,6 +685,7 @@ for i = 1:Size
         dr.ghu(endo, exo) = ghu;
         data(i).pol.i_ghu = exo;
     end
+
     if (verbose)
         disp('dr.ghx');
         dr.ghx

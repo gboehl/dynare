@@ -66,7 +66,9 @@ while notsteady && t<smpl
         iF     = inv(F);
         K      = P(:,mf)*iF;
         lik(t) = log(det(F))+transpose(v)*iF*v;
+
         [DK,DF,DP1] = computeDKalman(T,DT,DOm,P,DP,DH,mf,iF,K);
+
         for ii = 1:k
             Dv(:,ii)   = -Da(mf,ii) - DYss(mf,ii);
             Da(:,ii)   = DT(:,:,ii)*(a+K*v) + T*(Da(:,ii)+DK(:,:,ii)*v + K*Dv(:,ii));

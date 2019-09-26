@@ -194,8 +194,8 @@ else
         [U,T] = ordschur(U,T,e1);
         T = T(k+1:end,k+1:end);
         dyssdtheta = -U(:,k+1:end)*(T\U(:,k+1:end)')*df;
-        if nargout>5,
-            for j=1:length(indx),
+        if nargout>5
+            for j=1:length(indx)
                 d2yssdtheta(:,:,j) = -U(:,k+1:end)*(T\U(:,k+1:end)')*d2f(:,:,j);
             end
         end
