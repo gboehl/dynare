@@ -46,12 +46,6 @@ for it = 2:(periods+1)
             A(i_rows,i_cols_A) = jacobian(eq_index,i_cols_j);
         end
     end
-    i_rows = i_rows + ny;
-    i_cols = i_cols + ny;
-    if nargout == 2 && it > 2
-        i_cols_A = i_cols_A + ny;
-    end
-end
 
     i_rows = i_rows + ny;
     i_cols = i_cols + ny;

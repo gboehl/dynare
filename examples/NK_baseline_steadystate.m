@@ -96,20 +96,11 @@ g2=epsilon/(epsilon-1)*g1;
 %% end own model equations
 
 for iter = 1:length(M_.params) %update parameters set in the file
-<<<<<<< HEAD
-    eval([ 'M_.params(' num2str(iter) ') = ' M_.param_names(iter,:) ';' ])
-=======
   eval([ 'M_.params(' num2str(iter) ') = ' M_.param_names{iter} ';' ])
->>>>>>> master
 end
 
 NumberOfEndogenousVariables = M_.orig_endo_nbr; %auxiliary variables are set automatically
 for ii = 1:NumberOfEndogenousVariables
-<<<<<<< HEAD
-    varname = deblank(M_.endo_names(ii,:));
-    eval(['ys(' int2str(ii) ') = ' varname ';']);
-=======
   varname = M_.endo_names{ii};
   eval(['ys(' int2str(ii) ') = ' varname ';']);
->>>>>>> master
 end
