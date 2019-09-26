@@ -18,8 +18,8 @@
 	url = https://git.dynare.org/Dynare/particles.git
 [submodule "matlab/modules/dseries"]
 	path = matlab/modules/dseries
-	url = git@gitlab.com:McModelTeam/dseries.git
-	branch = ecb-master
+	url = ../../Enterprise/dseries.git
+	branch = enterprise
 [submodule "matlab/modules/reporting"]
 	path = matlab/modules/reporting
 	url = https://git.dynare.org/Dynare/reporting.git
