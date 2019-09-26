@@ -1,31 +1,31 @@
 [submodule "contrib/ms-sbvar/utilities_dw"]
 	path = contrib/ms-sbvar/utilities_dw
-	url = https://git.dynare.org/contrib/utilities_dw.git
+	url = ../../contrib/utilities_dw.git
 [submodule "contrib/ms-sbvar/switch_dw"]
 	path = contrib/ms-sbvar/switch_dw
-	url = https://git.dynare.org/contrib/switch_dw.git
+	url = ../../contrib/switch_dw.git
 [submodule "contrib/ms-sbvar/TZcode"]
 	path = contrib/ms-sbvar/TZcode
-	url = https://git.dynare.org/contrib/TZcode.git
+	url = ../../contrib/TZcode.git
 [submodule "contrib/dmm"]
 	path = contrib/dmm
-	url = https://git.dynare.org/contrib/dmm.git
+	url = ../../contrib/dmm.git
 [submodule "matlab/utilities/tests"]
 	path = matlab/utilities/tests
-	url = https://git.dynare.org/Dynare/m-unit-tests.git
+	url = ../../Dynare/m-unit-tests.git
 [submodule "matlab/particles"]
 	path = matlab/particles
-	url = https://git.dynare.org/Dynare/particles.git
+	url = ../../Dynare/particles.git
 [submodule "matlab/modules/dseries"]
 	path = matlab/modules/dseries
 	url = ../../Enterprise/dseries.git
 	branch = enterprise
 [submodule "matlab/modules/reporting"]
 	path = matlab/modules/reporting
-	url = https://git.dynare.org/Dynare/reporting.git
+	url = ../../Dynare/reporting.git
 [submodule "contrib/jsonlab"]
 	path = contrib/jsonlab
 	url = https://github.com/fangq/jsonlab.git
 [submodule "preprocessor"]
 	path = preprocessor
-	url = https://git.dynare.org/Dynare/preprocessor.git
+	url = ../../Dynare/preprocessor.git

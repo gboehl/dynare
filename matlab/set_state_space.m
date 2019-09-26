@@ -69,7 +69,7 @@ else
     both_var = [];
     stat_var = setdiff([1:endo_nbr]',fwrd_var);
 end
-if DynareOptions.block == 1
+if DynareOptions.block
     order_var = DynareModel.block_structure.variable_reordered;
 else
     order_var = [ stat_var(:); pred_var(:); both_var(:); fwrd_var(:)];
@@ -98,8 +98,8 @@ kmask(i_kmask) = (1:nd);
 % auxiliary equations
 
 % composition of state vector
-% col 1: variable;           col 2: lead/lag in z(t+1);
-% col 3: A cols for t+1 (D); col 4: A cols for t (E)
+% col 1: variable (index in DR-order);  col 2: lead/lag in z(t+1);
+% col 3: A cols for t+1 (D);            col 4: A cols for t (E)
 kstate = [ repmat([1:endo_nbr]',klen-1,1) kron([klen:-1:2]',ones(endo_nbr,1)) ...
            zeros((klen-1)*endo_nbr,2)];
 kiy = flipud(lead_lag_incidence(:,order_var))';

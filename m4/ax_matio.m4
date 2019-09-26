@@ -1,6 +1,6 @@
 dnl Detect the MATIO Library.
 dnl
-dnl Copyright (C) 2012-2014 Dynare Team
+dnl Copyright © 2012-2014 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -24,7 +24,7 @@ AC_ARG_WITH(matio, AC_HELP_STRING([--with-matio=DIR], [prefix to MATIO installat
 
   has_matio=yes
 
-  if test "x$matio_prefix" != "x"; then
+  if test -n "$matio_prefix"; then
     CPPFLAGS_MATIO="-I$withval/include"
     LDFLAGS_MATIO="-L$withval/lib"
   else

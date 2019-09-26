@@ -2,22 +2,47 @@ variables:
   GIT_SUBMODULE_STRATEGY: normal
   TERM: linux
 
+# The next stanza creates the version number used for the source tarball and the
+# binary packages. Here are the following possible cases:
+# - if VERSION was already set (when manually running a pipeline), use it
+# - if we are in the official Dynare repository:
+#   + if on a tag: use the tag
+#   + if on master: use 4.6-unstable-$TIMESTAMP-$COMMIT
+#   + on another branch: use $BRANCH-$TIMESTAMP-$COMMIT
+# - if in a personal repository: use $USER-$TIMESTAMP-$COMMIT
 before_script:
-  - wget http://www.dynare.org/x13/x13.zip
-  - unzip x13.zip
-  - cp -r binaries/linux matlab/modules/dseries/externals/x13
+  - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ -n $CI_COMMIT_TAG ]] && export VERSION=$CI_COMMIT_TAG'
+  - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ $CI_COMMIT_REF_NAME == master ]] && export VERSION=4.6-unstable-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
+  - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && export VERSION=$CI_COMMIT_REF_NAME-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
+  - '[[ -z $VERSION ]] && export VERSION=$CI_PROJECT_NAMESPACE-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
+
+stages:
+  - build
+  - test_and_pkg
+  - deploy
 
 build_binaries:
   stage: build
   script:
     - autoreconf -si
-    - './configure --with-matlab=$(dirname $(dirname $(readlink -f `which matlab`))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
+    - './configure --with-matlab=$(dirname $(dirname $(readlink -f $(which matlab)))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
     - make -j $(nproc) LN_S="cp -p"
   artifacts:
     paths:
       - matlab/preprocessor*/*
       - mex/octave/
       - mex/matlab/
+      - dynare++/parser/cc/*_tab.cc
+      - dynare++/parser/cc/*_tab.hh
+      - dynare++/parser/cc/*_ll.cc
+      - dynare++/src/*_tab.cc
+      - dynare++/src/*_tab.hh
+      - dynare++/src/*_ll.cc
+      - dynare++/*/*.o
+      - dynare++/*/*.a
+      - dynare++/*/*/*.o
+      - dynare++/*/*/*.a
+      - dynare++/integ/src/quadrature-points
       - dynare++/src/dynare++
     expire_in: 1 week
 
@@ -26,34 +51,102 @@ build_doc:
   script:
     - autoreconf -si
     - ./configure --disable-matlab --disable-octave
-    - make -j $(nproc) info pdf html
+    - make -j $(nproc) pdf html
   artifacts:
     paths:
-      - doc/dynare.info*
-      - doc/dynare.html
-      - doc/dynare.pdf
+      - doc/manual/build/
+      - doc/*.pdf
+      - doc/*/*.pdf
+      - dynare++/doc/*.pdf
+      - preprocessor/doc/*/*.pdf
+    expire_in: 1 week
 
-testsuite_matlab:
-  stage: test
+pkg_source:
+  stage: test_and_pkg
   script:
+    - 'for f in configure.ac preprocessor/configure.ac mex/build/matlab/configure.ac mex/build/octave/configure.ac; do sed -i "s/^AC_INIT(\[\(.*\)\],\s*\[\(.*\)\])/AC_INIT([\1], [$VERSION])/" $f; done'
     - autoreconf -si
-    - './configure --disable-octave --with-matlab=$(dirname $(dirname $(readlink -f `which matlab`))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
-    - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
+    - ./configure
+    - make dist
+  artifacts:
+    paths:
+      - dynare-*.tar.xz
+    expire_in: 1 week
+  dependencies: []
+
+pkg_windows:
+  stage: test_and_pkg
+  script:
+    - ln -s ~/tarballs windows/deps/
+    - make -C windows
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - windows/deps/sources32/
+      - windows/deps/sources64/
+      - windows/deps/lib32/
+      - windows/deps/lib64/
+      # We do not cache lib{32,64}-msys2, mingw{32,64}, octave{32,64} and
+      # matlab{32,64}, because those are simply extracted from a tarball. It
+      # would be a waste of space and of (re-compression) time.
+  artifacts:
+    paths:
+      - windows/exe/*
+      - windows/7z/*
+      - windows/zip/*
+    expire_in: 1 week
+  dependencies:
+    - build_doc
+
+pkg_macOS:
+  stage: test_and_pkg
+  script:
+    - make -C macOS
+  tags:
+    - macOS
+  artifacts:
+    paths:
+      - macOS/pkg/*
+    expire_in: 1 week
+  dependencies:
+    - build_doc
+
+.test_matlab_template:
+  stage: test_and_pkg
   artifacts:
     paths:
       - tests/*.m.log
       - tests/*.m.trs
       - tests/*/*.m.log
       - tests/*/*.m.trs
+      - tests/*/*.jnl
       - tests/*/*/*.m.log
       - tests/*/*/*.m.trs
+      - tests/*/*/*.jnl
       - tests/run_test_matlab_output.txt
     when: always
   dependencies:
     - build_binaries
 
-.testsuite_octave_template:
-  stage: test
+test_matlab:
+  extends: .test_matlab_template
+  script:
+    - autoreconf -si
+    - './configure --disable-octave --with-matlab=$(dirname $(dirname $(readlink -f $(which matlab)))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
+    - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
+
+test_old_matlab:
+  extends: .test_matlab_template
+  script:
+    - autoreconf -si
+    - './configure --disable-octave --with-matlab=/usr/local/MATLAB/R2009b MATLAB_VERSION=R2009b'
+    - make -C mex/build/matlab clean
+    - make -j $(nproc) -C mex/build/matlab
+    - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
+  when: manual
+
+test_octave:
+  stage: test_and_pkg
   variables:
     OPENBLAS_NUM_THREADS: 1
   script:
@@ -66,22 +159,65 @@ testsuite_matlab:
       - tests/*.o.trs
       - tests/*/*.o.log
       - tests/*/*.o.trs
+      - tests/*/*.jnl
       - tests/*/*/*.o.log
       - tests/*/*/*.o.trs
+      - tests/*/*/*.jnl
       - tests/run_test_octave_output.txt
     when: always
   dependencies:
     - build_binaries
-
-testsuite_octave_auto:
-  extends: .testsuite_octave_template
-  only:
-    - tags
-    - schedules
-
-testsuite_octave_manual:
-  extends: .testsuite_octave_template
-  except:
-    - tags
-    - schedules
   when: manual
+
+test_dynare++:
+  stage: test_and_pkg
+  script:
+    - autoreconf -si
+    - ./configure --disable-matlab --disable-octave
+    - touch dynare++/parser/cc/*_tab.cc dynare++/parser/cc/*_tab.hh dynare++/parser/cc/*_ll.cc dynare++/src/*_tab.cc dynare++/src/*_tab.hh dynare++/src/*_ll.cc
+    - touch dynare++/*/*.o dynare++/*/*/*.o
+    - touch dynare++/*/*.a dynare++/*/*/*.a
+    - touch dynare++/integ/src/quadrature-points dynare++/src/dynare++
+    - make -C dynare++ check
+  dependencies:
+    - build_binaries
+  artifacts:
+    paths:
+      - dynare++/kord/out.txt
+      - dynare++/tests/*.jnl
+      - dynare++/tests/*.m
+      - dynare++/tests/*.mat
+      - dynare++/tests/*.dump
+
+deploy_manual_unstable:
+  stage: deploy
+  only:
+    - master@Dynare/dynare
+  tags:
+    - restricted
+  dependencies:
+    - build_doc
+  script:
+    - rm -rf doc/manual/build/html/_static/mathjax
+    - ln -s /usr/share/javascript/mathjax doc/manual/build/html/_static/mathjax
+    - rsync --recursive --links --delete doc/manual/build/html/ /srv/www.dynare.org/manual-unstable/
+
+deploy_snapshot_unstable:
+  stage: deploy
+  only:
+    - master@Dynare/dynare
+  tags:
+    - restricted
+  dependencies:
+    - pkg_source
+    - pkg_windows
+    - pkg_macOS
+  script:
+    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/dynare-object-signing.p12 -n Dynare -i https://www.dynare.org -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
+    - cp *.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
+    - f=(windows/exe/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe
+    - f=(windows/7z/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-7z/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-7z/dynare-latest-win.7z
+    - f=(windows/zip/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip
+    - f=(macOS/pkg/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/macos/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/macos/dynare-latest-macos.pkg
+    - ~/update-snapshot-list.sh
+    - curl -X POST -F token="$WEBSITE_PIPELINE_TRIGGER_TOKEN" -F ref=master https://git.dynare.org/api/v4/projects/40/trigger/pipeline

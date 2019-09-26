@@ -1,4 +1,5 @@
-// checks whether second order coefficients are the same with order=2 and order=3 with k_order_solver=1
+/* Checks whether second order coefficients are the same with order=2 and order=3 with k_order_solver
+   (use_dll version) */
 
 var m P c e W R k d n l gy_obs gp_obs y dA ;
 varexo e_a e_m;

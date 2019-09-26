@@ -1,54 +1,31 @@
-% [err, g_0, g_1, g_2, g_3, derivs] = k_order_perturbation(dr,DynareModel,DynareOptions)
+% [err, dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,DynareModel,DynareOptions,g1,g2,g3)
 % computes a k_order_petrubation solution for k=1,2,3
 %
 % INPUTS
 % dr:            struct   describing the reduced form solution of the model.
 % DynareModel:   struct   jobs's parameters
 % DynareOptions: struct   job's options
+% g1:            matrix   First order derivatives of the model (optional)
+% g2:            matrix   Second order derivatives of the model (optional)
+% g3:            matrix   Third order derivatives of the model (optional)
 %
 % OUTPUTS
-% err:           double   err code (currently unused)
-% g_0:           vector   dynare++ output. Constant effect of future volatility (in
-%                         dr.order_var order) on the decision rule
-%                         (=ghs2/2). Contains zero when order of
-%                         approximation is 1.
-% g_1:           matrix   dynare++ output. First order Taylor coefficients
-%                         of decision rule. When order of approximation
-%                         is 3, the. Contains both the effect of
-%                         state endogenous variable and shocks. The rows
-%                         are in dr.order_var order. The columns are in
-%                         dr.order_var order of state endogenous
-%                         variables and shocks
-% g_2:           matrix   dynare++ output. Second order Taylor coefficients of decision
-%                         rule. Contains both the effect of state endogenous
-%                         variable and shocks. The rows are in dr.order_var
-%                         order. Each row corresponds to the vectorized
-%                         version of the lower triangle of the Hessian
-%                         matrix. The Taylor coefficient (1/2) is
-%                         included. The columns of the Hessian matrix are in
-%                         dr.order_var order of state endogenous variables
-%                         and shocks
-% g_3:           matrix   dynare++ output. Third order Taylor coefficients of decision
-%                         rule. Contains both the effect of state endogenous
-%                         variable and shocks. The rows are in dr.order_var
-%                         order. Each row corresponds to the vectorized
-%                         version of the 3rd order derivatives tensor where each
-%                         combination of variables appears only once.
-%                         The Taylor coefficient (1/6) is
-%                         included. Inside the tensor, the variables are in
-%                         dr.order_var order of state endogenous variables
-%                         and shocks
-% derivs        struct    contains the original derivatives of the
-%                         decision function (ghx, ghu, ghxx, ghxu, ghuu,
-%                         ghs2, ghxxx, ghxxu, ghxuu,ghuuu, ghxss, ghuss),
-%                         keeping the effect of future volatility
-%                         separate (in  ghs2, ghxss and ghuss). The
-%                         derivatives matrices contain full versions of
-%                         the Hessian matrices and 3rd order
-%                         tensor. Symmetric derivatives are repeated. The
-%                         Taylor coefficients (1/2 and 1/6) aren't
+% err:           double   error code
+% dynpp_derivs   struct   Derivatives of the decision rule in Dynare++ format.
+%                         The tensors are folded and the Taylor coefficients (1/n!) are
 %                         included.
-% k_order_peturbation is a compiled MEX function. It's source code is in
+%                         Fieldnames are g_0, g_1, g_2, …
+% dyn_derivs     struct   Derivatives of the decision rule in Dynare format, up to third order.
+%                         Matrices are dense and unfolded. The Taylor coefficients (1/2
+%                         and 1/6) aren't included.
+%                         The derivatives w.r.t. different categories of variables
+%                         are separated.
+%                         Fieldnames are:
+%                          + gy, gu
+%                          + if order ≥ 2: gyy, gyu, guu, gss
+%                          + if order ≥ 3: gyyy, gyyu, gyuu, guuu, gyss, guss
+%
+% k_order_perturbation is a compiled MEX function. It's source code is in
 % dynare/mex/sources/k_order_perturbation.cc and it uses code provided by
 % dynare++
 

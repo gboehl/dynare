@@ -13,11 +13,15 @@ LIBS += $(MATLAB_LIBS)
 mexdir = $(libdir)/dynare/mex/matlab
 
 all-local: $(PROGRAMS)
-	$(MKDIR_P) $(top_srcdir)/../../matlab
-	cd $(top_srcdir)/../../matlab && \
-	for p in $(PROGRAMS); do \
-		$(LN_S) -f $(abs_srcdir)/$$p $$p; \
-	done
+## Create symlinks in mex/matlab/, but only if the build is not
+## out-of-tree (because of the Windows installer)
+	if [ "$(abs_srcdir)" = "$(abs_builddir)" ]; then \
+		$(MKDIR_P) $(top_srcdir)/../../matlab && \
+		cd $(top_srcdir)/../../matlab && \
+		for p in $(PROGRAMS); do \
+			$(LN_S) -f $(abs_builddir)/$$p $$p; \
+		done; \
+	fi
 
 clean-local:
 	if test -d $(top_srcdir)/../../matlab; then \

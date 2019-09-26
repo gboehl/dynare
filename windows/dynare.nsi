@@ -2,13 +2,6 @@
 # Uses "NullSoft Scriptable Installer System", aka NSIS (see http://nsis.sourceforge.net)
 # NSIS can be run from both Windows and Linux (see "nsis" package in Debian)
 
-# How to build the installer:
-# - build: the preprocessor, the MEX binaries (for MATLAB and for Octave), and the documentation (PDF files + HTML manual)
-# - run "makensis dynare.nsi" to create the installer
-# - if there is no failure, this will create a file "dynare-VERSION-win.exe" in the current directory
-
-!include dynare-version.nsi
-
 SetCompressor /SOLID lzma
 
 Name "Dynare ${VERSION}"
@@ -22,10 +15,12 @@ InstallDir "c:\dynare\${VERSION}"
 
 !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of Dynare ${VERSION}.$\n$\nDynare is distributed under the GNU General Public License (GPL) version 3.$\n$\nIf you accept the license, click Next button to continue the installation."
 !insertmacro MUI_PAGE_WELCOME
+!define MUI_COMPONENTSPAGE_NODESC
+!define MUI_COMPONENTSPAGE_TEXT_TOP "Choose the components you want to install.$\nIf you know whether your version of MATLAB or Octave is 64-bit or 32-bit, you can uncheck the component that you don’t need in order to save disk space."
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
-!define MUI_FINISHPAGE_LINK_LOCATION http://www.dynare.org
+!define MUI_FINISHPAGE_LINK_LOCATION https://www.dynare.org
 !define MUI_FINISHPAGE_LINK "Go to Dynare homepage"
 !define MUI_FINISHPAGE_SHOWREADME $INSTDIR\README.txt
 !insertmacro MUI_PAGE_FINISH
@@ -50,6 +45,7 @@ InstallDir "c:\dynare\${VERSION}"
  SetShellVarContext all
 !macroend
 
+
 Section "Dynare core (preprocessor and M-files)"
  SectionIn RO
 !insertmacro DETERMINE_CONTEXT
@@ -65,11 +61,17 @@ Section "Dynare core (preprocessor and M-files)"
  SetOutPath $INSTDIR\matlab\preprocessor64
  File ..\matlab\preprocessor64\dynare_m.exe
 
+ SetOutPath $INSTDIR\matlab\modules\dseries\externals\x13\windows\32
+ File deps\lib32\x13as\x13as.exe
+
+ SetOutPath $INSTDIR\matlab\modules\dseries\externals\x13\windows\64
+ File deps\lib64\x13as\x13as.exe
+
  SetOutPath $INSTDIR\contrib
  File /r ..\contrib\*.m
 
  SetOutPath $INSTDIR\scripts
- File /r ..\scripts\*
+ File ..\scripts\dynare.el
 
  WriteUninstaller $INSTDIR\uninstall.exe
 
@@ -86,79 +88,83 @@ Section "Dynare core (preprocessor and M-files)"
  WriteRegDWORD SHELL_CONTEXT "${REGLOC}" "NoRepair" 1
 SectionEnd
 
-SectionGroup "MEX files for MATLAB"
 
-Section "MEX files for MATLAB 32-bit, version 7.9 to 8.6 (R2009b to R2015b)"
- SetOutPath $INSTDIR\mex\matlab\win32-7.9-8.6
- File ..\mex\matlab\win32-7.9-8.6\*.mexw32
-SectionEnd
+SectionGroup "Dynare support for 64-bit MATLAB and Octave"
 
 Section "MEX files for MATLAB 64-bit, version 7.9 to 9.3 (R2009b to R2017b)"
  SetOutPath $INSTDIR\mex\matlab\win64-7.9-9.3
  File ..\mex\matlab\win64-7.9-9.3\*.mexw64
 SectionEnd
 
-Section "MEX files for MATLAB 64-bit, version 9.4 to 9.5 (R2018a to R2018b)"
- SetOutPath $INSTDIR\mex\matlab\win64-9.4-9.5
- File ..\mex\matlab\win64-9.4-9.5\*.mexw64
+Section "MEX files for MATLAB 64-bit, version 9.4 to 9.7 (R2018a to R2019b)"
+ SetOutPath $INSTDIR\mex\matlab\win64-9.4-9.7
+ File ..\mex\matlab\win64-9.4-9.7\*.mexw64
 SectionEnd
 
-SectionGroupEnd
-
-SectionGroup "MEX files for Octave"
-
-Section "MEX files for Octave 4.4.1 (MinGW, 64bit)"
- SetOutPath $INSTDIR\mex\octave
- File ..\mex\octave\*
+Section "MEX files for Octave 5.1.0 (64-bit)"
+ SetOutPath $INSTDIR\mex\octave\win64
+ File ..\mex\octave\win64\*
 SectionEnd
 
-Section "MEX files for Octave 4.4.1 (MinGW, 32bit)"
- SetOutPath $INSTDIR\mex\octave32
- File ..\mex\octave32\*
-SectionEnd
-
-SectionGroupEnd
-
-SectionGroup "MinGW compiler (needed for use_dll option under MATLAB)"
-
-Section "MinGW for 32-bit MATLAB"
- SetOutPath $INSTDIR\mingw32
- File /r mingw32\*
-SectionEnd
-
-Section "MinGW for 64-bit MATLAB"
+Section "MinGW compiler for MATLAB 64-bit"
  SetOutPath $INSTDIR\mingw64
- File /r mingw64\*
+ File /r deps\mingw64\*
 SectionEnd
 
 SectionGroupEnd
 
-Section "Dynare++ (standalone executable)"
- SetOutPath $INSTDIR\dynare++
- File ..\dynare++\src\dynare++.exe ..\dynare++\extern\matlab\dynare_simul.m
+
+SectionGroup "Dynare support for 32-bit MATLAB and Octave"
+
+Section "MEX files for MATLAB 32-bit, version 7.9 to 8.6 (R2009b to R2015b)"
+ SetOutPath $INSTDIR\mex\matlab\win32-7.9-8.6
+ File ..\mex\matlab\win32-7.9-8.6\*.mexw32
 SectionEnd
 
-Section "Documentation and examples (Dynare and Dynare++)"
+Section "MEX files for Octave 5.1.0 (32-bit)"
+ SetOutPath $INSTDIR\mex\octave\win32
+ File ..\mex\octave\win32\*
+SectionEnd
+
+Section "MinGW compiler for MATLAB 32-bit"
+ SetOutPath $INSTDIR\mingw32
+ File /r deps\mingw32\*
+SectionEnd
+
+SectionGroupEnd
+
+
+Section "Documentation and examples"
  SetOutPath $INSTDIR\doc
- File ..\doc\dynare.pdf ..\doc\guide.pdf ..\doc\bvar-a-la-sims.pdf ..\doc\dr.pdf ..\doc\macroprocessor\macroprocessor.pdf ..\doc\preprocessor\preprocessor.pdf ..\doc\parallel\parallel.pdf ..\doc\gsa\gsa.pdf ..\doc\dseries-and-reporting\dseriesReporting.pdf
+ File ..\doc\manual\build\latex\dynare-manual.pdf ..\doc\guide.pdf ..\doc\bvar-a-la-sims.pdf ..\doc\dr.pdf ..\preprocessor\doc\macroprocessor\macroprocessor.pdf ..\preprocessor\doc\preprocessor\preprocessor.pdf ..\doc\parallel\parallel.pdf ..\doc\gsa\gsa.pdf ..\doc\dseries-and-reporting\dseriesReporting.pdf
 
- SetOutPath $INSTDIR\doc\dynare.html
- File ..\doc\dynare.html\*.html ..\doc\dynare.html\*.png
-
- SetOutPath $INSTDIR\doc\dynare++
- File ..\dynare++\doc\dynare++-tutorial.pdf ..\dynare++\doc\dynare++-ramsey.pdf ..\dynare++\sylv\sylvester.pdf ..\dynare++\tl\cc\tl.pdf ..\dynare++\integ\cc\integ.pdf ..\dynare++\kord\kord.pdf
+ SetOutPath $INSTDIR\doc\dynare-manual.html
+ File /r ..\doc\manual\build\html\*
 
  CreateShortcut "${SMLOC}\Documentation.lnk" "$INSTDIR\doc"
 
  SetOutPath $INSTDIR\examples
  File ..\examples\*.mod ..\examples\*.m
 
+ CreateShortcut "${SMLOC}\Examples.lnk" "$INSTDIR\examples"
+SectionEnd
+
+
+Section /o "Dynare++ (standalone executable)"
+
+ SetOutPath $INSTDIR\dynare++\32-bit
+ File ..\dynare++\32-bit\dynare++.exe
+
+ SetOutPath $INSTDIR\dynare++\64-bit
+ File ..\dynare++\64-bit\dynare++.exe
+
+ SetOutPath $INSTDIR\doc\dynare++
+ File ..\dynare++\doc\*.pdf
+
  SetOutPath $INSTDIR\examples\dynare++
  File ..\examples\dynare++\example1.mod ..\examples\dynare++\README.txt
-
- CreateShortcut "${SMLOC}\Examples.lnk" "$INSTDIR\examples"
-
 SectionEnd
+
 
 Section "Uninstall"
 !insertmacro DETERMINE_CONTEXT

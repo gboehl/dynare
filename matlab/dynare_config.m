@@ -1,5 +1,6 @@
-function dynareroot = dynare_config(path_to_dynare, verbose)
-
+function dynareroot = dynare_config(path_to_dynare)
+%function dynareroot = dynare_config(path_to_dynare)
+%
 % This function tests the existence of valid mex files (for qz
 % decomposition, solution to sylvester equation and kronecker
 % products...) and, if needed, add paths to the matlab versions
@@ -15,7 +16,7 @@ function dynareroot = dynare_config(path_to_dynare, verbose)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,10 +41,6 @@ dynareroot = strrep(which('dynare'),'dynare.m','');
 
 origin = pwd();
 cd([dynareroot '/..'])
-
-if ~nargin || nargin==1
-    verbose = 1;
-end
 
 p = {'/distributions/' ; ...
      '/kalman/' ; ...
@@ -85,8 +82,8 @@ if ~isoctave
     p{end+1} = '/missing/vec';
 end
 
-% ordeig() doesn't exist in Octave
-if isoctave
+% ordeig() doesn't exist in Octave < 5
+if isoctave && octave_ver_less_than('5')
     p{end+1} = '/missing/ordeig';
 end
 
@@ -95,20 +92,22 @@ if isoctave && octave_ver_less_than('4.4') && ~user_has_octave_forge_package('na
     p{end+1} = '/missing/corrcoef';
 end
 
-% nanmean is in Octave Forge Statistics package and in MATLAB Statistics
-% toolbox
-if (isoctave && ~user_has_octave_forge_package('statistics')) ...
-        || (~isoctave && ~user_has_matlab_license('statistics_toolbox'))
-    p{end+1} = '/missing/nanmean';
+%% intersect(…, 'stable') doesn't exist in Octave and in MATLAB < R2013a
+if isoctave || matlab_ver_less_than('8.1')
+    p{end+1} = '/missing/intersect_stable';
 end
 
 % Replacements for functions of the MATLAB statistics toolbox
-% These functions were part of Octave < 4.4, they are now in the statistics Forge package
-if (isoctave && ~octave_ver_less_than('4.4') && ~user_has_octave_forge_package('statistics')) ...
-        || (~isoctave && ~user_has_matlab_license('statistics_toolbox'))
-    p{end+1} = '/missing/stats/';
-    if ~isoctave
-        p{end+1} = '/missing/stats-matlab/';
+if isoctave
+    % These functions were part of Octave < 4.4, they are now in the statistics Forge package
+    if ~octave_ver_less_than('4.4') && ~user_has_octave_forge_package('statistics')
+        % Our replacement functions don't work under Octave (because of gamrnd, see
+        % #1638), hence the statistics toolbox is now a hard requirement
+        error('You must install the "statistics" package from Octave Forge, either with your distribution package manager or with "pkg install -forge statistics"')
+    end
+else
+    if ~user_has_matlab_license('statistics_toolbox')
+        p{end+1} = '/missing/stats/';
     end
 end
 
@@ -117,19 +116,30 @@ if ~exist('struct2array')
     p{end+1} = '/missing/struct2array';
 end
 
-% isfile is missing in Octave and Matlab<R2017b
-if isoctave || matlab_ver_less_than('9.3')
+% isfile is missing in Octave < 5 and Matlab < R2017b
+if (isoctave && octave_ver_less_than('5')) || (~isoctave && matlab_ver_less_than('9.3'))
     p{end+1} = '/missing/isfile';
 end
 
-% strsplit is missing in Matlab<R2013a
+% strsplit and strjoin are missing in MATLAB < R2013a
 if ~isoctave && matlab_ver_less_than('8.1')
     p{end+1} = '/missing/strsplit';
+    p{end+1} = '/missing/strjoin';
 end
 
 % isrow, iscolumn and ismatrix are missing in Matlab<R2010b
 if ~isoctave && matlab_ver_less_than('7.11')
     p{end+1} = '/missing/is-row-column-matrix';
+end
+
+%% isdiag is missing in MATLAB < R2014a
+if ~isoctave && matlab_ver_less_than('8.4')
+    p{end+1} = '/missing/isdiag';
+end
+
+%% narginchk is missing in MATLAB < R2011b
+if ~isoctave && matlab_ver_less_than('7.13')
+    p{end+1} = '/missing/narginchk';
 end
 
 P = cellfun(@(c)[dynareroot(1:end-1) c], p, 'uni',false);
@@ -143,110 +153,7 @@ P(end+1:end+length(mexpaths)) = mexpaths;
 % Set matlab's path
 addpath(P{:});
 
-% Set mex routine names
-mex_status = cell(1,3);
-mex_status(1,1) = {'mjdgges'};
-mex_status(1,2) = {'qz'};
-mex_status(1,3) = {'Generalized QZ'};
-mex_status(2,1) = {'gensylv'};
-mex_status(2,2) = {'gensylv'};
-mex_status(2,3) = {'Sylvester equation solution'};
-mex_status(3,1) = {'A_times_B_kronecker_C'};
-mex_status(3,2) = {'kronecker'};
-mex_status(3,3) = {'Kronecker products'};
-mex_status(4,1) = {'sparse_hessian_times_B_kronecker_C'};
-mex_status(4,2) = {'kronecker'};
-mex_status(4,3) = {'Sparse kronecker products'};
-mex_status(5,1) = {'local_state_space_iteration_2'};
-mex_status(5,2) = {'reduced_form_models/local_state_space_iteration_2'};
-mex_status(5,3) = {'Local state space iteration (second order)'};
-number_of_mex_files = size(mex_status,1);
-
-% Remove some directories from matlab's path. This is necessary if the user has
-% added dynare_v4/matlab with the subfolders. Matlab has to ignore these
-% subfolders if valid mex files exist.
-matlab_path = path;
-for i=1:number_of_mex_files
-    test = strfind(matlab_path,[dynareroot mex_status{i,2}]);
-    action = length(test);
-    if action
-        rmpath([dynareroot mex_status{i,2}]);
-        matlab_path = path;
-    end
-end
-
-% Test if valid mex files are available, if a mex file is not available
-% a matlab version of the routine is included in the path.
-if verbose
-    skipline()
-    disp('Configuring Dynare ...')
-end
-
-for i=1:number_of_mex_files
-    test = (exist(mex_status{i,1},'file') == 3);
-    if ~test
-        addpath([dynareroot mex_status{i,2}]);
-        message = '[m]   ';
-    else
-        message = '[mex] ';
-    end
-    if verbose
-        disp([ message mex_status{i,3} '.' ])
-    end
-end
-
-% Test if bytecode DLL is present
-if exist('bytecode', 'file') == 3
-    message = '[mex] ';
-else
-    message = '[no]  ';
-end
-if verbose
-    disp([ message 'Bytecode evaluation.' ])
-end
-
-% Test if k-order perturbation DLL is present
-if exist('k_order_perturbation', 'file') == 3
-    message = '[mex] ';
-else
-    message = '[no]  ';
-end
-if verbose
-    disp([ message 'k-order perturbation solver.' ])
-end
-
-% Test if dynare_simul_ DLL is present
-if exist('dynare_simul_', 'file') == 3
-    message = '[mex] ';
-else
-    message = '[no]  ';
-end
-if verbose
-    disp([ message 'k-order solution simulation.' ])
-end
-
-% Test if qmc_sequence DLL is present
-if exist('qmc_sequence', 'file') == 3
-    message = '[mex] ';
-else
-    message = '[no]  ';
-end
-if verbose
-    disp([ message 'Quasi Monte-Carlo sequence (Sobol).' ])
-end
-
-% Test if MS-SBVAR DLL is present
-if exist('ms_sbvar_command_line', 'file') == 3
-    message = '[mex] ';
-else
-    message = '[no]  ';
-end
-if verbose
-    disp([ message 'Markov Switching SBVAR.' ])
-    skipline()
-end
-
-% Initialization of the dates and dseries classes.
-initialize_dseries_class;
+% Initialization of the dates and dseries classes (recursive).
+initialize_dseries_class();
 
 cd(origin);

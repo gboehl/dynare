@@ -103,8 +103,16 @@ else
         n2 = n2+ny;
     end
 end
-icA = [find(lead_lag_incidence(1,:)) find(lead_lag_incidence(2,:))+world_nbr*ny ...
-       find(lead_lag_incidence(3,:))+2*world_nbr*ny]';
+if rows(lead_lag_incidence)>2
+    icA = [find(lead_lag_incidence(1,:)) find(lead_lag_incidence(2,:))+world_nbr*ny ...
+           find(lead_lag_incidence(3,:))+2*world_nbr*ny]';
+else
+    if nyf
+        icA = [find(lead_lag_incidence(2,:))+world_nbr*ny find(lead_lag_incidence(3,:))+2*world_nbr*ny ]';
+    else
+        icA = [find(lead_lag_incidence(1,:)) find(lead_lag_incidence(2,:))+world_nbr*ny ]';
+    end
+end
 h1 = clock;
 for iter = 1:maxit
     h2 = clock;

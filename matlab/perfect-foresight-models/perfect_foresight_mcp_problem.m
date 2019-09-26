@@ -2,12 +2,12 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
                                                   exo_simul, params, steady_state, ...
                                                   maximum_lag, T, ny, i_cols, ...
                                                   i_cols_J1, i_cols_1, i_cols_T, ...
-                                                  i_cols_j,nnzJ,eq_index)
+                                                  i_cols_j, i_cols_0,i_cols_J0, eq_index)
 % function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_function, Y0, YT, ...
 %                                            exo_simul, params, steady_state, ...
 %                                            maximum_lag, T, ny, i_cols, ...
 %                                            i_cols_J1, i_cols_1, i_cols_T, ...
-%                                            i_cols_j,nnzJ,eq_index)
+%                                            i_cols_j,eq_index)
 % Computes the residuals and the Jacobian matrix for a perfect foresight problem over T periods
 % in a mixed complementarity problem context
 %
@@ -33,7 +33,6 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 %                                variables (relevant in last period)
 %   i_cols_j            [double] indices of variables in M.lead_lag_incidence
 %                                in dynamic Jacobian (relevant in intermediate periods)
-%   nnzJ                [scalar] number of non-zero elements in Jacobian
 %   eq_index            [double] N*1 array, index vector describing residual mapping resulting
 %                                from complementarity setup
 % OUTPUTS
@@ -45,7 +44,7 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -80,10 +79,12 @@ for it = maximum_lag+(1:T)
                                steady_state,it);
         residuals(i_rows) = res(eq_index);
     elseif nargout == 2
-        [res,jacobian] = dynamic_function(YY(i_cols),exo_simul, params, ...
-                                          steady_state,it);
+        [res,jacobian] = dynamic_function(YY(i_cols),exo_simul, params, steady_state,it);
         residuals(i_rows) = res(eq_index);
-        if it == maximum_lag+1
+        if T==1 && it==maximum_lag+1
+            [rows, cols, vals] = find(jacobian(:,i_cols_0));
+            iJacobian{1} = [rows, i_cols_J0(cols), vals];
+        elseif it == maximum_lag+1
             [rows,cols,vals] = find(jacobian(eq_index,i_cols_1));
             iJacobian{1} = [offset+rows, i_cols_J1(cols), vals];
         elseif it == maximum_lag+T
@@ -103,6 +104,5 @@ end
 
 if nargout == 2
     iJacobian = cat(1,iJacobian{:});
-    JJacobian = sparse(iJacobian(:,1),iJacobian(:,2),iJacobian(:,3),T* ...
-                       ny,T*ny);
+    JJacobian = sparse(iJacobian(:,1),iJacobian(:,2),iJacobian(:,3),T*ny,T*ny);
 end

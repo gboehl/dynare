@@ -65,7 +65,7 @@ elseif options_.steadystate_flag
         %solve for instrument, using multivariate solver, starting at
         %initial value for instrument
         opt = options_;
-        opt.jacobian_flag = 0;
+        opt.jacobian_flag = false;
         [inst_val,info1] = dynare_solve(nl_func,ys_init(k_inst), ...
                                         opt);
         if info1~=0
@@ -80,7 +80,7 @@ else
     n_var = M.orig_endo_nbr;
     xx = oo.steady_state(1:n_var);
     opt = options_;
-    opt.jacobian_flag = 0;
+    opt.jacobian_flag = false;
     [xx,info1] = dynare_solve(nl_func,xx,opt);
     if info1~=0
         check=81;

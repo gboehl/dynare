@@ -50,6 +50,7 @@ count_nan_steadystate = 0;
 count_nan_params = 0;
 count_complex_params = 0;
 count_nonpositive_steadystate = 0;
+count_endogenous_prior_violation = 0;
 count_unknown_problem = 0;
 NumberOfSimulations = options_.prior_mc;
 NumberOfParameters = length(bayestopt_.p1);
@@ -95,7 +96,11 @@ while iteration < NumberOfSimulations
     loop_indx = loop_indx+1;
     params = prior_draw();
     M_ = set_all_parameters(params,estim_params_,M_);
-    [dr,INFO,M_,options_,oo_] = resol(work,M_,options_,oo_);
+    [T,R,~,INFO,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
+    dr=oo_.dr;
+    if ~INFO(1)
+        INFO=endogenous_prior_restrictions(T,R,M_,options_,oo_);
+    end
     file_line_number = file_line_number + 1;
     iteration = iteration + 1;
     if drsave
@@ -138,6 +143,8 @@ while iteration < NumberOfSimulations
         count_nan_params = count_nan_params + 1 ;
       case 26
         count_nonpositive_steadystate = count_nonpositive_steadystate + 1;
+      case 49
+        count_endogenous_prior_violation = count_endogenous_prior_violation + 1;
       otherwise
         count_unknown_problem = count_unknown_problem + 1 ;
     end
@@ -167,6 +174,7 @@ results.ss.complex_share = count_complex_steadystate/loop_indx;
 results.ass.problem_share = count_steadystate_file_exit/loop_indx;
 results.ss.nonpositive_share = count_nonpositive_steadystate/loop_indx;
 results.jacobian.problem_share = count_complex_jacobian/loop_indx;
+results.endogenous_prior_violation_share = count_endogenous_prior_violation/loop_indx;
 results.garbage_share = ...
     results.bk.indeterminacy_share + ...
     results.bk.unstability_share + ...
@@ -177,6 +185,7 @@ results.garbage_share = ...
     results.ss.complex_share + ...
     results.ss.nonpositive_share + ...
     results.jacobian.problem_share + ...
+    results.endogenous_prior_violation_share + ...
     count_unknown_problem/loop_indx ;
 results.prior.mean = sampled_prior_expectation;
 results.prior.variance = sampled_prior_covariance;

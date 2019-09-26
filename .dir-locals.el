@@ -1,6 +1,7 @@
-((nil .
-      ((c-file-style . "gnu")
-       (indent-tabs-mode . nil)
-       (fill-column . 79)))
- (c-mode . (c-basic-offset 2))
- (makefile-mode . ((indent-tabs-mode . t))))
+((c-mode . ((indent-tabs-mode . nil)
+            (c-file-style . "gnu")))
+ (c++-mode . ((indent-tabs-mode . nil)
+              (c-file-style . "gnu")))
+ (makefile-mode . ((indent-tabs-mode . t)))
+ (octave-mode . ((indent-tabs-mode . nil)
+                 (octave-block-offset . 4))))

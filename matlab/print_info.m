@@ -11,7 +11,7 @@ function print_info(info, noprint, DynareOptions)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2018 Dynare Team
+% Copyright (C) 2005-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,25 +31,20 @@ function print_info(info, noprint, DynareOptions)
 if ~noprint
     switch info(1)
       case 1
-        error(['The model doesn''t determine the current variables' ...
-               ' uniquely'])
+        error('The model doesn''t determine the current variables uniquely')
       case 2
         error(['The generalized Schur (QZ) decomposition failed. ' ...
                'For more information, see the documentation for Lapack function dgges: info=' ...
                int2str(info(2)) ', n=' int2str(info(3)) ...
                '. You can also run model_diagnostics to get more information on what may cause this problem.'])
       case 3
-        error(['Blanchard Kahn conditions are not satisfied: no stable' ...
-               ' equilibrium'])
+        error('Blanchard Kahn conditions are not satisfied: no stable equilibrium')
       case 4
-        error(['Blanchard Kahn conditions are not satisfied:' ...
-               ' indeterminacy'])
+        error('Blanchard Kahn conditions are not satisfied: indeterminacy')
       case 5
-        error(['Blanchard Kahn conditions are not satisfied:' ...
-               ' indeterminacy due to rank failure'])
+        error('Blanchard Kahn conditions are not satisfied: indeterminacy due to rank failure')
       case 6
-        error(['The Jacobian matrix evaluated at the steady state contains elements ' ...
-               'that are not real or are infinite'])
+        error('The Jacobian matrix evaluated at the steady state contains elements that are not real or are infinite')
       case 7
         error('One of the eigenvalues is close to 0/0 (the absolute value of numerator and denominator is smaller than %s!\n If you believe that the model has a unique solution you can try to reduce the value of qz_zero_threshold.',num2str(DynareOptions.qz_zero_threshold))
       case 8
@@ -61,12 +56,12 @@ if ~noprint
             end
             error(['The Jacobian contains NaNs because the following parameters are NaN: ' disp_string])
         else
-            error(['The Jacobian contains NaNs. For more information, use options_.debug.'])
+            error('The Jacobian contains NaNs. For more information, use options_.debug.')
         end
       case 9
-        error(['k_order_pert was unable to compute the solution'])
+        error('k_order_pert was unable to compute the solution')
       case 10
-        error(['The Jacobian of the dynamic model contains Inf. For more information, use options_.debug.'])
+        error('The Jacobian of the dynamic model contains Inf. For more information, use options_.debug.')
       case 11
         error('The Hessian of the dynamic model used for second order solutions must not contain Inf')
       case 12
@@ -127,32 +122,32 @@ if ~noprint
       case 55
         error('Fast Kalman filter only works with stationary models [lik_init=1] or stationary observables for non-stationary models [lik_init=3]')
       case 61 %Discretionary policy
-        error(['Discretionary policy: maximum number of iterations has been reached. Procedure failed. ']);
+        error('Discretionary policy: maximum number of iterations has been reached. Procedure failed.');
       case 62
-        error(['Discretionary policy: some eigenvalues greater than options_.qz_criterium. Model potentially unstable.']);
+        error('Discretionary policy: some eigenvalues greater than options_.qz_criterium. Model potentially unstable.');
       case 63
-        error(['Discretionary policy: NaN elements are present in the solution. Procedure failed.']);
+        error('Discretionary policy: NaN elements are present in the solution. Procedure failed.');
       case 71
-        error(['Calibrated covariance of the structural errors implies correlation larger than  +-1.']);
+        error('Calibrated covariance of the structural errors implies correlation larger than +-1.');
       case 72
-        error(['Calibrated covariance of the measurement errors implies correlation larger than  +-1.']);
+        error('Calibrated covariance of the measurement errors implies correlation larger than +-1.');
         % Aim Code Conversions by convertAimCodeToInfo.m
       case 81
         error(['Ramsey: The solution to the static first order conditions for optimal policy could not be found. Either the model' ...
                ' doesn''t have a steady state, there are an infinity of steady states, ' ...
                ' or the guess values are too far from the solution']);
       case 82
-        error(['Ramsey: The steady state computation resulted in NaN in the static first order conditions for optimal policy']);
+        error('Ramsey: The steady state computation resulted in NaN in the static first order conditions for optimal policy');
       case 83
-        error(['Ramsey: The steady state computation resulted in NaN in the auxiliary equations for optimal policy']);
+        error('Ramsey: The steady state computation resulted in NaN in the auxiliary equations for optimal policy');
       case 84
-        error(['Ramsey: The steady state file computation for the Ramsey problem resulted in NaNs at the initial values of the instruments']);
+        error('Ramsey: The steady state file computation for the Ramsey problem resulted in NaNs at the initial values of the instruments');
       case 85
-        error(['Ramsey: The steady state file does not solve the static first order conditions conditional on the instruments.']);
+        error('Ramsey: The steady state file does not solve the static first order conditions conditional on the instruments.');
       case 86
-        error(['Ramsey: The steady state file provides complex numbers conditional on the instruments.']);
+        error('Ramsey: The steady state file provides complex numbers conditional on the instruments.');
       case 87
-        error(['Ramsey: The maximum number of iterations has been reached. Try increasing maxit.']);
+        error('Ramsey: The maximum number of iterations has been reached. Try increasing maxit.');
       case 102
         error('Aim: roots not correctly computed by real_schur');
       case 103

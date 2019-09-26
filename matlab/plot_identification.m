@@ -1,18 +1,18 @@
-function plot_identification(params,idemoments,idehess,idemodel, idelre, advanced, tittxt, name, IdentifDirectoryName,tit_TeX,name_tex)
+function plot_identification(params, idemoments, idehess, idemodel, idelre, advanced, tittxt, name, IdentifDirectoryName, tit_TeX, name_tex)
 % function plot_identification(params,idemoments,idehess,idemodel, idelre, advanced, tittxt, name, IdentifDirectoryName)
 %
 % INPUTS
-%    o params             [array] parameter values for identification checks
-%    o idemoments         [structure] identification results for the moments
-%    o idehess            [structure] identification results for the Hessian
-%    o idemodel           [structure] identification results for the reduced form solution
-%    o idelre             [structure] identification results for the LRE model
-%    o advanced           [integer] flag for advanced identification checks
-%    o tittxt             [char] name of the results to plot
-%    o name               [char] list of names
-%    o IdentifDirectoryName   [char] directory name
-%    o tittxt             [char] TeX-name of the results to plot
-%    o name_tex           [char] TeX-names of the parameters
+%    o params               [array] parameter values for identification checks
+%    o idemoments           [structure] identification results for the moments
+%    o idehess              [structure] identification results for the Hessian
+%    o idemodel             [structure] identification results for the reduced form solution
+%    o idelre               [structure] identification results for the LRE model
+%    o advanced             [integer] flag for advanced identification checks
+%    o tittxt               [char] name of the results to plot
+%    o name                 [char] list of names
+%    o IdentifDirectoryName [char] directory name
+%    o tittxt               [char] TeX-name of the results to plot
+%    o name_tex             [char] TeX-names of the parameters
 % OUTPUTS
 %    None
 %
@@ -47,19 +47,14 @@ if nargin <11
 end
 
 [SampleSize, nparam]=size(params);
-siJnorm = idemoments.siJnorm;
-siHnorm = idemodel.siHnorm;
-siLREnorm = idelre.siLREnorm;
+si_Jnorm = idemoments.si_Jnorm;
+si_dTAUnorm = idemodel.si_dTAUnorm;
+si_dLREnorm = idelre.si_dLREnorm;
 
-% if prior_exist,
-%     tittxt = 'Prior mean - ';
-% else
-%     tittxt = '';
-% end
 tittxt1=regexprep(tittxt, ' ', '_');
 tittxt1=strrep(tittxt1, '.', '');
 if SampleSize == 1
-    siJ = idemoments.siJ;
+    si_J = idemoments.si_J;
     hh = dyn_figure(options_.nodisplay,'Name',[tittxt, ' - Identification using info from observables']);
     subplot(211)
     mmm = (idehess.ide_strength_J);
@@ -154,18 +149,18 @@ if SampleSize == 1
     if advanced
         if ~options_.nodisplay
             skipline()
-            disp('Press ENTER to plot advanced diagnostics'), pause(5),
+            disp('Plotting advanced diagnostics')
         end
-        if all(isnan([siJnorm';siHnorm';siLREnorm']))
+        if all(isnan([si_Jnorm';si_dTAUnorm';si_dLREnorm']))
             fprintf('\nIDENTIFICATION: Skipping sensitivity plot, because standard deviation of parameters is NaN, possibly due to the use of ML.\n')
         else
             hh = dyn_figure(options_.nodisplay,'Name',[tittxt, ' - Sensitivity plot']);
             subplot(211)
-            mmm = (siJnorm)'./max(siJnorm);
-            mmm1 = (siHnorm)'./max(siHnorm);
+            mmm = (si_Jnorm)'./max(si_Jnorm);
+            mmm1 = (si_dTAUnorm)'./max(si_dTAUnorm);
             mmm=[mmm mmm1];
-            mmm1 = (siLREnorm)'./max(siLREnorm);
-            offset=length(siHnorm)-length(siLREnorm);
+            mmm1 = (si_dLREnorm)'./max(si_dLREnorm);
+            offset=length(si_dTAUnorm)-length(si_dLREnorm);
             mmm1 = [NaN(offset,1); mmm1];
             mmm=[mmm mmm1];
 
@@ -334,13 +329,13 @@ else
     subplot(211)
     mmm = (idehess.ide_strength_J);
     [ss, is] = sort(mmm);
-    mmm = mean(siJnorm)';
+    mmm = mean(si_Jnorm)';
     mmm = mmm./max(mmm);
     if advanced
-        mmm1 = mean(siHnorm)';
+        mmm1 = mean(si_dTAUnorm)';
         mmm=[mmm mmm1./max(mmm1)];
-        mmm1 = mean(siLREnorm)';
-        offset=size(siHnorm,2)-size(siLREnorm,2);
+        mmm1 = mean(si_dLREnorm)';
+        offset=size(si_dTAUnorm,2)-size(si_dLREnorm,2);
         mmm1 = [NaN(offset,1); mmm1./max(mmm1)];
         mmm=[mmm mmm1];
     end
@@ -374,7 +369,7 @@ else
     if advanced
         if ~options_.nodisplay,
             skipline()
-            disp('Press ENTER to display advanced diagnostics'), pause(5),
+            disp('Displaying advanced diagnostics')
         end
         %         options_.nograph=1;
         hh = dyn_figure(options_.nodisplay,'Name','MC Condition Number');
@@ -499,5 +494,3 @@ else
         end
     end
 end
-
-% disp_identification(params, idemodel, idemoments, name)

@@ -16,7 +16,7 @@ function dynare(fname, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,7 +66,7 @@ end
 check_matlab_path(change_path_flag);
 
 % Detect if MEX files are present; if not, use alternative M-files
-dynareroot = dynare_config('', preprocessoroutput);
+dynareroot = dynare_config();
 
 warning_config()
 
@@ -207,25 +207,6 @@ else
     end
 end
 
-% Read options from the first line in mod/dyn file.
-fid = fopen(fname, 'r');
-firstline = fgetl(fid);
-fclose(fid);
-if regexp(firstline, '\s*\/\/', 'once') == 1
-    firstline = regexprep(firstline, '\s*\/\/', '');
-    if ~isempty(regexp(firstline, '(^\s*\-\-\+\s*options:\s*)', 'once')) ...
-        && ~isempty(regexp(firstline, '(\s*\+\-\-.*$)', 'once'))
-        firstline = regexprep(firstline, '(^\s*\-\-\+\s*options:\s*)', '');
-        firstline = regexprep(firstline, '(\s*\+\-\-.*$)', '');
-        dynoption = strsplit(firstline, {' ', ','});
-        if isequal(nargin, 1)
-            varargin = dynoption;
-        else
-            varargin = union(varargin, dynoption);
-        end
-    end
-end
-
 command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
 command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
 for i=1:length(varargin)
@@ -238,7 +219,7 @@ if preprocessoroutput
     if isempty(varargin)
         disp('none')
     else
-        disp(varargin);
+        disp(strjoin(varargin));
     end
 end
 
@@ -277,6 +258,12 @@ end
 no_log = 0;
 for i=1:length(varargin)
     no_log = no_log || strcmp(varargin{i}, 'nolog');
+end
+fid = fopen(fname, 'r');
+firstline = fgetl(fid);
+fclose(fid);
+if ~isempty(regexp(firstline, '//\s*--\+\s*options:(|.*\s|.*,)nolog(|\s.*|,.*)\+--'))
+    no_log = 1;
 end
 if ~no_log
     logname = [fname(1:end-4) '.log'];

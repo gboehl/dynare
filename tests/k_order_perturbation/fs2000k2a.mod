@@ -1,5 +1,5 @@
-/* Checks that, for order = 2, k_order_solver = 0 (this file)
-   and k_order_solver = 1 (fs2000k2) give the same results */
+/* Counterfactual, used by fs2000k2_m.mod, fs2000k2_use_dll.mod, fs2000k3_m.mod and fs2000k3_use_dll.mod
+ */
 
 var m P c e W R k d n l gy_obs gp_obs y dA ;
 varexo e_a e_m;

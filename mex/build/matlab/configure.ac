@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2009-2019 Dynare Team
+dnl Copyright © 2009-2019 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -27,12 +27,12 @@ AC_CANONICAL_HOST
 
 AX_MATLAB
 
-if test "x$ax_enable_matlab" = "xyes"; then
+if test "$ax_enable_matlab" = yes; then
   AX_MATLAB_VERSION
   AX_DOT_MEXEXT
   AX_MATLAB_ARCH
 
-  if test "x$ax_matlab_version_ok" = "xyes"; then
+  if test "$ax_matlab_version_ok" = yes; then
     AX_MEXOPTS
     AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.9], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to version 7.9 (R2009b) at least.])])
   fi
@@ -52,102 +52,82 @@ esac
 
 CFLAGS="$CFLAGS -Wall -Wno-parentheses"
 FFLAGS="$FFLAGS -Wall"
-CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses"
+CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses -Wold-style-cast"
 
 AC_PROG_F77([gfortran g77 f77])
 AC_PROG_CC
 AC_PROG_CC_C99 # mjdgges DLL now uses C99 features (variable declared in for loop)
 AC_PROG_CXX
-AX_CXX_COMPILE_STDCXX_14
+AX_CXX_COMPILE_STDCXX_17
 AC_PROG_RANLIB
 AX_PROG_LN_S
 AC_PROG_MKDIR_P
 AM_PROG_AR
 
 case ${host_os} in
-  *mingw32*)
-    # Kludge for bug in MinGW, that defines __STDC_UTF_16__ but not char16_t
-    # This breaks the matrix.h of older MATLABs (e.g. R2009a)
-    # Also see <uchar.h>
-    CFLAGS="$CFLAGS -include stdint.h -Dchar16_t=uint_least16_t"
-    ;;
   *darwin*)
-    string="`$CXX --version`"
-    if test x"${string#*clang}" != x"$string"; then
+    string=$($CXX --version)
+    if test "${string#*clang}" != "$string"; then
       CXXFLAGS="$CXXFLAGS -stdlib=libc++"
       MATLAB_LIBS="$MATLAB_LIBS -lc++"
-      MATLAB_LDFLAGS="$MATLAB_LDFLAGS -Wl,-syslibroot,`xcrun -sdk macosx --show-sdk-path`"
+      MATLAB_LDFLAGS="$MATLAB_LDFLAGS -Wl,-syslibroot,$(xcrun -sdk macosx --show-sdk-path)"
     else
       MATLAB_LIBS="$MATLAB_LIBS -lstdc++"
     fi
     ;;
 esac
-AX_PTHREAD
+
+AX_CXX11_THREAD
 
 # Check for dlopen(), needed by k_order_perturbation DLL
 AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
 AC_SUBST([LIBADD_DLOPEN])
 # Check for GSL, needed by MS-SBVAR
 AX_GSL
-AM_CONDITIONAL([HAVE_GSL], [test "x$has_gsl" = "xyes"])
+AM_CONDITIONAL([HAVE_GSL], [test "$has_gsl" = yes])
 
 # Check for libmatio, needed by MEX files using Dynare++ code
 AX_MATIO
-AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
+AM_CONDITIONAL([HAVE_MATIO], [test "$has_matio" = yes])
 
 # Check for libslicot, needed by kalman_steady_state
 AX_SLICOT([matlab])
-AM_CONDITIONAL([HAVE_SLICOT], [test "x$has_slicot" = "xyes"])
+AM_CONDITIONAL([HAVE_SLICOT], [test "$has_slicot" = yes])
 
 # On Windows, we want static linking of the external libraries
 case ${host_os} in
   *mingw32*)
-    # We hardcode -lpthread here, otherwise it is not detected by the
-    # AX_PTHREAD macro and therefore not statically linked
-    PTHREAD_LIBS="-Wl,-Bstatic -lpthread -Wl,-Bdynamic"
     GSL_LIBS="-Wl,-Bstatic $GSL_LIBS -Wl,-Bdynamic"
     LIBADD_MATIO="-Wl,-Bstatic $LIBADD_MATIO -Wl,-Bdynamic"
     LIBADD_SLICOT="-Wl,-Bstatic $LIBADD_SLICOT -Wl,-Bdynamic"
     ;;
 esac
 
-AM_CONDITIONAL([DO_SOMETHING], [test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes"])
+AM_CONDITIONAL([DO_SOMETHING], [test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes])
 
-if test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes"; then
-  if test x"$ax_pthread_ok" = "xyes"; then
-     BUILD_MEX_MATLAB="yes"
-  else
-     BUILD_MEX_MATLAB="yes (without POSIX threads)"
-  fi
+if test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes; then
+  BUILD_MEX_MATLAB="yes"
 else
   BUILD_MEX_MATLAB="no (missing MATLAB, or unknown version, or unknown architecture)"
 fi
 
-if test "x$ax_enable_matlab" = "xyes" -a "x$has_matio" = "xyes"; then
+if test "$ax_enable_matlab" = yes -a "$has_matio" = yes; then
    BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="yes"
 else
    BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="no (missing MatIO library)"
 fi
 
-if test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes" -a "x$has_slicot" = "xyes"; then
+if test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes -a "$has_slicot" = yes; then
    BUILD_KALMAN_STEADY_STATE_MATLAB="yes"
 else
    BUILD_KALMAN_STEADY_STATE_MATLAB="no (missing SLICOT)"
 fi
 
-if test "x$ax_enable_matlab" = "xyes" -a "x$ax_matlab_version_ok" = "xyes" -a "x$ax_mexopts_ok" = "xyes" -a "x$has_gsl" = "xyes"; then
+if test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes -a "$has_gsl" = yes; then
    BUILD_MS_SBVAR_MEX_MATLAB="yes"
 else
    BUILD_MS_SBVAR_MEX_MATLAB="no (missing GSL)"
 fi
-
-AC_ARG_ENABLE([openmp], AS_HELP_STRING([--enable-openmp], [use OpenMP for parallelization of some MEX files]), [
-  if test "x$enable_openmp" = "xyes"; then
-    CPPFLAGS="$CPPFLAGS -DUSE_OMP"
-    CFLAGS="$CFLAGS -fopenmp"
-    CXXFLAGS="$CXXFLAGS -fopenmp"
-  fi
-])
 
 AC_ARG_WITH([m2html], AS_HELP_STRING([--with-m2html=DIR], [specify installation directory of M2HTML]), [
 M2HTML=$withval
@@ -184,6 +164,8 @@ AC_CONFIG_FILES([Makefile
                  ms_sbvar/Makefile
                  block_kalman_filter/Makefile
 	         sobol/Makefile
-		 local_state_space_iterations/Makefile])
+		 local_state_space_iterations/Makefile
+                 perfect_foresight_problem/Makefile
+                 num_procs/Makefile])
 
 AC_OUTPUT

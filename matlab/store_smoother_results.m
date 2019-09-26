@@ -102,9 +102,9 @@ end
 %% Compute constant for observables
 if options_.prefilter == 1 %as mean is taken after log transformation, no distinction is needed here
     constant_part=repmat(dataset_info.descriptive.mean',1,gend);
-elseif options_.prefilter == 0 && options_.loglinear == 1 %logged steady state must be used
+elseif options_.prefilter == 0 && options_.loglinear %logged steady state must be used
     constant_part=repmat(log(ys(bayestopt_.mfys)),1,gend);
-elseif options_.prefilter == 0 && options_.loglinear == 0 %unlogged steady state must be used
+elseif options_.prefilter == 0 && ~options_.loglinear %unlogged steady state must be used
     constant_part=repmat(ys(bayestopt_.mfys),1,gend);
 end
 
@@ -134,9 +134,9 @@ i_endo_in_dr_matrices=bayestopt_.smoother_var_list(i_endo_in_bayestopt_smoother_
 if ~isempty(options_.nk) && options_.nk ~= 0
     %% Compute constant
     i_endo_declaration_order = oo_.dr.order_var(i_endo_in_dr_matrices); %get indices of smoothed variables in name vector
-    if  options_.loglinear == 1 %logged steady state must be used
+    if  options_.loglinear %logged steady state must be used
         constant_all_variables=repmat(log(ys(i_endo_declaration_order))',[length(options_.filter_step_ahead),1,gend+max(options_.filter_step_ahead)]);
-    elseif options_.loglinear == 0 %unlogged steady state must be used
+    elseif ~options_.loglinear %unlogged steady state must be used
         constant_all_variables=repmat((ys(i_endo_declaration_order))',[length(options_.filter_step_ahead),1,gend+max(options_.filter_step_ahead)]);
     end
     % add constant

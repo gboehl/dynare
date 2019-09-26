@@ -76,7 +76,11 @@ for i=1:nvar
     SubsetOfVariables(i) = i_tmp;
 end
 
-[observable_pos,index_observables,index_subset]=intersect(SubsetOfVariables,options_.varobs_id,'stable');
+if isoctave
+    [observable_pos,index_observables,index_subset]=intersect_stable(SubsetOfVariables,options_.varobs_id);
+else
+    [observable_pos,index_observables,index_subset]=intersect(SubsetOfVariables,options_.varobs_id,'stable');
+end
 y_pos=strmatch('y',var_list_,'exact');
 y_pos_varobs=strmatch('y',options_.varobs,'exact');
 a_pos_varobs=strmatch('a',options_.varobs,'exact');
@@ -110,7 +114,11 @@ if max(abs(sum(oo_.variance_decomposition,2)-100))>2
     error(['Variance decomposition at order ',num2str(options_.order),' does not work'])
 end
 
-[observable_pos,index_observables,index_subset]=intersect(SubsetOfVariables,options_.varobs_id,'stable');
+if isoctave
+    [observable_pos,index_observables,index_subset]=intersect_stable(SubsetOfVariables,options_.varobs_id);
+else
+    [observable_pos,index_observables,index_subset]=intersect(SubsetOfVariables,options_.varobs_id,'stable');
+end
 y_pos=strmatch('y',var_list_,'exact');
 y_pos_varobs=strmatch('y',options_.varobs,'exact');
 a_pos_varobs=strmatch('a',options_.varobs,'exact');

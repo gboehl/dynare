@@ -1,16 +1,16 @@
 <a name="logo"/>
 <div align="center">
-<a href="http://www.dynare.org/" target="_blank">
-<img src="http://www.dynare.org/img/dynare.png" alt="Dynare Logo"></img>
+<a href="https://www.dynare.org/" target="_blank">
+<img src="https://www.dynare.org/assets/images/logo/dlogo.svg" alt="Dynare Logo"></img>
 </a>
 </div>
 
 # Dynare
 
-Described on the homepage: <http://www.dynare.org/>
+Described on the homepage: <https://www.dynare.org/>
 
-Most users should use the precompiled package available for your OS, also
-available via the Dynare homepage: <http://www.dynare.org/download/dynare-stable>.
+Most users should use the precompiled package available for their OS, also
+available via the Dynare homepage: <https://www.dynare.org/download/>.
 
 # Contributions
 
@@ -31,20 +31,26 @@ Here, we explain how to build from source:
 
 This source can be retrieved in three forms:
 - via git, at <https://git.dynare.org/Dynare/dynare.git>
-- using the stable source archive of the latest Dynare version (currently 4.4) from <http://www.dynare.org/download/dynare-stable/>
-- using a source snapshot of the unstable version, from <http://www.dynare.org/download/dynare-unstable/source-snapshot>
+- using the stable source archive of the latest Dynare version from <https://www.dynare.org/download/>
+- using a source snapshot of the unstable version, also from <https://www.dynare.org/download/>
 
 Note that if you obtain the source code via git, you will need to install more tools (see below).
 
 The first section of this page gives general instructions, which apply to all platforms. Then some specific platforms are discussed.
 
-**Note:** Here, when we refer to 32-bit or 64-bit, we refer to the type of MATLAB installation, not the type of Windows installation. It is perfectly possible to run a 32-bit MATLAB on a 64-bit Windows: in that case, instructions for Windows 32-bit should be followed. To determine the type of your MATLAB installation, type:
+**Note:** Here, when we refer to 32-bit or 64-bit, we refer to the type of
+MATLAB or Octave installation, not the type of operating system installation.
+For example, it is perfectly possible to run a 32-bit MATLAB on a 64-bit
+Windows: in that case, instructions for Windows 32-bit should be followed. To
+determine the type of your MATLAB/Octave installation, type:
 ```matlab
 >> computer
 ```
-at the MATLAB prompt: if it returns `PCWIN64`, `GLNX64` or `MACI64`, then you
-have a 64-bit MATLAB; if it returns `PCWIN`, `MACI` or `GLNX`, then you have a
-32-bit MATLAB.
+at the MATLAB/Octave prompt. Under MATLAB, if it returns `PCWIN64`, `GLNX64` or
+`MACI64`, then it is a 64-bit MATLAB; if it returns `PCWIN`, `MACI` or `GLNX`,
+then it is a 32-bit MATLAB. Under Octave, if it returns a string that begins
+with `x86_64`, it is a 64-bit Octave; if the strings begins with `i686`, it is
+a 32-bit Octave.
 
 **Contents**
 
@@ -60,29 +66,26 @@ have a 64-bit MATLAB; if it returns `PCWIN`, `MACI` or `GLNX`, then you have a
 A number of tools and libraries are needed in order to recompile everything. You don't necessarily need to install everything, depending on what you want to compile.
 
 - A POSIX compliant shell and an implementation of Make (mandatory)
-- The [GNU Compiler Collection](http://gcc.gnu.org/), with gcc, g++ and gfortran (mandatory)
+- The [GNU Compiler Collection](http://gcc.gnu.org/), version 8 or later, with
+  gcc, g++ and gfortran (mandatory)
 - MATLAB (if you want to compile the MEX for MATLAB)
 - [GNU Octave](http://www.octave.org), with the development headers (if you
   want to compile the MEX for Octave)
-- [Boost libraries](http://www.boost.org), version 1.36 or later (with the filesystem library compiled)
-- [Bison](http://www.gnu.org/software/bison/), version 3.0 or later (only if you get the source through Git)
+- [Boost libraries](http://www.boost.org), version 1.36 or later
+- [Bison](http://www.gnu.org/software/bison/), version 3.2 or later (only if you get the source through Git)
 - [Flex](http://flex.sourceforge.net/), version 2.5.4 or later (only if you get the source through Git)
-- [Autoconf](http://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git) (see [Installing an updated version of Autoconf in your own directory, in GNU/Linux](http://www.dynare.org/DynareWiki/AutoMake))
-- [Automake](http://www.gnu.org/software/automake/), version 1.11.2 or later (only if you get the source through Git) (see [Installing an updated version of AutoMake in your own directory, in GNU/Linux](http://www.dynare.org/DynareWiki/AutoMake))
-- [CWEB](http://www-cs-faculty.stanford.edu/%7Eknuth/cweb.html), with its tools
-  `ctangle` and `cweave` (only if you want to build the k-order DLL or Dynare++, and get the source through Git)
+- [Autoconf](http://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git)
+- [Automake](http://www.gnu.org/software/automake/), version 1.11.2 or later (only if you get the source through Git)
 - An implementation of BLAS and LAPACK: either [ATLAS](http://math-atlas.sourceforge.net/), [OpenBLAS](http://xianyi.github.com/OpenBLAS/), Netlib ([BLAS](http://www.netlib.org/blas/), [LAPACK](http://www.netlib.org/lapack/)) or [MKL](http://software.intel.com/en-us/intel-mkl/) (only if you want to build Dynare++)
-- An implementation of [POSIX Threads](http://en.wikipedia.org/wiki/POSIX_Threads) (optional, for taking advantage of multi-core)
-- [MAT File I/O library](http://sourceforge.net/projects/matio/) (if you want to compile Markov-Switching code, the estimation DLL, k-order DLL and Dynare++)
+- [MAT File I/O library](http://sourceforge.net/projects/matio/), version 1.5 or later (if you want to compile Markov-Switching code, the estimation DLL, k-order DLL and Dynare++)
 - [SLICOT](http://www.slicot.org) (if you want to compile the Kalman steady state DLL)
 - [GSL library](http://www.gnu.org/software/gsl/) (if you want to compile Markov-Switching code)
-- A decent LaTeX distribution (if you want to compile PDF documentation). The following extra components may be needed:
-  - [Eplain](http://www.tug.org/eplain/) TeX macros (only if you want to build Dynare++ source documentation)
-  - [Beamer](http://latex-beamer.sourceforge.net/) (for some PDF presentations)
+- A decent LaTeX distribution (if you want to compile PDF documentation),
+  ideally with Beamer
 - For building the reference manual:
-  - [GNU Texinfo](http://www.gnu.org/software/texinfo/)
-  - [Latex2HTML](http://www.latex2html.org), if you want nice mathematical formulas in HTML output
-  - [Doxygen](http://www.stack.nl/%7Edimitri/doxygen/) (if you want to build Dynare preprocessor source documentation)
+  - [Sphinx](http://www.sphinx-doc.org/)
+  - [MathJax](https://www.mathjax.org/)
+- [Doxygen](http://www.stack.nl/%7Edimitri/doxygen/) (if you want to build Dynare preprocessor source documentation)
 - For Octave, the development libraries corresponding to the UMFPACK packaged with Octave
 
 ### Preparing the sources
@@ -91,7 +94,7 @@ If you have downloaded the sources from an official source archive or the source
 
 If you want to use Git, do the following from a terminal:
 
-    git clone --recursive https://git.dynare.org/Dynare/dynare.git
+    git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git
     cd dynare
     autoreconf -si
 
@@ -105,28 +108,39 @@ Simply launch the configure script from a terminal:
 ```
 If you have MATLAB, you need to indicate both the MATLAB location and version. For example, on GNU/Linux:
 ```
-./configure --with-matlab=/usr/local/MATLAB/R2013a MATLAB_VERSION=8.1
+./configure --with-matlab=/usr/local/MATLAB/R2019a MATLAB_VERSION=9.6
 ```
-Note that the MATLAB version can also be specified via the MATLAB family product release (R2009a, R2008b, ...).
+Note that the MATLAB version can also be specified via the MATLAB family product release (R2019a, R2018b, …).
 
 Alternatively, you can disable the compilation of MEX files for MATLAB with the `--disable-matlab` flag, and MEX files for Octave with `--disable-octave`.
 
-You may need to specify additional options to the configure script, see the platform specific instructions below.
+You may need to specify additional options to the configure script, see the
+output of the `--help` option, and also the platform specific instructions
+below.
 
 Note that if you don't want to compile the C/C++ programs with debugging information, you can specify the `CFLAGS` and `CXXFLAGS` variables to the configure script, such as:
 ```
 ./configure CFLAGS="-O3" CXXFLAGS="-O3"
 ```
-To remove debugging information for MATLAB MEX functions, the analagous call would be:
+To remove debugging information for MATLAB MEX functions, the analogous call would be:
 ```
 ./configure MATLAB_MEX_CFLAGS="-O3" MATLAB_MEX_CXXFLAGS="-O3"
 ```
 
-If you want to give a try to the parallelized versions of some mex files (`A_times_B_kronecker_C` and `sparse_hessian_times_B_kronecker_C` used to get the reduced form of the second order approximation of the model) you can add the `--enable-openmp` flag, for instance:
+If the configuration goes well, the script will tell you which components are
+correctly configured and will be built.
+
+Note that it is possible that some MEX files cannot be compiled, due to missing
+build dependencies. If you find no way of installing the missing dependencies,
+a workaround can be to give up on compiling these MEX files and rather use
+slower implementations (in the MATLAB/Octave language) that are available under
+the `matlab/missing/mex/` subdirectories. For example, if you fail to compile
+the gensylv MEX, you can type the following at the MATLAB/Octave prompt before
+running Dynare:
+```matlab
+addpath <DYNARE_ROOT>/matlab/missing/mex/gensylv
 ```
-./configure --with-matlab=/usr/local/MATLAB/R2013a MATLAB_VERSION=8.1 --enable-openmp
-```
-If the configuration goes well, the script will tell you which components are correctly configured and will be built.
+(where you need to replace `<DYNARE_ROOT>` with the full path to your Dynare copy).
 
 ### Building
 
@@ -154,7 +168,7 @@ The Git source comes with unit tests (in the MATLAB functions) and integration t
 make check
 ```
 In the `tests` subfolder. If Dynare has been compiled against MATLAB and Octave, the tests will be run with MATLAB and Octave. Depending on
-your PC, this can take several hours. It is possible to run the tests only with MATLAB:
+the performance of your machine, this can take several hours. It is possible to run the tests only with MATLAB:
 ```
 make check-matlab
 ```
@@ -205,7 +219,7 @@ All the prerequisites are packaged:
 - `build-essential` (for gcc, g++ and make)
 - `gfortran`
 - `liboctave-dev`
-- `libboost-graph-dev` and `libboost-filesystem-dev`
+- `libboost-graph-dev`
 - `libgsl-dev`
 - `libmatio-dev`
 - `libslicot-dev` and `libslicot-pic`
@@ -216,25 +230,25 @@ All the prerequisites are packaged:
 - `automake`
 - `texlive`
 - `texlive-publishers` (for Econometrica bibliographic style)
-- `texlive-extra-utils` (for CWEB)
-- `texlive-formats-extra` (for Eplain)
 - `texlive-latex-extra` (for fullpage.sty)
 - `texlive-fonts-extra` (for ccicons)
 - `texlive-latex-recommended`
 - `texlive-science` (for amstex)
-- `texinfo`
+- `texlive-generic-extra` (for Sphinx)
 - `lmodern` (for macroprocessor PDF)
-- `latex2html`
+- `python3-sphinx`
+- `libjs-mathjax`
 - `doxygen`
 
 You can install them all at once with:
 ```
-apt install build-essential gfortran liboctave-dev libboost-graph-dev libboost-filesystem-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-extra-utils texlive-formats-extra texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texinfo lmodern latex2html doxygen
+apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-generic-extra lmodern python3-sphinx libjs-mathjax doxygen
 ```
 
 ## Windows
 
-- Install [MSYS2](http://www.msys2.org) (pick the 64-bit version)
+- Install [MSYS2](http://www.msys2.org) (pick the 64-bit version, unless you
+  have a 32-bit Windows, in which case see below)
 - Run a MSYS MinGW 64-bit shell
 - Update the system:
 ```
@@ -246,18 +260,6 @@ pacman -Syu
 - Install all needed dependencies:
 ```
 pacman -S git autoconf automake-wrapper bison flex make tar texinfo mingw-w64-x86_64-gcc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-boost mingw-w64-x86_64-gsl mingw-w64-x86_64-matio mingw-w64-x86_64-openblas
-```
-- **(Optional)** compile and install `ctangle`, needed for the k-order MEX file and for
-   Dynare++ (*i.e.* if you want to solve models at order ≥ 3)
-```
-wget ftp://ftp.cs.stanford.edu/pub/cweb/cweb.tar.gz
-mkdir cweb
-cd cweb
-tar xf ../cweb.tar.gz
-make ctangle
-mkdir -p /usr/local/bin
-cp ctangle.exe /usr/local/bin/
-cd ..
 ```
 - **(Optional)** compile and install SLICOT, needed for the `kalman_steady_state`
   MEX file
@@ -272,13 +274,13 @@ cd ..
 ```
 - Clone and prepare the Dynare sources:
 ```
-git clone --recursive https://git.dynare.org/Dynare/dynare.git
+git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git
 cd dynare
 autoreconf -si
 ```
 - Configure Dynare:
 ```
-./configure --with-boost-system=boost_system-mt --with-boost-filesystem=boost_filesystem-mt --with-slicot=/usr/local --with-matlab=<…> MATLAB_VERSION=<…> --disable-octave
+./configure --with-slicot=/usr/local --with-matlab=<…> MATLAB_VERSION=<…> --disable-octave
 ```
 where the path and version of MATLAB are specified. Note that you should use
 the MSYS2 notation and not put spaces in the MATLAB path, so you probably want
@@ -306,10 +308,10 @@ currently not supported.
 ## macOS
 
 To simply use a snapshot of Dynare, you have two choices. On MATLAB, you can
-use the [snapshot build](http://www.dynare.org/snapshot/macosx/) provided by
+use the [snapshot build](https://www.dynare.org/snapshot/macos/) provided by
 Dynare. On Octave, you can simply install [Homebrew](https://brew.sh/) and run
 ```brew install dynare --HEAD``` (See the Install Dynare (unstable) section of
-[this webpage](http://www.dynare.org/DynareWiki/InstallOnMacOSX) for more
+[this webpage](https://archives.dynare.org/DynareWiki/InstallOnMacOSX) for more
 details).
 
 If you do not wish to use the snapshots provided by Dynare or Homebrew, follow
@@ -327,9 +329,6 @@ compile. They should be entered at the command prompt in Terminal.app.
 - `brew install automake bison flex boost fftw gcc gsl hdf5 libmatio metis veclibfort`
 - **(Optional)** To compile Dynare mex files for use on Octave:
     - `brew install octave`
-    - `brew install suite-sparse`
-- **(Optional)** To compile Dynare++
-    - `brew install cweb`
 - **(Optional)** To compile Dynare documentation
      - Install the latest version of [MacTeX](http://www.tug.org/mactex/), deselecting the option to install Ghostscript
      - `brew install doxygen latex2html`
@@ -338,13 +337,13 @@ The following commands will download the Dynare source code and compile
 it. They should be entered at the command prompt in Terminal.app from the
 folder where you want Dynare installed.
 
-- `git clone https://git.dynare.org/Dynare/dynare.git`
+- `git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git`
 - `cd dynare`
 - `PATH="/usr/local/opt/bison/bin:/usr/local/opt/flex/bin:$PATH"`
 - `autoreconf -si`
-- `./configure --disable-octave --with-matlab=/Applications/MATLAB_R2017b.app MATLAB_VERSION=R2017b`, adjusting the MATLAB path and version to accord with your local installation. If you don't have MATLAB, simply type `./configure --disable-octave`
+- `CC=gcc-9 CXX=g++-9 ./configure --disable-octave --with-matlab=/Applications/MATLAB_R2019a.app MATLAB_VERSION=R2019a --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local`, adjusting the MATLAB path and version to accord with your local installation. If you don't have MATLAB, simply remove `--with-matlab=/Applications/MATLAB_R2019a.app MATLAB_VERSION=R2019a` from the above command
 - `make -j`
 - **(Optional)** To then build mex files for Octave, run
      - `cd mex/build/octave`
-     - `./configure CXXFLAGS="-std=c++0x"`
+     - `CC=gcc-9 CXX=g++-9 ./configure --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local LDFLAGS=-L/usr/local/lib`
      - `make -j`

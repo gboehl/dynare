@@ -87,7 +87,11 @@ MaXNumberOfDecompLines = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPer
 
 ME_present=0;
 if ~all(M_.H==0)
-    [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
+    if isoctave || matlab_ver_less_than('8.1')
+        [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
+    else
+        [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
+    end
     if ~isempty(observable_pos_requested_vars)
         ME_present=1;
         nobs_ME=length(observable_pos_requested_vars);
@@ -137,6 +141,7 @@ for file = 1:NumberOfDrawsFiles
         linea = linea+1;
         linea_ME = linea_ME+1;
         if isdrsaved
+            M_=set_parameters_locally(M_,pdraws{linee,1});% Needed to update the covariance matrix of the state innovations.
             dr = pdraws{linee,2};
         else
             M_=set_parameters_locally(M_,pdraws{linee,1});

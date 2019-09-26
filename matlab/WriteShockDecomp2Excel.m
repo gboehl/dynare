@@ -114,10 +114,15 @@ for j=1:nvar
     end
 
     warning off
-    if ~ismac
+    try
         [STATUS,MESSAGE] = xlswrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
-    else
-        [STATUS] = xlwrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
+    catch
+        if exist('xlwrite.m','file')
+            [STATUS] = xlwrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
+        else
+            fprintf('\nWriteShockDecomp2Excel: could not write Excel file. It seems Excel is not installed on your machine.\n')
+            fprintf('Please install the free xlwrite.m from https://mathworks.com/matlabcentral/fileexchange/38591-xlwrite-generate-xls-x-files-without-excel-on-mac-linux-win\n')
+        end
     end
     warning on
 

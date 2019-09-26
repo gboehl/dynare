@@ -180,7 +180,7 @@ if options_.loglinear && isfield(oo_.dr,'ys') && options_.logged_steady_state==0
     options_.logged_steady_state=1; %set option for use in stoch_simul
 end
 
-if ~isdiagonal(M_.Sigma_e)
+if ~isdiag(M_.Sigma_e)
     warning(sprintf('The innovations are correlated (the covariance matrix has non zero off diagonal elements), the results of the conditional forecasts will\ndepend on the ordering of the innovations (as declared after varexo) because a Cholesky decomposition is used to factorize the covariance matrix.\n\n=> It is preferable to declare the correlations in the model block (explicitly imposing the identification restrictions), unless you are satisfied\nwith the implicit identification restrictions implied by the Cholesky decomposition.'))
     sQ = chol(M_.Sigma_e,'lower');
 else
@@ -265,13 +265,21 @@ forecasts.instruments = options_cond_fcst.controlled_varexo;
 
 for i = 1:EndoSize
     forecasts.cond.Mean.(M_.endo_names{oo_.dr.order_var(i)}) = mFORCS1(i,:)';
-    tmp = sort(squeeze(FORCS1(i,:,:))');
+    if size(FORCS1,2)>1
+        tmp = sort(squeeze(FORCS1(i,:,:))');
+    else
+        tmp = sort(squeeze(FORCS1(i,:,:)));        
+    end
     forecasts.cond.ci.(M_.endo_names{oo_.dr.order_var(i)}) = [tmp(t1,:)' ,tmp(t2,:)' ]';
 end
 
 for i = 1:n1
     forecasts.controlled_exo_variables.Mean.(options_cond_fcst.controlled_varexo{i}) = mFORCS1_shocks(i,:)';
-    tmp = sort(squeeze(FORCS1_shocks(i,:,:))');
+    if size(FORCS1_shocks,2)>1
+        tmp = sort(squeeze(FORCS1_shocks(i,:,:))');
+    else
+        tmp = sort(squeeze(FORCS1_shocks(i,:,:)));        
+    end
     forecasts.controlled_exo_variables.ci.(options_cond_fcst.controlled_varexo{i}) = [tmp(t1,:)' ,tmp(t2,:)' ]';
 end
 
@@ -290,7 +298,11 @@ mFORCS2 = mean(FORCS2,3);
 
 for i = 1:EndoSize
     forecasts.uncond.Mean.(M_.endo_names{oo_.dr.order_var(i)})= mFORCS2(i,:)';
-    tmp = sort(squeeze(FORCS2(i,:,:))');
+    if size(FORCS2,2)>1
+        tmp = sort(squeeze(FORCS2(i,:,:))');
+    else
+        tmp = sort(squeeze(FORCS2(i,:,:)));
+    end
     forecasts.uncond.ci.(M_.endo_names{oo_.dr.order_var(i)}) = [tmp(t1,:)' ,tmp(t2,:)' ]';
 end
 forecasts.graph.title = graph_title;

@@ -1,3 +1,0 @@
-# This file is processed by the configure script to create dynare-version.nsi
-
-!define VERSION "@PACKAGE_VERSION@"

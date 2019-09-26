@@ -44,8 +44,8 @@ histval;
 end;
 
 shocks;
-    var e_x = 0.005;
-    var e_n = 0.001;
+    var e_x = 0;
+    var e_n = 0;
 end;
 
-simulations = simul_backward_model([], 5000);
+simulations = simul_backward_model([], 500);

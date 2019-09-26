@@ -11,7 +11,7 @@ function oo_=disp_moments(y,var_list,M_,options_,oo_)
 % OUTPUTS
 %   oo_                 [structure]    Dynare's results structure,
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,7 +50,11 @@ y = y(ivar,options_.drop+1:end)';
 
 ME_present=0;
 if ~all(M_.H==0)
-    [observable_pos_requested_vars, index_subset, index_observables] = intersect(ivar, options_.varobs_id, 'stable');
+    if isoctave || matlab_ver_less_than('8.1')
+        [observable_pos_requested_vars, index_subset, index_observables] = intersect_stable(ivar, options_.varobs_id);
+    else
+        [observable_pos_requested_vars, index_subset, index_observables] = intersect(ivar, options_.varobs_id, 'stable');
+    end
     if ~isempty(observable_pos_requested_vars)
         ME_present=1;
         i_ME = setdiff([1:size(M_.H,1)],find(diag(M_.H) == 0)); % find ME with 0 variance
@@ -82,7 +86,7 @@ oo_.kurtosis = (mean(y.^4)./(s2.*s2)-3)';
 labels = M_.endo_names(ivar);
 labels_TeX = M_.endo_names_tex(ivar);
 
-if options_.nomoments == 0
+if ~options_.nomoments
     z = [ m' s' s2' (mean(y.^3)./s2.^1.5)' (mean(y.^4)./(s2.*s2)-3)' ];
     title='MOMENTS OF SIMULATED VARIABLES';
     title=add_filter_subtitle(title, options_);
@@ -93,12 +97,12 @@ if options_.nomoments == 0
     end
 end
 
-if options_.nocorr == 0
+if ~options_.nocorr
     corr = (y'*y/size(y,1))./(s'*s);
     if options_.contemporaneous_correlation
         oo_.contemporaneous_correlation = corr;
     end
-    if options_.noprint == 0
+    if ~options_.noprint
         title = 'CORRELATION OF SIMULATED VARIABLES';
         title=add_filter_subtitle(title,options_);
         headers = vertcat('VARIABLE', M_.endo_names(ivar));
@@ -111,7 +115,7 @@ if options_.nocorr == 0
     end
 end
 
-if options_.noprint == 0 && length(options_.conditional_variance_decomposition)
+if ~options_.noprint && length(options_.conditional_variance_decomposition)
     fprintf('\nSTOCH_SIMUL: conditional_variance_decomposition requires theoretical moments, i.e. periods=0.\n')
 end
 
@@ -122,7 +126,7 @@ if ar > 0
         oo_.autocorr{i} = y(ar+1:end,:)'*y(ar+1-i:end-i,:)./((size(y,1)-ar)*std(y(ar+1:end,:))'*std(y(ar+1-i:end-i,:)));
         autocorr = [ autocorr diag(oo_.autocorr{i}) ];
     end
-    if options_.noprint == 0
+    if ~options_.noprint
         title = 'AUTOCORRELATION OF SIMULATED VARIABLES';
         title=add_filter_subtitle(title,options_);
         headers = vertcat('VARIABLE', cellstr(int2str([1:ar]')));
@@ -162,7 +166,7 @@ if ~options_.nodecomposition
             temp_shock_mat=zeros(size(shock_mat));
             temp_shock_mat(:,i_exo_var(shock_iter))=shock_mat(:,i_exo_var(shock_iter));
             temp_shock_mat(:,i_exo_var) = temp_shock_mat(:,i_exo_var)*chol_S;
-            y_sim_one_shock = simult_(y0,oo_.dr,temp_shock_mat,options_.order);
+            y_sim_one_shock = simult_(M_,options_,y0,oo_.dr,temp_shock_mat,options_.order);
             y_sim_one_shock=y_sim_one_shock(ivar,1+options_.drop+1:end)';
             y_sim_one_shock=get_filtered_time_series(y_sim_one_shock,mean(y_sim_one_shock),options_);
             oo_.variance_decomposition(:,i_exo_var(shock_iter))=var(y_sim_one_shock)./s2*100;            

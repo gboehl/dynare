@@ -1,7 +1,7 @@
 function [nodes,weights,nnodes] = setup_integration_nodes(EpOptions,pfm)
 if EpOptions.stochastic.order
     % Compute weights and nodes for the stochastic version of the extended path.
-    switch EpOptions.IntegrationAlgorithm
+    switch EpOptions.stochastic.IntegrationAlgorithm
       case 'Tensor-Gaussian-Quadrature'
         % Get the nodes and weights from a univariate Gauss-Hermite quadrature.
         [nodes0,weights0] = gauss_hermite_weights_and_nodes(EpOptions.stochastic.quadrature.nodes);
@@ -28,7 +28,7 @@ if EpOptions.stochastic.order
         nnodes = length(weights);
       case 'Unscented'
         p = pfm.number_of_shocks;
-        k = EpOptions.ut.k;
+        k = 3;%EpOptions.ut.k;
         C = sqrt(pfm.number_of_shocks + k)*pfm.Omega';
         nodes = [zeros(1,p); -C; C];
         weights = [k/(p+k); (1/(2*(p+k)))*ones(2*p,1)];

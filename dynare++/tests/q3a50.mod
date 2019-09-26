@@ -1,4 +1,3 @@
-periods 5000;
 var c,a1,k1,a2,k2,a3,k3,a4,k4,a5,k5,a6,k6,a7,k7,a8,k8,a9,k9,a10,k10,a11,k11,a12,k12,a13,k13,a14,k14,a15,k15,a16,k16,a17,k17,a18,k18,a19,k19,a20,k20,a21,k21,a22,k22,a23,k23,a24,k24,a25,k25,a26,k26,a27,k27,a28,k28,a29,k29,a30,k30,a31,k31,a32,k32,a33,k33,a34,k34,a35,k35,a36,k36,a37,k37,a38,k38,a39,k39,a40,k40,a41,k41,a42,k42,a43,k43,a44,k44,a45,k45,a46,k46,a47,k47,a48,k48,a49,k49,a50,k50;
 varexo e,e1,e2,e3,e4,e5,e6,e7,e8,e9,e10,e11,e12,e13,e14,e15,e16,e17,e18,e19,e20,e21,e22,e23,e24,e25,e26,e27,e28,e29,e30,e31,e32,e33,e34,e35,e36,e37,e38,e39,e40,e41,e42,e43,e44,e45,e46,e47,e48,e49,e50;
 parameters beta, gamma, phi, delta, alpha, rho, zeta, sigma, N;

@@ -23,7 +23,7 @@ function myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 %
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright (C) 2006-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -70,10 +70,8 @@ NumberOfIRFfiles_dsgevar=myinputs.NumberOfIRFfiles_dsgevar;
 ifil2=myinputs.ifil2;
 
 if options_.dsge_var
-    gend=myinputs.gend;
     nvobs=myinputs.nvobs;
     NumberOfParametersPerEquation = myinputs.NumberOfParametersPerEquation;
-    NumberOfLags = myinputs.NumberOfLags;
     NumberOfLagsTimesNvobs = myinputs.NumberOfLagsTimesNvobs;
     Companion_matrix = myinputs.Companion_matrix;
     stock_irf_bvardsge = zeros(options_.irf,nvobs,M_.exo_nbr,MAX_nirfs_dsgevar);
@@ -178,9 +176,9 @@ while fpar<B
     for i=irf_shocks_indx
         if SS(i,i) > 1e-13
             if options_.order>1 && options_.relative_irf % normalize shock to 0.01 before IRF generation for GIRFs; multiply with 100 later
-                y=irf(dr,SS(M_.exo_names_orig_ord,i)./SS(i,i)/100, options_.irf, options_.drop,options_.replic,options_.order);
+                y=irf(M_,options_,dr,SS(M_.exo_names_orig_ord,i)./SS(i,i)/100, options_.irf, options_.drop,options_.replic,options_.order);
             else
-                y=irf(dr,SS(M_.exo_names_orig_ord,i), options_.irf, options_.drop,options_.replic,options_.order);
+                y=irf(M_,options_,dr,SS(M_.exo_names_orig_ord,i), options_.irf, options_.drop,options_.replic,options_.order);
             end
             if options_.relative_irf && options_.order==1 %multiply with 100 for backward compatibility
                 y = 100*y/SS(i,i);
@@ -194,7 +192,7 @@ while fpar<B
     end
     if MAX_nirfs_dsgevar
         IRUN = IRUN+1;
-        [fval,info,~,~,~,~,~,PHI,SIGMAu,iXX] =  dsge_var_likelihood(deep',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+        [~,~,~,~,~,~,~,PHI,SIGMAu,iXX] =  dsge_var_likelihood(deep',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
         dsge_prior_weight = M_.params(strmatch('dsge_prior_weight', M_.param_names));
         DSGE_PRIOR_WEIGHT = floor(dataset_.nobs*(1+dsge_prior_weight));
         SIGMA_inv_upper_chol = chol(inv(SIGMAu*dataset_.nobs*(dsge_prior_weight+1)));
@@ -216,7 +214,7 @@ while fpar<B
         if dsge_prior_weight > 0
             Atheta(oo_.dr.order_var,M_.exo_names_orig_ord) = oo_.dr.ghu*sqrt(M_.Sigma_e);
             A0 = Atheta(bayestopt_.mfys,:);
-            [OMEGAstar,SIGMAtr] = qr2(A0');
+            OMEGAstar = qr2(A0');
         end
         SIGMAu_chol = chol(SIGMAu_draw)';
         SIGMAtrOMEGA = SIGMAu_chol*OMEGAstar';
@@ -239,15 +237,12 @@ while fpar<B
             stock_irf_bvardsge(:,:,:,IRUN) = reshape(tmp_dsgevar,options_.irf,dataset_.vobs,M_.exo_nbr);
         else
             stock_irf_bvardsge(:,:,:,IRUN) = reshape(tmp_dsgevar,options_.irf,dataset_.vobs,M_.exo_nbr);
-            instr = [MhDirectoryName '/' M_.fname '_irf_bvardsge' ...
-                     int2str(NumberOfIRFfiles_dsgevar) '.mat stock_irf_bvardsge;'];
-            eval(['save ' instr]);
+            save([MhDirectoryName '/' M_.fname '_irf_bvardsge' int2str(NumberOfIRFfiles_dsgevar) '.mat'], 'stock_irf_bvardsge');
             if RemoteFlag==1
                 OutputFileName_bvardsge = [OutputFileName_bvardsge; {[MhDirectoryName filesep], [M_.fname '_irf_bvardsge' int2str(NumberOfIRFfiles_dsgevar) '.mat']}];
             end
             NumberOfIRFfiles_dsgevar = NumberOfIRFfiles_dsgevar+1;
             IRUN =0;
-            stock_irf_dsgevar = zeros(options_.irf,dataset_.vobs,M_.exo_nbr,MAX_nirfs_dsgevar);
         end
     end
     if irun == MAX_nirfs_dsge || irun == B || fpar == B
@@ -255,9 +250,7 @@ while fpar<B
             stock_irf_dsge = stock_irf_dsge(:,:,:,1:irun);
             if MAX_nirfs_dsgevar && (fpar == B || IRUN == B)
                 stock_irf_bvardsge = stock_irf_bvardsge(:,:,:,1:IRUN);
-                instr = [MhDirectoryName '/' M_.fname '_irf_bvardsge' ...
-                         int2str(NumberOfIRFfiles_dsgevar) '.mat stock_irf_bvardsge;'];
-                eval(['save ' instr]);
+                save([MhDirectoryName '/' M_.fname '_irf_bvardsge' int2str(NumberOfIRFfiles_dsgevar) '.mat'], 'stock_irf_bvardsge');
                 NumberOfIRFfiles_dsgevar = NumberOfIRFfiles_dsgevar+1;
                 if RemoteFlag==1
                     OutputFileName_bvardsge = [OutputFileName_bvardsge; {[MhDirectoryName filesep], [M_.fname '_irf_bvardsge' int2str(NumberOfIRFfiles_dsgevar) '.mat']}];

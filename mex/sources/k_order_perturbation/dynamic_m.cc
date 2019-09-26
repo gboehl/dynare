@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Dynare Team
+ * Copyright © 2010-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -17,43 +17,131 @@
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+#include <cassert>
+
+#include "dynare_exception.hh"
+
 #include "dynamic_m.hh"
 
-DynamicModelMFile::DynamicModelMFile(const string &modName) noexcept(false) :
+DynamicModelMFile::DynamicModelMFile(const std::string &modName, int ntt_arg) :
+  DynamicModelAC(ntt_arg),
   DynamicMFilename{modName + ".dynamic"}
 {
 }
 
 void
-DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
-                        Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false)
+DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix &tdm)
 {
-  mxArray *prhs[nrhs_dynamic], *plhs[nlhs_dynamic];
+  int totalCols = mxGetN(sparseMat);
+  mwIndex *rowIdxVector = mxGetIr(sparseMat);
+  mwSize sizeRowIdxVector = mxGetNzmax(sparseMat);
+  mwIndex *colIdxVector = mxGetJc(sparseMat);
 
-  prhs[0] = mxCreateDoubleMatrix(y.length(), 1, mxREAL);
-  prhs[1] = mxCreateDoubleMatrix(1, x.length(), mxREAL);
-  prhs[2] = mxCreateDoubleMatrix(modParams.length(), 1, mxREAL);
-  prhs[3] = mxCreateDoubleMatrix(ySteady.length(), 1, mxREAL);
-  prhs[4] = mxCreateDoubleScalar(1.0);
+  assert(tdm.ncols() == 3);
+  assert(tdm.nrows() == sizeRowIdxVector);
 
-  memcpy(mxGetData(prhs[0]), (void *) y.base(), y.length()*sizeof(double));
-  memcpy(mxGetData(prhs[1]), (void *) x.base(), x.length()*sizeof(double));
-  memcpy(mxGetData(prhs[2]), (void *) modParams.base(), modParams.length()*sizeof(double));
-  memcpy(mxGetData(prhs[3]), (void *) ySteady.base(), ySteady.length()*sizeof(double));
+  double *ptr = mxGetPr(sparseMat);
 
-  int retVal = mexCallMATLAB(nlhs_dynamic, plhs, nrhs_dynamic, prhs, DynamicMFilename.c_str());
-  if (retVal != 0)
-    throw DynareException(__FILE__, __LINE__, "Trouble calling " + DynamicMFilename);
+  int rind = 0;
+  int output_row = 0;
 
-  residual = Vector(mxGetPr(plhs[0]), residual.skip(), (int) mxGetM(plhs[0]));
-  copyDoubleIntoTwoDMatData(mxGetPr(plhs[1]), g1, (int) mxGetM(plhs[1]), (int) mxGetN(plhs[1]));
-  if (g2 != nullptr)
-    unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[2], g2);
-  if (g3 != nullptr)
-    unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[3], g3);
+  for (int i = 0; i < totalCols; i++)
+    for (int j = 0; j < static_cast<int>((colIdxVector[i+1]-colIdxVector[i])); j++, rind++)
+      {
+        tdm.get(output_row, 0) = rowIdxVector[rind] + 1;
+        tdm.get(output_row, 1) = i + 1;
+        tdm.get(output_row, 2) = ptr[rind];
+        output_row++;
+      }
 
-  for (int i = 0; i < nrhs_dynamic; i++)
-    mxDestroyArray(prhs[i]);
-  for (int i = 0; i < nlhs_dynamic; i++)
-    mxDestroyArray(plhs[i]);
+  /* If there are less elements than Nzmax (that might happen if some
+     derivative is symbolically not zero but numerically zero at the evaluation
+     point), then fill in the matrix with empty entries, that will be
+     recognized as such by KordpDynare::populateDerivativesContainer() */
+  while (output_row < static_cast<int>(sizeRowIdxVector))
+    {
+      tdm.get(output_row, 0) = 0;
+      tdm.get(output_row, 1) = 0;
+      tdm.get(output_row, 2) = 0;
+      output_row++;
+    }
+}
+
+void
+DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
+                        Vector &residual, std::vector<TwoDMatrix> &md) noexcept(false)
+{
+  mxArray *T_m = mxCreateDoubleMatrix(ntt, 1, mxREAL);
+
+  mxArray *y_m = mxCreateDoubleMatrix(y.length(), 1, mxREAL);
+  std::copy_n(y.base(), y.length(), mxGetPr(y_m));
+
+  mxArray *x_m = mxCreateDoubleMatrix(1, x.length(), mxREAL);
+  std::copy_n(x.base(), x.length(), mxGetPr(x_m));
+
+  mxArray *params_m = mxCreateDoubleMatrix(modParams.length(), 1, mxREAL);
+  std::copy_n(modParams.base(), modParams.length(), mxGetPr(params_m));
+
+  mxArray *steady_state_m = mxCreateDoubleMatrix(ySteady.length(), 1, mxREAL);
+  std::copy_n(ySteady.base(), ySteady.length(), mxGetPr(steady_state_m));
+
+  mxArray *it_m = mxCreateDoubleScalar(1.0);
+  mxArray *T_flag_m = mxCreateLogicalScalar(false);
+
+  {
+    // Compute temporary terms (for all orders)
+    std::string funcname = DynamicMFilename + "_g" + std::to_string(md.size()) + "_tt";
+    mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m, steady_state_m, it_m };
+
+    int retVal = mexCallMATLAB(1, plhs, 6, prhs, funcname.c_str());
+    if (retVal != 0)
+      throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
+
+    mxDestroyArray(T_m);
+    T_m = plhs[0];
+  }
+
+  {
+    // Compute residuals
+    std::string funcname = DynamicMFilename + "_resid";
+    mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m, steady_state_m, it_m, T_flag_m };
+
+    int retVal = mexCallMATLAB(1, plhs, 7, prhs, funcname.c_str());
+    if (retVal != 0)
+      throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
+
+    residual = Vector{plhs[0]};
+    mxDestroyArray(plhs[0]);
+  }
+
+  for (size_t i = 1; i <= md.size(); i++)
+    {
+      // Compute model derivatives
+      std::string funcname = DynamicMFilename + "_g" + std::to_string(i);
+      mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m, steady_state_m, it_m, T_flag_m };
+
+      int retVal = mexCallMATLAB(1, plhs, 7, prhs, funcname.c_str());
+      if (retVal != 0)
+        throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
+
+      if (i == 1)
+        {
+          assert(static_cast<int>(mxGetM(plhs[0])) == md[i-1].nrows());
+          assert(static_cast<int>(mxGetN(plhs[0])) == md[i-1].ncols());
+          std::copy_n(mxGetPr(plhs[0]), mxGetM(plhs[0])*mxGetN(plhs[0]), md[i-1].base());
+        }
+      else
+        unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[0], md[i-1]);
+
+      mxDestroyArray(plhs[0]);
+    }
+
+  mxDestroyArray(T_m);
+  mxDestroyArray(y_m);
+  mxDestroyArray(x_m);
+  mxDestroyArray(params_m);
+  mxDestroyArray(steady_state_m);
+  mxDestroyArray(it_m);
+  mxDestroyArray(T_flag_m);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2014 Dynare Team
+ * Copyright © 2010-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -20,15 +20,18 @@
 #ifndef _DYNAMICMODELAC_HH
 #define _DYNAMICMODELAC_HH
 
-#include "k_ord_dynare.hh"
+#include <vector>
+
+#include "twod_matrix.hh"
 
 class DynamicModelAC
 {
+protected:
+  int ntt; // Size of vector of temporary terms
 public:
+  DynamicModelAC(int ntt_arg) : ntt{ntt_arg} {};
   virtual ~DynamicModelAC() = default;
-  static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix *tdm);
-  static void copyDoubleIntoTwoDMatData(double *dm, TwoDMatrix *tdm, int rows, int cols);
   virtual void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
-                    Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false) = 0;
+                    Vector &residual, std::vector<TwoDMatrix> &md) = 0;
 };
 #endif

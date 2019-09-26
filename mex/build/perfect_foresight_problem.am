@@ -1,0 +1,16 @@
+mex_PROGRAMS = perfect_foresight_problem
+
+TOPDIR = $(top_srcdir)/../../sources/perfect_foresight_problem
+
+nodist_perfect_foresight_problem_SOURCES = perfect_foresight_problem.cc DynamicModelCaller.cc
+
+perfect_foresight_problem_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR)
+perfect_foresight_problem_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
+perfect_foresight_problem_LDFLAGS = $(AM_LDFLAGS) $(OPENMP_LDFLAGS)
+perfect_foresight_problem_LDADD = $(LIBADD_DLOPEN)
+
+BUILT_SOURCES = $(nodist_perfect_foresight_problem_SOURCES)
+CLEANFILES = $(nodist_perfect_foresight_problem_SOURCES)
+
+%.cc: $(TOPDIR)/%.cc
+	$(LN_S) -f $< $@

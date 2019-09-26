@@ -86,8 +86,6 @@ order_var = dr.order_var;
 endo_nbr = M.endo_nbr;
 exo_nbr = M.exo_nbr;
 
-M.var_order_endo_names = M.endo_names(dr.order_var);
-
 [~,dr.i_fwrd_g,i_fwrd_f] = find(lead_lag_incidence(3,order_var));
 dr.i_fwrd_f = i_fwrd_f;
 nd = nnz(lead_lag_incidence) + M.exo_nbr;
@@ -185,7 +183,6 @@ else
         print_info(info,options.noprint,options);
     end
     dr = dyn_second_order_solver(d1,d2,dr,M,...
-                                 options.threads.kronecker.A_times_B_kronecker_C,...
                                  options.threads.kronecker.sparse_hessian_times_B_kronecker_C);
 end
 
@@ -276,7 +273,6 @@ if info
 end
 
 dr_np = dyn_second_order_solver(d1_np,d2_np,dr_np,pm.M_np,...
-                                options.threads.kronecker.A_times_B_kronecker_C,...
                                 options.threads.kronecker.sparse_hessian_times_B_kronecker_C);
 end
 
@@ -314,7 +310,6 @@ if isfield(options,'portfolio') && options.portfolio == 1
     end
 
     dr_np = dyn_second_order_solver(d1_np,d2_np,dr_np,pm.M_np,...
-                                    options.threads.kronecker.A_times_B_kronecker_C,...
                                     options.threads.kronecker.sparse_hessian_times_B_kronecker_C);
 end
 
@@ -346,8 +341,12 @@ if nargout > 1
     nu2 = exo_nbr*(exo_nbr+1)/2;
     nu3 = exo_nbr*(exo_nbr+1)*(exo_nbr+2)/3;
     M_np.NZZDerivatives = [nnz(d1_np); nnz(d2_np); nnz(d3_np)];
-    [err,g_0, g_1, g_2, g_3] = k_order_perturbation(dr_np,M_np,options,d1_np,d2_np,d3_np);
+    [err, dynpp_derivs] = k_order_perturbation(dr_np,M_np,options,d1_np,d2_np,d3_np);
     mexErrCheck('k_order_perturbation', err);
+    g_0 = dynpp_derivs.g_0;
+    g_1 = dynpp_derivs.g_1;
+    g_2 = dynpp_derivs.g_2;
+    g_3 = dynpp_derivs.g_3;
 
     gu1 = g_1(i_fwrd_g,end-exo_nbr+1:end);
     ghuu = unfold2(g_2(:,end-nu2+1:end),exo_nbr);
@@ -504,7 +503,6 @@ M_np.endo_names = M.endo_names(v_np);
 dr_np = struct();
 dr_np = set_state_space(dr_np,M_np,options);
 pm.dr_np = dr_np;
-M_np.var_order_endo_names = M_np.endo_names(dr_np.order_var);
 pm.M_np = M_np;
 pm.i_fwrd_g = find(lead_lag_incidence_np(lead_index,dr_np.order_var)');
 

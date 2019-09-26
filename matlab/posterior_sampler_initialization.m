@@ -366,7 +366,9 @@ elseif options_.mh_recover
         FirstLine = ones(NumberOfBlocks,1);
         LastFileFullIndicator=1;
     end
-    [d,bayestopt_]=set_proposal_density_to_previous_value(record,options_,bayestopt_);
+    if ~isequal(options_.posterior_sampler_options.posterior_sampling_method,'slice')
+        [d,bayestopt_]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d);
+    end
     %% Now find out what exactly needs to be redone
     % 1. Check if really something needs to be done
     % How many mh files should we have ?
@@ -462,9 +464,14 @@ if isfield(record,'ProposalCovariance') && isfield(record,'ProposalCovariance')
     d=record.ProposalCovariance;
     bayestopt_.jscale=record.ProposalScaleVec;
 else
-    if options_.mode_compute~=0
-        fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by mode_compute\n.');
-    elseif ~isempty(options_.mode_file)
-        fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by the mode_file\n.');
+    if ~isequal(options_.posterior_sampler_options.posterior_sampling_method,'slice')
+        % pass through input d unaltered
+        if options_.mode_compute~=0
+            fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by mode_compute\n.');
+        elseif ~isempty(options_.mode_file)
+            fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by the mode_file\n.');
+        else
+            error('Estimation::mcmc: No stored previous proposal density found, no mode-finding conducted, and no mode-file provided. I don''t know how to continue')
+        end
     end
 end

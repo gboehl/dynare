@@ -1,4 +1,4 @@
-## Copyright (C) 2009-2017 Dynare Team
+## Copyright (C) 2009-2019 Dynare Team
 ##
 ## This file is part of Dynare.
 ##
@@ -22,7 +22,7 @@
 ## Dynare does a 'clear -all').
 
 top_test_dir = getenv('TOP_TEST_DIR');
-addpath(top_test_dir);
+addpath([top_test_dir filesep 'utils']);
 addpath([top_test_dir filesep '..' filesep 'matlab']);
 
 ## Test Dynare Version
@@ -56,7 +56,7 @@ for blockFlag = 0:1
             stack_solve_algos = 0:5;
         endif
 
-        sleep(1) # Workaround for strange race condition related to the _static.m file
+        pause(1) # Workaround for strange race condition related to the _static.m file
 
         for i = 1:length(solve_algos)
             num_block_tests = num_block_tests + 1;

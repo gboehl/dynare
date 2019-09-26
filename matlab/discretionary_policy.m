@@ -1,6 +1,6 @@
-function info = discretionary_policy(var_list)
+function [info, oo_, options_] = discretionary_policy(M_, options_, oo_, var_list)
 
-% Copyright (C) 2007-2018 Dynare Team
+% Copyright (C) 2007-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,23 +17,25 @@ function info = discretionary_policy(var_list)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global options_ oo_ M_
+if options_.loglinear
+    % Ensure it's ok to ignore options_ returned from stoch_simul. #1197
+    error('discretionary_policy is not compatible with `loglinear` option set to 1')
+end
 
+origorder = options_.order;
 options_.discretionary_policy = 1;
-oldoptions = options_;
 options_.order = 1;
-info = stoch_simul(var_list);
+[info, oo_] = stoch_simul(M_, options_, oo_, var_list);
 
-if options_.noprint == 0
+if ~options_.noprint
     disp_steady_state(M_,oo_)
     for i=M_.orig_endo_nbr:M_.endo_nbr
         if strmatch('mult_', M_.endo_names{i})
-            disp(sprintf('%s \t\t %g', M_.endo_names{i}, oo_.dr.ys(i)));
+            fprintf('%s \t\t %g\n', M_.endo_names{i}, oo_.dr.ys(i));
         end
     end
 end
 
-
 oo_.planner_objective_value = evaluate_planner_objective(M_,options_,oo_);
 
-options_ = oldoptions;
+options_.order = origorder;

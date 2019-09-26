@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2017 Dynare Team
+ * Copyright © 2010-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -32,13 +32,12 @@
 class DynamicModelMFile : public DynamicModelAC
 {
 private:
-  const string DynamicMFilename;
-  const static int nlhs_dynamic = 4;
-  const static int nrhs_dynamic = 5;
+  const std::string DynamicMFilename;
+  static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix &tdm);
 public:
-  explicit DynamicModelMFile(const string &modName) noexcept(false);
+  explicit DynamicModelMFile(const std::string &modName, int ntt_arg);
   virtual ~DynamicModelMFile() = default;
   void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
-            Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false);
+            Vector &residual, std::vector<TwoDMatrix> &md) override;
 };
 #endif

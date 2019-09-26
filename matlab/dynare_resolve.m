@@ -86,7 +86,7 @@ switch nargin
     nstatic = Model.nstatic;
     nspred = Model.nspred;
     iv = (1:endo_nbr)';
-    if DynareOptions.block == 0
+    if ~DynareOptions.block
         ic = [ nstatic+(1:nspred) endo_nbr+(1:size(DynareResults.dr.ghx,2)-nspred) ]';
     else
         ic = DynareResults.dr.restrict_columns;

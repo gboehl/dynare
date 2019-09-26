@@ -1,7 +1,13 @@
 mex_PROGRAMS = gensylv
 
-gensylv_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../sources
+gensylv_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/utils/cc
 
 gensylv_LDADD = ../libdynare++/libdynare++.a
 
-nodist_gensylv_SOURCES = $(top_srcdir)/../../../dynare++/sylv/matlab/gensylv.cpp
+nodist_gensylv_SOURCES = gensylv.cc
+
+BUILT_SOURCES = $(nodist_gensylv_SOURCES)
+CLEANFILES = $(nodist_gensylv_SOURCES)
+
+%.cc: $(top_srcdir)/../../sources/gensylv/%.cc
+	$(LN_S) -f $< $@

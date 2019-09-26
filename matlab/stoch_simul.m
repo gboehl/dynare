@@ -1,6 +1,6 @@
-function info=stoch_simul(var_list)
+function [info, oo_, options_] = stoch_simul(M_, options_, oo_, var_list)
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,11 +17,13 @@ function info=stoch_simul(var_list)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ options_ oo_ it_
-
 % Test if the order of approximation is nonzero (the preprocessor tests if order is non negative).
 if isequal(options_.order,0)
     error('stoch_simul:: The order of the Taylor approximation cannot be 0!')
+end
+
+if M_.exo_nbr==0
+    error('stoch_simul:: does not support having no varexo in the model. As a workaround you could define a dummy exogenous variable.')
 end
 
 test_for_deep_parameters_calibration(M_);
@@ -45,7 +47,7 @@ if isempty(options_.qz_criterium)
     options_.qz_criterium = 1+1e-6;
 end
 
-if options_.partial_information == 1 || options_.ACES_solver == 1
+if options_.partial_information || options_.ACES_solver
     PI_PCL_solver = 1;
     if options_.order ~= 1
         warning('stoch_simul:: forcing order=1 since you are using partial_information or ACES solver')
@@ -63,6 +65,7 @@ end
 
 [i_var, nvar, index_uniques] = varlist_indices(var_list, M_.endo_names);
 var_list=var_list(index_uniques);
+oo_.var_list = var_list;
 
 iter_ = max(options_.periods,1);
 if M_.exo_nbr > 0
@@ -79,14 +82,14 @@ elseif options_.discretionary_policy
     if ~options_.linear
         error('discretionary_policy: only linear-quadratic problems can be solved');
     end
-    [oo_.dr,ys,info] = discretionary_policy_1(oo_,options_.instruments);
+    [oo_.dr, ~, info] = discretionary_policy_1(oo_,options_.instruments);
 else
     if options_.logged_steady_state %if steady state was previously logged, undo this
         oo_.dr.ys=exp(oo_.dr.ys);
         oo_.steady_state=exp(oo_.steady_state);
         options_.logged_steady_state=0;
     end
-    [oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
+    [~,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
 end
 
 if options_.loglinear && isfield(oo_.dr,'ys') && options_.logged_steady_state==0 %log steady state for correct display of decision rule
@@ -178,11 +181,11 @@ if options_.periods > 0 && ~PI_PCL_solver
     [ys, oo_] = simult(y0,oo_.dr,M_,options_,oo_);
     oo_.endo_simul = ys;
     if ~options_.minimal_workspace
-        dyn2vec;
+        dyn2vec(M_, oo_, options_);
     end
 end
 
-if options_.nomoments == 0
+if ~options_.nomoments
     if PI_PCL_solver
         PCL_Part_info_moments(0, PCL_varobs, oo_.dr, i_var);
     elseif options_.periods == 0
@@ -218,10 +221,10 @@ if options_.irf
                 y=PCL_Part_info_irf (0, PCL_varobs, i_var, M_, oo_.dr, options_.irf, i);
             else
                 if options_.order>1 && options_.relative_irf % normalize shock to 0.01 before IRF generation for GIRFs; multiply with 100 later
-                    y=irf(oo_.dr,cs(M_.exo_names_orig_ord,i)./cs(i,i)/100, options_.irf, options_.drop, ...
+                    y=irf(M_, options_, oo_.dr,cs(M_.exo_names_orig_ord,i)./cs(i,i)/100, options_.irf, options_.drop, ...
                           options_.replic, options_.order);
                 else %for linear model, rescaling is done later
-                    y=irf(oo_.dr,cs(M_.exo_names_orig_ord,i), options_.irf, options_.drop, ...
+                    y=irf(M_, options_, oo_.dr,cs(M_.exo_names_orig_ord,i), options_.irf, options_.drop, ...
                           options_.replic, options_.order);
                 end
             end
@@ -244,8 +247,7 @@ if options_.irf
             for j = 1:nvar
                 assignin('base',[M_.endo_names{i_var(j)} '_' M_.exo_names{i}],...
                          y(i_var(j),:)');
-                eval(['oo_.irfs.' M_.endo_names{i_var(j)} '_' ...
-                      M_.exo_names{i} ' = y(i_var(j),:);']);
+                oo_.irfs.([M_.endo_names{i_var(j)} '_' M_.exo_names{i}]) = y(i_var(j),:);
                 if max(abs(y(i_var(j),:))) >= options_.impulse_responses.plot_threshold
                     irfs  = cat(1,irfs,y(i_var(j),:));
                     if isempty(mylist)
@@ -266,7 +268,7 @@ if options_.irf
                     end
                 end
             end
-            if options_.nograph == 0
+            if ~options_.nograph
                 number_of_plots_to_draw = size(irfs,1);
                 [nbplt,nr,nc,lr,lc,nstar] = pltorg(number_of_plots_to_draw);
                 if nbplt == 0
@@ -292,7 +294,7 @@ if options_.irf
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                         for j = 1:number_of_plots_to_draw
-                            fprintf(fidTeX,['\\psfrag{%s}[1][][0.5][0]{$%s$}\n'],deblank(mylist(j,:)),deblank(mylistTeX(j,:)));
+                            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist(j,:)),deblank(mylistTeX(j,:)));
                         end
                         fprintf(fidTeX,'\\centering \n');
                         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s}\n',options_.figures.textwidth*min(j/nc,1),M_.fname,tit{i});
@@ -324,14 +326,14 @@ if options_.irf
                         if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                             fprintf(fidTeX,'\\begin{figure}[H]\n');
                             for j = 1:nstar
-                                fprintf(fidTeX,['\\psfrag{%s}[1][][0.5][0]{$%s$}\n'],deblank(mylist((fig-1)*nstar+j,:)),deblank(mylistTeX((fig-1)*nstar+j,:)));
+                                fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist((fig-1)*nstar+j,:)),deblank(mylistTeX((fig-1)*nstar+j,:)));
                             end
                             fprintf(fidTeX,'\\centering \n');
                             fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s%s}\n',options_.figures.textwidth*min(plt/nc,1),M_.fname,tit{i},int2str(fig));
                             if options_.relative_irf
-                                fprintf(fidTeX,['\\caption{Relative impulse response functions (orthogonalized shock to $%s$).}'], titTeX{i});
+                                fprintf(fidTeX,'\\caption{Relative impulse response functions (orthogonalized shock to $%s$).}', titTeX{i});
                             else
-                                fprintf(fidTeX,['\\caption{Impulse response functions (orthogonalized shock to $%s$).}'], titTeX{i});
+                                fprintf(fidTeX,'\\caption{Impulse response functions (orthogonalized shock to $%s$).}', titTeX{i});
                             end
                             fprintf(fidTeX,'\\label{Fig:IRF:%s:%s}\n', tit{i},int2str(fig));
                             fprintf(fidTeX,'\\end{figure}\n');
@@ -355,14 +357,14 @@ if options_.irf
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                         for j = 1:m
-                            fprintf(fidTeX,['\\psfrag{%s}[1][][0.5][0]{$%s$}\n'],deblank(mylist((nbplt-1)*nstar+j,:)),deblank(mylistTeX((nbplt-1)*nstar+j,:)));
+                            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist((nbplt-1)*nstar+j,:)),deblank(mylistTeX((nbplt-1)*nstar+j,:)));
                         end
                         fprintf(fidTeX,'\\centering \n');
                         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s%s}\n',options_.figures.textwidth*min(m/lc,1),M_.fname,tit{i},int2str(nbplt));
                         if options_.relative_irf
-                            fprintf(fidTeX,['\\caption{Relative impulse response functions (orthogonalized shock to $%s$).}'], titTeX{i});
+                            fprintf(fidTeX,'\\caption{Relative impulse response functions (orthogonalized shock to $%s$).}', titTeX{i});
                         else
-                            fprintf(fidTeX,['\\caption{Impulse response functions (orthogonalized shock to $%s$).}'], titTeX{i});
+                            fprintf(fidTeX,'\\caption{Impulse response functions (orthogonalized shock to $%s$).}', titTeX{i});
                         end
                         fprintf(fidTeX,'\\label{Fig:IRF:%s:%s}\n', tit{i},int2str(nbplt));
                         fprintf(fidTeX,'\\end{figure}\n');
@@ -379,7 +381,7 @@ if options_.irf
     end
 end
 
-if options_.SpectralDensity.trigger == 1
+if options_.SpectralDensity.trigger
     [oo_] = UnivariateSpectralDensity(M_,oo_,options_,var_list);
 end
 

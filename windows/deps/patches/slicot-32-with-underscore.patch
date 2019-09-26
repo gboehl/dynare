@@ -1,0 +1,30 @@
+--- make.inc	2012-01-19 20:51:25.000000000 +0100
++++ slicot-32-with-underscore.inc	2016-09-18 15:39:53.403237169 +0200
+@@ -16,16 +16,16 @@
+ #  selected.  Define LOADER and LOADOPTS to refer to the loader and 
+ #  desired load options for your machine.
+ #
+-FORTRAN  = f77
+-OPTS     = -O4 -native -u
++FORTRAN  = i686-w64-mingw32-gfortran
++OPTS     = -O2 -g
+ NOOPT    = -u
+-LOADER   = f77
++LOADER   = i686-w64-mingw32-gfortran
+ LOADOPTS = $(SLICOTLIB) $(LPKAUXLIB) $(LAPACKLIB)
+ #
+ #  The archiver and the flag(s) to use when building archive (library)
+ #  If your system has no ranlib, set RANLIB = echo.
+ #
+-ARCH     = ar
++ARCH     = i686-w64-mingw32-ar
+ ARCHFLAGS= r
+ # ARCHFLAGS= cr
+ # RANLIB   = ranlib
+@@ -36,5 +36,5 @@
+ #
+ #BLASLIB     = -L/software/lib
+ LAPACKLIB    = -L/software/lib -llapack -lblas
+-SLICOTLIB    = ../slicot.a
++SLICOTLIB    = ../libslicot_pic.a
+ LPKAUXLIB    = ../lpkaux.a

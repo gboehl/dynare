@@ -64,8 +64,8 @@ options_ = set_default_option(options_,'qz_criterium',1.000001);
 
 xlen = M_.maximum_endo_lead + M_.maximum_endo_lag + 1;
 
-if (options_.aim_solver == 1)
-    options_.aim_solver == 0;
+if options_.aim_solver
+    options_.aim_solver = false;
     warning('You can not use AIM with Part Info solver. AIM ignored');
 end
 if (options_.order > 1)
@@ -74,7 +74,7 @@ if (options_.order > 1)
 end
 
 % expanding system for Optimal Linear Regulator
-if options_.ramsey_policy && options_.ACES_solver == 0
+if options_.ramsey_policy && ~options_.ACES_solver
     if isfield(M_,'orig_model')
         orig_model = M_.orig_model;
         M_.endo_nbr = orig_model.endo_nbr;
@@ -88,7 +88,7 @@ if options_.ramsey_policy && options_.ACES_solver == 0
     old_solve_algo = options_.solve_algo;
     %  options_.solve_algo = 1;
     opt = options_;
-    opt.jacobian_flag = 0;
+    opt.jacobian_flag = false;
     oo_.steady_state = dynare_solve('ramsey_static',oo_.steady_state,opt,M_,options_,oo_,it_);
     options_.solve_algo = old_solve_algo;
     [~,~,multbar] = ramsey_static(oo_.steady_state,M_,options_,oo_,it_);
@@ -107,7 +107,7 @@ else
     end
 
 
-    if options_.ACES_solver == 1
+    if options_.ACES_solver
         sim_ruleids=[];
         tct_ruleids=[];
         if  size(M_.equations_tags,1)>0  % there are tagged equations, check if they are aceslq rules
@@ -133,7 +133,7 @@ else
     [~,jacobia_] = feval([M_.fname '.dynamic'],z,[oo_.exo_simul ...
                         oo_.exo_det_simul], M_.params, dr.ys, it_);
 
-    if options_.ACES_solver==1 && (length(sim_ruleids)>0 || length(tct_ruleids)>0 )
+    if options_.ACES_solver && (length(sim_ruleids)>0 || length(tct_ruleids)>0 )
         if length(sim_ruleids)>0
             sim_rule=jacobia_(sim_ruleids,:);
             % uses the subdirectory - BY
@@ -172,7 +172,7 @@ sdyn = M_.endo_nbr - nstatic;
 k0 = M_.lead_lag_incidence(M_.maximum_endo_lag+1,order_var);
 k1 = M_.lead_lag_incidence(find([1:klen] ~= M_.maximum_endo_lag+1),:);
 
-if (options_.aim_solver == 1)
+if options_.aim_solver
     error('Anderson and Moore AIM solver is not compatible with Partial Information models');
 end % end if useAIM and...
 
@@ -182,7 +182,7 @@ end % end if useAIM and...
     nendo=M_.endo_nbr; % = size(aa,1)
 
 
-    if(options_.ACES_solver==1)
+    if(options_.ACES_solver)
         %if ~isfield(lq_instruments,'names')
         if isfield(options_,'instruments')
             lq_instruments.names=options_.instruments;
@@ -262,7 +262,7 @@ end % end if useAIM and...
                 fnd = find(lead_lag(:,1));
                 AA2(:, fnd)= jacobia_(:,nonzeros(lead_lag(:,1))); %backward
             end
-        elseif options_.ACES_solver==1 % more endo vars than equations in jacobia_
+        elseif options_.ACES_solver % more endo vars than equations in jacobia_
         if nendo-xlen==num_inst
             PSI=[PSI;zeros(num_inst, M_.exo_nbr)];
             % AA1 contemporary
@@ -324,7 +324,7 @@ end % end if useAIM and...
         %      (b) matrices TT1, TT2  that relate y(t) to these states:
         %      y(t)=[TT1 TT2][s(t)' x(t)']'.
 
-        if(options_.ACES_solver==1)
+        if(options_.ACES_solver)
             if isfield(lq_instruments,'xsopt_SS')
                 SSbar= diag([lq_instruments.xsopt_SS(m_var)]);% lq_instruments.xsopt_SS(lq_instruments.inst_var_indices)]);
                 insSSbar=repmat(lq_instruments.xsopt_SS(lq_instruments.inst_var_indices)',nendo-num_inst,1);
@@ -349,7 +349,7 @@ end % end if useAIM and...
         end
 
         % reuse some of the bypassed code and tests that may be needed
-        if (eu(1) ~= 1 || eu(2) ~= 1) && options_.ACES_solver==0
+        if (eu(1) ~= 1 || eu(2) ~= 1) && ~options_.ACES_solver
             info(1) = abs(eu(1)+eu(2));
             info(2) = 1.0e+8;
             %     return
@@ -370,7 +370,7 @@ end % end if useAIM and...
         dr.eigval = eig(G1pi);
         dr.rank=FL_RANK;
 
-        if options_.ACES_solver==1
+        if options_.ACES_solver
             betap=options_.planner_discount;
             sigma_cov=M_.Sigma_e;
             % get W - BY
@@ -440,7 +440,7 @@ end % end if useAIM and...
 
     catch
         lerror=lasterror;
-        if options_.ACES_solver==1
+        if options_.ACES_solver
             disp('Problem with using Part Info ACES solver:');
             error(lerror.message);
         else

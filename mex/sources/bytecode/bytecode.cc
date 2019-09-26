@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Dynare Team
+ * Copyright © 2007-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -75,7 +75,7 @@ Get_Argument(const mxArray *prhs)
   const mxArray *mxa = prhs;
   mwSize buflen = mwSize(mxGetM(mxa) * mxGetN(mxa) + 1);
   char *first_argument;
-  first_argument = (char *) mxCalloc(buflen, sizeof(char));
+  first_argument = static_cast<char *>(mxCalloc(buflen, sizeof(char)));
   size_t status = mxGetString(mxa, first_argument, buflen);
   if (status != 0)
     mexWarnMsgTxt("Not enough space. The first argument is truncated.");
@@ -249,7 +249,7 @@ GPU_close(cublasHandle_t cublas_handle, cusparseHandle_t cusparse_handle, cuspar
 string
 deblank(string x)
 {
-  for (int i = 0; i < (int) x.length(); i++)
+  for (int i = 0; i < static_cast<int>(x.length()); i++)
     if (x[i] == ' ')
       x.erase(i--, 1);
   return x;
@@ -624,7 +624,7 @@ main(int nrhs, const char *prhs[])
           double *specific_constrained_paths_ = mxGetPr(Array_constrained_paths_);
           double *specific_constrained_int_date_ = mxGetPr(mxGetCell(constrained_int_date_, i));
           int nb_local_periods = mxGetM(Array_constrained_paths_) * mxGetN(Array_constrained_paths_);
-          int *constrained_int_date = (int *) mxMalloc(nb_local_periods * sizeof(int));
+          int *constrained_int_date = static_cast<int *>(mxMalloc(nb_local_periods * sizeof(int)));
           error_msg.test_mxMalloc(constrained_int_date, __LINE__, __FILE__, __func__, nb_local_periods * sizeof(int));
           if (nb_periods < nb_local_periods)
             {
@@ -697,7 +697,7 @@ main(int nrhs, const char *prhs[])
       for (int i = 0; i < nb_periods; i++)
         {
           int buflen = mxGetNumberOfElements(mxGetCell(date_str, i)) + 1;
-          char *buf = (char *) mxCalloc(buflen, sizeof(char));
+          char *buf = static_cast<char *>(mxCalloc(buflen, sizeof(char)));
           int info = mxGetString(mxGetCell(date_str, i), buf, buflen);
           if (info)
             {
@@ -719,7 +719,7 @@ main(int nrhs, const char *prhs[])
         }
       size_t n_plan = mxGetN(plan_struct);
       splan.resize(n_plan);
-      for (int i = 0; i < (int) n_plan; i++)
+      for (int i = 0; i < static_cast<int>(n_plan); i++)
         {
           splan[i].var = "";
           splan[i].exo = "";
@@ -765,7 +765,7 @@ main(int nrhs, const char *prhs[])
               size_t num_shocks = mxGetM(tmp);
               (splan[i]).per_value.resize(num_shocks);
               double *per_value = mxGetPr(tmp);
-              for (int j = 0; j < (int) num_shocks; j++)
+              for (int j = 0; j < static_cast<int>(num_shocks); j++)
                 (splan[i]).per_value[j] = make_pair(ceil(per_value[j]), per_value[j + num_shocks]);
             }
         }
@@ -797,7 +797,7 @@ main(int nrhs, const char *prhs[])
         }
       size_t n_plan = mxGetN(pfplan_struct);
       spfplan.resize(n_plan);
-      for (int i = 0; i < (int) n_plan; i++)
+      for (int i = 0; i < static_cast<int>(n_plan); i++)
         {
           spfplan[i].var = "";
           spfplan[i].exo = "";
@@ -843,7 +843,7 @@ main(int nrhs, const char *prhs[])
               size_t num_shocks = mxGetM(tmp);
               double *per_value = mxGetPr(tmp);
               (spfplan[i]).per_value.resize(num_shocks);
-              for (int j = 0; j < (int) num_shocks; j++)
+              for (int j = 0; j < static_cast<int>(num_shocks); j++)
                 spfplan[i].per_value[j] = make_pair(ceil(per_value[j]), per_value[j+ num_shocks]);
             }
         }
@@ -1029,7 +1029,7 @@ main(int nrhs, const char *prhs[])
     DYN_MEX_FUNC_ERR_MSG_TXT("fname is not a field of M_");
   size_t buflen = mxGetM(mxa) * mxGetN(mxa) + 1;
   char *fname;
-  fname = (char *) mxCalloc(buflen+1, sizeof(char));
+  fname = static_cast<char *>(mxCalloc(buflen+1, sizeof(char)));
   size_t status = mxGetString(mxa, fname, int (buflen));
   fname[buflen] = ' ';
   if (status != 0)
@@ -1051,15 +1051,15 @@ main(int nrhs, const char *prhs[])
     DYN_MEX_FUNC_ERR_MSG_TXT("bytecode has not been compiled with CUDA option. Bytecode Can't use options_.stack_solve_algo=7\n");
 #endif
   size_t size_of_direction = col_y*row_y*sizeof(double);
-  double *y = (double *) mxMalloc(size_of_direction);
+  double *y = static_cast<double *>(mxMalloc(size_of_direction));
   error_msg.test_mxMalloc(y, __LINE__, __FILE__, __func__, size_of_direction);
-  double *ya = (double *) mxMalloc(size_of_direction);
+  double *ya = static_cast<double *>(mxMalloc(size_of_direction));
   error_msg.test_mxMalloc(ya, __LINE__, __FILE__, __func__, size_of_direction);
-  direction = (double *) mxMalloc(size_of_direction);
+  direction = static_cast<double *>(mxMalloc(size_of_direction));
   error_msg.test_mxMalloc(direction, __LINE__, __FILE__, __func__, size_of_direction);
   memset(direction, 0, size_of_direction);
   /*mexPrintf("col_x : %d, row_x : %d\n",col_x, row_x);*/
-  double *x = (double *) mxMalloc(col_x*row_x*sizeof(double));
+  double *x = static_cast<double *>(mxMalloc(col_x*row_x*sizeof(double)));
   error_msg.test_mxMalloc(x, __LINE__, __FILE__, __func__, col_x*row_x*sizeof(double));
   for (i = 0; i < row_x*col_x; i++)
     {
@@ -1184,7 +1184,7 @@ main(int nrhs, const char *prhs[])
                       jacob_exo_field_number = 1;
                       jacob_exo_det_field_number = 2;
                       jacob_other_endo_field_number = 3;
-                      mwSize dims[1] = {(mwSize) nb_blocks };
+                      mwSize dims[1] = {static_cast<mwSize>(nb_blocks) };
                       plhs[2] = mxCreateStructArray(1, dims, 4, field_names);
                     }
                   else if (!mxIsStruct(block_structur))

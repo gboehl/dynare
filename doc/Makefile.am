@@ -1,15 +1,7 @@
 SUBDIRS = parallel internals gsa dseries-and-reporting
 
-info_TEXINFOS = dynare.texi
-
-if HAVE_LATEX2HTML
-html-local: dynare.html
-
-# The temporary directory for latex2html (L2H_TMP) must not contain a dot, so
-# enforce standard tmp directory instead of defaulting to current directory
-dynare.html: dynare.texi
-	rm -rf dynare.html
-	texi2any --html --split=section -c L2H=1 -c L2H_TMP=$${TMPDIR:-/tmp} -c PREFIX=dynare.html dynare.texi
+if HAVE_SPHINXBUILD
+SUBDIRS += manual
 endif
 
 PDF_TARGETS =

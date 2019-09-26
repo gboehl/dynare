@@ -120,6 +120,7 @@ elseif q2a.plot ~= 2
 end
 
 % end initialize names
+steady_state=steady_state(i_var);
 
 if realtime_==0
     % usual shock decomp
@@ -143,7 +144,6 @@ if realtime_==0
             aux.yss=steady_state_aux;
         end
     end
-    steady_state=steady_state(i_var);
     % make annualized shock decomp
     [z, steady_state_a, steady_state_ga] = annualiz(z,t0,q2a,aux,steady_state);
 end

@@ -1,3 +1,9 @@
 mex_PROGRAMS = mjdgges
 
-nodist_mjdgges_SOURCES = $(top_srcdir)/../../sources/mjdgges/mjdgges.c
+nodist_mjdgges_SOURCES = mjdgges.cc
+
+BUILT_SOURCES = $(nodist_mjdgges_SOURCES)
+CLEANFILES = $(nodist_mjdgges_SOURCES)
+
+%.cc: $(top_srcdir)/../../sources/mjdgges/%.cc
+	$(LN_S) -f $< $@

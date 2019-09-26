@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright (C) 2009-2018 Dynare Team
+dnl Copyright © 2009-2019 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -26,6 +26,7 @@ AC_CONFIG_SUBDIRS([preprocessor])
 
 AC_PROG_CC
 AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX_17
 
 AC_CANONICAL_HOST
 case ${host_os} in
@@ -33,25 +34,23 @@ case ${host_os} in
     # On Windows, we want Dynare++ to be statically linked
     AM_LDFLAGS="-static"
     AC_SUBST([AM_LDFLAGS])
-    have_windows="yes"
     ;;
   *cygwin*)
     AC_MSG_WARN([You are compiling for the Cygwin target. This means that the preprocessor will])
     AC_MSG_WARN([not run from MATLAB unless you add the Cygwin DLL to the path.])
     AC_MSG_WARN([This is probably not what you want. Consider using a MinGW cross-compiler.])
-    if test "x$F77" = "x"; then
+    if test -z "$F77"; then
       # On Cygwin 1.7, g77 comes has version 3, and is not compatible with default gcc/g++ which has version 4
       # And by default, the AC_PROG_F77 will pick up g77 if it is present (even if gfortran is also here)
       F77=gfortran
     fi
-    have_windows="yes"
     ;;
 esac
 
 # Use C++ for testing headers
 AC_LANG([C++])
 
-AM_CXXFLAGS="-Wall -Wno-parentheses"
+AM_CXXFLAGS="-Wall -Wno-parentheses -Wold-style-cast"
 AC_SUBST([AM_CXXFLAGS])
 
 # If default 'ar' is not available, try to find one with a host prefix (see ticket #145)
@@ -64,64 +63,33 @@ AX_PROG_LN_S
 
 AC_PROG_MKDIR_P
 
-# We need 1.36 because of unordered_{set,hash} used by Dynare++
-AX_BOOST_BASE([1.36], [], [AC_MSG_ERROR([Can't find Boost >= 1.36])])
+AX_CXX11_THREAD
 
-CPPFLAGS_SAVED="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
-AC_CHECK_HEADERS([boost/graph/adjacency_list.hpp], [], [AC_MSG_ERROR([Can't find Boost Graph Library])])
-AC_CHECK_HEADERS([boost/algorithm/string/trim.hpp], [], [AC_MSG_ERROR([Can't find Boost String Library])])
-AC_CHECK_HEADERS([boost/algorithm/string/split.hpp], [], [AC_MSG_ERROR([Can't find Boost String Library])])
-AC_CHECK_HEADERS([boost/lexical_cast.hpp], [], [AC_MSG_ERROR([Can't find Boost Lexical Cast Header])])
-CPPFLAGS="$CPPFLAGS_SAVED"
+AM_PROG_LEX
 
-# Don't use deprecated hash structures
-AC_DEFINE([BOOST_NO_HASH], [], [Don't use deprecated STL hash structures])
+AC_CHECK_PROG([YACC], [bison], [bison])
+if test -z "$YACC"; then
+  unset YACC # AM_MISSING_PROG needs an unset variable: an empty variable won't do
+  AM_MISSING_PROG([YACC], [bison])
+fi
 
 # Check for libmatio, needed by Dynare++
 AX_MATIO
-AM_CONDITIONAL([HAVE_MATIO], [test "x$has_matio" = "xyes"])
-
-AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo])
-
-AC_CHECK_PROG([PDFTEX], [pdftex], [pdftex])
-AM_CONDITIONAL([HAVE_PDFTEX], [test "x$PDFTEX" != "x"])
-
-AC_CHECK_PROG([PDFETEX], [pdfetex], [pdfetex])
-AM_CONDITIONAL([HAVE_PDFETEX], [test "x$PDFETEX" != "x"])
-
-if test "x$PDFTEX" != "x"; then
-  AC_MSG_CHECKING([for eplain])
-  AX_TEX_TEST([\input eplain
-\end
-], [ax_tex_have_eplain])
-  AC_MSG_RESULT([$ax_tex_have_eplain])
-fi
-AM_CONDITIONAL([HAVE_EPLAIN], [test "x$ax_tex_have_eplain" = "xyes"])
+AM_CONDITIONAL([HAVE_MATIO], [test "$has_matio" = yes])
 
 AC_CHECK_PROG([PDFLATEX], [pdflatex], [pdflatex])
-AM_CONDITIONAL([HAVE_PDFLATEX], [test "x$PDFLATEX" != "x"])
+AM_CONDITIONAL([HAVE_PDFLATEX], [test -n "$PDFLATEX"])
 
 AC_CHECK_PROG([BIBTEX], [bibtex], [bibtex])
-AM_CONDITIONAL([HAVE_BIBTEX], [test "x$BIBTEX" != "x"])
+AM_CONDITIONAL([HAVE_BIBTEX], [test -n "$BIBTEX"])
 
-AC_CHECK_PROG([LATEX2HTML], [latex2html], [latex2html])
-AM_CONDITIONAL([HAVE_LATEX2HTML], [test "x$LATEX2HTML" != "x"])
+AC_CHECK_PROG([SPHINXBUILD], [sphinx-build], [sphinx-build])
+AM_CONDITIONAL([HAVE_SPHINXBUILD], [test -n "$SPHINXBUILD"])
 
-if test "x$PDFLATEX" != "x" -a "x$BIBTEX" != "x"; then
+if test -n "$PDFLATEX" -a -n "$BIBTEX"; then
   AX_LATEX_CLASS([beamer], [ax_latex_have_beamer])
 fi
-AM_CONDITIONAL([HAVE_BEAMER], [test "x$ax_latex_have_beamer" = "xyes"])
-
-AC_CHECK_PROG([CTANGLE], [ctangle], [ctangle])
-AM_CONDITIONAL([HAVE_CTANGLE], [test "x$CTANGLE" != "x"])
-if test "x$CTANGLE" = "x"; then
-  unset CTANGLE # AM_MISSING_PROG needs an unset variable: an empty variable won't do
-  AM_MISSING_PROG([CTANGLE], [ctangle])
-fi
-
-AC_CHECK_PROG([CWEAVE], [cweave], [cweave])
-AM_CONDITIONAL([HAVE_CWEAVE], [test "x$CWEAVE" != "x"])
+AM_CONDITIONAL([HAVE_BEAMER], [test "$ax_latex_have_beamer" = yes])
 
 AC_PROG_F77
 AC_F77_LIBRARY_LDFLAGS
@@ -133,25 +101,24 @@ case ${host_os} in
     ;;
 esac
 
-if test "x$F77" != "x"; then
+if test -n "$F77"; then
    AX_BLAS
    AX_LAPACK
 fi
-AM_CONDITIONAL([HAVE_BLAS], [test x"$ax_blas_ok" = "xyes"])
-AM_CONDITIONAL([HAVE_LAPACK], [test x"$ax_lapack_ok" = "xyes"])
-
-AX_PTHREAD
+AM_CONDITIONAL([HAVE_BLAS], [test "$ax_blas_ok" = yes])
+AM_CONDITIONAL([HAVE_LAPACK], [test "$ax_lapack_ok" = yes])
 
 AC_CONFIG_FILES([Makefile
                  VERSION
                  doc/Makefile
+                 doc/manual/Makefile
+                 doc/manual/utils/version.py
                  doc/parallel/Makefile
                  doc/internals/Makefile
                  doc/gsa/Makefile
                  doc/dseries-and-reporting/Makefile
                  tests/Makefile
                  matlab/dynare_version.m
-                 windows/dynare-version.nsi
                  dynare++/Makefile
                  dynare++/parser/cc/Makefile
                  dynare++/sylv/Makefile
@@ -168,56 +135,41 @@ AC_CONFIG_FILES([Makefile
                  dynare++/integ/testing/Makefile
                  dynare++/kord/Makefile
                  dynare++/src/Makefile
+                 dynare++/tests/Makefile
                  mex/sources/Makefile
 ])
 
 AC_ARG_ENABLE([matlab], AS_HELP_STRING([--disable-matlab], [disable compilation of MEX files for MATLAB]), [], [enable_matlab=yes])
-if test "x$enable_matlab" = "xyes"; then
+if test "$enable_matlab" = yes; then
   AC_CONFIG_SUBDIRS([mex/build/matlab])
   AX_MATLAB
-  AX_MATLAB_ARCH
-  if test "${MATLAB_ARCH}" = win32 -o "${MATLAB_ARCH}" = win64; then
-    MATLAB_BATCH_OPTIONS='-nosplash -automation -wait -sd "$(CURDIR)"'
-  else
-    MATLAB_BATCH_OPTIONS='-nosplash -nodisplay'
-  fi
-  AC_SUBST([MATLAB_BATCH_OPTIONS])
+  AX_MATLAB_BATCH_OPTIONS
 fi
-AM_CONDITIONAL([ENABLE_MATLAB], [test "x$enable_matlab" = "xyes"])
-AM_CONDITIONAL([HAVE_CMD_LINE_MATLAB], [test "x$ax_enable_matlab" = "xyes" -a "x$have_windows" = "x"])
+AM_CONDITIONAL([ENABLE_MATLAB], [test "$enable_matlab" = yes])
+AM_CONDITIONAL([HAVE_MATLAB], [test "$ax_enable_matlab" = yes])
 
 AC_ARG_ENABLE([octave], AS_HELP_STRING([--disable-octave], [disable compilation of MEX files for Octave]), [], [enable_octave=yes])
-if test "x$enable_octave" = "xyes"; then
+if test "$enable_octave" = yes; then
   AC_CONFIG_SUBDIRS([mex/build/octave])
   AC_CHECK_PROG([OCTAVE], [octave], [octave])
 fi
-AM_CONDITIONAL([ENABLE_OCTAVE], [test "x$enable_octave" = "xyes"])
-AM_CONDITIONAL([HAVE_OCTAVE], [test "x$enable_octave" = "xyes" -a "x$OCTAVE" != "x"])
+AM_CONDITIONAL([ENABLE_OCTAVE], [test "$enable_octave" = yes])
+AM_CONDITIONAL([HAVE_OCTAVE], [test "$enable_octave" = yes -a -n "$OCTAVE"])
 
 # Enable exporting of Org files
 # The clean way would be to test for Emacs, Org-mode, latex, dvipng...
 AC_ARG_ENABLE([org-export], AS_HELP_STRING([--enable-org-export], [enable exporting of Org files (requires Emacs, org-mode and other external programs)]))
-AM_CONDITIONAL([ENABLE_ORG_EXPORT], [test "x$enable_org_export" != "x"])
+AM_CONDITIONAL([ENABLE_ORG_EXPORT], [test -n "$enable_org_export"])
 
 # Construct final output message
 
-if test "x$ax_blas_ok" = "xyes" -a "x$ax_lapack_ok" = "xyes" -a "x$has_matio" = "xyes"; then
-  if test x"$ax_pthread_ok" = "xyes"; then
-     BUILD_DYNAREPLUSPLUS="yes"
-  else
-     BUILD_DYNAREPLUSPLUS="yes (without POSIX threads)"
-  fi
+if test "$ax_blas_ok" = yes -a "$ax_lapack_ok" = yes -a "$has_matio" = yes; then
+  BUILD_DYNAREPLUSPLUS="yes"
 else
   BUILD_DYNAREPLUSPLUS="no (missing one of: BLAS, LAPACK, MatIO)"
 fi
 
-if test "x$CWEAVE" != "x" -a x"$PDFTEX" != "x" -a "x$ax_tex_have_eplain" = "xyes"; then
-  BUILD_DYNAREPLUSPLUS_SRCDOC="yes"
-else
-  BUILD_DYNAREPLUSPLUS_SRCDOC="no (missing one of: cweave, pdftex, eplain)"
-fi
-
-if test "x$PDFLATEX" != "x" -a "x$ax_latex_have_beamer" = "xyes"; then
+if test -n "$PDFLATEX" -a "$ax_latex_have_beamer" = yes; then
   BUILD_BEAMER_DOC="yes"
 else
   BUILD_BEAMER_DOC="no (missing one of: pdflatex, beamer)"
@@ -229,33 +181,27 @@ else
   BUILD_OTHER_PDF_DOC="no (missing pdflatex)"
 fi
 
-if test "x$enable_org_export" != "x"; then
+if test -n "$enable_org_export"; then
   BUILD_DYNARE_INTERNAL_DOC="yes"
 else
   BUILD_DYNARE_INTERNAL_DOC="no (Org export not enabled)"
 fi
 
-if test "x$MAKEINFO" != "x"; then
-  BUILD_DYNARE_INFO="yes"
-  if test "x$LATEX2HTML" != "x"; then
-    BUILD_DYNARE_HTML_MANUAL="yes"
-  else
-    BUILD_DYNARE_HTML_MANUAL="yes (but with ugly math formulas, missing latex2html)"
-  fi
+if test -n "$SPHINXBUILD"; then
+  BUILD_DYNARE_HTML_MANUAL="yes"
   BUILD_DYNARE_PDF_MANUAL="yes"
 else
-  BUILD_DYNARE_INFO="no (missing makeinfo)"
-  BUILD_DYNARE_HTML_MANUAL="no (missing makeinfo)"
-  BUILD_DYNARE_PDF_MANUAL="no (missing makeinfo)"
+  BUILD_DYNARE_HTML_MANUAL="no (missing sphinx-build)"
+  BUILD_DYNARE_PDF_MANUAL="no (missing sphinx-build)"
 fi
 
-if test "x$OCTAVE" != "x"; then
+if test -n "$OCTAVE"; then
   TESTSUITE_OCTAVE="yes"
 else
   TESTSUITE_OCTAVE="no"
 fi
 
-if test "x$ax_blas_ok" = "xyes" -a "x$ax_lapack_ok" = "xyes"; then
+if test "$ax_blas_ok" = yes -a "$ax_lapack_ok" = yes; then
   TESTSUITE_DYNAREPLUSPLUS="yes"
 else
   TESTSUITE_DYNAREPLUSPLUS="no"
@@ -270,15 +216,12 @@ Binaries (with "make"):
 
 PDF documentation (with "make pdf"):
  Dynare reference manual:               $BUILD_DYNARE_PDF_MANUAL
- Dynare++ developer documentation:      $BUILD_DYNAREPLUSPLUS_SRCDOC
  Beamer presentations:                  $BUILD_BEAMER_DOC
  Various other documents:               $BUILD_OTHER_PDF_DOC
 
 HTML documentation (with "make html"):
  Dynare reference manual:               $BUILD_DYNARE_HTML_MANUAL
  Dynare internal doc:                   $BUILD_DYNARE_INTERNAL_DOC
-
-Info documentation (with "make info"):  $BUILD_DYNARE_INFO
 
 Testsuites (run with "make check"):
  Dynare for Octave:                     $TESTSUITE_OCTAVE

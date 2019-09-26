@@ -31,7 +31,7 @@ if ~isequal(length(intersect(M_.endo_names, {'c'; 'y'; 'k'; 'b'; 'a'; 'h'})), 6)
    error('Endogenous variables are wrong.')
 end
 
-if isfield(M_, 'param_names')
+if length(M_.param_names) > 0
    error('Parameters are wrong.')
 end
 

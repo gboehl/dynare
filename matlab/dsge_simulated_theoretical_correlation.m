@@ -104,6 +104,7 @@ for file = 1:NumberOfDrawsFiles
     for linee = 1:NumberOfDraws
         linea = linea+1;
         if isdrsaved
+            M_=set_parameters_locally(M_,pdraws{linee,1});% Needed to update the covariance matrix of the state innovations.
             dr = pdraws{linee,2};
         else
             M_=set_parameters_locally(M_,pdraws{linee,1});

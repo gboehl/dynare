@@ -1,7 +1,6 @@
 function set_dynare_threads(mexname,n)
-% This function sets the number of threads used by some MEX files when compiled
-% with OpenMP support (i.e with --enable-openmp is given to configure) or any
-% other parallel library.
+% This function sets the number of threads used by some MEX files using
+% OpenMP features or any other parallel library.
 %
 % INPUTS
 %  o mexname  [string]    Name of the mex file.
@@ -10,7 +9,7 @@ function set_dynare_threads(mexname,n)
 % OUTPUTS
 %  none.
 
-% Copyright (C) 2009-2012 Dynare Team
+% Copyright (C) 2009-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,12 +36,14 @@ if ~isint(n)
 end
 
 switch mexname
-  case 'A_times_B_kronecker_C'
-    options_.threads.kronecker.A_times_B_kronecker_C = n;
   case 'sparse_hessian_times_B_kronecker_C'
     options_.threads.kronecker.sparse_hessian_times_B_kronecker_C = n;
   case 'local_state_space_iteration_2'
     options_.threads.local_state_space_iteration_2 = n;
+  case 'perfect_foresight_problem'
+    options_.threads.perfect_foresight_problem = n;
+  case 'k_order_perturbation'
+    options_.threads.k_order_perturbation = n;
   otherwise
     message = [ mexname ' is not a known parallel mex file.' ];
     message_id  = 'Dynare:Threads:UnknownParallelMex';

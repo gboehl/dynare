@@ -1,8 +1,10 @@
-function y_=simult_(y0,dr,ex_,iorder)
+function y_=simult_(M_,options_,y0,dr,ex_,iorder)
 % Simulates the model using a perturbation approach, given the path for the exogenous variables and the
 % decision rules.
 %
 % INPUTS
+%    M_       [struct]   model
+%    options_ [struct]   options
 %    y0       [double]   n*1 vector, initial value (n is the number of declared endogenous variables plus the number
 %                        of auxilliary variables for lags and leads); must be in declaration order, i.e. as in M_.endo_names
 %    dr       [struct]   matlab's structure where the reduced form solution of the model is stored.
@@ -15,7 +17,7 @@ function y_=simult_(y0,dr,ex_,iorder)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,8 +33,6 @@ function y_=simult_(y0,dr,ex_,iorder)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-
-global M_ options_
 
 iter = size(ex_,1);
 endo_nbr = M_.endo_nbr;
@@ -53,22 +53,9 @@ end
 
 if options_.k_order_solver && ~options_.pruning % Call dynare++ routines.
     ex_ = [zeros(M_.maximum_lag,M_.exo_nbr); ex_];
-    switch options_.order
-      case 1
-        [err, y_] = dynare_simul_(1,M_.nstatic,M_.npred,M_.nboth,M_.nfwrd,exo_nbr, ...
-                                  y_(dr.order_var,1),ex_',M_.Sigma_e,options_.DynareRandomStreams.seed,dr.ys(dr.order_var),...
-                                  zeros(endo_nbr,1),dr.g_1);
-      case 2
-        [err, y_] = dynare_simul_(2,M_.nstatic,M_.npred,M_.nboth,M_.nfwrd,exo_nbr, ...
-                                  y_(dr.order_var,1),ex_',M_.Sigma_e,options_.DynareRandomStreams.seed,dr.ys(dr.order_var),dr.g_0, ...
-                                  dr.g_1,dr.g_2);
-      case 3
-        [err, y_] = dynare_simul_(3,M_.nstatic,M_.npred,M_.nboth,M_.nfwrd,exo_nbr, ...
-                                  y_(dr.order_var,1),ex_',M_.Sigma_e,options_.DynareRandomStreams.seed,dr.ys(dr.order_var),dr.g_0, ...
-                                  dr.g_1,dr.g_2,dr.g_3);
-      otherwise
-        error(['order = ' int2str(order) ' isn''t supported'])
-    end
+    [err, y_] = dynare_simul_(options_.order,M_.nstatic,M_.npred,M_.nboth,M_.nfwrd,exo_nbr, ...
+                              y_(dr.order_var,1),ex_',M_.Sigma_e,options_.DynareRandomStreams.seed, ...
+                              dr.ys(dr.order_var),dr);
     mexErrCheck('dynare_simul_', err);
     y_(dr.order_var,:) = y_;
 else
@@ -111,11 +98,11 @@ else
                 yhat1 = y__(order_var(k2))-dr.ys(order_var(k2));
                 yhat2 = y_(order_var(k2),i-1)-dr.ys(order_var(k2));
                 epsilon = ex_(i-1,:)';
-                [abcOut1, err] = A_times_B_kronecker_C(.5*dr.ghxx,yhat1,options_.threads.kronecker.A_times_B_kronecker_C);
+                [abcOut1, err] = A_times_B_kronecker_C(.5*dr.ghxx,yhat1);
                 mexErrCheck('A_times_B_kronecker_C', err);
-                [abcOut2, err] = A_times_B_kronecker_C(.5*dr.ghuu,epsilon,options_.threads.kronecker.A_times_B_kronecker_C);
+                [abcOut2, err] = A_times_B_kronecker_C(.5*dr.ghuu,epsilon);
                 mexErrCheck('A_times_B_kronecker_C', err);
-                [abcOut3, err] = A_times_B_kronecker_C(dr.ghxu,yhat1,epsilon,options_.threads.kronecker.A_times_B_kronecker_C);
+                [abcOut3, err] = A_times_B_kronecker_C(dr.ghxu,yhat1,epsilon);
                 mexErrCheck('A_times_B_kronecker_C', err);
                 y_(order_var,i) = constant + dr.ghx*yhat2 + dr.ghu*epsilon ...
                     + abcOut1 + abcOut2 + abcOut3;
@@ -125,11 +112,11 @@ else
             for i = 2:iter+M_.maximum_lag
                 yhat = y_(order_var(k2),i-1)-dr.ys(order_var(k2));
                 epsilon = ex_(i-1,:)';
-                [abcOut1, err] = A_times_B_kronecker_C(.5*dr.ghxx,yhat,options_.threads.kronecker.A_times_B_kronecker_C);
+                [abcOut1, err] = A_times_B_kronecker_C(.5*dr.ghxx,yhat);
                 mexErrCheck('A_times_B_kronecker_C', err);
-                [abcOut2, err] = A_times_B_kronecker_C(.5*dr.ghuu,epsilon,options_.threads.kronecker.A_times_B_kronecker_C);
+                [abcOut2, err] = A_times_B_kronecker_C(.5*dr.ghuu,epsilon);
                 mexErrCheck('A_times_B_kronecker_C', err);
-                [abcOut3, err] = A_times_B_kronecker_C(dr.ghxu,yhat,epsilon,options_.threads.kronecker.A_times_B_kronecker_C);
+                [abcOut3, err] = A_times_B_kronecker_C(dr.ghxu,yhat,epsilon);
                 mexErrCheck('A_times_B_kronecker_C', err);
                 y_(dr.order_var,i) = constant + dr.ghx*yhat + dr.ghu*epsilon ...
                     + abcOut1 + abcOut2 + abcOut3;
@@ -151,7 +138,6 @@ else
         ghuuu = dr.ghuuu;
         ghxss = dr.ghxss;
         ghuss = dr.ghuss;
-        threads = options_.threads.kronecker.A_times_B_kronecker_C;
         nspred = M_.nspred;
         ipred = M_.nstatic+(1:nspred);
         %construction follows Andreasen et al (2013), Technical
@@ -164,29 +150,29 @@ else
             u = ex_(i-1,:)';
             %construct terms of order 2 from second order part, based
             %on linear component yhat1
-            [gyy, err] = A_times_B_kronecker_C(ghxx,yhat1,threads);
+            [gyy, err] = A_times_B_kronecker_C(ghxx,yhat1);
             mexErrCheck('A_times_B_kronecker_C', err);
-            [guu, err] = A_times_B_kronecker_C(ghuu,u,threads);
+            [guu, err] = A_times_B_kronecker_C(ghuu,u);
             mexErrCheck('A_times_B_kronecker_C', err);
-            [gyu, err] = A_times_B_kronecker_C(ghxu,yhat1,u,threads);
+            [gyu, err] = A_times_B_kronecker_C(ghxu,yhat1,u);
             mexErrCheck('A_times_B_kronecker_C', err);
             %construct terms of order 3 from second order part, based
             %on order 2 component yhat2
-            [gyy12, err] = A_times_B_kronecker_C(ghxx,yhat1,yhat2,threads);
+            [gyy12, err] = A_times_B_kronecker_C(ghxx,yhat1,yhat2);
             mexErrCheck('A_times_B_kronecker_C', err);
-            [gy2u, err] = A_times_B_kronecker_C(ghxu,yhat2,u,threads);
+            [gy2u, err] = A_times_B_kronecker_C(ghxu,yhat2,u);
             mexErrCheck('A_times_B_kronecker_C', err);
             %construct terms of order 3, all based on first order component yhat1
             y2a = kron(yhat1,yhat1);
-            [gyyy, err] = A_times_B_kronecker_C(ghxxx,y2a,yhat1,threads);
+            [gyyy, err] = A_times_B_kronecker_C(ghxxx,y2a,yhat1);
             mexErrCheck('A_times_B_kronecker_C', err);
             u2a = kron(u,u);
-            [guuu, err] = A_times_B_kronecker_C(ghuuu,u2a,u,threads);
+            [guuu, err] = A_times_B_kronecker_C(ghuuu,u2a,u);
             mexErrCheck('A_times_B_kronecker_C', err);
             yu = kron(yhat1,u);
-            [gyyu, err] = A_times_B_kronecker_C(ghxxu,yhat1,yu,threads);
+            [gyyu, err] = A_times_B_kronecker_C(ghxxu,yhat1,yu);
             mexErrCheck('A_times_B_kronecker_C', err);
-            [gyuu, err] = A_times_B_kronecker_C(ghxuu,yu,u,threads);
+            [gyuu, err] = A_times_B_kronecker_C(ghxuu,yu,u);
             mexErrCheck('A_times_B_kronecker_C', err);
             %add all terms of order 3, linear component based on third
             %order yhat3
@@ -200,5 +186,7 @@ else
             yhat2 = yhat2(ipred);
             yhat3 = yhat3(ipred);
         end
+      otherwise
+          error(['pruning not available for order = ' int2str(options_.order)])
     end
 end

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <pkg-ref id="com.cepremap.dynare"/>
+    <options customize="never" require-scripts="false"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.cepremap.dynare"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="com.cepremap.dynare" visible="false">
+        <pkg-ref id="com.cepremap.dynare"/>
+    </choice>
+    <pkg-ref id="com.cepremap.dynare" version="VERSION_NO_SPACE" onConclusion="none">dynare-VERSION_NO_SPACE.pkg</pkg-ref>
+    <title>Dynare VERSION_READ</title>
+    <background file="background.png" scaling="tofit" mime-type="image/png" alignment="topleft" />
+    <background-darkAqua file="background.png" scaling="tofit" mime-type="image/png" alignment="topleft" />
+    <license file="COPYING" mime-type="text/plain" />
+</installer-gui-script>

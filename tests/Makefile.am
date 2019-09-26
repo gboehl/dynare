@@ -2,6 +2,7 @@ MODFILES = \
 	walsh.mod \
 	optimizers/fs2000_6.mod \
 	moments/example1_hp_test.mod \
+	moments/fs2000_post_moments.mod \
 	lmmcp/rbcii.mod \
 	ep/rbc_mc.mod \
 	estimation/TaRB/fs2000_tarb.mod \
@@ -104,7 +105,6 @@ MODFILES = \
 	ramst_vec.mod \
 	example1_varexo_det.mod \
 	predetermined_variables.mod \
-	fs2000_nonstationary.mod \
 	fs2000_ssfile.mod \
 	comments.mod \
 	histval_sto.mod \
@@ -134,6 +134,8 @@ MODFILES = \
 	k_order_perturbation/fs2000k_1_m.mod \
 	k_order_perturbation/fs2000k3_m.mod \
 	k_order_perturbation/fs2000k3_p.mod \
+	k_order_perturbation/fs2000k4.mod \
+	k_order_perturbation/burnside_k_order.mod \
 	partial_information/PItest3aHc0PCLsimModPiYrVarobsAll.mod \
 	partial_information/PItest3aHc0PCLsimModPiYrVarobsCNR.mod \
 	arima/mod1.mod \
@@ -181,6 +183,11 @@ MODFILES = \
 	seeds.mod \
 	identification/kim/kim2.mod \
 	identification/as2007/as2007.mod \
+	identification/as2007/as2007_kronflags.mod \
+	identification/as2007/as2007_QT.mod \
+	identification/as2007/as2007_QT_equal_autocorr.mod \
+	identification/BrockMirman/BrockMirman.mod \
+	identification/cgg/cgg_criteria_differ.mod \
 	identification/ident_unit_root/ident_unit_root.mod \
 	identification/rbc_ident/rbc_ident_std_as_structural_par.mod \
 	identification/rbc_ident/rbc_ident_varexo_only.mod \
@@ -336,6 +343,7 @@ MODFILES = \
 	optimizers/fs2000_101.mod \
 	optimizers/fs2000_102.mod \
 	optimizers/fs2000_w.mod \
+	epilogue/example1.mod \
 	differentiate_forward_vars/RBC_differentiate_forward.mod \
 	partitioning/partitions.mod \
 	prior_posterior_function/fs2000_prior_posterior_function.mod \
@@ -356,7 +364,11 @@ MODFILES = \
 	observation_trends_and_prefiltering/calib_smoother/Tr_no_prefil_f_obs_loglin_cal_smoother.mod \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefilter_loglin_calib_smoother.mod \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefil_f_obs_loglin_cal_smoother.mod \
-	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod
+	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod \
+	bgp/solow-1/solow.mod \
+	bgp/nk-1/nk.mod \
+	bgp/ramsey-1/ramsey.mod \
+	dynare-command-options/ramst.mod
 
 ECB_MODFILES = \
 	var-expectations/1/example.mod \
@@ -456,8 +468,7 @@ ECB_MODFILES = \
 	ecb/cherrypick/test1.mod \
 	ecb/cherrypick/test2.mod \
 	ecb/contribution-plots/contrib1.mod \
-	ecb/contribution-plots/contrib2.mod \
-	dynare-command-options/ramst.mod
+	ecb/contribution-plots/contrib2.mod
 
 OLS_MODFILES = \
 	estimation/univariate/bayesian.mod \
@@ -515,12 +526,15 @@ estimation/MH_recover/fs2000_recover_tarb.o.trs: estimation/MH_recover/fs2000_re
 k_order_perturbation/fs2000k_1_m.m.trs: k_order_perturbation/fs2000k2_m.m.trs
 k_order_perturbation/fs2000k2_m.m.trs k_order_perturbation/fs2000k3_m.m.trs k_order_perturbation/fs2000k2_use_dll.m.trs k_order_perturbation/fs2000k3_use_dll.m.trs: k_order_perturbation/fs2000k2a.m.trs
 k_order_perturbation/fs2000k_1_use_dll.m.trs: k_order_perturbation/fs2000k2_use_dll.m.trs
-k_order_perturbation/fs2000k4.m.trs: k_order_perturbation/fs2000k++.m.trs
+k_order_perturbation/fs2000k4.m.trs: k_order_perturbation/fs2000k++.mat
 
 k_order_perturbation/fs2000k_1_m.o.trs: k_order_perturbation/fs2000k2_m.o.trs
 k_order_perturbation/fs2000k2_m.o.trs k_order_perturbation/fs2000k3_m.o.trs k_order_perturbation/fs2000k2_use_dll.o.trs k_order_perturbation/fs2000k3_use_dll.o.trs: k_order_perturbation/fs2000k2a.o.trs
 k_order_perturbation/fs2000k_1_use_dll.o.trs: k_order_perturbation/fs2000k2_use_dll.o.trs
-k_order_perturbation/fs2000k4.o.trs: k_order_perturbation/fs2000k++.o.trs
+k_order_perturbation/fs2000k4.o.trs: k_order_perturbation/fs2000k++.mat
+
+k_order_perturbation/fs2000k++.mat: k_order_perturbation/fs2000k++.mod ../dynare++/src/dynare++$(EXEEXT)
+	cd k_order_perturbation && ../../dynare++/src/dynare++ --order 3 --no-centralize fs2000k++.mod
 
 kalman_filter_smoother/algo1.m.trs kalman_filter_smoother/algo3.m.trs kalman_filter_smoother/algo4a.m.trs kalman_filter_smoother/algo4b.m.trs kalman_filter_smoother/algoH1.m.trs kalman_filter_smoother/algoH3.m.trs kalman_filter_smoother/fs2000.m.trs kalman_filter_smoother/fs2000_1.m.trs kalman_filter_smoother/fs2000_2.m.trs kalman_filter_smoother/fs2000a.m.trs: kalman_filter_smoother/gen_data.m.trs
 kalman_filter_smoother/algo1.o.trs kalman_filter_smoother/algo3.o.trs kalman_filter_smoother/algo4a.o.trs kalman_filter_smoother/algo4b.o.trs kalman_filter_smoother/algoH1.o.trs kalman_filter_smoother/algoH3.o.trs kalman_filter_smoother/fs2000.o.trs kalman_filter_smoother/fs2000_1.o.trs kalman_filter_smoother/fs2000_2.o.trs kalman_filter_smoother/fs2000a.o.trs: kalman_filter_smoother/gen_data.o.trs
@@ -949,14 +963,15 @@ EXTRA_DIST = \
 	homotopy/common.mod \
 	block_bytecode/ls2003.mod \
 	fs2000_ssfile_aux.m \
-	printMakeCheckMatlabErrMsg.m \
-	printMakeCheckOctaveErrMsg.m \
-	fataltest.m \
+	utils/printMakeCheckMatlabErrMsg.m \
+	utils/printMakeCheckOctaveErrMsg.m \
+	utils/fataltest.m \
 	AIM/data_ca1.m \
 	AIM/fsdat.m \
 	block_bytecode/run_ls2003.m \
 	bvar_a_la_sims/bvar_sample.m \
 	dates/fsdat_simul.m \
+	dates/data_uav.xlsx \
 	external_function/extFunDeriv.m \
 	external_function/extFunNoDerivs.m \
 	external_function/extFunWithFirstAndSecondDerivs.m \
@@ -967,7 +982,6 @@ EXTRA_DIST = \
 	gsa/morris/nk_est_data.m \
 	analytic_derivatives/fsdat_simul.m \
 	fs2000/fsdat_simul.m \
-	k_order_perturbation/run_fs2000kplusplus.m \
 	ls2003/data_ca1.m \
 	measurement_errors/data_ca1.m \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fsdat_simul.m \
@@ -991,6 +1005,8 @@ EXTRA_DIST = \
 	ms-sbvar/archive-files/specification_2v.dat \
 	ms-sbvar/archive-files/specification_2v2c.dat \
 	recursive/data_ca1.m \
+	recursive/data_ca1_csv.csv \
+	recursive/data_ca1_xls.xlsx \
 	kalman_filter_smoother/fsdat_simul.m \
 	kalman/lik_init/fs2000_common.inc \
 	kalman/lik_init/fs2000_ns_common.inc \
@@ -1003,7 +1019,9 @@ EXTRA_DIST = \
 	identification/as2007/as2007_steadystate.m \
 	estimation/fsdat_simul.m \
 	ep/mean_preserving_spread.m \
+	decision_rules/example1_results_dyn_432.mat \
 	decision_rules/third_order/comparison_policy_functions_dynare_mathematica.m \
+	decision_rules/third_order/FV_2011_policyfunctions.mat \
 	shock_decomposition/example1_calib_shock_decomp_data.mat \
 	shock_decomposition/fsdat_simul.m \
 	smoother2histval/fsdat_simul.m \
@@ -1026,13 +1044,14 @@ EXTRA_DIST = \
 	optimizers/optimizer_function_wrapper.m \
 	optimizers/fs2000.common.inc \
 	estimation/MH_recover/fs2000.common.inc \
+	prior_posterior_function/posterior_function_demo.m \
+	deterministic_simulations/lola_data.mat \
 	estimation/univariate/data.csv \
 	estimation/univariate/ols/mc-ols.inc \
-	prior_posterior_function/posterior_function_demo.m \
 	ecb/SURGibbs/fishdata.csv
 
 
-if HAVE_CMD_LINE_MATLAB
+if HAVE_MATLAB
 check-local: check-matlab
 endif
 
@@ -1055,12 +1074,13 @@ check-matlab-ols: $(M_OLS_TRS_FILES)
 %.m.trs %.m.log: %.mod
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
-		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) -r run_test_matlab > $*.m.log  2> /dev/null || \
+		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) run_test_matlab > $*.m.log  2> /dev/null || \
 	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.m.trs
-	@if grep -q ":test-result: PASS" $*.m.trs; then \
-	echo "`tput bold``tput setaf 2`MATLAB: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
+	@if test -z "$(filter $*.m.trs,$(M_XFAIL_TRS_FILES))"; then pass_color=2; fail_color=1; else pass_color=1; fail_color=2; fi; \
+	if grep -q ":test-result: PASS" $*.m.trs; then \
+	echo "`tput bold``tput setaf $${pass_color}`MATLAB: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
 	else \
-	echo "`tput bold``tput setaf 1`MATLAB: $(CURDIR)/$* FAILED!`tput sgr0`" ; \
+	echo "`tput bold``tput setaf $${fail_color}`MATLAB: $(CURDIR)/$* FAILED!`tput sgr0`" ; \
 	fi
 
 %.m.drs %.m.log: %.m.trs
@@ -1069,7 +1089,7 @@ check-matlab-ols: $(M_OLS_TRS_FILES)
 %.m.trs %.m.log : %.m
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" \
-		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) -r $* > $*.m.log 2> /dev/null
+		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) $* > $*.m.log 2> /dev/null
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$* Done!`tput sgr0`"
 
 %.o.trs %.o.log: %.mod
@@ -1077,10 +1097,11 @@ check-matlab-ols: $(M_OLS_TRS_FILES)
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
 		$(OCTAVE) --no-init-file --silent --no-history --path "$*.mod" run_test_octave.m > $*.o.log 2>&1 || \
 	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.o.trs
-	@if grep -q ":test-result: PASS" $*.o.trs; then \
-	echo "`tput bold``tput setaf 2`OCTAVE: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
+	@if test -z "$(filter $*.o.trs,$(O_XFAIL_TRS_FILES))"; then pass_color=2; fail_color=1; else pass_color=1; fail_color=2; fi; \
+	if grep -q ":test-result: PASS" $*.o.trs; then \
+	echo "`tput bold``tput setaf $${pass_color}`OCTAVE: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
 	else \
-	echo "`tput bold``tput setaf 1`OCTAVE: $(CURDIR)/$* FAILED!`tput sgr0`" ; \
+	echo "`tput bold``tput setaf $${fail_color}`OCTAVE: $(CURDIR)/$* FAILED!`tput sgr0`" ; \
 	fi
 
 %.o.drs %.o.log: %.mod %.o.trs
@@ -1096,7 +1117,7 @@ check-matlab-ols: $(M_OLS_TRS_FILES)
 %.m.tls : %.m
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
 	@TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
-		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) -r run_m_script >/dev/null 2>&1
+		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) run_m_script >/dev/null 2>&1
 	@touch $*.m.tls
 	@echo "`tput bold`MATLAB`tput setaf 8`: $(CURDIR)/$* Done!`tput sgr0`"
 
@@ -1192,6 +1213,10 @@ clean-local:
 	rm -f initval_file/ramst_initval_file_data_col_vec_mat.mat initval_file/ramst_initval_file_data_row_vec_mat.mat initval_file/ramst_initval_file_excel.xls
 
 	rm -f loglinear/results_exp_histval.mat loglinear/results_exp.mat
+
+	rm -f k_order_perturbation/fs2000k++.mat k_order_perturbation/fs2000k++.dump \
+		k_order_perturbation/fs2000k++.jnl k_order_perturbation/fs2000k++_f.m \
+		k_order_perturbation/fs2000k++_ff.m
 
 	rm -rf ecb/cherrypick/simulation-files1 ecb/cherrypick/simulation-files2 toto.mod
 

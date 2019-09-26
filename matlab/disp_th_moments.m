@@ -55,7 +55,11 @@ oo_.var = oo_.gamma_y{1};
 
 ME_present=0;
 if ~all(M_.H==0)
-    [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
+    if isoctave || matlab_ver_less_than('8.1')
+        [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
+    else
+        [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
+    end
     if ~isempty(observable_pos_requested_vars)
         ME_present=1;
     end
@@ -101,7 +105,11 @@ if size(stationary_vars, 1) > 0
             lh = cellofchararraymaxlength(M_.endo_names(ivar(stationary_vars)))+2;
             dyntable(options_, title, headers, M_.endo_names(ivar(stationary_vars)), 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
             if ME_present
-                [stationary_observables, pos_index_subset] = intersect(index_subset, stationary_vars, 'stable');
+                if isoctave || matlab_ver_less_than('8.1')
+                    [stationary_observables, pos_index_subset] = intersect_stable(index_subset, stationary_vars);
+                else
+                    [stationary_observables, pos_index_subset] = intersect(index_subset, stationary_vars, 'stable');
+                end
                 headers_ME = vertcat(headers, 'ME');
                 dyntable(options_, [title,' WITH MEASUREMENT ERROR'], headers_ME, M_.endo_names(ivar(stationary_observables)), ...
                          oo_.variance_decomposition_ME(pos_index_subset,:), lh, 8, 2);
@@ -133,7 +141,7 @@ if size(stationary_vars, 1) > 0
         StateSpaceModel.observable_pos = options_.varobs_id;
         [oo_.conditional_variance_decomposition, oo_.conditional_variance_decomposition_ME] = ...
             conditional_variance_decomposition(StateSpaceModel, conditional_variance_steps, ivar);
-        if options_.noprint == 0
+        if ~options_.noprint
             display_conditional_variance_decomposition(oo_.conditional_variance_decomposition, conditional_variance_steps, ivar, M_, options_);
             if ME_present
                 display_conditional_variance_decomposition(oo_.conditional_variance_decomposition_ME, conditional_variance_steps, ...
@@ -150,7 +158,7 @@ if length(i1) == 0
     return
 end
 
-if options_.nocorr == 0 && size(stationary_vars, 1)>0
+if ~options_.nocorr && size(stationary_vars, 1)>0
     corr = NaN(size(oo_.gamma_y{1}));
     corr(i1,i1) = oo_.gamma_y{1}(i1,i1)./(sd(i1)*sd(i1)');
     if options_.contemporaneous_correlation 

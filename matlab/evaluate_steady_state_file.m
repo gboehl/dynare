@@ -19,7 +19,7 @@ function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,7 +36,6 @@ function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-ys = [];
 params = M.params;
 info = 0;
 
@@ -99,7 +98,7 @@ if updated_params_flag
 end
 
 % adding values for auxiliary variables
-if length(M.aux_vars) > 0 && ~options.ramsey_policy
+if ~isempty(M.aux_vars) && ~options.ramsey_policy
     if M.set_auxiliary_variables
         ys = h_set_auxiliary_variables(ys,exo_ss,params);
     end
@@ -129,5 +128,5 @@ elseif ~isempty(options.steadystate_partial)
     for i = 1:nov
         indv(i) = strmatch(ssvar(i), M.endo_names, 'exact');
     end
-    [ys,check] = dynare_solve('restricted_steadystate', ys(indv), options, exo_ss,indv);
+    [ys,~] = dynare_solve('restricted_steadystate', ys(indv), options, exo_ss,indv);
 end

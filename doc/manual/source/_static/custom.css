@@ -1,0 +1,41 @@
+div.sphinxsidebar {
+    float: left;
+    width: 230px;
+    font-size: 90%;
+    word-wrap: break-word;
+    overflow-wrap : break-word;
+    overflow-y: scroll;
+    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+    top: 0;
+    bottom: 0;
+}
+
+div.sphinxsidebar::-webkit-scrollbar {  /* WebKit */
+  width: 0px;
+}
+
+
+div.sphinxsidebarwrapper p.logo {
+    padding: 0;
+    margin: -10px 0 0 0px;
+    text-align: left;
+}
+
+div.body {
+    min-width: 450px;
+    max-width: 90%;
+}
+
+.property{
+    display:inline-block;
+    text-decoration: underline;
+    text-decoration-style: double;
+    padding-right: 10px;
+    padding-top: 0px;
+}
+
+blockquote {
+    margin: 0 0 15px 30px;
+    padding: 0;
+}

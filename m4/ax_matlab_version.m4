@@ -1,4 +1,4 @@
-dnl Copyright (C) 2009-2016 Dynare Team
+dnl Copyright © 2009-2019 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -20,8 +20,14 @@ AC_DEFUN([AX_MATLAB_VERSION],
 AC_REQUIRE([AX_MATLAB])
 
 AC_MSG_CHECKING([for MATLAB version])
-if test "x$MATLAB_VERSION" != "x"; then
+if test -n "$MATLAB_VERSION"; then
   case $MATLAB_VERSION in
+    *2019b | *2019B)
+      MATLAB_VERSION="9.7"
+      ;;
+    *2019a | *2019A)
+      MATLAB_VERSION="9.6"
+      ;;
     *2018b | *2018B)
       MATLAB_VERSION="9.5"
       ;;
@@ -113,6 +119,9 @@ if test "x$MATLAB_VERSION" != "x"; then
       MATLAB_VERSION="7.0.0"
       ;;
   esac
+  if ! echo "${MATLAB_VERSION}" | grep -qE '^[[0-9.]]+$'; then
+      AC_MSG_ERROR([unknown MATLAB version ${MATLAB_VERSION}])
+  fi
   AC_MSG_RESULT([${MATLAB_VERSION}])
   ax_matlab_version_ok="yes"
 else

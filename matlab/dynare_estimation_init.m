@@ -448,7 +448,7 @@ else
 end
 
 % Define union of observed and state variables
-if options_.block == 1
+if options_.block
     k1 = k1';
     [k2, i_posA, i_posB] = union(k1', M_.state_var', 'rows');
     % Set restrict_state to postion of observed + state variables in expanded state vector.
@@ -493,10 +493,6 @@ if options_.analytic_derivation
         error('analytic derivation is incompatible with diffuse filter')
     end
     options_.analytic_derivation = 1;
-    if ~(exist('sylvester3','file')==2)
-        dynareroot = strrep(which('dynare'),'dynare.m','');
-        addpath([dynareroot 'gensylv'])
-    end
     if estim_params_.np
         % check if steady state changes param values
         M=M_;

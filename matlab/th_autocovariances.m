@@ -92,7 +92,7 @@ nspred = M_.nspred;
 nstatic = M_.nstatic;
 
 nx = size(ghx,2);
-if options_.block == 0
+if ~options_.block
     %order_var = dr.order_var;
     inv_order_var = dr.inv_order_var;
     kstate = dr.kstate;
@@ -123,7 +123,7 @@ end
 b = ghu1*M_.Sigma_e*ghu1';
 
 
-if options_.block == 0
+if ~options_.block
     ipred = nstatic+(1:nspred)';
 else
     ipred = dr.state_var;
@@ -135,7 +135,7 @@ end
 % HP filtering, this mean correction is computed *before* filtering)
 if local_order == 2 || options_.hp_filter == 0
     [vx, u] =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,[],options_.debug);
-    if options_.block == 0
+    if ~options_.block
         iky = inv_order_var(ivar);
     else
         iky = ivar;

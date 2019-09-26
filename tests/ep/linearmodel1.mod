@@ -26,22 +26,14 @@ end;
 
 steady;
 
-options_.simul.maxit = 100;
-options_.ep.verbosity = 0;
-options_.ep.stochastic.status = 0;
-options_.ep.order = 0;
-options_.ep.nnodes = 0;
-options_.console_mode = 0;
 
 // Extended path simulation
-ts = extended_path([], 10, [], options_, M_, oo_);
+options_.ep.order = 0;
+ts = extended_path([], 100, [], options_, M_, oo_);
 
 // Stochastic extended path simulation
-options_.ep.stochastic.status = 1;
-options_.ep.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
 options_.ep.order = 1;
-options_.ep.nnodes = 3;
-sts = extended_path([], 10, [], options_, M_, oo_);
+sts = extended_path([], 100, [], options_, M_, oo_);
 
 // The generated paths should be identical (because the model is linear)
 if max(max(abs(ts.data-sts.data))) > 1e-12

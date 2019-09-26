@@ -91,5 +91,5 @@ shocks;
 var ez; stderr 0.001;  
 end;
 
-options_.risky_steadystate = 1;
+options_.risky_steadystate = true;
 stoch_simul (order=3,irf=0,periods=20000) erp1, rf1, m1, r1, y, z, c, d, mu, k;

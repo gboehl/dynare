@@ -62,14 +62,14 @@ end
 
 % Hack to determine if oo_.SmoothedVariables was computed after a Metropolis
 tmp = fieldnames(smoothedvars);
-if isstruct(getfield(smoothedvars, tmp{1}))
+if isstruct(smoothedvars.(tmp{1}))
     post_metropolis = 1;
-    if ~ isstruct(getfield(smoothedvars, tmp{end}))
+    if ~ isstruct(smoothedvars.(tmp{end}))
         % point and metropolis results are simultaneously present
         post_metropolis = 2;
     end
 
-elseif isstruct(getfield(smoothedvars, tmp{end}))
+elseif isstruct(smoothedvars.(tmp{end}))
     % point and metropolis results are simultaneously present
     post_metropolis = 2;
 else
@@ -121,7 +121,7 @@ else
 end
 
 % Determine number of periods
-n = size(getfield(smoothedvars, tmp{1}));
+n = size(smoothedvars.(tmp{1}));
 
 if n < M_.maximum_endo_lag
     error('Not enough observations to create initial conditions')
@@ -175,7 +175,7 @@ for i = 1:length(invars)
         % Skip exogenous
         continue
     end
-    s = getfield(smoothedvars, invars{i});
+    s = smoothedvars.(invars{i});
     j = strmatch(invars{i}, M_.endo_names, 'exact');
     v = s((period-M_.maximum_endo_lag+1):period);% + steady_state(j);
     if ~isfield(opts, 'outfile')
@@ -187,7 +187,7 @@ for i = 1:length(invars)
         end
     else
         % When saving to a file, x(-1) is in the variable called "x_"
-        o = setfield(o, [ outvars{i} '_' ], v);
+        o.([ outvars{i} '_' ]) = v;
     end
 end
 
@@ -207,9 +207,9 @@ for i = 1:length(M_.aux_vars)
         [m, k] = ismember(orig_var, outvars);
         if m
             if ~isempty(strmatch(invars{k}, M_.endo_names))
-                s = getfield(smoothedvars, invars{k});
+                s = smoothedvars.(invars{k});
             else
-                s = getfield(smoothedshocks, invars{k});
+                s = smoothedshocks.(invars{k});
             end
             l = M_.aux_vars(i).orig_lead_lag;
             if period-M_.maximum_endo_lag+1+l < 1
@@ -223,7 +223,7 @@ for i = 1:length(M_.aux_vars)
                 % When saving to a file, x(-2) is in the variable called "x_l2"
                 lead_lag = num2str(l);
                 lead_lag = regexprep(lead_lag, '-', 'l');
-                o = setfield(o, [ orig_var '_' lead_lag ], v);
+                o.([ orig_var '_' lead_lag ]) = v;
             end
         end
     end

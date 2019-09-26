@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Dynare Team
+ * Copyright © 2007-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -78,26 +78,26 @@ Mem_Mngr::mxMalloc_NZE()
     {
       CHUNK_SIZE += CHUNK_BLCK_SIZE;
       Nb_CHUNK++;
-      NZE_Mem = (NonZeroElem *) mxMalloc(CHUNK_BLCK_SIZE*sizeof(NonZeroElem));      /*The block of memory allocated*/
+      NZE_Mem = static_cast<NonZeroElem *>(mxMalloc(CHUNK_BLCK_SIZE*sizeof(NonZeroElem)));      /*The block of memory allocated*/
       error_msg.test_mxMalloc(NZE_Mem, __LINE__, __FILE__, __func__, CHUNK_BLCK_SIZE*sizeof(NonZeroElem));
       NZE_Mem_Allocated.push_back(NZE_Mem);
       if (!NZE_Mem)
         mexPrintf("Not enough memory available\n");
       if (NZE_Mem_add)
         {
-          NZE_Mem_add = (NonZeroElem **) mxRealloc(NZE_Mem_add, CHUNK_SIZE*sizeof(NonZeroElem *));                                                                                                     /*We have to redefine the size of pointer on the memory*/
+          NZE_Mem_add = static_cast<NonZeroElem **>(mxRealloc(NZE_Mem_add, CHUNK_SIZE*sizeof(NonZeroElem *)));                                                                                                     /*We have to redefine the size of pointer on the memory*/
           error_msg.test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
         }
       else
         {
-          NZE_Mem_add = (NonZeroElem **) mxMalloc(CHUNK_SIZE*sizeof(NonZeroElem *));                                                                                       /*We have to define the size of pointer on the memory*/
+          NZE_Mem_add = static_cast<NonZeroElem **>(mxMalloc(CHUNK_SIZE*sizeof(NonZeroElem *)));                                                                                       /*We have to define the size of pointer on the memory*/
           error_msg.test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
         }
 
       if (!NZE_Mem_add)
         mexPrintf("Not enough memory available\n");
       for (i = CHUNK_heap_pos; i < CHUNK_SIZE; i++)
-        NZE_Mem_add[i] = (NonZeroElem *) (NZE_Mem+(i-CHUNK_heap_pos));
+        NZE_Mem_add[i] = const_cast<NonZeroElem *>(NZE_Mem+(i-CHUNK_heap_pos));
       i = CHUNK_heap_pos++;
       return (NZE_Mem_add[i]);
     }
@@ -110,11 +110,11 @@ Mem_Mngr::mxFree_NZE(void *pos)
   size_t gap;
   for (i = 0; i < Nb_CHUNK; i++)
     {
-      gap = ((size_t) (pos)-(size_t) (NZE_Mem_add[i*CHUNK_BLCK_SIZE]))/sizeof(NonZeroElem);
+      gap = (reinterpret_cast<size_t>(pos)-reinterpret_cast<size_t>(NZE_Mem_add[i*CHUNK_BLCK_SIZE]))/sizeof(NonZeroElem);
       if ((gap < CHUNK_BLCK_SIZE) && (gap >= 0))
         break;
     }
-  Chunk_Stack.push_back((NonZeroElem *) pos);
+  Chunk_Stack.push_back(static_cast<NonZeroElem *>(pos));
 }
 
 void

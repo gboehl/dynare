@@ -3,7 +3,7 @@ function varargout = prior(varargin)
 % Computes various prior statistics and display them in the command window.
 %
 % INPUTS
-%   'table', 'moments', 'optimize', 'simulate', 'plot'
+%   'table', 'moments', 'optimize', 'simulate', 'plot', 'moments(distribution)'
 %
 % OUTPUTS
 %   none
@@ -11,7 +11,7 @@ function varargout = prior(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2018 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -61,7 +61,13 @@ if (size(estim_params_.var_endo,1) || size(estim_params_.corrn,1))
 end
 
 % Fill or update bayestopt_ structure
-[xparam1, EstimatedParams, BayesOptions, lb, ub, Model] = set_prior(estim_params_, M_, options_);
+[xparam1, estim_params_, BayesOptions, lb, ub, Model] = set_prior(estim_params_, M_, options_);
+% Set restricted state space
+options_plot_priors_old=options_.plot_priors;
+options_.plot_priors=0;
+[~,~,~,~, M_, options_, oo_, estim_params_, BayesOptions] = ...
+    dynare_estimation_init(M_.endo_names, M_.fname, 1, M_, options_, oo_, estim_params_, bayestopt_);
+options_.plot_priors=options_plot_priors_old;
 
 
 % Temporarly change qz_criterium option value
@@ -78,20 +84,20 @@ order = options_.order;
 options_.order = 1;
 
 if ismember('plot', varargin)
-    plot_priors(BayesOptions, Model, EstimatedParams, options_)
+    plot_priors(BayesOptions, Model, estim_params_, options_)
     donesomething = true;
 end
 
 if ismember('table', varargin)
-    print_table_prior(lb, ub, options_, Model, BayesOptions, EstimatedParams);
+    print_table_prior(lb, ub, options_, Model, BayesOptions, estim_params_);
     donesomething = true;
 end
 
 if ismember('simulate', varargin) % Prior simulations (BK).
     if ismember('moments(distribution)', varargin)
-        results = prior_sampler(1, Model, BayesOptions, options_, oo_, EstimatedParams);
+        results = prior_sampler(1, Model, BayesOptions, options_, oo_, estim_params_);
     else
-        results = prior_sampler(0, Model, BayesOptions, options_, oo_, EstimatedParams);
+        results = prior_sampler(0, Model, BayesOptions, options_, oo_, estim_params_);
     end
     % Display prior mass info
     skipline(2)
@@ -102,7 +108,8 @@ if ismember('simulate', varargin) % Prior simulations (BK).
     disp(['Complex jacobian share                = ' num2str(results.jacobian.problem_share)])
     disp(['mjdgges crash share                   = ' num2str(results.dll.problem_share)])
     disp(['Steady state problem share            = ' num2str(results.ss.problem_share)])
-    disp(['Complex steady state  share           = ' num2str(results.ss.complex_share)])
+    disp(['Complex steady state share            = ' num2str(results.ss.complex_share)])
+    disp(['Endogenous prior violation share      = ' num2str(results.endogenous_prior_violation_share)])
     if options_.loglinear
         disp(['Nonpositive steady state share        = ' num2str(results.ss.nonpositive_share)])
     end
@@ -112,7 +119,7 @@ if ismember('simulate', varargin) % Prior simulations (BK).
 end
 
 if ismember('optimize', varargin) % Prior optimization.
-    optimize_prior(options_, Model, oo_, BayesOptions, EstimatedParams);
+    optimize_prior(options_, Model, oo_, BayesOptions, estim_params_);
     donesomething = true;
 end
 
@@ -123,17 +130,20 @@ if ismember('moments', varargin) % Prior simulations (2nd order moments).
     k = find(isnan(xparam1));
     xparam1(k) = BayesOptions.p1(k);
     % Update vector of parameters and covariance matrices
-    Model = set_all_parameters(xparam1, EstimatedParams, Model);
+    Model = set_all_parameters(xparam1, estim_params_, Model);
     % Check model.
     check_model(Model);
     % Compute state space representation of the model.
     oo__ = oo_;
     oo__.dr = set_state_space(oo__.dr, Model, options_);
     % Solve model
-    [dr, info, Model , options__ , oo__] = resol(0, Model , options_ ,oo__);
+    [T,R,~,info,Model , options__ , oo__] = dynare_resolve(Model , options_ ,oo__,'restrict');
+    if ~info(1)
+        info=endogenous_prior_restrictions(T,R,Model , options__ , oo__);
+    end
     if info
         skipline()
-        disp(sprintf('Cannot solve the model on the prior mode (info = %s, %s)', num2str(info(1)), interpret_resol_info(info)));
+        fprintf('Cannot solve the model on the prior mode (info = %s, %s)\n', num2str(info(1)), interpret_resol_info(info));
         skipline()
         return
     end
@@ -145,7 +155,7 @@ end
 
 if ismember('moments(distribution)', varargin) % Prior simulations (BK).
     if ~ismember('simulate', varargin)
-        results = prior_sampler(1, Model, BayesOptions, options_, oo_, EstimatedParams);
+        results = prior_sampler(1, Model, BayesOptions, options_, oo_, estim_params_);
     end
     priorpath = [Model.dname filesep() 'prior' filesep() 'draws' filesep()];
     list_of_files = dir([priorpath 'prior_draws*']);
@@ -161,6 +171,7 @@ if ismember('moments(distribution)', varargin) % Prior simulations (BK).
                 dr = tmp.pdraws{j,3};
                 oo__ = oo_;
                 oo__.dr = dr;
+                Model=set_parameters_locally(Model,tmp.pdraws{j,1});% Needed to update the covariance matrix of the state innovations.
                 oo__ = disp_th_moments(oo__.dr, [], Model, options_, oo__);
                 FirstOrderMoments(:,iter) = oo__.mean;
                 SecondOrderMoments(:,:,iter) = oo__.var;

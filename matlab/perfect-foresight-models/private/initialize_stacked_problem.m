@@ -1,7 +1,6 @@
-function [options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, ...
-          dynamicmodel] = initialize_stacked_problem(endogenousvariables, options, M, steadystate_y)
-% function [options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, ...
-%           dynamicmodel] = initialize_stacked_problem(endogenousvariables, options, M, steadystate_y)
+function [options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, i_cols_0, i_cols_J0, dynamicmodel] = ...
+        initialize_stacked_problem(endogenousvariables, options, M, steadystate_y)
+
 % Sets up the stacked perfect foresight problem for use with dynare_solve.m
 %
 % INPUTS
@@ -9,6 +8,7 @@ function [options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, .
 % - options             [struct] contains various options.
 % - M                   [struct] contains a description of the model.
 % - steadystate_y       [double] N*1 array, steady state for the endogenous variables.
+%
 % OUTPUTS
 % - options             [struct] contains various options.
 % - y0                  [double] N*1 array, initial conditions for the endogenous variables
@@ -25,9 +25,12 @@ function [options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, .
 %                                in dynamic Jacobian (relevant in intermediate periods)
 % - i_cols_1            [double] indices of contemporaneous and forward looking variables in
 %                                M.lead_lag_incidence in dynamic Jacobian (relevant in first period)
+% - i_cols_0            [double] indices of contemporaneous variables in M.lead_lag_incidence in dynamic
+%                                Jacobian (relevant in problems with periods=1)
+% - i_cols_J0           [double] indices of contemporaneous variables appearing in M.lead_lag_incidence (relevant in problems with periods=1)
 % - dynamicmodel        [handle] function handle to _dynamic-file
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -67,12 +70,27 @@ elseif (options.solve_algo == 11)
     end
 end
 
-y0 = endogenousvariables(:,M.maximum_lag);
-yT = endogenousvariables(:,M.maximum_lag+periods+1);
+if M.maximum_lag > 0
+    y0 = endogenousvariables(:, M.maximum_lag);
+else
+    y0 = NaN(ny, 1);
+end
+if M.maximum_lead > 0
+    yT = endogenousvariables(:, M.maximum_lag+periods+1);
+else
+    yT = NaN(ny, 1);
+end
 z = endogenousvariables(:,M.maximum_lag+(1:periods));
 illi = M.lead_lag_incidence';
 [i_cols,~,i_cols_j] = find(illi(:));
 illi = illi(:,2:3);
 [i_cols_J1,~,i_cols_1] = find(illi(:));
 i_cols_T = nonzeros(M.lead_lag_incidence(1:2,:)');
+if periods==1
+    i_cols_0 = nonzeros(M.lead_lag_incidence(2,:)');
+    i_cols_J0 = find(M.lead_lag_incidence(2,:)');
+else
+    i_cols_0 = [];
+    i_cols_J0 = [];
+end
 dynamicmodel = str2func([M.fname,'.dynamic']);

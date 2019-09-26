@@ -12,7 +12,7 @@ function perfect_foresight_setup()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 1996-2018 Dynare Team
+% Copyright (C) 1996-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,8 +34,8 @@ global M_ options_ oo_
 test_for_deep_parameters_calibration(M_);
 
 if size(M_.lead_lag_incidence,2)-nnz(M_.lead_lag_incidence(M_.maximum_endo_lag+1,:)) > 0
-    mess = ['PERFECT_FORESIGHT_SETUP: error in model specification : the variable(s) '];
-    var_list = M_.endo_names(find(M_.lead_lag_incidence(M_.maximum_lag+1,:)==0));
+    mess = 'PERFECT_FORESIGHT_SETUP: error in model specification : the variable(s) ';
+    var_list = M_.endo_names(M_.lead_lag_incidence(M_.maximum_endo_lag+1,:)==0);
     for i=1:length(var_list)
         if i<length(var_list)
             mess = [mess, var_list{i} ', '];
@@ -55,7 +55,7 @@ if ~isempty(M_.det_shocks) && options_.periods<max([M_.det_shocks.periods])
     % Some expected shocks happen after the terminal period.
     mess = sprintf('Problem with the declaration of the expected shocks:\n');
     for i=1:length(M_.det_shocks)
-        if any(M_.det_shocks(i).periods>options_.periods);
+        if any(M_.det_shocks(i).periods>options_.periods)
             mess = sprintf('%s\n   At least one expected value for %s has been declared after the terminal period.', mess, M_.exo_names{M_.det_shocks(i).exo_id});
         end
     end

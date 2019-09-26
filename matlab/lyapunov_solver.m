@@ -15,11 +15,11 @@ function P=lyapunov_solver(T,R,Q,DynareOptions) % --*-- Unitary tests --*--
 % Algorithms
 %   Default, if none of the other algorithms is selected:
 %       Reordered Schur decomposition (Bartels-Stewart algorithm)
-%   DynareOptions.lyapunov_fp == 1
+%   DynareOptions.lyapunov_fp == true
 %       iteration-based fixed point algorithm
-%   DynareOptions.lyapunov_db == 1
+%   DynareOptions.lyapunov_db == true
 %       doubling algorithm
-%   DynareOptions.lyapunov_srs == 1
+%   DynareOptions.lyapunov_srs == true
 %       Square-root solver for discrete-time Lyapunov equations (requires Matlab System Control toolbox
 %       or Octave control package)
 
@@ -40,14 +40,14 @@ function P=lyapunov_solver(T,R,Q,DynareOptions) % --*-- Unitary tests --*--
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if DynareOptions.lyapunov_fp == 1
+if DynareOptions.lyapunov_fp
     P = lyapunov_symm(T,R*Q*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, 3, DynareOptions.debug);
-elseif DynareOptions.lyapunov_db == 1
+elseif DynareOptions.lyapunov_db
     [P, errorflag] = disclyap_fast(T,R*Q*R',DynareOptions.lyapunov_doubling_tol);
     if errorflag %use Schur-based method
         P = lyapunov_symm(T,R*Q*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
     end
-elseif DynareOptions.lyapunov_srs == 1
+elseif DynareOptions.lyapunov_srs
     % works only with Matlab System Control toolbox or Octave control package,
     if isoctave
         if ~user_has_octave_forge_package('control')
@@ -72,7 +72,7 @@ end
 %$ options_.qz_criterium=1-options_.qz_zero_threshold;
 %$ options_.lyapunov_fixed_point_tol = 1e-10;
 %$ options_.lyapunov_doubling_tol = 1e-16;
-%$ options_.debug=0;
+%$ options_.debug=false;
 %$
 %$ n_small=8;
 %$ m_small=10;
@@ -91,7 +91,7 @@ end
 %$ R_large=randn(n_large,m_large);
 %$
 %$ % DynareOptions.lyapunov_fp == 1
-%$ options_.lyapunov_fp = 1;
+%$ options_.lyapunov_fp = true;
 %$ try
 %$    Pstar1_small = lyapunov_solver(T_small,R_small,Q_small,options_);
 %$    Pstar1_large = lyapunov_solver(T_large,R_large,Q_large,options_);
@@ -101,8 +101,8 @@ end
 %$ end
 %$
 %$ % Dynareoptions.lyapunov_db == 1
-%$ options_.lyapunov_fp = 0;
-%$ options_.lyapunov_db = 1;
+%$ options_.lyapunov_fp = false;
+%$ options_.lyapunov_db = true;
 %$ try
 %$    Pstar2_small = lyapunov_solver(T_small,R_small,Q_small,options_);
 %$    Pstar2_large = lyapunov_solver(T_large,R_large,Q_large,options_);
@@ -113,8 +113,8 @@ end
 %$
 %$ % Dynareoptions.lyapunov_srs == 1
 %$ if (isoctave && user_has_octave_forge_package('control')) || (~isoctave && user_has_matlab_license('control_toolbox'))
-%$     options_.lyapunov_db = 0;
-%$     options_.lyapunov_srs = 1;
+%$     options_.lyapunov_db = false;
+%$     options_.lyapunov_srs = true;
 %$     try
 %$        Pstar3_small = lyapunov_solver(T_small,R_small,Q_small,options_);
 %$        Pstar3_large = lyapunov_solver(T_large,R_large,Q_large,options_);
@@ -127,7 +127,7 @@ end
 %$ end
 %$
 %$ % Standard
-%$     options_.lyapunov_srs = 0;
+%$     options_.lyapunov_srs = false;
 %$ try
 %$    Pstar4_small = lyapunov_solver(T_small,R_small,Q_small,options_);
 %$    Pstar4_large = lyapunov_solver(T_large,R_large,Q_large,options_);

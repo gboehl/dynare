@@ -1,16 +1,14 @@
-function aa = isconst(y)
-% Returns 1 if vector y is constant, 0 otherwise.
+function A = isconst(B)
+
+% Returns an array of logicals, i-th element is `true` if column i of B is constant, `false` otherwise.
 %
 % INPUTS:
-%   yy        [double]    n*1 vector.
+% - B        [double]    n×m matrix.
 %
 % OUTPUTS
-%   aa        [integer]   scalar equal to 1 or 0.
-%
-% SPECIAL REQUIREMENTS
-%   none
+% - A        [logical]   1×m vector.
 
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright © 2008-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -26,7 +24,11 @@ function aa = isconst(y)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>
-aa = 0;
-if all(abs(y(2:end)-y(1:end-1))<1e-10)
-    aa = 1;
+
+A = false(1, size(B, 2));
+
+for i = 1:size(B, 2)
+    if all(abs(B(2:end,i)-B(1:end-1,i))<1e-12)
+        A(i) = true;
+    end
 end

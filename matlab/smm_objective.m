@@ -15,7 +15,7 @@ function [r,flag] = smm_objective(xparams,sample_moments,weighting_matrix,option
 % SPECIAL REQUIREMENTS
 %  The user has to provide a file where the moment conditions are defined.
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -75,7 +75,7 @@ save('estimated_parameters.mat','xparams');
 
 % Check for local determinacy of the deterministic steady state.
 noprint = options_.noprint; options_.noprint = 1;
-[eigval,local_determinacy_and_stability,info] = check(M_,options_,oo_); options_.noprint = noprint;
+[~,local_determinacy_and_stability,info] = check(M_,options_,oo_); options_.noprint = noprint;
 if ~local_determinacy_and_stability
     r = priorObjectiveValue * (1+info(2));
     flag = 0;
@@ -100,7 +100,7 @@ else% parallel mode.
         error('The parallel version of SMM estimation is not implemented for non unix platforms!')
     end
     job_number = 1;% Remark. First job is for the master.
-    [Junk,hostname] = unix('hostname --fqdn');
+    [~,hostname] = unix('hostname --fqdn');
     hostname = deblank(hostname);
     for i=1:length(parallel)
         machine = deblank(parallel(i).machine);

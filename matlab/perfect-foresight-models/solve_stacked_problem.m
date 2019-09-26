@@ -1,5 +1,5 @@
 function [endogenousvariables, info] = solve_stacked_problem(endogenousvariables, exogenousvariables, steadystate, M, options)
-% [endogenousvariables, info] = solve_stacked_problem(endogenousvariables, exogenousvariables, steadystate, M, options)
+
 % Solves the perfect foresight model using dynare_solve
 %
 % INPUTS
@@ -13,7 +13,7 @@ function [endogenousvariables, info] = solve_stacked_problem(endogenousvariables
 % - endogenousvariables [double] N*T array, paths for the endogenous variables (solution of the perfect foresight model).
 % - info                [struct] contains informations about the results.
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,7 +30,7 @@ function [endogenousvariables, info] = solve_stacked_problem(endogenousvariables
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-[options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, dynamicmodel] = ...
+[options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, i_cols_0, i_cols_J0, dynamicmodel] = ...
     initialize_stacked_problem(endogenousvariables, options, M, steadystate);
 
 if (options.solve_algo == 10 || options.solve_algo == 11)% mixed complementarity problem
@@ -50,15 +50,10 @@ if (options.solve_algo == 10 || options.solve_algo == 11)% mixed complementarity
                               dynamicmodel, y0, yT, ...
                               exogenousvariables, M.params, steadystate, ...
                               M.maximum_lag, options.periods, M.endo_nbr, i_cols, ...
-                              i_cols_J1, i_cols_1, i_cols_T, i_cols_j, ...
-                              M.NNZDerivatives(1),eq_index);
+                              i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
+                              eq_index);
 else
-    [y, check] = dynare_solve(@perfect_foresight_problem,z(:),options, ...
-                              dynamicmodel, y0, yT, ...
-                              exogenousvariables, M.params, steadystate, ...
-                              M.maximum_lag, options.periods, M.endo_nbr, i_cols, ...
-                              i_cols_J1, i_cols_1, i_cols_T, i_cols_j, ...
-                              M.NNZDerivatives(1));
+    [y, check] = dynare_solve(@perfect_foresight_problem,z(:), options, y0, yT, exogenousvariables, M.params, steadystate, options.periods, M, options);
 end
 
 if all(imag(y)<.1*options.dynatol.x)
@@ -74,6 +69,5 @@ endogenousvariables(:, M.maximum_lag+(1:options.periods)) = reshape(y, M.endo_nb
 if check
     info.status = false;
 else
-
     info.status = true;
 end

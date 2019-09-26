@@ -14,7 +14,7 @@ function dyn_saveas(h, fname, nodisplay, graph_format)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2012-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,10 +43,13 @@ if any(strcmp('eps',cellstr(graph_format)))
 end
 if any(strcmp('pdf',cellstr(graph_format)))
     if isoctave
-        error('Octave cannot create pdf files!')
-    else
-        print(h,'-dpdf',[fname,'.pdf'])
+        fname = strrep(fname,'/',filesep);
+        fname = strrep(fname,'\',filesep);
+        if nodisplay && ispc
+            set(h, 'Visible','on');
+        end
     end
+    print(h,'-dpdf',[fname,'.pdf'])
 end
 if any(strcmp('fig',cellstr(graph_format)))
     if isoctave

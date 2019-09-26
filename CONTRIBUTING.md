@@ -45,7 +45,7 @@ So, now you've reported the bug or asked for an enhancemnt by creating a GitHub 
 Now, if you want to go the extra mile, you'll volunteer to contribute code to fix the GitHub issue you created above. Once we've agreed that you'll do it, please do the following:
 
 1. Clone the Dynare repository:
-   * `git clone https://git.dynare.org/Dynare/dynare.git`
+   * `git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git`
 1. [Fork the Dynare repository](https://help.github.com/articles/fork-a-repo)
 1. Change into the `dynare` folder and add the forked repository as a remote:
    * `cd dynare`

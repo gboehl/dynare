@@ -15,14 +15,15 @@ ep:
    maxit: 500
    periods: 200
    set_dynare_seed_to_default: 1
-   IntegrationAlgorithm: 'Tensor-Gaussian-Quadrature'
-                         'Stroud-Cubature-3'
-                         'Stroud-Cubature-5'
-                         'Unscented'
+
    solve_algo:
    stack_solve_algo: 4
    step: 50
    stochastic:
+              IntegrationAlgorithm: 'Tensor-Gaussian-Quadrature'
+                                    'Stroud-Cubature-3'
+                                    'Stroud-Cubature-5'
+                                    'Unscented'
               method: ''
               algo: 0
               order: 1
@@ -41,7 +42,7 @@ ep:
 initial_period: NaN
 lmmcp:
       lb:
-      ub: 
+      ub:
       status: 0 (?? status is not an option ??)
 mcppath:
         lb:
@@ -63,7 +64,7 @@ pfm.use_bytecode = DynareOptions.ep.use_bytecode ;
 
 * in extended_path_core, one passes options.ep and individual options
 * there are no options to control extended_path_homotopy
-* extended_path_initialization sets ep and options 
+* extended_path_initialization sets ep and options
 * setup_integration_nodes: number of nodes is not handled in a symmetric way for all algorithms
 * why extended_path_initialization et setup_stochastic_extended_path ?
 * do we need solve_stochastic_perfect_foresight_model.m and solve_stochastic_perfect_foresight_model_1.m ?

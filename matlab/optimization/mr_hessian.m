@@ -125,17 +125,20 @@ while i<n
         end
         if abs(dx(it))>(3*hess_info.htol)
             hess_info.h1(i)= hess_info.htol/abs(dx(it))*hess_info.h1(i);
+            hess_info.h1(i) = max(hess_info.h1(i),1e-10);
             xh1(i)=x(i)+hess_info.h1(i);
             try
                 [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
             catch
                 fx=1.e8;
             end
-            while (fx-f0)==0
+            iter=0;
+            while (fx-f0)==0 && iter<50
                 hess_info.h1(i)= hess_info.h1(i)*2;
                 xh1(i)=x(i)+hess_info.h1(i);
                 [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
                 ic=1;
+                iter=iter+1;
             end
         end
         it=it+1;

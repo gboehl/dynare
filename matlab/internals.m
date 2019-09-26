@@ -79,7 +79,7 @@ more off
 
 if strcmpi(flag,'--test')
     if nargin>1
-        dynare_path = dynare_config([],0);
+        dynare_path = dynare_config();
         number_of_matlab_routines = length(varargin);
         for i=1:number_of_matlab_routines
             dtest(varargin{i},[dynare_path '..' filesep 'tests']);
@@ -175,7 +175,7 @@ end
 
 if strcmpi(flag,'--info')
     if nargin==2
-        dynare_config([],0);
+        dynare_config();
         dynInfo(varargin{1})
     else
         if nargin<2

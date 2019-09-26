@@ -1,6 +1,6 @@
 function [endogenousvariables, info] = solve_stacked_linear_problem(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M, options)
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,7 +17,7 @@ function [endogenousvariables, info] = solve_stacked_linear_problem(endogenousva
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-[options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, dynamicmodel] = ...
+[options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, i_cols_0, i_cols_J0, dynamicmodel] = ...
     initialize_stacked_problem(endogenousvariables, options, M, steadystate_y);
 
 ip = find(M.lead_lag_incidence(1,:)');
@@ -45,8 +45,8 @@ x = bsxfun(@minus, exogenousvariables, steadystate_x');
                           jacobian, y0-steadystate_y, yT-steadystate_y, ...
                           x, M.params, steadystate_y, ...
                           M.maximum_lag, options.periods, M.endo_nbr, i_cols, ...
-                          i_cols_J1, i_cols_1, i_cols_T, i_cols_j, ...
-                          M.NNZDerivatives(1), jendo, jexog);
+                          i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
+                          jendo, jexog);
 
 if all(imag(y)<.1*options.dynatol.x)
     if ~isreal(y)

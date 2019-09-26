@@ -1,4 +1,4 @@
-## Copyright (C) 2013-2017 Dynare Team
+## Copyright (C) 2013-2019 Dynare Team
 ##
 ## This file is part of Dynare.
 ##
@@ -18,7 +18,6 @@
 load_octave_packages
 
 top_test_dir = getenv('TOP_TEST_DIR');
-addpath(top_test_dir);
 addpath([top_test_dir filesep '..' filesep 'matlab']);
 
 ## Test Dynare Version
@@ -32,7 +31,7 @@ endif
 putenv("GNUTERM", "dumb")
 
 ## To add default directories, empty dseries objects
-dynare_config([], 0);
+dynare_config();
 
 printf("\n***  TESTING:  run_reporting_test_octave.m ***\n");
 try

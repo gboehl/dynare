@@ -34,8 +34,8 @@ function [x,info,fvec,fjac] = dynare_solve(func,x,options,varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% jacobian_flag=1:  jacobian given by the 'func' function
-% jacobian_flag=0:  jacobian obtained numerically
+% jacobian_flag=true:  jacobian given by the 'func' function
+% jacobian_flag=false:  jacobian obtained numerically
 jacobian_flag = options.jacobian_flag;
 
 % Set tolerance parameter depending the the caller function.
@@ -46,7 +46,7 @@ if isoctave
 else
     caller_file_name=stack(2).file;
 end
-if strcmp(caller_file_name,'simulation_core.m') || strcmp(caller_file_name,'solve_stacked_problem.m')
+if strcmp(caller_file_name,'solve_stacked_problem.m')
     tolf = options.dynatol.f;
 else
     tolf = options.solve_tolf;

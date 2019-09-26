@@ -89,7 +89,7 @@ try
     warning('on','MATLAB:singularMatrix');
     warning('on','MATLAB:nearlySingularMatrix');
     if (any(any(isinf(UAVinv))) || any(any(isnan(UAVinv))))
-        if(options_.ACES_solver==1)
+        if(options_.ACES_solver)
             disp('ERROR! saving PI_gensys_data_dump');
             save PI_gensys_data_dump
             error('PI_gensys: Inversion of poss. zero matrix UAVinv=inv(U02''*a1*V02)!');
@@ -146,7 +146,7 @@ G1pi=[Ze11 Ze12 Ze134 Ze134; P1 G11 G12 G13; Ze31 G21 G22 G23; P3 G31 G32 G33];
 
 impact=[eye(NX,NX); zeros(n+FL_RANK,NX)];
 
-if(options_.ACES_solver==1)
+if(options_.ACES_solver)
     if isfield(lq_instruments,'names')
         num_inst=size(lq_instruments.names,1);
         if num_inst>0
@@ -251,7 +251,7 @@ if zxz
     nmat=[]; %;gev=[]
     return
 end
-if (FL_RANK ~= nunstab && options_.ACES_solver~=1)
+if (FL_RANK ~= nunstab && ~options_.ACES_solver)
     disp(['Number of unstable variables ' num2str(nunstab)]);
     disp( ['does not match number of expectational equations ' num2str(FL_RANK)]);
     nmat=[];% gev=[];

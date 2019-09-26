@@ -226,9 +226,9 @@ for b=fpar:B
         %% Compute constant for observables
         if options_.prefilter == 1 %as mean is taken after log transformation, no distinction is needed here
             constant_part=repmat(mean_varobs',1,gend);
-        elseif options_.prefilter == 0 && options_.loglinear == 1 %logged steady state must be used
+        elseif options_.prefilter == 0 && options_.loglinear %logged steady state must be used
             constant_part=repmat(log(SteadyState(IdObs)),1,gend);
-        elseif options_.prefilter == 0 && options_.loglinear == 0 %unlogged steady state must be used
+        elseif options_.prefilter == 0 && ~options_.loglinear %unlogged steady state must be used
             constant_part=repmat(SteadyState(IdObs),1,gend);
         end
         %add trend to observables

@@ -1,13 +1,26 @@
 function [co, b, yhat] = cosn(H)
-
-% function co = cosn(H);
-% computes the cosine of the angle between the H(:,1) and its
-% projection onto the span of H(:,2:end)
-%
-% Not the same as multiple correlation coefficient since the means are not
-% zero
-%
-% Copyright (C) 2008-2017 Dynare Team
+% function [co, b, yhat] = cosn(H)
+% -------------------------------------------------------------------------
+% computes the cosine of the angle between the (endogenous variable) H(:,1)
+% and its projection onto the span of (exogenous variables) H(:,2:end)
+% Note: This is not the same as multiple correlation coefficient since the 
+% means are not zero
+% =========================================================================
+% INPUTS
+%   * H     [n by k]
+%           Data matrix, endogenous variable y is in the first column,
+%           exogenous variables X are in the remaining (k-1) columns
+% -------------------------------------------------------------------------
+% OUTPUTS
+%   * co    [double] (approximate) multiple correlation coefficient
+%   * b     [k by 1] ols estimator
+%   * y     [n by 1] predicted endogenous values given ols estimation
+% -------------------------------------------------------------------------
+% This function is called by 
+%   * identification_checks.m
+%   * ident_bruteforce.m
+% =========================================================================
+% Copyright (C) 2008-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -23,15 +36,16 @@ function [co, b, yhat] = cosn(H)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% =========================================================================
 
 y = H(:,1);
 X = H(:,2:end);
 
-b=(X\y);
+b=(X\y); %ols estimator
 if any(isnan(b)) || any(isinf(b))
     b=0;
 end
-yhat =  X*b;
+yhat =  X*b; %predicted values
 if rank(yhat)
     co = abs(y'*yhat/sqrt((y'*y)*(yhat'*yhat)));
 else

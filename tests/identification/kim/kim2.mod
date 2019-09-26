@@ -42,12 +42,12 @@ var ea = 1;
 end;
 
 estimated_params;
-alph ,uniform_pdf,0.6,0.04,0.5,0.7;
+alph ,uniform_pdf, , ,0.5,0.7;
 //betae ,uniform_pdf,0.99,0.004,0.98,1;
 //delta ,uniform_pdf,0.0125,0.001,0.01,0.015;
-phi ,uniform_pdf,0.5,0.2,0,10;
-theta ,uniform_pdf,0.3,0.1,0,10;
-dumpy ,uniform_pdf,0.5,0.2,0,10;
+phi ,uniform_pdf, , ,0,10;
+theta ,uniform_pdf, , ,0,10;
+dumpy ,uniform_pdf, , ,0,10;
 end;
 
 varobs c i;

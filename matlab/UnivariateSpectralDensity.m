@@ -150,7 +150,7 @@ else
     warning on MATLAB:dividebyzero
 end
 
-if options_.nograph == 0
+if ~options_.nograph
     if ~exist(M_.fname, 'dir')
         mkdir('.',M_.fname);
     end

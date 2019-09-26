@@ -11,7 +11,11 @@ EXTRA_DIST = \
 	ms-sbvar \
 	block_kalman_filter \
 	sobol \
-	local_state_space_iterations
+	local_state_space_iterations \
+	gensylv \
+	dynare_simul_ \
+	perfect_foresight_problem \
+	num_procs
 
 clean-local:
 	rm -rf `find mex/sources -name *.o`

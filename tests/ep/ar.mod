@@ -15,7 +15,7 @@ sigma   =  0.0001;
 
 external_function(name=mean_preserving_spread,nargs=2);
 
-model;
+model(use_dll);
 
   // Eq. n°1:
   efficiency = rho*efficiency(-1) + sigma*EfficiencyInnovation;
@@ -31,21 +31,14 @@ end;
 
 steady;
 
-options_.ep.verbosity = 0;
 options_.ep.stochastic.order = 0;
-options_.ep.stochastic.nodes = 0;
-options_.console_mode = 0;
+ts = extended_path([], 100, [], options_, M_, oo_);
 
-ts = extended_path([], 10, options_, M_, oo_);
-
-options_.ep.verbosity = 0;
 options_.ep.stochastic.order = 1;
-options_.ep.IntegrationAlgorithm='Tensor-Gaussian-Quadrature';
-options_.ep.stochastic.nodes = 3;
-options_.console_mode = 0;
+sts = extended_path([], 100, [], options_, M_, oo_);
 
-sts = extended_path([], 10, [], options_, M_, oo_);
-
-if max(max(abs(ts-sts)))>pi*options_.dynatol.x
+// The model is backward, we do not care about future uncertainty, extended path and stochastic extended path
+// should return the same results.
+if max(max(abs(ts.data-sts.data)))>pi*options_.dynatol.x
    disp('Stochastic Extended Path:: Something is wrong here (potential bug in extended_path.m)!!!')
 end

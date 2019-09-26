@@ -1,7 +1,7 @@
 dnl ax_mexext.m4 --- check for MEX-file suffix.
 dnl
-dnl Copyright (C) 2000--2003 Ralph Schleicher
-dnl Copyright (C) 2009 Dynare Team
+dnl Copyright © 2000-2003 Ralph Schleicher
+dnl Copyright © 2009-2019 Dynare Team
 dnl
 dnl This program is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU General Public License as
@@ -31,20 +31,14 @@ AC_DEFUN([AX_MEXEXT],
 [dnl
 AC_PREREQ([2.50])
 AC_REQUIRE([AX_MATLAB])
-AC_REQUIRE([AX_MATLAB_VERSION])
 AC_REQUIRE([AC_CANONICAL_BUILD])
 AC_CACHE_CHECK([for MEX-file suffix], [ax_cv_mexext],
 [if test "${MEXEXT+set}" = set ; then
     ax_cv_mexext="$MEXEXT"
 else
-    # The mexext script appeared in MATLAB 7.1
-    AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.1], [AC_MSG_ERROR([I can't determine the MEX file extension. Please explicitly indicate it to the configure script with the MEXEXT variable.])])
     case $build_os in
-      *cygwin*)
+      *cygwin*|*mingw*)
         ax_cv_mexext=$("$MATLAB"/bin/mexext.bat | sed 's/\r//')
-        ;;
-      *mingw*)
-        ax_cv_mexext=$(cd "$MATLAB"/bin && cmd /c mexext.bat | sed 's/\r//')
         ;;
       *)
         ax_cv_mexext=$("$MATLAB"/bin/mexext)

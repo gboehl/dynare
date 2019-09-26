@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2017 Dynare Team
+ * Copyright © 2008-2019 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -30,15 +30,12 @@
 #endif
 
 #include <string>
+#include <memory>
 
 #include "dynamic_abstract_class.hh"
-#include "dynare_exception.h"
 
 using dynamic_tt_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, double *T);
-using dynamic_resid_fct = void (*) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *residual);
-using dynamic_g1_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *g1);
-using dynamic_g2_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *v2);
-using dynamic_g3_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *v3);
+using dynamic_deriv_fct = void (*) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *deriv);
 
 /**
  * creates pointer to Dynamic function inside <model>_dynamic.dll
@@ -47,24 +44,21 @@ using dynamic_g3_fct = void (*)(const double *y, const double *x, int nb_row_x, 
 class DynamicModelDLL : public DynamicModelAC
 {
 private:
-  int *ntt;
-  dynamic_tt_fct dynamic_resid_tt, dynamic_g1_tt, dynamic_g2_tt, dynamic_g3_tt;
-  dynamic_resid_fct dynamic_resid;
-  dynamic_g1_fct dynamic_g1;
-  dynamic_g2_fct dynamic_g2;
-  dynamic_g3_fct dynamic_g3;
+  std::vector<dynamic_tt_fct> dynamic_tt;
+  std::vector<dynamic_deriv_fct> dynamic_deriv;
 #if defined(_WIN32) || defined(__CYGWIN32__)
   HINSTANCE dynamicHinstance;  // DLL instance pointer in Windows
 #else
   void *dynamicHinstance; // and in Linux or Mac
 #endif
+  std::unique_ptr<double[]> tt; // Vector of temporary terms
 
 public:
   // construct and load Dynamic model DLL
-  explicit DynamicModelDLL(const string &fname) noexcept(false);
+  explicit DynamicModelDLL(const std::string &fname, int ntt_arg, int order);
   virtual ~DynamicModelDLL();
 
   void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
-            Vector &residual, TwoDMatrix *g1, TwoDMatrix *g2, TwoDMatrix *g3) noexcept(false);
+            Vector &residual, std::vector<TwoDMatrix> &md) override;
 };
 #endif

@@ -24,7 +24,7 @@
 % wsMat' within a 'catch' block will overwrite the last exception.
 
 top_test_dir = getenv('TOP_TEST_DIR');
-addpath(top_test_dir);
+addpath([top_test_dir filesep 'utils']);
 addpath([top_test_dir filesep '..' filesep 'matlab']);
 
 % Test Dynare Version

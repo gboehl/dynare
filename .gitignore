@@ -11,13 +11,12 @@
 \#*\#
 TAGS
 *.mat
-*.xls
-*.xlsx
 
 # Build system rules
 .deps
 Makefile
 Makefile.in
+confdefs.h
 configure
 config.log
 config.status
@@ -56,48 +55,18 @@ checksum
 *.bbl
 *.blg
 *.lof
-/doc/dynare.html
-/doc/dynare.info
-/doc/dynare.info-1
-/doc/dynare.info-2
-/doc/dynare.info-3
-/doc/dynare.cp
-/doc/dynare.fn
-/doc/dynare.fns
-/doc/dynare.vrs
-/doc/dynare.ky
-/doc/dynare.pg
-/doc/dynare.tp
-/doc/dynare.vr
-/doc/dynare.t2p/*
-/doc/texinfo.tex
-/doc/version.texi
-/doc/mdate-sh
-/doc/stamp-vti
+/doc/manual/build
+/doc/manual/utils/version.py
+/doc/manual/utils/__pycache__/*
 !/doc/guide.bbl
-!/doc/userguide/P_ModStruct3.pdf
-!/doc/userguide/P_MH2.pdf
-!/doc/userguide/P_flowest.pdf
-!/doc/userguide/P_ModStruct4.pdf
-!/doc/userguide/Graphics/DynareFigures.key/droppedImage-2.pdf
-!/doc/userguide/Graphics/DynareFigures.key/droppedImage.pdf
-!/doc/userguide/Graphics/DynareFigures.key/droppedImage-1.pdf
-!/doc/userguide/Graphics/DynareTitle.pdf
-!/doc/userguide/P_ModStruct5.pdf
-!/doc/userguide/P_DynareStruct2.pdf
-!/doc/userguide/P_SchorfMod.pdf
-!/doc/userguide/P_ModStruct2.pdf
-!/doc/userguide/P_ShockModel2.pdf
 !/doc/parallel/AvenueParadigm.pdf
 !/doc/parallel/iVaNo_*.pdf
 !/doc/parallel/netbook_*.pdf
 !/doc/parallel/quest_*.pdf
 !/doc/parallel/RWMH_quest1_*.pdf
 !/doc/parallel/waitbars*.pdf
-doc/m2html
 doc/internals/*.html
 doc/internals/ltxpng
-mex/build/matlab/run_m2html.m
 
 # MATLAB dir
 /matlab/preprocessor*
@@ -108,7 +77,6 @@ mex/build/matlab/run_m2html.m
 
 # DLL rules
 *.mex
-*.dll
 *.oct
 *.mexglx
 *.mexa64
@@ -119,21 +87,22 @@ mex/build/matlab/run_m2html.m
 /mex/matlab/
 /mex/octave/
 
+# Symbolic links created for building MEX files
+/mex/build/matlab/*/*.c
+/mex/build/matlab/*/*.cc
+/mex/build/octave/*/*.c
+/mex/build/octave/*/*.cc
+
 # Dynare++
-/dynare++/integ/cc/*.cpp
-/dynare++/integ/cc/*.h
-/dynare++/integ/cc/main.tex
+/dynare++/integ/src/quadrature-points.dSYM/
+/dynare++/src/dynare++.dSYM/
 /dynare++/integ/src/quadrature-points
 /dynare++/integ/src/quadrature-points.exe
 /dynare++/integ/testing/tests
-/dynare++/kord/*.cpp
-!/dynare++/kord/tests.cpp
-/dynare++/kord/*.h
-/dynare++/kord/main.tex
+/dynare++/integ/testing/tests.exe
 /dynare++/kord/tests
 /dynare++/kord/tests.exe
 /dynare++/kord/out.txt
-/dynare++/sylv/testing/*.mm
 /dynare++/sylv/testing/tests
 /dynare++/sylv/testing/tests.exe
 /dynare++/parser/cc/*_ll.cc
@@ -144,38 +113,39 @@ mex/build/matlab/run_m2html.m
 /dynare++/src/dynglob_ll.cc
 /dynare++/src/dynglob_tab.cc
 /dynare++/src/dynglob_tab.hh
-/dynare++/tl/cc/*.cpp
-/dynare++/tl/cc/*.h
-/dynare++/tl/cc/main.tex
 /dynare++/tl/testing/tests
 /dynare++/tl/testing/tests.exe
+/dynare++/tests/*.jnl
+/dynare++/tests/*.m
+/dynare++/tests/*.mat
+/dynare++/tests/*.dump
 !/dynare++/extern/R/Makefile
 
 # Windows
-/windows/dynare-version.nsi
-
-# Estimation DLL tests
-/mex/sources/estimation/tests/test-dr
-/mex/sources/estimation/tests/test-dr.exe
-/mex/sources/estimation/tests/testModelSolution
-/mex/sources/estimation/tests/testModelSolution.exe
-/mex/sources/estimation/tests/testInitKalman
-/mex/sources/estimation/tests/testInitKalman.exe
-/mex/sources/estimation/tests/testKalman
-/mex/sources/estimation/tests/testKalman.exe
-/mex/sources/estimation/tests/testPDF
-/mex/sources/estimation/tests/testPDF.exe
-/mex/sources/estimation/libmat/tests/test-qr
-/mex/sources/estimation/libmat/tests/test-qr.exe
-/mex/sources/estimation/libmat/tests/test-gsd
-/mex/sources/estimation/libmat/tests/test-gsd.exe
-/mex/sources/estimation/libmat/tests/test-lu
-/mex/sources/estimation/libmat/tests/test-lu.exe
-/mex/sources/estimation/libmat/tests/test-repmat
-/mex/sources/estimation/libmat/tests/test-repmat.exe
+!/windows/Makefile
+!/windows/deps/Makefile
+windows/deps/lib32/
+windows/deps/lib64/
+windows/deps/lib32-msys2/
+windows/deps/lib64-msys2/
+windows/deps/matlab32/
+windows/deps/matlab64/
+windows/deps/mingw32/
+windows/deps/mingw64/
+windows/deps/octave32/
+windows/deps/octave64/
+windows/deps/sources32/
+windows/deps/sources64/
+windows/deps/tarballs/
+windows/exe/
+windows/7z/
+windows/zip/
+dynare++/32-bit/
+dynare++/64-bit/
 
 # MacOS stuff
 .DS_Store
+macOS/pkg/
 
 # Emacs stuff
 scripts/dynare.elc
@@ -185,6 +155,7 @@ scripts/dynare.elc
 /contrib/ms-sbvar/*.dat
 /contrib/ms-sbvar/sbvar_commandline
 /contrib/ms-sbvar/sbvar_init_file
+!/contrib/ms-sbvar/Makefile
 /tests/ms-sbvar/*.tmp
 
 # Reporting
@@ -199,3 +170,5 @@ octave-workspace
 
 # VERSION generated file
 VERSION
+
+matlab/supported_octave_version.m

@@ -16,7 +16,7 @@
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 top_test_dir = getenv('TOP_TEST_DIR');
-addpath(top_test_dir);
+addpath([top_test_dir filesep 'utils']);
 addpath([top_test_dir filesep '..' filesep 'matlab']);
 
 % Test Dynare Version

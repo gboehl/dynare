@@ -1,5 +1,5 @@
-function [z,zss]=dyn2vec(s1,s2)
-% function [z,zss]=dyn2vec(s1,s2)
+function [z,zss]=dyn2vec(M_, oo_, options_, s1, s2)
+% function [z,zss]=dyn2vec(M_, oo_, options_, s1, s2)
 % Takes Dynare variables from oo_.endo_simul and copies them into matlab global vectors
 %
 % INPUTS
@@ -14,7 +14,7 @@ function [z,zss]=dyn2vec(s1,s2)
 %   none
 %
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,7 +31,9 @@ function [z,zss]=dyn2vec(s1,s2)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ oo_ options_
+if ~(nargin >= 3)
+    error('DYNARE dyn2vec error: function takes at least 3 arguments');
+end
 
 if options_.smpl == 0
     k = [1:size(oo_.endo_simul,2)];
@@ -39,7 +41,7 @@ else
     k = [M_.maximum_lag+options_.smpl(1):M_.maximum_lag+options_.smpl(2)];
 end
 
-if nargin == 0
+if nargin == 3
     if nargout > 0
         t = ['DYNARE dyn2vec error: the function doesn''t return values when' ...
              ' used without input argument'];
@@ -70,9 +72,9 @@ else
 end
 
 if nargout == 0
-    if nargin == 1
+    if nargin == 4
         assignin('base',s1,z);
-    elseif nargin == 2
+    elseif nargin == 5
         assignin('base',s2,z);
     end
 else

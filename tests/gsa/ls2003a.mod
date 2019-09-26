@@ -88,7 +88,7 @@ end;
 
 moment_calibration;
 //y_obs,y_obs, [0.8 1.1]; //[unconditional variance]
-y_obs,y_obs(-(1:4)), +; //[first year acf]
+y_obs,y_obs(1:4), +; //[first year acf]
 //y_obs,pie_obs(-4:4), -; //[ccf]
 @#for ilag in -2:2
 y_obs,R_obs(@{ilag}), -; //[ccf]
@@ -97,6 +97,8 @@ y_obs,R_obs(@{ilag}), -; //[ccf]
 y_obs,pie_obs(@{ilag}), -; //[ccf]
 @#endfor
 end;
+prior simulate;
+prior moments(distribution);
 
 if isoctave()
   dynare_sensitivity(prior_range=0, nodisplay, graph_format=(eps));

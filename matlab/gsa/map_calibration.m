@@ -394,6 +394,7 @@ if ~isempty(indx_moment)
     % For single legend search which has maximum nbr of restrictions
     maxijv=0;
     for ij=1:nbr_moment_restrictions
+        endo_prior_restrictions.moment{ij,3} = sort(endo_prior_restrictions.moment{ij,3});
         if length(endo_prior_restrictions.moment{ij,3})>maxijv
             maxij=ij;maxijv=length(endo_prior_restrictions.moment{ij,3});
         end
@@ -477,6 +478,7 @@ if ~isempty(indx_moment)
         %         end
     end
     for ij=1:nbr_moment_couples
+        time_matrix{ij} = sort(time_matrix{ij});
         if length(time_matrix{ij})>1
             if ~DynareOptions.nograph
                 itmp = (find(plot_indx==ij));
@@ -505,7 +507,7 @@ if ~isempty(indx_moment)
                 hold off
                 axis(a)
                 box on
-                set(gca,'xtick',sort(time_matrix{ij}))
+%                 set(gca,'xtick',sort(time_matrix{ij}))
                 itmp = min(itmp);
                 title([endo_prior_restrictions.moment{itmp,1},' vs ',endo_prior_restrictions.moment{itmp,2}],'interpreter','none'),
             end
