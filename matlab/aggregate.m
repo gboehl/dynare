@@ -213,7 +213,7 @@ function [lhs, rhs] = getequation(str)
     terms = strsplit(str, {'=',';'});
     terms(cellfun(@(x) all(isempty(x)), terms)) = [];
     terms(1) = {strrep(terms{1}, ' ', '')};
-    lhs = regexp(terms{1}, '^(diff\((log|diff)\([\-\+\*\/\w]*\)\)|(log|diff)\([\-\+\*\/\w]*\)|\w*)', 'match');
+    lhs = regexp(terms{1}, '^(diff\([\-]*(log|diff)\([\-\+\*\/\w]*\)\)|(log|diff)\([\-\+\*\/\w]*\)|\w*)', 'match');
     if ~isempty(lhs)
         lhs = lhs{1};
         if isequal(lhs, 'log')
