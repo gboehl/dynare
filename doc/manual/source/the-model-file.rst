@@ -8738,14 +8738,14 @@ IRF and moment calibration can be defined in ``irf_calibration`` and
     terminated by ``end;``. To set IRF sign restrictions, the
     following syntax is used::
 
-        VARIABLE_NAME(INTEGER),EXOGENOUS_NAME, -;
-        VARIABLE_NAME(INTEGER:INTEGER),EXOGENOUS_NAME, +;
+        VARIABLE_NAME(INTEGER), EXOGENOUS_NAME, -;
+        VARIABLE_NAME(INTEGER:INTEGER), EXOGENOUS_NAME, +;
 
     To set IRF restrictions with specific intervals, the following
     syntax is used::
 
-        VARIABLE_NAME(INTEGER),EXOGENOUS_NAME, [EXPRESSION, EXPRESSION];
-        VARIABLE_NAME(INTEGER:INTEGER),EXOGENOUS_NAME, [EXPRESSION, EXPRESSION];
+        VARIABLE_NAME(INTEGER), EXOGENOUS_NAME, [EXPRESSION, EXPRESSION];
+        VARIABLE_NAME(INTEGER:INTEGER), EXOGENOUS_NAME, [EXPRESSION, EXPRESSION];
 
     When ``(INTEGER:INTEGER)`` is used, the restriction is considered
     to be fulfilled by a logical OR. A list of restrictions must
@@ -8775,10 +8775,10 @@ IRF and moment calibration can be defined in ``irf_calibration`` and
     |br| This block allows defining moment calibration criteria. This
     block is terminated by ``end;``, and contains lines of the form::
 
-        VARIABLE_NAME1,VARIABLE_NAME2(+/-INTEGER), [EXPRESSION, EXPRESSION];
-        VARIABLE_NAME1,VARIABLE_NAME2(+/-INTEGER), +/-;
-        VARIABLE_NAME1,VARIABLE_NAME2(+/-(INTEGER:INTEGER)), [EXPRESSION, EXPRESSION];
-        VARIABLE_NAME1,VARIABLE_NAME2((-INTEGER:+INTEGER)), [EXPRESSION, EXPRESSION];
+        VARIABLE_NAME1, VARIABLE_NAME2(+/-INTEGER), [EXPRESSION, EXPRESSION];
+        VARIABLE_NAME1, VARIABLE_NAME2(+/-INTEGER), +/-;
+        VARIABLE_NAME1, VARIABLE_NAME2(+/-(INTEGER:INTEGER)), [EXPRESSION, EXPRESSION];
+        VARIABLE_NAME1, VARIABLE_NAME2((-INTEGER:+INTEGER)), [EXPRESSION, EXPRESSION];
 
     When ``(INTEGER:INTEGER)`` is used, the restriction is considered
     to be fulfilled by a logical OR. A list of restrictions must
