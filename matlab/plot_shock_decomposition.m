@@ -526,10 +526,12 @@ if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp
     options_.plot_shock_decomp.zfull = zfull;
 end
 
-if detail_plot
-    graph_decomp_detail(z, shock_names, M_.endo_names, i_var, my_initial_date, M_, options_)
-else
-    graph_decomp(z, shock_names, M_.endo_names, i_var, my_initial_date, M_, options_);
+if ~options_.no_graph.plot_shock_decomposition
+    if detail_plot
+        graph_decomp_detail(z, shock_names, M_.endo_names, i_var, my_initial_date, M_, options_);
+    else
+        graph_decomp(z, shock_names, M_.endo_names, i_var, my_initial_date, M_, options_);
+    end
 end
 
 if write_xls
