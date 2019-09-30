@@ -213,17 +213,23 @@ function [lhs, rhs] = getequation(str)
     terms = strsplit(str, {'=',';'});
     terms(cellfun(@(x) all(isempty(x)), terms)) = [];
     terms(1) = {strrep(terms{1}, ' ', '')};
-    lhs = regexp(terms{1}, '^(diff\(\w*\)|log\(\w*\)|diff\(diff\(\w*\)\)|diff\(log\(\w*\)\)|diff\(diff\(log\(\w*\)\)\)|\w*)', 'match');
+    lhs = regexp(terms{1}, '^(diff\((log|diff)\([\-\+\*\/\w]*\)\)|(log|diff)\([\-\+\*\/\w]*\)|\w*)', 'match');
     if ~isempty(lhs)
         lhs = lhs{1};
+        if isequal(lhs, 'log')
+           error('Malformed equation: log of log or diff are not allowed.')
+        end
         rhs = terms{2};
     else
         error('Malformed equation.')
     end
 
 function v = getendovar(lhs)
-    v = strsplit(lhs, {'diff','log','(',')'});
+    v = strsplit(lhs, {'diff','log','(',')', '+', '-', '*', '/'});
     v(cellfun(@(x) all(isempty(x)), v)) = [];
+    if length(v)>1
+        error('Malformed equation: no more than one endogenous variable can be used on the LHS.')
+    end
 
 function [v, t] = getvarandtag(str)
     tmp = regexp(str, '(?<name>\w+)\s*(?<tag>\(.*\))', 'names');
