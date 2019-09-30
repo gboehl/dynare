@@ -15,10 +15,22 @@
 # You should have received a copy of the GNU General Public License
 # along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-.PHONY: all clean
+.PHONY: all deps clean-deps clean clean-all build
 
-all:
-	./build.sh
+NTHREADS=$(shell nproc)
+
+all: build
+
+deps:
+	make -C deps -j$(NTHREADS)
+
+clean-deps:
+	make -C deps clean-all
 
 clean:
 	rm -rf pkg
+
+clean-all: clean-deps clean
+
+build: deps
+	./build.sh

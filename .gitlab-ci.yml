@@ -101,7 +101,13 @@ pkg_windows:
 pkg_macOS:
   stage: test_and_pkg
   script:
+    - ln -s ~/tarballs macOS/deps/
     - make -C macOS
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - macOS/deps/sources64/
+      - macOS/deps/lib64/
   tags:
     - macOS
   artifacts:
