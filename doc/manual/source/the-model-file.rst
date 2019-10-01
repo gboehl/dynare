@@ -2391,7 +2391,7 @@ parameters with new values as it will lead to wrong results.
 
     *Steady state file for deterministic models*
 
-    The ``steady_state_model`` block works also with deterministic
+    The ``steady_state_model`` block also works with deterministic
     models. An ``initval`` block and, when necessary, an ``endval``
     block, is used to set the value of the exogenous variables. Each
     ``initval`` or ``endval`` block must be followed by ``steady`` to
