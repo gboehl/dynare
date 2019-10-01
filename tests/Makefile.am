@@ -924,6 +924,7 @@ M_OLS_TRS_FILES = $(patsubst %.mod, %.m.trs, $(OLS_MODFILES))
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
 M_TRS_FILES += run_block_byte_tests_matlab.m.trs run_reporting_test_matlab.m.trs run_all_unitary_tests.m.trs
+M_TRS_FILES += test_aggregate_routine_1_2.m.trs test_aggregate_routine_1_2_3.m.trs
 M_XFAIL_TRS_FILES = $(patsubst %.mod, %.m.trs, $(XFAIL_MODFILES))
 
 # Octave TRS Files
@@ -1048,8 +1049,24 @@ EXTRA_DIST = \
 	deterministic_simulations/lola_data.mat \
 	estimation/univariate/data.csv \
 	estimation/univariate/ols/mc-ols.inc \
-	ecb/SURGibbs/fishdata.csv
-
+	ecb/SURGibbs/fishdata.csv \
+	test_aggregate_routine_1_2.m \
+	test_aggregate_routine_1_2_3.m \
+	ecb/aggregate/1/endogenous.inc \
+	ecb/aggregate/1/exogenous.inc \
+	ecb/aggregate/1/parameters.inc \
+	ecb/aggregate/1/parameter-values.inc \
+	ecb/aggregate/1/model.inc \
+	ecb/aggregate/2/endogenous.inc \
+	ecb/aggregate/2/exogenous.inc \
+	ecb/aggregate/2/parameters.inc \
+	ecb/aggregate/2/parameter-values.inc \
+	ecb/aggregate/2/model.inc \
+	ecb/aggregate/3/endogenous.inc \
+	ecb/aggregate/3/exogenous.inc \
+	ecb/aggregate/3/parameters.inc \
+	ecb/aggregate/3/parameter-values.inc \
+	ecb/aggregate/3/model.inc
 
 if HAVE_MATLAB
 check-local: check-matlab
