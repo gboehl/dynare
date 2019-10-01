@@ -65,9 +65,9 @@ end;
 
 // endogenous prior restrictions
 irf_calibration(relative_irf);
-y(1:4), e_ys, [ -50 50]; //[first year response]
+y(1:4), e_ys, [ -50, 50]; //[first year response]
 @#for ilag in 21:40
-R_obs(@{ilag}), e_ys, [0 6]; //[response after 4th year to 10th year]
+R_obs(@{ilag}), e_ys, [0, 6]; //[response after 4th year to 10th year]
 @#endfor
 end;
 

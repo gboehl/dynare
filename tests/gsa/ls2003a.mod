@@ -70,24 +70,24 @@ end;
 
 // endogenous prior restrictions
 irf_calibration(relative_irf);
-y(1:4), e_ys, [ -50 50]; //[first year response]
+y(1:4), e_ys, [ -50, 50]; //[first year response]
 //y(1:4), e_ys, [-inf -50]; //[first year response]
 @#for ilag in 21:40
-R_obs(@{ilag}), e_ys, [0 6]; //[response after 4th year to 10th year]
+R_obs(@{ilag}), e_ys, [0, 6]; //[response after 4th year to 10th year]
 @#endfor
 end;
 
 /*
 irf_calibration;
-y(1:4), e_ys, [-inf -0.4]; //[first year response]
+y(1:4), e_ys, [-inf, -0.4]; //[first year response]
 @#for ilag in 21:40
-R_obs(@{ilag}), e_ys, [0 0.25]; //[response after 4th year to 10th year]
+R_obs(@{ilag}), e_ys, [0, 0.25]; //[response after 4th year to 10th year]
 @#endfor
 end;
 */
 
 moment_calibration;
-//y_obs,y_obs, [0.8 1.1]; //[unconditional variance]
+//y_obs,y_obs, [0.8, 1.1]; //[unconditional variance]
 y_obs,y_obs(1:4), +; //[first year acf]
 //y_obs,pie_obs(-4:4), -; //[ccf]
 @#for ilag in -2:2

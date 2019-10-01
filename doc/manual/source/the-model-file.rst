@@ -2391,7 +2391,7 @@ parameters with new values as it will lead to wrong results.
 
     *Steady state file for deterministic models*
 
-    The ``steady_state_model`` block works also with deterministic
+    The ``steady_state_model`` block also works with deterministic
     models. An ``initval`` block and, when necessary, an ``endval``
     block, is used to set the value of the exogenous variables. Each
     ``initval`` or ``endval`` block must be followed by ``steady`` to
@@ -8738,14 +8738,14 @@ IRF and moment calibration can be defined in ``irf_calibration`` and
     terminated by ``end;``. To set IRF sign restrictions, the
     following syntax is used::
 
-        VARIABLE_NAME(INTEGER),EXOGENOUS_NAME, -;
-        VARIABLE_NAME(INTEGER:INTEGER),EXOGENOUS_NAME, +;
+        VARIABLE_NAME(INTEGER), EXOGENOUS_NAME, -;
+        VARIABLE_NAME(INTEGER:INTEGER), EXOGENOUS_NAME, +;
 
     To set IRF restrictions with specific intervals, the following
     syntax is used::
 
-        VARIABLE_NAME(INTEGER),EXOGENOUS_NAME, [DOUBLE DOUBLE];
-        VARIABLE_NAME(INTEGER:INTEGER),EXOGENOUS_NAME, [DOUBLE DOUBLE];
+        VARIABLE_NAME(INTEGER), EXOGENOUS_NAME, [EXPRESSION, EXPRESSION];
+        VARIABLE_NAME(INTEGER:INTEGER), EXOGENOUS_NAME, [EXPRESSION, EXPRESSION];
 
     When ``(INTEGER:INTEGER)`` is used, the restriction is considered
     to be fulfilled by a logical OR. A list of restrictions must
@@ -8762,9 +8762,9 @@ IRF and moment calibration can be defined in ``irf_calibration`` and
         ::
 
             irf_calibration;
-            y(1:4), e_ys, [ -50 50]; //[first year response with logical OR]
+            y(1:4), e_ys, [-50, 50]; //[first year response with logical OR]
             @#for ilag in 21:40
-            R_obs(@{ilag}), e_ys, [0 6]; //[response from 5th to 10th years with logical AND]
+            R_obs(@{ilag}), e_ys, [0, 6]; //[response from 5th to 10th years with logical AND]
             @#endfor
             end;
 
@@ -8775,10 +8775,10 @@ IRF and moment calibration can be defined in ``irf_calibration`` and
     |br| This block allows defining moment calibration criteria. This
     block is terminated by ``end;``, and contains lines of the form::
 
-        VARIABLE_NAME1,VARIABLE_NAME2(+/-INTEGER), [DOUBLE DOUBLE];
-        VARIABLE_NAME1,VARIABLE_NAME2(+/-INTEGER), +/-;
-        VARIABLE_NAME1,VARIABLE_NAME2(+/-(INTEGER:INTEGER)), [DOUBLE DOUBLE];
-        VARIABLE_NAME1,VARIABLE_NAME2((-INTEGER:+INTEGER)), [DOUBLE DOUBLE];
+        VARIABLE_NAME1, VARIABLE_NAME2(+/-INTEGER), [EXPRESSION, EXPRESSION];
+        VARIABLE_NAME1, VARIABLE_NAME2(+/-INTEGER), +/-;
+        VARIABLE_NAME1, VARIABLE_NAME2(+/-(INTEGER:INTEGER)), [EXPRESSION, EXPRESSION];
+        VARIABLE_NAME1, VARIABLE_NAME2((-INTEGER:+INTEGER)), [EXPRESSION, EXPRESSION];
 
     When ``(INTEGER:INTEGER)`` is used, the restriction is considered
     to be fulfilled by a logical OR. A list of restrictions must
@@ -8789,7 +8789,7 @@ IRF and moment calibration can be defined in ``irf_calibration`` and
         ::
 
             moment_calibration;
-            y_obs,y_obs, [0.5 1.5]; //[unconditional variance]
+            y_obs,y_obs, [0.5, 1.5]; //[unconditional variance]
             y_obs,y_obs(-(1:4)), +; //[sign restriction for first year acf with logical OR]
             @#for ilag in -2:2
             y_obs,R_obs(@{ilag}), -; //[-2:2 ccf with logical AND]
