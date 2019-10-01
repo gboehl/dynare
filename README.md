@@ -237,12 +237,13 @@ All the prerequisites are packaged:
 - `texlive-generic-extra` (for Sphinx)
 - `lmodern` (for macroprocessor PDF)
 - `python3-sphinx`
+- `latexmk`
 - `libjs-mathjax`
 - `doxygen`
 
 You can install them all at once with:
 ```
-apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-generic-extra lmodern python3-sphinx libjs-mathjax doxygen
+apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-generic-extra lmodern python3-sphinx latexmk libjs-mathjax doxygen
 ```
 
 ## Windows

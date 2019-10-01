@@ -25,7 +25,7 @@
 PACKAGES=(make xz-utils p7zip bzip2 zip patch wget autoconf automake libtool
           mingw-w64 gfortran-mingw-w64 parallel flex bison texlive
           texlive-publishers texlive-latex-extra texlive-math-extra
-          texlive-fonts-extra lmodern python3-sphinx nsis)
+          texlive-fonts-extra lmodern python3-sphinx latexmk nsis)
 
 apt install "${PACKAGES[@]}"
 
