@@ -52,70 +52,70 @@ sources32/slicot-$(SLICOT_VERSION)-without-underscore: tarballs/slicot-$(SLICOT_
 	rm -rf sources32/slicot-*-without-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
-	patch $@/make.inc < patches/slicot-32-without-underscore.patch
+	touch $@
 
 sources32/slicot-$(SLICOT_VERSION)-with-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources32/slicot-*-with-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
-	patch $@/make.inc < patches/slicot-32-with-underscore.patch
+	touch $@
 
 sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources64/slicot-*-with-32bit-integer
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
-	patch $@/make.inc < patches/slicot-64-with-32bit-integer.patch
+	touch $@
 
 sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources64/slicot-*-with-64bit-integer
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
-	patch $@/make.inc < patches/slicot-64-with-64bit-integer.patch
+	touch $@
 
 sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources64/slicot-*-with-32bit-integer-and-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
-	patch $@/make.inc < patches/slicot-64-with-32bit-integer-and-underscore.patch
+	touch $@
 
 sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources64/slicot-*-with-64bit-integer-and-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
-	patch $@/make.inc < patches/slicot-64-with-64bit-integer-and-underscore.patch
+	touch $@
 
 lib32/Slicot/without-underscore/lib/libslicot_pic.a: sources32/slicot-$(SLICOT_VERSION)-without-underscore
-	make -C $< lib
+	make -C $< lib SLICOTLIB=../libslicot_pic.a OPTS="-O2 -g -fno-underscoring" FORTRAN=i686-w64-mingw32-gfortran LOADER=i686-w64-mingw32-gfortran ARCH=i686-w64-mingw32-ar
 	i686-w64-mingw32-strip --strip-debug $</libslicot_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot_pic.a $@
 
 lib32/Slicot/with-underscore/lib/libslicot_pic.a: sources32/slicot-$(SLICOT_VERSION)-with-underscore
-	make -C $< lib
+	make -C $< lib SLICOTLIB=../libslicot_pic.a OPTS="-O2 -g" FORTRAN=i686-w64-mingw32-gfortran LOADER=i686-w64-mingw32-gfortran ARCH=i686-w64-mingw32-ar
 	i686-w64-mingw32-strip --strip-debug $</libslicot_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot_pic.a $@
 
 lib64/Slicot/without-underscore/lib/libslicot_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer
-	make -C $< lib
+	make -C $< lib SLICOTLIB=../libslicot_pic.a OPTS="-O2 -g -fno-underscoring" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
 	x86_64-w64-mingw32-strip --strip-debug $</libslicot_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot_pic.a $@
 
 lib64/Slicot/without-underscore/lib/libslicot64_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer
-	make -C $< lib
+	make -C $< lib SLICOTLIB=../libslicot64_pic.a OPTS="-O2 -g -fno-underscoring -fdefault-integer-8" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
 	x86_64-w64-mingw32-strip --strip-debug $</libslicot64_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot64_pic.a $@
 
 lib64/Slicot/with-underscore/lib/libslicot_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore
-	make -C $< lib
+	make -C $< lib SLICOTLIB=../libslicot_pic.a OPTS="-O2 -g" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
 	x86_64-w64-mingw32-strip --strip-debug $</libslicot_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot_pic.a $@
 
 lib64/Slicot/with-underscore/lib/libslicot64_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer-and-underscore
-	make -C $< lib
+	make -C $< lib SLICOTLIB=../libslicot64_pic.a OPTS="-O2 -g -fdefault-integer-8" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
 	x86_64-w64-mingw32-strip --strip-debug $</libslicot64_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot64_pic.a $@
