@@ -1,4 +1,4 @@
-function aggregate(ofile, varargin)
+function aggregate(ofile, dynopt, varargin)
 
 % Agregates cherry-picked models.
 
@@ -22,6 +22,22 @@ function aggregate(ofile, varargin)
 MAX_NUMBER_OF_ELEMENTS = 10000;
 
 warning off MATLAB:subscripting:noSubscriptsSpecified
+
+if ~isempty(dynopt)
+    % Should be a list of options for the preprocessor in a cell
+    % array.
+    firstline = '// --+ options:';
+    if iscell(dynopt)
+        for i = 1:length(dynopt)
+            firstline = sprintf('%s %s', firstline, dynopt{i});
+        end
+        firstline = sprintf('%s %s', firstline, '+--');
+    else
+        error('Second argument has to be a cell array (list of options for dynare preprocessor).')
+    end
+else
+    firstline = '';
+end
 
 
 % Get parameters.
@@ -162,6 +178,9 @@ if isempty(filepath)
     fid = fopen(sprintf('%s%s', filename, fileext), 'w');
 else
     fid = fopen(sprintf('%s%s%s%s', filepath, filesep(), filename, fileext), 'w');
+end
+if ~isempty(firstline)
+    fprintf(fid, '%s\n\n', firstline);
 end
 fprintf(fid, 'var\n');
 for i=1:rows(elist)
