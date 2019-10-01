@@ -142,12 +142,16 @@ if ~isequal(length(i1),rows(eqlist))
 end
 i2 = setdiff(1:rows(elist), i1);
 xlist = [xlist; elist(i2,:)];
-[~,idx] = unique(xlist(:,1));        % Ensure that the exogenous variable names are unique.
-xlist=[xlist(idx,1) xlist(idx,2)];   % We do not test that the tags are the same.
+[~,idx] = unique(xlist(:,1));          % Ensure that the exogenous variable names are unique.
+xlist = [xlist(idx,1) xlist(idx,2)];   % We do not test that the tags are the same.
 elist = elist(i1,:);
 
 % Remove endogenous variables from list of exogenous variables (if any).
-xlist = setdiff(xlist, elist);
+xlist1 = xlist(:,1);
+xlist2 = xlist(:,2);
+[xlist1, id] = setdiff(xlist1, elist(:,1));
+xlist2 = xlist2(id);
+xlist = [xlist1, xlist2];
 
 % Print all cherry-picked models in one mod-file.
 [filepath, filename, fileext] = fileparts(ofile);
