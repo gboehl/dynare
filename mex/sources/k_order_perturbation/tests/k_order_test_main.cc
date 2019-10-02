@@ -311,7 +311,7 @@ main(int argc, char *argv[])
   mxArray *plhs[nlhs];
 
 #ifdef DEBUG
-  mexPrintf("k_order_perturbation: Filling Matlab outputs.\n");
+  mexPrintf("k_order_perturbation: Filling MATLAB outputs.\n");
 #endif
 
   double  *dgy, *dgu, *ysteady;

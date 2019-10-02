@@ -8,7 +8,7 @@
 Time Series
 ###########
 
-Dynare provides a Matlab/Octave class for handling time series data,
+Dynare provides a MATLAB/Octave class for handling time series data,
 which is based on a class for handling dates. Dynare also provides a
 new type for dates, so that the basic user does not have to worry
 about class and methods for dates. Below, you will first find the
@@ -32,7 +32,7 @@ quarterly, monthly or weekly dates using the following syntax::
     1990W49
 
 Behind the scene, Dynare’s preprocessor translates these expressions
-into instantiations of the Matlab/Octave’s class ``dates`` described
+into instantiations of the MATLAB/Octave’s class ``dates`` described
 below. Basic operations can be performed on dates:
 
 **plus binary operator (+)**
@@ -126,7 +126,7 @@ below. Basic operations can be performed on dates:
     and ones.
 
 One can select an element, or some elements, in a ``dates`` object as
-he would extract some elements from a vector in Matlab/Octave. Let ``a
+he would extract some elements from a vector in MATLAB/Octave. Let ``a
 = 1950Q1:1951Q1`` be a ``dates`` object, then ``a(1)==1950Q1`` returns
 ``1``, ``a(end)==1951Q1`` returns ``1`` and ``a(end-1:end)`` selects
 the two last elements of ``a`` (by instantiating the ``dates`` object
@@ -146,7 +146,7 @@ Dynare will translate this as::
     disp('Initial period is dates('1950Q1')');
 
 which will lead to a crash because this expression is illegal in
-Matlab. For this situation, Dynare provides the ``$`` escape
+MATLAB. For this situation, Dynare provides the ``$`` escape
 parameter. The following expression::
 
     disp('Initial period is $1950Q1');
@@ -253,7 +253,7 @@ The dates class
 
 
     A list of the available methods, by alphabetical order, is given
-    below. Note that the Matlab/Octave classes do not allow in place
+    below. Note that the MATLAB/Octave classes do not allow in place
     modifications: when a method is applied to an object a new object
     is instantiated. For instance, to apply the method
     ``multiplybytwo`` to an object ``X`` we write::
@@ -295,7 +295,7 @@ The dates class
     .. datesmethod:: C = colon (A, B)
                      C = colon (A, i, B)
 
-        |br| Overloads the Matlab/Octave colon (``:``) operator. A and B
+        |br| Overloads the MATLAB/Octave colon (``:``) operator. A and B
         are ``dates`` objects. The optional increment ``i`` is a
         scalar integer (default value is ``i=1``). This method returns
         a ``dates`` object and can be used to create ranges of dates.
@@ -314,7 +314,7 @@ The dates class
 
     .. datesmethod:: B = double (A)
 
-        |br| Overloads the Matlab/Octave ``double`` function. ``A`` is
+        |br| Overloads the MATLAB/Octave ``double`` function. ``A`` is
         a ``dates`` object. The method returns a floating point
         representation of a ``dates`` object, the integer and
         fractional parts respectively corresponding to the year and
@@ -339,7 +339,7 @@ The dates class
 
     .. datesmethod:: C = eq (A, B)
 
-        |br| Overloads the Matlab/Octave ``eq`` (equal, ``==``)
+        |br| Overloads the MATLAB/Octave ``eq`` (equal, ``==``)
         operator. ``dates`` objects ``A`` and ``B`` must have the same
         number of elements (say, ``n``). The returned argument is a
         ``n`` by ``1`` vector of zeros and ones. The i-th element of
@@ -362,7 +362,7 @@ The dates class
 
     .. datesmethod:: C = ge (A, B)
 
-        |br| Overloads the Matlab/Octave ``ge`` (greater or equal,
+        |br| Overloads the MATLAB/Octave ``ge`` (greater or equal,
         ``>=``) operator. ``dates`` objects ``A`` and ``B`` must have
         the same number of elements (say, ``n``). The returned
         argument is a ``n`` by ``1`` vector of zeros and ones. The
@@ -385,7 +385,7 @@ The dates class
 
     .. datesmethod:: C = gt (A, B)
 
-        |br| Overloads the Matlab/Octave ``gt`` (greater than, ``>``)
+        |br| Overloads the MATLAB/Octave ``gt`` (greater than, ``>``)
         operator. ``dates`` objects ``A`` and ``B`` must have the same
         number of elements (say, ``n``). The returned argument is a
         ``n`` by ``1`` vector of zeros and ones. The i-th element of
@@ -408,7 +408,7 @@ The dates class
 
     .. datesmethod:: D = horzcat (A, B, C, ...)
 
-        |br| Overloads the Matlab/Octave ``horzcat`` operator. All the
+        |br| Overloads the MATLAB/Octave ``horzcat`` operator. All the
         input arguments must be ``dates`` objects. The returned
         argument is a ``dates`` object gathering all the dates given
         in the input arguments (repetitions are not removed).
@@ -426,7 +426,7 @@ The dates class
 
     .. datesmethod:: C = intersect (A, B)
 
-        |br| Overloads the Matlab/Octave ``intersect`` function. All
+        |br| Overloads the MATLAB/Octave ``intersect`` function. All
         the input arguments must be ``dates`` objects. The returned
         argument is a ``dates`` object gathering all the common dates
         given in the input arguments. If ``A`` and ``B`` are disjoint
@@ -447,7 +447,7 @@ The dates class
 
     .. datesmethod:: C = setdiff (A, B)
 
-        |br| Overloads the Matlab/Octave ``setdiff`` function. All the
+        |br| Overloads the MATLAB/Octave ``setdiff`` function. All the
         input arguments must be ``dates`` objects. The returned
         argument is a ``dates`` object all dates present in ``A`` but
         not in ``B``. If ``A`` and ``B`` are disjoint ``dates``
@@ -469,7 +469,7 @@ The dates class
 
     .. datesmethod:: B = isempty (A)
 
-        |br| Overloads the Matlab/Octave ``isempty`` function for ``dates``
+        |br| Overloads the MATLAB/Octave ``isempty`` function for ``dates``
         objects``.
 
         *Example*
@@ -486,7 +486,7 @@ The dates class
 
     .. datesmethod:: C = isequal (A, B)
 
-        |br| Overloads the Matlab/Octave ``isequal`` function for
+        |br| Overloads the MATLAB/Octave ``isequal`` function for
         ``dates`` objects.
 
         *Example*
@@ -503,7 +503,7 @@ The dates class
 
     .. datesmethod:: C = le (A, B)
 
-        |br| Overloads the Matlab/Octave ``le`` (less or equal,
+        |br| Overloads the MATLAB/Octave ``le`` (less or equal,
         ``<=``) operator. ``dates`` objects ``A`` and ``B`` must have
         the same number of elements (say, ``n``). The returned
         argument is a ``n`` by ``1`` vector of zeros and ones. The
@@ -526,7 +526,7 @@ The dates class
 
     .. datesmethod:: B = length (A)
 
-        |br| Overloads the Matlab/Octave ``length`` function. Returns the
+        |br| Overloads the MATLAB/Octave ``length`` function. Returns the
         number of dates in ``dates`` object ``A`` (``B`` is a scalar
         integer).
 
@@ -544,7 +544,7 @@ The dates class
 
     .. datesmethod:: C = lt (A, B)
 
-        |br| Overloads the Matlab/Octave ``lt`` (less than, ``<``)
+        |br| Overloads the MATLAB/Octave ``lt`` (less than, ``<``)
         operator. ``dates`` objects ``A`` and ``B`` must have the same
         number of elements (say, ``n``). The returned argument is a
         ``n`` by ``1`` vector of zeros and ones. The i-th element of
@@ -567,7 +567,7 @@ The dates class
 
     .. datesmethod:: D = max (A, B, C, ...)
 
-        |br| Overloads the Matlab/Octave ``max`` function. All input
+        |br| Overloads the MATLAB/Octave ``max`` function. All input
         arguments must be ``dates`` objects. The function returns a
         single element ``dates`` object containing the greatest date.
 
@@ -582,7 +582,7 @@ The dates class
 
     .. datesmethod:: D = min (A, B, C, ...)
 
-        |br| Overloads the Matlab/Octave ``min`` function. All input
+        |br| Overloads the MATLAB/Octave ``min`` function. All input
         arguments must be ``dates`` objects. The function returns a
         single element ``dates`` object containing the smallest date.
 
@@ -597,7 +597,7 @@ The dates class
 
     .. datesmethod:: C = minus (A, B)
 
-        |br| Overloads the Matlab/Octave ``minus`` operator
+        |br| Overloads the MATLAB/Octave ``minus`` operator
         (``-``). If both input arguments are ``dates`` objects, then
         number of periods between ``A`` and ``B`` is returned (so that
         ``A+C=B``). If ``B`` is a vector of integers, the minus
@@ -624,7 +624,7 @@ The dates class
 
     .. datesmethod:: C = ne (A, B)
 
-        |br| Overloads the Matlab/Octave ``ne`` (not equal, ``~=``)
+        |br| Overloads the MATLAB/Octave ``ne`` (not equal, ``~=``)
         operator. ``dates`` objects ``A`` and ``B`` must have the same
         number of elements (say, ``n``) or one of the inputs must be a
         single element ``dates`` object. The returned argument is a
@@ -648,7 +648,7 @@ The dates class
 
     .. datesmethod:: C = plus (A, B)
 
-        |br| Overloads the Matlab/Octave ``plus`` operator (``+``). If
+        |br| Overloads the MATLAB/Octave ``plus`` operator (``+``). If
         both input arguments are ``dates`` objects, then the method
         combines ``A`` and ``B`` without removing repetitions. If
         ``B`` is a vector of integers, the ``plus`` operator shifts
@@ -709,7 +709,7 @@ The dates class
 
     .. datesmethod:: B = uminus (A)
 
-        |br| Overloads the Matlab/Octave unary minus operator. Returns
+        |br| Overloads the MATLAB/Octave unary minus operator. Returns
         a ``dates`` object with elements shifted one period backward.
 
         *Example*
@@ -723,7 +723,7 @@ The dates class
 
     .. datesmethod:: D = union (A, B, C, ...)
 
-        |br| Overloads the Matlab/Octave ``union`` function. Returns a
+        |br| Overloads the MATLAB/Octave ``union`` function. Returns a
         ``dates`` object with elements sorted by increasing order
         (repetitions are removed, to keep the repetitions use the
         ``horzcat`` or ``plus`` operators).
@@ -740,7 +740,7 @@ The dates class
 
     .. datesmethod:: B = unique (A)
 
-        |br| Overloads the Matlab/Octave ``unique`` function. Returns
+        |br| Overloads the MATLAB/Octave ``unique`` function. Returns
         a ``dates`` object with repetitions removed (only the last
         occurence of a date is kept).
 
@@ -755,7 +755,7 @@ The dates class
 
     .. datesmethod:: B = uplus (A)
 
-        |br| Overloads the Matlab/Octave unary plus operator. Returns
+        |br| Overloads the MATLAB/Octave unary plus operator. Returns
         a ``dates`` object with elements shifted one period ahead.
 
         *Example*
@@ -774,8 +774,8 @@ The dseries class
 
 .. class:: dseries
 
-    |br| The Matlab/Octave ``dseries`` class handles time series
-    data. As any Matlab/Octave statements, this class can be used in a
+    |br| The MATLAB/Octave ``dseries`` class handles time series
+    data. As any MATLAB/Octave statements, this class can be used in a
     Dynare’s mod file. A ``dseries`` object has six members:
 
     :arg name: A ``nobs*1`` cell of strings or a ``nobs*p`` character
@@ -1046,7 +1046,7 @@ The dseries class
 
     .. dseriesmethod:: B = cumprod(A[, d[, v]])
 
-        |br| Overloads the Matlab/Octave ``cumprod`` function for
+        |br| Overloads the MATLAB/Octave ``cumprod`` function for
         ``dseries`` objects. The cumulated product cannot be computed
         if the variables in ``dseries`` object ``A`` have NaNs. If a
         ``dates`` object ``d`` is provided as a second argument, then
@@ -1108,7 +1108,7 @@ The dseries class
 
     .. dseriesmethod:: B = cumsum(A[, d[, v]])
 
-        |br| Overloads the Matlab/Octave ``cumsum`` function for
+        |br| Overloads the MATLAB/Octave ``cumsum`` function for
         ``dseries`` objects. The cumulated sum cannot be computed if
         the variables in ``dseries`` object ``A`` have NaNs. If a
         ``dates`` object ``d`` is provided as a second argument, then
@@ -1179,7 +1179,7 @@ The dseries class
 
     .. dseriesmethod:: C = eq(A, B)
 
-        |br| Overloads the Matlab/Octave ``eq`` (equal, ``==``)
+        |br| Overloads the MATLAB/Octave ``eq`` (equal, ``==``)
         operator. ``dseries`` objects ``A`` and ``B`` must have the
         same number of observations (say, :math:`T`) and variables
         (:math:`N`). The returned argument is a :math:`T \times N`
@@ -1204,7 +1204,7 @@ The dseries class
 
     .. dseriesmethod:: B = exp(A)
 
-        |br| Overloads the Matlab/Octave ``exp`` function for
+        |br| Overloads the MATLAB/Octave ``exp`` function for
         ``dseries`` objects.
 
         *Example*
@@ -1247,7 +1247,7 @@ The dseries class
         creation of sub-objects, the ``dseries`` class overloads the
         curly braces (``D = extract (A, B, C)`` is equivalent to ``D =
         A{B,C}``) and allows implicit loops (defined between a pair of
-        ``@`` symbol, see examples below) or Matlab/Octave’s regular
+        ``@`` symbol, see examples below) or MATLAB/Octave’s regular
         expressions (introduced by square brackets).
 
         *Example*
@@ -1301,7 +1301,7 @@ The dseries class
 
     .. dseriesmethod:: D = horzcat(A, B[, ...])
 
-        |br| Overloads the ``horzcat`` Matlab/Octave’s method for
+        |br| Overloads the ``horzcat`` MATLAB/Octave’s method for
         ``dseries`` objects. Returns a ``dseries`` object ``D``
         containing the variables in ``dseries`` objects passed as
         inputs: ``A, B, ...`` If the inputs are not defined on the
@@ -1452,13 +1452,13 @@ The dseries class
 
     .. dseriesmethod:: B = isempty(A)
 
-    |br| Overloads the Matlab/octave’s ``isempty`` function. Returns
+    |br| Overloads the MATLAB/octave’s ``isempty`` function. Returns
     ``1`` if ``dseries`` object ``A`` is empty, ``0`` otherwise.
 
 
     .. dseriesmethod:: C = isequal(A,B)
 
-        |br| Overloads the Matlab/octave’s ``isequal`` function. Returns
+        |br| Overloads the MATLAB/octave’s ``isequal`` function. Returns
         ``1`` if ``dseries`` objects ``A`` and ``B`` are identical, ``0``
         otherwise.
 
@@ -1601,7 +1601,7 @@ The dseries class
 
     .. dseriesmethod:: B = log(A)
 
-        |br| Overloads the Matlab/Octave ``log`` function for
+        |br| Overloads the MATLAB/Octave ``log`` function for
         ``dseries`` objects.
 
         *Example*
@@ -1775,7 +1775,7 @@ The dseries class
 
         |br| Overloads the ``mrdivide`` (``/``) operator for
         ``dseries`` objects, element by element division (like the
-        ``./`` Matlab/Octave operator). If both ``A`` and ``B`` are
+        ``./`` MATLAB/Octave operator). If both ``A`` and ``B`` are
         ``dseries`` objects, they do not need to be defined over the
         same time ranges. If ``A`` and ``B`` are ``dseries`` objects
         with :math:`T_A` and :math:`T_B` observations and :math:`N_A`
@@ -1826,7 +1826,7 @@ The dseries class
     .. dseriesmethod:: C = mtimes(A, B)
 
         |br| Overloads the ``mtimes`` (``*``) operator for ``dseries``
-        objects and the Hadammard product (the .* Matlab/Octave
+        objects and the Hadammard product (the .* MATLAB/Octave
         operator). If both ``A`` and ``B`` are ``dseries`` objects,
         they do not need to be defined over the same time ranges. If
         ``A`` and ``B`` are ``dseries`` objects with :math:`T_A` and
@@ -1855,7 +1855,7 @@ The dseries class
 
     .. dseriesmethod:: C = ne(A, B)
 
-        |br| Overloads the Matlab/Octave ``ne`` (not equal, ``~=``)
+        |br| Overloads the MATLAB/Octave ``ne`` (not equal, ``~=``)
         operator. ``dseries`` objects ``A`` and ``B`` must have the
         same number of observations (say, :math:`T`) and variables
         (:math:`N`). The returned argument is a :math:`T` by :math:`N`
@@ -1900,19 +1900,19 @@ The dseries class
                        h = plot(A[, ...])
                        h = plot(A, B[, ...])
 
-        |br| Overloads Matlab/Octave’s ``plot`` function for
-        ``dseries`` objects. Returns a Matlab/Octave plot handle, that
+        |br| Overloads MATLAB/Octave’s ``plot`` function for
+        ``dseries`` objects. Returns a MATLAB/Octave plot handle, that
         can be used to modify the properties of the plotted time
         series. If only one ``dseries`` object, ``A``, is passed as
         argument, then the plot function will put the associated dates
         on the x-abscissa. If this ``dseries`` object contains only
         one variable, additional arguments can be passed to modify the
         properties of the plot (as one would do with the
-        Matlab/Octave’s version of the plot function). If ``dseries``
+        MATLAB/Octave’s version of the plot function). If ``dseries``
         object ``A`` contains more than one variable, it is not
         possible to pass these additional arguments and the properties
         of the plotted time series must be modified using the returned
-        plot handle and the Matlab/Octave ``set`` function (see
+        plot handle and the MATLAB/Octave ``set`` function (see
         example below). If two ``dseries`` objects, ``A`` and ``B``,
         are passed as input arguments, the plot function will plot the
         variables in ``A`` against the variables in ``B`` (the number
@@ -1920,7 +1920,7 @@ The dseries class
         error is issued). Again, if each object contains only one
         variable, additional arguments can be passed to modify the
         properties of the plotted time series, otherwise the
-        Matlab/Octave ``set`` command has to be used.
+        MATLAB/Octave ``set`` command has to be used.
 
         *Example*
 
@@ -1940,7 +1940,7 @@ The dseries class
 
             If one wants to modify the properties of the plotted time
             series (line style, colours, ...), the set function can be
-            used (see Matlab’s documentation)::
+            used (see MATLAB’s documentation)::
 
                 >> set(h(1),'-k','linewidth',2);
                 >> set(h(2),'--r');
@@ -2116,10 +2116,10 @@ The dseries class
 
     .. dseriesmethod:: save(A, basename[, format])
 
-        |br| Overloads the Matlab/Octave ``save`` function and saves
+        |br| Overloads the MATLAB/Octave ``save`` function and saves
         ``dseries`` object ``A`` to disk. Possible formats are ``csv``
-        (this is the default), ``m`` (Matlab/Octave script), and
-        ``mat`` (Matlab binary data file). The name of the file
+        (this is the default), ``m`` (MATLAB/Octave script), and
+        ``mat`` (MATLAB binary data file). The name of the file
         without extension is specified by ``basename``.
 
         *Example*
@@ -2136,7 +2136,7 @@ The dseries class
                 1Y,               1,               1
                 2Y,               1,               1
 
-            To create a Matlab/Octave script, the following command::
+            To create a MATLAB/Octave script, the following command::
 
                 >> ts0.save('ts0','m');
 
@@ -2188,7 +2188,7 @@ The dseries class
 
     .. dseriesmethod:: [T, N ] = size(A[, dim])
 
-        Overloads the Matlab/Octave’s ``size`` function. Returns the
+        Overloads the MATLAB/Octave’s ``size`` function. Returns the
         number of observations in ``dseries`` object ``A``
         (i.e. ``A.nobs``) and the number of variables
         (i.e. ``A.vobs``). If a second input argument is passed, the
@@ -2247,7 +2247,7 @@ The dseries class
 
     .. dseriesmethod:: D = vertcat (A, B[, ...])
 
-        |br| Overloads the ``vertcat`` Matlab/Octave method for
+        |br| Overloads the ``vertcat`` MATLAB/Octave method for
         ``dseries`` objects. This method is used to append more
         observations to a ``dseries`` object. Returns a ``dseries``
         object ``D`` containing the variables in ``dseries`` objects

@@ -40,7 +40,7 @@ added to this ``Page`` until another ``Page`` is added to the report
 at the end of the section.
 
 Options to methods are passed differently than those to Dynare
-commands. They take the form of named options to Matlab functions
+commands. They take the form of named options to MATLAB functions
 where the arguments come in pairs
 (e.g. ``function_name(`option_1_name', `option_1_value',
 `option_2_name', `option_2_value', ...)``, where ``option_X_name`` is
@@ -821,7 +821,7 @@ and a clarifying example.
     .. option:: showReport, BOOLEAN
 
         Open the compiled report (works on Windows and macOS on
-        Matlab). Default: ``true``.
+        MATLAB). Default: ``true``.
 
 
 *Example*

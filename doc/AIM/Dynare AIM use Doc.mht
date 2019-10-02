@@ -111,7 +111,7 @@ demia/Economics/Dynare%20DSGE/V4/doc/AIM/Dynare%20AIM%20use%20Doc.html#11=
 <H2>AIM Solver Subsystem<A name=3D1></A></H2>
 <P>The AIM subsystem in the AIM subdirectory of the main Dynare matlab =
 directory=20
-contains Matlab functions necessary for using Gary Anderson's AIM 1st =
+contains MATLAB functions necessary for using Gary Anderson's AIM 1st =
 order=20
 solver as an alternative to Dynare's default mjdgges solver (see <A=20
 href=3D"http://www.federalreserve.gov/Pubs/oss/oss4/aimindex.html">http:/=
@@ -129,7 +129,7 @@ AIM outputs.=20
   ("1" in the title is for 1st order solver). </LI></UL></DIV>
 <DIV>
 <UL>
-  <LI>A subset of Matlab routines from Gary Anderson's own AIM package =
+  <LI>A subset of MATLAB routines from Gary Anderson's own AIM package =
 needed to=20
   compute and solve system passed on and returned by dynAIMsolver1 whose =
 names=20
@@ -328,7 +328,7 @@ forward looking models, passing into dynAIMsolver aa =3D{Q'|1}*jacobia_
      i.e. diff &lt; e-14 for aa and diff &lt; *e-13 for jacobia_ if Q' =
 is used.</PRE>
 <P>GP July 2008</P>
-<P>part of DYNARE, copyright Dynare Team (1996-2008) Gnu Public =
+<P>part of Dynare, copyright Dynare Team (1996-2008) Gnu Public =
 License.</P>
 <P class=3Dfooter><BR>Published with MATLAB=C2=AE 7.1<BR></P></DIV><!--=0A=
 ##### SOURCE BEGIN #####=0A=
@@ -336,7 +336,7 @@ License.</P>
 
 %% AIM Solver Subsystem
 % The AIM subsystem in the AIM subdirectory of the main Dynare matlab
-% directory contains Matlab functions necessary for using
+% directory contains MATLAB functions necessary for using
 % Gary Anderson's AIM 1st order solver as an alternative to Dynare's =
 default mjdgges solver (see  =
 http://www.federalreserve.gov/Pubs/oss/oss4/aimindex.html ).=20
@@ -351,7 +351,7 @@ subsystem.=20
 % gu=3Ddr.hgu from the AIM outputs. ("1" in the title is for 1st order
 % solver).
 %
-% * A subset of Matlab routines from Gary Anderson's own AIM package =
+% * A subset of MATLAB routines from Gary Anderson's own AIM package =
 needed to compute
 % and solve system passed on and returned by dynAIMsolver1 whose names =
 start with SP..=20
@@ -544,7 +544,7 @@ used. =20
 %
 % GP July 2008 =20
 %
-% part of DYNARE, copyright Dynare Team (1996-2008)
+% part of Dynare, copyright Dynare Team (1996-2008)
 % Gnu Public License.
 =0A=
 ##### SOURCE END #####=0A=

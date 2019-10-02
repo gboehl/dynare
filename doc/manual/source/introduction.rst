@@ -63,15 +63,15 @@ to bear the concomitant performance loss.
 The development of Dynare is mainly done at `CEPREMAP`_ by a core team
 of researchers who devote part of their time to software
 development. Currently the development team of Dynare is composed of
-Stéphane Adjemian (Université du Maine, Gains and Cepremap), Houtan
-Bastani (Cepremap), Michel Juillard (Banque de France), Frédéric
-Karamé (Université du Maine, Gains and Cepremap), Junior Maih (Norges
+Stéphane Adjemian (Université du Maine, Gains and CEPREMAP), Houtan
+Bastani (CEPREMAP), Michel Juillard (Banque de France), Frédéric
+Karamé (Université du Maine, Gains and CEPREMAP), Junior Maih (Norges
 Bank), Ferhat Mihoubi (Université Paris-Est Créteil, Érudite and
-Cepremap), Johannes Pfeifer (University of Cologne), Marco Ratto
+CEPREMAP), Johannes Pfeifer (University of Cologne), Marco Ratto
 (European Commission, Joint Research Centre - JRC) and Sébastien
-Villemot (Cepremap). Increasingly, the developer base is expanding, as
-tools developed by researchers outside of Cepremap are integrated into
-Dynare. Financial support is provided by Cepremap, Banque de France
+Villemot (CEPREMAP). Increasingly, the developer base is expanding, as
+tools developed by researchers outside of CEPREMAP are integrated into
+Dynare. Financial support is provided by CEPREMAP, Banque de France
 and DSGE-net (an international research network for DSGE modeling).
 
 Interaction between developers and users of Dynare is central to the

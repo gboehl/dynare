@@ -6,7 +6,7 @@
  * To do so, the equations of the model have been transformed into a non-linear equation in 
  * labor h. Within the steady_state_model-block, a helper function is called that uses fsolve
  * to solve this non-linear equation. The use of the helper function is necessary to avoid 
- * interference of the Matlab syntax with Dynare's preprocessor. A more complicated alternative 
+ * interference of the MATLAB syntax with Dynare's preprocessor. A more complicated alternative 
  * that provides more flexibility in the type of commands executed and functions called is the use 
  * of an explicit steady state file. See the NK_baseline.mod in the Examples Folder.
  * 
