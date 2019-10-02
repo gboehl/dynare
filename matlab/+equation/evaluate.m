@@ -89,8 +89,9 @@ for i=1:length(eqtags)
     for j=1:length(enames)
         if ismember(enames{j}, ds.name)
             RHS = exactstrrep(RHS, enames{j}, sprintf('ds(range).%s', enames{j}));
-        elseif ~isequal(enames{j}, lhs)
-            error('Endogenous variable %s is unknown in dseries objet.', enames{j})
+        else
+            RHS = exactstrrep(RHS, sprintf('%s\\((\\-)*\\d\\)|%s', enames{j}, enames{j}), '0');
+            warning('Endogenous variable %s is unknown in dseries objet. Assign zero value.', enames{j})
         end
     end
     % Substitute exogenous variable x with ds.x, except if
