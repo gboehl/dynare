@@ -44,19 +44,6 @@ LIB64="$ROOTDIR"/macOS/deps/lib64
 
 
 ##
-## Find versions set in deps/versions.mk
-##
-while read -r line
-do
-    if [[ "$line" =~ OCTAVE_VERSION[[:space:]]*=[[:space:]]*([^[:space:]]+) ]]; then
-        OCTAVE_VERSION=${BASH_REMATCH[1]}
-        break
-    fi
-done < "$ROOTDIR"/macOS/deps/versions.mk
-[[ -n $OCTAVE_VERSION ]] || { echo "Can't find OCTAVE_VERSION in versions.mk" >&2; exit 1; }
-
-
-##
 ## Compile Dynare
 ##
 cd "$ROOTDIR"
@@ -131,7 +118,8 @@ cd "$ROOTDIR"/mex/build/octave
 CC=$CC CXX=$CXX ./configure --with-matio=/usr/local --with-gsl=/usr/local --with-slicot="$LIB64"/Slicot/with-underscore LDFLAGS=-L/usr/local/lib PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
 make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/octave/*                                       "$PKGFILES"/mex/octave
-echo -e "function v = supported_octave_version\nv=\"${OCTAVE_VERSION}\";\nend" > "$PKGFILES"/matlab/supported_octave_version.m
+echo -e "function v = supported_octave_version\nv=\"$(octave --eval "disp(OCTAVE_VERSION)")\";\nend" > "$PKGFILES"/matlab/supported_octave_version.m
+
 
 ##
 ## Make package
