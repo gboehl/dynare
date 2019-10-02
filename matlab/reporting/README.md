@@ -20,7 +20,7 @@ repository, located in ```dynare/matlab/utilities/general```
 
 # Use the Dynare Reporting code
 
-- Open Matlab/Octave
+- Open MATLAB/Octave
 - Change into the ```reporting``` directory
 - Ensure that the [```dseries```](https://git.dynare.org/Dynare/dseries)
   directory is in your path and initialized correctly (follow the directions on
