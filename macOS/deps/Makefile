@@ -48,18 +48,6 @@ tarballs/slicot-$(SLICOT_VERSION).tar.gz:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://deb.debian.org/debian/pool/main/s/slicot/slicot_$(SLICOT_VERSION).orig.tar.gz
 
-sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz
-	rm -rf sources64/slicot-*-with-32bit-integer
-	mkdir -p $@
-	tar xf $< --directory $@ --strip-components=1
-	touch $@
-
-sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz
-	rm -rf sources64/slicot-*-with-64bit-integer
-	mkdir -p $@
-	tar xf $< --directory $@ --strip-components=1
-	touch $@
-
 sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources64/slicot-*-with-32bit-integer-and-underscore
 	mkdir -p $@
@@ -71,18 +59,6 @@ sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer-and-underscore: tarballs/s
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	touch $@
-
-lib64/Slicot/without-underscore/lib/libslicot_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer
-	make -C $< FORTRAN=gfortran LOADER=gfortran SLICOTLIB=../libslicot_pic.a OPTS="-O2 -g -fno-underscoring" lib
-	strip -S $</libslicot_pic.a
-	mkdir -p $(dir $@)
-	cp $</libslicot_pic.a $@
-
-lib64/Slicot/without-underscore/lib/libslicot64_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer
-	make -C $< FORTRAN=gfortran LOADER=gfortran SLICOTLIB=../libslicot64_pic.a OPTS="-O2 -g -fno-underscoring -fdefault-integer-8" lib
-	strip -S $</libslicot64_pic.a
-	mkdir -p $(dir $@)
-	cp $</libslicot64_pic.a $@
 
 lib64/Slicot/with-underscore/lib/libslicot_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore
 	make -C $< FORTRAN=gfortran LOADER=gfortran SLICOTLIB=../libslicot_pic.a OPTS="-O2 -g" lib
@@ -96,16 +72,13 @@ lib64/Slicot/with-underscore/lib/libslicot64_pic.a: sources64/slicot-$(SLICOT_VE
 	mkdir -p $(dir $@)
 	cp $</libslicot64_pic.a $@
 
-build-slicot: lib64/Slicot/without-underscore/lib/libslicot_pic.a \
-	lib64/Slicot/without-underscore/lib/libslicot64_pic.a \
-	lib64/Slicot/with-underscore/lib/libslicot_pic.a \
+build-slicot: lib64/Slicot/with-underscore/lib/libslicot_pic.a \
 	lib64/Slicot/with-underscore/lib/libslicot64_pic.a
 
 clean-slicot-tar:
 	rm -f tarballs/slicot-$(SLICOT_VERSION).tar.gz
 
 clean-slicot-src:
-	rm -rf sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer
 	rm -rf sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer-and-underscore
 
 clean-libslicot:

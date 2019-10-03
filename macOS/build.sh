@@ -48,7 +48,7 @@ LIB64="$ROOTDIR"/macOS/deps/lib64
 ##
 cd "$ROOTDIR"
 [[ -f configure ]] || autoreconf -si
-CC=$CC CXX=$CXX ./configure --with-matlab=/Applications/MATLAB_R2016b.app MATLAB_VERSION=R2016b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot="$LIB64"/Slicot/without-underscore --disable-octave PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
+CC=$CC CXX=$CXX ./configure --with-matlab=/Applications/MATLAB_R2016b.app MATLAB_VERSION=R2016b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot="$LIB64"/Slicot/with-underscore --disable-octave PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
 if [[ -z $CI ]]; then
     # If not in Gitlab CI, clean the source and build the doc
     make clean
@@ -106,7 +106,7 @@ cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"
 ##
 cd "$ROOTDIR"/mex/build/matlab
 make clean
-CC=$CC CXX=$CXX ./configure --with-matlab=/Applications/MATLAB_R2019b.app MATLAB_VERSION=R2019b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot="$LIB64"/Slicot/without-underscore PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
+CC=$CC CXX=$CXX ./configure --with-matlab=/Applications/MATLAB_R2019b.app MATLAB_VERSION=R2019b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot="$LIB64"/Slicot/with-underscore PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
 make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.7
 
