@@ -97,8 +97,8 @@ cp     "$ROOTDIR"/dynare++/doc/*.pdf                                 "$PKGFILES"
 
 cp     "$ROOTDIR"/dynare++/src/dynare++                              "$PKGFILES"/dynare++
 
-mkdir -p                                                             "$PKGFILES"/matlab/modules/dseries/externals/x13/osx/64
-cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"/matlab/modules/dseries/externals/x13/osx/64
+mkdir -p                                                             "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
+cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
 
 
 ##
