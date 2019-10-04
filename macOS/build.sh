@@ -68,7 +68,7 @@ mkdir    "$PKGFILES"/mex/octave
 mkdir -p "$PKGFILES"/doc/dynare++
 mkdir    "$PKGFILES"/dynare++
 mkdir    "$PKGFILES"/scripts
-mkdir    "$PKGFILES"/contrib
+mkdir -p "$PKGFILES"/contrib/ms-sbvar/TZcode
 
 cp -p  "$ROOTDIR"/NEWS                                               "$PKGFILES"
 cp -p  "$ROOTDIR"/COPYING                                            "$PKGFILES"
@@ -81,7 +81,7 @@ cp -pr "$ROOTDIR"/examples                                           "$PKGFILES"
 cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-8.7-9.3
 
 cp -p  "$ROOTDIR"/scripts/dynare.el                                  "$PKGFILES"/scripts
-cp -pr "$ROOTDIR"/contrib/ms-sbvar                                   "$PKGFILES"/contrib
+cp -pr "$ROOTDIR"/contrib/ms-sbvar/TZcode/MatlabFiles                "$PKGFILES"/contrib/ms-sbvar/TZcode
 cp -pr "$ROOTDIR"/contrib/jsonlab                                    "$PKGFILES"/contrib
 
 cp     "$ROOTDIR"/doc/*.pdf                                          "$PKGFILES"/doc
