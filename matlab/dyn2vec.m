@@ -32,7 +32,7 @@ function [z,zss]=dyn2vec(M_, oo_, options_, s1, s2)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if ~(nargin >= 3)
-    error('DYNARE dyn2vec error: function takes at least 3 arguments');
+    error('Dynare dyn2vec error: function takes at least 3 arguments');
 end
 
 if options_.smpl == 0
@@ -43,7 +43,7 @@ end
 
 if nargin == 3
     if nargout > 0
-        t = ['DYNARE dyn2vec error: the function doesn''t return values when' ...
+        t = ['Dynare dyn2vec error: the function doesn''t return values when' ...
              ' used without input argument'];
         error(t);
     end
@@ -64,7 +64,7 @@ else
                 z = oo_.exo_simul(M_.maximum_lag+options_.smpl(1):M_.maximum_lag+options_.smpl(2));
             end
         else
-            t = ['DYNARE dyn2vec error: variable ' deblank(s1(i,:)) ' doesn''t' ...
+            t = ['Dynare dyn2vec error: variable ' deblank(s1(i,:)) ' doesn''t' ...
                  ' exist.'] ;
             error (t) ;
         end
