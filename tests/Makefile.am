@@ -439,6 +439,7 @@ ECB_MODFILES = \
 	pac/trend-component-19/example1.mod \
 	pac/trend-component-19/example2.mod \
 	pac/trend-component-19/example3.mod \
+	pac/trend-component-19-growth-lin-comb/example.mod \
 	pac/trend-component-1-mce/example_det.mod \
 	pac/trend-component-1-mce/example_sto.mod \
 	pac/trend-component-2-mce/example_det.mod \

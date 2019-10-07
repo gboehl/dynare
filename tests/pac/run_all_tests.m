@@ -40,6 +40,7 @@ r = [r; run_this_test('trend-component-13b')];
 r = [r; run_this_test('trend-component-14')];
 r = [r; run_this_test('trend-component-15')];
 r = [r; run_this_test('trend-component-16')];
+r = [r; run_this_test('trend-component-19-growth-lin-comb')];
 
 print_results(r);
 

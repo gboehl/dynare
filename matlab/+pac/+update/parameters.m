@@ -122,7 +122,7 @@ for e=1:number_of_pac_eq
     % Get the value of the discount factor.
     beta = DynareModel.params(pacmodel.discount_index);
     % Is growth argument passed to pac_expectation?
-    if isfield(pacmodel, 'growth_index')
+    if isfield(pacmodel, 'growth_str')
         growth_flag = true;
     else
         growth_flag = false;

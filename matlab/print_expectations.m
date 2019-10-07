@@ -127,7 +127,7 @@ switch expectationmodelkind
     fprintf(fid, '%s;\n\n', parameter_declaration);
     if withcalibration
         for i=1:length(expectationmodel.param_indices)
-            fprintf(fid, '%s = %s;\n', M_.param_names{expectationmodel.param_indices(i)}, num2str(M_.params(expectationmodel.param_indices(i)), 16));
+            fprintf(fid, '%s = %1.16f;\n', M_.param_names{expectationmodel.param_indices(i)}, M_.params(expectationmodel.param_indices(i)));
         end
     end
   case 'pac'
@@ -139,7 +139,7 @@ switch expectationmodelkind
         fprintf(fid, '%s;\n\n', parameter_declaration);
         if withcalibration
             for i=1:length(expectationmodel.equations.(eqtag).h0_param_indices)
-                fprintf(fid, '%s = %s;\n', M_.param_names{expectationmodel.equations.(eqtag).h0_param_indices(i)}, num2str(M_.params(expectationmodel.equations.(eqtag).h0_param_indices(i)), 16));
+                fprintf(fid, '%s = %1.16f;\n', M_.param_names{expectationmodel.equations.(eqtag).h0_param_indices(i)}, M_.params(expectationmodel.equations.(eqtag).h0_param_indices(i)));
             end
         end
     end
@@ -151,7 +151,7 @@ switch expectationmodelkind
         fprintf(fid, '%s;\n\n', parameter_declaration);
         if withcalibration
             for i=1:length(expectationmodel.equations.(eqtag).h1_param_indices)
-                fprintf(fid, '%s = %s;\n', M_.param_names{expectationmodel.equations.(eqtag).h1_param_indices(i)}, num2str(M_.params(expectationmodel.equations.(eqtag).h1_param_indices(i)), 16));
+                fprintf(fid, '%s = %1.16f;\n', M_.param_names{expectationmodel.equations.(eqtag).h1_param_indices(i)}, M_.params(expectationmodel.equations.(eqtag).h1_param_indices(i)));
             end
         end
     end
@@ -159,7 +159,7 @@ switch expectationmodelkind
         fprintf(fid, '\n');
         fprintf(fid, 'parameters %s;\n\n', M_.param_names{expectationmodel.growth_neutrality_param_index});
         if withcalibration
-            fprintf(fid, '%s = %s;\n', M_.param_names{expectationmodel.growth_neutrality_param_index}, num2str(M_.params(expectationmodel.growth_neutrality_param_index), 16));
+            fprintf(fid, '%s = %1.16f;\n', M_.param_names{expectationmodel.growth_neutrality_param_index}, M_.params(expectationmodel.growth_neutrality_param_index));
         end
         growth_correction = true;
     else
@@ -307,42 +307,55 @@ for i=1:maxlag
         end
         if isequal(id, 1)
             if isequal(expectationmodelkind, 'pac') && growth_correction
-                if numel(expectationmodel.growth_type) > 1 || ...
-                   expectationmodel.growth_constant(1) ~= 1 || ...
-                   expectationmodel.growth_param_id(1) ~= 0
-                    error('Linear combinations in growth parameter are not yet supported')
-                end
                 pgrowth = M_.params(expectationmodel.growth_neutrality_param_index);
-                vgrowth = expectationmodel.growth_str;
-                switch expectationmodel.growth_type{1}
-                  case 'parameter'
-                    vgrowth = M_.params(strcmp(vgrowth, M_.param_names));
-                  otherwise
-                    vgrowth = regexprep(vgrowth, '\<(?!diff\>)\<(?!log\>)\<(?!\d\>)\w+', 'dbase.$0');
+                linearCombination = '';
+                for iter = 1:numel(expectationmodel.growth_linear_comb)
+                    vgrowth='';
+                    if expectationmodel.growth_linear_comb(iter).exo_id > 0
+                        vgrowth = strcat('dbase.', M_.exo_names{expectationmodel.growth_linear_comb(iter).exo_id});
+                    elseif expectationmodel.growth_linear_comb(iter).endo_id > 0
+                        vgrowth = strcat('dbase.', M_.endo_names{expectationmodel.growth_linear_comb(iter).endo_id});
+                    end
+                    if expectationmodel.growth_linear_comb(iter).lag ~= 0
+                        vgrowth = sprintf('%s(%d)', vgrowth, expectationmodel.growth_linear_comb(iter).lag);
+                    end
+                    if expectationmodel.growth_linear_comb(iter).param_id > 0
+                        if ~isempty(vgrowth)
+                            vgrowth = sprintf('%1.16f*%s',M_.params(expectationmodel.growth_linear_comb(iter).param_id), vgrowth);
+                        else
+                            vgrowth = num2str(M_.params(expectationmodel.growth_linear_comb(iter).param_id), '%1.16f');
+                        end
+                    end
+                    if abs(expectationmodel.growth_linear_comb(iter).constant) ~= 1
+                        if ~isempty(vgrowth)
+                            vgrowth = sprintf('%1.16f*%s', expectationmodel.growth_linear_comb(iter).constant, vgrowth);
+                        else
+                            vgrowth = num2str(expectationmodel.growth_linear_comb(iter).constant, '%1.16f');
+                        end
+                    end
+                    if iter > 1
+                        if expectationmodel.growth_linear_comb(iter).constant > 0
+                            linearCombination = sprintf('%s+%s', linearCombination, vgrowth);
+                        else
+                            linearCombination = sprintf('%s-%s', linearCombination, vgrowth);
+                        end
+                    else
+                        linearCombination=vgrowth;
+                    end
                 end
-                if parameter>=0
-                    switch expectationmodel.growth_type{1}
-                      case 'parameter'
-                        expression = sprintf('%s*%s+%s*%s', num2str(pgrowth, '%1.16f'), num2str(vgrowth, '%1.16f'), num2str(parameter, '%1.16f'), variable);
-                      otherwise
-                        expression = sprintf('%s*%s+%s*%s', num2str(pgrowth, '%1.16f'), vgrowth, num2str(parameter, '%1.16f'), variable);
-                    end
+                if parameter >= 0
+                    expression = sprintf('%1.16f*(%s)+%1.16f*%s', pgrowth, linearCombination, parameter, variable);
                 else
-                    switch expectationmodel.growth_type{1}
-                      case 'parameter'
-                        expression = sprintf('%s*%s-%s*%s', num2str(pgrowth, '%1.16f'), num2str(vgrowth, '%1.16f'), num2str(-parameter, '%1.16f'), variable);
-                      otherwise
-                        expression = sprintf('%s*%s-%s*%s', num2str(pgrowth, '%1.16f'), vgrowth, num2str(-parameter, '%1.16f'), variable);
-                    end
+                    expression = sprintf('%1.16f*(%s)-%1.16f*%s', pgrowth, linearCombination, -parameter, variable);
                 end
             else
-                expression = sprintf('%s*%s', num2str(parameter, '%1.16f'), variable);
+                expression = sprintf('%1.16f*%s', parameter, variable);
             end
         else
             if parameter>=0
-                expression = sprintf('%s + %s*%s', expression, num2str(parameter, '%1.16f'), variable);
+                expression = sprintf('%s+%1.16f*%s', expression, parameter, variable);
             else
-                expression = sprintf('%s - %s*%s', expression, num2str(-parameter, '%1.16f'), variable);
+                expression = sprintf('%s-%1.16f*%s', expression, -parameter, variable);
             end
         end
     end

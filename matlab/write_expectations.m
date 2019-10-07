@@ -143,7 +143,11 @@ for i=1:maxlag
 end
 
 if isfield(expectationmodel, 'growth_neutrality_param_index')
-    growthneutralitycorrection = sprintf('%s*%s', M_.param_names{expectationmodel.growth_neutrality_param_index}, expectationmodel.growth_str);
+    if numel(expectationmodel.growth_linear_comb) == 1
+        growthneutralitycorrection = sprintf('%s*%s', M_.param_names{expectationmodel.growth_neutrality_param_index}, expectationmodel.growth_str);
+    else
+        growthneutralitycorrection = sprintf('%s*(%s)', M_.param_names{expectationmodel.growth_neutrality_param_index}, expectationmodel.growth_str);
+    end
 else
     growthneutralitycorrection = '';
 end
