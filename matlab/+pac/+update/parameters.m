@@ -135,7 +135,7 @@ for e=1:number_of_pac_eq
     end
     % Update the parameters related to the stationary components.
     if ~isempty(h0)
-        DynareModel.params(pacmodel.eqyations.(eqtag).h0_param_indices) = h0;
+        DynareModel.params(pacmodel.equations.(eqtag).h0_param_indices) = h0;
     else
         if ~isempty(equations.(eqtag).h0_param_indices)
             DynareModel.params(equations.(eqtag).h0_param_indices) = .0;
