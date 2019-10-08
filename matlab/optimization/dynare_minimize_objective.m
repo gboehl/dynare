@@ -26,7 +26,7 @@ function [opt_par_values,fval,exitflag,hessian_mat,options_,Scale,new_rat_hess_i
 %   none.
 %
 %
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright (C) 2014-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -64,13 +64,22 @@ new_rat_hess_info=[];
 
 switch minimizer_algorithm
   case 1
-    if isoctave
-        error('Optimization algorithm 1 is not available under Octave')
-    elseif ~user_has_matlab_license('optimization_toolbox')
+    if isoctave && ~user_has_octave_forge_package('optim', '1.6')
+        error('Optimization algorithm 1 is not available, you need to install the optim Forge package, version 1.6 or above')
+    elseif ~isoctave && ~user_has_matlab_license('optimization_toolbox')
         error('Optimization algorithm 1 requires the Optimization Toolbox')
     end
     % Set default optimization options for fmincon.
-    optim_options = optimset('display','iter', 'LargeScale','off', 'MaxFunEvals',100000, 'TolFun',1e-8, 'TolX',1e-6);
+    optim_options = optimset('display','iter', 'MaxFunEvals',100000, 'TolFun',1e-8, 'TolX',1e-6);
+    if ~isoctave
+        optim_options = optimset(optim_options, 'LargeScale','off');
+    end
+    if isoctave
+        % Under Octave, use the active-set (i.e. octave_sqp of nonlin_min)
+        % algorithm. On a simple example (fs2000.mod), the default algorithm
+        % is not able to even move away from the initial point.
+        optim_options = optimset(optim_options, 'Algorithm','active-set');
+    end
     if ~isempty(options_.optim_opt)
         eval(['optim_options = optimset(optim_options,' options_.optim_opt ');']);
     end
@@ -80,8 +89,16 @@ switch minimizer_algorithm
     if options_.analytic_derivation
         optim_options = optimset(optim_options,'GradObj','on','TolX',1e-7);
     end
-    [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
+    if ~isoctave
+        [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
         fmincon(objective_function,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options,varargin{:});
+    else
+        % Under Octave, use a wrapper, since fmincon() does not have an 11th
+        % arg. Also, only the first 4 output arguments are available.
+        func = @(x) objective_function(x,varargin{:});
+        [opt_par_values,fval,exitflag,output] = ...
+        fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
+    end
   case 2
     %simulating annealing
     sa_options = options_.saopt;

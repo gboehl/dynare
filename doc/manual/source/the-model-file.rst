@@ -4652,8 +4652,10 @@ block decomposition of the model (see :opt:`block`).
            ``1``
 
                 Uses ``fmincon`` optimization routine (available under
-                MATLAB if the Optimization Toolbox is installed; not
-                available under Octave).
+                MATLAB if the Optimization Toolbox is installed; available
+                under Octave if the `optim
+                <https://octave.sourceforge.io/optim/>`__ package from
+                Octave-Forge, version 1.6 or above, is installed).
 
            ``2``
 
