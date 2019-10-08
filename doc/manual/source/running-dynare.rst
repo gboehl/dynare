@@ -209,7 +209,7 @@ by the ``dynare`` command.
        variables: ``exp``, ``log``, ``log10``, ``cos``, ``sin``, ``tan``,
        ``acos``, ``asin``, ``atan``, ``cosh``, ``sinh``, ``tanh``, ``acosh``,
        ``asinh``, ``atanh``, ``sqrt``, ``cbrt``, ``abs``, ``sign``,
-       ``erf``. Defalut: no obligatory transformation
+       ``erf``. Default: no obligatory transformation
 
     .. option:: json = parse|check|transform|compute
 
