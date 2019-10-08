@@ -182,13 +182,13 @@ by the ``dynare`` command.
 
     .. option:: output=dynamic|first|second|third
 
-       Instructs the preprocessor to calculate derivatives at the given
+       Instructs the preprocessor to output derivatives at the given
        order. Only works when ``language=julia`` has been passed.
 
     .. option:: language=matlab|julia
 
-       Instructs the preprocessor to write output for Matlab or Julia. Default:
-       Matlab
+       Instructs the preprocessor to write output for MATLAB or Julia. Default:
+       MATLAB
 
     .. option:: params_derivs_order=0|1|2
 
@@ -209,7 +209,7 @@ by the ``dynare`` command.
        variables: ``exp``, ``log``, ``log10``, ``cos``, ``sin``, ``tan``,
        ``acos``, ``asin``, ``atan``, ``cosh``, ``sinh``, ``tanh``, ``acosh``,
        ``asinh``, ``atanh``, ``sqrt``, ``cbrt``, ``abs``, ``sign``,
-       ``erf``. Defalut: don't transform unary operators
+       ``erf``. Defalut: no obligatory transformation
 
     .. option:: json = parse|check|transform|compute
 
