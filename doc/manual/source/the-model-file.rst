@@ -4298,7 +4298,7 @@ block decomposition of the model (see :opt:`block`).
 
        The datafile: a ``.m`` file, a ``.mat`` file, a ``.csv`` file,
        or a ``.xls/.xlsx`` file (under Octave, the `io
-       <http://octave.sourceforge.net/io/>`__ package from Octave-Forge
+       <https://octave.sourceforge.io/io/>`__ package from Octave-Forge
        is required for the ``.csv`` and ``.xlsx`` formats and the
        ``.xls`` file extension is not supported). Note that the base
        name (i.e. without extension) of the datafile has to be
@@ -4666,7 +4666,7 @@ block decomposition of the model (see :opt:`block`).
                 Uses ``fminunc`` optimization routine (available under
                 MATLAB if the Optimization Toolbox is installed;
                 available under Octave if the `optim
-                <http://octave.sourceforge.net/optim/>`__ package from
+                <https://octave.sourceforge.io/optim/>`__ package from
                 Octave-Forge is installed).
 
            ``4``
@@ -5775,7 +5775,7 @@ block decomposition of the model (see :opt:`block`).
                (``dlyapchol``). This method is fast for large scale
                models (available under MATLAB if the Control System
                Toolbox is installed; available under Octave if the
-               `control <http://octave.sourceforge.net/control/>`__
+               `control <https://octave.sourceforge.io/control/>`__
                package from Octave-Forge is installed)
 
        Default value is ``default``.
@@ -11205,7 +11205,7 @@ Misc commands
 
 
 .. _Dynare wiki: http://www.dynare.org/DynareWiki/EquationsTags
-.. _io: http://octave.sourceforge.net/io/
+.. _io: https://octave.sourceforge.io/io/
 .. _AIM website: http://www.federalreserve.gov/Pubs/oss/oss4/aimindex.html
 
 .. rubric:: Footnotes

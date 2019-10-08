@@ -235,4 +235,4 @@ Dynare unusable.
 .. _Ubuntu: http://www.ubuntu.com/
 .. _Dynare website: https://www.dynare.org/
 .. _Dynare wiki: https://git.dynare.org/Dynare/dynare/wikis
-.. _Octave-Forge: http://octave.sourceforge.io/
+.. _Octave-Forge: https://octave.sourceforge.io/
