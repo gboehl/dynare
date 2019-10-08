@@ -180,6 +180,16 @@ by the ``dynare`` command.
         Instructs Dynare to no create a logfile of this run in
         ``FILENAME.log.`` The default is to create the logfile.
 
+    .. option:: output=dynamic|first|second|third
+
+       Instructs the preprocessor to calculate derivatives at the given
+       order. Only works when ``language=julia`` has been passed.
+
+    .. option:: language=matlab|julia
+
+       Instructs the preprocessor to write output for Matlab or Julia. Default:
+       Matlab
+
     .. option:: params_derivs_order=0|1|2
 
         When :comm:`identification`, :comm:`dynare_sensitivity` (with
@@ -192,6 +202,14 @@ by the ``dynare`` command.
     .. option:: nowarn
 
         Suppresses all warnings.
+
+    .. option:: transform_unary_ops
+
+       Transform the following operators in the model block into auxiliary
+       variables: ``exp``, ``log``, ``log10``, ``cos``, ``sin``, ``tan``,
+       ``acos``, ``asin``, ``atan``, ``cosh``, ``sinh``, ``tanh``, ``acosh``,
+       ``asinh``, ``atanh``, ``sqrt``, ``cbrt``, ``abs``, ``sign``,
+       ``erf``. Defalut: don't transform unary operators
 
     .. option:: json = parse|check|transform|compute
 
