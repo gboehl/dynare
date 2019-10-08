@@ -173,12 +173,14 @@ MODFILES = \
 	dsge-var/simul_hybrid.mod \
 	dsge-var/dsgevar_forward_calibrated_lambda.mod \
 	dsge-var/dsgevar_forward_estimated_lambda.mod \
-	external_function/first_and_2nd_deriv_fcns_provided.mod \
-	external_function/first_and_2nd_deriv_fcns_provided_dll.mod \
-	external_function/first_deriv_fcn_provided.mod \
-	external_function/first_deriv_fcn_provided_dll.mod \
-	external_function/no_deriv_fcns_provided.mod \
-	external_function/no_deriv_fcns_provided_dll.mod \
+	external_function/first_deriv_given.mod \
+	external_function/first_deriv_given_dll.mod \
+	external_function/first_and_2nd_deriv_given.mod \
+	external_function/first_and_2nd_deriv_given_namespace.mod \
+	external_function/first_and_2nd_deriv_given_dll.mod \
+	external_function/first_and_2nd_deriv_given_dll_namespace.mod \
+	external_function/no_deriv_given.mod \
+	external_function/no_deriv_given_dll.mod \
 	seeds.mod \
 	identification/kim/kim2.mod \
 	identification/as2007/as2007.mod \
