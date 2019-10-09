@@ -420,6 +420,11 @@ switch minimizer_algorithm
     options_.cova_compute = 0;
     [opt_par_values, stdh, lb_95, ub_95, med_param] = online_auxiliary_filter(start_par_value, varargin{:});
   case 12
+    if isoctave
+        error('Option mode_compute=12 is not available under Octave')
+    elseif ~user_has_matlab_license('global_optimization_toolbox')
+        error('Option mode_compute=12 requires the Global Optimization Toolbox')
+    end
     [LB, UB] = set_bounds_to_finite_values(bounds, options_.huge_number);
     tmp = transpose([fieldnames(options_.particleswarm), struct2cell(options_.particleswarm)]);
     particleswarmOptions = optimoptions(@particleswarm);
