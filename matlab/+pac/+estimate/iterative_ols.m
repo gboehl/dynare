@@ -401,6 +401,12 @@ while noconvergence
     end
 end
 
+% Save results
+oo_.pac.(pacmodl).equations.(eqtag).ssr = ssr;
+oo_.pac.(pacmodl).equations.(eqtag).residual = r;
+oo_.pac.(pacmodl).equations.(eqtag).estimator = params0_;
+oo_.pac.(pacmodl).equations.(eqtag).covariance = NaN(length(params0_));
+oo_.pac.(pacmodl).equations.(eqtag).student = NaN(size(params0_));
 
 
 function [PacExpectations, Model] = UpdatePacExpectationsData(dataPAC0, dataPAC1, data, range, pacmodl, eqtag, Model, Output)
