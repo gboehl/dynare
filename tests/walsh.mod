@@ -67,7 +67,7 @@ steady_state_model;
 // adapting solution Walsh (2003) p. 84
 en = 1/3;
 eR = 1/beta;
-y_k = (1/alpha)*(1/beta-1+delta);
+y_k = matlab.namespace.y_k(alpha, beta, delta);
 ek = en*y_k^(-1/(1-alpha));
 ec = ek*(y_k-delta);
 em = ec*(a/(1-a))^(-1/b)*((thetass-beta)/thetass)^(-1/b);

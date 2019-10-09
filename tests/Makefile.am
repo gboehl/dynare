@@ -777,6 +777,7 @@ EXTRA_DIST = \
 	run_reporting_test_matlab.m \
 	run_reporting_test_octave.m \
 	run_all_unitary_tests.m \
+	+matlab/+namespace/y_k.m \
 	reporting/AnnualTable.m \
 	reporting/CommResidTablePage.m \
 	reporting/CountryGraphPage.m \
