@@ -19,6 +19,10 @@
 
 set -ex
 
+# Set the compilers
+CC=gcc-9
+CXX=g++-9
+
 # Set the number of threads
 NTHREADS=$(nproc)
 
@@ -35,13 +39,16 @@ if [[ -z $VERSION ]]; then
     fi
 fi
 
+# Set dependency directory
+LIB64="$ROOTDIR"/macOS/deps/lib64
+
 
 ##
 ## Compile Dynare
 ##
 cd "$ROOTDIR"
 [[ -f configure ]] || autoreconf -si
-CC=gcc-9 CXX=g++-9 ./configure --with-matlab=/Applications/MATLAB_R2016b.app MATLAB_VERSION=R2016b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local --disable-octave PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
+CC=$CC CXX=$CXX ./configure --with-matlab=/Applications/MATLAB_R2016b.app MATLAB_VERSION=R2016b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot="$LIB64"/Slicot/with-underscore --disable-octave PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
 if [[ -z $CI ]]; then
     # If not in Gitlab CI, clean the source and build the doc
     make clean
@@ -61,7 +68,7 @@ mkdir    "$PKGFILES"/mex/octave
 mkdir -p "$PKGFILES"/doc/dynare++
 mkdir    "$PKGFILES"/dynare++
 mkdir    "$PKGFILES"/scripts
-mkdir    "$PKGFILES"/contrib
+mkdir -p "$PKGFILES"/contrib/ms-sbvar/TZcode
 
 cp -p  "$ROOTDIR"/NEWS                                               "$PKGFILES"
 cp -p  "$ROOTDIR"/COPYING                                            "$PKGFILES"
@@ -74,7 +81,7 @@ cp -pr "$ROOTDIR"/examples                                           "$PKGFILES"
 cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-8.7-9.3
 
 cp -p  "$ROOTDIR"/scripts/dynare.el                                  "$PKGFILES"/scripts
-cp -pr "$ROOTDIR"/contrib/ms-sbvar                                   "$PKGFILES"/contrib
+cp -pr "$ROOTDIR"/contrib/ms-sbvar/TZcode/MatlabFiles                "$PKGFILES"/contrib/ms-sbvar/TZcode
 cp -pr "$ROOTDIR"/contrib/jsonlab                                    "$PKGFILES"/contrib
 
 cp     "$ROOTDIR"/doc/*.pdf                                          "$PKGFILES"/doc
@@ -90,13 +97,16 @@ cp     "$ROOTDIR"/dynare++/doc/*.pdf                                 "$PKGFILES"
 
 cp     "$ROOTDIR"/dynare++/src/dynare++                              "$PKGFILES"/dynare++
 
+mkdir -p                                                             "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
+cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
+
 
 ##
-## Create mex for Matlab le 2018a
+## Create mex for MATLAB le 2018a
 ##
 cd "$ROOTDIR"/mex/build/matlab
 make clean
-CC=gcc-9 CXX=g++-9 ./configure --with-matlab=/Applications/MATLAB_R2019b.app MATLAB_VERSION=R2019b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
+CC=$CC CXX=$CXX ./configure --with-matlab=/Applications/MATLAB_R2019b.app MATLAB_VERSION=R2019b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot="$LIB64"/Slicot/with-underscore PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
 make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.7
 
@@ -105,9 +115,10 @@ cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"
 ## Create mex for Octave
 ##
 cd "$ROOTDIR"/mex/build/octave
-CC=gcc-9 CXX=g++-9 ./configure --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local LDFLAGS=-L/usr/local/lib PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
+CC=$CC CXX=$CXX ./configure --with-matio=/usr/local --with-gsl=/usr/local --with-slicot="$LIB64"/Slicot/with-underscore LDFLAGS=-L/usr/local/lib PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
 make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/octave/*                                       "$PKGFILES"/mex/octave
+echo -e "function v = supported_octave_version\nv=\"$(octave --eval "disp(OCTAVE_VERSION)")\";\nend" > "$PKGFILES"/matlab/supported_octave_version.m
 
 
 ##
@@ -119,7 +130,7 @@ sed "s/VERSION_READ/$VERSION_READ/g" "$ROOTDIR"/macOS/distribution_template.xml 
 sed "s/VERSION_NO_SPACE/$VERSION/g" distribution_tmp.xml > distribution.xml
 ln -s "$ROOTDIR"/COPYING "$ROOTDIR"/macOS/
 productbuild --distribution distribution.xml --resources "$ROOTDIR"/macOS --package-path ./"$NAME".pkg "$NAME"-new.pkg
-rm -f *.xml
+rm -f ./*.xml
 rm -rf "$PKGFILES"
 rm "$ROOTDIR"/macOS/COPYING
 mv "$NAME"-new.pkg "$NAME".pkg

@@ -337,12 +337,12 @@ set up Dynare for parallel execution.
        Key+Pause to open the System Configuration, then go to Advanced
        -> Environment Variables -> Path).
     5. Restart your computer to make the path change effective.
-    6. Open Matlab and type into the command window::
+    6. Open MATLAB and type into the command window::
 
            !psexec
 
        This executes the ``psexec.exe`` from PSTools on your system
-       and shows whether Dynare will be able to locate it. If Matlab
+       and shows whether Dynare will be able to locate it. If MATLAB
        complains at this stage, you did not correctly set your Windows
        system path for the ``PSTools`` folder.
     7. If ``psexec.exe`` was located in the previous step, a popup
@@ -380,7 +380,7 @@ set up Dynare for parallel execution.
     ComputerName=localhost
     #cores to be included from this node
     CPUnbr=[1:2]
-    #path to matlab.exe; on Windows, theMatlab bin folder is in the system path
+    #path to matlab.exe; on Windows, the MATLAB bin folder is in the system path
     #so we only need to provide the name of the exe file
     MatlabOctavePath=matlab
     #Dynare path you are using

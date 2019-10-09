@@ -190,7 +190,7 @@ fixed in version 4.5.4:
 
  - Estimation with missing values was crashing if the `prefilter` option was used.
 
- - Added a workaround for a difference in behaviour between Octave and Matlab regarding the creation
+ - Added a workaround for a difference in behaviour between Octave and MATLAB regarding the creation
    of function handles for functions that do not exist in the path. With Octave 4.2.1, steady state
    files did not work if no auxiliary variables were created.
 
@@ -315,7 +315,7 @@ fixed in version 4.5.2:
  - Fixed crash with optimizer 5 when not used with DSGE model at order 1.
 
  - Fixed mex file used for third order approximation (was crashing on
-   Matlab/Windows 7).
+   MATLAB/Windows 7).
 
 
 
@@ -658,7 +658,7 @@ Here is the list of major user-visible changes:
  - Command line
 
    + New option `onlyclearglobals` (do not clear JIT compiled functions
-     with recent versions of Matlab),
+     with recent versions of MATLAB),
 
    + New option `minimal_workspace` to use fewer variables in the
      current workspace,
@@ -689,7 +689,7 @@ Here is the list of major user-visible changes:
    + `mode_compute=101` Uses SOLVEOPT as described by Kuntsevich and
      Kappel (1997),
 
-   + `mode_compute=102` Uses `simulannealbnd` from Matlab's Global
+   + `mode_compute=102` Uses `simulannealbnd` from MATLAB's Global
      Optimization Toolbox (if available),
 
    + New option `silent_optimizer` to shut off output from mode
@@ -724,7 +724,7 @@ Here is the list of major user-visible changes:
    + Introduces new path management to avoid conflicts with other
      toolboxes,
 
-   + Full compatibility with Matlab 2014b's new graphic interface,
+   + Full compatibility with MATLAB 2014b's new graphic interface,
 
    + When using `model(linear)`, Dynare automatically checks
      whether the model is truly linear,
@@ -924,7 +924,7 @@ Here is the list of major user-visible changes:
      was not consistent with the reference manual,
 
    + When the initialization of an MCMC run failed, the metropolis.log file was
-     locked, requiring a restart of Matlab to restart estimation,
+     locked, requiring a restart of MATLAB to restart estimation,
 
    + If the posterior mode was right at the corner of the prior bounds, the
      initialization of the MCMC erroneously crashed,
@@ -1140,7 +1140,7 @@ Here is the list of major user-visible changes:
 
  - A bug when external functions were used in model local variables
    that were contained in equations that required auxiliary
-   variable/equations led to crashes of Matlab.
+   variable/equations led to crashes of MATLAB.
 
  - Sampling from the prior distribution for an inverse gamma II
    distribution when `prior_trunc>0` could result in incorrect

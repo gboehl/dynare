@@ -203,18 +203,18 @@ institutions who cannot afford, or do not want to pay for, MATLAB and
 are willing to bear the concomitant performance loss.
 
 The development of Dynare is mainly done at
-@uref{http://www.cepremap.ens.fr, Cepremap} by a core team of
+@uref{http://www.cepremap.ens.fr, CEPREMAP} by a core team of
 researchers who devote part of their time to software
 development. Currently the development team of Dynare is composed of
-Stéphane Adjemian (Université du Maine, Gains and Cepremap), Houtan
-Bastani (Cepremap), Michel Juillard (Banque de France), Frédéric
-Karamé (Université d'Évry, Epee and Cepremap), Junior Maih (Norges
-Bank), Ferhat Mihoubi (Université d'Évry, Epee and Cepremap), George
-Perendia, Marco Ratto (JRC) and Sébastien Villemot (Cepremap and Paris
-School of Economics). Financial support is provided by Cepremap,
+Stéphane Adjemian (Université du Maine, Gains and CEPREMAP), Houtan
+Bastani (CEPREMAP), Michel Juillard (Banque de France), Frédéric
+Karamé (Université d'Évry, Epee and CEPREMAP), Junior Maih (Norges
+Bank), Ferhat Mihoubi (Université d'Évry, Epee and CEPREMAP), George
+Perendia, Marco Ratto (JRC) and Sébastien Villemot (CEPREMAP and Paris
+School of Economics). Financial support is provided by CEPREMAP,
 Banque de France and DSGE-net (an international research network for
 DSGE modeling). Increasingly, the developer base is expanding, as
-tools developed by researchers outside of Cepremap are integrated into
+tools developed by researchers outside of CEPREMAP are integrated into
 Dynare.
 
 Interaction between developers and users of Dynare is central to the

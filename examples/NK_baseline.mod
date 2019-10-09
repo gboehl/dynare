@@ -17,7 +17,7 @@
  * and ii) solve a nonlinear equation using a numerical solver to find the steady
  * state of labor. It provides an example on how the steady state file can be used
  * to circumvent some of the limitation of Dynare mod-file by accessing an external
- * file that allows calling general Matlab routines. These capacities will mostly be 
+ * file that allows calling general MATLAB routines. These capacities will mostly be 
  * interesting for power users. If one just wants to provide analytical steady state 
  * values and update parameters, the steady_state_model-block allows an easy and convenient
  * alternative. It even allows calling numerical solvers like fsolve. For an example, see

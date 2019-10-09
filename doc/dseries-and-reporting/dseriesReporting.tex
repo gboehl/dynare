@@ -68,9 +68,9 @@
   \myitem Compatible with all setups that are supported by Dynare
     \begin{itemize}
     \myitem Windows, Mac OS X, Linux
-    \myitem Matlab 7.5 (R2007b) or later, Octave
+    \myitem MATLAB 7.5 (R2007b) or later, Octave
     \end{itemize}
-  \myitem Must run \texttt{dynare} or \texttt{dynare\_config} at least once in the current Matlab/Octave session before use
+  \myitem Must run \texttt{dynare} or \texttt{dynare\_config} at least once in the current MATLAB/Octave session before use
   \myitem More complete information is included in the Dynare manual
   \end{itemize}
 \end{frame}
@@ -80,7 +80,7 @@
 \begin{frame}[fragile,t]
   \frametitle{A Programming Note (1/3)}
   \begin{itemize}
-  \myitem Time series and dates (and reporting) are implemented as Matlab/Octave classes
+  \myitem Time series and dates (and reporting) are implemented as MATLAB/Octave classes
   \myitem Inplace modification of instantiated objects not supported. Let me explain \dots
     \begin{itemize}
       \myitem A class is a template for defining objects, defining their member
@@ -115,7 +115,7 @@ X =
   \frametitle{A Programming Note (2/3)}
   \begin{itemize}
     \item[] \begin{itemize}
-  \myitem But! For Matlab/Octave's implementation of classes this is not the
+  \myitem But! For MATLAB/Octave's implementation of classes this is not the
     case as it does not support inplace modification
 \begin{verbatim}
 >> X.multiplyByTwo()
@@ -183,7 +183,7 @@ X =
 
 
 \begin{frame}[fragile,t]
-  \frametitle{Creating a new \texttt{dates} object in Matlab/Octave}
+  \frametitle{Creating a new \texttt{dates} object in MATLAB/Octave}
   \begin{itemize}
     \myitem{A single date}
 \begin{alltt}
@@ -429,7 +429,7 @@ would be transformed into
 
 \begin{frame}[fragile,t]
   \frametitle{Creating a new \texttt{dseries} object (2/2)}
-  Load series from CSV/spreadsheet (\texttt{.csv, .xls}) or Matlab file (\texttt{.m, .mat})
+  Load series from CSV/spreadsheet (\texttt{.csv, .xls}) or MATLAB file (\texttt{.m, .mat})
   \begin{itemize}
     \myitem Syntax:
     \begin{alltt}
@@ -646,7 +646,7 @@ the time range of \verb+vs+ will be the union of \verb+ts.dates+ and
       \begin{itemize}
       \myitem You can easily modify the Ti$k$Z graph if the option you want is not in Dynare
       \end{itemize}
-    \myitem Works with Matlab \& Octave
+    \myitem Works with MATLAB \& Octave
     \myitem Works much faster than similar softawre
     \myitem NB: Must install a \LaTeX\ distribution to compile reports
       \begin{itemize}

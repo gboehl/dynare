@@ -155,13 +155,13 @@ dynare++ example1.mod
 }
 
 When the program is finished, it produces two output files: a journal
-file {\tt example1.jnl} and a Matlab MAT-4 {\tt example1.mat}. The
+file {\tt example1.jnl} and a MATLAB MAT-4 {\tt example1.mat}. The
 journal file contains information about time, memory and processor
 resources needed for all steps of solution. The output file is more
 interesting. It contains various simulation results. It can be loaded
-into Matlab or Scilab and examined.%
-\footnote{For Matlab {\tt load example1.mat}, for Scilab {\tt
-mtlb\_load example1.mat}} The following examples are done in Matlab,
+into MATLAB or Scilab and examined.%
+\footnote{For MATLAB {\tt load example1.mat}, for Scilab {\tt
+mtlb\_load example1.mat}} The following examples are done in MATLAB,
 everything would be very similar in Scilab.
 
 Let us first examine the contents of the MAT file:
@@ -189,7 +189,7 @@ dyn_i_NU           dyn_nforw
 
 All the variables coming from one MAT file have a common prefix. In
 this case it is {\tt dyn}, which is Dynare++ default. The prefix can
-be changed, so that the multiple results could be loaded into one Matlab
+be changed, so that the multiple results could be loaded into one MATLAB
 session.
 
 In the default setup, Dynare++ solves the Taylor approximation to the
@@ -431,7 +431,7 @@ vcov = [
 }
 
 After this model file has been run, we can load the resulting MAT-file
-into the Matlab (or Scilab) and examine its contents:
+into the MATLAB (or Scilab) and examine its contents:
 {\small
 \begin{verbatim}
 >> load kp1980_2.mat
@@ -856,9 +856,9 @@ if they are set in the {\tt initval} section. In other words, if a
 multiplier has been given a value in the {\tt initval} section, then
 the value is used, otherwise the calculated value is taken.
 
-For even more difficult problems, Dynare++ generates two Matlab files
+For even more difficult problems, Dynare++ generates two MATLAB files
 calculating a residual of the static system and its derivative. These
-can be used in Matlab's {\tt fsolve} or other algorithm to get an
+can be used in MATLAB's {\tt fsolve} or other algorithm to get an
 exact solution of the deterministic steady state. See
 \ref{output_matlab_scripts} for more details.
 
@@ -924,7 +924,7 @@ This section deals with Dynare++ input. The first subsection
 \ref{dynpp_opts} provides a list of command line options, next
 subsection \ref{dynpp_mod} deals with a format of Dynare++ model file,
 and the last subsection discusses incompatibilities between Dynare
-Matlab and Dynare++.
+MATLAB and Dynare++.
 
 \subsection{Command Line Options}
 \label{dynpp_opts}
@@ -1143,7 +1143,7 @@ $t+1$. The realization of $u_t$ is included in the information set of
 $E_t$. See an explanation of Dynare++ timing on page \pageref{timing}.
 \end{itemize}
 
-The model equations are formulated in the same way as in Matlab
+The model equations are formulated in the same way as in MATLAB
 Dynare. The time indexes different from $t$ are put to round
 parenthesis in this way: {\tt C(-1)}, {\tt C}, {\tt C(+1)}.
 
@@ -1181,16 +1181,16 @@ Y-Y_SS = rho*(Y(-1)-Y_SS)+EPS;
 \end{verbatim}
 }
 
-\subsection{Incompatibilities with Matlab Dynare}
+\subsection{Incompatibilities with MATLAB Dynare}
 
 This section provides a list of incompatibilities between a model file
-for Dy\-na\-re++ and Matlab Dynare. These must be considered when a model
-file for Matlab Dynare is being migrated to Dynare++. The list is the
+for Dy\-na\-re++ and MATLAB Dynare. These must be considered when a model
+file for MATLAB Dynare is being migrated to Dynare++. The list is the
 following:
 \begin{itemize}
 \item There is no {\tt periods} keyword.
 \item The parameters cannot be lagged or leaded, I think that Dynare
-Matlab allows it, but the semantics is the same (parameter is a
+MATLAB allows it, but the semantics is the same (parameter is a
 constant).
 \item There are no commands like {\tt steady}, {\tt check}, {\tt
 simul}, {\tt stoch\_simul}, etc.
@@ -1218,7 +1218,7 @@ vcov = [
 There are three output files; a data file in MAT-4 format containing
 the output data (\ref{matfile}), a journal text file containing an
 information about the Dynare++ run (\ref{journalfile}), and a dump
-file (\ref{dumpfile}). Further, Dynare++ generates two Matlab script
+file (\ref{dumpfile}). Further, Dynare++ generates two MATLAB script
 files, which calculate a residual and the first derivative of the
 residual of the static system (\ref{output_matlab_scripts}). These are
 useful when calculating the deterministic steady state outside
@@ -1429,15 +1429,15 @@ of the planner.
 The dump file serves for debugging purposes, since it contains the
 mathematical problem which is being solved by dynare++.
 
-\subsection{Matlab Scripts for Steady State Calculations}
+\subsection{MATLAB Scripts for Steady State Calculations}
 \label{output_matlab_scripts}
 
-This section describes two Matlab scripts, which are useful when
+This section describes two MATLAB scripts, which are useful when
 calculating the deterministic steady state outside Dynare++. The
 scripts are created by Dynare++ as soon as an input file is parsed,
 that is before any calculations.
 
-The first Matlab script having a name {\tt {\it modname}\_f.m} for
+The first MATLAB script having a name {\tt {\it modname}\_f.m} for
 given parameters values and given all endogenous variables $y$
 calculates a residual of the static system. Supposing the model is in
 the form of \eqref{focs}, the script calculates a vector:
@@ -1465,14 +1465,14 @@ For example, if we want to calculate the deterministic steady state of
 the {\tt kp1980.dyn} model, we need to do the following:
 \begin{enumerate}
 \item Run Dynare++ with {\tt kp1980.dyn}, no matter if the calculation
-has not been finished, important output are the two Matlab scripts
+has not been finished, important output are the two MATLAB scripts
 created just in the beginning.
 \item Consult file {\tt kp1980\_f.m}\ to get the ordering of parameters
 and all endogenous variables.
 \item Create a vector {\tt p} with the parameter values in the ordering
 \item Create a vector {\tt init\_y} with the initial guess for the
-Matlab solver {\tt fsolve}
-\item Create a simple Matlab function called {\tt kp1980\_fsolve.m}\ 
+MATLAB solver {\tt fsolve}
+\item Create a simple MATLAB function called {\tt kp1980\_fsolve.m}\ 
 returning the residual and Jacobian:
 {\small
 \begin{verbatim}
@@ -1481,7 +1481,7 @@ function [r, J] = kp1980_fsolve(p, y)
   J = kp1980_ff(p, y);
 \end{verbatim}
 }
-\item In the Matlab prompt, run the following:
+\item In the MATLAB prompt, run the following:
 {\small
 \begin{verbatim}
 opt=optimset('Jacobian','on','Display','iter');
@@ -1497,7 +1497,7 @@ y=fsolve(@(y) kp1980_fsolve(p,y), init_y, opt);
 When Dynare++ run is finished it dumps the derivatives of the
 calculated decision rule to the MAT file. The derivatives can be used
 for a construction of the decision rule and custom simulations can be
-run. This is done by {\tt dynare\_simul.m} M-file in Matlab. It reads
+run. This is done by {\tt dynare\_simul.m} M-file in MATLAB. It reads
 the derivatives and simulates the decision rule with provided
 realization of shocks.
 

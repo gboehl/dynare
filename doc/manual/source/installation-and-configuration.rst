@@ -67,7 +67,7 @@ be under ``/usr/share/doc/dynare-doc``.
 On macOS
 --------
 
-To install Dynare for use with Matlab, execute the automated installer
+To install Dynare for use with MATLAB, execute the automated installer
 called ``dynare-4.x.y.pkg`` (where *4.x.y* is the version number), and
 follow the instructions. The default installation directory is
 ``/Applications/Dynare/4.x.y`` (please refer to the `Dynare wiki`_ for
@@ -235,4 +235,4 @@ Dynare unusable.
 .. _Ubuntu: http://www.ubuntu.com/
 .. _Dynare website: https://www.dynare.org/
 .. _Dynare wiki: https://git.dynare.org/Dynare/dynare/wikis
-.. _Octave-Forge: http://octave.sourceforge.io/
+.. _Octave-Forge: https://octave.sourceforge.io/

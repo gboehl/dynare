@@ -15,7 +15,7 @@ function r = octave_ver_less_than(verstr)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright (C) 2008-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,15 +32,6 @@ function r = octave_ver_less_than(verstr)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-cur_verstr = version();
+r = compare_versions(version(), verstr, "<");
 
-r = get_ver_numeric(cur_verstr) < get_ver_numeric(verstr);
-endfunction
-
-function x = get_ver_numeric(verstr)
-nums = sscanf(verstr, '%d.%d.%d')';
-if length(nums) < 3
-    nums(3) = 0;
-end
-x = nums * [1; 0.01; 0.0001 ];
 endfunction

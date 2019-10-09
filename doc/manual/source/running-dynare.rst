@@ -111,7 +111,7 @@ by the ``dynare`` command.
         By default, ``dynare`` will issue a ``clear all`` command to
         MATLAB (<R2015b) or Octave, thereby deleting all workspace
         variables and functions; this option instructs ``dynare`` not
-        to clear the workspace. Note that starting with Matlab 2015b
+        to clear the workspace. Note that starting with MATLAB 2015b
         ``dynare`` only deletes the global variables and the functions
         using persistent variables, in order to benefit from the JIT
         (Just In Time) compilation. In this case the option instructs
@@ -180,6 +180,16 @@ by the ``dynare`` command.
         Instructs Dynare to no create a logfile of this run in
         ``FILENAME.log.`` The default is to create the logfile.
 
+    .. option:: output=dynamic|first|second|third
+
+       Instructs the preprocessor to output derivatives at the given
+       order. Only works when ``language=julia`` has been passed.
+
+    .. option:: language=matlab|julia
+
+       Instructs the preprocessor to write output for MATLAB or Julia. Default:
+       MATLAB
+
     .. option:: params_derivs_order=0|1|2
 
         When :comm:`identification`, :comm:`dynare_sensitivity` (with
@@ -192,6 +202,14 @@ by the ``dynare`` command.
     .. option:: nowarn
 
         Suppresses all warnings.
+
+    .. option:: transform_unary_ops
+
+       Transform the following operators in the model block into auxiliary
+       variables: ``exp``, ``log``, ``log10``, ``cos``, ``sin``, ``tan``,
+       ``acos``, ``asin``, ``atan``, ``cosh``, ``sinh``, ``tanh``, ``acosh``,
+       ``asinh``, ``atanh``, ``sqrt``, ``cbrt``, ``abs``, ``sign``,
+       ``erf``. Default: no obligatory transformation
 
     .. option:: json = parse|check|transform|compute
 
@@ -265,13 +283,13 @@ by the ``dynare`` command.
 
     .. option:: nopathchange
 
-        By default Dynare will change Matlab/Octave’s path if
+        By default Dynare will change MATLAB/Octave’s path if
         ``dynare/matlab`` directory is not on top and if Dynare’s
         routines are overriden by routines provided in other
         toolboxes. If one wishes to override Dynare’s routines, the
         ``nopathchange`` options can be used. Alternatively, the path
         can be temporarly modified by the user at the top of the
-        ``.mod`` file (using Matlab/Octave’s ``addpath`` command).
+        ``.mod`` file (using MATLAB/Octave’s ``addpath`` command).
 
     .. option:: nopreprocessoroutput
 
@@ -287,7 +305,7 @@ by the ``dynare`` command.
 
     .. option:: matlabroot=<<path>>
 
-        The path to the Matlab installation for use with
+        The path to the MATLAB installation for use with
         :opt:`use_dll`. Dynare is able to set this automatically,
         so you should not need to set it yourself.
 
@@ -505,7 +523,7 @@ parser would continue processing.
 
 It is also helpful to keep in mind that any piece of code that does not violate
 Dynare syntax, but at the same time is not recognized by the parser, is interpreted
-as native Matlab code. This code will be directly passed to the ``driver`` script.
+as native MATLAB code. This code will be directly passed to the ``driver`` script.
 Investigating ``driver.m`` file then helps with debugging. Such problems most often
 occur when defined variable or parameter names have been misspelled so that Dynare's
 parser is unable to recognize them.

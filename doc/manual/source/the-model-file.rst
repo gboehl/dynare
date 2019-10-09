@@ -21,7 +21,7 @@ are terminated by ``end;``.
 
 If Dynare encounters an unknown expression at the beginning of a line
 or after a semicolon, it will parse the rest of that line as native
-Matlab code, even if there are more statements separated by semicolons
+MATLAB code, even if there are more statements separated by semicolons
 present. To prevent cryptic error messages, it is strongly recommended
 to always only put one statement/command into each line and start a
 new line after each semicolon. [#feol]_
@@ -83,7 +83,7 @@ functions that may be called by Dynare or user-defined steady state
 files, it is recommended to avoid using the name of MATLAB
 functions. In particular when working with steady state files, do not
 use correctly-spelled greek names like `alpha`, because there are
-Matlab functions of the same name. Rather go for ``alppha`` or
+MATLAB functions of the same name. Rather go for ``alppha`` or
 ``alph``. Lastly, please do not name a variable or parameter
 ``i``. This may interfere with the imaginary number i and the index in
 many loops. Rather, name investment ``invest``. Using ``inv`` is also
@@ -2168,7 +2168,7 @@ Finding the steady state with Dynare nonlinear solver
                 to download the solver’s most current version yourself
                 from `http://pages.cs.wisc.edu/~ferris/path.html
                 <http://pages.cs.wisc.edu/~ferris/path.html>`__ and
-                place it in Matlab’s search path.
+                place it in MATLAB’s search path.
 
        |br| Default value is ``4``.
 
@@ -4298,7 +4298,7 @@ block decomposition of the model (see :opt:`block`).
 
        The datafile: a ``.m`` file, a ``.mat`` file, a ``.csv`` file,
        or a ``.xls/.xlsx`` file (under Octave, the `io
-       <http://octave.sourceforge.net/io/>`__ package from Octave-Forge
+       <https://octave.sourceforge.io/io/>`__ package from Octave-Forge
        is required for the ``.csv`` and ``.xlsx`` formats and the
        ``.xls`` file extension is not supported). Note that the base
        name (i.e. without extension) of the datafile has to be
@@ -4652,8 +4652,10 @@ block decomposition of the model (see :opt:`block`).
            ``1``
 
                 Uses ``fmincon`` optimization routine (available under
-                MATLAB if the Optimization Toolbox is installed; not
-                available under Octave).
+                MATLAB if the Optimization Toolbox is installed; available
+                under Octave if the `optim
+                <https://octave.sourceforge.io/optim/>`__ package from
+                Octave-Forge, version 1.6 or above, is installed).
 
            ``2``
 
@@ -4666,7 +4668,7 @@ block decomposition of the model (see :opt:`block`).
                 Uses ``fminunc`` optimization routine (available under
                 MATLAB if the Optimization Toolbox is installed;
                 available under Octave if the `optim
-                <http://octave.sourceforge.net/optim/>`__ package from
+                <https://octave.sourceforge.io/optim/>`__ package from
                 Octave-Forge is installed).
 
            ``4``
@@ -4984,7 +4986,7 @@ block decomposition of the model (see :opt:`block`).
 
                    Triggers three types of Hessian
                    computations. ``0``: outer product gradient; ``1``:
-                   default DYNARE Hessian routine; ``2``: ’mixed’
+                   default Dynare Hessian routine; ``2``: ’mixed’
                    outer product gradient, where diagonal elements are
                    obtained using second order derivation formula and
                    outer product is used for correlation
@@ -4992,7 +4994,7 @@ block decomposition of the model (see :opt:`block`).
                    univariate filters, to ensure using maximum number
                    of individual densities and a positive definite
                    Hessian. Both {0} and {2} are quicker than default
-                   DYNARE numeric Hessian, but provide decent starting
+                   Dynare numeric Hessian, but provide decent starting
                    values for Metropolis for large models (option {2}
                    being more accurate than {0}). Default: ``1``.
 
@@ -5775,7 +5777,7 @@ block decomposition of the model (see :opt:`block`).
                (``dlyapchol``). This method is fast for large scale
                models (available under MATLAB if the Control System
                Toolbox is installed; available under Octave if the
-               `control <http://octave.sourceforge.net/control/>`__
+               `control <https://octave.sourceforge.io/control/>`__
                package from Octave-Forge is installed)
 
        Default value is ``default``.
@@ -6915,7 +6917,7 @@ Shock Decomposition
     .. option:: colormap = STRING
 
         Controls the ``colormap`` used for the shocks decomposition
-        graphs. See colormap in Matlab/Octave manual for valid
+        graphs. See colormap in MATLAB/Octave manual for valid
         arguments.
 
     .. option:: nograph
@@ -7794,7 +7796,7 @@ variables. This shocks are described using the function
     for a perfectly anticipated shock. The fourth argument indicates
     the period of the shock using a dates class (see :ref:`dates class
     members <dates-members>`). The last argument is the shock path
-    indicated as a Matlab vector of double. This function return the
+    indicated as a MATLAB vector of double. This function return the
     handle of the updated forecast scenario.
 
 The forecast scenario can also contain a constrained path on an
@@ -7817,7 +7819,7 @@ is described with the function ``flip_plan``:
     argument indicates the period where the path of the endogenous
     variable is constrained using a dates class (see :ref:`dates class
     members <dates-members>`). The last argument contains the
-    constrained path as a Matlab vector of double. This function
+    constrained path as a MATLAB vector of double. This function
     return the handle of the updated forecast scenario.
 
 Once the forecast scenario if fully described, the forecast is
@@ -9037,7 +9039,7 @@ Types of analysis and output files
 
 The sensitivity analysis toolbox includes several types of
 analyses. Sensitivity analysis results are saved locally in
-``<mod_file>/gsa``, where ``<mod_file>.mod`` is the name of the DYNARE
+``<mod_file>/gsa``, where ``<mod_file>.mod`` is the name of the Dynare
 model file.
 
 Sampling
@@ -11205,7 +11207,7 @@ Misc commands
 
 
 .. _Dynare wiki: http://www.dynare.org/DynareWiki/EquationsTags
-.. _io: http://octave.sourceforge.net/io/
+.. _io: https://octave.sourceforge.io/io/
 .. _AIM website: http://www.federalreserve.gov/Pubs/oss/oss4/aimindex.html
 
 .. rubric:: Footnotes

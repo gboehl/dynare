@@ -35,11 +35,11 @@ function dynare(fname, varargin)
 
 if ~nargin || strcmpi(fname,'help')
     skipline()
-    disp(['This is dynare version ' dynare_version() '.'])
+    disp(['This is Dynare version ' dynare_version() '.'])
     skipline()
     disp('USAGE: dynare FILENAME[.mod,.dyn] [OPTIONS]')
     skipline()
-    disp('dynare executes instruction included in FILENAME.mod.')
+    disp('The dynare command executes instruction included in FILENAME.mod.')
     disp('See the reference manual for the available options.')
     skipline()
     return
@@ -104,21 +104,21 @@ if isoctave
 end
 
 if nargin < 1
-    error('DYNARE: you must provide the name of the MOD file in argument')
+    error('Dynare: you must provide the name of the .mod file in argument')
 end
 
 if ~ischar(fname)
-    error('DYNARE: argument of dynare must be a text string')
+    error('Dynare: argument of dynare must be a text string')
 end
 
 % Testing if filename has more than one period (not allowed).
 dot_location=strfind(fname,'.');
 if length(dot_location)>1
-    error('DYNARE: Periods in filenames are only allowed for .mod or .dyn extensions')
+    error('Dynare: Periods in filenames are only allowed for .mod or .dyn extensions')
 end
 
 if dot_location==length(fname)
-    error('DYNARE: Periods in filenames are only allowed for .mod or .dyn extensions')
+    error('Dynare: Periods in filenames are only allowed for .mod or .dyn extensions')
 end
 
 % Add dyn or mod extension to the file name if not already provided.
@@ -133,13 +133,13 @@ if isempty(dot_location)
 else
     % Check provided file extension.
     if ~strcmpi(fname(dot_location+1:end), 'mod') && ~strcmpi(fname(dot_location+1:end), 'dyn')
-        error('DYNARE: argument must be a filename with .mod or .dyn extensions')
+        error('Dynare: argument must be a filename with .mod or .dyn extensions')
     end
     fnamelength = length(fname) - 4;
 end
 
 if fnamelength + length('.set_auxiliary_variables') > namelengthmax()
-    error('The name of your MOD file is too long, please shorten it')
+    error('Dynare: the name of your .mod file is too long, please shorten it')
 end
 
 % Workaround for a strange bug with Octave: if there is any call to exist(fname)
@@ -151,20 +151,20 @@ if isoctave && length(dir([fname(1:(end-4)) '.m'])) > 0
 end
 
 if ~isempty(strfind(fname,filesep))
-    fprintf('\nIt seems you are trying to call a mod-file not located in the "Current Folder". This is not possible (the %s symbol is not allowed in the name of the mod file).\n', filesep)
+    fprintf('\nIt seems you are trying to call a .mod file not located in the "Current Folder". This is not possible (the %s symbol is not allowed in the name of the .mod file).\n', filesep)
     [pathtomodfile,basename,ext] = fileparts(fname);
     if exist(pathtomodfile,'dir')
         filesindirectory = dir(pathtomodfile);
         filesindirectory = struct2cell(filesindirectory);
         filesindirectory = filesindirectory(1,:);
         if ~isempty(strmatch([basename '.mod'],filesindirectory)) || ~isempty(strmatch([basename '.dyn'],filesindirectory))
-            fprintf('Please set your "Current Folder" to the folder where the mod-file is located using the following command:\n')
+            fprintf('Please set your "Current Folder" to the folder where the .mod file is located using the following command:\n')
             fprintf('\n  >> cd %s\n\n',pathtomodfile)
         else
             fprintf('The file %s[.mod,.dyn] could not be located!\n\n',basename)
         end
     end
-    error(['dynare:: can''t open ' fname, '.'])
+    error(['Dynare: can''t open ' fname, '.'])
 end
 
 if ~exist(fname,'file') || isequal(fname,'dir')
@@ -172,16 +172,16 @@ if ~exist(fname,'file') || isequal(fname,'dir')
     fprintf('and whether the file is really located in the "Current Folder".\n')
     try
         list_of_mod_files = ls('*.mod');
-        fprintf('\nCurrent folder is %s, and contains the following mod files:\n\n',pwd)
+        fprintf('\nCurrent folder is %s, and contains the following .mod files:\n\n',pwd)
         disp(list_of_mod_files)
     catch
-        fprintf('\nCurrent folder is %s, and does not contain any mod files.\n\n',pwd)
+        fprintf('\nCurrent folder is %s, and does not contain any .mod files.\n\n',pwd)
     end
-    error(['dynare:: can''t open ' fname])
+    error(['Dynare: can''t open ' fname])
 end
 
 if ~isvarname(fname(1:end-4))
-    error('DYNARE: argument of dynare must conform to Matlab''s convention for naming functions, i.e. start with a letter and not contain special characters. Please rename your MOD-file.')
+    error('Dynare: argument of dynare must conform to MATLAB''s convention for naming functions, i.e. start with a letter and not contain special characters. Please rename your .mod file.')
 end
 
 % pre-dynare-preprocessor-hook
@@ -274,7 +274,7 @@ end
 
 if status
     % Should not use "error(result)" since message will be truncated if too long
-    error('DYNARE: preprocessing failed')
+    error('Dynare: preprocessing failed')
 end
 
 if ~ isempty(find(abs(fname) == 46))
