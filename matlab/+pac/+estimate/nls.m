@@ -193,9 +193,9 @@ else
         bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = 0.0;
         bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),2)  = 1.0;
       case 'fmincon'
-        if isoctave
-            error('Optimization algorithm ''fmincon'' is not available under Octave')
-        elseif ~user_has_matlab_license('optimization_toolbox')
+        if isoctave && ~user_has_octave_forge_package('optim', '1.6')
+            error('Optimization algorithm ''fmincon'' requires the optim package, version 1.6 or higher')
+        elseif ~isoctave && ~user_has_matlab_license('optimization_toolbox')
             error('Optimization algorithm ''fmincon'' requires the Optimization Toolbox')
         end
         minalgo = 1;
