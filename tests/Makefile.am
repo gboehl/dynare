@@ -802,6 +802,8 @@ EXTRA_DIST = \
 	external_function/extFunDeriv.m \
 	external_function/extFunNoDerivs.m \
 	external_function/extFunWithFirstAndSecondDerivs.m \
+	external_function/+matlab/+namespace/extFunNoDerivsNamespace.m \
+	external_function/+matlab/+namespace/extFunWithFirstAndSecondDerivsNamespace.m \
 	expectations/expectation_ss_old_steadystate.m \
 	filter_step_ahead/trend_cycle_decomposition_data.m \
 	steady_state/walsh1_old_ss_steadystate.m \
