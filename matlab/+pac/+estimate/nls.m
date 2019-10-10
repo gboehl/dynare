@@ -323,6 +323,7 @@ C = C/T;
 
 % Save results
 oo_.pac.(pacmodl).equations.(eqtag).ssr = SSR;
+oo_.pac.(pacmodl).equations.(eqtag).residual = r;
 oo_.pac.(pacmodl).equations.(eqtag).estimator = params1;
 oo_.pac.(pacmodl).equations.(eqtag).covariance = C;
 oo_.pac.(pacmodl).equations.(eqtag).student = params1./(sqrt(diag(C)));
