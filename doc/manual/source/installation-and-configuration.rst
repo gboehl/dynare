@@ -54,6 +54,10 @@ Note that you can have several versions of Dynare coexisting (for
 example in ``c:\dynare``), as long as you correctly adjust your path
 settings (see see :ref:`words-warning`).
 
+Also note that it is possible to do a silent installation, by passing the
+``/S`` flag to the installer on the command line. This can be useful when
+doing an unattended installation of Dynare on a computer pool.
+
 
 On GNU/Linux
 ------------
