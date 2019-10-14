@@ -7,10 +7,10 @@ Installation and configuration
 Software requirements
 =====================
 
-Packaged versions of Dynare are available for Windows 7/8/10,
-`Debian GNU/Linux <http://www.debian.org/>`__, `Ubuntu`_ and macOS 10.8
-or later. Dynare should work on other systems, but some compilation
-steps are necessary in that case.
+Packaged versions of Dynare are available for Windows 7/8/10, several GNU/Linux
+distributions (Debian, Ubuntu, Linux Mint, Arch Linux) and macOS
+10.8 or later. Dynare should work on other systems, but some compilation steps
+are necessary in that case.
 
 In order to run Dynare, you need one of the following:
 
@@ -55,13 +55,26 @@ example in ``c:\dynare``), as long as you correctly adjust your path
 settings (see see :ref:`words-warning`).
 
 
-On Debian GNU/Linux and Ubuntu
-------------------------------
+On GNU/Linux
+------------
 
-Please refer to the `Dynare wiki`_ for detailed instructions.
+On Debian, Ubuntu and Linux Mint, the Dynare package can be installed with:
+``apt install dynare``. This will give a fully-functional Dynare installation
+usable with Octave. If you have MATLAB installed, you should also do: ``apt
+install dynare-matlab`` (under Debian, this package is in the ``contrib``
+section). Documentation can be installed with ``apt install dynare-doc``. The
+status of those packages can be checked at those pages:
+
+* `Package status in Debian`_
+* `Package status in Ubuntu`_
+* `Package status in Linux Mint`_
+
+On Arch Linux, the Dynare package is not in the official repositories, but is
+available in the `Arch User Repository`_. The needed sources can be
+downloaded from the `package status in Arch Linux`_.
 
 Dynare will be installed under ``/usr/lib/dynare``. Documentation will
-be under ``/usr/share/doc/dynare-doc``.
+be under ``/usr/share/doc/dynare-doc`` (only on Debian, Ubuntu and Linux Mint).
 
 
 On macOS
@@ -112,15 +125,16 @@ There is no prerequisites on Windows. Dynare now ships a compilation
 environment that can be used with the :opt:`use_dll` option.
 
 
-Prerequisites on Debian GNU/Linux and Ubuntu
---------------------------------------------
+Prerequisites on GNU/Linux
+--------------------------
 
-Users of MATLAB under GNU/Linux need a working compilation
-environment installed. If not already present, it can be installed via
-``apt install build-essential``.
+Users of MATLAB under GNU/Linux need a working compilation environment
+installed. Under Debian, Ubuntu or Linux Mint, it can be installed via ``apt
+install build-essential``.
 
 Users of Octave under GNU/Linux should install the package for MEX file
-compilation (under Debian or Ubuntu, it is called ``liboctave-dev``).
+compilation (under Debian, Ubuntu or Linux Mint, it can be done via ``apt
+install liboctave-dev``).
 
 Prerequisites on macOS
 ----------------------
@@ -152,7 +166,7 @@ installation to MATLAB path. You have two options for doing that:
 
     >> addpath c:/dynare/4.x.y/matlab
 
-  Under Debian GNU/Linux or Ubuntu, type::
+  Under GNU/Linux, type::
 
     >> addpath /usr/lib/dynare/matlab
 
@@ -187,8 +201,10 @@ type::
 
   octave:1> addpath c:/dynare/4.x.y/matlab
 
-Under Debian GNU/Linux or Ubuntu, there is no need to use the
-``addpath`` command; the packaging does it for you.
+Under Debian, Ubuntu or Linux Mint, there is no need to use the ``addpath``
+command; the packaging does it for you. Under Arch Linux, you need to do::
+
+  octave:1> addpath /usr/lib/dynare/matlab
 
 Under macOS, assuming that you have installed Dynare and Octave via
 Homebrew, type::
@@ -232,7 +248,11 @@ Dynare unusable.
    end up with a non optimal or un-usable installation of Dynare.
 
 
-.. _Ubuntu: http://www.ubuntu.com/
+.. _Package status in Debian: https://packages.debian.org/sid/dynare
+.. _Package status in Ubuntu: https://launchpad.net/ubuntu/+source/dynare
+.. _Package status in Linux Mint: https://community.linuxmint.com/software/view/dynare
+.. _Package status in Arch Linux: https://aur.archlinux.org/packages/dynare/
+.. _Arch User Repository: https://wiki.archlinux.org/index.php/Arch_User_Repository
 .. _Dynare website: https://www.dynare.org/
 .. _Dynare wiki: https://git.dynare.org/Dynare/dynare/wikis
 .. _Octave-Forge: https://octave.sourceforge.io/
