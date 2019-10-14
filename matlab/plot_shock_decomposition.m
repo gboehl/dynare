@@ -515,7 +515,11 @@ if ~isempty(options_.plot_shock_decomp.plot_init_date)
     a = find((initial_date:initial_date+b-1)==options_.plot_shock_decomp.plot_init_date);
 end
 if ~isempty(options_.plot_shock_decomp.plot_end_date)
-    b = find((initial_date:initial_date+b-1)==options_.plot_shock_decomp.plot_end_date);
+    if options_.plot_shock_decomp.plot_end_date<=(max(initial_date:initial_date+b-1))
+        b = find((initial_date:initial_date+b-1)==options_.plot_shock_decomp.plot_end_date);
+    else
+        warning('You set plot_end_date larger than smoother size!!');
+    end
 end
 z = z(:,:,a:b);
 % end crop data
