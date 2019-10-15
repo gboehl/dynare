@@ -46,6 +46,8 @@ AC_ARG_WITH(matio, AC_HELP_STRING([--with-matio=DIR], [prefix to MATIO installat
   AC_CHECK_LIB([z], [compress])
   dnl szip is needed under MSYS2
   AC_CHECK_LIB([szip], [SZ_Compress])
+  dnl szip is needed for static linking on macOS (it's called libsz on macOS)
+  AC_CHECK_LIB([sz], [SZ_Compress])
   AC_CHECK_LIB([hdf5], [H5Fcreate])
 
   AC_CHECK_HEADER([matio.h], [], [has_matio=no])

@@ -44,11 +44,20 @@ LIB64="$ROOTDIR"/macOS/deps/lib64
 
 
 ##
-## Compile Dynare
+## Compile Dynare doc, dynare++, preprocessor, mex for MATLAB < 2018a
 ##
 cd "$ROOTDIR"
 [[ -f configure ]] || autoreconf -si
-CC=$CC CXX=$CXX ./configure --with-matlab=/Applications/MATLAB_R2016b.app MATLAB_VERSION=R2016b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot="$LIB64"/Slicot/with-underscore --disable-octave PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
+CC=$CC CXX=$CXX ./configure \
+  PACKAGE_VERSION="$VERSION" \
+  PACKAGE_STRING="dynare $VERSION" \
+  CXXFLAGS=-I/usr/local/include \
+  LDFLAGS=-static-libgcc \
+  --with-gsl="$LIB64"/gsl \
+  --with-matio="$LIB64"/matio \
+  --with-slicot="$LIB64"/Slicot/with-underscore \
+  --disable-octave \
+  --with-matlab=/Applications/MATLAB_R2016b.app MATLAB_VERSION=R2016b
 if [[ -z $CI ]]; then
     # If not in Gitlab CI, clean the source and build the doc
     make clean
@@ -102,11 +111,19 @@ cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"
 
 
 ##
-## Create mex for MATLAB le 2018a
+## Create mex for MATLAB ≥ 2018a
 ##
 cd "$ROOTDIR"/mex/build/matlab
 make clean
-CC=$CC CXX=$CXX ./configure --with-matlab=/Applications/MATLAB_R2019b.app MATLAB_VERSION=R2019b --with-matio=/usr/local --with-gsl=/usr/local --with-slicot="$LIB64"/Slicot/with-underscore PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
+CC=$CC CXX=$CXX ./configure \
+  PACKAGE_VERSION="$VERSION" \
+  PACKAGE_STRING="dynare $VERSION" \
+  CXXFLAGS=-I/usr/local/include \
+  LDFLAGS=-static-libgcc \
+  --with-gsl="$LIB64"/gsl \
+  --with-matio="$LIB64"/matio \
+  --with-slicot="$LIB64"/Slicot/with-underscore \
+  --with-matlab=/Applications/MATLAB_R2019b.app MATLAB_VERSION=R2019b
 make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.7
 
@@ -115,7 +132,14 @@ cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"
 ## Create mex for Octave
 ##
 cd "$ROOTDIR"/mex/build/octave
-CC=$CC CXX=$CXX ./configure --with-matio=/usr/local --with-gsl=/usr/local --with-slicot="$LIB64"/Slicot/with-underscore LDFLAGS=-L/usr/local/lib PACKAGE_VERSION="$VERSION" PACKAGE_STRING="dynare $VERSION"
+CC=$CC CXX=$CXX ./configure \
+  PACKAGE_VERSION="$VERSION" \
+  PACKAGE_STRING="dynare $VERSION" \
+  CXXFLAGS=-I/usr/local/include \
+  LDFLAGS="-static-libgcc -L/usr/local/lib" \
+  --with-gsl="$LIB64"/gsl \
+  --with-matio="$LIB64"/matio \
+  --with-slicot="$LIB64"/Slicot/with-underscore
 make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/octave/*                                       "$PKGFILES"/mex/octave
 echo -e "function v = supported_octave_version\nv=\"$(octave --eval "disp(OCTAVE_VERSION)")\";\nend" > "$PKGFILES"/matlab/supported_octave_version.m
