@@ -84,28 +84,28 @@ below. Basic operations can be performed on dates:
 **eq operator (equal, ==)**
 
     Tests if two ``dates`` objects are equal. ``+1950Q1==1950Q2``
-    returns ``1``, ``1950Q1==1950Q2`` returns ``0``. If the compared
+    returns ``true``, ``1950Q1==1950Q2`` returns ``false``. If the compared
     objects have both ``n>1`` elements, the ``eq`` operator returns a
     column vector, ``n`` by ``1``, of zeros and ones.
 
 **ne operator (not equal, ~=)**
 
     Tests if two ``dates`` objects are not equal. ``+1950Q1~=``
-    returns ``0`` while ``1950Q1~=1950Q2`` returns ``1``. If the
+    returns ``false`` while ``1950Q1~=1950Q2`` returns ``true``. If the
     compared objects both have ``n>1`` elements, the ``ne`` operator
     returns an ``n`` by ``1`` column vector of zeros and ones.
 
 **lt operator (less than, <)**
 
     Tests if a ``dates`` object preceeds another ``dates`` object. For
-    instance, ``1950Q1<1950Q3`` returns ``1``. If the compared objects
+    instance, ``1950Q1<1950Q3`` returns ``true``. If the compared objects
     have both ``n>1`` elements, the ``lt`` operator returns a column
     vector, ``n`` by ``1``, of zeros and ones.
 
 **gt operator (greater than, >)**
 
     Tests if a ``dates`` object follows another ``dates`` object. For
-    instance, ``1950Q1>1950Q3`` returns ``0``. If the compared objects
+    instance, ``1950Q1>1950Q3`` returns ``false``. If the compared objects
     have both ``n>1`` elements, the ``gt`` operator returns a column
     vector, ``n`` by ``1``, of zeros and ones.
 
@@ -113,7 +113,7 @@ below. Basic operations can be performed on dates:
 
     Tests if a ``dates`` object preceeds another ``dates`` object or
     is equal to this object. For instance, ``1950Q1<=1950Q3`` returns
-    ``1``. If the compared objects have both ``n>1`` elements, the
+    ``true``. If the compared objects have both ``n>1`` elements, the
     ``le`` operator returns a column vector, ``n`` by ``1``, of zeros
     and ones.
 
@@ -121,14 +121,14 @@ below. Basic operations can be performed on dates:
 
     Tests if a ``dates`` object follows another ``dates`` object or is
     equal to this object. For instance, ``1950Q1>=1950Q3`` returns
-    ``0``. If the compared objects have both ``n>1`` elements, the
+    ``false``. If the compared objects have both ``n>1`` elements, the
     ``ge`` operator returns a column vector, ``n`` by ``1``, of zeros
     and ones.
 
 One can select an element, or some elements, in a ``dates`` object as
 he would extract some elements from a vector in MATLAB/Octave. Let ``a
 = 1950Q1:1951Q1`` be a ``dates`` object, then ``a(1)==1950Q1`` returns
-``1``, ``a(end)==1951Q1`` returns ``1`` and ``a(end-1:end)`` selects
+``true``, ``a(end)==1951Q1`` returns ``true`` and ``a(end-1:end)`` selects
 the two last elements of ``a`` (by instantiating the ``dates`` object
 ``[1950Q4, 1951Q1]``).
 
@@ -1620,7 +1620,9 @@ The dseries class
         ranges. If a variable, say ``x``, is defined both in
         ``dseries`` objects ``A`` and ``B``, then the ``merge`` will
         select the variable ``x`` as defined in the second input
-        argument, ``B``.
+        argument, ``B``, except for the NaN elements in ``B`` if
+        corresponding elements in ``A`` (ie same periods) are well
+        defined numbers.
 
         *Example*
 
