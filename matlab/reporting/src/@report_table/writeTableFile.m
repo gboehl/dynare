@@ -40,16 +40,16 @@ if ne == 0 && ~is_data_table
     return
 end
 
-if exist([rep_dir filesep o.tableDirName], 'dir') ~= 7
-    mkdir([rep_dir filesep o.tableDirName]);
+if exist([rep_dir '/' o.tableDirName], 'dir') ~= 7
+    mkdir([rep_dir '/' o.tableDirName]);
 end
 if isempty(o.tableName)
-    tableName = sprintf([o.tableDirName filesep 'table_pg%d_sec%d_row%d_col%d.tex'], pg, sec, row, col);
+    tableName = sprintf([o.tableDirName '/table_pg%d_sec%d_row%d_col%d.tex'], pg, sec, row, col);
 else
-    tableName = [o.tableDirName filesep o.tableName];
+    tableName = [o.tableDirName '/' o.tableName];
 end
 
-[fid, msg] = fopen([rep_dir filesep tableName], 'w');
+[fid, msg] = fopen([rep_dir '/' tableName], 'w');
 if fid == -1
     error(['@report_table.writeTableFile: ' msg]);
 end

@@ -31,7 +31,7 @@ function o = write(o)
 if exist(o.directory, 'dir') ~= 7
     mkdir(o.directory);
 end
-[fid, msg] = fopen([o.directory filesep o.fileName], 'w');
+[fid, msg] = fopen([o.directory '/' o.fileName], 'w');
 if fid == -1
     error(['@report.write: ' msg]);
 end

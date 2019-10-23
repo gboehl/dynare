@@ -24,5 +24,5 @@ function initialize_reporting_toolbox()
 reporting_src_root = strrep(which('initialize_reporting_toolbox'), 'initialize_reporting_toolbox.m', '');
 
 % Add path to reporting source
-addpath([reporting_src_root filesep '..' filesep 'macros']);
+addpath([reporting_src_root '/../macros']);
 end

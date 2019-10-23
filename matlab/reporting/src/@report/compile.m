@@ -57,7 +57,7 @@ assert(ischar(opts.compiler), '@report.compile: compiler file must be a string')
 assert(islogical(opts.showReport), '@report.compile: showReport must be either true or false');
 assert(islogical(opts.showOutput), '@report.compile: showOutput must be either true or false');
 
-if exist([o.directory filesep o.fileName], 'file') ~= 2
+if exist([o.directory '/' o.fileName], 'file') ~= 2
     o.write();
 end
 
@@ -111,7 +111,7 @@ if status ~= 0
            '  ' opts.compiler ' returned the error code: ' num2str(status)]);
 end
 if o.showOutput || opts.showOutput
-    fprintf('Done.\n\nYour compiled report is located here:\n  %s.pdf\n\n\n', [pwd filesep rfn])
+    fprintf('Done.\n\nYour compiled report is located here:\n  %s.pdf\n\n\n', [pwd '/' rfn])
 end
 if opts.showReport && ~isoctave
     open([rfn '.pdf']);

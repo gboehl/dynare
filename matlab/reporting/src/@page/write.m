@@ -42,11 +42,11 @@ end
 fprintf(fid, '\n');
 
 if ~isempty(o.latex)
-    dir = [rep_dir filesep o.pageDirName];
+    dir = [rep_dir '/' o.pageDirName];
     if exist(dir, 'dir') ~= 7
         mkdir(dir);
     end
-    pagename = [dir filesep 'page_' num2str(pg) '.tex'];
+    pagename = [dir '/page_' num2str(pg) '.tex'];
     [fidp, msg] = fopen(pagename, 'w');
     if fidp == -1
         error(['@page.write: ' msg]);

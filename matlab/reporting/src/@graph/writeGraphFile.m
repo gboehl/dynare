@@ -39,16 +39,16 @@ if ne < 1
     return
 end
 
-if exist([rep_dir filesep o.graphDirName], 'dir') ~= 7
-    mkdir([rep_dir filesep o.graphDirName]);
+if exist([rep_dir '/' o.graphDirName], 'dir') ~= 7
+    mkdir([rep_dir '/' o.graphDirName]);
 end
 if isempty(o.graphName)
-    graphName = sprintf([o.graphDirName filesep 'graph_pg%d_sec%d_row%d_col%d.tex'], pg, sec, row, col);
+    graphName = sprintf([o.graphDirName '/graph_pg%d_sec%d_row%d_col%d.tex'], pg, sec, row, col);
 else
-    graphName = [o.graphDirName filesep o.graphName];
+    graphName = [o.graphDirName '/' o.graphName];
 end
 
-[fid, msg] = fopen([rep_dir filesep graphName], 'w');
+[fid, msg] = fopen([rep_dir '/' graphName], 'w');
 if fid == -1
     error(['@graph.writeGraphFile: ' msg]);
 end
