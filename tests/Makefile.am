@@ -174,12 +174,14 @@ MODFILES = \
 	dsge-var/simul_hybrid.mod \
 	dsge-var/dsgevar_forward_calibrated_lambda.mod \
 	dsge-var/dsgevar_forward_estimated_lambda.mod \
-	external_function/first_and_2nd_deriv_fcns_provided.mod \
-	external_function/first_and_2nd_deriv_fcns_provided_dll.mod \
-	external_function/first_deriv_fcn_provided.mod \
-	external_function/first_deriv_fcn_provided_dll.mod \
-	external_function/no_deriv_fcns_provided.mod \
-	external_function/no_deriv_fcns_provided_dll.mod \
+	external_function/first_deriv_given.mod \
+	external_function/first_deriv_given_dll.mod \
+	external_function/first_and_2nd_deriv_given.mod \
+	external_function/first_and_2nd_deriv_given_namespace.mod \
+	external_function/first_and_2nd_deriv_given_dll.mod \
+	external_function/first_and_2nd_deriv_given_dll_namespace.mod \
+	external_function/no_deriv_given.mod \
+	external_function/no_deriv_given_dll.mod \
 	seeds.mod \
 	identification/kim/kim2.mod \
 	identification/as2007/as2007.mod \
@@ -953,6 +955,7 @@ EXTRA_DIST = \
 	run_reporting_test_matlab.m \
 	run_reporting_test_octave.m \
 	run_all_unitary_tests.m \
+	+matlab/+namespace/y_k.m \
 	reporting/AnnualTable.m \
 	reporting/CommResidTablePage.m \
 	reporting/CountryGraphPage.m \
@@ -978,6 +981,8 @@ EXTRA_DIST = \
 	external_function/extFunDeriv.m \
 	external_function/extFunNoDerivs.m \
 	external_function/extFunWithFirstAndSecondDerivs.m \
+	external_function/+matlab/+namespace/extFunNoDerivsNamespace.m \
+	external_function/+matlab/+namespace/extFunWithFirstAndSecondDerivsNamespace.m \
 	expectations/expectation_ss_old_steadystate.m \
 	filter_step_ahead/trend_cycle_decomposition_data.m \
 	steady_state/walsh1_old_ss_steadystate.m \
