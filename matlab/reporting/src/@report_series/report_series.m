@@ -98,14 +98,14 @@ classdef report_series < handle
             end
         end
     end
-    methods (Access = ?graph, Hidden = true)
+    methods (Hidden = true)
         s = getNameForLegend(o)
         writeSeriesForGraph(o, fid, xrange, series_num)
     end
-    methods (Access = ?report_table, Hidden = true)
+    methods (Hidden = true)
         writeSeriesForTable(o, fid, dates, precision, ncols, rowcolor)
     end
-    methods (Access = {?graph,?report_table}, Hidden = true)
+    methods (Hidden = true)
         tf = isZero(o)
     end
     methods (Access = private)

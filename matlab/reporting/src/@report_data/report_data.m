@@ -71,7 +71,7 @@ classdef report_data < handle
             end
         end
     end
-    methods (Access = ?report_table, Hidden = true)
+    methods (Hidden = true)
         writeDataForTable(o, fid, precision)
     end
 end

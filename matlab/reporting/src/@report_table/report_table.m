@@ -44,7 +44,7 @@ classdef report_table < handle
         writeCSV = false              % Whether or not to write a CSV file containing the data displayed in the table. The file will be saved in the directory specified by tableDirName with the same base name as specified by tableName with the ending .csv. Default: false.
         highlightRows = {''}          % A cell array containing the colors to use for row highlighting. See shadeColor for how to use colors with reports. Highlighting for a specific row can be overridden by using the tableRowColor option to addSeries. Default: empty.
     end
-    methods (Access = ?section)
+    methods
         function o = report_table(varargin)
             %function o = report_table(varargin)
             % Report_Table Class Constructor
@@ -150,7 +150,7 @@ classdef report_table < handle
             o.seriesToUse = '';
         end
     end
-    methods (Access = ?section, Hidden = true)
+    methods (Hidden = true)
         o = addData(o, varargin)
         o = addSeries(o, varargin)
         write(o, fid, pg, sec, row, col, rep_dir)

@@ -21,7 +21,7 @@ classdef vspace < handle
         hline = 0  % Number of horizontal lines to be inserted. Default 0
         number = 1 % Number of new lines to be inserted. Default 1
     end
-    methods (Access = ?section)
+    methods
         function o = vspace(varargin)
             %function o = vspace(varargin)
             % Vspace Class Constructor
@@ -70,7 +70,7 @@ classdef vspace < handle
             assert(isint(o.hline), '@vspace.vspace: hline must be an integer');
         end
     end
-    methods (Access = ?section, Hidden = true)
+    methods (Hidden = true)
         % Methods defined in separate files
         write(o, fid);
     end

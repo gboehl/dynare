@@ -75,7 +75,7 @@ classdef paragraph < handle
             assert(ischar(o.heading), '@paragraph.paragraph: heading must be a string');
         end
     end
-    methods (Access = ?section, Hidden = true)
+    methods (Hidden = true)
         % Methods defined in separate files
         write(o, fid);
     end

@@ -24,7 +24,7 @@ classdef section < handle
         cols = 1    % The number of columns in the section. Default: 1.
         height = '' % A string to be used with the \sectionheight LATEX command. Default: '!'
     end
-    methods (Access = ?page)
+    methods
         function o = section(varargin)
             %function o = section(varargin)
             % Section Class Constructor
@@ -74,7 +74,7 @@ classdef section < handle
                 '@section.section: cols must be a string');
         end
     end
-    methods (Access = ?page, Hidden = true)
+    methods (Hidden = true)
          o = addGraph(o, varargin)
          o = addParagraph(o, varargin)
          o = addTable(o, varargin)

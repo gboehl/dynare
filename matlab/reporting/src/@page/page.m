@@ -33,7 +33,7 @@ classdef page < handle
         pageDirName = 'tmpRepDir' % The name of the folder in which to store this page. Only used when the latex command is passed. Default: tmpRepDir.
         latex = ''                % The valid LATEX code to be used for this page. Alows the user to create a page to be included in the report by passing LATEX code directly. Default: empty.
     end
-    methods (Access = ?report)
+    methods
         function o = page(varargin)
             %function o = page(varargin)
             % Page Class Constructor
@@ -113,7 +113,7 @@ classdef page < handle
                 '@page.page: sections is not a valid option');
         end
     end
-    methods (Access = ?report, Hidden = true)
+    methods (Hidden = true)
         o = addSection(o, varargin)
         o = addVspace(o, varargin)
         o = addTable(o, varargin)

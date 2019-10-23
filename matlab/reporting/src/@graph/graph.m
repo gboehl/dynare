@@ -205,7 +205,7 @@ classdef graph < handle
             o.data = '';
         end
     end
-    methods (Access = ?section, Hidden = true)
+    methods (Hidden = true)
         o = addSeries(o, varargin)
         write(o, fid, pg, sec, row, col, rep_dir)
     end
