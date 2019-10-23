@@ -30,7 +30,7 @@ WGET_OPTIONS := --no-verbose --no-use-server-timestamps --retry-connrefused --re
 
 all: build
 
-build: build-slicot build-x13as
+build: build-slicot build-x13as ln-matio ln-gsl
 
 clean-lib: clean-libslicot clean-x13as-bin
 
@@ -40,6 +40,48 @@ clean-tar: clean-slicot-tar clean-x13as-tar
 
 clean-all: clean-lib clean-src clean-tar
 
+
+#
+# Matio & GSL
+# (done to link only to static Matio and GSL libraries)
+
+# Matio
+lib64/matio/lib/libmatio.a: /usr/local/lib/libmatio.a
+	mkdir -p $(dir $@) && ln -sf $< $@
+
+lib64/matio/lib/libhdf5.a: /usr/local/lib/libhdf5.a
+	mkdir -p $(dir $@) && ln -sf $< $@
+
+lib64/matio/lib/libsz.a: /usr/local/lib/libsz.a
+	mkdir -p $(dir $@) && ln -sf $< $@
+
+lib64/matio/include/matio.h: /usr/local/include/matio.h
+	mkdir -p $(dir $@) && cd $(dir $@).. && rm -rf include && ln -sf $(dir $<) .
+
+ln-matio: lib64/matio/lib/libmatio.a \
+	lib64/matio/lib/libhdf5.a \
+	lib64/matio/lib/libsz.a \
+	lib64/matio/include/matio.h
+
+clean-matio:
+	rm -rf lib64/matio
+
+# GSL
+lib64/gsl/lib/libgsl.a: /usr/local/lib/libgsl.a
+	mkdir -p $(dir $@) && ln -sf $< $@
+
+lib64/gsl/lib/libgslcblas.a: /usr/local/lib/libgslcblas.a
+	mkdir -p $(dir $@) && ln -sf $< $@
+
+lib64/gsl/include/gsl/gsl_blas.h: /usr/local/include/gsl/gsl_blas.h
+	mkdir -p $(dir $@) && cd $(dir $@).. && rm -rf gsl && ln -sf $(dir $<) .
+
+ln-gsl: lib64/gsl/lib/libgsl.a \
+	lib64/gsl/lib/libgslcblas.a \
+	lib64/gsl/include/gsl/gsl_blas.h
+
+clean-gsl:
+	rm -rf lib64/gsl
 
 #
 # Slicot

@@ -20,8 +20,8 @@ MATLAB64_VERSION = 20181204
 ## Build dependencies
 
 # pacman -Ss .*-boost$
-MINGW32_BOOST_VERSION = 1.70.0-2
-MINGW64_BOOST_VERSION = 1.70.0-2
+MINGW32_BOOST_VERSION = 1.71.0-1
+MINGW64_BOOST_VERSION = 1.71.0-1
 
 # pacman -Ss .*-gsl$
 MINGW32_GSL_VERSION = 2.6-1
@@ -54,8 +54,8 @@ MINGW64_SZIP_VERSION = 2.1.1-2
 ## MinGW packages for the embedded compiler
 
 # pacman -Ss mingw-w64-.*-gcc$
-MINGW32_GCC_VERSION = 9.1.0-2
-MINGW64_GCC_VERSION = 9.1.0-2
+MINGW32_GCC_VERSION = 9.2.0-2
+MINGW64_GCC_VERSION = 9.2.0-2
 
 # pacman -Ss mingw-w64-.*-gmp$
 MINGW32_GMP_VERSION = 6.1.2-1

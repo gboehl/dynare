@@ -25,7 +25,7 @@ build_binaries:
   stage: build
   script:
     - autoreconf -si
-    - './configure --with-matlab=$(dirname $(dirname $(readlink -f $(which matlab)))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
+    - './configure --with-matlab=$(dirname $(dirname $(readlink -f $(which matlab)))) MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p") PACKAGE_VERSION=$VERSION PACKAGE_STRING="dynare $VERSION"'
     - make -j $(nproc) LN_S="cp -p"
   artifacts:
     paths:
@@ -50,7 +50,7 @@ build_doc:
   stage: build
   script:
     - autoreconf -si
-    - ./configure --disable-matlab --disable-octave
+    - ./configure --disable-matlab --disable-octave PACKAGE_VERSION=$VERSION PACKAGE_STRING="dynare $VERSION"
     - make -j $(nproc) pdf html
   artifacts:
     paths:
