@@ -27,10 +27,10 @@ ny = pfm.ny;
 periods = pfm.periods;
 dynamic_model = pfm.dynamic_model;
 lead_lag_incidence = pfm.lead_lag_incidence;
+lead_lag_incidence_t = transpose(lead_lag_incidence);
 nyp = pfm.nyp;
 nyf = pfm.nyf;
 i_cols_1 = pfm.i_cols_1;
-i_cols_A1 = pfm.i_cols_A1;
 i_cols_j = pfm.i_cols_j;
 i_cols_T = nonzeros(lead_lag_incidence(1:2,:)');
 
@@ -45,7 +45,7 @@ number_of_shocks = size(exo_simul,2);
 if number_of_shocks>1
     nodes = repmat(nodes,1,number_of_shocks)*chol(pfm.Sigma);
     % to be fixed for Sigma ~= I
-    for i=1:number_of_shocks
+    for i=number_of_shocks:-1:1
         rr(i) = {nodes(:,i)};
         ww(i) = {weights};
     end
@@ -56,16 +56,14 @@ else
     nodes = nodes*sqrt(pfm.Sigma);
 end
 
-innovations = zeros(periods+2,number_of_shocks);
-
 if verbose
-    disp ([' -----------------------------------------------------']);
-    disp (['MODEL SIMULATION :']);
+    disp (' -----------------------------------------------------');
+    disp ('MODEL SIMULATION :');
     fprintf('\n');
 end
 
-z = endo_simul(find(lead_lag_incidence'));
-[d1,jacobian] = dynamic_model(z,exo_simul,params,steady_state,2);
+z = endo_simul(lead_lag_incidence_t(:)>0);
+[~, jacobian] = dynamic_model(z, exo_simul, params,steady_state, 2);
 
 % Each column of Y represents a different world
 % The upper right cells are unused
@@ -92,7 +90,6 @@ else
     n1 = ny+1;
     n2 = 2*ny;
     for i=2:periods
-        k = n1:n2;
         for j=1:nnodes^min(i-1,order)
             i_upd_r(i1:i2) = (n1:n2)+(j-1)*ny*periods;
             i_upd_y(i1:i2) = (n1:n2)+ny+(j-1)*ny*(periods+2);
@@ -115,7 +112,6 @@ else
 end
 h1 = clock;
 for iter = 1:maxit
-    h2 = clock;
     A1 = sparse([],[],[],ny*(sum(nnodes.^(0:order-1),2)+1),dimension,(order+1)*world_nbr*nnz(jacobian));
     res = zeros(ny,periods,world_nbr);
     i_rows = 1:ny;
@@ -123,7 +119,6 @@ for iter = 1:maxit
     i_cols_p = i_cols(1:nyp);
     i_cols_s = i_cols(nyp+(1:ny));
     i_cols_f = i_cols(nyp+ny+(1:nyf));
-    i_cols_A = i_cols;
     i_cols_Ap = i_cols_p;
     i_cols_As = i_cols_s;
     i_cols_Af = i_cols_f - ny;
@@ -212,13 +207,11 @@ for iter = 1:maxit
             fprintf('\n') ;
             disp([' Total time of simulation        :' num2str(etime(clock,h1))]) ;
             fprintf('\n') ;
-            disp([' Convergency obtained.']) ;
+            disp(' Convergency obtained.') ;
             fprintf('\n') ;
         end
         flag = 0;% Convergency obtained.
-        endo_simul = reshape(Y(:,1),ny,periods+2);%Y(ny+(1:ny),1);
-                                                  %            figure;plot(Y(16:ny:(periods+2)*ny,:))
-                                                  %            pause
+        endo_simul = reshape(Y(:,1),ny,periods+2);
         break
     end
     A2 = [nzA{:}]';
@@ -232,12 +225,12 @@ if ~stop
         fprintf('\n') ;
         disp(['     Total time of simulation        :' num2str(etime(clock,h1))]) ;
         fprintf('\n') ;
-        disp(['WARNING : maximum number of iterations is reached (modify options_.simul.maxit).']) ;
+        disp('WARNING : maximum number of iterations is reached (modify options_.simul.maxit).') ;
         fprintf('\n') ;
     end
     flag = 1;% more iterations are needed.
     endo_simul = 1;
 end
 if verbose
-    disp (['-----------------------------------------------------']) ;
+    disp ('-----------------------------------------------------') ;
 end
