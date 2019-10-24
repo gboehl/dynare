@@ -32,12 +32,6 @@ function writeDataForTable(o, fid, precision)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 %% Validate options provided by user
-assert(ischar(o.tableSubSectionHeader), '@report_data.writeDataForTable: tableSubSectionHeader must be a string');
-if isempty(o.tableSubSectionHeader)
-    assert(~isempty(o.data) && iscell(o.data), ...
-           '@report_data.writeDataForTable: must provide data as a cell');
-end
-
 assert(ischar(o.tableRowColor), '@report_data.writeDataForTable: tableRowColor must be a string');
 assert(isint(o.tableRowIndent) && o.tableRowIndent >= 0, ...
        '@report_data.writeDataForTable: tableRowIndent must be an integer >= 0');
@@ -53,20 +47,9 @@ rounding = 10^precision;
 
 %% Write Output
 fprintf(fid, '%% Table Data (report_data)\n');
-nrows = length(o.data{1});
-ncols = length(o.data);
+[nrows, ncols] = size(o.data);
 for i = 1:nrows
-    if ~isempty(o.tableRowColor) && ~strcmpi(o.tableRowColor, 'white')
-        fprintf(fid, '\\rowcolor{%s}', o.tableRowColor);
-    else
-        fprintf(fid, '\\rowcolor{%s}', o.tableRowColor);
-    end
-    if ~isempty(o.tableSubSectionHeader)
-        fprintf(fid, '\\textbf{%s}', o.tableSubSectionHeader);
-        fprintf(fid, '%s', repmat(' &', 1, ncols-1));
-        fprintf(fid, '\\\\%%\n');
-        return
-    end
+    fprintf(fid, '\\rowcolor{%s}', o.tableRowColor);
     if o.tableAlignRight
         fprintf(fid, '\\multicolumn{1}{r}{');
     end
@@ -81,7 +64,7 @@ for i = 1:nrows
         fprintf(fid, '}');
     end
     for j = 1:ncols
-        val = o.data{j}(i);
+        val = o.data(i,j);
         if iscell(val)
             val = val{:};
         end

@@ -19,7 +19,6 @@ classdef report_data < handle
     % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
     properties (SetAccess = private)
         data = ''
-        tableSubSectionHeader = ''
         tableAlignRight = false
         tableRowColor = 'white'
         tableRowIndent = 0
