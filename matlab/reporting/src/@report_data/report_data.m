@@ -26,6 +26,9 @@ classdef report_data < handle
         tablePrecision = ''
         zeroTol = 1e-6
     end
+    properties
+        column_names = ''
+    end
     methods
         function o = report_data(varargin)
             %function o = report_data(varargin)

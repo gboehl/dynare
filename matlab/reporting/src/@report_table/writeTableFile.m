@@ -39,7 +39,9 @@ if ne == 0 && ~is_data_table
     warning('@report_table.write: no series to plot, returning');
     return
 end
-
+if is_data_table
+    ne = size(o.table_data{1}.data,2);
+end
 if exist([rep_dir '/' o.tableDirName], 'dir') ~= 7
     mkdir([rep_dir '/' o.tableDirName]);
 end
@@ -177,8 +179,13 @@ else
     if o.showVlines
         fprintf(fid, '|');
     end
-    for i = 1:length(o.column_names)
-        if isempty(o.column_names{i})
+    if ~isempty(o.table_data{1}.column_names) && ne ~= length(o.table_data{1}.column_names)
+        error(['@report_table.writeTableFile: when writing a data table and passing the ' ...
+            '`column_names` option, it must have the same number of elements as the ' ...
+            'number of columns in the data']);
+    end
+    for i = 1:ne
+        if isempty(o.table_data{1}.column_names) ||isempty(o.table_data{1}.column_names{i})
             fprintf(fid, 'l');
         else
             fprintf(fid, 'r');
@@ -216,14 +223,16 @@ if ~is_data_table
         csvseries.save(strrep(o.tableName, '.tex', ''), 'csv');
     end
 else
-    fprintf(fid, '%%\n');
-    fprintf(fid, '\\hline%%\n');
-    fprintf(fid, '%%\n');
-    for i = 1:length(o.column_names)
-        if ~isempty(o.column_names{i})
-            fprintf(fid, '%s', o.column_names{i});
+    if ~isempty(o.table_data{1}.column_names)
+        fprintf(fid, '%%\n');
+        fprintf(fid, '\\hline%%\n');
+        fprintf(fid, '%%\n');
+    end
+    for i = 1:ne
+        if ~isempty(o.table_data{1}.column_names) && ~isempty(o.table_data{1}.column_names{i})
+            fprintf(fid, '%s', o.table_data{1}.column_names{i});
         end
-        if i ~= length(o.column_names)
+        if i ~= ne
             fprintf(fid, ' & ');
         end
     end

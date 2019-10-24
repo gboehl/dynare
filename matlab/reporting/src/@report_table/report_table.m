@@ -22,11 +22,10 @@ classdef report_table < handle
     end
     properties (Access = private)
         series = {}
-        table_data = {}
+        table_data = {}               % The table data
         % Not documented
         preamble = {''}
         afterward = {''}
-        column_names = ''
     end
     properties (SetAccess = private)
         tableDirName = 'tmpRepDir'    % The name of the folder in which to store this table. Default: tmpRepDir.
