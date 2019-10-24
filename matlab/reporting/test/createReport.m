@@ -296,13 +296,16 @@ rep.addSeries('data', d, ...
                     'graphLegendName', 'control', ...
                     'graphFanShadeColor', 'red', 'graphFanShadeOpacity', 20);
 
-% Page 26
-% rep.addPage('title', {'report\_data test'}, ...
-%     'titleFormat', {'\large\bfseries', '\large'});
-% rep.addSection('cols', 1);
-% rep.addTable('title', {'Table Data', 'subtitle 2'});
-% rep.addData('data', [repmat({'a'},10,1) num2cell(rand(10,6))]);
-
+%% Page 26
+rep.addPage('title', {'report\_data test'}, ...
+    'titleFormat', {'\large\bfseries', '\large'});
+rep.addSection('cols', 1);
+rep.addTable('title', {'Table Data 0', 'subtitle 2'});
+rep.addData('data', [repmat({'a'},10,1) num2cell(rand(10,6))]);
+rep.addVspace();
+rep.addSection('cols', 1);
+rep.addTable('title', {'Table Data 1', 'subtitle 3'});
+rep.addData('data', [repmat({'a'},10,1) repmat({'b'},10,1) num2cell(rand(10,1))], 'column_names', {'Name', '', 'Var2'});
 
 %% Write & Compile Report
 rep.write();
