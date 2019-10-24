@@ -37,7 +37,7 @@ classdef report_table < handle
         showVlines = false            %
         vlineAfter = ''               % Show a vertical line after the specified date (or dates if a cell array of dates is passed). Default: empty.
         vlineAfterEndOfPeriod = false % Show a vertical line after the end of every period (i.e. after every year, after the fourth quarter, etc.). Default: false.
-        data = ''                     % The dseries that provides the data for the graph. Default: none.
+        data = ''                     % The dseries that provides the data for the table. Default: none.
         seriesToUse = ''              % The names of the series contained in the dseries provided to the data option. If empty, use all series provided to data option. Default: empty.
         range = {}                    % The date range of the data to be displayed. Default: all.
         precision = 1                 % The number of decimal places to report in the table data (rounding done via the round half away from zero method). Default: 1.
