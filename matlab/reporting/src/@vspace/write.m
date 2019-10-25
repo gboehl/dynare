@@ -31,6 +31,6 @@ function o = write(o, fid)
 
 fprintf(fid, repmat(' \\par \\medskip ', 1, o.number));
 if o.hline > 0
-    fprintf(fid, ['\\\\\n' repmat('\\midrule', 1, o.hline)]);
+    fprintf(fid, ['\\\\\n' repmat('\\noindent\\makebox[\\linewidth]{\\rule{\\linewidth}{0.4pt}}\\\\', 1, o.hline)]);
 end
 end
