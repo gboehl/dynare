@@ -1,9 +1,10 @@
-function [oo_,options_] = squeeze_shock_decomp(M_,oo_,options_,sd_vlist)
+function [oo_,options_] = squeeze_shock_decomp(M_,oo_,options_,var_list_)
 
-if nargin==3
-    % automatic selection from history of plot_shock_decomp
-    sd_vlist = M_.endo_names(options_.plot_shock_decomp.i_var);
+my_vars = options_.plot_shock_decomp.i_var;
+if nargin>3
+    my_vars = [varlist_indices(var_list_,M_.endo_names); my_vars];
 end
+sd_vlist = M_.endo_names(my_vars,:);
 
 if isstruct(options_.plot_shock_decomp.q2a)
     
