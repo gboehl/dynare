@@ -57,6 +57,15 @@ var_expectation.initialize('varexp')
 // Update VAR_EXPECTATION reduced form parameters
 var_expectation.update('varexp');
 
+// Print equations where the variable appears in
+fprintf('x is in: \n')
+print_equations('x')
+fprintf('\n')
+
+fprintf('y is in: \n')
+print_equations('y', true)
+fprintf('\n')
+
 /*
 ** REMARK The VAR model is such that x depends on past values of x
 ** (xₜ₋₁ and xₜ₋₂) and on zₜ₋₂ ⇒ yₜ₋₁, yₜ₋₂ and zₜ₋₁ do not bring any
