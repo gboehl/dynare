@@ -91,7 +91,9 @@ for i=1:length(eqtags)
             RHS = exactstrrep(RHS, enames{j}, sprintf('ds(range).%s', enames{j}));
         else
             RHS = exactstrrep(RHS, sprintf('%s\\((\\-)*\\d\\)|%s', enames{j}, enames{j}), '0');
+            warning off backtrace
             warning('Endogenous variable %s is unknown in dseries objet. Assign zero value.', enames{j})
+            warning on backtrace
         end
     end
     % Substitute exogenous variable x with ds.x, except if
@@ -105,7 +107,9 @@ for i=1:length(eqtags)
                 RHS = exactstrrep(RHS, xnames{j}, sprintf('ds(range).%s', xnames{j}));
             else
                 RHS = exactstrrep(RHS, xnames{j}, '0');
+                warning off backtrace
                 warning('Exogenous variable %s is unknown in dseries objet. Assign zero value.', xnames{j})
+                warning on backtrace
             end
         else
             RHS = regexprep(RHS, sprintf('(\\ *)(+)(\\ *)%s', xnames{j}), '');
