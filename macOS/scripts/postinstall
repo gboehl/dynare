@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+# Copyright © 2019 Dynare Team
+#
+# This file is part of Dynare.
+#
+# Dynare is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Dynare is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
+set -ex
+
+set -o errexit
+readonly LOG_FILE="$2"/install.log
+sudo touch "$LOG_FILE"
+exec 1>"$LOG_FILE"
+exec 2>&1
+
+# Remove dummy payload
+rm -f "$2"/dummy
+
+# Test for Internet connection
+[[ -z $(curl -s -m 4 www.google.com) ]] && { echo "No internet connection found"; exit 1; }
+
+# Install Command Line Tools
+if [[ -z $(/usr/bin/xcode-select -print-path) ]]; then
+    touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress;
+    SUC=$(softwareupdate -l |
+              grep "\*.*Command Line" |
+              grep -m1 "" |
+              awk -F"*" '{print $2}' |
+              sed -e 's/^ *//' |
+              tr -d '\n')
+    # On macOS 10.15 softwareupdate output is preceded by "Label: "
+    [[ $SUC == Label:* ]] && SUC=${SUC#"Label: "}
+    softwareupdate -i "$SUC" --verbose;
+    rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress;
+    softwareupdate -l
+fi
+
+# If CLT installation didn't work, exit
+[[ -z $(/usr/bin/xcode-select -print-path) ]] && \
+    { echo "You must install Command Line Tools to proceed with installation of GCC"; exit 1; }
+
+# Install Homebrew
+BREWDIR="$2"/.brew
+[ -d "$BREWDIR" ] || mkdir -p "$BREWDIR"
+
+BREW_URL="https://github.com/Homebrew/brew"
+BREW_BRANCH="master"
+
+curl -\# -L "$BREW_URL"/tarball/"$BREW_BRANCH" | tar xz -m --strip 1 -C "$BREWDIR"
+
+# Change ownership of Dynare directory
+chown -R "$USER":staff "$2"
+
+sudo -u "$USER" "$BREWDIR"/bin/brew tap homebrew/core
+HOMEBREW_CACHE="$HOME"/Library/Caches/Homebrew-Dynare
+HOMEBREW_NO_AUTO_UPDATE=1
+[[ -z "${HOMEBREW_NO_ANALYTICS}" ]] && HOMEBREW_NO_ANALYTICS=1
+
+# Move modified formulas to Homebrew Formula directory
+mv "$2"/*.rb "$BREWDIR"/Library/Taps/homebrew/homebrew-core/Formula
+
+# Install GCC & deps
+sudo -u "$USER" "$BREWDIR"/bin/brew install gcc -v --force-bottle
+
+exit 0
