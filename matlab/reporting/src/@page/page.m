@@ -24,15 +24,16 @@ classdef page < handle
         sections = {}
     end
     properties (SetAccess = private)
-        paper = ''                % Paper size. Default: `a4'.
-        title = {''}              % With one entry (a STRING), the title of the page. With more than one entry (a CELL_ARRAY_STRINGS), the title and subtitle(s) of the page. Values passed must be valid LATEX code (e.g., % must be \%). Default: none.
-        titleFormat = ''          % A string representing the valid LATEX markup to use on title. The number of cell array entries must be equal to that of the title option if you do not want to use the default value for the title (and subtitles). Default: \large\bfseries.
-        titleTruncate = ''        % Useful when automatically generating page titles that may become too long, titleTruncate can be used to truncate a title (and subsequent subtitles) when they pass the specified number of characters. Default: .off.
-        orientation = ''          % Paper orientation: Default: `portrait'.
-        footnote = {}             % A footnote to be included at the bottom of this page. Default: none.
-        pageDirName = 'tmpRepDir' % The name of the folder in which to store this page. Only used when the latex command is passed. Default: tmpRepDir.
-        latex = ''                % The valid LATEX code to be used for this page. Alows the user to create a page to be included in the report by passing LATEX code directly. Default: empty.
-        setPageNumber = ''        % If true, reset the page number counter. Default: false.
+        paper = ''                    % Paper size. Default: `a4'.
+        title = {''}                  % With one entry (a STRING), the title of the page. With more than one entry (a CELL_ARRAY_STRINGS), the title and subtitle(s) of the page. Values passed must be valid LATEX code (e.g., % must be \%). Default: none.
+        titleFormat = ''              % A string representing the valid LATEX markup to use on title. The number of cell array entries must be equal to that of the title option if you do not want to use the default value for the title (and subtitles). Default: \large\bfseries.
+        titleTruncate = ''            % Useful when automatically generating page titles that may become too long, titleTruncate can be used to truncate a title (and subsequent subtitles) when they pass the specified number of characters. Default: .off.
+        orientation = ''              % Paper orientation: Default: `portrait'.
+        footnote = {}                 % A footnote to be included at the bottom of this page. Default: none.
+        pageDirName = 'tmpRepDir'     % The name of the folder in which to store this page. Only used when the latex command is passed. Default: tmpRepDir.
+        latex = ''                    % The valid LATEX code to be used for this page. Alows the user to create a page to be included in the report by passing LATEX code directly. Default: empty.
+        setPageNumber = ''            % If true, reset the page number counter. Default: false.
+        removeHeaderAndFooter = false % Removes the header and footer from this page. Default: false.
     end
     methods
         function o = page(varargin)
@@ -114,6 +115,8 @@ classdef page < handle
                 '@page.page: sections is not a valid option');
             assert(isempty(o.setPageNumber) || isint(o.setPageNumber), ...
                 '@page.page: setPageNumber must be an integer');
+            assert(islogical(o.removeHeaderAndFooter), ...
+                '@page.page: removeHeaderAndFooter must be boolean');
         end
     end
     methods (Hidden = true)

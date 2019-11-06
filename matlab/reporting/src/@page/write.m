@@ -35,6 +35,9 @@ fprintf(fid, '\n%% Page Number %d written %s\n', pg, datestr(now));
 if ~isempty(o.setPageNumber)
     fprintf(fid, '\\setcounter{page}{%d}\n', o.setPageNumber);
 end
+if o.removeHeaderAndFooter
+    fprintf(fid, '\\thispagestyle{empty}\n');
+end
 if strcmpi(o.orientation, 'landscape')
     fprintf(fid, '\\begin{landscape}\n');
 end

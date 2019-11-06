@@ -149,7 +149,8 @@ rep = CommResidTablePage(rep, db_q, dc_q, trange, dates('2012q2'));
 %% Commodities Graphs
 %Page 24
 rep.addPage('title', 'Jan1 vs Jan2', ...
-                  'titleFormat', '\large\bfseries');
+                  'titleFormat', '\large\bfseries', ...
+                  'removeHeaderAndFooter', true);
 rep.addSection('height', '0.475\textheight');
 
 rep.addGraph('title', {'World Real Oil Price Index','SUBTITLE'}, ...
