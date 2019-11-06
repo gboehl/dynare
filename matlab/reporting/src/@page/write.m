@@ -32,6 +32,9 @@ function write(o, fid, pg, rep_dir)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 fprintf(fid, '\n%% Page Number %d written %s\n', pg, datestr(now));
+if ~isempty(o.setPageNumber)
+    fprintf(fid, '\\setcounter{page}{%d}\n', o.setPageNumber);
+end
 if strcmpi(o.orientation, 'landscape')
     fprintf(fid, '\\begin{landscape}\n');
 end

@@ -32,6 +32,7 @@ classdef page < handle
         footnote = {}             % A footnote to be included at the bottom of this page. Default: none.
         pageDirName = 'tmpRepDir' % The name of the folder in which to store this page. Only used when the latex command is passed. Default: tmpRepDir.
         latex = ''                % The valid LATEX code to be used for this page. Alows the user to create a page to be included in the report by passing LATEX code directly. Default: empty.
+        setPageNumber = ''        % If true, reset the page number counter. Default: false.
     end
     methods
         function o = page(varargin)
@@ -111,6 +112,8 @@ classdef page < handle
                 '@page.page: footnote must be a cell array of string(s)');
             assert(isempty(o.sections), ...
                 '@page.page: sections is not a valid option');
+            assert(isempty(o.setPageNumber) || isint(o.setPageNumber), ...
+                '@page.page: setPageNumber must be an integer');
         end
     end
     methods (Hidden = true)
