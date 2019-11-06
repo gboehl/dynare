@@ -31,75 +31,122 @@ function o = write(o)
 if exist(o.directory, 'dir') ~= 7
     mkdir(o.directory);
 end
-[fid, msg] = fopen([o.directory '/' o.fileName], 'w');
-if fid == -1
+if exist([o.directory '/' o.reportDirName], 'dir') ~= 7
+    mkdir([o.directory '/' o.reportDirName]);
+end
+idx = strfind(o.fileName, '.tex');
+if isempty(idx) || ~strcmp(o.fileName(idx:end), '.tex')
+    preamble_file_name = [o.reportDirName '/' o.fileName '_preamble.tex'];
+    document_file_name = [o.reportDirName '/' o.fileName '_document.tex'];
+    page_file_name_root = [o.reportDirName '/' o.fileName '_pg'];
+    o.fileName = [o.fileName '.tex'];
+else
+    preamble_file_name = [o.reportDirName '/' o.fileName(1:idx-1) '_preamble.tex'];
+    document_file_name = [o.reportDirName '/' o.fileName(1:idx-1) '_document.tex'];
+    page_file_name_root = [o.reportDirName '/' o.fileName(1:idx-1) '_pg'];
+end
+
+%% Create preamble
+[fid_preamble, msg] = fopen([o.directory '/' preamble_file_name], 'w');
+if fid_preamble == -1
     error(['@report.write: ' msg]);
 end
 
-fprintf(fid, '%% Report Object written %s\n', datestr(now));
-fprintf(fid, '\\documentclass[11pt]{article}\n');
+fprintf(fid_preamble, '%% Report Object written %s\n', datestr(now));
+fprintf(fid_preamble, '\\documentclass[11pt]{article}\n');
 
-fprintf(fid, '\\usepackage[%spaper,margin=%f%s', o.paper, o.margin, o.marginUnit);
+fprintf(fid_preamble, '\\usepackage[%spaper,margin=%f%s', o.paper, o.margin, o.marginUnit);
 if strcmpi(o.orientation, 'landscape')
-    fprintf(fid, ',landscape');
+    fprintf(fid_preamble, ',landscape');
 end
-fprintf(fid, ']{geometry}\n');
-fprintf(fid, '\\usepackage{pdflscape, booktabs, pgfplots, colortbl, adjustbox, multicol}\n');
-fprintf(fid, '\\pgfplotsset{compat=1.5.1}');
-fprintf(fid, ['\\makeatletter\n' ...
+fprintf(fid_preamble, ']{geometry}\n');
+fprintf(fid_preamble, '\\usepackage{pdflscape, booktabs, pgfplots, colortbl, adjustbox, multicol}\n');
+fprintf(fid_preamble, '\\pgfplotsset{compat=1.5.1}');
+fprintf(fid_preamble, ['\\makeatletter\n' ...
               '\\def\\blfootnote{\\gdef\\@thefnmark{}\\@footnotetext}\n' ...
               '\\makeatother\n']);
 
 if isoctave && isempty(regexpi(computer, '.*apple.*', 'once'))
-    fprintf(fid, '\\usepackage[T1]{fontenc}\n');
-    fprintf(fid, '\\usepackage[utf8x]{inputenc}\n');
+    fprintf(fid_preamble, '\\usepackage[T1]{fontenc}\n');
+    fprintf(fid_preamble, '\\usepackage[utf8x]{inputenc}\n');
 end
 if ispc || ismac
-    fprintf(fid, '\\usepgfplotslibrary{fillbetween}\n');
+    fprintf(fid_preamble, '\\usepgfplotslibrary{fillbetween}\n');
 end
-fprintf(fid, '\\definecolor{LightCyan}{rgb}{0.88,1,1}\n');
-fprintf(fid, '\\definecolor{Gray}{gray}{0.9}\n');
+fprintf(fid_preamble, '\\definecolor{LightCyan}{rgb}{0.88,1,1}\n');
+fprintf(fid_preamble, '\\definecolor{Gray}{gray}{0.9}\n');
 if o.showDate
-    fprintf(fid, '\\usepackage{fancyhdr, datetime}\n');
-    fprintf(fid, '\\newdateformat{reportdate}{\\THEDAY\\ \\shortmonthname\\ \\THEYEAR}\n');
-    fprintf(fid, '\\pagestyle{fancy}\n');
-    fprintf(fid, '\\renewcommand{\\headrulewidth}{0pt}\n');
-    fprintf(fid, '\\renewcommand{\\footrulewidth}{0.5pt}\n');
-    fprintf(fid, '\\rfoot{\\scriptsize\\reportdate\\today\\ -- \\currenttime}\n');
+    fprintf(fid_preamble, '\\usepackage{fancyhdr, datetime}\n');
+    fprintf(fid_preamble, '\\newdateformat{reportdate}{\\THEDAY\\ \\shortmonthname\\ \\THEYEAR}\n');
+    fprintf(fid_preamble, '\\pagestyle{fancy}\n');
+    fprintf(fid_preamble, '\\renewcommand{\\headrulewidth}{0pt}\n');
+    fprintf(fid_preamble, '\\renewcommand{\\footrulewidth}{0.5pt}\n');
+    fprintf(fid_preamble, '\\rfoot{\\scriptsize\\reportdate\\today\\ -- \\currenttime}\n');
 end
 
 % May not need these.....
-fprintf(fid, '\\renewcommand{\\textfraction}{0.05}\n');
-fprintf(fid, '\\renewcommand{\\topfraction}{0.8}\n');
-fprintf(fid, '\\renewcommand{\\bottomfraction}{0.8}\n');
-fprintf(fid, '\\setlength{\\parindent}{0in}\n');
-fprintf(fid, '\\setlength{\\tabcolsep}{1em}\n');
-fprintf(fid, '\\newlength\\sectionheight\n');
+fprintf(fid_preamble, '\\renewcommand{\\textfraction}{0.05}\n');
+fprintf(fid_preamble, '\\renewcommand{\\topfraction}{0.8}\n');
+fprintf(fid_preamble, '\\renewcommand{\\bottomfraction}{0.8}\n');
+fprintf(fid_preamble, '\\setlength{\\parindent}{0in}\n');
+fprintf(fid_preamble, '\\setlength{\\tabcolsep}{1em}\n');
+fprintf(fid_preamble, '\\newlength\\sectionheight\n');
 if ~isempty(o.header)
-    fprintf(fid, '%s\n', o.header);
+    fprintf(fid_preamble, '%s\n', o.header);
 end
-fprintf(fid, '\\begin{document}\n');
+fprintf(fid_preamble, '\\begin{document}\n');
+status = fclose(fid_preamble);
+if status == -1
+    error('@report.write: closing %s\n', preamble_file_name);
+end
+
+%% Write body of document
+[fid_document, msg] = fopen([o.directory '/' document_file_name], 'w');
+if fid_document == -1
+    error(['@report.write: ' msg]);
+end
 if isunix && ~ismac
-    fprintf(fid, '\\pgfdeclarelayer{axis background}\n');
-    fprintf(fid, '\\pgfdeclarelayer{axis lines}\n');
-    fprintf(fid, '\\pgfsetlayers{axis background,axis lines,main}\n');
+    fprintf(fid_document, '\\pgfdeclarelayer{axis background}\n');
+    fprintf(fid_document, '\\pgfdeclarelayer{axis lines}\n');
+    fprintf(fid_document, '\\pgfsetlayers{axis background,axis lines,main}\n');
 end
-fprintf(fid, '\\pgfplotsset{tick scale binop={\\times},\ntrim axis left}\n');
-fprintf(fid, '\\centering\n');
+fprintf(fid_document, '\\pgfplotsset{tick scale binop={\\times},\ntrim axis left}\n');
+fprintf(fid_document, '\\centering\n');
 
 for i = 1:length(o.pages)
     if o.showOutput
         fprintf(1, 'Writing Page: %d\n', i);
     end
-    o.pages{i}.write(fid, i, o.directory);
+    page_file_name = [page_file_name_root num2str(i) '.tex'];
+    [fid_pg, msg] = fopen([o.directory '/' page_file_name], 'w');
+    if fid_pg == -1
+        error(['@report.write: ' msg]);
+    end
+    o.pages{i}.write(fid_pg, i, o.directory);
+    status = fclose(fid_pg);
+    if status == -1
+        error('@report.write: closing %s\n', o.fileName);
+    end
+    fprintf(fid_document, '\\input{%s}\n', page_file_name);
+end
+status = fclose(fid_document);
+if status == -1
+    error('@report.write: closing %s\n', document_file_name);
 end
 
+%% Create report comprised of preamble and document
+[fid, msg] = fopen([o.directory '/' o.fileName], 'w');
+if fid == -1
+    error(['@report.write: ' msg]);
+end
+fprintf(fid, '\\input{%s}\n\\input{%s}\n', ...
+    preamble_file_name, document_file_name);
 fprintf(fid, '\\end{document}\n');
-fprintf(fid, '%% End Report Object\n');
 status = fclose(fid);
 if status == -1
     error('@report.write: closing %s\n', o.fileName);
 end
+
 if o.showOutput
     disp('Finished Writing Report!');
 end

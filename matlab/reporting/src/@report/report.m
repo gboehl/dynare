@@ -21,17 +21,18 @@ classdef report < handle
         pages = {}
     end
     properties (SetAccess = private)
-        directory = '.'          % Directory in which to write/compile the report. Default: '.'
-        title = ''               % Report Title. Default: none.
-        orientation = 'portrait' % Paper orientation: Default: `portrait'.
-        paper = 'a4'             % Paper size. Default: `a4'.
-        margin = 2.5             % The margin size. Default: 2.5.
-        marginUnit = 'cm'        % Units associated with the margin. Default: `cm'.
-        fileName = 'report.tex'  % The file name to use when saving this report. Default: report.tex.
-        showDate = true          % Display the date and time when the report was compiled. Default: true.
-        compiler = ''            % The full path to the LATEX compiler on your system
-        showOutput = true        % Print report creation progress to screen. Shows you the page number as it is created and as it is written. This is useful to see where a potential error occurs in report creation. Default: true.
-        header = ''              % The valid LATEX code to be included in the report before \begin{document}. Default: empty.
+        directory = '.'             % Directory in which to write/compile the report. Default: '.'
+        title = ''                  % Report Title. Default: none.
+        orientation = 'portrait'    % Paper orientation: Default: `portrait'.
+        paper = 'a4'                % Paper size. Default: `a4'.
+        margin = 2.5                % The margin size. Default: 2.5.
+        marginUnit = 'cm'           % Units associated with the margin. Default: `cm'.
+        fileName = 'report'         % The file name to use when saving this report. Default: report.tex.
+        showDate = true             % Display the date and time when the report was compiled. Default: true.
+        compiler = ''               % The full path to the LATEX compiler on your system
+        showOutput = true           % Print report creation progress to screen. Shows you the page number as it is created and as it is written. This is useful to see where a potential error occurs in report creation. Default: true.
+        header = ''                 % The valid LATEX code to be included in the report before \begin{document}. Default: empty.
+        reportDirName = 'tmpRepDir' % The name of the folder in which to store the component parts of the report (preamble, document, end). Default: tmpRepDir.
     end
     methods
         function o = report(varargin)
@@ -86,6 +87,7 @@ classdef report < handle
             assert(islogical(o.showOutput), '@report.report: showOutput must be either true or false');
             assert(isfloat(o.margin) && o.margin > 0, '@report.report: margin must be a float > 0.');
             assert(ischar(o.header), '@report.report: header must be a string');
+            assert(ischar(o.reportDirName), '@report.report: reportDirName must be a string');
             valid_margin_unit = {'cm', 'in'};
             assert(any(strcmp(o.marginUnit, valid_margin_unit)), ...
                 ['@report.report: marginUnit must be one of ' addCommasToCellStr(valid_margin_unit)]);
