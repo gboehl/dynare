@@ -125,6 +125,12 @@ if ~isoctave && matlab_ver_less_than('8.1')
     p{end+1} = '/missing/strjoin';
 end
 
+% contains and splitlines don't exist in Octave and in MATLAB < R2016b
+if isoctave || matlab_ver_less_than('9.1')
+    p{end+1} = '/missing/contains';
+    p{end+1} = '/missing/splitlines';
+end
+
 % isrow, iscolumn and ismatrix are missing in Matlab<R2010b
 if ~isoctave && matlab_ver_less_than('7.11')
     p{end+1} = '/missing/is-row-column-matrix';
