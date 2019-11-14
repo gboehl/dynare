@@ -55,7 +55,7 @@ manual. Part of Dynare is programmed in C++, while the rest is written
 using the `MATLAB`_ programming language. The latter implies that
 commercially-available MATLAB software is required in order to run
 Dynare. However, as an alternative to MATLAB, Dynare is also able to
-run on top of `GNU Octave`_ (basically a free clone of MATLAB): this
+run on top of `Octave`_ (basically a free clone of MATLAB): this
 possibility is particularly interesting for students or institutions
 who cannot afford, or do not want to pay for, MATLAB and are willing
 to bear the concomitant performance loss.
@@ -128,7 +128,7 @@ https://www.dynare.org.
 
 
 .. _MATLAB: http://www.mathworks.com/products/matlab/
-.. _GNU Octave: http://www.octave.org/
+.. _Octave: http://www.octave.org/
 .. _CEPREMAP: http://www.cepremap.fr/
 .. _web forum: https://forum.dynare.org/
 .. _official Dynare website: http://www.dynare.org/

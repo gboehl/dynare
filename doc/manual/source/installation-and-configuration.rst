@@ -15,7 +15,7 @@ are necessary in that case.
 In order to run Dynare, you need one of the following:
 
 * MATLAB version 7.9 (R2009b) or above;
-* GNU Octave version 4.2.1 or above, with the statistics package from `Octave-Forge`_.
+* Octave version 4.2.1 or above, with the statistics package from `Octave-Forge`_.
 
 The following optional extensions are also useful to benefit from
 extra features, but are in no way required:
@@ -23,7 +23,7 @@ extra features, but are in no way required:
 * If under MATLAB: the Optimization Toolbox, the Statistics Toolbox,
   the Control System Toolbox;
 
-* If under GNU Octave, the following `Octave-Forge`_ packages: ``optim, io,
+* If under Octave, the following `Octave-Forge`_ packages: ``optim, io,
   control``.
 
 
@@ -192,8 +192,8 @@ installation to MATLAB path. You have two options for doing that:
   MATLAB will remember this setting next time you run it.
 
 
-For GNU Octave
---------------
+For Octave
+----------
 
 You need to add the ``matlab`` subdirectory of your Dynare
 installation to Octave path, using the ``addpath`` at the Octave

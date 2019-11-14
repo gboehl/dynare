@@ -22,7 +22,7 @@ command at the MATLAB or Octave prompt (with the filename of the
 In practice, the handling of the model file is done in two steps: in
 the first one, the model and the processing instructions written by
 the user in a *model file* are interpreted and the proper MATLAB or
-GNU Octave instructions are generated; in the second step, the program
+Octave instructions are generated; in the second step, the program
 actually runs the computations. Both steps are triggered automatically
 by the ``dynare`` command.
 
