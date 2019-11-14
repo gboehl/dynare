@@ -25,7 +25,7 @@ function [x,check,info] = trust_region(fcn,x0,j1,j2,jacobian_flag,gstep,tolf,tol
 %    none
 
 % Copyright (C) 2008-2012 VZLU Prague, a.s.
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright (C) 2014-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -65,24 +65,27 @@ info = 0;
 fvec = fcn (x, varargin{:});
 fvec = fvec(j1);
 fn = norm (fvec);
+recompute_jacobian = true;
 
 % Outer loop.
 while (niter < maxiter && ~info)
 
-    % Calculate function value and Jacobian (possibly via FD).
-    if jacobian_flag
-        [fvec, fjac] = fcn (x, varargin{:});
-        fvec = fvec(j1);
-        fjac = fjac(j1,j2);
-    else
-        dh = max(abs(x(j2)),gstep(1)*ones(n,1))*eps^(1/3);
+    % Calculate Jacobian (possibly via FD).
+    if recompute_jacobian
+        if jacobian_flag
+            [~, fjac] = fcn (x, varargin{:});
+            fjac = fjac(j1,j2);
+        else
+            dh = max(abs(x(j2)),gstep(1)*ones(n,1))*eps^(1/3);
 
-        for j = 1:n
-            xdh = x ;
-            xdh(j2(j)) = xdh(j2(j))+dh(j) ;
-            t = fcn(xdh,varargin{:});
-            fjac(:,j) = (t(j1) - fvec)./dh(j) ;
+            for j = 1:n
+                xdh = x ;
+                xdh(j2(j)) = xdh(j2(j))+dh(j) ;
+                t = fcn(xdh,varargin{:});
+                fjac(:,j) = (t(j1) - fvec)./dh(j) ;
+            end
         end
+        recompute_jacobian = false;
     end
 
     % Get column norms, use them as scaling factors.
@@ -164,20 +167,13 @@ while (niter < maxiter && ~info)
         xn = norm (dg .* x(j2));
         fvec = fvec1;
         fn = fn1;
+        recompute_jacobian = true;
     end
 
     niter = niter + 1;
 
 
-    % Tests for termination conditions. A mysterious place, anything
-    % can happen if you change something here...
-
-    % The rule of thumb (which I'm not sure M*b is quite following)
-    % is that for a tolerance that depends on scaling, only 0 makes
-    % sense as a default value. But 0 usually means uselessly long
-    % iterations, so we need scaling-independent tolerances wherever
-    % possible.
-
+    % Tests for termination condition
     if (fn <= tolf)
         info = 1;
     end
