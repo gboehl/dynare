@@ -6,7 +6,7 @@ rho_1=0.2;
 rho_2=0.1;
 
 // Equilibrium conditions
-model;
+model(linear);
 y_backward=rho_1*y_backward(-1)+rho_2*y_backward(-2);
 dummy_var=0.9*dummy_var(+1);
 end;

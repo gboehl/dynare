@@ -33,12 +33,13 @@
 class DynamicModelCaller
 {
 public:
-  const bool compute_jacobian;
+  const bool linear;
+  bool compute_jacobian; // Not constant, because will be changed from true to false for linear models after first evaluation
 
   // Used to store error messages (as exceptions cannot cross the OpenMP boundary)
   static std::string error_msg;
 
-  DynamicModelCaller(bool compute_jacobian_arg) : compute_jacobian{compute_jacobian_arg} {};
+  DynamicModelCaller(bool linear_arg, bool compute_jacobian_arg) : linear{linear_arg}, compute_jacobian{compute_jacobian_arg} {};
   virtual ~DynamicModelCaller() = default;
   virtual double &y(size_t i) const = 0;
   virtual double jacobian(size_t i) const = 0;
@@ -62,7 +63,7 @@ private:
   std::unique_ptr<double[]> tt, y_p, jacobian_p;
 
 public:
-  DynamicModelDllCaller(size_t ntt, mwIndex nx, mwIndex ny, size_t ndynvars, const double *x_arg, size_t nb_row_x_arg, const double *params_arg, const double *steady_state_arg, bool compute_jacobian_arg);
+  DynamicModelDllCaller(size_t ntt, mwIndex nx, mwIndex ny, size_t ndynvars, const double *x_arg, size_t nb_row_x_arg, const double *params_arg, const double *steady_state_arg, bool linear_arg, bool compute_jacobian_arg);
   virtual ~DynamicModelDllCaller() = default;
   double &y(size_t i) const override { return y_p[i]; };
   double jacobian(size_t i) const override { return jacobian_p[i]; };
@@ -82,7 +83,7 @@ private:
      Destroys the original matrix. */
   static mxArray *cmplxToReal(mxArray *m);
 public:
-  DynamicModelMatlabCaller(std::string basename_arg, size_t ntt, size_t ndynvars, const mxArray *x_mx_arg, const mxArray *params_mx_arg, const mxArray *steady_state_mx_arg, bool compute_jacobian_arg);
+  DynamicModelMatlabCaller(std::string basename_arg, size_t ntt, size_t ndynvars, const mxArray *x_mx_arg, const mxArray *params_mx_arg, const mxArray *steady_state_mx_arg, bool linear_arg, bool compute_jacobian_arg);
   ~DynamicModelMatlabCaller() override;
   double &y(size_t i) const override { return mxGetPr(y_mx)[i]; };
   double jacobian(size_t i) const override { return jacobian_mx ? mxGetPr(jacobian_mx)[i] : std::numeric_limits<double>::quiet_NaN(); };

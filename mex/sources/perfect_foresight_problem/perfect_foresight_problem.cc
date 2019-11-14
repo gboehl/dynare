@@ -86,6 +86,11 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mexErrMsgTxt("options_.use_dll should be a logical scalar");
   bool use_dll = static_cast<bool>(mxGetScalar(use_dll_mx));
 
+  const mxArray *linear_mx = mxGetField(options_mx, 0, "linear");
+  if (!(linear_mx && mxIsLogicalScalar(linear_mx)))
+    mexErrMsgTxt("options_.linear should be a logical scalar");
+  bool linear = static_cast<bool>(mxGetScalar(linear_mx));
+
   const mxArray *threads_mx = mxGetField(options_mx, 0, "threads");
   if (!threads_mx)
     mexErrMsgTxt("Can't find field options_.threads");
@@ -211,9 +216,9 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // Allocate (thread-private) model evaluator (which allocates space for temporaries)
     std::unique_ptr<DynamicModelCaller> m;
     if (use_dll)
-      m = std::make_unique<DynamicModelDllCaller>(ntt, nx, ny, ndynvars, exo_path, nb_row_x, params, steady_state, compute_jacobian);
+      m = std::make_unique<DynamicModelDllCaller>(ntt, nx, ny, ndynvars, exo_path, nb_row_x, params, steady_state, linear, compute_jacobian);
     else
-      m = std::make_unique<DynamicModelMatlabCaller>(basename, ntt, ndynvars, exo_path_mx, params_mx, steady_state_mx, compute_jacobian);
+      m = std::make_unique<DynamicModelMatlabCaller>(basename, ntt, ndynvars, exo_path_mx, params_mx, steady_state_mx, linear, compute_jacobian);
 
     // Main computing loop
 #pragma omp for
