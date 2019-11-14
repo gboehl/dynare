@@ -997,6 +997,13 @@ The model is declared inside a ``model`` block:
         slave nodes when doing a parallel computation (see
         :ref:`paral-conf`).
 
+    .. option:: balanced_growth_test_tol = DOUBLE
+
+        Tolerance used for determining whether cross-derivatives are zero in
+        the test for balanced growth path (the latter is documented on
+        `<https://archives.dynare.org/DynareWiki/RemovingTrends>`__). Default:
+        ``1e-6``
+
     *Example* (Elementary RBC model)
 
         ::
