@@ -3296,7 +3296,7 @@ Computing the stochastic solution
        command. Note that if ``varobs`` is not present or contains all
        endogenous variables, then this is the full information case
        and this option has no effect. More references can be found
-       `here <http://www.dynare.org/DynareWiki/PartialInformation>`__ .
+       `here <https://archives.dynare.org/DynareWiki/PartialInformation>`__ .
 
     .. option:: sylvester = OPTION
 
@@ -3308,7 +3308,7 @@ Computing the stochastic solution
                 Uses the default solver for Sylvester equations
                 (``gensylv``) based on Ondra Kamenik’s algorithm (see
                 `here
-                <http://www.dynare.org/documentation-and-support/dynarepp/sylvester.pdf/at_download/file>`__
+                <https://www.dynare.org/assets/dynare++/sylvester.pdf>`__
                 for more information).
 
            ``fixed_point``
@@ -9616,7 +9616,7 @@ below.
         RESTRICTION EQUATION INTEGER, EXPRESSION = EXPRESSION;
 
     To be documented. For now, see the wiki:
-    `<http://www.dynare.org/DynareWiki/MarkovSwitchingInterface>`__
+    `<https://archives.dynare.org/DynareWiki/MarkovSwitchingInterface>`__
 
 
 .. command:: ms_estimation (OPTIONS...);
@@ -11206,9 +11206,9 @@ Misc commands
     and ``morefloats``.
 
 
-.. _Dynare wiki: http://www.dynare.org/DynareWiki/EquationsTags
+.. _Dynare wiki: https://archives.dynare.org/DynareWiki/EquationsTags
 .. _io: https://octave.sourceforge.io/io/
-.. _AIM website: http://www.federalreserve.gov/Pubs/oss/oss4/aimindex.html
+.. _AIM website: https://www.federalreserve.gov/econres/ama-index.htm
 
 .. rubric:: Footnotes
 

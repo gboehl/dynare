@@ -127,11 +127,11 @@ https://www.dynare.org.
 
 
 
-.. _MATLAB: http://www.mathworks.com/products/matlab/
-.. _Octave: http://www.octave.org/
-.. _CEPREMAP: http://www.cepremap.fr/
+.. _MATLAB: https://www.mathworks.com/products/matlab/
+.. _Octave: https://www.octave.org/
+.. _CEPREMAP: https://www.cepremap.fr/
 .. _web forum: https://forum.dynare.org/
-.. _official Dynare website: http://www.dynare.org/
+.. _official Dynare website: https://www.dynare.org/
 .. _Dynare wiki: https://git.dynare.org/Dynare/dynare/wikis
 .. _Dynare forums: https://forum.dynare.org/
 .. _Git repository: https://git.dynare.org/Dynare/dynare
