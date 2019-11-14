@@ -5,6 +5,7 @@ Upstream-Contact: Dynare Team, whose members in 2019 are:
                   Houtan Bastani <houtan@dynare.org>
                   Michel Juillard <michel.juillard@mjui.fr>
                   Frédéric Karamé <frederic.karame@univ-lemans.fr>
+                  Dóra Kocsis <dora@dynare.org>
                   Junior Maih <junior.maih@gmail.com>
                   Ferhat Mihoubi <fmihoubi@univ-evry.fr>
                   Willi Mutschler <willi@mutschler.eu>

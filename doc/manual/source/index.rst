@@ -7,6 +7,7 @@ Currently the development team of Dynare is composed of:
 * Houtan Bastani
 * Michel Juillard
 * Frédéric Karamé
+* Dóra Kocsis
 * Junior Maih
 * Ferhat Mihoubi
 * Willi Mutschler
