@@ -147,7 +147,7 @@ t = exp(log(scale)+log(-log(1-proba))/shape);
 %$           if debug
 %$               [shape, scale, x(k-1)]
 %$           end
-%$           if isoctave
+%$           if isoctave || matlab_ver_less_than('7.14')
 %$               s = quadv(density, 0, x(k-1),1e-10);
 %$           else
 %$               s = integral(density, 0, x(k-1));
@@ -155,8 +155,8 @@ t = exp(log(scale)+log(-log(1-proba))/shape);
 %$           if debug
 %$               [s, abs(p-s)]
 %$           end
-%$         if isoctave
-%$           t(k) = abs(p-s)<1e-10;
+%$         if isoctave || matlab_ver_less_than('7.14')
+%$           t(k) = abs(p-s)<1e-9;
 %$         else
 %$           t(k) = abs(p-s)<1e-12;
 %$         end
