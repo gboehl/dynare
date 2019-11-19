@@ -247,6 +247,9 @@ FirstOrder::solve(const TwoDMatrix &fd)
 
   journalEigs();
 
+  KORD_RAISE_IF_X(!bk_cond,
+                  "The model is not Blanchard-Kahn stable",
+                  KORD_MD_NOT_STABLE);
   if (!gy.isFinite() || !gu.isFinite())
     throw KordException(__FILE__, __LINE__,
                         "NaN or Inf asserted in first order derivatives in FirstOrder::solve()");

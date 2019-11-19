@@ -71,11 +71,6 @@ public:
   {
     solve(FFSTensor(f));
   }
-  bool
-  isStable() const
-  {
-    return bk_cond;
-  }
   const TwoDMatrix &
   getGy() const
   {
