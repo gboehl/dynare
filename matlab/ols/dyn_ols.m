@@ -176,7 +176,7 @@ for i = 1:length(Y)
         oo_.ols.(tag).Yhat = ...
             feval(fitted_names_dict{idx, 3}, oo_.ols.(tag).Yhat);
     end
-    ds = [ds oo_.ols.(tag).Yhat];
+    ds.(oo_.ols.(tag).Yhat.name) = oo_.ols.(tag).Yhat;
 
     %% Calculate statistics
     % Estimate for sigma^2

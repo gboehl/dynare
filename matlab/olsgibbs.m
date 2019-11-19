@@ -233,7 +233,7 @@ if any(idx) ...
     oo_.olsgibbs.(model_name).Yhat = ...
         feval(fitted_names_dict{idx, 3}, oo_.olsgibbs.(model_name).Yhat);
 end
-ds = [ds oo_.olsgibbs.(model_name).Yhat];
+ds.(oo_.olsgibbs.(model_name).Yhat.name) = oo_.olsgibbs.(model_name).Yhat;
 
 % Compute and save posterior densities.
 for i=1:n
