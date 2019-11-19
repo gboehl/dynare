@@ -210,7 +210,12 @@ end
 command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
 command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
 for i=1:length(varargin)
-    command = [command ' ' varargin{i}];
+    idx = regexp(varargin{i}, '(in|ex)clude_eqs');
+    if ~isempty(idx) && idx(1) == 1
+        command = [command ' "' varargin{i} '"'];
+    else
+        command = [command ' ' varargin{i}];
+    end
 end
 
 if preprocessoroutput
