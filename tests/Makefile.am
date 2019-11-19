@@ -800,6 +800,7 @@ EXTRA_DIST = \
 	bvar_a_la_sims/bvar_sample.m \
 	dates/fsdat_simul.m \
 	dates/data_uav.xls \
+	dates/data_uav.xlsx \
 	external_function/extFunDeriv.m \
 	external_function/extFunNoDerivs.m \
 	external_function/extFunWithFirstAndSecondDerivs.m \
@@ -809,6 +810,7 @@ EXTRA_DIST = \
 	filter_step_ahead/trend_cycle_decomposition_data.m \
 	steady_state/walsh1_old_ss_steadystate.m \
 	data/test.xls \
+	data/test.xlsx \
 	gsa/morris/nk_est_data.m \
 	analytic_derivatives/fsdat_simul.m \
 	fs2000/fsdat_simul.m \
@@ -837,6 +839,7 @@ EXTRA_DIST = \
 	recursive/data_ca1.m \
 	recursive/data_ca1_csv.csv \
 	recursive/data_ca1_xls.xls \
+	recursive/data_ca1_xls.xlsx \
 	kalman_filter_smoother/fsdat_simul.m \
 	kalman/lik_init/fs2000_common.inc \
 	kalman/lik_init/fs2000_ns_common.inc \
