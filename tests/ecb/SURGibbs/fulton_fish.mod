@@ -30,7 +30,7 @@ estparams = {'bq1' 'bq0'};
 estparamsval = [bq1 bq0];
 
 A = 0.0005.*eye(length(estparams));
-surgibbs(dseries('fishdata.csv'), estparams, estparamsval, A, 20000, 5000, 7);
+simdata = surgibbs(dseries('fishdata.csv'), estparams, estparamsval, A, 20000, 5000, 7);
 
 good = [6.791587808530124
    8.552700000000000

@@ -98,7 +98,7 @@ ast = handle_constant_eqs(get_ast(eqtags));
 neqs = length(ast);
 
 %% Find parameters and variable names in equations and setup estimation matrices
-[Y, lhssub, X, ~, ~, residnames] = common_parsing(ds(ds_range), ast, true, param_names);
+[Y, lhssub, X, fp, lp, residnames] = common_parsing(ds(ds_range), ast, true, param_names);
 clear ast
 nobs = Y{1}.nobs;
 [Y, lhssub, X, constrained] = put_in_sur_form(Y, lhssub, X);
@@ -114,6 +114,9 @@ if ~isempty(st) && strcmp(st(1).name, 'surgibbs')
     varargout{2} = X{param_names{:}}.data;
     varargout{3} = Y.data;
     varargout{4} = neqs;
+    varargout{5} = lhssub.data;
+    varargout{6} = fp{1};
+    varargout{7} = lp{1};
     return
 end
 
@@ -176,6 +179,9 @@ oo_.sur.(model_name).resid = Y.data - oo_.sur.(model_name).Yhat;
 
 % Correct Yhat reported back to user
 oo_.sur.(model_name).Yhat = oo_.sur.(model_name).Yhat + lhssub;
+yhatname = [model_name '_FIT'];
+ds.(yhatname) = dseries(oo_.sur.(model_name).Yhat.data,  fp{1}, yhatname);
+varargout{1} = ds;
 
 %% Calculate statistics
 % Estimate for sigma^2

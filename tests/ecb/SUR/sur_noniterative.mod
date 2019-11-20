@@ -172,7 +172,7 @@ for i=1:NSIMS
             idxs = [idxs j];
         end
     end
-    sur(simdata{idxs}, {}, {}, 'mymodel', true);
+    simdata = sur(simdata{idxs}, {}, {}, 'mymodel', true);
     BETA(i, :) = M_.params';
     oo_ = rmfield(oo_, 'sur');
 end

@@ -1,5 +1,5 @@
-function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags, model_name)
-%function surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags, model_name)
+function ds = surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags, model_name)
+%function ds = surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags, model_name)
 % Implements Gibbs Samipling for SUR
 %
 % INPUTS
@@ -88,10 +88,12 @@ end
 %  Using a Combination of Direct Monte Carlo and Importance Sampling
 %  Techniques. Bayesian Analysis. 2010. pp 67-70.
 if nargin == 8
-    [nobs, X, Y, m] = sur(ds, param_names, eqtags);
+    [nobs, X, Y, m, lhssub, fp, ~] = sur(ds, param_names, eqtags);
 else
-    [nobs, X, Y, m] = sur(ds, param_names);
+    [nobs, X, Y, m, lhssub, fp, ~] = sur(ds, param_names);
 end
+
+oo_.surgibbs.(model_name).dof = nobs;
 
 beta = beta0;
 A = inv(A);
@@ -116,7 +118,7 @@ for i = 1:ndraws
     beta = rand_multivariate_normal(betabar', chol(Omegabar), nparams)';
     if i > discarddraws
         if thinidx == thin
-            oo_.surgibbs.(model_name).betadraws(drawidx, :) = beta';
+            oo_.surgibbs.(model_name).betadraws(drawidx, 1:nparams) = beta';
             thinidx = 1;
             drawidx = drawidx + 1;
         else
@@ -125,22 +127,65 @@ for i = 1:ndraws
     end
 end
 
-% save parameter values
-oo_.surgibbs.(model_name).beta = (sum(oo_.surgibbs.(model_name).betadraws)/rows(oo_.surgibbs.(model_name).betadraws))';
+%% Save posterior moments.
+oo_.surgibbs.(model_name).posterior.mean.beta = (sum(oo_.surgibbs.(model_name).betadraws)/rows(oo_.surgibbs.(model_name).betadraws))';
+oo_.surgibbs.(model_name).posterior.variance.beta = cov(oo_.surgibbs.(model_name).betadraws);
 
-incidxs = zeros(length(param_names), 1);
-for i = 1:length(param_names)
-    incidxs(i) = strmatch(param_names{i}, M_.param_names, 'exact');
-    M_.params(incidxs(i)) = oo_.surgibbs.(model_name).beta(i);
+% Yhat
+oo_.surgibbs.(model_name).Yhat = X*oo_.surgibbs.(model_name).posterior.mean.beta;  
+
+% Residuals
+oo_.surgibbs.(model_name).resid = Y - oo_.surgibbs.(model_name).Yhat;
+
+% Correct Yhat reported back to user
+oo_.surgibbs.(model_name).Yhat = oo_.surgibbs.(model_name).Yhat + lhssub;
+yhatname = [model_name '_FIT'];
+ds.(yhatname) = dseries(oo_.surgibbs.(model_name).Yhat,  fp, yhatname);
+
+% Compute and save posterior densities.
+for i=1:nparams
+    xx = oo_.surgibbs.(model_name).betadraws(:,i);
+    nn = length(xx);
+    bandwidth = mh_optimal_bandwidth(xx, nn, 0, 'gaussian');
+    [x, f] = kernel_density_estimate(xx, 512, nn, bandwidth, 'gaussian');
+    oo_.surgibbs.(model_name).posterior.density.(param_names{i}) = [x, f];
 end
 
+% Update model1s parameters with posterior mean.
+oo_.surgibbs.(model_name).param_idxs = zeros(length(param_names), 1);
+for i = 1:length(param_names)
+     if ~strcmp(param_names{i}, 'intercept')
+         oo_.surgibbs.(model_name).param_idxs(i) = find(strcmp(M_.param_names, param_names{i}));
+         M_.params(oo_.surgibbs.(model_name).param_idxs(i)) = oo_.surgibbs.(model_name).posterior.mean.beta(i);
+     end
+end
+oo_.surgibbs.(model_name).pnames = param_names;
+oo_.surgibbs.(model_name).neqs = m;
+
+% Estimate for sigma^2
+SS_res = oo_.surgibbs.(model_name).resid'*oo_.surgibbs.(model_name).resid;
+oo_.surgibbs.(model_name).s2 = SS_res/oo_.surgibbs.(model_name).dof;
+
+% R^2
+ym = Y - mean(Y);
+SS_tot = ym'*ym;
+oo_.surgibbs.(model_name).R2 = 1 - SS_res/SS_tot;
+
 % Write .inc file
-write_param_init_inc_file('surgibbs', model_name, incidxs, oo_.surgibbs.(model_name).beta);
+write_param_init_inc_file('surgibbs', model_name, oo_.surgibbs.(model_name).param_idxs, oo_.surgibbs.(model_name).posterior.mean.beta);
 
 %% Print Output
 if ~options_.noprint
-    dyn_table('Gibbs Sampling on SUR', {}, {}, param_names, ...
-        {'Parameter Value'}, 4, oo_.surgibbs.(model_name).beta);
+    ttitle = ['Gibbs Sampling on SUR'];
+    preamble = {['Model name: ' model_name], ...
+        sprintf('No. Equations: %d', oo_.surgibbs.(model_name).neqs), ...
+        sprintf('No. Independent Variables: %d', size(X, 2)), ...
+        sprintf('Observations: %d', oo_.surgibbs.(model_name).dof)};
+    
+    afterward = {sprintf('s^2: %f', oo_.surgibbs.(model_name).s2), sprintf('R^2: %f', oo_.surgibbs.(model_name).R2)};
+    dyn_table(ttitle, preamble, afterward, param_names,...
+             {'Posterior mean', 'Posterior std.'}, 4,...
+             [oo_.surgibbs.(model_name).posterior.mean.beta, sqrt(diag(oo_.surgibbs.(model_name).posterior.variance.beta))]);
 end
 
 %% Plot
@@ -155,7 +200,7 @@ if ~options_.nograph
         subplot(nrows, ncols, j)
         histogram(oo_.surgibbs.(model_name).betadraws(:, j))
         hc = histcounts(oo_.surgibbs.(model_name).betadraws(:, j));
-        line([oo_.surgibbs.(model_name).beta(j) oo_.surgibbs.(model_name).beta(j)], [min(hc) max(hc)], 'Color', 'red');
+        line([oo_.surgibbs.(model_name).posterior.mean.beta(j) oo_.surgibbs.(model_name).posterior.mean.beta(j)], [min(hc) max(hc)], 'Color', 'red');
         title(param_names{j}, 'Interpreter', 'none')
     end
 end
