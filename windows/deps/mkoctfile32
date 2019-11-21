@@ -78,7 +78,7 @@ fi
 : ${LIBOCTINTERP=-loctinterp}
 : ${READLINE_LIBS=-lreadline}
 : ${LAPACK_LIBS="-llapack"}
-: ${BLAS_LIBS="-lblas"}
+: ${BLAS_LIBS="-lblas -lxerbla"}
 : ${FFTW3_LDFLAGS=""}
 : ${FFTW3_LIBS="-lfftw3"}
 : ${FFTW3F_LDFLAGS=""}
