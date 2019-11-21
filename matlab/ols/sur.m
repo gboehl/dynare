@@ -109,7 +109,7 @@ end
 
 %% Return to surgibbs if called from there
 st = dbstack(1);
-if strcmp(st(1).name, 'surgibbs')
+if ~isempty(st) && strcmp(st(1).name, 'surgibbs')
     varargout{1} = nobs;
     varargout{2} = X{param_names{:}}.data;
     varargout{3} = Y.data;
