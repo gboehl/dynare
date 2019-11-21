@@ -68,13 +68,23 @@ if SampleSize == 1
     plot((1:length(idehess.ide_strength_J(:,is)))-0.15,log([idehess.ide_strength_J(:,is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
     plot((1:length(idehess.ide_strength_J_prior(:,is)))+0.15,log([idehess.ide_strength_J_prior(:,is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
     if any(isinf(log(idehess.ide_strength_J(idehess.identified_parameter_indices))))
-        inf_indices=find(isinf(log(idehess.ide_strength_J(idehess.identified_parameter_indices))));
-        inf_pos=ismember(is,inf_indices);
+        %-Inf, i.e. 0 strength
+        inf_indices=find(isinf(log(idehess.ide_strength_J(idehess.identified_parameter_indices))) & log(idehess.ide_strength_J(idehess.identified_parameter_indices))<0);
+        inf_pos=ismember(is,idehess.identified_parameter_indices(inf_indices));
+        plot(find(inf_pos)-0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 0 0],'MarkerEdgeColor',[0 0 0])
+        %+Inf, i.e. Inf strength
+        inf_indices=find(isinf(log(idehess.ide_strength_J(idehess.identified_parameter_indices))) & log(idehess.ide_strength_J(idehess.identified_parameter_indices))>0);
+        inf_pos=ismember(is,idehess.identified_parameter_indices(inf_indices));
         plot(find(inf_pos)-0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 1 1],'MarkerEdgeColor',[0 0 0])
     end
     if any(isinf(log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))))
-        inf_indices=find(isinf(log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))));
-        inf_pos=ismember(is,inf_indices);
+        %-Inf, i.e. 0 strength
+        inf_indices=find(isinf(log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))) & log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))<0);
+        inf_pos=ismember(is,idehess.identified_parameter_indices(inf_indices));
+        plot(find(inf_pos)+0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 0 0],'MarkerEdgeColor',[0 0 0])
+        %+Inf, i.e. 0 strength
+        inf_indices=find(isinf(log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))) & log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))>0);
+        inf_pos=ismember(is,idehess.identified_parameter_indices(inf_indices));
         plot(find(inf_pos)+0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 1 1],'MarkerEdgeColor',[0 0 0])
     end
     set(gca,'xlim',[0 nparam+1])
