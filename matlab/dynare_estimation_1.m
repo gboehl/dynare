@@ -365,9 +365,13 @@ if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     % Laplace approximation to the marginal log density:
     if options_.cova_compute
         estim_params_nbr = size(xparam1,1);
-        log_det_invhess = log(det(invhess./(stdh*stdh')))+2*sum(log(stdh));
-        likelihood = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
-        oo_.MarginalDensity.LaplaceApproximation = .5*estim_params_nbr*log(2*pi) + .5*log_det_invhess - likelihood;
+        if ispd(invhess)
+            log_det_invhess = log(det(invhess./(stdh*stdh')))+2*sum(log(stdh));
+            likelihood = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+            oo_.MarginalDensity.LaplaceApproximation = .5*estim_params_nbr*log(2*pi) + .5*log_det_invhess - likelihood;
+        else
+            oo_.MarginalDensity.LaplaceApproximation = NaN;
+        end
         skipline()
         disp(sprintf('Log data density [Laplace approximation] is %f.',oo_.MarginalDensity.LaplaceApproximation))
         skipline()
