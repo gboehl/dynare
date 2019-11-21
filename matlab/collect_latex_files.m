@@ -40,15 +40,6 @@ fprintf(fid,'%s \n','\usepackage{breqn}');
 fprintf(fid,'%s \n','\usepackage{float,morefloats,caption}');
 fprintf(fid,'%s \n','\begin{document}');
 
-%% Include LaTeX files from root directory
-TeX_Files=dir([M_.fname,'*.tex']);
-for ii=1:length(TeX_Files)
-    [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
-    if ~strcmp(TeX_Files(ii).name,f_name_binder)
-        fprintf(fid,'%s \n',['\include{',f_name,'}']);
-    end
-end
-
 %% Include LaTeX files from <fname>/latex/ directory, except the standalone ones
 TeX_Files=dir([M_.dname filesep 'latex' filesep '*.tex']);
 for ii=1:length(TeX_Files)

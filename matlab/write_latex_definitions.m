@@ -12,7 +12,7 @@ function write_latex_definitions
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2013-2018 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,7 +39,10 @@ else
     M_var_root = {'M_.endo', 'M_.exo', 'M_.exo_det', 'M_.param'};
 end
 
-fid = fopen([M_.fname '_latex_definitions.tex'], 'w');
+if ~exist([M_.fname '/latex'],'dir')
+    mkdir(M_.fname,'latex');
+end
+fid = fopen([M_.fname, '/latex/' M_.fname '_latex_definitions.tex'], 'w');
 for i=1:length(tables)
     fprintf(fid, '\\begin{center}\n');
     fprintf(fid, '\\begin{longtable}{ccc}\n');
