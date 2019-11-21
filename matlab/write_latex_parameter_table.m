@@ -12,7 +12,7 @@ function write_latex_parameter_table
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015-2018 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,7 +37,11 @@ if ~isequal(M_.param_names, M_.param_names_long)
     Long_names_present = true;
 end
 
-fid = fopen([M_.fname '_latex_parameters.tex'], 'w');
+if ~exist([M_.fname '/latex'],'dir')
+    mkdir(M_.fname,'latex');
+end
+            
+fid = fopen([M_.fname, '/latex/' M_.fname '_latex_parameters.tex'], 'w');
 fprintf(fid, '\\begin{center}\n');
 if Long_names_present==1
     fprintf(fid, '\\begin{longtable}{ccc}\n');
