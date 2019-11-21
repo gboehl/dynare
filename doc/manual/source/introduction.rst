@@ -104,10 +104,11 @@ For convenience, you can copy and paste the following into your BibTeX file:
     .. code-block:: bibtex
 
         @TechReport{Adjemianetal2011,
-          author      = {Adjemian, St\'ephane and Bastani, Houtan and Juillard, Michel and
-                         Karam\'e, Fr\'ederic and Maih, Junior and Mihoubi, Ferhat and
-                         Perendia, George and Pfeifer, Johannes and Ratto, Marco and
-                         Villemot, S\'ebastien},
+          author      = {Adjemian, St\'ephane and Bastani, Houtan and 
+                         Juillard, Michel and Karam\'e, Fr\'ederic and 
+                         Maih, Junior and Mihoubi, Ferhat and
+                         Perendia, George and Pfeifer, Johannes and 
+                         Ratto, Marco and Villemot, S\'ebastien},
           title       = {Dynare: Reference Manual Version 4},
           year        = {2011},
           institution = {CEPREMAP},
