@@ -430,7 +430,7 @@ variable to be declared (``endogenous``, ``exogenous``, or
 quotes. Hence, to declare a variable ``c`` as endogenous in an equation tag,
 you can type ``[endogenous='c']``.
 
-To perform on-the-fly variable declaration in an equtaion, simply follow the
+To perform on-the-fly variable declaration in an equation, simply follow the
 symbol name with a vertical line (``|``, pipe character) and either an ``e``, an
 ``x``, or a ``p``. For example, to declare a parameter named
 ``alphaa`` in the model block, you could write ``alphaa|p`` directly in
