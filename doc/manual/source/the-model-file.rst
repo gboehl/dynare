@@ -806,6 +806,11 @@ Internally, the parameter values are stored in ``M_.params``:
     order that was used in the ``parameters`` command, hence ordered as
     in ``M_.param_names``.
 
+The parameter names are stored in ``M_.param_names``:
+
+.. matvar:: M_.param_names
+
+    Cell array containing the names of the model parameters.
 
 .. _model-decl:
 
@@ -3636,6 +3641,11 @@ state of the model and shocks observed at the beginning of the
 period. The decision rules are stored in the structure ``oo_.dr``
 which is described below.
 
+.. matvar:: oo_.dr
+
+        Structure storing the decision rules. The subfields for different
+        orders of approximation are explained below.
+
 .. command:: extended_path ;
              extended_path (OPTIONS...);
 
@@ -3725,6 +3735,13 @@ lag. We therefore have the following identity:
 
        M_.npred + M_.both + M_.nfwrd + M_.nstatic = M_.endo_nbr
 
+.. matvar:: M_.state_var
+
+        Vector of numerical indices identifying the state variables in the
+        vector of declared variables. ``M_.endo_names(M_.state_var)``
+        therefore yields the name of all variables that are states in 
+        the model declaration, i.e. that show up with a lag.
+
 Internally, Dynare uses two orderings of the endogenous variables: the
 order of declaration (which is reflected in ``M_.endo_names``), and an
 order based on the four types described above, which we will call the
@@ -3737,9 +3754,15 @@ purely backward variables, then mixed variables, and finally purely
 forward variables. Inside each category, variables are arranged
 according to the declaration order.
 
-Variable ``oo_.dr.order_var`` maps DR-order to declaration order, and
-variable ``oo_.dr.inv_order_var`` contains the inverse map. In other
-words, the k-th variable in the DR-order corresponds to the endogenous
+.. matvar:: oo_.dr.order_var
+
+       This variables maps DR-order to declaration order.
+       
+.. matvar:: oo_.dr.inv_order_var
+
+       This variable contains the inverse map. 
+
+In other words, the k-th variable in the DR-order corresponds to the endogenous
 variable numbered ``oo_.dr.order_var(k)`` in declaration
 order. Conversely, k-th declared variable is numbered
 ``oo_.dr.inv_order_var(k)`` in DR-order.
@@ -3763,6 +3786,15 @@ The approximation has the stylized form:
 
 where :math:`y^s` is the steady state value of :math:`y` and
 :math:`y^h_t=y_t-y^s`.
+
+.. matvar:: oo.dr.state_var
+
+        Vector of numerical indices identifying the state variables in the
+        vector of declared variables, *given the current parameter values* 
+        for which the decision rules have been computed. It may differ from
+        ``M_.state_var`` in case a state variable drops from the model given
+        the current parameterization, because it only gets 0 coefficients in
+        the decision rules. See :mvar:`M_.state_var`.
 
 The coefficients of the decision rules are stored as follows:
 
