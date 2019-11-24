@@ -29,8 +29,7 @@ end;
 check;
 
 // Deterministic simulation of the model for 200 periods
-options_.solve_tolf=1e-12;
-simul(periods=100);
+simul(periods=100, tolf=1e-12);
 
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')
