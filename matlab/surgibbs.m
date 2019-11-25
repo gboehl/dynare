@@ -132,7 +132,7 @@ oo_.surgibbs.(model_name).posterior.mean.beta = (sum(oo_.surgibbs.(model_name).b
 oo_.surgibbs.(model_name).posterior.variance.beta = cov(oo_.surgibbs.(model_name).betadraws);
 
 % Yhat
-oo_.surgibbs.(model_name).Yhat = X*oo_.surgibbs.(model_name).posterior.mean.beta;  
+oo_.surgibbs.(model_name).Yhat = X*oo_.surgibbs.(model_name).posterior.mean.beta;
 
 % Residuals
 oo_.surgibbs.(model_name).resid = Y - oo_.surgibbs.(model_name).Yhat;
@@ -181,7 +181,7 @@ if ~options_.noprint
         sprintf('No. Equations: %d', oo_.surgibbs.(model_name).neqs), ...
         sprintf('No. Independent Variables: %d', size(X, 2)), ...
         sprintf('Observations: %d', oo_.surgibbs.(model_name).dof)};
-    
+
     afterward = {sprintf('s^2: %f', oo_.surgibbs.(model_name).s2), sprintf('R^2: %f', oo_.surgibbs.(model_name).R2)};
     dyn_table(ttitle, preamble, afterward, param_names,...
              {'Posterior mean', 'Posterior std.'}, 4,...
