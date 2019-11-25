@@ -282,6 +282,11 @@ Copyright: 2009 John Burkardt
            2010-2011 Dynare Team
 License: LGPL-3+
 
+Files: macOS/brewfiles/*
+Copyright: 2009-2019, Homebrew contributors
+           2019 Dynare Team
+License: BSD-2-clause
+
 Files: contrib/jsonlab
 Copyright: 2011-2018 Qianqian Fang <q.fang at neu.edu>
 License: BSD or GPL-3+
