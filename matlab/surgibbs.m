@@ -88,9 +88,9 @@ end
 %  Using a Combination of Direct Monte Carlo and Importance Sampling
 %  Techniques. Bayesian Analysis. 2010. pp 67-70.
 if nargin == 8
-    [nobs, X, Y, m, lhssub, fp, ~] = sur(ds, param_names, eqtags);
+    [nobs, X, Y, m, lhssub, fp] = sur(ds, param_names, eqtags);
 else
-    [nobs, X, Y, m, lhssub, fp, ~] = sur(ds, param_names);
+    [nobs, X, Y, m, lhssub, fp] = sur(ds, param_names);
 end
 
 oo_.surgibbs.(model_name).dof = nobs;
@@ -176,7 +176,7 @@ write_param_init_inc_file('surgibbs', model_name, oo_.surgibbs.(model_name).para
 
 %% Print Output
 if ~options_.noprint
-    ttitle = ['Gibbs Sampling on SUR'];
+    ttitle = 'Gibbs Sampling on SUR';
     preamble = {['Model name: ' model_name], ...
         sprintf('No. Equations: %d', oo_.surgibbs.(model_name).neqs), ...
         sprintf('No. Independent Variables: %d', size(X, 2)), ...

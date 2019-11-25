@@ -121,13 +121,16 @@ if ~isempty(st) && strcmp(st(1).name, 'surgibbs')
 end
 
 % constrained_param_idxs: indexes in X.name of parameters that were constrained
-constrained_param_idxs = [];
+constrained_param_idxs = NaN(length(constrained), 1);
+j = 0;
 for i = 1:length(constrained)
     idx = find(strcmp(X.name, constrained{i}));
     if ~isempty(idx)
-        constrained_param_idxs(end+1, 1) = idx;
+        j = j+1;
+        constrained_param_idxs(j, 1) = idx;
     end
 end
+constrained_param_idxs = constrained_param_idxs(1:j);
 
 %% Estimation
 oo_.sur.(model_name).dof = nobs;
