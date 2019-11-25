@@ -26,8 +26,7 @@ EXTRA_DIST = \
 	README.md \
 	COPYING \
 	CONTRIBUTING.md \
-	windows/dynare.nsi \
-	windows/README.txt \
+	windows \
 	macOS \
 	examples \
 	scripts \
