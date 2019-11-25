@@ -322,7 +322,9 @@ C = inv(A)*B*inv(A); % C is the asymptotic covariance of sqrt(T) times the vecto
 C = C/T;
 
 % Save results
-lhs = eval(strrep(lhs, 'data', 'data.data'));
+lhs = eval(strrep(lhs, 'data', 'data(range(1)-1:range(end)).data'));
+oo_.pac.(pacmodl).equations.(eqtag).lhs = dseries(lhs, range(1), sprintf('%s_lhs', eqtag));
+oo_.pac.(pacmodl).equations.(eqtag).fit = dseries(lhs-r, range(1), sprintf('%s_fit', eqtag));
 oo_.pac.(pacmodl).equations.(eqtag).residual = dseries(r, range(1), sprintf('%s_residual', eqtag));
 oo_.pac.(pacmodl).equations.(eqtag).ssr = SSR;
 oo_.pac.(pacmodl).equations.(eqtag).R2 = 1-var(r)/var(lhs);
