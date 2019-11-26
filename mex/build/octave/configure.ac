@@ -22,22 +22,17 @@ AC_INIT([dynare], [4.6-unstable])
 AC_CONFIG_SRCDIR([configure.ac])
 AM_INIT_AUTOMAKE([-Wall -Wno-portability foreign])
 
-AC_CHECK_PROG([MKOCTFILE], [mkoctfile], [mkoctfile])
+AC_CHECK_PROG([MKOCTFILE], [mkoctfile], [mkoctfile], [AC_MSG_ERROR([Octave cannot be found])])
 
-if test -n "$MKOCTFILE"; then
-  CC=$($MKOCTFILE -p CC)
-  CXX=$($MKOCTFILE -p CXX)
-  CFLAGS=$($MKOCTFILE -p CFLAGS)
-  FFLAGS=$($MKOCTFILE -p FFLAGS)
-  CXXFLAGS=$($MKOCTFILE -p CXXFLAGS)
-  LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
-  OCTAVE_VERSION=$($MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //')
-  AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.2], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.2 at least.])])
-fi
+CC=$($MKOCTFILE -p CC)
+CXX=$($MKOCTFILE -p CXX)
+CFLAGS="$($MKOCTFILE -p CFLAGS) -Wall -Wno-parentheses"
+FFLAGS="$($MKOCTFILE -p FFLAGS) -Wall"
+CXXFLAGS="$($MKOCTFILE -p CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast"
+LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
 
-CFLAGS="$CFLAGS -Wall -Wno-parentheses"
-FFLAGS="$FFLAGS -Wall"
-CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses -Wold-style-cast"
+OCTAVE_VERSION=$($MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //')
+AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.2], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.2 at least (or disable Octave support with --disable-octave).])])
 
 AC_PROG_F77([gfortran g77 f77])
 AC_PROG_CC
@@ -54,46 +49,62 @@ AX_CXX11_THREAD
 # Check for dlopen(), needed by k_order_perturbation DLL
 AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
 AC_SUBST([LIBADD_DLOPEN])
+
+# Define optional components and their corresponding flags and Automake conditionals
+AC_ARG_ENABLE([mex-ms-sbvar], AS_HELP_STRING([--disable-mex-ms-sbvar], [disable compilation of the MS-SBVAR MEX]), [], [enable_mex_ms_sbvar=yes])
+AM_CONDITIONAL([ENABLE_MEX_MS_SBVAR], [test "$enable_mex_ms_sbvar" = yes])
+
+AC_ARG_ENABLE([mex-dynare++], AS_HELP_STRING([--disable-mex-dynare++], [disable compilation of MEX based on Dynare++]), [], [enable_mex_dynareplusplus=yes])
+AM_CONDITIONAL([ENABLE_MEX_DYNAREPLUSPLUS], [test "$enable_mex_dynareplusplus" = yes])
+
+AC_ARG_ENABLE([mex-kalman-steady-state], AS_HELP_STRING([--disable-mex-kalman-steady-state], [disable compilation of the kalman_steady_state MEX]), [], [enable_mex_kalman_steady_state=yes])
+AM_CONDITIONAL([ENABLE_MEX_KALMAN_STEADY_STATE], [test "$enable_mex_kalman_steady_state" = yes])
+
 # Check for GSL, needed by MS-SBVAR
-AX_GSL
-AM_CONDITIONAL([HAVE_GSL], [test "$has_gsl" = yes])
+if test "$enable_mex_ms_sbvar" = yes; then
+  AX_GSL
+  if test "$has_gsl" != yes; then
+    AC_MSG_ERROR([GSL cannot be found. If you want to skip the compilation of the MS-SBVAR MEX, pass the --disable-mex-ms-sbvar flag.])
+  fi
+fi
 
 # Check for libmatio, needed by MEX files using Dynare++ code, and by ms-sbvar (the latter only under Octave, as an alternative to MATLAB's libmat)
-AX_MATIO
-AM_CONDITIONAL([HAVE_MATIO], [test "$has_matio" = yes])
+if test "$enable_mex_dynareplusplus" = yes -o "$enable_mex_ms_sbvar" = yes; then
+  AX_MATIO
+  if test "$has_matio" != yes; then
+    AC_MSG_ERROR([libmatio cannot be found. If you want to skip the compilation of MS-SBVAR MEX and MEX files based Dynare++, pass the --disable-mex-dynare++ and --disable-mex-ms-sbvar flags.])
+  fi
+fi
 
 # Check for libslicot, needed by kalman_steady_state
-AX_SLICOT([octave])
-AM_CONDITIONAL([HAVE_SLICOT], [test "$has_slicot" = yes])
+if test "$enable_mex_kalman_steady_state" = yes; then
+  AX_SLICOT([octave])
+  if test "$has_slicot" != yes; then
+    AC_MSG_ERROR([slicot cannot be found. If you want to skip the compilation of the kalman_steady_state MEX, pass the --disable-mex-kalman-steady-state flag.])
+  fi
+fi
 
 # Check for UMFPACK, needed by bytecode
 AC_CHECK_LIB([umfpack], [umfpack_dl_defaults], [LIBADD_UMFPACK="-lumfpack"], [AC_MSG_ERROR([Can't find UMFPACK])])
 AC_SUBST([LIBADD_UMFPACK])
 
-AM_CONDITIONAL([DO_SOMETHING], [test -n "$MKOCTFILE"])
-
-if test -n "$MKOCTFILE"; then
-  BUILD_MEX_OCTAVE="yes"
+# Construct final output message
+if test "$enable_mex_dynareplusplus" = yes; then
+   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE="yes"
 else
-  BUILD_MEX_OCTAVE="no (missing mkoctfile)"
+   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE="no"
 fi
 
-if test -n "$MKOCTFILE" -a "$has_matio" = yes; then
-  BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE="yes"
-else
-  BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE="no (missing MatIO library)"
-fi
-
-if  test -n "$MKOCTFILE" -a "$has_slicot" = yes; then
+if test "$enable_mex_kalman_steady_state" = yes; then
    BUILD_KALMAN_STEADY_STATE_OCTAVE="yes"
 else
-   BUILD_KALMAN_STEADY_STATE_OCTAVE="no (missing SLICOT)"
+   BUILD_KALMAN_STEADY_STATE_OCTAVE="no"
 fi
 
-if test -n "$MKOCTFILE" -a "$has_gsl" = yes -a "$has_matio" = yes; then
+if test "$enable_mex_ms_sbvar" = yes; then
    BUILD_MS_SBVAR_MEX_OCTAVE="yes"
 else
-   BUILD_MS_SBVAR_MEX_OCTAVE="no (missing GSL or MatIO library)"
+   BUILD_MS_SBVAR_MEX_OCTAVE="no"
 fi
 
 AC_MSG_NOTICE([
@@ -101,7 +112,7 @@ AC_MSG_NOTICE([
 Dynare is now configured for building the following components...
 
 Binaries (with "make"):
- MEX files for Octave (except those listed below):                   $BUILD_MEX_OCTAVE
+ MEX files for Octave (except those listed below):                   yes
  Gensylv, k-order and dynare_simul MEX for Octave:                   $BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE
  MS-SBVAR MEX files for Octave:                                      $BUILD_MS_SBVAR_MEX_OCTAVE
  Kalman Steady State MEX file for Octave:                            $BUILD_KALMAN_STEADY_STATE_OCTAVE

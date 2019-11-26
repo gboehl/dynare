@@ -26,21 +26,16 @@ dnl The following must occur before we modify CFLAGS/CXXFLAGS
 AC_CANONICAL_HOST
 
 AX_MATLAB
+AX_MATLAB_VERSION
+AX_DOT_MEXEXT
+AX_MATLAB_ARCH
+AX_MEXOPTS
 
-if test "$ax_enable_matlab" = yes; then
-  AX_MATLAB_VERSION
-  AX_DOT_MEXEXT
-  AX_MATLAB_ARCH
-
-  if test "$ax_matlab_version_ok" = yes; then
-    AX_MEXOPTS
-    AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.9], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to version 7.9 (R2009b) at least.])])
-  fi
-
-  CFLAGS="$MATLAB_CFLAGS"
-  CXXFLAGS="$MATLAB_CXXFLAGS"
-  FFLAGS="$MATLAB_FFLAGS"
+if test "$ax_enable_matlab" != yes -o "$ax_matlab_version_ok" != yes -o "$ax_mexopts_ok" != yes; then
+  AC_MSG_ERROR([MATLAB cannot be found])
 fi
+
+AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.9], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to version 7.9 (R2009b) at least (or disable MATLAB support with --disable-matlab).])])
 
 case ${host_os} in
   *cygwin*)
@@ -50,9 +45,9 @@ case ${host_os} in
     ;;
 esac
 
-CFLAGS="$CFLAGS -Wall -Wno-parentheses"
-FFLAGS="$FFLAGS -Wall"
-CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses -Wold-style-cast"
+CFLAGS="$MATLAB_CFLAGS -Wall -Wno-parentheses"
+FFLAGS="$MATLAB_FFLAGS -Wall"
+CXXFLAGS="$MATLAB_CXXFLAGS -Wall -Wno-parentheses -Wold-style-cast"
 
 AC_PROG_F77([gfortran g77 f77])
 AC_PROG_CC
@@ -82,17 +77,40 @@ AX_CXX11_THREAD
 # Check for dlopen(), needed by k_order_perturbation DLL
 AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
 AC_SUBST([LIBADD_DLOPEN])
-# Check for GSL, needed by MS-SBVAR
-AX_GSL
-AM_CONDITIONAL([HAVE_GSL], [test "$has_gsl" = yes])
+
+# Define optional components and their corresponding flags and Automake conditionals
+AC_ARG_ENABLE([mex-ms-sbvar], AS_HELP_STRING([--disable-mex-ms-sbvar], [disable compilation of the MS-SBVAR MEX]), [], [enable_mex_ms_sbvar=yes])
+AM_CONDITIONAL([ENABLE_MEX_MS_SBVAR], [test "$enable_mex_ms_sbvar" = yes])
+
+AC_ARG_ENABLE([mex-dynare++], AS_HELP_STRING([--disable-mex-dynare++], [disable compilation of MEX based on Dynare++]), [], [enable_mex_dynareplusplus=yes])
+AM_CONDITIONAL([ENABLE_MEX_DYNAREPLUSPLUS], [test "$enable_mex_dynareplusplus" = yes])
+
+AC_ARG_ENABLE([mex-kalman-steady-state], AS_HELP_STRING([--disable-mex-kalman-steady-state], [disable compilation of the kalman_steady_state MEX]), [], [enable_mex_kalman_steady_state=yes])
+AM_CONDITIONAL([ENABLE_MEX_KALMAN_STEADY_STATE], [test "$enable_mex_kalman_steady_state" = yes])
+
+# Check for GSL, needed by MS-SBVAR MEX
+if test "$enable_mex_ms_sbvar" = yes; then
+  AX_GSL
+  if test "$has_gsl" != yes; then
+    AC_MSG_ERROR([GSL cannot be found. If you want to skip the compilation of the MS-SBVAR MEX, pass the --disable-mex-ms-sbvar flag.])
+  fi
+fi
 
 # Check for libmatio, needed by MEX files using Dynare++ code
-AX_MATIO
-AM_CONDITIONAL([HAVE_MATIO], [test "$has_matio" = yes])
+if test "$enable_mex_dynareplusplus" = yes; then
+  AX_MATIO
+  if test "$has_matio" != yes; then
+    AC_MSG_ERROR([libmatio cannot be found. If you want to skip the compilation of MEX files based Dynare++, pass the --disable-mex-dynare++ flag.])
+  fi
+fi
 
 # Check for libslicot, needed by kalman_steady_state
-AX_SLICOT([matlab])
-AM_CONDITIONAL([HAVE_SLICOT], [test "$has_slicot" = yes])
+if test "$enable_mex_kalman_steady_state" = yes; then
+  AX_SLICOT([matlab])
+  if test "$has_slicot" != yes; then
+    AC_MSG_ERROR([slicot cannot be found. If you want to skip the compilation of the kalman_steady_state MEX, pass the --disable-mex-kalman-steady-state flag.])
+  fi
+fi
 
 # On Windows, we want static linking of the external libraries
 case ${host_os} in
@@ -103,32 +121,7 @@ case ${host_os} in
     ;;
 esac
 
-AM_CONDITIONAL([DO_SOMETHING], [test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes])
-
-if test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes; then
-  BUILD_MEX_MATLAB="yes"
-else
-  BUILD_MEX_MATLAB="no (missing MATLAB, or unknown version, or unknown architecture)"
-fi
-
-if test "$ax_enable_matlab" = yes -a "$has_matio" = yes; then
-   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="yes"
-else
-   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="no (missing MatIO library)"
-fi
-
-if test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes -a "$has_slicot" = yes; then
-   BUILD_KALMAN_STEADY_STATE_MATLAB="yes"
-else
-   BUILD_KALMAN_STEADY_STATE_MATLAB="no (missing SLICOT)"
-fi
-
-if test "$ax_enable_matlab" = yes -a "$ax_matlab_version_ok" = yes -a "$ax_mexopts_ok" = yes -a "$has_gsl" = yes; then
-   BUILD_MS_SBVAR_MEX_MATLAB="yes"
-else
-   BUILD_MS_SBVAR_MEX_MATLAB="no (missing GSL)"
-fi
-
+# Support for M2HTML
 AC_ARG_WITH([m2html], AS_HELP_STRING([--with-m2html=DIR], [specify installation directory of M2HTML]), [
 M2HTML=$withval
 BUILD_M2HTML=yes
@@ -139,12 +132,31 @@ BUILD_M2HTML=no
 AC_SUBST([M2HTML])
 AM_CONDITIONAL([HAVE_M2HTML], [test "x$M2HTML" != "x"])
 
+# Construct final output message
+if test "$enable_mex_dynareplusplus" = yes; then
+   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="yes"
+else
+   BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="no"
+fi
+
+if test "$enable_mex_kalman_steady_state" = yes; then
+   BUILD_KALMAN_STEADY_STATE_MATLAB="yes"
+else
+   BUILD_KALMAN_STEADY_STATE_MATLAB="no"
+fi
+
+if test "$enable_mex_ms_sbvar" = yes; then
+   BUILD_MS_SBVAR_MEX_MATLAB="yes"
+else
+   BUILD_MS_SBVAR_MEX_MATLAB="no"
+fi
+
 AC_MSG_NOTICE([
 
 Dynare is now configured for building the following components...
 
 Binaries (with "make"):
- MEX files for MATLAB (except those listed below):                   $BUILD_MEX_MATLAB
+ MEX files for MATLAB (except those listed below):                   yes
  Gensylv, k-order and dynare_simul MEX files for MATLAB:             $BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB
  MS-SBVAR MEX files for MATLAB:                                      $BUILD_MS_SBVAR_MEX_MATLAB
  Kalman Steady State MEX file for MATLAB:                            $BUILD_KALMAN_STEADY_STATE_MATLAB

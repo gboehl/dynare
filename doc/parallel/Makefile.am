@@ -1,7 +1,5 @@
-if HAVE_PDFLATEX
-if HAVE_BIBTEX
+if ENABLE_DOC
 pdf-local: parallel.pdf
-endif
 endif
 
 SRC = AvenueParadigm.pdf iVaNo_gain.pdf iVaNo_time_comp.pdf marco.bib					\

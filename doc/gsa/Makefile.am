@@ -1,7 +1,5 @@
-if HAVE_PDFLATEX
-if HAVE_BIBTEX
+if ENABLE_DOC
 pdf-local: gsa.pdf
-endif
 endif
 
 SRC = gsa.tex marco.bib

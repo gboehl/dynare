@@ -1,19 +1,9 @@
 SUBDIRS = parallel internals gsa dseries-and-reporting
 
-if HAVE_SPHINXBUILD
+if ENABLE_DOC
 SUBDIRS += manual
+pdf-local: guide.pdf bvar-a-la-sims.pdf dr.pdf
 endif
-
-PDF_TARGETS =
-
-if HAVE_PDFLATEX
-PDF_TARGETS += guide.pdf bvar-a-la-sims.pdf
-if HAVE_BIBTEX
-PDF_TARGETS += dr.pdf
-endif
-endif
-
-pdf-local: $(PDF_TARGETS)
 
 EXTRA_DIST = guide.tex guide.bbl bibmad.sty bvar-a-la-sims.tex dr.tex dr.bib dynare.plots
 

@@ -1,14 +1,9 @@
 SUBDIRS = preprocessor doc tests mex/sources
 
-if HAVE_BLAS
-if HAVE_LAPACK
-if HAVE_MATIO
+if ENABLE_DYNAREPLUSPLUS
 SUBDIRS += dynare++
 endif
-endif
-endif
 
-# MEX must be built after dynare++ (because of kordepert)
 if ENABLE_MATLAB
 SUBDIRS += mex/build/matlab
 endif

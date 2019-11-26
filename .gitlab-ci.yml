@@ -66,7 +66,7 @@ pkg_source:
   script:
     - 'for f in configure.ac preprocessor/configure.ac mex/build/matlab/configure.ac mex/build/octave/configure.ac; do sed -i "s/^AC_INIT(\[\(.*\)\],\s*\[\(.*\)\])/AC_INIT([\1], [$VERSION])/" $f; done'
     - autoreconf -si
-    - ./configure
+    - ./configure --disable-matlab --disable-octave
     - make dist
   artifacts:
     paths:

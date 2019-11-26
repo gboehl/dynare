@@ -881,11 +881,11 @@ EXTRA_DIST = \
 	deterministic_simulations/lola_data.mat
 
 
-if HAVE_MATLAB
+if ENABLE_MATLAB
 check-local: check-matlab
 endif
 
-if HAVE_OCTAVE
+if ENABLE_OCTAVE
 check-local: check-octave
 endif
 
