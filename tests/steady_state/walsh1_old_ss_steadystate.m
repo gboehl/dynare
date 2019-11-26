@@ -1,5 +1,4 @@
-function [ys,check] = walsh1_old_ss_steadystate(ys,exo)
-global M_ 
+function [ys,params,check] = walsh1_old_ss_steadystate(ys,exo,M_,options_)
 
 % read out parameters to access them with their name
 NumberOfParameters = M_.param_nbr;
@@ -34,8 +33,9 @@ check = 0;
     
 %% end own model equations
 
-for iter = 1:length(M_.params) %update parameters set in the file
-  eval([ 'M_.params(' num2str(iter) ') = ' M_.param_names{iter} ';' ])
+params=NaN(NumberOfParameters,1);
+for iter = 1:NumberOfParameters %update parameters set in the file
+  eval([ 'params(' num2str(iter) ') = ' M_.param_names{iter} ';' ])
 end
 
 NumberOfEndogenousVariables = M_.orig_endo_nbr; %auxiliary variables are set automatically
