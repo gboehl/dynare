@@ -46,8 +46,7 @@ if options.steadystate_flag == 1
     assignin('base','tmp_00_',params);
     evalin('base','M_.params=tmp_00_; clear(''tmp_00_'')');
     h_steadystate = str2func([fname '_steadystate']);
-    [ys,check] = h_steadystate(ys_init, exo_ss);
-    params1 = evalin('base','M_.params');
+    [ys,params1,check] = h_steadystate(ys_init, exo_ss,M,options);
 else % steadystate_flag == 2
      % new format
     h_steadystate = str2func([fname '.steadystate']);
