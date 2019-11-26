@@ -1,5 +1,5 @@
-The Dynare Reference Manual, version 4.6-unstable.
-==================================================
+The Dynare Reference Manual, version |version|
+==============================================
 
 Currently the development team of Dynare is composed of:
 
