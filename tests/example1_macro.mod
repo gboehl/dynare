@@ -214,5 +214,9 @@ stoch_simul;
 @#error "Range error"
 @#endif
 
+@#if (bool)"FaLse" || !(bool)"TRUE" || (bool)"0" || !(bool)"-3"
+@#error "Error in cast of string to bool"
+@#endif
+
 @#echomacrovars(save)
 @#echomacrovars
