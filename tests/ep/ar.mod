@@ -29,6 +29,11 @@ shocks;
 var EfficiencyInnovation = 1;
 end;
 
+steady_state_model;
+efficiency=0;
+Efficiency=effstar;
+end;
+
 steady;
 
 options_.ep.stochastic.order = 0;
