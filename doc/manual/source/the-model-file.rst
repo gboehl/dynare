@@ -578,6 +578,9 @@ not in EXPRESSION):
     you may want to use the value of GDP at steady state to compute
     the output gap.
 
+    Exogenous and exogenous deterministic variables may not appear in
+    MODEL_EXPRESSION.
+
 .. operator:: EXPECTATION (INTEGER) (MODEL_EXPRESSION)
 
     This operator is used to take the expectation of some expression
