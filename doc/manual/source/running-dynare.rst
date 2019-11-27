@@ -393,6 +393,84 @@ by the ``dynare`` command.
         understands by default that the model to be solved is
         deterministic.
 
+    .. _exclude_eqs:
+
+    .. option:: exclude_eqs=<<equation_tags_to_exclude>>
+
+       Tells Dynare to exclude all equations specified by the argument. As a
+       ``.mod`` file must have the same number of endogenous variables as
+       equations, when `exclude_eqs` is passed, certain rules are followed for
+       excluding endogenous variables. If the ``endogenous`` tag has been set
+       for the excluded equation, the variable it specifies is
+       excluded. Otherwise, if the left hand side of the excluded equation is
+       an expression that contains only one endogenous variable, that variable
+       is excluded. If neither of these conditions hold, processing stops with
+       an error. If an endogenous variable has been excluded by the
+       `exclude_eqs` option and it exists in an equation that has not been
+       excluded, it is transformed into an exogenous variable.
+
+       To specify which equations to exclude, you must pass the argument
+       ``<<equation_tags_to_exclude>>``. This argument takes either a list of
+       equation tags specifying the equations to be excluded or a filename that
+       contains those tags.
+
+       If ``<<equation_tags_to_exclude>>`` is a list of equation tags, it can
+       take one of the following forms:
+
+       #. Given a single argument, e.g. ``exclude_eqs=eq1``, the equation with
+          the tag ``[name='eq1']`` will be excluded. Note that if there is a
+          file called ``eq1`` in the current directory, Dynare will instead
+          try to open this and read equations to exclude from it (see info on
+          filename argument to ``exclude_eqs`` below). Further note that if the
+          tag value contains a space, you must use the variant specified in 2
+          below, i.e. ``exclude_eqs=[eq 1]``.
+       #. Given two or more arguments, e.g. ``exclude_eqs=[eq1, eq 2]``, the
+          equations with the tags ``[name='eq1']`` and ``[name='eq 2']`` will
+          be excluded.
+       #. If you'd like to exclude equations based on another tag name (as
+          opposed to the default ``name``), you can pass the argument as either
+          e.g. ``exclude_eqs=[tagname=a tag]`` if a single equation with tag
+          ``[tagname='a tag']`` is to be excluded or as
+          e.g. ``exclude_eqs=[tagname=(a tag, 'a tag with a, comma')]`` if more
+          than one equation with tags ``[tagname='a tag']`` and ``[tagname='a
+          tag with a, comma']`` will be excluded (note the parenthesis, which
+          are required when more than one equation is specified). Note that if
+          the value of a tag contains a comma, it must be included inside
+          single quotes.
+
+       If ``<<equation_tags_to_exclude>>`` is a filename, the file can take one
+       of the following forms:
+
+       #. One equation per line of the file, where every line represents the
+          value passed to the ``name`` tag. e.g., a file such as::
+
+             eq1
+             eq 2
+
+          would exclude equations with tags ``[name='eq1']`` and ``[name='eq
+          2']``.
+       #. One equation per line of the file, where every line after the first
+          line represents the value passed to the tag specified by the first
+          line. e.g., a file such as::
+
+             tagname=
+             a tag
+             a tag with a, comma
+
+          would exclude equations with tags ``[tagname='a tag']`` and
+          ``[tagname='a tag with a, comma']``. Here note that the first line
+          must end in an equal sign.
+
+    .. option:: include_eqs=<<equation_tags_to_include>>
+
+       Tells Dynare to run with only those equations specified by the
+       argument; in other words, Dynare will exclude all equations not
+       specified by the argument. The argument ``<<equation_tags_to_include>>``
+       is specified in the same way as the argument to :ref:`exclude_eqs
+       <exclude_eqs>`. The functionality of ``include_eqs`` is to find which
+       equations to exclude then take actions in accord with :ref:`exclude_eqs
+       <exclude_eqs>`.
+
     These options can be passed to the preprocessor by listing them
     after the name of the ``.mod`` file. They can alternatively be
     defined in the first line of the ``.mod`` file, this avoids typing
