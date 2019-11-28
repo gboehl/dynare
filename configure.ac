@@ -91,9 +91,12 @@ AM_CONDITIONAL([ENABLE_ORG_EXPORT], [test -n "$enable_org_export"])
 
 # Check utilities needed for documentation
 if test "$enable_doc" = yes; then
-  AC_CHECK_PROG([PDFLATEX], [pdflatex], [pdflatex], [AC_MSG_ERROR([pdflatex cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])])
-  AC_CHECK_PROG([BIBTEX], [bibtex], [bibtex], [AC_MSG_ERROR([bibtex cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])])
-  AC_CHECK_PROG([SPHINXBUILD], [sphinx-build], [sphinx-build], [AC_MSG_ERROR([sphinx-build cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])])
+  AC_CHECK_PROG([PDFLATEX], [pdflatex], [pdflatex], [no])
+  test "$PDFLATEX" = no && AC_MSG_ERROR([pdflatex cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])
+  AC_CHECK_PROG([BIBTEX], [bibtex], [bibtex], [no])
+  test "$BIBTEX" = no && AC_MSG_ERROR([bibtex cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])
+  AC_CHECK_PROG([SPHINXBUILD], [sphinx-build], [sphinx-build], [no])
+  test "$SPHINXBUILD" = no && AC_MSG_ERROR([sphinx-build cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])
   AX_LATEX_CLASS([beamer], [ax_latex_have_beamer], [], [AC_MSG_ERROR([beamer cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])])
 fi
 
@@ -121,15 +124,14 @@ if test "$enable_matlab" = yes; then
   AC_CONFIG_SUBDIRS([mex/build/matlab])
   AX_MATLAB
   AX_MATLAB_BATCH_OPTIONS
-  if test "$ax_enable_matlab" != yes; then
-    AC_MSG_ERROR([MATLAB cannot be found. If you want to compile Dynare without MATLAB support, pass the --disable-matlab flag.])
-  fi
+  test "$ax_enable_matlab" != yes && AC_MSG_ERROR([MATLAB cannot be found. If you want to compile Dynare without MATLAB support, pass the --disable-matlab flag.])
 fi
 
 # Check for Octave
 if test "$enable_octave" = yes; then
   AC_CONFIG_SUBDIRS([mex/build/octave])
-  AC_CHECK_PROG([OCTAVE], [octave], [octave], [AC_MSG_ERROR([Octave cannot be found. If you want to compile Dynare without Octave support, pass the --disable-octave flag.])])
+  AC_CHECK_PROG([OCTAVE], [octave], [octave], [no])
+  test "$OCTAVE" = no && AC_MSG_ERROR([Octave cannot be found. If you want to compile Dynare without Octave support, pass the --disable-octave flag.])
 fi
 
 # Construct final output message

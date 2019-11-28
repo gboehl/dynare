@@ -22,7 +22,8 @@ AC_INIT([dynare], [4.6-unstable])
 AC_CONFIG_SRCDIR([configure.ac])
 AM_INIT_AUTOMAKE([-Wall -Wno-portability foreign])
 
-AC_CHECK_PROG([MKOCTFILE], [mkoctfile], [mkoctfile], [AC_MSG_ERROR([Octave cannot be found])])
+AC_CHECK_PROG([MKOCTFILE], [mkoctfile], [mkoctfile], [no])
+test "$MKOCTFILE" = no && AC_MSG_ERROR([Octave cannot be found])
 
 CC=$($MKOCTFILE -p CC)
 CXX=$($MKOCTFILE -p CXX)
@@ -63,25 +64,19 @@ AM_CONDITIONAL([ENABLE_MEX_KALMAN_STEADY_STATE], [test "$enable_mex_kalman_stead
 # Check for GSL, needed by MS-SBVAR
 if test "$enable_mex_ms_sbvar" = yes; then
   AX_GSL
-  if test "$has_gsl" != yes; then
-    AC_MSG_ERROR([GSL cannot be found. If you want to skip the compilation of the MS-SBVAR MEX, pass the --disable-mex-ms-sbvar flag.])
-  fi
+  test "$has_gsl" != yes && AC_MSG_ERROR([GSL cannot be found. If you want to skip the compilation of the MS-SBVAR MEX, pass the --disable-mex-ms-sbvar flag.])
 fi
 
 # Check for libmatio, needed by MEX files using Dynare++ code, and by ms-sbvar (the latter only under Octave, as an alternative to MATLAB's libmat)
 if test "$enable_mex_dynareplusplus" = yes -o "$enable_mex_ms_sbvar" = yes; then
   AX_MATIO
-  if test "$has_matio" != yes; then
-    AC_MSG_ERROR([libmatio cannot be found. If you want to skip the compilation of MS-SBVAR MEX and MEX files based Dynare++, pass the --disable-mex-dynare++ and --disable-mex-ms-sbvar flags.])
-  fi
+  test "$has_matio" != yes && AC_MSG_ERROR([libmatio cannot be found. If you want to skip the compilation of MS-SBVAR MEX and MEX files based Dynare++, pass the --disable-mex-dynare++ and --disable-mex-ms-sbvar flags.])
 fi
 
 # Check for libslicot, needed by kalman_steady_state
 if test "$enable_mex_kalman_steady_state" = yes; then
   AX_SLICOT([octave])
-  if test "$has_slicot" != yes; then
-    AC_MSG_ERROR([slicot cannot be found. If you want to skip the compilation of the kalman_steady_state MEX, pass the --disable-mex-kalman-steady-state flag.])
-  fi
+  test "$has_slicot" != yes && AC_MSG_ERROR([slicot cannot be found. If you want to skip the compilation of the kalman_steady_state MEX, pass the --disable-mex-kalman-steady-state flag.])
 fi
 
 # Check for UMFPACK, needed by bytecode

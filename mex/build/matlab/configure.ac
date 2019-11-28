@@ -91,25 +91,19 @@ AM_CONDITIONAL([ENABLE_MEX_KALMAN_STEADY_STATE], [test "$enable_mex_kalman_stead
 # Check for GSL, needed by MS-SBVAR MEX
 if test "$enable_mex_ms_sbvar" = yes; then
   AX_GSL
-  if test "$has_gsl" != yes; then
-    AC_MSG_ERROR([GSL cannot be found. If you want to skip the compilation of the MS-SBVAR MEX, pass the --disable-mex-ms-sbvar flag.])
-  fi
+  test "$has_gsl" != yes && AC_MSG_ERROR([GSL cannot be found. If you want to skip the compilation of the MS-SBVAR MEX, pass the --disable-mex-ms-sbvar flag.])
 fi
 
 # Check for libmatio, needed by MEX files using Dynare++ code
 if test "$enable_mex_dynareplusplus" = yes; then
   AX_MATIO
-  if test "$has_matio" != yes; then
-    AC_MSG_ERROR([libmatio cannot be found. If you want to skip the compilation of MEX files based Dynare++, pass the --disable-mex-dynare++ flag.])
-  fi
+  test "$has_matio" != yes && AC_MSG_ERROR([libmatio cannot be found. If you want to skip the compilation of MEX files based Dynare++, pass the --disable-mex-dynare++ flag.])
 fi
 
 # Check for libslicot, needed by kalman_steady_state
 if test "$enable_mex_kalman_steady_state" = yes; then
   AX_SLICOT([matlab])
-  if test "$has_slicot" != yes; then
-    AC_MSG_ERROR([slicot cannot be found. If you want to skip the compilation of the kalman_steady_state MEX, pass the --disable-mex-kalman-steady-state flag.])
-  fi
+  test "$has_slicot" != yes && AC_MSG_ERROR([slicot cannot be found. If you want to skip the compilation of the kalman_steady_state MEX, pass the --disable-mex-kalman-steady-state flag.])
 fi
 
 # On Windows, we want static linking of the external libraries
