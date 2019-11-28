@@ -93,6 +93,28 @@ end
 orig_dir = pwd;
 cd(o.directory)
 options = '-synctex=1 -halt-on-error';
+[~, rfn] = fileparts(o.fileName);
+if ~isempty(o.maketoc)
+    % TOC compilation requires two passes
+    compile_tex(o, orig_dir, opts, [options ' -draftmode'], middle);
+end
+if status ~= 0
+    cd(orig_dir)
+    error(['@report.compile: There was an error in compiling ' rfn '.pdf.' ...
+           '  ' opts.compiler ' returned the error code: ' num2str(status)]);
+end
+compile_tex(o, orig_dir, opts, options, middle);
+
+if o.showOutput || opts.showOutput
+    fprintf('Done.\n\nYour compiled report is located here:\n  %s.pdf\n\n\n', [pwd '/' rfn])
+end
+if opts.showReport && ~isoctave
+    open([rfn '.pdf']);
+end
+cd(orig_dir)
+end
+
+function compile_tex(o, orig_dir, opts, options, middle)
 if opts.showOutput
     if isoctave
         system([opts.compiler ' ' options middle o.fileName]);
@@ -101,20 +123,12 @@ if opts.showOutput
         status = system([opts.compiler ' ' options middle o.fileName], '-echo');
     end
 else
-    [status, ~] = system([opts.compiler ' -interaction=batchmode ' options middle o.fileName]);
+    status = system([opts.compiler ' -interaction=batchmode ' options middle o.fileName]);
 end
-[~, rfn, ~] = fileparts(o.fileName);
 
 if status ~= 0
     cd(orig_dir)
     error(['@report.compile: There was an error in compiling ' rfn '.pdf.' ...
-           '  ' opts.compiler ' returned the error code: ' num2str(status)]);
+        '  ' opts.compiler ' returned the error code: ' num2str(status)]);
 end
-if o.showOutput || opts.showOutput
-    fprintf('Done.\n\nYour compiled report is located here:\n  %s.pdf\n\n\n', [pwd '/' rfn])
-end
-if opts.showReport && ~isoctave
-    open([rfn '.pdf']);
-end
-cd(orig_dir)
 end

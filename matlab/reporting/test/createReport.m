@@ -34,8 +34,8 @@ longNames  = {'Coca Cola', 'Kinder Bueno', 'Pizza', ...
               'Vegetarianism Is Good', 'OS X', 'Dothraki'};
 
 %% Begin Report
-rep = report('directory', 'my/report/dir', 'title', 'Report Title');
-
+rep = report('directory', 'my/report/dir', 'title', 'Report Title', ...
+    'maketoc', true);
 
 %% Page 1: GDP
 rep.addPage('title', 'Jan1 vs Jan2', ...

@@ -63,6 +63,9 @@ if ~isempty(o.latex)
     end
     fprintf(fid, '\\input{%s}', pagename);
 else
+    if ~isempty(o.title)
+        fprintf(fid, '\\addcontentsline{toc}{subsection}{%s}\n', o.title{1});
+    end
     fprintf(fid, '\\begin{tabular}[t]{c}\n');
     for i = 1:length(o.title)
         if isint(o.titleTruncate)

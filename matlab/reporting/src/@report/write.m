@@ -53,7 +53,7 @@ if fid_preamble == -1
 end
 
 fprintf(fid_preamble, '%% Report Object written %s\n', datestr(now));
-fprintf(fid_preamble, '\\documentclass[11pt]{article}\n');
+fprintf(fid_preamble, '\\documentclass[11pt,notitlepage]{article}\n');
 
 fprintf(fid_preamble, '\\usepackage[%spaper,margin=%f%s', o.paper, o.margin, o.marginUnit);
 if strcmpi(o.orientation, 'landscape')
@@ -83,6 +83,7 @@ if o.showDate
     fprintf(fid_preamble, '\\renewcommand{\\footrulewidth}{0.5pt}\n');
     fprintf(fid_preamble, '\\rfoot{\\scriptsize\\reportdate\\today\\ -- \\currenttime}\n');
 end
+fprintf(fid_preamble, '\\rhead{}\n\\lhead{}\n');
 
 % May not need these.....
 fprintf(fid_preamble, '\\renewcommand{\\textfraction}{0.05}\n');
@@ -94,11 +95,6 @@ fprintf(fid_preamble, '\\newlength\\sectionheight\n');
 if ~isempty(o.header)
     fprintf(fid_preamble, '%s\n', o.header);
 end
-fprintf(fid_preamble, '\\begin{document}\n');
-status = fclose(fid_preamble);
-if status == -1
-    error('@report.write: closing %s\n', preamble_file_name);
-end
 
 %% Write body of document
 [fid_document, msg] = fopen([o.directory '/' document_file_name], 'w');
@@ -107,10 +103,16 @@ if fid_document == -1
 end
 
 if ~isempty(o.title)
-    fprintf(fid_document, ['\\begin{titlepage}\n\\centering\n' ...
-        '\\vspace*{0.5cm}\n\\huge\\bfseries\n%s\n' ...
-        '\\vspace*{\\fill}\n\\end{titlepage}\n\\clearpage\n'], ...
-        o.title);
+    fprintf(fid_preamble, '\\newdateformat{reportdatelong}{\\THEDAY\\ \\monthname\\ \\THEYEAR}\n');
+    fprintf(fid_document, '\\title{\\huge\\bfseries %s\\vspace{-1em}}\n\\author{}\n\\date{\\reportdatelong\\today}\n\\maketitle\n', o.title);
+end
+
+if o.maketoc
+    fprintf(fid_document, '\\tableofcontents\n');
+end
+
+if ~isempty(o.title) || o.maketoc
+    fprintf(fid_document, '\\clearpage\n');
 end
 
 if isunix && ~ismac
@@ -137,6 +139,14 @@ for i = 1:length(o.pages)
     end
     fprintf(fid_document, '\\input{%s}\n', page_file_name);
 end
+
+%% Close preamble, document
+fprintf(fid_preamble, '\\begin{document}\n');
+status = fclose(fid_preamble);
+if status == -1
+    error('@report.write: closing %s\n', preamble_file_name);
+end
+
 status = fclose(fid_document);
 if status == -1
     error('@report.write: closing %s\n', document_file_name);
