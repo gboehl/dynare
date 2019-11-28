@@ -34,7 +34,7 @@ longNames  = {'Coca Cola', 'Kinder Bueno', 'Pizza', ...
               'Vegetarianism Is Good', 'OS X', 'Dothraki'};
 
 %% Begin Report
-rep = report('directory', 'my/report/dir');
+rep = report('directory', 'my/report/dir', 'title', 'Report Title');
 
 
 %% Page 1: GDP

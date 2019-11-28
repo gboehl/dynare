@@ -105,6 +105,14 @@ end
 if fid_document == -1
     error(['@report.write: ' msg]);
 end
+
+if ~isempty(o.title)
+    fprintf(fid_document, ['\\begin{titlepage}\n\\centering\n' ...
+        '\\vspace*{0.5cm}\n\\huge\\bfseries\n%s\n' ...
+        '\\vspace*{\\fill}\n\\end{titlepage}\n\\clearpage\n'], ...
+        o.title);
+end
+
 if isunix && ~ismac
     fprintf(fid_document, '\\pgfdeclarelayer{axis background}\n');
     fprintf(fid_document, '\\pgfdeclarelayer{axis lines}\n');
