@@ -88,6 +88,11 @@ and a clarifying example.
         The valid :math:`\text{\LaTeX}` code to be included in the report before
         ``\begin{document}``. Default: ``empty``.
 
+    .. option:: maketoc, BOOLEAN
+
+        Whether or not to make the table of contents. One entry is made per
+        page containing a title. Default: ``false``.
+
     .. option:: margin, DOUBLE
 
         The margin size. Default: ``2.5``.

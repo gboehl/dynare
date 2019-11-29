@@ -1,5 +1,5 @@
 function runDynareReport(dc_a, dc_q, db_a, db_q)
-% Copyright (C) 2013-2018 Dynare Team
+% Copyright (C) 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,7 +32,7 @@ longNames  = {'Coca Cola', 'Kinder Bueno', 'Pizza', ...
               'Vegetarianism Is Good', 'OS X', 'Dothraki'};
 
 %% Begin Report
-rep = report();
+rep = report('title', 'Report Title', 'maketoc', true);
 
 
 %% Page 1: GDP
