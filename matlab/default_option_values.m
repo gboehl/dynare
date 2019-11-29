@@ -12,7 +12,7 @@ function options_ = default_option_values(M_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -131,6 +131,7 @@ options_.nodisplay = false;
 options_.nograph = false;
 options_.no_graph.posterior = false;
 options_.no_graph.shock_decomposition = false;
+options_.no_graph.plot_shock_decomposition = false;
 options_.XTick = [];
 options_.XTickLabel = [];
 options_.console_mode = false;

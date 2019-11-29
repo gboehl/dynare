@@ -7246,6 +7246,10 @@ Shock Decomposition
 
         See :opt:`nodisplay`.
 
+    .. option:: nograph
+
+       See :opt:`nograph`.
+
     .. option:: graph_format = FORMAT
                 graph_format = ( FORMAT, FORMAT... )
 
