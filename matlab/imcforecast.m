@@ -25,10 +25,10 @@ function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
 % This routine has to be called after an estimation statement or an estimated_params block.
 %
 % REMARKS
-% [1] Results are stored in a structure which is saved in a mat file called conditional_forecasts.mat.
+% [1] Results are stored in oo_.conditional_forecast.
 % [2] Use the function plot_icforecast to plot the results.
 
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright (C) 2006-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -310,5 +310,4 @@ forecasts.graph.fname = M_.fname;
 
 %reset qz_criterium
 options_.qz_criterium=qz_criterium_old;
-
-save('conditional_forecasts.mat','forecasts');
+oo_.conditional_forecast = forecasts;

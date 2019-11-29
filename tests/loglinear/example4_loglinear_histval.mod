@@ -114,7 +114,7 @@ end;
 conditional_forecast(parameter_set=calibration, controlled_varexo=(u,e));
 
 
-load('conditional_forecasts.mat')
+forecasts=oo_.conditional_forecast;
 
 if max(max(abs(struct2array(forecasts.cond.Mean)-struct2array(conditional_forecasts_exp.cond.Mean))))>1e-10 || ...
     max(max(abs(struct2array(forecasts.cond.ci)-struct2array(conditional_forecasts_exp.cond.ci))))>1e-10 || ...
