@@ -118,7 +118,7 @@ if max(max(abs(struct2array(oo_.forecast.Mean)-struct2array(oo_exp.forecast.Mean
     error('Option loglinear wrong, forecast not equal')
 end
 
-load('conditional_forecasts.mat')
+forecasts=oo_.conditional_forecast;
 
 if max(max(abs(struct2array(forecasts.cond.Mean)-struct2array(conditional_forecasts_exp.cond.Mean))))>1e-10 || ...
     max(max(abs(struct2array(forecasts.cond.ci)-struct2array(conditional_forecasts_exp.cond.ci))))>1e-10 || ...

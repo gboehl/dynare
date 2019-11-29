@@ -7675,9 +7675,7 @@ the :comm:`bvar_forecast` command.
 
     *Output*
 
-    The results are not stored in the ``oo_`` structure but in a
-    separate structure ``forecasts``, described below, saved to the
-    hard disk into a file called ``conditional_forecasts.mat.``
+    The results are stored in ``oo_.conditional_forecast``, which is described below.
 
     *Example*
 
@@ -7702,7 +7700,7 @@ the :comm:`bvar_forecast` command.
             plot_conditional_forecast(periods = 10) a y;
 
 
-    .. matvar:: forecasts.cond
+    .. matvar:: oo_.conditional_forecast.cond
 
         Variable set by the ``conditional_forecast`` command. It
         stores the conditional forecasts. Fields are ``periods+1`` by
@@ -7710,7 +7708,7 @@ the :comm:`bvar_forecast` command.
         subsequent ``periods`` forecasts periods. Fields are of the
         form::
 
-            forecasts.cond.FORECAST_MOMENT.VARIABLE_NAME
+            oo_.conditional_forecast.cond.FORECAST_MOMENT.VARIABLE_NAME
 
         where FORECAST_MOMENT is one of the following:
 
@@ -7724,12 +7722,12 @@ the :comm:`bvar_forecast` command.
                 distribution. The size corresponds to ``conf_sig``.
 
 
-    .. matvar:: forecasts.uncond
+    .. matvar:: oo_.conditional_forecast.uncond
 
         Variable set by the ``conditional_forecast`` command. It stores
         the unconditional forecasts. Fields are of the form::
 
-            forecasts.uncond.FORECAST_MOMENT.VARIABLE_NAME
+            oo_.conditional_forecast.uncond.FORECAST_MOMENT.VARIABLE_NAME
 
 
     .. matvar:: forecasts.instruments
@@ -7738,14 +7736,14 @@ the :comm:`bvar_forecast` command.
         the names of the exogenous instruments.
 
 
-    .. matvar:: forecasts.controlled_variables
+    .. matvar:: oo_.conditional_forecast.controlled_variables
 
         Variable set by the ``conditional_forecast`` command. Stores
         the position of the constrained endogenous variables in
         declaration order.
 
 
-    .. matvar:: forecasts.controlled_exo_variables
+    .. matvar:: oo_.conditional_forecast.controlled_exo_variables
 
         Variable set by the ``conditional_forecast`` command. Stores
         the values of the controlled exogenous variables underlying
@@ -7753,9 +7751,9 @@ the :comm:`bvar_forecast` command.
         endogenous variables. Fields are ``[number of constrained
         periods]`` by ``1`` vectors and are of the form::
 
-            forecasts.controlled_exo_variables.FORECAST_MOMENT.SHOCK_NAME
+            oo_.conditional_forecast.controlled_exo_variables.FORECAST_MOMENT.SHOCK_NAME
 
-    .. matvar:: forecasts.graphs
+    .. matvar:: oo_.conditional_forecast.graphs
 
         Variable set by the ``conditional_forecast`` command. Stores
         the information for generating the conditional forecast plots.

@@ -1,8 +1,11 @@
-function plot_icforecast(Variables,periods,options_)
+function plot_icforecast(Variables,periods,options_,oo_)
 % Build plots for the conditional forecasts.
 %
 % INPUTS
-%  o Variables     [cell]        names of the endogenous variables to be plotted.
+%  o Variables     [cell]        Names of the endogenous variables to be plotted.
+%  o periods       [int]         Number of periods to be plotted.
+%  o options_      [structure]   Options.
+%  o oo_           [structure]   Storage of results.
 %
 % OUTPUTS
 %  None.
@@ -10,7 +13,7 @@ function plot_icforecast(Variables,periods,options_)
 % SPECIAL REQUIREMENTS
 %  This routine has to be called after imcforecast.m.
 
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright (C) 2006-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,7 +30,11 @@ function plot_icforecast(Variables,periods,options_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-load conditional_forecasts;
+if ~isfield(oo_, 'conditional_forecast')
+    error('Can''t find conditional forecasts');
+else
+    forecasts = oo_.conditional_forecast;
+end
 
 forecast_periods = length(forecasts.cond.Mean.(Variables{1}));
 if nargin==1 || isempty(periods) % Set default number of periods.
