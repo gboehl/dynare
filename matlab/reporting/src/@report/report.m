@@ -33,7 +33,7 @@ classdef report < handle
         showOutput = true           % Print report creation progress to screen. Shows you the page number as it is created and as it is written. This is useful to see where a potential error occurs in report creation. Default: true.
         header = ''                 % The valid LATEX code to be included in the report before \begin{document}. Default: empty.
         reportDirName = 'tmpRepDir' % The name of the folder in which to store the component parts of the report (preamble, document, end). Default: tmpRepDir.
-        maketoc = false             % Whether or not to make a table of contents
+        maketoc = false             % Whether or not to make a table of contents. Default: false.
     end
     methods
         function o = report(varargin)
