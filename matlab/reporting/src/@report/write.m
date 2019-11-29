@@ -75,6 +75,7 @@ if ispc || ismac
 end
 fprintf(fid_preamble, '\\definecolor{LightCyan}{rgb}{0.88,1,1}\n');
 fprintf(fid_preamble, '\\definecolor{Gray}{gray}{0.9}\n');
+
 if o.showDate
     fprintf(fid_preamble, '\\usepackage{fancyhdr, datetime}\n');
     fprintf(fid_preamble, '\\newdateformat{reportdate}{\\THEDAY\\ \\shortmonthname\\ \\THEYEAR}\n');
@@ -83,7 +84,6 @@ if o.showDate
     fprintf(fid_preamble, '\\renewcommand{\\footrulewidth}{0.5pt}\n');
     fprintf(fid_preamble, '\\rfoot{\\scriptsize\\reportdate\\today\\ -- \\currenttime}\n');
 end
-fprintf(fid_preamble, '\\rhead{}\n\\lhead{}\n');
 
 % May not need these.....
 fprintf(fid_preamble, '\\renewcommand{\\textfraction}{0.05}\n');
@@ -103,11 +103,22 @@ if fid_document == -1
 end
 
 if ~isempty(o.title)
-    fprintf(fid_preamble, '\\newdateformat{reportdatelong}{\\THEDAY\\ \\monthname\\ \\THEYEAR}\n');
-    fprintf(fid_document, '\\title{\\huge\\bfseries %s\\vspace{-1em}}\n\\author{}\n\\date{\\reportdatelong\\today}\n\\maketitle\n', o.title);
+    if o.showDate
+        fprintf(fid_preamble, '\\newdateformat{reportdatelong}{\\THEDAY\\ \\monthname\\ \\THEYEAR}\n');
+    end
+    fprintf(fid_document, '\\title{\\huge\\bfseries %s\\vspace{-1em}}\n\\author{}\n', o.title);
+    if o.showDate
+        fprintf(fid_document, '\\date{\\reportdatelong\\today}\n');
+    else
+        fprintf(fid_document, '\\date{}\n');
+    end
+    fprintf(fid_document, '\\maketitle\n');
 end
 
 if o.maketoc
+    if o.showDate
+        fprintf(fid_preamble, '\\rhead{}\n\\lhead{}\n');
+    end
     fprintf(fid_document, '\\tableofcontents\n');
 end
 
