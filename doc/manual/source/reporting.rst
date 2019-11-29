@@ -109,6 +109,15 @@ and a clarifying example.
 
         Paper size. Default: ```a4'``.
 
+    .. option:: reportDirName, FILENAME
+
+        The name of the folder in which to store the component parts of the
+        report (preamble, document, end). Default: ``tmpRepDir``.
+
+    .. option:: showDate, BOOLEAN
+
+        Display the date and time when the report was compiled. Default: true.
+
     .. option:: showOutput, BOOLEAN
 
         Print report creation progress to screen. Shows you the page
