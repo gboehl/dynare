@@ -96,14 +96,14 @@ options = '-synctex=1 -halt-on-error';
 [~, rfn] = fileparts(o.fileName);
 if ~isempty(o.maketoc)
     % TOC compilation requires two passes
-    compile_tex(o, orig_dir, opts, [options ' -draftmode'], middle);
+    compile_tex(o, orig_dir, opts, [options ' -draftmode'], middle, rfn);
 end
 if status ~= 0
     cd(orig_dir)
     error(['@report.compile: There was an error in compiling ' rfn '.pdf.' ...
            '  ' opts.compiler ' returned the error code: ' num2str(status)]);
 end
-compile_tex(o, orig_dir, opts, options, middle);
+compile_tex(o, orig_dir, opts, options, middle, rfn);
 
 if o.showOutput || opts.showOutput
     fprintf('Done.\n\nYour compiled report is located here:\n  %s.pdf\n\n\n', [pwd '/' rfn])
@@ -114,7 +114,7 @@ end
 cd(orig_dir)
 end
 
-function compile_tex(o, orig_dir, opts, options, middle)
+function compile_tex(o, orig_dir, opts, options, middle, rfn)
 if opts.showOutput
     if isoctave
         system([opts.compiler ' ' options middle o.fileName]);
