@@ -53,20 +53,20 @@ colrow = sprintf('%s', colbegin);
 colrow2 = colrow;
 format = ['    %-' num2str(maxrowstrlen) 's'];
 for i = 1:length(cols)
-    precision = 16;
-    if colstrlens(i) < precision
-        colrow = [colrow repmat(' ', 1, floor((precision-mod(colstrlens(i), precision))/2)) cols{i} repmat(' ', 1, ceil((precision-mod(colstrlens(i), precision))/2))];
-        colrow2 = [colrow2 repmat('_', 1, precision)];
+    field_width = 16;
+    if colstrlens(i) < field_width
+        colrow = [colrow repmat(' ', 1, floor((field_width-mod(colstrlens(i), field_width))/2)) cols{i} repmat(' ', 1, ceil((field_width-mod(colstrlens(i), field_width))/2))];
+        colrow2 = [colrow2 repmat('_', 1, field_width)];
     else
         colrow = [colrow cols{i}];
         colrow2 = [colrow2 repmat('_', 1, colstrlens(i))];
-        precision = colstrlens(i);
+        field_width = colstrlens(i);
     end
     if i ~= length(cols)
         colrow = [colrow repmat(' ', 1, indent)];
         colrow2 = [colrow2 repmat(' ', 1, indent)];
     end
-    format = [format repmat(' ', 1, indent) '%' sprintf('%d.5g', precision)];
+    format = [format repmat(' ', 1, indent) '%' sprintf('%d.5g', field_width)];
 end
 
 % Center title
