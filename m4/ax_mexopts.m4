@@ -33,7 +33,7 @@ case ${MATLAB_ARCH} in
     MATLAB_DEFS="$MATLAB_DEFS -D_GNU_SOURCE -DNDEBUG"
     MATLAB_CFLAGS="-fexceptions -fPIC -pthread -g -O2"
     MATLAB_CXXFLAGS="-fPIC -pthread -g -O2"
-    MATLAB_FFLAGS="-fPIC -g -O2 -fexceptions"
+    MATLAB_FCFLAGS="-fPIC -g -O2 -fexceptions"
     MATLAB_LDFLAGS_NOMAP="-shared -Wl,--no-undefined -Wl,-rpath-link,$MATLAB/bin/${MATLAB_ARCH} -L$MATLAB/bin/${MATLAB_ARCH}"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,--version-script,$MATLAB/extern/lib/${MATLAB_ARCH}/mexFunction.map"
     MATLAB_LIBS="-lmx -lmex -lmat -lm -lstdc++ -lmwlapack -lmwblas"
@@ -50,13 +50,14 @@ case ${MATLAB_ARCH} in
   win32 | win64)
     MATLAB_CFLAGS="-fexceptions -g -O2"
     MATLAB_CXXFLAGS="-g -O2"
-    MATLAB_FFLAGS="-fexceptions -g -O2 -fno-underscoring"
+    MATLAB_FCFLAGS="-g -O2 -fexceptions -fno-underscoring"
     MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
-    # Note that static-libstdc++ is only supported since GCC 4.5 (but generates no error on older versions)
+    # The hack for libquadmath is needed because -static-libgfortran
+    # unfortunately does not imply the static linking of the former.
     # The last part about winpthread is a hack to avoid dynamically linking
     # against libwinpthread DLL (which is pulled in by libstdc++, even without
     # using threads, since we are using the POSIX threads version of MinGW)
-    MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -shared -L$MATLAB/bin/${MATLAB_ARCH} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,-Bdynamic,--no-whole-archive"
+    MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -static-libgfortran -Wl,-Bstatic,--whole-archive -lquadmath -Wl,-Bdynamic,--no-whole-archive -shared -L$MATLAB/bin/${MATLAB_ARCH} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,-Bdynamic,--no-whole-archive"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP \$(abs_top_srcdir)/mex.def"
     MATLAB_LIBS="-lmex -lmx -lmat -lmwlapack -lmwblas"
     # Hack for static linking of libgomp, needed for OpenMP
@@ -68,7 +69,7 @@ case ${MATLAB_ARCH} in
     MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
     MATLAB_CFLAGS="-fno-common -arch x86_64 -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -fexceptions"
     MATLAB_CXXFLAGS="$MATLAB_CFLAGS"
-    MATLAB_FFLAGS="-fexceptions -fbackslash -arch x86_64"
+    MATLAB_FCFLAGS="-g -O2 -fexceptions -fbackslash -arch x86_64"
     MATLAB_LDFLAGS_NOMAP="-Wl,-twolevel_namespace -undefined error -arch x86_64 -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,\$(abs_top_srcdir)/mexFunction-MacOSX.map"
     MATLAB_LIBS="-L$MATLAB/bin/maci64 -lmx -lmex -lmat -lmwlapack -lmwblas"
@@ -78,11 +79,6 @@ case ${MATLAB_ARCH} in
     ax_mexopts_ok="no"
     ;;
 esac
-
-# Starting from MATLAB 7.8, on 64-bit platforms, BLAS and LAPACK expect 64-bit integers, so make it the default for integers in Fortran code
-if test "${MATLAB_ARCH}" = "glnxa64" -o "${MATLAB_ARCH}" = "win64" -o "${MATLAB_ARCH}" = "maci64"; then
-  AX_COMPARE_VERSION([$MATLAB_VERSION], [ge], [7.8], [MATLAB_FFLAGS="$MATLAB_FFLAGS -fdefault-integer-8"])
-fi
 
 # Kludge for incompatibility of older MATLABs (≤ R2011a) with recent gcc
 # Include <uchar.h>, because matrix.h needs char16_t
@@ -132,6 +128,7 @@ AC_SUBST([MATLAB_CPPFLAGS])
 AC_SUBST([MATLAB_DEFS])
 AC_SUBST([MATLAB_CFLAGS])
 AC_SUBST([MATLAB_CXXFLAGS])
+AC_SUBST([MATLAB_FCFLAGS])
 AC_SUBST([MATLAB_LDFLAGS])
 AC_SUBST([MATLAB_LIBS])
 AC_SUBST([OPENMP_LDFLAGS])

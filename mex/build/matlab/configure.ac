@@ -46,10 +46,10 @@ case ${host_os} in
 esac
 
 CFLAGS="$MATLAB_CFLAGS -Wall -Wno-parentheses"
-FFLAGS="$MATLAB_FFLAGS -Wall"
+FCFLAGS="$MATLAB_FCFLAGS -Wall"
 CXXFLAGS="$MATLAB_CXXFLAGS -Wall -Wno-parentheses -Wold-style-cast"
 
-AC_PROG_F77([gfortran g77 f77])
+AC_PROG_FC
 AC_PROG_CC
 AC_PROG_CC_C99 # mjdgges DLL now uses C99 features (variable declared in for loop)
 AC_PROG_CXX

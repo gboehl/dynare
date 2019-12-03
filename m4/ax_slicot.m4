@@ -5,7 +5,7 @@ dnl
 dnl AX_SLICOT([matlab])
 dnl AX_SLICOT([octave])
 dnl
-dnl Copyright © 2012 Dynare Team
+dnl Copyright © 2012-2019 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -40,7 +40,7 @@ AC_DEFUN([AX_SLICOT],
   ac_save_LDFLAGS="$LDFLAGS"
   LDFLAGS_SAVED="$LDFLAGS"
 
-  AC_F77_FUNC(sb02od)
+  AC_FC_FUNC(sb02od)
 
   if test "$1" = matlab; then
     LDFLAGS="$MATLAB_LDFLAGS_NOMAP $LDFLAGS_SLICOT"

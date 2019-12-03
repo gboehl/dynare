@@ -91,8 +91,16 @@ doc/internals/ltxpng
 # Symbolic links created for building MEX files
 /mex/build/matlab/*/*.c
 /mex/build/matlab/*/*.cc
+/mex/build/matlab/*/*.f08
+/mex/build/matlab/*/*.F08
 /mex/build/octave/*/*.c
 /mex/build/octave/*/*.cc
+/mex/build/octave/*/*.f08
+/mex/build/octave/*/*.F08
+
+# Fortran modules
+/mex/build/matlab/*/*.mod
+/mex/build/octave/*/*.mod
 
 # Dynare++
 /dynare++/integ/src/quadrature-points.dSYM/
