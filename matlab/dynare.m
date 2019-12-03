@@ -51,15 +51,12 @@ change_path_flag = true;
 % Filter out some options.
 preprocessoroutput = true;
 if nargin>1
-    id = strfind(varargin,'nopathchange');
-    if ~all(cellfun(@isempty, id))
+    id = ismember(varargin, 'nopathchange');
+    if any(id)
         change_path_flag = false;
-        varargin(cellfun(@isempty, id) == 0) = [];
+        varargin(id) = [];
     end
-    id = strfind(varargin, 'nopreprocessoroutput');
-    if ~all(cellfun(@isempty, id))
-        preprocessoroutput = false;
-    end
+    preprocessoroutput = ~ismember('nopreprocessoroutput', varargin);
 end
 
 % Check matlab path
