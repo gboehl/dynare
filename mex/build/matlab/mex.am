@@ -29,6 +29,13 @@ clean-local:
 		cd $(top_srcdir)/../../matlab && rm -f $(PROGRAMS); \
 	fi
 
-# Automake provides a default rule for .f08 files, but not .F08
+# Automake provides a default rule for .f08 files, but not .F08.
 %.o: %.F08
 	$(AM_V_FC)$(FCCOMPILE) $(DEFS) -c -o $@ $<
+
+# Rules for the Fortran 2008 interface to MEX functions
+matlab_mat.mod: matlab_mex.o
+matlab_mex.mod: matlab_mex.o
+
+matlab_mex.F08: $(top_srcdir)/../../sources/matlab_mex.F08
+	$(LN_S) -f $< $@
