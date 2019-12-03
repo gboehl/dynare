@@ -227,7 +227,7 @@ end
 oo_.olsgibbs.(model_name).Yhat = dseries(X*oo_.olsgibbs.(model_name).posterior.mean.beta, fp, yhatname);
 
 % Residuals
-oo_.olsgibbs.(model_name).resid = Y - oo_.olsgibbs.(model_name).Yhat.data;
+oo_.olsgibbs.(model_name).resid = Y - oo_.olsgibbs.(model_name).Yhat;
 
 % Apply correcting function for Yhat if it was passed
 oo_.olsgibbs.(model_name).Yhat = oo_.olsgibbs.(model_name).Yhat + lhssub{1};
