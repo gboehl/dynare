@@ -24,6 +24,11 @@ all-local: $(PROGRAMS)
 	fi
 
 clean-local:
+	rm -f *.mod # Fortran modules
 	if test -d $(top_srcdir)/../../matlab; then \
 		cd $(top_srcdir)/../../matlab && rm -f $(PROGRAMS); \
 	fi
+
+# Automake provides a default rule for .f08 files, but not .F08
+%.o: %.F08
+	$(AM_V_FC)$(FCCOMPILE) $(DEFS) -c -o $@ $<

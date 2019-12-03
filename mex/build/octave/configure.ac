@@ -28,6 +28,7 @@ test "$MKOCTFILE" = no && AC_MSG_ERROR([Octave cannot be found])
 CC=$($MKOCTFILE -p CC)
 CXX=$($MKOCTFILE -p CXX)
 CFLAGS="$($MKOCTFILE -p CFLAGS) -Wall -Wno-parentheses"
+FCFLAGS="-g -O2 -Wall"
 FFLAGS="$($MKOCTFILE -p FFLAGS) -Wall"
 CXXFLAGS="$($MKOCTFILE -p CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast"
 LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
@@ -35,7 +36,7 @@ LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
 OCTAVE_VERSION=$($MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //')
 AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.2], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.2 at least (or disable Octave support with --disable-octave).])])
 
-AC_PROG_F77([gfortran g77 f77])
+AC_PROG_FC
 AC_PROG_CC
 AC_PROG_CC_C99 # mjdgges DLL now uses C99 features (variable declared in for loop)
 AC_PROG_CXX
