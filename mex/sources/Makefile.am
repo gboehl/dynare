@@ -15,7 +15,8 @@ EXTRA_DIST = \
 	gensylv \
 	dynare_simul_ \
 	perfect_foresight_problem \
-	num_procs
+	num_procs \
+	block_trust_region
 
 clean-local:
 	rm -rf `find mex/sources -name *.o`

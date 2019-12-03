@@ -172,6 +172,7 @@ AC_CONFIG_FILES([Makefile
 	         sobol/Makefile
 		 local_state_space_iterations/Makefile
                  perfect_foresight_problem/Makefile
-                 num_procs/Makefile])
+                 num_procs/Makefile
+                 block_trust_region/Makefile])
 
 AC_OUTPUT

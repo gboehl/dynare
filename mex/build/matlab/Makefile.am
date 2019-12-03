@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I ../../../m4
 
-SUBDIRS = mjdgges kronecker bytecode block_kalman_filter sobol local_state_space_iterations perfect_foresight_problem num_procs
+SUBDIRS = mjdgges kronecker bytecode block_kalman_filter sobol local_state_space_iterations perfect_foresight_problem num_procs block_trust_region
 
 # libdynare++ must come before gensylv, k_order_perturbation, dynare_simul_
 if ENABLE_MEX_DYNAREPLUSPLUS
