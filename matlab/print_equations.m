@@ -90,4 +90,4 @@ end
 function [transformed_expression] = TransformExpandedExpr(expression)
     transformed_expression = splitlines(expression);
     transformed_expression{1} = sprintf(' + %s', transformed_expression{1});
-    transformed_expression = sprintf('\n\t%s', transformed_expression{1:end-1});
+    transformed_expression = sprintf('\n\t%s', transformed_expression{:});
