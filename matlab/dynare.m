@@ -206,8 +206,9 @@ end
 
 command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
 command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
-for i=1:length(varargin)
-    command = [command ' ' varargin{i}];
+if ~isempty(varargin)
+    dynare_varargin = strjoin(varargin);
+    command = [command ' ' dynare_varargin];
 end
 
 if preprocessoroutput
@@ -216,7 +217,7 @@ if preprocessoroutput
     if isempty(varargin)
         disp('none')
     else
-        disp(strjoin(varargin));
+        disp(dynare_varargin);
     end
 end
 
@@ -252,17 +253,11 @@ if exist(fname(1:end-4),'dir') && exist([fname(1:end-4) filesep 'hooks'],'dir') 
 end
 
 % Save preprocessor result in logfile (if `no_log' option not present)
-no_log = 0;
-for i=1:length(varargin)
-    no_log = no_log || strcmp(varargin{i}, 'nolog');
-end
 fid = fopen(fname, 'r');
 firstline = fgetl(fid);
 fclose(fid);
-if ~isempty(regexp(firstline, '//\s*--\+\s*options:(|.*\s|.*,)nolog(|\s.*|,.*)\+--'))
-    no_log = 1;
-end
-if ~no_log
+if ~ismember('nolog', varargin) ...
+        && isempty(regexp(firstline, '//\s*--\+\s*options:(|.*\s|.*,)nolog(|\s.*|,.*)\+--'))
     logname = [fname(1:end-4) '.log'];
     fid = fopen(logname, 'w');
     fprintf(fid, '%s', result);
