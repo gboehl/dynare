@@ -1,18 +1,17 @@
 ACLOCAL_AMFLAGS = -I ../../../m4
 
-if DO_SOMETHING
 SUBDIRS = mjdgges kronecker bytecode block_kalman_filter sobol local_state_space_iterations perfect_foresight_problem num_procs
 
 # libdynare++ must come before gensylv, k_order_perturbation, dynare_simul_
-if HAVE_MATIO
+if ENABLE_MEX_DYNAREPLUSPLUS
 SUBDIRS += libdynare++ gensylv k_order_perturbation dynare_simul_
 endif
 
-if HAVE_GSL
+if ENABLE_MEX_MS_SBVAR
 SUBDIRS += ms_sbvar
 endif
 
-if HAVE_SLICOT
+if ENABLE_MEX_KALMAN_STEADY_STATE
 SUBDIRS += kalman_steady_state
 endif
 
@@ -31,6 +30,5 @@ endif
 
 install-exec-local:
 	$(MKDIR_P) $(DESTDIR)$(pkglibdir)/mex/matlab
-endif
 
 EXTRA_DIST = mex.def mexFunction-MacOSX.map

@@ -16,10 +16,21 @@ end;
 verbatim;
 
     bgp.write(M_);
-    options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-6,'StepTolerance',1e-6);
+    if isoctave || matlab_ver_less_than('8.1')
+        options = optimset('Display', 'iter', 'MaxFunEvals', 1000000,'MaxIter',100000,'Jacobian','on','TolFun',1e-6,'TolX',1e-6);
+    else
+        options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-6,'StepTolerance',1e-6);
+    end
+    if isoctave
+        % Octave can't take a function handle of a function in a package
+        % See https://savannah.gnu.org/bugs/index.php?46659
+        fun = str2func('ramsey.bgpfun');
+    else
+        fun = @ramsey.bgpfun;
+    end
     y = 1+(rand(M_.endo_nbr,1)-.5)*.5;
     g = ones(M_.endo_nbr,1);% 1+(rand(M_.endo_nbr,1)-.5)*.1;
-    [y, fval, exitflag] = fsolve(@ramsey.bgpfun, [y;g], options);
+    [y, fval, exitflag] = fsolve(fun, [y;g], options);
     assert(max(abs(y(M_.endo_nbr+(1:M_.orig_endo_nbr))-1.02))<1e-6)
 
 end;

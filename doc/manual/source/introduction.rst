@@ -55,21 +55,14 @@ manual. Part of Dynare is programmed in C++, while the rest is written
 using the `MATLAB`_ programming language. The latter implies that
 commercially-available MATLAB software is required in order to run
 Dynare. However, as an alternative to MATLAB, Dynare is also able to
-run on top of `GNU Octave`_ (basically a free clone of MATLAB): this
+run on top of `Octave`_ (basically a free clone of MATLAB): this
 possibility is particularly interesting for students or institutions
 who cannot afford, or do not want to pay for, MATLAB and are willing
 to bear the concomitant performance loss.
 
 The development of Dynare is mainly done at `CEPREMAP`_ by a core team
 of researchers who devote part of their time to software
-development. Currently the development team of Dynare is composed of
-Stéphane Adjemian (Université du Maine, Gains and CEPREMAP), Houtan
-Bastani (CEPREMAP), Michel Juillard (Banque de France), Frédéric
-Karamé (Université du Maine, Gains and CEPREMAP), Junior Maih (Norges
-Bank), Ferhat Mihoubi (Université Paris-Est Créteil, Érudite and
-CEPREMAP), Johannes Pfeifer (University of Cologne), Marco Ratto
-(European Commission, Joint Research Centre - JRC) and Sébastien
-Villemot (CEPREMAP). Increasingly, the developer base is expanding, as
+development. Increasingly, the developer base is expanding, as
 tools developed by researchers outside of CEPREMAP are integrated into
 Dynare. Financial support is provided by CEPREMAP, Banque de France
 and DSGE-net (an international research network for DSGE modeling).
@@ -111,10 +104,11 @@ For convenience, you can copy and paste the following into your BibTeX file:
     .. code-block:: bibtex
 
         @TechReport{Adjemianetal2011,
-          author      = {Adjemian, St\'ephane and Bastani, Houtan and Juillard, Michel and
-                         Karam\'e, Fr\'ederic and Maih, Junior and Mihoubi, Ferhat and
-                         Perendia, George and Pfeifer, Johannes and Ratto, Marco and
-                         Villemot, S\'ebastien},
+          author      = {Adjemian, St\'ephane and Bastani, Houtan and 
+                         Juillard, Michel and Karam\'e, Fr\'ederic and 
+                         Maih, Junior and Mihoubi, Ferhat and
+                         Perendia, George and Pfeifer, Johannes and 
+                         Ratto, Marco and Villemot, S\'ebastien},
           title       = {Dynare: Reference Manual Version 4},
           year        = {2011},
           institution = {CEPREMAP},
@@ -127,11 +121,11 @@ https://www.dynare.org.
 
 
 
-.. _MATLAB: http://www.mathworks.com/products/matlab/
-.. _GNU Octave: http://www.octave.org/
-.. _CEPREMAP: http://www.cepremap.fr/
+.. _MATLAB: https://www.mathworks.com/products/matlab/
+.. _Octave: https://www.octave.org/
+.. _CEPREMAP: https://www.cepremap.fr/
 .. _web forum: https://forum.dynare.org/
-.. _official Dynare website: http://www.dynare.org/
+.. _official Dynare website: https://www.dynare.org/
 .. _Dynare wiki: https://git.dynare.org/Dynare/dynare/wikis
 .. _Dynare forums: https://forum.dynare.org/
 .. _Git repository: https://git.dynare.org/Dynare/dynare

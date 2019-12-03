@@ -75,8 +75,8 @@ DynamicModelDllCaller::unload_dll()
 #endif
 }
 
-DynamicModelDllCaller::DynamicModelDllCaller(size_t ntt, mwIndex nx, mwIndex ny, size_t ndynvars, const double *x_arg, size_t nb_row_x_arg, const double *params_arg, const double *steady_state_arg, bool compute_jacobian_arg) :
-  DynamicModelCaller{compute_jacobian_arg},
+DynamicModelDllCaller::DynamicModelDllCaller(size_t ntt, mwIndex nx, mwIndex ny, size_t ndynvars, const double *x_arg, size_t nb_row_x_arg, const double *params_arg, const double *steady_state_arg, bool linear_arg, bool compute_jacobian_arg) :
+  DynamicModelCaller{linear_arg, compute_jacobian_arg},
   nb_row_x{nb_row_x_arg}, x{x_arg}, params{params_arg}, steady_state{steady_state_arg}
 {
   tt = std::make_unique<double[]>(ntt);
@@ -94,11 +94,14 @@ DynamicModelDllCaller::eval(int it, double *resid)
     {
       g1_tt_fct(y_p.get(), x, nb_row_x, params, steady_state, it, tt.get());
       g1_fct(y_p.get(), x, nb_row_x, params, steady_state, it, tt.get(), jacobian_p.get());
+
+      if (linear)
+        compute_jacobian = false; // If model is linear, no need to recompute Jacobian later
     }
 }
 
-DynamicModelMatlabCaller::DynamicModelMatlabCaller(std::string basename_arg, size_t ntt, size_t ndynvars, const mxArray *x_mx_arg, const mxArray *params_mx_arg, const mxArray *steady_state_mx_arg, bool compute_jacobian_arg) :
-  DynamicModelCaller{compute_jacobian_arg},
+DynamicModelMatlabCaller::DynamicModelMatlabCaller(std::string basename_arg, size_t ntt, size_t ndynvars, const mxArray *x_mx_arg, const mxArray *params_mx_arg, const mxArray *steady_state_mx_arg, bool linear_arg, bool compute_jacobian_arg) :
+  DynamicModelCaller{linear_arg, compute_jacobian_arg},
   basename{std::move(basename_arg)},
   T_mx{mxCreateDoubleMatrix(ntt, 1, mxREAL)},
   y_mx{mxCreateDoubleMatrix(ndynvars, 1, mxREAL)},
@@ -178,6 +181,9 @@ DynamicModelMatlabCaller::eval(int it, double *resid)
         jacobian_mx = cmplxToReal(plhs[0]);
       else
         jacobian_mx = plhs[0];
+
+      if (linear)
+        compute_jacobian = false; // If model is linear, no need to recompute Jacobian later
     }
 }
 

@@ -19,6 +19,8 @@
 
 set -ex
 
+ROOTDIR=$(pwd)/..
+
 # Set the compilers
 CC=gcc-9
 CXX=g++-9
@@ -26,21 +28,35 @@ CXX=g++-9
 # Set the number of threads
 NTHREADS=$(nproc)
 
+# Set dependency directory
+LIB64="$ROOTDIR"/macOS/deps/lib64
+
+
 ##
 ## Find Dynare Version
 ##
-ROOTDIR=$(pwd)/..
+DATE=$(date +%Y-%m-%d-%H%M)
+DATELONG=$(date '+%d %B %Y')
+if [[ -d ../.git/ ]]; then
+    SHA=$(git rev-parse HEAD)
+    SHASHORT=$(git rev-parse --short HEAD)
+fi
+
 if [[ -z $VERSION ]]; then
     VERSION=$(grep '^AC_INIT(' ../configure.ac | sed 's/AC_INIT(\[dynare\], \[\(.*\)\])/\1/')
     if [[ -d ../.git/ ]]; then
-        SHA=$(git rev-parse --short HEAD)
-        VERSION_READ="$VERSION-$SHA"
-        VERSION=$VERSION-$(date +%Y-%m-%d-%H%M)-"$SHA"
+        VERSION="$VERSION"-"$SHASHORT"
     fi
 fi
 
-# Set dependency directory
-LIB64="$ROOTDIR"/macOS/deps/lib64
+# Install location must be truncated for installation of `gcc`
+# If it's too long, the headers of the compiled libraries cannot be modified
+# obliging recompilation on the user's system. Truncate to 5 characters
+# To allow for distribution version to appear
+LOCATION=$(echo "$VERSION" | cut -f1 -d"-" | cut -c 1-5)
+if [[ "$VERSION" == *-unstable* || "$VERSION" == [a-zA-Z]* ]]; then
+    LOCATION="$LOCATION"-"$DATE"
+fi
 
 
 ##
@@ -71,14 +87,18 @@ make -j"$NTHREADS"
 ##
 NAME=dynare-"$VERSION"
 PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
-mkdir -p "$PKGFILES"/mex/matlab/maci64-7.9-9.3
-mkdir    "$PKGFILES"/mex/matlab/maci64-9.4-9.7
-mkdir    "$PKGFILES"/mex/octave
-mkdir -p "$PKGFILES"/doc/dynare++
-mkdir    "$PKGFILES"/dynare++
-mkdir    "$PKGFILES"/scripts
-mkdir -p "$PKGFILES"/contrib/ms-sbvar/TZcode
+mkdir -p \
+      "$PKGFILES"/mex/matlab/maci64-7.9-9.3 \
+      "$PKGFILES"/mex/matlab/maci64-9.4-9.7 \
+      "$PKGFILES"/mex/octave \
+      "$PKGFILES"/doc/dynare++ \
+      "$PKGFILES"/dynare++ \
+      "$PKGFILES"/scripts \
+      "$PKGFILES"/contrib/ms-sbvar/TZcode
 
+if [[ $VERSION == *-unstable* ]]; then
+    echo "$SHA"                                                    > "$PKGFILES"/sha.txt
+fi
 cp -p  "$ROOTDIR"/NEWS                                               "$PKGFILES"
 cp -p  "$ROOTDIR"/COPYING                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/VERSION                                            "$PKGFILES"
@@ -149,12 +169,32 @@ echo -e "function v = supported_octave_version\nv=\"$(octave --eval "disp(OCTAVE
 ## Make package
 ##
 cd "$ROOTDIR"/macOS/pkg
-pkgbuild --root "$PKGFILES" --identifier com.cepremap.dynare --version "$VERSION" --install-location /Applications/Dynare/"$VERSION" "$NAME".pkg
-sed "s/VERSION_READ/$VERSION_READ/g" "$ROOTDIR"/macOS/distribution_template.xml > distribution_tmp.xml
+
+# Dynare option
+pkgbuild --root "$PKGFILES" --identifier com.cepremap.dynare --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
+
+# GCC option
+# Create dummy payload for GCC package; otherwise the size is displayed as 0 bytes in the installer
+dd if=/dev/zero of="$ROOTDIR"/macOS/brewfiles/dummy  bs=1m  count=800
+pkgbuild --root "$ROOTDIR"/macOS/brewfiles --identifier com.cepremap.dynare.gcc --version "$VERSION" --scripts "$ROOTDIR"/macOS/scripts --install-location /Applications/Dynare/"$LOCATION" "$NAME"-gcc.pkg
+
+# Replace variables in displayed files
+sed "s/VERSION_READ/$VERSION/g" "$ROOTDIR"/macOS/distribution_template.xml > distribution_tmp.xml
 sed "s/VERSION_NO_SPACE/$VERSION/g" distribution_tmp.xml > distribution.xml
-ln -s "$ROOTDIR"/COPYING "$ROOTDIR"/macOS/
+sed "s/GCC_BINARY/$CC/g" "$ROOTDIR"/macOS/welcome_template.html > "$ROOTDIR"/macOS/welcome.html
+sed "s/VERSION_NO_SPACE/$VERSION/g" "$ROOTDIR"/macOS/welcome.html > "$ROOTDIR"/macOS/welcome_tmp.html
+sed "s/DATE/$DATELONG/g" "$ROOTDIR"/macOS/welcome_tmp.html > "$ROOTDIR"/macOS/welcome.html
+
+# Create installer
 productbuild --distribution distribution.xml --resources "$ROOTDIR"/macOS --package-path ./"$NAME".pkg "$NAME"-new.pkg
+
+# cleanup
 rm -f ./*.xml
 rm -rf "$PKGFILES"
-rm "$ROOTDIR"/macOS/COPYING
+rm -f "$NAME"-gcc.pkg
+rm -f "$ROOTDIR"/macOS/brewfiles/dummy
+rm -f "$ROOTDIR"/macOS/welcome.html
+rm -f "$ROOTDIR"/macOS/welcome_tmp.html
+
+# Final pkg
 mv "$NAME"-new.pkg "$NAME".pkg

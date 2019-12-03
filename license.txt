@@ -1,16 +1,24 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Dynare
 Upstream-Contact: Dynare Team, whose members in 2019 are:
-                  Stéphane Adjemian <stephane.adjemian@univ-lemans.fr>
-                  Houtan Bastani <houtan@dynare.org>
-                  Michel Juillard <michel.juillard@mjui.fr>
-                  Frédéric Karamé <frederic.karame@univ-lemans.fr>
-                  Junior Maih <junior.maih@gmail.com>
-                  Ferhat Mihoubi <fmihoubi@univ-evry.fr>
-                  Willi Mutschler <willi@mutschler.eu>
-                  Johannes Pfeifer <jpfeifer@gmx.de>
-                  Marco Ratto <marco.ratto@ec.europa.eu>
-                  Sébastien Villemot <sebastien@dynare.org>
+                  - Stéphane Adjemian <stephane.adjemian@univ-lemans.fr>
+                  - Houtan Bastani <houtan@dynare.org>
+                  - Michel Juillard <michel.juillard@mjui.fr>
+                  - Frédéric Karamé <frederic.karame@univ-lemans.fr>
+                  - Dóra Kocsis <dora@dynare.org>
+                  - Junior Maih <junior.maih@gmail.com>
+                  - Ferhat Mihoubi <fmihoubi@univ-evry.fr>
+                  - Willi Mutschler <willi@mutschler.eu>
+                  - Johannes Pfeifer <jpfeifer@gmx.de>
+                  - Marco Ratto <marco.ratto@ec.europa.eu>
+                  - Sébastien Villemot <sebastien@dynare.org>
+                  Former Dynare Team members include:
+                  - Abdeljabar Benzougar
+                  - Alejandro Buesa
+                  - Fabrice Collard
+                  - Assia Ezzeroug
+                  - Stéphane Lhuissier
+                  - George Perendia
 Source: https://www.dynare.org
 
 Files: *
@@ -280,6 +288,11 @@ Files: mex/sources/sobol/sobol.hh mex/sources/sobol/initialize_v_array.hh
 Copyright: 2009 John Burkardt
            2010-2011 Dynare Team
 License: LGPL-3+
+
+Files: macOS/brewfiles/*
+Copyright: 2009-2019, Homebrew contributors
+           2019 Dynare Team
+License: BSD-2-clause
 
 Files: contrib/jsonlab
 Copyright: 2011-2018 Qianqian Fang <q.fang at neu.edu>

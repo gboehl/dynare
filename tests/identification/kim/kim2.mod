@@ -33,6 +33,15 @@ lam = (1-(betae*delta*alph/(1-betae+delta*betae)))^theta/c^(1+theta)/(1+theta);
 //cobs = c+ec;
 end;
 
+steady_state_model;
+s=betae*delta*alph/(1-betae+delta*betae);
+a=as; %as^((1-alph)/(1+theta))*(delta^((phi+theta+1)/(theta+1))/s)^alph;
+k=(delta/s/a)^(1/(alph-1));
+i=delta*k;
+c=(((a*k^alph)^(1+theta)-s*(i/s)^(1+theta))/(1-s))^(1/(1+theta))*(1-s);
+lam = (1-s)^theta/c^(1+theta)/(1+theta);
+end;
+
 steady;
 check;
 

@@ -11,8 +11,8 @@ If something is not clear, don't hesitate to ask if you can't find the answer on
 Please note that the repositories under the purview of this page are:
 
 * [Dynare](https://git.dynare.org/Dynare/dynare)
+* [Preprocessor](https://git.dynare.org/Dynare/preprocessor)
 * [Particles](https://git.dynare.org/Dynare/particles)
-* [Dates](https://git.dynare.org/Dynare/dates)
 * [Dseries](https://git.dynare.org/Dynare/dseries)
 * [Reporting](https://git.dynare.org/Dynare/reporting)
 * [Testsuite](https://git.dynare.org/Dynare/testsuite)
@@ -20,17 +20,25 @@ Please note that the repositories under the purview of this page are:
 
 ## Making your Intentions Known
 
-Before making changes to the codebase, it'd be helpful if you communicated your intentions with us. This will avoid double work and ensure that you don't contribute code that won't be included in Dynare for one reason or another. The way to communicate with us is via [GitHub Issues](https://guides.github.com/features/issues/).
+Before making changes to the codebase, it'd be helpful if you communicated your intentions with us. This will avoid double work and ensure that you don't contribute code that won't be included in Dynare for one reason or another.
+
+### Create your account on our GitLab instance
+
+All the development of Dynare happens in [GitLab](https://about.gitlab.com/), which is an integrated environment for storing code under git, keeping track of issues and milestones, and perform testing. The Dynare Team has its own instance of GitLab.
+
+In order to work with us, you need to create your account on our GitLab instance on the [register page](https://git.dynare.org/users/sign_in).
+
+You will also need to register your SSH key in your GitLab profile if you want to contribute code.
 
 ### Issues: Reporting Bugs
 
-You can report bugs in both the stable and unstable versions of Dynare. Before reporting a bug in the stable version of Dynare, please check the [Known Bugs](http://www.dynare.org/DynareWiki/KnownBugs) page to ensure it has not already been encountered/fixed. If reporting a bug in the unstable version of Dynare, please ensure the bug exists in the latest [unstable Dynare snapshot](http://www.dynare.org/download/dynare-unstable).
+You can report bugs in both the stable and unstable versions of Dynare. Before reporting a bug in the stable version of Dynare, please check the [Known Bugs](https://git.dynare.org/Dynare/dynare/wikis/Known-bugs-present-in-the-current-stable-version) page to ensure it has not already been encountered/fixed. If reporting a bug in the unstable version of Dynare, please ensure the bug exists in the latest [unstable Dynare snapshot](https://www.dynare.org/download/#snapshot).
 
-To report a bug in Dynare, simply open a GitHub issue in the repository where the bug resides. For example, to report a bug in Dynare itself, go to the [Dynare repository issue page](https://git.dynare.org/Dynare/dynare/issues) and click on "New Issue."
+To report a bug in Dynare, simply open a Gitlab issue in the repository where the bug resides. For example, to report a bug in Dynare itself, go to the [Dynare repository issue page](https://git.dynare.org/Dynare/dynare/issues) and click on "New Issue."
 
 The minimal information to add is a subject and a description of the steps needed to reproduce the bug. However, the most helpful description would also provide the code to reproduce the bug (often times a `.mod` file). The most helpful `.mod` file is a minimal, quick-running example that reproduces the bug, but we'll take anything that will help us squash a bug.
 
-To include short amounts of code, please paste it into the description box, using the appropriate [GitHub markdown](https://help.github.com/articles/github-flavored-markdown/) code. For larger amounds of code like `.mod` files, please create a new [GitHub Gist](https://gist.github.com) and provide the link in the description box.
+To include short amounts of code, please paste it into the description box, using the appropriate [GitLab Flavored Markdown](https://docs.gitlab.com/ee/user/markdown.html) code. For larger amounds of code like `.mod` files, please create a new [GitLab snippet](https://git.dynare.org/dashboard/snippets) and provide the link in the description box.
 
 ### Issues: Enhancements
 
@@ -40,19 +48,19 @@ Though our development priorities lay with those who finance Dynare and with wha
 
 ## Get to Coding!
 
-So, now you've reported the bug or asked for an enhancemnt by creating a GitHub issue. That's already a great help. Thank you!
+So, now you've reported the bug or asked for an enhancemnt by creating a GitLab issue. That's already a great help. Thank you!
 
-Now, if you want to go the extra mile, you'll volunteer to contribute code to fix the GitHub issue you created above. Once we've agreed that you'll do it, please do the following:
+Now, if you want to go the extra mile, you'll volunteer to contribute code to fix the GitLab issue you created above. Once we've agreed that you'll do it, please do the following:
 
 1. Clone the Dynare repository:
    * `git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git`
-1. [Fork the Dynare repository](https://help.github.com/articles/fork-a-repo)
+1. [Fork the Dynare repository](https://docs.gitlab.com/ee/gitlab-basics/fork-project.html)
 1. Change into the `dynare` folder and add the forked repository as a remote:
    * `cd dynare`
-   * `git remote add personal https://github.com/<<GitHub username>>/dynare.git`
+   * `git remote add personal git@git.dynare.org:<<GitLab username>>/dynare.git`
 1. Create a branch to work on
    * `git checkout -b <<descriptive branch name>>`
-1. Do your work, all the while respecting the [Dynare Coding Standards](http://www.dynare.org/DynareWiki/CodingStandards)
+1. Do your work, all the while respecting the [Dynare Coding Standards](https://archives.dynare.org/DynareWiki/CodingStandards)
 
 As you work, your forked repository will likely fall out of sync with the main Dynare repository as we'll be working in parallel. No matter. Follow these steps to ensure your changes will be merge-able when they're done:
 
@@ -70,14 +78,16 @@ Once you've made the changes necessary to fix the bug or add an enhancement, ens
 1. Get the latest changes from Dynare and rebase your branch on top of them (see above)
 1. Commit your changes:
    * `git add <<files to commit>>`
-   * `git commit -m "<<descriptive commit message.>> Closes #<<Ref. to GitHub issue number fixed by this commit>>"`
+   * `git commit -m "<<descriptive commit message.>> Closes: #<<Ref. to GitLab issue number fixed by this commit>>"`
 1. Push to your forked Dynare repository
    * `git push personal <<descriptive branch name>>`
-1. Create a [Pull Request](https://help.github.com/articles/creating-a-pull-request/) from the branch in your forked Dynare repository
+1. Create a [Merge Request](https://docs.gitlab.com/ee/gitlab-basics/add-merge-request.html) from the branch in your forked Dynare repository
 
 ## Tests
 
-The Dynare Test Suite runs nightly. It's how we quickly catch bugs that may have been introduced by changes made during the day. The output from the test suite can be found here: [http://www.dynare.org/testsuite/master/](http://www.dynare.org/testsuite/master/). This is also a good place to start fixing bugs. If you see a `.mod` file that doesn't run in the test suite and think you can fix it, create an issue and once you have the go ahead, go for it!
+The Dynare testsuite runs every time a commit is pushed, either in the official repository or in your personal repository, through [GitLab Continuous Integration](https://docs.gitlab.com/ee/ci/). It's how we quickly catch bugs that may have been introduced by changes made.
+
+The output from the latest run of the test suite can be found in the `test_matlab` job associated to the [latest pipeline](https://git.dynare.org/Dynare/dynare/pipelines). This is also a good place to start fixing bugs. If you see a `.mod` file that doesn't run in the test suite and think you can fix it, create an issue and once you have the go ahead, go for it!
 
 ### Test `.mod` File
 
@@ -87,7 +97,5 @@ It's useful to contribute `.mod` files that test some aspect of Dynare that is n
 1. If any ancillary files are needed to run your test, please include them in the `EXTRA_DIST` variable in `tests/Makefile.am`
 1. Add and commit your test file and `tests/Makefile.am` as described above
 1. Push and create a pull request as described above
-
-NB: Please do not contribute non-text files (e.g. `.xls`). If you absolutely need such a file for your test to run, please contact us to see how to go about contributing it.
 
 ### Unitary Tests

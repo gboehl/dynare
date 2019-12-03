@@ -1,0 +1,15 @@
+<html lang="en">
+  <body>
+    <h3 style="text-align: center;">Welcome to Dynare</h3>
+    <p style="text-align: center;">Version VERSION_NO_SPACE</p>
+    <p style="text-align: center;">DATE</p>
+
+    <p><b>Just a few things to note</b>. This installation can be customized as you can choose not to install the GNU C Compiler (GCC). Installing GCC is necessary if you want to use the <tt>use_dll</tt> option in Dynare, but otherwise unnecessary.</p>
+
+    <p>To install GCC we run a script that first installs the XCode Command Line Tools (an Apple product). The script then installs Homebrew, a package manager for macOS and, finally, GCC itself. Both Homebrew and GCC will be installed in your Dynare installation folder. So, when you delete this folder, they too will be deleted.</p>
+
+    <p>Installing GCC will require an active internet connection and will take a few minutes to a half an hour during the <i>Running package scripts</i> phase of Installation. The time it takes depends on your internet speed, the speed of your computer, and whether or not you already have XCode Command Line Tools installed. The progress bar will not advance during this phase. Please be patient.</p>
+
+    <p> You can choose not to install GCC by choosing <i>Customize</i> from the <i>Installation Type</i> screen and deselecting <i>GCC compiler</i>. If you already have <tt>GCC_BINARY</tt> installed under <tt>/usr/local</tt>, you can forgo the installation of GCC here as Dynare will find your system compiler when you use <tt>use_dll</tt>.</p>
+  </body>
+</html>

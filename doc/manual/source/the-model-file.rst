@@ -430,7 +430,7 @@ variable to be declared (``endogenous``, ``exogenous``, or
 quotes. Hence, to declare a variable ``c`` as endogenous in an equation tag,
 you can type ``[endogenous='c']``.
 
-To perform on-the-fly variable declaration in an equtaion, simply follow the
+To perform on-the-fly variable declaration in an equation, simply follow the
 symbol name with a vertical line (``|``, pipe character) and either an ``e``, an
 ``x``, or a ``p``. For example, to declare a parameter named
 ``alphaa`` in the model block, you could write ``alphaa|p`` directly in
@@ -577,6 +577,9 @@ not in EXPRESSION):
     at the steady state. A typical usage is in the Taylor rule, where
     you may want to use the value of GDP at steady state to compute
     the output gap.
+
+    Exogenous and exogenous deterministic variables may not appear in
+    MODEL_EXPRESSION.
 
 .. operator:: EXPECTATION (INTEGER) (MODEL_EXPRESSION)
 
@@ -806,6 +809,11 @@ Internally, the parameter values are stored in ``M_.params``:
     order that was used in the ``parameters`` command, hence ordered as
     in ``M_.param_names``.
 
+The parameter names are stored in ``M_.param_names``:
+
+.. matvar:: M_.param_names
+
+    Cell array containing the names of the model parameters.
 
 .. _model-decl:
 
@@ -996,6 +1004,13 @@ The model is declared inside a ``model`` block:
         Declares a list of extra files that should be transferred to
         slave nodes when doing a parallel computation (see
         :ref:`paral-conf`).
+
+    .. option:: balanced_growth_test_tol = DOUBLE
+
+        Tolerance used for determining whether cross-derivatives are zero in
+        the test for balanced growth path (the latter is documented on
+        `<https://archives.dynare.org/DynareWiki/RemovingTrends>`__). Default:
+        ``1e-6``
 
     *Example* (Elementary RBC model)
 
@@ -3296,7 +3311,7 @@ Computing the stochastic solution
        command. Note that if ``varobs`` is not present or contains all
        endogenous variables, then this is the full information case
        and this option has no effect. More references can be found
-       `here <http://www.dynare.org/DynareWiki/PartialInformation>`__ .
+       `here <https://archives.dynare.org/DynareWiki/PartialInformation>`__ .
 
     .. option:: sylvester = OPTION
 
@@ -3308,7 +3323,7 @@ Computing the stochastic solution
                 Uses the default solver for Sylvester equations
                 (``gensylv``) based on Ondra Kamenik’s algorithm (see
                 `here
-                <http://www.dynare.org/documentation-and-support/dynarepp/sylvester.pdf/at_download/file>`__
+                <https://www.dynare.org/assets/dynare++/sylvester.pdf>`__
                 for more information).
 
            ``fixed_point``
@@ -3629,6 +3644,11 @@ state of the model and shocks observed at the beginning of the
 period. The decision rules are stored in the structure ``oo_.dr``
 which is described below.
 
+.. matvar:: oo_.dr
+
+        Structure storing the decision rules. The subfields for different
+        orders of approximation are explained below.
+
 .. command:: extended_path ;
              extended_path (OPTIONS...);
 
@@ -3718,6 +3738,13 @@ lag. We therefore have the following identity:
 
        M_.npred + M_.both + M_.nfwrd + M_.nstatic = M_.endo_nbr
 
+.. matvar:: M_.state_var
+
+        Vector of numerical indices identifying the state variables in the
+        vector of declared variables. ``M_.endo_names(M_.state_var)``
+        therefore yields the name of all variables that are states in 
+        the model declaration, i.e. that show up with a lag.
+
 Internally, Dynare uses two orderings of the endogenous variables: the
 order of declaration (which is reflected in ``M_.endo_names``), and an
 order based on the four types described above, which we will call the
@@ -3730,9 +3757,15 @@ purely backward variables, then mixed variables, and finally purely
 forward variables. Inside each category, variables are arranged
 according to the declaration order.
 
-Variable ``oo_.dr.order_var`` maps DR-order to declaration order, and
-variable ``oo_.dr.inv_order_var`` contains the inverse map. In other
-words, the k-th variable in the DR-order corresponds to the endogenous
+.. matvar:: oo_.dr.order_var
+
+       This variables maps DR-order to declaration order.
+       
+.. matvar:: oo_.dr.inv_order_var
+
+       This variable contains the inverse map. 
+
+In other words, the k-th variable in the DR-order corresponds to the endogenous
 variable numbered ``oo_.dr.order_var(k)`` in declaration
 order. Conversely, k-th declared variable is numbered
 ``oo_.dr.inv_order_var(k)`` in DR-order.
@@ -3756,6 +3789,15 @@ The approximation has the stylized form:
 
 where :math:`y^s` is the steady state value of :math:`y` and
 :math:`y^h_t=y_t-y^s`.
+
+.. matvar:: oo.dr.state_var
+
+        Vector of numerical indices identifying the state variables in the
+        vector of declared variables, *given the current parameter values* 
+        for which the decision rules have been computed. It may differ from
+        ``M_.state_var`` in case a state variable drops from the model given
+        the current parameterization, because it only gets 0 coefficients in
+        the decision rules. See :mvar:`M_.state_var`.
 
 The coefficients of the decision rules are stored as follows:
 
@@ -7204,6 +7246,10 @@ Shock Decomposition
 
         See :opt:`nodisplay`.
 
+    .. option:: nograph
+
+       See :opt:`nograph`.
+
     .. option:: graph_format = FORMAT
                 graph_format = ( FORMAT, FORMAT... )
 
@@ -7629,9 +7675,7 @@ the :comm:`bvar_forecast` command.
 
     *Output*
 
-    The results are not stored in the ``oo_`` structure but in a
-    separate structure ``forecasts``, described below, saved to the
-    hard disk into a file called ``conditional_forecasts.mat.``
+    The results are stored in ``oo_.conditional_forecast``, which is described below.
 
     *Example*
 
@@ -7656,7 +7700,7 @@ the :comm:`bvar_forecast` command.
             plot_conditional_forecast(periods = 10) a y;
 
 
-    .. matvar:: forecasts.cond
+    .. matvar:: oo_.conditional_forecast.cond
 
         Variable set by the ``conditional_forecast`` command. It
         stores the conditional forecasts. Fields are ``periods+1`` by
@@ -7664,7 +7708,7 @@ the :comm:`bvar_forecast` command.
         subsequent ``periods`` forecasts periods. Fields are of the
         form::
 
-            forecasts.cond.FORECAST_MOMENT.VARIABLE_NAME
+            oo_.conditional_forecast.cond.FORECAST_MOMENT.VARIABLE_NAME
 
         where FORECAST_MOMENT is one of the following:
 
@@ -7678,12 +7722,12 @@ the :comm:`bvar_forecast` command.
                 distribution. The size corresponds to ``conf_sig``.
 
 
-    .. matvar:: forecasts.uncond
+    .. matvar:: oo_.conditional_forecast.uncond
 
         Variable set by the ``conditional_forecast`` command. It stores
         the unconditional forecasts. Fields are of the form::
 
-            forecasts.uncond.FORECAST_MOMENT.VARIABLE_NAME
+            oo_.conditional_forecast.uncond.FORECAST_MOMENT.VARIABLE_NAME
 
 
     .. matvar:: forecasts.instruments
@@ -7692,14 +7736,14 @@ the :comm:`bvar_forecast` command.
         the names of the exogenous instruments.
 
 
-    .. matvar:: forecasts.controlled_variables
+    .. matvar:: oo_.conditional_forecast.controlled_variables
 
         Variable set by the ``conditional_forecast`` command. Stores
         the position of the constrained endogenous variables in
         declaration order.
 
 
-    .. matvar:: forecasts.controlled_exo_variables
+    .. matvar:: oo_.conditional_forecast.controlled_exo_variables
 
         Variable set by the ``conditional_forecast`` command. Stores
         the values of the controlled exogenous variables underlying
@@ -7707,9 +7751,9 @@ the :comm:`bvar_forecast` command.
         endogenous variables. Fields are ``[number of constrained
         periods]`` by ``1`` vectors and are of the form::
 
-            forecasts.controlled_exo_variables.FORECAST_MOMENT.SHOCK_NAME
+            oo_.conditional_forecast.controlled_exo_variables.FORECAST_MOMENT.SHOCK_NAME
 
-    .. matvar:: forecasts.graphs
+    .. matvar:: oo_.conditional_forecast.graphs
 
         Variable set by the ``conditional_forecast`` command. Stores
         the information for generating the conditional forecast plots.
@@ -9616,7 +9660,7 @@ below.
         RESTRICTION EQUATION INTEGER, EXPRESSION = EXPRESSION;
 
     To be documented. For now, see the wiki:
-    `<http://www.dynare.org/DynareWiki/MarkovSwitchingInterface>`__
+    `<https://archives.dynare.org/DynareWiki/MarkovSwitchingInterface>`__
 
 
 .. command:: ms_estimation (OPTIONS...);
@@ -11206,9 +11250,9 @@ Misc commands
     and ``morefloats``.
 
 
-.. _Dynare wiki: http://www.dynare.org/DynareWiki/EquationsTags
+.. _Dynare wiki: https://archives.dynare.org/DynareWiki/EquationsTags
 .. _io: https://octave.sourceforge.io/io/
-.. _AIM website: http://www.federalreserve.gov/Pubs/oss/oss4/aimindex.html
+.. _AIM website: https://www.federalreserve.gov/econres/ama-index.htm
 
 .. rubric:: Footnotes
 

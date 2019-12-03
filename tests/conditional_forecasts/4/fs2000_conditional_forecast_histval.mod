@@ -86,8 +86,8 @@ plot_conditional_forecast(periods=100) gy_obs gp_obs k;
 forecast(periods=100);
 
 %compare unconditional forecasts
-cond_forecast=load('conditional_forecasts.mat');
-if max(abs(cond_forecast.forecasts.uncond.Mean.k(2:end)-oo_.forecast.Mean.k))>1e-8
+cond_forecast=oo_.conditional_forecast;
+if max(abs(cond_forecast.uncond.Mean.k(2:end)-oo_.forecast.Mean.k))>1e-8
     error('Unconditional Forecasts do not match')
 end
         
@@ -95,11 +95,11 @@ end
 initial_condition_states = oo_.dr.ys;
 initial_condition_states(strmatch('k',M_.endo_names,'exact')) = 6;
 shock_matrix = zeros(options_cond_fcst_.periods ,M_.exo_nbr); %create shock matrix with found controlled shocks
-shock_matrix(1:5,strmatch('e_a',M_.exo_names,'exact')) = cond_forecast.forecasts.controlled_exo_variables.Mean.e_a; %set controlled shocks to their values
-shock_matrix(1:5,strmatch('e_m',M_.exo_names,'exact')) = cond_forecast.forecasts.controlled_exo_variables.Mean.e_m; %set controlled shocks to their values
+shock_matrix(1:5,strmatch('e_a',M_.exo_names,'exact')) = cond_forecast.controlled_exo_variables.Mean.e_a; %set controlled shocks to their values
+shock_matrix(1:5,strmatch('e_m',M_.exo_names,'exact')) = cond_forecast.controlled_exo_variables.Mean.e_m; %set controlled shocks to their values
 
 y_simult = simult_(M_,options_,initial_condition_states,oo_.dr,shock_matrix,1);
 
-if max(abs(y_simult(strmatch('k',M_.endo_names,'exact'),:)'-cond_forecast.forecasts.cond.Mean.k))>1e-8
+if max(abs(y_simult(strmatch('k',M_.endo_names,'exact'),:)'-cond_forecast.cond.Mean.k))>1e-8
     error('Unconditional Forecasts do not match')
 end

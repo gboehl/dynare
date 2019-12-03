@@ -6,7 +6,7 @@ rho_1=0.2;
 rho_2=0.1;
 
 // Equilibrium conditions
-model;
+model(linear);
 y_backward=rho_1*y_backward(-1)+rho_2*y_backward(-2);
 dummy_var=0.9*dummy_var(+1);
 end;
@@ -29,8 +29,7 @@ end;
 check;
 
 // Deterministic simulation of the model for 200 periods
-options_.solve_tolf=1e-12;
-simul(periods=100);
+simul(periods=100, tolf=1e-12);
 
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')

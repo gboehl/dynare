@@ -1,7 +1,5 @@
-if HAVE_PDFLATEX
-if HAVE_BEAMER
+if ENABLE_DOC
 pdf-local: dseriesReporting.pdf
-endif
 endif
 
 SRC = dseriesReporting.tex

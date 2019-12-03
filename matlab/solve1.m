@@ -64,7 +64,7 @@ end
 
 f = 0.5*(fvec'*fvec) ;
 
-if max(abs(fvec)) < tolf
+if max(abs(fvec)) < tolf*tolf
     return ;
 end
 

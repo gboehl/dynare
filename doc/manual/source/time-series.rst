@@ -849,6 +849,13 @@ The dseries class
         elements *RANGE_OF_DATES* or be equal to one (in which case
         the single observation is replicated).
 
+    .. construct:: dseries (TABLE)
+
+       Creates a ``dseries`` object given the MATLAB Table provided as the sole
+       argument. It is assumed that the first column of the table contains the
+       dates of the ``dseries`` and the first row contains the names. NB: This
+       feature is not available under Octave or MATLAB R2013a or earlier.
+
     *Example*
 
         Various ways to create a ``dseries`` object::

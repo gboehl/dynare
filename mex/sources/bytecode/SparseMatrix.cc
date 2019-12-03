@@ -2618,7 +2618,7 @@ dynSparseMatrix::Sparse_substract_SA_SB(mxArray *A_m, mxArray *B_m)
               C_j[A_col+1] = nze_C++;
               C_col = A_col;
             }
-          else if (A_row < B_row || (nze_B >= total_nze_B && nze_A < total_nze_A))
+          else if ((A_row < B_row && nze_A < total_nze_A) || nze_B == total_nze_B)
             {
               C_d[nze_C] = A_d[nze_A++];
               C_i[nze_C] = A_row;
@@ -2637,7 +2637,7 @@ dynSparseMatrix::Sparse_substract_SA_SB(mxArray *A_m, mxArray *B_m)
               C_col = B_col;
             }
         }
-      else if (A_col < B_col || (nze_B >= total_nze_B && nze_A < total_nze_A))
+      else if ((A_col < B_col && nze_A < total_nze_A) || nze_B == total_nze_B)
         {
           C_d[nze_C] = A_d[nze_A++];
           C_i[nze_C] = A_row;

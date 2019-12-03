@@ -97,13 +97,14 @@ fclose(fid);
 % Define a set of variables to be loaded.
 listofvariablestobeloaded = {'b'; 'a'};
 % Test if we can load the data.
+exist('example1.m', 'file'); % To force the detection of the new file under old MATLAB
 try
     data = load_m_file_data_legacy('example1.m', listofvariablestobeloaded);
-    delete('example1.m');
     t(1) = 1;
 catch
     t(1) = 0;
 end
+delete('example1.m');
 T = all(t);
 %@eof:1
 
@@ -124,13 +125,14 @@ fclose(fid);
 % Define a set of variables to be loaded.
 listofvariablestobeloaded = {'e'; 'a'};
 % Test if we can load the data.
+exist('example2.m', 'file'); % To force the detection of the new file under old MATLAB
 try
     data = load_m_file_data_legacy('example2.m', listofvariablestobeloaded);
-    delete('example2.m');
     t(1) = 0;
 catch
     t(1) = 1;
 end
+delete('example2.m');
 T = all(t);
 %@eof:2
 
@@ -151,12 +153,13 @@ fclose(fid);
 % Define a set of variables to be loaded.
 listofvariablestobeloaded = {'c'; 'a'};
 % Test if we can load the data.
+exist('example3.m', 'file'); % To force the detection of the new file under old MATLAB
 try
     data = load_m_file_data_legacy('example3.m', listofvariablestobeloaded);
-    delete('example3.m');
     t(1) = 1;
 catch
     t(1) = 0;
 end
+delete('example3.m');
 T = all(t);
 %@eof:3

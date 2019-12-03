@@ -87,9 +87,6 @@ Approximation::approxAtSteady()
   FirstOrder fo(model.nstat(), model.npred(), model.nboth(), model.nforw(),
                 model.nexog(), model.getModelDerivatives().get(Symmetry{1}),
                 journal, qz_criterium);
-  KORD_RAISE_IF_X(!fo.isStable(),
-                  "The model is not Blanchard-Kahn stable",
-                  KORD_MD_NOT_STABLE);
 
   if (model.order() >= 2)
     {

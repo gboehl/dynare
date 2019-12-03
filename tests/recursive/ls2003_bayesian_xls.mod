@@ -61,4 +61,8 @@ stderr e_ys,inv_gamma_pdf,1.2533,0.6551;
 stderr e_pies,inv_gamma_pdf,1.88,0.9827;
 end;
 
-estimation(datafile=data_ca1_xls,first_obs=8,nobs=[76 79],mh_nblocks=1,prefilter=1,mh_jscale=0.5,mh_replic=2000,forecast=8) y_obs R_obs pie_obs dq de;
+if isoctave || ~matlab_ver_less_than('7.14') % xlsread is able to read XLSX without Excel installed since R2012a
+estimation(datafile='data_ca1_xls.xlsx',first_obs=8,nobs=[76 79],mh_nblocks=1,prefilter=1,mh_jscale=0.5,mh_replic=2000,forecast=8) y_obs R_obs pie_obs dq de;
+else
+estimation(datafile='data_ca1_xls.xls',first_obs=8,nobs=[76 79],mh_nblocks=1,prefilter=1,mh_jscale=0.5,mh_replic=2000,forecast=8) y_obs R_obs pie_obs dq de;
+end

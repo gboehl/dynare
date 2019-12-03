@@ -30,6 +30,17 @@ INFL = pi_steady+400*pie;
 INT = pi_steady+rr_steady+4*gam_steady+400*R;
 end;
 
+steady_state_model;
+pie=0;
+y=0;
+R=0;
+g=0;
+z=0;
+YGR=gam_steady;
+INFL = pi_steady;
+INT = pi_steady+rr_steady+4*gam_steady;
+end;
+
 estimated_params;
 tau, gamma_pdf, 2, 0.5; 
 kap, beta_pdf, 0.2, 0.1;

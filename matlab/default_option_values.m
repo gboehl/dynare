@@ -131,6 +131,7 @@ options_.nodisplay = false;
 options_.nograph = false;
 options_.no_graph.posterior = false;
 options_.no_graph.shock_decomposition = false;
+options_.no_graph.plot_shock_decomposition = false;
 options_.XTick = [];
 options_.XTickLabel = [];
 options_.console_mode = false;

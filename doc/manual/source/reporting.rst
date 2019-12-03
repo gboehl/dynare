@@ -88,6 +88,11 @@ and a clarifying example.
         The valid :math:`\text{\LaTeX}` code to be included in the report before
         ``\begin{document}``. Default: ``empty``.
 
+    .. option:: maketoc, BOOLEAN
+
+        Whether or not to make the table of contents. One entry is made per
+        page containing a title. Default: ``false``.
+
     .. option:: margin, DOUBLE
 
         The margin size. Default: ``2.5``.
@@ -103,6 +108,15 @@ and a clarifying example.
     .. option:: paper, `a4' | `letter'
 
         Paper size. Default: ```a4'``.
+
+    .. option:: reportDirName, FILENAME
+
+        The name of the folder in which to store the component parts of the
+        report (preamble, document, end). Default: ``tmpRepDir``.
+
+    .. option:: showDate, BOOLEAN
+
+        Display the date and time when the report was compiled. Default: true.
 
     .. option:: showOutput, BOOLEAN
 

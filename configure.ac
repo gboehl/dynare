@@ -73,40 +73,116 @@ if test -z "$YACC"; then
   AM_MISSING_PROG([YACC], [bison])
 fi
 
-# Check for libmatio, needed by Dynare++
-AX_MATIO
-AM_CONDITIONAL([HAVE_MATIO], [test "$has_matio" = yes])
+# Define optional components and their corresponding flags and Automake conditionals
+AC_ARG_ENABLE([doc], AS_HELP_STRING([--disable-doc], [disable compilation of documentation]), [], [enable_doc=yes])
+AM_CONDITIONAL([ENABLE_DOC], [test "$enable_doc" = yes])
 
-AC_CHECK_PROG([PDFLATEX], [pdflatex], [pdflatex])
-AM_CONDITIONAL([HAVE_PDFLATEX], [test -n "$PDFLATEX"])
+AC_ARG_ENABLE([dynare++], AS_HELP_STRING([--disable-dynare++], [disable compilation of Dynare++]), [], [enable_dynareplusplus=yes])
+AM_CONDITIONAL([ENABLE_DYNAREPLUSPLUS], [test "$enable_dynareplusplus" = yes])
 
-AC_CHECK_PROG([BIBTEX], [bibtex], [bibtex])
-AM_CONDITIONAL([HAVE_BIBTEX], [test -n "$BIBTEX"])
+AC_ARG_ENABLE([matlab], AS_HELP_STRING([--disable-matlab], [disable compilation of MEX files for MATLAB]), [], [enable_matlab=yes])
+AM_CONDITIONAL([ENABLE_MATLAB], [test "$enable_matlab" = yes])
 
-AC_CHECK_PROG([SPHINXBUILD], [sphinx-build], [sphinx-build])
-AM_CONDITIONAL([HAVE_SPHINXBUILD], [test -n "$SPHINXBUILD"])
+AC_ARG_ENABLE([octave], AS_HELP_STRING([--disable-octave], [disable compilation of MEX files for Octave]), [], [enable_octave=yes])
+AM_CONDITIONAL([ENABLE_OCTAVE], [test "$enable_octave" = yes])
 
-if test -n "$PDFLATEX" -a -n "$BIBTEX"; then
-  AX_LATEX_CLASS([beamer], [ax_latex_have_beamer])
+AC_ARG_ENABLE([org-export], AS_HELP_STRING([--enable-org-export], [enable exporting of Org files (requires Emacs, org-mode and other external programs)]))
+AM_CONDITIONAL([ENABLE_ORG_EXPORT], [test -n "$enable_org_export"])
+
+# Check utilities needed for documentation
+if test "$enable_doc" = yes; then
+  AC_CHECK_PROG([PDFLATEX], [pdflatex], [pdflatex], [no])
+  test "$PDFLATEX" = no && AC_MSG_ERROR([pdflatex cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])
+  AC_CHECK_PROG([BIBTEX], [bibtex], [bibtex], [no])
+  test "$BIBTEX" = no && AC_MSG_ERROR([bibtex cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])
+  AC_CHECK_PROG([SPHINXBUILD], [sphinx-build], [sphinx-build], [no])
+  test "$SPHINXBUILD" = no && AC_MSG_ERROR([sphinx-build cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])
+  AX_LATEX_CLASS([beamer], [ax_latex_have_beamer], [], [AC_MSG_ERROR([beamer cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])])
 fi
-AM_CONDITIONAL([HAVE_BEAMER], [test "$ax_latex_have_beamer" = yes])
 
-AC_PROG_F77
-AC_F77_LIBRARY_LDFLAGS
-case ${host_os} in
-  *darwin*)
-    # * OS X doesn't need to link against the Fortran libraries because
-    #   everything is contained within the vecLib framework.
-    FLIBS=''
-    ;;
-esac
-
-if test -n "$F77"; then
-   AX_BLAS
-   AX_LAPACK
+# Check for BLAS, LAPACK and MATIO, needed by Dynare++
+if test "$enable_dynareplusplus" = yes; then
+  AC_PROG_F77
+  AC_F77_LIBRARY_LDFLAGS
+  case ${host_os} in
+    *darwin*)
+      # * OS X doesn't need to link against the Fortran libraries because
+      #   everything is contained within the vecLib framework.
+      FLIBS=''
+      ;;
+  esac
+  AX_BLAS
+  AX_LAPACK
+  AX_MATIO
+  if test "$ax_blas_ok" != yes -o "$ax_lapack_ok" != yes -o "$has_matio" != yes; then
+    AC_MSG_ERROR([Some dependencies of Dynare++ cannot be found. If you want to skip the compilation of Dynare++, pass the --disable-dynare++ flag.])
+  fi
 fi
-AM_CONDITIONAL([HAVE_BLAS], [test "$ax_blas_ok" = yes])
-AM_CONDITIONAL([HAVE_LAPACK], [test "$ax_lapack_ok" = yes])
+
+# Check for MATLAB
+if test "$enable_matlab" = yes; then
+  AC_CONFIG_SUBDIRS([mex/build/matlab])
+  AX_MATLAB
+  AX_MATLAB_BATCH_OPTIONS
+  test "$ax_enable_matlab" != yes && AC_MSG_ERROR([MATLAB cannot be found. If you want to compile Dynare without MATLAB support, pass the --disable-matlab flag.])
+fi
+
+# Check for Octave
+if test "$enable_octave" = yes; then
+  AC_CONFIG_SUBDIRS([mex/build/octave])
+  AC_CHECK_PROG([OCTAVE], [octave], [octave], [no])
+  test "$OCTAVE" = no && AC_MSG_ERROR([Octave cannot be found. If you want to compile Dynare without Octave support, pass the --disable-octave flag.])
+fi
+
+# Construct final output message
+if test "$enable_dynareplusplus" = yes; then
+  BUILD_DYNAREPLUSPLUS="yes"
+  TESTSUITE_DYNAREPLUSPLUS="yes"
+else
+  BUILD_DYNAREPLUSPLUS="no"
+  TESTSUITE_DYNAREPLUSPLUS="no"
+fi
+
+if test "$enable_doc" = yes; then
+  BUILD_DOC="yes"
+else
+  BUILD_DOC="no"
+fi
+
+if test -n "$enable_org_export"; then
+  BUILD_INTERNAL_DOC="yes"
+else
+  BUILD_INTERNAL_DOC="no"
+fi
+
+if test "$enable_matlab" = yes; then
+  TESTSUITE_MATLAB="yes"
+else
+  TESTSUITE_MATLAB="no"
+fi
+
+if test "$enable_octave" = yes; then
+  TESTSUITE_OCTAVE="yes"
+else
+  TESTSUITE_OCTAVE="no"
+fi
+
+AC_MSG_NOTICE([
+
+Dynare is now configured for building the following components...
+
+Binaries (with "make"):
+ Dynare++:                              $BUILD_DYNAREPLUSPLUS
+
+Documentation (with "make html pdf"):
+ Manual and other documents             $BUILD_DOC
+ Dynare internal doc:                   $BUILD_INTERNAL_DOC
+
+Testsuites (run with "make check"):
+ Dynare for MATLAB:                     $TESTSUITE_MATLAB
+ Dynare for Octave:                     $TESTSUITE_OCTAVE
+ Dynare++:                              $TESTSUITE_DYNAREPLUSPLUS
+])
 
 AC_CONFIG_FILES([Makefile
                  VERSION
@@ -137,95 +213,6 @@ AC_CONFIG_FILES([Makefile
                  dynare++/src/Makefile
                  dynare++/tests/Makefile
                  mex/sources/Makefile
-])
-
-AC_ARG_ENABLE([matlab], AS_HELP_STRING([--disable-matlab], [disable compilation of MEX files for MATLAB]), [], [enable_matlab=yes])
-if test "$enable_matlab" = yes; then
-  AC_CONFIG_SUBDIRS([mex/build/matlab])
-  AX_MATLAB
-  AX_MATLAB_BATCH_OPTIONS
-fi
-AM_CONDITIONAL([ENABLE_MATLAB], [test "$enable_matlab" = yes])
-AM_CONDITIONAL([HAVE_MATLAB], [test "$ax_enable_matlab" = yes])
-
-AC_ARG_ENABLE([octave], AS_HELP_STRING([--disable-octave], [disable compilation of MEX files for Octave]), [], [enable_octave=yes])
-if test "$enable_octave" = yes; then
-  AC_CONFIG_SUBDIRS([mex/build/octave])
-  AC_CHECK_PROG([OCTAVE], [octave], [octave])
-fi
-AM_CONDITIONAL([ENABLE_OCTAVE], [test "$enable_octave" = yes])
-AM_CONDITIONAL([HAVE_OCTAVE], [test "$enable_octave" = yes -a -n "$OCTAVE"])
-
-# Enable exporting of Org files
-# The clean way would be to test for Emacs, Org-mode, latex, dvipng...
-AC_ARG_ENABLE([org-export], AS_HELP_STRING([--enable-org-export], [enable exporting of Org files (requires Emacs, org-mode and other external programs)]))
-AM_CONDITIONAL([ENABLE_ORG_EXPORT], [test -n "$enable_org_export"])
-
-# Construct final output message
-
-if test "$ax_blas_ok" = yes -a "$ax_lapack_ok" = yes -a "$has_matio" = yes; then
-  BUILD_DYNAREPLUSPLUS="yes"
-else
-  BUILD_DYNAREPLUSPLUS="no (missing one of: BLAS, LAPACK, MatIO)"
-fi
-
-if test -n "$PDFLATEX" -a "$ax_latex_have_beamer" = yes; then
-  BUILD_BEAMER_DOC="yes"
-else
-  BUILD_BEAMER_DOC="no (missing one of: pdflatex, beamer)"
-fi
-
-if test "x$PDFLATEX" != "x"; then
-  BUILD_OTHER_PDF_DOC="yes"
-else
-  BUILD_OTHER_PDF_DOC="no (missing pdflatex)"
-fi
-
-if test -n "$enable_org_export"; then
-  BUILD_DYNARE_INTERNAL_DOC="yes"
-else
-  BUILD_DYNARE_INTERNAL_DOC="no (Org export not enabled)"
-fi
-
-if test -n "$SPHINXBUILD"; then
-  BUILD_DYNARE_HTML_MANUAL="yes"
-  BUILD_DYNARE_PDF_MANUAL="yes"
-else
-  BUILD_DYNARE_HTML_MANUAL="no (missing sphinx-build)"
-  BUILD_DYNARE_PDF_MANUAL="no (missing sphinx-build)"
-fi
-
-if test -n "$OCTAVE"; then
-  TESTSUITE_OCTAVE="yes"
-else
-  TESTSUITE_OCTAVE="no"
-fi
-
-if test "$ax_blas_ok" = yes -a "$ax_lapack_ok" = yes; then
-  TESTSUITE_DYNAREPLUSPLUS="yes"
-else
-  TESTSUITE_DYNAREPLUSPLUS="no"
-fi
-
-AC_MSG_NOTICE([
-
-Dynare is now configured for building the following components...
-
-Binaries (with "make"):
- Dynare++:                              $BUILD_DYNAREPLUSPLUS
-
-PDF documentation (with "make pdf"):
- Dynare reference manual:               $BUILD_DYNARE_PDF_MANUAL
- Beamer presentations:                  $BUILD_BEAMER_DOC
- Various other documents:               $BUILD_OTHER_PDF_DOC
-
-HTML documentation (with "make html"):
- Dynare reference manual:               $BUILD_DYNARE_HTML_MANUAL
- Dynare internal doc:                   $BUILD_DYNARE_INTERNAL_DOC
-
-Testsuites (run with "make check"):
- Dynare for Octave:                     $TESTSUITE_OCTAVE
- Dynare++:                              $TESTSUITE_DYNAREPLUSPLUS
 ])
 
 AC_OUTPUT

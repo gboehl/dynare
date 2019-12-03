@@ -39,7 +39,7 @@ end
 %We have to get an initial guess for the conditional forecast
 % and terminal conditions for the non-stationary variables, we
 % use the first order approximation of the rational expectation solution.
-if ~isfield(oo_,'dr') || (isempty(oo_.dr))
+if ~isfield(oo_,'dr') || ~isfield(oo_.dr,'ghx')
     fprintf('computing the first order solution of the model as initial guess...');
     dr = struct();
     oo_.dr=set_state_space(dr,M_,options_);

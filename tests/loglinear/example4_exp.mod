@@ -77,6 +77,5 @@ end;
 conditional_forecast(parameter_set=calibration, controlled_varexo=(u,e));
 
 oo_exp=oo_;
-load('conditional_forecasts.mat')
-conditional_forecasts_exp=forecasts;
+conditional_forecasts_exp=oo_.conditional_forecast;
 save results_exp.mat oo_exp conditional_forecasts_exp

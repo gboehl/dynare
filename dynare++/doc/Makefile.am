@@ -6,7 +6,7 @@ EXTRA_DIST = \
 	changelog-old.html \
 	changelog-sylv-old.html
 
-if HAVE_PDFLATEX
+if ENABLE_DOC
 pdf-local: dynare++-ramsey.pdf dynare++-tutorial.pdf sylvester.pdf tl.pdf
 endif
 

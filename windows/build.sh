@@ -219,7 +219,7 @@ NTHREADS=$((NTHREADS/${#TASKS[@]}))
 # Build all the mex files (parallel).
 # Some variables and functions need to be available in subshells.
 cd "$ROOT_DIRECTORY"
-export TMP_DIRECTORY ROOT_DIRECTORY LIB32 LIB64 VERSION NTHREADS
+export TMP_DIRECTORY ROOT_DIRECTORY LIB32 LIB32_MSYS2 LIB64 LIB64_MSYS2 VERSION NTHREADS
 export -f "${TASKS[@]}"
 parallel "set -ex;shopt -s globstar;" ::: "${TASKS[@]}"
 
