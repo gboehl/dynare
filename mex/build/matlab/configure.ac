@@ -46,7 +46,7 @@ case ${host_os} in
 esac
 
 CFLAGS="$MATLAB_CFLAGS -Wall -Wno-parentheses"
-FCLAGS="$MATLAB_FCFLAGS -Wall"
+FCFLAGS="$MATLAB_FCFLAGS -Wall"
 CXXFLAGS="$MATLAB_CXXFLAGS -Wall -Wno-parentheses -Wold-style-cast"
 
 AC_PROG_FC
