@@ -620,7 +620,7 @@ MODEL_EXPRESSION and EXPRESSION:
 
 .. function:: cbrt(x)
 
-    Cubic root.
+    Cube root.
 
 .. function:: sign(x)
 

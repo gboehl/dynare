@@ -125,7 +125,7 @@ Compiler installation
 Prerequisites on Windows
 ------------------------
 
-There is no prerequisites on Windows. Dynare now ships a compilation
+There are no prerequisites on Windows. Dynare now ships a compilation
 environment that can be used with the :opt:`use_dll` option.
 
 
