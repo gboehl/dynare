@@ -11200,6 +11200,40 @@ Misc commands
     ``save_params_and_steady_state``; see the documentation of that
     function for more information.
 
+.. command:: compilation_setup (OPTIONS);
+
+   When the :opt:`use_dll` option is present, Dynare uses the GCC compiler that
+   was distributed with it to compile the static and dynamic C files produced
+   by the preprocessor. You can use this option to change the compiler, flags,
+   and libraries used.
+
+   *Options*
+
+    .. option:: compiler = FILENAME
+
+        The path to the compiler.
+
+    .. option:: substitute_flags = QUOTED_STRING
+
+       The flags to use instead of the default flags.
+
+    .. option:: add_flags = QUOTED_STRING
+
+       The flags to use in addition to the default flags. If
+       ``substitute_flags`` is passed, these flags are added to the flags
+       specified there.
+
+    .. option:: substitute_libs = QUOTED_STRING
+
+       The libraries to link against instead of the default libraries.
+
+    .. option:: add_libs = QUOTED_STRING
+
+       The libraries to link against in addition to the default libraries. If
+       ``substitute_libs`` is passed, these libraries are added to the
+       libraries specified there.
+
+
 .. matcomm:: dynare_version ;
 
     |br| Output the version of Dynare that is currently being used
