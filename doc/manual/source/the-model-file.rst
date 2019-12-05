@@ -7349,6 +7349,17 @@ Shock Decomposition
 
         Default: ``0``.
 
+    .. option:: diff
+
+        If passed, plot the decomposition of the first difference of the list of variables. 
+        If used in combination with :opt:`flip`, the ``diff`` operator is first applied. 
+        Default: not activated
+
+    .. option:: flip
+
+        If passed, plot the decomposition of the opposite of the list of variables. 
+        If used in combination with :opt:`diff`, the ``diff`` operator is first applied. 
+        Default: not activated
 
 Calibrated Smoother
 ===================
