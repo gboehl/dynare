@@ -70,6 +70,11 @@ if differentiate_decomp
     fig_mode1 = [fig_mode1 '_diff'];
     fig_mode = [fig_mode 'diff_'];
 end
+if isfield(opts_decomp,'init_cond_decomp')
+    init_cond_decomp = opts_decomp.init_cond_decomp ;
+else
+    init_cond_decomp = 0;
+end
 
 fig_name_long = opts_decomp.fig_name;
 
@@ -117,10 +122,16 @@ if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.plot_shock_decomp
     fprintf(fidTeX,' \n');
 end
 
-if opts_decomp.vintage && opts_decomp.realtime>1
-    preamble_txt = 'Shock decomposition';
+if init_cond_decomp
+    preamble_txt = 'Initial condition decomposition';
+    preamble_figname = '_initval_decomposition_';
 else
-    preamble_txt = 'Historical shock decomposition';
+    preamble_figname = '_shock_decomposition_';
+    if opts_decomp.vintage && opts_decomp.realtime>1
+        preamble_txt = 'Shock decomposition';
+    else
+        preamble_txt = 'Historical shock decomposition';
+    end
 end
 
 if ~(screen_shocks && comp_nbr>18)
@@ -244,18 +255,18 @@ for j=1:nvar
     hold off
     if ~DynareOptions.plot_shock_decomp.expand
         
-        dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,'_shock_decomposition_',endo_names{i_var(j)},fig_mode1,fig_name],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
+        dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,preamble_figname,endo_names{i_var(j)},fig_mode1,fig_name],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
         if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.plot_shock_decomp.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
             fprintf(fidTeX,'\\centering \n');
-            fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s/graphs/%s_shock_decomposition_%s}\n',DynareModel.fname,DynareModel.fname,[endo_names{i_var(j)} fig_mode1 fig_name]);
+            fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s/graphs/%s%s}\n',DynareModel.fname,DynareModel.fname,[preamble_figname endo_names{i_var(j)} fig_mode1 fig_name]);
             fprintf(fidTeX,'\\label{Fig:shock_decomp:%s}\n',[fig_mode endo_names{i_var(j)} fig_name]);
             fprintf(fidTeX,['\\caption{' preamble_txt fig_name_long strrep(fig_mode1, '_',  ' ') ': $ %s $.}\n'],DynareModel.endo_names_tex{i_var(j)});
             fprintf(fidTeX,'\\end{figure}\n');
             fprintf(fidTeX,' \n');
         end
     else
-        dyn_saveas(fhandle,[DynareOptions.plot_shock_decomp.filepath, filesep, DynareModel.fname,'_shock_decomposition_',endo_names{i_var(j)},fig_mode1,fig_name],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
+        dyn_saveas(fhandle,[DynareOptions.plot_shock_decomp.filepath, filesep, DynareModel.fname,preamble_figname,endo_names{i_var(j)},fig_mode1,fig_name],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
         
     end
 end

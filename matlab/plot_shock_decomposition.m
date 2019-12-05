@@ -62,6 +62,9 @@ else
     expand=0;
     options_.plot_shock_decomp.expand=0;
 end
+if ~isfield(options_.plot_shock_decomp,'init_cond_decomp') 
+    options_.plot_shock_decomp.init_cond_decomp=0;
+end
 
 if ~isempty(options_.plot_shock_decomp.fig_name)
     fig_name=[' ' options_.plot_shock_decomp.fig_name];
