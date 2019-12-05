@@ -50,6 +50,27 @@ if ~isempty(opts_decomp.type)
     fig_mode1 = ['_' fig_mode];
     fig_mode = [fig_mode '_'];
 end
+
+if isfield(opts_decomp,'flip')
+    flip_decomp = opts_decomp.flip ;
+else
+    flip_decomp = 0;
+end
+if flip_decomp
+    fig_mode1 = [fig_mode1 '_flip'];
+    fig_mode = [fig_mode 'flip_'];
+end
+
+if isfield(opts_decomp,'diff')
+    differentiate_decomp = opts_decomp.diff ;
+else
+    differentiate_decomp = 0;
+end
+if differentiate_decomp
+    fig_mode1 = [fig_mode1 '_diff'];
+    fig_mode = [fig_mode 'diff_'];
+end
+
 fig_name_long = opts_decomp.fig_name;
 
 use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;

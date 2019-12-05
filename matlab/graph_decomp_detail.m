@@ -53,6 +53,25 @@ if ~isempty(opts_decomp.type)
     fig_mode1 = ['_' fig_mode];
     fig_mode = [fig_mode '_'];
 end
+if isfield(opts_decomp,'flip')
+    flip_decomp = opts_decomp.flip ;
+else
+    flip_decomp = 0;
+end
+if flip_decomp
+    fig_mode1 = [fig_mode1 '_flip'];
+    fig_mode = [fig_mode 'flip_'];
+end
+
+if isfield(opts_decomp,'diff')
+    differentiate_decomp = opts_decomp.diff ;
+else
+    differentiate_decomp = 0;
+end
+if differentiate_decomp
+    fig_mode1 = [fig_mode1 '_diff'];
+    fig_mode = [fig_mode 'diff_'];
+end
 screen_shocks = opts_decomp.screen_shocks;
 if ~isempty(DynareOptions.plot_shock_decomp.use_shock_groups) || comp_nbr<=18
     screen_shocks=0;
