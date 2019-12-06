@@ -9,7 +9,7 @@ Software requirements
 
 Packaged versions of Dynare are available for Windows 7/8/10, several GNU/Linux
 distributions (Debian, Ubuntu, Linux Mint, Arch Linux) and macOS
-10.8 or later. Dynare should work on other systems, but some compilation steps
+10.11 or later. Dynare should work on other systems, but some compilation steps
 are necessary in that case.
 
 In order to run Dynare, you need one of the following:
@@ -125,7 +125,7 @@ Compiler installation
 Prerequisites on Windows
 ------------------------
 
-There is no prerequisites on Windows. Dynare now ships a compilation
+There are no prerequisites on Windows. Dynare now ships a compilation
 environment that can be used with the :opt:`use_dll` option.
 
 
@@ -143,12 +143,11 @@ install liboctave-dev``).
 Prerequisites on macOS
 ----------------------
 
-[TO BE UPDATED]
-
-If you are using MATLAB under macOS, you should install the latest
-version of XCode: `see instructions on the Dynare wiki
-<https://git.dynare.org/Dynare/dynare/wikis/Install-on-MacOS>`__.
-
+Dynare now ships a compilation environment that can be used with the
+:opt:`use_dll` option. Specifically, the Dynare installer downloads and
+installs the Xcode Command Line Tools, installs `Homebrew <https://brew.sh>`_
+under the Dynare installation directory (in the ``.brew`` folder), and finally
+installs GCC.
 
 Configuration
 =============

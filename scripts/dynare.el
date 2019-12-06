@@ -38,6 +38,7 @@
 ;;    - basically deactivate the mode within verbatim blocks?
 ;;    - blocks templates "model/end", "initval/end", etc.
 ;;    - functions to insert main keywords, with shortcuts in the keymap
+;;    - make font-locking case insensitive (as is Dynare lexer)
 
 (defgroup dynare nil
   "Editing Dynare mod files."
@@ -87,7 +88,7 @@
 ;; Also include "verbatim" in this list
 (defvar dynare-blocks
   '("model" "steady_state_model" "initval" "endval" "histval" "shocks"
-    "shock_groups" "mshocks" "estimated_params" "epilogue" "priors"
+    "shock_groups" "init2shocks" "mshocks" "estimated_params" "epilogue" "priors"
     "estimated_param_init" "estimated_params_bounds" "osr_params_bounds"
     "observation_trends" "optim_weights" "homotopy_setup"
     "conditional_forecast_paths" "svar_identification" "moment_calibration"
@@ -95,11 +96,12 @@
     "verbatim")
   "Dynare block keywords.")
 
-;; Mathematical functions used in model equations (see "expression" in Bison file)
+;; Mathematical functions and operators used in model equations (see "hand_side" in Bison file)
 (defvar dynare-functions
-  '("exp" "log" "ln" "log10" "sin" "cos" "tan" "asin" "acos" "atan" "sqrt"
-    "abs" "sign" "max" "min" "normcdf" "normpdf" "erf")
-  "Dynare mathematical functions.")
+  '("expectation" "var_expectation" "pac_expectation" "exp" "diff" "adl" "log"
+    "ln" "log10" "sin" "cos" "tan" "asin" "acos" "atan" "sqrt" "cbrt" "abs"
+    "sign" "max" "min" "normcdf" "normpdf" "erf" "steady_state")
+  "Dynare mathematical functions and operators.")
 
 (defvar dynare-constants
   '("nan" "inf")
@@ -110,8 +112,13 @@
   "Dynare attributes for on-the-fly type declarations.")
 
 (defvar dynare-macro-keywords
-  '("in" "length" "line" "define" "echomacrovars" "save" "for" "endfor" "ifdef"
-    "ifndef" "if" "else" "endif" "echo" "error" "include" "includepath")
+  '("line" "include" "includepath" "define" "echo" "error" "if" "ifdef" "ifndef"
+    "elseif" "else" "endif" "for" "endfor" "echomacrovars" "in" "when" "save"
+    "true" "false" "exp" "log" "ln" "log10" "sin" "cos" "tan" "asin" "acos"
+    "atan" "sqrt" "cbrt" "sign" "max" "min" "floor" "ceil" "trunc" "mod" "sum"
+    "erf" "erfc" "gamma" "lgamma" "round" "length" "normpdf" "normcdf" "isempty"
+    "isboolean" "isreal" "isstring" "istuple" "isarray" "bool" "real" "string"
+    "tuple" "array" "defined" "nan" "inf")
   "Dynare macroprocessor keywords.")
 
 (defvar dynare-font-lock-keywords

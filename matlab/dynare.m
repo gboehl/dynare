@@ -51,15 +51,12 @@ change_path_flag = true;
 % Filter out some options.
 preprocessoroutput = true;
 if nargin>1
-    id = strfind(varargin,'nopathchange');
-    if ~all(cellfun(@isempty, id))
+    id = ismember(varargin, 'nopathchange');
+    if any(id)
         change_path_flag = false;
-        varargin(cellfun(@isempty, id) == 0) = [];
+        varargin(id) = [];
     end
-    id = strfind(varargin, 'nopreprocessoroutput');
-    if ~all(cellfun(@isempty, id))
-        preprocessoroutput = false;
-    end
+    preprocessoroutput = ~ismember('nopreprocessoroutput', varargin);
 end
 
 % Check matlab path
@@ -260,17 +257,11 @@ if exist(fname(1:end-4),'dir') && exist([fname(1:end-4) filesep 'hooks'],'dir') 
 end
 
 % Save preprocessor result in logfile (if `no_log' option not present)
-no_log = 0;
-for i=1:length(varargin)
-    no_log = no_log || strcmp(varargin{i}, 'nolog');
-end
 fid = fopen(fname, 'r');
 firstline = fgetl(fid);
 fclose(fid);
-if ~isempty(regexp(firstline, '//\s*--\+\s*options:(|.*\s|.*,)nolog(|\s.*|,.*)\+--'))
-    no_log = 1;
-end
-if ~no_log
+if ~ismember('nolog', varargin) ...
+        && isempty(regexp(firstline, '//\s*--\+\s*options:(|.*\s|.*,)nolog(|\s.*|,.*)\+--'))
     logname = [fname(1:end-4) '.log'];
     fid = fopen(logname, 'w');
     fprintf(fid, '%s', result);

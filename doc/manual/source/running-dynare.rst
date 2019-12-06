@@ -36,7 +36,7 @@ by the ``dynare`` command.
     first line of the ``.mod`` file itself (see below).
 
     dynare begins by launching the preprocessor on the ``.mod
-    file``. By default (unless ``use_dll`` option has been given to
+    file``. By default (unless the :opt:`use_dll` option has been given to
     ``model``), the preprocessor creates three intermediary files:
 
     - ``+FILENAME/driver.m``
@@ -364,7 +364,7 @@ by the ``dynare`` command.
 
     .. option:: fast
 
-        Only useful with model option ``use_dll``. Don’t recompile the
+        Only useful with model option :opt:`use_dll`. Don’t recompile the
         MEX files when running again the same model file and the lists
         of variables and the equations haven’t changed. We use a 32
         bit checksum, stored in ``<model filename>/checksum``. There
