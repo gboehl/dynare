@@ -46,11 +46,24 @@ endo_nbr = M_.endo_nbr;
 nshocks = M_.exo_nbr;
 fig_name='';
 
+if isfield(options_.plot_shock_decomp,'diff') % private trap for uimenu calls
+    differentiate_decomp=options_.plot_shock_decomp.diff;
+else
+    differentiate_decomp=0;
+end
+if isfield(options_.plot_shock_decomp,'flip') % private trap for uimenu calls
+    flip_decomp=options_.plot_shock_decomp.flip;
+else
+    flip_decomp=0;
+end
 if isfield(options_.plot_shock_decomp,'expand') % private trap for uimenu calls
     expand=options_.plot_shock_decomp.expand;
 else
     expand=0;
     options_.plot_shock_decomp.expand=0;
+end
+if ~isfield(options_.plot_shock_decomp,'init_cond_decomp') 
+    options_.plot_shock_decomp.init_cond_decomp=0;
 end
 
 if ~isempty(options_.plot_shock_decomp.fig_name)
@@ -229,6 +242,12 @@ if isempty(options_.plot_shock_decomp.colormap)
     options_.plot_shock_decomp.colormap = MAP;
 end
 
+if differentiate_decomp
+    z(:,:,2:end) =  z(:,:,2:end)-z(:,:,1:end-1);
+    z(:,:,1) = nan;
+    steady_state = steady_state*0;
+end
+
 switch type
 
   case '' % default
@@ -336,6 +355,11 @@ switch type
 
     error('plot_shock_decomposition:: Wrong type')
 
+end
+
+if flip_decomp
+    z = -z;
+    steady_state = - steady_state;
 end
 if steadystate
     options_.plot_shock_decomp.steady_state=steady_state;

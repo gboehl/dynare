@@ -38,12 +38,18 @@ function oo_ = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+options_.plot_shock_decomp.colormap = options_.initial_condition_decomp.colormap;
+options_.plot_shock_decomp.nodisplay = options_.initial_condition_decomp.nodisplay;
+options_.plot_shock_decomp.graph_format = options_.initial_condition_decomp.graph_format;
+options_.plot_shock_decomp.fig_name = options_.initial_condition_decomp.fig_name;
 options_.plot_shock_decomp.detail_plot = options_.initial_condition_decomp.detail_plot;
 options_.plot_shock_decomp.steadystate = options_.initial_condition_decomp.steadystate;
 options_.plot_shock_decomp.write_xls = options_.initial_condition_decomp.write_xls;
 options_.plot_shock_decomp.type = options_.initial_condition_decomp.type;
 options_.plot_shock_decomp.plot_init_date = options_.initial_condition_decomp.plot_init_date;
 options_.plot_shock_decomp.plot_end_date = options_.initial_condition_decomp.plot_end_date;
+options_.plot_shock_decomp.diff = options_.initial_condition_decomp.diff;
+options_.plot_shock_decomp.flip = options_.initial_condition_decomp.flip;
 
 % indices of endogenous variables
 if isempty(varlist)
@@ -128,11 +134,7 @@ M_.exo_nbr = M_.endo_nbr;
 options_.plot_shock_decomp.realtime=0;
 options_.plot_shock_decomp.screen_shocks=1;
 options_.plot_shock_decomp.use_shock_groups = '';
-fig_name = options_.plot_shock_decomp.fig_name;
-if ~isempty(fig_name)
-    options_.plot_shock_decomp.fig_name=[fig_name '_initval'];
-else
-options_.plot_shock_decomp.fig_name='initval';
-end   
+options_.plot_shock_decomp.init_cond_decomp = 1; % private flag to plotting utilities
+
 plot_shock_decomposition(M_,oo,options_,varlist);
 % end

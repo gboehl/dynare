@@ -28,9 +28,13 @@ function options = set_default_initial_condition_decomposition_options(options)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-options.initial_condition_decomp.detail_plot = 0;
-options.initial_condition_decomp.steadystate = 0;
-options.initial_condition_decomp.write_xls = 0;
+options.initial_condition_decomp.colormap = '';
+options.initial_condition_decomp.nodisplay = false;
+options.initial_condition_decomp.graph_format = 'eps';
+options.initial_condition_decomp.fig_name = '';
+options.initial_condition_decomp.detail_plot = false;
+options.initial_condition_decomp.steadystate = false;
+options.initial_condition_decomp.write_xls = false;
 options.initial_condition_decomp.type = '';
 options.initial_condition_decomp.plot_init_date = [];
 options.initial_condition_decomp.plot_end_date = [];

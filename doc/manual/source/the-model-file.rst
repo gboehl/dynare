@@ -7349,6 +7349,113 @@ Shock Decomposition
 
         Default: ``0``.
 
+    .. option:: plot_init_date = DATE
+
+        If passed, plots decomposition using ``plot_init_date`` as initial period.
+        Default: first observation in estimation
+
+    .. option:: plot_end_date = DATE
+
+        If passed, plots decomposition using ``plot_end_date`` as last period.
+        Default: last observation in estimation
+
+    .. option:: diff
+
+        If passed, plot the decomposition of the first difference of the list of variables. 
+        If used in combination with :opt:`flip`, the ``diff`` operator is first applied. 
+        Default: not activated
+
+    .. option:: flip
+
+        If passed, plot the decomposition of the opposite of the list of variables. 
+        If used in combination with :opt:`diff`, the ``diff`` operator is first applied. 
+        Default: not activated
+
+.. command:: initial_condition_decomposition [VARIABLE_NAME]...;
+             initial_condition_decomposition (OPTIONS...) [VARIABLE_NAME]...;
+
+    |br| This command computes and plots the decomposition of the effect of
+    smoothed initial conditions of state variables. The ``variable_names`` provided
+    govern which variables the decomposition is plotted for.
+
+    Further note that, unlike the majority of Dynare commands, the
+    options specified below are overwritten with their defaults before
+    every call to ``initial_condition_decomposition``. Hence, if you want to
+    reuse an option in a subsequent call to
+    ``initial_condition_decomposition``, you must pass it to the command
+    again.
+
+    *Options*
+
+    .. option:: colormap = STRING
+
+        See :opt:`colormap <colormap = STRING>`.
+
+    .. option:: nodisplay
+
+        See :opt:`nodisplay`.
+
+    .. option:: graph_format = FORMAT
+                graph_format = ( FORMAT, FORMAT... )
+
+        See :opt:`graph_format <graph_format = FORMAT>`.
+
+    .. option:: detail_plot
+
+        Plots shock contributions using subplots, one per shock (or
+        group of shocks). Default: not activated
+
+    .. option:: steadystate
+
+        If passed, the the :math:`y`-axis value of the zero line in
+        the shock decomposition plot is translated to the steady state
+        level. Default: not activated
+
+    .. option:: type = qoq | yoy | aoa
+
+        For quarterly data, valid arguments are: ``qoq`` for
+        quarter-on-quarter plots, ``yoy`` for year-on-year plots of
+        growth rates, ``aoa`` for annualized variables, i.e. the value
+        in the last quarter for each year is plotted. Default value:
+        empty, i.e. standard period-on-period plots (``qoq`` for
+        quarterly data).
+
+    .. option:: fig_name = STRING
+
+        Specifies a user-defined keyword to be appended to the default
+        figure name set by ``plot_shock_decomposition``. This can
+        avoid to overwrite plots in case of sequential calls to
+        ``plot_shock_decomposition``.
+
+    .. option:: write_xls
+
+        Saves shock decompositions to Excel-file in the main
+        directory, named
+        ``FILENAME_shock_decomposition_TYPE_FIG_NAME_initval.xls``. This
+        option requires your system to be configured to be able to
+        write Excel files. [#f7]_
+
+    .. option:: plot_init_date = DATE
+
+        If passed, plots decomposition using ``plot_init_date`` as initial period.
+        Default: first observation in estimation
+
+    .. option:: plot_end_date = DATE
+
+        If passed, plots decomposition using ``plot_end_date`` as last period.
+        Default: last observation in estimation
+
+    .. option:: diff
+
+        If passed, plot the decomposition of the first difference of the list of variables. 
+        If used in combination with :opt:`flip`, the ``diff`` operator is first applied. 
+        Default: not activated
+
+    .. option:: flip
+
+        If passed, plot the decomposition of the opposite of the list of variables. 
+        If used in combination with :opt:`diff`, the ``diff`` operator is first applied. 
+        Default: not activated
 
 Calibrated Smoother
 ===================
