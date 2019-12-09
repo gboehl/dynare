@@ -36,6 +36,16 @@ if isempty(varlist)
     varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
+if isfield(options_.plot_shock_decomp,'init2shocks') % private trap for uimenu calls
+    init2shocks=options_.plot_shock_decomp.init2shocks;
+else
+    init2shocks=[];
+end
+if ~isempty(init2shocks)
+    init2shocks=M_.init2shocks.(init2shocks);
+end
+
+
 [i_var, ~, index_uniques] = varlist_indices(varlist, M_.endo_names);
 varlist = varlist(index_uniques);
 
@@ -150,6 +160,23 @@ switch realtime_
             fig_name1=[fig_name ' 1-step ahead forecast (rolling)'];
         end
 end
+
+
+if ~isempty(init2shocks) && ~expand
+    n=size(init2shocks,1);
+    for i=1:n
+        j=strmatch(init2shocks{i}{1},M_.endo_names,'exact');
+        if ~isempty(init2shocks{i}{2})
+            jj=strmatch(init2shocks{i}{2},M_.exo_names,'exact');
+            z(:,jj,:)= z(:,jj,:) + oo_.initval_decomposition (:,j,:);
+        else
+            z(:,end,:)= z(:,end,:) - oo_.initval_decomposition (:,j,:);
+        end
+        z(:,end-1,:)= z(:,end-1,:) - oo_.initval_decomposition (:,j,:);
+        
+    end    
+end    
+
 
 if isfield(oo_.dr,'ys')
     steady_state = oo_.dr.ys;
