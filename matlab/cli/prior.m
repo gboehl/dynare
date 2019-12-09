@@ -11,7 +11,7 @@ function varargout = prior(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015-2018 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -143,7 +143,8 @@ if ismember('moments', varargin) % Prior simulations (2nd order moments).
     end
     if info
         skipline()
-        fprintf('Cannot solve the model on the prior mode (info = %s, %s)\n', num2str(info(1)), interpret_resol_info(info));
+        message = get_error_message(info);
+        fprintf('Cannot solve the model on the prior mode (info = %d, %s)\n', info(1), message);
         skipline()
         return
     end
