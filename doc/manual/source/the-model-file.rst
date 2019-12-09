@@ -6956,11 +6956,13 @@ Shock Decomposition
         individual shocks in the decomposition. The groups of shocks
         are defined in the :bck:`shock_groups` block.
 
-    .. option:: colormap = STRING
+    .. option:: colormap = VARIABLE_NAME
 
-        Controls the ``colormap`` used for the shocks decomposition
-        graphs. See colormap in MATLAB/Octave manual for valid
-        arguments.
+        Controls the ``colormap`` used for the shocks decomposition graphs.
+        VARIABLE_NAME must be the name of a MATLAB/Octave variable that has
+        been declared beforehand and whose value will be passed to the
+        MATLAB/Octave ``colormap`` function (see the MATLAB/Octave manual for
+        the list of acceptable values).
 
     .. option:: nograph
 
@@ -7099,9 +7101,9 @@ Shock Decomposition
 
         See :opt:`use_shock_groups <use_shock_groups [= STRING]>`.
 
-    .. option:: colormap = STRING
+    .. option:: colormap = VARIABLE_NAME
 
-        See :opt:`colormap <colormap = STRING>`.
+        See :opt:`colormap <colormap = VARIABLE_NAME>`.
 
     .. option:: nograph
 
@@ -7238,9 +7240,9 @@ Shock Decomposition
 
         See :opt:`use_shock_groups <use_shock_groups [= STRING]>`.
 
-    .. option:: colormap = STRING
+    .. option:: colormap = VARIABLE_NAME
 
-        See :opt:`colormap <colormap = STRING>`.
+        See :opt:`colormap <colormap = VARIABLE_NAME>`.
 
     .. option:: nodisplay
 
@@ -7387,9 +7389,9 @@ Shock Decomposition
 
     *Options*
 
-    .. option:: colormap = STRING
+    .. option:: colormap = VARIABLE_NAME
 
-        See :opt:`colormap <colormap = STRING>`.
+        See :opt:`colormap <colormap = VARIABLE_NAME>`.
 
     .. option:: nodisplay
 
