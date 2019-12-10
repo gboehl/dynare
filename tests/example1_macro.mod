@@ -169,8 +169,8 @@ stoch_simul;
 @#error "String comparison"
 @#endif
 
-@#define A = "La crise économique"
-@#if A[1,8,3,7,4,10,13,2,5,16,12,9,11,14,15,6,17:19] != "Le scénario comique"
+@#define A = "La crise economique"
+@#if A[1,8,3,7,4,10,13,2,5,16,12,9,11,14,15,6,17:19] != "Le scenario comique"
 @#error "Problem with string indexing/comparison"
 @#endif
 
