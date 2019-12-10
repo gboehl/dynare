@@ -152,15 +152,18 @@ cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"
 ## Create mex for Octave
 ##
 cd "$ROOTDIR"/mex/build/octave
-CC=$CC CXX=$CXX ./configure \
+OCTAVE_VERSION=$(grep OCTAVE_VERSION "$ROOTDIR"/macOS/deps/versions.mk | cut -d'=' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+OCTAVE_USR_DIR="/Applications/Octave-$OCTAVE_VERSION.app/Contents/Resources/usr"
+OCTAVE_BIN_DIR="$OCTAVE_USR_DIR/Cellar/octave-octave-app@$OCTAVE_VERSION/$OCTAVE_VERSION/bin"
+PATH="$OCTAVE_BIN_DIR:$PATH" CC=$CC CXX=$CXX ./configure \
   PACKAGE_VERSION="$VERSION" \
   PACKAGE_STRING="dynare $VERSION" \
   CXXFLAGS=-I/usr/local/include \
-  LDFLAGS="-static-libgcc -L/usr/local/lib" \
+  LDFLAGS="-static-libgcc -L$OCTAVE_USR_DIR/lib " \
   --with-gsl="$LIB64"/gsl \
   --with-matio="$LIB64"/matio \
   --with-slicot="$LIB64"/Slicot/with-underscore
-make -j"$NTHREADS"
+PATH="$OCTAVE_BIN_DIR:$PATH" make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/octave/*                                       "$PKGFILES"/mex/octave
 echo -e "function v = supported_octave_version\nv=\"$(octave --eval "disp(OCTAVE_VERSION)")\";\nend" > "$PKGFILES"/matlab/supported_octave_version.m
 

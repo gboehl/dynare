@@ -97,14 +97,8 @@ Note that several versions of Dynare can coexist (by default in
 ``/Applications/Dynare``), as long as you correctly adjust your path
 settings (see :ref:`words-warning`).
 
-To install Dynare for Octave, first install Homebrew following the
-instructions on their site: `https://brew.sh/
-<https://brew.sh/>`__. Then install Octave, issuing the command ``brew
-install octave`` at the Terminal prompt. You can then install the
-latest stable version of Dynare by typing ``brew install dynare`` at
-the Terminal prompt. You can also pass options to the installation
-command. These options can be viewed by typing ``brew info dynare`` at
-the Terminal prompt.
+Dynare for Octave works with Octave installed via the package located here:
+`https://octave-app.org <https://octave-app.org>`__.
 
 
 For other systems
@@ -209,10 +203,10 @@ command; the packaging does it for you. Under Arch Linux, you need to do::
 
   octave:1> addpath /usr/lib/dynare/matlab
 
-Under macOS, assuming that you have installed Dynare and Octave via
-Homebrew, type::
+Under macOS, assuming you have installed Octave via `https://octave-app.org
+<https://octave-app.org>`__, type::
 
-  octave:1> addpath /usr/local/opt/dynare/lib/dynare/matlab
+  octave:1> addpath /Applications/Dynare/4.x.y/matlab
 
 If you don’t want to type this command every time you run Octave, you
 can put it in a file called ``.octaverc`` in your home directory

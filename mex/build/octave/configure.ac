@@ -32,6 +32,14 @@ FFLAGS="$($MKOCTFILE -p FFLAGS) -Wall"
 CXXFLAGS="$($MKOCTFILE -p CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast"
 LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
 
+AC_CANONICAL_HOST
+case ${host_os} in
+  darwin*)
+    CXXFLAGS="$($MKOCTFILE -p ALL_CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast -O2"
+    LDFLAGS+="$($MKOCTFILE -p OCTAVE_LIBS)"
+    ;;
+esac
+
 OCTAVE_VERSION=$($MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //')
 AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.2], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.2 at least (or disable Octave support with --disable-octave).])])
 
