@@ -104,7 +104,13 @@ oo_.surgibbs.(model_name).betadraws = zeros(floor((ndraws-discarddraws)/thin), n
 if ~options_.noprint
     disp('surgibbs: estimating, please wait...')
 end
+
+hh = dyn_waitbar(0,'Please wait. Gibbs sampler...');
+set(hh,'Name','Surgibbs estimation.');
 for i = 1:ndraws
+    if ~mod(i,10)
+        dyn_waitbar(i/ndraws,hh,'Please wait. Gibbs sampler...');
+    end
     % Draw Omega, given X, Y, Beta
     resid = reshape(Y - X*beta, nobs, m);
     Omega = rand_inverse_wishart(m, nobs, chol(inv(resid'*resid/nobs)));
@@ -126,6 +132,7 @@ for i = 1:ndraws
         end
     end
 end
+dyn_waitbar_close(hh);
 
 %% Save posterior moments.
 oo_.surgibbs.(model_name).posterior.mean.beta = (sum(oo_.surgibbs.(model_name).betadraws)/rows(oo_.surgibbs.(model_name).betadraws))';
