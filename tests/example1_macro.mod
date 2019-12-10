@@ -218,5 +218,9 @@ stoch_simul;
 @#error "Error in cast of string to bool"
 @#endif
 
+@#if !(true || "A") || (0 && "A")
+    @#error "problem with short circuit || or && operator"
+@#endif
+
 @#echomacrovars(save)
 @#echomacrovars
