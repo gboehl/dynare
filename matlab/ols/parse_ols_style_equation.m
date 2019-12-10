@@ -313,7 +313,11 @@ if strcmp(node.node_type, 'NumConstNode')
 elseif strcmp(node.node_type, 'VariableNode')
     if strcmp(node.type, 'endogenous') ...
             || (strcmp(node.type, 'exogenous') && any(strcmp(ds.name, node.name)))
-        X = ds.(node.name)(node.lag);
+        if ds.exist(node.name)
+            X = ds.(node.name)(node.lag);
+        else
+            error('Variable %s is not available in the database.', node.name)
+        end
     elseif strcmp(node.type, 'parameter')
         X = M_.params(not(cellfun('isempty', strfind(M_.param_names, node.name))));
         if isnan(X) || isinf(X) || ~isreal(X)
