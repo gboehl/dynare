@@ -161,6 +161,8 @@ for i = 1:length(Y)
         end
     end
     oo_.ols.(tag).Yhat = dseries(X{i}.data*oo_.ols.(tag).beta, fp{i}, yhatname);
+    oo_.ols.(tag).YhatOrig = oo_.ols.(tag).Yhat;
+    oo_.ols.(tag).Yobs = Y{i};
 
     % Residuals
     oo_.ols.(tag).resid = Y{i} - oo_.ols.(tag).Yhat;
@@ -168,7 +170,6 @@ for i = 1:length(Y)
     % Correct Yhat reported back to user
     Y{i} = Y{i} + lhssub{i};
     oo_.ols.(tag).Yhat = oo_.ols.(tag).Yhat + lhssub{i};
-    oo_.ols.(tag).YhatOrig = oo_.ols.(tag).Yhat;
 
     % Apply correcting function for Yhat if it was passed
     if any(idx) ...

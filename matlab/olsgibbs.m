@@ -225,13 +225,14 @@ if ~isempty(fitted_names_dict)
     end
 end
 oo_.olsgibbs.(model_name).Yhat = dseries(X*oo_.olsgibbs.(model_name).posterior.mean.beta, fp, yhatname);
+oo_.olsgibbs.(model_name).YhatOrig = oo_.olsgibbs.(model_name).Yhat;
+oo_.olsgibbs.(model_name).Yobs = dseries(Y, fp, lhsname);
 
 % Residuals
 oo_.olsgibbs.(model_name).resid = Y - oo_.olsgibbs.(model_name).Yhat;
 
 % Apply correcting function for Yhat if it was passed
 oo_.olsgibbs.(model_name).Yhat = oo_.olsgibbs.(model_name).Yhat + lhssub{1};
-oo_.olsgibbs.(model_name).YhatOrig = oo_.olsgibbs.(model_name).Yhat;
 if any(idx) ...
         && length(fitted_names_dict(idx, :)) == 3 ...
         && ~isempty(fitted_names_dict{idx, 3})

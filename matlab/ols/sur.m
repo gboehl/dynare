@@ -176,6 +176,8 @@ write_param_init_inc_file('sur', model_name, opidxs, oo_.sur.(model_name).beta);
 
 % Yhat
 oo_.sur.(model_name).Yhat = X.data * oo_.sur.(model_name).beta;
+oo_.sur.(model_name).YhatOrig = oo_.sur.(model_name).Yhat;
+oo_.sur.(model_name).Yobs = Y;
 
 % Residuals
 oo_.sur.(model_name).resid = Y.data - oo_.sur.(model_name).Yhat;
