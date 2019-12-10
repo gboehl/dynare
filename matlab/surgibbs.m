@@ -133,6 +133,8 @@ oo_.surgibbs.(model_name).posterior.variance.beta = cov(oo_.surgibbs.(model_name
 
 % Yhat
 oo_.surgibbs.(model_name).Yhat = X*oo_.surgibbs.(model_name).posterior.mean.beta;
+oo_.surgibbs.(model_name).YhatOrig = oo_.surgibbs.(model_name).Yhat;
+oo_.surgibbs.(model_name).Yobs = Y;
 
 % Residuals
 oo_.surgibbs.(model_name).resid = Y - oo_.surgibbs.(model_name).Yhat;
