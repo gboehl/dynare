@@ -164,19 +164,20 @@ end
 
 if ~isempty(init2shocks) && ~expand
     n=size(init2shocks,1);
+    M_.exo_names_init=M_.exo_names;
     for i=1:n
         j=strmatch(init2shocks{i}{1},M_.endo_names,'exact');
         if ~isempty(init2shocks{i}{2})
             jj=strmatch(init2shocks{i}{2},M_.exo_names,'exact');
+            M_.exo_names_init{jj}=[M_.exo_names_init{jj} ' + ' M_.endo_names{j}];
             z(:,jj,:)= z(:,jj,:) + oo_.initval_decomposition (:,j,:);
         else
             z(:,end,:)= z(:,end,:) - oo_.initval_decomposition (:,j,:);
         end
         z(:,end-1,:)= z(:,end-1,:) - oo_.initval_decomposition (:,j,:);
         
-    end    
+    end   
 end    
-
 
 if isfield(oo_.dr,'ys')
     steady_state = oo_.dr.ys;
@@ -235,6 +236,7 @@ end
 if ~expand
     fig_name = fig_name1;
 end
+
 if options_.plot_shock_decomp.use_shock_groups
     fig_name=[fig_name ' group ' options_.plot_shock_decomp.use_shock_groups];
     if expand
@@ -255,8 +257,26 @@ if options_.plot_shock_decomp.use_shock_groups
         zfull = z;
         [z, shock_names, M_] = make_the_groups(z,gend,endo_nbr,nshocks,M_,options_);
     end
+    if ~isempty(init2shocks) && ~expand
+        M_.exo_names=M_.exo_names_init;
+    end
 else
+    if ~isempty(init2shocks) && ~expand
+        M_.exo_names=M_.exo_names_init;
+    end
     shock_names = M_.exo_names;
+end
+
+if ~expand
+    if flip_decomp
+        fig_name=[fig_name ' flip'];
+    end
+    if differentiate_decomp
+        fig_name=[fig_name ' diff'];
+    end
+    if ~isempty(init2shocks)
+        fig_name=[fig_name ' init2shocks'];
+    end
 end
 
 func = @(x) colorspace('RGB->Lab',x);
@@ -417,6 +437,7 @@ options_.plot_shock_decomp.orig_varlist = varlist;
 if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp.use_shock_groups)
     options_.plot_shock_decomp.zfull = zfull;
 end
+
 if detail_plot
     graph_decomp_detail(z, shock_names, M_.endo_names, i_var, my_initial_date, M_, options_)
 else
@@ -435,17 +456,29 @@ shock_groups = M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups);
 shock_ind = fieldnames(shock_groups);
 ngroups = length(shock_ind);
 shock_names = shock_ind;
+shock_varexo = shock_ind;
 for i=1:ngroups
     shock_names{i} = (shock_groups.(shock_ind{i}).label);
+    if isfield(M_,'exo_names_init')
+        shock_varexo{i} = (shock_groups.(shock_ind{i}).shocks);
+    end
 end
 zz = zeros(endo_nbr,ngroups+2,gend);
 kcum=[];
 for i=1:ngroups
+    indx=0;
     for j = shock_groups.(shock_ind{i}).shocks
         k = find(strcmp(j,cellstr(M_.exo_names)));
+        if isfield(M_,'exo_names_init')
+            indx=indx+1;
+            shock_varexo{i}{indx} = M_.exo_names_init{k};
+        end
         zz(:,i,:) = zz(:,i,:) + z(:,k,:);
         z(:,k,:) = 0;
         kcum = [kcum k];
+    end
+    if isfield(M_,'exo_names_init')
+        shock_groups.(shock_ind{i}).shocks = shock_varexo{i};
     end
 end
 zothers = sum(z(:,1:nshocks,:),2);
