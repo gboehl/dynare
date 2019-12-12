@@ -714,6 +714,9 @@ options_.convergence.geweke.geweke_interval=[0.2 0.5];
 options_.convergence.rafterylewis.indicator=false;
 options_.convergence.rafterylewis.qrs=[0.025 0.005 0.95];
 
+%tolerance for Modified Harmonic Mean estimator
+options_.marginal_data_density.harmonic_mean.tolerance = 0.01;
+
 % Options for lmmcp solver
 options_.lmmcp.status = false;
 
