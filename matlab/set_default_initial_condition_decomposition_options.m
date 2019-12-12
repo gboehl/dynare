@@ -33,6 +33,7 @@ options.initial_condition_decomp.nodisplay = false;
 options.initial_condition_decomp.graph_format = 'eps';
 options.initial_condition_decomp.fig_name = '';
 options.initial_condition_decomp.detail_plot = false;
+options.initial_condition_decomp.init2shocks = [];
 options.initial_condition_decomp.steadystate = false;
 options.initial_condition_decomp.write_xls = false;
 options.initial_condition_decomp.type = '';

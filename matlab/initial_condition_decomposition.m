@@ -43,6 +43,7 @@ options_.plot_shock_decomp.nodisplay = options_.initial_condition_decomp.nodispl
 options_.plot_shock_decomp.graph_format = options_.initial_condition_decomp.graph_format;
 options_.plot_shock_decomp.fig_name = options_.initial_condition_decomp.fig_name;
 options_.plot_shock_decomp.detail_plot = options_.initial_condition_decomp.detail_plot;
+options_.plot_shock_decomp.init2shocks = options_.initial_condition_decomp.init2shocks;
 options_.plot_shock_decomp.steadystate = options_.initial_condition_decomp.steadystate;
 options_.plot_shock_decomp.write_xls = options_.initial_condition_decomp.write_xls;
 options_.plot_shock_decomp.type = options_.initial_condition_decomp.type;
@@ -51,6 +52,11 @@ options_.plot_shock_decomp.plot_end_date = options_.initial_condition_decomp.plo
 options_.plot_shock_decomp.diff = options_.initial_condition_decomp.diff;
 options_.plot_shock_decomp.flip = options_.initial_condition_decomp.flip;
 
+if isfield(options_.initial_condition_decomp,'init2shocks') % private trap for uimenu calls
+    init2shocks=options_.initial_condition_decomp.init2shocks;
+else
+    init2shocks=[];
+end
 % indices of endogenous variables
 if isempty(varlist)
     varlist = M_.endo_names(1:M_.orig_endo_nbr);
@@ -129,6 +135,15 @@ end
 % if ~options_.no_graph.shock_decomposition
 oo=oo_;
 oo.shock_decomposition = oo_.initval_decomposition;
+if ~isempty(init2shocks)
+    init2shocks = M_.init2shocks.(init2shocks);
+    n=size(init2shocks,1);
+    for i=1:n
+        j=strmatch(init2shocks{i}{1},M_.endo_names,'exact');
+        oo.shock_decomposition(:,end-1,:)=oo.shock_decomposition(:,j,:)+oo.shock_decomposition(:,end-1,:);
+        oo.shock_decomposition(:,j,:)=0;
+    end    
+end    
 M_.exo_names = M_.endo_names;
 M_.exo_nbr = M_.endo_nbr;
 options_.plot_shock_decomp.realtime=0;

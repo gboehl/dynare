@@ -53,25 +53,7 @@ if ~isempty(opts_decomp.type)
     fig_mode1 = ['_' fig_mode];
     fig_mode = [fig_mode '_'];
 end
-if isfield(opts_decomp,'flip')
-    flip_decomp = opts_decomp.flip ;
-else
-    flip_decomp = 0;
-end
-if flip_decomp
-    fig_mode1 = [fig_mode1 '_flip'];
-    fig_mode = [fig_mode 'flip_'];
-end
 
-if isfield(opts_decomp,'diff')
-    differentiate_decomp = opts_decomp.diff ;
-else
-    differentiate_decomp = 0;
-end
-if differentiate_decomp
-    fig_mode1 = [fig_mode1 '_diff'];
-    fig_mode = [fig_mode 'diff_'];
-end
 if isfield(opts_decomp,'init_cond_decomp')
     init_cond_decomp = opts_decomp.init_cond_decomp ;
 else
@@ -232,8 +214,9 @@ for j=1:nvar
                 mydata.first_obs = DynareOptions.first_obs;
                 mydata.nobs = DynareOptions.nobs;
                 mydata.plot_shock_decomp.zfull = DynareOptions.plot_shock_decomp.zfull(i_var(j),:,:);
-                mydata.endo_names = endo_names{i_var(j)};
-                mydata.endo_names_tex = DynareModel.endo_names_tex{i_var(j)};
+                mydata.endo_names = endo_names(i_var(j));
+                mydata.endo_names_tex = DynareModel.endo_names_tex(i_var(j));
+                mydata.exo_names = DynareModel.exo_names;
                 if ~isempty(mydata.shock_group.shocks)
                     c = uicontextmenu;
                     hax.UIContextMenu=c;
@@ -289,8 +272,9 @@ for j=1:nvar
                 fprintf(fidTeX,' \n');
             end
         else
-            dyn_saveas(fhandle,[DynareOptions.plot_shock_decomp.filepath, filesep, DynareModel.fname,preamble_figname,endo_names{i_var(j)},fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
-            
+            if ~isempty(DynareOptions.plot_shock_decomp.filepath)
+                dyn_saveas(fhandle,[DynareOptions.plot_shock_decomp.filepath, filesep, DynareModel.fname,preamble_figname,endo_names{i_var(j)},fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
+            end    
         end
     end
 end

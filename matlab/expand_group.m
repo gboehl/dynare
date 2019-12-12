@@ -51,6 +51,7 @@ for j=1:length(shocks)
     M.shock_groups.(options.plot_shock_decomp.use_shock_groups).(['group' int2str(j)]).label=shocks{j};
     M.shock_groups.(options.plot_shock_decomp.use_shock_groups).(['group' int2str(j)]).shocks=shocks(j);
 end
+M.exo_names = mydata.exo_names;
 
 options.plot_shock_decomp.interactive=0;
 options.plot_shock_decomp.expand=1;
