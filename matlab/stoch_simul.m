@@ -38,7 +38,7 @@ if options_.order == 1
     options_.replic = 1;
 end
 
-if M_.hessian_eq_zero && options_.order~=1
+if options_.order~=1 && M_.hessian_eq_zero
     options_.order = 1;
     warning('stoch_simul: using order = 1 because Hessian is equal to zero');
 end

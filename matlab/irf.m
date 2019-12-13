@@ -43,7 +43,7 @@ end
 y       = 0;
 
 local_order = iorder;
-if M_.hessian_eq_zero && local_order~=1
+if local_order~=1 && M_.hessian_eq_zero
     local_order = 1;
 end
 

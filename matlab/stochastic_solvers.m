@@ -24,7 +24,7 @@ function [dr, info] = stochastic_solvers(dr, task, M_, options_, oo_)
 %                                 info=6 -> The jacobian matrix evaluated at the steady state is complex.
 %                                 info=9 -> k_order_pert was unable to compute the solution
 
-% Copyright (C) 1996-2018 Dynare Team
+% Copyright (C) 1996-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,7 +48,7 @@ if options_.linear
 end
 
 local_order = options_.order;
-if M_.hessian_eq_zero && local_order~=1
+if local_order~=1 && M_.hessian_eq_zero
     local_order = 1;
     warning('stochastic_solvers: using order = 1 because Hessian is equal to zero');
 end
