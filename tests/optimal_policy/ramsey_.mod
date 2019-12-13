@@ -28,4 +28,6 @@ planner_objective inflation^2 + lambda1*y^2 + lambda2*r^2;
 
 write_latex_dynamic_model;
 
-ramsey_policy(planner_discount=0.95, order = 1);
+ramsey_model(planner_discount=0.95);
+stoch_simul(order=1);
+evaluate_planner_objective;

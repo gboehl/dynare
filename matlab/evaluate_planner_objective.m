@@ -28,14 +28,17 @@ function planner_objective_value = evaluate_planner_objective(M,options,oo)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+if options.order>1
+    fprintf('\nevaluate_planner_objective: order>1 not yet supported\n')
+    planner_objective_value = NaN;
+    return
+end
 dr = oo.dr;
 exo_nbr = M.exo_nbr;
 nstatic = M.nstatic;
 nspred = M.nspred;
 if nspred > 180
-    disp(' ')
-    disp(['WARNING in evaluate_planner_objective: model too large, can''t evaluate planner ' ...
-          'objective'])
+    fprintf('\nevaluate_planner_objective: model too large, can''t evaluate planner objective\n')
     planner_objective_value = NaN;
     return
 end
@@ -109,15 +112,13 @@ if options.ramsey_policy
 end
 
 if ~options.noprint
-    skipline()
-    disp('Approximated value of planner objective function')
+    fprintf('\nApproximated value of planner objective function\n')
     if options.ramsey_policy
-        disp(['    - with initial Lagrange multipliers set to 0: ' ...
-              num2str(planner_objective_value(2)) ])
-        disp(['    - with initial Lagrange multipliers set to steady state: ' ...
-              num2str(planner_objective_value(1)) ])
+        fprintf('    - with initial Lagrange multipliers set to 0: %10.8f\n', ...
+              planner_objective_value(2))
+        fprintf('    - with initial Lagrange multipliers set to steady state: %10.8f\n\n', ...
+              planner_objective_value(1))
     elseif options.discretionary_policy
-        fprintf('with discretionary policy: %10.8f',planner_objective_value(1))
+        fprintf('with discretionary policy: %10.8f\n\n',planner_objective_value(1))
     end
-    skipline()
 end
