@@ -45,7 +45,8 @@ end;
 
 planner_objective 0.25*pie_obs^2+y^2+0.1*dR^2;
 
-ramsey_policy(order=1,irf=0,planner_discount=0.95);
+ramsey_model(planner_discount=0.95);
+stoch_simul(order=1,irf=0);
 
 dr2 = mult_elimination({'R'},M_,options_,oo_);
 

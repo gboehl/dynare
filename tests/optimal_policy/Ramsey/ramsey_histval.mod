@@ -41,4 +41,5 @@ values 1;
 end;
 options_.dr_display_tol=0;
 planner_objective(ln(c)-phi*((n^(1+gamma))/(1+gamma)));
-ramsey_policy(planner_discount=0.99,order=1,instruments=(r),periods=500);
+ramsey_model(planner_discount=0.99,instruments=(r));
+stoch_simul(order=1,periods=500);
