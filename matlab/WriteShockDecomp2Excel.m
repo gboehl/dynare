@@ -100,8 +100,8 @@ for j=1:nvar
         comp_nbr=18;
     end
 
-    d0(1,:)=[{'Decomposition'} cellstr(labels(1:comp_nbr,:))' {'Smoot Var'}];
-    d0=[d0; num2cell([x' z1'])];
+    d0(1,:)=[{'Decomposition'} cellstr(labels(1:comp_nbr,:))' {'Smoot Var'} {'Steady State'}];
+    d0=[d0; num2cell([x' z1' ]), [num2cell(SteadyState(i_var(j))); cell(size(z1,2)-1,1)]];
     LastRow=size(d0,1);
     if use_shock_groups
         d0(LastRow+2,1)={'Legend.'};
