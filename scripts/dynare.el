@@ -64,6 +64,7 @@
     "write_latex_steady_state_model" "steady" "check" "simul" "stoch_simul"
     "var_model" "trend_component_model" "var_expectation_model" "pac_model"
     "dsample" "Sigma_e" "planner_objective" "ramsey_model" "ramsey_policy"
+    "evaluate_planner_objective"
     "discretionary_policy" "identification" "bvar_density" "bvar_forecast"
     "dynare_sensitivity" "initval_file" "histval_file" "forecast"
     "shock_decomposition" "realtime_shock_decomposition"
