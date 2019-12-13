@@ -1,4 +1,4 @@
-function [z, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
+function [out, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 % function plot_shock_decomposition(M_,oo_,options_,varlist)
 % Plots the results of shock_decomposition
 %
@@ -32,6 +32,9 @@ options0 = evalin('base','options_'); % this is to store in global options the i
 options_.nodisplay = options_.plot_shock_decomp.nodisplay;
 options_.graph_format = options_.plot_shock_decomp.graph_format;
 
+if nargout ==1
+    out=oo_;
+end
 % indices of endogenous variables
 exist_varlist = 1;
 if size(varlist,1) == 0
@@ -491,8 +494,8 @@ if steadystate
     options_.plot_shock_decomp.steady_state=steady_state;
 end
 
-if nargout
-    z=z(i_var,:,:);
+if nargout == 2
+    out=z(i_var,:,:);
     steady_state = steady_state(i_var);
     return
 end
