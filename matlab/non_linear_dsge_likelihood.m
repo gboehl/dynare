@@ -144,7 +144,7 @@ end
 %------------------------------------------------------------------------------
 
 % Linearize the model around the deterministic sdteadystate and extract the matrices of the state equation (T and R).
-[T,R,SteadyState,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
+[dr, info, Model, DynareOptions, DynareResults] = resol(0, Model, DynareOptions, DynareResults);
 
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 || ...
@@ -166,33 +166,13 @@ end
 % Define a vector of indices for the observed variables. Is this really usefull?...
 BayesInfo.mf = BayesInfo.mf1;
 
-% Define the deterministic linear trend of the measurement equation.
-if DynareOptions.noconstant
-    constant = zeros(DynareDataset.vobs,1);
-else
-    constant = SteadyState(BayesInfo.mfys);
-end
-
-% Define the deterministic linear trend of the measurement equation.
-if BayesInfo.with_trend
-    [trend_addition, trend_coeff]=compute_trend_coefficients(Model,DynareOptions,DynareDataset.vobs,DynareDataset.nobs);
-    trend = repmat(constant,1,DynareDataset.info.ntobs)+trend_addition;
-else
-    trend = repmat(constant,1,DynareDataset.nobs);
-end
-
 % Get needed informations for kalman filter routines.
 start = DynareOptions.presample+1;
-np    = size(T,1);
-mf    = BayesInfo.mf;
-Y     = transpose(DynareDataset.data);
+Y = transpose(DynareDataset.data);
 
 %------------------------------------------------------------------------------
 % 3. Initial condition of the Kalman filter
 %------------------------------------------------------------------------------
-
-% Get decision rules and transition equations.
-dr = DynareResults.dr;
 
 % Set persistent variables (first call).
 if isempty(init_flag)
@@ -270,7 +250,7 @@ DynareOptions.warning_for_steadystate = 1;
 % Adds prior if necessary
 % ------------------------------------------------------------------------------
 lnprior = priordens(xparam1(:),BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
-fval    = (likelihood-lnprior);
+fval = (likelihood-lnprior);
 
 if isnan(fval)
     fval = Inf;
@@ -280,7 +260,7 @@ if isnan(fval)
     return
 end
 
-if imag(fval)~=0
+if ~isreal(fval)
     fval = Inf;
     info(1) = 48;
     info(4) = 0.1;
@@ -288,7 +268,7 @@ if imag(fval)~=0
     return
 end
 
-if isinf(LIK)~=0
+if isinf(LIK)
     fval = Inf;
     info(1) = 50;
     info(4) = 0.1;
