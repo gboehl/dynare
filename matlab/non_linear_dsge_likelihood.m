@@ -1,113 +1,32 @@
 function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,Model,DynareOptions,BayesInfo,DynareResults] = non_linear_dsge_likelihood(xparam1,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
+
 % Evaluates the posterior kernel of a dsge model using a non linear filter.
+%
+% INPUTS
+% - xparam1                 [double]              n×1 vector, estimated parameters.
+% - DynareDataset           [struct]              Matlab's structure containing the dataset (initialized by dynare, aka dataset_).
+% - DatasetInfo             [struct]              Matlab's structure describing the dataset (initialized by dynare, aka dataset_info).
+% - DynareOptions           [struct]              Matlab's structure describing the options (initialized by dynare, aka options_).
+% - Model                   [struct]              Matlab's structure describing the Model (initialized by dynare, aka M_).
+% - EstimatedParameters     [struct]              Matlab's structure describing the estimated_parameters (initialized by dynare, aka estim_params_).
+% - BayesInfo               [struct]              Matlab's structure describing the priors (initialized by dynare,aka bayesopt_).
+% - BoundsInfo              [struct]              Matlab's structure specifying the bounds on the paramater values (initialized by dynare,aka bayesopt_).
+% - DynareResults           [struct]              Matlab's structure gathering the results (initialized by dynare,aka oo_).
+%
+% OUTPUTS
+% - fval                    [double]              scalar, value of the likelihood or posterior kernel.
+% - info                    [integer]             4×1 vector, informations resolution of the model and evaluation of the likelihood.
+% - exit_flag               [integer]             scalar, equal to 1 (no issues when evaluating the likelihood) or 0 (not able to evaluate the likelihood).
+% - DLIK                    [double]              Empty array.
+% - Hess                    [double]              Empty array.
+% - ys                      [double]              Empty array.
+% - trend_coeff             [double]              Empty array.
+% - Model                   [struct]              Updated Model structure described in INPUTS section.
+% - DynareOptions           [struct]              Updated DynareOptions structure described in INPUTS section.
+% - BayesInfo               [struct]              See INPUTS section.
+% - DynareResults           [struct]              Updated DynareResults structure described in INPUTS section.
 
-%@info:
-%! @deftypefn {Function File} {[@var{fval},@var{exit_flag},@var{ys},@var{trend_coeff},@var{info},@var{Model},@var{DynareOptions},@var{BayesInfo},@var{DynareResults}] =} non_linear_dsge_likelihood (@var{xparam1},@var{DynareDataset},@var{DynareOptions},@var{Model},@var{EstimatedParameters},@var{BayesInfo},@var{DynareResults})
-%! @anchor{dsge_likelihood}
-%! @sp 1
-%! Evaluates the posterior kernel of a dsge model using a non linear filter.
-%! @sp 2
-%! @strong{Inputs}
-%! @sp 1
-%! @table @ @var
-%! @item xparam1
-%! Vector of doubles, current values for the estimated parameters.
-%! @item DynareDataset
-%! Matlab's structure describing the dataset (initialized by dynare, see @ref{dataset_}).
-%! @item DynareOptions
-%! Matlab's structure describing the options (initialized by dynare, see @ref{options_}).
-%! @item Model
-%! Matlab's structure describing the Model (initialized by dynare, see @ref{M_}).
-%! @item EstimatedParamemeters
-%! Matlab's structure describing the estimated_parameters (initialized by dynare, see @ref{estim_params_}).
-%! @item BayesInfo
-%! Matlab's structure describing the priors (initialized by dynare, see @ref{bayesopt_}).
-%! @item DynareResults
-%! Matlab's structure gathering the results (initialized by dynare, see @ref{oo_}).
-%! @end table
-%! @sp 2
-%! @strong{Outputs}
-%! @sp 1
-%! @table @ @var
-%! @item fval
-%! Double scalar, value of (minus) the likelihood.
-%! @item info
-%! Double vector, fourth entry stores penalty, first entry the error code.
-%! @table @ @code
-%! @item info==0
-%! No error.
-%! @item info==1
-%! The model doesn't determine the current variables uniquely.
-%! @item info==2
-%! MJDGGES returned an error code.
-%! @item info==3
-%! Blanchard & Kahn conditions are not satisfied: no stable equilibrium.
-%! @item info==4
-%! Blanchard & Kahn conditions are not satisfied: indeterminacy.
-%! @item info==5
-%! Blanchard & Kahn conditions are not satisfied: indeterminacy due to rank failure.
-%! @item info==6
-%! The jacobian evaluated at the deterministic steady state is complex.
-%! @item info==19
-%! The steadystate routine has thrown an exception (inconsistent deep parameters).
-%! @item info==20
-%! Cannot find the steady state, info(2) contains the sum of square residuals (of the static equations).
-%! @item info==21
-%! The steady state is complex, info(2) contains the sum of square of imaginary parts of the steady state.
-%! @item info==22
-%! The steady has NaNs.
-%! @item info==23
-%! M_.params has been updated in the steadystate routine and has complex valued scalars.
-%! @item info==24
-%! M_.params has been updated in the steadystate routine and has some NaNs.
-%! @item info==30
-%! Ergodic variance can't be computed.
-%! @item info==41
-%! At least one parameter is violating a lower bound condition.
-%! @item info==42
-%! At least one parameter is violating an upper bound condition.
-%! @item info==43
-%! The covariance matrix of the structural innovations is not positive definite.
-%! @item info==44
-%! The covariance matrix of the measurement errors is not positive definite.
-%! @item info==45
-%! Likelihood is not a number (NaN).
-%! @item info==45
-%! Likelihood is a complex valued number.
-%! @end table
-%! @item exit_flag
-%! Integer scalar, equal to zero if the routine return with a penalty (one otherwise).
-%! @item DLIK
-%! Vector of doubles, placeholder for score of the likelihood, currently
-%! not supported by non_linear_dsge_likelihood
-%! @item AHess
-%! Matrix of doubles, placeholder for asymptotic hessian matrix, currently
-%! not supported by non_linear_dsge_likelihood
-%! @item ys
-%! Vector of doubles, steady state level for the endogenous variables.
-%! @item trend_coeffs
-%! Matrix of doubles, coefficients of the deterministic trend in the measurement equation.
-%! @item Model
-%! Matlab's structure describing the model (initialized by dynare, see @ref{M_}).
-%! @item DynareOptions
-%! Matlab's structure describing the options (initialized by dynare, see @ref{options_}).
-%! @item BayesInfo
-%! Matlab's structure describing the priors (initialized by dynare, see @ref{bayesopt_}).
-%! @item DynareResults
-%! Matlab's structure gathering the results (initialized by dynare, see @ref{oo_}).
-%! @end table
-%! @sp 2
-%! @strong{This function is called by:}
-%! @sp 1
-%! @ref{dynare_estimation_1}, @ref{mode_check}
-%! @sp 2
-%! @strong{This function calls:}
-%! @sp 1
-%! @ref{dynare_resolve}, @ref{lyapunov_symm}, @ref{priordens}
-%! @end deftypefn
-%@eod:
-
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
