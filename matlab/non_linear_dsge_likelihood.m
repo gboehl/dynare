@@ -43,11 +43,6 @@ function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,Model,DynareOptions,Bayes
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% Declaration of the penalty as a persistent variable.
-persistent init_flag
-persistent restrict_variables_idx observed_variables_idx state_variables_idx mf0 mf1
-persistent sample_size number_of_state_variables number_of_observed_variables number_of_structural_innovations
-
 % Initialization of the returned arguments.
 fval            = [];
 ys              = [];
@@ -174,19 +169,15 @@ Y = transpose(DynareDataset.data);
 % 3. Initial condition of the Kalman filter
 %------------------------------------------------------------------------------
 
-% Set persistent variables (first call).
-if isempty(init_flag)
-    mf0 = BayesInfo.mf0;
-    mf1 = BayesInfo.mf1;
-    restrict_variables_idx  = dr.restrict_var_list;
-    observed_variables_idx  = restrict_variables_idx(mf1);
-    state_variables_idx     = restrict_variables_idx(mf0);
-    sample_size = size(Y,2);
-    number_of_state_variables = length(mf0);
-    number_of_observed_variables = length(mf1);
-    number_of_structural_innovations = length(Q);
-    init_flag = 1;
-end
+mf0 = BayesInfo.mf0;
+mf1 = BayesInfo.mf1;
+restrict_variables_idx  = dr.restrict_var_list;
+observed_variables_idx  = restrict_variables_idx(mf1);
+state_variables_idx     = restrict_variables_idx(mf0);
+sample_size = size(Y,2);
+number_of_state_variables = length(mf0);
+number_of_observed_variables = length(mf1);
+number_of_structural_innovations = length(Q);
 
 ReducedForm.ghx  = dr.ghx(restrict_variables_idx,:);
 ReducedForm.ghu  = dr.ghu(restrict_variables_idx,:);
