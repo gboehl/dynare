@@ -86,6 +86,15 @@ if isempty(parameter_set)
 end
 
 if ~isfield(oo_,'initval_decomposition') || isequal(varlist,0)
+    if isfield(oo_,'shock_decomposition_info') && isfield(oo_.shock_decomposition_info,'i_var')
+        if isfield (oo_,'realtime_conditional_shock_decomposition') ...
+                || isfield (oo_,'realtime_forecast_shock_decomposition') ...
+                || isfield (oo_,'realtime_shock_decomposition') ...
+                || isfield (oo_,'conditional_shock_decomposition') ...
+                || isfield (oo_,'shock_decomposition')
+            error('initval_decomposition::squeezed shock decompositions are already stored in oo_')
+        end
+    end
     options_.selected_variables_only = 0; %make sure all variables are stored
     options_.plot_priors=0;
     [oo,M,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);

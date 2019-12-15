@@ -1,12 +1,12 @@
-function [oo_,options_] = squeeze_shock_decomp(M_,oo_,options_,var_list_)
+function oo_ = squeeze_shock_decomp(M_,oo_,options_,var_list_)
 
-my_vars = options_.plot_shock_decomp.i_var;
+my_vars = oo_.plot_shock_decomposition_info.i_var;
 if nargin>3
     my_vars = [varlist_indices(var_list_,M_.endo_names); my_vars];
 end
 sd_vlist = M_.endo_names(my_vars,:);
 
-if isstruct(options_.plot_shock_decomp.q2a)
+if isfield(options_.plot_shock_decomp,'q2a') && isstruct(options_.plot_shock_decomp.q2a)
     
     avname={options_.plot_shock_decomp.q2a.qname};
     sda = options_.plot_shock_decomp.q2a(ismember(avname,sd_vlist));
@@ -18,7 +18,8 @@ if isstruct(options_.plot_shock_decomp.q2a)
 end
 i_var = varlist_indices(sd_vlist,M_.endo_names);
 
-options_.shock_decomp.i_var = i_var;
+oo_.plot_shock_decomposition_info.i_var = i_var;
+oo_.shock_decomposition_info.i_var = i_var;
 if isfield (oo_,'shock_decomposition')
     oo_.shock_decomposition = oo_.shock_decomposition(i_var,:,:);
 end

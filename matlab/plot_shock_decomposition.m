@@ -28,13 +28,17 @@ function [out, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-options0 = evalin('base','options_'); % this is to store in global options the index of variables plotted
 options_.nodisplay = options_.plot_shock_decomp.nodisplay;
 options_.graph_format = options_.plot_shock_decomp.graph_format;
 
-if nargout ==1
-    out=oo_;
+if ~isfield(oo_,'shock_decomposition_info')
+    oo_.shock_decomposition_info = struct();
 end
+if ~isfield(oo_,'plot_shock_decomposition_info')
+    oo_.plot_shock_decomposition_info = struct();
+end
+
+out=oo_;
 % indices of endogenous variables
 exist_varlist = 1;
 if size(varlist,1) == 0
@@ -55,20 +59,21 @@ if ~isempty(init2shocks)
     init2shocks=M_.init2shocks.(init2shocks);
 end
 
-
-if isfield(options_.shock_decomp,'i_var') && (M_.endo_nbr>=M_.orig_endo_nbr)
-    M_.endo_names = M_.endo_names(options_.shock_decomp.i_var,:);
-    M_.endo_names_tex = M_.endo_names_tex(options_.shock_decomp.i_var,:);
-    M_.endo_nbr = length( options_.shock_decomp.i_var );
+if isfield(oo_.shock_decomposition_info,'i_var') && (M_.endo_nbr>=M_.orig_endo_nbr)
+    M_.endo_names = M_.endo_names(oo_.shock_decomposition_info.i_var,:);
+    M_.endo_names_tex = M_.endo_names_tex(oo_.shock_decomposition_info.i_var,:);
+    M_.endo_nbr = length( oo_.shock_decomposition_info.i_var );
 end
 try
     [i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
 catch ME
-    if isfield(options_.shock_decomp,'i_var')
+    if isfield(oo_.shock_decomposition_info,'i_var')
         warning('shock decomp results for some input variable was not stored: I recompute all decompositions')
         M_ = evalin('base','M_');
         bayestopt_ = evalin('base','bayestopt_');
         estim_params_ = evalin('base','estim_params_');
+        options_.no_graph.shock_decomposition=1; % force nograph in computing decompositions!
+        oo_.shock_decomposition_info = rmfield(oo_.shock_decomposition_info,'i_var');
         var_list_ = char();
         disp('recomputing shock decomposition ...')
         [oo_,M_]= shock_decomposition(M_,oo_,options_,var_list_,bayestopt_,estim_params_);
@@ -80,10 +85,8 @@ catch ME
             disp('recomputing initval shock decomposition ...')
             oo_ = initial_condition_decomposition(M_,oo_,options_,0,bayestopt_,estim_params_);   
         end
-        assignin('base','oo_',oo_)
         [i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
-        options_.shock_decomp = rmfield(options_.shock_decomp,'i_var');
-        options0.shock_decomp = rmfield(options0.shock_decomp,'i_var');
+        out = oo_;
     else
         rethrow(ME)
     end
@@ -91,13 +94,12 @@ end
 
 varlist = varlist(index_uniques);
 
-if ~isfield(options0.shock_decomp,'i_var') && exist_varlist
-    if ~isfield(options0.plot_shock_decomp,'i_var')
-        options0.plot_shock_decomp.i_var = i_var;
+if ~isfield(out.shock_decomposition_info,'i_var') && exist_varlist
+    if ~isfield(out.plot_shock_decomposition_info,'i_var')
+        out.plot_shock_decomposition_info.i_var = i_var;
     else
-        options0.plot_shock_decomp.i_var = union(i_var, options0.plot_shock_decomp.i_var);
+        out.plot_shock_decomposition_info.i_var = unique([i_var(:); out.plot_shock_decomposition_info.i_var(:)]);
     end
-    assignin('base','options_',options0)
 end
 
 type=options_.plot_shock_decomp.type;

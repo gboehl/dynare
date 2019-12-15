@@ -41,6 +41,16 @@ function [oo_,M_] = shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % indices of endogenous variables
+
+if isfield(oo_,'shock_decomposition_info') && isfield(oo_.shock_decomposition_info,'i_var')
+    if isfield (oo_,'realtime_conditional_shock_decomposition') ...
+            || isfield (oo_,'realtime_forecast_shock_decomposition') ...
+            || isfield (oo_,'realtime_shock_decomposition') ...
+            || isfield (oo_,'conditional_shock_decomposition') ...
+            || isfield (oo_,'initval_decomposition')
+        error('shock_decomposition::squeezed shock decompositions are already stored in oo_')
+    end
+end
 if isempty(varlist)
     varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
@@ -123,5 +133,5 @@ end
 oo_.shock_decomposition = z;
 
 if ~options_.no_graph.shock_decomposition
-    plot_shock_decomposition(M_,oo_,options_,varlist);
+    oo_ = plot_shock_decomposition(M_,oo_,options_,varlist);
 end
