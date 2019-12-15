@@ -107,6 +107,9 @@ close all,
 // first compute realtime decompositions [pre-processor not yet available]
 realtime_shock_decomposition(forecast=8, save_realtime=[5 9 13 17 21 25 29 33 37 41 45 49 53 57 61 65 69 73 77]) y_obs R_obs pie_obs dq de;
 
+// test squeeze
+oo_ = squeeze_shock_decomp(M_,oo_,options_);
+
 //realtime pooled
 plot_shock_decomposition(realtime = 1) y_obs R_obs pie_obs dq de;
 
@@ -129,6 +132,7 @@ close all,
 // now I test annualized variables
 // options_.plot_shock_decomp.q2a=1;
 // options_.plot_shock_decomp.islog=1;
+// this also triggers re-computing of decompositions since y was not present in squeeze set
 plot_shock_decomposition(detail_plot, type = aoa) y;
 
 plot_shock_decomposition(realtime = 1) y;
@@ -147,6 +151,9 @@ close all,
 
 // testing realtime decomposition with fast_realtime option
 realtime_shock_decomposition(fast_realtime=75) y_obs R_obs pie_obs dq de;
+
+// re-test squeeze
+oo_ = squeeze_shock_decomp(M_,oo_,options_);
 
 collect_latex_files;
 if system(['pdflatex -halt-on-error -interaction=batchmode ' M_.fname '_TeX_binder.tex'])
