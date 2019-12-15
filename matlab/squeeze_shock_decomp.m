@@ -1,6 +1,10 @@
 function oo_ = squeeze_shock_decomp(M_,oo_,options_,var_list_)
 
-my_vars = oo_.plot_shock_decomposition_info.i_var;
+if isfield(oo_,'plot_shock_decomposition_info') && isfield(oo_.plot_shock_decomposition_info','i_var')
+    my_vars = oo_.plot_shock_decomposition_info.i_var;
+else
+    my_vars=[];
+end
 if nargin>3
     my_vars = [varlist_indices(var_list_,M_.endo_names); my_vars];
 end
@@ -15,6 +19,11 @@ if isfield(options_.plot_shock_decomp,'q2a') && isstruct(options_.plot_shock_dec
             sd_vlist = [sd_vlist; {sda(k).aux.y}];
         end
     end
+end
+
+if isempty(sd_vlist)
+    disp('Nothing has been squeezed: there is no list of variables for it!')
+    return
 end
 i_var = varlist_indices(sd_vlist,M_.endo_names);
 
