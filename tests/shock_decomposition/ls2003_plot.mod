@@ -83,10 +83,14 @@ A e_A;
 end;
 
 options_.initial_date=dates('1989Q4'); % date arbitrarily set for testing purposes
-shock_decomposition(use_shock_groups=trade) y_obs R_obs pie_obs dq de;
+shock_decomposition(nograph);
+// test for nothing to squeeze
+oo_ = squeeze_shock_decomp(M_,oo_,options_);
 
 // standard plot
 plot_shock_decomposition y_obs R_obs pie_obs dq de;
+// grouped shocks
+plot_shock_decomposition(use_shock_groups=trade) y_obs R_obs pie_obs dq de;
 
 // test datailed, custom name and yoy plots
 plot_shock_decomposition(detail_plot, fig_name = MR, type = yoy) y_obs R_obs pie_obs dq de;
