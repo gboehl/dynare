@@ -117,7 +117,7 @@ end
 % User doesn't want to use parallel computing, or wants to compute a
 % single chain compute sequentially.
 
-if isnumeric(options_.parallel) || (nblck-fblck)==0
+if isnumeric(options_.parallel) || (~isempty(fblck) && (nblck-fblck)==0)
     fout = posterior_sampler_core(localVars, fblck, nblck, 0);
     record = fout.record;
     % Parallel in Local or remote machine.
@@ -142,6 +142,11 @@ else
     end
     % from where to get back results
     %     NamFileOutput(1,:) = {[M_.dname,'/metropolis/'],'*.*'};
+    if options_.mh_recover && isempty(fblck)
+        % here we just need to retrieve the output of the completed remote jobs
+        fblck=1;
+        options_.parallel_info.parallel_recover = 1;
+    end
     [fout, nBlockPerCPU, totCPU] = masterParallel(options_.parallel, fblck, nblck,NamFileInput,'posterior_sampler_core', localVars, globalVars, options_.parallel_info);
     for j=1:totCPU
         offset = sum(nBlockPerCPU(1:j-1))+fblck-1;
@@ -151,7 +156,7 @@ else
         record.FunctionEvalPerIteration(offset+1:sum(nBlockPerCPU(1:j)))=fout(j).record.FunctionEvalPerIteration(offset+1:sum(nBlockPerCPU(1:j)));
         record.LastSeeds(offset+1:sum(nBlockPerCPU(1:j)))=fout(j).record.LastSeeds(offset+1:sum(nBlockPerCPU(1:j)));
     end
-
+    options_.parallel_info.parallel_recover = 0;
 end
 
 irun = fout(1).irun;
