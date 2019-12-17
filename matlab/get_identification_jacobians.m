@@ -71,7 +71,7 @@ function [J, G, D, dTAU, dLRE, dA, dOm, dYss, MOMENTS] = get_identification_jaco
 %   * get_minimal_state_representation
 %   * duplication
 %   * dyn_vech
-%   * get_first_order_solution_params_deriv (previously getH)
+%   * get_perturbation_params_deriv (previously getH)
 %   * get_all_parameters
 %   * fjaco
 %   * lyapunov_symm
@@ -124,7 +124,13 @@ exo_nbr         = M.exo_nbr;
 endo_nbr        = M.endo_nbr;
 
 %% Construct dTAU, dLRE, dA, dOm, dYss
-[dA, dB, dSig, dOm, dYss, dg1] = get_first_order_solution_params_deriv(A, B, estim_params, M, oo, options, kronflag, indpmodel, indpstderr, indpcorr, (1:endo_nbr)');
+DERIVS = get_perturbation_params_derivs(M, options, estim_params, oo, indpmodel, indpstderr, indpcorr, 0);%d2flag=0
+dA = zeros(M.endo_nbr, M.endo_nbr, size(DERIVS.dghx,3));
+dA(:,M.nstatic+(1:M.nspred),:) = DERIVS.dghx;
+dB = DERIVS.dghu;
+dSig = DERIVS.dSigma_e;
+dOm = DERIVS.dOm;
+dYss = DERIVS.dYss;
 
 % Collect terms for derivative of tau=[Yss; vec(A); vech(Om)]
 dTAU = zeros(endo_nbr*endo_nbr+endo_nbr*(endo_nbr+1)/2, totparam_nbr);
@@ -132,7 +138,7 @@ for j=1:totparam_nbr
     dTAU(:,j) = [vec(dA(:,:,j)); dyn_vech(dOm(:,:,j))];
 end
 dTAU = [ [zeros(endo_nbr, stderrparam_nbr+corrparam_nbr) dYss]; dTAU ]; % add steady state
-dLRE = [dYss; reshape(dg1,size(dg1,1)*size(dg1,2),size(dg1,3)) ]; %reshape dg1 and add steady state
+dLRE = [dYss; reshape(DERIVS.dg1,size(DERIVS.dg1,1)*size(DERIVS.dg1,2),size(DERIVS.dg1,3)) ]; %reshape dg1 and add steady state
     
 %State Space Matrices for VAROBS variables
 C  = A(indvobs,:);
@@ -144,7 +150,7 @@ dD = dB(indvobs,:,:);
 if ~no_identification_moments
     if kronflag == -1
         %numerical derivative of autocovariogram [outputflag=1]
-        J = fjaco('identification_numerical_objective', para0, 1, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr);
+        J = fjaco(str2func('identification_numerical_objective'), para0, 1, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr);
         M.params = params0;              %make sure values are set back
         M.Sigma_e = Sigma_e0;            %make sure values are set back
         M.Correlation_matrix = Corr_e0 ; %make sure values are set back
@@ -254,7 +260,7 @@ if ~no_identification_spectrum
     IA = eye(size(A,1));
     if kronflag == -1
         %numerical derivative of spectral density [outputflag=2]
-        dOmega_tmp = fjaco('identification_numerical_objective', para0, 2, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr);
+        dOmega_tmp = fjaco(str2func('identification_numerical_objective'), para0, 2, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr);
         M.params = params0;              %make sure values are set back
         M.Sigma_e = Sigma_e0;            %make sure values are set back
         M.Correlation_matrix = Corr_e0 ; %make sure values are set back

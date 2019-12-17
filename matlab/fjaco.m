@@ -10,7 +10,7 @@ function fjac = fjaco(f,x,varargin)
 % OUTPUT
 %   fjac      : finite difference Jacobian
 %
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2017,2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,7 +29,10 @@ function fjac = fjaco(f,x,varargin)
 
 ff=feval(f,x,varargin{:});
 
-tol    = eps.^(1/3);
+tol = eps.^(1/3); %some default value
+if strcmp(func2str(f),'get_perturbation_params_derivs_numerical_objective') || strcmp(func2str(f),'identification_numerical_objective')
+    tol= varargin{5}.dynatol.x;
+end
 h = tol.*max(abs(x),1);
 xh1=x+h; xh0=x-h;
 h=xh1-xh0;
@@ -37,8 +40,34 @@ fjac = NaN(length(ff),length(x));
 for j=1:length(x)
     xx = x;
     xx(j) = xh1(j); f1=feval(f,xx,varargin{:});
+    if isempty(f1) && (strcmp(func2str(f),'get_perturbation_params_derivs_numerical_objective') || strcmp(func2str(f),'identification_numerical_objective') )
+        [~,info]=feval(f,xx,varargin{:});
+        disp_info_error_identification_perturbation(info,j);
+    end    
     xx(j) = xh0(j); f0=feval(f,xx,varargin{:});
+    if isempty(f0) && (strcmp(func2str(f),'get_perturbation_params_derivs_numerical_objective') || strcmp(func2str(f),'identification_numerical_objective') )
+        [~,info]=feval(f,xx,varargin{:});
+        disp_info_error_identification_perturbation(info,j)
+    end
     fjac(:,j) = (f1-f0)/h(j);
 end
 
 feval(f,x,varargin{:});
+
+%Auxiliary functions
+function disp_info_error_identification_perturbation(info,j)
+    % there are errors in the solution algorithm
+    probl_par = get_the_name(j,varargin{5}.TeX,varargin{3},varargin{2},varargin{5});
+    skipline()
+    message = get_error_message(info,0,varargin{5});
+    fprintf('Parameter error in numerical two-sided difference method:\n')
+    fprintf('Cannot solve the model for %s (info = %d, %s)\n', probl_par, info(1), message);
+    fprintf('Possible solutions:\n')
+    fprintf('  -- check your mod file, calibration and steady state computations carefully\n');
+    fprintf('  -- use analytic derivatives, i.e. set analytic_derivation_mode=0\n');
+    fprintf('  -- use an estimated_params block without %s or change its value\n', probl_par);
+    fprintf('  -- change numerical tolerance level in fjaco.m (you can tune ''options_.dynatol.x'' or change fjaco.m function directly)\n');
+    error('fjaco.m: numerical two-sided difference method yields errors in solution algorithm');
+end
+
+end %main function end

@@ -284,7 +284,6 @@ options_ = set_default_option(options_,'datafile','');
 options_.mode_compute = 0;
 options_.plot_priors = 0;
 options_.smoother = 1;
-options_.options_ident = options_ident; %store identification options into global options
 [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_, bayestopt_, bounds] = dynare_estimation_init(M_.endo_names, fname, 1, M_, options_, oo_, estim_params_, bayestopt_);
 %outputting dataset_ is needed for Octave
 
@@ -294,6 +293,7 @@ options_ident = set_default_option(options_ident,'analytic_derivation_mode', opt
     %  1: kronecker products method to compute analytical derivatives as in Iskrev (2010)
     % -1: numerical two-sided finite difference method to compute numerical derivatives of all Jacobians using function identification_numerical_objective.m (previously thet2tau.m)
     % -2: numerical two-sided finite difference method to compute numerically dYss, dg1, d2Yss and d2g1, the Jacobians are then computed analytically as in options 0
+options_.analytic_derivation_mode = options_ident.analytic_derivation_mode; %overwrite setting
 
 % initialize persistent variables in prior_draw
 if prior_exist
@@ -385,12 +385,13 @@ options_ident = set_default_option(options_ident,'max_dim_subsets_groups',min([4
     % In identification_checks_via_subsets.m, when checks_via_subsets=1, this
     % option sets the maximum dimension of groups of parameters for which
     % the corresponding rank criteria is checked 
-    
+
+options_.options_ident = options_ident; %store identification options into global options
 MaxNumberOfBytes = options_.MaxNumberOfBytes; %threshold when to save from memory to files
 store_options_ident = options_ident;
+
 iload = options_ident.load_ident_files;
 SampleSize = options_ident.prior_mc;
-
 if iload <=0
     %% Perform new identification analysis, i.e. do not load previous analysis
     if prior_exist
