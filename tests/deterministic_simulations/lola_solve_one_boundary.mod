@@ -96,50 +96,50 @@ eps_Ds eps_phijs eps_PensCorr_L eps_PensCorr_F;
 % ============================================================
 
 @#for i in wg
-set_param_value('Du@{i}',Du@{i});
-set_param_value('Dn@{i}',Dn@{i});
-set_param_value('h@{i}',h@{i});
-set_param_value('h@{i}_f',h@{i}_f);
-set_param_value('chi@{i}',chi@{i});
-set_param_value('eta@{i}b',eta@{i}b);
+set.param_value('Du@{i}',Du@{i});
+set.param_value('Dn@{i}',Dn@{i});
+set.param_value('h@{i}',h@{i});
+set.param_value('h@{i}_f',h@{i}_f);
+set.param_value('chi@{i}',chi@{i});
+set.param_value('eta@{i}b',eta@{i}b);
 @#endfor
 
 @#for i in erg
-set_param_value('De_@{i}b',De_@{i}b);
+set.param_value('De_@{i}b',De_@{i}b);
 @#endfor
 
-set_param_value('rho',rho);
-set_param_value('phi',phi);
-set_param_value('delta',delta);
-set_param_value('alpha',alpha);
-set_param_value('beta',beta);
-set_param_value('ann',ann);
-set_param_value('fc',fc);
-set_param_value('nu',nu);
-set_param_value('aa',aa);
+set.param_value('rho',rho);
+set.param_value('phi',phi);
+set.param_value('delta',delta);
+set.param_value('alpha',alpha);
+set.param_value('beta',beta);
+set.param_value('ann',ann);
+set.param_value('fc',fc);
+set.param_value('nu',nu);
+set.param_value('aa',aa);
 
-set_param_value('rhoub',rhoub);
-set_param_value('rhoeb',rhoeb);
-set_param_value('rholb',rholb);
-set_param_value('tauwb',tauwb);
-set_param_value('taucb',taucb);
-set_param_value('taufb',taufb);
-set_param_value('taukb',taukb);
-set_param_value('gb',gb);
+set.param_value('rhoub',rhoub);
+set.param_value('rhoeb',rhoeb);
+set.param_value('rholb',rholb);
+set.param_value('tauwb',tauwb);
+set.param_value('taucb',taucb);
+set.param_value('taufb',taufb);
+set.param_value('taukb',taukb);
+set.param_value('gb',gb);
 
-set_param_value('TFPb',TFPb);
-set_param_value('ghb',ghb);
-set_param_value('rrbb',rrbb);
+set.param_value('TFPb',TFPb);
+set.param_value('ghb',ghb);
+set.param_value('rrbb',rrbb);
 
-set_param_value('thetab',thetab);
-set_param_value('tau1b',tau1b);
-set_param_value('om1b',om1b);
-set_param_value('om2b',om2b);
-set_param_value('om2sb',om2sb);
-set_param_value('Dsb',Dsb);
-set_param_value('phijsb',phijsb);
+set.param_value('thetab',thetab);
+set.param_value('tau1b',tau1b);
+set.param_value('om1b',om1b);
+set.param_value('om2b',om2b);
+set.param_value('om2sb',om2sb);
+set.param_value('Dsb',Dsb);
+set.param_value('phijsb',phijsb);
 
-set_param_value('bsY_iss',bsY_iss);
+set.param_value('bsY_iss',bsY_iss);
 
 NBRYb=NBR_iss/(phii_iss*gdp_iss);
 
