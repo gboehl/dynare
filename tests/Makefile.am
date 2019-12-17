@@ -19,6 +19,8 @@ MODFILES = \
 	optimizers/fs2000_9.mod \
 	optimizers/fs2000_10.mod \
 	analytic_derivatives/fs2000_analytic_derivation.mod \
+	analytic_derivatives/BrockMirman_PertParamsDerivs.mod \
+	analytic_derivatives/burnside_3_order_PertParamsDerivs.mod \	
 	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME.mod \
 	TeX/fs2000_corr_ME.mod \
 	estimation/MH_recover/fs2000_recover_tarb.mod \
@@ -383,6 +385,7 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	estimation/fs2000_mixed_ML_xfail.mod \
 	estimation/fs2000_stochastic_singularity_xfail.mod \
 	identification/ident_unit_root/ident_unit_root_xfail.mod \
+	identification/LindeTrabandt/LindeTrabandt2019_xfail.mod \
 	steady_state/Linear_steady_state_xfail.mod \
 	optimal_policy/Ramsey/ramsey_histval_xfail.mod \
 	example1_extra_exo_xfail.mod
@@ -696,6 +699,10 @@ identification: m/identification o/identification
 m/identification: $(patsubst %.mod, %.m.trs, $(filter identification/%.mod, $(MODFILES)))
 o/identification: $(patsubst %.mod, %.o.trs, $(filter identification/%.mod, $(MODFILES)))
 
+analytic_derivatives: m/analytic_derivatives o/analytic_derivatives
+m/analytic_derivatives: $(patsubst %.mod, %.m.trs, $(filter analytic_derivatives/%.mod, $(MODFILES)))
+o/analytic_derivatives: $(patsubst %.mod, %.o.trs, $(filter analytic_derivatives/%.mod, $(MODFILES)))
+
 fs2000: m/fs2000 o/fs2000
 m/fs2000: $(patsubst %.mod, %.m.trs, $(filter fs2000/%.mod, $(MODFILES)))
 o/fs2000: $(patsubst %.mod, %.o.trs, $(filter fs2000/%.mod, $(MODFILES)))
@@ -813,6 +820,7 @@ EXTRA_DIST = \
 	data/test.xlsx \
 	gsa/morris/nk_est_data.m \
 	analytic_derivatives/fsdat_simul.m \
+	analytic_derivatives/nBrockMirmanSYM.mat \
 	fs2000/fsdat_simul.m \
 	ls2003/data_ca1.m \
 	measurement_errors/data_ca1.m \
@@ -848,6 +856,7 @@ EXTRA_DIST = \
 	kalman/likelihood_from_dynare/fs2000_estimation_check.inc \
 	kalman/likelihood_from_dynare/fs2000ns_model.inc \
 	kalman/likelihood_from_dynare/fs2000ns_estimation_check.inc \
+	identification/as2007/G_QT.mat \
 	estimation/fsdat_simul.m \
 	ep/mean_preserving_spread.m \
 	decision_rules/example1_results_dyn_432.mat \

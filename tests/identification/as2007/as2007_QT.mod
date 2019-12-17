@@ -74,24 +74,23 @@ identification(parameter_set=calibration,
                checks_via_subsets=1,
                max_dim_subsets_groups=4);
 
-%     load('G_QT'); %note that this is computed using replication files of Qu and Tkachenko (2012)
-%     temp = load([M_.dname filesep 'identification' filesep M_.fname '_identif']);
-%     G_dynare = temp.ide_spectrum_point.G;
-% 
-%     % Compare signs
-%     if ~isequal(sign(G_dynare),sign(G_QT))
-%         error('signs of normalized G are note equal');
-%     end
-% 
-%     % Compare normalized versions
-%     tilda_G_dynare = temp.ide_spectrum_point.tilda_G;
-%     ind_G_QT = (find(max(abs(G_QT'),[],1) > temp.store_options_ident.tol_deriv));
-%     tilda_G_QT = zeros(size(G_QT));
-%     delta_G_QT = sqrt(diag(G_QT(ind_G_QT,ind_G_QT)));
-%     tilda_G_QT(ind_G_QT,ind_G_QT) = G_QT(ind_G_QT,ind_G_QT)./((delta_G_QT)*(delta_G_QT'));
-%     if ~isequal(rank(tilda_G_QT,temp.store_options_ident.tol_rank),rank(tilda_G_dynare,temp.store_options_ident.tol_rank))
-%         error('ranks are not the same for normalized version')
-%     end
-% 
-%     max(max(abs(abs(tilda_G_dynare)-abs(tilda_G_QT))))
-%     norm(tilda_G_dynare - tilda_G_QT)
+load('G_QT'); %note that this is computed using replication files of Qu and Tkachenko (2012)
+temp = load([M_.dname filesep 'identification' filesep M_.fname '_identif']);
+G_dynare = temp.ide_spectrum_point.G;
+% Compare signs
+if ~isequal(sign(G_dynare),sign(G_QT))
+    error('signs of normalized G are note equal');
+end
+
+% Compare normalized versions
+tilda_G_dynare = temp.ide_spectrum_point.tilda_G;
+ind_G_QT = (find(max(abs(G_QT'),[],1) > temp.store_options_ident.tol_deriv));
+tilda_G_QT = zeros(size(G_QT));
+delta_G_QT = sqrt(diag(G_QT(ind_G_QT,ind_G_QT)));
+tilda_G_QT(ind_G_QT,ind_G_QT) = G_QT(ind_G_QT,ind_G_QT)./((delta_G_QT)*(delta_G_QT'));
+if ~isequal(rank(tilda_G_QT,temp.store_options_ident.tol_rank),rank(tilda_G_dynare,temp.store_options_ident.tol_rank))
+    error('ranks are not the same for normalized version')
+end
+
+max(max(abs(abs(tilda_G_dynare)-abs(tilda_G_QT))))
+norm(tilda_G_dynare - tilda_G_QT)

@@ -33,6 +33,7 @@ wsOct
 !/AIM/fs2000_b1L1L_steadystate.m
 !/AIM/fsdat.m
 !/analytic_derivatives/fsdat_simul.m
+!/analytic_derivatives/nBrockMirmanSYM.mat
 !/block_bytecode/run_ls2003.m
 !/bvar_a_la_sims/bvar_sample.m
 !/conditional_forecasts/2/fsdat_simul.m
@@ -67,6 +68,7 @@ wsOct
 !/gsa/ls2003scr_results.mat
 !/gsa/morris/nk_est_data.m
 !/identification/as2007/as2007_steadystate.m
+!/identification/as2007/G_QT.mat
 !/identification/kim/kim2_steadystate.m
 !/initval_file/ramst_initval_file_data.m
 !/internals/tests.m

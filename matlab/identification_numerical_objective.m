@@ -92,17 +92,6 @@ end
 ys = oo.dr.ys; %steady state of model variables in declaration order
 y0 = ys(oo.dr.order_var); %steady state of model variables in DR order
 
-%% out = [Yss; vec(A); vec(B); dyn_vech(Sig_e)]; of indvar variables only, in DR order
-if outputflag == 0    
-    out = [y0(indvar); vec(A(indvar,indvar)); vec(B(indvar,:)); dyn_vech(M.Sigma_e)];
-end
-
-%% out = [Yss; vec(A); dyn_vech(Om)]; of indvar variables only, in DR order
-if outputflag == -2
-    Om = B*M.Sigma_e*transpose(B);
-    out = [y0(indvar); vec(A(indvar,indvar)); dyn_vech(Om(indvar,indvar))];
-end
-
 %% out = [vech(cov(Y_t,Y_t)); vec(cov(Y_t,Y_{t-1}); ...; vec(cov(Y_t,Y_{t-nlags})] of indvar variables, in DR order. This is Iskrev (2010)'s J matrix.
 if outputflag == 1
     % Denote Ezz0 = E_t(z_t * z_t'), then the following Lyapunov equation defines the autocovariagrom: Ezz0 -A*Ezz*A' = B*Sig_e*B'
@@ -145,14 +134,4 @@ if outputflag == 2
         kk = kk+1;
         out(1 + (kk-1)*var_nbr^2 : kk*var_nbr^2) = g_omega(:);
     end    
-end
-
-
-%% out = [Yss; vec(g1)]; of all endogenous variables, in DR order
-if outputflag == -1
-    [I,~] = find(M.lead_lag_incidence'); %I is used to evaluate dynamic model files    
-    yy0 = oo.dr.ys(I); %steady state of dynamic model variables in DR order
-    ex0 = oo.exo_steady_state';
-    [~, g1] = feval([M.fname,'.dynamic'], yy0, ex0, M.params, ys, 1);
-    out = [y0; g1(:)];    
 end
