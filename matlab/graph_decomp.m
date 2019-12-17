@@ -148,6 +148,11 @@ for j=1:nvar
     ax=axes('Position',[0.1 0.1 0.6 0.8],'box','on');
     %     plot(ax,x(2:end),z1(end,:),'k-','LineWidth',2)
     %     axis(ax,[xmin xmax ymin ymax]);
+    if strcmp('aoa',DynareOptions.plot_shock_decomp.type)
+        bgap = 0.15;
+    else
+        bgap = 0;
+    end        
     hold on;
     for i=1:gend
         i_1 = i-1;
@@ -156,10 +161,10 @@ for j=1:nvar
         for k = 1:comp_nbr
             zz = z1(k,i);
             if zz > 0
-                fill([x(i) x(i) x(i+1) x(i+1)]+(1/freq/2),[yp yp+zz yp+zz yp],k);
+                fill([x(i)+bgap x(i)+bgap x(i+1)-bgap x(i+1)-bgap]+(1/freq/2),[yp yp+zz yp+zz yp],k);
                 yp = yp+zz;
             else
-                fill([x(i) x(i) x(i+1) x(i+1)]+(1/freq/2),[ym ym+zz ym+zz ym],k);
+                fill([x(i)+bgap x(i)+bgap x(i+1)-bgap x(i+1)-bgap]+(1/freq/2),[ym ym+zz ym+zz ym],k);
                 ym = ym+zz;
             end
             hold on;
@@ -220,7 +225,7 @@ for j=1:nvar
                 c = uicontextmenu;
                 hl.UIContextMenu=c;
                 browse_menu = uimenu(c,'Label','Browse group');
-                expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' deblank(mydata.plot_shock_decomp.orig_varlist{j}) ''',' int2str(i) ')']);
+                expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' mydata.plot_shock_decomp.orig_varlist{j} ''',' int2str(i) ')']);
                 set(expand_menu,'UserData',mydata,'Tag',['group' int2str(i)]);
                 for jmember = mydata.shock_group.shocks
                     uimenu('parent',browse_menu,'Label',char(jmember))
@@ -252,6 +257,7 @@ for j=1:nvar
             dyn_saveas(fhandle,[DynareOptions.plot_shock_decomp.filepath, filesep, DynareModel.fname,preamble_figname,endo_names{i_var(j)},fig_mode1,fig_name],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
         end
     end
+    
 end
 
 %% write LaTeX-Footer

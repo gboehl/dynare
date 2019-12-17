@@ -1,20 +1,17 @@
-function options=set_default_option(options,field,default)
-
-% function options=set_default_option(options,field,default)
-% Sets the option value
-%
-% INPUTS
-%    options
-%    field:   option name
-%    default: assigns a value
+function x = get_shock_stderr_by_name(exoname)
+% function x = get_shock_stderr_by_name(exoname)
+% returns the value of a shock identified by its name
+%  
+% INPUTS:
+%   exoname:  shock name
 %
 % OUTPUTS
-%    options
+%   x:      shock value
 %
 % SPECIAL REQUIREMENTS
-%    none
+%   none
 
-% Copyright (C) 2003-2018 Dynare Team
+% Copyright (C) 2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,21 +28,12 @@ function options=set_default_option(options,field,default)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if ~isfield(options,field)
-    options.(field) = default;
-    return
+global M_
+
+i = find(strcmp(exoname,M_.exo_names));
+
+if isempty(i)
+    error(['Can''t find shock ', exoname])
 end
 
-if isempty(options.(field))
-    options.(field) = default;
-    return
-end
-
-if ~iscell(options.(field)) && ~isdates(options.(field)) && ~isstruct(options.(field))
-    if isnan(options.(field))
-        options.(field) = default;
-        return
-    end
-end
-
-% 06/07/03 MJ added ; to eval expression
+x = sqrt(M_.Sigma_e(i,i));

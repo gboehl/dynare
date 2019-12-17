@@ -62,8 +62,10 @@ if isempty(varlist)
     varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-[i_var, nvar, index_uniques] = varlist_indices(varlist, M_.endo_names);
-varlist = varlist(index_uniques);
+if ~isequal(varlist,0)
+    [i_var, nvar, index_uniques] = varlist_indices(varlist, M_.endo_names);
+    varlist = varlist(index_uniques);
+end
 
 % number of variables
 endo_nbr = M_.endo_nbr;
@@ -83,7 +85,16 @@ if isempty(parameter_set)
     end
 end
 
-if ~isfield(oo_,'initval_decomposition')
+if ~isfield(oo_,'initval_decomposition') || isequal(varlist,0)
+    if isfield(oo_,'shock_decomposition_info') && isfield(oo_.shock_decomposition_info,'i_var')
+        if isfield (oo_,'realtime_conditional_shock_decomposition') ...
+                || isfield (oo_,'realtime_forecast_shock_decomposition') ...
+                || isfield (oo_,'realtime_shock_decomposition') ...
+                || isfield (oo_,'conditional_shock_decomposition') ...
+                || isfield (oo_,'shock_decomposition')
+            error('initval_decomposition::squeezed shock decompositions are already stored in oo_')
+        end
+    end
     options_.selected_variables_only = 0; %make sure all variables are stored
     options_.plot_priors=0;
     [oo,M,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
@@ -129,27 +140,30 @@ if ~isfield(oo_,'initval_decomposition')
 
     end
 
-
     oo_.initval_decomposition = z;
 end
-% if ~options_.no_graph.shock_decomposition
-oo=oo_;
-oo.shock_decomposition = oo_.initval_decomposition;
-if ~isempty(init2shocks)
-    init2shocks = M_.init2shocks.(init2shocks);
-    n=size(init2shocks,1);
-    for i=1:n
-        j=strmatch(init2shocks{i}{1},M_.endo_names,'exact');
-        oo.shock_decomposition(:,end-1,:)=oo.shock_decomposition(:,j,:)+oo.shock_decomposition(:,end-1,:);
-        oo.shock_decomposition(:,j,:)=0;
-    end    
-end    
-M_.exo_names = M_.endo_names;
-M_.exo_nbr = M_.endo_nbr;
-options_.plot_shock_decomp.realtime=0;
-options_.plot_shock_decomp.screen_shocks=1;
-options_.plot_shock_decomp.use_shock_groups = '';
-options_.plot_shock_decomp.init_cond_decomp = 1; % private flag to plotting utilities
 
-plot_shock_decomposition(M_,oo,options_,varlist);
-% end
+% when varlist==0, we only store results in oo_ and do not make any plot
+if ~isequal(varlist,0)
+    
+    % if ~options_.no_graph.shock_decomposition
+    oo=oo_;
+    oo.shock_decomposition = oo_.initval_decomposition;
+    if ~isempty(init2shocks)
+        init2shocks = M_.init2shocks.(init2shocks);
+        n=size(init2shocks,1);
+        for i=1:n
+            j=strmatch(init2shocks{i}{1},M_.endo_names,'exact');
+            oo.shock_decomposition(:,end-1,:)=oo.shock_decomposition(:,j,:)+oo.shock_decomposition(:,end-1,:);
+            oo.shock_decomposition(:,j,:)=0;
+        end
+    end
+    M_.exo_names = M_.endo_names;
+    M_.exo_nbr = M_.endo_nbr;
+    options_.plot_shock_decomp.realtime=0;
+    options_.plot_shock_decomp.screen_shocks=1;
+    options_.plot_shock_decomp.use_shock_groups = '';
+    options_.plot_shock_decomp.init_cond_decomp = 1; % private flag to plotting utilities
+    
+    plot_shock_decomposition(M_,oo,options_,varlist);
+end

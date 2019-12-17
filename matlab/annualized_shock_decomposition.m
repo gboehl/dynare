@@ -158,7 +158,7 @@ if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
         myopts.plot_shock_decomp.realtime=1;
         myopts.plot_shock_decomp.vintage=i;
         % retrieve quarterly shock decomp
-        z = plot_shock_decomposition(M_,oo_,myopts,[]);
+        [z, ~] = plot_shock_decomposition(M_,oo_,myopts,[]);
         zdim = size(z);
         z = z(i_var,:,:);
         if isstruct(aux)
@@ -185,13 +185,14 @@ if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
             if qvintage_>i-4 && qvintage_<i
                 myopts.plot_shock_decomp.vintage=qvintage_;
                 % retrieve quarterly shock decomp
-                z = plot_shock_decomposition(M_,oo_,myopts,[]);
+                [z, ~] = plot_shock_decomposition(M_,oo_,myopts,[]);
                 z(:,:,end+1:zdim(3))=nan; % fill with nan's remaining time points to reach Q4
                 z = z(i_var,:,:);
                 if isstruct(aux)
                     if ischar(aux0.y)
                         % retrieve quarterly shock decomp for aux variable
                         [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,myopts,aux0.y);
+                        y_aux(:,:,end+1:zdim(3))=nan; % fill with nan's remaining time points to reach Q4
                         aux.y=y_aux;
                         aux.yss=steady_state_aux;
                     end
@@ -202,6 +203,7 @@ if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
 
             end
             oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr)]) = z(:,:,end-nfrcst:end);
+            oo_.annualized_realtime_forecast_shock_decomposition.pool(:,:,yr+1) = squeeze(z(:,:,end-nfrcst+1));
             if init>nfrcst
                 oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)]) = ...
                     oo_.annualized_realtime_shock_decomposition.pool(:,:,yr-nfrcst:end) - ...
@@ -223,8 +225,12 @@ if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
                             oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,end,1:my_forecast_+1);
                         oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,end,:) = ...
                             oo_.annualized_realtime_shock_decomposition.pool(:,end,yr-my_forecast_:yr);
+                        oo_.annualized_realtime_conditional_shock_decomposition.pool(:,:,yr-my_forecast_+1) = ...
+                            oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-my_forecast_)])(:,:,2);
                     end
                 end
+                oo_.annualized_realtime_conditional_shock_decomposition.pool(:,:,yr-nfrcst+1) = ...
+                    oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(yr-nfrcst)])(:,:,2);
             end
         end
         % ztmp=oo_.realtime_shock_decomposition.pool(:,:,21:29)-oo_.realtime_forecast_shock_decomposition.time_21;
@@ -251,14 +257,14 @@ if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
         if vintage_
             z = oo_.annualized_realtime_conditional_shock_decomposition.(['yr_' int2str(floor(vintage_/4))]);
         else
-            error();
+            z = oo_.annualized_realtime_conditional_shock_decomposition.pool;
         end
 
       case 3 % forecast
         if vintage_
             z = oo_.annualized_realtime_forecast_shock_decomposition.(['yr_' int2str(floor(vintage_/4))]);
         else
-            error()
+            z = oo_.annualized_realtime_forecast_shock_decomposition.pool;
         end
     end
 end
