@@ -20,7 +20,7 @@ MODFILES = \
 	optimizers/fs2000_10.mod \
 	analytic_derivatives/fs2000_analytic_derivation.mod \
 	analytic_derivatives/BrockMirman_PertParamsDerivs.mod \
-	analytic_derivatives/burnside_3_order_PertParamsDerivs.mod \	
+	analytic_derivatives/burnside_3_order_PertParamsDerivs.mod \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME.mod \
 	TeX/fs2000_corr_ME.mod \
 	estimation/MH_recover/fs2000_recover_tarb.mod \
