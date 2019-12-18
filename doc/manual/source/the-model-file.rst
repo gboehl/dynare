@@ -8396,6 +8396,11 @@ with ``discretionary_policy`` or for optimal simple rule with ``osr``
         Declares or reassigns the discount factor of the central
         planner ``optimal_policy_discount_factor``. Default: ``1.0``.
 
+    .. option:: planner_discount_latex_name = LATEX_NAME
+
+        Sets the LaTeX name of the ``optimal_policy_discount_factor``
+        parameter.
+
     .. option:: instruments = (VARIABLE_NAME,...)
 
         Declares instrument variables for the computation of the
