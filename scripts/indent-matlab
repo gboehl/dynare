@@ -1,13 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 
-# Reindents the MATLAB source code file given in argument.
+# Reindents the MATLAB source code files given in argument
 
-if [ -z "$1" ]; then
-    echo "Give a filename in argument"
-    exit 1
-fi
+[[ -n $1 ]] || { echo "Give filename(s) in argument" 2>&1; exit 1; }
 
-SCRIPTS_DIR=$(pwd)/$(dirname $0)
+pushd "$(dirname "$0")" > /dev/null
+SCRIPTS_DIR=$(pwd)
+popd > /dev/null
 
-cd $(dirname $1)
-emacs -batch $(basename $1) -l ${SCRIPTS_DIR}/indent-matlab.el
+for f in "$@"; do
+    echo "*** Indenting $f…"
+
+    pushd "$(dirname "$f")" > /dev/null
+    emacs -batch "$(basename "$f")" -l "${SCRIPTS_DIR}"/indent-matlab.el
+    popd > /dev/null
+
+    echo
+done
