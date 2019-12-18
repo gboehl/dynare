@@ -644,7 +644,7 @@ m/optimal_policy/OSR: $(patsubst %.mod, %.m.trs, $(filter optimal_policy/OSR/%.m
 o/optimal_policy/OSR: $(patsubst %.mod, %.o.trs, $(filter optimal_policy/OSR/%.mod, $(MODFILES)))
 
 optimal_policy/Ramsey: m/optimal_policy/Ramsey o/optimal_policy/Ramsey
-m/optimal_policy/Ramsey: $(patsubst %.mod, %.m.trs, $(filter optimal_policy/Ransey/%.mod, $(MODFILES)))
+m/optimal_policy/Ramsey: $(patsubst %.mod, %.m.trs, $(filter optimal_policy/Ramsey/%.mod, $(MODFILES)))
 o/optimal_policy/Ramsey: $(patsubst %.mod, %.o.trs, $(filter optimal_policy/Ramsey/%.mod, $(MODFILES)))
 
 optimal_policy: m/optimal_policy o/optimal_policy
