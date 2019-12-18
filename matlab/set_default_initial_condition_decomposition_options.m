@@ -41,4 +41,5 @@ options.initial_condition_decomp.plot_init_date = [];
 options.initial_condition_decomp.plot_end_date = [];
 options.initial_condition_decomp.diff = false;
 options.initial_condition_decomp.flip = false;
+options.initial_condition_decomp.max_nrows = 6;
 end

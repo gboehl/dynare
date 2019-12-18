@@ -7373,6 +7373,11 @@ Shock Decomposition
         If used in combination with :opt:`diff`, the ``diff`` operator is first applied. 
         Default: not activated
 
+    .. option:: max_nrows
+
+        Maximum number of rows in the subplot layout of detailed shock
+        decomposition graphs. Note that columns are always 3. Default: 6
+
 .. command:: initial_condition_decomposition [VARIABLE_NAME]...;
              initial_condition_decomposition (OPTIONS...) [VARIABLE_NAME]...;
 
@@ -7458,6 +7463,22 @@ Shock Decomposition
         If passed, plot the decomposition of the opposite of the list of variables. 
         If used in combination with :opt:`diff`, the ``diff`` operator is first applied. 
         Default: not activated
+
+.. command:: squeeze_shock_decomposition [VARIABLE_NAME]...;
+
+    |br| For large models, the size of the information stored by shock
+    decompositions (especially various settings of realtime decompositions) may
+    become huge. This command allows to squeeze this information in two
+    possible ways:
+
+        * Automatic (default): only the variables for which plotting has been
+          explicitly required with `plot_shock_decomposition` will have their
+          decomposition left in `oo_` after this command is run;
+
+        * If a list of variables is passed to the command, then only those
+          variables will have their decomposition left in `oo_` after this
+          command is run.
+
 
 Calibrated Smoother
 ===================

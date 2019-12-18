@@ -1,4 +1,4 @@
-function oo_ = squeeze_shock_decomp(M_,oo_,options_,var_list_)
+function oo_ = squeeze_shock_decomposition(M_,oo_,options_,var_list_)
 
 if isfield(oo_,'plot_shock_decomposition_info') && isfield(oo_.plot_shock_decomposition_info','i_var')
     my_vars = oo_.plot_shock_decomposition_info.i_var;

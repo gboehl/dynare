@@ -51,6 +51,7 @@ options_.plot_shock_decomp.plot_init_date = options_.initial_condition_decomp.pl
 options_.plot_shock_decomp.plot_end_date = options_.initial_condition_decomp.plot_end_date;
 options_.plot_shock_decomp.diff = options_.initial_condition_decomp.diff;
 options_.plot_shock_decomp.flip = options_.initial_condition_decomp.flip;
+options_.plot_shock_decomp.max_nrows = options_.initial_condition_decomp.max_nrows;
 
 if isfield(options_.initial_condition_decomp,'init2shocks') % private trap for uimenu calls
     init2shocks=options_.initial_condition_decomp.init2shocks;

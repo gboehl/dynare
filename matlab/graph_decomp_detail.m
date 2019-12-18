@@ -60,11 +60,7 @@ if isfield(opts_decomp,'init_cond_decomp')
 else
     init_cond_decomp = 0;
 end
-if isfield(opts_decomp,'min_nrows')
-    min_nrows = opts_decomp.min_nrows ;
-else
-    max_nrows = 6;
-end
+max_nrows = opts_decomp.max_nrows;
 screen_shocks = opts_decomp.screen_shocks;
 if ~isempty(DynareOptions.plot_shock_decomp.use_shock_groups) || comp_nbr<=18
     screen_shocks=0;
