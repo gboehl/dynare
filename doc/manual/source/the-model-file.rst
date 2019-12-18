@@ -7472,11 +7472,11 @@ Shock Decomposition
     possible ways:
 
         * Automatic (default): only the variables for which plotting has been
-          explicitly required with `plot_shock_decomposition` will have their
-          decomposition left in `oo_` after this command is run;
+          explicitly required with ``plot_shock_decomposition`` will have their
+          decomposition left in ``oo_`` after this command is run;
 
         * If a list of variables is passed to the command, then only those
-          variables will have their decomposition left in `oo_` after this
+          variables will have their decomposition left in ``oo_`` after this
           command is run.
 
 
@@ -7496,7 +7496,7 @@ Dynare can also run the smoother on a calibrated model:
     approximation of the model.
 
     By default, the command computes the smoothed variables and shocks
-    and stores the results in ``oo_.SmoothedVariables` and
+    and stores the results in ``oo_.SmoothedVariables`` and
     ``oo_.SmoothedShocks``. It also fills ``oo_.UpdatedVariables``.
 
     *Options*
