@@ -52,7 +52,7 @@ end
 
 % Set particle filter flag.
 if options_.order > 1
-    if options_.particle.status && options_.order==2
+    if options_.particle.status
         skipline()
         disp('Estimation using a non linear filter!')
         skipline()
@@ -78,12 +78,8 @@ if options_.order > 1
                 end
             end
         end
-    elseif options_.particle.status && options_.order>2
-        error(['Non linear filter are not implemented with order ' int2str(options_.order) ' approximation of the model!'])
-    elseif ~options_.particle.status && options_.order==2
-        error('For estimating the model with a second order approximation using a non linear filter, one should have options_.particle.status=true;')
     else
-        error(['Cannot estimate a model with an order ' int2str(options_.order) ' approximation!'])
+        error('For estimating the model with a second order approximation using a non linear filter, one should have options_.particle.status=true;')
     end
 end
 
