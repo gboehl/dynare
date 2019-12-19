@@ -48,7 +48,9 @@ function [condX, rankX, ind0, indno, ixno, Mco, Pco, jweak, jweak_pair] = identi
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 % =========================================================================
-
+if issparse(X)
+    X = full(X);
+end
 if nargin < 3 || isempty(tol_rank)
     tol_rank = 1.e-10; %tolerance level used for rank computations
 end

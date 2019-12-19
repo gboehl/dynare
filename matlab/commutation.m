@@ -13,7 +13,7 @@ function k = commutation(n, m, sparseflag)
 %   k:          [n by m] commutation matrix 
 % -------------------------------------------------------------------------
 % This function is called by 
-%   * get_first_order_solution_params_deriv.m (previously getH.m)
+%   * get_perturbation_params_derivs.m (previously getH.m)
 %   * get_identification_jacobians.m (previously getJJ.m)
 % -------------------------------------------------------------------------
 % This function calls
