@@ -22,12 +22,6 @@ k = ((delt+bet)/(1.0*aa*alph))^(1/(alph-1));
 c = aa*k^alph-delt*k;
 end;
 
-initval_file(filename = ramst_initval_file_data);
-steady;
-perfect_foresight_setup(periods=200);
-perfect_foresight_solver;
-
-
 initval_file(filename = ramst_initval_file_data_row_vec_mat);
 steady;
 perfect_foresight_setup(periods=200);
