@@ -57,10 +57,20 @@ epsilon = chol(M_.Sigma_e)*randn(M_.exo_nbr, nparticles);
 
 dr = oo_.dr;
 
-ynext = local_state_space_iteration_2(yhat, epsilon, dr.ghx, dr.ghu, dr.ys(dr.order_var)+0.5*dr.ghs2, dr.ghxx, dr.ghuu, dr.ghxu, 1);
+tStart1 = tic; for i=1:10000, ynext1 = local_state_space_iteration_2(yhat, epsilon, dr.ghx, dr.ghu, dr.ys(dr.order_var)+0.5*dr.ghs2, dr.ghxx, dr.ghuu, dr.ghxu, 1); end, tElapsed1 = toc(tStart1);
 
-ynext2 = local_state_space_iteration_k(yhat, epsilon, oo_.dr, M_, options_);
+tStart2 = tic; for i=1:10000, ynext2 = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_); end, tElapsed2 = toc(tStart2);
 
-if max(max(abs(ynext-ynext2))) > 1e-14
+if max(max(abs(ynext1-ynext2))) > 1e-14
     error('Inconsistency between local_state_space_iteration_2 and local_state_space_iteration_k')
+end
+
+if tElapsed1<tElapsed2
+    skipline()
+    dprintf('local_state_space_iteration_2 is %5.2f times faster than local_state_space_iteration_k', tElapsed2/tElapsed1)
+    skipline()
+else
+    skipline()
+    dprintf('local_state_space_iteration_2 is %5.2f times slower than local_state_space_iteration_k', tElapsed1/tElapsed2)
+    skipline()
 end
