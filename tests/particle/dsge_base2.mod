@@ -70,6 +70,19 @@ log(A) = rho*log(A(-1)) + e_a ;
 (((c^(tet))*((1-l)^(1-tet)))^(1-tau))/c - bet*((((c(+1)^(tet))*((1-l(+1))^(1-tet)))^(1-tau))/c(+1))*(1 -delt+alp*(A(1)*(k^alp)*(l(1)^(1-alp)))/k)=0 ;
 end;
 
+steady_state_model;
+
+  k = -(alp-1)*(alp^(1/(1-alp)))*(bet^(1/(1-alp)))*((bet*(delt-1)+1)^(alp/(alp-1)))*tet/(-alp*delt*bet+delt*bet+alp*tet*bet-bet-alp*tet+1);
+  l = (alp-1)*(bet*(delt-1)+1)*tet/(alp*tet+bet*((alp-1)*delt-alp*tet+1)-1) ;
+  y = (k^alp)*(l^(1-alp)) ;
+  i = delt*k ;
+  c = y - i ;
+  A = 1;
+
+end;
+
+
+
 shocks;
 var e_a; stderr 0.035;
 end;
