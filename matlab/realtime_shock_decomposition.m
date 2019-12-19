@@ -51,6 +51,8 @@ if isfield(oo_,'shock_decomposition_info') && isfield(oo_.shock_decomposition_in
     end
 end
 
+with_epilogue = options_.shock_decomp.with_epilogue;
+
 % indices of endogenous variables
 if isempty(varlist)
     varlist = M_.endo_names(1:M_.orig_endo_nbr);
@@ -100,8 +102,8 @@ end
 save_realtime = options_.shock_decomp.save_realtime;
 % array of time points in the range options_.presample+1:options_.nobs
 
-zreal = zeros(endo_nbr,nshocks+2,options_.nobs+forecast_);
-zcond = zeros(endo_nbr,nshocks+2,options_.nobs);
+zreal = zeros(endo_nbr+length(M_.epilogue_names)*with_epilogue,nshocks+2,options_.nobs+forecast_);
+zcond = zeros(endo_nbr+length(M_.epilogue_names)*with_epilogue,nshocks+2,options_.nobs);
 
 options_.selected_variables_only = 0; %make sure all variables are stored
 options_.plot_priors=0;
@@ -226,6 +228,12 @@ for j=presample+1:nobs
         z(:,nshocks+1,i) = z(:,nshocks+2,i) - sum(z(:,1:nshocks,i),2);
     end
 
+    if with_epilogue
+        [z, epilogue_steady_state] = epilogue_shock_decomposition(z, M_, oo_);
+        if ~isfield(oo_,'shock_decomposition_info') || ~isfield(oo_.shock_decomposition_info,'epilogue_steady_state')
+            oo_.shock_decomposition_info.epilogue_steady_state = epilogue_steady_state;
+        end
+    end
     %% conditional shock decomp 1 step ahead
     z1 = zeros(endo_nbr,nshocks+2);
     z1(:,end) = Smoothed_Variables_deviation_from_mean(:,gend);
@@ -233,6 +241,15 @@ for j=presample+1:nobs
 
         z1(:,1:nshocks) = z1(:,1:nshocks) + B(inv_order_var,:).*repmat(epsilon(:,i)',endo_nbr,1);
         z1(:,nshocks+1) = z1(:,nshocks+2) - sum(z1(:,1:nshocks),2);
+    end
+    if with_epilogue
+        clear ztmp0
+        ztmp0(:,1,:) = Smoothed_Variables_deviation_from_mean(:,1:gend-1);
+        ztmp0(:,2,:) = Smoothed_Variables_deviation_from_mean(:,1:gend-1);
+        ztmp = cat(3,cat(2,zeros(endo_nbr,nshocks,gend-1),ztmp0),z1);
+%         ztmp = cat(3,zeros(endo_nbr,nshocks+2,40),ztmp); % pad with zeros in presample
+        z1  = epilogue_shock_decomposition(ztmp, M_, oo_);
+        z1=squeeze(z1(:,:,end));
     end
     %%
 
@@ -257,6 +274,15 @@ for j=presample+1:nobs
             %             zn(:,1:nshocks,i) = zn(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i+gend-forecast_-1)',endo_nbr,1);
             zn(:,nshocks+1,i) = zn(:,nshocks+2,i) - sum(zn(:,1:nshocks,i),2);
         end
+        if with_epilogue
+            clear ztmp0
+            ztmp0(:,1,:) = Smoothed_Variables_deviation_from_mean(:,1:gend-forecast_-1);
+            ztmp0(:,2,:) = Smoothed_Variables_deviation_from_mean(:,1:gend-forecast_-1);
+            ztmp = cat(3,cat(2,zeros(endo_nbr,nshocks,gend-forecast_-1),ztmp0),zn);
+%             ztmp = cat(3,zeros(endo_nbr,nshocks+2,40),ztmp); % pad with zeros (st state) in presample
+            zn  = epilogue_shock_decomposition(ztmp, M_, oo_);
+            zn=squeeze(zn(:,:,end-forecast_:end));
+        end
         if ismember(j-forecast_,save_realtime)
             oo_.conditional_shock_decomposition.(['time_' int2str(j-forecast_)])=zn;
         end
@@ -265,8 +291,10 @@ for j=presample+1:nobs
 
     if init
         zreal(:,:,1:j) = z(:,:,1:j);
-    else
+    elseif j<nobs
         zreal(:,:,j) = z(:,:,gend);
+    else
+        zreal(:,:,j:end) = z(:,:,gend:end);
     end
     zcond(:,:,j) = z1;
     if ismember(j,save_realtime)

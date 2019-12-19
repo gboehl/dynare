@@ -96,6 +96,7 @@ if ~isfield(oo_,'initval_decomposition') || isequal(varlist,0)
             error('initval_decomposition::squeezed shock decompositions are already stored in oo_')
         end
     end
+    with_epilogue = options_.initial_condition_decomp.with_epilogue;
     options_.selected_variables_only = 0; %make sure all variables are stored
     options_.plot_priors=0;
     [oo,M,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
@@ -141,6 +142,12 @@ if ~isfield(oo_,'initval_decomposition') || isequal(varlist,0)
 
     end
 
+    if with_epilogue
+        [z, epilogue_steady_state] = epilogue_shock_decomposition(z, M_, oo_);
+        if ~isfield(oo_,'shock_decomposition_info') || ~isfield(oo_.shock_decomposition_info,'epilogue_steady_state')
+            oo_.shock_decomposition_info.epilogue_steady_state = epilogue_steady_state;
+        end
+    end
     oo_.initval_decomposition = z;
 end
 

@@ -59,11 +59,26 @@ if ~isempty(init2shocks)
     init2shocks=M_.init2shocks.(init2shocks);
 end
 
+
+epilogue_decomp=false;
+if exist_varlist && any(ismember(varlist,M_.epilogue_names))
+    epilogue_decomp=true;
+    M_.endo_names = [M_.endo_names;M_.epilogue_names];
+    M_.endo_names_tex = [M_.endo_names_tex;M_.epilogue_names];
+    M_.endo_nbr = length( M_.endo_names );
+end
 if isfield(oo_.shock_decomposition_info,'i_var') && (M_.endo_nbr>=M_.orig_endo_nbr)
+    if max(oo_.shock_decomposition_info.i_var)>M_.orig_endo_nbr
+        epilogue_decomp=true;
+        M_.endo_names = [M_.endo_names;M_.epilogue_names];
+        M_.endo_names_tex = [M_.endo_names_tex;M_.epilogue_names];
+        M_.endo_nbr = length( M_.endo_names );
+    end
     M_.endo_names = M_.endo_names(oo_.shock_decomposition_info.i_var,:);
     M_.endo_names_tex = M_.endo_names_tex(oo_.shock_decomposition_info.i_var,:);
     M_.endo_nbr = length( oo_.shock_decomposition_info.i_var );
 end
+
 try
     [i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
 catch ME
@@ -118,9 +133,6 @@ if isequal(type, 'aoa') && isfield(options_.plot_shock_decomp,'q2a') && isstruct
         options_.plot_shock_decomp.q2a =  q2avec(indv);
     end
 end
-
-% number of variables
-endo_nbr = M_.endo_nbr;
 
 % number of shocks
 nshocks = M_.exo_nbr;
@@ -253,10 +265,14 @@ if ~isempty(init2shocks) && ~expand
     end   
 end    
 
-if isfield(oo_.dr,'ys')
-    steady_state = oo_.dr.ys;
+if ~epilogue_decomp
+    if isfield(oo_.dr,'ys')
+        steady_state = oo_.dr.ys;
+    else
+        steady_state = oo_.steady_state;
+    end
 else
-    steady_state = oo_.steady_state;
+    steady_state = oo_.shock_decomposition_info.epilogue_steady_state;
 end
 
 if isequal(type,'aoa') && isstruct(q2a)
@@ -343,6 +359,7 @@ if options_.plot_shock_decomp.use_shock_groups
     else
         gend = size(z,3);
         zfull = z;
+        endo_nbr = size(z,1);
         [z, shock_names, M_] = make_the_groups(z,gend,endo_nbr,nshocks,M_,options_);
     end
     if ~isempty(init2shocks) && ~expand
