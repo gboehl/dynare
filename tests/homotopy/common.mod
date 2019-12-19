@@ -30,6 +30,6 @@ if abs(oo_.steady_state(1)/(aa*oo_.exo_steady_state(1)*oo_.steady_state(2)^alph-
    error('Error in homotopy for c')
 end
 
-if abs(oo_.steady_state(2)/((delt+get.param_by_name('bet'))/(aa*oo_.exo_steady_state(1)*alph))^(1/(alph-1)) - 1) > 1e-4
+if abs(oo_.steady_state(2)/((delt+get_param_by_name('bet'))/(aa*oo_.exo_steady_state(1)*alph))^(1/(alph-1)) - 1) > 1e-4
    error('Error in homotopy for k')
 end
