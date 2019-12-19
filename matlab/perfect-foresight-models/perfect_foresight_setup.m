@@ -65,10 +65,6 @@ if ~isempty(M_.det_shocks) && options_.periods<max([M_.det_shocks.periods])
 end
 
 if ~options_.initval_file
-    if isempty(options_.datafile)
-        oo_=make_ex_(M_,options_,oo_);
-        oo_=make_y_(M_,options_,oo_);
-    else
-        read_data_;
-    end
+    oo_ = make_ex_(M_,options_,oo_);
+    oo_ = make_y_(M_,options_,oo_);
 end

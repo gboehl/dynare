@@ -102,6 +102,7 @@ MODFILES = \
 	discretionary_policy/dennis_1.mod \
 	discretionary_policy/Gali_discretion.mod \
 	initval_file/ramst_initval_file.mod \
+	initval_file/ramst_datafile.mod \
 	ramst_normcdf_and_friends.mod \
 	ramst_vec.mod \
 	example1_varexo_det.mod \
@@ -490,6 +491,8 @@ deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.o.trs: deterministi
 
 initval_file/ramst_initval_file.m.trs: initval_file/ramst_initval_file_data.m.tls
 initval_file/ramst_initval_file.o.trs: initval_file/ramst_initval_file_data.o.tls
+initval_file/ramst_datafile.m.trs: initval_file/ramst_initval_file_data.m.tls
+initval_file/ramst_datafile.o.trs: initval_file/ramst_initval_file_data.o.tls
 
 identification/rbc_ident/rbc_ident_varexo_only.m.trs: identification/rbc_ident/rbc_ident_std_as_structural_par.m.trs
 identification/rbc_ident/rbc_ident_varexo_only.o.trs: identification/rbc_ident/rbc_ident_std_as_structural_par.o.trs

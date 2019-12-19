@@ -2700,10 +2700,8 @@ speed-up on large models.
 
     .. option:: datafile = FILENAME
 
-       If the variables of the model are not constant over time, their
-       initial values, stored in a text file, could be loaded, using
-       that option, as initial values before a deterministic
-       simulation.
+       Used to specify path for all endogenous and exogenous variables.
+       Strictly equivalent to :comm:`initval_file`.
 
     *Output*
 
