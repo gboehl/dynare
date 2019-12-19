@@ -22,20 +22,34 @@ k = ((delt+bet)/(1.0*aa*alph))^(1/(alph-1));
 c = aa*k^alph-delt*k;
 end;
 
-initval_file(filename = ramst_initval_file_data_row_vec_mat);
 steady;
+
+initval_file(filename = ramst_initval_file_data_row_vec_mat);
+if oo_.exo_simul(2) ~= 1.2
+  error('initval_file problem with exogenous variable');
+end
+if oo_.endo_simul(2, 2) ~= 13
+  error('initval_file option problem with endogenous variable');
+end
 perfect_foresight_setup(periods=200);
 perfect_foresight_solver;
 
+oo_.exo_simul = [];
+oo_.endo_simul = [];
 
 initval_file(filename = ramst_initval_file_data_col_vec_mat);
-steady;
+if oo_.exo_simul(2) ~= 1.2
+  error('initval_file problem with exogenous variable');
+end
+if oo_.endo_simul(2, 2) ~= 13
+  error('initval_file problem with endogenous variable');
+end
+
 perfect_foresight_setup(periods=200);
 perfect_foresight_solver;
 
 if ispc()
     initval_file(filename = ramst_initval_file_excel);
-    steady;
     perfect_foresight_setup(periods=200);
     perfect_foresight_solver;
 end
