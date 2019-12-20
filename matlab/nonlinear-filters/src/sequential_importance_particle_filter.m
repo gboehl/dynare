@@ -1,4 +1,4 @@
-function [LIK,lik] = sequential_importance_particle_filter(ReducedForm,Y,start,ParticleOptions,ThreadsOptions)
+function [LIK,lik] = sequential_importance_particle_filter(ReducedForm,Y,start,ParticleOptions,ThreadsOptions, DynareOptions, Model)
 
 % Evaluates the likelihood of a nonlinear model with a particle filter (optionally with resampling).
 
@@ -49,14 +49,18 @@ if isempty(init_flag)
     init_flag = 1;
 end
 
-% Set local state space model (first order approximation).
-ghx  = ReducedForm.ghx;
-ghu  = ReducedForm.ghu;
+if ReducedForm.use_k_order_solver
+    dr = ReducedForm.dr;
+else
+    % Set local state space model (first order approximation).
+    ghx  = ReducedForm.ghx;
+    ghu  = ReducedForm.ghu;
 
-% Set local state space model (second order approximation).
-ghxx = ReducedForm.ghxx;
-ghuu = ReducedForm.ghuu;
-ghxu = ReducedForm.ghxu;
+    % Set local state space model (second order approximation).
+    ghxx = ReducedForm.ghxx;
+    ghuu = ReducedForm.ghuu;
+    ghxu = ReducedForm.ghxu;
+end
 
 % Get covariance matrices.
 Q = ReducedForm.Q; % Covariance matrix of the structural innovations.
@@ -101,7 +105,11 @@ for t=1:sample_size
         yhat_ = bsxfun(@minus,StateVectors_,state_variables_steady_state);
         [tmp, tmp_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_2);
     else
-        tmp = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
+        if ReducedForm.use_k_order_solver
+            tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions);
+        else
+            tmp = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
+        end
     end
     %PredictedObservedMean = tmp(mf1,:)*transpose(weights);
     PredictionError = bsxfun(@minus,Y(:,t),tmp(mf1,:));
