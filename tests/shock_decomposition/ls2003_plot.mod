@@ -90,11 +90,9 @@ A e_A;
 end;
 
 options_.initial_date=dates('1989Q4'); % date arbitrarily set for testing purposes
-options_.shock_decomp.with_epilogue=true;
-shock_decomposition(nograph);
+shock_decomposition(nograph, with_epilogue);
 // test for nothing to squeeze
 squeeze_shock_decomposition;
-// oo_ = squeeze_shock_decomp(M_,oo_,options_);
 
 // standard plot
 plot_shock_decomposition y_obs R_obs pie_obs dq de;
@@ -122,7 +120,6 @@ realtime_shock_decomposition(forecast=8, save_realtime=[5 9 13 17 21 25 29 33 37
 
 // test squeeze
 squeeze_shock_decomposition;
-// oo_ = squeeze_shock_decomp(M_,oo_,options_);
 
 //realtime pooled
 plot_shock_decomposition(realtime = 1) y_obs R_obs pie_obs dq de;
@@ -167,7 +164,6 @@ realtime_shock_decomposition(fast_realtime=75) y_obs R_obs pie_obs dq de;
 
 // re-test squeeze
 squeeze_shock_decomposition;
-// oo_ = squeeze_shock_decomp(M_,oo_,options_);
 
 collect_latex_files;
 if system(['pdflatex -halt-on-error -interaction=batchmode ' M_.fname '_TeX_binder.tex'])

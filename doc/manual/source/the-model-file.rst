@@ -6977,6 +6977,11 @@ Shock Decomposition
         ``1``, the shock decomposition is computed conditional on the
         smoothed state variables in period 1. Default: ``0``.
 
+    .. option:: with_epilogue
+
+        If set, then also compute the decomposition for variables declared in
+        the ``epilogue`` block.
+
     *Output*
 
     .. matvar:: oo_.shock_decomposition
@@ -7133,6 +7138,11 @@ Shock Decomposition
         once for the last out-of-sample data point, where the provided
         integer defines the last observation (equivalent to
         :opt:`nobs`). Default: not enabled.
+
+    .. option:: with_epilogue
+
+        If set, then also compute the decomposition for variables declared in
+        the ``epilogue`` block.
 
     *Output*
 
@@ -7375,6 +7385,11 @@ Shock Decomposition
 
         Maximum number of rows in the subplot layout of detailed shock
         decomposition graphs. Note that columns are always 3. Default: 6
+
+    .. option:: with_epilogue
+
+        If set, then also compute the decomposition for variables declared in
+        the ``epilogue`` block.
 
 .. command:: initial_condition_decomposition [VARIABLE_NAME]...;
              initial_condition_decomposition (OPTIONS...) [VARIABLE_NAME]...;
