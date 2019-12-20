@@ -220,13 +220,13 @@ options.options_ident.indpmodel = indpmodel;
 options.options_ident.indpstderr = indpstderr;
 options.options_ident.indpcorr = indpcorr;
 oo.dr = pruned_state_space_system(M, options, oo.dr);
-E_y = oo.dr.pruned.E_y; dE_y = oo.dr.pruned.dE_y;
-A = oo.dr.pruned.A; dA = oo.dr.pruned.dA;
-B = oo.dr.pruned.B; dB = oo.dr.pruned.dB;
-C = oo.dr.pruned.C; dC = oo.dr.pruned.dC;
-D = oo.dr.pruned.D; dD = oo.dr.pruned.dD;
-c = oo.dr.pruned.c; dc = oo.dr.pruned.dc;
-d = oo.dr.pruned.d; dd = oo.dr.pruned.dd;
+E_y = oo.dr.pruned.E_y;         dE_y = oo.dr.pruned.dE_y;
+A = oo.dr.pruned.A;             dA   = oo.dr.pruned.dA;
+B = oo.dr.pruned.B;             dB   = oo.dr.pruned.dB;
+C = oo.dr.pruned.C;             dC   = oo.dr.pruned.dC;
+D = oo.dr.pruned.D;             dD   = oo.dr.pruned.dD;
+c = oo.dr.pruned.c;             dc   = oo.dr.pruned.dc;
+d = oo.dr.pruned.d;             dd   = oo.dr.pruned.dd;
 Varinov = oo.dr.pruned.Varinov; dVarinov = oo.dr.pruned.dVarinov;
 Om_z = oo.dr.pruned.Om_z; dOm_z = oo.dr.pruned.dOm_z;
 Om_y = oo.dr.pruned.Om_y; dOm_y = oo.dr.pruned.dOm_y;
@@ -259,13 +259,20 @@ if ~no_identification_moments
         dMOMENTS = zeros(obs_nbr + obs_nbr*(obs_nbr+1)/2 + nlags*obs_nbr^2 , totparam_nbr);
         dMOMENTS(1:obs_nbr,:) = dE_y; %add Jacobian of first moments of VAROBS variables
         % Denote Ezz0 = E[zhat*zhat'], then the following Lyapunov equation defines the autocovariagram: Ezz0 -A*Ezz0*A' = B*Sig_xi*B' = Om_z
-        Ezz0 = lyapunov_symm(A, B*Varinov*B', options.lyapunov_fixed_point_tol, options.qz_criterium, options.lyapunov_complex_threshold, 1, options.debug);
-        Eyy0 = C*Ezz0*C' + D*Varinov*D';
+        [Ezz0,u] = lyapunov_symm(A, Om_z, options.lyapunov_fixed_point_tol, options.qz_criterium, options.lyapunov_complex_threshold, 1, options.debug);
+        stationary_vars = (1:length(indvobs))';
+        if ~isempty(u)
+            x = abs(C*u);
+            stationary_vars = find(all(x < options.Schur_vec_tol,2));
+        end
+        Eyy0 = NaN*ones(obs_nbr,obs_nbr);
+        Eyy0(stationary_vars,stationary_vars) = C(stationary_vars,:)*Ezz0*C(stationary_vars,:)' + Om_y(stationary_vars,stationary_vars);
         %here method=1 is used, whereas all other calls of lyapunov_symm use method=2. The reason is that T and U are persistent, and input matrix A is the same, so using option 2 for all the rest of iterations spares a lot of computing time while not repeating Schur every time
         indzeros = find(abs(Eyy0) < 1e-12); %find values that are numerical zero
-        Eyy0(indzeros) = 0;        
+        Eyy0(indzeros) = 0;
         if useautocorr
             sdy = sqrt(diag(Eyy0)); %theoretical standard deviation
+            sdy = sdy(stationary_vars);
             sy = sdy*sdy';          %cross products of standard deviations            
         end
         
@@ -289,13 +296,13 @@ if ~no_identification_moments
             else
                 dMOMENTS(obs_nbr+1 : obs_nbr+obs_nbr*(obs_nbr+1)/2 , jp) = dyn_vech(dEyy0); %focus only on VAROBS variables
             end
-            tmpEyyi = A*Ezz0*C' + B*Varinov*D';
+            tmpEyyi = A*Ezz0*C(stationary_vars,:)' + B*Varinov*D(stationary_vars,:)';
             %we could distinguish between stderr and corr params, but this has no real speed effect as we multipliy with zeros
             dtmpEyyi = dA(:,:,jp)*Ezz0*C' + A*dEzz0*C' + A*Ezz0*dC(:,:,jp)' + dB(:,:,jp)*Varinov*D' + B*dVarinov(:,:,jp)*D' + B*Varinov*dD(:,:,jp)';    
             Ai = eye(size(A,1)); %this is A^0
             dAi = zeros(size(A,1),size(A,1)); %this is d(A^0)
             for i = 1:nlags
-                Eyyi = C*Ai*tmpEyyi;
+                Eyyi = C(stationary_vars,:)*Ai*tmpEyyi;
                 dEyyi = dC(:,:,jp)*Ai*tmpEyyi + C*dAi*tmpEyyi + C*Ai*dtmpEyyi;
                 if useautocorr                    
                     dEyyi = (dEyyi.*sy-dsy.*Eyyi)./(sy.*sy);

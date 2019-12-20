@@ -104,10 +104,6 @@ end
 if options_.order>2 && options_.particle.pruning
     error('Higher order nonlinear filters are not compatible with pruning option.')
 end
-% Check the perturbation order (nonlinear filters with third order perturbation, or higher order, are not yet implemented).
-if options_.order>2 && ~isfield(options_,'options_ident') %For identification at order=3 we skip this check.
-    error(['I cannot estimate a model with a ' int2str(options_.order) ' order approximation of the model!'])
-end
 
 % analytical derivation is not yet available for kalman_filter_fast
 if options_.analytic_derivation && options_.fast_kalman_filter
