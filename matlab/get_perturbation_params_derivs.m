@@ -260,8 +260,9 @@ if analytic_derivation_mode == -1
         DERIVS.dghxss = reshape(dSig_gh(ind_ghxss,:), [M.endo_nbr M.nspred totparam_nbr]);             %in tensor notation, wrt selected parameters
         DERIVS.dghuss = reshape(dSig_gh(ind_ghuss,:), [M.endo_nbr M.exo_nbr totparam_nbr]);            %in tensor notation, wrt selected parameters
     end
-    % Parameter Jacobian of Om=ghu*Sigma_e*ghu' (wrt selected stderr, corr and model paramters)
+    % Parameter Jacobian of Om=ghu*Sigma_e*ghu' and Correlation_matrix (wrt selected stderr, corr and model paramters)
     DERIVS.dOm = zeros(M.endo_nbr,M.endo_nbr,totparam_nbr); %initialize in tensor notation
+    DERIVS.dCorrelation_matrix = zeros(M.exo_nbr,M.exo_nbr,totparam_nbr);  %initialize
     if ~isempty(indpstderr) %derivatives of ghu wrt stderr parameters are zero by construction
         for jp=1:stderrparam_nbr
             DERIVS.dOm(:,:,jp) = oo.dr.ghu*DERIVS.dSigma_e(:,:,jp)*oo.dr.ghu';
@@ -270,6 +271,8 @@ if analytic_derivation_mode == -1
     if ~isempty(indpcorr)  %derivatives of ghu wrt corr parameters are zero by construction
         for jp=1:corrparam_nbr
             DERIVS.dOm(:,:,stderrparam_nbr+jp) = oo.dr.ghu*DERIVS.dSigma_e(:,:,stderrparam_nbr+jp)*oo.dr.ghu';
+            DERIVS.dCorrelation_matrix(indpcorr(jp,1),indpcorr(jp,2),stderrparam_nbr+jp) = 1;
+            DERIVS.dCorrelation_matrix(indpcorr(jp,2),indpcorr(jp,1),stderrparam_nbr+jp) = 1;%symmetry
         end
     end
     if ~isempty(indpmodel)  %derivatives of Sigma_e wrt model parameters are zero by construction
@@ -1190,6 +1193,7 @@ end
 %% Store into structure
 DERIVS.dg1 = dg1;
 DERIVS.dSigma_e = dSigma_e;
+DERIVS.dCorrelation_matrix = dCorrelation_matrix;
 DERIVS.dYss = dYss;
 DERIVS.dghx = cat(3,zeros(M.endo_nbr,M.nspred,stderrparam_nbr+corrparam_nbr), dghx);
 DERIVS.dghu = cat(3,zeros(M.endo_nbr,M.exo_nbr,stderrparam_nbr+corrparam_nbr), dghu);

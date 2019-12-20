@@ -1,7 +1,7 @@
 //Tests Identification command with ML and unit roots/diffuse filter option;
 //Should not work because of observed unit root variable
 
-var y delta_y x z;
+var y x z delta_y;
 
 varexo eps_x eps_z;
 

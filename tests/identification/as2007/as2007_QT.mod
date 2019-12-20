@@ -76,14 +76,14 @@ identification(parameter_set=calibration,
 
 load('G_QT'); %note that this is computed using replication files of Qu and Tkachenko (2012)
 temp = load([M_.dname filesep 'identification' filesep M_.fname '_identif']);
-G_dynare = temp.ide_spectrum_point.G;
+G_dynare = temp.ide_spectrum_point.dSPECTRUM;
 % Compare signs
 if ~isequal(sign(G_dynare),sign(G_QT))
     error('signs of normalized G are note equal');
 end
 
 % Compare normalized versions
-tilda_G_dynare = temp.ide_spectrum_point.tilda_G;
+tilda_G_dynare = temp.ide_spectrum_point.tilda_dSPECTRUM;
 ind_G_QT = (find(max(abs(G_QT'),[],1) > temp.store_options_ident.tol_deriv));
 tilda_G_QT = zeros(size(G_QT));
 delta_G_QT = sqrt(diag(G_QT(ind_G_QT,ind_G_QT)));

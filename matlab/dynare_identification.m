@@ -1,32 +1,32 @@
-function [pdraws, STO_TAU, STO_MOMENTS, STO_LRE, STO_si_dLRE, STO_si_dTAU, STO_si_J, STO_G, STO_D] = dynare_identification(options_ident, pdraws0)
-%function [pdraws, STO_TAU, STO_MOMENTS, STO_LRE, STO_dLRE, STO_dTAU, STO_J, STO_G, STO_D] = dynare_identification(options_ident, pdraws0)
+function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, STO_si_dREDUCEDFORM, STO_si_dMOMENTS, STO_dSPECTRUM, STO_dMINIMAL] = dynare_identification(options_ident, pdraws0)
+%function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, STO_si_dREDUCEDFORM, STO_si_dMOMENTS, STO_dSPECTRUM, STO_dMINIMAL] = dynare_identification(options_ident, pdraws0)
 % -------------------------------------------------------------------------
 % This function is called, when the user specifies identification(...); in
 % the mod file. It prepares all identification analysis, i.e.
-% (1) sets options, local/persistent/global variables for a new identification 
-%     analysis either for a single point or MC Sample and displays and plots the results
-% or
-% (2) loads, displays and plots a previously saved identification analysis
+% (1) sets options, local and persistent variables for a new identification 
+%     analysis either for a single point or a MC Sample. It also displays
+%     and plots the results.
+% or this function can be used to 
+% (2) load, display and plot a previously saved identification analysis
+% Note: This function does not output the arguments to the workspace if only called by
+%       "identification" in the mod file, but saves results to the folder identification.
+%       If you want to use this function directly in the mod file and workspace, you still have 
+%       to put identification once in the mod file, otherwise the preprocessor won't compute all necessary objects
 % =========================================================================
 % INPUTS
 %    * options_ident    [structure] identification options
 %    * pdraws0          [SampleSize by totparam_nbr] optional: matrix of MC sample of model parameters
 % -------------------------------------------------------------------------
 % OUTPUTS
-% Note: This function does not output the arguments to the workspace if only called by
-%       "identification" in the mod file, but saves results to the folder identification.
-%       One can, however, just use
-%       [pdraws, STO_TAU, STO_MOMENTS, STO_LRE, STO_dLRE, STO_dTAU, STO_J, STO_G, STO_D] = dynare_identification(options_ident, pdraws0)
-%       in the mod file to get the results directly in the workspace
-%    * pdraws           [matrix] MC sample of model params used
-%    * STO_TAU,         [matrix] MC sample of entries in the model solution (stacked vertically)
-%    * STO_MOMENTS,     [matrix] MC sample of entries in the moments (stacked vertically)
-%    * STO_LRE,         [matrix] MC sample of entries in LRE model (stacked vertically)
-%    * STO_dLRE,        [matrix] MC sample of derivatives of the Jacobian (dLRE)
-%    * STO_dTAU,        [matrix] MC sample of derivatives of the model solution and steady state (dTAU)
-%    * STO_J            [matrix] MC sample of Iskrev (2010)'s J matrix
-%    * STO_G            [matrix] MC sample of Qu and Tkachenko (2012)'s G matrix
-%    * STO_D            [matrix] MC sample of Komunjer and Ng (2011)'s D matrix
+%    * pdraws               [matrix] MC sample of model params used
+%    * STO_REDUCEDFORM,     [matrix] MC sample of entries in steady state and reduced form model solution (stacked vertically)
+%    * STO_MOMENTS,         [matrix] MC sample of entries in theoretical first two moments (stacked vertically)
+%    * STO_DYNAMIC,         [matrix] MC sample of entries in steady state and dynamic model derivatives (stacked vertically)
+%    * STO_si_dDYNAMIC,     [matrix] MC sample of derivatives of steady state and dynamic derivatives
+%    * STO_si_dREDUCEDFORM, [matrix] MC sample of derivatives of steady state and reduced form model solution
+%    * STO_si_dMOMENTS      [matrix] MC sample of Iskrev (2010)'s J matrix
+%    * STO_dSPECTRUM        [matrix] MC sample of Qu and Tkachenko (2012)'s \bar{G} matrix
+%    * STO_dMINIMAL         [matrix] MC sample of Komunjer and Ng (2011)'s \bar{\Delta} matrix
 % -------------------------------------------------------------------------
 % This function is called by
 %    * driver.m
@@ -107,10 +107,10 @@ options_ident = set_default_option(options_ident,'parameter_set','prior_mean');
 options_ident = set_default_option(options_ident,'load_ident_files',0);
     % 1: load previously computed analysis from identification/fname_identif.mat
 options_ident = set_default_option(options_ident,'useautocorr',0);
-    % 1: use autocorrelations in Iskrev (2010)'s J criteria
-    % 0: use autocovariances in Iskrev (2010)'s J criteria
+    % 1: use autocorrelations in Iskrev (2010)'s criteria
+    % 0: use autocovariances in Iskrev (2010)'s criteria
 options_ident = set_default_option(options_ident,'ar',1);
-    % number of lags to consider for autocovariances/autocorrelations in Iskrev (2010)'s J criteria
+    % number of lags to consider for autocovariances/autocorrelations in Iskrev (2010)'s criteria
 options_ident = set_default_option(options_ident,'prior_mc',1);
     % size of Monte-Carlo sample of parameter draws
 options_ident = set_default_option(options_ident,'prior_range',0);
@@ -121,16 +121,17 @@ options_ident = set_default_option(options_ident,'periods',300);
 options_ident = set_default_option(options_ident,'replic',100);
     % number of replicas to compute simulated moment uncertainty, when analytic Hessian is not available
 options_ident = set_default_option(options_ident,'advanced',0);
-    % 1: show a more detailed analysis based on reduced-form solution and Jacobian of dynamic model (LRE). Further, performs a brute force
-    %    search of the groups of parameters best reproducing the behavior of each single parameter of Iskrev (2010)'s J.
+    % 1: show a more detailed analysis based on reduced-form model solution and dynamic model derivatives. Further, performs a brute force
+    %    search of the groups of parameters best reproducing the behavior of each single parameter.
 options_ident = set_default_option(options_ident,'normalize_jacobians',1);
-    % 1: normalize Jacobians by rescaling each row by its largest element in absolute value
+    % 1: normalize Jacobians by either rescaling each row by its largest element in absolute value or for Gram (or Hessian-type) matrices by transforming into correlation-type matrices
 options_ident = set_default_option(options_ident,'grid_nbr',5000);
-    % number of grid points in [-pi;pi] to approximate the integral to compute Qu and Tkachenko (2012)'s G criteria
+    % number of grid points in [-pi;pi] to approximate the integral to compute Qu and Tkachenko (2012)'s criteria
     % note that grid_nbr needs to be even and actually we use (grid_nbr+1) points, as we add the 0 frequency and use symmetry, i.e. grid_nbr/2
     % negative as well as grid_nbr/2 positive values to speed up the compuations
     if mod(options_ident.grid_nbr,2) ~= 0
         options_ident.grid_nbr = options_ident.grid_nbr+1;
+        fprintf('IDENTIFICATION: ''grid_nbr'' needs to be even, hence it is reset to %d\n',options_ident.grid_nbr)
         if mod(options_ident.grid_nbr,2) ~= 0
             error('IDENTIFICATION: You need to set an even value for ''grid_nbr''');
         end
@@ -148,25 +149,25 @@ if ~isfield(options_ident,'no_identification_strength')
 else
     options_ident.no_identification_strength = 1;
 end
-%check whether to compute and display identification criteria based on steady state and reduced-form solution
+%check whether to compute and display identification criteria based on steady state and reduced-form model solution
 if ~isfield(options_ident,'no_identification_reducedform')
     options_ident.no_identification_reducedform = 0;
 else
     options_ident.no_identification_reducedform = 1;
 end
-%check whether to compute and display identification criteria based on Iskrev (2010)'s J, i.e. derivative of first two moments
+%check whether to compute and display identification criteria based on Iskrev (2010), i.e. derivative of first two moments
 if ~isfield(options_ident,'no_identification_moments')
     options_ident.no_identification_moments = 0;
 else
     options_ident.no_identification_moments = 1;
 end
-%check whether to compute and display identification criteria based on Komunjer and Ng (2011)'s D, i.e. derivative of first moment, minimal state space system and observational equivalent spectral density transformation
+%check whether to compute and display identification criteria based on Komunjer and Ng (2011), i.e. derivative of first moment, minimal state space system and observational equivalent spectral density transformation
 if ~isfield(options_ident,'no_identification_minimal')
     options_ident.no_identification_minimal = 0;
 else
-     options_ident.no_identification_minimal = 1;
+    options_ident.no_identification_minimal = 1;
 end
-%Check whether to compute and display identification criteria based on Qu and Tkachenko (2012)'s G, i.e. Gram matrix of derivatives of first moment plus outer product of derivatives of spectral density
+%Check whether to compute and display identification criteria based on Qu and Tkachenko (2012), i.e. Gram matrix of derivatives of first moment plus outer product of derivatives of spectral density
 if ~isfield(options_ident,'no_identification_spectrum')
     options_ident.no_identification_spectrum = 0;
 else
@@ -211,6 +212,10 @@ options_ident = set_default_option(options_ident,'lik_init',1);
     %    ii) option 1 for the stationary elements
 options_ident = set_default_option(options_ident,'analytic_derivation',1);
     % 1: analytic derivation of gradient and hessian of likelihood in dsge_likelihood.m, only works for stationary models, i.e. kalman_algo<3
+options_ident = set_default_option(options_ident,'order',1);
+    % 1: first-order perturbation approximation, identification is based on linear state space system
+    % 2: second-order perturbation approximation, identification is based on second-order pruned state space system
+    % 3: third-order perturbation approximation, identification is based on third-order pruned state space system 
 
 %overwrite values in options_, note that options_ is restored at the end of the function
 if isfield(options_ident,'TeX')
@@ -273,7 +278,17 @@ else
 end
 
 % overwrite settings in options_ and prepare to call dynare_estimation_init
-options_.order = 1; % Identification does not support order>1 (yet)
+options_.order = options_ident.order;
+if options_ident.order > 1
+    %order>1 is not compatible with analytic derivation in dsge_likelihood.m
+    options_ident.analytic_derivation=0;
+    options_.analytic_derivation=0;
+    %order>1 is based on pruned state space system
+    options_.pruning = true;    
+end
+if options_ident.order == 3
+    options_.k_order_solver = 1;
+end
 options_.ar = options_ident.ar;
 options_.prior_mc = options_ident.prior_mc;
 options_.Schur_vec_tol = 1.e-8;
@@ -284,15 +299,15 @@ options_ = set_default_option(options_,'datafile','');
 options_.mode_compute = 0;
 options_.plot_priors = 0;
 options_.smoother = 1;
+options_.options_ident = [];
 [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_, bayestopt_, bounds] = dynare_estimation_init(M_.endo_names, fname, 1, M_, options_, oo_, estim_params_, bayestopt_);
 %outputting dataset_ is needed for Octave
-
 % set method to compute identification Jacobians (kronflag). Default:0
 options_ident = set_default_option(options_ident,'analytic_derivation_mode', options_.analytic_derivation_mode); % if not set by user, inherit default global one
-    %  0: efficient sylvester equation method to compute analytical derivatives as in Ratto & Iskrev (2011)
-    %  1: kronecker products method to compute analytical derivatives as in Iskrev (2010)
-    % -1: numerical two-sided finite difference method to compute numerical derivatives of all Jacobians using function identification_numerical_objective.m (previously thet2tau.m)
-    % -2: numerical two-sided finite difference method to compute numerically dYss, dg1, d2Yss and d2g1, the Jacobians are then computed analytically as in options 0
+    %  0: efficient sylvester equation method to compute analytical derivatives as in Ratto & Iskrev (2012)
+    %  1: kronecker products method to compute analytical derivatives as in Iskrev (2010) (only for order=1)
+    % -1: numerical two-sided finite difference method to compute numerical derivatives of all identification Jacobians using function identification_numerical_objective.m (previously thet2tau.m)
+    % -2: numerical two-sided finite difference method to compute numerically dYss, dg1, dg2, dg3, d2Yss and d2g1, the identification Jacobians are then computed analytically as if option is set to 0
 options_.analytic_derivation_mode = options_ident.analytic_derivation_mode; %overwrite setting
 
 % initialize persistent variables in prior_draw
@@ -365,7 +380,10 @@ end
 options_ident.name_tex = name_tex;
 
 skipline()
-disp('==== Identification analysis ====')
+fprintf('======== Identification Analysis ========\n')
+if options_ident.order > 1
+    fprintf('Using Pruned State Space System (order=%d)\n',options_ident.order);
+end
 skipline()
 if totparam_nbr < 2
     options_ident.advanced = 0;
@@ -378,20 +396,19 @@ options_ident = set_default_option(options_ident,'max_dim_cova_group',min([2,tot
 options_ident.max_dim_cova_group = min([options_ident.max_dim_cova_group,totparam_nbr-1]);
     % In brute force search (ident_bruteforce.m) when advanced=1 this option sets the maximum dimension of groups of parameters that best reproduce the behavior of each single model parameter
 
-options_ident = set_default_option(options_ident,'checks_via_subsets',0); %[ONLY FOR DEBUGGING]
+options_ident = set_default_option(options_ident,'checks_via_subsets',0);
     % 1: uses identification_checks_via_subsets.m to compute problematic parameter combinations 
     % 0: uses identification_checks.m to compute problematic parameter combinations [default]
-options_ident = set_default_option(options_ident,'max_dim_subsets_groups',min([4,totparam_nbr-1])); %[ONLY FOR DEBUGGING]    
-    % In identification_checks_via_subsets.m, when checks_via_subsets=1, this
-    % option sets the maximum dimension of groups of parameters for which
-    % the corresponding rank criteria is checked 
+options_ident = set_default_option(options_ident,'max_dim_subsets_groups',min([4,totparam_nbr-1]));
+    % In identification_checks_via_subsets.m, when checks_via_subsets=1, this option sets the maximum dimension of groups of parameters for which the corresponding rank criteria is checked 
 
 options_.options_ident = options_ident; %store identification options into global options
-MaxNumberOfBytes = options_.MaxNumberOfBytes; %threshold when to save from memory to files
 store_options_ident = options_ident;
 
+MaxNumberOfBytes = options_.MaxNumberOfBytes; %threshold when to save from memory to files
 iload = options_ident.load_ident_files;
 SampleSize = options_ident.prior_mc;
+
 if iload <=0
     %% Perform new identification analysis, i.e. do not load previous analysis
     if prior_exist
@@ -442,14 +459,14 @@ if iload <=0
         end
     else
         % no estimated_params block is available, all stderr and model parameters, but no corr parameters are chosen
-        params = [sqrt(diag(M_.Sigma_e))', M_.params']; % use current values
+        params = [sqrt(diag(M_.Sigma_e))', M_.params'];
         parameters = 'Current_params';
         parameters_TeX = 'Current parameter values';
         disp('Testing all current stderr and model parameter values')
     end
     options_ident.tittxt = parameters; %title text for graphs and figures
     % perform identification analysis for single point
-    [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_lre_point, derivatives_info_point, info, options_ident] = ...
+    [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info, options_ident] = ...
         identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end implies initialization of persistent variables
     if info(1)~=0
         % there are errors in the solution algorithm
@@ -496,7 +513,7 @@ if iload <=0
                 params = prior_draw();
                 options_ident.tittxt = 'Random_prior_params'; %title text for graphs and figures
                 % perform identification analysis
-                [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_lre_point, derivatives_info, info, options_ident] = ...
+                [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info, options_ident] = ...
                     identification_analysis(params,indpmodel,indpstderr,indpcorr,options_ident,dataset_info, prior_exist, 1);
             end
         end
@@ -521,13 +538,13 @@ if iload <=0
     end
     ide_hess_point.params = params;
     % save all output into identification folder
-    save([IdentifDirectoryName '/' fname                '_identif.mat'], 'ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_hess_point', 'ide_reducedform_point', 'ide_lre_point','store_options_ident');
-    save([IdentifDirectoryName '/' fname '_' parameters '_identif.mat'], 'ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_hess_point', 'ide_reducedform_point', 'ide_lre_point','store_options_ident');
+    save([IdentifDirectoryName '/' fname                '_identif.mat'], 'ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_hess_point', 'ide_reducedform_point', 'ide_dynamic_point','store_options_ident');
+    save([IdentifDirectoryName '/' fname '_' parameters '_identif.mat'], 'ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_hess_point', 'ide_reducedform_point', 'ide_dynamic_point','store_options_ident');
     % display results of identification analysis
     disp_identification(params, ide_reducedform_point, ide_moments_point, ide_spectrum_point, ide_minimal_point, name, options_ident);
     if ~options_ident.no_identification_strength && ~options_.nograph
         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-        plot_identification(params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_lre_point, options_ident.advanced, parameters, name, IdentifDirectoryName, parameters_TeX, name_tex);
+        plot_identification(params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, IdentifDirectoryName, parameters_TeX, name_tex);
     end
     
     if SampleSize > 1
@@ -553,30 +570,30 @@ if iload <=0
         end
         options_ident.tittxt = []; % clear title text for graphs and figures
         % run identification analysis
-        [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_lre, ide_derivatives_info, info, options_MC] = ...
+        [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, ide_derivatives_info, info, options_MC] = ...
             identification_analysis(params, indpmodel, indpstderr, indpcorr, options_MC, dataset_info, prior_exist, 0); % the 0 implies that we do not initialize persistent variables anymore
-        
+
         if iteration==0 && info(1)==0 % preallocate storage in the first admissable run
             delete([IdentifDirectoryName '/' fname '_identif_*.mat']) % delete previously saved results
-            MAX_RUNS_BEFORE_SAVE_TO_FILE = min(SampleSize,ceil(MaxNumberOfBytes/(size(ide_reducedform.si_dTAU,1)*totparam_nbr)/8)); % set how many runs can be stored before we save to files
+            MAX_RUNS_BEFORE_SAVE_TO_FILE = min(SampleSize,ceil(MaxNumberOfBytes/(size(ide_reducedform.si_dREDUCEDFORM,1)*totparam_nbr)/8)); % set how many runs can be stored before we save to files
             pdraws = zeros(SampleSize,totparam_nbr); % preallocate storage for draws in each row
             
-            % preallocate storage for linear rational expectations model
-            STO_si_dLRE        = zeros([size(ide_lre.si_dLRE,1),modparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
-            STO_LRE            = zeros(size(ide_lre.LRE,1),SampleSize);
-            IDE_LRE.ind_dLRE   = ide_lre.ind_dLRE;
-            IDE_LRE.in0        = zeros(SampleSize,modparam_nbr);
-            IDE_LRE.ind0       = zeros(SampleSize,modparam_nbr);
-            IDE_LRE.jweak      = zeros(SampleSize,modparam_nbr);
-            IDE_LRE.jweak_pair = zeros(SampleSize,modparam_nbr*(modparam_nbr+1)/2);
-            IDE_LRE.cond       = zeros(SampleSize,1);
-            IDE_LRE.Mco        = zeros(SampleSize,modparam_nbr);
+            % preallocate storage for steady state and dynamic model derivatives
+            STO_si_dDYNAMIC        = zeros([size(ide_dynamic.si_dDYNAMIC,1),modparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
+            STO_DYNAMIC            = zeros(size(ide_dynamic.DYNAMIC,1),SampleSize);
+            IDE_DYNAMIC.ind_dDYNAMIC   = ide_dynamic.ind_dDYNAMIC;
+            IDE_DYNAMIC.in0        = zeros(SampleSize,modparam_nbr);
+            IDE_DYNAMIC.ind0       = zeros(SampleSize,modparam_nbr);
+            IDE_DYNAMIC.jweak      = zeros(SampleSize,modparam_nbr);
+            IDE_DYNAMIC.jweak_pair = zeros(SampleSize,modparam_nbr*(modparam_nbr+1)/2);
+            IDE_DYNAMIC.cond       = zeros(SampleSize,1);
+            IDE_DYNAMIC.Mco        = zeros(SampleSize,modparam_nbr);
             
             % preallocate storage for reduced form
             if ~options_MC.no_identification_reducedform
-                STO_si_dTAU                = zeros([size(ide_reducedform.si_dTAU,1),totparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
-                STO_TAU                    = zeros(size(ide_reducedform.TAU,1),SampleSize);
-                IDE_REDUCEDFORM.ind_dTAU   = ide_reducedform.ind_dTAU;
+                STO_si_dREDUCEDFORM                = zeros([size(ide_reducedform.si_dREDUCEDFORM,1),totparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
+                STO_REDUCEDFORM                    = zeros(size(ide_reducedform.REDUCEDFORM,1),SampleSize);
+                IDE_REDUCEDFORM.ind_dREDUCEDFORM   = ide_reducedform.ind_dREDUCEDFORM;
                 IDE_REDUCEDFORM.in0        = zeros(SampleSize,1);
                 IDE_REDUCEDFORM.ind0       = zeros(SampleSize,totparam_nbr);
                 IDE_REDUCEDFORM.jweak      = zeros(SampleSize,totparam_nbr);
@@ -589,45 +606,45 @@ if iload <=0
             
             % preallocate storage for moments
             if ~options_MC.no_identification_moments
-                STO_si_J               = zeros([size(ide_moments.si_J,1),totparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
-                STO_MOMENTS            = zeros(size(ide_moments.MOMENTS,1),SampleSize);
-                IDE_MOMENTS.ind_J      = ide_moments.ind_J;
-                IDE_MOMENTS.in0        = zeros(SampleSize,1);
-                IDE_MOMENTS.ind0       = zeros(SampleSize,totparam_nbr);
-                IDE_MOMENTS.jweak      = zeros(SampleSize,totparam_nbr);
-                IDE_MOMENTS.jweak_pair = zeros(SampleSize,totparam_nbr*(totparam_nbr+1)/2);
-                IDE_MOMENTS.cond       = zeros(SampleSize,1);
-                IDE_MOMENTS.Mco        = zeros(SampleSize,totparam_nbr);
-                IDE_MOMENTS.S          = zeros(SampleSize,min(8,totparam_nbr));
-                IDE_MOMENTS.V          = zeros(SampleSize,totparam_nbr,min(8,totparam_nbr));
+                STO_si_dMOMENTS          = zeros([size(ide_moments.si_dMOMENTS,1),totparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
+                STO_MOMENTS              = zeros(size(ide_moments.MOMENTS,1),SampleSize);
+                IDE_MOMENTS.ind_dMOMENTS = ide_moments.ind_dMOMENTS;
+                IDE_MOMENTS.in0          = zeros(SampleSize,1);
+                IDE_MOMENTS.ind0         = zeros(SampleSize,totparam_nbr);
+                IDE_MOMENTS.jweak        = zeros(SampleSize,totparam_nbr);
+                IDE_MOMENTS.jweak_pair   = zeros(SampleSize,totparam_nbr*(totparam_nbr+1)/2);
+                IDE_MOMENTS.cond         = zeros(SampleSize,1);
+                IDE_MOMENTS.Mco          = zeros(SampleSize,totparam_nbr);
+                IDE_MOMENTS.S            = zeros(SampleSize,min(8,totparam_nbr));
+                IDE_MOMENTS.V            = zeros(SampleSize,totparam_nbr,min(8,totparam_nbr));
             else
                 IDE_MOMENTS = {};
             end
             
             % preallocate storage for spectrum
             if ~options_MC.no_identification_spectrum
-                STO_G                   = zeros([size(ide_spectrum.G,1),size(ide_spectrum.G,2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);
-                IDE_SPECTRUM.ind_G      = ide_spectrum.ind_G;
-                IDE_SPECTRUM.in0        = zeros(SampleSize,1);
-                IDE_SPECTRUM.ind0       = zeros(SampleSize,totparam_nbr);
-                IDE_SPECTRUM.jweak      = zeros(SampleSize,totparam_nbr);
-                IDE_SPECTRUM.jweak_pair = zeros(SampleSize,totparam_nbr*(totparam_nbr+1)/2);
-                IDE_SPECTRUM.cond       = zeros(SampleSize,1);
-                IDE_SPECTRUM.Mco        = zeros(SampleSize,totparam_nbr);
+                STO_dSPECTRUM              = zeros([size(ide_spectrum.dSPECTRUM,1),size(ide_spectrum.dSPECTRUM,2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);
+                IDE_SPECTRUM.ind_dSPECTRUM = ide_spectrum.ind_dSPECTRUM;
+                IDE_SPECTRUM.in0           = zeros(SampleSize,1);
+                IDE_SPECTRUM.ind0          = zeros(SampleSize,totparam_nbr);
+                IDE_SPECTRUM.jweak         = zeros(SampleSize,totparam_nbr);
+                IDE_SPECTRUM.jweak_pair    = zeros(SampleSize,totparam_nbr*(totparam_nbr+1)/2);
+                IDE_SPECTRUM.cond          = zeros(SampleSize,1);
+                IDE_SPECTRUM.Mco           = zeros(SampleSize,totparam_nbr);
             else
                 IDE_SPECTRUM = {};
             end
             
             % preallocate storage for minimal system
             if ~options_MC.no_identification_minimal
-                STO_D                  = zeros([size(ide_minimal.D,1),size(ide_minimal.D,2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);                
-                IDE_MINIMAL.ind_D      = ide_minimal.ind_D;
-                IDE_MINIMAL.in0        = zeros(SampleSize,1);
-                IDE_MINIMAL.ind0       = zeros(SampleSize,totparam_nbr);
-                IDE_MINIMAL.jweak      = zeros(SampleSize,totparam_nbr);
-                IDE_MINIMAL.jweak_pair = zeros(SampleSize,totparam_nbr*(totparam_nbr+1)/2);
-                IDE_MINIMAL.cond       = zeros(SampleSize,1);
-                IDE_MINIMAL.Mco        = zeros(SampleSize,totparam_nbr);
+                STO_dMINIMAL             = zeros([size(ide_minimal.dMINIMAL,1),size(ide_minimal.dMINIMAL,2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);
+                IDE_MINIMAL.ind_dMINIMAL = ide_minimal.ind_dMINIMAL;
+                IDE_MINIMAL.in0          = zeros(SampleSize,1);
+                IDE_MINIMAL.ind0         = zeros(SampleSize,totparam_nbr);
+                IDE_MINIMAL.jweak        = zeros(SampleSize,totparam_nbr);
+                IDE_MINIMAL.jweak_pair   = zeros(SampleSize,totparam_nbr*(totparam_nbr+1)/2);
+                IDE_MINIMAL.cond         = zeros(SampleSize,1);
+                IDE_MINIMAL.Mco          = zeros(SampleSize,totparam_nbr);
             else
                 IDE_MINIMAL = {};
             end
@@ -638,20 +655,20 @@ if iload <=0
             run_index = run_index + 1; %increase index of admissable draws after saving to files
             pdraws(iteration,:) = params; % store draw
             
-            % store results for linear rational expectations model
-            STO_LRE(:,iteration)            = ide_lre.LRE;
-            STO_si_dLRE(:,:,run_index)      = ide_lre.si_dLRE;
-            IDE_LRE.cond(iteration,1)       = ide_lre.cond;
-            IDE_LRE.ino(iteration,1)        = ide_lre.ino;
-            IDE_LRE.ind0(iteration,:)       = ide_lre.ind0;
-            IDE_LRE.jweak(iteration,:)      = ide_lre.jweak;
-            IDE_LRE.jweak_pair(iteration,:) = ide_lre.jweak_pair;
-            IDE_LRE.Mco(iteration,:)        = ide_lre.Mco;            
+            % store results for steady state and dynamic model derivatives
+            STO_DYNAMIC(:,iteration)            = ide_dynamic.DYNAMIC;
+            STO_si_dDYNAMIC(:,:,run_index)      = ide_dynamic.si_dDYNAMIC;
+            IDE_DYNAMIC.cond(iteration,1)       = ide_dynamic.cond;
+            IDE_DYNAMIC.ino(iteration,1)        = ide_dynamic.ino;
+            IDE_DYNAMIC.ind0(iteration,:)       = ide_dynamic.ind0;
+            IDE_DYNAMIC.jweak(iteration,:)      = ide_dynamic.jweak;
+            IDE_DYNAMIC.jweak_pair(iteration,:) = ide_dynamic.jweak_pair;
+            IDE_DYNAMIC.Mco(iteration,:)        = ide_dynamic.Mco;            
             
-            % store results for reduced form solution
+            % store results for reduced form model solution
             if ~options_MC.no_identification_reducedform
-                STO_TAU(:,iteration)                    = ide_reducedform.TAU;
-                STO_si_dTAU(:,:,run_index)              = ide_reducedform.si_dTAU;
+                STO_REDUCEDFORM(:,iteration)                    = ide_reducedform.REDUCEDFORM;
+                STO_si_dREDUCEDFORM(:,:,run_index)              = ide_reducedform.si_dREDUCEDFORM;
                 IDE_REDUCEDFORM.cond(iteration,1)       = ide_reducedform.cond;
                 IDE_REDUCEDFORM.ino(iteration,1)        = ide_reducedform.ino;
                 IDE_REDUCEDFORM.ind0(iteration,:)       = ide_reducedform.ind0;
@@ -663,7 +680,7 @@ if iload <=0
             % store results for moments
             if ~options_MC.no_identification_moments
                 STO_MOMENTS(:,iteration)            = ide_moments.MOMENTS;
-                STO_si_J(:,:,run_index)             = ide_moments.si_J;
+                STO_si_dMOMENTS(:,:,run_index)      = ide_moments.si_dMOMENTS;
                 IDE_MOMENTS.cond(iteration,1)       = ide_moments.cond;
                 IDE_MOMENTS.ino(iteration,1)        = ide_moments.ino;
                 IDE_MOMENTS.ind0(iteration,:)       = ide_moments.ind0;
@@ -676,7 +693,7 @@ if iload <=0
             
             % store results for spectrum
             if ~options_MC.no_identification_spectrum
-                STO_G(:,:,run_index)                 = ide_spectrum.G;
+                STO_dSPECTRUM(:,:,run_index)         = ide_spectrum.dSPECTRUM;
                 IDE_SPECTRUM.cond(iteration,1)       = ide_spectrum.cond;
                 IDE_SPECTRUM.ino(iteration,1)        = ide_spectrum.ino;
                 IDE_SPECTRUM.ind0(iteration,:)       = ide_spectrum.ind0;
@@ -687,7 +704,7 @@ if iload <=0
             
             % store results for minimal system
             if ~options_MC.no_identification_minimal
-                STO_D(:,:,run_index)                = ide_minimal.D;
+                STO_dMINIMAL(:,:,run_index)         = ide_minimal.dMINIMAL;
                 IDE_MINIMAL.cond(iteration,1)       = ide_minimal.cond;
                 IDE_MINIMAL.ino(iteration,1)        = ide_minimal.ino;
                 IDE_MINIMAL.ind0(iteration,:)       = ide_minimal.ind0;
@@ -701,37 +718,37 @@ if iload <=0
                 file_index = file_index + 1;
                 if run_index<MAX_RUNS_BEFORE_SAVE_TO_FILE 
                     %we are finished (iteration == SampleSize), so get rid of additional storage
-                    STO_si_dLRE = STO_si_dLRE(:,:,1:run_index);
+                    STO_si_dDYNAMIC = STO_si_dDYNAMIC(:,:,1:run_index);
                     if ~options_MC.no_identification_reducedform
-                        STO_si_dTAU = STO_si_dTAU(:,:,1:run_index);
+                        STO_si_dREDUCEDFORM = STO_si_dREDUCEDFORM(:,:,1:run_index);
                     end
                     if ~options_MC.no_identification_moments
-                        STO_si_J = STO_si_J(:,:,1:run_index);
+                        STO_si_dMOMENTS = STO_si_dMOMENTS(:,:,1:run_index);
                     end
                     if ~options_MC.no_identification_spectrum
-                        STO_G = STO_G(:,:,1:run_index);
+                        STO_dSPECTRUM = STO_dSPECTRUM(:,:,1:run_index);
                     end
                     if ~options_MC.no_identification_minimal
-                        STO_D = STO_D(:,:,1:run_index);
+                        STO_dMINIMAL = STO_dMINIMAL(:,:,1:run_index);
                     end
                 end                
-                save([IdentifDirectoryName '/' fname '_identif_' int2str(file_index) '.mat'], 'STO_si_dLRE');
-                STO_si_dLRE = zeros(size(STO_si_dLRE)); % reset storage
+                save([IdentifDirectoryName '/' fname '_identif_' int2str(file_index) '.mat'], 'STO_si_dDYNAMIC');
+                STO_si_dDYNAMIC = zeros(size(STO_si_dDYNAMIC)); % reset storage
                 if ~options_MC.no_identification_reducedform
-                    save([IdentifDirectoryName '/' fname '_identif_' int2str(file_index) '.mat'], 'STO_si_dTAU', '-append');
-                    STO_si_dTAU = zeros(size(STO_si_dTAU)); % reset storage
+                    save([IdentifDirectoryName '/' fname '_identif_' int2str(file_index) '.mat'], 'STO_si_dREDUCEDFORM', '-append');
+                    STO_si_dREDUCEDFORM = zeros(size(STO_si_dREDUCEDFORM)); % reset storage
                 end
                 if ~options_MC.no_identification_moments
-                    save([IdentifDirectoryName '/' fname '_identif_' int2str(file_index) '.mat'], 'STO_si_J','-append');
-                    STO_si_J = zeros(size(STO_si_J)); % reset storage
+                    save([IdentifDirectoryName '/' fname '_identif_' int2str(file_index) '.mat'], 'STO_si_dMOMENTS','-append');
+                    STO_si_dMOMENTS = zeros(size(STO_si_dMOMENTS)); % reset storage
                 end
                 if ~options_MC.no_identification_spectrum
-                    save([IdentifDirectoryName '/' fname '_identif_' int2str(file_index) '.mat'], 'STO_G','-append');
-                    STO_G = zeros(size(STO_G)); % reset storage
+                    save([IdentifDirectoryName '/' fname '_identif_' int2str(file_index) '.mat'], 'STO_dSPECTRUM','-append');
+                    STO_dSPECTRUM = zeros(size(STO_dSPECTRUM)); % reset storage
                 end
                 if ~options_MC.no_identification_minimal
-                    save([IdentifDirectoryName '/' fname '_identif_' int2str(file_index) '.mat'], 'STO_D','-append');
-                    STO_D = zeros(size(STO_D)); % reset storage
+                    save([IdentifDirectoryName '/' fname '_identif_' int2str(file_index) '.mat'], 'STO_dMINIMAL','-append');
+                    STO_dMINIMAL = zeros(size(STO_dMINIMAL)); % reset storage
                 end
                 run_index = 0; % reset index
             end
@@ -743,9 +760,9 @@ if iload <=0
 
     if SampleSize > 1
         dyn_waitbar_close(h);
-        normalize_STO_LRE = std(STO_LRE,0,2);
+        normalize_STO_DYNAMIC = std(STO_DYNAMIC,0,2);
         if ~options_MC.no_identification_reducedform
-            normalize_STO_TAU = std(STO_TAU,0,2);
+            normalize_STO_REDUCEDFORM = std(STO_REDUCEDFORM,0,2);
         end
         if ~options_MC.no_identification_moments
             normalize_STO_MOMENTS = std(STO_MOMENTS,0,2);
@@ -759,65 +776,65 @@ if iload <=0
         normaliz1 = std(pdraws);
         iter = 0;
         for ifile_index = 1:file_index
-            load([IdentifDirectoryName '/' fname '_identif_' int2str(ifile_index) '.mat'], 'STO_si_dLRE');
-            maxrun_dLRE = size(STO_si_dLRE,3);
+            load([IdentifDirectoryName '/' fname '_identif_' int2str(ifile_index) '.mat'], 'STO_si_dDYNAMIC');
+            maxrun_dDYNAMIC = size(STO_si_dDYNAMIC,3);
             if ~options_MC.no_identification_reducedform
-                load([IdentifDirectoryName '/' fname '_identif_' int2str(ifile_index) '.mat'], 'STO_si_dTAU');
-                maxrun_dTAU = size(STO_si_dTAU,3);
+                load([IdentifDirectoryName '/' fname '_identif_' int2str(ifile_index) '.mat'], 'STO_si_dREDUCEDFORM');
+                maxrun_dREDUCEDFORM = size(STO_si_dREDUCEDFORM,3);
             else
-                maxrun_dTAU = 0;
+                maxrun_dREDUCEDFORM = 0;
             end
             if ~options_MC.no_identification_moments
-                load([IdentifDirectoryName '/' fname '_identif_' int2str(ifile_index) '.mat'], 'STO_si_J');
-                maxrun_J = size(STO_si_J,3);
+                load([IdentifDirectoryName '/' fname '_identif_' int2str(ifile_index) '.mat'], 'STO_si_dMOMENTS');
+                maxrun_dMOMENTS = size(STO_si_dMOMENTS,3);
             else
-                maxrun_J = 0;
+                maxrun_dMOMENTS = 0;
             end
             if ~options_MC.no_identification_spectrum
-                load([IdentifDirectoryName '/' fname '_identif_' int2str(ifile_index) '.mat'], 'STO_G');
-                maxrun_G = size(STO_G,3);
+                load([IdentifDirectoryName '/' fname '_identif_' int2str(ifile_index) '.mat'], 'STO_dSPECTRUM');
+                maxrun_dSPECTRUM = size(STO_dSPECTRUM,3);
             else
-                maxrun_G = 0;
+                maxrun_dSPECTRUM = 0;
             end
             if ~options_MC.no_identification_minimal
-                load([IdentifDirectoryName '/' fname '_identif_' int2str(ifile_index) '.mat'], 'STO_D');
-                maxrun_D = size(STO_D,3);
+                load([IdentifDirectoryName '/' fname '_identif_' int2str(ifile_index) '.mat'], 'STO_dMINIMAL');
+                maxrun_dMINIMAL = size(STO_dMINIMAL,3);
             else
-                maxrun_D = 0;
+                maxrun_dMINIMAL = 0;
             end
-            for irun=1:max([maxrun_dLRE, maxrun_dTAU, maxrun_J, maxrun_G, maxrun_D])
+            for irun=1:max([maxrun_dDYNAMIC, maxrun_dREDUCEDFORM, maxrun_dMOMENTS, maxrun_dSPECTRUM, maxrun_dMINIMAL])
                 iter=iter+1;
-                % note that this is not the same si_dLREnorm as computed in identification_analysis
+                % note that this is not the same si_dDYNAMICnorm as computed in identification_analysis
                 % given that we have the MC sample of the Jacobians, we also normalize by the std of the sample of Jacobian entries, to get a fully standardized sensitivity measure
-                si_dLREnorm(iter,:) = vnorm(STO_si_dLRE(:,:,irun)./repmat(normalize_STO_LRE,1,totparam_nbr-(stderrparam_nbr+corrparam_nbr))).*normaliz1((stderrparam_nbr+corrparam_nbr)+1:end);
+                si_dDYNAMICnorm(iter,:) = vnorm(STO_si_dDYNAMIC(:,:,irun)./repmat(normalize_STO_DYNAMIC,1,totparam_nbr-(stderrparam_nbr+corrparam_nbr))).*normaliz1((stderrparam_nbr+corrparam_nbr)+1:end);
                 if ~options_MC.no_identification_reducedform
-                    % note that this is not the same si_dTAUnorm as computed in identification_analysis
+                    % note that this is not the same si_dREDUCEDFORMnorm as computed in identification_analysis
                     % given that we have the MC sample of the Jacobians, we also normalize by the std of the sample of Jacobian entries, to get a fully standardized sensitivity measure
-                    si_dTAUnorm(iter,:) = vnorm(STO_si_dTAU(:,:,irun)./repmat(normalize_STO_TAU,1,totparam_nbr)).*normaliz1;
+                    si_dREDUCEDFORMnorm(iter,:) = vnorm(STO_si_dREDUCEDFORM(:,:,irun)./repmat(normalize_STO_REDUCEDFORM,1,totparam_nbr)).*normaliz1;
                 end
                 if ~options_MC.no_identification_moments
-                    % note that this is not the same si_Jnorm as computed in identification_analysis
+                    % note that this is not the same si_dMOMENTSnorm as computed in identification_analysis
                     % given that we have the MC sample of the Jacobians, we also normalize by the std of the sample of Jacobian entries, to get a fully standardized sensitivity measure
-                    si_Jnorm(iter,:) = vnorm(STO_si_J(:,:,irun)./repmat(normalize_STO_MOMENTS,1,totparam_nbr)).*normaliz1;
+                    si_dMOMENTSnorm(iter,:) = vnorm(STO_si_dMOMENTS(:,:,irun)./repmat(normalize_STO_MOMENTS,1,totparam_nbr)).*normaliz1;
                 end
                 if ~options_MC.no_identification_spectrum
-                    % note that this is not the same Gnorm as computed in identification_analysis                    
-                    Gnorm(iter,:) = vnorm(STO_G(:,:,irun)); %not yet used
+                    % note that this is not the same dSPECTRUMnorm as computed in identification_analysis
+                    dSPECTRUMnorm(iter,:) = vnorm(STO_dSPECTRUM(:,:,irun)); %not yet used
                 end
                 if ~options_MC.no_identification_minimal
-                    % note that this is not the same Dnorm as computed in identification_analysis
-                    Dnorm(iter,:) = vnorm(STO_D(:,:,irun)); %not yet used
+                    % note that this is not the same dMINIMALnorm as computed in identification_analysis
+                    dMINIMALnorm(iter,:) = vnorm(STO_dMINIMAL(:,:,irun)); %not yet used
                 end
             end
         end
-        IDE_LRE.si_dLREnorm = si_dLREnorm;
-        save([IdentifDirectoryName '/' fname '_identif.mat'], 'pdraws', 'IDE_LRE','STO_LRE','-append');
+        IDE_DYNAMIC.si_dDYNAMICnorm = si_dDYNAMICnorm;
+        save([IdentifDirectoryName '/' fname '_identif.mat'], 'pdraws', 'IDE_DYNAMIC','STO_DYNAMIC','-append');
         if ~options_MC.no_identification_reducedform
-            IDE_REDUCEDFORM.si_dTAUnorm = si_dTAUnorm;
-            save([IdentifDirectoryName '/' fname '_identif.mat'], 'IDE_REDUCEDFORM', 'STO_TAU','-append');
+            IDE_REDUCEDFORM.si_dREDUCEDFORMnorm = si_dREDUCEDFORMnorm;
+            save([IdentifDirectoryName '/' fname '_identif.mat'], 'IDE_REDUCEDFORM', 'STO_REDUCEDFORM','-append');
         end
         if ~options_MC.no_identification_moments
-            IDE_MOMENTS.si_Jnorm = si_Jnorm;
+            IDE_MOMENTS.si_dMOMENTSnorm = si_dMOMENTSnorm;
             save([IdentifDirectoryName '/' fname '_identif.mat'], 'IDE_MOMENTS', 'STO_MOMENTS','-append');
         end        
         
@@ -836,25 +853,25 @@ end
 %% if dynare_identification is called as it own function (not through identification command) and if we load files
 if nargout>3 && iload
     filnam = dir([IdentifDirectoryName '/' fname '_identif_*.mat']);
-    STO_si_dLRE = [];
-    STO_si_dTAU=[];    
-    STO_si_J = [];
-    STO_G = [];
-    STO_D = [];    
+    STO_si_dDYNAMIC = [];
+    STO_si_dREDUCEDFORM=[];    
+    STO_si_dMOMENTS = [];
+    STO_dSPECTRUM = [];
+    STO_dMINIMAL = [];    
     for j=1:length(filnam)
         load([IdentifDirectoryName '/' fname '_identif_',int2str(j),'.mat']);
-        STO_si_dLRE = cat(3,STO_si_dLRE, STO_si_dLRE(:,abs(iload),:));
+        STO_si_dDYNAMIC = cat(3,STO_si_dDYNAMIC, STO_si_dDYNAMIC(:,abs(iload),:));
         if ~options_ident.no_identification_reducedform
-            STO_si_dTAU = cat(3,STO_si_dTAU, STO_si_dTAU(:,abs(iload),:));
+            STO_si_dREDUCEDFORM = cat(3,STO_si_dREDUCEDFORM, STO_si_dREDUCEDFORM(:,abs(iload),:));
         end
         if ~options_ident.no_identification_moments
-            STO_si_J = cat(3,STO_si_J, STO_si_J(:,abs(iload),:));
+            STO_si_dMOMENTS = cat(3,STO_si_dMOMENTS, STO_si_dMOMENTS(:,abs(iload),:));
         end
         if ~options_ident.no_identification_spectrum
-            STO_G = cat(3,STO_G, STO_G(:,abs(iload),:));
+            STO_dSPECTRUM = cat(3,STO_dSPECTRUM, STO_dSPECTRUM(:,abs(iload),:));
         end
         if ~options_ident.no_identification_minimal
-            STO_D = cat(3,STO_D, STO_D(:,abs(iload),:));
+            STO_dMINIMAL = cat(3,STO_dMINIMAL, STO_dMINIMAL(:,abs(iload),:));
         end
     end
 end
@@ -865,7 +882,7 @@ if iload
     disp_identification(ide_hess_point.params, ide_reducedform_point, ide_moments_point, ide_spectrum_point, ide_minimal_point, name, options_ident);
     if ~options_.nograph
         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-        plot_identification(ide_hess_point.params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_lre_point, options_ident.advanced, parameters, name, IdentifDirectoryName, [],name_tex);
+        plot_identification(ide_hess_point.params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, IdentifDirectoryName, [],name_tex);
     end
 end
 
@@ -880,7 +897,7 @@ if SampleSize > 1
     options_ident.advanced = advanced0; % reset advanced setting
     if ~options_.nograph
         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-        plot_identification(pdraws, IDE_MOMENTS, ide_hess_point, IDE_REDUCEDFORM, IDE_LRE, options_ident.advanced, 'MC sample ', name, IdentifDirectoryName, [], name_tex);
+        plot_identification(pdraws, IDE_MOMENTS, ide_hess_point, IDE_REDUCEDFORM, IDE_DYNAMIC, options_ident.advanced, 'MC sample ', name, IdentifDirectoryName, [], name_tex);
     end
     %advanced display and plots for MC Sample, i.e. look at draws with highest/lowest condition number
     if options_ident.advanced        
@@ -898,16 +915,16 @@ if SampleSize > 1
                 disp(['Testing ',tittxt, '.']),
                 if ~iload
                     options_ident.tittxt = tittxt; %title text for graphs and figures
-                    [ide_moments_max, ide_spectrum_max, ide_minimal_max, ide_hess_max, ide_reducedform_max, ide_lre_max, derivatives_info_max, info_max, options_ident] = ...
+                    [ide_moments_max, ide_spectrum_max, ide_minimal_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, derivatives_info_max, info_max, options_ident] = ...
                         identification_analysis(pdraws(jmax,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes some persistent variables
-                    save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_max', 'ide_moments_max', 'ide_spectrum_max', 'ide_minimal_max','ide_reducedform_max', 'ide_lre_max', 'jmax', '-append');
+                    save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_max', 'ide_moments_max', 'ide_spectrum_max', 'ide_minimal_max','ide_reducedform_max', 'ide_dynamic_max', 'jmax', '-append');
                 end                
                 advanced0 = options_ident.advanced; options_ident.advanced = 1; % make sure advanced setting is on
                 disp_identification(pdraws(jmax,:), ide_reducedform_max, ide_moments_max, ide_spectrum_max, ide_minimal_max, name, options_ident);
                 options_ident.advanced = advanced0; %reset advanced setting                
                 if ~options_.nograph
                     % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-                    plot_identification(pdraws(jmax,:), ide_moments_max, ide_hess_max, ide_reducedform_max, ide_lre_max, 1, tittxt, name, IdentifDirectoryName, tittxt, name_tex);
+                    plot_identification(pdraws(jmax,:), ide_moments_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, 1, tittxt, name, IdentifDirectoryName, tittxt, name_tex);
                 end
                 
                 % SMALLEST condition number
@@ -918,16 +935,16 @@ if SampleSize > 1
                 disp(['Testing ',tittxt, '.']),
                 if ~iload
                     options_ident.tittxt = tittxt; %title text for graphs and figures
-                    [ide_moments_min, ide_spectrum_min, ide_minimal_min, ide_hess_min, ide_reducedform_min, ide_lre_min, derivatives_info_min, info_min, options_ident] = ...
+                    [ide_moments_min, ide_spectrum_min, ide_minimal_min, ide_hess_min, ide_reducedform_min, ide_dynamic_min, derivatives_info_min, info_min, options_ident] = ...
                         identification_analysis(pdraws(jmin,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes persistent variables
-                    save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_min', 'ide_moments_min','ide_spectrum_min','ide_minimal_min','ide_reducedform_min', 'ide_lre_min', 'jmin', '-append');
+                    save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_min', 'ide_moments_min','ide_spectrum_min','ide_minimal_min','ide_reducedform_min', 'ide_dynamic_min', 'jmin', '-append');
                 end
                 advanced0 = options_ident.advanced; options_ident.advanced = 1; % make sure advanced setting is on
                 disp_identification(pdraws(jmin,:), ide_reducedform_min, ide_moments_min, ide_spectrum_min, ide_minimal_min, name, options_ident);
                 options_ident.advanced = advanced0; %reset advanced setting
                 if ~options_.nograph
                     % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-                    plot_identification(pdraws(jmin,:),ide_moments_min,ide_hess_min,ide_reducedform_min,ide_lre_min,1,tittxt,name,IdentifDirectoryName,tittxt,name_tex);
+                    plot_identification(pdraws(jmin,:),ide_moments_min,ide_hess_min,ide_reducedform_min,ide_dynamic_min,1,tittxt,name,IdentifDirectoryName,tittxt,name_tex);
                 end
                 % reset nodisplay option
                 options_.nodisplay = store_nodisplay;
@@ -941,7 +958,7 @@ if SampleSize > 1
                     disp(['Testing ',tittxt, '.']),
                     if ~iload
                         options_ident.tittxt = tittxt; %title text for graphs and figures
-                        [ide_moments_(j), ide_spectrum_(j), ide_minimal_(j), ide_hess_(j), ide_reducedform_(j), ide_lre_(j), derivatives_info_(j), info_resolve, options_ident] = ...
+                        [ide_moments_(j), ide_spectrum_(j), ide_minimal_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), derivatives_info_(j), info_resolve, options_ident] = ...
                             identification_analysis(pdraws(jcrit(j),:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
                     end
                     advanced0 = options_ident.advanced; options_ident.advanced = 1; %make sure advanced setting is on
@@ -949,11 +966,11 @@ if SampleSize > 1
                     options_ident.advanced = advanced0; % reset advanced                    
                     if ~options_.nograph
                         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-                        plot_identification(pdraws(jcrit(j),:), ide_moments_(j), ide_hess_(j), ide_reducedform_(j), ide_lre_(j), 1, tittxt, name, IdentifDirectoryName, tittxt, name_tex);
+                        plot_identification(pdraws(jcrit(j),:), ide_moments_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), 1, tittxt, name, IdentifDirectoryName, tittxt, name_tex);
                     end
                 end
                 if ~iload
-                    save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_', 'ide_moments_', 'ide_reducedform_', 'ide_lre_', 'ide_spectrum_', 'ide_minimal_', 'jcrit', '-append');
+                    save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_', 'ide_moments_', 'ide_reducedform_', 'ide_dynamic_', 'ide_spectrum_', 'ide_minimal_', 'jcrit', '-append');
                 end
                 % reset nodisplay option
                 options_.nodisplay = store_nodisplay;                
