@@ -18,7 +18,6 @@
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 // Dynamic model abstraction
 
 /* This file only defines a generic interface to a DSGE model. The model

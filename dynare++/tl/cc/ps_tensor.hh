@@ -86,7 +86,8 @@
 class PerTensorDimens : public TensorDimens
 {
 private:
-  static IntSequence sortIntSequence(IntSequence s)
+  static IntSequence
+  sortIntSequence(IntSequence s)
   {
     s.sort();
     return s;
@@ -221,7 +222,7 @@ public:
   void addTo(FGSTensor &out) const;
   void addTo(UGSTensor &out) const;
 
-  enum class fill_method {first, second};
+  enum class fill_method { first, second };
   static fill_method decideFillMethod(const FSSparseTensor &t);
 private:
   int tailIdentitySize() const;

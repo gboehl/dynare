@@ -56,10 +56,10 @@ protected:
   template<class _Ttype>
   static bool index_forward(const Symmetry &s, const IntSequence &nvs);
 
-  template <class _Ttype>
+  template<class _Ttype>
   static bool index_backward(const Symmetry &s, const IntSequence &nvs);
 
-  template <class _Ttype>
+  template<class _Ttype>
   static bool index_offset(const Symmetry &s, const IntSequence &nvs);
 
   static bool fold_unfold(std::unique_ptr<FTensor> folded);
@@ -122,7 +122,7 @@ TestRunnable::test() const
 /****************************************************/
 /*     definition of TestRunnable static methods    */
 /****************************************************/
-template <class _Ttype>
+template<class _Ttype>
 bool
 TestRunnable::index_forward(const Symmetry &s, const IntSequence &nvs)
 {
@@ -154,7 +154,7 @@ TestRunnable::index_forward(const Symmetry &s, const IntSequence &nvs)
   return fails == 0;
 }
 
-template <class _Ttype>
+template<class _Ttype>
 bool
 TestRunnable::index_backward(const Symmetry &s, const IntSequence &nvs)
 {
@@ -185,7 +185,7 @@ TestRunnable::index_backward(const Symmetry &s, const IntSequence &nvs)
   return fails == 0;
 }
 
-template <class _Ttype>
+template<class _Ttype>
 bool
 TestRunnable::index_offset(const Symmetry &s, const IntSequence &nvs)
 {

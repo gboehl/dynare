@@ -112,117 +112,173 @@ MatrixS::MatrixS(const FSSparseTensor &f, const IntSequence &ss,
    interesting here. */
 
 template<>
-ctraits<Storage::unfold>::Tg& KOrder::g<Storage::unfold>()
+ctraits<Storage::unfold>::Tg &
+KOrder::g<Storage::unfold>()
 {
   return _ug;
 }
 template<>
-const ctraits<Storage::unfold>::Tg& KOrder::g<Storage::unfold>() const
-{ return _ug;}
+const ctraits<Storage::unfold>::Tg &
+KOrder::g<Storage::unfold>() const
+{
+  return _ug;
+}
 template<>
-ctraits<Storage::fold>::Tg& KOrder::g<Storage::fold>()
+ctraits<Storage::fold>::Tg &
+KOrder::g<Storage::fold>()
 {
   return _fg;
 }
 template<>
-const ctraits<Storage::fold>::Tg& KOrder::g<Storage::fold>() const
-{ return _fg;}
+const ctraits<Storage::fold>::Tg &
+KOrder::g<Storage::fold>() const
+{
+  return _fg;
+}
 template<>
-ctraits<Storage::unfold>::Tgs& KOrder::gs<Storage::unfold>()
+ctraits<Storage::unfold>::Tgs &
+KOrder::gs<Storage::unfold>()
 {
   return _ugs;
 }
 template<>
-const ctraits<Storage::unfold>::Tgs& KOrder::gs<Storage::unfold>() const
-{ return _ugs;}
+const ctraits<Storage::unfold>::Tgs &
+KOrder::gs<Storage::unfold>() const
+{
+  return _ugs;
+}
 template<>
-ctraits<Storage::fold>::Tgs& KOrder::gs<Storage::fold>()
+ctraits<Storage::fold>::Tgs &
+KOrder::gs<Storage::fold>()
 {
   return _fgs;
 }
 template<>
-const ctraits<Storage::fold>::Tgs& KOrder::gs<Storage::fold>() const
-{ return _fgs;}
+const ctraits<Storage::fold>::Tgs &
+KOrder::gs<Storage::fold>() const
+{
+  return _fgs;
+}
 template<>
-ctraits<Storage::unfold>::Tgss& KOrder::gss<Storage::unfold>()
+ctraits<Storage::unfold>::Tgss &
+KOrder::gss<Storage::unfold>()
 {
   return _ugss;
 }
 template<>
-const ctraits<Storage::unfold>::Tgss& KOrder::gss<Storage::unfold>() const
-{ return _ugss;}
+const ctraits<Storage::unfold>::Tgss &
+KOrder::gss<Storage::unfold>() const
+{
+  return _ugss;
+}
 template<>
-ctraits<Storage::fold>::Tgss& KOrder::gss<Storage::fold>()
+ctraits<Storage::fold>::Tgss &
+KOrder::gss<Storage::fold>()
 {
   return _fgss;
 }
 template<>
-const ctraits<Storage::fold>::Tgss& KOrder::gss<Storage::fold>() const
-{ return _fgss;}
+const ctraits<Storage::fold>::Tgss &
+KOrder::gss<Storage::fold>() const
+{
+  return _fgss;
+}
 template<>
-ctraits<Storage::unfold>::TG& KOrder::G<Storage::unfold>()
+ctraits<Storage::unfold>::TG &
+KOrder::G<Storage::unfold>()
 {
   return _uG;
 }
 template<>
-const ctraits<Storage::unfold>::TG& KOrder::G<Storage::unfold>() const
-{ return _uG;}
+const ctraits<Storage::unfold>::TG &
+KOrder::G<Storage::unfold>() const
+{
+  return _uG;
+}
 template<>
-ctraits<Storage::fold>::TG& KOrder::G<Storage::fold>()
+ctraits<Storage::fold>::TG &
+KOrder::G<Storage::fold>()
 {
   return _fG;
 }
 template<>
-const ctraits<Storage::fold>::TG& KOrder::G<Storage::fold>() const
-{ return _fG;}
+const ctraits<Storage::fold>::TG &
+KOrder::G<Storage::fold>() const
+{
+  return _fG;
+}
 template<>
-ctraits<Storage::unfold>::TZstack& KOrder::Zstack<Storage::unfold>()
+ctraits<Storage::unfold>::TZstack &
+KOrder::Zstack<Storage::unfold>()
 {
   return _uZstack;
 }
 template<>
-const ctraits<Storage::unfold>::TZstack& KOrder::Zstack<Storage::unfold>() const
-{ return _uZstack;}
+const ctraits<Storage::unfold>::TZstack &
+KOrder::Zstack<Storage::unfold>() const
+{
+  return _uZstack;
+}
 template<>
-ctraits<Storage::fold>::TZstack& KOrder::Zstack<Storage::fold>()
+ctraits<Storage::fold>::TZstack &
+KOrder::Zstack<Storage::fold>()
 {
   return _fZstack;
 }
 template<>
-const ctraits<Storage::fold>::TZstack& KOrder::Zstack<Storage::fold>() const
-{ return _fZstack;}
+const ctraits<Storage::fold>::TZstack &
+KOrder::Zstack<Storage::fold>() const
+{
+  return _fZstack;
+}
 template<>
-ctraits<Storage::unfold>::TGstack& KOrder::Gstack<Storage::unfold>()
+ctraits<Storage::unfold>::TGstack &
+KOrder::Gstack<Storage::unfold>()
 {
   return _uGstack;
 }
 template<>
-const ctraits<Storage::unfold>::TGstack& KOrder::Gstack<Storage::unfold>() const
-{ return _uGstack;}
+const ctraits<Storage::unfold>::TGstack &
+KOrder::Gstack<Storage::unfold>() const
+{
+  return _uGstack;
+}
 template<>
-ctraits<Storage::fold>::TGstack& KOrder::Gstack<Storage::fold>()
+ctraits<Storage::fold>::TGstack &
+KOrder::Gstack<Storage::fold>()
 {
   return _fGstack;
 }
 template<>
-const ctraits<Storage::fold>::TGstack& KOrder::Gstack<Storage::fold>() const
-{ return _fGstack;}
+const ctraits<Storage::fold>::TGstack &
+KOrder::Gstack<Storage::fold>() const
+{
+  return _fGstack;
+}
 template<>
-ctraits<Storage::unfold>::Tm& KOrder::m<Storage::unfold>()
+ctraits<Storage::unfold>::Tm &
+KOrder::m<Storage::unfold>()
 {
   return _um;
 }
 template<>
-const ctraits<Storage::unfold>::Tm& KOrder::m<Storage::unfold>() const
-{ return _um;}
+const ctraits<Storage::unfold>::Tm &
+KOrder::m<Storage::unfold>() const
+{
+  return _um;
+}
 template<>
-ctraits<Storage::fold>::Tm& KOrder::m<Storage::fold>()
+ctraits<Storage::fold>::Tm &
+KOrder::m<Storage::fold>()
 {
   return _fm;
 }
 template<>
-const ctraits<Storage::fold>::Tm& KOrder::m<Storage::fold>() const
-{ return _fm;}
+const ctraits<Storage::fold>::Tm &
+KOrder::m<Storage::fold>() const
+{
+  return _fm;
+}
 
 /* Here is the constructor of the KOrder class. We pass what we have to. The
    partitioning of the y vector, a sparse container with model derivatives,

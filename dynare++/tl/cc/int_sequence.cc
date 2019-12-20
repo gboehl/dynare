@@ -284,7 +284,7 @@ IntSequence::print() const
    we want to compute the number of permutations of the word ‘yyyyuuvvv’.
                                                 ⎛  9  ⎞
    This is equal to the multinomial coefficient ⎝4,2,3⎠.
- */
+*/
 int
 IntSequence::noverseq()
 {

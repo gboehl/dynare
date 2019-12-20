@@ -96,7 +96,7 @@ StaticFineAtoms::parsing_finished()
 
   // go through all endo and exo insert tree indices, ignore names
   // whose tree index is -1 (those which are not referenced)
-  for (auto & endovar : endovars)
+  for (auto &endovar : endovars)
     {
       int t = index(endovar);
       if (t != -1)
@@ -105,7 +105,7 @@ StaticFineAtoms::parsing_finished()
           der_atoms.push_back(t);
         }
     }
-  for (auto & exovar : exovars)
+  for (auto &exovar : exovars)
     {
       int t = index(exovar);
       if (t != -1)

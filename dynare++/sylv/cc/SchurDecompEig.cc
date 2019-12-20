@@ -30,7 +30,7 @@
    neighbour is bubbled also in front. The method returns a new
    position ‘to’, where the original block pointed by ‘to’ happens to
    appear at the end. ‘from’ must be greater than ‘to’.
- */
+*/
 SchurDecompEig::diag_iter
 SchurDecompEig::bubbleEigen(diag_iter from, diag_iter to)
 {
@@ -65,7 +65,7 @@ SchurDecompEig::bubbleEigen(diag_iter from, diag_iter to)
    resolve eigenvalues from ‘itadd’ to ‘it’, before the ‘it’ can be
    resolved.
    The success is signaled by returned true.
- */
+*/
 bool
 SchurDecompEig::tryToSwap(diag_iter &it, diag_iter &itadd)
 {

@@ -87,7 +87,6 @@ PlannerBuilder::PlannerBuilder(const PlannerBuilder &pb, ogdyn::DynareModel &m)
     diff_b_static(pb.diff_b_static),
     diff_f_static(pb.diff_f_static),
     aux_map(), static_aux_map()
-
 {
   fill_yset(m.atoms.get_name_storage(), pb.yset);
   fill_aux_map(m.atoms.get_name_storage(), pb.aux_map, pb.static_aux_map);
@@ -244,7 +243,7 @@ PlannerBuilder::make_static_version()
     for (int yi = 0; yi < diff_b.nrows(); yi++)
       diff_b_static(yi, ll-minlag)
         = static_tree.add_substitution(diff_b(yi, ll-minlag),
-                                       tmap,  model.eqs.getTree());
+                                       tmap, model.eqs.getTree());
 
   // go through diff_f and fill diff_f_static
   for (int ll = minlag; ll <= maxlead; ll++)
@@ -384,7 +383,7 @@ MultInitSS::MultInitSS(const PlannerBuilder &pb, const Vector &pvals, Vector &yy
           if (it != old2new.end())
             {
               const ogp::AtomSubstitutions::Tshiftnameset &sset = it->second;
-              for (const auto & itt : sset)
+              for (const auto &itt : sset)
                 {
                   const std::string &newname = itt.first;
                   int iouter = builder.model.atoms.name2outer_endo(newname);

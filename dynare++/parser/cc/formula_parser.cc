@@ -271,7 +271,7 @@ FormulaDerivatives::derivative(const FoldMultiIndex &mi) const
 void
 FormulaDerivatives::print(const OperationTree &otree) const
 {
-  for (const auto & it : ind2der)
+  for (const auto &it : ind2der)
     {
       std::cout << "derivative ";
       it.first.print();

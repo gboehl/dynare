@@ -72,7 +72,7 @@ class UnfoldedZXContainer;
 class FoldedGXContainer;
 class UnfoldedGXContainer;
 
-template <Storage type>
+template<Storage type>
 class ctraits
 {
 public:
@@ -296,15 +296,15 @@ public:
 
   /* Performs k-order step provided that k=2 or the k−1-th step has been
      run, this is the core method */
-  template <Storage t>
+  template<Storage t>
   void performStep(int order);
 
   /* Calculates residuals of all solved equations for k-order and reports their
      sizes, it is runnable after k-order performStep() has been run */
-  template <Storage t>
+  template<Storage t>
   double check(int dim) const;
 
-  template <Storage t>
+  template<Storage t>
   Vector calcStochShift(int order, double sigma) const;
   void switchToFolded();
   const PartitionY &
@@ -330,7 +330,7 @@ public:
 protected:
   /* Inserts a g derivative to the g container and also creates subtensors and
      insert them to g_y* and g_y** containers */
-  template <Storage t>
+  template<Storage t>
   void insertDerivative(std::unique_ptr<typename ctraits<t>::Ttensor> der);
 
   /* Solves the sylvester equation (templated fold, and unfold) */
@@ -339,27 +339,27 @@ protected:
 
   /* Calculates derivatives of F by Faà Di Bruno for the sparse container of
      system derivatives and Z stack container */
-  template <Storage t>
+  template<Storage t>
   std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoZ(const Symmetry &sym) const;
 
   /* Calculates derivatives of G by Faà Di Bruno for the dense container g**
      and G stack */
-  template <Storage t>
+  template<Storage t>
   std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoG(const Symmetry &sym) const;
 
   // Recovers g_y*ⁱ
   template<Storage t>
   void recover_y(int i);
   // Recovers g_y*ⁱuʲ
-  template <Storage t>
+  template<Storage t>
   void recover_yu(int i, int j);
   // Recovers g_y*ⁱσʲ
-  template <Storage t>
+  template<Storage t>
   void recover_ys(int i, int j);
   // Recovers g_y*ⁱuʲσᵏ
-  template <Storage t>
+  template<Storage t>
   void recover_yus(int i, int j, int k);
-  template <Storage t>
+  template<Storage t>
   // Recovers g_σⁱ
   void recover_s(int i);
   // Calculates specified derivatives of G and inserts them to the container
@@ -367,26 +367,26 @@ protected:
   void fillG(int i, int j, int k);
 
   // Calculates Dᵢⱼₖ
-  template <Storage t>
+  template<Storage t>
   typename ctraits<t>::Ttensor calcD_ijk(int i, int j, int k) const;
-  template <Storage t>
+  template<Storage t>
   typename ctraits<t>::Ttensor calcD_ik(int i, int k) const;
-  template <Storage t>
+  template<Storage t>
   typename ctraits<t>::Ttensor calcD_k(int k) const;
 
   // Calculates Eᵢⱼₖ
-  template <Storage t>
+  template<Storage t>
   typename ctraits<t>::Ttensor calcE_ijk(int i, int j, int k) const;
-  template <Storage t>
+  template<Storage t>
   typename ctraits<t>::Ttensor calcE_ik(int i, int k) const;
-  template <Storage t>
+  template<Storage t>
   typename ctraits<t>::Ttensor calcE_k(int k) const;
 };
 
 /* Here we insert the result to the container. Along the insertion, we
    also create subtensors and insert as well. */
 
-template <Storage t>
+template<Storage t>
 void
 KOrder::insertDerivative(std::unique_ptr<typename ctraits<t>::Ttensor> der)
 {
@@ -405,7 +405,7 @@ KOrder::insertDerivative(std::unique_ptr<typename ctraits<t>::Ttensor> der)
 
    where s is a given outer symmetry and k is the dimension of the symmetry. */
 
-template <Storage t>
+template<Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrder::faaDiBrunoZ(const Symmetry &sym) const
 {
@@ -419,7 +419,7 @@ KOrder::faaDiBrunoZ(const Symmetry &sym) const
 
 /* The same as KOrder::faaDiBrunoZ(), but for g** and G stack. */
 
-template <Storage t>
+template<Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrder::faaDiBrunoG(const Symmetry &sym) const
 {
@@ -441,7 +441,7 @@ KOrder::faaDiBrunoG(const Symmetry &sym) const
    Requires: everything at order ≤ i−1
 
    Provides: g_yⁱ and G_yⁱ
- */
+*/
 template<Storage t>
 void
 KOrder::recover_y(int i)
@@ -475,8 +475,8 @@ KOrder::recover_y(int i)
    Requires: everything at order ≤ i+j−1, G_yⁱ⁺ʲ and g_yⁱ⁺ʲ.
 
    Provides: g_yⁱuʲ and G_yⁱuʲ
- */
-template <Storage t>
+*/
+template<Storage t>
 void
 KOrder::recover_yu(int i, int j)
 {
@@ -508,8 +508,8 @@ KOrder::recover_yu(int i, int j)
 
    Provides: g_yⁱσʲ and G_yⁱσʲ, and finally G_yⁱu′ᵐσʲ⁻ᵐ for m=1,…,j. The latter
      is calculated by fillG() before the actual calculation.
- */
-template <Storage t>
+*/
+template<Storage t>
 void
 KOrder::recover_ys(int i, int j)
 {
@@ -561,8 +561,8 @@ KOrder::recover_ys(int i, int j)
      through Eᵢⱼₖ.
 
    Provides: g_yⁱuʲσᵏ, G_yⁱuʲσᵏ, and G_yⁱuʲu′ᵐσᵏ⁻ᵐ for m=1,…,k
- */
-template <Storage t>
+*/
+template<Storage t>
 void
 KOrder::recover_yus(int i, int j, int k)
 {
@@ -619,8 +619,8 @@ KOrder::recover_yus(int i, int j, int k)
      F_u′ᵏ, and g_yᵐuʲσᵏ for j=1,…,i−1 and m+j+k=i through F_u′ʲσⁱ⁻ʲ.
 
    Provides: g_σⁱ, G_σⁱ, and G_u′ᵐσⁱ⁻ᵐ for m=1,…,i
- */
-template <Storage t>
+*/
+template<Storage t>
 void
 KOrder::recover_s(int i)
 {
@@ -680,7 +680,7 @@ KOrder::fillG(int i, int j, int k)
 
    So it is non zero only for even k. */
 
-template <Storage t>
+template<Storage t>
 typename ctraits<t>::Ttensor
 KOrder::calcD_ijk(int i, int j, int k) const
 {
@@ -700,7 +700,7 @@ KOrder::calcD_ijk(int i, int j, int k) const
                         ᵐ⁼¹
    The sum can sum only for even m. */
 
-template <Storage t>
+template<Storage t>
 typename ctraits<t>::Ttensor
 KOrder::calcE_ijk(int i, int j, int k) const
 {
@@ -715,28 +715,28 @@ KOrder::calcE_ijk(int i, int j, int k) const
   return res;
 }
 
-template <Storage t>
+template<Storage t>
 typename ctraits<t>::Ttensor
 KOrder::calcD_ik(int i, int k) const
 {
   return calcD_ijk<t>(i, 0, k);
 }
 
-template <Storage t>
+template<Storage t>
 typename ctraits<t>::Ttensor
 KOrder::calcD_k(int k) const
 {
   return calcD_ijk<t>(0, 0, k);
 }
 
-template <Storage t>
+template<Storage t>
 typename ctraits<t>::Ttensor
 KOrder::calcE_ik(int i, int k) const
 {
   return calcE_ijk<t>(i, 0, k);
 }
 
-template <Storage t>
+template<Storage t>
 typename ctraits<t>::Ttensor
 KOrder::calcE_k(int k) const
 {
@@ -763,7 +763,7 @@ KOrder::calcE_k(int k) const
    all the recovering methods, he should find out that also all G are
    provided. */
 
-template <Storage t>
+template<Storage t>
 void
 KOrder::performStep(int order)
 {
@@ -794,7 +794,7 @@ KOrder::performStep(int order)
    The method returns the largest residual size. Each check simply evaluates
    the equation. */
 
-template <Storage t>
+template<Storage t>
 double
 KOrder::check(int dim) const
 {
@@ -808,7 +808,7 @@ KOrder::check(int dim) const
   // Check for F_yⁱuʲ=0
   for (int i = 0; i <= dim; i++)
     {
-      Symmetry sym{dim-i, i, 0,  0};
+      Symmetry sym{dim-i, i, 0, 0};
       auto r = faaDiBrunoZ<t>(sym);
       double err = r->getData().getMax();
       JournalRecord(journal) << "\terror for symmetry " << sym << "\tis " << err << endrec;
@@ -849,7 +849,7 @@ KOrder::check(int dim) const
   return maxerror;
 }
 
-template <Storage t>
+template<Storage t>
 Vector
 KOrder::calcStochShift(int order, double sigma) const
 {

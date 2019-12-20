@@ -178,9 +178,9 @@ FirstOrder::solve(const TwoDMatrix &fd)
     std::lock_guard<std::mutex> lk{mut};
     qz_criterium_global = qz_criterium;
     dgges("N", "V", "S", order_eigs, &n, matE.getData().base(), &lda,
-        matD.getData().base(), &ldb, &sdim2, alphar.base(), alphai.base(),
-        beta.base(), vsl.getData().base(), &ldvsl, vsr.getData().base(), &ldvsr,
-        work.base(), &lwork, bwork.get(), &info);
+          matD.getData().base(), &ldb, &sdim2, alphar.base(), alphai.base(),
+          beta.base(), vsl.getData().base(), &ldvsl, vsr.getData().base(), &ldvsr,
+          work.base(), &lwork, bwork.get(), &info);
   }
   if (info)
     throw KordException(__FILE__, __LINE__,

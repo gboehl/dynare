@@ -129,7 +129,7 @@ public:
   {
     return std::make_unique<Dynare>(*this);
   }
-  
+
   ~Dynare() override = default;
   int
   nstat() const override

@@ -101,7 +101,8 @@ public:
   struct dummy { using type = T; };
 
   template<class T>
-  const T &getNext()
+  const T &
+  getNext()
   {
     return getNext(dummy<T>());
   }
@@ -128,7 +129,7 @@ private:
    See documentation to TensorPolynomial::derivative() and
    TensorPolynomial::evalPartially() for details. */
 
-template <class _Ttype, class _TGStype, class _Stype>
+template<class _Ttype, class _TGStype, class _Stype>
 class TensorPolynomial : public TensorContainer<_Ttype>
 {
   int nr;
@@ -138,18 +139,18 @@ class TensorPolynomial : public TensorContainer<_Ttype>
 public:
   TensorPolynomial(int rows, int vars)
     : TensorContainer<_Ttype>(1),
-    nr(rows), nv(vars), maxdim(0)
+      nr(rows), nv(vars), maxdim(0)
   {
   }
   TensorPolynomial(const TensorPolynomial<_Ttype, _TGStype, _Stype> &tp, int k)
     : TensorContainer<_Ttype>(tp),
-    nr(tp.nr), nv(tp.nv), maxdim(0)
+      nr(tp.nr), nv(tp.nv), maxdim(0)
   {
     derivative(k);
   }
   TensorPolynomial(int first_row, int num, TensorPolynomial<_Ttype, _TGStype, _Stype> &tp)
     : TensorContainer<_Ttype>(first_row, num, tp),
-    nr(num), nv(tp.nv), maxdim(tp.maxdim)
+      nr(num), nv(tp.nv), maxdim(tp.maxdim)
   {
   }
 
@@ -176,7 +177,7 @@ public:
 
   TensorPolynomial(const TensorPolynomial<_Ttype, _TGStype, _Stype> &tp, const Vector &xval)
     : TensorContainer<_Ttype>(1),
-    nr(tp.nrows()), nv(tp.nvars() - xval.length()), maxdim(0)
+      nr(tp.nrows()), nv(tp.nvars() - xval.length()), maxdim(0)
   {
     TL_RAISE_IF(nvars() < 0,
                 "Length of xval too big in TensorPolynomial contract constructor");
@@ -472,7 +473,7 @@ public:
    tensor, with the number of variables equal to the number of variables
    of the polynomial plus 1 for ‘1’. */
 
-template <class _Ttype, class _TGStype, class _Stype>
+template<class _Ttype, class _TGStype, class _Stype>
 class CompactPolynomial : public _Ttype
 {
 public:

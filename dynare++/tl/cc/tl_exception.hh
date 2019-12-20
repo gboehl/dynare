@@ -59,7 +59,7 @@
 # define TL_DEBUG 0
 #endif
 
-#define TL_RAISE(mes)                                                   \
+#define TL_RAISE(mes)                           \
   throw TLException(__FILE__, __LINE__, mes)
 
 #define TL_RAISE_IF(expr, mes)                                          \

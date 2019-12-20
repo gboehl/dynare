@@ -339,20 +339,20 @@ namespace ogp
     int get_pos_of_all(int t) const;
     /** Return the mapping from endogenous at time t to outer
      * ordering of endogenous. */
-    const vector<int>&y2outer_endo() const;
+    const vector<int> &y2outer_endo() const;
     /** Return the mapping from the outer ordering of endogenous to endogenous
      * at time t. */
-    const vector<int>&outer2y_endo() const;
+    const vector<int> &outer2y_endo() const;
     /** Return the mapping from exogenous at time t to outer
      * ordering of exogenous. */
-    const vector<int>&y2outer_exo() const;
+    const vector<int> &y2outer_exo() const;
     /** Return the mapping from the outer ordering of exogenous to exogenous
      * at time t. */
-    const vector<int>&outer2y_exo() const;
+    const vector<int> &outer2y_exo() const;
     /** Return the endo_atoms_map. */
-    const vector<int>&get_endo_atoms_map() const;
+    const vector<int> &get_endo_atoms_map() const;
     /** Return the exo_atoms_map. */
-    const vector<int>&get_exo_atoms_map() const;
+    const vector<int> &get_exo_atoms_map() const;
     /** Return an index in the outer ordering of a given
      * parameter. An exception is thrown if the name is not a
      * parameter. */

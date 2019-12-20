@@ -68,7 +68,6 @@ PascalRow::print() const
   std::cout << std::endl;
 }
 
-
 namespace PascalTriangle
 {
   namespace // Anonymous namespace that is a functional equivalent of “private”
@@ -127,7 +126,7 @@ namespace PascalTriangle
   void
   print()
   {
-    for (const auto & i : tr)
+    for (const auto &i : tr)
       i.print();
   }
 }

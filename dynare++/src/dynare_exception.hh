@@ -29,8 +29,8 @@ class DynareException
   std::string mes;
 public:
   DynareException(const std::string &m, const std::string &fname, int line, int col)
-    : mes{"Parse error at " + fname + ", line " + std::to_string(line) + ", column " +
-          std::to_string(col) + ": " + m}
+    : mes{"Parse error at " + fname + ", line " + std::to_string(line) + ", column "
+          + std::to_string(col) + ": " + m}
   {
   }
   DynareException(const std::string &fname, int line, const std::string &m)

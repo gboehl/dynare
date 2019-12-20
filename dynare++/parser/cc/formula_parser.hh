@@ -256,7 +256,7 @@ namespace ogp
      * different order). */
     void differentiate(int max_order);
     /** Return i-th formula derivatives. */
-    const FormulaDerivatives&derivatives(int i) const;
+    const FormulaDerivatives &derivatives(int i) const;
 
     /** This returns a maximum index of zero derivative formulas
      * including all nulary terms. This is a mimumum length of the

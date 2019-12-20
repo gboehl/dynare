@@ -75,7 +75,7 @@ public:
   virtual void eval(emethod em, Vector &out, const ConstVector &v) const = 0;
 
   /* makes only one step of simulation (in terms of absolute values, not
-   deviations) */
+     deviations) */
   virtual void evaluate(emethod em, Vector &out, const ConstVector &ys,
                         const ConstVector &u) const = 0;
 
@@ -120,7 +120,7 @@ public:
    Storage::unfold. So, there are two implementations of the DecisionRule
    interface. */
 
-template <Storage t>
+template<Storage t>
 class DecisionRuleImpl : public ctraits<t>::Tpol, public DecisionRule
 {
 protected:
@@ -220,7 +220,7 @@ public:
    So we go through i+j=d=0…q and in each loop we form the fully symmetric
    tensor [g_(yu)ᵈ] and insert it to the container. */
 
-template <Storage t>
+template<Storage t>
 void
 DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
 {
@@ -277,7 +277,7 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
 
    where ȳ is the steady state of the original rule ‘dr’. */
 
-template <Storage t>
+template<Storage t>
 void
 DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
 {
@@ -310,7 +310,7 @@ DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
    canceled from ‘ystart’, we simulate, and at the end ‘ysteady’ is added to
    all columns of the result. */
 
-template <Storage t>
+template<Storage t>
 TwoDMatrix
 DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
                               ShockRealization &sr) const
@@ -378,7 +378,7 @@ DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
    steady state (fix point) is cancelled and added once. Hence we have two
    special methods. */
 
-template <Storage t>
+template<Storage t>
 void
 DecisionRuleImpl<t>::evaluate(emethod em, Vector &out, const ConstVector &ys,
                               const ConstVector &u) const
@@ -401,7 +401,7 @@ DecisionRuleImpl<t>::evaluate(emethod em, Vector &out, const ConstVector &ys,
 /* This is easy. We just return the newly created copy using the centralized
    constructor. */
 
-template <Storage t>
+template<Storage t>
 std::unique_ptr<DecisionRule>
 DecisionRuleImpl<t>::centralizedClone(const Vector &fixpoint) const
 {
@@ -411,7 +411,7 @@ DecisionRuleImpl<t>::centralizedClone(const Vector &fixpoint) const
 /* Here we only encapsulate two implementations to one, deciding according to
    the parameter. */
 
-template <Storage t>
+template<Storage t>
 void
 DecisionRuleImpl<t>::eval(emethod em, Vector &out, const ConstVector &v) const
 {
@@ -423,7 +423,7 @@ DecisionRuleImpl<t>::eval(emethod em, Vector &out, const ConstVector &v) const
 
 /* Write the decision rule and steady state to the MAT file. */
 
-template <Storage t>
+template<Storage t>
 void
 DecisionRuleImpl<t>::writeMat(mat_t *fd, const std::string &prefix) const
 {
@@ -506,7 +506,7 @@ public:
    F is given by its derivatives ‘bigf’. The Jacobian of the solved system is
    given by derivatives stored in ‘bigfder’. */
 
-template <Storage t>
+template<Storage t>
 class DRFixPoint : public ctraits<t>::Tpol
 {
   using _Tpol = typename ctraits<t>::Tpol;
@@ -557,7 +557,7 @@ private:
    first derivative (Symmetry{1}). Then the derivative of the F polynomial is
    calculated. */
 
-template <Storage t>
+template<Storage t>
 DRFixPoint<t>::DRFixPoint(const _Tg &g, const PartitionY &yp,
                           const Vector &ys, double sigma)
   : ctraits<t>::Tpol(yp.ny(), yp.nys()),
@@ -577,7 +577,7 @@ DRFixPoint<t>::DRFixPoint(const _Tg &g, const PartitionY &yp,
    such that ‘d+k’ is between the maximum dimension and ‘d’, and add
    σᵏ/(d!k!)[g_yᵈσᵏ] to the tensor [g_yᵈ]. */
 
-template <Storage t>
+template<Storage t>
 void
 DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
 {
@@ -612,7 +612,7 @@ DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
    underrelaxation parameter ‘urelax’, which improves the residual. If ‘urelax’
    is less that ‘urelax_threshold’, we stop searching and stop the Newton. */
 
-template <Storage t>
+template<Storage t>
 bool
 DRFixPoint<t>::solveNewton(Vector &y)
 {
@@ -666,7 +666,7 @@ DRFixPoint<t>::solveNewton(Vector &y)
       flastnorm = fnorm;
     }
   while (!converged && newton_iter_last < max_newton_iter
-         &&urelax > urelax_threshold);
+         && urelax > urelax_threshold);
 
   newton_iter_total += newton_iter_last;
   if (!converged)
@@ -688,7 +688,7 @@ DRFixPoint<t>::solveNewton(Vector &y)
 
    The ‘out’ vector is not touched if the algorithm has not convered. */
 
-template <Storage t>
+template<Storage t>
 bool
 DRFixPoint<t>::calcFixPoint(emethod em, Vector &out)
 {

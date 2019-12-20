@@ -42,7 +42,9 @@ class TransposedMatrix
 private:
   T &orig;
 public:
-  TransposedMatrix(T &orig_arg) : orig{orig_arg} {};
+  TransposedMatrix(T &orig_arg) : orig{orig_arg}
+  {
+  };
 };
 
 // Syntactic sugar for representing a transposed matrix

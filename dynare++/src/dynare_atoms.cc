@@ -186,7 +186,7 @@ DynareAtomValues::setValues(ogp::EvalTree &et) const
         for (auto it : lmap)
           {
             int ll = it.first;
-            if (ll == 0)   // this is always true because of checks
+            if (ll == 0) // this is always true because of checks
               {
                 int t = it.second;
                 int i = atoms.outer2y_exo()[outer_i];

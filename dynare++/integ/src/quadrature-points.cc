@@ -47,7 +47,7 @@ struct QuadParams
   QuadParams(int argc, char **argv);
   void check_consistency() const;
 private:
-  enum class opt {max_level, discard_weight, vcov};
+  enum class opt { max_level, discard_weight, vcov };
 };
 
 QuadParams::QuadParams(int argc, char **argv)
@@ -62,11 +62,11 @@ QuadParams::QuadParams(int argc, char **argv)
   outname = argv[argc-1];
   argc--;
 
-  struct option const opts [] = {
-    {"max-level", required_argument, nullptr, static_cast<int>(opt::max_level)},
-    {"discard-weight", required_argument, nullptr, static_cast<int>(opt::discard_weight)},
-    {"vcov", required_argument, nullptr, static_cast<int>(opt::vcov)},
-    {nullptr, 0, nullptr, 0}
+  struct option const opts[] = {
+                                {"max-level", required_argument, nullptr, static_cast<int>(opt::max_level)},
+                                {"discard-weight", required_argument, nullptr, static_cast<int>(opt::discard_weight)},
+                                {"vcov", required_argument, nullptr, static_cast<int>(opt::vcov)},
+                                {nullptr, 0, nullptr, 0}
   };
 
   int ret;
@@ -188,7 +188,7 @@ main(int argc, char **argv)
       // Calculate weights and mass
       double mass = 0.0;
       std::vector<double> weights;
-      for (auto & point : points)
+      for (auto &point : points)
         {
           weights.push_back(std::exp(-point->dot(*point)));
           mass += weights.back();

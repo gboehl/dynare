@@ -65,7 +65,7 @@ BlockDiagonal::setZerosToRU(diag_iter edge)
    of the right-most non-zero element of i-th row from the left, and
    col_len[j] is distance of top-most non-zero element of j-th column
    to the top. (First element has distance 1).
- */
+*/
 void
 BlockDiagonal::setZeroBlockEdge(diag_iter edge)
 {

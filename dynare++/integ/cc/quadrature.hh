@@ -109,10 +109,10 @@ public:
 
    See QuadratureImpl class declaration for details. */
 
-template <typename _Tpit>
+template<typename _Tpit>
 class QuadratureImpl;
 
-template <typename _Tpit>
+template<typename _Tpit>
 class IntegrationWorker : public sthread::detach_thread
 {
   const QuadratureImpl<_Tpit> &quad;
@@ -168,7 +168,7 @@ public:
    In addition, we define a method which saves all the points to a given file.
    Only for debugging purposes. */
 
-template <typename _Tpit>
+template<typename _Tpit>
 class QuadratureImpl : public Quadrature
 {
   friend class IntegrationWorker<_Tpit>;
@@ -257,7 +257,7 @@ class OneDPrecalcQuadrature : public OneDQuadrature
 public:
   OneDPrecalcQuadrature(int nlevels, const int *npoints,
                         const double *wts, const double *pts)
-    : num_levels(nlevels),  num_points(npoints),
+    : num_levels(nlevels), num_points(npoints),
       weights(wts), points(pts), offsets(num_levels)
   {
     calcOffsets();

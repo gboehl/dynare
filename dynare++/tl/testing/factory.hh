@@ -42,7 +42,7 @@ class Factory
 public:
   double get();
   // This can be used with UGSTensor, FGSTensor
-  template <class _Ttype>
+  template<class _Ttype>
   std::unique_ptr<_Ttype>
   make(int r, const Symmetry &s, const IntSequence &nvs)
   {
@@ -53,7 +53,7 @@ public:
   }
 
   // This can be used with FFSTensor, UFSTensor, FRTensor, URTensor
-  template <class _Ttype>
+  template<class _Ttype>
   std::unique_ptr<_Ttype>
   make(int r, int nv, int dim)
   {
@@ -63,7 +63,7 @@ public:
     return res;
   }
 
-  template <class _Ttype, class _Ctype>
+  template<class _Ttype, class _Ctype>
   _Ctype
   makeCont(int r, const IntSequence &nvs, int maxdim)
   {
@@ -80,7 +80,7 @@ public:
     return res;
   }
 
-  template <class _Ttype, class _Ptype>
+  template<class _Ttype, class _Ptype>
   _Ptype
   makePoly(int r, int nv, int maxdim)
   {

@@ -145,7 +145,7 @@ JournalRecord::writePrefix(const SystemResources &f)
   std::ostringstream s;
   s << std::setfill('0');
   writeFloatTabular(s, f.elapsed, 7);
-  s  << u8"│" << recChar << std::setw(5) << ord << u8"│";
+  s << u8"│" << recChar << std::setw(5) << ord << u8"│";
   writeFloatTabular(s, f.load_avg, 3);
   s << u8"│";
   writeFloatTabular(s, f.mem_avail/mb, 5);

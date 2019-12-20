@@ -45,7 +45,7 @@ ParsedMatrix::ParsedMatrix(const ogp::MatrixParser &mp)
 }
 
 DynareModel::DynareModel()
-  : atoms(), eqs(atoms) 
+  : atoms(), eqs(atoms)
 {
 }
 

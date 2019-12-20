@@ -83,7 +83,7 @@
 class Tensor : public TwoDMatrix
 {
 public:
-  enum class indor {along_row, along_col};
+  enum class indor { along_row, along_col };
 
   /* The index represents n-tuple α₁…αₙ. Since its movement is dependent on the
      underlying tensor (with storage and symmetry), we maintain a reference to

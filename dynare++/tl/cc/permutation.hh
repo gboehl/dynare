@@ -43,7 +43,7 @@
    Also, we need PermutationSet class which contains all permutations
    of an n-element set, and a bundle of permutations PermutationBundle
    which contains all permutation sets up to a given number.
- */
+*/
 
 #ifndef PERMUTATION_H
 #define PERMUTATION_H
@@ -63,7 +63,7 @@
    indices which yield identity. Also we have a constructor calculating
    map, which corresponds to permutation in sort. This is, we want
    (sorted s)∘m = s.
-  */
+*/
 
 class Permutation
 {
