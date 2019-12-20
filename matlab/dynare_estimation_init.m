@@ -100,7 +100,10 @@ if length(unique(options_.varobs))<length(options_.varobs)
     end
 end
 
-% Check the perturbation order (nonlinear filters with third order perturbation, or higher order, are not yet implemented).
+% Check the perturbation order (k order perturbation based nonlinear filters are not yet implemented for k>1).
+if options_.order>2 && options_.particle.pruning
+    error('Higher order nonlinear filters are not compatible with pruning option.')
+end
 
 % analytical derivation is not yet available for kalman_filter_fast
 if options_.analytic_derivation && options_.fast_kalman_filter
