@@ -39,49 +39,49 @@ HINSTANCE hinstLib;
 # define UMFPACK_INFO 90
 # define UMFPACK_CONTROL 20
 /* used in all UMFPACK_report_* routines: */
-# define UMFPACK_PRL 0                   /* print level */
+# define UMFPACK_PRL 0 /* print level */
 /* returned by all routines that use Info: */
 # define UMFPACK_OK (0)
-# define UMFPACK_STATUS 0        /* UMFPACK_OK, or other result */
+# define UMFPACK_STATUS 0 /* UMFPACK_OK, or other result */
 
 typedef void (*t_umfpack_dl_free_numeric)(void **Numeric);
 t_umfpack_dl_free_numeric umfpack_dl_free_numeric;
 typedef void (*t_umfpack_dl_free_symbolic)(void **Symbolic);
 t_umfpack_dl_free_symbolic umfpack_dl_free_symbolic;
 typedef int64_t (*t_umfpack_dl_solve)(int64_t sys,
-                                      const int64_t Ap [],
-                                      const int64_t Ai [],
-                                      const double Ax [],
-                                      double X [],
-                                      const double B [],
+                                      const int64_t Ap[],
+                                      const int64_t Ai[],
+                                      const double Ax[],
+                                      double X[],
+                                      const double B[],
                                       void *Numeric,
-                                      const double Control [UMFPACK_CONTROL],
-                                      double Info [UMFPACK_INFO]);
+                                      const double Control[UMFPACK_CONTROL],
+                                      double Info[UMFPACK_INFO]);
 t_umfpack_dl_solve umfpack_dl_solve;
-typedef int64_t (*t_umfpack_dl_numeric)(const int64_t Ap [],
-                                        const int64_t Ai [],
-                                        const double Ax [],
+typedef int64_t (*t_umfpack_dl_numeric)(const int64_t Ap[],
+                                        const int64_t Ai[],
+                                        const double Ax[],
                                         void *Symbolic,
                                         void **Numeric,
-                                        const double Control [UMFPACK_CONTROL],
-                                        double Info [UMFPACK_INFO]);
+                                        const double Control[UMFPACK_CONTROL],
+                                        double Info[UMFPACK_INFO]);
 t_umfpack_dl_numeric umfpack_dl_numeric;
 typedef int64_t (*t_umfpack_dl_symbolic)(int64_t n_row,
                                          int64_t n_col,
-                                         const int64_t Ap [],
-                                         const int64_t Ai [],
-                                         const double Ax [],
+                                         const int64_t Ap[],
+                                         const int64_t Ai[],
+                                         const double Ax[],
                                          void **Symbolic,
-                                         const double Control [UMFPACK_CONTROL],
-                                         double Info [UMFPACK_INFO]);
+                                         const double Control[UMFPACK_CONTROL],
+                                         double Info[UMFPACK_INFO]);
 t_umfpack_dl_symbolic umfpack_dl_symbolic;
-typedef void (*t_umfpack_dl_report_info)(const double Control [UMFPACK_CONTROL],
-                                         const double Info [UMFPACK_INFO]);
+typedef void (*t_umfpack_dl_report_info)(const double Control[UMFPACK_CONTROL],
+                                         const double Info[UMFPACK_INFO]);
 t_umfpack_dl_report_info umfpack_dl_report_info;
-typedef void (*t_umfpack_dl_report_status)(const double Control [UMFPACK_CONTROL],
+typedef void (*t_umfpack_dl_report_status)(const double Control[UMFPACK_CONTROL],
                                            int64_t status);
 t_umfpack_dl_report_status umfpack_dl_report_status;
-typedef void (*t_umfpack_dl_defaults)(double Control [UMFPACK_CONTROL]);
+typedef void (*t_umfpack_dl_defaults)(double Control[UMFPACK_CONTROL]);
 t_umfpack_dl_defaults umfpack_dl_defaults;
 
 #endif
@@ -688,7 +688,7 @@ dynSparseMatrix::Simple_Init(int Size, map<pair<pair<int, int>, int>, int> &IM, 
       var = it4->first.first.second;
       eq = it4->first.first.first;
       lag = it4->first.second;
-      if (lag == 0)   /*Build the index for sparse matrix containing the jacobian : u*/
+      if (lag == 0) /*Build the index for sparse matrix containing the jacobian : u*/
         {
           NbNZRow[eq]++;
           NbNZCol[var]++;
@@ -796,7 +796,7 @@ dynSparseMatrix::Init_Matlab_Sparse_Simple(int Size, map<pair<pair<int, int>, in
       var = it4->first.first.first;
       if (var != last_var)
         {
-          Aj[1+last_var ] = NZE;
+          Aj[1+last_var] = NZE;
           last_var = var;
         }
       eq = it4->first.second;
@@ -894,7 +894,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse_Simple(int Size, map<pair<pair<int, int>, i
       ya[eq+it_*y_size] = y[eq+it_*y_size];
     }
 #ifdef DEBUG
-  unsigned int max_nze = prior_nz;//mxGetNzmax(A_m);
+  unsigned int max_nze = prior_nz; //mxGetNzmax(A_m);
 #endif
   unsigned int NZE = 0;
   int last_var = 0;
@@ -918,7 +918,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse_Simple(int Size, map<pair<pair<int, int>, i
       var = it4->first.first.first;
       if (var != last_var)
         {
-          (*Ap)[1+last_var ] = NZE;
+          (*Ap)[1+last_var] = NZE;
           last_var = var;
         }
       eq = it4->first.second;
@@ -980,11 +980,11 @@ dynSparseMatrix::find_exo_num(vector<s_plan> sconstrained_extended_path, int val
 }
 
 int
-dynSparseMatrix::find_int_date(vector<pair<int, double> > per_value, int value)
+dynSparseMatrix::find_int_date(vector<pair<int, double>> per_value, int value)
 {
   int res = -1;
   int i = 0;
-  for (vector<pair<int, double> >::iterator it = per_value.begin(); it != per_value.end(); it++, i++)
+  for (vector<pair<int, double>>::iterator it = per_value.begin(); it != per_value.end(); it++, i++)
     if (it->first == value)
       {
         res = i;
@@ -1158,7 +1158,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
                                   throw FatalExceptionHandling(tmp.str());
                                 }
 #endif
-                              u[k] -=  jacob_exo[k + row_x*flip_exo] * x[t+y_kmin+flip_exo*nb_row_x];
+                              u[k] -= jacob_exo[k + row_x*flip_exo] * x[t+y_kmin+flip_exo*nb_row_x];
                             }
                         }
                     }
@@ -1178,7 +1178,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
               ti_y_kmax = min(periods-(t +1), y_kmax);
               int ti_new_y_kmax = min(t, y_kmax);
               int ti_new_y_kmin = -min(periods-(t+1), y_kmin);
-              if (lag <= ti_new_y_kmax && lag >= ti_new_y_kmin)   /*Build the index for sparse matrix containing the jacobian : u*/
+              if (lag <= ti_new_y_kmax && lag >= ti_new_y_kmin) /*Build the index for sparse matrix containing the jacobian : u*/
                 {
 #ifdef DEBUG
                   if (index < 0 || index >= u_count_alloc || index > Size + Size*Size)
@@ -1248,10 +1248,10 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
                       throw FatalExceptionHandling(tmp.str());
                     }
 #endif
-                  (*b)[eq]  += u[index+lag*u_count_init]*y[index_vara[var+Size*(y_kmin+t+lag)]];
+                  (*b)[eq] += u[index+lag*u_count_init]*y[index_vara[var+Size*(y_kmin+t+lag)]];
                 }
             }
-          else           /* ...and store it in the u vector*/
+          else /* ...and store it in the u vector*/
             {
 #ifdef DEBUG
               if (index < 0 || index >= u_count_alloc)
@@ -1267,7 +1267,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
                   throw FatalExceptionHandling(tmp.str());
                 }
 #endif
-              (*b)[eq]  += u[index];
+              (*b)[eq] += u[index];
             }
           it4++;
         }
@@ -1369,7 +1369,7 @@ dynSparseMatrix::Init_CUDA_Sparse_Simple(int Size, map<pair<pair<int, int>, int>
       var = it4->first.first.first;
       if (var != last_var)
         {
-          (*Ap)[1+last_var ] = NZE;
+          (*Ap)[1+last_var] = NZE;
           last_var = var;
         }
       eq = it4->first.second;
@@ -1509,7 +1509,7 @@ dynSparseMatrix::Init_CUDA_Sparse(int periods, int y_kmin, int y_kmax, int Size,
 # endif
               Host_Ap[1+last_eq + t * Size] = NZE;
               if (preconditioner == 3 && t == 0)
-                Host_Ap_tild[1+last_eq ] = NZE_tild;
+                Host_Ap_tild[1+last_eq] = NZE_tild;
               last_eq = eq;
             }
           var = it4->first.second+Size*t;
@@ -1519,7 +1519,7 @@ dynSparseMatrix::Init_CUDA_Sparse(int periods, int y_kmin, int y_kmax, int Size,
             {
               ti_y_kmin = -min(t, y_kmin);
               ti_y_kmax = min(periods-(t + 1), y_kmax);
-              if ((lag <= ti_y_kmax && lag >= ti_y_kmin) || preconditioner == 3)  /*Build the index for sparse matrix containing the jacobian : u*/
+              if ((lag <= ti_y_kmax && lag >= ti_y_kmin) || preconditioner == 3) /*Build the index for sparse matrix containing the jacobian : u*/
                 {
 # ifdef DEBUG
                   if (index < 0 || index >= u_count_alloc || index > (periods-1)* IM.size() + Size * Size + periods * Size)
@@ -1547,7 +1547,7 @@ dynSparseMatrix::Init_CUDA_Sparse(int periods, int y_kmin, int y_kmax, int Size,
                     {
                       if (lag > ti_y_kmax || lag < ti_y_kmin)
                         {
-                          Host_b[eq + t * Size]  += u[index]*y[index_vara[var+Size*(y_kmin+lag)]];
+                          Host_b[eq + t * Size] += u[index]*y[index_vara[var+Size*(y_kmin+lag)]];
                           to_store = false;
                         }
                       if (t == 0)
@@ -1593,10 +1593,10 @@ dynSparseMatrix::Init_CUDA_Sparse(int periods, int y_kmin, int y_kmax, int Size,
                       throw FatalExceptionHandling(tmp.str());
                     }
 # endif
-                  Host_b[eq + t * Size]  += u[index]*y[index_vara[var+Size*(y_kmin+lag)]];
+                  Host_b[eq + t * Size] += u[index]*y[index_vara[var+Size*(y_kmin+lag)]];
                 }
             }
-          else           // ...and store it in the u vector
+          else // ...and store it in the u vector
             {
 # ifdef DEBUG
               if (index < 0 || index >= u_count_alloc)
@@ -1612,7 +1612,7 @@ dynSparseMatrix::Init_CUDA_Sparse(int periods, int y_kmin, int y_kmax, int Size,
                   throw FatalExceptionHandling(tmp.str());
                 }
 # endif
-              Host_b[var]  += u[index];
+              Host_b[var] += u[index];
             }
           it4++;
         }
@@ -1680,15 +1680,15 @@ dynSparseMatrix::Init_CUDA_Sparse(int periods, int y_kmin, int y_kmax, int Size,
     }
   cudaChk(cudaMalloc((void **) A_tild, preconditioner_size * sizeof(double)), "  in Init_Cuda_Sparse, can't allocate A_tild on the graphic card\n");
 
-  cudaChk(cudaMemcpy(*x0,     Host_x0,     n *                   sizeof(double), cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy x0 = Host_x0 failed");
-  cudaChk(cudaMemcpy(*b,      Host_b,      n *                   sizeof(double), cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy b = Host_b failed");
-  cudaChk(cudaMemcpy(*Ap,     Host_Ap,     (n + 1) *             sizeof(int),    cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy Ap = Host_Ap failed");
-  cudaChk(cudaMemcpy(*Ai,     Host_Ai,     NZE *                 sizeof(int),    cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy Ai = Host_Ai failed");
-  cudaChk(cudaMemcpy(*Ax,     Host_Ax,     NZE *                 sizeof(double), cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy Ax = Host_Ax failed");
+  cudaChk(cudaMemcpy(*x0, Host_x0, n * sizeof(double), cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy x0 = Host_x0 failed");
+  cudaChk(cudaMemcpy(*b, Host_b, n * sizeof(double), cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy b = Host_b failed");
+  cudaChk(cudaMemcpy(*Ap, Host_Ap, (n + 1) * sizeof(int), cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy Ap = Host_Ap failed");
+  cudaChk(cudaMemcpy(*Ai, Host_Ai, NZE * sizeof(int), cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy Ai = Host_Ai failed");
+  cudaChk(cudaMemcpy(*Ax, Host_Ax, NZE * sizeof(double), cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy Ax = Host_Ax failed");
   if (preconditioner == 3)
     {
-      cudaChk(cudaMemcpy(*Ap_tild,     Host_Ap_tild,     (n + 1) *             sizeof(int),    cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy Ap_tild = Host_Ap_tild failed");
-      cudaChk(cudaMemcpy(*Ai_tild,     Host_Ai_tild,     NZE_tild *                 sizeof(int),    cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy Ai_tild = Host_Ai_til failed");
+      cudaChk(cudaMemcpy(*Ap_tild, Host_Ap_tild, (n + 1) * sizeof(int), cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy Ap_tild = Host_Ap_tild failed");
+      cudaChk(cudaMemcpy(*Ai_tild, Host_Ai_tild, NZE_tild * sizeof(int), cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy Ai_tild = Host_Ai_til failed");
     }
   cudaChk(cudaMemcpy(*A_tild, Host_A_tild, preconditioner_size * sizeof(double), cudaMemcpyHostToDevice), " in Init_CUDA_Sparse, cudaMemcpy A_tild = Host_A_tild failed");
 }
@@ -1800,7 +1800,7 @@ dynSparseMatrix::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Siz
               ti_y_kmax = min(periods-(t +1), y_kmax);
               int ti_new_y_kmax = min(t, y_kmax);
               int ti_new_y_kmin = -min(periods-(t+1), y_kmin);
-              if (lag <= ti_new_y_kmax && lag >= ti_new_y_kmin)   /*Build the index for sparse matrix containing the jacobian : u*/
+              if (lag <= ti_new_y_kmax && lag >= ti_new_y_kmin) /*Build the index for sparse matrix containing the jacobian : u*/
                 {
 #ifdef DEBUG
                   if (index < 0 || index >= u_count_alloc || index > Size + Size*Size)
@@ -1842,10 +1842,10 @@ dynSparseMatrix::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Siz
                       throw FatalExceptionHandling(tmp.str());
                     }
 #endif
-                  b[eq]  += u[index+lag*u_count_init]*y[index_vara[var+Size*(y_kmin+t+lag)]];
+                  b[eq] += u[index+lag*u_count_init]*y[index_vara[var+Size*(y_kmin+t+lag)]];
                 }
             }
-          else           /* ...and store it in the u vector*/
+          else /* ...and store it in the u vector*/
             {
 #ifdef DEBUG
               if (index < 0 || index >= u_count_alloc)
@@ -1861,7 +1861,7 @@ dynSparseMatrix::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Siz
                   throw FatalExceptionHandling(tmp.str());
                 }
 #endif
-              b[eq]  += u[index];
+              b[eq] += u[index];
             }
           it4++;
         }
@@ -1941,7 +1941,7 @@ dynSparseMatrix::Init_GE(int periods, int y_kmin, int y_kmax, int Size, map<pair
           if (var < (periods+y_kmax)*Size)
             {
               lag = it4->first.second;
-              if (lag <= ti_y_kmax && lag >= ti_y_kmin)   /*Build the index for sparse matrix containing the jacobian : u*/
+              if (lag <= ti_y_kmax && lag >= ti_y_kmin) /*Build the index for sparse matrix containing the jacobian : u*/
                 {
                   nnz++;
                   var += Size*t;
@@ -1965,7 +1965,7 @@ dynSparseMatrix::Init_GE(int periods, int y_kmin, int y_kmax, int Size, map<pair
                   temp_NZE_R[eq] = first;
                   temp_NZE_C[var] = first;
                 }
-              else       /*Build the additive terms ooutside the simulation periods related to the first lags and the last leads...*/
+              else /*Build the additive terms ooutside the simulation periods related to the first lags and the last leads...*/
                 {
                   if (lag < ti_y_kmin)
                     {
@@ -1978,7 +1978,7 @@ dynSparseMatrix::Init_GE(int periods, int y_kmin, int y_kmax, int Size, map<pair
                     }
                 }
             }
-          else           /* ...and store it in the u vector*/
+          else /* ...and store it in the u vector*/
             {
               b[eq] = it4->second+u_count_init*t;
               u[b[eq]] += tmp_b;
@@ -2062,7 +2062,7 @@ dynSparseMatrix::End_GE(int Size)
 }
 
 bool
-dynSparseMatrix::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, int periods, long int nop4,  int Size)
+dynSparseMatrix::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, int periods, long int nop4, int Size)
 {
   long int i, j, nop = nop4/2;
   double r = 0.0;
@@ -2981,7 +2981,7 @@ dynSparseMatrix::golden(double ax, double bx, double cx, double tol, double solv
 }
 
 void
-dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Size, double slowc_l, bool is_two_boundaries, int  it_)
+dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Size, double slowc_l, bool is_two_boundaries, int it_)
 {
   mxArray *B1, *C1, *A2, *B2, *A3, *b1, *b2;
   double *b_m_d = mxGetPr(b_m);
@@ -3133,7 +3133,7 @@ dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned in
   while (A3_var < Size)
     A3_j[++A3_var] = A3_nze;
   mxArray *d1 = NULL;
-  vector<pair<mxArray *, mxArray *> > triangular_form;
+  vector<pair<mxArray *, mxArray *>> triangular_form;
   double sumc = 0, C_sumc = 1000;
   mxArray *B1_inv = NULL;
   mxArray *B1_inv_t = NULL;
@@ -3255,7 +3255,7 @@ dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned in
 }
 
 void
-dynSparseMatrix::Solve_Matlab_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int  it_)
+dynSparseMatrix::Solve_Matlab_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int it_)
 {
   size_t n = mxGetM(A_m);
   mxArray *z;
@@ -3305,12 +3305,12 @@ void
 dynSparseMatrix::Printfull_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n)
 {
   double A[n*n];
-  for (int i = 0; i  < n*n; i++)
+  for (int i = 0; i < n*n; i++)
     A[i] = 0;
   int k = 0;
   for (int i = 0; i < n; i++)
     for (int j = Ap[i]; j < Ap[i+1]; j++)
-      A[Ai[j] * n + i] =  Ax[k++];
+      A[Ai[j] * n + i] = Ax[k++];
   for (int i = 0; i < n; i++)
     {
       for (int j = 0; j < n; j++)
@@ -3329,11 +3329,11 @@ dynSparseMatrix::Print_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, doubl
 }
 
 void
-dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int  it_, vector_table_conditional_local_type vector_table_conditional_local)
+dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_, vector_table_conditional_local_type vector_table_conditional_local)
 {
   SuiteSparse_long status, sys = 0;
 #ifndef _MSC_VER
-  double Control [UMFPACK_CONTROL], Info [UMFPACK_INFO], res [n];
+  double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
 #else
   double *Control, *Info, *res;
   Control = (double *) mxMalloc(UMFPACK_CONTROL * sizeof(double));
@@ -3345,7 +3345,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
 #endif
 
   umfpack_dl_defaults(Control);
-  Control [UMFPACK_PRL] = 5;
+  Control[UMFPACK_PRL] = 5;
   status = 0;
   if (iter == 0)
     {
@@ -3354,7 +3354,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
         {
           umfpack_dl_report_info(Control, Info);
           umfpack_dl_report_status(Control, status);
-          ostringstream  Error;
+          ostringstream Error;
           Error << " umfpack_dl_symbolic failed\n";
           throw FatalExceptionHandling(Error.str());
         }
@@ -3366,7 +3366,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
-      ostringstream  Error;
+      ostringstream Error;
       Error << " umfpack_dl_numeric failed\n";
       throw FatalExceptionHandling(Error.str());
     }
@@ -3375,7 +3375,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
-      ostringstream  Error;
+      ostringstream Error;
       Error << " umfpack_dl_solve failed\n";
       throw FatalExceptionHandling(Error.str());
     }
@@ -3393,14 +3393,14 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
                     {
                       int eq = index_vara[i+Size*(y_kmin)];
                       int flip_exo = vector_table_conditional_local[i].var_exo;
-                      double  yy = -(res[i] + x[y_kmin + flip_exo*nb_row_x]);
+                      double yy = -(res[i] + x[y_kmin + flip_exo*nb_row_x]);
                       direction[eq] = 0;
                       x[flip_exo*nb_row_x + y_kmin] += slowc_l * yy;
                     }
                   else
                     {
                       int eq = index_vara[i+Size*(y_kmin)];
-                      double yy = -(res[i ] + y[eq]);
+                      double yy = -(res[i] + y[eq]);
                       direction[eq] = yy;
                       y[eq] += slowc_l * yy;
                     }
@@ -3457,11 +3457,11 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
 }
 
 void
-dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int  it_)
+dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_)
 {
   SuiteSparse_long status, sys = 0;
 #ifndef _MSC_VER
-  double Control [UMFPACK_CONTROL], Info [UMFPACK_INFO], res [n];
+  double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
 #else
   double *Control, *Info, *res;
   Control = (double *) mxMalloc(UMFPACK_CONTROL * sizeof(double));
@@ -3473,7 +3473,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
 #endif
 
   umfpack_dl_defaults(Control);
-  Control [UMFPACK_PRL] = 5;
+  Control[UMFPACK_PRL] = 5;
   status = 0;
   if (iter == 0)
     {
@@ -3482,7 +3482,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
         {
           umfpack_dl_report_info(Control, Info);
           umfpack_dl_report_status(Control, status);
-          ostringstream  Error;
+          ostringstream Error;
           Error << " umfpack_dl_symbolic failed\n";
           throw FatalExceptionHandling(Error.str());
         }
@@ -3494,7 +3494,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
-      ostringstream  Error;
+      ostringstream Error;
       Error << " umfpack_dl_numeric failed\n";
       throw FatalExceptionHandling(Error.str());
     }
@@ -3503,7 +3503,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
-      ostringstream  Error;
+      ostringstream Error;
       Error << " umfpack_dl_solve failed\n";
       throw FatalExceptionHandling(Error.str());
     }
@@ -3536,7 +3536,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
 }
 
 void
-dynSparseMatrix::Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int  it_)
+dynSparseMatrix::Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int it_)
 {
   SuiteSparse_long n = mxGetM(A_m);
 
@@ -3544,10 +3544,10 @@ dynSparseMatrix::Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double s
 
   SuiteSparse_long *Ai = reinterpret_cast<SuiteSparse_long *>(mxGetIr(A_m));
   double *Ax = mxGetPr(A_m);
-  double *B  = mxGetPr(b_m);
+  double *B = mxGetPr(b_m);
   SuiteSparse_long status, sys = 0;
 #ifndef _MSC_VER
-  double Control [UMFPACK_CONTROL], Info [UMFPACK_INFO], res [n];
+  double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
 #else
   double *Control, *Info, *res;
   Control = (double *) mxMalloc(UMFPACK_CONTROL * sizeof(double));
@@ -3600,7 +3600,7 @@ dynSparseMatrix::Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double s
 
 #ifdef CUDA
 void
-printM(int n, double *Ax, int *Ap, int *Ai,  cusparseMatDescr_t descrA, cusparseHandle_t cusparse_handle)
+printM(int n, double *Ax, int *Ap, int *Ai, cusparseMatDescr_t descrA, cusparseHandle_t cusparse_handle)
 {
   //cudaError_t cuda_error;
   //cusparseStatus_t cusparse_status;
@@ -3627,8 +3627,8 @@ printM(int n, double *Ax, int *Ap, int *Ai,  cusparseMatDescr_t descrA, cusparse
 
 void
 dynSparseMatrix::Solve_CUDA_BiCGStab_Free(double *tmp_vect_host, double *p, double *r, double *v, double *s, double *t, double *y_, double *z, double *tmp_,
-                                          int *Ai, double *Ax, int *Ap, double *x0, double *b, double *A_tild, int *A_tild_i, int *A_tild_p/*, double* Lx, int* Li, int* Lp,
-                                                                                                                                             double* Ux, int* Ui, int* Up, int* device_n*/, cusparseSolveAnalysisInfo_t infoL, cusparseSolveAnalysisInfo_t infoU,
+                                          int *Ai, double *Ax, int *Ap, double *x0, double *b, double *A_tild, int *A_tild_i, int *A_tild_p /*, double* Lx, int* Li, int* Lp,
+                                                                                                                                              double* Ux, int* Ui, int* Up, int* device_n*/, cusparseSolveAnalysisInfo_t infoL, cusparseSolveAnalysisInfo_t infoU,
                                           cusparseMatDescr_t descrL, cusparseMatDescr_t descrU, int preconditioner)
 {
   //cudaError_t cuda_error;
@@ -3726,7 +3726,7 @@ Check(int n, double *Ax, int *Ap, int *Ai, double *b, double *x, bool Lower)
               if (k < i)
                 sum += x[k] * Ax[j];
             }
-          double err =  b[i] - sum - x[i];
+          double err = b[i] - sum - x[i];
           if (abs(err) > 1e-10)
             mexPrintf("error at i=%d\n", i);
         }
@@ -3742,7 +3742,7 @@ Check(int n, double *Ax, int *Ap, int *Ai, double *b, double *x, bool Lower)
               if (k >= i)
                 sum += x[k] * Ax[j];
             }
-          double err =  b[i] - sum;
+          double err = b[i] - sum;
           if (abs(err) > 1e-10)
             mexPrintf("error at i=%d\n", i);
         }
@@ -3752,11 +3752,11 @@ Check(int n, double *Ax, int *Ap, int *Ai, double *b, double *x, bool Lower)
 #ifdef CUDA
 int
 dynSparseMatrix::Solve_CUDA_BiCGStab(int *Ap, int *Ai, double *Ax, int *Ap_tild, int *Ai_tild, double *A_tild, double *b, double *x0, int n, int Size, double slowc_l, bool is_two_boundaries,
-                                     int  it_, int nnz, int nnz_tild, int preconditioner, int max_iterations, int block)
+                                     int it_, int nnz, int nnz_tild, int preconditioner, int max_iterations, int block)
 {
   cusparseSolveAnalysisInfo_t info, infoL, infoU;
   cusparseMatDescr_t descrL, descrU;
-  const double tol = 1.0e-6;//1.0e-6;
+  const double tol = 1.0e-6; //1.0e-6;
   const double eps = 1.0e-16;
   double *p, *r, *r0, *v, *s, *t, *y_, *z, *tmp_;
   int *A_tild_i, *A_tild_p;
@@ -4277,14 +4277,14 @@ dynSparseMatrix::Solve_CUDA_BiCGStab(int *Ap, int *Ai, double *Ax, int *Ap_tild,
       for (int t = 0; t < periods; t++)
         for (int i = 0; i < Size; i++)
           {
-            for (mwIndex l  = Ujw_host[i]; l < Ujw_host[i+1]; l++)
+            for (mwIndex l = Ujw_host[i]; l < Ujw_host[i+1]; l++)
               {
                 Wi[W_nnz] = Uiw_host[l] + t * Size;
                 pW[W_nnz] = Ux_host[l];
                 //mexPrintf("Wj[%d] = %d, Wi[%d] = Uiw_host[%d] + t * Size = %d, pW[%d]=%f\n", i + t * Size, Wj[i + t * Size], W_nnz, l, Uiw_host[l] + t * Size, W_nnz, Ux_host[l]);
                 W_nnz++;
               }
-            for (mwIndex l  = Ljw_host[i]; l < Ljw_host[i+1]; l++)
+            for (mwIndex l = Ljw_host[i]; l < Ljw_host[i+1]; l++)
               {
                 if (Liw_host[l] > i)
                   {
@@ -4405,7 +4405,7 @@ dynSparseMatrix::Solve_CUDA_BiCGStab(int *Ap, int *Ai, double *Ax, int *Ap_tild,
                   "  in Solve_Cuda_BiCGStab, cusparseSetMatDiagType has failed for descrU\n");
 
       int host_nnz_tild;
-      if  (preconditioner == 3)
+      if (preconditioner == 3)
         host_nnz_tild = W_nnz;
       else
         host_nnz_tild = nnz;
@@ -4601,7 +4601,7 @@ dynSparseMatrix::Solve_CUDA_BiCGStab(int *Ap, int *Ai, double *Ax, int *Ap_tild,
                             &tmp2),
                 "  in Solve_Cuda_BiCGStab, cublasDnrm2(y_) has failed\n");
       mexPrintf("abs(alpha)*tmp1  = %f, alpha = %f, tmp1 = %f, tmp2 = %f, eps = %f\n", abs(alpha)*tmp1, alpha, tmp1, tmp2, eps);
-      if (abs(alpha)*tmp1  < eps * tmp2)
+      if (abs(alpha)*tmp1 < eps * tmp2)
         stagnation++;
       else
         stagnation = 0;
@@ -4979,7 +4979,7 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
   double flags = 2;
   mxArray *z;
   z = NULL;
-  if (steady_state)  /*Octave BicStab algorihtm involves a 0 division in case of a preconditionner equal to the LU decomposition of A matrix*/
+  if (steady_state) /*Octave BicStab algorihtm involves a 0 division in case of a preconditionner equal to the LU decomposition of A matrix*/
     {
       mxArray *res = mult_SAT_B(Sparse_transpose(A_m), x0_m);
       double *resid = mxGetPr(res);
@@ -5129,7 +5129,7 @@ dynSparseMatrix::Singular_display(int block, int Size)
         {
           int k = first->u_index;
           int jj = first->r_index;
-          pind[ii * Size + jj ] = u[k];
+          pind[ii * Size + jj] = u[k];
           first = first->NZE_C_N;
         }
     }
@@ -5314,8 +5314,8 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
               if (markovitz > markovitz_max)
                 {
                   piv = piv_v[j];
-                  pivj = pivj_v[j];   //Line number
-                  pivk = pivk_v[j];   //positi
+                  pivj = pivj_v[j]; //Line number
+                  pivk = pivk_v[j]; //positi
                   markovitz_max = markovitz;
                 }
             }
@@ -5341,8 +5341,8 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
               if (NR[j] == 1)
                 {
                   piv = piv_v[j];
-                  pivj = pivj_v[j];   //Line number
-                  pivk = pivk_v[j];   //positi
+                  pivj = pivj_v[j]; //Line number
+                  pivk = pivk_v[j]; //positi
                   markovitz_max = markovitz;
                 }
             }
@@ -5588,8 +5588,8 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                       if (markovitz > markovitz_max)
                         {
                           piv = piv_v[j];
-                          pivj = pivj_v[j];   //Line number
-                          pivk = pivk_v[j];   //positi
+                          pivj = pivj_v[j]; //Line number
+                          pivk = pivk_v[j]; //positi
                           markovitz_max = markovitz;
                           NR_max = NR[j];
                         }
@@ -5616,8 +5616,8 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                       if (NR[j] == 1)
                         {
                           piv = piv_v[j];
-                          pivj = pivj_v[j];   //Line number
-                          pivk = pivk_v[j];   //positi
+                          pivj = pivj_v[j]; //Line number
+                          pivk = pivk_v[j]; //positi
                           markovitz_max = markovitz;
                           NR_max = NR[j];
                         }
@@ -6458,7 +6458,6 @@ dynSparseMatrix::solve_linear(const int block_num, const int y_size, const int y
 
 void
 dynSparseMatrix::solve_non_linear(const int block_num, const int y_size, const int y_kmin, const int y_kmax, const int size)
-
 {
   max_res_idx = 0;
   bool cvg = false;

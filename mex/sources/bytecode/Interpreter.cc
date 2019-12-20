@@ -606,13 +606,13 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, vector<s_plan> 
   vector<int> endogenous = fb->get_endogenous();
   for (vector<s_plan>::iterator it = sconstrained_extended_path.begin(); it != sconstrained_extended_path.end(); it++)
     {
-      if ((find(endogenous.begin(), endogenous.end(), it->exo_num) != endogenous.end()) &&  (find(exogenous.begin(), exogenous.end(), it->var_num) == exogenous.end()))
+      if ((find(endogenous.begin(), endogenous.end(), it->exo_num) != endogenous.end()) && (find(exogenous.begin(), exogenous.end(), it->var_num) == exogenous.end()))
         {
           ostringstream tmp;
           tmp << "\n the conditional forecast involving as constrained variable " << get_variable(SymbolType::endogenous, it->exo_num) << " and as endogenized exogenous " << get_variable(SymbolType::exogenous, it->var_num) << " that do not appear in block=" << Block_Count+1 << ")\n You should not use block in model options\n";
           throw FatalExceptionHandling(tmp.str());
         }
-      else if ((find(endogenous.begin(), endogenous.end(), it->exo_num) != endogenous.end()) &&  (find(exogenous.begin(), exogenous.end(), it->var_num) != exogenous.end()) && ((fb->get_type() == EVALUATE_FORWARD) || (fb->get_type() != EVALUATE_BACKWARD)))
+      else if ((find(endogenous.begin(), endogenous.end(), it->exo_num) != endogenous.end()) && (find(exogenous.begin(), exogenous.end(), it->var_num) != exogenous.end()) && ((fb->get_type() == EVALUATE_FORWARD) || (fb->get_type() != EVALUATE_BACKWARD)))
         {
           ostringstream tmp;
           tmp << "\n the conditional forecast cannot be implemented for the block=" << Block_Count+1 << ") that has to be evaluated instead to be solved\n You should not use block in model options\n";
@@ -921,9 +921,9 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
         MainLoop(bin_basename, code, evaluate, block, true, true, sconstrained_extended_path, vector_table_conditional_local);
       for (int j = 0; j < y_size; j++)
         {
-          y_save[j + (t + y_kmin) * y_size] = y[ j +  (y_kmin) * y_size];
+          y_save[j + (t + y_kmin) * y_size] = y[j + y_kmin * y_size];
           if (y_kmin > 0)
-            y[j ] = y[ j +  (y_kmin) * y_size];
+            y[j] = y[j + y_kmin * y_size];
         }
       for (int j = 0; j < col_x; j++)
         {
@@ -951,7 +951,7 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
     y_save[j + (k + y_kmin) * y_size] = y[ j +  ( k - (nb_periods-1) + y_kmin) * y_size];
     }*/
   for (int i = 0; i < y_size * col_y; i++)
-    y[i]  = y_save[i];
+    y[i] = y_save[i];
   for (int j = 0; j < col_x * nb_row_x; j++)
     x[j] = x_save[j];
   if (Init_Code->second)

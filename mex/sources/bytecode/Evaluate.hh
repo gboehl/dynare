@@ -73,7 +73,7 @@ protected:
   vector<Block_contain_type> Block_Contain;
 
   int size;
-  int  *index_vara;
+  int *index_vara;
 
   bool print_it, forward;
   int minimal_solving_periods;

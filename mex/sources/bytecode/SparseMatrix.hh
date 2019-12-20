@@ -86,7 +86,7 @@ struct t_save_op_s
   int first, second;
 };
 
-const int IFLD  = 0;
+const int IFLD = 0;
 const int IFDIV = 1;
 const int IFLESS = 2;
 const int IFSUB = 3;
@@ -122,7 +122,7 @@ public:
   double g0, gp0, glambda2;
   int try_at_iteration;
   int find_exo_num(vector<s_plan> sconstrained_extended_path, int value);
-  int find_int_date(vector<pair<int, double> > per_value, int value);
+  int find_int_date(vector<pair<int, double>> per_value, int value);
 
 private:
   void Init_GE(int periods, int y_kmin, int y_kmax, int Size, map<pair<pair<int, int>, int>, int> &IM);
@@ -140,14 +140,14 @@ private:
   bool golden(double ax, double bx, double cx, double tol, double solve_tolf, double *xmin);
   void Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool symbolic, int Block_number);
   bool Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int it_);
-  void Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Size, double slowc_l, bool is_two_boundaries, int  it_);
+  void Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Size, double slowc_l, bool is_two_boundaries, int it_);
   void Solve_Matlab_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int it_);
   void Print_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, int n);
   void Printfull_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n);
   void PrintM(int n, double *Ax, mwIndex *Ap, mwIndex *Ai);
-  void Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int  it_);
-  void Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int  it_, vector_table_conditional_local_type vector_table_conditional_local);
-  void Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int  it_);
+  void Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int it_);
+  void Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_, vector_table_conditional_local_type vector_table_conditional_local);
+  void Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_);
 
   void End_Matlab_LU_UMFPack();
 #ifdef CUDA
@@ -155,7 +155,7 @@ private:
                                 int *Ai, double *Ax, int *Ap, double *x0, double *b, double *A_tild, int *A_tild_i, int *A_tild_p,
                                 cusparseSolveAnalysisInfo_t infoL, cusparseSolveAnalysisInfo_t infoU,
                                 cusparseMatDescr_t descrL, cusparseMatDescr_t descrU, int preconditioner);
-  int Solve_CUDA_BiCGStab(int *Ap, int *Ai, double *Ax, int *Ap_tild, int *Ai_tild, double *A_tild, double *b, double *x0, int n, int Size, double slowc_l, bool is_two_boundaries, int  it_, int nnz, int nnz_tild, int preconditioner, int max_iterations, int block);
+  int Solve_CUDA_BiCGStab(int *Ap, int *Ai, double *Ax, int *Ap_tild, int *Ai_tild, double *A_tild, double *b, double *x0, int n, int Size, double slowc_l, bool is_two_boundaries, int it_, int nnz, int nnz_tild, int preconditioner, int max_iterations, int block);
 #endif
   void Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double slowc, int block, bool is_two_boundaries, int it_, mxArray *x0_m);
   void Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, double slowc, int block, bool is_two_boundaries, int it_, mxArray *x0_m, int precond);
@@ -164,7 +164,7 @@ private:
   bool solve_linear(const int block_num, const int y_size, const int y_kmin, const int y_kmax, const int size, const int iter);
   void solve_non_linear(const int block_num, const int y_size, const int y_kmin, const int y_kmax, const int size);
   string preconditioner_print_out(string s, int preconditioner, bool ss);
-  bool compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, int periods, long int nop4,  int Size
+  bool compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, int periods, long int nop4, int Size
 #ifdef PROFILER
                , long int *ndiv, long int *nsub
 #endif

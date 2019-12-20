@@ -95,7 +95,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (static_cast<size_t>(q) != mxGetN(prhs[1]))
     DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The second input argument (QQ) must be a square matrix!");
   if (mxIsNumeric(prhs[1]) == 0 || mxIsComplex(prhs[1]) == 1)
-      DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The second input argument (QQ) must be a real matrix!");
+    DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The second input argument (QQ) must be a real matrix!");
   if (q != n)
     DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The size of the second input argument (QQ) must match the size of the first argument (T)!");
   lapack_int p = mxGetN(prhs[2]);

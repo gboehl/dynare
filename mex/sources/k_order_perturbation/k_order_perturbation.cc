@@ -179,7 +179,7 @@ extern "C" {
     int ntt = std::accumulate(mxGetPr(dynamic_tmp_nbr_mx), mxGetPr(dynamic_tmp_nbr_mx)+kOrder+1, 0);
 
     // Extract various fields from dr
-    const mxArray *ys_mx = mxGetField(dr_mx, 0, "ys");  // and not in order of dr.order_var
+    const mxArray *ys_mx = mxGetField(dr_mx, 0, "ys"); // and not in order of dr.order_var
     if (!(ys_mx && mxIsDouble(ys_mx)))
       DYN_MEX_FUNC_ERR_MSG_TXT("dr.ys should be a double precision array");
     Vector ySteady{ConstVector{ys_mx}};
@@ -312,4 +312,3 @@ extern "C" {
     plhs[0] = mxCreateDoubleScalar(0);
   } // end of mexFunction()
 } // end of extern C
-

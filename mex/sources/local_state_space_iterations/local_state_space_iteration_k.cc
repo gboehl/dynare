@@ -37,13 +37,13 @@
 struct ParticleWorker : public sthread::detach_thread
 {
   const int npred_both, exo_nbr;
-  const std::pair<size_t,size_t> particle_range;
+  const std::pair<size_t, size_t> particle_range;
   const ConstGeneralMatrix &yhat, &epsilon;
   const Vector &ys_reordered;
   const UnfoldDecisionRule &dr;
   GeneralMatrix &ynext;
 
-  ParticleWorker(int npred_both_arg, int exo_nbr_arg, std::pair<size_t,size_t> particle_range_arg,
+  ParticleWorker(int npred_both_arg, int exo_nbr_arg, std::pair<size_t, size_t> particle_range_arg,
                  const ConstGeneralMatrix &yhat_arg, const ConstGeneralMatrix &epsilon_arg,
                  const Vector &ys_reordered_arg, const UnfoldDecisionRule &dr_arg,
                  GeneralMatrix &ynext_arg)
@@ -52,7 +52,8 @@ struct ParticleWorker : public sthread::detach_thread
       ynext{ynext_arg}
   {
   }
-  void operator()(std::mutex &mut) override
+  void
+  operator()(std::mutex &mut) override
   {
     Vector dyu(npred_both+exo_nbr);
     Vector dy(dyu, 0, npred_both);

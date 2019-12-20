@@ -103,11 +103,11 @@ public:
   inline double
   erf(double x) const
   {
-    const double a1 = -1.26551223,   a2 = 1.00002368,
-      a3 =  0.37409196,   a4 = 0.09678418,
-      a5 = -0.18628806,   a6 = 0.27886807,
-      a7 = -1.13520398,   a8 = 1.48851587,
-      a9 = -0.82215223,  a10 = 0.17087277;
+    const double a1 = -1.26551223, a2 = 1.00002368,
+      a3 = 0.37409196, a4 = 0.09678418,
+      a5 = -0.18628806, a6 = 0.27886807,
+      a7 = -1.13520398, a8 = 1.48851587,
+      a9 = -0.82215223, a10 = 0.17087277;
     double v = 1;
     double z = abs(x);
     if (z <= 0)
@@ -152,7 +152,7 @@ using namespace std;
 const int NO_ERROR_ON_EXIT = 0;
 const int ERROR_ON_EXIT = 1;
 
-typedef vector<pair<Tags, void * > > code_liste_type;
+typedef vector<pair<Tags, void * >> code_liste_type;
 typedef code_liste_type::const_iterator it_code_type;
 
 class GeneralExceptionHandling
@@ -271,7 +271,7 @@ struct s_plan
 {
   string var, exo;
   int var_num, exo_num;
-  vector<pair<int, double> > per_value;
+  vector<pair<int, double>> per_value;
   vector<double> value;
 };
 
@@ -310,7 +310,7 @@ public:
   vector<mxArray *> jacobian_block, jacobian_other_endo_block, jacobian_exo_block, jacobian_det_exo_block;
   map<unsigned int, double> TEF;
   map<pair<unsigned int, unsigned int>, double > TEFD;
-  map<pair<unsigned int, pair<unsigned int, unsigned int> >, double > TEFDD;
+  map<pair<unsigned int, pair<unsigned int, unsigned int>>, double > TEFDD;
 
   ExpressionType EQN_type;
   it_code_type it_code_expr;
@@ -319,7 +319,7 @@ public:
   size_t /*unsigned int*/ endo_name_length, exo_name_length, param_name_length;
   unsigned int EQN_equation, EQN_block, EQN_block_number;
   unsigned int EQN_dvar1, EQN_dvar2, EQN_dvar3;
-  vector<pair<string, pair<SymbolType, unsigned int> > > Variable_list;
+  vector<pair<string, pair<SymbolType, unsigned int>>> Variable_list;
 
   inline
   ErrorMsg()
@@ -955,7 +955,7 @@ public:
                 Stack.pop();
                 if (compute)
                   {
-                    x[it_+lag+var*nb_row_x]  = Stackf.top();
+                    x[it_+lag+var*nb_row_x] = Stackf.top();
                     Stackf.pop();
                   }
                 break;
@@ -1036,7 +1036,7 @@ public:
                 Stack.pop();
                 if (compute)
                   {
-                    x[var]  = Stackf.top();
+                    x[var] = Stackf.top();
                     Stackf.pop();
                   }
                 break;
@@ -2134,7 +2134,7 @@ public:
 #ifdef DEBUG
                   double rr = Stackf.top();
                   mexPrintf("rr=%f\n", rr);
-                  map<pair<unsigned int, pair<unsigned int, unsigned int> >, double>::const_iterator it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
+                  map<pair<unsigned int, pair<unsigned int, unsigned int>>, double>::const_iterator it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
                   mexPrintf("FSTP TEFDD[make_pair(indx, make_pair(row, col))]=%f done\n", it->second);
                   mexEvalString("drawnow;");
 #endif
@@ -2157,13 +2157,13 @@ public:
 #ifdef DEBUG
               mexPrintf("FLDTEFD\n");
               mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
-              map<pair<unsigned int, pair<unsigned int, unsigned int> >, double>::const_iterator it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
+              map<pair<unsigned int, pair<unsigned int, unsigned int>>, double>::const_iterator it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
               mexPrintf("FLD TEFD[make_pair(indx, make_pair(row, col))]=%f done\n", it->second);
               mexEvalString("drawnow;");
 #endif
               if (compute)
                 {
-                  map<pair<unsigned int, pair<unsigned int, unsigned int> >, double>::const_iterator it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
+                  map<pair<unsigned int, pair<unsigned int, unsigned int>>, double>::const_iterator it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
                   Stackf.push(it->second);
                 }
               tmp_out.str("");

@@ -208,7 +208,7 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
   mexPrintf("> Driver version:\n");
   int cuda_version;
   cuda_error = cudaDriverGetVersion(&cuda_version);
-  if (cuda_error  != cudaSuccess)
+  if (cuda_error != cudaSuccess)
     {
       ostringstream tmp;
       tmp << " cudaGetVersion has failed\n";
@@ -297,7 +297,7 @@ Get_Arguments_and_global_variables(int nrhs,
                 col_y = mxGetN(prhs[i]);
                 break;
               case 1:
-                *xd =  mxGetPr(prhs[i]);
+                *xd = mxGetPr(prhs[i]);
                 row_x = mxGetM(prhs[i]);
                 col_x = mxGetN(prhs[i]);
                 break;
@@ -349,7 +349,7 @@ Get_Arguments_and_global_variables(int nrhs,
                     pos = pos1 + 1;
                   else
                     pos += 5;
-                  block =  atoi(Get_Argument(prhs[i]).substr(pos, string::npos).c_str())-1;
+                  block = atoi(Get_Argument(prhs[i]).substr(pos, string::npos).c_str())-1;
                 }
               else if (Get_Argument(prhs[i]).substr(0, 13) == "extended_path")
                 {
@@ -369,7 +369,7 @@ Get_Arguments_and_global_variables(int nrhs,
                     pos = pos1 + 1;
                   else
                     pos += 6;
-                  *pfplan_struct_name =  deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
+                  *pfplan_struct_name = deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
                 }
               else if (Get_Argument(prhs[i]).substr(0, 4) == "plan")
                 {
@@ -378,7 +378,7 @@ Get_Arguments_and_global_variables(int nrhs,
                     pos = pos1 + 1;
                   else
                     pos += 4;
-                  *plan_struct_name =  deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
+                  *plan_struct_name = deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
                 }
               else
                 {
@@ -582,7 +582,7 @@ main(int nrhs, const char *prhs[])
       int nb_controlled = 0;
       mxArray *options_cond_fcst_ = mxGetField(extended_path_struct, 0, "options_cond_fcst_");
       mxArray *controlled_varexo = NULL;
-      if (options_cond_fcst_  != NULL)
+      if (options_cond_fcst_ != NULL)
         {
           controlled_varexo = mxGetField(options_cond_fcst_, 0, "controlled_varexo");
           nb_controlled = mxGetM(controlled_varexo) * mxGetN(controlled_varexo);
@@ -704,7 +704,7 @@ main(int nrhs, const char *prhs[])
               string tmp = "Can not allocated memory to store the date_str in the extended path descriptor";
               DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
             }
-          dates.push_back(string(buf));//string(Dates[i]);
+          dates.push_back(string(buf)); //string(Dates[i]);
           mxFree(buf);
         }
     }
@@ -726,7 +726,7 @@ main(int nrhs, const char *prhs[])
           mxArray *tmp = mxGetField(plan_struct, i, "exo");
           if (tmp)
             {
-              char name [100];
+              char name[100];
               mxGetString(tmp, name, 100);
               splan[i].var = name;
               SymbolType variable_type = SymbolType::endogenous;
@@ -744,7 +744,7 @@ main(int nrhs, const char *prhs[])
           tmp = mxGetField(plan_struct, i, "var");
           if (tmp)
             {
-              char name [100];
+              char name[100];
               mxGetString(tmp, name, 100);
               splan[i].exo = name;
               SymbolType variable_type;
@@ -778,7 +778,7 @@ main(int nrhs, const char *prhs[])
             mexPrintf(" plan fliping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it->var.c_str(), it->var_num, it->exo.c_str(), it->exo_num);
           else
             mexPrintf(" plan shocks on var=%s for the following periods and with the following values:\n", it->var.c_str());
-          for (vector<pair<int, double> >::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
+          for (vector<pair<int, double>>::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
             {
               mexPrintf("  %3d %10.5f\n", it1->first, it1->second);
             }
@@ -804,7 +804,7 @@ main(int nrhs, const char *prhs[])
           mxArray *tmp = mxGetField(pfplan_struct, i, "var");
           if (tmp)
             {
-              char name [100];
+              char name[100];
               mxGetString(tmp, name, 100);
               spfplan[i].var = name;
               SymbolType variable_type = SymbolType::endogenous;
@@ -822,7 +822,7 @@ main(int nrhs, const char *prhs[])
           tmp = mxGetField(pfplan_struct, i, "exo");
           if (tmp)
             {
-              char name [100];
+              char name[100];
               mxGetString(tmp, name, 100);
               spfplan[i].exo = name;
               SymbolType variable_type;
@@ -856,7 +856,7 @@ main(int nrhs, const char *prhs[])
             mexPrintf(" plan flipping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it->var.c_str(), it->var_num, it->exo.c_str(), it->exo_num);
           else
             mexPrintf(" plan shocks on var=%s (%d) for the following periods and with the following values:\n", it->var.c_str(), it->var_num);
-          for (vector<pair<int, double> >::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
+          for (vector<pair<int, double>>::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
             {
               mexPrintf("  %3d %10.5f\n", it1->first, it1->second);
             }
@@ -1067,7 +1067,7 @@ main(int nrhs, const char *prhs[])
     }
   for (i = 0; i < row_y*col_y; i++)
     {
-      y[i]  = double (yd[i]);
+      y[i] = double (yd[i]);
       ya[i] = double (yd[i]);
     }
   size_t y_size = row_y;

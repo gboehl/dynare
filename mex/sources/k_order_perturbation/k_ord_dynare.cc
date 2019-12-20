@@ -236,4 +236,3 @@ DynareStateNameList::DynareStateNameList(const KordpDynare &dynare, const Dynare
   for (int i = 0; i < dynare.nexog(); i++)
     names.emplace_back(denl.getName(i));
 }
-

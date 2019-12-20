@@ -60,7 +60,7 @@ private:
   NonZeroElem *NZE_Mem;
   vector<NonZeroElem *> NZE_Mem_Allocated;
   int swp_f_b;
-  fstream  SaveCode_swp;
+  fstream SaveCode_swp;
   string filename_mem;
 };
 
