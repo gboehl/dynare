@@ -29,15 +29,21 @@ function oo_ = squeeze_shock_decomposition(M_,oo_,options_,var_list_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+if ~options_.shock_decomp.with_epilogue
+    endo_names = M_.endo_names;
+else
+    endo_names = [M_.endo_names; M_.epilogue_names];
+    
+end
 if isfield(oo_,'plot_shock_decomposition_info') && isfield(oo_.plot_shock_decomposition_info','i_var')
     my_vars = oo_.plot_shock_decomposition_info.i_var;
 else
     my_vars=[];
 end
 if nargin>3
-    my_vars = [varlist_indices(var_list_,M_.endo_names); my_vars];
+    my_vars = [varlist_indices(var_list_,endo_names); my_vars];
 end
-sd_vlist = M_.endo_names(my_vars,:);
+sd_vlist = endo_names(my_vars,:);
 
 if isfield(options_.plot_shock_decomp,'q2a') && isstruct(options_.plot_shock_decomp.q2a)
     
@@ -54,7 +60,7 @@ if isempty(sd_vlist)
     disp('Nothing has been squeezed: there is no list of variables for it!')
     return
 end
-i_var = varlist_indices(sd_vlist,M_.endo_names);
+i_var = varlist_indices(sd_vlist,endo_names);
 
 oo_.plot_shock_decomposition_info.i_var = i_var;
 oo_.shock_decomposition_info.i_var = i_var;

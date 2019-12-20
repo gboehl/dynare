@@ -305,16 +305,22 @@ for j=1:nvar
     end
     ztmp=squeeze(za(j,:,:));
     if cumfix==0
-        zscale = sum(ztmp(1:end-1,:))./ztmp(end,:);
-        ztmp(1:end-1,:) = ztmp(1:end-1,:)./repmat(zscale,[nterms-1,1]);
+        zres = ztmp(end,:) - sum(ztmp(1:end-1,:));
+        w = abs(ztmp(1:end-1,:))./sum(abs(ztmp(1:end-1,:)));
+        ztmp(1:end-1,:) = ztmp(1:end-1,:) + repmat(zres,[nterms-1 1]).*w;
+%         zscale = sum(ztmp(1:end-1,:))./ztmp(end,:);
+%         ztmp(1:end-1,:) = ztmp(1:end-1,:)./repmat(zscale,[nterms-1,1]);
     else
         zres = ztmp(end,:)-sum(ztmp(1:end-1,:));
         ztmp(1:end-1,:) = ztmp(1:end-1,:) + repmat(zres,[nterms-1 1])/(nterms-1);
     end
     gztmp=squeeze(gza(j,:,:));
     if cumfix==0
-        gscale = sum(gztmp(1:end-1,:))./ gztmp(end,:);
-        gztmp(1:end-1,:) = gztmp(1:end-1,:)./repmat(gscale,[nterms-1,1]);
+        gres = gztmp(end,:) - sum(gztmp(1:end-1,:));
+        w = abs(gztmp(1:end-1,:))./sum(abs(gztmp(1:end-1,:)));
+        gztmp(1:end-1,:) = gztmp(1:end-1,:) + repmat(gres,[nterms-1 1]).*w;
+%         gscale = sum(gztmp(1:end-1,:))./ gztmp(end,:);
+%         gztmp(1:end-1,:) = gztmp(1:end-1,:)./repmat(gscale,[nterms-1,1]);
     else
         gres = gztmp(end,:) - sum(gztmp(1:end-1,:));
         gztmp(1:end-1,:) = gztmp(1:end-1,:) + repmat(gres,[nterms-1 1])/(nterms-1);

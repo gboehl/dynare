@@ -31,6 +31,13 @@ pie_obs = 4*pie;
 R_obs = 4*R;
 end;
 
+epilogue;
+// annualized level of y
+ya = exp(y)+exp(y(-1))+exp(y(-2))+exp(y(-3));
+// annualized growth rate of y
+gya = ya/ya(-4)-1;
+end;
+
 shocks;
 var e_R = 1.25^2;
 var e_q = 2.5^2;
@@ -83,9 +90,11 @@ A e_A;
 end;
 
 options_.initial_date=dates('1989Q4'); % date arbitrarily set for testing purposes
+options_.shock_decomp.with_epilogue=true;
 shock_decomposition(nograph);
 // test for nothing to squeeze
 squeeze_shock_decomposition;
+// oo_ = squeeze_shock_decomp(M_,oo_,options_);
 
 // standard plot
 plot_shock_decomposition y_obs R_obs pie_obs dq de;
@@ -113,6 +122,7 @@ realtime_shock_decomposition(forecast=8, save_realtime=[5 9 13 17 21 25 29 33 37
 
 // test squeeze
 squeeze_shock_decomposition;
+// oo_ = squeeze_shock_decomp(M_,oo_,options_);
 
 //realtime pooled
 plot_shock_decomposition(realtime = 1) y_obs R_obs pie_obs dq de;
@@ -134,10 +144,9 @@ plot_shock_decomposition(detail_plot, realtime = 3, vintage = 29) y_obs R_obs pi
 close all,
 
 // now I test annualized variables
-// options_.plot_shock_decomp.q2a=1;
-// options_.plot_shock_decomp.islog=1;
-// this also triggers re-computing of decompositions since y was not present in squeeze set
+    // this also triggers re-computing of decompositions since y was not present in squeeze set
 plot_shock_decomposition(detail_plot, type = aoa) y;
+plot_shock_decomposition(detail_plot, type = aoa) ya;
 
 plot_shock_decomposition(realtime = 1) y;
 plot_shock_decomposition(realtime = 1, vintage = 29) y;
@@ -158,6 +167,7 @@ realtime_shock_decomposition(fast_realtime=75) y_obs R_obs pie_obs dq de;
 
 // re-test squeeze
 squeeze_shock_decomposition;
+// oo_ = squeeze_shock_decomp(M_,oo_,options_);
 
 collect_latex_files;
 if system(['pdflatex -halt-on-error -interaction=batchmode ' M_.fname '_TeX_binder.tex'])

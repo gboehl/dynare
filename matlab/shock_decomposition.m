@@ -51,6 +51,8 @@ if isfield(oo_,'shock_decomposition_info') && isfield(oo_.shock_decomposition_in
         error('shock_decomposition::squeezed shock decompositions are already stored in oo_')
     end
 end
+with_epilogue = options_.shock_decomp.with_epilogue;
+
 if isempty(varlist)
     varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
@@ -128,6 +130,10 @@ for i=1:gend
         z(:,1:nshocks,i) = z(:,1:nshocks,i) + B(inv_order_var,:).*repmat(epsilon(:,i)',endo_nbr,1);
     end
     z(:,nshocks+1,i) = z(:,nshocks+2,i) - sum(z(:,1:nshocks,i),2);
+end
+
+if with_epilogue
+    [z, oo_.shock_decomposition_info.epilogue_steady_state] = epilogue_shock_decomposition(z, M_, oo_);
 end
 
 oo_.shock_decomposition = z;

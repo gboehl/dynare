@@ -652,6 +652,7 @@ options_.parameter_set = [];
 options_.use_shock_groups = '';
 options_.shock_decomp.colormap = '';
 options_.shock_decomp.init_state = 0;
+options_.shock_decomp.with_epilogue = false;
 
 % Shock decomposition realtime
 options_.shock_decomp.forecast = 0;
