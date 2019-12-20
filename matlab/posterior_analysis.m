@@ -72,9 +72,9 @@ switch type
                 [observable_name_requested_vars,index_subset,index_observables]=intersect(vartan,options_.varobs,'stable');
             end
             oo_ = variance_decomposition_ME_mc_analysis(SampleSize,'posterior',M_.dname,M_.fname,...
-                                             M_.exo_names,arg2,observable_name_requested_vars,arg1,options_.mh_conf_sig,oo_,options_);
+                                                        M_.exo_names,arg2,observable_name_requested_vars,arg1,options_.mh_conf_sig,oo_,options_);
         end
-    end        
+    end
   case 'correlation'
     if nargin==narg1
         [nvar,vartan,NumberOfFiles] = ...
@@ -92,9 +92,9 @@ switch type
     if ~all(M_.H==0)
         if strmatch(arg1,options_.varobs,'exact')
             oo_ = conditional_variance_decomposition_ME_mc_analysis(SampleSize,'posterior',M_.dname,M_.fname,...
-                arg3,M_.exo_names,arg2,vartan,arg1,options_.mh_conf_sig,oo_,options_);
+                                                              arg3,M_.exo_names,arg2,vartan,arg1,options_.mh_conf_sig,oo_,options_);
         end
-    end        
+    end
   otherwise
     disp('Not yet implemented')
 end

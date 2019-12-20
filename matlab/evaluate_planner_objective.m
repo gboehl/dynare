@@ -115,9 +115,9 @@ if ~options.noprint
     fprintf('\nApproximated value of planner objective function\n')
     if options.ramsey_policy
         fprintf('    - with initial Lagrange multipliers set to 0: %10.8f\n', ...
-              planner_objective_value(2))
+                planner_objective_value(2))
         fprintf('    - with initial Lagrange multipliers set to steady state: %10.8f\n\n', ...
-              planner_objective_value(1))
+                planner_objective_value(1))
     elseif options.discretionary_policy
         fprintf('with discretionary policy: %10.8f\n\n',planner_objective_value(1))
     end

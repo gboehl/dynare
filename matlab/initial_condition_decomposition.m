@@ -153,7 +153,7 @@ end
 
 % when varlist==0, we only store results in oo_ and do not make any plot
 if ~isequal(varlist,0)
-    
+
     % if ~options_.no_graph.shock_decomposition
     oo=oo_;
     oo.shock_decomposition = oo_.initval_decomposition;
@@ -172,6 +172,6 @@ if ~isequal(varlist,0)
     options_.plot_shock_decomp.screen_shocks=1;
     options_.plot_shock_decomp.use_shock_groups = '';
     options_.plot_shock_decomp.init_cond_decomp = 1; % private flag to plotting utilities
-    
+
     plot_shock_decomposition(M_,oo,options_,varlist);
 end

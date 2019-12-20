@@ -1,7 +1,7 @@
 function [initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic, y] = ...
     simul_backward_model_init(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations)
 
-% Initialization of the routines simulating backward models.    
+% Initialization of the routines simulating backward models.
 
 % Copyright (C) 2017-2019 Dynare Team
 %
@@ -67,7 +67,7 @@ endolags_ = endolags(find(endolags));
 endowithlagnames = endonames(find(endolags));
 if ~isempty(missingendogenousvariables)
     missingendogenousvariables = setdiff(endowithlagnames, initialconditions.name);
-    missingendogenouslaggedvariables = intersect(endowithlagnames, missingendogenousvariables); 
+    missingendogenouslaggedvariables = intersect(endowithlagnames, missingendogenousvariables);
     if ~isempty(missingendogenouslaggedvariables)
         disp('You have to initialize the following endogenous variables:')
         msg = sprintf('%s\n', missingendogenouslaggedvariables{1:end-1});
@@ -83,7 +83,7 @@ maxlag = abs(min(endolags));
 if maxlag>initialconditions.nobs
     error('The dseries object provided as first input argument should at least have %s periods!', num2str(maxlag))
 end
-missinginitialcondition = false; 
+missinginitialcondition = false;
 for i = 1:length(endowithlagnames)
     lags = abs(endolags_(i));
     variable = initialconditions{endowithlagnames{i}};
@@ -102,7 +102,7 @@ if missinginitialcondition
     error('Please fix the dseries object used for setting the initial conditions!')
 end
 
-% If the model has lags on the exogenous variables, test if we have corresponding initial conditions. 
+% If the model has lags on the exogenous variables, test if we have corresponding initial conditions.
 exonames = DynareModel.exo_names;
 missingexogenousvariables = setdiff(exonames, initialconditions.name);
 exolags = get_lags_on_exogenous_variables(DynareModel);
@@ -110,7 +110,7 @@ exolags_ = exolags(find(exolags));
 exowithlagnames = exonames(find(exolags));
 if ~isempty(missingexogenousvariables)
     missingexogenousvariables = setdiff(exowithlagnames, initialconditions.name);
-    missingexogenouslaggedvariables = intersect(exowithlagnames, missingexogenousvariables); 
+    missingexogenouslaggedvariables = intersect(exowithlagnames, missingexogenousvariables);
     if ~isempty(missingexogenouslaggedvariables)
         disp('You have to initialize the following exogenous variables:')
         msg = sprintf('%s\n', missingexogenouslaggedvariables{1:end-1});
@@ -126,7 +126,7 @@ maxlag = abs(min(exolags));
 if maxlag>initialconditions.nobs
     error('The dseries object provided as first input argument should at least have %s periods!', num2str(maxlag))
 end
-missinginitialcondition = false; 
+missinginitialcondition = false;
 for i = 1:length(exowithlagnames)
     lags = abs(exolags_(i));
     variable = initialconditions{exowithlagnames{i}};
@@ -190,14 +190,14 @@ end
 
 
 if nargout>8
-   nx = size(DynareOutput.exo_simul,2);
-   ny0 = nnz(DynareModel.lead_lag_incidence(2,:));
-   ny1 = nnz(DynareModel.lead_lag_incidence(1,:));
-   iy1 = find(DynareModel.lead_lag_incidence(1,:)>0);
-   idx = 1:DynareModel.endo_nbr;
-   jdx = idx+ny1;
-   % Get the name of the dynamic model routine.
-   model_dynamic = str2func([DynareModel.fname,'.dynamic']);
-   % initialization of vector y.
-   y = NaN(length(idx)+ny1,1);
+    nx = size(DynareOutput.exo_simul,2);
+    ny0 = nnz(DynareModel.lead_lag_incidence(2,:));
+    ny1 = nnz(DynareModel.lead_lag_incidence(1,:));
+    iy1 = find(DynareModel.lead_lag_incidence(1,:)>0);
+    idx = 1:DynareModel.endo_nbr;
+    jdx = idx+ny1;
+    % Get the name of the dynamic model routine.
+    model_dynamic = str2func([DynareModel.fname,'.dynamic']);
+    % initialization of vector y.
+    y = NaN(length(idx)+ny1,1);
 end

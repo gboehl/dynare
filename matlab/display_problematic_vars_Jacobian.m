@@ -94,7 +94,7 @@ if strcmp(type,'dynamic')
                         eq_nbr, type_string, M_.exo_names{var_index});
             else
                 eq_nbr = problemrow(ii)-aux_eq_nbr;
-                fprintf('Derivative of Equation %d with respect to %s shock %s \n', ... 
+                fprintf('Derivative of Equation %d with respect to %s shock %s \n', ...
                         eq_nbr, type_string, M_.exo_names{var_index});
             end
         else
@@ -111,10 +111,10 @@ elseif strcmp(type, 'static')
             if problemrow(ii)<=aux_eq_nbr
                 eq_nbr = problemrow(ii);
                 fprintf('Derivative of Auxiliary Equation %d with respect to Variable %s  (initial value of %s: %g) \n', ...
-                eq_nbr, M_.endo_names{problemcol(ii)}, M_.endo_names{problemcol(ii)}, x(problemcol(ii)));
+                        eq_nbr, M_.endo_names{problemcol(ii)}, M_.endo_names{problemcol(ii)}, x(problemcol(ii)));
             else
                 eq_nbr = problemrow(ii)-aux_eq_nbr;
-                fprintf('Derivative of Equation %d with respect to Variable %s  (initial value of %s: %g) \n', ... 
+                fprintf('Derivative of Equation %d with respect to Variable %s  (initial value of %s: %g) \n', ...
                         eq_nbr, M_.endo_names{problemcol(ii)}, M_.endo_names{problemcol(ii)}, x(problemcol(ii)));
             end
         else %auxiliary vars

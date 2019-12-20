@@ -1,6 +1,6 @@
 function l = get_lags_on_exogenous_variables(DynareModel)
 
-% Returns a vector with the max lag for each exogenous variable. 
+% Returns a vector with the max lag for each exogenous variable.
 
 % Copyright (C) 2017 Dynare Team
 %

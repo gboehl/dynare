@@ -91,13 +91,13 @@ switch minimizer_algorithm
     end
     if ~isoctave
         [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
-        fmincon(objective_function,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options,varargin{:});
+            fmincon(objective_function,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options,varargin{:});
     else
         % Under Octave, use a wrapper, since fmincon() does not have an 11th
         % arg. Also, only the first 4 output arguments are available.
         func = @(x) objective_function(x,varargin{:});
         [opt_par_values,fval,exitflag,output] = ...
-        fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
+            fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
     end
   case 2
     %simulating annealing

@@ -80,7 +80,7 @@ while (t <= samplesize)
         warning(msg)
         break
     end
-end% (while) loop over t
+end % (while) loop over t
 
 % Close waitbar.
 dyn_waitbar_close(hh);

@@ -558,7 +558,7 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
         disp('The command causing the error was:')
         disp(command_string)
         disp('The system returned:')
-        disp(de0)        
+        disp(de0)
         skipline(2)
     end
 

@@ -9,10 +9,10 @@ switch nargout
               M.params, ss, 1);
   case 2
     [r,g1] = feval([M.fname '.dynamic'],y,x, ...
-                    M.params, ss, 1);
+                   M.params, ss, 1);
   case 3
     [r,g1,g2] = feval([M.fname '.dynamic'],y,x, ...
-                    M.params, ss, 1);
+                      M.params, ss, 1);
   case 4
     [r,g1,g2,g3] = feval([M.fname '.dynamic'],y,x, ...
                          M.params, ss, 1);

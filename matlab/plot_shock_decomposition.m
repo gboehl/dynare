@@ -98,7 +98,7 @@ catch ME
         end
         if isfield(oo_,'initval_decomposition')
             disp('recomputing initval shock decomposition ...')
-            oo_ = initial_condition_decomposition(M_,oo_,options_,0,bayestopt_,estim_params_);   
+            oo_ = initial_condition_decomposition(M_,oo_,options_,0,bayestopt_,estim_params_);
         end
         [i_var,nvar,index_uniques] = varlist_indices(varlist,M_.endo_names);
         out = oo_;
@@ -154,7 +154,7 @@ else
     expand=0;
     options_.plot_shock_decomp.expand=0;
 end
-if ~isfield(options_.plot_shock_decomp,'init_cond_decomp') 
+if ~isfield(options_.plot_shock_decomp,'init_cond_decomp')
     options_.plot_shock_decomp.init_cond_decomp=0;
 end
 
@@ -261,9 +261,9 @@ if ~isempty(init2shocks) && ~expand
             z(:,end,:)= z(:,end,:) - oo_.initval_decomposition (:,j,:);
         end
         z(:,end-1,:)= z(:,end-1,:) - oo_.initval_decomposition (:,j,:);
-        
-    end   
-end    
+
+    end
+end
 
 if ~epilogue_decomp
     if isfield(oo_.dr,'ys')
@@ -308,7 +308,7 @@ if isequal(type,'aoa') && isstruct(q2a)
         if ~isfield(q2a,'plot') % private trap for aoa calls
             q2a.plot=1; % growth rate
         end
-        
+
         if ~expand
             if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp.use_shock_groups)
                 mygroup = options_.plot_shock_decomp.use_shock_groups;
@@ -432,7 +432,7 @@ switch type
     end
     if realtime_ == 0
         t0=t0+4-1; % we start in Q4 of the first full year
-        end
+    end
     if isempty(options_.plot_shock_decomp.plot_init_date) && realtime_ == 0
         options_.plot_shock_decomp.plot_init_date=initial_date+t0;
     end
@@ -458,17 +458,17 @@ switch type
             end
 
             if ~expand
-            if isstruct(q2a.aux) && ischar(q2a.aux.y)
-                opts=options_;
-                opts.plot_shock_decomp.type='qoq';
-                opts.plot_shock_decomp.use_shock_groups=[];
-                [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,opts,q2a.aux.y);
-                q2a.aux.y=y_aux;
-                q2a.aux.yss=steady_state_aux;
-            end
-            i_var0 = i_var;
-            [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
-                annualized_shock_decomposition(z,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
+                if isstruct(q2a.aux) && ischar(q2a.aux.y)
+                    opts=options_;
+                    opts.plot_shock_decomp.type='qoq';
+                    opts.plot_shock_decomp.use_shock_groups=[];
+                    [y_aux, steady_state_aux] = plot_shock_decomposition(M_,oo_,opts,q2a.aux.y);
+                    q2a.aux.y=y_aux;
+                    q2a.aux.yss=steady_state_aux;
+                end
+                i_var0 = i_var;
+                [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
+                    annualized_shock_decomposition(z,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
                 if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp.use_shock_groups)
                     mygroup = options_.plot_shock_decomp.use_shock_groups;
                     options_.plot_shock_decomp.use_shock_groups='';
@@ -479,9 +479,9 @@ switch type
             end
         end
         z = za;
-            if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp.use_shock_groups)
-                zfull = zafull;
-            end
+        if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp.use_shock_groups)
+            zfull = zafull;
+        end
         M_.endo_names = endo_names;
         M_.endo_names_tex = endo_names_tex;
         %     endo_nbr = size(z,1);

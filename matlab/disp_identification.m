@@ -21,8 +21,8 @@ function disp_identification(pdraws, ide_reducedform, ide_moments, ide_spectrum,
 % OUTPUTS
 %   * all output is printed on the command line
 % -------------------------------------------------------------------------
-% This function is called by 
-%   * dynare_identification.m 
+% This function is called by
+%   * dynare_identification.m
 % =========================================================================
 % Copyright (C) 2010-2019 Dynare Team
 %
@@ -55,21 +55,21 @@ fprintf('Note that differences in the criteria could be due to numerical setting
 fprintf('numerical errors or the method used to find problematic parameter sets.\n')
 fprintf('Settings:\n')
 if options_ident.analytic_derivation_mode == 0
-fprintf('    Derivation mode for Jacobians:                         Analytic using sylvester equations\n');
+    fprintf('    Derivation mode for Jacobians:                         Analytic using sylvester equations\n');
 elseif options_ident.analytic_derivation_mode == 1
-fprintf('    Derivation mode for Jacobians:                         Analytic using kronecker products\n');
+    fprintf('    Derivation mode for Jacobians:                         Analytic using kronecker products\n');
 elseif options_ident.analytic_derivation_mode < 0
-fprintf('    Derivation mode for Jacobians:                         Numerical\n');
+    fprintf('    Derivation mode for Jacobians:                         Numerical\n');
 end
 if checks_via_subsets
-fprintf('    Method to find problematic parameters:                 Rank condition on all possible subsets\n');
+    fprintf('    Method to find problematic parameters:                 Rank condition on all possible subsets\n');
 else
-fprintf('    Method to find problematic parameters:                 Nullspace and multicorrelation coefficients\n');
+    fprintf('    Method to find problematic parameters:                 Nullspace and multicorrelation coefficients\n');
 end
 if options_ident.normalize_jacobians == 1
-fprintf('    Normalize Jacobians:                                   Yes\n');
+    fprintf('    Normalize Jacobians:                                   Yes\n');
 else
-fprintf('    Normalize Jacobians:                                   No\n');
+    fprintf('    Normalize Jacobians:                                   No\n');
 end
 fprintf('    Tolerance level for rank computations:                 %.0d\n',options_ident.tol_rank);
 fprintf('    Tolerance level for selecting nonzero columns:         %.0d\n',options_ident.tol_deriv);
@@ -83,7 +83,7 @@ for jide = 1:4
     if jide == 1
         strTest = 'REDUCED-FORM'; strJacobian = 'Tau'; strMeaning = 'Jacobian of steady state and reduced-form solution matrices';
         if ~no_identification_reducedform
-            noidentification = 0; ide = ide_reducedform; 
+            noidentification = 0; ide = ide_reducedform;
             if SampleSize == 1
                 Jacob = ide.dREDUCEDFORM;
             end
@@ -111,7 +111,7 @@ for jide = 1:4
             strTest = 'SPECTRUM (Mutschler, 2015)';
         end
         if ~no_identification_spectrum
-            noidentification = 0; ide = ide_spectrum; 
+            noidentification = 0; ide = ide_spectrum;
             if SampleSize == 1
                 Jacob = ide.dSPECTRUM;
             end
@@ -124,20 +124,20 @@ for jide = 1:4
             strTest = 'MOMENTS (Mutschler, 2015)'; strJacobian = 'Mbar';
         end
         if ~no_identification_moments
-            noidentification = 0; ide = ide_moments; 
+            noidentification = 0; ide = ide_moments;
             if SampleSize == 1
                 Jacob = ide.si_dMOMENTS;
             end
         else %skip test
             noidentification = 1; no_warning_message_display = 0;
-        end    
+        end
     end
-    
+
     if ~noidentification
         %% display problematic parameters computed by identifcation_checks.m
         if ~checks_via_subsets
             if any(ide.ino) || any(any(ide.ind0==0)) || any(any(ide.jweak_pair))
-                no_warning_message_display=0;        
+                no_warning_message_display=0;
                 skipline()
                 disp([upper(strTest), ':'])
                 disp('    !!!WARNING!!!');
@@ -184,8 +184,8 @@ for jide = 1:4
                 end
             end
 
-        %% display problematic parameters computed by identification_checks_via_subsets
-        elseif checks_via_subsets            
+            %% display problematic parameters computed by identification_checks_via_subsets
+        elseif checks_via_subsets
             if ide.rank < size(Jacob,2)
                 no_warning_message_display = 0;
                 skipline()
@@ -199,7 +199,7 @@ for jide = 1:4
                 if all(cellfun(@isempty,ide.problpars))
                     disp(['    No problematic parameter combinations with maximum dimension ', num2str(size(ide.problpars,2)), ' were found. Increase max_dim_subsets_groups.']);
                     skipline()
-                else                    
+                else
                     disp(['    Displaying problematic parameter combinations (with maximum dimension ', num2str(size(ide.problpars,2)), '):']);
                     skipline()
                     probparamset_nbr = 0;
@@ -221,11 +221,11 @@ for jide = 1:4
                                             disp(['    ',problparnamestring, ' is not identified!' ])
                                         else
                                             disp(['    [',problparnamestring, '] are collinear!' ])
-                                        end        
+                                        end
                                     end
                                 end
                             end
-                        end                    
+                        end
                     end
                 end
             end
@@ -235,7 +235,7 @@ for jide = 1:4
     if no_warning_message_display
         skipline()
         disp([upper(strTest), ':']);
-        disp(['    All parameters are identified in the ', strMeaning, ' (rank(', strJacobian, ') is full with tol = ', num2str(tol_rank), ').' ]),        
+        disp(['    All parameters are identified in the ', strMeaning, ' (rank(', strJacobian, ') is full with tol = ', num2str(tol_rank), ').' ]),
     end
 end
 
@@ -243,7 +243,7 @@ end
 
 %% Advanced identificaton patterns
 if SampleSize==1 && options_ident.advanced
-    skipline()    
+    skipline()
     for j=1:size(ide_moments.cosndMOMENTS,2)
         pax=NaN(totparam_nbr,totparam_nbr);
         fprintf('\n')

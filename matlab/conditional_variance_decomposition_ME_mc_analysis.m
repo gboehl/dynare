@@ -56,10 +56,10 @@ end
 exogenous_variable_index = check_name(exonames,exo);
 if isempty(exogenous_variable_index)
     if isequal(exo,'ME')
-       exogenous_variable_index=length(exonames)+1; 
+        exogenous_variable_index=length(exonames)+1;
     else
         disp([ type '_analysis:: ' exo ' is not a declared exogenous variable!'])
-    return
+        return
     end
 end
 

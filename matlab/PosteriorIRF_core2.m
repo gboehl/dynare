@@ -158,13 +158,13 @@ for i=fpar:npar
             end
             subplotnum = 0;
         end
-    end% loop over selected endo_var
+    end % loop over selected endo_var
     if whoiam
         fprintf('Done! \n');
         waitbarString = [ 'Exog. shocks ' int2str(i) '/' int2str(npar) ' done.'];
         %         fMessageStatus((i-fpar+1)/(npar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
         dyn_waitbar((i-fpar+1)/(npar-fpar+1),[],waitbarString);
     end
-end% loop over exo_var
+end % loop over exo_var
 
 myoutput.OutputFileName = OutputFileName;

@@ -64,7 +64,7 @@ nn = size(x,1);
 % Get status of the initial guess (default values?)
 if any(x)
     % The current initial guess is not the default for all the variables.
-    idx = find(x);      % Indices of the variables with default initial guess values. 
+    idx = find(x);      % Indices of the variables with default initial guess values.
     in0 = length(idx);
 else
     % The current initial guess is the default for all the variables.
@@ -79,9 +79,9 @@ if jacobian_flag
     if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) ...
             || any(~isreal(fvec)) || any(~isreal(fjac(:)))
         if max(abs(fvec)) < tolf %return if initial value solves problem
-            info = 0; 
+            info = 0;
             return;
-        end    
+        end
         disp('Randomize initial guess...')
         % Let's try random numbers for the variables initialized with the default value.
         wrong_initial_guess_flag = true;

@@ -156,7 +156,7 @@ for file = 1:NumberOfDrawsFiles
             end
         end
         if only_non_stationary_vars
-             Decomposition_array(linea,:) = NaN;
+            Decomposition_array(linea,:) = NaN;
         else
             tmp = th_autocovariances(dr,ivar,M_,options_,nodecomposition);
             for i=1:nvar

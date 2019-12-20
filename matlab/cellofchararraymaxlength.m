@@ -1,5 +1,5 @@
 function n = cellofchararraymaxlength(c)
-    
+
 % Copyright (C) 2018 Dynare Team
 %
 % This file is part of Dynare.

@@ -37,7 +37,7 @@ function [CheckCO,minnx,minA,minB,minC,minD,dminA,dminB,dminC,dminD] = get_minim
 %   dminD:      [obs_nbr by exo_nbr by totparam_nbr] in DR order
 %                 Jacobian (wrt to all parameters) of measurement matrix minD
 % -------------------------------------------------------------------------
-% This function is called by 
+% This function is called by
 %   * get_identification_jacobians.m (previously getJJ.m)
 % -------------------------------------------------------------------------
 % This function calls
@@ -68,11 +68,11 @@ nu = size(B,2);
 % Check controllability and observability conditions for full state vector
 CheckCO = check_minimality(A,B,C);
 
-if CheckCO == 1 % If model is already minimal    
+if CheckCO == 1 % If model is already minimal
     minnx = nx;
-    minA = A; 
-    minB = B; 
-    minC = C; 
+    minA = A;
+    minB = B;
+    minC = C;
     minD = D;
     if nargout > 6
         dminA = dA;
@@ -86,21 +86,21 @@ else
     % create indices for unnecessary states
     endogstateindex = find(abs(sum(A,1))<realsmall);
     exogstateindex = find(abs(sum(A,1))>realsmall);
-    minnx = length(exogstateindex);    
+    minnx = length(exogstateindex);
     % remove unnecessary states from solution matrices
     A_1 = A(endogstateindex,exogstateindex);
     A_2 = A(exogstateindex,exogstateindex);
-    B_2 = B(exogstateindex,:); 
-    C_1 = C(:,endogstateindex); 
+    B_2 = B(exogstateindex,:);
+    C_1 = C(:,endogstateindex);
     C_2 = C(:,exogstateindex);
     D   = D;
     ind_A1 = endogstateindex;
     ind_A2 = exogstateindex;
     % minimal representation
-    minA = A_2; 
+    minA = A_2;
     minB = B_2;
     minC = C_2;
-    minD = D;        
+    minD = D;
     % Check controllability and observability conditions
     CheckCO = check_minimality(minA,minB,minC);
 
@@ -116,20 +116,20 @@ else
                 % remove unnecessary states from solution matrices
                 A_1 = A(ind_A1,ind_A2);
                 A_2 = A(ind_A2,ind_A2);
-                B_2 = B(ind_A2,:); 
-                C_1 = C(:,ind_A1); 
+                B_2 = B(ind_A2,:);
+                C_1 = C(:,ind_A1);
                 C_2 = C(:,ind_A2);
                 D = D;
                 % minimal representation
-                minA = A_2; 
+                minA = A_2;
                 minB = B_2;
                 minC = C_2;
                 minD = D;
                 % Check controllability and observability conditions
                 CheckCO = check_minimality(minA,minB,minC);
-                if CheckCO == 1                    
+                if CheckCO == 1
                     minnx = length(ind_A2);
-                    break;                    
+                    break;
                 end
                 i=i+1;
             end

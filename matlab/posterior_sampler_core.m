@@ -162,9 +162,9 @@ for curr_block = fblck:nblck
             set_dynare_random_generator_state(LastSeeds.(['file' int2str(NewFile(curr_block))]).Unifor, LastSeeds.(['file' int2str(NewFile(curr_block))]).Normal);
             last_draw(curr_block,:)=x2(draw_iter-1,:);
             last_posterior(curr_block)=logpo2(draw_iter-1);
-                
+
         else
-        
+
             x2 = zeros(InitSizeArray(curr_block),npar);
             logpo2 = zeros(InitSizeArray(curr_block),1);
         end
@@ -198,7 +198,7 @@ for curr_block = fblck:nblck
         last_draw(curr_block,:) = par;
         logpo2(draw_index_current_file) = logpost;
         last_posterior(curr_block) = logpost;
-        neval_this_chain(:, draw_iter) = neval; 
+        neval_this_chain(:, draw_iter) = neval;
         feval_this_chain = feval_this_chain + sum(neval);
         feval_this_file = feval_this_file + sum(neval);
         accepted_draws_this_chain = accepted_draws_this_chain + accepted;
@@ -264,7 +264,7 @@ for curr_block = fblck:nblck
         end
         draw_iter=draw_iter+1;
         draw_index_current_file = draw_index_current_file + 1;
-    end% End of the simulations for one mh-block.
+    end % End of the simulations for one mh-block.
     dyn_waitbar_close(hh);
     if nruns(curr_block)
         record.AcceptanceRatio(curr_block) = accepted_draws_this_chain/(draw_iter-1);
@@ -272,7 +272,7 @@ for curr_block = fblck:nblck
         [record.LastSeeds(curr_block).Unifor, record.LastSeeds(curr_block).Normal] = get_dynare_random_generator_state();
     end
     OutputFileName(block_iter,:) = {[MetropolisFolder,filesep], [ModelName '_mh*_blck' int2str(curr_block) '.mat']};
-end% End of the loop over the mh-blocks.
+end % End of the loop over the mh-blocks.
 
 
 myoutput.record = record;

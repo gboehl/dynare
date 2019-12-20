@@ -40,7 +40,7 @@ end
 if ~exist([M_.fname '/latex'],'dir')
     mkdir(M_.fname,'latex');
 end
-            
+
 fid = fopen([M_.fname, '/latex/' M_.fname '_latex_parameters.tex'], 'w');
 fprintf(fid, '\\begin{center}\n');
 if Long_names_present==1

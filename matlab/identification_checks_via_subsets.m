@@ -4,19 +4,19 @@ function [ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] 
 % Finds problematic sets of paramters via checking the necessary rank condition
 % of the Jacobians for all possible combinations of parameters. The rank is
 % computed via an inbuild function based on the SVD, similar to matlab's
-% rank. The idea is that once we have the Jacobian for all parameters, we 
+% rank. The idea is that once we have the Jacobian for all parameters, we
 % can easily set up Jacobians containing all combinations of parameters by
-% picking the relevant columns/elements of the full Jacobian. Then the rank 
-% of these smaller Jacobians indicates whether this paramter combination is 
+% picking the relevant columns/elements of the full Jacobian. Then the rank
+% of these smaller Jacobians indicates whether this paramter combination is
 % identified or not. To speed up computations:
 % (1) single parameters are removed from possible higher-order sets,
-% (2) for parameters that are collinear, i.e. rank failure for 2 element sets, 
-% we replace the second parameter by the first one, and then compute 
+% (2) for parameters that are collinear, i.e. rank failure for 2 element sets,
+% we replace the second parameter by the first one, and then compute
 % higher-order combinations [uncommented]
 % (3) all lower-order problematic sets are removed from higher-order sets
 % by an inbuild function
 % (4) we could replace nchoosek by a mex version, e.g. VChooseK
-% (https://de.mathworks.com/matlabcentral/fileexchange/26190-vchoosek) as 
+% (https://de.mathworks.com/matlabcentral/fileexchange/26190-vchoosek) as
 % nchoosek could be the bottleneck in terms of speed (and memory for models
 % with totparam_nbr > 150)
 % =========================================================================
@@ -44,12 +44,12 @@ function [ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] 
 %   ide_reducedform, ide_moments, ide_spectrum, ide_minimal are augmented by the
 %   following fields:
 %   * problpars:  [1 by totparam_nbr] cell with the following structure for j=1:totparam_nbr
-%                  problpars{j}:   [nonidentified_j_set_parameters_nbr by j] 
+%                  problpars{j}:   [nonidentified_j_set_parameters_nbr by j]
 %                  matrix with j collinear parameters in each row
 %   * rank:       [integer] rank of Jacobian
 % -------------------------------------------------------------------------
-% This function is called by 
-%   * identification_analysis.m 
+% This function is called by
+%   * identification_analysis.m
 % =========================================================================
 % Copyright (C) 2019 Dynare Team
 %
@@ -96,11 +96,11 @@ if ~no_identification_dynamic
     rank_dDYNAMIC = rank(full(dDYNAMIC),tol_rank); %compute rank with imposed tolerance level
     ide_dynamic.rank = rank_dDYNAMIC;
     % check rank criteria for full Jacobian
-    if rank_dDYNAMIC == totparam_nbr 
+    if rank_dDYNAMIC == totparam_nbr
         % all parameters are identifiable
         no_identification_dynamic = 1; %skip in the following
         indparam_dDYNAMIC = [];
-    else 
+    else
         % there is lack of identification
         indparam_dDYNAMIC = indtotparam; %initialize for nchoosek
     end
@@ -119,7 +119,7 @@ if ~no_identification_reducedform
         % all parameters are identifiable
         no_identification_reducedform = 1; %skip in the following
         indparam_dREDUCEDFORM = [];
-    else 
+    else
         % there is lack of identification
         indparam_dREDUCEDFORM = indtotparam; %initialize for nchoosek
     end
@@ -134,11 +134,11 @@ if ~no_identification_moments
     rank_dMOMENTS = rank(full(dMOMENTS),tol_rank); %compute rank with imposed tolerance level
     ide_moments.rank = rank_dMOMENTS;
     % check rank criteria for full Jacobian
-    if rank_dMOMENTS == totparam_nbr 
+    if rank_dMOMENTS == totparam_nbr
         % all parameters are identifiable
         no_identification_moments = 1; %skip in the following
         indparam_dMOMENTS = [];
-    else 
+    else
         % there is lack of identification
         indparam_dMOMENTS = indtotparam; %initialize for nchoosek
     end
@@ -172,7 +172,7 @@ if ~no_identification_minimal
     dMINIMAL = ide_minimal.dMINIMAL;
     dMINIMAL(ide_minimal.ind_dMINIMAL,:) = dMINIMAL(ide_minimal.ind_dMINIMAL,:)./ide_minimal.norm_dMINIMAL; %normalize
     dMINIMAL_par  = dMINIMAL(:,1:totparam_nbr);       %part of dMINIMAL that is dependent on parameters
-    dMINIMAL_rest = dMINIMAL(:,(totparam_nbr+1):end); %part of dMINIMAL that is independent of parameters 
+    dMINIMAL_rest = dMINIMAL(:,(totparam_nbr+1):end); %part of dMINIMAL that is independent of parameters
     rank_dMINIMAL = rank(full(dMINIMAL),tol_rank); %compute rank via SVD see function below
     ide_minimal.rank = rank_dMINIMAL;
     dMINIMAL_fixed_rank_nbr = size(dMINIMAL_rest,2);
@@ -315,7 +315,7 @@ for j=2:min(length(indtotparam),max_dim_subsets_groups) % Check j-element subset
     else
         indexj_dMINIMAL = [];
     end
-    
+
     %Step3: Check rank criteria on submatrices
     k_dDYNAMIC=0; k_dREDUCEDFORM=0; k_dMOMENTS=0; k_dSPECTRUM=0; k_dMINIMAL=0; %initialize counters
     maxk = max([size(indexj_dDYNAMIC,1), size(indexj_dREDUCEDFORM,1), size(indexj_dMOMENTS,1), size(indexj_dMINIMAL,1), size(indexj_dSPECTRUM,1)]);
@@ -357,7 +357,7 @@ for j=2:min(length(indtotparam),max_dim_subsets_groups) % Check j-element subset
         end
         dyn_waitbar(k/maxk,h)
     end
-    
+
     %Step 4: Compare rank conditions for all possible subsets. If rank condition is violated, then the corresponding numbers of the parameters are stored
     if ~no_identification_dynamic
         dynamic_problpars{j} = indexj_dDYNAMIC(rankj_dDYNAMIC < j,:);
@@ -365,7 +365,7 @@ for j=2:min(length(indtotparam),max_dim_subsets_groups) % Check j-element subset
     if ~no_identification_reducedform
         reducedform_problpars{j} = indexj_dREDUCEDFORM(rankj_dREDUCEDFORM < j,:);
     end
-    if ~no_identification_moments        
+    if ~no_identification_moments
         moments_problpars{j} = indexj_dMOMENTS(rankj_dMOMENTS < j,:);
     end
     if ~no_identification_minimal

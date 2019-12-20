@@ -114,7 +114,7 @@ if ME_present
         Conditional_decomposition_array_ME = zeros(nobs_ME,length(Steps),M_.exo_nbr+1,SampleSize);
         NumberOfLinesInTheLastConditionalDecompFile_ME = mod(SampleSize,MaXNumberOfConditionalDecompLines_ME);
         NumberOfConditionalDecompFiles_ME = ceil(SampleSize/MaXNumberOfConditionalDecompLines_ME);
-    end    
+    end
     NumberOfConditionalDecompLines_ME = size(Conditional_decomposition_array_ME,4);
     ConditionalDecompFileNumber_ME = 0;
 end
@@ -197,10 +197,10 @@ for file = 1:NumberOfDrawsFiles
                 linea_ME = 0;
                 if posterior
                     save([M_.dname '/metropolis/' M_.fname '_PosteriorConditionalVarianceDecompME' int2str(ConditionalDecompFileNumber_ME) '.mat' ], ...
-                        'Conditional_decomposition_array_ME');
+                         'Conditional_decomposition_array_ME');
                 else
                     save([M_.dname '/prior/moments/' M_.fname '_PriorConditionalVarianceDecompME' int2str(ConditionalDecompFileNumber_ME) '.mat' ], ...
-                        'Conditional_decomposition_array_ME');
+                         'Conditional_decomposition_array_ME');
                 end
                 if (ConditionalDecompFileNumber_ME==NumberOfConditionalDecompFiles_ME-1)% Prepare last round.
                     Conditional_decomposition_array_ME = zeros(nobs_ME, length(Steps),M_.exo_nbr+1,NumberOfLinesInTheLastConditionalDecompFile_ME) ;

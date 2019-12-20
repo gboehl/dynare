@@ -127,7 +127,7 @@ while it<npar
             end
             mytxt{it,1} = sprintf('Getting L for [%s] is taking too long.', varargin{6}.name{it});
             save(['slice_iter_info_' fname],'mytxt','neval','it','theta','fxl')
-             %keyboard;
+            %keyboard;
         end
     end
     neval1 = neval(it);
@@ -156,7 +156,7 @@ while it<npar
             end
             mytxt{it,2} = sprintf('Getting R for [%s] is taking too long.', varargin{6}.name{it});
             save(['slice_iter_info_' fname],'mytxt','neval','it','theta','fxr')
-             %keyboard;
+            %keyboard;
         end
     end
     neval2 = neval(it);
@@ -186,9 +186,9 @@ while it<npar
     save(['slice_iter_info_' fname],'mytxt','neval','it','theta','fxsim')
 
     if isinf(fxsim) || isnan(fxsim)
-         theta(it) = xold;
-         fxsim = fxold;
-         disp('SLICE: posterior density is infinite. Reset values at initial ones.')
+        theta(it) = xold;
+        fxsim = fxold;
+        disp('SLICE: posterior density is infinite. Reset values at initial ones.')
     end
 end
 

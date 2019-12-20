@@ -4,7 +4,7 @@ function  [par, logpost, accepted, neval] = posterior_sampler_iteration(TargetFu
 % posterior samplers
 %
 % INPUTS
-%   TargetFun:              string storing the objective function (e.g. 'dsge_likelihood.m')     
+%   TargetFun:              string storing the objective function (e.g. 'dsge_likelihood.m')
 %   last_draw:              parameter vector in last iteration
 %   last_posterior:         value of the posterior in last iteration
 %   sampler_options:        posterior sampler options
@@ -14,14 +14,14 @@ function  [par, logpost, accepted, neval] = posterior_sampler_iteration(TargetFu
 %   M_:                     structure storing the model information
 %   estim_params_:          structure storing information about estimated parameters
 %   bayestopt_:             structure storing information about priors
-%   mh_bounds:              structure containing prior bounds            
+%   mh_bounds:              structure containing prior bounds
 %   oo_:                    structure storing the results
 %
 % OUTPUTS
 %   par:                    last accepted parameter vector
 %   logpost:                value of the posterior after current iteration
-%   accepted:               share of proposed draws that were accepted 
-%   neval:                  number of evaluations (>1 only for slice)                  
+%   accepted:               share of proposed draws that were accepted
+%   neval:                  number of evaluations (>1 only for slice)
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -134,7 +134,7 @@ switch posterior_sampling_method
         else
             logpost = -inf;
         end
-        
+
         if (logpost > -inf)
             %get ratio of proposal densities, required because proposal depends
             %on current mode via Hessian and is thus not symmetric anymore
@@ -151,7 +151,7 @@ switch posterior_sampling_method
                 last_posterior=logpost;
                 accepted_draws_counter =accepted_draws_counter +1;
             else %no updating
-                %do nothing, keep old value
+                 %do nothing, keep old value
             end
         end
     end

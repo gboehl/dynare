@@ -58,10 +58,10 @@ end
 jndx = check_name(exonames,exo);
 if isempty(jndx)
     if isequal(exo,'ME')
-       jndx=size(exonames,1)+1; 
+        jndx=size(exonames,1)+1;
     else
         disp([ type '_analysis:: ' exo ' is not a declared exogenous variable!'])
-    return
+        return
     end
 end
 

@@ -29,7 +29,7 @@ function [forcs, e]= mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 %
 %   Variable number of controlled vars are allowed in different
 %   periods. Missing control information are indicated by NaN in
-%   y_t(controlled_vars_index). 
+%   y_t(controlled_vars_index).
 %
 %   After obtaining the shocks, and for uncontrolled periods, the state-space representation
 %       y_t=T*y_{t-1}+R*shocks(:,t)

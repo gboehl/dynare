@@ -19,7 +19,7 @@ function [out,info] = get_perturbation_params_derivs_numerical_objective(params,
 %   - 'Kalman_Transition':      out = [Yss; vec(KalmanA); dyn_vech(KalmanB*Sigma_e*KalmanB')];
 % all in DR-order
 % -------------------------------------------------------------------------
-% This function is called by 
+% This function is called by
 %   * get_solution_params_deriv.m (previously getH.m)
 %   * get_identification_jacobians.m (previously getJJ.m)
 % -------------------------------------------------------------------------
@@ -52,7 +52,7 @@ Sigma_e = M.Sigma_e;
 [~,info,M,options,oo] = resol(0,M,options,oo);
 
 if info(1) > 0
-    % there are errors in the solution algorithm        
+    % there are errors in the solution algorithm
     out = [];
     return
 else
@@ -95,7 +95,7 @@ if strcmp(outputflag,'dynamic_model')
         out = [Yss; g1(:); g2(:); g3(:)];
     end
 end
- 
+
 %% out = [Yss; vec(KalmanA); dyn_vech(KalmanB*Sigma_e*KalmanB')]; in DR order, where A and B are Kalman transition matrices
 if strcmp(outputflag,'Kalman_Transition')
     if options.order == 1

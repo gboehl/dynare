@@ -29,7 +29,7 @@ function out = identification_numerical_objective(params, outputflag, estim_para
 % transition equation, Sig_e the covariance of exogenous shocks, g1 the
 % Jacobian of the dynamic model equations, and Y_t selected variables
 % -------------------------------------------------------------------------
-% This function is called by 
+% This function is called by
 %   * get_first_order_solution_params_deriv.m (previously getH.m)
 %   * get_identification_jacobians.m (previously getJJ.m)
 % -------------------------------------------------------------------------
@@ -74,13 +74,13 @@ if length(params) > length(indpmodel)
     if isempty(indpstderr)==0 && isempty(estim_params.var_exo) %if there are stderr parameters but no estimated_params_block
         %provide temporary necessary information for stderr parameters
         estim_params.nvx = length(indpstderr);
-        estim_params.var_exo = indpstderr';        
+        estim_params.var_exo = indpstderr';
     end
     if isempty(indpmodel)==0 && isempty(estim_params.param_vals) %if there are model parameters but no estimated_params_block
         %provide temporary necessary information for model parameters
         estim_params.np = length(indpmodel);
-        estim_params.param_vals = indpmodel';        
-    end    
+        estim_params.param_vals = indpmodel';
+    end
     M = set_all_parameters(params,estim_params,M); %this function can only be used if there is some information in estim_params
 else
     %if there are only model parameters, we don't need to use set_all_parameters
@@ -139,7 +139,7 @@ end
 
 %% out = vec(g_omega). This is needed for Qu and Tkachenko (2012)'s G matrix.
 if outputflag == 2
-% This computes the spectral density g_omega where the interval [-pi;\pi] is discretized by grid_nbr points
+    % This computes the spectral density g_omega where the interval [-pi;\pi] is discretized by grid_nbr points
     freqs = (0 : pi/(grid_nbr/2):pi);% we focus only on positive values including the 0 frequency
     tpos  = exp( sqrt(-1)*freqs); %Fourier frequencies
     IA = eye(size(A,1));
@@ -151,5 +151,5 @@ if outputflag == 2
         g_omega = (1/(2*pi))*(Transferfct*Varinov*Transferfct'); % note that ' is the conjugate transpose
         kk = kk+1;
         out(1 + (kk-1)*var_nbr^2 : kk*var_nbr^2) = g_omega(:);
-    end    
+    end
 end

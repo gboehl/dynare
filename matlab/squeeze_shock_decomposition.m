@@ -33,7 +33,7 @@ if ~options_.shock_decomp.with_epilogue
     endo_names = M_.endo_names;
 else
     endo_names = [M_.endo_names; M_.epilogue_names];
-    
+
 end
 if isfield(oo_,'plot_shock_decomposition_info') && isfield(oo_.plot_shock_decomposition_info','i_var')
     my_vars = oo_.plot_shock_decomposition_info.i_var;
@@ -46,7 +46,7 @@ end
 sd_vlist = endo_names(my_vars,:);
 
 if isfield(options_.plot_shock_decomp,'q2a') && isstruct(options_.plot_shock_decomp.q2a)
-    
+
     avname={options_.plot_shock_decomp.q2a.qname};
     sda = options_.plot_shock_decomp.q2a(ismember(avname,sd_vlist));
     for k=1:length(sda)

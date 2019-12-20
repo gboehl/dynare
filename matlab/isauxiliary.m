@@ -12,7 +12,7 @@ function b = isauxiliary(var, type)
 % REMARKS
 %
 % Types for auxiliary variables are as follows:
-%  
+%
 %   -  0,    Lead on endogenous variable (substitute for endo leads >= 2)
 %   -  1,    Lag on endogenous variable (ubstitute for endo lags >= 2)
 %   -  2,    Lead on exogenous variable  (ubstitute for exo leads >= 1)

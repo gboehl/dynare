@@ -17,8 +17,8 @@ function [pars, cosnJ] = ident_bruteforce(J, max_dim_cova_group, TeX, name_tex, 
 %  pars  : cell array with group of params for each column of J for 1 to n
 %  cosnJ : cosn of each column with the selected group of columns
 % -------------------------------------------------------------------------
-% This function is called by 
-%   * identification_analysis.m 
+% This function is called by
+%   * identification_analysis.m
 % =========================================================================
 % Copyright (C) 2009-2019 Dynare Team
 %

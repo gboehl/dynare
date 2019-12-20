@@ -61,8 +61,8 @@ if ~all(M_.H==0)
         chol_S = chol(M_.H(i_ME,i_ME)); %decompose rest
         shock_mat=zeros(options_.periods,size(M_.H,1)); %initialize
         shock_mat(:,i_ME)=randn(length(i_ME),options_.periods)'*chol_S;
-        y_ME = y(:,index_subset)+shock_mat(options_.drop+1:end,index_observables);       
-        y_ME_only = shock_mat(options_.drop+1:end,index_observables);       
+        y_ME = y(:,index_subset)+shock_mat(options_.drop+1:end,index_observables);
+        y_ME_only = shock_mat(options_.drop+1:end,index_observables);
         m_ME = mean(y_ME);
         y_ME=get_filtered_time_series(y_ME,m_ME,options_);
         y_ME_only_filtered=get_filtered_time_series(y_ME_only,mean(y_ME_only),options_);
@@ -169,13 +169,13 @@ if ~options_.nodecomposition
             y_sim_one_shock = simult_(M_,options_,y0,oo_.dr,temp_shock_mat,options_.order);
             y_sim_one_shock=y_sim_one_shock(ivar,1+options_.drop+1:end)';
             y_sim_one_shock=get_filtered_time_series(y_sim_one_shock,mean(y_sim_one_shock),options_);
-            oo_.variance_decomposition(:,i_exo_var(shock_iter))=var(y_sim_one_shock)./s2*100;            
+            oo_.variance_decomposition(:,i_exo_var(shock_iter))=var(y_sim_one_shock)./s2*100;
         end
         if ME_present
             oo_.variance_decomposition_ME=oo_.variance_decomposition(index_subset,:)...
                 .*repmat((s2(index_subset)./s2_ME)',1,length(i_exo_var));
             oo_.variance_decomposition_ME(:,end+1)=var(y_ME_only_filtered)./s2_ME*100;
-        end        
+        end
         if ~options_.noprint %options_.nomoments == 0
             skipline()
             title='VARIANCE DECOMPOSITION SIMULATING ONE SHOCK AT A TIME (in percent)';
@@ -201,9 +201,9 @@ if ~options_.nodecomposition
                 if ME_present
                     headers_ME = vertcat(headers, 'ME');
                     dyn_latex_table(M_, options_, [title, ' WITH MEASUREMENT ERROR'], 'sim_var_decomp_ME', ...
-                                        vertcat(headers_ME, 'Tot. lin. contr.'), ...
-                                        labels_TeX(ivar(index_subset)), ...
-                                        [oo_.variance_decomposition_ME sum(oo_.variance_decomposition_ME, 2)], lh, 8, 2);
+                                    vertcat(headers_ME, 'Tot. lin. contr.'), ...
+                                    labels_TeX(ivar(index_subset)), ...
+                                    [oo_.variance_decomposition_ME sum(oo_.variance_decomposition_ME, 2)], lh, 8, 2);
                 end
             end
 

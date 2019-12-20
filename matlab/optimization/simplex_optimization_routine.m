@@ -491,7 +491,7 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
             break
         end
     end
-end% while loop.
+end % while loop.
 
 x(:) = v(:,1);
 fval = fv(1);

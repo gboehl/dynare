@@ -378,7 +378,7 @@ elseif options_.mh_recover
     AllMhFiles = dir([BaseName '_mh*_blck*.mat']);
     TotalNumberOfMhFiles = length(AllMhFiles)-length(dir([BaseName '_mh_tmp*_blck*.mat']));
     % Quit if no crashed mcmc chain can be found as there are as many files as expected
-    if (TotalNumberOfMhFiles==ExpectedNumberOfMhFiles) 
+    if (TotalNumberOfMhFiles==ExpectedNumberOfMhFiles)
         if isnumeric(options_.parallel)
             disp('Estimation::mcmc: It appears that you don''t need to use the mh_recover option!')
             disp('                  You have to edit the mod file and remove the mh_recover option')
@@ -441,7 +441,7 @@ elseif options_.mh_recover
             %         NumberOfSavedMhFilesInTheCrashedBlck = NumberOfSavedMhFilesInTheCrashedBlck - LastFileNumberInThePreviousMh;
             %     end
             %     NumberOfSavedMhFiles = NumberOfSavedMhFilesInTheCrashedBlck+LastFileNumberInThePreviousMh;
-            
+
             % Correct initial conditions.
             if NumberOfSavedMhFilesInTheCrashedBlck>0 && NumberOfSavedMhFilesInTheCrashedBlck<ExpectedNumberOfMhFilesPerBlock
                 loaded_results=load([BaseName '_mh' int2str(NumberOfSavedMhFilesInTheCrashedBlck) '_blck' int2str(FirstBlock) '.mat']);
@@ -467,7 +467,7 @@ elseif options_.mh_recover
             loaded_results=load([BaseName '_mh' int2str(ExpectedNumberOfMhFilesPerBlock) '_blck' int2str(FirstBlock) '.mat']);
             ilogpo2(FirstBlock) = loaded_results.logpo2(end);
             ix2(FirstBlock,:) = loaded_results.x2(end,:);
-            nruns(FirstBlock)=0; 
+            nruns(FirstBlock)=0;
             %reset seed if possible
             if isfield(loaded_results,'LastSeeds')
                 record.LastSeeds(FirstBlock).Unifor=loaded_results.LastSeeds.(['file' int2str(ExpectedNumberOfMhFilesPerBlock)]).Unifor;

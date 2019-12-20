@@ -41,6 +41,5 @@ SmoothedVariables=cell2struct(SmoothedVariables(logical(isvar)),my_field_names(l
 
 y0=zeros(length(SmoothedVariables.(varargin{1})),length(varargin));
 for j=1:length(varargin)
-    y0(:,j)=SmoothedVariables.(varargin{j}); 
+    y0(:,j)=SmoothedVariables.(varargin{j});
 end
-

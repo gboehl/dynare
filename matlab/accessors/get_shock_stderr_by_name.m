@@ -1,7 +1,7 @@
 function x = get_shock_stderr_by_name(exoname)
 % function x = get_shock_stderr_by_name(exoname)
 % returns the value of a shock identified by its name
-%  
+%
 % INPUTS:
 %   exoname:  shock name
 %

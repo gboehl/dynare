@@ -2,7 +2,7 @@ function dyntable(options_, title, headers, labels, values, label_width, val_wid
 
 % Prints a table of results in main command window.
 %
-% INPUTS 
+% INPUTS
 % - options_    [structure]         Dynare options structure
 % - title       [string]            Table title
 % - headers     [cell]              labels for header row (each element is a row characater array)
@@ -12,7 +12,7 @@ function dyntable(options_, title, headers, labels, values, label_width, val_wid
 % - val_width   [integer]           scalar, width of value column
 % - val_precis  [integer]           scalar, precision of displayed values
 %
-% OUTPUTS 
+% OUTPUTS
 % none
 
 % Copyright (C) 2002-2018 Dynare Team

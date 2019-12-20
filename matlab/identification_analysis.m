@@ -7,7 +7,7 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 % reduced-form solution and dynamic model derivatives (Ratto and Iskrev, 2011).
 % (2) computes the identification strength based on moments (Ratto and Iskrev, 2011)
 % (3) checks which parameters are involved.
-% If options_ident.order>1, then the identification analysis is based on 
+% If options_ident.order>1, then the identification analysis is based on
 % Mutschler (2015), i.e. the pruned state space system and the corresponding
 % moments, spectrum, reduced-form solution and dynamic model derivatives
 % =========================================================================
@@ -141,7 +141,7 @@ if info(1) == 0 %no errors in solution
         no_identification_minimal = 1;
         options_ident.no_identification_minimal = 1;
     end
-    
+
     if init
         %check stationarity
         if ~no_identification_moments
@@ -179,7 +179,7 @@ if info(1) == 0 %no errors in solution
             %display error if all three criteria fail
             error('identification_analyis: Stationarity condition(s) failed and/or diffuse_filter option missing');
         end
-        
+
         % Check order conditions
         if ~no_identification_moments
             %check order condition of Iskrev (2010)
@@ -265,9 +265,9 @@ if info(1) == 0 %no errors in solution
             else
                 normaliz_prior_std = NaN(1,totparam_nbr); %no prior information available, do not normalize
             end
-            
+
             try
-                %try to compute asymptotic Hessian for identification strength analysis based on moments                
+                %try to compute asymptotic Hessian for identification strength analysis based on moments
                 % reset some options for faster computations
                 options_.irf                     = 0;
                 options_.noprint                 = 1;
@@ -314,7 +314,7 @@ if info(1) == 0 %no errors in solution
                 cdynamic = si_dDYNAMIC(:,ind1-stderrparam_nbr-corrparam_nbr)*((AHess(ind1,ind1))\si_dDYNAMIC(:,ind1-stderrparam_nbr-corrparam_nbr)');
                 flag_score = 1; %this is used for the title in plot_identification.m
             catch
-                %Asymptotic Hessian via simulation                
+                %Asymptotic Hessian via simulation
                 replic = max([replic, length(ind_dMOMENTS)*3]);
                 cmm = simulated_moment_uncertainty(ind_dMOMENTS, periods, replic,options_,M_,oo_); %covariance matrix of moments
                 sd = sqrt(diag(cmm));
@@ -352,7 +352,7 @@ if info(1) == 0 %no errors in solution
                 end
                 flag_score = 0; %this is used for the title in plot_identification.m
             end % end of computing sample information matrix for identification strength measure
-            
+
             ide_strength_dMOMENTS(indok) = (1./(ide_uncert_unnormaliz(indok)'./abs(params(indok)')));              %this is s_i in Ratto and Iskrev (2011, p.13)
             ide_strength_dMOMENTS_prior(indok) = (1./(ide_uncert_unnormaliz(indok)'./normaliz_prior_std(indok)')); %this is s_i^{prior} in Ratto and Iskrev (2011, p.14)
             sensitivity_zero_pos = find(isinf(deltaM));
@@ -421,7 +421,7 @@ if info(1) == 0 %no errors in solution
     ide_dynamic.si_dDYNAMIC   = si_dDYNAMIC;
     ide_dynamic.dDYNAMIC      = dDYNAMIC;
     ide_dynamic.DYNAMIC       = DYNAMIC;
-    
+
     if ~no_identification_reducedform
         if normalize_jacobians
             norm_dREDUCEDFORM = max(abs(si_dREDUCEDFORM),[],2);
@@ -435,8 +435,8 @@ if info(1) == 0 %no errors in solution
         ide_reducedform.si_dREDUCEDFORM   = si_dREDUCEDFORM;
         ide_reducedform.dREDUCEDFORM      = dREDUCEDFORM;
         ide_reducedform.REDUCEDFORM       = REDUCEDFORM;
-    end    
-    
+    end
+
     if ~no_identification_moments
         if normalize_jacobians
             norm_dMOMENTS = max(abs(si_dMOMENTS),[],2);
@@ -450,12 +450,12 @@ if info(1) == 0 %no errors in solution
         ide_moments.si_dMOMENTS   = si_dMOMENTS;
         ide_moments.dMOMENTS      = dMOMENTS;
         ide_moments.MOMENTS       = MOMENTS;
-        
+
         if advanced
             % here we do not normalize (i.e. we set norm_dMOMENTS=1) as the OLS in ident_bruteforce is very sensitive to norm_dMOMENTS
             [ide_moments.pars, ide_moments.cosndMOMENTS] = ident_bruteforce(dMOMENTS(ind_dMOMENTS,:), max_dim_cova_group, options_.TeX, options_ident.name_tex, options_ident.tittxt, options_ident.tol_deriv);
         end
-        
+
         %here we focus on the unnormalized S and V, which is then used in plot_identification.m and for prior_mc > 1
         [~, S, V] = svd(dMOMENTS(ind_dMOMENTS,:),0);
         S = diag(S);
@@ -468,7 +468,7 @@ if info(1) == 0 %no errors in solution
             ide_moments.V = V;
         end
     end
-    
+
     if ~no_identification_minimal
         if normalize_jacobians
             ind_dMINIMAL = (find(max(abs(dMINIMAL'),[],1) > tol_deriv)); %index for non-zero rows
@@ -482,7 +482,7 @@ if info(1) == 0 %no errors in solution
         ide_minimal.norm_dMINIMAL = norm_dMINIMAL;
         ide_minimal.dMINIMAL      = dMINIMAL;
     end
-    
+
     if ~no_identification_spectrum
         if normalize_jacobians
             ind_dSPECTRUM = (find(max(abs(dSPECTRUM'),[],1) > tol_deriv)); %index for non-zero rows
@@ -517,14 +517,14 @@ if info(1) == 0 %no errors in solution
         if ~no_identification_moments
             [ide_moments.cond, ide_moments.rank, ide_moments.ind0, ide_moments.indno, ide_moments.ino, ide_moments.Mco, ide_moments.Pco, ide_moments.jweak, ide_moments.jweak_pair] = ...
                 identification_checks(dMOMENTS(ind_dMOMENTS,:)./norm_dMOMENTS, 1, tol_rank, tol_sv, totparam_nbr);
-        end                
+        end
         if ~no_identification_minimal
             [ide_minimal.cond, ide_minimal.rank, ide_minimal.ind0, ide_minimal.indno, ide_minimal.ino, ide_minimal.Mco, ide_minimal.Pco, ide_minimal.jweak, ide_minimal.jweak_pair] = ...
                 identification_checks(dMINIMAL(ind_dMINIMAL,:)./norm_dMINIMAL, 2, tol_rank, tol_sv, totparam_nbr);
-        end        
-        if ~no_identification_spectrum            
+        end
+        if ~no_identification_spectrum
             [ide_spectrum.cond, ide_spectrum.rank, ide_spectrum.ind0, ide_spectrum.indno, ide_spectrum.ino, ide_spectrum.Mco, ide_spectrum.Pco, ide_spectrum.jweak, ide_spectrum.jweak_pair] = ...
-                identification_checks(tilda_dSPECTRUM, 3, tol_rank, tol_sv, totparam_nbr);            
+                identification_checks(tilda_dSPECTRUM, 3, tol_rank, tol_sv, totparam_nbr);
         end
     end
 end

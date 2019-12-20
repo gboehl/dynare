@@ -8,7 +8,7 @@ function dr = dyn_second_order_solver(jacobia,hessian_mat,dr,M,threads_BC)
 %! * Juillard and Kamenik (2004): Solving Stochastic Dynamic Equilibrium Models: A k-Order Perturbation Approach
 %! * Kamenik (2005) - Solving SDGE Models: A New Algorithm for the Sylvester Equation
 %! Note that this function makes use of the fact that Dynare internally transforms the model
-%! so that there is only one lead and one lag on endogenous variables and, in the case of a stochastic model, 
+%! so that there is only one lead and one lag on endogenous variables and, in the case of a stochastic model,
 %! no leads/lags on exogenous variables. See the manual for more details.
 %  Auxiliary variables
 %! @sp 2

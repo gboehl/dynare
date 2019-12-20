@@ -3,14 +3,14 @@ function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, ST
 % -------------------------------------------------------------------------
 % This function is called, when the user specifies identification(...); in
 % the mod file. It prepares all identification analysis, i.e.
-% (1) sets options, local and persistent variables for a new identification 
+% (1) sets options, local and persistent variables for a new identification
 %     analysis either for a single point or a MC Sample. It also displays
 %     and plots the results.
-% or this function can be used to 
+% or this function can be used to
 % (2) load, display and plot a previously saved identification analysis
 % Note: This function does not output the arguments to the workspace if only called by
 %       "identification" in the mod file, but saves results to the folder identification.
-%       If you want to use this function directly in the mod file and workspace, you still have 
+%       If you want to use this function directly in the mod file and workspace, you still have
 %       to put identification once in the mod file, otherwise the preprocessor won't compute all necessary objects
 % =========================================================================
 % INPUTS
@@ -37,13 +37,13 @@ function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, ST
 %    * disp_identification
 %    * dyn_waitbar
 %    * dyn_waitbar_close
-%    * get_all_parameters 
+%    * get_all_parameters
 %    * get_posterior_parameters
-%    * get_the_name 
+%    * get_the_name
 %    * identification_analysis
 %    * isoctave
 %    * plot_identification
-%    * prior_draw 
+%    * prior_draw
 %    * set_default_option
 %    * set_prior
 %    * skipline
@@ -284,7 +284,7 @@ if options_ident.order > 1
     options_ident.analytic_derivation=0;
     options_.analytic_derivation=0;
     %order>1 is based on pruned state space system
-    options_.pruning = true;    
+    options_.pruning = true;
 end
 if options_ident.order == 3
     options_.k_order_solver = 1;
@@ -546,7 +546,7 @@ if iload <=0
         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
         plot_identification(params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, IdentifDirectoryName, parameters_TeX, name_tex);
     end
-    
+
     if SampleSize > 1
         % initializations for Monte Carlo Analysis
         skipline()
@@ -556,7 +556,7 @@ if iload <=0
         run_index  = 0; % initialize counter for admissable draws after saving previous draws to file(s)
         file_index = 0; % initialize counter for files (if MaxNumberOfBytes is reached, we store results in files)
         options_MC = options_ident; %store options structure for Monte Carlo analysis
-        options_MC.advanced = 0;    %do not run advanced checking in a Monte Carlo analysis        
+        options_MC.advanced = 0;    %do not run advanced checking in a Monte Carlo analysis
         options_ident.checks_via_subsets = 0; % for Monte Carlo analysis currently only identification_checks and not identification_checks_via_subsets is supported
     else
         iteration = 1; % iteration equals SampleSize and we are finished
@@ -577,7 +577,7 @@ if iload <=0
             delete([IdentifDirectoryName '/' fname '_identif_*.mat']) % delete previously saved results
             MAX_RUNS_BEFORE_SAVE_TO_FILE = min(SampleSize,ceil(MaxNumberOfBytes/(size(ide_reducedform.si_dREDUCEDFORM,1)*totparam_nbr)/8)); % set how many runs can be stored before we save to files
             pdraws = zeros(SampleSize,totparam_nbr); % preallocate storage for draws in each row
-            
+
             % preallocate storage for steady state and dynamic model derivatives
             STO_si_dDYNAMIC        = zeros([size(ide_dynamic.si_dDYNAMIC,1),modparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
             STO_DYNAMIC            = zeros(size(ide_dynamic.DYNAMIC,1),SampleSize);
@@ -588,7 +588,7 @@ if iload <=0
             IDE_DYNAMIC.jweak_pair = zeros(SampleSize,modparam_nbr*(modparam_nbr+1)/2);
             IDE_DYNAMIC.cond       = zeros(SampleSize,1);
             IDE_DYNAMIC.Mco        = zeros(SampleSize,modparam_nbr);
-            
+
             % preallocate storage for reduced form
             if ~options_MC.no_identification_reducedform
                 STO_si_dREDUCEDFORM                = zeros([size(ide_reducedform.si_dREDUCEDFORM,1),totparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
@@ -603,7 +603,7 @@ if iload <=0
             else
                 IDE_REDUCEDFORM = {};
             end
-            
+
             % preallocate storage for moments
             if ~options_MC.no_identification_moments
                 STO_si_dMOMENTS          = zeros([size(ide_moments.si_dMOMENTS,1),totparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
@@ -620,7 +620,7 @@ if iload <=0
             else
                 IDE_MOMENTS = {};
             end
-            
+
             % preallocate storage for spectrum
             if ~options_MC.no_identification_spectrum
                 STO_dSPECTRUM              = zeros([size(ide_spectrum.dSPECTRUM,1),size(ide_spectrum.dSPECTRUM,2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);
@@ -634,7 +634,7 @@ if iload <=0
             else
                 IDE_SPECTRUM = {};
             end
-            
+
             % preallocate storage for minimal system
             if ~options_MC.no_identification_minimal
                 STO_dMINIMAL             = zeros([size(ide_minimal.dMINIMAL,1),size(ide_minimal.dMINIMAL,2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);
@@ -649,12 +649,12 @@ if iload <=0
                 IDE_MINIMAL = {};
             end
         end
-        
+
         if info(1)==0 % if admissable draw
             iteration = iteration + 1; %increase total index of admissable draws
             run_index = run_index + 1; %increase index of admissable draws after saving to files
             pdraws(iteration,:) = params; % store draw
-            
+
             % store results for steady state and dynamic model derivatives
             STO_DYNAMIC(:,iteration)            = ide_dynamic.DYNAMIC;
             STO_si_dDYNAMIC(:,:,run_index)      = ide_dynamic.si_dDYNAMIC;
@@ -663,8 +663,8 @@ if iload <=0
             IDE_DYNAMIC.ind0(iteration,:)       = ide_dynamic.ind0;
             IDE_DYNAMIC.jweak(iteration,:)      = ide_dynamic.jweak;
             IDE_DYNAMIC.jweak_pair(iteration,:) = ide_dynamic.jweak_pair;
-            IDE_DYNAMIC.Mco(iteration,:)        = ide_dynamic.Mco;            
-            
+            IDE_DYNAMIC.Mco(iteration,:)        = ide_dynamic.Mco;
+
             % store results for reduced form model solution
             if ~options_MC.no_identification_reducedform
                 STO_REDUCEDFORM(:,iteration)                    = ide_reducedform.REDUCEDFORM;
@@ -676,7 +676,7 @@ if iload <=0
                 IDE_REDUCEDFORM.jweak_pair(iteration,:) = ide_reducedform.jweak_pair;
                 IDE_REDUCEDFORM.Mco(iteration,:)        = ide_reducedform.Mco;
             end
-            
+
             % store results for moments
             if ~options_MC.no_identification_moments
                 STO_MOMENTS(:,iteration)            = ide_moments.MOMENTS;
@@ -688,9 +688,9 @@ if iload <=0
                 IDE_MOMENTS.jweak_pair(iteration,:) = ide_moments.jweak_pair;
                 IDE_MOMENTS.Mco(iteration,:)        = ide_moments.Mco;
                 IDE_MOMENTS.S(iteration,:)          = ide_moments.S;
-                IDE_MOMENTS.V(iteration,:,:)        = ide_moments.V;                
+                IDE_MOMENTS.V(iteration,:,:)        = ide_moments.V;
             end
-            
+
             % store results for spectrum
             if ~options_MC.no_identification_spectrum
                 STO_dSPECTRUM(:,:,run_index)         = ide_spectrum.dSPECTRUM;
@@ -699,9 +699,9 @@ if iload <=0
                 IDE_SPECTRUM.ind0(iteration,:)       = ide_spectrum.ind0;
                 IDE_SPECTRUM.jweak(iteration,:)      = ide_spectrum.jweak;
                 IDE_SPECTRUM.jweak_pair(iteration,:) = ide_spectrum.jweak_pair;
-                IDE_SPECTRUM.Mco(iteration,:)        = ide_spectrum.Mco;                
+                IDE_SPECTRUM.Mco(iteration,:)        = ide_spectrum.Mco;
             end
-            
+
             % store results for minimal system
             if ~options_MC.no_identification_minimal
                 STO_dMINIMAL(:,:,run_index)         = ide_minimal.dMINIMAL;
@@ -710,13 +710,13 @@ if iload <=0
                 IDE_MINIMAL.ind0(iteration,:)       = ide_minimal.ind0;
                 IDE_MINIMAL.jweak(iteration,:)      = ide_minimal.jweak;
                 IDE_MINIMAL.jweak_pair(iteration,:) = ide_minimal.jweak_pair;
-                IDE_MINIMAL.Mco(iteration,:)        = ide_minimal.Mco;                
+                IDE_MINIMAL.Mco(iteration,:)        = ide_minimal.Mco;
             end
-            
+
             % save results to file: either to avoid running into memory issues, i.e. (run_index==MAX_RUNS_BEFORE_SAVE_TO_FILE) or if finished (iteration==SampleSize)
             if run_index==MAX_RUNS_BEFORE_SAVE_TO_FILE || iteration==SampleSize
                 file_index = file_index + 1;
-                if run_index<MAX_RUNS_BEFORE_SAVE_TO_FILE 
+                if run_index<MAX_RUNS_BEFORE_SAVE_TO_FILE
                     %we are finished (iteration == SampleSize), so get rid of additional storage
                     STO_si_dDYNAMIC = STO_si_dDYNAMIC(:,:,1:run_index);
                     if ~options_MC.no_identification_reducedform
@@ -731,7 +731,7 @@ if iload <=0
                     if ~options_MC.no_identification_minimal
                         STO_dMINIMAL = STO_dMINIMAL(:,:,1:run_index);
                     end
-                end                
+                end
                 save([IdentifDirectoryName '/' fname '_identif_' int2str(file_index) '.mat'], 'STO_si_dDYNAMIC');
                 STO_si_dDYNAMIC = zeros(size(STO_si_dDYNAMIC)); % reset storage
                 if ~options_MC.no_identification_reducedform
@@ -836,8 +836,8 @@ if iload <=0
         if ~options_MC.no_identification_moments
             IDE_MOMENTS.si_dMOMENTSnorm = si_dMOMENTSnorm;
             save([IdentifDirectoryName '/' fname '_identif.mat'], 'IDE_MOMENTS', 'STO_MOMENTS','-append');
-        end        
-        
+        end
+
     end
 
 else
@@ -854,10 +854,10 @@ end
 if nargout>3 && iload
     filnam = dir([IdentifDirectoryName '/' fname '_identif_*.mat']);
     STO_si_dDYNAMIC = [];
-    STO_si_dREDUCEDFORM=[];    
+    STO_si_dREDUCEDFORM=[];
     STO_si_dMOMENTS = [];
     STO_dSPECTRUM = [];
-    STO_dMINIMAL = [];    
+    STO_dMINIMAL = [];
     for j=1:length(filnam)
         load([IdentifDirectoryName '/' fname '_identif_',int2str(j),'.mat']);
         STO_si_dDYNAMIC = cat(3,STO_si_dDYNAMIC, STO_si_dDYNAMIC(:,abs(iload),:));
@@ -887,7 +887,7 @@ if iload
 end
 
 %displaying and plotting of results for MC sample
-if SampleSize > 1    
+if SampleSize > 1
     fprintf('\n')
     disp('Testing MC sample')
     %print results to console but make sure advanced=0
@@ -900,7 +900,7 @@ if SampleSize > 1
         plot_identification(pdraws, IDE_MOMENTS, ide_hess_point, IDE_REDUCEDFORM, IDE_DYNAMIC, options_ident.advanced, 'MC sample ', name, IdentifDirectoryName, [], name_tex);
     end
     %advanced display and plots for MC Sample, i.e. look at draws with highest/lowest condition number
-    if options_ident.advanced        
+    if options_ident.advanced
         jcrit = find(IDE_MOMENTS.ino);
         if length(jcrit) < SampleSize
             if isempty(jcrit)
@@ -918,15 +918,15 @@ if SampleSize > 1
                     [ide_moments_max, ide_spectrum_max, ide_minimal_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, derivatives_info_max, info_max, options_ident] = ...
                         identification_analysis(pdraws(jmax,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes some persistent variables
                     save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_max', 'ide_moments_max', 'ide_spectrum_max', 'ide_minimal_max','ide_reducedform_max', 'ide_dynamic_max', 'jmax', '-append');
-                end                
+                end
                 advanced0 = options_ident.advanced; options_ident.advanced = 1; % make sure advanced setting is on
                 disp_identification(pdraws(jmax,:), ide_reducedform_max, ide_moments_max, ide_spectrum_max, ide_minimal_max, name, options_ident);
-                options_ident.advanced = advanced0; %reset advanced setting                
+                options_ident.advanced = advanced0; %reset advanced setting
                 if ~options_.nograph
                     % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
                     plot_identification(pdraws(jmax,:), ide_moments_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, 1, tittxt, name, IdentifDirectoryName, tittxt, name_tex);
                 end
-                
+
                 % SMALLEST condition number
                 [~, jmin] = min(IDE_MOMENTS.cond);
                 fprintf('\n')
@@ -963,7 +963,7 @@ if SampleSize > 1
                     end
                     advanced0 = options_ident.advanced; options_ident.advanced = 1; %make sure advanced setting is on
                     disp_identification(pdraws(jcrit(j),:), ide_reducedform_(j), ide_moments_(j), ide_spectrum_(j), ide_minimal_(j), name, options_ident);
-                    options_ident.advanced = advanced0; % reset advanced                    
+                    options_ident.advanced = advanced0; % reset advanced
                     if ~options_.nograph
                         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
                         plot_identification(pdraws(jcrit(j),:), ide_moments_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), 1, tittxt, name, IdentifDirectoryName, tittxt, name_tex);
@@ -973,7 +973,7 @@ if SampleSize > 1
                     save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_', 'ide_moments_', 'ide_reducedform_', 'ide_dynamic_', 'ide_spectrum_', 'ide_minimal_', 'jcrit', '-append');
                 end
                 % reset nodisplay option
-                options_.nodisplay = store_nodisplay;                
+                options_.nodisplay = store_nodisplay;
             end
         end
     end

@@ -1,17 +1,17 @@
 function tf = contains(string, pattern, varargin)
 
 % CONTAINS Returns 1 if the pattern is found in string, and 0 otherwise.
-% 
+%
 % INPUTS
 % - string      [string, char, cell(str)]  String to be searhced.
-% - pattern     [string, char, cell(str)]  The searched pattern. 
+% - pattern     [string, char, cell(str)]  The searched pattern.
 %
-% If 'IgnoreCase',IGNORE is provided, the function ignores case if IGNORE is true. 
+% If 'IgnoreCase',IGNORE is provided, the function ignores case if IGNORE is true.
 % The default value is false.
-% 
+%
 % OUTPUT
 % - tf   [logical]
-% 
+%
 % Copyright (C) 2019 Dynare Team
 %
 % This file is part of Dynare.

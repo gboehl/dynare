@@ -30,7 +30,7 @@ function y0 = get_mean(varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ oo_ options_ 
+global M_ oo_ options_
 
 if ~isempty(regexp(varargin{end},'\d','ONCE')) && isempty(regexp(varargin{end},'\D','ONCE'))
     order=eval(varargin{end});
@@ -38,13 +38,13 @@ else
     order=1;
 end
 if order==1
-     ys_ = oo_.steady_state;
-     ys_ = evaluate_steady_state(ys_,M_,options_,oo_,1);
+    ys_ = oo_.steady_state;
+    ys_ = evaluate_steady_state(ys_,M_,options_,oo_,1);
 elseif order==2
     ys_ = oo_.dr.ys;
     ys_(oo_.dr.order_var)=ys_(oo_.dr.order_var)+oo_.dr.ghs2./2;
 else
-   return
+    return
 end
 lgy_ = M_.endo_names;
 

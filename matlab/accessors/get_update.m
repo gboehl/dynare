@@ -27,10 +27,9 @@ function y0 = get_update(varargin)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-global oo_ 
+global oo_
 
 y0=zeros(length(oo_.UpdatedVariables.(varargin{1})),length(varargin));
 for j=1:length(varargin)
-    y0(:,j)=oo_.UpdatedVariables.(varargin{j}); 
+    y0(:,j)=oo_.UpdatedVariables.(varargin{j});
 end
-

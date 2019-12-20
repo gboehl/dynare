@@ -268,7 +268,7 @@ for i = 1:EndoSize
     if size(FORCS1,2)>1
         tmp = sort(squeeze(FORCS1(i,:,:))');
     else
-        tmp = sort(squeeze(FORCS1(i,:,:)));        
+        tmp = sort(squeeze(FORCS1(i,:,:)));
     end
     forecasts.cond.ci.(M_.endo_names{oo_.dr.order_var(i)}) = [tmp(t1,:)' ,tmp(t2,:)' ]';
 end
@@ -278,7 +278,7 @@ for i = 1:n1
     if size(FORCS1_shocks,2)>1
         tmp = sort(squeeze(FORCS1_shocks(i,:,:))');
     else
-        tmp = sort(squeeze(FORCS1_shocks(i,:,:)));        
+        tmp = sort(squeeze(FORCS1_shocks(i,:,:)));
     end
     forecasts.controlled_exo_variables.ci.(options_cond_fcst.controlled_varexo{i}) = [tmp(t1,:)' ,tmp(t2,:)' ]';
 end

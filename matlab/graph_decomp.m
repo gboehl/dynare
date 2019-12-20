@@ -152,7 +152,7 @@ for j=1:nvar
         bgap = 0.15;
     else
         bgap = 0;
-    end        
+    end
     hold on;
     for i=1:gend
         i_1 = i-1;
@@ -241,7 +241,7 @@ for j=1:nvar
     end
     hold off
     if ~DynareOptions.plot_shock_decomp.expand
-        
+
         dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname,preamble_figname,endo_names{i_var(j)},fig_mode1,fig_name],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
         if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.plot_shock_decomp.graph_format)))
             fprintf(fidTeX,'\\begin{figure}[H]\n');
@@ -257,7 +257,7 @@ for j=1:nvar
             dyn_saveas(fhandle,[DynareOptions.plot_shock_decomp.filepath, filesep, DynareModel.fname,preamble_figname,endo_names{i_var(j)},fig_mode1,fig_name],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
         end
     end
-    
+
 end
 
 %% write LaTeX-Footer

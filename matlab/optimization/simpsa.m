@@ -317,7 +317,7 @@ while 1
             OUTPUT.COSTS(nITERATIONS,:) = Y;
             OUTPUT.COST_BEST(nITERATIONS) = YBEST;
         end
-        
+
         if strcmp(OPTIONS.DISPLAY,'iter')
             disp(sprintf('%5.0f      %5.0f       %12.6g     %15.6g      %12.6g       %s',nITERATIONS,nFUN_EVALS,Y(1),YBEST,TEMP,ALGOSTEP));
         end
@@ -458,17 +458,17 @@ FVAL = YBEST;
 if nargout>3
     % store number of function evaluations
     OUTPUT.nFUN_EVALS = nFUN_EVALS;
-    
+
     % store number of iterations
     OUTPUT.nITERATIONS = nITERATIONS;
-    
+
     % trim OUTPUT data structure
     OUTPUT.TEMPERATURE(nITERATIONS+1:end) = [];
     OUTPUT.SIMPLEX(:,:,nITERATIONS+1:end) = [];
     OUTPUT.SIMPLEX_BEST(nITERATIONS+1:end,:) = [];
     OUTPUT.COSTS(nITERATIONS+1:end,:) = [];
     OUTPUT.COST_BEST(nITERATIONS+1:end) = [];
-    
+
     % store the amount of time needed in OUTPUT data structure
     OUTPUT.TIME = toc;
 end

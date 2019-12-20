@@ -191,19 +191,19 @@ for j=1:nvar
             hax = subplot(nrow,ncol,i); set(gca,'box','on')
             hbar = bar(x(2:end),(zz.*ipos)','stacked','FaceColor','flat');
             if ~isoctave && ~matlab_ver_less_than('9.3.0')
-            % make bar obey colormap under MATLAB R2017b
-            for k = 1:2
-                hbar(k).CData = k;
-            end
+                % make bar obey colormap under MATLAB R2017b
+                for k = 1:2
+                    hbar(k).CData = k;
+                end
             end
             set(hbar,'edgecolor','flat');
             hold on,
             hbar = bar(x(2:end),(zz.*ineg)','stacked','FaceColor','flat');
             if ~isoctave && ~matlab_ver_less_than('9.3.0')
-            % make bar obey colormap under MATLAB R2017b
-            for k = 1:2
-                hbar(k).CData = k;
-            end
+                % make bar obey colormap under MATLAB R2017b
+                for k = 1:2
+                    hbar(k).CData = k;
+                end
             end
             set(hbar,'edgecolor','flat');
             title(deblank(labels(ic,:)),'Interpreter','none'),
@@ -261,7 +261,7 @@ for j=1:nvar
             hold on
             x1 = x1 + width;
         end
-       colormap([0.15 0.15 0.15;0.85 0.85 0.85]),
+        colormap([0.15 0.15 0.15;0.85 0.85 0.85]),
 
 
         if nfigs>1
@@ -271,7 +271,7 @@ for j=1:nvar
         end
         if ~DynareOptions.plot_shock_decomp.expand
             dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname, ...
-                            preamble_figname, endo_names{i_var(j)}, fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
+                                preamble_figname, endo_names{i_var(j)}, fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
             if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.plot_shock_decomp.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
                 fprintf(fidTeX,'\\centering \n');
@@ -284,7 +284,7 @@ for j=1:nvar
         else
             if ~isempty(DynareOptions.plot_shock_decomp.filepath)
                 dyn_saveas(fhandle,[DynareOptions.plot_shock_decomp.filepath, filesep, DynareModel.fname,preamble_figname,endo_names{i_var(j)},fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
-            end    
+            end
         end
     end
 end

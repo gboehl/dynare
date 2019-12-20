@@ -239,7 +239,7 @@ for j = 1:length(anamendo)
                             icheck=[];
                         end
                         if isempty(icheck)
-                            if length(iy)<=10 
+                            if length(iy)<=10
                                 if isempty(iy)
                                     disp(['There are NO MC samples in the desired range [' num2str(threshold) ']!'])
                                 else
@@ -298,7 +298,7 @@ for j = 1:length(anamendo)
                 end
 
             else
-               disp(['This entry in the shock matrix is CONSTANT = ' num2str(mean(y0),3)])
+                disp(['This entry in the shock matrix is CONSTANT = ' num2str(mean(y0),3)])
             end
         end
     end
@@ -396,7 +396,7 @@ for j = 1:length(anamendo)
                             icheck = [];
                         end
                         if isempty(icheck)
-                            if length(iy)<=10 
+                            if length(iy)<=10
                                 if isempty(iy)
                                     disp(['There are NO MC samples in the desired range [' num2str(threshold) ']!'])
                                 else
@@ -454,7 +454,7 @@ for j = 1:length(anamendo)
                 end
 
             else
-               disp(['This entry in the transition matrix is CONSTANT = ' num2str(mean(y0),3)])
+                disp(['This entry in the transition matrix is CONSTANT = ' num2str(mean(y0),3)])
             end
         end
     end

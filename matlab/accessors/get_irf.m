@@ -41,7 +41,6 @@ y0=zeros(length(oo_.irfs.([varargin{1} '_' exo]))+1,length(varargin));
 
 
 for j=1:nvar
-%     mfys = strmatch(varargin{j},lgy_,'exact');
+    %     mfys = strmatch(varargin{j},lgy_,'exact');
     y0(:,j)=[0; oo_.irfs.([ varargin{j} '_' exo ])']+ys_(i_var(j));
 end
-

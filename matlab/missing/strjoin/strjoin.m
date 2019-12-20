@@ -39,8 +39,8 @@ if numel(cstr) == 1
 end
 
 if ischar(delimiter)
-                        % There is no equivalent to do_string_escapes in MATLAB
-                        %delimiter = do_string_escapes(delimiter);
+    % There is no equivalent to do_string_escapes in MATLAB
+    %delimiter = do_string_escapes(delimiter);
     delimiter = {delimiter};
 end
 
@@ -60,4 +60,3 @@ else
     tmp = [cstr(:).'; delimiter(:).'];
     rval = [tmp{:}];
 end
-

@@ -28,12 +28,10 @@ for k=1:size(y,1)
     ytmp  = squeeze(y(k,:,:));
     yres = ytmp(end,:) - sum(ytmp(1:end-1,:));
     w = abs(ytmp(1:end-1,:))./sum(abs(ytmp(1:end-1,:)));
-%     ytmp(1:end-1,:) = ytmp(1:end-1,:) + repmat(yres,[nterms-1 1])/(nterms-1);
+    %     ytmp(1:end-1,:) = ytmp(1:end-1,:) + repmat(yres,[nterms-1 1])/(nterms-1);
     ytmp(1:end-1,:) = ytmp(1:end-1,:) + repmat(yres,[nterms-1 1]).*w;
     y(k,:,:) = ytmp;
 end
 
 zout = cat(1,zout,y);
 zss = [zss; yss(:)];
-
-

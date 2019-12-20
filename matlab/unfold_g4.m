@@ -34,7 +34,7 @@ for k = 1:length(v)
     j3 = floor((j(k)-1)/ny^2);
     l3 = rem(j3,ny);
     l4 = floor(j3/ny);
-    
+
     p = unique(perms([l1 l2 l3 l4]), 'rows');
     np = rows(p);
 

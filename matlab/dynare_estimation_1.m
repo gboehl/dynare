@@ -443,11 +443,11 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
             options = options_.mh_tune_jscale;
             options.rwmh = options_.posterior_sampler_options.rwmh;
             options_.mh_jscale = calibrate_mh_scale_parameter(objective_function, ...
-                                                                  invhess, xparam1, [bounds.lb,bounds.ub], ...
-                                                                  options, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_);
-                bayestopt_.jscale(:) = options_.mh_jscale;
-                disp(sprintf('mh_jscale has been set equal to %s', num2str(options_.mh_jscale)))
-                skipline()
+                                                              invhess, xparam1, [bounds.lb,bounds.ub], ...
+                                                              options, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_);
+            bayestopt_.jscale(:) = options_.mh_jscale;
+            disp(sprintf('mh_jscale has been set equal to %s', num2str(options_.mh_jscale)))
+            skipline()
         else
             warning('mh_tune_jscale is only available with Random Walk Metropolis Hastings!')
         end

@@ -329,7 +329,7 @@ if analytic_derivation_mode == -2
 
     if d2flag
         % computation of d2Yss and d2g1
-        % note that hessian_sparse does not take symmetry into account, i.e. compare hessian_sparse.m to hessian.m, but focuses already on unique values, which are duplicated below        
+        % note that hessian_sparse does not take symmetry into account, i.e. compare hessian_sparse.m to hessian.m, but focuses already on unique values, which are duplicated below
         options.order = 1; %d2flag requires only first order
         d2Yss_g1 = hessian_sparse(numerical_objective_fname, modparam1, options.gstep, 'dynamic_model', estim_params_model, M, oo, options);  % d2flag requires only first-order
         options.order = order;%make sure to set back the order
@@ -371,7 +371,7 @@ if analytic_derivation_mode == -2
         dg3 = reshape(sparse(dYss_g(ind_g3,:)), [M.endo_nbr, yy0ex0_nbr^3*modparam_nbr]); %blockwise in matrix notation, i.e. [dg3_dp1 dg3_dp2 ...], where dg3_dpj has dimension M.endo_nbr by yy0ex0_nbr^3
     end
     clear dYss_g
-    
+
 elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
     %% Analytical computation of Jacobian and Hessian (wrt selected model parameters) of steady state, i.e. dYss and d2Yss
     [~, g1_static] = feval([M.fname,'.static'], oo.dr.ys, oo.exo_steady_state', M.params); %g1_static is [M.endo_nbr by M.endo_nbr] first-derivative (wrt all endogenous variables) of static model equations f, i.e. df/dys, in declaration order
@@ -385,7 +385,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
     if d2flag
         [~, ~, g2_static] = feval([M.fname,'.static'], oo.dr.ys, oo.exo_steady_state', M.params); %g2_static is [M.endo_nbr by M.endo_nbr^2] second derivative (wrt all endogenous variables) of static model equations f, i.e. d(df/dys)/dys, in declaration order
         if order < 3
-            [~, g1, g2, g3] = feval([M.fname,'.dynamic'], oo.dr.ys(I), oo.exo_steady_state', M.params, oo.dr.ys, 1); %note that g3 does not contain symmetric elements        
+            [~, g1, g2, g3] = feval([M.fname,'.dynamic'], oo.dr.ys(I), oo.exo_steady_state', M.params, oo.dr.ys, 1); %note that g3 does not contain symmetric elements
             g3 = unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3
         else
             T  = NaN(sum(M.dynamic_tmp_nbr(1:5)));
@@ -458,7 +458,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
                 [~, g1p, ~, g1pp, g2p, g3p] = feval([M.fname,'.dynamic_params_derivs'], oo.dr.ys(I), oo.exo_steady_state', M.params, oo.dr.ys, 1, dys, d2ys);
             end
         catch
-           error('For analytical parameter derivatives ''dynamic_params_derivs.m'' file is needed, this can be created by putting identification(order=%d) into your mod file.',order)
+            error('For analytical parameter derivatives ''dynamic_params_derivs.m'' file is needed, this can be created by putting identification(order=%d) into your mod file.',order)
         end
         %g1pp are nonzero values and corresponding indices of second-derivatives (wrt all model parameters) of first-derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(d(df/dyy0ex0)/dparam)/dparam, rows are in declaration order, first column in declaration order
         d2Yss = d2ys(oo.dr.order_var,indpmodel,indpmodel); %[M.endo_nbr by mod_param_nbr by mod_param_nbr], put into DR order and focus only on selected model parameters
@@ -504,7 +504,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
             g3 = unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3, %g3 is [M.endo_nbr by yy0ex0_nbr^3] third-derivative (wrt all dynamic variables) of dynamic model equations, i.e. (d(df/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
             g4 = unfold_g4(g4, yy0ex0_nbr); %add symmetric elements to g4, %g4 is [M.endo_nbr by yy0ex0_nbr^4] fourth-derivative (wrt all dynamic variables) of dynamic model equations, i.e. ((d(df/dyy0ex0)/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
         end
-    end    
+    end
     % Parameter Jacobian of steady state in different orderings, note dys is in declaration order
     dYss = dys(oo.dr.order_var, indpmodel); %in DR-order, focus only on selected model parameters
     dyy0 = dys(I,:); %in lead_lag_incidence order, Jacobian of dynamic (without exogenous) variables, focus on all model parameters
@@ -554,7 +554,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
             if jpos~=0
                 dg2(g2p(jj,1), k2yy0ex0(g2p(jj,2),g2p(jj,3))+(jpos-1)*yy0ex0_nbr^2) = dg2(g2p(jj,1), k2yy0ex0(g2p(jj,2),g2p(jj,3))+(jpos-1)*yy0ex0_nbr^2) + g2p(jj,5); %add part (1)
             end
-        end        
+        end
     end
 
     if order>2
@@ -580,7 +580,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
                     dg3(g3p(jj,1), k3yy0ex0(idyyy(k,1),idyyy(k,2),idyyy(k,3))+(jpos-1)*yy0ex0_nbr^3) = dg3(g3p(jj,1), k3yy0ex0(idyyy(k,1),idyyy(k,2),idyyy(k,3))+(jpos-1)*yy0ex0_nbr^3) + g3p(jj,6); %add part (1)
                 end
             end
-        end        
+        end
     end
 
     if d2flag
@@ -599,7 +599,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
         for j = 1:M.param_nbr
             %compute first two terms of part 4
             d2g1_part4_left(:,j) = g3_tmp*dyy0ex0(:,j);
-        end       
+        end
         for j=1:M.endo_nbr
             %Note that in the following we skip exogenous variables as these are 0 by construction in a stochastic setting
             d2g1_part5 = reshape(g2(j,:), [yy0ex0_nbr yy0ex0_nbr]);
@@ -638,7 +638,7 @@ end
 
 %% clear variables that are not used any more
 clear dys dyy0 dyy0ex0 d2ys
-clear rp_static rpp_static 
+clear rp_static rpp_static
 clear g1_static g1p_static g1p g1pp
 clear g2_static g2p tmp_g2 g3_tmp
 clear ind_d2g1 ind_d2g1_tmp ind_part4 i j i1 i2 ig1 ig2 I II JJ ip1 ip2 is
@@ -718,20 +718,20 @@ if analytic_derivation_mode == 1
     dF_dKalmanAghx = kron(I_endo,GAM0) - kron(KalmanA',GAM1) - kron(I_endo,GAM1*KalmanA); %equation 31 in Appendix A of Iskrev (2010)
     Fp = kron(KalmanA',I_endo)*dGAM0 - kron( (KalmanA')^2,I_endo)*dGAM1 - dGAM2; %equation 32 in Appendix A of Iskrev (2010)
     dKalmanA = -dF_dKalmanAghx\Fp;
-    
+
     % Compute dBB from expressions 33 in Iskrev (2010) Appendix A
     MM = GAM0-GAM1*KalmanA; %this corresponds to matrix M in Ratto and Iskrev (2012, page 6)
     invMM = MM\eye(M.endo_nbr);
     dghu = - kron( (invMM*GAM3)' , invMM ) * ( dGAM0 - kron( KalmanA' , I_endo ) * dGAM1 - kron( I_endo , GAM1 ) * dKalmanA ) + kron( speye(M.exo_nbr), invMM ) * dGAM3 ;
-    
+
     % Add derivatives for stderr and corr parameters, which are zero by construction
     dKalmanA = [zeros(M.endo_nbr^2, stderrparam_nbr+corrparam_nbr) dKalmanA];
     dghu = [zeros(M.endo_nbr*M.exo_nbr, stderrparam_nbr+corrparam_nbr) dghu];
-    
+
     % Compute dOm = dvec(ghu*Sigma_e*ghu') from expressions 34 in Iskrev (2010) Appendix A
     dOm = kron(I_endo,oo.dr.ghu*M.Sigma_e)*(commutation(M.endo_nbr, M.exo_nbr)*dghu)...
           + kron(oo.dr.ghu,oo.dr.ghu)*reshape(dSigma_e, M.exo_nbr^2, totparam_nbr) + kron(oo.dr.ghu*M.Sigma_e,I_endo)*dghu;
-    
+
     % Put into tensor notation
     dKalmanA = reshape(dKalmanA, M.endo_nbr, M.endo_nbr, totparam_nbr);
     dghx = dKalmanA(:, M.nstatic+(1:M.nspred), stderrparam_nbr+corrparam_nbr+1:end); %get rid of zeros and focus on modparams only
@@ -739,7 +739,7 @@ if analytic_derivation_mode == 1
     dghu = dghu(:,:,stderrparam_nbr+corrparam_nbr+1:end); %focus only on modparams
     dOm  = reshape(dOm, M.endo_nbr, M.endo_nbr, totparam_nbr);
     clear dF_dKalmanAghx Fp dGAM0 dGAM1 dGAM2 dGAM3 MM invMM I_endo
-   
+
 elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == -2)
     % Here we make use of more efficient generalized sylvester equations
     % Notation: ghx_ = oo.dr.ghx(idx_states,:), ghx0 = oo.dr.ghx(kcurr~=0,:), ghxp = oo.dr.ghx(klead~=0,:)
@@ -756,13 +756,13 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == -2)
     B = zeros(M.endo_nbr,M.endo_nbr);
     B(:,M.nstatic+M.npred+1:end) = g1(:,nonzeros(klead));
     zx = [eye(M.nspred);
-      oo.dr.ghx(kcurr~=0,:);
-      oo.dr.ghx(klead~=0,:)*oo.dr.ghx(idx_states,:);
-      zeros(M.exo_nbr,M.nspred)];  
+          oo.dr.ghx(kcurr~=0,:);
+          oo.dr.ghx(klead~=0,:)*oo.dr.ghx(idx_states,:);
+          zeros(M.exo_nbr,M.nspred)];
     dRHSx = zeros(M.endo_nbr,M.nspred,modparam_nbr);
     for jp=1:modparam_nbr
         dRHSx(:,:,jp) = -dg1(:,kyy0,jp)*zx(1:yy0_nbr,:);
-    end    
+    end
     %use iterated generalized sylvester equation to compute dghx
     dghx = sylvester3(A,B,oo.dr.ghx(idx_states,:),dRHSx);
     flag = 1; icount = 0;
@@ -770,7 +770,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == -2)
         [dghx, flag] = sylvester3a(dghx,A,B,oo.dr.ghx(idx_states,:),dRHSx);
         icount = icount+1;
     end
-    
+
     %Compute dOm, dghu, dA, dB
     dOm = zeros(M.endo_nbr,M.endo_nbr,totparam_nbr); %as Om=ghu*Sigma_e*ghu', we need to use totparam_nbr, because there is also a contribution from stderr and corr parameters, which we compute after modparams
     dghu = zeros(M.endo_nbr,M.exo_nbr,modparam_nbr);
@@ -781,7 +781,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == -2)
         dA(:,idx_states,jp) = dA(:,idx_states,jp) + dg1(:,nonzeros(klead),jp)*oo.dr.ghx(klead~=0,:) + g1(:,nonzeros(klead))*dghx(klead~=0,:,jp);
         dghu(:,:,jp) = -invA*( dg1(:,yy0_nbr+1:end,jp) + dA(:,:,jp)*oo.dr.ghu);
         dOm(:,:,stderrparam_nbr+corrparam_nbr+jp) = dghu(:,:,jp)*M.Sigma_e*oo.dr.ghu' + oo.dr.ghu*M.Sigma_e*dghu(:,:,jp)';
-    end    
+    end
     %add stderr and corr derivatives to Om=ghu*Sigma_e*ghu'
     if ~isempty(indpstderr)
         for jp = 1:stderrparam_nbr
@@ -814,7 +814,7 @@ if order > 1
     invS = inv(S);
     G_x_x = kron(oo.dr.ghx(idx_states,:),oo.dr.ghx(idx_states,:));
     dG_x_x = zeros(size(G_x_x,1),size(G_x_x,2),modparam_nbr);
-    dzx = zeros(size(zx,1),size(zx,2),modparam_nbr);    
+    dzx = zeros(size(zx,1),size(zx,2),modparam_nbr);
     dRHSghxx = zeros(M.endo_nbr,M.nspred^2,modparam_nbr);
     for jp=1:modparam_nbr
         dzx(:,:,jp) = [zeros(M.nspred,M.nspred);
@@ -901,22 +901,22 @@ if order > 2
     %   * for ghuss: A*ghuss + B*ghxss*ghu_ + gg2*kron(zu,zss) + fyp*ghxxp*kron(ghu_,ghss_) + Fuupup*kron(Iu,Sigma_e(:)) = 0
     %                Taking the differential yields an invertible equation to get dghuss: A*dghuss = RHSuss
     %   * due to certainty equivalence and Gaussian shocks, we note that ghxxs, ghxus, ghuus, and ghsss are zero and thus not computed
-    
+
     % permutation matrices
     id_xxx = reshape(1:M.nspred^3,1,M.nspred,M.nspred,M.nspred);
     id_uux = reshape(1:M.nspred*M.exo_nbr^2,1,M.exo_nbr,M.exo_nbr,M.nspred);
     id_uxx = reshape(1:M.nspred^2*M.exo_nbr,1,M.exo_nbr,M.nspred,M.nspred);
-    id_uuu = reshape(1:M.exo_nbr^3,1,M.exo_nbr,M.exo_nbr,M.exo_nbr);    
+    id_uuu = reshape(1:M.exo_nbr^3,1,M.exo_nbr,M.exo_nbr,M.exo_nbr);
     I_xxx = speye(M.nspred^3);
     I_xxu = speye(M.nspred^2*M.exo_nbr);
     I_xuu = speye(M.nspred*M.exo_nbr^2);
-    I_uuu = speye(M.exo_nbr^3);    
+    I_uuu = speye(M.exo_nbr^3);
     P_x_xx = I_xxx(:,ipermute(id_xxx,[1,3,4,2])) + I_xxx(:,ipermute(id_xxx,[1,2,4,3])) + I_xxx(:,ipermute(id_xxx,[1,2,3,4]));
     P_x_xu = I_xxu(:,ipermute(id_uxx,[1,2,3,4])) + I_xxu(:,ipermute(id_uxx,[1,2,4,3]));
     P_xu_u = I_xuu(:,ipermute(id_uux,[1,2,3,4])) + I_xuu(:,ipermute(id_uux,[1,3,2,4]));
     P_u_uu = I_uuu(:,ipermute(id_uuu,[1,3,4,2])) + I_uuu(:,ipermute(id_uuu,[1,2,4,3])) + I_uuu(:,ipermute(id_uuu,[1,2,3,4]));
     P_uu_u = I_uuu(:,ipermute(id_uuu,[1,2,3,4])) + I_uuu(:,ipermute(id_uuu,[1,3,4,2]));
-    
+
     zxx = [spalloc(M.nspred,M.nspred^2,0);
            oo.dr.ghxx(kcurr~=0,:);
            oo.dr.ghxx(klead~=0,:)*G_x_x + oo.dr.ghx(klead~=0,:)*oo.dr.ghxx(idx_states,:);
@@ -927,10 +927,10 @@ if order > 2
     Z_x_x_x = kron(zx,Z_x_x);
     Z_x_xx = kron(zx,zxx);
     fyp_ghxxp = sparse(g1(:,nonzeros(klead))*oo.dr.ghxx(klead~=0,:));
-    B_ghxxx = B*oo.dr.ghxxx;    
+    B_ghxxx = B*oo.dr.ghxxx;
     dzxx = zeros(size(zxx,1),size(zxx,2),modparam_nbr);
     dfyp_ghxxp = zeros(size(fyp_ghxxp,1),size(fyp_ghxxp,2),modparam_nbr);
-    
+
     dRHSghxxx = zeros(M.endo_nbr,M.nspred^3,modparam_nbr);
     for jp=1:modparam_nbr
         dzxx(:,:,jp) = [zeros(M.nspred,M.nspred^2);
@@ -942,7 +942,7 @@ if order > 2
         dZ_x_x = kron(dzx(:,:,jp), zx) + kron(zx, dzx(:,:,jp));
         dZ_x_x_x = kron(dzx(:,:,jp), Z_x_x) + kron(zx, dZ_x_x);
         dZ_x_xx = kron(dzx(:,:,jp), zxx) + kron(zx, dzxx(:,:,jp));
-        dfyp_ghxxp(:,:,jp) = dg1(:,nonzeros(klead),jp)*oo.dr.ghxx(klead~=0,:) + g1(:,nonzeros(klead))*dghxx(klead~=0,:,jp);        
+        dfyp_ghxxp(:,:,jp) = dg1(:,nonzeros(klead),jp)*oo.dr.ghxx(klead~=0,:) + g1(:,nonzeros(klead))*dghxx(klead~=0,:,jp);
         dRHSghxxx(:,:,jp) = dA(:,:,jp)*oo.dr.ghxxx + dB(:,:,jp)*oo.dr.ghxxx*G_x_x_x + B_ghxxx*dG_x_x_x;
         dRHSghxxx(:,:,jp) = dRHSghxxx(:,:,jp) + dg3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^3)*Z_x_x_x + g3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0))*dZ_x_x_x;
         dRHSghxxx(:,:,jp) = dRHSghxxx(:,:,jp) + dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2)*Z_x_xx*P_x_xx + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*dZ_x_xx*P_x_xx;
@@ -967,7 +967,7 @@ if order > 2
     zuu = [zeros(M.nspred,M.exo_nbr^2);
            oo.dr.ghuu(kcurr~=0,:);
            oo.dr.ghxx(klead~=0,:)*G_u_u + oo.dr.ghx(klead~=0,:)*oo.dr.ghuu(idx_states,:);
-           zeros(M.exo_nbr,M.exo_nbr^2)];    
+           zeros(M.exo_nbr,M.exo_nbr^2)];
     Z_x_u = kron(zx,zu);
     Z_u_u = kron(zu,zu);
     Z_x_xu = kron(zx,zxu);
@@ -989,11 +989,11 @@ if order > 2
     aux_ZP_x_xu_Z_xx_u = Z_x_xu*P_x_xu + Z_xx_u;
     aux_ZP_xu_u_Z_x_uu = Z_xu_u*P_xu_u + Z_x_uu;
     aux_GP_x_xu_G_xx_u = G_x_xu*P_x_xu + G_xx_u;
-    aux_GP_xu_u_G_x_uu = G_xu_u*P_xu_u + G_x_uu;    
+    aux_GP_xu_u_G_x_uu = G_xu_u*P_xu_u + G_x_uu;
     dghxxu = zeros(M.endo_nbr,M.nspred^2*M.exo_nbr,modparam_nbr);
     dghxuu = zeros(M.endo_nbr,M.nspred*M.exo_nbr^2,modparam_nbr);
     dghuuu = zeros(M.endo_nbr,M.exo_nbr^3,modparam_nbr);
-    
+
     %stuff for ghxss
     zup = [zeros(M.nspred,M.exo_nbr);
            zeros(length(nonzeros(kcurr)),M.exo_nbr);
@@ -1005,7 +1005,7 @@ if order > 2
            zeros(M.exo_nbr,1)];
     zxup = [zeros(M.nspred,M.nspred*M.exo_nbr);
             zeros(length(nonzeros(kcurr)),M.nspred*M.exo_nbr);
-            oo.dr.ghxu(klead~=0,:)*kron(oo.dr.ghx(idx_states,:),eye(M.exo_nbr));            
+            oo.dr.ghxu(klead~=0,:)*kron(oo.dr.ghx(idx_states,:),eye(M.exo_nbr));
             zeros(M.exo_nbr,M.nspred*M.exo_nbr)];
     zupup = [zeros(M.nspred,M.exo_nbr^2);
              zeros(length(nonzeros(kcurr)),M.exo_nbr^2);
@@ -1016,8 +1016,8 @@ if order > 2
     Z_up_up = kron(zup,zup);
     Z_xup_up = kron(zxup,zup);
     Z_x_upup = kron(zx,zupup);
-    Z_x_up_up = kron(zx,Z_up_up);    
-    aux_ZP_xup_up_Z_x_upup = Z_xup_up*P_xu_u + Z_x_upup;    
+    Z_x_up_up = kron(zx,Z_up_up);
+    aux_ZP_xup_up_Z_x_upup = Z_xup_up*P_xu_u + Z_x_upup;
     Fxupup = g3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0))*Z_x_up_up + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*aux_ZP_xup_up_Z_x_upup + g1(:,nonzeros(klead))*oo.dr.ghxuu(klead~=0,:)*kron(oo.dr.ghx(idx_states,:),eye(M.exo_nbr^2));
     Ix_vecSig_e = kron(speye(M.nspred),M.Sigma_e(:));
     dRHSxss = zeros(M.endo_nbr,M.nspred,totparam_nbr);
@@ -1031,10 +1031,10 @@ if order > 2
     Z_u_ss = kron(zu,zss);
     Z_u_upup = kron(zu,zupup);
     Z_uup_up = kron(zuup,zup);
-    Z_u_up_up = kron(zu,Z_up_up);    
+    Z_u_up_up = kron(zu,Z_up_up);
     aux_ZP_uup_up_Z_u_upup = Z_uup_up*P_uu_u + Z_u_upup;
     Fuupup = g3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0))*Z_u_up_up + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*aux_ZP_uup_up_Z_u_upup + g1(:,nonzeros(klead))*oo.dr.ghxuu(klead~=0,:)*kron(oo.dr.ghu(idx_states,:),eye(M.exo_nbr^2));
-    Iu_vecSig_e = kron(speye(M.exo_nbr),M.Sigma_e(:));    
+    Iu_vecSig_e = kron(speye(M.exo_nbr),M.Sigma_e(:));
     dRHSuss = zeros(M.endo_nbr,M.exo_nbr,totparam_nbr);
 
     for jp=1:modparam_nbr
@@ -1072,7 +1072,7 @@ if order > 2
         dRHS = dRHS + dg3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^3)*Z_x_x_u + g3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0))*dZ_x_x_u;
         dRHS = dRHS + dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2)*aux_ZP_x_xu_Z_xx_u + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*( dZ_x_xu*P_x_xu + dZ_xx_u );
         dRHS = dRHS + dfyp_ghxxp(:,:,jp)*aux_GP_x_xu_G_xx_u + fyp_ghxxp*( dG_x_xu*P_x_xu + dG_xx_u );
-        dghxxu(:,:,jp) = invA* (-dRHS);        
+        dghxxu(:,:,jp) = invA* (-dRHS);
         %Compute dghxuu
         dRHS = dA(:,:,jp)*oo.dr.ghxuu + dB_ghxxx*G_x_u_u + B_ghxxx*dG_x_u_u;
         dRHS = dRHS + dg3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^3)*Z_x_u_u + g3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0))*dZ_x_u_u;
@@ -1110,13 +1110,13 @@ if order > 2
         dZ_x_up_up = kron(dzx(:,:,jp),Z_up_up) + kron(zx,dZ_up_up);
         daux_ZP_xup_up_Z_x_upup = dZ_xup_up*P_xu_u + dZ_x_upup;
         dFxupup = dg3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^3)*Z_x_up_up + g3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0))*dZ_x_up_up...
-                + dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2)*aux_ZP_xup_up_Z_x_upup + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*daux_ZP_xup_up_Z_x_upup...
-                + dg1(:,nonzeros(klead),jp)*oo.dr.ghxuu(klead~=0,:)*kron(oo.dr.ghx(idx_states,:),eye(M.exo_nbr^2)) + g1(:,nonzeros(klead))*dghxuu(klead~=0,:,jp)*kron(oo.dr.ghx(idx_states,:),eye(M.exo_nbr^2)) + g1(:,nonzeros(klead))*oo.dr.ghxuu(klead~=0,:)*kron(dghx(idx_states,:,jp),eye(M.exo_nbr^2));
+                  + dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2)*aux_ZP_xup_up_Z_x_upup + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*daux_ZP_xup_up_Z_x_upup...
+                  + dg1(:,nonzeros(klead),jp)*oo.dr.ghxuu(klead~=0,:)*kron(oo.dr.ghx(idx_states,:),eye(M.exo_nbr^2)) + g1(:,nonzeros(klead))*dghxuu(klead~=0,:,jp)*kron(oo.dr.ghx(idx_states,:),eye(M.exo_nbr^2)) + g1(:,nonzeros(klead))*oo.dr.ghxuu(klead~=0,:)*kron(dghx(idx_states,:,jp),eye(M.exo_nbr^2));
         dRHSxss(:,:,stderrparam_nbr+corrparam_nbr+jp) = dA(:,:,jp)*oo.dr.ghxss + dB(:,:,jp)*oo.dr.ghxss*oo.dr.ghx(idx_states,:) + B*oo.dr.ghxss*dghx(idx_states,:,jp);
         dRHSxss(:,:,stderrparam_nbr+corrparam_nbr+jp) = dRHSxss(:,:,stderrparam_nbr+corrparam_nbr+jp) + dfyp_ghxxp(:,:,jp)*G_x_ss + fyp_ghxxp*dG_x_ss; %m
         dRHSxss(:,:,stderrparam_nbr+corrparam_nbr+jp) = dRHSxss(:,:,stderrparam_nbr+corrparam_nbr+jp) + dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2)*Z_x_ss + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*dZ_x_ss;
         dRHSxss(:,:,stderrparam_nbr+corrparam_nbr+jp) = dRHSxss(:,:,stderrparam_nbr+corrparam_nbr+jp) + dFxupup*Ix_vecSig_e; %missing contribution by dSigma_e
-        %Compute dRHSuss         
+        %Compute dRHSuss
         dzuup = [zeros(M.nspred,M.exo_nbr^2);
                  zeros(length(nonzeros(kcurr)),M.exo_nbr^2);
                  dghxu(klead~=0,:,jp)*kron(oo.dr.ghu(idx_states,:),eye(M.exo_nbr)) + oo.dr.ghxu(klead~=0,:)*kron(dghu(idx_states,:,jp),eye(M.exo_nbr));
@@ -1125,15 +1125,15 @@ if order > 2
         dZ_u_ss = kron(dzu(:,:,jp),zss) + kron(zu,dzss);
         dZ_u_upup = kron(dzu(:,:,jp),zupup) + kron(zu,dzupup);
         dZ_uup_up = kron(dzuup,zup) + kron(zuup,dzup);
-        dZ_u_up_up = kron(dzu(:,:,jp),Z_up_up) + kron(zu,dZ_up_up);    
+        dZ_u_up_up = kron(dzu(:,:,jp),Z_up_up) + kron(zu,dZ_up_up);
         daux_ZP_uup_up_Z_u_upup = dZ_uup_up*P_uu_u + dZ_u_upup;
         dFuupup = dg3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^3)*Z_u_up_up + g3(:,k3yy0ex0(kyy0ex0,kyy0ex0,kyy0ex0))*dZ_u_up_up...
-                + dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2)*aux_ZP_uup_up_Z_u_upup + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*daux_ZP_uup_up_Z_u_upup...
-                + dg1(:,nonzeros(klead),jp)*oo.dr.ghxuu(klead~=0,:)*kron(oo.dr.ghu(idx_states,:),eye(M.exo_nbr^2)) + g1(:,nonzeros(klead))*dghxuu(klead~=0,:,jp)*kron(oo.dr.ghu(idx_states,:),eye(M.exo_nbr^2)) + g1(:,nonzeros(klead))*oo.dr.ghxuu(klead~=0,:)*kron(dghu(idx_states,:,jp),eye(M.exo_nbr^2));
+                  + dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2)*aux_ZP_uup_up_Z_u_upup + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*daux_ZP_uup_up_Z_u_upup...
+                  + dg1(:,nonzeros(klead),jp)*oo.dr.ghxuu(klead~=0,:)*kron(oo.dr.ghu(idx_states,:),eye(M.exo_nbr^2)) + g1(:,nonzeros(klead))*dghxuu(klead~=0,:,jp)*kron(oo.dr.ghu(idx_states,:),eye(M.exo_nbr^2)) + g1(:,nonzeros(klead))*oo.dr.ghxuu(klead~=0,:)*kron(dghu(idx_states,:,jp),eye(M.exo_nbr^2));
         dRHSuss(:,:,stderrparam_nbr+corrparam_nbr+jp) = dA(:,:,jp)*oo.dr.ghuss + dB(:,:,jp)*oo.dr.ghxss*oo.dr.ghu(idx_states,:) + B*oo.dr.ghxss*dghu(idx_states,:,jp); %missing dghxss
         dRHSuss(:,:,stderrparam_nbr+corrparam_nbr+jp) = dRHSuss(:,:,stderrparam_nbr+corrparam_nbr+jp) + dfyp_ghxxp(:,:,jp)*G_u_ss + fyp_ghxxp*dG_u_ss;
         dRHSuss(:,:,stderrparam_nbr+corrparam_nbr+jp) = dRHSuss(:,:,stderrparam_nbr+corrparam_nbr+jp) + dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2)*Z_u_ss + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*dZ_u_ss;
-        dRHSuss(:,:,stderrparam_nbr+corrparam_nbr+jp) = dRHSuss(:,:,stderrparam_nbr+corrparam_nbr+jp) + dFuupup*Iu_vecSig_e; %contribution by dSigma_e only for stderr and corr params        
+        dRHSuss(:,:,stderrparam_nbr+corrparam_nbr+jp) = dRHSuss(:,:,stderrparam_nbr+corrparam_nbr+jp) + dFuupup*Iu_vecSig_e; %contribution by dSigma_e only for stderr and corr params
     end
     %Add contribution for stderr and corr params to dRHSxss and dRHSuss
     if ~isempty(indpstderr)
@@ -1147,12 +1147,12 @@ if order > 2
             dRHSxss(:,:,jp) = Fxupup*kron(speye(M.nspred),vec(dSigma_e(:,:,jp)));
             dRHSxss(:,:,jp) = dRHSxss(:,:,jp) + fyp_ghxxp*dG_x_ss;
             dRHSxss(:,:,jp) = dRHSxss(:,:,jp) + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*dZ_x_ss;
-            
+
             dG_u_ss = kron(oo.dr.ghu(idx_states,:),dghs2(idx_states,jp));
             dZ_u_ss = kron(zu,dzss);
             dRHSuss(:,:,jp) = Fuupup*kron(speye(M.exo_nbr),vec(dSigma_e(:,:,jp)));
             dRHSuss(:,:,jp) = dRHSuss(:,:,jp) + fyp_ghxxp*dG_u_ss;
-            dRHSuss(:,:,jp) = dRHSuss(:,:,jp) + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*dZ_u_ss;            
+            dRHSuss(:,:,jp) = dRHSuss(:,:,jp) + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*dZ_u_ss;
         end
     end
     if ~isempty(indpcorr)
@@ -1166,12 +1166,12 @@ if order > 2
             dRHSxss(:,:,jp) = Fxupup*kron(speye(M.nspred),vec(dSigma_e(:,:,jp)));
             dRHSxss(:,:,jp) = dRHSxss(:,:,jp) + fyp_ghxxp*dG_x_ss;
             dRHSxss(:,:,jp) = dRHSxss(:,:,jp) + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*dZ_x_ss;
-            
+
             dG_u_ss = kron(oo.dr.ghu(idx_states,:),dghs2(idx_states,jp));
             dZ_u_ss = kron(zu,dzss);
             dRHSuss(:,:,jp) = Fuupup*kron(speye(M.exo_nbr),vec(dSigma_e(:,:,jp)));
             dRHSuss(:,:,jp) = dRHSuss(:,:,jp) + fyp_ghxxp*dG_u_ss;
-            dRHSuss(:,:,jp) = dRHSuss(:,:,jp) + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*dZ_u_ss;            
+            dRHSuss(:,:,jp) = dRHSuss(:,:,jp) + g2(:,k2yy0ex0(kyy0ex0,kyy0ex0))*dZ_u_ss;
         end
     end
     dRHSxss = -dRHSxss;
@@ -1312,7 +1312,7 @@ if d2flag
     clear d2g1 tmp
 
     % Compute Hessian (wrt selected params) of ghx using generalized sylvester equations, see equations 17 and 18 in Ratto and Iskrev (2012)
-    % solves MM*d2KalmanA+N*d2KalmanA*P = QQ where d2KalmanA are second order derivatives (wrt model parameters) of KalmanA    
+    % solves MM*d2KalmanA+N*d2KalmanA*P = QQ where d2KalmanA are second order derivatives (wrt model parameters) of KalmanA
     QQ = zeros(M.endo_nbr,M.endo_nbr,floor(sqrt(modparam_nbr2)));
     jcount=0;
     cumjcount=0;
@@ -1370,8 +1370,8 @@ if d2flag
         for i=1:j
             jcount=jcount+1;
             if j<=offset %stderr and corr parameters
-                    y = KalmanB*d2Sigma_e(:,:,jcount)*KalmanB';
-                    d2Om_tmp(:,jcount) = dyn_vech(y);
+                y = KalmanB*d2Sigma_e(:,:,jcount)*KalmanB';
+                d2Om_tmp(:,jcount) = dyn_vech(y);
             else %model parameters
                 jind = j-offset;
                 iind = i-offset;
@@ -1534,4 +1534,3 @@ if ~isempty(is)
 end
 
 return
-

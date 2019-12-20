@@ -1,5 +1,5 @@
 function [options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, i_cols_0, i_cols_J0, dynamicmodel] = ...
-        initialize_stacked_problem(endogenousvariables, options, M, steadystate_y)
+    initialize_stacked_problem(endogenousvariables, options, M, steadystate_y)
 
 % Sets up the stacked perfect foresight problem for use with dynare_solve.m
 %

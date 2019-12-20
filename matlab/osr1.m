@@ -124,7 +124,7 @@ else
     end
     %%do actual optimization
     [p, f] = dynare_minimize_objective(str2func('osr_obj'),t0,options_.osr.opt_algo,options_,M_.osr.param_bounds,M_.param_names(i_params),[],[], i_params,...
-                                                 inv_order_var(i_var),weights(i_var,i_var));
+                                       inv_order_var(i_var),weights(i_var,i_var));
 end
 
 osr_res.objective_function = f;

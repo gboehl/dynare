@@ -8,10 +8,10 @@ constraint_nbr = sum(strcmp(upper(M.equations_tags(:,2)),'OCCBIN'))/2;
 switch(constraint_nbr)
   case 1
     [zdatalinear_ zdatapiecewise_ zdatass_ oobase_ ] = ...
-    solve_one_constraint(M,oo,options);
+        solve_one_constraint(M,oo,options);
   case 2
     [zdatalinear_ zdatapiecewise_ zdatass_ oobase_ ] = ...
-    solve_two_constraints(M,oo,options);
+        solve_two_constraints(M,oo,options);
   otherwise
     error('OCCBIN can only handle two constraints in a model')
 end
