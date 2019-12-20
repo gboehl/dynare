@@ -171,19 +171,10 @@ Y = transpose(DynareDataset.data);
 
 mf0 = BayesInfo.mf0;
 mf1 = BayesInfo.mf1;
-restrict_variables_idx  = dr.restrict_var_list;
-observed_variables_idx  = restrict_variables_idx(mf1);
-state_variables_idx     = restrict_variables_idx(mf0);
-sample_size = size(Y,2);
+restrict_variables_idx = dr.restrict_var_list;
+state_variables_idx = restrict_variables_idx(mf0);
 number_of_state_variables = length(mf0);
-number_of_observed_variables = length(mf1);
-number_of_structural_innovations = length(Q);
 
-ReducedForm.ghx  = dr.ghx(restrict_variables_idx,:);
-ReducedForm.ghu  = dr.ghu(restrict_variables_idx,:);
-ReducedForm.ghxx = dr.ghxx(restrict_variables_idx,:);
-ReducedForm.ghuu = dr.ghuu(restrict_variables_idx,:);
-ReducedForm.ghxu = dr.ghxu(restrict_variables_idx,:);
 ReducedForm.steadystate = dr.ys(dr.order_var(restrict_variables_idx));
 ReducedForm.constant = ReducedForm.steadystate + .5*dr.ghs2(restrict_variables_idx);
 ReducedForm.state_variables_steady_state = dr.ys(dr.order_var(state_variables_idx));
@@ -192,11 +183,24 @@ ReducedForm.H = H;
 ReducedForm.mf0 = mf0;
 ReducedForm.mf1 = mf1;
 
+if DynareOptions.k_order_solver
+    ReducedForm.use_k_order_solver = true;
+    ReducedForm.dr = dr;
+else
+    ReducedForm.use_k_order_solver = false;
+    ReducedForm.ghx  = dr.ghx(restrict_variables_idx,:);
+    ReducedForm.ghu  = dr.ghu(restrict_variables_idx,:);
+    ReducedForm.ghxx = dr.ghxx(restrict_variables_idx,:);
+    ReducedForm.ghuu = dr.ghuu(restrict_variables_idx,:);
+    ReducedForm.ghxu = dr.ghxu(restrict_variables_idx,:);
+end
+
 % Set initial condition.
 switch DynareOptions.particle.initialization
   case 1% Initial state vector covariance is the ergodic variance associated to the first order Taylor-approximation of the model.
     StateVectorMean = ReducedForm.constant(mf0);
-    StateVectorVariance = lyapunov_symm(ReducedForm.ghx(mf0,:),ReducedForm.ghu(mf0,:)*ReducedForm.Q*ReducedForm.ghu(mf0,:)',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold,[],DynareOptions.debug);
+    StateVectorVariance = lyapunov_symm(dr.ghx(mf0,:), dr.ghu(mf0,:)*Q*dr.ghu(mf0,:)', DynareOptions.lyapunov_fixed_point_tol, ...
+                                        DynareOptions.qz_criterium, DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
   case 2% Initial state vector covariance is a monte-carlo based estimate of the ergodic variance (consistent with a k-order Taylor-approximation of the model).
     StateVectorMean = ReducedForm.constant(mf0);
     old_DynareOptionsperiods = DynareOptions.periods;
@@ -221,7 +225,7 @@ ReducedForm.StateVectorVariance = StateVectorVariance;
 %------------------------------------------------------------------------------
 DynareOptions.warning_for_steadystate = 0;
 [s1,s2] = get_dynare_random_generator_state();
-LIK = feval(DynareOptions.particle.algorithm,ReducedForm,Y,start,DynareOptions.particle,DynareOptions.threads);
+LIK = feval(DynareOptions.particle.algorithm, ReducedForm, Y, start, DynareOptions.particle, DynareOptions.threads, DynareOptions, Model);
 set_dynare_random_generator_state(s1,s2);
 if imag(LIK)
     likelihood = Inf;
