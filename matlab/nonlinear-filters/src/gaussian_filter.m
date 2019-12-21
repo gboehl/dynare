@@ -1,4 +1,5 @@
-function [LIK,lik] = gaussian_filter(ReducedForm, Y, start, ParticleOptions, ThreadsOptions)
+function [LIK,lik] = gaussian_filter(ReducedForm, Y, start, ParticleOptions, ThreadsOptions, DynareOptions, Model)
+
 % Evaluates the likelihood of a non-linear model approximating the
 % predictive (prior) and filtered (posterior) densities for state variables
 % by gaussian distributions.
@@ -30,7 +31,8 @@ function [LIK,lik] = gaussian_filter(ReducedForm, Y, start, ParticleOptions, Thr
 %
 % NOTES
 %   The vector "lik" is used to evaluate the jacobian of the likelihood.
-% Copyright (C) 2009-2017 Dynare Team
+
+% Copyright (C) 2009-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -47,37 +49,27 @@ function [LIK,lik] = gaussian_filter(ReducedForm, Y, start, ParticleOptions, Thr
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-persistent init_flag mf0 mf1
-persistent nodes2 weights2 weights_c2 number_of_particles
-persistent sample_size number_of_state_variables number_of_observed_variables
-
 % Set default
 if isempty(start)
     start = 1;
 end
 
-% Set persistent variables.
-if isempty(init_flag)
-    mf0 = ReducedForm.mf0;
-    mf1 = ReducedForm.mf1;
-    sample_size = size(Y,2);
-    number_of_state_variables = length(mf0);
-    number_of_observed_variables = length(mf1);
-    number_of_particles = ParticleOptions.number_of_particles;
-    init_flag = 1;
-end
+mf0 = ReducedForm.mf0;
+mf1 = ReducedForm.mf1;
+sample_size = size(Y,2);
+number_of_state_variables = length(mf0);
+number_of_observed_variables = length(mf1);
+number_of_particles = ParticleOptions.number_of_particles;
 
 % compute gaussian quadrature nodes and weights on states and shocks
-if isempty(nodes2)
-    if ParticleOptions.distribution_approximation.cubature
-        [nodes2,weights2] = spherical_radial_sigma_points(number_of_state_variables);
-        weights_c2 = weights2;
-    elseif ParticleOptions.distribution_approximation.unscented
-        [nodes2,weights2,weights_c2] = unscented_sigma_points(number_of_state_variables,ParticleOptions);
-    else
-        if ~ParticleOptions.distribution_approximation.montecarlo
-            error('Estimation: This approximation for the proposal is not implemented or unknown!')
-        end
+if ParticleOptions.distribution_approximation.cubature
+    [nodes2, weights2] = spherical_radial_sigma_points(number_of_state_variables);
+    weights_c2 = weights2;
+elseif ParticleOptions.distribution_approximation.unscented
+    [nodes2, weights2, weights_c2] = unscented_sigma_points(number_of_state_variables,ParticleOptions);
+else
+    if ~ParticleOptions.distribution_approximation.montecarlo
+        error('This approximation for the proposal is unknown!')
     end
 end
 
@@ -107,38 +99,37 @@ lik  = NaN(sample_size,1);
 LIK  = NaN;
 
 for t=1:sample_size
-    [PredictedStateMean,PredictedStateVarianceSquareRoot,StateVectorMean,StateVectorVarianceSquareRoot] = ...
-        gaussian_filter_bank(ReducedForm,Y(:,t),StateVectorMean,StateVectorVarianceSquareRoot,Q_lower_triangular_cholesky,H_lower_triangular_cholesky,H,ParticleOptions,ThreadsOptions) ;
+    [PredictedStateMean, PredictedStateVarianceSquareRoot, StateVectorMean, StateVectorVarianceSquareRoot] = ...
+        gaussian_filter_bank(ReducedForm, Y(:,t), StateVectorMean, StateVectorVarianceSquareRoot, Q_lower_triangular_cholesky, H_lower_triangular_cholesky, ...
+                             H, ParticleOptions, ThreadsOptions, DynareOptions, Model);
     if ParticleOptions.distribution_approximation.cubature || ParticleOptions.distribution_approximation.unscented
-        StateParticles = bsxfun(@plus,StateVectorMean,StateVectorVarianceSquareRoot*nodes2') ;
-        IncrementalWeights = ...
-            gaussian_densities(Y(:,t),StateVectorMean,...
-                               StateVectorVarianceSquareRoot,PredictedStateMean,...
-                               PredictedStateVarianceSquareRoot,StateParticles,H,const_lik,...
-                               weights2,weights_c2,ReducedForm,ThreadsOptions) ;
-        SampleWeights = weights2.*IncrementalWeights ;
+        StateParticles = bsxfun(@plus, StateVectorMean, StateVectorVarianceSquareRoot*nodes2');
+        IncrementalWeights = gaussian_densities(Y(:,t), StateVectorMean, StateVectorVarianceSquareRoot, PredictedStateMean, ...
+                                                PredictedStateVarianceSquareRoot, StateParticles, H, const_lik, ...
+                                                weights2, weights_c2, ReducedForm, ThreadsOptions, ...
+                                                DynareOptions, Model);
+        SampleWeights = weights2.*IncrementalWeights;
     else
-        StateParticles = bsxfun(@plus,StateVectorVarianceSquareRoot*randn(state_variance_rank,number_of_particles),StateVectorMean) ;
-        IncrementalWeights = ...
-            gaussian_densities(Y(:,t),StateVectorMean,...
-                               StateVectorVarianceSquareRoot,PredictedStateMean,...
-                               PredictedStateVarianceSquareRoot,StateParticles,H,const_lik,...
-                               1/number_of_particles,1/number_of_particles,ReducedForm,ThreadsOptions) ;
-        SampleWeights = IncrementalWeights/number_of_particles ;
+        StateParticles = bsxfun(@plus, StateVectorVarianceSquareRoot*randn(state_variance_rank, number_of_particles), StateVectorMean) ;
+        IncrementalWeights = gaussian_densities(Y(:,t), StateVectorMean, StateVectorVarianceSquareRoot, PredictedStateMean, ...
+                                                PredictedStateVarianceSquareRoot,StateParticles,H,const_lik, ...
+                                                1/number_of_particles,1/number_of_particles,ReducedForm,ThreadsOptions, ...
+                                                DynareOptions, Model);
+        SampleWeights = IncrementalWeights/number_of_particles;
     end
-    SampleWeights = SampleWeights + 1e-6*ones(size(SampleWeights,1),1) ;
-    SumSampleWeights = sum(SampleWeights) ;
-    lik(t) = log(SumSampleWeights) ;
-    SampleWeights = SampleWeights./SumSampleWeights ;
+    SampleWeights = SampleWeights + 1e-6*ones(size(SampleWeights, 1), 1);
+    SumSampleWeights = sum(SampleWeights);
+    lik(t) = log(SumSampleWeights);
+    SampleWeights = SampleWeights./SumSampleWeights;
     if not(ParticleOptions.distribution_approximation.cubature || ParticleOptions.distribution_approximation.unscented)
         if (ParticleOptions.resampling.status.generic && neff(SampleWeights)<ParticleOptions.resampling.threshold*sample_size) || ParticleOptions.resampling.status.systematic
-            StateParticles = resample(StateParticles',SampleWeights,ParticleOptions)' ;
-            SampleWeights = ones(number_of_particles,1)/number_of_particles;
+            StateParticles = resample(StateParticles', SampleWeights, ParticleOptions)';
+            SampleWeights = ones(number_of_particles, 1)/number_of_particles;
         end
     end
-    StateVectorMean = StateParticles*SampleWeights ;
-    temp = bsxfun(@minus,StateParticles,StateVectorMean) ;
-    StateVectorVarianceSquareRoot = reduced_rank_cholesky( bsxfun(@times,SampleWeights',temp)*temp' )';
+    StateVectorMean = StateParticles*SampleWeights;
+    temp = bsxfun(@minus, StateParticles, StateVectorMean);
+    StateVectorVarianceSquareRoot = reduced_rank_cholesky(bsxfun(@times,SampleWeights',temp)*temp')';
 end
 
 LIK = -sum(lik(start:end));
