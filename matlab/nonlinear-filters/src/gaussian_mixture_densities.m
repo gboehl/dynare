@@ -1,7 +1,7 @@
-function  IncrementalWeights = gaussian_mixture_densities(obs,StateMuPrior,StateSqrtPPrior,StateWeightsPrior,...
-                                                  StateMuPost,StateSqrtPPost,StateWeightsPost,...
-                                                  StateParticles,H,normconst,weigths1,weigths2,ReducedForm,ThreadsOptions)
-%
+function  IncrementalWeights = gaussian_mixture_densities(obs, StateMuPrior, StateSqrtPPrior, StateWeightsPrior, ...
+                                                      StateMuPost, StateSqrtPPost, StateWeightsPost, StateParticles, H, ...
+                                                      ReducedForm, ThreadsOptions, DynareOptions, Model)
+
 % Elements to calculate the importance sampling ratio
 %
 % INPUTS
@@ -21,7 +21,8 @@ function  IncrementalWeights = gaussian_mixture_densities(obs,StateMuPrior,State
 %
 % NOTES
 %   The vector "lik" is used to evaluate the jacobian of the likelihood.
-% Copyright (C) 2009-2017 Dynare Team
+
+% Copyright (C) 2009-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,19 +40,16 @@ function  IncrementalWeights = gaussian_mixture_densities(obs,StateMuPrior,State
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % Compute the density of particles under the prior distribution
-[ras,ras,prior] = probability(StateMuPrior,StateSqrtPPrior,StateWeightsPrior,StateParticles) ;
-prior = prior' ;
+[~, ~, prior] = probability(StateMuPrior, StateSqrtPPrior, StateWeightsPrior, StateParticles);
+prior = prior';
+
 % Compute the density of particles under the proposal distribution
-[ras,ras,proposal] = probability(StateMuPost,StateSqrtPPost,StateWeightsPost,StateParticles) ;
-proposal = proposal' ;
+[~, ~, proposal] = probability(StateMuPost, StateSqrtPPost, StateWeightsPost, StateParticles);
+proposal = proposal';
+
 % Compute the density of the current observation conditionally to each particle
-yt_t_1_i = measurement_equations(StateParticles,ReducedForm,ThreadsOptions) ;
-%eta_t_i = bsxfun(@minus,obs,yt_t_1_i)' ;
-%yt_t_1 = sum(yt_t_1_i*weigths1,2) ;
-%tmp = bsxfun(@minus,yt_t_1_i,yt_t_1) ;
-%Pyy = bsxfun(@times,weigths2',tmp)*tmp' + H ;
-%sqr_det = sqrt(det(Pyy)) ;
-%foo = (eta_t_i/Pyy).*eta_t_i ;
-%likelihood = exp(-0.5*sum(foo,2))/(normconst*sqr_det) + 1e-99 ;
-likelihood = probability2(obs,sqrt(H),yt_t_1_i) ;
-IncrementalWeights = likelihood.*prior./proposal ;
+yt_t_1_i = measurement_equations(StateParticles, ReducedForm, ThreadsOptions, DynareOptions, Model);
+
+% likelihood
+likelihood = probability2(obs, sqrt(H), yt_t_1_i);
+IncrementalWeights = likelihood.*prior./proposal;
