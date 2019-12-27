@@ -41,17 +41,33 @@ if M_.exo_det_nbr > 1 && isempty(oo_.exo_det_steady_state)
 end
 
 % Initialize oo_.exo_simul
-if isempty(M_.exo_histval)
-    if isempty(ex0_)
-        oo_.exo_simul = repmat(oo_.exo_steady_state',M_.maximum_lag+options_.periods+M_.maximum_lead,1);
+if isempty(oo_.initval_series)
+    if isempty(M_.exo_histval)
+        if isempty(ex0_)
+            oo_.exo_simul = repmat(oo_.exo_steady_state',M_.maximum_lag+options_.periods+M_.maximum_lead,1);
+        else
+            oo_.exo_simul = [ repmat(ex0_',M_.maximum_lag,1) ; repmat(oo_.exo_steady_state',options_.periods+M_.maximum_lead,1) ];
+        end
     else
-        oo_.exo_simul = [ repmat(ex0_',M_.maximum_lag,1) ; repmat(oo_.exo_steady_state',options_.periods+M_.maximum_lead,1) ];
+        if isempty(ex0_)
+            oo_.exo_simul = [M_.exo_histval'; repmat(oo_.exo_steady_state',options_.periods+M_.maximum_lead,1)];
+        else
+            error('histval and endval cannot be used simultaneously')
+        end
     end
-else
-    if isempty(ex0_)
-        oo_.exo_simul = [M_.exo_histval'; repmat(oo_.exo_steady_state',options_.periods+M_.maximum_lead,1)];
-    else
-        error('histval and endval cannot be used simultaneously')
+elseif M_.exo_nbr > 0
+    x = oo_.initval_series{M_.exo_names{:}}.data;
+    oo_.exo_simul = x(1:M_.maximum_lag + options_.periods + M_.maximum_lead,:);
+    if ~isempty(M_.exo_histval)
+        oo_.exo_simul(1:M_.maximum_lag, :) ...
+            = M_.exo_histval(:, 1:M_.maximum_lag)';
+    end
+elseif M_.exo_det_nbr > 0
+    x_det = oo_.initval_series{M_.exo_det_names{:}}.data;
+    oo_.exo_det_simul = x_det(1:M_.maximum_lag + options_.periods + M_.maximum_lead,:);
+    if ~isempty(M_.exo_det_histval)
+        oo_.exo_det_simul(1:M_.maximum_lag, :) ...
+            = M_.exo_det_histval(:, 1:M_.maximum_lag)';
     end
 end
 

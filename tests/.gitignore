@@ -25,6 +25,9 @@ wsOct
 /run_test_matlab_output.txt
 
 /block_bytecode/ls2003_tmp.mod
+/histval_initval_file/data.csv
+/histval_initval_file/data.xls
+/histval_initval_file/data.xlsx
 /partial_information/PItest3aHc0PCLsimModPiYrVarobsAll_PCL*
 /partial_information/PItest3aHc0PCLsimModPiYrVarobsCNR_PCL*
 
@@ -67,10 +70,11 @@ wsOct
 !/gsa/ls2003scr_mode.mat
 !/gsa/ls2003scr_results.mat
 !/gsa/morris/nk_est_data.m
+!/histval_initval_file/histval_initval_file_unit_tests.m
+!/histval_initval_file/ramst_initval_file_data.m
 !/identification/as2007/as2007_steadystate.m
 !/identification/as2007/G_QT.mat
 !/identification/kim/kim2_steadystate.m
-!/initval_file/ramst_initval_file_data.m
 !/internals/tests.m
 !/k_order_perturbation/run_fs2000kplusplus.m
 !/kalman/likelihood/compare_kalman_routines.m

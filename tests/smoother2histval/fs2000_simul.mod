@@ -66,6 +66,10 @@ results_estimation=load('fs2000_smooth_results');
 M_.params=results_estimation.M_.params;
 steady;
 
+OO = load('fs2000_smooth_results.mat');
+M_.params = OO.M_.params;
+
 histval_file(filename = 'fs2000_histval.mat');
 
-simul(periods = 30);
+perfect_foresight_setup(periods = 100);
+perfect_foresight_solver;

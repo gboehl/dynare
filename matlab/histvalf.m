@@ -1,5 +1,5 @@
-function histvalf(fname)
-%function histvalf(fname)
+function [endo_histval, exo_histval, exo_det_histval] = histvalf(M, options)
+%function [endo_histval, exo_histval, exo_det_histval] = histvalf(M, options)
 % Sets initial values for simulation using values contained in `fname`, a
 % file possibly created by a call to `smoother2histval`
 %
@@ -13,7 +13,7 @@ function histvalf(fname)
 %    none
 
 
-% Copyright (C) 2014-2019 Dynare Team
+% Copyright (C) 2014-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,72 +30,41 @@ function histvalf(fname)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ oo_ ex0_
-
-if ~exist(fname, 'file')
-    error(['Can''t find datafile: ' fname ]);
+if ~isfield(options, 'nobs') || isempty(options.nobs)
+    options.nobs = M.orig_maximum_lag;
 end
 
-M_.endo_histval = repmat(oo_.steady_state, 1, M_.maximum_endo_lag);
-
-% Also fill in oo_.exo_simul: necessary if we are in deterministic context,
-% since aux vars for lagged exo are not created in this case
-if isempty(oo_.exo_simul)
-    if isempty(ex0_)
-        oo_.exo_simul = repmat(oo_.exo_steady_state',M_.maximum_lag,1);
+if ~isfield(options, 'first_obs') || isempty(options.first_obs)
+    if isfield(options, 'first_simulation_period')
+        options.first_obs = options.first_simulation_period ...
+            - options.nobs;
     else
-        oo_.exo_simul = repmat(ex0_',M_.maximum_lag,1);
+        options.first_obs = 1;
+    end
+elseif isfield(options, 'first_simulation_period')
+    nobs = options.first_simulation_period - opions_.first_obs;
+    if options.nobs ~= nobs
+        error(sprintf(['HISTVALF: first_obs = %d and', ...
+                       ' first_simulation_period = %d', ...
+                       ' don''t provide for the number of' ...
+                       ' lags in the model.'], ...
+                      options.first_obs, ...
+                      options.first_simulation_period))
     end
 end
 
-S = load(fname);
+series = histvalf_initvalf('HISTVAL', M, options);
+% capture the difference between stochastic and
+% perfect foresight setup
+k = M.orig_maximum_lag - M.maximum_lag + 1;
+endo_histval  = series{M.endo_names{:}}.data(k:end, :)';
 
-outvars = fieldnames(S);
-
-for i = 1:length(outvars)
-    ov_ = outvars{i};
-    if ov_(end) == '_'
-        ov = ov_(1:end-1);
-        j = strmatch(ov, M_.endo_names, 'exact');
-        if isempty(j)
-            warning(['smoother2histval: output variable ' ov ' does not exist.'])
-        end
-    else
-        % Lagged endogenous or exogenous, search through aux vars
-        undidx = find(ov_ == '_', 1, 'last'); % Index of last underscore in name
-        ov = ov_(1:(undidx-1));
-        lead_lag = ov_((undidx+1):end);
-        lead_lag = regexprep(lead_lag,'l','-');
-        lead_lag = str2num(lead_lag);
-        j = [];
-        for i = 1:length(M_.aux_vars)
-            if M_.aux_vars(i).type ~= 1 && M_.aux_vars(i).type ~= 3
-                continue
-            end
-            if M_.aux_vars(i).type == 1
-                % Endogenous
-                orig_var = M_.endo_names{M_.aux_vars(i).orig_index};
-            else
-                % Exogenous
-                orig_var = M_.exo_names{M_.aux_vars(i).orig_index};
-            end
-            if strcmp(orig_var, ov) && M_.aux_vars(i).orig_lead_lag == lead_lag
-                j = M_.aux_vars(i).endo_index;
-            end
-        end
-        if isempty(j)
-            % There is no aux var corresponding to (orig_var, lead_lag).
-            % If this is an exogenous variable, then it means we should put
-            % the value in oo_.exo_simul (we are probably in deterministic
-            % context).
-            k = strmatch(ov, M_.exo_names);
-            if isempty(k)
-                warning(['smoother2histval: output variable ' ov '(' lead_lag ') does not exist.'])
-            else
-                oo_.exo_simul((M_.maximum_lag-M_.maximum_endo_lag+1):M_.maximum_lag, k) = S.(ov_);
-            end
-            continue
-        end
-    end
-    M_.endo_histval(j, :) = S.(ov_);
+exo_histval  = [];
+if M.exo_nbr
+    exo_histval  = series{M.exo_names{:}}.data(k:end, :)';
 end
+exo_det_histval  = [];
+if M.exo_det_nbr
+    exo_det_histval  = series{M.exo_names{:}}.data(k:end, :)';
+end
+

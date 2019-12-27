@@ -119,7 +119,9 @@ if options.endogenous_terminal_period
 end
 
 if stop
-    if any(any(isnan(endogenousvariables))) || any(any(isinf(endogenousvariables)))
+    % initial or terminal observations may contain
+    % harmless NaN or Inf. We test only values computed above
+    if any(any(isnan(y))) || any(any(isinf(y)))
         info.status = false;% NaN or Inf occurred
         info.error = err;
         info.iterations = iter;

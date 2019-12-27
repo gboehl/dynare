@@ -104,9 +104,12 @@ MODFILES = \
 	discretionary_policy/dennis_1.mod \
 	discretionary_policy/dennis_1_estim.mod \
 	discretionary_policy/Gali_discretion.mod \
-	initval_file/ramst_initval_file.mod \
-	initval_file/ramst_datafile.mod \
-	ramst_normcdf_and_friends.mod \
+	histval_initval_file/ramst_initval_file.mod \
+	histval_initval_file/ramst_data.mod \
+	histval_initval_file/ramst_datafile.mod \
+	histval_initval_file/sim_exo_lead_lag.mod \
+	histval_initval_file/sim_exo_lead_lag_initvalf.mod \
+        ramst_normcdf_and_friends.mod \
 	ramst_vec.mod \
 	example1_varexo_det.mod \
 	predetermined_variables.mod \
@@ -405,7 +408,8 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_1_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_2_xfail.mod
 
-MFILES = initval_file/ramst_initval_file_data.m
+MFILES = histval_initval_file/ramst_initval_file_data.m \
+	 histval_initval_file_unit_tests.m
 
 # Dependencies
 example1_use_dll.m.trs: example1.m.trs
@@ -503,10 +507,15 @@ deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.o.trs: determinist
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.m.trs: deterministic_simulations/rbc_det.m.trs
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.o.trs: deterministic_simulations/rbc_det.o.trs
 
-initval_file/ramst_initval_file.m.trs: initval_file/ramst_initval_file_data.m.tls
-initval_file/ramst_initval_file.o.trs: initval_file/ramst_initval_file_data.o.tls
-initval_file/ramst_datafile.m.trs: initval_file/ramst_initval_file_data.m.tls
-initval_file/ramst_datafile.o.trs: initval_file/ramst_initval_file_data.o.tls
+histval_initval_file/ramst_initval_file.m.trs: histval_initval_file/ramst_initval_file_data.m.tls histval_initval_file/ramst_data.m.trs
+histval_initval_file/ramst_initval_file.o.trs: histval_initval_file/ramst_initval_file_data.o.tls histval_initval_file/ramst_data.o.trs
+histval_initval_file/ramst_datafile.m.trs: histval_initval_file/ramst_initval_file_data.m.tls
+histval_initval_file/ramst_datafile.o.trs: histval_initval_file/ramst_initval_file_data.o.tls
+histval_initval_file/sim_exo_lead_lag_initvalf.m.trs: histval_initval_file/sim_exo_lead_lag.m.trs
+histval_initval_file/sim_exo_lead_lag_initvalf.o.trs: histval_initval_file/sim_exo_lead_lag.o.trs
+histval_initval_file_unit_tests.m.trs: histval_initval_file/ramst_data.m.trs
+histval_initval_file_unit_tests.o.trs: histval_initval_file/ramst_data.o.trs
+
 
 identification/rbc_ident/rbc_ident_varexo_only.m.trs: identification/rbc_ident/rbc_ident_std_as_structural_par.m.trs
 identification/rbc_ident/rbc_ident_varexo_only.o.trs: identification/rbc_ident/rbc_ident_std_as_structural_par.o.trs
@@ -782,12 +791,20 @@ o/particle: $(patsubst %.mod, %.o.trs, $(PARTICLEFILES))
 
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
-M_TRS_FILES += run_block_byte_tests_matlab.m.trs run_reporting_test_matlab.m.trs run_all_unitary_tests.m.trs
+M_TRS_FILES += 	run_block_byte_tests_matlab.m.trs \
+		run_reporting_test_matlab.m.trs \
+		run_all_unitary_tests.m.trs \
+		histval_initval_file_unit_tests.m.trs
+
 M_XFAIL_TRS_FILES = $(patsubst %.mod, %.m.trs, $(XFAIL_MODFILES))
 
 # Octave TRS Files
 O_TRS_FILES = $(patsubst %.mod, %.o.trs, $(MODFILES))
-O_TRS_FILES += run_block_byte_tests_octave.o.trs run_reporting_test_octave.o.trs run_all_unitary_tests.o.trs
+O_TRS_FILES += 	run_block_byte_tests_octave.o.trs \
+		run_reporting_test_octave.o.trs \
+		run_all_unitary_tests.o.trs \
+	 	histval_initval_file_unit_tests.o.trs
+
 O_XFAIL_TRS_FILES = $(patsubst %.mod, %.o.trs, $(XFAIL_MODFILES))
 
 # Matlab TLS Files
@@ -920,8 +937,12 @@ EXTRA_DIST = \
 	k_order_perturbation/fs2000k++.mod \
 	lmmcp/sw-common-header.inc \
 	lmmcp/sw-common-footer.inc \
-	estimation/tune_mh_jscale/fs2000.inc
-
+	estimation/tune_mh_jscale/fs2000.inc \
+	histval_initval_file_unit_tests.m \
+	histval_initval_file/my_assert.m \
+	histval_initval_file/ramst_data.xls \
+	histval_initval_file/ramst_data.xlsx \
+	histval_initval_file/ramst_initval_file_data.m
 
 if ENABLE_MATLAB
 check-local: check-matlab
@@ -1073,7 +1094,7 @@ clean-local:
 
 	rm -f estimation/test_matrix.mat
 
-	rm -f initval_file/ramst_initval_file_data_col_vec_mat.mat initval_file/ramst_initval_file_data_row_vec_mat.mat initval_file/ramst_initval_file_excel.xls
+	rm -f histval_initval_file/ramst_initval_file_data_col_vec_mat.mat histval_initval_file/ramst_initval_file_data_row_vec_mat.mat histval_initval_file/ramst_initval_file_excel.xls
 
 	rm -f loglinear/results_exp_histval.mat loglinear/results_exp.mat
 

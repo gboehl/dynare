@@ -1769,7 +1769,7 @@ in this case ``initval`` is used to specify the terminal conditions.
     in the last ``initval`` or ``endval`` block (or the steady state
     file if you provided one, see :ref:`st-st`).
 
-.. command:: initval_file (filename = FILENAME);
+.. command:: initval_file (OPTIONS...);
 
     |br| In a deterministic setup, this command is used to specify a
     path for all endogenous and exogenous variables. The length of
@@ -1786,33 +1786,534 @@ in this case ``initval`` is used to specify the terminal conditions.
           by the path for endogenous variables for the simulation
           periods (excluding initial and terminal conditions)
 
-    The command accepts three file formats:
+    In perfect foresight and stochastic contexts, ``steady`` uses the
+    first observation loaded by ``initval_file`` as guess value to
+    solve for the steady state of the model. This first observation is
+    determined by the ``first_obs`` option when it is used.
+
+    Don’t mix ``initval_file`` with ``initval`` statements. However,
+    after ``initval_file``, you can modify the historical initial
+    values with ``histval`` or ``histval_file`` statement.
+
+    There can be several ``initval_file`` statements in a model
+    file. Each statement resets ``oo_.initval_series``.
+
+    *Options*
+
+    .. option:: datafile = FILENAME
+                filename = FILENAME (deprecated)
+		
+        The name of the file containing the data. It must be included in quotes if the filename
+        contains a path or an extension. The command accepts the following file formats:
 
         * M-file (extension ``.m``): for each endogenous and exogenous
           variable, the file must contain a row or column vector of
-          the same name. Their length must be ``periods +
-          M_.maximum_lag + M_.maximum_lead``
+          the same name.
         * MAT-file (extension ``.mat``): same as for M-files.
         * Excel file (extension ``.xls`` or ``.xlsx``): for each
-          endogenous and exogenous, the file must contain a column of
-          the same name. NB: Octave only supports the ``.xlsx`` file
-          extension and must have the `io`_ package installed (easily
-          done via octave by typing ‘``pkg install -forge io``’).
+          endogenous and exogenous variable, the file must contain a
+          column of the same name. NB: Octave only supports the
+          ``.xlsx`` file extension and must have the `io`_ package
+          installed (easily done via octave by typing ‘``pkg
+          install -forge io``’). The first column may contain the date
+	  of each observation.
+        * CSV files (extension ``.csv``): for each endogenous and
+          exogenous variable, the file must contain a column of the
+          same name. The first column may contain the date of each
+          observation.
 
-    .. warning:: The extension must be omitted in the command
-                 argument. Dynare will automatically figure out the
-                 extension and select the appropriate file type. If
-                 there are several files with the same name but different
-                 extensions, then the order of precedence is as follows:
-                 first ``.m``, then ``.mat``, ``.xls`` and finally ``.xlsx``.
+    .. option:: first_obs = {INTEGER | DATE}
+	       
+        The observation number or the date (see
+	:ref:`dates-members`) of the first observation to be used in the file
 
+    .. option:: first_simulation_period = {INTEGER | DATE}
 
-.. command:: histval_file (filename = FILENAME);
+	The observation number in the file or the date (see
+	:ref:`dates <dates-members>`) at which the simulation (or the forecast) is
+	starting. This option avoids to have to compute the maximum
+	number of lags in the model.  The observation corresponding to
+	the first period of simulation doesn’t need to exist in the
+	file as the only dates necessary for initialization are before
+	that date.
+	
+    .. option:: last_obs = {INTEGER | DATE}
+	       
+        The observaton number or the date (see
+	:ref:`dates-members`) of the last observation to be used in
+	the file.
+
+    .. option:: nobs = INTEGER
+
+	The number of observations to be used in the file (starting
+	with first of ``first_obs`` observation).	 
+
+    .. option:: series = DSERIES NAME
+
+        The name of a DSERIES containing the data (see :ref:`dseries-members`)		
+
+    *Example 1*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    initval_file(datafile=mydata.csv);
+
+	    perfect_foresight_setup(periods=200);
+	    perfect_foresight_solver;
+
+	The initial and terminal values are taken from file
+	``mydata.csv`` (nothing guarantees that these vales are the
+	steady state of the model). The guess value for the
+	trajectories are also taken from the file. The file must
+	contain at least 203 observations of variables ``c``, ``x``
+	and ``e``. If there are more than 203 observations available
+	in the file, the first 203 are used by
+	``perfect_foresight_setup(periods=200)``.
+	Note that the values for the auxiliary variable corresponding
+	to ``x(-2)`` are automatically computed by ``initval_file``.
+	
+    *Example 2*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    initval_file(datafile=mydata.csv,
+	                 first_obs=10);
+
+	    perfect_foresight_setup(periods=200);
+	    perfect_foresight_solver;
+
+	The initial and terminal values are taken from file
+	``mydata.csv`` starting with the 10th observation in the
+	file. There must be at least 212 observations in the file.
+	
+    *Example 3*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    ds = dseries(mydata.csv);
+	    lds = log(ds);
+	    
+	    initval_file(series=lds,
+	                 first_obs=2010Q1);
+
+	    perfect_foresight_setup(periods=200);
+	    perfect_foresight_solver;
+
+	The initial and terminal values are taken from dseries
+	``lds``. All observations are loaded starting with the 1st quarter of
+	2010 until the end of the file. There must be data available
+	at least until 2050Q3.
+	
+    *Example 4*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    initval_file(datafile=mydata.csv,
+	                 first_simulation_period=2010Q1);
+
+	    perfect_foresight_setup(periods=200);
+	    perfect_foresight_solver;
+
+	The initial and terminal values are taken from file
+	``mydata.csv``. The observations in the file must have
+	dates. All observations are loaded from the 3rd quarter of
+	2009 until the end of the file. There must be data available
+	in the file at least until 2050Q1.
+	
+    *Example 5*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    initval_file(datafile=mydata.csv,
+	                 last_obs = 212);
+
+	    perfect_foresight_setup(periods=200);
+	    perfect_foresight_solver;
+
+	The initial and terminal values are taken from file
+	``mydata.csv``. The first 212 observations are loaded and the
+	first 203 observations will be used by
+	``perfect_foresight_setup(periods=200)``.
+	
+    *Example 6*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    initval_file(datafile=mydata.csv,
+	                 first_obs = 10,
+			 nobs = 203);
+
+	    perfect_foresight_setup(periods=200);
+	    perfect_foresight_solver;
+
+	The initial and terminal values are taken from file
+	``mydata.csv``. Observations 10 to 212 are loaded.
+	   
+    *Example 7*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    initval_file(datafile=mydata.csv,
+	                 first_obs = 10);
+
+	    steady;
+
+        The values of the 10th observation of ``mydata.csv`` are used
+	as guess value to compute the steady state. The exogenous
+	variables are set to values found in the file or zero if these
+	variables aren't present.
+
+.. command:: histval_file (OPTIONS...);
 
     |br| This command is equivalent to ``histval``, except that it
     reads its input from a file, and is typically used in conjunction
     with ``smoother2histval``.
 
+        *Options*
+
+    .. option:: datafile = FILENAME
+                filename = FILENAME (deprecated)
+
+        The name of the file containing the data. The command accepts
+	the following file formats:
+
+        * M-file (extension ``.m``): for each endogenous and exogenous
+          variable, the file must contain a row or column vector of
+          the same name.
+        * MAT-file (extension ``.mat``): same as for M-files.
+        * Excel file (extension ``.xls`` or ``.xlsx``): for each
+          endogenous and exogenous variable, the file must contain a
+          column of the same name. NB: Octave only supports the
+          ``.xlsx`` file extension and must have the `io`_ package
+          installed (easily done via octave by typing ‘``pkg
+          install -forge io``’).  The first column may contain the
+          date of each observation.
+        * CSV files (extension ``.csv``): for each endogenous and
+          exogenous variable, the file must contain a column of the
+          same name. The first column may contain the date of each
+          observation.
+
+    .. option:: first_obs = {INTEGER | DATE}
+	       
+        The observation number or the date (see :ref:`dates-members`) of
+	the first observation to be used in the file
+
+    .. option:: first_simulation_period = {INTEGER | DATE}
+
+	The observation number in the file or the date (see
+	:ref:`dates-members`) at which the simulation (or the forecast) is
+	starting. This option avoids to have to compute the maximum
+	number of lags in the model.  The observation corresponding to
+	the first period of simulation doesn’t need to exist in the
+	file as the only dates necessary for initialization are before
+	that date.
+	
+    .. option:: last_obs = {INTEGER | DATE}
+	       
+        The observation number or the date (see :ref:`dates-members`) of the
+	last observation to be used in the file.
+
+    .. option:: nobs = INTEGER
+
+	The number of observations to be used in the file (starting
+	with first of ``first_obs`` observation).	 
+
+    .. option:: series = DSERIES NAME
+
+        The name of a DSERIES containing the data (see :ref:`dseries-members`)		
+
+    *Example 1*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    steady_state_model;
+	    x = 0;
+	    c = exp(c*x/(1 - d));
+	    end;
+	    
+	    histval_file(datafile=mydata.csv);
+
+	    stoch_simul(order=1,periods=100);
+	    
+	The initial values for the stochastic simulation are taken
+	from the two first rows of file ``mydata.csv``.
+	   
+    *Example 2*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    histval_file(datafile=mydata.csv,
+	                 first_obs=10);
+
+	    stoch_simul(order=1,periods=100);
+
+	The initial values for the stochastic simulation are taken
+	from rows 10 and 11 of file ``mydata.csv``.
+
+	
+    *Example 3*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    histval_file(datafile=mydata.csv,
+	                 first_obs=2010Q1);
+
+	    stoch_simul(order=1,periods=100);
+
+	The initial values for the stochastic simulation are taken
+	from observations 2010Q1 and 2010Q2 of file ``mydata.csv``.
+	
+    *Example 4*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    histval_file(datafile=mydata.csv,
+	                 first_simulation_period=2010Q1)
+
+	    stoch_simul(order=1,periods=100);
+
+	The initial values for the stochastic simulation are taken
+	from observations 2009Q3 and 2009Q4 of file ``mydata.csv``.
+	
+    *Example 5*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    histval_file(datafile=mydata.csv,
+	                 last_obs = 4);
+
+	    stoch_simul(order=1,periods=100);
+
+	The initial values for the stochastic simulation are taken
+	from the two first rows of file ``mydata.csv``.
+	
+    *Example 6*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    initval_file(datafile=mydata.csv,
+	                 first_obs = 10,
+			 nobs = 4);
+
+	    stoch_simul(order=1,periods=100);
+
+	The initial values for the stochastic simulation are taken
+	from rows 10 and 11 of file ``mydata.csv``.
+	   
+    *Example 7*
+
+        ::
+
+            var c x;
+            varexo e;
+	    parameters a b c d;
+
+	    a = 1.5;
+	    b = -0,6;
+	    c = 0.5;
+	    d = 0.5;
+	    
+            model;
+            x = a*x(-1) + b*x(-2) + e;
+            log(c) = c*x + d*log(c(+1));
+            end;
+
+	    initval_file(datafile=mydata.csv,
+	                 first_obs=10);
+
+            histval_file(datafile=myotherdata.csv);
+	    
+	    perfect_foresight_setup(periods=200);
+	    perfect_foresight_solver;
+
+	Historical initial values for the simulation are taken from
+	the two first rows of file ``myotherdata.csv``.
+	
+        Terminal values and guess values for the simulation are taken
+	from file ``mydata.csv`` starting with the 12th observation in
+	the file. There must be at least 212 observations in the file.
 
 .. _shocks-exo:
 
