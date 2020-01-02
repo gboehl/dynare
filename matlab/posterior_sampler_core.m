@@ -86,6 +86,8 @@ oo_ = myinputs.oo_;
 if whoiam
     % initialize persistent variables in priordens()
     priordens(xparam1,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7, bayestopt_.p3,bayestopt_.p4,1);
+    % initialize persistent variables in prior_draw()
+    prior_draw(bayestopt_,options_.prior_trunc);
 end
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
