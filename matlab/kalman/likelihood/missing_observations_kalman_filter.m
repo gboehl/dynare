@@ -84,6 +84,7 @@ oldK = Inf;
 notsteady   = 1;
 F_singular  = true;
 s = 0;
+rescale_prediction_error_covariance0=rescale_prediction_error_covariance;
 
 while notsteady && t<=last
     s  = t-start+1;
@@ -110,7 +111,13 @@ while notsteady && t<=last
             end
         else
             if rcond(F)<kalman_tol
-                badly_conditioned_F = true;
+                sig=sqrt(diag(F));
+                if any(diag(F)<kalman_tol) || rcond(F./(sig*sig'))<kalman_tol
+                    badly_conditioned_F = true;
+                else
+                    rescale_prediction_error_covariance=1;
+                end
+                %                 badly_conditioned_F = true;
             end
         end
         if badly_conditioned_F
@@ -126,6 +133,7 @@ while notsteady && t<=last
             if rescale_prediction_error_covariance
                 log_dF = log(det(F./(sig*sig')))+2*sum(log(sig));
                 iF = inv(F./(sig*sig'))./(sig*sig');
+                rescale_prediction_error_covariance=rescale_prediction_error_covariance0;
             else
                 log_dF = log(det(F));
                 iF = inv(F);
