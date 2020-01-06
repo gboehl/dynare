@@ -405,6 +405,7 @@ end
 oo_.pac.(pacmodl).equations.(eqtag).ssr = ssr;
 oo_.pac.(pacmodl).equations.(eqtag).residual = r;
 oo_.pac.(pacmodl).equations.(eqtag).estimator = params0_;
+oo_.pac.(pacmodl).equations.(eqtag).parnames = fieldnames(params);
 oo_.pac.(pacmodl).equations.(eqtag).covariance = NaN(length(params0_));
 oo_.pac.(pacmodl).equations.(eqtag).student = NaN(size(params0_));
 
