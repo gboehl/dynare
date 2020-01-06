@@ -78,14 +78,14 @@ if isoctave
                  'of precompiled mex files and some\nfeatures, like solution ' ...
                  'of models approximated at third order, will not be available.'], supported_octave_version())
         skipline()
-    elseif octave_ver_less_than('4.2') % Should match the test in mex/build/octave/configure.ac
-                                       % and in m4/ax_mexopts.m4
+    elseif octave_ver_less_than('4.4') % Should match the test in mex/build/octave/configure.ac
         skipline()
-        warning(['This version of Dynare has only been tested on Octave 4.2 and above. Dynare may fail to run or give unexpected result. Consider upgrading your version of Octave.'])
+        warning(['This version of Dynare has only been tested on Octave 4.4 and above. Dynare may fail to run or give unexpected result. Consider upgrading your version of Octave.'])
         skipline()
     end
 else
     if matlab_ver_less_than('7.9') % Should match the test in mex/build/matlab/configure.ac
+                                   % and in m4/ax_mexopts.m4
         skipline()
         warning('This version of Dynare has only been tested on MATLAB 7.9 (R2009b) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
         skipline()

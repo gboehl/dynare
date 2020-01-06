@@ -41,7 +41,7 @@ case ${host_os} in
 esac
 
 OCTAVE_VERSION=$($MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //')
-AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.2], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.2 at least (or disable Octave support with --disable-octave).])])
+AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.4], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.4 at least (or disable Octave support with --disable-octave).])])
 
 AC_PROG_F77([gfortran g77 f77])
 AC_PROG_CC
