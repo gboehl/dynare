@@ -10425,20 +10425,20 @@ Dynare has comments to plot the results of a simulation and to save the results.
 
 .. command:: dynatype (FILENAME) [VARIABLE_NAME...];
 
-    |br| This command prints the listed variables in a text file named
-    FILENAME. If no VARIABLE_NAME is listed, all endogenous variables
+    |br| This command prints the listed endogenous or exogenous variables in a text file named
+    FILENAME, where FILENAME is a quoted string. If no VARIABLE_NAME is listed, all endogenous variables
     are printed.
 
 .. command:: dynasave (FILENAME) [VARIABLE_NAME...];
 
-    |br| This command saves the listed variables in a binary file
-    named FILENAME. If no VARIABLE_NAME are listed, all endogenous
+    |br| This command saves the listed endogenous or exogenous variables in a binary file
+    named FILENAME, where FILENAME is a quoted string. If no VARIABLE_NAME is listed, all endogenous
     variables are saved.
 
-    In MATLAB or Octave, variables saved with the ``dynasave command``
+    In MATLAB or Octave, variables saved with the ``dynasave`` command
     can be retrieved by the command::
 
-        load -mat FILENAME
+        load(FILENAME,'-mat') 
 
 
 .. _macro-proc-lang:
