@@ -1,6 +1,6 @@
 function dynatype (s,var_list)
 % function dynatype (s,var_list)
-% This optional command saves the simulation results in a text file. The name of each
+% This command saves the simulation results in a text file. The name of each
 % variable preceeds the corresponding results. This command must follow SIMUL.
 %
 % INPUTS
@@ -13,7 +13,7 @@ function dynatype (s,var_list)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,29 +32,27 @@ function dynatype (s,var_list)
 
 global M_ oo_
 
-fid=fopen(s,'w') ;
+fid = fopen(s, 'w');
 
 if isempty(var_list)
     var_list = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-n = length(var_list);
-ivar = zeros(n,1);
-
-for i=1:n
-    i_tmp = strmatch(var_list{i}, M_.endo_names, 'exact');
-    if isempty(i_tmp)
-        error ('One of the specified variables does not exist') ;
+for i = 1:length(var_list)
+    idx = strcmp(var_list{i}, M_.endo_names);
+    if any(idx)
+        fprintf(fid, '%s\n', M_.endo_names{idx});
+        fprintf(fid, '%15.8g\n', oo_.endo_simul(idx,:)');
     else
-        ivar(i) = i_tmp;
+        idx = strcmp(var_list{i}, M_.exo_names);
+        if any(idx)
+            fprintf(fid, '%s\n', M_.exo_names{idx});
+            fprintf(fid, '%15.8g\n', oo_.exo_simul(:,idx));
+        else
+            error(['Should not arrive here: ' var_list{i} ' not found in M_.endo_names or M_.exo_names']) ;
+        end
     end
 end
 
-for i = 1:n
-    fprintf(fid,M_.endo_names{ivar(i)},'\n') ;
-    fprintf(fid,'\n') ;
-    fprintf(fid,'%15.8g\n',oo_.endo_simul(ivar(i),:)') ;
+fclose(fid);
 end
-fclose(fid) ;
-
-return ;
