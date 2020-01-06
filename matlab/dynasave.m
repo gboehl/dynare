@@ -1,6 +1,6 @@
-function dynasave(s, var_list)
+function dynasave(s,var_list)
 % function dynasave(s,var_list)
-% This optional command saves the simulation results in a .MAT file.
+% This command saves the simulation results in a .MAT file.
 %
 % INPUTS
 %    s:              filename
@@ -12,7 +12,7 @@ function dynasave(s, var_list)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,20 +39,19 @@ if ~isfield(oo_, 'endo_simul') || isempty(oo_.endo_simul)
     error('dynasave:: The results structure does not contain simulated series. Maybe the periods option has not been set.')
 end
 
-n = length(var_list);
-ivar = zeros(n, 1);
-for i=1:n
-    i_tmp = strmatch(var_list{i}, M_.endo_names, 'exact');
-    if isempty(i_tmp)
-        error ('One of the specified variables does not exist') ;
+for i = 1:length(var_list)
+    idx = strcmp(var_list{i}, M_.endo_names);
+    if any(idx)
+        SaveStruct.(var_list{i}) = oo_.endo_simul(idx,:);
     else
-        ivar(i) = i_tmp;
+        idx = strcmp(var_list{i}, M_.exo_names);
+        if any(idx)
+            SaveStruct.(var_list{i}) = oo_.exo_simul(:,idx);
+        else
+            error(['Should not arrive here: ' var_list{i} ' not found in M_.endo_names or M_.exo_names']) ;
+        end
     end
 end
 
-eval([var_list{1} ' = oo_.endo_simul(ivar(1),:)'';'])
-eval(['save ' s ' ' var_list{1} ' -mat'])
-for dynare__i_ = 2:n
-    eval([var_list{dynare__i_} ' = oo_.endo_simul(ivar(dynare__i_),:)'';'])
-    eval(['save ' s ' ' var_list{dynare__i_} ' -append -mat'])
+save(s, '-struct', 'SaveStruct');
 end

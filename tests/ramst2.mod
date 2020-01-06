@@ -36,6 +36,9 @@ end;
 
 simul(periods=200);
 
+dynasave('myfile') c x k;
+dynatype('myfile1.txt') c x k;
+
 rplot c;
 rplot k;
 rplot dc;
