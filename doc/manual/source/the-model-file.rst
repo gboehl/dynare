@@ -7974,7 +7974,7 @@ The forecast scenario can contain some simple shocks on the exogenous
 variables. This shocks are described using the function
 ``basic_plan``:
 
-.. matcomm:: HANDLE = basic_plan (HANDLE, 'VAR_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | | EXPR] ] );
+.. matcomm:: HANDLE = basic_plan (HANDLE, `VAR_NAME', `SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | EXPR] ] );
 
     Adds to the forecast scenario a shock on the exogenous variable
     indicated between quotes in the second argument. The shock type
@@ -7992,7 +7992,7 @@ compatible with the constrained path are in this case computed. In
 other words, a conditional forecast is performed. This kind of shock
 is described with the function ``flip_plan``:
 
-.. matcomm:: HANDLE = flip_plan (HANDLE, 'VAR_NAME, 'VAR_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | | EXPR] ] );
+.. matcomm:: HANDLE = flip_plan (HANDLE, `VAR_NAME', `VAR_NAME', `SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | EXPR] ] );
 
     Adds to the forecast scenario a constrained path on the endogenous
     variable specified between quotes in the second argument. The
@@ -8049,7 +8049,8 @@ computed with the command ``det_cond_forecast``:
         plot(dset_forecast.{'r','e'});
 
 
-.. command:: smoother2histval [(OPTIONS...)];
+.. command:: smoother2histval ;
+             smoother2histval(OPTIONS...);
 
     The purpose of this command is to construct initial conditions
     (for a subsequent simulation) that are the smoothed values of a
