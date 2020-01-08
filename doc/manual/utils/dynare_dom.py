@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2018-2020 Dynare Team
+# Copyright (C) 2018-2019 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -82,17 +82,6 @@ class DynObject(ObjectDescription):
         if self.has_arguments:
             if not arglist:
                 signode += addnodes.desc_parameterlist()
-            elif isinstance(self, MatComm):
-                # Handle arguments of MATLAB/Octave commands differently
-                # using `desc_addname` doesn't allow for line wrapping
-                # Issue: dynare#1688
-                if arglist.startswith('('):
-                    arglist = arglist[1:]
-                if arglist.endswith(';'):
-                    arglist = arglist[:-1]
-                if arglist.endswith(')'):
-                    arglist = arglist[:-1]
-                signode += addnodes.desc_parameterlist(arglist,arglist)
             else:
                 signode += addnodes.desc_addname(arglist,arglist)
         return fullname, prefix
