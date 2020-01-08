@@ -23,7 +23,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../utils'))
 
 extensions = ['sphinx.ext.autodoc',
-			  'sphinx.ext.mathjax']
+              'sphinx.ext.mathjax']
 
 source_suffix = '.rst'
 

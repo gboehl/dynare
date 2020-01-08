@@ -34,7 +34,7 @@ A copy of the license can be found at `http://www.gnu.org/licenses/fdl.txt <http
 .. toctree::
    :numbered:
    :maxdepth: 4
-   
+
    introduction
    installation-and-configuration
    running-dynare
@@ -51,4 +51,4 @@ A copy of the license can be found at `http://www.gnu.org/licenses/fdl.txt <http
    Indices and tables
    ==================
 
-	* :ref:`genindex`
+   * :ref:`genindex`

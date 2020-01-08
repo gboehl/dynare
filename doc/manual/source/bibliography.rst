@@ -68,6 +68,3 @@ Bibliography
 * Stock, James H. and Mark W. Watson (1999). “Forecasting Inflation,”, *Journal of Monetary Economics*, 44(2), 293–335.
 * Uhlig, Harald (2001): “A Toolkit for Analysing Nonlinear Dynamic Stochastic Models Easily,” in *Computational Methods for the Study of Dynamic Economies*, Eds. Ramon Marimon and Andrew Scott, Oxford University Press, 30–61.
 * Villemot, Sébastien (2011): “Solving rational expectations models at first order: what Dynare does,” *Dynare Working Papers*, 2, CEPREMAP.
-
-
-

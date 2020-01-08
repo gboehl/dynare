@@ -45,7 +45,7 @@ from sphinx.util.docfields import Field, GroupedField, TypedField
 class DynObject(ObjectDescription):
     has_arguments  = True
     display_prefix = None
-    allow_nesting  = False          
+    allow_nesting  = False
 
     def handle_signature(self, sig, signode):
         sig = sig.strip()
@@ -76,9 +76,9 @@ class DynObject(ObjectDescription):
 
         if self.display_prefix:
             signode += addnodes.desc_annotation(self.display_prefix, self.display_prefix)
-        
+
         signode += addnodes.desc_name(name, name)
-        
+
         if self.has_arguments:
             if not arglist:
                 signode += addnodes.desc_parameterlist()
@@ -94,7 +94,7 @@ class DynObject(ObjectDescription):
             signode['first'] = not self.names
             self.state.document.note_explicit_target(signode)
             objects = self.env.domaindata['dynare']['objects']
-            
+
             if fullname in objects:
                 self.state_machine.reporter.warning(
                     'duplicate object description of %s, ' % fullname +
@@ -222,9 +222,9 @@ class DynSimpleObject(ObjectDescription):
 
         if self.display_prefix:
             signode += addnodes.desc_annotation(self.display_prefix, self.display_prefix)
-        
+
         signode += addnodes.desc_name(name, name)
-        return fullname, prefix    
+        return fullname, prefix
 
     def add_target_and_index(self, name_obj, sig, signode):
         fullname = name_obj[0]
@@ -291,40 +291,40 @@ class DynareDomain(Domain):
     name = 'dynare'
     label = 'Dynare'
     object_types = {
-    'function':      ObjType(l_('function'),         'func'),
-    'datesmethod':   ObjType(l_('method'),           'datmeth'),
-    'dseriesmethod': ObjType(l_('method'),           'dsermeth'),
-    'reportingmethod': 	 ObjType(l_('method'),       'repmeth'),
-    'matcomm':   	 ObjType(l_('matlab command'),   'mcomm'),
-    'command':   	 ObjType(l_('command'),          'comm'),
-    'class':     	 ObjType(l_('class'),            'class'),
-    'block':     	 ObjType(l_('block'),            'bck'),
-    'confblock': 	 ObjType(l_('config block'),     'cbck'),
-    'macrodir':  	 ObjType(l_('macro directive'),  'mdir'),
-    'construct': 	 ObjType(l_('constructor'),      'cstr'),
-    'matvar':    	 ObjType(l_('matlab variable'),  'mvar'),
-    'specvar':   	 ObjType(l_('special variable'), 'svar'),
-    'operator':  	 ObjType(l_('operator'),         'op'),
-    'constant':  	 ObjType(l_('constant'),         'const'),
-    'option':    	 ObjType(l_('option'),           'opt'),
+    'function':          ObjType(l_('function'),         'func'),
+    'datesmethod':       ObjType(l_('method'),           'datmeth'),
+    'dseriesmethod':     ObjType(l_('method'),           'dsermeth'),
+    'reportingmethod':   ObjType(l_('method'),       'repmeth'),
+    'matcomm':           ObjType(l_('matlab command'),   'mcomm'),
+    'command':           ObjType(l_('command'),          'comm'),
+    'class':             ObjType(l_('class'),            'class'),
+    'block':             ObjType(l_('block'),            'bck'),
+    'confblock':         ObjType(l_('config block'),     'cbck'),
+    'macrodir':          ObjType(l_('macro directive'),  'mdir'),
+    'construct':         ObjType(l_('constructor'),      'cstr'),
+    'matvar':            ObjType(l_('matlab variable'),  'mvar'),
+    'specvar':           ObjType(l_('special variable'), 'svar'),
+    'operator':          ObjType(l_('operator'),         'op'),
+    'constant':          ObjType(l_('constant'),         'const'),
+    'option':            ObjType(l_('option'),           'opt'),
     }
     directives = {
-    'function':      DynFunction,
-    'datesmethod':   DatesMethod,
-    'dseriesmethod': DseriesMethod,
-    'reportingmethod': 	 ReportingMethod,
-    'matcomm':   	 MatComm,
-    'command':   	 DynComm,
-    'class':     	 DynClass,
-    'block':     	 DynBlock,
-    'confblock': 	 DynConfBlock,
-    'macrodir':  	 DynMacroDir,
-    'construct': 	 Constructor,   
-    'matvar':    	 MatlabVar,
-    'specvar':   	 SpecialVar,  
-    'operator':  	 Operator, 
-    'constant':  	 Constant,
-    'option':    	 Option,
+    'function':          DynFunction,
+    'datesmethod':       DatesMethod,
+    'dseriesmethod':     DseriesMethod,
+    'reportingmethod':   ReportingMethod,
+    'matcomm':           MatComm,
+    'command':           DynComm,
+    'class':             DynClass,
+    'block':             DynBlock,
+    'confblock':         DynConfBlock,
+    'macrodir':          DynMacroDir,
+    'construct':         Constructor,
+    'matvar':            MatlabVar,
+    'specvar':           SpecialVar,
+    'operator':          Operator,
+    'constant':          Constant,
+    'option':            Option,
     }
     roles = {
     'func':     DynareXRefRole(),
@@ -334,19 +334,19 @@ class DynareDomain(Domain):
     'mcomm':    DynareXRefRole(),
     'comm':     DynareXRefRole(),
     'class':    DynareXRefRole(),
-    'bck':      DynareXRefRole(),    
+    'bck':      DynareXRefRole(),
     'cbck':     DynareXRefRole(),
     'mdir':     DynareXRefRole(),
-    'cstr':     DynareXRefRole(),       
-    'mvar':     DynareXRefRole(),   
-    'svar':     DynareXRefRole(),    
-    'op':       DynareXRefRole(),     
+    'cstr':     DynareXRefRole(),
+    'mvar':     DynareXRefRole(),
+    'svar':     DynareXRefRole(),
+    'op':       DynareXRefRole(),
     'const':    DynareXRefRole(),
-    'opt':      DynareXRefRole(),  
+    'opt':      DynareXRefRole(),
     }
     initial_data = {
         'objects': {},
-    } 
+    }
 
     def clear_doc(self, docname):
         for fullname, (fn, _l) in list(self.data['objects'].items()):
