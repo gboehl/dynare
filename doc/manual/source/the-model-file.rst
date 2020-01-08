@@ -3740,7 +3740,7 @@ lag. We therefore have the following identity:
 
         Vector of numerical indices identifying the state variables in the
         vector of declared variables. ``M_.endo_names(M_.state_var)``
-        therefore yields the name of all variables that are states in 
+        therefore yields the name of all variables that are states in
         the model declaration, i.e. that show up with a lag.
 
 Internally, Dynare uses two orderings of the endogenous variables: the
@@ -3758,10 +3758,10 @@ according to the declaration order.
 .. matvar:: oo_.dr.order_var
 
        This variables maps DR-order to declaration order.
-       
+
 .. matvar:: oo_.dr.inv_order_var
 
-       This variable contains the inverse map. 
+       This variable contains the inverse map.
 
 In other words, the k-th variable in the DR-order corresponds to the endogenous
 variable numbered ``oo_.dr.order_var(k)`` in declaration
@@ -3791,7 +3791,7 @@ where :math:`y^s` is the steady state value of :math:`y` and
 .. matvar:: oo.dr.state_var
 
         Vector of numerical indices identifying the state variables in the
-        vector of declared variables, *given the current parameter values* 
+        vector of declared variables, *given the current parameter values*
         for which the decision rules have been computed. It may differ from
         ``M_.state_var`` in case a state variable drops from the model given
         the current parameterization, because it only gets 0 coefficients in
@@ -7371,14 +7371,14 @@ Shock Decomposition
 
     .. option:: diff
 
-        If passed, plot the decomposition of the first difference of the list of variables. 
-        If used in combination with :opt:`flip`, the ``diff`` operator is first applied. 
+        If passed, plot the decomposition of the first difference of the list of variables.
+        If used in combination with :opt:`flip`, the ``diff`` operator is first applied.
         Default: not activated
 
     .. option:: flip
 
-        If passed, plot the decomposition of the opposite of the list of variables. 
-        If used in combination with :opt:`diff`, the ``diff`` operator is first applied. 
+        If passed, plot the decomposition of the opposite of the list of variables.
+        If used in combination with :opt:`diff`, the ``diff`` operator is first applied.
         Default: not activated
 
     .. option:: max_nrows
@@ -7467,14 +7467,14 @@ Shock Decomposition
 
     .. option:: diff
 
-        If passed, plot the decomposition of the first difference of the list of variables. 
-        If used in combination with :opt:`flip`, the ``diff`` operator is first applied. 
+        If passed, plot the decomposition of the first difference of the list of variables.
+        If used in combination with :opt:`flip`, the ``diff`` operator is first applied.
         Default: not activated
 
     .. option:: flip
 
-        If passed, plot the decomposition of the opposite of the list of variables. 
-        If used in combination with :opt:`diff`, the ``diff`` operator is first applied. 
+        If passed, plot the decomposition of the opposite of the list of variables.
+        If used in combination with :opt:`diff`, the ``diff`` operator is first applied.
         Default: not activated
 
 .. command:: squeeze_shock_decomposition [VARIABLE_NAME]...;
@@ -9057,7 +9057,7 @@ Performing identification analysis
         triggers gsa prior sample. If equal to ``2``, triggers gsa
         Monte-Carlo sample (i.e. loads a sample corresponding to
         ``pprior=0`` and ``ppost=0`` in the ``dynare_sensitivity``
-        options). If equal to ``FILENAME`` uses the provided path to 
+        options). If equal to ``FILENAME`` uses the provided path to
         a specific user defined sample file.
         Default: ``0``.
 
@@ -9213,8 +9213,8 @@ Performing identification analysis
         If equal to ``1``: finds problematic parameters in a bruteforce
         fashion: It computes the rank of the Jacobians for all possible
         parameter combinations. If the rank condition is not fullfilled,
-        these parameter sets are flagged as non-identifiable. 
-        The maximum dimension of the group searched is triggered by 
+        these parameter sets are flagged as non-identifiable.
+        The maximum dimension of the group searched is triggered by
         ``max_dim_subsets_groups``.
         Default: ``0``.
 
@@ -10477,7 +10477,7 @@ Dynare has comments to plot the results of a simulation and to save the results.
     In MATLAB or Octave, variables saved with the ``dynasave`` command
     can be retrieved by the command::
 
-        load(FILENAME,'-mat') 
+        load(FILENAME,'-mat')
 
 
 .. _macro-proc-lang:
