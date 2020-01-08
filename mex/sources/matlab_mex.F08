@@ -52,7 +52,7 @@
 # define API_VER2 ""
 #endif
 
-#define MX_HAS_INTERLEAVED_COMPLEX (defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0904)
+#include "defines.F08"
 
 !!! C Matrix API
 !!! Listed in same order as https://fr.mathworks.com/help/matlab/cc-mx-matrix-library.html
