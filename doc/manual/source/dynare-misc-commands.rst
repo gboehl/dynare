@@ -167,24 +167,26 @@ Dynare misc commands
 
             A ``1*Nblck`` array of doubles. Current acceptance ratios.
 
-.. matcomm:: prior [options[, ...]];
+.. matcomm:: prior [OPTIONS[, ...]];
 
-    Prints various informations about the prior distribution depending
-    on the options. If no options are provided, the command returns
-    the list of available options. Following options are available:
+    Prints information about the prior distribution given the provided
+    options. If no options are provided, the command returns the list of
+    available options.
 
-    ``table``
+    *Options*
+
+    .. option:: table
 
         Prints a table describing the marginal prior distributions
         (mean, mode, std., lower and upper bounds, HPD interval).
 
-    ``moments``
+    .. option:: moments
 
         Computes and displays first and second order moments of the
         endogenous variables at the prior mode (considering the
         linearized version of the model).
 
-    ``moments(distribution)``
+    .. option:: moments(distribution)
 
         Computes and displays the prior mean and prior standard
         deviation of the first and second moments of the endogenous
@@ -193,7 +195,7 @@ Dynare misc commands
         stored in the ``prior`` subfolder in a
         ``_endogenous_variables_prior_draws.mat`` file.
 
-    ``optimize``
+    .. option:: optimize
 
         Optimizes the prior density (starting from a random initial
         guess). The parameters such that the steady state does not
@@ -203,7 +205,7 @@ Dynare misc commands
         defined over such regions, the optimization algorithm may fail
         to converge to the true solution (the prior mode).
 
-    ``simulate``
+    .. option:: simulate
 
         Computes the effective prior mass using a Monte-Carlo. Ideally
         the effective prior mass should be equal to 1, otherwise
@@ -215,6 +217,6 @@ Dynare misc commands
         :math:`p_A\neq p_B \leq 1` so that the prior mass of the
         compared models are identical.
 
-    ``plot``
+    .. option:: plot
 
         Plots the marginal prior density.
