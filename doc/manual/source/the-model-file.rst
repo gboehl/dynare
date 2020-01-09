@@ -1487,7 +1487,9 @@ in this case ``initval`` is used to specify the terminal conditions.
 
             steady;
 
-            simul(periods=200);
+            perfect_foresight_setup(periods=200);
+            perfect_foresight_solver;
+            
 
         In this example, the problem is finding the optimal path for
         consumption and capital for the periods :math:`t=1` to
@@ -1527,7 +1529,9 @@ in this case ``initval`` is used to specify the terminal conditions.
             x = 1.1;
             end;
 
-            simul(periods=200);
+            perfect_foresight_setup(periods=200);
+            perfect_foresight_solver;
+
 
         In this example, there is no `steady` command, hence the
         conditions are exactly those specified in the `initval` and `endval` blocks.
