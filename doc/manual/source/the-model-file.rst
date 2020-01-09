@@ -1713,7 +1713,7 @@ in this case ``initval`` is used to specify the terminal conditions.
           objective function of the planner is computed. Note that the
           initial values of the Lagrange multipliers associated with
           the planner’s problem cannot be set (see
-          :ref:`planner_objective_value <plan-obj>`).
+          :comm:`evaluate_planner_objective`).
 
     *Options*
 
@@ -8137,6 +8137,9 @@ commitment with ``ramsey_policy``, for optimal policy under discretion
 with ``discretionary_policy`` or for optimal simple rule with ``osr``
 (also implying commitment).
 
+Optimal Simple Rules (OSR)
+--------------------------
+
 .. command:: osr [VARIABLE_NAME...];
              osr (OPTIONS...) [VARIABLE_NAME...];
 
@@ -8387,20 +8390,25 @@ with ``discretionary_policy`` or for optimal simple rule with ``osr``
     ``M_.endo_names``.
 
 
+Optimal policy under commitment (Ramsey)
+----------------------------------------
+
 .. command:: ramsey_model (OPTIONS...);
 
     |br| This command computes the First Order Conditions for maximizing
     the policy maker objective function subject to the constraints
     provided by the equilibrium path of the private economy.
 
-    The planner objective must be declared with the
-    ``planner_objective`` command.
+    The planner objective must be declared with the :comm:`planner_objective` command.
 
     This command only creates the expanded model, it doesn’t perform
     any computations. It needs to be followed by other instructions to
-    actually perform desired computations. Note that it is the only
-    way to perform perfect foresight simulation of the Ramsey policy
-    problem.
+    actually perform desired computations. Examples are calls to ``steady`` 
+    to compute the steady state of the Ramsey economy, to ``stoch_simul`` 
+    with various approximation orders to conduct stochastic simulations based on 
+    perturbation solutions, to ``estimation`` in order to estimate models
+    under optimal policy with commitment, and to perfect foresight simulation  
+    routines.
 
     See :ref:`aux-variables`, for an explanation of how Lagrange
     multipliers are automatically created.
@@ -8439,8 +8447,13 @@ with ``discretionary_policy`` or for optimal simple rule with ``osr``
     ``steady_state_model`` block or in a ``_steadystate.m`` file). In
     this case, it is necessary to provide a steady state solution
     CONDITIONAL on the value of the instruments in the optimal policy
-    problem and declared with option ``instruments``. Note that
-    choosing the instruments is partly a matter of interpretation and
+    problem and declared with the option ``instruments``. The initial value 
+    of the instrument for steady state finding in this case is set with 
+    ``initval``. Note that computing and displaying steady state values 
+    using the ``steady``-command or calls to ``resid`` must come after 
+    the ``ramsey_model`` statement and the ``initval``-block.
+    
+    Note that choosing the instruments is partly a matter of interpretation and
     you can choose instruments that are handy from a mathematical
     point of view but different from the instruments you would refer
     to in the analysis of the paper. A typical example is choosing
@@ -8461,11 +8474,43 @@ with ``discretionary_policy`` or for optimal simple rule with ``osr``
             i > 0;
             end;
 
+.. command:: evaluate_planner_objective ;
+
+    This command computes, displays, and stores the value of the 
+    planner objective function 
+    under Ramsey policy in ``oo_.planner_objective_value``, given the
+    initial values of the endogenous state variables. If not specified
+    with ``histval``, they are taken to be at their steady state
+    values. The result is a 1 by 2 vector, where the first entry
+    stores the value of the planner objective when the initial
+    Lagrange multipliers associated with the planner’s problem are set
+    to their steady state values (see :comm:`ramsey_policy`).
+
+    In contrast, the second entry stores the value of the planner
+    objective with initial Lagrange multipliers of the planner’s
+    problem set to 0, i.e. it is assumed that the planner exploits its
+    ability to surprise private agents in the first period of
+    implementing Ramsey policy. This is the value of implementating
+    optimal policy for the first time and committing not to
+    re-optimize in the future.
+
+    Because it entails computing at least a second order approximation, the
+    computation of the planner objective value is skipped with a message when
+    the model is too large (more than 180 state variables, including lagged
+    Lagrange multipliers).
 
 .. command:: ramsey_policy [VARIABLE_NAME...];
              ramsey_policy (OPTIONS...) [VARIABLE_NAME...];
 
-    |br| This command computes the first order approximation of the
+    |br| This command is formally equivalent to the calling sequence
+    
+        ::
+
+            ramsey_model;
+            stoch_simul(order=1);
+            evaluate_planner_objective;
+
+    It computes the first order approximation of the
     policy that maximizes the policy maker’s objective function
     subject to the constraints provided by the equilibrium path of the
     private economy and under commitment to this optimal policy. The
@@ -8495,10 +8540,7 @@ with ``discretionary_policy`` or for optimal simple rule with ``osr``
     will for example display the IRFs of the respective multipliers
     when ``irf>0``.
 
-    The planner objective must be declared with the planner_objective command.
-
-    See :ref:`aux-variables`, for an explanation of how this operator
-    is handled internally and how this affects the output.
+    The planner objective must be declared with the :comm:`planner_objective` command.
 
     *Options*
 
@@ -8526,34 +8568,13 @@ with ``discretionary_policy`` or for optimal simple rule with ``osr``
     endogenous state variables (except for the Lagrange multipliers),
     see :bck:`histval`.
 
-    .. _plan-obj:
-
-    In addition, it stores the value of planner objective function
-    under Ramsey policy in ``oo_.planner_objective_value``, given the
-    initial values of the endogenous state variables. If not specified
-    with ``histval``, they are taken to be at their steady state
-    values. The result is a 1 by 2 vector, where the first entry
-    stores the value of the planner objective when the initial
-    Lagrange multipliers associated with the planner’s problem are set
-    to their steady state values (see :comm:`ramsey_policy`).
-
-    In contrast, the second entry stores the value of the planner
-    objective with initial Lagrange multipliers of the planner’s
-    problem set to 0, i.e. it is assumed that the planner exploits its
-    ability to surprise private agents in the first period of
-    implementing Ramsey policy. This is the value of implementating
-    optimal policy for the first time and committing not to
-    re-optimize in the future.
-
-    Because it entails computing at least a second order approximation, the
-    computation of the planner objective value is skipped with a message when
-    the model is too large (more than 180 state variables, including lagged
-    Lagrange multipliers).
 
     *Steady state*
 
     See :comm:`Ramsey steady state <ramsey_model>`.
 
+Optimal policy under discretion 
+-------------------------------
 
 .. command:: discretionary_policy [VARIABLE_NAME...];
              discretionary_policy (OPTIONS...) [VARIABLE_NAME...];

@@ -52,7 +52,7 @@ class DynareLexer(RegexLexer):
         "save_params_and_steady_state","load_params_and_steady_state",
         "dynare_version","write_latex_definitions","write_latex_parameter_table",
         "write_latex_prior_table","collect_latex_files","prior_function",
-        "posterior_function","generate_trace_plots")
+        "posterior_function","generate_trace_plots","evaluate_planner_objective")
 
     report_commands = ("report","addPage","addSection","addGraph","addTable",
         "addSeries","addParagraph","addVspace","write","compile")
