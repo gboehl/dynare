@@ -1,5 +1,5 @@
 /*
- * Copyright © 2006-2019 Dynare Team
+ * Copyright © 2006-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -38,8 +38,8 @@ mexFunction(int nlhs, mxArray *plhs[],
             int nrhs, const mxArray *prhs[])
 {
   /* Check for proper number of arguments */
-  if (nrhs < 2 || nrhs > 4 || nlhs == 0 || nlhs > 7)
-    DYN_MEX_FUNC_ERR_MSG_TXT("MJDGGES: takes 2, 3 or 4 input arguments and between 1 and 7 output arguments.");
+  if (nrhs < 2 || nrhs > 4 || nlhs != 7)
+    DYN_MEX_FUNC_ERR_MSG_TXT("MJDGGES: takes 2, 3 or 4 input arguments and exactly 7 output arguments.");
 
   /* Check that A and B are real matrices of the same dimension.*/
   size_t m1 = mxGetM(prhs[0]);
