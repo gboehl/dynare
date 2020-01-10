@@ -1487,7 +1487,9 @@ in this case ``initval`` is used to specify the terminal conditions.
 
             steady;
 
-            simul(periods=200);
+            perfect_foresight_setup(periods=200);
+            perfect_foresight_solver;
+            
 
         In this example, the problem is finding the optimal path for
         consumption and capital for the periods :math:`t=1` to
@@ -1527,7 +1529,9 @@ in this case ``initval`` is used to specify the terminal conditions.
             x = 1.1;
             end;
 
-            simul(periods=200);
+            perfect_foresight_setup(periods=200);
+            perfect_foresight_solver;
+
 
         In this example, there is no `steady` command, hence the
         conditions are exactly those specified in the `initval` and `endval` blocks.
@@ -1709,7 +1713,7 @@ in this case ``initval`` is used to specify the terminal conditions.
           objective function of the planner is computed. Note that the
           initial values of the Lagrange multipliers associated with
           the planner’s problem cannot be set (see
-          :ref:`planner_objective_value <plan-obj>`).
+          :comm:`evaluate_planner_objective`).
 
     *Options*
 
@@ -8123,15 +8127,241 @@ Optimal policy
 ==============
 
 Dynare has tools to compute optimal policies for various types of
-objectives. ``ramsey_model`` computes automatically the First Order
-Conditions (FOC) of a model, given the ``planner_objective``. You can
-then use other standard commands to solve, estimate or simulate this
-new, expanded model.
-
-Alternatively, you can either solve for optimal policy under
-commitment with ``ramsey_policy``, for optimal policy under discretion
-with ``discretionary_policy`` or for optimal simple rule with ``osr``
+objectives. You can either solve for optimal policy under
+commitment with ``ramsey_model``, for optimal policy under discretion
+with ``discretionary_policy`` or for optimal simple rules with ``osr``
 (also implying commitment).
+
+.. command:: planner_objective MODEL_EXPRESSION ;
+
+    |br| This command declares the policy maker objective, for use
+    with ``ramsey_model`` or ``discretionary_policy``.
+
+    You need to give the one-period objective, not the discounted
+    lifetime objective. The discount factor is given by the
+    ``planner_discount`` option of ``ramsey_model`` and
+    ``discretionary_policy``. The objective function can only contain
+    current endogenous variables and no exogenous ones. This
+    limitation is easily circumvented by defining an appropriate
+    auxiliary variable in the model.
+
+    With ``ramsey_model``, you are not limited to quadratic
+    objectives: you can give any arbitrary nonlinear expression.
+
+    With ``discretionary_policy``, the objective function must be quadratic.
+
+Optimal policy under commitment (Ramsey)
+----------------------------------------
+
+.. command:: ramsey_model (OPTIONS...);
+
+    |br| This command computes the First Order Conditions for maximizing
+    the policy maker objective function subject to the constraints
+    provided by the equilibrium path of the private economy.
+
+    The planner objective must be declared with the :comm:`planner_objective` command.
+
+    This command only creates the expanded model, it doesn’t perform
+    any computations. It needs to be followed by other instructions to
+    actually perform desired computations. Examples are calls to ``steady`` 
+    to compute the steady state of the Ramsey economy, to ``stoch_simul`` 
+    with various approximation orders to conduct stochastic simulations based on 
+    perturbation solutions, to ``estimation`` in order to estimate models
+    under optimal policy with commitment, and to perfect foresight simulation  
+    routines.
+
+    See :ref:`aux-variables`, for an explanation of how Lagrange
+    multipliers are automatically created.
+
+    *Options*
+
+    This command accepts the following options:
+
+    .. option:: planner_discount = EXPRESSION
+
+        Declares or reassigns the discount factor of the central
+        planner ``optimal_policy_discount_factor``. Default: ``1.0``.
+
+    .. option:: planner_discount_latex_name = LATEX_NAME
+
+        Sets the LaTeX name of the ``optimal_policy_discount_factor``
+        parameter.
+
+    .. option:: instruments = (VARIABLE_NAME,...)
+
+        Declares instrument variables for the computation of the
+        steady state under optimal policy. Requires a
+        ``steady_state_model`` block or a ``_steadystate.m`` file. See
+        below.
+
+    *Steady state*
+
+    Dynare takes advantage of the fact that the Lagrange multipliers
+    appear linearly in the equations of the steady state of the model
+    under optimal policy. Nevertheless, it is in general very
+    difficult to compute the steady state with simply a numerical
+    guess in ``initval`` for the endogenous variables.
+
+    It greatly facilitates the computation, if the user provides an
+    analytical solution for the steady state (in
+    ``steady_state_model`` block or in a ``_steadystate.m`` file). In
+    this case, it is necessary to provide a steady state solution
+    CONDITIONAL on the value of the instruments in the optimal policy
+    problem and declared with the option ``instruments``. The initial value 
+    of the instrument for steady state finding in this case is set with 
+    ``initval``. Note that computing and displaying steady state values 
+    using the ``steady``-command or calls to ``resid`` must come after 
+    the ``ramsey_model`` statement and the ``initval``-block.
+    
+    Note that choosing the instruments is partly a matter of interpretation and
+    you can choose instruments that are handy from a mathematical
+    point of view but different from the instruments you would refer
+    to in the analysis of the paper. A typical example is choosing
+    inflation or nominal interest rate as an instrument.
+
+
+.. block:: ramsey_constraints ;
+
+    |br| This block lets you define constraints on the variables in
+    the Ramsey problem. The constraints take the form of a variable,
+    an inequality operator (> or <) and a constant.
+
+    *Example*
+
+        ::
+
+            ramsey_constraints;
+            i > 0;
+            end;
+
+.. command:: evaluate_planner_objective ;
+
+    This command computes, displays, and stores the value of the 
+    planner objective function 
+    under Ramsey policy in ``oo_.planner_objective_value``, given the
+    initial values of the endogenous state variables. If not specified
+    with ``histval``, they are taken to be at their steady state
+    values. The result is a 1 by 2 vector, where the first entry
+    stores the value of the planner objective when the initial
+    Lagrange multipliers associated with the planner’s problem are set
+    to their steady state values (see :comm:`ramsey_policy`).
+
+    In contrast, the second entry stores the value of the planner
+    objective with initial Lagrange multipliers of the planner’s
+    problem set to 0, i.e. it is assumed that the planner exploits its
+    ability to surprise private agents in the first period of
+    implementing Ramsey policy. This is the value of implementating
+    optimal policy for the first time and committing not to
+    re-optimize in the future.
+
+    Because it entails computing at least a second order approximation, the
+    computation of the planner objective value is skipped with a message when
+    the model is too large (more than 180 state variables, including lagged
+    Lagrange multipliers).
+
+.. command:: ramsey_policy [VARIABLE_NAME...];
+             ramsey_policy (OPTIONS...) [VARIABLE_NAME...];
+
+    |br| This command is formally equivalent to the calling sequence
+    
+        ::
+
+            ramsey_model;
+            stoch_simul(order=1);
+            evaluate_planner_objective;
+
+    It computes the first order approximation of the
+    policy that maximizes the policy maker’s objective function
+    subject to the constraints provided by the equilibrium path of the
+    private economy and under commitment to this optimal policy. The
+    Ramsey policy is computed by approximating the equilibrium system
+    around the perturbation point where the Lagrange multipliers are
+    at their steady state, i.e. where the Ramsey planner acts as if
+    the initial multipliers had been set to 0 in the distant past,
+    giving them time to converge to their steady state
+    value. Consequently, the optimal decision rules are computed
+    around this steady state of the endogenous variables and the
+    Lagrange multipliers.
+
+    This first order approximation to the optimal policy conducted by
+    Dynare is not to be confused with a naive linear quadratic
+    approach to optimal policy that can lead to spurious welfare
+    rankings (see *Kim and Kim (2003)*). In the latter, the optimal
+    policy would be computed subject to the first order approximated
+    FOCs of the private economy. In contrast, Dynare first computes
+    the FOCs of the Ramsey planner’s problem subject to the nonlinear
+    constraints that are the FOCs of the private economy and only then
+    approximates these FOCs of planner’s problem to first
+    order. Thereby, the second order terms that are required for a
+    second-order correct welfare evaluation are preserved.
+
+    Note that the variables in the list after the ``ramsey_policy``
+    command can also contain multiplier names. In that case, Dynare
+    will for example display the IRFs of the respective multipliers
+    when ``irf>0``.
+
+    The planner objective must be declared with the :comm:`planner_objective` command.
+
+    *Options*
+
+    This command accepts all options of ``stoch_simul``, plus:
+
+    .. option:: planner_discount = EXPRESSION
+
+        See :opt:`planner_discount <planner_discount = EXPRESSION>`.
+
+    .. option:: instruments = (VARIABLE_NAME,...)
+
+        Declares instrument variables for the computation of the
+        steady state under optimal policy. Requires a
+        ``steady_state_model`` block or a ``_steadystate.m`` file. See
+        below.
+
+    Note that only a first order approximation of the optimal Ramsey
+    policy is available, leading to a second-order accurate welfare
+    ranking (i.e. ``order=1`` must be specified).
+
+    *Output*
+
+    This command generates all the output variables of
+    ``stoch_simul``. For specifying the initial values for the
+    endogenous state variables (except for the Lagrange multipliers),
+    see :bck:`histval`.
+
+
+    *Steady state*
+
+    See :comm:`Ramsey steady state <ramsey_model>`.
+
+Optimal policy under discretion 
+-------------------------------
+
+.. command:: discretionary_policy [VARIABLE_NAME...];
+             discretionary_policy (OPTIONS...) [VARIABLE_NAME...];
+
+    |br| This command computes an approximation of the optimal policy
+    under discretion. The algorithm implemented is essentially an LQ
+    solver, and is described by *Dennis (2007)*.
+
+    You should ensure that your model is linear and your objective is
+    quadratic. Also, you should set the ``linear`` option of the
+    ``model`` block.
+
+    *Options*
+
+    This command accepts the same options as ``ramsey_policy``, plus:
+
+    .. option:: discretionary_tol = NON-NEGATIVE DOUBLE
+
+        Sets the tolerance level used to assess convergence of the
+        solution algorithm. Default: ``1e-7``.
+
+    .. option:: maxit = INTEGER
+
+        Maximum number of iterations. Default: ``3000``.
+
+Optimal Simple Rules (OSR)
+--------------------------
 
 .. command:: osr [VARIABLE_NAME...];
              osr (OPTIONS...) [VARIABLE_NAME...];
@@ -8381,218 +8611,6 @@ with ``discretionary_policy`` or for optimal simple rule with ``osr``
     After an execution of the ``osr`` command, this vector contains
     the indices of the variables entering the objective function in
     ``M_.endo_names``.
-
-
-.. command:: ramsey_model (OPTIONS...);
-
-    |br| This command computes the First Order Conditions for maximizing
-    the policy maker objective function subject to the constraints
-    provided by the equilibrium path of the private economy.
-
-    The planner objective must be declared with the
-    ``planner_objective`` command.
-
-    This command only creates the expanded model, it doesn’t perform
-    any computations. It needs to be followed by other instructions to
-    actually perform desired computations. Note that it is the only
-    way to perform perfect foresight simulation of the Ramsey policy
-    problem.
-
-    See :ref:`aux-variables`, for an explanation of how Lagrange
-    multipliers are automatically created.
-
-    *Options*
-
-    This command accepts the following options:
-
-    .. option:: planner_discount = EXPRESSION
-
-        Declares or reassigns the discount factor of the central
-        planner ``optimal_policy_discount_factor``. Default: ``1.0``.
-
-    .. option:: planner_discount_latex_name = LATEX_NAME
-
-        Sets the LaTeX name of the ``optimal_policy_discount_factor``
-        parameter.
-
-    .. option:: instruments = (VARIABLE_NAME,...)
-
-        Declares instrument variables for the computation of the
-        steady state under optimal policy. Requires a
-        ``steady_state_model`` block or a ``_steadystate.m`` file. See
-        below.
-
-    *Steady state*
-
-    Dynare takes advantage of the fact that the Lagrange multipliers
-    appear linearly in the equations of the steady state of the model
-    under optimal policy. Nevertheless, it is in general very
-    difficult to compute the steady state with simply a numerical
-    guess in ``initval`` for the endogenous variables.
-
-    It greatly facilitates the computation, if the user provides an
-    analytical solution for the steady state (in
-    ``steady_state_model`` block or in a ``_steadystate.m`` file). In
-    this case, it is necessary to provide a steady state solution
-    CONDITIONAL on the value of the instruments in the optimal policy
-    problem and declared with option ``instruments``. Note that
-    choosing the instruments is partly a matter of interpretation and
-    you can choose instruments that are handy from a mathematical
-    point of view but different from the instruments you would refer
-    to in the analysis of the paper. A typical example is choosing
-    inflation or nominal interest rate as an instrument.
-
-
-.. block:: ramsey_constraints ;
-
-    |br| This block lets you define constraints on the variables in
-    the Ramsey problem. The constraints take the form of a variable,
-    an inequality operator (> or <) and a constant.
-
-    *Example*
-
-        ::
-
-            ramsey_constraints;
-            i > 0;
-            end;
-
-
-.. command:: ramsey_policy [VARIABLE_NAME...];
-             ramsey_policy (OPTIONS...) [VARIABLE_NAME...];
-
-    |br| This command computes the first order approximation of the
-    policy that maximizes the policy maker’s objective function
-    subject to the constraints provided by the equilibrium path of the
-    private economy and under commitment to this optimal policy. The
-    Ramsey policy is computed by approximating the equilibrium system
-    around the perturbation point where the Lagrange multipliers are
-    at their steady state, i.e. where the Ramsey planner acts as if
-    the initial multipliers had been set to 0 in the distant past,
-    giving them time to converge to their steady state
-    value. Consequently, the optimal decision rules are computed
-    around this steady state of the endogenous variables and the
-    Lagrange multipliers.
-
-    This first order approximation to the optimal policy conducted by
-    Dynare is not to be confused with a naive linear quadratic
-    approach to optimal policy that can lead to spurious welfare
-    rankings (see *Kim and Kim (2003)*). In the latter, the optimal
-    policy would be computed subject to the first order approximated
-    FOCs of the private economy. In contrast, Dynare first computes
-    the FOCs of the Ramsey planner’s problem subject to the nonlinear
-    constraints that are the FOCs of the private economy and only then
-    approximates these FOCs of planner’s problem to first
-    order. Thereby, the second order terms that are required for a
-    second-order correct welfare evaluation are preserved.
-
-    Note that the variables in the list after the ``ramsey_policy``
-    command can also contain multiplier names. In that case, Dynare
-    will for example display the IRFs of the respective multipliers
-    when ``irf>0``.
-
-    The planner objective must be declared with the planner_objective command.
-
-    See :ref:`aux-variables`, for an explanation of how this operator
-    is handled internally and how this affects the output.
-
-    *Options*
-
-    This command accepts all options of ``stoch_simul``, plus:
-
-    .. option:: planner_discount = EXPRESSION
-
-        See :opt:`planner_discount <planner_discount = EXPRESSION>`.
-
-    .. option:: instruments = (VARIABLE_NAME,...)
-
-        Declares instrument variables for the computation of the
-        steady state under optimal policy. Requires a
-        ``steady_state_model`` block or a ``_steadystate.m`` file. See
-        below.
-
-    Note that only a first order approximation of the optimal Ramsey
-    policy is available, leading to a second-order accurate welfare
-    ranking (i.e. ``order=1`` must be specified).
-
-    *Output*
-
-    This command generates all the output variables of
-    ``stoch_simul``. For specifying the initial values for the
-    endogenous state variables (except for the Lagrange multipliers),
-    see :bck:`histval`.
-
-    .. _plan-obj:
-
-    In addition, it stores the value of planner objective function
-    under Ramsey policy in ``oo_.planner_objective_value``, given the
-    initial values of the endogenous state variables. If not specified
-    with ``histval``, they are taken to be at their steady state
-    values. The result is a 1 by 2 vector, where the first entry
-    stores the value of the planner objective when the initial
-    Lagrange multipliers associated with the planner’s problem are set
-    to their steady state values (see :comm:`ramsey_policy`).
-
-    In contrast, the second entry stores the value of the planner
-    objective with initial Lagrange multipliers of the planner’s
-    problem set to 0, i.e. it is assumed that the planner exploits its
-    ability to surprise private agents in the first period of
-    implementing Ramsey policy. This is the value of implementating
-    optimal policy for the first time and committing not to
-    re-optimize in the future.
-
-    Because it entails computing at least a second order approximation, the
-    computation of the planner objective value is skipped with a message when
-    the model is too large (more than 180 state variables, including lagged
-    Lagrange multipliers).
-
-    *Steady state*
-
-    See :comm:`Ramsey steady state <ramsey_model>`.
-
-
-.. command:: discretionary_policy [VARIABLE_NAME...];
-             discretionary_policy (OPTIONS...) [VARIABLE_NAME...];
-
-    |br| This command computes an approximation of the optimal policy
-    under discretion. The algorithm implemented is essentially an LQ
-    solver, and is described by *Dennis (2007)*.
-
-    You should ensure that your model is linear and your objective is
-    quadratic. Also, you should set the ``linear`` option of the
-    ``model`` block.
-
-    *Options*
-
-    This command accepts the same options than ``ramsey_policy``, plus:
-
-    .. option:: discretionary_tol = NON-NEGATIVE DOUBLE
-
-        Sets the tolerance level used to assess convergence of the
-        solution algorithm. Default: ``1e-7``.
-
-    .. option:: maxit = INTEGER
-
-        Maximum number of iterations. Default: ``3000``.
-
-
-.. command:: planner_objective MODEL_EXPRESSION ;
-
-    |br| This command declares the policy maker objective, for use
-    with ``ramsey_policy`` or ``discretionary_policy``.
-
-    You need to give the one-period objective, not the discounted
-    lifetime objective. The discount factor is given by the
-    ``planner_discount`` option of ``ramsey_policy`` and
-    ``discretionary_policy``. The objective function can only contain
-    current endogenous variables and no exogenous ones. This
-    limitation is easily circumvented by defining an appropriate
-    auxiliary variable in the model.
-
-    With ``ramsey_policy``, you are not limited to quadratic
-    objectives: you can give any arbitrary nonlinear expression.
-
-    With ``discretionary_policy``, the objective function must be quadratic.
 
 
 Sensitivity and identification analysis
