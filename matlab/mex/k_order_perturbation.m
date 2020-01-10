@@ -1,4 +1,4 @@
-% [err, dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,DynareModel,DynareOptions,g1,g2,g3)
+% [dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,DynareModel,DynareOptions,g1,g2,g3)
 % computes a k_order_petrubation solution for k=1,2,3
 %
 % INPUTS
@@ -10,7 +10,6 @@
 % g3:            matrix   Third order derivatives of the model (optional)
 %
 % OUTPUTS
-% err:           double   error code
 % dynpp_derivs   struct   Derivatives of the decision rule in Dynare++ format.
 %                         The tensors are folded and the Taylor coefficients (1/n!) are
 %                         included.
@@ -29,7 +28,7 @@
 % dynare/mex/sources/k_order_perturbation.cc and it uses code provided by
 % dynare++
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

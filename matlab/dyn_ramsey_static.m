@@ -18,7 +18,7 @@ function [steady_state,params,check] = dyn_ramsey_static(ys_init,M,options_,oo)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2018 Dynare Team
+% Copyright (C) 2003-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -156,8 +156,8 @@ Uyy = reshape(Uyy,endo_nbr,endo_nbr);
 % set multipliers and auxiliary variables that
 % depends on multipliers to 0 to compute residuals
 if (options_.bytecode)
-    [chck, res, junk] = bytecode('static',xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
-                                 params, 'evaluate');
+    [res, junk] = bytecode('static',xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
+                           params, 'evaluate');
     fJ = junk.g1;
 else
     [res,fJ] = feval([fname '.static'],xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
@@ -194,8 +194,8 @@ end
 function result = check_static_model(ys,M,options_,oo)
 result = false;
 if (options_.bytecode)
-    [chck, res, ~] = bytecode('static',ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
-                              M.params, 'evaluate');
+    [res, ~] = bytecode('static',ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
+                        M.params, 'evaluate');
 else
     res = feval([M.fname '.static'],ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
                 M.params);

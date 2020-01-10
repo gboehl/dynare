@@ -12,7 +12,7 @@ function z = resid(junk)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,8 +79,7 @@ if options_.block && ~options_.bytecode
         z(idx) = r;
     end
 elseif options_.bytecode
-    [check, z] = bytecode('evaluate','static');
-    mexErrCheck('bytecode', check);
+    z = bytecode('evaluate','static');
 else
     z = feval([M_.fname '.static'],...
               oo_.steady_state,...

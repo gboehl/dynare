@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2019 Dynare Team
+ * Copyright © 2008-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -82,8 +82,8 @@ extern "C" {
   mexFunction(int nlhs, mxArray *plhs[],
               int nrhs, const mxArray *prhs[])
   {
-    if (nrhs < 3 || nlhs < 2 || nlhs > 3)
-      DYN_MEX_FUNC_ERR_MSG_TXT("Must have at least 3 input parameters and takes 2 or 3 output parameters.");
+    if (nrhs < 3 || nlhs < 1 || nlhs > 2)
+      mexErrMsgTxt("Must have at least 3 input parameters and takes 1 or 2 output parameters.");
 
     // Give explicit names to input arguments
     const mxArray *dr_mx = prhs[0];
@@ -101,11 +101,11 @@ extern "C" {
     // Extract various fields from options_
     const int kOrder = get_int_field(options_mx, "order");
     if (kOrder < 1)
-      DYN_MEX_FUNC_ERR_MSG_TXT("options_.order must be at least 1");
+      mexErrMsgTxt("options_.order must be at least 1");
 
     const mxArray *use_dll_mx = mxGetField(options_mx, 0, "use_dll");
     if (!(use_dll_mx && mxIsLogicalScalar(use_dll_mx)))
-      DYN_MEX_FUNC_ERR_MSG_TXT("options_.use_dll should be a logical scalar");
+      mexErrMsgTxt("options_.use_dll should be a logical scalar");
     bool use_dll = static_cast<bool>(mxGetScalar(use_dll_mx));
 
     double qz_criterium = 1+1e-6;
@@ -115,31 +115,31 @@ extern "C" {
 
     const mxArray *threads_mx = mxGetField(options_mx, 0, "threads");
     if (!threads_mx)
-      DYN_MEX_FUNC_ERR_MSG_TXT("Can't find field options_.threads");
+      mexErrMsgTxt("Can't find field options_.threads");
     const mxArray *num_threads_mx = mxGetField(threads_mx, 0, "k_order_perturbation");
     if (!(num_threads_mx && mxIsScalar(num_threads_mx) && mxIsNumeric(num_threads_mx)))
-      DYN_MEX_FUNC_ERR_MSG_TXT("options_.threads.k_order_perturbation be a numeric scalar");
+      mexErrMsgTxt("options_.threads.k_order_perturbation be a numeric scalar");
     int num_threads = static_cast<int>(mxGetScalar(num_threads_mx));
 
     // Extract various fields from M_
     const mxArray *fname_mx = mxGetField(M_mx, 0, "fname");
     if (!(fname_mx && mxIsChar(fname_mx) && mxGetM(fname_mx) == 1))
-      DYN_MEX_FUNC_ERR_MSG_TXT("M_.fname should be a character string");
+      mexErrMsgTxt("M_.fname should be a character string");
     std::string fname{mxArrayToString(fname_mx)};
 
     const mxArray *params_mx = mxGetField(M_mx, 0, "params");
     if (!(params_mx && mxIsDouble(params_mx)))
-      DYN_MEX_FUNC_ERR_MSG_TXT("M_.params should be a double precision array");
+      mexErrMsgTxt("M_.params should be a double precision array");
     Vector modParams{ConstVector{params_mx}};
     if (!modParams.isFinite())
-      DYN_MEX_FUNC_ERR_MSG_TXT("M_.params contains NaN or Inf");
+      mexErrMsgTxt("M_.params contains NaN or Inf");
 
     const mxArray *sigma_e_mx = mxGetField(M_mx, 0, "Sigma_e");
     if (!(sigma_e_mx && mxIsDouble(sigma_e_mx) && mxGetM(sigma_e_mx) == mxGetN(sigma_e_mx)))
-      DYN_MEX_FUNC_ERR_MSG_TXT("M_.Sigma_e should be a double precision square matrix");
+      mexErrMsgTxt("M_.Sigma_e should be a double precision square matrix");
     TwoDMatrix vCov{ConstTwoDMatrix{sigma_e_mx}};
     if (!vCov.isFinite())
-      DYN_MEX_FUNC_ERR_MSG_TXT("M_.Sigma_e contains NaN or Inf");
+      mexErrMsgTxt("M_.Sigma_e contains NaN or Inf");
 
     const int nStat = get_int_field(M_mx, "nstatic");
     const int nPred = get_int_field(M_mx, "npred");
@@ -153,42 +153,42 @@ extern "C" {
     const mxArray *lead_lag_incidence_mx = mxGetField(M_mx, 0, "lead_lag_incidence");
     if (!(lead_lag_incidence_mx && mxIsDouble(lead_lag_incidence_mx) && mxGetM(lead_lag_incidence_mx) == 3
           && mxGetN(lead_lag_incidence_mx) == static_cast<size_t>(nEndo)))
-      DYN_MEX_FUNC_ERR_MSG_TXT("M_.lead_lag_incidence should be a double precision matrix with 3 rows and M_.endo_nbr columns");
+      mexErrMsgTxt("M_.lead_lag_incidence should be a double precision matrix with 3 rows and M_.endo_nbr columns");
     ConstTwoDMatrix llincidence{lead_lag_incidence_mx};
 
     const mxArray *nnzderivatives_mx = mxGetField(M_mx, 0, "NNZDerivatives");
     if (!(nnzderivatives_mx && mxIsDouble(nnzderivatives_mx)))
-      DYN_MEX_FUNC_ERR_MSG_TXT("M_.NNZDerivatives should be a double precision array");
+      mexErrMsgTxt("M_.NNZDerivatives should be a double precision array");
     ConstVector NNZD{nnzderivatives_mx};
     if (NNZD.length() < kOrder || NNZD[kOrder-1] == -1)
-      DYN_MEX_FUNC_ERR_MSG_TXT("The derivatives were not computed for the required order. Make sure that you used the right order option inside the `stoch_simul' command");
+      mexErrMsgTxt("The derivatives were not computed for the required order. Make sure that you used the right order option inside the `stoch_simul' command");
 
     const mxArray *endo_names_mx = mxGetField(M_mx, 0, "endo_names");
     if (!(endo_names_mx && mxIsCell(endo_names_mx) && mxGetNumberOfElements(endo_names_mx) == static_cast<size_t>(nEndo)))
-      DYN_MEX_FUNC_ERR_MSG_TXT("M_.endo_names should be a cell array of M_.endo_nbr elements");
+      mexErrMsgTxt("M_.endo_names should be a cell array of M_.endo_nbr elements");
     std::vector<std::string> endoNames = DynareMxArrayToString(endo_names_mx);
 
     const mxArray *exo_names_mx = mxGetField(M_mx, 0, "exo_names");
     if (!(exo_names_mx && mxIsCell(exo_names_mx) && mxGetNumberOfElements(exo_names_mx) == static_cast<size_t>(nExog)))
-      DYN_MEX_FUNC_ERR_MSG_TXT("M_.exo_names should be a cell array of M_.exo_nbr elements");
+      mexErrMsgTxt("M_.exo_names should be a cell array of M_.exo_nbr elements");
     std::vector<std::string> exoNames = DynareMxArrayToString(exo_names_mx);
 
     const mxArray *dynamic_tmp_nbr_mx = mxGetField(M_mx, 0, "dynamic_tmp_nbr");
     if (!(dynamic_tmp_nbr_mx && mxIsDouble(dynamic_tmp_nbr_mx) && mxGetNumberOfElements(dynamic_tmp_nbr_mx) >= static_cast<size_t>(kOrder+1)))
-      DYN_MEX_FUNC_ERR_MSG_TXT("M_.dynamic_tmp_nbr should be a double precision array with strictly more elements than the order of derivation");
+      mexErrMsgTxt("M_.dynamic_tmp_nbr should be a double precision array with strictly more elements than the order of derivation");
     int ntt = std::accumulate(mxGetPr(dynamic_tmp_nbr_mx), mxGetPr(dynamic_tmp_nbr_mx)+kOrder+1, 0);
 
     // Extract various fields from dr
     const mxArray *ys_mx = mxGetField(dr_mx, 0, "ys"); // and not in order of dr.order_var
     if (!(ys_mx && mxIsDouble(ys_mx)))
-      DYN_MEX_FUNC_ERR_MSG_TXT("dr.ys should be a double precision array");
+      mexErrMsgTxt("dr.ys should be a double precision array");
     Vector ySteady{ConstVector{ys_mx}};
     if (!ySteady.isFinite())
-      DYN_MEX_FUNC_ERR_MSG_TXT("dr.ys contains NaN or Inf");
+      mexErrMsgTxt("dr.ys contains NaN or Inf");
 
     const mxArray *order_var_mx = mxGetField(dr_mx, 0, "order_var");
     if (!(order_var_mx && mxIsDouble(order_var_mx) && mxGetNumberOfElements(order_var_mx) == static_cast<size_t>(nEndo)))
-      DYN_MEX_FUNC_ERR_MSG_TXT("dr.order_var should be a double precision array of M_.endo_nbr elements");
+      mexErrMsgTxt("dr.order_var should be a double precision array of M_.endo_nbr elements");
     std::vector<int> dr_order(nEndo);
     std::transform(mxGetPr(order_var_mx), mxGetPr(order_var_mx)+nEndo, dr_order.begin(),
                    [](double x) { return static_cast<int>(x)-1; });
@@ -241,7 +241,7 @@ extern "C" {
         const char *g_fieldnames_c[kOrder+1];
         for (int i = 0; i <= kOrder; i++)
           g_fieldnames_c[i] = g_fieldnames[i].c_str();
-        plhs[1] = mxCreateStructMatrix(1, 1, kOrder+1, g_fieldnames_c);
+        plhs[0] = mxCreateStructMatrix(1, 1, kOrder+1, g_fieldnames_c);
 
         // Fill that structure
         for (int i = 0; i <= kOrder; i++)
@@ -251,10 +251,10 @@ extern "C" {
             const ConstVector &vec = t.getData();
             assert(vec.skip() == 1);
             std::copy_n(vec.base(), vec.length(), mxGetPr(tmp));
-            mxSetField(plhs[1], 0, ("g_" + std::to_string(i)).c_str(), tmp);
+            mxSetField(plhs[0], 0, ("g_" + std::to_string(i)).c_str(), tmp);
           }
 
-        if (nlhs > 2)
+        if (nlhs > 1)
           {
             /* Return as 3rd argument a struct containing derivatives in Dynare
                format (unfolded matrices, without Taylor coefficient) up to 3rd
@@ -264,51 +264,50 @@ extern "C" {
             size_t nfields = (kOrder == 1 ? 2 : (kOrder == 2 ? 6 : 12));
             const char *c_fieldnames[] = { "gy", "gu", "gyy", "gyu", "guu", "gss",
                                            "gyyy", "gyyu", "gyuu", "guuu", "gyss", "guss" };
-            plhs[2] = mxCreateStructMatrix(1, 1, nfields, c_fieldnames);
+            plhs[1] = mxCreateStructMatrix(1, 1, nfields, c_fieldnames);
 
-            copy_derivatives(plhs[2], Symmetry{1, 0, 0, 0}, derivs, "gy");
-            copy_derivatives(plhs[2], Symmetry{0, 1, 0, 0}, derivs, "gu");
+            copy_derivatives(plhs[1], Symmetry{1, 0, 0, 0}, derivs, "gy");
+            copy_derivatives(plhs[1], Symmetry{0, 1, 0, 0}, derivs, "gu");
             if (kOrder >= 2)
               {
-                copy_derivatives(plhs[2], Symmetry{2, 0, 0, 0}, derivs, "gyy");
-                copy_derivatives(plhs[2], Symmetry{0, 2, 0, 0}, derivs, "guu");
-                copy_derivatives(plhs[2], Symmetry{1, 1, 0, 0}, derivs, "gyu");
-                copy_derivatives(plhs[2], Symmetry{0, 0, 0, 2}, derivs, "gss");
+                copy_derivatives(plhs[1], Symmetry{2, 0, 0, 0}, derivs, "gyy");
+                copy_derivatives(plhs[1], Symmetry{0, 2, 0, 0}, derivs, "guu");
+                copy_derivatives(plhs[1], Symmetry{1, 1, 0, 0}, derivs, "gyu");
+                copy_derivatives(plhs[1], Symmetry{0, 0, 0, 2}, derivs, "gss");
               }
             if (kOrder >= 3)
               {
-                copy_derivatives(plhs[2], Symmetry{3, 0, 0, 0}, derivs, "gyyy");
-                copy_derivatives(plhs[2], Symmetry{0, 3, 0, 0}, derivs, "guuu");
-                copy_derivatives(plhs[2], Symmetry{2, 1, 0, 0}, derivs, "gyyu");
-                copy_derivatives(plhs[2], Symmetry{1, 2, 0, 0}, derivs, "gyuu");
-                copy_derivatives(plhs[2], Symmetry{1, 0, 0, 2}, derivs, "gyss");
-                copy_derivatives(plhs[2], Symmetry{0, 1, 0, 2}, derivs, "guss");
+                copy_derivatives(plhs[1], Symmetry{3, 0, 0, 0}, derivs, "gyyy");
+                copy_derivatives(plhs[1], Symmetry{0, 3, 0, 0}, derivs, "guuu");
+                copy_derivatives(plhs[1], Symmetry{2, 1, 0, 0}, derivs, "gyyu");
+                copy_derivatives(plhs[1], Symmetry{1, 2, 0, 0}, derivs, "gyuu");
+                copy_derivatives(plhs[1], Symmetry{1, 0, 0, 2}, derivs, "gyss");
+                copy_derivatives(plhs[1], Symmetry{0, 1, 0, 2}, derivs, "guss");
               }
           }
       }
     catch (const KordException &e)
       {
         e.print();
-        DYN_MEX_FUNC_ERR_MSG_TXT(("dynare:k_order_perturbation: Caught Kord exception: " + e.get_message()).c_str());
+        mexErrMsgTxt(("dynare:k_order_perturbation: Caught Kord exception: " + e.get_message()).c_str());
       }
     catch (const TLException &e)
       {
         e.print();
-        DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Caught TL exception");
+        mexErrMsgTxt("dynare:k_order_perturbation: Caught TL exception");
       }
     catch (SylvException &e)
       {
         e.printMessage();
-        DYN_MEX_FUNC_ERR_MSG_TXT("dynare:k_order_perturbation: Caught Sylv exception");
+        mexErrMsgTxt("dynare:k_order_perturbation: Caught Sylv exception");
       }
     catch (const DynareException &e)
       {
-        DYN_MEX_FUNC_ERR_MSG_TXT(("dynare:k_order_perturbation: Caught KordDynare exception: " + e.message()).c_str());
+        mexErrMsgTxt(("dynare:k_order_perturbation: Caught KordDynare exception: " + e.message()).c_str());
       }
     catch (const ogu::Exception &e)
       {
-        DYN_MEX_FUNC_ERR_MSG_TXT(("dynare:k_order_perturbation: Caught general exception: " + e.message()).c_str());
+        mexErrMsgTxt(("dynare:k_order_perturbation: Caught general exception: " + e.message()).c_str());
       }
-    plhs[0] = mxCreateDoubleScalar(0);
   } // end of mexFunction()
 } // end of extern C

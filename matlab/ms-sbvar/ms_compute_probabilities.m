@@ -14,7 +14,7 @@ function [options_, oo_]=ms_compute_probabilities(M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011 Dynare Team
+% Copyright (C) 2011-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,8 +53,7 @@ else
 end
 
 % compute probabilities
-[err] = ms_sbvar_command_line(opt);
-mexErrCheck('ms_compute_probabilities',err);
+ms_sbvar_command_line(opt);
 
 % now we want to plot the probabilities for each chain
 if ischar(prob_out_file)

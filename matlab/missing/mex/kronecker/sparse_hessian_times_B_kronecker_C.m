@@ -1,7 +1,7 @@
-function [D, err] = sparse_hessian_times_B_kronecker_C(varargin)
+function D = sparse_hessian_times_B_kronecker_C(varargin)
 
 %@info:
-%! @deftypefn {Function File} {[@var{D}, @var{err}] =} sparse_hessian_times_B_kronecker_C (@var{A},@var{B},@var{C},@var{fake})
+%! @deftypefn {Function File} {@var{D} =} sparse_hessian_times_B_kronecker_C (@var{A},@var{B},@var{C},@var{fake})
 %! @anchor{kronecker/sparse_hessian_times_B_kronecker_C}
 %! @sp 1
 %! Computes A*kron(B,C) where A is hessian matrix in sparse format.
@@ -24,8 +24,6 @@ function [D, err] = sparse_hessian_times_B_kronecker_C(varargin)
 %! @table @ @var
 %! @item D
 %! mA*(nC*nB) or mA*(nB*nB) matrix of doubles.
-%! @item err
-%! Integer scalar equal to zero (if all goes well).
 %! @end table
 %! @sp 2
 %! @strong{Remarks}
@@ -45,7 +43,7 @@ function [D, err] = sparse_hessian_times_B_kronecker_C(varargin)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 1996-2012 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -71,10 +69,9 @@ fake = varargin{nargin};
 
 switch nargin
   case 4
-    [D, fake] = A_times_B_kronecker_C(A,B,C,fake);
+    D = A_times_B_kronecker_C(A,B,C,fake);
   case 3
-    [D, fake] = A_times_B_kronecker_C(A,B,C);
+    D = A_times_B_kronecker_C(A,B,C);
   otherwise
     error('Two or Three input arguments required!')
 end
-err = 0;

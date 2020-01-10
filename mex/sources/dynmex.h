@@ -1,5 +1,5 @@
 /*
- * Copyright © 2009-2019 Dynare Team
+ * Copyright © 2009-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -25,20 +25,6 @@
 #endif
 
 #include <mex.h>
-
-/*
- * Fix for trac ticket Ticket #137
- */
-#if !defined(DYN_MEX_FUNC_ERR_MSG_TXT)
-# define DYN_MEX_FUNC_ERR_MSG_TXT(str)          \
-  do {                                          \
-    mexPrintf("%s\n", str);                     \
-    int i;                                      \
-    for (i = 0; i < nlhs; i++)                  \
-      plhs[i] = mxCreateDoubleScalar(1);        \
-    return;                                     \
-  } while (0)
-#endif
 
 #if defined(MATLAB_MEX_FILE) && MATLAB_VERSION < 0x0805
 # define mxIsScalar(x) (mxGetM(x) == 1 && mxGetN(x) == 1)

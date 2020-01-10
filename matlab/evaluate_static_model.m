@@ -20,7 +20,7 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,9 +39,8 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 
 check1 = 0;
 if options.bytecode
-    [check1, residuals] = bytecode('evaluate','static',ys,...
-                                   exo_ss, params, ys, 1);
-    mexErrCheck('bytecode', check1);
+    residuals = bytecode('evaluate','static',ys,...
+                         exo_ss, params, ys, 1);
 else
     fh_static = str2func([M.fname '.static']);
     if options.block

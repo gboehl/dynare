@@ -1,4 +1,4 @@
-function [D, err] = A_times_B_kronecker_C(A,B,C)
+function D = A_times_B_kronecker_C(A,B,C)
 
 %@info:
 %! @deftypefn {Function File} {[@var{D}, @var{err}] =} A_times_B_kronecker_C (@var{A},@var{B},@var{C})
@@ -41,7 +41,7 @@ function [D, err] = A_times_B_kronecker_C(A,B,C)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 1996-2012 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -109,4 +109,4 @@ else
         D = A * kron(B,B);
     end
 end
-err = 0;
+

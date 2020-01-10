@@ -1,7 +1,7 @@
 function [dr,info] = k_order_pert(dr,M,options)
 % Compute decision rules using the k-order DLL from Dynare++
 
-% Copyright (C) 2009-2018 Dynare Team
+% Copyright (C) 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,8 +30,9 @@ if M.maximum_endo_lead == 0 && order>1
            'backward models'])
 end
 
-[err, dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,M,options);
-if err
+try
+    [dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,M,options);
+catch
     info(1)=9;
     return
 end

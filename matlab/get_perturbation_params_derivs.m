@@ -97,7 +97,7 @@ function DERIVS = get_perturbation_params_derivs(M, options, estim_params, oo, i
 %   * sylvester3a
 %   * get_perturbation_params_derivs_numerical_objective
 % =========================================================================
-% Copyright (C) 2019 Dynare Team
+% Copyright (C) 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -821,9 +821,9 @@ if order > 1
                        dghx(kcurr~=0,:,jp);
                        dghx(klead~=0,:,jp)*oo.dr.ghx(idx_states,:) + oo.dr.ghx(klead~=0,:)*dghx(idx_states,:,jp);
                        zeros(M.exo_nbr,M.nspred)];
-        [dRHS_1, err] = sparse_hessian_times_B_kronecker_C(dg2(:,k2yy0ex0(kyy0,kyy0)+(jp-1)*yy0ex0_nbr^2),zx(1:yy0_nbr,:),threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-        [dRHS_2, err] = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0,kyy0)),dzx(1:yy0_nbr,:,jp),zx(1:yy0_nbr,:),threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-        [dRHS_3, err] = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0,kyy0)),zx(1:yy0_nbr,:),dzx(1:yy0_nbr,:,jp),threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
+        dRHS_1 = sparse_hessian_times_B_kronecker_C(dg2(:,k2yy0ex0(kyy0,kyy0)+(jp-1)*yy0ex0_nbr^2),zx(1:yy0_nbr,:),threads_BC);
+        dRHS_2 = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0,kyy0)),dzx(1:yy0_nbr,:,jp),zx(1:yy0_nbr,:),threads_BC);
+        dRHS_3 = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0,kyy0)),zx(1:yy0_nbr,:),dzx(1:yy0_nbr,:,jp),threads_BC);
         dG_x_x(:,:,jp) = kron(dghx(idx_states,:,jp),oo.dr.ghx(idx_states,:)) + kron(oo.dr.ghx(idx_states,:),dghx(idx_states,:,jp));
         dRHSghxx(:,:,jp) = -( (dRHS_1+dRHS_2+dRHS_3) + dA(:,:,jp)*oo.dr.ghxx + dB(:,:,jp)*oo.dr.ghxx*G_x_x + B*oo.dr.ghxx*dG_x_x(:,:,jp) );
     end
@@ -838,9 +838,9 @@ if order > 1
           oo.dr.ghu(kcurr~=0,:);
           oo.dr.ghx(klead~=0,:)*oo.dr.ghu(idx_states,:);
           eye(M.exo_nbr)];
-    [abcOutxu,err] = A_times_B_kronecker_C(oo.dr.ghxx,oo.dr.ghx(idx_states,:),oo.dr.ghu(idx_states,:)); mexErrCheck('A_times_B_kronecker_C', err); %auxiliary expressions for dghxu
-    [abcOutuu, err] = A_times_B_kronecker_C(oo.dr.ghxx,oo.dr.ghu(idx_states,:)); mexErrCheck('A_times_B_kronecker_C', err); %auxiliary expressions for dghuu
-    [RHSs2, err] = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(nonzeros(klead),nonzeros(klead))), oo.dr.ghu(klead~=0,:),threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
+    abcOutxu = A_times_B_kronecker_C(oo.dr.ghxx,oo.dr.ghx(idx_states,:),oo.dr.ghu(idx_states,:)); %auxiliary expressions for dghxu
+    abcOutuu = A_times_B_kronecker_C(oo.dr.ghxx,oo.dr.ghu(idx_states,:)); %auxiliary expressions for dghuu
+    RHSs2 = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(nonzeros(klead),nonzeros(klead))), oo.dr.ghu(klead~=0,:),threads_BC);
     RHSs2 = RHSs2 + g1(:,nonzeros(klead))*oo.dr.ghuu(klead~=0,:);
     dzu = zeros(size(zu,1),size(zu,2),modparam_nbr);
     dghxu = zeros(M.endo_nbr,M.nspred*M.exo_nbr,modparam_nbr);
@@ -852,25 +852,25 @@ if order > 1
                        dghx(klead~=0,:,jp)*oo.dr.ghu(idx_states,:) + oo.dr.ghx(klead~=0,:)*dghu(idx_states,:,jp);
                        zeros(M.exo_nbr,M.exo_nbr)];
         %compute dghxu
-        [dRHS_1, err] = sparse_hessian_times_B_kronecker_C(dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2),zx,zu,threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-        [dRHS_2, err] = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0ex0,kyy0ex0)),dzx(:,:,jp),zu,threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-        [dRHS_3, err] = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0ex0,kyy0ex0)),zx,dzu(:,:,jp),threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-        [dabcOut_1,err] = A_times_B_kronecker_C(dghxx(:,:,jp),oo.dr.ghx(idx_states,:),oo.dr.ghu(idx_states,:)); mexErrCheck('A_times_B_kronecker_C', err);
-        [dabcOut_2,err] = A_times_B_kronecker_C(oo.dr.ghxx,dghx(idx_states,:,jp),oo.dr.ghu(idx_states,:)); mexErrCheck('A_times_B_kronecker_C', err);
-        [dabcOut_3,err] = A_times_B_kronecker_C(oo.dr.ghxx,oo.dr.ghx(idx_states,:),dghu(idx_states,:,jp)); mexErrCheck('A_times_B_kronecker_C', err);
+        dRHS_1 = sparse_hessian_times_B_kronecker_C(dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2),zx,zu,threads_BC);
+        dRHS_2 = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0ex0,kyy0ex0)),dzx(:,:,jp),zu,threads_BC);
+        dRHS_3 = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0ex0,kyy0ex0)),zx,dzu(:,:,jp),threads_BC);
+        dabcOut_1 = A_times_B_kronecker_C(dghxx(:,:,jp),oo.dr.ghx(idx_states,:),oo.dr.ghu(idx_states,:));
+        dabcOut_2 = A_times_B_kronecker_C(oo.dr.ghxx,dghx(idx_states,:,jp),oo.dr.ghu(idx_states,:));
+        dabcOut_3 = A_times_B_kronecker_C(oo.dr.ghxx,oo.dr.ghx(idx_states,:),dghu(idx_states,:,jp));
         dghxu(:,:,jp) = -invA * ( dA(:,:,jp)*oo.dr.ghxu + (dRHS_1+dRHS_2+dRHS_3) + dB(:,:,jp)*abcOutxu + B*(dabcOut_1+dabcOut_2+dabcOut_3) );
         %compute dghuu
-        [dRHS_1, err] = sparse_hessian_times_B_kronecker_C(dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2),zu,threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-        [dRHS_2, err] = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0ex0,kyy0ex0)),dzu(:,:,jp),zu,threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-        [dRHS_3, err] = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0ex0,kyy0ex0)),zu,dzu(:,:,jp),threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-        [dabcOut_1, err] = A_times_B_kronecker_C(dghxx(:,:,jp),oo.dr.ghu(idx_states,:)); mexErrCheck('A_times_B_kronecker_C', err);
-        [dabcOut_2, err] = A_times_B_kronecker_C(oo.dr.ghxx,dghu(idx_states,:,jp),oo.dr.ghu(idx_states,:)); mexErrCheck('A_times_B_kronecker_C', err);
-        [dabcOut_3, err] = A_times_B_kronecker_C(oo.dr.ghxx,oo.dr.ghu(idx_states,:),dghu(idx_states,:,jp)); mexErrCheck('A_times_B_kronecker_C', err);
+        dRHS_1 = sparse_hessian_times_B_kronecker_C(dg2(:,k2yy0ex0(kyy0ex0,kyy0ex0)+(jp-1)*yy0ex0_nbr^2),zu,threads_BC);
+        dRHS_2 = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0ex0,kyy0ex0)),dzu(:,:,jp),zu,threads_BC);
+        dRHS_3 = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(kyy0ex0,kyy0ex0)),zu,dzu(:,:,jp),threads_BC);
+        dabcOut_1 = A_times_B_kronecker_C(dghxx(:,:,jp),oo.dr.ghu(idx_states,:));
+        dabcOut_2 = A_times_B_kronecker_C(oo.dr.ghxx,dghu(idx_states,:,jp),oo.dr.ghu(idx_states,:));
+        dabcOut_3 = A_times_B_kronecker_C(oo.dr.ghxx,oo.dr.ghu(idx_states,:),dghu(idx_states,:,jp));
         dghuu(:,:,jp) = -invA * ( dA(:,:,jp)*oo.dr.ghuu + (dRHS_1+dRHS_2+dRHS_3) + dB(:,:,jp)*abcOutuu + B*(dabcOut_1+dabcOut_2+dabcOut_3) );
         %compute dghs2
-        [dRHS_1, err] = sparse_hessian_times_B_kronecker_C(dg2(:,k2yy0ex0(nonzeros(klead),nonzeros(klead))+(jp-1)*yy0ex0_nbr^2), oo.dr.ghu(klead~=0,:),threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-        [dRHS_2, err] = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(nonzeros(klead),nonzeros(klead))), dghu(klead~=0,:,jp), oo.dr.ghu(klead~=0,:),threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-        [dRHS_3, err] = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(nonzeros(klead),nonzeros(klead))), oo.dr.ghu(klead~=0,:), dghu(klead~=0,:,jp),threads_BC); mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
+        dRHS_1 = sparse_hessian_times_B_kronecker_C(dg2(:,k2yy0ex0(nonzeros(klead),nonzeros(klead))+(jp-1)*yy0ex0_nbr^2), oo.dr.ghu(klead~=0,:),threads_BC);
+        dRHS_2 = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(nonzeros(klead),nonzeros(klead))), dghu(klead~=0,:,jp), oo.dr.ghu(klead~=0,:),threads_BC);
+        dRHS_3 = sparse_hessian_times_B_kronecker_C(g2(:,k2yy0ex0(nonzeros(klead),nonzeros(klead))), oo.dr.ghu(klead~=0,:), dghu(klead~=0,:,jp),threads_BC);
         dghs2(:,stderrparam_nbr+corrparam_nbr+jp) = -invS * ( dS(:,:,jp)*oo.dr.ghs2 + ( (dRHS_1+dRHS_2+dRHS_3) + dg1(:,nonzeros(klead),jp)*oo.dr.ghuu(klead~=0,:) + g1(:,nonzeros(klead))*dghuu(klead~=0,:,jp) )*M.Sigma_e(:) );
     end
     %add contributions by dSigma_e to dghs2

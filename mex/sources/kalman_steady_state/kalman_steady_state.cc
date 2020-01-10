@@ -1,5 +1,5 @@
 /*
- * Copyright © 2009-2019 Dynare Team.
+ * Copyright © 2009-2020 Dynare Team.
  *
  * This file is part of Dynare.
  *
@@ -76,10 +76,10 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   // Check the number of arguments and set some flags.
   bool measurement_error_flag = true;
   if (nrhs < 3 || 4 < nrhs)
-    DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state accepts either 3 or 4 input arguments!");
+    mexErrMsgTxt("kalman_steady_state accepts either 3 or 4 input arguments!");
 
-  if (nlhs < 1 || 2 < nlhs)
-    DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state requires at least 1, but no more than 2, output arguments!");
+  if (nlhs != 1)
+    mexErrMsgTxt("kalman_steady_state accepts exactly one output argument!");
 
   if (nrhs == 3)
     measurement_error_flag = false;
@@ -87,30 +87,30 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   // Check the type of the input arguments and get the size of the matrices.
   lapack_int n = mxGetM(prhs[0]);
   if (static_cast<size_t>(n) != mxGetN(prhs[0]))
-    DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The first input argument (T) must be a square matrix!");
+    mexErrMsgTxt("kalman_steady_state: The first input argument (T) must be a square matrix!");
   if (mxIsNumeric(prhs[0]) == 0 || mxIsComplex(prhs[0]) == 1)
-    DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The first input argument (T) must be a real matrix!");
+    mexErrMsgTxt("kalman_steady_state: The first input argument (T) must be a real matrix!");
 
   lapack_int q = mxGetM(prhs[1]);
   if (static_cast<size_t>(q) != mxGetN(prhs[1]))
-    DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The second input argument (QQ) must be a square matrix!");
+    mexErrMsgTxt("kalman_steady_state: The second input argument (QQ) must be a square matrix!");
   if (mxIsNumeric(prhs[1]) == 0 || mxIsComplex(prhs[1]) == 1)
-    DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The second input argument (QQ) must be a real matrix!");
+    mexErrMsgTxt("kalman_steady_state: The second input argument (QQ) must be a real matrix!");
   if (q != n)
-    DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The size of the second input argument (QQ) must match the size of the first argument (T)!");
+    mexErrMsgTxt("kalman_steady_state: The size of the second input argument (QQ) must match the size of the first argument (T)!");
   lapack_int p = mxGetN(prhs[2]);
   if (mxGetM(prhs[2]) != static_cast<size_t>(n))
-    DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The number of rows of the third argument (Z) must match the number of rows of the first argument (T)!");
+    mexErrMsgTxt("kalman_steady_state: The number of rows of the third argument (Z) must match the number of rows of the first argument (T)!");
   if (mxIsNumeric(prhs[2]) == 0 || mxIsComplex(prhs[2]) == 1)
-    DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The third input argument (Z) must be a real matrix!");
+    mexErrMsgTxt("kalman_steady_state: The third input argument (Z) must be a real matrix!");
   if (measurement_error_flag)
     {
       if (mxGetM(prhs[3]) != mxGetN(prhs[3]))
-        DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The fourth input argument (H) must be a square matrix!");
+        mexErrMsgTxt("kalman_steady_state: The fourth input argument (H) must be a square matrix!");
       if (mxGetM(prhs[3]) != static_cast<size_t>(p))
-        DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The number of rows of the fourth input argument (H) must match the number of rows of the third input argument!");
+        mexErrMsgTxt("kalman_steady_state: The number of rows of the fourth input argument (H) must match the number of rows of the third input argument!");
       if (mxIsNumeric(prhs[3]) == 0 || mxIsComplex(prhs[3]) == 1)
-        DYN_MEX_FUNC_ERR_MSG_TXT("kalman_steady_state: The fifth input argument (H) must be a real matrix!");
+        mexErrMsgTxt("kalman_steady_state: The fifth input argument (H) must be a real matrix!");
     }
   // Get input matrices.
   const double *T = mxGetPr(prhs[0]);
@@ -147,8 +147,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   auto DWORK = std::make_unique<double[]>(LDWORK);
   auto BWORK = std::make_unique<lapack_int[]>(nn);
   // Initialize the output of the mex file
-  plhs[1] = mxCreateDoubleMatrix(n, n, mxREAL);
-  double *P = mxGetPr(plhs[1]);
+  plhs[0] = mxCreateDoubleMatrix(n, n, mxREAL);
+  double *P = mxGetPr(plhs[0]);
   // Call the slicot routine
   sb02od("D", // We want to solve a discrete Riccati equation.
          "B", // Matrices Z and H are given.
@@ -164,25 +164,24 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     case 0:
       break;
     case 1:
-      DYN_MEX_FUNC_ERR_MSG_TXT("The computed extended matrix pencil is singular, possibly due to rounding errors.\n");
+      mexErrMsgTxt("The computed extended matrix pencil is singular, possibly due to rounding errors.");
       break;
     case 2:
-      DYN_MEX_FUNC_ERR_MSG_TXT("The QZ (or QR) algorithm failed!\n");
+      mexErrMsgTxt("The QZ (or QR) algorithm failed!");
       break;
     case 3:
-      DYN_MEX_FUNC_ERR_MSG_TXT("The reordering of the (generalized) eigenvalues failed!\n");
+      mexErrMsgTxt("The reordering of the (generalized) eigenvalues failed!");
       break;
     case 4:
-      DYN_MEX_FUNC_ERR_MSG_TXT("After reordering, roundoff changed values of some complex eigenvalues so that leading eigenvalues\n in the (generalized) Schur form no longer satisfy the stability condition; this could also be caused due to scaling.");
+      mexErrMsgTxt("After reordering, roundoff changed values of some complex eigenvalues so that leading eigenvalues\n in the (generalized) Schur form no longer satisfy the stability condition; this could also be caused due to scaling.");
       break;
     case 5:
-      DYN_MEX_FUNC_ERR_MSG_TXT("The computed dimension of the solution does not equal n!\n");
+      mexErrMsgTxt("The computed dimension of the solution does not equal n!");
       break;
     case 6:
-      DYN_MEX_FUNC_ERR_MSG_TXT("A singular matrix was encountered during the computation of the solution matrix P!\n");
+      mexErrMsgTxt("A singular matrix was encountered during the computation of the solution matrix P!");
       break;
     default:
-      DYN_MEX_FUNC_ERR_MSG_TXT("Unknown problem!\n");
+      mexErrMsgTxt("Unknown problem!");
     }
-  plhs[0] = mxCreateDoubleScalar(0);
 }

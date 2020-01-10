@@ -1,5 +1,5 @@
 function info = test_kron(test,number_of_threads)
-% Copyright (C) 2007-2010 Dynare Team
+% Copyright (C) 2007-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,14 +52,12 @@ if test == 1
     disp('')
     disp('Computation of A*kron(B,B) with the mex file (v1):')
     tic 
-    [err, D1] = sparse_hessian_times_B_kronecker_C(A,B,number_of_threads);
-    mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
+    D1 = sparse_hessian_times_B_kronecker_C(A,B,number_of_threads);
     toc
     disp('')
     disp('Computation of A*kron(B,B) with the mex file (v2):')
     tic
-    [err, D2] = sparse_hessian_times_B_kronecker_C(A,B,B,number_of_threads);
-    mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
+    D2 = sparse_hessian_times_B_kronecker_C(A,B,B,number_of_threads);
     toc
     disp('');
     disp(['Difference between D1 and D2 = ' num2str(max(max(abs(D1-D2))))]);
@@ -120,14 +118,12 @@ if test==2
     disp(' ')
     disp('Computation of A*kron(B,B) with the mex file (v1):')
     tic
-    [err, D1] = sparse_hessian_times_B_kronecker_C(hessian,zx,number_of_threads);
-    mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
+    D1 = sparse_hessian_times_B_kronecker_C(hessian,zx,number_of_threads);
     toc
     disp(' ')
     disp('Computation of A*kron(B,B) with the mex file (v2):')
     tic
-    [err, D2] = sparse_hessian_times_B_kronecker_C(hessian,zx,zx,number_of_threads);
-    mexErrCheck('sparse_hessian_times_B_kronecker_C', err);    
+    D2 = sparse_hessian_times_B_kronecker_C(hessian,zx,zx,number_of_threads);
     toc
     disp(' ');
     disp(['Difference between D1 and D2 = ' num2str(max(max(abs(D1-D2))))]);
@@ -167,8 +163,7 @@ if test==3
     disp('Test with full format matrix -- 1(a)')
     D1 = A*kron(B,C);
     tic
-    [err, D2] = A_times_B_kronecker_C(A,B,C,number_of_threads);
-    mexErrCheck('A_times_B_kronecker_C', err);
+    D2 = A_times_B_kronecker_C(A,B,C,number_of_threads);
     toc
     disp(['Difference between D1 and D2 = ' num2str(max(max(abs(D1-D2))))]);
     if max(max(abs(D1-D2)))>1e-10
@@ -177,8 +172,7 @@ if test==3
     disp('Test with full format matrix -- 1(b)')
     D1 = A*kron(B,B);
     tic
-    [err, D2] = A_times_B_kronecker_C(A,B,number_of_threads);
-    mexErrCheck('A_times_B_kronecker_C', err);
+    D2 = A_times_B_kronecker_C(A,B,number_of_threads);
     toc
     disp(['Difference between D1 and D2 = ' num2str(max(max(abs(D1-D2))))]);
     if max(max(abs(D1-D2)))>1e-10

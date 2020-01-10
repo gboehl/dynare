@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2017 Dynare Team
+ * Copyright © 2010-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -42,8 +42,8 @@ mexFunction(int nlhs, mxArray *plhs[],
   /*
    * Check args
    */
-  if (nrhs != 1 || !mxIsChar(prhs[0]) || nlhs != 1)
-    DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: this function takes 1 string input argument and returns 1 output argument.");
+  if (nrhs != 1 || !mxIsChar(prhs[0]) || nlhs != 0)
+    mexErrMsgTxt("Error in MS-SBVAR MEX file: this function takes 1 string input argument and returns no output argument.");
 
   /*
    * Allocate memory
@@ -52,24 +52,24 @@ mexFunction(int nlhs, mxArray *plhs[],
   argument = static_cast<char *>(mxCalloc(mxGetN(prhs[0])+1, sizeof(char)));
   args = static_cast<char **>(mxCalloc(maxnargs, sizeof(char *)));
   if (argument == NULL || args == NULL)
-    DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: could not allocate memory. (1)");
+    mexErrMsgTxt("Error in MS-SBVAR MEX file: could not allocate memory. (1)");
 
   /*
    * Create argument string from prhs and parse to create args / nargs
    */
   if (!(args[nargs] = static_cast<char *>(mxCalloc(strlen(mainarg)+1, sizeof(char)))))
-    DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: could not allocate memory. (2)");
+    mexErrMsgTxt("Error in MS-SBVAR MEX file: could not allocate memory. (2)");
 
   strncpy(args[nargs++], mainarg, strlen(mainarg));
 
   if (mxGetString(prhs[0], argument, mxGetN(prhs[0])+1))
-    DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: error using mxGetString.\n");
+    mexErrMsgTxt("Error in MS-SBVAR MEX file: error using mxGetString.\n");
 
   beginarg = &argument[0];
   while ((n = strcspn(beginarg, " ")))
     {
       if (!(args[nargs] = static_cast<char *>(mxCalloc(n+1, sizeof(char)))))
-        DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: could not allocate memory. (3)");
+        mexErrMsgTxt("Error in MS-SBVAR MEX file: could not allocate memory. (3)");
 
       strncpy(args[nargs++], beginarg, n);
       beginarg += (isspace(beginarg[n]) || isblank(beginarg[n]) ? ++n : n);
@@ -85,7 +85,7 @@ mexFunction(int nlhs, mxArray *plhs[],
     }
   catch (const char *str)
     {
-      DYN_MEX_FUNC_ERR_MSG_TXT(str);
+      mexErrMsgTxt(str);
     }
 
   /*
@@ -94,6 +94,4 @@ mexFunction(int nlhs, mxArray *plhs[],
   for (n = 0; n < nargs; n++)
     mxFree(args[n]);
   mxFree(args);
-
-  plhs[0] = mxCreateDoubleScalar(0);
 }

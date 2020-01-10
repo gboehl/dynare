@@ -341,8 +341,7 @@ if nargout > 1
     nu2 = exo_nbr*(exo_nbr+1)/2;
     nu3 = exo_nbr*(exo_nbr+1)*(exo_nbr+2)/3;
     M_np.NZZDerivatives = [nnz(d1_np); nnz(d2_np); nnz(d3_np)];
-    [err, dynpp_derivs] = k_order_perturbation(dr_np,M_np,options,d1_np,d2_np,d3_np);
-    mexErrCheck('k_order_perturbation', err);
+    dynpp_derivs = k_order_perturbation(dr_np,M_np,options,d1_np,d2_np,d3_np);
     g_0 = dynpp_derivs.g_0;
     g_1 = dynpp_derivs.g_1;
     g_2 = dynpp_derivs.g_2;

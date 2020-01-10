@@ -11,7 +11,7 @@ function ms_sbvar_setup(options_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -428,6 +428,5 @@ fclose(fidForC);
 %======================================================================
 ms_write_markov_file(markov_file,options_)
 create_init_file = [matlab_filename,' ',markov_file,' ',options_.ms.file_tag];
-[err] = ms_sbvar_create_init_file(create_init_file);
-mexErrCheck('ms_sbvar_create_init_file',err);
+ms_sbvar_create_init_file(create_init_file);
 end

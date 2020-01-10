@@ -1,7 +1,7 @@
 /*
 ** Computes Quasi Monte-Carlo sequence.
 **
-** Copyright © 2010-2017 Dynare Team
+** Copyright © 2010-2020 Dynare Team
 **
 ** This file is part of Dynare (can be used outside Dynare).
 **
@@ -52,23 +52,23 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   ** Check the number of input and output arguments.
   */
   if (nrhs < 3 || nrhs > 5)
-    DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: Five, four or three input arguments are required!");
+    mexErrMsgTxt("qmc_sequence:: Five, four or three input arguments are required!");
 
   if (nlhs == 0)
-    DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: At least one output argument is required!");
+    mexErrMsgTxt("qmc_sequence:: At least one output argument is required!");
 
   /*
   ** Test the first input argument and assign it to dimension.
   */
   if (!mxIsNumeric(prhs[0]))
-    DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: First input (dimension) has to be a positive integer!");
+    mexErrMsgTxt("qmc_sequence:: First input (dimension) has to be a positive integer!");
 
   int dimension = static_cast<int>(mxGetScalar(prhs[0]));
   /*
   ** Test the second input argument and assign it to seed.
   */
   if (!(mxIsNumeric(prhs[1]) && mxIsClass(prhs[1], "int64")))
-    DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: Second input (seed) has to be an integer [int64]!");
+    mexErrMsgTxt("qmc_sequence:: Second input (seed) has to be an integer [int64]!");
 
   int64_T seed = static_cast<int64_T>(mxGetScalar(prhs[1]));
   /*
@@ -83,22 +83,22 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     error_flag_3 = 1;
 
   if (error_flag_3 == 1)
-    DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: Third input (type of QMC sequence) has to be an integer equal to 0, 1 or 2!");
+    mexErrMsgTxt("qmc_sequence:: Third input (type of QMC sequence) has to be an integer equal to 0, 1 or 2!");
 
   /*
   ** Test dimension ≥ 2 when type==2
   */
   if (type == 2 && dimension < 2)
-    DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: First input (dimension) has to be greater than 1 for a uniform QMC on an hypershere!");
+    mexErrMsgTxt("qmc_sequence:: First input (dimension) has to be greater than 1 for a uniform QMC on an hypershere!");
 
   else if (dimension > DIM_MAX)
-    DYN_MEX_FUNC_ERR_MSG_TXT(("qmc_sequence:: First input (dimension) has to be smaller than " + to_string(DIM_MAX) + " !").c_str());
+    mexErrMsgTxt(("qmc_sequence:: First input (dimension) has to be smaller than " + to_string(DIM_MAX) + " !").c_str());
 
   /*
   ** Test the optional fourth input argument and assign it to sequence_size.
   */
   if (nrhs > 3 && !mxIsNumeric(prhs[3]))
-    DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: Fourth input (qmc sequence size) has to be a positive integer!");
+    mexErrMsgTxt("qmc_sequence:: Fourth input (qmc sequence size) has to be a positive integer!");
 
   int sequence_size;
   if (nrhs > 3)
@@ -110,17 +110,17 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   ** Test the optional fifth input argument and assign it to lower_and_upper_bounds.
   */
   if (nrhs > 4 && type == 0 && mxGetN(prhs[4]) != 2) // Sequence of uniformly distributed numbers in an hypercube
-    DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: The fifth input argument must be an array with two columns!");
+    mexErrMsgTxt("qmc_sequence:: The fifth input argument must be an array with two columns!");
 
   if (nrhs > 4 && type == 0 && static_cast<int>(mxGetM(prhs[4])) != dimension)
-    DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: The fourth input argument must be an array with a number of lines equal to dimension (first input argument)!");
+    mexErrMsgTxt("qmc_sequence:: The fourth input argument must be an array with a number of lines equal to dimension (first input argument)!");
 
   if (nrhs > 4 && type == 1 && !(static_cast<int>(mxGetN(prhs[4])) == dimension
                                  && static_cast<int>(mxGetM(prhs[4])) == dimension)) // Sequence of normally distributed numbers
-    DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: The fifth input argument must be a squared matrix (whose dimension is given by the first input argument)!");
+    mexErrMsgTxt("qmc_sequence:: The fifth input argument must be a squared matrix (whose dimension is given by the first input argument)!");
 
   if (nrhs > 4 && type == 2 && !(mxGetN(prhs[4]) == 1 && mxGetM(prhs[4]) == 1)) // Sequence of uniformly distributed numbers on a hypershere
-    DYN_MEX_FUNC_ERR_MSG_TXT("qmc_sequence:: The fifth input argument must be a positive scalar!");
+    mexErrMsgTxt("qmc_sequence:: The fifth input argument must be a positive scalar!");
 
   const double *lower_bounds = nullptr, *upper_bounds = nullptr;
   int unit_hypercube_flag = 1;

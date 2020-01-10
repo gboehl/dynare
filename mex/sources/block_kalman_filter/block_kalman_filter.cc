@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2019 Dynare Team
+ * Copyright © 2007-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -143,10 +143,10 @@ det(const double *F, int dim, const lapack_int *ipiv)
 
 BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  if (nlhs > 3)
-    DYN_MEX_FUNC_ERR_MSG_TXT("block_kalman_filter provides at most 3 output argument.");
+  if (nlhs > 2)
+    mexErrMsgTxt("block_kalman_filter provides at most 2 output argument.");
   if (nrhs != 13 && nrhs != 16)
-    DYN_MEX_FUNC_ERR_MSG_TXT("block_kalman_filter requires exactly \n  13 input arguments for standard Kalman filter \nor\n  16 input arguments for missing observations Kalman filter.");
+    mexErrMsgTxt("block_kalman_filter requires exactly \n  13 input arguments for standard Kalman filter \nor\n  16 input arguments for missing observations Kalman filter.");
   if (nrhs == 16)
     missing_observations = true;
   else
@@ -154,13 +154,13 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
   if (missing_observations)
     {
       if (!mxIsCell(prhs[0]))
-        DYN_MEX_FUNC_ERR_MSG_TXT("the first input argument of block_missing_observations_kalman_filter must be a Cell Array.");
+        mexErrMsgTxt("the first input argument of block_missing_observations_kalman_filter must be a Cell Array.");
       pdata_index = prhs[0];
       if (!mxIsDouble(prhs[1]))
-        DYN_MEX_FUNC_ERR_MSG_TXT("the second input argument of block_missing_observations_kalman_filter must be a scalar.");
+        mexErrMsgTxt("the second input argument of block_missing_observations_kalman_filter must be a scalar.");
       number_of_observations = ceil(mxGetScalar(prhs[1]));
       if (!mxIsDouble(prhs[2]))
-        DYN_MEX_FUNC_ERR_MSG_TXT("the third input argument of block_missing_observations_kalman_filter must be a scalar.");
+        mexErrMsgTxt("the third input argument of block_missing_observations_kalman_filter must be a scalar.");
       no_more_missing_observations = ceil(mxGetScalar(prhs[2]));
       pT = mxDuplicateArray(prhs[3]);
       pR = mxDuplicateArray(prhs[4]);
@@ -218,7 +218,7 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
 
   if (missing_observations)
     if (mxGetNumberOfElements(pdata_index) != static_cast<unsigned int>(smpl))
-      DYN_MEX_FUNC_ERR_MSG_TXT("the number of element in the cell array passed to block_missing_observation_kalman_filter as first argument has to be equal to the smpl size");
+      mexErrMsgTxt("the number of element in the cell array passed to block_missing_observation_kalman_filter as first argument has to be equal to the smpl size");
 
   i_nz_state_var = std::make_unique<int[]>(n);
   for (int i = 0; i < n; i++)
@@ -436,7 +436,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
           {
             mexPrintf("error: F singular\n");
             LIK = Inf;
-            if (nlhs == 3)
+            if (nlhs == 2)
               for (int i = t; i < smpl; i++)
                 lik[i] = Inf;
             // info = 0
@@ -817,17 +817,15 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
 void
 BlockKalmanFilter::return_results_and_clean(int nlhs, mxArray *plhs[])
 {
-  plhs[0] = mxCreateDoubleScalar(0);
-
-  if (nlhs >= 2)
+  if (nlhs >= 1)
     {
-      plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
-      double *pind = mxGetPr(plhs[1]);
+      plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
+      double *pind = mxGetPr(plhs[0]);
       pind[0] = LIK;
     }
 
-  if (nlhs == 3)
-    plhs[2] = plik;
+  if (nlhs == 2)
+    plhs[1] = plik;
   else
     mxDestroyArray(plik);
 

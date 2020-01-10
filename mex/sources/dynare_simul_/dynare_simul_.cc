@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -51,8 +51,8 @@ extern "C" {
   mexFunction(int nlhs, mxArray *plhs[],
               int nhrs, const mxArray *prhs[])
   {
-    if (nhrs != 12 || nlhs != 2)
-      DYN_MEX_FUNC_ERR_MSG_TXT("dynare_simul_ must have at exactly 12 input parameters and 2 output arguments.\n");
+    if (nhrs != 12 || nlhs != 1)
+      mexErrMsgTxt("dynare_simul_ must have at exactly 12 input parameters and 1 output argument.");
 
     int order = static_cast<int>(mxGetScalar(prhs[0]));
     int nstat = static_cast<int>(mxGetScalar(prhs[1]));
@@ -74,22 +74,22 @@ extern "C" {
 
     int ny = nstat + npred + nboth + nforw;
     if (ny != static_cast<int>(ystart_dim[0]))
-      DYN_MEX_FUNC_ERR_MSG_TXT("ystart has wrong number of rows.\n");
+      mexErrMsgTxt("ystart has wrong number of rows.\n");
     if (1 != ystart_dim[1])
-      DYN_MEX_FUNC_ERR_MSG_TXT("ystart has wrong number of cols.\n");
+      mexErrMsgTxt("ystart has wrong number of cols.\n");
     int nper = shocks_dim[1];
     if (nexog != static_cast<int>(shocks_dim[0]))
-      DYN_MEX_FUNC_ERR_MSG_TXT("shocks has a wrong number of rows.\n");
+      mexErrMsgTxt("shocks has a wrong number of rows.\n");
     if (nexog != static_cast<int>(vcov_dim[0]))
-      DYN_MEX_FUNC_ERR_MSG_TXT("vcov has a wrong number of rows.\n");
+      mexErrMsgTxt("vcov has a wrong number of rows.\n");
     if (nexog != static_cast<int>(vcov_dim[1]))
-      DYN_MEX_FUNC_ERR_MSG_TXT("vcov has a wrong number of cols.\n");
+      mexErrMsgTxt("vcov has a wrong number of cols.\n");
     if (ny != static_cast<int>(ysteady_dim[0]))
-      DYN_MEX_FUNC_ERR_MSG_TXT("ysteady has wrong number of rows.\n");
+      mexErrMsgTxt("ysteady has wrong number of rows.\n");
     if (1 != ysteady_dim[1])
-      DYN_MEX_FUNC_ERR_MSG_TXT("ysteady has wrong number of cols.\n");
+      mexErrMsgTxt("ysteady has wrong number of cols.\n");
 
-    plhs[1] = mxCreateDoubleMatrix(ny, nper, mxREAL);
+    plhs[0] = mxCreateDoubleMatrix(ny, nper, mxREAL);
 
     try
       {
@@ -102,13 +102,13 @@ extern "C" {
           {
             const mxArray *gk_m = mxGetField(dr, 0, ("g_" + std::to_string(dim)).c_str());
             if (!gk_m)
-              DYN_MEX_FUNC_ERR_MSG_TXT(("Can't find field `g_" + std::to_string(dim) + "' in structured passed as last argument").c_str());
+              mexErrMsgTxt(("Can't find field `g_" + std::to_string(dim) + "' in structured passed as last argument").c_str());
             ConstTwoDMatrix gk(gk_m);
             FFSTensor ft(ny, npred+nboth+nexog, dim);
             if (ft.ncols() != gk.ncols())
-              DYN_MEX_FUNC_ERR_MSG_TXT(("Wrong number of columns for folded tensor: got " + std::to_string(gk.ncols()) + " but i want " + std::to_string(ft.ncols()) + '\n').c_str());
+              mexErrMsgTxt(("Wrong number of columns for folded tensor: got " + std::to_string(gk.ncols()) + " but i want " + std::to_string(ft.ncols()) + '\n').c_str());
             if (ft.nrows() != gk.nrows())
-              DYN_MEX_FUNC_ERR_MSG_TXT(("Wrong number of rows for folded tensor: got " + std::to_string(gk.nrows()) + " but i want " + std::to_string(ft.nrows()) + '\n').c_str());
+              mexErrMsgTxt(("Wrong number of rows for folded tensor: got " + std::to_string(gk.nrows()) + " but i want " + std::to_string(ft.nrows()) + '\n').c_str());
             ft.zeros();
             ft.add(1.0, gk);
             pol.insert(std::make_unique<UFSTensor>(ft));
@@ -123,21 +123,20 @@ extern "C" {
         // simulate and copy the results
         TwoDMatrix res_mat{dr.simulate(DecisionRule::emethod::horner, nper,
                                        ConstVector{ystart}, sr)};
-        TwoDMatrix res_tmp_mat{plhs[1]};
+        TwoDMatrix res_tmp_mat{plhs[0]};
         res_tmp_mat = const_cast<const TwoDMatrix &>(res_mat);
       }
     catch (const KordException &e)
       {
-        DYN_MEX_FUNC_ERR_MSG_TXT("Caught Kord exception.");
+        mexErrMsgTxt("Caught Kord exception.");
       }
     catch (const TLException &e)
       {
-        DYN_MEX_FUNC_ERR_MSG_TXT("Caught TL exception.");
+        mexErrMsgTxt("Caught TL exception.");
       }
     catch (SylvException &e)
       {
-        DYN_MEX_FUNC_ERR_MSG_TXT("Caught Sylv exception.");
+        mexErrMsgTxt("Caught Sylv exception.");
       }
-    plhs[0] = mxCreateDoubleScalar(0);
   }
 };

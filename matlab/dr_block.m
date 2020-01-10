@@ -34,7 +34,7 @@ function [dr,info,M_,options_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
 %   none.
 %
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -71,12 +71,10 @@ else
     Size = 1;
 end
 if (options_.bytecode)
-    [chck, zz, data]= bytecode('dynamic','evaluate', z, zx, M_.params, dr.ys, 1, data);
+    [zz, data]= bytecode('dynamic','evaluate', z, zx, M_.params, dr.ys, 1, data);
 else
     [r, data] = feval([M_.fname '.dynamic'], options_, M_, oo_, z', zx, M_.params, dr.ys, M_.maximum_lag+1, data);
-    chck = 0;
 end
-mexErrCheck('bytecode', chck);
 dr.full_rank = 1;
 dr.eigval = [];
 dr.nd = 0;
@@ -440,7 +438,7 @@ for i = 1:Size
             D = [[aa(row_indx,index_0m) zeros(n_dynamic,n_both) aa(row_indx,index_p)] ; [zeros(n_both, n_pred) eye(n_both) zeros(n_both, n_both + n_fwrd)]];
             E = [-aa(row_indx,[index_m index_0p])  ; [zeros(n_both, n_both + n_pred) eye(n_both, n_both + n_fwrd) ] ];
 
-            [err, ss, tt, w, sdim, data(i).eigval, info1] = mjdgges(E,D,options_.qz_criterium,options_.qz_zero_threshold);
+            [ss, tt, w, sdim, data(i).eigval, info1] = mjdgges(E,D,options_.qz_criterium,options_.qz_zero_threshold);
 
             if (verbose)
                 disp('eigval');
@@ -591,7 +589,7 @@ for i = 1:Size
                 elseif options_.sylvester_fp
                     ghx_other = gensylv_fp(A_, B_, C_, D_, i, options_.sylvester_fixed_point_tol);
                 else
-                    [err, ghx_other] = gensylv(1, A_, B_, C_, -D_);
+                    ghx_other = gensylv(1, A_, B_, C_, -D_);
                 end
                 if options_.aim_solver ~= 1
                     % Necessary when using Sims' routines for QZ

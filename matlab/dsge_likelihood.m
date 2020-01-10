@@ -115,7 +115,7 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOpti
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2019 Dynare Team
+% Copyright (C) 2004-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -150,7 +150,9 @@ if DynareOptions.estimation_dll
     [fval,exit_flag,SteadyState,trend_coeff,info,params,H,Q] ...
         = logposterior(xparam1,DynareDataset, DynareOptions,Model, ...
                        EstimatedParameters,BayesInfo,DynareResults);
-    mexErrCheck('logposterior', exit_flag);
+    if exit_flag
+        error("Error encountered in logposterior")
+    end
     Model.params = params;
     if ~isequal(Model.H,0)
         Model.H = H;
@@ -455,12 +457,14 @@ switch DynareOptions.lik_init
     if kalman_algo ~= 2
         kalman_algo = 1;
     end
-    if isequal(H,0)
-        [err,Pstar] = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(Z,mm,length(Z))));
-    else
-        [err,Pstar] = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(Z,mm,length(Z))),H);
-    end
-    if err
+    try
+        if isequal(H,0)
+            Pstar = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(Z,mm,length(Z))));
+        else
+            Pstar = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(Z,mm,length(Z))),H);
+        end
+    catch ME
+        disp(ME.message)
         disp(['dsge_likelihood:: I am not able to solve the Riccati equation, so I switch to lik_init=1!']);
         DynareOptions.lik_init = 1;
         Pstar=lyapunov_solver(T,R,Q,DynareOptions);
@@ -647,8 +651,7 @@ singularity_has_been_detected = false;
 if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
     if no_missing_data_flag
         if DynareOptions.block
-            [err, LIK] = block_kalman_filter(T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
-            mexErrCheck('block_kalman_filter', err);
+            LIK = block_kalman_filter(T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
         elseif DynareOptions.fast_kalman_filter
             if diffuse_periods
                 %kalman_algo==3 requires no diffuse periods (stationary
@@ -677,8 +680,8 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
         end
     else
         if 0 %DynareOptions.block
-            [err, LIK,lik] = block_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,...
-                                                 T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
+            [LIK,lik] = block_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,...
+                                            T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
         else
             [LIK,lik] = missing_observations_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,Y,diffuse_periods+1,size(Y,2), ...
                                                            a, Pstar, ...

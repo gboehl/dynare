@@ -14,7 +14,7 @@ function [options_, oo_]=ms_estimation(M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright (C) 2011-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -73,8 +73,7 @@ opt = [opt ' -random_tol_obj ' num2str(options_.ms.random_function_convergence_c
 opt = [opt ' -random_tol_parms ' num2str(options_.ms.random_parameter_convergence_criterion)];
 
 % estimation
-[err] = ms_sbvar_command_line(opt);
-mexErrCheck('ms_estimation', err);
+ms_sbvar_command_line(opt);
 
 [options_, oo_] = set_ms_estimation_file(options_.ms.output_file_tag, options_, oo_);
 end

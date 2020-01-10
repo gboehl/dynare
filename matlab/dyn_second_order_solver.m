@@ -36,7 +36,7 @@ function dr = dyn_second_order_solver(jacobia,hessian_mat,dr,M,threads_BC)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -85,29 +85,23 @@ zu = [zeros(length(ic),M.exo_nbr);
       dr.ghx(klead~=0,:)*dr.ghu(ic,:);
       eye(M.exo_nbr);
       zeros(M.exo_det_nbr,M.exo_nbr)];
-[rhs, err] = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(kk1,kk1)),zx,threads_BC); %hessian_mat: reordering to DR order
-mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
+rhs = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(kk1,kk1)),zx,threads_BC); %hessian_mat: reordering to DR order
 rhs = -rhs;
-[err, dr.ghxx] = gensylv(2,A,B,C,rhs);
-mexErrCheck('gensylv', err);
+dr.ghxx = gensylv(2,A,B,C,rhs);
 
 
 %% ghxu
 %rhs
-[rhs, err] = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(kk1,kk1)),zx,zu,threads_BC); %hessian_mat: reordering to DR order
-mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-[abcOut,err] = A_times_B_kronecker_C(dr.ghxx, dr.ghx(ic,:), dr.ghu(ic,:));
-mexErrCheck('A_times_B_kronecker_C', err);
+rhs = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(kk1,kk1)),zx,zu,threads_BC); %hessian_mat: reordering to DR order
+abcOut = A_times_B_kronecker_C(dr.ghxx, dr.ghx(ic,:), dr.ghu(ic,:));
 rhs = -rhs-B*abcOut;
 %lhs
 dr.ghxu = A\rhs;
 
 %% ghuu
 %rhs
-[rhs, err] = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(kk1,kk1)),zu,threads_BC); %hessian_mat: reordering to DR order
-mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
-[B1, err] = A_times_B_kronecker_C(B*dr.ghxx,dr.ghu(ic,:));
-mexErrCheck('A_times_B_kronecker_C', err);
+rhs = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(kk1,kk1)),zu,threads_BC); %hessian_mat: reordering to DR order
+B1 = A_times_B_kronecker_C(B*dr.ghxx,dr.ghu(ic,:));
 rhs = -rhs-B1;
 %lhs
 dr.ghuu = A\rhs;
@@ -120,8 +114,7 @@ LHS = zeros(M.endo_nbr,M.endo_nbr);
 LHS(:,kcurr~=0) = jacobia(:,nonzeros(kcurr));
 RHS = zeros(M.endo_nbr,M.exo_nbr^2);
 E = eye(M.endo_nbr);
-[B1, err] = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(nonzeros(klead),nonzeros(klead))), dr.ghu(klead~=0,:),threads_BC); %hessian_mat:focus only on forward variables and reorder to DR order
-mexErrCheck('sparse_hessian_times_B_kronecker_C', err);
+B1 = sparse_hessian_times_B_kronecker_C(hessian_mat(:,kk2(nonzeros(klead),nonzeros(klead))), dr.ghu(klead~=0,:),threads_BC); %hessian_mat:focus only on forward variables and reorder to DR order
 RHS = RHS + jacobia(:,nonzeros(klead))*dr.ghuu(klead~=0,:)+B1;
 % LHS
 LHS = LHS + jacobia(:,nonzeros(klead))*(E(klead~=0,:)+[O1(klead~=0,:) dr.ghx(klead~=0,:) O2(klead~=0,:)]);

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2019 Dynare Team
+ * Copyright © 2007-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -68,8 +68,11 @@ void
 mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   // Check input and output:
-  if (nrhs > 3 || nrhs < 2)
-    DYN_MEX_FUNC_ERR_MSG_TXT("A_times_B_kronecker_C takes 2 or 3 input arguments and provides 2 output arguments.");
+  if (nrhs > 3 || nrhs < 2 || nlhs != 1)
+    {
+      mexErrMsgTxt("A_times_B_kronecker_C takes 2 or 3 input arguments and provides 1 output argument.");
+      return; // Needed to shut up some GCC warnings
+    }
 
   // Get & Check dimensions (columns and rows):
   size_t mA = mxGetM(prhs[0]);
@@ -82,12 +85,12 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       mC = mxGetM(prhs[2]);
       nC = mxGetN(prhs[2]);
       if (mB*mC != nA)
-        DYN_MEX_FUNC_ERR_MSG_TXT("Input dimension error!");
+        mexErrMsgTxt("Input dimension error!");
     }
   else // A·(B⊗B) is to be computed.
     {
       if (mB*mB != nA)
-        DYN_MEX_FUNC_ERR_MSG_TXT("Input dimension error!");
+        mexErrMsgTxt("Input dimension error!");
     }
   // Get input matrices:
   const double *A = mxGetPr(prhs[0]);
@@ -108,6 +111,4 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     full_A_times_kronecker_B_B(A, B, D, mA, nA, mB, nB);
   else
     full_A_times_kronecker_B_C(A, B, C, D, mA, nA, mB, nB, mC, nC);
-
-  plhs[1] = mxCreateDoubleScalar(0);
 }

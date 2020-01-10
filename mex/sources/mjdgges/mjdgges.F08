@@ -60,8 +60,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   real(real64), dimension(:), allocatable, target :: vsl_target
 #endif
 
-  if (nrhs < 2 .or. nrhs > 4 .or. nlhs /= 7) then
-     call mexErrMsgTxt("MJDGGES: takes 2, 3 or 4 input arguments and exactly 7 output arguments.")
+  if (nrhs < 2 .or. nrhs > 4 .or. nlhs /= 6) then
+     call mexErrMsgTxt("MJDGGES: takes 2, 3 or 4 input arguments and exactly 6 output arguments.")
      return
   end if
 
@@ -95,24 +95,24 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
      zhreshold = 1e-6_real64
   end if
 
+  plhs(1) = mxCreateDoubleMatrix(n1, n1, mxREAL)
   plhs(2) = mxCreateDoubleMatrix(n1, n1, mxREAL)
   plhs(3) = mxCreateDoubleMatrix(n1, n1, mxREAL)
-  plhs(4) = mxCreateDoubleMatrix(n1, n1, mxREAL)
-  plhs(5) = mxCreateDoubleMatrix(1_mwSize, 1_mwSize, mxREAL)
-  plhs(6) = mxCreateDoubleMatrix(n1, 1_mwSize, mxCOMPLEX)
-  plhs(7) = mxCreateDoubleMatrix(1_mwSize, 1_mwSize, mxREAL)
+  plhs(4) = mxCreateDoubleMatrix(1_mwSize, 1_mwSize, mxREAL)
+  plhs(5) = mxCreateDoubleMatrix(n1, 1_mwSize, mxCOMPLEX)
+  plhs(6) = mxCreateDoubleMatrix(1_mwSize, 1_mwSize, mxREAL)
 
-  s => mxGetPr(plhs(2))
-  t => mxGetPr(plhs(3))
-  sdim => mxGetPr(plhs(5))
+  s => mxGetPr(plhs(1))
+  t => mxGetPr(plhs(2))
+  sdim => mxGetPr(plhs(4))
 #if MX_HAS_INTERLEAVED_COMPLEX
-  gev => mxGetComplexDoubles(plhs(6))
+  gev => mxGetComplexDoubles(plhs(5))
 #else
-  gev_r => mxGetPr(plhs(6))
-  gev_i => mxGetPi(plhs(6))
+  gev_r => mxGetPr(plhs(5))
+  gev_i => mxGetPi(plhs(5))
 #endif
-  info => mxGetPr(plhs(7))
-  z => mxGetPr(plhs(4))
+  info => mxGetPr(plhs(6))
+  z => mxGetPr(plhs(3))
 #if defined(MATLAB_MEX_FILE) && MATLAB_VERSION < 0x0904
   ! The left Schur vectors (VSL) are normally not computed, since JOBVSL="N".
   ! But old MKL versions (at least the one shipped with MATLAB R2009b/7.9,
@@ -162,6 +162,4 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   ! error number (only if no other error)
   if (any(abs(alpha_r) <= zhreshold .and. abs(beta) <= zhreshold) .and. info_bl == 0) &
        info = 30
-
-  plhs(1) = mxCreateDoubleScalar(0._real64)
 end subroutine mexFunction

@@ -15,7 +15,7 @@ function [options_, oo_]=ms_irf(varlist, M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright (C) 2011-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,8 +77,7 @@ else
 end
 
 % irf
-[err] = ms_sbvar_command_line(opt);
-mexErrCheck('ms_irf',err);
+ms_sbvar_command_line(opt);
 
 % Plot IRFs
 if options_.ms.regimes

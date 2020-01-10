@@ -4,7 +4,7 @@ function [y, info_convergence, endogenousvariablespaths] = extended_path_core(pe
                                                   debug,bytecode_flag,order,M,pfm,algo,solve_algo,stack_solve_algo,...
                                                   olmmcp,options,oo,initialguess)
 
-% Copyright (C) 2016-2019 Dynare Team
+% Copyright (C) 2016-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,7 +41,13 @@ if debug
 end
 
 if bytecode_flag && ~ep.stochastic.order
-    [flag, tmp] = bytecode('dynamic', endo_simul, exo_simul, M_.params, endo_simul, periods);
+    try
+        tmp = bytecode('dynamic', endo_simul, exo_simul, M_.params, endo_simul, periods);
+        flag = false;
+    catch ME
+        disp(ME.message);
+        flag = true;
+    end
 else
     flag = true;
 end

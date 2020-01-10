@@ -1,6 +1,6 @@
 function [flag,endo_simul,err] = solve_perfect_foresight_model(endo_simul,exo_simul,pfm)
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2012-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,7 +33,13 @@ if pfm.verbose
 end
 
 if pfm.use_bytecode
-    [flag, endo_simul]=bytecode(Y, exo_simul, pfm.params);
+    try
+        endo_simul=bytecode(Y, exo_simul, pfm.params);
+        flag = 0;
+    catch ME
+        disp(ME.message);
+        flag = 1;
+    end
     return
 end
 
