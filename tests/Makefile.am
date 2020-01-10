@@ -100,6 +100,7 @@ MODFILES = \
 	optimal_policy/Ramsey/ramsey_histval.mod \
 	optimal_policy/Ramsey/Gali_commitment.mod \
 	optimal_policy/RamseyConstraints/test1.mod \
+	optimal_policy/Ramsey/Ramsey_Example_estimation.mod \
 	discretionary_policy/dennis_1.mod \
 	discretionary_policy/dennis_1_estim.mod \
 	discretionary_policy/Gali_discretion.mod \
