@@ -56,3 +56,9 @@ description, please refer to the comments inside the files themselves.
     Baseline New Keynesian Model estimated in *Fernández-Villaverde
     (2010)*. It demonstrates how to use an explicit steady state file
     to update parameters and call a numerical solver.
+
+``Ramsey_Example.mod``
+
+    File demonstrating how to conduct optimal policy experiments in a 
+    simple New Keynesian model either under commitment (Ramsey) or using
+    optimal simple rules (OSR)
