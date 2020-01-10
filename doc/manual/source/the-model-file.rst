@@ -8127,30 +8127,25 @@ Optimal policy
 ==============
 
 Dynare has tools to compute optimal policies for various types of
-objectives. ``ramsey_model`` computes automatically the First Order
-Conditions (FOC) of a model, given the ``planner_objective``. You can
-then use other standard commands to solve, estimate or simulate this
-new, expanded model.
-
-Alternatively, you can either solve for optimal policy under
-commitment with ``ramsey_policy``, for optimal policy under discretion
-with ``discretionary_policy`` or for optimal simple rule with ``osr``
+objectives. You can either solve for optimal policy under
+commitment with ``ramsey_model``, for optimal policy under discretion
+with ``discretionary_policy`` or for optimal simple rules with ``osr``
 (also implying commitment).
 
 .. command:: planner_objective MODEL_EXPRESSION ;
 
     |br| This command declares the policy maker objective, for use
-    with ``ramsey_policy`` or ``discretionary_policy``.
+    with ``ramsey_model`` or ``discretionary_policy``.
 
     You need to give the one-period objective, not the discounted
     lifetime objective. The discount factor is given by the
-    ``planner_discount`` option of ``ramsey_policy`` and
+    ``planner_discount`` option of ``ramsey_model`` and
     ``discretionary_policy``. The objective function can only contain
     current endogenous variables and no exogenous ones. This
     limitation is easily circumvented by defining an appropriate
     auxiliary variable in the model.
 
-    With ``ramsey_policy``, you are not limited to quadratic
+    With ``ramsey_model``, you are not limited to quadratic
     objectives: you can give any arbitrary nonlinear expression.
 
     With ``discretionary_policy``, the objective function must be quadratic.
@@ -8354,7 +8349,7 @@ Optimal policy under discretion
 
     *Options*
 
-    This command accepts the same options than ``ramsey_policy``, plus:
+    This command accepts the same options as ``ramsey_policy``, plus:
 
     .. option:: discretionary_tol = NON-NEGATIVE DOUBLE
 
