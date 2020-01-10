@@ -41,8 +41,16 @@ function DynareResults = initial_estimation_checks(objective_function,xparam1,Dy
 %singularity check
 maximum_number_non_missing_observations=max(sum(~isnan(DynareDataset.data),2));
 
-if DynareOptions.order>1 && any(any(isnan(DynareDataset.data)))
-    error('initial_estimation_checks:: particle filtering does not support missing observations')
+if DynareOptions.order>1 
+    if any(any(isnan(DynareDataset.data)))
+        error('initial_estimation_checks:: particle filtering does not support missing observations')
+    end
+    if DynareOptions.prefilter==1
+        error('initial_estimation_checks:: particle filtering does not support the prefilter option')
+    end
+    if BayesInfo.with_trend
+        error('initial_estimation_checks:: particle filtering does not support trends')
+    end
 end
 
 non_zero_ME=length(EstimatedParameters.H_entries_to_check_for_positive_definiteness);
