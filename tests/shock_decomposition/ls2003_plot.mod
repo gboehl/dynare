@@ -103,7 +103,7 @@ plot_shock_decomposition(use_shock_groups=trade) y_obs R_obs pie_obs dq de;
 plot_shock_decomposition(detail_plot, fig_name = MR, type = yoy) y_obs R_obs pie_obs dq de;
 
 // testing init2shocks
-initial_condition_decomposition(detail_plot, type=aoa, steadystate, write_xls, plot_init_date=1991Q1, plot_end_date=1995Q4, graph_format=fig) R_obs;
+initial_condition_decomposition(detail_plot, type=aoa, steadystate, write_xls, plot_init_date=1991Q1, plot_end_date=1995Q4) R_obs;
 plot_shock_decomposition(init2shocks) y_obs R_obs pie_obs dq de;
 plot_shock_decomposition(init2shocks,use_shock_groups=trade) y_obs R_obs pie_obs dq de;
 
