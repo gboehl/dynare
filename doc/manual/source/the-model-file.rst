@@ -7560,6 +7560,14 @@ Dynare can also run the smoother on a calibrated model:
 
         See :opt:`diffuse_kalman_tol <diffuse_kalman_tol = DOUBLE>`.
 
+    .. option:: xls_sheet = NAME
+
+        See :opt:`xls_sheet <xls_sheet = NAME>`.
+
+    .. option:: xls_range = RANGE
+
+        See :opt:`xls_range <xls_range = RANGE>`.
+
 .. _fore:
 
 Forecasting
