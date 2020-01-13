@@ -151,7 +151,7 @@ if DynareOptions.estimation_dll
         = logposterior(xparam1,DynareDataset, DynareOptions,Model, ...
                        EstimatedParameters,BayesInfo,DynareResults);
     if exit_flag
-        error("Error encountered in logposterior")
+        error('Error encountered in logposterior')
     end
     Model.params = params;
     if ~isequal(Model.H,0)
