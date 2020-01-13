@@ -2508,7 +2508,7 @@ Getting information about the model
 ===================================
 
 .. command:: check ;
-             check (solve_algo = INTEGER);
+             check (OPTIONS...);
 
     |br| Computes the eigenvalues of the model linearized around the
     values specified by the last ``initval``, ``endval`` or ``steady``
