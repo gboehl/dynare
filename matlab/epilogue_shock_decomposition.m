@@ -27,7 +27,11 @@ nterms = size(z,2);
 for k=1:size(y,1)
     ytmp  = squeeze(y(k,:,:));
     yres = ytmp(end,:) - sum(ytmp(1:end-1,:));
-    w = abs(ytmp(1:end-1,:))./sum(abs(ytmp(1:end-1,:)));
+    if ~isoctave && matlab_ver_less_than('9.1') % Automatic broadcasting was introduced in MATLAB R2016b
+        w = bsxfun(@rdivide, abs(ytmp(1:end-1,:)), sum(abs(ytmp(1:end-1,:))))
+    else
+        w = abs(ytmp(1:end-1,:))./sum(abs(ytmp(1:end-1,:)));
+    end
     %     ytmp(1:end-1,:) = ytmp(1:end-1,:) + repmat(yres,[nterms-1 1])/(nterms-1);
     ytmp(1:end-1,:) = ytmp(1:end-1,:) + repmat(yres,[nterms-1 1]).*w;
     y(k,:,:) = ytmp;
