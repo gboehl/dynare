@@ -231,14 +231,14 @@ if info(1) == 0 %no errors in solution
         end
         ind_dDYNAMIC = (find(max(abs(dDYNAMIC'),[],1) > tol_deriv)); %index with non-zero rows
     end
-    
+
     DYNAMIC = DYNAMIC(ind_dDYNAMIC); %focus only on non-zero entries
     si_dDYNAMIC = (dDYNAMIC(ind_dDYNAMIC,:)); %focus only on non-zero rows
     if ~no_identification_reducedform
         REDUCEDFORM = REDUCEDFORM(ind_dREDUCEDFORM); %focus only on non-zero entries
         si_dREDUCEDFORM = (dREDUCEDFORM(ind_dREDUCEDFORM,:)); %focus only on non-zero rows
     end
-    
+
     if ~no_identification_moments
         MOMENTS = MOMENTS(ind_dMOMENTS); %focus only on non-zero entries
         si_dMOMENTS   = (dMOMENTS(ind_dMOMENTS,:)); %focus only on non-zero derivatives
@@ -268,6 +268,9 @@ if info(1) == 0 %no errors in solution
 
             try
                 %try to compute asymptotic Hessian for identification strength analysis based on moments
+                if options_.order > 1
+                    error('IDENTIFICATION STRENGTH: Analytic computation of Hessian is not available for ''order>1''. Identification strength is based on simulated moment uncertainty');
+                end                
                 % reset some options for faster computations
                 options_.irf                     = 0;
                 options_.noprint                 = 1;
@@ -282,10 +285,6 @@ if info(1) == 0 %no errors in solution
                 dataset_ = dseries(oo_.endo_simul(options_.varobs_id,100+1:end)',dates('1Q1'), options_.varobs); %get information on moments
                 derivatives_info.no_DLIK = 1;
                 bounds = prior_bounds(bayestopt_, options_.prior_trunc); %reset bounds as lb and ub must only be operational during mode-finding 
-                if options_.order > 1
-                    fprintf('IDENTIFICATION STRENGTH: Analytic computation of Hessian is not available for ''order>1''\n')
-                    fprintf('                         Identification strength is based on simulated moment uncertainty\n');
-                end
                 %note that for order>1 we do not provide any information on DT,DYss,DOM in derivatives_info, such that dsge_likelihood creates an error. Therefore the computation will be based on simulated_moment_uncertainty for order>1.
                 [fval, info, cost_flag, DLIK, AHess, ys, trend_coeff, M_, options_, bayestopt_, oo_] = dsge_likelihood(params', dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_, derivatives_info); %non-used output variables need to be set for octave for some reason
                     %note that for the order of parameters in AHess we have: stderr parameters come first, corr parameters second, model parameters third. the order within these blocks corresponds to the order specified in the estimated_params block
@@ -315,6 +314,13 @@ if info(1) == 0 %no errors in solution
                 flag_score = 1; %this is used for the title in plot_identification.m
             catch
                 %Asymptotic Hessian via simulation
+                if options_.order > 1       
+                    % reset some options for faster computations
+                    options_.irf                     = 0;
+                    options_.noprint                 = 1;
+                    options_.SpectralDensity.trigger = 0;
+                    options_.periods                 = periods+100;
+                end                
                 replic = max([replic, length(ind_dMOMENTS)*3]);
                 cmm = simulated_moment_uncertainty(ind_dMOMENTS, periods, replic,options_,M_,oo_); %covariance matrix of moments
                 sd = sqrt(diag(cmm));

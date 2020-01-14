@@ -99,7 +99,7 @@ end;
 
 steady;
 check;
-stoch_simul(order=3,irf=0,periods=0); %needed for identification(order=3)
+stoch_simul(order=3,irf=0); %needed for identification(order=3)
 
 @#for ORDER in [1, 2, 3]
 @#for KRONFLAG in [-1, -2, 0]
