@@ -2,6 +2,8 @@
 % used in their replication file.
 % This file is used to check whether the G matrix is computed correctly.
 % Created by Willi Mutschler (willi@mutschler.eu)
+@#define TOL_RANK = 1e-10
+
 var z g R y pie c piep yp;
 varexo e_z e_g e_R ;
 parameters tau betta nu phi pistar psi1 psi2 rhor rhog rhoz sig2r sig2g sig2z;
@@ -72,6 +74,7 @@ identification(parameter_set=calibration,
                no_identification_reducedform,
                no_identification_moments,
                checks_via_subsets=1,
+               tol_rank=@{TOL_RANK},
                max_dim_subsets_groups=4);
 
 load('G_QT'); %note that this is computed using replication files of Qu and Tkachenko (2012)
@@ -88,7 +91,7 @@ ind_G_QT = (find(max(abs(G_QT'),[],1) > temp.store_options_ident.tol_deriv));
 tilda_G_QT = zeros(size(G_QT));
 delta_G_QT = sqrt(diag(G_QT(ind_G_QT,ind_G_QT)));
 tilda_G_QT(ind_G_QT,ind_G_QT) = G_QT(ind_G_QT,ind_G_QT)./((delta_G_QT)*(delta_G_QT'));
-if ~isequal(rank(tilda_G_QT,temp.store_options_ident.tol_rank),rank(tilda_G_dynare,temp.store_options_ident.tol_rank))
+if ~isequal(rank(tilda_G_QT,@{TOL_RANK}),rank(tilda_G_dynare,@{TOL_RANK}))
     error('ranks are not the same for normalized version')
 end
 

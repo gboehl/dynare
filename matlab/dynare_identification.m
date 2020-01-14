@@ -89,6 +89,7 @@ else
     warning('off','MATLAB:specgraph:private:specgraph:UsingOnlyRealComponentOfComplexData');
     warning('off','MATLAB:handle_graphics:exceptions:SceneNode');
     warning('off','MATLAB:divideByZero');
+    warning('off','MATLAB:log:logOfZero');
 end
 
 %% Set all options and create objects
@@ -136,7 +137,7 @@ options_ident = set_default_option(options_ident,'grid_nbr',5000);
             error('IDENTIFICATION: You need to set an even value for ''grid_nbr''');
         end
     end
-options_ident = set_default_option(options_ident,'tol_rank',1.e-10);
+options_ident = set_default_option(options_ident,'tol_rank','robust');
     % tolerance level used for rank computations
 options_ident = set_default_option(options_ident,'tol_deriv',1.e-8);
     % tolerance level for selecting columns of non-zero derivatives

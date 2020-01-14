@@ -1,11 +1,11 @@
-% By Willi Mutschler, September 26, 2016. Email: willi@mutschler.eu
+% By Bruno Luong
 function p = uperm(a)
 [u, ~, J] = unique(a);
 p = u(up(J, length(a)));
 
 
 function p = up(J, n)
-ktab = histcounts(J,1:max(J));
+ktab = histc(J,1:max(J));
 l = n;
 p = zeros(1, n);
 s = 1;
