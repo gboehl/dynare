@@ -100,8 +100,24 @@ Copyright: 1997 Tom Minka <minka@microsoft.com>
 License: GPL-3+
 
 Files: matlab/allVL1.m
-Copyright: 2009 Bruno Luong
-License: BSD-2-clause
+Copyright: 2007-2010 Bruno Luong <brunoluong@yahoo.com> 
+           2019 Dynare Team
+License: GPL-3+
+
+Files: matlab/uperm.m
+Copyright: 2014 Bruno Luong <brunoluong@yahoo.com> 
+           2019 Dynare Team
+License: GPL-3+
+
+Files: matlab/prodmom.m matlab/bivmom.m
+Copyright: 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
+           2019-2020 Dynare Team
+License: GPL-3+
+ The author would appreciate acknowledgement of the source by
+ citation of the following paper:
+ Kan, R.: "From moments of sum to moments of product."
+ Journal of Multivariate Analysis, 2008, vol. 99, issue 3,
+ pages 542-554.
 
 Files: matlab/gsa/Morris_Measure_Groups.m
        matlab/gsa/Sampling_Function_2.m
