@@ -777,6 +777,7 @@ EXTRA_DIST = \
 	read_trs_files.sh \
 	run_test_matlab.m \
 	run_test_octave.m \
+	run_m_script.m \
 	load_octave_packages.m \
 	$(MODFILES) \
 	$(XFAIL_MODFILES) \
@@ -821,9 +822,13 @@ EXTRA_DIST = \
 	data/test.xls \
 	data/test.xlsx \
 	gsa/morris/nk_est_data.m \
+	gsa/data_ca1.m \
+	gsa/data_ca1.mat \
 	analytic_derivatives/fsdat_simul.m \
 	analytic_derivatives/nBrockMirmanSYM.mat \
 	fs2000/fsdat_simul.m \
+	fs2000/fsdat_simul_dseries.m \
+	fs2000/fsdat_simul_missing_obs.m \
 	ls2003/data_ca1.m \
 	measurement_errors/data_ca1.m \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fsdat_simul.m \
@@ -861,6 +866,7 @@ EXTRA_DIST = \
 	identification/as2007/G_QT.mat \
 	estimation/fsdat_simul.m \
 	ep/mean_preserving_spread.m \
+	ep/rbcii_steady_state.m \
 	decision_rules/example1_results_dyn_432.mat \
 	decision_rules/third_order/comparison_policy_functions_dynare_mathematica.m \
 	decision_rules/third_order/FV_2011_policyfunctions.mat \
@@ -869,6 +875,7 @@ EXTRA_DIST = \
 	smoother2histval/fsdat_simul.m \
 	optimal_policy/Ramsey/find_c.m \
 	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat \
+	observation_trends_and_prefiltering/generate_trend_stationary_AR1.m \
 	observation_trends_and_prefiltering/Trend_diagnostics_MCMC_common.inc \
 	observation_trends_and_prefiltering/Trend_diagnostics_calib_common.inc \
 	observation_trends_and_prefiltering/Trend_diagnostics_ML_common.inc \
@@ -887,7 +894,10 @@ EXTRA_DIST = \
 	optimizers/fs2000.common.inc \
 	estimation/MH_recover/fs2000.common.inc \
 	prior_posterior_function/posterior_function_demo.m \
-	deterministic_simulations/lola_data.mat
+	deterministic_simulations/lola_data.mat \
+	k_order_perturbation/fs2000k++.mod \
+	lmmcp/sw-common-header.inc \
+	lmmcp/sw-common-footer.inc
 
 
 if ENABLE_MATLAB
