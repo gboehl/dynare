@@ -442,14 +442,16 @@ if ~no_identification_minimal
         dMINIMAL = [];        
     else
         % Derive and check minimal state vector of first-order
-        [CheckCO,minnx,minA,minB,minC,minD,dminA,dminB,dminC,dminD] = get_minimal_state_representation(oo.dr.ghx(oo.dr.pruned.indx,:),...            %A
-                                                                                                       oo.dr.ghu(oo.dr.pruned.indx,:),...            %B
-                                                                                                       oo.dr.ghx(oo.dr.pruned.indy,:),...             %C
-                                                                                                       oo.dr.ghu(oo.dr.pruned.indy,:),...             %D
-                                                                                                       oo.dr.derivs.dghx(oo.dr.pruned.indx,:,:),...  %dA
-                                                                                                       oo.dr.derivs.dghu(oo.dr.pruned.indx,:,:),...  %dB
-                                                                                                       oo.dr.derivs.dghx(oo.dr.pruned.indy,:,:),...   %dC
-                                                                                                       oo.dr.derivs.dghu(oo.dr.pruned.indy,:,:));     %dD
+        SYS.A  = oo.dr.ghx(oo.dr.pruned.indx,:);
+        SYS.dA = oo.dr.derivs.dghx(oo.dr.pruned.indx,:,:);
+        SYS.B  = oo.dr.ghu(oo.dr.pruned.indx,:);
+        SYS.dB = oo.dr.derivs.dghu(oo.dr.pruned.indx,:,:);
+        SYS.C  = oo.dr.ghx(oo.dr.pruned.indy,:);
+        SYS.dC = oo.dr.derivs.dghx(oo.dr.pruned.indy,:,:);
+        SYS.D  = oo.dr.ghu(oo.dr.pruned.indy,:);
+        SYS.dD = oo.dr.derivs.dghu(oo.dr.pruned.indy,:,:);
+        [CheckCO,minnx,SYS] = get_minimal_state_representation(SYS,1);
+        
         if CheckCO == 0
             warning_KomunjerNg = 'WARNING: Komunjer and Ng (2011) failed:\n';
             warning_KomunjerNg = [warning_KomunjerNg '         Conditions for minimality are not fullfilled:\n'];
@@ -457,6 +459,10 @@ if ~no_identification_minimal
             fprintf(warning_KomunjerNg); %use sprintf to have line breaks            
             dMINIMAL = [];
         else
+            minA = SYS.A; dminA = SYS.dA;
+            minB = SYS.B; dminB = SYS.dB;
+            minC = SYS.C; dminC = SYS.dC;
+            minD = SYS.D; dminD = SYS.dD;
             %reshape into Magnus-Neudecker Jacobians, i.e. dvec(X)/dp
             dminA = reshape(dminA,size(dminA,1)*size(dminA,2),size(dminA,3));
             dminB = reshape(dminB,size(dminB,1)*size(dminB,2),size(dminB,3));
