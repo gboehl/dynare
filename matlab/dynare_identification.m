@@ -1,17 +1,14 @@
 function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, STO_si_dREDUCEDFORM, STO_si_dMOMENTS, STO_dSPECTRUM, STO_dMINIMAL] = dynare_identification(options_ident, pdraws0)
 %function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, STO_si_dREDUCEDFORM, STO_si_dMOMENTS, STO_dSPECTRUM, STO_dMINIMAL] = dynare_identification(options_ident, pdraws0)
 % -------------------------------------------------------------------------
-% This function is called, when the user specifies identification(...); in
-% the mod file. It prepares all identification analysis, i.e.
-% (1) sets options, local and persistent variables for a new identification
-%     analysis either for a single point or a MC Sample. It also displays
-%     and plots the results.
-% or this function can be used to
+% This function is called, when the user specifies identification(...); in the mod file. It prepares all identification analysis:
+% (1) set options, local and persistent variables for a new identification
+%     analysis either for a single point or a MC Sample. It also displays and plots the results
 % (2) load, display and plot a previously saved identification analysis
-% Note: This function does not output the arguments to the workspace if only called by
-%       "identification" in the mod file, but saves results to the folder identification.
-%       If you want to use this function directly in the mod file and workspace, you still have
-%       to put identification once in the mod file, otherwise the preprocessor won't compute all necessary objects
+%
+% Note 1: This function does not output the arguments to the workspace, but saves results to the folder identification
+% Note 2: If you want to use this function directly in the mod file and workspace, you still have
+%         to put identification in your mod file, otherwise the preprocessor won't provide all necessary objects
 % =========================================================================
 % INPUTS
 %    * options_ident    [structure] identification options
@@ -49,7 +46,7 @@ function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, ST
 %    * skipline
 %    * vnorm
 % =========================================================================
-% Copyright (C) 2010-2019 Dynare Team
+% Copyright (C) 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -92,11 +89,11 @@ else
     warning('off','MATLAB:log:logOfZero');
 end
 
-%% Set all options and create objects
+%% Set all options in options_ident and create objects
 options_ident = set_default_option(options_ident,'gsa_sample_file',0);
-    % 0: do not use sample file.
-    % 1: triggers gsa prior sample.
-    % 2: triggers gsa Monte-Carlo sample (i.e. loads a sample corresponding to pprior=0 and ppost=0 in dynare_sensitivity options).
+    % 0: do not use sample file
+    % 1: triggers gsa prior sample
+    % 2: triggers gsa Monte-Carlo sample (i.e. loads a sample corresponding to pprior=0 and ppost=0 in dynare_sensitivity options)
     % FILENAME: use sample file in provided path
 options_ident = set_default_option(options_ident,'parameter_set','prior_mean');
     % 'calibration':      use values in M_.params and M_.Sigma_e to update estimated stderr, corr and model parameters (get_all_parameters)
@@ -108,8 +105,8 @@ options_ident = set_default_option(options_ident,'parameter_set','prior_mean');
 options_ident = set_default_option(options_ident,'load_ident_files',0);
     % 1: load previously computed analysis from identification/fname_identif.mat
 options_ident = set_default_option(options_ident,'useautocorr',0);
-    % 1: use autocorrelations in Iskrev (2010)'s criteria
-    % 0: use autocovariances in Iskrev (2010)'s criteria
+    % 1: use autocorrelations in Iskrev (2010)'s theoretical second moments criteria
+    % 0: use autocovariances in Iskrev (2010)'s theoretical second moments criteria
 options_ident = set_default_option(options_ident,'ar',1);
     % number of lags to consider for autocovariances/autocorrelations in Iskrev (2010)'s criteria
 options_ident = set_default_option(options_ident,'prior_mc',1);
@@ -118,9 +115,9 @@ options_ident = set_default_option(options_ident,'prior_range',0);
     % 1: sample uniformly from prior ranges implied by the prior specifications (overwrites prior shape when prior_mc > 1)
     % 0: sample from specified prior distributions (when prior_mc > 1)
 options_ident = set_default_option(options_ident,'periods',300);
-    % length of stochastic simulation to compute simulated moment uncertainty, when analytic Hessian is not available
+    % length of stochastic simulation to compute simulated moment uncertainty (when analytic Hessian is not available)
 options_ident = set_default_option(options_ident,'replic',100);
-    % number of replicas to compute simulated moment uncertainty, when analytic Hessian is not available
+    % number of replicas to compute simulated moment uncertainty (when analytic Hessian is not available)
 options_ident = set_default_option(options_ident,'advanced',0);
     % 1: show a more detailed analysis based on reduced-form model solution and dynamic model derivatives. Further, performs a brute force
     %    search of the groups of parameters best reproducing the behavior of each single parameter.
@@ -128,8 +125,7 @@ options_ident = set_default_option(options_ident,'normalize_jacobians',1);
     % 1: normalize Jacobians by either rescaling each row by its largest element in absolute value or for Gram (or Hessian-type) matrices by transforming into correlation-type matrices
 options_ident = set_default_option(options_ident,'grid_nbr',5000);
     % number of grid points in [-pi;pi] to approximate the integral to compute Qu and Tkachenko (2012)'s criteria
-    % note that grid_nbr needs to be even and actually we use (grid_nbr+1) points, as we add the 0 frequency and use symmetry, i.e. grid_nbr/2
-    % negative as well as grid_nbr/2 positive values to speed up the compuations
+    % note that grid_nbr needs to be even and actually we use (grid_nbr+1) points, as we add the 0 frequency and use symmetry
     if mod(options_ident.grid_nbr,2) ~= 0
         options_ident.grid_nbr = options_ident.grid_nbr+1;
         fprintf('IDENTIFICATION: ''grid_nbr'' needs to be even, hence it is reset to %d\n',options_ident.grid_nbr)
@@ -143,7 +139,7 @@ options_ident = set_default_option(options_ident,'tol_deriv',1.e-8);
     % tolerance level for selecting columns of non-zero derivatives
 options_ident = set_default_option(options_ident,'tol_sv',1.e-3);
     % tolerance level for selecting non-zero singular values in identification_checks.m
-    
+
 %check whether to compute identification strength based on information matrix
 if ~isfield(options_ident,'no_identification_strength')
     options_ident.no_identification_strength = 0;
@@ -175,20 +171,20 @@ else
     options_ident.no_identification_spectrum = 1;
 end
 
-%overwrite setting, as identification strength and advanced need criteria based on both reducedform and moments
+%overwrite setting, as identification strength and advanced need both reducedform and moments criteria
 if (isfield(options_ident,'no_identification_strength') &&  options_ident.no_identification_strength == 0) || (options_ident.advanced == 1)
     options_ident.no_identification_reducedform = 0;
     options_ident.no_identification_moments = 0;
 end
 
-%overwrite setting, as dynare_sensitivity does not make use of spectrum and minimal system (yet)
+%overwrite setting, as dynare_sensitivity does not make use of spectrum and minimal system
 if isfield(options_,'opt_gsa') && isfield(options_.opt_gsa,'identification') && options_.opt_gsa.identification == 1
     options_ident.no_identification_minimal = 1;
     options_ident.no_identification_spectrum = 1;
 end
 
 %Deal with non-stationary cases
-if isfield(options_ident,'diffuse_filter') %set lik_init and options_
+if isfield(options_ident,'diffuse_filter')
     options_ident.lik_init=3; %overwrites any other lik_init set
     options_.diffuse_filter=options_ident.diffuse_filter; %make options_ inherit diffuse filter; will overwrite any conflicting lik_init in dynare_estimation_init
 else
@@ -216,7 +212,7 @@ options_ident = set_default_option(options_ident,'analytic_derivation',1);
 options_ident = set_default_option(options_ident,'order',1);
     % 1: first-order perturbation approximation, identification is based on linear state space system
     % 2: second-order perturbation approximation, identification is based on second-order pruned state space system
-    % 3: third-order perturbation approximation, identification is based on third-order pruned state space system 
+    % 3: third-order perturbation approximation, identification is based on third-order pruned state space system
 
 %overwrite values in options_, note that options_ is restored at the end of the function
 if isfield(options_ident,'TeX')
@@ -302,14 +298,14 @@ options_.plot_priors = 0;
 options_.smoother = 1;
 options_.options_ident = [];
 [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_, bayestopt_, bounds] = dynare_estimation_init(M_.endo_names, fname, 1, M_, options_, oo_, estim_params_, bayestopt_);
-%outputting dataset_ is needed for Octave
+
 % set method to compute identification Jacobians (kronflag). Default:0
 options_ident = set_default_option(options_ident,'analytic_derivation_mode', options_.analytic_derivation_mode); % if not set by user, inherit default global one
     %  0: efficient sylvester equation method to compute analytical derivatives as in Ratto & Iskrev (2012)
     %  1: kronecker products method to compute analytical derivatives as in Iskrev (2010) (only for order=1)
     % -1: numerical two-sided finite difference method to compute numerical derivatives of all identification Jacobians using function identification_numerical_objective.m (previously thet2tau.m)
-    % -2: numerical two-sided finite difference method to compute numerically dYss, dg1, dg2, dg3, d2Yss and d2g1, the identification Jacobians are then computed analytically as if option is set to 0
-options_.analytic_derivation_mode = options_ident.analytic_derivation_mode; %overwrite setting
+    % -2: numerical two-sided finite difference method to compute numerically dYss, dg1, dg2, dg3, d2Yss and d2g1, the identification Jacobians are then computed analytically as with 0
+options_.analytic_derivation_mode = options_ident.analytic_derivation_mode; %overwrite setting in options_
 
 % initialize persistent variables in prior_draw
 if prior_exist
@@ -344,14 +340,14 @@ if prior_exist % use estimated_params block
         indpcorr = estim_params_.corrx(:,1:2); %values correspond to varexo declaration order, row number corresponds to order in estimated_params
     end
     totparam_nbr = length(bayestopt_.name); % number of estimated stderr, corr and model parameters as declared in estimated_params
-    modparam_nbr = estim_params_.np; %number of model parameters as declared in estimated_params
-    stderrparam_nbr = estim_params_.nvx; % nvx is number of stderr parameters
-    corrparam_nbr = estim_params_.ncx; % ncx is number of corr parameters
+    modparam_nbr = estim_params_.np;        % number of model parameters as declared in estimated_params
+    stderrparam_nbr = estim_params_.nvx;    % number of stderr parameters
+    corrparam_nbr = estim_params_.ncx;      % number of corr parameters
     if estim_params_.nvn || estim_params_.ncn %nvn is number of stderr parameters and ncn is number of corr parameters of measurement innovations as declared in estimated_params
-        error('Identification does not (yet) support measurement errors. Instead, define them explicitly in measurement equations in model definition.')
+        error('Identification does not (yet) support measurement errors. Instead, define them explicitly as varexo and provide measurement equations in the model definition.')
     end
-    name = cell(totparam_nbr,1); %initialize cell for parameter names
-    name_tex = cell(totparam_nbr,1);
+    name = cell(totparam_nbr,1);     %initialize cell for parameter names
+    name_tex = cell(totparam_nbr,1); %initialize cell for TeX parameter names
     for jj=1:totparam_nbr
         if options_.TeX
             [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_);
@@ -363,9 +359,9 @@ if prior_exist % use estimated_params block
         end
     end
 else % no estimated_params block, choose all model parameters and all stderr parameters, but no corr parameters
-    indpmodel = 1:M_.param_nbr; %all model  parameters
+    indpmodel = 1:M_.param_nbr; %all model parameters
     indpstderr = 1:M_.exo_nbr;  %all stderr parameters
-    indpcorr = [];              %no  corr   parameters
+    indpcorr = [];              %no corr parameters
     stderrparam_nbr = M_.exo_nbr;
     corrparam_nbr = 0;
     modparam_nbr = M_.param_nbr;
@@ -375,38 +371,38 @@ else % no estimated_params block, choose all model parameters and all stderr par
     name_tex = cellfun(@(x) horzcat('$ SE_{', x, '} $'), M_.exo_names, 'UniformOutput', false);
     name_tex = vertcat(name_tex, M_.param_names_tex);
     if ~isequal(M_.H,0)
-        fprintf('\ndynare_identification:: Identification does not support measurement errors (yet) and will ignore them in the following. To test their identifiability, instead define them explicitly in measurement equations in the model definition.\n')
+        fprintf('\ndynare_identification:: Identification does not support measurement errors (yet) and will ignore them in the following. To test their identifiability, instead define them explicitly as varexo and provide measurement equations in the model definition.\n')
     end
 end
 options_ident.name_tex = name_tex;
 
-skipline()
-fprintf('======== Identification Analysis ========\n')
+fprintf('\n======== Identification Analysis ========\n')
 if options_ident.order > 1
-    fprintf('Using Pruned State Space System (order=%d)\n',options_ident.order);
+    fprintf('Based on Pruned State Space System (order=%d)\n',options_ident.order);
 end
 skipline()
 if totparam_nbr < 2
     options_ident.advanced = 0;
-    disp('There is only one parameter to study for identitification. The advanced option is re-set to 0.')
-    skipline()
+    fprintf('There is only one parameter to study for identitification. The advanced option is re-set to 0.\n')
 end
 
-% set options_ident dependent ot totparam_nbr
+% settings dependent on number of parameters
 options_ident = set_default_option(options_ident,'max_dim_cova_group',min([2,totparam_nbr-1]));
 options_ident.max_dim_cova_group = min([options_ident.max_dim_cova_group,totparam_nbr-1]);
     % In brute force search (ident_bruteforce.m) when advanced=1 this option sets the maximum dimension of groups of parameters that best reproduce the behavior of each single model parameter
 
 options_ident = set_default_option(options_ident,'checks_via_subsets',0);
-    % 1: uses identification_checks_via_subsets.m to compute problematic parameter combinations 
+    % 1: uses identification_checks_via_subsets.m to compute problematic parameter combinations
     % 0: uses identification_checks.m to compute problematic parameter combinations [default]
 options_ident = set_default_option(options_ident,'max_dim_subsets_groups',min([4,totparam_nbr-1]));
-    % In identification_checks_via_subsets.m, when checks_via_subsets=1, this option sets the maximum dimension of groups of parameters for which the corresponding rank criteria is checked 
+    % In identification_checks_via_subsets.m, when checks_via_subsets=1, this option sets the maximum dimension of groups of parameters for which the corresponding rank criteria is checked
 
-options_.options_ident = options_ident; %store identification options into global options
+
+% store identification options
+options_.options_ident = options_ident;
 store_options_ident = options_ident;
 
-MaxNumberOfBytes = options_.MaxNumberOfBytes; %threshold when to save from memory to files
+% get some options for quick reference
 iload = options_ident.load_ident_files;
 SampleSize = options_ident.prior_mc;
 
@@ -419,43 +415,37 @@ if iload <=0
             % only bounds are specified in estimated_params
             parameters = 'ML_Starting_value';
             parameters_TeX = 'ML starting value';
-            disp('Testing ML Starting value')
+            fprintf('Testing ML Starting value\n');
         else
             % use user-defined option
             switch parameters
-              case 'calibration'
-                parameters_TeX = 'Calibration';
-                disp('Testing calibration')
-                params(1,:) = get_all_parameters(estim_params_,M_);
-              case 'posterior_mode'
-                parameters_TeX = 'Posterior mode';
-                disp('Testing posterior mode')
-                params(1,:) = get_posterior_parameters('mode',M_,estim_params_,oo_,options_);
-              case 'posterior_mean'
-                parameters_TeX = 'Posterior mean';
-                disp('Testing posterior mean')
-                params(1,:) = get_posterior_parameters('mean',M_,estim_params_,oo_,options_);
-              case 'posterior_median'
-                parameters_TeX = 'Posterior median';
-                disp('Testing posterior median')
-                params(1,:) = get_posterior_parameters('median',M_,estim_params_,oo_,options_);
-              case 'prior_mode'
-                parameters_TeX = 'Prior mode';
-                disp('Testing prior mode')
-                params(1,:) = bayestopt_.p5(:);
-              case 'prior_mean'
-                parameters_TeX = 'Prior mean';
-                disp('Testing prior mean')
-                params(1,:) = bayestopt_.p1;
-              otherwise
-                disp('The option parameter_set has to be equal to:')
-                disp('                   ''calibration'', ')
-                disp('                   ''posterior_mode'', ')
-                disp('                   ''posterior_mean'', ')
-                disp('                   ''posterior_median'', ')
-                disp('                   ''prior_mode'' or')
-                disp('                   ''prior_mean''.')
-                error('IDENTIFICATION: The option ''parameter_set'' has and invalid value');
+                case 'calibration'
+                    parameters_TeX = 'Calibration';
+                    fprintf('Testing calibration\n');
+                    params(1,:) = get_all_parameters(estim_params_,M_);
+                case 'posterior_mode'
+                    parameters_TeX = 'Posterior mode';
+                    fprintf('Testing posterior mode\n');
+                    params(1,:) = get_posterior_parameters('mode',M_,estim_params_,oo_,options_);
+                case 'posterior_mean'
+                    parameters_TeX = 'Posterior mean';
+                    fprintf('Testing posterior mean\n');
+                    params(1,:) = get_posterior_parameters('mean',M_,estim_params_,oo_,options_);
+                case 'posterior_median'
+                    parameters_TeX = 'Posterior median';
+                    fprintf('Testing posterior median\n');
+                    params(1,:) = get_posterior_parameters('median',M_,estim_params_,oo_,options_);
+                case 'prior_mode'
+                    parameters_TeX = 'Prior mode';
+                    fprintf('Testing prior mode\n');
+                    params(1,:) = bayestopt_.p5(:);
+                case 'prior_mean'
+                    parameters_TeX = 'Prior mean';
+                    fprintf('Testing prior mean\n');
+                    params(1,:) = bayestopt_.p1;
+                otherwise
+                    fprintf('The option parameter_set has to be equal to: ''calibration'', ''posterior_mode'', ''posterior_mean'', ''posterior_median'', ''prior_mode'' or ''prior_mean''.\n');
+                    error('IDENTIFICATION: The option ''parameter_set'' has an invalid value');
             end
         end
     else
@@ -463,7 +453,7 @@ if iload <=0
         params = [sqrt(diag(M_.Sigma_e))', M_.params'];
         parameters = 'Current_params';
         parameters_TeX = 'Current parameter values';
-        disp('Testing all current stderr and model parameter values')
+        fprintf('Testing all current stderr and model parameter values\n');
     end
     options_ident.tittxt = parameters; %title text for graphs and figures
     % perform identification analysis for single point
@@ -471,43 +461,13 @@ if iload <=0
         identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end implies initialization of persistent variables
     if info(1)~=0
         % there are errors in the solution algorithm
-        skipline()
-        disp('----------- ')
-        disp('Parameter error:')
-        disp(['The model does not solve for ', parameters, ' with error code info = ', int2str(info(1))]),
-        skipline()
-        if info(1)==1
-            disp('info==1 %! The model doesn''t determine the current variables uniquely.')
-        elseif info(1)==2
-            disp('info==2 %! MJDGGES returned an error code.')
-        elseif info(1)==3
-            disp('info==3 %! Blanchard & Kahn conditions are not satisfied: no stable equilibrium. ')
-        elseif info(1)==4
-            disp('info==4 %! Blanchard & Kahn conditions are not satisfied: indeterminacy. ')
-        elseif info(1)==5
-            disp('info==5 %! Blanchard & Kahn conditions are not satisfied: indeterminacy due to rank failure. ')
-        elseif info(1)==6
-            disp('info==6 %! The jacobian evaluated at the deterministic steady state is complex.')
-        elseif info(1)==19
-            disp('info==19 %! The steadystate routine has thrown an exception (inconsistent deep parameters). ')
-        elseif info(1)==20
-            disp('info==20 %! Cannot find the steady state, info(2) contains the sum of square residuals (of the static equations). ')
-        elseif info(1)==21
-            disp('info==21 %! The steady state is complex, info(2) contains the sum of square of imaginary parts of the steady state.')
-        elseif info(1)==22
-            disp('info==22 %! The steady has NaNs. ')
-        elseif info(1)==23
-            disp('info==23 %! M_.params has been updated in the steadystate routine and has complex valued scalars. ')
-        elseif info(1)==24
-            disp('info==24 %! M_.params has been updated in the steadystate routine and has some NaNs. ')
-        elseif info(1)==30
-            disp('info==30 %! Ergodic variance can''t be computed. ')
-        end
-        disp('----------- ')
-        skipline()
+        message = get_error_message(info,0,options_);
+        fprintf('-----------\n');
+        fprintf('The model does not solve for %s (info = %d: %s)\n', parameters, info(1), message);
+        fprintf('-----------\n');
         if any(bayestopt_.pshape)
             % if there are errors in the solution algorithm, try to sample a different point from the prior
-            disp('Try sampling up to 50 parameter sets from the prior.')
+            fprintf('Try sampling up to 50 parameter sets from the prior.\n');
             kk=0;
             while kk<50 && info(1)
                 kk=kk+1;
@@ -515,53 +475,50 @@ if iload <=0
                 options_ident.tittxt = 'Random_prior_params'; %title text for graphs and figures
                 % perform identification analysis
                 [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info, options_ident] = ...
-                    identification_analysis(params,indpmodel,indpstderr,indpcorr,options_ident,dataset_info, prior_exist, 1);
+                    identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
             end
         end
         if info(1)
-            skipline()
-            disp('----------- ')
-            disp('Identification stopped:')
+            fprintf('\n-----------\n');
+            fprintf('Identification stopped:\n');
             if any(bayestopt_.pshape)
-                disp('The model did not solve for any of 50 attempts of random samples from the prior')
+                fprintf('The model did not solve for any of 50 attempts of random samples from the prior\n');
             end
-            disp('----------- ')
-            skipline()
+            fprintf('-----------\n');
             return
         else
             % found a (random) point that solves the model
-            disp('Found a random draw from the priors that solves the model.')
-            disp(params)
-            disp('Identification now continues for this draw.');
+            fprintf('Found a random draw from the priors that solves the model:\n');
+            disp(params);
+            fprintf('Identification now continues for this draw.');
             parameters = 'Random_prior_params';
             parameters_TeX = 'Random prior parameter draw';
         end
     end
     ide_hess_point.params = params;
     % save all output into identification folder
-    save([IdentifDirectoryName '/' fname                '_identif.mat'], 'ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_hess_point', 'ide_reducedform_point', 'ide_dynamic_point','store_options_ident');
-    save([IdentifDirectoryName '/' fname '_' parameters '_identif.mat'], 'ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_hess_point', 'ide_reducedform_point', 'ide_dynamic_point','store_options_ident');
+    save([IdentifDirectoryName '/' fname                '_identif.mat'], 'ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_hess_point', 'ide_reducedform_point', 'ide_dynamic_point', 'store_options_ident');
+    save([IdentifDirectoryName '/' fname '_' parameters '_identif.mat'], 'ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_hess_point', 'ide_reducedform_point', 'ide_dynamic_point', 'store_options_ident');
     % display results of identification analysis
     disp_identification(params, ide_reducedform_point, ide_moments_point, ide_spectrum_point, ide_minimal_point, name, options_ident);
     if ~options_ident.no_identification_strength && ~options_.nograph
-        % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
+        % plot (i) identification strength and sensitivity measure based on the moment information matrix and (ii) plot advanced analysis graphs
         plot_identification(params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, IdentifDirectoryName, parameters_TeX, name_tex);
     end
 
     if SampleSize > 1
         % initializations for Monte Carlo Analysis
-        skipline()
-        disp('Monte Carlo Testing')
+        fprintf('\nMonte Carlo Testing\n');
         h = dyn_waitbar(0,'Monte Carlo identification checks ...');
         iteration  = 0; % initialize counter for admissable draws
         run_index  = 0; % initialize counter for admissable draws after saving previous draws to file(s)
-        file_index = 0; % initialize counter for files (if MaxNumberOfBytes is reached, we store results in files)
+        file_index = 0; % initialize counter for files (if options_.MaxNumberOfBytes is reached, we store results in files)
         options_MC = options_ident; %store options structure for Monte Carlo analysis
         options_MC.advanced = 0;    %do not run advanced checking in a Monte Carlo analysis
         options_ident.checks_via_subsets = 0; % for Monte Carlo analysis currently only identification_checks and not identification_checks_via_subsets is supported
     else
         iteration = 1; % iteration equals SampleSize and we are finished
-        pdraws = [];   % to have output object otherwise map_ident may crash
+        pdraws = [];   % to have output object otherwise map_ident.m may crash
     end
     while iteration < SampleSize
         if external_sample
@@ -576,78 +533,84 @@ if iload <=0
 
         if iteration==0 && info(1)==0 % preallocate storage in the first admissable run
             delete([IdentifDirectoryName '/' fname '_identif_*.mat']) % delete previously saved results
-            MAX_RUNS_BEFORE_SAVE_TO_FILE = min(SampleSize,ceil(MaxNumberOfBytes/(size(ide_reducedform.si_dREDUCEDFORM,1)*totparam_nbr)/8)); % set how many runs can be stored before we save to files
+            MAX_RUNS_BEFORE_SAVE_TO_FILE = min(SampleSize,ceil(options_.MaxNumberOfBytes/(size(ide_reducedform.si_dREDUCEDFORM,1)*totparam_nbr)/8)); % set how many runs can be stored before we save to files
             pdraws = zeros(SampleSize,totparam_nbr); % preallocate storage for draws in each row
 
-            % preallocate storage for steady state and dynamic model derivatives
-            STO_si_dDYNAMIC        = zeros([size(ide_dynamic.si_dDYNAMIC,1),modparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
-            STO_DYNAMIC            = zeros(size(ide_dynamic.DYNAMIC,1),SampleSize);
-            IDE_DYNAMIC.ind_dDYNAMIC   = ide_dynamic.ind_dDYNAMIC;
-            IDE_DYNAMIC.in0        = zeros(SampleSize,modparam_nbr);
-            IDE_DYNAMIC.ind0       = zeros(SampleSize,modparam_nbr);
-            IDE_DYNAMIC.jweak      = zeros(SampleSize,modparam_nbr);
-            IDE_DYNAMIC.jweak_pair = zeros(SampleSize,modparam_nbr*(modparam_nbr+1)/2);
-            IDE_DYNAMIC.cond       = zeros(SampleSize,1);
-            IDE_DYNAMIC.Mco        = zeros(SampleSize,modparam_nbr);
+            % preallocate storage for dynamic model
+            STO_si_dDYNAMIC          = zeros([size(ide_dynamic.si_dDYNAMIC, 1), modparam_nbr, MAX_RUNS_BEFORE_SAVE_TO_FILE]);
+            STO_DYNAMIC              = zeros(size(ide_dynamic.DYNAMIC, 1), SampleSize);
+            IDE_DYNAMIC.ind_dDYNAMIC = ide_dynamic.ind_dDYNAMIC;
+            IDE_DYNAMIC.in0          = zeros(SampleSize, modparam_nbr);
+            IDE_DYNAMIC.ind0         = zeros(SampleSize, modparam_nbr);
+            IDE_DYNAMIC.jweak        = zeros(SampleSize, modparam_nbr);
+            IDE_DYNAMIC.jweak_pair   = zeros(SampleSize, modparam_nbr*(modparam_nbr+1)/2);
+            IDE_DYNAMIC.cond         = zeros(SampleSize, 1);
+            IDE_DYNAMIC.Mco          = zeros(SampleSize, modparam_nbr);
 
             % preallocate storage for reduced form
             if ~options_MC.no_identification_reducedform
-                STO_si_dREDUCEDFORM                = zeros([size(ide_reducedform.si_dREDUCEDFORM,1),totparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
-                STO_REDUCEDFORM                    = zeros(size(ide_reducedform.REDUCEDFORM,1),SampleSize);
-                IDE_REDUCEDFORM.ind_dREDUCEDFORM   = ide_reducedform.ind_dREDUCEDFORM;
-                IDE_REDUCEDFORM.in0        = zeros(SampleSize,1);
-                IDE_REDUCEDFORM.ind0       = zeros(SampleSize,totparam_nbr);
-                IDE_REDUCEDFORM.jweak      = zeros(SampleSize,totparam_nbr);
-                IDE_REDUCEDFORM.jweak_pair = zeros(SampleSize,totparam_nbr*(totparam_nbr+1)/2);
-                IDE_REDUCEDFORM.cond       = zeros(SampleSize,1);
-                IDE_REDUCEDFORM.Mco        = zeros(SampleSize,totparam_nbr);
+                STO_si_dREDUCEDFORM              = zeros([size(ide_reducedform.si_dREDUCEDFORM, 1), totparam_nbr, MAX_RUNS_BEFORE_SAVE_TO_FILE]);
+                STO_REDUCEDFORM                  = zeros(size(ide_reducedform.REDUCEDFORM, 1), SampleSize);
+                IDE_REDUCEDFORM.ind_dREDUCEDFORM = ide_reducedform.ind_dREDUCEDFORM;
+                IDE_REDUCEDFORM.in0              = zeros(SampleSize, 1);
+                IDE_REDUCEDFORM.ind0             = zeros(SampleSize, totparam_nbr);
+                IDE_REDUCEDFORM.jweak            = zeros(SampleSize, totparam_nbr);
+                IDE_REDUCEDFORM.jweak_pair       = zeros(SampleSize, totparam_nbr*(totparam_nbr+1)/2);
+                IDE_REDUCEDFORM.cond             = zeros(SampleSize, 1);
+                IDE_REDUCEDFORM.Mco              = zeros(SampleSize, totparam_nbr);
             else
-                IDE_REDUCEDFORM = {};
+                STO_si_dREDUCEDFORM = {};
+                STO_REDUCEDFORM     = {};
+                IDE_REDUCEDFORM     = {};
             end
 
             % preallocate storage for moments
             if ~options_MC.no_identification_moments
-                STO_si_dMOMENTS          = zeros([size(ide_moments.si_dMOMENTS,1),totparam_nbr,MAX_RUNS_BEFORE_SAVE_TO_FILE]);
-                STO_MOMENTS              = zeros(size(ide_moments.MOMENTS,1),SampleSize);
+                STO_si_dMOMENTS          = zeros([size(ide_moments.si_dMOMENTS, 1), totparam_nbr, MAX_RUNS_BEFORE_SAVE_TO_FILE]);
+                STO_MOMENTS              = zeros(size(ide_moments.MOMENTS, 1), SampleSize);
                 IDE_MOMENTS.ind_dMOMENTS = ide_moments.ind_dMOMENTS;
-                IDE_MOMENTS.in0          = zeros(SampleSize,1);
-                IDE_MOMENTS.ind0         = zeros(SampleSize,totparam_nbr);
-                IDE_MOMENTS.jweak        = zeros(SampleSize,totparam_nbr);
-                IDE_MOMENTS.jweak_pair   = zeros(SampleSize,totparam_nbr*(totparam_nbr+1)/2);
-                IDE_MOMENTS.cond         = zeros(SampleSize,1);
-                IDE_MOMENTS.Mco          = zeros(SampleSize,totparam_nbr);
-                IDE_MOMENTS.S            = zeros(SampleSize,min(8,totparam_nbr));
-                IDE_MOMENTS.V            = zeros(SampleSize,totparam_nbr,min(8,totparam_nbr));
+                IDE_MOMENTS.in0          = zeros(SampleSize, 1);
+                IDE_MOMENTS.ind0         = zeros(SampleSize, totparam_nbr);
+                IDE_MOMENTS.jweak        = zeros(SampleSize, totparam_nbr);
+                IDE_MOMENTS.jweak_pair   = zeros(SampleSize, totparam_nbr*(totparam_nbr+1)/2);
+                IDE_MOMENTS.cond         = zeros(SampleSize, 1);
+                IDE_MOMENTS.Mco          = zeros(SampleSize, totparam_nbr);
+                IDE_MOMENTS.S            = zeros(SampleSize, min(8, totparam_nbr));
+                IDE_MOMENTS.V            = zeros(SampleSize, totparam_nbr, min(8, totparam_nbr));
             else
-                IDE_MOMENTS = {};
+                STO_si_dMOMENTS = {};
+                STO_MOMENTS     = {};
+                IDE_MOMENTS     = {};
             end
 
             % preallocate storage for spectrum
             if ~options_MC.no_identification_spectrum
-                STO_dSPECTRUM              = zeros([size(ide_spectrum.dSPECTRUM,1),size(ide_spectrum.dSPECTRUM,2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);
+                STO_dSPECTRUM              = zeros([size(ide_spectrum.dSPECTRUM, 1), size(ide_spectrum.dSPECTRUM, 2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);
                 IDE_SPECTRUM.ind_dSPECTRUM = ide_spectrum.ind_dSPECTRUM;
-                IDE_SPECTRUM.in0           = zeros(SampleSize,1);
-                IDE_SPECTRUM.ind0          = zeros(SampleSize,totparam_nbr);
-                IDE_SPECTRUM.jweak         = zeros(SampleSize,totparam_nbr);
-                IDE_SPECTRUM.jweak_pair    = zeros(SampleSize,totparam_nbr*(totparam_nbr+1)/2);
-                IDE_SPECTRUM.cond          = zeros(SampleSize,1);
-                IDE_SPECTRUM.Mco           = zeros(SampleSize,totparam_nbr);
+                IDE_SPECTRUM.in0           = zeros(SampleSize, 1);
+                IDE_SPECTRUM.ind0          = zeros(SampleSize, totparam_nbr);
+                IDE_SPECTRUM.jweak         = zeros(SampleSize, totparam_nbr);
+                IDE_SPECTRUM.jweak_pair    = zeros(SampleSize, totparam_nbr*(totparam_nbr+1)/2);
+                IDE_SPECTRUM.cond          = zeros(SampleSize, 1);
+                IDE_SPECTRUM.Mco           = zeros(SampleSize, totparam_nbr);
             else
-                IDE_SPECTRUM = {};
+                STO_dSPECTRUM = {};
+                IDE_SPECTRUM  = {};
             end
 
             % preallocate storage for minimal system
             if ~options_MC.no_identification_minimal
-                STO_dMINIMAL             = zeros([size(ide_minimal.dMINIMAL,1),size(ide_minimal.dMINIMAL,2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);
+                STO_dMINIMAL             = zeros([size(ide_minimal.dMINIMAL, 1), size(ide_minimal.dMINIMAL, 2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);
                 IDE_MINIMAL.ind_dMINIMAL = ide_minimal.ind_dMINIMAL;
-                IDE_MINIMAL.in0          = zeros(SampleSize,1);
-                IDE_MINIMAL.ind0         = zeros(SampleSize,totparam_nbr);
-                IDE_MINIMAL.jweak        = zeros(SampleSize,totparam_nbr);
-                IDE_MINIMAL.jweak_pair   = zeros(SampleSize,totparam_nbr*(totparam_nbr+1)/2);
-                IDE_MINIMAL.cond         = zeros(SampleSize,1);
-                IDE_MINIMAL.Mco          = zeros(SampleSize,totparam_nbr);
+                IDE_MINIMAL.in0          = zeros(SampleSize, 1);
+                IDE_MINIMAL.ind0         = zeros(SampleSize, totparam_nbr);
+                IDE_MINIMAL.jweak        = zeros(SampleSize, totparam_nbr);
+                IDE_MINIMAL.jweak_pair   = zeros(SampleSize, totparam_nbr*(totparam_nbr+1)/2);
+                IDE_MINIMAL.cond         = zeros(SampleSize, 1);
+                IDE_MINIMAL.Mco          = zeros(SampleSize, totparam_nbr);
             else
-                IDE_MINIMAL = {};
+                STO_dMINIMAL = {};
+                IDE_MINIMAL  = {};
             end
         end
 
@@ -666,10 +629,10 @@ if iload <=0
             IDE_DYNAMIC.jweak_pair(iteration,:) = ide_dynamic.jweak_pair;
             IDE_DYNAMIC.Mco(iteration,:)        = ide_dynamic.Mco;
 
-            % store results for reduced form model solution
+            % store results for reduced form
             if ~options_MC.no_identification_reducedform
-                STO_REDUCEDFORM(:,iteration)                    = ide_reducedform.REDUCEDFORM;
-                STO_si_dREDUCEDFORM(:,:,run_index)              = ide_reducedform.si_dREDUCEDFORM;
+                STO_REDUCEDFORM(:,iteration)            = ide_reducedform.REDUCEDFORM;
+                STO_si_dREDUCEDFORM(:,:,run_index)      = ide_reducedform.si_dREDUCEDFORM;
                 IDE_REDUCEDFORM.cond(iteration,1)       = ide_reducedform.cond;
                 IDE_REDUCEDFORM.ino(iteration,1)        = ide_reducedform.ino;
                 IDE_REDUCEDFORM.ind0(iteration,:)       = ide_reducedform.ind0;
@@ -717,7 +680,7 @@ if iload <=0
             % save results to file: either to avoid running into memory issues, i.e. (run_index==MAX_RUNS_BEFORE_SAVE_TO_FILE) or if finished (iteration==SampleSize)
             if run_index==MAX_RUNS_BEFORE_SAVE_TO_FILE || iteration==SampleSize
                 file_index = file_index + 1;
-                if run_index<MAX_RUNS_BEFORE_SAVE_TO_FILE
+                if run_index < MAX_RUNS_BEFORE_SAVE_TO_FILE
                     %we are finished (iteration == SampleSize), so get rid of additional storage
                     STO_si_dDYNAMIC = STO_si_dDYNAMIC(:,:,1:run_index);
                     if ~options_MC.no_identification_reducedform
@@ -754,7 +717,7 @@ if iload <=0
                 run_index = 0; % reset index
             end
             if SampleSize > 1
-                dyn_waitbar(iteration/SampleSize,h,['MC identification checks ',int2str(iteration),'/',int2str(SampleSize)])
+                dyn_waitbar(iteration/SampleSize, h, ['MC identification checks ', int2str(iteration), '/', int2str(SampleSize)]);
             end
         end
     end
@@ -769,10 +732,10 @@ if iload <=0
             normalize_STO_MOMENTS = std(STO_MOMENTS,0,2);
         end
         if ~options_MC.no_identification_minimal
-            normalize_STO_MINIMAL = 1; %not yet used
+            normalize_STO_MINIMAL = 1; %not used (yet)
         end
         if ~options_MC.no_identification_spectrum
-            normalize_STO_SPECTRUM = 1; %not yet used
+            normalize_STO_SPECTRUM = 1; %not used (yet)
         end
         normaliz1 = std(pdraws);
         iter = 0;
@@ -854,11 +817,11 @@ end
 %% if dynare_identification is called as it own function (not through identification command) and if we load files
 if nargout>3 && iload
     filnam = dir([IdentifDirectoryName '/' fname '_identif_*.mat']);
-    STO_si_dDYNAMIC = [];
-    STO_si_dREDUCEDFORM=[];
-    STO_si_dMOMENTS = [];
-    STO_dSPECTRUM = [];
-    STO_dMINIMAL = [];
+    STO_si_dDYNAMIC     = [];
+    STO_si_dREDUCEDFORM = [];
+    STO_si_dMOMENTS     = [];
+    STO_dSPECTRUM       = [];
+    STO_dMINIMAL        = [];
     for j=1:length(filnam)
         load([IdentifDirectoryName '/' fname '_identif_',int2str(j),'.mat']);
         STO_si_dDYNAMIC = cat(3,STO_si_dDYNAMIC, STO_si_dDYNAMIC(:,abs(iload),:));
@@ -879,18 +842,17 @@ end
 
 if iload
     %if previous analysis is loaded
-    disp(['Testing ',parameters])
+    fprintf(['Testing %s\n',parameters]);
     disp_identification(ide_hess_point.params, ide_reducedform_point, ide_moments_point, ide_spectrum_point, ide_minimal_point, name, options_ident);
     if ~options_.nograph
         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-        plot_identification(ide_hess_point.params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, IdentifDirectoryName, [],name_tex);
+        plot_identification(ide_hess_point.params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, IdentifDirectoryName, [], name_tex);
     end
 end
 
 %displaying and plotting of results for MC sample
 if SampleSize > 1
-    fprintf('\n')
-    disp('Testing MC sample')
+    fprintf('\nTesting MC sample\n');
     %print results to console but make sure advanced=0
     advanced0 = options_ident.advanced;
     options_ident.advanced = 0;
@@ -909,11 +871,9 @@ if SampleSize > 1
                 store_nodisplay = options_.nodisplay;
                 options_.nodisplay = 1;
                 % HIGHEST CONDITION NUMBER
-                [~, jmax] = max(IDE_MOMENTS.cond);
-                fprintf('\n')
+                [~, jmax] = max(IDE_MOMENTS.cond);                
                 tittxt = 'Draw with HIGHEST condition number';
-                fprintf('\n')
-                disp(['Testing ',tittxt, '.']),
+                fprintf('\nTesting %s.\n',tittxt);
                 if ~iload
                     options_ident.tittxt = tittxt; %title text for graphs and figures
                     [ide_moments_max, ide_spectrum_max, ide_minimal_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, derivatives_info_max, info_max, options_ident] = ...
@@ -930,10 +890,8 @@ if SampleSize > 1
 
                 % SMALLEST condition number
                 [~, jmin] = min(IDE_MOMENTS.cond);
-                fprintf('\n')
                 tittxt = 'Draw with SMALLEST condition number';
-                fprintf('\n')
-                disp(['Testing ',tittxt, '.']),
+                fprintf('Testing %s.\n',tittxt);
                 if ~iload
                     options_ident.tittxt = tittxt; %title text for graphs and figures
                     [ide_moments_min, ide_spectrum_min, ide_minimal_min, ide_hess_min, ide_reducedform_min, ide_dynamic_min, derivatives_info_min, info_min, options_ident] = ...
@@ -954,9 +912,8 @@ if SampleSize > 1
                 store_nodisplay = options_.nodisplay;
                 options_.nodisplay = 1;
                 for j=1:length(jcrit)
-                    tittxt = ['Rank deficient draw n. ',int2str(j)];
-                    fprintf('\n')
-                    disp(['Testing ',tittxt, '.']),
+                    tittxt = ['Rank deficient draw nr. ',int2str(j)];
+                    fprintf('\nTesting %s.\n',tittxt);
                     if ~iload
                         options_ident.tittxt = tittxt; %title text for graphs and figures
                         [ide_moments_(j), ide_spectrum_(j), ide_minimal_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), derivatives_info_(j), info_resolve, options_ident] = ...
@@ -987,8 +944,6 @@ else
     warning on
 end
 
-skipline()
-disp('==== Identification analysis completed ====')
-skipline(2)
+fprintf('\n==== Identification analysis completed ====\n\n')
 
 options_ = store_options_; %restore options set
