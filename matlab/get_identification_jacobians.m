@@ -1,7 +1,7 @@
-function [E_y, dE_y, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M, oo, options, options_ident, indpmodel, indpstderr, indpcorr, indvobs)
+function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M, oo, options, options_ident, indpmodel, indpstderr, indpcorr, indvobs)
 % function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M, oo, options, options_ident, indpmodel, indpstderr, indpcorr, indvobs)
-% previously getJJ.m
-% % Sets up the Jacobians needed for identification analysis
+% previously getJJ.m in Dynare 4.5
+% Sets up the Jacobians needed for identification analysis
 % =========================================================================
 % INPUTS
 %   estim_params:   [structure] storing the estimation information
@@ -27,46 +27,50 @@ function [E_y, dE_y, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOM
 %
 %  MEAN             [endo_nbr by 1], in DR order. Expectation of all model variables
 %                   * order==1: corresponds to steady state
-%                   * order==2: computed from pruned state space system (as in e.g. Andreasen, Fernandez-Villaverde, Rubio-Ramirez, 2018)
+%                   * order==2|3: corresponds to mean computed from pruned state space system (as in Andreasen, Fernandez-Villaverde, Rubio-Ramirez, 2018)
 %  dMEAN            [endo_nbr by totparam_nbr], in DR Order, Jacobian (wrt all params) of MEAN
 %
 %  REDUCEDFORM      [rowredform_nbr by 1] in DR order. Steady state and reduced-form model solution matrices for all model variables
-%                   * order==1: [Yss' vec(dghx)' vech(dghu*Sigma_e*dghu')']',
-%                   where rowredform_nbr = endo_nbr+endo_nbr*nspred+endo_nbr*(endo_nbr+1)/2
-%                   * order==2: [Yss' vec(dghx)' vech(dghu*Sigma_e*dghu')' vec(dghxx)' vec(dghxu)' vec(dghuu)' vec(dghs2)']',
-%                   where rowredform_nbr = endo_nbr+endo_nbr*nspred+endo_nbr*(endo_nbr+1)/2+endo_nbr*nspred^2*endo_nbr*nspred*exo_nr+endo_nbr*exo_nbr^2+endo_nbr
-%  dREDUCEDFORM:    [rowrf_nbr by totparam_nbr] in DR order, Jacobian (wrt all params) of REDUCEDFORM
+%                   * order==1: [Yss' vec(ghx)' vech(ghu*Sigma_e*ghu')']',
+%                     where rowredform_nbr = endo_nbr*(1+nspred+(endo_nbr+1)/2)
+%                   * order==2: [Yss' vec(ghx)' vech(ghu*Sigma_e*ghu')' vec(ghxx)' vec(ghxu)' vec(ghuu)' vec(ghs2)']',
+%                     where rowredform_nbr = endo_nbr*(1+nspred+(endo_nbr+1)/2+nspred^2+nspred*exo_nr+exo_nbr^2+1)
+%                   * order==3: [Yss' vec(ghx)' vech(ghu*Sigma_e*ghu')' vec(ghxx)' vec(ghxu)' vec(ghuu)' vec(ghs2)' vec(ghxxx)' vec(ghxxu)' vec(ghxuu)' vec(ghuuu)' vec(ghxss)' vec(ghuss)']',
+%                     where rowredform_nbr = endo_nbr*(1+nspred+(endo_nbr+1)/2+nspred^2+nspred*exo_nr+exo_nbr^2+1+nspred^3+nspred^2*exo_nbr+nspred*exo_nbr^2+exo_nbr^3+nspred+exo_nbr)
+%  dREDUCEDFORM:    [rowredform_nbr by totparam_nbr] in DR order, Jacobian (wrt all params) of REDUCEDFORM
 %                   * order==1: corresponds to Iskrev (2010)'s J_2 matrix
 %                   * order==2: corresponds to Mutschler (2015)'s J matrix
 %
 %  DYNAMIC          [rowdyn_nbr by 1] in declaration order. Steady state and dynamic model derivatives for all model variables
 %                   * order==1: [ys' vec(g1)']', rowdyn_nbr=endo_nbr+length(g1)
 %                   * order==2: [ys' vec(g1)' vec(g2)']', rowdyn_nbr=endo_nbr+length(g1)+length(g2)
+%                   * order==3: [ys' vec(g1)' vec(g2)' vec(g3)']', rowdyn_nbr=endo_nbr+length(g1)+length(g2)+length(g3)
 %  dDYNAMIC         [rowdyn_nbr by modparam_nbr] in declaration order. Jacobian (wrt model parameters) of DYNAMIC
 %                   * order==1: corresponds to Ratto and Iskrev (2011)'s J_\Gamma matrix (or LRE)
-%                   * order==2: additionally includes derivatives of dynamic hessian
 %
 %  MOMENTS:         [obs_nbr+obs_nbr*(obs_nbr+1)/2+nlags*obs_nbr^2 by 1] in DR order. First two theoretical moments for VAROBS variables, i.e.
-%                   [E[yobs]' vech(E[yobs*yobs'])' vec(E[yobs*yobs(-1)'])' ... vec(E[yobs*yobs(-nlag)'])']
+%                   [E[varobs]' vech(E[varobs*varobs'])' vec(E[varobs*varobs(-1)'])' ... vec(E[varobs*varobs(-nlag)'])']
 %  dMOMENTS:        [obs_nbr+obs_nbr*(obs_nbr+1)/2+nlags*obs_nbr^2 by totparam_nbr] in DR order. Jacobian (wrt all params) of MOMENTS
 %                   * order==1: corresponds to Iskrev (2010)'s J matrix
 %                   * order==2: corresponds to Mutschler (2015)'s \bar{M}_2 matrix, i.e. theoretical moments from the pruned state space system
 %
 %  dSPECTRUM:       [totparam_nbr by totparam_nbr] in DR order. Gram matrix of Jacobian (wrt all params) of spectral density for VAROBS variables, where
-%                   spectral density at frequency w: f(w) = (2*pi)^(-1)*H(exp(-i*w))*E[xi*xi']*ctranspose(H(exp(-i*w)) with H being the Transfer function
+%                   spectral density at frequency w: f(w) = (2*pi)^(-1)*H(exp(-i*w))*E[Inov*Inov']*ctranspose(H(exp(-i*w)) with H being the Transfer function
 %                   dSPECTRUM = int_{-\pi}^\pi transpose(df(w)/dp')*(df(w)/dp') dw
-%                   * order==1: corresponds to Qu and Tkachenko (2012)'s G matrix, where xi and H are computed from linear state space system
-%                   * order==2: corresponds to Mutschler (2015)'s G_2 matrix, where xi and H are computed from pruned state space system
+%                   * order==1: corresponds to Qu and Tkachenko (2012)'s G matrix, where Inov and H are computed from linear state space system
+%                   * order==2: corresponds to Mutschler (2015)'s G_2 matrix, where Inov and H are computed from second-order pruned state space system
+%                   * order==3: Inov and H are computed from third-order pruned state space system
 %
-%  dMINIMAL:        [obs_nbr+minx^2+minx*exo_nbr+obs_nbr*minx+obs_nbr*exo_nbr+exo_nbr*(exo_nbr+1)/2 by totparam_nbr+minx^2+exo_nbr^2]
+%  dMINIMAL:        [obs_nbr+minx_nbr^2+minx_nbr*exo_nbr+obs_nbr*minx_nbr+obs_nbr*exo_nbr+exo_nbr*(exo_nbr+1)/2 by totparam_nbr+minx_nbr^2+exo_nbr^2]
 %                   Jacobian (wrt all params, and similarity_transformation_matrices (T and U)) of observational equivalent minimal ABCD system,
 %                   corresponds to Komunjer and Ng (2011)'s Deltabar matrix, where
-%                   MINIMAL = [vec(E[yobs]' vec(minA)' vec(minB)' vec(minC)' vec(minD)' vech(Sigma_e)']'
-%                   * order==1: E[yobs] is equal to steady state
-%                   * order==2: E[yobs] is computed from the pruned state space system (second-order accurate), as noted in section 5 of Komunjer and Ng (2011)
+%                   MINIMAL = [vec(E[varobs]' vec(minA)' vec(minB)' vec(minC)' vec(minD)' vech(Sigma_e)']'
+%                   minA, minB, minC and minD is the minimal state space system computed in get_minimal_state_representation
+%                   * order==1: E[varobs] is equal to steady state
+%                   * order==2|3: E[varobs] is computed from the pruned state space system (second|third-order accurate), as noted in section 5 of Komunjer and Ng (2011)
 %
-%  derivatives_info [structure] for use in dsge_likelihood to compute Hessian analytically.
-%                   Contains dA, dB, and d(B*Sigma_e*B'), where A and B are from Kalman filter. Only used at order==1.
+%  derivatives_info [structure] for use in dsge_likelihood to compute Hessian analytically. Only used at order==1.
+%                   Contains dA, dB, and d(B*Sigma_e*B'), where A and B are Kalman filter transition matrice.
 %
 % -------------------------------------------------------------------------
 % This function is called by
@@ -220,7 +224,7 @@ options.options_ident.indpmodel = indpmodel;
 options.options_ident.indpstderr = indpstderr;
 options.options_ident.indpcorr = indpcorr;
 oo.dr = pruned_state_space_system(M, options, oo.dr);
-E_y = oo.dr.pruned.E_y;         dE_y = oo.dr.pruned.dE_y;
+MEAN = oo.dr.pruned.E_y;         dMEAN = oo.dr.pruned.dE_y;
 A = oo.dr.pruned.A;             dA   = oo.dr.pruned.dA;
 B = oo.dr.pruned.B;             dB   = oo.dr.pruned.dB;
 C = oo.dr.pruned.C;             dC   = oo.dr.pruned.dC;
@@ -247,17 +251,17 @@ end
 % yhat = C*zhat(-1) + D*xi, where yhat = y - E(y)
 if ~no_identification_moments
     MOMENTS = identification_numerical_objective(para0, 1, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=1]
-    MOMENTS = [E_y; MOMENTS];
+    MOMENTS = [MEAN; MOMENTS];
     if kronflag == -1
         %numerical derivative of autocovariogram
         dMOMENTS = fjaco(str2func('identification_numerical_objective'), para0, 1, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=1]
         M.params = params0;              %make sure values are set back
         M.Sigma_e = Sigma_e0;            %make sure values are set back
         M.Correlation_matrix = Corr_e0 ; %make sure values are set back
-        dMOMENTS = [dE_y; dMOMENTS]; %add Jacobian of steady state of VAROBS variables
+        dMOMENTS = [dMEAN; dMOMENTS]; %add Jacobian of steady state of VAROBS variables
     else
         dMOMENTS = zeros(obs_nbr + obs_nbr*(obs_nbr+1)/2 + nlags*obs_nbr^2 , totparam_nbr);
-        dMOMENTS(1:obs_nbr,:) = dE_y; %add Jacobian of first moments of VAROBS variables
+        dMOMENTS(1:obs_nbr,:) = dMEAN; %add Jacobian of first moments of VAROBS variables
         % Denote Ezz0 = E[zhat*zhat'], then the following Lyapunov equation defines the autocovariagram: Ezz0 -A*Ezz0*A' = B*Sig_xi*B' = Om_z
         [Ezz0,u] = lyapunov_symm(A, Om_z, options.lyapunov_fixed_point_tol, options.qz_criterium, options.lyapunov_complex_threshold, 1, options.debug);
         stationary_vars = (1:length(indvobs))';
@@ -426,7 +430,7 @@ if ~no_identification_spectrum
         end
     end
     % Normalize Matrix and add steady state Jacobian, note that G is real and symmetric by construction
-    dSPECTRUM = 2*pi*dSPECTRUM./(2*length(freqs)-1) + dE_y'*dE_y;
+    dSPECTRUM = 2*pi*dSPECTRUM./(2*length(freqs)-1) + dMEAN'*dMEAN;
     dSPECTRUM = real(dSPECTRUM);
 else
     dSPECTRUM = [];
@@ -482,7 +486,7 @@ if ~no_identification_minimal
                              -2*Enu*kron(Sigma_e0,Inu)];
             dMINIMAL = full([KomunjerNg_DL KomunjerNg_DT KomunjerNg_DU]);
             %add Jacobian of steady state (here we also allow for higher-order perturbation, i.e. only the mean provides additional restrictions
-            dMINIMAL =  [dE_y zeros(obs_nbr,minnx^2+exo_nbr^2); dMINIMAL];
+            dMINIMAL =  [dMEAN zeros(obs_nbr,minnx^2+exo_nbr^2); dMINIMAL];
         end
     end
 else

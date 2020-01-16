@@ -13,22 +13,25 @@ function [out,info] = get_perturbation_params_derivs_numerical_objective(params,
 %   options:        [structure] storing the options
 % -------------------------------------------------------------------------
 %
-% OUTPUT (dependent on outputflag and order of approximation):
-%   - 'perturbation_solution':  out = [vec(Sigma_e);vec(ghx);vec(ghu);vec(ghxx);vec(ghxu);vec(ghuu);vec(ghs2);vec(ghxxx);vec(ghxxu);vec(ghxuu);vec(ghuuu);vec(ghxss);vec(ghuss)]
-%   - 'dynamic_model':          out = [Yss; vec(g1); vec(g2); vec(g3)]
-%   - 'Kalman_Transition':      out = [Yss; vec(KalmanA); dyn_vech(KalmanB*Sigma_e*KalmanB')];
-% all in DR-order
+% OUTPUT 
+%   out (dependent on outputflag and order of approximation):
+%     - 'perturbation_solution':  out = out1 = [vec(Sigma_e);vec(ghx);vec(ghu)]; (order==1)
+%                                 out = out2 = [out1;vec(ghxx);vec(ghxu);vec(ghuu);vec(ghs2)]; (order==2)
+%                                 out = out3 = [out1;out2;vec(ghxxx);vec(ghxxu);vec(ghxuu);vec(ghuuu);vec(ghxss);vec(ghuss)]; (order==3)
+%     - 'dynamic_model':          out = [Yss; vec(g1); vec(g2); vec(g3)]
+%     - 'Kalman_Transition':      out = [Yss; vec(KalmanA); dyn_vech(KalmanB*Sigma_e*KalmanB')];
+%     all in DR-order
+%   info            [integer] output from resol
 % -------------------------------------------------------------------------
 % This function is called by
-%   * get_solution_params_deriv.m (previously getH.m)
-%   * get_identification_jacobians.m (previously getJJ.m)
+%   * get_perturbation_params_derivs.m (previously getH.m)
 % -------------------------------------------------------------------------
 % This function calls
 %   * [M.fname,'.dynamic']
 %   * resol
 %   * dyn_vech
 % =========================================================================
-% Copyright (C) 2019 Dynare Team
+% Copyright (C) 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,8 +51,8 @@ function [out,info] = get_perturbation_params_derivs_numerical_objective(params,
 
 %% Update stderr, corr and model parameters and compute perturbation approximation and steady state with updated parameters
 M = set_all_parameters(params,estim_params,M);
-Sigma_e = M.Sigma_e;
 [~,info,M,options,oo] = resol(0,M,options,oo);
+Sigma_e = M.Sigma_e;
 
 if info(1) > 0
     % there are errors in the solution algorithm
@@ -60,11 +63,9 @@ else
     ghx = oo.dr.ghx; ghu = oo.dr.ghu;
     if options.order > 1
         ghxx = oo.dr.ghxx; ghxu = oo.dr.ghxu; ghuu = oo.dr.ghuu; ghs2 = oo.dr.ghs2;
-        %ghxs = oo.dr.ghxs; ghus = oo.dr.ghus; %these are zero due to certainty equivalence and Gaussian shocks
     end
     if options.order > 2
         ghxxx = oo.dr.ghxxx; ghxxu = oo.dr.ghxxu; ghxuu = oo.dr.ghxuu; ghxss = oo.dr.ghxss; ghuuu = oo.dr.ghuuu; ghuss = oo.dr.ghuss;
-        %ghxxs = oo.dr.ghxxs; ghxus = oo.dr.ghxus; ghuus = oo.dr.ghuus; ghsss = oo.dr.ghsss; %these are zero due to certainty equivalence and Gaussian shocks
     end
 end
 Yss = ys(oo.dr.order_var); %steady state of model variables in DR order
