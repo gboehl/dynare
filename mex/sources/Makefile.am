@@ -3,6 +3,9 @@ EXTRA_DIST = \
 	dynlapack.h \
 	dynumfpack.h \
 	dynmex.h \
+	blas_lapack.F08 \
+	defines.F08 \
+	matlab_mex.F08 \
 	mjdgges \
 	kronecker \
 	bytecode \
