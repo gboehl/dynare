@@ -16,7 +16,7 @@ function dynareroot = dynare_config(path_to_dynare)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -138,7 +138,7 @@ if ~isoctave && matlab_ver_less_than('7.11')
 end
 
 %% isdiag is missing in MATLAB < R2014a
-if ~isoctave && matlab_ver_less_than('8.4')
+if ~isoctave && matlab_ver_less_than('8.3')
     p{end+1} = '/missing/isdiag';
 end
 
