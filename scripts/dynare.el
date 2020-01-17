@@ -91,7 +91,7 @@
 (defvar dynare-blocks
   '("model" "steady_state_model" "initval" "endval" "histval" "shocks"
     "shock_groups" "init2shocks" "mshocks" "estimated_params" "epilogue" "priors"
-    "estimated_param_init" "estimated_params_bounds" "osr_params_bounds"
+    "estimated_params_init" "estimated_params_bounds" "osr_params_bounds"
     "observation_trends" "optim_weights" "homotopy_setup"
     "conditional_forecast_paths" "svar_identification" "moment_calibration"
     "irf_calibration" "ramsey_constraints" "restrictions" "generate_irfs"
