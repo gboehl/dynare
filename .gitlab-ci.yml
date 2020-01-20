@@ -201,8 +201,10 @@ test_dynare++:
 
 deploy_manual_unstable:
   stage: deploy
-  only:
-    - master@Dynare/dynare
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_REF_NAME == "master"'
+      when: on_success
+    - when: never
   tags:
     - restricted
   dependencies:
@@ -214,8 +216,10 @@ deploy_manual_unstable:
 
 deploy_snapshot_unstable:
   stage: deploy
-  only:
-    - master@Dynare/dynare
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_REF_NAME == "master"'
+      when: on_success
+    - when: never
   tags:
     - restricted
   dependencies:
