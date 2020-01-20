@@ -18,9 +18,8 @@ end;
 options_.SpectralDensity.trigger=1;
 
 options_.bandpass.indicator=0;
-options_.hp_ngrid=2048;
 
-stoch_simul(order=1,nofunctions,hp_filter=0,irf=0,periods=1000000);
+stoch_simul(order=1,nofunctions,hp_filter=0,irf=0,periods=1000000,filtered_theoretical_moments_grid=2048);
 
 white_noise_sample=white_noise;
 
@@ -50,7 +49,7 @@ end
 options_.hp_filter=0;
 stoch_simul(order=1,nofunctions,bandpass_filter=[6 32],irf=0);
 
-theoretical_spectrum_white_noise=repmat(theoretical_spectrum_white_noise,1,options_.hp_ngrid);
+theoretical_spectrum_white_noise=repmat(theoretical_spectrum_white_noise,1,options_.filtered_theoretical_moments_grid);
 passband=oo_.SpectralDensity.freqs>=2*pi/options_.bandpass.passband(2) & oo_.SpectralDensity.freqs<=2*pi/options_.bandpass.passband(1); 
 if max(abs(oo_.SpectralDensity.density(strmatch('white_noise',M_.endo_names,'exact'),passband)-theoretical_spectrum_white_noise(passband)))>1e-10
    error('Spectral Density is wrong') 
