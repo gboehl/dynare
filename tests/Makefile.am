@@ -191,6 +191,7 @@ MODFILES = \
 	identification/as2007/as2007_QT.mod \
 	identification/as2007/as2007_QT_equal_autocorr.mod \
 	identification/as2007/as2007_order_1_2_3.mod \
+	identification/as2007/as2007_order3_no_stoch_simul.mod \
 	identification/BrockMirman/BrockMirman.mod \
 	identification/cgg/cgg_criteria_differ.mod \
 	identification/ident_unit_root/ident_unit_root.mod \
