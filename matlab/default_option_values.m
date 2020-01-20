@@ -12,7 +12,7 @@ function options_ = default_option_values(M_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright (C) 2018-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -155,7 +155,7 @@ options_.relative_irf = false;
 options_.ar = 5;
 options_.hp_filter = 0;
 options_.one_sided_hp_filter = 0;
-options_.hp_ngrid = 512;
+options_.filtered_theoretical_moments_grid = 512;
 options_.nodecomposition = false;
 options_.nomoments = false;
 options_.nocorr = false;

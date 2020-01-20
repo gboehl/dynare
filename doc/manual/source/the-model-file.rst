@@ -3073,13 +3073,6 @@ Computing the stochastic solution
        moments. This option is only available with simulated
        moments. Default: no filter.
 
-    .. option:: hp_ngrid = INTEGER
-
-       Number of points in the grid for the discrete Inverse Fast
-       Fourier Transform used in the HP filter computation. It may be
-       necessary to increase it for highly autocorrelated
-       processes. Default: ``512``.
-
     .. option:: bandpass_filter
 
        Uses a bandpass filter with the default passband before
@@ -3094,6 +3087,14 @@ Computing the stochastic solution
        is set to a periodicity of to LOWEST_PERIODICITY,
        e.g. :math:`6` to :math:`32` quarters if the model frequency is
        quarterly. Default: ``[6,32]``.
+
+    .. option:: filtered_theoretical_moments_grid = INTEGER
+
+       When computing filtered theoretical moments (with either option
+       ``hp_filter`` or option ``bandpass_filter``), this option governs the
+       number of points in the grid for the discrete Inverse Fast Fourier
+       Transform. It may be necessary to increase it for highly autocorrelated
+       processes. Default: ``512``.
 
     .. option:: irf = INTEGER
 
@@ -3421,6 +3422,10 @@ Computing the stochastic solution
        stored in ´´oo_.SpectralDensity´´, defined below. Default: do
        not request spectral density estimates.
 
+    .. option:: hp_ngrid = INTEGER
+
+       Deprecated option. It has the same effect as
+       :opt:`filtered_theoretical_moments_grid <filtered_theoretical_moments_grid = INTEGER>`.
 
     *Output*
 

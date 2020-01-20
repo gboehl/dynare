@@ -4,7 +4,7 @@
  */
 
 /*
- * Copyright (C) 2001-2010 Dynare Team
+ * Copyright (C) 2001-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -67,7 +67,7 @@ end;
 
 steady(solve_algo=4,maxit=1000);
 
-stoch_simul(order=1,nofunctions,irf=0,bandpass_filter=[6 32],hp_ngrid=8192);
+stoch_simul(order=1,nofunctions,irf=0,bandpass_filter=[6 32],filtered_theoretical_moments_grid=8192);
 oo_filtered_all_shocks_theoretical=oo_;
 
 stoch_simul(order=1,nofunctions,periods=1000000);
