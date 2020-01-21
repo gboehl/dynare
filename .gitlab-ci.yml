@@ -199,43 +199,12 @@ test_dynare++:
       - dynare++/tests/*.mat
       - dynare++/tests/*.dump
 
-deploy_manual_unstable:
+deploy_snapshot_enterprise:
   stage: deploy
-  only:
-    - master@Dynare/dynare
-  tags:
-    - restricted
-  dependencies:
-    - build_doc
-  script:
-    - rm -rf doc/manual/build/html/_static/mathjax
-    - ln -s /usr/share/javascript/mathjax doc/manual/build/html/_static/mathjax
-    - rsync --recursive --links --delete doc/manual/build/html/ /srv/www.dynare.org/manual-unstable/
-
-deploy_snapshot_unstable:
-  stage: deploy
-  only:
-    - master@Dynare/dynare
-  tags:
-    - restricted
-  dependencies:
-    - pkg_source
-    - pkg_windows
-    - pkg_macOS
-  script:
-    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/dynare-object-signing.p12 -n Dynare -i https://www.dynare.org -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
-    - cp *.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
-    - f=(windows/exe/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe
-    - f=(windows/7z/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-7z/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-7z/dynare-latest-win.7z
-    - f=(windows/zip/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip
-    - f=(macOS/pkg/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/macos/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/macos/dynare-latest-macos.pkg
-    - ~/update-snapshot-list.sh
-    - curl -X POST -F token="$WEBSITE_PIPELINE_TRIGGER_TOKEN" -F ref=master https://git.dynare.org/api/v4/projects/40/trigger/pipeline
-
-deploy_snapshot_unstable_enterprise:
-  stage: deploy
-  only:
-    - enterprise@Enterprise/dynare
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_REF_NAME == "enterprise"'
+      when: on_success
+    - when: never
   tags:
     - restricted
   dependencies:
@@ -251,10 +220,12 @@ deploy_snapshot_unstable_enterprise:
     - f=(macOS/pkg/*) && cp ${f[0]} /srv/www.dynare.org/snapshot_ecb/macos/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot_ecb/macos/dynare-latest-macos.pkg
     - ~/update-snapshot_ecb-list.sh
 
-deploy_stable_enterprise:
+deploy_release_enterprise:
   stage: deploy
-  only:
-    - tags@Enterprise/dynare
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^enterprise-.*/'
+      when: on_success
+    - when: never
   tags:
     - restricted
   dependencies:
