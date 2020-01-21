@@ -16,7 +16,7 @@ function dynare(fname, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,6 +45,9 @@ if ~nargin || strcmpi(fname,'help')
     return
 end
 
+% The following needs to come early, to avoid spurious warnings (especially under Octave)
+warning_config;
+
 % Set default local options
 change_path_flag = true;
 
@@ -64,8 +67,6 @@ check_matlab_path(change_path_flag);
 
 % Detect if MEX files are present; if not, use alternative M-files
 dynareroot = dynare_config();
-
-warning_config()
 
 if isoctave
     % The supported_octave_version.m file is not in git nor in the source
