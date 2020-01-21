@@ -5,18 +5,18 @@
   <background-darkAqua file="background.png" scaling="tofit" mime-type="image/png" alignment="topleft" />
   <welcome file="welcome.html" mime-type="text/html" />
   <license file="gpl-3.0-standalone.html" mime-type="text/html" />
-  <pkg-ref id="com.cepremap.dynare" />
+  <pkg-ref id="org.dynare" />
   <options customize="allow" require-scripts="false" hostArchitectures="x86_64" />
   <choices-outline>
-    <line choice="com.cepremap.dynare" />
-    <line choice="com.cepremap.dynare.gcc" />
+    <line choice="org.dynare" />
+    <line choice="org.dynare.gcc" />
   </choices-outline>
-  <choice id="com.cepremap.dynare" title="Dynare" description="Dynare Required Files" start_enabled="false" enabled="false">
-    <pkg-ref id="com.cepremap.dynare" />
+  <choice id="org.dynare" title="Dynare" description="Dynare Required Files" start_enabled="false" enabled="false">
+    <pkg-ref id="org.dynare" />
   </choice>
-  <choice id="com.cepremap.dynare.gcc" title="GCC compiler for use_dll" description="This is necessary for the use of Dynare with the `use_dll` option. NB: This takes a few minutes and requires an active internet connection">
-    <pkg-ref id="com.cepremap.dynare.gcc" />
+  <choice id="org.dynare.gcc" title="GCC compiler for use_dll" description="This is necessary for the use of Dynare with the `use_dll` option. NB: This takes a few minutes and requires an active internet connection">
+    <pkg-ref id="org.dynare.gcc" />
   </choice>
-  <pkg-ref id="com.cepremap.dynare" version="VERSION_NO_SPACE">dynare-VERSION_NO_SPACE.pkg</pkg-ref>
-  <pkg-ref id="com.cepremap.dynare.gcc" version="VERSION_NO_SPACE">dynare-VERSION_NO_SPACE-gcc.pkg</pkg-ref>
+  <pkg-ref id="org.dynare" version="VERSION_NO_SPACE">dynare-VERSION_NO_SPACE.pkg</pkg-ref>
+  <pkg-ref id="org.dynare.gcc" version="VERSION_NO_SPACE">dynare-VERSION_NO_SPACE-gcc.pkg</pkg-ref>
 </installer-gui-script>
