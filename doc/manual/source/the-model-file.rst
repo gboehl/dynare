@@ -7400,6 +7400,74 @@ Shock Decomposition
         If set, then also compute the decomposition for variables declared in
         the ``epilogue`` block.
 
+    .. option:: init2shocks
+                init2shocks = NAME
+
+        Use the information contained in an :bck:`init2shocks` block, in order
+        to attribute initial conditions to shocks. The name of the block can be
+        explicitly given, otherwise it defaults to the ``default`` block.
+
+
+.. block:: init2shocks ;
+           init2shocks (OPTIONS...);
+
+    |br| This blocks gives the possibility of attributing the initial condition
+    of endogenous variables to the contribution of exogenous variables in the
+    shock decomposition.
+
+    For example, in an AR(1) process, the contribution of the initial condition
+    on the process variable can naturally be assigned to the innovation of the
+    process.
+
+    Each line of the block should have the syntax::
+
+        VARIABLE_1 [,] VARIABLE_2;
+
+    Where VARIABLE_1 is an endogenous variable whose initial condition
+    will be attributed to the exogenous VARIABLE_2.
+
+    The information contained in this block is used by the
+    :comm:`plot_shock_decomposition` command when given the ``init2shocks``
+    option.
+
+    *Options*
+
+    .. option:: name = NAME
+
+        Specifies a name for the block, that can be referenced from
+        ``plot_shock_decomposition``, so that several such blocks can coexist
+        in a single model file. If the name is unspecified, it defaults to
+        ``default``.
+
+    *Example*
+
+        ::
+
+            var y y_s R pie dq pie_s de A y_obs pie_obs R_obs;
+            varexo e_R e_q e_ys e_pies e_A;
+            ...
+
+            model;
+              dq = rho_q*dq(-1)+e_q;
+              A = rho_A*A(-1)+e_A;
+              ...
+            end;
+
+            ...
+
+            init2shocks;
+              dq e_q;
+              A e_A;
+            end;
+
+            shock_decomposition(nograph);
+
+            plot_shock_decomposition(init2shocks) y_obs R_obs pie_obs dq de;
+
+        In this example, the initial conditions of ``dq`` and ``A`` will
+        be respectively attributed to ``e_q`` and ``e_A``.
+
+
 .. command:: initial_condition_decomposition [VARIABLE_NAME]...;
              initial_condition_decomposition (OPTIONS...) [VARIABLE_NAME]...;
 
