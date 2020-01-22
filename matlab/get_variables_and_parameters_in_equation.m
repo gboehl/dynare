@@ -15,7 +15,7 @@ function [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_
 % - eid         [Integer]           n*1 vector of indices in M_.endo_names for the listed parameters in endogenous.
 % - xid         [Integer]           m*1 vector of indices in M_.exo_names for the listed parameters in exogenous.
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright (C) 2018-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,30 +33,10 @@ function [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % Get the tokens in the rhs member of the equation.
-rhs_ = strsplit(rhs,{'+','-','*','/','^', ...
-                    'log(', 'log10(', 'ln(', 'exp(', ...
-                    'sqrt(', 'abs(', 'sign(', ...
-                    'sin(', 'cos(', 'tan(', 'asin(', 'acos(', 'atan(', ...
-                    'min(', 'max(', ...
-                    'normcdf(', 'normpdf(', 'erf(', ...
-                    'diff(', 'adl(', '(', ')', '\n', '\t', ' '});
+rhs_ = get_variables_and_parameters_in_expression(rhs);
 
 % Get the tokens in the lhs member of the equation.
-lhs_ = strsplit(lhs, {'+','-','*','/','^', ...
-                    'log(', 'log10(', 'ln(', 'exp(', ...
-                    'sqrt(', 'abs(', 'sign(', ...
-                    'sin(', 'cos(', 'tan(', 'asin(', 'acos(', 'atan(', ...
-                    'min(', 'max(', ...
-                    'normcdf(', 'normpdf(', 'erf(', ...
-                    'diff(', 'adl(', '(', ')'});
-
-% Filter out the numbers and punctuation.
-rhs_(cellfun(@(x) all(isstrprop(x, 'digit')+isstrprop(x, 'punct')), rhs_)) = [];
-lhs_(cellfun(@(x) all(isstrprop(x, 'digit')+isstrprop(x, 'punct')), lhs_)) = [];
-
-% Filter out empty elements.
-rhs_(cellfun(@(x) all(isempty(x)), rhs_)) = [];
-lhs_(cellfun(@(x) all(isempty(x)), lhs_)) = [];
+lhs_ = get_variables_and_parameters_in_expression(lhs);
 
 % Get list of parameters.
 pnames = DynareModel.param_names;
@@ -68,7 +48,7 @@ enames = intersect([rhs_, lhs_], enames);
 
 % Get list of exogenous variables
 xnames = DynareModel.exo_names;
-xnames = intersect([rhs_, lhs_], xnames);
+xnames = intersect([rhs_,lhs_], xnames);
 
 % Returns vector of indices for parameters endogenous and exogenous
 % variables if required.
