@@ -81,7 +81,13 @@ for i=1:length(eqtags)
     % Get the original equation.
     [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true);
     % Get the parameters, endogenous and exogenous variables in the current equation.
-    [pnames, enames, xnames] = get_variables_and_parameters_in_equation(LHS, RHS, M_);
+    [pnames, ~, xnames] = get_variables_and_parameters_in_equation(LHS, RHS, M_);
+    LHS = get_variables_and_parameters_in_expression(LHS);
+    enames = LHS;
+    if length(LHS)>1
+        error('Expressions with more than one variable on the LHS are not allowed.')
+    end
+    LHS = LHS{1};
     if isrename
         [variable_has_to_be_renamed, id] = ismember(eqnum, [rename{:,1}]);
         if variable_has_to_be_renamed
@@ -123,14 +129,13 @@ for i=1:length(eqtags)
         rhs = write_expectations(eqtags{i}, isvar.name, 'var');
         lhs = sprintf('%s_VE', eqtags{i});
         RHS = strrep(RHS, sprintf('var_expectation(model_name = %s)', isvar.name), lhs);
-    else
-        if ~isempty(ispac)
-            [rhs, growthneutralitycorrection] = write_expectations(eqtags{i}, ispac.name, 'pac');
-            lhs = sprintf('%s_PE', eqtags{i});
-            RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), lhs);
-            if ~isempty(growthneutralitycorrection)
-                RHS = sprintf('%s + %s', RHS, growthneutralitycorrection);
-            end
+    end
+    if ~isempty(ispac)
+        [rhs, growthneutralitycorrection] = write_expectations(eqtags{i}, ispac.name, 'pac');
+        lhs = sprintf('%s_PE', eqtags{i});
+        RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), lhs);
+        if ~isempty(growthneutralitycorrection)
+            RHS = sprintf('%s + %s', RHS, growthneutralitycorrection);
         end
     end
     % Print equation for unrolled PAC/VAR-expectation and update
@@ -139,12 +144,20 @@ for i=1:length(eqtags)
         % Note that the call to get_variables_and_parameters_in_equation()
         % will not return the lhs variable in expectation_enames since
         % the name is created on the fly and is not a  member of M_.endo_names.
-        [expectation_pnames, expectation_enames] = get_variables_and_parameters_in_equation(lhs, rhs, M_);
+        [expectation_pnames, ~, expectation_xnames] = get_variables_and_parameters_in_equation('', rhs, M_);
+        expectation_enames = get_variables_and_parameters_in_expression(lhs);
         pnames = union(pnames, expectation_pnames);
+        xnames = union(xnames, expectation_xnames);
         enames = union(enames, expectation_enames);
-        enames = union(enames, lhs);
+        enames = union(enames, LHS);
         fprintf(fid, '[name=''%s'']\n', lhs);
         fprintf(fid, '%s = %s;\n\n', lhs, rhs);
+    else
+        [~, eLHS] = get_variables_and_parameters_in_equation(LHS, '', M_);
+        [pRHS, ~, xRHS] = get_variables_and_parameters_in_equation('', RHS, M_);
+        enames = union(enames, eLHS);
+        xnames = union(xnames, xRHS);
+        pnames = union(pnames, pRHS);
     end
     % Update pnames, enames and xnames if PAC with growth neutrality correction.
     if ~isempty(ispac) && ~isempty(growthneutralitycorrection)
@@ -155,7 +168,7 @@ for i=1:length(eqtags)
             pnames = union(pnames, growthneutralitycorrection_pnames);
         end
         if ~isempty(growthneutralitycorrection_enames)
-            enames = union(enames, growthneutralitycorrection_enames);
+            xnames = union(xnames, growthneutralitycorrection_enames);
         end
         if ~isempty(growthneutralitycorrection_xnames)
             xnames = union(xnames, growthneutralitycorrection_xnames);
