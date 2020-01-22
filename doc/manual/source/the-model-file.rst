@@ -7150,8 +7150,7 @@ Shock Decomposition
 
     .. option:: with_epilogue
 
-        If set, then also compute the decomposition for variables declared in
-        the ``epilogue`` block (see :ref:`epilogue`).
+        See :opt:`with_epilogue`.
 
     *Output*
 
@@ -7397,8 +7396,7 @@ Shock Decomposition
 
     .. option:: with_epilogue
 
-        If set, then also compute the decomposition for variables declared in
-        the ``epilogue`` block (see :ref:`epilogue`).
+        See :opt:`with_epilogue`.
 
     .. option:: init2shocks
                 init2shocks = NAME
