@@ -6989,7 +6989,7 @@ Shock Decomposition
     .. option:: with_epilogue
 
         If set, then also compute the decomposition for variables declared in
-        the ``epilogue`` block.
+        the ``epilogue`` block (see :ref:`epilogue`).
 
     *Output*
 
@@ -7151,7 +7151,7 @@ Shock Decomposition
     .. option:: with_epilogue
 
         If set, then also compute the decomposition for variables declared in
-        the ``epilogue`` block.
+        the ``epilogue`` block (see :ref:`epilogue`).
 
     *Output*
 
@@ -7398,7 +7398,7 @@ Shock Decomposition
     .. option:: with_epilogue
 
         If set, then also compute the decomposition for variables declared in
-        the ``epilogue`` block.
+        the ``epilogue`` block (see :ref:`epilogue`).
 
     .. option:: init2shocks
                 init2shocks = NAME
@@ -10547,6 +10547,48 @@ below.
     .. option:: regimes
 
         See :opt:`regimes`.
+
+.. _epilogue:
+
+Epilogue Variables
+==================
+
+.. block:: epilogue ;
+
+The epilogue block is useful for computing output variables of interest that
+may not be necessarily defined in the model (e.g. various kinds of real/nominal
+shares or relative prices, or annualized variables out of a quarterly model).
+
+It can also provide several advantages in terms of computational efficiency and
+flexibility:
+
+- You can calculate variables in the epilogue block after smoothers/simulations
+  have already been run without adding the new definitions and equations and
+  rerunning smoothers/simulations. Even posterior smoother subdraws can be
+  recycled for computing epilogue variables without rerunning subdraws with the
+  new definitions and equations.
+
+- You can also reduce the state space dimension in data
+  filtering/smoothing. Assume, for example, you want annualized variables as
+  outputs. If you define an annual growth rate in a quarterly model, you need
+  lags up to order 7 of the associated quarterly variable; in a medium/large
+  scale model this would just blow up the state dimension and increase by a
+  huge amount the computing time of a smoother.
+
+The ``epilogue`` block is terminated by ``end;`` and contains lines of the
+form:
+
+            NAME = EXPRESSION;
+
+*Example*
+        ::
+
+            epilogue;
+            // annualized level of y
+            ya = exp(y)+exp(y(-1))+exp(y(-2))+exp(y(-3));
+            // annualized growth rate of y
+            gya = ya/ya(-4)-1;
+            end;
 
 
 Displaying and saving results
