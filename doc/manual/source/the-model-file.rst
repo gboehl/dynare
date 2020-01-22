@@ -815,6 +815,19 @@ The parameter names are stored in ``M_.param_names``:
 
     Cell array containing the names of the model parameters.
 
+.. matcomm:: get_param_by_name ('PARAMETER_NAME');
+
+   Given the name of a parameter, returns its calibrated value as it is
+   stored in ``M_.params``.
+
+.. matcomm:: set_param_value ('PARAMETER_NAME', MATLAB_EXPRESSION);
+
+   Sets the calibrated value of a parameter to the provided expression.
+   This does essentially the same as the parameter initialization syntax
+   described above, except that it accepts arbitrary MATLAB/Octave expressions,
+   and that it works from MATLAB/Octave scripts.
+
+
 .. _model-decl:
 
 Model declaration
@@ -2033,6 +2046,17 @@ blocks.
                  is strongly discouraged**. You should use a
                  ``shocks`` block instead.
 
+.. matcomm:: get_shock_stderr_by_name ('EXOGENOUS_NAME');
+
+   |br| Given the name of an exogenous variable, returns its standard
+   deviation, as set by a previous ``shocks`` block.
+
+.. matcomm:: set_shock_stderr_value ('EXOGENOUS_NAME', MATLAB_EXPRESSION);
+
+   |br| Sets the standard deviation of an exgonous variable. This does
+   essentially the same as setting the standard error via a ``shocks`` block,
+   except that it accepts arbitrary MATLAB/Octave expressions, and that it
+   works from MATLAB/Octave scripts.
 
 Other general declarations
 ==========================
@@ -2272,6 +2296,11 @@ After computation, the steady state is available in the following variable:
     ordered in the order of declaration used in the ``var`` command (which
     is also the order used in ``M_.endo_names``).
 
+.. matcomm:: get_mean ('ENDOGENOUS_NAME' [, 'ENDOGENOUS_NAME']... );
+
+    Returns the steady of state of the given endogenous variable(s), as it is
+    stored in ``oo_.steady_state``. Note that, if the steady state has not yet
+    been computed with ``steady``, it will first try to compute it.
 
 .. block:: homotopy_setup ;
 
@@ -3643,6 +3672,11 @@ Computing the stochastic solution
 
     For example, ``oo_.irfs.gnp_ea`` contains the effect on ``gnp`` of
     a one-standard deviation shock on ``ea``.
+
+.. matcomm:: get_irf ('EXOGENOUS_NAME' [, 'ENDOGENOUS_NAME']... );
+
+   |br| Given the name of an exogenous variables, returns the IRFs for the
+   requested endogenous variable(s), as they are stored in ``oo_.irfs``.
 
 The approximated solution of a model takes the form of a set of
 decision rules or transition equations expressing the current value of
@@ -6390,6 +6424,12 @@ block decomposition of the model (see :opt:`block`).
             oo_.SmoothedVariables.MOMENT_NAME.VARIABLE_NAME
 
 
+    .. matcomm:: get_smooth ('VARIABLE_NAME' [, 'VARIABLE_NAME']...);
+
+       Returns the smoothed values of the given endogenous or exogenous
+       variable(s), as they are stored in the ``oo_.SmoothedVariables``
+       and ``oo_.SmoothedShocks`` variables.
+
     .. matvar:: oo_.UpdatedVariables
 
         Variable set by the ``estimation`` command (if used with the
@@ -6406,6 +6446,10 @@ block decomposition of the model (see :opt:`block`).
 
             oo_.UpdatedVariables.MOMENT_NAME.VARIABLE_NAME
 
+    .. matcomm:: get_update ('VARIABLE_NAME' [, 'VARIABLE_NAME']...);
+
+       Returns the updated values of the given variable(s), as they are stored
+       in the ``oo_.UpdatedVariables`` variable.
 
     .. matvar:: oo_.FilterCovariance
 
