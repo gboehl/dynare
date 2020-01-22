@@ -73,7 +73,7 @@ class DynareLexer(RegexLexer):
             (r'\s*(%|//).*$', Comment),
 
             (words((
-                'model','steady_state_model','initval','endval','histval',
+                'model','steady_state_model','initval','endval','histval','epilogue',
                 'shocks','mshocks','homotopy_setup','observation_trends',
                 'estimated_params','estimated_params_init','estimated_params_bounds',
                 'shock_groups','conditional_forecast_paths','optim_weights',
