@@ -88,7 +88,7 @@ function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dM
 %   * identification_numerical_objective (previously thet2tau)
 %   * vec
 % =========================================================================
-% Copyright (C) 2010-2019 Dynare Team
+% Copyright (C) 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -106,26 +106,32 @@ function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dM
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 % =========================================================================
 
-%get options
+%get fields from options_ident
 no_identification_moments   = options_ident.no_identification_moments;
 no_identification_minimal   = options_ident.no_identification_minimal;
 no_identification_spectrum  = options_ident.no_identification_spectrum;
-
 order       = options_ident.order;
 nlags       = options_ident.ar;
 useautocorr = options_ident.useautocorr;
 grid_nbr    = options_ident.grid_nbr;
 kronflag    = options_ident.analytic_derivation_mode;
 
-% set values
-params0     = M.params;                 %values at which to evaluate dynamic, static and param_derivs files
-Sigma_e0    = M.Sigma_e;                %covariance matrix of exogenous shocks
-Corr_e0     = M.Correlation_matrix;     %correlation matrix of exogenous shocks
-stderr_e0   = sqrt(diag(Sigma_e0));     %standard errors of exogenous shocks
-para0       = get_all_parameters(estim_params, M);  %get all selected parameters in estimated_params block, stderr and corr come first, then model parameters
-if isempty(para0)
+% get fields from M
+endo_nbr           = M.endo_nbr;
+exo_nbr            = M.exo_nbr;
+fname              = M.fname;
+lead_lag_incidence = M.lead_lag_incidence;
+nspred             = M.nspred;
+nstatic            = M.nstatic;
+params             = M.params;
+Sigma_e            = M.Sigma_e;
+stderr_e           = sqrt(diag(Sigma_e));
+
+% set all selected values: stderr and corr come first, then model parameters
+xparam1 = get_all_parameters(estim_params, M); %try using estimated_params block
+if isempty(xparam1)
     %if there is no estimated_params block, consider all stderr and all model parameters, but no corr parameters
-    para0 = [stderr_e0', params0'];
+    xparam1 = [stderr_e', params'];
 end
 
 %get numbers/lengths of vectors
@@ -134,21 +140,16 @@ stderrparam_nbr = length(indpstderr);
 corrparam_nbr   = size(indpcorr,1);
 totparam_nbr    = stderrparam_nbr + corrparam_nbr + modparam_nbr;
 obs_nbr         = length(indvobs);
-exo_nbr         = M.exo_nbr;
-endo_nbr        = M.endo_nbr;
-nspred          = M.nspred;
-nstatic         = M.nstatic;
-indvall         = (1:endo_nbr)'; %index for all endogenous variables
 d2flag          = 0; % do not compute second parameter derivatives
 
 % Get Jacobians (wrt selected params) of steady state, dynamic model derivatives and perturbation solution matrices for all endogenous variables
 oo.dr.derivs = get_perturbation_params_derivs(M, options, estim_params, oo, indpmodel, indpstderr, indpcorr, d2flag);
 
-[I,~] = find(M.lead_lag_incidence'); %I is used to select nonzero columns of the Jacobian of endogenous variables in dynamic model files
+[I,~] = find(lead_lag_incidence'); %I is used to select nonzero columns of the Jacobian of endogenous variables in dynamic model files
 yy0 = oo.dr.ys(I);           %steady state of dynamic (endogenous and auxiliary variables) in lead_lag_incidence order
 Yss = oo.dr.ys(oo.dr.order_var); % steady state in DR order
 if order == 1
-    [~, g1 ] = feval([M.fname,'.dynamic'], yy0, oo.exo_steady_state', params0, oo.dr.ys, 1);
+    [~, g1 ] = feval([fname,'.dynamic'], yy0, oo.exo_steady_state', params, oo.dr.ys, 1);
     %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     DYNAMIC = [Yss;
                vec(g1(oo.dr.order_var,:))]; %add steady state and put rows of g1 in DR order
@@ -156,7 +157,7 @@ if order == 1
                 reshape(oo.dr.derivs.dg1(oo.dr.order_var,:,:),size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2),size(oo.dr.derivs.dg1,3)) ]; %reshape dg1 in DR order and add steady state
     REDUCEDFORM = [Yss;
                    vec(oo.dr.ghx);
-                   dyn_vech(oo.dr.ghu*Sigma_e0*transpose(oo.dr.ghu))]; %in DR order
+                   dyn_vech(oo.dr.ghu*Sigma_e*transpose(oo.dr.ghu))]; %in DR order
     dREDUCEDFORM = zeros(endo_nbr*nspred+endo_nbr*(endo_nbr+1)/2, totparam_nbr);
     for j=1:totparam_nbr
         dREDUCEDFORM(:,j) = [vec(oo.dr.derivs.dghx(:,:,j));
@@ -165,7 +166,7 @@ if order == 1
     dREDUCEDFORM = [ [zeros(endo_nbr, stderrparam_nbr+corrparam_nbr) oo.dr.derivs.dYss]; dREDUCEDFORM ]; % add steady state
 
 elseif order == 2
-    [~, g1, g2 ] = feval([M.fname,'.dynamic'], yy0, oo.exo_steady_state', params0, oo.dr.ys, 1);
+    [~, g1, g2 ] = feval([fname,'.dynamic'], yy0, oo.exo_steady_state', params, oo.dr.ys, 1);
     %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     DYNAMIC = [Yss;
@@ -176,7 +177,7 @@ elseif order == 2
                 reshape(oo.dr.derivs.dg2(oo.dr.order_var,:),size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2)^2,size(oo.dr.derivs.dg1,3))]; %reshape dg2 in DR order
     REDUCEDFORM = [Yss;
                    vec(oo.dr.ghx);
-                   dyn_vech(oo.dr.ghu*Sigma_e0*transpose(oo.dr.ghu));
+                   dyn_vech(oo.dr.ghu*Sigma_e*transpose(oo.dr.ghu));
                    vec(oo.dr.ghxx);
                    vec(oo.dr.ghxu);
                    vec(oo.dr.ghuu);
@@ -192,7 +193,7 @@ elseif order == 2
     end
     dREDUCEDFORM = [ [zeros(endo_nbr, stderrparam_nbr+corrparam_nbr) oo.dr.derivs.dYss]; dREDUCEDFORM ]; % add steady state
 elseif order == 3
-    [~, g1, g2, g3 ] = feval([M.fname,'.dynamic'], yy0, oo.exo_steady_state', params0, oo.dr.ys, 1);
+    [~, g1, g2, g3 ] = feval([fname,'.dynamic'], yy0, oo.exo_steady_state', params, oo.dr.ys, 1);
     %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     DYNAMIC = [Yss;
@@ -205,7 +206,7 @@ elseif order == 3
                 reshape(oo.dr.derivs.dg2(oo.dr.order_var,:),size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2)^2,size(oo.dr.derivs.dg1,3))]; %reshape dg3 in DR order
     REDUCEDFORM = [Yss;
                    vec(oo.dr.ghx);
-                   dyn_vech(oo.dr.ghu*Sigma_e0*transpose(oo.dr.ghu));
+                   dyn_vech(oo.dr.ghu*Sigma_e*transpose(oo.dr.ghu));
                    vec(oo.dr.ghxx); vec(oo.dr.ghxu); vec(oo.dr.ghuu); vec(oo.dr.ghs2);
                    vec(oo.dr.ghxxx); vec(oo.dr.ghxxu); vec(oo.dr.ghxuu); vec(oo.dr.ghuuu); vec(oo.dr.ghxss); vec(oo.dr.ghuss)]; %in DR order
     dREDUCEDFORM = zeros(size(REDUCEDFORM,1)-endo_nbr, totparam_nbr);
@@ -250,14 +251,11 @@ end
 % zhat = A*zhat(-1) + B*xi, where zhat = z - E(z)
 % yhat = C*zhat(-1) + D*xi, where yhat = y - E(y)
 if ~no_identification_moments
-    MOMENTS = identification_numerical_objective(para0, 1, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=1]
+    MOMENTS = identification_numerical_objective(xparam1, 1, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=1]
     MOMENTS = [MEAN; MOMENTS];
     if kronflag == -1
         %numerical derivative of autocovariogram
-        dMOMENTS = fjaco(str2func('identification_numerical_objective'), para0, 1, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=1]
-        M.params = params0;              %make sure values are set back
-        M.Sigma_e = Sigma_e0;            %make sure values are set back
-        M.Correlation_matrix = Corr_e0 ; %make sure values are set back
+        dMOMENTS = fjaco(str2func('identification_numerical_objective'), xparam1, 1, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=1]
         dMOMENTS = [dMEAN; dMOMENTS]; %add Jacobian of steady state of VAROBS variables
     else
         dMOMENTS = zeros(obs_nbr + obs_nbr*(obs_nbr+1)/2 + nlags*obs_nbr^2 , totparam_nbr);
@@ -334,19 +332,19 @@ if ~no_identification_spectrum
 %             tpos  = exp( sqrt(-1)*freqs); %positive Fourier frequencies
 %             tneg  = exp(-sqrt(-1)*freqs); %negative Fourier frequencies
 %             IA = eye(size(A,1));
-%             IE = eye(M.exo_nbr);
+%             IE = eye(exo_nbr);
 %             mathp_col1 = NaN(length(freqs),obs_nbr^2); mathp_col2 = mathp_col1; mathp_col3 = mathp_col1; mathp_col4 = mathp_col1;
 %             for ig = 1:length(freqs)
 %                 %method 1: as in UnivariateSpectralDensity.m
-%                 f_omega  =(1/(2*pi))*( [(IA-A*tneg(ig))\B;IE]*M.Sigma_e*[B'/(IA-A'*tpos(ig)) IE]); % state variables
+%                 f_omega  =(1/(2*pi))*( [(IA-A*tneg(ig))\B;IE]*Sigma_e*[B'/(IA-A'*tpos(ig)) IE]); % state variables
 %                 g_omega1 = [C*tneg(ig) D]*f_omega*[C'*tpos(ig); D']; % selected variables
 %                 %method 2: as in UnivariateSpectralDensity.m but simplified algebraically
-%                 g_omega2 = (1/(2*pi))*(  C*((tpos(ig)*IA-A)\(B*M.Sigma_e*B'))*((tneg(ig)*IA-A')\(C'))  +  D*M.Sigma_e*B'*((tneg(ig)*IA-A')\(C'))  +   C* ((tpos(ig)*IA-A)\(B*M.Sigma_e*D'))  +  D*M.Sigma_e*D'  );
+%                 g_omega2 = (1/(2*pi))*(  C*((tpos(ig)*IA-A)\(B*Sigma_e*B'))*((tneg(ig)*IA-A')\(C'))  +  D*Sigma_e*B'*((tneg(ig)*IA-A')\(C'))  +   C* ((tpos(ig)*IA-A)\(B*Sigma_e*D'))  +  D*Sigma_e*D'  );
 %                 %method 3: use transfer function note that ' is the complex conjugate transpose operator i.e. transpose(ffneg')==ffpos
 %                 Transferfct = D+C*((tpos(ig)*IA-A)\B);
-%                 g_omega3 = (1/(2*pi))*(Transferfct*M.Sigma_e*Transferfct');
+%                 g_omega3 = (1/(2*pi))*(Transferfct*Sigma_e*Transferfct');
 %                 %method 4: kronecker products
-%                 g_omega4 = (1/(2*pi))*( kron( D+C*((tneg(ig)^(-1)*IA-A)\B) , D+C*((tneg(ig)*IA-A)\B) )*M.Sigma_e(:));
+%                 g_omega4 = (1/(2*pi))*( kron( D+C*((tneg(ig)^(-1)*IA-A)\B) , D+C*((tneg(ig)*IA-A)\B) )*Sigma_e(:));
 %                 % store as matrix row
 %                 mathp_col1(ig,:) = (g_omega1(:))'; mathp_col2(ig,:) = (g_omega2(:))'; mathp_col3(ig,:) = (g_omega3(:))'; mathp_col4(ig,:) = g_omega4;
 %             end
@@ -362,10 +360,7 @@ if ~no_identification_spectrum
     IA = eye(size(A,1));
     if kronflag == -1
         %numerical derivative of spectral density
-        dOmega_tmp = fjaco(str2func('identification_numerical_objective'), para0, 2, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=2]
-        M.params = params0;              %make sure values are set back
-        M.Sigma_e = Sigma_e0;            %make sure values are set back
-        M.Correlation_matrix = Corr_e0 ; %make sure values are set back
+        dOmega_tmp = fjaco(str2func('identification_numerical_objective'), xparam1, 2, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=2]
         kk = 0;
         for ig = 1:length(freqs)
             kk = kk+1;
@@ -483,7 +478,7 @@ if ~no_identification_minimal
                              kron(Inu,minB);
                              zeros(obs_nbr*minnx,exo_nbr^2);
                              kron(Inu,minD);
-                             -2*Enu*kron(Sigma_e0,Inu)];
+                             -2*Enu*kron(Sigma_e,Inu)];
             dMINIMAL = full([KomunjerNg_DL KomunjerNg_DT KomunjerNg_DU]);
             %add Jacobian of steady state (here we also allow for higher-order perturbation, i.e. only the mean provides additional restrictions
             dMINIMAL =  [dMEAN zeros(obs_nbr,minnx^2+exo_nbr^2); dMINIMAL];
