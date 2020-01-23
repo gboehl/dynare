@@ -397,13 +397,14 @@ by the ``dynare`` command.
     after the name of the ``.mod`` file. They can alternatively be
     defined in the first line of the ``.mod`` file, this avoids typing
     them on the command line each time a ``.mod`` file is to be
-    run. This line must be a Dynare comment (ie must begin with //)
-    and the options must be comma separated between ``--+`` options:
+    run. This line must be a Dynare one-line comment (i.e. must begin with ``//``)
+    and the options must be whitespace separated between ``--+ options:``
     and ``+--``. Note that any text after the ``+--`` will be
     discarded. As in the command line, if an option admits a value the
     equal symbol must not be surrounded by spaces. For instance ``json
     = compute`` is not correct, and should be written
-    ``json=compute``.
+    ``json=compute``. The ``nopathchange`` option cannot be specified in
+    this way, it must be passed on the command-line.
 
     *Output*
 
