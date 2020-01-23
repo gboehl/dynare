@@ -48,21 +48,18 @@ end
 % The following needs to come early, to avoid spurious warnings (especially under Octave)
 warning_config;
 
-% Set default local options
+% Handle nopathchange option
+% Note that it is only handled if it appears on the command-line, and not at
+% the top of the .mod file (since the treatment needs to take place very early,
+% even before we make the various checks on the filename)
 change_path_flag = true;
-
-% Filter out some options.
-preprocessoroutput = true;
 if nargin>1
     id = ismember(varargin, 'nopathchange');
     if any(id)
         change_path_flag = false;
         varargin(id) = [];
     end
-    preprocessoroutput = ~ismember('nopreprocessoroutput', varargin);
 end
-
-% Check matlab path
 check_matlab_path(change_path_flag);
 
 % Detect if MEX files are present; if not, use alternative M-files
@@ -187,6 +184,14 @@ if exist(fname(1:end-4),'dir') && exist([fname(1:end-4) filesep 'hooks'],'dir') 
     run([fname(1:end-4) filesep 'hooks/priorprocessing'])
 end
 
+% Parse some options, either for the command-line or from the top of the .mod file
+file_opts = parse_options_line(fname);
+preprocessoroutput = ~ismember('nopreprocessoroutput', varargin) && ...
+                     ~ismember('nopreprocessoroutput', file_opts);
+nolog = ismember('nolog', varargin) || ismember('nolog', file_opts);
+onlymacro = ismember('onlymacro', varargin) || ismember('onlymacro', file_opts);
+onlyjson = ismember('onlyjson', varargin) || ismember('onlyjson', file_opts);
+
 if ispc
     arch = getenv('PROCESSOR_ARCHITECTURE');
 else
@@ -234,14 +239,14 @@ end
 if status ~= 0 || preprocessoroutput
     disp(result)
 end
-if ismember('onlymacro', varargin)
+if onlymacro
     if preprocessoroutput
         disp('Preprocessor stopped after macroprocessing step because of ''onlymacro'' option.');
     end
     return
 end
 
-if ismember('onlyjson', varargin)
+if onlyjson
     if preprocessoroutput
         disp('Preprocessor stopped after preprocessing step because of ''onlyjson'' option.');
     end
@@ -254,11 +259,7 @@ if exist(fname(1:end-4),'dir') && exist([fname(1:end-4) filesep 'hooks'],'dir') 
 end
 
 % Save preprocessor result in logfile (if `no_log' option not present)
-fid = fopen(fname, 'r');
-firstline = fgetl(fid);
-fclose(fid);
-if ~ismember('nolog', varargin) ...
-        && isempty(regexp(firstline, '//\s*--\+\s*options:(|.*\s|.*,)nolog(|\s.*|,.*)\+--'))
+if ~nolog
     logname = [fname(1:end-4) '.log'];
     fid = fopen(logname, 'w');
     fprintf(fid, '%s', result);
@@ -279,3 +280,38 @@ end
 clear(['+' fname '/driver'])
 
 evalin('base',[fname '.driver']) ;
+
+end
+
+% Looks for an options list in the first non-empty line of the .mod file
+% Should be kept in sync with the function of the same name in preprocessor/src/DynareMain.cc
+%
+% Note that separating options with commas is accepted, but is deprecated (and undocumented)
+%
+% Also, the parser does not handle correctly some corner cases: for example, it
+% will fail on something like -Dfoo="a b,c" (will split at whitespace and comma)
+function opts = parse_options_line(fname)
+    opts = {};
+    fid = fopen(fname, 'r');
+    while true
+        firstline = fgetl(fid);
+        if firstline == -1
+            fclose(fid);
+            return
+        end
+        if ~isempty(firstline)
+            break
+        end
+    end
+    fclose(fid);
+    t = regexp(firstline, '^\s*//\s*--\+\s*options:([^\+]*)\+--', 'tokens');
+    if isempty(t)
+        return
+    end
+
+    opts = regexp(t{1}{1}, '[^,\s]+', 'match');
+
+    if ismember(opts, 'nopathchange')
+        warning('The ''nopathchange'' option is not taken into account when it appears at the top of ''.mod'' file. You should rather pass it on the command-line.')
+    end
+end
