@@ -6,6 +6,7 @@ function dy = prodmom_deriv(V,ii,nu,dV,dC)
 % Kan, R.: "From moments of sum to moments of product." Journal of 
 % Multivariate Analysis, 2008, vol. 99, issue 3, pages 542-554.
 % =========================================================================
+% Copyright (C) 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
 % Copyright (C) 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
