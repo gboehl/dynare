@@ -1,21 +1,29 @@
+function dy = prodmom_deriv(V,ii,nu,dV,dC)
+% This function builds upon and extends prodmom.m to compute the 
+% derivatives of product moments of normally distributed variables with 
+% respect to standard errors and correlation parameters.
+% prodmom.m is part of replication codes of the following paper:
+% Kan, R.: "From moments of sum to moments of product." Journal of 
+% Multivariate Analysis, 2008, vol. 99, issue 3, pages 542-554.
+% =========================================================================
+% Copyright (C) 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
+% Copyright (C) 2019-2020 Dynare Team
 %
-% prodmom.m		Date: 4/29/2006
-% This Matlab program computes the product moment of X_{i_1}^{nu_1}X_{i_2}^{nu_2}...X_{i_m}^{nu_m},
-% where X_{i_j} are elements from X ~ N(0_n,V).  
-% V only needs to be positive semidefinite.
-% V: variance-covariance matrix of X
-% ii: vector of i_j
-% nu: power of X_{i_j} 
-% Reference: Triantafyllopoulos (2003) On the Central Moments of the Multidimensional
-%            Gaussian Distribution, Mathematical Scientist
-%            Kotz, Balakrishnan, and Johnson (2000), Continuous Multivariate
-%            Distributions, Vol. 1, p.261
-% Note that there is a typo in Eq.(46.25), there should be an extra rho in front 
-% of the equation.
-% Usage: prodmom(V,[i1 i2 ... ir],[nu1 nu2 ... nur])
-% Example: To get E[X_2X_4^3X_7^2], use prodmom(V,[2 4 7],[1 3 2])
+% This file is part of Dynare.
 %
-function dy = prodmom_deriv(V,ii,nu,dV,dC);
+% Dynare is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Dynare is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% =========================================================================
 if nargin<3
    nu = ones(size(ii));
 end

@@ -71,7 +71,7 @@ if options_ident.normalize_jacobians == 1
 else
     fprintf('    Normalize Jacobians:                                   No\n');
 end
-fprintf('    Tolerance level for rank computations:                 %.0d\n',options_ident.tol_rank);
+fprintf('    Tolerance level for rank computations:                 %s\n',num2str(options_ident.tol_rank));
 fprintf('    Tolerance level for selecting nonzero columns:         %.0d\n',options_ident.tol_deriv);
 fprintf('    Tolerance level for selecting nonzero singular values: %.0d\n',options_ident.tol_sv);
 

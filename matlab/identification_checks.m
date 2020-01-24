@@ -51,8 +51,8 @@ function [condX, rankX, ind0, indno, ixno, Mco, Pco, jweak, jweak_pair] = identi
 if issparse(X)
     X = full(X);
 end
-if nargin < 3 || isempty(tol_rank)
-    tol_rank = 1.e-10; %tolerance level used for rank computations
+if nargin < 3 || isempty(tol_rank) || strcmp(tol_rank,'robust')
+    tol_rank = max(size(X)) * eps(norm(X)); %tolerance level used for rank computations
 end
 if nargin < 4 || isempty(tol_sv)
     tol_sv = 1.e-3; %tolerance level for zero singular value

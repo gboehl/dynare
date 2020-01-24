@@ -28,7 +28,7 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 %                         1: prior exists. Identification is checked for stderr, corr and model parameters as declared in estimated_params block
 %                         0: prior does not exist. Identification is checked for all stderr and model parameters, but no corr parameters
 %    * init               [integer]
-%                         flag for initialization of persistent vars. This is needed if one may wants to make more calls to identification in the same dynare mod file
+%                         flag for initialization of persistent vars. This is needed if one may want to make more calls to identification in the same mod file
 % -------------------------------------------------------------------------
 % OUTPUTS
 %    * ide_moments        [structure]
@@ -36,7 +36,7 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 %    * ide_spectrum       [structure]
 %                         identification results using spectrum (Qu and Tkachenko, 2012; Mutschler, 2015)
 %    * ide_minimal        [structure]
-%                         identification results using minimal system (Komunjer and Ng, 2011)
+%                         identification results using theoretical mean and minimal system (Komunjer and Ng, 2011)
 %    * ide_hess           [structure]
 %                         identification results using asymptotic Hessian (Ratto and Iskrev, 2011)
 %    * ide_reducedform    [structure]
@@ -44,7 +44,7 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 %    * ide_dynamic        [structure]
 %                         identification results using steady state and dynamic model derivatives (Ratto and Iskrev, 2011)
 %    * derivatives_info   [structure]
-%                         info about derivatives, used in dsge_likelihood.m
+%                         info about first-order perturbation derivatives, used in dsge_likelihood.m
 %    * info               [integer]
 %                         output from dynare_resolve
 %    * options_ident      [structure]
@@ -71,7 +71,7 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 %   * stoch_simul
 %   * vec
 % =========================================================================
-% Copyright (C) 2008-2019 Dynare Team
+% Copyright (C) 2008-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -91,16 +91,17 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 
 global oo_ M_ options_ bayestopt_ estim_params_
 persistent ind_dMOMENTS ind_dREDUCEDFORM ind_dDYNAMIC
-% persistence is necessary, because in a MC loop the numerical threshold used may provide vectors of different length, leading to crashes in MC loops
+% persistent indices are necessary, because in a MC loop the numerical threshold
+% used may provide vectors of different length, leading to crashes in MC loops
 
 %initialize output structures
-ide_hess         = struct(); %Jacobian of asymptotic/simulated information matrix
-ide_reducedform  = struct(); %Jacobian of steady state and reduced form solution
-ide_dynamic      = struct(); %Jacobian of steady state and dynamic model derivatives
-ide_moments      = struct(); %Jacobian of first two moments (Iskrev, 2010; Mutschler, 2015)
-ide_spectrum     = struct(); %Gram matrix of Jacobian of spectral density plus Gram matrix of Jacobian of steady state (Qu and Tkachenko, 2012; Mutschler, 2015)
-ide_minimal      = struct(); %Jacobian of minimal system (Komunjer and Ng, 2011)
-derivatives_info = struct(); %storage for Jacobians used in dsge_likelihood.m for (analytical or simulated) asymptotic Gradient and Hession of likelihood
+ide_hess         = struct(); %Identification structure based on asymptotic/simulated information matrix
+ide_reducedform  = struct(); %Identification structure based on steady state and reduced form solution
+ide_dynamic      = struct(); %Identification structure based on steady state and dynamic model derivatives
+ide_moments      = struct(); %Identification structure based on first two moments (Iskrev, 2010; Mutschler, 2015)
+ide_spectrum     = struct(); %Identification structure based on Gram matrix of Jacobian of spectral density plus Gram matrix of Jacobian of steady state (Qu and Tkachenko, 2012; Mutschler, 2015)
+ide_minimal      = struct(); %Identification structure based on mean and minimal system (Komunjer and Ng, 2011)
+derivatives_info = struct(); %storage for first-order perturbation Jacobians used in dsge_likelihood.m
 
 totparam_nbr    = length(params);     %number of all parameters to be checked
 modparam_nbr    = length(indpmodel);  %number of model parameters to be checked
@@ -114,11 +115,6 @@ if ~isempty(estim_params_)
 end
 
 %get options (see dynare_identification.m for description of options)
-no_identification_strength    = options_ident.no_identification_strength;
-no_identification_reducedform = options_ident.no_identification_reducedform;
-no_identification_moments     = options_ident.no_identification_moments;
-no_identification_minimal     = options_ident.no_identification_minimal;
-no_identification_spectrum    = options_ident.no_identification_spectrum;
 order               = options_ident.order;
 nlags               = options_ident.ar;
 advanced            = options_ident.advanced;
@@ -130,11 +126,17 @@ checks_via_subsets  = options_ident.checks_via_subsets;
 tol_deriv           = options_ident.tol_deriv;
 tol_rank            = options_ident.tol_rank;
 tol_sv              = options_ident.tol_sv;
+no_identification_strength    = options_ident.no_identification_strength;
+no_identification_reducedform = options_ident.no_identification_reducedform;
+no_identification_moments     = options_ident.no_identification_moments;
+no_identification_minimal     = options_ident.no_identification_minimal;
+no_identification_spectrum    = options_ident.no_identification_spectrum;
 
 %Compute linear approximation and fill dr structure
 [oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
 
 if info(1) == 0 %no errors in solution
+    % Compute parameter Jacobians for identification analysis
     [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params_, M_, oo_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs);
     if isempty(dMINIMAL)
         % Komunjer and Ng is not computed if (1) minimality conditions are not fullfilled or (2) there are more shocks and measurement errors than observables, so we need to reset options
@@ -231,14 +233,14 @@ if info(1) == 0 %no errors in solution
         end
         ind_dDYNAMIC = (find(max(abs(dDYNAMIC'),[],1) > tol_deriv)); %index with non-zero rows
     end
-    
+
     DYNAMIC = DYNAMIC(ind_dDYNAMIC); %focus only on non-zero entries
     si_dDYNAMIC = (dDYNAMIC(ind_dDYNAMIC,:)); %focus only on non-zero rows
     if ~no_identification_reducedform
         REDUCEDFORM = REDUCEDFORM(ind_dREDUCEDFORM); %focus only on non-zero entries
         si_dREDUCEDFORM = (dREDUCEDFORM(ind_dREDUCEDFORM,:)); %focus only on non-zero rows
     end
-    
+
     if ~no_identification_moments
         MOMENTS = MOMENTS(ind_dMOMENTS); %focus only on non-zero entries
         si_dMOMENTS   = (dMOMENTS(ind_dMOMENTS,:)); %focus only on non-zero derivatives
@@ -268,6 +270,9 @@ if info(1) == 0 %no errors in solution
 
             try
                 %try to compute asymptotic Hessian for identification strength analysis based on moments
+                if options_.order > 1
+                    error('IDENTIFICATION STRENGTH: Analytic computation of Hessian is not available for ''order>1''. Identification strength is based on simulated moment uncertainty');
+                end                
                 % reset some options for faster computations
                 options_.irf                     = 0;
                 options_.noprint                 = 1;
@@ -282,10 +287,6 @@ if info(1) == 0 %no errors in solution
                 dataset_ = dseries(oo_.endo_simul(options_.varobs_id,100+1:end)',dates('1Q1'), options_.varobs); %get information on moments
                 derivatives_info.no_DLIK = 1;
                 bounds = prior_bounds(bayestopt_, options_.prior_trunc); %reset bounds as lb and ub must only be operational during mode-finding 
-                if options_.order > 1
-                    fprintf('IDENTIFICATION STRENGTH: Analytic computation of Hessian is not available for ''order>1''\n')
-                    fprintf('                         Identification strength is based on simulated moment uncertainty\n');
-                end
                 %note that for order>1 we do not provide any information on DT,DYss,DOM in derivatives_info, such that dsge_likelihood creates an error. Therefore the computation will be based on simulated_moment_uncertainty for order>1.
                 [fval, info, cost_flag, DLIK, AHess, ys, trend_coeff, M_, options_, bayestopt_, oo_] = dsge_likelihood(params', dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_, derivatives_info); %non-used output variables need to be set for octave for some reason
                     %note that for the order of parameters in AHess we have: stderr parameters come first, corr parameters second, model parameters third. the order within these blocks corresponds to the order specified in the estimated_params block
@@ -315,6 +316,13 @@ if info(1) == 0 %no errors in solution
                 flag_score = 1; %this is used for the title in plot_identification.m
             catch
                 %Asymptotic Hessian via simulation
+                if options_.order > 1       
+                    % reset some options for faster computations
+                    options_.irf                     = 0;
+                    options_.noprint                 = 1;
+                    options_.SpectralDensity.trigger = 0;
+                    options_.periods                 = periods+100;
+                end                
                 replic = max([replic, length(ind_dMOMENTS)*3]);
                 cmm = simulated_moment_uncertainty(ind_dMOMENTS, periods, replic,options_,M_,oo_); %covariance matrix of moments
                 sd = sqrt(diag(cmm));

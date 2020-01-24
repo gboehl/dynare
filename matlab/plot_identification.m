@@ -60,9 +60,9 @@ if SampleSize == 1
     mmm = (idehess.ide_strength_dMOMENTS);
     [ss, is] = sort(mmm);
     if ~all(isnan(idehess.ide_strength_dMOMENTS_prior))
-        bar(log([idehess.ide_strength_dMOMENTS(:,is)' idehess.ide_strength_dMOMENTS_prior(:,is)']))
+        bar(1:nparam,log([idehess.ide_strength_dMOMENTS(:,is)' idehess.ide_strength_dMOMENTS_prior(:,is)']))
     else
-        bar(log([idehess.ide_strength_dMOMENTS(:,is)' ]))
+        bar(1:nparam,log([idehess.ide_strength_dMOMENTS(:,is)' ]))
     end
     hold on
     plot((1:length(idehess.ide_strength_dMOMENTS(:,is)))-0.15,log([idehess.ide_strength_dMOMENTS(:,is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
@@ -106,9 +106,9 @@ if SampleSize == 1
 
     subplot(212)
     if ~all(isnan(idehess.deltaM_prior))
-        bar(log([idehess.deltaM(is) idehess.deltaM_prior(is)]))
+        bar(1:nparam, log([idehess.deltaM(is) idehess.deltaM_prior(is)]))
     else
-        bar(log([idehess.deltaM(is)]))
+        bar(1:nparam, log([idehess.deltaM(is)]))
     end
     hold on
     plot((1:length(idehess.deltaM(is)))-0.15,log([idehess.deltaM(is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')

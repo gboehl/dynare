@@ -185,6 +185,8 @@ MODFILES = \
 	external_function/no_deriv_given.mod \
 	external_function/no_deriv_given_dll.mod \
 	seeds.mod \
+	minimal_state_space_system/as2007_minimal.mod \
+	minimal_state_space_system/sw_minimal.mod \
 	identification/kim/kim2.mod \
 	identification/as2007/as2007.mod \
 	identification/as2007/as2007_kronflags.mod \

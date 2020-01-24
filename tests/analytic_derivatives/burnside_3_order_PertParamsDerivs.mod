@@ -1,5 +1,5 @@
 % =========================================================================
-% Copyright (C) 2019 Dynare Team
+% Copyright (C) 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

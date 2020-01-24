@@ -10,7 +10,7 @@ function fjac = fjaco(f,x,varargin)
 % OUTPUT
 %   fjac      : finite difference Jacobian
 %
-% Copyright (C) 2010-2017,2019 Dynare Team
+% Copyright (C) 2010-2017,2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

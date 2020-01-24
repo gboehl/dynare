@@ -93,7 +93,11 @@ if ~no_identification_dynamic
     if totparam_nbr > modparam_nbr
         dDYNAMIC = [zeros(size(ide_dynamic.dDYNAMIC,1),totparam_nbr-modparam_nbr) dDYNAMIC]; %add derivatives wrt stderr and corr parameters
     end
-    rank_dDYNAMIC = rank(full(dDYNAMIC),tol_rank); %compute rank with imposed tolerance level
+    if strcmp(tol_rank,'robust')
+        rank_dDYNAMIC = rank(full(dDYNAMIC)); %compute rank with imposed tolerance level
+    else
+        rank_dDYNAMIC = rank(full(dDYNAMIC),tol_rank); %compute rank with imposed tolerance level
+    end
     ide_dynamic.rank = rank_dDYNAMIC;
     % check rank criteria for full Jacobian
     if rank_dDYNAMIC == totparam_nbr
@@ -112,7 +116,11 @@ end
 if ~no_identification_reducedform
     dREDUCEDFORM = ide_reducedform.dREDUCEDFORM;
     dREDUCEDFORM(ide_reducedform.ind_dREDUCEDFORM,:) = dREDUCEDFORM(ide_reducedform.ind_dREDUCEDFORM,:)./ide_reducedform.norm_dREDUCEDFORM; %normalize
-    rank_dREDUCEDFORM = rank(full(dREDUCEDFORM),tol_rank); %compute rank with imposed tolerance level
+    if strcmp(tol_rank,'robust')
+        rank_dREDUCEDFORM = rank(full(dREDUCEDFORM)); %compute rank with imposed tolerance level
+    else
+        rank_dREDUCEDFORM = rank(full(dREDUCEDFORM),tol_rank); %compute rank with imposed tolerance level
+    end
     ide_reducedform.rank = rank_dREDUCEDFORM;
     % check rank criteria for full Jacobian
     if rank_dREDUCEDFORM == totparam_nbr
@@ -131,7 +139,11 @@ end
 if ~no_identification_moments
     dMOMENTS = ide_moments.dMOMENTS;
     dMOMENTS(ide_moments.ind_dMOMENTS,:) = dMOMENTS(ide_moments.ind_dMOMENTS,:)./ide_moments.norm_dMOMENTS; %normalize
-    rank_dMOMENTS = rank(full(dMOMENTS),tol_rank); %compute rank with imposed tolerance level
+    if strcmp(tol_rank,'robust')
+        rank_dMOMENTS = rank(full(dMOMENTS)); %compute rank with imposed tolerance level
+    else
+        rank_dMOMENTS = rank(full(dMOMENTS),tol_rank); %compute rank with imposed tolerance level
+    end
     ide_moments.rank = rank_dMOMENTS;
     % check rank criteria for full Jacobian
     if rank_dMOMENTS == totparam_nbr
@@ -152,7 +164,11 @@ if ~no_identification_spectrum
     %alternative normalization
     %dSPECTRUM = ide_spectrum.dSPECTRUM;
     %dSPECTRUM(ide_spectrum.ind_dSPECTRUM,:) = dSPECTRUM(ide_spectrum.ind_dSPECTRUM,:)./ide_spectrum.norm_dSPECTRUM; %normalize
-    rank_dSPECTRUM = rank(full(dSPECTRUM),tol_rank); %compute rank with imposed tolerance level
+    if strcmp(tol_rank,'robust')
+        rank_dSPECTRUM = rank(full(dSPECTRUM)); %compute rank with imposed tolerance level
+    else
+        rank_dSPECTRUM = rank(full(dSPECTRUM),tol_rank); %compute rank with imposed tolerance level
+    end
     ide_spectrum.rank = rank_dSPECTRUM;
     % check rank criteria for full Jacobian
     if rank_dSPECTRUM == totparam_nbr
@@ -173,7 +189,11 @@ if ~no_identification_minimal
     dMINIMAL(ide_minimal.ind_dMINIMAL,:) = dMINIMAL(ide_minimal.ind_dMINIMAL,:)./ide_minimal.norm_dMINIMAL; %normalize
     dMINIMAL_par  = dMINIMAL(:,1:totparam_nbr);       %part of dMINIMAL that is dependent on parameters
     dMINIMAL_rest = dMINIMAL(:,(totparam_nbr+1):end); %part of dMINIMAL that is independent of parameters
-    rank_dMINIMAL = rank(full(dMINIMAL),tol_rank); %compute rank via SVD see function below
+    if strcmp(tol_rank,'robust')
+        rank_dMINIMAL = rank(full(dMINIMAL)); %compute rank via SVD see function below
+    else
+        rank_dMINIMAL = rank(full(dMINIMAL),tol_rank); %compute rank via SVD see function below
+    end
     ide_minimal.rank = rank_dMINIMAL;
     dMINIMAL_fixed_rank_nbr = size(dMINIMAL_rest,2);
     % check rank criteria for full Jacobian
@@ -193,20 +213,38 @@ end
 for j=1:totparam_nbr
     if ~no_identification_dynamic
         % Columns correspond to single parameters, i.e. full rank would be equal to 1
-        if rank(full(dDYNAMIC(:,j)),tol_rank) == 0
-            dynamic_problpars{1} = [dynamic_problpars{1};j];
+        if strcmp(tol_rank,'robust')
+            if rank(full(dDYNAMIC(:,j))) == 0
+                dynamic_problpars{1} = [dynamic_problpars{1};j];
+            end
+        else
+            if rank(full(dDYNAMIC(:,j)),tol_rank) == 0
+                dynamic_problpars{1} = [dynamic_problpars{1};j];
+            end
         end
     end
     if ~no_identification_reducedform
         % Columns correspond to single parameters, i.e. full rank would be equal to 1
-        if rank(full(dREDUCEDFORM(:,j)),tol_rank) == 0
-            reducedform_problpars{1} = [reducedform_problpars{1};j];
+        if strcmp(tol_rank,'robust')
+            if rank(full(dREDUCEDFORM(:,j))) == 0
+                reducedform_problpars{1} = [reducedform_problpars{1};j];
+            end
+        else
+            if rank(full(dREDUCEDFORM(:,j)),tol_rank) == 0
+                reducedform_problpars{1} = [reducedform_problpars{1};j];
+            end
         end
     end
-    if ~no_identification_moments
+    if ~no_identification_moments        
         % Columns correspond to single parameters, i.e. full rank would be equal to 1
-        if rank(full(dMOMENTS(:,j)),tol_rank) == 0
-            moments_problpars{1} = [moments_problpars{1};j];
+        if strcmp(tol_rank,'robust')
+            if rank(full(dMOMENTS(:,j))) == 0
+                moments_problpars{1} = [moments_problpars{1};j];
+            end
+        else
+            if rank(full(dMOMENTS(:,j)),tol_rank) == 0
+                moments_problpars{1} = [moments_problpars{1};j];
+            end
         end
     end
     if ~no_identification_spectrum
@@ -218,8 +256,14 @@ for j=1:totparam_nbr
     if ~no_identification_minimal
         % Columns of dMINIMAL_par correspond to single parameters, needs to be augmented with dMINIMAL_rest (part that is independent of parameters),
         % full rank would be equal to 1+dMINIMAL_fixed_rank_nbr
-        if rank(full([dMINIMAL_par(:,j) dMINIMAL_rest]),tol_rank) == dMINIMAL_fixed_rank_nbr
-            minimal_problpars{1} = [minimal_problpars{1};j];
+        if strcmp(tol_rank,'robust')
+            if rank(full([dMINIMAL_par(:,j) dMINIMAL_rest])) == dMINIMAL_fixed_rank_nbr
+                minimal_problpars{1} = [minimal_problpars{1};j];
+            end
+        else
+            if rank(full([dMINIMAL_par(:,j) dMINIMAL_rest]),tol_rank) == dMINIMAL_fixed_rank_nbr
+                minimal_problpars{1} = [minimal_problpars{1};j];
+            end
         end
     end
 end
@@ -324,35 +368,55 @@ for j=2:min(length(indtotparam),max_dim_subsets_groups) % Check j-element subset
             k_dDYNAMIC = k_dDYNAMIC+1;
             if k_dDYNAMIC <= size(indexj_dDYNAMIC,1)
                 dDYNAMIC_j = dDYNAMIC(:,indexj_dDYNAMIC(k_dDYNAMIC,:)); % pick columns that correspond to parameter subset
-                rankj_dDYNAMIC(k_dDYNAMIC,1) = rank(full(dDYNAMIC_j),tol_rank); %compute rank with imposed tolerance
+                if strcmp(tol_rank,'robust')
+                    rankj_dDYNAMIC(k_dDYNAMIC,1) = rank(full(dDYNAMIC_j)); %compute rank with imposed tolerance
+                else
+                    rankj_dDYNAMIC(k_dDYNAMIC,1) = rank(full(dDYNAMIC_j),tol_rank); %compute rank with imposed tolerance
+                end
             end
         end
         if ~no_identification_reducedform
             k_dREDUCEDFORM = k_dREDUCEDFORM+1;
             if k_dREDUCEDFORM <= size(indexj_dREDUCEDFORM,1)
                 dREDUCEDFORM_j = dREDUCEDFORM(:,indexj_dREDUCEDFORM(k_dREDUCEDFORM,:)); % pick columns that correspond to parameter subset
-                rankj_dREDUCEDFORM(k_dREDUCEDFORM,1) = rank(full(dREDUCEDFORM_j),tol_rank); %compute rank with imposed tolerance
+                if strcmp(tol_rank,'robust')
+                    rankj_dREDUCEDFORM(k_dREDUCEDFORM,1) = rank(full(dREDUCEDFORM_j)); %compute rank with imposed tolerance
+                else
+                    rankj_dREDUCEDFORM(k_dREDUCEDFORM,1) = rank(full(dREDUCEDFORM_j),tol_rank); %compute rank with imposed tolerance
+                end
             end
         end
         if ~no_identification_moments
             k_dMOMENTS = k_dMOMENTS+1;
             if k_dMOMENTS <= size(indexj_dMOMENTS,1)
                 dMOMENTS_j = dMOMENTS(:,indexj_dMOMENTS(k_dMOMENTS,:)); % pick columns that correspond to parameter subset
-                rankj_dMOMENTS(k_dMOMENTS,1) = rank(full(dMOMENTS_j),tol_rank); %compute rank with imposed tolerance
+                if strcmp(tol_rank,'robust')
+                    rankj_dMOMENTS(k_dMOMENTS,1) = rank(full(dMOMENTS_j)); %compute rank with imposed tolerance
+                else
+                    rankj_dMOMENTS(k_dMOMENTS,1) = rank(full(dMOMENTS_j),tol_rank); %compute rank with imposed tolerance
+                end
             end
         end
         if ~no_identification_minimal
             k_dMINIMAL = k_dMINIMAL+1;
             if k_dMINIMAL <= size(indexj_dMINIMAL,1)
                 dMINIMAL_j = [dMINIMAL_par(:,indexj_dMINIMAL(k_dMINIMAL,:)) dMINIMAL_rest]; % pick columns in dMINIMAL_par that correspond to parameter subset and augment with parameter-indepdendet part dMINIMAL_rest
-                rankj_dMINIMAL(k_dMINIMAL,1) = rank(full(dMINIMAL_j),tol_rank); %compute rank with imposed tolerance
+                if strcmp(tol_rank,'robust')
+                    rankj_dMINIMAL(k_dMINIMAL,1) = rank(full(dMINIMAL_j)); %compute rank with imposed tolerance
+                else
+                    rankj_dMINIMAL(k_dMINIMAL,1) = rank(full(dMINIMAL_j),tol_rank); %compute rank with imposed tolerance
+                end
             end
         end
         if ~no_identification_spectrum
             k_dSPECTRUM = k_dSPECTRUM+1;
             if k_dSPECTRUM <= size(indexj_dSPECTRUM,1)
                 dSPECTRUM_j = dSPECTRUM(indexj_dSPECTRUM(k_dSPECTRUM,:),indexj_dSPECTRUM(k_dSPECTRUM,:)); % pick rows and columns that correspond to parameter subset
-                rankj_dSPECTRUM(k_dSPECTRUM,1) = rank(full(dSPECTRUM_j),tol_rank); % Compute rank with imposed tol
+                if strcmp(tol_rank,'robust')
+                    rankj_dSPECTRUM(k_dSPECTRUM,1) = rank(full(dSPECTRUM_j)); % Compute rank with imposed tol
+                else
+                    rankj_dSPECTRUM(k_dSPECTRUM,1) = rank(full(dSPECTRUM_j),tol_rank); % Compute rank with imposed tol
+                end
             end
         end
         dyn_waitbar(k/maxk,h)
