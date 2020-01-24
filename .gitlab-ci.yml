@@ -1,6 +1,7 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   TERM: linux
+  OLD_MATLAB_VERSION: R2009b
 
 # The next stanza creates the version number used for the source tarball and the
 # binary packages. Here are the following possible cases:
@@ -149,7 +150,7 @@ test_old_matlab:
   extends: .test_matlab_template
   script:
     - autoreconf -si
-    - ./configure --disable-octave --with-matlab=/usr/local/MATLAB/R2009b MATLAB_VERSION=R2009b
+    - ./configure --disable-octave --with-matlab=/usr/local/MATLAB/$OLD_MATLAB_VERSION MATLAB_VERSION=$OLD_MATLAB_VERSION
     - make -C mex/build/matlab clean
     - make -j $(nproc) -C mex/build/matlab
     - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
