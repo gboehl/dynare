@@ -151,7 +151,6 @@ test_old_matlab:
     - make -C mex/build/matlab clean
     - make -j $(nproc) -C mex/build/matlab
     - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
-  when: manual
 
 test_octave:
   stage: test_and_pkg
