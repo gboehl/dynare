@@ -25,6 +25,9 @@
 @#ifndef ALGO_APF
 @#define ALGO_APF = 0
 @#endif
+@#ifndef ALGO_CPF
+@#define ALGO_CPF = 0
+@#endif
 @#ifndef ALGO_GPF
 @#define ALGO_GPF = 0
 @#endif
@@ -171,6 +174,10 @@ options_.threads.local_state_space_iteration_2 = 4;
 
 @#if ALGO_APF
   estimation(order=2,nograph,filter_algorithm=apf,number_of_particles=10000,resampling=none,mh_replic=0,mode_compute=8,mode_check);
+@#endif
+
+@#if ALGO_CPF
+  estimation(order=2,nograph,filter_algorithm=cpf,number_of_particles=10000,resampling=none,mh_replic=0,mode_compute=8,mode_check);
 @#endif
 
 @#if ALGO_GPF
