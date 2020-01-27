@@ -174,7 +174,6 @@ test_octave:
     when: always
   dependencies:
     - build_binaries
-  when: manual
 
 test_dynare++:
   stage: test_and_pkg
