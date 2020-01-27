@@ -1,7 +1,22 @@
-function [LIK,lik] = conditional_particle_filter(ReducedForm,Y,start,ParticleOptions,ThreadsOptions)
-%
+function [LIK,lik] = conditional_particle_filter(ReducedForm, Y, s, ParticleOptions, ThreadsOptions, DynareOptions, Model)
+
 % Evaluates the likelihood of a non-linear model with a particle filter
-% - the proposal is built using the Kalman updating step for each particle.
+%
+% INPUTS
+% - ReducedForm        [structure]    Matlab's structure describing the reduced form model.
+% - Y                  [double]       p×T matrix of (detrended) data, where p is the number of observed variables.
+% - s                  [integer]      scalar, likelihood evaluation starts at s (has to be smaller than T, the sample length provided in Y).
+% - ParticlesOptions   [struct]
+% - ThreadsOptions     [struct]
+% - DynareOptions      [struct]
+% - Model              [struct]
+%
+% OUTPUTS
+% - LIK                [double]    scalar, likelihood
+% - lik                [double]    (T-s+1)×1 vector, density of observations in each period.
+%
+% REMARKS
+% - The proposal is built using the Kalman updating step for each particle.
 % - we need draws in the errors distributions
 % Whether we use Monte-Carlo draws from a multivariate gaussian distribution
 % as in Amisano & Tristani (JEDC 2010).
@@ -19,25 +34,8 @@ function [LIK,lik] = conditional_particle_filter(ReducedForm,Y,start,ParticleOpt
 % - The use of the Kalman updating step may biais the proposal distribution since
 % it has been derived in a linear context and is implemented in a nonlinear
 % context. That is why particle resampling is performed.
-%
-% INPUTS
-%    reduced_form_model     [structure] Matlab's structure describing the reduced form model.
-%                                       reduced_form_model.measurement.H   [double]   (pp x pp) variance matrix of measurement errors.
-%                                       reduced_form_model.state.Q         [double]   (qq x qq) variance matrix of state errors.
-%                                       reduced_form_model.state.dr        [structure] output of resol.m.
-%    Y                      [double]    pp*smpl matrix of (detrended) data, where pp is the maximum number of observed variables.
-%    start                  [integer]   scalar, likelihood evaluation starts at 'start'.
-%    smolyak_accuracy       [integer]   scalar.
-%
-% OUTPUTS
-%    LIK        [double]    scalar, likelihood
-%    lik        [double]    vector, density of observations in each period.
-%
-% REFERENCES
-%
-% NOTES
-%   The vector "lik" is used to evaluate the jacobian of the likelihood.
-% Copyright (C) 2009-2017 Dynare Team
+
+% Copyright (C) 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,26 +52,14 @@ function [LIK,lik] = conditional_particle_filter(ReducedForm,Y,start,ParticleOpt
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% AUTHOR(S) frederic DOT karame AT univ DASH lemans DOT fr
-%           stephane DOT adjemian AT univ DASH lemans DOT fr
-
-persistent init_flag mf1
-persistent number_of_particles
-persistent sample_size number_of_observed_variables
-
-% Set default
-if isempty(start)
-    start = 1;
+% Set default for third input argument.
+if isempty(s)
+    s = 1;
 end
 
-% Set persistent variables.
-if isempty(init_flag)
-    mf1 = ReducedForm.mf1;
-    sample_size = size(Y,2);
-    number_of_observed_variables = length(mf1);
-    init_flag = 1;
-    number_of_particles = ParticleOptions.number_of_particles ;
-end
+T = size(Y,2);
+p = length(ReducedForm.mf1);
+n = ParticleOptions.number_of_particles;
 
 % Get covariance matrices
 Q = ReducedForm.Q;
@@ -88,39 +74,37 @@ end
 % Get initial condition for the state vector.
 StateVectorMean = ReducedForm.StateVectorMean;
 StateVectorVarianceSquareRoot = chol(ReducedForm.StateVectorVariance)';
-state_variance_rank = size(StateVectorVarianceSquareRoot,2);
+state_variance_rank = size(StateVectorVarianceSquareRoot, 2);
 Q_lower_triangular_cholesky = chol(Q)';
 
 % Set seed for randn().
 set_dynare_seed('default');
 
 % Initialization of the likelihood.
-normconst2 = sqrt( ((2*pi)^number_of_observed_variables)*prod(det(H)) ) ;
-lik  = NaN(sample_size,1);
-LIK  = NaN;
-ks = 0 ;
-StateParticles = bsxfun(@plus,StateVectorVarianceSquareRoot*randn(state_variance_rank,number_of_particles),StateVectorMean);
-SampleWeights = ones(1,number_of_particles)/number_of_particles ;
-for t=1:sample_size
-    obs=Y(:,t);
-    flag = zeros(number_of_particles) ;
-    parfor i=1:number_of_particles
-        [StateParticles(:,i),SampleWeights(i),flag(i)] = ...
-            conditional_filter_proposal(ReducedForm,obs,StateParticles(:,i),SampleWeights(i),Q_lower_triangular_cholesky,H_lower_triangular_cholesky,H,ParticleOptions,ThreadsOptions,normconst2) ;
+lik = NaN(T, 1);
+ks = 0;
+StateParticles = bsxfun(@plus, StateVectorVarianceSquareRoot*randn(state_variance_rank, n), StateVectorMean);
+SampleWeights = ones(1, n)/n;
+
+for t=1:T
+    flags = false(n, 1);
+    for i=1:n
+        [StateParticles(:,i), SampleWeights(i), flags(i)] = ...
+            conditional_filter_proposal(ReducedForm, Y(:,t), StateParticles(:,i), SampleWeights(i), Q_lower_triangular_cholesky, H_lower_triangular_cholesky, H, ParticleOptions, ThreadsOptions, DynareOptions, Model);
     end
-    if sum(flag)~=0 
-      LIK=-Inf;
-      lik(t)=-Inf;
-      return 
-    end 
-    SumSampleWeights = sum(SampleWeights) ;
-    lik(t) = log(SumSampleWeights) ;
-    SampleWeights = SampleWeights./SumSampleWeights ;
-    if (ParticleOptions.resampling.status.generic && neff(SampleWeights)<ParticleOptions.resampling.threshold*sample_size) || ParticleOptions.resampling.status.systematic
-        ks = ks + 1 ;
-        StateParticles = resample(StateParticles',SampleWeights',ParticleOptions)';
-        SampleWeights = ones(1,number_of_particles)/number_of_particles ;
+    if any(flags)
+        LIK = -Inf;
+        lik(t) = -Inf;
+        return 
+    end
+    SumSampleWeights = sum(SampleWeights);
+    lik(t) = log(SumSampleWeights);
+    SampleWeights = SampleWeights./SumSampleWeights;
+    if (ParticleOptions.resampling.status.generic && neff(SampleWeights)<ParticleOptions.resampling.threshold*T) || ParticleOptions.resampling.status.systematic
+        ks = ks + 1;
+        StateParticles = resample(StateParticles', SampleWeights', ParticleOptions)';
+        SampleWeights = ones(1, n)/n;
     end
 end
 
-LIK = -sum(lik(start:end));
+LIK = -sum(lik(s:end));
