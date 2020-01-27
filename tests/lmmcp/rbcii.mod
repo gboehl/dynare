@@ -53,7 +53,11 @@ end;
 steady;
 
 perfect_foresight_setup(periods=400);
-perfect_foresight_solver(lmmcp, maxit=200);
+perfect_foresight_solver(lmmcp, maxit=200, no_homotopy);
+
+if ~oo_.deterministic_simulation.status
+    error('Convergence not obtained')
+end
 
 n = 40;
 
