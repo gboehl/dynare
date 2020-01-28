@@ -85,7 +85,9 @@ for i=1:length(varargin)
     end
 end
 eqlist = eqlist(1:eqnum,:);
-
+[~, idx] = unique(eqlist(:,1), 'stable');
+eqlist = eqlist(idx, :);
+eqlist
 % Get endogenous variables.
 elist = cell(MAX_NUMBER_OF_ELEMENTS, 2);
 enum = 0;
@@ -106,6 +108,8 @@ for i=1:length(varargin)
     fclose(fid);
 end
 elist = elist(1:enum,:);
+[~, idx] = unique(elist(:,1), 'stable');
+elist = elist(idx,:);
 
 % Get exogenous variables.
 xlist = cell(MAX_NUMBER_OF_ELEMENTS, 2);
@@ -132,6 +136,8 @@ for i=1:length(varargin)
     fclose(fid);
 end
 xlist = xlist(1:xnum,:);
+[~, idx] = unique(xlist(:,1), 'stable');
+xlist = xlist(idx,:);
 
 % Get parameter values.
 calibration = '';
