@@ -1,4 +1,4 @@
-function aggregate(ofile, dynopt, varargin)
+function aggregate(ofile, dynopt, rootfolder, varargin)
 
 % Agregates cherry-picked models.
 
@@ -70,6 +70,8 @@ for i=1:length(varargin)
             if eqtag
                 error('An equation tag must be followed by an equation.')
             end
+            % Add equation tag with block name.
+            model{j} = strcat('[block=''',  getblockname(varargin{i}, rootfolder), ''',', model{j}(2:end));
             eqlist{tagnum,4} = model{j};
             eqtag = true;
         else
@@ -270,3 +272,8 @@ function [v, t] = getvarandtag(str)
         v = tmp.name;
         t = tmp.tag;
     end
+
+function blkname = getblockname(str, ROOT_FOLDER)
+    str = strrep(str, [ROOT_FOLDER filesep() 'blocks' filesep()], '');
+    idx = strfind(str, filesep());
+    blkname = str(1:idx(1)-1);
