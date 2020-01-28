@@ -43,7 +43,7 @@ if ~exist(jsonfile, 'file')
     error('Could not find %s! Please use the json=compute option (see the Dynare invocation section in the reference manual).', jsonfile)
 end
 
-tmp = loadjson(jsonfile);
+tmp = loadjson_(jsonfile);
 ast = tmp.abstract_syntax_tree;
 
 if nargout>1

@@ -42,11 +42,14 @@ end
 
 % Get the equation from the JSON output.
 if original
-    jsonfil = loadjson([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json']);
+    jsonfil = loadjson_([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json']);
 else
-    jsonfil = loadjson([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile.json']);
+    jsonfil = loadjson_([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile.json']);
 end
 jsonmod = jsonfil.model;
+if isstruct(jsonmod)
+    jsonmod = {jsonmod};
+end
 jsoneqn = getEquationsByTags(jsonmod, 'name', eqname);
 
 % Get the lhs and rhs members of the selected equation.

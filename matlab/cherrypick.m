@@ -61,7 +61,7 @@ rename = M_.equations_tags(strcmp('rename',M_.equations_tags(:,2)),[1,3]);
 isrename = ~isempty(rename);
 
 % Load json file (original mod file)
-orig = loadjson(sprintf('%s/model/json/modfile-original.json', M_.dname));
+orig = loadjson_(sprintf('%s/model/json/modfile-original.json', M_.dname));
 
 % Create a new file.
 fid = fopen(sprintf('%s/model.inc', outfold), 'w');
@@ -175,11 +175,21 @@ for i=1:length(eqtags)
         end
     end
     % Print tags
-    tfields = fieldnames(orig.model{eqnum}.tags);
-    tags = sprintf('%s=''%s''', tfields{1}, orig.model{eqnum}.tags.(tfields{1}));
-    for j=2:length(tfields)
-        if ~isempty(orig.model{eqnum}.tags.(tfields{j}))
-            tags = sprintf('%s, %s=''%s''', tags, tfields{j}, orig.model{eqnum}.tags.(tfields{j}));
+    if iscell(orig.model)
+        tfields = fieldnames(orig.model{eqnum}.tags);
+        tags = sprintf('%s=''%s''', tfields{1}, orig.model{eqnum}.tags.(tfields{1}));
+        for j=2:length(tfields)
+            if ~isempty(orig.model{eqnum}.tags.(tfields{j}))
+                tags = sprintf('%s, %s=''%s''', tags, tfields{j}, orig.model{eqnum}.tags.(tfields{j}));
+            end
+        end
+    else
+        tfields = fieldnames(orig.model.tags);
+        tags = sprintf('%s=''%s''', tfields{1}, orig.model.tags.(tfields{1}));
+        for j=2:length(tfields)
+            if ~isempty(orig.model.tags.(tfields{j}))
+                tags = sprintf('%s, %s=''%s''', tags, tfields{j}, orig.model.tags.(tfields{j}));
+            end
         end
     end
     fprintf(fid, '[%s]\n', tags);

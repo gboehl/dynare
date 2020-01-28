@@ -42,7 +42,7 @@ if nargout > 1
 end
 
 %% Read JSON
-jm = loadjson(json, 'SimplifyCell', 1);
+jm = loadjson_(json, 'SimplifyCell', 1);
 
 %% INITVAL instructions
 % initialize exogenous shocks to zero and compute initial steady state

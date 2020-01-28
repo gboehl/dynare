@@ -56,7 +56,7 @@ if ~ismember(variable_name, [M_.exo_names; M_.endo_names])
 end
 
 % Load the JSON file.
-jsonfile = loadjson(fname);
+jsonfile = loadjson_(fname);
 model = jsonfile.model;
 
 % Print the equations the variable appears in.

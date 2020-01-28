@@ -33,7 +33,7 @@ function run(json)
 global M_ options_ oo_
 
 %loading JSON
-jm = loadjson(json, 'SimplifyCell', 1);
+jm = loadjson_(json, 'SimplifyCell', 1);
 runflag=1;
 data2json=struct();
 
