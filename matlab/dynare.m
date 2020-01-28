@@ -213,7 +213,18 @@ end
 command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
 command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
 if ~isempty(varargin)
-    dynare_varargin = strjoin(varargin);
+    if ispc
+        varargincopy = varargin;
+        for i = 1:length(varargincopy)
+            if varargincopy{i}(end) == '\'
+                varargincopy{i} = [varargincopy{i} '\'];
+            end
+        end
+        varargincopy = strrep(varargincopy, '"', '\"');
+        dynare_varargin = ['"' strjoin(varargincopy, '" "') '"'];
+    else
+        dynare_varargin = ['''' strjoin(varargin, ''' ''') ''''];
+    end
     command = [command ' ' dynare_varargin];
 end
 

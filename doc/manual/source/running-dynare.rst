@@ -338,9 +338,20 @@ by the ``dynare`` command.
 
     .. option:: -DMACRO_VARIABLE=MACRO_EXPRESSION
 
-        Defines a macro-variable from the command line (the same
-        effect as using the Macro directive ``@#define`` in a model
-        file, see :ref:`macro-proc-lang`).
+        Defines a macro-variable from the command line (the same effect as
+        using the Macro directive ``@#define`` in a model file, see
+        :ref:`macro-proc-lang`). Note that when passing a MACRO_EXPRESSION that
+        contains a space, you must surround the entire ``-D`` flag with single
+        quotes, as in the following example. Also note that an expression
+        passed on the command line can reference variables defined before it.
+
+        *Example*
+
+        Call dynare with command line defines
+
+            .. code-block:: matlab
+
+               >> dynare <<modfile.mod>> -DA=true '-DB="A string with space"' -DC=[1,2,3] '-DD=[ i in C when i > 1 ]'
 
     .. option:: -I<<path>>
 
