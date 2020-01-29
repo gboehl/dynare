@@ -71,7 +71,9 @@ for i=1:length(varargin)
                 error('An equation tag must be followed by an equation.')
             end
             % Add equation tag with block name.
-            model{j} = strcat('[block=''',  getblockname(varargin{i}, rootfolder), ''',', model{j}(2:end));
+            if ~isempty(rootfolder)
+                model{j} = strcat('[block=''',  getblockname(varargin{i}, rootfolder), ''',', model{j}(2:end));
+            end
             % Ensure that the equation tag name matches the LHS variable.
             eqtagname = regexp(model{j}, 'name=''(\w*)''', 'match');
             [lhs, ~] = getequation(model{j+1});
