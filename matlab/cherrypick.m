@@ -82,6 +82,7 @@ for i=1:length(eqtags)
     [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true);
     % Get the parameters, endogenous and exogenous variables in the current equation.
     [pnames, ~, xnames] = get_variables_and_parameters_in_equation(LHS, RHS, M_);
+    lhs_expression = LHS;
     LHS = get_variables_and_parameters_in_expression(LHS);
     enames = LHS;
     if length(LHS)>1
@@ -194,7 +195,7 @@ for i=1:length(eqtags)
     end
     fprintf(fid, '[%s]\n', tags);
     % Print equation.
-    fprintf(fid, '%s = %s;\n\n', LHS, RHS);
+    fprintf(fid, '%s = %s;\n\n', lhs_expression, RHS);
     % Update lists of parameters, endogenous variables and exogenous variables.
     plist = union(plist, pnames);
     elist = union(elist, enames);
