@@ -72,7 +72,7 @@ for i=1:length(varargin)
             end
             % Add equation tag with block name.
             if ~isempty(rootfolder)
-                model{j} = strcat('[block=''',  getblockname(varargin{i}, rootfolder), ''',', model{j}(2:end));
+                model{j} = strcat('[blockname=''',  getblockname(varargin{i}, rootfolder), ''',', model{j}(2:end));
             end
             % Ensure that the equation tag name matches the LHS variable.
             eqtagname = regexp(model{j}, 'name=''(\w*)''', 'match');
