@@ -36,5 +36,11 @@ if isoctave() || matlab_ver_less_than('9.1')
 end
 
 json = fileread(jsonfilename);
+
+% Remove some escape characters that cannot be interpreted by jsondecode
+json = strrep(json, '\w', '\\w');
+json = strrep(json, '\_', '\\_');
+json = strrep(json, '\\\_', '\\_');
+
 o = jsondecode(json); clear('json');
 o = convertjsondecode(o);
