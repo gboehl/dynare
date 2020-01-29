@@ -127,5 +127,5 @@ pac.update.expectation('pacman');
 verbatim;
   cherrypick('test1', 'simulation-files1', {'z1', 'z2', 'z3'}, true);
   cherrypick('test1', 'simulation-files2', {'zpac', 'eq:x1', 'eq:x', 'eq:y'}, true);
-  aggregate('toto.mod', {}, 'simulation-files1', 'simulation-files2');
+  aggregate('toto.mod', {}, '', 'simulation-files1', 'simulation-files2');
 end;
