@@ -79,8 +79,12 @@ for i=1:length(varargin)
             [lhs, ~] = getequation(model{j+1});
             endovar = getendovar(lhs);
             eqtagname_ = strcat('name=''', endovar{1}, '''');
-            if ~isequal(eqtagname{1}, eqtagname_)
-                model{j} = strrep(model{j}, eqtagname{1}, eqtagname_);
+            if ~isempty(eqtagname)
+                if ~isequal(eqtagname{1}, eqtagname_)
+                    model{j} = strrep(model{j}, eqtagname{1}, eqtagname_);
+                end
+            else
+                model{j} = eqtagname_;
             end
             eqlist{tagnum,4} = model{j};
             eqtag = true;
@@ -99,7 +103,7 @@ end
 eqlist = eqlist(1:eqnum,:);
 [~, idx] = unique(eqlist(:,1), 'stable');
 eqlist = eqlist(idx, :);
-eqlist
+
 % Get endogenous variables.
 elist = cell(MAX_NUMBER_OF_ELEMENTS, 2);
 enum = 0;
