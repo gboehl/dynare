@@ -70,9 +70,6 @@ plist = {};
 elist = {};
 xlist = {};
 
-eappend = {};
-xappend = {};
-
 for i=1:length(eqtags)
     rhs = [];
     lhs = [];
@@ -98,12 +95,10 @@ for i=1:length(eqtags)
             rep = strcmp(tmp{1}, enames);
             if any(rep)
                 enames(rep) = tmp(2);
-                eappend = union(eappend, tmp{2});
             end
             rep = strcmp(tmp{1}, xnames);
             if any(rep)
                 xnames(rep) = tmp(2);
-                xappend = union(xappend, tmp{2});
             end
         end
     end
@@ -151,14 +146,11 @@ for i=1:length(eqtags)
         pnames = union(pnames, expectation_pnames);
         xnames = union(xnames, setdiff(expectation_xnames, expectation_pnames));
         enames = union(enames, expectation_enames);
-        enames = union(enames, LHS);
         fprintf(fid, '[name=''%s'']\n', lhs);
         fprintf(fid, '%s = %s;\n\n', lhs, rhs);
     else
-        eLHS = get_variables_and_parameters_in_expression(LHS);
         pRHS = get_variables_and_parameters_in_equation('', RHS, M_);
         xRHS = get_variables_and_parameters_in_expression(RHS);
-        enames = union(enames, eLHS);
         xnames = union(xnames, setdiff(xRHS, pRHS));
         pnames = union(pnames, pRHS);
     end
@@ -214,13 +206,13 @@ end
 
 % Export endogegnous variables
 fid = fopen(sprintf('%s/endogenous.inc', outfold), 'w');
-printlistofvariables(fid, 'endo', elist, M_, eappend);
+printlistofvariables(fid, 'endo', elist, M_, elist);
 fclose(fid);
 
 % Export exogenous variables
 if ~isempty(xlist)
     fid = fopen(sprintf('%s/exogenous.inc', outfold), 'w');
-    printlistofvariables(fid, 'exo', xlist, M_, xappend);
+    printlistofvariables(fid, 'exo', xlist, M_, xlist);
     fclose(fid);
 end
 
