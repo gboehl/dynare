@@ -145,19 +145,21 @@ for i=1:length(eqtags)
         % Note that the call to get_variables_and_parameters_in_equation()
         % will not return the lhs variable in expectation_enames since
         % the name is created on the fly and is not a  member of M_.endo_names.
-        [expectation_pnames, ~, expectation_xnames] = get_variables_and_parameters_in_equation('', rhs, M_);
+        expectation_pnames = get_variables_and_parameters_in_equation('', rhs, M_);
         expectation_enames = get_variables_and_parameters_in_expression(lhs);
+        expectation_xnames = get_variables_and_parameters_in_expression(rhs);
         pnames = union(pnames, expectation_pnames);
-        xnames = union(xnames, expectation_xnames);
+        xnames = union(xnames, setdiff(expectation_xnames, expectation_pnames));
         enames = union(enames, expectation_enames);
         enames = union(enames, LHS);
         fprintf(fid, '[name=''%s'']\n', lhs);
         fprintf(fid, '%s = %s;\n\n', lhs, rhs);
     else
-        [~, eLHS] = get_variables_and_parameters_in_equation(LHS, '', M_);
-        [pRHS, ~, xRHS] = get_variables_and_parameters_in_equation('', RHS, M_);
+        eLHS = get_variables_and_parameters_in_expression(LHS);
+        pRHS = get_variables_and_parameters_in_equation('', RHS, M_);
+        xRHS = get_variables_and_parameters_in_expression(RHS);
         enames = union(enames, eLHS);
-        xnames = union(xnames, xRHS);
+        xnames = union(xnames, setdiff(xRHS, pRHS));
         pnames = union(pnames, pRHS);
     end
     % Update pnames, enames and xnames if PAC with growth neutrality correction.
