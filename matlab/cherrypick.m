@@ -93,7 +93,7 @@ for i=1:length(eqtags)
         [variable_has_to_be_renamed, id] = ismember(eqnum, [rename{:,1}]);
         if variable_has_to_be_renamed
             tmp = strsplit(rename{id,2}, '->');
-            LHS = exactstrrep(LHS, tmp{1}, tmp{2});
+            lhs_expression = exactstrrep(lhs_expression, tmp{1}, tmp{2});
             RHS = exactstrrep(RHS, tmp{1}, tmp{2});
             rep = strcmp(tmp{1}, enames);
             if any(rep)
