@@ -1,14 +1,18 @@
-function [lhs, rhs] = get_lhs_and_rhs(eqname, DynareModel, original)
+function [lhs, rhs, json] = get_lhs_and_rhs(eqname, DynareModel, original, json)
 
 % Returns the left and right handsides of an equation.
 %
 % INPUTS
-% - lhs         [string]            Left hand side of the equation.
-% - rhs         [string]            Right hand side of the equation.
-% - DynareModel [struct]            Structure describing the current model (M_).
+% - eqname       [char]            Name of the equation.
+% - DynareModel  [struct]          Structure describing the current model (M_).
+% - original     [logical]         fetch equation in modfile-original.json or modfile.json
+% - json         [char]            content of the JSON file
 %
 % OUTPUTS
-% - eqname      [string]            Name of the equation.
+% - lhs          [char]            Left hand side of the equation.
+% - rhs          [char]            Right hand side of the equation.
+
+%
 %
 % SPECIAL REQUIREMENTS
 %  The user must have attached names to the equations using equation
@@ -19,7 +23,7 @@ function [lhs, rhs] = get_lhs_and_rhs(eqname, DynareModel, original)
 %      [name='Phillips curve']
 %      pi = beta*pi(1) + slope*y + lam;
 
-% Copyright (C) 2018 Dynare Team
+% Copyright © 2018-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,20 +40,26 @@ function [lhs, rhs] = get_lhs_and_rhs(eqname, DynareModel, original)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin<3
+if nargin<3 || isempty(original)
     original = false;
 end
 
-% Get the equation from the JSON output.
-if original
-    jsonfil = loadjson_([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json']);
-else
-    jsonfil = loadjson_([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile.json']);
+% Load JSON file if nargin<4
+if nargin<4
+    if original
+        json = loadjson_([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json']);
+    else
+        json = loadjson_([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile.json']);
+    end
 end
-jsonmod = jsonfil.model;
+
+% Load model.
+jsonmod = json.model;
 if isstruct(jsonmod)
     jsonmod = {jsonmod};
 end
+
+% Load equation.
 jsoneqn = getEquationsByTags(jsonmod, 'name', eqname);
 
 % Get the lhs and rhs members of the selected equation.

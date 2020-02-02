@@ -1,4 +1,4 @@
-function cherrypick(infile, outfold, eqtags, noresids)
+function json = cherrypick(infile, outfold, eqtags, noresids, json)
 
 % Extract some equations in infile (mod file used for estimation)
 % and write them in outfile (mod file used for simulation).
@@ -8,15 +8,16 @@ function cherrypick(infile, outfold, eqtags, noresids)
 % - outfold       [string]    Name of the folder where the generated files are saveda subset of the equations is to be printed.
 % - eqtags        [cell]      Equation tags of the selected equations.
 % - noresids      [logical]   Removes estimation residuals (not to be used in simulation) if true.
+% - json          [char]      Content of a JSON file.
 %
 % OUTPUTS
-% none.
+% - json          [char]      Content of a JSON file.
 %
 % SPECIAL REQUIREMENTS
 % It is expected that the file infile.mod has already been run, and
 % that the associated JSON output is available.
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,7 +37,7 @@ function cherrypick(infile, outfold, eqtags, noresids)
 global M_
 
 % Set default value
-if nargin<4
+if nargin<4 || isempty(noresids)
     noresids = true;
 end
 
@@ -60,8 +61,10 @@ end
 rename = M_.equations_tags(strcmp('rename',M_.equations_tags(:,2)),[1,3]);
 isrename = ~isempty(rename);
 
-% Load json file (original mod file)
-orig = loadjson_(sprintf('%s/model/json/modfile-original.json', M_.dname));
+if nargin<5
+    % Load json file (original mod file)
+    json = loadjson_(sprintf('%s/model/json/modfile-original.json', M_.dname));
+end
 
 % Create a new file.
 fid = fopen(sprintf('%s/model.inc', outfold), 'w');
@@ -76,7 +79,7 @@ for i=1:length(eqtags)
     % Get equation number.
     eqnum = get_equation_number_by_tag(eqtags{i}, M_);
     % Get the original equation.
-    [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true);
+    [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true, json);
     % Get the parameters, endogenous and exogenous variables in the current equation.
     [pnames, ~, xnames] = get_variables_and_parameters_in_equation(LHS, RHS, M_);
     lhs_expression = LHS;
@@ -173,20 +176,20 @@ for i=1:length(eqtags)
         end
     end
     % Print tags
-    if iscell(orig.model)
-        tfields = fieldnames(orig.model{eqnum}.tags);
-        tags = sprintf('%s=''%s''', tfields{1}, orig.model{eqnum}.tags.(tfields{1}));
+    if iscell(json.model)
+        tfields = fieldnames(json.model{eqnum}.tags);
+        tags = sprintf('%s=''%s''', tfields{1}, json.model{eqnum}.tags.(tfields{1}));
         for j=2:length(tfields)
-            if ~isempty(orig.model{eqnum}.tags.(tfields{j}))
-                tags = sprintf('%s, %s=''%s''', tags, tfields{j}, orig.model{eqnum}.tags.(tfields{j}));
+            if ~isempty(json.model{eqnum}.tags.(tfields{j}))
+                tags = sprintf('%s, %s=''%s''', tags, tfields{j}, json.model{eqnum}.tags.(tfields{j}));
             end
         end
     else
-        tfields = fieldnames(orig.model.tags);
-        tags = sprintf('%s=''%s''', tfields{1}, orig.model.tags.(tfields{1}));
+        tfields = fieldnames(json.model.tags);
+        tags = sprintf('%s=''%s''', tfields{1}, json.model.tags.(tfields{1}));
         for j=2:length(tfields)
-            if ~isempty(orig.model.tags.(tfields{j}))
-                tags = sprintf('%s, %s=''%s''', tags, tfields{j}, orig.model.tags.(tfields{j}));
+            if ~isempty(json.model.tags.(tfields{j}))
+                tags = sprintf('%s, %s=''%s''', tags, tfields{j}, json.model.tags.(tfields{j}));
             end
         end
     end
