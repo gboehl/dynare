@@ -74,7 +74,7 @@ for i=1:length(eqtags)
     rhs = [];
     lhs = [];
     % Get equation number.
-    eqnum = get_equation_number_by_tag(eqtags{i});
+    eqnum = get_equation_number_by_tag(eqtags{i}, M_);
     % Get the original equation.
     [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true);
     % Get the parameters, endogenous and exogenous variables in the current equation.
