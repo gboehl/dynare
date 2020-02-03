@@ -36,6 +36,9 @@ verbosity = options_.verbosity;
 if options_.periods == 0
     options_.periods = 25;
 end
+if isempty(options_.qz_criterium)
+    options_.qz_criterium = 1+1e-6;
+end
 %We have to get an initial guess for the conditional forecast
 % and terminal conditions for the non-stationary variables, we
 % use the first order approximation of the rational expectation solution.
