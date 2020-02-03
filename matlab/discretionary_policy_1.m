@@ -1,6 +1,8 @@
-function [dr,ys,info]=discretionary_policy_1(oo_,Instruments)
+function [dr, info, M_, options_, oo_]=discretionary_policy_1(Instruments, M_, options_, oo_)
+% Higher-level function for solving discretionary optimal policy
+% Has the same interface as resol.m
 
-% Copyright (C) 2007-2018 Dynare Team
+% Copyright (C) 2007-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,11 +19,8 @@ function [dr,ys,info]=discretionary_policy_1(oo_,Instruments)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-global M_ options_
 persistent Hold
 
-dr = [];
-ys = [];
 info = 0;
 
 if isempty(options_.qz_criterium)
@@ -150,15 +149,15 @@ else
     [H,G,info]=discretionary_policy_engine(Alag,A0,Alead,B,W,instr_id,beta,solve_maxit,discretion_tol,qz_criterium);
 end
 
+% set the state
+dr=oo_.dr;
+
 if info
-    dr=[];
     return
 else
     Hold=H; %save previous solution
             % Hold=[]; use this line if persistent command is not used.
 end
-% set the state
-dr=oo_.dr;
 dr.ys =zeros(endo_nbr,1);
 dr=set_state_space(dr,M_,options_);
 order_var=dr.order_var;
@@ -168,8 +167,8 @@ dr.ghu=G(order_var,:);
 Selection=lead_lag_incidence(1,order_var)>0;%select state variables
 dr.ghx=T(:,Selection);
 
-ys=NondistortionarySteadyState(M_);
-dr.ys=ys; % <--- dr.ys =zeros(NewEndo_nbr,1);
+dr.ys=NondistortionarySteadyState(M_);
+oo_.dr = dr;
 
 function ys=NondistortionarySteadyState(M_)
 if exist([M_.fname,'_steadystate.m'],'file')
