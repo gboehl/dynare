@@ -1,4 +1,4 @@
-function ds = evaluate(ds, eqtags, firstperiod, lastperiod)
+function [ds, json] = evaluate(ds, eqtags, firstperiod, lastperiod, json)
 
 % Copyright (C) 2019 Dynare Team
 %
@@ -19,6 +19,8 @@ function ds = evaluate(ds, eqtags, firstperiod, lastperiod)
 
 global M_
 
+debug = false;
+
 if ischar(eqtags)
     eqtags = {eqtags};
 end
@@ -30,18 +32,39 @@ list_of_expression_tokens = {'+', '-', '*', '/', '^', ...
         'normcdf(', 'normpdf(', 'erf(', ...
         'diff(', 'adl(', ')'};
 
-if nargin<3
+if ismember(nargin, [4, 5])
+    if isempty(firstperiod) && isempty(lastperiod)
+        range = ds.dates(1):ds.dates(end);
+    elseif isempty(firstperiod) && ~isempty(lastperiod)
+        range = ds.dates(1):lastperiod;
+    elseif ~isempty(firstperiod) && isempty(lastperiod)
+        range = firstperiod:ds.dates(end);
+    else
+        range = firstperiod:lastperiod;
+    end
+elseif isequal(nargin, 3)
+    if isempty(firstperiod)
+        range = ds.dates(1):ds.dates(end);
+    else
+        range = firstperiod:ds.dates(end);
+    end
+elseif isequal(nargin, 2)
     range = ds.dates(1):ds.dates(end);
-elseif nargin<4
-    range = firstperiod:ds.dates(end);
 else
-    range = firstperiod:lastperiod;
+    error('This routine admits 2, 3, 4, or 5 input arguments.')
 end
-
 
 for i=1:length(eqtags)
     % Get equation
-    [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true);
+    if isequal(i, 1)
+        if nargin<5
+            [LHS, RHS, json] = get_lhs_and_rhs(eqtags{i}, M_, true);
+        else
+            [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true, json);
+        end
+    else
+        [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true, json);
+    end
     % Parse equation and return list of parameters, endogenous and exogenous variables.
     [pnames, enames, xnames] = get_variables_and_parameters_in_equation(LHS, RHS, M_);
     % Load parameter values.
@@ -91,9 +114,11 @@ for i=1:length(eqtags)
             RHS = exactstrrep(RHS, enames{j}, sprintf('ds(range).%s', enames{j}));
         else
             RHS = exactstrrep(RHS, sprintf('%s\\((\\-)*\\d\\)|%s', enames{j}, enames{j}), '0');
-            warning off backtrace
-            warning('Endogenous variable %s is unknown in dseries objet. Assign zero value.', enames{j})
-            warning on backtrace
+            if debug
+                warning off backtrace
+                warning('Endogenous variable %s is unknown in dseries objet. Assign zero value.', enames{j})
+                warning on backtrace
+            end
         end
     end
     % Substitute exogenous variable x with ds.x, except if
@@ -107,9 +132,11 @@ for i=1:length(eqtags)
                 RHS = exactstrrep(RHS, xnames{j}, sprintf('ds(range).%s', xnames{j}));
             else
                 RHS = exactstrrep(RHS, xnames{j}, '0');
-                warning off backtrace
-                warning('Exogenous variable %s is unknown in dseries objet. Assign zero value.', xnames{j})
-                warning on backtrace
+                if debug
+                    warning off backtrace
+                    warning('Exogenous variable %s is unknown in dseries objet. Assign zero value.', xnames{j})
+                    warning on backtrace
+                end
             end
         else
             RHS = regexprep(RHS, sprintf('(\\ *)(+)(\\ *)%s', xnames{j}), '');
