@@ -8470,6 +8470,10 @@ Optimal policy under discretion
     quadratic. Also, you should set the ``linear`` option of the
     ``model`` block.
 
+    It is possible to use the :comm:`estimation` command after the
+    ``discretionary_policy`` command, in order to estimate the model with
+    optimal policy under discretion.
+
     *Options*
 
     This command accepts the same options as ``ramsey_policy``, plus:

@@ -100,6 +100,7 @@ MODFILES = \
 	optimal_policy/Ramsey/Gali_commitment.mod \
 	optimal_policy/RamseyConstraints/test1.mod \
 	discretionary_policy/dennis_1.mod \
+	discretionary_policy/dennis_1_estim.mod \
 	discretionary_policy/Gali_discretion.mod \
 	initval_file/ramst_initval_file.mod \
 	initval_file/ramst_datafile.mod \
@@ -583,6 +584,10 @@ kalman/likelihood_from_dynare/fs2000ns_corr_ME_missing.o.trs: kalman/likelihood_
 lmmcp/sw_newton.m.trs: lmmcp/sw_lmmcp.m.trs
 lmmcp/sw_newton.o.trs: lmmcp/sw_lmmcp.o.trs
 
+discretionary_policy/dennis_1_estim.m.trs: discretionary_policy/dennis_1.m.trs
+discretionary_policy/dennis_1_estim.o.trs: discretionary_policy/dennis_1.o.trs
+
+
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
 o/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.o.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
@@ -1063,6 +1068,8 @@ clean-local:
 	rm -f k_order_perturbation/fs2000k++.mat k_order_perturbation/fs2000k++.dump \
 		k_order_perturbation/fs2000k++.jnl k_order_perturbation/fs2000k++_f.m \
 		k_order_perturbation/fs2000k++_ff.m
+
+	rm -f discretionary_policy/dennis_simul.m
 
 	find . -name "*.tex" -type f -delete
 	find . -name "*.aux" -type f -delete
