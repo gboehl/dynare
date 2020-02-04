@@ -38,6 +38,14 @@ if isoctave
     mlist = mlist(find(~strcmp('../matlab/load_m_file_data_legacy.m', mlist)));
 end
 
+% Set random seed, for reproducibility
+if isoctave || matlab_ver_less_than('7.12')
+    randn('state',1);
+    rand('state',1);
+else
+    rng(1);
+end
+
 failedtests = {};
 
 counter = 0;
