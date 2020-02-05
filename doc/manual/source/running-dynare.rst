@@ -163,7 +163,7 @@ by the ``dynare`` command.
 
     .. option:: noemptylinemacro
 
-        Passing this option removes all empty from the macro expanded
+        Passing this option removes all empty lines from the macro expanded
         mod file created when the :opt:`savemacro <savemacro[=FILENAME]>` option is used.
 
     .. option:: onlymodel
