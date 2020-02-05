@@ -152,19 +152,12 @@ by the ``dynare`` command.
         debugging purposes or for using the macro processor
         independently of the rest of Dynare toolbox.
 
-    .. option:: nolinemacro
+    .. option:: linemacro
 
-        Instructs the macro preprocessor to omit line numbering
-        information in the intermediary ``.mod`` file created after
-        the macro processing step. Useful in conjunction with
-        :opt:`savemacro <savemacro[=FILENAME]>` when one wants that to reuse the intermediary
-        ``.mod`` file, without having it cluttered by line numbering
-        directives.
-
-    .. option:: noemptylinemacro
-
-        Passing this option removes all empty lines from the macro expanded
-        mod file created when the :opt:`savemacro <savemacro[=FILENAME]>` option is used.
+        Instructs the macro preprocessor include ``@#line`` directives
+        specifying the line on which macro directives were encountered and
+        expanded from. Only useful in conjunction with :opt:`savemacro
+        <savemacro[=FILENAME]>`.
 
     .. option:: onlymodel
 
