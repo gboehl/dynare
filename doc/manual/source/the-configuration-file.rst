@@ -255,10 +255,15 @@ lines starting with a hashtag (#).
         The directory to be used for remote computation. Required for
         remote runs on all platforms.
 
-    .. option:: DynarePath = PATH
+    .. option:: ProgramPath = PATH
 
         The path to the matlab subdirectory within the Dynare
         installation directory. The default is the empty string.
+
+    .. option:: ProgramConfig = PATH_AND_FILE
+
+        A MATLAB/Octave script that should be run to setup the MATLAB/Octave
+        environment (e.g. `dynare_config`).
 
     .. option:: MatlabOctavePath = PATH_AND_FILE
 

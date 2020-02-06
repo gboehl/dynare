@@ -29,3 +29,6 @@
 [submodule "preprocessor"]
 	path = preprocessor
 	url = ../../Dynare/preprocessor.git
+[submodule "matlab/modules/dragonfly"]
+	path = contrib/dragonfly
+	url = https://gitlab.com/dragonflytool/dragonfly.git

@@ -37,7 +37,7 @@ function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_boun
 % Then the comments write here can be used for all the other pairs of
 % parallel functions and also for management functions.
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -123,7 +123,8 @@ if isnumeric(options_.parallel) || (~isempty(fblck) && (nblck-fblck)==0)
     % Parallel in Local or remote machine.
 else
     % Global variables for parallel routines.
-    globalVars = struct();
+    globalVars.M_ = M_;
+    globalVars.options_ = options_;
     % which files have to be copied to run remotely
     NamFileInput(1,:) = {'',[ModelName '.static.m']};
     NamFileInput(2,:) = {'',[ModelName '.dynamic.m']};
