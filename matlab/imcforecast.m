@@ -257,8 +257,8 @@ mFORCS1 = mean(FORCS1,3);
 mFORCS1_shocks = mean(FORCS1_shocks,3);
 
 tt = (1-options_cond_fcst.conditional_forecast.conf_sig)/2;
-t1 = round(options_cond_fcst.replic*tt);
-t2 = round(options_cond_fcst.replic*(1-tt));
+t1 = max(1,round(options_cond_fcst.replic*tt));
+t2 = min(options_cond_fcst.replic,round(options_cond_fcst.replic*(1-tt)));
 
 forecasts.controlled_variables = constrained_vars;
 forecasts.instruments = options_cond_fcst.controlled_varexo;
