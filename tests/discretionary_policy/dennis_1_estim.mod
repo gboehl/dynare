@@ -35,7 +35,8 @@ estimated_params;
   kappa, normal_pdf, 0.2, 0.1;
 end;
 
-estimation(order = 1, datafile = dennis_simul, mh_replic = 2000);
+options_.plot_priors=0;
+estimation(order = 1, datafile = dennis_simul, mh_replic = 2000, mh_nblocks=1,smoother,bayesian_irf,moments_varendo) y i pi pi_c q;
 
 if max(abs(oo_.posterior.optimization.mode - [1; 0.3433])) > 0.025
   error('Posterior mode too far from true parameter values');
