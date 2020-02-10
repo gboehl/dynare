@@ -17,9 +17,9 @@
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
 #include <dynmex.h>
 
 #include "modify_for_mex.h"
@@ -31,13 +31,7 @@ mexFunction(int nlhs, mxArray *plhs[],
             int nrhs, const mxArray *prhs[])
 {
   int nargs = 0;
-  int n = 0;
-  int maxnargs = 0;
-
   const char *mainarg = "./a.out";
-  char *argument = NULL;
-  char *beginarg = NULL;
-  char **args = NULL;
 
   /*
    * Check args
@@ -48,10 +42,10 @@ mexFunction(int nlhs, mxArray *plhs[],
   /*
    * Allocate memory
    */
-  maxnargs = static_cast<int>(mxGetN(prhs[0])/2+1);
-  argument = static_cast<char *>(mxCalloc(mxGetN(prhs[0])+1, sizeof(char)));
-  args = static_cast<char **>(mxCalloc(maxnargs, sizeof(char *)));
-  if (argument == NULL || args == NULL)
+  int maxnargs = static_cast<int>(mxGetN(prhs[0])/2+1);
+  char *argument = static_cast<char *>(mxCalloc(mxGetN(prhs[0])+1, sizeof(char)));
+  char **args = static_cast<char **>(mxCalloc(maxnargs, sizeof(char *)));
+  if (!argument || !args)
     mexErrMsgTxt("Error in MS-SBVAR MEX file: could not allocate memory. (1)");
 
   /*
@@ -60,13 +54,13 @@ mexFunction(int nlhs, mxArray *plhs[],
   if (!(args[nargs] = static_cast<char *>(mxCalloc(strlen(mainarg)+1, sizeof(char)))))
     mexErrMsgTxt("Error in MS-SBVAR MEX file: could not allocate memory. (2)");
 
-  strncpy(args[nargs++], mainarg, strlen(mainarg));
+  strcpy(args[nargs++], mainarg);
 
   if (mxGetString(prhs[0], argument, mxGetN(prhs[0])+1))
     mexErrMsgTxt("Error in MS-SBVAR MEX file: error using mxGetString.\n");
 
-  beginarg = &argument[0];
-  while ((n = strcspn(beginarg, " ")))
+  char *beginarg = argument;
+  while (int n = strcspn(beginarg, " "))
     {
       if (!(args[nargs] = static_cast<char *>(mxCalloc(n+1, sizeof(char)))))
         mexErrMsgTxt("Error in MS-SBVAR MEX file: could not allocate memory. (3)");
@@ -91,7 +85,7 @@ mexFunction(int nlhs, mxArray *plhs[],
   /*
    * free memory
    */
-  for (n = 0; n < nargs; n++)
+  for (int n = 0; n < nargs; n++)
     mxFree(args[n]);
   mxFree(args);
 }
