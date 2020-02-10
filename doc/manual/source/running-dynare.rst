@@ -334,9 +334,10 @@ by the ``dynare`` command.
         Defines a macro-variable from the command line (the same effect as
         using the Macro directive ``@#define`` in a model file, see
         :ref:`macro-proc-lang`). Note that when passing a MACRO_EXPRESSION that
-        contains a space, you must surround the entire ``-D`` flag with single
-        quotes, as in the following example. Also note that an expression
-        passed on the command line can reference variables defined before it.
+        contains a space (or, under Octave, a double quote), you must surround
+        the entire ``-D`` flag with single quotes, as in the following example.
+        Also note that an expression passed on the command line can reference
+        variables defined before it.
 
         *Example*
 

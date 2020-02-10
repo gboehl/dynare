@@ -210,32 +210,32 @@ else
     end
 end
 
-command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
-command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
-if ~isempty(varargin)
-    if ispc
-        varargincopy = varargin;
-        for i = 1:length(varargincopy)
-            if varargincopy{i}(end) == '\'
-                varargincopy{i} = [varargincopy{i} '\'];
-            end
-        end
-        varargincopy = strrep(varargincopy, '"', '\"');
-        dynare_varargin = ['"' strjoin(varargincopy, '" "') '"'];
-    else
-        dynare_varargin = ['''' strjoin(varargin, ''' ''') ''''];
-    end
-    command = [command ' ' dynare_varargin];
-end
-
 if preprocessoroutput
     fprintf(['Starting Dynare (version ' dynare_version() ').\n']);
     fprintf('Calling Dynare with arguments: ');
     if isempty(varargin)
         disp('none')
     else
-        disp(dynare_varargin);
+        disp(strjoin(varargin, ' '));
     end
+end
+
+command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
+command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
+% Properly quote arguments before passing them to the shell
+if ~isempty(varargin)
+    varargincopy = varargin;
+    % Escape backslashes and double-quotes
+    varargincopy = strrep(varargincopy, '\', '\\');
+    varargincopy = strrep(varargincopy, '"', '\"');
+    if ~ispc
+        % On GNU/Linux and macOS, also escape dollars and backquotes
+        varargincopy = strrep(varargincopy, '$', '\$');
+        varargincopy = strrep(varargincopy, '`', '\`');
+    end
+    % Finally, enclose arguments within double quotes
+    dynare_varargin = ['"' strjoin(varargincopy, '" "') '"'];
+    command = [command ' ' dynare_varargin];
 end
 
 % Under Windows, make sure the MEX file is unloaded (in the use_dll case),
