@@ -288,6 +288,7 @@ function [v, t] = getvarandtag(str)
     end
 
 function blkname = getblockname(str, ROOT_FOLDER)
+    str = strrep(str, '/', filesep());
     str = strrep(str, [ROOT_FOLDER filesep() 'blocks' filesep()], '');
     idx = strfind(str, filesep());
     blkname = str(1:idx(1)-1);
