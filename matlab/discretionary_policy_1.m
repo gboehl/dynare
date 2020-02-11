@@ -74,7 +74,7 @@ end
 if options_.steadystate_flag
     % explicit steady state file
     [~,M_.params,info] = evaluate_steady_state_file(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_, ...
-                                                    options_,0);
+                                                    options_,false);
 end
 [U,Uy,W] = feval([M_.fname,'.objective.static'],zeros(endo_nbr,1),[], M_.params);
 if any(any(isnan(Uy)))
@@ -178,12 +178,4 @@ dr.ghu=G(order_var,:);
 Selection=lead_lag_incidence(1,order_var)>0;%select state variables
 dr.ghx=T(:,Selection);
 
-dr.ys=NondistortionarySteadyState(M_);
 oo_.dr = dr;
-
-function ys=NondistortionarySteadyState(M_)
-if exist([M_.fname,'_steadystate.m'],'file')
-    eval(['ys=',M_.fname,'_steadystate.m;'])
-else
-    ys=zeros(M_.endo_nbr,1);
-end
