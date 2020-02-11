@@ -148,15 +148,15 @@ clean-slicot-all: clean-slicot-src clean-slicot-tar clean-libslicot
 # Octave
 #
 
-tarballs/octave-${OCTAVE_VERSION}-w32.7z:
+tarballs/octave-${OCTAVE_VERSION}${OCTAVE_W32_BUILD}-w32.7z:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://ftp.gnu.org/gnu/octave/windows/$(notdir $@)
 
-tarballs/octave-${OCTAVE_VERSION}-w64.7z:
+tarballs/octave-${OCTAVE_VERSION}${OCTAVE_W64_BUILD}-w64.7z:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://ftp.gnu.org/gnu/octave/windows/$(notdir $@)
 
-octave32: tarballs/octave-${OCTAVE_VERSION}-w32.7z
+octave32: tarballs/octave-${OCTAVE_VERSION}${OCTAVE_W32_BUILD}-w32.7z
 	rm -rf $@
 	7zr x $< > /dev/null
 	mv octave-${OCTAVE_VERSION}-w32 $@
@@ -165,7 +165,7 @@ octave32: tarballs/octave-${OCTAVE_VERSION}-w32.7z
 	cd $@/mingw32/include && rm -f $$(grep -l "This file is part of the mingw-w64 runtime package" *.h)
 	touch $@
 
-octave64: tarballs/octave-${OCTAVE_VERSION}-w64.7z
+octave64: tarballs/octave-${OCTAVE_VERSION}${OCTAVE_W64_BUILD}-w64.7z
 	rm -rf $@
 	7zr x $< > /dev/null
 	mv octave-${OCTAVE_VERSION}-w64 $@
@@ -179,8 +179,8 @@ octave: octave32 octave64
 clean-octave:
 	rm -rf octave32
 	rm -rf octave64
-	rm -f tarballs/octave-${OCTAVE_VERSION}-w64.7z
-	rm -f tarballs/octave-${OCTAVE_VERSION}-w32.7z
+	rm -f tarballs/octave-${OCTAVE_VERSION}${OCTAVE_W64_BUILD}-w64.7z
+	rm -f tarballs/octave-${OCTAVE_VERSION}${OCTAVE_W32_BUILD}-w32.7z
 
 #
 # MATLAB
