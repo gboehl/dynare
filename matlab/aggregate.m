@@ -84,7 +84,6 @@ for i=1:length(varargin)
             end
             % Add equation tag with block name.
             if ~isempty(rootfolder)
-                getblockname(varargin{i}, rootfolder)
                 model{j} = strcat('[blockname=''',  getblockname(varargin{i}, rootfolder), ''',', model{j}(2:end));
             end
             eqlist{tagnum,4} = model{j};
