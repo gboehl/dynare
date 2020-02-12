@@ -121,6 +121,12 @@ if ~noprint
             message = 'Discretionary policy: some eigenvalues greater than options_.qz_criterium. Model potentially unstable.';
         case 63
             message = 'Discretionary policy: NaN elements are present in the solution. Procedure failed.';
+        case 64
+            message = 'discretionary_policy: the derivatives of the objective function contain NaN.';   
+        case 65
+            message = 'discretionary_policy: the model must be written in deviation form and not have constant terms.';   
+        case 66
+            message = 'discretionary_policy: the objective function must have zero first order derivatives.';
         case 71
             message = 'Calibrated covariance of the structural errors implies correlation larger than +-1.';
         case 72

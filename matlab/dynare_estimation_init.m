@@ -32,7 +32,7 @@ function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2018 Dynare Team
+% Copyright (C) 2003-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -97,6 +97,14 @@ if length(unique(options_.varobs))<length(options_.varobs)
         if length(strmatch(options_.varobs{i},options_.varobs,'exact'))>1
             error(['A variable cannot be declared as observed more than once (' options_.varobs{i} ')!'])
         end
+    end
+end
+
+if options_.discretionary_policy
+    if options_.order>1
+        error('discretionary_policy does not support order>1');
+    else
+        M_=discretionary_policy_initialization(M_,options_);
     end
 end
 
