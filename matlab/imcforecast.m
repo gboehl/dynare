@@ -204,9 +204,6 @@ if ~estimated_model
     trend = repmat(ys(oo_.dr.order_var,:),1,options_cond_fcst.periods+1); %trend needs to contain correct steady state
 end
 
-
-
-
 NumberOfStates = length(InitState);
 FORCS1 = zeros(NumberOfStates,options_cond_fcst.periods+1,options_cond_fcst.replic);
 
@@ -252,7 +249,11 @@ for b=1:options_cond_fcst.replic %conditional forecast using cL set to constrain
     [FORCS1(:,:,b), FORCS1_shocks(:,:,b)] = mcforecast3(cL,options_cond_fcst.periods,constrained_paths,shocks,FORCS1(:,:,b),T,R,mv, mu);
     FORCS1(:,:,b)=FORCS1(:,:,b)+trend; %add trend
 end
-
+if max(max(max(abs(FORCS1(constrained_vars,1:cL,:)-constrained_paths))))>1e-4
+    fprintf('\nconditional_forecasts: controlling of variables was not successful.\n')
+    fprintf('This can be due to numerical imprecision (e.g. explosive simulations)\n')
+    fprintf('or because the instrument(s) do not allow controlling the variable(s).\n')
+end
 mFORCS1 = mean(FORCS1,3);
 mFORCS1_shocks = mean(FORCS1_shocks,3);
 
