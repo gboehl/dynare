@@ -1068,6 +1068,15 @@ clean-local:
 
 	rm -f discretionary_policy/dennis_simul.m
 
+	rm -f kalman/likelihood_from_dynare/fsdat_simul_corr_ME.m \
+		kalman/likelihood_from_dynare/fsdat_simul_corr_ME_missing.m \
+		kalman/likelihood_from_dynare/fsdat_simul_uncorr_ME.m \
+		kalman/likelihood_from_dynare/fsdat_simul_uncorr_ME_missing.m \
+		kalman/likelihood_from_dynare/fs_ns_dat_simul_corr_ME.m \
+		kalman/likelihood_from_dynare/fs_ns_dat_simul_corr_ME_missing.m \
+		kalman/likelihood_from_dynare/fs_ns_dat_simul_uncorr_ME.m \
+		kalman/likelihood_from_dynare/fs_ns_dat_simul_uncorr_ME_missing.m
+
 	find . -name "*.tex" -type f -delete
 	find . -name "*.aux" -type f -delete
 	find . -name "*.log" -type f -delete
