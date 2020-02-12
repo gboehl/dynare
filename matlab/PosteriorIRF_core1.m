@@ -145,11 +145,7 @@ while fpar<B
     end
     stock_param(irun2,:) = deep;
     set_parameters(deep);
-    if options_.discretionary_policy
-        [dr,info,M_,options_,oo_] = discretionary_policy_1(options_.instruments,M_,options_,oo_);
-    else
-        [dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
-    end
+    [dr,info,M_,options_,oo_] =compute_decision_rules(M_,options_,oo_);
     oo_.dr = dr;
     if info(1)
         nosaddle = nosaddle + 1;

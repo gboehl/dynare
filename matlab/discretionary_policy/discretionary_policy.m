@@ -1,4 +1,15 @@
 function [info, oo_, options_] = discretionary_policy(M_, options_, oo_, var_list)
+% function [info, oo_, options_] = discretionary_policy(M_, options_, oo_, var_list)
+% INPUTS
+% - M_            [structure]     Matlab's structure describing the model (M_).
+% - options_      [structure]     Matlab's structure describing the current options (options_).
+% - oo_           [structure]     Matlab's structure containing the results (oo_).
+% - var_list      [cell]          list of variables
+%
+% OUTPUTS
+% - info          [integer]       scalar or vector, error code.
+% - oo_           [structure]     Matlab's structure containing the results (oo_).
+% - options_      [structure]     Matlab's structure describing the current options (options_).
 
 % Copyright (C) 2007-2019 Dynare Team
 %
@@ -17,10 +28,7 @@ function [info, oo_, options_] = discretionary_policy(M_, options_, oo_, var_lis
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if options_.loglinear
-    % Ensure it's ok to ignore options_ returned from stoch_simul. #1197
-    error('discretionary_policy is not compatible with `loglinear` option set to 1')
-end
+M_=discretionary_policy_initialization(M_,options_);
 
 origorder = options_.order;
 options_.discretionary_policy = 1;

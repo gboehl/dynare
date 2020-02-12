@@ -66,11 +66,7 @@ function [A,B,ys,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if DynareOptions.discretionary_policy
-    [dr,info,Model,DynareOptions,DynareResults] = discretionary_policy_1(DynareOptions.instruments,Model,DynareOptions,DynareResults);
-else
-    [dr,info,Model,DynareOptions,DynareResults] = resol(0,Model,DynareOptions,DynareResults);
-end
+[dr,info,Model,DynareOptions,DynareResults] =compute_decision_rules(Model,DynareOptions,DynareResults);
 
 if info(1) > 0
     A = [];

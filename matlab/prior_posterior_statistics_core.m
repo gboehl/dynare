@@ -203,11 +203,7 @@ for b=fpar:B
     M_ = set_all_parameters(deep,estim_params_,M_);
 
     if run_smoother
-        if options_.discretionary_policy
-            [dr,info,M_,options_,oo_] = discretionary_policy_1(options_.instruments,M_,options_,oo_);
-        else
-            [dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
-        end
+        [dr,info,M_,options_,oo_] =compute_decision_rules(M_,options_,oo_);
         [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,options_,bayestopt_] = ...
             DsgeSmoother(deep,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
 
