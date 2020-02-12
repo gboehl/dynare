@@ -113,7 +113,7 @@ for i=1:length(eqtags)
         if ismember(enames{j}, ds.name)
             RHS = exactstrrep(RHS, enames{j}, sprintf('ds(range).%s', enames{j}));
         else
-            RHS = exactstrrep(RHS, sprintf('%s\\((\\-)*\\d\\)|%s', enames{j}, enames{j}), '0');
+            RHS = exactstrrep(RHS, sprintf('(%s\\((\\-)*\\d\\)|%s)', enames{j}, enames{j}), '0');
             if debug
                 warning off backtrace
                 warning('Endogenous variable %s is unknown in dseries objet. Assign zero value.', enames{j})
