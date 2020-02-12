@@ -41,6 +41,9 @@ if options_.steadystate_flag
     % explicit steady state file
     [~,M_.params,info] = evaluate_steady_state_file(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_, ...
                                                     options_,false);
+    if info(1)
+        return;
+    end
 end
 [U,Uy,W] = feval([M_.fname,'.objective.static'],zeros(M_.endo_nbr,1),[], M_.params);
 if any(any(isnan(Uy)))
