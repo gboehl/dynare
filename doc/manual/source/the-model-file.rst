@@ -10799,6 +10799,8 @@ The following operators can be used on arrays:
     * Comparison operators: ``==, !=``
     * Dereferencing: if ``v`` is an array, then ``v[2]`` is its 2nd element
     * Concatenation of two arrays: ``+``
+    * Set union of two arrays: ``|``
+    * Set intersection of two arrays: ``&``
     * Difference ``-``: returns the first operand from which the
       elements of the second operand have been removed.
     * Cartesian product of two arrays: ``*``
