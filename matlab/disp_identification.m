@@ -93,9 +93,9 @@ for jide = 1:4
     elseif jide == 2
         strTest = 'MINIMAL SYSTEM (Komunjer and Ng, 2011)'; strJacobian = 'Deltabar'; strMeaning = 'Jacobian of steady state and minimal system';
         if options_ident.order == 2
-            strMeaning = 'Jacobian of second-order accurate mean and first-order minimal system';
+            strMeaning = 'Jacobian of first-order minimal system and second-order accurate mean';
         elseif options_ident.order == 3
-            strMeaning = 'Jacobian of second-order accurate mean and first-order minimal system';
+            strMeaning = 'Jacobian of first-order minimal system and third-order accurate mean';
         end
         if ~no_identification_minimal
             noidentification = 0; ide = ide_minimal;
