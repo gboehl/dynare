@@ -145,6 +145,12 @@ analytic_derivation_mode = options.analytic_derivation_mode;
     % * -2: numerical two-sided finite difference method to compute numerically dYss, dg1, dg2, dg3, d2Yss and d2g1, the other output arguments are computed analytically as in kronflag=0
 gstep        = options.gstep;
 order        = options.order;
+if isempty(options.qz_criterium)
+    % set default value for qz_criterium: if there are no unit roots one can use 1.0
+    % If they are possible, you may have have multiple unit roots and the accuracy 
+    % decreases when computing the eigenvalues in lyapunov_symm. Hence, we normally use 1+1e-6
+    options = select_qz_criterium_value(options);
+end
 qz_criterium = options.qz_criterium;
 threads_BC   = options.threads.kronecker.sparse_hessian_times_B_kronecker_C;
 
@@ -268,6 +274,11 @@ if d2flag
     KalmanA(:,idx_states) = ghx;
     KalmanB = ghu;
 end
+
+% Store some objects
+DERIVS.indpmodel  = indpmodel;
+DERIVS.indpstderr = indpstderr;
+DERIVS.indpcorr   = indpcorr;
 
 if analytic_derivation_mode == -1
 %% numerical two-sided finite difference method using function get_perturbation_params_derivs_numerical_objective.m (previously thet2tau.m in Dynare 4.5) for

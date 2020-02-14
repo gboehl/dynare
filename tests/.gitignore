@@ -126,6 +126,7 @@ wsOct
 !/practicing/dataHST.mat
 !/practicing/data_consRicardoypg.mat
 !/practicing/datasaver.m
+!/pruning/Andreasen_et_al_2018_Dynare44Pruning_v2.mat
 !/utils/printMakeCheckMatlabErrMsg.m
 !/utils/printMakeCheckOctaveErrMsg.m
 !/prior_posterior_function/posterior_function_demo.m

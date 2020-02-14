@@ -21,6 +21,7 @@ MODFILES = \
 	analytic_derivatives/fs2000_analytic_derivation.mod \
 	analytic_derivatives/BrockMirman_PertParamsDerivs.mod \
 	analytic_derivatives/burnside_3_order_PertParamsDerivs.mod \
+	pruning/AnSchorfheide_pruned_state_space.mod \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME.mod \
 	TeX/fs2000_corr_ME.mod \
 	estimation/MH_recover/fs2000_recover_tarb.mod \
@@ -713,6 +714,10 @@ analytic_derivatives: m/analytic_derivatives o/analytic_derivatives
 m/analytic_derivatives: $(patsubst %.mod, %.m.trs, $(filter analytic_derivatives/%.mod, $(MODFILES)))
 o/analytic_derivatives: $(patsubst %.mod, %.o.trs, $(filter analytic_derivatives/%.mod, $(MODFILES)))
 
+pruning: m/pruning o/pruning
+m/pruning: $(patsubst %.mod, %.m.trs, $(filter pruning/%.mod, $(MODFILES)))
+o/pruning: $(patsubst %.mod, %.o.trs, $(filter pruning/%.mod, $(MODFILES)))
+
 fs2000: m/fs2000 o/fs2000
 m/fs2000: $(patsubst %.mod, %.m.trs, $(filter fs2000/%.mod, $(MODFILES)))
 o/fs2000: $(patsubst %.mod, %.o.trs, $(filter fs2000/%.mod, $(MODFILES)))
@@ -834,6 +839,7 @@ EXTRA_DIST = \
 	gsa/data_ca1.mat \
 	analytic_derivatives/fsdat_simul.m \
 	analytic_derivatives/nBrockMirmanSYM.mat \
+	pruning/Andreasen_et_al_2018_Dynare44Pruning_v2.mat \
 	fs2000/fsdat_simul.m \
 	fs2000/fsdat_simul_dseries.m \
 	fs2000/fsdat_simul_missing_obs.m \
