@@ -1,4 +1,4 @@
-function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M, oo, options, options_ident, indpmodel, indpstderr, indpcorr, indvobs)
+function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M, oo, options, options_ident, indpmodel, indpstderr, indpcorr, indvobs)
 % function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M, oo, options, options_ident, indpmodel, indpstderr, indpcorr, indvobs)
 % previously getJJ.m in Dynare 4.5
 % Sets up the Jacobians needed for identification analysis
@@ -54,7 +54,14 @@ function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dM
 %                   * order==1: corresponds to Iskrev (2010)'s J matrix
 %                   * order==2: corresponds to Mutschler (2015)'s \bar{M}_2 matrix, i.e. theoretical moments from the pruned state space system
 %
-%  dSPECTRUM:       [totparam_nbr by totparam_nbr] in DR order. Gram matrix of Jacobian (wrt all params) of spectral density for VAROBS variables, where
+%  dSPECTRUM:       [totparam_nbr by totparam_nbr] in DR order. Gram matrix of Jacobian (wrt all params) of mean and of spectral density for VAROBS variables, where
+%                   spectral density at frequency w: f(w) = (2*pi)^(-1)*H(exp(-i*w))*E[Inov*Inov']*ctranspose(H(exp(-i*w)) with H being the Transfer function
+%                   dSPECTRUM = dMEAN*dMEAN + int_{-\pi}^\pi transpose(df(w)/dp')*(df(w)/dp') dw
+%                   * order==1: corresponds to Qu and Tkachenko (2012)'s G matrix, where Inov and H are computed from linear state space system
+%                   * order==2: corresponds to Mutschler (2015)'s G_2 matrix, where Inov and H are computed from second-order pruned state space system
+%                   * order==3: Inov and H are computed from third-order pruned state space system
+%
+%  dSPECTRUM_NO_MEAN:[totparam_nbr by totparam_nbr] in DR order. Gram matrix of Jacobian (wrt all params) of spectral density for VAROBS variables, where
 %                   spectral density at frequency w: f(w) = (2*pi)^(-1)*H(exp(-i*w))*E[Inov*Inov']*ctranspose(H(exp(-i*w)) with H being the Transfer function
 %                   dSPECTRUM = int_{-\pi}^\pi transpose(df(w)/dp')*(df(w)/dp') dw
 %                   * order==1: corresponds to Qu and Tkachenko (2012)'s G matrix, where Inov and H are computed from linear state space system
@@ -81,11 +88,11 @@ function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dM
 %   * get_minimal_state_representation
 %   * duplication
 %   * dyn_vech
+%   * fjaco
 %   * get_perturbation_params_derivs (previously getH)
 %   * get_all_parameters
-%   * fjaco
-%   * lyapunov_symm
 %   * identification_numerical_objective (previously thet2tau)
+%   * pruned_state_space_system
 %   * vec
 % =========================================================================
 % Copyright (C) 2010-2020 Dynare Team
@@ -220,22 +227,9 @@ elseif order == 3
 end
 
 % Get (pruned) state space representation:
-options.options_ident.indvobs = indvobs;
-options.options_ident.indpmodel = indpmodel;
-options.options_ident.indpstderr = indpstderr;
-options.options_ident.indpcorr = indpcorr;
-oo.dr = pruned_state_space_system(M, options, oo.dr);
-MEAN = oo.dr.pruned.E_y;         dMEAN = oo.dr.pruned.dE_y;
-A = oo.dr.pruned.A;             dA   = oo.dr.pruned.dA;
-B = oo.dr.pruned.B;             dB   = oo.dr.pruned.dB;
-C = oo.dr.pruned.C;             dC   = oo.dr.pruned.dC;
-D = oo.dr.pruned.D;             dD   = oo.dr.pruned.dD;
-c = oo.dr.pruned.c;             dc   = oo.dr.pruned.dc;
-d = oo.dr.pruned.d;             dd   = oo.dr.pruned.dd;
-Varinov = oo.dr.pruned.Varinov; dVarinov = oo.dr.pruned.dVarinov;
-Om_z = oo.dr.pruned.Om_z; dOm_z = oo.dr.pruned.dOm_z;
-Om_y = oo.dr.pruned.Om_y; dOm_y = oo.dr.pruned.dOm_y;
-
+pruned = pruned_state_space_system(M, options, oo.dr, indvobs, nlags, useautocorr, 1);
+MEAN  = pruned.E_y;
+dMEAN = pruned.dE_y;
 %storage for Jacobians used in dsge_likelihood.m for analytical Gradient and Hession of likelihood (only at order=1)
 derivatives_info = struct();
 if order == 1
@@ -247,12 +241,19 @@ if order == 1
 end
 
 %% Compute dMOMENTS
-%Note that our state space system for computing second moments is the following:
-% zhat = A*zhat(-1) + B*xi, where zhat = z - E(z)
-% yhat = C*zhat(-1) + D*xi, where yhat = y - E(y)
-if ~no_identification_moments
-    MOMENTS = identification_numerical_objective(xparam1, 1, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=1]
-    MOMENTS = [MEAN; MOMENTS];
+if ~no_identification_moments    
+    if useautocorr
+        E_yy  = pruned.Corr_y;  dE_yy  = pruned.dCorr_y;
+        E_yyi = pruned.Corr_yi; dE_yyi = pruned.dCorr_yi;
+    else
+        E_yy  = pruned.Var_y;   dE_yy  = pruned.dVar_y;
+        E_yyi = pruned.Var_yi;  dE_yyi = pruned.dVar_yi;
+    end
+    MOMENTS = [MEAN; dyn_vech(E_yy)];
+    for i=1:nlags
+        MOMENTS = [MOMENTS; vec(E_yyi(:,:,i))];
+    end
+    
     if kronflag == -1
         %numerical derivative of autocovariogram
         dMOMENTS = fjaco(str2func('identification_numerical_objective'), xparam1, 1, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=1]
@@ -260,58 +261,10 @@ if ~no_identification_moments
     else
         dMOMENTS = zeros(obs_nbr + obs_nbr*(obs_nbr+1)/2 + nlags*obs_nbr^2 , totparam_nbr);
         dMOMENTS(1:obs_nbr,:) = dMEAN; %add Jacobian of first moments of VAROBS variables
-        % Denote Ezz0 = E[zhat*zhat'], then the following Lyapunov equation defines the autocovariagram: Ezz0 -A*Ezz0*A' = B*Sig_xi*B' = Om_z
-        [Ezz0,u] = lyapunov_symm(A, Om_z, options.lyapunov_fixed_point_tol, options.qz_criterium, options.lyapunov_complex_threshold, 1, options.debug);
-        stationary_vars = (1:length(indvobs))';
-        if ~isempty(u)
-            x = abs(C*u);
-            stationary_vars = find(all(x < options.Schur_vec_tol,2));
-        end
-        Eyy0 = NaN*ones(obs_nbr,obs_nbr);
-        Eyy0(stationary_vars,stationary_vars) = C(stationary_vars,:)*Ezz0*C(stationary_vars,:)' + Om_y(stationary_vars,stationary_vars);
-        %here method=1 is used, whereas all other calls of lyapunov_symm use method=2. The reason is that T and U are persistent, and input matrix A is the same, so using option 2 for all the rest of iterations spares a lot of computing time while not repeating Schur every time
-        indzeros = find(abs(Eyy0) < 1e-12); %find values that are numerical zero
-        Eyy0(indzeros) = 0;
-        if useautocorr
-            sdy = sqrt(diag(Eyy0)); %theoretical standard deviation
-            sdy = sdy(stationary_vars);
-            sy = sdy*sdy';          %cross products of standard deviations
-        end
-
         for jp = 1:totparam_nbr
-            if jp <= (stderrparam_nbr+corrparam_nbr)
-                %Note that for stderr and corr parameters, the derivatives of the system matrices are zero, i.e. dA=dB=dC=dD=0
-                dEzz0 = lyapunov_symm(A,dOm_z(:,:,jp),options.lyapunov_fixed_point_tol,options.qz_criterium,options.lyapunov_complex_threshold,2,options.debug);     %here method=2 is used to spare a lot of computing time while not repeating Schur every time
-                dEyy0 = C*dEzz0*C' + dOm_y(:,:,jp);
-            else %model parameters
-                dEzz0 = lyapunov_symm(A,dOm_z(:,:,jp)+dA(:,:,jp)*Ezz0*A'+A*Ezz0*dA(:,:,jp)',options.lyapunov_fixed_point_tol,options.qz_criterium,options.lyapunov_complex_threshold,2,options.debug);     %here method=2 is used to spare a lot of computing time while not repeating Schur every time
-                dEyy0 = dC(:,:,jp)*Ezz0*C' + C*dEzz0*C' + C*Ezz0*dC(:,:,jp)' + dOm_y(:,:,jp);
-            end
-            %indzeros = find(abs(dEyy0) < 1e-12);
-            %dEyy0(indzeros) = 0;
-            if useautocorr
-                dsy = 1/2./sdy.*diag(dEyy0);
-                dsy = dsy*sdy'+sdy*dsy';
-                dEyy0corr = (dEyy0.*sy-dsy.*Eyy0)./(sy.*sy);
-                dEyy0corr = dEyy0corr-diag(diag(dEyy0corr))+diag(diag(dEyy0));
-                dMOMENTS(obs_nbr+1 : obs_nbr+obs_nbr*(obs_nbr+1)/2 , jp) = dyn_vech(dEyy0corr); %focus only on VAROBS variables
-            else
-                dMOMENTS(obs_nbr+1 : obs_nbr+obs_nbr*(obs_nbr+1)/2 , jp) = dyn_vech(dEyy0); %focus only on VAROBS variables
-            end
-            tmpEyyi = A*Ezz0*C(stationary_vars,:)' + B*Varinov*D(stationary_vars,:)';
-            %we could distinguish between stderr and corr params, but this has no real speed effect as we multipliy with zeros
-            dtmpEyyi = dA(:,:,jp)*Ezz0*C' + A*dEzz0*C' + A*Ezz0*dC(:,:,jp)' + dB(:,:,jp)*Varinov*D' + B*dVarinov(:,:,jp)*D' + B*Varinov*dD(:,:,jp)';
-            Ai = eye(size(A,1)); %this is A^0
-            dAi = zeros(size(A,1),size(A,1)); %this is d(A^0)
+            dMOMENTS(obs_nbr+1 : obs_nbr+obs_nbr*(obs_nbr+1)/2 , jp) = dyn_vech(dE_yy(:,:,jp));
             for i = 1:nlags
-                Eyyi = C(stationary_vars,:)*Ai*tmpEyyi;
-                dEyyi = dC(:,:,jp)*Ai*tmpEyyi + C*dAi*tmpEyyi + C*Ai*dtmpEyyi;
-                if useautocorr
-                    dEyyi = (dEyyi.*sy-dsy.*Eyyi)./(sy.*sy);
-                end
-                dMOMENTS(obs_nbr + obs_nbr*(obs_nbr+1)/2 + (i-1)*obs_nbr^2 + 1 : obs_nbr + obs_nbr*(obs_nbr+1)/2 + i*obs_nbr^2, jp) = vec(dEyyi); %focus only on VAROBS variables
-                dAi = dAi*A + Ai*dA(:,:,jp); %note that this is d(A^(i-1))
-                Ai = Ai*A; %note that this is A^(i-1)
+                dMOMENTS(obs_nbr + obs_nbr*(obs_nbr+1)/2 + (i-1)*obs_nbr^2 + 1 : obs_nbr + obs_nbr*(obs_nbr+1)/2 + i*obs_nbr^2, jp) = vec(dE_yyi(:,:,i,jp));
             end
         end
     end
@@ -357,7 +310,7 @@ if ~no_identification_spectrum
     freqs = (0 : pi/(grid_nbr/2):pi); % we focus only on positive frequencies
     tpos  = exp( sqrt(-1)*freqs); %positive Fourier frequencies
     tneg  = exp(-sqrt(-1)*freqs); %negative Fourier frequencies
-    IA = eye(size(A,1));
+    IA = eye(size(pruned.A,1));
     if kronflag == -1
         %numerical derivative of spectral density
         dOmega_tmp = fjaco(str2func('identification_numerical_objective'), xparam1, 2, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=2]
@@ -366,68 +319,63 @@ if ~no_identification_spectrum
             kk = kk+1;
             dOmega = dOmega_tmp(1 + (kk-1)*obs_nbr^2 : kk*obs_nbr^2,:);
             if ig == 1 % add zero frequency once
-                dSPECTRUM = dOmega'*dOmega;
+                dSPECTRUM_NO_MEAN = dOmega'*dOmega;
             else % due to symmetry to negative frequencies we can add positive frequencies twice
-                dSPECTRUM = dSPECTRUM + 2*(dOmega'*dOmega);
+                dSPECTRUM_NO_MEAN = dSPECTRUM_NO_MEAN + 2*(dOmega'*dOmega);
             end
         end
     elseif kronflag == 1
         %use Kronecker products
-        dA = reshape(dA,size(dA,1)*size(dA,2),size(dA,3));
-        dB = reshape(dB,size(dB,1)*size(dB,2),size(dB,3));
-        dC = reshape(dC,size(dC,1)*size(dC,2),size(dC,3));
-        dD = reshape(dD,size(dD,1)*size(dD,2),size(dD,3));
-        dVarinov = reshape(dVarinov,size(dVarinov,1)*size(dVarinov,2),size(dVarinov,3));
-        K_obs_exo = commutation(obs_nbr,size(Varinov,1));
+        dA = reshape(pruned.dA,size(pruned.dA,1)*size(pruned.dA,2),size(pruned.dA,3));
+        dB = reshape(pruned.dB,size(pruned.dB,1)*size(pruned.dB,2),size(pruned.dB,3));
+        dC = reshape(pruned.dC,size(pruned.dC,1)*size(pruned.dC,2),size(pruned.dC,3));
+        dD = reshape(pruned.dD,size(pruned.dD,1)*size(pruned.dD,2),size(pruned.dD,3));
+        dVarinov = reshape(pruned.dVarinov,size(pruned.dVarinov,1)*size(pruned.dVarinov,2),size(pruned.dVarinov,3));
+        K_obs_exo = commutation(obs_nbr,size(pruned.Varinov,1));
         for ig=1:length(freqs)
             z = tneg(ig);
-            zIminusA =  (z*IA - A);
+            zIminusA =  (z*IA - pruned.A);
             zIminusAinv = zIminusA\IA;
-            Transferfct = D + C*zIminusAinv*B; % Transfer function
+            Transferfct = pruned.D + pruned.C*zIminusAinv*pruned.B; % Transfer function
             dzIminusA = -dA;
             dzIminusAinv = kron(-(transpose(zIminusA)\IA),zIminusAinv)*dzIminusA; %this takes long
-            dTransferfct = dD + DerivABCD(C,dC,zIminusAinv,dzIminusAinv,B,dB); %also long
+            dTransferfct = dD + DerivABCD(pruned.C,dC,zIminusAinv,dzIminusAinv,pruned.B,dB); %this takes long
             dTransferfct_conjt = K_obs_exo*conj(dTransferfct);
-            dOmega = (1/(2*pi))*DerivABCD(Transferfct,dTransferfct,Varinov,dVarinov,Transferfct',dTransferfct_conjt); %also long
+            dOmega = (1/(2*pi))*DerivABCD(Transferfct,dTransferfct,pruned.Varinov,dVarinov,Transferfct',dTransferfct_conjt); %also long
             if ig == 1 % add zero frequency once
-                dSPECTRUM = dOmega'*dOmega;
+                dSPECTRUM_NO_MEAN = dOmega'*dOmega;
             else  % due to symmetry to negative frequencies we can add positive frequencies twice
-                dSPECTRUM = dSPECTRUM + 2*(dOmega'*dOmega);
+                dSPECTRUM_NO_MEAN = dSPECTRUM_NO_MEAN + 2*(dOmega'*dOmega);
             end
         end
-        %put back into tensor notation
-        dA = reshape(dA,size(A,1),size(A,2),totparam_nbr);
-        dB = reshape(dB,size(B,1),size(B,2),totparam_nbr);
-        dC = reshape(dC,size(C,1),size(C,2),totparam_nbr);
-        dD = reshape(dD,size(D,1),size(D,2),totparam_nbr);
-        dVarinov = reshape(dVarinov,size(Varinov,1),size(Varinov,2),totparam_nbr);
     elseif (kronflag==0) || (kronflag==-2)
         for ig = 1:length(freqs)
-            IzminusA =  tpos(ig)*IA - A;
-            invIzminusA = IzminusA\eye(size(A,1));
-            Transferfct = D + C*invIzminusA*B;
+            IzminusA =  tpos(ig)*IA - pruned.A;
+            invIzminusA = IzminusA\eye(size(pruned.A,1));
+            Transferfct = pruned.D + pruned.C*invIzminusA*pruned.B;
             dOmega = zeros(obs_nbr^2,totparam_nbr);
             for j = 1:totparam_nbr
                 if j <= stderrparam_nbr+corrparam_nbr %stderr and corr parameters: only dSig is nonzero
-                    dOmega_tmp = Transferfct*dVarinov(:,:,j)*Transferfct';
+                    dOmega_tmp = Transferfct*pruned.dVarinov(:,:,j)*Transferfct';
                 else %model parameters
-                    dinvIzminusA = -invIzminusA*(-dA(:,:,j))*invIzminusA;
-                    dTransferfct = dD(:,:,j) + dC(:,:,j)*invIzminusA*B + C*dinvIzminusA*B + C*invIzminusA*dB(:,:,j);
-                    dOmega_tmp = dTransferfct*Varinov*Transferfct' + Transferfct*dVarinov(:,:,j)*Transferfct' + Transferfct*Varinov*dTransferfct';
+                    dinvIzminusA = -invIzminusA*(-pruned.dA(:,:,j))*invIzminusA;
+                    dTransferfct = pruned.dD(:,:,j) + pruned.dC(:,:,j)*invIzminusA*pruned.B + pruned.C*dinvIzminusA*pruned.B + pruned.C*invIzminusA*pruned.dB(:,:,j);
+                    dOmega_tmp = dTransferfct*pruned.Varinov*Transferfct' + Transferfct*pruned.dVarinov(:,:,j)*Transferfct' + Transferfct*pruned.Varinov*dTransferfct';
                 end
                 dOmega(:,j) = (1/(2*pi))*dOmega_tmp(:);
             end
             if ig == 1 % add zero frequency once
-                dSPECTRUM = dOmega'*dOmega;
+                dSPECTRUM_NO_MEAN = dOmega'*dOmega;
             else % due to symmetry to negative frequencies we can add positive frequencies twice
-                dSPECTRUM = dSPECTRUM + 2*(dOmega'*dOmega);
+                dSPECTRUM_NO_MEAN = dSPECTRUM_NO_MEAN + 2*(dOmega'*dOmega);
             end
         end
     end
     % Normalize Matrix and add steady state Jacobian, note that G is real and symmetric by construction
-    dSPECTRUM = 2*pi*dSPECTRUM./(2*length(freqs)-1) + dMEAN'*dMEAN;
-    dSPECTRUM = real(dSPECTRUM);
+    dSPECTRUM_NO_MEAN = real(2*pi*dSPECTRUM_NO_MEAN./(2*length(freqs)-1));
+    dSPECTRUM         = dSPECTRUM_NO_MEAN + dMEAN'*dMEAN;
 else
+    dSPECTRUM_NO_MEAN = [];
     dSPECTRUM = [];
 end
 
@@ -442,14 +390,14 @@ if ~no_identification_minimal
         dMINIMAL = [];        
     else
         % Derive and check minimal state vector of first-order
-        SYS.A  = oo.dr.ghx(oo.dr.pruned.indx,:);
-        SYS.dA = oo.dr.derivs.dghx(oo.dr.pruned.indx,:,:);
-        SYS.B  = oo.dr.ghu(oo.dr.pruned.indx,:);
-        SYS.dB = oo.dr.derivs.dghu(oo.dr.pruned.indx,:,:);
-        SYS.C  = oo.dr.ghx(oo.dr.pruned.indy,:);
-        SYS.dC = oo.dr.derivs.dghx(oo.dr.pruned.indy,:,:);
-        SYS.D  = oo.dr.ghu(oo.dr.pruned.indy,:);
-        SYS.dD = oo.dr.derivs.dghu(oo.dr.pruned.indy,:,:);
+        SYS.A  = oo.dr.ghx(pruned.indx,:);
+        SYS.dA = oo.dr.derivs.dghx(pruned.indx,:,:);
+        SYS.B  = oo.dr.ghu(pruned.indx,:);
+        SYS.dB = oo.dr.derivs.dghu(pruned.indx,:,:);
+        SYS.C  = oo.dr.ghx(pruned.indy,:);
+        SYS.dC = oo.dr.derivs.dghx(pruned.indy,:,:);
+        SYS.D  = oo.dr.ghu(pruned.indy,:);
+        SYS.dD = oo.dr.derivs.dghu(pruned.indy,:,:);
         [CheckCO,minnx,SYS] = get_minimal_state_representation(SYS,1);
         
         if CheckCO == 0

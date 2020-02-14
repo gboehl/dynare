@@ -30,17 +30,15 @@ function out = identification_numerical_objective(params, outputflag, estim_para
 % Jacobian of the dynamic model equations, and Y_t selected variables
 % -------------------------------------------------------------------------
 % This function is called by
-%   * get_first_order_solution_params_deriv.m (previously getH.m)
 %   * get_identification_jacobians.m (previously getJJ.m)
 % -------------------------------------------------------------------------
 % This function calls
 %   * [M.fname,'.dynamic']
-%   * dynare_resolve
 %   * dyn_vech
-%   * lyapunov_symm
+%   * resol
 %   * vec
 % =========================================================================
-% Copyright (C) 2011-2019 Dynare Team
+% Copyright (C) 2011-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -57,16 +55,6 @@ function out = identification_numerical_objective(params, outputflag, estim_para
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 % =========================================================================
-
-if nargin < 11 || isempty(useautocorr)
-    useautocorr = 0;
-end
-if nargin < 12 || isempty(nlags)
-    nlags = 3;
-end
-if nargin < 13 || isempty(grid_nbr)
-    grid_nbr = 0;
-end
 
 %% Update stderr, corr and model parameters
 %note that if no estimated_params_block is given, then all stderr and model parameters are selected but no corr parameters
@@ -90,50 +78,21 @@ end
 %% compute Kalman transition matrices and steady state with updated parameters
 [~,info,M,options,oo] = resol(0,M,options,oo);
 options = rmfield(options,'options_ident');
-oo.dr = pruned_state_space_system(M, options, oo.dr);
-A = oo.dr.pruned.A;
-B = oo.dr.pruned.B;
-C = oo.dr.pruned.C(indvar,:);
-D = oo.dr.pruned.D(indvar,:);
-Om_z = oo.dr.pruned.Om_z;
-Om_y = oo.dr.pruned.Om_y(indvar,indvar);
-Varinov = oo.dr.pruned.Varinov;
-obs_nbr = size(C,1);
+pruned = pruned_state_space_system(M, options, oo.dr, indvar, nlags, useautocorr, 0);
+
 %% out = [vech(cov(Y_t,Y_t)); vec(cov(Y_t,Y_{t-1}); ...; vec(cov(Y_t,Y_{t-nlags})] of indvar variables, in DR order. This is Iskrev (2010)'s J matrix.
-if outputflag == 1
-    % Denote Ezz0 = E_t(z_t * z_t'), then the following Lyapunov equation defines the autocovariagrom: Ezz0 -A*Ezz*A' = B*Sig_e*B'
-    [Ezz0,u] = lyapunov_symm(A, Om_z, options.lyapunov_fixed_point_tol, options.qz_criterium, options.lyapunov_complex_threshold, 1, options.debug);
-    stationary_vars = (1:size(C,1))';
-    if ~isempty(u)
-        x = abs(C*u);
-        stationary_vars = find(all(x < options.Schur_vec_tol,2));
-    end
-    Eyy0 = NaN*ones(obs_nbr,obs_nbr);
-    Eyy0(stationary_vars,stationary_vars) = C(stationary_vars,:)*Ezz0*C(stationary_vars,:)' + Om_y(stationary_vars,stationary_vars);
-    indzeros = find(abs(Eyy0) < 1e-12); %find values that are numerical zero
-    Eyy0(indzeros) = 0;
+if outputflag == 1    
     if useautocorr
-        sy = sqrt(diag(Ezz0)); %theoretical standard deviation
-        sy = sy(stationary_vars);
-        sy = sy*sy';          %cross products of standard deviations
-        sy0 = sy-diag(diag(sy))+eye(length(sy));
-        Eyy0corr = NaN*ones(size(C,1),size(C,1));
-        Eyy0corr(stationary_vars,stationary_vars) = Eyy0./sy0;
-        out = dyn_vech(Eyy0corr); %focus only on unique terms
+        out = dyn_vech(pruned.Corr_y);
     else
-        out = dyn_vech(Eyy0); %focus only on unique terms
-    end
-    % compute autocovariances/autocorrelations of lagged observed variables
-    tmpEyyi = A*Ezz0*C(stationary_vars,:)' + B*Varinov*D(stationary_vars,:)';
-    Ai = eye(size(A,1)); %this is A^0
+        out = dyn_vech(pruned.Var_y);
+    end    
     for i = 1:nlags
-        Eyyi = NaN*ones(obs_nbr,obs_nbr);
-        Eyyi(stationary_vars,stationary_vars) = C(stationary_vars,:)*Ai*tmpEyyi;
         if useautocorr
-            Eyyi = Eyyi./sy;
+            out = [out;vec(pruned.Corr_yi(:,:,i))];
+        else
+            out = [out;vec(pruned.Var_yi(:,:,i))];
         end
-        out = [out;vec(Eyyi)];
-        Ai = Ai*A; %note that this is A^(i-1)
     end
 end
 
@@ -142,13 +101,13 @@ if outputflag == 2
     % This computes the spectral density g_omega where the interval [-pi;\pi] is discretized by grid_nbr points
     freqs = (0 : pi/(grid_nbr/2):pi);% we focus only on positive values including the 0 frequency
     tpos  = exp( sqrt(-1)*freqs); %Fourier frequencies
-    IA = eye(size(A,1));
-    var_nbr = size(C,1);
+    IA = eye(size(pruned.A,1));
+    var_nbr = size(pruned.C,1);
     out = zeros(var_nbr^2*length(freqs),1);
     kk = 0;
     for ig = 1:length(freqs)
-        Transferfct = D + C*((tpos(ig)*IA-A)\B);
-        g_omega = (1/(2*pi))*(Transferfct*Varinov*Transferfct'); % note that ' is the conjugate transpose
+        Transferfct = pruned.D + pruned.C*((tpos(ig)*IA-pruned.A)\pruned.B);
+        g_omega = (1/(2*pi))*(Transferfct*pruned.Varinov*Transferfct'); % note that ' is the conjugate transpose
         kk = kk+1;
         out(1 + (kk-1)*var_nbr^2 : kk*var_nbr^2) = g_omega(:);
     end
