@@ -40,7 +40,15 @@ phi   = 0.1;
 @#define w = w + [ elt ]
 @#endfor
 @#if w != [ 1, "a", 1, 2:3]
-@#error "For loop problem"
+@#error "For loop problem 1"
+@#endif
+
+@#define w = [ ]
+@#for (i,j) in [(1,2),(1,3),(1,4)]
+@#define w = w + [i, j]
+@#endfor
+@#if w != [ 1, 2, 1, 3, 1, 4]
+@#error "For loop problem 2"
 @#endif
 
 @#define s = "abcde"
