@@ -64,7 +64,7 @@ StateVectorMean = ReducedForm.StateVectorMean;
 StateVectorVarianceSquareRoot = chol(ReducedForm.StateVectorVariance)';
 state_variance_rank = size(StateVectorVarianceSquareRoot,2);
 StateVectors = bsxfun(@plus,StateVectorVarianceSquareRoot*randn(state_variance_rank,number_of_particles),StateVectorMean);
-if pruning
+if DynareOptions.order<3 && pruning
     StateVectors_ = StateVectors;
 end
 
@@ -123,19 +123,29 @@ for t=1:sample_size
             steadystate = ReducedForm.steadystate;
             state_variables_steady_state = ReducedForm.state_variables_steady_state;
             % Set local state space model (second-order approximation).
-            constant = ReducedForm.constant;
-            ghx  = ReducedForm.ghx;
-            ghu  = ReducedForm.ghu;
-            ghxx = ReducedForm.ghxx;
-            ghuu = ReducedForm.ghuu;
-            ghxu = ReducedForm.ghxu;
-            % particle likelihood contribution
-            yhat = bsxfun(@minus,StateVectors(:,i),state_variables_steady_state);
-            if pruning
-                yhat_ = bsxfun(@minus,StateVectors_(:,i),state_variables_steady_state);
-                [tmp, ~] = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_2);
+            if ReducedForm.use_k_order_solver
+                dr = ReducedForm.dr;
             else
-                tmp = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, DynareOptions.threads.local_state_space_iteration_2);
+                constant = ReducedForm.constant;
+                % Set local state space model (first-order approximation).
+                ghx  = ReducedForm.ghx;
+                ghu  = ReducedForm.ghu;
+                % Set local state space model (second-order approximation).
+                ghxx = ReducedForm.ghxx;
+                ghuu = ReducedForm.ghuu;
+                ghxu = ReducedForm.ghxu;
+            end
+            % particle likelihood contribution
+            yhat = bsxfun(@minus, StateVectors(:,i), state_variables_steady_state);
+            if ReducedForm.use_k_order_solver
+                tmp = local_state_space_iteration_k(yhat, zeros(number_of_structural_innovations, 1), dr, Model, DynareOptions);
+            else
+                if pruning
+                    yhat_ = bsxfun(@minus,StateVectors_(:,i),state_variables_steady_state);
+                    [tmp, ~] = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_2);
+                else
+                    tmp = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, DynareOptions.threads.local_state_space_iteration_2);
+                end
             end
             PredictionError = bsxfun(@minus,Y(t,:)', tmp(mf1,:));
             % Replace Gaussian density with a Student density with 3 degrees of freedom for fat tails.
@@ -148,7 +158,7 @@ for t=1:sample_size
     indx = resample(0, tau_tilde', DynareOptions.particle);
     StateVectors = StateVectors(:,indx);
     xparam = fore_xparam(:,indx);
-    if pruning
+    if DynareOptions.order>=3 && pruning
         StateVectors_ = StateVectors_(:,indx);
     end
     w_stage1 = weights(indx)./tau_tilde(indx);
@@ -167,22 +177,32 @@ for t=1:sample_size
                     steadystate = ReducedForm.steadystate;
                     state_variables_steady_state = ReducedForm.state_variables_steady_state;
                     % Set local state space model (second order approximation).
-                    constant = ReducedForm.constant;
-                    ghx  = ReducedForm.ghx;
-                    ghu  = ReducedForm.ghu;
-                    ghxx = ReducedForm.ghxx;
-                    ghuu = ReducedForm.ghuu;
-                    ghxu = ReducedForm.ghxu;
+                    if ReducedForm.use_k_order_solver
+                        dr = ReducedForm.dr;
+                    else
+                        constant = ReducedForm.constant;
+                        % Set local state space model (first-order approximation).
+                        ghx  = ReducedForm.ghx;
+                        ghu  = ReducedForm.ghu;
+                        % Set local state space model (second-order approximation).
+                        ghxx = ReducedForm.ghxx;
+                        ghuu = ReducedForm.ghuu;
+                        ghxu = ReducedForm.ghxu;
+                    end
                     % Get covariance matrices and structural shocks
                     epsilon = chol(ReducedForm.Q)'*randn(number_of_structural_innovations, 1);
                     % compute particles likelihood contribution
                     yhat = bsxfun(@minus,StateVectors(:,i), state_variables_steady_state);
-                    if pruning
-                        yhat_ = bsxfun(@minus,StateVectors_(:,i), state_variables_steady_state);
-                        [tmp, tmp_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_2);
-                        StateVectors_(:,i) = tmp_(mf0,:);
+                    if ReducedForm.use_k_order_solver
+                        tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions);
                     else
-                        tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, DynareOptions.threads.local_state_space_iteration_2);
+                        if pruning
+                            yhat_ = bsxfun(@minus,StateVectors_(:,i), state_variables_steady_state);
+                            [tmp, tmp_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_2);
+                            StateVectors_(:,i) = tmp_(mf0,:);
+                        else
+                            tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, DynareOptions.threads.local_state_space_iteration_2);
+                        end
                     end
                     StateVectors(:,i) = tmp(mf0,:);
                     PredictionError = bsxfun(@minus,Y(t,:)', tmp(mf1,:));

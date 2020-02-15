@@ -155,12 +155,17 @@ if nargout>4
     ReducedForm.ghx = dr.ghx(restrict_variables_idx,:);
     ReducedForm.ghu = dr.ghu(restrict_variables_idx,:);
     ReducedForm.steadystate = dr.ys(dr.order_var(restrict_variables_idx));
-    if DynareOptions.order>1
+    if DynareOptions.order==2
+        ReducedForm.use_k_order_solver = false;
         ReducedForm.ghxx = dr.ghxx(restrict_variables_idx,:);
         ReducedForm.ghuu = dr.ghuu(restrict_variables_idx,:);
         ReducedForm.ghxu = dr.ghxu(restrict_variables_idx,:);
         ReducedForm.constant = ReducedForm.steadystate + .5*dr.ghs2(restrict_variables_idx);
+    elseif DynareOptions.order>=3
+        ReducedForm.use_k_order_solver = true;
+        ReducedForm.dr = dr;
     else
+        ReducedForm.use_k_order_solver = false;
         ReducedForm.ghxx = zeros(size(restrict_variables_idx,1),size(dr.kstate,2));
         ReducedForm.ghuu = zeros(size(restrict_variables_idx,1),size(dr.ghu,2));
         ReducedForm.ghxu = zeros(size(restrict_variables_idx,1),size(dr.ghx,2));
@@ -177,19 +182,19 @@ end
 if setinitialcondition
     switch DynareOptions.particle.initialization
       case 1% Initial state vector covariance is the ergodic variance associated to the first order Taylor-approximation of the model.
-        StateVectorMean = ReducedForm.constant(mf0);
+        StateVectorMean = ReducedForm.state_variables_steady_state;%.constant(mf0);
         StateVectorVariance = lyapunov_symm(ReducedForm.ghx(mf0,:),ReducedForm.ghu(mf0,:)*ReducedForm.Q*ReducedForm.ghu(mf0,:)',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
       case 2% Initial state vector covariance is a monte-carlo based estimate of the ergodic variance (consistent with a k-order Taylor-approximation of the model).
-        StateVectorMean = ReducedForm.constant(mf0);
+        StateVectorMean = ReducedForm.state_variables_steady_state;%.constant(mf0);
         old_DynareOptionsperiods = DynareOptions.periods;
         DynareOptions.periods = 5000;
-        y_ = simult(oo_.steady_state, dr,Model,DynareOptions,DynareResults);
+        y_ = simult(oo_.steady_state, dr, Model, DynareOptions, DynareResults);
         y_ = y_(state_variables_idx,2001:5000);
         StateVectorVariance = cov(y_');
         DynareOptions.periods = old_DynareOptionsperiods;
         clear('old_DynareOptionsperiods','y_');
       case 3% Initial state vector covariance is a diagonal matrix.
-        StateVectorMean = ReducedForm.constant(mf0);
+        StateVectorMean = ReducedForm.state_variables_steady_state;%.constant(mf0);
         StateVectorVariance = DynareOptions.particle.initial_state_prior_std*eye(number_of_state_variables);
       otherwise
         error('Unknown initialization option!')
