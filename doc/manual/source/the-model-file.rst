@@ -4807,7 +4807,8 @@ block decomposition of the model (see :opt:`block`).
                 state variables and estimated jointly with the
                 original state variables of the model using a
                 nonlinear filter. The algorithm implemented in Dynare
-                is described in *Liu and West (2001)*.
+                is described in *Liu and West (2001)*, and works with
+                ``k`` order local approximations of the model.
 
            ``12``
 
