@@ -418,7 +418,8 @@ switch minimizer_algorithm
     [opt_par_values, fval, exitflag] = simpsa(func2str(objective_function),start_par_value,LB,UB,simpsaOptions,varargin{:});
   case 11
     options_.cova_compute = 0;
-    [opt_par_values, stdh, lb_95, ub_95, med_param] = online_auxiliary_filter(start_par_value, varargin{:});
+    subvarargin = [varargin(1), varargin(3:6), varargin(8)];
+    [opt_par_values, stdh, lb_95, ub_95, med_param] = online_auxiliary_filter(start_par_value, subvarargin{:});
   case 12
     if isoctave
         error('Option mode_compute=12 is not available under Octave')
