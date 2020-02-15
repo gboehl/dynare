@@ -24,12 +24,11 @@ Dates in a mod file
 -------------------
 
 Dynare understands dates in a mod file. Users can declare annual,
-quarterly, monthly or weekly dates using the following syntax::
+quarterly, or monthly dates using the following syntax::
 
     1990Y
     1990Q3
     1990M11
-    1990W49
 
 Behind the scene, Dynare’s preprocessor translates these expressions
 into instantiations of the MATLAB/Octave’s class ``dates`` described
@@ -165,14 +164,13 @@ The dates class
 
 .. class:: dates
 
-    :arg int freq: equal to 1, 4, 12 or 52 (resp. for annual,
-                   quarterly, monthly or weekly dates).
+    :arg int freq: equal to 1, 4, or 12 (resp. for annual,
+                   quarterly, or monthly dates).
     :arg int ndat: the number of declared dates in the object.
     :arg int time: a ``ndat*2`` array, the years are stored in the
                    first column, the subperiods (1 for annual dates,
-                   1-4 for quarterly dates, 1-12 for monthly dates and
-                   1-52 for weekly dates) are stored in the second
-                   column.
+                   1-4 for quarterly dates, and 1-12 for monthly
+                   dates) are stored in the second column.
 
     Each member is private, one can display the content of a member
     but cannot change its value directly. Note that it is not possible
@@ -187,14 +185,14 @@ The dates class
         |br| Returns an empty ``dates`` object with a given frequency
         (if the constructor is called with one input
         argument). ``FREQ`` is a character equal to ’Y’ or ’A’ for
-        annual dates, ’Q’ for quarterly dates, ’M’ for monthly dates
-        or ’W’ for weekly dates. Note that ``FREQ`` is not case
-        sensitive, so that, for instance, ’q’ is also allowed for
-        quarterly dates. The frequency can also be set with an integer
-        scalar equal to 1 (annual), 4 (quarterly), 12 (monthly) or 52
-        (weekly). The instantiation of empty objects can be used to
-        rename the ``dates`` class. For instance, if one only works
-        with quarterly dates, object ``qq`` can be created as::
+        annual dates, ’Q’ for quarterly dates, or ’M’ for monthly
+        dates. Note that ``FREQ`` is not case sensitive, so that, for
+        instance, ’q’ is also allowed for quarterly dates. The
+        frequency can also be set with an integer scalar equal to 1
+        (annual), 4 (quarterly), or 12 (monthly). The instantiation of
+        empty objects can be used to rename the ``dates`` class. For
+        instance, if one only works with quarterly dates, object
+        ``qq`` can be created as::
 
             qq = dates('Q')
 
@@ -213,11 +211,11 @@ The dates class
         given by the string ``STRING``. This string has to be
         interpretable as a date (only strings of the following forms
         are admitted: ``'1990Y'``, ``'1990A'``, ``'1990Q1'``,
-        ``'1990M2'``, ``'1990W5'``), the routine ``isdate`` can be
-        used to test if a string is interpretable as a date. If more
-        than one argument is provided, they should all be dates
-        represented as strings, the resulting ``dates`` object
-        contains as many elements as arguments to the constructor.
+        ``'1990M2'``), the routine ``isdate`` can be used to test if a
+        string is interpretable as a date. If more than one argument
+        is provided, they should all be dates represented as strings,
+        the resulting ``dates`` object contains as many elements as
+        arguments to the constructor.
 
 
     .. construct:: dates(DATES)
@@ -233,13 +231,13 @@ The dates class
 
     .. construct:: dates (FREQ, YEAR, SUBPERIOD)
 
-        |br| where ``FREQ`` is a single character (’Y’, ’A’, ’Q’, ’M’,
-        ’W’) or integer (1, 4, 12 or 52) specifying the frequency,
-        ``YEAR`` and ``SUBPERIOD`` are ``n*1`` vectors of
-        integers. Returns a ``dates`` object with ``n`` elements. If
-        ``FREQ`` is equal to ``'Y'``, ``'A'`` or ``1``, the third
-        argument is not needed (because ``SUBPERIOD`` is necessarily a
-        vector of ones in this case).
+        |br| where ``FREQ`` is a single character (’Y’, ’A’, ’Q’, ’M’)
+        or integer (1, 4, or 12) specifying the frequency, ``YEAR``
+        and ``SUBPERIOD`` are ``n*1`` vectors of integers. Returns a
+        ``dates`` object with ``n`` elements. If ``FREQ`` is equal to
+        ``'Y'``, ``'A'`` or ``1``, the third argument is not needed
+        (because ``SUBPERIOD`` is necessarily a vector of ones in this
+        case).
 
 
     *Example*
@@ -319,8 +317,7 @@ The dates class
         representation of a ``dates`` object, the integer and
         fractional parts respectively corresponding to the year and
         the subperiod. The fractional part is the subperiod number
-        minus one divided by the frequency (``1``, ``4``, ``12`` or
-        ``52``).
+        minus one divided by the frequency (``1``, ``4``, or ``12``).
 
         *Example*:
 
