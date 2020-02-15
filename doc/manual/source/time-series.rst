@@ -2111,13 +2111,13 @@ The dseries class
             ::
 
                 >> ts0 = dseries(ones(2,3));
-                >> ts1 = ts0.rename({'Tree','Worst','President'})
+                >> ts1 = ts0.rename({'TinkyWinky','Dipsy','LaaLaa'})
 
                 ts1 is a dseries object:
 
-                   | Bush | Worst | President
-                1Y | 1    | 1     | 1
-                2Y | 1    | 1     | 1
+                   | TinkyWinky | Dipsy | LaaLaa
+                1Y | 1          | 1     | 1
+                2Y | 1          | 1     | 1
 
 
     .. dseriesmethod:: save(A, basename[, format])
