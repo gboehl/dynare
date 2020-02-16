@@ -259,8 +259,11 @@ The dates class
       >> X = 2;
       >> Y = X.multiplybytwo();
       >> X
+
       2
+
       >> Y
+
       4
 
 
@@ -277,6 +280,7 @@ The dates class
       >> X = 2;
       >> X.multiplybytwo_();
       >> X
+
       4
 
     Modifying the objects in place, with underscore methods, is
@@ -284,6 +288,7 @@ The dates class
     saves the object instantiation overhead.
 
     .. datesmethod:: C = append (A, B)
+                     C = append_ (A, B)
 
         |br| Appends ``dates`` object ``B``, or a string that can be
         interpreted as a date, to the ``dates`` object ``A``. If ``B``
@@ -297,17 +302,43 @@ The dates class
                 >> D = dates('1950Q1','1950Q2');
                 >> d = dates('1950Q3');
                 >> E = D.append(d);
-                >> F = D.append('1950Q3')
+                >> F = D.append('1950Q3');
                 >> isequal(E,F)
 
                 ans =
 
                      1
                 >> F
+
                 F = <dates: 1950Q1, 1950Q2, 1950Q3>
 
+                >> D
 
-    .. datesmethod:: C = colon (A, B)
+                D = <dates: 1950Q1, 1950Q2>
+
+                >> D.append_('1950Q3')
+
+                ans = <dates: 1950Q1, 1950Q2, 1950Q3>
+
+
+    .. datesmethod:: B = char (A)
+
+        |br| Overloads the MATLAB/Octave ``char`` function. Converts a
+        ``dates`` object into a character array.
+
+        *Example*
+
+            ::
+
+                >> A = dates('1950Q1');
+                > A.char()
+
+                ans =
+
+                '1950Q1'
+
+
+   .. datesmethod:: C = colon (A, B)
                      C = colon (A, i, B)
 
         |br| Overloads the MATLAB/Octave colon (``:``) operator. A and B
@@ -322,9 +353,40 @@ The dates class
                 >> A = dates('1950Q1');
                 >> B = dates('1951Q2');
                 >> C = A:B
+
                 C = <dates: 1950Q1, 1950Q2, 1950Q3, 1950Q4, 1951Q1>
+
                 >> D = A:2:B
+
                 D = <dates: 1950Q1, 1950Q3, 1951Q1>
+
+
+    .. datesmethod:: B = copy (A)
+
+        |br| Returns a copy of a ``dates`` object.
+
+
+     .. datesmethod:: disp (A)
+
+        |br| Overloads the MATLAB/Octave disp function for ``dates`` object.
+
+
+     .. datesmethod:: display (A)
+
+        |br| Overloads the MATLAB/Octave display function for ``dates`` object.
+
+        *Example*
+
+            ::
+
+                >> disp(B)
+
+                B = <dates: 1950Q1, 1950Q2, 1950Q3, 1950Q4, 1951Q1, 1951Q2, 1951Q3, 1951Q4, 1952Q1, 1952Q2, 1952Q3>
+
+
+                >> display(B)
+
+                B = <dates: 1950Q1, 1950Q2, ..., 1952Q2, 1952Q3>
 
 
     .. datesmethod:: B = double (A)
@@ -356,8 +418,8 @@ The dates class
         |br| Overloads the MATLAB/Octave ``eq`` (equal, ``==``)
         operator. ``dates`` objects ``A`` and ``B`` must have the same
         number of elements (say, ``n``). The returned argument is a
-        ``n`` by ``1`` vector of zeros and ones. The i-th element of
-        ``C`` is equal to ``1`` if and only if the dates ``A(i)`` and
+        ``n`` by ``1`` vector of logicals. The i-th element of
+        ``C`` is equal to ``true`` if and only if the dates ``A(i)`` and
         ``B(i)`` are the same.
 
         *Example*
@@ -370,8 +432,10 @@ The dates class
 
                 ans =
 
-                     1
-                     0
+                  2x1 logical array
+
+                   1
+                   0
 
 
     .. datesmethod:: C = ge (A, B)
@@ -379,8 +443,8 @@ The dates class
         |br| Overloads the MATLAB/Octave ``ge`` (greater or equal,
         ``>=``) operator. ``dates`` objects ``A`` and ``B`` must have
         the same number of elements (say, ``n``). The returned
-        argument is a ``n`` by ``1`` vector of zeros and ones. The
-        i-th element of ``C`` is equal to ``1`` if and only if the
+        argument is a ``n`` by ``1`` vector of logicals. The
+        i-th element of ``C`` is equal to ``true`` if and only if the
         date ``A(i)`` is posterior or equal to the date ``B(i)``.
 
         *Example*
@@ -393,8 +457,10 @@ The dates class
 
                 ans =
 
-                     1
-                     1
+                  2x1 logical array
+
+                   1
+                   1
 
 
     .. datesmethod:: C = gt (A, B)
@@ -402,7 +468,7 @@ The dates class
         |br| Overloads the MATLAB/Octave ``gt`` (greater than, ``>``)
         operator. ``dates`` objects ``A`` and ``B`` must have the same
         number of elements (say, ``n``). The returned argument is a
-        ``n`` by ``1`` vector of zeros and ones. The i-th element of
+        ``n`` by ``1`` vector of logicals. The i-th element of
         ``C`` is equal to ``1`` if and only if the date ``A(i)`` is
         posterior to the date ``B(i)``.
 
@@ -416,8 +482,10 @@ The dates class
 
                 ans =
 
-                     0
-                     1
+                  2x1 logical array
+
+                   0
+                   1
 
 
     .. datesmethod:: D = horzcat (A, B, C, ...)
@@ -435,6 +503,7 @@ The dates class
                 >> B = dates('1950Q2');
                 >> C = [A, B];
                 >> C
+
                 C = <dates: 1950Q1, 1950Q2>
 
 
@@ -456,63 +525,53 @@ The dates class
                 >> B = dates('1951Q1'):dates('1951Q4');
                 >> C = intersect(A, B);
                 >> C
+
                 C = <dates: 1951Q1, 1951Q2, 1951Q3, 1951Q4>
-
-
-    .. datesmethod:: C = setdiff (A, B)
-
-        |br| Overloads the MATLAB/Octave ``setdiff`` function. All the
-        input arguments must be ``dates`` objects. The returned
-        argument is a ``dates`` object all dates present in ``A`` but
-        not in ``B``. If ``A`` and ``B`` are disjoint ``dates``
-        objects, the function returns ``A``. Returned dates in
-        ``dates`` object ``C`` are sorted by increasing order.
-
-        *Example*
-
-            ::
-
-                >> A = dates('1950Q1'):dates('1969Q4') ;
-                >> B = dates('1960Q1'):dates('1969Q4') ;
-                >> C = dates('1970Q1'):dates('1979Q4') ;
-                >> d1 = setdiff(d1,d2);
-                >> d2 = setdiff(d1,d3);
-                d1 = <dates: 1950Q1, 1950Q2,  ..., 1959Q3, 1959Q4>
-                d2 = <dates: 1950Q1, 1950Q2,  ..., 1969Q3, 1969Q4>
 
 
     .. datesmethod:: B = isempty (A)
 
-        |br| Overloads the MATLAB/Octave ``isempty`` function for ``dates``
-        objects``.
+        |br| Overloads the MATLAB/Octave ``isempty`` function.
 
         *Example*
 
             ::
 
-                >> A = dates('1950Q1'):dates('1951Q4');
+                >> A = dates('1950Q1');
                 >> A.isempty()
 
                 ans =
 
-                     0
+                  logical
 
+                  0
 
-    .. datesmethod:: C = isequal (A, B)
+                >> B = dates();
+                >> B.isempty()
 
-        |br| Overloads the MATLAB/Octave ``isequal`` function for
-        ``dates`` objects.
+                ans =
+
+                  logical
+
+                  1
+
+     .. datesmethod:: C = isequal (A, B)
+
+        |br| Overloads the MATLAB/Octave ``isequal`` function.
 
         *Example*
 
             ::
 
-                >> A = dates('1950Q1'):dates('1951Q4');
-                >> isequal(A,A)
+                >> A = dates('1950Q1');
+                >> B = dates('1950Q2');
+                >> isequal(A, B)
 
                 ans =
 
-                     1
+                  logical
+
+                  0
 
 
     .. datesmethod:: C = le (A, B)
@@ -520,9 +579,9 @@ The dates class
         |br| Overloads the MATLAB/Octave ``le`` (less or equal,
         ``<=``) operator. ``dates`` objects ``A`` and ``B`` must have
         the same number of elements (say, ``n``). The returned
-        argument is a ``n`` by ``1`` vector of zeros and ones. The
-        i-th element of ``C`` is equal to ``1`` if and only if the
-        date ``A(i)`` is not posterior to the date ``B(i)``.
+        argument is a ``n`` by ``1`` vector of logicals. The
+        i-th element of ``C`` is equal to ``true`` if and only if the
+        date ``A(i)`` is anterior or equal to the date ``B(i)``.
 
         *Example*
 
@@ -534,36 +593,37 @@ The dates class
 
                 ans =
 
-                     1
-                     0
+                  2x1 logical array
+
+                   1
+                   0
 
 
     .. datesmethod:: B = length (A)
 
-        |br| Overloads the MATLAB/Octave ``length`` function. Returns the
-        number of dates in ``dates`` object ``A`` (``B`` is a scalar
-        integer).
+        |br| Overloads the MATLAB/Octave ``length`` function. Returns
+        the number of elements in a ``dates`` object.
 
         *Example*
 
             ::
 
-                >> A = dates('1950Q1','1951Q2');
+                >> A = dates('1950Q1'):dates(2000Q3);
                 >> A.length()
 
                 ans =
 
-                     2
+                   203
 
 
-    .. datesmethod:: C = lt (A, B)
+        .. datesmethod:: C = lt (A, B)
 
-        |br| Overloads the MATLAB/Octave ``lt`` (less than, ``<``)
-        operator. ``dates`` objects ``A`` and ``B`` must have the same
-        number of elements (say, ``n``). The returned argument is a
-        ``n`` by ``1`` vector of zeros and ones. The i-th element of
-        ``C`` is equal to ``1`` if and only if the date ``A(i)``
-        preceeds the date ``B(i)``.
+        |br| Overloads the MATLAB/Octave ``lt`` (less than,
+        ``<``) operator. ``dates`` objects ``A`` and ``B`` must have
+        the same number of elements (say, ``n``). The returned
+        argument is a ``n`` by ``1`` vector of logicals. The
+        i-th element of ``C`` is equal to ``true`` if and only if the
+        date ``A(i)`` is anterior or equal to the date ``B(i)``.
 
         *Example*
 
@@ -575,8 +635,10 @@ The dates class
 
                 ans =
 
-                     0
-                     0
+                  2x1 logical array
+
+                   0
+                   0
 
 
     .. datesmethod:: D = max (A, B, C, ...)
@@ -591,6 +653,7 @@ The dates class
 
                 >> A = {dates('1950Q2'), dates('1953Q4','1876Q2'), dates('1794Q3')};
                 >> max(A{:})
+
                 ans = <dates: 1953Q4>
 
 
@@ -606,6 +669,7 @@ The dates class
 
                 >> A = {dates('1950Q2'), dates('1953Q4','1876Q2'), dates('1794Q3')};
                 >> min(A{:})
+
                 ans = <dates: 1794Q3>
 
 
@@ -633,7 +697,25 @@ The dates class
                      0
 
                 >> d1-(-ee)
+
                 ans = <dates: 1950Q3, 1950Q4, 1960Q1>
+
+
+    .. datesmethod:: C = mtimes (A, B)
+
+        |br| Overloads the MATLAB/Octave ``mtimes`` operator
+        (``*``). ``A`` and ``B`` are respectively expected to be a
+        ``dseries`` object and a scalar integer. Returns ``dates``
+        object ``A`` replicated ``B`` times.
+
+        *Example*
+
+            ::
+
+                >> d = dates('1950Q1');
+                >> d*2
+
+                ans = <dates: 1950Q1, 1950Q1>
 
 
     .. datesmethod:: C = ne (A, B)
@@ -642,8 +724,8 @@ The dates class
         operator. ``dates`` objects ``A`` and ``B`` must have the same
         number of elements (say, ``n``) or one of the inputs must be a
         single element ``dates`` object. The returned argument is a
-        ``n`` by ``1`` vector of zeros and ones. The i-th element of
-        ``C`` is equal to ``1`` if and only if the dates ``A(i)`` and
+        ``n`` by ``1`` vector of logicals. The i-th element of
+        ``C`` is equal to ``true`` if and only if the dates ``A(i)`` and
         ``B(i)`` are different.
 
         *Example*
@@ -656,8 +738,10 @@ The dates class
 
                 ans =
 
-                     0
-                     1
+                  2x1 logical array
+
+                   0
+                   1
 
 
     .. datesmethod:: C = plus (A, B)
@@ -668,7 +752,7 @@ The dates class
         ``B`` is a vector of integers, the ``plus`` operator shifts
         the ``dates`` object by ``B`` periods forward.
 
-        :ex:
+        *Example*
 
             ::
 
@@ -687,7 +771,9 @@ The dates class
 
 
     .. datesmethod:: C = pop (A)
-                     C = pop (A,B)
+                     C = pop (A, B)
+                     C = pop_ (A)
+                     C = pop_ (A, B)
 
         |br| Pop method for ``dates`` class. If only one input is
         provided, the method removes the last element of a ``dates``
@@ -699,15 +785,58 @@ The dates class
 
             ::
 
-                >> d1 = dates('1950Q1','1950Q2');
-                >> d1.pop()
+                >> d = dates('1950Q1','1950Q2');
+                >> d.pop()
+
                 ans = <dates: 1950Q1>
 
-                >> d1.pop(1)
+                >> d.pop_(1)
+
                 ans = <dates: 1950Q2>
 
 
+    .. datesmethod:: C = remove (A, B)
+                     C = remove_ (A, B)
+
+        |br| Remove method for ``dates`` class. Both inputs have to be ``dates`` objects, removes dates in ``B`` from ``A``.
+
+        *Example*
+
+            ::
+
+                >> d = dates('1950Q1','1950Q2');
+                >> d.remove(dates('1950Q2'))
+
+                ans = <dates: 1950Q1>
+
+
+    .. datesmethod:: C = setdiff (A, B)
+
+        |br| Overloads the MATLAB/Octave ``setdiff`` function. All the
+        input arguments must be ``dates`` objects. The returned
+        argument is a ``dates`` object all dates present in ``A`` but
+        not in ``B``. If ``A`` and ``B`` are disjoint ``dates``
+        objects, the function returns ``A``. Returned dates in
+        ``dates`` object ``C`` are sorted by increasing order.
+
+        *Example*
+
+            ::
+
+                >> A = dates('1950Q1'):dates('1969Q4');
+                >> B = dates('1960Q1'):dates('1969Q4');
+                >> C = dates('1970Q1'):dates('1979Q4');
+                >> setdiff(A, B)
+
+                ans = <dates: 1950Q1, 1950Q2,  ..., 1959Q3, 1959Q4>
+
+                >> setdiff(A, C)
+
+                ans = <dates: 1950Q1, 1950Q2,  ..., 1969Q3, 1969Q4>
+
+
     .. datesmethod:: B = sort (A)
+                     B = sort_ (A)
 
         |br| Sort method for ``dates`` objects. Returns a ``dates`` object
         with elements sorted by increasing order.
@@ -718,7 +847,44 @@ The dates class
 
                 >> dd = dates('1945Q3','1938Q4','1789Q3');
                 >> dd.sort()
+
                 ans = <dates: 1789Q3, 1938Q4, 1945Q3>
+
+
+    .. datesmethod:: B = strings (A)
+
+        |br| Converts a ``dates`` object into a cell of char arrays.
+
+        *Example*
+
+            ::
+
+                >> A = dates('1950Q1');
+                >> A = A:A+1;
+                >> strings(A)
+
+                  ans =
+
+                    1x2 cell array
+
+                    {'1950Q1'}    {'1950Q2'}
+
+
+    .. datesmethod:: B = subperiod (A)
+
+        |br| Returns the subperiod of a date (an integer scalar
+        between 1 and ``A.freq``).
+
+        *Example*
+
+            ::
+
+                >> A = dates('1950Q2');
+                >> A.subperiod()
+
+                ans =
+
+                     2
 
 
     .. datesmethod:: B = uminus (A)
@@ -732,6 +898,7 @@ The dates class
 
                 >> dd = dates('1945Q3','1938Q4','1973Q1');
                 >> -dd
+
                 ans = <dates: 1945Q2, 1938Q3, 1972Q4>
 
 
@@ -749,10 +916,12 @@ The dates class
                 >> d1 = dates('1945Q3','1973Q1','1938Q4');
                 >> d2 = dates('1973Q1','1976Q1');
                 >> union(d1,d2)
+
                 ans = <dates: 1938Q4, 1945Q3, 1973Q1, 1976Q1>
 
 
     .. datesmethod:: B = unique (A)
+                     B = unique_ (A)
 
         |br| Overloads the MATLAB/Octave ``unique`` function. Returns
         a ``dates`` object with repetitions removed (only the last
@@ -764,6 +933,7 @@ The dates class
 
                 >> d1 = dates('1945Q3','1973Q1','1945Q3');
                 >> d1.unique()
+
                 ans = <dates: 1973Q1, 1945Q3>
 
 
@@ -778,8 +948,33 @@ The dates class
 
                 >> dd = dates('1945Q3','1938Q4','1973Q1');
                 >> +dd
+
                 ans = <dates: 1945Q4, 1939Q1, 1973Q2>
 
+
+    .. datesmethod:: D = vertcat (A, B, C, ...)
+
+        |br| Overloads the MATLAB/Octave ``horzcat`` operator. All the
+        input arguments must be ``dates`` objects. The returned
+        argument is a ``dates`` object gathering all the dates given
+        in the input arguments (repetitions are not removed).
+
+
+    .. datesmethod:: B = year (A)
+
+        |br| Returns the year of a date (an integer scalar
+        between 1 and ``A.freq``).
+
+        *Example*
+
+            ::
+
+                >> A = dates('1950Q2');
+                >> A.subperiod()
+
+                ans =
+
+                       1950
 
 .. _dseries-members:
 
