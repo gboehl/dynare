@@ -251,20 +251,37 @@ The dates class
 
 
     A list of the available methods, by alphabetical order, is given
-    below. Note that the MATLAB/Octave classes do not allow in place
+    below. Note that by default the methods do not allow in place
     modifications: when a method is applied to an object a new object
     is instantiated. For instance, to apply the method
     ``multiplybytwo`` to an object ``X`` we write::
 
-        Y = X.multiplybytwo()
+      >> X = 2;
+      >> Y = X.multiplybytwo();
+      >> X
+      2
+      >> Y
+      4
+
 
     or equivalently::
 
-        Y = multiplybytwo(X)
+        >> Y = multiplybytwo(X);
 
     the object ``X`` is left unchanged, and the object ``Y`` is a
-    modified copy of ``X``.
+    modified copy of ``X`` (multiplied by two). This behaviour is
+    altered if the name of the method is postfixed with an
+    underscore. In this case the creation of a copy is avoided. For
+    instance, following the previous example, we would have::
 
+      >> X = 2;
+      >> X.multiplybytwo_();
+      >> X
+      4
+
+    Modifying the objects in place, with underscore methods, is
+    particularly useful if the methods are called in loops, since this
+    saves the object instantiation overhead.
 
     .. datesmethod:: C = append (A, B)
 
