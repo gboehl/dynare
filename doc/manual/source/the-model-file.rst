@@ -4879,10 +4879,8 @@ block decomposition of the model (see :opt:`block`).
        the computed mode for each estimated parameter in turn. This is
        helpful to diagnose problems with the optimizer. Note that for
        ``order>1`` the likelihood function resulting from the particle
-       filter is not differentiable anymore due to random chatter
-       introduced by selecting different particles for different
-       parameter values. For this reason, the ``mode_check`` plot may
-       look wiggly.
+       filter is not differentiable anymore due to the resampling
+       step. For this reason, the ``mode_check`` plot may look wiggly.
 
     .. option:: mode_check_neighbourhood_size = DOUBLE
 
@@ -5794,12 +5792,12 @@ block decomposition of the model (see :opt:`block`).
 
     .. option:: order = INTEGER
 
-       Order of approximation, either ``1`` or ``2``. When equal to
-       ``2``, the likelihood is evaluated with a particle filter based
-       on a second order approximation of the model (see
-       *Fernandez-Villaverde and Rubio-Ramirez (2005)*). Default is
-       ``1``, i.e. the likelihood of the linearized model is evaluated
-       using a standard Kalman filter.
+       Order of approximation around the deterministic steady
+       state. When greater than 1, the likelihood is evaluated with a
+       particle or nonlinear filter (see *Fernandez-Villaverde and
+       Rubio-Ramirez (2005)*). Default is ``1``, i.e. the likelihood
+       of the linearized model is evaluated using a standard Kalman
+       filter.
 
     .. option:: irf = INTEGER
 
