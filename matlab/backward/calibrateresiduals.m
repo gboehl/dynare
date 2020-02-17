@@ -41,6 +41,9 @@ model_dynamic = str2func([DynareModel.fname,'.dynamic']);
 % Get data for all the endogenous variables.
 ydata = dbase{info.endonames{:}}.data;
 
+% Define function to retrieve an equation name
+eqname = @(z) DynareModel.equations_tags{cellfun(@(x) x==z, DynareModel.equations_tags(:,1)) & cellfun(@(x) isequal(x, 'name'), DynareModel.equations_tags(:,2)),3};
+
 % Get data for all the exogenous variables. Missing exogenous variables, to be solved for, have NaN values.
 exogenousvariablesindbase = intersect(info.exonames, dbase.name);
 residuals = dseries(NaN(dbase.nobs, length(info.residuals)), dbase.init, info.residuals);
@@ -77,9 +80,14 @@ if ~isempty(find(abs(r(ido))>1e-6))
         c2 = strvcat(c2, sprintf('%s', num2str(r(idx(i)))));
     end
     c2 = strvcat(c2(1, :), repmat('-', 1, size(c2, 2)), c2(3:end,:));
+    c5 = 'Equation name';
+    c5 = strvcat(c5, '-------------');
+    for i = 1:length(idx)
+        c5 = strvcat(c5, sprintf('  %s', eqname(idx(i))));
+    end
     c3 = repmat(' | ', size(c2, 1), 1);
     c4 = repmat('   ', size(c2, 1), 1);
-    cc = [c4, c1, c3, c2];
+    cc = [c4, c1, c3, c2, c3, c5];
     skipline()
     disp(cc)
     skipline()
