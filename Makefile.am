@@ -16,7 +16,7 @@ ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = \
 	matlab \
 	contrib \
-	NEWS \
+	NEWS.md \
 	license.txt \
 	README.md \
 	COPYING \
