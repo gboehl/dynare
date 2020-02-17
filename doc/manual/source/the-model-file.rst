@@ -9154,14 +9154,26 @@ Performing identification analysis
             * minimal system as in *Komunjer and Ng (2011)*
             * reduced-form solution and linear rational expectation model
               as in *Ratto and Iskrev (2011)*
+            Note that for orders 2 and 3, all identification checks are based on the pruned
+            state space system as in *Mutschler (2015)*. That is, theoretical moments and 
+            spectrum are computed from the pruned ABCD-system, whereas the minimal system
+            criteria is based on the first-order system, but augmented by the theoretical
+            (pruned) mean at order 2 or 3.
 
-         2. Identification strength analysis based on sample information matrix as in
-            *Ratto and Iskrev (2011)*
+         2. Identification strength analysis based on (theoretical or simulated) curvature of
+            moment information matrix as in *Ratto and Iskrev (2011)*
 
          3. Parameter checks based on nullspace and multicorrelation coefficients to
             determine which (combinations of) parameters are involved
 
 *General Options*
+
+    .. option:: order = 1|2|3
+
+        Order of approximation. At orders 2 and 3 identification is based on the
+        pruned state space system. Note that the order set in other functions does
+        not overwrite the default.
+        Default: ``1``.
 
     .. option:: parameter_set = OPTION
 
@@ -9220,13 +9232,15 @@ Performing identification analysis
             * ``0``: efficient sylvester equation method to compute
               analytical derivatives
             * ``1``: kronecker products method to compute analytical
-              derivatives
+              derivatives (only at order=1)
             * ``-1``: numerical two-sided finite difference method
-              to compute all identification Jacobians
+              to compute all identification Jacobians (numerical tolerance
+              level is equal to ``options_.dynatol.x``)
             * ``-2``: numerical two-sided finite difference method
               to compute derivatives of steady state and dynamic
               model numerically, the identification Jacobians are
-              then computed analytically
+              then computed analytically (numerical tolerance
+              level is equal to ``options_.dynatol.x``)
 
         Default: ``0``.
 
@@ -9297,7 +9311,7 @@ Performing identification analysis
     .. option:: no_identification_spectrum
 
         Disables computations of identification check based on
-        Qu and Tkachenko (2012)'s G, i.e. Gram matrix of derivatives of
+        *Qu and Tkachenko (2012)*'s G, i.e. Gram matrix of derivatives of
         first moment plus outer product of derivatives of spectral density.
 
     .. option:: grid_nbr = INTEGER
@@ -9311,7 +9325,7 @@ Performing identification analysis
     .. option:: no_identification_minimal
 
         Disables computations of identification check based on
-        Komunjer and Ng (2011)'s D, i.e. minimal state space system
+        *Komunjer and Ng (2011)*'s D, i.e. minimal state space system
         and observational equivalent spectral density transformations.
 
 *Misc Options*
