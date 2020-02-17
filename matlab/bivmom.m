@@ -1,19 +1,27 @@
-%
-% bivmom.m		Date: 1/11/2004
-% This Matlab program computes the product moment of X_1^{p_1}X_2^{p_2},
-% where X_1 and X_2 are standard bivariate normally distributed.
+function [y,dy] = bivmom(p,rho)
+% Computes the product moment (and its derivative with respect to standard
+% errors and correlation parameters) of X_1^{p_1}X_2^{p_2}, where X_1 and X_2
+% are standard bivariate normally distributed.
 % n : dimension of X
 % rho: correlation coefficient between X_1 and X_2
-% Reference: Kotz, Balakrishnan, and Johnson (2000), Continuous Multivariate
-%            Distributions, Vol. 1, p.261
-% Note that there is a typo in Eq.(46.25), there should be an extra rho in front 
-% of the equation.
-% Usage: bivmom(p,rho)
-%
-% Retrieved from http://www-2.rotman.utoronto.ca/~kan/papers/prodmom.zip
-% This function is part of replication codes of the following paper:
+% =========================================================================
+% INPUTS
+%   p   [2 by 1]    powers of X_{1} and X_{2}
+%   rho [1 by 1]    correlation coefficient between X_1 and X_2
+% -------------------------------------------------------------------------
+% OUTPUTS
+%   y   [1 by 1]    product moment E[X_1^{p_1}X_2^{p_2}]
+%   dy  [1 by 1]    derivative of y wrt to rho
+% -------------------------------------------------------------------------
+% This function is based upon bivmom.m which is part of replication codes
+% of the following paper:
 % Kan, R.: "From moments of sum to moments of product." Journal of 
 % Multivariate Analysis, 2008, vol. 99, issue 3, pages 542-554.
+% bivmom.m can be retrieved from http://www-2.rotman.utoronto.ca/~kan/papers/prodmom.zip
+% Further references:
+% Kotz, Balakrishnan, and Johnson (2000), Continuous Multivariate Distributions, Vol. 1, p.261
+% Note that there is a typo in Eq.(46.25), there should be an extra rho in front 
+% of the equation.
 % =========================================================================
 % Copyright (C) 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
 % Copyright (C) 2019-2020 Dynare Team
@@ -33,7 +41,6 @@
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 % =========================================================================
-function [y,dy] = bivmom(p,rho)
 s1 = p(1);
 s2 = p(2);
 rho2 = rho^2;

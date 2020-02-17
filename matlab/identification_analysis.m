@@ -137,7 +137,7 @@ no_identification_spectrum    = options_ident.no_identification_spectrum;
 
 if info(1) == 0 %no errors in solution
     % Compute parameter Jacobians for identification analysis
-    [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params_, M_, oo_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs);
+    [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params_, M_, oo_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs);
     if isempty(dMINIMAL)
         % Komunjer and Ng is not computed if (1) minimality conditions are not fullfilled or (2) there are more shocks and measurement errors than observables, so we need to reset options
         no_identification_minimal = 1;
@@ -194,7 +194,7 @@ if info(1) == 0 %no errors in solution
                 options_ident.no_identification_spectrum = 1; %do not recompute dSPECTRUM
                 options_ident.ar = nlags;     %store new lag number
                 options_.ar      = nlags;     %store new lag number
-                [~, ~, ~, ~, ~, ~, MOMENTS, dMOMENTS, ~, ~, ~] = get_identification_jacobians(estim_params_, M_, oo_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs);
+                [~, ~, ~, ~, ~, ~, MOMENTS, dMOMENTS, ~, ~, ~, ~] = get_identification_jacobians(estim_params_, M_, oo_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs);
 
                 ind_dMOMENTS = (find(max(abs(dMOMENTS'),[],1) > tol_deriv)); %new index with non-zero rows
             end
@@ -508,6 +508,7 @@ if info(1) == 0 %no errors in solution
         ide_spectrum.norm_dSPECTRUM  = norm_dSPECTRUM;
         ide_spectrum.tilda_dSPECTRUM = tilda_dSPECTRUM;
         ide_spectrum.dSPECTRUM       = dSPECTRUM;
+        ide_spectrum.dSPECTRUM_NO_MEAN = dSPECTRUM_NO_MEAN;
     end
     
 %% Perform identification checks, i.e. find out which parameters are involved

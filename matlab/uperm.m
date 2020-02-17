@@ -1,4 +1,5 @@
 function p = uperm(a)
+% Return all unique permutations of possibly-repeating array elements
 % =========================================================================
 % Copyright (C) 2014 Bruno Luong <brunoluong@yahoo.com>
 % Copyright (C) 2020 Dynare Team
