@@ -50,7 +50,7 @@ Section "Dynare core (preprocessor and M-files)"
  SectionIn RO
 !insertmacro DETERMINE_CONTEXT
  SetOutPath $INSTDIR
- File README.txt ..\NEWS ..\license.txt ..\VERSION
+ File README.txt ..\NEWS.md ..\license.txt ..\VERSION
 
  SetOutPath $INSTDIR\matlab
  File /r ..\matlab\*.m
@@ -172,7 +172,7 @@ Section "Uninstall"
  # First delete the uninstaller
  Delete $INSTDIR\uninstall.exe
  Delete $INSTDIR\README.txt
- Delete $INSTDIR\NEWS
+ Delete $INSTDIR\NEWS.md
  Delete $INSTDIR\license.txt
  Delete $INSTDIR\VERSION
  Rmdir /r $INSTDIR\matlab

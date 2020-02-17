@@ -99,7 +99,7 @@ mkdir -p \
 if [[ $VERSION == *-unstable* ]]; then
     echo "$SHA"                                                    > "$PKGFILES"/sha.txt
 fi
-cp -p  "$ROOTDIR"/NEWS                                               "$PKGFILES"
+cp -p  "$ROOTDIR"/NEWS.md                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/COPYING                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/VERSION                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/license.txt                                        "$PKGFILES"

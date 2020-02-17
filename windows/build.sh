@@ -248,7 +248,7 @@ ZIPDIR="$TMP_DIRECTORY"/"$ZIPNAME"
 mkdir -p "$ZIPDIR"
 
 cd ..
-cp -p NEWS "$ZIPDIR"
+cp -p NEWS.md "$ZIPDIR"
 cp -p VERSION "$ZIPDIR"
 cp -p license.txt "$ZIPDIR"
 cp -p windows/README.txt "$ZIPDIR"
