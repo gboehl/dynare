@@ -11025,8 +11025,8 @@ Macro directives
               @#ifdef MACRO_VARIABLE
               @#ifndef MACRO_VARIABLE
               @#elseif MACRO_EXPRESSION
-              @#else
-              @#endif
+              @#else ​
+              @#endif ​
 
     |br| Conditional inclusion of some part of the ``.mod`` file. The lines
     between ``@#if``, ``@#ifdef``, or ``@#ifndef`` and the next ``@#elseif``,
@@ -11114,7 +11114,7 @@ Macro directives
               @#for MACRO_VARIABLE in MACRO_EXPRESSION when MACRO_EXPRESSION
               @#for MACRO_TUPLE in MACRO_EXPRESSION
               @#for MACRO_TUPLE in MACRO_EXPRESSION when MACRO_EXPRESSION
-              @#endfor
+              @#endfor ​
 
     |br| Loop construction for replicating portions of the ``.mod``
     file. Note that this construct can enclose variable/parameters
@@ -11187,7 +11187,7 @@ Macro directives
     |br| Asks the preprocessor to display some error message on standard
     output and to abort. The argument must evaluate to a string.
 
-.. macrodir:: @#echomacrovars
+.. macrodir:: @#echomacrovars ​
               @#echomacrovars MACRO_VARIABLE_LIST
               @#echomacrovars(save) MACRO_VARIABLE_LIST
 
