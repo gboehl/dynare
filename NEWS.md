@@ -1,3 +1,345 @@
+Announcement for Dynare 4.6.0
+=============================
+
+We are pleased to announce the release of Dynare 4.6.0.
+
+This major release adds new features and fixes various bugs.
+
+The Windows, macOS and source packages are already available for download at
+[the Dynare website](https://www.dynare.org/download/).
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 7.9 (R2009b) to
+9.7 (R2019b), and with GNU Octave versions 5.2.0 (under Windows) and 4.4.1
+(under macOS).
+
+Here is the list of major user-visible changes:
+
+ - Stochastic simulations
+
+    - The perturbation method is now available at an arbitrary approximation
+      order. In other words, the `order` option of `stoch_simul` accepts an
+      arbitrary positive integer (of course, up to some model-specific
+      computational limit).
+
+    - New option `filtered_theoretical_moments_grid` of `stoch_simul`, that
+      supersedes `hp_ngrid`.
+
+ - Estimation
+
+    - Nonlinear estimation is now also available at an arbitrary approximation
+      order. In other words, the `order` option of `estimation` accepts an
+      arbitrary positive integer (of course, up to some model-specific
+      computational limit).
+
+    - Various improvements to particle filters.
+
+    - It is now possible to estimate models under optimal policy (see below).
+
+    - Variance decomposition of observables now accounts for measurement error.
+
+    - New option `mh_tune_jscale` of `estimation` command for tuning the scale
+      parameter of the proposal distribution of the Random Walk Metropolis
+      Hastings.
+
+    - Added debugging info when parameters take a `NaN` or `Inf` value.
+
+    - Option `mode_compute=1` is now available under Octave.
+
+ - Perfect foresight and extended path
+
+    - A significant speed improvement should be noted on large models (when
+      neither `bytecode` nor `block` option is used). The stacked problem is
+      now constructed using a dedicated machine-compiled library that greatly
+      speeds up the process (in particular, the time spent in that step can
+      become negligible when the `use_dll` option is used).
+
+    - New options `print` and `noprint` of `perfect_foresight_solver` command.
+
+    - Option `stack_solve_algo=2` is now available under Octave.
+
+ - Steady state
+
+    - Option `solve_algo=7` is now available under Octave.
+
+ - Optimal policy
+
+    - The `ramsey_policy` command is now deprecated. It is superseded by
+      successive calls to `ramsey_model`, `stoch_simul`, and
+      `evaluate_planner_objective` (in this order).
+
+    - It is now possible to estimate a model under optimal policy (either
+      Ramsey or discretionary) by running the `estimation` command after either
+      `ramsey_model` or `discretionary_policy`. It is however not yet possible
+      to estimate parameters that appear in the discount factor of the social
+      planner.
+
+    - Discretionary policy returns a more informative error message when the
+      objective has nonzero derivatives with respect to some variables.
+
+ - Identification
+
+    - Added minimal system identification check of *Komunjer and Ng (2011)*.
+
+    - Added spectrum identification check of *Qu and Tkachenko (2012)*.
+
+    - Identification is now also available for approximation orders 2 and 3
+      with either analytical or numerical parameter derivatives. The relevant
+      moments and spectrum are computed from the pruned state space system
+      as in *Mutschler (2015)*.
+
+    - All tests (moments, spectrum, minimal system, strength) can be turned
+      off.
+
+    - More numerical options can be changed by the user.
+
+    - Improved printing and storage (same folder) of results.
+
+ - Sensitivity analysis
+
+    - New `diffuse_filter` option to the `dynare_sensitivity` command.
+
+    - Arbitrary expressions can now be passed for the interval boundaries in
+      `irf_calibration` and `moment_calibration`. ⚠ This breaks the
+      previous syntax, requiring that the lower/upper bounds be separated by
+      commas.
+
+ - Forecasting and smoothing
+
+    - In `conditional_forecast_paths`, it is no longer required that all
+      constrained paths be of the same length. There may now be a different
+      number of controlled variables at each period. In that case, the order of
+      declaration of endogenous controlled variables and of `controlled_varexo`
+      matters: if the second endogenous variable is controlled for less periods
+      than the first one, the second `controlled_varexo` isn't set for the last
+      periods.
+
+    - New option `parameter_set` to the `calib_smoother` command.
+
+    - ⚠ The results of `conditional_forecast` command is now saved in
+      `oo_` (used to be in a file)
+
+ - Shock decomposition
+
+   - Added `fast_realtime` option to real time shock decomposition (deactivated
+     by default, runs the smoother only twice: once for the last in-sample and
+     once for the last out-of-sample data point).
+
+   - New `diff`, `flip`, `max_nrows`, `plot_init_date` and `plot_end_date`
+     options to `plot_shock_decomposition`.
+
+   - New `initial_decomposition_decomposition` command, for computing and
+     plotting the decomposition of the effect of smoothed initial conditions of
+     state variables.
+
+   - New `squeeze_shock_decomposition` command, for removing decompositions of
+     variables that are not of interest.
+
+   - New `with_epilogue` option (common to `shock_decomposition`,
+     `realtime_shock_decomposition` and `initial_condition_decomposition`).
+
+   - New `init2shocks` block to attribute initial conditions to shocks.
+
+ - Macro processor
+
+   - New object types: real (supersedes integers), boolean (distinct from
+     integers), tuple, user-defined function.
+
+   - New operators: various mathematical functions, set operations on arrays
+     (union, intersection, difference, cartesian power and product), type
+     checking and conversion.
+
+   - Added support for comprehensions (*e.g.* the set containing the squares of
+     all even numbers between 1 and 5 can be constructed with `[ i^2 for i in
+     1:5 when mod(i,2) == 0]`).
+
+   - User-defined functions can be declared using the `@#define` operator (*e.g.*
+     `@#define f(x) = 2*x^2+3*x+5`).
+
+   - `@#elseif`-clauses are now supported in conditional statements.
+
+   - `@#for` loops can iterate over several variables at the same time (*e.g.*
+     `@#for (i,j) in X`, where `X` is an array containing tuples of size 2).
+
+   - A `defined()` function allows testing whether macro variables have been
+     defined.
+
+   - Empty arrays (with the `[]` syntax) are now possible.
+
+   - Arrays of arrays are now supported.
+
+   - New macro directives `@#echomacrovars` and `@#echomacrovars(save)` for
+     displaying or saving the values of all macro-variables.
+
+   - Inline comments are now supported.
+
+   - ⚠ All division operations are now done with doubles (as opposed to
+     integers). To achieve the old functionality, use the new `floor` operator.
+
+   - ⚠ Colon syntax used to require braces around it to create an array
+     (*e.g.* `[1:3]` would create `[1,2,3]`). Now this is not necessary (`1:3`
+     creates `[1,2,3]` while `[1:3]` would create `[[1,2,3]]`).
+
+   - ⚠ Previously, printing a boolean would print `1` or `0`. Now, it
+     prints `true` or `false`. To achieve the old functionality, you must cast
+     it to a real, *e.g.* `@{(real)(1!=0)}`.
+
+ - LaTeX output
+
+    - New command `write_latex_steady_state_model`.
+
+    - New option `planner_discount_latex_name` of `ramsey_model` and
+      `discretionary_policy`.
+
+    - New command `model_local_variable` command for assigning a LaTeX name to
+      model-local variables.
+
+    - The `write_latex_static_model` and `write_latex_original_model` commands
+      now support the `write_equation_tags` option.
+
+ - Compilation of the model (`use_dll` option) made easier and faster
+
+    - Under Windows, it is no longer necessary to manually install the
+      compiler, since the latter is now shipped by the Dynare installer.
+
+    - Under macOS, the Dynare installer now automatically downloads and
+      installs the compiler.
+
+    - It is no longer necessary to configure MATLAB to let it know where the
+      compiler is, since the compilation is now done by the preprocessor.
+
+    - The compilation phase is now faster on large models (this has been
+      achieved by disabling a few time-consuming and not-so-useful optimization
+      passes otherwise done by the compiler).
+
+    - New `compilation_setup` block for specifying a custom compiler or custom
+      compilation flags.
+
+ - Model, variables and parameters declaration
+
+    - New syntax to declare model variables and parameters on-the-fly in the
+      `model` block. To do this, simply follow the symbol name with a vertical
+      line (`|`, pipe character) and either an `e`, an `x`, or a `p`. For
+      example, to declare a parameter named `alpha` in the model block, you
+      could write `alpha|p` directly in an equation where it appears.
+      Similarly, to declare an endogenous variable `c` in the model block you
+      could write `c|e`.
+
+    - New syntax to declare model variable and parameters on-the-fly in
+      equation tags. In the tag, simply state the type of variable to be
+      declared (`endogenous`, `exogenous`, or `parameter` followed by an equal
+      sign and the variable name in single quotes. Hence, to declare a variable
+      `c` as endogenous in an equation tag, you can type `[endogenous='c']`.
+
+    - New `epilogue` block for computing output variables of interest that may
+      not be necessarily defined in the model (*e.g.* various kinds of
+      real/nominal shares or relative prices, or annualized variables out of a
+      quarterly model).
+
+ - Command-line options
+
+    - Added the possibility to declare Dynare command-line options in the `.mod`
+      file.
+
+    - New option `nopreprocessoroutput` to disable printing of messages from
+      the preprocessor.
+
+    - It is now possible to assign an arbitrary macro-expression to a
+      macro-variable defined on the command-line, using the `-D` syntax.
+
+    - New  option `linemacro` to revert to the old format of the
+      macro-processed file (see below).
+
+ - Preprocessor outputs and inputs
+
+    - Added JSON output to the preprocessor. A representation of the model file
+      and the whole content of the `.mod` file is saved in `.json` files.
+      These JSON files can be easily parsed from any language (C++, Fortran,
+      Python, Julia, MATLAB, Octave…). This new feature opens the possibility to
+      develop alternative back-ends for the Dynare language.
+
+    - ⚠ Most files generated by the preprocessor are now grouped under
+      two subdirectories. Assuming your file is `FILENAME.mod`, then M-files
+      and MEX-files will be under `+FILENAME/`, while other output (JSON,
+      LaTeX, source code for the MEX files) will be under `FILENAME/`.
+
+    - The macro-generated output is now more readable (no more line numbers and
+      empty lines). The old behaviour can be restored using the `linemacro`
+      option (see above).
+
+    - Ability to call the preprocessor by passing the `.mod` file as a string
+      argument from the macOS or GNU/Linux command line.
+
+ - dseries classes
+
+    - New functionalities and efficiency improvements.
+
+    - Complete rewrite using the new `classdef` syntax and exploiting in place
+      modifications when possible.
+
+    - Integration of the `dates` classes within `dseries`.
+
+ - Reporting classes
+
+    - Automatically create titlepage with page numbers/page titles.
+
+    - Allow for the removal of headers and footers from a given page.
+
+    - Allow user to set page number.
+
+    - Split up report output. Create new files for the preamble, the body of
+      the report, and each individual page of the report.
+
+    - The classes have been converted to the new `classdef` syntax.
+
+ - Misc
+
+    - External functions can be located in MATLAB/Octave namespaces.
+
+    - Improvements to the balanced growth path test that is performed after
+      Dynare has detrended the model (given the trends on variables declared by
+      the user): the default tolerance has been raised, and a different value
+      can be set with new option `balanced_growth_test_tol` to the `model`
+      block; as a consequence, failing the test is now an error again.
+
+    - New collection of MATLAB/Octave utilities to retrieve and alter objects:
+      `get_irf`, `get_mean`, `get_shock_stderr_by_name`, `get_smooth`,
+      `get_update`, `set_shock_stderr_value`.
+
+    - ⚠ Previously, when some MEX files were missing, Dynare would
+      automatically fall back to slower M-file functional alternative; this is
+      no longer the case. It is however still possible to manually add these
+      alternatives in the MATLAB/Octave path (they are located under
+      `matlab/missing/mex`; this only applies to the `mjdgges`, `gensylv`,
+      `A_times_B_kronecker_C`, `sparse_hessian_times_B_kronecker_C` and
+      `local_state_space_iteration_2` DLLs).
+
+ - References
+
+   - Komunjer, I. and S. Ng (2011), “[Dynamic Identification of Dynamic
+     Stochastic General Equilibrium
+     Models](https://www.onlinelibrary.wiley.com/doi/abs/10.3982/ECTA8916),”
+     *Econometrica*, 79(6), 1995–2032
+
+   - Qu, Z. and D. Tkachenko (2012), “[Identification and frequency domain
+     quasi‐maximum likelihood estimation of linearized dynamic stochastic
+     general equilibrium
+     models](https://onlinelibrary.wiley.com/doi/abs/10.3982/QE126),”
+     *Quantitative Economics*, 3(1), 95–132
+
+   - Mutschler, W. (2015), “[Identification of DSGE models—The effect of
+     higher-order approximation and
+     pruning](https://www.sciencedirect.com/science/article/pii/S0165188915000731),”
+     *Journal of Economic Dynamics and Control*, 56, 34–54
+
+
+Since there are a few backward-incompatible changes in this release, users may
+want to have a look at the [upgrade
+guide](https://git.dynare.org/Dynare/dynare/-/wikis/BreakingFeaturesIn4.6) to
+adapt their existing codes.
+
+
 Announcement for Dynare 4.5.7 (on 2019-02-06)
 =============================================
 
