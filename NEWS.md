@@ -1,5 +1,5 @@
-Announcement for Dynare 4.6.0
-=============================
+Announcement for Dynare 4.6.0 (in February 2020)
+================================================
 
 We are pleased to announce the release of Dynare 4.6.0.
 
@@ -14,7 +14,8 @@ This release is compatible with MATLAB versions ranging from 7.9 (R2009b) to
 9.7 (R2019b), and with GNU Octave versions 5.2.0 (under Windows) and 4.4.1
 (under macOS).
 
-Here is the list of major user-visible changes:
+Major user-visible changes
+--------------------------
 
  - Stochastic simulations
 
@@ -315,29 +316,57 @@ Here is the list of major user-visible changes:
       `A_times_B_kronecker_C`, `sparse_hessian_times_B_kronecker_C` and
       `local_state_space_iteration_2` DLLs).
 
- - References
-
-   - Komunjer, I. and S. Ng (2011), “[Dynamic Identification of Dynamic
-     Stochastic General Equilibrium
-     Models](https://www.onlinelibrary.wiley.com/doi/abs/10.3982/ECTA8916),”
-     *Econometrica*, 79(6), 1995–2032
-
-   - Qu, Z. and D. Tkachenko (2012), “[Identification and frequency domain
-     quasi‐maximum likelihood estimation of linearized dynamic stochastic
-     general equilibrium
-     models](https://onlinelibrary.wiley.com/doi/abs/10.3982/QE126),”
-     *Quantitative Economics*, 3(1), 95–132
-
-   - Mutschler, W. (2015), “[Identification of DSGE models—The effect of
-     higher-order approximation and
-     pruning](https://www.sciencedirect.com/science/article/pii/S0165188915000731),”
-     *Journal of Economic Dynamics and Control*, 56, 34–54
-
 
 Since there are a few backward-incompatible changes in this release, users may
 want to have a look at the [upgrade
 guide](https://git.dynare.org/Dynare/dynare/-/wikis/BreakingFeaturesIn4.6) to
 adapt their existing codes.
+
+
+Bugs that were present in 4.5.7 and that are fixed in 4.6.0
+-----------------------------------------------------------
+
+* Estimation: the check for stochastic singularity erroneously would only take
+  estimated measurement error into account.
+* Estimation: if the Hessian at the mode was not positive definite, the Laplace
+  approximation returned a complex number, but only displayed the real-valued
+  part.
+* Conditional Forecasting: using one period only would result in a crash.
+* First-order approximation was not working with purely forward-looking models.
+* The preprocessor would not allow for inline comments including macro
+  statements.
+* Using the `STEADY_STATE()` operator on exogenous variables would lead to
+  crashes in stochastic simulations.
+* `moment_calibration`: for autocorrelation functions, the x-axis labeling had
+  the wrong order.
+* `plot_identification`: placement of white dots indicating infinite values was
+  incorrect
+* Automatic detrending would sometime refuse to detrend model despite the user
+  having given correct trends.
+* Using `use_dll` + `fast` options would not always recompile the model when
+  the equations were changed.
+* Under certain circumstances, the combination of `bytecode` and
+  `stack_solve_algo=1` options could lead to crashes or wrong results.
+
+
+References
+----------
+
+ - Komunjer, I. and S. Ng (2011), “[Dynamic Identification of Dynamic
+   Stochastic General Equilibrium
+   Models](https://www.onlinelibrary.wiley.com/doi/abs/10.3982/ECTA8916),”
+   *Econometrica*, 79(6), 1995–2032
+
+ - Qu, Z. and D. Tkachenko (2012), “[Identification and frequency domain
+   quasi‐maximum likelihood estimation of linearized dynamic stochastic
+   general equilibrium
+   models](https://onlinelibrary.wiley.com/doi/abs/10.3982/QE126),”
+   *Quantitative Economics*, 3(1), 95–132
+
+ - Mutschler, W. (2015), “[Identification of DSGE models—The effect of
+   higher-order approximation and
+   pruning](https://www.sciencedirect.com/science/article/pii/S0165188915000731),”
+   *Journal of Economic Dynamics and Control*, 56, 34–54
 
 
 Announcement for Dynare 4.5.7 (on 2019-02-06)
