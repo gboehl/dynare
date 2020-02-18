@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2019 Dynare Team
+ * Copyright © 2010-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -35,11 +35,13 @@ DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, 
 {
   int totalCols = mxGetN(sparseMat);
   mwIndex *rowIdxVector = mxGetIr(sparseMat);
-  mwSize sizeRowIdxVector = mxGetNzmax(sparseMat);
   mwIndex *colIdxVector = mxGetJc(sparseMat);
 
   assert(tdm.ncols() == 3);
-  assert(tdm.nrows() == sizeRowIdxVector);
+  /* Under MATLAB, the following check always holds at equality; under Octave,
+     there may be an inequality, because Octave diminishes nzmax if one gives
+     zeros in the values vector when calling sparse(). */
+  assert(tdm.nrows() >= mxGetNzmax(sparseMat));
 
   double *ptr = mxGetPr(sparseMat);
 
@@ -55,11 +57,11 @@ DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, 
         output_row++;
       }
 
-  /* If there are less elements than Nzmax (that might happen if some
+  /* If there are less elements than expected (that might happen if some
      derivative is symbolically not zero but numerically zero at the evaluation
      point), then fill in the matrix with empty entries, that will be
      recognized as such by KordpDynare::populateDerivativesContainer() */
-  while (output_row < static_cast<int>(sizeRowIdxVector))
+  while (output_row < tdm.nrows())
     {
       tdm.get(output_row, 0) = 0;
       tdm.get(output_row, 1) = 0;
