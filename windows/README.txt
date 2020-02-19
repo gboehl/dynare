@@ -57,9 +57,9 @@ and may not work with other versions of Octave. The recommended version of
 Octave can be downloaded at:
 
 — For 64-bit systems:
-  https://ftpmirror.gnu.org/gnu/octave/windows/octave-5.2.0-w64-installer.exe
+  https://ftpmirror.gnu.org/gnu/octave/windows/octave-5.2.0_1-w64-installer.exe
 — For 32-bit systems:
-  https://ftpmirror.gnu.org/gnu/octave/windows/octave-5.2.0-w32-installer.exe
+  https://ftpmirror.gnu.org/gnu/octave/windows/octave-5.2.0_1-w32-installer.exe
 
 Every time you run Octave, you should type the following command (assuming that
 you have installed Dynare at the standard location, and replacing ‘4.x.y’ by
