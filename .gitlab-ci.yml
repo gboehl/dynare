@@ -209,6 +209,7 @@ deploy_manual_stable:
     - rm -rf doc/manual/build/html/_static/mathjax
     - ln -s /usr/share/javascript/mathjax doc/manual/build/html/_static/mathjax
     - rsync --recursive --links --delete doc/manual/build/html/ /srv/www.dynare.org/manual/
+    - cp doc/manual/build/latex/dynare-manual.pdf /srv/www.dynare.org/manual.pdf
 
 deploy_release_stable:
   stage: deploy
