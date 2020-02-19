@@ -48,10 +48,16 @@ end
 for it = initialconditions.nobs+(1:samplesize)
     ylag = DynareOutput.endo_simul(iy1,it-1);                   % Set lagged variables.
     y = DynareOutput.endo_simul(:,it-1);                        % A good guess for the initial conditions is the previous values for the endogenous variables.
-    [DynareOutput.endo_simul(:,it), info, fvec] = dynare_solve(model_dynamic_s, ...
-                                                      y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
-    if info
-        error('Newton failed!')
+    try
+        [DynareOutput.endo_simul(:,it), info] = dynare_solve(model_dynamic_s, ...
+                                                          y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+        if info
+            error('Newton failed!')
+        end
+    catch
+        dprintf('Newton failed on iteration i = %s.', num2str(it-initialconditions.nobs));
+        DynareOutput.endo_simul(:, 1:it-1);
+        break
     end
 end
 
