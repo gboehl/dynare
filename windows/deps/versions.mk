@@ -75,8 +75,3 @@ MINGW64_CRT_VERSION = 8.0.0.5647.1fe2e62e-1
 # pacman -Ss mingw-w64-.*-winpthreads-git
 MINGW32_WINPTHREADS_VERSION = 8.0.0.5574.33e5a2ac-1
 MINGW64_WINPTHREADS_VERSION = 8.0.0.5574.33e5a2ac-1
-
-# pacman -Ss mingw-w64-.*-libwinpthread-git
-# NB: "thread" is singular here
-MINGW32_LIBWINPTHREAD_VERSION = 8.0.0.5574.33e5a2ac-1
-MINGW64_LIBWINPTHREAD_VERSION = 8.0.0.5574.33e5a2ac-1
