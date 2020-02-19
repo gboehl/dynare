@@ -9154,6 +9154,7 @@ Performing identification analysis
             * minimal system as in *Komunjer and Ng (2011)*
             * reduced-form solution and linear rational expectation model
               as in *Ratto and Iskrev (2011)*
+
             Note that for orders 2 and 3, all identification checks are based on the pruned
             state space system as in *Mutschler (2015)*. That is, theoretical moments and 
             spectrum are computed from the pruned ABCD-system, whereas the minimal system
