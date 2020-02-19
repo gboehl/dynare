@@ -101,7 +101,7 @@ Section "MEX files for MATLAB 64-bit, version 9.4 to 9.7 (R2018a to R2019b)"
  File ..\mex\matlab\win64-9.4-9.7\*.mexw64
 SectionEnd
 
-Section "MEX files for Octave 5.1.0 (64-bit)"
+Section "MEX files for Octave 5.2.0 (64-bit)"
  SetOutPath $INSTDIR\mex\octave\win64
  File ..\mex\octave\win64\*
 SectionEnd
@@ -121,7 +121,7 @@ Section "MEX files for MATLAB 32-bit, version 7.9 to 8.6 (R2009b to R2015b)"
  File ..\mex\matlab\win32-7.9-8.6\*.mexw32
 SectionEnd
 
-Section "MEX files for Octave 5.1.0 (32-bit)"
+Section "MEX files for Octave 5.2.0 (32-bit)"
  SetOutPath $INSTDIR\mex\octave\win32
  File ..\mex\octave\win32\*
 SectionEnd
