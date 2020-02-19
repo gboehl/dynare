@@ -10995,7 +10995,8 @@ Macro directives
 
 
 
-.. macrodir:: @#define MACRO_VARIABLE = MACRO_EXPRESSION
+.. macrodir:: @#define MACRO_VARIABLE
+              @#define MACRO_VARIABLE = MACRO_EXPRESSION
               @#define MACRO_FUNCTION = MACRO_EXPRESSION
 
     |br| Defines a macro-variable or macro function.
@@ -11004,6 +11005,7 @@ Macro directives
 
         ::
 
+            @#define var                      // Equals 1
             @#define x = 5                    // Real
             @#define y = "US"                 // String
             @#define v = [ 1, 2, 4 ]          // Real array
