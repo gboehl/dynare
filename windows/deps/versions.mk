@@ -35,7 +35,7 @@ MINGW64_OPENBLAS_VERSION = 0.3.7-1
 MINGW32_MATIO_VERSION = 1.5.17-1
 MINGW64_MATIO_VERSION = 1.5.17-1
 
-# Dependency of matio
+# Dependency of matio (and of the MinGW compiler)
 # pacman -Ss .*-zlib$
 MINGW32_ZLIB_VERSION = 1.2.11-7
 MINGW64_ZLIB_VERSION = 1.2.11-7
