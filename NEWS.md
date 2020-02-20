@@ -1,5 +1,5 @@
-Announcement for Dynare 4.6.0 (in February 2020)
-================================================
+Announcement for Dynare 4.6.0 (on 2020-02-20)
+=============================================
 
 We are pleased to announce the release of Dynare 4.6.0.
 
@@ -162,6 +162,10 @@ Major user-visible changes
 
    - `@#for` loops can iterate over several variables at the same time (*e.g.*
      `@#for (i,j) in X`, where `X` is an array containing tuples of size 2).
+
+   - Added the possibility to exclude some elements when iterating over `@#for`
+     loops (*e.g.* `@#for i in 1:5 when mod(i,2) == 0` iterates over all even
+     numbers between 1 and 5).
 
    - A `defined()` function allows testing whether macro variables have been
      defined.
