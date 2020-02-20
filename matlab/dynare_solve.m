@@ -1,23 +1,22 @@
-function [x,info,fvec,fjac] = dynare_solve(func,x,options,varargin)
-% function [x,info,fvec,fjac] = dynare_solve(func,x,options,varargin)
-% proposes different solvers
+function [x, errorflag, fvec, fjac] = dynare_solve(f, x, options, varargin)
+
+% Solves a nonlinear system of equations, f(x) = 0 with n unknowns
+% and n equations.
 %
 % INPUTS
-%    func:             name of the function to be solved
-%    x:                guess values
-%    options:          struct of Dynare options
-%    varargin:         list of arguments following jacobian_flag
+% - f            [char, fhandle]    function to be solved
+% - x            [double]           n×1 vector, initial guess.
+% - options      [struct]           Dynare options, aka options_.
+% - varargin                        list of additional arguments to be passed to func.
 %
 % OUTPUTS
-%    x:                solution
-%    info=1:           the model can not be solved
-%    fvec:             Function value (used for debugging when check=1)
-%    fjac:             Jacobian (used for debugging when check=1)
+% - x            [double]           n×1 vector, solution.
+% - errorflag    [logical]          scalar, true iff the model can not be solved.
+% - fvec         [double]           n×1 vector, function value at x (f(x), used for debugging when errorflag is true).
+% - fjac         [double]           n×n matrix, Jacobian value at x (J(x), used for debugging when errorflag is true).
 %
-% SPECIAL REQUIREMENTS
-%    none
-
-% Copyright (C) 2001-2017 Dynare Team
+% REMARKS
+% Copyright © 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,14 +33,12 @@ function [x,info,fvec,fjac] = dynare_solve(func,x,options,varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-% jacobian_flag=true:  jacobian given by the 'func' function
-% jacobian_flag=false:  jacobian obtained numerically
-jacobian_flag = options.jacobian_flag;
+jacobian_flag = options.jacobian_flag; % true iff Jacobian is returned by f routine (as a second output argument).
 
 % Set tolerance parameter depending the the caller function.
 stack = dbstack;
 if isoctave
-    [pathstr,name,ext]=fileparts(stack(2).file);
+    [~, name, ext]=fileparts(stack(2).file);
     caller_file_name=[name,ext];
 else
     caller_file_name=stack(2).file;
@@ -58,13 +55,13 @@ else
     maxit = options.steady.maxit;
 end
 
-info = 0;
+errorflag = false;
 nn = size(x,1);
 
 % Get status of the initial guess (default values?)
 if any(x)
     % The current initial guess is not the default for all the variables.
-    idx = find(x);      % Indices of the variables with default initial guess values. 
+    idx = find(x);      % Indices of the variables with default initial guess values.
     in0 = length(idx);
 else
     % The current initial guess is the default for all the variables.
@@ -72,9 +69,17 @@ else
     in0 = nn;
 end
 
+% Get first element of varargin if solve_algo ∈ {12,14} and rename varargin.
+if ismember(options.solve_algo, [12, 14])
+    isloggedlhs = varargin{1};
+    arguments = varargin(2:end);
+else
+    arguments = varargin;
+end
+
 % checking initial values
 if jacobian_flag
-    [fvec, fjac] = feval(func, x, varargin{:});
+    [fvec, fjac] = feval(f, x, arguments{:});
     wrong_initial_guess_flag = false;
     if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) ...
             || any(~isreal(fvec)) || any(~isreal(fjac(:)))
@@ -86,7 +91,7 @@ if jacobian_flag
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = rand(in0, 1)*10;
-            [fvec, fjac] = feval(func, x, varargin{:});
+            [fvec, fjac] = feval(f, x, arguments{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
         end
         % If all previous attempts failed, try with real numbers.
@@ -94,7 +99,7 @@ if jacobian_flag
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = randn(in0, 1)*10;
-            [fvec, fjac] = feval(func, x, varargin{:});
+            [fvec, fjac] = feval(f, x, arguments{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
         end
         % Last tentative, ff all previous attempts failed, try with negative numbers.
@@ -102,13 +107,13 @@ if jacobian_flag
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = -rand(in0, 1)*10;
-            [fvec, fjac] = feval(func, x, varargin{:});
+            [fvec, fjac] = feval(f, x, arguments{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
         end
     end
 else
-    fvec = feval(func,x,varargin{:});
-    fjac = zeros(nn,nn);
+    fvec = feval(f, x, arguments{:});
+    fjac = zeros(nn, nn);
     wrong_initial_guess_flag = false;
     if ~all(isfinite(fvec))
         % Let's try random numbers for the variables initialized with the default value.
@@ -118,7 +123,7 @@ else
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = rand(in0, 1)*10;
-            fvec = feval(func, x, varargin{:});
+            fvec = feval(f, x, arguments{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec));
         end
         % If all previous attempts failed, try with real numbers.
@@ -126,7 +131,7 @@ else
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = randn(in0, 1)*10;
-            fvec = feval(func, x, varargin{:});
+            fvec = feval(f, x, arguments{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec));
         end
         % Last tentative, ff all previous attempts failed, try with negative numbers.
@@ -134,7 +139,7 @@ else
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = -rand(in0, 1)*10;
-            fvec = feval(func, x, varargin{:});
+            fvec = feval(f, x, arguments{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec));
         end
     end
@@ -142,7 +147,7 @@ end
 
 % Exit with error if no initial guess has been found.
 if wrong_initial_guess_flag
-    info=1;
+    errorflag = true;
     x = NaN(size(fvec));
     return
 end
@@ -174,108 +179,123 @@ if options.solve_algo == 0
         options4fsolve.Jacobian = 'off';
     end
     if ~isoctave
-        [x,fval,exitval,output] = fsolve(func,x,options4fsolve,varargin{:});
+        [x, ~, exitval] = fsolve(f, x, options4fsolve, arguments{:});
     else
         % Under Octave, use a wrapper, since fsolve() does not have a 4th arg
-        if ischar(func)
-            func2 = str2func(func);
+        if ischar(f)
+            f2 = str2func(f);
         else
-            func2 = func;
+            f2 = f;
         end
-        func = @(x) func2(x, varargin{:});
+        f = @(x) f2(x, arguments{:});
         % The Octave version of fsolve does not converge when it starts from the solution
-        fvec = feval(func,x);
+        fvec = feval(f, x);
         if max(abs(fvec)) >= tolf
-            [x,fval,exitval,output] = fsolve(func,x,options4fsolve);
+            [x, ~,exitval] = fsolve(f, x, options4fsolve);
         else
             exitval = 3;
         end
     end
 
     if exitval == 1
-        info = 0;
+        errorflag = false;
     elseif exitval > 1
-        if ischar(func)
-            func2 = str2func(func);
+        if ischar(f)
+            f2 = str2func(f);
         else
-            func2 = func;
+            f2 = f;
         end
-        func = @(x) func2(x, varargin{:});
-        fvec = feval(func,x);
+        f = @(x) f2(x, arguments{:});
+        fvec = feval(f, x);
         if max(abs(fvec)) >= tolf
-            info = 1;
+            errorflag = true;
         else
-            info = 0;
+            errorflag = false;
         end
     else
-        info = 1;
+        errorflag = true;
     end
-elseif options.solve_algo == 1
-    [x,info]=solve1(func,x,1:nn,1:nn,jacobian_flag,options.gstep, ...
-                    tolf,options.solve_tolx, ...
-                    maxit,options.debug,varargin{:});
-elseif options.solve_algo == 9
-    [x,info]=trust_region(func,x,1:nn,1:nn,jacobian_flag,options.gstep, ...
-                          tolf,options.solve_tolx, ...
-                          maxit,options.debug,varargin{:});
-elseif options.solve_algo == 2 || options.solve_algo == 4
-
-    if options.solve_algo == 2
+elseif options.solve_algo==1
+    [x, errorflag] = solve1(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, ...
+                       tolf, options.solve_tolx, ...
+                       maxit, options.debug, arguments{:});
+elseif options.solve_algo==9
+    [x, errorflag] = trust_region(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, ...
+                             tolf, options.solve_tolx, ...
+                             maxit, options.debug, arguments{:});
+elseif ismember(options.solve_algo, [2, 12, 4, 14])
+    if ismember(options.solve_algo, [2, 12])
         solver = @solve1;
     else
         solver = @trust_region;
     end
-
+    specializedunivariateblocks = ismember(options.solve_algo, [12, 14]); 
     if ~jacobian_flag
         fjac = zeros(nn,nn) ;
-        dh = max(abs(x),options.gstep(1)*ones(nn,1))*eps^(1/3);
+        dh = max(abs(x), options.gstep(1)*ones(nn,1))*eps^(1/3);
         for j = 1:nn
             xdh = x ;
             xdh(j) = xdh(j)+dh(j) ;
-            fjac(:,j) = (feval(func,xdh,varargin{:}) - fvec)./dh(j) ;
+            fjac(:,j) = (feval(f, xdh, arguments{:})-fvec)./dh(j) ;
         end
     end
-
-    [j1,j2,r,s] = dmperm(fjac);
-
+    [j1,j2,r] = dmperm(fjac);
     if options.debug
-        disp(['DYNARE_SOLVE (solve_algo=2|4): number of blocks = ' num2str(length(r))]);
+        disp(['DYNARE_SOLVE (solve_algo=2|4|12|14): number of blocks = ' num2str(length(r))]);
     end
-
     for i=length(r)-1:-1:1
+        blocklength = r(i+1)-r(i);
         if options.debug
-            disp(['DYNARE_SOLVE (solve_algo=2|4): solving block ' num2str(i) ', of size ' num2str(r(i+1)-r(i)) ]);
+            dprintf('DYNARE_SOLVE (solve_algo=2|4|12|14): solving block %u of size %u.', i, blocklength);
         end
-        [x,info]=solver(func,x,j1(r(i):r(i+1)-1),j2(r(i):r(i+1)-1),jacobian_flag, ...
+        j = r(i):r(i+1)-1;
+        if specializedunivariateblocks
+            if options.debug
+                dprintf('DYNARE_SOLVE (solve_algo=2|4|12|14): solving block %u by evaluating RHS.', i);
+            end
+            if isequal(blocklength, 1)
+                z = feval(f, x, arguments{:});
+                if isloggedlhs(j1(j))
+                    x(j2(j)) = x(j2(j))*exp(-z(j1(j)));
+                else
+                    x(j2(j)) = x(j2(j))-z(j1(j));
+                end
+                continue
+            end
+        else
+            if options.debug
+                dprintf('DYNARE_SOLVE (solve_algo=2|4|12|14): solving block %u with trust_region routine.', i);
+            end
+        end
+        [x, errorflag] = solver(f, x, j1(j), j2(j), jacobian_flag, ...
                         options.gstep, ...
-                        tolf,options.solve_tolx, ...
-                        maxit,options.debug,varargin{:});
-        if info
+                        tolf, options.solve_tolx, ...
+                        maxit, options.debug, arguments{:});
+        if errorflag
             return
         end
     end
-    fvec = feval(func,x,varargin{:});
-    if max(abs(fvec)) > tolf
-        [x,info]=solver(func,x,1:nn,1:nn,jacobian_flag, ...
-                        options.gstep, tolf,options.solve_tolx, ...
-                        maxit,options.debug,varargin{:});
+    fvec = feval(f, x, arguments{:});
+    if max(abs(fvec))>tolf
+        [x, errorflag] = solver(f, x, 1:nn, 1:nn, jacobian_flag, ...
+                        options.gstep, tolf, options.solve_tolx, ...
+                        maxit, options.debug, arguments{:});
     end
-elseif options.solve_algo == 3
+elseif options.solve_algo==3
     if jacobian_flag
-        [x,info] = csolve(func,x,func,1e-6,500,varargin{:});
+        [x, errorflag] = csolve(f, x, f, 1e-6, 500, arguments{:});
     else
-        [x,info] = csolve(func,x,[],1e-6,500,varargin{:});
+        [x, errorflag] = csolve(f, x, [], 1e-6, 500, arguments{:});
     end
-    [fvec, fjac] = feval(func, x, varargin{:});
-elseif options.solve_algo == 10
+    [fvec, fjac] = feval(f, x, arguments{:});
+elseif options.solve_algo==10
     % LMMCP
     olmmcp = options.lmmcp;
-
-    [x,fval,exitflag] = lmmcp(func,x,olmmcp.lb,olmmcp.ub,olmmcp,varargin{:});
-    if exitflag == 1
-        info = 0;
+    [x, ~, exitflag] = lmmcp(f, x, olmmcp.lb, olmmcp.ub, olmmcp, arguments{:});
+    if exitflag==1
+        errorflag = false;
     else
-        info = 1;
+        errorflag = true;
     end
 elseif options.solve_algo == 11
     % PATH mixed complementary problem
@@ -287,14 +307,13 @@ elseif options.solve_algo == 11
     end
     omcppath = options.mcppath;
     global mcp_data
-    mcp_data.func = func;
-    mcp_data.args = varargin;
-    info=0;
+    mcp_data.func = f;
+    mcp_data.args = arguments;
     try
-        [x,fval,jac,mu] = pathmcp(x,omcppath.lb,omcppath.ub,'mcp_func',omcppath.A,omcppath.b,omcppath.t,omcppath.mu0);
+        [x, fval, jac, mu] = pathmcp(x,omcppath.lb,omcppath.ub,'mcp_func',omcppath.A,omcppath.b,omcppath.t,omcppath.mu0);
     catch
-        info = 1;
+        errorflag = true;
     end
 else
-    error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9,10,11]')
+    error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9,10,11,12,14]')
 end
