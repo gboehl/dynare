@@ -18,7 +18,7 @@ function [residuals, info] = calibrateresiduals(dbase, info, DynareModel)
 % The first two input arguments are the output of checkdatabaseforinversion
 % routine.
 
-% Copyright (C) 2017 Dynare Team
+% Copyright © 2017-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,6 +34,8 @@ function [residuals, info] = calibrateresiduals(dbase, info, DynareModel)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
+displayresidualsequationmapping = false;
 
 % Get function handle for the dynamic model
 model_dynamic = str2func([DynareModel.fname,'.dynamic']);
@@ -105,22 +107,25 @@ for i = 1:residuals.vobs
     r = model_dynamic(y, tmpxdata, DynareModel.params, zeros(n, 1), 2);
     info.equations(i) = { idr(find(~isnan(r(idr))))};
 end
-c1 = 'Residual';
-for i=1:length(info.residuals)
-    c1 = strvcat(c1, sprintf('%s', info.residuals{i}));
+
+if displayresidualsequationmapping
+    c1 = 'Residual';
+    for i=1:length(info.residuals)
+        c1 = strvcat(c1, sprintf('%s', info.residuals{i}));
+    end
+    c1 = strvcat(c1(1,:), repmat('-', 1, size(c1, 2)), c1(2:end,:));
+    c2 = 'Equation';
+    for i=1:length(info.residuals)
+        c2 = strvcat(c2, sprintf('  %s', num2str(info.equations{i})));
+    end
+    c2 = strvcat(c2(1,:), repmat('-', 1, size(c2, 2)), c2(2:end,:));
+    c3 = repmat(' | ', size(c2, 1), 1);
+    c4 = repmat('   ', size(c2, 1), 1);
+    cc = [c4, c1, c3, c2];
+    skipline()
+    disp(cc)
+    skipline()
 end
-c1 = strvcat(c1(1,:), repmat('-', 1, size(c1, 2)), c1(2:end,:));
-c2 = 'Equation';
-for i=1:length(info.residuals)
-    c2 = strvcat(c2, sprintf('  %s', num2str(info.equations{i})));
-end
-c2 = strvcat(c2(1,:), repmat('-', 1, size(c2, 2)), c2(2:end,:));
-c3 = repmat(' | ', size(c2, 1), 1);
-c4 = repmat('   ', size(c2, 1), 1);
-cc = [c4, c1, c3, c2];
-skipline()
-disp(cc)
-skipline()
 
 % Compute residuals
 xdata(:,cell2mat(info.residualindex)) = 0;
