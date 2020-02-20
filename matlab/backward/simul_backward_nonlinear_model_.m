@@ -21,7 +21,7 @@ function [ysim, xsim] = simul_backward_nonlinear_model_(initialconditions, sampl
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided thrtough the histval block.
 
-% Copyright (C) 2017 Dynare Team
+% Copyright © 2017-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -49,8 +49,13 @@ for it = initialconditions.nobs+(1:samplesize)
     ylag = DynareOutput.endo_simul(iy1,it-1);                   % Set lagged variables.
     y = DynareOutput.endo_simul(:,it-1);                        % A good guess for the initial conditions is the previous values for the endogenous variables.
     try
-        [DynareOutput.endo_simul(:,it), info] = dynare_solve(model_dynamic_s, ...
-                                                          y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+        if ismember(DynareOptions.solve_algo, [12,14])
+            [DynareOutput.endo_simul(:,it), info] = dynare_solve(model_dynamic_s, ...
+                                                              y, DynareOptions, DynareModel.isloggedlhs, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+        else
+            [DynareOutput.endo_simul(:,it), info] = dynare_solve(model_dynamic_s, ...
+                                                              y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+        end
         if info
             error('Newton failed!')
         end
