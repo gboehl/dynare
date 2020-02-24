@@ -130,7 +130,7 @@ par=load([M_.fname filesep 'metropolis' filesep M_.fname '_posterior_draws1']);
 
 for par_iter=1:size(par.pdraws,1)
    M_=set_parameters_locally(M_,par.pdraws{par_iter,1});
-   [info, oo_, options_]=stoch_simul(M_, options_, oo_, var_list_);
+   [info, oo_, options_, M_]=stoch_simul(M_, options_, oo_, var_list_);
    correlation(:,:,par_iter)=cell2mat(oo_.autocorr);
    covariance(:,:,par_iter)=oo_.var;
    conditional_variance_decomposition(:,:,:,par_iter)=oo_.conditional_variance_decomposition;

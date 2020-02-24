@@ -1,5 +1,5 @@
-function [info, oo_, options_] = discretionary_policy(M_, options_, oo_, var_list)
-% function [info, oo_, options_] = discretionary_policy(M_, options_, oo_, var_list)
+function [info, oo_, options_, M_] = discretionary_policy(M_, options_, oo_, var_list)
+% function [info, oo_, options_, M_] = discretionary_policy(M_, options_, oo_, var_list)
 % INPUTS
 % - M_            [structure]     Matlab's structure describing the model (M_).
 % - options_      [structure]     Matlab's structure describing the current options (options_).
@@ -10,8 +10,9 @@ function [info, oo_, options_] = discretionary_policy(M_, options_, oo_, var_lis
 % - info          [integer]       scalar or vector, error code.
 % - oo_           [structure]     Matlab's structure containing the results (oo_).
 % - options_      [structure]     Matlab's structure describing the current options (options_).
+% - M_            [structure]     Matlab's structure describing the model (M_).
 
-% Copyright (C) 2007-2019 Dynare Team
+% Copyright (C) 2007-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,7 +34,7 @@ M_=discretionary_policy_initialization(M_,options_);
 origorder = options_.order;
 options_.discretionary_policy = 1;
 options_.order = 1;
-[info, oo_] = stoch_simul(M_, options_, oo_, var_list);
+[info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list);
 
 if ~options_.noprint
     disp_steady_state(M_,oo_)

@@ -1,4 +1,4 @@
-function [info, oo_, options_] = stoch_simul(M_, options_, oo_, var_list)
+function [info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list)
 
 % Copyright (C) 2001-2020 Dynare Team
 %
