@@ -66,6 +66,7 @@ build_doc:
 pkg_source:
   stage: test_and_pkg
   script:
+    - rm doc/manual/source/_static/mathjax && sed -i "/^mathjax_path *=/d" doc/manual/source/conf.py
     - 'for f in configure.ac preprocessor/configure.ac mex/build/matlab/configure.ac mex/build/octave/configure.ac; do sed -i "s/^AC_INIT(\[\(.*\)\],\s*\[\(.*\)\])/AC_INIT([\1], [$VERSION])/" $f; done'
     - autoreconf -si
     - ./configure --with-matlab=$MATLAB_PATH MATLAB_VERSION=$MATLAB_VERSION
