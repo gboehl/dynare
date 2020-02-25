@@ -34,6 +34,8 @@ persistent Hold
 
 info = 0;
 
+dr=oo_.dr; %initialize output argument
+
 beta = get_optimal_policy_discount_factor(M_.params, M_.param_names);
 
 %call steady_state_file if present to update parameters
@@ -106,7 +108,6 @@ else
     [H,G,info]=discretionary_policy_engine(A.lag,A.contemp,A.lead,B,W,M_.instr_id,beta,options_.dp.maxit,options_.discretionary_tol,options_.qz_criterium);
 end
 
-
 if info
     return
 else
@@ -115,7 +116,6 @@ else
 end
 
 %write back solution to dr
-dr=oo_.dr;
 dr.ys =zeros(M_.endo_nbr,1);
 dr=set_state_space(dr,M_,options_);
 T=H(dr.order_var,dr.order_var);
