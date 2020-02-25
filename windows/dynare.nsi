@@ -158,6 +158,9 @@ Section /o "Dynare++ (standalone executable)"
  SetOutPath $INSTDIR\dynare++\64-bit
  File ..\dynare++\64-bit\dynare++.exe
 
+ SetOutPath $INSTDIR\dynare++\
+ File ..\dynare++\dynare_simul\dynare_simul.m
+
  SetOutPath $INSTDIR\doc\dynare++
  File ..\dynare++\doc\*.pdf
 

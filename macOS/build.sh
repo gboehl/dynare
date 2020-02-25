@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2019 Dynare Team
+# Copyright © 2019-2020 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -125,6 +125,7 @@ cp -r  "$ROOTDIR"/doc/manual/build/html                              "$PKGFILES"
 cp     "$ROOTDIR"/dynare++/doc/*.pdf                                 "$PKGFILES"/doc/dynare++
 
 cp     "$ROOTDIR"/dynare++/src/dynare++                              "$PKGFILES"/dynare++
+cp     "$ROOTDIR"/dynare++/dynare_simul/dynare_simul.m               "$PKGFILES"/dynare++
 
 mkdir -p                                                             "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
 cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
