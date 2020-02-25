@@ -36,6 +36,9 @@ all-local: preprocessor/src/dynare_m$(EXEEXT)
 	mkdir -p $(abs_srcdir)/matlab/preprocessor$$ARCH && \
 	$(LN_S) -f $(abs_builddir)/preprocessor/src/dynare_m$(EXEEXT) $(abs_srcdir)/matlab/preprocessor$$ARCH
 
+clean-local:
+	rm -rf $(abs_srcdir)/matlab/preprocessor32 $(abs_srcdir)/matlab/preprocessor64
+
 dist-hook:
 	rm -rf `find $(distdir)/matlab $(distdir)/examples -name *~`
 	rm -rf $(distdir)/matlab/preprocessor* $(distdir)/matlab/dynare_version.m
