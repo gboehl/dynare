@@ -88,15 +88,18 @@
 
 ;; Those keywords that makes the lexer enter the DYNARE_BLOCK start condition
 ;; Also include "verbatim" in this list
-(defvar dynare-blocks
-  '("model" "steady_state_model" "initval" "endval" "histval" "shocks"
-    "shock_groups" "init2shocks" "mshocks" "estimated_params" "epilogue" "priors"
-    "estimated_params_init" "estimated_params_bounds" "osr_params_bounds"
-    "observation_trends" "optim_weights" "homotopy_setup"
-    "conditional_forecast_paths" "svar_identification" "moment_calibration"
-    "irf_calibration" "ramsey_constraints" "restrictions" "generate_irfs"
-    "verbatim")
-  "Dynare block keywords.")
+;; Needs to be enclosed within eval-when-compile, because this variable is
+;; referenced in another eval-when-compile statement in dynare-calculate-indentation
+(eval-when-compile
+  (defvar dynare-blocks
+    '("model" "steady_state_model" "initval" "endval" "histval" "shocks"
+      "shock_groups" "init2shocks" "mshocks" "estimated_params" "epilogue" "priors"
+      "estimated_params_init" "estimated_params_bounds" "osr_params_bounds"
+      "observation_trends" "optim_weights" "homotopy_setup"
+      "conditional_forecast_paths" "svar_identification" "moment_calibration"
+      "irf_calibration" "ramsey_constraints" "restrictions" "generate_irfs"
+      "verbatim")
+    "Dynare block keywords."))
 
 ;; Mathematical functions and operators used in model equations (see "hand_side" in Bison file)
 (defvar dynare-functions
