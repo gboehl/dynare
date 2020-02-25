@@ -16,3 +16,4 @@ build/latex/dynare-manual.pdf: $(SRC) source/conf.py
 
 clean-local:
 	rm -rf build
+	rm -rf utils/__pycache__
