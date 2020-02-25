@@ -232,3 +232,6 @@
 (add-to-list 'auto-mode-alist '("\\.mod$" . dynare-mode))
 
 (provide 'dynare)
+
+;; The following line is for ELPA compatibility (in particular needed for Debian)
+;;; dynare.el ends here
