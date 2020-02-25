@@ -63,5 +63,4 @@ install-exec-local:
 	cp preprocessor/src/dynare_m $(DESTDIR)$(pkglibdir)/matlab/preprocessor$$ARCH
 
 uninstall-local:
-	rm -f  $(DESTDIR)$(bindir)/dynare++
 	rm -rf $(DESTDIR)$(pkglibdir)
