@@ -226,6 +226,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
     record.LastLineNumber = AnticipatedNumberOfLinesInTheLastFile;
     record.MCMCConcludedSuccessfully = 0;
     record.MCMC_sampler=options_.posterior_sampler_options.posterior_sampling_method;
+    record.ProposalScaleVec=bayestopt_.jscale;
     fprintf('Ok!\n');
     id = write_mh_history_file(MetropolisFolder, ModelName, record);
     disp(['Estimation::mcmc: Details about the MCMC are available in ' BaseName '_mh_history_' num2str(id) '.mat'])
