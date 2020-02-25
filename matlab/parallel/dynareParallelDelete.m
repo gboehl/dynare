@@ -11,7 +11,7 @@ function dynareParallelDelete(fname,pname,Parallel)
 %  None
 %
 %
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright (C) 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,25 +28,31 @@ function dynareParallelDelete(fname,pname,Parallel)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin ==0
-    disp('dynareParallelDelete(fname)')
+if nargin ~= 3
+    disp('dynareParallelDelete(fname,pname,Parallel)')
     return
 end
 
-if nargin ==1
-    pname='';
-else
+if ~isempty(pname)
     pname=[pname,filesep];
 end
 
 for indPC=1:length(Parallel)
     if ~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)
         if ~isempty(Parallel(indPC).Port)
-            ssh_token = ['-p ',Parallel(indPC).Port];
+            ssh_token = ['-p ',Parallel(indPC).Port ' '];
         else
-            ssh_token = '';
+            ssh_token = ' ';
         end
-        [NonServeS NonServeD]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' rm -f ',Parallel(indPC).RemoteDirectory,'/',pname,fname]);
+        username = Parallel(indPC).UserName;
+        if ~isempty(username)
+            username = [username '@'];
+        end
+        directory = Parallel(indPC).RemoteDirectory;
+        if ~isempty(directory)
+            directory = [directory '/'];
+        end
+        [~, ~] = system(['ssh ',ssh_token,username,Parallel(indPC).ComputerName,' ''/bin/bash --norc -c "rm -f ',directory,pname,fname,'"''']);
     else
         fname_temp=['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',pname,fname];
         if exist(fname_temp,'file')
