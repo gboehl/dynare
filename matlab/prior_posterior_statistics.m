@@ -241,7 +241,7 @@ if isnumeric(options_.parallel)
     [fout] = prior_posterior_statistics_core(localVars,1,B,0);
     % Parallel execution!
 else
-    [nCPU, totCPU, nBlockPerCPU] = distributeJobs(options_.parallel, 1, B);
+    [~, totCPU, nBlockPerCPU] = distributeJobs(options_.parallel, 1, B);
     ifil=zeros(n_variables_to_fill,totCPU);
     for j=1:totCPU-1
         if run_smoother
