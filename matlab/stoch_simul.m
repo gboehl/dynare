@@ -201,7 +201,7 @@ end
 
 if options_.irf
     var_listTeX = M_.endo_names_tex(i_var);
-    if ~options_.nograph
+    if ~options_.nograph || (TeX && any(strcmp('eps',cellstr(options_.graph_format))))
         if ~exist([M_.fname '/graphs'],'dir')
             mkdir(M_.fname,'graphs');
         end
