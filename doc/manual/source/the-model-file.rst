@@ -4642,7 +4642,8 @@ block decomposition of the model (see :opt:`block`).
        Note also that for the Random Walk Metropolis Hastings
        algorithm, it is possible to use option :opt:`mh_tune_jscale
        <mh_tune_jscale [= DOUBLE]>`, to automatically tune the value
-       of ``mh_jscale``.
+       of ``mh_jscale``. In this case, the ``mh_jscale``-value must
+       not be set.
 
     .. option:: mh_init_scale = DOUBLE
 
@@ -4680,6 +4681,11 @@ block decomposition of the model (see :opt:`block`).
        initial conditions of the markov chains if
        ``mh_nblocks>1``). This option is only available for the
        Random Walk Metropolis Hastings algorithm.
+
+    .. option:: mh_tune_jscale_initial_guess = DOUBLE
+
+       Specifies the initial value for the :opt:`mh_tune_jscale
+       <mh_tune_jscale [= DOUBLE]>`-option. Default: ``0.2``.
 
     .. option:: mh_recover
 
