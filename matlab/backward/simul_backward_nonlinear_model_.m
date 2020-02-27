@@ -38,6 +38,8 @@ function [ysim, xsim] = simul_backward_nonlinear_model_(initialconditions, sampl
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+debug = false;
+
 model_dynamic_s = str2func('dynamic_backward_model_for_simulation');
 
 if ~isempty(innovations)
@@ -46,24 +48,37 @@ end
 
 % Simulations (call a Newton-like algorithm for each period).
 for it = initialconditions.nobs+(1:samplesize)
-    ylag = DynareOutput.endo_simul(iy1,it-1);                   % Set lagged variables.
-    y = DynareOutput.endo_simul(:,it-1);                        % A good guess for the initial conditions is the previous values for the endogenous variables.
+    if debug
+        dprintf('Période t = %s.', num2str(it-initialconditions.nobs));
+    end
+    y_ = DynareOutput.endo_simul(:,it-1);
+    ylag = y_(iy1);                    % Set lagged variables.
+    y = y_;                            % A good guess for the initial conditions is the previous values for the endogenous variables.
     try
         if ismember(DynareOptions.solve_algo, [12,14])
-            [DynareOutput.endo_simul(:,it), info] = dynare_solve(model_dynamic_s, ...
-                                                              y, DynareOptions, DynareModel.isloggedlhs, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+            [DynareOutput.endo_simul(:,it), info] = ...
+                dynare_solve(model_dynamic_s, y, DynareOptions, ...
+                             DynareModel.isloggedlhs, DynareModel.isauxdiffloggedrhs, DynareModel.endo_names, DynareModel.lhs, ...
+                             model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
         else
-            [DynareOutput.endo_simul(:,it), info] = dynare_solve(model_dynamic_s, ...
-                                                              y, DynareOptions, model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+            [DynareOutput.endo_simul(:,it), info] = ...
+                dynare_solve(model_dynamic_s, y, DynareOptions, ...
+                             model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
         end
         if info
             error('Newton failed!')
         end
     catch
-        dprintf('Newton failed on iteration i = %s.', num2str(it-initialconditions.nobs));
         DynareOutput.endo_simul(:, 1:it-1);
+        dprintf('Newton failed on iteration i = %s.', num2str(it-initialconditions.nobs));
+        if debug
+            for i=1:DynareModel.orig_endo_nbr
+                dprintf('%s \t %s -> %s', DynareModel.endo_names{i}, num2str(DynareOutput.endo_simul(i, it-1)), num2str(DynareOutput.endo_simul(i, it)))
+            end
+        end
         break
     end
+
 end
 
 ysim = DynareOutput.endo_simul(1:DynareModel.orig_endo_nbr,:);
