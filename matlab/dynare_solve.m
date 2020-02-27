@@ -72,7 +72,10 @@ end
 % Get first element of varargin if solve_algo ∈ {12,14} and rename varargin.
 if ismember(options.solve_algo, [12, 14])
     isloggedlhs = varargin{1};
-    arguments = varargin(2:end);
+    isauxdiffloggedrhs = varargin{2};
+    endo_names = varargin{3};
+    lhs = varargin{4};
+    arguments = varargin(5:end);
 else
     arguments = varargin;
 end
@@ -229,7 +232,7 @@ elseif ismember(options.solve_algo, [2, 12, 4, 14])
     else
         solver = @trust_region;
     end
-    specializedunivariateblocks = ismember(options.solve_algo, [12, 14]); 
+    specializedunivariateblocks = ismember(options.solve_algo, [12, 14]);
     if ~jacobian_flag
         fjac = zeros(nn,nn) ;
         dh = max(abs(x), options.gstep(1)*ones(nn,1))*eps^(1/3);
@@ -239,10 +242,13 @@ elseif ismember(options.solve_algo, [2, 12, 4, 14])
             fjac(:,j) = (feval(f, xdh, arguments{:})-fvec)./dh(j) ;
         end
     end
-    [j1,j2,r] = dmperm(fjac);
+    [j1,j2,r,s] = dmperm(fjac);
+    JAC = abs(fjac(j1,j2))>tolf;
     if options.debug
         disp(['DYNARE_SOLVE (solve_algo=2|4|12|14): number of blocks = ' num2str(length(r))]);
     end
+    l = 0;
+    fre = false;
     for i=length(r)-1:-1:1
         blocklength = r(i+1)-r(i);
         if options.debug
@@ -254,11 +260,39 @@ elseif ismember(options.solve_algo, [2, 12, 4, 14])
                 dprintf('DYNARE_SOLVE (solve_algo=2|4|12|14): solving block %u by evaluating RHS.', i);
             end
             if isequal(blocklength, 1)
-                z = feval(f, x, arguments{:});
-                if isloggedlhs(j1(j))
-                    x(j2(j)) = x(j2(j))*exp(-z(j1(j)));
+                if i<length(r)-1
+                    if fre || any(JAC(r(i), s(i)+(1:l)))
+                        % Reevaluation of the residuals is required because the current RHS depends on
+                        % variables that potentially have been updated previously.
+                        z = feval(f, x, arguments{:});
+                        l = 0;
+                        fre = false;
+                    end
                 else
-                    x(j2(j)) = x(j2(j))-z(j1(j));
+                    % First iteration requires the evaluation of the residuals.
+                    z = feval(f, x, arguments{:});
+                end
+                l = l+1;
+                if isequal(lhs{j1(j)}, endo_names{j2(j)}) || isequal(lhs{j1(j)}, sprintf('log(%s)', endo_names{j2(j)}))
+                    if isloggedlhs(j1(j))
+                        x(j2(j)) = exp(log(x(j2(j)))-z(j1(j)));
+                    else
+                        x(j2(j)) = x(j2(j))-z(j1(j));
+                    end
+                else
+                    if options.debug
+                        dprintf('LHS variable is not determined by RHS expression (%u).', j1(j))
+                        dprintf('%s -> %s', lhs{j1(j)}, endo_names{j2(j)})
+                    end
+                    if ~isempty(regexp(lhs{j1(j)}, '\<AUX_DIFF_(\d*)\>', 'once'))
+                        if isauxdiffloggedrhs(j1(j))
+                            x(j2(j)) = exp(log(x(j2(j)))+z(j1(j)));
+                        else
+                            x(j2(j)) = x(j2(j))+z(j1(j));
+                        end
+                    else
+                        error('Algorithm solve_algo=%u cannot be used with this nonlinear problem.', options.solve_algo)
+                    end
                 end
                 continue
             end
@@ -268,18 +302,20 @@ elseif ismember(options.solve_algo, [2, 12, 4, 14])
             end
         end
         [x, errorflag] = solver(f, x, j1(j), j2(j), jacobian_flag, ...
-                        options.gstep, ...
-                        tolf, options.solve_tolx, ...
-                        maxit, options.debug, arguments{:});
+                                options.gstep, ...
+                                tolf, options.solve_tolx, ...
+                                maxit, options.debug, arguments{:});
+        fre = true;
         if errorflag
             return
         end
     end
     fvec = feval(f, x, arguments{:});
     if max(abs(fvec))>tolf
+        disp('Problem.')
         [x, errorflag] = solver(f, x, 1:nn, 1:nn, jacobian_flag, ...
-                        options.gstep, tolf, options.solve_tolx, ...
-                        maxit, options.debug, arguments{:});
+                                options.gstep, tolf, options.solve_tolx, ...
+                                maxit, options.debug, arguments{:});
     end
 elseif options.solve_algo==3
     if jacobian_flag
