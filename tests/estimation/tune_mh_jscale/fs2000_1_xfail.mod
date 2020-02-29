@@ -1,5 +1,5 @@
 /*
- * Copyright © 2004-2020 Dynare Team
+ * Copyright © 2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -19,10 +19,4 @@
 
 @#include "fs2000.inc"
 
-estimation(order=1, datafile='../fsdat_simul', nobs=192, loglinear, mh_replic=20000, mh_nblocks=2, mh_tune_jscale=0.33);
-
-mhdata = load('fs2000/metropolis/fs2000_mh_history_0.mat');
-
-if any(abs(mhdata.record.AcceptanceRatio-options_.mh_tune_jscale.target)>options_.mh_tune_jscale.c2)
-    error('Automagic tuning of the MCMC proposal scale parameter did not work as expected!')
-end
+estimation(order=1, datafile='../fsdat_simul', nobs=192, loglinear, mh_jscale=0.2, mh_replic=20000, mh_nblocks=2, mh_tune_jscale=0.33);

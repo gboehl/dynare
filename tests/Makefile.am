@@ -397,7 +397,9 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	identification/LindeTrabandt/LindeTrabandt2019_xfail.mod \
 	steady_state/Linear_steady_state_xfail.mod \
 	optimal_policy/Ramsey/ramsey_histval_xfail.mod \
-	example1_extra_exo_xfail.mod
+	example1_extra_exo_xfail.mod \
+	estimation/tune_mh_jscale/fs2000_1_xfail.mod \
+	estimation/tune_mh_jscale/fs2000_2_xfail.mod
 
 MFILES = initval_file/ramst_initval_file_data.m
 
@@ -915,7 +917,8 @@ EXTRA_DIST = \
 	deterministic_simulations/lola_data.mat \
 	k_order_perturbation/fs2000k++.mod \
 	lmmcp/sw-common-header.inc \
-	lmmcp/sw-common-footer.inc
+	lmmcp/sw-common-footer.inc \
+	estimation/tune_mh_jscale/fs2000.inc
 
 
 if ENABLE_MATLAB
