@@ -114,6 +114,7 @@ MODFILES = \
 	comments.mod \
 	histval_sto.mod \
 	histval_det.mod \
+	histval_predetermined.mod \
 	auxiliary_variables/test1.mod \
 	expectations/expectation.mod \
 	expectations/expectation_ss.mod \
