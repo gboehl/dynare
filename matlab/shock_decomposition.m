@@ -23,7 +23,7 @@ function [oo_,M_] = shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2009-2019 Dynare Team
+% Copyright (C) 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -141,3 +141,5 @@ oo_.shock_decomposition = z;
 if ~options_.no_graph.shock_decomposition
     oo_ = plot_shock_decomposition(M_,oo_,options_,varlist);
 end
+
+oo_.gui.ran_shock_decomposition = true;

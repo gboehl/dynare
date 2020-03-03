@@ -12,7 +12,7 @@ function perfect_foresight_solver()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 1996-2019 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -226,3 +226,6 @@ end
 
 ts = dseries(transpose(oo_.endo_simul), initial_period, M_.endo_names);
 assignin('base', 'Simulated_time_series', ts);
+if oo_.deterministic_simulation.status
+    oo_.gui.ran_perfect_foresight = true;
+end

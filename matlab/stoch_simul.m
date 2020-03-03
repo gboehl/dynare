@@ -393,3 +393,5 @@ end
 options_ = options_old;
 % temporary fix waiting for local options
 options_.partial_information = 0;
+
+oo_.gui.ran_stoch_simul = true;
