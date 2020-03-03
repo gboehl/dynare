@@ -22,7 +22,7 @@ function oo_ = realtime_shock_decomposition(M_,oo_,options_,varlist,bayestopt_,e
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2009-2019 Dynare Team
+% Copyright (C) 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -357,5 +357,6 @@ oo_.conditional_shock_decomposition.pool = zcond;
 if forecast_
     oo_.realtime_forecast_shock_decomposition.pool = zfrcst;
 end
+oo_.gui.ran_realtime_shock_decomposition = true;
 
 skipline()

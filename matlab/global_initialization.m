@@ -93,6 +93,13 @@ oo_.exo_steady_state = [];
 oo_.exo_det_steady_state = [];
 oo_.exo_det_simul = [];
 
+oo_.gui.ran_estimation = false;
+oo_.gui.ran_stoch_simul = false;
+oo_.gui.ran_calib_smoother = false;
+oo_.gui.ran_perfect_foresight = false;
+oo_.gui.ran_shock_decomposition = false;
+oo_.gui.ran_realtime_shock_decomposition = false;
+
 M_.params = [];
 M_.endo_histval = [];
 M_.exo_histval = [];
