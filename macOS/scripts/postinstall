@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2019 Dynare Team
+# Copyright © 2019-2020 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -29,7 +29,12 @@ exec 2>&1
 rm -f "$2"/dummy
 
 # Test for Internet connection
-[[ -z $(curl -s -m 4 www.google.com) ]] && { echo "No internet connection found"; exit 1; }
+[[ -z $(curl -s -m 4 www.google.com) ]] && \
+    { \
+      osascript -e 'display alert "Dynare Installation Error" message "No internet connection found" as critical'; \
+      echo "No internet connection found"; \
+      exit 1; \
+    }
 
 # Install Command Line Tools
 if [[ -z $(/usr/bin/xcode-select -print-path) ]]; then
@@ -49,7 +54,11 @@ fi
 
 # If CLT installation didn't work, exit
 [[ -z $(/usr/bin/xcode-select -print-path) ]] && \
-    { echo "You must install Command Line Tools to proceed with installation of GCC"; exit 1; }
+    { \
+      osascript -e 'display alert "Dynare Installation Error" message "You must install Command Line Tools to proceed with installation of GCC" as critical'; \
+      echo "You must install Command Line Tools to proceed with installation of GCC"; \
+      exit 1; \
+    }
 
 # Install Homebrew
 BREWDIR="$2"/.brew
