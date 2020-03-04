@@ -29,7 +29,7 @@ exec 2>&1
 rm -f "$2"/dummy
 
 # Test for Internet connection
-[[ -z $(curl -s -m 4 www.google.com) ]] && \
+[[ -z $(curl -s -m 4 https://github.com) ]] && \
     { \
       osascript -e 'display alert "Dynare Installation Error" message "No internet connection found" as critical'; \
       echo "No internet connection found"; \
