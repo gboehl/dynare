@@ -31,8 +31,8 @@ rm -f "$2"/dummy
 # Test for Internet connection
 [[ -z $(curl -s -m 4 https://github.com) ]] && \
     { \
-      osascript -e 'display alert "Dynare Installation Error" message "No internet connection found" as critical'; \
-      echo "No internet connection found"; \
+      osascript -e 'display alert "Dynare Installation Error" message "Not able to connect to github.com. Either you are not connected to the internet or github.com is blocked where you are.\n\nAccess to GitHub is necessary to make Dynare work with the `use_dll` option on macOS.\n\nIf you cannot establish this connection or do not want to use the `use_dll` option of Dynare, please run the installer again and choose \"Customize\" from the \"Installation Type\" screen and uncheck the `GCC` option." as critical'; \
+      echo "No internet connection to github.com"; \
       exit 1; \
     }
 
@@ -55,8 +55,8 @@ fi
 # If CLT installation didn't work, exit
 [[ -z $(/usr/bin/xcode-select -print-path) ]] && \
     { \
-      osascript -e 'display alert "Dynare Installation Error" message "You must install Command Line Tools to proceed with installation of GCC" as critical'; \
-      echo "You must install Command Line Tools to proceed with installation of GCC"; \
+      osascript -e 'display alert "Dynare Installation Error" message "Not able to find Command Line Tools.\n\nCommand Line Tools is necessary to make Dynare work with the `use_dll` option on macOS.\n\nIf you cannot establish this connection or do not want to use the `use_dll` option of Dynare, please run the installer again and choose \"Customize\" from the \"Installation Type\" screen and uncheck the `GCC` option." as critical'; \
+      echo "Command Line Tools not installed"; \
       exit 1; \
     }
 
