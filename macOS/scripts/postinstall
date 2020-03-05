@@ -60,6 +60,15 @@ fi
       exit 1; \
     }
 
+# Ensure git is in the path
+[[ -z $(which git) ]] && \
+    { \
+      osascript -e 'display alert "Dynare Installation Error" message "Not able to find Git even though the Command Line Tools have already been installed. This is likely a problem with your PATH environment variable.\n\nGit is necessary to make Dynare work with the `use_dll` option on macOS.\n\nIf you cannot establish this connection or do not want to use the `use_dll` option of Dynare, please run the installer again and choose \"Customize\" from the \"Installation Type\" screen and uncheck the `GCC` option." as critical'; \
+      echo $PATH; \
+      echo "Git not found in PATH"; \
+      exit 1; \
+    }
+
 # Install Homebrew
 BREWDIR="$2"/.brew
 [ -d "$BREWDIR" ] || mkdir -p "$BREWDIR"
