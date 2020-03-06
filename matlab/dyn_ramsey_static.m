@@ -125,6 +125,11 @@ if options_.steadystate_flag
         steady_state=NaN(endo_nbr,1);
         return
     end
+    if check %return 
+        resids=ones(inst_nbr,1)+sum(abs(x(1:M.orig_endo_nbr))); %return with penalty
+        steady_state=NaN(endo_nbr,1);
+        return        
+    end
 
 end
 
