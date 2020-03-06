@@ -14,7 +14,7 @@
   <choice id="org.dynare" title="Dynare" description="Dynare Required Files" start_enabled="false" enabled="false">
     <pkg-ref id="org.dynare" />
   </choice>
-  <choice id="org.dynare.gcc" title="GCC compiler for use_dll" description="This is necessary for the use of Dynare with the `use_dll` option. NB: This takes a few minutes and requires an active internet connection">
+  <choice id="org.dynare.gcc" title="GCC for `use_dll`" description="This is necessary for the use of Dynare with the `use_dll` option. NB: This takes a few minutes and requires an active internet connection.">
     <pkg-ref id="org.dynare.gcc" />
   </choice>
   <pkg-ref id="org.dynare" version="VERSION_NO_SPACE">dynare-VERSION_NO_SPACE.pkg</pkg-ref>
