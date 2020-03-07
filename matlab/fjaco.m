@@ -59,7 +59,7 @@ function disp_info_error_identification_perturbation(info,j)
     % there are errors in the solution algorithm
     probl_par = get_the_name(j,varargin{5}.TeX,varargin{3},varargin{2},varargin{5});
     skipline()
-    message = get_error_message(info,0,varargin{5});
+    message = get_error_message(info,varargin{5});
     fprintf('Parameter error in numerical two-sided difference method:\n')
     fprintf('Cannot solve the model for %s (info = %d, %s)\n', probl_par, info(1), message);
     fprintf('Possible solutions:\n')
