@@ -11,7 +11,7 @@ function print_info(info, noprint, DynareOptions)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2019 Dynare Team
+% Copyright (C) 2005-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,6 +27,7 @@ function print_info(info, noprint, DynareOptions)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-
-message = get_error_message(info, noprint, DynareOptions);
-error(message);
+if ~noprint
+    message = get_error_message(info, DynareOptions);
+    error(message);
+end

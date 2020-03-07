@@ -461,7 +461,7 @@ if iload <=0
         identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end implies initialization of persistent variables
     if info(1)~=0
         % there are errors in the solution algorithm
-        message = get_error_message(info,0,options_);
+        message = get_error_message(info,options_);
         fprintf('-----------\n');
         fprintf('The model does not solve for %s (info = %d: %s)\n', parameters, info(1), message);
         fprintf('-----------\n');
