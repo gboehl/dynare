@@ -143,7 +143,7 @@ if ismember('moments', varargin) % Prior simulations (2nd order moments).
     end
     if info
         skipline()
-        message = get_error_message(info);
+        message = get_error_message(info,options_);
         fprintf('Cannot solve the model on the prior mode (info = %d, %s)\n', info(1), message);
         skipline()
         return
