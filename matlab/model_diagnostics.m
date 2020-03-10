@@ -71,7 +71,7 @@ end
 
 % check if ys is steady state
 options.debug=1; %locally set debug option to 1
-[dr.ys,params,check1]=evaluate_steady_state(oo.steady_state,M,options,oo,1);
+[dr.ys,M.params,check1]=evaluate_steady_state(oo.steady_state,M,options,oo,options.steadystate.nocheck);
 
 % testing for problem
 if check1(1)
