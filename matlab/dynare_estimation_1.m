@@ -439,7 +439,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
     end
     % Tunes the jumping distribution's scale parameter
     if options_.mh_tune_jscale.status
-        if options_.posterior_sampler_options.posterior_sampling_method=='random_walk_metropolis_hastings'
+        if strcmp(options_.posterior_sampler_options.posterior_sampling_method, 'random_walk_metropolis_hastings')
             options = options_.mh_tune_jscale;
             options.rwmh = options_.posterior_sampler_options.rwmh;
             options_.mh_jscale = calibrate_mh_scale_parameter(objective_function, ...
