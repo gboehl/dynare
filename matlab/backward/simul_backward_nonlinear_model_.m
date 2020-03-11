@@ -71,14 +71,8 @@ for it = initialconditions.nobs+(1:samplesize)
     catch
         DynareOutput.endo_simul(:, 1:it-1);
         dprintf('Newton failed on iteration i = %s.', num2str(it-initialconditions.nobs));
-        if debug
-            for i=1:DynareModel.orig_endo_nbr
-                dprintf('%s \t %s -> %s', DynareModel.endo_names{i}, num2str(DynareOutput.endo_simul(i, it-1)), num2str(DynareOutput.endo_simul(i, it)))
-            end
-        end
         break
     end
-
 end
 
 ysim = DynareOutput.endo_simul(1:DynareModel.orig_endo_nbr,:);
