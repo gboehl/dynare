@@ -312,7 +312,7 @@ elseif ismember(options.solve_algo, [2, 12, 4, 14])
     end
     fvec = feval(f, x, arguments{:});
     if max(abs(fvec))>tolf
-        disp('Problem.')
+        disp('Call solver on the full nonlinear problem.')
         [x, errorflag] = solver(f, x, 1:nn, 1:nn, jacobian_flag, ...
                                 options.gstep, tolf, options.solve_tolx, ...
                                 maxit, options.debug, arguments{:});
