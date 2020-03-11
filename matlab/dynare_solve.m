@@ -243,7 +243,7 @@ elseif ismember(options.solve_algo, [2, 12, 4, 14])
         end
     end
     [j1,j2,r,s] = dmperm(fjac);
-    JAC = abs(fjac(j1,j2))>tolf;
+    JAC = abs(fjac(j1,j2))>0;
     if options.debug
         disp(['DYNARE_SOLVE (solve_algo=2|4|12|14): number of blocks = ' num2str(length(r))]);
     end
