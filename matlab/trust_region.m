@@ -188,7 +188,7 @@ end
 
 function x = dogleg (r, b, d, delta)
 % Get Gauss-Newton direction.
-x = r \ b;
+x = decomposition(r, 'CheckCondition', false) \ b;
 xn = norm (d .* x);
 if (xn > delta)
     % GN is too big, get scaled gradient.
@@ -218,3 +218,4 @@ if (xn > delta)
     x = alpha * x + ((1-alpha) * min (snm, delta)) * s;
 end
 end
+
