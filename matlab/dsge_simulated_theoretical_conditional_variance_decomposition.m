@@ -19,7 +19,7 @@ function [nvar,vartan,NumberOfConditionalDecompFiles] = ...
 %   vartan                           [char]     array of characters (with nvar rows).
 %   NumberOfConditionalDecompFiles   [integer]  scalar, number of prior or posterior data files (for covariance).
 
-% Copyright (C) 2009-2015 Dynare Team
+% Copyright (C) 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,10 +39,10 @@ function [nvar,vartan,NumberOfConditionalDecompFiles] = ...
 
 % Get informations about the _posterior_draws files.
 if strcmpi(type,'posterior')
-    DrawsFiles = dir([M_.dname '/metropolis/' M_.fname '_' type '_draws*' ]);
+    NumberOfDrawsFiles = length(dir([M_.dname '/metropolis/' M_.fname '_' type '_draws*' ]));
     posterior = 1;
 elseif strcmpi(type,'prior')
-    DrawsFiles = dir([M_.dname '/prior/draws/' type '_draws*' ]);
+    NumberOfDrawsFiles = length(dir([M_.dname '/prior/draws/' type '_draws*' ]));
     CheckPath('prior/moments',M_.dname);
     posterior = 0;
 else
@@ -78,7 +78,6 @@ nvar = length(ivar);
 nar = options_.ar;
 options_.ar = 0;
 
-NumberOfDrawsFiles = rows(DrawsFiles);
 NumberOfSavedElementsPerSimulation = nvar*M_.exo_nbr*length(Steps);
 MaXNumberOfConditionalDecompLines = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPerSimulation/8);
 
@@ -132,9 +131,9 @@ linea = 0;
 linea_ME = 0;
 for file = 1:NumberOfDrawsFiles
     if posterior
-        load([M_.dname '/metropolis/' DrawsFiles(file).name ]);
+        load([M_.dname '/metropolis/' M_.fname '_' type '_draws' num2str(file) ]);
     else
-        load([M_.dname '/prior/draws/' DrawsFiles(file).name ]);
+        load([M_.dname '/prior/draws/' type '_draws' num2str(file) ]);
     end
     isdrsaved = columns(pdraws)-1;
     NumberOfDraws = rows(pdraws);

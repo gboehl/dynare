@@ -17,7 +17,7 @@ function [nvar,vartan,CorrFileNumber] = dsge_simulated_theoretical_correlation(S
 %   vartan         [char]           array of characters (with nvar rows).
 %   CorrFileNumber [integer]        scalar, number of prior or posterior data files (for correlation).
 
-% Copyright (C) 2007-2017 Dynare Team
+% Copyright (C) 2007-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,17 +38,16 @@ nodecomposition = 1;
 
 % Get informations about the _posterior_draws files.
 if strcmpi(type,'posterior')
-    DrawsFiles = dir([M_.dname '/metropolis/' M_.fname '_' type '_draws*' ]);
+    NumberOfDrawsFiles = length(dir([M_.dname '/metropolis/' M_.fname '_' type '_draws*' ]));
     posterior = 1;
 elseif strcmpi(type,'prior')
-    DrawsFiles = dir([M_.dname '/prior/draws/' type '_draws*' ]);
+    NumberOfDrawsFiles = length(dir([M_.dname '/prior/draws/' type '_draws*' ]));
     CheckPath('prior/moments',M_.dname);
     posterior = 0;
 else
     disp('dsge_simulated_theoretical_correlation:: Unknown type!');
     error()
 end
-NumberOfDrawsFiles = length(DrawsFiles);
 
 %delete old stale files before creating new ones
 if posterior
@@ -95,9 +94,9 @@ CorrFileNumber = 1;
 linea = 0;
 for file = 1:NumberOfDrawsFiles
     if posterior
-        load([M_.dname '/metropolis/' DrawsFiles(file).name ]);
+        load([M_.dname '/metropolis/' M_.fname '_' type '_draws' num2str(file) ]);
     else
-        load([M_.dname '/prior/draws/' DrawsFiles(file).name]);
+        load([M_.dname '/prior/draws/' type '_draws' num2str(file) ]);
     end
     NumberOfDraws = rows(pdraws);
     isdrsaved = columns(pdraws)-1;
