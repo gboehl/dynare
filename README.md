@@ -284,7 +284,10 @@ autoreconf -si
 ```
 where the path and version of MATLAB are specified. Note that you should use
 the MSYS2 notation and not put spaces in the MATLAB path, so you probably want
-to use something like `/c/Progra~1/MATLAB/…`.
+to use something like `/c/Progra~1/MATLAB/…`. Alternatively, if your filesystem
+does not have short filenames (8dot3), then you can run `mkdir -p
+/usr/local/MATLAB && mount c:/Program\ Files/MATLAB /usr/local/MATLAB`, and
+then pass `/usr/local/MATLAB/…` as MATLAB path to the configure script.
 - Compile:
 ```
 make
