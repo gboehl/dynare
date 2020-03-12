@@ -1,3 +1,46 @@
+Announcement for Dynare 4.6.1 (on 2020-03-13)
+=============================================
+
+We are pleased to announce the release of Dynare 4.6.1.
+
+This maintenance release fixes various bugs.
+
+The Windows, macOS and source packages are already available for download at
+[the Dynare website](https://www.dynare.org/download/).
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 7.9 (R2009b) to
+9.7 (R2019b), and with GNU Octave versions 5.2.0 (under Windows) and 4.4.1
+(under macOS).
+
+Here is a list of the problems identified in version 4.6.0 and that have been
+fixed in version 4.6.1:
+
+* Installation on macOS would fail if the GCC compiler was supposed to be
+  installed and `www.google.com` was not reachable or blocked
+* Dynare++ was missing the `dynare_simul.m` file
+* The parameter vector `M_.params` would not be correctly updated after calls
+  to `stoch_simul` and `discretionary_policy` if parameters had been modified
+  in a steady state file
+* The `stoch_simul` command with both the `nograph` and `TeX` options would
+  crash
+* The `stoch_simul` command with the `noprint` option would crash
+* The `prior moments` command would crash if the used parameter vector
+  triggered an error code
+* In case of problem, the `discretionary_policy` command would crash instead of
+  aborting with a proper error code
+* Computing of prior/posterior statistics would not work in parallel
+* Closing of parallel estimation on GNU/Linux could crash
+* The `histval` command would not work in combination with the
+  `predetermined_variables` command
+* Ramsey optimal policy with multiple instruments would crash if a steady state
+  file returned complex values, instead of providing an error message
+* The `model_diagnostics` command would not correctly update the parameter
+  vector if the latter was set in a steady state file
+* The `model_diagnostics` command would ignore the `nocheck` steady state flag
+
+
 Announcement for Dynare 4.6.0 (on 2020-02-20)
 =============================================
 
