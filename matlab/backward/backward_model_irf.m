@@ -51,7 +51,7 @@ else
 end
 
 % Set default value for the last input argument (no transformation).
-if nargin<6
+if nargin<6 || isempty(varargin{2})
     notransform = true;
 else
     notransform = false;
