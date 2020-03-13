@@ -220,5 +220,5 @@ end
 
 if nargout>1
     baseline = dseries(transpose(endo_simul__0), initialcondition.init, endonames(1:M_.orig_endo_nbr), DynareModel.endo_names_tex(1:M_.orig_endo_nbr));
-    baseline = [baseline, innovationbaseline];
+    baseline = merge(baseline, innovationbaseline);
 end
