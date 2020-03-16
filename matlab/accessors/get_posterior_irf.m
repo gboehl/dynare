@@ -55,8 +55,9 @@ end
 
 % We use the raw files, i.e. those that are *not* the output of
 % ReshapeMatFiles.m. Their filename contains 'irf_dsge' in *lowercase*.
-
-NumberIRFsFiles = length(dir([M_.dname '/metropolis/' M_.fname '_irf_dsge*']));
+filesUpperAndLower = dir([M_.dname '/metropolis/' M_.fname '_irf_dsge*']);
+filesLower = cellfun(@any, regexp({filesUpperAndLower.name}, [M_.fname '_irf_dsge\d\.mat']));
+NumberIRFsFiles = sum(filesLower);
 if NumberIRFsFiles == 0
     error('Can''t find posterior IRFs file(s)')
 end
