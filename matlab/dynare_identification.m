@@ -215,6 +215,10 @@ options_ident = set_default_option(options_ident,'order',1);
     % 3: third-order perturbation approximation, identification is based on third-order pruned state space system
 
 %overwrite values in options_, note that options_ is restored at the end of the function
+if isfield(options_ident,'prior_trunc')
+    options_.prior_trunc=options_ident.prior_trunc;
+        % sets truncation of prior
+end
 if isfield(options_ident,'TeX')
     options_.TeX=options_ident.TeX;
         % requests printing of results and graphs in LaTeX
