@@ -7009,6 +7009,30 @@ Shock Decomposition
 
         See :opt:`nobs <nobs = INTEGER>`.
 
+    .. option:: prefilter = INTEGER
+
+        See :opt:`prefilter <prefilter = INTEGER>`.
+        
+    .. option:: loglinear
+        
+        See :opt:`loglinear <loglinear>`.
+
+    .. option:: diffuse_kalman_tol = DOUBLE
+
+        See :opt:`diffuse_kalman_tol <diffuse_kalman_tol = DOUBLE>`.
+        
+    .. option:: diffuse_filter
+                
+        See :opt:`diffuse_filter <diffuse_filter>`.
+        
+    .. option:: xls_sheet = NAME
+
+        See :opt:`xls_sheet <xls_sheet = NAME>`.
+
+    .. option:: xls_range = RANGE
+        
+        See :opt:`xls_range <xls_range = RANGE>`.
+
     .. option:: use_shock_groups [= STRING]
 
         Uses shock grouping defined by the string instead of
