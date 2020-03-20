@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2017 Dynare Team
+ * Copyright © 2007-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -87,9 +87,9 @@ Interpreter::evaluate_a_block(bool initialization)
 {
   it_code_type begining;
 
-  switch (type)
+  switch (static_cast<BlockSimulationType>(type))
     {
-    case EVALUATE_FORWARD:
+    case BlockSimulationType::evaluateForward:
       if (steady_state)
         {
           compute_block_time(0, true, /*block_num, size, steady_state, */ false);
@@ -117,7 +117,7 @@ Interpreter::evaluate_a_block(bool initialization)
             }
         }
       break;
-    case SOLVE_FORWARD_SIMPLE:
+    case BlockSimulationType::solveForwardSimple:
       g1 = static_cast<double *>(mxMalloc(size*size*sizeof(double)));
       test_mxMalloc(g1, __LINE__, __FILE__, __func__, size*size*sizeof(double));
       r = static_cast<double *>(mxMalloc(size*sizeof(double)));
@@ -151,14 +151,14 @@ Interpreter::evaluate_a_block(bool initialization)
       mxFree(g1);
       mxFree(r);
       break;
-    case SOLVE_FORWARD_COMPLETE:
+    case BlockSimulationType::solveForwardComplete:
       if (initialization)
         {
           fixe_u(&u, u_count_int, u_count_int);
           Read_SparseMatrix(bin_base_name, size, 1, 0, 0, false, stack_solve_algo, solve_algo);
         }
 #ifdef DEBUG
-      mexPrintf("in SOLVE_FORWARD_COMPLETE r = mxMalloc(%d*sizeof(double))\n", size);
+      mexPrintf("in SOLVE FORWARD COMPLETE r = mxMalloc(%d*sizeof(double))\n", size);
 #endif
       r = static_cast<double *>(mxMalloc(size*sizeof(double)));
       test_mxMalloc(r, __LINE__, __FILE__, __func__, size*sizeof(double));
@@ -190,7 +190,7 @@ Interpreter::evaluate_a_block(bool initialization)
         }
       mxFree(r);
       break;
-    case EVALUATE_BACKWARD:
+    case BlockSimulationType::evaluateBackward:
       if (steady_state)
         {
           compute_block_time(0, true, /*block_num, size, steady_state,*/ false);
@@ -218,7 +218,7 @@ Interpreter::evaluate_a_block(bool initialization)
             }
         }
       break;
-    case SOLVE_BACKWARD_SIMPLE:
+    case BlockSimulationType::solveBackwardSimple:
       g1 = static_cast<double *>(mxMalloc(size*size*sizeof(double)));
       test_mxMalloc(g1, __LINE__, __FILE__, __func__, size*size*sizeof(double));
       r = static_cast<double *>(mxMalloc(size*sizeof(double)));
@@ -252,7 +252,7 @@ Interpreter::evaluate_a_block(bool initialization)
       mxFree(g1);
       mxFree(r);
       break;
-    case SOLVE_BACKWARD_COMPLETE:
+    case BlockSimulationType::solveBackwardComplete:
       if (initialization)
         {
           fixe_u(&u, u_count_int, u_count_int);
@@ -288,8 +288,8 @@ Interpreter::evaluate_a_block(bool initialization)
         }
       mxFree(r);
       break;
-    case SOLVE_TWO_BOUNDARIES_SIMPLE:
-    case SOLVE_TWO_BOUNDARIES_COMPLETE:
+    case BlockSimulationType::solveTwoBoundariesSimple:
+    case BlockSimulationType::solveTwoBoundariesComplete:
       if (initialization)
         {
           fixe_u(&u, u_count_int, u_count_int);
@@ -314,6 +314,8 @@ Interpreter::evaluate_a_block(bool initialization)
         }
       mxFree(r);
       break;
+    case BlockSimulationType::unknown:
+      throw FatalExceptionHandling("UNKNOWN block simulation type: impossible case");
     }
 }
 
@@ -329,39 +331,39 @@ Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_c
   mexPrintf("simulate_a_block type = %d, periods=%d, y_kmin=%d, y_kmax=%d\n", type, periods, y_kmin, y_kmax);
   mexEvalString("drawnow;");
 #endif
-  switch (type)
+  switch (static_cast<BlockSimulationType>(type))
     {
-    case EVALUATE_FORWARD:
+    case BlockSimulationType::evaluateForward:
 #ifdef DEBUG
-      mexPrintf("EVALUATE_FORWARD\n");
+      mexPrintf("EVALUATE FORWARD\n");
       mexEvalString("drawnow;");
 #endif
       evaluate_over_periods(true);
       break;
-    case EVALUATE_BACKWARD:
+    case BlockSimulationType::evaluateBackward:
 #ifdef DEBUG
-      mexPrintf("EVALUATE_BACKWARD\n");
+      mexPrintf("EVALUATE BACKWARD\n");
       mexEvalString("drawnow;");
 #endif
       evaluate_over_periods(false);
       break;
-    case SOLVE_FORWARD_SIMPLE:
+    case BlockSimulationType::solveForwardSimple:
 #ifdef DEBUG
-      mexPrintf("SOLVE_FORWARD_SIMPLE size=%d\n", size);
+      mexPrintf("SOLVE FORWARD SIMPLE size=%d\n", size);
       mexEvalString("drawnow;");
 #endif
       solve_simple_over_periods(true);
       break;
-    case SOLVE_BACKWARD_SIMPLE:
+    case BlockSimulationType::solveBackwardSimple:
 #ifdef DEBUG
-      mexPrintf("SOLVE_BACKWARD_SIMPLE\n");
+      mexPrintf("SOLVE BACKWARD SIMPLE\n");
       mexEvalString("drawnow;");
 #endif
       solve_simple_over_periods(false);
       break;
-    case SOLVE_FORWARD_COMPLETE:
+    case BlockSimulationType::solveForwardComplete:
 #ifdef DEBUG
-      mexPrintf("SOLVE_FORWARD_COMPLETE\n");
+      mexPrintf("SOLVE FORWARD COMPLETE\n");
       mexEvalString("drawnow;");
 #endif
       if (vector_table_conditional_local.size())
@@ -386,9 +388,9 @@ Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_c
       memset(direction, 0, size_of_direction);
       End_Solver();
       break;
-    case SOLVE_BACKWARD_COMPLETE:
+    case BlockSimulationType::solveBackwardComplete:
 #ifdef DEBUG
-      mexPrintf("SOLVE_BACKWARD_COMPLETE\n");
+      mexPrintf("SOLVE BACKWARD COMPLETE\n");
       mexEvalString("drawnow;");
 #endif
       if (vector_table_conditional_local.size())
@@ -413,15 +415,15 @@ Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_c
       mxFree(u);
       End_Solver();
       break;
-    case SOLVE_TWO_BOUNDARIES_SIMPLE:
-    case SOLVE_TWO_BOUNDARIES_COMPLETE:
+    case BlockSimulationType::solveTwoBoundariesSimple:
+    case BlockSimulationType::solveTwoBoundariesComplete:
 #ifdef DEBUG
-      mexPrintf("SOLVE_TWO_BOUNDARIES\n");
+      mexPrintf("SOLVE TWO BOUNDARIES\n");
       mexEvalString("drawnow;");
 #endif
       if (steady_state)
         {
-          mexPrintf("SOLVE_TWO_BOUNDARIES in a steady state model: impossible case\n");
+          mexPrintf("SOLVE TWO BOUNDARIES in a steady state model: impossible case\n");
           return ERROR_ON_EXIT;
         }
       if (vector_table_conditional_local.size())
@@ -612,7 +614,7 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, vector<s_plan> 
           tmp << "\n the conditional forecast involving as constrained variable " << get_variable(SymbolType::endogenous, it->exo_num) << " and as endogenized exogenous " << get_variable(SymbolType::exogenous, it->var_num) << " that do not appear in block=" << Block_Count+1 << ")\n You should not use block in model options\n";
           throw FatalExceptionHandling(tmp.str());
         }
-      else if ((find(endogenous.begin(), endogenous.end(), it->exo_num) != endogenous.end()) && (find(exogenous.begin(), exogenous.end(), it->var_num) != exogenous.end()) && ((fb->get_type() == EVALUATE_FORWARD) || (fb->get_type() != EVALUATE_BACKWARD)))
+      else if ((find(endogenous.begin(), endogenous.end(), it->exo_num) != endogenous.end()) && (find(exogenous.begin(), exogenous.end(), it->var_num) != exogenous.end()) && ((fb->get_type() == static_cast<uint8_t>(BlockSimulationType::evaluateForward)) || (fb->get_type() != static_cast<uint8_t>(BlockSimulationType::evaluateBackward))))
         {
           ostringstream tmp;
           tmp << "\n the conditional forecast cannot be implemented for the block=" << Block_Count+1 << ") that has to be evaluated instead to be solved\n You should not use block in model options\n";
