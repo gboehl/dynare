@@ -249,7 +249,7 @@ for b=1:options_cond_fcst.replic %conditional forecast using cL set to constrain
     [FORCS1(:,:,b), FORCS1_shocks(:,:,b)] = mcforecast3(cL,options_cond_fcst.periods,constrained_paths,shocks,FORCS1(:,:,b),T,R,mv, mu);
     FORCS1(:,:,b)=FORCS1(:,:,b)+trend; %add trend
 end
-if max(max(max(abs(bsxfun(@minus,FORCS1(constrained_vars,1:cL,:),constrained_paths)))))>1e-4
+if max(max(max(abs(bsxfun(@minus,FORCS1(constrained_vars,1+1:1+cL,:),trend(constrained_vars,1:cL)+constrained_paths)))))>1e-4
     fprintf('\nconditional_forecasts: controlling of variables was not successful.\n')
     fprintf('This can be due to numerical imprecision (e.g. explosive simulations)\n')
     fprintf('or because the instrument(s) do not allow controlling the variable(s).\n')
