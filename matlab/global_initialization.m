@@ -117,8 +117,14 @@ M_.osr.param_bounds=[];
 M_.osr.variable_weights=[];
 M_.osr.variable_indices =[];
 
-% Set default options_ in function below; this change was made for the GUI
-options_ = default_option_values(M_);
+% Set default options_ but keep global_init_file field if defined in the driver.
+if isstruct(options_) && isfield(options_, 'global_init_file')
+    global_init_file = options_.global_init_file;
+    options_ = default_option_values(M_);
+    options_.global_init_file = global_init_file;
+else
+    options_ = default_option_values(M_);
+end
 
 % initialize persistent variables in priordens()
 priordens([],[],[],[],[],[],1);
@@ -137,3 +143,6 @@ set_dynare_seed('default');
 if isfield(options_, 'global_init_file')
     run(options_.global_init_file);
 end
+
+end
+
