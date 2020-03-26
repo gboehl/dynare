@@ -150,5 +150,13 @@ set_dynare_seed('default');
 
 % Load user configuration file.
 if isfield(options_, 'global_init_file')
-    run(options_.global_init_file);
+    if isfile(options_.global_init_file)
+        try
+            run(options_.global_init_file);
+        catch
+            error('Cannot evaluate global initialization file (%s)', options_.global_init_file)
+        end
+    else
+        error('Cannot find global initialization file (%s).', options_.global_init_file)
+    end
 end
