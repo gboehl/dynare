@@ -1,9 +1,11 @@
 mex_PROGRAMS = mjdgges
 
-nodist_mjdgges_SOURCES = mjdgges.cc
+nodist_mjdgges_SOURCES = mjdgges.F08 matlab_mex.F08 blas_lapack.F08
 
 BUILT_SOURCES = $(nodist_mjdgges_SOURCES)
 CLEANFILES = $(nodist_mjdgges_SOURCES)
 
-%.cc: $(top_srcdir)/../../sources/mjdgges/%.cc
+mjdgges.o : matlab_mex.mod lapack.mod
+
+%.F08: $(top_srcdir)/../../sources/mjdgges/%.F08
 	$(LN_S) -f $< $@

@@ -1,5 +1,5 @@
 function [x,info] = dynare_solve_block_or_bytecode(y, exo, params, options, M)
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,9 +51,10 @@ if options.block && ~options.bytecode
     end
 elseif options.bytecode
     if options.solve_algo > 4
-        [check, x] = bytecode('static', x, exo, params);
-        %        mexErrCheck('bytecode', check);
-        if check
+        try
+            x = bytecode('static', x, exo, params);
+        catch ME
+            disp(ME.message);
             info = 1;
             return
         end
@@ -73,10 +74,12 @@ elseif options.bytecode
                 end
                 x(M.block_structure_stat.block(b).variable) = y;
             else
-                [chk, nulldev, nulldev1, x] = bytecode( x, exo, params, ...
-                                                        x, 1, x, 'evaluate', 'static', ...
-                                                        ['block = ' int2str(b)]);
-                if chk
+                try
+                    [nulldev, nulldev1, x] = bytecode(x, exo, params, ...
+                                                      x, 1, x, 'evaluate', 'static', ...
+                                                      ['block = ' int2str(b)]);
+                catch ME
+                    disp(ME.message);
                     info = 1;
                     return
                 end

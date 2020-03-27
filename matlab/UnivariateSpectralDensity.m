@@ -19,7 +19,7 @@ function [oo_] = UnivariateSpectralDensity(M_,oo_,options_,var_list)
 
 % Adapted from th_autocovariances.m.
 
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright (C) 2006-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -105,7 +105,7 @@ end
 iky = iv(ivar);
 aa = ghx(iky,:);
 bb = ghu(iky,:);
-ngrid = options_.hp_ngrid; %number of grid points
+ngrid = options_.filtered_theoretical_moments_grid; %number of grid points
 freqs = (0 : pi/(ngrid-1):pi)'; % grid on which to compute
 tpos  = exp( sqrt(-1)*freqs); %positive frequencies
 tneg  = exp(-sqrt(-1)*freqs); %negative frequencies

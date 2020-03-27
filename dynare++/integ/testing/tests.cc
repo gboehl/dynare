@@ -177,7 +177,7 @@ Function1Trans::eval(const Vector &point, const ParameterSignal &sig, Vector &ou
 }
 
 /* WallTimer class. Constructor saves the wall time, destructor cancels the
- current time from the saved, and prints the message with time information */
+   current time from the saved, and prints the message with time information */
 class WallTimer
 {
   std::string mes;

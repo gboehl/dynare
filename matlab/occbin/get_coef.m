@@ -11,15 +11,15 @@ if M.maximum_lag > 0
     [~,c1,c2] = find(ll(2,:));
     coef_y(:,c1+endo_nbr) = jacobian(:,c2);
     if M.maximum_lead > 0
-            [~,c1,c2] = find(ll(3,:));
-            coef_y(:,c1+2*endo_nbr) = jacobian(:,c2);
+        [~,c1,c2] = find(ll(3,:));
+        coef_y(:,c1+2*endo_nbr) = jacobian(:,c2);
     end
 else
     [~,c1,c2] = find(ll(1,:));
     coef_y(:,c1+endo_nbr) = jacobian(:,c2);
     if M.maximum_lead > 0
-            [~,c1,c2] = find(ll(2,:));
-            coef_y(:,c1+2*endo_nbr) = jacobian(:,c2);
+        [~,c1,c2] = find(ll(2,:));
+        coef_y(:,c1+2*endo_nbr) = jacobian(:,c2);
     end
 end
 

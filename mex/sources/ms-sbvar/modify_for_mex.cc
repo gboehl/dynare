@@ -19,12 +19,12 @@
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 
-#include <dynmex.h>
+# include <dynmex.h>
 
-#ifdef __cplusplus
+# ifdef __cplusplus
 extern "C"
 {
-#endif
+# endif
 
   int constant_seed;
 
@@ -34,7 +34,7 @@ extern "C"
     throw "Error in MS-SBVAR MEX file.\n";
   }
 
-#ifdef __cplusplus
+# ifdef __cplusplus
 }
-#endif
+# endif
 #endif

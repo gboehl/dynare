@@ -57,7 +57,7 @@ public:
   void calculate(const UnfoldedStackContainer &cont, const UGSContainer &g,
                  UGSTensor &out);
 protected:
-  std::tuple<int,int,int> estimRefinement(const TensorDimens &tdims, int nr, int l);
+  std::tuple<int, int, int> estimRefinement(const TensorDimens &tdims, int nr, int l);
 
   // See FaaDiBruno::calculate() folded sparse code for why we have magic_mult
   constexpr static double magic_mult = 1.5;

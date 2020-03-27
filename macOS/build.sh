@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2019 Dynare Team
+# Copyright © 2019-2020 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -99,7 +99,7 @@ mkdir -p \
 if [[ $VERSION == *-unstable* ]]; then
     echo "$SHA"                                                    > "$PKGFILES"/sha.txt
 fi
-cp -p  "$ROOTDIR"/NEWS                                               "$PKGFILES"
+cp -p  "$ROOTDIR"/NEWS.md                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/COPYING                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/VERSION                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/license.txt                                        "$PKGFILES"
@@ -125,6 +125,7 @@ cp -r  "$ROOTDIR"/doc/manual/build/html                              "$PKGFILES"
 cp     "$ROOTDIR"/dynare++/doc/*.pdf                                 "$PKGFILES"/doc/dynare++
 
 cp     "$ROOTDIR"/dynare++/src/dynare++                              "$PKGFILES"/dynare++
+cp     "$ROOTDIR"/dynare++/dynare_simul/dynare_simul.m               "$PKGFILES"/dynare++
 
 mkdir -p                                                             "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
 cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
@@ -152,15 +153,18 @@ cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"
 ## Create mex for Octave
 ##
 cd "$ROOTDIR"/mex/build/octave
-CC=$CC CXX=$CXX ./configure \
+OCTAVE_VERSION=$(grep OCTAVE_VERSION "$ROOTDIR"/macOS/deps/versions.mk | cut -d'=' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+OCTAVE_USR_DIR="/Applications/Octave-$OCTAVE_VERSION.app/Contents/Resources/usr"
+OCTAVE_BIN_DIR="$OCTAVE_USR_DIR/Cellar/octave-octave-app@$OCTAVE_VERSION/$OCTAVE_VERSION/bin"
+PATH="$OCTAVE_BIN_DIR:$PATH" CC=$CC CXX=$CXX ./configure \
   PACKAGE_VERSION="$VERSION" \
   PACKAGE_STRING="dynare $VERSION" \
   CXXFLAGS=-I/usr/local/include \
-  LDFLAGS="-static-libgcc -L/usr/local/lib" \
+  LDFLAGS="-static-libgcc -L$OCTAVE_USR_DIR/lib " \
   --with-gsl="$LIB64"/gsl \
   --with-matio="$LIB64"/matio \
   --with-slicot="$LIB64"/Slicot/with-underscore
-make -j"$NTHREADS"
+PATH="$OCTAVE_BIN_DIR:$PATH" make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/octave/*                                       "$PKGFILES"/mex/octave
 echo -e "function v = supported_octave_version\nv=\"$(octave --eval "disp(OCTAVE_VERSION)")\";\nend" > "$PKGFILES"/matlab/supported_octave_version.m
 

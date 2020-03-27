@@ -1,5 +1,12 @@
 @#include "fs2000ns_model.inc" 
 
+% Under Octave, the default seed leads to a generated dataset that makes
+% fs2000ns_corr_ME.mod and fs2000ns_corr_ME_missing.mod fail (due to a large
+% difference between univariate and multivariate diffuse filters).
+if isoctave
+    set_dynare_seed(2);
+end
+
 stoch_simul(periods=200, order=1,irf=0);
 temp=oo_.endo_simul;
 %add measurement error

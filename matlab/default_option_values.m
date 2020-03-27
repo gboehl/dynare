@@ -12,7 +12,7 @@ function options_ = default_option_values(M_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright (C) 2018-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -71,6 +71,7 @@ options_.huge_number = 1e7;
 % Default number of threads for parallelized mex files.
 options_.threads.kronecker.sparse_hessian_times_B_kronecker_C = num_procs;
 options_.threads.local_state_space_iteration_2 = 1;
+options_.threads.local_state_space_iteration_k = 1;
 options_.threads.perfect_foresight_problem = num_procs;
 options_.threads.k_order_perturbation = max(1, num_procs/2);
 
@@ -154,7 +155,7 @@ options_.relative_irf = false;
 options_.ar = 5;
 options_.hp_filter = 0;
 options_.one_sided_hp_filter = 0;
-options_.hp_ngrid = 512;
+options_.filtered_theoretical_moments_grid = 512;
 options_.nodecomposition = false;
 options_.nomoments = false;
 options_.nocorr = false;
@@ -651,6 +652,7 @@ options_.parameter_set = [];
 options_.use_shock_groups = '';
 options_.shock_decomp.colormap = '';
 options_.shock_decomp.init_state = 0;
+options_.shock_decomp.with_epilogue = false;
 
 % Shock decomposition realtime
 options_.shock_decomp.forecast = 0;
@@ -713,6 +715,9 @@ options_.convergence.geweke.geweke_interval=[0.2 0.5];
 %Raftery/Lewis convergence diagnostics;
 options_.convergence.rafterylewis.indicator=false;
 options_.convergence.rafterylewis.qrs=[0.025 0.005 0.95];
+
+%tolerance for Modified Harmonic Mean estimator
+options_.marginal_data_density.harmonic_mean.tolerance = 0.01;
 
 % Options for lmmcp solver
 options_.lmmcp.status = false;

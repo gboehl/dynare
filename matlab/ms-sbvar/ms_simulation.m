@@ -14,7 +14,7 @@ function [options_, oo_]=ms_simulation(M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2013 Dynare Team
+% Copyright (C) 2011-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,6 +50,5 @@ if options_.ms.save_draws
 end
 
 % simulation
-[err] = ms_sbvar_command_line(opt);
-mexErrCheck('ms_simulation',err);
+ms_sbvar_command_line(opt);
 end

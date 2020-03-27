@@ -29,18 +29,16 @@ function out = identification_numerical_objective(params, outputflag, estim_para
 % transition equation, Sig_e the covariance of exogenous shocks, g1 the
 % Jacobian of the dynamic model equations, and Y_t selected variables
 % -------------------------------------------------------------------------
-% This function is called by 
-%   * get_first_order_solution_params_deriv.m (previously getH.m)
+% This function is called by
 %   * get_identification_jacobians.m (previously getJJ.m)
 % -------------------------------------------------------------------------
 % This function calls
 %   * [M.fname,'.dynamic']
-%   * dynare_resolve
 %   * dyn_vech
-%   * lyapunov_symm
+%   * resol
 %   * vec
 % =========================================================================
-% Copyright (C) 2011-2019 Dynare Team
+% Copyright (C) 2011-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -58,29 +56,19 @@ function out = identification_numerical_objective(params, outputflag, estim_para
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 % =========================================================================
 
-if nargin < 11 || isempty(useautocorr)
-    useautocorr = 0;
-end
-if nargin < 12 || isempty(nlags)
-    nlags = 3;
-end
-if nargin < 13 || isempty(grid_nbr)
-    grid_nbr = 0;
-end
-
 %% Update stderr, corr and model parameters
 %note that if no estimated_params_block is given, then all stderr and model parameters are selected but no corr parameters
 if length(params) > length(indpmodel)
     if isempty(indpstderr)==0 && isempty(estim_params.var_exo) %if there are stderr parameters but no estimated_params_block
         %provide temporary necessary information for stderr parameters
         estim_params.nvx = length(indpstderr);
-        estim_params.var_exo = indpstderr';        
+        estim_params.var_exo = indpstderr';
     end
     if isempty(indpmodel)==0 && isempty(estim_params.param_vals) %if there are model parameters but no estimated_params_block
         %provide temporary necessary information for model parameters
         estim_params.np = length(indpmodel);
-        estim_params.param_vals = indpmodel';        
-    end    
+        estim_params.param_vals = indpmodel';
+    end
     M = set_all_parameters(params,estim_params,M); %this function can only be used if there is some information in estim_params
 else
     %if there are only model parameters, we don't need to use set_all_parameters
@@ -88,71 +76,39 @@ else
 end
 
 %% compute Kalman transition matrices and steady state with updated parameters
-[A, B, ~, ~, M, options, oo] = dynare_resolve(M, options, oo);
-ys = oo.dr.ys; %steady state of model variables in declaration order
-y0 = ys(oo.dr.order_var); %steady state of model variables in DR order
-
-%% out = [Yss; vec(A); vec(B); dyn_vech(Sig_e)]; of indvar variables only, in DR order
-if outputflag == 0    
-    out = [y0(indvar); vec(A(indvar,indvar)); vec(B(indvar,:)); dyn_vech(M.Sigma_e)];
-end
-
-%% out = [Yss; vec(A); dyn_vech(Om)]; of indvar variables only, in DR order
-if outputflag == -2
-    Om = B*M.Sigma_e*transpose(B);
-    out = [y0(indvar); vec(A(indvar,indvar)); dyn_vech(Om(indvar,indvar))];
-end
+[~,info,M,options,oo] = resol(0,M,options,oo);
+options = rmfield(options,'options_ident');
+pruned = pruned_state_space_system(M, options, oo.dr, indvar, nlags, useautocorr, 0);
 
 %% out = [vech(cov(Y_t,Y_t)); vec(cov(Y_t,Y_{t-1}); ...; vec(cov(Y_t,Y_{t-nlags})] of indvar variables, in DR order. This is Iskrev (2010)'s J matrix.
-if outputflag == 1
-    % Denote Ezz0 = E_t(z_t * z_t'), then the following Lyapunov equation defines the autocovariagrom: Ezz0 -A*Ezz*A' = B*Sig_e*B'
-    Ezz0 =  lyapunov_symm(A,B*M.Sigma_e*B',options.lyapunov_fixed_point_tol,options.qz_criterium,options.lyapunov_complex_threshold,[],options.debug);
-    indzeros = find(abs(Ezz0) < 1e-12); %set small values to zero
-    Ezz0(indzeros) = 0;
+if outputflag == 1    
     if useautocorr
-        sy = sqrt(diag(Ezz0));
-        sy = sy*sy';
-        sy0 = sy-diag(diag(sy))+eye(length(sy));
-        Ezz0corr = Ezz0./sy0;
-        out = dyn_vech(Ezz0corr(indvar,indvar)); %focus only on unique terms
+        out = dyn_vech(pruned.Corr_y);
     else
-        out = dyn_vech(Ezz0(indvar,indvar)); %focus only on unique terms
-    end
-    % compute autocovariances/autocorrelations of lagged observed variables
-    for ii = 1:nlags
-        Ezzii = A^(ii)*Ezz0;
-        if useautocorr
-            Ezzii = Ezzii./sy;
-        end
-        out = [out;vec(Ezzii(indvar,indvar))];
+        out = dyn_vech(pruned.Var_y);
     end    
+    for i = 1:nlags
+        if useautocorr
+            out = [out;vec(pruned.Corr_yi(:,:,i))];
+        else
+            out = [out;vec(pruned.Var_yi(:,:,i))];
+        end
+    end
 end
 
 %% out = vec(g_omega). This is needed for Qu and Tkachenko (2012)'s G matrix.
 if outputflag == 2
-% This computes the spectral density g_omega where the interval [-pi;\pi] is discretized by grid_nbr points
+    % This computes the spectral density g_omega where the interval [-pi;\pi] is discretized by grid_nbr points
     freqs = (0 : pi/(grid_nbr/2):pi);% we focus only on positive values including the 0 frequency
     tpos  = exp( sqrt(-1)*freqs); %Fourier frequencies
-    C = A(indvar,:);
-    D = B(indvar,:);
-    IA = eye(size(A,1));
-    var_nbr = length(indvar);
+    IA = eye(size(pruned.A,1));
+    var_nbr = size(pruned.C,1);
     out = zeros(var_nbr^2*length(freqs),1);
     kk = 0;
     for ig = 1:length(freqs)
-        Transferfct = D + C*((tpos(ig)*IA-A)\B);
-        g_omega = (1/(2*pi))*(Transferfct*M.Sigma_e*Transferfct'); % note that ' is the conjugate transpose
+        Transferfct = pruned.D + pruned.C*((tpos(ig)*IA-pruned.A)\pruned.B);
+        g_omega = (1/(2*pi))*(Transferfct*pruned.Varinov*Transferfct'); % note that ' is the conjugate transpose
         kk = kk+1;
         out(1 + (kk-1)*var_nbr^2 : kk*var_nbr^2) = g_omega(:);
-    end    
-end
-
-
-%% out = [Yss; vec(g1)]; of all endogenous variables, in DR order
-if outputflag == -1
-    [I,~] = find(M.lead_lag_incidence'); %I is used to evaluate dynamic model files    
-    yy0 = oo.dr.ys(I); %steady state of dynamic model variables in DR order
-    ex0 = oo.exo_steady_state';
-    [~, g1] = feval([M.fname,'.dynamic'], yy0, ex0, M.params, ys, 1);
-    out = [y0; g1(:)];    
+    end
 end

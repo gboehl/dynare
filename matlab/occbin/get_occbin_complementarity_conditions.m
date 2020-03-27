@@ -45,14 +45,14 @@ for i=1:size(etags,1)
         str = etags{i,3};
         kop = strfind(etags{i,3},'<');
         if ~isempty(kop)
-                k = find(strcmp(strtrim(str(1:kop-1)), M.endo_names));
-                if isempty(k)
-                    error(sprintf(['Complementarity condition %s: variable %s is ' ...
-                                   'not recognized',etags{i,3},b{1}]))
-                end
-                ivar(nrow) = k;
-                ieq(nrow) = etags{i,1};
-                ub(nrow) = eval(str(kop+1:end));
+            k = find(strcmp(strtrim(str(1:kop-1)), M.endo_names));
+            if isempty(k)
+                error(sprintf(['Complementarity condition %s: variable %s is ' ...
+                               'not recognized',etags{i,3},b{1}]))
+            end
+            ivar(nrow) = k;
+            ieq(nrow) = etags{i,1};
+            ub(nrow) = eval(str(kop+1:end));
         else
             kop = strfind(etags{i,3},'>');
             if ~isempty(kop)
@@ -72,4 +72,3 @@ for i=1:size(etags,1)
         nrow = nrow + 1;
     end
 end
-

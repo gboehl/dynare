@@ -90,7 +90,7 @@ write_latex_static_model;
 write_latex_dynamic_model;
 
 options_.solve_tolf=1e-12;
-ramsey_policy(planner_discount=0.99);
-
-
+ramsey_model(planner_discount=0.99);
+stoch_simul(order=1,irf=0);
+evaluate_planner_objective;
 

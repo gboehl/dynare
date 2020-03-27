@@ -115,23 +115,23 @@ d = 4;
 t = zeros(5,1);
 
 try
-  [nodes,weights] = cubature_with_gaussian_weight(d,3);
-  t(1) = 1;
+    [nodes,weights] = cubature_with_gaussian_weight(d,3);
+    t(1) = 1;
 catch
-  t = t(1);
-  T = all(t);
+    t = t(1);
+    T = all(t);
 end
 
 if t(1)
-  m1 = nodes*weights;
-  m2 = nodes.^2*weights;
-  m3 = nodes.^3*weights;
-  m4 = nodes.^4*weights;
-  t(2) = dassert(m1,zeros(d,1),1e-12);
-  t(3) = dassert(m2,ones(d,1),1e-12);
-  t(4) = dassert(m3,zeros(d,1),1e-12);
-  t(5) = dassert(m4,d*ones(d,1),1e-10);
-  T = all(t);
+    m1 = nodes*weights;
+    m2 = nodes.^2*weights;
+    m3 = nodes.^3*weights;
+    m4 = nodes.^4*weights;
+    t(2) = dassert(m1,zeros(d,1),1e-12);
+    t(3) = dassert(m2,ones(d,1),1e-12);
+    t(4) = dassert(m3,zeros(d,1),1e-12);
+    t(5) = dassert(m4,d*ones(d,1),1e-10);
+    T = all(t);
 end
 %@eof:1
 
@@ -142,24 +142,24 @@ Omega = diag(sqrt(1:d));
 t = zeros(5,1);
 
 try
-  [nodes,weights] = cubature_with_gaussian_weight(d,3);
-  t(1) = 1;
+    [nodes,weights] = cubature_with_gaussian_weight(d,3);
+    t(1) = 1;
 catch
-  t = t(1);
-  T = all(t);
+    t = t(1);
+    T = all(t);
 end
 
 if t(1)
-  nodes = Omega*nodes;
-  m1 = nodes*weights;
-  m2 = nodes.^2*weights;
-  m3 = nodes.^3*weights;
-  m4 = nodes.^4*weights;
-  t(2) = dassert(m1,zeros(d,1),1e-12);
-  t(3) = dassert(m2,transpose(1:d),1e-12);
-  t(4) = dassert(m3,zeros(d,1),1e-12);
-  t(5) = dassert(m4,d*transpose(1:d).^2,1e-10);
-  T = all(t);
+    nodes = Omega*nodes;
+    m1 = nodes*weights;
+    m2 = nodes.^2*weights;
+    m3 = nodes.^3*weights;
+    m4 = nodes.^4*weights;
+    t(2) = dassert(m1,zeros(d,1),1e-12);
+    t(3) = dassert(m2,transpose(1:d),1e-12);
+    t(4) = dassert(m3,zeros(d,1),1e-12);
+    t(5) = dassert(m4,d*transpose(1:d).^2,1e-10);
+    T = all(t);
 end
 %@eof:2
 
@@ -170,21 +170,21 @@ Omega = diag(sqrt(1:d));
 t = zeros(4,1);
 
 try
-  [nodes,weights] = cubature_with_gaussian_weight(d,3);
-  t(1) = 1;
+    [nodes,weights] = cubature_with_gaussian_weight(d,3);
+    t(1) = 1;
 catch
-  t = t(1);
-  T = all(t);
+    t = t(1);
+    T = all(t);
 end
 
 if t(1)
-  nodes = Omega*nodes;
-  m1 = nodes*weights;
-  m2 = bsxfun(@times,nodes,transpose(weights))*transpose(nodes);
-  t(2) = dassert(m1,zeros(d,1),1e-12);
-  t(3) = dassert(diag(m2),transpose(1:d),1e-12);
-  t(4) = dassert(m2(:),vec(diag(diag(m2))),1e-12);
-  T = all(t);
+    nodes = Omega*nodes;
+    m1 = nodes*weights;
+    m2 = bsxfun(@times,nodes,transpose(weights))*transpose(nodes);
+    t(2) = dassert(m1,zeros(d,1),1e-12);
+    t(3) = dassert(diag(m2),transpose(1:d),1e-12);
+    t(4) = dassert(m2(:),vec(diag(diag(m2))),1e-12);
+    T = all(t);
 end
 %@eof:3
 
@@ -196,24 +196,24 @@ Omega = chol(Sigma,'lower');
 t = zeros(4,1);
 
 try
-  [nodes,weights] = cubature_with_gaussian_weight(d,3);
-  t(1) = 1;
+    [nodes,weights] = cubature_with_gaussian_weight(d,3);
+    t(1) = 1;
 catch
-  t = t(1);
-  T = all(t);
+    t = t(1);
+    T = all(t);
 end
 
 if t(1)
-  for i=1:length(weights)
-    nodes(:,i) = Omega*nodes(:,i);
-  end
-  m1 = nodes*weights;
-  m2 =  bsxfun(@times,nodes,transpose(weights))*transpose(nodes);
-  m3 = nodes.^3*weights;
-  t(2) = dassert(m1,zeros(d,1),1e-12);
-  t(3) = dassert(m2(:),vec(Sigma),1e-12);
-  t(4) = dassert(m3,zeros(d,1),1e-12);
-  T = all(t);
+    for i=1:length(weights)
+        nodes(:,i) = Omega*nodes(:,i);
+    end
+    m1 = nodes*weights;
+    m2 =  bsxfun(@times,nodes,transpose(weights))*transpose(nodes);
+    m3 = nodes.^3*weights;
+    t(2) = dassert(m1,zeros(d,1),1e-12);
+    t(3) = dassert(m2(:),vec(Sigma),1e-12);
+    t(4) = dassert(m3,zeros(d,1),1e-12);
+    T = all(t);
 end
 %@eof:4
 
@@ -222,26 +222,26 @@ d = 5;
 t = zeros(6,1);
 
 try
-  [nodes,weights] = cubature_with_gaussian_weight(d,5);
-  t(1) = 1;
+    [nodes,weights] = cubature_with_gaussian_weight(d,5);
+    t(1) = 1;
 catch
-  t = t(1);
-  T = all(t);
+    t = t(1);
+    T = all(t);
 end
 
 if t(1)
-  nodes = nodes;
-  m1 = nodes*weights;
-  m2 = nodes.^2*weights;
-  m3 = nodes.^3*weights;
-  m4 = nodes.^4*weights;
-  m5 = nodes.^5*weights;
-  t(2) = dassert(m1,zeros(d,1),1e-12);
-  t(3) = dassert(m2,ones(d,1),1e-12);
-  t(4) = dassert(m3,zeros(d,1),1e-12);
-  t(5) = dassert(m4,3*ones(d,1),1e-12);
-  t(6) = dassert(m5,zeros(d,1),1e-12);
-  T = all(t);
+    nodes = nodes;
+    m1 = nodes*weights;
+    m2 = nodes.^2*weights;
+    m3 = nodes.^3*weights;
+    m4 = nodes.^4*weights;
+    m5 = nodes.^5*weights;
+    t(2) = dassert(m1,zeros(d,1),1e-12);
+    t(3) = dassert(m2,ones(d,1),1e-12);
+    t(4) = dassert(m3,zeros(d,1),1e-12);
+    t(5) = dassert(m4,3*ones(d,1),1e-12);
+    t(6) = dassert(m5,zeros(d,1),1e-12);
+    T = all(t);
 end
 %@eof:5
 
@@ -251,20 +251,20 @@ t = zeros(4,1);
 
 % Call the tested routine
 try
-  [nodes,weights] = cubature_with_gaussian_weight(d,3,'ScaledUnscentedTransform');
-  t(1) = 1;
+    [nodes,weights] = cubature_with_gaussian_weight(d,3,'ScaledUnscentedTransform');
+    t(1) = 1;
 catch
-  t = t(1);
-  T = all(t);
+    t = t(1);
+    T = all(t);
 end
 
 if t(1)
-  m1 = nodes*weights;
-  m2 = nodes.^2*weights;
-  m3 = nodes.^3*weights;
-  t(2) = dassert(m1,zeros(d,1),1e-12);
-  t(3) = dassert(m2,ones(d,1),1e-12);
-  t(4) = dassert(m3,zeros(d,1),1e-12);
-  T = all(t);
+    m1 = nodes*weights;
+    m2 = nodes.^2*weights;
+    m3 = nodes.^3*weights;
+    t(2) = dassert(m1,zeros(d,1),1e-12);
+    t(3) = dassert(m2,ones(d,1),1e-12);
+    t(4) = dassert(m3,zeros(d,1),1e-12);
+    T = all(t);
 end
 %@eof:6

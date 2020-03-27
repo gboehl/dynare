@@ -815,6 +815,19 @@ The parameter names are stored in ``M_.param_names``:
 
     Cell array containing the names of the model parameters.
 
+.. matcomm:: get_param_by_name ('PARAMETER_NAME');
+
+   Given the name of a parameter, returns its calibrated value as it is
+   stored in ``M_.params``.
+
+.. matcomm:: set_param_value ('PARAMETER_NAME', MATLAB_EXPRESSION);
+
+   Sets the calibrated value of a parameter to the provided expression.
+   This does essentially the same as the parameter initialization syntax
+   described above, except that it accepts arbitrary MATLAB/Octave expressions,
+   and that it works from MATLAB/Octave scripts.
+
+
 .. _model-decl:
 
 Model declaration
@@ -1487,7 +1500,9 @@ in this case ``initval`` is used to specify the terminal conditions.
 
             steady;
 
-            simul(periods=200);
+            perfect_foresight_setup(periods=200);
+            perfect_foresight_solver;
+            
 
         In this example, the problem is finding the optimal path for
         consumption and capital for the periods :math:`t=1` to
@@ -1527,7 +1542,9 @@ in this case ``initval`` is used to specify the terminal conditions.
             x = 1.1;
             end;
 
-            simul(periods=200);
+            perfect_foresight_setup(periods=200);
+            perfect_foresight_solver;
+
 
         In this example, there is no `steady` command, hence the
         conditions are exactly those specified in the `initval` and `endval` blocks.
@@ -1709,7 +1726,7 @@ in this case ``initval`` is used to specify the terminal conditions.
           objective function of the planner is computed. Note that the
           initial values of the Lagrange multipliers associated with
           the planner’s problem cannot be set (see
-          :ref:`planner_objective_value <plan-obj>`).
+          :comm:`evaluate_planner_objective`).
 
     *Options*
 
@@ -2029,6 +2046,17 @@ blocks.
                  is strongly discouraged**. You should use a
                  ``shocks`` block instead.
 
+.. matcomm:: get_shock_stderr_by_name ('EXOGENOUS_NAME');
+
+   |br| Given the name of an exogenous variable, returns its standard
+   deviation, as set by a previous ``shocks`` block.
+
+.. matcomm:: set_shock_stderr_value ('EXOGENOUS_NAME', MATLAB_EXPRESSION);
+
+   |br| Sets the standard deviation of an exgonous variable. This does
+   essentially the same as setting the standard error via a ``shocks`` block,
+   except that it accepts arbitrary MATLAB/Octave expressions, and that it
+   works from MATLAB/Octave scripts.
 
 Other general declarations
 ==========================
@@ -2286,6 +2314,11 @@ After computation, the steady state is available in the following variable:
     ordered in the order of declaration used in the ``var`` command (which
     is also the order used in ``M_.endo_names``).
 
+.. matcomm:: get_mean ('ENDOGENOUS_NAME' [, 'ENDOGENOUS_NAME']... );
+
+    Returns the steady of state of the given endogenous variable(s), as it is
+    stored in ``oo_.steady_state``. Note that, if the steady state has not yet
+    been computed with ``steady``, it will first try to compute it.
 
 .. block:: homotopy_setup ;
 
@@ -2522,7 +2555,7 @@ Getting information about the model
 ===================================
 
 .. command:: check ;
-             check (solve_algo = INTEGER);
+             check (OPTIONS...);
 
     |br| Computes the eigenvalues of the model linearized around the
     values specified by the last ``initval``, ``endval`` or ``steady``
@@ -2718,10 +2751,8 @@ speed-up on large models.
 
     .. option:: datafile = FILENAME
 
-       If the variables of the model are not constant over time, their
-       initial values, stored in a text file, could be loaded, using
-       that option, as initial values before a deterministic
-       simulation.
+       Used to specify path for all endogenous and exogenous variables.
+       Strictly equivalent to :comm:`initval_file`.
 
     *Output*
 
@@ -3089,13 +3120,6 @@ Computing the stochastic solution
        moments. This option is only available with simulated
        moments. Default: no filter.
 
-    .. option:: hp_ngrid = INTEGER
-
-       Number of points in the grid for the discrete Inverse Fast
-       Fourier Transform used in the HP filter computation. It may be
-       necessary to increase it for highly autocorrelated
-       processes. Default: ``512``.
-
     .. option:: bandpass_filter
 
        Uses a bandpass filter with the default passband before
@@ -3110,6 +3134,14 @@ Computing the stochastic solution
        is set to a periodicity of to LOWEST_PERIODICITY,
        e.g. :math:`6` to :math:`32` quarters if the model frequency is
        quarterly. Default: ``[6,32]``.
+
+    .. option:: filtered_theoretical_moments_grid = INTEGER
+
+       When computing filtered theoretical moments (with either option
+       ``hp_filter`` or option ``bandpass_filter``), this option governs the
+       number of points in the grid for the discrete Inverse Fast Fourier
+       Transform. It may be necessary to increase it for highly autocorrelated
+       processes. Default: ``512``.
 
     .. option:: irf = INTEGER
 
@@ -3437,6 +3469,10 @@ Computing the stochastic solution
        stored in ´´oo_.SpectralDensity´´, defined below. Default: do
        not request spectral density estimates.
 
+    .. option:: hp_ngrid = INTEGER
+
+       Deprecated option. It has the same effect as
+       :opt:`filtered_theoretical_moments_grid <filtered_theoretical_moments_grid = INTEGER>`.
 
     *Output*
 
@@ -3655,6 +3691,11 @@ Computing the stochastic solution
     For example, ``oo_.irfs.gnp_ea`` contains the effect on ``gnp`` of
     a one-standard deviation shock on ``ea``.
 
+.. matcomm:: get_irf ('EXOGENOUS_NAME' [, 'ENDOGENOUS_NAME']... );
+
+   |br| Given the name of an exogenous variables, returns the IRFs for the
+   requested endogenous variable(s), as they are stored in ``oo_.irfs``.
+
 The approximated solution of a model takes the form of a set of
 decision rules or transition equations expressing the current value of
 the endogenous variables of the model as function of the previous
@@ -3760,7 +3801,7 @@ lag. We therefore have the following identity:
 
         Vector of numerical indices identifying the state variables in the
         vector of declared variables. ``M_.endo_names(M_.state_var)``
-        therefore yields the name of all variables that are states in 
+        therefore yields the name of all variables that are states in
         the model declaration, i.e. that show up with a lag.
 
 Internally, Dynare uses two orderings of the endogenous variables: the
@@ -3778,10 +3819,10 @@ according to the declaration order.
 .. matvar:: oo_.dr.order_var
 
        This variables maps DR-order to declaration order.
-       
+
 .. matvar:: oo_.dr.inv_order_var
 
-       This variable contains the inverse map. 
+       This variable contains the inverse map.
 
 In other words, the k-th variable in the DR-order corresponds to the endogenous
 variable numbered ``oo_.dr.order_var(k)`` in declaration
@@ -3811,7 +3852,7 @@ where :math:`y^s` is the steady state value of :math:`y` and
 .. matvar:: oo.dr.state_var
 
         Vector of numerical indices identifying the state variables in the
-        vector of declared variables, *given the current parameter values* 
+        vector of declared variables, *given the current parameter values*
         for which the decision rules have been computed. It may differ from
         ``M_.state_var`` in case a state variable drops from the model given
         the current parameterization, because it only gets 0 coefficients in
@@ -4619,7 +4660,8 @@ block decomposition of the model (see :opt:`block`).
        Note also that for the Random Walk Metropolis Hastings
        algorithm, it is possible to use option :opt:`mh_tune_jscale
        <mh_tune_jscale [= DOUBLE]>`, to automatically tune the value
-       of ``mh_jscale``.
+       of ``mh_jscale``. In this case, the ``mh_jscale`` option must
+       not be used.
 
     .. option:: mh_init_scale = DOUBLE
 
@@ -4656,7 +4698,15 @@ block decomposition of the model (see :opt:`block`).
        stochastic nature of the algorithm (the proposals and the
        initial conditions of the markov chains if
        ``mh_nblocks>1``). This option is only available for the
-       Random Walk Metropolis Hastings algorithm.
+       Random Walk Metropolis Hastings algorithm. Must not be used in conjunction with
+       :opt:`mh_jscale = DOUBLE`.
+
+    .. option:: mh_tune_guess = DOUBLE
+
+       Specifies the initial value for the :opt:`mh_tune_jscale
+       <mh_tune_jscale [= DOUBLE]>` option. Default: ``0.2``. Must not
+       be set if :opt:`mh_tune_jscale <mh_tune_jscale [= DOUBLE]>` is
+       not used.
 
     .. option:: mh_recover
 
@@ -4784,7 +4834,8 @@ block decomposition of the model (see :opt:`block`).
                 state variables and estimated jointly with the
                 original state variables of the model using a
                 nonlinear filter. The algorithm implemented in Dynare
-                is described in *Liu and West (2001)*.
+                is described in *Liu and West (2001)*, and works with
+                ``k`` order local approximations of the model.
 
            ``12``
 
@@ -4855,10 +4906,8 @@ block decomposition of the model (see :opt:`block`).
        the computed mode for each estimated parameter in turn. This is
        helpful to diagnose problems with the optimizer. Note that for
        ``order>1`` the likelihood function resulting from the particle
-       filter is not differentiable anymore due to random chatter
-       introduced by selecting different particles for different
-       parameter values. For this reason, the ``mode_check`` plot may
-       look wiggly.
+       filter is not differentiable anymore due to the resampling
+       step. For this reason, the ``mode_check`` plot may look wiggly.
 
     .. option:: mode_check_neighbourhood_size = DOUBLE
 
@@ -5770,12 +5819,12 @@ block decomposition of the model (see :opt:`block`).
 
     .. option:: order = INTEGER
 
-       Order of approximation, either ``1`` or ``2``. When equal to
-       ``2``, the likelihood is evaluated with a particle filter based
-       on a second order approximation of the model (see
-       *Fernandez-Villaverde and Rubio-Ramirez (2005)*). Default is
-       ``1``, i.e. the likelihood of the linearized model is evaluated
-       using a standard Kalman filter.
+       Order of approximation around the deterministic steady
+       state. When greater than 1, the likelihood is evaluated with a
+       particle or nonlinear filter (see *Fernandez-Villaverde and
+       Rubio-Ramirez (2005)*). Default is ``1``, i.e. the likelihood
+       of the linearized model is evaluated using a standard Kalman
+       filter.
 
     .. option:: irf = INTEGER
 
@@ -6401,6 +6450,12 @@ block decomposition of the model (see :opt:`block`).
             oo_.SmoothedVariables.MOMENT_NAME.VARIABLE_NAME
 
 
+    .. matcomm:: get_smooth ('VARIABLE_NAME' [, 'VARIABLE_NAME']...);
+
+       Returns the smoothed values of the given endogenous or exogenous
+       variable(s), as they are stored in the ``oo_.SmoothedVariables``
+       and ``oo_.SmoothedShocks`` variables.
+
     .. matvar:: oo_.UpdatedVariables
 
         Variable set by the ``estimation`` command (if used with the
@@ -6417,6 +6472,10 @@ block decomposition of the model (see :opt:`block`).
 
             oo_.UpdatedVariables.MOMENT_NAME.VARIABLE_NAME
 
+    .. matcomm:: get_update ('VARIABLE_NAME' [, 'VARIABLE_NAME']...);
+
+       Returns the updated values of the given variable(s), as they are stored
+       in the ``oo_.UpdatedVariables`` variable.
 
     .. matvar:: oo_.FilterCovariance
 
@@ -6968,17 +7027,43 @@ Shock Decomposition
 
         See :opt:`nobs <nobs = INTEGER>`.
 
+    .. option:: prefilter = INTEGER
+
+        See :opt:`prefilter <prefilter = INTEGER>`.
+        
+    .. option:: loglinear
+        
+        See :opt:`loglinear <loglinear>`.
+
+    .. option:: diffuse_kalman_tol = DOUBLE
+
+        See :opt:`diffuse_kalman_tol <diffuse_kalman_tol = DOUBLE>`.
+        
+    .. option:: diffuse_filter
+                
+        See :opt:`diffuse_filter <diffuse_filter>`.
+        
+    .. option:: xls_sheet = NAME
+
+        See :opt:`xls_sheet <xls_sheet = NAME>`.
+
+    .. option:: xls_range = RANGE
+        
+        See :opt:`xls_range <xls_range = RANGE>`.
+
     .. option:: use_shock_groups [= STRING]
 
         Uses shock grouping defined by the string instead of
         individual shocks in the decomposition. The groups of shocks
         are defined in the :bck:`shock_groups` block.
 
-    .. option:: colormap = STRING
+    .. option:: colormap = VARIABLE_NAME
 
-        Controls the ``colormap`` used for the shocks decomposition
-        graphs. See colormap in MATLAB/Octave manual for valid
-        arguments.
+        Controls the ``colormap`` used for the shocks decomposition graphs.
+        VARIABLE_NAME must be the name of a MATLAB/Octave variable that has
+        been declared beforehand and whose value will be passed to the
+        MATLAB/Octave ``colormap`` function (see the MATLAB/Octave manual for
+        the list of acceptable values).
 
     .. option:: nograph
 
@@ -6994,6 +7079,11 @@ Shock Decomposition
         smoothed shocks starting in period 1 are used. If equal to
         ``1``, the shock decomposition is computed conditional on the
         smoothed state variables in period 1. Default: ``0``.
+
+    .. option:: with_epilogue
+
+        If set, then also compute the decomposition for variables declared in
+        the ``epilogue`` block (see :ref:`epilogue`).
 
     *Output*
 
@@ -7117,9 +7207,9 @@ Shock Decomposition
 
         See :opt:`use_shock_groups <use_shock_groups [= STRING]>`.
 
-    .. option:: colormap = STRING
+    .. option:: colormap = VARIABLE_NAME
 
-        See :opt:`colormap <colormap = STRING>`.
+        See :opt:`colormap <colormap = VARIABLE_NAME>`.
 
     .. option:: nograph
 
@@ -7151,6 +7241,10 @@ Shock Decomposition
         once for the last out-of-sample data point, where the provided
         integer defines the last observation (equivalent to
         :opt:`nobs`). Default: not enabled.
+
+    .. option:: with_epilogue
+
+        See :opt:`with_epilogue`.
 
     *Output*
 
@@ -7256,9 +7350,9 @@ Shock Decomposition
 
         See :opt:`use_shock_groups <use_shock_groups [= STRING]>`.
 
-    .. option:: colormap = STRING
+    .. option:: colormap = VARIABLE_NAME
 
-        See :opt:`colormap <colormap = STRING>`.
+        See :opt:`colormap <colormap = VARIABLE_NAME>`.
 
     .. option:: nodisplay
 
@@ -7367,6 +7461,206 @@ Shock Decomposition
 
         Default: ``0``.
 
+    .. option:: plot_init_date = DATE
+
+        If passed, plots decomposition using ``plot_init_date`` as initial period.
+        Default: first observation in estimation
+
+    .. option:: plot_end_date = DATE
+
+        If passed, plots decomposition using ``plot_end_date`` as last period.
+        Default: last observation in estimation
+
+    .. option:: diff
+
+        If passed, plot the decomposition of the first difference of the list of variables.
+        If used in combination with :opt:`flip`, the ``diff`` operator is first applied.
+        Default: not activated
+
+    .. option:: flip
+
+        If passed, plot the decomposition of the opposite of the list of variables.
+        If used in combination with :opt:`diff`, the ``diff`` operator is first applied.
+        Default: not activated
+
+    .. option:: max_nrows
+
+        Maximum number of rows in the subplot layout of detailed shock
+        decomposition graphs. Note that columns are always 3. Default: 6
+
+    .. option:: with_epilogue
+
+        See :opt:`with_epilogue`.
+
+    .. option:: init2shocks
+                init2shocks = NAME
+
+        Use the information contained in an :bck:`init2shocks` block, in order
+        to attribute initial conditions to shocks. The name of the block can be
+        explicitly given, otherwise it defaults to the ``default`` block.
+
+
+.. block:: init2shocks ;
+           init2shocks (OPTIONS...);
+
+    |br| This blocks gives the possibility of attributing the initial condition
+    of endogenous variables to the contribution of exogenous variables in the
+    shock decomposition.
+
+    For example, in an AR(1) process, the contribution of the initial condition
+    on the process variable can naturally be assigned to the innovation of the
+    process.
+
+    Each line of the block should have the syntax::
+
+        VARIABLE_1 [,] VARIABLE_2;
+
+    Where VARIABLE_1 is an endogenous variable whose initial condition
+    will be attributed to the exogenous VARIABLE_2.
+
+    The information contained in this block is used by the
+    :comm:`plot_shock_decomposition` command when given the ``init2shocks``
+    option.
+
+    *Options*
+
+    .. option:: name = NAME
+
+        Specifies a name for the block, that can be referenced from
+        ``plot_shock_decomposition``, so that several such blocks can coexist
+        in a single model file. If the name is unspecified, it defaults to
+        ``default``.
+
+    *Example*
+
+        ::
+
+            var y y_s R pie dq pie_s de A y_obs pie_obs R_obs;
+            varexo e_R e_q e_ys e_pies e_A;
+            ...
+
+            model;
+              dq = rho_q*dq(-1)+e_q;
+              A = rho_A*A(-1)+e_A;
+              ...
+            end;
+
+            ...
+
+            init2shocks;
+              dq e_q;
+              A e_A;
+            end;
+
+            shock_decomposition(nograph);
+
+            plot_shock_decomposition(init2shocks) y_obs R_obs pie_obs dq de;
+
+        In this example, the initial conditions of ``dq`` and ``A`` will
+        be respectively attributed to ``e_q`` and ``e_A``.
+
+
+.. command:: initial_condition_decomposition [VARIABLE_NAME]...;
+             initial_condition_decomposition (OPTIONS...) [VARIABLE_NAME]...;
+
+    |br| This command computes and plots the decomposition of the effect of
+    smoothed initial conditions of state variables. The ``variable_names`` provided
+    govern which variables the decomposition is plotted for.
+
+    Further note that, unlike the majority of Dynare commands, the
+    options specified below are overwritten with their defaults before
+    every call to ``initial_condition_decomposition``. Hence, if you want to
+    reuse an option in a subsequent call to
+    ``initial_condition_decomposition``, you must pass it to the command
+    again.
+
+    *Options*
+
+    .. option:: colormap = VARIABLE_NAME
+
+        See :opt:`colormap <colormap = VARIABLE_NAME>`.
+
+    .. option:: nodisplay
+
+        See :opt:`nodisplay`.
+
+    .. option:: graph_format = FORMAT
+                graph_format = ( FORMAT, FORMAT... )
+
+        See :opt:`graph_format <graph_format = FORMAT>`.
+
+    .. option:: detail_plot
+
+        Plots shock contributions using subplots, one per shock (or
+        group of shocks). Default: not activated
+
+    .. option:: steadystate
+
+        If passed, the the :math:`y`-axis value of the zero line in
+        the shock decomposition plot is translated to the steady state
+        level. Default: not activated
+
+    .. option:: type = qoq | yoy | aoa
+
+        For quarterly data, valid arguments are: ``qoq`` for
+        quarter-on-quarter plots, ``yoy`` for year-on-year plots of
+        growth rates, ``aoa`` for annualized variables, i.e. the value
+        in the last quarter for each year is plotted. Default value:
+        empty, i.e. standard period-on-period plots (``qoq`` for
+        quarterly data).
+
+    .. option:: fig_name = STRING
+
+        Specifies a user-defined keyword to be appended to the default
+        figure name set by ``plot_shock_decomposition``. This can
+        avoid to overwrite plots in case of sequential calls to
+        ``plot_shock_decomposition``.
+
+    .. option:: write_xls
+
+        Saves shock decompositions to Excel-file in the main
+        directory, named
+        ``FILENAME_shock_decomposition_TYPE_FIG_NAME_initval.xls``. This
+        option requires your system to be configured to be able to
+        write Excel files. [#f7]_
+
+    .. option:: plot_init_date = DATE
+
+        If passed, plots decomposition using ``plot_init_date`` as initial period.
+        Default: first observation in estimation
+
+    .. option:: plot_end_date = DATE
+
+        If passed, plots decomposition using ``plot_end_date`` as last period.
+        Default: last observation in estimation
+
+    .. option:: diff
+
+        If passed, plot the decomposition of the first difference of the list of variables.
+        If used in combination with :opt:`flip`, the ``diff`` operator is first applied.
+        Default: not activated
+
+    .. option:: flip
+
+        If passed, plot the decomposition of the opposite of the list of variables.
+        If used in combination with :opt:`diff`, the ``diff`` operator is first applied.
+        Default: not activated
+
+.. command:: squeeze_shock_decomposition [VARIABLE_NAME]...;
+
+    |br| For large models, the size of the information stored by shock
+    decompositions (especially various settings of realtime decompositions) may
+    become huge. This command allows to squeeze this information in two
+    possible ways:
+
+        * Automatic (default): only the variables for which plotting has been
+          explicitly required with ``plot_shock_decomposition`` will have their
+          decomposition left in ``oo_`` after this command is run;
+
+        * If a list of variables is passed to the command, then only those
+          variables will have their decomposition left in ``oo_`` after this
+          command is run.
+
 
 Calibrated Smoother
 ===================
@@ -7384,7 +7678,7 @@ Dynare can also run the smoother on a calibrated model:
     approximation of the model.
 
     By default, the command computes the smoothed variables and shocks
-    and stores the results in ``oo_.SmoothedVariables` and
+    and stores the results in ``oo_.SmoothedVariables`` and
     ``oo_.SmoothedShocks``. It also fills ``oo_.UpdatedVariables``.
 
     *Options*
@@ -7430,6 +7724,14 @@ Dynare can also run the smoother on a calibrated model:
     .. option:: diffuse_kalman_tol = DOUBLE
 
         See :opt:`diffuse_kalman_tol <diffuse_kalman_tol = DOUBLE>`.
+
+    .. option:: xls_sheet = NAME
+
+        See :opt:`xls_sheet <xls_sheet = NAME>`.
+
+    .. option:: xls_range = RANGE
+
+        See :opt:`xls_range <xls_range = RANGE>`.
 
 .. _fore:
 
@@ -7849,7 +8151,7 @@ The forecast scenario can contain some simple shocks on the exogenous
 variables. This shocks are described using the function
 ``basic_plan``:
 
-.. matcomm:: HANDLE = basic_plan (HANDLE, 'VAR_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | | EXPR] ] );
+.. matcomm:: HANDLE = basic_plan (HANDLE, `VAR_NAME', `SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | EXPR] ] );
 
     Adds to the forecast scenario a shock on the exogenous variable
     indicated between quotes in the second argument. The shock type
@@ -7867,7 +8169,7 @@ compatible with the constrained path are in this case computed. In
 other words, a conditional forecast is performed. This kind of shock
 is described with the function ``flip_plan``:
 
-.. matcomm:: HANDLE = flip_plan (HANDLE, 'VAR_NAME, 'VAR_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | | EXPR] ] );
+.. matcomm:: HANDLE = flip_plan (HANDLE, `VAR_NAME', `VAR_NAME', `SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | EXPR] ] );
 
     Adds to the forecast scenario a constrained path on the endogenous
     variable specified between quotes in the second argument. The
@@ -7924,7 +8226,8 @@ computed with the command ``det_cond_forecast``:
         plot(dset_forecast.{'r','e'});
 
 
-.. command:: smoother2histval [(OPTIONS...)];
+.. command:: smoother2histval ;
+             smoother2histval(OPTIONS...);
 
     The purpose of this command is to construct initial conditions
     (for a subsequent simulation) that are the smoothed values of a
@@ -7997,15 +8300,245 @@ Optimal policy
 ==============
 
 Dynare has tools to compute optimal policies for various types of
-objectives. ``ramsey_model`` computes automatically the First Order
-Conditions (FOC) of a model, given the ``planner_objective``. You can
-then use other standard commands to solve, estimate or simulate this
-new, expanded model.
-
-Alternatively, you can either solve for optimal policy under
-commitment with ``ramsey_policy``, for optimal policy under discretion
-with ``discretionary_policy`` or for optimal simple rule with ``osr``
+objectives. You can either solve for optimal policy under
+commitment with ``ramsey_model``, for optimal policy under discretion
+with ``discretionary_policy`` or for optimal simple rules with ``osr``
 (also implying commitment).
+
+.. command:: planner_objective MODEL_EXPRESSION ;
+
+    |br| This command declares the policy maker objective, for use
+    with ``ramsey_model`` or ``discretionary_policy``.
+
+    You need to give the one-period objective, not the discounted
+    lifetime objective. The discount factor is given by the
+    ``planner_discount`` option of ``ramsey_model`` and
+    ``discretionary_policy``. The objective function can only contain
+    current endogenous variables and no exogenous ones. This
+    limitation is easily circumvented by defining an appropriate
+    auxiliary variable in the model.
+
+    With ``ramsey_model``, you are not limited to quadratic
+    objectives: you can give any arbitrary nonlinear expression.
+
+    With ``discretionary_policy``, the objective function must be quadratic.
+
+Optimal policy under commitment (Ramsey)
+----------------------------------------
+
+.. command:: ramsey_model (OPTIONS...);
+
+    |br| This command computes the First Order Conditions for maximizing
+    the policy maker objective function subject to the constraints
+    provided by the equilibrium path of the private economy.
+
+    The planner objective must be declared with the :comm:`planner_objective` command.
+
+    This command only creates the expanded model, it doesn’t perform
+    any computations. It needs to be followed by other instructions to
+    actually perform desired computations. Examples are calls to ``steady`` 
+    to compute the steady state of the Ramsey economy, to ``stoch_simul`` 
+    with various approximation orders to conduct stochastic simulations based on 
+    perturbation solutions, to ``estimation`` in order to estimate models
+    under optimal policy with commitment, and to perfect foresight simulation  
+    routines.
+
+    See :ref:`aux-variables`, for an explanation of how Lagrange
+    multipliers are automatically created.
+
+    *Options*
+
+    This command accepts the following options:
+
+    .. option:: planner_discount = EXPRESSION
+
+        Declares or reassigns the discount factor of the central
+        planner ``optimal_policy_discount_factor``. Default: ``1.0``.
+
+    .. option:: planner_discount_latex_name = LATEX_NAME
+
+        Sets the LaTeX name of the ``optimal_policy_discount_factor``
+        parameter.
+
+    .. option:: instruments = (VARIABLE_NAME,...)
+
+        Declares instrument variables for the computation of the
+        steady state under optimal policy. Requires a
+        ``steady_state_model`` block or a ``_steadystate.m`` file. See
+        below.
+
+    *Steady state*
+
+    Dynare takes advantage of the fact that the Lagrange multipliers
+    appear linearly in the equations of the steady state of the model
+    under optimal policy. Nevertheless, it is in general very
+    difficult to compute the steady state with simply a numerical
+    guess in ``initval`` for the endogenous variables.
+
+    It greatly facilitates the computation, if the user provides an
+    analytical solution for the steady state (in
+    ``steady_state_model`` block or in a ``_steadystate.m`` file). In
+    this case, it is necessary to provide a steady state solution
+    CONDITIONAL on the value of the instruments in the optimal policy
+    problem and declared with the option ``instruments``. The initial value 
+    of the instrument for steady state finding in this case is set with 
+    ``initval``. Note that computing and displaying steady state values 
+    using the ``steady``-command or calls to ``resid`` must come after 
+    the ``ramsey_model`` statement and the ``initval``-block.
+    
+    Note that choosing the instruments is partly a matter of interpretation and
+    you can choose instruments that are handy from a mathematical
+    point of view but different from the instruments you would refer
+    to in the analysis of the paper. A typical example is choosing
+    inflation or nominal interest rate as an instrument.
+
+
+.. block:: ramsey_constraints ;
+
+    |br| This block lets you define constraints on the variables in
+    the Ramsey problem. The constraints take the form of a variable,
+    an inequality operator (> or <) and a constant.
+
+    *Example*
+
+        ::
+
+            ramsey_constraints;
+            i > 0;
+            end;
+
+.. command:: evaluate_planner_objective ;
+
+    This command computes, displays, and stores the value of the 
+    planner objective function 
+    under Ramsey policy in ``oo_.planner_objective_value``, given the
+    initial values of the endogenous state variables. If not specified
+    with ``histval``, they are taken to be at their steady state
+    values. The result is a 1 by 2 vector, where the first entry
+    stores the value of the planner objective when the initial
+    Lagrange multipliers associated with the planner’s problem are set
+    to their steady state values (see :comm:`ramsey_policy`).
+
+    In contrast, the second entry stores the value of the planner
+    objective with initial Lagrange multipliers of the planner’s
+    problem set to 0, i.e. it is assumed that the planner exploits its
+    ability to surprise private agents in the first period of
+    implementing Ramsey policy. This is the value of implementating
+    optimal policy for the first time and committing not to
+    re-optimize in the future.
+
+    Because it entails computing at least a second order approximation, the
+    computation of the planner objective value is skipped with a message when
+    the model is too large (more than 180 state variables, including lagged
+    Lagrange multipliers).
+
+.. command:: ramsey_policy [VARIABLE_NAME...];
+             ramsey_policy (OPTIONS...) [VARIABLE_NAME...];
+
+    |br| This command is formally equivalent to the calling sequence
+    
+        ::
+
+            ramsey_model;
+            stoch_simul(order=1);
+            evaluate_planner_objective;
+
+    It computes the first order approximation of the
+    policy that maximizes the policy maker’s objective function
+    subject to the constraints provided by the equilibrium path of the
+    private economy and under commitment to this optimal policy. The
+    Ramsey policy is computed by approximating the equilibrium system
+    around the perturbation point where the Lagrange multipliers are
+    at their steady state, i.e. where the Ramsey planner acts as if
+    the initial multipliers had been set to 0 in the distant past,
+    giving them time to converge to their steady state
+    value. Consequently, the optimal decision rules are computed
+    around this steady state of the endogenous variables and the
+    Lagrange multipliers.
+
+    This first order approximation to the optimal policy conducted by
+    Dynare is not to be confused with a naive linear quadratic
+    approach to optimal policy that can lead to spurious welfare
+    rankings (see *Kim and Kim (2003)*). In the latter, the optimal
+    policy would be computed subject to the first order approximated
+    FOCs of the private economy. In contrast, Dynare first computes
+    the FOCs of the Ramsey planner’s problem subject to the nonlinear
+    constraints that are the FOCs of the private economy and only then
+    approximates these FOCs of planner’s problem to first
+    order. Thereby, the second order terms that are required for a
+    second-order correct welfare evaluation are preserved.
+
+    Note that the variables in the list after the ``ramsey_policy``
+    command can also contain multiplier names. In that case, Dynare
+    will for example display the IRFs of the respective multipliers
+    when ``irf>0``.
+
+    The planner objective must be declared with the :comm:`planner_objective` command.
+
+    *Options*
+
+    This command accepts all options of ``stoch_simul``, plus:
+
+    .. option:: planner_discount = EXPRESSION
+
+        See :opt:`planner_discount <planner_discount = EXPRESSION>`.
+
+    .. option:: instruments = (VARIABLE_NAME,...)
+
+        Declares instrument variables for the computation of the
+        steady state under optimal policy. Requires a
+        ``steady_state_model`` block or a ``_steadystate.m`` file. See
+        below.
+
+    Note that only a first order approximation of the optimal Ramsey
+    policy is available, leading to a second-order accurate welfare
+    ranking (i.e. ``order=1`` must be specified).
+
+    *Output*
+
+    This command generates all the output variables of
+    ``stoch_simul``. For specifying the initial values for the
+    endogenous state variables (except for the Lagrange multipliers),
+    see :bck:`histval`.
+
+
+    *Steady state*
+
+    See :comm:`Ramsey steady state <ramsey_model>`.
+
+Optimal policy under discretion 
+-------------------------------
+
+.. command:: discretionary_policy [VARIABLE_NAME...];
+             discretionary_policy (OPTIONS...) [VARIABLE_NAME...];
+
+    |br| This command computes an approximation of the optimal policy
+    under discretion. The algorithm implemented is essentially an LQ
+    solver, and is described by *Dennis (2007)*.
+
+    You should ensure that your model is linear and your objective is
+    quadratic. Also, you should set the ``linear`` option of the
+    ``model`` block.
+
+    It is possible to use the :comm:`estimation` command after the
+    ``discretionary_policy`` command, in order to estimate the model with
+    optimal policy under discretion.
+
+    *Options*
+
+    This command accepts the same options as ``ramsey_policy``, plus:
+
+    .. option:: discretionary_tol = NON-NEGATIVE DOUBLE
+
+        Sets the tolerance level used to assess convergence of the
+        solution algorithm. Default: ``1e-7``.
+
+    .. option:: maxit = INTEGER
+
+        Maximum number of iterations. Default: ``3000``.
+
+Optimal Simple Rules (OSR)
+--------------------------
 
 .. command:: osr [VARIABLE_NAME...];
              osr (OPTIONS...) [VARIABLE_NAME...];
@@ -8255,213 +8788,6 @@ with ``discretionary_policy`` or for optimal simple rule with ``osr``
     After an execution of the ``osr`` command, this vector contains
     the indices of the variables entering the objective function in
     ``M_.endo_names``.
-
-
-.. command:: ramsey_model (OPTIONS...);
-
-    |br| This command computes the First Order Conditions for maximizing
-    the policy maker objective function subject to the constraints
-    provided by the equilibrium path of the private economy.
-
-    The planner objective must be declared with the
-    ``planner_objective`` command.
-
-    This command only creates the expanded model, it doesn’t perform
-    any computations. It needs to be followed by other instructions to
-    actually perform desired computations. Note that it is the only
-    way to perform perfect foresight simulation of the Ramsey policy
-    problem.
-
-    See :ref:`aux-variables`, for an explanation of how Lagrange
-    multipliers are automatically created.
-
-    *Options*
-
-    This command accepts the following options:
-
-    .. option:: planner_discount = EXPRESSION
-
-        Declares or reassigns the discount factor of the central
-        planner ``optimal_policy_discount_factor``. Default: ``1.0``.
-
-    .. option:: instruments = (VARIABLE_NAME,...)
-
-        Declares instrument variables for the computation of the
-        steady state under optimal policy. Requires a
-        ``steady_state_model`` block or a ``_steadystate.m`` file. See
-        below.
-
-    *Steady state*
-
-    Dynare takes advantage of the fact that the Lagrange multipliers
-    appear linearly in the equations of the steady state of the model
-    under optimal policy. Nevertheless, it is in general very
-    difficult to compute the steady state with simply a numerical
-    guess in ``initval`` for the endogenous variables.
-
-    It greatly facilitates the computation, if the user provides an
-    analytical solution for the steady state (in
-    ``steady_state_model`` block or in a ``_steadystate.m`` file). In
-    this case, it is necessary to provide a steady state solution
-    CONDITIONAL on the value of the instruments in the optimal policy
-    problem and declared with option ``instruments``. Note that
-    choosing the instruments is partly a matter of interpretation and
-    you can choose instruments that are handy from a mathematical
-    point of view but different from the instruments you would refer
-    to in the analysis of the paper. A typical example is choosing
-    inflation or nominal interest rate as an instrument.
-
-
-.. block:: ramsey_constraints ;
-
-    |br| This block lets you define constraints on the variables in
-    the Ramsey problem. The constraints take the form of a variable,
-    an inequality operator (> or <) and a constant.
-
-    *Example*
-
-        ::
-
-            ramsey_constraints;
-            i > 0;
-            end;
-
-
-.. command:: ramsey_policy [VARIABLE_NAME...];
-             ramsey_policy (OPTIONS...) [VARIABLE_NAME...];
-
-    |br| This command computes the first order approximation of the
-    policy that maximizes the policy maker’s objective function
-    subject to the constraints provided by the equilibrium path of the
-    private economy and under commitment to this optimal policy. The
-    Ramsey policy is computed by approximating the equilibrium system
-    around the perturbation point where the Lagrange multipliers are
-    at their steady state, i.e. where the Ramsey planner acts as if
-    the initial multipliers had been set to 0 in the distant past,
-    giving them time to converge to their steady state
-    value. Consequently, the optimal decision rules are computed
-    around this steady state of the endogenous variables and the
-    Lagrange multipliers.
-
-    This first order approximation to the optimal policy conducted by
-    Dynare is not to be confused with a naive linear quadratic
-    approach to optimal policy that can lead to spurious welfare
-    rankings (see *Kim and Kim (2003)*). In the latter, the optimal
-    policy would be computed subject to the first order approximated
-    FOCs of the private economy. In contrast, Dynare first computes
-    the FOCs of the Ramsey planner’s problem subject to the nonlinear
-    constraints that are the FOCs of the private economy and only then
-    approximates these FOCs of planner’s problem to first
-    order. Thereby, the second order terms that are required for a
-    second-order correct welfare evaluation are preserved.
-
-    Note that the variables in the list after the ``ramsey_policy``
-    command can also contain multiplier names. In that case, Dynare
-    will for example display the IRFs of the respective multipliers
-    when ``irf>0``.
-
-    The planner objective must be declared with the planner_objective command.
-
-    See :ref:`aux-variables`, for an explanation of how this operator
-    is handled internally and how this affects the output.
-
-    *Options*
-
-    This command accepts all options of ``stoch_simul``, plus:
-
-    .. option:: planner_discount = EXPRESSION
-
-        See :opt:`planner_discount <planner_discount = EXPRESSION>`.
-
-    .. option:: instruments = (VARIABLE_NAME,...)
-
-        Declares instrument variables for the computation of the
-        steady state under optimal policy. Requires a
-        ``steady_state_model`` block or a ``_steadystate.m`` file. See
-        below.
-
-    Note that only a first order approximation of the optimal Ramsey
-    policy is available, leading to a second-order accurate welfare
-    ranking (i.e. ``order=1`` must be specified).
-
-    *Output*
-
-    This command generates all the output variables of
-    ``stoch_simul``. For specifying the initial values for the
-    endogenous state variables (except for the Lagrange multipliers),
-    see :bck:`histval`.
-
-    .. _plan-obj:
-
-    In addition, it stores the value of planner objective function
-    under Ramsey policy in ``oo_.planner_objective_value``, given the
-    initial values of the endogenous state variables. If not specified
-    with ``histval``, they are taken to be at their steady state
-    values. The result is a 1 by 2 vector, where the first entry
-    stores the value of the planner objective when the initial
-    Lagrange multipliers associated with the planner’s problem are set
-    to their steady state values (see :comm:`ramsey_policy`).
-
-    In contrast, the second entry stores the value of the planner
-    objective with initial Lagrange multipliers of the planner’s
-    problem set to 0, i.e. it is assumed that the planner exploits its
-    ability to surprise private agents in the first period of
-    implementing Ramsey policy. This is the value of implementating
-    optimal policy for the first time and committing not to
-    re-optimize in the future.
-
-    Because it entails computing at least a second order approximation, the
-    computation of the planner objective value is skipped with a message when
-    the model is too large (more than 180 state variables, including lagged
-    Lagrange multipliers).
-
-    *Steady state*
-
-    See :comm:`Ramsey steady state <ramsey_model>`.
-
-
-.. command:: discretionary_policy [VARIABLE_NAME...];
-             discretionary_policy (OPTIONS...) [VARIABLE_NAME...];
-
-    |br| This command computes an approximation of the optimal policy
-    under discretion. The algorithm implemented is essentially an LQ
-    solver, and is described by *Dennis (2007)*.
-
-    You should ensure that your model is linear and your objective is
-    quadratic. Also, you should set the ``linear`` option of the
-    ``model`` block.
-
-    *Options*
-
-    This command accepts the same options than ``ramsey_policy``, plus:
-
-    .. option:: discretionary_tol = NON-NEGATIVE DOUBLE
-
-        Sets the tolerance level used to assess convergence of the
-        solution algorithm. Default: ``1e-7``.
-
-    .. option:: maxit = INTEGER
-
-        Maximum number of iterations. Default: ``3000``.
-
-
-.. command:: planner_objective MODEL_EXPRESSION ;
-
-    |br| This command declares the policy maker objective, for use
-    with ``ramsey_policy`` or ``discretionary_policy``.
-
-    You need to give the one-period objective, not the discounted
-    lifetime objective. The discount factor is given by the
-    ``planner_discount`` option of ``ramsey_policy`` and
-    ``discretionary_policy``. The objective function can only contain
-    current endogenous variables and no exogenous ones. This
-    limitation is easily circumvented by defining an appropriate
-    auxiliary variable in the model.
-
-    With ``ramsey_policy``, you are not limited to quadratic
-    objectives: you can give any arbitrary nonlinear expression.
-
-    With ``discretionary_policy``, the objective function must be quadratic.
 
 
 Sensitivity and identification analysis
@@ -8880,13 +9206,26 @@ Performing identification analysis
             * reduced-form solution and linear rational expectation model
               as in *Ratto and Iskrev (2011)*
 
-         2. Identification strength analysis based on sample information matrix as in
-            *Ratto and Iskrev (2011)*
+            Note that for orders 2 and 3, all identification checks are based on the pruned
+            state space system as in *Mutschler (2015)*. That is, theoretical moments and 
+            spectrum are computed from the pruned ABCD-system, whereas the minimal system
+            criteria is based on the first-order system, but augmented by the theoretical
+            (pruned) mean at order 2 or 3.
+
+         2. Identification strength analysis based on (theoretical or simulated) curvature of
+            moment information matrix as in *Ratto and Iskrev (2011)*
 
          3. Parameter checks based on nullspace and multicorrelation coefficients to
             determine which (combinations of) parameters are involved
 
 *General Options*
+
+    .. option:: order = 1|2|3
+
+        Order of approximation. At orders 2 and 3 identification is based on the
+        pruned state space system. Note that the order set in other functions does
+        not overwrite the default.
+        Default: ``1``.
 
     .. option:: parameter_set = OPTION
 
@@ -8927,7 +9266,7 @@ Performing identification analysis
         triggers gsa prior sample. If equal to ``2``, triggers gsa
         Monte-Carlo sample (i.e. loads a sample corresponding to
         ``pprior=0`` and ``ppost=0`` in the ``dynare_sensitivity``
-        options). If equal to ``FILENAME`` uses the provided path to 
+        options). If equal to ``FILENAME`` uses the provided path to
         a specific user defined sample file.
         Default: ``0``.
 
@@ -8945,13 +9284,15 @@ Performing identification analysis
             * ``0``: efficient sylvester equation method to compute
               analytical derivatives
             * ``1``: kronecker products method to compute analytical
-              derivatives
+              derivatives (only at order=1)
             * ``-1``: numerical two-sided finite difference method
-              to compute all identification Jacobians
+              to compute all identification Jacobians (numerical tolerance
+              level is equal to ``options_.dynatol.x``)
             * ``-2``: numerical two-sided finite difference method
               to compute derivatives of steady state and dynamic
               model numerically, the identification Jacobians are
-              then computed analytically
+              then computed analytically (numerical tolerance
+              level is equal to ``options_.dynatol.x``)
 
         Default: ``0``.
 
@@ -9022,7 +9363,7 @@ Performing identification analysis
     .. option:: no_identification_spectrum
 
         Disables computations of identification check based on
-        Qu and Tkachenko (2012)'s G, i.e. Gram matrix of derivatives of
+        *Qu and Tkachenko (2012)*'s G, i.e. Gram matrix of derivatives of
         first moment plus outer product of derivatives of spectral density.
 
     .. option:: grid_nbr = INTEGER
@@ -9036,7 +9377,7 @@ Performing identification analysis
     .. option:: no_identification_minimal
 
         Disables computations of identification check based on
-        Komunjer and Ng (2011)'s D, i.e. minimal state space system
+        *Komunjer and Ng (2011)*'s D, i.e. minimal state space system
         and observational equivalent spectral density transformations.
 
 *Misc Options*
@@ -9083,8 +9424,8 @@ Performing identification analysis
         If equal to ``1``: finds problematic parameters in a bruteforce
         fashion: It computes the rank of the Jacobians for all possible
         parameter combinations. If the rank condition is not fullfilled,
-        these parameter sets are flagged as non-identifiable. 
-        The maximum dimension of the group searched is triggered by 
+        these parameter sets are flagged as non-identifiable.
+        The maximum dimension of the group searched is triggered by
         ``max_dim_subsets_groups``.
         Default: ``0``.
 
@@ -10318,6 +10659,48 @@ below.
 
         See :opt:`regimes`.
 
+.. _epilogue:
+
+Epilogue Variables
+==================
+
+.. block:: epilogue ;
+
+The epilogue block is useful for computing output variables of interest that
+may not be necessarily defined in the model (e.g. various kinds of real/nominal
+shares or relative prices, or annualized variables out of a quarterly model).
+
+It can also provide several advantages in terms of computational efficiency and
+flexibility:
+
+- You can calculate variables in the epilogue block after smoothers/simulations
+  have already been run without adding the new definitions and equations and
+  rerunning smoothers/simulations. Even posterior smoother subdraws can be
+  recycled for computing epilogue variables without rerunning subdraws with the
+  new definitions and equations.
+
+- You can also reduce the state space dimension in data
+  filtering/smoothing. Assume, for example, you want annualized variables as
+  outputs. If you define an annual growth rate in a quarterly model, you need
+  lags up to order 7 of the associated quarterly variable; in a medium/large
+  scale model this would just blow up the state dimension and increase by a
+  huge amount the computing time of a smoother.
+
+The ``epilogue`` block is terminated by ``end;`` and contains lines of the
+form:
+
+            NAME = EXPRESSION;
+
+*Example*
+        ::
+
+            epilogue;
+            // annualized level of y
+            ya = exp(y)+exp(y(-1))+exp(y(-2))+exp(y(-3));
+            // annualized growth rate of y
+            gya = ya/ya(-4)-1;
+            end;
+
 
 Displaying and saving results
 =============================
@@ -10334,20 +10717,20 @@ Dynare has comments to plot the results of a simulation and to save the results.
 
 .. command:: dynatype (FILENAME) [VARIABLE_NAME...];
 
-    |br| This command prints the listed variables in a text file named
+    |br| This command prints the listed endogenous or exogenous variables in a text file named
     FILENAME. If no VARIABLE_NAME is listed, all endogenous variables
     are printed.
 
 .. command:: dynasave (FILENAME) [VARIABLE_NAME...];
 
-    |br| This command saves the listed variables in a binary file
-    named FILENAME. If no VARIABLE_NAME are listed, all endogenous
+    |br| This command saves the listed endogenous or exogenous variables in a binary file
+    named FILENAME. If no VARIABLE_NAME is listed, all endogenous
     variables are saved.
 
-    In MATLAB or Octave, variables saved with the ``dynasave command``
+    In MATLAB or Octave, variables saved with the ``dynasave`` command
     can be retrieved by the command::
 
-        load -mat FILENAME
+        load(FILENAME,'-mat')
 
 
 .. _macro-proc-lang:
@@ -10481,6 +10864,8 @@ The following operators can be used on arrays:
     * Comparison operators: ``==, !=``
     * Dereferencing: if ``v`` is an array, then ``v[2]`` is its 2nd element
     * Concatenation of two arrays: ``+``
+    * Set union of two arrays: ``|``
+    * Set intersection of two arrays: ``&``
     * Difference ``-``: returns the first operand from which the
       elements of the second operand have been removed.
     * Cartesian product of two arrays: ``*``
@@ -10662,7 +11047,8 @@ Macro directives
 
 
 
-.. macrodir:: @#define MACRO_VARIABLE = MACRO_EXPRESSION
+.. macrodir:: @#define MACRO_VARIABLE
+              @#define MACRO_VARIABLE = MACRO_EXPRESSION
               @#define MACRO_FUNCTION = MACRO_EXPRESSION
 
     |br| Defines a macro-variable or macro function.
@@ -10671,6 +11057,7 @@ Macro directives
 
         ::
 
+            @#define var                      // Equals 1
             @#define x = 5                    // Real
             @#define y = "US"                 // String
             @#define v = [ 1, 2, 4 ]          // Real array
@@ -10706,8 +11093,8 @@ Macro directives
               @#ifdef MACRO_VARIABLE
               @#ifndef MACRO_VARIABLE
               @#elseif MACRO_EXPRESSION
-              @#else
-              @#endif
+              @#else ​
+              @#endif ​
 
     |br| Conditional inclusion of some part of the ``.mod`` file. The lines
     between ``@#if``, ``@#ifdef``, or ``@#ifndef`` and the next ``@#elseif``,
@@ -10795,7 +11182,7 @@ Macro directives
               @#for MACRO_VARIABLE in MACRO_EXPRESSION when MACRO_EXPRESSION
               @#for MACRO_TUPLE in MACRO_EXPRESSION
               @#for MACRO_TUPLE in MACRO_EXPRESSION when MACRO_EXPRESSION
-              @#endfor
+              @#endfor ​
 
     |br| Loop construction for replicating portions of the ``.mod``
     file. Note that this construct can enclose variable/parameters
@@ -10868,7 +11255,7 @@ Macro directives
     |br| Asks the preprocessor to display some error message on standard
     output and to abort. The argument must evaluate to a string.
 
-.. macrodir:: @#echomacrovars
+.. macrodir:: @#echomacrovars ​
               @#echomacrovars MACRO_VARIABLE_LIST
               @#echomacrovars(save) MACRO_VARIABLE_LIST
 

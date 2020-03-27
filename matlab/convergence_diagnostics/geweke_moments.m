@@ -89,7 +89,7 @@ results_struct.rne_iid = results_vec(1,4);
 centered_window_means=window_means-total_mean;
 autocov_grouped_means=zeros(n_groups,1);
 for lag=0:n_groups-1
-    autocov_grouped_means(lag+1)=centered_window_means(lag+1:n_groups,1)'*centered_window_means(1:n_groups-lag,1)/100;
+    autocov_grouped_means(lag+1)=centered_window_means(lag+1:n_groups,1)'*centered_window_means(1:n_groups-lag,1)/n_groups;
 end
 
 % numerical standard error with tapered autocovariance functions

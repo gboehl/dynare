@@ -404,8 +404,8 @@ namespace ogdyn
        in the subclass. */
     void write_der0(std::ostream &os);
     /* This writes the evaluation of the first order derivative of the system.
-        It calls pure virtual methods for writing a preamble, assignment, and
-        assignemnt of the resulting objects. */
+       It calls pure virtual methods for writing a preamble, assignment, and
+       assignemnt of the resulting objects. */
     void write_der1(std::ostream &os);
   protected:
     virtual void write_der0_preamble(std::ostream &os) const = 0;

@@ -234,7 +234,7 @@ All the prerequisites are packaged:
 - `texlive-fonts-extra` (for ccicons)
 - `texlive-latex-recommended`
 - `texlive-science` (for amstex)
-- `texlive-generic-extra` (for Sphinx)
+- `texlive-plain-generic`
 - `lmodern` (for macroprocessor PDF)
 - `python3-sphinx`
 - `latexmk`
@@ -243,7 +243,7 @@ All the prerequisites are packaged:
 
 You can install them all at once with:
 ```
-apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-generic-extra lmodern python3-sphinx latexmk libjs-mathjax doxygen
+apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx latexmk libjs-mathjax doxygen
 ```
 
 ## Windows
@@ -262,30 +262,32 @@ pacman -Syu
 ```
 pacman -S git autoconf automake-wrapper bison flex make tar texinfo mingw-w64-x86_64-gcc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-boost mingw-w64-x86_64-gsl mingw-w64-x86_64-matio mingw-w64-x86_64-openblas
 ```
-- **(Optional)** compile and install SLICOT, needed for the `kalman_steady_state`
-  MEX file
+- Compile and install SLICOT, needed for the `kalman_steady_state` MEX file
 ```
 wget https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
 tar xf slicot_5.0+20101122.orig.tar.gz
 cd slicot-5.0+20101122
-make FORTRAN=gfortran OPTS="-O2 -fno-underscoring -fdefault-integer-8" LOADER=gfortran slicot.a
+make FORTRAN=gfortran OPTS="-O2 -fno-underscoring -fdefault-integer-8" LOADER=gfortran lib
 mkdir -p /usr/local/lib
 cp slicot.a /usr/local/lib/libslicot64_pic.a
 cd ..
 ```
-- Clone and prepare the Dynare sources:
+- Prepare the Dynare sources, either by unpacking the source tarball, or with:
 ```
 git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git
 cd dynare
 autoreconf -si
 ```
-- Configure Dynare:
+- Configure Dynare from the source directory:
 ```
-./configure --with-slicot=/usr/local --with-matlab=<…> MATLAB_VERSION=<…> --disable-octave
+./configure --with-slicot=/usr/local --with-matlab=<…> MATLAB_VERSION=<…> --disable-octave --disable-doc
 ```
 where the path and version of MATLAB are specified. Note that you should use
 the MSYS2 notation and not put spaces in the MATLAB path, so you probably want
-to use something like `/c/Progra~1/MATLAB/…`.
+to use something like `/c/Progra~1/MATLAB/…`. Alternatively, if your filesystem
+does not have short filenames (8dot3), then you can run `mkdir -p
+/usr/local/MATLAB && mount c:/Program\ Files/MATLAB /usr/local/MATLAB`, and
+then pass `/usr/local/MATLAB/…` as MATLAB path to the configure script.
 - Compile:
 ```
 make

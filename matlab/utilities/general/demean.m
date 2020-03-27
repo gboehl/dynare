@@ -2,10 +2,10 @@ function c = demean(x)
 
 % Removes the mean of each column of a matrix.
 %
-% INPUTS 
+% INPUTS
 % - x    [double]   T*N matrix of data.
 %
-% OUTPUTS 
+% OUTPUTS
 % - c    [double]   T*N matrix of demeaned data.
 
 % Copyright (C) 2011-2018 Dynare Team

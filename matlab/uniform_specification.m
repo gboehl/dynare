@@ -45,5 +45,5 @@ if ~(isnan(p3) || isnan(p4))
 else
     p6 = m-s*sqrt(3);
     p7 = m+s*sqrt(3);
-    
+
 end

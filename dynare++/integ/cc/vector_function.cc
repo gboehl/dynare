@@ -70,7 +70,6 @@ VectorFunctionSet::VectorFunctionSet(VectorFunction &f, int n)
     }
 }
 
-
 /* Here we construct the object from the given function f and given
    variance-covariance matrix Σ=vcov. The matrix A is calculated as lower
    triangular and yields Σ=AAᵀ. */

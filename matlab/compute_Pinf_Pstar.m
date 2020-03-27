@@ -150,8 +150,8 @@ Pinf = zeros(np,np);
 Pinf(1:nk,1:nk) = eye(nk);
 if np0
     STtriu = STinf-eye(nk);
-%     A\B is the matrix division of A into B, which is roughly the
-%     same as INV(A)*B
+    % A\B is the matrix division of A into B, which is roughly the
+    % same as INV(A)*B
     STinf0 = ST00*(eye(nk)-iSTinf*STtriu);
     Pinf = blkdiag(zeros(np0),Pinf);
     QT = blkdiag(eye(np0),QT);

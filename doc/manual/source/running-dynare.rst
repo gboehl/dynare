@@ -104,6 +104,23 @@ by the ``dynare`` command.
     Octave, it also means that the ``.mod`` file cannot be named
     ``test.mod`` or ``example.mod``.
 
+    .. _quote-note:
+
+    .. note::
+       Note on Quotes
+
+       When passing command line options that contains a space (or, under
+       Octave, a double quote), you must surround the entire option (keyword
+       and argument) with single quotes, as in the following example.
+
+       *Example*
+
+       Call Dynare with options containing spaces
+
+       .. code-block:: matlab
+
+          >> dynare <<modfile.mod>> '-DA=[ i in [1,2,3] when i > 1 ]' 'conffile=C:\User\My Documents\config.txt'
+
     *Options*
 
     .. option:: noclearall
@@ -140,10 +157,11 @@ by the ``dynare`` command.
 
     .. option:: savemacro[=FILENAME]
 
-        Instructs ``dynare`` to save the intermediary file which is
-        obtained after macro processing (see :ref:`macro-proc-lang`);
-        the saved output will go in the file specified, or if no file
-        is specified in ``FILENAME-macroexp.mod``
+        Instructs ``dynare`` to save the intermediary file which is obtained
+        after macro processing (see :ref:`macro-proc-lang`); the saved output
+        will go in the file specified, or if no file is specified in
+        ``FILENAME-macroexp.mod``. See the :ref:`note on quotes<quote-note>`
+        for info on passing a ``FILENAME`` argument containing spaces.
 
     .. option:: onlymacro
 
@@ -152,19 +170,12 @@ by the ``dynare`` command.
         debugging purposes or for using the macro processor
         independently of the rest of Dynare toolbox.
 
-    .. option:: nolinemacro
+    .. option:: linemacro
 
-        Instructs the macro preprocessor to omit line numbering
-        information in the intermediary ``.mod`` file created after
-        the macro processing step. Useful in conjunction with
-        :opt:`savemacro <savemacro[=FILENAME]>` when one wants that to reuse the intermediary
-        ``.mod`` file, without having it cluttered by line numbering
-        directives.
-
-    .. option:: noemptylinemacro
-
-        Passing this option removes all empty from the macro expanded
-        mod file created when the :opt:`savemacro <savemacro[=FILENAME]>` option is used.
+        Instructs the macro preprocessor include ``@#line`` directives
+        specifying the line on which macro directives were encountered and
+        expanded from. Only useful in conjunction with :opt:`savemacro
+        <savemacro[=FILENAME]>`.
 
     .. option:: onlymodel
 
@@ -305,9 +316,10 @@ by the ``dynare`` command.
 
     .. option:: matlabroot=<<path>>
 
-        The path to the MATLAB installation for use with
-        :opt:`use_dll`. Dynare is able to set this automatically,
-        so you should not need to set it yourself.
+        The path to the MATLAB installation for use with :opt:`use_dll`. Dynare
+        is able to set this automatically, so you should not need to set it
+        yourself. See the :ref:`note on quotes<quote-note>` for info on
+        passing a ``<<path>>`` argument containing spaces.
 
     .. option:: parallel[=CLUSTER_NAME]
 
@@ -320,9 +332,11 @@ by the ``dynare`` command.
 
     .. option:: conffile=FILENAME
 
-        Specifies the location of the configuration file if it differs
-        from the default. See :ref:`conf-file`, for more information
-        about the configuration file and its default location.
+        Specifies the location of the configuration file if it differs from the
+        default. See :ref:`conf-file`, for more information about the
+        configuration file and its default location. See the :ref:`note on
+        quotes<quote-note>` for info on passing a ``FILENAME`` argument
+        containing spaces.
 
     .. option:: parallel_slave_open_mode
 
@@ -338,18 +352,30 @@ by the ``dynare`` command.
 
     .. option:: -DMACRO_VARIABLE=MACRO_EXPRESSION
 
-        Defines a macro-variable from the command line (the same
-        effect as using the Macro directive ``@#define`` in a model
-        file, see :ref:`macro-proc-lang`).
+        Defines a macro-variable from the command line (the same effect as
+        using the Macro directive ``@#define`` in a model file, see
+        :ref:`macro-proc-lang`). See the :ref:`note on quotes<quote-note>` for
+        info on passing a ``MACRO_EXPRESSION`` argument containing spaces. Note
+        that an expression passed on the command line can reference variables
+        defined before it.
+
+        *Example*
+
+        Call dynare with command line defines
+
+            .. code-block:: matlab
+
+               >> dynare <<modfile.mod>> -DA=true '-DB="A string with space"' -DC=[1,2,3] '-DD=[ i in C when i > 1 ]'
 
     .. option:: -I<<path>>
 
-        Defines a path to search for files to be included by the
-        macro processor (using the ``@#include`` command). Multiple
-        ``-I`` flags can be passed on the command line. The paths will
-        be searched in the order that the ``-I`` flags are passed and
-        the first matching file will be used. The flags passed here
-        take priority over those passed to ``@#includepath``.
+        Defines a path to search for files to be included by the macro
+        processor (using the ``@#include`` command). Multiple ``-I`` flags can
+        be passed on the command line. The paths will be searched in the order
+        that the ``-I`` flags are passed and the first matching file will be
+        used. The flags passed here take priority over those passed to
+        ``@#includepath``. See the :ref:`note on quotes<quote-note>` for info
+        on passing a ``<<path>>`` argument containing spaces.
 
     .. option:: nostrict
 
@@ -475,13 +501,14 @@ by the ``dynare`` command.
     after the name of the ``.mod`` file. They can alternatively be
     defined in the first line of the ``.mod`` file, this avoids typing
     them on the command line each time a ``.mod`` file is to be
-    run. This line must be a Dynare comment (ie must begin with //)
-    and the options must be comma separated between ``--+`` options:
+    run. This line must be a Dynare one-line comment (i.e. must begin with ``//``)
+    and the options must be whitespace separated between ``--+ options:``
     and ``+--``. Note that any text after the ``+--`` will be
     discarded. As in the command line, if an option admits a value the
     equal symbol must not be surrounded by spaces. For instance ``json
     = compute`` is not correct, and should be written
-    ``json=compute``.
+    ``json=compute``. The ``nopathchange`` option cannot be specified in
+    this way, it must be passed on the command-line.
 
     *Output*
 

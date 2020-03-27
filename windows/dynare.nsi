@@ -50,7 +50,7 @@ Section "Dynare core (preprocessor and M-files)"
  SectionIn RO
 !insertmacro DETERMINE_CONTEXT
  SetOutPath $INSTDIR
- File README.txt ..\NEWS ..\license.txt ..\VERSION
+ File README.txt ..\NEWS.md ..\license.txt ..\VERSION
 
  SetOutPath $INSTDIR\matlab
  File /r ..\matlab\*.m
@@ -101,7 +101,7 @@ Section "MEX files for MATLAB 64-bit, version 9.4 to 9.8 (R2018a to R2020a)"
  File ..\mex\matlab\win64-9.4-9.8\*.mexw64
 SectionEnd
 
-Section "MEX files for Octave 5.1.0 (64-bit)"
+Section "MEX files for Octave 5.2.0 (64-bit)"
  SetOutPath $INSTDIR\mex\octave\win64
  File ..\mex\octave\win64\*
 SectionEnd
@@ -121,7 +121,7 @@ Section "MEX files for MATLAB 32-bit, version 7.9 to 8.6 (R2009b to R2015b)"
  File ..\mex\matlab\win32-7.9-8.6\*.mexw32
 SectionEnd
 
-Section "MEX files for Octave 5.1.0 (32-bit)"
+Section "MEX files for Octave 5.2.0 (32-bit)"
  SetOutPath $INSTDIR\mex\octave\win32
  File ..\mex\octave\win32\*
 SectionEnd
@@ -158,6 +158,9 @@ Section /o "Dynare++ (standalone executable)"
  SetOutPath $INSTDIR\dynare++\64-bit
  File ..\dynare++\64-bit\dynare++.exe
 
+ SetOutPath $INSTDIR\dynare++
+ File ..\dynare++\dynare_simul\dynare_simul.m
+
  SetOutPath $INSTDIR\doc\dynare++
  File ..\dynare++\doc\*.pdf
 
@@ -172,7 +175,7 @@ Section "Uninstall"
  # First delete the uninstaller
  Delete $INSTDIR\uninstall.exe
  Delete $INSTDIR\README.txt
- Delete $INSTDIR\NEWS
+ Delete $INSTDIR\NEWS.md
  Delete $INSTDIR\license.txt
  Delete $INSTDIR\VERSION
  Rmdir /r $INSTDIR\matlab

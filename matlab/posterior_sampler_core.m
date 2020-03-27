@@ -86,6 +86,8 @@ oo_ = myinputs.oo_;
 if whoiam
     % initialize persistent variables in priordens()
     priordens(xparam1,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7, bayestopt_.p3,bayestopt_.p4,1);
+    % initialize persistent variables in prior_draw()
+    prior_draw(bayestopt_,options_.prior_trunc);
 end
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
@@ -137,14 +139,37 @@ for curr_block = fblck:nblck
         % If the state set by master is incompatible with the slave, we only reseed
         set_dynare_seed(options_.DynareRandomStreams.seed+curr_block);
     end
+    mh_recover_flag=0;
     if (options_.load_mh_file~=0) && (fline(curr_block)>1) && OpenOldFile(curr_block) %load previous draws and likelihood
         load([BaseName '_mh' int2str(NewFile(curr_block)) '_blck' int2str(curr_block) '.mat'])
         x2 = [x2;zeros(InitSizeArray(curr_block)-fline(curr_block)+1,npar)];
         logpo2 = [logpo2;zeros(InitSizeArray(curr_block)-fline(curr_block)+1,1)];
         OpenOldFile(curr_block) = 0;
     else
-        x2 = zeros(InitSizeArray(curr_block),npar);
-        logpo2 = zeros(InitSizeArray(curr_block),1);
+        if options_.mh_recover && exist([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat'],'file')==2
+            load([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat']);
+            draw_iter = size(neval_this_chain,2)+1;
+            draw_index_current_file = draw_iter;
+            feval_this_chain = sum(sum(neval_this_chain));
+            feval_this_file = sum(sum(neval_this_chain));
+            if feval_this_chain>draw_iter-1
+                % non Metropolis type of sampler
+                accepted_draws_this_chain = draw_iter-1;
+                accepted_draws_this_file = draw_iter-1;
+            else
+                accepted_draws_this_chain = 0;
+                accepted_draws_this_file = 0;
+            end
+            mh_recover_flag=1;
+            set_dynare_random_generator_state(LastSeeds.(['file' int2str(NewFile(curr_block))]).Unifor, LastSeeds.(['file' int2str(NewFile(curr_block))]).Normal);
+            last_draw(curr_block,:)=x2(draw_iter-1,:);
+            last_posterior(curr_block)=logpo2(draw_iter-1);
+
+        else
+
+            x2 = zeros(InitSizeArray(curr_block),npar);
+            logpo2 = zeros(InitSizeArray(curr_block),1);
+        end
     end
     %Prepare waiting bars
     if whoiam
@@ -158,13 +183,15 @@ for curr_block = fblck:nblck
         hh = dyn_waitbar(0,[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
         set(hh,'Name',bar_title);
     end
-    accepted_draws_this_chain = 0;
-    accepted_draws_this_file = 0;
-    feval_this_chain = 0;
-    feval_this_file = 0;
-    draw_index_current_file = fline(curr_block); %get location of first draw in current block
-    draw_iter = 1;
-
+    if mh_recover_flag==0
+        accepted_draws_this_chain = 0;
+        accepted_draws_this_file = 0;
+        feval_this_chain = 0;
+        feval_this_file = 0;
+        draw_iter = 1;
+        draw_index_current_file = fline(curr_block); %get location of first draw in current block
+    end
+    sampler_options.curr_block = curr_block;
     while draw_iter <= nruns(curr_block)
 
         [par, logpost, accepted, neval] = posterior_sampler_iteration(TargetFun, last_draw(curr_block,:), last_posterior(curr_block), sampler_options,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
@@ -173,6 +200,7 @@ for curr_block = fblck:nblck
         last_draw(curr_block,:) = par;
         logpo2(draw_index_current_file) = logpost;
         last_posterior(curr_block) = logpost;
+        neval_this_chain(:, draw_iter) = neval;
         feval_this_chain = feval_this_chain + sum(neval);
         feval_this_file = feval_this_file + sum(neval);
         accepted_draws_this_chain = accepted_draws_this_chain + accepted;
@@ -187,7 +215,7 @@ for curr_block = fblck:nblck
             end
             if save_tmp_file
                 [LastSeeds.(['file' int2str(NewFile(curr_block))]).Unifor, LastSeeds.(['file' int2str(NewFile(curr_block))]).Normal] = get_dynare_random_generator_state();
-                save([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat'],'x2','logpo2','LastSeeds');
+                save([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat'],'x2','logpo2','LastSeeds','neval_this_chain','accepted_draws_this_chain','accepted_draws_this_file','feval_this_chain','feval_this_file');
             end
         end
         if (draw_index_current_file == InitSizeArray(curr_block)) || (draw_iter == nruns(curr_block)) % Now I save the simulations, either because the current file is full or the chain is done
@@ -195,7 +223,7 @@ for curr_block = fblck:nblck
             if save_tmp_file
                 delete([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat']);
             end
-            save([BaseName '_mh' int2str(NewFile(curr_block)) '_blck' int2str(curr_block) '.mat'],'x2','logpo2','LastSeeds');
+            save([BaseName '_mh' int2str(NewFile(curr_block)) '_blck' int2str(curr_block) '.mat'],'x2','logpo2','LastSeeds','accepted_draws_this_chain','accepted_draws_this_file','feval_this_chain','feval_this_file');
             fidlog = fopen([MetropolisFolder '/metropolis.log'],'a');
             fprintf(fidlog,['\n']);
             fprintf(fidlog,['%% Mh' int2str(NewFile(curr_block)) 'Blck' int2str(curr_block) ' (' datestr(now,0) ')\n']);
@@ -238,13 +266,15 @@ for curr_block = fblck:nblck
         end
         draw_iter=draw_iter+1;
         draw_index_current_file = draw_index_current_file + 1;
-    end% End of the simulations for one mh-block.
-    record.AcceptanceRatio(curr_block) = accepted_draws_this_chain/(draw_iter-1);
-    record.FunctionEvalPerIteration(curr_block) = feval_this_chain/(draw_iter-1);
+    end % End of the simulations for one mh-block.
     dyn_waitbar_close(hh);
-    [record.LastSeeds(curr_block).Unifor, record.LastSeeds(curr_block).Normal] = get_dynare_random_generator_state();
+    if nruns(curr_block)
+        record.AcceptanceRatio(curr_block) = accepted_draws_this_chain/(draw_iter-1);
+        record.FunctionEvalPerIteration(curr_block) = feval_this_chain/(draw_iter-1);
+        [record.LastSeeds(curr_block).Unifor, record.LastSeeds(curr_block).Normal] = get_dynare_random_generator_state();
+    end
     OutputFileName(block_iter,:) = {[MetropolisFolder,filesep], [ModelName '_mh*_blck' int2str(curr_block) '.mat']};
-end% End of the loop over the mh-blocks.
+end % End of the loop over the mh-blocks.
 
 
 myoutput.record = record;

@@ -47,43 +47,43 @@ if nargin <11
 end
 
 [SampleSize, nparam]=size(params);
-si_Jnorm = idemoments.si_Jnorm;
-si_dTAUnorm = idemodel.si_dTAUnorm;
-si_dLREnorm = idelre.si_dLREnorm;
+si_dMOMENTSnorm = idemoments.si_dMOMENTSnorm;
+si_dTAUnorm = idemodel.si_dREDUCEDFORMnorm;
+si_dLREnorm = idelre.si_dDYNAMICnorm;
 
 tittxt1=regexprep(tittxt, ' ', '_');
 tittxt1=strrep(tittxt1, '.', '');
 if SampleSize == 1
-    si_J = idemoments.si_J;
+    si_dMOMENTS = idemoments.si_dMOMENTS;
     hh = dyn_figure(options_.nodisplay,'Name',[tittxt, ' - Identification using info from observables']);
     subplot(211)
-    mmm = (idehess.ide_strength_J);
+    mmm = (idehess.ide_strength_dMOMENTS);
     [ss, is] = sort(mmm);
-    if ~all(isnan(idehess.ide_strength_J_prior))
-        bar(log([idehess.ide_strength_J(:,is)' idehess.ide_strength_J_prior(:,is)']))
+    if ~all(isnan(idehess.ide_strength_dMOMENTS_prior))
+        bar(1:nparam,log([idehess.ide_strength_dMOMENTS(:,is)' idehess.ide_strength_dMOMENTS_prior(:,is)']))
     else
-        bar(log([idehess.ide_strength_J(:,is)' ]))
+        bar(1:nparam,log([idehess.ide_strength_dMOMENTS(:,is)' ]))
     end
     hold on
-    plot((1:length(idehess.ide_strength_J(:,is)))-0.15,log([idehess.ide_strength_J(:,is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
-    plot((1:length(idehess.ide_strength_J_prior(:,is)))+0.15,log([idehess.ide_strength_J_prior(:,is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
-    if any(isinf(log(idehess.ide_strength_J(idehess.identified_parameter_indices))))
+    plot((1:length(idehess.ide_strength_dMOMENTS(:,is)))-0.15,log([idehess.ide_strength_dMOMENTS(:,is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
+    plot((1:length(idehess.ide_strength_dMOMENTS_prior(:,is)))+0.15,log([idehess.ide_strength_dMOMENTS_prior(:,is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
+    if any(isinf(log(idehess.ide_strength_dMOMENTS(idehess.identified_parameter_indices))))
         %-Inf, i.e. 0 strength
-        inf_indices=find(isinf(log(idehess.ide_strength_J(idehess.identified_parameter_indices))) & log(idehess.ide_strength_J(idehess.identified_parameter_indices))<0);
+        inf_indices=find(isinf(log(idehess.ide_strength_dMOMENTS(idehess.identified_parameter_indices))) & log(idehess.ide_strength_dMOMENTS(idehess.identified_parameter_indices))<0);
         inf_pos=ismember(is,idehess.identified_parameter_indices(inf_indices));
         plot(find(inf_pos)-0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 0 0],'MarkerEdgeColor',[0 0 0])
         %+Inf, i.e. Inf strength
-        inf_indices=find(isinf(log(idehess.ide_strength_J(idehess.identified_parameter_indices))) & log(idehess.ide_strength_J(idehess.identified_parameter_indices))>0);
+        inf_indices=find(isinf(log(idehess.ide_strength_dMOMENTS(idehess.identified_parameter_indices))) & log(idehess.ide_strength_dMOMENTS(idehess.identified_parameter_indices))>0);
         inf_pos=ismember(is,idehess.identified_parameter_indices(inf_indices));
         plot(find(inf_pos)-0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 1 1],'MarkerEdgeColor',[0 0 0])
     end
-    if any(isinf(log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))))
+    if any(isinf(log(idehess.ide_strength_dMOMENTS_prior(idehess.identified_parameter_indices))))
         %-Inf, i.e. 0 strength
-        inf_indices=find(isinf(log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))) & log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))<0);
+        inf_indices=find(isinf(log(idehess.ide_strength_dMOMENTS_prior(idehess.identified_parameter_indices))) & log(idehess.ide_strength_dMOMENTS_prior(idehess.identified_parameter_indices))<0);
         inf_pos=ismember(is,idehess.identified_parameter_indices(inf_indices));
         plot(find(inf_pos)+0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 0 0],'MarkerEdgeColor',[0 0 0])
         %+Inf, i.e. 0 strength
-        inf_indices=find(isinf(log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))) & log(idehess.ide_strength_J_prior(idehess.identified_parameter_indices))>0);
+        inf_indices=find(isinf(log(idehess.ide_strength_dMOMENTS_prior(idehess.identified_parameter_indices))) & log(idehess.ide_strength_dMOMENTS_prior(idehess.identified_parameter_indices))>0);
         inf_pos=ismember(is,idehess.identified_parameter_indices(inf_indices));
         plot(find(inf_pos)+0.15,zeros(sum(inf_pos),1),'o','MarkerSize',7,'MarkerFaceColor',[1 1 1],'MarkerEdgeColor',[0 0 0])
     end
@@ -93,7 +93,7 @@ if SampleSize == 1
     for ip=1:nparam
         text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
     end
-    if ~all(isnan(idehess.ide_strength_J_prior))
+    if ~all(isnan(idehess.ide_strength_dMOMENTS_prior))
         legend('relative to param value','relative to prior std','Location','Best')
     else
         legend('relative to param value','Location','Best')
@@ -106,9 +106,9 @@ if SampleSize == 1
 
     subplot(212)
     if ~all(isnan(idehess.deltaM_prior))
-        bar(log([idehess.deltaM(is) idehess.deltaM_prior(is)]))
+        bar(1:nparam, log([idehess.deltaM(is) idehess.deltaM_prior(is)]))
     else
-        bar(log([idehess.deltaM(is)]))
+        bar(1:nparam, log([idehess.deltaM(is)]))
     end
     hold on
     plot((1:length(idehess.deltaM(is)))-0.15,log([idehess.deltaM(is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
@@ -161,12 +161,12 @@ if SampleSize == 1
             skipline()
             disp('Plotting advanced diagnostics')
         end
-        if all(isnan([si_Jnorm';si_dTAUnorm';si_dLREnorm']))
+        if all(isnan([si_dMOMENTSnorm';si_dTAUnorm';si_dLREnorm']))
             fprintf('\nIDENTIFICATION: Skipping sensitivity plot, because standard deviation of parameters is NaN, possibly due to the use of ML.\n')
         else
             hh = dyn_figure(options_.nodisplay,'Name',[tittxt, ' - Sensitivity plot']);
             subplot(211)
-            mmm = (si_Jnorm)'./max(si_Jnorm);
+            mmm = (si_dMOMENTSnorm)'./max(si_dMOMENTSnorm);
             mmm1 = (si_dTAUnorm)'./max(si_dTAUnorm);
             mmm=[mmm mmm1];
             mmm1 = (si_dLREnorm)'./max(si_dLREnorm);
@@ -199,7 +199,7 @@ if SampleSize == 1
             end
         end
         % identificaton patterns
-        for  j=1:size(idemoments.cosnJ,2)
+        for  j=1:size(idemoments.cosndMOMENTS,2)
             pax=NaN(nparam,nparam);
             %             fprintf('\n')
             %             disp(['Collinearity patterns with ', int2str(j) ,' parameter(s)'])
@@ -212,10 +212,10 @@ if SampleSize == 1
                         namx=[namx ' ' sprintf('%-15s','--')];
                     else
                         namx=[namx ' ' sprintf('%-15s',name{dumpindx})];
-                        pax(i,dumpindx)=idemoments.cosnJ(i,j);
+                        pax(i,dumpindx)=idemoments.cosndMOMENTS(i,j);
                     end
                 end
-                %                 fprintf('%-15s [%s] %10.3f\n',name{i},namx,idemoments.cosnJ(i,j))
+                %                 fprintf('%-15s [%s] %10.3f\n',name{i},namx,idemoments.cosndMOMENTS(i,j))
             end
             hh = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Collinearity patterns with ', int2str(j) ,' parameter(s)']);
             imagesc(pax,[0 1]);
@@ -337,9 +337,9 @@ if SampleSize == 1
 else
     hh = dyn_figure(options_.nodisplay,'Name',['MC sensitivities']);
     subplot(211)
-    mmm = (idehess.ide_strength_J);
+    mmm = (idehess.ide_strength_dMOMENTS);
     [ss, is] = sort(mmm);
-    mmm = mean(si_Jnorm)';
+    mmm = mean(si_dMOMENTSnorm)';
     mmm = mmm./max(mmm);
     if advanced
         mmm1 = mean(si_dTAUnorm)';

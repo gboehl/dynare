@@ -93,6 +93,13 @@ oo_.exo_steady_state = [];
 oo_.exo_det_steady_state = [];
 oo_.exo_det_simul = [];
 
+oo_.gui.ran_estimation = false;
+oo_.gui.ran_stoch_simul = false;
+oo_.gui.ran_calib_smoother = false;
+oo_.gui.ran_perfect_foresight = false;
+oo_.gui.ran_shock_decomposition = false;
+oo_.gui.ran_realtime_shock_decomposition = false;
+
 M_.params = [];
 M_.endo_histval = [];
 M_.exo_histval = [];
@@ -116,6 +123,8 @@ M_.osr.param_indices=[];
 M_.osr.param_bounds=[];
 M_.osr.variable_weights=[];
 M_.osr.variable_indices =[];
+
+M_.instr_id=[];
 
 % Set default options_ but keep global_init_file field if defined in the driver.
 if isstruct(options_) && isfield(options_, 'global_init_file')
@@ -141,7 +150,15 @@ set_dynare_seed('default');
 
 % Load user configuration file.
 if isfield(options_, 'global_init_file')
-    run(options_.global_init_file);
+    if isfile(options_.global_init_file)
+        try
+            run(options_.global_init_file);
+        catch
+            error('Cannot evaluate global initialization file (%s)', options_.global_init_file)
+        end
+    else
+        error('Cannot find global initialization file (%s).', options_.global_init_file)
+    end
 end
 
 end

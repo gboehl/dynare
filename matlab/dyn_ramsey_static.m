@@ -18,7 +18,7 @@ function [steady_state,params,check] = dyn_ramsey_static(ys_init,M,options_,oo)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2018 Dynare Team
+% Copyright (C) 2003-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -121,9 +121,14 @@ if options_.steadystate_flag
                         oo.exo_det_steady_state], ...
                                                   M,options_,~options_.steadystate.nocheck);
     if any(imag(x(1:M.orig_endo_nbr))) %return with penalty
-        resids=1+sum(abs(imag(x(1:M.orig_endo_nbr)))); %return with penalty
+        resids=ones(inst_nbr,1)+sum(abs(imag(x(1:M.orig_endo_nbr)))); %return with penalty
         steady_state=NaN(endo_nbr,1);
         return
+    end
+    if check %return 
+        resids=ones(inst_nbr,1)+sum(abs(x(1:M.orig_endo_nbr))); %return with penalty
+        steady_state=NaN(endo_nbr,1);
+        return        
     end
 
 end
@@ -156,8 +161,8 @@ Uyy = reshape(Uyy,endo_nbr,endo_nbr);
 % set multipliers and auxiliary variables that
 % depends on multipliers to 0 to compute residuals
 if (options_.bytecode)
-    [chck, res, junk] = bytecode('static',xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
-                                 params, 'evaluate');
+    [res, junk] = bytecode('static',xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
+                           params, 'evaluate');
     fJ = junk.g1;
 else
     [res,fJ] = feval([fname '.static'],xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
@@ -194,8 +199,8 @@ end
 function result = check_static_model(ys,M,options_,oo)
 result = false;
 if (options_.bytecode)
-    [chck, res, ~] = bytecode('static',ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
-                              M.params, 'evaluate');
+    [res, ~] = bytecode('static',ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
+                        M.params, 'evaluate');
 else
     res = feval([M.fname '.static'],ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
                 M.params);

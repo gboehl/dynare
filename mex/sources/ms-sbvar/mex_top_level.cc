@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2017 Dynare Team
+ * Copyright © 2010-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -17,9 +17,9 @@
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
 #include <dynmex.h>
 
 #include "modify_for_mex.h"
@@ -31,45 +31,39 @@ mexFunction(int nlhs, mxArray *plhs[],
             int nrhs, const mxArray *prhs[])
 {
   int nargs = 0;
-  int n = 0;
-  int maxnargs = 0;
-
   const char *mainarg = "./a.out";
-  char *argument = NULL;
-  char *beginarg = NULL;
-  char **args = NULL;
 
   /*
    * Check args
    */
-  if (nrhs != 1 || !mxIsChar(prhs[0]) || nlhs != 1)
-    DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: this function takes 1 string input argument and returns 1 output argument.");
+  if (nrhs != 1 || !mxIsChar(prhs[0]) || nlhs != 0)
+    mexErrMsgTxt("Error in MS-SBVAR MEX file: this function takes 1 string input argument and returns no output argument.");
 
   /*
    * Allocate memory
    */
-  maxnargs = static_cast<int> (mxGetN(prhs[0])/2+1);
-  argument = static_cast<char *> (mxCalloc(mxGetN(prhs[0])+1, sizeof(char)));
-  args = static_cast<char **> (mxCalloc(maxnargs, sizeof(char *)));
-  if (argument == NULL || args == NULL)
-    DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: could not allocate memory. (1)");
+  int maxnargs = static_cast<int>(mxGetN(prhs[0])/2+1);
+  char *argument = static_cast<char *>(mxCalloc(mxGetN(prhs[0])+1, sizeof(char)));
+  char **args = static_cast<char **>(mxCalloc(maxnargs, sizeof(char *)));
+  if (!argument || !args)
+    mexErrMsgTxt("Error in MS-SBVAR MEX file: could not allocate memory. (1)");
 
   /*
    * Create argument string from prhs and parse to create args / nargs
    */
-  if (!(args[nargs] = static_cast<char *> (mxCalloc(strlen(mainarg)+1, sizeof(char)))))
-    DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: could not allocate memory. (2)");
+  if (!(args[nargs] = static_cast<char *>(mxCalloc(strlen(mainarg)+1, sizeof(char)))))
+    mexErrMsgTxt("Error in MS-SBVAR MEX file: could not allocate memory. (2)");
 
-  strncpy(args[nargs++], mainarg, strlen(mainarg));
+  strcpy(args[nargs++], mainarg);
 
   if (mxGetString(prhs[0], argument, mxGetN(prhs[0])+1))
-    DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: error using mxGetString.\n");
+    mexErrMsgTxt("Error in MS-SBVAR MEX file: error using mxGetString.\n");
 
-  beginarg = &argument[0];
-  while ((n = strcspn(beginarg, " ")))
+  char *beginarg = argument;
+  while (int n = strcspn(beginarg, " "))
     {
-      if (!(args[nargs] = static_cast<char *> (mxCalloc(n+1, sizeof(char)))))
-        DYN_MEX_FUNC_ERR_MSG_TXT("Error in MS-SBVAR MEX file: could not allocate memory. (3)");
+      if (!(args[nargs] = static_cast<char *>(mxCalloc(n+1, sizeof(char)))))
+        mexErrMsgTxt("Error in MS-SBVAR MEX file: could not allocate memory. (3)");
 
       strncpy(args[nargs++], beginarg, n);
       beginarg += (isspace(beginarg[n]) || isblank(beginarg[n]) ? ++n : n);
@@ -85,15 +79,13 @@ mexFunction(int nlhs, mxArray *plhs[],
     }
   catch (const char *str)
     {
-      DYN_MEX_FUNC_ERR_MSG_TXT(str);
+      mexErrMsgTxt(str);
     }
 
   /*
    * free memory
    */
-  for (n = 0; n < nargs; n++)
+  for (int n = 0; n < nargs; n++)
     mxFree(args[n]);
   mxFree(args);
-
-  plhs[0] = mxCreateDoubleScalar(0);
 }

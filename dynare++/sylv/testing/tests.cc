@@ -398,7 +398,7 @@ TestRunnable::gen_sylv(const std::string &aname, const std::string &bname, const
 
   if (m != mmc.row() || m != mmc.col()
       || n != mma.row() || n != mma.col()
-      || n != mmb.row() || n <  mmb.col()
+      || n != mmb.row() || n < mmb.col()
       || n != mmd.row() || power(m, order) != mmd.col())
     {
       std::cout << "  Incompatible sizes for gen_sylv.\n";
@@ -447,10 +447,10 @@ TestRunnable::eig_bubble(const std::string &aname, int from, int to)
   double normInf = check.getNormInf();
   double onorm1 = orig.getNorm1();
   double onormInf = orig.getNormInf();
-  std:: cout <<   "\tabs. error1 = " << norm1 << std::endl
-             << u8"\tabs. error∞ = " << normInf << std::endl
-             <<   "\trel. error1 = " << norm1/onorm1 << std::endl
-             << u8"\trel. error∞ = " << normInf/onormInf << std::endl;
+  std::cout <<   "\tabs. error1 = " << norm1 << std::endl
+            << u8"\tabs. error∞ = " << normInf << std::endl
+            <<   "\trel. error1 = " << norm1/onorm1 << std::endl
+            << u8"\trel. error∞ = " << normInf/onormInf << std::endl;
   return (norm1 < eps_norm*onorm1 && normInf < eps_norm*onormInf);
 }
 

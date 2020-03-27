@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2017 Dynare Team
+ * Copyright © 2007-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -29,39 +29,32 @@
 #include <algorithm>
 using namespace std;
 
-#if !defined(DYN_MEX_FUNC_ERR_MSG_TXT)
-# define DYN_MEX_FUNC_ERR_MSG_TXT(str)          \
-  do {                                          \
-    mexPrintf("%s\n", str);                     \
-  } while (0)
-#endif
-
 typedef unsigned int mwIndex;
 typedef unsigned int mwSize;
 
 enum mxData_type
   {
-    mxREAL,
-    mxCOMPLEX
+   mxREAL,
+   mxCOMPLEX
   };
 
 enum mxArray_type
   {
-    mxDOUBLE_CLASS = 0,
-    mxSINGLE_CLASS = 1,
-    mxLOGICAL_CLASS = 2,
-    mxCHAR_CLASS = 3,
-    mxSPARSE_CLASS = 4,
-    mxSTRUCT_CLASS = 5,
-    mxCELL_CLASS = 6,
-    mxFUNCTION_CLASS = 7,
-    mxUINT8_CLASS = 8,
-    mxINT16_CLASS = 9,
-    mxUINT16_CLASS = 10,
-    mxINT32_CLASS = 11,
-    mxUINT32_CLASS = 12,
-    mxINT64_CLASS = 13,
-    mxUINT64_CLASS = 14
+   mxDOUBLE_CLASS = 0,
+   mxSINGLE_CLASS = 1,
+   mxLOGICAL_CLASS = 2,
+   mxCHAR_CLASS = 3,
+   mxSPARSE_CLASS = 4,
+   mxSTRUCT_CLASS = 5,
+   mxCELL_CLASS = 6,
+   mxFUNCTION_CLASS = 7,
+   mxUINT8_CLASS = 8,
+   mxINT16_CLASS = 9,
+   mxUINT16_CLASS = 10,
+   mxINT32_CLASS = 11,
+   mxUINT32_CLASS = 12,
+   mxINT64_CLASS = 13,
+   mxUINT64_CLASS = 14
   };
 
 class mxArray_tag
@@ -73,7 +66,7 @@ public:
   double *data;
   mxArray_type type;
   vector<string> field_name;
-  vector<vector<mxArray_tag *> > field_array;
+  vector<vector<mxArray_tag *>> field_array;
   mxArray_tag();
 };
 

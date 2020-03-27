@@ -52,7 +52,7 @@ end
 
 % Set particle filter flag.
 if options_.order > 1
-    if options_.particle.status && options_.order==2
+    if options_.particle.status
         skipline()
         disp('Estimation using a non linear filter!')
         skipline()
@@ -78,12 +78,8 @@ if options_.order > 1
                 end
             end
         end
-    elseif options_.particle.status && options_.order>2
-        error(['Non linear filter are not implemented with order ' int2str(options_.order) ' approximation of the model!'])
-    elseif ~options_.particle.status && options_.order==2
-        error('For estimating the model with a second order approximation using a non linear filter, one should have options_.particle.status=true;')
     else
-        error(['Cannot estimate a model with an order ' int2str(options_.order) ' approximation!'])
+        error('For estimating the model with a second order approximation using a non linear filter, one should have options_.particle.status=true;')
     end
 end
 
@@ -443,15 +439,15 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
     end
     % Tunes the jumping distribution's scale parameter
     if options_.mh_tune_jscale.status
-        if options_.posterior_sampler_options.posterior_sampling_method=='random_walk_metropolis_hastings'
+        if strcmp(options_.posterior_sampler_options.posterior_sampling_method, 'random_walk_metropolis_hastings')
             options = options_.mh_tune_jscale;
             options.rwmh = options_.posterior_sampler_options.rwmh;
             options_.mh_jscale = calibrate_mh_scale_parameter(objective_function, ...
-                                                                  invhess, xparam1, [bounds.lb,bounds.ub], ...
-                                                                  options, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_);
-                bayestopt_.jscale(:) = options_.mh_jscale;
-                disp(sprintf('mh_jscale has been set equal to %s', num2str(options_.mh_jscale)))
-                skipline()
+                                                              invhess, xparam1, [bounds.lb,bounds.ub], ...
+                                                              options, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_);
+            bayestopt_.jscale(:) = options_.mh_jscale;
+            disp(sprintf('mh_jscale has been set equal to %s', num2str(options_.mh_jscale)))
+            skipline()
         else
             warning('mh_tune_jscale is only available with Random Walk Metropolis Hastings!')
         end
@@ -523,23 +519,27 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
             end
         end
         [error_flag,~,options_]= metropolis_draw(1,options_,estim_params_,M_);
-        if options_.bayesian_irf
-            if error_flag
-                error('Estimation::mcmc: I cannot compute the posterior IRFs!')
+        if ~(~isempty(options_.sub_draws) && options_.sub_draws==0)
+            if options_.bayesian_irf
+                if error_flag
+                    error('Estimation::mcmc: I cannot compute the posterior IRFs!')
+                end
+                PosteriorIRF('posterior');
             end
-            PosteriorIRF('posterior');
-        end
-        if options_.moments_varendo
-            if error_flag
-                error('Estimation::mcmc: I cannot compute the posterior moments for the endogenous variables!')
+            if options_.moments_varendo
+                if error_flag
+                    error('Estimation::mcmc: I cannot compute the posterior moments for the endogenous variables!')
+                end
+                oo_ = compute_moments_varendo('posterior',options_,M_,oo_,var_list_);
             end
-            oo_ = compute_moments_varendo('posterior',options_,M_,oo_,var_list_);
-        end
-        if options_.smoother || ~isempty(options_.filter_step_ahead) || options_.forecast
-            if error_flag
-                error('Estimation::mcmc: I cannot compute the posterior statistics!')
+            if options_.smoother || ~isempty(options_.filter_step_ahead) || options_.forecast
+                if error_flag
+                    error('Estimation::mcmc: I cannot compute the posterior statistics!')
+                end
+                prior_posterior_statistics('posterior',dataset_,dataset_info);
             end
-            prior_posterior_statistics('posterior',dataset_,dataset_info);
+        else
+            fprintf('Estimation:mcmc: sub_draws was set to 0. Skipping posterior computations.')
         end
         xparam1 = get_posterior_parameters('mean',M_,estim_params_,oo_,options_);
         M_ = set_all_parameters(xparam1,estim_params_,M_);

@@ -2,7 +2,7 @@ function print_moments_implied_prior(ModelInfo, mm, vm, mv, vv)
 %function print_moments_implied_prior(ModelInfo, mm, vm, mv, vv)
 % This routine prints in the command window some descriptive statistics
 % about the endogenous variables implied prior moments.
-% Inputs: 
+% Inputs:
 %   - ModelInfo     [structure]             Dynare's model structure
 %   - mm            [endo_nbr*1]            mean first moments of the endogenous
 %                                           variables

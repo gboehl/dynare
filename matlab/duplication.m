@@ -10,7 +10,7 @@ function [Dp,DpMPinv] = duplication(p)
 %   Dp:      Duplication matrix
 %   DpMPinv: Moore-Penroze inverse of Dp
 % -------------------------------------------------------------------------
-% This function is called by 
+% This function is called by
 %   * get_identification_jacobians.m (previously getJJ.m)
 % =========================================================================
 % Copyright (C) 1997 Tom Minka <minka@microsoft.com>
@@ -43,7 +43,7 @@ j = a(:);
 m = p*(p+1)/2;
 Dp = spalloc(p*p,m,p^2);
 for r = 1:size(Dp,1)
-  Dp(r, j(r)) = 1;
+    Dp(r, j(r)) = 1;
 end
 
 if nargout > 1

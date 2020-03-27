@@ -40,7 +40,7 @@ function [DynareDataset, DatasetInfo, newdatainterface] = makedataset(DynareOpti
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
-    
+
 
 if nargin<3
     gsa_flag = 0;

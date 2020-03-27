@@ -25,6 +25,9 @@
 @#ifndef ALGO_APF
 @#define ALGO_APF = 0
 @#endif
+@#ifndef ALGO_CPF
+@#define ALGO_CPF = 0
+@#endif
 @#ifndef ALGO_GPF
 @#define ALGO_GPF = 0
 @#endif
@@ -69,6 +72,19 @@ k = (1-delt)*k(-1) + i ;
 log(A) = rho*log(A(-1)) + e_a ;
 (((c^(tet))*((1-l)^(1-tet)))^(1-tau))/c - bet*((((c(+1)^(tet))*((1-l(+1))^(1-tet)))^(1-tau))/c(+1))*(1 -delt+alp*(A(1)*(k^alp)*(l(1)^(1-alp)))/k)=0 ;
 end;
+
+steady_state_model;
+
+  k = -(alp-1)*(alp^(1/(1-alp)))*(bet^(1/(1-alp)))*((bet*(delt-1)+1)^(alp/(alp-1)))*tet/(-alp*delt*bet+delt*bet+alp*tet*bet-bet-alp*tet+1);
+  l = (alp-1)*(bet*(delt-1)+1)*tet/(alp*tet+bet*((alp-1)*delt-alp*tet+1)-1) ;
+  y = (k^alp)*(l^(1-alp)) ;
+  i = delt*k ;
+  c = y - i ;
+  A = 1;
+
+end;
+
+
 
 shocks;
 var e_a; stderr 0.035;
@@ -158,6 +174,10 @@ options_.threads.local_state_space_iteration_2 = 4;
 
 @#if ALGO_APF
   estimation(order=2,nograph,filter_algorithm=apf,number_of_particles=10000,resampling=none,mh_replic=0,mode_compute=8,mode_check);
+@#endif
+
+@#if ALGO_CPF
+  estimation(order=2,nograph,filter_algorithm=cpf,number_of_particles=10000,resampling=none,mh_replic=0,mode_compute=8,mode_check);
 @#endif
 
 @#if ALGO_GPF

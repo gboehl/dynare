@@ -34,7 +34,7 @@
 // FoldDecisionRule conversion from UnfoldDecisionRule
 FoldDecisionRule::FoldDecisionRule(const UnfoldDecisionRule &udr)
   : DecisionRuleImpl<Storage::fold>(ctraits<Storage::fold>::Tpol(udr.nrows(), udr.nvars()),
-                                   udr.ypart, udr.nu, udr.ysteady)
+                                    udr.ypart, udr.nu, udr.ysteady)
 {
   for (const auto &it : udr)
     insert(std::make_unique<ctraits<Storage::fold>::Ttensym>(*(it.second)));
@@ -43,7 +43,7 @@ FoldDecisionRule::FoldDecisionRule(const UnfoldDecisionRule &udr)
 // UnfoldDecisionRule conversion from FoldDecisionRule
 UnfoldDecisionRule::UnfoldDecisionRule(const FoldDecisionRule &fdr)
   : DecisionRuleImpl<Storage::unfold>(ctraits<Storage::unfold>::Tpol(fdr.nrows(), fdr.nvars()),
-                                     fdr.ypart, fdr.nu, fdr.ysteady)
+                                      fdr.ypart, fdr.nu, fdr.ysteady)
 {
   for (const auto &it : fdr)
     insert(std::make_unique<ctraits<Storage::unfold>::Ttensym>(*(it.second)));

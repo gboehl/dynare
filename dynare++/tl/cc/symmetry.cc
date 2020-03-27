@@ -116,7 +116,7 @@ symiterator::operator++()
 
 InducedSymmetries::InducedSymmetries(const Equivalence &e, const Symmetry &s)
 {
-  for (const auto & i : e)
+  for (const auto &i : e)
     emplace_back(s, i);
 }
 

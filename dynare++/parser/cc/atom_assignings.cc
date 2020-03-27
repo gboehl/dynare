@@ -158,7 +158,7 @@ AtomAssignings::apply_subst(const AtomSubstitutions::Toldnamemap &mm)
 {
   // go through all old variables and see what are their derived new
   // variables
-  for (const auto & it : mm)
+  for (const auto &it : mm)
     {
       const string &oldname = it.first;
       const AtomSubstitutions::Tshiftnameset &sset = it.second;
@@ -175,7 +175,7 @@ AtomAssignings::apply_subst(const AtomSubstitutions::Toldnamemap &mm)
           order.push_back(-1);
           // now go through all new names derived from the old name and
           // reference to the newly added formula
-          for (const auto & itt : sset)
+          for (const auto &itt : sset)
             {
               const string &newname = itt.first;
               left_names.insert(newname);

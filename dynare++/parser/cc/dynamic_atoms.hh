@@ -347,7 +347,7 @@ namespace ogp
   public:
     /** This is an enum type for an ordering type implemented by
      * do_general. */
-    enum ord_type {pbspbfbf, bfspbfpb};
+    enum ord_type { pbspbfbf, bfspbfpb };
     /** Construct the ordering of the variables given by the names
      * with their dynamic occurrences defined by the atoms. It
      * calls the virtual method do_ordering which can be

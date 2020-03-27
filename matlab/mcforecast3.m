@@ -1,5 +1,5 @@
 function [forcs, e]= mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
-% forcs = mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
+% [forcs, e] = mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 % Computes the shock values for constrained forecasts necessary to keep
 % endogenous variables at their constrained paths
 %
@@ -7,13 +7,15 @@ function [forcs, e]= mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 %  o cL             [scalar]                            number of controlled periods
 %  o H              [scalar]                            number of forecast periods
 %  o mcValue        [n_controlled_vars by cL double]    paths for constrained variables
-%  o shocks         [nexo by H double]      shock values draws (with zeros for controlled_varexo)
-%  o forcs
-%  o T              [n_endovars by n_endovars double]       transition matrix of the state equation.
-%  o R              [n_endovars by n_exo double]           matrix relating the endogenous variables to the innovations in the state equation.
-%  o mv             [n_controlled_exo by n_endovars boolean]        indicator vector  selecting constrained endogenous variables
-%  o mu             [n_controlled_vars by nexo boolean]             indicator vector
-%                                                   selecting controlled exogenous variables
+%  o shocks         [nexo by H double]                  shock values draws (with zeros for controlled_varexo)
+%  o forcs          [n_endovars by H+1 double]          matrix of endogenous variables storing the inital condition
+%  o T              [n_endovars by n_endovars double]   transition matrix of the state equation.
+%  o R              [n_endovars by n_exo double]        matrix relating the endogenous variables to the innovations in the state equation.
+%  o mv             [n_controlled_exo by n_endovars boolean]   indicator vector  selecting constrained endogenous variables
+%  o mu             [n_controlled_vars by nexo boolean]        indicator vector selecting controlled exogenous variables
+% OUTPUTS
+%  o forcs          [n_endovars by H+1 double]          matrix of forecasted endogenous variables
+%  o e              [nexo by H double]                  matrix of exogenous variables
 %
 % Algorithm:
 %   Relies on state-space form:
@@ -29,7 +31,7 @@ function [forcs, e]= mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 %
 %   Variable number of controlled vars are allowed in different
 %   periods. Missing control information are indicated by NaN in
-%   y_t(controlled_vars_index). 
+%   y_t(controlled_vars_index).
 %
 %   After obtaining the shocks, and for uncontrolled periods, the state-space representation
 %       y_t=T*y_{t-1}+R*shocks(:,t)

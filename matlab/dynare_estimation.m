@@ -12,7 +12,7 @@ function oo_recursive_=dynare_estimation(var_list,dname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2018 Dynare Team
+% Copyright (C) 2003-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -144,7 +144,7 @@ if nnobs > 1 && horizon > 0
     k = time_offset+min(nobs(end)-nobs(1)+horizon, ...
                         size(dataset_.data,1)-nobs(1));
     data2 = dataset_info.rawdata(end-k+1:end,:);
-    [nbplt,nr,nc,lr,lc,nstar] = pltorg(nvar);
+    [~,nr,nc,~,~,nstar] = pltorg(nvar);
     m = 1;
     plot_index=0;
     OutputDirectoryName = CheckPath('graphs',M_.fname);
@@ -214,3 +214,5 @@ if nnobs > 1 && horizon > 0
 end
 options_.mode_file = mode_file0;
 %reset stored mode-file to user defined one (and in case it was only set by the recursive estimation)
+oo_.gui.ran_estimation = true;
+

@@ -49,20 +49,20 @@ namespace sthread
       {
         counter++;
         std::thread th{[&, it] {
-            // The ‘it’ variable is captured by value, because otherwise the iterator may move
-            (*it)->operator()(mut_threads);
-            std::unique_lock<std::mutex> lk2{mut_cv};
-            counter--;
-            /* First notify the thread waiting on the condition variable, then
-               unlock the mutex. We must do these two operations in that order,
-               otherwise there is a possibility of having the main process
-               destroying the condition variable before the thread tries to
-               notify it (if all other threads terminate at the same time and
-               bring the counter down to zero).
-               For that reason, we cannot use std::notify_all_at_thread_exit() */
-            cv.notify_one();
-            lk2.unlock();
-          }};
+                         // The ‘it’ variable is captured by value, because otherwise the iterator may move
+                         (*it)->operator()(mut_threads);
+                         std::unique_lock<std::mutex> lk2{mut_cv};
+                         counter--;
+                         /* First notify the thread waiting on the condition variable, then
+                            unlock the mutex. We must do these two operations in that order,
+                            otherwise there is a possibility of having the main process
+                            destroying the condition variable before the thread tries to
+                            notify it (if all other threads terminate at the same time and
+                            bring the counter down to zero).
+                            For that reason, we cannot use std::notify_all_at_thread_exit() */
+                         cv.notify_one();
+                         lk2.unlock();
+                       }};
         th.detach();
         ++it;
         cv.wait(lk, [&] { return counter < max_parallel_threads; });

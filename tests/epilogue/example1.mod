@@ -56,4 +56,4 @@ end;
 
 ds = dseries(oo_.endo_simul', 2000Q1, M_.endo_names);
 ds = [ds dseries(randn(7,1), 2000Q1, 'x')];
-ds = example1.epilogue(M_.params, ds);
+ds = example1.epilogue_dynamic(M_.params, ds);

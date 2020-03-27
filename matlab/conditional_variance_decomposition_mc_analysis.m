@@ -51,7 +51,7 @@ end
 exogenous_variable_index = check_name(exonames,exo);
 if isempty(exogenous_variable_index)
     if ~isequal(exo,'ME')
-        disp([ type '_analysis:: ' exo ' is not a declared exogenous variable!'])        
+        disp([ type '_analysis:: ' exo ' is not a declared exogenous variable!'])
     end
     return
 end

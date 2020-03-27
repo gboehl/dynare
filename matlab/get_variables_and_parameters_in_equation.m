@@ -8,7 +8,7 @@ function [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_
 % - DynareModel [struct]            Structure describing the current model (M_).
 %
 % OUTPUTS
-% - pnames      [cell]              Cell of row char arrays (p elements), names of the parameters. 
+% - pnames      [cell]              Cell of row char arrays (p elements), names of the parameters.
 % - enames      [cell]              Cell of row char arrays (n elements), names of the endogenous variables.
 % - xnames      [cell]              Cell of row char arrays (m elements), names of the exogenous variables.
 % - pid         [Integer]           p*1 vector of indices in M_.param_names for the listed parameters in params.

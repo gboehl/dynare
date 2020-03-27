@@ -22,7 +22,7 @@ function [ys,params,info] = evaluate_steady_state(ys_init,M,options,oo,steadysta
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -307,8 +307,7 @@ if M.static_and_dynamic_models_differ
     z = repmat(ys,1,M.maximum_lead + M.maximum_lag + 1);
     zx = repmat([exo_ss'], M.maximum_lead + M.maximum_lag + 1, 1);
     if options.bytecode
-        [chck, r, ~]= bytecode('dynamic','evaluate', z, zx, params, ys, 1);
-        mexErrCheck('bytecode', chck);
+        [r, ~]= bytecode('dynamic','evaluate', z, zx, params, ys, 1);
     elseif options.block
         [r, oo.dr] = feval([M.fname '.dynamic'], z', zx, params, ys, M.maximum_lag+1, oo.dr);
     else

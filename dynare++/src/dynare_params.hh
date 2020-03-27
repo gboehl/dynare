@@ -89,11 +89,11 @@ struct DynareParams
     return 10*check_num;
   }
 private:
-  enum class opt {per, burn, sim, rtper, rtsim, condper, condsim,
-                  prefix, threads,
-                  steps, seed, order, ss_tol, check,
-                  check_evals, check_scale, check_num, noirfs, irfs,
-                  help, version, centralize, no_centralize, qz_criterium};
+  enum class opt { per, burn, sim, rtper, rtsim, condper, condsim,
+                   prefix, threads,
+                   steps, seed, order, ss_tol, check,
+                   check_evals, check_scale, check_num, noirfs, irfs,
+                   help, version, centralize, no_centralize, qz_criterium };
   void processCheckFlags(const std::string &flags);
   /* This gathers strings from argv[optind] and on not starting with '-' to the
      irf_list. It stops one item before the end, since this is the model

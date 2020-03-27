@@ -14,7 +14,7 @@ function [options_, oo_]=ms_compute_mdd(M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2013 Dynare Team
+% Copyright (C) 2011-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,8 +51,7 @@ if options_.ms.use_mean_center
 end
 
 % compute mdd
-[err] = ms_sbvar_command_line(opt);
-mexErrCheck('ms_compute_mdd',err);
+ms_sbvar_command_line(opt);
 
 % grab the muller/bridge log mdd from the output file
 mull_exp = 'Muller \w+\(\w+\) \= (\d+.\d+e\+\d+)';

@@ -33,6 +33,7 @@ options.plot_shock_decomp.colormap = '';
 options.plot_shock_decomp.nodisplay = false;
 options.plot_shock_decomp.graph_format = 'eps';
 options.plot_shock_decomp.detail_plot = false;
+options.plot_shock_decomp.init2shocks = [];
 options.plot_shock_decomp.interactive = false;
 options.plot_shock_decomp.screen_shocks = false;
 options.plot_shock_decomp.steadystate = false;
@@ -50,4 +51,5 @@ options.plot_shock_decomp.plot_init_date = [];
 options.plot_shock_decomp.plot_end_date = [];
 options.plot_shock_decomp.diff = false;
 options.plot_shock_decomp.flip = false;
+options.plot_shock_decomp.max_nrows = 6;
 end

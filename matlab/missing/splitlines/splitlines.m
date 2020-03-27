@@ -1,7 +1,7 @@
 function s = splitlines(string)
 
 % SPLITLINES splits strings at newline characters into a string array.
-% 
+%
 % INPUT
 % - string   [string]  String to be splitted with newline characters.
 %

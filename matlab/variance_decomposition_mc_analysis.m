@@ -57,10 +57,10 @@ if isempty(indx)
 end
 jndx = check_name(exonames,exo);
 if isempty(jndx)
-        if ~isequal(exo,'ME')
-            disp([ type '_analysis:: ' exo ' is not a declared exogenous variable!'])
-        end
-        return
+    if ~isequal(exo,'ME')
+        disp([ type '_analysis:: ' exo ' is not a declared exogenous variable!'])
+    end
+    return
 end
 
 var=deblank(var);

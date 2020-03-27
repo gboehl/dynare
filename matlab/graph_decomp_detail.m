@@ -24,7 +24,7 @@ function []=graph_decomp_detail(z,shock_names,endo_names,i_var,initial_date,Dyna
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+%xf
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -36,6 +36,7 @@ fig_mode='';
 fig_mode1='';
 % fig_name='';
 % screen_shocks=0;
+initval = DynareOptions.plot_shock_decomp.initval;
 use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
 if use_shock_groups
     shock_groups = DynareModel.shock_groups.(use_shock_groups);
@@ -53,6 +54,13 @@ if ~isempty(opts_decomp.type)
     fig_mode1 = ['_' fig_mode];
     fig_mode = [fig_mode '_'];
 end
+
+if isfield(opts_decomp,'init_cond_decomp')
+    init_cond_decomp = opts_decomp.init_cond_decomp ;
+else
+    init_cond_decomp = 0;
+end
+max_nrows = opts_decomp.max_nrows;
 screen_shocks = opts_decomp.screen_shocks;
 if ~isempty(DynareOptions.plot_shock_decomp.use_shock_groups) || comp_nbr<=18
     screen_shocks=0;
@@ -117,18 +125,28 @@ if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.plot_shock_decomp
     fprintf(fidTeX,' \n');
 end
 
-if opts_decomp.vintage && opts_decomp.realtime>1
-    preamble_txt = 'Shock decomposition';
+if init_cond_decomp
+    preamble_txt = 'Initial condition decomposition';
+    preamble_figname = '_initval_decomposition_';
 else
-    preamble_txt = 'Historical shock decomposition';
+    preamble_figname = '_shock_decomposition_';
+    if opts_decomp.vintage && opts_decomp.realtime>1
+        preamble_txt = 'Shock decomposition';
+    else
+        preamble_txt = 'Historical shock decomposition';
+    end
 end
 
 ncol=3;
 nrow=ceil(comp_nbr/ncol);
 ntotrow = nrow;
-nrow = min(ntotrow, 6);
+nrow = min(ntotrow, max_nrows);
 nfigs = ceil(ntotrow/nrow);
-labels = char(char(shock_names),'Initial values');
+if initval
+    labels = char(char(shock_names),'All shocks');
+else
+    labels = char(char(shock_names),'Initial values');
+end
 if ~(screen_shocks && comp_nbr>18)
     screen_shocks=0;
 end
@@ -138,7 +156,11 @@ for j=1:nvar
     z1 = squeeze(z(i_var(j),:,:));
     if screen_shocks,
         [~, isort] = sort(mean(abs(z1(1:end-2,:)')), 'descend');
-        labels = char(char(shock_names(isort(1:16))),'Others', 'Initial values');
+        if initval
+            labels = char(char(shock_names(isort(1:16))),'Others', 'All shocks');
+        else
+            labels = char(char(shock_names(isort(1:16))),'Others', 'Initial values');
+        end
         zres = sum(z1(isort(17:end),:),1);
         z1 = [z1(isort(1:16),:); zres; z1(comp_nbr0:end,:)];
         comp_nbr=18;
@@ -169,19 +191,19 @@ for j=1:nvar
             hax = subplot(nrow,ncol,i); set(gca,'box','on')
             hbar = bar(x(2:end),(zz.*ipos)','stacked','FaceColor','flat');
             if ~isoctave && ~matlab_ver_less_than('9.3.0')
-            % make bar obey colormap under MATLAB R2017b
-            for k = 1:2
-                hbar(k).CData = k;
-            end
+                % make bar obey colormap under MATLAB R2017b
+                for k = 1:2
+                    hbar(k).CData = k;
+                end
             end
             set(hbar,'edgecolor','flat');
             hold on,
             hbar = bar(x(2:end),(zz.*ineg)','stacked','FaceColor','flat');
             if ~isoctave && ~matlab_ver_less_than('9.3.0')
-            % make bar obey colormap under MATLAB R2017b
-            for k = 1:2
-                hbar(k).CData = k;
-            end
+                % make bar obey colormap under MATLAB R2017b
+                for k = 1:2
+                    hbar(k).CData = k;
+                end
             end
             set(hbar,'edgecolor','flat');
             title(deblank(labels(ic,:)),'Interpreter','none'),
@@ -202,13 +224,14 @@ for j=1:nvar
                 mydata.first_obs = DynareOptions.first_obs;
                 mydata.nobs = DynareOptions.nobs;
                 mydata.plot_shock_decomp.zfull = DynareOptions.plot_shock_decomp.zfull(i_var(j),:,:);
-                mydata.endo_names = endo_names{i_var(j)};
-                mydata.endo_names_tex = DynareModel.endo_names_tex{i_var(j)};
+                mydata.endo_names = endo_names(i_var(j));
+                mydata.endo_names_tex = DynareModel.endo_names_tex(i_var(j));
+                mydata.exo_names = DynareModel.exo_names;
                 if ~isempty(mydata.shock_group.shocks)
                     c = uicontextmenu;
                     hax.UIContextMenu=c;
                     browse_menu = uimenu(c,'Label','Browse group');
-                    expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' deblank(mydata.plot_shock_decomp.orig_varlist{j}) ''',' int2str(ic) ')']);
+                    expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' mydata.plot_shock_decomp.orig_varlist{j} ''',' int2str(ic) ')']);
                     set(expand_menu,'UserData',mydata,'Tag',['group' int2str(ic)]);
                     for jmember = mydata.shock_group.shocks
                         uimenu('parent',browse_menu,'Label',char(jmember))
@@ -238,7 +261,7 @@ for j=1:nvar
             hold on
             x1 = x1 + width;
         end
-       colormap([0.15 0.15 0.15;0.85 0.85 0.85]),
+        colormap([0.15 0.15 0.15;0.85 0.85 0.85]),
 
 
         if nfigs>1
@@ -248,19 +271,20 @@ for j=1:nvar
         end
         if ~DynareOptions.plot_shock_decomp.expand
             dyn_saveas(fhandle,[GraphDirectoryName, filesep, DynareModel.fname, ...
-                            '_shock_decomposition_', endo_names{i_var(j)}, fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
+                                preamble_figname, endo_names{i_var(j)}, fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
             if DynareOptions.TeX && any(strcmp('eps',cellstr(DynareOptions.plot_shock_decomp.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
                 fprintf(fidTeX,'\\centering \n');
-                fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s/graphs/%s_shock_decomposition_%s}\n',DynareModel.fname,DynareModel.fname,[endo_names{i_var(j)} fig_mode1 fig_name suffix]);
+                fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s/graphs/%s%s}\n',DynareModel.fname,DynareModel.fname,[preamble_figname endo_names{i_var(j)} fig_mode1 fig_name suffix]);
                 fprintf(fidTeX,'\\label{Fig:shock_decomp_detail:%s}\n',[fig_mode endo_names{i_var(j)} fig_name suffix]);
                 fprintf(fidTeX,['\\caption{' preamble_txt fig_name_long strrep(fig_mode1, '_',  ' ') ': $ %s $ (detail).}\n'], DynareModel.endo_names_tex{i_var(j)});
                 fprintf(fidTeX,'\\end{figure}\n');
                 fprintf(fidTeX,' \n');
             end
         else
-            dyn_saveas(fhandle,[DynareOptions.plot_shock_decomp.filepath, filesep, DynareModel.fname,'_shock_decomposition_',endo_names{i_var(j)},fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
-            
+            if ~isempty(DynareOptions.plot_shock_decomp.filepath)
+                dyn_saveas(fhandle,[DynareOptions.plot_shock_decomp.filepath, filesep, DynareModel.fname,preamble_figname,endo_names{i_var(j)},fig_mode1,fig_name suffix],DynareOptions.plot_shock_decomp.nodisplay,DynareOptions.plot_shock_decomp.graph_format);
+            end
         end
     end
 end

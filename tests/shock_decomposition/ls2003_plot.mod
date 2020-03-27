@@ -31,6 +31,13 @@ pie_obs = 4*pie;
 R_obs = 4*R;
 end;
 
+epilogue;
+// annualized level of y
+ya = exp(y)+exp(y(-1))+exp(y(-2))+exp(y(-3));
+// annualized growth rate of y
+gya = ya/ya(-4)-1;
+end;
+
 shocks;
 var e_R = 1.25^2;
 var e_q = 2.5^2;
@@ -76,47 +83,67 @@ supply = e_A ;
 'RoW shocks' = e_q e_ys e_pies  ;
 monetary = e_R ;
 end;
-options_.initial_date=dates('1989Q4'); % date arbitrarily set for testing purposes
-shock_decomposition(use_shock_groups=trade) y_obs R_obs pie_obs dq de;
 
-// various tests for plot_shock_decompositions
-// standard plot [using trade group defined before]
-plot_shock_decomposition;
+init2shocks;
+dq e_q;
+A e_A;
+end;
+
+options_.initial_date=dates('1989Q4'); % date arbitrarily set for testing purposes
+shock_decomposition(nograph, with_epilogue);
+// test for nothing to squeeze
+squeeze_shock_decomposition;
+
+// standard plot
+plot_shock_decomposition y_obs R_obs pie_obs dq de;
+// grouped shocks
+plot_shock_decomposition(use_shock_groups=trade) y_obs R_obs pie_obs dq de;
 
 // test datailed, custom name and yoy plots
-plot_shock_decomposition(detail_plot, fig_name = MR, type = yoy);
+plot_shock_decomposition(detail_plot, fig_name = MR, type = yoy) y_obs R_obs pie_obs dq de;
 
+// testing init2shocks
+initial_condition_decomposition(detail_plot, type=aoa, steadystate, write_xls, plot_init_date=1991Q1, plot_end_date=1995Q4) R_obs;
+plot_shock_decomposition(init2shocks) y_obs R_obs pie_obs dq de;
+plot_shock_decomposition(init2shocks,use_shock_groups=trade) y_obs R_obs pie_obs dq de;
+
+// testing flip and diff
+plot_shock_decomposition(diff, use_shock_groups=trade) y_obs;
+plot_shock_decomposition(flip, use_shock_groups=trade) de;
 
 close all,
 
 
 // testing realtime decomposition
 // first compute realtime decompositions [pre-processor not yet available]
-realtime_shock_decomposition(forecast=8, save_realtime=[5 9 13 17 21 25 29 33 37 41 45 49 53 57 61 65 69 73 77]);
+realtime_shock_decomposition(forecast=8, save_realtime=[5 9 13 17 21 25 29 33 37 41 45 49 53 57 61 65 69 73 77]) y_obs R_obs pie_obs dq de;
+
+// test squeeze
+squeeze_shock_decomposition;
 
 //realtime pooled
-plot_shock_decomposition(realtime = 1);
+plot_shock_decomposition(realtime = 1) y_obs R_obs pie_obs dq de;
 
 //conditional pooled
-plot_shock_decomposition(realtime = 2);
+plot_shock_decomposition(realtime = 2) y_obs R_obs pie_obs dq de;
 
 // conditional 8-step ahead decomposition, given 1989q4
-plot_shock_decomposition(detail_plot, realtime = 2, vintage = 29);
+plot_shock_decomposition(detail_plot, realtime = 2, vintage = 29) y_obs R_obs pie_obs dq de;
 
 close all,
 
 //forecast pooled
-plot_shock_decomposition(realtime = 3);
+plot_shock_decomposition(realtime = 3) y_obs R_obs pie_obs dq de;
 
 // forecast 8-step ahead decomposition, given 1989q4
-plot_shock_decomposition(detail_plot, realtime = 3, vintage = 29);
+plot_shock_decomposition(detail_plot, realtime = 3, vintage = 29) y_obs R_obs pie_obs dq de;
 
 close all,
 
 // now I test annualized variables
-options_.plot_shock_decomp.q2a=1;
-options_.plot_shock_decomp.islog=1;
+    // this also triggers re-computing of decompositions since y was not present in squeeze set
 plot_shock_decomposition(detail_plot, type = aoa) y;
+plot_shock_decomposition(detail_plot, type = aoa) ya;
 
 plot_shock_decomposition(realtime = 1) y;
 plot_shock_decomposition(realtime = 1, vintage = 29) y;
@@ -126,14 +153,17 @@ plot_shock_decomposition(realtime = 3, vintage = 29) y;
 close all
 
 //test uimenu for groups
-plot_shock_decomposition(detail_plot, interactive, use_shock_groups = row, type = qoq);
-plot_shock_decomposition(detail_plot, interactive, realtime = 3, vintage = 29);
+plot_shock_decomposition(detail_plot, interactive, use_shock_groups = row, type = qoq, plot_init_date=2004Q1) y_obs R_obs pie_obs dq de;
+plot_shock_decomposition(detail_plot, interactive, realtime = 3, vintage = 29) y_obs R_obs pie_obs dq de;
 
 close all,
 
 
 // testing realtime decomposition with fast_realtime option
-realtime_shock_decomposition(fast_realtime=75);
+realtime_shock_decomposition(fast_realtime=75) y_obs R_obs pie_obs dq de;
+
+// re-test squeeze
+squeeze_shock_decomposition;
 
 collect_latex_files;
 if system(['pdflatex -halt-on-error -interaction=batchmode ' M_.fname '_TeX_binder.tex'])

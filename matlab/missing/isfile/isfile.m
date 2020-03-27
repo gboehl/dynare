@@ -70,7 +70,7 @@ for i=1:n
         d = b(i);
     elseif cellofstringflag
         d = b{i};
-    elseif ischar(b) && size(b, 1)==1 
+    elseif ischar(b) && size(b, 1)==1
         d = b;
     else
         error('Wrong input argument type!')

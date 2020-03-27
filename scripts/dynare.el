@@ -64,10 +64,12 @@
     "write_latex_steady_state_model" "steady" "check" "simul" "stoch_simul"
     "var_model" "trend_component_model" "var_expectation_model" "pac_model"
     "dsample" "Sigma_e" "planner_objective" "ramsey_model" "ramsey_policy"
+    "evaluate_planner_objective"
     "discretionary_policy" "identification" "bvar_density" "bvar_forecast"
     "dynare_sensitivity" "initval_file" "histval_file" "forecast"
     "shock_decomposition" "realtime_shock_decomposition"
-    "plot_shock_decomposition" "initial_condition_decomposition" "sbvar"
+    "plot_shock_decomposition" "initial_condition_decomposition"
+    "squeeze_shock_decomposition" "sbvar"
     "ms_estimation" "ms_simulation" "ms_compute_mdd" "ms_compute_probabilities"
     "ms_forecast" "ms_irf" "ms_variance_decomposition" "conditional_forecast"
     "plot_conditional_forecast" "gmm_estimation" "smm_estimation"
@@ -86,15 +88,18 @@
 
 ;; Those keywords that makes the lexer enter the DYNARE_BLOCK start condition
 ;; Also include "verbatim" in this list
-(defvar dynare-blocks
-  '("model" "steady_state_model" "initval" "endval" "histval" "shocks"
-    "shock_groups" "init2shocks" "mshocks" "estimated_params" "epilogue" "priors"
-    "estimated_param_init" "estimated_params_bounds" "osr_params_bounds"
-    "observation_trends" "optim_weights" "homotopy_setup"
-    "conditional_forecast_paths" "svar_identification" "moment_calibration"
-    "irf_calibration" "ramsey_constraints" "restrictions" "generate_irfs"
-    "verbatim")
-  "Dynare block keywords.")
+;; Needs to be enclosed within eval-when-compile, because this variable is
+;; referenced in another eval-when-compile statement in dynare-calculate-indentation
+(eval-when-compile
+  (defvar dynare-blocks
+    '("model" "steady_state_model" "initval" "endval" "histval" "shocks"
+      "shock_groups" "init2shocks" "mshocks" "estimated_params" "epilogue" "priors"
+      "estimated_params_init" "estimated_params_bounds" "osr_params_bounds"
+      "observation_trends" "optim_weights" "homotopy_setup"
+      "conditional_forecast_paths" "svar_identification" "moment_calibration"
+      "irf_calibration" "ramsey_constraints" "restrictions" "generate_irfs"
+      "verbatim")
+    "Dynare block keywords."))
 
 ;; Mathematical functions and operators used in model equations (see "hand_side" in Bison file)
 (defvar dynare-functions
@@ -227,3 +232,6 @@
 (add-to-list 'auto-mode-alist '("\\.mod$" . dynare-mode))
 
 (provide 'dynare)
+
+;; The following line is for ELPA compatibility (in particular needed for Debian)
+;;; dynare.el ends here

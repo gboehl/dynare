@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2019 Dynare Team
+# Copyright © 2019-2020 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -29,7 +29,12 @@ exec 2>&1
 rm -f "$2"/dummy
 
 # Test for Internet connection
-[[ -z $(curl -s -m 4 www.google.com) ]] && { echo "No internet connection found"; exit 1; }
+[[ -z $(curl -s -m 4 https://github.com) ]] && \
+    { \
+      osascript -e 'display alert "Dynare Installation Error" message "Not able to connect to github.com. Either you are not connected to the internet or github.com is blocked where you are.\n\nAccess to GitHub is necessary to make Dynare work with the `use_dll` option on macOS.\n\nIf you cannot establish this connection or do not want to use the `use_dll` option of Dynare, please run the installer again and choose \"Customize\" from the \"Installation Type\" screen and uncheck the `GCC` option." as critical'; \
+      echo "No internet connection to github.com"; \
+      exit 1; \
+    }
 
 # Install Command Line Tools
 if [[ -z $(/usr/bin/xcode-select -print-path) ]]; then
@@ -49,7 +54,20 @@ fi
 
 # If CLT installation didn't work, exit
 [[ -z $(/usr/bin/xcode-select -print-path) ]] && \
-    { echo "You must install Command Line Tools to proceed with installation of GCC"; exit 1; }
+    { \
+      osascript -e 'display alert "Dynare Installation Error" message "Not able to find Command Line Tools.\n\nCommand Line Tools is necessary to make Dynare work with the `use_dll` option on macOS.\n\nIf you cannot establish this connection or do not want to use the `use_dll` option of Dynare, please run the installer again and choose \"Customize\" from the \"Installation Type\" screen and uncheck the `GCC` option." as critical'; \
+      echo "Command Line Tools not installed"; \
+      exit 1; \
+    }
+
+# Ensure git is in the path
+[[ -z $(which git) ]] && \
+    { \
+      osascript -e 'display alert "Dynare Installation Error" message "Not able to find Git even though the Command Line Tools have already been installed. This is likely a problem with your PATH environment variable.\n\nGit is necessary to make Dynare work with the `use_dll` option on macOS.\n\nIf you cannot establish this connection or do not want to use the `use_dll` option of Dynare, please run the installer again and choose \"Customize\" from the \"Installation Type\" screen and uncheck the `GCC` option." as critical'; \
+      echo $PATH; \
+      echo "Git not found in PATH"; \
+      exit 1; \
+    }
 
 # Install Homebrew
 BREWDIR="$2"/.brew

@@ -119,7 +119,7 @@ WorkerFoldMAASparse1::operator()(std::mutex &mut)
       const Permutation &per = pset.get(iper);
       IntSequence percoor(coor.size());
       per.apply(coor, percoor);
-      for (const auto & it : eset)
+      for (const auto &it : eset)
         {
           if (it.numClasses() == t.dimen())
             {
@@ -163,7 +163,7 @@ FoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
   sthread::detach_thread_group gr;
   FFSTensor dummy_f(0, numStacks(), t.dimen());
   for (Tensor::index fi = dummy_f.begin(); fi != dummy_f.end(); ++fi)
-      gr.insert(std::make_unique<WorkerFoldMAASparse2>(*this, t, out, fi.getCoor()));
+    gr.insert(std::make_unique<WorkerFoldMAASparse2>(*this, t, out, fi.getCoor()));
 
   gr.run();
 }
@@ -231,7 +231,7 @@ FoldedStackContainer::multAndAddSparse3(const FSSparseTensor &t,
       Vector outcol{out.getCol(*run)};
       FRSingleTensor sumcol(t.nvar(), t.dimen());
       sumcol.zeros();
-      for (const auto & it : eset)
+      for (const auto &it : eset)
         if (it.numClasses() == t.dimen())
           {
             StackProduct<FGSTensor> sp(*this, it, out.getSym());
@@ -485,7 +485,7 @@ WorkerUnfoldMAASparse1::operator()(std::mutex &mut)
       const Permutation &per = pset.get(iper);
       IntSequence percoor(coor.size());
       per.apply(coor, percoor);
-      for (const auto & it : eset)
+      for (const auto &it : eset)
         if (it.numClasses() == t.dimen())
           {
             StackProduct<UGSTensor> sp(cont, it, out.getSym());
@@ -611,7 +611,7 @@ UnfoldedStackContainer::multAndAddStacks(const IntSequence &fi,
         {
           Permutation sort_per(ui.getCoor());
           sort_per.inverse();
-          for (const auto & it : eset)
+          for (const auto &it : eset)
             if (it.numClasses() == g.dimen())
               {
                 StackProduct<UGSTensor> sp(*this, it, sort_per, out.getSym());

@@ -51,39 +51,40 @@ DynareParams::DynareParams(int argc, char **argv)
   modname = argv[argc-1];
   argc--;
 
-  struct option const opts [] = {
-    {"periods", required_argument, nullptr, static_cast<int>(opt::per)},
-    {"per", required_argument, nullptr, static_cast<int>(opt::per)},
-    {"burn", required_argument, nullptr, static_cast<int>(opt::burn)},
-    {"simulations", required_argument, nullptr, static_cast<int>(opt::sim)},
-    {"sim", required_argument, nullptr, static_cast<int>(opt::sim)},
-    {"rtperiods", required_argument, nullptr, static_cast<int>(opt::rtper)},
-    {"rtper", required_argument, nullptr, static_cast<int>(opt::rtper)},
-    {"rtsimulations", required_argument, nullptr, static_cast<int>(opt::rtsim)},
-    {"rtsim", required_argument, nullptr, static_cast<int>(opt::rtsim)},
-    {"condperiods", required_argument, nullptr, static_cast<int>(opt::condper)},
-    {"condper", required_argument, nullptr, static_cast<int>(opt::condper)},
-    {"condsimulations", required_argument, nullptr, static_cast<int>(opt::condsim)},
-    {"condsim", required_argument, nullptr, static_cast<int>(opt::condsim)},
-    {"prefix", required_argument, nullptr, static_cast<int>(opt::prefix)},
-    {"threads", required_argument, nullptr, static_cast<int>(opt::threads)},
-    {"steps", required_argument, nullptr, static_cast<int>(opt::steps)},
-    {"seed", required_argument, nullptr, static_cast<int>(opt::seed)},
-    {"order", required_argument, nullptr, static_cast<int>(opt::order)},
-    {"ss-tol", required_argument, nullptr, static_cast<int>(opt::ss_tol)},
-    {"check", required_argument, nullptr, static_cast<int>(opt::check)},
-    {"check-scale", required_argument, nullptr, static_cast<int>(opt::check_scale)},
-    {"check-evals", required_argument, nullptr, static_cast<int>(opt::check_evals)},
-    {"check-num", required_argument, nullptr, static_cast<int>(opt::check_num)},
-    {"qz-criterium", required_argument, nullptr, static_cast<int>(opt::qz_criterium)},
-    {"no-irfs", no_argument, nullptr, static_cast<int>(opt::noirfs)},
-    {"irfs", no_argument, nullptr, static_cast<int>(opt::irfs)},
-    {"centralize", no_argument, nullptr, static_cast<int>(opt::centralize)},
-    {"no-centralize", no_argument, nullptr, static_cast<int>(opt::no_centralize)},
-    {"help", no_argument, nullptr, static_cast<int>(opt::help)},
-    {"version", no_argument, nullptr, static_cast<int>(opt::version)},
-    {nullptr, 0, nullptr, 0}
-  };
+  struct option const opts[] =
+    {
+     {"periods", required_argument, nullptr, static_cast<int>(opt::per)},
+     {"per", required_argument, nullptr, static_cast<int>(opt::per)},
+     {"burn", required_argument, nullptr, static_cast<int>(opt::burn)},
+     {"simulations", required_argument, nullptr, static_cast<int>(opt::sim)},
+     {"sim", required_argument, nullptr, static_cast<int>(opt::sim)},
+     {"rtperiods", required_argument, nullptr, static_cast<int>(opt::rtper)},
+     {"rtper", required_argument, nullptr, static_cast<int>(opt::rtper)},
+     {"rtsimulations", required_argument, nullptr, static_cast<int>(opt::rtsim)},
+     {"rtsim", required_argument, nullptr, static_cast<int>(opt::rtsim)},
+     {"condperiods", required_argument, nullptr, static_cast<int>(opt::condper)},
+     {"condper", required_argument, nullptr, static_cast<int>(opt::condper)},
+     {"condsimulations", required_argument, nullptr, static_cast<int>(opt::condsim)},
+     {"condsim", required_argument, nullptr, static_cast<int>(opt::condsim)},
+     {"prefix", required_argument, nullptr, static_cast<int>(opt::prefix)},
+     {"threads", required_argument, nullptr, static_cast<int>(opt::threads)},
+     {"steps", required_argument, nullptr, static_cast<int>(opt::steps)},
+     {"seed", required_argument, nullptr, static_cast<int>(opt::seed)},
+     {"order", required_argument, nullptr, static_cast<int>(opt::order)},
+     {"ss-tol", required_argument, nullptr, static_cast<int>(opt::ss_tol)},
+     {"check", required_argument, nullptr, static_cast<int>(opt::check)},
+     {"check-scale", required_argument, nullptr, static_cast<int>(opt::check_scale)},
+     {"check-evals", required_argument, nullptr, static_cast<int>(opt::check_evals)},
+     {"check-num", required_argument, nullptr, static_cast<int>(opt::check_num)},
+     {"qz-criterium", required_argument, nullptr, static_cast<int>(opt::qz_criterium)},
+     {"no-irfs", no_argument, nullptr, static_cast<int>(opt::noirfs)},
+     {"irfs", no_argument, nullptr, static_cast<int>(opt::irfs)},
+     {"centralize", no_argument, nullptr, static_cast<int>(opt::centralize)},
+     {"no-centralize", no_argument, nullptr, static_cast<int>(opt::no_centralize)},
+     {"help", no_argument, nullptr, static_cast<int>(opt::help)},
+     {"version", no_argument, nullptr, static_cast<int>(opt::version)},
+     {nullptr, 0, nullptr, 0}
+    };
 
   int ret;
   int index;

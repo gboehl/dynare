@@ -44,6 +44,7 @@ Bibliography
 * Kim, Jinill and Sunghyun Kim (2003): “Spurious welfare reversals in international business cycle models,” *Journal of International Economics*, 60, 471–500.
 * Kanzow, Christian and Stefania Petra (2004): “On a semismooth least squares formulation of complementarity problems with gap reduction,” *Optimization Methods and Software*, 19, 507–525.
 * Kim, Jinill, Sunghyun Kim, Ernst Schaumburg, and Christopher A. Sims (2008): “Calculating and using second-order accurate solutions of discrete time dynamic equilibrium models,” *Journal of Economic Dynamics and Control*, 32(11), 3397–3414.
+* Komunjer, Ivana and Ng, Serena (2011): ”Dynamic identification of dynamic stochastic general equilibrium models”, *Econometrica*, 79, 1995–2032.
 * Koop, Gary (2003), *Bayesian Econometrics*, John Wiley & Sons.
 * Koopman, S. J. and J. Durbin (2000): “Fast Filtering and Smoothing for Multivariate State Space Models,” *Journal of Time Series Analysis*, 21(3), 281–296.
 * Koopman, S. J. and J. Durbin (2003): “Filtering and Smoothing of State Vector for Diffuse State Space Models,” *Journal of Time Series Analysis*, 24(1), 85–98.
@@ -52,13 +53,16 @@ Bibliography
 * Liu, Jane and Mike West (2001): “Combined parameter and state estimation in simulation-based filtering”, in *Sequential Monte Carlo Methods in Practice*, Eds. Doucet, Freitas and Gordon, Springer Verlag.
 * Lubik, Thomas and Frank Schorfheide (2007): “Do Central Banks Respond to Exchange Rate Movements? A Structural Investigation,” *Journal of Monetary Economics*, 54(4), 1069–1087.
 * Murray, Lawrence M., Emlyn M. Jones and John Parslow (2013): “On Disturbance State-Space Models and the Particle Marginal Metropolis-Hastings Sampler”, *SIAM/ASA Journal on Uncertainty Quantification*, 1, 494–521.
+* Mutschler, Willi (2015): “Identification of DSGE models - The effect of higher-order approximation and pruning“, *Journal of Economic Dynamics & Control*, 56, 34-54.
 * Pearlman, Joseph, David Currie, and Paul Levine (1986): “Rational expectations models with partial information,” *Economic Modelling*, 3(2), 90–105.
 * Planas, Christophe, Marco Ratto and Alessandro Rossi (2015): “Slice sampling in Bayesian estimation of DSGE models”.
 * Pfeifer, Johannes (2013): “A Guide to Specifying Observation Equations for the Estimation of DSGE Models”.
 * Pfeifer, Johannes (2014): “An Introduction to Graphs in Dynare”.
+* Qu, Zhongjun and Tkachenko, Denis (2012): “Identification and frequency domain quasi-maximum likelihood estimation of linearized dynamic stochastic general equilibrium models“, *Quantitative Economics*, 3, 95–132.
 * Rabanal, Pau and Juan Rubio-Ramirez (2003): “Comparing New Keynesian Models of the Business Cycle: A Bayesian Approach,” Federal Reserve of Atlanta, *Working Paper Series*, 2003-30.
 * Raftery, Adrian E. and Steven Lewis (1992): “How many iterations in the Gibbs sampler?,” in *Bayesian Statistics, Vol. 4*, ed. J.O. Berger, J.M. Bernardo, A.P. * Dawid, and A.F.M. Smith, Clarendon Press: Oxford, pp. 763-773.
 * Ratto, Marco (2008): “Analysing DSGE models with global sensitivity analysis”, *Computational Economics*, 31, 115–139.
+* Ratto, Marco and Iskrev, Nikolay (2011): “Identification Analysis of DSGE Models with DYNARE.“, *MONFISPOL* 225149.
 * Schorfheide, Frank (2000): “Loss Function-based evaluation of DSGE models,” *Journal of Applied Econometrics*, 15(6), 645–670.
 * Schmitt-Grohé, Stephanie and Martin Uríbe (2004): “Solving Dynamic General Equilibrium Models Using a Second-Order Approximation to the Policy Function,” *Journal of Economic Dynamics and Control*, 28(4), 755–775.
 * Schnabel, Robert B. and Elizabeth Eskow (1990): “A new modified Cholesky algorithm,” *SIAM Journal of Scientific and Statistical Computing*, 11, 1136–1158.
@@ -68,6 +72,3 @@ Bibliography
 * Stock, James H. and Mark W. Watson (1999). “Forecasting Inflation,”, *Journal of Monetary Economics*, 44(2), 293–335.
 * Uhlig, Harald (2001): “A Toolkit for Analysing Nonlinear Dynamic Stochastic Models Easily,” in *Computational Methods for the Study of Dynamic Economies*, Eds. Ramon Marimon and Andrew Scott, Oxford University Press, 30–61.
 * Villemot, Sébastien (2011): “Solving rational expectations models at first order: what Dynare does,” *Dynare Working Papers*, 2, CEPREMAP.
-
-
-

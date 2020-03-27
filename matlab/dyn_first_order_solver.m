@@ -21,7 +21,7 @@ function [dr, info] = dyn_first_order_solver(jacobia, DynareModel, dr, DynareOpt
 %                                     info=5 -> Blanchard and Kahn conditions are not satisfied: indeterminacy due to rank failure,
 %                                     info=7 -> One of the eigenvalues is close to 0/0 (infinity of complex solutions)
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -187,8 +187,7 @@ else
     E(row_indx_de_1,index_e1) = -aa(row_indx,index_e);
     E(row_indx_de_2,index_e2) = eye(nboth);
 
-    [err, ss, tt, w, sdim, dr.eigval, info1] = mjdgges(E, D, DynareOptions.qz_criterium, DynareOptions.qz_zero_threshold);
-    mexErrCheck('mjdgges', err);
+    [ss, tt, w, sdim, dr.eigval, info1] = mjdgges(E, D, DynareOptions.qz_criterium, DynareOptions.qz_zero_threshold);
 
     if info1
         if info1 == -30

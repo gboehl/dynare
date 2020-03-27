@@ -59,7 +59,7 @@ FFSTensor::FFSTensor(const FFSTensor &t, const ConstVector &x)
    symmetry. Let n be a number of variables and d the
                                                 ⎛n+d-1⎞
    dimension dim. Then the number of indices is ⎝  d  ⎠.
- */
+*/
 
 int
 FFSTensor::calcMaxOffset(int nvar, int d)
@@ -79,7 +79,7 @@ FFSTensor::FFSTensor(const FSSparseTensor &t)
     nv(t.nvar())
 {
   zeros();
-  for (const auto & it : t.getMap())
+  for (const auto &it : t.getMap())
     {
       index ind(*this, it.first);
       get(it.second.first, *ind) = it.second.second;

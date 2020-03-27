@@ -136,7 +136,8 @@ public:
       insert(std::make_unique<_Ttype>(first_row, num, *(it.second)));
   }
 
-  TensorContainer<_Ttype> &operator=(const TensorContainer<_Ttype> &c)
+  TensorContainer<_Ttype> &
+  operator=(const TensorContainer<_Ttype> &c)
   {
     n = c.n;
     m.clear();
@@ -182,7 +183,7 @@ public:
     TL_RAISE_IF(check(t->getSym()),
                 "Tensor already in container in TensorContainer::insert");
     if (!t->isFinite())
-      throw TLException(__FILE__, __LINE__,  "NaN or Inf asserted in TensorContainer::insert");
+      throw TLException(__FILE__, __LINE__, "NaN or Inf asserted in TensorContainer::insert");
     m.emplace(t->getSym(), std::move(t));
   }
 

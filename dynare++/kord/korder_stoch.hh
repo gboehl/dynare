@@ -36,7 +36,7 @@
    containers corresponding to f(h(g*(y*,u,σ),σ),g(y,u,σ),y,u). Further, we
    declare IntegDerivs and StochForwardDerivs classes which basically calculate
    h as an extrapolation based on an approximation to g at lower σ.
- */
+*/
 
 #include <memory>
 
@@ -48,7 +48,7 @@
 /* This class is a container, which has a specialized constructor integrating
    the policy rule at given σ. */
 
-template <Storage t>
+template<Storage t>
 class IntegDerivs : public ctraits<t>::Tgss
 {
 public:
@@ -100,8 +100,8 @@ public:
              ⁿ⁺ᵏ⁼ᵖ
 
    and this is exactly what the code does.
- */
-template <Storage t>
+*/
+template<Storage t>
 IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const typename ctraits<t>::Tgss &g,
                             const typename ctraits<t>::Tm &mom, double at_sigma)
   : ctraits<t>::Tgss(4)
@@ -156,7 +156,7 @@ IntegDerivs<t>::IntegDerivs(int r, const IntSequence &nvs, const typename ctrait
    The class calculates derivatives of E[g(y*,u,σ)] at (ȳ*,σ¯). The derivatives
    are extrapolated based on derivatives at (ỹ*,σ~). */
 
-template <Storage t>
+template<Storage t>
 class StochForwardDerivs : public ctraits<t>::Tgss
 {
 public:
@@ -180,7 +180,7 @@ public:
    — Centralize this polynomial about (ȳ,σ¯)
    — Recover general symmetry tensors from the (full symmetric) polynomial
 */
-template <Storage t>
+template<Storage t>
 StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
                                           const typename ctraits<t>::Tgss &g,
                                           const typename ctraits<t>::Tm &m,
@@ -260,7 +260,7 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
    the σ as a second argument to h will be its fourth variable in symmetry, so
    we have to do four member stack having the second and third stack dummy. */
 
-template <class _Ttype>
+template<class _Ttype>
 class GXContainer : public GContainer<_Ttype>
 {
 public:
@@ -279,8 +279,8 @@ public:
    ⎢   dummy   ⎥
    ⎢   dummy   ⎥
    ⎣     σ     ⎦
- */
-template <class _Ttype>
+*/
+template<class _Ttype>
 typename GXContainer<_Ttype>::itype
 GXContainer<_Ttype>::getType(int i, const Symmetry &s) const
 {
@@ -306,7 +306,7 @@ GXContainer<_Ttype>::getType(int i, const Symmetry &s) const
    the size (number of rows) as g**. Since it is very simmilar to ZContainer,
    we inherit form it and override only getType() method. */
 
-template <class _Ttype>
+template<class _Ttype>
 class ZXContainer : public ZContainer<_Ttype>
 {
 public:
@@ -326,7 +326,7 @@ public:
    ⎢    y     ⎥
    ⎣    u     ⎦
 */
-template <class _Ttype>
+template<class _Ttype>
 typename ZXContainer<_Ttype>::itype
 ZXContainer<_Ttype>::getType(int i, const Symmetry &s) const
 {
@@ -446,7 +446,7 @@ public:
               const FGSContainer &hh, Journal &jr);
   KOrderStoch(const PartitionY &ypart, int nu, const TensorContainer<FSSparseTensor> &fcont,
               const UGSContainer &hh, Journal &jr);
-  template <Storage t>
+  template<Storage t>
   void performStep(int order);
   const FGSContainer &
   getFoldDers() const
@@ -459,9 +459,9 @@ public:
     return _ug;
   }
 protected:
-  template <Storage t>
+  template<Storage t>
   std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoZ(const Symmetry &sym) const;
-  template <Storage t>
+  template<Storage t>
   std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoG(const Symmetry &sym) const;
 
   // Convenience access methods
@@ -497,7 +497,7 @@ protected:
 /* This calculates a derivative of f(G(y,u,σ),g(y,u,σ),y,u) of a given
    symmetry. */
 
-template <Storage t>
+template<Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrderStoch::faaDiBrunoZ(const Symmetry &sym) const
 {
@@ -512,7 +512,7 @@ KOrderStoch::faaDiBrunoZ(const Symmetry &sym) const
 /* This calculates a derivative of G(y,u,σ)=h(g*(y,u,σ),σ) of a given
    symmetry. */
 
-template <Storage t>
+template<Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrderStoch::faaDiBrunoG(const Symmetry &sym) const
 {
@@ -535,7 +535,7 @@ KOrderStoch::faaDiBrunoG(const Symmetry &sym) const
    as gₛ=-matA⁻¹·RHS. Finally we have to update Gₛ by calling
    Gstack<t>().multAndAdd(1, h<t>(), *G_sym_ptr). */
 
-template <Storage t>
+template<Storage t>
 void
 KOrderStoch::performStep(int order)
 {

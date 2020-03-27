@@ -29,12 +29,12 @@ namespace ogp
 };
 
 // set current off to the first off and add all lengths
-#define YYLLOC_DEFAULT(Current, Rhs, N)                         \
-  {                                                             \
-    (Current).off = (Rhs)[1].off;                               \
-    (Current).ll = 0;                                           \
-    for (int i = 1; i <= N; i++)                                \
-      (Current).ll += (Rhs)[i].ll;                              \
+#define YYLLOC_DEFAULT(Current, Rhs, N)         \
+  {                                             \
+    (Current).off = (Rhs)[1].off;               \
+    (Current).ll = 0;                           \
+    for (int i = 1; i <= N; i++)                \
+      (Current).ll += (Rhs)[i].ll;              \
   }
 
 #define SET_LLOC(prefix) (prefix ## lloc.off += prefix ## lloc.ll, prefix ## lloc.ll = prefix ## leng)

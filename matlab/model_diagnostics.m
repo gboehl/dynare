@@ -16,7 +16,7 @@ function model_diagnostics(M,options,oo)
 %   none.
 %
 
-% Copyright (C) 1996-2018 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -71,7 +71,7 @@ end
 
 % check if ys is steady state
 options.debug=1; %locally set debug option to 1
-[dr.ys,params,check1]=evaluate_steady_state(oo.steady_state,M,options,oo,1);
+[dr.ys,M.params,check1]=evaluate_steady_state(oo.steady_state,M,options,oo,options.steadystate.nocheck);
 
 % testing for problem
 if check1(1)
@@ -107,11 +107,11 @@ exo = [oo.exo_steady_state; oo.exo_det_steady_state];
 for b=1:nb
     if options.bytecode
         if nb == 1
-            [chk, res, jacob] = bytecode(dr.ys, exo, M.params, dr.ys, 1, exo, ...
-                                         'evaluate', 'static');
+            [res, jacob] = bytecode(dr.ys, exo, M.params, dr.ys, 1, exo, ...
+                                    'evaluate', 'static');
         else
-            [chk, res, jacob] = bytecode(dr.ys, exo, M.params, dr.ys, 1, exo, ...
-                                         'evaluate', 'static',['block=' ...
+            [res, jacob] = bytecode(dr.ys, exo, M.params, dr.ys, 1, exo, ...
+                                    'evaluate', 'static',['block=' ...
                                 int2str(b)]);
         end
     else
@@ -204,8 +204,8 @@ z = repmat(dr.ys,1,klen);
 if ~options.block
     if options.order == 1
         if (options.bytecode)
-            [chck, ~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                                         M.params, dr.ys, 1);
+            [~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
+                                   M.params, dr.ys, 1);
             jacobia_ = [loc_dr.g1 loc_dr.g1_x loc_dr.g1_xd];
         else
             [~,jacobia_] = feval([M.fname '.dynamic'],z(iyr0),exo_simul, ...
@@ -213,8 +213,8 @@ if ~options.block
         end
     elseif options.order >= 2
         if (options.bytecode)
-            [chck, ~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                                         M.params, dr.ys, 1);
+            [~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
+                                   M.params, dr.ys, 1);
             jacobia_ = [loc_dr.g1 loc_dr.g1_x];
         else
             [~,jacobia_,hessian1] = feval([M.fname '.dynamic'],z(iyr0),...

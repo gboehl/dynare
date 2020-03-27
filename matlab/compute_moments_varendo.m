@@ -247,7 +247,7 @@ if M_.exo_nbr > 1
                     title = 'Posterior mean conditional variance decomposition (in percent) with measurement error';
                     save_name_string = 'dsge_post_mean_var_decomp_ME_cond_h';
                 else
-                   for i=1:NumberOfObservedEndogenousVariables
+                    for i=1:NumberOfObservedEndogenousVariables
                         for j=1:NumberOfExogenousVariables
                             temp(i,j,:) = oo_.PriorTheoreticalMoments.dsge.ConditionalVarianceDecompositionME.Mean.(observable_name_requested_vars{i}).(M_.exo_names{j});
                         end

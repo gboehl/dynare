@@ -51,7 +51,7 @@ Approximation::Approximation(DynamicModel &m, Journal &j, int ns, bool dr_centr,
   : model(m), journal(j),
     ypart(model.nstat(), model.npred(), model.nboth(), model.nforw()),
     mom(UNormalMoments(model.order(), model.getVcov())),
-    nvs{ypart.nys(), model.nexog(), model.nexog(), 1 },
+    nvs{ypart.nys(), model.nexog(), model.nexog(), 1},
     steps(ns),
     dr_centralize(dr_centr), qz_criterium(qz_crit), ss(ypart.ny(), steps+1)
 {
@@ -184,7 +184,7 @@ Approximation::walkStochSteady()
       dy.add(-1.0, last_steady);
 
       StochForwardDerivs<Storage::fold> hh(ypart, model.nexog(), *rule_ders_ss, mom, dy,
-                                          dsigma, sigma_so_far);
+                                           dsigma, sigma_so_far);
       JournalRecord rec1(journal);
       rec1 << "Calculation of g** expectations done" << endrec;
 

@@ -85,6 +85,5 @@ planner_objective(ln(c)-phi*((n^(1+gamma))/(1+gamma)));
 write_latex_static_model;
 
 ramsey_model(planner_discount=0.99);
-options_.ramsey_policy=1;
 stoch_simul(irf=0);
-
+evaluate_planner_objective;

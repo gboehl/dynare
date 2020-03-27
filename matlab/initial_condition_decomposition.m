@@ -38,20 +38,35 @@ function oo_ = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+options_.plot_shock_decomp.colormap = options_.initial_condition_decomp.colormap;
+options_.plot_shock_decomp.nodisplay = options_.initial_condition_decomp.nodisplay;
+options_.plot_shock_decomp.graph_format = options_.initial_condition_decomp.graph_format;
+options_.plot_shock_decomp.fig_name = options_.initial_condition_decomp.fig_name;
 options_.plot_shock_decomp.detail_plot = options_.initial_condition_decomp.detail_plot;
+options_.plot_shock_decomp.init2shocks = options_.initial_condition_decomp.init2shocks;
 options_.plot_shock_decomp.steadystate = options_.initial_condition_decomp.steadystate;
 options_.plot_shock_decomp.write_xls = options_.initial_condition_decomp.write_xls;
 options_.plot_shock_decomp.type = options_.initial_condition_decomp.type;
 options_.plot_shock_decomp.plot_init_date = options_.initial_condition_decomp.plot_init_date;
 options_.plot_shock_decomp.plot_end_date = options_.initial_condition_decomp.plot_end_date;
+options_.plot_shock_decomp.diff = options_.initial_condition_decomp.diff;
+options_.plot_shock_decomp.flip = options_.initial_condition_decomp.flip;
+options_.plot_shock_decomp.max_nrows = options_.initial_condition_decomp.max_nrows;
 
+if isfield(options_.initial_condition_decomp,'init2shocks') % private trap for uimenu calls
+    init2shocks=options_.initial_condition_decomp.init2shocks;
+else
+    init2shocks=[];
+end
 % indices of endogenous variables
 if isempty(varlist)
     varlist = M_.endo_names(1:M_.orig_endo_nbr);
 end
 
-[i_var, nvar, index_uniques] = varlist_indices(varlist, M_.endo_names);
-varlist = varlist(index_uniques);
+if ~isequal(varlist,0)
+    [i_var, nvar, index_uniques] = varlist_indices(varlist, M_.endo_names);
+    varlist = varlist(index_uniques);
+end
 
 % number of variables
 endo_nbr = M_.endo_nbr;
@@ -71,7 +86,17 @@ if isempty(parameter_set)
     end
 end
 
-if ~isfield(oo_,'initval_decomposition')
+if ~isfield(oo_,'initval_decomposition') || isequal(varlist,0)
+    if isfield(oo_,'shock_decomposition_info') && isfield(oo_.shock_decomposition_info,'i_var')
+        if isfield (oo_,'realtime_conditional_shock_decomposition') ...
+                || isfield (oo_,'realtime_forecast_shock_decomposition') ...
+                || isfield (oo_,'realtime_shock_decomposition') ...
+                || isfield (oo_,'conditional_shock_decomposition') ...
+                || isfield (oo_,'shock_decomposition')
+            error('initval_decomposition::squeezed shock decompositions are already stored in oo_')
+        end
+    end
+    with_epilogue = options_.initial_condition_decomp.with_epilogue;
     options_.selected_variables_only = 0; %make sure all variables are stored
     options_.plot_priors=0;
     [oo,M,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
@@ -117,22 +142,36 @@ if ~isfield(oo_,'initval_decomposition')
 
     end
 
-
+    if with_epilogue
+        [z, epilogue_steady_state] = epilogue_shock_decomposition(z, M_, oo_);
+        if ~isfield(oo_,'shock_decomposition_info') || ~isfield(oo_.shock_decomposition_info,'epilogue_steady_state')
+            oo_.shock_decomposition_info.epilogue_steady_state = epilogue_steady_state;
+        end
+    end
     oo_.initval_decomposition = z;
 end
-% if ~options_.no_graph.shock_decomposition
-oo=oo_;
-oo.shock_decomposition = oo_.initval_decomposition;
-M_.exo_names = M_.endo_names;
-M_.exo_nbr = M_.endo_nbr;
-options_.plot_shock_decomp.realtime=0;
-options_.plot_shock_decomp.screen_shocks=1;
-options_.plot_shock_decomp.use_shock_groups = '';
-fig_name = options_.plot_shock_decomp.fig_name;
-if ~isempty(fig_name)
-    options_.plot_shock_decomp.fig_name=[fig_name '_initval'];
-else
-options_.plot_shock_decomp.fig_name='initval';
-end   
-plot_shock_decomposition(M_,oo,options_,varlist);
-% end
+
+% when varlist==0, we only store results in oo_ and do not make any plot
+if ~isequal(varlist,0)
+
+    % if ~options_.no_graph.shock_decomposition
+    oo=oo_;
+    oo.shock_decomposition = oo_.initval_decomposition;
+    if ~isempty(init2shocks)
+        init2shocks = M_.init2shocks.(init2shocks);
+        n=size(init2shocks,1);
+        for i=1:n
+            j=strmatch(init2shocks{i}{1},M_.endo_names,'exact');
+            oo.shock_decomposition(:,end-1,:)=oo.shock_decomposition(:,j,:)+oo.shock_decomposition(:,end-1,:);
+            oo.shock_decomposition(:,j,:)=0;
+        end
+    end
+    M_.exo_names = M_.endo_names;
+    M_.exo_nbr = M_.endo_nbr;
+    options_.plot_shock_decomp.realtime=0;
+    options_.plot_shock_decomp.screen_shocks=1;
+    options_.plot_shock_decomp.use_shock_groups = '';
+    options_.plot_shock_decomp.init_cond_decomp = 1; % private flag to plotting utilities
+
+    plot_shock_decomposition(M_,oo,options_,varlist);
+end

@@ -13,8 +13,6 @@ var pai, c, n, r, a;
 varexo u;
 
 
-
-
 //------------------------------------------------------------------------------------------------------------------------
 // 2. Parameter declaration and calibration
 //-------------------------------------------------------------------------------------------------------------------------
@@ -29,25 +27,16 @@ phi=1;           //coefficient associated to labor effort disutility
 
 rho=0.95;  //coefficient associated to productivity shock
 
-
 //-----------------------------------------------------------------------------------------------------------------------
 // 3. The model
 //-----------------------------------------------------------------------------------------------------------------------
 
-
 model;
-
-
 a=rho*(a(-1))+u;
-
 1/c=beta*(1/(c(+1)))*(r/(pai(+1)));               //euler
-
-
 omega*pai*(pai-1)=beta*omega*(c/(c(+1)))*(pai(+1))*(pai(+1)-1)+epsilon*exp(a)*n*(c/exp(a)*phi*n^gamma-(epsilon-1)/epsilon);  //NK pc
 //pai*(pai-1)/c = beta*pai(+1)*(pai(+1)-1)/c(+1)+epsilon*phi*n^(gamma+1)/omega-exp(a)*n*(epsilon-1)/(omega*c);  //NK pc
-
 (exp(a))*n=c+(omega/2)*((pai-1)^2);
-
 end;
 
 //--------------------------------------------------------------------------------------------------------------------------
@@ -55,16 +44,12 @@ end;
 //---------------------------------------------------------------------------------------------------------------------------
 
 initval;
-
 pai=1;
 r=1/beta;
 c=0.9671684882;
 n=0.9671684882;
 a=0;
-
-
 end;
-
 
 
 //---------------------------------------------------------------------------------------------------------------------------
@@ -86,11 +71,9 @@ planner_objective(ln(c)-phi*((n^(1+gamma))/(1+gamma)));
 write_latex_static_model;
 
 ramsey_model(planner_discount=0.99);
-
-options_.ramsey_policy=1;
 steady;
 
-options_.simul.maxit = 20;
-simul(periods=100);
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver(maxit=20);
 
 rplot r;

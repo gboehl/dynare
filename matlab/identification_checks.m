@@ -24,7 +24,7 @@ function [condX, rankX, ind0, indno, ixno, Mco, Pco, jweak, jweak_pair] = identi
 %    * jweak_pair       [(vech) matrix] gives 1 if a couple parameters has Pco=1 (with tolerance tol_rank)
 % -------------------------------------------------------------------------
 % This function is called by
-%   * identification_analysis.m 
+%   * identification_analysis.m
 % -------------------------------------------------------------------------
 % This function calls
 %    * cosn
@@ -48,9 +48,11 @@ function [condX, rankX, ind0, indno, ixno, Mco, Pco, jweak, jweak_pair] = identi
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 % =========================================================================
-
-if nargin < 3 || isempty(tol_rank)
-    tol_rank = 1.e-10; %tolerance level used for rank computations
+if issparse(X)
+    X = full(X);
+end
+if nargin < 3 || isempty(tol_rank) || strcmp(tol_rank,'robust')
+    tol_rank = max(size(X)) * eps(norm(X)); %tolerance level used for rank computations
 end
 if nargin < 4 || isempty(tol_sv)
     tol_sv = 1.e-3; %tolerance level for zero singular value
@@ -71,7 +73,7 @@ else
     Xrest = [];
 end
 
- % find non-zero columns at machine precision
+% find non-zero columns at machine precision
 if size(Xpar,1) > 1
     ind1 = find(vnorm(Xpar) >= eps);
 else
@@ -121,7 +123,7 @@ if icheck
     rankX = rank(X,tol_rank);
 end
 
-ind0 = zeros(1,param_nbr); %initialize 
+ind0 = zeros(1,param_nbr); %initialize
 ind0(ind1) = 1;
 
 % find near linear dependence problems via multicorrelation coefficients
@@ -129,17 +131,17 @@ if test_flag == 0 || test_flag == 3 % G is a Gram matrix and hence should be a c
     if test_flag == 3 % For Qu and Tkachenko's G matrix we need to keep track of all parameters
         Mco = NaN(param_nbr,1);
     end
-    Pco=NaN(param_nbr,param_nbr);         % pairwise correlation coefficient    
+    Pco=NaN(param_nbr,param_nbr);         % pairwise correlation coefficient
     deltaX = sqrt(diag(X(ind1,ind1)));
-    tildaX = X(ind1,ind1)./((deltaX)*(deltaX'));    
+    tildaX = X(ind1,ind1)./((deltaX)*(deltaX'));
     Mco(ind1,1)=(1-1./diag(inv(tildaX))); % multicorrelation coefficent
     Pco(ind1,ind1)=inv(X(ind1,ind1));
     sd=sqrt(diag(Pco));
     Pco = abs(Pco./((sd)*(sd')));
-else    
+else
     Mco = NaN(param_nbr,1);
     for ii = 1:size(Xparnonzero,2)
-        Mco(ind1(ii),:) = cosn([Xparnonzero(:,ii) , Xparnonzero(:,find([1:1:size(Xparnonzero,2)]~=ii)), Xrest]);        
+        Mco(ind1(ii),:) = cosn([Xparnonzero(:,ii) , Xparnonzero(:,find([1:1:size(Xparnonzero,2)]~=ii)), Xrest]);
     end
 end
 
@@ -151,10 +153,10 @@ if param_nbr>0 && (rankX<rankrequired || min(1-Mco)<tol_rank)
         ixno = ixno + 1;
         indno(ixno,:) = (~ismember([1:param_nbr],ind1));
     end
-    ee0 = [rankX+1:size([Xparnonzero Xrest],2)]; %look into last columns with singular values of problematic parameter sets (except single parameters)    
+    ee0 = [rankX+1:size([Xparnonzero Xrest],2)]; %look into last columns with singular values of problematic parameter sets (except single parameters)
     for j=1:length(ee0)
         % linearely dependent parameters
-        ixno = ixno + 1;        
+        ixno = ixno + 1;
         if test_flag == 2
             temp = (abs(ee1(:,ee0(j))) > tol_sv)';
             indno(ixno,ind1) = temp(1:(end-size(Xrest,2)));
@@ -178,7 +180,7 @@ if test_flag ~= 0 || test_flag ~= 0
             Pco(ind1(jj),ind1(ii)) = Pco(ind1(ii),ind1(jj));
         end
     end
-    
+
     for j=1:param_nbr
         if Mco(j)>(1-tol_rank)
             jweak(j)=1;

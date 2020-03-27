@@ -99,7 +99,7 @@ for iter = 1:options.simul.maxit
         break
     end
     if options.simul.robust_lin_solve
-        dy = -lin_solve_robust(A, res, verbose);
+        dy = -lin_solve_robust(A, res, verbose, options);
     else
         dy = -lin_solve(A, res, verbose);
     end
@@ -173,7 +173,7 @@ if relres > 1e-6 && verbose
     fprintf('WARNING : Failed to find a solution to the linear system.\n');
 end
 
-function [ x, flag, relres ] = lin_solve_robust(A, b ,verbose)
+function [ x, flag, relres ] = lin_solve_robust(A, b ,verbose, options)
 if norm(b) < sqrt(eps) % then x = 0 is a solution
     x = 0;
     flag = 0;

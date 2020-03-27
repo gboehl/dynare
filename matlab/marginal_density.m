@@ -100,7 +100,7 @@ while check_coverage
         marginal(linee,:) = [p, lpost_mode-log(tmp/((TotalNumberOfMhDraws-TODROP)*nblck))];
         warning(warning_old_state);
     end
-    if abs((marginal(9,2)-marginal(1,2))/marginal(9,2)) > 0.01 || isinf(marginal(1,2))
+    if abs((marginal(9,2)-marginal(1,2))/marginal(9,2)) > options_.marginal_data_density.harmonic_mean.tolerance || isinf(marginal(1,2))
         fprintf('\n')
         if increase == 1
             disp('Estimation::marginal density: The support of the weighting density function is not large enough...')

@@ -91,13 +91,13 @@ switch minimizer_algorithm
     end
     if ~isoctave
         [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
-        fmincon(objective_function,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options,varargin{:});
+            fmincon(objective_function,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options,varargin{:});
     else
         % Under Octave, use a wrapper, since fmincon() does not have an 11th
         % arg. Also, only the first 4 output arguments are available.
         func = @(x) objective_function(x,varargin{:});
         [opt_par_values,fval,exitflag,output] = ...
-        fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
+            fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
     end
   case 2
     %simulating annealing
@@ -418,7 +418,8 @@ switch minimizer_algorithm
     [opt_par_values, fval, exitflag] = simpsa(func2str(objective_function),start_par_value,LB,UB,simpsaOptions,varargin{:});
   case 11
     options_.cova_compute = 0;
-    [opt_par_values, stdh, lb_95, ub_95, med_param] = online_auxiliary_filter(start_par_value, varargin{:});
+    subvarargin = [varargin(1), varargin(3:6), varargin(8)];
+    [opt_par_values, stdh, lb_95, ub_95, med_param] = online_auxiliary_filter(start_par_value, subvarargin{:});
   case 12
     if isoctave
         error('Option mode_compute=12 is not available under Octave')

@@ -50,7 +50,7 @@ eqname = @(z) DynareModel.equations_tags{cellfun(@(x) x==z, DynareModel.equation
 exogenousvariablesindbase = intersect(info.exonames, dbase.name);
 residuals = dseries(NaN(dbase.nobs, length(info.residuals)), dbase.init, info.residuals);
 allexogenousvariables = [dbase{exogenousvariablesindbase{:}}, residuals];
-allexogenousvariables = allexogenousvariables{info.exonames{:}}; 
+allexogenousvariables = allexogenousvariables{info.exonames{:}};
 xdata = allexogenousvariables.data;
 
 % Evaluate the dynamic equation

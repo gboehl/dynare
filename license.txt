@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Dynare
-Upstream-Contact: Dynare Team, whose members in 2019 are:
+Upstream-Contact: Dynare Team, whose members in 2020 are:
                   - Stéphane Adjemian <stephane.adjemian@univ-lemans.fr>
                   - Houtan Bastani <houtan@dynare.org>
                   - Michel Juillard <michel.juillard@mjui.fr>
@@ -22,7 +22,7 @@ Upstream-Contact: Dynare Team, whose members in 2019 are:
 Source: https://www.dynare.org
 
 Files: *
-Copyright: 1996-2019 Dynare Team
+Copyright: 1996-2020 Dynare Team
 License: GPL-3+
 
 Files: matlab/AIM/SP*
@@ -53,45 +53,45 @@ Files: matlab/optimization/bfgsi1.m matlab/csolve.m matlab/optimization/csminit1
  matlab/bvar_toolbox.m matlab/partial_information/PI_gensys.m matlab/partial_information/qzswitch.m
  matlab/partial_information/qzdiv.m
 Copyright: 1993-2009 Christopher Sims
-           2006-2016 Dynare Team
+           2006-2017 Dynare Team
 License: GPL-3+
 
 Files: matlab/optimization/cmaes.m
 Copyright: 2001-2012 Nikolaus Hansen
-           2012 Dynare Team
+           2012-2017 Dynare Team
 License: GPL-3+
 
 Files: matlab/optimization/solvopt.m
 Copyright: 1997-2008 Alexei Kuntsevich and Franz Kappel 
            2008-2015 Giovanni Lombardo
-           2015 Dynare Team
+           2015-2017 Dynare Team
 License: GPL-3+
 
 Files: matlab/optimization/simulated_annealing.m
 Copyright: 1995 E.G.Tsionas 
            1995-2002 Thomas Werner 
            2002-2015 Giovanni Lombardo
-           2015 Dynare Team
+           2015-2017 Dynare Team
 License: GPL-3+
 
 Files: matlab/endogenous_prior.m
 Copyright: 2011 Lawrence J. Christiano, Mathias Trabandt and Karl Walentin
-           2013 Dynare Team
+           2013-2017 Dynare Team
 License: GPL-3+
 
 Files: matlab/trust_region.m
 Copyright: 2008-2012 VZLU Prague, a.s.
-           2014-2016 Dynare Team
+           2014-2019 Dynare Team
 License: GPL-3+
 
 Files: matlab/one_sided_hp_filter.m
 Copyright: 2010-2015 Alexander Meyer-Gohde
-           2015 Dynare Team
+           2015-2017 Dynare Team
 License: GPL-3+
 
 Files: matlab/convergence_diagnostics/raftery_lewis.m
 Copyright: 2016 Benjamin Born and Johannes Pfeifer
-           2016 Dynare Team
+           2016-2017 Dynare Team
 License: GPL-3+
 
 Files: matlab/commutation.m matlab/duplication.m
@@ -99,10 +99,38 @@ Copyright: 1997 Tom Minka <minka@microsoft.com>
            2019 Dynare Team
 License: GPL-3+
 
+Files: matlab/allVL1.m
+Copyright: 2007-2010 Bruno Luong <brunoluong@yahoo.com> 
+           2019 Dynare Team
+License: GPL-3+
+Comment: The original author gave authorization to change
+ the license from BSD-2-clause to GPL-3+ and redistribute 
+ it under GPL-3+ with Dynare.
+
+Files: matlab/uperm.m
+Copyright: 2014 Bruno Luong <brunoluong@yahoo.com> 
+           2019 Dynare Team
+License: GPL-3+
+Comment: The original author gave authorization to change
+ the license from BSD-2-clause to GPL-3+ and redistribute 
+ it under GPL-3+ with Dynare.
+
+Files: matlab/prodmom.m matlab/bivmom.m
+Copyright: 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
+           2019-2020 Dynare Team
+License: GPL-3+
+Comment: The author gave authorization to redistribute
+ these functions under GPL-3+ with Dynare and would 
+ appreciate acknowledgement of the source by citation
+ of the following paper:
+ Kan, R.: "From moments of sum to moments of product."
+ Journal of Multivariate Analysis, 2008, vol. 99, issue 3,
+ pages 542-554.
+
 Files: matlab/gsa/Morris_Measure_Groups.m
        matlab/gsa/Sampling_Function_2.m
 Copyright: 2005 European Commission
-           2012 Dynare Team
+           2012-2017 Dynare Team
 License: GPL-3+
 Comment: Written by Jessica Cariboni and Francesca Campolongo
  Joint Research Centre, The European Commission,
@@ -153,7 +181,7 @@ Comment: This file is part of GLUEWIN.
 Files: matlab/optimization/simpsa.m matlab/optimization/simpsaget.m matlab/optimization/simpsaset.m
 Copyright: 2005 Henning Schmidt, FCC, henning@fcc.chalmers.se
            2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be
-           2013-2016 Dynare Team
+           2013-2017 Dynare Team
 License: GPL-3+
 
 Files: matlab/missing/stats/normpdf.m matlab/missing/stats/gamcdf.m
@@ -163,22 +191,20 @@ Files: matlab/missing/stats/normpdf.m matlab/missing/stats/gamcdf.m
  matlab/missing/stats/betapdf.m matlab/missing/stats/normcdf.m
  matlab/missing/stats/stdnormal_cdf.m matlab/missing/stats/norminv.m
  matlab/missing/stats/stdnormal_pdf.m matlab/missing/stats/betainv.m
- matlab/missing/stats-matlab/common_size.m
 Copyright: 1995-2007 Kurt Hornik
-           2008-2011 Dynare Team
+           2008-2017 Dynare Team
 License: GPL-3+
 
-Files: matlab/missing/stats-matlab/quantile.m
+Files: matlab/missing/stats/quantile.m
 Copyright: 2014-2016 Christopher Hummersone
-           2016 Dynare Team
+           2016-2017 Dynare Team
 License: GPL-3+
 
-
-Files: matlab/missing/stats-matlab/corr.m
+Files: matlab/missing/stats/corr.m
 Copyright: 1993-1996 Kurt Hornik
            1996-2015 John W. Eaton
            2013-2015 Julien Bect
-           2016 Dynare Team
+           2016-2017 Dynare Team
 License: GPL-3+
 
 Files: matlab/missing/strjoin/strjoin.m
@@ -187,47 +213,35 @@ Copyright: 2013-2019 Ben Abbott
            2019 Dynare Team
 License: GPL-3+
 
-Files: matlab/missing/corrcoef/corrcoef.m matlab/missing/corrcoef/sumskipnan.m
- matlab/missing/corrcoef/flag_implicit_skip_nan.m matlab/missing/corrcoef/tcdf.m
-Copyright: 2000-2005,2008,2009,2011 by Alois Schloegl <alois.schloegl@gmail.com>
-           2014 Dynare Team
-License: GPL-3+
-
 Files: matlab/lmmcp/catstruct.m
 Copyright: 2005 Jos van der Geest <jos@jasen.nl>
            2013 Christophe Gouel
-           2016 Dynare Team
+           2016-2017 Dynare Team
 License: BSD-2-clause
 
 Files: matlab/lmmcp/lmmcp.m
 Copyright: 2005 Christian Kanzow and Stefania Petra
            2013 Christophe Gouel
-           2014 Dynare Team
+           2014-2017 Dynare Team
 License: permissive-lmmcp
  Unlimited permission is granted to everyone to use, copy, modify or
  distribute this software.
 
 Files: matlab/utilities/graphics/distinguishable_colors.m
 Copyright: 2010-2011 Timothy E. Holy
+           2017 Dynare Team
 License: BSD-2-clause
 
 Files: matlab/utilities/graphics/colorspace.m
 Copyright: 2005-2010 Pascal Getreuer
+           2017 Dynare Team
 License: BSD-2-clause
 
 Files: doc/*.rst doc/*.tex doc/*.svg doc/*.pdf doc/*.bib
-Copyright: 1996-2019 Dynare Team
+Copyright: 1996-2020 Dynare Team
 License: GFDL-NIV-1.3+
 
-Files: doc/macroprocessor/*
-Copyright: 2008-2015 Dynare Team
-License: CC-BY-SA-4.0
-
-Files: doc/preprocessor/*
-Copyright: 2007-2019 Dynare Team
-License: CC-BY-SA-4.0
-
-Files: doc/dr.tex doc/bvar_a_la_sims.tex
+Files: doc/dr.tex doc/dr.bib doc/bvar-a-la-sims.tex
 Copyright: 2007-2011 Sébastien Villemot
 License: GFDL-NIV-1.3+
 
@@ -237,18 +251,12 @@ Copyright: 2004-2011 Ondra Kamenik
 License: GPL-3+
 
 Files: m4/ax_blas.m4 m4/ax_lapack.m4
-Copyright: 2008 Steven G. Johnson <stevenj@alum.mit.edu>
+Copyright: 2008-2009 Steven G. Johnson <stevenj@alum.mit.edu>
 License: GPL-3+ with Autoconf exception
-
-Files: m4/ax_boost_base.m4
-Copyright: 2008 Thomas Porschberg <thomas@randspringer.de>
-           2009 Peter Adolphs
-License: FSFAP
 
 Files: m4/ax_compare_version.m4
 Copyright: 2008 Tim Toolan <toolan@ele.uri.edu>
 License: FSFAP
-
 
 Files: m4/ax_cxx_compile_stdcxx.m4
        m4/ax_cxx_compile_stdcxx_17.m4
@@ -262,14 +270,14 @@ Copyright: 2008 Benjamin Kosnik <bkoz@redhat.com>
            2019 Enji Cooper <yaneurabeya@gmail.com>
 License: FSFAP
 
-Files: m4/ax_latex_class.m4 m4/ax_tex_test.m4
+Files: m4/ax_latex_class.m4 m4/ax_latex_test.m4
 Copyright: 2008 Boretti Mathieu <boretti@eig.unige.ch>
            2009 Dynare Team
 License: LGPL-2.1+
 
 Files: m4/ax_matlab_arch.m4 m4/ax_matlab.m4 m4/ax_mexext.m4
 Copyright: 2002-2003 Ralph Schleicher
-           2009 Dynare Team
+           2009-2019 Dynare Team
 License: GPL-2+ with Autoconf exception
 
 Files: scripts/dynare.el
@@ -286,18 +294,48 @@ License: GPL-3+
 Files: mex/sources/sobol/sobol.hh mex/sources/sobol/initialize_v_array.hh
  mex/sources/sobol/initialize_v_array.inc
 Copyright: 2009 John Burkardt
-           2010-2011 Dynare Team
+           2010-2017 Dynare Team
 License: LGPL-3+
 
 Files: macOS/brewfiles/*
-Copyright: 2009-2019, Homebrew contributors
+Copyright: 2009-2019 Homebrew contributors
            2019 Dynare Team
 License: BSD-2-clause
 
-Files: contrib/jsonlab
+Files: preprocessor/m4/ax_boost_base.m4
+Copyright: 2008-2009 Thomas Porschberg <thomas@randspringer.de>
+           2009 Peter Adolphs
+License: FSFAP
+
+Files: preprocessor/m4/ax_cxx_compile_stdcxx.m4
+       preprocessor/m4/ax_cxx_compile_stdcxx_17.m4
+Copyright: 2008 Benjamin Kosnik <bkoz@redhat.com>
+           2012 Zack Weinberg <zackw@panix.com>
+           2013 Roy Stogner <roystgnr@ices.utexas.edu>
+           2014, 2015 Google Inc.; contributed by Alexey Sokolov <sokolov@google.com>
+           2015 Paul Norman <penorman@mac.com>
+           2015 Moritz Klammler <moritz@klammler.eu>
+           2016, 2018 Krzesimir Nowak <qdlacz@gmail.com>
+           2019 Enji Cooper <yaneurabeya@gmail.com>
+License: FSFAP
+
+Files: preprocessor/m4/ax_latex_class.m4
+       preprocessor/m4/ax_latex_test.m4
+Copyright: 2008 Boretti Mathieu <boretti@eig.unige.ch>
+           2009 Dynare Team
+License: LGPL-2.1+
+
+Files: preprocessor/doc/macroprocessor/*
+Copyright: 2008-2019 Dynare Team
+License: CC-BY-SA-4.0
+
+Files: preprocessor/doc/preprocessor/*
+Copyright: 2007-2019 Dynare Team
+License: CC-BY-SA-4.0
+
+Files: contrib/jsonlab/*
 Copyright: 2011-2018 Qianqian Fang <q.fang at neu.edu>
-License: BSD or GPL-3+
-Comment: https://www.mathworks.com/matlabcentral/fileexchange/33381-jsonlab-a-toolbox-to-encode-decode-json-files
+License: BSD-2-clause or GPL-3+
 
 Files: contrib/ms-sbvar/utilities_dw/*
 Copyright: 1996-2011 Daniel Waggoner
@@ -565,7 +603,7 @@ License: CC-BY-SA-4.0
       material not subject to the license. This includes other CC-
       licensed material, or material used under an exception or
       limitation to copyright. More considerations for licensors:
- 	wiki.creativecommons.org/Considerations_for_licensors
+      wiki.creativecommons.org/Considerations_for_licensors
  .
       Considerations for the public: By using one of our public
       licenses, a licensor grants the public permission to use the
@@ -581,8 +619,8 @@ License: CC-BY-SA-4.0
       such as asking that all changes be marked or described.
       Although not required by our licenses, you are encouraged to
       respect those requests where reasonable. More_considerations
-      for the public: 
- 	wiki.creativecommons.org/Considerations_for_licensees
+      for the public:
+      wiki.creativecommons.org/Considerations_for_licensees
  .
  =======================================================================
  .

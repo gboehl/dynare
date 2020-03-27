@@ -49,7 +49,7 @@ function [A,B,ys,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,8 +66,7 @@ function [A,B,ys,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-[dr,info,Model,DynareOptions,DynareResults] = resol(0,Model,DynareOptions,DynareResults);
-DynareResults.dr = dr;
+[dr,info,Model,DynareOptions,DynareResults] =compute_decision_rules(Model,DynareOptions,DynareResults);
 
 if info(1) > 0
     A = [];

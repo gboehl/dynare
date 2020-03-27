@@ -1,4 +1,4 @@
-// --+ options: json=compute, notmpterms, nolog +--
+// --+ options: json=compute notmpterms nolog +--
 
 var c k;
 varexo x;

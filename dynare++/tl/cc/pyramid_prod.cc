@@ -43,7 +43,7 @@ USubTensor::USubTensor(const TensorDimens &bdims,
               "Tensor has not full symmetry in USubTensor()");
   const EquivalenceSet &eset = TLStatic::getEquiv(bdims.dimen());
   zeros();
-  for (const auto & it : eset)
+  for (const auto &it : eset)
     {
       if (it.numClasses() == hdims.dimen())
         {

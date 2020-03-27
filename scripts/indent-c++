@@ -1,15 +1,21 @@
-#!/bin/sh
+#!/bin/bash
 
-# Reindents the C++ source code file given in argument.
+# Reindents the C++ source code files given in argument
 
-if [ -z "$1" ]; then
-    echo "Give a filename in argument"
-    exit 1
-fi
+[[ -n $1 ]] || { echo "Give filename(s) in argument" 2>&1; exit 1; }
 
-SCRIPTS_DIR=$(pwd)/$(dirname $0)
+pushd "$(dirname "$0")" > /dev/null
+SCRIPTS_DIR=$(pwd)
+popd > /dev/null
 
-uncrustify -l CPP --replace -c ${SCRIPTS_DIR}/uncrustify.cfg $1
+for f in "$@"; do
+    echo "*** Indenting $f…"
 
-cd $(dirname $1)
-emacs -batch $(basename $1) -l ${SCRIPTS_DIR}/indent-c++.el
+    uncrustify -l CPP --replace -c "${SCRIPTS_DIR}"/uncrustify.cfg "$f"
+
+    pushd "$(dirname "$f")" > /dev/null
+    emacs -batch "$(basename "$f")" -l "${SCRIPTS_DIR}"/indent-c++.el
+    popd > /dev/null
+
+    echo
+done

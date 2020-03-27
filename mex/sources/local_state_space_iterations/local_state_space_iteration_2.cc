@@ -31,7 +31,7 @@
 
 #include <omp.h>
 
-#define FIRST_ORDER_LOOP 1// Comment out this line to use mkl-blas instead of loops when computing ghx*yhat and ghu*epsilon
+#define FIRST_ORDER_LOOP 1 // Comment out this line to use mkl-blas instead of loops when computing ghx*yhat and ghu*epsilon
 
 std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>
 set_vector_of_indices(int n, int r)
@@ -216,7 +216,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     prhs[7] ghxu          [double]  m×nq array, second order reduced form.
     prhs[8] yhat_         [double]  [OPTIONAL] n×s array, time t particles (pruning additional latent variables).
     prhs[9] ss            [double]  [OPTIONAL] m×1 array, steady state for the union of the states and the observed variables (needed for the pruning mode).
-    
+
     prhs[9 or 11]         [double]  num of threads
 
     plhs[0] y             [double]  n×s array, time t+1 particles.
@@ -231,14 +231,14 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mexErrMsgTxt("Too many output arguments.");
 
   // Get dimensions.
-  size_t n = mxGetM(prhs[0]);// Number of states.
-  size_t s = mxGetN(prhs[0]);// Number of particles.
-  size_t q = mxGetM(prhs[1]);// Number of innovations.
-  size_t m = mxGetM(prhs[2]);// Number of elements in the union of states and observed variables.
+  size_t n = mxGetM(prhs[0]); // Number of states.
+  size_t s = mxGetN(prhs[0]); // Number of particles.
+  size_t q = mxGetM(prhs[1]); // Number of innovations.
+  size_t m = mxGetM(prhs[2]); // Number of elements in the union of states and observed variables.
   //mexPrintf("\n s (the number of column of yhat) is equal to %d.", s);
   //mexPrintf("\n The number of column of epsilon is %d.", mxGetN(prhs[1]));
   // Check the dimensions.
-  if (s != mxGetN(prhs[1])      // Number of columns for epsilon
+  if (s != mxGetN(prhs[1]) // Number of columns for epsilon
       || n != mxGetN(prhs[2]) // Number of columns for ghx
       || m != mxGetM(prhs[3]) // Number of rows for ghu
       || q != mxGetN(prhs[3]) // Number of columns for ghu
@@ -248,12 +248,12 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       || m != mxGetM(prhs[6]) // Number of rows for ghuu
       || q*q != mxGetN(prhs[6]) // Number of columns for ghuu
       || m != mxGetM(prhs[7]) // Number of rows for ghxu
-      || n*q != mxGetN(prhs[7]))    // Number of rows for ghxu
+      || n*q != mxGetN(prhs[7])) // Number of rows for ghxu
     mexErrMsgTxt("Input dimension mismatch!.");
   if (nrhs > 9)
-    if (n != mxGetM(prhs[8])      // Number of rows for yhat_
-        || s != mxGetN(prhs[8])   // Number of columns for yhat_
-        || m != mxGetM(prhs[9]))  // Number of rows for ss
+    if (n != mxGetM(prhs[8]) // Number of rows for yhat_
+        || s != mxGetN(prhs[8]) // Number of columns for yhat_
+        || m != mxGetM(prhs[9])) // Number of rows for ss
       mexErrMsgTxt("Input dimension mismatch!.");
 
   // Get Input arrays.

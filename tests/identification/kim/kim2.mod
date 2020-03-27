@@ -1,3 +1,23 @@
+% Created by Marco Ratto (@rattoma, marco.ratto@ec.europa.eu)
+% =========================================================================
+% Copyright (C) 2010-2020 Dynare Team
+%
+% This file is part of Dynare.
+%
+% Dynare is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Dynare is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% =========================================================================
+
 var c k i a lam;
 varexo ea;
 
@@ -60,6 +80,11 @@ dumpy ,uniform_pdf, , ,0,10;
 end;
 
 varobs c i;
+
+/* Skip test under MATLAB R2009b
+   MATLAB crashes, most likely due to an internal bug */
+if isoctave || ~matlab_ver_less_than('7.10')
+
 identification(advanced=1,max_dim_cova_group=3);
 //varobs c i lam; //to check if observing lam identifies phi and theta
 //identification(ar=1,advanced=1,max_dim_cova_group=3,prior_mc=250);
@@ -68,3 +93,5 @@ identification(advanced=1,max_dim_cova_group=3);
 
 estim_params_=[]; 
 identification(advanced=1,max_dim_cova_group=3);
+
+end

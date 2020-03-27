@@ -19,6 +19,9 @@ MODFILES = \
 	optimizers/fs2000_9.mod \
 	optimizers/fs2000_10.mod \
 	analytic_derivatives/fs2000_analytic_derivation.mod \
+	analytic_derivatives/BrockMirman_PertParamsDerivs.mod \
+	analytic_derivatives/burnside_3_order_PertParamsDerivs.mod \
+	pruning/AnSchorfheide_pruned_state_space.mod \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME.mod \
 	TeX/fs2000_corr_ME.mod \
 	estimation/MH_recover/fs2000_recover_tarb.mod \
@@ -98,9 +101,12 @@ MODFILES = \
 	optimal_policy/Ramsey/ramsey_histval.mod \
 	optimal_policy/Ramsey/Gali_commitment.mod \
 	optimal_policy/RamseyConstraints/test1.mod \
+	optimal_policy/Ramsey/Ramsey_Example_estimation.mod \
 	discretionary_policy/dennis_1.mod \
+	discretionary_policy/dennis_1_estim.mod \
 	discretionary_policy/Gali_discretion.mod \
 	initval_file/ramst_initval_file.mod \
+	initval_file/ramst_datafile.mod \
 	ramst_normcdf_and_friends.mod \
 	ramst_vec.mod \
 	example1_varexo_det.mod \
@@ -109,6 +115,7 @@ MODFILES = \
 	comments.mod \
 	histval_sto.mod \
 	histval_det.mod \
+	histval_predetermined.mod \
 	auxiliary_variables/test1.mod \
 	expectations/expectation.mod \
 	expectations/expectation_ss.mod \
@@ -120,6 +127,7 @@ MODFILES = \
 	steady_state/walsh1_ssm_block.mod \
 	steady_state/multi_leads.mod \
 	steady_state/example1_trust_region.mod \
+	steady_state/Gali_2015_chapter_6_4.mod \
 	steady_state_operator/standard.mod \
 	steady_state_operator/use_dll.mod \
 	steady_state_operator/block.mod \
@@ -183,11 +191,15 @@ MODFILES = \
 	external_function/no_deriv_given.mod \
 	external_function/no_deriv_given_dll.mod \
 	seeds.mod \
+	minimal_state_space_system/as2007_minimal.mod \
+	minimal_state_space_system/sw_minimal.mod \
 	identification/kim/kim2.mod \
 	identification/as2007/as2007.mod \
 	identification/as2007/as2007_kronflags.mod \
 	identification/as2007/as2007_QT.mod \
 	identification/as2007/as2007_QT_equal_autocorr.mod \
+	identification/as2007/as2007_order_1_2_3.mod \
+	identification/as2007/as2007_order3_no_stoch_simul.mod \
 	identification/BrockMirman/BrockMirman.mod \
 	identification/cgg/cgg_criteria_differ.mod \
 	identification/ident_unit_root/ident_unit_root.mod \
@@ -268,6 +280,7 @@ MODFILES = \
 	ep/rbcii.mod \
 	ep/linearmodel0.mod \
 	ep/linearmodel1.mod \
+	stochastic_simulations/example1_noprint.mod \
 	stochastic-backward-models/solow_cd.mod \
 	stochastic-backward-models/solow_ces.mod \
 	stochastic-backward-models/solow_cd_with_steadystate.mod \
@@ -371,7 +384,8 @@ MODFILES = \
 	bgp/solow-1/solow.mod \
 	bgp/nk-1/nk.mod \
 	bgp/ramsey-1/ramsey.mod \
-	dynare-command-options/ramst.mod
+	dynare-command-options/ramst.mod \
+	particle/local_state_space_iteration_k_test.mod
 
 ECB_MODFILES = \
 	var-expectations/1/example.mod \
@@ -508,9 +522,12 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	estimation/fs2000_mixed_ML_xfail.mod \
 	estimation/fs2000_stochastic_singularity_xfail.mod \
 	identification/ident_unit_root/ident_unit_root_xfail.mod \
+	identification/LindeTrabandt/LindeTrabandt2019_xfail.mod \
 	steady_state/Linear_steady_state_xfail.mod \
 	optimal_policy/Ramsey/ramsey_histval_xfail.mod \
-	example1_extra_exo_xfail.mod
+	example1_extra_exo_xfail.mod \
+	estimation/tune_mh_jscale/fs2000_1_xfail.mod \
+	estimation/tune_mh_jscale/fs2000_2_xfail.mod
 
 MFILES = initval_file/ramst_initval_file_data.m
 
@@ -612,6 +629,8 @@ deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.o.trs: deterministi
 
 initval_file/ramst_initval_file.m.trs: initval_file/ramst_initval_file_data.m.tls
 initval_file/ramst_initval_file.o.trs: initval_file/ramst_initval_file_data.o.tls
+initval_file/ramst_datafile.m.trs: initval_file/ramst_initval_file_data.m.tls
+initval_file/ramst_datafile.o.trs: initval_file/ramst_initval_file_data.o.tls
 
 identification/rbc_ident/rbc_ident_varexo_only.m.trs: identification/rbc_ident/rbc_ident_std_as_structural_par.m.trs
 identification/rbc_ident/rbc_ident_varexo_only.o.trs: identification/rbc_ident/rbc_ident_std_as_structural_par.o.trs
@@ -719,6 +738,9 @@ trend-component-and-var-models/tcm7.o.trs: trend-component-and-var-models/tcm6.o
 trend-component-and-var-models/tcm8.m.trs: trend-component-and-var-models/tcm6.m.trs
 trend-component-and-var-models/tcm8.o.trs: trend-component-and-var-models/tcm6.o.trs
 
+discretionary_policy/dennis_1_estim.m.trs: discretionary_policy/dennis_1.m.trs
+discretionary_policy/dennis_1_estim.o.trs: discretionary_policy/dennis_1.o.trs
+
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
 o/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.o.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
@@ -788,7 +810,7 @@ m/optimal_policy/OSR: $(patsubst %.mod, %.m.trs, $(filter optimal_policy/OSR/%.m
 o/optimal_policy/OSR: $(patsubst %.mod, %.o.trs, $(filter optimal_policy/OSR/%.mod, $(MODFILES)))
 
 optimal_policy/Ramsey: m/optimal_policy/Ramsey o/optimal_policy/Ramsey
-m/optimal_policy/Ramsey: $(patsubst %.mod, %.m.trs, $(filter optimal_policy/Ransey/%.mod, $(MODFILES)))
+m/optimal_policy/Ramsey: $(patsubst %.mod, %.m.trs, $(filter optimal_policy/Ramsey/%.mod, $(MODFILES)))
 o/optimal_policy/Ramsey: $(patsubst %.mod, %.o.trs, $(filter optimal_policy/Ramsey/%.mod, $(MODFILES)))
 
 optimal_policy: m/optimal_policy o/optimal_policy
@@ -842,6 +864,14 @@ o/gsa: $(patsubst %.mod, %.o.trs, $(filter gsa/%.mod, $(MODFILES)))
 identification: m/identification o/identification
 m/identification: $(patsubst %.mod, %.m.trs, $(filter identification/%.mod, $(MODFILES)))
 o/identification: $(patsubst %.mod, %.o.trs, $(filter identification/%.mod, $(MODFILES)))
+
+analytic_derivatives: m/analytic_derivatives o/analytic_derivatives
+m/analytic_derivatives: $(patsubst %.mod, %.m.trs, $(filter analytic_derivatives/%.mod, $(MODFILES)))
+o/analytic_derivatives: $(patsubst %.mod, %.o.trs, $(filter analytic_derivatives/%.mod, $(MODFILES)))
+
+pruning: m/pruning o/pruning
+m/pruning: $(patsubst %.mod, %.m.trs, $(filter pruning/%.mod, $(MODFILES)))
+o/pruning: $(patsubst %.mod, %.o.trs, $(filter pruning/%.mod, $(MODFILES)))
 
 fs2000: m/fs2000 o/fs2000
 m/fs2000: $(patsubst %.mod, %.m.trs, $(filter fs2000/%.mod, $(MODFILES)))
@@ -946,6 +976,7 @@ EXTRA_DIST = \
 	read_trs_files.sh \
 	run_test_matlab.m \
 	run_test_octave.m \
+	run_m_script.m \
 	load_octave_packages.m \
 	$(MODFILES) \
 	$(XFAIL_MODFILES) \
@@ -990,8 +1021,14 @@ EXTRA_DIST = \
 	data/test.xls \
 	data/test.xlsx \
 	gsa/morris/nk_est_data.m \
+	gsa/data_ca1.m \
+	gsa/data_ca1.mat \
 	analytic_derivatives/fsdat_simul.m \
+	analytic_derivatives/nBrockMirmanSYM.mat \
+	pruning/Andreasen_et_al_2018_Dynare44Pruning_v2.mat \
 	fs2000/fsdat_simul.m \
+	fs2000/fsdat_simul_dseries.m \
+	fs2000/fsdat_simul_missing_obs.m \
 	ls2003/data_ca1.m \
 	measurement_errors/data_ca1.m \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fsdat_simul.m \
@@ -1026,8 +1063,10 @@ EXTRA_DIST = \
 	kalman/likelihood_from_dynare/fs2000_estimation_check.inc \
 	kalman/likelihood_from_dynare/fs2000ns_model.inc \
 	kalman/likelihood_from_dynare/fs2000ns_estimation_check.inc \
+	identification/as2007/G_QT.mat \
 	estimation/fsdat_simul.m \
 	ep/mean_preserving_spread.m \
+	ep/rbcii_steady_state.m \
 	decision_rules/example1_results_dyn_432.mat \
 	decision_rules/third_order/comparison_policy_functions_dynare_mathematica.m \
 	decision_rules/third_order/FV_2011_policyfunctions.mat \
@@ -1036,6 +1075,7 @@ EXTRA_DIST = \
 	smoother2histval/fsdat_simul.m \
 	optimal_policy/Ramsey/find_c.m \
 	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat \
+	observation_trends_and_prefiltering/generate_trend_stationary_AR1.m \
 	observation_trends_and_prefiltering/Trend_diagnostics_MCMC_common.inc \
 	observation_trends_and_prefiltering/Trend_diagnostics_calib_common.inc \
 	observation_trends_and_prefiltering/Trend_diagnostics_ML_common.inc \
@@ -1055,6 +1095,10 @@ EXTRA_DIST = \
 	estimation/MH_recover/fs2000.common.inc \
 	prior_posterior_function/posterior_function_demo.m \
 	deterministic_simulations/lola_data.mat \
+	k_order_perturbation/fs2000k++.mod \
+	lmmcp/sw-common-header.inc \
+	lmmcp/sw-common-footer.inc \
+	estimation/tune_mh_jscale/fs2000.inc \
 	estimation/univariate/data.csv \
 	estimation/univariate/ols/mc-ols.inc \
 	ecb/SURGibbs/fishdata.csv \
@@ -1244,6 +1288,17 @@ clean-local:
 		k_order_perturbation/fs2000k++_ff.m
 
 	rm -rf ecb/cherrypick/simulation-files1 ecb/cherrypick/simulation-files2 toto.mod
+
+	rm -f discretionary_policy/dennis_simul.m
+
+	rm -f kalman/likelihood_from_dynare/fsdat_simul_corr_ME.m \
+		kalman/likelihood_from_dynare/fsdat_simul_corr_ME_missing.m \
+		kalman/likelihood_from_dynare/fsdat_simul_uncorr_ME.m \
+		kalman/likelihood_from_dynare/fsdat_simul_uncorr_ME_missing.m \
+		kalman/likelihood_from_dynare/fs_ns_dat_simul_corr_ME.m \
+		kalman/likelihood_from_dynare/fs_ns_dat_simul_corr_ME_missing.m \
+		kalman/likelihood_from_dynare/fs_ns_dat_simul_uncorr_ME.m \
+		kalman/likelihood_from_dynare/fs_ns_dat_simul_uncorr_ME_missing.m
 
 	find . -name "*.tex" -type f -delete
 	find . -name "*.aux" -type f -delete

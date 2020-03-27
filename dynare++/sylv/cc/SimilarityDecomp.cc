@@ -52,7 +52,7 @@ SimilarityDecomp::getXDim(diag_iter start, diag_iter end,
 /* Find solution of X for diagonal block given by start(incl.) and
    end(excl.). If the solution cannot be found, or it is greater than
    norm, X is not changed and flase is returned.
- */
+*/
 bool
 SimilarityDecomp::solveX(diag_iter start, diag_iter end,
                          GeneralMatrix &X, double norm) const

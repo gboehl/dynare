@@ -184,7 +184,7 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
     if options_.TeX
         Geweke_tex_header = {'Parameter'; 'Mean'; 'Std'; 'No\ Taper'};
         additional_header = {[' & \multicolumn{2}{c}{Posterior} & \multicolumn{',num2str(1+length(options_.convergence.geweke.taper_steps)),'}{c}{p-values} \\'],
-                           ['\cmidrule(r{.75em}){2-3} \cmidrule(r{.75em}){4-',num2str(4+length(options_.convergence.geweke.taper_steps)),'}']};
+                            ['\cmidrule(r{.75em}){2-3} \cmidrule(r{.75em}){4-',num2str(4+length(options_.convergence.geweke.taper_steps)),'}']};
         for ii=1:length(options_.convergence.geweke.taper_steps)
             Geweke_tex_header = vertcat(Geweke_tex_header, [num2str(options_.convergence.geweke.taper_steps(ii)),'\%%\ Taper']);
         end

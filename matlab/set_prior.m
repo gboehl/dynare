@@ -112,8 +112,8 @@ if ncx
     bayestopt_.name = [bayestopt_.name; cell(ncx, 1)];
     for i = 1:ncx
         bayestopt_.name(baseid+i) = {sprintf('corr %s, %s', ...
-                                      M_.exo_names{estim_params_.corrx(i,1)}, ...
-                                      M_.exo_names{estim_params_.corrx(i,2)})};
+                                             M_.exo_names{estim_params_.corrx(i,1)}, ...
+                                             M_.exo_names{estim_params_.corrx(i,2)})};
     end
 end
 if ncn
@@ -236,7 +236,7 @@ for i=1:length(k)
         else
             problem_parameters=[problem_parameters ', ' bayestopt_.name{k(i)}];
         end
-    end    
+    end
     bayestopt_.p3(k(i)) = bayestopt_.p6(k(i)) ;
     bayestopt_.p4(k(i)) = bayestopt_.p7(k(i)) ;
     bayestopt_.p5(k(i)) = NaN ;

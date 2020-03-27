@@ -11,7 +11,7 @@ function planner_objective_value = evaluate_planner_objective(M,options,oo)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2007-2018 Dynare Team
+% Copyright (C) 2007-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,14 +28,17 @@ function planner_objective_value = evaluate_planner_objective(M,options,oo)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+if options.order>1
+    fprintf('\nevaluate_planner_objective: order>1 not yet supported\n')
+    planner_objective_value = NaN;
+    return
+end
 dr = oo.dr;
 exo_nbr = M.exo_nbr;
 nstatic = M.nstatic;
 nspred = M.nspred;
 if nspred > 180
-    disp(' ')
-    disp(['WARNING in evaluate_planner_objective: model too large, can''t evaluate planner ' ...
-          'objective'])
+    fprintf('\nevaluate_planner_objective: model too large, can''t evaluate planner objective\n')
     planner_objective_value = NaN;
     return
 end
@@ -54,21 +57,16 @@ ys = oo.dr.ys;
 %second order terms
 Uyy = full(Uyy);
 
-[Uyygygy, err] = A_times_B_kronecker_C(Uyy,gy,gy);
-mexErrCheck('A_times_B_kronecker_C', err);
-[Uyygugu, err] = A_times_B_kronecker_C(Uyy,gu,gu);
-mexErrCheck('A_times_B_kronecker_C', err);
-[Uyygygu, err] = A_times_B_kronecker_C(Uyy,gy,gu);
-mexErrCheck('A_times_B_kronecker_C', err);
+Uyygygy = A_times_B_kronecker_C(Uyy,gy,gy);
+Uyygugu = A_times_B_kronecker_C(Uyy,gu,gu);
+Uyygygu = A_times_B_kronecker_C(Uyy,gy,gu);
 
 Wbar =U/(1-beta); %steady state welfare
 Wy = Uy*gy/(eye(nspred)-beta*Gy);
 Wu = Uy*gu+beta*Wy*Gu;
 Wyy = Uyygygy/(eye(nspred*nspred)-beta*kron(Gy,Gy));
-[Wyygugu, err] = A_times_B_kronecker_C(Wyy,Gu,Gu);
-mexErrCheck('A_times_B_kronecker_C', err);
-[Wyygygu,err] = A_times_B_kronecker_C(Wyy,Gy,Gu);
-mexErrCheck('A_times_B_kronecker_C', err);
+Wyygugu = A_times_B_kronecker_C(Wyy,Gu,Gu);
+Wyygygu = A_times_B_kronecker_C(Wyy,Gy,Gu);
 Wuu = Uyygugu+beta*Wyygugu;
 Wyu = Uyygygu+beta*Wyygygu;
 Wss = beta*Wuu*M.Sigma_e(:)/(1-beta); % at period 0, we are in steady state, so the deviation term only starts in period 1, thus the beta in front
@@ -90,34 +88,27 @@ end
 yhat1 = yhat1(dr.order_var(nstatic+(1:nspred)),1)-dr.ys(dr.order_var(nstatic+(1:nspred)));
 u = oo.exo_simul(1,:)';
 
-[Wyyyhatyhat1, err] = A_times_B_kronecker_C(Wyy,yhat1,yhat1);
-mexErrCheck('A_times_B_kronecker_C', err);
-[Wuuuu, err] = A_times_B_kronecker_C(Wuu,u,u);
-mexErrCheck('A_times_B_kronecker_C', err);
-[Wyuyhatu1, err] = A_times_B_kronecker_C(Wyu,yhat1,u);
-mexErrCheck('A_times_B_kronecker_C', err);
+Wyyyhatyhat1 = A_times_B_kronecker_C(Wyy,yhat1,yhat1);
+Wuuuu = A_times_B_kronecker_C(Wuu,u,u);
+Wyuyhatu1 = A_times_B_kronecker_C(Wyu,yhat1,u);
 planner_objective_value(1) = Wbar+Wy*yhat1+Wu*u+Wyuyhatu1 ...
     + 0.5*(Wyyyhatyhat1 + Wuuuu+Wss);
 if options.ramsey_policy
     yhat2 = yhat2(dr.order_var(nstatic+(1:nspred)),1)-dr.ys(dr.order_var(nstatic+(1:nspred)));
-    [Wyyyhatyhat2, err] = A_times_B_kronecker_C(Wyy,yhat2,yhat2);
-    mexErrCheck('A_times_B_kronecker_C', err);
-    [Wyuyhatu2, err] = A_times_B_kronecker_C(Wyu,yhat2,u);
-    mexErrCheck('A_times_B_kronecker_C', err);
+    Wyyyhatyhat2 = A_times_B_kronecker_C(Wyy,yhat2,yhat2);
+    Wyuyhatu2 = A_times_B_kronecker_C(Wyu,yhat2,u);
     planner_objective_value(2) = Wbar+Wy*yhat2+Wu*u+Wyuyhatu2 ...
         + 0.5*(Wyyyhatyhat2 + Wuuuu+Wss);
 end
 
 if ~options.noprint
-    skipline()
-    disp('Approximated value of planner objective function')
+    fprintf('\nApproximated value of planner objective function\n')
     if options.ramsey_policy
-        disp(['    - with initial Lagrange multipliers set to 0: ' ...
-              num2str(planner_objective_value(2)) ])
-        disp(['    - with initial Lagrange multipliers set to steady state: ' ...
-              num2str(planner_objective_value(1)) ])
+        fprintf('    - with initial Lagrange multipliers set to 0: %10.8f\n', ...
+                planner_objective_value(2))
+        fprintf('    - with initial Lagrange multipliers set to steady state: %10.8f\n\n', ...
+                planner_objective_value(1))
     elseif options.discretionary_policy
-        fprintf('with discretionary policy: %10.8f',planner_objective_value(1))
+        fprintf('with discretionary policy: %10.8f\n\n',planner_objective_value(1))
     end
-    skipline()
 end

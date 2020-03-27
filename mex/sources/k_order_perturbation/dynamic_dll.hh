@@ -35,7 +35,7 @@
 #include "dynamic_abstract_class.hh"
 
 using dynamic_tt_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, double *T);
-using dynamic_deriv_fct = void (*) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *deriv);
+using dynamic_deriv_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *deriv);
 
 /**
  * creates pointer to Dynamic function inside <model>_dynamic.dll
@@ -47,7 +47,7 @@ private:
   std::vector<dynamic_tt_fct> dynamic_tt;
   std::vector<dynamic_deriv_fct> dynamic_deriv;
 #if defined(_WIN32) || defined(__CYGWIN32__)
-  HINSTANCE dynamicHinstance;  // DLL instance pointer in Windows
+  HINSTANCE dynamicHinstance; // DLL instance pointer in Windows
 #else
   void *dynamicHinstance; // and in Linux or Mac
 #endif

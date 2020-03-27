@@ -1,7 +1,28 @@
 % this is the exact model Qu and Tkachenk (2012, Quantitative Economics)
 % used in their replication file.
 % This file is used to check whether the G matrix is computed correctly.
-% Created by Willi Mutschler (willi@mutschler.eu)
+% Created by Willi Mutschler (@wmutschl, willi@mutschler.eu)
+% =========================================================================
+% Copyright (C) 2019-2020 Dynare Team
+%
+% This file is part of Dynare.
+%
+% Dynare is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Dynare is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% =========================================================================
+
+@#define TOL_RANK = 1e-10
+
 var z g R y pie c piep yp;
 varexo e_z e_g e_R ;
 parameters tau betta nu phi pistar psi1 psi2 rhor rhog rhoz sig2r sig2g sig2z;
@@ -72,26 +93,26 @@ identification(parameter_set=calibration,
                no_identification_reducedform,
                no_identification_moments,
                checks_via_subsets=1,
+               tol_rank=@{TOL_RANK},
                max_dim_subsets_groups=4);
 
-%     load('G_QT'); %note that this is computed using replication files of Qu and Tkachenko (2012)
-%     temp = load([M_.dname filesep 'identification' filesep M_.fname '_identif']);
-%     G_dynare = temp.ide_spectrum_point.G;
-% 
-%     % Compare signs
-%     if ~isequal(sign(G_dynare),sign(G_QT))
-%         error('signs of normalized G are note equal');
-%     end
-% 
-%     % Compare normalized versions
-%     tilda_G_dynare = temp.ide_spectrum_point.tilda_G;
-%     ind_G_QT = (find(max(abs(G_QT'),[],1) > temp.store_options_ident.tol_deriv));
-%     tilda_G_QT = zeros(size(G_QT));
-%     delta_G_QT = sqrt(diag(G_QT(ind_G_QT,ind_G_QT)));
-%     tilda_G_QT(ind_G_QT,ind_G_QT) = G_QT(ind_G_QT,ind_G_QT)./((delta_G_QT)*(delta_G_QT'));
-%     if ~isequal(rank(tilda_G_QT,temp.store_options_ident.tol_rank),rank(tilda_G_dynare,temp.store_options_ident.tol_rank))
-%         error('ranks are not the same for normalized version')
-%     end
-% 
-%     max(max(abs(abs(tilda_G_dynare)-abs(tilda_G_QT))))
-%     norm(tilda_G_dynare - tilda_G_QT)
+load('G_QT'); %note that this is computed using replication files of Qu and Tkachenko (2012)
+temp = load([M_.dname filesep 'identification' filesep M_.fname '_identif']);
+G_dynare = temp.ide_spectrum_point.dSPECTRUM;
+% Compare signs
+if ~isequal(sign(G_dynare),sign(G_QT))
+    error('signs of normalized G are note equal');
+end
+
+% Compare normalized versions
+tilda_G_dynare = temp.ide_spectrum_point.tilda_dSPECTRUM;
+ind_G_QT = (find(max(abs(G_QT'),[],1) > temp.store_options_ident.tol_deriv));
+tilda_G_QT = zeros(size(G_QT));
+delta_G_QT = sqrt(diag(G_QT(ind_G_QT,ind_G_QT)));
+tilda_G_QT(ind_G_QT,ind_G_QT) = G_QT(ind_G_QT,ind_G_QT)./((delta_G_QT)*(delta_G_QT'));
+if ~isequal(rank(tilda_G_QT,@{TOL_RANK}),rank(tilda_G_dynare,@{TOL_RANK}))
+    error('ranks are not the same for normalized version')
+end
+
+max(max(abs(abs(tilda_G_dynare)-abs(tilda_G_QT))))
+norm(tilda_G_dynare - tilda_G_QT)

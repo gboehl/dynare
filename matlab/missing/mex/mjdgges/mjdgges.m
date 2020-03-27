@@ -1,4 +1,4 @@
-function [err, ss, tt, zz, sdim, eigval, info] = mjdgges(e, d, qz_criterium, zhreshold)
+function [ss, tt, zz, sdim, eigval, info] = mjdgges(e, d, qz_criterium, zhreshold)
 %
 % INPUTS
 %   e            [double] real square (n*n) matrix.
@@ -8,7 +8,6 @@ function [err, ss, tt, zz, sdim, eigval, info] = mjdgges(e, d, qz_criterium, zhr
 %                                  detecting eigenvalues too close to 0/0)
 %
 % OUTPUTS
-%   err          [integer] scalar: 1 indicates failure, 0 indicates success
 %   ss           [double] (n*n) quasi-triangular matrix.
 %   tt           [double] (n*n) quasi-triangular matrix.
 %   zz           [double] (n*n) orthogonal matrix.
@@ -19,7 +18,7 @@ function [err, ss, tt, zz, sdim, eigval, info] = mjdgges(e, d, qz_criterium, zhr
 % SPECIAL REQUIREMENTS
 %   none.
 
-% Copyright (C) 1996-2018 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,5 +65,3 @@ try
 catch
     info = 1; % Not as precise as lapack's info!
 end
-
-err = 0;

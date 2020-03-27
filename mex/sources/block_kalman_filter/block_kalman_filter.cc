@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2019 Dynare Team
+ * Copyright © 2007-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -143,10 +143,10 @@ det(const double *F, int dim, const lapack_int *ipiv)
 
 BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  if (nlhs > 3)
-    DYN_MEX_FUNC_ERR_MSG_TXT("block_kalman_filter provides at most 3 output argument.");
+  if (nlhs > 2)
+    mexErrMsgTxt("block_kalman_filter provides at most 2 output argument.");
   if (nrhs != 13 && nrhs != 16)
-    DYN_MEX_FUNC_ERR_MSG_TXT("block_kalman_filter requires exactly \n  13 input arguments for standard Kalman filter \nor\n  16 input arguments for missing observations Kalman filter.");
+    mexErrMsgTxt("block_kalman_filter requires exactly \n  13 input arguments for standard Kalman filter \nor\n  16 input arguments for missing observations Kalman filter.");
   if (nrhs == 16)
     missing_observations = true;
   else
@@ -154,13 +154,13 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
   if (missing_observations)
     {
       if (!mxIsCell(prhs[0]))
-        DYN_MEX_FUNC_ERR_MSG_TXT("the first input argument of block_missing_observations_kalman_filter must be a Cell Array.");
+        mexErrMsgTxt("the first input argument of block_missing_observations_kalman_filter must be a Cell Array.");
       pdata_index = prhs[0];
       if (!mxIsDouble(prhs[1]))
-        DYN_MEX_FUNC_ERR_MSG_TXT("the second input argument of block_missing_observations_kalman_filter must be a scalar.");
+        mexErrMsgTxt("the second input argument of block_missing_observations_kalman_filter must be a scalar.");
       number_of_observations = ceil(mxGetScalar(prhs[1]));
       if (!mxIsDouble(prhs[2]))
-        DYN_MEX_FUNC_ERR_MSG_TXT("the third input argument of block_missing_observations_kalman_filter must be a scalar.");
+        mexErrMsgTxt("the third input argument of block_missing_observations_kalman_filter must be a scalar.");
       no_more_missing_observations = ceil(mxGetScalar(prhs[2]));
       pT = mxDuplicateArray(prhs[3]);
       pR = mxDuplicateArray(prhs[4]);
@@ -187,9 +187,9 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
       pY = mxDuplicateArray(prhs[5]);
       start = mxGetScalar(prhs[6]);
       /*Defining the initials values*/
-      n   = mxGetN(pT);           // Number of state variables.
-      pp   = mxGetM(pY);          // Maximum number of observed variables.
-      smpl = mxGetN(pY);          // Sample size.          ;
+      n = mxGetN(pT); // Number of state variables.
+      pp = mxGetM(pY); // Maximum number of observed variables.
+      smpl = mxGetN(pY); // Sample size.          ;
       mfd = mxGetPr(prhs[7]);
       kalman_tol = mxGetScalar(prhs[8]);
       riccati_tol = mxGetScalar(prhs[9]);
@@ -204,9 +204,9 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
   P = mxGetPr(pP);
   Y = mxGetPr(pY);
 
-  n   = mxGetN(pT);           // Number of state variables.
-  pp   = mxGetM(pY);          // Maximum number of observed variables.
-  smpl = mxGetN(pY);          // Sample size.          ;
+  n = mxGetN(pT); // Number of state variables.
+  pp = mxGetM(pY); // Maximum number of observed variables.
+  smpl = mxGetN(pY); // Sample size.          ;
   n_state = n - pure_obs;
 
   /*mexPrintf("T\n");
@@ -218,33 +218,33 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
 
   if (missing_observations)
     if (mxGetNumberOfElements(pdata_index) != static_cast<unsigned int>(smpl))
-      DYN_MEX_FUNC_ERR_MSG_TXT("the number of element in the cell array passed to block_missing_observation_kalman_filter as first argument has to be equal to the smpl size");
+      mexErrMsgTxt("the number of element in the cell array passed to block_missing_observation_kalman_filter as first argument has to be equal to the smpl size");
 
   i_nz_state_var = std::make_unique<int[]>(n);
   for (int i = 0; i < n; i++)
     i_nz_state_var[i] = nz_state_var[i];
 
-  pa = mxCreateDoubleMatrix(n, 1, mxREAL);         // State vector.
+  pa = mxCreateDoubleMatrix(n, 1, mxREAL); // State vector.
   a = mxGetPr(pa);
   tmp_a = std::make_unique<double[]>(n);
-  dF = 0.0;                                            // det(F).
+  dF = 0.0; // det(F).
 
   p_tmp1 = mxCreateDoubleMatrix(n, n_shocks, mxREAL);
   tmp1 = mxGetPr(p_tmp1);
-  t = 0;                                               // Initialization of the time index.
-  plik  = mxCreateDoubleMatrix(smpl, 1, mxREAL);
+  t = 0; // Initialization of the time index.
+  plik = mxCreateDoubleMatrix(smpl, 1, mxREAL);
   lik = mxGetPr(plik);
-  Inf =  mxGetInf();
-  LIK  = 0.0;                                          // Default value of the log likelihood.
-  notsteady   = true;                                 // Steady state flag.
-  F_singular  = true;
+  Inf = mxGetInf();
+  LIK = 0.0; // Default value of the log likelihood.
+  notsteady = true; // Steady state flag.
+  F_singular = true;
   v_pp = std::make_unique<double[]>(pp);
   v_n = std::make_unique<double[]>(n);
   mf = std::make_unique<int[]>(pp);
   for (int i = 0; i < pp; i++)
     mf[i] = mfd[i] - 1;
 
-  /*compute QQ = R*Q*transpose(R)*/                        // Variance of R times the vector of structural innovations.;
+  /*compute QQ = R*Q*transpose(R)*/ // Variance of R times the vector of structural innovations.;
   // tmp = R * Q;
   for (int i = 0; i < n; i++)
     for (int j = 0; j < n_shocks; j++)
@@ -270,9 +270,9 @@ BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const 
 
   pv = mxCreateDoubleMatrix(pp, 1, mxREAL);
   v = mxGetPr(pv);
-  pF =  mxCreateDoubleMatrix(pp, pp, mxREAL);
+  pF = mxCreateDoubleMatrix(pp, pp, mxREAL);
   F = mxGetPr(pF);
-  piF =  mxCreateDoubleMatrix(pp, pp, mxREAL);
+  piF = mxCreateDoubleMatrix(pp, pp, mxREAL);
   iF = mxGetPr(piF);
   lw = pp * 4;
   w = std::make_unique<double[]>(lw);
@@ -316,7 +316,7 @@ BlockKalmanFilter::block_kalman_filter_ss()
       {
         //v = Y(:,t)-a(mf);
         for (int i = 0; i < pp; i++)
-          v[i]  = Y[i + t * pp] - a[mf[i]];
+          v[i] = Y[i + t * pp] - a[mf[i]];
 
         //a = T*(a+K*v);
         for (int i = pure_obs; i < n; i++)
@@ -375,7 +375,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
           for (auto i = d_index.begin(); i != d_index.end(); i++)
             {
               //mexPrintf("i_i=%d, omp_get_max_threads()=%d\n",i_i,omp_get_max_threads());
-              v[i_i]  = Y[*i + t * pp] - a[mf[*i]];
+              v[i_i] = Y[*i + t * pp] - a[mf[*i]];
               i_i++;
             }
 
@@ -404,7 +404,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
 
           //v = Y(:,t) - a(mf)
           for (int i = 0; i < pp; i++)
-            v[i]  = Y[i + t * pp] - a[mf[i]];
+            v[i] = Y[i + t * pp] - a[mf[i]];
 
           //F  = P(mf,mf) + H;
           if (H_size == 1)
@@ -432,11 +432,11 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
         mexPrintf("dgecon failure with error %d\n", static_cast<int>(info));
 
       if (rcond < kalman_tol)
-        if (not_all_abs_F_bellow_crit(F, size_d_index * size_d_index, kalman_tol))   //~all(abs(F(:))<kalman_tol)
+        if (not_all_abs_F_bellow_crit(F, size_d_index * size_d_index, kalman_tol)) //~all(abs(F(:))<kalman_tol)
           {
             mexPrintf("error: F singular\n");
-            LIK  = Inf;
-            if (nlhs == 3)
+            LIK = Inf;
+            if (nlhs == 2)
               for (int i = t; i < smpl; i++)
                 lik[i] = Inf;
             // info = 0
@@ -466,7 +466,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
                   int j1 = j - pure_obs;
                   int j1_n_state = j1 * n_state - pure_obs;
                   for (int k = pure_obs; k < i_nz_state_var[i]; k++)
-                    tmp[i + j1 * n ] += T[i + k * n] * P[k + j1_n_state];
+                    tmp[i + j1 * n] += T[i + k * n] * P[k + j1_n_state];
                 }
 
             std::fill_n(P, 0, n * n);
@@ -492,7 +492,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
           F_singular = false;
 
           //dF     = det(F);
-          dF     = det(iF, size_d_index, ipiv.get());
+          dF = det(iF, size_d_index, ipiv.get());
 
           //iF     = inv(F);
           //int lwork = 4/*2*/* pp;
@@ -518,7 +518,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
             LIK += lik[t];
 
           if (missing_observations)
-              //K      = P(:,mf)*iF;
+            //K      = P(:,mf)*iF;
 #pragma omp parallel for shared(P_mf)
             for (int i = 0; i < n; i++)
               {
@@ -597,7 +597,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
                 unsigned int k = i * n + j;
                 P_t_t1[j * n + i] = P_t_t1[k] = P[k] - K_P[k];
               }
-          double one  = 1.0;
+          double one = 1.0;
           double zero = 0.0;
           std::copy_n(QQ, n * n, P);
           blas_int n_b = n;
@@ -631,7 +631,7 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
               }
           mexPrintf("CudaBLAS\n");
           mexEvalString("drawnow;");
-          double one  = 1.0;
+          double one = 1.0;
           double zero = 0.0;
           cublasStatus_t status;
           cublasHandle_t handle;
@@ -817,17 +817,15 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
 void
 BlockKalmanFilter::return_results_and_clean(int nlhs, mxArray *plhs[])
 {
-  plhs[0] = mxCreateDoubleScalar(0);
-
-  if (nlhs >= 2)
+  if (nlhs >= 1)
     {
-      plhs[1] = mxCreateDoubleMatrix(1, 1, mxREAL);
-      double *pind = mxGetPr(plhs[1]);
+      plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
+      double *pind = mxGetPr(plhs[0]);
       pind[0] = LIK;
     }
 
-  if (nlhs == 3)
-    plhs[2] = plik;
+  if (nlhs == 2)
+    plhs[1] = plik;
   else
     mxDestroyArray(plik);
 

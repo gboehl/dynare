@@ -18,7 +18,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.62])
-AC_INIT([dynare], [4.6-unstable])
+AC_INIT([dynare], [4.7-unstable])
 AC_CONFIG_SRCDIR([configure.ac])
 AM_INIT_AUTOMAKE([-Wall -Wno-portability foreign])
 
@@ -33,8 +33,16 @@ FFLAGS="$($MKOCTFILE -p FFLAGS) -Wall"
 CXXFLAGS="$($MKOCTFILE -p CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast"
 LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
 
+AC_CANONICAL_HOST
+case ${host_os} in
+  darwin*)
+    CXXFLAGS="$($MKOCTFILE -p ALL_CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast -O2"
+    LDFLAGS+="$($MKOCTFILE -p OCTAVE_LIBS)"
+    ;;
+esac
+
 OCTAVE_VERSION=$($MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //')
-AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.2], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.2 at least (or disable Octave support with --disable-octave).])])
+AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.4], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.4 at least (or disable Octave support with --disable-octave).])])
 
 AC_PROG_FC
 AC_PROG_CC

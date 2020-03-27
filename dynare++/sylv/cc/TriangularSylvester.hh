@@ -37,7 +37,7 @@ public:
   TriangularSylvester(const QuasiTriangular &k, const QuasiTriangular &f);
   TriangularSylvester(const SchurDecompZero &kdecomp, const SchurDecomp &fdecomp);
   TriangularSylvester(const SchurDecompZero &kdecomp, const SimilarityDecomp &fdecomp);
-  
+
   ~TriangularSylvester() override = default;
   void print() const;
   void solve(SylvParams &pars, KronVector &d) const override;

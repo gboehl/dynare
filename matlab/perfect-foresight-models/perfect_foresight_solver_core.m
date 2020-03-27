@@ -11,7 +11,7 @@ function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
 % - oo_                 [struct] contains results
 % - maxerror            [double] contains the maximum absolute error
 
-% Copyright (C) 2015-2019 Dynare Team
+% Copyright (C) 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,18 +50,14 @@ end
 if options_.block
     if options_.bytecode
         try
-            [info, tmp] = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);
-        catch
-            info = 1;
-        end
-        if info
-            oo_.deterministic_simulation.status = false;
-        else
-            oo_.endo_simul = tmp;
+            oo_.endo_simul = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);
             oo_.deterministic_simulation.status = true;
-        end
-        if options_.no_homotopy
-            mexErrCheck('bytecode', info);
+        catch ME
+            disp(ME.message)
+            if options_.no_homotopy
+                error('Error in bytecode')
+            end
+            oo_.deterministic_simulation.status = false;
         end
     else
         oo_ = feval([M_.fname '.dynamic'], options_, M_, oo_);
@@ -69,18 +65,14 @@ if options_.block
 else
     if options_.bytecode
         try
-            [info, tmp] = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state, 1, periods+2), periods);
-        catch
-            info = 1;
-        end
-        if info
-            oo_.deterministic_simulation.status = false;
-        else
-            oo_.endo_simul = tmp;
+            oo_.endo_simul = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state, 1, periods+2), periods);
             oo_.deterministic_simulation.status = true;
-        end
-        if options_.no_homotopy
-            mexErrCheck('bytecode', info);
+        catch ME
+            disp(ME.message)
+            if options_.no_homotopy
+                error('Error in bytecode')
+            end
+            oo_.deterministic_simulation.status = false;
         end
     else
         if M_.maximum_endo_lead == 0 % Purely backward model
@@ -128,7 +120,7 @@ if nargout>1
         maxerror = oo_.deterministic_simulation.error;
     else
         if options_.bytecode
-            [~, residuals]= bytecode('dynamic','evaluate', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1);
+            residuals = bytecode('dynamic','evaluate', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1);
         else
             if M_.maximum_lag > 0
                 y0 = oo_.endo_simul(:, M_.maximum_lag);

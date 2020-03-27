@@ -1033,724 +1033,724 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
         end % handle boundaries
             % ----- end handle boundaries -----
 
-            % compute noise measurement and reduce fitness arrays to size lambda
-            if noiseHandling
-                [noiseS] = local_noisemeasurement(fitness.sel(1:lambda), ...
-                                                  fitness.sel(lambda+(1:noiseReevals)), ...
-                                                  noiseReevals, noiseTheta, noiseCutOff);
-                if countiter == 1 % TODO: improve this very rude way of initialization
-                    noiseSS = 0;
-                    noiseN = 0;  % counter for mean
-                end
-                noiseSS = noiseSS + noisecum * (noiseS - noiseSS);
-
-                % noise-handling could be done here, but the original sigma is still needed
-                % disp([noiseS noiseSS noisecum])
-
-                fitness.rawar12 = fitness.raw; % just documentary
-                fitness.selar12 = fitness.sel; % just documentary
-                                               % qqq refine fitness based on both values
-                if 11 < 3  % TODO: in case of outliers this mean is counterproductive
-                           % median out of three would be ok
-                    fitness.raw(1:noiseReevals) = ... % not so raw anymore
-                        (fitness.raw(1:noiseReevals) + fitness.raw(lambda+(1:noiseReevals))) / 2;
-                    fitness.sel(1:noiseReevals) = ...
-                        (fitness.sel(1:noiseReevals) + fitness.sel(lambda+(1:noiseReevals))) / 2;
-                end
-                fitness.raw = fitness.raw(1:lambda);
-                fitness.sel = fitness.sel(1:lambda);
+        % compute noise measurement and reduce fitness arrays to size lambda
+        if noiseHandling
+            [noiseS] = local_noisemeasurement(fitness.sel(1:lambda), ...
+                                              fitness.sel(lambda+(1:noiseReevals)), ...
+                                              noiseReevals, noiseTheta, noiseCutOff);
+            if countiter == 1 % TODO: improve this very rude way of initialization
+                noiseSS = 0;
+                noiseN = 0;  % counter for mean
             end
+            noiseSS = noiseSS + noisecum * (noiseS - noiseSS);
 
-            % Sort by fitness
-            [fitness.raw, fitness.idx] = sort(fitness.raw);
-            [fitness.sel, fitness.idxsel] = sort(fitness.sel);  % minimization
-            fitness.hist(2:end) = fitness.hist(1:end-1);    % record short history of
-            fitness.hist(1) = fitness.raw(1);               % best fitness values
-            if length(fitness.histbest) < 120+ceil(30*N/lambda) || ...
-                    (mod(countiter, 5) == 0  && length(fitness.histbest) < 2e4)  % 20 percent of 1e5 gen.
-                fitness.histbest = [fitness.raw(1) fitness.histbest];          % best fitness values
-                fitness.histmedian = [median(fitness.raw) fitness.histmedian]; % median fitness values
+            % noise-handling could be done here, but the original sigma is still needed
+            % disp([noiseS noiseSS noisecum])
+
+            fitness.rawar12 = fitness.raw; % just documentary
+            fitness.selar12 = fitness.sel; % just documentary
+                                           % qqq refine fitness based on both values
+            if 11 < 3  % TODO: in case of outliers this mean is counterproductive
+                       % median out of three would be ok
+                fitness.raw(1:noiseReevals) = ... % not so raw anymore
+                    (fitness.raw(1:noiseReevals) + fitness.raw(lambda+(1:noiseReevals))) / 2;
+                fitness.sel(1:noiseReevals) = ...
+                    (fitness.sel(1:noiseReevals) + fitness.sel(lambda+(1:noiseReevals))) / 2;
+            end
+            fitness.raw = fitness.raw(1:lambda);
+            fitness.sel = fitness.sel(1:lambda);
+        end
+
+        % Sort by fitness
+        [fitness.raw, fitness.idx] = sort(fitness.raw);
+        [fitness.sel, fitness.idxsel] = sort(fitness.sel);  % minimization
+        fitness.hist(2:end) = fitness.hist(1:end-1);    % record short history of
+        fitness.hist(1) = fitness.raw(1);               % best fitness values
+        if length(fitness.histbest) < 120+ceil(30*N/lambda) || ...
+                (mod(countiter, 5) == 0  && length(fitness.histbest) < 2e4)  % 20 percent of 1e5 gen.
+            fitness.histbest = [fitness.raw(1) fitness.histbest];          % best fitness values
+            fitness.histmedian = [median(fitness.raw) fitness.histmedian]; % median fitness values
+        else
+            fitness.histbest(2:end) = fitness.histbest(1:end-1);
+            fitness.histmedian(2:end) = fitness.histmedian(1:end-1);
+            fitness.histbest(1) = fitness.raw(1);           % best fitness values
+            fitness.histmedian(1) = median(fitness.raw);    % median fitness values
+        end
+        fitness.histsel(2:end) = fitness.histsel(1:end-1); % record short history of
+        fitness.histsel(1) = fitness.sel(1);               % best sel fitness values
+
+        % Calculate new xmean, this is selection and recombination
+        xold = xmean; % for speed up of Eq. (2) and (3)
+        xmean = arx(:,fitness.idxsel(1:mu))*weights;
+        zmean = arz(:,fitness.idxsel(1:mu))*weights;%==D^-1*B'*(xmean-xold)/sigma
+        if mu == 1
+            fmean = fitness.sel(1);
+        else
+            fmean = NaN; % [] does not work in the latter assignment
+                         % fmean = feval(fitfun, xintobounds(xmean, lbounds, ubounds), varargin{:});
+                         % counteval = counteval + 1;
+        end
+
+        % Cumulation: update evolution paths
+        ps = (1-cs)*ps + sqrt(cs*(2-cs)*mueff) * (B*zmean);          % Eq. (4)
+        hsig = norm(ps)/sqrt(1-(1-cs)^(2*countiter))/chiN < 1.4 + 2/(N+1);
+        if flg_future_setting
+            hsig = sum(ps.^2) / (1-(1-cs)^(2*countiter)) / N < 2 + 4/(N+1); % just simplified
+        end
+        %  hsig = norm(ps)/sqrt(1-(1-cs)^(2*countiter))/chiN < 1.4 + 2/(N+1);
+        %  hsig = norm(ps)/sqrt(1-(1-cs)^(2*countiter))/chiN < 1.5 + 1/(N-0.5);
+        %  hsig = norm(ps) < 1.5 * sqrt(N);
+        %  hsig = 1;
+
+        pc = (1-cc)*pc ...
+             + hsig*(sqrt(cc*(2-cc)*mueff)/sigma) * (xmean-xold);     % Eq. (2)
+        if hsig == 0
+            % disp([num2str(countiter) ' ' num2str(counteval) ' pc update stalled']);
+        end
+
+        % Adapt covariance matrix
+        neg.ccov = 0;  % TODO: move parameter setting upwards at some point
+        if ccov1 + ccovmu > 0                                                    % Eq. (3)
+            if flgDiagonalOnly % internal linear(?) complexity
+                diagC = (1-ccov1_sep-ccovmu_sep+(1-hsig)*ccov1_sep*cc*(2-cc)) * diagC ... % regard old matrix
+                        + ccov1_sep * pc.^2 ...               % plus rank one update
+                        + ccovmu_sep ...                      % plus rank mu update
+                        * (diagC .* (arz(:,fitness.idxsel(1:mu)).^2 * weights));
+                %             * (repmat(diagC,1,mu) .* arz(:,fitness.idxsel(1:mu)).^2 * weights);
+                diagD = sqrt(diagC); % replaces eig(C)
             else
-                fitness.histbest(2:end) = fitness.histbest(1:end-1);
-                fitness.histmedian(2:end) = fitness.histmedian(1:end-1);
-                fitness.histbest(1) = fitness.raw(1);           % best fitness values
-                fitness.histmedian(1) = median(fitness.raw);    % median fitness values
-            end
-            fitness.histsel(2:end) = fitness.histsel(1:end-1); % record short history of
-            fitness.histsel(1) = fitness.sel(1);               % best sel fitness values
-
-            % Calculate new xmean, this is selection and recombination
-            xold = xmean; % for speed up of Eq. (2) and (3)
-            xmean = arx(:,fitness.idxsel(1:mu))*weights;
-            zmean = arz(:,fitness.idxsel(1:mu))*weights;%==D^-1*B'*(xmean-xold)/sigma
-            if mu == 1
-                fmean = fitness.sel(1);
-            else
-                fmean = NaN; % [] does not work in the latter assignment
-                             % fmean = feval(fitfun, xintobounds(xmean, lbounds, ubounds), varargin{:});
-                             % counteval = counteval + 1;
-            end
-
-            % Cumulation: update evolution paths
-            ps = (1-cs)*ps + sqrt(cs*(2-cs)*mueff) * (B*zmean);          % Eq. (4)
-            hsig = norm(ps)/sqrt(1-(1-cs)^(2*countiter))/chiN < 1.4 + 2/(N+1);
-            if flg_future_setting
-                hsig = sum(ps.^2) / (1-(1-cs)^(2*countiter)) / N < 2 + 4/(N+1); % just simplified
-            end
-            %  hsig = norm(ps)/sqrt(1-(1-cs)^(2*countiter))/chiN < 1.4 + 2/(N+1);
-            %  hsig = norm(ps)/sqrt(1-(1-cs)^(2*countiter))/chiN < 1.5 + 1/(N-0.5);
-            %  hsig = norm(ps) < 1.5 * sqrt(N);
-            %  hsig = 1;
-
-            pc = (1-cc)*pc ...
-                 + hsig*(sqrt(cc*(2-cc)*mueff)/sigma) * (xmean-xold);     % Eq. (2)
-            if hsig == 0
-                % disp([num2str(countiter) ' ' num2str(counteval) ' pc update stalled']);
-            end
-
-            % Adapt covariance matrix
-            neg.ccov = 0;  % TODO: move parameter setting upwards at some point
-            if ccov1 + ccovmu > 0                                                    % Eq. (3)
-                if flgDiagonalOnly % internal linear(?) complexity
-                    diagC = (1-ccov1_sep-ccovmu_sep+(1-hsig)*ccov1_sep*cc*(2-cc)) * diagC ... % regard old matrix
-                            + ccov1_sep * pc.^2 ...               % plus rank one update
-                            + ccovmu_sep ...                      % plus rank mu update
-                            * (diagC .* (arz(:,fitness.idxsel(1:mu)).^2 * weights));
-                    %             * (repmat(diagC,1,mu) .* arz(:,fitness.idxsel(1:mu)).^2 * weights);
-                    diagD = sqrt(diagC); % replaces eig(C)
-                else
-                    arpos = (arx(:,fitness.idxsel(1:mu))-repmat(xold,1,mu)) / sigma;
-                    % "active" CMA update: negative update, in case controlling pos. definiteness
-                    if flgActiveCMA > 0
-                        % set parameters
-                        neg.mu = mu;
-                        neg.mueff = mueff;
-                        if flgActiveCMA > 10  % flat weights with mu=lambda/2
-                            neg.mu = floor(lambda/2);
-                            neg.mueff = neg.mu;
-                        end
-                        % neg.mu = ceil(min([N, lambda/4, mueff]));  neg.mueff = mu; % i.e. neg.mu <= N
-                        % Parameter study: in 3-D lambda=50,100, 10-D lambda=200,400, 30-D lambda=1000,2000 a
-                        % three times larger neg.ccov does not work.
-                        %   increasing all ccov rates three times does work (probably because of the factor (1-ccovmu))
-                        %   in 30-D to looks fine
-
-                        neg.ccov = (1 - ccovmu) * 0.25 * neg.mueff / ((N+2)^1.5 + 2*neg.mueff);
-                        neg.minresidualvariance = 0.66;  % keep at least 0.66 in all directions, small popsize are most critical
-                        neg.alphaold = 0.5;  % where to make up for the variance loss, 0.5 means no idea what to do
-                                             % 1 is slightly more robust and gives a better "guaranty" for pos. def.,
-                                             % but does it make sense from the learning perspective for large ccovmu?
-
-                        neg.ccovfinal = neg.ccov;
-
-                        % prepare vectors, compute negative updating matrix Cneg and checking matrix Ccheck
-                        arzneg = arz(:,fitness.idxsel(lambda:-1:lambda - neg.mu + 1));
-                        % i-th longest becomes i-th shortest
-                        % TODO: this is not in compliance with the paper Hansen&Ros2010,
-                        %       where simply arnorms = arnorms(end:-1:1) ?
-                        [arnorms, idxnorms] = sort(sqrt(sum(arzneg.^2, 1)));
-                        [ignore, idxnorms] = sort(idxnorms);  % inverse index
-                        arnormfacs = arnorms(end:-1:1) ./ arnorms;
-                        % arnormfacs = arnorms(randperm(neg.mu)) ./ arnorms;
-                        arnorms = arnorms(end:-1:1); % for the record
-                        if flgActiveCMA < 20
-                            arzneg = arzneg .* repmat(arnormfacs(idxnorms), N, 1);  % E x*x' is N
-                                                                                    % arzneg = sqrt(N) * arzneg ./ repmat(sqrt(sum(arzneg.^2, 1)), N, 1);  % E x*x' is N
-                        end
-                        if flgActiveCMA < 10 && neg.mu == mu  % weighted sum
-                            if mod(flgActiveCMA, 10) == 1 % TODO: prevent this with a less tight but more efficient check (see below)
-                                Ccheck = arzneg * diag(weights) * arzneg';  % in order to check the largest EV
-                            end
-                            artmp = BD * arzneg;
-                            Cneg = artmp * diag(weights) * artmp';
-                        else  % simple sum
-                            if mod(flgActiveCMA, 10) == 1
-                                Ccheck = (1/neg.mu) * arzneg*arzneg';  % in order to check largest EV
-                            end
-                            artmp = BD * arzneg;
-                            Cneg = (1/neg.mu) * artmp*artmp';
-
-                        end
-
-                        % check pos.def. and set learning rate neg.ccov accordingly,
-                        % this check makes the original choice of neg.ccov extremly failsafe
-                        % still assuming C == BD*BD', which is only approxim. correct
-                        if mod(flgActiveCMA, 10) == 1 && 1 - neg.ccov * arnorms(idxnorms).^2 * weights < neg.minresidualvariance
-                            % TODO: the simple and cheap way would be to set
-                            %    fac = 1 - ccovmu - ccov1 OR 1 - mueff/lambda and
-                            %    neg.ccov = fac*(1 - neg.minresidualvariance) / (arnorms(idxnorms).^2 * weights)
-                            % this is the more sophisticated way:
-                            % maxeigenval = eigs(arzneg * arzneg', 1, 'lm', eigsopts);  % not faster
-                            maxeigenval = max(eig(Ccheck));  % norm is much slower, because (norm()==max(svd())
-                                                             %disp([countiter log10([neg.ccov, maxeigenval, arnorms(idxnorms).^2 * weights, max(arnorms)^2]), ...
-                                                             %          neg.ccov * arnorms(idxnorms).^2 * weights])
-                                                             % pause
-                                                             % remove less than ??34*(1-cmu)%?? of variance in any direction
-                                                             %     1-ccovmu is the variance left from the old C
-                            neg.ccovfinal = min(neg.ccov, (1-ccovmu)*(1-neg.minresidualvariance)/maxeigenval);
-                            % -ccov1 removed to avoid error message??
-                            if neg.ccovfinal < neg.ccov
-                                disp(['active CMA at iteration ' num2str(countiter) ...
-                                      ': max EV ==', num2str([maxeigenval, neg.ccov, neg.ccovfinal])]);
-                            end
-                        end
-                        % xmean = xold;  % the distribution does not degenerate!?
-                        % update C
-                        C = (1-ccov1-ccovmu+neg.alphaold*neg.ccovfinal+(1-hsig)*ccov1*cc*(2-cc)) * C ... % regard old matrix
-                            + ccov1 * pc*pc' ...     % plus rank one update
-                            + (ccovmu + (1-neg.alphaold)*neg.ccovfinal) ...  % plus rank mu update
-                            * arpos * (repmat(weights,1,N) .* arpos') ...
-                            - neg.ccovfinal * Cneg;                        % minus rank mu update
-                    else  % no active (negative) update
-                        C = (1-ccov1-ccovmu+(1-hsig)*ccov1*cc*(2-cc)) * C ... % regard old matrix
-                            + ccov1 * pc*pc' ...     % plus rank one update
-                            + ccovmu ...             % plus rank mu update
-                            * arpos * (repmat(weights,1,N) .* arpos');
-                        % is now O(mu*N^2 + mu*N), was O(mu*N^2 + mu^2*N) when using diag(weights)
-                        %   for mu=30*N it is now 10 times faster, overall 3 times faster
+                arpos = (arx(:,fitness.idxsel(1:mu))-repmat(xold,1,mu)) / sigma;
+                % "active" CMA update: negative update, in case controlling pos. definiteness
+                if flgActiveCMA > 0
+                    % set parameters
+                    neg.mu = mu;
+                    neg.mueff = mueff;
+                    if flgActiveCMA > 10  % flat weights with mu=lambda/2
+                        neg.mu = floor(lambda/2);
+                        neg.mueff = neg.mu;
                     end
-                    diagC = diag(C);
-                end
-            end
+                    % neg.mu = ceil(min([N, lambda/4, mueff]));  neg.mueff = mu; % i.e. neg.mu <= N
+                    % Parameter study: in 3-D lambda=50,100, 10-D lambda=200,400, 30-D lambda=1000,2000 a
+                    % three times larger neg.ccov does not work.
+                    %   increasing all ccov rates three times does work (probably because of the factor (1-ccovmu))
+                    %   in 30-D to looks fine
 
-            % the following is de-preciated and will be removed in future
-            % better setting for cc makes this hack obsolete
-            if 11 < 2 && ~flgscience
-                % remove momentum in ps, if ps is large and fitness is getting worse.
-                % this should rarely happen.
-                % this might very well be counterproductive in dynamic environments
-                if sum(ps.^2)/N > 1.5 + 10*(2/N)^.5 && ...
-                        fitness.histsel(1) > max(fitness.histsel(2:3))
-                    ps = ps * sqrt(N*(1+max(0,log(sum(ps.^2)/N))) / sum(ps.^2));
-                    if flgdisplay
-                        disp(['Momentum in ps removed at [niter neval]=' ...
-                              num2str([countiter counteval]) ']']);
+                    neg.ccov = (1 - ccovmu) * 0.25 * neg.mueff / ((N+2)^1.5 + 2*neg.mueff);
+                    neg.minresidualvariance = 0.66;  % keep at least 0.66 in all directions, small popsize are most critical
+                    neg.alphaold = 0.5;  % where to make up for the variance loss, 0.5 means no idea what to do
+                                         % 1 is slightly more robust and gives a better "guaranty" for pos. def.,
+                                         % but does it make sense from the learning perspective for large ccovmu?
+
+                    neg.ccovfinal = neg.ccov;
+
+                    % prepare vectors, compute negative updating matrix Cneg and checking matrix Ccheck
+                    arzneg = arz(:,fitness.idxsel(lambda:-1:lambda - neg.mu + 1));
+                    % i-th longest becomes i-th shortest
+                    % TODO: this is not in compliance with the paper Hansen&Ros2010,
+                    %       where simply arnorms = arnorms(end:-1:1) ?
+                    [arnorms, idxnorms] = sort(sqrt(sum(arzneg.^2, 1)));
+                    [ignore, idxnorms] = sort(idxnorms);  % inverse index
+                    arnormfacs = arnorms(end:-1:1) ./ arnorms;
+                    % arnormfacs = arnorms(randperm(neg.mu)) ./ arnorms;
+                    arnorms = arnorms(end:-1:1); % for the record
+                    if flgActiveCMA < 20
+                        arzneg = arzneg .* repmat(arnormfacs(idxnorms), N, 1);  % E x*x' is N
+                                                                                % arzneg = sqrt(N) * arzneg ./ repmat(sqrt(sum(arzneg.^2, 1)), N, 1);  % E x*x' is N
                     end
-                end
-            end
+                    if flgActiveCMA < 10 && neg.mu == mu  % weighted sum
+                        if mod(flgActiveCMA, 10) == 1 % TODO: prevent this with a less tight but more efficient check (see below)
+                            Ccheck = arzneg * diag(weights) * arzneg';  % in order to check the largest EV
+                        end
+                        artmp = BD * arzneg;
+                        Cneg = artmp * diag(weights) * artmp';
+                    else  % simple sum
+                        if mod(flgActiveCMA, 10) == 1
+                            Ccheck = (1/neg.mu) * arzneg*arzneg';  % in order to check largest EV
+                        end
+                        artmp = BD * arzneg;
+                        Cneg = (1/neg.mu) * artmp*artmp';
 
-            % Adapt sigma
-            if flg_future_setting  % according to a suggestion from Dirk Arnold (2000)
-                                   % exp(1) is still not reasonably small enough
-                sigma = sigma * exp(min(1, (sum(ps.^2)/N - 1)/2 * cs/damps));            % Eq. (5)
-            else
-                % exp(1) is still not reasonably small enough
-                sigma = sigma * exp(min(1, (sqrt(sum(ps.^2))/chiN - 1) * cs/damps));             % Eq. (5)
-            end
-            % disp([countiter norm(ps)/chiN]);
-
-            if 11 < 3   % testing with optimal step-size
-                if countiter == 1
-                    disp('*********** sigma set to const * ||x|| ******************');
-                end
-                sigma = 0.04 * mueff * sqrt(sum(xmean.^2)) / N; % 20D,lam=1000:25e3
-                sigma = 0.3 * mueff * sqrt(sum(xmean.^2)) / N; % 20D,lam=(40,1000):17e3
-                                                               %      75e3 with def (1.5)
-                                                               %      35e3 with damps=0.25
-            end
-            if 11 < 3
-                if countiter == 1
-                    disp('*********** xmean set to const ******************');
-                end
-                xmean = ones(N,1);
-            end
-
-            % Update B and D from C
-
-            if ~flgDiagonalOnly && (ccov1+ccovmu+neg.ccov) > 0 && mod(countiter, 1/(ccov1+ccovmu+neg.ccov)/N/10) < 1
-                C=triu(C)+triu(C,1)'; % enforce symmetry to prevent complex numbers
-                [B,tmp] = eig(C);     % eigen decomposition, B==normalized eigenvectors
-                                      % effort: approx. 15*N matrix-vector multiplications
-                diagD = diag(tmp);
-
-                if any(~isfinite(diagD))
-                    clear idx; % prevents error under octave
-                    save(['tmp' opts.SaveFilename]);
-                    error(['function eig returned non-finited eigenvalues, cond(C)=' ...
-                           num2str(cond(C)) ]);
-                end
-                if any(any(~isfinite(B)))
-                    clear idx; % prevents error under octave
-                    save(['tmp' opts.SaveFilename]);
-                    error(['function eig returned non-finited eigenvectors, cond(C)=' ...
-                           num2str(cond(C)) ]);
-                end
-
-                % limit condition of C to 1e14 + 1
-                if min(diagD) <= 0
-                    if stopOnWarnings
-                        stopflag(end+1) = {'warnconditioncov'};
-                    else
-                        warning(['Iteration ' num2str(countiter) ...
-                                 ': Eigenvalue (smaller) zero']);
-                        diagD(diagD<0) = 0;
-                        tmp = max(diagD)/1e14;
-                        C = C + tmp*eye(N,N); diagD = diagD + tmp*ones(N,1);
                     end
-                end
-                if max(diagD) > 1e14*min(diagD)
-                    if stopOnWarnings
-                        stopflag(end+1) = {'warnconditioncov'};
-                    else
-                        warning(['Iteration ' num2str(countiter) ': condition of C ' ...
-                                 'at upper limit' ]);
-                        tmp = max(diagD)/1e14 - min(diagD);
-                        C = C + tmp*eye(N,N); diagD = diagD + tmp*ones(N,1);
-                    end
-                end
 
+                    % check pos.def. and set learning rate neg.ccov accordingly,
+                    % this check makes the original choice of neg.ccov extremly failsafe
+                    % still assuming C == BD*BD', which is only approxim. correct
+                    if mod(flgActiveCMA, 10) == 1 && 1 - neg.ccov * arnorms(idxnorms).^2 * weights < neg.minresidualvariance
+                        % TODO: the simple and cheap way would be to set
+                        %    fac = 1 - ccovmu - ccov1 OR 1 - mueff/lambda and
+                        %    neg.ccov = fac*(1 - neg.minresidualvariance) / (arnorms(idxnorms).^2 * weights)
+                        % this is the more sophisticated way:
+                        % maxeigenval = eigs(arzneg * arzneg', 1, 'lm', eigsopts);  % not faster
+                        maxeigenval = max(eig(Ccheck));  % norm is much slower, because (norm()==max(svd())
+                                                         %disp([countiter log10([neg.ccov, maxeigenval, arnorms(idxnorms).^2 * weights, max(arnorms)^2]), ...
+                                                         %          neg.ccov * arnorms(idxnorms).^2 * weights])
+                                                         % pause
+                                                         % remove less than ??34*(1-cmu)%?? of variance in any direction
+                                                         %     1-ccovmu is the variance left from the old C
+                        neg.ccovfinal = min(neg.ccov, (1-ccovmu)*(1-neg.minresidualvariance)/maxeigenval);
+                        % -ccov1 removed to avoid error message??
+                        if neg.ccovfinal < neg.ccov
+                            disp(['active CMA at iteration ' num2str(countiter) ...
+                                  ': max EV ==', num2str([maxeigenval, neg.ccov, neg.ccovfinal])]);
+                        end
+                    end
+                    % xmean = xold;  % the distribution does not degenerate!?
+                    % update C
+                    C = (1-ccov1-ccovmu+neg.alphaold*neg.ccovfinal+(1-hsig)*ccov1*cc*(2-cc)) * C ... % regard old matrix
+                        + ccov1 * pc*pc' ...     % plus rank one update
+                        + (ccovmu + (1-neg.alphaold)*neg.ccovfinal) ...  % plus rank mu update
+                        * arpos * (repmat(weights,1,N) .* arpos') ...
+                        - neg.ccovfinal * Cneg;                        % minus rank mu update
+                else  % no active (negative) update
+                    C = (1-ccov1-ccovmu+(1-hsig)*ccov1*cc*(2-cc)) * C ... % regard old matrix
+                        + ccov1 * pc*pc' ...     % plus rank one update
+                        + ccovmu ...             % plus rank mu update
+                        * arpos * (repmat(weights,1,N) .* arpos');
+                    % is now O(mu*N^2 + mu*N), was O(mu*N^2 + mu^2*N) when using diag(weights)
+                    %   for mu=30*N it is now 10 times faster, overall 3 times faster
+                end
                 diagC = diag(C);
-                diagD = sqrt(diagD); % D contains standard deviations now
-                                     % diagD = diagD / prod(diagD)^(1/N);  C = C / prod(diagD)^(2/N);
-                BD = B.*repmat(diagD',N,1); % O(n^2)
-            end % if mod
+            end
+        end
 
-            % Align/rescale order of magnitude of scales of sigma and C for nicer output
-            % not a very usual case
-            if 1 < 2 && sigma > 1e10*max(diagD)
-                fac = sigma / max(diagD);
-                sigma = sigma/fac;
-                pc = fac * pc;
-                diagD = fac * diagD;
-                if ~flgDiagonalOnly
-                    C = fac^2 * C; % disp(fac);
-                    BD = B.*repmat(diagD',N,1); % O(n^2), but repmat might be inefficient todo?
+        % the following is de-preciated and will be removed in future
+        % better setting for cc makes this hack obsolete
+        if 11 < 2 && ~flgscience
+            % remove momentum in ps, if ps is large and fitness is getting worse.
+            % this should rarely happen.
+            % this might very well be counterproductive in dynamic environments
+            if sum(ps.^2)/N > 1.5 + 10*(2/N)^.5 && ...
+                    fitness.histsel(1) > max(fitness.histsel(2:3))
+                ps = ps * sqrt(N*(1+max(0,log(sum(ps.^2)/N))) / sum(ps.^2));
+                if flgdisplay
+                    disp(['Momentum in ps removed at [niter neval]=' ...
+                          num2str([countiter counteval]) ']']);
                 end
-                diagC = fac^2 * diagC;
+            end
+        end
+
+        % Adapt sigma
+        if flg_future_setting  % according to a suggestion from Dirk Arnold (2000)
+                               % exp(1) is still not reasonably small enough
+            sigma = sigma * exp(min(1, (sum(ps.^2)/N - 1)/2 * cs/damps));            % Eq. (5)
+        else
+            % exp(1) is still not reasonably small enough
+            sigma = sigma * exp(min(1, (sqrt(sum(ps.^2))/chiN - 1) * cs/damps));             % Eq. (5)
+        end
+        % disp([countiter norm(ps)/chiN]);
+
+        if 11 < 3   % testing with optimal step-size
+            if countiter == 1
+                disp('*********** sigma set to const * ||x|| ******************');
+            end
+            sigma = 0.04 * mueff * sqrt(sum(xmean.^2)) / N; % 20D,lam=1000:25e3
+            sigma = 0.3 * mueff * sqrt(sum(xmean.^2)) / N; % 20D,lam=(40,1000):17e3
+                                                           %      75e3 with def (1.5)
+                                                           %      35e3 with damps=0.25
+        end
+        if 11 < 3
+            if countiter == 1
+                disp('*********** xmean set to const ******************');
+            end
+            xmean = ones(N,1);
+        end
+
+        % Update B and D from C
+
+        if ~flgDiagonalOnly && (ccov1+ccovmu+neg.ccov) > 0 && mod(countiter, 1/(ccov1+ccovmu+neg.ccov)/N/10) < 1
+            C=triu(C)+triu(C,1)'; % enforce symmetry to prevent complex numbers
+            [B,tmp] = eig(C);     % eigen decomposition, B==normalized eigenvectors
+                                  % effort: approx. 15*N matrix-vector multiplications
+            diagD = diag(tmp);
+
+            if any(~isfinite(diagD))
+                clear idx; % prevents error under octave
+                save(['tmp' opts.SaveFilename]);
+                error(['function eig returned non-finited eigenvalues, cond(C)=' ...
+                       num2str(cond(C)) ]);
+            end
+            if any(any(~isfinite(B)))
+                clear idx; % prevents error under octave
+                save(['tmp' opts.SaveFilename]);
+                error(['function eig returned non-finited eigenvectors, cond(C)=' ...
+                       num2str(cond(C)) ]);
             end
 
-            if flgDiagonalOnly > 1 && countiter > flgDiagonalOnly
-                % full covariance matrix from now on
-                flgDiagonalOnly = 0;
-                B = eye(N,N);
-                BD = diag(diagD);
-                C = diag(diagC); % is better, because correlations are spurious anyway
+            % limit condition of C to 1e14 + 1
+            if min(diagD) <= 0
+                if stopOnWarnings
+                    stopflag(end+1) = {'warnconditioncov'};
+                else
+                    warning(['Iteration ' num2str(countiter) ...
+                             ': Eigenvalue (smaller) zero']);
+                    diagD(diagD<0) = 0;
+                    tmp = max(diagD)/1e14;
+                    C = C + tmp*eye(N,N); diagD = diagD + tmp*ones(N,1);
+                end
+            end
+            if max(diagD) > 1e14*min(diagD)
+                if stopOnWarnings
+                    stopflag(end+1) = {'warnconditioncov'};
+                else
+                    warning(['Iteration ' num2str(countiter) ': condition of C ' ...
+                             'at upper limit' ]);
+                    tmp = max(diagD)/1e14 - min(diagD);
+                    C = C + tmp*eye(N,N); diagD = diagD + tmp*ones(N,1);
+                end
             end
 
-            if noiseHandling
-                if countiter == 1  % assign firstvarargin for noise treatment e.g. as #reevaluations
-                    if ~isempty(varargin) && length(varargin{1}) == 1 && isnumeric(varargin{1})
-                        if irun == 1
-                            firstvarargin = varargin{1};
-                        else
-                            varargin{1} =  firstvarargin;  % reset varargin{1}
-                        end
+            diagC = diag(C);
+            diagD = sqrt(diagD); % D contains standard deviations now
+                                 % diagD = diagD / prod(diagD)^(1/N);  C = C / prod(diagD)^(2/N);
+            BD = B.*repmat(diagD',N,1); % O(n^2)
+        end % if mod
+
+        % Align/rescale order of magnitude of scales of sigma and C for nicer output
+        % not a very usual case
+        if 1 < 2 && sigma > 1e10*max(diagD)
+            fac = sigma / max(diagD);
+            sigma = sigma/fac;
+            pc = fac * pc;
+            diagD = fac * diagD;
+            if ~flgDiagonalOnly
+                C = fac^2 * C; % disp(fac);
+                BD = B.*repmat(diagD',N,1); % O(n^2), but repmat might be inefficient todo?
+            end
+            diagC = fac^2 * diagC;
+        end
+
+        if flgDiagonalOnly > 1 && countiter > flgDiagonalOnly
+            % full covariance matrix from now on
+            flgDiagonalOnly = 0;
+            B = eye(N,N);
+            BD = diag(diagD);
+            C = diag(diagC); % is better, because correlations are spurious anyway
+        end
+
+        if noiseHandling
+            if countiter == 1  % assign firstvarargin for noise treatment e.g. as #reevaluations
+                if ~isempty(varargin) && length(varargin{1}) == 1 && isnumeric(varargin{1})
+                    if irun == 1
+                        firstvarargin = varargin{1};
                     else
-                        firstvarargin = 0;
+                        varargin{1} =  firstvarargin;  % reset varargin{1}
                     end
+                else
+                    firstvarargin = 0;
                 end
-                if noiseSS < 0 && noiseMinMaxEvals(2) > noiseMinMaxEvals(1) && firstvarargin
-                    varargin{1} = max(noiseMinMaxEvals(1), varargin{1} / noiseAlphaEvals^(1/4));  % still experimental
-                elseif noiseSS > 0
-                    if ~isempty(noiseCallback)  % to be removed?
-                        res = feval(noiseCallback); % should also work without output argument!?
-                        if ~isempty(res) && res > 1 % TODO: decide for interface of callback
-                                                    %       also a dynamic popsize could be done here
-                            sigma = sigma * noiseAlpha;
-                        end
-                    else
-                        if noiseMinMaxEvals(2) > noiseMinMaxEvals(1) && firstvarargin
-                            varargin{1} = min(noiseMinMaxEvals(2), varargin{1} * noiseAlphaEvals);
-                        end
-
+            end
+            if noiseSS < 0 && noiseMinMaxEvals(2) > noiseMinMaxEvals(1) && firstvarargin
+                varargin{1} = max(noiseMinMaxEvals(1), varargin{1} / noiseAlphaEvals^(1/4));  % still experimental
+            elseif noiseSS > 0
+                if ~isempty(noiseCallback)  % to be removed?
+                    res = feval(noiseCallback); % should also work without output argument!?
+                    if ~isempty(res) && res > 1 % TODO: decide for interface of callback
+                                                %       also a dynamic popsize could be done here
                         sigma = sigma * noiseAlpha;
-                        % lambda = ceil(0.1 * sqrt(lambda) + lambda);
-                        % TODO: find smallest increase of lambda with log-linear
-                        %       convergence in iterations
                     end
-                    % qqq experimental: take a mean to estimate the true optimum
-                    noiseN = noiseN + 1;
-                    if noiseN == 1
-                        noiseX = xmean;
-                    else
-                        noiseX = noiseX + (3/noiseN) * (xmean - noiseX);
-                    end
-                end
-            end
-
-            % ----- numerical error management -----
-            % Adjust maximal coordinate axis deviations
-            if any(sigma*sqrt(diagC) > maxdx)
-                sigma = min(maxdx ./ sqrt(diagC));
-                %warning(['Iteration ' num2str(countiter) ': coordinate axis std ' ...
-                %         'deviation at upper limit of ' num2str(maxdx)]);
-                % stopflag(end+1) = {'maxcoorddev'};
-            end
-            % Adjust minimal coordinate axis deviations
-            if any(sigma*sqrt(diagC) < mindx)
-                sigma = max(mindx ./ sqrt(diagC)) * exp(0.05+cs/damps);
-                %warning(['Iteration ' num2str(countiter) ': coordinate axis std ' ...
-                %         'deviation at lower limit of ' num2str(mindx)]);
-                % stopflag(end+1) = {'mincoorddev'};;
-            end
-            % Adjust too low coordinate axis deviations
-            if any(xmean == xmean + 0.2*sigma*sqrt(diagC))
-                if stopOnWarnings
-                    stopflag(end+1) = {'warnnoeffectcoord'};
                 else
-                    warning(['Iteration ' num2str(countiter) ': coordinate axis std ' ...
-                             'deviation too low' ]);
-                    if flgDiagonalOnly
-                        diagC = diagC + (ccov1_sep+ccovmu_sep) * (diagC .* ...
-                                                                  (xmean == xmean + 0.2*sigma*sqrt(diagC)));
-                    else
-                        C = C + (ccov1+ccovmu) * diag(diagC .* ...
-                                                      (xmean == xmean + 0.2*sigma*sqrt(diagC)));
+                    if noiseMinMaxEvals(2) > noiseMinMaxEvals(1) && firstvarargin
+                        varargin{1} = min(noiseMinMaxEvals(2), varargin{1} * noiseAlphaEvals);
                     end
-                    sigma = sigma * exp(0.05+cs/damps);
+
+                    sigma = sigma * noiseAlpha;
+                    % lambda = ceil(0.1 * sqrt(lambda) + lambda);
+                    % TODO: find smallest increase of lambda with log-linear
+                    %       convergence in iterations
+                end
+                % qqq experimental: take a mean to estimate the true optimum
+                noiseN = noiseN + 1;
+                if noiseN == 1
+                    noiseX = xmean;
+                else
+                    noiseX = noiseX + (3/noiseN) * (xmean - noiseX);
                 end
             end
-            % Adjust step size in case of (numerical) precision problem
-            if flgDiagonalOnly
-                tmp = 0.1*sigma*diagD;
+        end
+
+        % ----- numerical error management -----
+        % Adjust maximal coordinate axis deviations
+        if any(sigma*sqrt(diagC) > maxdx)
+            sigma = min(maxdx ./ sqrt(diagC));
+            %warning(['Iteration ' num2str(countiter) ': coordinate axis std ' ...
+            %         'deviation at upper limit of ' num2str(maxdx)]);
+            % stopflag(end+1) = {'maxcoorddev'};
+        end
+        % Adjust minimal coordinate axis deviations
+        if any(sigma*sqrt(diagC) < mindx)
+            sigma = max(mindx ./ sqrt(diagC)) * exp(0.05+cs/damps);
+            %warning(['Iteration ' num2str(countiter) ': coordinate axis std ' ...
+            %         'deviation at lower limit of ' num2str(mindx)]);
+            % stopflag(end+1) = {'mincoorddev'};;
+        end
+        % Adjust too low coordinate axis deviations
+        if any(xmean == xmean + 0.2*sigma*sqrt(diagC))
+            if stopOnWarnings
+                stopflag(end+1) = {'warnnoeffectcoord'};
             else
-                tmp = 0.1*sigma*BD(:,1+floor(mod(countiter,N)));
-            end
-            if all(xmean == xmean + tmp)
-                i = 1+floor(mod(countiter,N));
-                if stopOnWarnings
-                    stopflag(end+1) = {'warnnoeffectaxis'};
+                warning(['Iteration ' num2str(countiter) ': coordinate axis std ' ...
+                         'deviation too low' ]);
+                if flgDiagonalOnly
+                    diagC = diagC + (ccov1_sep+ccovmu_sep) * (diagC .* ...
+                                                              (xmean == xmean + 0.2*sigma*sqrt(diagC)));
                 else
+                    C = C + (ccov1+ccovmu) * diag(diagC .* ...
+                                                  (xmean == xmean + 0.2*sigma*sqrt(diagC)));
+                end
+                sigma = sigma * exp(0.05+cs/damps);
+            end
+        end
+        % Adjust step size in case of (numerical) precision problem
+        if flgDiagonalOnly
+            tmp = 0.1*sigma*diagD;
+        else
+            tmp = 0.1*sigma*BD(:,1+floor(mod(countiter,N)));
+        end
+        if all(xmean == xmean + tmp)
+            i = 1+floor(mod(countiter,N));
+            if stopOnWarnings
+                stopflag(end+1) = {'warnnoeffectaxis'};
+            else
+                warning(['Iteration ' num2str(countiter) ...
+                         ': main axis standard deviation ' ...
+                         num2str(sigma*diagD(i)) ' has no effect' ]);
+                sigma = sigma * exp(0.2+cs/damps);
+            end
+        end
+        % Adjust step size in case of equal function values (flat fitness)
+        % isequalfuncvalues = 0;
+        if fitness.sel(1) == fitness.sel(1+ceil(0.1+lambda/4))
+            % isequalfuncvalues = 1;
+            if stopOnEqualFunctionValues
+                arrEqualFunvals = [countiter arrEqualFunvals(1:end-1)];
+                % stop if this happens in more than 33%
+                if arrEqualFunvals(end) > countiter - 3 * length(arrEqualFunvals)
+                    stopflag(end+1) = {'equalfunvals'};
+                end
+            else
+                if flgWarnOnEqualFunctionValues
                     warning(['Iteration ' num2str(countiter) ...
-                             ': main axis standard deviation ' ...
-                             num2str(sigma*diagD(i)) ' has no effect' ]);
-                    sigma = sigma * exp(0.2+cs/damps);
+                             ': equal function values f=' num2str(fitness.sel(1)) ...
+                             ' at maximal main axis sigma ' ...
+                             num2str(sigma*max(diagD))]);
                 end
+                sigma = sigma * exp(0.2+cs/damps);
             end
-            % Adjust step size in case of equal function values (flat fitness)
-            % isequalfuncvalues = 0;
-            if fitness.sel(1) == fitness.sel(1+ceil(0.1+lambda/4))
-                % isequalfuncvalues = 1;
-                if stopOnEqualFunctionValues
-                    arrEqualFunvals = [countiter arrEqualFunvals(1:end-1)];
-                    % stop if this happens in more than 33%
-                    if arrEqualFunvals(end) > countiter - 3 * length(arrEqualFunvals)
-                        stopflag(end+1) = {'equalfunvals'};
+        end
+        % Adjust step size in case of equal function values
+        if countiter > 2 && myrange([fitness.hist fitness.sel(1)]) == 0
+            if stopOnWarnings
+                stopflag(end+1) = {'warnequalfunvalhist'};
+            else
+                warning(['Iteration ' num2str(countiter) ...
+                         ': equal function values in history at maximal main ' ...
+                         'axis sigma ' num2str(sigma*max(diagD))]);
+                sigma = sigma * exp(0.2+cs/damps);
+            end
+        end
+
+        % ----- end numerical error management -----
+
+        % Keep overall best solution
+        out.evals = counteval;
+        out.solutions.evals = counteval;
+        out.solutions.mean.x = xmean;
+        out.solutions.mean.f = fmean;
+        out.solutions.mean.evals = counteval;
+        out.solutions.recentbest.x = arxvalid(:, fitness.idx(1));
+        out.solutions.recentbest.f = fitness.raw(1);
+        out.solutions.recentbest.evals = counteval + fitness.idx(1) - lambda;
+        out.solutions.recentworst.x = arxvalid(:, fitness.idx(end));
+        out.solutions.recentworst.f = fitness.raw(end);
+        out.solutions.recentworst.evals = counteval + fitness.idx(end) - lambda;
+        if fitness.hist(1) < out.solutions.bestever.f
+            out.solutions.bestever.x = arxvalid(:, fitness.idx(1));
+            out.solutions.bestever.f = fitness.hist(1);
+            out.solutions.bestever.evals = counteval + fitness.idx(1) - lambda;
+            bestever = out.solutions.bestever;
+        end
+
+        % Set stop flag
+        if fitness.raw(1) <= stopFitness, stopflag(end+1) = {'fitness'}; end
+        if counteval >= stopMaxFunEvals, stopflag(end+1) = {'maxfunevals'}; end
+        if countiter >= stopMaxIter, stopflag(end+1) = {'maxiter'}; end
+        if all(sigma*(max(abs(pc), sqrt(diagC))) < stopTolX)
+            stopflag(end+1) = {'tolx'};
+        end
+        if any(sigma*sqrt(diagC) > stopTolUpX)
+            stopflag(end+1) = {'tolupx'};
+        end
+        if sigma*max(diagD) == 0  % should never happen
+            stopflag(end+1) = {'bug'};
+        end
+        if countiter > 2 && myrange([fitness.sel fitness.hist]) <= stopTolFun
+            stopflag(end+1) = {'tolfun'};
+        end
+        if countiter >= length(fitness.hist) && myrange(fitness.hist) <= stopTolHistFun
+            stopflag(end+1) = {'tolhistfun'};
+        end
+        l = floor(length(fitness.histbest)/3);
+        if 1 < 2 && stopOnStagnation && ...  % leads sometimes early stop on ftablet, fcigtab
+                countiter > N * (5+100/lambda) && ...
+                length(fitness.histbest) > 100 && ...
+                median(fitness.histmedian(1:l)) >= median(fitness.histmedian(end-l:end)) && ...
+                median(fitness.histbest(1:l)) >= median(fitness.histbest(end-l:end))
+            stopflag(end+1) = {'stagnation'};
+        end
+
+        if counteval >= stopFunEvals || countiter >= stopIter
+            stopflag(end+1) = {'stoptoresume'};
+            if length(stopflag) == 1 && flgsaving == 0
+                error('To resume later the saving option needs to be set');
+            end
+        end
+        % read stopping message from file signals.par
+        if flgreadsignals
+            fid = fopen('./signals.par', 'rt');  % can be performance critical
+            while fid > 0
+                strline = fgetl(fid); %fgets(fid, 300);
+                if strline < 0 % fgets and fgetl returns -1 at end of file
+                    break
+                end
+                % 'stop filename' sets stopflag to manual
+                str = sscanf(strline, ' %s %s', 2);
+                if strcmp(str, ['stop' opts.LogFilenamePrefix])
+                    stopflag(end+1) = {'manual'};
+                    break
+                end
+                % 'skip filename run 3' skips a run, but not the last
+                str = sscanf(strline, ' %s %s %s', 3);
+                if strcmp(str, ['skip' opts.LogFilenamePrefix 'run'])
+                    i = strfind(strline, 'run');
+                    if irun == sscanf(strline(i+3:end), ' %d ', 1) && irun <= myeval(opts.Restarts)
+                        stopflag(end+1) = {'skipped'};
                     end
+                end
+            end % while, break
+            if fid > 0
+                fclose(fid);
+                clear fid; % prevents strange error under octave
+            end
+        end
+
+        out.stopflag = stopflag;
+
+        % ----- output generation -----
+        if verbosemodulo > 0 && isfinite(verbosemodulo)
+            if countiter == 1 || mod(countiter, 10*verbosemodulo) < 1
+                disp(['Iterat, #Fevals:   Function Value    (median,worst) ' ...
+                      '|Axis Ratio|' ...
+                      'idx:Min SD idx:Max SD']);
+            end
+            if mod(countiter, verbosemodulo) < 1 ...
+                    || (verbosemodulo > 0 && isfinite(verbosemodulo) && ...
+                        (countiter < 3 || ~isempty(stopflag)))
+                [minstd, minstdidx] = min(sigma*sqrt(diagC));
+                [maxstd, maxstdidx] = max(sigma*sqrt(diagC));
+                % format display nicely
+                disp([repmat(' ',1,4-floor(log10(countiter))) ...
+                      num2str(countiter) ' , ' ...
+                      repmat(' ',1,5-floor(log10(counteval))) ...
+                      num2str(counteval) ' : ' ...
+                      num2str(fitness.hist(1), '%.13e') ...
+                      ' +(' num2str(median(fitness.raw)-fitness.hist(1), '%.0e ') ...
+                      ',' num2str(max(fitness.raw)-fitness.hist(1), '%.0e ') ...
+                      ') | ' ...
+                      num2str(max(diagD)/min(diagD), '%4.2e') ' | ' ...
+                      repmat(' ',1,1-floor(log10(minstdidx))) num2str(minstdidx) ':' ...
+                      num2str(minstd, ' %.1e') ' ' ...
+                      repmat(' ',1,1-floor(log10(maxstdidx))) num2str(maxstdidx) ':' ...
+                      num2str(maxstd, ' %.1e')]);
+            end
+        end
+
+        % measure time for recording data
+        if countiter < 3
+            time.c = 0.05;
+            time.nonoutput = 0;
+            time.recording = 0;
+            time.saving  = 0.15; % first saving after 3 seconds of 100 iterations
+            time.plotting = 0;
+        elseif countiter > 300
+            % set backward horizon, must be long enough to cover infrequent plotting etc
+            % time.c = min(1, time.nonoutput/3 + 1e-9);
+            time.c = max(1e-5, 0.1/sqrt(countiter)); % mean over all or 1e-5
+        end
+        % get average time per iteration
+        time.t1 = clock;
+        time.act = max(0,etime(time.t1, time.t0));
+        time.nonoutput = (1-time.c) * time.nonoutput ...
+            + time.c * time.act;
+
+        time.recording = (1-time.c) * time.recording;  % per iteration
+        time.saving  = (1-time.c) * time.saving;
+        time.plotting = (1-time.c) * time.plotting;
+
+        % record output data, concerning time issues
+        if savemodulo && savetime && (countiter < 1e2 || ~isempty(stopflag) || ...
+                                      countiter >= outiter + savemodulo)
+            outiter = countiter;
+            % Save output data to files
+            for namecell = filenames(:)'
+                name = namecell{:};
+
+                [fid, err] = fopen(['./' filenameprefix name '.dat'], 'a');
+                if fid < 1 % err ~= 0
+                    warning(['could not open ' filenameprefix name '.dat']);
                 else
-                    if flgWarnOnEqualFunctionValues
-                        warning(['Iteration ' num2str(countiter) ...
-                                 ': equal function values f=' num2str(fitness.sel(1)) ...
-                                 ' at maximal main axis sigma ' ...
-                                 num2str(sigma*max(diagD))]);
-                    end
-                    sigma = sigma * exp(0.2+cs/damps);
-                end
-            end
-            % Adjust step size in case of equal function values
-            if countiter > 2 && myrange([fitness.hist fitness.sel(1)]) == 0
-                if stopOnWarnings
-                    stopflag(end+1) = {'warnequalfunvalhist'};
-                else
-                    warning(['Iteration ' num2str(countiter) ...
-                             ': equal function values in history at maximal main ' ...
-                             'axis sigma ' num2str(sigma*max(diagD))]);
-                    sigma = sigma * exp(0.2+cs/damps);
-                end
-            end
-
-            % ----- end numerical error management -----
-
-            % Keep overall best solution
-            out.evals = counteval;
-            out.solutions.evals = counteval;
-            out.solutions.mean.x = xmean;
-            out.solutions.mean.f = fmean;
-            out.solutions.mean.evals = counteval;
-            out.solutions.recentbest.x = arxvalid(:, fitness.idx(1));
-            out.solutions.recentbest.f = fitness.raw(1);
-            out.solutions.recentbest.evals = counteval + fitness.idx(1) - lambda;
-            out.solutions.recentworst.x = arxvalid(:, fitness.idx(end));
-            out.solutions.recentworst.f = fitness.raw(end);
-            out.solutions.recentworst.evals = counteval + fitness.idx(end) - lambda;
-            if fitness.hist(1) < out.solutions.bestever.f
-                out.solutions.bestever.x = arxvalid(:, fitness.idx(1));
-                out.solutions.bestever.f = fitness.hist(1);
-                out.solutions.bestever.evals = counteval + fitness.idx(1) - lambda;
-                bestever = out.solutions.bestever;
-            end
-
-            % Set stop flag
-            if fitness.raw(1) <= stopFitness, stopflag(end+1) = {'fitness'}; end
-            if counteval >= stopMaxFunEvals, stopflag(end+1) = {'maxfunevals'}; end
-            if countiter >= stopMaxIter, stopflag(end+1) = {'maxiter'}; end
-            if all(sigma*(max(abs(pc), sqrt(diagC))) < stopTolX)
-                stopflag(end+1) = {'tolx'};
-            end
-            if any(sigma*sqrt(diagC) > stopTolUpX)
-                stopflag(end+1) = {'tolupx'};
-            end
-            if sigma*max(diagD) == 0  % should never happen
-                stopflag(end+1) = {'bug'};
-            end
-            if countiter > 2 && myrange([fitness.sel fitness.hist]) <= stopTolFun
-                stopflag(end+1) = {'tolfun'};
-            end
-            if countiter >= length(fitness.hist) && myrange(fitness.hist) <= stopTolHistFun
-                stopflag(end+1) = {'tolhistfun'};
-            end
-            l = floor(length(fitness.histbest)/3);
-            if 1 < 2 && stopOnStagnation && ...  % leads sometimes early stop on ftablet, fcigtab
-                    countiter > N * (5+100/lambda) && ...
-                    length(fitness.histbest) > 100 && ...
-                    median(fitness.histmedian(1:l)) >= median(fitness.histmedian(end-l:end)) && ...
-                    median(fitness.histbest(1:l)) >= median(fitness.histbest(end-l:end))
-                stopflag(end+1) = {'stagnation'};
-            end
-
-            if counteval >= stopFunEvals || countiter >= stopIter
-                stopflag(end+1) = {'stoptoresume'};
-                if length(stopflag) == 1 && flgsaving == 0
-                    error('To resume later the saving option needs to be set');
-                end
-            end
-            % read stopping message from file signals.par
-            if flgreadsignals
-                fid = fopen('./signals.par', 'rt');  % can be performance critical
-                while fid > 0
-                    strline = fgetl(fid); %fgets(fid, 300);
-                    if strline < 0 % fgets and fgetl returns -1 at end of file
-                        break
-                    end
-                    % 'stop filename' sets stopflag to manual
-                    str = sscanf(strline, ' %s %s', 2);
-                    if strcmp(str, ['stop' opts.LogFilenamePrefix])
-                        stopflag(end+1) = {'manual'};
-                        break
-                    end
-                    % 'skip filename run 3' skips a run, but not the last
-                    str = sscanf(strline, ' %s %s %s', 3);
-                    if strcmp(str, ['skip' opts.LogFilenamePrefix 'run'])
-                        i = strfind(strline, 'run');
-                        if irun == sscanf(strline(i+3:end), ' %d ', 1) && irun <= myeval(opts.Restarts)
-                            stopflag(end+1) = {'skipped'};
+                    if strcmp(name, 'axlen')
+                        fprintf(fid, '%d %d %e %e %e ', countiter, counteval, sigma, ...
+                                max(diagD), min(diagD));
+                        fprintf(fid, '%e ', sort(diagD));
+                        fprintf(fid, '\n');
+                    elseif strcmp(name, 'disp') % TODO
+                    elseif strcmp(name, 'fit')
+                        fprintf(fid, '%ld %ld %e %e %25.18e %25.18e %25.18e %25.18e', ...
+                                countiter, counteval, sigma, max(diagD)/min(diagD), ...
+                                out.solutions.bestever.f, ...
+                                fitness.raw(1), median(fitness.raw), fitness.raw(end));
+                        if ~isempty(varargin) && length(varargin{1}) == 1 && isnumeric(varargin{1}) && varargin{1} ~= 0
+                            fprintf(fid, ' %f', varargin{1});
                         end
-                    end
-                end % while, break
-                if fid > 0
-                    fclose(fid);
-                    clear fid; % prevents strange error under octave
-                end
-            end
-
-            out.stopflag = stopflag;
-
-            % ----- output generation -----
-            if verbosemodulo > 0 && isfinite(verbosemodulo)
-                if countiter == 1 || mod(countiter, 10*verbosemodulo) < 1
-                    disp(['Iterat, #Fevals:   Function Value    (median,worst) ' ...
-                          '|Axis Ratio|' ...
-                          'idx:Min SD idx:Max SD']);
-                end
-                if mod(countiter, verbosemodulo) < 1 ...
-                        || (verbosemodulo > 0 && isfinite(verbosemodulo) && ...
-                            (countiter < 3 || ~isempty(stopflag)))
-                    [minstd, minstdidx] = min(sigma*sqrt(diagC));
-                    [maxstd, maxstdidx] = max(sigma*sqrt(diagC));
-                    % format display nicely
-                    disp([repmat(' ',1,4-floor(log10(countiter))) ...
-                          num2str(countiter) ' , ' ...
-                          repmat(' ',1,5-floor(log10(counteval))) ...
-                          num2str(counteval) ' : ' ...
-                          num2str(fitness.hist(1), '%.13e') ...
-                          ' +(' num2str(median(fitness.raw)-fitness.hist(1), '%.0e ') ...
-                          ',' num2str(max(fitness.raw)-fitness.hist(1), '%.0e ') ...
-                          ') | ' ...
-                          num2str(max(diagD)/min(diagD), '%4.2e') ' | ' ...
-                          repmat(' ',1,1-floor(log10(minstdidx))) num2str(minstdidx) ':' ...
-                          num2str(minstd, ' %.1e') ' ' ...
-                          repmat(' ',1,1-floor(log10(maxstdidx))) num2str(maxstdidx) ':' ...
-                          num2str(maxstd, ' %.1e')]);
-                end
-            end
-
-            % measure time for recording data
-            if countiter < 3
-                time.c = 0.05;
-                time.nonoutput = 0;
-                time.recording = 0;
-                time.saving  = 0.15; % first saving after 3 seconds of 100 iterations
-                time.plotting = 0;
-            elseif countiter > 300
-                % set backward horizon, must be long enough to cover infrequent plotting etc
-                % time.c = min(1, time.nonoutput/3 + 1e-9);
-                time.c = max(1e-5, 0.1/sqrt(countiter)); % mean over all or 1e-5
-            end
-            % get average time per iteration
-            time.t1 = clock;
-            time.act = max(0,etime(time.t1, time.t0));
-            time.nonoutput = (1-time.c) * time.nonoutput ...
-                + time.c * time.act;
-
-            time.recording = (1-time.c) * time.recording;  % per iteration
-            time.saving  = (1-time.c) * time.saving;
-            time.plotting = (1-time.c) * time.plotting;
-
-            % record output data, concerning time issues
-            if savemodulo && savetime && (countiter < 1e2 || ~isempty(stopflag) || ...
-                                          countiter >= outiter + savemodulo)
-                outiter = countiter;
-                % Save output data to files
-                for namecell = filenames(:)'
-                    name = namecell{:};
-
-                    [fid, err] = fopen(['./' filenameprefix name '.dat'], 'a');
-                    if fid < 1 % err ~= 0
-                        warning(['could not open ' filenameprefix name '.dat']);
-                    else
-                        if strcmp(name, 'axlen')
-                            fprintf(fid, '%d %d %e %e %e ', countiter, counteval, sigma, ...
-                                    max(diagD), min(diagD));
-                            fprintf(fid, '%e ', sort(diagD));
-                            fprintf(fid, '\n');
-                        elseif strcmp(name, 'disp') % TODO
-                        elseif strcmp(name, 'fit')
-                            fprintf(fid, '%ld %ld %e %e %25.18e %25.18e %25.18e %25.18e', ...
-                                    countiter, counteval, sigma, max(diagD)/min(diagD), ...
-                                    out.solutions.bestever.f, ...
-                                    fitness.raw(1), median(fitness.raw), fitness.raw(end));
-                            if ~isempty(varargin) && length(varargin{1}) == 1 && isnumeric(varargin{1}) && varargin{1} ~= 0
-                                fprintf(fid, ' %f', varargin{1});
-                            end
-                            fprintf(fid, '\n');
-                        elseif strcmp(name, 'stddev')
-                            fprintf(fid, '%ld %ld %e 0 0 ', countiter, counteval, sigma);
-                            fprintf(fid, '%e ', sigma*sqrt(diagC));
-                            fprintf(fid, '\n');
-                        elseif strcmp(name, 'xmean')
-                            if isnan(fmean)
-                                fprintf(fid, '%ld %ld 0 0 0 ', countiter, counteval);
-                            else
-                                fprintf(fid, '%ld %ld 0 0 %e ', countiter, counteval, fmean);
-                            end
-                            fprintf(fid, '%e ', xmean);
-                            fprintf(fid, '\n');
-                        elseif strcmp(name, 'xrecentbest')
-                            % TODO: fitness is inconsistent with x-value
-                            fprintf(fid, '%ld %ld %25.18e 0 0 ', countiter, counteval, fitness.raw(1));
-                            fprintf(fid, '%e ', arx(:,fitness.idx(1)));
-                            fprintf(fid, '\n');
-                        end
-                        fclose(fid);
-                    end
-                end
-
-                % get average time for recording data
-                time.t2 = clock;
-                time.recording = time.recording + time.c * max(0,etime(time.t2, time.t1));
-
-                % plot
-                if flgplotting && countiter > 1
-                    if countiter == 2
-                        iterplotted = 0;
-                    end
-                    if ~isempty(stopflag) || ...
-                            ((time.nonoutput+time.recording) * (countiter - iterplotted) > 1 && ...
-                             time.plotting < 0.05 * (time.nonoutput+time.recording))
-                        local_plotcmaesdat(324, filenameprefix);
-                        iterplotted = countiter;
-                        %  outplot(out); % outplot defined below
-                        if time.plotting == 0  % disregard opening of the window
-                            time.plotting = time.nonoutput+time.recording;
+                        fprintf(fid, '\n');
+                    elseif strcmp(name, 'stddev')
+                        fprintf(fid, '%ld %ld %e 0 0 ', countiter, counteval, sigma);
+                        fprintf(fid, '%e ', sigma*sqrt(diagC));
+                        fprintf(fid, '\n');
+                    elseif strcmp(name, 'xmean')
+                        if isnan(fmean)
+                            fprintf(fid, '%ld %ld 0 0 0 ', countiter, counteval);
                         else
-                            time.plotting = time.plotting + time.c * max(0,etime(clock, time.t2));
+                            fprintf(fid, '%ld %ld 0 0 %e ', countiter, counteval, fmean);
                         end
+                        fprintf(fid, '%e ', xmean);
+                        fprintf(fid, '\n');
+                    elseif strcmp(name, 'xrecentbest')
+                        % TODO: fitness is inconsistent with x-value
+                        fprintf(fid, '%ld %ld %25.18e 0 0 ', countiter, counteval, fitness.raw(1));
+                        fprintf(fid, '%e ', arx(:,fitness.idx(1)));
+                        fprintf(fid, '\n');
                     end
-                end
-                if countiter > 100 + 20 && savemodulo && ...
-                        time.recording * countiter > 0.1 && ...  % absolute time larger 0.1 second
-                        time.recording > savetime * (time.nonoutput+time.recording) / 100
-                    savemodulo = floor(1.1 * savemodulo) + 1;
-                    % disp('++savemodulo'); %qqq
-                end
-            end % if output
-
-            % save everything
-            time.t3 = clock;
-            if ~isempty(stopflag) || time.saving < 0.05 * time.nonoutput || countiter == 100
-                xmin = arxvalid(:, fitness.idx(1));
-                fmin = fitness.raw(1);
-                if flgsaving && countiter > 2
-                    clear idx; % prevents error under octave
-                               % -v6 : non-compressed non-unicode for version 6 and earlier
-                    if ~isempty(strsaving) && ~isoctave
-                        save('-mat', strsaving, opts.SaveFilename); % for inspection and possible restart
-                    else
-                        save('-mat', opts.SaveFilename); % for inspection and possible restart
-                    end
-                    time.saving = time.saving + time.c * max(0,etime(clock, time.t3));
+                    fclose(fid);
                 end
             end
-            time.t0 = clock;
 
-            % ----- end output generation -----
+            % get average time for recording data
+            time.t2 = clock;
+            time.recording = time.recording + time.c * max(0,etime(time.t2, time.t1));
+
+            % plot
+            if flgplotting && countiter > 1
+                if countiter == 2
+                    iterplotted = 0;
+                end
+                if ~isempty(stopflag) || ...
+                        ((time.nonoutput+time.recording) * (countiter - iterplotted) > 1 && ...
+                         time.plotting < 0.05 * (time.nonoutput+time.recording))
+                    local_plotcmaesdat(324, filenameprefix);
+                    iterplotted = countiter;
+                    %  outplot(out); % outplot defined below
+                    if time.plotting == 0  % disregard opening of the window
+                        time.plotting = time.nonoutput+time.recording;
+                    else
+                        time.plotting = time.plotting + time.c * max(0,etime(clock, time.t2));
+                    end
+                end
+            end
+            if countiter > 100 + 20 && savemodulo && ...
+                    time.recording * countiter > 0.1 && ...  % absolute time larger 0.1 second
+                    time.recording > savetime * (time.nonoutput+time.recording) / 100
+                savemodulo = floor(1.1 * savemodulo) + 1;
+                % disp('++savemodulo'); %qqq
+            end
+        end % if output
+
+        % save everything
+        time.t3 = clock;
+        if ~isempty(stopflag) || time.saving < 0.05 * time.nonoutput || countiter == 100
+            xmin = arxvalid(:, fitness.idx(1));
+            fmin = fitness.raw(1);
+            if flgsaving && countiter > 2
+                clear idx; % prevents error under octave
+                           % -v6 : non-compressed non-unicode for version 6 and earlier
+                if ~isempty(strsaving) && ~isoctave
+                    save('-mat', strsaving, opts.SaveFilename); % for inspection and possible restart
+                else
+                    save('-mat', opts.SaveFilename); % for inspection and possible restart
+                end
+                time.saving = time.saving + time.c * max(0,etime(clock, time.t3));
+            end
+        end
+        time.t0 = clock;
+
+        % ----- end output generation -----
 
     end % while, end generation loop
 
-        % -------------------- Final Procedures -------------------------------
+    % -------------------- Final Procedures -------------------------------
 
-        % Evaluate xmean and return best recent point in xmin
-        fmin = fitness.raw(1);
-        xmin = arxvalid(:, fitness.idx(1)); % Return best point of last generation.
-        if length(stopflag) > sum(strcmp(stopflag, 'stoptoresume')) % final stopping
-            out.solutions.mean.f = ...
-                feval(fitfun, xintobounds(xmean, lbounds, ubounds), varargin{:});
-            counteval = counteval + 1;
-            out.solutions.mean.evals = counteval;
-            if out.solutions.mean.f < fitness.raw(1)
-                fmin = out.solutions.mean.f;
-                xmin = xintobounds(xmean, lbounds, ubounds); % Return xmean as best point
-            end
-            if out.solutions.mean.f < out.solutions.bestever.f
-                out.solutions.bestever = out.solutions.mean; % Return xmean as bestever point
-                out.solutions.bestever.x = xintobounds(xmean, lbounds, ubounds);
-                bestever = out.solutions.bestever;
-            end
+    % Evaluate xmean and return best recent point in xmin
+    fmin = fitness.raw(1);
+    xmin = arxvalid(:, fitness.idx(1)); % Return best point of last generation.
+    if length(stopflag) > sum(strcmp(stopflag, 'stoptoresume')) % final stopping
+        out.solutions.mean.f = ...
+            feval(fitfun, xintobounds(xmean, lbounds, ubounds), varargin{:});
+        counteval = counteval + 1;
+        out.solutions.mean.evals = counteval;
+        if out.solutions.mean.f < fitness.raw(1)
+            fmin = out.solutions.mean.f;
+            xmin = xintobounds(xmean, lbounds, ubounds); % Return xmean as best point
         end
+        if out.solutions.mean.f < out.solutions.bestever.f
+            out.solutions.bestever = out.solutions.mean; % Return xmean as bestever point
+            out.solutions.bestever.x = xintobounds(xmean, lbounds, ubounds);
+            bestever = out.solutions.bestever;
+        end
+    end
 
-        % Save everything and display final message
-        if flgsavingfinal
-            clear idx; % prevents error under octave
-            if ~isempty(strsaving) && ~isoctave
-                save('-mat', strsaving, opts.SaveFilename); % for inspection and possible restart
-            else
-                save('-mat', opts.SaveFilename);    % for inspection and possible restart
-            end
-            message = [' (saved to ' opts.SaveFilename ')'];
+    % Save everything and display final message
+    if flgsavingfinal
+        clear idx; % prevents error under octave
+        if ~isempty(strsaving) && ~isoctave
+            save('-mat', strsaving, opts.SaveFilename); % for inspection and possible restart
         else
-            message = [];
+            save('-mat', opts.SaveFilename);    % for inspection and possible restart
         end
+        message = [' (saved to ' opts.SaveFilename ')'];
+    else
+        message = [];
+    end
 
-        if flgdisplay
-            disp(['#Fevals:   f(returned x)   |    bestever.f     | stopflag' ...
-                  message]);
-            if isoctave
-                strstop = stopflag(:);
-            else
-                strcat(stopflag(:), '.');
-            end
-            strstop = stopflag(:); %strcat(stopflag(:), '.');
-            disp([repmat(' ',1,6-floor(log10(counteval))) ...
-                  num2str(counteval, '%6.0f') ': ' num2str(fmin, '%.11e') ' | ' ...
-                  num2str(out.solutions.bestever.f, '%.11e') ' | ' ...
-                  strstop{1:end}]);
-            if N < 102
-                disp(['mean solution:' sprintf(' %+.1e', xmean)]);
-                disp(['std deviation:' sprintf('  %.1e', sigma*sqrt(diagC))]);
-                disp(sprintf('use plotcmaesdat.m for plotting the output at any time (option LogModulo must not be zero)'));
-            end
-            if exist('sfile', 'var')
-                disp(['Results saved in ' sfile]);
-            end
+    if flgdisplay
+        disp(['#Fevals:   f(returned x)   |    bestever.f     | stopflag' ...
+              message]);
+        if isoctave
+            strstop = stopflag(:);
+        else
+            strcat(stopflag(:), '.');
         end
+        strstop = stopflag(:); %strcat(stopflag(:), '.');
+        disp([repmat(' ',1,6-floor(log10(counteval))) ...
+              num2str(counteval, '%6.0f') ': ' num2str(fmin, '%.11e') ' | ' ...
+              num2str(out.solutions.bestever.f, '%.11e') ' | ' ...
+              strstop{1:end}]);
+        if N < 102
+            disp(['mean solution:' sprintf(' %+.1e', xmean)]);
+            disp(['std deviation:' sprintf('  %.1e', sigma*sqrt(diagC))]);
+            disp(sprintf('use plotcmaesdat.m for plotting the output at any time (option LogModulo must not be zero)'));
+        end
+        if exist('sfile', 'var')
+            disp(['Results saved in ' sfile]);
+        end
+    end
 
-        out.arstopflags{irun} = stopflag;
-        if any(strcmp(stopflag, 'fitness')) ...
-                || any(strcmp(stopflag, 'maxfunevals')) ...
-                || any(strcmp(stopflag, 'stoptoresume')) ...
-                || any(strcmp(stopflag, 'manual'))
-            break
-        end
+    out.arstopflags{irun} = stopflag;
+    if any(strcmp(stopflag, 'fitness')) ...
+            || any(strcmp(stopflag, 'maxfunevals')) ...
+            || any(strcmp(stopflag, 'stoptoresume')) ...
+            || any(strcmp(stopflag, 'manual'))
+        break
+    end
 end % while irun <= Restarts
 
 % ---------------------------------------------------------------

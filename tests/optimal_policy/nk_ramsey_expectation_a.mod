@@ -89,7 +89,9 @@ end;
 planner_objective(ln(c)-phi*((n^(1+gamma))/(1+gamma)));
 
 options_.solve_tolf=1e-12;
-ramsey_policy(planner_discount=0.99);
+ramsey_model(planner_discount=0.99);
+stoch_simul(order=1,irf=0);
+evaluate_planner_objective;
 
 o1=load('nk_ramsey_expectation_results');
 if (norm(o1.oo_.dr.ghx-oo_.dr.ghx,inf) > 1e-12)

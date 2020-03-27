@@ -90,7 +90,7 @@ protected:
 public:
   ResidFunction(const Approximation &app);
   ResidFunction(const ResidFunction &rf);
-  
+
   std::unique_ptr<VectorFunction>
   clone() const override
   {

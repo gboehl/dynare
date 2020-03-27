@@ -287,7 +287,7 @@ OperationTree::add_derivative(int t, int v)
         int tmp1 = add_derivative(terms[t].getOp1(), v);
         int tmp2 = add_derivative(terms[t].getOp2(), v);
         int res1 = add_binary(code_t::TIMES, terms[t].getOp1(), tmp2);
-        int     res2 = add_binary(code_t::TIMES, tmp1, terms[t].getOp2());
+        int res2 = add_binary(code_t::TIMES, tmp1, terms[t].getOp2());
         res = add_binary(code_t::PLUS, res1, res2);
         break;
       }
@@ -477,7 +477,7 @@ OperationTree::select_terms_inv(int t, const opselector &sel, unordered_set<int>
 void
 OperationTree::forget_derivative_maps()
 {
-  for (auto & derivative : derivatives)
+  for (auto &derivative : derivatives)
     derivative.clear();
 }
 

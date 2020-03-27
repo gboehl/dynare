@@ -40,7 +40,15 @@ phi   = 0.1;
 @#define w = w + [ elt ]
 @#endfor
 @#if w != [ 1, "a", 1, 2:3]
-@#error "For loop problem"
+@#error "For loop problem 1"
+@#endif
+
+@#define w = [ ]
+@#for (i,j) in [(1,2),(1,3),(1,4)]
+@#define w = w + [i, j]
+@#endfor
+@#if w != [ 1, 2, 1, 3, 1, 4]
+@#error "For loop problem 2"
 @#endif
 
 @#define s = "abcde"
@@ -169,8 +177,8 @@ stoch_simul;
 @#error "String comparison"
 @#endif
 
-@#define A = "La crise économique"
-@#if A[1,8,3,7,4,10,13,2,5,16,12,9,11,14,15,6,17:19] != "Le scénario comique"
+@#define A = "La crise economique"
+@#if A[1,8,3,7,4,10,13,2,5,16,12,9,11,14,15,6,17:19] != "Le scenario comique"
 @#error "Problem with string indexing/comparison"
 @#endif
 
@@ -216,6 +224,10 @@ stoch_simul;
 
 @#if (bool)"FaLse" || !(bool)"TRUE" || (bool)"0" || !(bool)"-3"
 @#error "Error in cast of string to bool"
+@#endif
+
+@#if !(true || "A") || (0 && "A")
+    @#error "problem with short circuit || or && operator"
 @#endif
 
 @#echomacrovars(save)

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2019 Dynare Team
+ * Copyright © 2007-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -135,11 +135,14 @@ void
 mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   // Check input and output:
-  if (nrhs > 4 || nrhs < 3)
-    DYN_MEX_FUNC_ERR_MSG_TXT("sparse_hessian_times_B_kronecker_C takes 3 or 4 input arguments and provides 2 output arguments.");
+  if (nrhs > 4 || nrhs < 3 || nlhs != 1)
+    {
+      mexErrMsgTxt("sparse_hessian_times_B_kronecker_C takes 3 or 4 input arguments and provides 1 output argument.");
+      return; // Needed to shut up some GCC warnings
+    }
 
   if (!mxIsSparse(prhs[0]))
-    DYN_MEX_FUNC_ERR_MSG_TXT("sparse_hessian_times_B_kronecker_C: First input must be a sparse (dynare) hessian matrix.");
+    mexErrMsgTxt("sparse_hessian_times_B_kronecker_C: First input must be a sparse (dynare) hessian matrix.");
 
   // Get & Check dimensions (columns and rows):
   size_t mA = mxGetM(prhs[0]);
@@ -152,12 +155,12 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       mC = mxGetM(prhs[2]);
       nC = mxGetN(prhs[2]);
       if (mB*mC != nA)
-        DYN_MEX_FUNC_ERR_MSG_TXT("Input dimension error!");
+        mexErrMsgTxt("Input dimension error!");
     }
   else // A·(B⊗B) is to be computed.
     {
       if (mB*mB != nA)
-        DYN_MEX_FUNC_ERR_MSG_TXT("Input dimension error!");
+        mexErrMsgTxt("Input dimension error!");
     }
   // Get input matrices:
   int numthreads;
@@ -185,6 +188,4 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     sparse_hessian_times_B_kronecker_B(isparseA, jsparseA, vsparseA, B, D, mA, nA, mB, nB, numthreads);
   else
     sparse_hessian_times_B_kronecker_C(isparseA, jsparseA, vsparseA, B, C, D, mA, nA, mB, nB, mC, nC, numthreads);
-
-  plhs[1] = mxCreateDoubleScalar(0);
 }

@@ -37,7 +37,7 @@ function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviat
 % [1] This function use persistent variables for the dataset and the description of the missing observations. Consequently, if this function
 %     is called more than once (by changing the value of parameters) the sample *must not* change.
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -111,3 +111,4 @@ end
 
 %reset qz_criterium
 options_.qz_criterium=qz_criterium_old;
+oo_.gui.ran_calib_smoother = true;

@@ -31,7 +31,7 @@ template<Storage>
 class FirstOrderDerivs;
 class FirstOrder
 {
-  template <Storage>
+  template<Storage>
   friend class FirstOrderDerivs;
   PartitionY ypart;
   int nu;
@@ -89,7 +89,7 @@ protected:
 /* This class only converts the derivatives g_y* and gᵤ to a folded or unfolded
    container. */
 
-template <Storage t>
+template<Storage t>
 class FirstOrderDerivs : public ctraits<t>::Tg
 {
 public:

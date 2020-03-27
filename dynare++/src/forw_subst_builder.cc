@@ -70,7 +70,7 @@ ForwSubstBuilder::substitute_for_term(int t, int i, int j)
       // first make lagsubst be substitution setting f(x(+4)) to f(x(+1))
       // this is lag = -3 (1-mlead)
       map<int, int> lagsubst;
-      unordered_set<int> nult = model.eqs.nulary_of_term(t);// make copy of nult!
+      unordered_set<int> nult = model.eqs.nulary_of_term(t); // make copy of nult!
       model.variable_shift_map(nult, 1-mlead, lagsubst);
       int lagt = model.eqs.add_substitution(t, lagsubst);
 

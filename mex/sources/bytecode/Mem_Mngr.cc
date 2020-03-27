@@ -63,7 +63,7 @@ NonZeroElem *
 Mem_Mngr::mxMalloc_NZE()
 {
   long unsigned int i;
-  if (!Chunk_Stack.empty())           /*An unused block of memory available inside the heap*/
+  if (!Chunk_Stack.empty()) /*An unused block of memory available inside the heap*/
     {
       NonZeroElem *p1 = Chunk_Stack.back();
       Chunk_Stack.pop_back();
@@ -74,23 +74,23 @@ Mem_Mngr::mxMalloc_NZE()
       i = CHUNK_heap_pos++;
       return (NZE_Mem_add[i]);
     }
-  else                                /*We have to allocate extra memory space*/
+  else /*We have to allocate extra memory space*/
     {
       CHUNK_SIZE += CHUNK_BLCK_SIZE;
       Nb_CHUNK++;
-      NZE_Mem = static_cast<NonZeroElem *>(mxMalloc(CHUNK_BLCK_SIZE*sizeof(NonZeroElem)));      /*The block of memory allocated*/
+      NZE_Mem = static_cast<NonZeroElem *>(mxMalloc(CHUNK_BLCK_SIZE*sizeof(NonZeroElem))); /*The block of memory allocated*/
       error_msg.test_mxMalloc(NZE_Mem, __LINE__, __FILE__, __func__, CHUNK_BLCK_SIZE*sizeof(NonZeroElem));
       NZE_Mem_Allocated.push_back(NZE_Mem);
       if (!NZE_Mem)
         mexPrintf("Not enough memory available\n");
       if (NZE_Mem_add)
         {
-          NZE_Mem_add = static_cast<NonZeroElem **>(mxRealloc(NZE_Mem_add, CHUNK_SIZE*sizeof(NonZeroElem *)));                                                                                                     /*We have to redefine the size of pointer on the memory*/
+          NZE_Mem_add = static_cast<NonZeroElem **>(mxRealloc(NZE_Mem_add, CHUNK_SIZE*sizeof(NonZeroElem *))); /*We have to redefine the size of pointer on the memory*/
           error_msg.test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
         }
       else
         {
-          NZE_Mem_add = static_cast<NonZeroElem **>(mxMalloc(CHUNK_SIZE*sizeof(NonZeroElem *)));                                                                                       /*We have to define the size of pointer on the memory*/
+          NZE_Mem_add = static_cast<NonZeroElem **>(mxMalloc(CHUNK_SIZE*sizeof(NonZeroElem *))); /*We have to define the size of pointer on the memory*/
           error_msg.test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
         }
 

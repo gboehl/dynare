@@ -68,7 +68,7 @@ if options_.TeX
     labels_TeX = M_.endo_names_tex(SubsetOfVariables);
     lh = cellofchararraymaxlength(labels_TeX)+2;
 end
- 
+
 vardec_i = zeros(length(SubsetOfVariables), shock_number);
 
 for i=1:length(Steps)

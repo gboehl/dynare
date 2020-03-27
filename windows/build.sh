@@ -5,7 +5,7 @@
 # The binaries are cross compiled for Windows (32/64bits), Octave and MATLAB
 # (all supported versions).
 
-# Copyright © 2017-2019 Dynare Team
+# Copyright © 2017-2020 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -248,7 +248,7 @@ ZIPDIR="$TMP_DIRECTORY"/"$ZIPNAME"
 mkdir -p "$ZIPDIR"
 
 cd ..
-cp -p NEWS "$ZIPDIR"
+cp -p NEWS.md "$ZIPDIR"
 cp -p VERSION "$ZIPDIR"
 cp -p license.txt "$ZIPDIR"
 cp -p windows/README.txt "$ZIPDIR"
@@ -270,7 +270,7 @@ cp -pr examples "$ZIPDIR"
 mkdir -p "$ZIPDIR"/scripts
 cp -p scripts/dynare.el "$ZIPDIR"/scripts
 mkdir "$ZIPDIR"/dynare++
-cp -pr dynare++/32-bit/ dynare++/64-bit/ "$ZIPDIR"/dynare++
+cp -pr dynare++/32-bit/ dynare++/64-bit/ dynare++/dynare_simul/dynare_simul.m "$ZIPDIR"/dynare++
 mkdir -p "$ZIPDIR"/doc/dynare++
 mkdir -p "$ZIPDIR"/doc/dynare-manual.html
 cp -pr doc/manual/build/html/* "$ZIPDIR"/doc/dynare-manual.html

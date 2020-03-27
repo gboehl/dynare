@@ -19,45 +19,45 @@
 
 function [c, ia, ib] = intersect_stable(a, b)
 
-    if nargin ~= 2
-        error('intersect_stable: needs exactly 2 input arguments');
-    end
+if nargin ~= 2
+    error('intersect_stable: needs exactly 2 input arguments');
+end
 
-    if isnumeric (a) && isnumeric (b)
-        c = [];
-    elseif iscell (b)
-        c = {};
-    else
-        c = '';
-    end
-    ia = [];
-    ib = [];
+if isnumeric (a) && isnumeric (b)
+    c = [];
+elseif iscell (b)
+    c = {};
+else
+    c = '';
+end
+ia = [];
+ib = [];
 
-    if isempty (a) || isempty (b)
-        return
-    else
-        isrowvec = isrow (a) && isrow (b);
+if isempty (a) || isempty (b)
+    return
+else
+    isrowvec = isrow (a) && isrow (b);
 
-        for i = 1:numel(a)
-            if iscellstr(c)
-                idx = strcmp(a(i), b);
-            else
-                idx = a(i) == b;
-            end
-            if any(idx) && ~ismember(a(i), c)
-                c = [c(:); a(i)];
-                if nargout > 1
-                    ia = [ia, i];
-                    ib = [ib, find(idx)];
-                end
+    for i = 1:numel(a)
+        if iscellstr(c)
+            idx = strcmp(a(i), b);
+        else
+            idx = a(i) == b;
+        end
+        if any(idx) && ~ismember(a(i), c)
+            c = [c(:); a(i)];
+            if nargout > 1
+                ia = [ia, i];
+                ib = [ib, find(idx)];
             end
         end
-
-        %% Adjust output orientation for MATLAB compatibility
-        if isrowvec
-            c = c.';
-        end
     end
+
+    %% Adjust output orientation for MATLAB compatibility
+    if isrowvec
+        c = c.';
+    end
+end
 end
 
 %!test

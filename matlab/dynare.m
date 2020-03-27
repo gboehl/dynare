@@ -16,7 +16,7 @@ function dynare(fname, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,27 +45,25 @@ if ~nargin || strcmpi(fname,'help')
     return
 end
 
-% Set default local options
-change_path_flag = true;
+% The following needs to come early, to avoid spurious warnings (especially under Octave)
+warning_config;
 
-% Filter out some options.
-preprocessoroutput = true;
+% Handle nopathchange option
+% Note that it is only handled if it appears on the command-line, and not at
+% the top of the .mod file (since the treatment needs to take place very early,
+% even before we make the various checks on the filename)
+change_path_flag = true;
 if nargin>1
     id = ismember(varargin, 'nopathchange');
     if any(id)
         change_path_flag = false;
         varargin(id) = [];
     end
-    preprocessoroutput = ~ismember('nopreprocessoroutput', varargin);
 end
-
-% Check matlab path
 check_matlab_path(change_path_flag);
 
 % Detect if MEX files are present; if not, use alternative M-files
 dynareroot = dynare_config();
-
-warning_config()
 
 if isoctave
     % The supported_octave_version.m file is not in git nor in the source
@@ -78,14 +76,14 @@ if isoctave
                  'of precompiled mex files and some\nfeatures, like solution ' ...
                  'of models approximated at third order, will not be available.'], supported_octave_version())
         skipline()
-    elseif octave_ver_less_than('4.2') % Should match the test in mex/build/octave/configure.ac
-                                       % and in m4/ax_mexopts.m4
+    elseif octave_ver_less_than('4.4') % Should match the test in mex/build/octave/configure.ac
         skipline()
-        warning(['This version of Dynare has only been tested on Octave 4.2 and above. Dynare may fail to run or give unexpected result. Consider upgrading your version of Octave.'])
+        warning(['This version of Dynare has only been tested on Octave 4.4 and above. Dynare may fail to run or give unexpected result. Consider upgrading your version of Octave.'])
         skipline()
     end
 else
     if matlab_ver_less_than('7.9') % Should match the test in mex/build/matlab/configure.ac
+                                   % and in m4/ax_mexopts.m4
         skipline()
         warning('This version of Dynare has only been tested on MATLAB 7.9 (R2009b) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
         skipline()
@@ -186,6 +184,14 @@ if exist(fname(1:end-4),'dir') && exist([fname(1:end-4) filesep 'hooks'],'dir') 
     run([fname(1:end-4) filesep 'hooks/priorprocessing'])
 end
 
+% Parse some options, either for the command-line or from the top of the .mod file
+file_opts = parse_options_line(fname);
+preprocessoroutput = ~ismember('nopreprocessoroutput', varargin) && ...
+                     ~ismember('nopreprocessoroutput', file_opts);
+nolog = ismember('nolog', varargin) || ismember('nolog', file_opts);
+onlymacro = ismember('onlymacro', varargin) || ismember('onlymacro', file_opts);
+onlyjson = ismember('onlyjson', varargin) || ismember('onlyjson', file_opts);
+
 if ispc
     arch = getenv('PROCESSOR_ARCHITECTURE');
 else
@@ -204,47 +210,54 @@ else
     end
 end
 
-command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
-command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
-for i=1:length(varargin)
-    idx = regexp(varargin{i}, '(in|ex)clude_eqs');
-    if ~isempty(idx) && idx(1) == 1
-        command = [command ' "' varargin{i} '"'];
-    else
-        command = [command ' ' varargin{i}];
-    end
-end
-
 if preprocessoroutput
     fprintf(['Starting Dynare (version ' dynare_version() ').\n']);
     fprintf('Calling Dynare with arguments: ');
     if isempty(varargin)
         disp('none')
     else
-        disp(strjoin(varargin));
+        disp(strjoin(varargin, ' '));
     end
+end
+
+command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
+command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
+% Properly quote arguments before passing them to the shell
+if ~isempty(varargin)
+    varargincopy = varargin;
+    % Escape backslashes and double-quotes
+    varargincopy = strrep(varargincopy, '\', '\\');
+    varargincopy = strrep(varargincopy, '"', '\"');
+    if ~ispc
+        % On GNU/Linux and macOS, also escape dollars and backquotes
+        varargincopy = strrep(varargincopy, '$', '\$');
+        varargincopy = strrep(varargincopy, '`', '\`');
+    end
+    % Finally, enclose arguments within double quotes
+    dynare_varargin = ['"' strjoin(varargincopy, '" "') '"'];
+    command = [command ' ' dynare_varargin];
 end
 
 % Under Windows, make sure the MEX file is unloaded (in the use_dll case),
 % otherwise the preprocessor can't recompile it
 if isoctave
-  clear([fname(1:end-4) '.static'], [fname(1:end-4) '.dynamic'])
+    clear([fname(1:end-4) '.static'], [fname(1:end-4) '.dynamic'])
 else
-  clear(['+' fname(1:end-4) '/static'], ['+' fname(1:end-4) '/dynamic'])
+    clear(['+' fname(1:end-4) '/static'], ['+' fname(1:end-4) '/dynamic'])
 end
 
 [status, result] = system(command);
 if status ~= 0 || preprocessoroutput
     disp(result)
 end
-if ismember('onlymacro', varargin)
+if onlymacro
     if preprocessoroutput
         disp('Preprocessor stopped after macroprocessing step because of ''onlymacro'' option.');
     end
     return
 end
 
-if ismember('onlyjson', varargin)
+if onlyjson
     if preprocessoroutput
         disp('Preprocessor stopped after preprocessing step because of ''onlyjson'' option.');
     end
@@ -257,11 +270,7 @@ if exist(fname(1:end-4),'dir') && exist([fname(1:end-4) filesep 'hooks'],'dir') 
 end
 
 % Save preprocessor result in logfile (if `no_log' option not present)
-fid = fopen(fname, 'r');
-firstline = fgetl(fid);
-fclose(fid);
-if ~ismember('nolog', varargin) ...
-        && isempty(regexp(firstline, '//\s*--\+\s*options:(|.*\s|.*,)nolog(|\s.*|,.*)\+--'))
+if ~nolog
     logname = [fname(1:end-4) '.log'];
     fid = fopen(logname, 'w');
     fprintf(fid, '%s', result);
@@ -282,3 +291,38 @@ end
 clear(['+' fname '/driver'])
 
 evalin('base',[fname '.driver']) ;
+
+end
+
+% Looks for an options list in the first non-empty line of the .mod file
+% Should be kept in sync with the function of the same name in preprocessor/src/DynareMain.cc
+%
+% Note that separating options with commas is accepted, but is deprecated (and undocumented)
+%
+% Also, the parser does not handle correctly some corner cases: for example, it
+% will fail on something like -Dfoo="a b,c" (will split at whitespace and comma)
+function opts = parse_options_line(fname)
+    opts = {};
+    fid = fopen(fname, 'r');
+    while true
+        firstline = fgetl(fid);
+        if firstline == -1
+            fclose(fid);
+            return
+        end
+        if ~isempty(firstline)
+            break
+        end
+    end
+    fclose(fid);
+    t = regexp(firstline, '^\s*//\s*--\+\s*options:([^\+]*)\+--', 'tokens');
+    if isempty(t)
+        return
+    end
+
+    opts = regexp(t{1}{1}, '[^,\s]+', 'match');
+
+    if ismember(opts, 'nopathchange')
+        warning('The ''nopathchange'' option is not taken into account when it appears at the top of ''.mod'' file. You should rather pass it on the command-line.')
+    end
+end

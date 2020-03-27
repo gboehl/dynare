@@ -24,12 +24,11 @@ Dates in a mod file
 -------------------
 
 Dynare understands dates in a mod file. Users can declare annual,
-quarterly, monthly or weekly dates using the following syntax::
+quarterly, or monthly dates using the following syntax::
 
     1990Y
     1990Q3
     1990M11
-    1990W49
 
 Behind the scene, Dynare’s preprocessor translates these expressions
 into instantiations of the MATLAB/Octave’s class ``dates`` described
@@ -165,14 +164,13 @@ The dates class
 
 .. class:: dates
 
-    :arg int freq: equal to 1, 4, 12 or 52 (resp. for annual,
-                   quarterly, monthly or weekly dates).
+    :arg int freq: equal to 1, 4, or 12 (resp. for annual,
+                   quarterly, or monthly dates).
     :arg int ndat: the number of declared dates in the object.
     :arg int time: a ``ndat*2`` array, the years are stored in the
                    first column, the subperiods (1 for annual dates,
-                   1-4 for quarterly dates, 1-12 for monthly dates and
-                   1-52 for weekly dates) are stored in the second
-                   column.
+                   1-4 for quarterly dates, and 1-12 for monthly
+                   dates) are stored in the second column.
 
     Each member is private, one can display the content of a member
     but cannot change its value directly. Note that it is not possible
@@ -187,14 +185,14 @@ The dates class
         |br| Returns an empty ``dates`` object with a given frequency
         (if the constructor is called with one input
         argument). ``FREQ`` is a character equal to ’Y’ or ’A’ for
-        annual dates, ’Q’ for quarterly dates, ’M’ for monthly dates
-        or ’W’ for weekly dates. Note that ``FREQ`` is not case
-        sensitive, so that, for instance, ’q’ is also allowed for
-        quarterly dates. The frequency can also be set with an integer
-        scalar equal to 1 (annual), 4 (quarterly), 12 (monthly) or 52
-        (weekly). The instantiation of empty objects can be used to
-        rename the ``dates`` class. For instance, if one only works
-        with quarterly dates, object ``qq`` can be created as::
+        annual dates, ’Q’ for quarterly dates, or ’M’ for monthly
+        dates. Note that ``FREQ`` is not case sensitive, so that, for
+        instance, ’q’ is also allowed for quarterly dates. The
+        frequency can also be set with an integer scalar equal to 1
+        (annual), 4 (quarterly), or 12 (monthly). The instantiation of
+        empty objects can be used to rename the ``dates`` class. For
+        instance, if one only works with quarterly dates, object
+        ``qq`` can be created as::
 
             qq = dates('Q')
 
@@ -213,11 +211,11 @@ The dates class
         given by the string ``STRING``. This string has to be
         interpretable as a date (only strings of the following forms
         are admitted: ``'1990Y'``, ``'1990A'``, ``'1990Q1'``,
-        ``'1990M2'``, ``'1990W5'``), the routine ``isdate`` can be
-        used to test if a string is interpretable as a date. If more
-        than one argument is provided, they should all be dates
-        represented as strings, the resulting ``dates`` object
-        contains as many elements as arguments to the constructor.
+        ``'1990M2'``), the routine ``isdate`` can be used to test if a
+        string is interpretable as a date. If more than one argument
+        is provided, they should all be dates represented as strings,
+        the resulting ``dates`` object contains as many elements as
+        arguments to the constructor.
 
 
     .. construct:: dates(DATES)
@@ -233,13 +231,13 @@ The dates class
 
     .. construct:: dates (FREQ, YEAR, SUBPERIOD)
 
-        |br| where ``FREQ`` is a single character (’Y’, ’A’, ’Q’, ’M’,
-        ’W’) or integer (1, 4, 12 or 52) specifying the frequency,
-        ``YEAR`` and ``SUBPERIOD`` are ``n*1`` vectors of
-        integers. Returns a ``dates`` object with ``n`` elements. If
-        ``FREQ`` is equal to ``'Y'``, ``'A'`` or ``1``, the third
-        argument is not needed (because ``SUBPERIOD`` is necessarily a
-        vector of ones in this case).
+        |br| where ``FREQ`` is a single character (’Y’, ’A’, ’Q’, ’M’)
+        or integer (1, 4, or 12) specifying the frequency, ``YEAR``
+        and ``SUBPERIOD`` are ``n*1`` vectors of integers. Returns a
+        ``dates`` object with ``n`` elements. If ``FREQ`` is equal to
+        ``'Y'``, ``'A'`` or ``1``, the third argument is not needed
+        (because ``SUBPERIOD`` is necessarily a vector of ones in this
+        case).
 
 
     *Example*
@@ -253,22 +251,44 @@ The dates class
 
 
     A list of the available methods, by alphabetical order, is given
-    below. Note that the MATLAB/Octave classes do not allow in place
+    below. Note that by default the methods do not allow in place
     modifications: when a method is applied to an object a new object
     is instantiated. For instance, to apply the method
     ``multiplybytwo`` to an object ``X`` we write::
 
-        Y = X.multiplybytwo()
+      >> X = 2;
+      >> Y = X.multiplybytwo();
+      >> X
+
+      2
+
+      >> Y
+
+      4
+
 
     or equivalently::
 
-        Y = multiplybytwo(X)
+        >> Y = multiplybytwo(X);
 
     the object ``X`` is left unchanged, and the object ``Y`` is a
-    modified copy of ``X``.
+    modified copy of ``X`` (multiplied by two). This behaviour is
+    altered if the name of the method is postfixed with an
+    underscore. In this case the creation of a copy is avoided. For
+    instance, following the previous example, we would have::
 
+      >> X = 2;
+      >> X.multiplybytwo_();
+      >> X
+
+      4
+
+    Modifying the objects in place, with underscore methods, is
+    particularly useful if the methods are called in loops, since this
+    saves the object instantiation overhead.
 
     .. datesmethod:: C = append (A, B)
+                     C = append_ (A, B)
 
         |br| Appends ``dates`` object ``B``, or a string that can be
         interpreted as a date, to the ``dates`` object ``A``. If ``B``
@@ -282,17 +302,43 @@ The dates class
                 >> D = dates('1950Q1','1950Q2');
                 >> d = dates('1950Q3');
                 >> E = D.append(d);
-                >> F = D.append('1950Q3')
+                >> F = D.append('1950Q3');
                 >> isequal(E,F)
 
                 ans =
 
                      1
                 >> F
+
                 F = <dates: 1950Q1, 1950Q2, 1950Q3>
 
+                >> D
 
-    .. datesmethod:: C = colon (A, B)
+                D = <dates: 1950Q1, 1950Q2>
+
+                >> D.append_('1950Q3')
+
+                ans = <dates: 1950Q1, 1950Q2, 1950Q3>
+
+
+    .. datesmethod:: B = char (A)
+
+        |br| Overloads the MATLAB/Octave ``char`` function. Converts a
+        ``dates`` object into a character array.
+
+        *Example*
+
+            ::
+
+                >> A = dates('1950Q1');
+                > A.char()
+
+                ans =
+
+                '1950Q1'
+
+
+   .. datesmethod:: C = colon (A, B)
                      C = colon (A, i, B)
 
         |br| Overloads the MATLAB/Octave colon (``:``) operator. A and B
@@ -307,9 +353,40 @@ The dates class
                 >> A = dates('1950Q1');
                 >> B = dates('1951Q2');
                 >> C = A:B
+
                 C = <dates: 1950Q1, 1950Q2, 1950Q3, 1950Q4, 1951Q1>
+
                 >> D = A:2:B
+
                 D = <dates: 1950Q1, 1950Q3, 1951Q1>
+
+
+    .. datesmethod:: B = copy (A)
+
+        |br| Returns a copy of a ``dates`` object.
+
+
+     .. datesmethod:: disp (A)
+
+        |br| Overloads the MATLAB/Octave disp function for ``dates`` object.
+
+
+     .. datesmethod:: display (A)
+
+        |br| Overloads the MATLAB/Octave display function for ``dates`` object.
+
+        *Example*
+
+            ::
+
+                >> disp(B)
+
+                B = <dates: 1950Q1, 1950Q2, 1950Q3, 1950Q4, 1951Q1, 1951Q2, 1951Q3, 1951Q4, 1952Q1, 1952Q2, 1952Q3>
+
+
+                >> display(B)
+
+                B = <dates: 1950Q1, 1950Q2, ..., 1952Q2, 1952Q3>
 
 
     .. datesmethod:: B = double (A)
@@ -319,8 +396,7 @@ The dates class
         representation of a ``dates`` object, the integer and
         fractional parts respectively corresponding to the year and
         the subperiod. The fractional part is the subperiod number
-        minus one divided by the frequency (``1``, ``4``, ``12`` or
-        ``52``).
+        minus one divided by the frequency (``1``, ``4``, or ``12``).
 
         *Example*:
 
@@ -342,8 +418,8 @@ The dates class
         |br| Overloads the MATLAB/Octave ``eq`` (equal, ``==``)
         operator. ``dates`` objects ``A`` and ``B`` must have the same
         number of elements (say, ``n``). The returned argument is a
-        ``n`` by ``1`` vector of zeros and ones. The i-th element of
-        ``C`` is equal to ``1`` if and only if the dates ``A(i)`` and
+        ``n`` by ``1`` vector of logicals. The i-th element of
+        ``C`` is equal to ``true`` if and only if the dates ``A(i)`` and
         ``B(i)`` are the same.
 
         *Example*
@@ -356,8 +432,10 @@ The dates class
 
                 ans =
 
-                     1
-                     0
+                  2x1 logical array
+
+                   1
+                   0
 
 
     .. datesmethod:: C = ge (A, B)
@@ -365,8 +443,8 @@ The dates class
         |br| Overloads the MATLAB/Octave ``ge`` (greater or equal,
         ``>=``) operator. ``dates`` objects ``A`` and ``B`` must have
         the same number of elements (say, ``n``). The returned
-        argument is a ``n`` by ``1`` vector of zeros and ones. The
-        i-th element of ``C`` is equal to ``1`` if and only if the
+        argument is a ``n`` by ``1`` vector of logicals. The
+        i-th element of ``C`` is equal to ``true`` if and only if the
         date ``A(i)`` is posterior or equal to the date ``B(i)``.
 
         *Example*
@@ -379,8 +457,10 @@ The dates class
 
                 ans =
 
-                     1
-                     1
+                  2x1 logical array
+
+                   1
+                   1
 
 
     .. datesmethod:: C = gt (A, B)
@@ -388,7 +468,7 @@ The dates class
         |br| Overloads the MATLAB/Octave ``gt`` (greater than, ``>``)
         operator. ``dates`` objects ``A`` and ``B`` must have the same
         number of elements (say, ``n``). The returned argument is a
-        ``n`` by ``1`` vector of zeros and ones. The i-th element of
+        ``n`` by ``1`` vector of logicals. The i-th element of
         ``C`` is equal to ``1`` if and only if the date ``A(i)`` is
         posterior to the date ``B(i)``.
 
@@ -402,8 +482,10 @@ The dates class
 
                 ans =
 
-                     0
-                     1
+                  2x1 logical array
+
+                   0
+                   1
 
 
     .. datesmethod:: D = horzcat (A, B, C, ...)
@@ -421,6 +503,7 @@ The dates class
                 >> B = dates('1950Q2');
                 >> C = [A, B];
                 >> C
+
                 C = <dates: 1950Q1, 1950Q2>
 
 
@@ -442,63 +525,53 @@ The dates class
                 >> B = dates('1951Q1'):dates('1951Q4');
                 >> C = intersect(A, B);
                 >> C
+
                 C = <dates: 1951Q1, 1951Q2, 1951Q3, 1951Q4>
-
-
-    .. datesmethod:: C = setdiff (A, B)
-
-        |br| Overloads the MATLAB/Octave ``setdiff`` function. All the
-        input arguments must be ``dates`` objects. The returned
-        argument is a ``dates`` object all dates present in ``A`` but
-        not in ``B``. If ``A`` and ``B`` are disjoint ``dates``
-        objects, the function returns ``A``. Returned dates in
-        ``dates`` object ``C`` are sorted by increasing order.
-
-        *Example*
-
-            ::
-
-                >> A = dates('1950Q1'):dates('1969Q4') ;
-                >> B = dates('1960Q1'):dates('1969Q4') ;
-                >> C = dates('1970Q1'):dates('1979Q4') ;
-                >> d1 = setdiff(d1,d2);
-                >> d2 = setdiff(d1,d3);
-                d1 = <dates: 1950Q1, 1950Q2,  ..., 1959Q3, 1959Q4>
-                d2 = <dates: 1950Q1, 1950Q2,  ..., 1969Q3, 1969Q4>
 
 
     .. datesmethod:: B = isempty (A)
 
-        |br| Overloads the MATLAB/Octave ``isempty`` function for ``dates``
-        objects``.
+        |br| Overloads the MATLAB/Octave ``isempty`` function.
 
         *Example*
 
             ::
 
-                >> A = dates('1950Q1'):dates('1951Q4');
+                >> A = dates('1950Q1');
                 >> A.isempty()
 
                 ans =
 
-                     0
+                  logical
 
+                  0
 
-    .. datesmethod:: C = isequal (A, B)
+                >> B = dates();
+                >> B.isempty()
 
-        |br| Overloads the MATLAB/Octave ``isequal`` function for
-        ``dates`` objects.
+                ans =
+
+                  logical
+
+                  1
+
+     .. datesmethod:: C = isequal (A, B)
+
+        |br| Overloads the MATLAB/Octave ``isequal`` function.
 
         *Example*
 
             ::
 
-                >> A = dates('1950Q1'):dates('1951Q4');
-                >> isequal(A,A)
+                >> A = dates('1950Q1');
+                >> B = dates('1950Q2');
+                >> isequal(A, B)
 
                 ans =
 
-                     1
+                  logical
+
+                  0
 
 
     .. datesmethod:: C = le (A, B)
@@ -506,9 +579,9 @@ The dates class
         |br| Overloads the MATLAB/Octave ``le`` (less or equal,
         ``<=``) operator. ``dates`` objects ``A`` and ``B`` must have
         the same number of elements (say, ``n``). The returned
-        argument is a ``n`` by ``1`` vector of zeros and ones. The
-        i-th element of ``C`` is equal to ``1`` if and only if the
-        date ``A(i)`` is not posterior to the date ``B(i)``.
+        argument is a ``n`` by ``1`` vector of logicals. The
+        i-th element of ``C`` is equal to ``true`` if and only if the
+        date ``A(i)`` is anterior or equal to the date ``B(i)``.
 
         *Example*
 
@@ -520,36 +593,37 @@ The dates class
 
                 ans =
 
-                     1
-                     0
+                  2x1 logical array
+
+                   1
+                   0
 
 
     .. datesmethod:: B = length (A)
 
-        |br| Overloads the MATLAB/Octave ``length`` function. Returns the
-        number of dates in ``dates`` object ``A`` (``B`` is a scalar
-        integer).
+        |br| Overloads the MATLAB/Octave ``length`` function. Returns
+        the number of elements in a ``dates`` object.
 
         *Example*
 
             ::
 
-                >> A = dates('1950Q1','1951Q2');
+                >> A = dates('1950Q1'):dates(2000Q3);
                 >> A.length()
 
                 ans =
 
-                     2
+                   203
 
 
-    .. datesmethod:: C = lt (A, B)
+        .. datesmethod:: C = lt (A, B)
 
-        |br| Overloads the MATLAB/Octave ``lt`` (less than, ``<``)
-        operator. ``dates`` objects ``A`` and ``B`` must have the same
-        number of elements (say, ``n``). The returned argument is a
-        ``n`` by ``1`` vector of zeros and ones. The i-th element of
-        ``C`` is equal to ``1`` if and only if the date ``A(i)``
-        preceeds the date ``B(i)``.
+        |br| Overloads the MATLAB/Octave ``lt`` (less than,
+        ``<``) operator. ``dates`` objects ``A`` and ``B`` must have
+        the same number of elements (say, ``n``). The returned
+        argument is a ``n`` by ``1`` vector of logicals. The
+        i-th element of ``C`` is equal to ``true`` if and only if the
+        date ``A(i)`` is anterior or equal to the date ``B(i)``.
 
         *Example*
 
@@ -561,8 +635,10 @@ The dates class
 
                 ans =
 
-                     0
-                     0
+                  2x1 logical array
+
+                   0
+                   0
 
 
     .. datesmethod:: D = max (A, B, C, ...)
@@ -577,6 +653,7 @@ The dates class
 
                 >> A = {dates('1950Q2'), dates('1953Q4','1876Q2'), dates('1794Q3')};
                 >> max(A{:})
+
                 ans = <dates: 1953Q4>
 
 
@@ -592,6 +669,7 @@ The dates class
 
                 >> A = {dates('1950Q2'), dates('1953Q4','1876Q2'), dates('1794Q3')};
                 >> min(A{:})
+
                 ans = <dates: 1794Q3>
 
 
@@ -619,7 +697,25 @@ The dates class
                      0
 
                 >> d1-(-ee)
+
                 ans = <dates: 1950Q3, 1950Q4, 1960Q1>
+
+
+    .. datesmethod:: C = mtimes (A, B)
+
+        |br| Overloads the MATLAB/Octave ``mtimes`` operator
+        (``*``). ``A`` and ``B`` are respectively expected to be a
+        ``dseries`` object and a scalar integer. Returns ``dates``
+        object ``A`` replicated ``B`` times.
+
+        *Example*
+
+            ::
+
+                >> d = dates('1950Q1');
+                >> d*2
+
+                ans = <dates: 1950Q1, 1950Q1>
 
 
     .. datesmethod:: C = ne (A, B)
@@ -628,8 +724,8 @@ The dates class
         operator. ``dates`` objects ``A`` and ``B`` must have the same
         number of elements (say, ``n``) or one of the inputs must be a
         single element ``dates`` object. The returned argument is a
-        ``n`` by ``1`` vector of zeros and ones. The i-th element of
-        ``C`` is equal to ``1`` if and only if the dates ``A(i)`` and
+        ``n`` by ``1`` vector of logicals. The i-th element of
+        ``C`` is equal to ``true`` if and only if the dates ``A(i)`` and
         ``B(i)`` are different.
 
         *Example*
@@ -642,8 +738,10 @@ The dates class
 
                 ans =
 
-                     0
-                     1
+                  2x1 logical array
+
+                   0
+                   1
 
 
     .. datesmethod:: C = plus (A, B)
@@ -654,7 +752,7 @@ The dates class
         ``B`` is a vector of integers, the ``plus`` operator shifts
         the ``dates`` object by ``B`` periods forward.
 
-        :ex:
+        *Example*
 
             ::
 
@@ -673,7 +771,9 @@ The dates class
 
 
     .. datesmethod:: C = pop (A)
-                     C = pop (A,B)
+                     C = pop (A, B)
+                     C = pop_ (A)
+                     C = pop_ (A, B)
 
         |br| Pop method for ``dates`` class. If only one input is
         provided, the method removes the last element of a ``dates``
@@ -685,15 +785,58 @@ The dates class
 
             ::
 
-                >> d1 = dates('1950Q1','1950Q2');
-                >> d1.pop()
+                >> d = dates('1950Q1','1950Q2');
+                >> d.pop()
+
                 ans = <dates: 1950Q1>
 
-                >> d1.pop(1)
+                >> d.pop_(1)
+
                 ans = <dates: 1950Q2>
 
 
+    .. datesmethod:: C = remove (A, B)
+                     C = remove_ (A, B)
+
+        |br| Remove method for ``dates`` class. Both inputs have to be ``dates`` objects, removes dates in ``B`` from ``A``.
+
+        *Example*
+
+            ::
+
+                >> d = dates('1950Q1','1950Q2');
+                >> d.remove(dates('1950Q2'))
+
+                ans = <dates: 1950Q1>
+
+
+    .. datesmethod:: C = setdiff (A, B)
+
+        |br| Overloads the MATLAB/Octave ``setdiff`` function. All the
+        input arguments must be ``dates`` objects. The returned
+        argument is a ``dates`` object all dates present in ``A`` but
+        not in ``B``. If ``A`` and ``B`` are disjoint ``dates``
+        objects, the function returns ``A``. Returned dates in
+        ``dates`` object ``C`` are sorted by increasing order.
+
+        *Example*
+
+            ::
+
+                >> A = dates('1950Q1'):dates('1969Q4');
+                >> B = dates('1960Q1'):dates('1969Q4');
+                >> C = dates('1970Q1'):dates('1979Q4');
+                >> setdiff(A, B)
+
+                ans = <dates: 1950Q1, 1950Q2,  ..., 1959Q3, 1959Q4>
+
+                >> setdiff(A, C)
+
+                ans = <dates: 1950Q1, 1950Q2,  ..., 1969Q3, 1969Q4>
+
+
     .. datesmethod:: B = sort (A)
+                     B = sort_ (A)
 
         |br| Sort method for ``dates`` objects. Returns a ``dates`` object
         with elements sorted by increasing order.
@@ -704,7 +847,44 @@ The dates class
 
                 >> dd = dates('1945Q3','1938Q4','1789Q3');
                 >> dd.sort()
+
                 ans = <dates: 1789Q3, 1938Q4, 1945Q3>
+
+
+    .. datesmethod:: B = strings (A)
+
+        |br| Converts a ``dates`` object into a cell of char arrays.
+
+        *Example*
+
+            ::
+
+                >> A = dates('1950Q1');
+                >> A = A:A+1;
+                >> strings(A)
+
+                  ans =
+
+                    1x2 cell array
+
+                    {'1950Q1'}    {'1950Q2'}
+
+
+    .. datesmethod:: B = subperiod (A)
+
+        |br| Returns the subperiod of a date (an integer scalar
+        between 1 and ``A.freq``).
+
+        *Example*
+
+            ::
+
+                >> A = dates('1950Q2');
+                >> A.subperiod()
+
+                ans =
+
+                     2
 
 
     .. datesmethod:: B = uminus (A)
@@ -718,6 +898,7 @@ The dates class
 
                 >> dd = dates('1945Q3','1938Q4','1973Q1');
                 >> -dd
+
                 ans = <dates: 1945Q2, 1938Q3, 1972Q4>
 
 
@@ -735,10 +916,12 @@ The dates class
                 >> d1 = dates('1945Q3','1973Q1','1938Q4');
                 >> d2 = dates('1973Q1','1976Q1');
                 >> union(d1,d2)
+
                 ans = <dates: 1938Q4, 1945Q3, 1973Q1, 1976Q1>
 
 
     .. datesmethod:: B = unique (A)
+                     B = unique_ (A)
 
         |br| Overloads the MATLAB/Octave ``unique`` function. Returns
         a ``dates`` object with repetitions removed (only the last
@@ -750,6 +933,7 @@ The dates class
 
                 >> d1 = dates('1945Q3','1973Q1','1945Q3');
                 >> d1.unique()
+
                 ans = <dates: 1973Q1, 1945Q3>
 
 
@@ -764,8 +948,33 @@ The dates class
 
                 >> dd = dates('1945Q3','1938Q4','1973Q1');
                 >> +dd
+
                 ans = <dates: 1945Q4, 1939Q1, 1973Q2>
 
+
+    .. datesmethod:: D = vertcat (A, B, C, ...)
+
+        |br| Overloads the MATLAB/Octave ``horzcat`` operator. All the
+        input arguments must be ``dates`` objects. The returned
+        argument is a ``dates`` object gathering all the dates given
+        in the input arguments (repetitions are not removed).
+
+
+    .. datesmethod:: B = year (A)
+
+        |br| Returns the year of a date (an integer scalar
+        between 1 and ``A.freq``).
+
+        *Example*
+
+            ::
+
+                >> A = dates('1950Q2');
+                >> A.subperiod()
+
+                ans =
+
+                       1950
 
 .. _dseries-members:
 
@@ -804,26 +1013,34 @@ The dseries class
         input. Valid file types are ``.m``, ``.mat``, ``.csv`` and
         ``.xls/.xlsx`` (Octave only supports ``.xlsx`` files and the
         `io <https://octave.sourceforge.io/io/>`__ package from
-        Octave-Forge must be installed). A typical ``.m`` file will
-        have the following form::
+        Octave-Forge must be installed). The extension of the file
+        should be explicitly provided. A typical ``.m`` file will have
+        the following form::
 
+            FREQ__ = 4;
             INIT__ = '1994Q3';
             NAMES__ = {'azert';'yuiop'};
             TEX__ = {'azert';'yuiop'};
+            TAGS__ = struct()
+            DATA__ = {}
 
             azert = randn(100,1);
             yuiop = randn(100,1);
 
         If a ``.mat`` file is used instead, it should provide the same
-        informations. Note that the ``INIT__`` variable can be either
-        a ``dates`` object or a string which could be used to
-        instantiate the same ``dates`` object. If ``INIT__`` is not
-        provided in the ``.mat`` or ``.m`` file, the initial is by
-        default set equal to ``dates('1Y')``. If a second input
-        argument is passed to the constructor, ``dates`` object
-        *INITIAL_DATE*, the initial date defined in *FILENAME* is
-        reset to *INITIAL_DATE*. This is typically usefull if
-        ``INIT__`` is not provided in the data file.
+        informations, except that the data should not be given as a
+        set of vectors, but as a single matrix of doubles named
+        ``DATA__``. This array should have as many columns as elements
+        in ``NAMES__`` (the number of variables). Note that the
+        ``INIT__`` variable can be either a ``dates`` object or a
+        string which could be used to instantiate the same ``dates``
+        object. If ``INIT__`` is not provided in the ``.mat`` or
+        ``.m`` file, the initial is by default set equal to
+        ``dates('1Y')``. If a second input argument is passed to the
+        constructor, ``dates`` object *INITIAL_DATE*, the initial date
+        defined in *FILENAME* is reset to *INITIAL_DATE*. This is
+        typically usefull if ``INIT__`` is not provided in the data
+        file.
 
     .. construct:: dseries (DATA_MATRIX[,INITIAL_DATE[,LIST_OF_NAMES[,TEX_NAMES]]])
                    dseries (DATA_MATRIX[,RANGE_OF_DATES[,LIST_OF_NAMES[,TEX_NAMES]]])
@@ -853,20 +1070,20 @@ The dseries class
 
        Creates a ``dseries`` object given the MATLAB Table provided as the sole
        argument. It is assumed that the first column of the table contains the
-       dates of the ``dseries`` and the first row contains the names. NB: This
+       dates of the ``dseries`` and the first row contains the names. This
        feature is not available under Octave or MATLAB R2013a or earlier.
 
-    *Example*
+       *Example*
 
-        Various ways to create a ``dseries`` object::
+       Various ways to create a ``dseries`` object::
 
-            do1 = dseries(1999Q3);
-            do2 = dseries('filename.csv');
-            do3 = dseries([1; 2; 3], 1999Q3, {'var123'}, {'var_{123}'});
+         do1 = dseries(1999Q3);
+         do2 = dseries('filename.csv');
+         do3 = dseries([1; 2; 3], 1999Q3, {'var123'}, {'var_{123}'});
 
-            >> do1 = dseries(dates('1999Q3'));
-            >> do2 = dseries('filename.csv');
-            >> do3 = dseries([1; 2; 3], dates('1999Q3'), {'var123'}, {'var_{123}'});
+         >> do1 = dseries(dates('1999Q3'));
+         >> do2 = dseries('filename.csv');
+         >> do3 = dseries([1; 2; 3], dates('1999Q3'), {'var123'}, {'var_{123}'});
 
 
     One can easily create subsamples from a ``dseries`` object using
@@ -878,10 +1095,13 @@ The dseries class
     to the last observation, then ``ds(d)`` instantiates a new
     ``dseries`` object containing the subsample defined by ``d``.
 
-    A list of the available methods, by alphabetical order, is given below.
+    A list of the available methods, by alphabetical order, is given
+    below. As in the previous section the in place modifications
+    versions of the methods are postfixed with an underscore.
 
 
-    .. dseriesmethod:: A = abs(B)
+    .. dseriesmethod:: A = abs (B)
+                       abs_ (B)
 
         |br| Overloads the ``abs()`` function for ``dseries``
         objects. Returns the absolute value of the variables in
@@ -912,7 +1132,8 @@ The dseries class
                 1973Q3 | 0.99791 | 0.22677
 
 
-    .. dseriesmethod:: [A, B] = align(A, B)
+    .. dseriesmethod:: [A, B] = align (A, B)
+                       align_ (A, B)
 
         If ``dseries`` objects ``A`` and ``B`` are defined on
         different time ranges, this function extends ``A`` and/or
@@ -951,8 +1172,33 @@ The dseries class
                 2001Q1 | 0.17813
                 2001Q2 | 0.12801
 
+                >> ts0 = dseries(rand(5,1),dates('2000Q1')); % 2000Q1 -> 2001Q1
+                >> ts1 = dseries(rand(3,1),dates('2000Q4')); % 2000Q4 -> 2001Q2
+                >> align_(ts0, ts1);                         % 2000Q1 -> 2001Q2
+                >> ts1
 
-    .. dseriesmethod:: B = baxter_king_filter(A, hf, lf, K)
+                ts1 is a dseries object:
+
+                       | Variable_1
+                2000Q1 | NaN
+                2000Q2 | NaN
+                2000Q3 | NaN
+                2000Q4 | 0.66653
+                2001Q1 | 0.17813
+                2001Q2 | 0.12801
+
+
+    .. dseriesmethod:: C = backcast (A, B[, diff])
+                       backcast_ (A, B[, diff])
+
+        Backcasts ``dseries`` object ``A`` with ``dseries`` object B's
+        growth rates (except if the last optional argument, ``diff``,
+        is true in which case first differences are used). Both
+        ``dseries`` objects must have the same frequency.
+
+
+    .. dseriesmethod:: B = baxter_king_filter (A, hf, lf, K)
+                       baxter_king_filter_ (A, hf, lf, K)
 
         |br| Implementation of the *Baxter and King* (1999) band pass
         filter for ``dseries`` objects. This filter isolates business
@@ -997,7 +1243,17 @@ The dseries class
                 set(gca,'XTickLabel',strings(ts1.dates(id)));
 
 
-    .. dseriesmethod:: C = chain(A, B)
+    .. dseriesmethod:: B = center (A[, geometric])
+                       center_ (A[, geometric])
+
+       |br| Centers variables in ``dseries`` object ``A`` around their
+       arithmetic means, except if the optional argument ``geometric``
+       is set equal to ``true`` in which case all the variables are
+       divided by their geometric means.
+
+
+    .. dseriesmethod:: C = chain (A, B)
+                       chain_ (A, B)
 
         |br| Merge two ``dseries`` objects along the time
         dimension. The two objects must have the same number of
@@ -1043,7 +1299,7 @@ The dseries class
                 1951Q2 | 6
 
 
-    .. dseriesmethod:: [error_flag, message ] = check(A)
+    .. dseriesmethod:: [error_flag, message ] = check (A)
 
         |br| Sanity check of ``dseries`` object ``A``. Returns ``1``
         if there is an error, ``0`` otherwise. The second output
@@ -1051,7 +1307,68 @@ The dseries class
         error.
 
 
-    .. dseriesmethod:: B = cumprod(A[, d[, v]])
+    .. dseriesmethod:: B = copy (A)
+
+       |br| Returns a copy of ``A``. If an inplace modification method
+       is applied to ``A``, object ``B`` will not be affected. Note
+       that if ``A`` is assigned to ``C``, ``C = A``, then any in
+       place modification method applied to ``A`` will change ``C``.
+
+       *Example*
+
+            ::
+
+               >> a = dseries(randn(5,1))
+
+               a is a dseries object:
+
+                  | Variable_1
+               1Y | -0.16936
+               2Y | -1.1451
+               3Y | -0.034331
+               4Y | -0.089042
+               5Y | -0.66997
+
+               >> b = copy(a);
+               >> c = a;
+               >> a.abs();
+               >> a.abs_();
+               >> a
+
+               a is a dseries object:
+
+                  | Variable_1
+               1Y | 0.16936
+               2Y | 1.1451
+               3Y | 0.034331
+               4Y | 0.089042
+               5Y | 0.66997
+
+               >> b
+
+               b is a dseries object:
+
+                  | Variable_1
+               1Y | -0.16936
+               2Y | -1.1451
+               3Y | -0.034331
+               4Y | -0.089042
+               5Y | -0.66997
+
+               >> c
+
+               c is a dseries object:
+
+                  | Variable_1
+               1Y | 0.16936
+               2Y | 1.1451
+               3Y | 0.034331
+               4Y | 0.089042
+               5Y | 0.66997
+
+
+   .. dseriesmethod:: B = cumprod (A[, d[, v]])
+                      cumprod_ (A[, d[, v]])
 
         |br| Overloads the MATLAB/Octave ``cumprod`` function for
         ``dseries`` objects. The cumulated product cannot be computed
@@ -1113,7 +1430,8 @@ The dseries class
                 7Y | 50.2655
 
 
-    .. dseriesmethod:: B = cumsum(A[, d[, v]])
+    .. dseriesmethod:: B = cumsum (A[, d[, v]])
+                       cumsum (A[, d[, v]])
 
         |br| Overloads the MATLAB/Octave ``cumsum`` function for
         ``dseries`` objects. The cumulated sum cannot be computed if
@@ -1184,14 +1502,46 @@ The dseries class
                 10Y | 10.1416
 
 
-    .. dseriesmethod:: C = eq(A, B)
+    .. dseriesmethod:: B = detrend (A, m)
+                       dentrend_ (A, m)
+
+        |br| Detrends ``dseries`` object ``A`` with a fitted
+        polynomial of order ``m``. Note that each variable is
+        detrended with a different polynomial.
+
+
+    .. dseriesmethod:: B = diff (A)
+                       diff_ (A)
+
+        |br| Returns the first difference of ``dseries`` object ``A``.
+
+
+    .. datesmethod:: disp (A)
+
+        |br| Overloads the MATLAB/Octave disp function for ``dseries`` object.
+
+
+    .. datesmethod:: display (A)
+
+        |br| Overloads the MATLAB/Octave display function for
+        ``dseries`` object. ``display`` is the function called by
+        MATLAB to print the content of an object if a semicolon is
+        missing at the end of a MATLAB statement. If the ``dseries``
+        object is defined over a too large time span, only the first
+        and last periods will be printed. If the ``dseries`` object
+        contains too many variables, only the first and last variables
+        will be printed. If all the periods and variables are
+        required, the ``disp`` method should be used instead.
+
+
+    .. dseriesmethod:: C = eq (A, B)
 
         |br| Overloads the MATLAB/Octave ``eq`` (equal, ``==``)
         operator. ``dseries`` objects ``A`` and ``B`` must have the
         same number of observations (say, :math:`T`) and variables
         (:math:`N`). The returned argument is a :math:`T \times N`
-        matrix of zeros and ones. Element :math:`(i,j)` of ``C`` is
-        equal to ``1`` if and only if observation :math:`i` for
+        matrix of logicals. Element :math:`(i,j)` of ``C`` is
+        equal to ``true`` if and only if observation :math:`i` for
         variable :math:`j` in ``A`` and ``B`` are the same.
 
         *Example*
@@ -1204,12 +1554,42 @@ The dseries class
 
                 ans =
 
-                     1
-                     0
-                     1
+                   3x1 logical array
+
+                    1
+                    0
+                    1
 
 
-    .. dseriesmethod:: B = exp(A)
+    .. dseriesmethod:: l = exist (A, varname)
+
+        |br| Tests if variable ``varname``  exists in ``dseries`` object ``A``. Returns
+        ``true`` iff variable exists in ``A``.
+
+        *Example*
+
+            ::
+
+                >> ts = dseries(randn(100,1));
+                >> ts.exist('Variable_1')
+
+                ans =
+
+                   logical
+
+                    1
+
+                >> ts.exist('Variable_2')
+
+                ans =
+
+                   logical
+
+                    0
+
+
+    .. dseriesmethod:: B = exp (A)
+                       exp_ (A)
 
         |br| Overloads the MATLAB/Octave ``exp`` function for
         ``dseries`` objects.
@@ -1222,30 +1602,7 @@ The dseries class
                 >> ts1 = ts0.exp();
 
 
-    .. dseriesmethod:: l = exist(A, varname)
-
-        |br| Tests if variable exists in ``dseries`` object ``A``. Returns
-        ``1`` (true) iff variable exists in ``A``.
-
-        *Example*
-
-            ::
-
-                >> ts = dseries(randn(100,1));
-                >> ts.exist('Variable_1')
-
-                ans =
-
-                     1
-
-                >> ts.exist('Variable_2')
-
-                ans =
-
-                     0
-
-
-    .. dseriesmethod:: C = extract(A, B[, ...])
+    .. dseriesmethod:: C = extract (A, B[, ...])
 
         |br| Extracts some variables from a ``dseries`` object ``A``
         and returns a ``dseries`` object ``C``. The input arguments
@@ -1263,13 +1620,15 @@ The dseries class
 
                 >> ts0 = dseries(ones(100,10));
                 >> ts1 = ts0{'Variable_1','Variable_2','Variable_3'};
-                >> ts2 = ts0{'Variable_@1,2,3@'}
-                >> ts3 = ts0{'Variable_[1-3]$'}
+                >> ts2 = ts0{'Variable_@1,2,3@'};
+                >> ts3 = ts0{'Variable_[1-3]$'};
                 >> isequal(ts1,ts2) && isequal(ts1,ts3)
 
                 ans =
 
-                     1
+                   logical
+
+                    1
 
             It is possible to use up to two implicit loops to select variables::
 
@@ -1290,7 +1649,17 @@ The dseries class
                 1973Q4 | -0.03705 | -0.35899  | 0.85838   | -1.4675  | -2.1666  | -0.62032
 
 
-    .. dseriesmethod:: f = freq(B)
+    .. dseriesmethod:: f = firstdate (A)
+
+       |br| Returns the first period in ``dseries`` object ``A``.
+
+
+    .. dseriesmethod:: f = firstobservedperiod (A)
+
+       |br| Returns the first period where all the variables in ``dseries`` object ``A`` are observed (non NaN).
+
+
+    .. dseriesmethod:: f = frequency (B)
 
         |br| Returns the frequency of the variables in ``dseries`` object ``B``.
 
@@ -1299,14 +1668,14 @@ The dseries class
             ::
 
                 >> ts = dseries(randn(3,2),'1973Q1');
-                >> ts.freq
+                >> ts.frequency
 
                 ans =
 
                      4
 
 
-    .. dseriesmethod:: D = horzcat(A, B[, ...])
+    .. dseriesmethod:: D = horzcat (A, B[, ...])
 
         |br| Overloads the ``horzcat`` MATLAB/Octave’s method for
         ``dseries`` objects. Returns a ``dseries`` object ``D``
@@ -1341,7 +1710,8 @@ The dseries class
                 1952Q1 | NaN     | NaN      | 0.50946
 
 
-    .. dseriesmethod:: B = hpcycle(A[, lambda])
+    .. dseriesmethod:: B = hpcycle (A[, lambda])
+                       hpcycle_ (A[, lambda])
 
         |br| Extracts the cycle component from a ``dseries`` ``A``
         object using the *Hodrick and Prescott (1997)* filter and
@@ -1381,7 +1751,8 @@ The dseries class
                 set(gca,'XTickLabel',strings(ts.dates(id)));
 
 
-    .. dseriesmethod:: B = hptrend(A[, lambda])
+    .. dseriesmethod:: B = hptrend (A[, lambda])
+                       hptrend_ (A[, lambda])
 
         |br| Extracts the trend component from a ``dseries`` A object
         using the *Hodrick and Prescott (1997)* filter and returns a
@@ -1409,20 +1780,7 @@ The dseries class
                 set(gca,'XTickLabel',strings(ts0.dates(id)));
 
 
-    .. dseriesmethod:: f = init(B)
-
-        |br| Returns the initial date in ``dseries`` object ``B``.
-
-        *Example*
-
-            ::
-
-                >> ts = dseries(randn(3,2),'1973Q1');
-                >> ts.init
-                ans = <dates: 1973Q1>
-
-
-    .. dseriesmethod:: C = insert(A, B, I)
+    .. dseriesmethod:: C = insert (A, B, I)
 
         |br| Inserts variables contained in ``dseries`` object ``B``
         in ``dseries`` object ``A`` at positions specified by integer
@@ -1433,7 +1791,7 @@ The dseries class
         defined over the same time ranges, but it is assumed that they
         have common frequency.
 
-        :ex:
+        *Example*
 
             ::
 
@@ -1457,29 +1815,50 @@ The dseries class
                 1950Q2 | 1   | 1     | 3.1416 | 1      | 1.7725      | 1
 
 
-    .. dseriesmethod:: B = isempty(A)
+    .. dseriesmethod:: B = isempty (A)
 
-    |br| Overloads the MATLAB/octave’s ``isempty`` function. Returns
-    ``1`` if ``dseries`` object ``A`` is empty, ``0`` otherwise.
+       |br| Overloads the MATLAB/octave’s ``isempty`` function. Returns
+       ``true`` if ``dseries`` object ``A`` is empty.
 
 
-    .. dseriesmethod:: C = isequal(A,B)
+    .. dseriesmethod:: C = isequal (A, B)
 
         |br| Overloads the MATLAB/octave’s ``isequal`` function. Returns
-        ``1`` if ``dseries`` objects ``A`` and ``B`` are identical, ``0``
-        otherwise.
+        ``true`` if ``dseries`` objects ``A`` and ``B`` are identical.
 
 
-    .. dseriesmethod:: B = lag(A[, p])
+    .. dseriesmethod:: C = isinf (A)
 
-        Returns lagged time series. Default value of ``p``, the number
+        |br| Overloads the MATLAB/octave’s ``isinf`` function. Returns
+        a logical array, with element ``(i,j)`` equal to ``true`` if and
+        only if variable ``j`` is finite in period ``A.dates(i)``.
+
+
+    .. dseriesmethod:: C = isnan (A)
+
+        |br| Overloads the MATLAB/octave’s ``isnan`` function. Returns
+        a logical array, with element ``(i,j)`` equal to ``true`` if and
+        only if variable ``j`` isn't NaN in period ``A.dates(i)``.
+
+
+    .. dseriesmethod:: C = isreal (A)
+
+        |br| Overloads the MATLAB/octave’s ``isreal`` function. Returns
+        a logical array, with element ``(i,j)`` equal to ``true`` if and
+        only if variable ``j`` is real in period ``A.dates(i)``.
+
+
+    .. dseriesmethod:: B = lag (A[, p])
+                       lag_ (A[, p])
+
+        |br| Returns lagged time series. Default value of integer scalar ``p``, the number
         of lags, is ``1``.
 
         *Example*
 
             ::
 
-                >> ts0 = dseries(transpose(1:4),'1950Q1')
+                >> ts0 = dseries(transpose(1:4), '1950Q1')
 
                 ts0 is a dseries object:
 
@@ -1493,7 +1872,7 @@ The dseries class
 
                 ts1 is a dseries object:
 
-                           | lag(Variable_1,1)
+                           | Variable_1
                     1950Q1 | NaN
                     1950Q2 | 1
                     1950Q3 | 2
@@ -1503,7 +1882,7 @@ The dseries class
 
                 ts2 is a dseries object:
 
-                       | lag(Variable_1,2)
+                       | Variable_1
                 1950Q1 | NaN
                 1950Q2 | NaN
                 1950Q3 | 1
@@ -1517,7 +1896,7 @@ The dseries class
 
                 ans is a dseries object:
 
-                       | lag(Variable_1,1)
+                       | Variable_1
                 1950Q1 | NaN
                 1950Q2 | 1
                 1950Q3 | 2
@@ -1529,32 +1908,39 @@ The dseries class
 
                 ans is a dseries object:
 
-                       | lag(Variable_1,1)
+                       | Variable_1
                 1950Q1 | NaN
                 1950Q2 | 1
                 1950Q3 | 2
                 1950Q4 | 3
 
 
-    .. dseriesmethod:: l = last(B)
+    .. dseriesmethod:: l = lastdate (B)
 
-        |br| Returns the last date in ``dseries`` object ``B``.
+        |br| Returns the last period in ``dseries`` object ``B``.
 
         *Example*
 
             ::
 
                 >> ts = dseries(randn(3,2),'1973Q1');
-                >> ts.last
+                >> ts.lastdate()
+
                 ans = <dates: 1973Q3>
 
 
-    .. dseriesmethod:: B = lead(A[, p])
+    .. dseriesmethod:: f = lastobservedperiod (A)
 
-        |br| Returns lead time series. Default value of ``p``, the
-        number of leads, is ``1``. As in the ``lag`` method, the
-        ``dseries`` class overloads the parenthesis so that
-        ``ts.lead(p)`` is equivalent to ``ts(p)``.
+       |br| Returns the last period where all the variables in ``dseries`` object ``A`` are observed (non NaN).
+
+
+    .. dseriesmethod:: B = lead (A[, p])
+                       lead_ (A[, p])
+
+        |br| Returns lead time series. Default value of integer scalar
+        ``p``, the number of leads, is ``1``. As in the ``lag``
+        method, the ``dseries`` class overloads the parenthesis so
+        that ``ts.lead(p)`` is equivalent to ``ts(p)``.
 
         *Example*
 
@@ -1565,7 +1951,7 @@ The dseries class
 
                 ts1 is a dseries object:
 
-                       | lead(Variable_1,1)
+                       | Variable_1
                 1950Q1 | 2
                 1950Q2 | 3
                 1950Q3 | 4
@@ -1575,7 +1961,7 @@ The dseries class
 
                 ts2 is a dseries object:
 
-                       | lead(Variable_1,2)
+                       | Variable_1
                 1950Q1 | 3
                 1950Q2 | 4
                 1950Q3 | NaN
@@ -1606,7 +1992,29 @@ The dseries class
         in the ``model`` block is zero, but the residuals are non
         zero).
 
-    .. dseriesmethod:: B = log(A)
+
+    .. dseriesmethod:: B = lineartrend (A)
+
+        |br| Returns a linear trend centered on 0, the length of the
+        trend is given by the size of ``dseries`` object ``A`` (the
+        number of periods).
+
+        *Example*
+
+            ::
+
+               >> ts = dseries(ones(3,1));
+               >> ts.lineartrend()
+
+               ans =
+
+                    -1
+                     0
+                     1
+
+
+    .. dseriesmethod:: B = log (A)
+                       log_ (A)
 
         |br| Overloads the MATLAB/Octave ``log`` function for
         ``dseries`` objects.
@@ -1618,8 +2026,23 @@ The dseries class
                 >> ts0 = dseries(rand(10,1));
                 >> ts1 = ts0.log();
 
+    .. dseriesmethod:: B = mdiff (A)
+                       mdiff_ (A)
 
-    .. dseriesmethod:: C = merge(A, B)
+       |br| Computes monthly growth rates of variables in
+       ``dseries`` object ``A``.
+
+
+    .. dseriesmethod:: B = mean (A[, geometric])
+
+        |br| Overloads the MATLAB/Octave ``mean`` function for
+        ``dseries`` objects. Returns the mean of each variable in
+        ``dseries`` object ``A``. If the second argument is ``true``
+        the geometric mean is computed, otherwise (default) the
+        arithmetic mean is reported.
+
+
+    .. dseriesmethod:: C = merge (A, B[, legacy])
 
         |br| Merges two ``dseries`` objects ``A`` and ``B`` in
         ``dseries`` object ``C``. Objects ``A`` and ``B`` need to have
@@ -1629,71 +2052,75 @@ The dseries class
         select the variable ``x`` as defined in the second input
         argument, ``B``, except for the NaN elements in ``B`` if
         corresponding elements in ``A`` (ie same periods) are well
-        defined numbers.
+        defined numbers. This behaviour can be changed by setting the
+        optional argument ``legacy`` equal to true, in which case the
+        second variable overwrites the first one even if the second
+        variable has NaNs.
 
         *Example*
 
             ::
 
-                >> ts0 = dseries(rand(3,2),'1950Q1',{'A1';'A2'})
+               >> ts0 = dseries(rand(3,2),'1950Q1',{'A1';'A2'})
 
-                ts0 is a dseries object:
+               ts0 is a dseries object:
 
-                       | A1       | A2
-                1950Q1 | 0.42448  | 0.92477
-                1950Q2 | 0.60726  | 0.64208
-                1950Q3 | 0.070764 | 0.1045
+                      | A1      | A2
+               1950Q1 | 0.96284 | 0.5363
+               1950Q2 | 0.25145 | 0.31866
+               1950Q3 | 0.34447 | 0.4355
 
-                >> ts1 = dseries(rand(3,1),'1950Q2',{'A1'})
+               >> ts1 = dseries(rand(3,1),'1950Q2',{'A1'})
 
-                ts1 is a dseries object:
+               ts1 is a dseries object:
 
-                       | A1
-                1950Q2 | 0.70023
-                1950Q3 | 0.3958
-                1950Q4 | 0.084905
+                      | A1
+               1950Q2 | 0.40161
+               1950Q3 | 0.81763
+               1950Q4 | 0.97769
 
-                >> merge(ts0,ts1)
+               >> merge(ts0,ts1)
 
-                ans is a dseries object:
+               ans is a dseries object:
 
-                       | A1       | A2
-                1950Q1 | NaN      | 0.92477
-                1950Q2 | 0.70023  | 0.64208
-                1950Q3 | 0.3958   | 0.1045
-                1950Q4 | 0.084905 | NaN
+                      | A1      | A2
+               1950Q1 | 0.96284 | 0.5363
+               1950Q2 | 0.40161 | 0.31866
+               1950Q3 | 0.81763 | 0.4355
+               1950Q4 | 0.97769 | NaN
 
                 >> merge(ts1,ts0)
 
                 ans is a dseries object:
 
-                       | A1       | A2
-                1950Q1 | 0.42448  | 0.92477
-                1950Q2 | 0.60726  | 0.64208
-                1950Q3 | 0.070764 | 0.1045
-                1950Q4 | NaN      | NaN
+                      | A1      | A2
+               1950Q1 | 0.96284 | 0.5363
+               1950Q2 | 0.25145 | 0.31866
+               1950Q3 | 0.34447 | 0.4355
+               1950Q4 | 0.97769 | NaN
 
 
-    .. dseriesmethod:: C = minus(A, B)
+    .. dseriesmethod:: C = minus (A, B)
 
-        |br| Overloads the ``minus`` (``-``) operator for ``dseries``
-        objects, element by element subtraction. If both ``A`` and
-        ``B`` are ``dseries`` objects, they do not need to be defined
-        over the same time ranges. If ``A`` and ``B`` are ``dseries``
-        objects with :math:`T_A` and :math:`T_B` observations and
-        :math:`N_A` and :math:`N_B` variables, then :math:`N_A` must
-        be equal to :math:`N_B` or :math:`1` and :math:`N_B` must be
-        equal to :math:`N_A` or :math:`1`. If :math:`T_A=T_B`,
-        ``isequal(A.init,B.init)`` returns ``1`` and :math:`N_A=N_B`,
-        then the ``minus`` operator will compute for each couple
-        :math:`(t,n)`, with :math:`1\le t\le T_A` and :math:`1\le n\le
-        N_A`, ``C.data(t,n)=A.data(t,n)-B.data(t,n)``. If :math:`N_B`
-        is equal to :math:`1` and :math:`N_A>1`, the smaller
-        ``dseries`` object (``B``) is “broadcast” across the larger
-        ``dseries`` (``A``) so that they have compatible shapes, the
-        ``minus`` operator will subtract the variable defined in ``B``
-        from each variable in ``A``. If ``B`` is a double scalar, then
-        the method ``minus`` will subtract ``B`` from all the
+        |br| Overloads the MATLAB/Octave ``minus`` (``-``) operator
+        for ``dseries`` objects, element by element subtraction. If
+        both ``A`` and ``B`` are ``dseries`` objects, they do not need
+        to be defined over the same time ranges. If ``A`` and ``B``
+        are ``dseries`` objects with :math:`T_A` and :math:`T_B`
+        observations and :math:`N_A` and :math:`N_B` variables, then
+        :math:`N_A` must be equal to :math:`N_B` or :math:`1` and
+        :math:`N_B` must be equal to :math:`N_A` or :math:`1`. If
+        :math:`T_A=T_B`, ``isequal(A.init,B.init)`` returns ``1`` and
+        :math:`N_A=N_B`, then the ``minus`` operator will compute for
+        each couple :math:`(t,n)`, with :math:`1\le t\le T_A` and
+        :math:`1\le n\le N_A`,
+        ``C.data(t,n)=A.data(t,n)-B.data(t,n)``. If :math:`N_B` is
+        equal to :math:`1` and :math:`N_A>1`, the smaller ``dseries``
+        object (``B``) is “broadcast” across the larger ``dseries``
+        (``A``) so that they have compatible shapes, the ``minus``
+        operator will subtract the variable defined in ``B`` from each
+        variable in ``A``. If ``B`` is a double scalar, then the
+        method ``minus`` will subtract ``B`` from all the
         observations/variables in ``A``. If ``B`` is a row vector of
         length :math:`N_A`, then the ``minus`` method will subtract
         ``B(i)`` from all the observations of variable ``i``, for
@@ -1711,10 +2138,10 @@ The dseries class
 
                 ans is a dseries object:
 
-                   | minus(Variable_1,Variable_2) | minus(Variable_2,Variable_2)
-                1Y | -0.48853                     | 0
-                2Y | -0.50535                     | 0
-                3Y | -0.32063                     | 0
+                   | Variable_1 | Variable_2
+                1Y | -0.48853   | 0
+                2Y | -0.50535   | 0
+                3Y | -0.32063   | 0
 
                 >> ts1
 
@@ -1729,7 +2156,7 @@ The dseries class
 
                 ans is a dseries object:
 
-                   | minus(Variable_2,0.703)
+                   | Variable_2
                 1Y | 0
                 2Y | 0.051148
                 3Y | -0.15572
@@ -1738,15 +2165,15 @@ The dseries class
 
                 ans is a dseries object:
 
-                   | minus(0.703,Variable_2)
+                   | Variable_2
                 1Y | 0
                 2Y | -0.051148
                 3Y | 0.15572
 
 
-    .. dseriesmethod:: C = mpower(A, B)
+    .. dseriesmethod:: C = mpower (A, B)
 
-        |br| Overloads the ``mpower`` (``^``) operator for ``dseries``
+        |br| Overloads the MATLAB/Octave ``mpower`` (``^``) operator for ``dseries``
         objects and computes element-by-element power. ``A`` is a
         ``dseries`` object with ``N`` variables and ``T``
         observations. If ``B`` is a real scalar, then ``mpower(A,B)``
@@ -1765,7 +2192,7 @@ The dseries class
 
                 ts1 is a dseries object:
 
-                   | power(Variable_1,2)
+                   | Variable_1
                 1Y | 1
                 2Y | 4
                 3Y | 9
@@ -1774,15 +2201,15 @@ The dseries class
 
                 ts2 is a dseries object:
 
-                   | power(Variable_1,Variable_1)
+                   | Variable_1
                 1Y | 1
                 2Y | 4
                 3Y | 27
 
 
-    .. dseriesmethod:: C = mrdivide(A, B)
+    .. dseriesmethod:: C = mrdivide (A, B)
 
-        |br| Overloads the ``mrdivide`` (``/``) operator for
+        |br| Overloads the MATLAB/Octave ``mrdivide`` (``/``) operator for
         ``dseries`` objects, element by element division (like the
         ``./`` MATLAB/Octave operator). If both ``A`` and ``B`` are
         ``dseries`` objects, they do not need to be defined over the
@@ -1826,43 +2253,53 @@ The dseries class
 
                 ans is a dseries object:
 
-                   | divide(Variable_1,Variable_2) | divide(Variable_2,Variable_2)
-                1Y | 0.80745                       | 1
-                2Y | 4.2969                        | 1
-                3Y | 0.59235                       | 1
+                   | Variable_1 | Variable_2
+                1Y | 0.80745    | 1
+                2Y | 4.2969     | 1
+                3Y | 0.59235    | 1
 
 
-    .. dseriesmethod:: C = mtimes(A, B)
+    .. dseriesmethod:: C = mtimes (A, B)
 
-        |br| Overloads the ``mtimes`` (``*``) operator for ``dseries``
-        objects and the Hadammard product (the .* MATLAB/Octave
-        operator). If both ``A`` and ``B`` are ``dseries`` objects,
-        they do not need to be defined over the same time ranges. If
-        ``A`` and ``B`` are ``dseries`` objects with :math:`T_A` and
-        :math:`_B` observations and :math:`N_A` and :math:`N_B`
-        variables, then :math:`N_A` must be equal to :math:`N_B` or
-        :math:`1` and :math:`N_B` must be equal to :math:`N_A` or
-        :math:`1`. If :math:`T_A=T_B`, ``isequal(A.init,B.init)``
-        returns ``1`` and :math:`N_A=N_B`, then the ``mtimes``
-        operator will compute for each couple :math:`(t,n)`, with
-        :math:`1\le t\le T_A` and :math:`1\le n\le N_A`,
-        ``C.data(t,n)=A.data(t,n)*B.data(t,n)``. If :math:`N_B` is
-        equal to :math:`1` and :math:`N_A>1`, the smaller ``dseries``
-        object (``B``) is “broadcast” across the larger ``dseries``
-        (``A``) so that they have compatible shapes, ``mtimes``
-        operator will multiply each variable defined in ``A`` by the
-        variable in ``B``, observation per observation. If ``B`` is a
-        double scalar, then the method ``mtimes`` will multiply all
-        the observations/variables in ``A`` by ``B``. If ``B`` is a
-        row vector of length :math:`N_A`, then the ``mtimes`` method
-        will multiply all the observations of variable ``i`` by
-        ``B(i)``, for :math:`i=1,...,N_A`. If ``B`` is a column vector
-        of length :math:`T_A`, then the ``mtimes`` method will perform
-        a multiplication of all the variables by ``B``, element by
+        |br| Overloads the MATLAB/Octave ``mtimes`` (``*``) operator
+        for ``dseries`` objects and the Hadammard product (the .*
+        MATLAB/Octave operator). If both ``A`` and ``B`` are
+        ``dseries`` objects, they do not need to be defined over the
+        same time ranges. If ``A`` and ``B`` are ``dseries`` objects
+        with :math:`T_A` and :math:`_B` observations and :math:`N_A`
+        and :math:`N_B` variables, then :math:`N_A` must be equal to
+        :math:`N_B` or :math:`1` and :math:`N_B` must be equal to
+        :math:`N_A` or :math:`1`. If :math:`T_A=T_B`,
+        ``isequal(A.init,B.init)`` returns ``1`` and :math:`N_A=N_B`,
+        then the ``mtimes`` operator will compute for each couple
+        :math:`(t,n)`, with :math:`1\le t\le T_A` and :math:`1\le n\le
+        N_A`, ``C.data(t,n)=A.data(t,n)*B.data(t,n)``. If :math:`N_B`
+        is equal to :math:`1` and :math:`N_A>1`, the smaller
+        ``dseries`` object (``B``) is “broadcast” across the larger
+        ``dseries`` (``A``) so that they have compatible shapes,
+        ``mtimes`` operator will multiply each variable defined in
+        ``A`` by the variable in ``B``, observation per
+        observation. If ``B`` is a double scalar, then the method
+        ``mtimes`` will multiply all the observations/variables in
+        ``A`` by ``B``. If ``B`` is a row vector of length
+        :math:`N_A`, then the ``mtimes`` method will multiply all the
+        observations of variable ``i`` by ``B(i)``, for
+        :math:`i=1,...,N_A`. If ``B`` is a column vector of length
+        :math:`T_A`, then the ``mtimes`` method will perform a
+        multiplication of all the variables by ``B``, element by
         element.
 
 
-    .. dseriesmethod:: C = ne(A, B)
+    .. dseriesmethod:: B = nanmean (A[, geometric])
+
+        |br| Overloads the MATLAB/Octave ``nanmean`` function for
+        ``dseries`` objects. Returns the mean of each variable in
+        ``dseries`` object ``A`` ignoring the NaN values. If the
+        second argument is ``true`` the geometric mean is computed,
+        otherwise (default) the arithmetic mean is reported.
+
+
+    .. dseriesmethod:: C = ne (A, B)
 
         |br| Overloads the MATLAB/Octave ``ne`` (not equal, ``~=``)
         operator. ``dseries`` objects ``A`` and ``B`` must have the
@@ -1882,12 +2319,14 @@ The dseries class
 
                 ans =
 
-                     0
-                     1
-                     0
+                  3x1 logical array
+
+                   0
+                   1
+                   0
 
 
-    .. dseriesmethod:: B = nobs(A)
+    .. dseriesmethod:: B = nobs (A)
 
         |br| Returns the number of observations in ``dseries`` object
         ``A``.
@@ -1904,10 +2343,32 @@ The dseries class
                     10
 
 
-    .. dseriesmethod:: h = plot(A)
-                       h = plot(A, B)
-                       h = plot(A[, ...])
-                       h = plot(A, B[, ...])
+    .. dseriesmethod:: B = onesidedhpcycle (A[, lambda[, init]])
+                       onesidedhpcycle_ (A[, lambda[, init]])
+
+        |br| Extracts the cycle component from a ``dseries`` ``A``
+        object using a one sided HP filter (with a Kalman filter) and
+        returns a ``dseries`` object, ``B``. The default value for
+        ``lambda``, the smoothing parameter, is ``1600``. By default,
+        if ``ìnit`` is not provided, the initial value is based on the
+        first two observations.
+
+
+    .. dseriesmethod:: B = onesidedhptrend (A[, lambda[, init]])
+                       onesidedhptrend_ (A[, lambda[, init]])
+
+        |br| Extracts the trend component from a ``dseries`` ``A``
+        object using a one sided HP filter (with a Kalman filter) and
+        returns a ``dseries`` object, ``B``. The default value for
+        ``lambda``, the smoothing parameter, is ``1600``. By default,
+        if ``ìnit`` is not provided, the initial value is based on the
+        first two observations.
+
+
+    .. dseriesmethod:: h = plot (A)
+                       h = plot (A, B)
+                       h = plot (A[, ...])
+                       h = plot (A, B[, ...])
 
         |br| Overloads MATLAB/Octave’s ``plot`` function for
         ``dseries`` objects. Returns a MATLAB/Octave plot handle, that
@@ -1967,35 +2428,36 @@ The dseries class
                 >> set(h(2),'+r');
 
 
-    .. dseriesmethod:: C = plus(A, B)
+    .. dseriesmethod:: C = plus (A, B)
 
-        |br| Overloads the ``plus`` (``+``) operator for ``dseries``
-        objects, element by element addition. If both ``A`` and ``B``
-        are ``dseries`` objects, they do not need to be defined over
-        the same time ranges. If ``A`` and ``B`` are ``dseries``
-        objects with :math:`T_A` and :math:`T_B` observations and
-        :math:`N_A` and :math:`N_B` variables, then :math:`N_A` must
-        be equal to :math:`N_B` or :math:`1` and :math:`N_B` must be
-        equal to :math:`N_A` or :math:`1`. If :math:`T_A=T_B`,
-        ``isequal(A.init,B.init)`` returns ``1`` and :math:`N_A=N_B`,
-        then the ``plus`` operator will compute for each couple
-        :math:`(t,n)`, with :math:`1\le t\le T_A` and :math:`1\le n\le
-        N_A`, ``C.data(t,n)=A.data(t,n)+B.data(t,n)``. If :math:`N_B`
-        is equal to :math:`1` and :math:`N_A>1`, the smaller
-        ``dseries`` object (``B``) is “broadcast” across the larger
-        ``dseries`` (``A``) so that they have compatible shapes, the
-        plus operator will add the variable defined in ``B`` to each
-        variable in ``A``. If ``B`` is a double scalar, then the
-        method ``plus`` will add ``B`` to all the
-        observations/variables in ``A``. If ``B`` is a row vector of
-        length :math:`N_A`, then the ``plus`` method will add ``B(i)``
-        to all the observations of variable ``i``, for
-        :math:`i=1,...,N_A`. If ``B`` is a column vector of length
-        :math:`T_A`, then the ``plus`` method will add ``B`` to all
-        the variables.
+        |br| Overloads the MATLAB/Octave ``plus`` (``+``) operator for
+        ``dseries`` objects, element by element addition. If both
+        ``A`` and ``B`` are ``dseries`` objects, they do not need to
+        be defined over the same time ranges. If ``A`` and ``B`` are
+        ``dseries`` objects with :math:`T_A` and :math:`T_B`
+        observations and :math:`N_A` and :math:`N_B` variables, then
+        :math:`N_A` must be equal to :math:`N_B` or :math:`1` and
+        :math:`N_B` must be equal to :math:`N_A` or :math:`1`. If
+        :math:`T_A=T_B`, ``isequal(A.init,B.init)`` returns ``1`` and
+        :math:`N_A=N_B`, then the ``plus`` operator will compute for
+        each couple :math:`(t,n)`, with :math:`1\le t\le T_A` and
+        :math:`1\le n\le N_A`,
+        ``C.data(t,n)=A.data(t,n)+B.data(t,n)``. If :math:`N_B` is
+        equal to :math:`1` and :math:`N_A>1`, the smaller ``dseries``
+        object (``B``) is “broadcast” across the larger ``dseries``
+        (``A``) so that they have compatible shapes, the plus operator
+        will add the variable defined in ``B`` to each variable in
+        ``A``. If ``B`` is a double scalar, then the method ``plus``
+        will add ``B`` to all the observations/variables in ``A``. If
+        ``B`` is a row vector of length :math:`N_A`, then the ``plus``
+        method will add ``B(i)`` to all the observations of variable
+        ``i``, for :math:`i=1,...,N_A`. If ``B`` is a column vector of
+        length :math:`T_A`, then the ``plus`` method will add ``B`` to
+        all the variables.
 
 
-    .. dseriesmethod:: C = pop(A[, B])
+    .. dseriesmethod:: C = pop (A[, B])
+                       pop_ (A[, B])
 
         |br| Removes variable ``B`` from ``dseries`` object ``A``. By
         default, if the second argument is not provided, the last
@@ -2016,8 +2478,10 @@ The dseries class
                 3Y | 1          | 1
 
 
-    .. dseriesmethod:: B = qdiff(A)
-                       B = qgrowth(A)
+    .. dseriesmethod:: B = qdiff (A)
+                       B = qgrowth (A)
+                       qdiff_ (A)
+                       qgrowth_ (A)
 
         |br| Computes quarterly differences or growth rates.
 
@@ -2030,7 +2494,7 @@ The dseries class
 
                 ts1 is a dseries object:
 
-                       | qdiff(Variable_1)
+                       | Variable_1
                 1950Q1 | NaN
                 1950Q2 | 1
                 1950Q3 | 1
@@ -2041,7 +2505,7 @@ The dseries class
 
                 ts1 is a dseries object:
 
-                        | qdiff(Variable_1)
+                        | Variable_1
                 1950M1  | NaN
                 1950M2  | NaN
                 1950M3  | NaN
@@ -2050,7 +2514,8 @@ The dseries class
                 1950M6  | 3
 
 
-    .. dseriesmethod:: C = remove(A, B)
+    .. dseriesmethod:: C = remove (A, B)
+                       remove_ (A, B)
 
         |br| Alias for the ``pop`` method with two arguments. Removes
         variable ``B`` from ``dseries`` object ``A``.
@@ -2083,10 +2548,13 @@ The dseries class
             implicit loops can.
 
 
-    .. dseriesmethod:: B = rename(A,oldname,newname)
+    .. dseriesmethod:: B = rename (A, oldname, newname)
+                       rename_ (A, oldname, newname)
 
         |br| Rename variable ``oldname`` to ``newname`` in ``dseries``
-        object ``A``. Returns a ``dseries`` object.``
+        object ``A``. Returns a ``dseries`` object. If more than one
+        variable needs to be renamed, it is possible to pass cells of
+        char arrays as second and third arguments.
 
         *Example*
 
@@ -2102,33 +2570,34 @@ The dseries class
                 2Y | 1       | 1
 
 
-    .. dseriesmethod:: C = rename(A,newname)
+    .. dseriesmethod:: C = rename (A, newname)
+                       rename_ (A, newname)
 
         |br| Replace the names in ``A`` with those passed in the cell
         string array ``newname``. ``newname`` must have the same
-        number of cells as ``A`` has ``dseries``. Returns a
-        ``dseries`` object.
+        number of elements as ``dseries`` object ``A`` has
+        variables. Returns a ``dseries`` object.
 
         *Example*
 
             ::
 
                 >> ts0 = dseries(ones(2,3));
-                >> ts1 = ts0.rename({'Tree','Worst','President'})
+                >> ts1 = ts0.rename({'TinkyWinky','Dipsy','LaaLaa'})
 
                 ts1 is a dseries object:
 
-                   | Bush | Worst | President
-                1Y | 1    | 1     | 1
-                2Y | 1    | 1     | 1
+                   | TinkyWinky | Dipsy | LaaLaa
+                1Y | 1          | 1     | 1
+                2Y | 1          | 1     | 1
 
 
-    .. dseriesmethod:: save(A, basename[, format])
+    .. dseriesmethod:: save (A, basename[, format])
 
         |br| Overloads the MATLAB/Octave ``save`` function and saves
-        ``dseries`` object ``A`` to disk. Possible formats are ``csv``
+        ``dseries`` object ``A`` to disk. Possible formats are ``mat``
         (this is the default), ``m`` (MATLAB/Octave script), and
-        ``mat`` (MATLAB binary data file). The name of the file
+        ``csv`` (MATLAB binary data file). The name of the file
         without extension is specified by ``basename``.
 
         *Example*
@@ -2136,7 +2605,7 @@ The dseries class
             ::
 
                 >> ts0 = dseries(ones(2,2));
-                >> ts0.save('ts0');
+                >> ts0.save('ts0', 'csv');
 
             The last command will create a file ts0.csv with the
             following content::
@@ -2158,6 +2627,8 @@ The dseries class
 
                 NAMES__ = {'Variable_1'; 'Variable_2'};
                 TEX__ = {'Variable_{1}'; 'Variable_{2}'};
+                OPS__ = {};
+                TAGS__ = struct();
 
                 Variable_1 = [
                               1
@@ -2217,8 +2688,34 @@ The dseries class
                      1     3
 
 
-    .. dseriesmethod:: B = tex_rename(A, name, newtexname)
-                       B = tex_rename(A, newtexname)
+    .. dseriesmethod:: B = std (A[, geometric])
+
+        |br| Overloads the MATLAB/Octave ``std`` function for
+        ``dseries`` objects. Returns the standard deviation of each
+        variable in ``dseries`` object ``A``. If the second argument
+        is ``true`` the geometric standard deviation is computed
+        (default value of the second argument is ``false``).
+
+
+    .. dseriesmethod:: A = tag (A, a[, b, c])
+
+        |br| Add a tag to a variable in ``dseries`` object ``A``.
+
+        *Example*
+
+            ::
+
+               >> ts = dseries(randn(10, 3));
+               >> tag(ts, 'type');             % Define a tag name.
+               >> tag(ts, 'type', 'Variable_1', 'Stock');
+               >> tag(ts, 'type', 'Variable_2', 'Flow');
+               >> tag(ts, 'type', 'Variable_3', 'Stock');
+
+
+    .. dseriesmethod:: B = tex_rename (A, name, newtexname)
+                       B = tex_rename (A, newtexname)
+                       tex_rename_ (A, name, newtexname)
+                       tex_rename_ (A, newtexname)
 
         |br| Redefines the tex name of variable ``name`` to
         ``newtexname`` in ``dseries`` object ``A``. Returns a
@@ -2250,7 +2747,7 @@ The dseries class
 
                 ts1 is a dseries object:
 
-                   | -Variable_1
+                   | Variable_1
                 1Y | -1
 
 
@@ -2281,7 +2778,7 @@ The dseries class
                 1950Q4 | 0.11171  | 0.67865
 
 
-    .. dseriesmethod:: B = vobs(A)
+    .. dseriesmethod:: B = vobs (A)
 
         |br| Returns the number of variables in ``dseries`` object
         ``A``.
@@ -2298,7 +2795,9 @@ The dseries class
                     2
 
 
-.. dseriesmethod:: B = ydiff(A)
-                   B = ygrowth(A)
+.. dseriesmethod:: B = ydiff (A)
+                   B = ygrowth (A)
+                   ydiff_ (A)
+                   ygrowth_ (A)
 
         |br| Computes yearly differences or growth rates.

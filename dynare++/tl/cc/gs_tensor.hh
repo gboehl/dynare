@@ -215,7 +215,7 @@ public:
   UGSTensor(UGSTensor &&) = default;
 
   UGSTensor(int first_row, int num, UGSTensor &t)
-    : UTensor(first_row,  num, t), tdims(t.tdims)
+    : UTensor(first_row, num, t), tdims(t.tdims)
   {
   }
 

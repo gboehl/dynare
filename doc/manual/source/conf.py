@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2018-2019 Dynare Team
+# Copyright (C) 2018-2020 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -23,7 +23,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../utils'))
 
 extensions = ['sphinx.ext.autodoc',
-			  'sphinx.ext.mathjax']
+              'sphinx.ext.mathjax']
 
 source_suffix = '.rst'
 
@@ -36,7 +36,7 @@ mathjax_path = 'mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
 master_doc = 'index'
 
 project = u'Dynare'
-copyright = u'2019, Dynare Team'
+copyright = u'2020, Dynare Team'
 author = u'Dynare Team'
 
 add_function_parentheses = False
@@ -77,6 +77,7 @@ latex_elements = {
                     warningBorderColor={RGB}{255,50,50},OuterLinkColor={RGB}{34,139,34}, \
                     InnerLinkColor={RGB}{51,51,255},TitleColor={RGB}{51,51,255}',
     'papersize': 'a4paper',
+    'preamble': r'\DeclareUnicodeCharacter{200B}{}', # Part of the workaround for #1707
 }
 
 latex_documents = [

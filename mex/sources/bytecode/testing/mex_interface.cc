@@ -347,7 +347,7 @@ read_struct(FILE *fid)
   fscanf(fid, "%d", &size_2);
   vector<string> fieldnames;
   vector<mxArray *> v_Array;
-  vector<vector<mxArray * > > vv_Array;
+  vector<vector<mxArray * >> vv_Array;
   for (unsigned int j = 0; j < size_1 * size_2; j++)
     {
       for (unsigned int i = 0; i < nfields; i++)

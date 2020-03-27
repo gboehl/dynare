@@ -1,6 +1,6 @@
-function [info, oo_, options_] = stoch_simul(M_, options_, oo_, var_list)
+function [info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list)
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,7 +38,7 @@ if options_.order == 1
     options_.replic = 1;
 end
 
-if M_.hessian_eq_zero && options_.order~=1
+if options_.order~=1 && M_.hessian_eq_zero
     options_.order = 1;
     warning('stoch_simul: using order = 1 because Hessian is equal to zero');
 end
@@ -82,7 +82,7 @@ elseif options_.discretionary_policy
     if ~options_.linear
         error('discretionary_policy: only linear-quadratic problems can be solved');
     end
-    [oo_.dr, ~, info] = discretionary_policy_1(oo_,options_.instruments);
+    [~,info,M_,options_,oo_] = discretionary_policy_1(options_.instruments,M_,options_,oo_);
 else
     if options_.logged_steady_state %if steady state was previously logged, undo this
         oo_.dr.ys=exp(oo_.dr.ys);
@@ -201,7 +201,7 @@ end
 
 if options_.irf
     var_listTeX = M_.endo_names_tex(i_var);
-    if ~options_.nograph
+    if ~options_.nograph || (TeX && any(strcmp('eps',cellstr(options_.graph_format))))
         if ~exist([M_.fname '/graphs'],'dir')
             mkdir(M_.fname,'graphs');
         end
@@ -393,3 +393,5 @@ end
 options_ = options_old;
 % temporary fix waiting for local options
 options_.partial_information = 0;
+
+oo_.gui.ran_stoch_simul = true;

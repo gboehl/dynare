@@ -62,7 +62,7 @@ AtomSubstitutions::substitutions_finished(VarOrdering::ord_type ot)
       // add all new names derived from the old name
       auto it = old2new.find(oname);
       if (it != old2new.end())
-        for (const auto & itt : it->second)
+        for (const auto &itt : it->second)
           na_ext.push_back(itt.first);
     }
 
@@ -77,7 +77,7 @@ AtomSubstitutions::get_new4old(const string &oldname, int tshift) const
   if (it != old2new.end())
     {
       const Tshiftnameset &sset = it->second;
-      for (const auto & itt : sset)
+      for (const auto &itt : sset)
         if (itt.second == -tshift)
           return itt.first;
     }
@@ -88,12 +88,12 @@ void
 AtomSubstitutions::print() const
 {
   std::cout << u8"Atom Substitutions:\nOld ⇒ New:\n";
-  for (const auto & it : old2new)
+  for (const auto &it : old2new)
     for (const auto &itt : it.second)
       std::cout << "    " << it.first << u8" ⇒ [" << itt.first << ", " << itt.second << "]\n";
 
   std::cout << u8"Old ⇐ New:\n";
-  for (const auto & it : new2old)
+  for (const auto &it : new2old)
     std::cout << "    [" << it.second.first << ", " << it.second.second << "] ⇐ " << it.first << '\n';
 }
 

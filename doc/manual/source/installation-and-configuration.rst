@@ -7,7 +7,7 @@ Installation and configuration
 Software requirements
 =====================
 
-Packaged versions of Dynare are available for Windows 7/8/10, several GNU/Linux
+Packaged versions of Dynare are available for Windows (7, 8.1, 10), several GNU/Linux
 distributions (Debian, Ubuntu, Linux Mint, Arch Linux) and macOS
 10.11 or later. Dynare should work on other systems, but some compilation steps
 are necessary in that case.
@@ -15,7 +15,10 @@ are necessary in that case.
 In order to run Dynare, you need one of the following:
 
 * MATLAB version 7.9 (R2009b) or above;
-* Octave version 4.2.1 or above, with the statistics package from `Octave-Forge`_.
+* GNU Octave version 4.4 or above, with the statistics package from
+  `Octave-Forge`_. Note however that the Dynare installers for Windows and
+  macOS require a more specific version of Octave, as indicated on the download
+  page.
 
 The following optional extensions are also useful to benefit from
 extra features, but are in no way required:
@@ -84,27 +87,33 @@ be under ``/usr/share/doc/dynare-doc`` (only on Debian, Ubuntu and Linux Mint).
 On macOS
 --------
 
-To install Dynare for use with MATLAB, execute the automated installer
-called ``dynare-4.x.y.pkg`` (where *4.x.y* is the version number), and
-follow the instructions. The default installation directory is
-``/Applications/Dynare/4.x.y`` (please refer to the `Dynare wiki`_ for
-detailed instructions).
-
-After installation, this directory will contain several
-sub-directories, among which are ``matlab``, ``mex`` and ``doc``.
+To install Dynare for use with MATLAB, execute the automated installer called
+``dynare-4.x.y.pkg`` (where *4.x.y* is the version number), and follow the
+instructions. The default installation directory is
+``/Applications/Dynare/4.x.y``. After installation, this directory will contain
+several sub-directories, among which are ``matlab``, ``mex``, and ``doc``.
 
 Note that several versions of Dynare can coexist (by default in
 ``/Applications/Dynare``), as long as you correctly adjust your path
 settings (see :ref:`words-warning`).
 
-To install Dynare for Octave, first install Homebrew following the
-instructions on their site: `https://brew.sh/
-<https://brew.sh/>`__. Then install Octave, issuing the command ``brew
-install octave`` at the Terminal prompt. You can then install the
-latest stable version of Dynare by typing ``brew install dynare`` at
-the Terminal prompt. You can also pass options to the installation
-command. These options can be viewed by typing ``brew info dynare`` at
-the Terminal prompt.
+By default, the installer installs a version of GCC (for use with :opt:`use_dll`)
+in the installation directory, under the ``.brew`` folder. To do so, it also
+installs a version of `Homebrew <https://brew.sh>`__ in the same folder and
+Xcode Command Line Tools (this is an Apple product) in a system folder.
+
+All of this requires a bit of time and hard disk space. The amount of time it
+takes will depend on your computing power and internet connection. To reduce
+the time the Dynare installer takes, you can install Xcode Command Line Tools
+yourself (see :ref:`prerequisites-macos`). Dynare, Homebrew, and GCC use
+about 600 MB of disk space while the Xcode Command Line Tools require about 400
+MB.
+
+If you do not use the :opt:`use_dll` option, you have the choice to forgo the
+installation of GCC and hence Dynare will only take about 50 MB of disk space.
+
+Dynare for Octave works with Octave installed via the package located here:
+`https://octave-app.org <https://octave-app.org>`__.
 
 
 For other systems
@@ -140,14 +149,17 @@ Users of Octave under GNU/Linux should install the package for MEX file
 compilation (under Debian, Ubuntu or Linux Mint, it can be done via ``apt
 install liboctave-dev``).
 
+.. _prerequisites-macos:
+
 Prerequisites on macOS
 ----------------------
 
 Dynare now ships a compilation environment that can be used with the
-:opt:`use_dll` option. Specifically, the Dynare installer downloads and
-installs the Xcode Command Line Tools, installs `Homebrew <https://brew.sh>`_
-under the Dynare installation directory (in the ``.brew`` folder), and finally
-installs GCC.
+:opt:`use_dll` option. To install this environment correctly, the Dynare
+installer ensures that the Xcode Command Line Tools (an Apple product) have
+been installed on a system folder. To install the Xcode Command Line Tools
+yourself, simply type ``xcode-select --install`` into the Terminal
+(``/Applications/Utilities/Terminal.app``) prompt.
 
 Configuration
 =============
@@ -209,10 +221,10 @@ command; the packaging does it for you. Under Arch Linux, you need to do::
 
   octave:1> addpath /usr/lib/dynare/matlab
 
-Under macOS, assuming that you have installed Dynare and Octave via
-Homebrew, type::
+Under macOS, assuming you have installed Octave via `https://octave-app.org
+<https://octave-app.org>`__, type::
 
-  octave:1> addpath /usr/local/opt/dynare/lib/dynare/matlab
+  octave:1> addpath /Applications/Dynare/4.x.y/matlab
 
 If you don’t want to type this command every time you run Octave, you
 can put it in a file called ``.octaverc`` in your home directory

@@ -1,5 +1,5 @@
-function run(json)
-% function varargout = run(json)
+function read(json)
+% function varargout = read(json)
 % Read JSON and run perfect foresight solver. Potentially return output as
 % JSON
 %
@@ -13,7 +13,7 @@ function run(json)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2019 Dynare Team
+% Copyright (C) 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,6 @@ global M_ options_ oo_
 
 %loading JSON
 jm = loadjson_(json, 'SimplifyCell', 1);
-runflag=1;
 data2json=struct();
 
 M_.exo_det_length = 0;
@@ -67,7 +66,7 @@ options_.order = jm.taylororder;
 % 	options_.k_order_solver = 3;
 % end
 var_list_ = char();
-info = stoch_simul(var_list_);
+[~, oo_, options_] = stoch_simul(M_, options_, oo_, var_list_);
 
 irfnames=fieldnames(oo_.irfs);
 for jj = 1:numel(fieldnames(oo_.irfs))

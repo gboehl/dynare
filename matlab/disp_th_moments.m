@@ -64,7 +64,7 @@ if ~all(M_.H==0)
         ME_present=1;
     end
 end
-                
+
 if size(stationary_vars, 1) > 0
     if ~nodecomposition
         oo_.variance_decomposition=100*oo_.gamma_y{options_.ar+2};
@@ -145,8 +145,8 @@ if size(stationary_vars, 1) > 0
             display_conditional_variance_decomposition(oo_.conditional_variance_decomposition, conditional_variance_steps, ivar, M_, options_);
             if ME_present
                 display_conditional_variance_decomposition(oo_.conditional_variance_decomposition_ME, conditional_variance_steps, ...
-                                                           observable_pos_requested_vars, M_, options_);               
-            end                                                    
+                                                           observable_pos_requested_vars, M_, options_);
+            end
         end
     end
 end
@@ -161,7 +161,7 @@ end
 if ~options_.nocorr && size(stationary_vars, 1)>0
     corr = NaN(size(oo_.gamma_y{1}));
     corr(i1,i1) = oo_.gamma_y{1}(i1,i1)./(sd(i1)*sd(i1)');
-    if options_.contemporaneous_correlation 
+    if options_.contemporaneous_correlation
         oo_.contemporaneous_correlation = corr;
     end
     if ~options_.noprint

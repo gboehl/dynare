@@ -16,7 +16,7 @@ ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = \
 	matlab \
 	contrib \
-	NEWS \
+	NEWS.md \
 	license.txt \
 	README.md \
 	COPYING \
@@ -34,9 +34,10 @@ all-local: preprocessor/src/dynare_m$(EXEEXT)
 	  ARCH="32"; \
 	fi; \
 	mkdir -p $(abs_srcdir)/matlab/preprocessor$$ARCH && \
-	$(LN_S) -f $(abs_builddir)/preprocessor/src/dynare_m$(EXEEXT) $(abs_srcdir)/matlab/preprocessor$$ARCH && \
-	mkdir -p $(abs_srcdir)/julia/preprocessor$$ARCH && \
-	$(LN_S) -f $(abs_builddir)/preprocessor/src/dynare_m$(EXEEXT) $(abs_srcdir)/julia/preprocessor$$ARCH
+	$(LN_S) -f $(abs_builddir)/preprocessor/src/dynare_m$(EXEEXT) $(abs_srcdir)/matlab/preprocessor$$ARCH
+
+clean-local:
+	rm -rf $(abs_srcdir)/matlab/preprocessor32 $(abs_srcdir)/matlab/preprocessor64
 
 dist-hook:
 	rm -rf `find $(distdir)/matlab $(distdir)/examples -name *~`
@@ -62,5 +63,4 @@ install-exec-local:
 	cp preprocessor/src/dynare_m $(DESTDIR)$(pkglibdir)/matlab/preprocessor$$ARCH
 
 uninstall-local:
-	rm -f  $(DESTDIR)$(bindir)/dynare++
 	rm -rf $(DESTDIR)$(pkglibdir)

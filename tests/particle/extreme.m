@@ -155,4 +155,4 @@ y = series(:,1) + 0.00158*randn(size(series(:,1)));
 l = series(:,2) + 0.0011*randn(size(series(:,2)));
 i = series(:,3) + 0.000866*randn(size(series(:,3)));
 
-ti = [1950:0.25:1997.75] ;
+clear series;

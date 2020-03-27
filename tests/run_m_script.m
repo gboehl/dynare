@@ -1,4 +1,4 @@
-% Copyright (C) 2015 Dynare Team
+% Copyright (C) 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -24,7 +24,7 @@ addpath([top_test_dir filesep 'utils']);
 cd(directory);
 
 try
-  mscript;
+  eval(mscript);
   testFailed = false;
 catch exception
   printMakeCheckMatlabErrMsg(strtok(getenv('FILESTEM')), exception);

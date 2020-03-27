@@ -64,7 +64,7 @@ namespace ogdyn
   class DynareDynamicAtoms : public ogp::SAtoms, public ogp::NularyStringConvertor
   {
   public:
-    enum class atype {endovar, exovar, param};
+    enum class atype { endovar, exovar, param };
   protected:
     using Tatypemap = map<string, atype>;
     /* The map assigining a type to each name. */

@@ -1,7 +1,7 @@
 function dyn_latex_table(M_, options_, title, LaTeXtitle, headers, labels, values, label_width, val_width, val_precis, optional_header)
 %function dyn_latex_table(M_, options_, title, LaTeXtitle, headers, labels, values, label_width, val_width, val_precis, optional_header)
 
-% Copyright (C) 2015-2019 Dynare Team
+% Copyright (C) 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,7 +42,7 @@ if all(~isfinite(values))
 else
     values_length = max(ceil(max(max(log10(abs(values(isfinite(values))))))),1)+val_precis+1;
 end
-if any(values) < 0 %add one character for minus sign
+if any(values < 0) %add one character for minus sign
     values_length = values_length+1;
 end
 headers_length = cellofchararraymaxlength(headers(2:end));

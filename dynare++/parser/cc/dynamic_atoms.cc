@@ -55,7 +55,7 @@ Constants::import_constants(const Constants &c, OperationTree &otree, Tintintmap
 void
 Constants::setValues(EvalTree &et) const
 {
-  for (const auto & it : cmap)
+  for (const auto &it : cmap)
     et.set_nulary(it.first, it.second);
 }
 
@@ -250,7 +250,7 @@ vector<int>
 DynamicAtoms::variables() const
 {
   vector<int> res;
-  for (const auto & var : vars)
+  for (const auto &var : vars)
     {
       const Tlagmap &lmap = var.second;
       for (auto itt : lmap)
@@ -372,7 +372,7 @@ DynamicAtoms::print() const
   std::cout << "constants:\n";
   Constants::print();
   std::cout << "variables:\n";
-  for (const auto & var : vars)
+  for (const auto &var : vars)
     {
       const Tlagmap &lmap = var.second;
       for (auto itt : lmap)
@@ -501,7 +501,7 @@ VarOrdering::do_general(ord_type ordering)
 
   // make der_atoms and positions
   int off = 0;
-  for (auto & ord : ords)
+  for (auto &ord : ords)
     for (unsigned int j = 0; j < ord->size(); j++, off++)
       if ((*ord)[j] != -1)
         {

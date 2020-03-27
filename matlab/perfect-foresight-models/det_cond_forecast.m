@@ -12,7 +12,7 @@ function data_set = det_cond_forecast(varargin)
 %  dataset                [dseries]     Returns a dseries containing the forecasted endgenous variables and shocks
 %
 
-% Copyright (C) 2013-2018 Dynare Team
+% Copyright (C) 2013-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,6 +35,9 @@ initial_conditions = oo_.steady_state;
 verbosity = options_.verbosity;
 if options_.periods == 0
     options_.periods = 25;
+end
+if isempty(options_.qz_criterium)
+    options_.qz_criterium = 1+1e-6;
 end
 %We have to get an initial guess for the conditional forecast
 % and terminal conditions for the non-stationary variables, we
@@ -158,13 +161,12 @@ else
             if options_.bytecode
                 save_options_dynatol_f = options_.dynatol.f;
                 options_.dynatol.f = 1e-7;
-                [Info, endo, exo] = bytecode('extended_path', plan, oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
+                [endo, exo] = bytecode('extended_path', plan, oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
                 options_.dynatol.f = save_options_dynatol_f;
 
-                if Info == 0
-                    oo_.endo_simul = endo;
-                    oo_.exo_simul = exo;
-                end
+                oo_.endo_simul = endo;
+                oo_.exo_simul = exo;
+
                 endo = endo';
                 endo_l = size(endo(1+M_.maximum_lag:end,:),1);
                 jrng = dates(plan.date(1)):dates(plan.date(1)+endo_l);
@@ -473,14 +475,12 @@ if pf && ~surprise
                 end
                 data1 = M_;
                 if (options_.bytecode)
-                    [chck, zz, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                    [zz, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
                 else
                     [zz, g1b] = feval([M_.fname '.dynamic'], z', zx, M_.params, oo_.steady_state, k);
                     data1.g1_x = g1b(:,end - M_.exo_nbr + 1:end);
                     data1.g1 = g1b(:,1 : end - M_.exo_nbr);
-                    chck = 0;
                 end
-                mexErrCheck('bytecode', chck);
             end
             if k == 1
                 g1(1:M_.endo_nbr,-M_.endo_nbr + [cur_indx lead_indx]) = data1.g1(:,M_.nspred + 1:end);
@@ -745,14 +745,12 @@ else
                     end
                     data1 = M_;
                     if (options_.bytecode)
-                        [chck, zz, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                        [zz, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
                     else
                         [zz, g1b] = feval([M_.fname '.dynamic'], z', zx, M_.params, oo_.steady_state, k);
                         data1.g1_x = g1b(:,end - M_.exo_nbr + 1:end);
                         data1.g1 = g1b(:,1 : end - M_.exo_nbr);
-                        chck = 0;
                     end
-                    mexErrCheck('bytecode', chck);
                 end
                 if k == 1
                     g1(1:M_.endo_nbr,-M_.endo_nbr + [cur_indx lead_indx]) = data1.g1(:,M_.nspred + 1:end);

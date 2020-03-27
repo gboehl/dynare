@@ -3,7 +3,7 @@
  * in Jordi Galí (2008): Monetary Policy, Inflation, and the Business Cycle, 
  * Princeton University Press, Chapter 5.1.2
  *
- * It demonstrates how to use the ramsey_policy command of Dynare.
+ * It demonstrates how to use the ramsey_model command of Dynare.
  *
  * Notes:
  *      - all model variables are expressed in deviations from steady state, i.e. 
@@ -18,7 +18,7 @@
  */
 
 /*
- * Copyright (C) 2015 Johannes Pfeifer
+ * Copyright (C) 2015-19 Johannes Pfeifer
  *
  * This is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -168,7 +168,8 @@ end;
 //planner objective using alpha_x expressed as function of deep parameters
 planner_objective pi^2 +(((1-theta)*(1-betta*theta)/theta*((1-alppha)/(1-alppha+alppha*epsilon)))*(siggma+(phi+alppha)/(1-alppha)))/epsilon*y_gap^2;
 
-ramsey_policy(instruments=(i),irf=13,planner_discount=betta) x pi p u;
+ramsey_model(instruments=(i),planner_discount=betta);
+stoch_simul(order=1,irf=13) x pi p u;
 
 verbatim;
 %% Check correctness

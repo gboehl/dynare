@@ -62,6 +62,8 @@ var e_a; stderr 0.014;
 var e_m; stderr 0.005;
 end;
 
+results_estimation=load('fs2000_smooth_results');
+M_.params=results_estimation.M_.params;
 steady;
 
 histval_file(filename = 'fs2000_histval.mat');

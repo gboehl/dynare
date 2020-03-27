@@ -37,7 +37,7 @@ UNormalMoments::UNormalMoments(int maxdim, const TwoDMatrix &v)
    equal to 2n. See the header file for proof and details.
 
    Here we sequentially construct the Kronecker power ⊗ⁿv and apply Fₙ.
- */
+*/
 void
 UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
 {

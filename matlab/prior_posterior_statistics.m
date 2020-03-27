@@ -19,7 +19,7 @@ function prior_posterior_statistics(type,dataset,dataset_info)
 % See the comments in the posterior_sampler.m funtion.
 
 
-% Copyright (C) 2005-2018 Dynare Team
+% Copyright (C) 2005-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -241,7 +241,7 @@ if isnumeric(options_.parallel)
     [fout] = prior_posterior_statistics_core(localVars,1,B,0);
     % Parallel execution!
 else
-    [nCPU, totCPU, nBlockPerCPU] = distributeJobs(options_.parallel, 1, B);
+    [~, totCPU, nBlockPerCPU] = distributeJobs(options_.parallel, 1, B);
     ifil=zeros(n_variables_to_fill,totCPU);
     for j=1:totCPU-1
         if run_smoother
@@ -294,7 +294,7 @@ else
     % which files have to be copied to run remotely
     NamFileInput(1,:) = {'',[M_.fname '.static.m']};
     NamFileInput(2,:) = {'',[M_.fname '.dynamic.m']};
-    if M.set_auxiliary_variables
+    if M_.set_auxiliary_variables
         NamFileInput(3,:) = {'',[M_.fname '.set_auxiliary_variables.m']};
     end
     if options_.steadystate_flag

@@ -222,7 +222,7 @@ private:
   static bool isZero(double p);
 };
 
-template <class _TRef, class _TPtr>
+template<class _TRef, class _TPtr>
 struct _matrix_iter
 {
   using _Self = _matrix_iter<_TRef, _TPtr>;
@@ -260,7 +260,7 @@ public:
   virtual _Self &operator++() = 0;
 };
 
-template <class _TRef, class _TPtr>
+template<class _TRef, class _TPtr>
 class _column_iter : public _matrix_iter<_TRef, _TPtr>
 {
   using _Tparent = _matrix_iter<_TRef, _TPtr>;
@@ -293,7 +293,7 @@ public:
   }
 };
 
-template <class _TRef, class _TPtr>
+template<class _TRef, class _TPtr>
 class _row_iter : public _matrix_iter<_TRef, _TPtr>
 {
   using _Tparent = _matrix_iter<_TRef, _TPtr>;
@@ -358,7 +358,7 @@ public:
   explicit QuasiTriangular(const SchurDecomp &decomp);
   explicit QuasiTriangular(const SchurDecompZero &decomp);
   QuasiTriangular(const QuasiTriangular &t);
-  
+
   ~QuasiTriangular() override = default;
   const Diagonal &
   getDiagonal() const

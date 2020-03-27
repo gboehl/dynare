@@ -24,7 +24,7 @@ function [dr, info] = stochastic_solvers(dr, task, M_, options_, oo_)
 %                                 info=6 -> The jacobian matrix evaluated at the steady state is complex.
 %                                 info=9 -> k_order_pert was unable to compute the solution
 
-% Copyright (C) 1996-2018 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,7 +48,7 @@ if options_.linear
 end
 
 local_order = options_.order;
-if M_.hessian_eq_zero && local_order~=1
+if local_order~=1 && M_.hessian_eq_zero
     local_order = 1;
     warning('stochastic_solvers: using order = 1 because Hessian is equal to zero');
 end
@@ -111,8 +111,8 @@ it_ = M_.maximum_lag + 1;
 z = repmat(dr.ys,1,klen);
 if local_order == 1
     if (options_.bytecode)
-        [chck, ~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                                     M_.params, dr.ys, 1);
+        [~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
+                               M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x loc_dr.g1_xd];
     else
         [~,jacobia_] = feval([M_.fname '.dynamic'],z(iyr0),exo_simul, ...
@@ -120,8 +120,8 @@ if local_order == 1
     end
 elseif local_order == 2
     if (options_.bytecode)
-        [chck, ~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                                     M_.params, dr.ys, 1);
+        [~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
+                               M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x];
     else
         [~,jacobia_,hessian1] = feval([M_.fname '.dynamic'],z(iyr0),...

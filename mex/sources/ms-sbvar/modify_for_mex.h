@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2017 Dynare Team
+ * Copyright © 2010-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -41,12 +41,6 @@ extern bool utIsInterruptPending();
 
 void msExit(int status);
 extern int constant_seed;
-
-/* Write Matlab Output
-   mxArray *globalMatlabStruct;*/
-void mex_write_to_matlab_matfile(double *, int, int, const char *, const char *);
-void mex_write_to_matlab_global_struct(double *, int, int, const char *);
-mxArray *getMxArray(double *, int, int);
 
 #endif
 #endif

@@ -32,7 +32,7 @@ function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2018 Dynare Team
+% Copyright (C) 2003-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -100,9 +100,17 @@ if length(unique(options_.varobs))<length(options_.varobs)
     end
 end
 
-% Check the perturbation order (nonlinear filters with third order perturbation, or higher order, are not yet implemented).
-if options_.order>2
-    error(['I cannot estimate a model with a ' int2str(options_.order) ' order approximation of the model!'])
+if options_.discretionary_policy
+    if options_.order>1
+        error('discretionary_policy does not support order>1');
+    else
+        M_=discretionary_policy_initialization(M_,options_);
+    end
+end
+
+% Check the perturbation order (k order perturbation based nonlinear filters are not yet implemented for k>1).
+if options_.order>2 && options_.particle.pruning
+    error('Higher order nonlinear filters are not compatible with pruning option.')
 end
 
 % analytical derivation is not yet available for kalman_filter_fast
@@ -566,7 +574,7 @@ end
 if info(1)
     fprintf('\ndynare_estimation_init:: The steady state at the initial parameters cannot be computed.\n')
     if options_.debug
-        M.params=params;       
+        M.params=params;
         plist = list_of_parameters_calibrated_as_NaN(M);
         if ~isempty(plist)
             message = ['dynare_estimation_init:: Some of the parameters are NaN (' ];
@@ -589,7 +597,7 @@ if info(1)
                     message = [message, plist{i} ')'];
                 end
             end
-        end        
+        end
         fprintf('%s\n',message)
     end
     print_info(info, 0, options_);

@@ -49,7 +49,7 @@ main(int argc, char *argv[])
                         0.7000,
                         0.7870,
                         0.0200};
-  Vector *modParams =  new Vector(dparams, npar);
+  Vector *modParams = new Vector(dparams, npar);
 
 #ifdef DEBUG
   mexPrintf("k_ord_perturbation: nParams=%d .\n", npar);
@@ -65,24 +65,24 @@ main(int argc, char *argv[])
 #endif
 
   double d2Dparams[4] = { //(double *) mxGetData(mxFldp);
-    0.1960e-3, 0.0,
-    0.0, 0.0250e-3
+                         0.1960e-3, 0.0,
+                         0.0, 0.0250e-3
   };
   npar = 2; //(int)mxGetN(mxFldp);
-  TwoDMatrix *vCov =  new TwoDMatrix(npar, npar, (d2Dparams));
-  double dYSparams [16] = { // 27 mxGetData(mxFldp);
-    //	1.0110,  2.2582,  5.8012,  0.5808,
-    1.0110,  2.2582,  0.4477,  1.0000,
-    4.5959,  1.0212,  5.8012,  0.8494,
-    0.1872,  0.8604,  1.0030,  1.0080,
-    0.5808,  1.0030,  2.2582,  0.4477
-    //,  1.0110,  2.2582,  0.4477,  1.0000,	0.1872,  2.2582,  0.4477
+  TwoDMatrix *vCov = new TwoDMatrix(npar, npar, (d2Dparams));
+  double dYSparams[16] = { // 27 mxGetData(mxFldp);
+                          //	1.0110,  2.2582,  5.8012,  0.5808,
+                          1.0110, 2.2582, 0.4477, 1.0000,
+                          4.5959, 1.0212, 5.8012, 0.8494,
+                          0.1872, 0.8604, 1.0030, 1.0080,
+                          0.5808, 1.0030, 2.2582, 0.4477
+                          //,  1.0110,  2.2582,  0.4477,  1.0000,	0.1872,  2.2582,  0.4477
   };
   const int nSteady = 16; //27 //31;//29, 16 (int)mxGetM(mxFldp);
-  Vector *ySteady =  new Vector(dYSparams, nSteady);
+  Vector *ySteady = new Vector(dYSparams, nSteady);
 
   double nnzd[3] = { 77, 217, 0};
-  const Vector *NNZD =  new Vector(nnzd, 3);
+  const Vector *NNZD = new Vector(nnzd, 3);
 
   //mxFldp = mxGetField(dr, 0,"nstatic" );
   const int nStat = 7; //(int)mxGetScalar(mxFldp);
@@ -109,32 +109,32 @@ main(int argc, char *argv[])
 
   int var_order[] //[18]
     = {
-    5,   6,   8,  10,  11,  12,  14,   7,  13,   1,   2,   3,   4,   9,   15,  16
-    //			 5,  6,  8, 10, 11, 12, 16,  7, 13, 14, 15,  1,  2,  3, 4,  9, 17, 18
+       5, 6, 8, 10, 11, 12, 14, 7, 13, 1, 2, 3, 4, 9, 15, 16
+       //			 5,  6,  8, 10, 11, 12, 16,  7, 13, 14, 15,  1,  2,  3, 4,  9, 17, 18
   };
   //Vector * varOrder =  new Vector(var_order, nEndo);
   vector<int> *var_order_vp = new vector<int>(nEndo); //nEndo));
   for (int v = 0; v < nEndo; v++)
     (*var_order_vp)[v] = var_order[v];
 
-  const double ll_incidence [] //[3][18]
+  const double ll_incidence[] //[3][18]
     = {
-    1,   5,  21,
-    2,   6,  22,
-    0,   7,  23,
-    0,   8,  24,
-    0,   9,   0,
-    0,  10,   0,
-    3,  11,   0,
-    0,  12,   0,
-    0,  13,  25,
-    0,  14,   0,
-    0,  15,   0,
-    0,  16,   0,
-    4,  17,   0,
-    0,  18,   0,
-    0,  19,  26,
-    0,  20,  27
+       1, 5, 21,
+       2, 6, 22,
+       0, 7, 23,
+       0, 8, 24,
+       0, 9, 0,
+       0, 10, 0,
+       3, 11, 0,
+       0, 12, 0,
+       0, 13, 25,
+       0, 14, 0,
+       0, 15, 0,
+       0, 16, 0,
+       4, 17, 0,
+       0, 18, 0,
+       0, 19, 26,
+       0, 20, 27
   };
   TwoDMatrix *llincidence = new TwoDMatrix(3, nEndo, ll_incidence);
 
@@ -166,7 +166,7 @@ main(int argc, char *argv[])
       mexPrintf("k_ord_perturbation: ExoNameList[%d][0]= %s.\n", i, exoNamesMX[i]);
     }
 #endif
-  if ((nEndo != nendo) || (nExog != nexo))    //(nPar != npar)
+  if ((nEndo != nendo) || (nExog != nexo)) //(nPar != npar)
     {
       mexPrintf("Incorrect number of input parameters.\n");
       return;
@@ -220,7 +220,7 @@ main(int argc, char *argv[])
       mexPrintf("k_order_perturbation: Calling dynare constructor.\n");
 #endif
       // make KordpDynare object
-      KordpDynare dynare(endoNamesMX,  nEndo, exoNamesMX,  nExog, nPar, // paramNames,
+      KordpDynare dynare(endoNamesMX, nEndo, exoNamesMX, nExog, nPar, // paramNames,
                          ySteady, vCov, modParams, nStat, nPred, nForw, nBoth,
                          jcols, NNZD, nSteps, kOrder, journal, dynamicDLL, sstol, var_order_vp, //var_order
                          llincidence, qz_criterium);
@@ -314,7 +314,7 @@ main(int argc, char *argv[])
   mexPrintf("k_order_perturbation: Filling MATLAB outputs.\n");
 #endif
 
-  double  *dgy, *dgu, *ysteady;
+  double *dgy, *dgu, *ysteady;
   int nb_row_x;
 
   ysteady = NULL;

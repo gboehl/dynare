@@ -36,7 +36,7 @@ Evaluate::Evaluate()
 }
 
 Evaluate::Evaluate(const int y_size_arg, const int y_kmin_arg, const int y_kmax_arg, const bool print_it_arg, const bool steady_state_arg, const int periods_arg, const int minimal_solving_periods_arg, const double slowc_arg) :
-  print_it(print_it_arg),  minimal_solving_periods(minimal_solving_periods_arg)
+  print_it(print_it_arg), minimal_solving_periods(minimal_solving_periods_arg)
 {
   symbol_table_endo_nbr = 0;
   Block_List_Max_Lag = 0;
@@ -45,7 +45,7 @@ Evaluate::Evaluate(const int y_size_arg, const int y_kmin_arg, const int y_kmax_
   block = -1;
   y_size = y_size_arg;
   y_kmin = y_kmin_arg;
-  y_kmax  = y_kmax_arg;
+  y_kmax = y_kmax_arg;
   periods = periods_arg;
   steady_state = steady_state_arg;
   slowc = slowc_arg;
@@ -545,7 +545,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
             case SymbolType::exogenous:
               var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
               lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
-              x[it_+lag+var*nb_row_x]  = Stack.top();
+              x[it_+lag+var*nb_row_x] = Stack.top();
 #ifdef DEBUG
               tmp_out << "=>";
               mexPrintf(" x[%d, %d](%f)=%s\n", it_+lag, var, x[it_+lag+var*nb_row_x], tmp_out.str().c_str());
@@ -591,7 +591,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
             case SymbolType::exogenous:
             case SymbolType::exogenousDet:
               var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
-              x[var]  = Stack.top();
+              x[var] = Stack.top();
 #ifdef DEBUG
               tmp_out << "=>";
               mexPrintf(" x[%d, %d](%f)=%s\n", it_+lag, var, x[var], tmp_out.str().c_str());

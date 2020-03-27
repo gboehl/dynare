@@ -115,7 +115,7 @@ if info
             pdraws(i,1) = {x2(SampleAddress(i,4),:)};
             if info-1
                 set_parameters(pdraws{i,1});
-                [dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
+                [dr,info,M_,options_,oo_] =compute_decision_rules(M_,options_,oo_);
                 pdraws(i,2) = { dr };
             end
             old_mhfile = mhfile;

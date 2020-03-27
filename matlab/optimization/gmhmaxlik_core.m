@@ -116,7 +116,7 @@ while j<=MaxNumberOfTuningSimulations
         ilogpo2 = logpo2;
         isux = isux + 1;
         jsux = jsux + 1;
-    end% ... otherwise I don't move.
+    end % ... otherwise I don't move.
     prtfrc = j/MaxNumberOfTuningSimulations;
     if mod(j, 10)==0
         dyn_waitbar(prtfrc,hh,sprintf('Acceptance ratio [during last 500]: %f [%f]',isux/j,jsux/jj));
@@ -165,7 +165,7 @@ while j<= NumberOfIterations
         ilogpo2 = logpo2;
         isux = isux + 1;
         jsux = jsux + 1;
-    end% ... otherwise I don't move.
+    end % ... otherwise I don't move.
     prtfrc = j/NumberOfIterations;
     if mod(j, 10)==0
         dyn_waitbar(prtfrc,hh,sprintf('Acceptance ratio: %f',isux/j));
@@ -209,7 +209,7 @@ if strcmpi(info,'LastCall')
             ilogpo2 = logpo2;
             isux = isux + 1;
             jsux = jsux + 1;
-        end% ... otherwise I don't move.
+        end % ... otherwise I don't move.
         prtfrc = j/MaxNumberOfTuningSimulations;
         if mod(j, 10)==0
             dyn_waitbar(prtfrc,hh,sprintf('Acceptance ratio [during last 1000]: %f [%f]',isux/j,jsux/jj));
@@ -251,7 +251,7 @@ if strcmpi(info,'LastCall')
                 ModePar = proposal;
                 mlogpo2 = logpo2;
                 jsux = jsux + 1;
-            end% otherwise I don't move...
+            end % otherwise I don't move...
             prtfrc = j/MaxNumberOfClimbingSimulations;
             if mod(j, 10)==0
                 dyn_waitbar(prtfrc,hh,sprintf('%f Jumps / MaxStepSize %f',jsux,sqrt(max(diag(iScale*CovJump)))));
@@ -276,7 +276,7 @@ if strcmpi(info,'LastCall')
             jj = jj + 1;
         end
         dyn_waitbar_close(hh);
-    end%climb
+    end %climb
 else
     Scale = iScale;
 end

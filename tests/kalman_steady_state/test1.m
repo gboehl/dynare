@@ -17,8 +17,7 @@ for i=1:100
     Z(1,1) = 1;
     Z(2,3) = 1;
     Z(3,6) = 1;
-    [err P] = kalman_steady_state(transpose(T),QQ,transpose(Z),H);
-    mexErrCheck('kalman_steady_state',err);
+    P = kalman_steady_state(transpose(T),QQ,transpose(Z),H);
 end
 
 % Without measurment errors.
@@ -35,6 +34,5 @@ for i=1:100
     Z(1,1) = 1;
     Z(2,3) = 1;
     Z(3,6) = 1;
-    [err P] = kalman_steady_state(transpose(T),QQ,transpose(Z),H);
-    mexErrCheck('kalman_steady_state',err);
+    P = kalman_steady_state(transpose(T),QQ,transpose(Z),H);
 end

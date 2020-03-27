@@ -142,7 +142,6 @@ public:
   {
   }
 #endif
-
   ~TwoDMatrix() override = default;
 
   TwoDMatrix &operator=(const TwoDMatrix &m) = default;

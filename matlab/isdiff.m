@@ -1,6 +1,6 @@
 function boo = isdiff(var)
 
-% Returns true iff endogenous variable `var` is a v ariable in difference. 
+% Returns true iff endogenous variable `var` is a v ariable in difference.
 %
 % INPUTS
 % - var   [string, integer]  Variable name or index in M_.endo_names.
@@ -33,5 +33,5 @@ boo = false;
 if ~ida, return, end
 
 if ismember(M_.aux_vars(ida).type, [8, 9])
-    boo = true; 
+    boo = true;
 end

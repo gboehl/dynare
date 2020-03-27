@@ -42,4 +42,3 @@ for k = 1:length(v)
 end
 
 g3_unfolded = sparse(i_unfolded, j_unfolded, v_unfolded, size(g3, 1), size(g3, 2));
-

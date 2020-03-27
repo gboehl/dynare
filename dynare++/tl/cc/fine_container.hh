@@ -90,7 +90,7 @@ public:
    method, which returns a type for a given stack as the type of the
    corresponding (old) stack of the former stack container. */
 
-template <class _Ttype>
+template<class _Ttype>
 class FineContainer : public SizeRefinement, public StackContainer<_Ttype>
 {
 protected:
@@ -117,8 +117,8 @@ public:
   FineContainer(const _Stype &sc, int max)
     : SizeRefinement(sc.getStackSizes(), sc.numConts(), max),
       StackContainer<_Ttype>(numRefinements(), getNC()),
-    ref_conts(getNC()),
-    stack_cont(sc)
+      ref_conts(getNC()),
+      stack_cont(sc)
   {
     for (int i = 0; i < numRefinements(); i++)
       _Stype::stack_sizes[i] = getRefSize(i);

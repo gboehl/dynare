@@ -14,7 +14,7 @@ function [options_, oo_]=ms_variance_decomposition(M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright (C) 2011-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -78,8 +78,7 @@ if options_.ms.error_bands
 end
 
 % variance_decomposition
-[err] = ms_sbvar_command_line(opt);
-mexErrCheck('ms_variance_decomposition',err);
+ms_sbvar_command_line(opt);
 
 if options_.ms.regime || options_.ms.regimes
     outfile = [outfile 'regime_'];

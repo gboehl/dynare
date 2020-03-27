@@ -148,7 +148,7 @@ void
 Diagonal::changeBase(double *p)
 {
   int d_size = getSize();
-  for (auto & it : *this)
+  for (auto &it : *this)
     {
       const DiagonalBlock &b = it;
       int jbar = b.getIndex();
@@ -179,7 +179,7 @@ Diagonal::getEigenValues(Vector &eig) const
           << ", should be=" << 2*d_size << '.' << std::endl;
       throw SYLV_MES_EXCEPTION(mes.str());
     }
-  for (const auto & b : *this)
+  for (const auto &b : *this)
     {
       int ind = b.getIndex();
       eig[2*ind] = *(b.getAlpha());
@@ -303,7 +303,7 @@ Diagonal::print() const
   auto ff = std::cout.flags();
   std::cout << "Num real: " << getNumReal() << ", num complex: " << getNumComplex() << std::endl
             << std::fixed;
-  for (const auto & it : *this)
+  for (const auto &it : *this)
     if (it.isReal())
       std::cout << "real: jbar=" << it.getIndex() << ", alpha=" << *(it.getAlpha()) << std::endl;
     else

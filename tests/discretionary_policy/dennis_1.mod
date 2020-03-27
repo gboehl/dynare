@@ -29,5 +29,7 @@ var e; stderr 1;
 end;
 
 planner_objective pi_c^2 + y^2;
-discretionary_policy(instruments=(i),irf=0,planner_discount=beta);
+discretionary_policy(instruments=(i),irf=0,planner_discount=beta, periods=200);
 
+// Generate data used by dennis_1_estim.mod
+datatomfile('dennis_simul', {'y'; 'i'; 'pi';});

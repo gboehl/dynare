@@ -130,7 +130,7 @@ for plt = 1:nbplt
             end
             l1 = max(lower_bound,-BayesInfo.p2(kk)); m1 = 0; %lower bound
             l2 = min(upper_bound,BayesInfo.p2(kk)); %upper bound
-        end            
+        end
         binding_lower_bound=0;
         binding_upper_bound=0;
         if isequal(x(kk),BoundsInfo.lb(kk))

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2017 Dynare Team
+ * Copyright © 2007-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -21,37 +21,6 @@
 #include "ErrorHandling.hh"
 #include <ctime>
 #include <math.h>
-#ifdef DYN_MEX_FUNC_ERR_MSG_TXT
-# undef DYN_MEX_FUNC_ERR_MSG_TXT
-#endif // DYN_MEX_FUNC_ERR_MSG_TXT
-
-#define DYN_MEX_FUNC_ERR_MSG_TXT(str)                                   \
-  do {                                                                  \
-    mexPrintf("%s\n", str);                                             \
-    if (nlhs > 0)                                                       \
-      {                                                                 \
-        plhs[0] = mxCreateDoubleScalar(1);                              \
-        if (nlhs > 1)                                                   \
-          {                                                             \
-            double *pind;                                               \
-            plhs[1] = mxCreateDoubleMatrix(int (row_y), int (col_y), mxREAL); \
-            pind = mxGetPr(plhs[1]);                                    \
-            if (evaluate)                                               \
-              {                                                         \
-                for (unsigned int i = 0; i < row_y*col_y; i++)          \
-                  pind[i] = 0;                                          \
-              }                                                         \
-            else                                                        \
-              {                                                         \
-                for (unsigned int i = 0; i < row_y*col_y; i++)          \
-                  pind[i] = yd[i];                                      \
-              }                                                         \
-            for (int i = 2; i < nlhs; i++)                              \
-              plhs[i] = mxCreateDoubleScalar(1);                        \
-          }                                                             \
-      }                                                                 \
-    return;                                                             \
-  } while (0)
 
 #ifdef DEBUG_EX
 
@@ -208,7 +177,7 @@ GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_hand
   mexPrintf("> Driver version:\n");
   int cuda_version;
   cuda_error = cudaDriverGetVersion(&cuda_version);
-  if (cuda_error  != cudaSuccess)
+  if (cuda_error != cudaSuccess)
     {
       ostringstream tmp;
       tmp << " cudaGetVersion has failed\n";
@@ -297,7 +266,7 @@ Get_Arguments_and_global_variables(int nrhs,
                 col_y = mxGetN(prhs[i]);
                 break;
               case 1:
-                *xd =  mxGetPr(prhs[i]);
+                *xd = mxGetPr(prhs[i]);
                 row_x = mxGetM(prhs[i]);
                 col_x = mxGetN(prhs[i]);
                 break;
@@ -349,7 +318,7 @@ Get_Arguments_and_global_variables(int nrhs,
                     pos = pos1 + 1;
                   else
                     pos += 5;
-                  block =  atoi(Get_Argument(prhs[i]).substr(pos, string::npos).c_str())-1;
+                  block = atoi(Get_Argument(prhs[i]).substr(pos, string::npos).c_str())-1;
                 }
               else if (Get_Argument(prhs[i]).substr(0, 13) == "extended_path")
                 {
@@ -369,7 +338,7 @@ Get_Arguments_and_global_variables(int nrhs,
                     pos = pos1 + 1;
                   else
                     pos += 6;
-                  *pfplan_struct_name =  deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
+                  *pfplan_struct_name = deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
                 }
               else if (Get_Argument(prhs[i]).substr(0, 4) == "plan")
                 {
@@ -378,7 +347,7 @@ Get_Arguments_and_global_variables(int nrhs,
                     pos = pos1 + 1;
                   else
                     pos += 4;
-                  *plan_struct_name =  deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
+                  *plan_struct_name = deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
                 }
               else
                 {
@@ -492,13 +461,13 @@ main(int nrhs, const char *prhs[])
     }
   catch (GeneralExceptionHandling &feh)
     {
-      DYN_MEX_FUNC_ERR_MSG_TXT(feh.GetErrorMsg().c_str());
+      mexErrMsgTxt(feh.GetErrorMsg().c_str());
     }
   if (!count_array_argument)
     {
       int field = mxGetFieldNumber(M_, "params");
       if (field < 0)
-        DYN_MEX_FUNC_ERR_MSG_TXT("params is not a field of M_");
+        mexErrMsgTxt("params is not a field of M_");
       params = mxGetPr(mxGetFieldByNumber(M_, 0, field));
     }
 
@@ -510,14 +479,14 @@ main(int nrhs, const char *prhs[])
       if (extended_path_struct == NULL)
         {
           string tmp = "The 'extended_path' option must be followed by the extended_path descriptor";
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
       mxArray *date_str = mxGetField(extended_path_struct, 0, "date_str");
       if (date_str == NULL)
         {
           string tmp = "date_str";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
       int nb_periods = mxGetM(date_str) * mxGetN(date_str);
 
@@ -526,28 +495,28 @@ main(int nrhs, const char *prhs[])
         {
           string tmp = "constrained_vars_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
       mxArray *constrained_paths_ = mxGetField(extended_path_struct, 0, "constrained_paths_");
       if (constrained_paths_ == NULL)
         {
           string tmp = "constrained_paths_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
       mxArray *constrained_int_date_ = mxGetField(extended_path_struct, 0, "constrained_int_date_");
       if (constrained_int_date_ == NULL)
         {
           string tmp = "constrained_int_date_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
       mxArray *constrained_perfect_foresight_ = mxGetField(extended_path_struct, 0, "constrained_perfect_foresight_");
       if (constrained_perfect_foresight_ == NULL)
         {
           string tmp = "constrained_perfect_foresight_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
 
       mxArray *shock_var_ = mxGetField(extended_path_struct, 0, "shock_vars_");
@@ -555,40 +524,40 @@ main(int nrhs, const char *prhs[])
         {
           string tmp = "shock_vars_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
       mxArray *shock_paths_ = mxGetField(extended_path_struct, 0, "shock_paths_");
       if (shock_paths_ == NULL)
         {
           string tmp = "shock_paths_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
       mxArray *shock_int_date_ = mxGetField(extended_path_struct, 0, "shock_int_date_");
       if (shock_int_date_ == NULL)
         {
           string tmp = "shock_int_date_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
       mxArray *shock_str_date_ = mxGetField(extended_path_struct, 0, "shock_str_date_");
       if (shock_str_date_ == NULL)
         {
           string tmp = "shock_str_date_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
       int nb_constrained = mxGetM(constrained_vars_) * mxGetN(constrained_vars_);
       int nb_controlled = 0;
       mxArray *options_cond_fcst_ = mxGetField(extended_path_struct, 0, "options_cond_fcst_");
       mxArray *controlled_varexo = NULL;
-      if (options_cond_fcst_  != NULL)
+      if (options_cond_fcst_ != NULL)
         {
           controlled_varexo = mxGetField(options_cond_fcst_, 0, "controlled_varexo");
           nb_controlled = mxGetM(controlled_varexo) * mxGetN(controlled_varexo);
           if (nb_controlled != nb_constrained)
             {
-              DYN_MEX_FUNC_ERR_MSG_TXT("The number of exogenized variables and the number of exogenous controlled variables should be equal.");
+              mexErrMsgTxt("The number of exogenized variables and the number of exogenous controlled variables should be equal.");
             }
         }
       double *controlled_varexo_value = NULL;
@@ -637,7 +606,7 @@ main(int nrhs, const char *prhs[])
               string tmp1 = oss.str();
               tmp.append(tmp1);
               tmp.append(")");
-              DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+              mexErrMsgTxt(tmp.c_str());
             }
           (sconditional_extended_path[i]).per_value.resize(nb_local_periods);
           (sconditional_extended_path[i]).value.resize(nb_periods);
@@ -680,7 +649,7 @@ main(int nrhs, const char *prhs[])
               string tmp1 = oss.str();
               tmp.append(tmp1);
               tmp.append(")");
-              DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+              mexErrMsgTxt(tmp.c_str());
             }
           (sextended_path[i]).per_value.resize(nb_local_periods);
           (sextended_path[i]).value.resize(nb_periods);
@@ -702,9 +671,9 @@ main(int nrhs, const char *prhs[])
           if (info)
             {
               string tmp = "Can not allocated memory to store the date_str in the extended path descriptor";
-              DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+              mexErrMsgTxt(tmp.c_str());
             }
-          dates.push_back(string(buf));//string(Dates[i]);
+          dates.push_back(string(buf)); //string(Dates[i]);
           mxFree(buf);
         }
     }
@@ -715,7 +684,7 @@ main(int nrhs, const char *prhs[])
         {
           string tmp = plan;
           tmp.insert(0, "Can't find the plan: ");
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
       size_t n_plan = mxGetN(plan_struct);
       splan.resize(n_plan);
@@ -726,7 +695,7 @@ main(int nrhs, const char *prhs[])
           mxArray *tmp = mxGetField(plan_struct, i, "exo");
           if (tmp)
             {
-              char name [100];
+              char name[100];
               mxGetString(tmp, name, 100);
               splan[i].var = name;
               SymbolType variable_type = SymbolType::endogenous;
@@ -738,13 +707,13 @@ main(int nrhs, const char *prhs[])
                   string tmp = name;
                   tmp.insert(0, "the variable '");
                   tmp.append("'  defined as var in plan is not an exogenous or a deterministic exogenous\n");
-                  DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+                  mexErrMsgTxt(tmp.c_str());
                 }
             }
           tmp = mxGetField(plan_struct, i, "var");
           if (tmp)
             {
-              char name [100];
+              char name[100];
               mxGetString(tmp, name, 100);
               splan[i].exo = name;
               SymbolType variable_type;
@@ -756,7 +725,7 @@ main(int nrhs, const char *prhs[])
                   string tmp = name;
                   tmp.insert(0, "the variable '");
                   tmp.append("'  defined as exo in plan is not an endogenous variable\n");
-                  DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+                  mexErrMsgTxt(tmp.c_str());
                 }
             }
           tmp = mxGetField(plan_struct, i, "per_value");
@@ -778,7 +747,7 @@ main(int nrhs, const char *prhs[])
             mexPrintf(" plan fliping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it->var.c_str(), it->var_num, it->exo.c_str(), it->exo_num);
           else
             mexPrintf(" plan shocks on var=%s for the following periods and with the following values:\n", it->var.c_str());
-          for (vector<pair<int, double> >::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
+          for (vector<pair<int, double>>::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
             {
               mexPrintf("  %3d %10.5f\n", it1->first, it1->second);
             }
@@ -793,7 +762,7 @@ main(int nrhs, const char *prhs[])
         {
           string tmp = pfplan;
           tmp.insert(0, "Can't find the pfplan: ");
-          DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+          mexErrMsgTxt(tmp.c_str());
         }
       size_t n_plan = mxGetN(pfplan_struct);
       spfplan.resize(n_plan);
@@ -804,7 +773,7 @@ main(int nrhs, const char *prhs[])
           mxArray *tmp = mxGetField(pfplan_struct, i, "var");
           if (tmp)
             {
-              char name [100];
+              char name[100];
               mxGetString(tmp, name, 100);
               spfplan[i].var = name;
               SymbolType variable_type = SymbolType::endogenous;
@@ -816,13 +785,13 @@ main(int nrhs, const char *prhs[])
                   string tmp = name;
                   tmp.insert(0, "the variable '");
                   tmp.append("' defined as var in pfplan is not an exogenous or a deterministic exogenous\n");
-                  DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+                  mexErrMsgTxt(tmp.c_str());
                 }
             }
           tmp = mxGetField(pfplan_struct, i, "exo");
           if (tmp)
             {
-              char name [100];
+              char name[100];
               mxGetString(tmp, name, 100);
               spfplan[i].exo = name;
               SymbolType variable_type;
@@ -834,7 +803,7 @@ main(int nrhs, const char *prhs[])
                   string tmp = name;
                   tmp.insert(0, "the variable '");
                   tmp.append("' defined as exo in pfplan  is not an endogenous variable\n");
-                  DYN_MEX_FUNC_ERR_MSG_TXT(tmp.c_str());
+                  mexErrMsgTxt(tmp.c_str());
                 }
             }
           tmp = mxGetField(pfplan_struct, i, "per_value");
@@ -856,7 +825,7 @@ main(int nrhs, const char *prhs[])
             mexPrintf(" plan flipping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it->var.c_str(), it->var_num, it->exo.c_str(), it->exo_num);
           else
             mexPrintf(" plan shocks on var=%s (%d) for the following periods and with the following values:\n", it->var.c_str(), it->var_num);
-          for (vector<pair<int, double> >::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
+          for (vector<pair<int, double>>::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
             {
               mexPrintf("  %3d %10.5f\n", it1->first, it1->second);
             }
@@ -866,20 +835,20 @@ main(int nrhs, const char *prhs[])
 
   int field_steady_state = mxGetFieldNumber(oo_, "steady_state");
   if (field_steady_state < 0)
-    DYN_MEX_FUNC_ERR_MSG_TXT("steady_state is not a field of oo_");
+    mexErrMsgTxt("steady_state is not a field of oo_");
   int field_exo_steady_state = mxGetFieldNumber(oo_, "exo_steady_state");
   if (field_exo_steady_state < 0)
-    DYN_MEX_FUNC_ERR_MSG_TXT("exo_steady_state is not a field of oo_");
+    mexErrMsgTxt("exo_steady_state is not a field of oo_");
 
   if (!steady_state)
     {
       int field_endo_simul = mxGetFieldNumber(oo_, "endo_simul");
       if (field_endo_simul < 0)
-        DYN_MEX_FUNC_ERR_MSG_TXT("endo_simul is not a field of oo_");
+        mexErrMsgTxt("endo_simul is not a field of oo_");
 
       int field_exo_simul = mxGetFieldNumber(oo_, "exo_simul");
       if (field_exo_simul < 0)
-        DYN_MEX_FUNC_ERR_MSG_TXT("exo_simul is not a field of oo_");
+        mexErrMsgTxt("exo_simul is not a field of oo_");
 
       if (!count_array_argument)
         {
@@ -897,17 +866,17 @@ main(int nrhs, const char *prhs[])
       if (field >= 0)
         y_kmin = int (floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field)))));
       else
-        DYN_MEX_FUNC_ERR_MSG_TXT("maximum_lag is not a field of M_");
+        mexErrMsgTxt("maximum_lag is not a field of M_");
       field = mxGetFieldNumber(M_, "maximum_lead");
       if (field >= 0)
         y_kmax = int (floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field)))));
       else
-        DYN_MEX_FUNC_ERR_MSG_TXT("maximum_lead is not a field of M_");
+        mexErrMsgTxt("maximum_lead is not a field of M_");
       field = mxGetFieldNumber(M_, "maximum_endo_lag");
       if (field >= 0)
         y_decal = max(0, y_kmin-int (floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field))))));
       else
-        DYN_MEX_FUNC_ERR_MSG_TXT("maximum_endo_lag is not a field of M_");
+        mexErrMsgTxt("maximum_endo_lag is not a field of M_");
 
       if (!count_array_argument)
         {
@@ -915,7 +884,7 @@ main(int nrhs, const char *prhs[])
           if (field >= 0)
             periods = int (floor(*(mxGetPr(mxGetFieldByNumber(options_, 0, field)))));
           else
-            DYN_MEX_FUNC_ERR_MSG_TXT("options_ is not a field of options_");
+            mexErrMsgTxt("options_ is not a field of options_");
         }
 
       if (!steady_yd)
@@ -948,7 +917,7 @@ main(int nrhs, const char *prhs[])
   if (field >= 0)
     verbose = int (*mxGetPr((mxGetFieldByNumber(options_, 0, field))));
   else
-    DYN_MEX_FUNC_ERR_MSG_TXT("verbosity is not a field of options_");
+    mexErrMsgTxt("verbosity is not a field of options_");
   if (verbose)
     print_it = true;
   if (!steady_state)
@@ -961,34 +930,34 @@ main(int nrhs, const char *prhs[])
   else
     {
       if (!steady_state)
-        DYN_MEX_FUNC_ERR_MSG_TXT("simul is not a field of options_");
+        mexErrMsgTxt("simul is not a field of options_");
       else
-        DYN_MEX_FUNC_ERR_MSG_TXT("steady is not a field of options_");
+        mexErrMsgTxt("steady is not a field of options_");
     }
   field = mxGetFieldNumber(temporaryfield, "maxit");
   if (field < 0)
     {
       if (!steady_state)
-        DYN_MEX_FUNC_ERR_MSG_TXT("maxit is not a field of options_.simul");
+        mexErrMsgTxt("maxit is not a field of options_.simul");
       else
-        DYN_MEX_FUNC_ERR_MSG_TXT("maxit is not a field of options_.steady");
+        mexErrMsgTxt("maxit is not a field of options_.steady");
     }
   int maxit_ = int (floor(*(mxGetPr(mxGetFieldByNumber(temporaryfield, 0, field)))));
   field = mxGetFieldNumber(options_, "slowc");
   if (field < 0)
-    DYN_MEX_FUNC_ERR_MSG_TXT("slows is not a field of options_");
+    mexErrMsgTxt("slows is not a field of options_");
   double slowc = double (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
   field = mxGetFieldNumber(options_, "markowitz");
   if (field < 0)
-    DYN_MEX_FUNC_ERR_MSG_TXT("markowitz is not a field of options_");
+    mexErrMsgTxt("markowitz is not a field of options_");
   double markowitz_c = double (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
   field = mxGetFieldNumber(options_, "minimal_solving_periods");
   if (field < 0)
-    DYN_MEX_FUNC_ERR_MSG_TXT("minimal_solving_periods is not a field of options_");
+    mexErrMsgTxt("minimal_solving_periods is not a field of options_");
   int minimal_solving_periods = int (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
   field = mxGetFieldNumber(options_, "stack_solve_algo");
   if (field < 0)
-    DYN_MEX_FUNC_ERR_MSG_TXT("stack_solve_algo is not a field of options_");
+    mexErrMsgTxt("stack_solve_algo is not a field of options_");
   int stack_solve_algo = int (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
   int solve_algo;
   double solve_tolf;
@@ -999,12 +968,12 @@ main(int nrhs, const char *prhs[])
       if (field >= 0)
         solve_algo = int (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
       else
-        DYN_MEX_FUNC_ERR_MSG_TXT("solve_algo is not a field of options_");
+        mexErrMsgTxt("solve_algo is not a field of options_");
       field = mxGetFieldNumber(options_, "solve_tolf");
       if (field >= 0)
         solve_tolf = *(mxGetPr(mxGetFieldByNumber(options_, 0, field)));
       else
-        DYN_MEX_FUNC_ERR_MSG_TXT("solve_tolf is not a field of options_");
+        mexErrMsgTxt("solve_tolf is not a field of options_");
     }
   else
     {
@@ -1014,19 +983,19 @@ main(int nrhs, const char *prhs[])
       if (field >= 0)
         dynatol = mxGetFieldByNumber(options_, 0, field);
       else
-        DYN_MEX_FUNC_ERR_MSG_TXT("dynatol is not a field of options_");
+        mexErrMsgTxt("dynatol is not a field of options_");
       field = mxGetFieldNumber(dynatol, "f");
       if (field >= 0)
         solve_tolf = *mxGetPr((mxGetFieldByNumber(dynatol, 0, field)));
       else
-        DYN_MEX_FUNC_ERR_MSG_TXT("f is not a field of options_.dynatol");
+        mexErrMsgTxt("f is not a field of options_.dynatol");
     }
   field = mxGetFieldNumber(M_, "fname");
   mxArray *mxa;
   if (field >= 0)
     mxa = mxGetFieldByNumber(M_, 0, field);
   else
-    DYN_MEX_FUNC_ERR_MSG_TXT("fname is not a field of M_");
+    mexErrMsgTxt("fname is not a field of M_");
   size_t buflen = mxGetM(mxa) * mxGetN(mxa) + 1;
   char *fname;
   fname = static_cast<char *>(mxCalloc(buflen+1, sizeof(char)));
@@ -1044,11 +1013,11 @@ main(int nrhs, const char *prhs[])
     }
   catch (GeneralExceptionHandling &feh)
     {
-      DYN_MEX_FUNC_ERR_MSG_TXT(feh.GetErrorMsg().c_str());
+      mexErrMsgTxt(feh.GetErrorMsg().c_str());
     }
 #else
   if (stack_solve_algo == 7 && !steady_state)
-    DYN_MEX_FUNC_ERR_MSG_TXT("bytecode has not been compiled with CUDA option. Bytecode Can't use options_.stack_solve_algo=7\n");
+    mexErrMsgTxt("bytecode has not been compiled with CUDA option. Bytecode Can't use options_.stack_solve_algo=7\n");
 #endif
   size_t size_of_direction = col_y*row_y*sizeof(double);
   double *y = static_cast<double *>(mxMalloc(size_of_direction));
@@ -1067,7 +1036,7 @@ main(int nrhs, const char *prhs[])
     }
   for (i = 0; i < row_y*col_y; i++)
     {
-      y[i]  = double (yd[i]);
+      y[i] = double (yd[i]);
       ya[i] = double (yd[i]);
     }
   size_t y_size = row_y;
@@ -1085,7 +1054,6 @@ main(int nrhs, const char *prhs[])
   mxFree(fname);
   int nb_blocks = 0;
   double *pind;
-  bool no_error = true;
 
   if (extended_path)
     {
@@ -1095,7 +1063,7 @@ main(int nrhs, const char *prhs[])
         }
       catch (GeneralExceptionHandling &feh)
         {
-          DYN_MEX_FUNC_ERR_MSG_TXT(feh.GetErrorMsg().c_str());
+          mexErrMsgTxt(feh.GetErrorMsg().c_str());
         }
     }
   else
@@ -1106,7 +1074,7 @@ main(int nrhs, const char *prhs[])
         }
       catch (GeneralExceptionHandling &feh)
         {
-          DYN_MEX_FUNC_ERR_MSG_TXT(feh.GetErrorMsg().c_str());
+          mexErrMsgTxt(feh.GetErrorMsg().c_str());
         }
     }
 
@@ -1116,42 +1084,21 @@ main(int nrhs, const char *prhs[])
 #endif
 
   clock_t t1 = clock();
-  if (!steady_state && !evaluate && no_error && print)
+  if (!steady_state && !evaluate && print)
     mexPrintf("Simulation Time=%f milliseconds\n", 1000.0*(double (t1)-double (t0))/double (CLOCKS_PER_SEC));
 #ifndef DEBUG_EX
   bool dont_store_a_structure = false;
   if (nlhs > 0)
     {
-      plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
-      pind = mxGetPr(plhs[0]);
-      if (no_error)
-        pind[0] = 0;
-      else
-        pind[0] = 1;
-      if (nlhs > 1)
+      if (block >= 0)
         {
-          if (block >= 0)
+          if (evaluate)
             {
-              if (evaluate)
-                {
-                  vector<double> residual = interprete.get_residual();
-                  plhs[1] = mxCreateDoubleMatrix(int (residual.size()/double (col_y)), int (col_y), mxREAL);
-                  pind = mxGetPr(plhs[1]);
-                  for (i = 0; i < residual.size(); i++)
-                    pind[i] = residual[i];
-                }
-              else
-                {
-                  int out_periods;
-                  if (extended_path)
-                    out_periods = max_periods + y_kmin;
-                  else
-                    out_periods = row_y;
-                  plhs[1] = mxCreateDoubleMatrix(out_periods, int (col_y), mxREAL);
-                  pind = mxGetPr(plhs[1]);
-                  for (i = 0; i < out_periods*col_y; i++)
-                    pind[i] = y[i];
-                }
+              vector<double> residual = interprete.get_residual();
+              plhs[0] = mxCreateDoubleMatrix(int (residual.size()/double (col_y)), int (col_y), mxREAL);
+              pind = mxGetPr(plhs[0]);
+              for (i = 0; i < residual.size(); i++)
+                pind[i] = residual[i];
             }
           else
             {
@@ -1159,99 +1106,111 @@ main(int nrhs, const char *prhs[])
               if (extended_path)
                 out_periods = max_periods + y_kmin;
               else
-                out_periods = col_y;
-              plhs[1] = mxCreateDoubleMatrix(int (row_y), out_periods, mxREAL);
-              pind = mxGetPr(plhs[1]);
-              if (evaluate)
+                out_periods = row_y;
+              plhs[0] = mxCreateDoubleMatrix(out_periods, int (col_y), mxREAL);
+              pind = mxGetPr(plhs[0]);
+              for (i = 0; i < out_periods*col_y; i++)
+                pind[i] = y[i];
+            }
+        }
+      else
+        {
+          int out_periods;
+          if (extended_path)
+            out_periods = max_periods + y_kmin;
+          else
+            out_periods = col_y;
+          plhs[0] = mxCreateDoubleMatrix(int (row_y), out_periods, mxREAL);
+          pind = mxGetPr(plhs[0]);
+          if (evaluate)
+            {
+              vector<double> residual = interprete.get_residual();
+              for (i = 0; i < residual.size(); i++)
+                pind[i] = residual[i];
+            }
+          else
+            for (i = 0; i < row_y*out_periods; i++)
+              pind[i] = y[i];
+        }
+      if (nlhs > 1)
+        {
+          if (evaluate)
+            {
+              int jacob_field_number = 0, jacob_exo_field_number = 0, jacob_exo_det_field_number = 0, jacob_other_endo_field_number = 0;
+              if (!block_structur)
                 {
-                  vector<double> residual = interprete.get_residual();
-                  for (i = 0; i < residual.size(); i++)
-                    pind[i] = residual[i];
+                  const char *field_names[] = {"g1", "g1_x", "g1_xd", "g1_o"};
+                  jacob_field_number = 0;
+                  jacob_exo_field_number = 1;
+                  jacob_exo_det_field_number = 2;
+                  jacob_other_endo_field_number = 3;
+                  mwSize dims[1] = {static_cast<mwSize>(nb_blocks) };
+                  plhs[1] = mxCreateStructArray(1, dims, 4, field_names);
+                }
+              else if (!mxIsStruct(block_structur))
+                {
+                  plhs[1] = interprete.get_jacob(0);
+                  //mexCallMATLAB(0,NULL, 1, &plhs[1], "disp");
+                  dont_store_a_structure = true;
                 }
               else
-                for (i = 0; i < row_y*out_periods; i++)
-                  pind[i] = y[i];
-            }
-          if (nlhs > 2)
-            {
-              if (evaluate)
                 {
-                  int jacob_field_number = 0, jacob_exo_field_number = 0, jacob_exo_det_field_number = 0, jacob_other_endo_field_number = 0;
-                  if (!block_structur)
+                  plhs[1] = block_structur;
+                  jacob_field_number = mxAddField(plhs[1], "g1");
+                  if (jacob_field_number == -1)
+                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob to the structArray\n");
+                  jacob_exo_field_number = mxAddField(plhs[1], "g1_x");
+                  if (jacob_exo_field_number == -1)
+                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_exo to the structArray\n");
+                  jacob_exo_det_field_number = mxAddField(plhs[1], "g1_xd");
+                  if (jacob_exo_det_field_number == -1)
+                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_exo_det to the structArray\n");
+                  jacob_other_endo_field_number = mxAddField(plhs[1], "g1_o");
+                  if (jacob_other_endo_field_number == -1)
+                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_other_endo to the structArray\n");
+                }
+              if (!dont_store_a_structure)
+                {
+                  for (int i = 0; i < nb_blocks; i++)
                     {
-                      const char *field_names[] = {"g1", "g1_x", "g1_xd", "g1_o"};
-                      jacob_field_number = 0;
-                      jacob_exo_field_number = 1;
-                      jacob_exo_det_field_number = 2;
-                      jacob_other_endo_field_number = 3;
-                      mwSize dims[1] = {static_cast<mwSize>(nb_blocks) };
-                      plhs[2] = mxCreateStructArray(1, dims, 4, field_names);
-                    }
-                  else if (!mxIsStruct(block_structur))
-                    {
-                      plhs[2] = interprete.get_jacob(0);
-                      //mexCallMATLAB(0,NULL, 1, &plhs[2], "disp");
-                      dont_store_a_structure = true;
-                    }
-                  else
-                    {
-                      plhs[2] = block_structur;
-                      jacob_field_number = mxAddField(plhs[2], "g1");
-                      if (jacob_field_number == -1)
-                        DYN_MEX_FUNC_ERR_MSG_TXT("Fatal error in bytecode: in main, cannot add extra field jacob to the structArray\n");
-                      jacob_exo_field_number = mxAddField(plhs[2], "g1_x");
-                      if (jacob_exo_field_number == -1)
-                        DYN_MEX_FUNC_ERR_MSG_TXT("Fatal error in bytecode: in main, cannot add extra field jacob_exo to the structArray\n");
-                      jacob_exo_det_field_number = mxAddField(plhs[2], "g1_xd");
-                      if (jacob_exo_det_field_number == -1)
-                        DYN_MEX_FUNC_ERR_MSG_TXT("Fatal error in bytecode: in main, cannot add extra field jacob_exo_det to the structArray\n");
-                      jacob_other_endo_field_number = mxAddField(plhs[2], "g1_o");
-                      if (jacob_other_endo_field_number == -1)
-                        DYN_MEX_FUNC_ERR_MSG_TXT("Fatal error in bytecode: in main, cannot add extra field jacob_other_endo to the structArray\n");
-                    }
-                  if (!dont_store_a_structure)
-                    {
-                      for (int i = 0; i < nb_blocks; i++)
+                      mxSetFieldByNumber(plhs[1], i, jacob_field_number, interprete.get_jacob(i));
+                      if (!steady_state)
                         {
-                          mxSetFieldByNumber(plhs[2], i, jacob_field_number, interprete.get_jacob(i));
-                          if (!steady_state)
-                            {
-                              mxSetFieldByNumber(plhs[2], i, jacob_exo_field_number, interprete.get_jacob_exo(i));
-                              mxSetFieldByNumber(plhs[2], i, jacob_exo_det_field_number, interprete.get_jacob_exo_det(i));
-                              mxSetFieldByNumber(plhs[2], i, jacob_other_endo_field_number, interprete.get_jacob_other_endo(i));
-                            }
+                          mxSetFieldByNumber(plhs[1], i, jacob_exo_field_number, interprete.get_jacob_exo(i));
+                          mxSetFieldByNumber(plhs[1], i, jacob_exo_det_field_number, interprete.get_jacob_exo_det(i));
+                          mxSetFieldByNumber(plhs[1], i, jacob_other_endo_field_number, interprete.get_jacob_other_endo(i));
                         }
                     }
                 }
-              else
+            }
+          else
+            {
+              plhs[1] = mxCreateDoubleMatrix(int (row_x), int (col_x), mxREAL);
+              pind = mxGetPr(plhs[1]);
+              for (i = 0; i < row_x*col_x; i++)
                 {
-                  plhs[2] = mxCreateDoubleMatrix(int (row_x), int (col_x), mxREAL);
-                  pind = mxGetPr(plhs[2]);
-                  for (i = 0; i < row_x*col_x; i++)
-                    {
-                      pind[i] = x[i];
-                    }
-
-                }
-              if (nlhs > 3)
-                {
-                  plhs[3] = mxCreateDoubleMatrix(int (row_y), int (col_y), mxREAL);
-                  pind = mxGetPr(plhs[3]);
-                  for (i = 0; i < row_y*col_y; i++)
-                    pind[i] = y[i];
-                  if (nlhs > 4)
-                    {
-                      mxArray *GlobalTemporaryTerms = interprete.get_Temporary_Terms();
-                      size_t nb_temp_terms = mxGetM(GlobalTemporaryTerms);
-                      plhs[4] = mxCreateDoubleMatrix(int (nb_temp_terms), 1, mxREAL);
-                      pind = mxGetPr(plhs[4]);
-                      double *tt = mxGetPr(GlobalTemporaryTerms);
-                      for (i = 0; i < nb_temp_terms; i++)
-                        pind[i] = tt[i];
-                    }
+                  pind[i] = x[i];
                 }
 
             }
+          if (nlhs > 2)
+            {
+              plhs[2] = mxCreateDoubleMatrix(int (row_y), int (col_y), mxREAL);
+              pind = mxGetPr(plhs[2]);
+              for (i = 0; i < row_y*col_y; i++)
+                pind[i] = y[i];
+              if (nlhs > 3)
+                {
+                  mxArray *GlobalTemporaryTerms = interprete.get_Temporary_Terms();
+                  size_t nb_temp_terms = mxGetM(GlobalTemporaryTerms);
+                  plhs[3] = mxCreateDoubleMatrix(int (nb_temp_terms), 1, mxREAL);
+                  pind = mxGetPr(plhs[3]);
+                  double *tt = mxGetPr(GlobalTemporaryTerms);
+                  for (i = 0; i < nb_temp_terms; i++)
+                    pind[i] = tt[i];
+                }
+            }
+
         }
     }
 #else

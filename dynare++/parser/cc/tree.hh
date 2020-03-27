@@ -42,8 +42,8 @@ namespace ogp
    * codes, he should update the code of #OperationTree::add_unary,
    * #OperationTree::add_binary, and of course
    * #OperationTree::add_derivative. */
-  enum class code_t {NONE, UMINUS, LOG, EXP, SIN, COS, TAN, SQRT, ERF,
-                     ERFC, PLUS, MINUS, TIMES, DIVIDE, POWER};
+  enum class code_t { NONE, UMINUS, LOG, EXP, SIN, COS, TAN, SQRT, ERF,
+                      ERFC, PLUS, MINUS, TIMES, DIVIDE, POWER };
 
   /** Class representing a nulary, unary, or binary operation. */
   class Operation
@@ -64,7 +64,7 @@ namespace ogp
     }
     /** Constructs a unary operation. */
     Operation(code_t cd, int oper1)
-      : code(cd), op1(oper1) 
+      : code(cd), op1(oper1)
     {
     }
     /** Constructs a nulary operation. */
@@ -218,7 +218,7 @@ namespace ogp
      * 2/pi.  These will be always first four terms having indices
      * zero, one and two, three. If adding anything to this
      * enumeration, make sure ‘num_constants’ remains the last one.*/
-    enum {zero, one, nan, two_over_pi, num_constants};
+    enum { zero, one, nan, two_over_pi, num_constants };
 
     /** The unique constructor which initializes the object to
      * contain only zero, one and nan and two_over_pi.*/

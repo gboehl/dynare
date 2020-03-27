@@ -29,7 +29,7 @@ function disp_dr(dr,order,var_list)
 
 global M_ options_
 
-if M_.hessian_eq_zero && order~=1
+if order~=1 && M_.hessian_eq_zero
     order = 1;
     warning('disp_dr: using order = 1 because Hessian is equal to zero');
 end

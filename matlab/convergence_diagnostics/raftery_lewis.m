@@ -149,10 +149,10 @@ for ind_1 = 1:2
         end       % end of for i3
     end        % end of for i2
 end         % end of for i1
-    g2 = g2*2;
-    bic = g2 - log(n_obs-2)*2;
+g2 = g2*2;
+bic = g2 - log(n_obs-2)*2;
 
-    end
+end
 
 
 function [g2, bic] = independence_chain_test(d)

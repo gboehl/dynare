@@ -9,7 +9,7 @@ function  g = knuth(a, b)
 % OUTPUTS
 % - g    [double]     n*1 vector, gamma variates.
 
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright (C) 2006-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,7 +38,15 @@ while mm
     X(index) = Y(index).*bb(index) + a(index) - 1;
     id1 = index(X(index)<=0); % Rejected draws.
     id2 = setdiff(index, id1);
-    id3 = id2(rand(length(id2), 1)>(1+Y(id2).*Y(id2)).*exp((a(id2)-1).*(log(X(id2))-log(a(id2)-1))-bb(id2).*Y(id2))); % Rejected draws.
+    if numel(id2) == 0 && ~isoctave && matlab_ver_less_than('9.1')
+        % The LHS of the > comparison in the "else" branch has size = [0, 1]
+        % while the RHS has size = [0, 0].
+        % Automatic broadcasting was only introduced in MATLAB R2016b, so we
+        % must handle this case separately to avoid an error.
+        id3 = [];
+    else
+        id3 = id2(rand(length(id2), 1)>(1+Y(id2).*Y(id2)).*exp((a(id2)-1).*(log(X(id2))-log(a(id2)-1))-bb(id2).*Y(id2))); % Rejected draws.
+    end
     index = [id1, id3];
     mm = length(index);
 end

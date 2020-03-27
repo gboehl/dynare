@@ -111,11 +111,11 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOpti
 %! @sp 2
 %! @strong{This function calls:}
 %! @sp 1
-%! @ref{dynare_resolve}, @ref{lyapunov_symm}, @ref{lyapunov_solver}, @ref{compute_Pinf_Pstar}, @ref{kalman_filter_d}, @ref{missing_observations_kalman_filter_d}, @ref{univariate_kalman_filter_d}, @ref{kalman_steady_state}, @ref{get_first_order_solution_params_deriv}, @ref{kalman_filter}, @ref{score}, @ref{AHessian}, @ref{missing_observations_kalman_filter}, @ref{univariate_kalman_filter}, @ref{priordens}
+%! @ref{dynare_resolve}, @ref{lyapunov_symm}, @ref{lyapunov_solver}, @ref{compute_Pinf_Pstar}, @ref{kalman_filter_d}, @ref{missing_observations_kalman_filter_d}, @ref{univariate_kalman_filter_d}, @ref{kalman_steady_state}, @ref{get_perturbation_params_deriv}, @ref{kalman_filter}, @ref{score}, @ref{AHessian}, @ref{missing_observations_kalman_filter}, @ref{univariate_kalman_filter}, @ref{priordens}
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2019 Dynare Team
+% Copyright (C) 2004-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -150,7 +150,9 @@ if DynareOptions.estimation_dll
     [fval,exit_flag,SteadyState,trend_coeff,info,params,H,Q] ...
         = logposterior(xparam1,DynareDataset, DynareOptions,Model, ...
                        EstimatedParameters,BayesInfo,DynareResults);
-    mexErrCheck('logposterior', exit_flag);
+    if exit_flag
+        error('Error encountered in logposterior')
+    end
     Model.params = params;
     if ~isequal(Model.H,0)
         Model.H = H;
@@ -455,12 +457,14 @@ switch DynareOptions.lik_init
     if kalman_algo ~= 2
         kalman_algo = 1;
     end
-    if isequal(H,0)
-        [err,Pstar] = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(Z,mm,length(Z))));
-    else
-        [err,Pstar] = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(Z,mm,length(Z))),H);
-    end
-    if err
+    try
+        if isequal(H,0)
+            Pstar = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(Z,mm,length(Z))));
+        else
+            Pstar = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(Z,mm,length(Z))),H);
+        end
+    catch ME
+        disp(ME.message)
         disp(['dsge_likelihood:: I am not able to solve the Riccati equation, so I switch to lik_init=1!']);
         DynareOptions.lik_init = 1;
         Pstar=lyapunov_solver(T,R,Q,DynareOptions);
@@ -522,11 +526,29 @@ if analytic_derivation
         else
             indparam=[];
         end
-        if full_Hess
-            [DT, ~, ~, DOm, DYss, ~, D2T, D2Om, D2Yss] = get_first_order_solution_params_deriv(A, B, EstimatedParameters, Model,DynareResults,DynareOptions,kron_flag,indparam,indexo,[],iv);
-        else
-            [DT, ~, ~, DOm, DYss] = get_first_order_solution_params_deriv(A, B, EstimatedParameters, Model,DynareResults,DynareOptions,kron_flag,indparam,indexo,[],iv);
+        old_order = DynareOptions.order;
+        if DynareOptions.order > 1%not sure whether this check is necessary
+            DynareOptions.order = 1; fprintf('Reset order to 1 for analytical parameter derivatives.\n');
         end
+        old_analytic_derivation_mode = DynareOptions.analytic_derivation_mode;
+        DynareOptions.analytic_derivation_mode = kron_flag;
+        if full_Hess
+            DERIVS = get_perturbation_params_derivs(Model, DynareOptions, EstimatedParameters, DynareResults, indparam, indexo, [], true);
+            indD2T = reshape(1:Model.endo_nbr^2, Model.endo_nbr, Model.endo_nbr);
+            indD2Om = dyn_unvech(1:Model.endo_nbr*(Model.endo_nbr+1)/2);
+            D2T = DERIVS.d2KalmanA(indD2T(iv,iv),:);
+            D2Om = DERIVS.d2Om(dyn_vech(indD2Om(iv,iv)),:);
+            D2Yss = DERIVS.d2Yss(iv,:,:);
+        else
+            DERIVS = get_perturbation_params_derivs(Model, DynareOptions, EstimatedParameters, DynareResults, indparam, indexo, [], false);
+        end
+        DT = zeros(Model.endo_nbr, Model.endo_nbr, size(DERIVS.dghx,3));
+        DT(:,Model.nstatic+(1:Model.nspred),:) = DERIVS.dghx;
+        DT = DT(iv,iv,:);
+        DOm = DERIVS.dOm(iv,iv,:);
+        DYss = DERIVS.dYss(iv,:);
+        DynareOptions.order = old_order; %make sure order is reset (not sure if necessary)
+        DynareOptions.analytic_derivation_mode = old_analytic_derivation_mode;%make sure analytic_derivation_mode is reset (not sure if necessary)
     else
         DT = derivatives_info.DT(iv,iv,:);
         DOm = derivatives_info.DOm(iv,iv,:);
@@ -629,8 +651,7 @@ singularity_has_been_detected = false;
 if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
     if no_missing_data_flag
         if DynareOptions.block
-            [err, LIK] = block_kalman_filter(T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
-            mexErrCheck('block_kalman_filter', err);
+            LIK = block_kalman_filter(T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
         elseif DynareOptions.fast_kalman_filter
             if diffuse_periods
                 %kalman_algo==3 requires no diffuse periods (stationary
@@ -659,8 +680,8 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
         end
     else
         if 0 %DynareOptions.block
-            [err, LIK,lik] = block_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,...
-                                                 T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
+            [LIK,lik] = block_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,...
+                                            T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
         else
             [LIK,lik] = missing_observations_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,Y,diffuse_periods+1,size(Y,2), ...
                                                            a, Pstar, ...

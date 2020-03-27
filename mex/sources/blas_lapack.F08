@@ -1,4 +1,4 @@
-! Copyright © 2019 Dynare Team
+! Copyright © 2019-2020 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -20,8 +20,10 @@ module blas
 
 #if defined(MATLAB_MEX_FILE) && __SIZEOF_POINTER__ == 8
   integer, parameter :: blint = int64
+  integer, parameter :: bllog = 8 ! Logical kind, gfortran-specific
 #else
   integer, parameter :: blint = int32
+  integer, parameter :: bllog = 4 ! Logical kind, gfortran-specific
 #endif
 
   interface
@@ -43,10 +45,29 @@ module lapack
      subroutine dgesv(n, nrhs, a, lda, ipiv, b, ldb, info)
        import :: blint, real64
        integer(blint), intent(in) :: n, nrhs, lda, ldb
-       real(real64), dimension(*), intent(inout) :: a
-       real(real64), dimension(*), intent(inout) :: b
+       real(real64), dimension(*), intent(inout) :: a, b
        integer(blint), dimension(*), intent(out) :: ipiv
        integer(blint), intent(out) :: info
      end subroutine dgesv
+  end interface
+
+  interface
+     subroutine dgges(jobvsl, jobvsr, sort, selctg, n, a, lda, b, ldb, sdim, &
+          alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, work, lwork, bwork, &
+          info)
+       import :: blint, bllog, real64
+       character :: jobvsl, jobvsr, sort
+       interface
+          logical(bllog) function selctg(alphar, alphai, beta)
+            import :: bllog, real64
+            real(real64), intent(in) :: alphar, alphai, beta
+          end function selctg
+       end interface
+       integer(blint), intent(in) :: n, lda, ldb, ldvsl, ldvsr, lwork
+       real(real64), dimension(*), intent(inout) :: a, b
+       real(real64), dimension(*), intent(out) :: alphar, alphai, beta, vsl, vsr, work
+       logical(bllog), dimension(*), intent(out) :: bwork
+       integer(blint), intent(out) :: sdim, info
+     end subroutine dgges
   end interface
 end module lapack

@@ -31,7 +31,7 @@ IterativeSylvester::solve(SylvParams &pars, KronVector &x) const
 
   auto kpow = matrixK->clone();
   auto fpow = matrixF->clone();
-  while (steps < max_steps &&norm > max_norm)
+  while (steps < max_steps && norm > max_norm)
     {
       kpow->multRight(SqSylvMatrix(*kpow)); // be careful to make copy
       fpow->multRight(SqSylvMatrix(*fpow)); // also here

@@ -3,7 +3,7 @@ function [co, b, yhat] = cosn(H)
 % -------------------------------------------------------------------------
 % computes the cosine of the angle between the (endogenous variable) H(:,1)
 % and its projection onto the span of (exogenous variables) H(:,2:end)
-% Note: This is not the same as multiple correlation coefficient since the 
+% Note: This is not the same as multiple correlation coefficient since the
 % means are not zero
 % =========================================================================
 % INPUTS
@@ -16,7 +16,7 @@ function [co, b, yhat] = cosn(H)
 %   * b     [k by 1] ols estimator
 %   * y     [n by 1] predicted endogenous values given ols estimation
 % -------------------------------------------------------------------------
-% This function is called by 
+% This function is called by
 %   * identification_checks.m
 %   * ident_bruteforce.m
 % =========================================================================

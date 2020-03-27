@@ -28,9 +28,9 @@
 # include <dynmex.h>
 #endif
 
-enum class status {def, changed, undef};
+enum class status { def, changed, undef };
 
-template <class _Type>
+template<class _Type>
 struct ParamItem
 {
 protected:
@@ -81,7 +81,7 @@ public:
 class SylvParams
 {
 public:
-  enum class solve_method {iter, recurse};
+  enum class solve_method { iter, recurse };
 
 protected:
   class DoubleParamItem : public ParamItem<double>

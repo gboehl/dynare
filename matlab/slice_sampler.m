@@ -55,7 +55,12 @@ npar = length(theta);
 W1 = sampler_options.W1;
 neval = zeros(npar,1);
 
-for it=1:npar
+% % % fname0=fname;
+fname = [ int2str(sampler_options.curr_block)];
+
+it=0;
+while it<npar
+    it=it+1;
     neval(it) = 0;
     W = W1(it);
     xold  = theta(it);
@@ -70,6 +75,24 @@ for it=1:npar
     %    THIS DEFINES THE SLICE S={x: z < ln(f(x))}
     % -------------------------------------------------------
     fxold = -feval(objective_function,theta,varargin{:});
+    if ~isfinite(fxold)
+        disp(['slice_sampler:: Iteration ' int2str(it) ' started with bad parameter set (fval is inf or nan)'])
+        icount=0;
+        while ~isfinite(fxold) && icount<1000
+            icount=icount+1;
+            theta = prior_draw();
+            if all(theta(:) >= thetaprior(:,1)) && all(theta(:) <= thetaprior(:,2))
+                fxold = -feval(objective_function,theta,varargin{:});
+            end
+        end
+        % restart from 1
+        it = 1;
+        neval(it) = 0;
+        W = W1(it);
+        xold  = theta(it);
+        XLB   = thetaprior(it,1);
+        XUB   = thetaprior(it,2);
+    end
     neval(it) = neval(it) + 1;
     Z = fxold + log(rand(1,1));
     % -------------------------------------------------------------
@@ -79,6 +102,7 @@ for it=1:npar
     u = rand(1,1);
     L = max(XLB,xold-W*u);
     R = min(XUB,L+W);
+    mytxt{it,1} = '';
     while(L > XLB)
         xsim = L;
         theta(it) = xsim;
@@ -88,7 +112,26 @@ for it=1:npar
             break
         end
         L = max(XLB,L-W);
+        if neval(it)>30
+            L=XLB;
+            xsim = L;
+            theta(it) = xsim;
+            fxl = -feval(objective_function,theta,varargin{:});
+            icount = 0;
+            while (isinf(fxl) || isnan(fxl)) && icount<300
+                icount = icount+1;
+                L=L+sqrt(eps);
+                xsim = L;
+                theta(it) = xsim;
+                fxl = -feval(objective_function,theta,varargin{:});
+            end
+            mytxt{it,1} = sprintf('Getting L for [%s] is taking too long.', varargin{6}.name{it});
+            save(['slice_iter_info_' fname],'mytxt','neval','it','theta','fxl')
+            %keyboard;
+        end
     end
+    neval1 = neval(it);
+    mytxt{it,2} = '';
     while(R < XUB)
         xsim = R;
         theta(it) = xsim;
@@ -98,11 +141,30 @@ for it=1:npar
             break
         end
         R = min(XUB,R+W);
+        if neval(it)>(neval1+30)
+            R=XUB;
+            xsim = R;
+            theta(it) = xsim;
+            fxr = -feval(objective_function,theta,varargin{:});
+            icount = 0;
+            while (isinf(fxr) || isnan(fxr)) && icount<300
+                icount = icount+1;
+                R=R-sqrt(eps);
+                xsim = R;
+                theta(it) = xsim;
+                fxr = -feval(objective_function,theta,varargin{:});
+            end
+            mytxt{it,2} = sprintf('Getting R for [%s] is taking too long.', varargin{6}.name{it});
+            save(['slice_iter_info_' fname],'mytxt','neval','it','theta','fxr')
+            %keyboard;
+        end
     end
+    neval2 = neval(it);
     % ------------------------------------------------------
     % 3. SAMPLING FROM THE SET A = (I INTERSECT S) = (LA,RA)
     % ------------------------------------------------------
     fxsim = Z-1;
+    mytxt{it,3} = '';
     while (fxsim < Z)
         u = rand(1,1);
         xsim = L + u*(R - L);
@@ -114,8 +176,20 @@ for it=1:npar
         else
             L = xsim;
         end
+        if (R-L)<1.e-6 %neval(it)>(30+neval2)
+            disp(sprintf('The sampling for variable [%s] is taking too long as the sampling set is too tight. Check the prior.', varargin{6}.name{it}))
+            mytxt{it,3} = sprintf('Sampling [%s] is taking too long.', varargin{6}.name{it});
+            save(['slice_iter_info_' fname],'mytxt','neval','it')
+            break
+        end
     end
+    save(['slice_iter_info_' fname],'mytxt','neval','it','theta','fxsim')
 
+    if isinf(fxsim) || isnan(fxsim)
+        theta(it) = xold;
+        fxsim = fxold;
+        disp('SLICE: posterior density is infinite. Reset values at initial ones.')
+    end
 end
 
 if sampler_options.rotated && ~isempty(sampler_options.mode) % jumping

@@ -59,7 +59,7 @@
 # define TL_DEBUG 0
 #endif
 
-#define TL_RAISE(mes)                                                   \
+#define TL_RAISE(mes)                           \
   throw TLException(__FILE__, __LINE__, mes)
 
 #define TL_RAISE_IF(expr, mes)                                          \
@@ -71,8 +71,8 @@ class TLException
 {
   const std::string fname;
   int lnum;
-  const std::string message;
 public:
+  const std::string message;
   TLException(std::string fname_arg, int lnum_arg, std::string message_arg)
     : fname{std::move(fname_arg)},
       lnum{lnum_arg},

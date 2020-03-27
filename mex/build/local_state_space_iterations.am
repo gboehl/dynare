@@ -1,12 +1,19 @@
-mex_PROGRAMS = local_state_space_iteration_2
+mex_PROGRAMS = local_state_space_iteration_2 local_state_space_iteration_k
 
 nodist_local_state_space_iteration_2_SOURCES = local_state_space_iteration_2.cc
+nodist_local_state_space_iteration_k_SOURCES = local_state_space_iteration_k.cc
 
 local_state_space_iteration_2_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
 local_state_space_iteration_2_LDFLAGS = $(AM_LDFLAGS) $(OPENMP_LDFLAGS)
 
-BUILT_SOURCES = $(nodist_local_state_space_iteration_2_SOURCES)
-CLEANFILES = $(nodist_local_state_space_iteration_2_SOURCES)
+local_state_space_iteration_k_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/tl/cc -I$(top_srcdir)/../../../dynare++/kord -I$(top_srcdir)/../../../dynare++/utils/cc $(CPPFLAGS_MATIO)
+local_state_space_iteration_k_LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_MATIO)
+local_state_space_iteration_k_LDADD = ../libdynare++/libdynare++.a  $(LIBADD_MATIO)
+
+BUILT_SOURCES = $(nodist_local_state_space_iteration_2_SOURCES) \
+		$(nodist_local_state_space_iteration_k_SOURCES)
+CLEANFILES = $(nodist_local_state_space_iteration_2_SOURCES) \
+	     $(nodist_local_state_space_iteration_k_SOURCES)
 
 %.cc: $(top_srcdir)/../../sources/local_state_space_iterations/%.cc
 	$(LN_S) -f $< $@

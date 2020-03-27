@@ -39,7 +39,9 @@ public:
   // Used to store error messages (as exceptions cannot cross the OpenMP boundary)
   static std::string error_msg;
 
-  DynamicModelCaller(bool linear_arg, bool compute_jacobian_arg) : linear{linear_arg}, compute_jacobian{compute_jacobian_arg} {};
+  DynamicModelCaller(bool linear_arg, bool compute_jacobian_arg) : linear{linear_arg}, compute_jacobian{compute_jacobian_arg}
+  {
+  };
   virtual ~DynamicModelCaller() = default;
   virtual double &y(size_t i) const = 0;
   virtual double jacobian(size_t i) const = 0;
@@ -55,7 +57,7 @@ private:
   static void *dynamic_mex;
 #endif
   using dynamic_tt_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, double *T);
-  using dynamic_deriv_fct = void (*) (const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *deriv);
+  using dynamic_deriv_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *deriv);
   static dynamic_tt_fct residual_tt_fct, g1_tt_fct;
   static dynamic_deriv_fct residual_fct, g1_fct;
   size_t nb_row_x;
@@ -65,8 +67,16 @@ private:
 public:
   DynamicModelDllCaller(size_t ntt, mwIndex nx, mwIndex ny, size_t ndynvars, const double *x_arg, size_t nb_row_x_arg, const double *params_arg, const double *steady_state_arg, bool linear_arg, bool compute_jacobian_arg);
   virtual ~DynamicModelDllCaller() = default;
-  double &y(size_t i) const override { return y_p[i]; };
-  double jacobian(size_t i) const override { return jacobian_p[i]; };
+  double &
+  y(size_t i) const override
+  {
+    return y_p[i];
+  };
+  double
+  jacobian(size_t i) const override
+  {
+    return jacobian_p[i];
+  };
   void eval(int it, double *resid) override;
   static void load_dll(const std::string &basename);
   static void unload_dll();
@@ -85,13 +95,23 @@ private:
 public:
   DynamicModelMatlabCaller(std::string basename_arg, size_t ntt, size_t ndynvars, const mxArray *x_mx_arg, const mxArray *params_mx_arg, const mxArray *steady_state_mx_arg, bool linear_arg, bool compute_jacobian_arg);
   ~DynamicModelMatlabCaller() override;
-  double &y(size_t i) const override { return mxGetPr(y_mx)[i]; };
-  double jacobian(size_t i) const override { return jacobian_mx ? mxGetPr(jacobian_mx)[i] : std::numeric_limits<double>::quiet_NaN(); };
+  double &
+  y(size_t i) const override
+  {
+    return mxGetPr(y_mx)[i];
+  };
+  double
+  jacobian(size_t i) const override
+  {
+    return jacobian_mx ? mxGetPr(jacobian_mx)[i] : std::numeric_limits<double>::quiet_NaN();
+  };
   void eval(int it, double *resid) override;
-  class Exception {
+  class Exception
+  {
   public:
     const std::string msg;
-    Exception(std::string msg_arg) : msg{std::move(msg_arg)} {};
+    Exception(std::string msg_arg) : msg{std::move(msg_arg)}
+    {
+    };
   };
 };
-

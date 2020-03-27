@@ -2,13 +2,13 @@ function forecasts = backward_model_forecast(initialcondition, listofvariables, 
 
 % Returns unconditional forecasts.
 %
-% INPUTS 
+% INPUTS
 % - initialcondition    [dseries]             Initial conditions for the endogenous variables.
 % - periods             [integer]             scalar, the number of (forecast) periods.
 % - withuncertainty     [logical]             scalar, returns confidence bands if true.
 %
-% OUTPUTS 
-% - forecast            [dseries]   
+% OUTPUTS
+% - forecast            [dseries]
 
 % Copyright (C) 2017-2018 Dynare Team
 %
@@ -98,7 +98,7 @@ end
 forecasts.pointforecast = dseries(transpose(ysim__0(idy,:)), initialcondition.init, listofvariables);
 
 % Set first period of forecast
-forecasts.start = start; 
+forecasts.start = start;
 
 if withuncertainty
     % Preallocate an array gathering the simulations.
@@ -110,7 +110,7 @@ if withuncertainty
         else
             [ysim__, xsim__] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
         end
-        ArrayOfForecasts(:,:,i) = ysim__(idy,:); 
+        ArrayOfForecasts(:,:,i) = ysim__(idy,:);
     end
     % Compute mean (over future uncertainty) forecast.
     forecasts.meanforecast = dseries(transpose(mean(ArrayOfForecasts, 3)), initialcondition.init, listofvariables);

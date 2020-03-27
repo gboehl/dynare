@@ -107,12 +107,12 @@
    from zero types, or unit matrices are deleted. See kron_prod.hh for an
    explanation. */
 
-template <class _Ttype>
+template<class _Ttype>
 class StackContainerInterface
 {
 public:
   using _Ctype = TensorContainer<_Ttype>;
-  enum class itype { matrix, unit, zero};
+  enum class itype { matrix, unit, zero };
 public:
   StackContainerInterface() = default;
   virtual ~StackContainerInterface() = default;
@@ -145,7 +145,7 @@ public:
 
    It does not own its tensors. */
 
-template <class _Ttype>
+template<class _Ttype>
 class StackContainer : virtual public StackContainerInterface<_Ttype>
 {
 public:
@@ -347,7 +347,7 @@ protected:
    on four variables, the third being u′ a dummy and always returning zero if
    dimension of u′ is positive. */
 
-template <class _Ttype>
+template<class _Ttype>
 class ZContainer : public StackContainer<_Ttype>
 {
 public:
@@ -429,7 +429,7 @@ public:
    third one is dummy, and always returns zero. The first stack
    corresponds to a container of g*. */
 
-template <class _Ttype>
+template<class _Ttype>
 class GContainer : public StackContainer<_Ttype>
 {
 public:
@@ -503,7 +503,7 @@ public:
    equivalence can have permuted classes by some given
    permutation. Nothing else is interesting. */
 
-template <class _Ttype>
+template<class _Ttype>
 class StackProduct
 {
 public:
@@ -614,7 +614,7 @@ public:
 /* Here we only inherit from Kronecker product KronProdAllOptim, only to
    allow for a constructor constructing from StackProduct. */
 
-template <class _Ttype>
+template<class _Ttype>
 class KronProdStack : public KronProdAllOptim
 {
 public:

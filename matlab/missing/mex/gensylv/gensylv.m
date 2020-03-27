@@ -1,5 +1,5 @@
-function [err, E] = gensylv(kron_prod,A,B,C0,D)
-%function [err, E] = gensylv(fake,A,B,C,D)
+function E = gensylv(kron_prod,A,B,C0,D)
+%function E = gensylv(fake,A,B,C,D)
 % Solves a Sylvester equation.
 %
 % INPUTS
@@ -19,7 +19,7 @@ function [err, E] = gensylv(kron_prod,A,B,C0,D)
 % SPECIAL REQUIREMENTS
 %   none.
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,4 +42,3 @@ end
 
 x0 = sylvester3(A,B,C,D);
 E  = sylvester3a(x0,A,B,C,D);
-err = 0;
