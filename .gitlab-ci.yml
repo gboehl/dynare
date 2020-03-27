@@ -1,6 +1,7 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   TERM: linux
+  MATLAB_VERSION: R2020a
   OLD_MATLAB_VERSION: R2009b
 
 # The next stanza creates the version number used for the source tarball and the
@@ -11,15 +12,11 @@ variables:
 #   + if on master: use 4.7-unstable-$TIMESTAMP-$COMMIT
 #   + on another branch: use $BRANCH-$TIMESTAMP-$COMMIT
 # - if in a personal repository: use $USER-$TIMESTAMP-$COMMIT
-#
-# Also sets the path and version of the default MATLAB installation.
 before_script:
   - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ -n $CI_COMMIT_TAG ]] && export VERSION=$CI_COMMIT_TAG'
   - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ $CI_COMMIT_REF_NAME == master ]] && export VERSION=4.7-unstable-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
   - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && export VERSION=$CI_COMMIT_REF_NAME-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
   - '[[ -z $VERSION ]] && export VERSION=$CI_PROJECT_NAMESPACE-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
-  - 'export MATLAB_PATH=$(dirname $(dirname $(readlink -f $(which matlab))))'
-  - 'export MATLAB_VERSION=$(echo version | matlab -nodesktop -nodisplay -nosplash 2>/dev/null | sed -En "/ans\ =/!d;n;n;s/^[^0-9]*([0-9]+\.[0-9]+).*$/\1/;p")'
 
 stages:
   - build
@@ -30,7 +27,7 @@ build_binaries:
   stage: build
   script:
     - autoreconf -si
-    - ./configure --with-matlab=$MATLAB_PATH MATLAB_VERSION=$MATLAB_VERSION PACKAGE_VERSION=$VERSION PACKAGE_STRING="dynare $VERSION"
+    - ./configure --with-matlab=/usr/local/MATLAB/$MATLAB_VERSION MATLAB_VERSION=$MATLAB_VERSION PACKAGE_VERSION=$VERSION PACKAGE_STRING="dynare $VERSION"
     - make -j $(nproc) LN_S="cp -p"
   artifacts:
     paths:
@@ -72,7 +69,7 @@ pkg_source:
     - rm doc/manual/source/_static/mathjax && sed -i "/^mathjax_path *=/d" doc/manual/source/conf.py
     - 'for f in configure.ac preprocessor/configure.ac mex/build/matlab/configure.ac mex/build/octave/configure.ac; do sed -i "s/^AC_INIT(\[\(.*\)\],\s*\[\(.*\)\])/AC_INIT([\1], [$VERSION])/" $f; done'
     - autoreconf -si
-    - ./configure --with-matlab=$MATLAB_PATH MATLAB_VERSION=$MATLAB_VERSION
+    - ./configure --with-matlab=/usr/local/MATLAB/$MATLAB_VERSION MATLAB_VERSION=$MATLAB_VERSION
     - make dist
   artifacts:
     paths:
@@ -144,7 +141,7 @@ test_matlab:
   extends: .test_matlab_template
   script:
     - autoreconf -si
-    - ./configure --disable-octave --with-matlab=$MATLAB_PATH MATLAB_VERSION=$MATLAB_VERSION
+    - ./configure --disable-octave --with-matlab=/usr/local/MATLAB/$MATLAB_VERSION MATLAB_VERSION=$MATLAB_VERSION
     - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
 
 test_old_matlab:
