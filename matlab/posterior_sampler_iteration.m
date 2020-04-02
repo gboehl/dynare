@@ -118,7 +118,7 @@ switch posterior_sampling_method
         if strcmpi(sampler_options.proposal_distribution,'rand_multivariate_normal')
             n = nxopt;
         elseif strcmpi(sampler_options.proposal_distribution,'rand_multivariate_student')
-            n = options_.student_degrees_of_freedom;
+            n = sampler_options.student_degrees_of_freedom;
         end
 
         proposed_par = feval(sampler_options.proposal_distribution, xopt_current_block', proposal_covariance_Cholesky_decomposition_upper, n);
