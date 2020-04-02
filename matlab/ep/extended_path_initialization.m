@@ -16,7 +16,7 @@ function [initial_conditions, innovations, pfm, ep, verbosity, DynareOptions, Dy
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright (C) 2016-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,6 +34,9 @@ function [initial_conditions, innovations, pfm, ep, verbosity, DynareOptions, Dy
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 ep  = DynareOptions.ep;
+
+% Set bytecode flag (see #1717)
+ep.use_bytecode = DynareOptions.bytecode;
 
 % Set verbosity levels.
 DynareOptions.verbosity = ep.verbosity;
