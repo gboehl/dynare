@@ -257,6 +257,7 @@ MODFILES = \
 	kalman_filter_smoother/fs2000_smoother_only_ns.mod \
 	kalman_filter_smoother/test_compute_Pinf_Pstar_data.mod \
 	kalman_filter_smoother/test_compute_Pinf_Pstar.mod \
+	kalman_filter_smoother/SOE.mod \
 	kalman_filter_smoother/check_variable_dimensions/fs2000.mod \
 	kalman_filter_smoother/check_variable_dimensions/fs2000_ML.mod \
 	kalman/likelihood_from_dynare/fs2000_corr_ME.mod \
@@ -882,6 +883,7 @@ EXTRA_DIST = \
 	kalman/lik_init/fs2000_common.inc \
 	kalman/lik_init/fs2000_ns_common.inc \
 	kalman_filter_smoother/compare_results_simulation/fsdat_simul_logged.m \
+	kalman_filter_smoother/SOE_data_file.m \
 	kalman/likelihood_from_dynare/fs2000_model.inc \
 	kalman/likelihood_from_dynare/fs2000_estimation_check.inc \
 	kalman/likelihood_from_dynare/fs2000ns_model.inc \
