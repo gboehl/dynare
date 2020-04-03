@@ -5448,6 +5448,8 @@ block decomposition of the model (see :opt:`block`).
 
                Available options are:
 
+           .. _prop_distrib:
+
            ``'proposal_distribution'``
 
                Specifies the statistical distribution used for the
@@ -5545,6 +5547,11 @@ block decomposition of the model (see :opt:`block`).
                See :ref:`save_tmp_file <savetmp>`. Default: ``1``.
 
            ``'tailored_random_block_metropolis_hastings'``
+
+           ``'proposal_distribution'``
+
+               Specifies the statistical distribution used for the
+               proposal density. See :ref:`proposal_distribution <prop_distrib>`.
 
            ``new_block_probability = DOUBLE``
 

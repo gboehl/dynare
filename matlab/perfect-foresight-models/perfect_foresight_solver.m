@@ -185,6 +185,7 @@ end
 
 
 if ~isreal(oo_.endo_simul(:)) % cannot happen with bytecode or the perfect_foresight_problem DLL
+    ny = size(oo_.endo_simul, 1)
     if M_.maximum_lag > 0
         y0 = real(oo_.endo_simul(:, M_.maximum_lag));
     else
