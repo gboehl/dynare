@@ -214,6 +214,10 @@ by the ``dynare`` command.
 
         Suppresses all warnings.
 
+    .. option:: notime
+
+        Do not print the total computing time at the end of the driver.
+
     .. option:: transform_unary_ops
 
        Transform the following operators in the model block into auxiliary
