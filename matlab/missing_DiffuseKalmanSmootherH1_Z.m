@@ -297,7 +297,7 @@ if d %diffuse periods
                         + L_1'*N(:,:,t+1)*L_1;                            % DK (2012), eq. 5.29
                 end
             else
-                r0(:,t) = Z(di,:)'*iFstar(di,di,t)*v(di,t)-Lstar(:,di,t)'*r0(:,t+1); % DK (2003), eq. (14)
+                r0(:,t) = Z(di,:)'*iFstar(di,di,t)*v(di,t)-Lstar(:,:,t)'*r0(:,t+1); % DK (2003), eq. (14)
                 r1(:,t) = T'*r1(:,t+1);                                             % DK (2003), eq. (14)
                 if state_uncertainty_flag
                     N(:,:,t)=Z(di,:)'*iFstar(di,di,t)*Z(di,:)...
