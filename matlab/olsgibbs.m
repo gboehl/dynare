@@ -187,7 +187,7 @@ hh = dyn_waitbar(0,'Please wait. Gibbs sampler...');
 set(hh,'Name','Olsgibbs estimation.');
 for i = discarddraws+1:ndraws
     if ~mod(i,10)
-        dyn_waitbar(i/(ndraws-discarddraws),hh,'Please wait. Gibbs sampler...');
+        dyn_waitbar((i-discarddraws)/(ndraws-discarddraws),hh,'Please wait. Gibbs sampler...');
     end
     % Set conditional distribution of β
     InverseConditionalPoseriorVariance = BetaInversePriorVariance + h*(X'*X);
