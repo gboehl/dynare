@@ -12,7 +12,7 @@ test_matlab:
 test_old_matlab:
   stage: test
   variables:
-    MATLAB: /usr/local/MATLAB/R2009b/bin/matlab
+    MATLAB: /usr/local/MATLAB/R2014a/bin/matlab
   script:
     - make check-matlab
   artifacts:
