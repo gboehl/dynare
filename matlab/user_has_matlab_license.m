@@ -11,7 +11,7 @@ function [hasLicense] = user_has_matlab_license(toolbox)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2012-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,11 +28,8 @@ function [hasLicense] = user_has_matlab_license(toolbox)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if matlab_ver_less_than('7.12')
-    hasLicense = license('test', toolbox);
-else
-    [hasLicense, ~] = license('checkout',toolbox);
-end
+[hasLicense, ~] = license('checkout',toolbox);
+
 if ~hasLicense
     return
 end

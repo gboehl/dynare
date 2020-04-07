@@ -832,7 +832,6 @@ EXTRA_DIST = \
 	block_bytecode/run_ls2003.m \
 	bvar_a_la_sims/bvar_sample.m \
 	dates/fsdat_simul.m \
-	dates/data_uav.xls \
 	dates/data_uav.xlsx \
 	external_function/extFunDeriv.m \
 	external_function/extFunNoDerivs.m \
@@ -842,7 +841,6 @@ EXTRA_DIST = \
 	expectations/expectation_ss_old_steadystate.m \
 	filter_step_ahead/trend_cycle_decomposition_data.m \
 	steady_state/walsh1_old_ss_steadystate.m \
-	data/test.xls \
 	data/test.xlsx \
 	gsa/morris/nk_est_data.m \
 	gsa/data_ca1.m \
@@ -877,7 +875,6 @@ EXTRA_DIST = \
 	ms-sbvar/archive-files/specification_2v2c.dat \
 	recursive/data_ca1.m \
 	recursive/data_ca1_csv.csv \
-	recursive/data_ca1_xls.xls \
 	recursive/data_ca1_xls.xlsx \
 	kalman_filter_smoother/fsdat_simul.m \
 	kalman/lik_init/fs2000_common.inc \

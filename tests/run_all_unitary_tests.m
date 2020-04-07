@@ -39,7 +39,7 @@ if isoctave
 end
 
 % Set random seed, for reproducibility
-if isoctave || matlab_ver_less_than('7.12')
+if isoctave
     randn('state',1);
     rand('state',1);
 else

@@ -17,7 +17,7 @@ function [ConditionalVarianceDecomposition, ConditionalVarianceDecomposition_ME]
 %                                                    h is the number of Steps
 %                                                    p is the number of state innovations and
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -89,7 +89,7 @@ end
 % Measurement error
 
 if ~all(StateSpaceModel.measurement_error==0)
-    if isoctave || matlab_ver_less_than('8.1')
+    if isoctave
         [observable_pos,index_subset,index_observables]=intersect_stable(SubsetOfVariables,StateSpaceModel.observable_pos);
     else
         [observable_pos,index_subset,index_observables]=intersect(SubsetOfVariables,StateSpaceModel.observable_pos,'stable');

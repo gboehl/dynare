@@ -88,7 +88,7 @@ make -j"$NTHREADS"
 NAME=dynare-"$VERSION"
 PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p \
-      "$PKGFILES"/mex/matlab/maci64-7.9-9.3 \
+      "$PKGFILES"/mex/matlab/maci64-8.3-9.3 \
       "$PKGFILES"/mex/matlab/maci64-9.4-9.8 \
       "$PKGFILES"/mex/octave \
       "$PKGFILES"/doc/dynare++ \
@@ -107,7 +107,7 @@ cp -p  "$ROOTDIR"/license.txt                                        "$PKGFILES"
 cp -pr "$ROOTDIR"/matlab                                             "$PKGFILES"
 cp -pr "$ROOTDIR"/examples                                           "$PKGFILES"
 
-cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-7.9-9.3
+cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-8.3-9.3
 
 cp -p  "$ROOTDIR"/scripts/dynare.el                                  "$PKGFILES"/scripts
 cp -pr "$ROOTDIR"/contrib/ms-sbvar/TZcode/MatlabFiles                "$PKGFILES"/contrib/ms-sbvar/TZcode

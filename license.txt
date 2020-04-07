@@ -207,12 +207,6 @@ Copyright: 1993-1996 Kurt Hornik
            2016-2017 Dynare Team
 License: GPL-3+
 
-Files: matlab/missing/strjoin/strjoin.m
-Copyright: 2013-2019 Ben Abbott
-           2007 Muthiah Annamalai
-           2019 Dynare Team
-License: GPL-3+
-
 Files: matlab/lmmcp/catstruct.m
 Copyright: 2005 Jos van der Geest <jos@jasen.nl>
            2013 Christophe Gouel

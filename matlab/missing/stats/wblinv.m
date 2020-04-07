@@ -10,7 +10,7 @@ function t = wblinv(proba, scale, shape)   % --*-- Unitary tests --*--
 % OUTPUTS
 % - t     [double] scalar such that P(X<=t)=proba
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -147,7 +147,7 @@ t = exp(log(scale)+log(-log(1-proba))/shape);
 %$           if debug
 %$               [shape, scale, x(k-1)]
 %$           end
-%$           if isoctave || matlab_ver_less_than('7.14')
+%$           if isoctave
 %$               s = quadv(density, 0, x(k-1),1e-10);
 %$           else
 %$               s = integral(density, 0, x(k-1));
@@ -155,7 +155,7 @@ t = exp(log(scale)+log(-log(1-proba))/shape);
 %$           if debug
 %$               [s, abs(p-s)]
 %$           end
-%$         if isoctave || matlab_ver_less_than('7.14')
+%$         if isoctave
 %$           t(k) = abs(p-s)<1e-9;
 %$         else
 %$           t(k) = abs(p-s)<1e-12;

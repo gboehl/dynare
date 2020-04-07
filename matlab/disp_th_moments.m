@@ -2,7 +2,7 @@ function oo_ = disp_th_moments(dr, var_list, M_, options_, oo_)
 
 % Display theoretical moments of variables
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -55,7 +55,7 @@ oo_.var = oo_.gamma_y{1};
 
 ME_present=0;
 if ~all(M_.H==0)
-    if isoctave || matlab_ver_less_than('8.1')
+    if isoctave
         [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
     else
         [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
@@ -105,7 +105,7 @@ if size(stationary_vars, 1) > 0
             lh = cellofchararraymaxlength(M_.endo_names(ivar(stationary_vars)))+2;
             dyntable(options_, title, headers, M_.endo_names(ivar(stationary_vars)), 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
             if ME_present
-                if isoctave || matlab_ver_less_than('8.1')
+                if isoctave
                     [stationary_observables, pos_index_subset] = intersect_stable(index_subset, stationary_vars);
                 else
                     [stationary_observables, pos_index_subset] = intersect(index_subset, stationary_vars, 'stable');

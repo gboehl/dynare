@@ -1,6 +1,6 @@
 function mexpath = add_path_to_mex_files(dynareroot, modifypath)
 
-% Copyright (C) 2015-2019 Dynare Team
+% Copyright (C) 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,7 +54,7 @@ if isoctave
 else
     % Add win32 specific paths for Dynare Windows package
     if strcmp(computer, 'PCWIN')
-        tmp = [dynareroot '../mex/matlab/win32-7.9-8.6/'];
+        tmp = [dynareroot '../mex/matlab/win32-8.3-8.6/'];
         if exist(tmp, 'dir')
             mexpath = tmp;
             if modifypath
@@ -65,7 +65,7 @@ else
     % Add win64 specific paths for Dynare Windows package
     if strcmp(computer, 'PCWIN64')
         if matlab_ver_less_than('9.4')
-            tmp = [dynareroot '../mex/matlab/win64-7.9-9.3/'];
+            tmp = [dynareroot '../mex/matlab/win64-8.3-9.3/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
                 if modifypath
@@ -85,7 +85,7 @@ else
     % Add macOS paths for Dynare Mac package
     if strcmp(computer, 'MACI64')
         if matlab_ver_less_than('9.4')
-            tmp = [dynareroot '../mex/matlab/maci64-7.9-9.3/'];
+            tmp = [dynareroot '../mex/matlab/maci64-8.3-9.3/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
                 if modifypath

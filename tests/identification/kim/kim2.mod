@@ -81,10 +81,6 @@ end;
 
 varobs c i;
 
-/* Skip test under MATLAB R2009b
-   MATLAB crashes, most likely due to an internal bug */
-if isoctave || ~matlab_ver_less_than('7.10')
-
 identification(advanced=1,max_dim_cova_group=3);
 //varobs c i lam; //to check if observing lam identifies phi and theta
 //identification(ar=1,advanced=1,max_dim_cova_group=3,prior_mc=250);
@@ -93,5 +89,3 @@ identification(advanced=1,max_dim_cova_group=3);
 
 estim_params_=[]; 
 identification(advanced=1,max_dim_cova_group=3);
-
-end

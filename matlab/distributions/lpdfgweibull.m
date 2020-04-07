@@ -16,7 +16,7 @@ function [ldens,Dldens,D2ldens] = lpdfgweibull(x,a,b,c)  % --*-- Unitary tests -
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -205,7 +205,7 @@ end
 %$ density  = @(x) exp(lpdfgweibull(x,shape,scale));
 %$
 %$ try
-%$    if isoctave || matlab_ver_less_than('7.14')
+%$    if isoctave
 %$        s = quadl(density, .0000000001, 100000, 1e-10);
 %$    else
 %$        s = integral(density, 0, 100000);
@@ -228,7 +228,7 @@ end
 %$ density  = @(x) exp(lpdfgweibull(x,shape,scale));
 %$
 %$ try
-%$    if isoctave || matlab_ver_less_than('7.14')
+%$    if isoctave
 %$        s = quadl(density, .0000000001, 100000, 1e-10);
 %$    else
 %$        s = integral(density, 0, 100000);
@@ -251,7 +251,7 @@ end
 %$ density  = @(x) exp(lpdfgweibull(x,shape,scale));
 %$
 %$ try
-%$    if isoctave || matlab_ver_less_than('7.14')
+%$    if isoctave
 %$        s = quadl(density, .0000000001, 100000, 1e-10);
 %$    else
 %$        s = integral(density, 0, 100000);
@@ -262,7 +262,7 @@ end
 %$ end
 %$
 %$ if t(1)
-%$        if isoctave || matlab_ver_less_than('7.14')
+%$        if isoctave
 %$            t(2) = abs(s-1)<5e-5;
 %$        else
 %$            t(2) = abs(s-1)<1e-6;
@@ -280,8 +280,6 @@ end
 %$ try
 %$    if isoctave
 %$        s = quadgk(xdens, .0000000001, 100000, 1e-10);
-%$    elseif matlab_ver_less_than('7.14')
-%$        s = quadgk(xdens, .0000000001, 100000, 'AbsTol', 1e-10);
 %$    else
 %$        s = integral(xdens, 0, 100000);
 %$    end
@@ -303,7 +301,7 @@ end
 %$ xdens = @(x) x.*exp(lpdfgweibull(x,shape,scale));
 %$
 %$ try
-%$    if isoctave || matlab_ver_less_than('7.14')
+%$    if isoctave
 %$        s = quadl(xdens, .0000000001, 100000, 1e-10);
 %$    else
 %$        s = integral(xdens, 0, 100000);
@@ -326,7 +324,7 @@ end
 %$ xdens = @(x) x.*exp(lpdfgweibull(x,shape,scale));
 %$
 %$ try
-%$    if isoctave || matlab_ver_less_than('7.14')
+%$    if isoctave
 %$        s = quadl(xdens, .0000000001, 100000, 1e-10);
 %$    else
 %$        s = integral(xdens, 0, 100000);
@@ -352,7 +350,7 @@ end
 %$ try
 %$    s = NaN(n, 1);
 %$    for i=1:n
-%$        if isoctave || matlab_ver_less_than('7.14')
+%$        if isoctave
 %$             s(i) = quadl(density, .0000000001, .1*i, 1e-10);
 %$        else
 %$            s(i) = integral(density, 0, .1*i);
@@ -383,7 +381,7 @@ end
 %$ try
 %$    s = NaN(n, 1);
 %$    for i=1:n
-%$        if isoctave || matlab_ver_less_than('7.14')
+%$        if isoctave
 %$            s(i) = quadl(density, .0000000001, .1*i, 1e-10);
 %$        else
 %$            s(i) = integral(density, 0, .1*i);
@@ -414,7 +412,7 @@ end
 %$ try
 %$    s = NaN(n, 1);
 %$    for i=1:n
-%$        if isoctave || matlab_ver_less_than('7.14')
+%$        if isoctave
 %$            s(i) = quadl(density, .0000000001, .1*i, 1e-10);
 %$        else
 %$            s(i) = integral(density, 0, .1*i);
@@ -429,7 +427,7 @@ end
 %$    for i=1:n
 %$        x = .1*i;
 %$        q = 1-exp(-(x/scale)^shape);
-%$        if isoctave || matlab_ver_less_than('7.14')
+%$        if isoctave
 %$            t(i+1) = abs(s(i)-q)<5e-5;
 %$        else
 %$            t(i+1) = abs(s(i)-q)<1e-6;

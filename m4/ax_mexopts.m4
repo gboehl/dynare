@@ -22,7 +22,7 @@ AC_REQUIRE([AX_MATLAB_ARCH])
 AC_REQUIRE([AX_MATLAB_VERSION])
 AC_REQUIRE([AC_PROG_SED])
 
-AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.9], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to 7.9 (R2009b) at least.])])
+AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [8.3], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to 8.3 (R2014a) at least.])])
 
 AC_MSG_CHECKING([for options to compile MEX for MATLAB])
 
@@ -79,10 +79,6 @@ case ${MATLAB_ARCH} in
     ax_mexopts_ok="no"
     ;;
 esac
-
-# Kludge for incompatibility of older MATLABs (≤ R2011a) with recent gcc
-# Include <uchar.h>, because matrix.h needs char16_t
-AX_COMPARE_VERSION([$MATLAB_VERSION], [le], [7.12], [MATLAB_CFLAGS="$MATLAB_CFLAGS -include uchar.h"])
 
 # Converts the MATLAB version number into comparable integers with only major and minor version numbers
 # For example, 7.4.2 will become 0704

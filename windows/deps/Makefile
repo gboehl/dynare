@@ -1,4 +1,4 @@
-# Copyright © 2017-2019 Dynare Team
+# Copyright © 2017-2020 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -195,13 +195,13 @@ tarballs/matlab%.tar.xz:
 matlab32: tarballs/matlab32-$(MATLAB32_VERSION).tar.xz
 	rm -rf $@
 	mkdir -p $@
-	tar xf $< --directory $@ --strip-components=1
+	tar xf $< --directory $@
 	touch $@
 
 matlab64: tarballs/matlab64-$(MATLAB64_VERSION).tar.xz
 	rm -rf $@
 	mkdir -p $@
-	tar xf $< --directory $@ --strip-components=1
+	tar xf $< --directory $@
 	touch $@
 
 matlab: matlab32 matlab64

@@ -1,6 +1,6 @@
 function oo_ = posterior_analysis(type,arg1,arg2,arg3,options_,M_,oo_)
 
-% Copyright (C) 2008-2018 Dynare Team
+% Copyright (C) 2008-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,7 +66,7 @@ switch type
                                              M_.exo_names,arg2,vartan,arg1,options_.mh_conf_sig,oo_,options_);
     if ~all(M_.H==0)
         if strmatch(arg1,options_.varobs,'exact')
-            if isoctave || matlab_ver_less_than('8.1')
+            if isoctave
                 [observable_name_requested_vars,index_subset,index_observables]=intersect_stable(vartan,options_.varobs);
             else
                 [observable_name_requested_vars,index_subset,index_observables]=intersect(vartan,options_.varobs,'stable');

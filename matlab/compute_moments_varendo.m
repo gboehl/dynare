@@ -17,7 +17,7 @@ function oo_ = compute_moments_varendo(type, options_, M_, oo_, var_list_)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2018 Dynare Team
+% Copyright (C) 2008-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -145,7 +145,7 @@ if M_.exo_nbr > 1
     end
     skipline();
     if ~all(M_.H==0)
-        if isoctave || matlab_ver_less_than('8.1')
+        if isoctave
             [observable_name_requested_vars, varlist_pos] = intersect_stable(var_list_, options_.varobs);
         else
             [observable_name_requested_vars, varlist_pos] = intersect(var_list_, options_.varobs, 'stable');

@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright © 2009-2019 Dynare Team
+dnl Copyright © 2009-2020 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -35,7 +35,7 @@ if test "$ax_enable_matlab" != yes -o "$ax_matlab_version_ok" != yes -o "$ax_mex
   AC_MSG_ERROR([MATLAB cannot be found])
 fi
 
-AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [7.9], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to version 7.9 (R2009b) at least (or disable MATLAB support with --disable-matlab).])])
+AX_COMPARE_VERSION([$MATLAB_VERSION], [lt], [8.3], [AC_MSG_ERROR([Your MATLAB is too old, please upgrade to version 8.3 (R2014a) at least (or disable MATLAB support with --disable-matlab).])])
 
 case ${host_os} in
   *cygwin*)

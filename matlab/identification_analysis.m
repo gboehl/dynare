@@ -327,7 +327,7 @@ if info(1) == 0 %no errors in solution
                 cmm = simulated_moment_uncertainty(ind_dMOMENTS, periods, replic,options_,M_,oo_); %covariance matrix of moments
                 sd = sqrt(diag(cmm));
                 cc = cmm./(sd*sd');
-                if isoctave || matlab_ver_less_than('8.3')
+                if isoctave
                     [VV,DD] = eig(cc);
                     %fix for older Matlab versions that do not support computing left eigenvalues, see http://mathworks.com/help/releases/R2012b/matlab/ref/eig.html
                     [WW,~] = eig(cc.');

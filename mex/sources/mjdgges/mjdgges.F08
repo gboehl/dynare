@@ -55,10 +55,6 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
 #else
   real(real64), dimension(:), pointer :: gev_r, gev_i
 #endif
-#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION < 0x0904
-  ! Workaround for MKL bug, see below
-  real(real64), dimension(:), allocatable, target :: vsl_target
-#endif
 
   if (nrhs < 2 .or. nrhs > 4 .or. nlhs /= 6) then
      call mexErrMsgTxt("MJDGGES: takes 2, 3 or 4 input arguments and exactly 6 output arguments.")
@@ -113,19 +109,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
 #endif
   info => mxGetPr(plhs(6))
   z => mxGetPr(plhs(3))
-#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION < 0x0904
-  ! The left Schur vectors (VSL) are normally not computed, since JOBVSL="N".
-  ! But old MKL versions (at least the one shipped with MATLAB R2009b/7.9,
-  ! which is MKL 10.1) are buggy, and passing nullptr for VSL leads to a crash.
-  ! Hence we need to allocate space for it.
-  ! The bug seems to be fixed in MATLAB R2010a/7.10 (MKL 10.2), but we use the
-  ! workaround for all versions < R2018a/9.4, since those share the same
-  ! ABI and hence the same executables.
-  allocate(vsl_target(n1*n1))
-  vsl => vsl_target
-#else
   vsl => null()
-#endif
 
   ! Copy input matrices, since we can’t modify them
   associate (a => mxGetPr(prhs(1)), b => mxGetPr(prhs(2)))

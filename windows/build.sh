@@ -108,7 +108,7 @@ cp dynare++/src/dynare++.exe dynare++/32-bit/
 ## Note that we do out-of-tree compilation, since we want to do these in
 ## parallel
 
-# Create Windows 32-bit DLL binaries for MATLAB ≥ R2009b
+# Create Windows 32-bit DLL binaries for MATLAB ≥ R2014a
 build_windows_matlab_mex_32 ()
 {
     mkdir -p "$TMP_DIRECTORY"/matlab-win32/
@@ -118,18 +118,18 @@ build_windows_matlab_mex_32 ()
 		     --with-gsl="$LIB32_MSYS2" \
 		     --with-matio="$LIB32_MSYS2" \
 		     --with-slicot="$LIB32"/Slicot/without-underscore \
-		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab32/R2009b \
-		     MATLAB_VERSION=R2009b \
+		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab32/R2014a \
+		     MATLAB_VERSION=R2014a \
 		     MEXEXT=mexw32 \
 		     PACKAGE_VERSION="$VERSION" \
 		     PACKAGE_STRING="dynare $VERSION"
     make -j"$NTHREADS" all
     i686-w64-mingw32-strip -- **/*.mexw32
-    mkdir -p "$ROOT_DIRECTORY"/../mex/matlab/win32-7.9-8.6
-    mv -- **/*.mexw32 "$ROOT_DIRECTORY"/../mex/matlab/win32-7.9-8.6
+    mkdir -p "$ROOT_DIRECTORY"/../mex/matlab/win32-8.3-8.6
+    mv -- **/*.mexw32 "$ROOT_DIRECTORY"/../mex/matlab/win32-8.3-8.6
 }
 
-# Create Windows 64-bit DLL binaries for MATLAB ≥ R2009b and ≤ R2017b
+# Create Windows 64-bit DLL binaries for MATLAB ≥ R2014a and ≤ R2017b
 build_windows_matlab_mex_64_a ()
 {
     mkdir -p "$TMP_DIRECTORY"/matlab-win64-a/
@@ -139,15 +139,15 @@ build_windows_matlab_mex_64_a ()
 		     --with-gsl="$LIB64_MSYS2" \
 		     --with-matio="$LIB64_MSYS2" \
 		     --with-slicot="$LIB64"/Slicot/without-underscore \
-		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab64/R2009b \
-		     MATLAB_VERSION=R2009b \
+		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab64/R2014a \
+		     MATLAB_VERSION=R2014a \
 		     MEXEXT=mexw64 \
 		     PACKAGE_VERSION="$VERSION" \
 		     PACKAGE_STRING="dynare $VERSION"
     make -j"$NTHREADS" all
     x86_64-w64-mingw32-strip -- **/*.mexw64
-    mkdir -p "$ROOT_DIRECTORY"/../mex/matlab/win64-7.9-9.3
-    mv -- **/*.mexw64 "$ROOT_DIRECTORY"/../mex/matlab/win64-7.9-9.3
+    mkdir -p "$ROOT_DIRECTORY"/../mex/matlab/win64-8.3-9.3
+    mv -- **/*.mexw64 "$ROOT_DIRECTORY"/../mex/matlab/win64-8.3-9.3
 }
 
 # Create Windows 64-bit DLL binaries for MATLAB ≥ R2018a

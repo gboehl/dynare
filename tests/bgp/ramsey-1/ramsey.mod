@@ -16,7 +16,7 @@ end;
 verbatim;
 
     bgp.write(M_);
-    if isoctave || matlab_ver_less_than('8.1')
+    if isoctave
         options = optimset('Display', 'iter', 'MaxFunEvals', 1000000,'MaxIter',100000,'Jacobian','on','TolFun',1e-6,'TolX',1e-6);
     else
         options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-6,'StepTolerance',1e-6);

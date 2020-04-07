@@ -11,7 +11,7 @@ function oo_=disp_moments(y,var_list,M_,options_,oo_)
 % OUTPUTS
 %   oo_                 [structure]    Dynare's results structure,
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,7 +50,7 @@ y = y(ivar,options_.drop+1:end)';
 
 ME_present=0;
 if ~all(M_.H==0)
-    if isoctave || matlab_ver_less_than('8.1')
+    if isoctave
         [observable_pos_requested_vars, index_subset, index_observables] = intersect_stable(ivar, options_.varobs_id);
     else
         [observable_pos_requested_vars, index_subset, index_observables] = intersect(ivar, options_.varobs_id, 'stable');

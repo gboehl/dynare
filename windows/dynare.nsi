@@ -91,9 +91,9 @@ SectionEnd
 
 SectionGroup "Dynare support for 64-bit MATLAB and Octave"
 
-Section "MEX files for MATLAB 64-bit, version 7.9 to 9.3 (R2009b to R2017b)"
- SetOutPath $INSTDIR\mex\matlab\win64-7.9-9.3
- File ..\mex\matlab\win64-7.9-9.3\*.mexw64
+Section "MEX files for MATLAB 64-bit, version 8.3 to 9.3 (R2014a to R2017b)"
+ SetOutPath $INSTDIR\mex\matlab\win64-8.3-9.3
+ File ..\mex\matlab\win64-8.3-9.3\*.mexw64
 SectionEnd
 
 Section "MEX files for MATLAB 64-bit, version 9.4 to 9.8 (R2018a to R2020a)"
@@ -116,9 +116,9 @@ SectionGroupEnd
 
 SectionGroup "Dynare support for 32-bit MATLAB and Octave"
 
-Section "MEX files for MATLAB 32-bit, version 7.9 to 8.6 (R2009b to R2015b)"
- SetOutPath $INSTDIR\mex\matlab\win32-7.9-8.6
- File ..\mex\matlab\win32-7.9-8.6\*.mexw32
+Section "MEX files for MATLAB 32-bit, version 8.3 to 8.6 (R2014a to R2015b)"
+ SetOutPath $INSTDIR\mex\matlab\win32-8.3-8.6
+ File ..\mex\matlab\win32-8.3-8.6\*.mexw32
 SectionEnd
 
 Section "MEX files for Octave 5.2.0 (32-bit)"

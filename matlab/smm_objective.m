@@ -15,7 +15,7 @@ function [r,flag] = smm_objective(xparams,sample_moments,weighting_matrix,option
 % SPECIAL REQUIREMENTS
 %  The user has to provide a file where the moment conditions are defined.
 
-% Copyright (C) 2010-2019 Dynare Team
+% Copyright (C) 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,11 +40,7 @@ flag = 1;
 
 if nargin<5
     if isempty(mainStream)
-        if matlab_ver_less_than('7.12')
-            mainStream = RandStream.getDefaultStream;
-        else
-            mainStream = RandStream.getGlobalStream;
-        end
+        mainStream = RandStream.getGlobalStream;
         mainState  = mainStream.State;
     else
         mainStream.State = mainState;

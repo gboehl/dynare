@@ -6,7 +6,7 @@ function [state_u,state_n] = set_dynare_random_generator_state(state_u,state_n)
 % For backward compatibility, we return two vectors, but, in recent
 % versions of Matlab and in Octave, we return two identical vectors.
 %
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -23,14 +23,8 @@ function [state_u,state_n] = set_dynare_random_generator_state(state_u,state_n)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-matlab_random_streams = ~isoctave;
-
-if matlab_random_streams% Use new matlab interface.
-    if matlab_ver_less_than('7.12')
-        s = RandStream.getDefaultStream();
-    else
-        s = RandStream.getGlobalStream();
-    end
+if ~isoctave
+    s = RandStream.getGlobalStream();
     if isequal(s.Type,'legacy')
         rand('state',state_u);
         randn('state',state_n);
@@ -47,13 +41,9 @@ if matlab_random_streams% Use new matlab interface.
                    'please, contact Dynare''s development team.'])
         end
         s.State = state_u;
-        if matlab_ver_less_than('7.12')
-            RandStream.setDefaultStream(s);
-        else
-            RandStream.setGlobalStream(s);
-        end
+        RandStream.setGlobalStream(s);
     end
-else% Use old matlab interface.
+else
     rand('state',state_u);
     randn('state',state_n);
 end
