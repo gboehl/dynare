@@ -19,7 +19,7 @@ function [deviations, baseline, irfs] = backward_model_irf(initialcondition, inn
 %   argument.
 % - If second argument is not empty, periods must not be greater than innovationbaseline.nobs.
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright (C) 2017-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -95,6 +95,14 @@ else
             end
         end
     end
+end
+
+% Check fourth argument. If empty return the paths for all the endogenous variables.
+if isempty(listofvariables)
+    listofvariables = M_.endo_names;
+end
+if ~iscell(listofvariables)
+    error('Fourth input argument has to be a cell of row char arrays or an empty object.')
 end
 
 % Set default initial conditions for the innovations.
