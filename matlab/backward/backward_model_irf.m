@@ -220,6 +220,7 @@ for i=1:length(listofshocks)
         name = listofshocks{i};
     end
     deviations.(name) = alldeviations{listofvariables{:}};
+    deviations.(name) = [deviations.(name) dseries(innovations, initialcondition.last+1, exonames)];
     if nargout>2
         irfs.(name) = allirfs{listofvariables{:}};
         irfs.(name) = [irfs.(name) dseries(innovations, initialcondition.last+1, exonames)];
