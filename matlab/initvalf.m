@@ -34,7 +34,7 @@ global M_ oo_ options_
 
 series_ = 1;
 
-[directory,basename,extension] = fileparts(fname_);
+[directory, basename, extension] = fileparts(fname_);
 
 % Auto-detect extension if not provided
 if isempty(extension)
@@ -53,58 +53,70 @@ end
 
 fullname = [basename extension];
 
-if ~exist(fullname)
+if ~exist(fullname, 'file')
     error(['Can''t find datafile: ' fullname ]);
-end
-
-switch (extension)
-  case '.m'
-    eval(basename);
-  case '.mat'
-    load(basename);
-  case { '.xls', '.xlsx' }
-    [data_,names_v_]=xlsread(fullname); % Octave needs the extension explicitly
-    series_=0;
-  otherwise
-    error(['Unsupported extension for datafile: ' extension])
 end
 
 options_.initval_file = true;
 oo_.endo_simul = [];
 oo_.exo_simul = [];
 
-for i_=1:length(M_.endo_names)
-    if series_ == 1
-        x_ = eval(M_.endo_names{i_});
-        if size(x_,2)>size(x_,1) %oo_.endo_simul must be collection of row vectors
-            oo_.endo_simul = [oo_.endo_simul; x_];
-        else %transpose if column vector
+if ismember(extension, {'.mat', '.m'}) && isdseries(fname_)
+    data = dseries(fname_);
+    % Add auxiliary variables if any.
+    data = feval(sprintf('%s.dynamic_set_auxiliary_series', M_.fname), data, M_.params);
+    % Remove NaNs in the first periods.
+    data = data(data.firstobservedperiod:data.lastobservedperiod);
+    % Fill endo_simul.
+    oo_.endo_simul = transpose(data{M_.endo_names{:}}.data);
+    % Fill exo_simul.
+    oo_.exo_simul = data{M_.exo_names{:}}.data;
+    % Update number of periods for the deterministic simulation.
+    options_.periods = data.nobs-M_.maximum_lag-M_.maximum_lead;
+else
+    switch (extension)
+      case '.m'
+        eval(basename);
+      case '.mat'
+        load(basename);
+      case { '.xls', '.xlsx' }
+        [data_,names_v_]=xlsread(fullname); % Octave needs the extension explicitly
+        series_=0;
+      otherwise
+        error(['Unsupported extension for datafile: ' extension])
+    end
+    for i_=1:length(M_.endo_names)
+        if series_ == 1
+            x_ = eval(M_.endo_names{i_});
+            if size(x_,2)>size(x_,1) %oo_.endo_simul must be collection of row vectors
+                oo_.endo_simul = [oo_.endo_simul; x_];
+            else %transpose if column vector
+                oo_.endo_simul = [oo_.endo_simul; x_'];
+            end
+        else
+            k_ = strmatch(M_.endo_names{i_}, names_v_, 'exact');
+            if isempty(k_)
+                error(['INITVAL_FILE: ' M_.endo_names{i_} ' not found'])
+            end
+            x_ = data_(:,k_);
             oo_.endo_simul = [oo_.endo_simul; x_'];
         end
-    else
-        k_ = strmatch(M_.endo_names{i_}, names_v_, 'exact');
-        if isempty(k_)
-            error(['INITVAL_FILE: ' M_.endo_names{i_} ' not found'])
-        end
-        x_ = data_(:,k_);
-        oo_.endo_simul = [oo_.endo_simul; x_'];
     end
-end
-
-for i_=1:length(M_.exo_names)
-    if series_ == 1
-        x_ = eval(M_.exo_names{i_});
-        if size(x_,2)>size(x_,1) %oo_.endo_simul must be collection of row vectors
-            oo_.exo_simul = [oo_.exo_simul x_'];
-        else %if column vector
+    for i_=1:length(M_.exo_names)
+        if series_ == 1
+            x_ = eval(M_.exo_names{i_});
+            if size(x_,2)>size(x_,1) %oo_.endo_simul must be collection of row vectors
+                oo_.exo_simul = [oo_.exo_simul x_'];
+            else %if column vector
+                oo_.exo_simul = [oo_.exo_simul x_];
+            end
+        else
+            k_ = strmatch(M_.exo_names{i_}, names_v_, 'exact');
+            if isempty(k_)
+                error(['INITVAL_FILE: ' M_.exo_names{i_} ' not found'])
+            end
+            x_ = data_(:,k_);
             oo_.exo_simul = [oo_.exo_simul x_];
         end
-    else
-        k_ = strmatch(M_.exo_names{i_}, names_v_, 'exact');
-        if isempty(k_)
-            error(['INITVAL_FILE: ' M_.exo_names{i_} ' not found'])
-        end
-        x_ = data_(:,k_);
-        oo_.exo_simul = [oo_.exo_simul x_];
     end
 end
