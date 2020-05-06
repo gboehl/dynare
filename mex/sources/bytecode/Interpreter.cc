@@ -604,7 +604,7 @@ Interpreter::ReadCodeFile(string file_name, CodeLoad &code)
 void
 Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, vector<s_plan> sconstrained_extended_path)
 {
-  vector<unsigned int> exogenous = fb->get_exogenous();
+  vector<int> exogenous = fb->get_exogenous();
   vector<int> endogenous = fb->get_endogenous();
   for (vector<s_plan>::iterator it = sconstrained_extended_path.begin(); it != sconstrained_extended_path.end(); it++)
     {
@@ -627,8 +627,8 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, vector<s_plan> 
           throw FatalExceptionHandling(tmp.str());
         }
     }
-  for (vector<unsigned int>::iterator it = exogenous.begin(); it != exogenous.end(); it++)
-    previous_block_exogenous.push_back(*it);
+  for (auto it : exogenous)
+    previous_block_exogenous.push_back(it);
 }
 
 bool
