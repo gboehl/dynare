@@ -61,8 +61,8 @@ options_.initval_file = true;
 oo_.endo_simul = [];
 oo_.exo_simul = [];
 
-if ismember(extension, {'.mat', '.m'}) && isdseries(fname_)
-    data = dseries(fname_);
+if ismember(extension, {'.mat', '.m'}) && isdseries(fullname)
+    data = dseries(fullname);
     % Add auxiliary variables if any.
     data = feval(sprintf('%s.dynamic_set_auxiliary_series', M_.fname), data, M_.params);
     % Remove NaNs in the first periods.
