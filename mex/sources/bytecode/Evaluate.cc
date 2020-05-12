@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2017 Dynare Team
+ * Copyright © 2013-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -455,7 +455,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
           //load a temporary variable in the processor
           var = static_cast<FLDT_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
-          mexPrintf("T[it_=%d var=%d, y_kmin=%d, y_kmax=%d == %d]=>%f\n", it_, var, y_kmin, y_kmax, var*(periods+y_kmin+y_kmax)+it_, var);
+          mexPrintf("FLDT T[it_=%d var=%d, y_kmin=%d, y_kmax=%d == %d]=>%f\n", it_, var, y_kmin, y_kmax, var*(periods+y_kmin+y_kmax)+it_, T[var*(periods+y_kmin+y_kmax)+it_]);
           tmp_out << " T[" << it_ << ", " << var << "](" << T[var*(periods+y_kmin+y_kmax)+it_] << ")";
 #endif
           Stack.push(T[var*(periods+y_kmin+y_kmax)+it_]);
@@ -783,11 +783,11 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               tmp << " in compute_block_time, variable " << EQN_type << " not used yet\n";
               throw FatalExceptionHandling(tmp.str());
             }
-#ifdef DEBUG
-          tmp_out << "=>";
-          mexPrintf(" g1[%d](%f)=%s\n", var, g1[var], tmp_out.str().c_str());
-          tmp_out.str("");
-#endif
+// #ifdef DEBUG
+//           tmp_out << "=>";
+//           mexPrintf(" g1[%d](%f)=%s\n", var, g1[var], tmp_out.str().c_str());
+//           tmp_out.str("");
+// #endif
           Stack.pop();
           break;
 
@@ -1160,7 +1160,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
             unsigned int nb_add_input_arguments = fc->get_nb_add_input_arguments();
             function_type = fc->get_function_type();
 #ifdef DEBUG
-            mexPrintf("function_type=%d ExternalFunctionWithoutDerivative=%d\n", function_type, ExternalFunctionWithoutDerivative);
+            mexPrintf("function_type=%d ExternalFunctionWithoutDerivative=%d\n", function_type, ExternalFunctionType::withoutDerivative);
             mexEvalString("drawnow;");
 #endif
             mxArray **input_arguments;
