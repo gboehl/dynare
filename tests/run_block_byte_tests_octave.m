@@ -1,4 +1,4 @@
-## Copyright (C) 2009-2019 Dynare Team
+## Copyright (C) 2009-2020 Dynare Team
 ##
 ## This file is part of Dynare.
 ##
@@ -131,7 +131,7 @@ for blockFlag = 0:1
 endfor
 ecput = toc;
 delete('wsOct');
-cd(getenv('TOP_TEST_DIR'));
+cd(top_test_dir);
 fid = fopen('run_block_byte_tests_octave.o.trs', 'w+');
 if size(failedBlock,2) > 0
   fprintf(fid,':test-result: FAIL\n');
