@@ -223,7 +223,7 @@ deploy_release_stable:
     - pkg_windows
     - pkg_macOS
   script:
-    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/dynare-object-signing.p12 -n Dynare -i https://www.dynare.org -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
+    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/dynare-object-signing.p12 -n Dynare -i https://www.dynare.org -t http://timestamp.digicert.com -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
     - cp *.tar.xz /srv/www.dynare.org/release/source/
     - cp windows/exe/* /srv/www.dynare.org/release/windows/
     - cp windows/7z/* /srv/www.dynare.org/release/windows-7z/
@@ -245,7 +245,7 @@ deploy_beta_stable:
     - pkg_windows
     - pkg_macOS
   script:
-    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/dynare-object-signing.p12 -n Dynare -i https://www.dynare.org -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
+    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/dynare-object-signing.p12 -n Dynare -i https://www.dynare.org -t http://timestamp.digicert.com -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
     - cp *.tar.xz /srv/www.dynare.org/beta/source/
     - cp windows/exe/* /srv/www.dynare.org/beta/windows/
     - cp windows/7z/* /srv/www.dynare.org/beta/windows-7z/
