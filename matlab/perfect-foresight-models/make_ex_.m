@@ -42,7 +42,9 @@ end
 
 % Initialize oo_.exo_simul
 if isempty(M_.exo_histval)
-    if isempty(ex0_)
+    if options_.initval_file
+        % exo_simul provided by initval file
+    elseif isempty(ex0_)
         oo_.exo_simul = repmat(oo_.exo_steady_state',M_.maximum_lag+options_.periods+M_.maximum_lead,1);
     else
         oo_.exo_simul = [ repmat(ex0_',M_.maximum_lag,1) ; repmat(oo_.exo_steady_state',options_.periods+M_.maximum_lead,1) ];

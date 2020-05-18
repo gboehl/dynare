@@ -64,7 +64,8 @@ if ~isempty(M_.det_shocks) && options_.periods<max([M_.det_shocks.periods])
     error('PERFECT_FORESIGHT_SETUP: Please check the declaration of the shocks or increase the value of the periods option.')
 end
 
+oo_ = make_ex_(M_,options_,oo_);
+
 if ~options_.initval_file
-    oo_ = make_ex_(M_,options_,oo_);
     oo_ = make_y_(M_,options_,oo_);
 end
