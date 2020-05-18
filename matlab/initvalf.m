@@ -51,7 +51,7 @@ if isempty(extension)
     end
 end
 
-fullname = [basename extension];
+fullname = [directory '/' basename extension];
 
 if ~exist(fullname, 'file')
     error(['Can''t find datafile: ' fullname ]);
