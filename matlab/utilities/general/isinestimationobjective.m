@@ -2,7 +2,7 @@ function b = isinestimationobjective()
 
 % Returns true iff the caller function is called by a routine defining the objective of an estimation algorithm.
 
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright (C) 2014-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -26,7 +26,6 @@ list_of_previously_called_routines = transpose(tmp(2,:));
 
 if ~isempty(strmatch('dsge_likelihood', list_of_previously_called_routines, 'exact')) || ...
         ~isempty(strmatch('dsge_var_likelihood', list_of_previously_called_routines, 'exact')) || ...
-        ~isempty(strmatch('non_linear_dsge_likelihood', list_of_previously_called_routines, 'exact')) || ...
-        ~isempty(strmatch('simulated_moments_estimation', list_of_previously_called_routines, 'exact'))
+        ~isempty(strmatch('non_linear_dsge_likelihood', list_of_previously_called_routines, 'exact'))
     b = true;
 end
