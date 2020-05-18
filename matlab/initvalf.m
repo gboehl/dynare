@@ -51,6 +51,10 @@ if isempty(extension)
     end
 end
 
+if isempty(directory)
+    directory = '.';
+end
+
 fullname = [directory '/' basename extension];
 
 if ~exist(fullname, 'file')
