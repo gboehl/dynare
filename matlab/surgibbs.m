@@ -21,7 +21,7 @@ function ds = surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eq
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
 
-% Copyright (C) 2017-2019 Dynare Team
+% Copyright (C) 2017-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -107,6 +107,7 @@ end
 
 hh = dyn_waitbar(0,'Please wait. Gibbs sampler...');
 set(hh,'Name','Surgibbs estimation.');
+residdraws = zeros(floor((ndraws-discarddraws)/thin), nobs, m);
 for i = 1:ndraws
     if ~mod(i,10)
         dyn_waitbar(i/ndraws,hh,'Please wait. Gibbs sampler...');
@@ -125,6 +126,7 @@ for i = 1:ndraws
     if i > discarddraws
         if thinidx == thin
             oo_.surgibbs.(model_name).betadraws(drawidx, 1:nparams) = beta';
+            residdraws(drawidx, 1:nobs, 1:m) = resid;
             thinidx = 1;
             drawidx = drawidx + 1;
         else
@@ -175,10 +177,15 @@ oo_.surgibbs.(model_name).neqs = m;
 SS_res = oo_.surgibbs.(model_name).resid'*oo_.surgibbs.(model_name).resid;
 oo_.surgibbs.(model_name).s2 = SS_res/oo_.surgibbs.(model_name).dof;
 
-% R^2
-ym = Y - mean(Y);
-SS_tot = ym'*ym;
-oo_.surgibbs.(model_name).R2 = 1 - SS_res/SS_tot;
+% Set appropriate entries in Sigma_e
+posterior_mean_resid = reshape((sum(residdraws))/rows(residdraws), nobs, m);
+Sigma_e = posterior_mean_resid'*posterior_mean_resid/oo_.surgibbs.(model_name).dof;
+
+% System R^2 value of McElroy (1977) - formula from Judge et al. (1986, p. 477)
+IMn = ones(nobs,nobs)*1/nobs;
+D_T = eye(nobs)-IMn;
+oo_.surgibbs.(model_name).R2 = 1 - (oo_.surgibbs.(model_name).resid' * kron(inv(Sigma_e), eye(nobs)) * oo_.surgibbs.(model_name).resid) ...
+                                 / (oo_.surgibbs.(model_name).Yobs' * kron(inv(Sigma_e), D_T) * oo_.surgibbs.(model_name).Yobs);
 
 % Write .inc file
 write_param_init_inc_file('surgibbs', model_name, oo_.surgibbs.(model_name).param_idxs, oo_.surgibbs.(model_name).posterior.mean.beta);

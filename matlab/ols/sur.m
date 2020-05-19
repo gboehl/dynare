@@ -18,7 +18,7 @@ function varargout = sur(ds, param_names, eqtags, model_name, noniterative, ds_r
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
 
-% Copyright (C) 2017-2019 Dynare Team
+% Copyright (C) 2017-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -193,13 +193,14 @@ varargout{1} = ds;
 SS_res = oo_.sur.(model_name).resid'*oo_.sur.(model_name).resid;
 oo_.sur.(model_name).s2 = SS_res/oo_.sur.(model_name).dof;
 
-% R^2
-ym = Y.data - mean(Y.data);
-SS_tot = ym'*ym;
-oo_.sur.(model_name).R2 = 1 - SS_res/SS_tot;
+% System R^2 value of McElroy (1977) - formula from Judge et al. (1986, p. 477)
+IMn = ones(nobs,nobs)*1/nobs;
+D_T = eye(nobs)-IMn;
+oo_.sur.(model_name).R2 = 1 - (oo_.sur.(model_name).resid' * kron(inv(M_.Sigma_e), eye(nobs)) * oo_.sur.(model_name).resid) ...
+                            / (oo_.sur.(model_name).Yobs.data' * kron(inv(M_.Sigma_e), D_T) * oo_.sur.(model_name).Yobs.data);
 
 % Adjusted R^2
-oo_.sur.(model_name).adjR2 = oo_.sur.(model_name).R2 - (1 - oo_.sur.(model_name).R2)*M_.param_nbr/(oo_.sur.(model_name).dof - 1);
+oo_.sur.(model_name).adjR2 = 1 - (1 - oo_.sur.(model_name).R2) * ((neqs*nobs-neqs)/(neqs*nobs-size(oo_.sur.(model_name).beta,1)));
 
 % Durbin-Watson
 ediff = oo_.sur.(model_name).resid(2:oo_.sur.(model_name).dof) - oo_.sur.(model_name).resid(1:oo_.sur.(model_name).dof - 1);
