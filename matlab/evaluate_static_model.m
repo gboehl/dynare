@@ -45,17 +45,19 @@ else
     fh_static = str2func([M.fname '.static']);
     if options.block
         residuals = zeros(M.endo_nbr,1);
+        T = NaN(M.block_structure_stat.tmp_nbr, 1);
         for b = 1:length(M.block_structure_stat.block)
             mfsb = M.block_structure_stat.block(b).variable;
             % blocks that can be directly evaluated (mfsb is empty)
             % have zero residuals by construction
             if M.block_structure_stat.block(b).Simulation_Type ~= 1 && ...
                     M.block_structure_stat.block(b).Simulation_Type ~= 2
-                residuals(mfsb) = feval(fh_static,b,ys,exo_ss,params);
+                [r, ~, ~, ~, T] = feval(fh_static,b,ys,exo_ss,params,T);
+                residuals(mfsb) = r;
             else
                 %need to evaluate the recursive blocks to compute the
                 %temporary terms
-                feval(fh_static,b,ys,exo_ss,params);
+                [~, ~, ~, ~, T] = feval(fh_static,b,ys,exo_ss,params,T);
             end
         end
     else
