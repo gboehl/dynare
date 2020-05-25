@@ -189,46 +189,7 @@ for it_=start:incr:finish
             end
             ya_save=ya;
             g1a=g1;
-            if ~is_dynamic && options.solve_algo==0
-                if verbose
-                    disp('steady: fsolve')
-                end
-                if ~isoctave
-                    if ~user_has_matlab_license('optimization_toolbox')
-                        error('SOLVE_ONE_BOUNDARY: you can''t use solve_algo=0 since you don''t have MATLAB''s Optimization Toolbox')
-                    end
-                end
-                options=optimset('fsolve');
-                options.MaxFunEvals = 50000;
-                options.MaxIter = 2000;
-                options.TolFun=1e-8;
-                options.Display = 'iter';
-                options.Jacobian = 'on';
-                if ~isoctave
-                    [yn,fval,exitval,output] = fsolve(@local_fname, y(y_index_eq), ...
-                                                      options, x, params, steady_state, y, y_index_eq, fname, 0);
-                else
-                    % Under Octave, use a wrapper, since fsolve() does not have a 4th arg
-                    func = @(z) local_fname(z, x, params, steady_state, y, y_index_eq, fname, 0);
-                    % The Octave version of fsolve does not converge when it starts from the solution
-                    fvec = feval(func,y(y_index_eq));
-                    if max(abs(fvec)) >= options.solve_tolf
-                        [yn,fval,exitval,output] = fsolve(func,y(y_index_eq),options);
-                    else
-                        yn = y(y_index_eq);
-                        exitval = 3;
-                    end
-                end
-                y(y_index_eq) = yn;
-                if exitval > 0
-                    info = 0;
-                else
-                    info = -Block_Num*10;
-                end
-            elseif (~is_dynamic && options.solve_algo==2) || (is_dynamic && stack_solve_algo==4)
-                if verbose && ~is_dynamic
-                    disp('steady: LU + lnsrch1')
-                end
+            if is_dynamic && stack_solve_algo==4
                 lambda=1;
                 stpmx = 100 ;
                 if is_dynamic
@@ -240,30 +201,12 @@ for it_=start:incr:finish
                 g = (r'*g1)';
                 f = 0.5*r'*r;
                 p = -g1\r ;
-                if is_dynamic
-                    [ya,f,r,check]=lnsrch1(y(it_,:)',f,g,p,stpmax, ...
-                                           'lnsrch1_wrapper_one_boundary',nn, ...
-                                           y_index_eq, options.solve_tolx, y_index_eq, fname, y, x, params, steady_state, it_);
-                    dx = ya' - y(it_, :);
-                else
-                    [ya,f,r,check]=lnsrch1(y,f,g,p,stpmax,fname,nn,y_index_eq, options.solve_tolx, x, ...
-                                           params, steady_state,0);
-                    dx = ya - y(y_index_eq);
-                end
-                if is_dynamic
-                    y(it_,:) = ya';
-                else
-                    y = ya';
-                end
-            elseif ~is_dynamic && options.solve_algo==3
-                if verbose
-                    disp('steady: csolve')
-                end
-                [yn,info] = csolve(@local_fname, y(y_index_eq),@ ...
-                                   local_fname,1e-6,500, x, params, steady_state, y, y_index_eq, fname, 1);
-                dx = ya - yn;
-                y(y_index_eq) = yn;
-            elseif (stack_solve_algo==1 && is_dynamic) || (stack_solve_algo==0 && is_dynamic) || (~is_dynamic && (options.solve_algo==1 || options.solve_algo==6))
+                [ya,f,r,check]=lnsrch1(y(it_,:)',f,g,p,stpmax, ...
+                                       'lnsrch1_wrapper_one_boundary',nn, ...
+                                       y_index_eq, options.solve_tolx, y_index_eq, fname, y, x, params, steady_state, it_);
+                dx = ya' - y(it_, :);
+                y(it_,:) = ya';
+            elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0)) || (~is_dynamic && options.solve_algo==6)
                 if verbose && ~is_dynamic
                     disp('steady: Sparse LU ')
                 end
@@ -396,11 +339,4 @@ if is_dynamic
     oo_.deterministic_simulation.block(Block_Num).iterations = iter;
 else
     info = 0;
-end
-
-function [err, G]=local_fname(yl, x, params, steady_state, y, y_index_eq, fname, is_csolve)
-y(y_index_eq) = yl;
-[err, y, G] = feval(fname, y, x, params, steady_state, 0);
-if(is_csolve)
-    G = full(G);
 end
