@@ -18,7 +18,7 @@ function [steady_state,params,info] = steady_(M_,options_,oo_)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,8 +40,8 @@ if options_.solve_algo < 0 || options_.solve_algo > 12
 end
 
 if ~options_.bytecode && ~options_.block && options_.solve_algo > 4 && ...
-        options_.solve_algo < 10
-    error('STEADY: you can''t use solve_algo > 4 without block nor bytecode options')
+        options_.solve_algo < 9
+    error('STEADY: you can''t use solve_algo = {5,6,7,8} without block nor bytecode options')
 end
 
 if ~options_.bytecode && options_.block && options_.solve_algo == 5
