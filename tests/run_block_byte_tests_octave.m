@@ -46,10 +46,10 @@ for blockFlag = 0:1
         default_solve_algo = 2;
         default_stack_solve_algo = 0;
         if !blockFlag && !bytecodeFlag
-            solve_algos = 0:4;
+            solve_algos = [0:4 9];
             stack_solve_algos = [0 6];
         elseif blockFlag && !bytecodeFlag
-            solve_algos = [0:4 6:8];
+            solve_algos = [0:4 6:9];
             stack_solve_algos = 0:4;
         else
             solve_algos = 0:8;
