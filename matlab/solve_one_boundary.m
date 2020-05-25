@@ -1,4 +1,4 @@
-function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, ...
+function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, T, ...
                                         y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options, oo)
 % Computes the deterministic simulation of a block of equation containing
 % lead or lag variables
@@ -10,6 +10,7 @@ function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, ...
 %   x                   [matrix]        All the exogenous variables of the model
 %   params              [vector]        All the parameters of the model
 %   steady_state        [vector]        steady state of the model
+%   T                   [matrix]        Temporary terms
 %   y_index_eq          [vector of int] The index of the endogenous variables of
 %                                       the block
 %   nze                 [integer]       number of non-zero elements in the
@@ -94,7 +95,7 @@ for it_=start:incr:finish
         if is_dynamic
             [r, y, g1, g2, g3] = feval(fname, y, x, params, steady_state, it_, 0);
         else
-            [r, y, g1] = feval(fname, y, x, params);
+            [r, y, g1] = feval(fname, y, x, params, T);
         end
         if ~isreal(r)
             max_res=(-(max(max(abs(r))))^2)^0.5;
@@ -263,7 +264,7 @@ for it_=start:incr:finish
                         [r, y, g1, g2, g3] = feval(fname, y, x, params, ...
                                                    steady_state, it_, 0);
                     else
-                        [r, y, g1] = feval(fname, y, x, params);
+                        [r, y, g1] = feval(fname, y, x, params, T);
                     end
                     if max(abs(r))>=options.solve_tolf
                         [dx,flag1] = bicgstab(g1,-r,1e-7,Blck_size,L1,U1);
