@@ -1,5 +1,5 @@
 function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, ...
-                                        y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo, forward_backward, is_dynamic, verbose, M, options, oo)
+                                        y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options, oo)
 % Computes the deterministic simulation of a block of equation containing
 % lead or lag variables
 %
@@ -15,8 +15,7 @@ function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, ...
 %   nze                 [integer]       number of non-zero elements in the
 %                                       jacobian matrix
 %   periods             [integer]       number of simulation periods
-%   is_linear           [integer]       if is_linear=1 the block is linear
-%                                       if is_linear=0 the block is not linear
+%   is_linear           [logical]       whether the block is linear
 %   Block_Num           [integer]       block number
 %   y_kmin              [integer]       maximum number of lag in the model
 %   maxit_              [integer]       maximum number of iteration in Newton
@@ -31,18 +30,15 @@ function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, ...
 %                                            - 2 GMRES
 %                                            - 3 BicGStab
 %                                            - 4 Optimal path length
-%   forward_backward    [integer]       The block has to be solve forward
-%                                       (1) or backward (0)
-%   is_dynamic          [integer]       (1) The block belong to the dynamic
+%   is_forward          [logical]       Whether the block has to be solved forward
+%                                       If false, the block is solved backward
+%   is_dynamic          [logical]       If true, the block belongs to the dynamic file
 %                                           file and the oo_.deterministic_simulation field has to be uptated
-%                                       (0) The block belong to the static
-%                                           file and th oo_.deteerminstic
+%                                       If false, the block belongs to the static
+%                                           file and the oo_.detereministic_simulation
 %                                           field remains unchanged
-%   verbose            [integer]        (0) iterations are not printed
-%                                       (1) iterations are printed
-%   indirect_call      [integer]        (0) direct call to the fname
-%                                       (1) indirect call via the
-%                                       local_fname wrapper
+%   verbose             [logical]       Whether iterations are to be printed
+%
 % OUTPUTS
 %   y                  [matrix]         All endogenous variables of the model
 %   info               [integer]        >=0 no error
@@ -55,7 +51,7 @@ function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, ...
 %   none.
 %
 
-% Copyright (C) 1996-2018 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -80,7 +76,7 @@ correcting_factor=0.01;
 ilu_setup.droptol=1e-10;
 max_resa=1e100;
 reduced = 0;
-if forward_backward
+if is_forward
     incr = 1;
     start = y_kmin+1;
     finish = periods+y_kmin;
@@ -105,7 +101,7 @@ for it_=start:incr:finish
         else
             max_res=max(max(abs(r)));
         end
-        if verbose==1
+        if verbose
             disp(['iteration : ' int2str(iter+1) ' => ' num2str(max_res) ' time = ' int2str(it_)])
             if is_dynamic
                 disp([M.endo_names{y_index_eq} num2str([y(it_,y_index_eq)' r g1])])
@@ -230,7 +226,7 @@ for it_=start:incr:finish
                     info = -Block_Num*10;
                 end
             elseif (~is_dynamic && options.solve_algo==2) || (is_dynamic && stack_solve_algo==4)
-                if verbose==1 && ~is_dynamic
+                if verbose && ~is_dynamic
                     disp('steady: LU + lnsrch1')
                 end
                 lambda=1;
@@ -260,7 +256,7 @@ for it_=start:incr:finish
                     y = ya';
                 end
             elseif ~is_dynamic && options.solve_algo==3
-                if verbose==1
+                if verbose
                     disp('steady: csolve')
                 end
                 [yn,info] = csolve(@local_fname, y(y_index_eq),@ ...
@@ -268,7 +264,7 @@ for it_=start:incr:finish
                 dx = ya - yn;
                 y(y_index_eq) = yn;
             elseif (stack_solve_algo==1 && is_dynamic) || (stack_solve_algo==0 && is_dynamic) || (~is_dynamic && (options.solve_algo==1 || options.solve_algo==6))
-                if verbose==1 && ~is_dynamic
+                if verbose && ~is_dynamic
                     disp('steady: Sparse LU ')
                 end
                 dx =  g1\r;
@@ -280,7 +276,7 @@ for it_=start:incr:finish
                 end
             elseif (stack_solve_algo==2 && is_dynamic) || (options.solve_algo==7 && ~is_dynamic)
                 flag1=1;
-                if verbose == 1 && ~is_dynamic
+                if verbose && ~is_dynamic
                     disp('steady: GMRES ')
                 end
                 while flag1>0
@@ -309,7 +305,7 @@ for it_=start:incr:finish
                 end
             elseif (stack_solve_algo==3 && is_dynamic) || (options.solve_algo==8 && ~is_dynamic)
                 flag1=1;
-                if verbose == 1 && ~is_dynamic
+                if verbose && ~is_dynamic
                     disp('steady: BiCGStab')
                 end
                 while flag1>0
@@ -377,7 +373,7 @@ for it_=start:incr:finish
                 fprintf('Error in simul: Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "options_.simul.maxit" or set "cutoff=0" in model options.\n',Block_Num, it_,iter);
             end
         end
-        if(is_dynamic)
+        if is_dynamic
             oo_.deterministic_simulation.status = 0;
             oo_.deterministic_simulation.error = max_res;
             oo_.deterministic_simulation.iterations = iter;

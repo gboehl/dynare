@@ -16,8 +16,7 @@ function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_inde
 %   periods             [integer]       number of simulation periods
 %   y_kmin_l            [integer]       maximum number of lag in the block
 %   y_kmax_l            [integer]       maximum number of lead in the block
-%   is_linear           [integer]       if is_linear=1 the block is linear
-%                                       if is_linear=0 the block is not linear
+%   is_linear           [logical]       Whether the block is linear
 %   Block_Num           [integer]       block number
 %   y_kmin              [integer]       maximum number of lag in the model
 %   maxit_              [integer]       maximum number of iteration in Newton
@@ -46,7 +45,7 @@ function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_inde
 %   none.
 %
 
-% Copyright (C) 1996-2018 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -95,7 +94,7 @@ while ~(cvg==1 || iter>maxit_)
     end
     if ~isreal(max_res) || isnan(max_res)
         cvg = 0;
-    elseif(is_linear && iter>0)
+    elseif is_linear && iter>0
         cvg = 1;
     else
         cvg=(max_res<solve_tolf);
