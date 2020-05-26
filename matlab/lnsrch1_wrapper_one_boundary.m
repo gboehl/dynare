@@ -1,4 +1,4 @@
-function r = lnsrch1_wrapper_one_boundary(ya, y_index, fname, y, x, params, steady_state, it_)
+function r = lnsrch1_wrapper_one_boundary(ya, y_index, fname, y, x, params, steady_state, T, it_)
 % wrapper for solve_one_boundary m-file when it is used with a dynamic
 % model
 %
@@ -11,6 +11,8 @@ function r = lnsrch1_wrapper_one_boundary(ya, y_index, fname, y, x, params, stea
 %   y                   [matrix]        All the endogenous variables of the model
 %   x                   [matrix]        All the exogenous variables of the model
 %   params              [vector]        All the parameters of the model
+%   steady_state        [vector]        steady state of the model
+%   T                   [matrix]        Temporary terms
 % OUTPUTS
 %   r                   [vector]        The residuals of the current block
 %
@@ -21,7 +23,7 @@ function r = lnsrch1_wrapper_one_boundary(ya, y_index, fname, y, x, params, stea
 %   none.
 %
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright (C) 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,4 +42,4 @@ function r = lnsrch1_wrapper_one_boundary(ya, y_index, fname, y, x, params, stea
 
 %reshape the input arguments of the dynamic function
 y(it_, :) = ya;
-[r, y, g1, g2, g3]=feval(fname, y, x, params, steady_state, it_, 0);
+[r, y, T, g1, g2, g3]=feval(fname, y, x, params, steady_state, T, it_, false);

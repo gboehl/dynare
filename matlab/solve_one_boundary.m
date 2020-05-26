@@ -1,5 +1,5 @@
-function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, T, ...
-                                        y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options, oo)
+function [y, T, info] = solve_one_boundary(fname, y, x, params, steady_state, T, ...
+                                           y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options, oo)
 % Computes the deterministic simulation of a block of equation containing
 % lead or lag variables
 %
@@ -42,6 +42,7 @@ function [y, info] = solve_one_boundary(fname, y, x, params, steady_state, T, ..
 %
 % OUTPUTS
 %   y                  [matrix]         All endogenous variables of the model
+%   T                  [matrix]        Temporary terms
 %   info               [integer]        >=0 no error
 %                                       <0 error
 %
@@ -93,9 +94,9 @@ for it_=start:incr:finish
     g1=spalloc( Blck_size, Blck_size, nze);
     while ~(cvg==1 || iter>maxit_)
         if is_dynamic
-            [r, y, g1, g2, g3] = feval(fname, y, x, params, steady_state, it_, 0);
+            [r, y, T, g1, g2, g3] = feval(fname, y, x, params, steady_state, T, it_, false);
         else
-            [r, y, g1] = feval(fname, y, x, params, T);
+            [r, y, T, g1] = feval(fname, y, x, params, T);
         end
         if ~isreal(r)
             max_res=(-(max(max(abs(r))))^2)^0.5;
@@ -204,7 +205,9 @@ for it_=start:incr:finish
                 p = -g1\r ;
                 [ya,f,r,check]=lnsrch1(y(it_,:)',f,g,p,stpmax, ...
                                        'lnsrch1_wrapper_one_boundary',nn, ...
-                                       y_index_eq, options.solve_tolx, y_index_eq, fname, y, x, params, steady_state, it_);
+                                       y_index_eq, options.solve_tolx, y_index_eq, fname, y, x, params, steady_state, T, it_);
+                %% Recompute temporary terms, since they are not given as output of lnsrch1
+                [~, ~, T] = feval(fname, y, x, params, steady_state, T, it_, false);
                 dx = ya' - y(it_, :);
                 y(it_,:) = ya';
             elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0)) || (~is_dynamic && options.solve_algo==6)
@@ -261,10 +264,10 @@ for it_=start:incr:finish
                         y(y_index_eq) = phat;
                     end
                     if is_dynamic
-                        [r, y, g1, g2, g3] = feval(fname, y, x, params, ...
-                                                   steady_state, it_, 0);
+                        [r, y, T, g1, g2, g3] = feval(fname, y, x, params, ...
+                                                   steady_state, T, it_, false);
                     else
-                        [r, y, g1] = feval(fname, y, x, params, T);
+                        [r, y, T, g1] = feval(fname, y, x, params, T);
                     end
                     if max(abs(r))>=options.solve_tolf
                         [dx,flag1] = bicgstab(g1,-r,1e-7,Blck_size,L1,U1);

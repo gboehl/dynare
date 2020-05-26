@@ -1,5 +1,5 @@
 function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
-                                             params, steady_state, periods, y_kmin, y_size,Periods)
+                                             params, steady_state, T, periods, y_kmin, y_size,Periods)
 % wrapper for solve_one_boundary m-file when it is used with a dynamic
 % model
 %
@@ -12,6 +12,8 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 %   y                   [matrix]        All the endogenous variables of the model
 %   x                   [matrix]        All the exogenous variables of the model
 %   params              [vector]        All the parameters of the model
+%   steady_state        [vector]        steady state of the model
+%   T                   [matrix]        Temporary terms
 %   periods             [int]           The number of periods
 %   y_kmin              [int]           The maximum number of lag on en endogenous variables
 %   y_size              [int]           The number of endogenous variables
@@ -26,7 +28,7 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 %   none.
 %
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright (C) 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,5 +47,5 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 
 %reshape the input arguments of the dynamic function
 y(y_kmin+1:y_kmin+periods, y_index) = reshape(ya',length(y_index),periods)';
-[r, y, g1, g2, g3, b]=feval(fname, y, x, params, steady_state, periods, 0, y_kmin, y_size, Periods);
+[r, y, T, g1, g2, g3, b]=feval(fname, y, x, params, steady_state, T, periods, false, y_kmin, y_size, Periods);
 ra = reshape(r(:, y_kmin+1:periods+y_kmin),periods*y_size, 1);

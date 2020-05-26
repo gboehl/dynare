@@ -52,12 +52,12 @@ else
             % have zero residuals by construction
             if M.block_structure_stat.block(b).Simulation_Type ~= 1 && ...
                     M.block_structure_stat.block(b).Simulation_Type ~= 2
-                [r, ~, ~, ~, T] = feval(fh_static,b,ys,exo_ss,params,T);
+                [r, ~, T] = feval(fh_static,b,ys,exo_ss,params,T);
                 residuals(mfsb) = r;
             else
                 %need to evaluate the recursive blocks to compute the
                 %temporary terms
-                [~, ~, ~, ~, T] = feval(fh_static,b,ys,exo_ss,params,T);
+                [~, ~, T] = feval(fh_static,b,ys,exo_ss,params,T);
             end
         end
     else
