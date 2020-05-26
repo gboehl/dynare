@@ -99,7 +99,7 @@ end
 
 % Check fourth argument. If empty return the paths for all the endogenous variables.
 if isempty(listofvariables)
-    listofvariables = M_.endo_names;
+    listofvariables = M_.endo_names(1:M_.orig_endo_nbr);
 end
 if ~iscell(listofvariables)
     error('Fourth input argument has to be a cell of row char arrays or an empty object.')
