@@ -222,24 +222,24 @@ msys2: lib32-msys2 lib64-msys2 mingw32 mingw64
 
 MSYS2_EXCLUDES := --exclude .MTREE --exclude .BUILDINFO --exclude .PKGINFO
 
-lib32-msys2: tarballs/mingw-w64-i686-boost-$(MINGW32_BOOST_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-gsl-$(MINGW32_GSL_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-openblas-$(MINGW32_OPENBLAS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-matio-$(MINGW32_MATIO_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-zlib-$(MINGW32_ZLIB_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-hdf5-$(MINGW32_HDF5_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-szip-$(MINGW32_SZIP_VERSION)-any.pkg.tar.xz
+lib32-msys2: tarballs/mingw-w64-i686-boost-$(MINGW32_BOOST_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-i686-gsl-$(MINGW32_GSL_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-openblas-$(MINGW32_OPENBLAS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-matio-$(MINGW32_MATIO_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-i686-zlib-$(MINGW32_ZLIB_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-hdf5-$(MINGW32_HDF5_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-i686-szip-$(MINGW32_SZIP_VERSION)-any.pkg.tar.xz
 	rm -rf $@
 	mkdir $@
 	for f in $^; do tar xf $$f --directory $@ --strip-components 1 $(MSYS2_EXCLUDES); done
 	touch $@
 
-lib64-msys2: tarballs/mingw-w64-x86_64-boost-$(MINGW64_BOOST_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-gsl-$(MINGW64_GSL_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-openblas-$(MINGW64_OPENBLAS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-matio-$(MINGW64_MATIO_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-hdf5-$(MINGW64_HDF5_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-szip-$(MINGW64_SZIP_VERSION)-any.pkg.tar.xz
+lib64-msys2: tarballs/mingw-w64-x86_64-boost-$(MINGW64_BOOST_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gsl-$(MINGW64_GSL_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-openblas-$(MINGW64_OPENBLAS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-matio-$(MINGW64_MATIO_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-hdf5-$(MINGW64_HDF5_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-szip-$(MINGW64_SZIP_VERSION)-any.pkg.tar.xz
 	rm -rf $@
 	mkdir $@
 	for f in $^; do tar xf $$f --directory $@ --strip-components 1 $(MSYS2_EXCLUDES); done
 	touch $@
 
-mingw32: tarballs/mingw-w64-i686-gcc-$(MINGW32_GCC_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-gcc-libs-$(MINGW32_GCC_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-gmp-$(MINGW32_GMP_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-binutils-$(MINGW32_BINUTILS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-headers-git-$(MINGW32_HEADERS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-crt-git-$(MINGW32_CRT_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-winpthreads-git-$(MINGW32_WINPTHREADS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-libwinpthread-git-$(MINGW32_WINPTHREADS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-zlib-$(MINGW32_ZLIB_VERSION)-any.pkg.tar.xz
+mingw32: tarballs/mingw-w64-i686-gcc-$(MINGW32_GCC_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-i686-gcc-libs-$(MINGW32_GCC_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-i686-gmp-$(MINGW32_GMP_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-binutils-$(MINGW32_BINUTILS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-i686-headers-git-$(MINGW32_HEADERS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-crt-git-$(MINGW32_CRT_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-winpthreads-git-$(MINGW32_WINPTHREADS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-libwinpthread-git-$(MINGW32_WINPTHREADS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-i686-zlib-$(MINGW32_ZLIB_VERSION)-any.pkg.tar.xz
 	rm -rf $@
 	for f in $^; do tar xf $$f $(MSYS2_EXCLUDES); done
 	touch $@
 
-mingw64: tarballs/mingw-w64-x86_64-gcc-$(MINGW64_GCC_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-gcc-libs-$(MINGW64_GCC_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-gmp-$(MINGW64_GMP_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-binutils-$(MINGW64_BINUTILS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-headers-git-$(MINGW64_HEADERS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-crt-git-$(MINGW64_CRT_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-winpthreads-git-$(MINGW64_WINPTHREADS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-libwinpthread-git-$(MINGW64_WINPTHREADS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.xz
+mingw64: tarballs/mingw-w64-x86_64-gcc-$(MINGW64_GCC_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gcc-libs-$(MINGW64_GCC_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gmp-$(MINGW64_GMP_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-binutils-$(MINGW64_BINUTILS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-headers-git-$(MINGW64_HEADERS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-crt-git-$(MINGW64_CRT_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-winpthreads-git-$(MINGW64_WINPTHREADS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-libwinpthread-git-$(MINGW64_WINPTHREADS_VERSION)-any.pkg.tar.xz tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.xz
 	rm -rf $@
 	for f in $^; do tar xf $$f $(MSYS2_EXCLUDES); done
 	touch $@
@@ -250,6 +250,12 @@ tarballs/mingw-w64-i686-%-any.pkg.tar.xz:
 tarballs/mingw-w64-x86_64-%-any.pkg.tar.xz:
 	wget $(WGET_OPTIONS) -O $@ http://repo.msys2.org/mingw/x86_64/$(notdir $@)
 
+tarballs/mingw-w64-i686-%-any.pkg.tar.zst:
+	wget $(WGET_OPTIONS) -O $@ http://repo.msys2.org/mingw/i686/$(notdir $@)
+
+tarballs/mingw-w64-x86_64-%-any.pkg.tar.zst:
+	wget $(WGET_OPTIONS) -O $@ http://repo.msys2.org/mingw/x86_64/$(notdir $@)
+
 clean-msys2:
 	rm -rf lib32-msys2
 	rm -rf lib64-msys2
@@ -257,6 +263,8 @@ clean-msys2:
 	rm -rf mingw64
 	rm -f tarballs/mingw-w64-i686-*.tar.xz
 	rm -f tarballs/mingw-w64-x86_64-*.tar.xz
+	rm -f tarballs/mingw-w64-i686-*.tar.zst
+	rm -f tarballs/mingw-w64-x86_64-*.tar.zst
 
 #
 # X13AS
