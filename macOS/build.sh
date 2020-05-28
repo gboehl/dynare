@@ -175,12 +175,12 @@ echo -e "function v = supported_octave_version\nv=\"$OCTAVE_VERSION\";\nend" > "
 cd "$ROOTDIR"/macOS/pkg
 
 # Dynare option
-pkgbuild --root "$PKGFILES" --identifier com.cepremap.dynare --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
+pkgbuild --root "$PKGFILES" --identifier org.dynare --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
 
 # GCC option
 # Create dummy payload for GCC package; otherwise the size is displayed as 0 bytes in the installer
 dd if=/dev/zero of="$ROOTDIR"/macOS/brewfiles/dummy  bs=1m  count=800
-pkgbuild --root "$ROOTDIR"/macOS/brewfiles --identifier com.cepremap.dynare.gcc --version "$VERSION" --scripts "$ROOTDIR"/macOS/scripts --install-location /Applications/Dynare/"$LOCATION" "$NAME"-gcc.pkg
+pkgbuild --root "$ROOTDIR"/macOS/brewfiles --identifier org.dynare.gcc --version "$VERSION" --scripts "$ROOTDIR"/macOS/scripts --install-location /Applications/Dynare/"$LOCATION" "$NAME"-gcc.pkg
 
 # Replace variables in displayed files
 sed "s/VERSION_READ/$VERSION/g" "$ROOTDIR"/macOS/distribution_template.xml > distribution_tmp.xml
