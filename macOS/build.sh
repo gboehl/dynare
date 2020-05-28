@@ -166,7 +166,7 @@ PATH="$OCTAVE_BIN_DIR:$PATH" CC=$CC CXX=$CXX ./configure \
   --with-slicot="$LIB64"/Slicot/with-underscore
 PATH="$OCTAVE_BIN_DIR:$PATH" make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/octave/*                                       "$PKGFILES"/mex/octave
-echo -e "function v = supported_octave_version\nv=\"$(octave --eval "disp(OCTAVE_VERSION)")\";\nend" > "$PKGFILES"/matlab/supported_octave_version.m
+echo -e "function v = supported_octave_version\nv=\"$OCTAVE_VERSION\";\nend" > "$PKGFILES"/matlab/supported_octave_version.m
 
 
 ##
