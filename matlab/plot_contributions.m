@@ -189,6 +189,7 @@ cc = contribution(:,2:end);
 ccneg = cc(:,1:length(vnames)); ccneg(ccneg>=0) = nan;
 ccpos = cc(:,1:length(vnames)); ccpos(ccpos<0) = nan;
 H = bar(1:ds.nobs, ccneg, 'stacked');
+set(gca,'ColorOrderIndex',1);
 B = bar(1:ds.nobs, ccpos, 'stacked');
 line_ = plot(1:ds.nobs, contribution(:,1), '-r', 'linewidth', 2);
 hold off
