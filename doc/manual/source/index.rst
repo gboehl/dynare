@@ -4,7 +4,7 @@ The Dynare Reference Manual, version |version|
 Currently the development team of Dynare is composed of:
 
 * Stéphane Adjemian (Université du Maine, Gains)
-* Houtan Bastani (CEPREMAP)
+* Houtan Bastani
 * Michel Juillard (Banque de France)
 * Sumudu Kankanamge (Toulouse School of Economics)
 * Frédéric Karamé (Université du Maine, Gains and CEPREMAP)
