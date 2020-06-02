@@ -146,10 +146,10 @@ while ~(cvg==1 || iter>maxit_)
                             fprintf('Error in simul: Convergence not achieved in block %d, after %d iterations.\n Increase "options_.simul.maxit" or set "cutoff=0" in model options.\n',Block_Num, iter);
                         end
                     end
-                    oo.deterministic_simulation.status = 0;
+                    oo.deterministic_simulation.status = false;
                     oo.deterministic_simulation.error = max_res;
                     oo.deterministic_simulation.iterations = iter;
-                    oo.deterministic_simulation.block(Block_Num).status = 0;% Convergency failed.
+                    oo.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
                     oo.deterministic_simulation.block(Block_Num).error = max_res;
                     oo.deterministic_simulation.block(Block_Num).iterations = iter;
                     return
@@ -324,18 +324,18 @@ if (iter>maxit_)
         printline(41)
         %disp(['No convergence after ' num2str(iter,'%4d') ' iterations in Block ' num2str(Block_Num,'%d')])
     end
-    oo.deterministic_simulation.status = 0;
+    oo.deterministic_simulation.status = false;
     oo.deterministic_simulation.error = max_res;
     oo.deterministic_simulation.iterations = iter;
-    oo.deterministic_simulation.block(Block_Num).status = 0;% Convergency failed.
+    oo.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
     oo.deterministic_simulation.block(Block_Num).error = max_res;
     oo.deterministic_simulation.block(Block_Num).iterations = iter;
     return
 end
 
-oo.deterministic_simulation.status = 1;
+oo.deterministic_simulation.status = true;
 oo.deterministic_simulation.error = max_res;
 oo.deterministic_simulation.iterations = iter;
-oo.deterministic_simulation.block(Block_Num).status = 1;% Convergency obtained.
+oo.deterministic_simulation.block(Block_Num).status = true;% Convergency obtained.
 oo.deterministic_simulation.block(Block_Num).error = max_res;
 oo.deterministic_simulation.block(Block_Num).iterations = iter;

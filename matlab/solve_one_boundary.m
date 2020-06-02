@@ -1,5 +1,5 @@
-function [y, T, info] = solve_one_boundary(fname, y, x, params, steady_state, T, ...
-                                           y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options, oo)
+function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_state, T, ...
+                                                y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options, oo_)
 % Computes the deterministic simulation of a block of equation containing
 % lead or lag variables
 %
@@ -168,10 +168,10 @@ for it_=start:incr:finish
                             end
                         end
                         if is_dynamic
-                            oo_.deterministic_simulation.status = 0;
+                            oo_.deterministic_simulation.status = false;
                             oo_.deterministic_simulation.error = max_res;
                             oo_.deterministic_simulation.iterations = iter;
-                            oo_.deterministic_simulation.block(Block_Num).status = 0;% Convergency failed.
+                            oo_.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
                             oo_.deterministic_simulation.block(Block_Num).error = max_res;
                             oo_.deterministic_simulation.block(Block_Num).iterations = iter;
                         end
@@ -321,10 +321,10 @@ for it_=start:incr:finish
             end
         end
         if is_dynamic
-            oo_.deterministic_simulation.status = 0;
+            oo_.deterministic_simulation.status = false;
             oo_.deterministic_simulation.error = max_res;
             oo_.deterministic_simulation.iterations = iter;
-            oo_.deterministic_simulation.block(Block_Num).status = 0;% Convergency failed.
+            oo_.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
             oo_.deterministic_simulation.block(Block_Num).error = max_res;
             oo_.deterministic_simulation.block(Block_Num).iterations = iter;
         end
@@ -335,10 +335,10 @@ end
 
 if is_dynamic
     info = 1;
-    oo_.deterministic_simulation.status = 1;
+    oo_.deterministic_simulation.status = true;
     oo_.deterministic_simulation.error = max_res;
     oo_.deterministic_simulation.iterations = iter;
-    oo_.deterministic_simulation.block(Block_Num).status = 1;
+    oo_.deterministic_simulation.block(Block_Num).status = true;
     oo_.deterministic_simulation.block(Block_Num).error = max_res;
     oo_.deterministic_simulation.block(Block_Num).iterations = iter;
 else

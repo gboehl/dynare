@@ -60,7 +60,7 @@ if options_.block
             oo_.deterministic_simulation.status = false;
         end
     else
-        oo_ = feval([M_.fname '.dynamic'], options_, M_, oo_);
+        oo_ = solve_block_decomposed_problem(options_, M_, oo_);
     end
 else
     if options_.bytecode
