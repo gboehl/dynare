@@ -69,8 +69,6 @@ verbose = options.verbosity;
 cvg=0;
 iter=0;
 Per_u_=0;
-g2 = [];
-g3 = [];
 Blck_size=size(y_index,2);
 correcting_factor=0.01;
 ilu_setup.droptol=1e-10;
@@ -84,7 +82,7 @@ Jacobian_Size=Blck_size*(y_kmin+y_kmax_l +periods);
 g1=spalloc( Blck_size*periods, Jacobian_Size, nze*periods);
 reduced = 0;
 while ~(cvg==1 || iter>maxit_)
-    [r, y, T, g1, g2, g3, b]=feval(fname, y, x, params, steady_state, T, periods, false, y_kmin, Blck_size,options.periods);
+    [r, y, T, g1, b]=feval(fname, y, x, params, steady_state, T, periods, false, y_kmin, Blck_size,options.periods);
     preconditioner = 2;
     g1a=g1(:, y_kmin*Blck_size+1:(periods+y_kmin)*Blck_size);
     term1 = g1(:, 1:y_kmin_l*Blck_size)*reshape(y(1+y_kmin-y_kmin_l:y_kmin,y_index)',1,y_kmin_l*Blck_size)';

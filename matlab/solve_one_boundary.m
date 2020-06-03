@@ -72,8 +72,6 @@ function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_stat
 
 
 Blck_size=size(y_index_eq,2);
-g2 = [];
-g3 = [];
 correcting_factor=0.01;
 ilu_setup.droptol=1e-10;
 max_resa=1e100;
@@ -94,7 +92,7 @@ for it_=start:incr:finish
     g1=spalloc( Blck_size, Blck_size, nze);
     while ~(cvg==1 || iter>maxit_)
         if is_dynamic
-            [r, y, T, g1, g2, g3] = feval(fname, y, x, params, steady_state, T, it_, false);
+            [r, y, T, g1] = feval(fname, y, x, params, steady_state, T, it_, false);
         else
             [r, y, T, g1] = feval(fname, y, x, params, T);
         end
@@ -264,8 +262,8 @@ for it_=start:incr:finish
                         y(y_index_eq) = phat;
                     end
                     if is_dynamic
-                        [r, y, T, g1, g2, g3] = feval(fname, y, x, params, ...
-                                                   steady_state, T, it_, false);
+                        [r, y, T, g1] = feval(fname, y, x, params, ...
+                                              steady_state, T, it_, false);
                     else
                         [r, y, T, g1] = feval(fname, y, x, params, T);
                     end
