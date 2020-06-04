@@ -42,4 +42,4 @@ function r = lnsrch1_wrapper_one_boundary(ya, y_index, fname, y, x, params, stea
 
 %reshape the input arguments of the dynamic function
 y(it_, :) = ya;
-[r, y, T, g1, g2, g3]=feval(fname, y, x, params, steady_state, T, it_, false);
+[r, y, T, g1]=feval(fname, y, x, params, steady_state, T, it_, false);
