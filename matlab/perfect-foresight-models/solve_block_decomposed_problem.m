@@ -43,7 +43,7 @@ y=oo_.endo_simul';
 T=NaN(M_.block_structure.dyn_tmp_nbr, options_.periods+M_.maximum_lag+M_.maximum_lead);
 oo_.deterministic_simulation.status = 0;
 
-for blk = 1:size(M_.block_structure.block, 1)
+for blk = 1:length(M_.block_structure.block)
     funcname = sprintf('%s.block.dynamic_%d', M_.fname, blk);
     
     recursive_size = M_.block_structure.block(blk).endo_nbr - M_.block_structure.block(blk).mfs;
