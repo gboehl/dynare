@@ -188,6 +188,7 @@ MODFILES = \
 	external_function/first_and_2nd_deriv_given_dll_namespace.mod \
 	external_function/no_deriv_given.mod \
 	external_function/no_deriv_given_dll.mod \
+	external_function/extfun_in_mlv.mod \
 	seeds.mod \
 	minimal_state_space_system/as2007_minimal.mod \
 	minimal_state_space_system/sw_minimal.mod \
