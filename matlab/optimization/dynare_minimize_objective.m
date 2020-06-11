@@ -428,7 +428,7 @@ switch minimizer_algorithm
   case 12
     if isoctave
         error('Option mode_compute=12 is not available under Octave')
-    elseif ~user_has_matlab_license('global_optimization_toolbox')
+    elseif ~user_has_matlab_license('GADS_Toolbox')
         error('Option mode_compute=12 requires the Global Optimization Toolbox')
     end
     [LB, UB] = set_bounds_to_finite_values(bounds, options_.huge_number);
@@ -523,6 +523,21 @@ switch minimizer_algorithm
     end
     func = @(x)objective_function(x,varargin{:});
     [opt_par_values,fval,exitflag,output] = simulannealbnd(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
+  case 13
+    % Matlab's lsqnonlin (Optimization toolbox needed).
+    if isoctave && ~user_has_octave_forge_package('optim')
+        error('Option mode_compute=13 requires the optim package')
+    elseif ~isoctave && ~user_has_matlab_license('optimization_toolbox')
+        error('Option mode_compute=13 requires the Optimization Toolbox')
+    end
+    optim_options = optimset('display','iter','MaxFunEvals',5000,'MaxIter',5000,'TolFun',1e-6,'TolX',1e-6);
+    if ~isempty(options_.optim_opt)
+        eval(['optim_options = optimset(optim_options,' options_.optim_opt ');']);
+    end
+    if options_.silent_optimizer
+        optim_options = optimset(optim_options,'display','off');
+    end
+    [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(objective_function,start_par_value,bounds(:,1),bounds(:,2),optim_options,varargin{:});
   otherwise
     if ischar(minimizer_algorithm)
         if exist(minimizer_algorithm)
