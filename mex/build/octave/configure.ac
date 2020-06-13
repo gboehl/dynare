@@ -36,7 +36,7 @@ AC_CANONICAL_HOST
 case ${host_os} in
   darwin*)
     CXXFLAGS="$($MKOCTFILE -p ALL_CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast -O2"
-    LDFLAGS+="$($MKOCTFILE -p OCTAVE_LIBS)"
+    LDFLAGS+=" $($MKOCTFILE -p OCTAVE_LIBS)"
     ;;
 esac
 
