@@ -57,7 +57,14 @@ for blk = 1:length(M_.block_structure.block)
         oo_.deterministic_simulation.block(blk).status = true;
         oo_.deterministic_simulation.block(blk).error = 0;
         oo_.deterministic_simulation.block(blk).iterations = 0;
-        [y, T] = feval(funcname, y, oo_.exo_simul, M_.params, oo_.steady_state, T, false, M_.maximum_lag, options_.periods);
+        if M_.block_structure.block(blk).Simulation_Type == 1
+            range = M_.maximum_lag+1:M_.maximum_lag+options_.periods;
+        else
+            range = M_.maximum_lag+options_.periods:-1:M_.maximum_lag+1;
+        end
+        for it_ = range
+            [y, T] = feval(funcname, y, oo_.exo_simul, M_.params, oo_.steady_state, T, it_, false);
+        end
     elseif M_.block_structure.block(blk).Simulation_Type == 3 || ... % solveForwardSimple
            M_.block_structure.block(blk).Simulation_Type == 4 || ... % solveBackwardSimple
            M_.block_structure.block(blk).Simulation_Type == 6 || ... % solveForwardComplete
