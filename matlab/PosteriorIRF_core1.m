@@ -162,6 +162,8 @@ while fpar<B
             errordef = 'Indeterminacy';
         elseif info(1) == 5
             errordef = 'Rank condition  is not satisfied';
+        else
+            errordef = get_error_message(info, options_);
         end
         if strcmpi(type,'prior')
             disp(['PosteriorIRF :: Dynare is unable to solve the model (' errordef ')'])
