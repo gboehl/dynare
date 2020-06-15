@@ -82,7 +82,7 @@ Jacobian_Size=Blck_size*(y_kmin+y_kmax_l +periods);
 g1=spalloc( Blck_size*periods, Jacobian_Size, nze*periods);
 reduced = 0;
 while ~(cvg==1 || iter>maxit_)
-    [r, y, T, g1, b]=feval(fname, y, x, params, steady_state, T, periods, false, y_kmin, Blck_size,options.periods);
+    [r, y, T, g1, b]=feval(fname, y, x, params, steady_state, T, periods, false, y_kmin, Blck_size);
     preconditioner = 2;
     g1a=g1(:, y_kmin*Blck_size+1:(periods+y_kmin)*Blck_size);
     term1 = g1(:, 1:y_kmin_l*Blck_size)*reshape(y(1+y_kmin-y_kmin_l:y_kmin,y_index)',1,y_kmin_l*Blck_size)';
@@ -306,7 +306,7 @@ while ~(cvg==1 || iter>maxit_)
             g = (ra'*g1a)';
             f = 0.5*ra'*ra;
             p = -g1a\ra;
-            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,'lnsrch1_wrapper_two_boundaries',nn,nn, options.solve_tolx, fname, y, y_index,x, params, steady_state, T, periods, y_kmin, Blck_size,options.periods);
+            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,'lnsrch1_wrapper_two_boundaries',nn,nn, options.solve_tolx, fname, y, y_index,x, params, steady_state, T, periods, y_kmin, Blck_size);
             dx = ya - yn;
             y(1+y_kmin:periods+y_kmin,y_index)=reshape(yn',length(y_index),periods)';
         end
