@@ -92,9 +92,9 @@ for it_=start:incr:finish
     g1=spalloc( Blck_size, Blck_size, nze);
     while ~(cvg==1 || iter>maxit_)
         if is_dynamic
-            [r, y, T, g1] = feval(fname, y, x, params, steady_state, T, it_, false);
+            [r, T, g1] = feval(fname, y, x, params, steady_state, T, it_, false);
         else
-            [r, y, T, g1] = feval(fname, y, x, params, T);
+            [r, T, g1] = feval(fname, y, x, params, T);
         end
         if ~isreal(r)
             max_res=(-(max(max(abs(r))))^2)^0.5;
@@ -205,7 +205,7 @@ for it_=start:incr:finish
                                        'lnsrch1_wrapper_one_boundary',nn, ...
                                        y_index_eq, options.solve_tolx, y_index_eq, fname, y, x, params, steady_state, T, it_);
                 %% Recompute temporary terms, since they are not given as output of lnsrch1
-                [~, ~, T] = feval(fname, y, x, params, steady_state, T, it_, false);
+                [~, T] = feval(fname, y, x, params, steady_state, T, it_, false);
                 dx = ya' - y(it_, :);
                 y(it_,:) = ya';
             elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0)) || (~is_dynamic && options.solve_algo==6)
@@ -262,10 +262,10 @@ for it_=start:incr:finish
                         y(y_index_eq) = phat;
                     end
                     if is_dynamic
-                        [r, y, T, g1] = feval(fname, y, x, params, ...
-                                              steady_state, T, it_, false);
+                        [r, T, g1] = feval(fname, y, x, params, ...
+                                           steady_state, T, it_, false);
                     else
-                        [r, y, T, g1] = feval(fname, y, x, params, T);
+                        [r, T, g1] = feval(fname, y, x, params, T);
                     end
                     if max(abs(r))>=options.solve_tolf
                         [dx,flag1] = bicgstab(g1,-r,1e-7,Blck_size,L1,U1);
