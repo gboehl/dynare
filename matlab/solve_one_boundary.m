@@ -201,13 +201,13 @@ for it_=start:incr:finish
                 g = (r'*g1)';
                 f = 0.5*r'*r;
                 p = -g1\r ;
-                [ya,f,r,check]=lnsrch1(y(it_,:)',f,g,p,stpmax, ...
+                [ya,f,r,check]=lnsrch1(ya,f,g,p,stpmax, ...
                                        'lnsrch1_wrapper_one_boundary',nn, ...
                                        y_index_eq, options.solve_tolx, y_index_eq, fname, y, x, params, steady_state, T, it_);
                 %% Recompute temporary terms, since they are not given as output of lnsrch1
                 [~, T] = feval(fname, y, x, params, steady_state, T, it_, false);
-                dx = ya' - y(it_, :);
-                y(it_,:) = ya';
+                dx = ya' - y(it_, index_eq);
+                y(it_, index_eq) = ya';
             elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0)) || (~is_dynamic && options.solve_algo==6)
                 if verbose && ~is_dynamic
                     disp('steady: Sparse LU ')

@@ -41,5 +41,5 @@ function r = lnsrch1_wrapper_one_boundary(ya, y_index, fname, y, x, params, stea
 % along with Dynare.  If not, see <http://www.gnu.org/licen
 
 %reshape the input arguments of the dynamic function
-y(it_, :) = ya;
+y(it_, y_index) = ya;
 [r, T, g1]=feval(fname, y, x, params, steady_state, T, it_, false);
