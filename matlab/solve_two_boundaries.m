@@ -78,16 +78,14 @@ ilu_setup.milu = 'off';
 ilu_setup.thresh = 1;
 ilu_setup.udiag = 0;
 max_resa=1e100;
-Jacobian_Size=Blck_size*(y_kmin+y_kmax_l +periods);
-g1=spalloc( Blck_size*periods, Jacobian_Size, nze*periods);
 reduced = 0;
 while ~(cvg==1 || iter>maxit_)
-    [r, T, g1, b]=feval(fname, y, x, params, steady_state, T, periods, false, y_kmin, Blck_size);
+    [r, T, g1]=feval(fname, y, x, params, steady_state, T, periods, false, y_kmin, Blck_size);
     preconditioner = 2;
     g1a=g1(:, y_kmin*Blck_size+1:(periods+y_kmin)*Blck_size);
-    term1 = g1(:, 1:y_kmin_l*Blck_size)*reshape(y(1+y_kmin-y_kmin_l:y_kmin,y_index)',1,y_kmin_l*Blck_size)';
-    term2 = g1(:, (periods+y_kmin_l)*Blck_size+1:(periods+y_kmin_l+y_kmax_l)*Blck_size)*reshape(y(periods+y_kmin+1:periods+y_kmin+y_kmax_l,y_index)',1,y_kmax_l*Blck_size)';
-    b = b - term1 - term2;
+    ya = reshape(y(y_kmin+1:y_kmin+periods,y_index)',1,periods*Blck_size)';
+    ra = reshape(r(:, y_kmin+1:periods+y_kmin),periods*Blck_size, 1);
+    b=-ra+g1a*ya;
     [max_res, max_indx]=max(max(abs(r')));
     if ~isreal(r)
         max_res = (-max_res^2)^0.5;
@@ -120,7 +118,7 @@ while ~(cvg==1 || iter>maxit_)
                                 disp(['    trying to correct the Jacobian matrix:']);
                                 disp(['    correcting_factor=' num2str(correcting_factor,'%f') ' max(Jacobian)=' num2str(full(max_factor),'%f')]);
                             end
-                            dx = (g1aa+correcting_factor*speye(periods*Blck_size))\ba- ya;
+                            dx = (g1aa+correcting_factor*speye(periods*Blck_size))\ba- ya_save;
                             y(1+y_kmin:periods+y_kmin,y_index)=reshape((ya_save+lambda*dx)',length(y_index),periods)';
                             continue
                         else
@@ -158,7 +156,6 @@ while ~(cvg==1 || iter>maxit_)
                 end
             end
         end
-        ya = reshape(y(y_kmin+1:y_kmin+periods,y_index)',1,periods*Blck_size)';
         ya_save=ya;
         g1aa=g1a;
         ba=b;
@@ -299,7 +296,6 @@ while ~(cvg==1 || iter>maxit_)
                 end
             end
         elseif stack_solve_algo==4
-            ra = reshape(r(:, y_kmin+1:periods+y_kmin),periods*Blck_size, 1);
             stpmx = 100 ;
             stpmax = stpmx*max([sqrt(ya'*ya);size(y_index,2)]);
             nn=1:size(ra,1);
