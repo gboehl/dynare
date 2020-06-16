@@ -47,5 +47,7 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 
 %reshape the input arguments of the dynamic function
 y(y_kmin+1:y_kmin+periods, y_index) = reshape(ya',length(y_index),periods)';
-[r, T, g1]=feval(fname, y, x, params, steady_state, T, periods, false, y_kmin, y_size);
-ra = reshape(r(:, y_kmin+1:periods+y_kmin),periods*y_size, 1);
+ra = NaN(periods*y_size, 1);
+for it_ = y_kmin+(1:periods)
+    [ra((it_-y_kmin-1)*y_size+(1:y_size)), T, g1]=feval(fname, y, x, params, steady_state, T, it_, false);
+end

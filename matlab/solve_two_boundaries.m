@@ -80,11 +80,23 @@ ilu_setup.udiag = 0;
 max_resa=1e100;
 reduced = 0;
 while ~(cvg==1 || iter>maxit_)
-    [r, T, g1]=feval(fname, y, x, params, steady_state, T, periods, false, y_kmin, Blck_size);
+    r = NaN(Blck_size, periods);
+    g1a = spalloc(Blck_size*periods, Blck_size*periods, nze*periods);
+    for it_ = y_kmin+(1:periods)
+        [r(:, it_-y_kmin), T, g1]=feval(fname, y, x, params, steady_state, T, it_, false);
+        if periods == 1
+            g1a = g1(:, Blck_size+(1:Blck_size));
+        elseif it_ == y_kmin+1
+            g1a(1:Blck_size, 1:Blck_size*2) = g1(:, Blck_size+1:end);
+        elseif it_ == y_kmin+periods
+            g1a((periods-1)*Blck_size+1:end, (periods-2)*Blck_size+1:end) = g1(:, 1:2*Blck_size);
+        else
+            g1a((it_-y_kmin-1)*Blck_size+(1:Blck_size), (it_-y_kmin-2)*Blck_size+(1:3*Blck_size)) = g1;
+        end
+    end
     preconditioner = 2;
-    g1a=g1(:, y_kmin*Blck_size+1:(periods+y_kmin)*Blck_size);
-    ya = reshape(y(y_kmin+1:y_kmin+periods,y_index)',1,periods*Blck_size)';
-    ra = reshape(r(:, y_kmin+1:periods+y_kmin),periods*Blck_size, 1);
+    ya = reshape(y(y_kmin+(1:periods),y_index)', 1, periods*Blck_size)';
+    ra = reshape(r, periods*Blck_size, 1);
     b=-ra+g1a*ya;
     [max_res, max_indx]=max(max(abs(r')));
     if ~isreal(r)
