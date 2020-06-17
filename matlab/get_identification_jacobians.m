@@ -241,12 +241,11 @@ if order == 1
 end
 
 %% Compute dMOMENTS
-if ~no_identification_moments    
-    if useautocorr
-        E_yy  = pruned.Corr_y;  dE_yy  = pruned.dCorr_y;
+if ~no_identification_moments
+    E_yy  = pruned.Var_y;  dE_yy  = pruned.dVar_y;
+    if useautocorr        
         E_yyi = pruned.Corr_yi; dE_yyi = pruned.dCorr_yi;
-    else
-        E_yy  = pruned.Var_y;   dE_yy  = pruned.dVar_y;
+    else        
         E_yyi = pruned.Var_yi;  dE_yyi = pruned.dVar_yi;
     end
     MOMENTS = [MEAN; dyn_vech(E_yy)];
