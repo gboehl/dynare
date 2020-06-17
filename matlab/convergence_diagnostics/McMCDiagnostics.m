@@ -306,31 +306,24 @@ for i = 1:pages
                 plt2 = UDIAG(:,6,k);
                 namnam  = [nam , ' (m3)'];
             end
-            if TeX
-                if j==1
-                    NAMES = deblank(namnam);
-                    TEXNAMES = deblank(namtex);
-                else
-                    NAMES = char(NAMES,deblank(namnam));
-                    TEXNAMES = char(TEXNAMES,deblank(namtex));
-                end
-            end
             subplot(3,3,boxplot);
             plot(xx,plt1,'-b');     % Pooled
             hold on;
             plot(xx,plt2,'-r');     % Within (mean)
             hold off;
             xlim([xx(1) xx(NumberOfLines)])
-            title(namnam,'Interpreter','none')
+            if TeX
+                title(namtex,'interpreter','latex')
+            else
+                title(namnam,'Interpreter','none')
+            end
+
             boxplot = boxplot + 1;
         end
     end
     dyn_saveas(h,[OutputFolder '/' ModelName '_udiag' int2str(i)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
-        for jj = 1:size(NAMES,1)
-            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TEXNAMES(jj,:)));
-        end
         fprintf(fidTeX,'\\centering \n');
         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_udiag%s}\n',options_.figures.textwidth*min((boxplot-1)/3,1),[OutputFolder '/' ModelName],int2str(i));
         fprintf(fidTeX,'\\caption{Univariate convergence diagnostics for the Metropolis-Hastings.\n');
@@ -360,22 +353,22 @@ if reste
                 plt1 = UDIAG(:,1,k);
                 plt2 = UDIAG(:,2,k);
                 namnam  = [nam , ' (Interval)'];
+                if TeX
+                    namnamtex  = [namtex , ' (Interval)'];
+                end
             elseif crit == 2
                 plt1 = UDIAG(:,3,k);
                 plt2 = UDIAG(:,4,k);
                 namnam  = [nam , ' (m2)'];
+                if TeX
+                    namnamtex  = [namtex , ' (m2)'];
+                end
             elseif crit == 3
                 plt1 = UDIAG(:,5,k);
                 plt2 = UDIAG(:,6,k);
                 namnam  = [nam , ' (m3)'];
-            end
-            if TeX
-                if j==1
-                    NAMES = deblank(namnam);
-                    TEXNAMES = deblank(namtex);
-                else
-                    NAMES = char(NAMES,deblank(namnam));
-                    TEXNAMES = char(TEXNAMES,deblank(namtex));
+                if TeX
+                    namnamtex  = [namtex , ' (m3)'];
                 end
             end
             subplot(nr,nc,boxplot);
@@ -384,16 +377,17 @@ if reste
             plot(xx,plt2,'-r');                                 % Within (mean)
             hold off;
             xlim([xx(1) xx(NumberOfLines)]);
-            title(namnam,'Interpreter','none');
+            if TeX
+                title(namnamtex,'Interpreter','latex');
+            else
+                title(namnam,'Interpreter','none');
+            end
             boxplot = boxplot + 1;
         end
     end
     dyn_saveas(h,[ OutputFolder '/' ModelName '_udiag' int2str(pages+1)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
-        for jj = 1:size(NAMES,1)
-            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TEXNAMES(jj,:)));
-        end
         fprintf(fidTeX,'\\centering \n');
         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_udiag%s}\n',options_.figures.textwidth*min((boxplot-1)/nc,1),[OutputFolder '/' ModelName],int2str(pages+1));
         if reste == 2
@@ -477,13 +471,6 @@ for crit = 1:3
         plt2 = MDIAG(:,6);
         namnam  = 'm3';
     end
-    if TeX
-        if crit == 1
-            NAMES = deblank(namnam);
-        else
-            NAMES = char(NAMES,deblank(namnam));
-        end
-    end
     subplot(3,1,boxplot);
     plot(xx,plt1,'-b');  % Pooled
     hold on
@@ -497,9 +484,6 @@ dyn_saveas(h,[ OutputFolder '/' ModelName '_mdiag'],options_.nodisplay,options_.
 
 if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fprintf(fidTeX,'\\begin{figure}[H]\n');
-    for jj = 1:3
-        fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),' ');
-    end
     fprintf(fidTeX,'\\centering \n');
     fprintf(fidTeX,'\\includegraphics[width=0.8\\textwidth]{%s_mdiag}\n',[OutputFolder '/' ModelName]);
     fprintf(fidTeX,'\\caption{Multivariate convergence diagnostics for the Metropolis-Hastings.\n');

@@ -70,14 +70,14 @@ if k <= nvx
     nam = sprintf('SE_%s', vname);
     if TeX
         tname  = M_.exo_names_tex{estim_params_.var_exo(k,1)};
-        texnam = sprintf('$ SE_{%s} $', tname);
+        texnam = sprintf('$ \\sigma_{%s} $', tname);
     end
 elseif  k <= (nvx+nvn)
     vname = options_.varobs{estim_params_.nvn_observable_correspondence(k-estim_params_.nvx,1)};
     nam = sprintf('SE_EOBS_%s', vname);
     if TeX
         tname  = M_.endo_names_tex{estim_params_.var_endo(k-estim_params_.nvx,1)};
-        texnam = sprintf('$ EOBS SE_{%s} $', tname);
+        texnam = sprintf('$ \\sigma^{ME}_{%s} $', tname);
     end
 elseif  k <= (nvx+nvn+ncx)
     jj = k - (nvx+nvn);
@@ -87,7 +87,7 @@ elseif  k <= (nvx+nvn+ncx)
     nam = sprintf('CC_%s', vname);
     if TeX
         tname  = sprintf('%s,%s', M_.exo_names_tex{k1}, M_.exo_names_tex{k2});
-        texnam = sprintf('$ CC_{%s} $', tname);
+        texnam = sprintf('$ \\rho_{%s} $', tname);
     end
 elseif  k <= (nvx+nvn+ncx+ncn)
     jj = k - (nvx+nvn+ncx);
@@ -97,7 +97,7 @@ elseif  k <= (nvx+nvn+ncx+ncn)
     nam = sprintf('CC_EOBS_%s', vname);
     if TeX
         tname  = sprintf('%s,%s', M_.endo_names_tex{k1}, M_.endo_names_tex{k2});
-        texnam = sprintf('$ EOBS CC_{%s} $', tname);
+        texnam = sprintf('$ \\rho^{ME}_{%s} $', tname);
     end
 else
     jj = k - (nvx+nvn+ncx+ncn);

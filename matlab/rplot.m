@@ -54,9 +54,11 @@ for k = 1:length(s1)
             error ('rplot: One of the variables specified does not exist') ;
         else
             y = [y; oo_.exo_simul(:, strcmp(s1{k}, M_.exo_names))'] ;
+            s1_TeX(k,1)=M_.exo_names_tex(strcmp(s1{k}, M_.exo_names));
         end
     else
         y = [y; oo_.endo_simul(strcmp(s1{k}, M_.endo_names), :)];
+        s1_TeX(k,1)=M_.endo_names_tex(strcmp(s1{k}, M_.endo_names));
     end
 end
 
@@ -75,15 +77,21 @@ end
 if options_.rplottype == 0
     hh=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
     plot(ix(i),y(:,i)) ;
-    title (['Plot of ' strjoin(s1, ' ')],'Interpreter','none') ;
+    if options_.TeX
+        title (['Plot of $' strjoin(s1_TeX, '~') '$'],'Interpreter','latex') ;        
+    else
+        title (['Plot of ' strjoin(s1, ' ')],'Interpreter','none') ;
+    end
     xlabel('Periods') ;
     xlim([min(ix(i)) max(ix(i))])
     if length(s1) > 1
-        if isoctave
-            legend(s1);
+        if options_.TeX
+            for k = 1:length(s1)
+                s1_TeX(k,1)={['$' s1_TeX{k,1} '$']};
+            end
+            legend(s1_TeX,'interpreter','latex');
         else
-            h = legend(s1);
-            set(h, 'Interpreter', 'none');
+            legend(s1,'interpreter','none');
         end
     end
     dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' s1{1}],options_.nodisplay,options_.graph_format)
@@ -95,7 +103,11 @@ elseif options_.rplottype == 1
         hh=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
         plot(ix(i),y(j,i)) ;
         xlim([min(ix(i)) max(ix(i))])
-        title(['Plot of ' s1{j}],'Interpreter','none') ;
+        if options_.TeX
+            title(['Plot of $' s1_TeX{j} '$'],'Interpreter','latex') ;
+        else
+            title(['Plot of ' s1{j}],'Interpreter','none') ;
+        end
         xlabel('Periods') ;
         dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' s1{j}],options_.nodisplay,options_.graph_format)
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
@@ -116,8 +128,13 @@ elseif options_.rplottype == 2
             plot(ix(i),oo_.exo_steady_state(strcmp(s1{j}, M_.exo_names))*ones(1,size(i,1)),'r:') ;
         end
         xlabel('Periods') ;
-        ylabel([s1{j}],'Interpreter','none') ;
-        title(['Plot of ' s1{j}],'Interpreter','none') ;
+        if options_.TeX
+            ylabel([s1_TeX{j}],'Interpreter','latex') ;
+            title(['Plot of $' s1_TeX{j} '$'],'Interpreter','latex') ;
+        else
+            ylabel([s1{j}],'Interpreter','none') ;
+            title(['Plot of ' s1{j}],'Interpreter','none') ;
+        end
         axis tight;
     end
     dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' s1{1}],options_.nodisplay,options_.graph_format)

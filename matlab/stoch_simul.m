@@ -292,14 +292,15 @@ if options_.irf
                         hold off
                         xlim([1 options_.irf]);
                         remove_fractional_xticks;
-                        title(deblank(mylist(j,:)),'Interpreter','none');
+                        if TeX
+                            title(['$' deblank(mylistTeX(j,:)) '$'],'Interpreter','latex');
+                        else
+                            title(deblank(mylist(j,:)),'Interpreter','none');
+                        end
                     end
                     dyn_saveas(hh,[M_.fname, '/graphs/' M_.fname '_IRF_' tit{i}],options_.nodisplay,options_.graph_format);
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
-                        for j = 1:number_of_plots_to_draw
-                            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist(j,:)),deblank(mylistTeX(j,:)));
-                        end
                         fprintf(fidTeX,'\\centering \n');
                         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s}\n',options_.figures.textwidth*min(j/nc,1),[M_.fname, '/graphs/' M_.fname],tit{i});
                         fprintf(fidTeX,'\\caption{Impulse response functions (orthogonalized shock to $%s$).}\n',titTeX{i});
@@ -324,14 +325,15 @@ if options_.irf
                             hold off
                             xlim([1 options_.irf]);
                             remove_fractional_xticks
-                            title(deblank(mylist((fig-1)*nstar+plt,:)),'Interpreter','none');
+                            if TeX
+                                title(['$' deblank(mylistTeX((fig-1)*nstar+plt,:)) '$'],'Interpreter','latex');
+                            else
+                                title(deblank(mylist((fig-1)*nstar+plt,:)),'Interpreter','none');
+                            end
                         end
                         dyn_saveas(hh,[M_.fname, '/graphs/'  M_.fname '_IRF_' tit{i} int2str(fig)],options_.nodisplay,options_.graph_format);
                         if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                             fprintf(fidTeX,'\\begin{figure}[H]\n');
-                            for j = 1:nstar
-                                fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist((fig-1)*nstar+j,:)),deblank(mylistTeX((fig-1)*nstar+j,:)));
-                            end
                             fprintf(fidTeX,'\\centering \n');
                             fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s%s}\n',options_.figures.textwidth*min(plt/nc,1),[M_.fname, '/graphs/' M_.fname],tit{i},int2str(fig));
                             if options_.relative_irf
@@ -355,14 +357,15 @@ if options_.irf
                         hold off
                         xlim([1 options_.irf]);
                         remove_fractional_xticks
-                        title(deblank(mylist((nbplt-1)*nstar+plt,:)),'Interpreter','none');
+                            if TeX
+                                title(['$' deblank(mylistTeX((nbplt-1)*nstar+plt,:)) '$'],'Interpreter','latex');
+                            else
+                                title(deblank(mylist((nbplt-1)*nstar+plt,:)),'Interpreter','none');
+                            end
                     end
                     dyn_saveas(hh,[M_.fname, '/graphs/' M_.fname '_IRF_' tit{i} int2str(nbplt) ],options_.nodisplay,options_.graph_format);
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
-                        for j = 1:m
-                            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist((nbplt-1)*nstar+j,:)),deblank(mylistTeX((nbplt-1)*nstar+j,:)));
-                        end
                         fprintf(fidTeX,'\\centering \n');
                         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s%s}\n',options_.figures.textwidth*min(m/lc,1),[M_.fname, '/graphs/' M_.fname],tit{i},int2str(nbplt));
                         if options_.relative_irf

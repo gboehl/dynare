@@ -66,17 +66,6 @@ for i=1:npar
         hfig=dyn_figure(options_.nodisplay, 'Name', figurename);
     end
     [nam,texnam] = get_the_name(i, TeX, M_, estim_params_, options_);
-    if subplotnum == 1
-        NAMES = {nam};
-        if TeX
-            TeXNAMES = {texnam};
-        end
-    else
-        NAMES = [NAMES; {nam}];
-        if TeX
-            TeXNAMES = [TeXNAMES; {texnam}];
-        end
-    end
     [x2, f2, abscissa, dens, binf2, bsup2] = draw_prior_density(i, bayestopt_);
     top2 = max(f2);
     if i <= nvx
@@ -148,16 +137,17 @@ for i=1:npar
     end
     box on
     axis([borneinf bornesup 0 1.1*top0])
-    title(nam, 'Interpreter', 'none')
+    if TeX 
+        title(texnam, 'Interpreter', 'latex')
+    else
+        title(nam, 'Interpreter', 'none')
+    end
     hold off
     drawnow
     if subplotnum == MaxNumberOfPlotPerFigure || i == npar
         dyn_saveas(hfig,[OutputDirectoryName '/' M_.fname '_PriorsAndPosteriors' int2str(figunumber)], options_.nodisplay, options_.graph_format);
         if TeX && any(strcmp('eps', cellstr(options_.graph_format)))
             fprintf(fidTeX, '\\begin{figure}[H]\n');
-            for j = 1:size(NAMES, 1)
-                fprintf(fidTeX, '\\psfrag{%s}[1][][0.5][0]{%s}\n', NAMES{j}, TeXNAMES{j});
-            end
             fprintf(fidTeX, '\\centering\n');
             fprintf(fidTeX, '\\includegraphics[width=%2.2f\\textwidth]{%s/%s_PriorsAndPosteriors%s}\n', ...
                     options_.figures.textwidth*min(subplotnum/nn,1), OutputDirectoryName, M_.fname, int2str(figunumber));
