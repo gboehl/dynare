@@ -63,7 +63,9 @@ for blk = 1:length(M_.block_structure.block)
             range = M_.maximum_lag+options_.periods:-1:M_.maximum_lag+1;
         end
         for it_ = range
-            [y, T] = feval(funcname, y, oo_.exo_simul, M_.params, oo_.steady_state, T, it_, false);
+            y2 = dynvars_from_endo_simul(y', it_, M_);
+            [y2, T(:, it_)] = feval(funcname, y2, oo_.exo_simul, M_.params, oo_.steady_state, T(:, it_), it_, false);
+            y(it_, find(M_.lead_lag_incidence(M_.maximum_endo_lag+1, :))) = y2(nonzeros(M_.lead_lag_incidence(M_.maximum_endo_lag+1, :)));
         end
     elseif M_.block_structure.block(blk).Simulation_Type == 3 || ... % solveForwardSimple
            M_.block_structure.block(blk).Simulation_Type == 4 || ... % solveBackwardSimple

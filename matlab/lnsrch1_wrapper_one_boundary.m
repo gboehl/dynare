@@ -1,18 +1,17 @@
-function r = lnsrch1_wrapper_one_boundary(ya, y_index, fname, y, x, params, steady_state, T, it_)
+function r = lnsrch1_wrapper_one_boundary(ya, ll_index, fname, y, x, params, steady_state, T, it_)
 % wrapper for solve_one_boundary m-file when it is used with a dynamic
 % model
 %
 % INPUTS
 %   ya                  [vector]        The endogenous of the current block
-%   y_index             [vector of int] The index of the endogenous variables of
-%                                       the block
+%   ll_index            [vector]        M_.lead_lag_incidence(M_.maximum_endo_lag+1, :)
 %   fname               [string]        name of the file containing the block
 %                                       to simulate
-%   y                   [matrix]        All the endogenous variables of the model
+%   y                   [vector]        Dynamic endogenous variables of the model
 %   x                   [matrix]        All the exogenous variables of the model
 %   params              [vector]        All the parameters of the model
 %   steady_state        [vector]        steady state of the model
-%   T                   [matrix]        Temporary terms
+%   T                   [vector]        Temporary terms
 % OUTPUTS
 %   r                   [vector]        The residuals of the current block
 %
@@ -40,6 +39,5 @@ function r = lnsrch1_wrapper_one_boundary(ya, y_index, fname, y, x, params, stea
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licen
 
-%reshape the input arguments of the dynamic function
-y(it_, y_index) = ya;
-[r, T, g1]=feval(fname, y, x, params, steady_state, T, it_, false);
+y2(nonzeros(ll_index)) = ya(find(ll_index));
+[r, ~, g1]=feval(fname, y, x, params, steady_state, T, it_, false);

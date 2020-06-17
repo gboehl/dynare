@@ -83,7 +83,7 @@ while ~(cvg==1 || iter>maxit_)
     r = NaN(Blck_size, periods);
     g1a = spalloc(Blck_size*periods, Blck_size*periods, nze*periods);
     for it_ = y_kmin+(1:periods)
-        [r(:, it_-y_kmin), T, g1]=feval(fname, y, x, params, steady_state, T, it_, false);
+        [r(:, it_-y_kmin), T(:, it_), g1]=feval(fname, dynvars_from_endo_simul(y', it_, M), x, params, steady_state, T(:, it_), it_, false);
         if periods == 1
             g1a = g1(:, Blck_size+(1:Blck_size));
         elseif it_ == y_kmin+1
@@ -314,7 +314,7 @@ while ~(cvg==1 || iter>maxit_)
             g = (ra'*g1a)';
             f = 0.5*ra'*ra;
             p = -g1a\ra;
-            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,'lnsrch1_wrapper_two_boundaries',nn,nn, options.solve_tolx, fname, y, y_index,x, params, steady_state, T, periods, y_kmin, Blck_size);
+            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,'lnsrch1_wrapper_two_boundaries',nn,nn, options.solve_tolx, fname, y, y_index,x, params, steady_state, T, periods, Blck_size, M);
             dx = ya - yn;
             y(1+y_kmin:periods+y_kmin,y_index)=reshape(yn',length(y_index),periods)';
         end

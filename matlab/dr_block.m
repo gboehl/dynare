@@ -73,7 +73,7 @@ end
 if (options_.bytecode)
     [zz, data]= bytecode('dynamic','evaluate', z, zx, M_.params, dr.ys, 1, data);
 else
-    [r, data] = feval([M_.fname '.dynamic'], options_, M_, oo_, z', zx, M_.params, dr.ys, M_.maximum_lag+1, data);
+    [r, data] = feval([M_.fname '.dynamic'], options_, M_, oo_, dynvars_from_endo_simul(z, M_.maximum_lag+1, M_), zx, M_.params, dr.ys, M_.maximum_lag+1, data);
 end
 dr.full_rank = 1;
 dr.eigval = [];

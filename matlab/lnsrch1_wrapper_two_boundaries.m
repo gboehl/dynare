@@ -1,5 +1,6 @@
 function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
-                                             params, steady_state, T, periods, y_kmin, y_size)
+                                             params, steady_state, T, periods, ...
+                                             y_size, M_)
 % wrapper for solve_one_boundary m-file when it is used with a dynamic
 % model
 %
@@ -15,9 +16,10 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 %   steady_state        [vector]        steady state of the model
 %   T                   [matrix]        Temporary terms
 %   periods             [int]           The number of periods
-%   y_kmin              [int]           The maximum number of lag on en endogenous variables
 %   y_size              [int]           The number of endogenous variables
 %                                       in the current block
+%   M_                                  Model description structure
+%
 % OUTPUTS
 %   ra                  [vector]        The residuals of the current block
 %
@@ -46,8 +48,8 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 % along with Dynare.  If not, see <http://www.gnu.org/licen
 
 %reshape the input arguments of the dynamic function
-y(y_kmin+1:y_kmin+periods, y_index) = reshape(ya',length(y_index),periods)';
+y(M_.maximum_lag+(1:periods), y_index) = reshape(ya',length(y_index),periods)';
 ra = NaN(periods*y_size, 1);
-for it_ = y_kmin+(1:periods)
-    [ra((it_-y_kmin-1)*y_size+(1:y_size)), T, g1]=feval(fname, y, x, params, steady_state, T, it_, false);
+for it_ = M_.maximum_lag+(1:periods)
+    [ra((it_-M_.maximum_lag-1)*y_size+(1:y_size)), ~, g1]=feval(fname, dynvars_from_endo_simul(y', it_, M_), x, params, steady_state, T(:, it_), it_, false);
 end
