@@ -39,7 +39,7 @@ if options_.verbosity
     skipline()
 end
 
-y=oo_.endo_simul';
+y=oo_.endo_simul;
 T=NaN(M_.block_structure.dyn_tmp_nbr, options_.periods+M_.maximum_lag+M_.maximum_lead);
 oo_.deterministic_simulation.status = 0;
 
@@ -63,9 +63,9 @@ for blk = 1:length(M_.block_structure.block)
             range = M_.maximum_lag+options_.periods:-1:M_.maximum_lag+1;
         end
         for it_ = range
-            y2 = dynvars_from_endo_simul(y', it_, M_);
+            y2 = dynvars_from_endo_simul(y, it_, M_);
             [y2, T(:, it_)] = feval(funcname, y2, oo_.exo_simul, M_.params, oo_.steady_state, T(:, it_), it_, false);
-            y(it_, find(M_.lead_lag_incidence(M_.maximum_endo_lag+1, :))) = y2(nonzeros(M_.lead_lag_incidence(M_.maximum_endo_lag+1, :)));
+            y(find(M_.lead_lag_incidence(M_.maximum_endo_lag+1, :)), it_) = y2(nonzeros(M_.lead_lag_incidence(M_.maximum_endo_lag+1, :)));
         end
     elseif M_.block_structure.block(blk).Simulation_Type == 3 || ... % solveForwardSimple
            M_.block_structure.block(blk).Simulation_Type == 4 || ... % solveBackwardSimple
@@ -77,7 +77,7 @@ for blk = 1:length(M_.block_structure.block)
         [y, T, oo_] = solve_two_boundaries(funcname, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).maximum_lag, M_.block_structure.block(blk).maximum_lead, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.solve_tolf, options_.slowc, cutoff, options_.stack_solve_algo, options_, M_, oo_);
     end
 
-    tmp = y(:,M_.block_structure.block(blk).variable);
+    tmp = y(M_.block_structure.block(blk).variable, :);
     if any(isnan(tmp) | isinf(tmp))
         disp(['Inf or Nan value during the resolution of block ' num2str(blk)]);
         oo_.deterministic_simulation.status = false;
@@ -90,5 +90,4 @@ for blk = 1:length(M_.block_structure.block)
     end
 end
 
-oo_.endo_simul = y';
-
+oo_.endo_simul = y;

@@ -48,8 +48,8 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 % along with Dynare.  If not, see <http://www.gnu.org/licen
 
 %reshape the input arguments of the dynamic function
-y(M_.maximum_lag+(1:periods), y_index) = reshape(ya',length(y_index),periods)';
+y(y_index, M_.maximum_lag+(1:periods)) = reshape(ya',length(y_index),periods);
 ra = NaN(periods*y_size, 1);
 for it_ = M_.maximum_lag+(1:periods)
-    [ra((it_-M_.maximum_lag-1)*y_size+(1:y_size)), ~, g1]=feval(fname, dynvars_from_endo_simul(y', it_, M_), x, params, steady_state, T(:, it_), it_, false);
+    [ra((it_-M_.maximum_lag-1)*y_size+(1:y_size)), ~, g1]=feval(fname, dynvars_from_endo_simul(y, it_, M_), x, params, steady_state, T(:, it_), it_, false);
 end

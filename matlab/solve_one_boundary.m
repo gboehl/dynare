@@ -92,7 +92,7 @@ for it_=start:incr:finish
     g1=spalloc( Blck_size, Blck_size, nze);
     while ~(cvg==1 || iter>maxit_)
         if is_dynamic
-            [r, T(:, it_), g1] = feval(fname, dynvars_from_endo_simul(y', it_, M), x, params, steady_state, T(:, it_), it_, false);
+            [r, T(:, it_), g1] = feval(fname, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
         else
             [r, T, g1] = feval(fname, y, x, params, T);
         end
@@ -104,7 +104,7 @@ for it_=start:incr:finish
         if verbose
             disp(['iteration : ' int2str(iter+1) ' => ' num2str(max_res) ' time = ' int2str(it_)])
             if is_dynamic
-                disp([M.endo_names{y_index_eq} num2str([y(it_,y_index_eq)' r g1])])
+                disp([M.endo_names{y_index_eq} num2str([y(y_index_eq, it_) r g1])])
             else
                 disp([M.endo_names{y_index_eq} num2str([y(y_index_eq) r g1])])
             end
@@ -135,7 +135,7 @@ for it_=start:incr:finish
                                     disp(['    correcting_factor=' num2str(correcting_factor,'%f') ' max(Jacobian)=' num2str(full(max_factor),'%f')])
                                 end
                                 dx = - r/(g1+correcting_factor*speye(Blck_size));
-                                y(it_,y_index_eq)=ya_save+lambda*dx;
+                                y(y_index_eq, it_)=ya_save+lambda*dx;
                                 continue
                             else
                                 if verbose
@@ -152,7 +152,7 @@ for it_=start:incr:finish
                             disp(['reducing the path length: lambda=' num2str(lambda,'%f')])
                         end
                         if is_dynamic
-                            y(it_,y_index_eq)=ya_save-lambda*dx;
+                            y(y_index_eq, it_)=ya_save-lambda*dx;
                         else
                             y(y_index_eq)=ya_save-lambda*dx;
                         end
@@ -183,7 +183,7 @@ for it_=start:incr:finish
                 end
             end
             if is_dynamic
-                ya = y(it_,y_index_eq)';
+                ya = y(y_index_eq, it_);
             else
                 ya = y(y_index_eq);
             end
@@ -203,11 +203,11 @@ for it_=start:incr:finish
                 p = -g1\r ;
                 [ya,f,r,check]=lnsrch1(ya,f,g,p,stpmax, ...
                                        'lnsrch1_wrapper_one_boundary',nn, ...
-                                       y_index_eq, options.solve_tolx, M.lead_lag_incidence(M.maximum_endo_lag+1, :), fname, dynvars_from_endo_simul(y', it_, M), x, params, steady_state, T(:, it_), it_);
+                                       y_index_eq, options.solve_tolx, M.lead_lag_incidence(M.maximum_endo_lag+1, :), fname, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_);
                 %% Recompute temporary terms, since they are not given as output of lnsrch1
-                [~, T(:, it_)] = feval(fname, dynvars_from_endo_simul(y', it_, M), x, params, steady_state, T(:, it_), it_, false);
-                dx = ya' - y(it_, index_eq);
-                y(it_, index_eq) = ya';
+                [~, T(:, it_)] = feval(fname, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
+                dx = ya' - y(index_eq, it_);
+                y(index_eq, it_) = ya;
             elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0)) || (~is_dynamic && options.solve_algo==6)
                 if verbose && ~is_dynamic
                     disp('steady: Sparse LU ')
@@ -215,7 +215,7 @@ for it_=start:incr:finish
                 dx =  g1\r;
                 ya = ya - lambda*dx;
                 if is_dynamic
-                    y(it_,y_index_eq) = ya';
+                    y(y_index_eq, it_) = ya;
                 else
                     y(y_index_eq) = ya;
                 end
@@ -242,7 +242,7 @@ for it_=start:incr:finish
                     else
                         ya = ya + lambda*dx;
                         if is_dynamic
-                            y(it_,y_index_eq) = ya';
+                            y(y_index_eq, it_) = ya;
                         else
                             y(y_index_eq) = ya';
                         end
@@ -257,12 +257,12 @@ for it_=start:incr:finish
                     [L1, U1]=ilu(g1,ilu_setup);
                     phat = ya - U1 \ (L1 \ r);
                     if is_dynamic
-                        y(it_,y_index_eq) = phat;
+                        y(y_index_eq, it_) = phat;
                     else
                         y(y_index_eq) = phat;
                     end
                     if is_dynamic
-                        [r, T(:, it_), g1] = feval(fname, dynvars_from_endo_simul(y', it_, M), x, params, ...
+                        [r, T(:, it_), g1] = feval(fname, dynvars_from_endo_simul(y, it_, M), x, params, ...
                                                    steady_state, T(:, it_), it_, false);
                     else
                         [r, T, g1] = feval(fname, y, x, params, T);
@@ -288,7 +288,7 @@ for it_=start:incr:finish
                     else
                         ya = ya + lambda*dx;
                         if is_dynamic
-                            y(it_,y_index_eq) = ya';
+                            y(y_index_eq, it_) = ya;
                         else
                             y(y_index_eq) = ya';
                         end

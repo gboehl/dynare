@@ -83,7 +83,7 @@ while ~(cvg==1 || iter>maxit_)
     r = NaN(Blck_size, periods);
     g1a = spalloc(Blck_size*periods, Blck_size*periods, nze*periods);
     for it_ = y_kmin+(1:periods)
-        [r(:, it_-y_kmin), T(:, it_), g1]=feval(fname, dynvars_from_endo_simul(y', it_, M), x, params, steady_state, T(:, it_), it_, false);
+        [r(:, it_-y_kmin), T(:, it_), g1]=feval(fname, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
         if periods == 1
             g1a = g1(:, Blck_size+(1:Blck_size));
         elseif it_ == y_kmin+1
@@ -95,7 +95,7 @@ while ~(cvg==1 || iter>maxit_)
         end
     end
     preconditioner = 2;
-    ya = reshape(y(y_kmin+(1:periods),y_index)', 1, periods*Blck_size)';
+    ya = reshape(y(y_index, y_kmin+(1:periods)), 1, periods*Blck_size)';
     ra = reshape(r, periods*Blck_size, 1);
     b=-ra+g1a*ya;
     [max_res, max_indx]=max(max(abs(r')));
@@ -131,7 +131,7 @@ while ~(cvg==1 || iter>maxit_)
                                 disp(['    correcting_factor=' num2str(correcting_factor,'%f') ' max(Jacobian)=' num2str(full(max_factor),'%f')]);
                             end
                             dx = (g1aa+correcting_factor*speye(periods*Blck_size))\ba- ya_save;
-                            y(1+y_kmin:periods+y_kmin,y_index)=reshape((ya_save+lambda*dx)',length(y_index),periods)';
+                            y(y_index, y_kmin+(1:periods))=reshape((ya_save+lambda*dx)',length(y_index),periods);
                             continue
                         else
                             disp('The singularity of the jacobian matrix could not be corrected');
@@ -144,7 +144,7 @@ while ~(cvg==1 || iter>maxit_)
                     if verbose
                         disp(['reducing the path length: lambda=' num2str(lambda,'%f')]);
                     end
-                    y(1+y_kmin:periods+y_kmin,y_index)=reshape((ya_save+lambda*dx)',length(y_index),periods)';
+                    y(y_index, y_kmin+(1:periods))=reshape((ya_save+lambda*dx)',length(y_index),periods);
                     continue
                 else
                     if verbose
@@ -175,7 +175,7 @@ while ~(cvg==1 || iter>maxit_)
         if stack_solve_algo==0
             dx = g1a\b- ya;
             ya = ya + lambda*dx;
-            y(1+y_kmin:periods+y_kmin,y_index)=reshape(ya',length(y_index),periods)';
+            y(y_index, y_kmin+(1:periods))=reshape(ya',length(y_index),periods);
         elseif stack_solve_algo==1
             for t=1:periods
                 first_elem = (t-1)*Blck_size+1;
@@ -213,7 +213,7 @@ while ~(cvg==1 || iter>maxit_)
                 y_Elem = Blck_size * (t-1)+1:Blck_size * (t);
                 dx(y_Elem) = za - ya(y_Elem);
                 ya(y_Elem) = ya(y_Elem) + lambda*dx(y_Elem);
-                y(y_kmin + t, y_index) = ya(y_Elem);
+                y(y_index, y_kmin + t) = ya(y_Elem);
             end
         elseif stack_solve_algo==2
             flag1=1;
@@ -261,7 +261,7 @@ while ~(cvg==1 || iter>maxit_)
                 else
                     dx = za - ya;
                     ya = ya + lambda*dx;
-                    y(1+y_kmin:periods+y_kmin,y_index)=reshape(ya',length(y_index),periods)';
+                    y(y_index, y_kmin+(1:periods))=reshape(ya',length(y_index),periods);
                 end
             end
         elseif stack_solve_algo==3
@@ -304,7 +304,7 @@ while ~(cvg==1 || iter>maxit_)
                 else
                     dx = za - ya;
                     ya = ya + lambda*dx;
-                    y(1+y_kmin:periods+y_kmin,y_index)=reshape(ya',length(y_index),periods)';
+                    y(y_index, y_kmin+(1:periods))=reshape(ya',length(y_index),periods);
                 end
             end
         elseif stack_solve_algo==4
@@ -316,7 +316,7 @@ while ~(cvg==1 || iter>maxit_)
             p = -g1a\ra;
             [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,'lnsrch1_wrapper_two_boundaries',nn,nn, options.solve_tolx, fname, y, y_index,x, params, steady_state, T, periods, Blck_size, M);
             dx = ya - yn;
-            y(1+y_kmin:periods+y_kmin,y_index)=reshape(yn',length(y_index),periods)';
+            y(y_index, y_kmin+(1:periods))=reshape(yn',length(y_index),periods);
         end
     end
     iter=iter+1;
