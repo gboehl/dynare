@@ -82,11 +82,7 @@ pruned = pruned_state_space_system(M, options, oo.dr, indvar, nlags, useautocorr
 
 %% out = [vech(cov(Y_t,Y_t)); vec(cov(Y_t,Y_{t-1}); ...; vec(cov(Y_t,Y_{t-nlags})] of indvar variables, in DR order. This is Iskrev (2010)'s J matrix.
 if outputflag == 1    
-    if useautocorr
-        out = dyn_vech(pruned.Corr_y);
-    else
-        out = dyn_vech(pruned.Var_y);
-    end    
+    out = dyn_vech(pruned.Var_y);
     for i = 1:nlags
         if useautocorr
             out = [out;vec(pruned.Corr_yi(:,:,i))];
