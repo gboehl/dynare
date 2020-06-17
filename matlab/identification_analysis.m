@@ -205,10 +205,13 @@ if info(1) == 0 %no errors in solution
                 warning_MOMENTS = [warning_MOMENTS '         The number of moments with non-zero derivative is smaller than the number of parameters up to 10 lags.\n'];
                 warning_MOMENTS = [warning_MOMENTS '         Either reduce the list of parameters, or further increase ar, or increase number of observables.\n'];
                 warning_MOMENTS = [warning_MOMENTS '         Skip identification analysis based on moments.\n'];
+                warning_MOMENTS = [warning_MOMENTS '         Skip identification strenght analysis.\n'];
                 fprintf(warning_MOMENTS);
                 %reset options to neither display nor plot dMOMENTS anymore
                 no_identification_moments = 1;
                 options_ident.no_identification_moments = 1;
+                no_identification_strength = 1;
+                options_ident.no_identification_strength = 1;
             end
         end
         if ~no_identification_minimal
