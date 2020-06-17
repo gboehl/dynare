@@ -1048,16 +1048,17 @@ if compute_derivs
     end
     for jpV=1:totparam_nbr
         if order < 3
-            dVar_y(stationary_vars,stationary_vars,jpV) = dC(stationary_vars,:,jpV)*Var_z*C(stationary_vars,:)' + C(stationary_vars,:)*dVar_z(:,:,jpV)*C(stationary_vars,:)' + C(stationary_vars,:)*Var_z*dC(stationary_vars,:,jpV)'...
+            dVar_y_tmp = dC(stationary_vars,:,jpV)*Var_z*C(stationary_vars,:)' + C(stationary_vars,:)*dVar_z(:,:,jpV)*C(stationary_vars,:)' + C(stationary_vars,:)*Var_z*dC(stationary_vars,:,jpV)'...
                                                         + dD(stationary_vars,:,jpV)*Varinov*D(stationary_vars,:)' + D(stationary_vars,:)*dVarinov(:,:,jpV)*D(stationary_vars,:)' + D(stationary_vars,:)*Varinov*dD(stationary_vars,:,jpV)';
         else
-            dVar_y(stationary_vars,stationary_vars,jpV) = dC(stationary_vars,:,jpV)*Var_z*C(stationary_vars,:)' + C(stationary_vars,:)*dVar_z(:,:,jpV)*C(stationary_vars,:)' + C(stationary_vars,:)*Var_z*dC(stationary_vars,:,jpV)'...
+            dVar_y_tmp = dC(stationary_vars,:,jpV)*Var_z*C(stationary_vars,:)' + C(stationary_vars,:)*dVar_z(:,:,jpV)*C(stationary_vars,:)' + C(stationary_vars,:)*Var_z*dC(stationary_vars,:,jpV)'...
                                                         + dD(stationary_vars,:,jpV)*E_inovzlag1*C(stationary_vars,:)' + D(stationary_vars,:)*dE_inovzlag1(:,:,jpV)*C(stationary_vars,:)' + D(stationary_vars,:)*E_inovzlag1*dC(stationary_vars,:,jpV)'...
                                                         + dC(stationary_vars,:,jpV)*transpose(E_inovzlag1)*D(stationary_vars,:)' + C(stationary_vars,:)*transpose(dE_inovzlag1(:,:,jpV))*D(stationary_vars,:)' + C(stationary_vars,:)*transpose(E_inovzlag1)*dD(stationary_vars,:,jpV)'...
                                                         + dD(stationary_vars,:,jpV)*Varinov*D(stationary_vars,:)' + D(stationary_vars,:)*dVarinov(:,:,jpV)*D(stationary_vars,:)' + D(stationary_vars,:)*Varinov*dD(stationary_vars,:,jpV)';
         end
-        [indzerosrow,indzeroscol] = find(abs(dVar_y(:,:,jpV)) < 1e-12); %find values that are numerical zero
-        dVar_y(indzerosrow,indzeroscol,jpV) = 0;
+        indzeros = find(abs(dVar_y_tmp) < 1e-12); %find values that are numerical zero
+        dVar_y_tmp(indzeros) = 0;        
+        dVar_y(stationary_vars,stationary_vars,jpV) = dVar_y_tmp;
         if useautocorr
             %is this correct?[@wmutschl]
             dsy = 1/2./sy.*diag(dVar_y(:,:,jpV));
