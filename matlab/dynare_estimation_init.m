@@ -501,11 +501,15 @@ if options_.analytic_derivation
         error('analytic derivation is incompatible with diffuse filter')
     end
     options_.analytic_derivation = 1;
-    if estim_params_.np
+    if estim_params_.np || isfield(options_,'identification_check_endogenous_params_with_no_prior')
         % check if steady state changes param values
         M=M_;
-        M.params(estim_params_.param_vals(:,1)) = xparam1(estim_params_.nvx+estim_params_.ncx+estim_params_.nvn+estim_params_.ncn+1:end); %set parameters
-        M.params(estim_params_.param_vals(:,1)) = M.params(estim_params_.param_vals(:,1))*1.01; %vary parameters
+        if isfield(options_,'identification_check_endogenous_params_with_no_prior')
+            M.params = M.params*1.01; %vary parameters
+        else
+            M.params(estim_params_.param_vals(:,1)) = xparam1(estim_params_.nvx+estim_params_.ncx+estim_params_.nvn+estim_params_.ncn+1:end); %set parameters
+            M.params(estim_params_.param_vals(:,1)) = M.params(estim_params_.param_vals(:,1))*1.01; %vary parameters
+        end
         if options_.diffuse_filter || options_.steadystate.nocheck
             steadystate_check_flag = 0;
         else

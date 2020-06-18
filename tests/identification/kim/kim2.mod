@@ -90,7 +90,13 @@ identification(advanced=1,max_dim_cova_group=3);
 //identification(ar=1,advanced=1,max_dim_cova_group=3,prior_mc=250);
 //identification(prior_mc=100);
 
+% Unit test for analytic_derivation_mode
+load('kim2/identification/kim2_prior_mean_identif.mat','store_options_ident')
+if store_options_ident.analytic_derivation~=1 && store_options_ident.analytic_derivation_mode~=-2
+    error('the steady state file changed parameters and we should switch to numerical derivatives for the steady state, i.e. analytic_derivation_mode=-2')
+end
 
+% Integration test if identification works without priors
 estim_params_=[]; 
 identification(advanced=1,max_dim_cova_group=3);
 

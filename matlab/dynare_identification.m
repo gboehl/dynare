@@ -266,6 +266,7 @@ if isempty(estim_params_)
     %reset some options
     options_ident.prior_mc = 1;
     options_ident.prior_range = 0;
+    options_.identification_check_endogenous_params_with_no_prior = true; %needed to trigger endogenous steady state parameter check in dynare_estimation_init
 else
     prior_exist = 1;
     parameters = options_ident.parameter_set;
