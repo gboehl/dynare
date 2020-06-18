@@ -65,8 +65,42 @@ steady; % compute steady state given the starting values
 resid;  % check the starting values for the steady state
 check;  % check Blanchard & Khan rank condition
 
+@#define CORRFLAG = 1
+
 @#ifdef kronflag
-identification(ar=3, useautocorr=1, nodisplay, nograph, parameter_set=calibration, analytic_derivation_mode=@{kronflag});
+identification(ar=3, useautocorr=@{CORRFLAG}, nodisplay, nograph, parameter_set=calibration, analytic_derivation_mode=@{kronflag},tol_rank=1e-8);
 @#else
-identification(ar=3, useautocorr=1, nodisplay, nograph, parameter_set=calibration, analytic_derivation_mode=0);
+identification(ar=3, useautocorr=@{CORRFLAG}, nodisplay, nograph, parameter_set=calibration, analytic_derivation_mode=0, tol_rank=1e-8);
 @#endif
+
+% Unit test for correct identification results
+load('BrockMirman/identification/BrockMirman_Current_params_identif.mat','ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_reducedform_point')
+pause(1);
+chk.ind0       = [1 1 1 1 1];
+chk.indno      = [1 0 0 0 1];
+chk.jweak      = [1 0 0 0 1];
+chk.jweak_pair = [0 0 0 0 0 0 0 0 0 0 1 0 0 0 0];
+for strVars = {'ind0' 'indno' 'jweak' 'jweak_pair'}
+    if ~isequal(ide_moments_point.(strVars{:}) , chk.(strVars{:}))
+        disp('dMoments:')
+        disp(ide_moments_point.dMOMENTS);
+        disp(strVars{:})
+        disp(ide_moments_point.(strVars{:}));
+        error('identification based on moments is wrong for %s',strVars{:})
+    end
+    if ~isequal(ide_spectrum_point.(strVars{:}) , chk.(strVars{:}))
+        disp('dSPECTRUM');
+        disp(ide_spectrum_point.dSPECTRUM);
+        disp(strVars{:})
+        disp(ide_spectrum_point.(strVars{:}));
+        error('identification based on spectrum is wrong for %s',strVars{:})
+    end
+    if ~isequal(ide_minimal_point.(strVars{:}) , chk.(strVars{:}))
+        disp('dMINIMAL')
+        disp(ide_minimal_point.dMINIMAL);
+        disp(strVars{:})
+        disp(ide_minimal_point.(strVars{:}));
+        error('identification based on minimal system is wrong for %s',strVars{:})
+    end
+end
+
