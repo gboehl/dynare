@@ -160,35 +160,27 @@ plt = 1 ;
         subplot(ceil(sqrt(npar)),floor(sqrt(npar)),k)
         %kk = (plt-1)*nstar+k;
         [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_);
-        if TeX
-            if isempty(NAMES)
-                NAMES = name;
-                TeXNAMES = texname;
-            else
-                NAMES = char(NAMES,name);
-                TeXNAMES = char(TeXNAMES,texname);
-            end
-        end
         optimal_bandwidth = mh_optimal_bandwidth(distrib_param(k,:)',options_.HSsmc.nparticles,bandwidth,kernel_function);
         [density(:,1),density(:,2)] = kernel_density_estimate(distrib_param(k,:)',number_of_grid_points,...
                                                           options_.HSsmc.nparticles,optimal_bandwidth,kernel_function);
         plot(density(:,1),density(:,2));
         hold on
-        title(name,'interpreter','none')
+        if TeX
+            title(texname,'interpreter','latex')
+        else
+            title(name,'interpreter','none')
+        end
         hold off
         axis tight
         drawnow
     end
     dyn_saveas(hh,[ M_.fname '_param_density' int2str(plt) ],options_.nodisplay,options_.graph_format);
-    if TeX
+    if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         % TeX eps loader file
         fprintf(fidTeX,'\\begin{figure}[H]\n');
-        for jj = 1:min(nstar,length(x)-(plt-1)*nstar)
-            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
-        end
         fprintf(fidTeX,'\\centering \n');
-        fprintf(fidTeX,'\\includegraphics[scale=0.5]{%s_ParametersDensities%s}\n',M_.fname,int2str(plt));
-        fprintf(fidTeX,'\\caption{ParametersDensities.}');
+        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%_param_density%s}\n',min(k/floor(sqrt(npar)),1),M_.fname,int2str(plt));
+        fprintf(fidTeX,'\\caption{Parameter densities based on the Herbst/Schorfheide sampler.}');
         fprintf(fidTeX,'\\label{Fig:ParametersDensities:%s}\n',int2str(plt));
         fprintf(fidTeX,'\\end{figure}\n');
         fprintf(fidTeX,' \n');

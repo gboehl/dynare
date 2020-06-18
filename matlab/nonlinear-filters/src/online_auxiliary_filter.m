@@ -306,21 +306,16 @@ for plt = 1:nbplt
     for k=1:length(pmean)
         subplot(nr,nc,k)
         [name,texname] = get_the_name(k,TeX,Model,EstimatedParameters,DynareOptions);
-        if TeX
-            if isempty(NAMES)
-                NAMES = name;
-                TeXNAMES = texname;
-            else
-                NAMES = char(NAMES,name);
-                TeXNAMES = char(TeXNAMES,texname);
-            end
-        end
         % Draw the surface for an interval containing 95% of the particles.
         shade(1:sample_size, ub95_xparam(k,:)', 1:sample_size, lb95_xparam(k,:)', 'FillType',[1 2], 'LineStyle', 'none', 'Marker', 'none')
         hold on
         % Draw the mean of particles.
         plot(1:sample_size, mean_xparam(k,:), '-k', 'linewidth', 2)
-        title(name,'interpreter','none')
+        if TeX
+            title(texname,'interpreter','latex')
+        else
+            title(name,'interpreter','none')
+        end
         hold off
         axis tight
         drawnow
@@ -329,9 +324,6 @@ for plt = 1:nbplt
     if TeX
         % TeX eps loader file
         fprintf(fidTeX,'\\begin{figure}[H]\n');
-        for jj = 1:length(x)
-            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
-        end
         fprintf(fidTeX,'\\centering \n');
         fprintf(fidTeX,'\\includegraphics[scale=0.5]{%s_ParamTraj%s}\n',Model.fname,int2str(plt));
         fprintf(fidTeX,'\\caption{Parameters trajectories.}');
@@ -354,36 +346,28 @@ for plt = 1:nbplt
     for k=1:length(pmean)
         subplot(nr,nc,k)
         [name,texname] = get_the_name(k,TeX,Model,EstimatedParameters,DynareOptions);
-        if TeX
-            if isempty(NAMES)
-                NAMES = name;
-                TeXNAMES = texname;
-            else
-                NAMES = char(NAMES,name);
-                TeXNAMES = char(TeXNAMES,texname);
-            end
-        end
         optimal_bandwidth = mh_optimal_bandwidth(xparam(k,:)',number_of_particles,bandwidth,kernel_function);
         [density(:,1),density(:,2)] = kernel_density_estimate(xparam(k,:)', number_of_grid_points, ...
                                                           number_of_particles, optimal_bandwidth, kernel_function);
         plot(density(:,1), density(:,2));
         hold on
-        title(name, 'interpreter', 'none')
+        if TeX
+            title(texname,'interpreter','latex')
+        else
+            title(name,'interpreter','none')
+        end
         hold off
         axis tight
         drawnow
     end
     dyn_saveas(hh,[ Model.fname '_param_density' int2str(plt) ],DynareOptions.nodisplay,DynareOptions.graph_format);
-    if TeX
+    if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
         % TeX eps loader file
         fprintf(fidTeX, '\\begin{figure}[H]\n');
-        for jj = 1:length(x)
-            fprintf(fidTeX, '\\psfrag{%s}[1][][0.5][0]{%s}\n', deblank(NAMES(jj,:)), deblank(TeXNAMES(jj,:)));
-        end
         fprintf(fidTeX,'\\centering \n');
-        fprintf(fidTeX,'\\includegraphics[scale=0.5]{%s_ParametersDensities%s}\n',Model.fname,int2str(plt));
-        fprintf(fidTeX,'\\caption{ParametersDensities.}');
-        fprintf(fidTeX,'\\label{Fig:ParametersDensities:%s}\n',int2str(plt));
+        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%_param_density%s}\n',min(k/nc,1),M_.fname,int2str(plt));
+        fprintf(fidTeX,'\\caption{Parameter densities based on the Liu/West particle filter.}');
+        fprintf(fidTeX,'\\label{Fig:ParameterDensities:%s}\n',int2str(plt));
         fprintf(fidTeX,'\\end{figure}\n');
         fprintf(fidTeX,' \n');
     end
