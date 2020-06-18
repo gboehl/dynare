@@ -361,13 +361,13 @@ for plt = 1:nbplt
         drawnow
     end
     dyn_saveas(hh,[ Model.fname '_param_density' int2str(plt) ],DynareOptions.nodisplay,DynareOptions.graph_format);
-    if TeX
+    if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
         % TeX eps loader file
         fprintf(fidTeX, '\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering \n');
-        fprintf(fidTeX,'\\includegraphics[scale=0.5]{%s_ParametersDensities%s}\n',Model.fname,int2str(plt));
-        fprintf(fidTeX,'\\caption{ParametersDensities.}');
-        fprintf(fidTeX,'\\label{Fig:ParametersDensities:%s}\n',int2str(plt));
+        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%_param_density%s}\n',min(k/nc,1),M_.fname,int2str(plt));
+        fprintf(fidTeX,'\\caption{Parameter densities based on the Liu/West particle filter.}');
+        fprintf(fidTeX,'\\label{Fig:ParameterDensities:%s}\n',int2str(plt));
         fprintf(fidTeX,'\\end{figure}\n');
         fprintf(fidTeX,' \n');
     end
