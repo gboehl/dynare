@@ -87,7 +87,12 @@ for j= 1:nvar
     plot([NaN(obs,1); hpdinf.(vn)],'b-');
     hold on
     plot([NaN(obs,1); hpdsup.(vn)],'b-');
-    title(vn,'Interpreter','none');
+    if options_.TeX
+        temp=strmatch(vn,M_.endo_names,'exact');
+        title(['$' M_.endo_names_tex{temp} '$'],'Interpreter','latex');
+    else
+        title(vn,'Interpreter','none');
+    end
     xlim([1 obs+length(hpdsup.(vn))])
     hold off
     m = m + 1;
@@ -145,7 +150,12 @@ if isfield(oo_.forecast,'HPDinf_ME')
         plot([NaN(obs,1); oo_.forecast.HPDinf_ME.(vn)],'b-');
         hold on
         plot([NaN(obs,1); oo_.forecast.HPDsup_ME.(vn)],'b-');
-        title(vn,'Interpreter','none');
+        if options_.TeX
+            temp=strmatch(vn,M_.endo_names,'exact');
+            title(['$' M_.endo_names_tex{temp} '$'],'Interpreter','latex');
+        else
+            title(vn,'Interpreter','none');
+        end
         xlim([1 obs+length(oo_.forecast.HPDsup_ME.(vn))])
         hold off
         m = m + 1;

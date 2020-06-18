@@ -57,28 +57,20 @@ for plt = 1:nbplt
         i = (plt-1)*nstar + index;
         [x,f,abscissa,dens,binf,bsup] = draw_prior_density(i,bayestopt_);
         [nam,texnam] = get_the_name(i,TeX,M_,estim_params_,options_);
-        if TeX
-            if index==1
-                TeXNAMES = texnam;
-                NAMES = nam;
-            else
-                TeXNAMES = char(TeXNAMES,texnam);
-                NAMES = char(NAMES,nam);
-            end
-        end
         subplot(nr,nc,index)
         hh = plot(x,f,'-k','linewidth',2);
         set(hh,'color',[0.7 0.7 0.7]);
         box on
-        title(nam,'Interpreter','none')
+        if TeX
+            title(texnam,'Interpreter','latex')
+        else
+            title(nam,'Interpreter','none')
+        end
         drawnow
     end
     dyn_saveas(hplt,[M_.fname, '/graphs/' M_.fname '_Priors' int2str(plt)],options_.nodisplay,options_.graph_format);
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
-        for jj = 1:nstar0
-            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
-        end
         fprintf(fidTeX,'\\centering\n');
         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_Priors%s}\n',options_.figures.textwidth*min(index/nc,1),[M_.fname, '/graphs/' M_.fname],int2str(plt));
         fprintf(fidTeX,'\\caption{Priors.}');

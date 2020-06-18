@@ -104,15 +104,6 @@ for plt = 1:nbplt
         subplot(nr,nc,k)
         kk = (plt-1)*nstar+k;
         [name,texname] = get_the_name(kk,TeX,Model,EstimatedParameters,DynareOptions);
-        if TeX
-            if isempty(NAMES)
-                NAMES = name;
-                TeXNAMES = texname;
-            else
-                NAMES = char(NAMES,name);
-                TeXNAMES = char(TeXNAMES,texname);
-            end
-        end
         xx = x;
         if x(kk)~=0 || ~isinf(BoundsInfo.lb(kk)) || ~isinf(BoundsInfo.lb(kk))
             l1 = max(BoundsInfo.lb(kk),(1-sign(x(kk))*ll)*x(kk)); m1 = 0; %lower bound
@@ -182,7 +173,12 @@ for plt = 1:nbplt
         zNaN = z(NaN_index);
         yNaN = yl(1)*ones(size(NaN_index));
         plot(zNaN,yNaN,'o','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6);
-        title(name,'interpreter','none')
+        if TeX
+            title(texname,'interpreter','latex')
+        else
+            title(name,'interpreter','none')
+        end
+
         axis tight
         if binding_lower_bound || binding_upper_bound
             xl=get(gca,'xlim');
@@ -209,9 +205,6 @@ for plt = 1:nbplt
     if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
         % TeX eps loader file
         fprintf(fidTeX,'\\begin{figure}[H]\n');
-        for jj = 1:min(nstar,length(x)-(plt-1)*nstar)
-            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
-        end
         fprintf(fidTeX,'\\centering \n');
         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_CheckPlots%s}\n',DynareOptions.figures.textwidth*min(k/nc,1),[Model.fname, '/graphs/',Model.fname],int2str(plt));
         fprintf(fidTeX,'\\caption{Check plots.}');

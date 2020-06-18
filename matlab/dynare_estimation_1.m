@@ -589,11 +589,6 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                 plot(1:gend,innov(k,:),marker_string{2,1},'linewidth',1)
                 hold off
                 name = M_.exo_names{k};
-                if isempty(NAMES)
-                    NAMES = name;
-                else
-                    NAMES = char(NAMES,name);
-                end
                 if ~isempty(options_.XTick)
                     set(gca,'XTick',options_.XTick)
                     set(gca,'XTickLabel',options_.XTickLabel)
@@ -602,21 +597,14 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                     xlim([1 gend])
                 end
                 if options_.TeX
-                    texname = M_.exo_names_tex{k};
-                    if isempty(TeXNAMES)
-                        TeXNAMES = ['$ ' deblank(texname) ' $'];
-                    else
-                        TeXNAMES = char(TeXNAMES,['$ ' deblank(texname) ' $']);
-                    end
+                    title(['$' M_.exo_names_tex{k} '$'],'Interpreter','latex')
+                else
+                    title(name,'Interpreter','none')
                 end
-                title(name,'Interpreter','none')
             end
             dyn_saveas(fh,[M_.fname, '/graphs/' M_.fname '_SmoothedShocks' int2str(plt)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
-                for jj = 1:nstar0
-                    fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
-                end
                 fprintf(fidTeX,'\\centering \n');
                 fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_SmoothedShocks%s}\n',options_.figures.textwidth*min(i/nc,1),[M_.fname, '/graphs/' M_.fname],int2str(plt));
                 fprintf(fidTeX,'\\caption{Smoothed shocks.}');
@@ -650,8 +638,6 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
             end
             for plt = 1:nbplt
                 fh = dyn_figure(options_.nodisplay,'Name','Smoothed observation errors');
-                NAMES = [];
-                if options_.TeX, TeXNAMES = []; end
                 nstar0=min(nstar,number_of_plots_to_draw-(plt-1)*nstar);
                 if gend==1
                     marker_string{1,1}='-ro';
@@ -671,32 +657,20 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                     if gend>1
                         xlim([1 gend])
                     end
-                    if isempty(NAMES)
-                        NAMES = name;
-                    else
-                        NAMES = char(NAMES,name);
-                    end
                     if ~isempty(options_.XTick)
                         set(gca,'XTick',options_.XTick)
                         set(gca,'XTickLabel',options_.XTickLabel)
                     end
                     if options_.TeX
                         idx = strmatch(options_.varobs{index(k)}, M_.endo_names, 'exact');
-                        texname = M_.endo_names_tex{idx};
-                        if isempty(TeXNAMES)
-                            TeXNAMES = ['$ ' texname ' $'];
-                        else
-                            TeXNAMES = char(TeXNAMES,['$ ' texname ' $']);
-                        end
+                        title(['$' M_.endo_names_tex{idx} '$'],'Interpreter','latex')
+                    else
+                        title(name,'Interpreter','none')
                     end
-                    title(name,'Interpreter','none')
                 end
                 dyn_saveas(fh,[M_.fname, '/graphs/' M_.fname '_SmoothedObservationErrors' int2str(plt)],options_.nodisplay,options_.graph_format);
                 if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                     fprintf(fidTeX,'\\begin{figure}[H]\n');
-                    for jj = 1:nstar0
-                        fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
-                    end
                     fprintf(fidTeX,'\\centering \n');
                     fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_SmoothedObservationErrors%s}\n',options_.figures.textwidth*min(i/nc,1),[M_.fname, '/graphs/' M_.fname],int2str(plt));
                     fprintf(fidTeX,'\\caption{Smoothed observation errors.}');
@@ -726,7 +700,6 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
         for plt = 1:nbplt
             fh = dyn_figure(options_.nodisplay,'Name','Historical and smoothed variables');
             NAMES = [];
-            if options_.TeX, TeXNAMES = []; end
             nstar0=min(nstar,n_varobs-(plt-1)*nstar);
             if gend==1
                 marker_string{1,1}='-ro';
@@ -743,11 +716,6 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                 plot(1:gend,rawdata(:,k),marker_string{2,1},'linewidth',1)
                 hold off
                 name = options_.varobs{k};
-                if isempty(NAMES)
-                    NAMES = name;
-                else
-                    NAMES = char(NAMES,name);
-                end
                 if ~isempty(options_.XTick)
                     set(gca,'XTick',options_.XTick)
                     set(gca,'XTickLabel',options_.XTickLabel)
@@ -757,21 +725,14 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                 end
                 if options_.TeX
                     idx = strmatch(options_.varobs{k}, M_.endo_names,'exact');
-                    texname = M_.endo_names_tex{idx};
-                    if isempty(TeXNAMES)
-                        TeXNAMES = ['$ ' texname ' $'];
-                    else
-                        TeXNAMES = char(TeXNAMES,['$ ' texname ' $']);
-                    end
+                    title(['$' M_.endo_names_tex{idx} '$'],'Interpreter','latex')
+                else
+                    title(name,'Interpreter','none')
                 end
-                title(name,'Interpreter','none')
             end
             dyn_saveas(fh,[M_.fname, '/graphs/' M_.fname '_HistoricalAndSmoothedVariables' int2str(plt)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
-                for jj = 1:nstar0
-                    fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
-                end
                 fprintf(fidTeX,'\\centering \n');
                 fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_HistoricalAndSmoothedVariables%s}\n',options_.figures.textwidth*min(i/nc,1),[M_.fname, '/graphs/' M_.fname],int2str(plt));
                 fprintf(fidTeX,'\\caption{Historical and smoothed variables.}');

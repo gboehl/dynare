@@ -42,6 +42,7 @@ nn=myinputs.nn;
 n2=myinputs.n2;
 Distrib=myinputs.Distrib;
 varlist=myinputs.varlist;
+
 MaxNumberOfPlotsPerFigure=myinputs.MaxNumberOfPlotsPerFigure;
 name3=myinputs.name3;
 tit3=myinputs.tit3;
@@ -54,6 +55,9 @@ end
 
 global options_ M_ oo_
 
+if options_.TeX
+    varlist_TeX=myinputs.varlist_TeX;
+end
 
 if whoiam
     prct0={0,whoiam,Parallel(ThisMatlab)};
@@ -89,8 +93,11 @@ for i=fpar:nvar
         plot(1:n2,Mean(:,i),'-k','linewidth',1);
         xlim([1 n2]);
         hold off;
-        name = deblank(varlist(i,:));
-        title(name,'Interpreter','none')
+        if options_.TeX
+            title(['$' varlist_TeX{i,:} '$'],'Interpreter','latex')            
+        else
+            title(varlist(i,:),'Interpreter','none')
+        end       
         yticklabels=get(gca,'yticklabel');
         if size(char(yticklabels),2)>5 %make sure yticks do not screw up figure
             yticks=get(gca,'ytick');

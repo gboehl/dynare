@@ -307,6 +307,9 @@ if ~options_.nograph && ~options_.no_graph.posterior
     localVars.n2=n2;
     localVars.Distrib=Distrib;
     localVars.varlist=varlist;
+    if options_.TeX
+        localVars.varlist_TeX=varlist_TeX;
+    end
     localVars.MaxNumberOfPlotsPerFigure=MaxNumberOfPlotsPerFigure;
     localVars.name3=name3;
     localVars.tit3=tit3;
@@ -352,28 +355,14 @@ if ~options_.nograph && ~options_.no_graph.posterior
 
         i=0;
         for j=1:length(nvar0)
-            NAMES = [];
-            TEXNAMES = [];
             nvar=nvar0(j);
             while i<nvar
                 i=i+1;
                 if max(abs(Mean(:,i))) > 10^(-6)
                     subplotnum = subplotnum+1;
-                    name = varlist{i};
-                    texname = varlist_TeX{i};
-                    if subplotnum==1
-                        NAMES = name;
-                        TEXNAMES = ['$' texname '$'];
-                    else
-                        NAMES = char(NAMES,name);
-                        TEXNAMES = char(TEXNAMES,['$' texname '$']);
-                    end
                 end
                 if subplotnum == MaxNumberOfPlotsPerFigure || i == nvar
                     fprintf(fidTeX,'\\begin{figure}[H]\n');
-                    for jj = 1:size(TEXNAMES,1)
-                        fprintf(fidTeX,['\\psfrag{%s}[1][][0.5][0]{%s}\n'],deblank(NAMES(jj,:)),deblank(TEXNAMES(jj,:)));
-                    end
                     fprintf(fidTeX,'\\centering \n');
                     fprintf(fidTeX,['\\includegraphics[width=%2.2f\\textwidth]{%s/Output/%s_' name3 '_%s}\n'],options_.figures.textwidth*min(subplotnum/nn,1),M_.dname,M_.fname, tit3{i});
                     fprintf(fidTeX,'\\label{Fig:%s:%s}\n',name3,tit3{i});
@@ -381,8 +370,6 @@ if ~options_.nograph && ~options_.no_graph.posterior
                     fprintf(fidTeX,'\\end{figure}\n');
                     fprintf(fidTeX,' \n');
                     subplotnum = 0;
-                    NAMES = [];
-                    TEXNAMES = [];
                 end
             end
         end
