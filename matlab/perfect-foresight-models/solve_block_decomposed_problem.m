@@ -43,9 +43,9 @@ y=oo_.endo_simul;
 T=NaN(M_.block_structure.dyn_tmp_nbr, options_.periods+M_.maximum_lag+M_.maximum_lead);
 oo_.deterministic_simulation.status = 0;
 
+funcname = [ M_.fname '.dynamic'];
+
 for blk = 1:length(M_.block_structure.block)
-    funcname = sprintf('%s.block.dynamic_%d', M_.fname, blk);
-    
     recursive_size = M_.block_structure.block(blk).endo_nbr - M_.block_structure.block(blk).mfs;
     y_index = M_.block_structure.block(blk).variable((recursive_size+1):end);
 
@@ -64,7 +64,7 @@ for blk = 1:length(M_.block_structure.block)
         end
         for it_ = range
             y2 = dynvars_from_endo_simul(y, it_, M_);
-            [y2, T(:, it_)] = feval(funcname, y2, oo_.exo_simul, M_.params, oo_.steady_state, T(:, it_), it_, false);
+            [~, y2, T(:, it_)] = feval(funcname, blk, y2, oo_.exo_simul, M_.params, oo_.steady_state, T(:, it_), it_, false);
             y(find(M_.lead_lag_incidence(M_.maximum_endo_lag+1, :)), it_) = y2(nonzeros(M_.lead_lag_incidence(M_.maximum_endo_lag+1, :)));
         end
     elseif M_.block_structure.block(blk).Simulation_Type == 3 || ... % solveForwardSimple

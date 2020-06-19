@@ -92,9 +92,9 @@ for it_=start:incr:finish
     g1=spalloc( Blck_size, Blck_size, nze);
     while ~(cvg==1 || iter>maxit_)
         if is_dynamic
-            [r, T(:, it_), g1] = feval(fname, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
+            [r, ~, T(:, it_), g1] = feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
         else
-            [r, T, g1] = feval(fname, y, x, params, T);
+            [r, ~, T, g1] = feval(fname, Block_Num, y, x, params, T);
         end
         if ~isreal(r)
             max_res=(-(max(max(abs(r))))^2)^0.5;
@@ -203,9 +203,9 @@ for it_=start:incr:finish
                 p = -g1\r ;
                 [ya,f,r,check]=lnsrch1(ya,f,g,p,stpmax, ...
                                        'lnsrch1_wrapper_one_boundary',nn, ...
-                                       y_index_eq, options.solve_tolx, M.lead_lag_incidence(M.maximum_endo_lag+1, :), fname, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_);
+                                       y_index_eq, options.solve_tolx, M.lead_lag_incidence(M.maximum_endo_lag+1, :), fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_);
                 %% Recompute temporary terms, since they are not given as output of lnsrch1
-                [~, T(:, it_)] = feval(fname, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
+                [~, ~, T(:, it_)] = feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
                 dx = ya' - y(index_eq, it_);
                 y(index_eq, it_) = ya;
             elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0)) || (~is_dynamic && options.solve_algo==6)
@@ -262,10 +262,10 @@ for it_=start:incr:finish
                         y(y_index_eq) = phat;
                     end
                     if is_dynamic
-                        [r, T(:, it_), g1] = feval(fname, dynvars_from_endo_simul(y, it_, M), x, params, ...
+                        [r, ~, T(:, it_), g1] = feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, ...
                                                    steady_state, T(:, it_), it_, false);
                     else
-                        [r, T, g1] = feval(fname, y, x, params, T);
+                        [r, ~, T, g1] = feval(fname, Block_Num, y, x, params, T);
                     end
                     if max(abs(r))>=options.solve_tolf
                         [dx,flag1] = bicgstab(g1,-r,1e-7,Blck_size,L1,U1);

@@ -37,7 +37,7 @@ if options.block && ~options.bytecode
                 ss(M.block_structure_stat.block(b).variable) = y;
             else
                 n = length(M.block_structure_stat.block(b).variable);
-                [ss, T, ~, check] = solve_one_boundary([M.fname '.block.static_' int2str(b)], ss, exo, ...
+                [ss, T, ~, check] = solve_one_boundary([M.fname '.static' ], ss, exo, ...
                                                        params, [], T, M.block_structure_stat.block(b).variable, n, 1, false, b, 0, options.simul.maxit, ...
                                                        options.solve_tolf, ...
                                                        options.slowc, 0, options.solve_algo, true, false, false, M, options, []);
@@ -47,8 +47,9 @@ if options.block && ~options.bytecode
                 end
             end
         end
-        % In particular, the following updates the temporary terms vector (for the dynare_solve case)
-        [r, x, T, g1] = feval([M.fname '.static'], b, ss, exo, params, T);
+        % Compute endogenous if the block is of type evaluate forward/backward
+        % Also update the temporary terms vector (needed for the dynare_solve case)
+        [~, x, T, g1] = feval([M.fname '.static'], b, ss, exo, params, T);
     end
 elseif options.bytecode
     if options.solve_algo > 4

@@ -1,12 +1,12 @@
-function r = lnsrch1_wrapper_one_boundary(ya, ll_index, fname, y, x, params, steady_state, T, it_)
+function r = lnsrch1_wrapper_one_boundary(ya, ll_index, fname, blk, y, x, params, steady_state, T, it_)
 % wrapper for solve_one_boundary m-file when it is used with a dynamic
 % model
 %
 % INPUTS
 %   ya                  [vector]        The endogenous of the current block
 %   ll_index            [vector]        M_.lead_lag_incidence(M_.maximum_endo_lag+1, :)
-%   fname               [string]        name of the file containing the block
-%                                       to simulate
+%   fname               [string]        name of the static/dynamic file
+%   blk                 [int]           block number
 %   y                   [vector]        Dynamic endogenous variables of the model
 %   x                   [matrix]        All the exogenous variables of the model
 %   params              [vector]        All the parameters of the model
@@ -40,4 +40,4 @@ function r = lnsrch1_wrapper_one_boundary(ya, ll_index, fname, y, x, params, ste
 % along with Dynare.  If not, see <http://www.gnu.org/licen
 
 y2(nonzeros(ll_index)) = ya(find(ll_index));
-[r, ~, g1]=feval(fname, y, x, params, steady_state, T, it_, false);
+[r, ~, ~, g1]=feval(fname, blk, y, x, params, steady_state, T, it_, false);

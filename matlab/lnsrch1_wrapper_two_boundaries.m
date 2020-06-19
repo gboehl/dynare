@@ -1,4 +1,4 @@
-function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
+function ra = lnsrch1_wrapper_two_boundaries(ya, fname, blk, y, y_index, x, ...
                                              params, steady_state, T, periods, ...
                                              y_size, M_)
 % wrapper for solve_one_boundary m-file when it is used with a dynamic
@@ -8,8 +8,8 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 %   ya                  [vector]        The endogenous of the current block
 %   y_index             [vector of int] The index of the endogenous variables of
 %                                       the block
-%   fname               [string]        name of the file containing the block
-%                                       to simulate
+%   fname               [string]        name of the dynamic file
+%   blk                 [int]           block number
 %   y                   [matrix]        All the endogenous variables of the model
 %   x                   [matrix]        All the exogenous variables of the model
 %   params              [vector]        All the parameters of the model
@@ -51,5 +51,5 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 y(y_index, M_.maximum_lag+(1:periods)) = reshape(ya',length(y_index),periods);
 ra = NaN(periods*y_size, 1);
 for it_ = M_.maximum_lag+(1:periods)
-    [ra((it_-M_.maximum_lag-1)*y_size+(1:y_size)), ~, g1]=feval(fname, dynvars_from_endo_simul(y, it_, M_), x, params, steady_state, T(:, it_), it_, false);
+    [ra((it_-M_.maximum_lag-1)*y_size+(1:y_size)), ~, ~, g1]=feval(fname, blk, dynvars_from_endo_simul(y, it_, M_), x, params, steady_state, T(:, it_), it_, false);
 end

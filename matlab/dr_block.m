@@ -77,8 +77,7 @@ else
     it_=M_.maximum_lag+1;
     y=dynvars_from_endo_simul(z, it_, M_);
     for blk = 1:length(M_.block_structure.block)
-        funcname = sprintf('%s.block.dynamic_%d', M_.fname, blk);
-        [~, T, data(blk).g1, data(blk).g1_x, data(blk).g1_xd, data(blk).g1_o]=feval(funcname, y, zx, M_.params, dr.ys, T, it_, true);
+        [~, ~, T, data(blk).g1, data(blk).g1_x, data(blk).g1_xd, data(blk).g1_o]=feval([M_.fname '.dynamic'], blk, y, zx, M_.params, dr.ys, T, it_, true);
     end
 end
 dr.full_rank = 1;
