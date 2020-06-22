@@ -81,11 +81,48 @@ end;
 
 varobs c i;
 
-identification(advanced=1,max_dim_cova_group=3);
+identification(advanced=1,max_dim_cova_group=3,tol_rank=1e-8);
 //varobs c i lam; //to check if observing lam identifies phi and theta
 //identification(ar=1,advanced=1,max_dim_cova_group=3,prior_mc=250);
 //identification(prior_mc=100);
 
+% Unit test for analytic_derivation_mode
+load('kim2/identification/kim2_prior_mean_identif.mat','store_options_ident')
+if store_options_ident.analytic_derivation~=1 && store_options_ident.analytic_derivation_mode~=-2
+    error('the steady state file changed parameters and we should switch to numerical derivatives for the steady state, i.e. analytic_derivation_mode=-2')
+end
 
+% Unit test for correct identification results
+load('kim2/identification/kim2_prior_mean_identif.mat','ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_reducedform_point')
+pause(1);
+chk.ind0       = [1 1 1 0];
+chk.indno      = [0 0 0 1; 0 1 1 0];
+chk.jweak      = [0 1 1 0];
+chk.jweak_pair = [0 0 0 0 1 0 0 0 0 0];
+for strVars = {'ind0' 'indno' 'jweak' 'jweak_pair'}
+    if ~isequal(ide_moments_point.(strVars{:}) , chk.(strVars{:}))
+        disp('dMoments:')
+        disp(ide_moments_point.dMOMENTS);
+        disp(strVars{:})
+        disp(ide_moments_point.(strVars{:}));
+        error('identification based on moments is wrong for %s',strVars{:})
+    end
+    if ~isequal(ide_spectrum_point.(strVars{:}) , chk.(strVars{:}))
+        disp('dSPECTRUM');
+        disp(ide_spectrum_point.dSPECTRUM);
+        disp(strVars{:})
+        disp(ide_spectrum_point.(strVars{:}));
+        error('identification based on spectrum is wrong for %s',strVars{:})
+    end
+    if ~isequal(ide_minimal_point.(strVars{:}) , chk.(strVars{:}))
+        disp('dMINIMAL')
+        disp(ide_minimal_point.dMINIMAL);
+        disp(strVars{:})
+        disp(ide_minimal_point.(strVars{:}));
+        error('identification based on minimal system is wrong for %s',strVars{:})
+    end
+end
+
+% Integration test if identification works without priors
 estim_params_=[]; 
 identification(advanced=1,max_dim_cova_group=3);

@@ -1032,9 +1032,9 @@ end
 indzeros = find(abs(Var_y) < 1e-12); %find values that are numerical zero
 Var_y(indzeros) = 0;
 if useautocorr
-    sy = sqrt(diag(Var_y)); %theoretical standard deviation
-    sy = sy(stationary_vars);
-    sy = sy*sy';            %cross products of standard deviations
+    sdy = sqrt(diag(Var_y)); %theoretical standard deviation
+    sdy = sdy(stationary_vars);
+    sy = sdy*sdy';           %cross products of standard deviations
     Corr_y = NaN*ones(y_nbr,y_nbr);
     Corr_y(stationary_vars,stationary_vars) = Var_y(stationary_vars,stationary_vars)./sy;
     Corr_yi = NaN*ones(y_nbr,y_nbr,nlags);
@@ -1048,21 +1048,21 @@ if compute_derivs
     end
     for jpV=1:totparam_nbr
         if order < 3
-            dVar_y(stationary_vars,stationary_vars,jpV) = dC(stationary_vars,:,jpV)*Var_z*C(stationary_vars,:)' + C(stationary_vars,:)*dVar_z(:,:,jpV)*C(stationary_vars,:)' + C(stationary_vars,:)*Var_z*dC(stationary_vars,:,jpV)'...
+            dVar_y_tmp = dC(stationary_vars,:,jpV)*Var_z*C(stationary_vars,:)' + C(stationary_vars,:)*dVar_z(:,:,jpV)*C(stationary_vars,:)' + C(stationary_vars,:)*Var_z*dC(stationary_vars,:,jpV)'...
                                                         + dD(stationary_vars,:,jpV)*Varinov*D(stationary_vars,:)' + D(stationary_vars,:)*dVarinov(:,:,jpV)*D(stationary_vars,:)' + D(stationary_vars,:)*Varinov*dD(stationary_vars,:,jpV)';
         else
-            dVar_y(stationary_vars,stationary_vars,jpV) = dC(stationary_vars,:,jpV)*Var_z*C(stationary_vars,:)' + C(stationary_vars,:)*dVar_z(:,:,jpV)*C(stationary_vars,:)' + C(stationary_vars,:)*Var_z*dC(stationary_vars,:,jpV)'...
+            dVar_y_tmp = dC(stationary_vars,:,jpV)*Var_z*C(stationary_vars,:)' + C(stationary_vars,:)*dVar_z(:,:,jpV)*C(stationary_vars,:)' + C(stationary_vars,:)*Var_z*dC(stationary_vars,:,jpV)'...
                                                         + dD(stationary_vars,:,jpV)*E_inovzlag1*C(stationary_vars,:)' + D(stationary_vars,:)*dE_inovzlag1(:,:,jpV)*C(stationary_vars,:)' + D(stationary_vars,:)*E_inovzlag1*dC(stationary_vars,:,jpV)'...
                                                         + dC(stationary_vars,:,jpV)*transpose(E_inovzlag1)*D(stationary_vars,:)' + C(stationary_vars,:)*transpose(dE_inovzlag1(:,:,jpV))*D(stationary_vars,:)' + C(stationary_vars,:)*transpose(E_inovzlag1)*dD(stationary_vars,:,jpV)'...
                                                         + dD(stationary_vars,:,jpV)*Varinov*D(stationary_vars,:)' + D(stationary_vars,:)*dVarinov(:,:,jpV)*D(stationary_vars,:)' + D(stationary_vars,:)*Varinov*dD(stationary_vars,:,jpV)';
         end
-        [indzerosrow,indzeroscol] = find(abs(dVar_y(:,:,jpV)) < 1e-12); %find values that are numerical zero
-        dVar_y(indzerosrow,indzeroscol,jpV) = 0;
+        indzeros = find(abs(dVar_y_tmp) < 1e-12); %find values that are numerical zero
+        dVar_y_tmp(indzeros) = 0;        
+        dVar_y(stationary_vars,stationary_vars,jpV) = dVar_y_tmp;
         if useautocorr
-            %is this correct?[@wmutschl]
-            dsy = 1/2./sy.*diag(dVar_y(:,:,jpV));
+            dsy = 1/2./sdy.*diag(dVar_y(:,:,jpV));
             dsy = dsy(stationary_vars);
-            dsy = dsy*sy'+sy*dsy';
+            dsy = dsy*sdy'+sdy*dsy';
             dCorr_y(stationary_vars,stationary_vars,jpV) = (dVar_y(stationary_vars,stationary_vars,jpV).*sy-dsy.*Var_y(stationary_vars,stationary_vars))./(sy.*sy);
             dCorr_y(stationary_vars,stationary_vars,jpV) = dCorr_y(stationary_vars,stationary_vars,jpV)-diag(diag(dCorr_y(stationary_vars,stationary_vars,jpV)))+diag(diag(dVar_y(stationary_vars,stationary_vars,jpV)));
         end
@@ -1137,6 +1137,9 @@ if compute_derivs
                                                                 + dD(stationary_vars,:,jpVi)*E_inovzlagi*C(stationary_vars,:)' + D(stationary_vars,:)*dE_inovzlagi_jpVi*C(stationary_vars,:)' + D(stationary_vars,:)*E_inovzlagi*dC(stationary_vars,:,jpVi)';
             end
             if useautocorr
+                dsy = 1/2./sdy.*diag(dVar_y(:,:,jpVi));
+                dsy = dsy(stationary_vars);
+                dsy = dsy*sdy'+sdy*dsy';
                 dCorr_yi(stationary_vars,stationary_vars,i,jpVi) = (dVar_yi(stationary_vars,stationary_vars,i,jpVi).*sy-dsy.*Var_yi(stationary_vars,stationary_vars,i))./(sy.*sy);                
             end
             dAi_jpVi = dAi_jpVi*A + Ai*dA(:,:,jpVi);
