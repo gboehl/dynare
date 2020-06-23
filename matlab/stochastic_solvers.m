@@ -128,11 +128,6 @@ elseif local_order == 2
                                       exo_simul, ...
                                       M_.params, dr.ys, it_);
     end
-    if options_.use_dll
-        % In USE_DLL mode, the hessian is in the 3-column sparse representation
-        hessian1 = sparse(hessian1(:,1), hessian1(:,2), hessian1(:,3), ...
-                          size(jacobia_, 1), size(jacobia_, 2)*size(jacobia_, 2));
-    end
     [infrow,infcol]=find(isinf(hessian1));
     if options_.debug
         if ~isempty(infrow)
