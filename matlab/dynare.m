@@ -230,6 +230,16 @@ if ~isempty(varargin)
     command = [command ' ' dynare_varargin];
 end
 
+% On MATLAB+Windows, the +folder may be locked by MATLAB, preventing its
+% removal by the preprocessor.
+% Trying to delete it here will actually fail, but surprisingly this allows
+% the preprocessor to actually remove the folder (see ModFile::writeOutputFiles())
+% For an instance of this bug, see:
+% https://forum.dynare.org/t/issue-with-dynare-preprocessor-4-6-1/15448/1
+if ispc && ~isoctave && exist(['+',fname(1:end-4)],'dir')
+    [~,~]=rmdir(['+', fname(1:end-4)],'s');
+end
+
 % Under Windows, make sure the MEX file is unloaded (in the use_dll case),
 % otherwise the preprocessor can't recompile it
 if isoctave
