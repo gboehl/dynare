@@ -40,13 +40,13 @@ cd([top_test_dir filesep 'block_bytecode']);
 has_optimization_toolbox = user_has_matlab_license('optimization_toolbox');
 tic;
 for blockFlag = 0:1
-    for bytecodeFlag = 0:1
+    for storageFlag = 0:2 % 0=M-file, 1=use_dll, 2=bytecode
         default_solve_algo = 2;
         default_stack_solve_algo = 0;
-        if ~blockFlag && ~bytecodeFlag
+        if ~blockFlag && storageFlag ~= 2
             solve_algos = [1:4 9];
             stack_solve_algos = [0 6];
-        elseif blockFlag && ~bytecodeFlag
+        elseif blockFlag && storageFlag ~= 2
             solve_algos = [1:4 6:9];
             stack_solve_algos = 0:4;
         else
@@ -59,13 +59,13 @@ for blockFlag = 0:1
 
         for i = 1:length(solve_algos)
             num_block_tests = num_block_tests + 1;
-            if ~blockFlag && ~bytecodeFlag && (i == 1)
+            if ~blockFlag && storageFlag == 0 && (i == 1)
                 % This is the reference simulation path against which all
                 % other simulations will be tested
                 try
                     old_path = path;
                     save wsMat
-                    run_ls2003(blockFlag, bytecodeFlag, solve_algos(i), default_stack_solve_algo)
+                    run_ls2003(blockFlag, storageFlag, solve_algos(i), default_stack_solve_algo)
                     load wsMat
                     path(old_path);
                     y_ref = oo_.endo_simul;
@@ -73,31 +73,31 @@ for blockFlag = 0:1
                 catch exception
                     load wsMat
                     path(old_path);
-                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
-                    printMakeCheckMatlabErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], exception);
+                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
+                    printMakeCheckMatlabErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], exception);
                     clear exception
                 end
             else
                 try
                     old_path = path;
                     save wsMat
-                    run_ls2003(blockFlag, bytecodeFlag, solve_algos(i), default_stack_solve_algo)
+                    run_ls2003(blockFlag, storageFlag, solve_algos(i), default_stack_solve_algo)
                     load wsMat
                     path(old_path);
                     % Test against the reference simulation path
                     load('test.mat','y_ref');
                     diff = oo_.endo_simul - y_ref;
-                    if(abs(diff) > options_.dynatol.x)
-                        failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
+                    if abs(diff) > options_.dynatol.x
+                        failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
                         exception = MException('ERROR: simulation path differs from the reference path');
-                        printMakeCheckMatlabErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], exception);
+                        printMakeCheckMatlabErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], exception);
                         clear exception
                     end
                 catch exception
                     load wsMat
                     path(old_path);
-                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
-                    printMakeCheckMatlabErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], exception);
+                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
+                    printMakeCheckMatlabErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], exception);
                     clear exception
                 end
             end
@@ -107,23 +107,23 @@ for blockFlag = 0:1
             try
                 old_path = path;
                 save wsMat
-                run_ls2003(blockFlag, bytecodeFlag, default_solve_algo, stack_solve_algos(i))
+                run_ls2003(blockFlag, storageFlag, default_solve_algo, stack_solve_algos(i))
                 load wsMat
                 path(old_path);
                 % Test against the reference simulation path
                 load('test.mat','y_ref');
                 diff = oo_.endo_simul - y_ref;
-                if(abs(diff) > options_.dynatol.x)
-                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'];
+                if abs(diff) > options_.dynatol.x
+                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'];
                     exception = MException('ERROR: simulation path difers from the reference path');
-                    printMakeCheckMatlabErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'], exception);
+                    printMakeCheckMatlabErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'], exception);
                     clear exception
                 end
             catch exception
                 load wsMat
                 path(old_path);
-                failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'];
-                printMakeCheckMatlabErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'], exception);
+                failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'];
+                printMakeCheckMatlabErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'], exception);
                 clear exception
             end
         end
