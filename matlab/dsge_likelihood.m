@@ -181,84 +181,10 @@ end
 % 1. Get the structural parameters & define penalties
 %------------------------------------------------------------------------------
 
-% Return, with endogenous penalty, if some parameters are smaller than the lower bound of the prior domain.
-if isestimation(DynareOptions) && ~isequal(DynareOptions.mode_compute,1) && any(xparam1<BoundsInfo.lb)
-    k = find(xparam1<BoundsInfo.lb);
-    fval = Inf;
-    exit_flag = 0;
-    info(1) = 41;
-    info(4)= sum((BoundsInfo.lb(k)-xparam1(k)).^2);
-    if analytic_derivation
-        DLIK=ones(length(xparam1),1);
-    end
+[fval,info,exit_flag,Model,Q,H]=check_bounds_and_definiteness_estimation(xparam1, Model, DynareOptions, EstimatedParameters, BoundsInfo);
+if info(1)
     return
 end
-
-% Return, with endogenous penalty, if some parameters are greater than the upper bound of the prior domain.
-if isestimation(DynareOptions) && ~isequal(DynareOptions.mode_compute,1) && any(xparam1>BoundsInfo.ub)
-    k = find(xparam1>BoundsInfo.ub);
-    fval = Inf;
-    exit_flag = 0;
-    info(1) = 42;
-    info(4)= sum((xparam1(k)-BoundsInfo.ub(k)).^2);
-    if analytic_derivation
-        DLIK=ones(length(xparam1),1);
-    end
-    return
-end
-
-% Get the diagonal elements of the covariance matrices for the structural innovations (Q) and the measurement error (H).
-Model = set_all_parameters(xparam1,EstimatedParameters,Model);
-
-Q = Model.Sigma_e;
-H = Model.H;
-
-% Test if Q is positive definite.
-if ~issquare(Q) || EstimatedParameters.ncx || isfield(EstimatedParameters,'calibrated_covariances')
-    [Q_is_positive_definite, penalty] = ispd(Q(EstimatedParameters.Sigma_e_entries_to_check_for_positive_definiteness,EstimatedParameters.Sigma_e_entries_to_check_for_positive_definiteness));
-    if ~Q_is_positive_definite
-        fval = Inf;
-        exit_flag = 0;
-        info(1) = 43;
-        info(4) = penalty;
-        return
-    end
-    if isfield(EstimatedParameters,'calibrated_covariances')
-        correct_flag=check_consistency_covariances(Q);
-        if ~correct_flag
-            penalty = sum(Q(EstimatedParameters.calibrated_covariances.position).^2);
-            fval = Inf;
-            exit_flag = 0;
-            info(1) = 71;
-            info(4) = penalty;
-            return
-        end
-    end
-end
-
-% Test if H is positive definite.
-if ~issquare(H) || EstimatedParameters.ncn || isfield(EstimatedParameters,'calibrated_covariances_ME')
-    [H_is_positive_definite, penalty] = ispd(H(EstimatedParameters.H_entries_to_check_for_positive_definiteness,EstimatedParameters.H_entries_to_check_for_positive_definiteness));
-    if ~H_is_positive_definite
-        fval = Inf;
-        info(1) = 44;
-        info(4) = penalty;
-        exit_flag = 0;
-        return
-    end
-    if isfield(EstimatedParameters,'calibrated_covariances_ME')
-        correct_flag=check_consistency_covariances(H);
-        if ~correct_flag
-            penalty = sum(H(EstimatedParameters.calibrated_covariances_ME.position).^2);
-            fval = Inf;
-            exit_flag = 0;
-            info(1) = 72;
-            info(4) = penalty;
-            return
-        end
-    end
-end
-
 
 %------------------------------------------------------------------------------
 % 2. call model setup & reduction program
