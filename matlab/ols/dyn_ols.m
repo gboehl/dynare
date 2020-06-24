@@ -1,4 +1,4 @@
-function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names, ds_range)
+function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names, ds_range, update_params)
 % function varargout = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names, ds_range)
 % Run OLS on chosen model equations; unlike olseqs, allow for time t
 % endogenous variables on LHS
@@ -19,6 +19,8 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names, ds
 %   param_names       [cell of cellstr] list of parameters to estimate by eqtag
 %                                       (if empty, estimate all)
 %   ds_range          [dates]           range of dates to use in estimation
+%   update_params     [logical]         If false M_.params will not be estimation.
+%                                       If true (default) M_.params will be updated.
 %
 % OUTPUTS
 %   ds                [dseries]    data updated with fitted values
@@ -26,7 +28,7 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names, ds
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
 
-% Copyright (C) 2017-2019 Dynare Team
+% Copyright (C) 2017-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,16 +47,19 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names, ds
 
 global M_ oo_ options_
 
-if nargin < 1 || nargin > 6
-    error('dyn_ols() takes between 1 and 6 arguments')
+if nargin < 1 || nargin > 7
+    error('dyn_ols() takes between 1 and 7 arguments')
 end
 
 if isempty(ds) || ~isdseries(ds)
     error('dyn_ols: the first argument must be a dseries')
 end
 
-if nargin < 6
+if nargin == 6 && ~isempty(ds_range)
+    update_params = true;
+elseif nargin < 6
     ds_range = ds.dates;
+    update_params = true;
 else
     if isempty(ds_range)
         ds_range = ds.dates;
@@ -63,6 +68,7 @@ else
             error('There is a problem with the 6th argument: the date range does not correspond to that of the dseries')
         end
     end
+    update_params = true;
 end
 
 if nargin < 5
@@ -144,7 +150,9 @@ for i = 1:length(Y)
     for j = 1:length(pnames)
         if ~strcmp(pnames{j}, 'intercept')
             oo_.ols.(tag).param_idxs(j) = find(strcmp(M_.param_names, pnames{j}));
-            M_.params(oo_.ols.(tag).param_idxs(j)) = oo_.ols.(tag).beta(j);
+            if update_params
+                M_.params(oo_.ols.(tag).param_idxs(j)) = oo_.ols.(tag).beta(j);
+            end
         end
     end
 
