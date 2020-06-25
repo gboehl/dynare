@@ -129,7 +129,7 @@ elseif options_.rplottype == 2
         end
         xlabel('Periods') ;
         if options_.TeX
-            ylabel([s1_TeX{j}],'Interpreter','latex') ;
+            ylabel(['$' s1_TeX{j} '$'],'Interpreter','latex') ;
             title(['Plot of $' s1_TeX{j} '$'],'Interpreter','latex') ;
         else
             ylabel([s1{j}],'Interpreter','none') ;
