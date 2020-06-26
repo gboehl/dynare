@@ -124,7 +124,7 @@ if ~options_.noprint
         lh = cellofchararraymaxlength(labels)+2;
         dyn_latex_table(M_, options_, my_title, 'covar_ex_shocks', headers, labels, M_.Sigma_e, lh, 10, 6);
     end
-    if ~all(M_.H==0)
+    if ~all(diag(M_.H)==0)
         my_title='MATRIX OF COVARIANCE OF MEASUREMENT ERRORS';
         labels = cellfun(@(x) horzcat('SE_', x), options_.varobs, 'UniformOutput', false);
         headers = vertcat('Variables', labels);

@@ -150,7 +150,7 @@ while iteration < NumberOfSimulations
     end
     if ( file_line_number==TableOfInformations(file_indx_number+1,2) )
         file_indx_number = file_indx_number + 1;
-        save([ PriorDirectoryName '/prior_draws' int2str(file_indx_number) '.mat' ],'pdraws');
+        save([ PriorDirectoryName '/prior_draws' int2str(file_indx_number) '.mat' ],'pdraws','estim_params_');
         if file_indx_number<NumberOfFiles
             if drsave
                 pdraws = cell(TableOfInformations(file_indx_number+1,2),drsave+2);
