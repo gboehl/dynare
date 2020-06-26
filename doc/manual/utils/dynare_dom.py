@@ -34,7 +34,7 @@ from docutils.parsers.rst import Directive, directives
 
 from sphinx import addnodes
 from sphinx.domains import Domain, ObjType
-from sphinx.locale import l_, _
+from sphinx.locale import _
 from sphinx.directives import ObjectDescription
 from sphinx.roles import XRefRole
 from sphinx.util.nodes import make_refnode
@@ -140,14 +140,14 @@ class DynCallable(DynObject):
     has_arguments = True
 
     doc_field_types = [
-        TypedField('arguments', label=l_('Arguments'),
+        TypedField('arguments', label=_('Arguments'),
                    names=('argument', 'arg', 'parameter', 'param'),
                    typerolename='func', typenames=('paramtype', 'type')),
-        Field('returnvalue', label=l_('Returns'), has_arg=False,
+        Field('returnvalue', label=_('Returns'), has_arg=False,
               names=('returns', 'return')),
-        Field('returntype', label=l_('Return type'), has_arg=False,
+        Field('returntype', label=_('Return type'), has_arg=False,
               names=('rtype',)),
-        Field('example', label=l_('Example'), has_arg=False,
+        Field('example', label=_('Example'), has_arg=False,
               names=('ex',)),
     ]
 
@@ -157,10 +157,10 @@ class DynClass(DynObject):
     allow_nesting = True
 
     doc_field_types = [
-        TypedField('members', label=l_('Members'),
+        TypedField('members', label=_('Members'),
                    names=('argument', 'arg', ),
                    typerolename='func', typenames=('type', )),
-        Field('example', label=l_('Example'), has_arg=False,
+        Field('example', label=_('Example'), has_arg=False,
               names=('ex',)),
     ]
 
@@ -291,22 +291,22 @@ class DynareDomain(Domain):
     name = 'dynare'
     label = 'Dynare'
     object_types = {
-    'function':          ObjType(l_('function'),         'func'),
-    'datesmethod':       ObjType(l_('method'),           'datmeth'),
-    'dseriesmethod':     ObjType(l_('method'),           'dsermeth'),
-    'reportingmethod':   ObjType(l_('method'),       'repmeth'),
-    'matcomm':           ObjType(l_('matlab command'),   'mcomm'),
-    'command':           ObjType(l_('command'),          'comm'),
-    'class':             ObjType(l_('class'),            'class'),
-    'block':             ObjType(l_('block'),            'bck'),
-    'confblock':         ObjType(l_('config block'),     'cbck'),
-    'macrodir':          ObjType(l_('macro directive'),  'mdir'),
-    'construct':         ObjType(l_('constructor'),      'cstr'),
-    'matvar':            ObjType(l_('matlab variable'),  'mvar'),
-    'specvar':           ObjType(l_('special variable'), 'svar'),
-    'operator':          ObjType(l_('operator'),         'op'),
-    'constant':          ObjType(l_('constant'),         'const'),
-    'option':            ObjType(l_('option'),           'opt'),
+    'function':          ObjType(_('function'),         'func'),
+    'datesmethod':       ObjType(_('method'),           'datmeth'),
+    'dseriesmethod':     ObjType(_('method'),           'dsermeth'),
+    'reportingmethod':   ObjType(_('method'),       'repmeth'),
+    'matcomm':           ObjType(_('matlab command'),   'mcomm'),
+    'command':           ObjType(_('command'),          'comm'),
+    'class':             ObjType(_('class'),            'class'),
+    'block':             ObjType(_('block'),            'bck'),
+    'confblock':         ObjType(_('config block'),     'cbck'),
+    'macrodir':          ObjType(_('macro directive'),  'mdir'),
+    'construct':         ObjType(_('constructor'),      'cstr'),
+    'matvar':            ObjType(_('matlab variable'),  'mvar'),
+    'specvar':           ObjType(_('special variable'), 'svar'),
+    'operator':          ObjType(_('operator'),         'op'),
+    'constant':          ObjType(_('constant'),         'const'),
+    'option':            ObjType(_('option'),           'opt'),
     }
     directives = {
     'function':          DynFunction,
