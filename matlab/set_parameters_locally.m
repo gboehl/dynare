@@ -1,6 +1,6 @@
 function M_=set_parameters_locally(M_,xparam1)
 
-% function M_out=set_parameters(M_,xparam1)
+% function M_=set_parameters_locally(M_,xparam1)
 % Sets parameters value (except measurement errors)
 % This is called for computations such as IRF and forecast
 % when measurement errors aren't taken into account; in contrast to
