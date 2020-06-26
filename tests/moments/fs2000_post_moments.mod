@@ -169,11 +169,110 @@ end
 
 conditional_variance_decomposition=mean(conditional_variance_decomposition,4);
 nvars=M_.orig_endo_nbr;
-horizon_size=size(conditional_variance_decomposition,3);
+horizon_size=size(conditional_variance_decomposition,2);
 for var_iter_1=1:nvars
     for shock_iter=1:M_.exo_nbr
         for horizon_iter=1:horizon_size
             if max(abs(conditional_variance_decomposition(var_iter_1,horizon_iter,shock_iter)-oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition.Mean.(M_.endo_names{var_iter_1}).(M_.exo_names{shock_iter})(horizon_iter)))>1e-8
+                error('Conditional Variance decomposition does not match')
+            end
+        end
+    end
+end
+
+// case with measurement error
+estimated_params;
+alp, beta_pdf, 0.356, 0.02;
+bet, beta_pdf, 0.993, 0.002;
+gam, normal_pdf, 0.0085, 0.003;
+mst, normal_pdf, 1.0002, 0.007;
+rho, beta_pdf, 0.129, 0.100;
+psi, beta_pdf, 0.65, 0.05;
+del, beta_pdf, 0.01, 0.005;
+stderr e_a, inv_gamma_pdf, 0.035449, inf;
+stderr e_m, inv_gamma_pdf, 0.008862, inf;
+stderr gp_obs, inv_gamma_pdf, 0.003, inf;
+end;
+
+estimation(order=1,mode_compute=5, datafile='../fs2000/fsdat_simul.m', nobs=192, loglinear, mh_replic=20, mh_nblocks=1, mh_jscale=0.8,moments_varendo,
+conditional_variance_decomposition=[2,2000],consider_all_endogenous,sub_draws=2);
+
+stoch_simul(order=1,conditional_variance_decomposition=[2,2000],noprint,nograph);
+par=load([M_.fname filesep 'metropolis' filesep M_.fname '_posterior_draws1']);
+
+for par_iter=1:size(par.pdraws,1)
+   M_=set_parameters_locally(M_,par.pdraws{par_iter,1});
+   [info, oo_, options_, M_]=stoch_simul(M_, options_, oo_, var_list_);
+   correlation(:,:,par_iter)=cell2mat(oo_.autocorr);
+   covariance(:,:,par_iter)=oo_.var;
+   conditional_variance_decomposition(:,:,:,par_iter)=oo_.conditional_variance_decomposition;
+   conditional_variance_decomposition_ME(:,:,:,par_iter)=oo_.conditional_variance_decomposition_ME;
+   variance_decomposition(:,:,par_iter)=oo_.variance_decomposition;
+   variance_decomposition_ME(:,:,par_iter)=oo_.variance_decomposition_ME;
+   [~,obs_order]=sort(options_.varobs_id);
+end
+
+correlation=mean(correlation,3);
+nvars=M_.orig_endo_nbr;
+for var_iter_1=1:nvars
+    for var_iter_2=1:nvars
+        if max(abs(correlation(var_iter_1,var_iter_2:nvars:end)'-oo_.PosteriorTheoreticalMoments.dsge.correlation.Mean.(M_.endo_names{var_iter_1}).(M_.endo_names{var_iter_2})))>1e-8
+            error('Correlations do not match')
+        end
+    end
+end
+
+covariance=mean(covariance,3);
+nvars=M_.orig_endo_nbr;
+for var_iter_1=1:nvars
+    for var_iter_2=var_iter_1:nvars
+        if max(abs(covariance(var_iter_1,var_iter_2)-oo_.PosteriorTheoreticalMoments.dsge.covariance.Mean.(M_.endo_names{var_iter_1}).(M_.endo_names{var_iter_2})))>1e-8
+            error('Covariances do not match')
+        end
+    end
+end
+
+variance_decomposition=mean(variance_decomposition,3);
+nvars=M_.orig_endo_nbr;
+for var_iter_1=1:nvars
+    for shock_iter=1:M_.exo_nbr
+        if max(abs(variance_decomposition(var_iter_1,shock_iter)/100-oo_.PosteriorTheoreticalMoments.dsge.VarianceDecomposition.Mean.(M_.endo_names{var_iter_1}).(M_.exo_names{shock_iter})))>1e-8
+            error('Variance decomposition does not match')
+        end
+    end
+end
+
+variance_decomposition_ME=mean(variance_decomposition_ME,3);
+nvars=length(options_.varobs);
+for var_iter_1=1:nvars
+    for shock_iter=1:M_.exo_nbr
+        if max(abs(variance_decomposition_ME(obs_order(var_iter_1),shock_iter)/100-oo_.PosteriorTheoreticalMoments.dsge.VarianceDecompositionME.Mean.(options_.varobs{var_iter_1}).(M_.exo_names{shock_iter})))>1e-8
+            error('Variance decomposition does not match')
+        end
+    end
+end
+
+conditional_variance_decomposition=mean(conditional_variance_decomposition,4);
+nvars=M_.orig_endo_nbr;
+horizon_size=size(conditional_variance_decomposition,2);
+for var_iter_1=1:nvars
+    for shock_iter=1:M_.exo_nbr
+        for horizon_iter=1:horizon_size
+            if max(abs(conditional_variance_decomposition(var_iter_1,horizon_iter,shock_iter)-oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition.Mean.(M_.endo_names{var_iter_1}).(M_.exo_names{shock_iter})(horizon_iter)))>1e-8
+                error('Conditional Variance decomposition does not match')
+            end
+        end
+    end
+end
+
+conditional_variance_decomposition_ME=mean(conditional_variance_decomposition_ME,4);
+exo_names=[M_.exo_names;'ME'];
+nvars=length(options_.varobs);
+horizon_size=size(conditional_variance_decomposition_ME,2);
+for var_iter_1=1:nvars
+    for shock_iter=1:M_.exo_nbr+1
+        for horizon_iter=1:horizon_size
+            if max(abs(conditional_variance_decomposition_ME(obs_order(var_iter_1),horizon_iter,shock_iter)-oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecompositionME.Mean.(options_.varobs{var_iter_1}).(exo_names{shock_iter})(horizon_iter)))>1e-8
                 error('Conditional Variance decomposition does not match')
             end
         end
