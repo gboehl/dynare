@@ -88,7 +88,7 @@ end
 % get intersection of requested variables and observed variables with
 % Measurement error
 
-if ~all(StateSpaceModel.measurement_error==0)
+if ~all(diag(StateSpaceModel.measurement_error)==0)
     if isoctave || matlab_ver_less_than('8.1')
         [observable_pos,index_subset,index_observables]=intersect_stable(SubsetOfVariables,StateSpaceModel.observable_pos);
     else

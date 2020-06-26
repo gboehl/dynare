@@ -144,7 +144,7 @@ if M_.exo_nbr > 1
         skipline();
     end
     skipline();
-    if ~all(M_.H==0)
+    if ~all(diag(M_.H)==0)
         if isoctave || matlab_ver_less_than('8.1')
             [observable_name_requested_vars, varlist_pos] = intersect_stable(var_list_, options_.varobs);
         else
@@ -231,7 +231,7 @@ if M_.exo_nbr > 1
             end
         end
         skipline();
-        if ~all(M_.H==0)
+        if ~all(diag(M_.H)==0)
             if ~isempty(observable_name_requested_vars)
                 NumberOfObservedEndogenousVariables = length(observable_name_requested_vars);
                 temp=NaN(NumberOfObservedEndogenousVariables,NumberOfExogenousVariables+1,length(Steps));

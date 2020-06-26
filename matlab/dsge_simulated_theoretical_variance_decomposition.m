@@ -85,7 +85,7 @@ NumberOfSavedElementsPerSimulation = nvar*(nexo+1);
 MaXNumberOfDecompLines = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPerSimulation/8);
 
 ME_present=0;
-if ~all(M_.H==0)
+if ~all(diag(M_.H)==0)
     if isoctave || matlab_ver_less_than('8.1')
         [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
     else
@@ -130,20 +130,20 @@ linea_ME = 0;
 only_non_stationary_vars=0;
 for file = 1:NumberOfDrawsFiles
     if posterior
-        load([M_.dname '/metropolis/' M_.fname '_' type '_draws' num2str(file) ]);
+        temp=load([M_.dname '/metropolis/' M_.fname '_' type '_draws' num2str(file) ]);
     else
-        load([M_.dname '/prior/draws/' type '_draws' num2str(file) ]);
+        temp=load([M_.dname '/prior/draws/' type '_draws' num2str(file) ]);
     end
-    isdrsaved = columns(pdraws)-1;
-    NumberOfDraws = rows(pdraws);
+    isdrsaved = columns(temp.pdraws)-1;
+    NumberOfDraws = rows(temp.pdraws);
     for linee = 1:NumberOfDraws
         linea = linea+1;
         linea_ME = linea_ME+1;
         if isdrsaved
-            M_=set_parameters_locally(M_,pdraws{linee,1});% Needed to update the covariance matrix of the state innovations.
-            dr = pdraws{linee,2};
+            M_=set_parameters_locally(M_,temp.pdraws{linee,1});% Needed to update the covariance matrix of the state innovations.
+            dr = temp.pdraws{linee,2};
         else
-            M_=set_parameters_locally(M_,pdraws{linee,1});
+            M_=set_parameters_locally(M_,temp.pdraws{linee,1});
             [dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
         end
         if file==1 && linee==1
@@ -164,6 +164,7 @@ for file = 1:NumberOfDrawsFiles
                 end
             end
             if ME_present
+                M_ = set_measurement_errors(temp.pdraws{linee,1},temp.estim_params_,M_);
                 ME_Variance=diag(M_.H);
                 tmp_ME=NaN(nobs_ME,nexo+1);
                 tmp_ME(:,1:end-1)=tmp{2}(index_subset,:).*repmat(diag(tmp{1}(index_subset,index_subset))./(diag(tmp{1}(index_subset,index_subset))+ME_Variance(index_observables)),1,nexo);
