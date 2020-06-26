@@ -26,7 +26,7 @@ if length(headers) < 2
     error('headers length must be >= 2')
 end
 
-OutputDirectoryName = CheckPath('Output',M_.dname);
+OutputDirectoryName = CheckPath('latex',M_.dname);
 
 % Set width of label column
 if isempty(label_width)
