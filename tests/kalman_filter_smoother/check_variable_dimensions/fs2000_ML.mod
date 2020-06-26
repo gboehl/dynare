@@ -116,7 +116,7 @@ corr e_m, e_a, 0;
 stderr gp_obs, 0.01;
 end;
 options_.prior_trunc=0;
-estimation(order=1,datafile='../fsdat_simul', nobs=192, loglinear, forecast=8,smoother,filter_covariance,filtered_vars,filter_step_ahead=[1,2,4],filter_decomposition,selected_variables_only)  m P c e W R k d y gy_obs;
+estimation(order=1,datafile='../fsdat_simul', nobs=192, loglinear, moments_varendo,conditional_variance_decomposition=[1,3],forecast=8,smoother,filter_covariance,filtered_vars,filter_step_ahead=[1,2,4],filter_decomposition,selected_variables_only)  m P c e W R k d y gy_obs gp_obs;
 
 
 if size(oo_.FilteredVariablesKStepAhead,3)~=(options_.nobs+max(options_.filter_step_ahead)) || ...

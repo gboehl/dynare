@@ -68,3 +68,14 @@ end;
 steady(solve_algo=4,maxit=1000);
 
 stoch_simul(order=1,nofunctions,one_sided_hp_filter=1600,irf=0,periods=5000,filtered_theoretical_moments_grid=8192);
+
+varobs k c y;
+
+shocks;
+var e; stderr 0.009;
+var u; stderr 0.009;
+var e, u = phi*0.009*0.009;
+var c; stderr 0.01;
+end;
+
+stoch_simul(order=1,nofunctions,one_sided_hp_filter=1600,irf=0,periods=5000,filtered_theoretical_moments_grid=8192);
