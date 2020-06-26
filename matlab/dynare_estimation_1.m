@@ -149,9 +149,6 @@ ncn = estim_params_.ncn;  % Covariance of the measurement innovations (number of
 np  = estim_params_.np ;  % Number of deep parameters.
 nx  = nvx+nvn+ncx+ncn+np; % Total number of parameters to be estimated.
 
-% Set the names of the priors.
-pnames = {''; 'beta'; 'gamm'; 'norm'; 'invg'; 'unif'; 'invg2'; ''; 'weibl'};
-
 dr = oo_.dr;
 
 if ~isempty(estim_params_)
@@ -357,7 +354,7 @@ end
 
 if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     % display results table and store parameter estimates and standard errors in results
-    oo_ = display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, pnames, 'Posterior', 'posterior');
+    oo_ = display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, prior_dist_names, 'Posterior', 'posterior');
     % Laplace approximation to the marginal log density:
     if options_.cova_compute
         estim_params_nbr = size(xparam1,1);
@@ -378,7 +375,7 @@ if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     end
 
 elseif ~any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
-    oo_=display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, pnames, 'Maximum Likelihood', 'mle');
+    oo_=display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, prior_dist_names, 'Maximum Likelihood', 'mle');
 end
 
 if np > 0
@@ -490,7 +487,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
             [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_);
             % Store posterior statistics by parameter name
-            oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, pnames);
+            oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, prior_dist_names);
             if ~options_.nograph
                 oo_ = PlotPosteriorDistributions(estim_params_, M_, options_, bayestopt_, oo_);
             end
