@@ -42,6 +42,9 @@ if strcmpi(type,'posterior')
     if nargin==4
         var_list_ = options_.varobs;
     end
+    if isfield(oo_,'PosteriorTheoreticalMoments')
+        oo_=rmfield(oo_,'PosteriorTheoreticalMoments');
+    end
 elseif strcmpi(type,'prior')
     posterior = 0;
     if nargin==4
@@ -49,6 +52,9 @@ elseif strcmpi(type,'prior')
         if isempty(var_list_)
             options_.prior_analysis_var_list = options_.varobs;
         end
+    end
+    if isfield(oo_,'PriorTheoreticalMoments')
+        oo_=rmfield(oo_,'PriorTheoreticalMoments');
     end
 else
     error('compute_moments_varendo:: Unknown type!')
@@ -144,7 +150,7 @@ if M_.exo_nbr > 1
         skipline();
     end
     skipline();
-    if ~all(M_.H==0)
+    if ~all(diag(M_.H)==0)
         if isoctave
             [observable_name_requested_vars, varlist_pos] = intersect_stable(var_list_, options_.varobs);
         else
@@ -231,7 +237,7 @@ if M_.exo_nbr > 1
             end
         end
         skipline();
-        if ~all(M_.H==0)
+        if ~all(diag(M_.H)==0)
             if ~isempty(observable_name_requested_vars)
                 NumberOfObservedEndogenousVariables = length(observable_name_requested_vars);
                 temp=NaN(NumberOfObservedEndogenousVariables,NumberOfExogenousVariables+1,length(Steps));

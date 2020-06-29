@@ -93,19 +93,19 @@ CovarFileNumber = 1;
 linea = 0;
 for file = 1:NumberOfDrawsFiles
     if posterior
-        load([M_.dname '/metropolis/' M_.fname '_' type '_draws' num2str(file) ]);
+        temp=load([M_.dname '/metropolis/' M_.fname '_' type '_draws' num2str(file) ]);
     else
-        load([M_.dname '/prior/draws/' type '_draws' num2str(file) ]);
+        temp=load([M_.dname '/prior/draws/' type '_draws' num2str(file) ]);
     end
-    NumberOfDraws = rows(pdraws);
-    isdrsaved = columns(pdraws)-1;
+    NumberOfDraws = rows(temp.pdraws);
+    isdrsaved = columns(temp.pdraws)-1;
     for linee = 1:NumberOfDraws
         linea = linea+1;
         if isdrsaved
-            M_=set_parameters_locally(M_,pdraws{linee,1});% Needed to update the covariance matrix of the state innovations.
-            dr = pdraws{linee,2};
+            M_=set_parameters_locally(M_,temp.pdraws{linee,1});% Needed to update the covariance matrix of the state innovations.
+            dr = temp.pdraws{linee,2};
         else
-            M_=set_parameters_locally(M_,pdraws{linee,1});
+            M_=set_parameters_locally(M_,temp.pdraws{linee,1});
             [dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
         end
         tmp = th_autocovariances(dr,ivar,M_,options_,nodecomposition);

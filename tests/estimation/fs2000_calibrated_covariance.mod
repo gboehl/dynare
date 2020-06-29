@@ -80,7 +80,7 @@ corr e_a, e_m, 0.5;
 stderr gp_obs, 0.5;
 end;
 
-estimation(order=1,datafile=fsdat_simul,nobs=192, loglinear, mh_replic=2002, mh_nblocks=1, mh_jscale=0.8);
+estimation(order=1,datafile=fsdat_simul,nobs=192, loglinear, mh_replic=0, mh_nblocks=1, mh_jscale=0.8,moments_varendo,consider_all_endogenous);
 
 if isequal(M_.Sigma_e(2,1),5e-5) || isequal(M_.Sigma_e(1,2),5e-5)
     error('Problem in overriding calibrated covariance of structural shocks by estimated correlation')
@@ -88,3 +88,5 @@ end
 if ~isequal(M_.H(2,1),5e-5) || ~isequal(M_.H(1,2),5e-5)
     error('Problem in setting calibrated covariance of measurement errors')
 end
+
+stoch_simul(order=1,periods=1000);
