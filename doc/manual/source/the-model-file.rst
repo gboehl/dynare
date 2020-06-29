@@ -3816,8 +3816,9 @@ Computing the stochastic solution
        ``oo_.conditional_variance_decomposition_ME`` (see
        :mvar:`oo_.conditional_variance_decomposition_ME`).  The
        variance decomposition is only conducted, if theoretical
-       moments are requested, *i.e.* using the ``periods=0``-option.
-       In case of ``order=2``, Dynare provides a second-order accurate
+       moments are requested, *i.e.* using the ``periods=0``-option. 
+       Only available at ``order<3``. In case of ``order=2``, 
+       Dynare provides a second-order accurate
        approximation to the true second moments based on the linear
        terms of the second-order solution (see *Kim, Kim,
        Schaumburg and Sims (2008)*). Note that the unconditional
@@ -4013,9 +4014,10 @@ Computing the stochastic solution
 
     |br| After a run of ``stoch_simul``, contains the
     variance-covariance of the endogenous variables. Contains
-    theoretical variance if the ``periods`` option is not present (or
-    an approximation thereof for ``order=2``), and simulated variance
-    otherwise. The variables are arranged in declaration order.
+    theoretical variance if the ``periods`` option is not present and simulated variance
+    otherwise. Only available for ``order<4``. At ``order=2`` it will be be 
+    a second-order accurate approximation. At ``order=3``, theoretical moments 
+    are only available with ``pruning``. The variables are arranged in declaration order.
 
 .. matvar:: oo_.var_list
 
@@ -4042,9 +4044,10 @@ Computing the stochastic solution
     number of the matrix in the cell array corresponds to the order of
     autocorrelation. The option ar specifies the number of
     autocorrelation matrices available. Contains theoretical
-    autocorrelations if the ``periods`` option is not present (or an
-    approximation thereof for ``order=2``), and simulated
-    autocorrelations otherwise. The field is only created if
+    autocorrelations if the ``periods`` option is not present and simulated
+    autocorrelations otherwise. Only available for ``order<4``. At ``order=2`` it will be be 
+    a second-order accurate approximation. At ``order=3``, theoretical moments 
+    are only available with ``pruning``.  The field is only created if
     stationary variables are present.
 
     The element ``oo_.autocorr{i}(k,l)`` is equal to the correlation
@@ -4082,9 +4085,10 @@ Computing the stochastic solution
             If a second order approximation has been requested,
             contains the vector of the mean correction terms.
 
-            In case ``order=2``, the theoretical second moments are a
-            second order accurate approximation of the true second
-            moments, see conditional_variance_decomposition.
+            Only available at ``order<4``. In case ``order=2``, the 
+            theoretical second moments are a second order accurate 
+            approximation of the true second moments. See conditional_variance_decomposition.
+            At ``order=3``, theoretical moments are only available with ``pruning``. 
 
 .. matvar:: oo_.variance_decomposition
 
@@ -4152,8 +4156,10 @@ Computing the stochastic solution
     |br| After a run of ``stoch_simul`` with the
     ``contemporaneous_correlation option``, contains theoretical
     contemporaneous correlations if the ``periods`` option is not
-    present (or an approximation thereof for ``order=2``), and
-    simulated contemporaneous correlations otherwise. The variables
+    present, and simulated contemporaneous correlations otherwise. 
+    Only available for ``order<4``. At ``order=2`` it will be be 
+    a second-order accurate approximation. At ``order=3``, theoretical moments 
+    are only available with ``pruning``. The variables
     are arranged in declaration order.
 
 .. matvar:: oo_.SpectralDensity
