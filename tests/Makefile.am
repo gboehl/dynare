@@ -25,6 +25,8 @@ MODFILES = \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME.mod \
 	TeX/fs2000_corr_ME.mod \
 	estimation/MH_recover/fs2000_recover_tarb.mod \
+	estimation/method_of_moments/RBC_MoM.mod \
+	estimation/method_of_moments/RBC_MoM_SMM_ME.mod \
 	estimation/fs2000.mod \
 	gsa/ls2003a.mod \
 	optimizers/fs2000_8.mod \
@@ -961,6 +963,8 @@ EXTRA_DIST = \
 	lmmcp/sw-common-header.inc \
 	lmmcp/sw-common-footer.inc \
 	estimation/tune_mh_jscale/fs2000.inc \
+	estimation/method_of_moments/RBC_MoM_common.inc \
+	estimation/method_of_moments/RBC_MoM_steady_helper.m \
 	histval_initval_file_unit_tests.m \
 	histval_initval_file/my_assert.m \
 	histval_initval_file/ramst_data.xls \

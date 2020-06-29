@@ -1,7 +1,5 @@
-% RBC model used in replication files of 
-% Andreasen, Fernández-Villaverde, Rubio-Ramírez (2018): "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications", Review of Economic Studies, 85(1):1-49.
-% Adapted by Willi Mutschler (@wmutschl, willi@mutschler.eu)
-% =========================================================================
+% Tests SMM and GMM routines
+%
 % Copyright (C) 2020 Dynare Team
 %
 % This file is part of Dynare.
@@ -21,92 +19,72 @@
 % =========================================================================
 
 % Define testscenario
-@#define orderApp = 3
+@#define orderApp = 1
 @#define estimParams = 1
 
 % Note that we will set the numerical optimization tolerance levels very large to speed up the testsuite
 @#define optimizer = 13
 
-var k c a iv y la n rk w;
-predetermined_variables k;
-varexo u_a;
-varobs n c iv;
-parameters DELTA BETTA B ETAl ETAc THETA ALFA RHOA STDA;
 
-DELTA           = 0.025;
-BETTA           = 0.984;
-B               = 0.5;
-ETAl            = 1; 
-ETAc            = 2; 
-THETA           = 3.48;
-ALFA            = 0.667;
-RHOA            = 0.979;
-STDA            = 0.0072;
-
-model;    
-0 = -exp(la) +(exp(c)-B*exp(c(-1)))^(-ETAc) - BETTA*B*(exp(c(+1))-B*exp(c))^(-ETAc);
-0 = -THETA*(1-exp(n))^-ETAl + exp(la)*exp(w);
-0 = -exp(la) + BETTA*exp(la(+1))*(exp(rk(+1)) + (1-DELTA));
-0 = -exp(a)*(1-ALFA)*exp(k)^(-ALFA)*exp(n)^(ALFA) + exp(rk);
-0 = -exp(a)*ALFA*exp(k)^(1-ALFA)*exp(n)^(ALFA-1) + exp(w);
-0 = -exp(c) - exp(iv) + exp(y);
-0 = -exp(y) + exp(a)*exp(k)^(1-ALFA)*exp(n)^(ALFA);
-0 = -exp(k(+1)) + (1-DELTA)*exp(k) + exp(iv);
-0 = -log(exp(a)) + RHOA*log(exp(a(-1))) + STDA*u_a;
-end;
+@#include "RBC_MoM_common.inc"
 
 shocks;
-var u_a = 1;        
-end; 
+var u_a; stderr 0.0072;        
+end;
+
+varobs n c iv;
+
 
 @#if estimParams == 0
 estimated_params;
-    DELTA,         0.02;
-    BETTA,         0.9;
-    B,             0.4;
+    DELTA,         0.025;
+    BETTA,         0.98;
+    B,             0.45;
     %ETAl,          1;
-    ETAc,          1.5;
-    ALFA,          0.6;
-    RHOA,          0.9;
-    STDA,          0.01;
+    ETAc,          1.8;
+    ALFA,          0.65;
+    RHOA,          0.95;
+    stderr u_a,    0.01;
     %THETA,         3.48;
 end;
 @#endif
 
 @#if estimParams == 1
 estimated_params;
-    DELTA,         0.02,        0,           1;
-    BETTA,         0.90,        0,           1;
-    B,             0.40,        0,           1;
+    DELTA,         ,        0,           1;
+    BETTA,         ,        0,           1;
+    B,             ,        0,           1;
     %ETAl,          1,           0,           10;
-    ETAc,          1.80,        0,           10;
-    ALFA,          0.60,        0,           1;
-    RHOA,          0.90,        0,           1;
-    STDA,          0.01,        0,           1;
+    ETAc,          ,        0,           10;
+    ALFA,          ,        0,           1;
+    RHOA,          ,        0,           1;
+    stderr u_a,    ,        0,           1;
     %THETA,         3.48,          0,           10;
 end;
 @#endif
 
 @#if estimParams == 2
 estimated_params;
-    DELTA,         0.02,         0,           1,  normal_pdf, 0.02, 0.1;
-    BETTA,         0.90,         0,           1,  normal_pdf, 0.90, 0.1;
-    B,             0.40,         0,           1,  normal_pdf, 0.40, 0.1;
+    DELTA,         0.025,         0,           1,  normal_pdf, 0.02, 0.5;
+    BETTA,         0.98,         0,           1,  beta_pdf, 0.90, 0.25;
+    B,             0.45,         0,           1,  normal_pdf, 0.40, 0.5;
     %ETAl,          1,            0,           10, normal_pdf, 0.25, 0.0.1;
-    ETAc,          1.80,         0,           10, normal_pdf, 1.80, 0.1;
-    ALFA,          0.60,         0,           1,  normal_pdf, 0.60, 0.1;
-    RHOA,          0.90,         0,           1,  normal_pdf, 0.90, 0.1;
-    STDA,          0.01,         0,           1,  normal_pdf, 0.01, 0.1;
+    ETAc,          1.8,         0,           10, normal_pdf, 1.80, 0.5;
+    ALFA,          0.65,         0,           1,  normal_pdf, 0.60, 0.5;
+    RHOA,          0.95,         0,           1,  normal_pdf, 0.90, 0.5;
+    stderr u_a,    0.01,         0,           1,  normal_pdf, 0.01, 0.5;
     %THETA,         3.48,          0,           10, normal_pdf, 0.25, 0.0.1;
 end;
 @#endif
 
 % Simulate data
-stoch_simul(order=@{orderApp},pruning,nodisplay,nomoments,periods=750,drop=500);
+stoch_simul(order=@{orderApp},pruning,nodisplay,nomoments,periods=500);
 save('RBC_MoM_data_@{orderApp}.mat', options_.varobs{:} );
 pause(1);
 
 
+estimated_params_init(use_calibration);
+end;
 
 %--------------------------------------------------------------------------
 % Method of Moments Estimation
@@ -128,7 +106,7 @@ matched_moments_ = {
     [ic  ic ]  [0  0],  [1 1];
     [ic  iiv]  [0  0],  [1 1];
     [ic  in ]  [0  0],  [1 1];
-%    [iiv ic ]  [0  0],  [1 1];
+    [iiv ic ]  [0  0],  [1 1];
     [iiv iiv]  [0  0],  [1 1];
     [iiv in ]  [0  0],  [1 1];
 %    [in  ic ]  [0  0],  [1 1];
@@ -150,12 +128,13 @@ matched_moments_ = {
 
         % Options for both GMM and SMM
         % , bartlett_kernel_lag = 20          % bandwith in optimal weighting matrix
-        , order = @{orderApp}                         % order of Taylor approximation in perturbation
+        , order = @{orderApp}                 % order of Taylor approximation in perturbation
         % , penalized_estimator               % use penalized optimization
-        , pruning                           % use pruned state space system at higher-order
+        , pruning                             % use pruned state space system at higher-order
         % , verbose                           % display and store intermediate estimation results
-        , weighting_matrix = OPTIMAL        % weighting matrix in moments distance objective function; possible values: OPTIMAL|IDENTITY_MATRIX|DIAGONAL|filename
-        , mom_steps = [2 2]                 % vector of numbers for the iterations in the 2-step feasible method of moments
+        , weighting_matrix = ['optimal','optimal']      % weighting matrix in moments distance objective function; possible values: OPTIMAL|IDENTITY_MATRIX|DIAGONAL|filename
+        , weighting_matrix_scaling_factor=1
+        %, additional_optimizer_steps = [4]    % vector of additional mode-finders run after mode_compute
         % , prefilter=0                       % demean each data series by its empirical mean and use centered moments
         % 
         % Options for SMM
@@ -189,7 +168,7 @@ matched_moments_ = {
         %, optim = ('TolFun', 1e-3
         %           ,'TolX', 1e-5
         %          )    % a list of NAME and VALUE pairs to set options for the optimization routines. Available options depend on mode_compute
-        , silent_optimizer                  % run minimization of moments distance silently without displaying results or saving files in between
+        %, silent_optimizer                  % run minimization of moments distance silently without displaying results or saving files in between
         % , tolf = 1e-5                       % convergence criterion on function value for numerical differentiation
         % , tolx = 1e-6                       % convergence criterion on funciton input for numerical differentiation
         % 

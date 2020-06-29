@@ -1,17 +1,17 @@
-function Wopt = method_of_moments_optimal_weighting_matrix(m_data, moments, qLag)
-% Wopt = method_of_moments_optimal_weighting_matrix(m_data, moments, qLag)
+function [W_opt, normalization_factor]= method_of_moments_optimal_weighting_matrix(m_data, moments, q_lag)
+% W_opt = method_of_moments_optimal_weighting_matrix(m_data, moments, q_lag)
 % -------------------------------------------------------------------------
-% This function computes the optimal weigthing matrix by a Bartlett kernel with maximum lag qlag
+% This function computes the optimal weigthing matrix by a Bartlett kernel with maximum lag q_lag
 % Adapted from replication codes of
-%  o Andreasen, FernÃ¡ndez-Villaverde, Rubio-RamÃ­rez (2018): "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications", Review of Economic Studies, 85(1):1-49.
+%  o Andreasen, Fernández-Villaverde, Rubio-Ramírez (2018): "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications", Review of Economic Studies, 85(1):1-49.
 % =========================================================================
 % INPUTS
 %  o m_data                  [T x numMom]       selected empirical or theoretical moments at each point in time
 %  o moments                 [numMom x 1]       mean of selected empirical or theoretical moments
-%  o qlag                    [integer]          Bartlett kernel maximum lag order
+%  o q_lag                   [integer]          Bartlett kernel maximum lag order
 % -------------------------------------------------------------------------
 % OUTPUTS 
-%   o Wopt                   [numMom x numMom]  optimal weighting matrix
+%   o W_opt                  [numMom x numMom]  optimal weighting matrix
 % -------------------------------------------------------------------------
 % This function is called by
 %  o method_of_moments.m
@@ -42,45 +42,45 @@ function Wopt = method_of_moments_optimal_weighting_matrix(m_data, moments, qLag
 % =========================================================================
 
 % Initialize
-[T,numMom] = size(m_data); %note that in m_data nan values (due to leads or lags in matchedmoments) are removed so T is the effective sample size
+[T,num_Mom] = size(m_data); %note that in m_data NaN values (due to leads or lags in matched_moments and missing data) were replaced by the mean
 
-% center around moments (could be either datamoments or modelmoments)
-hFunc = m_data - repmat(moments',T,1);
+% center around moments (could be either data_moments or model_moments)
+h_Func = m_data - repmat(moments',T,1);
 
 % The required correlation matrices
-GAMA_array = zeros(numMom,numMom,qLag);
-GAMA0 = CorrMatrix(hFunc,T,numMom,0);
-if qLag > 0
-    for ii=1:qLag
-        GAMA_array(:,:,ii) = CorrMatrix(hFunc,T,numMom,ii);
+GAMA_array = zeros(num_Mom,num_Mom,q_lag);
+GAMA0 = Corr_Matrix(h_Func,T,num_Mom,0);
+if q_lag > 0
+    for ii=1:q_lag
+        GAMA_array(:,:,ii) = Corr_Matrix(h_Func,T,num_Mom,ii);
     end
 end
 
 % The estimate of S
 S = GAMA0;
-if qLag > 0
-    for ii=1:qLag
-        S = S + (1-ii/(qLag+1))*(GAMA_array(:,:,ii) + GAMA_array(:,:,ii)');
+if q_lag > 0
+    for ii=1:q_lag
+        S = S + (1-ii/(q_lag+1))*(GAMA_array(:,:,ii) + GAMA_array(:,:,ii)');
     end
 end
 
 % The estimate of W
-Wopt = S\eye(size(S,1));
+W_opt = S\eye(size(S,1));
 
 % Check positive definite W
 try 
-    chol(Wopt);
+    chol(W_opt);
 catch err
-    error('method_of_moments: The optimal weighting matrix is not positive definite. Check whether your model implies stochastic singularity\n')
+    error('method_of_moments: The optimal weighting matrix is not positive definite. Check whether your model implies stochastic singularity.\n')
 end
 
 end
 
 % The correlation matrix
-function GAMAcorr = CorrMatrix(hFunc,T,numMom,v)
-    GAMAcorr = zeros(numMom,numMom);
+function GAMA_corr = Corr_Matrix(h_Func,T,num_Mom,v)
+    GAMA_corr = zeros(num_Mom,num_Mom);
     for t = 1+v:T
-        GAMAcorr = GAMAcorr + hFunc(t-v,:)'*hFunc(t,:);
+        GAMA_corr = GAMA_corr + h_Func(t-v,:)'*h_Func(t,:);
     end
-    GAMAcorr = GAMAcorr/T;
+    GAMA_corr = GAMA_corr/T;
 end

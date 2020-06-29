@@ -1,12 +1,12 @@
-function [dataMoments, m_data] = method_of_moments_datamoments(data, DynareResults, MatchedMoments, OptionsMoM)
-% [dataMoments, m_data] = method_of_moments_datamoments(data, DynareResults, MatchedMoments, OptionsMoM)
+function [dataMoments, m_data] = method_of_moments_data_moments(data, oo_, matched_moments_, options_mom_)
+% [dataMoments, m_data] = method_of_moments_data_moments(data, oo_, matched_moments_, options_mom_)
 % This function computes the user-selected empirical moments from data
 % =========================================================================
 % INPUTS
 %  o data                    [T x varobs_nbr]  data set
-%  o DynareResults:          [structure]       storage for results (oo_)
-%  o MatchedMoments:         [structure]       information about selected moments to match in estimation (matched_moments_)
-%  o OptionsMoM:             [structure]       information about all settings (specified by the user, preprocessor, and taken from global options_)
+%  o oo_:                    [structure]       storage for results
+%  o matched_moments_:       [structure]       information about selected moments to match in estimation
+%  o options_mom_:           [structure]       information about all settings (specified by the user, preprocessor, and taken from global options_)
 % -------------------------------------------------------------------------
 % OUTPUTS
 %  o dataMoments             [numMom x 1]       mean of selected empirical moments
@@ -40,28 +40,26 @@ function [dataMoments, m_data] = method_of_moments_datamoments(data, DynareResul
 
 % Initialization
 T = size(data,1); % Number of observations (T) and number of observables (ny)
-mom_nbr = OptionsMoM.mom_nbr;
-dataMoments = nan(mom_nbr,1);
-m_data = nan(T,mom_nbr);
-% Product moment for each time period, i.e. each row t contains yt1(l1)^p1*yt2(l2)^p2*...
+dataMoments = NaN(options_mom_.mom_nbr,1);
+m_data = NaN(T,options_mom_.mom_nbr);
+% Product moment for each time period, i.e. each row t contains y_t1(l1)^p1*y_t2(l2)^p2*...
 % note that here we already are able to treat leads and lags and any power product moments
-for jm = 1:mom_nbr
-    vars     = DynareResults.dr.inv_order_var(MatchedMoments{jm,1})';
-    leadlags = MatchedMoments{jm,2}; % note that lags are negative numbers and leads are positive numbers
-    powers   = MatchedMoments{jm,3};
+for jm = 1:options_mom_.mom_nbr
+    vars     = oo_.dr.inv_order_var(matched_moments_{jm,1})';
+    leadlags = matched_moments_{jm,2}; % lags are negative numbers and leads are positive numbers
+    powers   = matched_moments_{jm,3};
     for jv = 1:length(vars)
-        jvar = DynareResults.dr.obs_var == vars(jv);
-        y = nan(T,1);
-        y( (1-min(leadlags(jv),0)) : (T-max(leadlags(jv),0)) , 1) = data( (1+max(leadlags(jv),0)) : (T+min(leadlags(jv),0)) , jvar).^powers(jv);
+        jvar = (oo_.dr.obs_var == vars(jv));
+        y = NaN(T,1); %Take care of T_eff instead of T for lags and NaN via nanmean below
+        y( (1-min(leadlags(jv),0)) : (T-max(leadlags(jv),0)), 1) = data( (1+max(leadlags(jv),0)) : (T+min(leadlags(jv),0)), jvar).^powers(jv);
         if jv==1
             m_data_tmp = y;
         else
             m_data_tmp = m_data_tmp.*y;
         end
     end
-    dataMoments(jm,1) = sum(m_data_tmp,'omitnan')/(T-sum(abs(leadlags)));
-    % We replace nan (due to leads and lags) with the corresponding mean
-    % @wmutschl: this should also work for missing values, right?
+    % We replace NaN (due to leads and lags and missing values) with the corresponding mean
+    dataMoments(jm,1) = mean(m_data_tmp,'omitnan');
     m_data_tmp(isnan(m_data_tmp)) = dataMoments(jm,1);
     m_data(:,jm) = m_data_tmp;
 end
