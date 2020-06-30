@@ -396,7 +396,18 @@ MODFILES = \
 	bgp/nk-1/nk.mod \
 	bgp/ramsey-1/ramsey.mod \
 	dynare-command-options/ramst.mod \
-	particle/local_state_space_iteration_k_test.mod
+	particle/local_state_space_iteration_k_test.mod \
+	matrix_notation/deterministic_matrix.mod \
+	matrix_notation/deterministic_scalar.mod \
+	matrix_notation/stochastic_matrix.mod \
+	matrix_notation/stochastic_scalar.mod \
+	matrix_notation/benchmark.mod \
+	matrix_notation/no_deriv_given_matrix_dll.mod \
+	matrix_notation/no_deriv_given_matrix.mod \
+	matrix_notation/first_deriv_given_matrix_dll.mod \
+	matrix_notation/first_deriv_given_matrix.mod \
+	matrix_notation/first_and_2nd_deriv_given_matrix_dll.mod \
+	matrix_notation/first_and_2nd_deriv_given_matrix.mod
 
 ECB_MODFILES = \
 	var-expectations/1/example.mod \
@@ -777,6 +788,23 @@ trend-component-and-var-models/tcm8.o.trs: trend-component-and-var-models/tcm6.o
 discretionary_policy/dennis_1_estim.m.trs: discretionary_policy/dennis_1.m.trs
 discretionary_policy/dennis_1_estim.o.trs: discretionary_policy/dennis_1.o.trs
 
+matrix_notation/deterministic_scalar.m.trs: matrix_notation/deterministic_matrix.m.trs
+matrix_notation/deterministic_scalar.o.trs: matrix_notation/deterministic_matrix.o.trs
+matrix_notation/stochastic_scalar.m.trs: matrix_notation/stochastic_matrix.m.trs
+matrix_notation/stochastic_scalar.o.trs: matrix_notation/stochastic_matrix.o.trs
+matrix_notation/first_deriv_given_matrix.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/first_deriv_given_matrix.o.trs: matrix_notation/benchmark.o.trs
+matrix_notation/first_deriv_given_matrix_dll.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/first_deriv_given_matrix_dll.o.trs: matrix_notation/benchmark.o.trs
+matrix_notation/first_and_2nd_deriv_given_matrix.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/first_and_2nd_deriv_given_matrix.o.trs: matrix_notation/benchmark.o.trs
+matrix_notation/first_and_2nd_deriv_given_matrix_dll.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/first_and_2nd_deriv_given_matrix_dll.o.trs: matrix_notation/benchmark.o.trs
+matrix_notation/no_deriv_given_matrix.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/no_deriv_given_matrix.o.trs: matrix_notation/benchmark.o.trs
+matrix_notation/no_deriv_given_matrix_dll.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/no_deriv_given_matrix_dll.o.trs: matrix_notation/benchmark.o.trs
+
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
 o/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.o.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
@@ -985,6 +1013,10 @@ estimation/univariate: m/estimation/univariate o/estimation/univariate
 m/estimation/univariate: $(patsubst %.mod, %.m.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
 o/estimation/univariate: $(patsubst %.mod, %.o.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
 
+matrix_notation: m/matrix_notation o/matrix_notation
+m/matrix_notation: $(patsubst %.mod, %.m.trs, $(filter matrix_notation/%.mod, $(MODFILES)))
+o/matrix_notation: $(patsubst %.mod, %.o.trs, $(filter matrix_notation/%.mod, $(MODFILES)))
+
 # ECB files
 M_ECB_TRS_FILES = $(patsubst %.mod, %.m.trs, $(ECB_MODFILES))
 
@@ -1168,7 +1200,10 @@ EXTRA_DIST = \
 	histval_initval_file/my_assert.m \
 	histval_initval_file/ramst_data.xls \
 	histval_initval_file/ramst_data.xlsx \
-	histval_initval_file/ramst_initval_file_data.m
+	histval_initval_file/ramst_initval_file_data.m \
+	matrix_notation/extFunFirstDerivMatrix.m \
+	matrix_notation/extFunNoDerivsMatrix.m \
+	matrix_notation/extFunWithFirstAndSecondDerivsMatrix.m
 
 if ENABLE_MATLAB
 check-local: check-matlab

@@ -94,6 +94,9 @@ wsOct
 !/kronecker/test_kron.m
 !/load_octave_packages.m
 !/ls2003/data_ca1.m
+!/matrix_notation/extFunNoDerivsMatrix.m
+!/matrix_notation/extFunFirstDerivMatrix.m
+!/matrix_notation/extFunWithFirstAndSecondDerivsMatrix.m
 !/measurement_errors/data_ca1.m
 !/measurement_errors/fs2000_corr_me_ml_mcmc/fsdat_simul.m
 !/missing/simulate_data_with_missing_observations.m
