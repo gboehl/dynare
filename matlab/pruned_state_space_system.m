@@ -10,12 +10,13 @@ function pruned_state_space = pruned_state_space_system(M, options, dr, indy, nl
 %   Econometrics and Statistics, Volume 6, Pages 44-56.
 % =========================================================================
 % INPUTS
-%   M:            [structure] storing the model information
-%   options:      [structure] storing the options
-%   dr:           [structure] storing the results from perturbation approximation
-%   indy:         [vector]    index of control variables in DR order
-%   nlags:        [integer]   number of lags in autocovariances and autocorrelations
-%   useautocorr:  [boolean]   true: compute autocorrelations
+%   M:              [structure] storing the model information
+%   options:        [structure] storing the options
+%   dr:             [structure] storing the results from perturbation approximation
+%   indy:           [vector]    index of control variables in DR order
+%   nlags:          [integer]   number of lags in autocovariances and autocorrelations
+%   useautocorr:    [boolean]   true: compute autocorrelations
+%   compute_derivs: [boolean]   true: compute derivatives
 % -------------------------------------------------------------------------
 % OUTPUTS
 % pruned_state_space: [structure] with the following fields:
@@ -240,6 +241,7 @@ function pruned_state_space = pruned_state_space_system(M, options, dr, indy, nl
 % See code below how z and inov are defined at first, second, and third order,
 % and how to set up A, B, C, D and compute unconditional first and second moments of inov, z and y
 
+persistent QPu COMBOS4 Q6Pu COMBOS6 K_u_xx K_u_ux K_xx_x
 
 %% Auxiliary indices and objects
 order = options.order;
@@ -418,8 +420,10 @@ if order > 1
 
     %Compute unique fourth order product moments of u, i.e. unique(E[kron(kron(kron(u,u),u),u)],'stable')
     u_nbr4    = u_nbr*(u_nbr+1)/2*(u_nbr+2)/3*(u_nbr+3)/4;
-    QPu       = quadruplication(u_nbr);
-    COMBOS4   = flipud(allVL1(u_nbr, 4)); %all possible (unique) combinations of powers that sum up to four
+    if isempty(QPu)
+        QPu       = quadruplication(u_nbr);
+        COMBOS4   = flipud(allVL1(u_nbr, 4)); %all possible (unique) combinations of powers that sum up to four
+    end
     E_u_u_u_u = zeros(u_nbr4,1); %only unique entries
     if compute_derivs && (stderrparam_nbr+corrparam_nbr>0)
         dE_u_u_u_u = zeros(u_nbr4,stderrparam_nbr+corrparam_nbr);
@@ -588,8 +592,11 @@ if order > 1
 
     if order > 2
         % Some common and useful objects for order > 2
-        K_u_xx   = commutation(u_nbr,x_nbr^2,1);
-        K_u_ux   = commutation(u_nbr,u_nbr*x_nbr,1);
+        if isempty(K_u_xx)
+            K_u_xx   = commutation(u_nbr,x_nbr^2,1);
+            K_u_ux   = commutation(u_nbr,u_nbr*x_nbr,1);
+            K_xx_x   = commutation(x_nbr^2,x_nbr);
+        end
         hx_hss2  = kron(hx,1/2*hss);
         hu_hss2  = kron(hu,1/2*hss);
         hx_hxx2  = kron(hx,1/2*hxx);
@@ -658,9 +665,11 @@ if order > 1
         end
 
         % Compute unique sixth-order product moments of u, i.e. unique(E[kron(kron(kron(kron(kron(u,u),u),u),u),u)],'stable')
-        u_nbr6        = u_nbr*(u_nbr+1)/2*(u_nbr+2)/3*(u_nbr+3)/4*(u_nbr+4)/5*(u_nbr+5)/6;
-        Q6Pu          = Q6_plication(u_nbr);
-        COMBOS6       = flipud(allVL1(u_nbr, 6)); %all possible (unique) combinations of powers that sum up to six
+        u_nbr6        = u_nbr*(u_nbr+1)/2*(u_nbr+2)/3*(u_nbr+3)/4*(u_nbr+4)/5*(u_nbr+5)/6;       
+        if isempty(Q6Pu)
+            Q6Pu          = Q6_plication(u_nbr);
+            COMBOS6       = flipud(allVL1(u_nbr, 6)); %all possible (unique) combinations of powers that sum up to six
+        end
         E_u_u_u_u_u_u = zeros(u_nbr6,1); %only unique entries
         if compute_derivs && (stderrparam_nbr+corrparam_nbr>0)
             dE_u_u_u_u_u_u = zeros(u_nbr6,stderrparam_nbr+corrparam_nbr);
@@ -798,7 +807,7 @@ if order > 1
         E_inovzlag1 = zeros(inov_nbr,z_nbr); % Attention: E[inov*z(-1)'] is not equal to zero for a third-order approximation due to kron(kron(xf(-1),u),u)
         E_inovzlag1(id_inov6_xf_u_u , id_z1_xf       ) = kron(E_xfxf,E_uu(:));
         E_inovzlag1(id_inov6_xf_u_u , id_z4_xrd      ) = kron(E_xrdxf',E_uu(:));
-        E_inovzlag1(id_inov6_xf_u_u , id_z5_xf_xs    ) = kron(reshape(commutation(x_nbr^2,x_nbr)*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(E_uu)) ;
+        E_inovzlag1(id_inov6_xf_u_u , id_z5_xf_xs    ) = kron(reshape(K_xx_x*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(E_uu)) ;
         E_inovzlag1(id_inov6_xf_u_u , id_z6_xf_xf_xf ) = kron(reshape(E_xf_xfxf_xf,x_nbr,x_nbr^3),E_uu(:));
 
         Binovzlag1A= B*E_inovzlag1*transpose(A);
@@ -980,7 +989,7 @@ if order > 1
 
                 dE_inovzlag1(id_inov6_xf_u_u , id_z1_xf       , jp3) = kron(dE_xfxf_jp3,E_uu(:)) + kron(E_xfxf,dE_uu_jp3(:));
                 dE_inovzlag1(id_inov6_xf_u_u , id_z4_xrd      , jp3) = kron(dE_xrdxf_jp3',E_uu(:)) + kron(E_xrdxf',dE_uu_jp3(:));
-                dE_inovzlag1(id_inov6_xf_u_u , id_z5_xf_xs    , jp3) = kron(reshape(commutation(x_nbr^2,x_nbr)*vec(dE_xsxf_xf_jp3),x_nbr,x_nbr^2),vec(E_uu)) + kron(reshape(commutation(x_nbr^2,x_nbr)*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(dE_uu_jp3)) ;
+                dE_inovzlag1(id_inov6_xf_u_u , id_z5_xf_xs    , jp3) = kron(reshape(K_xx_x*vec(dE_xsxf_xf_jp3),x_nbr,x_nbr^2),vec(E_uu)) + kron(reshape(K_xx_x*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(dE_uu_jp3)) ;
                 dE_inovzlag1(id_inov6_xf_u_u , id_z6_xf_xf_xf , jp3) = kron(reshape(dE_xf_xfxf_xf_jp3,x_nbr,x_nbr^3),E_uu(:)) + kron(reshape(E_xf_xfxf_xf,x_nbr,x_nbr^3),dE_uu_jp3(:));
 
                 dBinovzlag1A_jp3 = dB(:,:,jp3)*E_inovzlag1*transpose(A) + B*dE_inovzlag1(:,:,jp3)*transpose(A) + B*E_inovzlag1*transpose(dA(:,:,jp3));
@@ -1029,8 +1038,8 @@ else
                                            + C(stationary_vars,:)*transpose(E_inovzlag1)*D(stationary_vars,:)'...
                                            + D(stationary_vars,:)*Varinov*D(stationary_vars,:)';
 end
-indzeros = find(abs(Var_y) < 1e-12); %find values that are numerical zero
-Var_y(indzeros) = 0;
+
+Var_y(abs(Var_y) < 1e-12) = 0; %find values that are numerical zero
 if useautocorr
     sdy = sqrt(diag(Var_y)); %theoretical standard deviation
     sdy = sdy(stationary_vars);
@@ -1056,8 +1065,7 @@ if compute_derivs
                                                         + dC(stationary_vars,:,jpV)*transpose(E_inovzlag1)*D(stationary_vars,:)' + C(stationary_vars,:)*transpose(dE_inovzlag1(:,:,jpV))*D(stationary_vars,:)' + C(stationary_vars,:)*transpose(E_inovzlag1)*dD(stationary_vars,:,jpV)'...
                                                         + dD(stationary_vars,:,jpV)*Varinov*D(stationary_vars,:)' + D(stationary_vars,:)*dVarinov(:,:,jpV)*D(stationary_vars,:)' + D(stationary_vars,:)*Varinov*dD(stationary_vars,:,jpV)';
         end
-        indzeros = find(abs(dVar_y_tmp) < 1e-12); %find values that are numerical zero
-        dVar_y_tmp(indzeros) = 0;        
+        dVar_y_tmp(abs(dVar_y_tmp) < 1e-12) = 0; %find values that are numerical zero       
         dVar_y(stationary_vars,stationary_vars,jpV) = dVar_y_tmp;
         if useautocorr
             dsy = 1/2./sdy.*diag(dVar_y(:,:,jpV));
@@ -1089,7 +1097,7 @@ for i = 1:nlags
         E_inovzlagi = zeros(inov_nbr,z_nbr);
         E_inovzlagi(id_inov6_xf_u_u , id_z1_xf       ) = kron(hxi*E_xfxf,E_uu(:));
         E_inovzlagi(id_inov6_xf_u_u , id_z4_xrd      ) = kron(hxi*E_xrdxf',E_uu(:));
-        E_inovzlagi(id_inov6_xf_u_u , id_z5_xf_xs    ) = kron(hxi*reshape(commutation(x_nbr^2,x_nbr)*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(E_uu));
+        E_inovzlagi(id_inov6_xf_u_u , id_z5_xf_xs    ) = kron(hxi*reshape(K_xx_x*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(E_uu));
         E_inovzlagi(id_inov6_xf_u_u , id_z6_xf_xf_xf ) = kron(hxi*reshape(E_xf_xfxf_xf,x_nbr,x_nbr^3),E_uu(:));
         Var_yi(stationary_vars,stationary_vars,i)      = C(stationary_vars,:)*Var_zi*C(stationary_vars,:)' + C(stationary_vars,:)*Ai*tmp + D(stationary_vars,:)*E_inovzlagi*C(stationary_vars,:)';
     end    
@@ -1125,12 +1133,12 @@ if compute_derivs
                 E_inovzlagi = zeros(inov_nbr,z_nbr);
                 E_inovzlagi(id_inov6_xf_u_u , id_z1_xf       ) = kron(hxi*E_xfxf,E_uu(:));
                 E_inovzlagi(id_inov6_xf_u_u , id_z4_xrd      ) = kron(hxi*E_xrdxf',E_uu(:));
-                E_inovzlagi(id_inov6_xf_u_u , id_z5_xf_xs    ) = kron(hxi*reshape(commutation(x_nbr^2,x_nbr)*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(E_uu));
+                E_inovzlagi(id_inov6_xf_u_u , id_z5_xf_xs    ) = kron(hxi*reshape(K_xx_x*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(E_uu));
                 E_inovzlagi(id_inov6_xf_u_u , id_z6_xf_xf_xf ) = kron(hxi*reshape(E_xf_xfxf_xf,x_nbr,x_nbr^3),E_uu(:));
                 dE_inovzlagi_jpVi = zeros(inov_nbr,z_nbr);
                 dE_inovzlagi_jpVi(id_inov6_xf_u_u , id_z1_xf       ) = kron(dhxi_jpVi*E_xfxf,E_uu(:)) + kron(hxi*dE_xfxf(:,:,jpVi),E_uu(:)) + kron(hxi*E_xfxf,vec(dE_uu(:,:,jpVi)));
                 dE_inovzlagi_jpVi(id_inov6_xf_u_u , id_z4_xrd      ) = kron(dhxi_jpVi*E_xrdxf',E_uu(:)) + kron(hxi*dE_xrdxf(:,:,jpVi)',E_uu(:)) + kron(hxi*E_xrdxf',vec(dE_uu(:,:,jpVi)));
-                dE_inovzlagi_jpVi(id_inov6_xf_u_u , id_z5_xf_xs    ) = kron(dhxi_jpVi*reshape(commutation(x_nbr^2,x_nbr)*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(E_uu)) + kron(hxi*reshape(commutation(x_nbr^2,x_nbr)*vec(dE_xsxf_xf(:,:,jpVi)),x_nbr,x_nbr^2),vec(E_uu)) + kron(hxi*reshape(commutation(x_nbr^2,x_nbr)*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(dE_uu(:,:,jpVi)));
+                dE_inovzlagi_jpVi(id_inov6_xf_u_u , id_z5_xf_xs    ) = kron(dhxi_jpVi*reshape(K_xx_x*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(E_uu)) + kron(hxi*reshape(K_xx_x*vec(dE_xsxf_xf(:,:,jpVi)),x_nbr,x_nbr^2),vec(E_uu)) + kron(hxi*reshape(K_xx_x*vec(E_xsxf_xf),x_nbr,x_nbr^2),vec(dE_uu(:,:,jpVi)));
                 dE_inovzlagi_jpVi(id_inov6_xf_u_u , id_z6_xf_xf_xf ) = kron(dhxi_jpVi*reshape(E_xf_xfxf_xf,x_nbr,x_nbr^3),E_uu(:)) + kron(hxi*reshape(dE_xf_xfxf_xf(:,:,jpVi),x_nbr,x_nbr^3),E_uu(:)) + kron(hxi*reshape(E_xf_xfxf_xf,x_nbr,x_nbr^3),vec(dE_uu(:,:,jpVi)));
                 dVar_yi(stationary_vars,stationary_vars,i,jpVi) = dC(stationary_vars,:,jpVi)*Var_zi*C(stationary_vars,:)' + C(stationary_vars,:)*dVar_zi_jpVi*C(stationary_vars,:)' + C(stationary_vars,:)*Var_zi*dC(stationary_vars,:,jpVi)'...
                                                                 + dC(stationary_vars,:,jpVi)*Ai*tmp + C(stationary_vars,:)*dAi_jpVi*tmp + C(stationary_vars,:)*Ai*dtmp_jpVi...
@@ -1179,7 +1187,7 @@ if compute_derivs
         end
     end
 end
-non_stationary_vars = setdiff(1:y_nbr,stationary_vars);
+non_stationary_vars = ~ismember((1:y_nbr)',stationary_vars);
 E_y(non_stationary_vars) = NaN;
 if compute_derivs
     dE_y(non_stationary_vars,:) = NaN;
@@ -1195,7 +1203,7 @@ pruned_state_space.D = D;
 pruned_state_space.c = c;
 pruned_state_space.d = d;
 pruned_state_space.Varinov = Varinov;
-pruned_state_space.Var_z  = Var_z; %remove in future [@wmutschl]
+% pruned_state_space.Var_z  = Var_z; %
 pruned_state_space.Var_y  = Var_y;
 pruned_state_space.Var_yi = Var_yi;
 if useautocorr

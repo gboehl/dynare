@@ -63,7 +63,9 @@ for i1=1:p
         end
     end
 end
+if nargout==2
 DP6inv = (transpose(DP6)*DP6)\transpose(DP6);
+end
 
 function m = mue(p,i1,i2,i3,i4,i5,i6)
 % Auxiliary expression, see page 122 of Meijer (2005)
