@@ -1,10 +1,12 @@
-function [X,exitflag]=disclyap_fast(G,V,tol,check_flag)
-% function X=disclyap_fast(G,V,ch)
+function [X,exitflag]=disclyap_fast(G,V,tol,check_flag,max_iter)
+% [X,exitflag]=disclyap_fast(G,V,tol,check_flag)
 % Inputs:
 %   - G             [double]    first input matrix
 %   - V             [double]    second input matrix
 %   - tol           [scalar]    tolerance criterion
-%   - check_flag    empty of non-empty             if non-empty: check positive-definiteness
+%   - check_flag    [boolean]   if true: check positive-definiteness
+%   - max_iter      [scalar]    maximum number of iterations
+
 % Outputs:
 %   - X             [double]    solution matrix
 %   - exitflag      [scalar]    0 if solution is found, 1 otherwise
@@ -19,7 +21,7 @@ function [X,exitflag]=disclyap_fast(G,V,tol,check_flag)
 % Joe Pearlman and Alejandro Justiniano
 % 3/5/2005
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright (C) 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,10 +38,11 @@ function [X,exitflag]=disclyap_fast(G,V,tol,check_flag)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if nargin <= 3 || isempty( check_flag ) == 1
-    flag_ch = 0;
-else
-    flag_ch = 1;
+if nargin <= 3 || isempty(check_flag)
+    check_flag = 0;
+end
+if nargin <=4
+    max_iter=2000;
 end
 exitflag=0;
 
@@ -48,7 +51,7 @@ A0=G;
 
 matd=1;
 iter=1;
-while matd > tol && iter< 2000
+while matd > tol && iter< max_iter
     P1=P0+A0*P0*A0';
     A1=A0*A0;
     matd=max( max( abs( P1 - P0 ) ) );
@@ -56,20 +59,18 @@ while matd > tol && iter< 2000
     A0=A1;
     iter=iter+1;
 end
-if iter==5000
-    X=NaN(P0);
+if iter==max_iter
+    X=NaN(size(P0));
     exitflag=1;
     return
 end
-clear A0 A1 P1;
 
 X=(P0+P0')/2;
 
 % Check that X is positive definite
-if flag_ch==1
-    [C,p]=chol(X);
+if check_flag==1
+    [~,p]=chol(X);
     if p ~= 0
         exitflag=1;
-        error('X is not positive definite')
     end
 end
