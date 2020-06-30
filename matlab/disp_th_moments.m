@@ -21,7 +21,7 @@ function oo_ = disp_th_moments(dr, var_list, M_, options_, oo_)
 
 nodecomposition = options_.nodecomposition;
 if options_.one_sided_hp_filter
-    error(['disp_th_moments:: theoretical moments incompatible with one-sided HP filter. Use simulated moments instead'])
+    error('disp_th_moments:: theoretical moments incompatible with one-sided HP filter. Use simulated moments instead')
 end
 if isempty(var_list)
     var_list = M_.endo_names(1:M_.orig_endo_nbr);
@@ -129,7 +129,7 @@ if size(stationary_vars, 1) > 0
         end
     end
     conditional_variance_steps = options_.conditional_variance_decomposition;
-    if length(conditional_variance_steps)
+    if ~isempty(conditional_variance_steps)
         StateSpaceModel.number_of_state_equations = M_.endo_nbr;
         StateSpaceModel.number_of_state_innovations = M_.exo_nbr;
         StateSpaceModel.sigma_e_is_diagonal = M_.sigma_e_is_diagonal;
@@ -151,7 +151,7 @@ if size(stationary_vars, 1) > 0
     end
 end
 
-if length(i1) == 0
+if isempty(i1)
     skipline()
     disp('All endogenous are constant or non stationary, not displaying correlations and auto-correlations')
     skipline()
@@ -186,7 +186,7 @@ if ~options_.nocorr && size(stationary_vars, 1)>0
 end
 
 if options_.ar > 0 && size(stationary_vars, 1) > 0
-    z=[];
+    z=NaN(length(i1),options_.ar);
     for i=1:options_.ar
         oo_.autocorr{i} = oo_.gamma_y{i+1};
         z(:,i) = diag(oo_.gamma_y{i+1}(i1,i1));

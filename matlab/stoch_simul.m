@@ -189,9 +189,11 @@ if ~options_.nomoments
     if PI_PCL_solver
         PCL_Part_info_moments(0, PCL_varobs, oo_.dr, i_var);
     elseif options_.periods == 0
-        % There is no code for theoretical moments at 3rd order
         if options_.order <= 2
             oo_=disp_th_moments(oo_.dr,var_list,M_,options_,oo_);
+        elseif options_.order == 3 && options_.pruning  
+            % There is no code for theoretical moments at 3rd order without pruning
+            oo_=disp_th_moments_order3(oo_.dr,M_,options_,i_var,oo_);
         end
     else
         oo_=disp_moments(oo_.endo_simul,var_list,M_,options_,oo_);

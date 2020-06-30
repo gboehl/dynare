@@ -116,6 +116,6 @@ options_.solve_tolf=1E-12;
 steady(solve_algo=3);
 
 check;
-stoch_simul(order=3,pruning,irf=0,nocorr,nofunctions,nomoments) C I Y H r D K lambda phi; 
+stoch_simul(order=3,pruning,irf=0,nofunctions,contemporaneous_correlation,TeX) C I Y H r D K lambda phi; 
 
 comparison_policy_functions_dynare_mathematica;
