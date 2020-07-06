@@ -88,7 +88,7 @@ else
         if options_.linear == 0
             % nonlinear models
             if max(abs(feval(fh,dr.ys,[oo_.exo_steady_state; ...
-                                    oo_.exo_det_steady_state], M_.params))) > options_.dynatol.f
+                                    oo_.exo_det_steady_state], M_.params))) > options_.solve_tolf
                 opt = options_;
                 opt.jacobian_flag = false;
                 [dr.ys,check1] = dynare_solve(fh,dr.ys,opt,...
