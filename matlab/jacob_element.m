@@ -34,7 +34,7 @@ assert(element <= length(args));
 
 func = str2func(func);
 
-h=10e-6;
+h=1e-6;
 margs=args;
 
 args{element} = args{element} + h;

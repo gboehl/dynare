@@ -35,7 +35,7 @@ assert(element1 <= length(args) && element2 <= length(args));
 
 func = str2func(func);
 
-h=10e-6;
+h=1e-6;
 p10 = args;
 p01 = args;
 m10 = args;
