@@ -103,7 +103,7 @@ if nargout == 0
     disp('Residuals of the static equations:')
     skipline()
     for i=1:M_.orig_endo_nbr
-        if abs(z(i)) < options_.dynatol.f/100
+        if abs(z(i)) < options_.solve_tolf/100
             tmp = 0;
         else
             tmp = z(i);
