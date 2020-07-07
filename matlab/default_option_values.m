@@ -513,7 +513,7 @@ newrat.tolerance.f=1e-5;
 newrat.tolerance.f_analytic=1e-7;
 newrat.maxiter=1000;
 newrat.verbosity=1;
-newrat.Save_files=1;
+newrat.Save_files=0;
 
 options_.newrat=newrat;
 
