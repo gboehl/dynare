@@ -1,5 +1,5 @@
-function [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_files,varargin)
-% [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_files,varargin)
+function [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon,parameter_names,varargin)
+% [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon,parameter_names,varargin)
 %
 % Gibbs type step in optimisation
 %
@@ -11,7 +11,7 @@ function [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_fil
 % varargin{6} --> BayesInfo
 % varargin{1} --> DynareResults
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,7 +30,7 @@ function [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_fil
 
 n=size(x,1);
 if isempty(h1)
-    h1=varargin{3}.gradient_epsilon*ones(n,1);
+    h1=gradient_epsilon*ones(n,1);
 end
 
 
@@ -72,10 +72,10 @@ while i<n
         gg(i)=(f1(i)'-f_1(i)')./(2.*h1(i));
         hh(i) = 1/max(1.e-9,abs( (f1(i)+f_1(i)-2*f0)./(h1(i)*h1(i)) ));
         if gg(i)*(hh(i)*gg(i))/2 > htol(i)
-            [f0, x, fc, retcode] = csminit1(func0,x,penalty,f0,gg,0,diag(hh),Verbose,varargin{:});
+            [f0, x, ~, ~] = csminit1(func0,x,penalty,f0,gg,0,diag(hh),Verbose,varargin{:});
             ig(i)=1;
             if Verbose
-                fprintf(['Done for param %s = %8.4f\n'],varargin{6}.name{i},x(i))
+                fprintf(['Done for param %s = %8.4f\n'],parameter_names{i},x(i))
             end
         end
         xh1=x;
