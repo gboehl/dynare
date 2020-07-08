@@ -268,7 +268,7 @@ switch minimizer_algorithm
     hess_info.gstep=options_.gstep;
     hess_info.htol = 1.e-4;
     hess_info.h1=options_.gradient_epsilon*ones(n_params,1);
-    [opt_par_values,hessian_mat,gg,fval,invhess,new_rat_hess_info] = newrat(objective_function,start_par_value,bounds,analytic_grad,crit,nit,0,Verbose, Save_files,hess_info,prior_information.p2,varargin{:});    %hessian_mat is the plain outer product gradient Hessian
+    [opt_par_values,hessian_mat,gg,fval,invhess,new_rat_hess_info] = newrat(objective_function,start_par_value,bounds,analytic_grad,crit,nit,0,Verbose,Save_files,hess_info,prior_information.p2,options_.gradient_epsilon,parameter_names,varargin{:});    %hessian_mat is the plain outer product gradient Hessian
   case 6
     if isempty(prior_information) %Inf will be reset
         prior_information.p2=Inf(n_params,1);

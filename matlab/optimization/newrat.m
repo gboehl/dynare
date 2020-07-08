@@ -1,5 +1,5 @@
-function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, analytic_derivation, ftol0, nit, flagg, Verbose, Save_files, hess_info, prior_std, varargin)
-%  [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, analytic_derivation, ftol0, nit, flagg, Verbose, Save_files, hess_info, varargin)
+function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, analytic_derivation, ftol0, nit, flagg, Verbose, Save_files, hess_info, prior_std, gradient_epsilon, parameter_names, varargin)
+%  [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, analytic_derivation, ftol0, nit, flagg, Verbose, Save_files, hess_info, gradient_epsilon, parameter_names, varargin)
 %
 %  Optimiser with outer product gradient and with sequences of univariate steps
 %  uses Chris Sims subroutine for line search
@@ -24,6 +24,8 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 %                           computation of Hessian
 %  - prior_std              prior standard devation of parameters (can be NaN); 
 %                           passed to mr_hessian
+%  - gradient_epsilon       [double] step size in gradient
+%  - parameter_names        [cell] names of parameters for error messages
 %  - varargin               other inputs
 %                           e.g. in dsge_likelihood and others:
 %                           varargin{1} --> DynareDataset
@@ -167,7 +169,7 @@ while norm(gg)>gtol && check==0 && jit<nit
         [fvala,x0,fc,retcode] = csminit1(func0,x0,penalty,fval,ggx,0,iggx,Verbose,varargin{:});
     end
     x0 = check_bounds(x0,bounds);
-    [fvala, x0, ig] = mr_gstep(h1,x0,bounds,func0,penalty,htol0,Verbose,Save_files,varargin{:});
+    [fvala, x0, ig] = mr_gstep(h1,x0,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon, parameter_names,varargin{:});
     x0 = check_bounds(x0,bounds);
     nig=[nig ig];
     disp_verbose('Sequence of univariate steps!!',Verbose)
