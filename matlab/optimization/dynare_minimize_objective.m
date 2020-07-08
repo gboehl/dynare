@@ -51,7 +51,7 @@ if isempty(bounds)
 end
 
 if isempty(parameter_names)
-    parameter_names=[repmat('parameter ',n_params,1),num2str((1:n_params)')];
+    parameter_names=cellstr([repmat('parameter ',n_params,1),num2str((1:n_params)')]);
 end
 
 %% initialize function outputs
