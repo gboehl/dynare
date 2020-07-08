@@ -229,7 +229,8 @@ by the ``dynare`` command.
     .. option:: json = parse|check|transform|compute
 
         Causes the preprocessor to output a version of the ``.mod`` file in
-        JSON format. When the JSON output is created depends on the value
+        JSON format to ``<<M_.dname>>/model/json/``. 
+        When the JSON output is created depends on the value
         passed. These values represent various steps of processing in the
         preprocessor.
 
@@ -257,7 +258,8 @@ by the ``dynare`` command.
     .. option:: jsonstdout
 
         Instead of writing output requested by ``json`` to files,
-        write to standard out.
+        write to standard out, i.e. to the MATLAB/Octave command window 
+        (and the log-file).
 
     .. option:: onlyjson
 
