@@ -45,3 +45,14 @@ var e, u = phi*0.009*0.009;
 end;
 
 stoch_simul;
+
+L = load('benchmark_results.mat');
+if max(max(abs(L.oo_.dr.ghu - oo_.dr.ghu))) > 1e-12
+  error('Failure in external function')
+end
+if max(max(abs(L.oo_.dr.ghx - oo_.dr.ghx))) > 1e-12
+  error('Failure in external function')
+end
+if max(max(abs(L.oo_.var - oo_.var))) > 1e-12
+  error('Failure in external function')
+end
