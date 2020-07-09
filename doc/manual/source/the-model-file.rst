@@ -740,7 +740,9 @@ required for external functions used in an EXPRESSION outside of a
         provided as the only output of the M-/MEX file given as the
         option argument. If NAME is not provided, this tells Dynare
         that the M-/MEX file specified by the argument passed to NAME
-        returns the Jacobian as its second output argument.
+        returns the Jacobian as its second output argument. When this option is
+        not provided, Dynare will use finite difference approximations for
+        computing the derivatives of the function, whenever needed.
 
     .. option:: second_deriv_provided [= NAME]
 
@@ -750,7 +752,9 @@ required for external functions used in an EXPRESSION outside of a
         that the M-/MEX file specified by the argument passed to NAME
         returns the Hessian as its third output argument. NB: This
         option can only be used if the ``first_deriv_provided`` option
-        is used in the same ``external_function`` command.
+        is used in the same ``external_function`` command. When this option is
+        not provided, Dynare will use finite difference approximations for
+        computing the Hessian derivatives of the function, whenever needed.
 
     *Example*
 
