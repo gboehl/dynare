@@ -184,6 +184,7 @@ MODFILES = \
 	dsge-var/simul_hybrid.mod \
 	dsge-var/dsgevar_forward_calibrated_lambda.mod \
 	dsge-var/dsgevar_forward_estimated_lambda.mod \
+	external_function/benchmark.mod \
 	external_function/first_deriv_given.mod \
 	external_function/first_deriv_given_dll.mod \
 	external_function/first_and_2nd_deriv_given.mod \
@@ -493,6 +494,25 @@ dsge-var/dsgevar_forward_calibrated_lambda.m.trs: dsge-var/simul_hybrid.m.trs
 dsge-var/dsgevar_forward_estimated_lambda.m.trs: dsge-var/simul_hybrid.m.trs
 dsge-var/dsgevar_forward_calibrated_lambda.o.trs: dsge-var/simul_hybrid.o.trs
 dsge-var/dsgevar_forward_estimated_lambda.o.trs: dsge-var/simul_hybrid.o.trs
+
+external_function/first_deriv_given.m.trs: external_function/benchmark.m.trs
+external_function/first_deriv_given.o.trs: external_function/benchmark.o.trs
+external_function/first_deriv_given_dll.m.trs: external_function/benchmark.m.trs
+external_function/first_deriv_given_dll.o.trs: external_function/benchmark.o.trs
+external_function/first_and_2nd_deriv_given.m.trs: external_function/benchmark.m.trs
+external_function/first_and_2nd_deriv_given.o.trs: external_function/benchmark.o.trs
+external_function/first_and_2nd_deriv_given_dll.m.trs: external_function/benchmark.m.trs
+external_function/first_and_2nd_deriv_given_dll.o.trs: external_function/benchmark.o.trs
+external_function/first_and_2nd_deriv_given_namespace.m.trs: external_function/benchmark.m.trs
+external_function/first_and_2nd_deriv_given_namespace.o.trs: external_function/benchmark.o.trs
+external_function/first_and_2nd_deriv_given_dll_namespace.m.trs: external_function/benchmark.m.trs
+external_function/first_and_2nd_deriv_given_dll_namespace.o.trs: external_function/benchmark.o.trs
+external_function/no_deriv_given.m.trs: external_function/benchmark.m.trs
+external_function/no_deriv_given.o.trs: external_function/benchmark.o.trs
+external_function/no_deriv_given_dll.m.trs: external_function/benchmark.m.trs
+external_function/no_deriv_given_dll.o.trs: external_function/benchmark.o.trs
+external_function/extfun_in_mlv.m.trs: external_function/benchmark.m.trs
+external_function/extfun_in_mlv.o.trs: external_function/benchmark.o.trs
 
 smoother2histval/fs2000_simul.m.trs: smoother2histval/fs2000_smooth.m.trs
 smoother2histval/fs2000_simul.o.trs: smoother2histval/fs2000_smooth.o.trs
