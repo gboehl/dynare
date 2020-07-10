@@ -40,11 +40,11 @@ function [dataMoments, m_data] = method_of_moments_data_moments(data, oo_, match
 
 % Initialization
 T = size(data,1); % Number of observations (T) and number of observables (ny)
-dataMoments = NaN(options_mom_.mom_nbr,1);
-m_data = NaN(T,options_mom_.mom_nbr);
+dataMoments = NaN(options_mom_.mom.mom_nbr,1);
+m_data = NaN(T,options_mom_.mom.mom_nbr);
 % Product moment for each time period, i.e. each row t contains y_t1(l1)^p1*y_t2(l2)^p2*...
 % note that here we already are able to treat leads and lags and any power product moments
-for jm = 1:options_mom_.mom_nbr
+for jm = 1:options_mom_.mom.mom_nbr
     vars     = oo_.dr.inv_order_var(matched_moments_{jm,1})';
     leadlags = matched_moments_{jm,2}; % lags are negative numbers and leads are positive numbers
     powers   = matched_moments_{jm,3};

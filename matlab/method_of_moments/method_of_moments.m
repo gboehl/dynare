@@ -357,12 +357,12 @@ end
 % will need much improvement later on. @wmutschl
 
 % Initialize indices
-options_mom_.index.E_y       = false(options_mom_.obs_nbr,1);                      %unconditional first order product moments
-options_mom_.index.E_yy      = false(options_mom_.obs_nbr,options_mom_.obs_nbr);   %unconditional second order product moments
-options_mom_.index.E_yyt     = false(options_mom_.obs_nbr,options_mom_.obs_nbr,0); %unconditional temporal second order product moments
-options_mom_.index.E_y_pos   = zeros(options_mom_.obs_nbr,1);                      %position in matched moments block
-options_mom_.index.E_yy_pos  = zeros(options_mom_.obs_nbr,options_mom_.obs_nbr);   %position in matched moments block
-options_mom_.index.E_yyt_pos = zeros(options_mom_.obs_nbr,options_mom_.obs_nbr,0); %position in matched moments block
+options_mom_.mom.index.E_y       = false(options_mom_.obs_nbr,1);                      %unconditional first order product moments
+options_mom_.mom.index.E_yy      = false(options_mom_.obs_nbr,options_mom_.obs_nbr);   %unconditional second order product moments
+options_mom_.mom.index.E_yyt     = false(options_mom_.obs_nbr,options_mom_.obs_nbr,0); %unconditional temporal second order product moments
+options_mom_.mom.index.E_y_pos   = zeros(options_mom_.obs_nbr,1);                      %position in matched moments block
+options_mom_.mom.index.E_yy_pos  = zeros(options_mom_.obs_nbr,options_mom_.obs_nbr);   %position in matched moments block
+options_mom_.mom.index.E_yyt_pos = zeros(options_mom_.obs_nbr,options_mom_.obs_nbr,0); %position in matched moments block
 
 for jm=1:size(matched_moments_,1)
     % higher-order product moments not supported yet for GMM
@@ -388,8 +388,8 @@ for jm=1:size(matched_moments_,1)
     if sum(matched_moments_{jm,3}) == 1
         % First-order product moment
         vpos = (oo_.dr.obs_var == vars);
-        options_mom_.index.E_y(vpos,1) = true;
-        options_mom_.index.E_y_pos(vpos,1) = jm;
+        options_mom_.mom.index.E_y(vpos,1) = true;
+        options_mom_.mom.index.E_y_pos(vpos,1) = jm;
         matched_moments_{jm,4}=['E(',M_.endo_names{matched_moments_{jm,1}},')'];
         matched_moments_{jm,5}=['$E(',M_.endo_names_tex{matched_moments_{jm,1}},')$'];
     elseif sum(matched_moments_{jm,3}) == 2
@@ -399,15 +399,15 @@ for jm=1:size(matched_moments_,1)
         lag1 = matched_moments_{jm,2}(1);
         lag2 = matched_moments_{jm,2}(2);
         if lag1==0 && lag2==0 % contemporaneous covariance matrix
-            options_mom_.index.E_yy(idx1,idx2) = true;
-            options_mom_.index.E_yy(idx2,idx1) = true;
-            options_mom_.index.E_yy_pos(idx1,idx2) = jm;
-            options_mom_.index.E_yy_pos(idx2,idx1) = jm;
+            options_mom_.mom.index.E_yy(idx1,idx2) = true;
+            options_mom_.mom.index.E_yy(idx2,idx1) = true;
+            options_mom_.mom.index.E_yy_pos(idx1,idx2) = jm;
+            options_mom_.mom.index.E_yy_pos(idx2,idx1) = jm;
             matched_moments_{jm,4}=['E(',M_.endo_names{matched_moments_{jm,1}(1)},',',M_.endo_names{matched_moments_{jm,1}(2)},')'];
             matched_moments_{jm,5}=['$E({',M_.endo_names_tex{matched_moments_{jm,1}(1)},'}_t,{',M_.endo_names_tex{matched_moments_{jm,1}(1)},'}_t)$'];
         elseif lag1==0 && lag2 < 0
-            options_mom_.index.E_yyt(idx1,idx2,-lag2) = true;
-            options_mom_.index.E_yyt_pos(idx1,idx2,-lag2) = jm;
+            options_mom_.mom.index.E_yyt(idx1,idx2,-lag2) = true;
+            options_mom_.mom.index.E_yyt_pos(idx1,idx2,-lag2) = jm;
             matched_moments_{jm,4}=['E(',M_.endo_names{matched_moments_{jm,1}(1)},',',M_.endo_names{matched_moments_{jm,1}(2)},'(',num2str(lag2),'))'];
             matched_moments_{jm,5}=['$E({',M_.endo_names_tex{matched_moments_{jm,1}(1)},'}_t\times{',M_.endo_names_tex{matched_moments_{jm,1}(1)},'_{t',num2str(lag2) ,'})$'];
         end
@@ -417,25 +417,25 @@ end
 
 % @wmutschl: add check for duplicate moments by using the cellfun and unique functions
 %Remove duplicate elements
-UniqueMomIdx = [nonzeros(options_mom_.index.E_y_pos); nonzeros(triu(options_mom_.index.E_yy_pos)); nonzeros(options_mom_.index.E_yyt_pos)];
+UniqueMomIdx = [nonzeros(options_mom_.mom.index.E_y_pos); nonzeros(tril(options_mom_.mom.index.E_yy_pos)); nonzeros(options_mom_.mom.index.E_yyt_pos)];
 DuplicateMoms = setdiff(1:size(matched_moments_,1),UniqueMomIdx);
 if ~isempty(DuplicateMoms)
     fprintf('Found and removed duplicate declared moments in ''matched_moments'' block in rows: %s.\n',num2str(DuplicateMoms))
 end
-%reorder matched_moments_ to be compatible with options_mom_.index
+%reorder matched_moments_ to be compatible with options_mom_.mom.index
 matched_moments_ = matched_moments_(UniqueMomIdx,:);
-if strcmp(options_mom_.mom.mom_method,'SMM')    
-    options_mom_=rmfield(options_mom_,'index');
+if strcmp(options_mom_.mom.mom_method,'SMM')
+    options_mom_.mom=rmfield(options_mom_.mom,'index');
 end
 
 % Check if both prefilter and first moments were specified
-options_mom_.first_moment_indicator = find(cellfun(@(x) sum(abs(x))==1,matched_moments_(:,3)))';
-if options_mom_.prefilter && ~isempty(options_mom_.first_moment_indicator)
-    fprintf('Centered moments requested (prefilter option is set); therefore, ignore declared first moments in ''matched_moments'' block in rows: %u.\n',options_mom_.first_moment_indicator');
-    matched_moments_(options_mom_.first_moment_indicator,:)=[]; %remove first moments entries
-    options_mom_.first_moment_indicator = [];
+options_mom_.mom.first_moment_indicator = find(cellfun(@(x) sum(abs(x))==1,matched_moments_(:,3)))';
+if options_mom_.prefilter && ~isempty(options_mom_.mom.first_moment_indicator)
+    fprintf('Centered moments requested (prefilter option is set); therefore, ignore declared first moments in ''matched_moments'' block in rows: %u.\n',options_mom_.mom.first_moment_indicator');
+    matched_moments_(options_mom_.mom.first_moment_indicator,:)=[]; %remove first moments entries
+    options_mom_.mom.first_moment_indicator = [];
 end
-options_mom_.mom_nbr = size(matched_moments_,1);
+options_mom_.mom.mom_nbr = size(matched_moments_,1);
 
 % Get maximum lag number for autocovariances/autocorrelations
 options_mom_.ar = max(cellfun(@max,matched_moments_(:,2))) - min(cellfun(@min,matched_moments_(:,2)));
@@ -453,7 +453,7 @@ if (estim_params_.nvn || estim_params_.ncn) && strcmp(options_mom_.mom.mom_metho
 end
 
 % Check if enough moments for estimation
-if options_mom_.mom_nbr < length(xparam0)
+if options_mom_.mom.mom_nbr < length(xparam0)
     fprintf('\n');
     error('method_of_moments: We must have at least as many moments as parameters for a method of moments estimation.')
 end
@@ -612,20 +612,20 @@ end
 
 % Get shock series for SMM and set variance correction factor
 if strcmp(options_mom_.mom.mom_method,'SMM')
-    options_mom_.long = round(options_mom_.mom.simulation_multiple*options_mom_.nobs);
-    options_mom_.variance_correction_factor = (1+1/options_mom_.mom.simulation_multiple);
+    options_mom_.mom.long = round(options_mom_.mom.simulation_multiple*options_mom_.nobs);
+    options_mom_.mom.variance_correction_factor = (1+1/options_mom_.mom.simulation_multiple);
     % draw shocks for SMM
     smmstream = RandStream('mt19937ar','Seed',options_mom_.mom.seed);
-    temp_shocks = randn(smmstream,options_mom_.long+options_mom_.mom.burnin,M_.exo_nbr);
-    temp_shocks_ME = randn(smmstream,options_mom_.long,length(M_.H));
+    temp_shocks = randn(smmstream,options_mom_.mom.long+options_mom_.mom.burnin,M_.exo_nbr);
+    temp_shocks_ME = randn(smmstream,options_mom_.mom.long,length(M_.H));
     if options_mom_.mom.bounded_shock_support == 1
         temp_shocks(temp_shocks>2) = 2;
         temp_shocks(temp_shocks<-2) = -2;
         temp_shocks_ME(temp_shocks_ME<-2) = -2;
         temp_shocks_ME(temp_shocks_ME<-2) = -2;
     end
-    options_mom_.shock_series = temp_shocks;
-    options_mom_.ME_shock_series = temp_shocks_ME;
+    options_mom_.mom.shock_series = temp_shocks;
+    options_mom_.mom.ME_shock_series = temp_shocks_ME;
 end
 
 % -------------------------------------------------------------------------
@@ -683,7 +683,7 @@ objective_function = str2func('method_of_moments_objective_function');
 try
     % Check for NaN or complex values of moment-distance-funtion evaluated
     % at initial parameters and identity weighting matrix    
-    oo_.mom.Sw = eye(options_mom_.mom_nbr);
+    oo_.mom.Sw = eye(options_mom_.mom.mom_nbr);
     tic_id = tic;    
     [fval, info, ~, ~, ~, oo_, M_] = feval(objective_function, xparam0, Bounds, oo_, estim_params_, matched_moments_, M_, options_mom_);
     elapsed_time = toc(tic_id);    
@@ -760,7 +760,7 @@ fprintf('\n  - perturbation order:        %d', options_mom_.order)
 if options_mom_.order > 1 && options_mom_.pruning
     fprintf(' (with pruning)')
 end
-fprintf('\n  - number of matched moments: %d', options_mom_.mom_nbr);
+fprintf('\n  - number of matched moments: %d', options_mom_.mom.mom_nbr);
 fprintf('\n  - number of parameters:      %d\n\n', length(xparam0));
 
 % -------------------------------------------------------------------------
@@ -849,17 +849,30 @@ if ~Woptflag
     [fval] = feval(objective_function, xparam1, Bounds, oo_j, estim_params_, matched_moments_, M_, options_mom_);
 end
 
-% Compute J statistic
-if strcmp(options_mom_.mom.mom_method,'SMM')    
-    Variance_correction_factor = options_mom_.variance_correction_factor;
-elseif strcmp(options_mom_.mom.mom_method,'GMM')
-    Variance_correction_factor=1;
+% -------------------------------------------------------------------------
+% Step 8: J test
+% -------------------------------------------------------------------------
+if options_mom_.mom.mom_nbr > length(xparam1)
+    %get optimal weighting matrix for J test, if necessary
+    if ~Woptflag
+        W_opt = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
+        oo_j=oo_;
+        oo_j.mom.Sw = chol(W_opt);
+        [fval] = feval(objective_function, xparam1, Bounds, oo_j, estim_params_, matched_moments_, M_, options_mom_);
+    end
+
+    % Compute J statistic
+    if strcmp(options_mom_.mom.mom_method,'SMM')    
+        Variance_correction_factor = options_mom_.mom.variance_correction_factor;
+    elseif strcmp(options_mom_.mom.mom_method,'GMM')
+        Variance_correction_factor=1;
+    end
+    oo_.mom.J_test.j_stat          = dataset_.nobs*Variance_correction_factor*fval/options_mom_.mom.weighting_matrix_scaling_factor;
+    oo_.mom.J_test.degrees_freedom = length(oo_.mom.model_moments)-length(xparam1);
+    oo_.mom.J_test.p_val           = 1-chi2cdf(oo_.mom.J_test.j_stat, oo_.mom.J_test.degrees_freedom);
+    fprintf('\nvalue of J-test statistic: %f\n',oo_.mom.J_test.j_stat)
+    fprintf('p-value of J-test statistic: %f\n',oo_.mom.J_test.p_val)
 end
-oo_.mom.J_test.j_stat          = dataset_.nobs*Variance_correction_factor*fval/options_mom_.mom.weighting_matrix_scaling_factor;
-oo_.mom.J_test.degrees_freedom = length(oo_.mom.model_moments)-length(xparam1);
-oo_.mom.J_test.p_val           = 1-chi2cdf(oo_.mom.J_test.j_stat, oo_.mom.J_test.degrees_freedom);
-fprintf('\nvalue of J-test statistic: %f\n',oo_.mom.J_test.j_stat)
-fprintf('p-value of J-test statistic: %f\n',oo_.mom.J_test.p_val)
 
 title = ['Data moments and model moments (',options_mom_.mom.mom_method,')'];
 headers = {'Moment','Data','Model','% dev. target'};

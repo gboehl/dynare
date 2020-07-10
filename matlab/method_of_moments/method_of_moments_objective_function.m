@@ -111,36 +111,36 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
     %--------------------------------------------------------------------------
     pruned_state_space = pruned_state_space_system(M_, options_mom_, dr, oo_.dr.obs_var, options_mom_.ar, 0, 0);
     
-    oo_.mom.model_moments = NaN(options_mom_.mom_nbr,1);
+    oo_.mom.model_moments = NaN(options_mom_.mom.mom_nbr,1);
     offset = 0;
     % First moments
-    if ~options_mom_.prefilter && isfield(options_mom_.index,'E_y') && nnz(options_mom_.index.E_y) > 0
+    if ~options_mom_.prefilter && isfield(options_mom_.mom.index,'E_y') && nnz(options_mom_.mom.index.E_y) > 0
         E_y = pruned_state_space.E_y;
-        E_y_nbr = nnz(options_mom_.index.E_y);
-        oo_.mom.model_moments(offset+1:E_y_nbr,1) = E_y(options_mom_.index.E_y);
+        E_y_nbr = nnz(options_mom_.mom.index.E_y);
+        oo_.mom.model_moments(offset+1:E_y_nbr,1) = E_y(options_mom_.mom.index.E_y);
         offset = offset + E_y_nbr;
     end
     % Second moments
     % Contemporaneous covariance
-    if isfield(options_mom_.index,'E_yy') && nnz(options_mom_.index.E_yy) > 0
+    if isfield(options_mom_.mom.index,'E_yy') && nnz(options_mom_.mom.index.E_yy) > 0
         if options_mom_.prefilter
             E_yy = pruned_state_space.Var_y;
         else
             E_yy = pruned_state_space.Var_y + pruned_state_space.E_y*pruned_state_space.E_y';
         end
-        E_yy_nbr = nnz(triu(options_mom_.index.E_yy));
-        oo_.mom.model_moments(offset+(1:E_yy_nbr),1) = E_yy(triu(options_mom_.index.E_yy));
+        E_yy_nbr = nnz(tril(options_mom_.mom.index.E_yy));
+        oo_.mom.model_moments(offset+(1:E_yy_nbr),1) = E_yy(tril(options_mom_.mom.index.E_yy));
         offset = offset + E_yy_nbr;
     end
     % Lead/lags covariance
-    if isfield(options_mom_.index,'E_yyt') && nnz(options_mom_.index.E_yyt) > 0
+    if isfield(options_mom_.mom.index,'E_yyt') && nnz(options_mom_.mom.index.E_yyt) > 0
         if options_mom_.prefilter
             E_yyt = pruned_state_space.Var_yi;
         else
             E_yyt = pruned_state_space.Var_yi + repmat(pruned_state_space.E_y*pruned_state_space.E_y',[1 1 size(pruned_state_space.Var_yi,3)]);
         end
-        E_yyt_nbr = nnz(options_mom_.index.E_yyt);
-        oo_.mom.model_moments(offset+(1:E_yyt_nbr),1) = E_yyt(options_mom_.index.E_yyt);
+        E_yyt_nbr = nnz(options_mom_.mom.index.E_yyt);
+        oo_.mom.model_moments(offset+(1:E_yyt_nbr),1) = E_yyt(options_mom_.mom.index.E_yyt);
     end
 
 elseif strcmp(options_mom_.mom.mom_method,'SMM')
@@ -151,8 +151,8 @@ elseif strcmp(options_mom_.mom.mom_method,'SMM')
     % create shock series with correct covariance matrix from iid standard normal shocks
     i_exo_var = setdiff(1:M_.exo_nbr, find(diag(M_.Sigma_e) == 0 )); %find singular entries in covariance
     chol_S = chol(M_.Sigma_e(i_exo_var,i_exo_var));
-    scaled_shock_series = zeros(size(options_mom_.shock_series)); %initialize
-    scaled_shock_series(:,i_exo_var) = options_mom_.shock_series(:,i_exo_var)*chol_S; %set non-zero entries
+    scaled_shock_series = zeros(size(options_mom_.mom.shock_series)); %initialize
+    scaled_shock_series(:,i_exo_var) = options_mom_.mom.shock_series(:,i_exo_var)*chol_S; %set non-zero entries
     
     % simulate series
     y_sim = simult_(M_, options_mom_, dr.ys, dr, scaled_shock_series, options_mom_.order);
@@ -173,13 +173,13 @@ elseif strcmp(options_mom_.mom.mom_method,'SMM')
     end
     
     % Remove burn-in and focus on observables (note that y_sim is in declaration order)
-    y_sim = y_sim(oo_.dr.order_var(oo_.dr.obs_var) , end-options_mom_.long+1:end)';
+    y_sim = y_sim(oo_.dr.order_var(oo_.dr.obs_var) , end-options_mom_.mom.long+1:end)';
     
     if ~all(diag(M_.H)==0)
         i_ME = setdiff([1:size(M_.H,1)],find(diag(M_.H) == 0)); % find ME with 0 variance
         chol_S = chol(M_.H(i_ME,i_ME)); %decompose rest
-        shock_mat=zeros(size(options_mom_.ME_shock_series)); %initialize
-        shock_mat(:,i_ME)=options_mom_.ME_shock_series(:,i_exo_var)*chol_S;
+        shock_mat=zeros(size(options_mom_.mom.ME_shock_series)); %initialize
+        shock_mat(:,i_ME)=options_mom_.mom.ME_shock_series(:,i_exo_var)*chol_S;
         y_sim = y_sim+shock_mat;
     end
 
