@@ -50,6 +50,8 @@ wsOct
 !/ep/mean_preserving_spread.m
 !/ep/rbcii_steady_state.m
 !/estimation/fsdat_simul.m
+!/estimation/method_of_moments/RBC_MoM_steady_helper.m
+!/estimation/method_of_moments/RBC_Andreasen_Data_2.mat
 !/expectations/expectation_ss_old_steadystate.m
 !/external_function/extFunDeriv.m
 !/external_function/extFunNoDerivs.m

@@ -87,7 +87,7 @@ matched_moments_ = {
 %    [iiv iiv]  [0 -1],  [1 1];
 };
 
-weighting_matrix=diag([1000;ones(6,1)]);
+weighting_matrix=diag([1000;ones(8,1)]);
 save('test_matrix.mat','weighting_matrix')
 
 @#for mommethod in ["GMM", "SMM"]

@@ -16,11 +16,11 @@
 % =========================================================================
 
 % Define testscenario
-@#define orderApp = 2
+@#define orderApp = 1
 @#define estimParams = 0
 
 % Note that we will set the numerical optimization tolerance levels very large to speed up the testsuite
-@#define optimizer = 13
+@#define optimizer = 5
 
 @#include "RBC_MoM_common.inc"
 
@@ -33,14 +33,14 @@ varobs n c iv;
 
 @#if estimParams == 0
 estimated_params;
-    DELTA,         0.02;
-    BETTA,         0.9;
-    B,             0.4;
+    DELTA,         0.025;
+    BETTA,         0.984;
+    B,             0.5;
     %ETAl,          1;
-    ETAc,          1.5;
-    ALFA,          0.6;
-    RHOA,          0.9;
-    stderr u_a,    0.010;
+    ETAc,          1;
+    ALFA,          0.667;
+    RHOA,          0.979;
+    stderr u_a,    0.0072;
     %THETA,         3.48;
     stderr n,      0.01;
 
@@ -76,7 +76,7 @@ end;
 @#endif
 
 % Simulate data
-stoch_simul(order=@{orderApp},pruning,nodisplay,nomoments,periods=750,drop=500);
+stoch_simul(order=@{orderApp},pruning,nodisplay,nomoments,periods=250);
 save('RBC_MoM_data_@{orderApp}.mat', options_.varobs{:} );
 pause(1);
 
@@ -128,8 +128,10 @@ matched_moments_ = {
         % , penalized_estimator               % use penalized optimization
         , pruning                             % use pruned state space system at higher-order
         % , verbose                           % display and store intermediate estimation results
-        , weighting_matrix = OPTIMAL          % weighting matrix in moments distance objective function; possible values: OPTIMAL|IDENTITY_MATRIX|DIAGONAL|filename
-        , additional_optimizer_steps = [4]    % vector of additional mode-finders run after mode_compute
+        , weighting_matrix = ['identity_matrix']      % weighting matrix in moments distance objective function; possible values: OPTIMAL|IDENTITY_MATRIX|DIAGONAL|filename
+        , weighting_matrix_scaling_factor = 10
+        , burnin=250
+        %, additional_optimizer_steps = [4]    % vector of additional mode-finders run after mode_compute
         % , prefilter=0                       % demean each data series by its empirical mean and use centered moments
         % 
         % Options for SMM

@@ -194,7 +194,7 @@ matched_moments_ = {
         % , penalized_estimator               % use penalized optimization
         , pruning                             % use pruned state space system at higher-order
         % , verbose                           % display and store intermediate estimation results
-        , weighting_matrix = OPTIMAL          % weighting matrix in moments distance objective function; possible values: OPTIMAL|IDENTITY_MATRIX|DIAGONAL|filename
+        , weighting_matrix = ['optimal']      % weighting matrix in moments distance objective function; possible values: OPTIMAL|IDENTITY_MATRIX|DIAGONAL|filename
         , additional_optimizer_steps = [4]    % vector of numbers for the iterations in the 2-step feasible method of moments
         % , prefilter=0                       % demean each data series by its empirical mean and use centered moments
         % 

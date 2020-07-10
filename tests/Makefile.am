@@ -25,8 +25,6 @@ MODFILES = \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME.mod \
 	TeX/fs2000_corr_ME.mod \
 	estimation/MH_recover/fs2000_recover_tarb.mod \
-	estimation/method_of_moments/RBC_MoM.mod \
-	estimation/method_of_moments/RBC_MoM_SMM_ME.mod \
 	estimation/fs2000.mod \
 	gsa/ls2003a.mod \
 	optimizers/fs2000_8.mod \
@@ -50,7 +48,9 @@ MODFILES = \
 	estimation/t_proposal/fs2000_student.mod \
 	estimation/tune_mh_jscale/fs2000.mod \
 	estimation/method_of_moments/AnScho_MoM.mod \
-	estimation/method_of_moments/RBCmodel_MoM.mod \
+	estimation/method_of_moments/RBC_MoM_Andreasen.mod \
+	estimation/method_of_moments/RBC_MoM_SMM_ME.mod \
+	estimation/method_of_moments/RBC_MoM_prefilter.mod \
 	moments/example1_var_decomp.mod \
 	moments/example1_bp_test.mod \
 	moments/test_AR1_spectral_density.mod \
