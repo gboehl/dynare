@@ -54,6 +54,18 @@ end
 if max(max(abs(L.oo_.dr.ghx - oo_.dr.ghx))) > 1e-12
   error('Failure in external function')
 end
+if max(max(abs(L.oo_.dr.ghxu - oo_.dr.ghxu))) > 1e-12
+  error('Failure in external function')
+end
+if max(max(abs(L.oo_.dr.ghxx - oo_.dr.ghxx))) > 1e-12
+  error('Failure in external function')
+end
+if max(max(abs(L.oo_.dr.ghuu - oo_.dr.ghuu))) > 1e-12
+  error('Failure in external function')
+end
+if max(max(abs(L.oo_.dr.ghs2 - oo_.dr.ghs2))) > 1e-12
+  error('Failure in external function')
+end
 if max(max(abs(L.oo_.var - oo_.var))) > 1e-12
   error('Failure in external function')
 end
