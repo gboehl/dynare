@@ -95,30 +95,6 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 % - [ ] useautocorr
 
 % -------------------------------------------------------------------------
-% Stuff that needs to be taken care by the preprocessor
-% -------------------------------------------------------------------------
-
-if ~isfield(options_mom_.mom,'mom_method') % Estimation method, required
-    error('method_of_moments: You need to provide a ''mom_method''. Possible values are GMM or SMM.');
-else
-    if ~(strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM'))
-        error('method_of_moments: The provided ''mom_method'' needs to be GMM or SMM.');
-    end
-    objective_function = str2func('method_of_moments_objective_function');
-end
-if ~isfield(options_mom_,'datafile') || isempty(options_mom_.datafile) % Filename of data, required
-    error('method_of_moments: You need to supply a ''datafile''.');
-end
-% if order > 2 then we need to make sure that k_order_solver is selected
-options_mom_.k_order_solver = options_.k_order_solver;
-if isfield(options_mom_,'order') && options_mom_.order > 2
-    if ~options_.k_order_solver
-        error('method_of_moments: For perturbation order k>2 the k_order_solver option needs to be added. Workaround: run stoch_simul(order=k) before method_of_moments.');
-    end
-end
-% preprocessor needs to create all files as in stoch_simul(order=1|2|3)
-
-% -------------------------------------------------------------------------
 % Step 0: Check if required structures and options exist
 % -------------------------------------------------------------------------
 if isempty(estim_params_) % structure storing the info about estimated parameters in the estimated_params block
@@ -137,6 +113,9 @@ end
 
 if options_.logged_steady_state || options_.loglinear
     error('method_of_moments: The loglinear option is not supported. Please append the required logged variables as auxiliary equations.\n')
+else
+    options_mom_.logged_steady_state = 0;
+    options_mom_.loglinear = false;
 end
 
 fprintf('\n==== Method of Moments (%s) Estimation ====\n\n',options_mom_.mom.mom_method)
@@ -196,8 +175,7 @@ options_mom_ = set_default_option(options_mom_,'TeX',false);           % print T
 
 % Data and model options that can be set by the user in the mod file, otherwise default values are provided
 options_mom_ = set_default_option(options_mom_,'first_obs',1);     % number of first observation
-options_mom_ = set_default_option(options_mom_,'logdata',false);   % if loglinear is set, this option is necessary if the user provides data already in logs, otherwise the log transformation will be applied twice (this may result in complex data)
-options_mom_ = set_default_option(options_mom_,'loglinear',false); % we do not allow it here, but it needs to be set for makedataset
+options_mom_ = set_default_option(options_mom_,'logdata',false);   % if data is already in logs
 options_mom_ = set_default_option(options_mom_,'nobs',NaN);        % number of observations
 options_mom_ = set_default_option(options_mom_,'prefilter',false); % demean each data series by its empirical mean and use centered moments
 options_mom_ = set_default_option(options_mom_,'xls_sheet',1);     % name of sheet with data in Excel
@@ -211,26 +189,21 @@ if numel(options_mom_.first_obs)>1
 end
 
 % Optimization options that can be set by the user in the mod file, otherwise default values are provided
-if strcmp(options_mom_.mom.mom_method, 'GMM')
-    options_mom_ = set_default_option(options_mom_,'analytic_derivation',0); % use analytic derivatives to compute standard errors for GMM
-elseif isfield(options_mom_,'analytic_derivation')
-    fprintf('Only GMM supports analytic derivation to compute standard errors, we reset ''analytic_derivation'' to 0.\n')
-    options_mom_.analytic_derivation = 0;
-else
-    options_mom_.analytic_derivation = 0;
-end
-options_mom_ = set_default_option(options_mom_,'huge_number',1e7);        % value for replacing the infinite bounds on parameters by finite numbers. Used by some optimizers for numerical reasons
-options_mom_ = set_default_option(options_mom_,'mode_compute',13);        % specifies the optimizer for minimization of moments distance
-options_mom_ = set_default_option(options_mom_,'vector_output',false);    % specifies the whether the objective function returns a vector
-options_mom_ = set_default_option(options_mom_,'additional_optimizer_steps',[]);       % vector of additional mode-finders run after mode_compute
-options_mom_ = set_default_option(options_mom_,'optim_opt',[]);           % a list of NAME and VALUE pairs to set options for the optimization routines. Available options depend on mode_compute
-options_mom_ = set_default_option(options_mom_,'silent_optimizer',false); % run minimization of moments distance silently without displaying results or saving files in between
-
-options_mom_.solve_tolf = set_default_option(options_mom_,'solve_tolf', eps^(1/3));% convergence criterion on function value for steady state finding
-options_mom_.solve_tolx = set_default_option(options_mom_,'solve_tolx', eps^(2/3));% convergence criterion on function input for steady state finding
+options_mom_ = set_default_option(options_mom_,'huge_number',1e7);               % value for replacing the infinite bounds on parameters by finite numbers. Used by some optimizers for numerical reasons
+options_mom_ = set_default_option(options_mom_,'mode_compute',13);               % specifies the optimizer for minimization of moments distance
+options_mom_ = set_default_option(options_mom_,'additional_optimizer_steps',[]); % vector of additional mode-finders run after mode_compute
+options_mom_ = set_default_option(options_mom_,'optim_opt',[]);                  % a list of NAME and VALUE pairs to set options for the optimization routines. Available options depend on mode_compute
+options_mom_ = set_default_option(options_mom_,'silent_optimizer',false);        % run minimization of moments distance silently without displaying results or saving files in between
+% Mode_check plot options that can be set by the user in the mod file, otherwise default values are provided
+options_mom_.mode_check.nolik = false;                                                          % we don't do likelihood (also this initializes mode_check substructure)
+options_mom_.mode_check = set_default_option(options_mom_.mode_check,'status',true);            % plot the target function for values around the computed mode for each estimated parameter in turn. This is helpful to diagnose problems with the optimizer.
+options_mom_.mode_check = set_default_option(options_mom_.mode_check,'neighbourhood_size',.5);  % width of the window around the mode to be displayed on the diagnostic plots. This width is expressed in percentage deviation. The Inf value is allowed, and will trigger a plot over the entire domain
+options_mom_.mode_check = set_default_option(options_mom_.mode_check,'symmetric_plots',true);   % ensure that the check plots are symmetric around the mode. A value of 0 allows to have asymmetric plots, which can be useful if the posterior mode is close to a domain boundary, or in conjunction with mode_check_neighbourhood_size = Inf when the domain is not the entire real line
+options_mom_.mode_check = set_default_option(options_mom_.mode_check,'number_of_points',20);    % number of points around the mode where the target function is evaluated (for each parameter)
 
 % Numerical algorithms options that can be set by the user in the mod file, otherwise default values are provided
 options_mom_ = set_default_option(options_mom_,'aim_solver',false);                     % Use AIM algorithm to compute perturbation approximation
+options_mom_ = set_default_option(options_mom_,'k_order_solver',false);                 % use k_order_perturbation instead of mjdgges
 options_mom_ = set_default_option(options_mom_,'dr_cycle_reduction',false);             % use cycle reduction algorithm to solve the polynomial equation for retrieving the coefficients associated to the endogenous variables in the decision rule
 options_mom_ = set_default_option(options_mom_,'dr_cycle_reduction_tol',1e-7);          % convergence criterion used in the cycle reduction algorithm
 options_mom_ = set_default_option(options_mom_,'dr_logarithmic_reduction',false);       % use logarithmic reduction algorithm to solve the polynomial equation for retrieving the coefficients associated to the endogenous variables in the decision rule
@@ -246,6 +219,10 @@ options_mom_ = set_default_option(options_mom_,'sylvester_fp',false);           
 options_mom_ = set_default_option(options_mom_,'sylvester_fixed_point_tol',1e-12);      % convergence criterion used in the fixed point Sylvester solver
 options_mom_ = set_default_option(options_mom_,'qz_criterium',1-1e-6);                  % value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving first order problems [IS THIS CORRET @wmutschl]
 options_mom_ = set_default_option(options_mom_,'qz_zero_threshold',1e-6);               % value used to test if a generalized eigenvalue is 0/0 in the generalized Schur decomposition
+if options_mom_.order > 2
+    fprintf('Dynare will use ''k_order_solver'' as the order>2\n');
+    options_mom_.k_order_solver = true;
+end
 
 % -------------------------------------------------------------------------
 % Step 1b: Options that are set by the preprocessor and (probably) need to be carried over
@@ -295,6 +272,7 @@ options_mom_.homotopy_steps          = options_.homotopy_steps;
 options_mom_.markowitz               = options_.markowitz;
 options_mom_.solve_algo              = options_.solve_algo;
 options_mom_.solve_tolf              = options_.solve_tolf;
+options_mom_.solve_tolx              = options_.solve_tolx;
 options_mom_.steady                  = options_.steady;
 options_mom_.steadystate             = options_.steadystate;
 options_mom_.steadystate_flag        = options_.steadystate_flag;
@@ -309,8 +287,6 @@ options_mom_.endogenous_prior_restrictions.moment = {};
 if ~isempty(options_.endogenous_prior_restrictions.irf) && ~isempty(options_.endogenous_prior_restrictions.moment)
     fprintf('Endogenous prior restrictions are not supported yet and will be skipped.\n')
 end
-
-options_mom_.mode_check     = options_.mode_check;
 
 % -------------------------------------------------------------------------
 % Step 1c: Options related to optimizers
@@ -340,6 +316,9 @@ options_mom_.solveopt         = options_.solveopt;
 
 options_mom_.gradient_method  = options_.gradient_method;
 options_mom_.gradient_epsilon = options_.gradient_epsilon;
+options_mom_.analytic_derivation = 0;
+
+options_mom_.vector_output= false;           % specifies whether the objective function returns a vector
 
 % -------------------------------------------------------------------------
 % Step 1d: Other options that need to be initialized
@@ -700,6 +679,7 @@ end
 % -------------------------------------------------------------------------
 % Step 6: checks for objective function at initial parameters
 % -------------------------------------------------------------------------
+objective_function = str2func('method_of_moments_objective_function');
 try
     % Check for NaN or complex values of moment-distance-funtion evaluated
     % at initial parameters and identity weighting matrix    
