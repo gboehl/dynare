@@ -89,17 +89,16 @@ if isfield(options_mom_,'variance_correction_factor')
     T = T*options_mom_.variance_correction_factor;
 end
 
+WW = oo_.mom.Sw'*oo_.mom.Sw;
 if Wopt_flag
     % We have the optimal weighting matrix    
-    WW            = oo_.mom.Sw'*oo_.mom.Sw;
-    Asympt_Var    = 1/T*((D'*WW*D)\eye(dim_params));
+    Asympt_Var  = 1/T*((D'*WW*D)\eye(dim_params));
 else
-    % We do not have the optimal weighting matrix yet
-    WWused        = oo_.mom.Sw'*oo_.mom.Sw;
-    WWopt         = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
-    S             = WWopt\eye(size(WWopt,1));
-    AA            = (D'*WWused*D)\eye(dim_params);
-    Asympt_Var    = 1/T*AA*D'*WWused*S*WWused*D*AA;
+    % We do not have the optimal weighting matrix yet    
+    WWopt      = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
+    S          = WWopt\eye(size(WWopt,1));
+    AA         = (D'*WW*D)\eye(dim_params);
+    Asympt_Var = 1/T*AA*D'*WW*S*WW*D*AA;
 end
 
 SE_values   = sqrt(diag(Asympt_Var));

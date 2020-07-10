@@ -1,5 +1,5 @@
 function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, matched_moments_, M_, options_mom_)
-% [fval, info, exit_flag, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, matched_moments_, M_, options_mom_)
+% [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, matched_moments_, M_, options_mom_)
 % -------------------------------------------------------------------------
 % This function evaluates the objective function for GMM/SMM estimation
 % =========================================================================
@@ -8,19 +8,19 @@ function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_o
 %   o Bounds:                   structure containing parameter bounds
 %   o oo_:                      structure for results
 %   o estim_params_:            structure describing the estimated_parameters
-%   o matched_moments_:         structure containing information about selected moments to match in estimation (matched_moments_)
+%   o matched_moments_:         structure containing information about selected moments to match in estimation
 %   o M_                        structure describing the model
 %   o options_mom_:             structure information about all settings (specified by the user, preprocessor, and taken from global options_)
 % -------------------------------------------------------------------------
 % OUTPUTS
 %   o fval:                     value of the quadratic form of the moment difference (except for lsqnonlin, where this is done implicitly)
 %   o info:                     vector storing error code and penalty 
-%   o exit_flag:                0 if no error, 1 of error
+%   o exit_flag:                0 if error, 1 if no error
 %   o junk1:                    empty matrix required for optimizer interface
 %   o junk2:                    empty matrix required for optimizer interface
 %   o oo_:                      structure containing the results with the following updated fields:
 %      - mom.model_moments       [numMom x 1] vector with model moments
-%      - mom.Q                  value of the quadratic form of the moment difference
+%      - mom.Q                   value of the quadratic form of the moment difference
 %   o M_:                       Matlab's structure describing the model
 % -------------------------------------------------------------------------
 % This function is called by
@@ -53,7 +53,6 @@ function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_o
 % o Willi Mutschler (willi@mutschler.eu)
 % o Johannes Pfeifer (jpfeifer@uni-koeln.de)
 % =========================================================================
-% To Do: check penalized estimation for different optimizers, what is special about mode_compute=1 [@wmutschl]
 
 %------------------------------------------------------------------------------
 % 0. Initialization of the returned variables and others...

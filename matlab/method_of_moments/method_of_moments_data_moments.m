@@ -14,7 +14,7 @@ function [dataMoments, m_data] = method_of_moments_data_moments(data, oo_, match
 % -------------------------------------------------------------------------
 % This function is called by
 %  o method_of_moments.m
-%  o method_of_moments_SMM.m
+%  o method_of_moments_objective_function.m
 % =========================================================================
 % Copyright (C) 2020 Dynare Team
 %
@@ -39,7 +39,7 @@ function [dataMoments, m_data] = method_of_moments_data_moments(data, oo_, match
 % =========================================================================
 
 % Initialization
-T = size(data,1); % Number of observations (T) and number of observables (ny)
+T = size(data,1); % Number of observations (T)
 dataMoments = NaN(options_mom_.mom.mom_nbr,1);
 m_data = NaN(T,options_mom_.mom.mom_nbr);
 % Product moment for each time period, i.e. each row t contains y_t1(l1)^p1*y_t2(l2)^p2*...
@@ -50,7 +50,7 @@ for jm = 1:options_mom_.mom.mom_nbr
     powers   = matched_moments_{jm,3};
     for jv = 1:length(vars)
         jvar = (oo_.dr.obs_var == vars(jv));
-        y = NaN(T,1); %Take care of T_eff instead of T for lags and NaN via nanmean below
+        y = NaN(T,1); %Take care of T_eff instead of T for lags and NaN via mean with 'omitnan' option below
         y( (1-min(leadlags(jv),0)) : (T-max(leadlags(jv),0)), 1) = data( (1+max(leadlags(jv),0)) : (T+min(leadlags(jv),0)), jvar).^powers(jv);
         if jv==1
             m_data_tmp = y;

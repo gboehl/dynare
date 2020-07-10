@@ -1,4 +1,4 @@
-function [W_opt, normalization_factor]= method_of_moments_optimal_weighting_matrix(m_data, moments, q_lag)
+function W_opt = method_of_moments_optimal_weighting_matrix(m_data, moments, q_lag)
 % W_opt = method_of_moments_optimal_weighting_matrix(m_data, moments, q_lag)
 % -------------------------------------------------------------------------
 % This function computes the optimal weigthing matrix by a Bartlett kernel with maximum lag q_lag
@@ -6,8 +6,8 @@ function [W_opt, normalization_factor]= method_of_moments_optimal_weighting_matr
 %  o Andreasen, Fernández-Villaverde, Rubio-Ramírez (2018): "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications", Review of Economic Studies, 85(1):1-49.
 % =========================================================================
 % INPUTS
-%  o m_data                  [T x numMom]       selected empirical or theoretical moments at each point in time
-%  o moments                 [numMom x 1]       mean of selected empirical or theoretical moments
+%  o m_data                  [T x numMom]       selected data moments at each point in time
+%  o moments                 [numMom x 1]       selected estimated moments (either data_moments or estimated model_moments)
 %  o q_lag                   [integer]          Bartlett kernel maximum lag order
 % -------------------------------------------------------------------------
 % OUTPUTS 
@@ -66,13 +66,6 @@ end
 
 % The estimate of W
 W_opt = S\eye(size(S,1));
-
-% Check positive definite W
-try 
-    chol(W_opt);
-catch err
-    error('method_of_moments: The optimal weighting matrix is not positive definite. Check whether your model implies stochastic singularity.\n')
-end
 
 end
 

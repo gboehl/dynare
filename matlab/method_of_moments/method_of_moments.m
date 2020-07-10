@@ -1,20 +1,20 @@
 function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, estim_params_, M_, matched_moments_, options_mom_)
 %function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, estim_params_, M_, matched_moments_, options_mom_)
-
 % -------------------------------------------------------------------------
 % This function performs a method of moments estimation with the following steps:
 %   Step 0: Check if required structures and options exist
 %   Step 1: - Prepare options_mom_ structure
-%           - Carry over Options from the preprocessor
-%           - Other options that need to be initialized
+%           - Carry over options from the preprocessor
+%           - Initialize other options
 %           - Get variable orderings and state space representation
-%   Step 2: Checks and transformations for matched moments structure (preliminary)
+%   Step 2: Checks and transformations for matched moments structure
 %   Step 3: Checks and transformations for estimated parameters, priors, and bounds
 %   Step 4: Checks and transformations for data
-%   Step 5: checks for steady state at initial parameters
-%   Step 6: checks for objective function at initial parameters
-%   Step 7: Method of moments estimation: print some info, first-stage, and second-stage
-%   Step 8: Clean up
+%   Step 5: Checks for steady state at initial parameters
+%   Step 6: Checks for objective function at initial parameters
+%   Step 7: Iterated method of moments estimation
+%   Step 8: J-Test
+%   Step 9: Clean up
 % -------------------------------------------------------------------------
 % This function is inspired by replication codes accompanied to the following papers:
 %  o Andreasen, Fernández-Villaverde, Rubio-Ramírez (2018): "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications", Review of Economic Studies, 85(1):1-49.
@@ -35,7 +35,7 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 % -------------------------------------------------------------------------
 % OUTPUTS
 %  o oo_:                    [structure] storage for results (oo_)
-%  o options_mom_:           [structure] information about all used settings used in estimation (options_mom_)
+%  o options_mom_:           [structure] information about all (user-specified and updated) settings used in estimation (options_mom_)
 % -------------------------------------------------------------------------
 % This function is called by
 %  o driver.m
@@ -47,8 +47,13 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 %  o dynare_minimize_objective.m
 %  o evaluate_steady_state
 %  o get_all_parameters.m
+%  o get_matrix_entries_for_psd_check.m
 %  o makedataset.m
 %  o method_of_moments_data_moments.m
+%  o method_of_moments_mode_check.m
+%  o method_of_moments_objective_function.m
+%  o method_of_moments_optimal_weighting_matrix
+%  o method_of_moments_standard_errors
 %  o plot_priors.m
 %  o print_info.m
 %  o prior_bounds.m
@@ -93,7 +98,9 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 % - [ ] provide option to use analytical derivatives to compute std errors (similar to what we already do in identification)
 % - [ ] add Bayesian GMM/SMM estimation
 % - [ ] useautocorr
-
+% - [ ] do we need dirname?
+% - [ ] decide on default weighting matrix scheme, I would propose 2 stage with Diagonal of optimal matrix
+% - [ ] check smm with product moments greater than 2
 % -------------------------------------------------------------------------
 % Step 0: Check if required structures and options exist
 % -------------------------------------------------------------------------
@@ -132,14 +139,15 @@ fprintf('\n==== Method of Moments (%s) Estimation ====\n\n',options_mom_.mom.mom
 
 % Method of Moments estimation options that can be set by the user in the mod file, otherwise default values are provided
 if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
-    options_mom_.mom = set_default_option(options_mom_.mom,'bartlett_kernel_lag',20);             % bandwith in optimal weighting matrix
-    options_mom_.mom = set_default_option(options_mom_.mom,'penalized_estimator',false);          % @wmutschl: provide description
+    options_mom_.mom = set_default_option(options_mom_.mom,'bartlett_kernel_lag',20);               % bandwith in optimal weighting matrix
+    options_mom_.mom = set_default_option(options_mom_.mom,'penalized_estimator',false);            % include deviation from prior mean as additional moment restriction and use prior precision as weight
     options_mom_.mom = set_default_option(options_mom_.mom,'verbose',false);                        % display and store intermediate estimation results
-    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix','identity_matrix');   % weighting matrix in moments distance objective function; possible values: OPTIMAL|IDENTITY_MATRIX|DIAGONAL|filename
-    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix_scaling_factor',1000); % scaling of weighting matrix
-    options_mom_.mom = set_default_option(options_mom_.mom,'se_tolx',1e-5);           % step size for standard error
-    options_mom_ = set_default_option(options_mom_,'order',1);                            % order of Taylor approximation in perturbation
-    options_mom_ = set_default_option(options_mom_,'pruning',true);                       % use pruned state space system at higher-order
+    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix',{'DIAGONAL'; 'DIAGONAL'});   % weighting matrix in moments distance objective function at each iteration of estimation; cell of strings with
+                                                                                                           % possible values are 'OPTIMAL', 'IDENTITY_MATRIX' ,'DIAGONAL' or a filename. Size of cell determines stages in iterated estimation.
+    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix_scaling_factor',1);    % scaling of weighting matrix
+    options_mom_.mom = set_default_option(options_mom_.mom,'se_tolx',1e-5);                         % step size for numerical computation of standard errors
+    options_mom_ = set_default_option(options_mom_,'order',1);                                      % order of Taylor approximation in perturbation
+    options_mom_ = set_default_option(options_mom_,'pruning',true);                                 % use pruned state space system at higher-order
     % Checks for perturbation order
     if options_mom_.order < 1
         error('method_of_moments:: The order of the Taylor approximation cannot be 0!')
@@ -147,12 +155,12 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
 end
 if strcmp(options_mom_.mom.mom_method,'SMM')
     options_mom_.mom = set_default_option(options_mom_.mom,'burnin',500);                           % number of periods dropped at beginning of simulation
-    options_mom_.mom = set_default_option(options_mom_.mom,'bounded_shock_support',false);        % trim shocks in simulation to +- 2 stdev
-    options_mom_.mom = set_default_option(options_mom_.mom,'seed',24051986);                      % seed used in simulations
-    options_mom_.mom = set_default_option(options_mom_.mom,'simulation_multiple',5);              % multiple of the data length used for simulation
+    options_mom_.mom = set_default_option(options_mom_.mom,'bounded_shock_support',false);          % trim shocks in simulation to +- 2 stdev
+    options_mom_.mom = set_default_option(options_mom_.mom,'seed',24051986);                        % seed used in simulations
+    options_mom_.mom = set_default_option(options_mom_.mom,'simulation_multiple',5);                % multiple of the data length used for simulation
     if options_mom_.mom.simulation_multiple < 1
-        fprintf('The simulation horizon is shorter than the data. Dynare resets the simulation_multiple to 2.\n')
-        options_mom_.mom.simulation_multiple = 2;
+        fprintf('The simulation horizon is shorter than the data. Dynare resets the simulation_multiple to 5.\n')
+        options_mom_.mom.simulation_multiple = 5;
     end
 end
 if strcmp(options_mom_.mom.mom_method,'GMM')
@@ -162,9 +170,10 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         options_mom_.pruning = true;
     end
 end
+
     
 % General options that can be set by the user in the mod file, otherwise default values are provided
-options_mom_ = set_default_option(options_mom_,'dirname',M_.fname); % directory in which to store estimation output
+options_mom_ = set_default_option(options_mom_,'dirname',M_.fname);    % directory in which to store estimation output
 options_mom_ = set_default_option(options_mom_,'graph_format','eps');  % specify the file format(s) for graphs saved to disk
 options_mom_ = set_default_option(options_mom_,'nodisplay',false);     % do not display the graphs, but still save them to disk
 options_mom_ = set_default_option(options_mom_,'nograph',false);       % do not create graphs (which implies that they are not saved to the disk nor displayed)
@@ -196,13 +205,13 @@ options_mom_ = set_default_option(options_mom_,'optim_opt',[]);                 
 options_mom_ = set_default_option(options_mom_,'silent_optimizer',false);        % run minimization of moments distance silently without displaying results or saving files in between
 % Mode_check plot options that can be set by the user in the mod file, otherwise default values are provided
 options_mom_.mode_check.nolik = false;                                                          % we don't do likelihood (also this initializes mode_check substructure)
-options_mom_.mode_check = set_default_option(options_mom_.mode_check,'status',true);            % plot the target function for values around the computed mode for each estimated parameter in turn. This is helpful to diagnose problems with the optimizer.
+options_mom_.mode_check = set_default_option(options_mom_.mode_check,'status',false);            % plot the target function for values around the computed mode for each estimated parameter in turn. This is helpful to diagnose problems with the optimizer.
 options_mom_.mode_check = set_default_option(options_mom_.mode_check,'neighbourhood_size',.5);  % width of the window around the mode to be displayed on the diagnostic plots. This width is expressed in percentage deviation. The Inf value is allowed, and will trigger a plot over the entire domain
 options_mom_.mode_check = set_default_option(options_mom_.mode_check,'symmetric_plots',true);   % ensure that the check plots are symmetric around the mode. A value of 0 allows to have asymmetric plots, which can be useful if the posterior mode is close to a domain boundary, or in conjunction with mode_check_neighbourhood_size = Inf when the domain is not the entire real line
 options_mom_.mode_check = set_default_option(options_mom_.mode_check,'number_of_points',20);    % number of points around the mode where the target function is evaluated (for each parameter)
 
 % Numerical algorithms options that can be set by the user in the mod file, otherwise default values are provided
-options_mom_ = set_default_option(options_mom_,'aim_solver',false);                     % Use AIM algorithm to compute perturbation approximation
+options_mom_ = set_default_option(options_mom_,'aim_solver',false);                     % use AIM algorithm to compute perturbation approximation instead of mjdgges
 options_mom_ = set_default_option(options_mom_,'k_order_solver',false);                 % use k_order_perturbation instead of mjdgges
 options_mom_ = set_default_option(options_mom_,'dr_cycle_reduction',false);             % use cycle reduction algorithm to solve the polynomial equation for retrieving the coefficients associated to the endogenous variables in the decision rule
 options_mom_ = set_default_option(options_mom_,'dr_cycle_reduction_tol',1e-7);          % convergence criterion used in the cycle reduction algorithm
@@ -225,15 +234,15 @@ if options_mom_.order > 2
 end
 
 % -------------------------------------------------------------------------
-% Step 1b: Options that are set by the preprocessor and (probably) need to be carried over
+% Step 1b: Options that are set by the preprocessor and need to be carried over
 % -------------------------------------------------------------------------
 
 % options related to VAROBS
 if ~isfield(options_,'varobs')
     error('method_of_moments: VAROBS statement is missing!')
 else
-    options_mom_.varobs  = options_.varobs;     % observable variables in declaration order
-    options_mom_.obs_nbr = length(options_mom_.varobs);% number of observed variables
+    options_mom_.varobs  = options_.varobs;             % observable variables in declaration order
+    options_mom_.obs_nbr = length(options_mom_.varobs); % number of observed variables
     % Check that each declared observed variable is also an endogenous variable
     for i = 1:options_mom_.obs_nbr
         if ~any(strcmp(options_mom_.varobs{i},M_.endo_names))
@@ -241,7 +250,7 @@ else
         end
     end
 
-    % Check that a variable is not declared as observed more than once.
+    % Check that a variable is not declared as observed more than once
     if length(unique(options_mom_.varobs))<length(options_mom_.varobs)
         for i = 1:options_mom_.obs_nbr
             if sum(strcmp(options_mom_.varobs{i},options_mom_.varobs))>1
@@ -259,13 +268,13 @@ end
 % options related to estimated_params and estimated_params_init
 options_mom_.use_calibration_initialization = options_.use_calibration_initialization;
 
-% options related to model; block
+% options related to model block
 options_mom_.linear   = options_.linear;
 options_mom_.use_dll  = options_.use_dll;
 options_mom_.block    = options_.block;
 options_mom_.bytecode = options_.bytecode;
 
-% options related to steady; command
+% options related to steady command
 options_mom_.homotopy_force_continue = options_.homotopy_force_continue;
 options_mom_.homotopy_mode           = options_.homotopy_mode;
 options_mom_.homotopy_steps          = options_.homotopy_steps;
@@ -281,7 +290,7 @@ options_mom_.steadystate_flag        = options_.steadystate_flag;
 options_mom_.dataset        = options_.dataset;
 options_mom_.initial_period = options_.initial_period;
 
-% options related to endogenous prior restrictions
+% options related to endogenous prior restrictions are not supported
 options_mom_.endogenous_prior_restrictions.irf    = {};
 options_mom_.endogenous_prior_restrictions.moment = {};
 if ~isempty(options_.endogenous_prior_restrictions.irf) && ~isempty(options_.endogenous_prior_restrictions.moment)
@@ -368,7 +377,7 @@ for jm=1:size(matched_moments_,1)
     % higher-order product moments not supported yet for GMM
     if strcmp(options_mom_.mom.mom_method, 'GMM') && sum(matched_moments_{jm,3}) > 2
         error('method_of_moments: GMM does not yet support product moments higher than 2. Change row %d in ''matched_moments'' block.',jm);
-    end    
+    end
     % Check if declared variables are also observed (needed as otherwise the dataset variables won't coincide)
     if any(~ismember(oo_.dr.inv_order_var(matched_moments_{jm,1})', oo_.dr.obs_var))
         error('method_of_moments: Variables in row %d in ''matched_moments'' block need to be declared as VAROBS.', jm)
@@ -448,7 +457,7 @@ options_mom_.ar = max(cellfun(@max,matched_moments_(:,2))) - min(cellfun(@min,ma
 [xparam0, estim_params_, bayestopt_, lb, ub, M_] = set_prior(estim_params_, M_, options_mom_);
 
 % Check measurement errors
-if (estim_params_.nvn || estim_params_.ncn) && strcmp(options_mom_.mom.mom_method, 'GMM') 
+if (estim_params_.nvn || estim_params_.ncn) && strcmp(options_mom_.mom.mom_method, 'GMM')
     error('method_of_moments: GMM estimation does not support measurement error(s) yet. Please specifiy them as a structural shock.')
 end
 
@@ -493,7 +502,11 @@ if any(bayestopt_laplace.pshape > 0) % prior specified, not ML
         end
         fprintf('The parameter(s) %s have infinite prior variance. This implies a flat prior\n',disp_string)
         fprintf('Dynare disables the matrix singularity warning\n')
-        warning('off','MATLAB:singularMatrix');
+        if isoctave
+            warning('off','Octave:singular-matrix');
+        else
+            warning('off','MATLAB:singularMatrix');
+        end
     end
 end
 
@@ -515,7 +528,7 @@ if options_mom_.use_calibration_initialization %set calibration as starting valu
     end
 end
 
-% Check whether on initialization
+% Check initialization
 if ~isempty(bayestopt_laplace) && all(bayestopt_laplace.pshape==0) && any(isnan(xparam0))
     error('method_of_moments: %s without penalty requires all estimated parameters to be initialized, either in an estimated_params or estimated_params_init-block ',options_mom_.mom.mom_method)
 end
@@ -536,6 +549,10 @@ else  % estimated parameters but no declared priors
     % with inequality constraints for the parameters.
     Bounds.lb = lb;
     Bounds.ub = ub;
+    if options_mom_.mom.penalized_estimator
+        fprintf('Penalized estimation turned off as you did not declare priors\n')
+        options_mom_.mom.penalized_estimator = 0;
+    end    
 end
 % Set correct bounds for standard deviations and corrrelations
 param_of_interest=(1:length(xparam0))'<=estim_params_.nvx+estim_params_.nvn;
@@ -597,9 +614,9 @@ if ~isempty(dataset_)
     options_mom_.nobs = dataset_.nobs;
 end
 
-% missing observations are not supported yet
+% provide info on missing observations
 if any(any(isnan(dataset_.data)))
-    error('method_of_moments: missing observations are not supported')
+    fprintf('missing observations will be replaced by the sample mean of the corresponding moment')
 end
 
 % Check length of data for estimation of second moments
@@ -732,7 +749,7 @@ else
     fprintf('\n  - uncentered moments (prefilter=0)');
 end
 if options_mom_.mom.penalized_estimator
-    fprintf('\n  - penalized estimation using priors');
+    fprintf('\n  - penalized estimation using deviation from prior mean and weighted with prior precision');
 end
 if     options_mom_.mode_compute ==   1; fprintf('\n  - optimizer (mode_compute=1): fmincon');
 elseif options_mom_.mode_compute ==   2; fprintf('\n  - optimizer (mode_compute=2): continuous simulated annealing');
@@ -764,89 +781,84 @@ fprintf('\n  - number of matched moments: %d', options_mom_.mom.mom_nbr);
 fprintf('\n  - number of parameters:      %d\n\n', length(xparam0));
 
 % -------------------------------------------------------------------------
-% Step 7b: Method of moments estimation: First-stage
+% Step 7b: Iterated method of moments estimation
 % -------------------------------------------------------------------------
 if size(options_mom_.mom.weighting_matrix,1)>1 && ~(any(strcmpi('diagonal',options_mom_.mom.weighting_matrix)) || any(strcmpi('optimal',options_mom_.mom.weighting_matrix)))
-    fprintf('\nYou did not specify the use of an optimal or diagonal covariance matrix. There is no point in running an iterated method of moments.\n')
+    fprintf('\nYou did not specify the use of an optimal or diagonal weighting matrix. There is no point in running an iterated method of moments.\n')
 end
-for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)    
-    Woptflag = 0;
+
+optimizer_vec=[options_mom_.mode_compute,options_mom_.additional_optimizer_steps]; % at each stage one can possibly use different optimizers sequentially
+
+for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
     fprintf('Estimation stage %u\n',stage_iter);
+    Woptflag = false;
     switch lower(options_mom_.mom.weighting_matrix{stage_iter})
         case 'identity_matrix'
             fprintf('  - identity weighting matrix\n');
-            oo_.mom.Sw = eye(options_mom_.mom_nbr);
+            weighting_matrix = eye(options_mom_.mom.mom_nbr);            
         case 'diagonal'
-            %@wmutschl: better description in fprintf
-            fprintf('  - diagonal weighting matrix: diagonal of Newey-West estimator with lag order %d\n', options_mom_.mom.bartlett_kernel_lag);
-            fprintf('                      and data moments as estimate of unconditional moments\n');
-            W_opt = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.data_moments, options_mom_.mom.bartlett_kernel_lag);
-            oo_.mom.Sw = chol(diag(diag(W_opt)));
+            fprintf('  - diagonal of optimal weighting matrix (Bartlett kernel with %d lags)\n', options_mom_.mom.bartlett_kernel_lag);
+            if stage_iter == 1
+                fprintf('    and using data-moments as initial estimate of model-moments\n');
+                weighting_matrix = diag(diag(  method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.data_moments, options_mom_.mom.bartlett_kernel_lag)  ));
+            else
+                fprintf('    and using previous stage estimate of model-moments\n');
+                weighting_matrix = diag(diag(  method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag)  ));
+            end            
         case 'optimal'
-            %@wmutschl: better description in fprintf
-            fprintf('  - weighting matrix: optimal. At first-stage we use diagonal of Newey-West estimator with lag order %d\n', options_mom_.mom.bartlett_kernel_lag);
-            fprintf('                      and the data moments as initial estimate of unconditional moments\n');
-            W_opt = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.data_moments, options_mom_.mom.bartlett_kernel_lag);
-            oo_.mom.Sw = chol(diag(diag(W_opt)));
-            Woptflag = 1;
+            fprintf('  - optimal weighting matrix (Bartlett kernel with %d lags)\n', options_mom_.mom.bartlett_kernel_lag);
+            if stage_iter == 1
+                fprintf('    and using data-moments as initial estimate of model-moments\n');
+                weighting_matrix = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.data_moments, options_mom_.mom.bartlett_kernel_lag);
+            else
+                fprintf('    and using previous stage estimate of model-moments\n');
+                weighting_matrix = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
+                Woptflag = true;
+            end            
         otherwise %user specified matrix in file
-            fprintf('  - weighting matrix: user-specified\n');
+            fprintf('  - user-specified weighting matrix\n');
             try
                 load(options_mom_.mom.weighting_matrix{stage_iter},'weighting_matrix')
             catch
                 error(['method_of_moments: No matrix named ''weighting_matrix'' could be found in ',options_mom_.mom.weighting_matrix{stage_iter},'.mat'])
             end
             [nrow, ncol] = size(weighting_matrix);
-            if ~isequal(nrow,ncol) && ~isequal(nrow,length(oo_.mom.data_moments)) %check if square and right size
+            if ~isequal(nrow,ncol) || ~isequal(nrow,length(oo_.mom.data_moments)) %check if square and right size
                 error(['method_of_moments: weighting_matrix must be square and have ',num2str(length(oo_.mom.data_moments)),' rows and columns'])
-            end
-            try %check for positive definiteness
-                oo_.Sw = chol(weighting_matrix);
-            catch
-                error('method_of_moments: Specified weighting_matrix is not positive definite')
-            end
+            end            
     end
-    
-    optimizer_vec=[options_mom_.mode_compute,options_mom_.additional_optimizer_steps];
-    
-    for istep= 1:length(optimizer_vec)
-        if optimizer_vec(istep)==13
+    try %check for positive definiteness of weighting_matrix
+        oo_.mom.Sw = chol(weighting_matrix);
+    catch
+        error('method_of_moments: Specified weighting_matrix is not positive definite. Check whether your model implies stochastic singularity.')
+    end
+
+    for optim_iter= 1:length(optimizer_vec)
+        if optimizer_vec(optim_iter)==13
             options_mom_.vector_output = true;
         else
             options_mom_.vector_output = false;
         end
-        [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, optimizer_vec(istep), options_mom_, [Bounds.lb Bounds.ub], bayestopt_laplace.name, bayestopt_laplace, [],...
-            Bounds, oo_, estim_params_, matched_moments_, M_, options_mom_);
+        [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, optimizer_vec(optim_iter), options_mom_, [Bounds.lb Bounds.ub], bayestopt_laplace.name, bayestopt_laplace, [],...
+                                                              Bounds, oo_, estim_params_, matched_moments_, M_, options_mom_);
         if options_mom_.vector_output
             fval = fval'*fval;
         end
-        fprintf('\nStage %d Iteration %d: value of minimized moment distance objective function: %12.10f.\n',stage_iter,istep,fval)
+        fprintf('\nStage %d Iteration %d: value of minimized moment distance objective function: %12.10f.\n',stage_iter,optim_iter,fval)
         if options_mom_.mom.verbose
-            oo_.mom=display_estimation_results_table(xparam1,NaN(size(xparam1)),M_,options_mom_,estim_params_,bayestopt_laplace,oo_.mom,prior_dist_names,sprintf('%s (FIRST-STAGE ITERATION %d) verbose',options_mom_.mom.mom_method,istep),sprintf('verbose_%s_1st_stage_iter_%d',lower(options_mom_.mom.mom_method),istep));
+            oo_.mom=display_estimation_results_table(xparam1,NaN(size(xparam1)),M_,options_mom_,estim_params_,bayestopt_laplace,oo_.mom,prior_dist_names,sprintf('%s (STAGE %d ITERATION %d) VERBOSE',options_mom_.mom.mom_method,stage_iter,optim_iter),sprintf('verbose_%s_stage_%d_iter_%d',lower(options_mom_.mom.mom_method),stage_iter,optim_iter));
         end
         xparam0=xparam1;
     end
-    options_mom_.vector_output = false;
-    
-    % Update M_ and DynareResults (in particular oo_.mom.model_moments)
+    options_mom_.vector_output = false;    
+    % Update M_ and DynareResults (in particular to get oo_.mom.model_moments)    
     M_ = set_all_parameters(xparam1,estim_params_,M_);
     [fval, ~, ~,~,~, oo_] = feval(objective_function, xparam1, Bounds, oo_, estim_params_, matched_moments_, M_, options_mom_);
-    
     % Compute Standard errors
     SE = method_of_moments_standard_errors(xparam1, objective_function, Bounds, oo_, estim_params_, matched_moments_, M_, options_mom_, Woptflag);
     
-    % Store first-stage results in output structure
+    % Store results in output structure
     oo_.mom = display_estimation_results_table(xparam1,SE,M_,options_mom_,estim_params_,bayestopt_laplace,oo_.mom,prior_dist_names,sprintf('%s (STAGE %u)',options_mom_.mom.mom_method,stage_iter),sprintf('%s_stage_%u',lower(options_mom_.mom.mom_method),stage_iter));
-
-
-end
-
-%get optimal weighting matrix for J test, if necessary
-if ~Woptflag
-    W_opt = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
-    oo_j=oo_;
-    oo_j.mom.Sw = chol(W_opt);
-    [fval] = feval(objective_function, xparam1, Bounds, oo_j, estim_params_, matched_moments_, M_, options_mom_);
 end
 
 % -------------------------------------------------------------------------
@@ -874,6 +886,9 @@ if options_mom_.mom.mom_nbr > length(xparam1)
     fprintf('p-value of J-test statistic: %f\n',oo_.mom.J_test.p_val)
 end
 
+% -------------------------------------------------------------------------
+% Step 9: Display estimation results
+% -------------------------------------------------------------------------
 title = ['Data moments and model moments (',options_mom_.mom.mom_method,')'];
 headers = {'Moment','Data','Model','% dev. target'};
 labels= matched_moments_(:,4);
@@ -893,7 +908,11 @@ end
 fprintf('\n==== Method of Moments Estimation (%s) Completed ====\n\n',options_mom_.mom.mom_method)
 
 % -------------------------------------------------------------------------
-% Step 8: Clean up
+% Step 9: Clean up
 % -------------------------------------------------------------------------
-% restore warnings
-warning('on','MATLAB:singularMatrix');
+%reset warning state
+if isoctave
+    warning('on')
+else
+    warning on
+end
