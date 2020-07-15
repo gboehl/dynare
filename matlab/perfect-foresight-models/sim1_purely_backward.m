@@ -38,13 +38,13 @@ dynamicmodel = str2func([M.fname,'.dynamic']);
 
 info.status = 1;
 
-for it = 2:options.periods+1
+for it = M.maximum_lag + (1:options.periods)
     yb = endogenousvariables(:,it-1);        % Values at previous period, also used as guess value for current period
     yb1 = yb(iyb);
     [tmp, check] = solve1(dynamicmodel, [yb1; yb], 1:M.endo_nbr, nyb+1:nyb+M.endo_nbr, ...
                           1, options.gstep, options.dynatol.f, options.dynatol.x, ...
                           options.simul.maxit, options.debug, exogenousvariables, ...
-                          M.params, steadystate, it+M.maximum_lag-1);
+                          M.params, steadystate, it);
     if check
         info.status = 0;
     end
