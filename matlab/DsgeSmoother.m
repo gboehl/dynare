@@ -233,8 +233,10 @@ if kalman_algo == 1 || kalman_algo == 3
                                                       options_.nk,kalman_tol,diffuse_kalman_tol,options_.filter_decomposition,options_.smoothed_state_uncertainty);
     if isinf(alphahat)
         if kalman_algo == 1
+            fprintf('\nDsgeSmoother: Switching to univariate filter. This may be a sign of stochastic singularity.\n')
             kalman_algo = 2;
         elseif kalman_algo == 3
+            fprintf('\nDsgeSmoother: Switching to univariate filter. This may be a sign of stochastic singularity.\n')
             kalman_algo = 4;
         else
             error('This case shouldn''t happen')
