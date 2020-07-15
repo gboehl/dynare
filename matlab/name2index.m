@@ -87,7 +87,7 @@ end
 
 if strcmpi(type,'MeasurementError')
     if nargin<6% Covariance matrix diagonal term
-        i = nvx + strmatch(name1, M_.endo_names{estim_params_.var_endo(:,1)}, 'exact');
+        i = nvx + strmatch(name1, M_.endo_names(estim_params_.var_endo(:,1)), 'exact');
         if isempty(i)
             disp(['The standard deviation of the measurement error on ' name1  ' is not an estimated parameter!'])
             return
@@ -95,7 +95,7 @@ if strcmpi(type,'MeasurementError')
     else% Covariance matrix off-diagonal term
         offset = nvx+nvn+ncx;
         try
-            list_of_measurement_errors = { M_.endo_names{estim_params_.corrn(:,1)} , M_.endo_names{estim_params_.corrn(:,2)} };
+            list_of_measurement_errors = [M_.endo_names(estim_params_.corrn(:,1),1) , M_.endo_names(estim_params_.corrn(:,2),1)];
             k1 = strmatch(name1,list_of_measurement_errors(:,1),'exact');
             k2 = strmatch(name2,list_of_measurement_errors(:,2),'exact');
             i = offset+intersect(k1,k2);
