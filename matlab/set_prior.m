@@ -133,9 +133,7 @@ if ncn
     bayestopt_.p4 = [ bayestopt_.p4; estim_params_.corrn(:,10)]; %take generalized distribution into account
     bayestopt_.jscale = [ bayestopt_.jscale; estim_params_.corrn(:,11)];
     baseid = length(bayestopt_.name);
-    bayestopt_.name = [bayestopt_.name; cell(ncn, 1)]; [bayestopt_.name; cellstr([repmat('corr ',ncn,1) ...
-                        M_.endo_names{estim_params_.corrn(:,1)} ...
-                        repmat(', ',ncn,1) , M_.endo_names{estim_params_.corrn(:,2)}])];
+    bayestopt_.name = [bayestopt_.name; cell(ncn, 1)];;
     for i=1:ncn
         k1 = estim_params_.corrn(i,1);
         k2 = estim_params_.corrn(i,2);
