@@ -129,6 +129,24 @@ nobs0 = series.nobs;
 
 first_obs_ispresent = false;
 last_obs_ispresent = false;
+
+if ~isfield(options, 'first_obs') || isempty(options.first_obs)
+    if isfield(options, 'first_simulation_period')
+        options.first_obs = options.first_simulation_period ...
+            - M.orig_maximum_lag;
+    end
+elseif isfield(options, 'first_simulation_period')
+    nobs = options.first_simulation_period - opions_.first_obs;
+    if M.orig_maximum_lag ~= nobs
+        error(sprintf(['HISTVALF: first_obs = %d and', ...
+                       ' first_simulation_period = %d', ...
+                       ' don''t provide for the number of' ...
+                       ' lags in the model.'], ...
+                      options.first_obs, ...
+                      options.first_simulation_period))
+    end
+end
+
 if isfield(options, 'first_obs')
     i = options.first_obs;
     if i < 1

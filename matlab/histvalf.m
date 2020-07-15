@@ -30,29 +30,6 @@ function [endo_histval, exo_histval, exo_det_histval] = histvalf(M, options)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if ~isfield(options, 'nobs') || isempty(options.nobs)
-    options.nobs = M.orig_maximum_lag;
-end
-
-if ~isfield(options, 'first_obs') || isempty(options.first_obs)
-    if isfield(options, 'first_simulation_period')
-        options.first_obs = options.first_simulation_period ...
-            - options.nobs;
-    else
-        options.first_obs = 1;
-    end
-elseif isfield(options, 'first_simulation_period')
-    nobs = options.first_simulation_period - opions_.first_obs;
-    if options.nobs ~= nobs
-        error(sprintf(['HISTVALF: first_obs = %d and', ...
-                       ' first_simulation_period = %d', ...
-                       ' don''t provide for the number of' ...
-                       ' lags in the model.'], ...
-                      options.first_obs, ...
-                      options.first_simulation_period))
-    end
-end
-
 series = histvalf_initvalf('HISTVAL', M, options);
 % capture the difference between stochastic and
 % perfect foresight setup
