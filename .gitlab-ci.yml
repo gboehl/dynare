@@ -85,12 +85,10 @@ pkg_windows:
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
-      - windows/deps/sources32/
       - windows/deps/sources64/
-      - windows/deps/lib32/
       - windows/deps/lib64/
-      # We do not cache lib{32,64}-msys2, mingw{32,64}, octave{32,64} and
-      # matlab{32,64}, because those are simply extracted from a tarball. It
+      # We do not cache lib64-msys2, mingw64, octave64 and
+      # matlab64, because those are simply extracted from a tarball. It
       # would be a waste of space and of (re-compression) time.
   artifacts:
     paths:

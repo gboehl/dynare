@@ -25,13 +25,7 @@ if isoctave
     % Add specific paths for Dynare Windows package
     if ispc
         if strcmpi(computer(), 'i686-w64-mingw32')
-            tmp = [dynareroot '../mex/octave/win32/'];
-            if exist(tmp, 'dir')
-                mexpath = tmp;
-                if modifypath
-                    addpath(mexpath);
-                end
-            end
+            warning('MEX files not available for 32-bit Octave')
         else
             tmp = [dynareroot '../mex/octave/win64/'];
             if exist(tmp, 'dir')
@@ -52,15 +46,8 @@ if isoctave
         addpath([dynareroot '../mex/octave/']);
     end
 else
-    % Add win32 specific paths for Dynare Windows package
     if strcmp(computer, 'PCWIN')
-        tmp = [dynareroot '../mex/matlab/win32-8.3-8.6/'];
-        if exist(tmp, 'dir')
-            mexpath = tmp;
-            if modifypath
-                addpath(mexpath);
-            end
-        end
+        warning('MEX files not available for 32-bit MATLAB')
     end
     % Add win64 specific paths for Dynare Windows package
     if strcmp(computer, 'PCWIN64')

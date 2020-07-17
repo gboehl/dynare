@@ -192,14 +192,8 @@ end
 
 if isempty(strfind(arch, '64'))
     arch_ext = '32';
-    if preprocessoroutput
-        disp('Using 32-bit preprocessor');
-    end
 else
     arch_ext = '64';
-    if preprocessoroutput
-        disp('Using 64-bit preprocessor');
-    end
 end
 
 if preprocessoroutput
