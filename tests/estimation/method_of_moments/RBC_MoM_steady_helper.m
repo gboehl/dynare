@@ -10,8 +10,13 @@ if ETAc == 1 && ETAl == 1
 else
     % No closed-form solution use a fixed-point algorithm
     N0 = 1/3;
-    [N, ~, exitflag] = fsolve(@(N) THETA*(1-N)^(-ETAl)*N^ETAc - (1-BETTA*B)*(C_O_N*(1-B))^(-ETAc)*W, N0,optimset('Display','off','TolX',1e-12,'TolFun',1e-12));        
-    if exitflag<1
+    try
+        [N, ~, exitflag] = fsolve(@(N) THETA*(1-N)^(-ETAl)*N^ETAc - (1-BETTA*B)*(C_O_N*(1-B))^(-ETAc)*W, N0,optimset('Display','off','TolX',1e-12,'TolFun',1e-12));        
+        if exitflag<1
+            info=1;
+        end
+    catch
+        N=NaN;
         info=1;
     end
 end
