@@ -60,7 +60,7 @@ IV_O_N = DELTA*K_O_N;
 Y_O_N = A*K_O_N^(1-ALFA);
 C_O_N = Y_O_N - IV_O_N;
 
-N=RBC_MoM_steady_helper(THETA,ETAl,ETAc,BETTA,B,C_O_N,W);
+[N, info]=RBC_MoM_steady_helper(THETA,ETAl,ETAc,BETTA,B,C_O_N,W);
 C=C_O_N*N;
 Y=Y_O_N*N;
 IV=IV_O_N*N;
