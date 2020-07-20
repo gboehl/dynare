@@ -12,16 +12,19 @@
 !   • API_VER2 is for functions which were versioned _730 before 9.4 (R2018a)
 !     when not using the MX_COMPAT_32 mode
 !   For each function, the information can be retrieved from either matrix.h or
-!   mex.h from R2009b
+!   mex.h from R2014a
 ! — C passes arguments by value, so the “value” keyword is often needed
 ! — Strings passed to C must be null terminated (hence a wrapper is needed to
 !   append c_null_char)
+! — We follow the Fortran convention that indices start at one. Hence, when
+!   interfacing a function with a mwIndex argument, it is necessary to write
+!   a glue code that substracts one to the index
 ! — When writing glue code, using the pure C interface as a starting point:
 !   • remove the “use” declarations
 !   • remove the “value” keywords
 !   • convert input character arrays to character(kind=c_char, len=*)
 
-! Copyright © 2019 Dynare Team
+! Copyright © 2019-2020 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -193,6 +196,11 @@ module matlab_mat
      end function mxIsChar
 
      ! Logical
+     logical(c_bool) function mxIsLogical(pm) bind(c, name="mxIsLogical"//API_VER)
+       use iso_c_binding
+       type(c_ptr), intent(in), value :: pm
+     end function mxIsLogical
+
      logical(c_bool) function mxIsLogicalScalar(array_ptr) bind(c, name="mxIsLogicalScalar"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: array_ptr
@@ -204,6 +212,11 @@ module matlab_mat
        logical(mxLogical), intent(in), value :: value
      end function mxCreateLogicalScalar
 
+     type(c_ptr) function mxGetLogicals_internal(array_ptr) bind(c, name="mxGetLogicals"//API_VER)
+       use iso_c_binding
+       type(c_ptr), intent(in), value :: array_ptr
+     end function mxGetLogicals_internal
+
      ! Object
      logical(c_bool) function mxIsClass_internal(pm, classname) bind(c, name="mxIsClass"//API_VER)
        use iso_c_binding
@@ -212,6 +225,11 @@ module matlab_mat
      end function mxIsClass_internal
 
      ! Structure
+     logical(c_bool) function mxIsStruct(pm) bind(c, name="mxIsStruct"//API_VER)
+       use iso_c_binding
+       type(c_ptr), intent(in), value :: pm
+     end function mxIsStruct
+
      type(c_ptr) function mxGetField_internal(pm, index, fieldname) bind(c, name="mxGetField"//API_VER2)
        use iso_c_binding
        import :: mwIndex
@@ -219,6 +237,24 @@ module matlab_mat
        integer(mwIndex), intent(in), value :: index
        character(c_char), dimension(*), intent(in) :: fieldname
      end function mxGetField_internal
+
+     integer(c_int) function mxGetNumberOfFields(pm) bind(c, name="mxGetNumberOfFields"//API_VER)
+       use iso_c_binding
+       type(c_ptr), intent(in), value :: pm
+     end function mxGetNumberOfFields
+
+     ! Cell
+     logical(c_bool) function mxIsCell(pm) bind(c, name="mxIsCell"//API_VER)
+       use iso_c_binding
+       type(c_ptr), intent(in), value :: pm
+     end function mxIsCell
+
+     type(c_ptr) function mxGetCell_internal(pm, index) bind(c, name="mxGetCell"//API_VER2)
+       use iso_c_binding
+       import :: mwIndex
+       type(c_ptr), intent(in), value :: pm
+       integer(mwIndex), intent(in), value :: index
+     end function mxGetCell_internal
 
      !! Delete and Duplicate mxArray
      subroutine mxDestroyArray(pm) bind(c, name="mxDestroyArray"//API_VER)
@@ -246,14 +282,14 @@ contains
   function mxGetDoubles(pm)
     type(c_ptr), intent(in) :: pm
     real(real64), dimension(:), pointer :: mxGetDoubles
-    call c_f_pointer(mxGetDoubles_internal(pm) , mxGetDoubles, [ mxGetNumberOfElements(pm) ])
+    call c_f_pointer(mxGetDoubles_internal(pm), mxGetDoubles, [ mxGetNumberOfElements(pm) ])
   end function mxGetDoubles
 #endif
 
   function mxGetPr(pm)
     type(c_ptr), intent(in) :: pm
     real(real64), dimension(:), pointer :: mxGetPr
-    call c_f_pointer(mxGetPr_internal(pm) , mxGetPr, [ mxGetNumberOfElements(pm) ])
+    call c_f_pointer(mxGetPr_internal(pm), mxGetPr, [ mxGetNumberOfElements(pm) ])
   end function mxGetPr
 
 #if MX_HAS_INTERLEAVED_COMPLEX
@@ -278,6 +314,12 @@ contains
   end function mxGetPi
 #endif
 
+  function mxGetLogicals(array_ptr)
+    type(c_ptr), intent(in) :: array_ptr
+    logical(mxLogical), dimension(:), pointer :: mxGetLogicals
+    call c_f_pointer(mxGetLogicals_internal(array_ptr), mxGetLogicals, [ mxGetNumberOfElements(array_ptr) ])
+  end function mxGetLogicals
+
   logical(c_bool) function mxIsClass(pm, classname)
     type(c_ptr), intent(in) :: pm
     character(kind=c_char, len=*), intent(in) :: classname
@@ -288,13 +330,26 @@ contains
     type(c_ptr), intent(in) :: pm
     integer(mwIndex), intent(in) :: index
     character(kind=c_char, len=*), intent(in) :: fieldname
-    mxGetField = mxGetField_internal(pm, index, fieldname // c_null_char)
+    mxGetField = mxGetField_internal(pm, index-1, fieldname // c_null_char)
   end function mxGetField
+
+  type(c_ptr) function mxGetCell(pm, index)
+    type(c_ptr), intent(in) :: pm
+    integer(mwIndex), intent(in) :: index
+    mxGetCell = mxGetCell_internal(pm, index-1)
+  end function mxGetCell
 
   function mxArrayToString(pm)
     type(c_ptr), intent(in) :: pm
-    character(c_char), dimension(:), pointer :: mxArrayToString
-    call c_f_pointer(mxArrayToString_internal(pm), mxArrayToString, [ mxGetNumberOfElements(pm) ])
+    character(kind=c_char, len=:), allocatable :: mxArrayToString
+    character(kind=c_char), dimension(:), pointer :: chararray
+    integer :: i
+    call c_f_pointer(mxArrayToString_internal(pm), chararray, [ mxGetNumberOfElements(pm) ])
+    ! Convert the character array into a character scalar (of length > 1)
+    allocate(character(kind=c_char, len=size(chararray)) :: mxArrayToString)
+    do i=1,size(chararray)
+       mxArrayToString(i:i) = chararray(i)
+    end do
   end function mxArrayToString
 end module matlab_mat
 
@@ -367,4 +422,10 @@ contains
     character(kind=c_char, len=*), intent(in) :: message
     call mexPrintf_internal(message // c_null_char)
   end subroutine mexPrintf
+
+  ! Same as mexPrintf(), but trims trailing whitespace, and adds a new line
+  subroutine mexPrintf_trim_newline(message)
+    character(kind=c_char, len=*), intent(in) :: message
+    call mexPrintf_internal(trim(message) // new_line(message) // c_null_char)
+  end subroutine mexPrintf_trim_newline
 end module matlab_mex
