@@ -65,7 +65,9 @@ junk2        = [];
 % 1. Get the structural parameters & define penalties
 %--------------------------------------------------------------------------
 
-[fval,info,exit_flag,M_]=check_bounds_and_definiteness_estimation(xparam1, M_, options_mom_, estim_params_, Bounds);
+M_ = set_all_parameters(xparam1, estim_params_, M_);
+
+[fval,info,exit_flag]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, Bounds);
 if info(1)
     if options_mom_.vector_output == 1 % lsqnonlin requires vector output
        fval = ones(size(oo_.mom.data_moments,1),1)*options_mom_.huge_number;

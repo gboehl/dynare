@@ -180,8 +180,9 @@ end
 %------------------------------------------------------------------------------
 % 1. Get the structural parameters & define penalties
 %------------------------------------------------------------------------------
+Model = set_all_parameters(xparam1,EstimatedParameters,Model);
 
-[fval,info,exit_flag,Model,Q,H]=check_bounds_and_definiteness_estimation(xparam1, Model, DynareOptions, EstimatedParameters, BoundsInfo);
+[fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, Model, EstimatedParameters, BoundsInfo);
 if info(1)
     return
 end

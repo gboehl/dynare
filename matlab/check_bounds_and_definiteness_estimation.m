@@ -1,11 +1,10 @@
-function [fval,info,exit_flag,M_,Q,H]=check_bounds_and_definiteness_estimation(xparam1, M_, options_, estim_params_, bayestopt_)
-% function [fval,info,exit_flag]=check_bounds_and_definiteness_estimation(xparam1, M_, options_, estim_params_, bayestopt_)
+function [fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, bayestopt_)
+% function [fval,info,exit_flag]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, bayestopt_)
 % Checks whether parameter vector satisfies 
 %
 % INPUTS
 % - xparam1                 [double]              n by 1 vector, estimated parameters.
 % - M_                      [struct]              Matlab's structure describing the Model.
-% - options_                [struct]              Matlab's structure describing the options.
 % - estim_params_           [struct]              Matlab's structure describing the estimated_parameters.
 % - bayestopt_              [struct]              Matlab's structure specifying the bounds on the paramater values (initialized by dynare,aka bayesopt_).
 %
@@ -57,8 +56,6 @@ if any(xparam1>bayestopt_.ub)
     info(4) = sum((xparam1(k)-bayestopt_.ub(k)).^2);
     return
 end
-
-M_ = set_all_parameters(xparam1,estim_params_,M_);
 
 Q = M_.Sigma_e;
 H = M_.H;
