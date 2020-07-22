@@ -34,9 +34,11 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   real(real64), parameter :: tolf = 1e-6_real64
   real(real64), dimension(:), allocatable :: fvec
   real(real64), dimension(:,:), allocatable :: fjac
+  logical :: debug
+  character(len=80) :: debug_msg
 
-  if (nrhs < 2 .or. nlhs /= 2) then
-     call mexErrMsgTxt("Must have at least 2 inputs and exactly 2 outputs")
+  if (nrhs < 3 .or. nlhs /= 2) then
+     call mexErrMsgTxt("Must have at least 3 inputs and exactly 2 outputs")
      return
   end if
 
@@ -50,8 +52,14 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
      return
   end if
 
+  if (.not. (mxIsLogicalScalar(prhs(3)))) then
+     call mexErrMsgTxt("Third argument should be a logical scalar")
+     return
+  end if
+
   func => prhs(1)
-  extra_args => prhs(3:nrhs)
+  debug = mxGetScalar(prhs(3)) == 1._c_double
+  extra_args => prhs(4:nrhs)
   associate (x_mat => mxGetPr(prhs(2)))
     allocate(x(size(x_mat)))
     x = x_mat
@@ -65,9 +73,20 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   call matlab_fcn(x, fvec, fjac)
   call dm_blocks(fjac, blocks)
 
+  if (debug) then
+     write (debug_msg, "('DYNARE_SOLVE (solve_algo=13|14): number of blocks = ', i0)") size(blocks)
+     call mexPrintf_trim_newline(debug_msg)
+  end if
+
   ! Solve the system, starting from bottom-rightmost block
   x_all => x
   do i = size(blocks),1,-1
+     if (debug) then
+        write (debug_msg, "('DYNARE_SOLVE (solve_algo=13|14): solving block ', i0, ' of size ', i0)") &
+             i, size(blocks(i)%col_indices)
+        call mexPrintf_trim_newline(debug_msg)
+     end if
+
      block
        real(real64), dimension(size(blocks(i)%col_indices)) :: x_block
        x_indices => blocks(i)%col_indices
@@ -88,6 +107,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   nullify(x_indices, f_indices, x_all)
   call matlab_fcn(x, fvec)
   if (maxval(abs(fvec)) > tolf) then
+     if (debug) &
+          call mexPrintf_trim_newline("DYNARE_SOLVE (solve_algo=13|14): residuals still too large, solving for the whole model")
      call trust_region_solve(x, matlab_fcn, info, tolf = tolf)
   else
      info = 1
