@@ -91,6 +91,10 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
        real(real64), dimension(size(blocks(i)%col_indices)) :: x_block
        x_indices => blocks(i)%col_indices
        f_indices => blocks(i)%row_indices
+       if (size(x_indices) /= size(f_indices)) then
+          call mexErrMsgTxt("Non-square block")
+          return
+       end if
        x_block = x(x_indices)
        call trust_region_solve(x_block, matlab_fcn, info, tolf = tolf)
        x(x_indices) = x_block
