@@ -108,15 +108,15 @@ diff(diff(log(U2_HH_OCOR))) =  u2_hh_ocor_ecm_u2_q_yed_L1   * (U2_Q_YED(-1) - U2
 U2_H_Q_YER400 = U2_H_Q_YER400(-1) + res_U2_H_Q_YER;
 
 [name='zpac']
-diff(log(U2_HH_COR)) = ecm_pac*(log(U2_HH_COR(-1))-log(U2_HH_OCOR(-1))) +
+diff(log(U2_HH_COR)) = ecm_pac*(log(U2_HH_OCOR(-1))-log(U2_HH_COR(-1))) +
                   u2_hh_cor_pac_u2_hh_cor_L1*diff(log(U2_HH_COR(-1))) +
                   pac_expectation(pacman)   +
                   res_ez;
 
 [name='zpac1']
-diff(log(U2_HH_COR1)) = ecm_pac*(log(U2_HH_COR1(-1))-log(U2_HH_OCOR(-1))) +
+diff(log(U2_HH_COR1)) = ecm_pac*(log(U2_HH_OCOR(-1))-log(U2_HH_COR1(-1))) +
                   u2_hh_cor_pac_u2_hh_cor_L1*diff(log(U2_HH_COR1(-1))) +
-                  pac_expectation(pacman1)   +
+                  pac_expectation(pacman1) +
                   res_ez;
 
 end;

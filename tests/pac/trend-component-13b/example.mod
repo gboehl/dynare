@@ -52,7 +52,7 @@ x1bar = x1bar(-1) + ex1bar;
 x2bar = x2bar(-1) + ex2bar;
 
 [name='zpac']
-diff(z) = e_c_m*(z(-1)-x1(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
+diff(z) = e_c_m*(x1(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
 
 end;
 
@@ -69,6 +69,6 @@ end;
 // Initialize the PAC model (build the Companion VAR representation for the auxiliary model).
 pac.initialize('pacman');
 
-if ~isequal(M_.pac.pacman.equations.(M_.pac.pacman.tag_map{strcmp(M_.pac.pacman.tag_map(:,1), 'zpac'),2}).ec.istarget, [false, true])
+if ~isequal(M_.pac.pacman.equations.(M_.pac.pacman.tag_map{strcmp(M_.pac.pacman.tag_map(:,1), 'zpac'),2}).ec.istarget, [true, false])
    error('ec.istarget vector is wrong.')
 end
