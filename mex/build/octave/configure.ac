@@ -137,6 +137,7 @@ AC_CONFIG_FILES([Makefile
 		 sobol/Makefile
 		 local_state_space_iterations/Makefile
                  perfect_foresight_problem/Makefile
-                 num_procs/Makefile])
+                 num_procs/Makefile
+                 disclyap_fast/Makefile])
 
 AC_OUTPUT

@@ -86,7 +86,7 @@ function pruned_state_space = pruned_state_space_system(M, options, dr, indy, nl
 % This function calls
 %   * allVL1.m
 %   * commutation.m
-%   * disclyap_fast.m
+%   * disclyap_fast (MEX)
 %   * duplication.m
 %   * lyapunov_symm.m
 %   * prodmom

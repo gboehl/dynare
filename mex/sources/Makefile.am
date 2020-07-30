@@ -18,7 +18,8 @@ EXTRA_DIST = \
 	gensylv \
 	dynare_simul_ \
 	perfect_foresight_problem \
-	num_procs
+	num_procs \
+	disclyap_fast
 
 clean-local:
 	rm -rf `find mex/sources -name *.o`
