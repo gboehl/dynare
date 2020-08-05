@@ -1,5 +1,5 @@
-function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, matched_moments_, M_, options_mom_)
-% [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, matched_moments_, M_, options_mom_)
+function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, M_, options_mom_)
+% [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, M_, options_mom_)
 % -------------------------------------------------------------------------
 % This function evaluates the objective function for GMM/SMM estimation
 % =========================================================================
@@ -8,7 +8,6 @@ function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_o
 %   o Bounds:                   structure containing parameter bounds
 %   o oo_:                      structure for results
 %   o estim_params_:            structure describing the estimated_parameters
-%   o matched_moments_:         structure containing information about selected moments to match in estimation
 %   o M_                        structure describing the model
 %   o options_mom_:             structure information about all settings (specified by the user, preprocessor, and taken from global options_)
 % -------------------------------------------------------------------------
@@ -186,7 +185,7 @@ elseif strcmp(options_mom_.mom.mom_method,'SMM')
     if options_mom_.prefilter
         y_sim = bsxfun(@minus, y_sim, mean(y_sim,1));
     end
-    oo_.mom.model_moments = method_of_moments_data_moments(y_sim, oo_, matched_moments_, options_mom_);
+    oo_.mom.model_moments = method_of_moments_data_moments(y_sim, oo_, M_.matched_moments, options_mom_);
     
 end
 

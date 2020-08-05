@@ -148,7 +148,23 @@ pause(1);
 %--------------------------------------------------------------------------
 % Method of Moments Estimation
 %--------------------------------------------------------------------------
-% matched_moments blocks : We don't have an interface yet
+matched_moments;
+YGR;
+INFL;
+INT;
+%second-order contemporenous product moments
+YGR*YGR;
+YGR*INFL;
+YGR*INT;
+INFL*INFL;
+INFL*INT;
+INT*INT;
+%second-order temporal product moments
+YGR*YGR(-1);
+INT*INT(-1);
+INFL*INFL(-1);
+end;
+
 % get indices in declaration order
 iYGR  = strmatch('YGR',  M_.endo_names,'exact');
 iINFL = strmatch('INFL', M_.endo_names,'exact');
@@ -181,6 +197,9 @@ matched_moments_ = {
     [iINFL iINFL]  [0 -1],  [1 1];
 };
 
+if ~isequal(M_.matched_moments,matched_moments_)
+    error('Translation to matched_moments-block failed')
+end
 
 @#for mommethod in ["GMM", "SMM"]
     method_of_moments(
