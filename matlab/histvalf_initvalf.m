@@ -134,6 +134,9 @@ if ~isfield(options, 'first_obs') || isempty(options.first_obs)
     if isfield(options, 'first_simulation_period')
         options.first_obs = options.first_simulation_period ...
             - M.orig_maximum_lag;
+    elseif isfield(options, 'firstsimulationperiod')
+        options.firstobs = options.firstsimulationperiod ...
+            - M.orig_maximum_lag;
     end
 elseif isfield(options, 'first_simulation_period')
     nobs = options.first_simulation_period - opions_.first_obs;
