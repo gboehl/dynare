@@ -48,7 +48,7 @@ data1(8, 6) = 0.9; //shock to x in period 2
 ds1 = dseries(data1, '1Y', {'c', 'cmav', 'k', 'z_backward', 'z_forward', 'x'});
 
 initval_file(series = ds1, first_obs = 3, last_obs = 210, nobs = 208);
-if oo_.initval_series.dates(1) ~= dates('1Y');
+if oo_.initval_series.dates(1) ~= dates('3Y');
   error("Wrong initial date in oo_.initval_series");
 end;
 if oo_.initval_series{'x'}.data(6) ~= 0.9;
@@ -90,7 +90,7 @@ if max(max(abs(base_results.oo_.endo_simul(1:5,:) - oo_.endo_simul(1:5,:)))) > 1
 end
 
 initval_file(series = ds1, first_simulation_period = 7);
-if oo_.initval_series.dates(1) ~= dates('1Y');
+if oo_.initval_series.dates(1) ~= dates('3Y');
   error("Wrong initial date in oo_.initval_series");
 end;
 if oo_.initval_series{'x'}.data(6) ~= 0.9;
@@ -111,7 +111,7 @@ if max(max(abs(base_results.oo_.endo_simul(1:5,:) - oo_.endo_simul(1:5,:)))) > 1
 end
 
 initval_file(series = ds1, first_simulation_period = 7Y);
-if oo_.initval_series.dates(1) ~= dates('1Y');
+if oo_.initval_series.dates(1) ~= dates('3Y');
   error("Wrong initial date in oo_.initval_series");
 end;
 if oo_.initval_series{'x'}.data(6) ~= 0.9;
