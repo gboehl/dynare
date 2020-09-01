@@ -22,8 +22,8 @@ set -ex
 ROOTDIR=$(pwd)/..
 
 # Set the compilers
-CC=gcc-9
-CXX=g++-9
+CC=gcc-10
+CXX=g++-10
 
 # Set the number of threads
 NTHREADS=$(nproc)
