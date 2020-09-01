@@ -82,10 +82,32 @@ end;
 estimated_params_init(use_calibration);
 end;
 
+
 %--------------------------------------------------------------------------
 % Method of Moments Estimation
 %--------------------------------------------------------------------------
-% matched_moments blocks : We don't have an interface yet
+matched_moments;
+c;
+n;
+iv;
+c*c;
+c*iv;
+iv*n;
+iv*iv;
+n*c;
+n*n;
+c*c(-1);
+n*n(-1);
+iv*iv(-1);
+
+c*c(-3);
+n*n(-3);
+iv*iv(-3);
+
+c*c(-5);
+n*n(-5);
+iv*iv(-5);
+end;
 
 % get indices in declaration order
 ic  = strmatch('c',  M_.endo_names,'exact');
@@ -104,9 +126,9 @@ matched_moments_ = {
     [ic  iiv]  [0  0],  [1 1];
     %[ic  in ]  [0  0],  [1 1];
     %[iiv ic ]  [0  0],  [1 1];
-    [iiv in ]  [0  0],  [1 1];
+    [in iiv]  [0  0],  [1 1];
     [iiv iiv]  [0  0],  [1 1];    
-    [in  ic ]  [0  0],  [1 1];
+    [ic  in]  [0  0],  [1 1];
     %[in  iiv]  [0  0],  [1 1];
     [in  in ]  [0  0],  [1 1];
     
@@ -124,6 +146,9 @@ matched_moments_ = {
 
 };
 
+if ~isequal(M_.matched_moments,matched_moments_)
+    error('Translation to matched_moments-block failed')
+end
 
 
     method_of_moments(
@@ -133,7 +158,7 @@ matched_moments_ = {
 
         % Options for both GMM and SMM
         %, bartlett_kernel_lag = 20          % bandwith in optimal weighting matrix
-        , order = 2                 % order of Taylor approximation in perturbation
+        , order = @{orderApp}                % order of Taylor approximation in perturbation
         %, penalized_estimator               % use penalized optimization
         %, pruning                             % use pruned state space system at higher-order
         %, verbose                           % display and store intermediate estimation results
