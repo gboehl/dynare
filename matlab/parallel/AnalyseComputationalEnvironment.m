@@ -522,13 +522,16 @@ for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
     if (DataInput(Node).Local == 1)
         if Environment
             if ~ismac
-                [si0, de0] = system('nproc');
+                command_string = 'nproc';
+                [si0, de0] = system(command_string);
             else
-                [si0, de0] = system('sysctl -n hw.ncpu');
+                command_string = 'sysctl -n hw.ncpu';
+                [si0, de0] = system(command_string);
                 Environment1 = 2;
             end
         else
-            [si0, de0] = system(['psinfo \\']);
+            command_string = ['psinfo \\'];
+            [si0, de0] = system(command_string);
         end
     else
         if Environment
