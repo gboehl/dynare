@@ -207,7 +207,7 @@ sources64/x13as-$(X13AS_VERSION): tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
 	tar xf $< --directory $@
 
 lib64/x13as/x13as.exe: sources64/x13as-$(X13AS_VERSION)
-	make -C $< -f makefile.gf FC=x86_64-w64-mingw32-gfortran LINKER=x86_64-w64-mingw32-gfortran FFLAGS="-O2" PROGRAM=x13as.exe
+	make -C $< -f makefile.gf FC=x86_64-w64-mingw32-gfortran LINKER=x86_64-w64-mingw32-gfortran FFLAGS="-O2 -std=legacy" PROGRAM=x13as.exe
 	x86_64-w64-mingw32-strip $</x13as.exe
 	mkdir -p $(dir $@)
 	cp $</x13as.exe $@
