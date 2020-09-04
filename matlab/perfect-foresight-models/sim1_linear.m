@@ -120,9 +120,13 @@ if max(abs(d1))>options.solve_tolf
     error('Jacobian is not evaluated at the steady state!')
 end
 
+% current variables
 [r0,c0,v0] = find(jacobian(:,jc));
+% current and predetermined
 [rT,cT,vT] = find(jacobian(:,jpc));
+% current and jump variables
 [r1,c1,v1] = find(jacobian(:,jcn));
+% all endogenous variables
 [rr,cc,vv] = find(jacobian(:,jendo));
 
 iv0 = 1:length(v0);
@@ -155,9 +159,16 @@ for it = (maximum_lag+1):(maximum_lag+periods)
         nv = length(vv);
         iA(iv+m,:) = [i_rows(rr),i_cols_A(cc),vv];
     end
-    z(jendo) = Y(i_cols);
-    z(jexog) = transpose(exogenousvariables(it,:));
-    res(i_rows) = jacobian*z;
+    if M.maximum_exo_lag > 0
+        % needed as jacobian for lagged exogenous variables is wrong
+        % in current version of Dynare
+        zz = Y(i_cols);
+        res(i_rows) = dynamicmodel(zz, exogenousvariables, params, steadystate_y, it);
+    else
+        z(jendo) = Y(i_cols);
+        z(jexog) = transpose(exogenousvariables(it,:));
+        res(i_rows) = jacobian*z;
+    end
     m = m + nv;
     i_rows = i_rows + ny;
     i_cols = i_cols + ny;
