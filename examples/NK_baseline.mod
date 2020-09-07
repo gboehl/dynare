@@ -1,10 +1,10 @@
 /*
  * This file implements the Baseline New Keynesian DSGE model described in 
- * much detail in Jes�s Fern�ndez-Villaverde and Juan F. Rubio-Ram�rez (2006): "A Baseline DSGE 
- * Model", available at http://economics.sas.upenn.edu/~jesusfv/benchmark_DSGE.pdf
+ * much detail in Jesús Fernández-Villaverde and Juan F. Rubio-Ramírez (2006): “A Baseline DSGE 
+ * Model”, available at http://economics.sas.upenn.edu/~jesusfv/benchmark_DSGE.pdf
  *
  * The parametrization is based on the estimated version of this model in 
- * Jes�s Fern�ndez-Villaverde (2010): "The econometrics of DSGE models", 
+ * Jesús Fernández-Villaverde (2010): “The econometrics of DSGE models”, 
  * SERIEs, Vol. 1, pp. 3-49, DOI 10.1007/s13209-009-0014-7
  *
  * This implementation was written by Benjamin Born and Johannes Pfeifer. In
@@ -24,7 +24,7 @@
  * example3.mod
  * 
  * The model is written in the beginning of period stock notation. To make the model
- * conform with Dynare's end of period stock notation, we use the 
+ * conform with Dynare’s end of period stock notation, we use the 
  * predetermined_variables-command.
  *
  * Please note that the following copyright notice only applies to this Dynare 
