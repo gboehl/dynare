@@ -42,7 +42,7 @@ end
 
 if bytecode_flag && ~ep.stochastic.order
     try
-        tmp = bytecode('dynamic', endo_simul, exo_simul, M_.params, endo_simul, periods);
+        tmp = bytecode('dynamic', endo_simul, exo_simul, M.params, endo_simul, periods);
         flag = false;
     catch ME
         disp(ME.message);
