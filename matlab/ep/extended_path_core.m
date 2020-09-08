@@ -41,7 +41,7 @@ if debug
 end
 
 if bytecode_flag && ~ep.stochastic.order
-    [flag, tmp] = bytecode('dynamic', endo_simul, exo_simul, M_.params, endo_simul, periods);
+    [flag, tmp] = bytecode('dynamic', endo_simul, exo_simul, M.params, endo_simul, periods);
 else
     flag = true;
 end
