@@ -7035,11 +7035,12 @@ Shock Decomposition
         
         See :opt:`xls_range <xls_range = RANGE>`.
 
-    .. option:: use_shock_groups [= STRING]
+    .. option:: use_shock_groups [= NAME]
 
         Uses shock grouping defined by the string instead of
         individual shocks in the decomposition. The groups of shocks
-        are defined in the :bck:`shock_groups` block.
+        are defined in the :bck:`shock_groups` block. If no group name is
+        given, ``default`` is assumed.
 
     .. option:: colormap = VARIABLE_NAME
 
@@ -7108,7 +7109,8 @@ Shock Decomposition
         groups. It is possible to use several ``shock_groups`` blocks
         in a model file, each grouping being identified by a different
         name. This name must in turn be used in the
-        ``shock_decomposition`` command.
+        ``shock_decomposition`` command. If no name is given, ``default`` is
+        used.
 
     *Example*
 
@@ -7187,9 +7189,9 @@ Shock Decomposition
 
         See :opt:`nobs <nobs = INTEGER>`.
 
-    .. option:: use_shock_groups [= STRING]
+    .. option:: use_shock_groups [= NAME]
 
-        See :opt:`use_shock_groups <use_shock_groups [= STRING]>`.
+        See :opt:`use_shock_groups <use_shock_groups [= NAME]>`.
 
     .. option:: colormap = VARIABLE_NAME
 
@@ -7330,9 +7332,9 @@ Shock Decomposition
 
     *Options*
 
-    .. option:: use_shock_groups [= STRING]
+    .. option:: use_shock_groups [= NAME]
 
-        See :opt:`use_shock_groups <use_shock_groups [= STRING]>`.
+        See :opt:`use_shock_groups <use_shock_groups [= NAME]>`.
 
     .. option:: colormap = VARIABLE_NAME
 
