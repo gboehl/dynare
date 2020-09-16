@@ -46,7 +46,7 @@ pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman);
 
 model;
 
-[name='eq:u']
+[name='eq:s']
 s = .3*s(-1) - .1*s(-2) + es;
 
 [name='eq:diff(v)']
