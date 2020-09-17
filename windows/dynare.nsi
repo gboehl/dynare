@@ -16,7 +16,6 @@ InstallDir "c:\dynare\${VERSION}"
 !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of Dynare ${VERSION}.$\n$\nDynare is distributed under the GNU General Public License (GPL) version 3.$\n$\nIf you accept the license, click Next button to continue the installation."
 !insertmacro MUI_PAGE_WELCOME
 !define MUI_COMPONENTSPAGE_NODESC
-!define MUI_COMPONENTSPAGE_TEXT_TOP "Choose the components you want to install.$\nIf you know whether your version of MATLAB or Octave is 64-bit or 32-bit, you can uncheck the component that you don’t need in order to save disk space."
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -55,14 +54,8 @@ Section "Dynare core (preprocessor and M-files)"
  SetOutPath $INSTDIR\matlab
  File /r ..\matlab\*.m
 
- SetOutPath $INSTDIR\matlab\preprocessor32
- File ..\matlab\preprocessor32\dynare_m.exe
-
  SetOutPath $INSTDIR\matlab\preprocessor64
  File ..\matlab\preprocessor64\dynare_m.exe
-
- SetOutPath $INSTDIR\matlab\modules\dseries\externals\x13\windows\32
- File deps\lib32\x13as\x13as.exe
 
  SetOutPath $INSTDIR\matlab\modules\dseries\externals\x13\windows\64
  File deps\lib64\x13as\x13as.exe
@@ -89,11 +82,9 @@ Section "Dynare core (preprocessor and M-files)"
 SectionEnd
 
 
-SectionGroup "Dynare support for 64-bit MATLAB and Octave"
-
-Section "MEX files for MATLAB 64-bit, version 7.9 to 9.3 (R2009b to R2017b)"
- SetOutPath $INSTDIR\mex\matlab\win64-7.9-9.3
- File ..\mex\matlab\win64-7.9-9.3\*.mexw64
+Section "MEX files for MATLAB 64-bit, version 8.3 to 9.3 (R2014a to R2017b)"
+ SetOutPath $INSTDIR\mex\matlab\win64-8.3-9.3
+ File ..\mex\matlab\win64-8.3-9.3\*.mexw64
 SectionEnd
 
 Section "MEX files for MATLAB 64-bit, version 9.4 to 9.8 (R2018a to R2020a)"
@@ -101,38 +92,15 @@ Section "MEX files for MATLAB 64-bit, version 9.4 to 9.8 (R2018a to R2020a)"
  File ..\mex\matlab\win64-9.4-9.8\*.mexw64
 SectionEnd
 
-Section "MEX files for Octave 5.2.0 (64-bit)"
- SetOutPath $INSTDIR\mex\octave\win64
- File ..\mex\octave\win64\*
-SectionEnd
-
 Section "MinGW compiler for MATLAB 64-bit"
  SetOutPath $INSTDIR\mingw64
  File /r deps\mingw64\*
 SectionEnd
 
-SectionGroupEnd
-
-
-SectionGroup "Dynare support for 32-bit MATLAB and Octave"
-
-Section "MEX files for MATLAB 32-bit, version 7.9 to 8.6 (R2009b to R2015b)"
- SetOutPath $INSTDIR\mex\matlab\win32-7.9-8.6
- File ..\mex\matlab\win32-7.9-8.6\*.mexw32
+Section "MEX files for Octave 5.2.0 (64-bit)"
+ SetOutPath $INSTDIR\mex\octave\win64
+ File ..\mex\octave\win64\*
 SectionEnd
-
-Section "MEX files for Octave 5.2.0 (32-bit)"
- SetOutPath $INSTDIR\mex\octave\win32
- File ..\mex\octave\win32\*
-SectionEnd
-
-Section "MinGW compiler for MATLAB 32-bit"
- SetOutPath $INSTDIR\mingw32
- File /r deps\mingw32\*
-SectionEnd
-
-SectionGroupEnd
-
 
 Section "Documentation and examples"
  SetOutPath $INSTDIR\doc
@@ -152,14 +120,8 @@ SectionEnd
 
 Section /o "Dynare++ (standalone executable)"
 
- SetOutPath $INSTDIR\dynare++\32-bit
- File ..\dynare++\32-bit\dynare++.exe
-
- SetOutPath $INSTDIR\dynare++\64-bit
- File ..\dynare++\64-bit\dynare++.exe
-
  SetOutPath $INSTDIR\dynare++
- File ..\dynare++\dynare_simul\dynare_simul.m
+ File ..\dynare++\src\dynare++.exe ..\dynare++\dynare_simul\dynare_simul.m
 
  SetOutPath $INSTDIR\doc\dynare++
  File ..\dynare++\doc\*.pdf
@@ -185,7 +147,6 @@ Section "Uninstall"
  Rmdir /r $INSTDIR\doc
  Rmdir /r $INSTDIR\examples
  Rmdir /r $INSTDIR\scripts
- Rmdir /r $INSTDIR\mingw32
  Rmdir /r $INSTDIR\mingw64
  # We don't force deletion of installation directory (with /r), to avoid deleting important files
  Rmdir $INSTDIR

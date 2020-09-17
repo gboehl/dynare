@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2017 Dynare Team
+ * Copyright © 2007-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -1789,7 +1789,7 @@ public:
               unsigned int nb_add_input_arguments = fc->get_nb_add_input_arguments();
               function_type = fc->get_function_type();
 #ifdef DEBUG
-              mexPrintf("function_type=%d ExternalFunctionWithoutDerivative=%d\n", function_type, ExternalFunctionWithoutDerivative);
+              mexPrintf("function_type=%d ExternalFunctionWithoutDerivative=%d\n", function_type, ExternalFunctionType::withoutDerivative);
               mexEvalString("drawnow;");
 #endif
               mxArray **input_arguments;

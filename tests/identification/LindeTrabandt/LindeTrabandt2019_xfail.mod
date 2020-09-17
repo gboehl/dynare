@@ -370,10 +370,6 @@ steady;
 resid;
 check;
 
-/* Skip test under MATLAB R2009b
-   MATLAB crashes, most likely due to an internal bug */
-if isoctave || ~matlab_ver_less_than('7.10')
-
 identification(order=1,no_identification_strength,analytic_derivation_mode= 0,ar=5); %works
 %identification(no_identification_strength,analytic_derivation_mode= 1,ar=5); %works, this takes the longest due to Kronecker products
 options_.dynatol.x = 1e-9;
@@ -382,7 +378,3 @@ identification(order=1,no_identification_strength,analytic_derivation_mode=-2,ar
 options_.dynatol.x = 1e-5; %this is the default value
 identification(order=1,no_identification_strength,analytic_derivation_mode=-1,ar=5); %works only if GBAR_o_YBAR is uncommented
 identification(order=1,no_identification_strength,analytic_derivation_mode=-2,ar=5); %works only if GBAR_o_YBAR is uncommented
-
-else % Skip test under old MATLAB
-  error('Test failed as expected')
-end

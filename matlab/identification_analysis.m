@@ -205,10 +205,13 @@ if info(1) == 0 %no errors in solution
                 warning_MOMENTS = [warning_MOMENTS '         The number of moments with non-zero derivative is smaller than the number of parameters up to 10 lags.\n'];
                 warning_MOMENTS = [warning_MOMENTS '         Either reduce the list of parameters, or further increase ar, or increase number of observables.\n'];
                 warning_MOMENTS = [warning_MOMENTS '         Skip identification analysis based on moments.\n'];
+                warning_MOMENTS = [warning_MOMENTS '         Skip identification strenght analysis.\n'];
                 fprintf(warning_MOMENTS);
                 %reset options to neither display nor plot dMOMENTS anymore
                 no_identification_moments = 1;
                 options_ident.no_identification_moments = 1;
+                no_identification_strength = 1;
+                options_ident.no_identification_strength = 1;
             end
         end
         if ~no_identification_minimal
@@ -327,7 +330,7 @@ if info(1) == 0 %no errors in solution
                 cmm = simulated_moment_uncertainty(ind_dMOMENTS, periods, replic,options_,M_,oo_); %covariance matrix of moments
                 sd = sqrt(diag(cmm));
                 cc = cmm./(sd*sd');
-                if isoctave || matlab_ver_less_than('8.3')
+                if isoctave
                     [VV,DD] = eig(cc);
                     %fix for older Matlab versions that do not support computing left eigenvalues, see http://mathworks.com/help/releases/R2012b/matlab/ref/eig.html
                     [WW,~] = eig(cc.');

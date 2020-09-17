@@ -1,4 +1,4 @@
-function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_index, nze, periods, y_kmin_l, y_kmax_l, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo,options,M, oo)
+function [y, T, oo]= solve_two_boundaries(fname, y, x, params, steady_state, T, y_index, nze, periods, y_kmin_l, y_kmax_l, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo,options,M, oo)
 % Computes the deterministic simulation of a block of equation containing
 % both lead and lag variables using relaxation methods
 %
@@ -9,6 +9,7 @@ function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_inde
 %   x                   [matrix]        All the exogenous variables of the model
 %   params              [vector]        All the parameters of the model
 %   steady_state        [vector]        steady state of the model
+%   T                   [matrix]        Temporary terms
 %   y_index             [vector of int] The index of the endogenous variables of
 %                                       the block
 %   nze                 [integer]       number of non-zero elements in the
@@ -16,8 +17,7 @@ function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_inde
 %   periods             [integer]       number of simulation periods
 %   y_kmin_l            [integer]       maximum number of lag in the block
 %   y_kmax_l            [integer]       maximum number of lead in the block
-%   is_linear           [integer]       if is_linear=1 the block is linear
-%                                       if is_linear=0 the block is not linear
+%   is_linear           [logical]       Whether the block is linear
 %   Block_Num           [integer]       block number
 %   y_kmin              [integer]       maximum number of lag in the model
 %   maxit_              [integer]       maximum number of iteration in Newton
@@ -37,6 +37,7 @@ function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_inde
 %
 % OUTPUTS
 %   y                   [matrix]        All endogenous variables of the model
+%   T                   [matrix]        Temporary terms
 %   oo                  [structure]     Results
 %
 % ALGORITHM
@@ -46,7 +47,7 @@ function [y, oo]= solve_two_boundaries(fname, y, x, params, steady_state, y_inde
 %   none.
 %
 
-% Copyright (C) 1996-2018 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -68,8 +69,6 @@ verbose = options.verbosity;
 cvg=0;
 iter=0;
 Per_u_=0;
-g2 = [];
-g3 = [];
 Blck_size=size(y_index,2);
 correcting_factor=0.01;
 ilu_setup.droptol=1e-10;
@@ -79,23 +78,33 @@ ilu_setup.milu = 'off';
 ilu_setup.thresh = 1;
 ilu_setup.udiag = 0;
 max_resa=1e100;
-Jacobian_Size=Blck_size*(y_kmin+y_kmax_l +periods);
-g1=spalloc( Blck_size*periods, Jacobian_Size, nze*periods);
 reduced = 0;
 while ~(cvg==1 || iter>maxit_)
-    [r, y, g1, g2, g3, b]=feval(fname, y, x, params, steady_state, periods, 0, y_kmin, Blck_size,options.periods);
+    r = NaN(Blck_size, periods);
+    g1a = spalloc(Blck_size*periods, Blck_size*periods, nze*periods);
+    for it_ = y_kmin+(1:periods)
+        [r(:, it_-y_kmin), ~, T(:, it_), g1]=feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
+        if periods == 1
+            g1a = g1(:, Blck_size+(1:Blck_size));
+        elseif it_ == y_kmin+1
+            g1a(1:Blck_size, 1:Blck_size*2) = g1(:, Blck_size+1:end);
+        elseif it_ == y_kmin+periods
+            g1a((periods-1)*Blck_size+1:end, (periods-2)*Blck_size+1:end) = g1(:, 1:2*Blck_size);
+        else
+            g1a((it_-y_kmin-1)*Blck_size+(1:Blck_size), (it_-y_kmin-2)*Blck_size+(1:3*Blck_size)) = g1;
+        end
+    end
     preconditioner = 2;
-    g1a=g1(:, y_kmin*Blck_size+1:(periods+y_kmin)*Blck_size);
-    term1 = g1(:, 1:y_kmin_l*Blck_size)*reshape(y(1+y_kmin-y_kmin_l:y_kmin,y_index)',1,y_kmin_l*Blck_size)';
-    term2 = g1(:, (periods+y_kmin_l)*Blck_size+1:(periods+y_kmin_l+y_kmax_l)*Blck_size)*reshape(y(periods+y_kmin+1:periods+y_kmin+y_kmax_l,y_index)',1,y_kmax_l*Blck_size)';
-    b = b - term1 - term2;
+    ya = reshape(y(y_index, y_kmin+(1:periods)), 1, periods*Blck_size)';
+    ra = reshape(r, periods*Blck_size, 1);
+    b=-ra+g1a*ya;
     [max_res, max_indx]=max(max(abs(r')));
     if ~isreal(r)
         max_res = (-max_res^2)^0.5;
     end
     if ~isreal(max_res) || isnan(max_res)
         cvg = 0;
-    elseif(is_linear && iter>0)
+    elseif is_linear && iter>0
         cvg = 1;
     else
         cvg=(max_res<solve_tolf);
@@ -121,8 +130,8 @@ while ~(cvg==1 || iter>maxit_)
                                 disp(['    trying to correct the Jacobian matrix:']);
                                 disp(['    correcting_factor=' num2str(correcting_factor,'%f') ' max(Jacobian)=' num2str(full(max_factor),'%f')]);
                             end
-                            dx = (g1aa+correcting_factor*speye(periods*Blck_size))\ba- ya;
-                            y(1+y_kmin:periods+y_kmin,y_index)=reshape((ya_save+lambda*dx)',length(y_index),periods)';
+                            dx = (g1aa+correcting_factor*speye(periods*Blck_size))\ba- ya_save;
+                            y(y_index, y_kmin+(1:periods))=reshape((ya_save+lambda*dx)',length(y_index),periods);
                             continue
                         else
                             disp('The singularity of the jacobian matrix could not be corrected');
@@ -135,7 +144,7 @@ while ~(cvg==1 || iter>maxit_)
                     if verbose
                         disp(['reducing the path length: lambda=' num2str(lambda,'%f')]);
                     end
-                    y(1+y_kmin:periods+y_kmin,y_index)=reshape((ya_save+lambda*dx)',length(y_index),periods)';
+                    y(y_index, y_kmin+(1:periods))=reshape((ya_save+lambda*dx)',length(y_index),periods);
                     continue
                 else
                     if verbose
@@ -145,10 +154,10 @@ while ~(cvg==1 || iter>maxit_)
                             fprintf('Error in simul: Convergence not achieved in block %d, after %d iterations.\n Increase "options_.simul.maxit" or set "cutoff=0" in model options.\n',Block_Num, iter);
                         end
                     end
-                    oo.deterministic_simulation.status = 0;
+                    oo.deterministic_simulation.status = false;
                     oo.deterministic_simulation.error = max_res;
                     oo.deterministic_simulation.iterations = iter;
-                    oo.deterministic_simulation.block(Block_Num).status = 0;% Convergency failed.
+                    oo.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
                     oo.deterministic_simulation.block(Block_Num).error = max_res;
                     oo.deterministic_simulation.block(Block_Num).iterations = iter;
                     return
@@ -159,7 +168,6 @@ while ~(cvg==1 || iter>maxit_)
                 end
             end
         end
-        ya = reshape(y(y_kmin+1:y_kmin+periods,y_index)',1,periods*Blck_size)';
         ya_save=ya;
         g1aa=g1a;
         ba=b;
@@ -167,7 +175,7 @@ while ~(cvg==1 || iter>maxit_)
         if stack_solve_algo==0
             dx = g1a\b- ya;
             ya = ya + lambda*dx;
-            y(1+y_kmin:periods+y_kmin,y_index)=reshape(ya',length(y_index),periods)';
+            y(y_index, y_kmin+(1:periods))=reshape(ya',length(y_index),periods);
         elseif stack_solve_algo==1
             for t=1:periods
                 first_elem = (t-1)*Blck_size+1;
@@ -205,7 +213,7 @@ while ~(cvg==1 || iter>maxit_)
                 y_Elem = Blck_size * (t-1)+1:Blck_size * (t);
                 dx(y_Elem) = za - ya(y_Elem);
                 ya(y_Elem) = ya(y_Elem) + lambda*dx(y_Elem);
-                y(y_kmin + t, y_index) = ya(y_Elem);
+                y(y_index, y_kmin + t) = ya(y_Elem);
             end
         elseif stack_solve_algo==2
             flag1=1;
@@ -253,7 +261,7 @@ while ~(cvg==1 || iter>maxit_)
                 else
                     dx = za - ya;
                     ya = ya + lambda*dx;
-                    y(1+y_kmin:periods+y_kmin,y_index)=reshape(ya',length(y_index),periods)';
+                    y(y_index, y_kmin+(1:periods))=reshape(ya',length(y_index),periods);
                 end
             end
         elseif stack_solve_algo==3
@@ -296,20 +304,19 @@ while ~(cvg==1 || iter>maxit_)
                 else
                     dx = za - ya;
                     ya = ya + lambda*dx;
-                    y(1+y_kmin:periods+y_kmin,y_index)=reshape(ya',length(y_index),periods)';
+                    y(y_index, y_kmin+(1:periods))=reshape(ya',length(y_index),periods);
                 end
             end
         elseif stack_solve_algo==4
-            ra = reshape(r(:, y_kmin+1:periods+y_kmin),periods*Blck_size, 1);
             stpmx = 100 ;
             stpmax = stpmx*max([sqrt(ya'*ya);size(y_index,2)]);
             nn=1:size(ra,1);
             g = (ra'*g1a)';
             f = 0.5*ra'*ra;
             p = -g1a\ra;
-            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,'lnsrch1_wrapper_two_boundaries',nn,nn, options.solve_tolx, fname, y, y_index,x, params, steady_state, periods, y_kmin, Blck_size,options.periods);
+            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,'lnsrch1_wrapper_two_boundaries',nn,nn, options.solve_tolx, fname, Block_Num, y, y_index,x, params, steady_state, T, periods, Blck_size, M);
             dx = ya - yn;
-            y(1+y_kmin:periods+y_kmin,y_index)=reshape(yn',length(y_index),periods)';
+            y(y_index, y_kmin+(1:periods))=reshape(yn',length(y_index),periods);
         end
     end
     iter=iter+1;
@@ -323,18 +330,18 @@ if (iter>maxit_)
         printline(41)
         %disp(['No convergence after ' num2str(iter,'%4d') ' iterations in Block ' num2str(Block_Num,'%d')])
     end
-    oo.deterministic_simulation.status = 0;
+    oo.deterministic_simulation.status = false;
     oo.deterministic_simulation.error = max_res;
     oo.deterministic_simulation.iterations = iter;
-    oo.deterministic_simulation.block(Block_Num).status = 0;% Convergency failed.
+    oo.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
     oo.deterministic_simulation.block(Block_Num).error = max_res;
     oo.deterministic_simulation.block(Block_Num).iterations = iter;
     return
 end
 
-oo.deterministic_simulation.status = 1;
+oo.deterministic_simulation.status = true;
 oo.deterministic_simulation.error = max_res;
 oo.deterministic_simulation.iterations = iter;
-oo.deterministic_simulation.block(Block_Num).status = 1;% Convergency obtained.
+oo.deterministic_simulation.block(Block_Num).status = true;% Convergency obtained.
 oo.deterministic_simulation.block(Block_Num).error = max_res;
 oo.deterministic_simulation.block(Block_Num).iterations = iter;

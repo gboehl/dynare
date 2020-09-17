@@ -82,10 +82,10 @@ if isoctave
         skipline()
     end
 else
-    if matlab_ver_less_than('7.9') % Should match the test in mex/build/matlab/configure.ac
+    if matlab_ver_less_than('8.3') % Should match the test in mex/build/matlab/configure.ac
                                    % and in m4/ax_mexopts.m4
         skipline()
-        warning('This version of Dynare has only been tested on MATLAB 7.9 (R2009b) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
+        warning('This version of Dynare has only been tested on MATLAB 8.3 (R2014a) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
         skipline()
     end
 end
@@ -135,14 +135,6 @@ end
 
 if fnamelength + length('.set_auxiliary_variables') > namelengthmax()
     error('Dynare: the name of your .mod file is too long, please shorten it')
-end
-
-% Workaround for a strange bug with Octave: if there is any call to exist(fname)
-% before the call to the preprocessor, then Octave will use the old copy of
-% the .m instead of the newly generated one. Deleting the .m beforehand
-% fixes the problem.
-if isoctave && length(dir([fname(1:(end-4)) '.m'])) > 0
-    delete([fname(1:(end-4)) '.m'])
 end
 
 if ~isempty(strfind(fname,filesep))
@@ -200,14 +192,8 @@ end
 
 if isempty(strfind(arch, '64'))
     arch_ext = '32';
-    if preprocessoroutput
-        disp('Using 32-bit preprocessor');
-    end
 else
     arch_ext = '64';
-    if preprocessoroutput
-        disp('Using 64-bit preprocessor');
-    end
 end
 
 if preprocessoroutput
@@ -236,6 +222,16 @@ if ~isempty(varargin)
     % Finally, enclose arguments within double quotes
     dynare_varargin = ['"' strjoin(varargincopy, '" "') '"'];
     command = [command ' ' dynare_varargin];
+end
+
+% On MATLAB+Windows, the +folder may be locked by MATLAB, preventing its
+% removal by the preprocessor.
+% Trying to delete it here will actually fail, but surprisingly this allows
+% the preprocessor to actually remove the folder (see ModFile::writeOutputFiles())
+% For an instance of this bug, see:
+% https://forum.dynare.org/t/issue-with-dynare-preprocessor-4-6-1/15448/1
+if ispc && ~isoctave && exist(['+',fname(1:end-4)],'dir')
+    [~,~]=rmdir(['+', fname(1:end-4)],'s');
 end
 
 % Under Windows, make sure the MEX file is unloaded (in the use_dll case),

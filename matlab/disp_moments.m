@@ -11,7 +11,7 @@ function oo_=disp_moments(y,var_list,M_,options_,oo_)
 % OUTPUTS
 %   oo_                 [structure]    Dynare's results structure,
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,7 +40,7 @@ ivar=zeros(nvar,1);
 for i=1:nvar
     i_tmp = strmatch(var_list{i}, M_.endo_names, 'exact');
     if isempty(i_tmp)
-        error ('One of the variable specified does not exist') ;
+       error('The variable %s specified is not an endogenous variable',var_list{i});
     else
         ivar(i) = i_tmp;
     end
@@ -50,7 +50,7 @@ y = y(ivar,options_.drop+1:end)';
 
 ME_present=0;
 if ~all(M_.H==0)
-    if isoctave || matlab_ver_less_than('8.1')
+    if isoctave
         [observable_pos_requested_vars, index_subset, index_observables] = intersect_stable(ivar, options_.varobs_id);
     else
         [observable_pos_requested_vars, index_subset, index_observables] = intersect(ivar, options_.varobs_id, 'stable');
@@ -67,6 +67,8 @@ if ~all(M_.H==0)
         y_ME=get_filtered_time_series(y_ME,m_ME,options_);
         y_ME_only_filtered=get_filtered_time_series(y_ME_only,mean(y_ME_only),options_);
         s2_ME = mean(y_ME.*y_ME);
+        s_ME = sqrt(s2_ME);
+        zero_variance_ME_var_index=index_subset(abs(s_ME')<options_.zero_moments_tolerance);
     end
 end
 
@@ -83,11 +85,20 @@ oo_.var = y'*y/size(y,1);
 oo_.skewness = (mean(y.^3)./s2.^1.5)';
 oo_.kurtosis = (mean(y.^4)./(s2.*s2)-3)';
 
+zero_variance_var_index=find(abs(s)<options_.zero_moments_tolerance);
+oo_.skewness(zero_variance_var_index)=NaN;
+oo_.kurtosis(zero_variance_var_index)=NaN;
+s(zero_variance_var_index)=0;
+s2(zero_variance_var_index)=0;
+oo_.var(zero_variance_var_index,:)=0;
+oo_.var(:,zero_variance_var_index)=0;
+
+
 labels = M_.endo_names(ivar);
 labels_TeX = M_.endo_names_tex(ivar);
 
 if ~options_.nomoments
-    z = [ m' s' s2' (mean(y.^3)./s2.^1.5)' (mean(y.^4)./(s2.*s2)-3)' ];
+    z = [ m' s' s2' oo_.skewness oo_.kurtosis ];
     title='MOMENTS OF SIMULATED VARIABLES';
     title=add_filter_subtitle(title, options_);
     headers = {'VARIABLE'; 'MEAN'; 'STD. DEV.'; 'VARIANCE'; 'SKEWNESS'; 'KURTOSIS'};
@@ -99,6 +110,8 @@ end
 
 if ~options_.nocorr
     corr = (y'*y/size(y,1))./(s'*s);
+    corr(zero_variance_var_index,:)=NaN;
+    corr(:,zero_variance_var_index)=NaN;
     if options_.contemporaneous_correlation
         oo_.contemporaneous_correlation = corr;
     end
@@ -124,6 +137,8 @@ if ar > 0
     autocorr = [];
     for i=1:ar
         oo_.autocorr{i} = y(ar+1:end,:)'*y(ar+1-i:end-i,:)./((size(y,1)-ar)*std(y(ar+1:end,:))'*std(y(ar+1-i:end-i,:)));
+        oo_.autocorr{i}(zero_variance_var_index,:)=NaN;
+        oo_.autocorr{i}(:,zero_variance_var_index)=NaN;
         autocorr = [ autocorr diag(oo_.autocorr{i}) ];
     end
     if ~options_.noprint
@@ -169,12 +184,16 @@ if ~options_.nodecomposition
             y_sim_one_shock = simult_(M_,options_,y0,oo_.dr,temp_shock_mat,options_.order);
             y_sim_one_shock=y_sim_one_shock(ivar,1+options_.drop+1:end)';
             y_sim_one_shock=get_filtered_time_series(y_sim_one_shock,mean(y_sim_one_shock),options_);
-            oo_.variance_decomposition(:,i_exo_var(shock_iter))=var(y_sim_one_shock)./s2*100;
+            oo_.variance_decomposition(:,i_exo_var(shock_iter))=var(y_sim_one_shock)./s2*100;            
         end
+        oo_.variance_decomposition(zero_variance_var_index,:)=NaN;
         if ME_present
             oo_.variance_decomposition_ME=oo_.variance_decomposition(index_subset,:)...
                 .*repmat((s2(index_subset)./s2_ME)',1,length(i_exo_var));
             oo_.variance_decomposition_ME(:,end+1)=var(y_ME_only_filtered)./s2_ME*100;
+            oo_.variance_decomposition_ME(ismember(observable_pos_requested_vars,intersect(zero_variance_ME_var_index,zero_variance_var_index)),:)=NaN;
+            oo_.variance_decomposition_ME(ismember(observable_pos_requested_vars,setdiff(zero_variance_var_index,zero_variance_ME_var_index)),1:end-1)=0;
+            oo_.variance_decomposition_ME(ismember(observable_pos_requested_vars,setdiff(zero_variance_var_index,zero_variance_ME_var_index)),end)=1;
         end
         if ~options_.noprint %options_.nomoments == 0
             skipline()

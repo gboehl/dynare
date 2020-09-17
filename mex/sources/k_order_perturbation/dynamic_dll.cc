@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2019 Dynare Team
+ * Copyright © 2008-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -18,8 +18,6 @@
  */
 
 #include "dynamic_dll.hh"
-
-#include "dynare_exception.hh"
 
 #include <iostream>
 #include <cassert>
@@ -45,34 +43,14 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName, int ntt_arg, int or
 #endif
                           );
 
-  for (int i = 0; i <= order; i++)
-    {
-      std::string funcname = "dynamic_" + (i == 0 ? "resid" : "g" + std::to_string(i));
-      dynamic_deriv_fct deriv;
-      dynamic_tt_fct tt;
-#if defined(__CYGWIN32__) || defined(_WIN32)
-      deriv = reinterpret_cast<dynamic_deriv_fct>(GetProcAddress(dynamicHinstance, funcname.c_str()));
-      tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, (funcname + "_tt").c_str()));
-#else
-      deriv = reinterpret_cast<dynamic_deriv_fct>(dlsym(dynamicHinstance, funcname.c_str()));
-      tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, (funcname + "_tt").c_str()));
-#endif
-      if (!deriv || !tt)
-        {
-#if defined(__CYGWIN32__) || defined(_WIN32)
-          FreeLibrary(dynamicHinstance);
-#else
-          dlclose(dynamicHinstance);
-#endif
-          throw DynareException(__FILE__, __LINE__, "Error when loading symbols from " + fName
-#if !defined(__CYGWIN32__) && !defined(_WIN32)
-                                + ": " + dlerror()
-#endif
-                                );
-        }
-      dynamic_deriv.push_back(deriv);
-      dynamic_tt.push_back(tt);
-    }
+  dynamic_tt.resize(order+1);
+
+  std::tie(dynamic_resid, dynamic_tt[0]) = getSymbolsFromDLL<dynamic_resid_or_g1_fct>("dynamic_resid", fName);
+  std::tie(dynamic_g1, dynamic_tt[1]) = getSymbolsFromDLL<dynamic_resid_or_g1_fct>("dynamic_g1", fName);
+
+  dynamic_higher_deriv.resize(std::max(0, order-1));
+  for (int i = 2; i <= order; i++)
+    std::tie(dynamic_higher_deriv[i-2], dynamic_tt[i]) = getSymbolsFromDLL<dynamic_higher_deriv_fct>("dynamic_g" + std::to_string(i), fName);
 
   tt = std::make_unique<double[]>(ntt);
 }
@@ -95,11 +73,16 @@ void
 DynamicModelDLL::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
                       Vector &residual, std::vector<TwoDMatrix> &md) noexcept(false)
 {
-  assert(md.size() == dynamic_deriv.size()-1);
+  assert(md.size() == dynamic_tt.size()-1);
 
-  for (size_t i = 0; i < dynamic_deriv.size(); i++)
+  for (size_t i = 0; i < dynamic_tt.size(); i++)
     {
       dynamic_tt[i](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
-      dynamic_deriv[i](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), i == 0 ? residual.base() : md[i-1].base());
+      if (i == 0)
+        dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), residual.base());
+      else if (i == 1)
+        dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), md[0].base());
+      else
+        dynamic_higher_deriv[i-2](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), &md[i-1].get(0, 0), &md[i-1].get(0, 1), &md[i-1].get(0, 2));
     }
 }

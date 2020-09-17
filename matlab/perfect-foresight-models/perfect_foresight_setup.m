@@ -65,7 +65,4 @@ if ~isempty(M_.det_shocks) && options_.periods<max([M_.det_shocks.periods])
 end
 
 oo_ = make_ex_(M_,options_,oo_);
-
-if ~options_.initval_file
-    oo_ = make_y_(M_,options_,oo_);
-end
+oo_ = make_y_(M_,options_,oo_);

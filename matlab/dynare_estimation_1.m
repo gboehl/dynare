@@ -149,9 +149,6 @@ ncn = estim_params_.ncn;  % Covariance of the measurement innovations (number of
 np  = estim_params_.np ;  % Number of deep parameters.
 nx  = nvx+nvn+ncx+ncn+np; % Total number of parameters to be estimated.
 
-% Set the names of the priors.
-pnames = {''; 'beta'; 'gamm'; 'norm'; 'invg'; 'unif'; 'invg2'; ''; 'weibl'};
-
 dr = oo_.dr;
 
 if ~isempty(estim_params_)
@@ -268,7 +265,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 if compute_hessian
                     crit = options_.newrat.tolerance.f;
                     newratflag = newratflag>0;
-                    hh = reshape(mr_hessian(xparam1,objective_function,fval,newratflag,crit,new_rat_hess_info,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_), nx, nx);
+                    hh = reshape(mr_hessian(xparam1,objective_function,fval,newratflag,crit,new_rat_hess_info,[bounds.lb bounds.ub],bayestopt_.p2,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_), nx, nx);
                 end
                 options_.kalman_algo = kalman_algo0;
             end
@@ -357,7 +354,7 @@ end
 
 if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     % display results table and store parameter estimates and standard errors in results
-    oo_ = display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, pnames, 'Posterior', 'posterior');
+    oo_ = display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, prior_dist_names, 'Posterior', 'posterior');
     % Laplace approximation to the marginal log density:
     if options_.cova_compute
         estim_params_nbr = size(xparam1,1);
@@ -378,7 +375,7 @@ if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     end
 
 elseif ~any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
-    oo_=display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, pnames, 'Maximum Likelihood', 'mle');
+    oo_=display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, prior_dist_names, 'Maximum Likelihood', 'mle');
 end
 
 if np > 0
@@ -490,7 +487,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
             [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_);
             % Store posterior statistics by parameter name
-            oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, pnames);
+            oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, prior_dist_names);
             if ~options_.nograph
                 oo_ = PlotPosteriorDistributions(estim_params_, M_, options_, bayestopt_, oo_);
             end
@@ -589,11 +586,6 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                 plot(1:gend,innov(k,:),marker_string{2,1},'linewidth',1)
                 hold off
                 name = M_.exo_names{k};
-                if isempty(NAMES)
-                    NAMES = name;
-                else
-                    NAMES = char(NAMES,name);
-                end
                 if ~isempty(options_.XTick)
                     set(gca,'XTick',options_.XTick)
                     set(gca,'XTickLabel',options_.XTickLabel)
@@ -602,21 +594,14 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                     xlim([1 gend])
                 end
                 if options_.TeX
-                    texname = M_.exo_names_tex{k};
-                    if isempty(TeXNAMES)
-                        TeXNAMES = ['$ ' deblank(texname) ' $'];
-                    else
-                        TeXNAMES = char(TeXNAMES,['$ ' deblank(texname) ' $']);
-                    end
+                    title(['$' M_.exo_names_tex{k} '$'],'Interpreter','latex')
+                else
+                    title(name,'Interpreter','none')
                 end
-                title(name,'Interpreter','none')
             end
             dyn_saveas(fh,[M_.fname, '/graphs/' M_.fname '_SmoothedShocks' int2str(plt)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
-                for jj = 1:nstar0
-                    fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
-                end
                 fprintf(fidTeX,'\\centering \n');
                 fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_SmoothedShocks%s}\n',options_.figures.textwidth*min(i/nc,1),[M_.fname, '/graphs/' M_.fname],int2str(plt));
                 fprintf(fidTeX,'\\caption{Smoothed shocks.}');
@@ -650,8 +635,6 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
             end
             for plt = 1:nbplt
                 fh = dyn_figure(options_.nodisplay,'Name','Smoothed observation errors');
-                NAMES = [];
-                if options_.TeX, TeXNAMES = []; end
                 nstar0=min(nstar,number_of_plots_to_draw-(plt-1)*nstar);
                 if gend==1
                     marker_string{1,1}='-ro';
@@ -671,32 +654,20 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                     if gend>1
                         xlim([1 gend])
                     end
-                    if isempty(NAMES)
-                        NAMES = name;
-                    else
-                        NAMES = char(NAMES,name);
-                    end
                     if ~isempty(options_.XTick)
                         set(gca,'XTick',options_.XTick)
                         set(gca,'XTickLabel',options_.XTickLabel)
                     end
                     if options_.TeX
                         idx = strmatch(options_.varobs{index(k)}, M_.endo_names, 'exact');
-                        texname = M_.endo_names_tex{idx};
-                        if isempty(TeXNAMES)
-                            TeXNAMES = ['$ ' texname ' $'];
-                        else
-                            TeXNAMES = char(TeXNAMES,['$ ' texname ' $']);
-                        end
+                        title(['$' M_.endo_names_tex{idx} '$'],'Interpreter','latex')
+                    else
+                        title(name,'Interpreter','none')
                     end
-                    title(name,'Interpreter','none')
                 end
                 dyn_saveas(fh,[M_.fname, '/graphs/' M_.fname '_SmoothedObservationErrors' int2str(plt)],options_.nodisplay,options_.graph_format);
                 if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                     fprintf(fidTeX,'\\begin{figure}[H]\n');
-                    for jj = 1:nstar0
-                        fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
-                    end
                     fprintf(fidTeX,'\\centering \n');
                     fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_SmoothedObservationErrors%s}\n',options_.figures.textwidth*min(i/nc,1),[M_.fname, '/graphs/' M_.fname],int2str(plt));
                     fprintf(fidTeX,'\\caption{Smoothed observation errors.}');
@@ -726,7 +697,6 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
         for plt = 1:nbplt
             fh = dyn_figure(options_.nodisplay,'Name','Historical and smoothed variables');
             NAMES = [];
-            if options_.TeX, TeXNAMES = []; end
             nstar0=min(nstar,n_varobs-(plt-1)*nstar);
             if gend==1
                 marker_string{1,1}='-ro';
@@ -743,11 +713,6 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                 plot(1:gend,rawdata(:,k),marker_string{2,1},'linewidth',1)
                 hold off
                 name = options_.varobs{k};
-                if isempty(NAMES)
-                    NAMES = name;
-                else
-                    NAMES = char(NAMES,name);
-                end
                 if ~isempty(options_.XTick)
                     set(gca,'XTick',options_.XTick)
                     set(gca,'XTickLabel',options_.XTickLabel)
@@ -757,21 +722,14 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
                 end
                 if options_.TeX
                     idx = strmatch(options_.varobs{k}, M_.endo_names,'exact');
-                    texname = M_.endo_names_tex{idx};
-                    if isempty(TeXNAMES)
-                        TeXNAMES = ['$ ' texname ' $'];
-                    else
-                        TeXNAMES = char(TeXNAMES,['$ ' texname ' $']);
-                    end
+                    title(['$' M_.endo_names_tex{idx} '$'],'Interpreter','latex')
+                else
+                    title(name,'Interpreter','none')
                 end
-                title(name,'Interpreter','none')
             end
             dyn_saveas(fh,[M_.fname, '/graphs/' M_.fname '_HistoricalAndSmoothedVariables' int2str(plt)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
-                for jj = 1:nstar0
-                    fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{%s}\n',deblank(NAMES(jj,:)),deblank(TeXNAMES(jj,:)));
-                end
                 fprintf(fidTeX,'\\centering \n');
                 fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_HistoricalAndSmoothedVariables%s}\n',options_.figures.textwidth*min(i/nc,1),[M_.fname, '/graphs/' M_.fname],int2str(plt));
                 fprintf(fidTeX,'\\caption{Historical and smoothed variables.}');

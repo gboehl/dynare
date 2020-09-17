@@ -22,8 +22,8 @@ set -ex
 ROOTDIR=$(pwd)/..
 
 # Set the compilers
-CC=gcc-9
-CXX=g++-9
+CC=gcc-10
+CXX=g++-10
 
 # Set the number of threads
 NTHREADS=$(nproc)
@@ -88,7 +88,7 @@ make -j"$NTHREADS"
 NAME=dynare-"$VERSION"
 PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p \
-      "$PKGFILES"/mex/matlab/maci64-7.9-9.3 \
+      "$PKGFILES"/mex/matlab/maci64-8.3-9.3 \
       "$PKGFILES"/mex/matlab/maci64-9.4-9.8 \
       "$PKGFILES"/mex/octave \
       "$PKGFILES"/doc/dynare++ \
@@ -107,7 +107,7 @@ cp -p  "$ROOTDIR"/license.txt                                        "$PKGFILES"
 cp -pr "$ROOTDIR"/matlab                                             "$PKGFILES"
 cp -pr "$ROOTDIR"/examples                                           "$PKGFILES"
 
-cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-7.9-9.3
+cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-8.3-9.3
 
 cp -p  "$ROOTDIR"/scripts/dynare.el                                  "$PKGFILES"/scripts
 cp -pr "$ROOTDIR"/contrib/ms-sbvar/TZcode/MatlabFiles                "$PKGFILES"/contrib/ms-sbvar/TZcode
@@ -166,7 +166,7 @@ PATH="$OCTAVE_BIN_DIR:$PATH" CC=$CC CXX=$CXX ./configure \
   --with-slicot="$LIB64"/Slicot/with-underscore
 PATH="$OCTAVE_BIN_DIR:$PATH" make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/octave/*                                       "$PKGFILES"/mex/octave
-echo -e "function v = supported_octave_version\nv=\"$(octave --eval "disp(OCTAVE_VERSION)")\";\nend" > "$PKGFILES"/matlab/supported_octave_version.m
+echo -e "function v = supported_octave_version\nv=\"$OCTAVE_VERSION\";\nend" > "$PKGFILES"/matlab/supported_octave_version.m
 
 
 ##
@@ -175,12 +175,12 @@ echo -e "function v = supported_octave_version\nv=\"$(octave --eval "disp(OCTAVE
 cd "$ROOTDIR"/macOS/pkg
 
 # Dynare option
-pkgbuild --root "$PKGFILES" --identifier com.cepremap.dynare --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
+pkgbuild --root "$PKGFILES" --identifier org.dynare --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
 
 # GCC option
 # Create dummy payload for GCC package; otherwise the size is displayed as 0 bytes in the installer
 dd if=/dev/zero of="$ROOTDIR"/macOS/brewfiles/dummy  bs=1m  count=800
-pkgbuild --root "$ROOTDIR"/macOS/brewfiles --identifier com.cepremap.dynare.gcc --version "$VERSION" --scripts "$ROOTDIR"/macOS/scripts --install-location /Applications/Dynare/"$LOCATION" "$NAME"-gcc.pkg
+pkgbuild --root "$ROOTDIR"/macOS/brewfiles --identifier org.dynare.gcc --version "$VERSION" --scripts "$ROOTDIR"/macOS/scripts --install-location /Applications/Dynare/"$LOCATION" "$NAME"-gcc.pkg
 
 # Replace variables in displayed files
 sed "s/VERSION_READ/$VERSION/g" "$ROOTDIR"/macOS/distribution_template.xml > distribution_tmp.xml

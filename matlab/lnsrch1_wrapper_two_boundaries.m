@@ -1,5 +1,6 @@
-function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
-                                             params, steady_state, periods, y_kmin, y_size,Periods)
+function ra = lnsrch1_wrapper_two_boundaries(ya, fname, blk, y, y_index, x, ...
+                                             params, steady_state, T, periods, ...
+                                             y_size, M_)
 % wrapper for solve_one_boundary m-file when it is used with a dynamic
 % model
 %
@@ -7,15 +8,18 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 %   ya                  [vector]        The endogenous of the current block
 %   y_index             [vector of int] The index of the endogenous variables of
 %                                       the block
-%   fname               [string]        name of the file containing the block
-%                                       to simulate
+%   fname               [string]        name of the dynamic file
+%   blk                 [int]           block number
 %   y                   [matrix]        All the endogenous variables of the model
 %   x                   [matrix]        All the exogenous variables of the model
 %   params              [vector]        All the parameters of the model
+%   steady_state        [vector]        steady state of the model
+%   T                   [matrix]        Temporary terms
 %   periods             [int]           The number of periods
-%   y_kmin              [int]           The maximum number of lag on en endogenous variables
 %   y_size              [int]           The number of endogenous variables
 %                                       in the current block
+%   M_                                  Model description structure
+%
 % OUTPUTS
 %   ra                  [vector]        The residuals of the current block
 %
@@ -26,7 +30,7 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 %   none.
 %
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright (C) 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,6 +48,8 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, y, y_index, x, ...
 % along with Dynare.  If not, see <http://www.gnu.org/licen
 
 %reshape the input arguments of the dynamic function
-y(y_kmin+1:y_kmin+periods, y_index) = reshape(ya',length(y_index),periods)';
-[r, y, g1, g2, g3, b]=feval(fname, y, x, params, steady_state, periods, 0, y_kmin, y_size, Periods);
-ra = reshape(r(:, y_kmin+1:periods+y_kmin),periods*y_size, 1);
+y(y_index, M_.maximum_lag+(1:periods)) = reshape(ya',length(y_index),periods);
+ra = NaN(periods*y_size, 1);
+for it_ = M_.maximum_lag+(1:periods)
+    [ra((it_-M_.maximum_lag-1)*y_size+(1:y_size)), ~, ~, g1]=feval(fname, blk, dynvars_from_endo_simul(y, it_, M_), x, params, steady_state, T(:, it_), it_, false);
+end

@@ -125,10 +125,6 @@ end;
 calib_params = M_.params;
 calib_Sigma_e = M_.Sigma_e;
 
-/* Skip test under MATLAB R2009b
-   MATLAB crashes, most likely due to an internal bug */
-if isoctave || ~matlab_ver_less_than('7.10')
-
 stoch_simul(order=@{ORDER},nograph,irf=0,periods=0);
 identification(order=@{ORDER},nograph,no_identification_strength);
 
@@ -475,5 +471,3 @@ for jj = 1:2
         end
     end
 end
-
-end % Skip test under old MATLAB

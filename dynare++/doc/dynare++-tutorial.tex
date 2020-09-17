@@ -10,7 +10,7 @@
 
 \author{Ondra Kamen\'\i k}
 
-\date{February 2011, updated August 2016}
+\date{First version: February 2011 \\ This version: September 2020}
 \maketitle
 
 \tableofcontents
@@ -18,7 +18,7 @@
 \section{Setup}
 
 The Dynare++ setup procedure is pretty straightforward as Dynare++ is included in the Dynare installation 
-packages which can be downloaded from \url{http://www.dynare.org}. Take the following steps:
+packages which can be downloaded from \url{https://www.dynare.org}. Take the following steps:
 \begin{enumerate}
 \item Add the {\tt dynare++} subdirectory of the root Dynare installation directory to the your
 operating system path. This ensures that your OS will find the {\tt dynare++} executable.
@@ -159,10 +159,7 @@ file {\tt example1.jnl} and a MATLAB MAT-4 {\tt example1.mat}. The
 journal file contains information about time, memory and processor
 resources needed for all steps of solution. The output file is more
 interesting. It contains various simulation results. It can be loaded
-into MATLAB or Scilab and examined.%
-\footnote{For MATLAB {\tt load example1.mat}, for Scilab {\tt
-mtlb\_load example1.mat}} The following examples are done in MATLAB,
-everything would be very similar in Scilab.
+into MATLAB or Octave and examined.
 
 Let us first examine the contents of the MAT file:
 {\small
@@ -431,7 +428,7 @@ vcov = [
 }
 
 After this model file has been run, we can load the resulting MAT-file
-into the MATLAB (or Scilab) and examine its contents:
+into the MATLAB and examine its contents:
 {\small
 \begin{verbatim}
 >> load kp1980_2.mat
@@ -628,7 +625,11 @@ reported. They might be useful for confidence interval calculations.
 
 For each shock, Dynare++ calculates IRF for two impulses, positive and
 negative. Size of an impulse is one standard error of a respective
-shock.
+shock.\footnote{Note that if the exogenous shocks are correlated, Dynare++ will
+  ignore the correlation when computing the IRFs, and simulate the impulse on
+  each shock independently of the others. Note that Dynare behaves differently
+  in this case, and computes IRFs after performing an orthogonalization of the
+  shocks (via a Cholesky decomposition of the variance-covariance matrix).}
 
 The rest of this subsection is divided to three parts giving account
 on real-time simulations, conditional simulations, and on the way how
@@ -924,7 +925,7 @@ This section deals with Dynare++ input. The first subsection
 \ref{dynpp_opts} provides a list of command line options, next
 subsection \ref{dynpp_mod} deals with a format of Dynare++ model file,
 and the last subsection discusses incompatibilities between Dynare
-MATLAB and Dynare++.
+and Dynare++.
 
 \subsection{Command Line Options}
 \label{dynpp_opts}
@@ -1143,7 +1144,7 @@ $t+1$. The realization of $u_t$ is included in the information set of
 $E_t$. See an explanation of Dynare++ timing on page \pageref{timing}.
 \end{itemize}
 
-The model equations are formulated in the same way as in MATLAB
+The model equations are formulated in the same way as in
 Dynare. The time indexes different from $t$ are put to round
 parenthesis in this way: {\tt C(-1)}, {\tt C}, {\tt C(+1)}.
 
@@ -1181,16 +1182,16 @@ Y-Y_SS = rho*(Y(-1)-Y_SS)+EPS;
 \end{verbatim}
 }
 
-\subsection{Incompatibilities with MATLAB Dynare}
+\subsection{Incompatibilities with Dynare}
 
 This section provides a list of incompatibilities between a model file
-for Dy\-na\-re++ and MATLAB Dynare. These must be considered when a model
-file for MATLAB Dynare is being migrated to Dynare++. The list is the
+for Dy\-na\-re++ and for Dynare. These must be considered when a model
+file for Dynare is being migrated to Dynare++. The list is the
 following:
 \begin{itemize}
 \item There is no {\tt periods} keyword.
-\item The parameters cannot be lagged or leaded, I think that Dynare
-MATLAB allows it, but the semantics is the same (parameter is a
+\item The parameters cannot be lagged or leaded; Dynare
+allows it, though the semantics is the same (parameter is a
 constant).
 \item There are no commands like {\tt steady}, {\tt check}, {\tt
 simul}, {\tt stoch\_simul}, etc.

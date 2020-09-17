@@ -1,7 +1,7 @@
 /*
  * This file replicates the model studied in:
- * Aguiar, Mark and Gopinath, Gita (2004): "Emerging Market Business Cycles:
- * The Cycle is the Trend" (NBER WP 10734). It is different from version published 
+ * Aguiar, Mark and Gopinath, Gita (2004): “Emerging Market Business Cycles:
+ * The Cycle is the Trend” (NBER WP 10734). It is different from version published 
  * in the Journal of Political Economy.
  * 
  * This model file is intended to show the capabilities of the Dynare macro 
@@ -15,7 +15,7 @@
  * The mod-file reproduces Figure 4 of the working paper, which displays the
  * model response to 1 percent shock to trend and cyclical TFP.
  *
- * This implementation was written by S�bastien Villemot and Johannes Pfeifer. 
+ * This implementation was written by Sébastien Villemot and Johannes Pfeifer. 
  * Please note that the following copyright notice only applies to this Dynare 
  * implementation of the model.
  */

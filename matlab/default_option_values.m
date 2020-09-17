@@ -151,6 +151,7 @@ end
 % IRFs & other stoch_simul output
 options_.irf = 40;
 options_.impulse_responses.plot_threshold=1e-10;
+options_.zero_moments_tolerance=1e-10;
 options_.relative_irf = false;
 options_.ar = 5;
 options_.hp_filter = 0;
@@ -512,7 +513,7 @@ newrat.tolerance.f=1e-5;
 newrat.tolerance.f_analytic=1e-7;
 newrat.maxiter=1000;
 newrat.verbosity=1;
-newrat.Save_files=1;
+newrat.Save_files=0;
 
 options_.newrat=newrat;
 

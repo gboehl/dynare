@@ -70,10 +70,15 @@ else
     data = M_;
     Size = 1;
 end
-if (options_.bytecode)
-    [zz, data]= bytecode('dynamic','evaluate', z, zx, M_.params, dr.ys, 1, data);
+if options_.bytecode
+    [~, data]= bytecode('dynamic','evaluate', z, zx, M_.params, dr.ys, 1, data);
 else
-    [r, data] = feval([M_.fname '.dynamic'], options_, M_, oo_, z', zx, M_.params, dr.ys, M_.maximum_lag+1, data);
+    T=NaN(M_.block_structure.dyn_tmp_nbr, 1);
+    it_=M_.maximum_lag+1;
+    y=dynvars_from_endo_simul(z, it_, M_);
+    for blk = 1:length(M_.block_structure.block)
+        [~, ~, T, data(blk).g1, data(blk).g1_x, data(blk).g1_xd, data(blk).g1_o]=feval([M_.fname '.dynamic'], blk, y, zx, M_.params, dr.ys, T, it_, true);
+    end
 end
 dr.full_rank = 1;
 dr.eigval = [];

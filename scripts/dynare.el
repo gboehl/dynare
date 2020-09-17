@@ -1,7 +1,7 @@
 ;;; dynare.el --- major mode for editing Dynare mod files
 
 ;; Copyright © 2010 Yannick Kalantzis
-;; Copyright © 2019 Dynare Team
+;; Copyright © 2019-2020 Dynare Team
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@
     "squeeze_shock_decomposition" "sbvar"
     "ms_estimation" "ms_simulation" "ms_compute_mdd" "ms_compute_probabilities"
     "ms_forecast" "ms_irf" "ms_variance_decomposition" "conditional_forecast"
-    "plot_conditional_forecast" "gmm_estimation" "smm_estimation"
+    "plot_conditional_forecast" "method_of_moments"
     "markov_switching" "svar" "svar_global_identification_check"
     "external_function" "calib_smoother" "model_diagnostics" "extended_path"
     "smoother2histval" "perfect_foresight_setup" "perfect_foresight_solver"
@@ -98,7 +98,7 @@
       "observation_trends" "optim_weights" "homotopy_setup"
       "conditional_forecast_paths" "svar_identification" "moment_calibration"
       "irf_calibration" "ramsey_constraints" "restrictions" "generate_irfs"
-      "verbatim")
+      "matched_moments" "verbatim")
     "Dynare block keywords."))
 
 ;; Mathematical functions and operators used in model equations (see "hand_side" in Bison file)

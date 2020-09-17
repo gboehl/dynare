@@ -8,7 +8,7 @@
  * and MATLAB_VERSION (for version 7.4, define it to 0x0704).
  *
  *
- * Copyright © 2009-2011 Dynare Team
+ * Copyright © 2009-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -29,8 +29,7 @@
 #ifndef _DYNLAPACK_H
 #define _DYNLAPACK_H
 
-/* Starting from version 7.8, MATLAB LAPACK expects ptrdiff_t arguments for integers */
-#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION >= 0x0708
+#if defined(MATLAB_MEX_FILE)
 # ifdef __cplusplus
 #  include <cstddef>
 # else

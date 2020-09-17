@@ -69,12 +69,18 @@ end
 % Compute the residuals
 if options_.block && ~options_.bytecode
     z = zeros(M_.endo_nbr,1);
+    T = NaN(M_.block_structure_stat.tmp_nbr, 1);
     for i = 1:length(M_.block_structure_stat.block)
-        [r, g, yy, var_indx] = feval([M_.fname '.static'],...
-                                     i,...
-                                     oo_.steady_state,...
-                                     [oo_.exo_steady_state; ...
-                            oo_.exo_det_steady_state], M_.params);
+        [r, yy, T, g] = feval([M_.fname '.static'],...
+                              i,...
+                              oo_.steady_state,...
+                              [oo_.exo_steady_state; ...
+                               oo_.exo_det_steady_state], M_.params, T);
+        if M_.block_structure_stat.block(i).Simulation_Type == 1 || ... % evaluateForward
+           M_.block_structure_stat.block(i).Simulation_Type == 2        % evaluateBackward
+            vidx = M_.block_structure_stat.block(i).variable;
+            r = yy(vidx) - oo_.steady_state(vidx);
+        end
         idx = M_.block_structure_stat.block(i).equation;
         z(idx) = r;
     end
@@ -97,7 +103,7 @@ if nargout == 0
     disp('Residuals of the static equations:')
     skipline()
     for i=1:M_.orig_endo_nbr
-        if abs(z(i)) < options_.dynatol.f/100
+        if abs(z(i)) < options_.solve_tolf/100
             tmp = 0;
         else
             tmp = z(i);

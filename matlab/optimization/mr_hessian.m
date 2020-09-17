@@ -1,5 +1,5 @@
-function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,varargin)
-% function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,varargin)
+function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,bounds,prior_std,varargin)
+% function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,bounds,prior_std,varargin)
 %  numerical gradient and Hessian, with 'automatic' check of numerical
 %  error
 %
@@ -24,7 +24,10 @@ function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,f
 %                       derivatives
 %  - hess_info              structure storing the step sizes for
 %                           computation of Hessian
-%  - varargin               other inputs:
+%  - bounds                 prior bounds of parameters 
+%  - prior_std              prior standard devation of parameters (can be NaN)
+%  - varargin               other inputs
+%                           e.g. in dsge_likelihood
 %                           varargin{1} --> DynareDataset
 %                           varargin{2} --> DatasetInfo
 %                           varargin{3} --> DynareOptions
@@ -64,9 +67,9 @@ function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,f
 n=size(x,1);
 
 [f0,exit_flag, ff0]=penalty_objective_function(x,func,penalty,varargin{:});
-h2=varargin{7}.ub-varargin{7}.lb;
-hmax=varargin{7}.ub-x;
-hmax=min(hmax,x-varargin{7}.lb);
+h2=bounds(:,2)-bounds(:,1);
+hmax=bounds(:,2)-x;
+hmax=min(hmax,x-bounds(:,1));
 if isempty(ff0)
     outer_product_gradient=0;
 else
@@ -240,7 +243,7 @@ if outer_product_gradient
         sd=sqrt(diag(ihh));   %standard errors
         sdh=sqrt(1./diag(hh));   %diagonal standard errors
         for j=1:length(sd)
-            sd0(j,1)=min(varargin{6}.p2(j), sd(j));  %prior std
+            sd0(j,1)=min(prior_std(j), sd(j));  %prior std
             sd0(j,1)=10^(0.5*(log10(sd0(j,1))+log10(sdh(j,1))));
         end
         ihh=ihh./(sd*sd').*(sd0*sd0');  %inverse outer product with modified std's

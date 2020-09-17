@@ -3,7 +3,7 @@ function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
 % Computes conditional forecasts.
 %
 % INPUTS
-% - consnstrained_paths  [double]      m*p array, where m is the number of constrained endogenous variables and p is the number of constrained periods.
+% - constrained_paths  [double]        m*p array, where m is the number of constrained endogenous variables and p is the number of constrained periods.
 % - constrained_vars     [integer]     m*1 array, indices in M_.endo_names of the constrained variables.
 % - options_cond_fcst    [structure]   containing the options. The fields are:
 %

@@ -56,7 +56,7 @@ module lapack
           alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, work, lwork, bwork, &
           info)
        import :: blint, bllog, real64
-       character :: jobvsl, jobvsr, sort
+       character, intent(in) :: jobvsl, jobvsr, sort
        interface
           logical(bllog) function selctg(alphar, alphai, beta)
             import :: bllog, real64
@@ -69,5 +69,15 @@ module lapack
        logical(bllog), dimension(*), intent(out) :: bwork
        integer(blint), intent(out) :: sdim, info
      end subroutine dgges
+  end interface
+
+  interface
+     subroutine dpotrf(uplo, n, a, lda, info)
+       import :: blint, real64
+       character, intent(in) :: uplo
+       integer(blint), intent(in) :: n, lda
+       real(real64), dimension(*), intent(inout) :: a
+       integer(blint), intent(out) :: info
+     end subroutine dpotrf
   end interface
 end module lapack

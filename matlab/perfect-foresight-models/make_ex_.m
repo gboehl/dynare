@@ -1,5 +1,6 @@
-function oo_=make_ex_(M_,options_,oo_)
-% forms oo_.exo_simul and oo_.exo_det_simul
+function oo_ = make_ex_(M_, options_, oo_)
+
+% Forms oo_.exo_simul and oo_.exo_det_simul
 %
 % INPUTS
 %   M_:           Dynare model structure
@@ -8,13 +9,8 @@ function oo_=make_ex_(M_,options_,oo_)
 %
 % OUTPUTS
 %   oo_:          Dynare results structure
-%
-% ALGORITHM
-%
-% SPECIAL REQUIREMENTS
-%
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,19 +37,33 @@ if M_.exo_det_nbr > 1 && isempty(oo_.exo_det_steady_state)
 end
 
 % Initialize oo_.exo_simul
-if isempty(M_.exo_histval)
-    if options_.initval_file
-        % exo_simul provided by initval file
-    elseif isempty(ex0_)
-        oo_.exo_simul = repmat(oo_.exo_steady_state',M_.maximum_lag+options_.periods+M_.maximum_lead,1);
+if isempty(oo_.initval_series)
+    if isempty(M_.exo_histval)
+        if isempty(ex0_)
+            oo_.exo_simul = repmat(oo_.exo_steady_state',M_.maximum_lag+options_.periods+M_.maximum_lead,1);
+        else
+            oo_.exo_simul = [ repmat(ex0_',M_.maximum_lag,1) ; repmat(oo_.exo_steady_state',options_.periods+M_.maximum_lead,1) ];
+        end
     else
-        oo_.exo_simul = [ repmat(ex0_',M_.maximum_lag,1) ; repmat(oo_.exo_steady_state',options_.periods+M_.maximum_lead,1) ];
+        if isempty(ex0_)
+            oo_.exo_simul = [M_.exo_histval'; repmat(oo_.exo_steady_state',options_.periods+M_.maximum_lead,1)];
+        else
+            error('histval and endval cannot be used simultaneously')
+        end
     end
-else
-    if isempty(ex0_)
-        oo_.exo_simul = [M_.exo_histval'; repmat(oo_.exo_steady_state',options_.periods+M_.maximum_lead,1)];
-    else
-        error('histval and endval cannot be used simultaneously')
+elseif M_.exo_nbr > 0
+    x = oo_.initval_series{M_.exo_names{:}}.data;
+    oo_.exo_simul = x(1:M_.maximum_lag + options_.periods + M_.maximum_lead,:);
+    if ~isempty(M_.exo_histval)
+        oo_.exo_simul(1:M_.maximum_lag, :) ...
+            = M_.exo_histval(:, 1:M_.maximum_lag)';
+    end
+elseif M_.exo_det_nbr > 0
+    x_det = oo_.initval_series{M_.exo_det_names{:}}.data;
+    oo_.exo_det_simul = x_det(1:M_.maximum_lag + options_.periods + M_.maximum_lead,:);
+    if ~isempty(M_.exo_det_histval)
+        oo_.exo_det_simul(1:M_.maximum_lag, :) ...
+            = M_.exo_det_histval(:, 1:M_.maximum_lag)';
     end
 end
 

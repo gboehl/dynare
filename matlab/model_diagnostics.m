@@ -221,11 +221,6 @@ if ~options.block
                                           exo_simul, ...
                                           M.params, dr.ys, it_);
         end
-        if options.use_dll
-            % In USE_DLL mode, the hessian is in the 3-column sparse representation
-            hessian1 = sparse(hessian1(:,1), hessian1(:,2), hessian1(:,3), ...
-                              size(jacobia_, 1), size(jacobia_, 2)*size(jacobia_, 2));
-        end
     end
 
     if any(any(isinf(jacobia_) | isnan(jacobia_)))

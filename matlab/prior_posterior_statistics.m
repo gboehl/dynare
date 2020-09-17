@@ -354,7 +354,7 @@ if options_.smoother
     if nvn
         for obs_iter=1:length(options_.varobs)
             meas_error_names{obs_iter,1}=['SE_EOBS_' M_.endo_names{strmatch(options_.varobs{obs_iter},M_.endo_names,'exact')}];
-            texnames{obs_iter,1}=['SE_EOBS_' M_.endo_names_tex{strmatch(options_.varobs{obs_iter},M_.endo_names,'exact')}];
+            texnames{obs_iter,1}=['\sigma^{ME}_' M_.endo_names_tex{strmatch(options_.varobs{obs_iter},M_.endo_names,'exact')}];
         end
         pm3(meas_err_nbr,gend,ifil(3),B,'Smoothed measurement errors',...
             '',meas_error_names,texnames,meas_error_names,...

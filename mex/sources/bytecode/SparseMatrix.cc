@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2017 Dynare Team
+ * Copyright © 2007-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -1083,23 +1083,23 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
       while (it4 != IM.end())
         {
           var = it4->first.first.first;
-#ifdef DEBUG
-          if (var < 0 || var >= Size)
-            {
-              ostringstream tmp;
-              tmp << " in Init_UMFPACK_Sparse, var (" << var << ") out of range\n";
-              throw FatalExceptionHandling(tmp.str());
-            }
-#endif
+// #ifdef DEBUG
+//           if (var < 0 || var >= Size)
+//             {
+//               ostringstream tmp;
+//               tmp << " in Init_UMFPACK_Sparse, var (" << var << ") out of range\n";
+//               throw FatalExceptionHandling(tmp.str());
+//             }
+// #endif
           eq = it4->first.second+Size*t;
-#ifdef DEBUG
-          if (eq < 0 || eq >= Size)
-            {
-              ostringstream tmp;
-              tmp << " in Init_UMFPACK_Sparse, eq (" << eq << ") out of range\n";
-              throw FatalExceptionHandling(tmp.str());
-            }
-#endif
+// #ifdef DEBUG
+//           if (eq < 0 || eq >= Size)
+//             {
+//               ostringstream tmp;
+//               tmp << " in Init_UMFPACK_Sparse, eq (" << eq << ") out of range\n";
+//               throw FatalExceptionHandling(tmp.str());
+//             }
+// #endif
           lag = -it4->first.first.second;
           int index = it4->second+ (t-lag) * u_count_init;
           if (var != last_var)
@@ -1181,12 +1181,12 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
               if (lag <= ti_new_y_kmax && lag >= ti_new_y_kmin) /*Build the index for sparse matrix containing the jacobian : u*/
                 {
 #ifdef DEBUG
-                  if (index < 0 || index >= u_count_alloc || index > Size + Size*Size)
-                    {
-                      ostringstream tmp;
-                      tmp << " in Init_UMFPACK_Sparse, index (" << index << ") out of range for u vector max = " << Size+Size*Size << " allocated = " << u_count_alloc << "\n";
-                      throw FatalExceptionHandling(tmp.str());
-                    }
+                  // if (index < 0 || index >= u_count_alloc || index > Size + Size*Size)
+                  //   {
+                  //     ostringstream tmp;
+                  //     tmp << " in Init_UMFPACK_Sparse, index (" << index << ") out of range for u vector max = " << Size+Size*Size << " allocated = " << u_count_alloc << "\n";
+                  //     throw FatalExceptionHandling(tmp.str());
+                  //   }
                   if (NZE >= max_nze)
                     {
                       ostringstream tmp;
@@ -1275,7 +1275,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
   (*Ap)[Size*periods] = NZE;
 #ifdef DEBUG
   mexPrintf("*Ax = [");
-  for (int i = 0; i < NZE; i++)
+  for (int i = 0; i < static_cast<int>(NZE); i++)
     mexPrintf("%f ", (*Ax)[i]);
   mexPrintf("]\n");
 
@@ -1285,7 +1285,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
   mexPrintf("]\n");
 
   mexPrintf("*Ai = [");
-  for (int i = 0; i < NZE; i++)
+  for (int i = 0; i < static_cast<int>(NZE); i++)
     mexPrintf("%d ", (*Ai)[i]);
   mexPrintf("]\n");
 #endif
@@ -6294,9 +6294,9 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
                 break;
               }
           if (select)
-            mexPrintf("-> variable %s (%d) at time %d = %f direction = %f\n", get_variable(eEndogenous, j).c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
+            mexPrintf("-> variable %s (%d) at time %d = %f direction = %f\n", get_variable(SymbolType::endogenous, j).c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
           else
-            mexPrintf("   variable %s (%d) at time %d = %f direction = %f\n", get_variable(eEndogenous, j).c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
+            mexPrintf("   variable %s (%d) at time %d = %f direction = %f\n", get_variable(SymbolType::endogenous, j).c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
         }
 #endif
       if (steady_state)

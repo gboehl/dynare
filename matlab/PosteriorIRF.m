@@ -391,7 +391,6 @@ if ~options_.nograph && ~options_.no_graph.posterior
 
     % The files .TeX are genereted in sequential way always!
 
-    % The files .TeX are generated in sequential way always!
     subplotnum = 0;
     titTeX(M_.exo_names_orig_ord) = M_.exo_names_tex;
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
@@ -411,9 +410,6 @@ if ~options_.nograph && ~options_.no_graph.posterior
                     if subplotnum == 1
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                     end
-                    name = varlist{jj};
-                    texname = varlist_TeX{jj};
-                    fprintf(fidTeX,['\\psfrag{%s}[1][][0.5][0]{%s}\n'],name,['$' texname '$']);
                 end
                 if subplotnum == MaxNumberOfPlotPerFigure || (jj == nvar  && subplotnum> 0)
                     figunumber = figunumber+1;
@@ -438,8 +434,6 @@ if ~options_.nograph && ~options_.no_graph.posterior
 
     % The others file format are generated in parallel by PosteriorIRF_core2!
 
-
-    % Comment for testing!
     if ~isoctave
         if isnumeric(options_.parallel)  || (M_.exo_nbr*ceil(length(varlist)/MaxNumberOfPlotPerFigure))<8
             [fout] = PosteriorIRF_core2(localVars,1,M_.exo_nbr,0);

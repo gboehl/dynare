@@ -191,15 +191,12 @@ else
     if options_.diffuse_filter==1 %warning if estimation with diffuse filter was done, but not passed
         fprintf('WARNING IDENTIFICATION: Previously the diffuse_filter option was used, but it was not passed to the identification command. This may result in problems if your model contains unit roots.\n');
     end
-    if isfield(options_ident,'lik_init')
-        options_.lik_init=options_ident.lik_init; %make options_ inherit lik_init
-        if options_ident.lik_init==3 %user specified diffuse filter using the lik_init option
-            options_ident.analytic_derivation=0; %diffuse filter not compatible with analytic derivation
-            options_.analytic_derivation=0; %diffuse filter not compatible with analytic derivation
-        end
-    end
 end
 options_ident = set_default_option(options_ident,'lik_init',1);
+options_.lik_init=options_ident.lik_init; %make options_ inherit lik_init
+if options_ident.lik_init==3 %user specified diffuse filter using the lik_init option
+    options_ident.analytic_derivation=0; %diffuse filter not compatible with analytic derivation
+end
     % Type of initialization of Kalman filter:
     % 1: stationary models: initial matrix of variance of error of forecast is set equal to the unconditional variance of the state variables
     % 2: nonstationary models: wide prior is used with an initial matrix of variance of the error of forecast diagonal with 10 on the diagonal (follows the suggestion of Harvey and Phillips(1979))
@@ -273,6 +270,7 @@ if isempty(estim_params_)
     %reset some options
     options_ident.prior_mc = 1;
     options_ident.prior_range = 0;
+    options_.identification_check_endogenous_params_with_no_prior = true; %needed to trigger endogenous steady state parameter check in dynare_estimation_init
 else
     prior_exist = 1;
     parameters = options_ident.parameter_set;
@@ -283,7 +281,6 @@ options_.order = options_ident.order;
 if options_ident.order > 1
     %order>1 is not compatible with analytic derivation in dsge_likelihood.m
     options_ident.analytic_derivation=0;
-    options_.analytic_derivation=0;
     %order>1 is based on pruned state space system
     options_.pruning = true;
 end
@@ -294,7 +291,7 @@ options_.ar = options_ident.ar;
 options_.prior_mc = options_ident.prior_mc;
 options_.Schur_vec_tol = 1.e-8;
 options_.nomoments = 0;
-options_ = set_default_option(options_,'analytic_derivation',1); %if option was not already set
+options_.analytic_derivation=options_ident.analytic_derivation;
     % 1: analytic derivation of gradient and hessian of likelihood in dsge_likelihood.m, only works for stationary models, i.e. kalman_algo<3
 options_ = set_default_option(options_,'datafile','');
 options_.mode_compute = 0;

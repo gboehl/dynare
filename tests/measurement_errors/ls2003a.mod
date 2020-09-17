@@ -61,7 +61,10 @@ stderr e_ys,inv_gamma_pdf,1.2533,0.6551;
 stderr e_pies,inv_gamma_pdf,1.88,0.9827;
 stderr dq,inv_gamma_pdf,0.001,0.0001;
 stderr de,inv_gamma_pdf,0.001,0.0001;
+stderr pie_obs,inv_gamma_pdf,0.001,0.0001;
+corr dq,de, normal_pdf,0,1;
+corr pie_obs,de, normal_pdf,0,1;
 end;
 
-estimation(datafile=data_ca1,first_obs=8,nobs=79,mh_nblocks=10,prefilter=1,mh_jscale=0.5,mh_replic=0,mode_check);
-
+estimation(datafile=data_ca1,first_obs=8,nobs=79,mh_nblocks=1,prefilter=1,mh_jscale=0.5,mh_replic=3000,mode_check);
+generate_trace_plots(1);

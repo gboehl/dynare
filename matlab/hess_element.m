@@ -14,7 +14,7 @@ function d=hess_element(func,element1,element2,args)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2010-2011 Dynare Team
+% Copyright (C) 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,32 +31,29 @@ function d=hess_element(func,element1,element2,args)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+assert(element1 <= length(args) && element2 <= length(args));
+
 func = str2func(func);
 
-h=10e-6;
+h=1e-6;
 p10 = args;
 p01 = args;
 m10 = args;
 m01 = args;
 p11 = args;
 m11 = args;
-for i=1:size(args,2)
-    if i==element1
-        p10{i} = p10{i} + h;
-        m10{i} = m10{i} - h;
 
-        p11{i} = p11{i} + h;
-        m11{i} = m11{i} - h;
-    end
+p10{element1} = p10{element1} + h;
+m10{element1} = m10{element1} - h;
 
-    if i==element2
-        p01{i} = p01{i} + h;
-        m01{i} = m01{i} - h;
+p11{element1} = p11{element1} + h;
+m11{element1} = m11{element1} - h;
+        
+p01{element2} = p01{element2} + h;
+m01{element2} = m01{element2} - h;
 
-        p11{i} = p11{i} + h;
-        m11{i} = m11{i} - h;
-    end
-end
+p11{element2} = p11{element2} + h;
+m11{element2} = m11{element2} - h;
 
 % From Abramowitz and Stegun. Handbook of Mathematical Functions (1965)
 % formulas 25.3.24 and 25.3.27 p. 884
@@ -74,4 +71,5 @@ else
          -2*func(args{:})...
          -func(p11{:})...
          -func(m11{:}))/(-2*h^2);
+end
 end

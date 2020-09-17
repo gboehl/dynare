@@ -20,8 +20,4 @@ end;
 
 varobs dx dy;
 check;
-if isoctave || ~matlab_ver_less_than('7.14') % xlsread is able to read XLSX without Excel installed since R2012a
 estimation(datafile='test.xlsx',nobs=1000,mh_replic=2000,mh_jscale=1.3);
-else
-estimation(datafile='test.xls',nobs=1000,mh_replic=2000,mh_jscale=1.3);
-end

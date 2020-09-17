@@ -1,0 +1,11 @@
+mex_PROGRAMS = disclyap_fast
+
+nodist_disclyap_fast_SOURCES = disclyap_fast.f08 matlab_mex.F08 blas_lapack.F08
+
+BUILT_SOURCES = $(nodist_disclyap_fast_SOURCES)
+CLEANFILES = $(nodist_disclyap_fast_SOURCES)
+
+disclyap_fast.o : matlab_mex.mod lapack.mod
+
+%.f08: $(top_srcdir)/../../sources/disclyap_fast/%.f08
+	$(LN_S) -f $< $@

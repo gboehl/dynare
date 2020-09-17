@@ -62,7 +62,7 @@ function [dr,info] = dyn_risky_steadystate_solver(ys0,M, ...
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright (C) 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -165,12 +165,6 @@ if ~isreal(d1) || ~isreal(d2)
     pause
 end
 
-if options.use_dll
-    % In USE_DLL mode, the hessian is in the 3-column sparse representation
-    d2 = sparse(d2(:,1), d2(:,2), d2(:,3), ...
-                size(d1, 1), size(d1, 2)*size(d1, 2));
-end
-
 if isfield(options,'portfolio') && options.portfolio == 1
     pm = portfolio_model_structure(M,options);
     x = ys(pm.v_p);
@@ -224,12 +218,6 @@ if ~isreal(d1) || ~isreal(d2)
     pause
 end
 
-if options.use_dll
-    % In USE_DLL mode, the hessian is in the 3-column sparse representation
-    d2 = sparse(d2(:,1), d2(:,2), d2(:,3), ...
-                size(d1, 1), size(d1, 2)*size(d1, 2));
-end
-
 
 gu1 = dr_np.ghu(pm.i_fwrd_g,:);
 
@@ -255,12 +243,6 @@ z = z(iyr0) ;
                     oo.exo_det_simul], M.params, dr.ys, 2);
 if ~isreal(d1) || ~isreal(d2)
     pause
-end
-
-if options.use_dll
-    % In USE_DLL mode, the hessian is in the 3-column sparse representation
-    d2 = sparse(d2(:,1), d2(:,2), d2(:,3), ...
-                size(d1, 1), size(d1, 2)*size(d1, 2));
 end
 
 d1_np = d1(pm.eq_np,pm.i_d1_np);

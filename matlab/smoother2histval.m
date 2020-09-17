@@ -163,13 +163,15 @@ end
 % Initialize outputs
 if ~isfield(opts, 'outfile')
     % Output to M_.endo_histval
-    M_.endo_histval = repmat(oo_.steady_state, 1, M_.maximum_endo_lag);
+    M_.endo_histval = repmat(oo_.steady_state, 1, M_.maximum_lag);
 else
     % Output to a file
-    o = struct();
+    o = dseries();
 end
 
 % Handle all endogenous variables to be copied
+data = zeros(M_.orig_maximum_endo_lag, length(invars));
+k = M_.orig_maximum_endo_lag - M_.maximum_endo_lag + 1: M_.orig_maximum_lag
 for i = 1:length(invars)
     if isempty(strmatch(invars{i}, M_.endo_names))
         % Skip exogenous
@@ -177,61 +179,68 @@ for i = 1:length(invars)
     end
     s = smoothedvars.(invars{i});
     j = strmatch(invars{i}, M_.endo_names, 'exact');
-    v = s((period-M_.maximum_endo_lag+1):period);% + steady_state(j);
+    v = s((period-M_.orig_maximum_endo_lag+1):period);% + steady_state(j);
     if ~isfield(opts, 'outfile')
         j = strmatch(outvars{i}, M_.endo_names, 'exact');
         if isempty(j)
             error(['smoother2histval: output variable ' outvars{i} ' does not exist.'])
         else
-            M_.endo_histval(j, :) = v;
+            M_.endo_histval(j, :) = v(k);
         end
     else
-        % When saving to a file, x(-1) is in the variable called "x_"
-        o.([ outvars{i} '_' ]) = v;
+        data(:, i) = v';
     end
+end
+if isfield(opts, 'outfile')
+    o = dseries(data, '1Y', invars);
 end
 
-% Handle auxiliary variables for lags (both on endogenous and exogenous)
-for i = 1:length(M_.aux_vars)
-    if ~ ismember(M_.endo_names{M_.aux_vars(i).endo_index},invars)
-        if M_.aux_vars(i).type ~= 1 && M_.aux_vars(i).type ~= 3
-            continue
-        end
-        if M_.aux_vars(i).type == 1
-            % Endogenous
-            orig_var = M_.endo_names{M_.aux_vars(i).orig_index};
-        else
-            % Exogenous
-            orig_var = M_.exo_names{M_.aux_vars(i).orig_index};
-        end
-        [m, k] = ismember(orig_var, outvars);
-        if m
-            if ~isempty(strmatch(invars{k}, M_.endo_names))
-                s = smoothedvars.(invars{k});
-            else
-                s = smoothedshocks.(invars{k});
-            end
-            l = M_.aux_vars(i).orig_lead_lag;
-            if period-M_.maximum_endo_lag+1+l < 1
-                error('The period that you indicated is too small to construct initial conditions')
-            end
-            j = M_.aux_vars(i).endo_index;
-            v = s((period-M_.maximum_endo_lag+1+l):(period+l)); %+steady_state(j);
-            if ~isfield(opts, 'outfile')
-                M_.endo_histval(j, :) = v;
-            else
-                % When saving to a file, x(-2) is in the variable called "x_l2"
-                lead_lag = num2str(l);
-                lead_lag = regexprep(lead_lag, '-', 'l');
-                o.([ orig_var '_' lead_lag ]) = v;
-            end
-        end
-    end
-end
+% $$$ % Handle auxiliary variables for lags (both on endogenous and exogenous)
+% $$$ for i = 1:length(M_.aux_vars)
+% $$$     if ~ ismember(M_.endo_names{M_.aux_vars(i).endo_index},invars)
+% $$$         if M_.aux_vars(i).type ~= 1 && M_.aux_vars(i).type ~= 3
+% $$$             continue
+% $$$         end
+% $$$         if M_.aux_vars(i).type == 1
+% $$$             % Endogenous
+% $$$             orig_var = M_.endo_names{M_.aux_vars(i).orig_index};
+% $$$         else
+% $$$             % Exogenous
+% $$$             orig_var = M_.exo_names{M_.aux_vars(i).orig_index};
+% $$$         end
+% $$$         [m, k] = ismember(orig_var, outvars);
+% $$$         if m
+% $$$             if ~isempty(strmatch(invars{k}, M_.endo_names))
+% $$$                 s = smoothedvars.(invars{k});
+% $$$             else
+% $$$                 s = smoothedshocks.(invars{k});
+% $$$             end
+% $$$             l = M_.aux_vars(i).orig_lead_lag;
+% $$$             if period-M_.maximum_endo_lag+1+l < 1
+% $$$                 error('The period that you indicated is too small to construct initial conditions')
+% $$$             end
+% $$$             j = M_.aux_vars(i).endo_index;
+% $$$             v = s((period-M_.maximum_endo_lag+1+l):(period+l)); %+steady_state(j);
+% $$$             if ~isfield(opts, 'outfile')
+% $$$                 M_.endo_histval(j, :) = v;
+% $$$             else
+% $$$                 % When saving to a file, x(-2) is in the variable called "x_l2"
+% $$$                 lead_lag = num2str(l);
+% $$$                 lead_lag = regexprep(lead_lag, '-', 'l');
+% $$$                 o.([ orig_var '_' lead_lag ]) = v;
+% $$$             end
+% $$$         end
+% $$$     end
+% $$$ end
 
 % Finalize output
 if isfield(opts, 'outfile')
-    save(opts.outfile, '-struct', 'o')
+    [dir, fname, ext] = fileparts(opts.outfile);
+    if ~strcmp(ext,'.mat') && ~isempty(ext)
+        error(['smoother2hisvtval: if outfile has an extension, it must ' ...
+               'be .mat'])
+    end
+    o.save([dir fname]);
 end
 
 end

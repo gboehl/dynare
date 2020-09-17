@@ -142,9 +142,9 @@ for jide = 1:4
                 disp([upper(strTest), ':'])
                 disp('    !!!WARNING!!!');
                 if SampleSize>1
-                    disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient for ', num2str(length(find(ide.ino))),' out of ',int2str(SampleSize),' MC runs (with tol = ', num2str(tol_rank), ')!'  ]),
+                    disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient for ', num2str(length(find(ide.ino))),' out of ',int2str(SampleSize),' MC runs!'  ]),
                 else
-                    disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient by ', num2str(size(Jacob,2)-ide.rank), ' (rank(', strJacobian, ') = ', num2str(ide.rank), ' < ', num2str(size(Jacob,2)), ' with tol = ', num2str(tol_rank), ')!']),
+                    disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient!']),
                 end
                 skipline()
                 for j=1:totparam_nbr
@@ -192,9 +192,9 @@ for jide = 1:4
                 disp([upper(strTest), ':'])
                 disp('    !!!WARNING!!!');
                 if SampleSize>1
-                    disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient for ', num2str(length(find(ide.ino))),' out of ',int2str(SampleSize),' MC runs (with tol = ', num2str(tol_rank), ')!'  ]),
+                    disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient for ', num2str(length(find(ide.ino))),' out of ',int2str(SampleSize),' MC runs!'  ]),
                 else
-                    disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient by ', num2str(size(Jacob,2)-ide.rank), ' (rank(', strJacobian, ') = ', num2str(ide.rank), ' < ', num2str(size(Jacob,2)), ' with tol = ', num2str(tol_rank), ')!']),
+                    disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient!']),
                 end
                 if all(cellfun(@isempty,ide.problpars))
                     disp(['    No problematic parameter combinations with maximum dimension ', num2str(size(ide.problpars,2)), ' were found. Increase max_dim_subsets_groups.']);

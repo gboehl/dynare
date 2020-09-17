@@ -122,7 +122,7 @@ if info
             old_mhblck = mhblck;
         end
         clear('x2')
-        save([BaseName '_posterior_draws1.mat'],'pdraws')
+        save([BaseName '_posterior_draws1.mat'],'pdraws','estim_params_')
     else% The posterior draws are saved in xx files.
         NumberOfDrawsPerFile = fix(MAX_mega_bytes/drawsize);
         NumberOfFiles = ceil(SampleSize*drawsize/MAX_mega_bytes);
@@ -149,7 +149,7 @@ if info
             old_mhblck = mhblck;
             if fnum < NumberOfFiles && linee == NumberOfDrawsPerFile
                 linee = 0;
-                save([BaseName '_posterior_draws' num2str(fnum) '.mat'],'pdraws')
+                save([BaseName '_posterior_draws' num2str(fnum) '.mat'],'pdraws','estim_params_')
                 fnum = fnum+1;
                 if fnum < NumberOfFiles
                     pdraws = cell(NumberOfDrawsPerFile,info);
@@ -158,6 +158,6 @@ if info
                 end
             end
         end
-        save([BaseName '_posterior_draws' num2str(fnum) '.mat'],'pdraws')
+        save([BaseName '_posterior_draws' num2str(fnum) '.mat'],'pdraws','estim_params_')
     end
 end

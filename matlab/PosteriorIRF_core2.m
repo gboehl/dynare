@@ -142,8 +142,11 @@ for i=fpar:npar
                 remove_fractional_xticks;
                 hold off
             end
-            name = varlist{j};
-            title(name,'Interpreter','none')
+            if options_.TeX
+                title(['$' varlist_TeX{j} '$'],'Interpreter','latex')               
+            else
+                title(varlist{j},'Interpreter','none')
+            end
         else
             if options_.debug
                 fprintf('POSTERIOR_IRF: The IRF of %s to %s is smaller than the irf_plot_threshold of %4.3f and will not be displayed.\n',varlist{j},tit{i},options_.impulse_responses.plot_threshold)

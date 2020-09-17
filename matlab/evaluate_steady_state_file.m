@@ -111,7 +111,7 @@ if steady_state_checkflag
         info(2) = check; % to be improved
         return
     end
-    if max(abs(residuals)) > options.dynatol.f
+    if max(abs(residuals)) > options.solve_tolf
         info(1) = 19;
         info(2) = residuals'*residuals;
         return

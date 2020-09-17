@@ -45,18 +45,31 @@ if isempty(oo_.steady_state)
     oo_.steady_state = zeros(M_.endo_nbr,1);
 end
 
-if isempty(M_.endo_histval)
-    if isempty(ys0_)
-        oo_.endo_simul = repmat(oo_.steady_state, 1, M_.maximum_lag+options_.periods+M_.maximum_lead);
+if isempty(oo_.initval_series)
+    if isempty(M_.endo_histval)
+        if isempty(ys0_)
+            oo_.endo_simul = repmat(oo_.steady_state, 1, M_.maximum_lag+options_.periods+M_.maximum_lead);
+        else
+            oo_.endo_simul = [repmat(ys0_, 1, M_.maximum_lag) repmat(oo_.steady_state, 1,options_.periods+M_.maximum_lead)];
+        end
     else
-        oo_.endo_simul = [repmat(ys0_, 1, M_.maximum_lag) repmat(oo_.steady_state, 1,options_.periods+M_.maximum_lead)];
+        if ~isempty(ys0_)
+            error('histval and endval cannot be used simultaneously')
+        end
+        % the first NaNs take care of the case where there are lags > 1 on
+        % exogenous variables
+        oo_.endo_simul = [M_.endo_histval ...
+                          repmat(oo_.steady_state, 1, options_.periods+M_.maximum_lead)];
     end
 else
-    if ~isempty(ys0_)
-        error('histval and endval cannot be used simultaneously')
+    y = oo_.initval_series{M_.endo_names{:}}.data;
+    oo_.endo_simul = y(1:M_.maximum_lag + options_.periods + ...
+                       M_.maximum_lead, :)';
+    if ~isempty(M_.endo_histval)
+        if ~isempty(ys0_)
+            error('histval and endval cannot be used simultaneously')
+        end
+        oo_.endo_simul(:,1:M_.maximum_lag) ...
+            = M_.endo_histval(:, 1:M_.maximum_lag);
     end
-    % the first NaNs take care of the case where there are lags > 1 on
-    % exogenous variables
-    oo_.endo_simul = [M_.endo_histval ...
-                      repmat(oo_.steady_state, 1, options_.periods+M_.maximum_lead)];
 end

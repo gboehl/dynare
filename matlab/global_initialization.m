@@ -92,6 +92,7 @@ oo_.dr = [];
 oo_.exo_steady_state = [];
 oo_.exo_det_steady_state = [];
 oo_.exo_det_simul = [];
+oo_.initval_series = dseries();
 
 oo_.gui.ran_estimation = false;
 oo_.gui.ran_stoch_simul = false;

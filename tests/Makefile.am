@@ -48,6 +48,10 @@ MODFILES = \
 	estimation/MH_recover/fs2000_recover_3.mod \
 	estimation/t_proposal/fs2000_student.mod \
 	estimation/tune_mh_jscale/fs2000.mod \
+	estimation/method_of_moments/AnScho_MoM.mod \
+	estimation/method_of_moments/RBC_MoM_Andreasen.mod \
+	estimation/method_of_moments/RBC_MoM_SMM_ME.mod \
+	estimation/method_of_moments/RBC_MoM_prefilter.mod \
 	moments/example1_var_decomp.mod \
 	moments/example1_bp_test.mod \
 	moments/test_AR1_spectral_density.mod \
@@ -105,9 +109,12 @@ MODFILES = \
 	discretionary_policy/dennis_1.mod \
 	discretionary_policy/dennis_1_estim.mod \
 	discretionary_policy/Gali_discretion.mod \
-	initval_file/ramst_initval_file.mod \
-	initval_file/ramst_datafile.mod \
-	ramst_normcdf_and_friends.mod \
+	histval_initval_file/ramst_initval_file.mod \
+	histval_initval_file/ramst_data.mod \
+	histval_initval_file/ramst_datafile.mod \
+	histval_initval_file/sim_exo_lead_lag.mod \
+	histval_initval_file/sim_exo_lead_lag_initvalf.mod \
+        ramst_normcdf_and_friends.mod \
 	ramst_vec.mod \
 	example1_varexo_det.mod \
 	predetermined_variables.mod \
@@ -182,6 +189,7 @@ MODFILES = \
 	dsge-var/simul_hybrid.mod \
 	dsge-var/dsgevar_forward_calibrated_lambda.mod \
 	dsge-var/dsgevar_forward_estimated_lambda.mod \
+	external_function/benchmark.mod \
 	external_function/first_deriv_given.mod \
 	external_function/first_deriv_given_dll.mod \
 	external_function/first_and_2nd_deriv_given.mod \
@@ -190,6 +198,7 @@ MODFILES = \
 	external_function/first_and_2nd_deriv_given_dll_namespace.mod \
 	external_function/no_deriv_given.mod \
 	external_function/no_deriv_given_dll.mod \
+	external_function/extfun_in_mlv.mod \
 	seeds.mod \
 	minimal_state_space_system/as2007_minimal.mod \
 	minimal_state_space_system/sw_minimal.mod \
@@ -530,7 +539,8 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_1_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_2_xfail.mod
 
-MFILES = initval_file/ramst_initval_file_data.m
+MFILES = histval_initval_file/ramst_initval_file_data.m \
+	 histval_initval_file_unit_tests.m
 
 # Dependencies
 example1_use_dll.m.trs: example1.m.trs
@@ -614,6 +624,25 @@ dsge-var/dsgevar_forward_estimated_lambda.m.trs: dsge-var/simul_hybrid.m.trs
 dsge-var/dsgevar_forward_calibrated_lambda.o.trs: dsge-var/simul_hybrid.o.trs
 dsge-var/dsgevar_forward_estimated_lambda.o.trs: dsge-var/simul_hybrid.o.trs
 
+external_function/first_deriv_given.m.trs: external_function/benchmark.m.trs
+external_function/first_deriv_given.o.trs: external_function/benchmark.o.trs
+external_function/first_deriv_given_dll.m.trs: external_function/benchmark.m.trs
+external_function/first_deriv_given_dll.o.trs: external_function/benchmark.o.trs
+external_function/first_and_2nd_deriv_given.m.trs: external_function/benchmark.m.trs
+external_function/first_and_2nd_deriv_given.o.trs: external_function/benchmark.o.trs
+external_function/first_and_2nd_deriv_given_dll.m.trs: external_function/benchmark.m.trs
+external_function/first_and_2nd_deriv_given_dll.o.trs: external_function/benchmark.o.trs
+external_function/first_and_2nd_deriv_given_namespace.m.trs: external_function/benchmark.m.trs
+external_function/first_and_2nd_deriv_given_namespace.o.trs: external_function/benchmark.o.trs
+external_function/first_and_2nd_deriv_given_dll_namespace.m.trs: external_function/benchmark.m.trs
+external_function/first_and_2nd_deriv_given_dll_namespace.o.trs: external_function/benchmark.o.trs
+external_function/no_deriv_given.m.trs: external_function/benchmark.m.trs
+external_function/no_deriv_given.o.trs: external_function/benchmark.o.trs
+external_function/no_deriv_given_dll.m.trs: external_function/benchmark.m.trs
+external_function/no_deriv_given_dll.o.trs: external_function/benchmark.o.trs
+external_function/extfun_in_mlv.m.trs: external_function/benchmark.m.trs
+external_function/extfun_in_mlv.o.trs: external_function/benchmark.o.trs
+
 smoother2histval/fs2000_simul.m.trs: smoother2histval/fs2000_smooth.m.trs
 smoother2histval/fs2000_simul.o.trs: smoother2histval/fs2000_smooth.o.trs
 
@@ -628,10 +657,15 @@ deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.o.trs: determinist
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.m.trs: deterministic_simulations/rbc_det.m.trs
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.o.trs: deterministic_simulations/rbc_det.o.trs
 
-initval_file/ramst_initval_file.m.trs: initval_file/ramst_initval_file_data.m.tls
-initval_file/ramst_initval_file.o.trs: initval_file/ramst_initval_file_data.o.tls
-initval_file/ramst_datafile.m.trs: initval_file/ramst_initval_file_data.m.tls
-initval_file/ramst_datafile.o.trs: initval_file/ramst_initval_file_data.o.tls
+histval_initval_file/ramst_initval_file.m.trs: histval_initval_file/ramst_initval_file_data.m.tls histval_initval_file/ramst_data.m.trs
+histval_initval_file/ramst_initval_file.o.trs: histval_initval_file/ramst_initval_file_data.o.tls histval_initval_file/ramst_data.o.trs
+histval_initval_file/ramst_datafile.m.trs: histval_initval_file/ramst_initval_file_data.m.tls
+histval_initval_file/ramst_datafile.o.trs: histval_initval_file/ramst_initval_file_data.o.tls
+histval_initval_file/sim_exo_lead_lag_initvalf.m.trs: histval_initval_file/sim_exo_lead_lag.m.trs
+histval_initval_file/sim_exo_lead_lag_initvalf.o.trs: histval_initval_file/sim_exo_lead_lag.o.trs
+histval_initval_file_unit_tests.m.trs: histval_initval_file/ramst_data.m.trs
+histval_initval_file_unit_tests.o.trs: histval_initval_file/ramst_data.o.trs
+
 
 identification/rbc_ident/rbc_ident_varexo_only.m.trs: identification/rbc_ident/rbc_ident_std_as_structural_par.m.trs
 identification/rbc_ident/rbc_ident_varexo_only.o.trs: identification/rbc_ident/rbc_ident_std_as_structural_par.o.trs
@@ -958,13 +992,22 @@ M_OLS_TRS_FILES = $(patsubst %.mod, %.m.trs, $(OLS_MODFILES))
 
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
-M_TRS_FILES += run_block_byte_tests_matlab.m.trs run_reporting_test_matlab.m.trs run_all_unitary_tests.m.trs
-M_TRS_FILES += test_aggregate_routine_1_2.m.trs test_aggregate_routine_1_2_3.m.trs
+M_TRS_FILES += 	run_block_byte_tests_matlab.m.trs \
+		run_reporting_test_matlab.m.trs \
+		run_all_unitary_tests.m.trs \
+		histval_initval_file_unit_tests.m.trs \
+		test_aggregate_routine_1_2.m.trs \
+		test_aggregate_routine_1_2_3.m.trs
+
 M_XFAIL_TRS_FILES = $(patsubst %.mod, %.m.trs, $(XFAIL_MODFILES))
 
 # Octave TRS Files
 O_TRS_FILES = $(patsubst %.mod, %.o.trs, $(MODFILES))
-O_TRS_FILES += run_block_byte_tests_octave.o.trs run_reporting_test_octave.o.trs run_all_unitary_tests.o.trs
+O_TRS_FILES += 	run_block_byte_tests_octave.o.trs \
+		run_reporting_test_octave.o.trs \
+		run_all_unitary_tests.o.trs \
+	 	histval_initval_file_unit_tests.o.trs
+
 O_XFAIL_TRS_FILES = $(patsubst %.mod, %.o.trs, $(XFAIL_MODFILES))
 
 # Matlab TLS Files
@@ -1009,7 +1052,6 @@ EXTRA_DIST = \
 	block_bytecode/run_ls2003.m \
 	bvar_a_la_sims/bvar_sample.m \
 	dates/fsdat_simul.m \
-	dates/data_uav.xls \
 	dates/data_uav.xlsx \
 	external_function/extFunDeriv.m \
 	external_function/extFunNoDerivs.m \
@@ -1019,7 +1061,6 @@ EXTRA_DIST = \
 	expectations/expectation_ss_old_steadystate.m \
 	filter_step_ahead/trend_cycle_decomposition_data.m \
 	steady_state/walsh1_old_ss_steadystate.m \
-	data/test.xls \
 	data/test.xlsx \
 	gsa/morris/nk_est_data.m \
 	gsa/data_ca1.m \
@@ -1054,7 +1095,6 @@ EXTRA_DIST = \
 	ms-sbvar/archive-files/specification_2v2c.dat \
 	recursive/data_ca1.m \
 	recursive/data_ca1_csv.csv \
-	recursive/data_ca1_xls.xls \
 	recursive/data_ca1_xls.xlsx \
 	kalman_filter_smoother/fsdat_simul.m \
 	kalman/lik_init/fs2000_common.inc \
@@ -1120,7 +1160,14 @@ EXTRA_DIST = \
 	ecb/aggregate/3/exogenous.inc \
 	ecb/aggregate/3/parameters.inc \
 	ecb/aggregate/3/parameter-values.inc \
-	ecb/aggregate/3/model.inc
+	ecb/aggregate/3/model.inc \
+	estimation/method_of_moments/RBC_MoM_common.inc \
+	estimation/method_of_moments/RBC_MoM_steady_helper.m \
+	histval_initval_file_unit_tests.m \
+	histval_initval_file/my_assert.m \
+	histval_initval_file/ramst_data.xls \
+	histval_initval_file/ramst_data.xlsx \
+	histval_initval_file/ramst_initval_file_data.m
 
 if ENABLE_MATLAB
 check-local: check-matlab
@@ -1281,7 +1328,7 @@ clean-local:
 
 	rm -f estimation/test_matrix.mat
 
-	rm -f initval_file/ramst_initval_file_data_col_vec_mat.mat initval_file/ramst_initval_file_data_row_vec_mat.mat initval_file/ramst_initval_file_excel.xls
+	rm -f histval_initval_file/ramst_initval_file_data_col_vec_mat.mat histval_initval_file/ramst_initval_file_data_row_vec_mat.mat histval_initval_file/ramst_initval_file_excel.xls
 
 	rm -f loglinear/results_exp_histval.mat loglinear/results_exp.mat
 

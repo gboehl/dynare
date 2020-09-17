@@ -51,7 +51,7 @@ if isempty(bounds)
 end
 
 if isempty(parameter_names)
-    parameter_names=[repmat('parameter ',n_params,1),num2str((1:n_params)')];
+    parameter_names=cellstr([repmat('parameter ',n_params,1),num2str((1:n_params)')]);
 end
 
 %% initialize function outputs
@@ -222,6 +222,9 @@ switch minimizer_algorithm
         csminwel1(objective_function, start_par_value, H0, analytic_grad, crit, nit, numgrad, epsilon, Verbose, Save_files, varargin{:});
     hessian_mat=inv(inverse_hessian_mat);
   case 5
+    if isempty(prior_information) %mr_hessian requires it, but can be NaN
+        prior_information.p2=NaN(n_params,1);
+    end
     if options_.analytic_derivation==-1 %set outside as code for use of analytic derivation
         analytic_grad=1;
         crit = options_.newrat.tolerance.f_analytic;
@@ -265,9 +268,11 @@ switch minimizer_algorithm
     hess_info.gstep=options_.gstep;
     hess_info.htol = 1.e-4;
     hess_info.h1=options_.gradient_epsilon*ones(n_params,1);
-    [opt_par_values,hessian_mat,gg,fval,invhess,new_rat_hess_info] = newrat(objective_function,start_par_value,bounds,analytic_grad,crit,nit,0,Verbose, Save_files,hess_info,varargin{:});
-    %hessian_mat is the plain outer product gradient Hessian
+    [opt_par_values,hessian_mat,gg,fval,invhess,new_rat_hess_info] = newrat(objective_function,start_par_value,bounds,analytic_grad,crit,nit,0,Verbose,Save_files,hess_info,prior_information.p2,options_.gradient_epsilon,parameter_names,varargin{:});    %hessian_mat is the plain outer product gradient Hessian
   case 6
+    if isempty(prior_information) %Inf will be reset
+        prior_information.p2=Inf(n_params,1);
+    end
     [opt_par_values, hessian_mat, Scale, fval] = gmhmaxlik(objective_function, start_par_value, ...
                                                       Initial_Hessian, options_.mh_jscale, bounds, prior_information.p2, options_.gmhmaxlik, options_.optim_opt, varargin{:});
   case 7
@@ -423,7 +428,7 @@ switch minimizer_algorithm
   case 12
     if isoctave
         error('Option mode_compute=12 is not available under Octave')
-    elseif ~user_has_matlab_license('global_optimization_toolbox')
+    elseif ~user_has_matlab_license('GADS_Toolbox')
         error('Option mode_compute=12 requires the Global Optimization Toolbox')
     end
     [LB, UB] = set_bounds_to_finite_values(bounds, options_.huge_number);
@@ -518,6 +523,21 @@ switch minimizer_algorithm
     end
     func = @(x)objective_function(x,varargin{:});
     [opt_par_values,fval,exitflag,output] = simulannealbnd(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
+  case 13
+    % Matlab's lsqnonlin (Optimization toolbox needed).
+    if isoctave && ~user_has_octave_forge_package('optim')
+        error('Option mode_compute=13 requires the optim package')
+    elseif ~isoctave && ~user_has_matlab_license('optimization_toolbox')
+        error('Option mode_compute=13 requires the Optimization Toolbox')
+    end
+    optim_options = optimset('display','iter','MaxFunEvals',5000,'MaxIter',5000,'TolFun',1e-6,'TolX',1e-6);
+    if ~isempty(options_.optim_opt)
+        eval(['optim_options = optimset(optim_options,' options_.optim_opt ');']);
+    end
+    if options_.silent_optimizer
+        optim_options = optimset(optim_options,'display','off');
+    end
+    [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(objective_function,start_par_value,bounds(:,1),bounds(:,2),optim_options,varargin{:});
   otherwise
     if ischar(minimizer_algorithm)
         if exist(minimizer_algorithm)

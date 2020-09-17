@@ -37,7 +37,7 @@ AC_CANONICAL_HOST
 case ${host_os} in
   darwin*)
     CXXFLAGS="$($MKOCTFILE -p ALL_CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast -O2"
-    LDFLAGS+="$($MKOCTFILE -p OCTAVE_LIBS)"
+    LDFLAGS+=" $($MKOCTFILE -p OCTAVE_LIBS)"
     ;;
 esac
 
@@ -134,10 +134,11 @@ AC_CONFIG_FILES([Makefile
                  kalman_steady_state/Makefile
                  ms_sbvar/Makefile
                  block_kalman_filter/Makefile
-		 sobol/Makefile
-		 local_state_space_iterations/Makefile
+		         sobol/Makefile
+		         local_state_space_iterations/Makefile
                  perfect_foresight_problem/Makefile
                  num_procs/Makefile
-                 block_trust_region/Makefile])
+                 block_trust_region/Makefile
+                 disclyap_fast/Makefile])
 
 AC_OUTPUT

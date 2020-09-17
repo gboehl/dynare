@@ -1,5 +1,5 @@
-function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, analytic_derivation, ftol0, nit, flagg, Verbose, Save_files, hess_info, varargin)
-%  [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, analytic_derivation, ftol0, nit, flagg, Verbose, Save_files, hess_info, varargin)
+function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, analytic_derivation, ftol0, nit, flagg, Verbose, Save_files, hess_info, prior_std, gradient_epsilon, parameter_names, varargin)
+%  [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, analytic_derivation, ftol0, nit, flagg, Verbose, Save_files, hess_info, gradient_epsilon, parameter_names, varargin)
 %
 %  Optimiser with outer product gradient and with sequences of univariate steps
 %  uses Chris Sims subroutine for line search
@@ -8,6 +8,7 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 %  - func0                  name of the function that also outputs the single contributions at times t=1,...,T
 %                           of the log-likelihood to compute outer product gradient
 %  - x                      starting guess
+%  - bounds                 prior bounds of parameters 
 %  - analytic_derivation    1 if analytic derivatives, 0 otherwise
 %  - ftol0                  termination criterion for function change
 %  - nit                    maximum number of iterations
@@ -21,7 +22,12 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 %  - Save_files             1 if intermediate output is to be saved
 %  - hess_info              structure storing the step sizes for
 %                           computation of Hessian
-%  - varargin               other inputs:
+%  - prior_std              prior standard devation of parameters (can be NaN); 
+%                           passed to mr_hessian
+%  - gradient_epsilon       [double] step size in gradient
+%  - parameter_names        [cell] names of parameters for error messages
+%  - varargin               other inputs
+%                           e.g. in dsge_likelihood and others:
 %                           varargin{1} --> DynareDataset
 %                           varargin{2} --> DatasetInfo
 %                           varargin{3} --> DynareOptions
@@ -69,7 +75,6 @@ ftol=ftol0;
 gtol=1.e-3;
 htol=htol_base;
 htol0=htol_base;
-gibbstol=length(varargin{6}.pshape)/50; %25;
 
 % force fcn, grad to function handle
 if ischar(func0)
@@ -85,7 +90,7 @@ fval=fval0;
 
 outer_product_gradient=1;
 if isempty(hh)
-    [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(x,func0,penalty,flagit,htol,hess_info,varargin{:});
+    [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(x,func0,penalty,flagit,htol,hess_info,bounds,prior_std,varargin{:});
     if isempty(dum)
         outer_product_gradient=0;
         igg = 1e-4*eye(nx);
@@ -164,7 +169,7 @@ while norm(gg)>gtol && check==0 && jit<nit
         [fvala,x0,fc,retcode] = csminit1(func0,x0,penalty,fval,ggx,0,iggx,Verbose,varargin{:});
     end
     x0 = check_bounds(x0,bounds);
-    [fvala, x0, ig] = mr_gstep(h1,x0,bounds,func0,penalty,htol0,Verbose,Save_files,varargin{:});
+    [fvala, x0, ig] = mr_gstep(h1,x0,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon, parameter_names,varargin{:});
     x0 = check_bounds(x0,bounds);
     nig=[nig ig];
     disp_verbose('Sequence of univariate steps!!',Verbose)
@@ -203,7 +208,7 @@ while norm(gg)>gtol && check==0 && jit<nit
             if flagit==2
                 hh=hh0;
             elseif flagg>0
-                [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,varargin{:});
+                [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,bounds,prior_std,varargin{:});
                 if flagg==2
                     hh = reshape(dum,nx,nx);
                     ee=eig(hh);
@@ -243,7 +248,7 @@ while norm(gg)>gtol && check==0 && jit<nit
                     save('m1.mat','x','fval0','nig')
                 end
             end
-            [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagit,htol,hess_info,varargin{:});
+            [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagit,htol,hess_info,bounds,prior_std,varargin{:});
             if isempty(dum)
                 outer_product_gradient=0;
             end

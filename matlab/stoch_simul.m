@@ -124,7 +124,7 @@ if ~options_.noprint
         lh = cellofchararraymaxlength(labels)+2;
         dyn_latex_table(M_, options_, my_title, 'covar_ex_shocks', headers, labels, M_.Sigma_e, lh, 10, 6);
     end
-    if ~all(M_.H==0)
+    if ~all(diag(M_.H)==0)
         my_title='MATRIX OF COVARIANCE OF MEASUREMENT ERRORS';
         labels = cellfun(@(x) horzcat('SE_', x), options_.varobs, 'UniformOutput', false);
         headers = vertcat('Variables', labels);
@@ -189,9 +189,11 @@ if ~options_.nomoments
     if PI_PCL_solver
         PCL_Part_info_moments(0, PCL_varobs, oo_.dr, i_var);
     elseif options_.periods == 0
-        % There is no code for theoretical moments at 3rd order
         if options_.order <= 2
             oo_=disp_th_moments(oo_.dr,var_list,M_,options_,oo_);
+        elseif options_.order == 3 && options_.pruning  
+            % There is no code for theoretical moments at 3rd order without pruning
+            oo_=disp_th_moments_order3(oo_.dr,M_,options_,i_var,oo_);
         end
     else
         oo_=disp_moments(oo_.endo_simul,var_list,M_,options_,oo_);
@@ -292,14 +294,15 @@ if options_.irf
                         hold off
                         xlim([1 options_.irf]);
                         remove_fractional_xticks;
-                        title(deblank(mylist(j,:)),'Interpreter','none');
+                        if TeX
+                            title(['$' deblank(mylistTeX(j,:)) '$'],'Interpreter','latex');
+                        else
+                            title(deblank(mylist(j,:)),'Interpreter','none');
+                        end
                     end
                     dyn_saveas(hh,[M_.fname, '/graphs/' M_.fname '_IRF_' tit{i}],options_.nodisplay,options_.graph_format);
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
-                        for j = 1:number_of_plots_to_draw
-                            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist(j,:)),deblank(mylistTeX(j,:)));
-                        end
                         fprintf(fidTeX,'\\centering \n');
                         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s}\n',options_.figures.textwidth*min(j/nc,1),[M_.fname, '/graphs/' M_.fname],tit{i});
                         fprintf(fidTeX,'\\caption{Impulse response functions (orthogonalized shock to $%s$).}\n',titTeX{i});
@@ -324,14 +327,15 @@ if options_.irf
                             hold off
                             xlim([1 options_.irf]);
                             remove_fractional_xticks
-                            title(deblank(mylist((fig-1)*nstar+plt,:)),'Interpreter','none');
+                            if TeX
+                                title(['$' deblank(mylistTeX((fig-1)*nstar+plt,:)) '$'],'Interpreter','latex');
+                            else
+                                title(deblank(mylist((fig-1)*nstar+plt,:)),'Interpreter','none');
+                            end
                         end
                         dyn_saveas(hh,[M_.fname, '/graphs/'  M_.fname '_IRF_' tit{i} int2str(fig)],options_.nodisplay,options_.graph_format);
                         if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                             fprintf(fidTeX,'\\begin{figure}[H]\n');
-                            for j = 1:nstar
-                                fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist((fig-1)*nstar+j,:)),deblank(mylistTeX((fig-1)*nstar+j,:)));
-                            end
                             fprintf(fidTeX,'\\centering \n');
                             fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s%s}\n',options_.figures.textwidth*min(plt/nc,1),[M_.fname, '/graphs/' M_.fname],tit{i},int2str(fig));
                             if options_.relative_irf
@@ -355,14 +359,15 @@ if options_.irf
                         hold off
                         xlim([1 options_.irf]);
                         remove_fractional_xticks
-                        title(deblank(mylist((nbplt-1)*nstar+plt,:)),'Interpreter','none');
+                            if TeX
+                                title(['$' deblank(mylistTeX((nbplt-1)*nstar+plt,:)) '$'],'Interpreter','latex');
+                            else
+                                title(deblank(mylist((nbplt-1)*nstar+plt,:)),'Interpreter','none');
+                            end
                     end
                     dyn_saveas(hh,[M_.fname, '/graphs/' M_.fname '_IRF_' tit{i} int2str(nbplt) ],options_.nodisplay,options_.graph_format);
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
-                        for j = 1:m
-                            fprintf(fidTeX,'\\psfrag{%s}[1][][0.5][0]{$%s$}\n',deblank(mylist((nbplt-1)*nstar+j,:)),deblank(mylistTeX((nbplt-1)*nstar+j,:)));
-                        end
                         fprintf(fidTeX,'\\centering \n');
                         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_IRF_%s%s}\n',options_.figures.textwidth*min(m/lc,1),[M_.fname, '/graphs/' M_.fname],tit{i},int2str(nbplt));
                         if options_.relative_irf

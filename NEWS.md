@@ -1,3 +1,84 @@
+Announcement for Dynare 4.6.2 (on 2020-09-07)
+=============================================
+
+We are pleased to announce the release of Dynare 4.6.2.
+
+This maintenance release fixes various bugs.
+
+The Windows, macOS and source packages are already available for download at
+[the Dynare website](https://www.dynare.org/download/).
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 7.9 (R2009b) to
+9.8 (R2020a), and with GNU Octave versions 5.2.0 (under Windows) and 4.4.1
+(under macOS).
+
+*Note for Windows users:* upon launching the Dynare installer, you may get a
+warning emitted by Windows Defender SmartScreen, saying that this is an
+unrecognized app and that it was prevented from starting. You can safely ignore
+this warning, as long as you can verify on the next screen that CEPREMAP is the
+editor of the software. This security warning is due to the fact that we had to
+renew our code signing certificate (which had expired), and it takes some time
+to rebuild our reputation as a software editor using the new certificate.
+
+Here is a list of the problems identified in version 4.6.1 and that have been
+fixed in version 4.6.2:
+
+* Perfect foresight simulations of purely backward models could deliver an
+  incorrect result if some exogenous variable appeared with a lag of 2 or more
+  (and neither `block` nor `bytecode` option was used)
+* Perfect foresight simulations of linear models could deliver an incorrect
+  result if the following four conditions were met:
+  + the model was actually declared as linear through the `linear` option
+  + there was an exogenous variable with a lead or a lag
+  + `stack_solve_algo` was equal to 0 (the default) or 7
+  + neither `block` nor `bytecode` option was used
+* In stochastic simulations, for variables that actually do not leave the
+  steady state, reported simulated moments could be spurious (due to division
+  by zero)
+* Displayed variance decompositions would only take into account measurement
+  errors if measurement errors were present for all observed variables
+* The posterior variance decompositions with measurement errors computed with
+  `moments_varendo` were incorrect
+* `moments_varendo` would not update `oo_.PosteriorTheoreticalMoments` if it
+  was already present, from *e.g.* an earlier run of `estimation`
+* Identification would in some cases compute wrong Jacobian of moments
+* Identification would display incorrect results if parameter dependence was
+  implemented via a steady state file
+* `generate_trace_plots` would crash when measurement errors were present
+* `estimation` would crash for correlated measurement errors
+* Parallel execution/testing could crash instead of aborting with a proper
+  error message
+* Under macOS, Dynare would incorrectly claim that it is compiled for Octave
+  5.2.0 (it is actually compiled for Octave 4.4.1)
+* Using external functions in a model local variable would crash the
+  preprocessor
+* Tolerance criteria for steady state computations were inconsistently set
+* `stoch_simul` with its default `order=2` would crash with a message about
+  `hessian_eq_zero` not existing if an explicit `order=1` was present somewhere
+  else in the `.mod` file
+* Model local variables were not written to the `modfile.json` JSON file
+* Model local variables names would have two spurious underscores at their
+  point of definition in the `dynamic.json` and `static.json` files (but only
+  in the definition, not when they were used, which is inconsistent)
+* The `solve_algo=9` option was not accessible. The `solve_algo=10` and
+  `solve_algo=11` options were not accessible with `block` (without `bytecode`)
+* Under certain circumstances, `extended_path` would crash when used in
+  conjunction with the `block` option
+* `extended_path` was not working with the `bytecode` option
+* `shock_decomposition` was not accepting the options of `estimation` related
+  to smoothing
+* `conditional_forecast` would display a warning even if the simulation was
+  successful
+* The `prior_trunc` option of `identification` was not working
+* The `rand_multivariate_student` value of the `proposal_distribution` option
+  was not working when used with the
+  `tailored_random_block_metropolis_hastings` posterior sampling method
+* Perfect foresight simulations of backward models would crash if convergence
+  failed with complex-valued residuals
+* The diffuse Kalman smoother would crash if `Finf` became singular
+
 Announcement for Dynare 4.6.1 (on 2020-03-13)
 =============================================
 

@@ -45,7 +45,7 @@ verbatim;
     GY = NaN(MC,1);
     GK = NaN(MC,1);
     EG = NaN(MC,1);
-    if isoctave || matlab_ver_less_than('8.1')
+    if isoctave
         options = optimset('Display', 'off', 'MaxFunEvals', 1000000,'MaxIter',100000,'Jacobian','on','TolFun',1e-8,'TolX',1e-8);
     else
         options = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-8,'StepTolerance',1e-8);

@@ -45,8 +45,10 @@ else
 end
 if strcmp(caller_file_name,'solve_stacked_problem.m')
     tolf = options.dynatol.f;
+    tolx = options.dynatol.x;
 else
     tolf = options.solve_tolf;
+    tolx = options.solve_tolx;
 end
 
 if strcmp(caller_file_name,'dyn_ramsey_static.m')
@@ -224,11 +226,11 @@ if options.solve_algo == 0
     end
 elseif options.solve_algo==1
     [x, errorflag] = solve1(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, ...
-                       tolf, options.solve_tolx, ...
+                       tolf, tolx, ...
                        maxit, options.debug, arguments{:});
 elseif options.solve_algo==9
     [x, errorflag] = trust_region(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, ...
-                             tolf, options.solve_tolx, ...
+                             tolf, tolx, ...
                              maxit, options.debug, arguments{:});
 elseif ismember(options.solve_algo, [2, 12, 4, 14])
     if ismember(options.solve_algo, [2, 12])

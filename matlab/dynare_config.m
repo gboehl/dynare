@@ -61,8 +61,9 @@ p = {'/distributions/' ; ...
      '/cli/' ; ...
      '/lmmcp/' ; ...
      '/optimization/' ; ...
-     '/ols/'; ...
-     '/pac-tools/'; ...
+     '/ols/' ; ...
+     '/pac-tools/' ; ...
+     '/method_of_moments/' ; ...
      '/discretionary_policy/' ; ...
      '/accessors/' ; ...
      '/modules/dseries/src/' ; ...
@@ -89,8 +90,8 @@ if isoctave && octave_ver_less_than('5')
     p{end+1} = '/missing/ordeig';
 end
 
-%% intersect(…, 'stable') doesn't exist in Octave and in MATLAB < R2013a
-if isoctave || matlab_ver_less_than('8.1')
+%% intersect(…, 'stable') doesn't exist in Octave
+if isoctave
     p{end+1} = '/missing/intersect_stable';
 end
 
@@ -118,31 +119,10 @@ if (isoctave && octave_ver_less_than('5')) || (~isoctave && matlab_ver_less_than
     p{end+1} = '/missing/isfile';
 end
 
-% strsplit and strjoin are missing in MATLAB < R2013a
-if ~isoctave && matlab_ver_less_than('8.1')
-    p{end+1} = '/missing/strsplit';
-    p{end+1} = '/missing/strjoin';
-end
-
 % contains and splitlines don't exist in Octave and in MATLAB < R2016b
 if isoctave || matlab_ver_less_than('9.1')
     p{end+1} = '/missing/contains';
     p{end+1} = '/missing/splitlines';
-end
-
-% isrow, iscolumn and ismatrix are missing in Matlab<R2010b
-if ~isoctave && matlab_ver_less_than('7.11')
-    p{end+1} = '/missing/is-row-column-matrix';
-end
-
-%% isdiag is missing in MATLAB < R2014a
-if ~isoctave && matlab_ver_less_than('8.3')
-    p{end+1} = '/missing/isdiag';
-end
-
-%% narginchk is missing in MATLAB < R2011b
-if ~isoctave && matlab_ver_less_than('7.13')
-    p{end+1} = '/missing/narginchk';
 end
 
 P = cellfun(@(c)[dynareroot(1:end-1) c], p, 'uni',false);

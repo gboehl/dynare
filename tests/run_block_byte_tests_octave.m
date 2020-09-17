@@ -1,4 +1,4 @@
-## Copyright (C) 2009-2019 Dynare Team
+## Copyright (C) 2009-2020 Dynare Team
 ##
 ## This file is part of Dynare.
 ##
@@ -42,31 +42,34 @@ num_block_tests = 0;
 cd([top_test_dir filesep 'block_bytecode']);
 tic;
 for blockFlag = 0:1
-    for bytecodeFlag = 0:1
+    for storageFlag = 0:2 % 0=M-file, 1=use_dll, 2=bytecode
         default_solve_algo = 2;
         default_stack_solve_algo = 0;
-        if !blockFlag && !bytecodeFlag
-            solve_algos = 0:4;
+        if !blockFlag && storageFlag != 2
+            solve_algos = [0:4 9];
             stack_solve_algos = [0 6];
-        elseif blockFlag && !bytecodeFlag
-            solve_algos = [0:4 6:8];
+        elseif blockFlag && storageFlag != 2
+            solve_algos = [0:4 6:9];
             stack_solve_algos = 0:4;
         else
             solve_algos = 0:8;
             stack_solve_algos = 0:5;
         endif
 
-        pause(1) # Workaround for strange race condition related to the _static.m file
+        # Workaround for strange race condition related to the static/dynamic
+        # files (especially when we switch to/from use_dll)
+        rmdir('+ls2003_tmp', 's')
+        pause(1)
 
         for i = 1:length(solve_algos)
             num_block_tests = num_block_tests + 1;
-            if !blockFlag && !bytecodeFlag && (i == 1)
+            if !blockFlag && storageFlag == 0 && (i == 1)
                 ## This is the reference simulation path against which all
                 ## other simulations will be tested
                 try
                     old_path = path;
                     save wsOct
-                    run_ls2003(blockFlag, bytecodeFlag, solve_algos(i), default_stack_solve_algo)
+                    run_ls2003(blockFlag, storageFlag, solve_algos(i), default_stack_solve_algo)
                     load wsOct
                     path(old_path);
                     y_ref = oo_.endo_simul;
@@ -74,31 +77,29 @@ for blockFlag = 0:1
                 catch
                     load wsOct
                     path(old_path);
-                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
-                    printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], lasterror);
+                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
+                    printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], lasterror);
                 end_try_catch
             else
                 try
                     old_path = path;
                     save wsOct
-                    run_ls2003(blockFlag, bytecodeFlag, solve_algos(i), default_stack_solve_algo)
+                    run_ls2003(blockFlag, storageFlag, solve_algos(i), default_stack_solve_algo)
                     load wsOct
                     path(old_path);
                     ## Test against the reference simulation path
                     load('test.mat','y_ref');
                     diff = oo_.endo_simul - y_ref;
-                    if(abs(diff) > options_.dynatol.x)
-                        failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
+                    if abs(diff) > options_.dynatol.x
+                        failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
                         differr.message = ["ERROR: simulation path differs from the reference path" ];
-                        printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], differr);
+                        printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], differr);
                     endif
                 catch
                     load wsOct
-                    e = lasterror(); # The path() command alters the lasterror, because of io package
                     path(old_path);
-                    lasterror(e);
-                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
-                    printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], lasterror);
+                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
+                    printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], lasterror);
                 end_try_catch
             endif
         endfor
@@ -107,31 +108,29 @@ for blockFlag = 0:1
             try
                 old_path = path;
                 save wsOct
-                run_ls2003(blockFlag, bytecodeFlag, default_solve_algo, stack_solve_algos(i))
+                run_ls2003(blockFlag, storageFlag, default_solve_algo, stack_solve_algos(i))
                 load wsOct
                 path(old_path);
                 ## Test against the reference simulation path
                 load('test.mat','y_ref');
                 diff = oo_.endo_simul - y_ref;
-                if(abs(diff) > options_.dynatol.x)
-                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'];
+                if abs(diff) > options_.dynatol.x
+                    failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'];
                     differr.message = ["ERROR: simulation path differs from the reference path" ];
-                    printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'], differr);
+                    printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'], differr);
                 endif
             catch
                 load wsOct
-                e = lasterror(); # The path() command alters the lasterror, because of io package
                 path(old_path);
-                lasterror(e);
-                failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'];
-                printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(bytecodeFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'], lasterror);
+                failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'];
+                printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'], lasterror);
             end_try_catch
         endfor
     endfor
 endfor
 ecput = toc;
 delete('wsOct');
-cd(getenv('TOP_TEST_DIR'));
+cd(top_test_dir);
 fid = fopen('run_block_byte_tests_octave.o.trs', 'w+');
 if size(failedBlock,2) > 0
   fprintf(fid,':test-result: FAIL\n');

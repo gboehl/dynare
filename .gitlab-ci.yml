@@ -2,7 +2,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   TERM: linux
   MATLAB_VERSION: R2020a
-  OLD_MATLAB_VERSION: R2009b
+  OLD_MATLAB_VERSION: R2014a
 
 # The next stanza creates the version number used for the source tarball and the
 # binary packages. Here are the following possible cases:
@@ -85,12 +85,10 @@ pkg_windows:
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
-      - windows/deps/sources32/
       - windows/deps/sources64/
-      - windows/deps/lib32/
       - windows/deps/lib64/
-      # We do not cache lib{32,64}-msys2, mingw{32,64}, octave{32,64} and
-      # matlab{32,64}, because those are simply extracted from a tarball. It
+      # We do not cache lib64-msys2, mingw64, octave64 and
+      # matlab64, because those are simply extracted from a tarball. It
       # would be a waste of space and of (re-compression) time.
   artifacts:
     paths:
@@ -232,7 +230,7 @@ deploy_release_enterprise:
     - pkg_windows
     - pkg_macOS
   script:
-    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/dynare-object-signing.p12 -n Dynare -i https://www.dynare.org -t http://timestamp.digicert.com -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
+    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/cepremap-comodo-sectigo-code-signing.p12 -n Dynare -i https://www.dynare.org -t http://timestamp.comodoca.com -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
     - cp *.tar.xz /srv/www.dynare.org/release_ecb/source/
     - cp windows/exe/* /srv/www.dynare.org/release_ecb/windows/
     - cp windows/7z/* /srv/www.dynare.org/release_ecb/windows-7z/

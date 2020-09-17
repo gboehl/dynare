@@ -3,7 +3,7 @@
 # On a Debian system, install the packages needed for Windows
 # cross-compilation, and also setup the cross-compiler alternatives.
 
-# Copyright © 2017-2019 Dynare Team
+# Copyright © 2017-2020 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -22,8 +22,8 @@
 
 [[ $(id -u) == 0 ]] || { echo "You must be root" >&2; exit 1; }
 
-PACKAGES=(make xz-utils p7zip bzip2 zip patch wget autoconf automake libtool
-          mingw-w64 gfortran-mingw-w64 parallel flex bison texlive
+PACKAGES=(make xz-utils p7zip bzip2 zip zstd patch wget autoconf automake
+          libtool mingw-w64 gfortran-mingw-w64 parallel flex bison texlive
           texlive-publishers texlive-latex-extra texlive-science
           texlive-fonts-extra lmodern python3-sphinx latexmk nsis)
 
@@ -34,6 +34,3 @@ apt install "${PACKAGES[@]}"
 update-alternatives --set x86_64-w64-mingw32-gfortran /usr/bin/x86_64-w64-mingw32-gfortran-posix
 update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
 update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
-update-alternatives --set i686-w64-mingw32-gfortran /usr/bin/i686-w64-mingw32-gfortran-posix
-update-alternatives --set i686-w64-mingw32-gcc /usr/bin/i686-w64-mingw32-gcc-posix
-update-alternatives --set i686-w64-mingw32-g++ /usr/bin/i686-w64-mingw32-g++-posix

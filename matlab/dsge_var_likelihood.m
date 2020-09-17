@@ -101,37 +101,12 @@ mYX = evalin('base', 'mYX');
 mXY = evalin('base', 'mXY');
 mXX = evalin('base', 'mXX');
 
-% Return, with endogenous penalty, if some dsge-parameters are smaller than the lower bound of the prior domain.
-if isestimation(DynareOptions) && DynareOptions.mode_compute ~= 1 && any(xparam1 < BoundsInfo.lb)
-    k = find(xparam1 < BoundsInfo.lb);
-    fval = Inf;
-    exit_flag = 0;
-    info(1) = 41;
-    info(4)= sum((BoundsInfo.lb(k)-xparam1(k)).^2);
+Model = set_all_parameters(xparam1,EstimatedParameters,Model);
+
+[fval,info,exit_flag,Q]=check_bounds_and_definiteness_estimation(xparam1, Model, EstimatedParameters, BoundsInfo);
+if info(1)
     return
 end
-
-% Return, with endogenous penalty, if some dsge-parameters are greater than the upper bound of the prior domain.
-if isestimation(DynareOptions) && DynareOptions.mode_compute ~= 1 && any(xparam1 > BoundsInfo.ub)
-    k = find(xparam1 > BoundsInfo.ub);
-    fval = Inf;
-    exit_flag = 0;
-    info(1) = 42;
-    info(4) = sum((xparam1(k)-BoundsInfo.ub(k)).^2);
-    return
-end
-
-% Get the variance of each structural innovation.
-Q = Model.Sigma_e;
-for i=1:EstimatedParameters.nvx
-    k = EstimatedParameters.var_exo(i,1);
-    Q(k,k) = xparam1(i)*xparam1(i);
-end
-offset = EstimatedParameters.nvx;
-
-% Update Model.params and Model.Sigma_e.
-Model.params(EstimatedParameters.param_vals(:,1)) = xparam1(offset+1:end);
-Model.Sigma_e = Q;
 
 % Get the weight of the dsge prior.
 dsge_prior_weight = Model.params(dsge_prior_weight_idx);
