@@ -286,6 +286,7 @@ by the ``dynare`` command.
         computations.
 
     .. option:: nograph
+       :noindex:
 
         Activate the ``nograph`` option (see :opt:`nograph`), so that
         Dynare will not produce any graph.
