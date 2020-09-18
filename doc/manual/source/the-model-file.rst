@@ -928,7 +928,8 @@ The model is declared inside a ``model`` block:
         command (see :ref:`compil-install` for more details).
         Using this option can result in
         faster simulations or estimations, at the expense of some
-        initial compilation time. [#f2]_
+        initial compilation time. Alternatively, this option can be
+        given to the ``dynare`` command (see :ref:`dyn-invoc`). [#f2]_
 
     .. option:: block
 
