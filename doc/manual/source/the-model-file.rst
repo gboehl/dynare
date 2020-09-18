@@ -925,9 +925,8 @@ The model is declared inside a ``model`` block:
         libraries (DLL) containing the model equations and
         derivatives, instead of writing those in M-files. You need a
         working compilation environment, i.e. a working ``mex``
-        command (see :ref:`compil-install` for more details). On
-        MATLAB for Windows, you will need to also pass the compiler
-        name at the command line. Using this option can result in
+        command (see :ref:`compil-install` for more details).
+        Using this option can result in
         faster simulations or estimations, at the expense of some
         initial compilation time. [#f2]_
 
