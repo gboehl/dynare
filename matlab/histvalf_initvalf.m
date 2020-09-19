@@ -130,115 +130,128 @@ nobs0 = series.nobs;
 first_obs_ispresent = false;
 last_obs_ispresent = false;
 
-if ~isfield(options, 'first_obs') || isempty(options.first_obs)
-    if isfield(options, 'first_simulation_period')
-        options.first_obs = options.first_simulation_period ...
-            - M.orig_maximum_lag;
-    elseif isfield(options, 'firstsimulationperiod')
-        options.firstobs = options.firstsimulationperiod ...
-            - M.orig_maximum_lag;
-    end
-elseif isfield(options, 'first_simulation_period')
-    nobs = options.first_simulation_period - opions_.first_obs;
-    if M.orig_maximum_lag ~= nobs
-        error(sprintf(['HISTVALF: first_obs = %d and', ...
-                       ' first_simulation_period = %d', ...
-                       ' don''t provide for the number of' ...
-                       ' lags in the model.'], ...
-                      options.first_obs, ...
-                      options.first_simulation_period))
-    end
-end
-
-if isfield(options, 'first_obs')
-    i = options.first_obs;
-    if i < 1
-        error([caller, '_FILE: the first requested period is before available', ...
-               ' data.'])
-    elseif i > nobs0
-        error([caller, '_FILE: the first requested period is after available', ...
-               ' data.'])
-    end
-    first_obs = periods(i);
-    if nobs > 0
-        last_obs = first_obs + nobs - 1;
-        last_obs_ispresent = true;
-    end
-    first_obs_ispresent = true;
-elseif isfield(options, 'firstobs')
-    first_obs = options.firstobs; 
-    if nobs > 0
-        last_obs = first_obs + nobs - 1;
-        last_obs_ispresent = true;
-    end
-    first_obs_ispresent = true;
-end
-
-if last_obs_ispresent
-    if isfield(options, 'last_obs')
-        i = options.last_obs;
-        if i < 1
-            error([caller, '_FILE: the last requested period is before available', ...
-                   ' data.'])
-        elseif i > nobs0
-            error([caller, '_FILE: the last requested period is after available', ...
-                   ' data.'])
+first_obs = periods(1);
+if isfield(options, 'first_obs') && ~isempty(options.first_obs)
+    if options.first_obs < 1
+        error('first_obs must be a positive number')
+    elseif options.first_obs > nobs0
+        error(sprintf([caller, '_FILE: first_obs = %d is larger than the number', ...
+                       ' of observations in the data file (%d)'], ...
+                      options.first_obs, nobs0))
+    elseif isfield(options, 'first_simulation_period')
+        if  options.first_obs == options.first_simulation_period ...
+                - M.orig_maximum_lag
+            first_obs = periods(options.first_obs);
+        else
+            error(sprintf([caller, '_FILE: first_obs = %d and', ...
+                           ' first_simulation_period = %d have values', ...
+                           ' inconsistent with a maximum lag of %d periods'], ...
+                          options.first_obs, options_.first_simulation_period, ...
+                          M.orig_maximum_lag))
         end
-        if last_obs ~= periods(i) 
-            error([caller, '_FILE: FIST_OBS, LAST_OBS and NOBS contain', ...
-                   ' inconsistent information. Use only two of these', ...
-                   ' options.'])
-        end    
-    elseif isfield(options, 'lastobs')
-        if last_obs ~= options.lastobs 
-            error([caller, '_FILE: FIST_OBS, LAST_OBS and NOBS contain', ...
-                   ' inconsistent information. Use only two of these', ...
-                   ' options.'])
-        end    
+    elseif isfield(options, 'firstsimulationperiod')
+        if  periods(options.first_obs) == options.firstsimulationperiod ...
+                - M.orig_maximum_lag
+            first_obs = periods(options.first_obs);
+        else
+            error(sprintf([caller, '_FILE: first_obs = %d and', ...
+                           ' first_simulation_period = %s have values', ...
+                           ' inconsistent with a maximum lag of %d periods'], ...
+                          options.first_obs, options_.firstsimulationperiod, ...
+                          M.orig_maximum_lag))
+        end
+    else
+        first_obs = periods(options_.first_obs);
     end
-elseif isfield(options, 'last_obs')
-    i = options.last_obs;
-    if i < 1
-        error([caller, '_FILE: the last requested period is before available', ...
-               ' data.'])
-    elseif i > nobs0
-        error([caller, '_FILE: the last requested period is after available', ...
-               ' data.'])
+    first_obs_ispresent = true;
+end
+
+if isfield(options, 'firstobs') && ~isempty(options.firstobs)
+    if isfield(options, 'first_simulation_period')
+        if  options.firstobs == periods(options.first_simulation_period) ...
+                - M.orig_maximum_lag
+            first_obs = options.firstobs;
+        else
+            error(sprintf([caller, '_File: first_obs = %s and', ...
+                           ' first_simulation_period = %d have values', ...
+                           ' inconsistent with a maximum lag of %d periods'], ...
+                          options.firstobs, options_.first_simulation_period, ...
+                          M.orig_maximum_lag))
+        end
+    elseif isfield(options, 'firstsimulationperiod')
+        if  options.firstobs == options.firstsimulationperiod ...
+                - M.orig_maximum_lag
+            first_obs = options.firstobs;
+        else
+            error(sprintf([caller, '_FILE: firstobs = %s and', ...
+                           ' first_simulation_period = %s have values', ...
+                           ' inconsistent with a maximum lag of %d periods'], ...
+                          options.firstobs, options.firstsimulationperiod, ...
+                          M.orig_maximum_lag))
+        end
+    else
+        first_obs = options.firstobs;
     end
-    last_obs = periods(i);
-    if nobs > 0
-        first_obs = last_obs - nobs + 1;
-        first_obs_ispresent = true;
-    end
-    last_obs_ispresent = true;
-elseif isfield(options, 'lastobs')
-    last_obs = options.lastobs; 
-    if nobs > 0
-        first_obs = last_obs - nobs + 1;
-        first_obs_ispresent = true;
-    end
-    last_obs_ispresent = true;
+    first_obs_ispresent = true;
 end
 
 if ~first_obs_ispresent
-    first_obs = periods(1);
-end
-
-if ~last_obs_ispresent
-    if nobs > 0
-        last_obs = first_obs + nobs - 1;
-    else
-        last_obs = periods(end);
+    if isfield(options, 'first_simulation_period')
+        if options.first_simulation_period < options.maximum_lag
+            error(sprintf([caller, '_FILE: first_simulation_period = %d', ...
+                           'must be larger than the maximum lag (%d)'], ...
+                          options.first_simulation_period, M.orig_maximum_lag))
+        elseif options.first_simulation_period > nobs0
+            error(sprintf([caller, '_FILE: first_simulations_period = %d', ...
+                           ' is larger than the number of observations in', ...
+                           ' the data file (%d)'], ...
+                          options.first_obs, nobs0))
+        else
+            first_obs = periods(options.first_simulation_period) - ...
+                M.orig_maximum_lag;
+        end
+        first_obs_ispresent = true;
+    elseif isfield(options, 'firstsimulationperiod')
+        first_obs = options.firstsimulationperiod - ...
+            M.orig_maximum_lag;
+        first_obs_ispresent = true;
     end
 end
 
-if first_obs < series.init
-    error([caller, '_FILE: the first requested period is before available', ...
-                    ' data.'])
-elseif last_obs > series.last
-    error([caller, '_FILE: the last requested period is after available', ...
-                    ' data.'])
+if isfield(options, 'last_obs')
+    if options.last_obs > nobs0
+        error(sprintf([caller, '_FILE: last_obs is larger than the number', ...
+                       'observations in the dataset (%d)'], ...
+                      options.last_obs, nobs0))
+    elseif first_obs_ispresent
+        if nobs > 0 && (periods(options.last_obs) ~= first_obs + nobs - 1)
+            error([caller, '_FILE: FIST_OBS, LAST_OBS and NOBS contain', ...
+                   ' inconsistent information. Use only two of these', ...
+                   ' options.'])
+        else
+            last_obs = periods(options.last_obs)
+        end
+    end
+elseif isfield(options, 'lastobs')
+    if options.lastobs > series.last
+        error(sprintf([caller, '_FILE: last_obs = %s is larger than the number', ...
+                       'observations in the dataset (%s)'], ...
+                      options.lastobs, series.last))
+    elseif first_obs_ispresent
+        if nobs > 0 && (options.lastobs ~= first_obs + nobs - 1)
+            error([caller, '_FILE: FIST_OBS, LAST_OBS and NOBS contain', ...
+                   ' inconsistent information. Use only two of these', ...
+                   ' options.'])
+        else
+            last_obs = options.last_obs
+        end
+    end
+elseif nobs > 0
+    last_obs = first_obs + nobs - 1
 else
-    series = series(first_obs:last_obs);
+    last_obs = series.last
 end
+
+series = series(first_obs:last_obs);
+
 
