@@ -133,7 +133,7 @@ last_obs_ispresent = false;
 first_obs = periods(1);
 if isfield(options, 'first_obs') && ~isempty(options.first_obs)
     if options.first_obs < 1
-        error('first_obs must be a positive number')
+        error([caller, '_FILE: first_obs must be a positive number'])
     elseif options.first_obs > nobs0
         error(sprintf([caller, '_FILE: first_obs = %d is larger than the number', ...
                        ' of observations in the data file (%d)'], ...
@@ -146,7 +146,7 @@ if isfield(options, 'first_obs') && ~isempty(options.first_obs)
             error(sprintf([caller, '_FILE: first_obs = %d and', ...
                            ' first_simulation_period = %d have values', ...
                            ' inconsistent with a maximum lag of %d periods'], ...
-                          options.first_obs, options_.first_simulation_period, ...
+                          options.first_obs, options.first_simulation_period, ...
                           M.orig_maximum_lag))
         end
     elseif isfield(options, 'firstsimulationperiod')
@@ -157,11 +157,11 @@ if isfield(options, 'first_obs') && ~isempty(options.first_obs)
             error(sprintf([caller, '_FILE: first_obs = %d and', ...
                            ' first_simulation_period = %s have values', ...
                            ' inconsistent with a maximum lag of %d periods'], ...
-                          options.first_obs, options_.firstsimulationperiod, ...
+                          options.first_obs, options.firstsimulationperiod, ...
                           M.orig_maximum_lag))
         end
     else
-        first_obs = periods(options_.first_obs);
+        first_obs = periods(options.first_obs);
     end
     first_obs_ispresent = true;
 end
@@ -172,10 +172,10 @@ if isfield(options, 'firstobs') && ~isempty(options.firstobs)
                 - M.orig_maximum_lag
             first_obs = options.firstobs;
         else
-            error(sprintf([caller, '_File: first_obs = %s and', ...
+            error(sprintf([caller, '_FILE: first_obs = %s and', ...
                            ' first_simulation_period = %d have values', ...
                            ' inconsistent with a maximum lag of %d periods'], ...
-                          options.firstobs, options_.first_simulation_period, ...
+                          options.firstobs, options.first_simulation_period, ...
                           M.orig_maximum_lag))
         end
     elseif isfield(options, 'firstsimulationperiod')
@@ -220,8 +220,8 @@ end
 
 if isfield(options, 'last_obs')
     if options.last_obs > nobs0
-        error(sprintf([caller, '_FILE: last_obs is larger than the number', ...
-                       'observations in the dataset (%d)'], ...
+        error(sprintf([caller, '_FILE: last_obs = %d is larger than the number', ...
+                       ' of observations in the dataset (%d)'], ...
                       options.last_obs, nobs0))
     elseif first_obs_ispresent
         if nobs > 0 && (periods(options.last_obs) ~= first_obs + nobs - 1)
@@ -229,13 +229,20 @@ if isfield(options, 'last_obs')
                    ' inconsistent information. Use only two of these', ...
                    ' options.'])
         else
-            last_obs = periods(options.last_obs)
+            last_obs = periods(options.last_obs);
+        end
+    else
+        last_obs = periods(options.last_obs);
+        if nobs > 0
+            first_obs = last_obs - nobs + 1;
+        else
+            first_obs = periods(1);
         end
     end
 elseif isfield(options, 'lastobs')
     if options.lastobs > series.last
         error(sprintf([caller, '_FILE: last_obs = %s is larger than the number', ...
-                       'observations in the dataset (%s)'], ...
+                       ' of observations in the dataset (%s)'], ...
                       options.lastobs, series.last))
     elseif first_obs_ispresent
         if nobs > 0 && (options.lastobs ~= first_obs + nobs - 1)
@@ -243,13 +250,20 @@ elseif isfield(options, 'lastobs')
                    ' inconsistent information. Use only two of these', ...
                    ' options.'])
         else
-            last_obs = options.last_obs
+            last_obs = options.last_obs;
+        end
+    else
+        last_obs = options.last_obs;
+        if nobs > 0
+            first_obs = last_obs - nobs + 1;
+        else
+            first_obs = periods(1);
         end
     end
 elseif nobs > 0
-    last_obs = first_obs + nobs - 1
+    last_obs = first_obs + nobs - 1;
 else
-    last_obs = series.last
+    last_obs = series.last;
 end
 
 series = series(first_obs:last_obs);
