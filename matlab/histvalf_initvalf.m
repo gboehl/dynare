@@ -197,7 +197,7 @@ end
 
 if ~first_obs_ispresent
     if isfield(options, 'first_simulation_period')
-        if options.first_simulation_period < options.maximum_lag
+        if options.first_simulation_period < M.orig_maximum_lag
             error(sprintf([caller, '_FILE: first_simulation_period = %d', ...
                            'must be larger than the maximum lag (%d)'], ...
                           options.first_simulation_period, M.orig_maximum_lag))
@@ -250,7 +250,7 @@ elseif isfield(options, 'lastobs')
                    ' inconsistent information. Use only two of these', ...
                    ' options.'])
         else
-            last_obs = options.last_obs;
+            last_obs = options.lastobs;
         end
     else
         last_obs = options.last_obs;
