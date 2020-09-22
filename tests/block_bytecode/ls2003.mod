@@ -1,5 +1,5 @@
-var y y_s R pie dq pie_s de A y_obs pie_obs R_obs vv ww;
-varexo e_R e_q e_ys e_pies e_A;
+var y y_s R pie dq pie_s de A y_obs pie_obs R_obs vv ww pure_forward;
+varexo e_R e_q e_ys e_pies e_A e_pure_forward;
 
 parameters psi1 psi2 psi3 rho_R tau alpha rr k rho_q rho_A rho_ys rho_pies;
 
@@ -53,6 +53,10 @@ det = 0.25-0.02 = 0.23
      = 1/0.23*                = 1/0.23*       = 
 [ww]           [0.1  0.5] [2]           [1.1]   [4.7826]
 */
+
+/* Test a purely forward variable (thus within a block of type “evaluate
+   backward”). See #1727. */
+pure_forward = 0.9*pure_forward(+1) + e_pure_forward;
 end;
 
 shocks;
@@ -76,6 +80,9 @@ shocks;
 var e_q;
 periods 1;
 values 0.5;
+var e_pure_forward;
+periods 19;
+values 1;
 end;
 
 simul(periods=20, markowitz=0, stack_solve_algo = @{stack_solve_algo});
