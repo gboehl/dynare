@@ -24,6 +24,12 @@ model;
 end;
 
 initval_file(series = ds);
+if oo_.initval_series.dates(1) ~= dates('1Y');
+  error("Wrong initial date in oo_.initval_series");
+end;
+if oo_.initval_series{'x'}.data(6) ~= 0.9;
+  error("Wrond value for x"); 
+end;
 
 perfect_foresight_setup(periods=200);
 perfect_foresight_solver(maxit=100);
@@ -42,6 +48,13 @@ data1(8, 6) = 0.9; //shock to x in period 2
 ds1 = dseries(data1, '1Y', {'c', 'cmav', 'k', 'z_backward', 'z_forward', 'x'});
 
 initval_file(series = ds1, first_obs = 3, last_obs = 210, nobs = 208);
+if oo_.initval_series.dates(1) ~= dates('3Y');
+  error("Wrong initial date in oo_.initval_series");
+end;
+if oo_.initval_series{'x'}.data(6) ~= 0.9;
+  error("Wrond value for x"); 
+end;
+
 
 perfect_foresight_setup(periods=200);
 perfect_foresight_solver(maxit=100);
@@ -54,3 +67,67 @@ base_results=load('sim_exo_lead_lag_results.mat');
 if max(max(abs(base_results.oo_.endo_simul(1:5,:) - oo_.endo_simul(1:5,:)))) > 1e-8
     error('Simulation with leads and lags doesn''t match the one with auxiliary variables')
 end
+
+initval_file(series = ds1, first_obs = 3Y, last_obs = 210Y, nobs = 208);
+if oo_.initval_series.dates(1) ~= dates('3Y');
+  error("Wrong initial date in oo_.initval_series");
+end;
+if oo_.initval_series{'x'}.data(6) ~= 0.9;
+  error("Wrond value for x"); 
+end;
+
+
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver(maxit=100);
+
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed');
+end
+
+base_results=load('sim_exo_lead_lag_results.mat');
+if max(max(abs(base_results.oo_.endo_simul(1:5,:) - oo_.endo_simul(1:5,:)))) > 1e-8
+    error('Simulation with leads and lags doesn''t match the one with auxiliary variables')
+end
+
+initval_file(series = ds1, first_simulation_period = 7);
+if oo_.initval_series.dates(1) ~= dates('3Y');
+  error("Wrong initial date in oo_.initval_series");
+end;
+if oo_.initval_series{'x'}.data(6) ~= 0.9;
+  error("Wrond value for x"); 
+end;
+
+
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver(maxit=100);
+
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed');
+end
+
+base_results=load('sim_exo_lead_lag_results.mat');
+if max(max(abs(base_results.oo_.endo_simul(1:5,:) - oo_.endo_simul(1:5,:)))) > 1e-8
+    error('Simulation with leads and lags doesn''t match the one with auxiliary variables')
+end
+
+initval_file(series = ds1, first_simulation_period = 7Y);
+if oo_.initval_series.dates(1) ~= dates('3Y');
+  error("Wrong initial date in oo_.initval_series");
+end;
+if oo_.initval_series{'x'}.data(6) ~= 0.9;
+  error("Wrond value for x"); 
+end;
+
+
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver(maxit=100);
+
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed');
+end
+
+base_results=load('sim_exo_lead_lag_results.mat');
+if max(max(abs(base_results.oo_.endo_simul(1:5,:) - oo_.endo_simul(1:5,:)))) > 1e-8
+    error('Simulation with leads and lags doesn''t match the one with auxiliary variables')
+end
+

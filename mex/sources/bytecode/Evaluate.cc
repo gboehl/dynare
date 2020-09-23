@@ -1513,6 +1513,7 @@ Evaluate::evaluate_over_periods(const bool forward)
               it_code = begining;
               compute_block_time(0, false, false);
             }
+          it_ = periods+y_kmin-1; // Do not leave it_ in inconsistent state
         }
       else
         {
@@ -1521,6 +1522,7 @@ Evaluate::evaluate_over_periods(const bool forward)
               it_code = begining;
               compute_block_time(0, false, false);
             }
+          it_ = y_kmin; // Do not leave it_ in inconsistent state (see #1727)
         }
     }
 }
@@ -1596,11 +1598,17 @@ Evaluate::solve_simple_over_periods(const bool forward)
   else
     {
       if (forward)
-        for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
-          solve_simple_one_periods();
+        {
+          for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
+            solve_simple_one_periods();
+          it_= periods+y_kmin-1; // Do not leave it_ in inconsistent state
+        }
       else
-        for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
-          solve_simple_one_periods();
+        {
+          for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
+            solve_simple_one_periods();
+          it_ = y_kmin; // Do not leave it_ in inconsistent state (see #1727)
+        }
     }
   mxFree(g1);
   mxFree(r);
@@ -1665,6 +1673,7 @@ Evaluate::compute_complete_2b(const bool no_derivatives, double *_res1, double *
       else
         return;
     }
+  it_ = periods+y_kmin-1; // Do not leave it_ in inconsistent state
   return;
 }
 
@@ -1757,6 +1766,7 @@ Evaluate::compute_complete(double lambda, double *crit)
           else
             return false;
         }
+      it_ = periods+y_kmin-1; // Do not leave it_ in inconsistent state
     }
   mexPrintf("  lambda=%e, res2=%e\n", lambda, res2_);
   *crit = res2_/2;

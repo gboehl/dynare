@@ -700,8 +700,8 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
             else
               {
 #ifdef DEBUG
-                mexPrintf("endo in Block_Count=%d, block=%d, type=%d, steady_state=%d, print_it=%d, Block_Count=%d, fb->get_is_linear()=%d, fb->get_endo_nbr()=%d, fb->get_Max_Lag()=%d, fb->get_Max_Lead()=%d, fb->get_u_count_int()=%d\n",
-                          Block_Count, fb->get_size(), fb->get_type(), steady_state, print_it, Block_Count, fb->get_is_linear(), fb->get_endo_nbr(), fb->get_Max_Lag(), fb->get_Max_Lead(), fb->get_u_count_int());
+                mexPrintf("endo in Block_Count=%d, size=%d, type=%d, steady_state=%d, print_it=%d, fb->get_is_linear()=%d, fb->get_endo_nbr()=%d, fb->get_Max_Lag()=%d, fb->get_Max_Lead()=%d, fb->get_u_count_int()=%d\n",
+                          Block_Count+1, fb->get_size(), fb->get_type(), steady_state, print_it, fb->get_is_linear(), fb->get_endo_nbr(), fb->get_Max_Lag(), fb->get_Max_Lead(), fb->get_u_count_int());
 #endif
                 bool result;
                 if (sconstrained_extended_path.size())

@@ -16,6 +16,7 @@ M.endo_names = {'Variable_1','Variable_2','Variable_3'};
 M.exo_nbr = 1;
 M.exo_names = {'Variable_4'};
 M.exo_det_nbr = 0;
+M.orig_maximum_lag = 2;
 
 caller = 'INITVAL';
 
@@ -88,9 +89,9 @@ try
     ds1 = histvalf_initvalf(caller, M, options);
     error('This test didn''t catch the error')
 catch me
-    if strcmp(me.message, ['INITVAL_FILE: FIST_OBS, LAST_OBS and NOBS contain', ...
-                           ' inconsistent information. Use only two of these', ...
-                           ' options.']) == false
+    if ~strcmp(me.message, strcat('INITVAL_FILE: FIST_OBS, LAST_OBS and NOBS contain', ...
+                                  ' inconsistent information. Use only two of these', ...
+                                  ' options.'))
         failed_tests = cat(1, failed_tests, 'Wrong nobs error message' );
     end
 end
@@ -98,14 +99,13 @@ num_tests = num_tests + 1;
 
 options = struct();
 options.series = ds;
-options.first_obs = -1;
+options.first_obs = 0;
 
 try
     ds1 = histvalf_initvalf(caller, M, options);
     error('This test didn''t catch the error')
 catch me
-    if strcmp(me.message, [caller, '_FILE: the first requested period is', ...
-                           ' before available data.']) == false
+    if ~strcmp(me.message, strcat(caller, '_FILE: first_obs must be a positive number'))
         failed_tests = cat(1, failed_tests, ...
                            'Wrong first period error message');
     end
@@ -120,8 +120,8 @@ try
     ds1 = histvalf_initvalf(caller, M, options);
     error('This test didn''t catch the error')
 catch me
-    if strcmp(me.message, [caller, '_FILE: the last requested period is', ...
-                           ' after available data.']) == false
+    if ~strcmp(me.message, strcat(caller, '_FILE: last_obs = 11 is larger than the number', ...
+                                  ' of observations in the dataset (10)'))
         failed_tests = cat(1, failed_tests, ...
                            'Wrong last period error message');
     end
