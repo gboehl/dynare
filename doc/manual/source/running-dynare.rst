@@ -429,10 +429,10 @@ by the ``dynare`` command.
     .. option:: use_dll
        :noindex:
 
-        Instructs the preprocessor to create dynamic loadable libraries (DLL)
-        containing the model equations and derivatives, instead of writing
-        those in M-files. This is equivalent to the :opt:`use_dll` option of
-        the ``model`` block.
+       Instructs the preprocessor to create dynamic loadable libraries (DLL)
+       containing the model equations and derivatives, instead of writing
+       those in M-files. This is equivalent to the :opt:`use_dll` option of
+       the ``model`` block.
 
     These options can be passed to the preprocessor by listing them
     after the name of the ``.mod`` file. They can alternatively be
