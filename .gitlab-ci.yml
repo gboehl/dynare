@@ -1,7 +1,7 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   TERM: linux
-  MATLAB_VERSION: R2020a
+  MATLAB_VERSION: R2020b
   OLD_MATLAB_VERSION: R2009b
 
 # The next stanza creates the version number used for the source tarball and the
