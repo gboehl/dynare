@@ -89,7 +89,7 @@ NAME=dynare-"$VERSION"
 PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p \
       "$PKGFILES"/mex/matlab/maci64-8.3-9.3 \
-      "$PKGFILES"/mex/matlab/maci64-9.4-9.8 \
+      "$PKGFILES"/mex/matlab/maci64-9.4-9.9 \
       "$PKGFILES"/mex/octave \
       "$PKGFILES"/doc/dynare++ \
       "$PKGFILES"/dynare++ \
@@ -146,7 +146,7 @@ CC=$CC CXX=$CXX ./configure \
   --with-slicot="$LIB64"/Slicot/with-underscore \
   --with-matlab=/Applications/MATLAB_R2019b.app MATLAB_VERSION=R2019b
 make -j"$NTHREADS"
-cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.8
+cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.9
 
 
 ##
