@@ -232,13 +232,13 @@ elseif options.solve_algo==9
     [x, errorflag] = trust_region(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, ...
                              tolf, tolx, ...
                              maxit, options.debug, arguments{:});
-elseif ismember(options.solve_algo, [2, 12, 4, 14])
+elseif ismember(options.solve_algo, [2, 12, 4])
     if ismember(options.solve_algo, [2, 12])
         solver = @solve1;
     else
         solver = @trust_region;
     end
-    specializedunivariateblocks = ismember(options.solve_algo, [12, 14]);
+    specializedunivariateblocks = options.solve_algo == 12;
     if ~jacobian_flag
         fjac = zeros(nn,nn) ;
         dh = max(abs(x), options.gstep(1)*ones(nn,1))*eps^(1/3);
@@ -251,19 +251,19 @@ elseif ismember(options.solve_algo, [2, 12, 4, 14])
     [j1,j2,r,s] = dmperm(fjac);
     JAC = abs(fjac(j1,j2))>0;
     if options.debug
-        disp(['DYNARE_SOLVE (solve_algo=2|4|12|14): number of blocks = ' num2str(length(r))]);
+        disp(['DYNARE_SOLVE (solve_algo=2|4|12): number of blocks = ' num2str(length(r)-1)]);
     end
     l = 0;
     fre = false;
     for i=length(r)-1:-1:1
         blocklength = r(i+1)-r(i);
         if options.debug
-            dprintf('DYNARE_SOLVE (solve_algo=2|4|12|14): solving block %u of size %u.', i, blocklength);
+            dprintf('DYNARE_SOLVE (solve_algo=2|4|12): solving block %u of size %u.', i, blocklength);
         end
         j = r(i):r(i+1)-1;
         if specializedunivariateblocks
             if options.debug
-                dprintf('DYNARE_SOLVE (solve_algo=2|4|12|14): solving block %u by evaluating RHS.', i);
+                dprintf('DYNARE_SOLVE (solve_algo=2|4|12): solving block %u by evaluating RHS.', i);
             end
             if isequal(blocklength, 1)
                 if i<length(r)-1
@@ -304,7 +304,7 @@ elseif ismember(options.solve_algo, [2, 12, 4, 14])
             end
         else
             if options.debug
-                dprintf('DYNARE_SOLVE (solve_algo=2|4|12|14): solving block %u with trust_region routine.', i);
+                dprintf('DYNARE_SOLVE (solve_algo=2|4|12): solving block %u with trust_region routine.', i);
             end
         end
         [x, errorflag] = solver(f, x, j1(j), j2(j), jacobian_flag, ...
@@ -356,6 +356,19 @@ elseif options.solve_algo == 11
     catch
         errorflag = true;
     end
+elseif ismember(options.solve_algo, [13, 14])
+    if ~jacobian_flag
+        error('DYNARE_SOLVE: option solve_algo=13|14 needs computed Jacobian')
+    end
+    auxstruct = struct();
+    if options.solve_algo == 14
+        auxstruct.lhs = lhs;
+        auxstruct.endo_names = endo_names;
+        auxstruct.isloggedlhs = isloggedlhs;
+        auxstruct.isauxdiffloggedrhs = isauxdiffloggedrhs;
+    end
+    [x, errorflag] = block_trust_region(f, x, tolf, options.solve_tolx, maxit, options.debug, auxstruct, arguments{:});
+    [fvec, fjac] = feval(f, x, arguments{:});
 else
-    error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9,10,11,12,14]')
+    error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9,10,11,12,13,14]')
 end

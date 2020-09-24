@@ -11,6 +11,7 @@ nodist_block_trust_region_SOURCES = \
 BUILT_SOURCES = $(nodist_block_trust_region_SOURCES)
 CLEANFILES = $(nodist_block_trust_region_SOURCES)
 
+dulmage_mendelsohn.o: matlab_mex.mod
 dulmage_mendelsohn.mod: dulmage_mendelsohn.o
 
 matlab_fcn_closure.mod: matlab_fcn_closure.o

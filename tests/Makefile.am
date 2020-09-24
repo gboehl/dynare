@@ -134,6 +134,7 @@ MODFILES = \
 	steady_state/walsh1_ssm_block.mod \
 	steady_state/multi_leads.mod \
 	steady_state/example1_trust_region.mod \
+	steady_state/example1_block_trust_region.mod \
 	steady_state/Gali_2015_chapter_6_4.mod \
 	steady_state_operator/standard.mod \
 	steady_state_operator/use_dll.mod \

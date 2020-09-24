@@ -11,7 +11,7 @@
 ! be set in order to give the input values for the indices that are not passed
 ! to matlab_fcn.
 
-! Copyright © 2019 Dynare Team
+! Copyright © 2019-2020 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -80,12 +80,16 @@ contains
     if (mexCallMATLAB(nlhs, call_lhs, int(size(call_rhs), c_int), call_rhs, "feval") /= 0) &
          call mexErrMsgTxt("Error calling function to be solved")
 
+    call mxDestroyArray(call_rhs(2))
+
     fvec_all => mxGetPr(call_lhs(1))
     if (associated(f_indices)) then
        fvec = fvec_all(f_indices)
     else
        fvec = fvec_all
     end if
+    call mxDestroyArray(call_lhs(1))
+
     if (present(fjac)) then
        fjac_all(1:n_all,1:n_all) => mxGetPr(call_lhs(2))
        if (associated(x_indices) .and. associated(f_indices)) then
@@ -93,6 +97,7 @@ contains
        else
           fjac = fjac_all
        end if
+       call mxDestroyArray(call_lhs(2))
     end if
   end subroutine matlab_fcn
 end module matlab_fcn_closure
