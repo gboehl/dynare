@@ -1,5 +1,5 @@
 function varargout = sur(ds, param_names, eqtags, model_name, noniterative, ds_range)
-%function varargout = sur(ds, param_names, eqtags, model_name, noniterative, ds_range)
+
 % Seemingly Unrelated Regressions
 %
 % INPUTS
@@ -37,7 +37,10 @@ function varargout = sur(ds, param_names, eqtags, model_name, noniterative, ds_r
 
 global M_ oo_ options_
 
-%% Check input argument
+%
+% Check inputs
+%
+
 if nargin < 1 || nargin > 6
     error('function takes between 1 and 6 arguments');
 end
@@ -93,11 +96,17 @@ end
 maxit = 100;
 tol = 1e-6;
 
-%% Get Equation(s)
+%
+% Get Equation(s)
+%
+
 ast = handle_constant_eqs(get_ast(eqtags));
 neqs = length(ast);
 
-%% Find parameters and variable names in equations and setup estimation matrices
+%
+% Find parameters and variable names in equations and setup estimation matrices
+%
+
 [Y, lhssub, X, fp, lp, residnames] = common_parsing(ds(ds_range), ast, true, param_names);
 clear ast
 nobs = Y{1}.nobs;
@@ -107,7 +116,10 @@ if nargin == 1 && size(X, 2) ~= M_.param_nbr
     warning(['Not all parameters were used in model: ' strjoin(setdiff(M_.param_names, X.name), ', ')]);
 end
 
-%% Return to surgibbs if called from there
+%
+% Return to surgibbs if called from there
+%
+
 st = dbstack(1);
 if ~isempty(st) && strcmp(st(1).name, 'surgibbs')
     varargout{1} = nobs;
@@ -132,7 +144,10 @@ for i = 1:length(constrained)
 end
 constrained_param_idxs = constrained_param_idxs(1:j);
 
-%% Estimation
+%
+% Estimation
+%
+
 oo_.sur.(model_name).dof = nobs;
 
 % Estimated Parameters
@@ -188,16 +203,17 @@ yhatname = [model_name '_FIT'];
 ds.(yhatname) = dseries(oo_.sur.(model_name).Yhat.data,  fp{1}, yhatname);
 varargout{1} = ds;
 
-%% Calculate statistics
+%
+% Calculate various statistics
+%
+
 % Estimate for sigma^2
 SS_res = oo_.sur.(model_name).resid'*oo_.sur.(model_name).resid;
 oo_.sur.(model_name).s2 = SS_res/oo_.sur.(model_name).dof;
 
 % System R^2 value of McElroy (1977) - formula from Judge et al. (1986, p. 477)
-IMn = ones(nobs,nobs)*1/nobs;
-D_T = eye(nobs)-IMn;
 oo_.sur.(model_name).R2 = 1 - (oo_.sur.(model_name).resid' * kron(inv(M_.Sigma_e), eye(nobs)) * oo_.sur.(model_name).resid) ...
-                            / (oo_.sur.(model_name).Yobs.data' * kron(inv(M_.Sigma_e), D_T) * oo_.sur.(model_name).Yobs.data);
+                            / (oo_.sur.(model_name).Yobs.data' * kron(inv(M_.Sigma_e), eye(nobs)-ones(nobs,nobs)/nobs) * oo_.sur.(model_name).Yobs.data);
 
 % Adjusted R^2
 oo_.sur.(model_name).adjR2 = 1 - (1 - oo_.sur.(model_name).R2) * ((neqs*nobs-neqs)/(neqs*nobs-size(oo_.sur.(model_name).beta,1)));
@@ -215,7 +231,10 @@ oo_.sur.(model_name).tstat = oo_.sur.(model_name).beta./oo_.sur.(model_name).std
 oo_.sur.(model_name).neqs = neqs;
 oo_.sur.(model_name).pname = X.name;
 
-%% Print Output
+%
+% Print Output
+%
+
 if ~options_.noprint
     preamble = {['Model name: ' model_name], ...
         sprintf('No. Equations: %d', oo_.sur.(model_name).neqs), ...

@@ -1,5 +1,5 @@
 function ds = surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags, model_name)
-%function ds = surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags, model_name)
+
 % Implements Gibbs Samipling for SUR
 %
 % INPUTS
@@ -20,6 +20,12 @@ function ds = surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eq
 %
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
+%
+% REFERENCES
+% - Ando, Tomohiro and Zellner, Arnold. 2010. Hierarchical Bayesian Analysis of the
+%   Seemingly Unrelated Regression and Simultaneous Equations Models Using a
+%   Combination of Direct Monte Carlo and Importance Sampling Techniques.
+%   Bayesian Analysis Volume 5, Number 1, pp. 65-96.
 
 % Copyright (C) 2017-2020 Dynare Team
 %
@@ -38,15 +44,12 @@ function ds = surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eq
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-%% The notation that follows comes from Section 2.2 of
-% Ando, Tomohiro and Zellner, Arnold. 2010. Hierarchical Bayesian Analysis of the
-% Seemingly Unrelated Regression and Simultaneous Equations Models Using a
-% Combination of Direct Monte Carlo and Importance Sampling Techniques.
-% Bayesian Analysis Volume 5, Number 1, pp. 65-96.
-
 global M_ oo_ options_
 
-%% Check input
+%
+% Check inputs
+%
+
 assert(nargin >= 5 && nargin <= 9, 'Incorrect number of arguments passed to surgibbs');
 assert(isdseries(ds), 'The 1st argument must be a dseries');
 assert(iscellstr(param_names), 'The 2nd argument must be a cellstr');
@@ -81,12 +84,10 @@ else
     end
 end
 
-%% Estimation
-%  Notation from:
-%  Ando, Tomohiro and Zellner, Arnold. Hierarchical Bayesian Analysis of
-%  the Seemingly Unrelated Regression and Simultaneous Equations Models
-%  Using a Combination of Direct Monte Carlo and Importance Sampling
-%  Techniques. Bayesian Analysis. 2010. pp 67-70.
+%
+% Estimation
+%
+
 if nargin == 8
     [nobs, X, Y, m, lhssub, fp] = sur(ds, param_names, eqtags);
 else
@@ -136,7 +137,10 @@ for i = 1:ndraws
 end
 dyn_waitbar_close(hh);
 
-%% Save posterior moments.
+%
+% Save results.
+%
+
 oo_.surgibbs.(model_name).posterior.mean.beta = (sum(oo_.surgibbs.(model_name).betadraws)/rows(oo_.surgibbs.(model_name).betadraws))';
 oo_.surgibbs.(model_name).posterior.variance.beta = cov(oo_.surgibbs.(model_name).betadraws);
 
@@ -181,16 +185,21 @@ oo_.surgibbs.(model_name).s2 = SS_res/oo_.surgibbs.(model_name).dof;
 posterior_mean_resid = reshape((sum(residdraws))/rows(residdraws), nobs, m);
 Sigma_e = posterior_mean_resid'*posterior_mean_resid/oo_.surgibbs.(model_name).dof;
 
-% System R^2 value of McElroy (1977) - formula from Judge et al. (1986, p. 477)
-IMn = ones(nobs,nobs)*1/nobs;
-D_T = eye(nobs)-IMn;
+% System R² value of McElroy (1977) - formula from Judge et al. (1986, p. 477)
+%
+% The R² is computed at the posterior mean of the estimated
+% parameters. Maybe it would make more sense to compute a posterior
+% distribution for this statistic…
 oo_.surgibbs.(model_name).R2 = 1 - (oo_.surgibbs.(model_name).resid' * kron(inv(Sigma_e), eye(nobs)) * oo_.surgibbs.(model_name).resid) ...
-                                 / (oo_.surgibbs.(model_name).Yobs' * kron(inv(Sigma_e), D_T) * oo_.surgibbs.(model_name).Yobs);
+                                 / (oo_.surgibbs.(model_name).Yobs' * kron(inv(Sigma_e), eye(nobs)-ones(nobs,nobs)/nobs) * oo_.surgibbs.(model_name).Yobs);
 
 % Write .inc file
 write_param_init_inc_file('surgibbs', model_name, oo_.surgibbs.(model_name).param_idxs, oo_.surgibbs.(model_name).posterior.mean.beta);
 
-%% Print Output
+%
+% Print Output
+%
+
 if ~options_.noprint
     ttitle = 'Gibbs Sampling on SUR';
     preamble = {['Model name: ' model_name], ...
@@ -204,7 +213,10 @@ if ~options_.noprint
              [oo_.surgibbs.(model_name).posterior.mean.beta, sqrt(diag(oo_.surgibbs.(model_name).posterior.variance.beta))]);
 end
 
-%% Plot
+%
+% Plot
+%
+
 if ~options_.nograph
     figure
     nrows = 5;
