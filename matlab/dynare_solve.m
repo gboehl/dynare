@@ -14,8 +14,7 @@ function [x, errorflag, fvec, fjac] = dynare_solve(f, x, options, varargin)
 % - errorflag    [logical]          scalar, true iff the model can not be solved.
 % - fvec         [double]           n×1 vector, function value at x (f(x), used for debugging when errorflag is true).
 % - fjac         [double]           n×n matrix, Jacobian value at x (J(x), used for debugging when errorflag is true).
-%
-% REMARKS
+
 % Copyright © 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
