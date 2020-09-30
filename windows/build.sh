@@ -95,7 +95,6 @@ build_windows_matlab_mex_64_a ()
 		     --with-matio="$LIB64_MSYS2" \
 		     --with-slicot="$LIB64"/Slicot/without-underscore \
 		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab64/R2014a \
-		     MATLAB_VERSION=R2014a \
 		     MEXEXT=mexw64 \
 		     PACKAGE_VERSION="$VERSION" \
 		     PACKAGE_STRING="dynare $VERSION"
@@ -116,7 +115,6 @@ build_windows_matlab_mex_64_b ()
 		     --with-matio="$LIB64_MSYS2" \
 		     --with-slicot="$LIB64"/Slicot/without-underscore \
 		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab64/R2018a \
-		     MATLAB_VERSION=R2018a \
 		     MEXEXT=mexw64 \
 		     PACKAGE_VERSION="$VERSION" \
 		     PACKAGE_STRING="dynare $VERSION"
