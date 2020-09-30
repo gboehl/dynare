@@ -20,7 +20,29 @@ AC_DEFUN([AX_MATLAB_VERSION],
 AC_REQUIRE([AX_MATLAB])
 
 AC_MSG_CHECKING([for MATLAB version])
+
+if test -n "$MATLAB"; then
+  dnl Try to autodetect MATLAB version
+  if test -f "${MATLAB}/VersionInfo.xml"; then
+     dnl The VersionInfo.xml file is present on all versions since R2017a, on all platforms.
+     dnl Extract the version number as x.y, since it is our preferred form, and is
+     dnl more robust to future versions.
+     dnl NB: brackets in regular expressions are enclosed in other brackets, because this is m4
+     MATLAB_VERSION=$(sed -En '/<version>/s/.*>([[0-9]]+\.[[0-9]]+).*/\1/p' "${MATLAB}/VersionInfo.xml")
+  elif test -f "${MATLAB}/bin/util/mex/version.txt"; then
+     dnl The bin/util/mex/version.txt file is present on Windows and macOS, at least
+     dnl since R2009b. It contains the release number (Rnnnnx).
+     MATLAB_VERSION=$(cat "${MATLAB}/bin/util/mex/version.txt")
+  elif test -f "${MATLAB}/bin/mex" || test -f "${MATLAB}/bin/mexsh"; then
+     dnl Works on Linux and macOS until R2018a included. Returns the release number (Rnnnnx).
+     dnl Older MATLABs have the version in bin/mex, more recent in bin/mexsh
+     dnl NB: brackets in regular expressions are enclosed in other brackets, because this is m4
+     MATLAB_VERSION=$(sed -En "/^.*full_ver=/s/^.*full_ver='(R[[^']]+)'.*/\1/p" "${MATLAB}"/bin/mex*)
+  fi
+fi
+
 if test -n "$MATLAB_VERSION"; then
+  dnl Convert a release number (Rnnnnx) into a version number (x.y)
   case $MATLAB_VERSION in
     *2020b | *2020B)
       MATLAB_VERSION="9.9"
@@ -125,6 +147,7 @@ if test -n "$MATLAB_VERSION"; then
       MATLAB_VERSION="7.0.0"
       ;;
   esac
+  dnl Check that we have an x.y version number
   if ! echo "${MATLAB_VERSION}" | grep -qE '^[[0-9.]]+$'; then
       AC_MSG_ERROR([unknown MATLAB version ${MATLAB_VERSION}])
   fi
@@ -134,6 +157,5 @@ else
   AC_MSG_RESULT([unknown])
   ax_matlab_version_ok="no"
 fi
-
-AC_ARG_VAR([MATLAB_VERSION], [MATLAB version])
+AC_SUBST([MATLAB_VERSION])
 ])

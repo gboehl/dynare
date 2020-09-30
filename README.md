@@ -106,11 +106,10 @@ Simply launch the configure script from a terminal:
 ```
 ./configure
 ```
-If you have MATLAB, you need to indicate both the MATLAB location and version. For example, on GNU/Linux:
+If you have MATLAB, you need to indicate both the MATLAB location. For example, on GNU/Linux:
 ```
-./configure --with-matlab=/usr/local/MATLAB/R2019a MATLAB_VERSION=9.6
+./configure --with-matlab=/usr/local/MATLAB/R2019a
 ```
-Note that the MATLAB version can also be specified via the MATLAB family product release (R2019a, R2018b, …).
 
 Alternatively, you can disable the compilation of MEX files for MATLAB with the `--disable-matlab` flag, and MEX files for Octave with `--disable-octave`.
 
@@ -280,9 +279,9 @@ autoreconf -si
 ```
 - Configure Dynare from the source directory:
 ```
-./configure --with-slicot=/usr/local --with-matlab=<…> MATLAB_VERSION=<…> --disable-octave --disable-doc
+./configure --with-slicot=/usr/local --with-matlab=<…> --disable-octave --disable-doc
 ```
-where the path and version of MATLAB are specified. Note that you should use
+where the path of MATLAB is specified. Note that you should use
 the MSYS2 notation and not put spaces in the MATLAB path, so you probably want
 to use something like `/c/Progra~1/MATLAB/…`. Alternatively, if your filesystem
 does not have short filenames (8dot3), then you can run `mkdir -p
@@ -344,7 +343,7 @@ folder where you want Dynare installed.
 - `cd dynare`
 - `PATH="/usr/local/opt/bison/bin:/usr/local/opt/flex/bin:$PATH"`
 - `autoreconf -si`
-- `CC=gcc-9 CXX=g++-9 ./configure --disable-octave --with-matlab=/Applications/MATLAB_R2019a.app MATLAB_VERSION=R2019a --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local`, adjusting the MATLAB path and version to accord with your local installation. If you don't have MATLAB, simply remove `--with-matlab=/Applications/MATLAB_R2019a.app MATLAB_VERSION=R2019a` from the above command
+- `CC=gcc-9 CXX=g++-9 ./configure --disable-octave --with-matlab=/Applications/MATLAB_R2019a.app --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local`, adjusting the MATLAB path to accord with your local installation. If you don't have MATLAB, simply remove `--with-matlab=/Applications/MATLAB_R2019a.app` from the above command
 - `make -j`
 - **(Optional)** To then build mex files for Octave, run
      - `cd mex/build/octave`
