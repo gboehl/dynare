@@ -92,9 +92,10 @@ for it_=start:incr:finish
     g1=spalloc( Blck_size, Blck_size, nze);
     while ~(cvg==1 || iter>maxit_)
         if is_dynamic
-            [r, ~, T(:, it_), g1] = feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
+            [r, yy, T(:, it_), g1] = feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
+            y(:, it_) = yy(M.lead_lag_incidence(M.maximum_endo_lag+1,:));
         else
-            [r, ~, T, g1] = feval(fname, Block_Num, y, x, params, T);
+            [r, y, T, g1] = feval(fname, Block_Num, y, x, params, T);
         end
         if ~isreal(r)
             max_res=(-(max(max(abs(r))))^2)^0.5;

@@ -83,7 +83,8 @@ while ~(cvg==1 || iter>maxit_)
     r = NaN(Blck_size, periods);
     g1a = spalloc(Blck_size*periods, Blck_size*periods, nze*periods);
     for it_ = y_kmin+(1:periods)
-        [r(:, it_-y_kmin), ~, T(:, it_), g1]=feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
+        [r(:, it_-y_kmin), yy, T(:, it_), g1]=feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
+        y(:, it_) = yy(M.lead_lag_incidence(M.maximum_endo_lag+1,:));
         if periods == 1
             g1a = g1(:, Blck_size+(1:Blck_size));
         elseif it_ == y_kmin+1
