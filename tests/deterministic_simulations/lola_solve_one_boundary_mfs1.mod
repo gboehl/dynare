@@ -1,5 +1,4 @@
-//  Based on Luca Marchiori/Olivier Pierrard(2012) LOLA 2.0: Luxembourg OverLapping generation model for policy Analysis
-// Involves a call to solve_one_boundary.m that is tested here
+// Tests option mfs=1 with block
 
 load lola_data.mat
 
@@ -145,7 +144,7 @@ NBRYb=NBR_iss/(phii_iss*gdp_iss);
 
 
 % =======================================================
-model(block);              
+model(block, mfs=1);
 % ======================================================
 
 %  Labor Market Variables in the home country
@@ -972,9 +971,17 @@ end;
 % Numerical Simulation, Control Parameters
 % *******************************************
 
+model_info;
+
 perfect_foresight_setup(periods=125);
 perfect_foresight_solver(maxit=100);
 
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')
+end
+
+mfs0=load('lola_solve_one_boundary_results');
+
+if max(max(oo_.endo_simul-mfs0.oo_.endo_simul)) > options_.dynatol.x
+   error('Inconsistency with mfs=0')
 end

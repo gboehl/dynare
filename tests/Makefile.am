@@ -315,6 +315,10 @@ MODFILES = \
 	deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.mod \
 	deterministic_simulations/multiple_lead_lags/sim_lead_lag.mod \
 	deterministic_simulations/lola_solve_one_boundary.mod \
+	deterministic_simulations/lola_solve_one_boundary_mfs1.mod \
+	deterministic_simulations/lola_solve_one_boundary_mfs2.mod \
+	deterministic_simulations/lola_solve_one_boundary_mfs3.mod \
+	deterministic_simulations/ramst_block_mfs1.mod
 	deterministic_simulations/linear_approximation/sw.mod \
 	deterministic_simulations/multiple_lead_lags/AR2.mod \
 	deterministic_simulations/multiple_lead_lags/AR2_forward.mod \
@@ -531,6 +535,13 @@ deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.m.trs: determinist
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.o.trs: deterministic_simulations/rbc_det.o.trs
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.m.trs: deterministic_simulations/rbc_det.m.trs
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.o.trs: deterministic_simulations/rbc_det.o.trs
+deterministic_simulations/lola_solve_one_boundary_mfs1.m.trs: deterministic_simulations/lola_solve_one_boundary.m.trs
+deterministic_simulations/lola_solve_one_boundary_mfs1.o.trs: deterministic_simulations/lola_solve_one_boundary.o.trs
+deterministic_simulations/lola_solve_one_boundary_mfs2.m.trs: deterministic_simulations/lola_solve_one_boundary.m.trs
+deterministic_simulations/lola_solve_one_boundary_mfs2.o.trs: deterministic_simulations/lola_solve_one_boundary.o.trs
+deterministic_simulations/lola_solve_one_boundary_mfs3.m.trs: deterministic_simulations/lola_solve_one_boundary.m.trs
+deterministic_simulations/lola_solve_one_boundary_mfs3.o.trs: deterministic_simulations/lola_solve_one_boundary.o.trs
+
 
 histval_initval_file/ramst_initval_file.m.trs: histval_initval_file/ramst_initval_file_data.m.tls histval_initval_file/ramst_data.m.trs
 histval_initval_file/ramst_initval_file.o.trs: histval_initval_file/ramst_initval_file_data.o.tls histval_initval_file/ramst_data.o.trs
