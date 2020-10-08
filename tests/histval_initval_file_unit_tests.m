@@ -179,7 +179,7 @@ for i = 1:size(x,1)
 end
 fclose(fh);
 
-if ~verLessThan('matlab', '8.2')
+if (ispc && ~matlab_ver_less_than('8.2')) || (~ispc && ~matlab_ver_less_than('9.0'))
     writetable(table(x,y), 'data.xlsx')
     options = struct();
     options.datafile = 'data.xlsx';
@@ -189,18 +189,18 @@ if ~verLessThan('matlab', '8.2')
     failed_tests = my_assert(failed_tests, series.nobs == 10, ...
                              '*.xlsx file nobs test');
     num_tests = num_tests + 2;
+end
 
-    if ispc
-        writetable(table(x,y), 'data.xls')
-        options = struct();
-        options.datafile = 'data.xls';
-        series = histvalf_initvalf('INITVAL_FILE', M, options);
-        failed_tests = my_assert(failed_tests, series.init == dates('1Y'), ...
+if ispc && ~matlab_ver_less_than('8.2') % Does not work under GNU/Linux with R2020b (Unicode issue in xlsread)
+    writetable(table(x,y), 'data.xls')
+    options = struct();
+    options.datafile = 'data.xls';
+    series = histvalf_initvalf('INITVAL_FILE', M, options);
+    failed_tests = my_assert(failed_tests, series.init == dates('1Y'), ...
                              '*.xls file first_obs test');
-        failed_tests = my_assert(failed_tests, series.nobs == 10, ...        
+    failed_tests = my_assert(failed_tests, series.nobs == 10, ...
                              '*.xls file nobs test');
-        num_tests = num_tests + 2;
-    end
+    num_tests = num_tests + 2;
 end
 
 cd(getenv('TOP_TEST_DIR'));
