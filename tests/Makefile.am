@@ -418,8 +418,7 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_1_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_2_xfail.mod
 
-MFILES = histval_initval_file/ramst_initval_file_data.m \
-	 histval_initval_file_unit_tests.m
+MFILES = histval_initval_file/ramst_initval_file_data.m
 
 # Dependencies
 example1_use_dll.m.trs: example1.m.trs
