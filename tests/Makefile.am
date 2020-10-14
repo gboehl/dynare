@@ -281,6 +281,7 @@ MODFILES = \
 	ep/rbcii.mod \
 	ep/linearmodel0.mod \
 	ep/linearmodel1.mod \
+	ep/rbc_bytecode.mod \
 	stochastic_simulations/example1_noprint.mod \
 	stochastic-backward-models/solow_cd.mod \
 	stochastic-backward-models/solow_ces.mod \
