@@ -1,7 +1,7 @@
 function [y, info_convergence, endogenousvariablespaths] = extended_path_core(periods,endo_nbr,exo_nbr,positive_var_indx, ...
                                                   exo_simul,init,initial_conditions,...
                                                   steady_state, ...
-                                                  debug,bytecode_flag,order,M,pfm,algo,solve_algo,stack_solve_algo,...
+                                                  debug,order,M,pfm,algo,solve_algo,stack_solve_algo,...
                                                   olmmcp,options,oo,initialguess)
 
 % Copyright (C) 2016-2020 Dynare Team
@@ -40,7 +40,7 @@ if debug
     save ep_test_1.mat endo_simul exo_simul
 end
 
-if bytecode_flag && order > 0
+if options.bytecode && order > 0
     error('Option order > 0 of extended_path command is not compatible with bytecode option.')
 end
 if options.block && order > 0
@@ -53,7 +53,6 @@ if order == 0
     oo.endo_simul = endo_simul;
     oo.exo_simul = exo_simul;
     oo.steady_state = steady_state;
-    options.bytecode = bytecode_flag;
     options.lmmcp = olmmcp;
     options.solve_algo = solve_algo;
     options.stack_solve_algo = stack_solve_algo;

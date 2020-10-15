@@ -1,6 +1,6 @@
 function pfm = setup_stochastic_perfect_foresight_model_solver(DynareModel,DynareOptions,DynareOutput)
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright (C) 2013-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -72,4 +72,3 @@ end
 pfm.verbose = DynareOptions.ep.verbosity;
 pfm.maxit_ = DynareOptions.simul.maxit;
 pfm.tolerance = DynareOptions.dynatol.f;
-pfm.use_bytecode = DynareOptions.ep.use_bytecode ;
