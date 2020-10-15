@@ -121,6 +121,11 @@ extern "C" {
       mexErrMsgTxt("options_.threads.k_order_perturbation be a numeric scalar");
     int num_threads = static_cast<int>(mxGetScalar(num_threads_mx));
 
+    const mxArray *debug_mx = mxGetField(options_mx, 0, "debug");
+    if (!(debug_mx && mxIsLogicalScalar(debug_mx)))
+      mexErrMsgTxt("options_.debug should be a logical scalar");
+    bool debug = static_cast<bool>(mxGetScalar(debug_mx));
+
     // Extract various fields from M_
     const mxArray *fname_mx = mxGetField(M_mx, 0, "fname");
     if (!(fname_mx && mxIsChar(fname_mx) && mxGetM(fname_mx) == 1))
@@ -197,7 +202,10 @@ extern "C" {
 
     try
       {
-        Journal journal(fname + ".jnl");
+        // Journal is not written on-disk, unless options_.debug = true (see #1735)
+        Journal journal;
+        if (debug)
+          journal = Journal{fname + ".jnl"};
 
         std::unique_ptr<DynamicModelAC> dynamicModelFile;
         if (use_dll)
