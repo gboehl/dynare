@@ -1,5 +1,7 @@
 // --+ options: json=compute, stochastic +--
 
+// Regression test for bug preprocessor#52
+
 var x1 x2 x1bar x2bar z ;
 
 varexo ex1 ex2 ex1bar ex2bar ez ;
