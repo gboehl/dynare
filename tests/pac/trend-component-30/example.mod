@@ -1,5 +1,7 @@
 // --+ options: json=compute, stochastic +--
 
+// Test with two PAC equations in the same file
+
 var x1 x2 x1bar x2bar z u;
 
 varexo ex1 ex2 ex1bar ex2bar ez eu;
