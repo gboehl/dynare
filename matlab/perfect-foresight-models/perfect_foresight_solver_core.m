@@ -116,7 +116,9 @@ else
 end
 
 if nargout>1
-    if options_.block && ~options_.bytecode
+    if options_.lmmcp.status
+        maxerror = NaN; % Could be improved
+    elseif options_.block && ~options_.bytecode
         maxerror = oo_.deterministic_simulation.error;
     else
         if options_.bytecode
