@@ -3,7 +3,7 @@ function o = addSeries(o, varargin)
 % Add a series
 %
 % INPUTS
-%   o          [graph] graph object
+%   o          [report_graph] report_graph object
 %   varargin           arguments to report_series()
 %
 % OUTPUTS
@@ -12,7 +12,7 @@ function o = addSeries(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2019 Dynare Team
+% Copyright (C) 2013-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

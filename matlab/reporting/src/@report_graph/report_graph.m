@@ -1,7 +1,7 @@
-classdef graph < handle
-    % graph Class
+classdef report_graph < handle
+    % report_graph Class
     %
-    % Copyright (C) 2013-2019 Dynare Team
+    % Copyright (C) 2013-2020 Dynare Team
     %
     % This file is part of Dynare.
     %
@@ -63,31 +63,31 @@ classdef graph < handle
         writeCSV = false                 % Whether or not to write a CSV file with only the plotted data. The file will be saved in the directory specified by graphDirName with the same base name as specified by graphName with the ending .csv. Default: false.
     end
     methods
-        function o = graph(varargin)
-            %function o = graph(varargin)
-            % Graph Class Constructor
+        function o = report_graph(varargin)
+            %function o = report_graph(varargin)
+            % report_graph class constructor
             %
             % INPUTS
-            %   varargin        0 args  : empty graph object
-            %                   1 arg   : must be graph object (return a copy of arg)
+            %   varargin        0 args  : empty report_graph object
+            %                   1 arg   : must be report_graph object (return a copy of arg)
             %                   > 1 args: option/value pairs (see structure below for
             %                   options)
             %
             % OUTPUTS
-            %   o   [graph] graph object
+            %   o   [report_graph] report_graph object
             %
             % SPECIAL REQUIREMENTS
             %   none
             if nargin == 0
                 return
             elseif nargin == 1
-                assert(isa(varargin{1}, 'graph'), ...
-                    'With one arg to the Graph constructor, you must pass a graph object');
+                assert(isa(varargin{1}, 'report_graph'), ...
+                    'With one arg to the report_graph constructor, you must pass a report_graph object');
                 o = varargin{1};
                 return
             elseif nargin > 1
                 if round(nargin/2) ~= nargin/2
-                    error('@graph.graph: options must be supplied in name/value pairs.');
+                    error('@report_graph.report_graph: options must be supplied in name/value pairs.');
                 end
 
                 % Octave 5.1.0 has not implemented `properties` and issues a warning when using `fieldnames`
@@ -102,7 +102,7 @@ classdef graph < handle
                     if ~isempty(ind)
                         o.(optNames{ind}) = pair{2};
                     else
-                        error('@graph.graph: %s is not a recognized option.', pair{1});
+                        error('@report_graph.report_graph: %s is not a recognized option.', pair{1});
                     end
                 end
             end
@@ -111,82 +111,82 @@ classdef graph < handle
             if ischar(o.title)
                 o.title = {o.title};
             end
-            assert(iscellstr(o.title), '@graph.graph: title must be a cell array of string(s)');
-            assert(ischar(o.titleFormat), '@graph.graph: titleFormat file must be a string');
-            assert(ischar(o.xlabel), '@graph.graph: xlabel file must be a string');
-            assert(ischar(o.ylabel), '@graph.graph: ylabel file must be a string');
-            assert(ischar(o.miscTikzPictureOptions), '@graph.graph: miscTikzPictureOptions file must be a string');
-            assert(ischar(o.miscTikzAxisOptions), '@graph.graph: miscTikzAxisOptions file must be a string');
-            assert(ischar(o.graphName), '@graph.graph: graphName must be a string');
-            assert(ischar(o.graphDirName), '@graph.graph: graphDirName must be a string');
-            assert(islogical(o.showGrid), '@graph.graph: showGrid must be either true or false');
-            assert(islogical(o.xAxisTight), '@graph.graph: xAxisTight must be either true or false');
-            assert(islogical(o.yAxisTight), '@graph.graph: yAxisTight must be either true or false');
-            assert(islogical(o.showLegend), '@graph.graph: showLegend must be either true or false');
+            assert(iscellstr(o.title), '@report_graph.report_graph: title must be a cell array of string(s)');
+            assert(ischar(o.titleFormat), '@report_graph.report_graph: titleFormat file must be a string');
+            assert(ischar(o.xlabel), '@report_graph.report_graph: xlabel file must be a string');
+            assert(ischar(o.ylabel), '@report_graph.report_graph: ylabel file must be a string');
+            assert(ischar(o.miscTikzPictureOptions), '@report_graph.report_graph: miscTikzPictureOptions file must be a string');
+            assert(ischar(o.miscTikzAxisOptions), '@report_graph.report_graph: miscTikzAxisOptions file must be a string');
+            assert(ischar(o.graphName), '@report_graph.report_graph: graphName must be a string');
+            assert(ischar(o.graphDirName), '@report_graph.report_graph: graphDirName must be a string');
+            assert(islogical(o.showGrid), '@report_graph.report_graph: showGrid must be either true or false');
+            assert(islogical(o.xAxisTight), '@report_graph.report_graph: xAxisTight must be either true or false');
+            assert(islogical(o.yAxisTight), '@report_graph.report_graph: yAxisTight must be either true or false');
+            assert(islogical(o.showLegend), '@report_graph.report_graph: showLegend must be either true or false');
             assert(isempty(o.legendAt) || (isfloat(o.legendAt) && length(o.legendAt)==2), ...
-                '@graph.graph: legendAt must be a double array of size two');
-            assert(islogical(o.showLegendBox), '@graph.graph: showLegendBox must be either true or false');
-            assert(islogical(o.showZeroline), '@graph.graph: showZeroline must be either true or false');
+                '@report_graph.report_graph: legendAt must be a double array of size two');
+            assert(islogical(o.showLegendBox), '@report_graph.report_graph: showLegendBox must be either true or false');
+            assert(islogical(o.showZeroline), '@report_graph.report_graph: showZeroline must be either true or false');
             assert(isfloat(o.shadeOpacity) && length(o.shadeOpacity)==1 && ...
                 o.shadeOpacity >= 0 && o.shadeOpacity <= 100, ...
-                '@graph.graph: o.shadeOpacity must be a real in [0 100]');
-            assert(isfloat(o.width), '@graph.graph: o.width must be a real number');
-            assert(isfloat(o.height), '@graph.graph: o.height must be a real number');
-            assert(isfloat(o.xTickLabelRotation), '@graph.graph: o.xTickLabelRotation must be a real number');
-            assert(ischar(o.xTickLabelAnchor), '@graph.graph: xTickLabelAnchor must be a string');
-            assert(isint(o.yTickLabelPrecision), '@graph.graph: o.yTickLabelPrecision must be an integer');
-            assert(islogical(o.yTickLabelFixed), '@graph.graph: yTickLabelFixed must be either true or false');
-            assert(islogical(o.yTickLabelZeroFill), '@graph.graph: yTickLabelZeroFill must be either true or false');
-            assert(islogical(o.yTickLabelScaled), '@graph.graph: yTickLabelScaled must be either true or false');
-            assert(islogical(o.writeCSV), '@graph.graph: writeCSV must be either true or false');
-            assert(ischar(o.shadeColor), '@graph.graph: shadeColor must be a string');
-            assert(ischar(o.zeroLineColor), '@graph.graph: zeroLineColor must be a string');
-            assert(any(strcmp(o.axisShape, {'box', 'L'})), ['@graph.graph: axisShape ' ...
+                '@report_graph.report_graph: o.shadeOpacity must be a real in [0 100]');
+            assert(isfloat(o.width), '@report_graph.report_graph: o.width must be a real number');
+            assert(isfloat(o.height), '@report_graph.report_graph: o.height must be a real number');
+            assert(isfloat(o.xTickLabelRotation), '@report_graph.report_graph: o.xTickLabelRotation must be a real number');
+            assert(ischar(o.xTickLabelAnchor), '@report_graph.report_graph: xTickLabelAnchor must be a string');
+            assert(isint(o.yTickLabelPrecision), '@report_graph.report_graph: o.yTickLabelPrecision must be an integer');
+            assert(islogical(o.yTickLabelFixed), '@report_graph.report_graph: yTickLabelFixed must be either true or false');
+            assert(islogical(o.yTickLabelZeroFill), '@report_graph.report_graph: yTickLabelZeroFill must be either true or false');
+            assert(islogical(o.yTickLabelScaled), '@report_graph.report_graph: yTickLabelScaled must be either true or false');
+            assert(islogical(o.writeCSV), '@report_graph.report_graph: writeCSV must be either true or false');
+            assert(ischar(o.shadeColor), '@report_graph.report_graph: shadeColor must be a string');
+            assert(ischar(o.zeroLineColor), '@report_graph.report_graph: zeroLineColor must be a string');
+            assert(any(strcmp(o.axisShape, {'box', 'L'})), ['@report_graph.report_graph: axisShape ' ...
                 'must be one of ''box'' or ''L''']);
             valid_legend_locations = ...
                 {'south west','south east','north west','north east','outer north east'};
             assert(any(strcmp(o.legendLocation, valid_legend_locations)), ...
-                ['@graph.graph: legendLocation must be one of ' addCommasToCellStr(valid_legend_locations)]);
+                ['@report_graph.report_graph: legendLocation must be one of ' addCommasToCellStr(valid_legend_locations)]);
 
             valid_font_sizes = {'tiny', 'scriptsize', 'footnotesize', 'small', ...
                 'normalsize', 'large', 'Large', 'LARGE', 'huge', 'Huge'};
             assert(any(strcmp(o.legendFontSize, valid_font_sizes)), ...
-                ['@graph.graph: legendFontSize must be one of ' addCommasToCellStr(valid_font_sizes)]);
+                ['@report_graph.report_graph: legendFontSize must be one of ' addCommasToCellStr(valid_font_sizes)]);
             assert(any(strcmp(o.titleFontSize, valid_font_sizes)), ...
-                ['@graph.graph: titleFontSize must be one of ' addCommasToCellStr(valid_font_sizes)]);
+                ['@report_graph.report_graph: titleFontSize must be one of ' addCommasToCellStr(valid_font_sizes)]);
             assert(any(strcmp(o.tickFontSize, valid_font_sizes)), ...
-                ['@graph.graph: tickFontSize must be one of ' addCommasToCellStr(valid_font_sizes)]);
+                ['@report_graph.report_graph: tickFontSize must be one of ' addCommasToCellStr(valid_font_sizes)]);
 
             valid_legend_orientations = {'vertical', 'horizontal'};
             assert(any(strcmp(o.legendOrientation, valid_legend_orientations)), ...
-                ['@graph.graph: legendOrientation must be one of ' addCommasToCellStr(valid_legend_orientations)]);
+                ['@report_graph.report_graph: legendOrientation must be one of ' addCommasToCellStr(valid_legend_orientations)]);
 
             assert(isempty(o.shade) || (isdates(o.shade) && o.shade.ndat >= 2), ...
-                ['@graph.graph: shade is specified as a dates range, e.g. ' ...
+                ['@report_graph.report_graph: shade is specified as a dates range, e.g. ' ...
                 '''dates(''1999q1''):dates(''1999q3'')''.']);
             assert(isempty(o.xrange) || (isdates(o.xrange) && o.xrange.ndat >= 2), ...
-                ['@graph.graph: xrange is specified as a dates range, e.g. ' ...
+                ['@report_graph.report_graph: xrange is specified as a dates range, e.g. ' ...
                 '''dates(''1999q1''):dates(''1999q3'')''.']);
             assert(isempty(o.yrange) || (isfloat(o.yrange) && length(o.yrange) == 2 && ...
                 o.yrange(1) < o.yrange(2)), ...
-                ['@graph.graph: yrange is specified an array with two float entries, ' ...
+                ['@report_graph.report_graph: yrange is specified an array with two float entries, ' ...
                 'the lower bound and upper bound.']);
-            assert(isempty(o.data) || isdseries(o.data), ['@graph.graph: data must ' ...
+            assert(isempty(o.data) || isdseries(o.data), ['@report_graph.report_graph: data must ' ...
                 'be a dseries']);
-            assert(isempty(o.seriesToUse) || iscellstr(o.seriesToUse), ['@graph.graph: ' ...
+            assert(isempty(o.seriesToUse) || iscellstr(o.seriesToUse), ['@report_graph.report_graph: ' ...
                 'seriesToUse must be a cell array of string(s)']);
             assert(isempty(o.xTicks) || isfloat(o.xTicks),...
-                '@graph.graph: xTicks must be a numerical array');
+                '@report_graph.report_graph: xTicks must be a numerical array');
             assert(iscellstr(o.xTickLabels) || (ischar(o.xTickLabels) && strcmpi(o.xTickLabels, 'ALL')), ...
-                ['@graph.graph: xTickLabels must be a cell array of strings or ' ...
+                ['@report_graph.report_graph: xTickLabels must be a cell array of strings or ' ...
                 'equivalent to the string ''ALL''']);
             if ~isempty(o.xTickLabels)
                 assert((ischar(o.xTickLabels) && strcmpi(o.xTickLabels, 'ALL')) || ...
-                    ~isempty(o.xTicks), ['@graph.graph: if you set xTickLabels and ' ...
+                    ~isempty(o.xTicks), ['@report_graph.report_graph: if you set xTickLabels and ' ...
                     'it''s not equal to ''ALL'', you must set xTicks']);
             end
             if ~isempty(o.xTicks)
-                assert(~isempty(o.xTickLabels), '@graph.graph: if you set xTicks, you must set xTickLabels');
+                assert(~isempty(o.xTickLabels), '@report_graph.report_graph: if you set xTicks, you must set xTickLabels');
             end
 
             % using o.seriesToUse, create series objects and put them in o.series

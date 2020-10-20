@@ -4,7 +4,7 @@ function o = addGraph(o, varargin)
 %
 % INPUTS
 %   o          [section] section object
-%   varargin             arguments to graph()
+%   varargin             arguments to report_graph()
 %
 % OUTPUTS
 %   updated section object
@@ -12,7 +12,7 @@ function o = addGraph(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2019 Dynare Team
+% Copyright (C) 2013-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,5 +33,5 @@ if ~isempty(o.elements)
     assert(~isa(o.elements{1}, 'paragraph'), ...
         '@section.addSeries: A section that contains a paragraph cannot contain a graph or a table');
 end
-o.elements{end+1} = graph(varargin{:});
+o.elements{end+1} = report_graph(varargin{:});
 end

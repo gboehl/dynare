@@ -3,7 +3,7 @@ function graphName = writeGraphFile(o, pg, sec, row, col, rep_dir)
 % Write the tikz file that contains the graph
 %
 % INPUTS
-%   o         [graph]   graph object
+%   o         [report_graph]   report_graph object
 %   pg        [integer] this page number
 %   sec       [integer] this section number
 %   row       [integer] this row number
@@ -16,7 +16,7 @@ function graphName = writeGraphFile(o, pg, sec, row, col, rep_dir)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2019 Dynare Team
+% Copyright (C) 2013-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,7 +35,7 @@ function graphName = writeGraphFile(o, pg, sec, row, col, rep_dir)
 
 ne = length(o.series);
 if ne < 1
-    warning('@graph.writeGraphFile: no series to plot, returning');
+    warning('@report_graph.writeGraphFile: no series to plot, returning');
     return
 end
 
@@ -50,7 +50,7 @@ end
 
 [fid, msg] = fopen([rep_dir '/' graphName], 'w');
 if fid == -1
-    error(['@graph.writeGraphFile: ' msg]);
+    error(['@report_graph.writeGraphFile: ' msg]);
 end
 
 fprintf(fid, '%% Graph Object written %s\n', datestr(now));
@@ -227,7 +227,7 @@ if ~isempty(o.shade)
     stringsdd = strings(dd);
     x1 = find(strcmpi(date2string(o.shade(1)), stringsdd));
     x2 = find(strcmpi(date2string(o.shade(end)), stringsdd));
-    assert(~isempty(x1) && ~isempty(x2), ['@graph.writeGraphFile: either ' ...
+    assert(~isempty(x1) && ~isempty(x2), ['@report_graph.writeGraphFile: either ' ...
                         date2string(o.shade(1)) ' or ' date2string(o.shade(end)) ' is not in the date ' ...
                         'range of data selected.']);
     if x1 == 1
@@ -329,6 +329,6 @@ if o.writeCSV
 end
 fprintf(fid, '\\end{axis}\n\\end{tikzpicture}%%');
 if fclose(fid) == -1
-    error('@graph.writeGraphFile: closing %s\n', o.filename);
+    error('@report_graph.writeGraphFile: closing %s\n', o.filename);
 end
 end

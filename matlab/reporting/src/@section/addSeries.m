@@ -12,7 +12,7 @@ function o = addSeries(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2019 Dynare Team
+% Copyright (C) 2013-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,7 +33,7 @@ assert(~isempty(o.elements), ...
     '@section.addSeries: Before adding a series, you must add either a graph or a table');
 assert(~isa(o.elements{1}, 'paragraph'), ...
     '@section.addSeries: A section that contains a paragraph cannot contain a graph or a table');
-assert(isa(o.elements{end}, 'graph') || isa(o.elements{end}, 'report_table'), ...
-    '@report.addSeries: you can only add a series to a report_table or graph object');
+assert(isa(o.elements{end}, 'report_graph') || isa(o.elements{end}, 'report_table'), ...
+    '@report.addSeries: you can only add a series to a report_table or report_graph object');
 o.elements{end}.addSeries(varargin{:});
 end

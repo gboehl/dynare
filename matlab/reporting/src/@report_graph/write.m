@@ -1,9 +1,9 @@
 function write(o, fid, pg, sec, row, col, rep_dir)
 %function write(o, fid, pg, sec, row, col, rep_dir)
-% Write a Graph object
+% Write a report_graph object
 %
 % INPUTS
-%   o         [graph]   graph object
+%   o         [report_graph]   report_graph object
 %   fid       [integer] file id
 %   pg        [integer] this page number
 %   sec       [integer] this section number
@@ -12,12 +12,12 @@ function write(o, fid, pg, sec, row, col, rep_dir)
 %   rep_dir   [string]  directory containing report.tex
 %
 % OUTPUTS
-%   o   [graph] graph object
+%   o   [report_graph] report_graph object
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2019 Dynare Team
+% Copyright (C) 2013-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
