@@ -44,7 +44,7 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2019 Dynare Team
+% Copyright (C) 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -83,15 +83,35 @@ for it = maximum_lag+(1:T)
         residuals(i_rows) = res(eq_index);
         if T==1 && it==maximum_lag+1
             [rows, cols, vals] = find(jacobian(:,i_cols_0));
+            if size(jacobian, 1) == 1 % find() will return row vectors in this case
+                rows = rows';
+                cols = cols';
+                vals = vals';
+            end
             iJacobian{1} = [rows, i_cols_J0(cols), vals];
         elseif it == maximum_lag+1
             [rows,cols,vals] = find(jacobian(eq_index,i_cols_1));
+            if numel(eq_index) == 1 % find() will return row vectors in this case
+                rows = rows';
+                cols = cols';
+                vals = vals';
+            end
             iJacobian{1} = [offset+rows, i_cols_J1(cols), vals];
         elseif it == maximum_lag+T
             [rows,cols,vals] = find(jacobian(eq_index,i_cols_T));
+            if numel(eq_index) == 1 % find() will return row vectors in this case
+                rows = rows';
+                cols = cols';
+                vals = vals';
+            end
             iJacobian{T} = [offset+rows, i_cols_J(i_cols_T(cols)), vals];
         else
             [rows,cols,vals] = find(jacobian(eq_index,i_cols_j));
+            if numel(eq_index) == 1 % find() will return row vectors in this case
+                rows = rows';
+                cols = cols';
+                vals = vals';
+            end
             iJacobian{it-maximum_lag} = [offset+rows, i_cols_J(cols), vals];
             i_cols_J = i_cols_J + ny;
         end
