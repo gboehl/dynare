@@ -82,7 +82,7 @@ for it = maximum_lag+(1:T)
         [res,jacobian] = dynamic_function(YY(i_cols),exo_simul, params, steady_state,it);
         residuals(i_rows) = res(eq_index);
         if T==1 && it==maximum_lag+1
-            [rows, cols, vals] = find(jacobian(:,i_cols_0));
+            [rows, cols, vals] = find(jacobian(eq_index,i_cols_0));
             if size(jacobian, 1) == 1 % find() will return row vectors in this case
                 rows = rows';
                 cols = cols';
