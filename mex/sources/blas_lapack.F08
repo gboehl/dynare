@@ -29,7 +29,7 @@ module blas
   interface
      subroutine dgemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
        import :: blint, real64
-       character :: trans
+       character, intent(in) :: trans
        integer(blint), intent(in) :: m, n, lda, incx, incy
        real(real64), dimension(*), intent(in) :: a, x
        real(real64), intent(in) :: alpha, beta
