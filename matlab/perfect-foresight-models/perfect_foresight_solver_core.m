@@ -75,10 +75,10 @@ else
             oo_.deterministic_simulation.status = false;
         end
     else
-        if M_.maximum_endo_lead == 0 % Purely backward model
+        if M_.maximum_endo_lead == 0 && ~options_.lmmcp.status % Purely backward model
             [oo_.endo_simul, oo_.deterministic_simulation] = ...
                 sim1_purely_backward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
-        elseif M_.maximum_endo_lag == 0 % Purely forward model
+        elseif M_.maximum_endo_lag == 0 && ~options_.lmmcp.status % Purely forward model
         [oo_.endo_simul, oo_.deterministic_simulation] = ...
             sim1_purely_forward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
         else % General case

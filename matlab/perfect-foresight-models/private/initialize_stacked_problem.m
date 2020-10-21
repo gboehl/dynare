@@ -30,7 +30,7 @@ function [options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, i
 % - i_cols_J0           [double] indices of contemporaneous variables appearing in M.lead_lag_incidence (relevant in problems with periods=1)
 % - dynamicmodel        [handle] function handle to _dynamic-file
 
-% Copyright (C) 2015-2019 Dynare Team
+% Copyright (C) 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -73,22 +73,25 @@ end
 if M.maximum_lag > 0
     y0 = endogenousvariables(:, M.maximum_lag);
 else
-    y0 = NaN(ny, 1);
+    y0 = NaN(M.endo_nbr, 1);
 end
 if M.maximum_lead > 0
     yT = endogenousvariables(:, M.maximum_lag+periods+1);
 else
-    yT = NaN(ny, 1);
+    yT = NaN(M.endo_nbr, 1);
 end
 z = endogenousvariables(:,M.maximum_lag+(1:periods));
 illi = M.lead_lag_incidence';
 [i_cols,~,i_cols_j] = find(illi(:));
-illi = illi(:,2:3);
+if M.maximum_lag == 0
+    i_cols = i_cols + M.endo_nbr;
+end
+illi = illi(:,(1+M.maximum_lag):(1+M.maximum_lag+M.maximum_lead));
 [i_cols_J1,~,i_cols_1] = find(illi(:));
-i_cols_T = nonzeros(M.lead_lag_incidence(1:2,:)');
+i_cols_T = nonzeros(M.lead_lag_incidence(1:(1+M.maximum_lag),:)');
 if periods==1
-    i_cols_0 = nonzeros(M.lead_lag_incidence(2,:)');
-    i_cols_J0 = find(M.lead_lag_incidence(2,:)');
+    i_cols_0 = nonzeros(M.lead_lag_incidence(1+M.maximum_lag,:)');
+    i_cols_J0 = find(M.lead_lag_incidence(1+M.maximum_lag,:)');
 else
     i_cols_0 = [];
     i_cols_J0 = [];
