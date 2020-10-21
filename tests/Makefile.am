@@ -321,7 +321,7 @@ MODFILES = \
 	deterministic_simulations/lola_solve_one_boundary_mfs1.mod \
 	deterministic_simulations/lola_solve_one_boundary_mfs2.mod \
 	deterministic_simulations/lola_solve_one_boundary_mfs3.mod \
-	deterministic_simulations/ramst_block_mfs1.mod
+	deterministic_simulations/ramst_block_mfs1.mod \
 	deterministic_simulations/linear_approximation/sw.mod \
 	deterministic_simulations/multiple_lead_lags/AR2.mod \
 	deterministic_simulations/multiple_lead_lags/AR2_forward.mod \
