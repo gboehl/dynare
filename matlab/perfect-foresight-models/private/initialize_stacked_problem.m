@@ -83,15 +83,15 @@ end
 z = endogenousvariables(:,M.maximum_lag+(1:periods));
 illi = M.lead_lag_incidence';
 [i_cols,~,i_cols_j] = find(illi(:));
-if M.maximum_lag == 0
+if M.maximum_endo_lag == 0
     i_cols = i_cols + M.endo_nbr;
 end
-illi = illi(:,(1+M.maximum_lag):(1+M.maximum_lag+M.maximum_lead));
+illi = illi(:,(1+M.maximum_endo_lag):(1+M.maximum_endo_lag+M.maximum_endo_lead));
 [i_cols_J1,~,i_cols_1] = find(illi(:));
-i_cols_T = nonzeros(M.lead_lag_incidence(1:(1+M.maximum_lag),:)');
+i_cols_T = nonzeros(M.lead_lag_incidence(1:(1+M.maximum_endo_lag),:)');
 if periods==1
-    i_cols_0 = nonzeros(M.lead_lag_incidence(1+M.maximum_lag,:)');
-    i_cols_J0 = find(M.lead_lag_incidence(1+M.maximum_lag,:)');
+    i_cols_0 = nonzeros(M.lead_lag_incidence(1+M.maximum_endo_lag,:)');
+    i_cols_J0 = find(M.lead_lag_incidence(1+M.maximum_endo_lag,:)');
 else
     i_cols_0 = [];
     i_cols_J0 = [];
