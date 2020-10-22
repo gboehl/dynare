@@ -24,7 +24,7 @@
 !   • remove the “value” keywords
 !   • convert input character arrays to character(kind=c_char, len=*)
 
-! Copyright © 2019-2020 Dynare Team
+! Copyright © 2019-2021 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -225,6 +225,14 @@ module matlab_mat
      end function mxIsClass_internal
 
      ! Structure
+     type(c_ptr) function mxCreateStructMatrix_internal(m, n, nfields, fieldnames) bind(c, name="mxCreateStructMatrix"//API_VER2)
+       use iso_c_binding
+       import :: mwSize
+       integer(mwSize), intent(in), value :: m, n
+       integer(c_int), intent(in), value :: nfields
+       type(c_ptr), intent(in), value :: fieldnames
+     end function mxCreateStructMatrix_internal
+
      logical(c_bool) function mxIsStruct(pm) bind(c, name="mxIsStruct"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
@@ -238,10 +246,24 @@ module matlab_mat
        character(c_char), dimension(*), intent(in) :: fieldname
      end function mxGetField_internal
 
+     subroutine mxSetField_internal(pm, index, fieldname, pvalue) bind(c, name="mxSetField"//API_VER2)
+       use iso_c_binding
+       import :: mwIndex
+       type(c_ptr), intent(in), value :: pm, pvalue
+       integer(mwIndex), intent(in), value :: index
+       character(c_char), dimension(*), intent(in) :: fieldname
+     end subroutine mxSetField_internal
+
      integer(c_int) function mxGetNumberOfFields(pm) bind(c, name="mxGetNumberOfFields"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetNumberOfFields
+
+     integer(c_int) function mxAddField_internal(pm, fieldname) bind(c, name="mxAddField"//API_VER)
+       use iso_c_binding
+       type(c_ptr), intent(in), value :: pm
+       character(c_char), dimension(*), intent(in) :: fieldname
+     end function mxAddField_internal
 
      ! Cell
      logical(c_bool) function mxIsCell(pm) bind(c, name="mxIsCell"//API_VER)
@@ -326,12 +348,33 @@ contains
     mxIsclass = mxIsclass_internal(pm, classname // c_null_char)
   end function mxIsClass
 
+  ! Do not provide an interface for the last two arguments (initial
+  ! fieldnames), since passing a vector of C character strings is not easy.
+  ! One can simply use mxAddField().
+  type(c_ptr) function mxCreateStructMatrix(m, n)
+    integer(mwSize), intent(in) :: m, n
+    mxCreateStructMatrix = mxCreateStructMatrix_internal(m, n, 0_c_int, c_null_ptr)
+  end function mxCreateStructMatrix
+
   type(c_ptr) function mxGetField(pm, index, fieldname)
     type(c_ptr), intent(in) :: pm
     integer(mwIndex), intent(in) :: index
     character(kind=c_char, len=*), intent(in) :: fieldname
     mxGetField = mxGetField_internal(pm, index-1, fieldname // c_null_char)
   end function mxGetField
+
+  subroutine mxSetField(pm, index, fieldname, pvalue)
+    type(c_ptr), intent(in) :: pm, pvalue
+    integer(mwIndex), intent(in) :: index
+    character(kind=c_char, len=*), intent(in) :: fieldname
+    call mxSetField_internal(pm, index-1, fieldname // c_null_char, pvalue)
+  end subroutine mxSetField
+
+  integer(c_int) function mxAddField(pm, fieldname)
+    type(c_ptr), intent(in) :: pm
+    character(kind=c_char, len=*), intent(in) :: fieldname
+    mxAddField = mxAddField_internal(pm, fieldname // c_null_char)
+  end function mxAddField
 
   type(c_ptr) function mxGetCell(pm, index)
     type(c_ptr), intent(in) :: pm

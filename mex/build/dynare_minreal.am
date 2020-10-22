@@ -1,0 +1,14 @@
+mex_PROGRAMS = dynare_minreal
+
+dynare_minreal_LDADD = $(LIBADD_SLICOT)
+dynare_minreal_LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_SLICOT)
+
+nodist_dynare_minreal_SOURCES = dynare_minreal.f08 matlab_mex.F08 slicot.F08
+
+BUILT_SOURCES = $(nodist_dynare_minreal_SOURCES)
+CLEANFILES = $(nodist_dynare_minreal_SOURCES)
+
+dynare_minreal.o : matlab_mex.mod slicot.mod
+
+%.f08: $(top_srcdir)/../../sources/dynare_minreal/%.f08
+	$(LN_S) -f $< $@

@@ -37,7 +37,7 @@ clean-local:
 		cd $(top_srcdir)/../../octave && rm -f $(PROGRAMS); \
 	fi
 
-# Rules for the Fortran 2008 interface to MEX and BLAS/LAPACK functions
+# Rules for the Fortran 2008 interface to MEX and BLAS/LAPACK/SLICOT functions
 matlab_mat.mod: matlab_mex.o
 matlab_mex.mod: matlab_mex.o
 
@@ -48,4 +48,9 @@ blas.mod: blas_lapack.o
 lapack.mod: blas_lapack.o
 
 blas_lapack.F08: $(top_srcdir)/../../sources/blas_lapack.F08
+	$(LN_S) -f $< $@
+
+slicot.mod: slicot.o
+
+slicot.F08: $(top_srcdir)/../../sources/slicot.F08
 	$(LN_S) -f $< $@

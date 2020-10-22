@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright © 2009-2020 Dynare Team
+dnl Copyright © 2009-2021 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -70,8 +70,8 @@ AM_CONDITIONAL([ENABLE_MEX_MS_SBVAR], [test "$enable_mex_ms_sbvar" = yes])
 AC_ARG_ENABLE([mex-dynare++], AS_HELP_STRING([--disable-mex-dynare++], [disable compilation of MEX based on Dynare++]), [], [enable_mex_dynareplusplus=yes])
 AM_CONDITIONAL([ENABLE_MEX_DYNAREPLUSPLUS], [test "$enable_mex_dynareplusplus" = yes])
 
-AC_ARG_ENABLE([mex-kalman-steady-state], AS_HELP_STRING([--disable-mex-kalman-steady-state], [disable compilation of the kalman_steady_state MEX]), [], [enable_mex_kalman_steady_state=yes])
-AM_CONDITIONAL([ENABLE_MEX_KALMAN_STEADY_STATE], [test "$enable_mex_kalman_steady_state" = yes])
+AC_ARG_ENABLE([mex-kalman-minreal], AS_HELP_STRING([--disable-mex-kalman-minreal], [disable compilation of the kalman_steady_state and dynare_minreal MEX]), [], [enable_mex_kalman_minreal=yes])
+AM_CONDITIONAL([ENABLE_MEX_KALMAN_MINREAL], [test "$enable_mex_kalman_minreal" = yes])
 
 # Check for GSL, needed by MS-SBVAR
 if test "$enable_mex_ms_sbvar" = yes; then
@@ -85,10 +85,10 @@ if test "$enable_mex_dynareplusplus" = yes -o "$enable_mex_ms_sbvar" = yes; then
   test "$has_matio" != yes && AC_MSG_ERROR([libmatio cannot be found. If you want to skip the compilation of MS-SBVAR MEX and MEX files based Dynare++, pass the --disable-mex-dynare++ and --disable-mex-ms-sbvar flags.])
 fi
 
-# Check for libslicot, needed by kalman_steady_state
-if test "$enable_mex_kalman_steady_state" = yes; then
+# Check for libslicot, needed by kalman_steady_state and dynare_minreal
+if test "$enable_mex_kalman_minreal" = yes; then
   AX_SLICOT([octave])
-  test "$has_slicot" != yes && AC_MSG_ERROR([slicot cannot be found. If you want to skip the compilation of the kalman_steady_state MEX, pass the --disable-mex-kalman-steady-state flag.])
+  test "$has_slicot" != yes && AC_MSG_ERROR([slicot cannot be found. If you want to skip the compilation of the kalman_steady_state and dynare_minreal MEX, pass the --disable-mex-kalman-minreal flag.])
 fi
 
 # Check for UMFPACK, needed by bytecode
@@ -111,10 +111,10 @@ else
    BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE="no"
 fi
 
-if test "$enable_mex_kalman_steady_state" = yes; then
-   BUILD_KALMAN_STEADY_STATE_OCTAVE="yes"
+if test "$enable_mex_kalman_minreal" = yes; then
+   BUILD_KALMAN_MINREAL_OCTAVE="yes"
 else
-   BUILD_KALMAN_STEADY_STATE_OCTAVE="no"
+   BUILD_KALMAN_MINREAL_OCTAVE="no"
 fi
 
 if test "$enable_mex_ms_sbvar" = yes; then
@@ -131,7 +131,7 @@ Binaries (with "make"):
  MEX files for Octave (except those listed below):                   yes
  Gensylv, k-order and dynare_simul MEX for Octave:                   $BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE
  MS-SBVAR MEX files for Octave:                                      $BUILD_MS_SBVAR_MEX_OCTAVE
- Kalman Steady State MEX file for Octave:                            $BUILD_KALMAN_STEADY_STATE_OCTAVE
+ Kalman Steady State and dynare_minreal MEX file for Octave:         $BUILD_KALMAN_MINREAL_OCTAVE
 
 ])
 
@@ -151,6 +151,7 @@ AC_CONFIG_FILES([Makefile
                  perfect_foresight_problem/Makefile
                  num_procs/Makefile
                  block_trust_region/Makefile
-                 disclyap_fast/Makefile])
+                 disclyap_fast/Makefile
+                 dynare_minreal/Makefile])
 
 AC_OUTPUT

@@ -11,8 +11,8 @@ if ENABLE_MEX_MS_SBVAR
 SUBDIRS += ms_sbvar
 endif
 
-if ENABLE_MEX_KALMAN_STEADY_STATE
-SUBDIRS += kalman_steady_state
+if ENABLE_MEX_KALMAN_MINREAL
+SUBDIRS += kalman_steady_state dynare_minreal
 endif
 
 install-exec-local:

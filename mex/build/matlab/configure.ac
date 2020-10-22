@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright © 2009-2020 Dynare Team
+dnl Copyright © 2009-2021 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -72,8 +72,8 @@ AM_CONDITIONAL([ENABLE_MEX_MS_SBVAR], [test "$enable_mex_ms_sbvar" = yes])
 AC_ARG_ENABLE([mex-dynare++], AS_HELP_STRING([--disable-mex-dynare++], [disable compilation of MEX based on Dynare++]), [], [enable_mex_dynareplusplus=yes])
 AM_CONDITIONAL([ENABLE_MEX_DYNAREPLUSPLUS], [test "$enable_mex_dynareplusplus" = yes])
 
-AC_ARG_ENABLE([mex-kalman-steady-state], AS_HELP_STRING([--disable-mex-kalman-steady-state], [disable compilation of the kalman_steady_state MEX]), [], [enable_mex_kalman_steady_state=yes])
-AM_CONDITIONAL([ENABLE_MEX_KALMAN_STEADY_STATE], [test "$enable_mex_kalman_steady_state" = yes])
+AC_ARG_ENABLE([mex-kalman-minreal], AS_HELP_STRING([--disable-mex-kalman-minreal], [disable compilation of the kalman_steady_state and dynare_minreal MEX]), [], [enable_mex_kalman_minreal=yes])
+AM_CONDITIONAL([ENABLE_MEX_KALMAN_MINREAL], [test "$enable_mex_kalman_minreal" = yes])
 
 # Check for GSL, needed by MS-SBVAR MEX
 if test "$enable_mex_ms_sbvar" = yes; then
@@ -87,10 +87,10 @@ if test "$enable_mex_dynareplusplus" = yes; then
   test "$has_matio" != yes && AC_MSG_ERROR([libmatio cannot be found. If you want to skip the compilation of MEX files based Dynare++, pass the --disable-mex-dynare++ flag.])
 fi
 
-# Check for libslicot, needed by kalman_steady_state
-if test "$enable_mex_kalman_steady_state" = yes; then
+# Check for libslicot, needed by kalman_steady_state and dynare_minreal
+if test "$enable_mex_kalman_minreal" = yes; then
   AX_SLICOT([matlab])
-  test "$has_slicot" != yes && AC_MSG_ERROR([slicot cannot be found. If you want to skip the compilation of the kalman_steady_state MEX, pass the --disable-mex-kalman-steady-state flag.])
+  test "$has_slicot" != yes && AC_MSG_ERROR([slicot cannot be found. If you want to skip the compilation of the kalman_steady_state and dynare_minreal MEX, pass the --disable-mex-kalman-minreal flag.])
 fi
 
 # On Windows, we want static linking of the external libraries
@@ -120,10 +120,10 @@ else
    BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB="no"
 fi
 
-if test "$enable_mex_kalman_steady_state" = yes; then
-   BUILD_KALMAN_STEADY_STATE_MATLAB="yes"
+if test "$enable_mex_kalman_minreal" = yes; then
+   BUILD_KALMAN_MINREAL_MATLAB="yes"
 else
-   BUILD_KALMAN_STEADY_STATE_MATLAB="no"
+   BUILD_KALMAN_MINREAL_MATLAB="no"
 fi
 
 if test "$enable_mex_ms_sbvar" = yes; then
@@ -140,7 +140,7 @@ Binaries (with "make"):
  MEX files for MATLAB (except those listed below):                   yes
  Gensylv, k-order and dynare_simul MEX files for MATLAB:             $BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_MATLAB
  MS-SBVAR MEX files for MATLAB:                                      $BUILD_MS_SBVAR_MEX_MATLAB
- Kalman Steady State MEX file for MATLAB:                            $BUILD_KALMAN_STEADY_STATE_MATLAB
+ Kalman Steady State and dynare_minreal MEX file for MATLAB:         $BUILD_KALMAN_MINREAL_MATLAB
  M2HTML documentation:                                               $BUILD_M2HTML
 
 ])
@@ -161,6 +161,7 @@ AC_CONFIG_FILES([Makefile
                  perfect_foresight_problem/Makefile
                  num_procs/Makefile
                  block_trust_region/Makefile
-                 disclyap_fast/Makefile])
+                 disclyap_fast/Makefile
+                 dynare_minreal/Makefile])
 
 AC_OUTPUT
