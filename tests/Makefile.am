@@ -1000,9 +1000,13 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 
 %.m.trs %.m.log: %.mod
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
-	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
-		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) run_test_matlab > $*.m.log  2>&1 || \
-	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.m.trs
+# The while loop is a workaround for this glibc bug: https://sourceware.org/bugzilla/show_bug.cgi?id=19329
+	@while ! [ -f $*.m.trs ] || head -1 $*.m.log | egrep -q '^Inconsistency detected by ld.so'; \
+	do \
+	DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
+		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) run_test_matlab > $*.m.log 2>&1 || \
+		printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.m.trs; \
+	done
 	@if test -z "$(filter $*.m.trs,$(M_XFAIL_TRS_FILES))"; then pass_color=2; fail_color=1; else pass_color=1; fail_color=2; fi; \
 	if grep -q ":test-result: PASS" $*.m.trs; then \
 	echo "`tput bold``tput setaf $${pass_color}`MATLAB: $(CURDIR)/$* PASSED!`tput sgr0`" ; \
@@ -1015,8 +1019,13 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 
 %.m.trs %.m.log : %.m
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
-	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" \
-		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) $* > $*.m.log 2>&1
+# The while loop is a workaround for this glibc bug: https://sourceware.org/bugzilla/show_bug.cgi?id=19329
+	@while ! [ -f $*.m.trs ] || head -1 $*.m.log | egrep -q '^Inconsistency detected by ld.so'; \
+	do \
+	DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" \
+		$(MATLAB)/bin/matlab $(MATLAB_BATCH_OPTIONS) $* > $*.m.log 2>&1 || \
+		printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.m.trs; \
+	done
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$* Done!`tput sgr0`"
 
 %.o.trs %.o.log: %.mod
