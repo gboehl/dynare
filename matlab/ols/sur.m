@@ -212,8 +212,8 @@ SS_res = oo_.sur.(model_name).resid'*oo_.sur.(model_name).resid;
 oo_.sur.(model_name).s2 = SS_res/oo_.sur.(model_name).dof;
 
 % System R^2 value of McElroy (1977) - formula from Judge et al. (1986, p. 477)
-oo_.sur.(model_name).R2 = 1 - (oo_.sur.(model_name).resid' * kron(inv(M_.Sigma_e), eye(nobs)) * oo_.sur.(model_name).resid) ...
-                            / (oo_.sur.(model_name).Yobs.data' * kron(inv(M_.Sigma_e), eye(nobs)-ones(nobs,nobs)/nobs) * oo_.sur.(model_name).Yobs.data);
+oo_.sur.(model_name).R2 = 1 - (oo_.sur.(model_name).resid' * kron(inv(M_.Sigma_e(idxs,idxs)), eye(nobs)) * oo_.sur.(model_name).resid) ...
+                            / (oo_.sur.(model_name).Yobs.data' * kron(inv(M_.Sigma_e(idxs,idxs)), eye(nobs)-ones(nobs,nobs)/nobs) * oo_.sur.(model_name).Yobs.data);
 
 % Adjusted R^2
 oo_.sur.(model_name).adjR2 = 1 - (1 - oo_.sur.(model_name).R2) * ((neqs*nobs-neqs)/(neqs*nobs-size(oo_.sur.(model_name).beta,1)));
