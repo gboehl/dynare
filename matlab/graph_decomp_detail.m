@@ -24,7 +24,7 @@ function []=graph_decomp_detail(z,shock_names,endo_names,i_var,initial_date,Dyna
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%xf
+%
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -53,6 +53,16 @@ if ~isempty(opts_decomp.type)
     fig_mode = opts_decomp.type;
     fig_mode1 = ['_' fig_mode];
     fig_mode = [fig_mode '_'];
+end
+
+if isfield(opts_decomp,'init2shocks') && opts_decomp.realtime==0
+    init2shocks_decomp = 1 ;
+else
+    init2shocks_decomp = 0;
+end
+if init2shocks_decomp
+    fig_mode1 = [fig_mode1 '_init2shocks_decomp'];
+    fig_mode = [fig_mode 'init2shocks_decomp_'];
 end
 
 if isfield(opts_decomp,'init_cond_decomp')
