@@ -31,4 +31,8 @@ if nargin==1
 end
 
 x=x(:);
+if n>0
 xlag=[NaN(n,1); x(1:end-n)];
+else
+xlag=[x(abs(n)+1:end); NaN(abs(n),1)];
+end
