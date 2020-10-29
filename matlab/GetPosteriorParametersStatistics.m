@@ -96,7 +96,7 @@ if np
     disp(tit2)
     ip = nvx+nvn+ncx+ncn+1;
     for i=1:np
-        if options_.mh_replic
+        if options_.mh_replic || options_.load_mh_file
             Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             name = bayestopt_.name{ip};
