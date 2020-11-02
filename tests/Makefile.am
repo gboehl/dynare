@@ -75,13 +75,13 @@ MODFILES = \
 	example1_with_tags.mod \
 	example1_irf_shocks.mod \
 	example1_abs_sign.mod \
-	example1_macro.mod \
 	example1_mlv.mod \
 	example1long.mod \
 	example2long.mod \
 	example2long_use_dll.mod \
 	t_sgu_ex1.mod \
 	macro_processor/test_ifndef.mod \
+	macro_processor/example1_macro.mod \
 	irfs/example1_unit_std.mod \
 	optimal_policy/OSR/osr_example.mod \
 	optimal_policy/OSR/osr_example_objective_correctness.mod \
