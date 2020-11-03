@@ -12193,7 +12193,7 @@ Misc commands
     and ``morefloats``.
 
 
-.. _Dynare wiki: https://archives.dynare.org/DynareWiki/EquationsTags
+.. _Dynare wiki: https://archives.dynare.org/DynareWiki/
 .. _io: https://octave.sourceforge.io/io/
 .. _AIM website: https://www.federalreserve.gov/econres/ama-index.htm
 
