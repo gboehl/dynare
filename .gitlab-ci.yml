@@ -18,7 +18,8 @@ before_script:
 
 stages:
   - build
-  - test_and_pkg
+  - test
+  - pkg
   - deploy
 
 build_binaries:
@@ -62,7 +63,7 @@ build_doc:
     expire_in: 1 week
 
 pkg_source:
-  stage: test_and_pkg
+  stage: pkg
   script:
     - rm doc/manual/source/_static/mathjax && sed -i "/^mathjax_path *=/d" doc/manual/source/conf.py
     - 'for f in configure.ac preprocessor/configure.ac mex/build/matlab/configure.ac mex/build/octave/configure.ac; do sed -i "s/^AC_INIT(\[\(.*\)\],\s*\[\(.*\)\])/AC_INIT([\1], [$VERSION])/" $f; done'
@@ -73,10 +74,10 @@ pkg_source:
     paths:
       - dynare-*.tar.xz
     expire_in: 1 week
-  dependencies: []
+  needs: []
 
 pkg_windows:
-  stage: test_and_pkg
+  stage: pkg
   script:
     - ln -s ~/tarballs windows/deps/
     - make -C windows
@@ -96,11 +97,10 @@ pkg_windows:
       - windows/7z/*
       - windows/zip/*
     expire_in: 1 week
-  dependencies:
-    - build_doc
+  needs: [ "build_doc" ]
 
 pkg_macOS:
-  stage: test_and_pkg
+  stage: pkg
   script:
     - ln -s ~/tarballs macOS/deps/
     - make -C macOS
@@ -115,11 +115,10 @@ pkg_macOS:
     paths:
       - macOS/pkg/*
     expire_in: 1 week
-  dependencies:
-    - build_doc
+  needs: [ "build_doc" ]
 
 .test_matlab_template:
-  stage: test_and_pkg
+  stage: test
   artifacts:
     paths:
       - tests/*.m.log
@@ -132,8 +131,7 @@ pkg_macOS:
       - tests/*/*/*.jnl
       - tests/run_test_matlab_output.txt
     when: always
-  dependencies:
-    - build_binaries
+  needs: [ "build_binaries" ]
 
 test_matlab:
   extends: .test_matlab_template
@@ -152,7 +150,7 @@ test_old_matlab:
     - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
 
 test_octave:
-  stage: test_and_pkg
+  stage: test
   variables:
     OPENBLAS_NUM_THREADS: 1
   script:
@@ -171,11 +169,10 @@ test_octave:
       - tests/*/*/*.jnl
       - tests/run_test_octave_output.txt
     when: always
-  dependencies:
-    - build_binaries
+  needs: [ "build_binaries" ]
 
 test_dynare++:
-  stage: test_and_pkg
+  stage: test
   script:
     - autoreconf -si
     - ./configure --disable-matlab --disable-octave
@@ -184,8 +181,7 @@ test_dynare++:
     - touch dynare++/*/*.a dynare++/*/*/*.a
     - touch dynare++/integ/src/quadrature-points dynare++/src/dynare++
     - make -C dynare++ check
-  dependencies:
-    - build_binaries
+  needs: [ "build_binaries" ]
   artifacts:
     paths:
       - dynare++/kord/out.txt
@@ -193,6 +189,10 @@ test_dynare++:
       - dynare++/tests/*.m
       - dynare++/tests/*.mat
       - dynare++/tests/*.dump
+
+# For the deploy jobs, we don’t use the “needs” keyword, since we don’t want
+# those jobs to start before the “test” and “pkg” stages have succeeded. Hence
+# we stick to the “dependencies” keyword.
 
 deploy_manual_stable:
   stage: deploy
