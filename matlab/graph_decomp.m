@@ -237,7 +237,7 @@ for j=1:nvar
                 browse_menu = uimenu(c,'Label','Browse group');
                 expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' mydata.plot_shock_decomp.orig_varlist{j} ''',' int2str(i) ')']);
                 set(expand_menu,'UserData',mydata,'Tag',['group' int2str(i)]);
-                save_expand2xls_menu = uimenu(c,'Label','Export group to xls','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' deblank(mydata.plot_shock_decomp.orig_varlist(j,:)) ''',' int2str(i) ', 1)']);
+                save_expand2xls_menu = uimenu(c,'Label','Export group to xls','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' mydata.plot_shock_decomp.orig_varlist{j} ''',' int2str(i) ', 1)']);
                 set(save_expand2xls_menu,'Tag',['xls_group' int2str(i)]);
                 for jmember = mydata.shock_group.shocks
                     uimenu('parent',browse_menu,'Label',char(jmember))
