@@ -28,7 +28,7 @@ test "$MKOCTFILE" = no && AC_MSG_ERROR([Octave cannot be found])
 CC=$($MKOCTFILE -p CC)
 CXX=$($MKOCTFILE -p CXX)
 CFLAGS="$($MKOCTFILE -p CFLAGS) -Wall -Wno-parentheses"
-FCFLAGS="-g -O2 -Wall"
+FCFLAGS="$($MKOCTFILE -p FFLAGS) -Wall -std=gnu" # Override -std=legacy that is in FFLAGS in Octave 5
 FFLAGS="$($MKOCTFILE -p FFLAGS) -Wall"
 CXXFLAGS="$($MKOCTFILE -p CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast"
 LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
