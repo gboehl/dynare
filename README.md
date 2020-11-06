@@ -68,9 +68,12 @@ A number of tools and libraries are needed in order to recompile everything. You
 - A POSIX compliant shell and an implementation of Make (mandatory)
 - The [GNU Compiler Collection](http://gcc.gnu.org/), version 8 or later, with
   gcc, g++ and gfortran (mandatory)
-- MATLAB (if you want to compile the MEX for MATLAB)
-- [GNU Octave](http://www.octave.org), with the development headers (if you
-  want to compile the MEX for Octave)
+- [MATLAB](https://mathworks.com) (if you want to compile the MEX for MATLAB)
+- [GNU Octave](http://www.octave.org) with
+  - the development headers (if you want to compile the MEX for Octave)
+  - the development libraries corresponding to the [UMFPACK](https://people.engr.tamu.edu/davis/suitesparse.html) packaged with Octave
+  - Optionally, the [Control](https://wiki.octave.org/Control_package), [IO](https://wiki.octave.org/IO_package), [Optimization](https://wiki.octave.org/Optimization_package) and [Statistics](https://wiki.octave.org/Statistics_package) package either installed via your package manager or through [Octave Forge](https://wiki.octave.org/Category:Octave_Forge).
+
 - [Boost libraries](http://www.boost.org), version 1.36 or later
 - [Bison](http://www.gnu.org/software/bison/), version 3.2 or later (only if you get the source through Git)
 - [Flex](http://flex.sourceforge.net/), version 2.5.4 or later (only if you get the source through Git)
@@ -86,48 +89,39 @@ A number of tools and libraries are needed in order to recompile everything. You
   - [Sphinx](http://www.sphinx-doc.org/)
   - [MathJax](https://www.mathjax.org/)
 - [Doxygen](http://www.stack.nl/%7Edimitri/doxygen/) (if you want to build Dynare preprocessor source documentation)
-- For Octave, the development libraries corresponding to the UMFPACK packaged with Octave
+- [X-13ARIMA-SEATS Seasonal Adjustment Program](https://www.census.gov/srd/www/x13as/)
 
 ### Preparing the sources
 
 If you have downloaded the sources from an official source archive or the source snapshot, just unpack it.
 
 If you want to use Git, do the following from a terminal:
-
-    git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git
-    cd dynare
-    autoreconf -si
-
-The last line runs Autoconf and Automake in order to prepare the build environment (this is not necessary if you got the sources from an official source archive or the source snapshot).
+```sh
+git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git
+cd dynare
+autoreconf -si
+```
+The last line runs Autoconf and Automake in order to prepare the build environment (this is not necessary if you got the sources from an official source archive or the source snapshot). If you want a certain version (e.g. 4.6) , then add `--single-branch --branch 4.6` to the git clone command.
 
 ### Configuring the build tree
 
 Simply launch the configure script from a terminal:
-```
+```sh
 ./configure
 ```
-If you have MATLAB, you need to indicate both the MATLAB location. For example, on GNU/Linux:
-```
+If you have MATLAB, you need to indicate the MATLAB location using the `with-matlab` flag. For example, on GNU/Linux:
+```sh
 ./configure --with-matlab=/usr/local/MATLAB/R2019a
 ```
+Some important options:
 
-Alternatively, you can disable the compilation of MEX files for MATLAB with the `--disable-matlab` flag, and MEX files for Octave with `--disable-octave`.
+- `--disable-matlab`: skip the compilation of MEX files for MATLAB
+- `--disable-octave`: skip the compilation of MEX files for Octave
+- `--disable-doc`: skip the compilation of the documentation (PDF and HTML)
+- `CFLAGS="-O3" CXXFLAGS="-O3"`: don't compile the C/C++ programs with debugging information
+- `MATLAB_MEX_CFLAGS="-O3" MATLAB_MEX_CXXFLAGS="-O3"`: remove debugging information for MATLAB MEX functions
 
-You may need to specify additional options to the configure script, see the
-output of the `--help` option, and also the platform specific instructions
-below.
-
-Note that if you don't want to compile the C/C++ programs with debugging information, you can specify the `CFLAGS` and `CXXFLAGS` variables to the configure script, such as:
-```
-./configure CFLAGS="-O3" CXXFLAGS="-O3"
-```
-To remove debugging information for MATLAB MEX functions, the analogous call would be:
-```
-./configure MATLAB_MEX_CFLAGS="-O3" MATLAB_MEX_CXXFLAGS="-O3"
-```
-
-If the configuration goes well, the script will tell you which components are
-correctly configured and will be built.
+You may need to specify additional options to the configure script, see the output of the `--help` option, and also the platform specific instructions below. If the configuration goes well, the script will tell you which components are correctly configured and will be built. 
 
 Note that it is possible that some MEX files cannot be compiled, due to missing
 build dependencies. If you find no way of installing the missing dependencies,
@@ -143,22 +137,15 @@ addpath <DYNARE_ROOT>/matlab/missing/mex/gensylv
 
 ### Building
 
-Binaries and Info documentation are built with:
-```
+Binaries are built with:
+```sh
 make
 ```
 PDF and HTML documentation are respectively built with:
-```
+```sh
 make pdf
 make html
 ```
-The testsuites can be run with:
-```
-make check
-```
-
-Note that running the testsuite with Octave requires the additional packages
-`pstoedit`, `epstool`, `xfig`, and `gnuplot`.
 
 ### Check
 
@@ -166,8 +153,7 @@ The Git source comes with unit tests (in the MATLAB functions) and integration t
 ```
 make check
 ```
-In the `tests` subfolder. If Dynare has been compiled against MATLAB and Octave, the tests will be run with MATLAB and Octave. Depending on
-the performance of your machine, this can take several hours. It is possible to run the tests only with MATLAB:
+in the `tests` subfolder. If Dynare has been compiled against MATLAB and Octave, the tests will be run with both MATLAB and Octave. Depending on the performance of your machine, this can take several hours. It is possible to run the tests only with MATLAB:
 ```
 make check-matlab
 ```
@@ -175,9 +161,9 @@ or only with Octave:
 ```
 make check-octave
 ```
-A summary of the results is available in `tests/run_test_matlab_output.txt` or `tests/run_test_octave_output.txt`. Often, it does not make sense
-to run the complete testsuite. For instance, if you modify codes only related to the perfect foresight model solver, you can decide to run only a
-subset of the integration tests, with:
+Note that running the testsuite with Octave requires the additional packages `pstoedit`, `epstool`, `xfig`, and `gnuplot`. 
+
+A summary of the results is available in `tests/run_test_matlab_output.txt` or `tests/run_test_octave_output.txt`. Often, it does not make sense to run the complete testsuite. For instance, if you modify codes only related to the perfect foresight model solver, you can decide to run only a subset of the integration tests, with:
 ```
 make deterministic_simulations
 ```
@@ -239,11 +225,20 @@ All the prerequisites are packaged:
 - `latexmk`
 - `libjs-mathjax`
 - `doxygen`
+- `x13as`
 
 You can install them all at once with:
 ```
-apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx latexmk libjs-mathjax doxygen
+apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx latexmk libjs-mathjax doxygen x13as
 ```
+If you use MATLAB, we strongly advise to also `apt install matlab-support` and confirm to rename the GCC libraries shipped with MATLAB to avoid possible conflicts with GCC libraries shipped by your distribution.
+
+Tested on
+- Debian 9
+- Debian 10
+- Ubuntu 18.04
+- Ubuntu 20.04
+- Ubuntu 20.10
 
 ## Windows
 
