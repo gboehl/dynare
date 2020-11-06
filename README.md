@@ -56,6 +56,7 @@ a 32-bit Octave.
 
 1. [**General Instructions**](#general-instructions)
 1. [**Debian or Ubuntu**](#debian-or-ubuntu)
+1. [**Fedora**](#fedora)
 1. [**Windows**](#windows)
 1. [**macOS**](#macos)
 
@@ -239,6 +240,80 @@ Tested on
 - Ubuntu 18.04
 - Ubuntu 20.04
 - Ubuntu 20.10
+
+## Fedora
+
+Almost all prerequisites are packaged:
+
+- `gcc`, `gcc-c++`, `make`
+- `gcc-gfortran`
+- `lapack` and `lapack-devel`
+- `openblas` and `openblas-devel`
+- `boost-devel`
+- `gsl-devel`
+- `matio-devel`
+- `suitesparse-devel`
+- `flex`
+- `bison`
+- `autoconf`
+- `automake`
+- `redhat-rpm-config`
+-  `octave`, `octave-devel`, `octave-statistics`, `octave-io`, `octave-optim`, `octave-control`
+- `texlive-scheme-minimal`, `texlive-collection-publishers`, `texlive-collection-latexextra`, `texlive-collection-fontsextra`, `texlive-collection-latexrecommended`, `texlive-collection-science`, `texlive-collection-plaingeneric`, `texlive-lm`
+- `python3-sphinx`
+- `latexmk`
+- `mathjax`
+- `doxygen`
+
+You can install them all at once with:
+```sh
+# Minimal packages (use --disable-doc and --disable-octave flags)
+dnf install -y gcc gcc-c++ make gcc-gfortran lapack lapack-devel openblas openblas-devel boost-devel gsl-devel matio-devel suitesparse-devel flex bison autoconf automake redhat-rpm-config
+# Octave packages (use --disable-doc flag)
+dnf install octave octave-devel octave-statistics octave-io octave-optim octave-control
+# Documentation packages
+dnf install texlive-scheme-minimal texlive-collection-publishers texlive-collection-latexextra texlive-collection-fontsextra texlive-collection-latexrecommended texlive-collection-science texlive-collection-plaingeneric texlive-lm python3-sphinx latexmk mathjax doxygen
+```
+
+`Slicot` and `x13as` are not packaged yet in Fedora and need to be compiled from source:
+
+```sh
+# compile slicot from source and put it into /home/$USER/dynare/slicot/lib/
+mkdir -p /home/$USER/dynare/slicot
+cd /home/$USER/dynare/slicot
+wget https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
+tar xf slicot_5.0+20101122.orig.tar.gz
+cd slicot-5.0+20101122
+make FORTRAN=gfortran OPTS="-O2 -fPIC -fdefault-integer-8" LOADER=gfortran lib
+mkdir -p /home/$USER/dynare/slicot/lib
+cp slicot.a /home/$USER/dynare/slicot/lib/libslicot64_pic.a #for matlab
+cp slicot.a /home/$USER/dynare/slicot/lib/libslicot_pic.a #for octave
+
+# compile x13as from source and put it into /usr/bin/
+mkdir -p /home/$USER/dynare/x13as
+cd /home/$USER/dynare/x13as
+wget https://www.census.gov/ts/x13as/unix/x13assrc_V1.1_B39.tar.gz
+tar xf x13assrc_V1.1_B39.tar.gz
+sed -i "s|-static| |" makefile.gf # this removes '-static' in the makefile.gf
+make -f makefile.gf FFLAGS="-O2 -std=legacy" PROGRAM=x13as
+sudo cp x13as /usr/bin/
+```
+
+If you use MATLAB, we strongly advise to also rename or exclude the GCC libraries shipped with MATLAB to avoid possible conflicts with GCC libraries shipped by Fedora, see e.g. [Matlab on Fedora 33](https://mutschler.eu/linux/install-guides/fedora-post-install/#matlab) or [MATLAB-ArchWiki](https://wiki.archlinux.org/index.php/MATLAB) for instructions.
+
+Keep in mind to use the `--with-slicot` option to the configure command, e.g.:
+```sh
+cd /home/$USER/dynare
+git clone --recurse-submodules https://git.dynare.org/dynare/dynare.git unstable
+cd unstable
+autoreconf -si
+./configure --with-slicot=/home/$USER/dynare/slicot --with-matlab=/usr/local/MATLAB/R2020b
+make -j$(($(nproc)+1)) #rule of thumb: one more than CPUs as shown by e.g. lscpu
+```
+
+Tested on
+- Fedora Workstation 32
+- Fedora Workstation 33
 
 ## Windows
 
