@@ -56,7 +56,7 @@ a 32-bit Octave.
 
 1. [**General Instructions**](#general-instructions)
 1. [**Debian or Ubuntu**](#debian-or-ubuntu)
-1. [**Fedora**](#fedora)
+1. [**Fedora or RHEL**](#fedora)
 1. [**Windows**](#windows)
 1. [**macOS**](#macos)
 
@@ -235,13 +235,11 @@ apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev
 If you use MATLAB, we strongly advise to also `apt install matlab-support` and confirm to rename the GCC libraries shipped with MATLAB to avoid possible conflicts with GCC libraries shipped by your distribution.
 
 Tested on
-- Debian 9
 - Debian 10
-- Ubuntu 18.04
 - Ubuntu 20.04
 - Ubuntu 20.10
 
-## Fedora
+## Fedora or RHEL
 
 Almost all prerequisites are packaged:
 
@@ -274,8 +272,9 @@ dnf install octave octave-devel octave-statistics octave-io octave-optim octave-
 # Documentation packages
 dnf install texlive-scheme-minimal texlive-collection-publishers texlive-collection-latexextra texlive-collection-fontsextra texlive-collection-latexrecommended texlive-collection-science texlive-collection-plaingeneric texlive-lm python3-sphinx latexmk mathjax doxygen
 ```
+For RHEL you need to enable the `CodeReady Linux Builder` repository, e.g. by running `subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms`.
 
-`Slicot` and `x13as` are not packaged yet in Fedora and need to be compiled from source:
+`Slicot` and `x13as` need to be compiled from source:
 
 ```sh
 # compile slicot from source and put it into /home/$USER/dynare/slicot/lib/
@@ -311,9 +310,26 @@ autoreconf -si
 make -j$(($(nproc)+1)) #rule of thumb: one more than CPUs as shown by e.g. lscpu
 ```
 
+If your distribution ships an older version of `bison`, compile it from source and append it *temporarily* to your path before calling the configure script:
+```sh
+bison --version # bison (GNU Bison) 3.0.4
+mkdir -p /home/$USER/dynare/bison
+cd /home/$USER/dynare/bison
+wget http://ftp.gnu.org/gnu/bison/bison-3.6.4.tar.gz #change the version number accordingly
+tar xf bison-3.6.4.tar.gz
+cd bison-3.6.4
+./configure --prefix=/home/$USER/dynare/bison
+make
+make install
+export PATH=/home/$USER/dynare/bison/bin:$PATH
+bison --version # bison (GNU Bison) 3.6.4
+```
+Now configure dynare as above.
+
 Tested on
 - Fedora Workstation 32
 - Fedora Workstation 33
+- Red Hat Enterprise Linux 8
 
 ## Windows
 
