@@ -55,16 +55,6 @@ if ~isempty(opts_decomp.type)
     fig_mode = [fig_mode '_'];
 end
 
-if isfield(opts_decomp,'init2shocks') && opts_decomp.realtime==0
-    init2shocks_decomp = 1 ;
-else
-    init2shocks_decomp = 0;
-end
-if init2shocks_decomp
-    fig_mode1 = [fig_mode1 '_init2shocks_decomp'];
-    fig_mode = [fig_mode 'init2shocks_decomp_'];
-end
-
 if isfield(opts_decomp,'init_cond_decomp')
     init_cond_decomp = opts_decomp.init_cond_decomp ;
 else
