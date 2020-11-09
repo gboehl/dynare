@@ -83,8 +83,8 @@ rplot Capital;
 
 D = load('rbc_det_results');
 
-if norm(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead)) > 1e-30;
-   disp(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead));
+if norm(D.oo_.endo_simul(1:D.M_.orig_endo_nbr,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(1:M_.orig_endo_nbr,M_.maximum_lag+1:end-M_.maximum_lead)) > 1e-30;
+   disp(D.oo_.endo_simul(1:D.M_.orig_endo_nbr,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(1:M_.orig_endo_nbr,M_.maximum_lag+1:end-M_.maximum_lead));
    error('rbc_det_stack_solve_algo_7 failed');
 end;                       
 
@@ -109,8 +109,8 @@ if isoctave && options_.solve_algo==0
 else
     tol_crit=1e-8;    
 end
-if norm(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead)) > tol_crit;
-    disp(D.oo_.endo_simul(:,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead));
+if norm(D.oo_.endo_simul(1:D.M_.orig_endo_nbr,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(1:M_.orig_endo_nbr,M_.maximum_lag+1:end-M_.maximum_lead)) > tol_crit;
+    disp(D.oo_.endo_simul(1:D.M_.orig_endo_nbr,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(1:M_.orig_endo_nbr,M_.maximum_lag+1:end-M_.maximum_lead));
     error(sprintf('rbc_det_stack_solve_algo_7 failed with solve_algo=%u',options_.solve_algo));
 end;
 @#endfor

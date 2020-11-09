@@ -1,4 +1,4 @@
-// Same model as sim_lead_lag_aux_vars.mod, but no auxiliary variables to deal with leads and lags
+// Same model as sim_lead_lag_aux_vars.mod, but no user-crafted auxiliary variables to deal with leads and lags
 
 var c k z_forward z_backward;
 varexo x;
@@ -57,7 +57,7 @@ end
 clear base_results
 base_results_aux_vars=load('sim_lead_lag_aux_vars_results.mat');
 
-if max(abs(base_results_aux_vars.oo_.endo_simul(strmatch('x_lag_3',base_results_aux_vars.M_.endo_names,'exact'),1:end-base_results_aux_vars.M_.maximum_lead-1)' -...
-    oo_.exo_simul(1:end-M_.maximum_lead-M_.maximum_lag,strmatch('x', M_.exo_names, 'exact'))))>1e-8 
+if max(abs(base_results_aux_vars.oo_.endo_simul(strmatch('x_lag_3',base_results_aux_vars.M_.endo_names,'exact'),base_results_aux_vars.M_.maximum_lag+3:end-base_results_aux_vars.M_.maximum_lead)' -...
+    oo_.exo_simul(M_.maximum_lag:end-M_.maximum_lead-3,strmatch('x', M_.exo_names, 'exact'))))>1e-8
     error('Translation of aux vars is wrong')
 end

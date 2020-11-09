@@ -1137,9 +1137,8 @@ equations using the ``write_latex_static_model`` command.
         * Endogenous variables with leads or lags greater or equal
           than two will have been removed, replaced by new auxiliary
           variables and equations,
-        * For a stochastic model, exogenous variables with leads or
-          lags will also have been replaced by new auxiliary variables
-          and equations.
+        * Exogenous variables with leads or lags will also have been replaced
+          by new auxiliary variables and equations.
 
     For the required LaTeX packages, see
     :comm:`write_latex_original_model`.
@@ -1221,9 +1220,8 @@ auxiliary endogenous variables—along with corresponding auxiliary
 equations—which will appear in the final output.
 
 The main transformation concerns leads and lags. Dynare will perform a
-transformation of the model so that there is only one lead and one lag
-on endogenous variables and, in the case of a stochastic model, no
-leads/lags on exogenous variables.
+transformation of the model so that there is only one lead and one lag on
+endogenous variables and no leads/lags on exogenous variables.
 
 This transformation is achieved by the creation of auxiliary variables
 and corresponding equations. For example, if ``x(+2)`` exists in the
