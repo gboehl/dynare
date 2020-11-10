@@ -56,7 +56,7 @@ a 32-bit Octave.
 
 1. [**General Instructions**](#general-instructions)
 1. [**Debian or Ubuntu**](#debian-or-ubuntu)
-1. [**Fedora or RHEL**](#fedora)
+1. [**Fedora, CentOS or RHEL**](#fedora-centos-or-rhel)
 1. [**Windows**](#windows)
 1. [**macOS**](#macos)
 
@@ -239,7 +239,7 @@ Tested on
 - Ubuntu 20.04
 - Ubuntu 20.10
 
-## Fedora or RHEL
+## Fedora, CentOS or RHEL
 
 Almost all prerequisites are packaged:
 
@@ -272,7 +272,16 @@ dnf install octave octave-devel octave-statistics octave-io octave-optim octave-
 # Documentation packages
 dnf install texlive-scheme-minimal texlive-collection-publishers texlive-collection-latexextra texlive-collection-fontsextra texlive-collection-latexrecommended texlive-collection-science texlive-collection-plaingeneric texlive-lm python3-sphinx latexmk mathjax doxygen
 ```
-For RHEL you need to enable the `CodeReady Linux Builder` repository, e.g. by running `subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms`.
+In Fedora these are available from the default repositories; whereas for CentOS and RHEL you need to enable the [Extra Packages for Enterprise Linux (EPEL)](https://fedoraproject.org/wiki/EPEL) repository and either the PowerTools repository for CentOS or the CodeReady Linux Builder repository for RHEL:
+```sh
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+# CentOS 8
+dnf config-manager --set-enabled PowerTools
+# RHEL 8
+ARCH=$( /bin/arch )
+subscription-manager repos --enable "codeready-builder-for-rhel-8-${ARCH}-rpms"
+```
+The documentation packages have slightly different names in CentOS and RHEL, you can also choose to pass the `--disable-doc` flag to your configure script to skip these dependencies.
 
 `Slicot` and `x13as` need to be compiled from source:
 
@@ -327,6 +336,7 @@ bison --version # bison (GNU Bison) 3.6.4
 Now configure dynare as above.
 
 Tested on
+- CentOS 8
 - Fedora Workstation 32
 - Fedora Workstation 33
 - Red Hat Enterprise Linux 8
