@@ -91,7 +91,7 @@ end
 Indices={'lag','contemp','lead'};
 iter=1;
 for j=1:numel(Indices)
-    A.(Indices{j})=zeros(M_.orig_eq_nbr,M_.endo_nbr);
+    A.(Indices{j})=zeros(M_.eq_nbr,M_.endo_nbr);
     if strcmp(Indices{j},'contemp')||(strcmp(Indices{j},'lag') && M_.maximum_lag)||(strcmp(Indices{j},'lead') && M_.maximum_lead)
         [~,row,col]=find(M_.lead_lag_incidence(iter,:));
         A.(Indices{j})(:,row)=jacobia_(:,col);
