@@ -65,6 +65,8 @@ fi
 : ${CXXPICFLAG=""}
 : ${XTRA_CFLAGS="-fopenmp"}
 : ${XTRA_CXXFLAGS="-fopenmp"}
+: ${AR="x86_64-w64-mingw32-ar"}
+: ${RANLIB="x86_64-w64-mingw32-ranlib"}
 
 : ${DEPEND_FLAGS="-M"}
 : ${DEPEND_EXTRA_SED_PATTERN=""}

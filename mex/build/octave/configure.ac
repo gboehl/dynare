@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright © 2009-2019 Dynare Team
+dnl Copyright © 2009-2020 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -27,6 +27,8 @@ test "$MKOCTFILE" = no && AC_MSG_ERROR([Octave cannot be found])
 
 CC=$($MKOCTFILE -p CC)
 CXX=$($MKOCTFILE -p CXX)
+AR=$($MKOCTFILE -p AR)
+RANLIB=$($MKOCTFILE -p RANLIB)
 CFLAGS="$($MKOCTFILE -p CFLAGS) -Wall -Wno-parentheses"
 FCFLAGS="$($MKOCTFILE -p FFLAGS) -Wall -std=gnu" # Override -std=legacy that is in FFLAGS in Octave 5
 FFLAGS="$($MKOCTFILE -p FFLAGS) -Wall"
