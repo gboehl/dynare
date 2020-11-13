@@ -62,3 +62,9 @@ description, please refer to the comments inside the files themselves.
     File demonstrating how to conduct optimal policy experiments in a 
     simple New Keynesian model either under commitment (Ramsey) or using
     optimal simple rules (OSR)
+
+``Ramsey_steady_file.mod``
+
+    File demonstrating how to conduct optimal policy experiments in a 
+    simple New Keynesian model under commitment (Ramsey) with a user-defined
+    conditional steady state file
