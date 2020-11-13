@@ -1,8 +1,9 @@
-function [lnpriormom] = endogenous_prior(data,Pstar,BayesInfo,H)
+function [lnpriormom] = endogenous_prior(data,dataset_info, Pstar,BayesInfo,H)
 % Computes the endogenous log prior addition to the initial prior
 %
 % INPUTS
 %    data           [double]     n*T vector of data observations
+%    dataset_info   [structure]  various information about the dataset
 %    Pstar          [double]     k*k matrix of
 %    BayesInfo      [structure]
 %
@@ -11,7 +12,7 @@ function [lnpriormom] = endogenous_prior(data,Pstar,BayesInfo,H)
 
 % Code to implement notes on endogenous priors by Lawrence Christiano,
 % specified in the appendix of:
-% Introducing Financial Frictions and Unemployment into a Small Open Economy Model
+% Introducing Financial Frictions and Unemployment into a Small Open Economy Model
 % by Lawrence J. Christiano, Mathias Trabandt and Karl Walentin (2011), Journal of Economic Dynamics and Control
 % this is the 'mother' of the priors on the model parameters.
 % the priors include a metric across some choosen moments of the (supposedly
@@ -41,7 +42,8 @@ function [lnpriormom] = endogenous_prior(data,Pstar,BayesInfo,H)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-Y=data';
+Y=data(:,dataset_info.missing.no_more_missing_observations:end)';
+
 [Tsamp,n]=size(Y);    % sample length and number of matched moments (here set equal to nr of observables)
 
 hmat=zeros(n,Tsamp);
