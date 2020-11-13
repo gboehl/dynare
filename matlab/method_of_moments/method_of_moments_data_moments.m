@@ -59,7 +59,11 @@ for jm = 1:options_mom_.mom.mom_nbr
         end
     end
     % We replace NaN (due to leads and lags and missing values) with the corresponding mean
-    dataMoments(jm,1) = mean(m_data_tmp,'omitnan');
+    if isoctave
+        dataMoments(jm,1) = nanmean(m_data_tmp);
+    else
+        dataMoments(jm,1) = mean(m_data_tmp,'omitnan');
+    end
     m_data_tmp(isnan(m_data_tmp)) = dataMoments(jm,1);
     m_data(:,jm) = m_data_tmp;
 end
