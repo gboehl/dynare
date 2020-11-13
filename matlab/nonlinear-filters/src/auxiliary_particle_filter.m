@@ -134,6 +134,7 @@ for t=1:sample_size
     if (ParticleOptions.resampling.status.generic && neff(weights)<ParticleOptions.resampling.threshold*sample_size) || ParticleOptions.resampling.status.systematic
         if pruning
             temp = resample([StateVectors' StateVectors_'],weights',ParticleOptions);
+            number_of_state_variables=size(StateVectors,1);
             StateVectors = temp(:,1:number_of_state_variables)';
             StateVectors_ = temp(:,number_of_state_variables+1:2*number_of_state_variables)';
         else
