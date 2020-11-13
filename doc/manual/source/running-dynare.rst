@@ -456,7 +456,10 @@ by the ``dynare`` command.
     ``M_``,``oo_``, and ``options_`` structures are saved in a file
     called ``FILENAME_results.mat``. If they exist, ``estim_params_``,
     ``bayestopt_``, ``dataset_``, ``oo_recursive_`` and
-    ``estimation_info`` are saved in the same file.
+    ``estimation_info`` are saved in the same file. Note that Matlab 
+    by default only allows ``.mat``-files up to 2GB. You can lift this 
+    restriction by enabling the ``save -v7.3``-option in 
+    ``Preferences -> General -> MAT-Files``.
 
     .. matvar:: M_
 
