@@ -26,12 +26,11 @@ if isequal(flag{1,1}, "Not installed")
 else
     if isequal(flag{1,1}, "Not loaded")
         pkg("load", package);
-    endif
+    end
     if nargin > 1 && compare_versions(desc{1,1}.version, min_version, "<")
         hasPackage = 0;
     else
         hasPackage = 1;
-    endif
-endif
-endfunction
-
+    end
+end
+end
