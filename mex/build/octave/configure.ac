@@ -93,6 +93,15 @@ fi
 AC_CHECK_LIB([umfpack], [umfpack_dl_defaults], [LIBADD_UMFPACK="-lumfpack"], [AC_MSG_ERROR([Can't find UMFPACK])])
 AC_SUBST([LIBADD_UMFPACK])
 
+# On Windows, we want static linking of the external libraries
+case ${host_os} in
+  *mingw32*)
+    GSL_LIBS="-Wl,-Bstatic $GSL_LIBS -Wl,-Bdynamic"
+    LIBADD_MATIO="-Wl,-Bstatic $LIBADD_MATIO -Wl,-Bdynamic"
+    LIBADD_SLICOT="-Wl,-Bstatic $LIBADD_SLICOT -Wl,-Bdynamic"
+    ;;
+esac
+
 # Construct final output message
 if test "$enable_mex_dynareplusplus" = yes; then
    BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE="yes"
