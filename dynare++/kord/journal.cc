@@ -219,7 +219,8 @@ Journal::printHeader()
   *this << ", processors online: " << std::thread::hardware_concurrency()
         << "\n\nStart time: ";
   std::time_t t = std::time(nullptr);
-  *this << std::put_time(std::localtime(&t), "%c %Z")
+  // NB: in the date/time string, we avoid using locale-specific strings (#1751)
+  *this << std::put_time(std::localtime(&t), "%F %T %z")
         << "\n\n"
         << u8"  ┌────╼ elapsed time (seconds)                     \n"
         << u8"  │       ┌────╼ record unique identifier           \n"
