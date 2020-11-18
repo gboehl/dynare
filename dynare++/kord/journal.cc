@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -203,8 +203,8 @@ Journal::printHeader()
   *this << "Dynare++ v. " << VERSION << '\n'
         << '\n'
         << u8"Copyright © 2004-2011 Ondra Kamenik\n"
-        << u8"Copyright © 2019 Dynare Team\n"
-        << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under the GNU GPL,"
+        << u8"Copyright © 2019-2020 Dynare Team\n"
+        << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under the GNU GPL,\n"
         << "version 3 or later (see https://www.gnu.org/licenses/gpl.html)\n"
         << "\n\n"
         << "System info: ";
