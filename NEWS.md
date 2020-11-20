@@ -1,3 +1,44 @@
+Announcement for Dynare 4.6.3 (on 2020-11-20)
+=============================================
+
+We are pleased to announce the release of Dynare 4.6.3.
+
+This maintenance release fixes various bugs.
+
+The Windows, macOS and source packages are already available for download at
+[the Dynare website](https://www.dynare.org/download/).
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 7.9 (R2009b) to
+9.9 (R2020b), and with GNU Octave versions 5.2.0 (under Windows) and 4.4.1
+(under macOS).
+
+Here is a list of the problems identified in version 4.6.2 and that have been
+fixed in version 4.6.3:
+
+* Using an unknown symbol in `irf_shocks` option of `stoch_simul` would lead to
+  a crash of the preprocessor
+* `discretionary_policy` would crash in the presence of news shocks
+* The `endogenous_prior` option did not properly handle missing observations
+* The auxiliary particle filter with pruning and resampling would crash
+* Initialization of the state variance for particle filters was buggy
+* An `@#else` clause after an `@#ifndef` was not correctly interpreted
+* An `@#elseif` clause after an `@#ifdef` or an `@#ifndef` was not correctly
+  interpreted
+* Perfect foresight simulations of models with a single equation would crash
+  when using either the `lmmcp` option or the `linear_approximation`
+* Inequality constraints on endogenous variables (when using the `lmmcp`
+  option) were not enforced on purely backward or purely forward models
+* Perfect foresight simulations with `bytecode` and `block` options could crash
+  if there was a purely forward variable whose value in all periods could be
+  evaluated backward (typically a process of the form `y=a*y(+1)+e`)
+* `extended_path` was broken with `bytecode`
+* Under Windows, with Octave, the k-order perturbation and MS-SBVAR MEX files
+  could not be loaded
+* On Fedora (and possibly other GNU/Linux distributions), compilation from
+  source would fail against Octave 5
+
 Announcement for Dynare 4.6.2 (on 2020-09-07)
 =============================================
 
