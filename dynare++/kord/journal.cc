@@ -220,7 +220,14 @@ Journal::printHeader()
         << "\n\nStart time: ";
   std::time_t t = std::time(nullptr);
   // NB: in the date/time string, we avoid using locale-specific strings (#1751)
-  *this << std::put_time(std::localtime(&t), "%F %T %z")
+  *this << std::put_time(std::localtime(&t),
+#ifndef _WIN32
+                         "%F %T %z"
+#else
+                         // Specifiers introduced in C++11 don’t work under Windows…
+                         "%Y-%m-%d %H:%M:%S"
+#endif
+                         )
         << "\n\n"
         << u8"  ┌────╼ elapsed time (seconds)                     \n"
         << u8"  │       ┌────╼ record unique identifier           \n"
