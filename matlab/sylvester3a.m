@@ -1,7 +1,7 @@
 function [x0, flag]=sylvester3a(x0,a,b,c,dd)
 % solves iteratively ax+bxc=d
 
-% Copyright (C) 2005-2017 Dynare Team
+% Copyright (C) 2005-2017,2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -25,7 +25,7 @@ for j=1:size(dd,3)
     d = a_1*dd(:,:,j);
     e = 1;
     iter = 1;
-    while e > 1e-8 && iter < 500
+    while all(e > 1e-8) && iter < 500 %use all() to get a logical in case e is empty
         x = d-b*x0(:,:,j)*c;
         e = max(max(abs(x-x0(:,:,j))));
         x0(:,:,j) = x;
