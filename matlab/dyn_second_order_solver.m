@@ -62,7 +62,7 @@ k1 = nonzeros(M.lead_lag_incidence(:,dr.order_var)');
 kk1 = [k1; length(k1)+(1:M.exo_nbr+M.exo_det_nbr)'];
 nk = size(kk1,1);
 kk2 = reshape(1:nk^2,nk,nk);
-ic = [ M.nstatic+(1:M.nspred) M.endo_nbr+(1:size(dr.ghx,2)-M.nspred) ]';
+ic = [ M.nstatic+(1:M.nspred) ]';
 
 klag  = M.lead_lag_incidence(1,dr.order_var); %columns are in DR order
 kcurr = M.lead_lag_incidence(2,dr.order_var); %columns are in DR order
