@@ -19,7 +19,6 @@ fixed in version 4.6.3:
 
 * Using an unknown symbol in `irf_shocks` option of `stoch_simul` would lead to
   a crash of the preprocessor
-* `discretionary_policy` would crash in the presence of news shocks
 * `identification` would crash for purely forward-looking models
 * The `endogenous_prior` option did not properly handle missing observations
 * The auxiliary particle filter with pruning and resampling would crash
