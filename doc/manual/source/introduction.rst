@@ -95,8 +95,8 @@ You should cite Dynare if you use it in your research. The
 recommended way todo this is to cite the present manual, as:
 
     Stéphane Adjemian, Houtan Bastani, Michel Juillard, Frédéric
-    Karamé, Junior Maih, Ferhat Mihoubi, George Perendia, Johannes Pfeifer, Marco
-    Ratto and Sébastien Villemot (2011), “Dynare: Reference Manual,
+    Karamé, Junior Maih, Ferhat Mihoubi, Willi Mutschler, George Perendia, Johannes Pfeifer, 
+    Marco Ratto and Sébastien Villemot (2011), “Dynare: Reference Manual,
     Version 4,” *Dynare Working Papers*, 1, CEPREMAP
 
 For convenience, you can copy and paste the following into your BibTeX file:
@@ -106,8 +106,8 @@ For convenience, you can copy and paste the following into your BibTeX file:
         @TechReport{Adjemianetal2011,
           author      = {Adjemian, St\'ephane and Bastani, Houtan and
                          Juillard, Michel and Karam\'e, Fr\'ederic and
-                         Maih, Junior and Mihoubi, Ferhat and
-                         Perendia, George and Pfeifer, Johannes and
+                         Maih, Junior and Mihoubi, Ferhat and Mutschler, Willi
+                         and Perendia, George and Pfeifer, Johannes and
                          Ratto, Marco and Villemot, S\'ebastien},
           title       = {Dynare: Reference Manual Version 4},
           year        = {2011},
