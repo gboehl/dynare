@@ -147,22 +147,23 @@ if info(1) == 0 %no errors in solution
     if init
         %check stationarity
         if ~no_identification_moments
-            ind_dMOMENTS = (find(max(abs(dMOMENTS'),[],1) > tol_deriv)); %index for non-zero rows
-            if isempty(ind_dMOMENTS) && any(any(isnan(dMOMENTS)))
+            if any(any(isnan(MOMENTS)))
                 if options_.diffuse_filter == 1 % use options_ as it inherits diffuse_filter from options_ident if set by user
-                    error('There are NaN in the dMOMENTS matrix. Make sure that for non-stationary models stationary transformations of non-stationary observables are used for checking identification. [TIP: use first differences].' )
+                    error('There are NaN''s in the theoretical moments. Make sure that for non-stationary models stationary transformations of non-stationary observables are used for checking identification. [TIP: use first differences].')
                 else
-                    error('There are NaN in the dMOMENTS matrix. Please check whether your model has units roots, and you forgot to set diffuse_filter=1.' )
+                    error('There are NaN''s in the theoretical moments. Please check whether your model has units roots, and you forgot to set diffuse_filter=1.' )
                 end
             end
-            if any(any(isnan(MOMENTS)))
-                error('There are NaN''s in the theoretical moments: make sure that for non-stationary models stationary transformations of non-stationary observables are used for checking identification. [TIP: use first differences].')
+            ind_dMOMENTS = (find(max(abs(dMOMENTS'),[],1) > tol_deriv)); %index for non-zero rows
+            if isempty(ind_dMOMENTS) && any(any(isnan(dMOMENTS)))                
+                error('There are NaN in the dMOMENTS matrix.' )
             end
+            
         end
         if ~no_identification_spectrum
             ind_dSPECTRUM = (find(max(abs(dSPECTRUM'),[],1) > tol_deriv)); %index for non-zero rows
-            if isempty(ind_dSPECTRUM) && any(any(isnan(dSPECTRUM)))
-                warning_SPECTRUM = 'WARNING: There are NaN in the dSPECTRUM matrix. Please check whether your model has units roots and your forgot to set diffuse_filter=1.\n';
+            if any(any(isnan(dSPECTRUM)))
+                warning_SPECTRUM = 'WARNING: There are NaN in the dSPECTRUM matrix. Note that identification based on spectrum does not support non-stationary models (yet).\n';
                 warning_SPECTRUM = [warning_SPECTRUM '         Skip identification analysis based on spectrum.\n'];
                 fprintf(warning_SPECTRUM);
                 %reset options to neither display nor plot dSPECTRUM anymore
@@ -172,8 +173,8 @@ if info(1) == 0 %no errors in solution
         end
         if ~no_identification_minimal
             ind_dMINIMAL = (find(max(abs(dMINIMAL'),[],1) > tol_deriv)); %index for non-zero rows
-            if isempty(ind_dMINIMAL) && any(any(isnan(dMINIMAL)))
-                warning_MINIMAL = 'WARNING: There are NaN in the dMINIMAL matrix. Please check whether your model has units roots and you forgot to set diffuse_filter=1.\n';
+            if any(any(isnan(dMINIMAL)))
+                warning_MINIMAL = 'WARNING: There are NaN in the dMINIMAL matrix. Note that identification based on minimal system does not support non-stationary models (yet).\n';
                 warning_MINIMAL = [warning_MINIMAL '         Skip identification analysis based on minimal system.\n'];
                 fprintf(warning_MINIMAL);
                 %reset options to neither display nor plot dMINIMAL anymore
@@ -182,8 +183,8 @@ if info(1) == 0 %no errors in solution
             end
         end
         if no_identification_moments && no_identification_minimal && no_identification_spectrum
-            %display error if all three criteria fail
-            error('identification_analyis: Stationarity condition(s) failed and/or diffuse_filter option missing');
+            %display error if all three criteria fail            
+            error(sprintf('identification_analyis: Stationarity condition(s) failed and/or diffuse_filter option missing.\nMake sure that for non-stationary models stationary transformations of non-stationary observables are used for checking identification.\n[TIP: use first differences].'));
         end
 
         % Check order conditions
