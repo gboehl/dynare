@@ -49,8 +49,8 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 %  o get_all_parameters.m
 %  o get_matrix_entries_for_psd_check.m
 %  o makedataset.m
+%  o method_of_moments_check_plot.m
 %  o method_of_moments_data_moments.m
-%  o method_of_moments_mode_check.m
 %  o method_of_moments_objective_function.m
 %  o method_of_moments_optimal_weighting_matrix
 %  o method_of_moments_standard_errors
@@ -203,12 +203,12 @@ options_mom_ = set_default_option(options_mom_,'mode_compute',13);              
 options_mom_ = set_default_option(options_mom_,'additional_optimizer_steps',[]); % vector of additional mode-finders run after mode_compute
 options_mom_ = set_default_option(options_mom_,'optim_opt',[]);                  % a list of NAME and VALUE pairs to set options for the optimization routines. Available options depend on mode_compute
 options_mom_ = set_default_option(options_mom_,'silent_optimizer',false);        % run minimization of moments distance silently without displaying results or saving files in between
-% Mode_check plot options that can be set by the user in the mod file, otherwise default values are provided
+% Check plot options that can be set by the user in the mod file, otherwise default values are provided
 options_mom_.mode_check.nolik = false;                                                          % we don't do likelihood (also this initializes mode_check substructure)
-options_mom_.mode_check = set_default_option(options_mom_.mode_check,'status',false);            % plot the target function for values around the computed mode for each estimated parameter in turn. This is helpful to diagnose problems with the optimizer.
-options_mom_.mode_check = set_default_option(options_mom_.mode_check,'neighbourhood_size',.5);  % width of the window around the mode to be displayed on the diagnostic plots. This width is expressed in percentage deviation. The Inf value is allowed, and will trigger a plot over the entire domain
-options_mom_.mode_check = set_default_option(options_mom_.mode_check,'symmetric_plots',true);   % ensure that the check plots are symmetric around the mode. A value of 0 allows to have asymmetric plots, which can be useful if the posterior mode is close to a domain boundary, or in conjunction with mode_check_neighbourhood_size = Inf when the domain is not the entire real line
-options_mom_.mode_check = set_default_option(options_mom_.mode_check,'number_of_points',20);    % number of points around the mode where the target function is evaluated (for each parameter)
+options_mom_.mode_check = set_default_option(options_mom_.mode_check,'status',false);            % plot the target function for values around the computed minimum for each estimated parameter in turn. This is helpful to diagnose problems with the optimizer.
+options_mom_.mode_check = set_default_option(options_mom_.mode_check,'neighbourhood_size',.5);  % width of the window around the computed minimum to be displayed on the diagnostic plots. This width is expressed in percentage deviation. The Inf value is allowed, and will trigger a plot over the entire domain
+options_mom_.mode_check = set_default_option(options_mom_.mode_check,'symmetric_plots',true);   % ensure that the check plots are symmetric around the minimum. A value of 0 allows to have asymmetric plots, which can be useful if the minimum is close to a domain boundary, or in conjunction with neighbourhood_size = Inf when the domain is not the entire real line
+options_mom_.mode_check = set_default_option(options_mom_.mode_check,'number_of_points',20);    % number of points around the minimum where the target function is evaluated (for each parameter)
 
 % Numerical algorithms options that can be set by the user in the mod file, otherwise default values are provided
 options_mom_ = set_default_option(options_mom_,'aim_solver',false);                     % use AIM algorithm to compute perturbation approximation instead of mjdgges
@@ -909,7 +909,7 @@ if options_mom_.TeX
 end
 
 if options_mom_.mode_check.status
-    method_of_moments_mode_check(objective_function,xparam1,SE,options_mom_,M_,estim_params_,Bounds,bayestopt_laplace,...
+    method_of_moments_check_plot(objective_function,xparam1,SE,options_mom_,M_,estim_params_,Bounds,bayestopt_laplace,...
         Bounds, oo_, estim_params_, M_, options_mom_)
 end
 
