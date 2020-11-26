@@ -56,7 +56,7 @@
 (defvar dynare-statements
   '("var" "varexo" "varexo_det" "trend_var" "log_trend_var"
     "predetermined_variables" "parameters" "model_local_variable" "periods"
-    "model_info" "estimation" "var_estimation" "set_time" "data" "varobs"
+    "model_info" "estimation" "set_time" "data" "varobs"
     "varexobs" "unit_root_vars" "rplot" "osr_params" "osr" "dynatype"
     "dynasave" "model_comparison" "change_type" "load_params_and_steady_state"
     "save_params_and_steady_state" "write_latex_dynamic_model"
@@ -82,8 +82,7 @@
 ;; Keywords that may appear in blocks, and that begin a statement which will be
 ;; closed by a semicolon
 (defvar dynare-statements-like
-  '("stderr" "values" "restriction" "exclusion" "equation" "crossequations"
-    "covariance" "upper_cholesky" "lower_cholesky")
+  '("stderr" "values" "restriction" "exclusion" "upper_cholesky" "lower_cholesky")
   "Dynare statements-like keywords.")
 
 ;; Those keywords that makes the lexer enter the DYNARE_BLOCK start condition
@@ -97,7 +96,7 @@
       "estimated_params_init" "estimated_params_bounds" "osr_params_bounds"
       "observation_trends" "optim_weights" "homotopy_setup"
       "conditional_forecast_paths" "svar_identification" "moment_calibration"
-      "irf_calibration" "ramsey_constraints" "restrictions" "generate_irfs"
+      "irf_calibration" "ramsey_constraints" "generate_irfs"
       "matched_moments" "verbatim")
     "Dynare block keywords."))
 
