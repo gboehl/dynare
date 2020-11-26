@@ -149,7 +149,11 @@ if info(1) == 0 %no errors in solution
         if ~no_identification_moments
             ind_dMOMENTS = (find(max(abs(dMOMENTS'),[],1) > tol_deriv)); %index for non-zero rows
             if isempty(ind_dMOMENTS) && any(any(isnan(dMOMENTS)))
-                error('There are NaN in the dMOMENTS matrix. Please check whether your model has units roots and you forgot to set diffuse_filter=1.' )
+                if options_.diffuse_filter == 1 % use options_ as it inherits diffuse_filter from options_ident if set by user
+                    error('There are NaN in the dMOMENTS matrix. Make sure that for non-stationary models stationary transformations of non-stationary observables are used for checking identification. [TIP: use first differences].' )
+                else
+                    error('There are NaN in the dMOMENTS matrix. Please check whether your model has units roots, and you forgot to set diffuse_filter=1.' )
+                end
             end
             if any(any(isnan(MOMENTS)))
                 error('There are NaN''s in the theoretical moments: make sure that for non-stationary models stationary transformations of non-stationary observables are used for checking identification. [TIP: use first differences].')
