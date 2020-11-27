@@ -537,7 +537,13 @@ switch minimizer_algorithm
     if options_.silent_optimizer
         optim_options = optimset(optim_options,'display','off');
     end
-    [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(objective_function,start_par_value,bounds(:,1),bounds(:,2),optim_options,varargin{:});
+    if ~isoctave        
+        [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(objective_function,start_par_value,bounds(:,1),bounds(:,2),optim_options,varargin{:});
+    else
+        % Under Octave, use a wrapper, since lsqnonlin() does not have a 6th arg
+        func = @(x)objective_function(x,varargin{:});
+        [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
+    end    
   otherwise
     if ischar(minimizer_algorithm)
         if exist(minimizer_algorithm)
