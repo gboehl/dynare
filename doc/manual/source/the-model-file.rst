@@ -5336,6 +5336,14 @@ block decomposition of the model (see :opt:`block`).
                 (available under MATLAB if the Global Optimization
                 Toolbox is installed; not available under Octave).
 
+           ``13``
+
+                Uses the ``lsqnonlin`` non-linear least squares optimization
+                routine (available under MATLAB if the Optimization Toolbox is
+                installed; available under Octave if the `optim
+                <https://octave.sourceforge.io/optim/>`__ package from
+                Octave-Forge is installed). ``101``
+
            ``101``
 
                 Uses the SolveOpt algorithm for local nonlinear
