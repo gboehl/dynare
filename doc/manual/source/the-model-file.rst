@@ -5093,9 +5093,9 @@ block decomposition of the model (see :opt:`block`).
 
     .. option:: mh_replic = INTEGER
 
-       Number of replications for Metropolis-Hastings algorithm. For
-       the time being, ``mh_replic`` should be larger
-       than 1200. Default: ``20000``.
+       Number of replications for each chain of the Metropolis-Hastings algorithm. 
+       The number of draws should be sufficient to achieve convergence of the MCMC and 
+       to meaningfully compute posterior objects. Default: ``20000``.
 
     .. option:: sub_draws = INTEGER
 
