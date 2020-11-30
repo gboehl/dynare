@@ -88,8 +88,8 @@ if isoctave && octave_ver_less_than('5')
     p{end+1} = '/missing/ordeig';
 end
 
-%% intersect(…, 'stable') doesn't exist in Octave
-if isoctave
+%% intersect(…, 'stable') doesn't exist in Octave < 6
+if isoctave && octave_ver_less_than('6')
     p{end+1} = '/missing/intersect_stable';
 end
 

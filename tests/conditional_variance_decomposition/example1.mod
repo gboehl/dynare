@@ -76,7 +76,7 @@ for i=1:nvar
     SubsetOfVariables(i) = i_tmp;
 end
 
-if isoctave
+if isoctave && octave_ver_less_than('6')
     [observable_pos,index_observables,index_subset]=intersect_stable(SubsetOfVariables,options_.varobs_id);
 else
     [observable_pos,index_observables,index_subset]=intersect(SubsetOfVariables,options_.varobs_id,'stable');
