@@ -76,7 +76,7 @@ for i=1:nvar
     SubsetOfVariables(i) = i_tmp;
 end
 
-if isoctave || matlab_ver_less_than('8.1')
+if (isoctave && octave_ver_less_than('6')) || (~isoctave && matlab_ver_less_than('8.1'))
     [observable_pos,index_observables,index_subset]=intersect_stable(SubsetOfVariables,options_.varobs_id);
 else
     [observable_pos,index_observables,index_subset]=intersect(SubsetOfVariables,options_.varobs_id,'stable');

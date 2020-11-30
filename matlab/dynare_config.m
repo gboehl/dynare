@@ -92,8 +92,8 @@ if isoctave && octave_ver_less_than('4.4') && ~user_has_octave_forge_package('na
     p{end+1} = '/missing/corrcoef';
 end
 
-%% intersect(…, 'stable') doesn't exist in Octave and in MATLAB < R2013a
-if isoctave || matlab_ver_less_than('8.1')
+%% intersect(…, 'stable') doesn't exist in Octave < 6 and in MATLAB < R2013a
+if (isoctave && octave_ver_less_than('6')) || (~isoctave && matlab_ver_less_than('8.1'))
     p{end+1} = '/missing/intersect_stable';
 end
 

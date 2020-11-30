@@ -83,7 +83,7 @@ MaXNumberOfConditionalDecompLines = ceil(options_.MaxNumberOfBytes/NumberOfSaved
 
 ME_present=0;
 if ~all(diag(M_.H)==0)
-    if isoctave || matlab_ver_less_than('8.1')
+    if (isoctave && octave_ver_less_than('6')) || (~isoctave && matlab_ver_less_than('8.1'))
         [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
     else
         [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
