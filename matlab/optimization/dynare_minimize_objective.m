@@ -423,7 +423,7 @@ switch minimizer_algorithm
   case 12
     if isoctave
         error('Option mode_compute=12 is not available under Octave')
-    elseif ~user_has_matlab_license('global_optimization_toolbox')
+    elseif ~user_has_matlab_license('GADS_Toolbox')
         error('Option mode_compute=12 requires the Global Optimization Toolbox')
     end
     [LB, UB] = set_bounds_to_finite_values(bounds, options_.huge_number);
