@@ -22,8 +22,9 @@ AC_INIT([dynare], [4.6.4])
 AC_CONFIG_SRCDIR([configure.ac])
 AM_INIT_AUTOMAKE([-Wall -Wno-portability foreign])
 
-AC_CHECK_PROG([MKOCTFILE], [mkoctfile], [mkoctfile], [no])
-test "$MKOCTFILE" = no && AC_MSG_ERROR([Octave cannot be found])
+AX_OCTAVE
+
+test "$ax_enable_octave" != yes && AC_MSG_ERROR([Octave cannot be found])
 
 CC=$($MKOCTFILE -p CC)
 CXX=$($MKOCTFILE -p CXX)

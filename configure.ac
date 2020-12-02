@@ -130,8 +130,8 @@ fi
 # Check for Octave
 if test "$enable_octave" = yes; then
   AC_CONFIG_SUBDIRS([mex/build/octave])
-  AC_CHECK_PROG([OCTAVE], [octave], [octave], [no])
-  test "$OCTAVE" = no && AC_MSG_ERROR([Octave cannot be found. If you want to compile Dynare without Octave support, pass the --disable-octave flag.])
+  AX_OCTAVE
+  test "$ax_enable_octave" != yes && AC_MSG_ERROR([Octave cannot be found. If you want to compile Dynare without Octave support, pass the --disable-octave flag.])
 fi
 
 # Construct final output message
