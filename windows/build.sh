@@ -135,6 +135,7 @@ build_windows_octave_mex_64 ()
                      --with-matio="$LIB64_MSYS2" \
                      --with-slicot="$LIB64"/Slicot/with-underscore \
                      MKOCTFILE="$ROOT_DIRECTORY"/deps/mkoctfile64 \
+                     OCTAVE=/bin/true \
                      PACKAGE_VERSION="$VERSION" \
                      PACKAGE_STRING="dynare $VERSION"
     make -j"$NTHREADS" all
