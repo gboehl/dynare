@@ -114,7 +114,7 @@ if max(abs(sum(oo_.variance_decomposition,2)-100))>2
     error(['Variance decomposition at order ',num2str(options_.order),' does not work'])
 end
 
-if isoctave || matlab_ver_less_than('8.1')
+if (isoctave && octave_ver_less_than('6')) || (~isoctave && matlab_ver_less_than('8.1'))
     [observable_pos,index_observables,index_subset]=intersect_stable(SubsetOfVariables,options_.varobs_id);
 else
     [observable_pos,index_observables,index_subset]=intersect(SubsetOfVariables,options_.varobs_id,'stable');
