@@ -182,6 +182,7 @@ build_windows_octave_mex_32 ()
                      --with-matio="$LIB32_MSYS2" \
                      --with-slicot="$LIB32"/Slicot/with-underscore \
                      MKOCTFILE="$ROOT_DIRECTORY"/deps/mkoctfile32 \
+                     OCTAVE=/bin/true \
                      PACKAGE_VERSION="$VERSION" \
                      PACKAGE_STRING="dynare $VERSION"
     make -j"$NTHREADS" all
