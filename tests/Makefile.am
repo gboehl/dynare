@@ -63,6 +63,7 @@ MODFILES = \
 	ramst.mod \
 	ramst_a.mod \
 	ramst_static_tag.mod \
+	ramst_static_tag_block.mod \
 	ramst_mshocks.mod \
 	on-the-fly/ex1.mod \
 	on-the-fly/ex2.mod \
