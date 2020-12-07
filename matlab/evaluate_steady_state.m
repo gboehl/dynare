@@ -323,10 +323,8 @@ if M.static_and_dynamic_models_differ
             r(idx) = rr;
         end
     else
-        iyv = M.lead_lag_incidence';
-        iyr0 = find(iyv(:));
-        xys = z(iyr0);
-        r = feval([M.fname '.dynamic'], z(iyr0), zx, params, ys, M.maximum_lag + 1);
+        r = feval([M.fname '.dynamic'], dynvars_from_endo_simul(z, M.maximum_lag+1, M), ...
+                  zx, params, ys, M.maximum_lag + 1);
     end
     % Fail if residual greater than tolerance
     if max(abs(r)) > options.solve_tolf
