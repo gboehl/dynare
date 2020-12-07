@@ -116,6 +116,7 @@ MODFILES = \
 	histval_initval_file/sim_exo_lead_lag_initvalf.mod \
         ramst_normcdf_and_friends.mod \
 	ramst_vec.mod \
+	ramst_mshocks_vec.mod \
 	example1_varexo_det.mod \
 	predetermined_variables.mod \
 	fs2000_ssfile.mod \
