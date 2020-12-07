@@ -3,12 +3,12 @@ function oo_ = make_ex_(M_, options_, oo_)
 % Forms oo_.exo_simul and oo_.exo_det_simul
 %
 % INPUTS
-%   M_:           Dynare model structure
-%   options_:     Dynare options structure
-%   oo_:          Dynare results structure
+% - M_           [struct]   Dynare model structure
+% - options_     [struct]   Dynare options structure
+% - oo_          [struct]   Dynare results structure
 %
 % OUTPUTS
-%   oo_:          Dynare results structure
+% - oo_          [struct]   Updated dynare results structure
 
 % Copyright (C) 1996-2020 Dynare Team
 %
