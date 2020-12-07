@@ -92,5 +92,5 @@ simul(periods=40,maxit=1000);
 rplot gdp_hat;
 rplot R;
 if oo_.deterministic_simulation.status~=1
-    error('This model has solution');
+    error('This model has no solution');
 end
