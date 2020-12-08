@@ -417,6 +417,7 @@ MODFILES = \
 	bgp/nk-1/nk.mod \
 	bgp/ramsey-1/ramsey.mod \
 	dynare-command-options/ramst.mod \
+	particle/first_spec.mod \
 	particle/local_state_space_iteration_k_test.mod
 
 ECB_MODFILES = \
@@ -558,6 +559,8 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	identification/LindeTrabandt/LindeTrabandt2019_xfail.mod \
 	steady_state/Linear_steady_state_xfail.mod \
 	optimal_policy/Ramsey/ramsey_histval_xfail.mod \
+	particle/first_spec_xfail_0.mod \
+	particle/first_spec_xfail_1.mod \
 	example1_extra_exo_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_1_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_2_xfail.mod
@@ -1150,6 +1153,7 @@ EXTRA_DIST = \
 	shock_decomposition/example1_calib_shock_decomp_data.mat \
 	shock_decomposition/fsdat_simul.m \
 	smoother2histval/fsdat_simul.m \
+	particle/first_spec_common.inc \
 	optimal_policy/Ramsey/find_c.m \
 	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat \
 	observation_trends_and_prefiltering/generate_trend_stationary_AR1.m \

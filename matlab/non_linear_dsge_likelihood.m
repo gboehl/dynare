@@ -158,6 +158,14 @@ end
 ReducedForm.StateVectorMean = StateVectorMean;
 ReducedForm.StateVectorVariance = StateVectorVariance;
 
+[~, flag] = chol(ReducedForm.StateVectorVariance);%reduced_rank_cholesky(ReducedForm.StateVectorVariance)';
+if flag
+    fval = Inf;
+    info(1) = 201;
+    info(4) = 0.1;
+    exit_flag = 0;    
+    return;
+end
 %------------------------------------------------------------------------------
 % 4. Likelihood evaluation
 %------------------------------------------------------------------------------

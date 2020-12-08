@@ -166,6 +166,8 @@ switch info(1)
         message = 'Aim: A is NAN or INF.';
     case 164
         message = 'Aim: Problem in SPEIG.';
+    case 201
+        message = 'Particle Filter: Initial covariance of the states is not positive definite. Try a different nonlinear_filter_initialization';
     otherwise
         message = 'This case shouldn''t happen. Contact the authors of Dynare';
 end
