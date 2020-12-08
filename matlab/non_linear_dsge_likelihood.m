@@ -166,15 +166,17 @@ DynareOptions.warning_for_steadystate = 0;
 LIK = feval(DynareOptions.particle.algorithm, ReducedForm, Y, start, DynareOptions.particle, DynareOptions.threads, DynareOptions, Model);
 set_dynare_random_generator_state(s1,s2);
 if imag(LIK)
-    likelihood = Inf;
+    fval = Inf;
     info(1) = 46;
     info(4) = 0.1;
     exit_flag = 0;
+    return
 elseif isnan(LIK)
-    likelihood = Inf;
+    fval = Inf;
     info(1) = 45;
     info(4) = 0.1;
     exit_flag = 0;
+    return
 else
     likelihood = LIK;
 end
