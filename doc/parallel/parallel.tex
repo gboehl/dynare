@@ -248,7 +248,7 @@ The configuration file is designed as follows:
 The list of slave options includes:
 \begin{description}
 \item[Name]: name of the node;
-\item[CPUnbr]:  this is the number of CPU's to be used on that computer; if \verb"CPUnbr" is a vector of integers, the syntax is \verb"[s:d]", with \verb"d>=s" (\verb"d, s" are integer); the first core has number 1 so that, on a quad-core, use \verb"4" to use all cores, but use \verb [3:4] to specify just the last two cores (this is particularly relevant for Windows where it is possible to assign jobs to specific processors);
+\item[CPUnbr]:  this is the number of CPU's to be used on that computer; if \verb"CPUnbr" is a vector of integers, the syntax is \verb"[s:d]", with \verb"d>=s" (\verb"d, s" are integer); the first core has number 1 so that, on a quad-core, use \verb"4" to use all cores, but use \verb"[3:4]" to specify just the last two cores (this is particularly relevant for Windows where it is possible to assign jobs to specific processors);
 \item[ComputerName]: Computer name on the network or IP address; use the NETBIOS name under Windows\footnote{In Windows XP it is possible find this name in 'My Computer' $->$ mouse right click $->$ 'Property' $->$ 'Computer Name'.}, or the DNS name under Unix.;
 \item[UserName]: required for remote login; in order to assure proper communications between the master and the slave threads, it must be the same user name actually logged on the `master' machine. On a Windows network, this is in the form \verb"DOMAIN\username", like \verb"DEPT\JohnSmith", i.e. user JohnSmith in windows group DEPT;
 \item[Password]: required for remote login (only under Windows): it is the user password on \verb"DOMAIN" and \verb"ComputerName";
