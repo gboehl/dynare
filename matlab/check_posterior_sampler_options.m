@@ -378,11 +378,13 @@ end
 
 % here are all samplers requiring a proposal distribution
 if ~strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
-    if ~options_.cova_compute && ~(options_.load_mh_file && posterior_sampler_options.use_mh_covariance_matrix)
+    if ~options_.cova_compute && ~(options_.load_mh_file && posterior_sampler_options.use_mh_covariance_matrix) 
+        if strcmp('hessian',options_.MCMC_jumping_covariance)
         skipline()
         disp('check_posterior_sampler_options:: I cannot start the MCMC because the Hessian of the posterior kernel at the mode was not computed')
         disp('check_posterior_sampler_options:: or there is no previous MCMC to load ')
         error('check_posterior_sampler_options:: MCMC cannot start')
+        end
     end
 end
 
