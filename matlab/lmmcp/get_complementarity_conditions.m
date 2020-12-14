@@ -1,5 +1,5 @@
-function [lb,ub,eq_index] = get_complementarity_conditions(M,ramsey_policy)
-% [lb,ub,eq_index] = get_complementarity_conditions(M,ramsey_policy)
+function [lb,ub,eq_index] = get_complementarity_conditions(M_,ramsey_policy)
+% [lb,ub,eq_index] = get_complementarity_conditions(M_,ramsey_policy)
 % INPUTS
 %   - M                   [struct] contains a description of the model.
 %   - ramsey_policy       [boolean] indicator whether a Ramsey problem is considered
@@ -29,12 +29,12 @@ function [lb,ub,eq_index] = get_complementarity_conditions(M,ramsey_policy)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-ub = inf(M.endo_nbr,1);
+ub = inf(M_.endo_nbr,1);
 lb = -ub;
-eq_index = (1:M.endo_nbr)';
+eq_index = (1:M_.endo_nbr)';
 if ramsey_policy
-    if isfield(M,'ramsey_model_constraints')
-        rc = M.ramsey_model_constraints;
+    if isfield(M_,'ramsey_model_constraints')
+        rc = M_.ramsey_model_constraints;
         for i = 1:length(rc)
             switch rc{i}{2}
               case {'>','>='}
@@ -48,17 +48,17 @@ if ramsey_policy
     end
 end
 
-etags = M.equations_tags;
+etags = M_.equations_tags;
 for i=1:size(etags,1)
     if strcmp(etags{i,2},'mcp')
         eq_nbr = etags{i,1};
         if ramsey_policy
-            eq_nbr = eq_nbr + M.ramsey_eq_nbr;
+            eq_nbr = eq_nbr + M_.ramsey_eq_nbr;
         end
         str = etags{i,3};
         kop = strfind(etags{i,3},'<');
         if ~isempty(kop)
-            k = find(strcmp(strtrim(str(1:kop-1)), M.endo_names)); %get variable index with restriction
+            k = find(strcmp(strtrim(str(1:kop-1)), M_.endo_names)); %get variable index with restriction
             if isempty(k)
                 error(sprintf(['Complementarity condition %s: variable %s is ' ...
                                'not recognized'],etags{i,3},strtrim(str(1:kop-1))))
@@ -69,7 +69,7 @@ for i=1:size(etags,1)
         else
             kop = strfind(etags{i,3},'>');
             if ~isempty(kop)
-                k = find(strcmp(strtrim(str(1:kop-1)), M.endo_names)); %get variable index with restriction
+                k = find(strcmp(strtrim(str(1:kop-1)), M_.endo_names)); %get variable index with restriction
                 if isempty(k)
                     error(sprintf(['Complementarity condition %s: variable %s is ' ...
                                    'not recognized'],etags{i,3},strtrim(str(1:kop-1))))
