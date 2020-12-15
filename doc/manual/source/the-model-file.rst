@@ -3819,7 +3819,7 @@ Computing the stochastic solution
        :mvar:`oo_.conditional_variance_decomposition_ME`).  The
        variance decomposition is only conducted, if theoretical
        moments are requested, *i.e.* using the ``periods=0``-option. 
-       Only available at ``order<3``. In case of ``order=2``, 
+       Only available at ``order<3`` and without ``pruning''. In case of ``order=2``, 
        Dynare provides a second-order accurate
        approximation to the true second moments based on the linear
        terms of the second-order solution (see *Kim, Kim,
@@ -3836,7 +3836,11 @@ Computing the stochastic solution
        algorithm of *Kim, Kim, Schaumburg and Sims (2008)*, while at
        third order its generalization by *Andreasen,
        Fernández-Villaverde and Rubio-Ramírez (2018)* is used.
-       Not available above third order.
+       Not available above third order. When specified, theoretical moments
+       are based on the pruned state space, i.e. the computation of second moments 
+       uses all terms as in *Andreasen, Fernández-Villaverde and Rubio-Ramírez (2018), page 10* 
+       as opposed to simply providing a second-order accurate result based on the 
+       linear solution as in *Kim, Kim, Schaumburg and Sims (2008)*.
 
     .. option:: partial_information
 

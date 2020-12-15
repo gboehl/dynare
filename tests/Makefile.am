@@ -3,6 +3,7 @@ MODFILES = \
 	optimizers/fs2000_6.mod \
 	moments/example1_hp_test.mod \
 	moments/fs2000_post_moments.mod \
+	moments/example1_order2_pruning.mod \
 	lmmcp/rbcii.mod \
 	lmmcp/purely_backward.mod \
 	lmmcp/purely_forward.mod \
