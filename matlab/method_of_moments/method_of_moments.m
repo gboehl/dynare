@@ -169,7 +169,9 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         fprintf('GMM at higher order only works with pruning, so we set pruning option to 1.\n');
         options_mom_.pruning = true;
     end
+    options_mom_.mom = set_default_option(options_mom_.mom,'analytic_standard_errors',false);       % compute standard errors numerically (0) or analytically (1). Analytical derivatives are only available for GMM.
 end
+options_mom_.mom.compute_derivs = false;% flag to compute derivs in objective function (needed for analytic standard errors with GMM)
 
     
 % General options that can be set by the user in the mod file, otherwise default values are provided
@@ -326,6 +328,7 @@ options_mom_.solveopt         = options_.solveopt;
 options_mom_.gradient_method  = options_.gradient_method;
 options_mom_.gradient_epsilon = options_.gradient_epsilon;
 options_mom_.analytic_derivation = 0;
+options_mom_.analytic_derivation_mode = 0; % needed by get_perturbation_params_derivs.m, ie use efficient sylvester equation method to compute analytical derivatives as in Ratto & Iskrev (2012)
 
 options_mom_.vector_output= false;           % specifies whether the objective function returns a vector
 
@@ -688,6 +691,11 @@ if isfield(estim_params_,'param_vals') && ~isempty(estim_params_.param_vals)
         fprintf('This will override parameter values and may lead to wrong results.\n')
         fprintf('Check whether this is really intended.\n')
         warning('The steady state file internally changes the values of the estimated parameters.')
+        if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
+            fprintf('For analytical standard errors, the parameter-Jacobians of the dynamic model and of the steady-state will be computed numerically\n'),
+            fprintf('(re-set options_mom_.analytic_derivation_mode= -2)'),
+            options_mom_.analytic_derivation_mode= -2;
+        end
     end
 end
 
@@ -785,8 +793,14 @@ fprintf('\n  - perturbation order:        %d', options_mom_.order)
 if options_mom_.order > 1 && options_mom_.pruning
     fprintf(' (with pruning)')
 end
+if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
+    fprintf('\n  - standard errors:           analytic derivatives');
+else
+    fprintf('\n  - standard errors:           numerical derivatives');
+end
 fprintf('\n  - number of matched moments: %d', options_mom_.mom.mom_nbr);
-fprintf('\n  - number of parameters:      %d\n\n', length(xparam0));
+fprintf('\n  - number of parameters:      %d', length(xparam0));
+fprintf('\n\n');
 
 % -------------------------------------------------------------------------
 % Step 7b: Iterated method of moments estimation
@@ -861,8 +875,12 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
     options_mom_.vector_output = false;    
     % Update M_ and DynareResults (in particular to get oo_.mom.model_moments)    
     M_ = set_all_parameters(xparam1,estim_params_,M_);
+    if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
+        options_mom_.mom.compute_derivs = true; % for GMM we compute derivatives analytically in the objective function with this flag        
+    end
     [fval, ~, ~,~,~, oo_] = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_);
-    % Compute Standard errors
+    options_mom_.mom.compute_derivs = false; % reset to not compute derivatives in objective function during optimization
+    
     SE = method_of_moments_standard_errors(xparam1, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Woptflag);
     
     % Store results in output structure

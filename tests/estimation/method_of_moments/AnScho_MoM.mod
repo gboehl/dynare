@@ -25,7 +25,7 @@
 @#define estimParams = 1
 
 % Note that we set the numerical optimization tolerance levels very large to speed up the testsuite
-@#define optimizer = 4
+@#define optimizer = 13
 
 var c p R g y z INFL INT YGR;
 varexo e_r e_g e_z;
@@ -248,7 +248,7 @@ end
         %, optim = ('TolFun', 1e-5
         %           ,'TolX', 1e-6
         %          )    % a list of NAME and VALUE pairs to set options for the optimization routines. Available options depend on mode_compute
-        %, silent_optimizer                  % run minimization of moments distance silently without displaying results or saving files in between
+        , silent_optimizer                  % run minimization of moments distance silently without displaying results or saving files in between
         % , tolf = 1e-5                       % convergence criterion on function value for numerical differentiation
         % , tolx = 1e-6                       % convergence criterion on funciton input for numerical differentiation
         % 
@@ -267,6 +267,9 @@ end
         % , sylvester_fixed_point_tol = 1e-12      % convergence criterion used in the fixed point Sylvester solver
         % , qz_criterium = 0.999999                % value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving first order problems [IS THIS CORRET @wmutschl]
         % , qz_zero_threshold = 1e-6               % value used to test if a generalized eigenvalue is 0/0 in the generalized Schur decomposition
+        @#if mommethod == "GMM"
+        , analytic_standard_errors
+        @#endif
     );
 @#endfor
 
