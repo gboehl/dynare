@@ -113,6 +113,8 @@ MODFILES = \
 	discretionary_policy/dennis_1.mod \
 	discretionary_policy/dennis_1_estim.mod \
 	discretionary_policy/Gali_discretion.mod \
+	discretionary_policy/Gali_2015_chapter_3.mod \
+	discretionary_policy/Gali_2015_chapter_3_nonlinear.mod \
 	histval_initval_file/ramst_initval_file.mod \
 	histval_initval_file/ramst_data.mod \
 	histval_initval_file/ramst_datafile.mod \
@@ -645,7 +647,8 @@ lmmcp/sw_newton.o.trs: lmmcp/sw_lmmcp.o.trs
 
 discretionary_policy/dennis_1_estim.m.trs: discretionary_policy/dennis_1.m.trs
 discretionary_policy/dennis_1_estim.o.trs: discretionary_policy/dennis_1.o.trs
-
+discretionary_policy/Gali_2015_chapter_3_nonlinear.m.trs: discretionary_policy/Gali_2015_chapter_3.m.trs
+discretionary_policy/Gali_2015_chapter_3_nonlinear.o.trs: discretionary_policy/Gali_2015_chapter_3.o.trs
 
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
