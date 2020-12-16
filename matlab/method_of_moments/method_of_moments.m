@@ -86,21 +86,12 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 % =========================================================================
 
 %% TO DO LIST
-% - [ ] why does lsqnonlin take less time in Andreasen toolbox?
-% - [ ] test user-specified weightning matrix
-% - [ ] which qz_criterium value?
-% - [ ] document that in method_of_moments_data_moments.m NaN are replaced by mean of moment
 % - [ ] add IRF matching
-% - [ ] test estimated_params_bounds block
-% - [ ] test what happens if all parameters will be estimated but some/all are not calibrated
-% - [ ] speed up lyapunov equation by using doubling with old initial values
-% - [ ] check smm at order > 3 without pruning
-% - [ ] provide option to use analytical derivatives to compute std errors (similar to what we already do in identification)
-% - [ ] add Bayesian GMM/SMM estimation
-% - [ ] useautocorr
-% - [ ] do we need dirname?
-% - [ ] decide on default weighting matrix scheme, I would propose 2 stage with Diagonal of optimal matrix
-% - [ ] check smm with product moments greater than 2
+% - [ ] speed up pruned_state_space_system (by using doubling with old initial values, hardcoding zeros, other "tricks" used in e.g. nlma)
+% - [ ] add option to use autocorrelations (we have useautocorr in identification toolbox already)
+% - [ ] SMM with extended path
+% - [ ] deal with measurement errors (once @wmutschl has implemented this in identification toolbox)
+% - [ ] improve check for duplicate moments by using the cellfun and unique functions
 % -------------------------------------------------------------------------
 % Step 0: Check if required structures and options exist
 % -------------------------------------------------------------------------
@@ -178,7 +169,6 @@ options_mom_.mom.compute_derivs = false;% flag to compute derivs in objective fu
 
     
 % General options that can be set by the user in the mod file, otherwise default values are provided
-options_mom_ = set_default_option(options_mom_,'dirname',M_.dname);    % directory in which to store estimation output
 options_mom_ = set_default_option(options_mom_,'graph_format','eps');  % specify the file format(s) for graphs saved to disk
 options_mom_ = set_default_option(options_mom_,'nodisplay',false);     % do not display the graphs, but still save them to disk
 options_mom_ = set_default_option(options_mom_,'nograph',false);       % do not create graphs (which implies that they are not saved to the disk nor displayed)
@@ -231,7 +221,9 @@ options_mom_ = set_default_option(options_mom_,'lyapunov_fixed_point_tol',1e-10)
 options_mom_ = set_default_option(options_mom_,'lyapunov_doubling_tol',1e-16);          % convergence criterion used in the doubling algorithm
 options_mom_ = set_default_option(options_mom_,'sylvester_fp',false);                   % determines whether to use fixed point algorihtm to solve Sylvester equation (gensylv_fp), faster for large scale models
 options_mom_ = set_default_option(options_mom_,'sylvester_fixed_point_tol',1e-12);      % convergence criterion used in the fixed point Sylvester solver
-options_mom_ = set_default_option(options_mom_,'qz_criterium',1-1e-6);                  % value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving first order problems [IS THIS CORRET @wmutschl]
+options_mom_ = set_default_option(options_mom_,'qz_criterium',1+1e-6);                  % value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving first order problems
+                                                                                        % if there are no unit roots one can use 1.0; if they are possible, you may have have multiple unit roots and the accuracy decreases when computing the eigenvalues in lyapunov_symm
+                                                                                        % Hence, we use 1+1e-6. Note that unit roots are only possible at first-order, at higher order we set it to 1 in pruned_state_space_system and focus only on stationary observables.
 options_mom_ = set_default_option(options_mom_,'qz_zero_threshold',1e-6);               % value used to test if a generalized eigenvalue is 0/0 in the generalized Schur decomposition
 if options_mom_.order > 2
     fprintf('Dynare will use ''k_order_solver'' as the order>2\n');
@@ -368,8 +360,6 @@ end
 % -------------------------------------------------------------------------
 % Step 2: Checks and transformations for matched moments structure (preliminary)
 % -------------------------------------------------------------------------
-% Note that we do not have a preprocessor interface yet for this, so this
-% will need much improvement later on. @wmutschl
 
 % Initialize indices
 options_mom_.mom.index.E_y       = false(options_mom_.obs_nbr,1);                      %unconditional first order product moments
@@ -429,8 +419,6 @@ for jm=1:size(M_.matched_moments,1)
     end
 end
 
-
-% @wmutschl: add check for duplicate moments by using the cellfun and unique functions
 %Remove duplicate elements
 UniqueMomIdx = [nonzeros(options_mom_.mom.index.E_y_pos); nonzeros(tril(options_mom_.mom.index.E_yy_pos)); nonzeros(options_mom_.mom.index.E_yyt_pos)];
 DuplicateMoms = setdiff(1:size(M_.matched_moments,1),UniqueMomIdx);
@@ -631,6 +619,7 @@ if options_mom_.ar > options_mom_.nobs+1
 end
 
 % Get data moments for the method of moments
+fprintf('Computing data moments. Note that NaN values in the moments (due to leads and lags or missing data) are replaced by the mean of the corresponding moment\n');
 [oo_.mom.data_moments, oo_.mom.m_data] = method_of_moments_data_moments(dataset_.data, oo_, M_.matched_moments, options_mom_);
 
 % Get shock series for SMM and set variance correction factor
