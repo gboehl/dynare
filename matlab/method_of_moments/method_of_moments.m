@@ -221,9 +221,9 @@ options_mom_ = set_default_option(options_mom_,'lyapunov_fixed_point_tol',1e-10)
 options_mom_ = set_default_option(options_mom_,'lyapunov_doubling_tol',1e-16);          % convergence criterion used in the doubling algorithm
 options_mom_ = set_default_option(options_mom_,'sylvester_fp',false);                   % determines whether to use fixed point algorihtm to solve Sylvester equation (gensylv_fp), faster for large scale models
 options_mom_ = set_default_option(options_mom_,'sylvester_fixed_point_tol',1e-12);      % convergence criterion used in the fixed point Sylvester solver
-options_mom_ = set_default_option(options_mom_,'qz_criterium',1+1e-6);                  % value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving first order problems
-                                                                                        % if there are no unit roots one can use 1.0; if they are possible, you may have have multiple unit roots and the accuracy decreases when computing the eigenvalues in lyapunov_symm
-                                                                                        % Hence, we use 1+1e-6. Note that unit roots are only possible at first-order, at higher order we set it to 1 in pruned_state_space_system and focus only on stationary observables.
+options_mom_ = set_default_option(options_mom_,'qz_criterium',1-1e-6);                  % value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving first order problems
+                                                                                        % if there are no unit roots one can use 1.0 (or slightly below) which we set as defautl; if they are possible, you may have have multiple unit roots and the accuracy decreases when computing the eigenvalues in lyapunov_symm
+                                                                                        % Note that unit roots are only possible at first-order, at higher order we set it to 1 in pruned_state_space_system and focus only on stationary observables.
 options_mom_ = set_default_option(options_mom_,'qz_zero_threshold',1e-6);               % value used to test if a generalized eigenvalue is 0/0 in the generalized Schur decomposition
 if options_mom_.order > 2
     fprintf('Dynare will use ''k_order_solver'' as the order>2\n');
@@ -338,6 +338,7 @@ options_mom_.risky_steadystate = false; %needed by resol
 options_mom_.threads = options_.threads; %needed by resol
 options_mom_.jacobian_flag = true;
 options_mom_.gstep = options_.gstep;
+options_mom_.Schur_vec_tol = 1e-11; % used to find nonstationary variables in Schur decomposition of the transition matrix
 
 % options_mom.dsge_var          = false; %needed by check_list_of_variables
 % options_mom.bayesian_irf      = false; %needed by check_list_of_variables
