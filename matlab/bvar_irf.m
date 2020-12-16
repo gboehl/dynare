@@ -126,7 +126,7 @@ for shock=1:ny
 end
 
 % Save intermediate results
-DirectoryName = [ M_.fname '/bvar_irf' ];
+DirectoryName = [ M_.dname '/bvar_irf' ];
 if ~isdir(DirectoryName)
     mkdir('.',DirectoryName);
 end

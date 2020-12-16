@@ -114,7 +114,7 @@ sims_with_shocks_sort = sort(sims_with_shocks, 3);
 sims_with_shocks_down_conf = sims_with_shocks_sort(:, :, sort_idx(1));
 sims_with_shocks_up_conf = sims_with_shocks_sort(:, :, sort_idx(2));
 
-OutputDirectoryName = CheckPath('graphs',M_.fname);
+OutputDirectoryName = CheckPath('graphs',M_.dname);
 
 dyn_graph=dynare_graph_init(sprintf('BVAR forecasts (nlags = %d)', nlags), ny, {'b-' 'g-' 'g-' 'r-' 'r-'});
 
@@ -153,10 +153,10 @@ end
 
 % Store results
 
-DirectoryName = [ M_.fname '/bvar_forecast' ];
+DirectoryName = [ M_.dname '/bvar_forecast' ];
 if ~isdir(DirectoryName)
-    if ~isdir(M_.fname)
-        mkdir(M_.fname);
+    if ~isdir(M_.dname)
+        mkdir(M_.dname);
     end
     mkdir(DirectoryName);
 end

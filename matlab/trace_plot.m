@@ -115,12 +115,12 @@ plot(1:TotalNumberOfMhDraws,MovingAverage,'-k','linewidth',2)
 hold off
 axis tight
 legend({'MCMC draw';[num2str(N) ' period moving average']},'Location','NorthWest')
-% create subdirectory <fname>/graphs if it doesn't exist
-if ~exist(M_.fname, 'dir')
-    mkdir('.',M_.fname);
+% create subdirectory <dname>/graphs if it doesn't exist
+if ~exist(M_.dname, 'dir')
+    mkdir('.',M_.dname);
 end
-if ~exist([M_.fname filesep 'graphs'],'dir')
-    mkdir(M_.fname,'graphs');
+if ~exist([M_.dname filesep 'graphs'],'dir')
+    mkdir(M_.dname,'graphs');
 end
 
 %get name for plot
@@ -131,10 +131,10 @@ else
 end
 plot_name=[plot_name,'_blck_',num2str(blck)];
 
-dyn_saveas(hh,[M_.fname, filesep, 'graphs', filesep, 'TracePlot_' plot_name],options_.nodisplay,options_.graph_format)
+dyn_saveas(hh,[M_.dname, filesep, 'graphs', filesep, 'TracePlot_' plot_name],options_.nodisplay,options_.graph_format)
 
 if options_.TeX
-    fid=fopen([M_.fname,'/graphs/',M_.fname,'_TracePlot_' plot_name,'.tex'],'w+');
+    fid=fopen([M_.dname,'/graphs/',M_.fname,'_TracePlot_' plot_name,'.tex'],'w+');
 
     if strcmpi(type,'DeepParameter')
         tex_names=M_.param_names_tex;
@@ -162,7 +162,7 @@ if options_.TeX
 
     fprintf(fid,'%-s\n','\begin{figure}[H]');
     fprintf(fid,'%-s\n','\centering');
-    fprintf(fid,'%-s\n',['  \includegraphics[width=0.8\textwidth]{',[M_.fname, '/graphs/TracePlot_' plot_name],'}\\']);
+    fprintf(fid,'%-s\n',['  \includegraphics[width=0.8\textwidth]{',[M_.dname, '/graphs/TracePlot_' plot_name],'}\\']);
     fprintf(fid,'%-s\n',['    \caption{',FigureName,'}']);
     fprintf(fid,'%-s\n','\end{figure}');
     fclose(fid);
