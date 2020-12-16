@@ -147,10 +147,10 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix_scaling_factor',1);    % scaling of weighting matrix
     options_mom_.mom = set_default_option(options_mom_.mom,'se_tolx',1e-5);                         % step size for numerical computation of standard errors
     options_mom_ = set_default_option(options_mom_,'order',1);                                      % order of Taylor approximation in perturbation
-    options_mom_ = set_default_option(options_mom_,'pruning',true);                                 % use pruned state space system at higher-order
+    options_mom_ = set_default_option(options_mom_,'pruning',false);                                % use pruned state space system at higher-order
     % Checks for perturbation order
     if options_mom_.order < 1
-        error('method_of_moments:: The order of the Taylor approximation cannot be 0!')
+        error('method_of_moments: The order of the Taylor approximation cannot be 0!')
     end
 end
 if strcmp(options_mom_.mom.mom_method,'SMM')
@@ -168,6 +168,9 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
     if options_mom_.order > 1 && ~options_mom_.pruning
         fprintf('GMM at higher order only works with pruning, so we set pruning option to 1.\n');
         options_mom_.pruning = true;
+    end
+    if options_mom_.order > 3
+        error('method_of_moments: perturbation orders higher than 3 are not implemented for GMM estimation, try using SMM.\n');
     end
     options_mom_.mom = set_default_option(options_mom_.mom,'analytic_standard_errors',false);       % compute standard errors numerically (0) or analytically (1). Analytical derivatives are only available for GMM.
 end
@@ -654,6 +657,9 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
     end
     options_mom_.mom.shock_series = temp_shocks;
     options_mom_.mom.ME_shock_series = temp_shocks_ME;
+    if options_mom_.k_order_solver && ~options_mom_.pruning % dynare++ routines will be called in simult_.m, store some additional stuff
+        options_mom_.DynareRandomStreams.seed = options_mom_.mom.seed;
+    end
 end
 
 % -------------------------------------------------------------------------
