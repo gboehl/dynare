@@ -181,5 +181,4 @@ if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fclose(fidTeX);
 end
 
-OutputDirectoryName = CheckPath('check_plot',M_.dname);
-save([OutputDirectoryName '/MoM_check_plot_data.mat'],'mcheck');
+save([M_.fname filesep 'graphs' filesep M_.fname '_MoMCheckPlots_data.mat'],'mcheck');
