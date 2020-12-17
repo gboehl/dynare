@@ -1,20 +1,23 @@
+variables:
+  MATLAB_VERSION: R2020b
+  OLD_MATLAB_VERSION: R2014a
+  OCTAVE_VERSION: 5.2.0
+
 before_script:
   - git clone https://git.dynare.org/Dynare/dseries.git
 
 test_matlab:
   stage: test
   script:
-    - make check-matlab
+    - make check-matlab MATLAB=/usr/local/MATLAB/$MATLAB_VERSION/bin/matlab
   artifacts:
     paths:
       - test/my/report/dir/report.pdf
 
 test_old_matlab:
   stage: test
-  variables:
-    MATLAB: /usr/local/MATLAB/R2014a/bin/matlab
   script:
-    - make check-matlab
+    - make check-matlab MATLAB=/usr/local/MATLAB/$OLD_MATLAB_VERSION/bin/matlab
   artifacts:
     paths:
       - test/my/report/dir/report.pdf
@@ -22,7 +25,7 @@ test_old_matlab:
 test_octave:
   stage: test
   script:
-    - make check-octave
+    - make check-octave OCTAVE=/usr/local/octave/$OCTAVE_VERSION/bin/octave
   artifacts:
     paths:
       - test/my/report/dir/report.pdf
