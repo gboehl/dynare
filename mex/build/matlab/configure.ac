@@ -51,7 +51,7 @@ CXXFLAGS="$MATLAB_CXXFLAGS -Wall -Wno-parentheses -Wold-style-cast"
 
 AC_PROG_FC
 AC_PROG_CC
-AC_PROG_CC_C99 # mjdgges DLL now uses C99 features (variable declared in for loop)
+AC_PROG_CC_C99
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX_17
 AC_PROG_RANLIB
