@@ -48,7 +48,7 @@ function A = catstruct(varargin)
 
 % Copyright (C) 2005 Jos van der Geest <jos@jasen.nl>
 % Copyright (C) 2013 Christophe Gouel
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright (C) 2016-2020 Dynare Team
 %
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are
@@ -150,7 +150,7 @@ else
     FN = squeeze(FN) ;
     VAL = squeeze(VAL) ;
     MatlabVersion = version;
-    if isoctave || str2double(MatlabVersion(end-5:end-2))<2013 % Equivalent to, but faster than if verLessThan('matlab','8.1')
+    if (isoctave && octave_ver_less_than('6')) || (~isoctave && str2double(MatlabVersion(end-5:end-2))<2013) % Equivalent to, but faster than if verLessThan('matlab','8.1')
         [UFN,ind] = unique(FN) ;
     else
         [UFN,ind] = unique(FN,'legacy') ;
