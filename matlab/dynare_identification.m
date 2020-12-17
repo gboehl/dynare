@@ -139,6 +139,8 @@ options_ident = set_default_option(options_ident,'tol_deriv',1.e-8);
     % tolerance level for selecting columns of non-zero derivatives
 options_ident = set_default_option(options_ident,'tol_sv',1.e-3);
     % tolerance level for selecting non-zero singular values in identification_checks.m
+options_ident = set_default_option(options_ident,'schur_vec_tol',1e-11);
+    % tolerance level used to find nonstationary variables in Schur decomposition of the transition matrix.
 
 %check whether to compute identification strength based on information matrix
 if ~isfield(options_ident,'no_identification_strength')
@@ -289,7 +291,7 @@ if options_ident.order == 3
 end
 options_.ar = options_ident.ar;
 options_.prior_mc = options_ident.prior_mc;
-options_.Schur_vec_tol = 1.e-8;
+options_.schur_vec_tol = options_ident.schur_vec_tol;
 options_.nomoments = 0;
 options_.analytic_derivation=options_ident.analytic_derivation;
     % 1: analytic derivation of gradient and hessian of likelihood in dsge_likelihood.m, only works for stationary models, i.e. kalman_algo<3

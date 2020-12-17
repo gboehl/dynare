@@ -9829,6 +9829,12 @@ Performing identification analysis
         Tolerance level for selecting non-zero singular values.
         Default: ``1.e-3``.
 
+    .. option:: schur_vec_tol = DOUBLE
+
+        Tolerance level used to find nonstationary variables in Schur decomposition 
+        of the transition matrix.
+        Default: ``1.e-11``.
+
 *Identification Strength Options*
 
     .. option:: no_identification_strength
