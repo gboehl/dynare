@@ -405,31 +405,31 @@ currently not supported.
 
 ## macOS
 
-To simply use a snapshot of Dynare, you have two choices. On MATLAB, you can
-use the [snapshot build](https://www.dynare.org/snapshot/macos/) provided by
-Dynare. On Octave, you can simply install [Homebrew](https://brew.sh/) and run
-```brew install dynare --HEAD``` (See the Install Dynare (unstable) section of
-[this webpage](https://archives.dynare.org/DynareWiki/InstallOnMacOSX) for more
-details).
-
-If you do not wish to use the snapshots provided by Dynare or Homebrew, follow
-the directions below to build Dynare on your local machine.
-
 Preparatory work:
 
 - Install the Xcode Command Line Tools:
     - Open Terminal.app and type `xcode-select --install`
 - Install [Homebrew](https://brew.sh/) by following the instructions on their website
+- Install [MacTeX](http://www.tug.org/mactex/index.html). Alternatively, if you
+  don’t want to install MacTeX, you should pass the `--disable-doc` flag to the
+  `configure` command below.
 
 The following commands will install the programs that Dynare needs to
-compile. They should be entered at the command prompt in Terminal.app.
+compile. They should be entered at the command prompt in Terminal.app:
 
-- `brew install automake bison flex boost fftw gcc gsl hdf5 libmatio metis veclibfort`
-- **(Optional)** To compile Dynare mex files for use on Octave:
-    - `brew install octave`
-- **(Optional)** To compile Dynare documentation
-     - Install the latest version of [MacTeX](http://www.tug.org/mactex/), deselecting the option to install Ghostscript
-     - `brew install doxygen latex2html`
+- `brew install automake bison flex boost gcc gsl libmatio veclibfort octave sphinx-doc wget`
+- Compile and install SLICOT, needed for the `kalman_steady_state` MEX file
+```
+wget https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
+tar xf slicot_5.0+20101122.orig.tar.gz
+cd slicot-5.0+20101122
+make -j$(nproc) FORTRAN=gfortran OPTS="-O2" LOADER=gfortran lib
+cp slicot.a /usr/local/lib/libslicot_pic.a
+make clean
+make -j$(nproc) FORTRAN=gfortran OPTS="-O2 -fdefault-integer-8" LOADER=gfortran lib
+cp slicot.a /usr/local/lib/libslicot64_pic.a
+cd ..
+```
 
 The following commands will download the Dynare source code and compile
 it. They should be entered at the command prompt in Terminal.app from the
@@ -437,11 +437,6 @@ folder where you want Dynare installed.
 
 - `git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git`
 - `cd dynare`
-- `PATH="/usr/local/opt/bison/bin:/usr/local/opt/flex/bin:$PATH"`
 - `autoreconf -si`
-- `CC=gcc-9 CXX=g++-9 ./configure --disable-octave --with-matlab=/Applications/MATLAB_R2019a.app --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local`, adjusting the MATLAB path to accord with your local installation. If you don't have MATLAB, simply remove `--with-matlab=/Applications/MATLAB_R2019a.app` from the above command
-- `make -j`
-- **(Optional)** To then build mex files for Octave, run
-     - `cd mex/build/octave`
-     - `CC=gcc-9 CXX=g++-9 ./configure --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local LDFLAGS=-L/usr/local/lib`
-     - `make -j`
+- `./configure --with-matlab=/Applications/MATLAB_R2020b.app CC=gcc-10 CXX=g++-10 CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib`, adjusting the MATLAB path to accord with your local installation. If you don’t have MATLAB, simply replace `--with-matlab=/Applications/MATLAB_R2020b.app` in the above command by `--disable-matlab`.
+- `make -j$(nproc)`
