@@ -37,11 +37,11 @@ if ~isequal(M_.param_names, M_.param_names_long)
     Long_names_present = true;
 end
 
-if ~exist([M_.fname '/latex'],'dir')
-    mkdir(M_.fname,'latex');
+if ~exist([M_.dname '/latex'],'dir')
+    mkdir(M_.dname,'latex');
 end
 
-fid = fopen([M_.fname, '/latex/' M_.fname '_latex_parameters.tex'], 'w');
+fid = fopen([M_.dname, '/latex/' M_.fname '_latex_parameters.tex'], 'w');
 fprintf(fid, '\\begin{center}\n');
 if Long_names_present==1
     fprintf(fid, '\\begin{longtable}{ccc}\n');

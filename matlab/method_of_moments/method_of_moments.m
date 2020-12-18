@@ -173,7 +173,7 @@ end
 
     
 % General options that can be set by the user in the mod file, otherwise default values are provided
-options_mom_ = set_default_option(options_mom_,'dirname',M_.fname);    % directory in which to store estimation output
+options_mom_ = set_default_option(options_mom_,'dirname',M_.dname);    % directory in which to store estimation output
 options_mom_ = set_default_option(options_mom_,'graph_format','eps');  % specify the file format(s) for graphs saved to disk
 options_mom_ = set_default_option(options_mom_,'nodisplay',false);     % do not display the graphs, but still save them to disk
 options_mom_ = set_default_option(options_mom_,'nograph',false);       % do not create graphs (which implies that they are not saved to the disk nor displayed)
