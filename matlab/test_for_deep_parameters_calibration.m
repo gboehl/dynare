@@ -42,7 +42,7 @@ if ~isempty(plist)
     end
     tmp = dbstack;
     message = [message, ' when using ' tmp(2).name '. '];
-    message = [message, 'If these parameters are not initialized in a steadystate file or a steady_state_model-block, Dynare may not be able to solve the model...'];
+    message = [message, 'If these parameters are not initialized in a steadystate file or a steady_state_model-block, Dynare may not be able to solve the model. Note that simul, perfect_foresight_setup, and perfect_foresight_solver do not automatically call the steady state file.'];
     message_id  = 'Dynare:ParameterCalibration:NaNValues';
     warning('off','backtrace')
     warning(message_id,message);
