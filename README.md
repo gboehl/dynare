@@ -151,49 +151,49 @@ make html
 ### Check
 
 The Git source comes with unit tests (in the MATLAB functions) and integration tests (under the `tests` subfolder). All the tests can be run with:
-```
+```sh
 make check
 ```
 in the `tests` subfolder. If Dynare has been compiled against MATLAB and Octave, the tests will be run with both MATLAB and Octave. Depending on the performance of your machine, this can take several hours. It is possible to run the tests only with MATLAB:
-```
+```sh
 make check-matlab
 ```
 or only with Octave:
-```
+```sh
 make check-octave
 ```
 Note that running the testsuite with Octave requires the additional packages `pstoedit`, `epstool`, `xfig`, and `gnuplot`. 
 
 A summary of the results is available in `tests/run_test_matlab_output.txt` or `tests/run_test_octave_output.txt`. Often, it does not make sense to run the complete testsuite. For instance, if you modify codes only related to the perfect foresight model solver, you can decide to run only a subset of the integration tests, with:
-```
+```sh
 make deterministic_simulations
 ```
 This will run all the integration tests in `tests/deterministic_simulations` with MATLAB and Octave. Again, it is possible to do this only with MATLAB:
-```
+```sh
 make m/deterministic_simulations
 ```
 or with Octave:
-```
+```sh
 make o/deterministic_simulations
 ```
 Finally if you want to run a single integration test, e.g. `deterministic_simulations/lbj/rbc.mod` with MATLAB:
-```
+```sh
 make deterministic_simulations/lbj/rbc.m.trs
 ```
 or with Octave:
-```
+```sh
 make deterministic_simulations/lbj/rbc.o.trs
 ```
 The result of the test (`PASSED` or `FAILED`) will be printed in the terminal, the produced log can be displayed with:
-```
+```sh
 make deterministic_simulations/lbj/rbc.m.drs
 ```
 or
-```
+```sh
 make deterministic_simulations/lbj/rbc.o.drs
 ```
 Note that only tests will be executed where the `m.trs/o.trs` does not yet exist. You can run
-```
+```sh
 make clean
 ```
 in the `tests` folder to delete files that were created by the run of the testsuite. You can also manually delete the desired `m.trs/o.trs` file(s).
@@ -229,7 +229,7 @@ All the prerequisites are packaged:
 - `x13as`
 
 You can install them all at once with:
-```
+```sh
 apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx latexmk libjs-mathjax doxygen x13as
 ```
 If you use MATLAB, we strongly advise to also `apt install matlab-support` and confirm to rename the GCC libraries shipped with MATLAB to avoid possible conflicts with GCC libraries shipped by your distribution.
@@ -347,18 +347,18 @@ Tested on
   have a 32-bit Windows, in which case see below)
 - Run a MSYS MinGW 64-bit shell
 - Update the system:
-```
+```sh
 pacman -Syu
 ```
   You may be asked to close the window at the end of the
   first upgrade batch, in which case you should rerun the upgrade in a new
   window to complete the upgrade.
 - Install all needed dependencies:
-```
+```sh
 pacman -S git autoconf automake-wrapper bison flex make tar texinfo mingw-w64-x86_64-gcc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-boost mingw-w64-x86_64-gsl mingw-w64-x86_64-matio mingw-w64-x86_64-openblas
 ```
 - Compile and install SLICOT, needed for the `kalman_steady_state` MEX file
-```
+```sh
 wget https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
 tar xf slicot_5.0+20101122.orig.tar.gz
 cd slicot-5.0+20101122
@@ -368,13 +368,13 @@ cp slicot.a /usr/local/lib/libslicot64_pic.a
 cd ..
 ```
 - Prepare the Dynare sources, either by unpacking the source tarball, or with:
-```
+```sh
 git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git
 cd dynare
 autoreconf -si
 ```
 - Configure Dynare from the source directory:
-```
+```sh
 ./configure --with-slicot=/usr/local --with-matlab=<…> --disable-octave --disable-doc
 ```
 where the path of MATLAB is specified. Note that you should use
@@ -384,11 +384,11 @@ does not have short filenames (8dot3), then you can run `mkdir -p
 /usr/local/MATLAB && mount c:/Program\ Files/MATLAB /usr/local/MATLAB`, and
 then pass `/usr/local/MATLAB/…` as MATLAB path to the configure script.
 - Compile:
-```
+```sh
 make
 ```
 - Run the testsuite:
-```
+```sh
 make -C tests check-matlab
 ```
 
@@ -407,19 +407,21 @@ currently not supported.
 
 Preparatory work:
 
-- Install the Xcode Command Line Tools:
-    - Open Terminal.app and type `xcode-select --install`
+- Install the Xcode Command Line Tools. Open Terminal.app and type:
+```sh
+xcode-select --install
+```
 - Install [Homebrew](https://brew.sh/) by following the instructions on their website
 - Install [MacTeX](http://www.tug.org/mactex/index.html). Alternatively, if you
   don’t want to install MacTeX, you should pass the `--disable-doc` flag to the
   `configure` command below.
-
-The following commands will install the programs that Dynare needs to
-compile. They should be entered at the command prompt in Terminal.app:
-
-- `brew install automake bison flex boost gcc gsl libmatio veclibfort octave sphinx-doc wget`
-- Compile and install SLICOT, needed for the `kalman_steady_state` MEX file
+- Install required Homebrew packages. Open Terminal.app and type:
+```sh
+brew install automake bison flex boost gcc gsl libmatio veclibfort octave sphinx-doc wget
 ```
+- Compile and install SLICOT, needed for the `kalman_steady_state` MEX file.
+Still from Terminal.app:
+```sh
 wget https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
 tar xf slicot_5.0+20101122.orig.tar.gz
 cd slicot-5.0+20101122
@@ -435,8 +437,20 @@ The following commands will download the Dynare source code and compile
 it. They should be entered at the command prompt in Terminal.app from the
 folder where you want Dynare installed.
 
-- `git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git`
-- `cd dynare`
-- `autoreconf -si`
-- `./configure --with-matlab=/Applications/MATLAB_R2020b.app CC=gcc-10 CXX=g++-10 CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib`, adjusting the MATLAB path to accord with your local installation. If you don’t have MATLAB, simply replace `--with-matlab=/Applications/MATLAB_R2020b.app` in the above command by `--disable-matlab`.
-- `make -j$(nproc)`
+- Prepare the Dynare sources:
+```sh
+git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git`
+cd dynare
+autoreconf -si
+```
+- Configure Dynare from the source directory:
+```sh
+./configure --with-matlab=<…> CC=gcc-10 CXX=g++-10 CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib`
+```
+where the path to MATLAB is specified, typically of the form
+`/Applications/MATLAB_R2020b.app`. If you don’t have MATLAB, simply replace
+`--with-matlab=<…>` in the above command by `--disable-matlab`.
+- Compile:
+```sh
+make -j$(nproc)
+```
