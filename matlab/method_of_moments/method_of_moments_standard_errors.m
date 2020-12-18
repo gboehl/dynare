@@ -60,6 +60,16 @@ eps_value    = options_mom_.mom.se_tolx;
 if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
     fprintf('\nComputing standard errors using analytical derivatives of moments\n');
     D = oo_.mom.model_moments_params_derivs; %already computed in objective function via get_perturbation_params.m
+    idx_nan = find(any(isnan(D)));
+    if any(idx_nan)
+        for i = idx_nan            
+             fprintf('No standard errors available for parameter %s\n',get_the_name(i,options_mom_.TeX, M_, estim_params_, options_mom_))
+        end        
+        warning('There are NaN in the analytical Jacobian of Moments. Check your bounds and/or priors, or use a different optimizer.')
+        Asympt_Var = NaN(length(xparam),length(xparam));
+        SE_values = NaN(length(xparam),1);
+        return
+    end
 else    
     fprintf('\nComputing standard errors using numerical derivatives of moments\n');
     for i=1:dim_params
