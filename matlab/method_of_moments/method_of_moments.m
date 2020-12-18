@@ -86,21 +86,12 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 % =========================================================================
 
 %% TO DO LIST
-% - [ ] why does lsqnonlin take less time in Andreasen toolbox?
-% - [ ] test user-specified weightning matrix
-% - [ ] which qz_criterium value?
-% - [ ] document that in method_of_moments_data_moments.m NaN are replaced by mean of moment
 % - [ ] add IRF matching
-% - [ ] test estimated_params_bounds block
-% - [ ] test what happens if all parameters will be estimated but some/all are not calibrated
-% - [ ] speed up lyapunov equation by using doubling with old initial values
-% - [ ] check smm at order > 3 without pruning
-% - [ ] provide option to use analytical derivatives to compute std errors (similar to what we already do in identification)
-% - [ ] add Bayesian GMM/SMM estimation
-% - [ ] useautocorr
-% - [ ] do we need dirname?
-% - [ ] decide on default weighting matrix scheme, I would propose 2 stage with Diagonal of optimal matrix
-% - [ ] check smm with product moments greater than 2
+% - [ ] speed up pruned_state_space_system (by using doubling with old initial values, hardcoding zeros, other "tricks" used in e.g. nlma)
+% - [ ] add option to use autocorrelations (we have useautocorr in identification toolbox already)
+% - [ ] SMM with extended path
+% - [ ] deal with measurement errors (once @wmutschl has implemented this in identification toolbox)
+% - [ ] improve check for duplicate moments by using the cellfun and unique functions
 % -------------------------------------------------------------------------
 % Step 0: Check if required structures and options exist
 % -------------------------------------------------------------------------
@@ -125,7 +116,7 @@ else
     options_mom_.loglinear = false;
 end
 
-fprintf('\n==== Method of Moments (%s) Estimation ====\n\n',options_mom_.mom.mom_method)
+fprintf('\n==== Method of Moments Estimation (%s) ====\n\n',options_mom_.mom.mom_method)
 
 % -------------------------------------------------------------------------
 % Step 1a: Prepare options_mom_ structure
@@ -147,10 +138,10 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix_scaling_factor',1);    % scaling of weighting matrix
     options_mom_.mom = set_default_option(options_mom_.mom,'se_tolx',1e-5);                         % step size for numerical computation of standard errors
     options_mom_ = set_default_option(options_mom_,'order',1);                                      % order of Taylor approximation in perturbation
-    options_mom_ = set_default_option(options_mom_,'pruning',true);                                 % use pruned state space system at higher-order
+    options_mom_ = set_default_option(options_mom_,'pruning',false);                                % use pruned state space system at higher-order
     % Checks for perturbation order
     if options_mom_.order < 1
-        error('method_of_moments:: The order of the Taylor approximation cannot be 0!')
+        error('method_of_moments: The order of the Taylor approximation cannot be 0!')
     end
 end
 if strcmp(options_mom_.mom.mom_method,'SMM')
@@ -169,11 +160,15 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         fprintf('GMM at higher order only works with pruning, so we set pruning option to 1.\n');
         options_mom_.pruning = true;
     end
+    if options_mom_.order > 3
+        error('method_of_moments: perturbation orders higher than 3 are not implemented for GMM estimation, try using SMM.\n');
+    end
+    options_mom_.mom = set_default_option(options_mom_.mom,'analytic_standard_errors',false);       % compute standard errors numerically (0) or analytically (1). Analytical derivatives are only available for GMM.
 end
+options_mom_.mom.compute_derivs = false;% flag to compute derivs in objective function (needed for analytic standard errors with GMM)
 
     
 % General options that can be set by the user in the mod file, otherwise default values are provided
-options_mom_ = set_default_option(options_mom_,'dirname',M_.dname);    % directory in which to store estimation output
 options_mom_ = set_default_option(options_mom_,'graph_format','eps');  % specify the file format(s) for graphs saved to disk
 options_mom_ = set_default_option(options_mom_,'nodisplay',false);     % do not display the graphs, but still save them to disk
 options_mom_ = set_default_option(options_mom_,'nograph',false);       % do not create graphs (which implies that they are not saved to the disk nor displayed)
@@ -226,8 +221,11 @@ options_mom_ = set_default_option(options_mom_,'lyapunov_fixed_point_tol',1e-10)
 options_mom_ = set_default_option(options_mom_,'lyapunov_doubling_tol',1e-16);          % convergence criterion used in the doubling algorithm
 options_mom_ = set_default_option(options_mom_,'sylvester_fp',false);                   % determines whether to use fixed point algorihtm to solve Sylvester equation (gensylv_fp), faster for large scale models
 options_mom_ = set_default_option(options_mom_,'sylvester_fixed_point_tol',1e-12);      % convergence criterion used in the fixed point Sylvester solver
-options_mom_ = set_default_option(options_mom_,'qz_criterium',1-1e-6);                  % value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving first order problems [IS THIS CORRET @wmutschl]
+options_mom_ = set_default_option(options_mom_,'qz_criterium',1-1e-6);                  % value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving first order problems
+                                                                                        % if there are no unit roots one can use 1.0 (or slightly below) which we set as default; if they are possible, you may have have multiple unit roots and the accuracy decreases when computing the eigenvalues in lyapunov_symm
+                                                                                        % Note that unit roots are only possible at first-order, at higher order we set it to 1 in pruned_state_space_system and focus only on stationary observables.
 options_mom_ = set_default_option(options_mom_,'qz_zero_threshold',1e-6);               % value used to test if a generalized eigenvalue is 0/0 in the generalized Schur decomposition
+options_mom_ = set_default_option(options_mom_,'schur_vec_tol',1e-11);                  % tolerance level used to find nonstationary variables in Schur decomposition of the transition matrix.
 if options_mom_.order > 2
     fprintf('Dynare will use ''k_order_solver'' as the order>2\n');
     options_mom_.k_order_solver = true;
@@ -326,6 +324,7 @@ options_mom_.solveopt         = options_.solveopt;
 options_mom_.gradient_method  = options_.gradient_method;
 options_mom_.gradient_epsilon = options_.gradient_epsilon;
 options_mom_.analytic_derivation = 0;
+options_mom_.analytic_derivation_mode = 0; % needed by get_perturbation_params_derivs.m, ie use efficient sylvester equation method to compute analytical derivatives as in Ratto & Iskrev (2012)
 
 options_mom_.vector_output= false;           % specifies whether the objective function returns a vector
 
@@ -362,8 +361,6 @@ end
 % -------------------------------------------------------------------------
 % Step 2: Checks and transformations for matched moments structure (preliminary)
 % -------------------------------------------------------------------------
-% Note that we do not have a preprocessor interface yet for this, so this
-% will need much improvement later on. @wmutschl
 
 % Initialize indices
 options_mom_.mom.index.E_y       = false(options_mom_.obs_nbr,1);                      %unconditional first order product moments
@@ -423,8 +420,6 @@ for jm=1:size(M_.matched_moments,1)
     end
 end
 
-
-% @wmutschl: add check for duplicate moments by using the cellfun and unique functions
 %Remove duplicate elements
 UniqueMomIdx = [nonzeros(options_mom_.mom.index.E_y_pos); nonzeros(tril(options_mom_.mom.index.E_yy_pos)); nonzeros(options_mom_.mom.index.E_yyt_pos)];
 DuplicateMoms = setdiff(1:size(M_.matched_moments,1),UniqueMomIdx);
@@ -614,15 +609,13 @@ if ~isempty(dataset_)
     options_mom_.nobs = dataset_.nobs;
 end
 
-% provide info on missing observations
-if any(any(isnan(dataset_.data)))
-    fprintf('missing observations will be replaced by the sample mean of the corresponding moment')
-end
-
 % Check length of data for estimation of second moments
 if options_mom_.ar > options_mom_.nobs+1
     error('method_of_moments: Data set is too short to compute second moments');
 end
+
+% Provide info on data moments handling
+fprintf('Computing data moments. Note that NaN values in the moments (due to leads and lags or missing data) are replaced by the mean of the corresponding moment\n');
 
 % Get data moments for the method of moments
 [oo_.mom.data_moments, oo_.mom.m_data] = method_of_moments_data_moments(dataset_.data, oo_, M_.matched_moments, options_mom_);
@@ -651,6 +644,9 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
     end
     options_mom_.mom.shock_series = temp_shocks;
     options_mom_.mom.ME_shock_series = temp_shocks_ME;
+    if options_mom_.k_order_solver && ~options_mom_.pruning % dynare++ routines will be called in simult_.m, store some additional stuff
+        options_mom_.DynareRandomStreams.seed = options_mom_.mom.seed;
+    end
 end
 
 % -------------------------------------------------------------------------
@@ -688,6 +684,11 @@ if isfield(estim_params_,'param_vals') && ~isempty(estim_params_.param_vals)
         fprintf('This will override parameter values and may lead to wrong results.\n')
         fprintf('Check whether this is really intended.\n')
         warning('The steady state file internally changes the values of the estimated parameters.')
+        if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
+            fprintf('For analytical standard errors, the parameter-Jacobians of the dynamic model and of the steady-state will be computed numerically\n'),
+            fprintf('(re-set options_mom_.analytic_derivation_mode= -2)'),
+            options_mom_.analytic_derivation_mode= -2;
+        end
     end
 end
 
@@ -785,8 +786,14 @@ fprintf('\n  - perturbation order:        %d', options_mom_.order)
 if options_mom_.order > 1 && options_mom_.pruning
     fprintf(' (with pruning)')
 end
+if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
+    fprintf('\n  - standard errors:           analytic derivatives');
+else
+    fprintf('\n  - standard errors:           numerical derivatives');
+end
 fprintf('\n  - number of matched moments: %d', options_mom_.mom.mom_nbr);
-fprintf('\n  - number of parameters:      %d\n\n', length(xparam0));
+fprintf('\n  - number of parameters:      %d', length(xparam0));
+fprintf('\n\n');
 
 % -------------------------------------------------------------------------
 % Step 7b: Iterated method of moments estimation
@@ -861,8 +868,12 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
     options_mom_.vector_output = false;    
     % Update M_ and DynareResults (in particular to get oo_.mom.model_moments)    
     M_ = set_all_parameters(xparam1,estim_params_,M_);
+    if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
+        options_mom_.mom.compute_derivs = true; % for GMM we compute derivatives analytically in the objective function with this flag        
+    end
     [fval, ~, ~,~,~, oo_] = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_);
-    % Compute Standard errors
+    options_mom_.mom.compute_derivs = false; % reset to not compute derivatives in objective function during optimization
+    
     SE = method_of_moments_standard_errors(xparam1, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Woptflag);
     
     % Store results in output structure
