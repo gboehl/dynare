@@ -372,7 +372,7 @@ stationary_vars = (1:y_nbr)';
 if ~isempty(Schur_u)
     %base this only on first order, because if first-order is stable so are the higher-order pruned systems
     x = abs(gx*Schur_u);
-    stationary_vars = find(all(x < options.Schur_vec_tol,2));
+    stationary_vars = find(all(x < options.schur_vec_tol,2));
 end
 
 if compute_derivs == 1

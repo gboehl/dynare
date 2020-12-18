@@ -46,7 +46,7 @@ options_.gstep(2) = 1.0;
 options_.scalv = 1;
 options_.debug = false;
 options_.initval_file = false;
-options_.Schur_vec_tol = 1e-11; % used to find nonstationary variables in Schur decomposition of the
+options_.schur_vec_tol = 1e-11; % used to find nonstationary variables in Schur decomposition of the
                                 % transition matrix
 options_.qz_criterium = [];
 options_.qz_zero_threshold = 1e-6;

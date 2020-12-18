@@ -143,8 +143,8 @@ if local_order == 2 || options_.hp_filter == 0
     stationary_vars = (1:length(ivar))';
     if ~isempty(u)
         x = abs(ghx*u);
-        iky = iky(find(all(x(iky,:) < options_.Schur_vec_tol,2)));
-        stationary_vars = find(all(x(inv_order_var(ivar(stationary_vars)),:) < options_.Schur_vec_tol,2));
+        iky = iky(find(all(x(iky,:) < options_.schur_vec_tol,2)));
+        stationary_vars = find(all(x(inv_order_var(ivar(stationary_vars)),:) < options_.schur_vec_tol,2));
     end
     aa = ghx(iky,:);
     bb = ghu(iky,:);
