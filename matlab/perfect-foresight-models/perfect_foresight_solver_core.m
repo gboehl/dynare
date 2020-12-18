@@ -107,8 +107,12 @@ else
                     sim1_lbj(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
               case 7
                 if options_.linear_approximation
-                    if isequal(options_.solve_algo, 10)
-                        warning('It would be more efficient to set option solve_algo equal to 0!')
+                    if isequal(options_.solve_algo, 10) 
+                        if options_.ramsey_policy && isfield(M_,'ramsey_model_constraints') && ~isempty(M_.ramsey_model_constraints)
+                            warning('Due to ramsey_constraints you should not specify your model as model(linear)!')
+                        else
+                            warning('It would be more efficient to set option solve_algo equal to 0!')
+                        end
                     end
                     [oo_.endo_simul, oo_.deterministic_simulation] = ...
                         solve_stacked_linear_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
