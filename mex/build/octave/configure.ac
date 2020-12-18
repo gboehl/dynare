@@ -39,8 +39,8 @@ LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
 AC_CANONICAL_HOST
 case ${host_os} in
   darwin*)
-    CXXFLAGS="$($MKOCTFILE -p ALL_CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast -O2"
-    LDFLAGS+=" $($MKOCTFILE -p OCTAVE_LIBS)"
+    dnl The mkoctfile from Octave.app 4.4.1 does not add optimization flags in CXXFLAGS
+    CXXFLAGS+=" -O2"
     ;;
 esac
 

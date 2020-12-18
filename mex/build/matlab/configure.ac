@@ -59,19 +59,6 @@ AX_PROG_LN_S
 AC_PROG_MKDIR_P
 AM_PROG_AR
 
-case ${host_os} in
-  *darwin*)
-    string=$($CXX --version)
-    if test "${string#*clang}" != "$string"; then
-      CXXFLAGS="$CXXFLAGS -stdlib=libc++"
-      MATLAB_LIBS="$MATLAB_LIBS -lc++"
-      MATLAB_LDFLAGS="$MATLAB_LDFLAGS -Wl,-syslibroot,$(xcrun -sdk macosx --show-sdk-path)"
-    else
-      MATLAB_LIBS="$MATLAB_LIBS -lstdc++"
-    fi
-    ;;
-esac
-
 AX_CXX11_THREAD
 
 # Check for dlopen(), needed by k_order_perturbation DLL
