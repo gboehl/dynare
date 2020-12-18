@@ -108,19 +108,15 @@ The last line runs Autoconf and Automake in order to prepare the build environme
 
 Simply launch the configure script from a terminal:
 ```sh
-./configure
+./configure --with-matlab=<…>
 ```
-If you have MATLAB, you need to indicate the MATLAB location using the `with-matlab` flag. For example, on GNU/Linux:
-```sh
-./configure --with-matlab=/usr/local/MATLAB/R2019a
-```
+where the path to MATLAB is specified.
+
 Some important options:
 
 - `--disable-matlab`: skip the compilation of MEX files for MATLAB
 - `--disable-octave`: skip the compilation of MEX files for Octave
 - `--disable-doc`: skip the compilation of the documentation (PDF and HTML)
-- `CFLAGS="-O3" CXXFLAGS="-O3"`: don't compile the C/C++ programs with debugging information
-- `MATLAB_MEX_CFLAGS="-O3" MATLAB_MEX_CXXFLAGS="-O3"`: remove debugging information for MATLAB MEX functions
 
 You may need to specify additional options to the configure script, see the output of the `--help` option, and also the platform specific instructions below. If the configuration goes well, the script will tell you which components are correctly configured and will be built. 
 
