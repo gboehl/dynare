@@ -8937,11 +8937,6 @@ Optimal policy under commitment (Ramsey)
     optimal policy for the first time and committing not to
     re-optimize in the future.
 
-    Because it entails computing at least a second order approximation, the
-    computation of the planner objective value is skipped with a message when
-    the model is too large (more than 180 state variables, including lagged
-    Lagrange multipliers).
-
 .. command:: ramsey_policy [VARIABLE_NAME...];
              ramsey_policy (OPTIONS...) [VARIABLE_NAME...];
 
@@ -9026,8 +9021,9 @@ Optimal policy under discretion
     under discretion. The algorithm implemented is essentially an LQ
     solver, and is described by *Dennis (2007)*.
 
-    You should ensure that your model is linear and your objective is
-    quadratic. Also, you should set the ``linear`` option of the
+    You must ensure that your objective is quadratic. Regarding the model, it must 
+    either be linear or solved at first order with an analytical steady state provided. 
+    In the first case, you should set the ``linear`` option of the
     ``model`` block.
 
     It is possible to use the :comm:`estimation` command after the
