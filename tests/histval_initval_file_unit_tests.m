@@ -179,7 +179,8 @@ for i = 1:size(x,1)
 end
 fclose(fh);
 
-if (ispc && ~matlab_ver_less_than('8.2')) || (~ispc && ~matlab_ver_less_than('9.0'))
+% The table() function is not implemented in Octave
+if ~isoctave && ((ispc && ~matlab_ver_less_than('8.2')) || (~ispc && ~matlab_ver_less_than('9.0')))
     writetable(table(x,y), 'data.xlsx')
     options = struct();
     options.datafile = 'data.xlsx';
@@ -191,7 +192,9 @@ if (ispc && ~matlab_ver_less_than('8.2')) || (~ispc && ~matlab_ver_less_than('9.
     num_tests = num_tests + 2;
 end
 
-if ispc && ~matlab_ver_less_than('8.2') % Does not work under GNU/Linux with R2020b (Unicode issue in xlsread)
+% The table() function is not implemented in Octave
+% The test also does not work under GNU/Linux + MATLAB R2020b (Unicode issue in xlsread)
+if ~isoctave && (ispc && ~matlab_ver_less_than('8.2'))
     writetable(table(x,y), 'data.xls')
     options = struct();
     options.datafile = 'data.xls';
@@ -204,8 +207,13 @@ if ispc && ~matlab_ver_less_than('8.2') % Does not work under GNU/Linux with R20
 end
 
 cd(getenv('TOP_TEST_DIR'));
-fid = fopen('histval_initval_file_unit_tests.m.trs', 'w+');
-num_failed_tests = length(failed_tests)
+if isoctave
+    ext = '.o.trs';
+else
+    ext = '.m.trs';
+end
+fid = fopen([ 'histval_initval_file_unit_tests' ext ], 'w+');
+num_failed_tests = length(failed_tests);
 if num_failed_tests > 0
   fprintf(fid,':test-result: FAIL\n');
   fprintf(fid,':number-tests: %d\n', num_tests);
