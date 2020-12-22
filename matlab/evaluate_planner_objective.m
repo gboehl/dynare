@@ -37,11 +37,6 @@ dr = oo.dr;
 exo_nbr = M.exo_nbr;
 nstatic = M.nstatic;
 nspred = M.nspred;
-if nspred > 180
-    fprintf('\nevaluate_planner_objective: model too large, can''t evaluate planner objective\n')
-    planner_objective_value = NaN;
-    return
-end
 beta = get_optimal_policy_discount_factor(M.params, M.param_names);
 
 Gy = dr.ghx(nstatic+(1:nspred),:);
@@ -64,7 +59,13 @@ Uyygygu = A_times_B_kronecker_C(Uyy,gy,gu);
 Wbar =U/(1-beta); %steady state welfare
 Wy = Uy*gy/(eye(nspred)-beta*Gy);
 Wu = Uy*gu+beta*Wy*Gu;
-Wyy = Uyygygy/(eye(nspred*nspred)-beta*kron(Gy,Gy));
+% Wyy = Uyygygy/(eye(nspred*nspred)-beta*kron(Gy,Gy)); %solve Wyy=Uyy*kron(gy,gy)+beta*Wyy*kron(Gy,Gy)
+if isempty(options.qz_criterium)
+    options.qz_criterium = 1+1e-6;
+end
+%solve Lyapunuv equation Wyy=gy'*Uyy*gy+beta*Gy'Wyy*Gy
+Wyy = reshape(lyapunov_symm(sqrt(beta)*Gy',reshape(Uyygygy,nspred,nspred),options.lyapunov_fixed_point_tol,options.qz_criterium,options.lyapunov_complex_threshold, 3, options.debug),1,nspred*nspred);
+
 Wyygugu = A_times_B_kronecker_C(Wyy,Gu,Gu);
 Wyygygu = A_times_B_kronecker_C(Wyy,Gy,Gu);
 Wuu = Uyygugu+beta*Wyygugu;

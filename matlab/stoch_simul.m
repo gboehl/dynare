@@ -79,7 +79,7 @@ oo_.dr=set_state_space(dr,M_,options_);
 if PI_PCL_solver
     [oo_.dr, info] = PCL_resol(oo_.steady_state,0);
 elseif options_.discretionary_policy
-    if ~options_.linear
+    if ~options_.order==1
         error('discretionary_policy: only linear-quadratic problems can be solved');
     end
     [~,info,M_,options_,oo_] = discretionary_policy_1(options_.instruments,M_,options_,oo_);
