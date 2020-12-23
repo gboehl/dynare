@@ -23,7 +23,7 @@
  */
 
 
-var y, c, k, a, h, b;
+var y $y$, c $c$, k $k$, a , h, b;
 varexo e, u;
 
 parameters beta, rho, alpha, delta, theta, psi, tau;
@@ -57,13 +57,15 @@ a = 1;
 b = 1;
 end;
 resid(1);
+steady;
+
 shocks;
 var e; stderr 0.009;
 var u; stderr 0.009;
 var e, u = phi*0.009*0.009;
 end;
-
-stoch_simul(loglinear,order=1);
+steady;
+stoch_simul(loglinear,order=1,conditional_variance_decomposition=[1:2]);
 forecast;
 
 conditional_forecast_paths;
