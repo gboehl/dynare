@@ -67,6 +67,9 @@ header_label_length=16; %default
 for ii=1:length(ivar)
     header_label_length = max(header_label_length,length(M_.endo_names{k1(ivar(ii))})+2);
 end
+if options_.loglinear
+    header_label_length=header_label_length+5;
+end
 header_label_format  = sprintf('%%%ds',header_label_length);
 value_format_float  = sprintf('%%%d.6f',header_label_length);
 value_format_zero  = sprintf('%%%dd',header_label_length);
@@ -83,8 +86,11 @@ else
     aux_var_additional_characters=0;
 end
 
-var_name_width = max([cellofchararraymaxlength(M_.endo_names(k1(ivar))), cellofchararraymaxlength(M_.exo_names)]);
-
+if options_.loglinear
+    var_name_width = max([cellofchararraymaxlength(M_.endo_names(k1(ivar)))+5, cellofchararraymaxlength(M_.exo_names)]);
+else
+    var_name_width = max([cellofchararraymaxlength(M_.endo_names(k1(ivar))), cellofchararraymaxlength(M_.exo_names)]);
+end
 %deal with covariances
 if order > 1
     var_name_width=max(2*(var_name_width+aux_var_additional_characters)+2,20); %account for covariances, separated by comma
@@ -99,7 +105,11 @@ disp('POLICY AND TRANSITION FUNCTIONS')
 % variable names
 str = char(32*ones(1,var_name_width));
 for i=1:nvar
-    str = [str sprintf(header_label_format, M_.endo_names{k1(ivar(i))})];
+    if options_.loglinear
+        str = [str sprintf(header_label_format, ['log(',M_.endo_names{k1(ivar(i))},')'])];
+    else
+        str = [str sprintf(header_label_format, M_.endo_names{k1(ivar(i))})];
+    end
 end
 disp(str);
 %
@@ -138,7 +148,11 @@ for k=1:nx
     else
         str1 = subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2);
     end
-    str = sprintf(label_format,str1);
+    if options_.loglinear
+        str = sprintf(label_format,['log(',str1,')']);
+    else
+        str = sprintf(label_format,str1);
+    end
     for i=1:nvar
         x = dr.ghx(ivar(i),k);
         [str,flag]=get_print_string(str,x,value_format_zero,value_format_float,flag,options_);
