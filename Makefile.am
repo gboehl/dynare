@@ -27,25 +27,29 @@ EXTRA_DIST = \
 	scripts \
 	.dir-locals.el
 
-all-local: preprocessor/src/dynare_m$(EXEEXT)
-	if file preprocessor/src/dynare_m$(EXEEXT) | grep -q x86.64; then \
-	  ARCH="64"; \
-	else \
-	  ARCH="32"; \
-	fi; \
-	mkdir -p $(abs_srcdir)/matlab/preprocessor$$ARCH && \
-	$(LN_S) -f $(abs_builddir)/preprocessor/src/dynare_m$(EXEEXT) $(abs_srcdir)/matlab/preprocessor$$ARCH
+all-local:
+# Create top-level preprocessor symlink needed by matlab/dynare.m (when Dynare is run
+# from the locally-built copy)
+	$(LN_S) -f $(abs_builddir)/preprocessor/src/dynare-preprocessor$(EXEEXT) $(abs_builddir)/preprocessor/dynare-preprocessor$(EXEEXT)
+# Create backward-compatibility symlink for old location of preprocessor
+	$(MKDIR_P) matlab/preprocessor64/
+	$(LN_S) -f $(abs_builddir)/preprocessor/src/dynare-preprocessor$(EXEEXT) $(abs_srcdir)/matlab/preprocessor64/dynare_m$(EXEEXT)
 
 clean-local:
-	rm -rf $(abs_srcdir)/matlab/preprocessor32 $(abs_srcdir)/matlab/preprocessor64
+	rm -f preprocessor/dynare-preprocessor$(EXEEXT)
+	rm -rf matlab/preprocessor64/
 
 dist-hook:
 	rm -rf `find $(distdir)/matlab $(distdir)/examples -name *~`
-	rm -rf $(distdir)/matlab/preprocessor* $(distdir)/matlab/dynare_version.m
+	rm -f $(distdir)/matlab/dynare_version.m
+	rm -rf $(distdir)/matlab/preprocessor64/
 	$(MKDIR_P) $(distdir)/mex/matlab $(distdir)/mex/octave
 	rm -rf `find $(distdir) -name '.git*'`
 
 install-exec-local:
+	$(MKDIR_P) $(DESTDIR)$(pkglibdir)/preprocessor
+# The following will break under Windows, but we don’t use the install rule there
+	$(LN_S) -f $(bindir)/dynare-preprocessor$(EXEEXT) $(DESTDIR)$(pkglibdir)/preprocessor/dynare-preprocessor$(EXEEXT)
 	$(MKDIR_P) $(DESTDIR)$(pkglibdir)/contrib/ms-sbvar/TZcode
 	cp -r contrib/ms-sbvar/TZcode/MatlabFiles $(DESTDIR)$(pkglibdir)/contrib/ms-sbvar/TZcode
 	$(MKDIR_P) $(DESTDIR)$(pkglibdir)/contrib/jsonlab
@@ -53,14 +57,17 @@ install-exec-local:
 	cp -r examples $(DESTDIR)$(pkglibdir)
 	cp -r matlab $(DESTDIR)$(pkglibdir)
 	find $(DESTDIR)$(pkglibdir) -name LICENSE.md -delete
-	rm -rf $(DESTDIR)$(pkglibdir)/matlab/preprocessor*
-	if file preprocessor/src/dynare_m | grep -q x86.64; then \
-	  ARCH="64"; \
-	else \
-	  ARCH="32"; \
-	fi; \
-	mkdir -p $(DESTDIR)$(pkglibdir)/matlab/preprocessor$$ARCH && \
-	cp preprocessor/src/dynare_m $(DESTDIR)$(pkglibdir)/matlab/preprocessor$$ARCH
+# Recreate backward-compatibility symlink
+	rm -f $(DESTDIR)$(pkglibdir)/matlab/preprocessor64/dynare_m$(EXEEXT)
+	$(LN_S) -f $(bindir)/dynare-preprocessor$(EXEEXT) $(DESTDIR)$(pkglibdir)/matlab/preprocessor64/dynare_m$(EXEEXT)
+# We don’t fail over doc install rules, since the user may deliberately not have compiled them
+# (e.g. with the “nodoc” option under Debian)
+	$(MKDIR_P) $(docdir)
+	-cp doc/*.pdf doc/gsa/gsa.pdf doc/parallel/parallel.pdf doc/dseries-and-reporting/dseriesReporting.pdf preprocessor/doc/preprocessor/preprocessor.pdf preprocessor/doc/macroprocessor/macroprocessor.pdf doc/manual/build/latex/dynare-manual.pdf $(docdir)
+	-cp -r doc/manual/build/html $(docdir)/dynare-manual.html
+	$(MKDIR_P) $(docdir)/dynare++
+	-cp dynare++/doc/*.pdf $(docdir)/dynare++
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(pkglibdir)
+	rm -rf $(DESTDIR)$(docdir)

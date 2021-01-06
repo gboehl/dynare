@@ -194,18 +194,6 @@ if ~nolog
     diary(logfile)
 end
 
-if ispc
-    arch = getenv('PROCESSOR_ARCHITECTURE');
-else
-    [~, arch] = system('uname -m');
-end
-
-if isempty(strfind(arch, '64'))
-    arch_ext = '32';
-else
-    arch_ext = '64';
-end
-
 if preprocessoroutput
     fprintf(['Starting Dynare (version ' dynare_version() ').\n']);
     fprintf('Calling Dynare with arguments: ');
@@ -216,7 +204,7 @@ if preprocessoroutput
     end
 end
 
-command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
+command = ['"' dynareroot '..' filesep 'preprocessor' filesep 'dynare-preprocessor" ' fname] ;
 command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
 % Properly quote arguments before passing them to the shell
 if ~isempty(varargin)

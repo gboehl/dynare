@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2019-2020 Dynare Team
+# Copyright © 2019-2021 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -90,6 +90,7 @@ make -j"$NTHREADS"
 NAME=dynare-"$VERSION"
 PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p \
+      "$PKGFILES"/preprocessor \
       "$PKGFILES"/mex/matlab/maci64-8.3-9.3 \
       "$PKGFILES"/mex/matlab/maci64-9.4-9.9 \
       "$PKGFILES"/mex/octave \
@@ -108,6 +109,12 @@ cp -p  "$ROOTDIR"/license.txt                                        "$PKGFILES"
 
 cp -pr "$ROOTDIR"/matlab                                             "$PKGFILES"
 cp -pr "$ROOTDIR"/examples                                           "$PKGFILES"
+
+cp -p  "$ROOTDIR"/preprocessor/src/dynare-preprocessor               "$PKGFILES"/preprocessor
+
+# Recreate backward-compatibility symlink
+rm -f "$ROOTDIR"/matlab/preprocessor64/dynare_m
+ln -sf ../../preprocessor/dynare-preprocessor                        "$PKGFILES"/matlab/preprocessor64/dynare_m
 
 cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-8.3-9.3
 

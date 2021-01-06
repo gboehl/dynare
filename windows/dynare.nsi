@@ -54,8 +54,8 @@ Section "Dynare core (preprocessor and M-files)"
  SetOutPath $INSTDIR\matlab
  File /r ..\matlab\*.m
 
- SetOutPath $INSTDIR\matlab\preprocessor64
- File ..\matlab\preprocessor64\dynare_m.exe
+ SetOutPath $INSTDIR\preprocessor
+ File ..\preprocessor\src\dynare-preprocessor.exe
 
  SetOutPath $INSTDIR\matlab\modules\dseries\externals\x13\windows\64
  File deps\lib64\x13as\x13as.exe
@@ -141,6 +141,7 @@ Section "Uninstall"
  Delete $INSTDIR\license.txt
  Delete $INSTDIR\VERSION
  Rmdir /r $INSTDIR\matlab
+ Rmdir /r $INSTDIR\preprocessor
  Rmdir /r $INSTDIR\contrib
  Rmdir /r $INSTDIR\mex
  Rmdir /r $INSTDIR\dynare++
