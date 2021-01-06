@@ -738,11 +738,6 @@ catch last_error% if check fails, provide info on using calibration if present
     rethrow(last_error);
 end
 
-if options_mom_.mode_compute == 0 %We only report value of moments distance at initial value of the parameters
-    fprintf('No minimization of moments distance due to ''mode_compute=0''\n')
-    return
-end
-
 % -------------------------------------------------------------------------
 % Step 7a: Method of moments estimation: print some info
 % -------------------------------------------------------------------------
@@ -760,27 +755,36 @@ end
 if options_mom_.mom.penalized_estimator
     fprintf('\n  - penalized estimation using deviation from prior mean and weighted with prior precision');
 end
-if     options_mom_.mode_compute ==   1; fprintf('\n  - optimizer (mode_compute=1): fmincon');
-elseif options_mom_.mode_compute ==   2; fprintf('\n  - optimizer (mode_compute=2): continuous simulated annealing');
-elseif options_mom_.mode_compute ==   3; fprintf('\n  - optimizer (mode_compute=3): fminunc');
-elseif options_mom_.mode_compute ==   4; fprintf('\n  - optimizer (mode_compute=4): csminwel');
-elseif options_mom_.mode_compute ==   5; fprintf('\n  - optimizer (mode_compute=5): newrat');
-elseif options_mom_.mode_compute ==   6; fprintf('\n  - optimizer (mode_compute=6): gmhmaxlik');
-elseif options_mom_.mode_compute ==   7; fprintf('\n  - optimizer (mode_compute=7): fminsearch');
-elseif options_mom_.mode_compute ==   8; fprintf('\n  - optimizer (mode_compute=8): Dynare Nelder-Mead simplex');
-elseif options_mom_.mode_compute ==   9; fprintf('\n  - optimizer (mode_compute=9): CMA-ES');
-elseif options_mom_.mode_compute ==  10; fprintf('\n  - optimizer (mode_compute=10): simpsa');
-elseif options_mom_.mode_compute ==  11; fprintf('\n  - optimizer (mode_compute=11): online_auxiliary_filter');
-elseif options_mom_.mode_compute ==  12; fprintf('\n  - optimizer (mode_compute=12): particleswarm');
-elseif options_mom_.mode_compute == 101; fprintf('\n  - optimizer (mode_compute=101): SolveOpt');
-elseif options_mom_.mode_compute == 102; fprintf('\n  - optimizer (mode_compute=102): simulannealbnd');
-elseif options_mom_.mode_compute ==  13; fprintf('\n  - optimizer (mode_compute=13): lsqnonlin');
-elseif ischar(minimizer_algorithm); fprintf(['\n  - user-defined optimizer: ' minimizer_algorithm]);
-else
-    error('method_of_moments: Unknown optimizer, please contact the developers ')
-end
-if options_mom_.silent_optimizer
-    fprintf(' (silent)');
+optimizer_vec=[options_mom_.mode_compute;num2cell(options_mom_.additional_optimizer_steps)]; % at each stage one can possibly use different optimizers sequentially
+for i = 1:length(optimizer_vec)
+    if i == 1
+        str = '- optimizer (mode_compute';
+    else
+        str = '            (additional_optimizer_steps';
+    end
+    if     optimizer_vec{i} ==   0; fprintf('\n  %s=0): no minimization',str);
+    elseif optimizer_vec{i} ==   1; fprintf('\n  %s=1): fmincon',str);
+    elseif optimizer_vec{i} ==   2; fprintf('\n  %s=2): continuous simulated annealing',str);
+    elseif optimizer_vec{i} ==   3; fprintf('\n  %s=3): fminunc',str);
+    elseif optimizer_vec{i} ==   4; fprintf('\n  %s=4): csminwel',str);
+    elseif optimizer_vec{i} ==   5; fprintf('\n  %s=5): newrat',str);
+    elseif optimizer_vec{i} ==   6; fprintf('\n  %s=6): gmhmaxlik',str);
+    elseif optimizer_vec{i} ==   7; fprintf('\n  %s=7): fminsearch',str);
+    elseif optimizer_vec{i} ==   8; fprintf('\n  %s=8): Dynare Nelder-Mead simplex',str);
+    elseif optimizer_vec{i} ==   9; fprintf('\n  %s=9): CMA-ES',str);
+    elseif optimizer_vec{i} ==  10; fprintf('\n  %s=10): simpsa',str);
+    elseif optimizer_vec{i} ==  11; fprintf('\n  %s=11): online_auxiliary_filter',str);
+    elseif optimizer_vec{i} ==  12; fprintf('\n  %s=12): particleswarm',str);
+    elseif optimizer_vec{i} == 101; fprintf('\n  %s=101): SolveOpt',str);
+    elseif optimizer_vec{i} == 102; fprintf('\n  %s=102): simulannealbnd',str);
+    elseif optimizer_vec{i} ==  13; fprintf('\n  %s=13): lsqnonlin',str);
+    elseif ischar(optimizer_vec{i});fprintf('\n  %s=%s): user-defined',str,optimizer_vec{i});
+    else
+        error('method_of_moments: Unknown optimizer, please contact the developers ')
+    end
+    if options_mom_.silent_optimizer
+        fprintf(' (silent)');
+    end
 end
 fprintf('\n  - perturbation order:        %d', options_mom_.order)
 if options_mom_.order > 1 && options_mom_.pruning
@@ -801,8 +805,6 @@ fprintf('\n\n');
 if size(options_mom_.mom.weighting_matrix,1)>1 && ~(any(strcmpi('diagonal',options_mom_.mom.weighting_matrix)) || any(strcmpi('optimal',options_mom_.mom.weighting_matrix)))
     fprintf('\nYou did not specify the use of an optimal or diagonal weighting matrix. There is no point in running an iterated method of moments.\n')
 end
-
-optimizer_vec=[options_mom_.mode_compute,options_mom_.additional_optimizer_steps]; % at each stage one can possibly use different optimizers sequentially
 
 for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
     fprintf('Estimation stage %u\n',stage_iter);
@@ -849,15 +851,20 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
     end
 
     for optim_iter= 1:length(optimizer_vec)
-        if optimizer_vec(optim_iter)==13
-            options_mom_.vector_output = true;
+        if optimizer_vec{optim_iter}==0
+            xparam1=xparam0; %no minimization, evaluate objective at current values
+            fval = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_);
         else
-            options_mom_.vector_output = false;
-        end
-        [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, optimizer_vec(optim_iter), options_mom_, [Bounds.lb Bounds.ub], bayestopt_laplace.name, bayestopt_laplace, [],...
-                                                              Bounds, oo_, estim_params_, M_, options_mom_);
-        if options_mom_.vector_output
-            fval = fval'*fval;
+            if optimizer_vec{optim_iter}==13
+                options_mom_.vector_output = true;
+            else
+                options_mom_.vector_output = false;
+            end
+            [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_laplace.name, bayestopt_laplace, [],...
+                                                                  Bounds, oo_, estim_params_, M_, options_mom_);
+            if options_mom_.vector_output
+                fval = fval'*fval;
+            end
         end
         fprintf('\nStage %d Iteration %d: value of minimized moment distance objective function: %12.10f.\n',stage_iter,optim_iter,fval)
         if options_mom_.mom.verbose
