@@ -1,7 +1,7 @@
 function labels=get_labels_transformed_vars(endo_names,var_indices,options_,TeX)
 % function labels=get_labels_transformed_vars(endo_names,var_indices,options_,TeX)
-% This function displays the conditional variance decomposition of a given state space model
-% for a subset of endogenous variables.
+% This function provides the variable labels for table outputs in case of
+% applied transformations like logs
 %
 % INPUTS
 %   endo_names          [cell]        cell array of variable names
