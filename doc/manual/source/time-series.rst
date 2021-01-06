@@ -85,44 +85,42 @@ below. Basic operations can be performed on dates:
     Tests if two ``dates`` objects are equal. ``+1950Q1==1950Q2``
     returns ``true``, ``1950Q1==1950Q2`` returns ``false``. If the compared
     objects have both ``n>1`` elements, the ``eq`` operator returns a
-    column vector, ``n`` by ``1``, of zeros and ones.
+    column vector, ``n`` by ``1``, of logicals.
 
 **ne operator (not equal, ~=)**
 
     Tests if two ``dates`` objects are not equal. ``+1950Q1~=``
     returns ``false`` while ``1950Q1~=1950Q2`` returns ``true``. If the
     compared objects both have ``n>1`` elements, the ``ne`` operator
-    returns an ``n`` by ``1`` column vector of zeros and ones.
+    returns an ``n`` by ``1`` column vector of logicals.
 
 **lt operator (less than, <)**
 
     Tests if a ``dates`` object preceeds another ``dates`` object. For
     instance, ``1950Q1<1950Q3`` returns ``true``. If the compared objects
     have both ``n>1`` elements, the ``lt`` operator returns a column
-    vector, ``n`` by ``1``, of zeros and ones.
+    vector, ``n`` by ``1``, of logicals.
 
 **gt operator (greater than, >)**
 
     Tests if a ``dates`` object follows another ``dates`` object. For
     instance, ``1950Q1>1950Q3`` returns ``false``. If the compared objects
     have both ``n>1`` elements, the ``gt`` operator returns a column
-    vector, ``n`` by ``1``, of zeros and ones.
+    vector, ``n`` by ``1``, of logicals.
 
 **le operator (less or equal, <=)**
 
     Tests if a ``dates`` object preceeds another ``dates`` object or
     is equal to this object. For instance, ``1950Q1<=1950Q3`` returns
     ``true``. If the compared objects have both ``n>1`` elements, the
-    ``le`` operator returns a column vector, ``n`` by ``1``, of zeros
-    and ones.
+    ``le`` operator returns a column vector, ``n`` by ``1``, of logicals.
 
 **ge operator (greater or equal, >=)**
 
     Tests if a ``dates`` object follows another ``dates`` object or is
     equal to this object. For instance, ``1950Q1>=1950Q3`` returns
     ``false``. If the compared objects have both ``n>1`` elements, the
-    ``ge`` operator returns a column vector, ``n`` by ``1``, of zeros
-    and ones.
+    ``ge`` operator returns a column vector, ``n`` by ``1``, of logicals.
 
 One can select an element, or some elements, in a ``dates`` object as
 he would extract some elements from a vector in MATLAB/Octave. Let ``a
