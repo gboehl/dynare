@@ -164,8 +164,7 @@ The dates class
 
     :arg int freq: equal to 1, 4, or 12 (resp. for annual,
                    quarterly, or monthly dates).
-    :arg int ndat: the number of declared dates in the object.
-    :arg int time: a ``ndat*2`` array, the years are stored in the
+    :arg int time: a ``n*2`` array, the years are stored in the
                    first column, the subperiods (1 for annual dates,
                    1-4 for quarterly dates, and 1-12 for monthly
                    dates) are stored in the second column.
