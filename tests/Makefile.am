@@ -50,10 +50,13 @@ MODFILES = \
 	estimation/MH_recover/fs2000_recover_3.mod \
 	estimation/t_proposal/fs2000_student.mod \
 	estimation/tune_mh_jscale/fs2000.mod \
-	estimation/method_of_moments/AnScho_MoM.mod \
-	estimation/method_of_moments/RBC_MoM_Andreasen.mod \
-	estimation/method_of_moments/RBC_MoM_SMM_ME.mod \
-	estimation/method_of_moments/RBC_MoM_prefilter.mod \
+	estimation/method_of_moments/AnScho/AnScho_MoM.mod \
+	estimation/method_of_moments/RBC/RBC_MoM_Andreasen.mod \
+	estimation/method_of_moments/RBC/RBC_MoM_SMM_ME.mod \
+	estimation/method_of_moments/RBC/RBC_MoM_prefilter.mod \
+	estimation/method_of_moments/AFVRR/AFVRR_M0.mod \
+	estimation/method_of_moments/AFVRR/AFVRR_MFB.mod \
+	estimation/method_of_moments/AFVRR/AFVRR_MFB_RRA.mod \
 	moments/example1_var_decomp.mod \
 	moments/example1_bp_test.mod \
 	moments/test_AR1_spectral_density.mod \
@@ -835,6 +838,10 @@ particle: m/particle o/particle
 m/particle: $(patsubst %.mod, %.m.trs, $(PARTICLEFILES))
 o/particle: $(patsubst %.mod, %.o.trs, $(PARTICLEFILES))
 
+method_of_moments: m/method_of_moments o/method_of_moments
+m/method_of_moments: $(patsubst %.mod, %.m.trs, $(filter estimation/method_of_moments/%.mod, $(MODFILES)))
+o/method_of_moments: $(patsubst %.mod, %.o.trs, $(filter estimation/method_of_moments/%.mod, $(MODFILES)))
+
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
 M_TRS_FILES += 	run_block_byte_tests_matlab.m.trs \
@@ -984,8 +991,10 @@ EXTRA_DIST = \
 	lmmcp/sw-common-header.inc \
 	lmmcp/sw-common-footer.inc \
 	estimation/tune_mh_jscale/fs2000.inc \
-	estimation/method_of_moments/RBC_MoM_common.inc \
-	estimation/method_of_moments/RBC_MoM_steady_helper.m \
+	estimation/method_of_moments/RBC/RBC_MoM_common.inc \
+	estimation/method_of_moments/RBC/RBC_MoM_steady_helper.m \
+	estimation/method_of_moments/AFVRR/AFVRR_common.inc \
+	estimation/method_of_moments/AFVRR/AFVRR_steady_helper.m \
 	histval_initval_file_unit_tests.m \
 	histval_initval_file/my_assert.m \
 	histval_initval_file/ramst_data.xls \
