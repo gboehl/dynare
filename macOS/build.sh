@@ -71,6 +71,8 @@ cd "$ROOTDIR"
   CXX=$CXX \
   CPPFLAGS=-I/usr/local/include \
   LDFLAGS=-static-libgcc \
+  LEX=/usr/local/opt/flex/bin/flex \
+  YACC=/usr/local/opt/bison/bin/bison \
   --with-gsl="$LIB64"/gsl \
   --with-matio="$LIB64"/matio \
   --with-slicot="$LIB64"/Slicot/with-underscore \
