@@ -92,6 +92,7 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 % - [ ] SMM with extended path
 % - [ ] deal with measurement errors (once @wmutschl has implemented this in identification toolbox)
 % - [ ] improve check for duplicate moments by using the cellfun and unique functions
+% - [ ] dirname option to save output to different directory not yet implemented
 % -------------------------------------------------------------------------
 % Step 0: Check if required structures and options exist
 % -------------------------------------------------------------------------
@@ -133,9 +134,9 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     options_mom_.mom = set_default_option(options_mom_.mom,'bartlett_kernel_lag',20);               % bandwith in optimal weighting matrix
     options_mom_.mom = set_default_option(options_mom_.mom,'penalized_estimator',false);            % include deviation from prior mean as additional moment restriction and use prior precision as weight
     options_mom_.mom = set_default_option(options_mom_.mom,'verbose',false);                        % display and store intermediate estimation results
-    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix',{'DIAGONAL'; 'DIAGONAL'});   % weighting matrix in moments distance objective function at each iteration of estimation; cell of strings with
+    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix',{'DIAGONAL'; 'DIAGONAL'});   % weighting matrix in moments distance objective function at each iteration of estimation;
                                                                                                            % possible values are 'OPTIMAL', 'IDENTITY_MATRIX' ,'DIAGONAL' or a filename. Size of cell determines stages in iterated estimation.
-    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix_scaling_factor',1);    % scaling of weighting matrix
+    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix_scaling_factor',1);    % scaling of weighting matrix in objective function
     options_mom_.mom = set_default_option(options_mom_.mom,'se_tolx',1e-5);                         % step size for numerical computation of standard errors
     options_mom_ = set_default_option(options_mom_,'order',1);                                      % order of Taylor approximation in perturbation
     options_mom_ = set_default_option(options_mom_,'pruning',false);                                % use pruned state space system at higher-order
@@ -169,6 +170,7 @@ options_mom_.mom.compute_derivs = false;% flag to compute derivs in objective fu
 
     
 % General options that can be set by the user in the mod file, otherwise default values are provided
+options_mom_ = set_default_option(options_mom_,'dirname',M_.dname);    % specify directory in which to store estimation output [not yet working]
 options_mom_ = set_default_option(options_mom_,'graph_format','eps');  % specify the file format(s) for graphs saved to disk
 options_mom_ = set_default_option(options_mom_,'nodisplay',false);     % do not display the graphs, but still save them to disk
 options_mom_ = set_default_option(options_mom_,'nograph',false);       % do not create graphs (which implies that they are not saved to the disk nor displayed)
@@ -200,7 +202,7 @@ options_mom_ = set_default_option(options_mom_,'optim_opt',[]);                 
 options_mom_ = set_default_option(options_mom_,'silent_optimizer',false);        % run minimization of moments distance silently without displaying results or saving files in between
 % Check plot options that can be set by the user in the mod file, otherwise default values are provided
 options_mom_.mode_check.nolik = false;                                                          % we don't do likelihood (also this initializes mode_check substructure)
-options_mom_.mode_check = set_default_option(options_mom_.mode_check,'status',false);            % plot the target function for values around the computed minimum for each estimated parameter in turn. This is helpful to diagnose problems with the optimizer.
+options_mom_.mode_check = set_default_option(options_mom_.mode_check,'status',false);           % plot the target function for values around the computed minimum for each estimated parameter in turn. This is helpful to diagnose problems with the optimizer.
 options_mom_.mode_check = set_default_option(options_mom_.mode_check,'neighbourhood_size',.5);  % width of the window around the computed minimum to be displayed on the diagnostic plots. This width is expressed in percentage deviation. The Inf value is allowed, and will trigger a plot over the entire domain
 options_mom_.mode_check = set_default_option(options_mom_.mode_check,'symmetric_plots',true);   % ensure that the check plots are symmetric around the minimum. A value of 0 allows to have asymmetric plots, which can be useful if the minimum is close to a domain boundary, or in conjunction with neighbourhood_size = Inf when the domain is not the entire real line
 options_mom_.mode_check = set_default_option(options_mom_.mode_check,'number_of_points',20);    % number of points around the minimum where the target function is evaluated (for each parameter)
@@ -762,25 +764,45 @@ for i = 1:length(optimizer_vec)
     else
         str = '            (additional_optimizer_steps';
     end
-    if     optimizer_vec{i} ==   0; fprintf('\n  %s=0): no minimization',str);
-    elseif optimizer_vec{i} ==   1; fprintf('\n  %s=1): fmincon',str);
-    elseif optimizer_vec{i} ==   2; fprintf('\n  %s=2): continuous simulated annealing',str);
-    elseif optimizer_vec{i} ==   3; fprintf('\n  %s=3): fminunc',str);
-    elseif optimizer_vec{i} ==   4; fprintf('\n  %s=4): csminwel',str);
-    elseif optimizer_vec{i} ==   5; fprintf('\n  %s=5): newrat',str);
-    elseif optimizer_vec{i} ==   6; fprintf('\n  %s=6): gmhmaxlik',str);
-    elseif optimizer_vec{i} ==   7; fprintf('\n  %s=7): fminsearch',str);
-    elseif optimizer_vec{i} ==   8; fprintf('\n  %s=8): Dynare Nelder-Mead simplex',str);
-    elseif optimizer_vec{i} ==   9; fprintf('\n  %s=9): CMA-ES',str);
-    elseif optimizer_vec{i} ==  10; fprintf('\n  %s=10): simpsa',str);
-    elseif optimizer_vec{i} ==  11; fprintf('\n  %s=11): online_auxiliary_filter',str);
-    elseif optimizer_vec{i} ==  12; fprintf('\n  %s=12): particleswarm',str);
-    elseif optimizer_vec{i} == 101; fprintf('\n  %s=101): SolveOpt',str);
-    elseif optimizer_vec{i} == 102; fprintf('\n  %s=102): simulannealbnd',str);
-    elseif optimizer_vec{i} ==  13; fprintf('\n  %s=13): lsqnonlin',str);
-    elseif ischar(optimizer_vec{i});fprintf('\n  %s=%s): user-defined',str,optimizer_vec{i});
-    else
-        error('method_of_moments: Unknown optimizer, please contact the developers ')
+    switch optimizer_vec{i}
+        case 0
+            fprintf('\n  %s=0): no minimization',str);
+        case 1
+            fprintf('\n  %s=1): fmincon',str);
+        case 2
+            fprintf('\n  %s=2): continuous simulated annealing',str);
+        case 3
+            fprintf('\n  %s=3): fminunc',str);
+        case 4
+            fprintf('\n  %s=4): csminwel',str);
+        case 5
+            fprintf('\n  %s=5): newrat',str);
+        case 6
+            fprintf('\n  %s=6): gmhmaxlik',str);
+        case 7
+            fprintf('\n  %s=7): fminsearch',str);
+        case 8
+            fprintf('\n  %s=8): Dynare Nelder-Mead simplex',str);
+        case 9
+            fprintf('\n  %s=9): CMA-ES',str);
+        case 10
+            fprintf('\n  %s=10): simpsa',str);
+        case 11
+            fprintf('\n  %s=11): online_auxiliary_filter',str);
+        case 12
+            fprintf('\n  %s=12): particleswarm',str);
+        case 101
+            fprintf('\n  %s=101): SolveOpt',str);
+        case 102
+            fprintf('\n  %s=102): simulannealbnd',str);
+        case 13
+            fprintf('\n  %s=13): lsqnonlin',str);
+        otherwise
+            if ischar(optimizer_vec{i})
+                fprintf('\n  %s=%s): user-defined',str,optimizer_vec{i});
+            else
+                error('method_of_moments: Unknown optimizer, please contact the developers ')
+            end
     end
     if options_mom_.silent_optimizer
         fprintf(' (silent)');
