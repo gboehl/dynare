@@ -54,6 +54,7 @@ MODFILES = \
 	estimation/method_of_moments/RBC/RBC_MoM_Andreasen.mod \
 	estimation/method_of_moments/RBC/RBC_MoM_SMM_ME.mod \
 	estimation/method_of_moments/RBC/RBC_MoM_prefilter.mod \
+	estimation/method_of_moments/RBC/RBC_MoM_optimizer.mod \
 	estimation/method_of_moments/AFVRR/AFVRR_M0.mod \
 	estimation/method_of_moments/AFVRR/AFVRR_MFB.mod \
 	estimation/method_of_moments/AFVRR/AFVRR_MFB_RRA.mod \
