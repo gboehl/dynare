@@ -1,6 +1,6 @@
 % Tests SMM and GMM routines with prefilter, explicit initialization, and estimated_params_init(use_calibration);
 %
-% Copyright (C) 2020 Dynare Team
+% Copyright (C) 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

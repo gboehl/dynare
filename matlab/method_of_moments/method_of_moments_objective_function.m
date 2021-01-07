@@ -31,7 +31,7 @@ function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_o
 %  o resol
 %  o set_all_parameters
 % =========================================================================
-% Copyright (C) 2020 Dynare Team
+% Copyright (C) 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

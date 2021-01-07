@@ -2,7 +2,7 @@
 % An, Sungbae and Schorfheide, Frank, (2007), Bayesian Analysis of DSGE Models, Econometric Reviews, 26, issue 2-4, p. 113-172.
 % Adapted by Willi Mutschler (@wmutschl, willi@mutschler.eu)
 % =========================================================================
-% Copyright (C) 2020 Dynare Team
+% Copyright (C) 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

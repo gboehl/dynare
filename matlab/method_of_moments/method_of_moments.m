@@ -63,7 +63,7 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 %  o set_all_parameters.m
 %  o test_for_deep_parameters_calibration.m
 % =========================================================================
-% Copyright (C) 2020 Dynare Team
+% Copyright (C) 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -16,7 +16,7 @@ function [dataMoments, m_data] = method_of_moments_data_moments(data, oo_, match
 %  o method_of_moments.m
 %  o method_of_moments_objective_function.m
 % =========================================================================
-% Copyright (C) 2020 Dynare Team
+% Copyright (C) 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
