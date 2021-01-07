@@ -442,7 +442,7 @@ autoreconf -si
 ```
 - Configure Dynare from the source directory:
 ```sh
-./configure --with-matlab=<…> CC=gcc-10 CXX=g++-10 CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib` LEX=/usr/local/opt/flex/bin/flex YACC=/usr/local/opt/bison/bin/bison'
+./configure --with-matlab=<…> CC=gcc-10 CXX=g++-10 CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib LEX=/usr/local/opt/flex/bin/flex YACC=/usr/local/opt/bison/bin/bison
 ```
 where the path to MATLAB is specified, typically of the form
 `/Applications/MATLAB_R2020b.app`. If you don’t have MATLAB, simply replace
