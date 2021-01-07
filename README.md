@@ -348,5 +348,5 @@ folder where you want Dynare installed.
 - `make -j`
 - **(Optional)** To then build mex files for Octave, run
      - `cd mex/build/octave`
-     - `CC=gcc-9 CXX=g++-9 ./configure --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local LDFLAGS=-L/usr/local/lib`
+     - `CC=gcc-9 CXX=g++-9 ./configure --with-matio=/usr/local --with-gsl=/usr/local --with-slicot=/usr/local LDFLAGS=-L/usr/local/lib LEX=/usr/local/opt/flex/bin/flex YACC=/usr/local/opt/bison/bin/bison`
      - `make -j`
