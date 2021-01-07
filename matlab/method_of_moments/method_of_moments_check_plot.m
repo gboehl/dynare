@@ -2,7 +2,7 @@ function method_of_moments_check_plot(fun,xparam,SE_vec,options_,M_,estim_params
 % Checks the estimated local minimum of the moment's distance objective
 
 
-% Copyright (C) 2020 Dynare Team
+% Copyright (C) 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

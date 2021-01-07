@@ -29,7 +29,7 @@ function [SE_values, Asympt_Var] = method_of_moments_standard_errors(xparam, obj
 %  o SMM_objective_function.m
 %  o method_of_moments_optimal_weighting_matrix  
 % =========================================================================
-% Copyright (C) 2020 Dynare Team
+% Copyright (C) 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
