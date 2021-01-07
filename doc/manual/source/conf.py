@@ -93,5 +93,5 @@ man_pages = [
 def setup(app):
     from dynare_dom import DynareDomain
     from dynare_lex import DynareLexer
-    app.add_lexer("dynare", DynareLexer())
+    app.add_lexer("dynare",DynareLexer)
     app.add_domain(DynareDomain)
