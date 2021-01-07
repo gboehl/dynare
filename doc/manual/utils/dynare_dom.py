@@ -121,6 +121,8 @@ class DynObject(ObjectDescription):
             return _('%s (dates method)') % name
         elif self.objtype == 'dseriesmethod':
             return _('%s (dseries method)') % name
+        elif self.objtype == 'x13method':
+            return _('%s (x13 method)') % name
         elif self.objtype == 'reportingmethod':
             return _('%s (reporting method)') % name
         elif self.objtype == 'matcomm':
@@ -173,6 +175,10 @@ class DatesMethod(DynCallable):
     allow_nesting = True
 
 class DseriesMethod(DynCallable):
+    display_prefix = 'Method: '
+    allow_nesting = True
+
+class X13Method(DynCallable):
     display_prefix = 'Method: '
     allow_nesting = True
 
@@ -294,7 +300,8 @@ class DynareDomain(Domain):
     'function':          ObjType(_('function'),         'func'),
     'datesmethod':       ObjType(_('method'),           'datmeth'),
     'dseriesmethod':     ObjType(_('method'),           'dsermeth'),
-    'reportingmethod':   ObjType(_('method'),       'repmeth'),
+    'x13method':         ObjType(_('method'),           'x13meth'),
+    'reportingmethod':   ObjType(_('method'),           'repmeth'),
     'matcomm':           ObjType(_('matlab command'),   'mcomm'),
     'command':           ObjType(_('command'),          'comm'),
     'class':             ObjType(_('class'),            'class'),
@@ -312,6 +319,7 @@ class DynareDomain(Domain):
     'function':          DynFunction,
     'datesmethod':       DatesMethod,
     'dseriesmethod':     DseriesMethod,
+    'x13method':         X13Method,
     'reportingmethod':   ReportingMethod,
     'matcomm':           MatComm,
     'command':           DynComm,
@@ -330,6 +338,7 @@ class DynareDomain(Domain):
     'func':     DynareXRefRole(),
     'datmeth':  DynareXRefRole(),
     'dsermeth': DynareXRefRole(),
+    'x13meth':  DynareXRefRole(),
     'repmeth':  DynareXRefRole(),
     'mcomm':    DynareXRefRole(),
     'comm':     DynareXRefRole(),
