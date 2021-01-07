@@ -171,7 +171,7 @@ end
 
 % Handle all endogenous variables to be copied
 for i = 1:length(invars)
-    if isempty(strmatch(invars{i}, M_.endo_names))
+    if isempty(strmatch(invars{i}, M_.endo_names, 'exact'))
         % Skip exogenous
         continue
     end
