@@ -76,6 +76,7 @@ if [[ -z $CI ]]; then
     make -j"$NTHREADS" pdf html
 fi
 make -j"$NTHREADS"
+x86_64-w64-mingw32-strip preprocessor/src/dynare-preprocessor.exe
 x86_64-w64-mingw32-strip matlab/preprocessor64/dynare_m.exe
 x86_64-w64-mingw32-strip dynare++/src/dynare++.exe
 
@@ -195,6 +196,8 @@ cp -pr contrib/jsonlab/* "$ZIPDIR"/contrib/jsonlab
 mkdir "$ZIPDIR"/mex
 cp -pr mex/octave/ "$ZIPDIR"/mex
 cp -pr mex/matlab/ "$ZIPDIR"/mex
+mkdir "$ZIPDIR"/preprocessor
+cp -p preprocessor/src/dynare-preprocessor.exe "$ZIPDIR"/preprocessor
 cp -pr matlab "$ZIPDIR"
 mkdir -p "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
 cp -p windows/deps/lib64/x13as/x13as.exe "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
