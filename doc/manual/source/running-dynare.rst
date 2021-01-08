@@ -191,10 +191,10 @@ by the ``dynare`` command.
         Instructs Dynare to no create a logfile of this run in
         ``FILENAME.log.`` The default is to create the logfile.
 
-    .. option:: output=dynamic|first|second|third
+    .. option:: output=second|third
 
-       Instructs the preprocessor to output derivatives at the given
-       order. Only works when ``language=julia`` has been passed.
+       Instructs the preprocessor to output derivatives of the dynamic model at
+       least up to the given order.
 
     .. option:: language=matlab|julia
 
