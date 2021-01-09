@@ -81,7 +81,7 @@ end
 
 if info(1) == 0
     if ~options_.noprint
-        disp_steady_state(M_,oo_);
+        disp_steady_state(M_,oo_,options_);
     end
 else
     if ~options_.noprint

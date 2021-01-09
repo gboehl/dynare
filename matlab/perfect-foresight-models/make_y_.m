@@ -57,7 +57,7 @@ if isempty(oo_.initval_series)
     end
 else
     y = oo_.initval_series{M_.endo_names{:}}.data;
-    oo_.endo_simul = y(1:M_.maximum_lag + options_.periods + ...
+    oo_.endo_simul = y(M_.orig_maximum_lag - M_.maximum_lag + 1:M_.orig_maximum_lag + options_.periods + ...
                        M_.maximum_lead, :)';
     if ~isempty(M_.endo_histval)
         if ~isempty(ys0_)

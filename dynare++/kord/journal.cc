@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -203,8 +203,8 @@ Journal::printHeader()
   *this << "Dynare++ v. " << VERSION << '\n'
         << '\n'
         << u8"Copyright © 2004-2011 Ondra Kamenik\n"
-        << u8"Copyright © 2019 Dynare Team\n"
-        << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under the GNU GPL,"
+        << u8"Copyright © 2019-2020 Dynare Team\n"
+        << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under the GNU GPL,\n"
         << "version 3 or later (see https://www.gnu.org/licenses/gpl.html)\n"
         << "\n\n"
         << "System info: ";
@@ -219,7 +219,15 @@ Journal::printHeader()
   *this << ", processors online: " << std::thread::hardware_concurrency()
         << "\n\nStart time: ";
   std::time_t t = std::time(nullptr);
-  *this << std::put_time(std::localtime(&t), "%c %Z")
+  // NB: in the date/time string, we avoid using locale-specific strings (#1751)
+  *this << std::put_time(std::localtime(&t),
+#ifndef _WIN32
+                         "%F %T %z"
+#else
+                         // Specifiers introduced in C++11 don’t work under Windows…
+                         "%Y-%m-%d %H:%M:%S"
+#endif
+                         )
         << "\n\n"
         << u8"  ┌────╼ elapsed time (seconds)                     \n"
         << u8"  │       ┌────╼ record unique identifier           \n"

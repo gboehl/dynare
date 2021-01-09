@@ -16,7 +16,7 @@ function dynare(fname, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2020 Dynare Team
+% Copyright (C) 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -184,16 +184,14 @@ nolog = ismember('nolog', varargin) || ismember('nolog', file_opts);
 onlymacro = ismember('onlymacro', varargin) || ismember('onlymacro', file_opts);
 onlyjson = ismember('onlyjson', varargin) || ismember('onlyjson', file_opts);
 
-if ispc
-    arch = getenv('PROCESSOR_ARCHITECTURE');
-else
-    [~, arch] = system('uname -m');
-end
-
-if isempty(strfind(arch, '64'))
-    arch_ext = '32';
-else
-    arch_ext = '64';
+% Start journal
+diary off
+if ~nolog
+    logfile = [ fname(1:end-4) '.log' ];
+    if exist(logfile, 'file')
+        delete(logfile)
+    end
+    diary(logfile)
 end
 
 if preprocessoroutput
@@ -206,7 +204,7 @@ if preprocessoroutput
     end
 end
 
-command = ['"' dynareroot 'preprocessor' arch_ext filesep 'dynare_m" ' fname] ;
+command = ['"' dynareroot '..' filesep 'preprocessor' filesep 'dynare-preprocessor" ' fname] ;
 command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
 % Properly quote arguments before passing them to the shell
 if ~isempty(varargin)
@@ -265,15 +263,8 @@ if exist(fname(1:end-4),'dir') && exist([fname(1:end-4) filesep 'hooks'],'dir') 
     run([fname(1:end-4) filesep 'hooks/postprocessing'])
 end
 
-% Save preprocessor result in logfile (if `no_log' option not present)
-if ~nolog
-    logname = [fname(1:end-4) '.log'];
-    fid = fopen(logname, 'w');
-    fprintf(fid, '%s', result);
-    fclose(fid);
-end
-
 if status
+    diary off
     % Should not use "error(result)" since message will be truncated if too long
     error('Dynare: preprocessing failed')
 end
@@ -286,7 +277,14 @@ end
 % within the driver will clean the rest)
 clear(['+' fname '/driver'])
 
-evalin('base',[fname '.driver']) ;
+try
+    evalin('base',[fname '.driver']) ;
+catch ME
+    diary off
+    rethrow(ME)
+end
+
+diary off
 
 end
 

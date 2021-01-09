@@ -122,7 +122,7 @@ switch info(1)
     case 64
         message = 'discretionary_policy: the derivatives of the objective function contain NaN.';
     case 65
-        message = 'discretionary_policy: the model must be written in deviation form and not have constant terms.';
+        message = 'discretionary_policy: the model must be written in deviation form and not have constant terms or an analytical steady state meeds to be provided.';
     case 66
         message = 'discretionary_policy: the objective function must have zero first order derivatives.';
     case 71

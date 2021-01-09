@@ -36,15 +36,16 @@ options_.discretionary_policy = 1;
 options_.order = 1;
 [info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list);
 
+oo_.steady_state = oo_.dr.ys;
+
 if ~options_.noprint
-    disp_steady_state(M_,oo_)
+    disp_steady_state(M_,oo_,options_)
     for i=M_.orig_endo_nbr:M_.endo_nbr
         if strmatch('mult_', M_.endo_names{i})
             fprintf('%s \t\t %g\n', M_.endo_names{i}, oo_.dr.ys(i));
         end
     end
 end
-
 oo_.planner_objective_value = evaluate_planner_objective(M_,options_,oo_);
 
 options_.order = origorder;

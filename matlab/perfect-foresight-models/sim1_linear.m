@@ -38,7 +38,7 @@ function [endogenousvariables, info] = sim1_linear(endogenousvariables, exogenou
 % to center the variables around the deterministic steady state to solve the
 % perfect foresight model.
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -159,16 +159,9 @@ for it = (maximum_lag+1):(maximum_lag+periods)
         nv = length(vv);
         iA(iv+m,:) = [i_rows(rr),i_cols_A(cc),vv];
     end
-    if M.maximum_exo_lag > 0
-        % needed as jacobian for lagged exogenous variables is wrong
-        % in current version of Dynare
-        zz = Y(i_cols);
-        res(i_rows) = dynamicmodel(zz, exogenousvariables, params, steadystate_y, it);
-    else
-        z(jendo) = Y(i_cols);
-        z(jexog) = transpose(exogenousvariables(it,:));
-        res(i_rows) = jacobian*z;
-    end
+    z(jendo) = Y(i_cols);
+    z(jexog) = transpose(exogenousvariables(it,:));
+    res(i_rows) = jacobian*z;
     m = m + nv;
     i_rows = i_rows + ny;
     i_cols = i_cols + ny;

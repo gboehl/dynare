@@ -791,7 +791,7 @@ if DynareOptions.endogenous_prior==1
     if DynareOptions.lik_init==2 || DynareOptions.lik_init==3
         error('Endogenous prior not supported with non-stationary models')
     else
-        [lnpriormom]  = endogenous_prior(Y,Pstar,BayesInfo,H);
+        [lnpriormom]  = endogenous_prior(Y,DatasetInfo,Pstar,BayesInfo,H);
         fval    = (likelihood-lnprior-lnpriormom);
     end
 else

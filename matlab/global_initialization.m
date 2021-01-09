@@ -144,11 +144,6 @@ dyn_first_order_solver();
 % Set dynare random generator and seed.
 set_dynare_seed('default');
 
-
-% Create directories
-[~,~]=mkdir(M_.fname);
-[~,~]=mkdir([M_.fname filesep 'Output']);
-
 % Load user configuration file.
 if isfield(options_, 'global_init_file')
     if isfile(options_.global_init_file)

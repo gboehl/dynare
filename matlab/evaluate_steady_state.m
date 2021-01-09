@@ -309,12 +309,22 @@ if M.static_and_dynamic_models_differ
     if options.bytecode
         [r, ~]= bytecode('dynamic','evaluate', z, zx, params, ys, 1);
     elseif options.block
-        [r, oo.dr] = feval([M.fname '.dynamic'], z', zx, params, ys, M.maximum_lag+1, oo.dr);
+        T=NaN(M.block_structure.dyn_tmp_nbr, 1);
+        for i = 1:length(M.block_structure.block)
+            [rr, yy, T, g] = feval([M.fname '.dynamic'], i, ...
+                                   dynvars_from_endo_simul(z, M.maximum_lag+1, M), ...
+                                   zx, params, ys, T, M.maximum_lag+1, false);
+            if M.block_structure.block(i).Simulation_Type == 1 || ... % evaluateForward
+               M.block_structure.block(i).Simulation_Type == 2        % evaluateBackward
+                vidx = M.block_structure.block(i).variable;
+                rr = yy(M.lead_lag_incidence(M.maximum_endo_lag+1, vidx)) - oo.steady_state(vidx);
+            end
+            idx = M.block_structure.block(i).equation;
+            r(idx) = rr;
+        end
     else
-        iyv = M.lead_lag_incidence';
-        iyr0 = find(iyv(:));
-        xys = z(iyr0);
-        r = feval([M.fname '.dynamic'], z(iyr0), zx, params, ys, M.maximum_lag + 1);
+        r = feval([M.fname '.dynamic'], dynvars_from_endo_simul(z, M.maximum_lag+1, M), ...
+                  zx, params, ys, M.maximum_lag + 1);
     end
     % Fail if residual greater than tolerance
     if max(abs(r)) > options.solve_tolf

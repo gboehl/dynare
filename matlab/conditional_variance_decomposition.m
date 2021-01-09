@@ -89,7 +89,7 @@ end
 % Measurement error
 
 if ~all(diag(StateSpaceModel.measurement_error)==0)
-    if isoctave
+    if isoctave && octave_ver_less_than('6')
         [observable_pos,index_subset,index_observables]=intersect_stable(SubsetOfVariables,StateSpaceModel.observable_pos);
     else
         [observable_pos,index_subset,index_observables]=intersect(SubsetOfVariables,StateSpaceModel.observable_pos,'stable');

@@ -10,10 +10,12 @@ Time Series
 
 Dynare provides a MATLAB/Octave class for handling time series data,
 which is based on a class for handling dates. Dynare also provides a
-new type for dates, so that the basic user does not have to worry
-about class and methods for dates. Below, you will first find the
-class and methods used for creating and dealing with dates and then
-the class used for using time series.
+new type for dates, so that the user does not have to worry about
+class and methods for dates. Below, you will first find the class and
+methods used for creating and dealing with dates and then the class
+used for using time series. Dynare also provides an interface to the
+X-13 ARIMA-SEATS seasonal adjustment program produced, distributed, and
+maintained by the US Census Bureau.
 
 
 Dates
@@ -85,44 +87,42 @@ below. Basic operations can be performed on dates:
     Tests if two ``dates`` objects are equal. ``+1950Q1==1950Q2``
     returns ``true``, ``1950Q1==1950Q2`` returns ``false``. If the compared
     objects have both ``n>1`` elements, the ``eq`` operator returns a
-    column vector, ``n`` by ``1``, of zeros and ones.
+    column vector, ``n`` by ``1``, of logicals.
 
 **ne operator (not equal, ~=)**
 
     Tests if two ``dates`` objects are not equal. ``+1950Q1~=``
     returns ``false`` while ``1950Q1~=1950Q2`` returns ``true``. If the
     compared objects both have ``n>1`` elements, the ``ne`` operator
-    returns an ``n`` by ``1`` column vector of zeros and ones.
+    returns an ``n`` by ``1`` column vector of logicals.
 
 **lt operator (less than, <)**
 
     Tests if a ``dates`` object preceeds another ``dates`` object. For
     instance, ``1950Q1<1950Q3`` returns ``true``. If the compared objects
     have both ``n>1`` elements, the ``lt`` operator returns a column
-    vector, ``n`` by ``1``, of zeros and ones.
+    vector, ``n`` by ``1``, of logicals.
 
 **gt operator (greater than, >)**
 
     Tests if a ``dates`` object follows another ``dates`` object. For
     instance, ``1950Q1>1950Q3`` returns ``false``. If the compared objects
     have both ``n>1`` elements, the ``gt`` operator returns a column
-    vector, ``n`` by ``1``, of zeros and ones.
+    vector, ``n`` by ``1``, of logicals.
 
 **le operator (less or equal, <=)**
 
     Tests if a ``dates`` object preceeds another ``dates`` object or
     is equal to this object. For instance, ``1950Q1<=1950Q3`` returns
     ``true``. If the compared objects have both ``n>1`` elements, the
-    ``le`` operator returns a column vector, ``n`` by ``1``, of zeros
-    and ones.
+    ``le`` operator returns a column vector, ``n`` by ``1``, of logicals.
 
 **ge operator (greater or equal, >=)**
 
     Tests if a ``dates`` object follows another ``dates`` object or is
     equal to this object. For instance, ``1950Q1>=1950Q3`` returns
     ``false``. If the compared objects have both ``n>1`` elements, the
-    ``ge`` operator returns a column vector, ``n`` by ``1``, of zeros
-    and ones.
+    ``ge`` operator returns a column vector, ``n`` by ``1``, of logicals.
 
 One can select an element, or some elements, in a ``dates`` object as
 he would extract some elements from a vector in MATLAB/Octave. Let ``a
@@ -164,13 +164,15 @@ The dates class
 
 .. class:: dates
 
-    :arg int freq: equal to 1, 4, or 12 (resp. for annual,
-                   quarterly, or monthly dates).
-    :arg int ndat: the number of declared dates in the object.
-    :arg int time: a ``ndat*2`` array, the years are stored in the
-                   first column, the subperiods (1 for annual dates,
-                   1-4 for quarterly dates, and 1-12 for monthly
-                   dates) are stored in the second column.
+    :arg freq: equal to 1, 4, 12 or 365 (resp. for annual, quarterly,
+               monthly, or daily dates).
+    :arg time: a ``n*2`` array of integers. If `freq` is equal to 1,
+               4, or 12, the years are stored in the first column, the
+               subperiods (1 for annual dates, 1-4 for quarterly
+               dates, and 1-12 for monthly dates) are stored in the
+               second column. If `freq` is equal to 365, the first
+               column stores the number of days since the first day of
+               year 0, the second column is not used.
 
     Each member is private, one can display the content of a member
     but cannot change its value directly. Note that it is not possible
@@ -185,14 +187,14 @@ The dates class
         |br| Returns an empty ``dates`` object with a given frequency
         (if the constructor is called with one input
         argument). ``FREQ`` is a character equal to ’Y’ or ’A’ for
-        annual dates, ’Q’ for quarterly dates, or ’M’ for monthly
-        dates. Note that ``FREQ`` is not case sensitive, so that, for
-        instance, ’q’ is also allowed for quarterly dates. The
-        frequency can also be set with an integer scalar equal to 1
-        (annual), 4 (quarterly), or 12 (monthly). The instantiation of
-        empty objects can be used to rename the ``dates`` class. For
-        instance, if one only works with quarterly dates, object
-        ``qq`` can be created as::
+        annual dates, ’Q’ for quarterly dates, ’M’ for monthly dates,
+        or ’D’ for daily dates. Note that ``FREQ`` is not case
+        sensitive, so that, for instance, ’q’ is also allowed for
+        quarterly dates. The frequency can also be set with an integer
+        scalar equal to 1 (annual), 4 (quarterly), 12
+        (monthly), or 365 (daily). The instantiation of empty objects can be used to
+        rename the ``dates`` class. For instance, if one only works
+        with quarterly dates, object ``qq`` can be created as::
 
             qq = dates('Q')
 
@@ -201,7 +203,14 @@ The dates class
             d0 = qq(2009,2);
 
         which is much simpler if ``dates`` objects have to be defined
-        programmatically.
+        programmatically. For daily dates, we would instantiate an
+        empty daily dates object as::
+
+            dd = dates('D')
+
+        and a ``dates`` object holding the date ``2020-12-31``::
+
+            d1 = dd(2020,12,31);
 
 
     .. construct:: dates(STRING)
@@ -211,11 +220,11 @@ The dates class
         given by the string ``STRING``. This string has to be
         interpretable as a date (only strings of the following forms
         are admitted: ``'1990Y'``, ``'1990A'``, ``'1990Q1'``,
-        ``'1990M2'``), the routine ``isdate`` can be used to test if a
-        string is interpretable as a date. If more than one argument
-        is provided, they should all be dates represented as strings,
-        the resulting ``dates`` object contains as many elements as
-        arguments to the constructor.
+        ``'1990M2'``, or ``'2020-12-31'``), the routine ``isdate`` can
+        be used to test if a string is interpretable as a date. If
+        more than one argument is provided, they should all be dates
+        represented as strings, the resulting ``dates`` object
+        contains as many elements as arguments to the constructor.
 
 
     .. construct:: dates(DATES)
@@ -229,15 +238,16 @@ The dates class
         constructor.
 
 
-    .. construct:: dates (FREQ, YEAR, SUBPERIOD)
+    .. construct:: dates (FREQ, YEAR, SUBPERIOD[, S])
 
-        |br| where ``FREQ`` is a single character (’Y’, ’A’, ’Q’, ’M’)
-        or integer (1, 4, or 12) specifying the frequency, ``YEAR``
-        and ``SUBPERIOD`` are ``n*1`` vectors of integers. Returns a
-        ``dates`` object with ``n`` elements. If ``FREQ`` is equal to
-        ``'Y'``, ``'A'`` or ``1``, the third argument is not needed
-        (because ``SUBPERIOD`` is necessarily a vector of ones in this
-        case).
+        |br| where ``FREQ`` is a single character (’Y’, ’A’, ’Q’, ’M’,
+        ’D’) or integer (1, 4, 12, or 365) specifying the frequency,
+        ``YEAR`` and ``SUBPERIOD`` and ``S`` are ``n*1`` vectors of
+        integers. Returns a ``dates`` object with ``n`` elements. The
+        last argument, ``S``, is only to be used for daily
+        frequency. If ``FREQ`` is equal to ``'Y'``, ``'A'`` or ``1``,
+        the third argument is not needed (because ``SUBPERIOD`` is
+        necessarily a vector of ones in this case).
 
 
     *Example*
@@ -248,6 +258,7 @@ The dates class
             do2 = dates('1950Q2','1950Q3');
             do3 = dates(do1,do2);
             do4 = dates('Q',1950, 1);
+            do5 = dates('D',1973, 1, 25);
 
 
     A list of the available methods, by alphabetical order, is given
@@ -338,11 +349,11 @@ The dates class
                 '1950Q1'
 
 
-   .. datesmethod:: C = colon (A, B)
+    .. datesmethod:: C = colon (A, B)
                      C = colon (A, i, B)
 
-        |br| Overloads the MATLAB/Octave colon (``:``) operator. A and B
-        are ``dates`` objects. The optional increment ``i`` is a
+        |br| Overloads the MATLAB/Octave colon (``:``) operator. A and
+        B are ``dates`` objects. The optional increment ``i`` is a
         scalar integer (default value is ``i=1``). This method returns
         a ``dates`` object and can be used to create ranges of dates.
 
@@ -366,12 +377,12 @@ The dates class
         |br| Returns a copy of a ``dates`` object.
 
 
-     .. datesmethod:: disp (A)
+    .. datesmethod:: disp (A)
 
         |br| Overloads the MATLAB/Octave disp function for ``dates`` object.
 
 
-     .. datesmethod:: display (A)
+    .. datesmethod:: display (A)
 
         |br| Overloads the MATLAB/Octave display function for ``dates`` object.
 
@@ -555,7 +566,7 @@ The dates class
 
                   1
 
-     .. datesmethod:: C = isequal (A, B)
+    .. datesmethod:: C = isequal (A, B)
 
         |br| Overloads the MATLAB/Octave ``isequal`` function.
 
@@ -616,7 +627,7 @@ The dates class
                    203
 
 
-        .. datesmethod:: C = lt (A, B)
+    .. datesmethod:: C = lt (A, B)
 
         |br| Overloads the MATLAB/Octave ``lt`` (less than,
         ``<``) operator. ``dates`` objects ``A`` and ``B`` must have
@@ -861,7 +872,7 @@ The dates class
 
                 >> A = dates('1950Q1');
                 >> A = A:A+1;
-                >> strings(A)
+                >> A.strings()
 
                   ans =
 
@@ -873,7 +884,8 @@ The dates class
     .. datesmethod:: B = subperiod (A)
 
         |br| Returns the subperiod of a date (an integer scalar
-        between 1 and ``A.freq``).
+        between 1 and ``A.freq``). This method is not implemented for
+        daily dates.
 
         *Example*
 
@@ -987,16 +999,14 @@ The dseries class
     data. As any MATLAB/Octave statements, this class can be used in a
     Dynare’s mod file. A ``dseries`` object has six members:
 
-    :arg name: A ``nobs*1`` cell of strings or a ``nobs*p`` character
-               array, the names of the variables.
-    :arg tex: A ``nobs*1`` cell of strings or a ``nobs*p`` character
-              array, the tex names of the variables.
+    :arg name: A ``vobs*1`` cell of strings or a ``vobs*p`` character array, the names of the variables.
+    :arg tex: A ``vobs*1`` cell of strings or a ``vobs*p`` character array, the tex names of the variables.
     :arg dates dates: An object with ``nobs`` elements, the dates of the sample.
     :arg double data: A ``nobs`` by ``vobs`` array, the data.
     :arg ops: The history of operations on the variables.
     :arg tags: The user-defined tags on the variables.
 
-    ``data``, ``name``, ``tex`` are private members. The following
+    ``data``, ``name``, ``tex``, and ``ops`` are private members. The following
     constructors are available:
 
     .. construct:: dseries ()
@@ -1021,8 +1031,6 @@ The dseries class
             INIT__ = '1994Q3';
             NAMES__ = {'azert';'yuiop'};
             TEX__ = {'azert';'yuiop'};
-            TAGS__ = struct()
-            DATA__ = {}
 
             azert = randn(100,1);
             yuiop = randn(100,1);
@@ -1367,7 +1375,7 @@ The dseries class
                5Y | 0.66997
 
 
-   .. dseriesmethod:: B = cumprod (A[, d[, v]])
+    .. dseriesmethod:: B = cumprod (A[, d[, v]])
                       cumprod_ (A[, d[, v]])
 
         |br| Overloads the MATLAB/Octave ``cumprod`` function for
@@ -1508,6 +1516,12 @@ The dseries class
         |br| Detrends ``dseries`` object ``A`` with a fitted
         polynomial of order ``m``. Note that each variable is
         detrended with a different polynomial.
+
+
+    .. dseriesmethod:: B = dgrowth (A)
+                       dgrowth_ (A)
+
+        |br| Computes daily growth rates.
 
 
     .. dseriesmethod:: B = diff (A)
@@ -1657,6 +1671,13 @@ The dseries class
     .. dseriesmethod:: f = firstobservedperiod (A)
 
        |br| Returns the first period where all the variables in ``dseries`` object ``A`` are observed (non NaN).
+
+
+    .. dseriesmethod:: B = flip (A)
+                       flip_ (A)
+
+       |br| Flips the rows in the data member (without changing the
+       periods order).
 
 
     .. dseriesmethod:: f = frequency (B)
@@ -2028,8 +2049,10 @@ The dseries class
 
     .. dseriesmethod:: B = mdiff (A)
                        mdiff_ (A)
+                       B = mgrowth (A)
+                       mgrowth_ (A)
 
-       |br| Computes monthly growth rates of variables in
+       |br| Computes monthly differences or growth rates of variables in
        ``dseries`` object ``A``.
 
 
@@ -2299,6 +2322,16 @@ The dseries class
         otherwise (default) the arithmetic mean is reported.
 
 
+    .. dseriesmethod:: B = nanstd (A[, geometric])
+
+        |br| Overloads the MATLAB/Octave ``nanstd`` function for
+        ``dseries`` objects. Returns the standard deviation of each
+        variable in ``dseries`` object ``A`` ignoring the NaN
+        values. If the second argument is ``true`` the geometric std
+        is computed, default value of the second argument is
+        ``false``.
+
+
     .. dseriesmethod:: C = ne (A, B)
 
         |br| Overloads the MATLAB/Octave ``ne`` (not equal, ``~=``)
@@ -2478,6 +2511,39 @@ The dseries class
                 3Y | 1          | 1
 
 
+    .. dseriesmethod:: A = projection (A, info, periods)
+
+        |br| Projects variables in dseries object ``A``. ``info`` is
+        is a :math:`n \times 3` cell array. Each row provides
+        informations necessary to project a variable. The first column
+        contains the name of variable (row char array). the second
+        column contains the name of the method used to project the
+        associated variable (row char array), possible values are
+        ``'Trend'``, ``'Constant'``, and ``'AR'``. Last column
+        provides quantitative information about the projection. If the
+        second column value is ``'Trend'``, the third column value is
+        the growth factor of the (exponential) trend. If the second
+        column value is ``'Constant'``, the third column value is the
+        level of the variable. If the second column value is ``'AR'``,
+        the third column value is the autoregressive parameter. The
+        variables can be projected with an AR(p) model, if the third
+        column contains a 1×p vector of doubles. The stationarity of
+        the AR(p) model is not tested. The case of the constant
+        projection, using the last value of the variable, is covered
+        with 'Trend' and a growth factor equal to 1, or 'AR' with an
+        autoregressive parameter equal to one (random walk).  This
+        projection routine only deals with exponential trends.
+
+        *Example*
+
+            ::
+
+                >> data = ones(10,4);
+                >> ts = dseries(data, '1990Q1', {'A1', 'A2', 'A3', 'A4'});
+                >> info = {'A1', 'Trend', 1.2; 'A2', 'Constant', 0.0; 'A3', 'AR', .5; 'A4', 'AR', [.4, -.2]};
+                >> ts.projection(info, 10);
+
+
     .. dseriesmethod:: B = qdiff (A)
                        B = qgrowth (A)
                        qdiff_ (A)
@@ -2592,6 +2658,44 @@ The dseries class
                 2Y | 1          | 1     | 1
 
 
+    .. dseriesmethod:: A = resetops (A, ops)
+
+        |br| Redefine ``ops`` member.
+
+
+    .. dseriesmethod:: A = resetags (A, ops)
+
+        |br| Redefine ``tags`` member.
+
+
+    .. dseriesmethod:: B = round (A[, n])
+                       round_ (A[, n])
+
+        |br| Rounds to the nearest decimal or integer. ``n`` is the
+        precision parameter (number of decimals), default value is 0
+        meaning that that by default the method rounds to the nearest
+        integer.
+
+        *Example*
+
+            ::
+
+                >> ts = dseries(pi)
+
+                ts is a dseries object:
+
+                   | Variable_1
+                1Y | 3.1416
+
+                >> ts.round_();
+                >> ts
+
+                ts is a dseries object:
+
+                   | Variable_1
+                1Y | 3
+
+
     .. dseriesmethod:: save (A, basename[, format])
 
         |br| Overloads the MATLAB/Octave ``save`` function and saves
@@ -2697,6 +2801,28 @@ The dseries class
         (default value of the second argument is ``false``).
 
 
+    .. dseriesmethod:: B = subsample (A, d1, d2)
+
+        |br| Returns a subsample, for periods between ``dates`` ``d1``
+        and ``d2``. The same can be achieved by indexing a
+        ``dseries`` object with a ``dates`` object, but the
+        ``subsample`` method is easier to use programmatically.
+
+        *Example*
+
+            ::
+
+                >> o = dseries(transpose(1:5));
+                >> o.subsample(dates('2y'),dates('4y'))
+
+                ans is a dseries object:
+
+                   | Variable_1
+                2Y | 2
+                3Y | 3
+                4Y | 4
+
+
     .. dseriesmethod:: A = tag (A, a[, b, c])
 
         |br| Add a tag to a variable in ``dseries`` object ``A``.
@@ -2795,9 +2921,224 @@ The dseries class
                     2
 
 
-.. dseriesmethod:: B = ydiff (A)
-                   B = ygrowth (A)
-                   ydiff_ (A)
-                   ygrowth_ (A)
+    .. dseriesmethod:: B = ydiff (A)
+                       B = ygrowth (A)
+                       ydiff_ (A)
+                       ygrowth_ (A)
 
         |br| Computes yearly differences or growth rates.
+
+
+.. _x13-members:
+
+X-13 ARIMA-SEATS interface
+==========================
+
+.. class:: x13
+
+    |br| The x13 class provides a method for each X-13 command as
+    documented in the X-13 ARIMA-SEATS reference manual (`x11`,
+    `automdl`, `estimate`, ...), options can then be passed by
+    key/value pairs. The ``x13`` class has 22 members:
+
+    :arg y: ``dseries`` object with a single variable.
+    :arg x: ``dseries`` object with an arbitrary number of variables (to be used in the REGRESSION block).
+    :arg arima: structure containing the options of the ARIMA model command.
+    :arg automdl: structure containing the options of the ARIMA model selection command.
+    :arg regression: structure containing the options of the Regression command.
+    :arg estimate: structure containing the options of the estimation command.
+    :arg transform: structure containing the options of the transform command.
+    :arg outlier: structure containing the options of the outlier command.
+    :arg forecast: structure containing the options of the forecast command.
+    :arg check: structure containing the options of the check command.
+    :arg x11: structure containing the options of the X11 command.
+    :arg force: structure containing the options of the force command.
+    :arg history: structure containing the options of the history command.
+    :arg metadata: structure containing the options of the metadata command.
+    :arg identify: structure containing the options of the identify command.
+    :arg pickmdl: structure containing the options of the pickmdl command.
+    :arg seats: structure containing the options of the seats command.
+    :arg slidingspans: structure containing the options of the slidingspans command.
+    :arg spectrum: structure containing the options of the spectrum command.
+    :arg x11regression: structure containing the options of the x11Regression command.
+    :arg results: structure containing the results returned by x13.
+    :arg commands: cell array containing the list of commands.
+
+    All these members are private. The following constructors are available:
+
+    .. construct:: x13 (y)
+
+        |br| Instantiates an ``x13`` object with `dseries` object
+        ``y``. The ``dseries`` object passed as an argument must
+        contain only one variable, the one we need to pass to X-13.
+
+
+    .. construct:: x13 (y, x)
+
+        |br| Instantiates an ``x13`` object with `dseries` objects
+        ``y`` and ``x``. The first ``dseries`` object passed as an
+        argument must contain only one variable, the second
+        ``dseries`` object contains the exogenous variables used by
+        some of the X-13 commands. Both objects must be defined on the
+        same time span.
+
+
+    The Following methods allow to set sequence of X-13 commands, write an `.spc` file and run the X-13 binary:
+
+
+    .. x13method:: A = arima (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``arima`` command, see the X-13 ARIMA-SEATS
+        reference manual. All the options must be passed by key/value
+        pairs.
+
+
+    .. x13method:: A = automdl (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``automdl`` command, see the X-13 ARIMA-SEATS
+        reference manual. All the options must be passed by key/value
+        pairs.
+
+
+    .. x13method:: A = regression (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``regression`` command, see the X-13
+        ARIMA-SEATS reference manual. All the options must be passed
+        by key/value pairs.
+
+
+    .. x13method:: A = estimate (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``estimate`` command, see the X-13
+        ARIMA-SEATS reference manual. All the options must be passed
+        by key/value pairs.
+
+
+    .. x13method:: A = transform (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``transform`` command, see the X-13
+        ARIMA-SEATS reference manual. All the options must be passed
+        by key/value pairs.
+
+
+    .. x13method:: A = outlier (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``outlier`` command, see the X-13 ARIMA-SEATS
+        reference manual. All the options must be passed by key/value
+        pairs.
+
+
+    .. x13method:: A = forecast (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``forecast`` command, see the X-13
+        ARIMA-SEATS reference manual. All the options must be passed
+        by key/value pairs.
+
+
+    .. x13method:: A = check (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``check`` command, see the X-13 ARIMA-SEATS
+        reference manual. All the options must be passed by key/value
+        pairs.
+
+
+    .. x13method:: A = x11 (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``x11`` command, see the X-13 ARIMA-SEATS
+        reference manual. All the options must be passed by key/value
+        pairs.
+
+
+    .. x13method:: A = force (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``force`` command, see the X-13 ARIMA-SEATS
+        reference manual. All the options must be passed by key/value
+        pairs.
+
+
+    .. x13method:: A = history (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``history`` command, see the X-13 ARIMA-SEATS
+        reference manual. All the options must be passed by key/value
+        pairs.
+
+
+    .. x13method:: A = metadata (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``metadata`` command, see the X-13
+        ARIMA-SEATS reference manual. All the options must be passed
+        by key/value pairs.
+
+
+    .. x13method:: A = identify (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``identify`` command, see the X-13
+        ARIMA-SEATS reference manual. All the options must be passed
+        by key/value pairs.
+
+
+    .. x13method:: A = pickmdl (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``pickmdl`` command, see the X-13 ARIMA-SEATS
+        reference manual. All the options must be passed by key/value
+        pairs.
+
+
+    .. x13method:: A = seats (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``seats`` command, see the X-13 ARIMA-SEATS
+        reference manual. All the options must be passed by key/value
+        pairs.
+
+
+    .. x13method:: A = slidingspans (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``slidingspans`` command, see the X-13
+        ARIMA-SEATS reference manual. All the options must be passed
+        by key/value pairs.
+
+
+    .. x13method:: A = spectrum (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``spectrum`` command, see the X-13
+        ARIMA-SEATS reference manual. All the options must be passed
+        by key/value pairs.
+
+
+    .. x13method:: A = x11regression (A, key, value[, key, value[, [...]]])
+
+        Interface to the ``x11regression`` command, see the X-13
+        ARIMA-SEATS reference manual. All the options must be passed
+        by key/value pairs.
+
+
+    .. x13method:: print (A[, basefilename])
+
+        Prints an ``.spc`` file with all the X-13 commands. The
+        optional second argument is a row char array specifying the
+        name (without extension) of the file.
+
+
+    .. x13method:: run (A)
+
+        Calls the X-13 binary and run the previously defined
+        commands. All the results are stored in the structure
+        ``A.results``. When it makes sense these results are saved in
+        ``dseries`` objects (*e.g.* for forecasts or filtered variables).
+
+
+    *Example*
+
+            ::
+
+                >> ts = dseries(rand(100,1),'1999M1');
+                >> o = x13(ts);
+
+                >> o.x11('save','(d11)');
+                >> o.automdl('savelog','amd','mixed','no');
+                >> o.outlier('types','all','save','(fts)');
+                >> o.check('maxlag',24,'save','(acf pcf)');
+                >> o.estimate('save','(mdl est)');
+                >> o.forecast('maxlead',18,'probability',0.95,'save','(fct fvr)');
+
+                >> o.run();

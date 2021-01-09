@@ -1,11 +1,10 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Dynare
-Upstream-Contact: Dynare Team, whose members in 2020 are:
+Upstream-Contact: Dynare Team, whose members in 2021 are:
                   - Stéphane Adjemian <stephane.adjemian@univ-lemans.fr>
                   - Houtan Bastani <houtan@dynare.org>
                   - Michel Juillard <michel.juillard@mjui.fr>
                   - Frédéric Karamé <frederic.karame@univ-lemans.fr>
-                  - Dóra Kocsis <dora@dynare.org>
                   - Junior Maih <junior.maih@gmail.com>
                   - Ferhat Mihoubi <fmihoubi@univ-evry.fr>
                   - Willi Mutschler <willi@mutschler.eu>
@@ -17,12 +16,13 @@ Upstream-Contact: Dynare Team, whose members in 2020 are:
                   - Alejandro Buesa
                   - Fabrice Collard
                   - Assia Ezzeroug
+                  - Dóra Kocsis
                   - Stéphane Lhuissier
                   - George Perendia
 Source: https://www.dynare.org
 
 Files: *
-Copyright: 1996-2020 Dynare Team
+Copyright: 1996-2021 Dynare Team
 License: GPL-3+
 
 Files: matlab/AIM/SP*

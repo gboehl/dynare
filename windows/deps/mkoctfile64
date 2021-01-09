@@ -55,7 +55,7 @@ fi
 : ${CPPFLAGS=""}
 : ${INCFLAGS=$DEFAULT_INCFLAGS}
 : ${F77="x86_64-w64-mingw32-gfortran"}
-: ${FFLAGS="-O"}
+: ${FFLAGS="-g -O2 -std=legacy"}
 : ${FPICFLAG=""}
 : ${CC="x86_64-w64-mingw32-gcc"}
 : ${CFLAGS="-g -O2"}
@@ -63,17 +63,19 @@ fi
 : ${CXX="x86_64-w64-mingw32-g++"}
 : ${CXXFLAGS="-g -O2"}
 : ${CXXPICFLAG=""}
-: ${XTRA_CFLAGS=""}
-: ${XTRA_CXXFLAGS=""}
+: ${XTRA_CFLAGS="-fopenmp"}
+: ${XTRA_CXXFLAGS="-fopenmp"}
+: ${AR="x86_64-w64-mingw32-ar"}
+: ${RANLIB="x86_64-w64-mingw32-ranlib"}
 
 : ${DEPEND_FLAGS="-M"}
 : ${DEPEND_EXTRA_SED_PATTERN=""}
 
 : ${DL_LD="x86_64-w64-mingw32-g++"}
-: ${DL_LDFLAGS="-shared -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--enable-runtime-pseudo-reloc -static-libgcc -static-libstdc++"}
+: ${DL_LDFLAGS="-shared -static-libgcc -static-libstdc++"}
 
-: ${RLD_FLAG="-Wl,-rpath -Wl,$OCTAVE_PREFIX/lib/octave/${OCTAVE_VERSION}"}
-: ${RDYNAMIC_FLAG="-rdynamic"}
+: ${RLD_FLAG=""}
+: ${RDYNAMIC_FLAG=""}
 : ${LIBOCTAVE=-loctave}
 : ${LIBOCTINTERP=-loctinterp}
 : ${READLINE_LIBS=-lreadline}
@@ -83,10 +85,10 @@ fi
 : ${FFTW3_LIBS="-lfftw3"}
 : ${FFTW3F_LDFLAGS=""}
 : ${FFTW3F_LIBS="-lfftw3f"}
-: ${LIBS="-lm -lgfortran -llapack -lgdi32 -lws2_32 -luser32 -lkernel32"}
-: ${FLIBS="-lm -lgfortran -llapack -lmingw32 -lmoldname -lmingwex -lmsvcrt -luser32 -lkernel32 -ladvapi32 -lshell32"}
+: ${LIBS="-lpsapi -lgdi32 -lm"}
+: ${FLIBS="-lm -lgfortran -lmingw32 -lmoldname -lmingwex -lmsvcrt -lquadmath -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32"}
 : ${LD_CXX="x86_64-w64-mingw32-g++"}
-: ${LDFLAGS="-Wl,--enable-auto-import -Wl,--enable-runtime-pseudo-reloc-v2 -Wl,--allow-multiple-definition -static-libgcc -static-libstdc++"}
+: ${LDFLAGS="-static-libgcc -static-libstdc++"}
 : ${LD_STATIC_FLAG=""}
 : ${LFLAGS=$DEFAULT_LFLAGS}
 : ${F77_INTEGER_8_FLAG=""}

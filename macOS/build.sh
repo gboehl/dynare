@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2019-2020 Dynare Team
+# Copyright © 2019-2021 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -64,11 +64,15 @@ fi
 ##
 cd "$ROOTDIR"
 [[ -f configure ]] || autoreconf -si
-CC=$CC CXX=$CXX ./configure \
+./configure \
   PACKAGE_VERSION="$VERSION" \
   PACKAGE_STRING="dynare $VERSION" \
-  CXXFLAGS=-I/usr/local/include \
+  CC=$CC \
+  CXX=$CXX \
+  CPPFLAGS=-I/usr/local/include \
   LDFLAGS=-static-libgcc \
+  LEX=/usr/local/opt/flex/bin/flex \
+  YACC=/usr/local/opt/bison/bin/bison \
   --with-gsl="$LIB64"/gsl \
   --with-matio="$LIB64"/matio \
   --with-slicot="$LIB64"/Slicot/with-underscore \
@@ -88,6 +92,7 @@ make -j"$NTHREADS"
 NAME=dynare-"$VERSION"
 PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p \
+      "$PKGFILES"/preprocessor \
       "$PKGFILES"/mex/matlab/maci64-8.3-9.3 \
       "$PKGFILES"/mex/matlab/maci64-9.4-9.9 \
       "$PKGFILES"/mex/octave \
@@ -106,6 +111,12 @@ cp -p  "$ROOTDIR"/license.txt                                        "$PKGFILES"
 
 cp -pr "$ROOTDIR"/matlab                                             "$PKGFILES"
 cp -pr "$ROOTDIR"/examples                                           "$PKGFILES"
+
+cp -p  "$ROOTDIR"/preprocessor/src/dynare-preprocessor               "$PKGFILES"/preprocessor
+
+# Recreate backward-compatibility symlink
+rm -f "$ROOTDIR"/matlab/preprocessor64/dynare_m
+ln -sf ../../preprocessor/dynare-preprocessor                        "$PKGFILES"/matlab/preprocessor64/dynare_m
 
 cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-8.3-9.3
 
@@ -136,10 +147,12 @@ cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"
 ##
 cd "$ROOTDIR"/mex/build/matlab
 make clean
-CC=$CC CXX=$CXX ./configure \
+./configure \
   PACKAGE_VERSION="$VERSION" \
   PACKAGE_STRING="dynare $VERSION" \
-  CXXFLAGS=-I/usr/local/include \
+  CC=$CC \
+  CXX=$CXX \
+  CPPFLAGS=-I/usr/local/include \
   LDFLAGS=-static-libgcc \
   --with-gsl="$LIB64"/gsl \
   --with-matio="$LIB64"/matio \
@@ -156,10 +169,12 @@ cd "$ROOTDIR"/mex/build/octave
 OCTAVE_VERSION=$(grep OCTAVE_VERSION "$ROOTDIR"/macOS/deps/versions.mk | cut -d'=' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 OCTAVE_USR_DIR="/Applications/Octave-$OCTAVE_VERSION.app/Contents/Resources/usr"
 OCTAVE_BIN_DIR="$OCTAVE_USR_DIR/Cellar/octave-octave-app@$OCTAVE_VERSION/$OCTAVE_VERSION/bin"
-PATH="$OCTAVE_BIN_DIR:$PATH" CC=$CC CXX=$CXX ./configure \
+PATH="$OCTAVE_BIN_DIR:$PATH" ./configure \
   PACKAGE_VERSION="$VERSION" \
   PACKAGE_STRING="dynare $VERSION" \
-  CXXFLAGS=-I/usr/local/include \
+  CC=$CC \
+  CXX=$CXX \
+  CPPFLAGS=-I/usr/local/include \
   LDFLAGS="-static-libgcc -L$OCTAVE_USR_DIR/lib " \
   --with-gsl="$LIB64"/gsl \
   --with-matio="$LIB64"/matio \

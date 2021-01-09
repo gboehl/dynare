@@ -1,7 +1,7 @@
 function [y, info_convergence, endogenousvariablespaths] = extended_path_core(periods,endo_nbr,exo_nbr,positive_var_indx, ...
                                                   exo_simul,init,initial_conditions,...
                                                   steady_state, ...
-                                                  debug,bytecode_flag,order,M,pfm,algo,solve_algo,stack_solve_algo,...
+                                                  debug,order,M,pfm,algo,solve_algo,stack_solve_algo,...
                                                   olmmcp,options,oo,initialguess)
 
 % Copyright (C) 2016-2020 Dynare Team
@@ -40,46 +40,38 @@ if debug
     save ep_test_1.mat endo_simul exo_simul
 end
 
-if bytecode_flag && ~ep.stochastic.order
-    try
-        tmp = bytecode('dynamic', endo_simul, exo_simul, M.params, endo_simul, periods);
-        flag = false;
-    catch ME
-        disp(ME.message);
-        flag = true;
-    end
-else
-    flag = true;
+if options.bytecode && order > 0
+    error('Option order > 0 of extended_path command is not compatible with bytecode option.')
+end
+if options.block && order > 0
+    error('Option order > 0 of extended_path command is not compatible with block option.')
 end
 
-if flag
-    if order == 0
-        options.periods = periods;
-        options.block = pfm.block;
-        oo.endo_simul = endo_simul;
-        oo.exo_simul = exo_simul;
-        oo.steady_state = steady_state;
-        options.bytecode = bytecode_flag;
-        options.lmmcp = olmmcp;
-        options.solve_algo = solve_algo;
-        options.stack_solve_algo = stack_solve_algo;
-        tmp = perfect_foresight_solver_core(M, options, oo);
-        if ~tmp.deterministic_simulation.status
-            info_convergence = false;
-        else
-            info_convergence = true;
-        end
+if order == 0
+    options.periods = periods;
+    options.block = pfm.block;
+    oo.endo_simul = endo_simul;
+    oo.exo_simul = exo_simul;
+    oo.steady_state = steady_state;
+    options.lmmcp = olmmcp;
+    options.solve_algo = solve_algo;
+    options.stack_solve_algo = stack_solve_algo;
+    tmp = perfect_foresight_solver_core(M, options, oo);
+    if ~tmp.deterministic_simulation.status
+        info_convergence = false;
     else
-        switch(algo)
-          case 0
-            [flag, tmp.endo_simul] = ...
-                solve_stochastic_perfect_foresight_model(endo_simul, exo_simul, pfm, ep.stochastic.quadrature.nodes, ep.stochastic.order);
-          case 1
-            [flag, tmp.endo_simul] = ...
-                solve_stochastic_perfect_foresight_model_1(endo_simul, exo_simul, options, pfm, ep.stochastic.order);
-        end
-        info_convergence = ~flag;
+        info_convergence = true;
     end
+else
+    switch(algo)
+        case 0
+            [flag, tmp.endo_simul] = ...
+            solve_stochastic_perfect_foresight_model(endo_simul, exo_simul, pfm, ep.stochastic.quadrature.nodes, ep.stochastic.order);
+        case 1
+            [flag, tmp.endo_simul] = ...
+            solve_stochastic_perfect_foresight_model_1(endo_simul, exo_simul, options, pfm, ep.stochastic.order);
+    end
+    info_convergence = ~flag;
 end
 
 if ~info_convergence && ~options.no_homotopy

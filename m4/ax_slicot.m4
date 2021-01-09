@@ -43,7 +43,7 @@ AC_DEFUN([AX_SLICOT],
   AC_FC_FUNC(sb02od)
 
   if test "$1" = matlab; then
-    LDFLAGS="$MATLAB_LDFLAGS_NOMAP $LDFLAGS_SLICOT"
+    LDFLAGS="$LDFLAGS $MATLAB_LDFLAGS_NOMAP $LDFLAGS_SLICOT"
 
     case ${MATLAB_ARCH} in
        glnxa64 | win64 | maci64)

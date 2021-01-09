@@ -25,10 +25,10 @@ end;
 
 initval_file(series = ds);
 if oo_.initval_series.dates(1) ~= dates('1Y');
-  error("Wrong initial date in oo_.initval_series");
+  error('Wrong initial date in oo_.initval_series');
 end;
 if oo_.initval_series{'x'}.data(6) ~= 0.9;
-  error("Wrond value for x"); 
+  error('Wrong value for x');
 end;
 
 perfect_foresight_setup(periods=200);
@@ -49,10 +49,10 @@ ds1 = dseries(data1, '1Y', {'c', 'cmav', 'k', 'z_backward', 'z_forward', 'x'});
 
 initval_file(series = ds1, first_obs = 3, last_obs = 210, nobs = 208);
 if oo_.initval_series.dates(1) ~= dates('3Y');
-  error("Wrong initial date in oo_.initval_series");
+  error('Wrong initial date in oo_.initval_series');
 end;
 if oo_.initval_series{'x'}.data(6) ~= 0.9;
-  error("Wrond value for x"); 
+  error('Wrong value for x');
 end;
 
 
@@ -70,10 +70,10 @@ end
 
 initval_file(series = ds1, first_obs = 3Y, last_obs = 210Y, nobs = 208);
 if oo_.initval_series.dates(1) ~= dates('3Y');
-  error("Wrong initial date in oo_.initval_series");
+  error('Wrong initial date in oo_.initval_series');
 end;
 if oo_.initval_series{'x'}.data(6) ~= 0.9;
-  error("Wrond value for x"); 
+  error('Wrong value for x');
 end;
 
 
@@ -91,10 +91,10 @@ end
 
 initval_file(series = ds1, first_simulation_period = 7);
 if oo_.initval_series.dates(1) ~= dates('3Y');
-  error("Wrong initial date in oo_.initval_series");
+  error('Wrong initial date in oo_.initval_series');
 end;
 if oo_.initval_series{'x'}.data(6) ~= 0.9;
-  error("Wrond value for x"); 
+  error('Wrong value for x');
 end;
 
 
@@ -112,10 +112,10 @@ end
 
 initval_file(series = ds1, first_simulation_period = 7Y);
 if oo_.initval_series.dates(1) ~= dates('3Y');
-  error("Wrong initial date in oo_.initval_series");
+  error('Wrong initial date in oo_.initval_series');
 end;
 if oo_.initval_series{'x'}.data(6) ~= 0.9;
-  error("Wrond value for x"); 
+  error('Wrong value for x');
 end;
 
 

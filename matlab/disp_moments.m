@@ -50,7 +50,7 @@ y = y(ivar,options_.drop+1:end)';
 
 ME_present=0;
 if ~all(M_.H==0)
-    if isoctave
+    if isoctave && octave_ver_less_than('6')
         [observable_pos_requested_vars, index_subset, index_observables] = intersect_stable(ivar, options_.varobs_id);
     else
         [observable_pos_requested_vars, index_subset, index_observables] = intersect(ivar, options_.varobs_id, 'stable');
@@ -94,8 +94,8 @@ oo_.var(zero_variance_var_index,:)=0;
 oo_.var(:,zero_variance_var_index)=0;
 
 
-labels = M_.endo_names(ivar);
-labels_TeX = M_.endo_names_tex(ivar);
+labels=get_labels_transformed_vars(M_.endo_names,ivar,options_,false);
+labels_TeX=get_labels_transformed_vars(M_.endo_names_tex,ivar,options_,true);
 
 if ~options_.nomoments
     z = [ m' s' s2' oo_.skewness oo_.kurtosis ];
@@ -204,10 +204,11 @@ if ~options_.nodecomposition
             headers = vertcat(' ', headers);
             lh = cellofchararraymaxlength(M_.endo_names(ivar))+2;
             dyntable(options_, title, vertcat(headers, 'Tot. lin. contr.'), ...
-                     M_.endo_names(ivar), [oo_.variance_decomposition sum(oo_.variance_decomposition,2)], lh, 8, 2);
+                     labels, [oo_.variance_decomposition sum(oo_.variance_decomposition,2)], lh, 8, 2);
             if ME_present
                 headers_ME = vertcat(headers, 'ME');
-                dyntable(options_, [title,' WITH MEASUREMENT ERROR'], vertcat(headers_ME, 'Tot. lin. contr.'), M_.endo_names(ivar(index_subset)), ...
+                labels_obs=get_labels_transformed_vars(M_.endo_names,ivar(index_subset),options_,false);
+                dyntable(options_, [title,' WITH MEASUREMENT ERROR'], vertcat(headers_ME, 'Tot. lin. contr.'), labels_obs, ...
                          [oo_.variance_decomposition_ME sum(oo_.variance_decomposition_ME, 2)], lh, 8, 2);
             end
             if options_.TeX
@@ -219,9 +220,10 @@ if ~options_.nodecomposition
                                 labels_TeX, [oo_.variance_decomposition sum(oo_.variance_decomposition, 2)], lh, 8, 2);
                 if ME_present
                     headers_ME = vertcat(headers, 'ME');
+                    labels_obs_TeX=get_labels_transformed_vars(M_.endo_names_tex,ivar(index_subset),options_,true);
                     dyn_latex_table(M_, options_, [title, ' WITH MEASUREMENT ERROR'], 'sim_var_decomp_ME', ...
                                     vertcat(headers_ME, 'Tot. lin. contr.'), ...
-                                    labels_TeX(ivar(index_subset)), ...
+                                    labels_obs_TeX, ...
                                     [oo_.variance_decomposition_ME sum(oo_.variance_decomposition_ME, 2)], lh, 8, 2);
                 end
             end
@@ -256,3 +258,4 @@ else
 end
 
 end
+

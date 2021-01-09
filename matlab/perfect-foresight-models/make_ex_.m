@@ -53,14 +53,14 @@ if isempty(oo_.initval_series)
     end
 elseif M_.exo_nbr > 0
     x = oo_.initval_series{M_.exo_names{:}}.data;
-    oo_.exo_simul = x(1:M_.maximum_lag + options_.periods + M_.maximum_lead,:);
+    oo_.exo_simul = x(M_.orig_maximum_lag-M_.maximum_lag+1:M_.orig_maximum_lag + options_.periods + M_.maximum_lead,:);
     if ~isempty(M_.exo_histval)
         oo_.exo_simul(1:M_.maximum_lag, :) ...
             = M_.exo_histval(:, 1:M_.maximum_lag)';
     end
 elseif M_.exo_det_nbr > 0
     x_det = oo_.initval_series{M_.exo_det_names{:}}.data;
-    oo_.exo_det_simul = x_det(1:M_.maximum_lag + options_.periods + M_.maximum_lead,:);
+    oo_.exo_det_simul = x_det(M_.orig_maximum_lag-M_.maximum_lag+1:M_.orig_maximum_lag + options_.periods + M_.maximum_lead,:);
     if ~isempty(M_.exo_det_histval)
         oo_.exo_det_simul(1:M_.maximum_lag, :) ...
             = M_.exo_det_histval(:, 1:M_.maximum_lag)';

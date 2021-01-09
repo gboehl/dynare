@@ -37,7 +37,6 @@ ep:
                                 ortpol: 'hermite'
                                 nodes: 5
                                 pruned: [1x1 struct]
-   use_bytecode: 0
    verbosity: 0
 initial_period: NaN
 lmmcp:
@@ -59,7 +58,6 @@ ut: (unscented free parameter)
 pfm.stochastic_order = DynareOptions.ep.stochastic.order;
 pfm.periods = DynareOptions.ep.periods;
 pfm.verbose = DynareOptions.ep.verbosity;
-pfm.use_bytecode = DynareOptions.ep.use_bytecode ;
 
 
 * in extended_path_core, one passes options.ep and individual options

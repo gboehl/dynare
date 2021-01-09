@@ -147,7 +147,7 @@ if nnobs > 1 && horizon > 0
     [~,nr,nc,~,~,nstar] = pltorg(nvar);
     m = 1;
     plot_index=0;
-    OutputDirectoryName = CheckPath('graphs',M_.fname);
+    OutputDirectoryName = CheckPath('graphs',M_.dname);
     for i = 1:length(var_list)
         if mod(i,nstar) == 1
             plot_index=plot_index+1;
@@ -208,7 +208,7 @@ if nnobs > 1 && horizon > 0
         xlim([nobs(1)-offsetx nobs(end)+horizon])
         m = m + 1;
         if mod(i+1,nstar) == 1 || i==length(var_list)
-            dyn_saveas(hfig,[M_.fname,filesep,'graphs',filesep M_.fname '_RecursiveForecasts_' int2str(plot_index)],options_.nodisplay,options_.graph_format);
+            dyn_saveas(hfig,[M_.dname,filesep,'graphs',filesep M_.fname '_RecursiveForecasts_' int2str(plot_index)],options_.nodisplay,options_.graph_format);
         end
     end
 end

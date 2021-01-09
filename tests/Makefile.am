@@ -3,7 +3,10 @@ MODFILES = \
 	optimizers/fs2000_6.mod \
 	moments/example1_hp_test.mod \
 	moments/fs2000_post_moments.mod \
+	moments/example1_order2_pruning.mod \
 	lmmcp/rbcii.mod \
+	lmmcp/purely_backward.mod \
+	lmmcp/purely_forward.mod \
 	ep/rbc_mc.mod \
 	estimation/TaRB/fs2000_tarb.mod \
 	observation_trends_and_prefiltering/MCMC/Trend_loglin_no_prefilt_first_obs_MC.mod \
@@ -48,10 +51,14 @@ MODFILES = \
 	estimation/MH_recover/fs2000_recover_3.mod \
 	estimation/t_proposal/fs2000_student.mod \
 	estimation/tune_mh_jscale/fs2000.mod \
-	estimation/method_of_moments/AnScho_MoM.mod \
-	estimation/method_of_moments/RBC_MoM_Andreasen.mod \
-	estimation/method_of_moments/RBC_MoM_SMM_ME.mod \
-	estimation/method_of_moments/RBC_MoM_prefilter.mod \
+	estimation/method_of_moments/AnScho/AnScho_MoM.mod \
+	estimation/method_of_moments/RBC/RBC_MoM_Andreasen.mod \
+	estimation/method_of_moments/RBC/RBC_MoM_SMM_ME.mod \
+	estimation/method_of_moments/RBC/RBC_MoM_prefilter.mod \
+	estimation/method_of_moments/RBC/RBC_MoM_optimizer.mod \
+	estimation/method_of_moments/AFVRR/AFVRR_M0.mod \
+	estimation/method_of_moments/AFVRR/AFVRR_MFB.mod \
+	estimation/method_of_moments/AFVRR/AFVRR_MFB_RRA.mod \
 	moments/example1_var_decomp.mod \
 	moments/example1_bp_test.mod \
 	moments/test_AR1_spectral_density.mod \
@@ -62,6 +69,8 @@ MODFILES = \
 	ramst.mod \
 	ramst_a.mod \
 	ramst_static_tag.mod \
+	ramst_static_tag_block.mod \
+	ramst_mshocks.mod \
 	on-the-fly/ex1.mod \
 	on-the-fly/ex2.mod \
 	on-the-fly/ex3.mod \
@@ -74,12 +83,13 @@ MODFILES = \
 	example1_with_tags.mod \
 	example1_irf_shocks.mod \
 	example1_abs_sign.mod \
-	example1_macro.mod \
 	example1_mlv.mod \
 	example1long.mod \
 	example2long.mod \
 	example2long_use_dll.mod \
 	t_sgu_ex1.mod \
+	macro_processor/test_ifndef.mod \
+	macro_processor/example1_macro.mod \
 	irfs/example1_unit_std.mod \
 	optimal_policy/OSR/osr_example.mod \
 	optimal_policy/OSR/osr_example_objective_correctness.mod \
@@ -109,6 +119,8 @@ MODFILES = \
 	discretionary_policy/dennis_1.mod \
 	discretionary_policy/dennis_1_estim.mod \
 	discretionary_policy/Gali_discretion.mod \
+	discretionary_policy/Gali_2015_chapter_3.mod \
+	discretionary_policy/Gali_2015_chapter_3_nonlinear.mod \
 	histval_initval_file/ramst_initval_file.mod \
 	histval_initval_file/ramst_data.mod \
 	histval_initval_file/ramst_datafile.mod \
@@ -217,6 +229,7 @@ MODFILES = \
 	identification/rbc_ident/rbc_ident_std_as_structural_par.mod \
 	identification/rbc_ident/rbc_ident_varexo_only.mod \
 	identification/correlated_errors/fs2000_corr.mod \
+	identification/forward_looking/forward_looking.mod \
 	simul/example1.mod \
 	simul/Solow_no_varexo.mod \
 	simul/simul_ZLB_purely_forward.mod \
@@ -292,6 +305,7 @@ MODFILES = \
 	ep/rbcii.mod \
 	ep/linearmodel0.mod \
 	ep/linearmodel1.mod \
+	ep/rbc_bytecode.mod \
 	stochastic_simulations/example1_noprint.mod \
 	stochastic-backward-models/solow_cd.mod \
 	stochastic-backward-models/solow_ces.mod \
@@ -318,6 +332,10 @@ MODFILES = \
 	deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.mod \
 	deterministic_simulations/multiple_lead_lags/sim_lead_lag.mod \
 	deterministic_simulations/lola_solve_one_boundary.mod \
+	deterministic_simulations/lola_solve_one_boundary_mfs1.mod \
+	deterministic_simulations/lola_solve_one_boundary_mfs2.mod \
+	deterministic_simulations/lola_solve_one_boundary_mfs3.mod \
+	deterministic_simulations/ramst_block_mfs1.mod \
 	deterministic_simulations/linear_approximation/sw.mod \
 	deterministic_simulations/multiple_lead_lags/AR2.mod \
 	deterministic_simulations/multiple_lead_lags/AR2_forward.mod \
@@ -554,8 +572,7 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_1_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_2_xfail.mod
 
-MFILES = histval_initval_file/ramst_initval_file_data.m \
-	 histval_initval_file_unit_tests.m
+MFILES = histval_initval_file/ramst_initval_file_data.m
 
 # Dependencies
 example1_use_dll.m.trs: example1.m.trs
@@ -671,6 +688,13 @@ deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.m.trs: determinist
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.o.trs: deterministic_simulations/rbc_det.o.trs
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.m.trs: deterministic_simulations/rbc_det.m.trs
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.o.trs: deterministic_simulations/rbc_det.o.trs
+deterministic_simulations/lola_solve_one_boundary_mfs1.m.trs: deterministic_simulations/lola_solve_one_boundary.m.trs
+deterministic_simulations/lola_solve_one_boundary_mfs1.o.trs: deterministic_simulations/lola_solve_one_boundary.o.trs
+deterministic_simulations/lola_solve_one_boundary_mfs2.m.trs: deterministic_simulations/lola_solve_one_boundary.m.trs
+deterministic_simulations/lola_solve_one_boundary_mfs2.o.trs: deterministic_simulations/lola_solve_one_boundary.o.trs
+deterministic_simulations/lola_solve_one_boundary_mfs3.m.trs: deterministic_simulations/lola_solve_one_boundary.m.trs
+deterministic_simulations/lola_solve_one_boundary_mfs3.o.trs: deterministic_simulations/lola_solve_one_boundary.o.trs
+
 
 histval_initval_file/ramst_initval_file.m.trs: histval_initval_file/ramst_initval_file_data.m.tls histval_initval_file/ramst_data.m.trs
 histval_initval_file/ramst_initval_file.o.trs: histval_initval_file/ramst_initval_file_data.o.tls histval_initval_file/ramst_data.o.trs
@@ -790,6 +814,8 @@ trend-component-and-var-models/tcm8.o.trs: trend-component-and-var-models/tcm6.o
 
 discretionary_policy/dennis_1_estim.m.trs: discretionary_policy/dennis_1.m.trs
 discretionary_policy/dennis_1_estim.o.trs: discretionary_policy/dennis_1.o.trs
+discretionary_policy/Gali_2015_chapter_3_nonlinear.m.trs: discretionary_policy/Gali_2015_chapter_3.m.trs
+discretionary_policy/Gali_2015_chapter_3_nonlinear.o.trs: discretionary_policy/Gali_2015_chapter_3.o.trs
 
 matrix_notation/deterministic_scalar.m.trs: matrix_notation/deterministic_matrix.m.trs
 matrix_notation/deterministic_scalar.o.trs: matrix_notation/deterministic_matrix.o.trs
@@ -1008,6 +1034,10 @@ particle: m/particle o/particle
 m/particle: $(patsubst %.mod, %.m.trs, $(PARTICLEFILES))
 o/particle: $(patsubst %.mod, %.o.trs, $(PARTICLEFILES))
 
+method_of_moments: m/method_of_moments o/method_of_moments
+m/method_of_moments: $(patsubst %.mod, %.m.trs, $(filter estimation/method_of_moments/%.mod, $(MODFILES)))
+o/method_of_moments: $(patsubst %.mod, %.o.trs, $(filter estimation/method_of_moments/%.mod, $(MODFILES)))
+
 ecb: m/ecb o/ecb
 m/ecb: $(patsubst %.mod, %.m.trs, $(filter ecb/%.mod, $(MODFILES)))
 o/ecb: $(patsubst %.mod, %.o.trs, $(filter ecb/%.mod, $(MODFILES)))
@@ -1177,6 +1207,10 @@ EXTRA_DIST = \
 	lmmcp/sw-common-header.inc \
 	lmmcp/sw-common-footer.inc \
 	estimation/tune_mh_jscale/fs2000.inc \
+	estimation/method_of_moments/RBC/RBC_MoM_common.inc \
+	estimation/method_of_moments/RBC/RBC_MoM_steady_helper.m \
+	estimation/method_of_moments/AFVRR/AFVRR_common.inc \
+	estimation/method_of_moments/AFVRR/AFVRR_steady_helper.m \
 	estimation/univariate/data.csv \
 	estimation/univariate/ols/mc-ols.inc \
 	ecb/SURGibbs/fishdata.csv \
@@ -1197,8 +1231,6 @@ EXTRA_DIST = \
 	ecb/aggregate/3/parameters.inc \
 	ecb/aggregate/3/parameter-values.inc \
 	ecb/aggregate/3/model.inc \
-	estimation/method_of_moments/RBC_MoM_common.inc \
-	estimation/method_of_moments/RBC_MoM_steady_helper.m \
 	histval_initval_file_unit_tests.m \
 	histval_initval_file/my_assert.m \
 	histval_initval_file/ramst_data.xls \

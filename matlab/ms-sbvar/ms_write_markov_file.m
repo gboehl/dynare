@@ -52,6 +52,10 @@ for i_chain = 1:n_chains
     %//=====================================================//
     fprintf(fh,'//== Number of states for state_variable[%d] ==//\n', ...
             i_chain);
+    if ~isfield(options.ms.ms_chain(i_chain),'regime') ...
+                || isempty(options.ms.ms_chain(i_chain).regime)
+        error('Chain %u does not feature any regime states. Did you forget to specify them?',i_chain)
+    end
     n_states = length(options.ms.ms_chain(i_chain).regime);
     fprintf(fh,'%d\n\n',n_states);
 

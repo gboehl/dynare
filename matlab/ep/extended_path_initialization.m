@@ -35,9 +35,6 @@ function [initial_conditions, innovations, pfm, ep, verbosity, DynareOptions, Dy
 
 ep  = DynareOptions.ep;
 
-% Set bytecode flag (see #1717)
-ep.use_bytecode = DynareOptions.bytecode;
-
 % Set verbosity levels.
 DynareOptions.verbosity = ep.verbosity;
 verbosity = ep.verbosity+ep.debug;

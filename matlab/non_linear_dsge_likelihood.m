@@ -135,14 +135,16 @@ end
 switch DynareOptions.particle.initialization
   case 1% Initial state vector covariance is the ergodic variance associated to the first order Taylor-approximation of the model.
     StateVectorMean = ReducedForm.constant(mf0);
-    StateVectorVariance = lyapunov_symm(dr.ghx(mf0,:), dr.ghu(mf0,:)*Q*dr.ghu(mf0,:)', DynareOptions.lyapunov_fixed_point_tol, ...
+    [A,B] = kalman_transition_matrix(dr,dr.restrict_var_list,dr.restrict_columns,Model.exo_nbr);
+    StateVectorVariance = lyapunov_symm(A, B*Q*B', DynareOptions.lyapunov_fixed_point_tol, ...
                                         DynareOptions.qz_criterium, DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
+    StateVectorVariance = StateVectorVariance(mf0,mf0);
   case 2% Initial state vector covariance is a monte-carlo based estimate of the ergodic variance (consistent with a k-order Taylor-approximation of the model).
     StateVectorMean = ReducedForm.constant(mf0);
     old_DynareOptionsperiods = DynareOptions.periods;
     DynareOptions.periods = 5000;
     y_ = simult(DynareResults.steady_state, dr,Model,DynareOptions,DynareResults);
-    y_ = y_(state_variables_idx,2001:5000);
+    y_ = y_(dr.order_var(state_variables_idx),2001:5000); %state_variables_idx is in dr-order while simult_ is in declaration order
     StateVectorVariance = cov(y_');
     DynareOptions.periods = old_DynareOptionsperiods;
     clear('old_DynareOptionsperiods','y_');

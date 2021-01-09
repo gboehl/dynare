@@ -63,9 +63,12 @@ else
 end
 
 headers = vertcat(' ', headers);
-lh = cellofchararraymaxlength(M_.endo_names(SubsetOfVariables))+2;
+
+labels=get_labels_transformed_vars(M_.endo_names,SubsetOfVariables,options_,false);
+
+lh = cellofchararraymaxlength(labels)+2;
 if options_.TeX
-    labels_TeX = M_.endo_names_tex(SubsetOfVariables);
+    labels_TeX=get_labels_transformed_vars(M_.endo_names,SubsetOfVariables,options_,true);
     lh = cellofchararraymaxlength(labels_TeX)+2;
 end
 
@@ -76,7 +79,7 @@ for i=1:length(Steps)
     for j=1:shock_number
         vardec_i(:,j) = 100*conditional_decomposition_array(:,i,j);
     end
-    dyntable(options_, '', headers, M_.endo_names(SubsetOfVariables), vardec_i, lh, 8, 2);
+    dyntable(options_, '', headers, labels, vardec_i, lh, 8, 2);
     if options_.TeX
         dyn_latex_table(M_, options_, [title, '; Period ' int2str(Steps(i))], ['th_var_decomp_cond_h', int2str(Steps(i))], headers_TeX, labels_TeX, vardec_i, lh, 8, 2);
     end

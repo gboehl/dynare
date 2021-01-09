@@ -33,7 +33,7 @@ build_binaries:
     - make -j $(nproc) LN_S="cp -p"
   artifacts:
     paths:
-      - matlab/preprocessor*/*
+      - preprocessor/dynare-preprocessor
       - mex/octave/
       - mex/matlab/
       - dynare++/parser/cc/*_tab.cc

@@ -64,7 +64,7 @@ case ${MATLAB_ARCH} in
     OPENMP_LDFLAGS="-Wl,-Bstatic,--whole-archive -lgomp -Wl,-Bdynamic,--no-whole-archive"
     ax_mexopts_ok="yes"
     ;;
-  maci | maci64)
+  maci64)
     MACOSX_DEPLOYMENT_TARGET='10.9'
     MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
     MATLAB_CFLAGS="-fno-common -arch x86_64 -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -fexceptions"
@@ -72,7 +72,10 @@ case ${MATLAB_ARCH} in
     MATLAB_FCFLAGS="-g -O2 -fexceptions -fbackslash -arch x86_64"
     MATLAB_LDFLAGS_NOMAP="-Wl,-twolevel_namespace -undefined error -arch x86_64 -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,\$(abs_top_srcdir)/mexFunction-MacOSX.map"
-    MATLAB_LIBS="-L$MATLAB/bin/maci64 -lmx -lmex -lmat -lmwlapack -lmwblas"
+    # This -L flag is put here, hence later on the linker command line, so as
+    # to avoid linking against the HDF5 shipped by MATLAB (which would
+    # otherwise override the HDF5 from Homebrew)
+    MATLAB_LIBS="-L$MATLAB/bin/maci64 -lmx -lmex -lmat -lmwlapack -lmwblas -lstdc++"
     ax_mexopts_ok="yes"
     ;;
   *)

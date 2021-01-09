@@ -972,7 +972,8 @@ end;
 % Numerical Simulation, Control Parameters
 % *******************************************
 
-simul(periods=125,maxit=100);
+perfect_foresight_setup(periods=125);
+perfect_foresight_solver(maxit=100);
 
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')

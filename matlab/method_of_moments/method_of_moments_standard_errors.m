@@ -29,7 +29,7 @@ function [SE_values, Asympt_Var] = method_of_moments_standard_errors(xparam, obj
 %  o SMM_objective_function.m
 %  o method_of_moments_optimal_weighting_matrix  
 % =========================================================================
-% Copyright (C) 2020 Dynare Team
+% Copyright (C) 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -57,29 +57,45 @@ dim_params   = size(xparam,1);
 D            = zeros(num_mom,dim_params);
 eps_value    = options_mom_.mom.se_tolx;
 
-for i=1:dim_params
-    %Positive step
-    xparam_eps_p      = xparam;
-    xparam_eps_p(i,1) = xparam_eps_p(i) + eps_value;
-    [~, info_p, ~, ~,~, oo__p] = feval(objective_function, xparam_eps_p, Bounds, oo_, estim_params_, M_, options_mom_);
-    
-    % Negative step
-    xparam_eps_m      = xparam;
-    xparam_eps_m(i,1) = xparam_eps_m(i) - eps_value;
-    [~, info_m,  ~, ~,~, oo__m] = feval(objective_function, xparam_eps_m, Bounds, oo_, estim_params_, M_, options_mom_);
-
-    % The Jacobian:
-    if nnz(info_p)==0 && nnz(info_m)==0
-        D(:,i) = (oo__p.mom.model_moments - oo__m.mom.model_moments)/(2*eps_value);
-    else
-        problpar = get_the_name(i,options_mom_.TeX, M_, estim_params_, options_mom_);
-        message_p = get_error_message(info_p, options_mom_);
-        message_m = get_error_message(info_m, options_mom_);        
-        
-        warning('method_of_moments:info','Cannot compute the Jacobian for parameter %s - no standard errors available\n %s %s\nCheck your bounds and/or priors, or use a different optimizer.\n',problpar, message_p, message_m)
+if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
+    fprintf('\nComputing standard errors using analytical derivatives of moments\n');
+    D = oo_.mom.model_moments_params_derivs; %already computed in objective function via get_perturbation_params.m
+    idx_nan = find(any(isnan(D)));
+    if any(idx_nan)
+        for i = idx_nan            
+             fprintf('No standard errors available for parameter %s\n',get_the_name(i,options_mom_.TeX, M_, estim_params_, options_mom_))
+        end        
+        warning('There are NaN in the analytical Jacobian of Moments. Check your bounds and/or priors, or use a different optimizer.')
         Asympt_Var = NaN(length(xparam),length(xparam));
         SE_values = NaN(length(xparam),1);
         return
+    end
+else    
+    fprintf('\nComputing standard errors using numerical derivatives of moments\n');
+    for i=1:dim_params
+        %Positive step
+        xparam_eps_p      = xparam;
+        xparam_eps_p(i,1) = xparam_eps_p(i) + eps_value;
+        [~, info_p, ~, ~,~, oo__p] = feval(objective_function, xparam_eps_p, Bounds, oo_, estim_params_, M_, options_mom_);
+
+        % Negative step
+        xparam_eps_m      = xparam;
+        xparam_eps_m(i,1) = xparam_eps_m(i) - eps_value;
+        [~, info_m,  ~, ~,~, oo__m] = feval(objective_function, xparam_eps_m, Bounds, oo_, estim_params_, M_, options_mom_);
+
+        % The Jacobian:
+        if nnz(info_p)==0 && nnz(info_m)==0
+            D(:,i) = (oo__p.mom.model_moments - oo__m.mom.model_moments)/(2*eps_value);
+        else
+            problpar = get_the_name(i,options_mom_.TeX, M_, estim_params_, options_mom_);
+            message_p = get_error_message(info_p, options_mom_);
+            message_m = get_error_message(info_m, options_mom_);        
+
+            warning('method_of_moments:info','Cannot compute the Jacobian for parameter %s - no standard errors available\n %s %s\nCheck your bounds and/or priors, or use a different optimizer.\n',problpar, message_p, message_m)
+            Asympt_Var = NaN(length(xparam),length(xparam));
+            SE_values = NaN(length(xparam),1);
+            return
+        end
     end
 end
 

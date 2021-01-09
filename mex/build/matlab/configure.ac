@@ -51,26 +51,13 @@ CXXFLAGS="$MATLAB_CXXFLAGS -Wall -Wno-parentheses -Wold-style-cast"
 
 AC_PROG_FC
 AC_PROG_CC
-AC_PROG_CC_C99 # mjdgges DLL now uses C99 features (variable declared in for loop)
+AC_PROG_CC_C99
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX_17
 AC_PROG_RANLIB
 AX_PROG_LN_S
 AC_PROG_MKDIR_P
 AM_PROG_AR
-
-case ${host_os} in
-  *darwin*)
-    string=$($CXX --version)
-    if test "${string#*clang}" != "$string"; then
-      CXXFLAGS="$CXXFLAGS -stdlib=libc++"
-      MATLAB_LIBS="$MATLAB_LIBS -lc++"
-      MATLAB_LDFLAGS="$MATLAB_LDFLAGS -Wl,-syslibroot,$(xcrun -sdk macosx --show-sdk-path)"
-    else
-      MATLAB_LIBS="$MATLAB_LIBS -lstdc++"
-    fi
-    ;;
-esac
 
 AX_CXX11_THREAD
 

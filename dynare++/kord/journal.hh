@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -57,14 +57,18 @@ struct SystemResources
 
 class Journal : public std::ofstream
 {
-  int ord;
-  int depth;
+  int ord{0};
+  int depth{0};
 public:
   explicit Journal(const std::string &fname)
-    : std::ofstream(fname), ord(0), depth(0)
+    : std::ofstream(fname)
   {
     printHeader();
   }
+  /* Constructor that does not initialize the std::ofstream. To be used when an
+     on-disk journal is not wanted. */
+  Journal() = default;
+  Journal &operator=(Journal &&) = default;
   ~Journal() override
   {
     flush();

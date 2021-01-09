@@ -39,10 +39,10 @@ else
     M_var_root = {'M_.endo', 'M_.exo', 'M_.exo_det', 'M_.param'};
 end
 
-if ~exist([M_.fname '/latex'],'dir')
-    mkdir(M_.fname,'latex');
+if ~exist([M_.dname '/latex'],'dir')
+    mkdir(M_.dname,'latex');
 end
-fid = fopen([M_.fname, '/latex/' M_.fname '_latex_definitions.tex'], 'w');
+fid = fopen([M_.dname, '/latex/' M_.fname '_latex_definitions.tex'], 'w');
 for i=1:length(tables)
     fprintf(fid, '\\begin{center}\n');
     fprintf(fid, '\\begin{longtable}{ccc}\n');

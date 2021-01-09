@@ -31,7 +31,7 @@ function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_o
 %  o resol
 %  o set_all_parameters
 % =========================================================================
-% Copyright (C) 2020 Dynare Team
+% Copyright (C) 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -109,7 +109,32 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
     %--------------------------------------------------------------------------
     % 3. Set up pruned state-space system and compute model moments
     %--------------------------------------------------------------------------
-    pruned_state_space = pruned_state_space_system(M_, options_mom_, dr, oo_.dr.obs_var, options_mom_.ar, 0, 0);
+    if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors        
+        indpmodel = []; %initialize index for model parameters
+        if ~isempty(estim_params_.param_vals)
+            indpmodel = estim_params_.param_vals(:,1); %values correspond to parameters declaration order, row number corresponds to order in estimated_params
+        end
+        indpstderr=[]; %initialize index for stderr parameters
+        if ~isempty(estim_params_.var_exo)
+            indpstderr = estim_params_.var_exo(:,1); %values correspond to varexo declaration order, row number corresponds to order in estimated_params
+        end
+        indpcorr=[]; %initialize matrix for corr paramters
+        if ~isempty(estim_params_.corrx)
+            indpcorr = estim_params_.corrx(:,1:2); %values correspond to varexo declaration order, row number corresponds to order in estimated_params
+        end
+        if estim_params_.nvn || estim_params_.ncn %nvn is number of stderr parameters and ncn is number of corr parameters of measurement innovations as declared in estimated_params
+            error('Analytic computation of standard errrors does not (yet) support measurement errors.\nInstead, define them explicitly as varexo and provide measurement equations in the model definition.\nAlternatively, use numerical standard errors.')
+        end
+        modparam_nbr = estim_params_.np;        % number of model parameters as declared in estimated_params
+        stderrparam_nbr = estim_params_.nvx;    % number of stderr parameters
+        corrparam_nbr = estim_params_.ncx;      % number of corr parameters
+        totparam_nbr = stderrparam_nbr+corrparam_nbr+modparam_nbr;
+        dr.derivs = get_perturbation_params_derivs(M_, options_mom_, estim_params_, oo_, indpmodel, indpstderr, indpcorr, 0); %analytic derivatives of perturbation matrices
+        oo_.mom.model_moments_params_derivs = NaN(options_mom_.mom.mom_nbr,totparam_nbr);
+        pruned_state_space = pruned_state_space_system(M_, options_mom_, dr, oo_.dr.obs_var, options_mom_.ar, 0, 1);
+    else
+        pruned_state_space = pruned_state_space_system(M_, options_mom_, dr, oo_.dr.obs_var, options_mom_.ar, 0, 0);
+    end
     
     oo_.mom.model_moments = NaN(options_mom_.mom.mom_nbr,1);
     offset = 0;
@@ -118,6 +143,9 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         E_y = pruned_state_space.E_y;
         E_y_nbr = nnz(options_mom_.mom.index.E_y);
         oo_.mom.model_moments(offset+1:E_y_nbr,1) = E_y(options_mom_.mom.index.E_y);
+        if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+            oo_.mom.model_moments_params_derivs(offset+1:E_y_nbr,:) = pruned_state_space.dE_y(options_mom_.mom.index.E_y,:);
+        end
         offset = offset + E_y_nbr;
     end
     % Second moments
@@ -125,22 +153,47 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
     if isfield(options_mom_.mom.index,'E_yy') && nnz(options_mom_.mom.index.E_yy) > 0
         if options_mom_.prefilter
             E_yy = pruned_state_space.Var_y;
+            if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+                dE_yy = pruned_state_space.dVar_y;
+            end            
         else
             E_yy = pruned_state_space.Var_y + pruned_state_space.E_y*pruned_state_space.E_y';
+            if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+                dE_yy = pruned_state_space.dVar_y;
+                for jp=1:totparam_nbr
+                    dE_yy(:,:,jp) = dE_yy(:,:,jp) + pruned_state_space.dE_y(:,jp)*pruned_state_space.E_y' + pruned_state_space.E_y*pruned_state_space.dE_y(:,jp)';
+                end
+            end
         end
         E_yy_nbr = nnz(tril(options_mom_.mom.index.E_yy));
         oo_.mom.model_moments(offset+(1:E_yy_nbr),1) = E_yy(tril(options_mom_.mom.index.E_yy));
+        if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+            oo_.mom.model_moments_params_derivs(offset+(1:E_yy_nbr),:) = reshape(dE_yy(repmat(tril(options_mom_.mom.index.E_yy),[1 1 totparam_nbr])),E_yy_nbr,totparam_nbr);
+        end
         offset = offset + E_yy_nbr;
     end
     % Lead/lags covariance
     if isfield(options_mom_.mom.index,'E_yyt') && nnz(options_mom_.mom.index.E_yyt) > 0
         if options_mom_.prefilter
             E_yyt = pruned_state_space.Var_yi;
+            if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+                dE_yyt = pruned_state_space.dVar_yi;
+            end
         else
             E_yyt = pruned_state_space.Var_yi + repmat(pruned_state_space.E_y*pruned_state_space.E_y',[1 1 size(pruned_state_space.Var_yi,3)]);
+            if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+                dE_yyt = pruned_state_space.dVar_yi;
+                for jp=1:totparam_nbr
+                    dE_yyt(:,:,:,jp) = dE_yyt(:,:,:,jp) + repmat(pruned_state_space.dE_y(:,jp)*pruned_state_space.E_y',[1 1 size(pruned_state_space.Var_yi,3)])...
+                                                        + repmat(pruned_state_space.E_y*pruned_state_space.dE_y(:,jp)',[1 1 size(pruned_state_space.Var_yi,3)]);
+                end
+            end
         end
         E_yyt_nbr = nnz(options_mom_.mom.index.E_yyt);
         oo_.mom.model_moments(offset+(1:E_yyt_nbr),1) = E_yyt(options_mom_.mom.index.E_yyt);
+        if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+            oo_.mom.model_moments_params_derivs(offset+(1:E_yyt_nbr),:) = reshape(dE_yyt(repmat(options_mom_.mom.index.E_yyt,[1 1 1 totparam_nbr])),E_yyt_nbr,totparam_nbr);
+        end
     end
 
 elseif strcmp(options_mom_.mom.mom_method,'SMM')
@@ -179,7 +232,7 @@ elseif strcmp(options_mom_.mom.mom_method,'SMM')
         i_ME = setdiff([1:size(M_.H,1)],find(diag(M_.H) == 0)); % find ME with 0 variance
         chol_S = chol(M_.H(i_ME,i_ME)); %decompose rest
         shock_mat=zeros(size(options_mom_.mom.ME_shock_series)); %initialize
-        shock_mat(:,i_ME)=options_mom_.mom.ME_shock_series(:,i_exo_var)*chol_S;
+        shock_mat(:,i_ME)=options_mom_.mom.ME_shock_series(:,i_ME)*chol_S;
         y_sim = y_sim+shock_mat;
     end
 

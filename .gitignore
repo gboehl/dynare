@@ -70,11 +70,8 @@ doc/internals/*.html
 doc/internals/ltxpng
 
 # MATLAB dir
-/matlab/preprocessor*
+/matlab/preprocessor64/
 /matlab/dynare_version.m
-
-# JULIA dir
-/julia/preprocessor*
 
 # DLL rules
 *.mex

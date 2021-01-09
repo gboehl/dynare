@@ -179,7 +179,8 @@ for i = 1:size(x,1)
 end
 fclose(fh);
 
-if ~verLessThan('matlab', '8.2')
+% The table() function is not implemented in Octave
+if ~isoctave && ((ispc && ~matlab_ver_less_than('8.2')) || (~ispc && ~matlab_ver_less_than('9.0')))
     writetable(table(x,y), 'data.xlsx')
     options = struct();
     options.datafile = 'data.xlsx';
@@ -189,23 +190,30 @@ if ~verLessThan('matlab', '8.2')
     failed_tests = my_assert(failed_tests, series.nobs == 10, ...
                              '*.xlsx file nobs test');
     num_tests = num_tests + 2;
+end
 
-    if ispc
-        writetable(table(x,y), 'data.xls')
-        options = struct();
-        options.datafile = 'data.xls';
-        series = histvalf_initvalf('INITVAL_FILE', M, options);
-        failed_tests = my_assert(failed_tests, series.init == dates('1Y'), ...
+% The table() function is not implemented in Octave
+% The test also does not work under GNU/Linux + MATLAB R2020b (Unicode issue in xlsread)
+if ~isoctave && (ispc && ~matlab_ver_less_than('8.2'))
+    writetable(table(x,y), 'data.xls')
+    options = struct();
+    options.datafile = 'data.xls';
+    series = histvalf_initvalf('INITVAL_FILE', M, options);
+    failed_tests = my_assert(failed_tests, series.init == dates('1Y'), ...
                              '*.xls file first_obs test');
-        failed_tests = my_assert(failed_tests, series.nobs == 10, ...        
+    failed_tests = my_assert(failed_tests, series.nobs == 10, ...
                              '*.xls file nobs test');
-        num_tests = num_tests + 2;
-    end
+    num_tests = num_tests + 2;
 end
 
 cd(getenv('TOP_TEST_DIR'));
-fid = fopen('histval_initval_file_unit_tests.m.trs', 'w+');
-num_failed_tests = length(failed_tests)
+if isoctave
+    ext = '.o.trs';
+else
+    ext = '.m.trs';
+end
+fid = fopen([ 'histval_initval_file_unit_tests' ext ], 'w+');
+num_failed_tests = length(failed_tests);
 if num_failed_tests > 0
   fprintf(fid,':test-result: FAIL\n');
   fprintf(fid,':number-tests: %d\n', num_tests);

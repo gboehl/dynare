@@ -63,7 +63,7 @@ if isempty(exogenous_variable_index)
     end
 end
 
-if isoctave
+if isoctave && octave_ver_less_than('6')
     [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(var_list,options_.varobs);
 else
     [observable_pos_requested_vars,index_subset,index_observables]=intersect(var_list,options_.varobs,'stable');

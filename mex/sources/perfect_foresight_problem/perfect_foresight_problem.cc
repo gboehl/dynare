@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2020 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -101,7 +101,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   // Call <model>.dynamic_g1_nz
   mxArray *g1_nz_plhs[3];
-  mexCallMATLAB(3, g1_nz_plhs, 0, nullptr, (basename + ".dynamic_g1_nz").c_str());
+  if (mexCallMATLAB(3, g1_nz_plhs, 0, nullptr, (basename + ".dynamic_g1_nz").c_str()) != 0)
+    mexErrMsgTxt((std::string{"Could not call "} + basename + ".dynamic_g1_nz").c_str());
   const mxArray *nzij_pred_mx = g1_nz_plhs[0];
   const mxArray *nzij_current_mx = g1_nz_plhs[1];
   const mxArray *nzij_fwrd_mx = g1_nz_plhs[2];

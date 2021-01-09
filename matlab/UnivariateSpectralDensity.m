@@ -98,7 +98,7 @@ end
 [vx, u] =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,[],options_.debug);
 iky = iv(ivar);
 if ~isempty(u)
-    iky = iky(find(any(abs(ghx(iky,:)*u) < options_.Schur_vec_tol,2)));
+    iky = iky(find(any(abs(ghx(iky,:)*u) < options_.schur_vec_tol,2)));
     ivar = oo_.dr.order_var(iky);
 end
 
@@ -151,11 +151,11 @@ else
 end
 
 if ~options_.nograph
-    if ~exist(M_.fname, 'dir')
-        mkdir('.',M_.fname);
+    if ~exist(M_.dname, 'dir')
+        mkdir('.',M_.dname);
     end
-    if ~exist([M_.fname '/graphs'],'dir')
-        mkdir(M_.fname,'graphs');
+    if ~exist([M_.dname '/graphs'],'dir')
+        mkdir(M_.dname,'graphs');
     end
 
     for i= 1:nvar
@@ -165,6 +165,6 @@ if ~options_.nograph
         ylabel('f(\omega)')
         box on
         axis tight
-        dyn_saveas(hh,[M_.fname ,filesep,'graphs', filesep, 'SpectralDensity_' M_.endo_names{ivar(i)}],options_.nodisplay,options_.graph_format)
+        dyn_saveas(hh,[M_.dname ,filesep,'graphs', filesep, 'SpectralDensity_' M_.endo_names{ivar(i)}],options_.nodisplay,options_.graph_format)
     end
 end

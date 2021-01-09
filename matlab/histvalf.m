@@ -31,8 +31,6 @@ function [endo_histval, exo_histval, exo_det_histval] = histvalf(M, options)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 series = histvalf_initvalf('HISTVAL', M, options);
-% capture the difference between stochastic and
-% perfect foresight setup
 k = M.orig_maximum_lag - M.maximum_lag + 1;
 endo_histval  = series{M.endo_names{:}}.data(k:end, :)';
 

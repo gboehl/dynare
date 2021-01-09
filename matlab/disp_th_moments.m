@@ -55,7 +55,7 @@ oo_.var = oo_.gamma_y{1};
 
 ME_present=0;
 if ~all(diag(M_.H)==0)
-    if isoctave
+    if isoctave && octave_ver_less_than('6')
         [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
     else
         [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
@@ -82,11 +82,11 @@ if size(stationary_vars, 1) > 0
         end
         title = add_filter_subtitle(title, options_);
         headers = {'VARIABLE';'MEAN';'STD. DEV.';'VARIANCE'};
-        labels = M_.endo_names(ivar);
+        labels=get_labels_transformed_vars(M_.endo_names,ivar,options_,false);
         lh = cellofchararraymaxlength(labels)+2;
         dyntable(options_, title, headers, labels, z, lh, 11, 4);
         if options_.TeX
-            labels = M_.endo_names_tex(ivar);
+            labels=get_labels_transformed_vars(M_.endo_names_tex,ivar,options_,true);
             lh = cellofchararraymaxlength(labels)+2;
             dyn_latex_table(M_, options_, title, 'th_moments', headers, labels, z, lh, 11, 4);
         end
@@ -102,26 +102,29 @@ if size(stationary_vars, 1) > 0
             headers = M_.exo_names;
             headers(M_.exo_names_orig_ord) = headers;
             headers = vertcat(' ', headers);
-            lh = cellofchararraymaxlength(M_.endo_names(ivar(stationary_vars)))+2;
-            dyntable(options_, title, headers, M_.endo_names(ivar(stationary_vars)), 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
+            labels=get_labels_transformed_vars(M_.endo_names,ivar(stationary_vars),options_,false);
+            lh = cellofchararraymaxlength(labels)+2;
+            dyntable(options_, title, headers, labels, 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
             if ME_present
-                if isoctave
+                if isoctave && octave_ver_less_than('6')
                     [stationary_observables, pos_index_subset] = intersect_stable(index_subset, stationary_vars);
                 else
                     [stationary_observables, pos_index_subset] = intersect(index_subset, stationary_vars, 'stable');
                 end
                 headers_ME = vertcat(headers, 'ME');
-                dyntable(options_, [title,' WITH MEASUREMENT ERROR'], headers_ME, M_.endo_names(ivar(stationary_observables)), ...
+                labels=get_labels_transformed_vars(M_.endo_names,ivar(stationary_observables),options_,false);
+                dyntable(options_, [title,' WITH MEASUREMENT ERROR'], headers_ME, labels, ...
                          oo_.variance_decomposition_ME(pos_index_subset,:), lh, 8, 2);
             end
             if options_.TeX
                 headers = M_.exo_names_tex;
                 headers = vertcat(' ', headers);
-                labels = M_.endo_names_tex(ivar(stationary_vars));
+                labels=get_labels_transformed_vars(M_.endo_names_tex,ivar(stationary_vars),options_,true);
                 lh = cellofchararraymaxlength(labels)+2;
                 dyn_latex_table(M_, options_, title, 'th_var_decomp_uncond', headers, labels, 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
                 if ME_present
                     headers_ME = vertcat(headers, 'ME');
+                    labels=get_labels_transformed_vars(M_.endo_names_tex,ivar(stationary_observables),options_,true);
                     dyn_latex_table(M_, options_, [title,' WITH MEASUREMENT ERROR'], ...
                                     'th_var_decomp_uncond_ME', headers_ME, labels, oo_.variance_decomposition_ME(pos_index_subset,:), lh, 8, 2);
                 end
@@ -172,12 +175,12 @@ if ~options_.nocorr && size(stationary_vars, 1)>0
             title = 'MATRIX OF CORRELATIONS';
         end
         title = add_filter_subtitle(title, options_);
-        labels = M_.endo_names(ivar(i1));
+        labels=get_labels_transformed_vars(M_.endo_names,ivar(i1),options_,false);
         headers = vertcat('Variables', labels);
         lh = cellofchararraymaxlength(labels)+2;
         dyntable(options_, title, headers, labels, corr(i1,i1), lh, 8, 4);
         if options_.TeX
-            labels = M_.endo_names_tex(ivar(i1));
+            labels=get_labels_transformed_vars(M_.endo_names_tex,ivar(i1),options_,true);
             headers = vertcat('Variables', labels);
             lh = cellofchararraymaxlength(labels)+2;
             dyn_latex_table(M_, options_, title, 'th_corr_matrix', headers, labels, corr(i1,i1), lh, 8, 4);
@@ -199,12 +202,12 @@ if options_.ar > 0 && size(stationary_vars, 1) > 0
             title = 'COEFFICIENTS OF AUTOCORRELATION';
         end
         title = add_filter_subtitle(title, options_);
-        labels = M_.endo_names(ivar(i1));
+            labels=get_labels_transformed_vars(M_.endo_names,ivar(i1),options_,false);
         headers = vertcat('Order ', cellstr(int2str([1:options_.ar]')));
         lh = cellofchararraymaxlength(labels)+2;
         dyntable(options_, title, headers, labels, z, lh, 8, 4);
         if options_.TeX
-            labels = M_.endo_names_tex(ivar(i1));
+            labels=get_labels_transformed_vars(M_.endo_names_tex,ivar(i1),options_,true);
             headers = vertcat('Order ', cellstr(int2str([1:options_.ar]')));
             lh = cellofchararraymaxlength(labels)+2;
             dyn_latex_table(M_, options_, title, 'th_autocorr_matrix', headers, labels, z, lh, 8, 4);

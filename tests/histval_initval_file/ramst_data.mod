@@ -36,8 +36,8 @@ perfect_foresight_solver;
 
 fh = fopen('ramst_data.m', 'w');
 fprintf(fh, 'INIT__ = ''1Y'';\n');
-fprintf(fh, 'NAMES__ = {''c'', ''k'', ''x''};\n');
-fprintf(fh, 'TEX__ = {''c'', ''k'', ''x''};\n');
+fprintf(fh, 'NAMES__ = {''c''; ''k''; ''x''};\n');
+fprintf(fh, 'TEX__ = {''c''; ''k''; ''x''};\n');
 fprintf(fh, 'c = [');
 fprintf(fh, '%f ', oo_.endo_simul(1,:));
 fprintf(fh, '];\n');
@@ -50,8 +50,8 @@ fprintf(fh, '];\n');
 fclose(fh);
 
 INIT__ = '1Y';
-NAMES__ = {'c', 'k', 'x'};
-TEX__  = {'c', 'k', 'x'};
+NAMES__ = {'c'; 'k'; 'x'};
+TEX__  = {'c'; 'k'; 'x'};
 eval('c = oo_.endo_simul(1,:);');
 eval('k = oo_.endo_simul(2,:);');
 eval('x = oo_.exo_simul'';');
@@ -61,7 +61,7 @@ save('ramst_data.mat', 'INIT__', 'NAMES__', ...
 fh = fopen('ramst_data.csv', 'w');
 fprintf(fh, 'c,k,x\n');
 for i = 1:size(oo_.endo_simul, 2);
-  fprintf(fh, '%f, ', oo_.endo_simul(:, i));
+  fprintf(fh, '%f, ', oo_.endo_simul(1:M_.orig_endo_nbr, i));
   fprintf(fh, '%f\n', oo_.exo_simul(i));
 end;
 fclose(fh);

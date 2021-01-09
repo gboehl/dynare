@@ -41,11 +41,13 @@ beta = get_optimal_policy_discount_factor(M_.params, M_.param_names);
 %call steady_state_file if present to update parameters
 if options_.steadystate_flag
     % explicit steady state file
-    [~,M_.params,info] = evaluate_steady_state_file(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_, ...
+    [ys,M_.params,info] = evaluate_steady_state_file(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_, ...
                                                     options_,false);
     if info(1)
         return;
     end
+else
+    ys=zeros(M_.endo_nbr,1);
 end
 [U,Uy,W] = feval([M_.fname,'.objective.static'],zeros(M_.endo_nbr,1),[], M_.params);
 if any(any(isnan(Uy)))
@@ -73,8 +75,10 @@ W=reshape(W,M_.endo_nbr,M_.endo_nbr);
 klen = M_.maximum_lag + M_.maximum_lead + 1;
 iyv=M_.lead_lag_incidence';
 % Find the jacobian
-z = repmat(zeros(M_.endo_nbr,1),1,klen);
-z = z(nonzeros(iyv)) ;
+z = repmat(ys,1,klen);
+iyr0 = find(iyv(:)) ;
+
+z = z(iyr0);
 it_ = M_.maximum_lag + 1 ;
 
 if M_.exo_nbr == 0
@@ -82,16 +86,16 @@ if M_.exo_nbr == 0
 end
 
 [junk,jacobia_] = feval([M_.fname '.dynamic'],z, [zeros(size(oo_.exo_simul)) ...
-                    oo_.exo_det_simul], M_.params, zeros(M_.endo_nbr,1), it_);
-if any(junk~=0)
-    info = 65; %the model must be written in deviation form and not have constant terms
-    return;
+                    oo_.exo_det_simul], M_.params, ys, it_);
+if max(abs(junk))>options_.solve_tolf
+     info = 65; %the model must be written in deviation form and not have constant terms or have a steady state provided
+     return;
 end
 
 Indices={'lag','contemp','lead'};
 iter=1;
 for j=1:numel(Indices)
-    A.(Indices{j})=zeros(M_.orig_eq_nbr,M_.endo_nbr);
+    A.(Indices{j})=zeros(M_.eq_nbr,M_.endo_nbr);
     if strcmp(Indices{j},'contemp')||(strcmp(Indices{j},'lag') && M_.maximum_lag)||(strcmp(Indices{j},'lead') && M_.maximum_lead)
         [~,row,col]=find(M_.lead_lag_incidence(iter,:));
         A.(Indices{j})(:,row)=jacobia_(:,col);
@@ -116,10 +120,12 @@ else
 end
 
 %write back solution to dr
-dr.ys =zeros(M_.endo_nbr,1);
+dr.ys =ys;
 dr=set_state_space(dr,M_,options_);
 T=H(dr.order_var,dr.order_var);
 dr.ghu=G(dr.order_var,:);
-Selection=M_.lead_lag_incidence(1,dr.order_var)>0;%select state variables
+if M_.maximum_endo_lag
+    Selection=M_.lead_lag_incidence(1,dr.order_var)>0;%select state variables
+end
 dr.ghx=T(:,Selection);
 oo_.dr = dr;

@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright © 2009-2019 Dynare Team
+dnl Copyright © 2009-2020 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -28,8 +28,10 @@ test "$ax_enable_octave" != yes && AC_MSG_ERROR([Octave cannot be found])
 
 CC=$($MKOCTFILE -p CC)
 CXX=$($MKOCTFILE -p CXX)
+AR=$($MKOCTFILE -p AR)
+RANLIB=$($MKOCTFILE -p RANLIB)
 CFLAGS="$($MKOCTFILE -p CFLAGS) -Wall -Wno-parentheses"
-FCFLAGS="-g -O2 -Wall"
+FCFLAGS="$($MKOCTFILE -p FFLAGS) -Wall -std=gnu" # Override -std=legacy that is in FFLAGS in Octave 5
 FFLAGS="$($MKOCTFILE -p FFLAGS) -Wall"
 CXXFLAGS="$($MKOCTFILE -p CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast"
 LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
@@ -37,8 +39,8 @@ LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
 AC_CANONICAL_HOST
 case ${host_os} in
   darwin*)
-    CXXFLAGS="$($MKOCTFILE -p ALL_CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast -O2"
-    LDFLAGS+=" $($MKOCTFILE -p OCTAVE_LIBS)"
+    dnl The mkoctfile from Octave.app 4.4.1 does not add optimization flags in CXXFLAGS
+    CXXFLAGS+=" -O2"
     ;;
 esac
 
@@ -47,7 +49,7 @@ AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.4], [AC_MSG_ERROR([Your Octave is
 
 AC_PROG_FC
 AC_PROG_CC
-AC_PROG_CC_C99 # mjdgges DLL now uses C99 features (variable declared in for loop)
+AC_PROG_CC_C99
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX_17
 AC_PROG_RANLIB
@@ -92,6 +94,15 @@ fi
 # Check for UMFPACK, needed by bytecode
 AC_CHECK_LIB([umfpack], [umfpack_dl_defaults], [LIBADD_UMFPACK="-lumfpack"], [AC_MSG_ERROR([Can't find UMFPACK])])
 AC_SUBST([LIBADD_UMFPACK])
+
+# On Windows, we want static linking of the external libraries
+case ${host_os} in
+  *mingw32*)
+    GSL_LIBS="-Wl,-Bstatic $GSL_LIBS -Wl,-Bdynamic"
+    LIBADD_MATIO="-Wl,-Bstatic $LIBADD_MATIO -Wl,-Bdynamic"
+    LIBADD_SLICOT="-Wl,-Bstatic $LIBADD_SLICOT -Wl,-Bdynamic"
+    ;;
+esac
 
 # Construct final output message
 if test "$enable_mex_dynareplusplus" = yes; then
