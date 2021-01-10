@@ -180,6 +180,9 @@ if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && options_.m
     if options_.smoother
         [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,options_,bayestopt_] = DsgeSmoother(xparam1,gend,transpose(data),data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
         [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
+        if options_.forecast > 0
+            oo_.forecast = dyn_forecast(var_list_,M_,options_,oo_,'smoother',dataset_info);
+        end
     end
     %reset qz_criterium
     options_.qz_criterium=qz_criterium_old;
