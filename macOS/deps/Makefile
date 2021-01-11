@@ -144,7 +144,7 @@ sources64/x13as-$(X13AS_VERSION): tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
 
 lib64/x13as/x13as: sources64/x13as-$(X13AS_VERSION)
 	cd $< && sed -i '' 's/-static//g' makefile.gf
-	make -C $< -f makefile.gf FC=gfortran LINKER=ld FFLAGS="-O2 -std=legacy" LDFLAGS="-macosx_version_min 10.14.0 -lSystem $(shell gfortran -print-file-name=libgfortran.a) $(shell gfortran -print-file-name=libquadmath.a) $(shell gfortran -print-libgcc-file-name) $(shell gfortran -print-file-name=libgcc_eh.a)" PROGRAM=x13as
+	make -C $< -f makefile.gf FC=gfortran LINKER=gfortran FFLAGS="-O2 -std=legacy" PROGRAM=x13as
 	strip $</x13as
 	mkdir -p $(dir $@)
 	cp $</x13as $@
