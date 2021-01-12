@@ -18,7 +18,7 @@
 	url = ../../Dynare/particles.git
 [submodule "matlab/modules/dseries"]
 	path = matlab/modules/dseries
-	url = ../../Enterprise/dseries.git
+	url = ../../Dynare/dseries.git
 	branch = enterprise
 [submodule "matlab/modules/reporting"]
 	path = matlab/modules/reporting
@@ -28,4 +28,4 @@
 	url = https://github.com/fangq/jsonlab.git
 [submodule "preprocessor"]
 	path = preprocessor
-	url = ../../Enterprise/preprocessor.git
+	url = ../../Dynare/preprocessor.git
