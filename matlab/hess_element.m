@@ -1,15 +1,17 @@
-function d=hess_element(func,element1,element2,args)
-% function d=hess_element(func,element1,element2,args)
+function d=hess_element(func,arg1,arg2,elem1,elem2,args)
+% function d=hess_element(func,arg1,arg2,elem1,elem2,args)
 % returns an entry of the finite differences approximation to the hessian of func
 %
 % INPUTS
 %    func       [function name]    string with name of the function
-%    element1   [int]              the indices showing the element within the hessian that should be returned
-%    element2   [int]
+%    arg1       [int]              the indices showing the element within the hessian that should be returned
+%    arg2       [int]
+%    elem1      [int]              vector index 1
+%    elem2      [int]              vector index 2
 %    args       [cell array]       arguments provided to func
 %
 % OUTPUTS
-%    d          [double]           the (element1,element2) entry of the hessian
+%    d          [double]           the (arg1,arg2) entry of the hessian
 %
 % SPECIAL REQUIREMENTS
 %    none
@@ -31,7 +33,7 @@ function d=hess_element(func,element1,element2,args)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(element1 <= length(args) && element2 <= length(args));
+assert(arg1 <= length(args) && arg2 <= length(args));
 
 func = str2func(func);
 
@@ -43,21 +45,21 @@ m01 = args;
 p11 = args;
 m11 = args;
 
-p10{element1} = p10{element1} + h;
-m10{element1} = m10{element1} - h;
+p10{arg1}(elem1) = p10{arg1}(elem1) + h;
+m10{arg1}(elem1) = m10{arg1}(elem1) - h;
 
-p11{element1} = p11{element1} + h;
-m11{element1} = m11{element1} - h;
-        
-p01{element2} = p01{element2} + h;
-m01{element2} = m01{element2} - h;
+p11{arg1}(elem1) = p11{arg1}(elem1) + h;
+m11{arg1}(elem1) = m11{arg1}(elem1) - h;
 
-p11{element2} = p11{element2} + h;
-m11{element2} = m11{element2} - h;
+p01{arg2}(elem2) = p01{arg2}(elem2) + h;
+m01{arg2}(elem2) = m01{arg2}(elem2) - h;
+
+p11{arg2}(elem2) = p11{arg2}(elem2) + h;
+m11{arg2}(elem2) = m11{arg2}(elem2) - h;
 
 % From Abramowitz and Stegun. Handbook of Mathematical Functions (1965)
 % formulas 25.3.24 and 25.3.27 p. 884
-if element1==element2
+if arg1 == arg2 && elem1 == elem2
     d = (16*func(p10{:})...
          +16*func(m10{:})...
          -30*func(args{:})...

@@ -1,33 +1,33 @@
 /*
- * This file implements the Baseline New Keynesian DSGE model described in 
- * much detail in Jesús Fernández-Villaverde and Juan F. Rubio-Ramírez (2006): “A Baseline DSGE 
+ * This file implements the Baseline New Keynesian DSGE model described in
+ * much detail in Jesús Fernández-Villaverde and Juan F. Rubio-Ramírez (2006): “A Baseline DSGE
  * Model”, available at http://economics.sas.upenn.edu/~jesusfv/benchmark_DSGE.pdf
  *
- * The parametrization is based on the estimated version of this model in 
- * Jesús Fernández-Villaverde (2010): “The econometrics of DSGE models”, 
+ * The parametrization is based on the estimated version of this model in
+ * Jesús Fernández-Villaverde (2010): “The econometrics of DSGE models”,
  * SERIEs, Vol. 1, pp. 3-49, DOI 10.1007/s13209-009-0014-7
  *
  * This implementation was written by Benjamin Born and Johannes Pfeifer. In
  * case you spot mistakes, email us at jpfeifer@gmx.de
  *
- * This mod-file implements a non-linearized version of the New Keynesian 
- * model based on a recursive formulation of the price and wage setting 
- * equations. Moreover, it makes use of a steady state file to i) set 
+ * This mod-file implements a non-linearized version of the New Keynesian
+ * model based on a recursive formulation of the price and wage setting
+ * equations. Moreover, it makes use of a steady state file to i) set
  * parameters that depend on other parameters that are potentially estimated
  * and ii) solve a nonlinear equation using a numerical solver to find the steady
  * state of labor. It provides an example on how the steady state file can be used
  * to circumvent some of the limitation of Dynare mod-file by accessing an external
- * file that allows calling general MATLAB routines. These capacities will mostly be 
- * interesting for power users. If one just wants to provide analytical steady state 
+ * file that allows calling general MATLAB routines. These capacities will mostly be
+ * interesting for power users. If one just wants to provide analytical steady state
  * values and update parameters, the steady_state_model-block allows an easy and convenient
  * alternative. It even allows calling numerical solvers like fsolve. For an example, see
  * example3.mod
- * 
+ *
  * The model is written in the beginning of period stock notation. To make the model
- * conform with Dynare’s end of period stock notation, we use the 
+ * conform with Dynare’s end of period stock notation, we use the
  * predetermined_variables-command.
  *
- * Please note that the following copyright notice only applies to this Dynare 
+ * Please note that the following copyright notice only applies to this Dynare
  * implementation of the model.
  */
 
@@ -79,7 +79,7 @@ var d       (long_name='preference shock')
     phi     (long_name='labor disutility shock')
     F       (long_name='firm profits')
     ;
-    
+
 varexo epsd (long_name='Innovation preference shock')
     epsphi  (long_name='Innovation labor disutility shock')
     epsmu_I (long_name='Innovation investment-specific technology')
@@ -125,7 +125,7 @@ parameters h            (long_name='consumption habits')
 
 //Note that the parameter naming in FV(2010) differs from FV(2006)
 //Fixed parameters, taken from FV(2010), Table 2, p. 37
-delta=0.025; 
+delta=0.025;
 epsilon=10;
 eta= 10;
 Phi=0;
@@ -162,7 +162,7 @@ LambdaA = 2.8e-3;
 
 
 /*
-The following parameters are set in the steady state file as they depend on other 
+The following parameters are set in the steady state file as they depend on other
 deep parameters (some were estimated in the original study). Setting them in the
 steady state file means they are updated for every parameter draw in the MCMC
 algorithm, while the parameters initialized here are only set once for the initial
@@ -181,7 +181,7 @@ The following model equations are the stationary model equations, taken from
 FV(2006), p. 20, section 3.2.
 */
 
-model; 
+model;
 [name='FOC consumption']
 d*(c-h*c(-1)*mu_z^(-1))^(-1)-h*betta*d(+1)*(c(+1)*mu_z(+1)-h*c)^(-1)=lambda;
 [name='Euler equation']
@@ -221,7 +221,7 @@ yd=c+x+mu_z^(-1)*mu_I^(-1)*(gammma1*(u-1)+gammma2/2*(u-1)^2)*k;
 [name='Aggregate production']
 yd=(mu_A*mu_z^(-1)*(u*k)^alppha*ld^(1-alppha)-Phi)/vp;
 [name='Aggregate labor market']
-l=vw*ld; 
+l=vw*ld;
 [name='LOM Price dispersion term']
 vp=thetap*(PI(-1)^chi/PI)^(-epsilon)*vp(-1)+(1-thetap)*PIstar^(-epsilon);
 [name='LOM Wage dispersion term']
@@ -241,7 +241,7 @@ log(phi)=rhophi*log(phi(-1))+epsphi;
 [name='Investment specific technology']
 log(mu_I)=Lambdamu+epsmu_I;
 [name='Neutral technology']
-log(mu_A)=LambdaA+epsA; 
+log(mu_A)=LambdaA+epsA;
 [name='Defininition composite technology']
 mu_z=mu_A^(1/(1-alppha))*mu_I^(alppha/(1-alppha));
 

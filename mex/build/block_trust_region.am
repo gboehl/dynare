@@ -1,0 +1,26 @@
+mex_PROGRAMS = block_trust_region
+
+nodist_block_trust_region_SOURCES = \
+	dulmage_mendelsohn.f08 \
+	matlab_fcn_closure.f08 \
+	trust_region.f08 \
+	mexFunction.f08 \
+	matlab_mex.F08 \
+	blas_lapack.F08
+
+BUILT_SOURCES = $(nodist_block_trust_region_SOURCES)
+CLEANFILES = $(nodist_block_trust_region_SOURCES)
+
+dulmage_mendelsohn.o: matlab_mex.mod
+dulmage_mendelsohn.mod: dulmage_mendelsohn.o
+
+matlab_fcn_closure.mod: matlab_fcn_closure.o
+matlab_fcn_closure.o: matlab_mex.mod
+
+trust_region.mod: trust_region.o
+trust_region.o: lapack.mod
+
+mexFunction.o: matlab_mex.mod dulmage_mendelsohn.mod matlab_fcn_closure.mod trust_region.mod
+
+%.f08: $(top_srcdir)/../../sources/block_trust_region/%.f08
+	$(LN_S) -f $< $@

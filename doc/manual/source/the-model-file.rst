@@ -1504,7 +1504,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 
             perfect_foresight_setup(periods=200);
             perfect_foresight_solver;
-            
+
 
         In this example, the problem is finding the optimal path for
         consumption and capital for the periods :math:`t=1` to
@@ -1804,7 +1804,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 
     .. option:: datafile = FILENAME
                 filename = FILENAME (deprecated)
-		
+
         The name of the file containing the data. It must be included in quotes if the filename
         contains a path or an extension. The command accepts the following file formats:
 
@@ -1825,7 +1825,7 @@ in this case ``initval`` is used to specify the terminal conditions.
           observation.
 
     .. option:: first_obs = {INTEGER | DATE}
-	       
+
         The observation number or the date (see
 	:ref:`dates-members`) of the first observation to be used in the file
 
@@ -1838,9 +1838,9 @@ in this case ``initval`` is used to specify the terminal conditions.
 	the first period of simulation doesn’t need to exist in the
 	file as the only dates necessary for initialization are before
 	that date.
-	
+
     .. option:: last_obs = {INTEGER | DATE}
-	       
+
         The observaton number or the date (see
 	:ref:`dates-members`) of the last observation to be used in
 	the file.
@@ -1848,11 +1848,11 @@ in this case ``initval`` is used to specify the terminal conditions.
     .. option:: nobs = INTEGER
 
 	The number of observations to be used in the file (starting
-	with first of ``first_obs`` observation).	 
+	with first of ``first_obs`` observation).
 
     .. option:: series = DSERIES NAME
 
-        The name of a DSERIES containing the data (see :ref:`dseries-members`)		
+        The name of a DSERIES containing the data (see :ref:`dseries-members`)
 
     *Example 1*
 
@@ -1866,7 +1866,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -1887,7 +1887,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	``perfect_foresight_setup(periods=200)``.
 	Note that the values for the auxiliary variable corresponding
 	to ``x(-2)`` are automatically computed by ``initval_file``.
-	
+
     *Example 2*
 
         ::
@@ -1900,7 +1900,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -1915,7 +1915,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	The initial and terminal values are taken from file
 	``mydata.csv`` starting with the 10th observation in the
 	file. There must be at least 212 observations in the file.
-	
+
     *Example 3*
 
         ::
@@ -1928,7 +1928,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -1936,7 +1936,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 
 	    ds = dseries(mydata.csv);
 	    lds = log(ds);
-	    
+
 	    initval_file(series=lds,
 	                 first_obs=2010Q1);
 
@@ -1947,7 +1947,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	``lds``. All observations are loaded starting with the 1st quarter of
 	2010 until the end of the file. There must be data available
 	at least until 2050Q3.
-	
+
     *Example 4*
 
         ::
@@ -1960,7 +1960,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -1977,7 +1977,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	dates. All observations are loaded from the 3rd quarter of
 	2009 until the end of the file. There must be data available
 	in the file at least until 2050Q1.
-	
+
     *Example 5*
 
         ::
@@ -1990,7 +1990,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -2006,7 +2006,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	``mydata.csv``. The first 212 observations are loaded and the
 	first 203 observations will be used by
 	``perfect_foresight_setup(periods=200)``.
-	
+
     *Example 6*
 
         ::
@@ -2019,7 +2019,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -2034,7 +2034,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 
 	The initial and terminal values are taken from file
 	``mydata.csv``. Observations 10 to 212 are loaded.
-	   
+
     *Example 7*
 
         ::
@@ -2047,7 +2047,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -2094,7 +2094,7 @@ in this case ``initval`` is used to specify the terminal conditions.
           observation.
 
     .. option:: first_obs = {INTEGER | DATE}
-	       
+
         The observation number or the date (see :ref:`dates-members`) of
 	the first observation to be used in the file
 
@@ -2107,20 +2107,20 @@ in this case ``initval`` is used to specify the terminal conditions.
 	the first period of simulation doesn’t need to exist in the
 	file as the only dates necessary for initialization are before
 	that date.
-	
+
     .. option:: last_obs = {INTEGER | DATE}
-	       
+
         The observation number or the date (see :ref:`dates-members`) of the
 	last observation to be used in the file.
 
     .. option:: nobs = INTEGER
 
 	The number of observations to be used in the file (starting
-	with first of ``first_obs`` observation).	 
+	with first of ``first_obs`` observation).
 
     .. option:: series = DSERIES NAME
 
-        The name of a DSERIES containing the data (see :ref:`dseries-members`)		
+        The name of a DSERIES containing the data (see :ref:`dseries-members`)
 
     *Example 1*
 
@@ -2134,7 +2134,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -2144,14 +2144,14 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    x = 0;
 	    c = exp(c*x/(1 - d));
 	    end;
-	    
+
 	    histval_file(datafile=mydata.csv);
 
 	    stoch_simul(order=1,periods=100);
-	    
+
 	The initial values for the stochastic simulation are taken
 	from the two first rows of file ``mydata.csv``.
-	   
+
     *Example 2*
 
         ::
@@ -2164,7 +2164,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -2178,7 +2178,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	The initial values for the stochastic simulation are taken
 	from rows 10 and 11 of file ``mydata.csv``.
 
-	
+
     *Example 3*
 
         ::
@@ -2191,7 +2191,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -2204,7 +2204,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 
 	The initial values for the stochastic simulation are taken
 	from observations 2010Q1 and 2010Q2 of file ``mydata.csv``.
-	
+
     *Example 4*
 
         ::
@@ -2217,7 +2217,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -2230,7 +2230,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 
 	The initial values for the stochastic simulation are taken
 	from observations 2009Q3 and 2009Q4 of file ``mydata.csv``.
-	
+
     *Example 5*
 
         ::
@@ -2243,7 +2243,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -2256,7 +2256,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 
 	The initial values for the stochastic simulation are taken
 	from the two first rows of file ``mydata.csv``.
-	
+
     *Example 6*
 
         ::
@@ -2269,7 +2269,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -2283,7 +2283,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 
 	The initial values for the stochastic simulation are taken
 	from rows 10 and 11 of file ``mydata.csv``.
-	   
+
     *Example 7*
 
         ::
@@ -2296,7 +2296,7 @@ in this case ``initval`` is used to specify the terminal conditions.
 	    b = -0,6;
 	    c = 0.5;
 	    d = 0.5;
-	    
+
             model;
             x = a*x(-1) + b*x(-2) + e;
             log(c) = c*x + d*log(c(+1));
@@ -2306,13 +2306,13 @@ in this case ``initval`` is used to specify the terminal conditions.
 	                 first_obs=10);
 
             histval_file(datafile=myotherdata.csv);
-	    
+
 	    perfect_foresight_setup(periods=200);
 	    perfect_foresight_solver;
 
 	Historical initial values for the simulation are taken from
 	the two first rows of file ``myotherdata.csv``.
-	
+
         Terminal values and guess values for the simulation are taken
 	from file ``mydata.csv`` starting with the 12th observation in
 	the file. There must be at least 212 observations in the file.
@@ -2715,6 +2715,27 @@ Finding the steady state with Dynare nonlinear solver
                 from `http://pages.cs.wisc.edu/~ferris/path.html
                 <http://pages.cs.wisc.edu/~ferris/path.html>`__ and
                 place it in MATLAB’s search path.
+
+           ``12``
+
+                Specialized version of ``2`` for models where all the
+                equations have one endogenous variable on the left
+                hand side and where each equation determines a
+                different endogenous variable. Only expression allowed
+                on the left hand side is the natural logarithm of an
+                endogenous variable. Univariate blocks are solved by
+                evaluating the expression on the right hand
+                side.
+
+           ``14``
+
+                Specialized version of ``4`` for models where all the
+                equations have one endogenous variable on the left
+                hand side and where each equation determines a
+                different endogenous variable. Only expression allowed
+                on the left hand side is the natural logarithm of an
+                endogenous variable. Univariate blocks are solved by
+                evaluating the expression on the right hand side.
 
        |br| Default value is ``4``.
 
@@ -3818,8 +3839,8 @@ Computing the stochastic solution
        ``oo_.conditional_variance_decomposition_ME`` (see
        :mvar:`oo_.conditional_variance_decomposition_ME`).  The
        variance decomposition is only conducted, if theoretical
-       moments are requested, *i.e.* using the ``periods=0``-option. 
-       Only available at ``order<3`` and without ``pruning''. In case of ``order=2``, 
+       moments are requested, *i.e.* using the ``periods=0``-option.
+       Only available at ``order<3`` and without ``pruning''. In case of ``order=2``,
        Dynare provides a second-order accurate
        approximation to the true second moments based on the linear
        terms of the second-order solution (see *Kim, Kim,
@@ -4021,8 +4042,8 @@ Computing the stochastic solution
     |br| After a run of ``stoch_simul``, contains the
     variance-covariance of the endogenous variables. Contains
     theoretical variance if the ``periods`` option is not present and simulated variance
-    otherwise. Only available for ``order<4``. At ``order=2`` it will be be 
-    a second-order accurate approximation. At ``order=3``, theoretical moments 
+    otherwise. Only available for ``order<4``. At ``order=2`` it will be be
+    a second-order accurate approximation. At ``order=3``, theoretical moments
     are only available with ``pruning``. The variables are arranged in declaration order.
 
 .. matvar:: oo_.var_list
@@ -4051,8 +4072,8 @@ Computing the stochastic solution
     autocorrelation. The option ar specifies the number of
     autocorrelation matrices available. Contains theoretical
     autocorrelations if the ``periods`` option is not present and simulated
-    autocorrelations otherwise. Only available for ``order<4``. At ``order=2`` it will be be 
-    a second-order accurate approximation. At ``order=3``, theoretical moments 
+    autocorrelations otherwise. Only available for ``order<4``. At ``order=2`` it will be be
+    a second-order accurate approximation. At ``order=3``, theoretical moments
     are only available with ``pruning``.  The field is only created if
     stationary variables are present.
 
@@ -4091,10 +4112,10 @@ Computing the stochastic solution
             If a second order approximation has been requested,
             contains the vector of the mean correction terms.
 
-            Only available at ``order<4``. In case ``order=2``, the 
-            theoretical second moments are a second order accurate 
+            Only available at ``order<4``. In case ``order=2``, the
+            theoretical second moments are a second order accurate
             approximation of the true second moments. See conditional_variance_decomposition.
-            At ``order=3``, theoretical moments are only available with ``pruning``. 
+            At ``order=3``, theoretical moments are only available with ``pruning``.
 
 .. matvar:: oo_.variance_decomposition
 
@@ -4162,9 +4183,9 @@ Computing the stochastic solution
     |br| After a run of ``stoch_simul`` with the
     ``contemporaneous_correlation option``, contains theoretical
     contemporaneous correlations if the ``periods`` option is not
-    present, and simulated contemporaneous correlations otherwise. 
-    Only available for ``order<4``. At ``order=2`` it will be be 
-    a second-order accurate approximation. At ``order=3``, theoretical moments 
+    present, and simulated contemporaneous correlations otherwise.
+    Only available for ``order<4``. At ``order=2`` it will be be
+    a second-order accurate approximation. At ``order=3``, theoretical moments
     are only available with ``pruning``. The variables
     are arranged in declaration order.
 
@@ -7542,25 +7563,25 @@ Shock Decomposition
     .. option:: prefilter = INTEGER
 
         See :opt:`prefilter <prefilter = INTEGER>`.
-        
+
     .. option:: loglinear
-        
+
         See :opt:`loglinear <loglinear>`.
 
     .. option:: diffuse_kalman_tol = DOUBLE
 
         See :opt:`diffuse_kalman_tol <diffuse_kalman_tol = DOUBLE>`.
-        
+
     .. option:: diffuse_filter
-                
+
         See :opt:`diffuse_filter <diffuse_filter>`.
-        
+
     .. option:: xls_sheet = NAME
 
         See :opt:`xls_sheet <xls_sheet = NAME>`.
 
     .. option:: xls_range = RANGE
-        
+
         See :opt:`xls_range <xls_range = RANGE>`.
 
     .. option:: use_shock_groups [= NAME]
@@ -8850,11 +8871,11 @@ Optimal policy under commitment (Ramsey)
 
     This command only creates the expanded model, it doesn’t perform
     any computations. It needs to be followed by other instructions to
-    actually perform desired computations. Examples are calls to ``steady`` 
-    to compute the steady state of the Ramsey economy, to ``stoch_simul`` 
-    with various approximation orders to conduct stochastic simulations based on 
+    actually perform desired computations. Examples are calls to ``steady``
+    to compute the steady state of the Ramsey economy, to ``stoch_simul``
+    with various approximation orders to conduct stochastic simulations based on
     perturbation solutions, to ``estimation`` in order to estimate models
-    under optimal policy with commitment, and to perfect foresight simulation  
+    under optimal policy with commitment, and to perfect foresight simulation
     routines.
 
     See :ref:`aux-variables`, for an explanation of how Lagrange
@@ -8894,12 +8915,12 @@ Optimal policy under commitment (Ramsey)
     ``steady_state_model`` block or in a ``_steadystate.m`` file). In
     this case, it is necessary to provide a steady state solution
     CONDITIONAL on the value of the instruments in the optimal policy
-    problem and declared with the option ``instruments``. The initial value 
-    of the instrument for steady state finding in this case is set with 
-    ``initval``. Note that computing and displaying steady state values 
-    using the ``steady``-command or calls to ``resid`` must come after 
+    problem and declared with the option ``instruments``. The initial value
+    of the instrument for steady state finding in this case is set with
+    ``initval``. Note that computing and displaying steady state values
+    using the ``steady``-command or calls to ``resid`` must come after
     the ``ramsey_model`` statement and the ``initval``-block.
-    
+
     Note that choosing the instruments is partly a matter of interpretation and
     you can choose instruments that are handy from a mathematical
     point of view but different from the instruments you would refer
@@ -8923,8 +8944,8 @@ Optimal policy under commitment (Ramsey)
 
 .. command:: evaluate_planner_objective ;
 
-    This command computes, displays, and stores the value of the 
-    planner objective function 
+    This command computes, displays, and stores the value of the
+    planner objective function
     under Ramsey policy in ``oo_.planner_objective_value``, given the
     initial values of the endogenous state variables. If not specified
     with ``histval``, they are taken to be at their steady state
@@ -8945,7 +8966,7 @@ Optimal policy under commitment (Ramsey)
              ramsey_policy (OPTIONS...) [VARIABLE_NAME...];
 
     |br| This command is formally equivalent to the calling sequence
-    
+
         ::
 
             ramsey_model;
@@ -9015,7 +9036,7 @@ Optimal policy under commitment (Ramsey)
 
     See :comm:`Ramsey steady state <ramsey_model>`.
 
-Optimal policy under discretion 
+Optimal policy under discretion
 -------------------------------
 
 .. command:: discretionary_policy [VARIABLE_NAME...];
@@ -9717,7 +9738,7 @@ Performing identification analysis
               as in *Ratto and Iskrev (2011)*
 
             Note that for orders 2 and 3, all identification checks are based on the pruned
-            state space system as in *Mutschler (2015)*. That is, theoretical moments and 
+            state space system as in *Mutschler (2015)*. That is, theoretical moments and
             spectrum are computed from the pruned ABCD-system, whereas the minimal system
             criteria is based on the first-order system, but augmented by the theoretical
             (pruned) mean at order 2 or 3.
@@ -11609,8 +11630,8 @@ Macro directives
               @#ifdef MACRO_VARIABLE
               @#ifndef MACRO_VARIABLE
               @#elseif MACRO_EXPRESSION
-              @#else ​
-              @#endif ​
+              @#else
+              @#endif
 
     |br| Conditional inclusion of some part of the ``.mod`` file. The lines
     between ``@#if``, ``@#ifdef``, or ``@#ifndef`` and the next ``@#elseif``,
@@ -11698,7 +11719,7 @@ Macro directives
               @#for MACRO_VARIABLE in MACRO_EXPRESSION when MACRO_EXPRESSION
               @#for MACRO_TUPLE in MACRO_EXPRESSION
               @#for MACRO_TUPLE in MACRO_EXPRESSION when MACRO_EXPRESSION
-              @#endfor ​
+              @#endfor
 
     |br| Loop construction for replicating portions of the ``.mod``
     file. Note that this construct can enclose variable/parameters
@@ -11771,7 +11792,7 @@ Macro directives
     |br| Asks the preprocessor to display some error message on standard
     output and to abort. The argument must evaluate to a string.
 
-.. macrodir:: @#echomacrovars ​
+.. macrodir:: @#echomacrovars
               @#echomacrovars MACRO_VARIABLE_LIST
               @#echomacrovars(save) MACRO_VARIABLE_LIST
 

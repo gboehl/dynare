@@ -1,0 +1,13 @@
+#!/bin/sh
+
+rm *.eps
+
+rm -rf example_det
+rm -rf +example_det
+rm -f example_det*.mat
+rm -f example_det.log
+
+rm -rf example_sto
+rm -rf +example_sto
+rm -f example_sto*.mat
+rm -f example_sto.log

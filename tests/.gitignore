@@ -96,6 +96,9 @@ wsOct
 !/kronecker/test_kron.m
 !/load_octave_packages.m
 !/ls2003/data_ca1.m
+!/matrix_notation/extFunNoDerivsMatrix.m
+!/matrix_notation/extFunFirstDerivMatrix.m
+!/matrix_notation/extFunWithFirstAndSecondDerivsMatrix.m
 !/measurement_errors/data_ca1.m
 !/measurement_errors/fs2000_corr_me_ml_mcmc/fsdat_simul.m
 !/missing/simulate_data_with_missing_observations.m
@@ -161,3 +164,8 @@ wsOct
 !/shock_decomposition/fsdat_simul.m
 !/smoother2histval/fsdat_simul.m
 !/steady_state/walsh1_old_ss_steadystate.m
+
+/pac/var-6/example/model/pac-expectations/*
+/pac/var-5/example/model/pac-expectations/*
+/pac/trend-component-14/example/model/pac-expectations/*
+!/ecb/aggregate/test_aggregate_routine.m

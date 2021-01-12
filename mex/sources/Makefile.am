@@ -19,6 +19,7 @@ EXTRA_DIST = \
 	dynare_simul_ \
 	perfect_foresight_problem \
 	num_procs \
+	block_trust_region \
 	disclyap_fast
 
 clean-local:

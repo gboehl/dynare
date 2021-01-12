@@ -25,7 +25,7 @@ function [x,check,info] = trust_region(fcn,x0,j1,j2,jacobian_flag,gstep,tolf,tol
 %    none
 
 % Copyright (C) 2008-2012 VZLU Prague, a.s.
-% Copyright (C) 2014-2019 Dynare Team
+% Copyright (C) 2014-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -95,14 +95,7 @@ while (niter < maxiter && ~info)
         dg(dg == 0) = 1;
     else
         % Rescale adaptively.
-        % FIXME: the original minpack used the following rescaling strategy:
-        %   dg = max (dg, jcn);
-        % but it seems not good if we start with a bad guess yielding Jacobian
-        % columns with large norms that later decrease, because the corresponding
-        % variable will still be overscaled. So instead, we only give the old
-        % scaling a small momentum, but do not honor it.
-
-        dg = max (0.1*dg, jcn);
+        dg = max (dg, jcn);
     end
 
     if (niter == 1)
@@ -195,7 +188,7 @@ end
 
 function x = dogleg (r, b, d, delta)
 % Get Gauss-Newton direction.
-x = r \ b;
+x = decomposition(r, 'CheckCondition', false) \ b;
 xn = norm (d .* x);
 if (xn > delta)
     % GN is too big, get scaled gradient.
@@ -225,3 +218,4 @@ if (xn > delta)
     x = alpha * x + ((1-alpha) * min (snm, delta)) * s;
 end
 end
+

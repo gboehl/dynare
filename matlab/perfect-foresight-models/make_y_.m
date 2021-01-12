@@ -1,20 +1,14 @@
-function oo_=make_y_(M_,options_,oo_)
-% function oo_=make_y_(M_,options_,oo_)
+function oo_=make_y_(M_, options_, oo_)
+
 % forms oo_.endo_simul as guess values for deterministic simulations
 %
 % INPUTS
-%   M_:           Dynare model structure
-%   options_:     Dynare options structure
-%   oo_:          Dynare results structure
+% - M_          [struct]   Dynare model structure
+% - options_    [struct]   Dynare options structure
+% - oo_         [struct]   Dynare results structure
 %
 % OUTPUTS
-%   oo_:          Dynare results structure
-%
-% ALGORITHM
-%   ...
-% SPECIAL REQUIREMENTS
-%   none
-%
+% - oo_         [struct]   Updated dynare results structure
 
 % Copyright (C) 1996-2020 Dynare Team
 %

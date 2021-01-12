@@ -1,0 +1,9 @@
+#!/bin/sh
+
+rm -rf example
+rm  -rf +example
+rm -f example.log
+rm -f *.mat
+rm -rf substitution
+rm  -rf +substitution
+rm -f substitution.log

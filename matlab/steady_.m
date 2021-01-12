@@ -35,8 +35,8 @@ function [steady_state,params,info] = steady_(M_,options_,oo_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-if options_.solve_algo < 0 || options_.solve_algo > 12
-    error('STEADY: solve_algo must be between 0 and 12')
+if options_.solve_algo < 0 || options_.solve_algo > 14
+    error('STEADY: solve_algo must be between 0 and 14')
 end
 
 if ~options_.bytecode && ~options_.block && options_.solve_algo > 4 && ...

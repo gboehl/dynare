@@ -49,7 +49,17 @@ end;
 ds = dseries(repmat([1, .5, 1, .5, 0, 1], 10, 1), 1990Q1, M_.endo_names, M_.endo_names_tex);
 
 // Alternatively we could build this object with a stochastic simulation of the model.
-//oo_ = simul_backward_model(rand(6,1), 10, options_, M_, oo_);
+/*
+ds = simul_backward_model(dseries([1, .5, 1, .5, 0, 1], 1990Q1, cellstr(M_.endo_names)), 10);
+names=regexp(ds.name, 'e_\w*');
+idxs = [];
+for j=1:length(names)
+    if isempty(names{j})
+        idxs = [idxs j];
+    end
+end
+ds = ds{idxs};
+*/
 
 // Set the initial condition for the IRFs using observation 1991Q1 in ds.
 set_historical_values ds 1991Q1;
@@ -61,7 +71,7 @@ listofshocks = {'e_x', 'e_n'};
 listofvariables = {'Efficiency', 'Population', 'Output'};
 
 // Compute the IRFs
-irfs = backward_model_irf(1991Q1, listofshocks, listofvariables, 50);  // 10 is the number of periods (default value is 40).
+irfs = backward_model_irf(ds, dseries(), listofshocks, listofvariables, 50);  // 10 is the number of periods (default value is 40).
 
 // Plot an IRF (shock on technology)
 figure(1)
@@ -76,6 +86,7 @@ title('IRF (shock on the growth rate of efficiency)')
 ** the period of the initial condition).
 */
 
+/*
 histval;
   Efficiency(0) = 1;
   EfficiencyGrowth(0) = .5;
@@ -83,7 +94,7 @@ histval;
   PopulationGrowth(0) = .5;
   PhysicalCapitalStock(0) = 1;
 end;
-
+*/
 // Define the shocks for which we want to compute the IRFs
 listofshocks = {'e_x', 'e_n'};
 
@@ -91,16 +102,10 @@ listofshocks = {'e_x', 'e_n'};
 listofvariables = {'Efficiency', 'Population', 'Output'};
 
 // Compute the IRFs
-irfs = backward_model_irf(1991Q1, listofshocks, listofvariables, 50);  // 10 is the number of periods (default value is 40).
+irfs = backward_model_irf([], dseries(), listofshocks, listofvariables, 50);  // 10 is the number of periods (default value is 40).
 
 // Plot an IRF (shock on technology)
 figure(2)
 plot(irfs.e_x.Output)
 legend('Output')
 title('IRF (shock on the growth rate of efficiency)')
-
-/* REMARK
-** ------
-**
-** This model is nonlinear and non stationary. For different initial conditions the IRFs may look quite different. 
-*/

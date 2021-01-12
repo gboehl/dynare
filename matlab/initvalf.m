@@ -30,5 +30,3 @@ function series = initvalf(M, options)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 series = histvalf_initvalf('INITVALF', M, options);
-
-

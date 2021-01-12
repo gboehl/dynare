@@ -156,3 +156,6 @@ if isfield(options_, 'global_init_file')
         error('Cannot find global initialization file (%s).', options_.global_init_file)
     end
 end
+
+end
+

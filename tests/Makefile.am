@@ -37,6 +37,7 @@ MODFILES = \
 	fs2000/fs2000.mod \
 	ls2003/ls2003_hessian_zero.mod \
 	ep/rbc.mod \
+	exogenous-observed-variables/preprocessor.mod \
 	estimation/fs2000_with_weibull_prior.mod \
 	estimation/fs2000_initialize_from_calib.mod	\
 	estimation/fs2000_estimated_params_init.mod	\
@@ -127,6 +128,7 @@ MODFILES = \
 	histval_initval_file/sim_exo_lead_lag_initvalf.mod \
         ramst_normcdf_and_friends.mod \
 	ramst_vec.mod \
+	ramst_mshocks_vec.mod \
 	example1_varexo_det.mod \
 	predetermined_variables.mod \
 	fs2000_ssfile.mod \
@@ -145,6 +147,7 @@ MODFILES = \
 	steady_state/walsh1_ssm_block.mod \
 	steady_state/multi_leads.mod \
 	steady_state/example1_trust_region.mod \
+	steady_state/example1_block_trust_region.mod \
 	steady_state/Gali_2015_chapter_6_4.mod \
 	steady_state_operator/standard.mod \
 	steady_state_operator/use_dll.mod \
@@ -354,6 +357,7 @@ MODFILES = \
 	shock_decomposition/fs2000_est_varlist.mod \
 	shock_decomposition/fs2000_cal_groups.mod \
 	shock_decomposition/ls2003_plot.mod \
+	shock_decomposition/shock_decomposition_backward.mod \
 	stochastic_purely_forward/stochastic_purely_forward.mod \
 	stochastic_purely_forward/stochastic_purely_forward_with_static.mod \
 	forecast/Hansen_exo_det_forecast.mod \
@@ -412,7 +416,143 @@ MODFILES = \
 	bgp/nk-1/nk.mod \
 	bgp/ramsey-1/ramsey.mod \
 	dynare-command-options/ramst.mod \
-	particle/local_state_space_iteration_k_test.mod
+	particle/local_state_space_iteration_k_test.mod \
+	matrix_notation/deterministic_matrix.mod \
+	matrix_notation/deterministic_scalar.mod \
+	matrix_notation/stochastic_matrix.mod \
+	matrix_notation/stochastic_scalar.mod \
+	matrix_notation/benchmark.mod \
+	matrix_notation/no_deriv_given_matrix_dll.mod \
+	matrix_notation/no_deriv_given_matrix.mod \
+	matrix_notation/first_deriv_given_matrix_dll.mod \
+	matrix_notation/first_deriv_given_matrix.mod \
+	matrix_notation/first_and_2nd_deriv_given_matrix_dll.mod \
+	matrix_notation/first_and_2nd_deriv_given_matrix.mod
+
+ECB_MODFILES = \
+	var-expectations/1/example.mod \
+	var-expectations/2/example.mod \
+	var-expectations/3/example.mod \
+	var-expectations/4/example.mod \
+	var-expectations/5/example.mod \
+	var-expectations/6/example.mod \
+	var-expectations/6/substitution.mod \
+	var-expectations/7/example.mod \
+	var-expectations/7/substitution.mod \
+	var-expectations/8/example.mod \
+	var-expectations/8/substitution.mod \
+	var-expectations/9/example.mod \
+	var-expectations/10/example.mod \
+	trend-component-and-var-models/vm1.mod \
+	trend-component-and-var-models/vm2.mod \
+	trend-component-and-var-models/vm3.mod \
+	trend-component-and-var-models/vm4.mod \
+	trend-component-and-var-models/vm5.mod \
+	trend-component-and-var-models/tcm1.mod \
+	trend-component-and-var-models/tcm2.mod \
+	trend-component-and-var-models/tcm3.mod \
+	trend-component-and-var-models/tcm4.mod \
+	trend-component-and-var-models/tcm5.mod \
+	trend-component-and-var-models/tcm6.mod \
+	trend-component-and-var-models/tcm7.mod \
+	trend-component-and-var-models/tcm8.mod \
+	trend-component-and-var-models/tcm9.mod \
+	trend-component-and-var-models/tcm10.mod \
+	trend-component-and-var-models/tcm11.mod \
+	trend-component-and-var-models/tcm12.mod \
+	trend-component-and-var-models/legacy/vm1.mod \
+	trend-component-and-var-models/legacy/vm2.mod \
+	trend-component-and-var-models/legacy/vm3.mod \
+	trend-component-and-var-models/legacy/tcm1.mod \
+	trend-component-and-var-models/legacy/tcm2.mod \
+	trend-component-and-var-models/legacy/tcm3.mod \
+	trend-component-and-var-models/legacy/tcm4.mod \
+	trend-component-and-var-models/legacy/tcm5.mod \
+	pac/var-1/example.mod \
+	pac/var-2/example.mod \
+	pac/var-3/example.mod \
+	pac/var-4/example.mod \
+	pac/var-5/example.mod \
+	pac/var-5/substitution.mod \
+	pac/var-6/example.mod \
+	pac/var-6/substitution.mod \
+	pac/trend-component-1/example.mod \
+	pac/trend-component-2/example.mod \
+	pac/trend-component-3/example.mod \
+	pac/trend-component-4/example.mod \
+	pac/trend-component-5/example.mod \
+	pac/trend-component-6/example.mod \
+	pac/trend-component-7/example.mod \
+	pac/trend-component-9/example.mod \
+	pac/trend-component-10/example.mod \
+	pac/trend-component-11/example.mod \
+	pac/trend-component-12/example.mod \
+	pac/trend-component-13a/example.mod \
+	pac/trend-component-13b/example.mod \
+	pac/trend-component-14/example.mod \
+	pac/trend-component-14/substitution.mod \
+	pac/trend-component-15/example.mod \
+	pac/trend-component-16/example.mod \
+	pac/trend-component-17/example.mod \
+	pac/trend-component-18/example.mod \
+	pac/trend-component-19/example1.mod \
+	pac/trend-component-19/example2.mod \
+	pac/trend-component-19/example3.mod \
+	pac/trend-component-19-growth-lin-comb/example.mod \
+	pac/trend-component-1-mce/example_det.mod \
+	pac/trend-component-1-mce/example_sto.mod \
+	pac/trend-component-2-mce/example_det.mod \
+	pac/trend-component-2-mce/example_sto.mod \
+	pac/trend-component-20-1/example.mod \
+	pac/trend-component-20-2/example.mod \
+	pac/trend-component-20-3/example.mod \
+	pac/trend-component-20-4/example.mod \
+	pac/trend-component-21/example.mod \
+	pac/trend-component-22/example.mod \
+	pac/trend-component-23/example.mod \
+	pac/trend-component-24/example.mod \
+	pac/trend-component-25/example.mod \
+	pac/trend-component-26/example.mod \
+	pac/trend-component-27/example.mod \
+	pac/trend-component-28/example1.mod \
+	pac/trend-component-28/example2.mod \
+	pac/trend-component-28/example3.mod \
+	pac/trend-component-28/example4.mod \
+	pac/trend-component-28/example5.mod \
+	pac/trend-component-28/example6.mod \
+	pac/trend-component-29/example2.mod \
+	pac/trend-component-29/example2.mod \
+	pac/trend-component-30/example.mod \
+	write/example1.mod \
+	ecb/backward-models/irf/solow_1.mod \
+	ecb/backward-models/irf/solow_2.mod \
+	ecb/cherrypick/test1.mod \
+	ecb/cherrypick/test2.mod \
+	ecb/contribution-plots/contrib1.mod \
+	ecb/contribution-plots/contrib2.mod
+
+OLS_MODFILES = \
+	estimation/univariate/bayesian.mod \
+	estimation/univariate/bayesian_param_names.mod \
+	ecb/SURGibbs/fulton_fish.mod \
+	estimation/univariate/ols/ols_wc_1.mod \
+	estimation/univariate/ols/ols_wc_2.mod \
+	estimation/univariate/ols/ols_wc_3.mod \
+	estimation/univariate/ols/ols_date_range.mod \
+	estimation/univariate/ols/ols_param_names.mod \
+	estimation/univariate/ols/ols.mod \
+	ecb/SUR/sur_noniterative.mod \
+	ecb/SUR/sur_params_noniterative.mod \
+	ecb/SUR/panel_var_diff_NB_simulation_test.mod \
+	ecb/SUR/panel_var_diff_NB_simulation_zero_eq.mod \
+	ecb/pooled_ols/panel_var_diff_NB_simulation_test.mod \
+	ecb/pooled_ols/test_param_names.mod \
+	ecb/pooled_fgls/panel_var_diff_NB_simulation_test.mod \
+	ecb/pooled_fgls/test_param_names.mod
+
+ECB_MODFILES += $(OLS_MODFILES)
+
+MODFILES += $(ECB_MODFILES)
 
 PARTICLEFILES = \
 	particle/dsge_base2.mod \
@@ -647,13 +787,52 @@ kalman/likelihood_from_dynare/fs2000ns_uncorr_ME_missing.o.trs: kalman/likelihoo
 kalman/likelihood_from_dynare/fs2000ns_corr_ME_missing.m.trs: kalman/likelihood_from_dynare/fs2000ns_uncorr_ME.m.trs
 kalman/likelihood_from_dynare/fs2000ns_corr_ME_missing.o.trs: kalman/likelihood_from_dynare/fs2000ns_uncorr_ME.o.trs
 
+var-expectations/6/substitution.m.trs: var-expectations/6/example.m.trs
+var-expectations/6/substitution.o.trs: var-expectations/6/example.o.trs
+var-expectations/7/substitution.m.trs: var-expectations/7/example.m.trs
+var-expectations/7/substitution.o.trs: var-expectations/7/example.o.trs
+var-expectations/8/substitution.m.trs: var-expectations/8/example.m.trs
+var-expectations/8/substitution.o.trs: var-expectations/8/example.o.trs
+
+pac/var-5/substitution.m.trs: pac/var-5/example.m.trs
+pac/var-5/substitution.o.trs: pac/var-5/example.o.trs
+pac/var-6/substitution.m.trs: pac/var-6/example.m.trs
+pac/var-6/substitution.o.trs: pac/var-6/example.o.trs
+pac/trend-component-14/substitution.m.trs: pac/trend-component-14/example.m.trs
+pac/trend-component-14/substitution.o.trs: pac/trend-component-14/example.o.trs
+
 lmmcp/sw_newton.m.trs: lmmcp/sw_lmmcp.m.trs
 lmmcp/sw_newton.o.trs: lmmcp/sw_lmmcp.o.trs
+
+var-expectations/4/example.m.trs: var-expectations/3/example.m.trs
+var-expectations/4/example.o.trs: var-expectations/3/example.o.trs
+
+trend-component-and-var-models/tcm7.m.trs: trend-component-and-var-models/tcm6.m.trs
+trend-component-and-var-models/tcm7.o.trs: trend-component-and-var-models/tcm6.o.trs
+trend-component-and-var-models/tcm8.m.trs: trend-component-and-var-models/tcm6.m.trs
+trend-component-and-var-models/tcm8.o.trs: trend-component-and-var-models/tcm6.o.trs
 
 discretionary_policy/dennis_1_estim.m.trs: discretionary_policy/dennis_1.m.trs
 discretionary_policy/dennis_1_estim.o.trs: discretionary_policy/dennis_1.o.trs
 discretionary_policy/Gali_2015_chapter_3_nonlinear.m.trs: discretionary_policy/Gali_2015_chapter_3.m.trs
 discretionary_policy/Gali_2015_chapter_3_nonlinear.o.trs: discretionary_policy/Gali_2015_chapter_3.o.trs
+
+matrix_notation/deterministic_scalar.m.trs: matrix_notation/deterministic_matrix.m.trs
+matrix_notation/deterministic_scalar.o.trs: matrix_notation/deterministic_matrix.o.trs
+matrix_notation/stochastic_scalar.m.trs: matrix_notation/stochastic_matrix.m.trs
+matrix_notation/stochastic_scalar.o.trs: matrix_notation/stochastic_matrix.o.trs
+matrix_notation/first_deriv_given_matrix.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/first_deriv_given_matrix.o.trs: matrix_notation/benchmark.o.trs
+matrix_notation/first_deriv_given_matrix_dll.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/first_deriv_given_matrix_dll.o.trs: matrix_notation/benchmark.o.trs
+matrix_notation/first_and_2nd_deriv_given_matrix.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/first_and_2nd_deriv_given_matrix.o.trs: matrix_notation/benchmark.o.trs
+matrix_notation/first_and_2nd_deriv_given_matrix_dll.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/first_and_2nd_deriv_given_matrix_dll.o.trs: matrix_notation/benchmark.o.trs
+matrix_notation/no_deriv_given_matrix.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/no_deriv_given_matrix.o.trs: matrix_notation/benchmark.o.trs
+matrix_notation/no_deriv_given_matrix_dll.m.trs: matrix_notation/benchmark.m.trs
+matrix_notation/no_deriv_given_matrix_dll.o.trs: matrix_notation/benchmark.o.trs
 
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
@@ -835,6 +1014,22 @@ gradient: m/gradient o/gradient
 m/gradient: $(patsubst %.mod, %.m.trs, $(filter gradient/%.mod, $(MODFILES)))
 o/gradient: $(patsubst %.mod, %.o.trs, $(filter gradient/%.mod, $(MODFILES)))
 
+var-expectations: m/var-expectations o/var-expectations
+m/var-expectations: $(patsubst %.mod, %.m.trs, $(filter var-expectations/%.mod, $(MODFILES)))
+o/var-expectations: $(patsubst %.mod, %.o.trs, $(filter var-expectations/%.mod, $(MODFILES)))
+
+estimation/univariate/ols: m/estimation/univariate/ols o/estimation/univariate/ols
+m/estimation/univariate/ols: $(patsubst %.mod, %.m.trs, $(filter estimation/univariate/ols/%.mod, $(MODFILES)))
+o/estimation/univariate/ols: $(patsubst %.mod, %.o.trs, $(filter estimation/univariate/ols/%.mod, $(MODFILES)))
+
+trend-component-and-var-models: m/trend-component-and-var-models o/trend-component-and-var-models
+m/trend-component-and-var-models: $(patsubst %.mod, %.m.trs, $(filter trend-component-and-var-models/%.mod, $(MODFILES)))
+o/trend-component-and-var-models: $(patsubst %.mod, %.o.trs, $(filter trend-component-and-var-models/%.mod, $(MODFILES)))
+
+pac: m/pac o/pac
+m/pac: $(patsubst %.mod, %.m.trs, $(filter pac/%.mod, $(MODFILES)))
+o/pac: $(patsubst %.mod, %.o.trs, $(filter pac/%.mod, $(MODFILES)))
+
 particle: m/particle o/particle
 m/particle: $(patsubst %.mod, %.m.trs, $(PARTICLEFILES))
 o/particle: $(patsubst %.mod, %.o.trs, $(PARTICLEFILES))
@@ -843,12 +1038,32 @@ method_of_moments: m/method_of_moments o/method_of_moments
 m/method_of_moments: $(patsubst %.mod, %.m.trs, $(filter estimation/method_of_moments/%.mod, $(MODFILES)))
 o/method_of_moments: $(patsubst %.mod, %.o.trs, $(filter estimation/method_of_moments/%.mod, $(MODFILES)))
 
+ecb: m/ecb o/ecb
+m/ecb: $(patsubst %.mod, %.m.trs, $(filter ecb/%.mod, $(MODFILES)))
+o/ecb: $(patsubst %.mod, %.o.trs, $(filter ecb/%.mod, $(MODFILES)))
+
+estimation/univariate: m/estimation/univariate o/estimation/univariate
+m/estimation/univariate: $(patsubst %.mod, %.m.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
+o/estimation/univariate: $(patsubst %.mod, %.o.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
+
+matrix_notation: m/matrix_notation o/matrix_notation
+m/matrix_notation: $(patsubst %.mod, %.m.trs, $(filter matrix_notation/%.mod, $(MODFILES)))
+o/matrix_notation: $(patsubst %.mod, %.o.trs, $(filter matrix_notation/%.mod, $(MODFILES)))
+
+# ECB files
+M_ECB_TRS_FILES = $(patsubst %.mod, %.m.trs, $(ECB_MODFILES))
+
+# Just OLS files
+M_OLS_TRS_FILES = $(patsubst %.mod, %.m.trs, $(OLS_MODFILES))
+
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
 M_TRS_FILES += 	run_block_byte_tests_matlab.m.trs \
 		run_reporting_test_matlab.m.trs \
 		run_all_unitary_tests.m.trs \
-		histval_initval_file_unit_tests.m.trs
+		histval_initval_file_unit_tests.m.trs \
+		test_aggregate_routine_1_2.m.trs \
+		test_aggregate_routine_1_2_3.m.trs
 
 M_XFAIL_TRS_FILES = $(patsubst %.mod, %.m.trs, $(XFAIL_MODFILES))
 
@@ -996,11 +1211,34 @@ EXTRA_DIST = \
 	estimation/method_of_moments/RBC/RBC_MoM_steady_helper.m \
 	estimation/method_of_moments/AFVRR/AFVRR_common.inc \
 	estimation/method_of_moments/AFVRR/AFVRR_steady_helper.m \
+	estimation/univariate/data.csv \
+	estimation/univariate/ols/mc-ols.inc \
+	ecb/SURGibbs/fishdata.csv \
+	test_aggregate_routine_1_2.m \
+	test_aggregate_routine_1_2_3.m \
+	ecb/aggregate/1/endogenous.inc \
+	ecb/aggregate/1/exogenous.inc \
+	ecb/aggregate/1/parameters.inc \
+	ecb/aggregate/1/parameter-values.inc \
+	ecb/aggregate/1/model.inc \
+	ecb/aggregate/2/endogenous.inc \
+	ecb/aggregate/2/exogenous.inc \
+	ecb/aggregate/2/parameters.inc \
+	ecb/aggregate/2/parameter-values.inc \
+	ecb/aggregate/2/model.inc \
+	ecb/aggregate/3/endogenous.inc \
+	ecb/aggregate/3/exogenous.inc \
+	ecb/aggregate/3/parameters.inc \
+	ecb/aggregate/3/parameter-values.inc \
+	ecb/aggregate/3/model.inc \
 	histval_initval_file_unit_tests.m \
 	histval_initval_file/my_assert.m \
 	histval_initval_file/ramst_data.xls \
 	histval_initval_file/ramst_data.xlsx \
-	histval_initval_file/ramst_initval_file_data.m
+	histval_initval_file/ramst_initval_file_data.m \
+	matrix_notation/extFunFirstDerivMatrix.m \
+	matrix_notation/extFunNoDerivsMatrix.m \
+	matrix_notation/extFunWithFirstAndSecondDerivsMatrix.m
 
 if ENABLE_MATLAB
 check-local: check-matlab
@@ -1015,6 +1253,12 @@ check-matlab: $(M_XFAIL_TRS_FILES) $(M_TRS_FILES)
 
 check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 	@./read_trs_files.sh "$(O_TRS_FILES)" "$(O_XFAIL_TRS_FILES)"
+
+check-matlab-ecb: $(M_ECB_TRS_FILES)
+	@./read_trs_files.sh "$(M_ECB_TRS_FILES)"
+
+check-matlab-ols: $(M_OLS_TRS_FILES)
+	@./read_trs_files.sh "$(M_OLS_TRS_FILES)"
 
 %.m.trs %.m.log: %.mod
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
@@ -1084,16 +1328,19 @@ check-octave: $(O_XFAIL_TRS_FILES) $(O_TRS_FILES)
 
 clean-local:
 	rm -f $(M_TRS_FILES)
+	rm -f $(M_OLS_TRS_FILES)
 	rm -f $(M_TLS_FILES)
 	rm -f $(M_XFAIL_TRS_FILES)
 	rm -f $(O_TRS_FILES)
 	rm -f $(O_TLS_FILES)
 	rm -f $(O_XFAIL_TRS_FILES)
 	rm -f $(patsubst %.trs, %.log, $(M_TRS_FILES))
+	rm -f $(patsubst %.trs, %.log, $(M_OLS_TRS_FILES))
 	rm -f $(patsubst %.trs, %.log, $(M_XFAIL_TRS_FILES))
 	rm -f $(patsubst %.trs, %.log, $(O_TRS_FILES))
 	rm -f $(patsubst %.trs, %.log, $(O_XFAIL_TRS_FILES))
 	rm -f $(patsubst %.trs, %.json, $(M_TRS_FILES))
+	rm -f $(patsubst %.trs, %.json, $(M_OLS_TRS_FILES))
 	rm -f $(patsubst %.trs, %.json, $(M_XFAIL_TRS_FILES))
 	rm -f $(patsubst %.trs, %.json, $(O_TRS_FILES))
 	rm -f $(patsubst %.trs, %.json, $(O_XFAIL_TRS_FILES))
@@ -1168,6 +1415,8 @@ clean-local:
 	rm -f k_order_perturbation/fs2000k++.mat k_order_perturbation/fs2000k++.dump \
 		k_order_perturbation/fs2000k++.jnl k_order_perturbation/fs2000k++_f.m \
 		k_order_perturbation/fs2000k++_ff.m
+
+	rm -rf ecb/cherrypick/simulation-files1 ecb/cherrypick/simulation-files2 toto.mod
 
 	rm -f discretionary_policy/dennis_simul.m
 

@@ -15,7 +15,7 @@ function [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_
 % - eid         [Integer]           n*1 vector of indices in M_.endo_names for the listed parameters in endogenous.
 % - xid         [Integer]           m*1 vector of indices in M_.exo_names for the listed parameters in exogenous.
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright (C) 2018-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,38 +33,22 @@ function [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % Get the tokens in the rhs member of the equation.
-rhs_ = strsplit(rhs,{'+','-','*','/','^', ...
-                    'log(', 'log10(', 'ln(', 'exp(', ...
-                    'sqrt(', 'abs(', 'sign(', ...
-                    'sin(', 'cos(', 'tan(', 'asin(', 'acos(', 'atan(', ...
-                    'min(', 'max(', ...
-                    'normcdf(', 'normpdf(', 'erf(', ...
-                    'diff(', 'adl(', '(', ')'});
+rhs_ = get_variables_and_parameters_in_expression(rhs);
 
-% Filter out the numbers and punctuation.
-rhs_(cellfun(@(x) all(isstrprop(x, 'digit')+isstrprop(x, 'punct')), rhs_)) = [];
+% Get the tokens in the lhs member of the equation.
+lhs_ = get_variables_and_parameters_in_expression(lhs);
 
 % Get list of parameters.
 pnames = DynareModel.param_names;
-pnames = intersect(rhs_, pnames);
+pnames = intersect([rhs_, lhs_], pnames);
 
 % Get list of endogenous variables.
 enames = DynareModel.endo_names;
-enames = intersect(rhs_, enames);
+enames = intersect([rhs_, lhs_], enames);
 
 % Get list of exogenous variables
 xnames = DynareModel.exo_names;
-xnames = intersect(rhs_, xnames);
-
-% Decide if we are dealing with a dynamic model. If so, the lhs variable
-% already belongs to enames, we remove this variable from enames.
-id = find(strcmp(lhs, enames));
-if ~isempty(id)
-    enames(id) = [];
-end
-
-% Add lhs variable in first position of enames.
-enames = [lhs; enames];
+xnames = intersect([rhs_,lhs_], xnames);
 
 % Returns vector of indices for parameters endogenous and exogenous
 % variables if required.

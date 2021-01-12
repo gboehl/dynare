@@ -99,6 +99,12 @@ doc/internals/ltxpng
 /mex/build/matlab/*/*.mod
 /mex/build/octave/*/*.mod
 
+# Extra rules for trust_region MEX testfiles
+/mex/sources/block_trust_region/test/*.mod
+/mex/sources/block_trust_region/test/dulmage_mendelsohn_test
+/mex/sources/block_trust_region/test/trust_region_test
+!/mex/sources/block_trust_region/test/Makefile
+
 # Dynare++
 /dynare++/integ/src/quadrature-points.dSYM/
 /dynare++/src/dynare++.dSYM/

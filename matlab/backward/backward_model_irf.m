@@ -19,7 +19,7 @@ function [deviations, baseline, irfs] = backward_model_irf(initialcondition, inn
 %   argument.
 % - If second argument is not empty, periods must not be greater than innovationbaseline.nobs.
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright (C) 2017-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,7 +51,7 @@ else
 end
 
 % Set default value for the last input argument (no transformation).
-if nargin<6
+if nargin<6 || isempty(varargin{2})
     notransform = true;
 else
     notransform = false;
@@ -95,6 +95,14 @@ else
             end
         end
     end
+end
+
+% Check fourth argument. If empty return the paths for all the endogenous variables.
+if isempty(listofvariables)
+    listofvariables = M_.endo_names(1:M_.orig_endo_nbr);
+end
+if ~iscell(listofvariables)
+    error('Fourth input argument has to be a cell of row char arrays or an empty object.')
 end
 
 % Set default initial conditions for the innovations.
@@ -212,6 +220,7 @@ for i=1:length(listofshocks)
         name = listofshocks{i};
     end
     deviations.(name) = alldeviations{listofvariables{:}};
+    deviations.(name) = [deviations.(name) dseries(innovations, initialcondition.last+1, exonames)];
     if nargout>2
         irfs.(name) = allirfs{listofvariables{:}};
         irfs.(name) = [irfs.(name) dseries(innovations, initialcondition.last+1, exonames)];
@@ -220,5 +229,5 @@ end
 
 if nargout>1
     baseline = dseries(transpose(endo_simul__0), initialcondition.init, endonames(1:M_.orig_endo_nbr), DynareModel.endo_names_tex(1:M_.orig_endo_nbr));
-    baseline = [baseline, innovationbaseline];
+    baseline = merge(baseline, innovationbaseline);
 end

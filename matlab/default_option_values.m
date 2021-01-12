@@ -740,4 +740,7 @@ options_.figures.textwidth=0.8;
 
 options_.varobs_id=[]; %initialize field
 
+options_.pac.estimation.ols.share_of_optimizing_agents.lb = 0.0;
+options_.pac.estimation.ols.share_of_optimizing_agents.ub = 1.0;
+
 end
