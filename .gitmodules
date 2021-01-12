@@ -19,7 +19,7 @@
 [submodule "matlab/modules/dseries"]
 	path = matlab/modules/dseries
 	url = ../../Dynare/dseries.git
-	branch = enterprise
+	branch = master
 [submodule "matlab/modules/reporting"]
 	path = matlab/modules/reporting
 	url = ../../Dynare/reporting.git
