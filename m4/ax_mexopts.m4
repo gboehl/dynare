@@ -1,4 +1,4 @@
-dnl Copyright © 2009-2019 Dynare Team
+dnl Copyright © 2009-2021 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -67,10 +67,10 @@ case ${MATLAB_ARCH} in
   maci64)
     MACOSX_DEPLOYMENT_TARGET='10.9'
     MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
-    MATLAB_CFLAGS="-fno-common -arch x86_64 -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -fexceptions"
+    MATLAB_CFLAGS="-fno-common -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -fexceptions"
     MATLAB_CXXFLAGS="$MATLAB_CFLAGS"
-    MATLAB_FCFLAGS="-g -O2 -fexceptions -fbackslash -arch x86_64"
-    MATLAB_LDFLAGS_NOMAP="-Wl,-twolevel_namespace -undefined error -arch x86_64 -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
+    MATLAB_FCFLAGS="-g -O2 -fexceptions -fbackslash"
+    MATLAB_LDFLAGS_NOMAP="-Wl,-twolevel_namespace -undefined error -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -bundle"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,\$(abs_top_srcdir)/mexFunction-MacOSX.map"
     # This -L flag is put here, hence later on the linker command line, so as
     # to avoid linking against the HDF5 shipped by MATLAB (which would
