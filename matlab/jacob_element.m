@@ -1,15 +1,14 @@
-function d=jacob_element(func,arg,elem,args)
-% function d=jacob_element(func,arg,elem,args)
+function d=jacob_element(func,element,args)
+% function d=jacob_element(func,element,args)
 % returns an entry of the finite differences approximation to the jacobian of func
 %
 % INPUTS
 %    func       [function name]    string with name of the function
-%    arg        [int]              the index showing the elem within the jacobian that should be returned
-%    elem       [int]              vector index
+%    element    [int]              the index showing the element within the jacobian that should be returned
 %    args       [cell array]       arguments provided to func
 %
 % OUTPUTS
-%    d          [double]           jacobian[elem]
+%    d          [double]           jacobian[element]
 %
 % SPECIAL REQUIREMENTS
 %    none
@@ -31,15 +30,15 @@ function d=jacob_element(func,arg,elem,args)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-assert(arg <= length(args));
+assert(element <= length(args));
 
 func = str2func(func);
 
 h=1e-6;
 margs=args;
 
-args{arg}(elem) = args{arg}(elem) + h;
-margs{arg}(elem) = margs{arg}(elem) - h;
+args{element} = args{element} + h;
+margs{element} = margs{element} - h;
 
 d=(func(args{:})-func(margs{:}))/(2*h);
 end
