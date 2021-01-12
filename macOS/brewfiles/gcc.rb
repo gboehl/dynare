@@ -1,18 +1,37 @@
 class Gcc < Formula
   desc "GNU compiler collection"
   homepage "https://gcc.gnu.org/"
-  url "https://ftp.gnu.org/gnu/gcc/gcc-9.2.0/gcc-9.2.0.tar.xz"
-  mirror "https://ftpmirror.gnu.org/gcc/gcc-9.2.0/gcc-9.2.0.tar.xz"
-  sha256 "ea6ef08f121239da5695f76c9b33637a118dcf63e24164422231917fa61fb206"
+  if Hardware::CPU.arm?
+    # Branch from the Darwin maintainer of GCC with Apple Silicon support,
+    # located at https://github.com/iains/gcc-darwin-arm64 and
+    # backported with his help to gcc-10 branch. Too big for a patch.
+    url "https://github.com/fxcoudert/gcc/archive/gcc-10-arm-20201228.tar.gz"
+    sha256 "dd5377a13f0ee4645bce1c18ed7327ea4ad5f8bd5c6a2a24eb299c647d3d43f4"
+    version "10.2.0"
+  else
+    url "https://ftp.gnu.org/gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.xz"
+    mirror "https://ftpmirror.gnu.org/gcc/gcc-10.2.0/gcc-10.2.0.tar.xz"
+    sha256 "b8dd4368bb9c7f0b98188317ee0254dd8cc99d1e3a18d0ff146c855fe16c1d8c"
+  end
+  license "GPL-3.0"
   revision 2
   head "https://gcc.gnu.org/git/gcc.git"
+
+  livecheck do
+    # Should be
+    # url :stable
+    # but that does not work with the ARM-specific branch above
+    url "https://ftp.gnu.org/gnu/gcc/gcc-10.2.0"
+    regex(%r{href=.*?gcc[._-]v?(\d+(?:\.\d+)+)(?:/?["' >]|\.t)}i)
+  end
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles"
     cellar :any
-    sha256 "1564397f461f629f3811f1ececc7f2bb614f7520242743fc41348d190d8b6aa9" => :catalina
-    sha256 "5012d43ce3ff9b31fc21f9df1075b9d5e205d1a727b75f6dbd098654aff0f0f2" => :mojave
-    sha256 "cc0e6c6a7f7ce5823d0578cf57a6e201727238905aa8a4726e5f90dbc252d94b" => :high_sierra
+    sha256 "7d6952bb9c36d08e658e7e9b0637805a49184a1c7506c020ffa839e7ca756ba3" => :big_sur
+    sha256 "537582c8fb519a87b3e213953a8c2daadf11339559b9da17dd9fab95d8768dfc" => :arm64_big_sur
+    sha256 "4c17591306a2c233bdb9c469ceec3057a1b76ac4d194942737c322ffc22cb440" => :catalina
+    sha256 "d4ef938e9e1d7e4247b653e4b3f5fb13e55a3dc6d50ea64f0e914271edd78c7c" => :mojave
   end
 
   # The bottles are built on systems with the CLT installed, and do not work
@@ -27,15 +46,17 @@ class Gcc < Formula
   depends_on "libmpc"
   depends_on "mpfr"
 
+  uses_from_macos "zlib"
+
   # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
   cxxstdlib_check :skip
 
-  # Fix system headers for Catalina SDK
-  # (otherwise __OSX_AVAILABLE_STARTING ends up undefined)
-  if DevelopmentTools.clang_build_version >= 1100
+  if Hardware::CPU.arm?
+    # Patch for Big Sur version numbering, remove with GCC 11
+    # https://github.com/iains/gcc-darwin-arm64/commit/556ab512
     patch do
-      url "https://raw.githubusercontent.com/Homebrew/formula-patches/b8b8e65e/gcc/9.2.0-catalina.patch"
-      sha256 "0b8d14a7f3c6a2f0d2498526e86e088926671b5da50a554ffa6b7f73ac4f132b"
+      url "https://raw.githubusercontent.com/Homebrew/formula-patches/7baf6e2f/gcc/bigsur.diff"
+      sha256 "42de3bc4889b303258a4075f88ad8624ea19384cab57a98a5270638654b83f41"
     end
   end
 
@@ -43,7 +64,7 @@ class Gcc < Formula
     if build.head?
       "HEAD"
     else
-      version.to_s.slice(/\d/)
+      version.major.to_s
     end
   end
 
@@ -57,11 +78,11 @@ class Gcc < Formula
     #  - BRIG
     languages = %w[c c++ objc obj-c++ fortran]
 
-    osmajor = `uname -r`.split(".").first
     pkgversion = "Homebrew GCC #{pkg_version} #{build.used_options*" "}".strip
+    cpu = Hardware::CPU.arm? ? "aarch64" : "x86_64"
 
     args = %W[
-      --build=x86_64-apple-darwin#{osmajor}
+      --build=#{cpu}-apple-darwin#{OS.kernel_version.major}
       --prefix=#{prefix}
       --libdir=#{lib}/gcc/#{version_suffix}
       --disable-nls
@@ -80,21 +101,25 @@ class Gcc < Formula
     # Xcode 10 dropped 32-bit support
     args << "--disable-multilib" if DevelopmentTools.clang_build_version >= 1000
 
+    # System headers may not be in /usr/include
+    sdk = MacOS.sdk_path_if_needed
+    if sdk
+      args << "--with-native-system-header-dir=/usr/include"
+      args << "--with-sysroot=#{sdk}"
+    end
+
+    # Mojave uses the Catalina SDK which causes issues like
+    # https://github.com/Homebrew/homebrew-core/issues/46393
+    ENV["ac_cv_func_aligned_alloc"] = "no" if MacOS.version == :mojave
+
+    # Avoid reference to sed shim
+    args << "SED=/usr/bin/sed"
+
     # Ensure correct install names when linking against libgcc_s;
     # see discussion in https://github.com/Homebrew/legacy-homebrew/pull/34303
     inreplace "libgcc/config/t-slibgcc-darwin", "@shlib_slibdir@", "#{HOMEBREW_PREFIX}/lib/gcc/#{version_suffix}"
 
     mkdir "build" do
-      if !MacOS::CLT.installed?
-        # For Xcode-only systems, we need to tell the sysroot path
-        args << "--with-native-system-header-dir=/usr/include"
-        args << "--with-sysroot=#{MacOS.sdk_path}"
-      elsif MacOS.version >= :mojave
-        # System headers are no longer located in /usr/include
-        args << "--with-native-system-header-dir=/usr/include"
-        args << "--with-sysroot=/Library/Developer/CommandLineTools/SDKs/MacOSX#{MacOS.version}.sdk"
-      end
-
       system "../configure", *args
 
       # Use -headerpad_max_install_names in the build,

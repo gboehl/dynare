@@ -1,23 +1,29 @@
 class Isl < Formula
   desc "Integer Set Library for the polyhedral model"
-  homepage "https://isl.gforge.inria.fr/"
-  # Note: Always use tarball instead of git tag for stable version.
+  homepage "http://isl.gforge.inria.fr"
+  # NOTE: Always use tarball instead of git tag for stable version.
   #
   # Currently isl detects its version using source code directory name
   # and update isl_version() function accordingly.  All other names will
   # result in isl_version() function returning "UNKNOWN" and hence break
   # package detection.
-  url "http://isl.gforge.inria.fr/isl-0.21.tar.xz"
-  mirror "https://deb.debian.org/debian/pool/main/i/isl/isl_0.21.orig.tar.xz"
-  sha256 "777058852a3db9500954361e294881214f6ecd4b594c00da5eee974cd6a54960"
+  url "http://isl.gforge.inria.fr/isl-0.23.tar.xz"
+  mirror "https://deb.debian.org/debian/pool/main/i/isl/isl_0.23.orig.tar.xz"
+  sha256 "5efc53efaef151301f4e7dde3856b66812d8153dede24fab17673f801c8698f2"
+  license "MIT"
+
+  livecheck do
+    url :homepage
+    regex(/href=.*?isl[._-]v?(\d+(?:\.\d+)+)\.t/i)
+  end
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles"
     cellar :any
-    sha256 "1f42c08dd84a2f418c8446be2679f027d8b1250d337b5e3135c401eba578cbb7" => :catalina
-    sha256 "f9188b5d486b2a835cd865f219be1a9848ce3926e27089a1538ee989db65447d" => :mojave
-    sha256 "d997d49958218e521bc4f73369414ff9fad040d28601d94012e4c68cd090ea93" => :high_sierra
-    sha256 "d5dc353916cd98da04552a3d7cb86a3203612df422c4e9389e13e12f86945865" => :sierra
+    sha256 "77907a43a415210de713d9e82588b452e5546a31b42194c7c75e07486d319a51" => :big_sur
+    sha256 "5b066bc471862c8d166082f0d1bf6b132aac0117f67e19bba139dfe907eb2614" => :arm64_big_sur
+    sha256 "bb4c986e9f49c7eea6349a536889e6223549885c0aab3d7692542cd48bc06481" => :catalina
+    sha256 "066330367dcc69e8d200a1d26a7f6ca580ecc3c397a686fa3b2fbd36d5d88ada" => :mojave
   end
 
   head do
@@ -37,7 +43,6 @@ class Isl < Formula
                           "--prefix=#{prefix}",
                           "--with-gmp=system",
                           "--with-gmp-prefix=#{Formula["gmp"].opt_prefix}"
-    system "make", "check"
     system "make", "install"
     (share/"gdb/auto-load").install Dir["#{lib}/*-gdb.py"]
   end
