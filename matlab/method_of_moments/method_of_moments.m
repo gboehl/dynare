@@ -788,7 +788,7 @@ for i = 1:length(optimizer_vec)
         case 10
             fprintf('\n  %s=10): simpsa',str);
         case 11
-            fprintf('\n  %s=11): online_auxiliary_filter',str);
+            error('\nmethod_of_moments: online_auxiliary_filter (mode_compute=11) is only supported with likelihood-based estimation techniques');
         case 12
             fprintf('\n  %s=12): particleswarm',str);
         case 101

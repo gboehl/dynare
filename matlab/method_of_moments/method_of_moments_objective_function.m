@@ -64,6 +64,9 @@ junk2        = [];
 % 1. Get the structural parameters & define penalties
 %--------------------------------------------------------------------------
 
+% Ensure that xparam1 is a column vector; particleswarm.m requires this.
+xparam1 = xparam1(:);
+
 M_ = set_all_parameters(xparam1, estim_params_, M_);
 
 [fval,info,exit_flag]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, Bounds);
