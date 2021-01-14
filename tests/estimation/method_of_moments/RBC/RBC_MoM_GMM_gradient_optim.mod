@@ -88,8 +88,13 @@ end;
 
   estimated_params_init(use_calibration);
   end;
-  %1 3 13
-  @#for optimizer in [1,3, 13]
+  
+  @#for optimizer in [1, 3, 13]
+    @#if estimParams == 2 && optimizer == 13
+        %skip due to buggy behavior in Octave
+        if ~isoctave
+    @#endif
+  
   method_of_moments(
           mom_method = GMM         % method of moments method; possible values: GMM|SMM
         , datafile   = 'RBC_Andreasen_Data_2.mat' % name of filename with data
@@ -110,6 +115,11 @@ end;
         , silent_optimizer                  % run minimization of moments distance silently without displaying results or saving files in between        
         , analytic_jacobian
   );
-  @#endfor
+  
+    @#if estimParams == 2 && optimizer == 13
+        %skip due to buggy behavior in Octave
+        end
+    @#endif
+  @#endfor  
   
 @#endfor
