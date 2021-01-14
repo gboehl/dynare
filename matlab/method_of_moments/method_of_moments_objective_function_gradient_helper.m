@@ -47,16 +47,9 @@ function [out1, out2] = method_of_moments_objective_function_gradient_helper(xpa
 % =========================================================================
 [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_, df] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, M_, options_mom_);
 
-switch options_mom_.current_optimizer
-    case 1 %fmincon
-        out1=fval; out2=df;
-    case 3 %fminunc
-        out1=fval; out2=df;
-    case 13 %lsqnonlin
-        out1=fval; out2=df;
-    otherwise
-        error('Method of Moments: analytic_jacobian option is currently only supported by mode_compute 1, 3 and 13');
-end
+% mode_compute=1|3|13 require the gradient as second output argument
+out1=fval;
+out2=df;
 
 end%main function end
 
