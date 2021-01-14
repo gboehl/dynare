@@ -25,8 +25,7 @@ function [SE_values, Asympt_Var] = method_of_moments_standard_errors(xparam, obj
 % This function calls:
 %  o get_the_name
 %  o get_error_message
-%  o GMM_objective_function
-%  o SMM_objective_function.m
+%  o method_of_moments_objective_function
 %  o method_of_moments_optimal_weighting_matrix  
 % =========================================================================
 % Copyright (C) 2020-2021 Dynare Team

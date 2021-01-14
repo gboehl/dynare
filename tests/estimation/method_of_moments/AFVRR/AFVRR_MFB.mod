@@ -257,11 +257,13 @@ dev_Q            = AndreasenEtAl.Q@{orderApp} - oo_.mom.Q;
 dev_datamoments  = str2double(AndreasenEtAl.moments@{orderApp}(:,5)) - oo_.mom.data_moments;
 dev_modelmoments = str2double(AndreasenEtAl.moments@{orderApp}(:,6)) - oo_.mom.model_moments;
 
+if ~isoctave %there is no table command in Octave
 table([AndreasenEtAl.Q@{orderApp} ; str2double(AndreasenEtAl.moments@{orderApp}(:,5)) ; str2double(AndreasenEtAl.moments@{orderApp}(:,6))],...
       [oo_.mom.Q                  ; oo_.mom.data_moments                              ; oo_.mom.model_moments                            ],...
       [dev_Q                      ; dev_datamoments                                   ; dev_modelmoments                                 ],...
       'VariableNames', {'Andreasen et al', 'Dynare', 'dev'},...
       'RowNames', ['Q'; strcat('Data_', M_.matched_moments(:,4)); strcat('Model_', M_.matched_moments(:,4))])
+end
 
 if norm(dev_modelmoments)> 1e-4
     warning('Something wrong in the computation of moments at order @{orderApp}')

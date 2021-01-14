@@ -1,6 +1,7 @@
-% Test optimizers
+% Test whether gradient-based optimizers are able to use analytical
+% Jacobian of moments in GMM estimation
 %
-% Copyright (C) 2020-2021 Dynare Team
+% Copyright (C) 2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,15 +18,6 @@
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 % =========================================================================
-% TO DO
-% [ ] fix optimizers 11 and 12; 
-% note that 12 and 102 require GADS_Toolbox which is not available on servers, but need to be tested locally
-
-% Define testscenario
-@#define orderApp = 2
-
-% Note that we will set the numerical optimization tolerance levels very large to speed up the testsuite
-
 @#include "RBC_MoM_common.inc"
 
 shocks;
@@ -52,27 +44,10 @@ n*n(-1);
 iv*iv(-1);
 end;
 
-% reduce options to speed up testsuite
-options_.newrat.maxiter = 10;
-options_.newrat.tolerance.f = 1e-2;
-options_.newrat.tolerance.f_analytic = 1e-2;
-
-options_.mh_jscale = 0.6;
-options_.gmhmaxlik.iterations=1;
-options_.gmhmaxlik.number=2000;
-options_.gmhmaxlik.nclimb=2000;
-options_.gmhmaxlik.nscale=2000;
-options_.gmhmaxlik.target=0.5;
-
-options_.solveopt.MaxIter=300;
-options_.solveopt.LBGradientStep=1e-3;
-options_.solveopt.TolFun = 1e-3;
-options_.solveopt.TolX = 1e-3;
-options_.solveopt.TolXConstraint=1e-3;
-
 
 @#for estimParams in [0, 1, 2]
   clear estim_params_;
+
   @#if estimParams == 0
     estimated_params;
         %DELTA,         0.025;
@@ -83,7 +58,6 @@ options_.solveopt.TolXConstraint=1e-3;
         RHOA,          0.979;
         stderr u_a,    0.0072;
     end;
-  @#define OPTIMIZERS = [1, 2, 3, 4, 5, 7, 8, 9, 10, 13, 101]
   @#endif
 
   @#if estimParams == 1
@@ -96,7 +70,6 @@ options_.solveopt.TolXConstraint=1e-3;
         RHOA,          ,        0,           1;
         stderr u_a,    ,        0,           1;
     end;
-  @#define OPTIMIZERS = [1, 2, 3, 4, 7, 8, 9, 10, 13, 101]
   @#endif
 
   @#if estimParams == 2
@@ -111,47 +84,42 @@ options_.solveopt.TolXConstraint=1e-3;
         stderr u_a,    0.01,         0,           1,  normal_pdf, 0.01, 0.5;
         %THETA,         3.48,          0,           10, normal_pdf, 0.25, 0.0.1;
     end;
-  @#define OPTIMIZERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 101]
   @#endif
 
-    estimated_params_init(use_calibration);
-    end;
-
-    @#for optimizer in OPTIMIZERS
-        
-        @#if estimParams == 2 && optimizer == 13
-            %skip due to buggy behavior in Octave
+  estimated_params_init(use_calibration);
+  end;
+  
+  @#for optimizer in [1, 3, 13]
+    @#if estimParams == 2 && optimizer == 13
+        %skip due to buggy behavior in Octave
         if ~isoctave
-        @#endif
-        
-    method_of_moments(
+    @#endif
+  
+  method_of_moments(
           mom_method = GMM         % method of moments method; possible values: GMM|SMM
         , datafile   = 'RBC_Andreasen_Data_2.mat' % name of filename with data
-        , order = @{orderApp}                 % order of Taylor approximation in perturbation
+        , order = 2                 % order of Taylor approximation in perturbation
         , weighting_matrix = ['OPTIMAL']      % weighting matrix in moments distance objective function; possible values: OPTIMAL|IDENTITY_MATRIX|DIAGONAL|filename. Size of cell determines stages in iterated estimation, e.g. two state with ['DIAGONAL','OPTIMAL']
-        , nograph                           % do not create graphs (which implies that they are not saved to the disk nor displayed)
+        , nodisplay
+        , nograph
         , mode_compute = @{optimizer}        % specifies the optimizer for minimization of moments distance
-        @#if optimizer == 102
-        , optim = ('TolFun'      , 1D-3       % termination tolerance on the function value, a positive scalar
-                  ,'MaxIter'     , 300        % maximum number of iterations allowed, a positive integer
-                  ,'MaxFunEvals' , 1D3        % maximum number of function evaluations allowed, a positive integer
-                  )
-        @#else
-        , optim = ('TolFun'      , 1D-3       % termination tolerance on the function value, a positive scalar
-                  ,'TolX'        , 1e-3       % termination tolerance on x, a positive scalar
-                  ,'MaxIter'     , 300        % maximum number of iterations allowed, a positive integer
-                  ,'MaxFunEvals' , 1D3        % maximum number of function evaluations allowed, a positive integer
-                  )
-        @#endif
-        %, silent_optimizer                  % run minimization of moments distance silently without displaying results or saving files in between
-    );
-    
-        @#if estimParams == 2 && optimizer == 13
-            %skip due to buggy behavior in Octave
+        %, additional_optimizer_steps = [1 3 13]
+%        , optim = ('TolFun', 1e-6
+%                    ,'TolX', 1e-6
+%                    ,'MaxIter', 3000
+%                    ,'MaxFunEvals', 1D6
+%                    ,'UseParallel' , 1
+%                    ,'Jacobian' , 'on'                   
+%                    ,'GradObj','on'
+%                   )    % a list of NAME and VALUE pairs to set options for the optimization routines. Available options depend on mode_compute
+        , silent_optimizer                  % run minimization of moments distance silently without displaying results or saving files in between        
+        , analytic_jacobian
+  );
+  
+    @#if estimParams == 2 && optimizer == 13
+        %skip due to buggy behavior in Octave
         end
-        @#endif
-    @#endfor
+    @#endif
+  @#endfor  
+  
 @#endfor
-
-
-
