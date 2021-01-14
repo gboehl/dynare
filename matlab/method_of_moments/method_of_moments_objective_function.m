@@ -1,4 +1,4 @@
-function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, M_, options_mom_)
+function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_, df] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, M_, options_mom_)
 % [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, M_, options_mom_)
 % -------------------------------------------------------------------------
 % This function evaluates the objective function for GMM/SMM estimation
@@ -21,9 +21,12 @@ function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_o
 %      - mom.model_moments       [numMom x 1] vector with model moments
 %      - mom.Q                   value of the quadratic form of the moment difference
 %   o M_:                       Matlab's structure describing the model
+%   o options_mom_:             structure information about all settings (specified by the user, preprocessor, and taken from global options_)
+%   o df:                       analytical parameter Jacobian of the quadratic form of the moment difference (for GMM only)
 % -------------------------------------------------------------------------
 % This function is called by
 %  o method_of_moments.m
+%  o dynare_minimize_objective.m
 % -------------------------------------------------------------------------
 % This function calls
 %  o check_bounds_and_definiteness_estimation
@@ -56,7 +59,15 @@ function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_o
 %------------------------------------------------------------------------------
 % 0. Initialization of the returned variables and others...
 %------------------------------------------------------------------------------
-
+if options_mom_.vector_output == 1
+    if options_mom_.mom.penalized_estimator
+        df           = nan(size(oo_.mom.data_moments,1)+length(xparam1),length(xparam1));
+    else
+        df           = nan(size(oo_.mom.data_moments,1),length(xparam1));
+    end
+else
+    df           = nan(1,length(xparam1));
+end
 junk1        = [];
 junk2        = [];
 
@@ -112,7 +123,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
     %--------------------------------------------------------------------------
     % 3. Set up pruned state-space system and compute model moments
     %--------------------------------------------------------------------------
-    if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors        
+    if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
         indpmodel = []; %initialize index for model parameters
         if ~isempty(estim_params_.param_vals)
             indpmodel = estim_params_.param_vals(:,1); %values correspond to parameters declaration order, row number corresponds to order in estimated_params
@@ -146,7 +157,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         E_y = pruned_state_space.E_y;
         E_y_nbr = nnz(options_mom_.mom.index.E_y);
         oo_.mom.model_moments(offset+1:E_y_nbr,1) = E_y(options_mom_.mom.index.E_y);
-        if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+        if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
             oo_.mom.model_moments_params_derivs(offset+1:E_y_nbr,:) = pruned_state_space.dE_y(options_mom_.mom.index.E_y,:);
         end
         offset = offset + E_y_nbr;
@@ -156,12 +167,12 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
     if isfield(options_mom_.mom.index,'E_yy') && nnz(options_mom_.mom.index.E_yy) > 0
         if options_mom_.prefilter
             E_yy = pruned_state_space.Var_y;
-            if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+            if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
                 dE_yy = pruned_state_space.dVar_y;
             end            
         else
             E_yy = pruned_state_space.Var_y + pruned_state_space.E_y*pruned_state_space.E_y';
-            if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+            if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
                 dE_yy = pruned_state_space.dVar_y;
                 for jp=1:totparam_nbr
                     dE_yy(:,:,jp) = dE_yy(:,:,jp) + pruned_state_space.dE_y(:,jp)*pruned_state_space.E_y' + pruned_state_space.E_y*pruned_state_space.dE_y(:,jp)';
@@ -170,7 +181,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         end
         E_yy_nbr = nnz(tril(options_mom_.mom.index.E_yy));
         oo_.mom.model_moments(offset+(1:E_yy_nbr),1) = E_yy(tril(options_mom_.mom.index.E_yy));
-        if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+        if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
             oo_.mom.model_moments_params_derivs(offset+(1:E_yy_nbr),:) = reshape(dE_yy(repmat(tril(options_mom_.mom.index.E_yy),[1 1 totparam_nbr])),E_yy_nbr,totparam_nbr);
         end
         offset = offset + E_yy_nbr;
@@ -179,12 +190,12 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
     if isfield(options_mom_.mom.index,'E_yyt') && nnz(options_mom_.mom.index.E_yyt) > 0
         if options_mom_.prefilter
             E_yyt = pruned_state_space.Var_yi;
-            if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+            if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
                 dE_yyt = pruned_state_space.dVar_yi;
             end
         else
             E_yyt = pruned_state_space.Var_yi + repmat(pruned_state_space.E_y*pruned_state_space.E_y',[1 1 size(pruned_state_space.Var_yi,3)]);
-            if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+            if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
                 dE_yyt = pruned_state_space.dVar_yi;
                 for jp=1:totparam_nbr
                     dE_yyt(:,:,:,jp) = dE_yyt(:,:,:,jp) + repmat(pruned_state_space.dE_y(:,jp)*pruned_state_space.E_y',[1 1 size(pruned_state_space.Var_yi,3)])...
@@ -194,7 +205,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         end
         E_yyt_nbr = nnz(options_mom_.mom.index.E_yyt);
         oo_.mom.model_moments(offset+(1:E_yyt_nbr),1) = E_yyt(options_mom_.mom.index.E_yyt);
-        if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_standard_errors
+        if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
             oo_.mom.model_moments_params_derivs(offset+(1:E_yyt_nbr),:) = reshape(dE_yyt(repmat(options_mom_.mom.index.E_yyt,[1 1 1 totparam_nbr])),E_yyt_nbr,totparam_nbr);
         end
     end
@@ -262,6 +273,30 @@ else
     fval = oo_.mom.Q;
     if options_mom_.mom.penalized_estimator
         fval=fval+(xparam1-oo_.prior.mean)'/oo_.prior.variance*(xparam1-oo_.prior.mean);
+    end
+end
+
+if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_jacobian
+    if options_mom_.mom.penalized_estimator
+        dxparam1 = eye(length(xparam1));
+    end
+    
+    for jp=1:length(xparam1)
+        dmoments_difference = - oo_.mom.model_moments_params_derivs(:,jp);
+        dresiduals = sqrt(options_mom_.mom.weighting_matrix_scaling_factor)*oo_.mom.Sw*dmoments_difference;
+        
+        if options_mom_.vector_output == 1 % lsqnonlin requires vector output            
+            if options_mom_.mom.penalized_estimator                
+                df(:,jp)=[dresiduals;dxparam1(:,jp)./sqrt(diag(oo_.prior.variance))];
+            else
+                df(:,jp) = dresiduals;
+            end
+        else
+            df(:,jp) = dresiduals'*residuals + residuals'*dresiduals;
+            if options_mom_.mom.penalized_estimator
+                df(:,jp)=df(:,jp)+(dxparam1(:,jp))'/oo_.prior.variance*(xparam1-oo_.prior.mean)+(xparam1-oo_.prior.mean)'/oo_.prior.variance*(dxparam1(:,jp));
+            end
+        end
     end
 end
 

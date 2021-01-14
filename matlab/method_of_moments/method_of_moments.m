@@ -93,6 +93,7 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 % - [ ] deal with measurement errors (once @wmutschl has implemented this in identification toolbox)
 % - [ ] improve check for duplicate moments by using the cellfun and unique functions
 % - [ ] dirname option to save output to different directory not yet implemented
+% - [ ] add analytic_jacobian option for mode_compute 4 and 101
 % -------------------------------------------------------------------------
 % Step 0: Check if required structures and options exist
 % -------------------------------------------------------------------------
@@ -165,9 +166,10 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         error('method_of_moments: perturbation orders higher than 3 are not implemented for GMM estimation, try using SMM.\n');
     end
     options_mom_.mom = set_default_option(options_mom_.mom,'analytic_standard_errors',false);       % compute standard errors numerically (0) or analytically (1). Analytical derivatives are only available for GMM.
+    options_mom_.mom = set_default_option(options_mom_.mom,'analytic_jacobian',false);              % use analytic Jacobian in optimization, only available for GMM and gradient-based optimizers    
 end
-options_mom_.mom.compute_derivs = false;% flag to compute derivs in objective function (needed for analytic standard errors with GMM)
-
+% initialize flag to compute derivs in objective function (needed for GMM with either analytic_standard_errors or analytic_jacobian )
+options_mom_.mom.compute_derivs = false;
     
 % General options that can be set by the user in the mod file, otherwise default values are provided
 options_mom_ = set_default_option(options_mom_,'dirname',M_.dname);    % specify directory in which to store estimation output [not yet working]
@@ -329,6 +331,10 @@ options_mom_.analytic_derivation = 0;
 options_mom_.analytic_derivation_mode = 0; % needed by get_perturbation_params_derivs.m, ie use efficient sylvester equation method to compute analytical derivatives as in Ratto & Iskrev (2012)
 
 options_mom_.vector_output= false;           % specifies whether the objective function returns a vector
+
+optimizer_vec=[options_mom_.mode_compute;num2cell(options_mom_.additional_optimizer_steps)]; % at each stage one can possibly use different optimizers sequentially
+
+analytic_jacobian_optimizers = [1, 3, 13]; %these are currently supported, see to-do list
 
 % -------------------------------------------------------------------------
 % Step 1d: Other options that need to be initialized
@@ -708,6 +714,7 @@ end
 % Step 6: checks for objective function at initial parameters
 % -------------------------------------------------------------------------
 objective_function = str2func('method_of_moments_objective_function');
+
 try
     % Check for NaN or complex values of moment-distance-funtion evaluated
     % at initial parameters and identity weighting matrix    
@@ -757,7 +764,7 @@ end
 if options_mom_.mom.penalized_estimator
     fprintf('\n  - penalized estimation using deviation from prior mean and weighted with prior precision');
 end
-optimizer_vec=[options_mom_.mode_compute;num2cell(options_mom_.additional_optimizer_steps)]; % at each stage one can possibly use different optimizers sequentially
+
 for i = 1:length(optimizer_vec)
     if i == 1
         str = '- optimizer (mode_compute';
@@ -807,6 +814,9 @@ for i = 1:length(optimizer_vec)
     if options_mom_.silent_optimizer
         fprintf(' (silent)');
     end
+    if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_jacobian && ismember(optimizer_vec{i},analytic_jacobian_optimizers)
+        fprintf(' (using analytical Jacobian)');
+    end
 end
 fprintf('\n  - perturbation order:        %d', options_mom_.order)
 if options_mom_.order > 1 && options_mom_.pruning
@@ -828,6 +838,7 @@ if size(options_mom_.mom.weighting_matrix,1)>1 && ~(any(strcmpi('diagonal',optio
     fprintf('\nYou did not specify the use of an optimal or diagonal weighting matrix. There is no point in running an iterated method of moments.\n')
 end
 
+optim_opt0 = options_mom_.optim_opt; % store original options set by user
 for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
     fprintf('Estimation stage %u\n',stage_iter);
     Woptflag = false;
@@ -873,16 +884,36 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
     end
 
     for optim_iter= 1:length(optimizer_vec)
+        options_mom_.current_optimizer = optimizer_vec{optim_iter};
         if optimizer_vec{optim_iter}==0
             xparam1=xparam0; %no minimization, evaluate objective at current values
             fval = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_);
         else
             if optimizer_vec{optim_iter}==13
-                options_mom_.vector_output = true;
+                options_mom_.vector_output = true;                
             else
-                options_mom_.vector_output = false;
+                options_mom_.vector_output = false;                
             end
-            [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_laplace.name, bayestopt_laplace, [],...
+            if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_jacobian && ismember(optimizer_vec{optim_iter},analytic_jacobian_optimizers) %do this only for gradient-based optimizers
+                options_mom_.mom.compute_derivs = true;
+                objective_function1 = str2func('method_of_moments_objective_function_gradient_helper');
+                switch optimizer_vec{optim_iter}
+                    case 1
+                        options_mom_.optim_opt = [optim_opt0, ',''GradObj'',''on'''];   % make sure GradObj option is on for fmincon
+                    case 3
+                        options_mom_.optim_opt = [optim_opt0, ',''GradObj'',''on'''];   % make sure GradObj option is on for fmincon
+                    case 13
+                        options_mom_.optim_opt = [optim_opt0, ',''Jacobian'',''on'''];  % make sure Jacobian option is on for lsqnonlin
+                end
+                if strcmp(options_mom_.optim_opt(1),',')
+                    options_mom_.optim_opt(1) = []; %remove the comma if optim_opt was empty
+                end
+            else
+                options_mom_.mom.compute_derivs = false;
+                objective_function1 = objective_function;
+            end
+            
+            [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function1, xparam0, optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_laplace.name, bayestopt_laplace, [],...
                                                                   Bounds, oo_, estim_params_, M_, options_mom_);
             if options_mom_.vector_output
                 fval = fval'*fval;
