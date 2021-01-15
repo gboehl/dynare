@@ -70,29 +70,28 @@ nlhc = 1;
 if ~is_data_table
     fprintf(fid, '\\begin{tabular}{@{}l');
     if isempty(o.range)
-        dates = getMaxRange(o.series);
-        o.range = {dates};
+        Dates = getMaxRange(o.series);
+        o.range = {Dates};
     else
-        dates = o.range{1};
+        Dates = o.range{1};
     end
-    ndates = dates.ndat;
+    ndates = Dates.ndat;
 
     for i=1:ndates
         fprintf(fid, 'r');
         if o.showVlines
             fprintf(fid, '|');
-        elseif o.vlineAfterEndOfPeriod && dates(i).time(2) == dates(i).freq
+        elseif o.vlineAfterEndOfPeriod && subperiod(Dates(i)) == Dates(i).freq
             fprintf(fid, '|');
         elseif ~isempty(o.vlineAfter)
             for j=1:length(o.vlineAfter)
-                if dates(i) == o.vlineAfter{j}
+                if Dates(i) == o.vlineAfter{j}
                     fprintf(fid, '|');
                 end
             end
         end
     end
-    datedata = dates.time;
-    years = unique(datedata(:, 1));
+    years = unique(year(Dates));
     if length(o.range) > 1
         rhscols = strings(o.range{2});
         if o.range{2}.freq == 1
@@ -120,7 +119,7 @@ if ~is_data_table
 
     % Column Headers
     thdr = num2cell(years, size(years, 1));
-    if dates.freq == 1
+    if Dates.freq == 1
         for i=1:size(thdr, 1)
             fprintf(fid, ' & %d', thdr{i, 1});
         end
@@ -128,10 +127,10 @@ if ~is_data_table
             fprintf(fid, ' & %s', rhscols{i});
         end
     else
-        thdr{1, 2} = datedata(:, 2)';
+        thdr{1, 2} = subperiod(Dates)';
         if size(thdr, 1) > 1
             for i=2:size(thdr, 1)
-                split = find(thdr{i-1, 2} == dates.freq, 1, 'first');
+                split = find(thdr{i-1, 2} == Dates.freq, 1, 'first');
                 assert(~isempty(split), '@report_table.writeTableFile: Shouldn''t arrive here');
                 thdr{i, 2} = thdr{i-1, 2}(split+1:end);
                 thdr{i-1, 2} = thdr{i-1, 2}(1:split);
@@ -144,7 +143,7 @@ if ~is_data_table
             fprintf(fid, ' & %s', rhscols{i});
         end
         fprintf(fid, '\\\\\n');
-        switch dates.freq
+        switch Dates.freq
             case 4
                 sep = 'Q';
             case 12
@@ -164,8 +163,8 @@ if ~is_data_table
                     fprintf(fid, '|');
                 elseif ~isempty(o.vlineAfter)
                     for k=1:length(o.vlineAfter)
-                        if o.vlineAfter{k}.time(1) == thdr{i} && ...
-                                o.vlineAfter{k}.time(2) == period(j)
+                        if year(o.vlineAfter{k}) == thdr{i} && ...
+                                subperiod(o.vlineAfter{k}) == period(j)
                             fprintf(fid, '|');
                         end
                     end
@@ -210,7 +209,7 @@ if ~is_data_table
         if o.writeCSV
             if isempty(o.series{i}.tableSubSectionHeader)
                 csvseries = [csvseries ...
-                    o.series{i}.data(dates).set_names([...
+                    o.series{i}.data(Dates).set_names([...
                     num2str(i) '_' ...
                     o.series{i}.data.name{:}])];
             end
