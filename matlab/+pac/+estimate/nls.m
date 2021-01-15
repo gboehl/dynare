@@ -42,7 +42,7 @@ function nls(eqname, params, data, range, optimizer, varargin)
 % is available only if the matylab optimization toolbox is installed), the
 % remaining inputs are the options (key/value) passed to the optimizers.
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright (C) 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -130,7 +130,7 @@ fid = fopen(['+' M_.fname filesep() fun '.m'], 'w');
 fprintf(fid, 'function r = %s(params, data, DynareModel, DynareOutput)\n', fun);
 fprintf(fid, '\n');
 fprintf(fid, '%% Evaluates the residuals for equation %s.\n', eqname);
-fprintf(fid, '%% File created by Dynare (%s).\n', datestr(datetime));
+fprintf(fid, '%% File created by Dynare (%s).\n', datetime);
 fprintf(fid, '\n');
 for i=1:length(ipnames_)
     fprintf(fid, 'DynareModel.params(%u) = params(%u);\n', ipnames_(i), i);
@@ -147,7 +147,7 @@ fid = fopen(['+' M_.fname filesep() fun '.m'], 'w');
 fprintf(fid, 'function [s, fake1, fake2, fake3, fake4] = %s(params, data, DynareModel, DynareOutput)\n', fun);
 fprintf(fid, '\n');
 fprintf(fid, '%% Evaluates the sum of square residuals for equation %s.\n', eqname);
-fprintf(fid, '%% File created by Dynare (%s).\n', datestr(datetime));
+fprintf(fid, '%% File created by Dynare (%s).\n', datetime);
 fprintf(fid, '\n');
 fprintf(fid, 'fake1 = 0;\n');
 fprintf(fid, 'fake2 = [];\n');

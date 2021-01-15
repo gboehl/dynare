@@ -126,6 +126,11 @@ if isoctave || matlab_ver_less_than('9.1')
     p{end+1} = '/missing/splitlines';
 end
 
+% datetime doesn't exist in Octave and in MATLAB < R2014b
+if isoctave || matlab_ver_less_than('8.4')
+    p{end+1} = '/missing/datetime';
+end
+
 P = cellfun(@(c)[dynareroot(1:end-1) c], p, 'uni',false);
 
 % Get mex files folder(s)
