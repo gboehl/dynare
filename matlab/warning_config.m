@@ -10,7 +10,7 @@ function warning_config()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright (C) 2008-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,6 +48,11 @@ if isoctave
     warning('off', 'Octave:fortran-indexing');
     warning('off', 'Octave:classdef-to-struct');
     warning('off', 'Octave:legacy-function'); % For strmatch and isdir
+
+    % The following is necessary because of matlab/+pac/+bgp/{get,set}.m
+    % which triggers this bug: https://savannah.gnu.org/bugs/?46849
+    % The warning can be reenabled once the bug is fixed.
+    warning('off', 'Octave:shadowed-function');
 else
     % In MATLAB >= 7.7, don't display a warning if we use deprecated
     % interface to set seed of random number generators
