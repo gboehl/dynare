@@ -17,7 +17,7 @@ function [ast] = getEquationsByTags(ast, tagname, tagvalue)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2017-2019 Dynare Team
+% Copyright (C) 2017-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -72,5 +72,9 @@ for i = 1:length(tagvalue)
     end
 end
 assert(~isempty(idx2keep), 'getEquationsByTags: no equations selected');
-ast = ast(unique(idx2keep, 'stable'));
+if isoctave && octave_ver_less_than('6')
+    ast = ast(unique_stable(idx2keep));
+else
+    ast = ast(unique(idx2keep, 'stable'));
+end
 end

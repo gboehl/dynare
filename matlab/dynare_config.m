@@ -16,7 +16,7 @@ function dynareroot = dynare_config(path_to_dynare)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2020 Dynare Team
+% Copyright (C) 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -90,9 +90,10 @@ if isoctave && octave_ver_less_than('5')
     p{end+1} = '/missing/ordeig';
 end
 
-%% intersect(…, 'stable') doesn't exist in Octave < 6
+%% intersect(…, 'stable') and unique(…, 'stable') doen't exist in Octave < 6
 if isoctave && octave_ver_less_than('6')
     p{end+1} = '/missing/intersect_stable';
+    p{end+1} = '/missing/unique_stable';
 end
 
 % Replacements for functions of the MATLAB statistics toolbox
