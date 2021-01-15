@@ -27,7 +27,7 @@ diff(z) = f*diff(z(-1)) + e_z;
 [ name = 'Y' ]
 log(y) = d*log(y(-2)) + e*diff(z(-1)) + e_y;
 
-foo = var_expectation(varexp);
+foo = .5*foo(-1) + var_expectation(varexp);
 end;
 
 // Initialize the VAR expectation model, will build the companion matrix of the VAR.
@@ -56,14 +56,8 @@ verbatim;
   initialconditions(1,4) = .7; % x(-3)
   initialconditions = ...
   dseries(initialconditions, dates('2000Q1'), {'foo', 'y','z', 'x'});
-  set_dynare_seed('default');
-  ts = simul_backward_model(initialconditions, 15);
+    set_dynare_seed('default');
+  ts = simul_backward_model(initialconditions, 100);
   foo = ts.foo.data;
-  % Evaluate the (VAR) expectation term
-  ts{'toto'} = example.var_expectations.varexp.evaluate(ts);
-  % Check tthat the evaluation is correct.
-  range = dates('2000Q4'):dates('2004Q2');
-  if max(abs(ts(range).foo.data-ts(range).toto.data))>1e-5
-     error('Expectation term evaluations do not match!')
-  end
+  save('example1.mat', 'foo');
 end;

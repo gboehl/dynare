@@ -1,8 +1,8 @@
 // --+ options: json=compute, stochastic +--
 
-var y x z u;
+var y x z;
 
-varexo ex ey ez eu;
+varexo ex ey ez;
 
 parameters a_y_1 a_y_2 b_y_1 b_y_2 b_x_1 b_x_2 ; // VAR parameters
 
@@ -24,12 +24,9 @@ g = .1;
 
 var_model(model_name=toto, eqtags=['eq:x', 'eq:y']);
 
-pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman, growth=diff(u(-1)));
+pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman, growth=g);
 
 model;
-
-[name='eq:u']
-diff(u) = g + eu;
 
 [name='eq:y']
 y = a_y_1*y(-1) + a_y_2*diff(x(-1)) + b_y_1*y(-2) + b_y_2*diff(x(-2)) + ey ;
@@ -46,7 +43,6 @@ shocks;
     var ex = 1.0;
     var ey = 1.0;
     var ez = 1.0;
-    var eu = 0.1;
 end;
 
 // Initialize the PAC model (build the Companion VAR representation for the auxiliary model).
@@ -70,8 +66,8 @@ verbatim;
   y = zeros(M_.endo_nbr,1);
   y(1:M_.orig_endo_nbr) = rand(M_.orig_endo_nbr, 1);
   x = randn(M_.exo_nbr,1);
-  y = example.set_auxiliary_variables(y, x, M_.params);
+  y = example1.set_auxiliary_variables(y, x, M_.params);
   y = [y(find(M_.lead_lag_incidence(1,:))); y];
-  [residual, g1] = example.dynamic(y, x', M_.params, oo_.steady_state, 1);
-  save('example.mat', 'residual', 'g1', 'TrueData');
+  [residual, g1] = example1.dynamic(y, x', M_.params, oo_.steady_state, 1);
+  save('example1.mat', 'residual', 'g1', 'TrueData');
 end;

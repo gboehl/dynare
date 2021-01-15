@@ -105,5 +105,5 @@ verbatim;
     set_dynare_seed('default');
   ts = simul_backward_model(initialconditions, 100);
   foo = ts.foo.data;
-  save('example.mat', 'foo');
+  save('example1.mat', 'foo');
 end;

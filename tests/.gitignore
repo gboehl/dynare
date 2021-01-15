@@ -162,7 +162,7 @@ wsOct
 !/smoother2histval/fsdat_simul.m
 !/steady_state/walsh1_old_ss_steadystate.m
 
-/pac/var-6/example/model/pac-expectations/*
-/pac/var-5/example/model/pac-expectations/*
-/pac/trend-component-14/example/model/pac-expectations/*
+/pac/var-6/example1/model/pac-expectations/*
+/pac/var-5/example1/model/pac-expectations/*
+/pac/trend-component-14/example1/model/pac-expectations/*
 !/ecb/aggregate/test_aggregate_routine.m

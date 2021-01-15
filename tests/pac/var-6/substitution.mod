@@ -21,7 +21,7 @@ e_c_m =  .1;
 c_z_1 =  .7;
 c_z_2 = -.3;
 
-@#include "example/model/pac-expectations/eq0-pacman-parameters.inc"
+@#include "example1/model/pac-expectations/eq0-pacman-parameters.inc"
 
 model;
 
@@ -36,9 +36,9 @@ model;
 
   [name='eq:pac']
   diff(z) = e_c_m*(x(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) +
-  @#include "example/model/pac-expectations/eq0-pacman-growth-neutrality-correction.inc"
+  @#include "example1/model/pac-expectations/eq0-pacman-growth-neutrality-correction.inc"
   +
-  @#include "example/model/pac-expectations/eq0-pacman-expression.inc"
+  @#include "example1/model/pac-expectations/eq0-pacman-expression.inc"
   + ez;
 
 end;
@@ -65,21 +65,21 @@ verbatim;
   x = randn(M_.exo_nbr,1);
   y = substitution.set_auxiliary_variables(y, x, M_.params);
   y = [y(find(M_.lead_lag_incidence(1,:))); y];
-  example = load('example.mat');
+  example1 = load('example1.mat');
   [residual, g1] = substitution.dynamic(y, x', M_.params, oo_.steady_state, 1);
 
-  if max(abs(example.TrueData.data(:)-TrueData.data(:)))>1e-9
+  if max(abs(example1.TrueData.data(:)-TrueData.data(:)))>1e-9
     error('Simulations do not match.')
   end
 
-  if ~isequal(length(residual), length(example.residual)) || max(abs(example.residual-residual))>1e-8
+  if ~isequal(length(residual), length(example1.residual)) || max(abs(example1.residual-residual))>1e-8
     warning('Residuals do not match!')
   end
 
-  if ~isequal(length(g1(:)), length(example.g1(:))) || max(abs(example.g1(:)-g1(:)))>1e-8
+  if ~isequal(length(g1(:)), length(example1.g1(:))) || max(abs(example1.g1(:)-g1(:)))>1e-8
     warning('Jacobian matrices do not match!')
   end
 
-  delete('example.mat');
+  delete('example1.mat');
 
 end;

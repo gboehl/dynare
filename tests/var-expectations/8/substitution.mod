@@ -11,7 +11,7 @@ f =  .8;
 d =  .5;
 e =  .4;
 
-@#include "example/model/var-expectations/varexp-parameters.inc"
+@#include "example1/model/var-expectations/varexp-parameters.inc"
 
 beta = 1/(1+.02);
 
@@ -24,7 +24,7 @@ diff(z) = f*diff(z(-1)) + e_z;
 log(y) = d*log(y(-2)) + e*diff(z(-1)) + e_y;
 
 foo = .5*foo(-1) +
-@#include "example/model/var-expectations/varexp-expression.inc"
+@#include "example1/model/var-expectations/varexp-expression.inc"
 ;
 end;
 
@@ -47,10 +47,10 @@ verbatim;
   dseries(initialconditions, dates('2000Q1'), {'foo', 'y','z', 'x'});
   set_dynare_seed('default');
   ts = simul_backward_model(initialconditions, 100);
-  ex = load('example.mat');
+  ex = load('example1.mat');
 end;
 
-delete('example.mat')
+delete('example1.mat')
 
 if max(abs(ex.foo-ts.foo.data))>1e-12
    error('Simulations do not match!')

@@ -420,19 +420,19 @@ MODFILES = \
 	particle/local_state_space_iteration_k_test.mod
 
 ECB_MODFILES = \
-	var-expectations/1/example.mod \
-	var-expectations/2/example.mod \
-	var-expectations/3/example.mod \
-	var-expectations/4/example.mod \
-	var-expectations/5/example.mod \
-	var-expectations/6/example.mod \
+	var-expectations/1/example1.mod \
+	var-expectations/2/example1.mod \
+	var-expectations/3/example1.mod \
+	var-expectations/4/example1.mod \
+	var-expectations/5/example1.mod \
+	var-expectations/6/example1.mod \
 	var-expectations/6/substitution.mod \
-	var-expectations/7/example.mod \
+	var-expectations/7/example1.mod \
 	var-expectations/7/substitution.mod \
-	var-expectations/8/example.mod \
+	var-expectations/8/example1.mod \
 	var-expectations/8/substitution.mod \
-	var-expectations/9/example.mod \
-	var-expectations/10/example.mod \
+	var-expectations/9/example1.mod \
+	var-expectations/10/example1.mod \
 	trend-component-and-var-models/vm1.mod \
 	trend-component-and-var-models/vm2.mod \
 	trend-component-and-var-models/vm3.mod \
@@ -458,52 +458,52 @@ ECB_MODFILES = \
 	trend-component-and-var-models/legacy/tcm3.mod \
 	trend-component-and-var-models/legacy/tcm4.mod \
 	trend-component-and-var-models/legacy/tcm5.mod \
-	pac/var-1/example.mod \
-	pac/var-2/example.mod \
-	pac/var-3/example.mod \
-	pac/var-4/example.mod \
-	pac/var-5/example.mod \
+	pac/var-1/example1.mod \
+	pac/var-2/example1.mod \
+	pac/var-3/example1.mod \
+	pac/var-4/example1.mod \
+	pac/var-5/example1.mod \
 	pac/var-5/substitution.mod \
-	pac/var-6/example.mod \
+	pac/var-6/example1.mod \
 	pac/var-6/substitution.mod \
-	pac/trend-component-1/example.mod \
-	pac/trend-component-2/example.mod \
-	pac/trend-component-3/example.mod \
-	pac/trend-component-4/example.mod \
-	pac/trend-component-5/example.mod \
-	pac/trend-component-6/example.mod \
-	pac/trend-component-7/example.mod \
-	pac/trend-component-9/example.mod \
-	pac/trend-component-10/example.mod \
-	pac/trend-component-11/example.mod \
-	pac/trend-component-12/example.mod \
-	pac/trend-component-13a/example.mod \
-	pac/trend-component-13b/example.mod \
-	pac/trend-component-14/example.mod \
+	pac/trend-component-1/example1.mod \
+	pac/trend-component-2/example1.mod \
+	pac/trend-component-3/example1.mod \
+	pac/trend-component-4/example1.mod \
+	pac/trend-component-5/example1.mod \
+	pac/trend-component-6/example1.mod \
+	pac/trend-component-7/example1.mod \
+	pac/trend-component-9/example1.mod \
+	pac/trend-component-10/example1.mod \
+	pac/trend-component-11/example1.mod \
+	pac/trend-component-12/example1.mod \
+	pac/trend-component-13a/example1.mod \
+	pac/trend-component-13b/example1.mod \
+	pac/trend-component-14/example1.mod \
 	pac/trend-component-14/substitution.mod \
-	pac/trend-component-15/example.mod \
-	pac/trend-component-16/example.mod \
-	pac/trend-component-17/example.mod \
-	pac/trend-component-18/example.mod \
+	pac/trend-component-15/example1.mod \
+	pac/trend-component-16/example1.mod \
+	pac/trend-component-17/example1.mod \
+	pac/trend-component-18/example1.mod \
 	pac/trend-component-19/example1.mod \
 	pac/trend-component-19/example2.mod \
 	pac/trend-component-19/example3.mod \
-	pac/trend-component-19-growth-lin-comb/example.mod \
+	pac/trend-component-19-growth-lin-comb/example1.mod \
 	pac/trend-component-1-mce/example_det.mod \
 	pac/trend-component-1-mce/example_sto.mod \
 	pac/trend-component-2-mce/example_det.mod \
 	pac/trend-component-2-mce/example_sto.mod \
-	pac/trend-component-20-1/example.mod \
-	pac/trend-component-20-2/example.mod \
-	pac/trend-component-20-3/example.mod \
-	pac/trend-component-20-4/example.mod \
-	pac/trend-component-21/example.mod \
-	pac/trend-component-22/example.mod \
-	pac/trend-component-23/example.mod \
-	pac/trend-component-24/example.mod \
-	pac/trend-component-25/example.mod \
-	pac/trend-component-26/example.mod \
-	pac/trend-component-27/example.mod \
+	pac/trend-component-20-1/example1.mod \
+	pac/trend-component-20-2/example1.mod \
+	pac/trend-component-20-3/example1.mod \
+	pac/trend-component-20-4/example1.mod \
+	pac/trend-component-21/example1.mod \
+	pac/trend-component-22/example1.mod \
+	pac/trend-component-23/example1.mod \
+	pac/trend-component-24/example1.mod \
+	pac/trend-component-25/example1.mod \
+	pac/trend-component-26/example1.mod \
+	pac/trend-component-27/example1.mod \
 	pac/trend-component-28/example1.mod \
 	pac/trend-component-28/example2.mod \
 	pac/trend-component-28/example3.mod \
@@ -512,7 +512,7 @@ ECB_MODFILES = \
 	pac/trend-component-28/example6.mod \
 	pac/trend-component-29/example1.mod \
 	pac/trend-component-29/example2.mod \
-	pac/trend-component-30/example.mod \
+	pac/trend-component-30/example1.mod \
 	write/example1.mod \
 	ecb/backward-models/irf/solow_1.mod \
 	ecb/backward-models/irf/solow_2.mod \
@@ -777,25 +777,25 @@ kalman/likelihood_from_dynare/fs2000ns_uncorr_ME_missing.o.trs: kalman/likelihoo
 kalman/likelihood_from_dynare/fs2000ns_corr_ME_missing.m.trs: kalman/likelihood_from_dynare/fs2000ns_uncorr_ME.m.trs
 kalman/likelihood_from_dynare/fs2000ns_corr_ME_missing.o.trs: kalman/likelihood_from_dynare/fs2000ns_uncorr_ME.o.trs
 
-var-expectations/6/substitution.m.trs: var-expectations/6/example.m.trs
-var-expectations/6/substitution.o.trs: var-expectations/6/example.o.trs
-var-expectations/7/substitution.m.trs: var-expectations/7/example.m.trs
-var-expectations/7/substitution.o.trs: var-expectations/7/example.o.trs
-var-expectations/8/substitution.m.trs: var-expectations/8/example.m.trs
-var-expectations/8/substitution.o.trs: var-expectations/8/example.o.trs
+var-expectations/6/substitution.m.trs: var-expectations/6/example1.m.trs
+var-expectations/6/substitution.o.trs: var-expectations/6/example1.o.trs
+var-expectations/7/substitution.m.trs: var-expectations/7/example1.m.trs
+var-expectations/7/substitution.o.trs: var-expectations/7/example1.o.trs
+var-expectations/8/substitution.m.trs: var-expectations/8/example1.m.trs
+var-expectations/8/substitution.o.trs: var-expectations/8/example1.o.trs
 
-pac/var-5/substitution.m.trs: pac/var-5/example.m.trs
-pac/var-5/substitution.o.trs: pac/var-5/example.o.trs
-pac/var-6/substitution.m.trs: pac/var-6/example.m.trs
-pac/var-6/substitution.o.trs: pac/var-6/example.o.trs
-pac/trend-component-14/substitution.m.trs: pac/trend-component-14/example.m.trs
-pac/trend-component-14/substitution.o.trs: pac/trend-component-14/example.o.trs
+pac/var-5/substitution.m.trs: pac/var-5/example1.m.trs
+pac/var-5/substitution.o.trs: pac/var-5/example1.o.trs
+pac/var-6/substitution.m.trs: pac/var-6/example1.m.trs
+pac/var-6/substitution.o.trs: pac/var-6/example1.o.trs
+pac/trend-component-14/substitution.m.trs: pac/trend-component-14/example1.m.trs
+pac/trend-component-14/substitution.o.trs: pac/trend-component-14/example1.o.trs
 
 lmmcp/sw_newton.m.trs: lmmcp/sw_lmmcp.m.trs
 lmmcp/sw_newton.o.trs: lmmcp/sw_lmmcp.o.trs
 
-var-expectations/4/example.m.trs: var-expectations/3/example.m.trs
-var-expectations/4/example.o.trs: var-expectations/3/example.o.trs
+var-expectations/4/example1.m.trs: var-expectations/3/example1.m.trs
+var-expectations/4/example1.o.trs: var-expectations/3/example1.o.trs
 
 trend-component-and-var-models/tcm7.m.trs: trend-component-and-var-models/tcm6.m.trs
 trend-component-and-var-models/tcm7.o.trs: trend-component-and-var-models/tcm6.o.trs

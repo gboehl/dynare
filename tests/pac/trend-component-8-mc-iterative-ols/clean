@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rm -rf example
-rm  -rf +example
-rm -f example.log
+rm -rf example1
+rm  -rf +example1
+rm -f example1.log
 rm -f *.mat

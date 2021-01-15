@@ -22,7 +22,7 @@ a_x2_2 =  -.1;
 a_x2_x1_1 = -.1;
 a_x2_x1_2 = .2;
 
-@#include "example/model/var-expectations/varexp-parameters.inc"
+@#include "example1/model/var-expectations/varexp-parameters.inc"
 
 beta = 1/(1+.02);
 
@@ -41,7 +41,7 @@ x1bar = x1bar(-1) + ex1bar;
 x2bar = x2bar(-1) + ex2bar;
 
 foo = .5*foo(-1) +
-@#include "example/model/var-expectations/varexp-expression.inc"
+@#include "example1/model/var-expectations/varexp-expression.inc"
 ;
 end;
 
@@ -68,8 +68,8 @@ verbatim;
   dseries(initialconditions, dates('2000Q1'), {'foo', 'x1','x2', 'x1bar', 'x2bar'});
     set_dynare_seed('default');
   ts = simul_backward_model(initialconditions, 100);
-  ex = load('example.mat');
-  delete('example.mat')
+  ex = load('example1.mat');
+  delete('example1.mat')
   if max(abs(ex.foo-ts.foo.data))>1e-12
      error('Simulations do not match!')
   end

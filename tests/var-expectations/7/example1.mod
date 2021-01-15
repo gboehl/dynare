@@ -17,15 +17,16 @@ beta = 1/(1+.02);
 var_model(model_name = toto, eqtags = [ 'X' 'Y' 'Z' ]);
 
 // Define a VAR_EXPECTATION_MODEL
-var_expectation_model(model_name = varexp, expression = diff(log(x)), auxiliary_model_name = toto, horizon = 1, discount = beta)  ;
+var_expectation_model(model_name = varexp, expression = diff(x), auxiliary_model_name = toto, horizon = 1, discount = beta)  ;
+
 
 model;
 [ name = 'X' ]
-diff(log(x)) = a*diff(log(x(-1))) + b*diff(log(x(-2))) + c*diff(z(-2)) + e_x;
+diff(x) = a*diff(x(-1)) + b*diff(x(-2)) + c*z(-2) + e_x;
 [ name = 'Z' ]
-diff(z) = f*diff(z(-1)) + e_z;
+z = f*z(-1) + e_z;
 [ name = 'Y' ]
-log(y) = d*log(y(-2)) + e*diff(z(-1)) + e_y;
+log(y) = d*log(y(-2)) + e*z(-1) + e_y;
 
 foo = .5*foo(-1) + var_expectation(varexp);
 end;
@@ -45,6 +46,7 @@ shocks;
   var e_z = .01;
 end;
 
+
 verbatim;
   initialconditions =zeros(3,4);
   initialconditions(3,1) = .1; % foo(-1)
@@ -59,5 +61,5 @@ verbatim;
     set_dynare_seed('default');
   ts = simul_backward_model(initialconditions, 100);
   foo = ts.foo.data;
-  save('example.mat', 'foo');
+  save('example1.mat', 'foo');
 end;
