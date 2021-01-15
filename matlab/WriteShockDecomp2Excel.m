@@ -76,7 +76,7 @@ if isempty(initial_date)
     x = 1:gend;
 else
     freq = initial_date.freq;
-    initial_period = initial_date.time(1) + (initial_date.time(2)-1)/freq;
+    initial_period = double(initial_date);
     x = initial_period:(1/freq):initial_period+(gend-1)/freq;
 end
 

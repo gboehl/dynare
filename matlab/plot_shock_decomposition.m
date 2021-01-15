@@ -286,7 +286,7 @@ if isequal(type,'aoa') && isstruct(q2a)
         % take all dates where realtime is saved
         qqq=options_.initial_date+options_.shock_decomp.save_realtime(:)-1;
         % take the first Q4 of saved realtime
-        t0=min(options_.shock_decomp.save_realtime(qqq.time(:,2)==4));
+        t0=min(options_.shock_decomp.save_realtime(subperiod(qqq)==4));
         if isempty(t0)
             error('the realtime decompositions are not stored in Q4! Please check your dates and settings.')
         end
@@ -421,12 +421,12 @@ switch type
         t0=1; % we assume the sample starts Q1 of 1st year
         initial_date = dates('1Y');
     else
-        initial_date0 = dates([int2str(initial_date.time(1)) 'Y']);
-        if initial_date.time(2)==1  % the first year is full
+        initial_date0 = dates([int2str(year(initial_date)) 'Y']);
+        if subperiod(initial_date)==1  % the first year is full
             t0=1;
             initial_date1=initial_date0;
         else
-            t0=(4-initial_date.time(2)+2); % 1st period of the 1st full year in sample
+            t0=(4-subperiod(initial_date)+2); % 1st period of the 1st full year in sample
             initial_date1=initial_date0+1;
         end
     end
@@ -492,16 +492,16 @@ switch type
         end
     else
         % this is for quarterly-annualized variables already defined in model, so we can just take Q4
-        t0=4-initial_date.time(2)+1;
+        t0=4-subperiod(initial_date)+1;
         initial_date = initial_date0;
         z=z(:,:,t0:4:end);
     end
 
     if ~isempty(options_.plot_shock_decomp.plot_init_date)
-        options_.plot_shock_decomp.plot_init_date = dates([int2str(options_.plot_shock_decomp.plot_init_date.time(1)) 'Y']);
+        options_.plot_shock_decomp.plot_init_date = dates([int2str(year(options_.plot_shock_decomp.plot_init_date)) 'Y']);
     end
     if ~isempty(options_.plot_shock_decomp.plot_end_date)
-        options_.plot_shock_decomp.plot_end_date = dates([int2str(options_.plot_shock_decomp.plot_end_date.time(1)) 'Y']);
+        options_.plot_shock_decomp.plot_end_date = dates([int2str(year(options_.plot_shock_decomp.plot_end_date)) 'Y']);
     end
 
 
