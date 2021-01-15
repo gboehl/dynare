@@ -25,7 +25,7 @@ function [x,check,info] = trust_region(fcn,x0,j1,j2,jacobian_flag,gstep,tolf,tol
 %    none
 
 % Copyright (C) 2008-2012 VZLU Prague, a.s.
-% Copyright (C) 2014-2020 Dynare Team
+% Copyright (C) 2014-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -188,7 +188,12 @@ end
 
 function x = dogleg (r, b, d, delta)
 % Get Gauss-Newton direction.
-x = decomposition(r, 'CheckCondition', false) \ b;
+if isoctave || matlab_ver_less_than('9.3')
+   % The decomposition() function does not exist in Octave and MATLAB < R2017b
+    x = r \ b;
+else
+    x = decomposition(r, 'CheckCondition', false) \ b;
+end
 xn = norm (d .* x);
 if (xn > delta)
     % GN is too big, get scaled gradient.
