@@ -41,7 +41,7 @@ function DynareResults = initial_estimation_checks(objective_function,xparam1,Dy
 %singularity check
 maximum_number_non_missing_observations=max(sum(~isnan(DynareDataset.data),2));
 
-if DynareOptions.order>1 
+if DynareOptions.order>1
     if any(any(isnan(DynareDataset.data)))
         error('initial_estimation_checks:: particle filtering does not support missing observations')
     end
@@ -54,9 +54,13 @@ if DynareOptions.order>1
     if Model.H==0
         error('initial_estimation_checks:: particle filtering requires measurement error on the observables')
     else
-        [~,flag]=chol(Model.H);
-        if flag
-            error('initial_estimation_checks:: the measurement error matrix must be positive definite')
+        if sum(diag(Model.H)>0)<length(DynareOptions.varobs)
+            error('initial_estimation_checks:: particle filtering requires as many measurement errors as observed variables')
+        else
+            [~,flag]=chol(Model.H);
+            if flag
+                error('initial_estimation_checks:: the measurement error matrix must be positive definite')
+            end
         end
     end
 end
@@ -163,7 +167,7 @@ if ~isequal(DynareOptions.mode_compute,11) || ...
     if info(1)==201
         fprintf('initial_estimation_checks:: Initial covariance of the states is not positive definite. Try a different nonlinear_filter_initialization.\n')
         error('initial_estimation_checks:: Initial covariance of the states is not positive definite. Try a different nonlinear_filter_initialization.')
-    end        
+    end
     %reset options
     DynareOptions.use_univariate_filters_if_singularity_is_detected=use_univariate_filters_if_singularity_is_detected_old;
 else
