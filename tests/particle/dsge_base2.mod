@@ -11,10 +11,10 @@
 
 // ALGORITHM
 @#ifndef LINEAR_KALMAN
-@#define LINEAR_KALMAN = 1
+@#define LINEAR_KALMAN = 0
 @#endif
 @#ifndef NON_LINEAR_KALMAN
-@#define NON_LINEAR_KALMAN = 0
+@#define NON_LINEAR_KALMAN = 1
 @#endif
 @#ifndef ALGO_SIR
 @#define ALGO_SIR = 0
