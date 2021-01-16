@@ -416,9 +416,7 @@ MODFILES = \
 	bgp/solow-1/solow.mod \
 	bgp/nk-1/nk.mod \
 	bgp/ramsey-1/ramsey.mod \
-	dynare-command-options/ramst.mod \
-	particle/first_spec.mod \
-	particle/local_state_space_iteration_k_test.mod
+	dynare-command-options/ramst.mod
 
 ECB_MODFILES = \
 	var-expectations/1/example1.mod \
@@ -547,7 +545,8 @@ MODFILES += $(ECB_MODFILES)
 
 PARTICLEFILES = \
 	particle/dsge_base2.mod \
-	particle/dsge_unit_root.mod
+	particle/first_spec.mod \
+	particle/local_state_space_iteration_k_test.mod
 
 
 XFAIL_MODFILES = ramst_xfail.mod \
@@ -1030,6 +1029,7 @@ M_OLS_TRS_FILES = $(patsubst %.mod, %.m.trs, $(OLS_MODFILES))
 
 # Matlab TRS Files
 M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
+M_TRS_FILES += $(patsubst %.mod, %.m.trs, $(PARTICLEFILES))
 M_TRS_FILES += 	run_block_byte_tests_matlab.m.trs \
 		run_reporting_test_matlab.m.trs \
 		run_all_unitary_tests.m.trs \
@@ -1041,6 +1041,7 @@ M_XFAIL_TRS_FILES = $(patsubst %.mod, %.m.trs, $(XFAIL_MODFILES))
 
 # Octave TRS Files
 O_TRS_FILES = $(patsubst %.mod, %.o.trs, $(MODFILES))
+O_TRS_FILES += $(patsubst %.mod, %.o.trs, $(PARTICLEFILES))
 O_TRS_FILES += 	run_block_byte_tests_octave.o.trs \
 		run_reporting_test_octave.o.trs \
 		run_all_unitary_tests.o.trs \
