@@ -184,10 +184,10 @@ if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && options_.m
             if options_.forecast > 0
                 oo_.forecast = dyn_forecast(var_list_,M_,options_,oo_,'smoother',dataset_info);
             end
-            %reset qz_criterium
-            options_.qz_criterium=qz_criterium_old;
-            return
         end
+        %reset qz_criterium
+        options_.qz_criterium=qz_criterium_old;
+        return
     else %allow to continue, e.g. with MCMC_jumping_covariance
         if options_.smoother
             error('Estimation:: Particle Smoothers are not yet implemented.')
