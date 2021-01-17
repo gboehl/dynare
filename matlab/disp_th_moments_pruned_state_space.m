@@ -1,7 +1,7 @@
-function oo_=disp_th_moments_order3(dr,M_,options_,i_var,oo_)
-% oo_=disp_th_moments_order3(dr,M_,options_,i_var,oo_)
-% Display theoretical moments of variables based on (third order) pruned
-% state-space
+function oo_=disp_th_moments_pruned_state_space(dr,M_,options_,i_var,oo_)
+% oo_=disp_th_moments_pruned_state_space(dr,M_,options_,i_var,oo_)
+% Display theoretical moments of variables based on (second or third order)
+% pruned state-space
 %
 % INPUTS:
 % dr :                      Dynare decision rules structure
