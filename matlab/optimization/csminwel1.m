@@ -79,6 +79,9 @@ if ischar(fcn)
 end
 if ischar(grad)
     grad = str2func(grad);
+    grad_fun_provided=1;
+else
+    grad_fun_provided=0;
 end
 %tailstr = ')';
 %stailstr = [];
@@ -100,7 +103,7 @@ end
 
 if NumGrad
     [g, badg]=get_num_grad(method,fcn,penalty,f0,x0,epsilon,varargin{:});
-elseif ischar(grad)
+elseif grad_fun_provided
     [g,badg] = grad(x0,varargin{:});
 else
     g=arg1;
@@ -139,7 +142,7 @@ while ~done
         else
             if NumGrad
                 [g1, badg1]=get_num_grad(method,fcn,penalty,f1,x1,epsilon,varargin{:});
-            elseif ischar(grad)
+            elseif grad_fun_provided
                 [g1, badg1] = grad(x1,varargin{:});
             else
                 [~,cost_flag,g1] = penalty_objective_function(x1,fcn,penalty,varargin{:});
@@ -166,7 +169,7 @@ while ~done
                 else
                     if NumGrad
                         [g2, badg2]=get_num_grad(method,fcn,penalty,f2,x2,epsilon,varargin{:});
-                    elseif ischar(grad)
+                    elseif grad_fun_provided
                         [g2, badg2] = grad(x2,varargin{:});
                     else
                         [~,cost_flag,g2] = penalty_objective_function(x1,fcn,penalty,varargin{:});
@@ -198,7 +201,7 @@ while ~done
                         else
                             if NumGrad
                                 [g3, badg3]=get_num_grad(method,fcn,penalty,f3,x3,epsilon,varargin{:});
-                            elseif ischar(grad)
+                            elseif grad_fun_provided
                                 [g3, badg3] = grad(x3,varargin{:});
                             else
                                 [~,cost_flag,g3] = penalty_objective_function(x1,fcn,penalty,varargin{:});
@@ -258,7 +261,7 @@ while ~done
         if nogh
             if NumGrad
                 [gh, badgh]=get_num_grad(method,fcn,penalty,fh,xh,epsilon,varargin{:});
-            elseif ischar(grad)
+            elseif grad_fun_provided
                 [gh, badgh] = grad(xh,varargin{:});
             else
                 [~,cost_flag,gh] = penalty_objective_function(x1,fcn,penalty,varargin{:});
