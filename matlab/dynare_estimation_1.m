@@ -177,16 +177,22 @@ catch % if check fails, provide info on using calibration if present
 end
 
 if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && options_.mh_posterior_mode_estimation==0
-    if options_.smoother
-        [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,options_,bayestopt_] = DsgeSmoother(xparam1,gend,transpose(data),data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
-        [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
-        if options_.forecast > 0
-            oo_.forecast = dyn_forecast(var_list_,M_,options_,oo_,'smoother',dataset_info);
+    if options_.order==1 && ~options_.particle.status
+        if options_.smoother
+            [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,options_,bayestopt_] = DsgeSmoother(xparam1,gend,transpose(data),data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
+            [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
+            if options_.forecast > 0
+                oo_.forecast = dyn_forecast(var_list_,M_,options_,oo_,'smoother',dataset_info);
+            end
+            %reset qz_criterium
+            options_.qz_criterium=qz_criterium_old;
+            return
+        end
+    else %allow to continue, e.g. with MCMC_jumping_covariance
+        if options_.smoother
+            error('Estimation:: Particle Smoothers are not yet implemented.')
         end
     end
-    %reset qz_criterium
-    options_.qz_criterium=qz_criterium_old;
-    return
 end
 
 %% Estimation of the posterior mode or likelihood mode
@@ -539,7 +545,11 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                 if error_flag
                     error('Estimation::mcmc: I cannot compute the posterior statistics!')
                 end
-                prior_posterior_statistics('posterior',dataset_,dataset_info);
+                if options_.order==1 && ~options_.particle.status
+                    prior_posterior_statistics('posterior',dataset_,dataset_info); %get smoothed and filtered objects and forecasts
+                else
+                    error('Estimation::mcmc: Particle Smoothers are not yet implemented.')
+                end
             end
         else
             fprintf('Estimation:mcmc: sub_draws was set to 0. Skipping posterior computations.')
