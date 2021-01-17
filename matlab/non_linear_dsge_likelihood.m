@@ -119,7 +119,7 @@ ReducedForm.H = H;
 ReducedForm.mf0 = mf0;
 ReducedForm.mf1 = mf1;
 
-if DynareOptions.k_order_solver
+if DynareOptions.k_order_solver && ~(DynareOptions.particle.pruning && DynareOptions.order==2)
     ReducedForm.use_k_order_solver = true;
     ReducedForm.dr = dr;
 else
