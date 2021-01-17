@@ -304,4 +304,4 @@ if options_.order==1
 else
     fprintf(['Estimation::compute_moments_varendo: (conditional) variance decomposition only available at order=1. Skipping computations\n'])
 end
-fprintf(' Done!\n');
+fprintf('Done!\n\n');
