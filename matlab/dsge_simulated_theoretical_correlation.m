@@ -71,6 +71,13 @@ if ~posterior
 end
 nvar = length(ivar);
 
+if options_.pruning
+    obs_var=NaN(nvar,1);
+    for i=1:nvar
+        obs_var(i,1) = find(strcmp(M_.endo_names(ivar(i),:), M_.endo_names(oo_.dr.order_var)));
+    end
+end
+
 % Set the size of the auto-correlation function to nar.
 oldnar = options_.ar;
 options_.ar = nar;
@@ -109,7 +116,14 @@ for file = 1:NumberOfDrawsFiles
             M_=set_parameters_locally(M_,temp.pdraws{linee,1});
             [dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
         end
-        tmp = th_autocovariances(dr,ivar,M_,options_,nodecomposition);
+        if ~options_.pruning
+            tmp = th_autocovariances(dr,ivar,M_,options_,nodecomposition);
+        else
+            pruned_state_space = pruned_state_space_system(M_, options_, dr, obs_var, options_.ar, 1, 0);
+            for i=1:nar
+                tmp{i+1} = pruned_state_space.Corr_yi(:,:,i);                
+            end
+        end
         for i=1:nar
             Correlation_array(linea,:,:,i) = tmp{i+1};
         end
