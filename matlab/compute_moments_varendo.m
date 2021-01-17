@@ -37,6 +37,22 @@ function oo_ = compute_moments_varendo(type, options_, M_, oo_, var_list_)
 
 fprintf('Estimation::compute_moments_varendo: I''m computing endogenous moments (this may take a while)... \n');
 
+if options_.order==1
+    if options_.one_sided_hp_filter
+        fprintf('Estimation::compute_moments_varendo: theoretical moments incompatible with one-sided HP filter. Skipping computations.\n')
+        return
+    end
+else
+    if ~options_.pruning
+        fprintf('Estimation::compute_moments_varendo: theoretical moments at order>1 require pruning. Skipping computations.\n')
+        return
+    else
+        if options_.one_sided_hp_filter || options_.hp_filter || options_.bandpass.indicator
+            fprintf(['Estimation::compute_moments_varendo: theoretical pruned moments incompatible with filtering. Skipping computations\n'])
+        end        
+    end
+end
+
 if strcmpi(type,'posterior')
     posterior = 1;
     if nargin==4
