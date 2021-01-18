@@ -36,7 +36,9 @@ model;
     PhysicalCapitalStock = (1-delta)*PhysicalCapitalStock(-1) + s*Output;
 end;
 
-
+if ~isoctave
+% The levenberg-marquardt algorithm is not available in octave's
+% implementation of fsolve, so we skip this check for Octave
 verbatim;
 
     bgp.write(M_);
@@ -57,6 +59,7 @@ verbatim;
     else
         fun = @solow.bgpfun;
     end
+    reverseStr = '';
     for i=1:MC
         y = 1+(rand(6,1)-.5)*.2;
         g = ones(6,1);
@@ -66,8 +69,14 @@ verbatim;
             GY(i) = y(11);
             GK(i) = y(12);
             EG(i) = y(2);
-        end
+        end        
+        % Display the progress
+        percentDone = 100 * i / MC;
+        msg = sprintf('Percent done: %3.1f', percentDone);
+        fprintf([reverseStr, msg]);
+        reverseStr = repmat(sprintf('\b'), 1, length(msg));
     end
+    fprintf('\n');
     % Compute the physical capital stock over output ratio along the BGP as
     % a function of the deep parameters...
     theoretical_long_run_ratio = s*EfficiencyGrowth_ss*PopulationGrowth_ss/(EfficiencyGrowth_ss*PopulationGrowth_ss-1+delta);
@@ -87,5 +96,7 @@ verbatim;
     assert(var(GK(~isnan(GK)))<1e-16);
     assert(abs(mean(EG(~isnan(EG)))-EfficiencyGrowth_ss)<1e-8)
     assert(var(EG(~isnan(EG)))<1e-16);
+
+end;
 
 end;
