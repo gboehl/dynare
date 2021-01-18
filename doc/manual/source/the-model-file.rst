@@ -8646,6 +8646,37 @@ the :comm:`bvar_forecast` command.
     necessary to specify the logarithm of the controlled variables.
 
 
+.. block:: filter_initial_state ;
+
+    |br| This block specifies the initial values of the endogenous states at the beginning 
+    of the Kalman filter recursions. That is, if the Kalman filter recursion starts with 
+    time t=1 being the first observation, this block provides the state estimate at time 0 
+    given information at time 0, :math:`E_0(x_0)`. If nothing is specified, the initial condition is assumed to be at 
+    the steady state (which is the unconditional mean for a stationary model).
+
+    This block is terminated by ``end;``. 
+    
+    Each line inside of the block should be of the form::
+
+        VARIABLE_NAME(INTEGER)=EXPRESSION;
+
+    ``EXPRESSION`` is any valid expression returning a numerical value and can contain parameter values. This 
+    allows specifying relationships that will be honored during estimation. ``INTEGER`` refers to the lag
+    with which a variable appears. By convention in Dynare, period 1 is the first period. Going backwards in time,
+    the first period before the start of the simulation is period 0, then period -1, and so on.
+    Note that the ``filter_initial_state`` block does not take non-state variables.
+
+    *Example*
+
+        ::
+
+            filter_initial_state;
+            k(0)= ((1/bet-(1-del))/alp)^(1/(alp-1))*l_ss;
+            P(0)=2.5258;
+            m(0)= mst;
+            end;
+
+
 .. command:: plot_conditional_forecast [VARIABLE_NAME...];
              plot_conditional_forecast (periods = INTEGER) [VARIABLE_NAME...];
 
