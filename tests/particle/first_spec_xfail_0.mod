@@ -2,6 +2,8 @@
 
 @#include "first_spec_common.inc"
 
+varobs q ca;
+
 shocks;
 var eeps = 0.04^2;
 var nnu = 0.03^2;

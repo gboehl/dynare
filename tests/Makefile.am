@@ -546,6 +546,7 @@ MODFILES += $(ECB_MODFILES)
 PARTICLEFILES = \
 	particle/dsge_base2.mod \
 	particle/first_spec.mod \
+	particle/first_spec_MCMC.mod \
 	particle/local_state_space_iteration_k_test.mod
 
 
