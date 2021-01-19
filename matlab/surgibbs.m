@@ -27,7 +27,7 @@ function ds = surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eq
 %   Combination of Direct Monte Carlo and Importance Sampling Techniques.
 %   Bayesian Analysis Volume 5, Number 1, pp. 65-96.
 
-% Copyright (C) 2017-2020 Dynare Team
+% Copyright (C) 2017-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -217,7 +217,8 @@ end
 % Plot
 %
 
-if ~options_.nograph
+% The histogram() function is not implemented in Octave and in MATLAB < R2014b
+if ~options_.nograph && ~isoctave && ~matlab_ver_less_than('8.4')
     figure
     nrows = 5;
     ncols = floor(nparams/nrows);
