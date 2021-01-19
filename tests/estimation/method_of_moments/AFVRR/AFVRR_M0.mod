@@ -256,7 +256,9 @@ dev_Q            = AndreasenEtAl.Q@{orderApp} - oo_.mom.Q;
 dev_datamoments  = str2double(AndreasenEtAl.moments@{orderApp}(:,5)) - oo_.mom.data_moments;
 dev_modelmoments = str2double(AndreasenEtAl.moments@{orderApp}(:,6)) - oo_.mom.model_moments;
 
-if ~isoctave %there is no table command in Octave
+% There is no table command in Octave
+% The table command also crashes on MATLAB R2014a because it does not like variable names
+if ~isoctave && ~matlab_ver_less_than('8.4')
 table([AndreasenEtAl.Q@{orderApp} ; str2double(AndreasenEtAl.moments@{orderApp}(:,5)) ; str2double(AndreasenEtAl.moments@{orderApp}(:,6))],...
       [oo_.mom.Q                  ; oo_.mom.data_moments                              ; oo_.mom.model_moments                            ],...
       [dev_Q                      ; dev_datamoments                                   ; dev_modelmoments                                 ],...
