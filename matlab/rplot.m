@@ -14,7 +14,7 @@ function rplot(s1)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright (C) 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -78,9 +78,9 @@ if options_.rplottype == 0
     hh=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
     plot(ix(i),y(:,i)) ;
     if options_.TeX
-        title (['Plot of $' strjoin(s1_TeX, '~') '$'],'Interpreter','latex') ;        
+        title (['Plot of $' strjoin(s1_TeX', '~') '$'],'Interpreter','latex') ;
     else
-        title (['Plot of ' strjoin(s1, ' ')],'Interpreter','none') ;
+        title (['Plot of ' strjoin(s1', ' ')],'Interpreter','none') ;
     end
     xlabel('Periods') ;
     xlim([min(ix(i)) max(ix(i))])
