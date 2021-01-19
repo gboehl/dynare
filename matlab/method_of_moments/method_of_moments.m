@@ -94,6 +94,24 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 % - [ ] improve check for duplicate moments by using the cellfun and unique functions
 % - [ ] dirname option to save output to different directory not yet implemented
 % - [ ] add analytic_jacobian option for mode_compute 4 and 101
+
+% The TeX option crashes MATLAB R2014a run with "-nodisplay" option
+% (as is done from the testsuite).
+% Since we can’t directly test whether "-nodisplay" has been passed,
+% we test for the "TOP_TEST_DIR" environment variable, which is set
+% by the testsuite.
+% Note that it was not tested whether the crash happens with more
+% recent MATLAB versions, so when OLD_MATLAB_VERSION is increased,
+% one should make a test before removing this workaround.
+if options_.TeX && ~isoctave && matlab_ver_less_than('8.4') && ~isempty(getenv('TOP_TEST_DIR'))
+    warning('Disabling TeX option due to a bug in MATLAB R2014a with -nodisplay')
+    options_.TeX = false;
+end
+if isfield(options_mom_, 'TeX') && options_mom_.TeX && ~isoctave && matlab_ver_less_than('8.4') && ~isempty(getenv('TOP_TEST_DIR'))
+    warning('Disabling TeX option due to a bug in MATLAB R2014a with -nodisplay')
+    options_mom_.TeX = false;
+end
+
 % -------------------------------------------------------------------------
 % Step 0: Check if required structures and options exist
 % -------------------------------------------------------------------------

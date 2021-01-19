@@ -1,6 +1,6 @@
 function [info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list)
 
-% Copyright (C) 2001-2020 Dynare Team
+% Copyright (C) 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -20,6 +20,19 @@ function [info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list)
 % Test if the order of approximation is nonzero (the preprocessor tests if order is non negative).
 if isequal(options_.order,0)
     error('stoch_simul:: The order of the Taylor approximation cannot be 0!')
+end
+
+% The TeX option crashes MATLAB R2014a run with "-nodisplay" option
+% (as is done from the testsuite).
+% Since we can’t directly test whether "-nodisplay" has been passed,
+% we test for the "TOP_TEST_DIR" environment variable, which is set
+% by the testsuite.
+% Note that it was not tested whether the crash happens with more
+% recent MATLAB versions, so when OLD_MATLAB_VERSION is increased,
+% one should make a test before removing this workaround.
+if options_.TeX && ~isoctave && matlab_ver_less_than('8.4') && ~isempty(getenv('TOP_TEST_DIR'))
+    warning('Disabling TeX option due to a bug in MATLAB R2014a with -nodisplay')
+    options_.TeX = false;
 end
 
 if M_.exo_nbr==0
