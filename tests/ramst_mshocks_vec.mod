@@ -42,5 +42,5 @@ rplot k;
 
 if ~all(oo_.exo_simul(M_.maximum_lag+(1:3)) == [ 2.4; 1.6; 1.6]) ...
     || ~all(oo_.exo_simul(M_.maximum_lag+(4:200)) == 2)
-  error("mshocks not correctly applied")
+  error('mshocks not correctly applied')
 end
