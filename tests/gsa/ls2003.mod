@@ -61,7 +61,7 @@ stderr e_ys,inv_gamma_pdf,1.2533,0.6551;
 stderr e_pies,inv_gamma_pdf,1.88,0.9827;
 end;
 
-options_.TeX=1;  
+options_.TeX=true;
 
 disp(' ');
 disp('NOW I DO STABILITY MAPPING and prepare sample for Reduced form Mapping');

@@ -81,8 +81,7 @@ end;
 varobs gp_obs gy_obs;
 
 options_.solve_tolf = 1e-12;
-options_.TeX=1;
-estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=2000,mh_nblocks=1,mh_jscale=0.8);
+estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=2000,mh_nblocks=1,mh_jscale=0.8,tex);
 
 
 model_comparison fs2000(0.5) fs2000_calibrated_covariance(0.5);

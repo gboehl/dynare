@@ -68,8 +68,6 @@ rho = 0.7;
 psi = 0.787;
 del = 0.02;
 
-options_.TeX=1;
-
 model;
 [name='technology growth: $\Delta A_{t}$', eq='\#1']
 dA = exp(gam+e_a);
@@ -128,7 +126,7 @@ end;
 
 steady;
 
-stoch_simul(order=1,irf=20,graph_format=eps,periods=1000,contemporaneous_correlation,conditional_variance_decomposition=[1,3]);
+stoch_simul(order=1,irf=20,graph_format=eps,periods=1000,contemporaneous_correlation,conditional_variance_decomposition=[1,3],tex);
 options_.rplottype=0;
 rplot y e_a gy_obs;
 options_.rplottype=1;

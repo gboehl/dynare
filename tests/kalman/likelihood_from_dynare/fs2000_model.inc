@@ -97,6 +97,6 @@ var e_m; stderr 0.005;
 corr gy_obs,gp_obs = 0.5;
 end;
 
-options_.TeX=1;
-options_.debug=1;
+options_.TeX=true;
+options_.debug=true;
 
