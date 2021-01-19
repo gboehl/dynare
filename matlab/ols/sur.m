@@ -18,7 +18,7 @@ function varargout = sur(ds, param_names, eqtags, model_name, noniterative, ds_r
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
 
-% Copyright (C) 2017-2020 Dynare Team
+% Copyright (C) 2017-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -113,7 +113,7 @@ nobs = Y{1}.nobs;
 [Y, lhssub, X, constrained] = put_in_sur_form(Y, lhssub, X);
 
 if nargin == 1 && size(X, 2) ~= M_.param_nbr
-    warning(['Not all parameters were used in model: ' strjoin(setdiff(M_.param_names, X.name), ', ')]);
+    warning(['Not all parameters were used in model: ' strjoin(setdiff(M_.param_names, X.name)', ', ')]);
 end
 
 %
