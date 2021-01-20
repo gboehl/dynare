@@ -490,24 +490,29 @@ elseif options_.mh_recover
 end
 
 function [d,bayestopt_]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d)
-if isfield(record,'ProposalCovariance') && isfield(record,'ProposalCovariance')
-    if isfield(record,'MCMC_sampler')
-        if ~strcmp(record.MCMC_sampler,options_.posterior_sampler_options.posterior_sampling_method)
-            error(fprintf('Estimation::mcmc: The posterior_sampling_method differs from the one of the original chain. Please reset it to %s',record.MCMC_sampler))
+if ~options_.use_mh_covariance_matrix
+    if isfield(record,'ProposalCovariance') && isfield(record,'ProposalScaleVec')
+        if isfield(record,'MCMC_sampler')
+            if ~strcmp(record.MCMC_sampler,options_.posterior_sampler_options.posterior_sampling_method)
+                error(fprintf('Estimation::mcmc: The posterior_sampling_method differs from the one of the original chain. Please reset it to %s',record.MCMC_sampler))
+            end
+        end
+        fprintf('Estimation::mcmc: Recovering the previous proposal density.\n')
+        d=record.ProposalCovariance;
+        bayestopt_.jscale=record.ProposalScaleVec;
+    else
+        if ~isequal(options_.posterior_sampler_options.posterior_sampling_method,'slice')
+            % pass through input d unaltered
+            if options_.mode_compute~=0
+                fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by mode_compute\n.');
+            elseif ~isempty(options_.mode_file)
+                fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by the mode_file\n.');
+            else
+                error('Estimation::mcmc: No stored previous proposal density found, no mode-finding conducted, and no mode-file provided. I don''t know how to continue')
+            end
         end
     end
-    fprintf('Estimation::mcmc: Recovering the previous proposal density.\n')
-    d=record.ProposalCovariance;
-    bayestopt_.jscale=record.ProposalScaleVec;
 else
-    if ~isequal(options_.posterior_sampler_options.posterior_sampling_method,'slice')
-        % pass through input d unaltered
-        if options_.mode_compute~=0
-            fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by mode_compute\n.');
-        elseif ~isempty(options_.mode_file)
-            fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by the mode_file\n.');
-        else
-            error('Estimation::mcmc: No stored previous proposal density found, no mode-finding conducted, and no mode-file provided. I don''t know how to continue')
-        end
-    end
+    % pass through input d unaltered
+    fprintf('Estimation::mcmc: use_mh_covariance_matrix specified, continuing with proposal density implied by the previous MCMC run.\n.');
 end
