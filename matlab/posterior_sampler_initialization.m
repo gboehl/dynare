@@ -493,7 +493,7 @@ if ~options_.use_mh_covariance_matrix
     if isfield(record,'ProposalCovariance') && isfield(record,'ProposalScaleVec')
         if isfield(record,'MCMC_sampler')
             if ~strcmp(record.MCMC_sampler,options_.posterior_sampler_options.posterior_sampling_method)
-                error(fprintf('Estimation::mcmc: The posterior_sampling_method differs from the one of the original chain. Please reset it to %s',record.MCMC_sampler))
+                warning('Estimation::mcmc: The posterior_sampling_method %s selected differs from the %s of the original chain. This may create problems with the convergence diagnostics.',options_.posterior_sampler_options.posterior_sampling_method,record.MCMC_sampler)
             end
         end
         fprintf('Estimation::mcmc: Recovering the previous proposal density.\n')
