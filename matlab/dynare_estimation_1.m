@@ -440,14 +440,19 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
     % Tunes the jumping distribution's scale parameter
     if options_.mh_tune_jscale.status
         if strcmp(options_.posterior_sampler_options.posterior_sampling_method, 'random_walk_metropolis_hastings')
+            %get invhess in case of use_mh_covariance_matrix
+            posterior_sampler_options_temp = options_.posterior_sampler_options.current_options;
+            posterior_sampler_options_temp.invhess = invhess;
+            posterior_sampler_options_temp = check_posterior_sampler_options(posterior_sampler_options_temp, options_);
+
             options = options_.mh_tune_jscale;
             options.rwmh = options_.posterior_sampler_options.rwmh;
             options_.mh_jscale = calibrate_mh_scale_parameter(objective_function, ...
-                                                              invhess, xparam1, [bounds.lb,bounds.ub], ...
+                                                              posterior_sampler_options_temp.invhess, xparam1, [bounds.lb,bounds.ub], ...
                                                               options, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_);
+            clear('posterior_sampler_options_temp','options')
             bayestopt_.jscale(:) = options_.mh_jscale;
-            disp(sprintf('mh_jscale has been set equal to %s', num2str(options_.mh_jscale)))
-            skipline()
+            fprintf('mh_jscale has been set equal to %s\n', num2str(options_.mh_jscale))
         else
             warning('mh_tune_jscale is only available with Random Walk Metropolis Hastings!')
         end
