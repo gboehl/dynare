@@ -143,10 +143,13 @@ switch DynareOptions.particle.initialization
     StateVectorMean = ReducedForm.constant(mf0);
     old_DynareOptionsperiods = DynareOptions.periods;
     DynareOptions.periods = 5000;
+    old_DynareOptionspruning =  DynareOptions.pruning;
+    DynareOptions.pruning = DynareOptions.particle.pruning;
     y_ = simult(DynareResults.steady_state, dr,Model,DynareOptions,DynareResults);
     y_ = y_(dr.order_var(state_variables_idx),2001:5000); %state_variables_idx is in dr-order while simult_ is in declaration order
     StateVectorVariance = cov(y_');
     DynareOptions.periods = old_DynareOptionsperiods;
+    DynareOptions.pruning = old_DynareOptionspruning;
     clear('old_DynareOptionsperiods','y_');
   case 3% Initial state vector covariance is a diagonal matrix (to be used
         % if model has stochastic trends).
