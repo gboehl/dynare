@@ -129,7 +129,6 @@ else
     done=0;
     factor=3;
     shrink=1;
-    lambdaMin=0;
     lambdaMax=inf;
     lambdaPeak=0;
     fPeak=f0;
