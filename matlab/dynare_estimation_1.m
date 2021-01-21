@@ -274,7 +274,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 if compute_hessian
                     crit = options_.newrat.tolerance.f;
                     newratflag = newratflag>0;
-                    hh = reshape(mr_hessian(xparam1,objective_function,fval,newratflag,crit,new_rat_hess_info,[bounds.lb bounds.ub],bayestopt_.p2,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_), nx, nx);
+                    hh = reshape(mr_hessian(xparam1,objective_function,fval,newratflag,crit,new_rat_hess_info,[bounds.lb bounds.ub],bayestopt_.p2,0,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_), nx, nx);
                 end
                 options_.kalman_algo = kalman_algo0;
             end

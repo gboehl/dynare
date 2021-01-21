@@ -94,7 +94,7 @@ fval=fval0;
 
 outer_product_gradient=1;
 if isempty(hh)
-    [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(x,func0,penalty,flagit,htol,hess_info,bounds,prior_std,varargin{:});
+    [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(x,func0,penalty,flagit,htol,hess_info,bounds,prior_std,Save_files,varargin{:});
     if isempty(dum)
         outer_product_gradient=0;
         igg = 1e-4*eye(nx);
@@ -160,16 +160,17 @@ while norm(gg)>gtol && check==0 && jit<nit
         fval=fval1;
         x0=x01;
     end
-    if length(find(ig))<nx
-        ggx=ggx*0;
-        ggx(find(ig))=gg(find(ig));
+    ig_pos=find(ig);
+    if length(ig_pos)<nx
+        ggx=ggx*0;        
+        ggx(ig_pos)=gg(ig_pos);
         if analytic_derivation || ~outer_product_gradient
             hhx=hh;
         else
             hhx = reshape(dum,nx,nx);
         end
         iggx=eye(length(gg));
-        iggx(find(ig),find(ig)) = inv( hhx(find(ig),find(ig)) );
+        iggx(ig_pos,ig_pos) = inv( hhx(ig_pos,ig_pos) );
         [fvala,x0,fc,retcode] = csminit1(func0,x0,penalty,fval,ggx,0,iggx,Verbose,varargin{:});
     end
     x0 = check_bounds(x0,bounds);
@@ -212,7 +213,7 @@ while norm(gg)>gtol && check==0 && jit<nit
             if flagit==2
                 hh=hh0;
             elseif flagg>0
-                [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,bounds,prior_std,varargin{:});
+                [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,bounds,prior_std,Save_files,varargin{:});
                 if flagg==2
                     hh = reshape(dum,nx,nx);
                     ee=eig(hh);
@@ -252,7 +253,7 @@ while norm(gg)>gtol && check==0 && jit<nit
                     save('m1.mat','x','fval0','nig')
                 end
             end
-            [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagit,htol,hess_info,bounds,prior_std,varargin{:});
+            [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagit,htol,hess_info,bounds,prior_std,Save_files,varargin{:});
             if isempty(dum)
                 outer_product_gradient=0;
             end

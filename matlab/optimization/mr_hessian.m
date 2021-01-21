@@ -1,15 +1,15 @@
-function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,bounds,prior_std,varargin)
-% function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,bounds,prior_std,varargin)
+function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,bounds,prior_std,Save_files,varargin)
+% function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,bounds,prior_std,Save_files,varargin)
 %  numerical gradient and Hessian, with 'automatic' check of numerical
 %  error
 %
 % adapted from Michel Juillard original routine hessian.m
 %
 % Inputs:
+%  - x                  parameter values
 %  - func               function handle. The function must give two outputs:
 %                       the log-likelihood AND the single contributions at times t=1,...,T
 %                       of the log-likelihood to compute outer product gradient
-%  - x                  parameter values
 %  - penalty            penalty due to error code
 %  - hflag              0: Hessian computed with outer product gradient, one point
 %                           increments for partial derivatives in gradients
@@ -26,6 +26,7 @@ function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,f
 %                           computation of Hessian
 %  - bounds                 prior bounds of parameters 
 %  - prior_std              prior standard devation of parameters (can be NaN)
+%  - Save_files             indicator whether files should be saved
 %  - varargin               other inputs
 %                           e.g. in dsge_likelihood
 %                           varargin{1} --> DynareDataset
@@ -267,7 +268,9 @@ if outer_product_gradient
         hessian_mat=hh_mat0(:);
     end
     hh1=hess_info.h1;
-    save hess.mat hessian_mat
+    if Save_files
+        save('hess.mat','hessian_mat')
+    end
 else
     hessian_mat=[];
     ihh=[];
