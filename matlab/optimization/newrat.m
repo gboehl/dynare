@@ -84,6 +84,10 @@ end
 % func0 = str2func([func2str(func0),'_hh']);
 % func0 = func0;
 [fval0,exit_flag,gg,hh]=penalty_objective_function(x,func0,penalty,varargin{:});
+if ~exit_flag
+    disp_verbose('Bad initial parameter.',Verbose)
+    return
+end
 fval=fval0;
 
 % initialize mr_gstep and mr_hessian
