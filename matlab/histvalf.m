@@ -13,7 +13,7 @@ function [endo_histval, exo_histval, exo_det_histval] = histvalf(M, options)
 %    none
 
 
-% Copyright (C) 2014-2020 Dynare Team
+% Copyright (C) 2014-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,14 +32,31 @@ function [endo_histval, exo_histval, exo_det_histval] = histvalf(M, options)
 
 series = histvalf_initvalf('HISTVAL', M, options);
 k = M.orig_maximum_lag - M.maximum_lag + 1;
-endo_histval  = series{M.endo_names{:}}.data(k:end, :)';
 
-exo_histval  = [];
-if M.exo_nbr
-    exo_histval  = series{M.exo_names{:}}.data(k:end, :)';
-end
-exo_det_histval  = [];
-if M.exo_det_nbr
-    exo_det_histval  = series{M.exo_names{:}}.data(k:end, :)';
-end
+if ~isoctave && matlab_ver_less_than('9.7')
+    % Workaround for MATLAB bug described in dseries#45
+    % The solution is to avoid using the "end" keyword
+    myend = nobs(series);
 
+    endo_histval  = series{M.endo_names{:}}.data(k:myend, :)';
+
+    exo_histval  = [];
+    if M.exo_nbr
+        exo_histval  = series{M.exo_names{:}}.data(k:myend, :)';
+    end
+    exo_det_histval  = [];
+    if M.exo_det_nbr
+        exo_det_histval  = series{M.exo_names{:}}.data(k:myend, :)';
+    end
+else
+    endo_histval  = series{M.endo_names{:}}.data(k:end, :)';
+
+    exo_histval  = [];
+    if M.exo_nbr
+        exo_histval  = series{M.exo_names{:}}.data(k:end, :)';
+    end
+    exo_det_histval  = [];
+    if M.exo_det_nbr
+        exo_det_histval  = series{M.exo_names{:}}.data(k:end, :)';
+    end
+end
