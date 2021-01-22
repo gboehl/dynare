@@ -5369,7 +5369,7 @@ block decomposition of the model (see :opt:`block`).
                 routine (available under MATLAB if the Optimization Toolbox is
                 installed; available under Octave if the `optim
                 <https://octave.sourceforge.io/optim/>`__ package from
-                Octave-Forge is installed). ``101``
+                Octave-Forge is installed).
 
            ``101``
 
@@ -5504,7 +5504,7 @@ block decomposition of the model (see :opt:`block`).
        option :opt:`mode_compute <mode_compute = INTEGER |
        FUNCTION_NAME>`):
 
-           ``1, 3, 7, 12``
+           ``1, 3, 7, 12, 13``
 
                Available options are given in the documentation of the
                MATLAB Optimization Toolbox or in Octave’s
