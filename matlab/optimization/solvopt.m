@@ -14,9 +14,8 @@ function [x,f,exitflag,n_f_evals,n_grad_evals,n_constraint_evals,n_constraint_gr
 % fun       name of an M-file (M-function) which computes the value
 %           of the objective function <fun> at a point x,
 %           synopsis: f=fun(x)
-% grad      name of an M-file (M-function) which computes the gradient
+% grad      indicator whether objective function provides the gradient
 %           vector of the function <fun> at a point x,
-%           synopsis: g=grad(x)
 % func      name of an M-file (M-function) which computes the MAXIMAL
 %           RESIDUAL(!) for a set of constraints at a point x,
 %           synopsis: fc=func(x)
@@ -126,7 +125,7 @@ if nargin<2           % Function and/or starting point are not specified
 end
 if nargin<3
     app=1;             % No user-supplied gradients
-elseif isempty(grad)
+elseif isempty(grad) || grad==0
     app=1;
 else
     app=0;                     % Exact gradients are supplied
@@ -271,9 +270,19 @@ stopf=0;
 
 % COMPUTE THE FUNCTION  ( FIRST TIME ) ----{
 if trx
-    f=feval(fun,x',varargin{:});
+    if app
+        f=feval(fun,x',varargin{:});
+    else
+        [f,g]=feval(fun,x',varargin{:});
+        n_grad_evals=n_grad_evals+1;
+    end    
 else
-    f=feval(fun,x,varargin{:});
+    if app
+        f=feval(fun,x,varargin{:});
+    else
+        [f,g]=feval(fun,x,varargin{:});
+        n_grad_evals=n_grad_evals+1;
+    end
 end
 n_f_evals=n_f_evals+1;
 if isempty(f)
@@ -378,12 +387,7 @@ if app
     end
     n_f_evals=n_f_evals+n;
 else
-    if trx
-        g=feval(grad,x',varargin{:});
-    else
-        g=feval(grad,x,varargin{:});
-    end
-    n_grad_evals=n_grad_evals+1;
+    %done above
 end
 if size(g,2)==1, g=g'; end
 ng=norm(g);
@@ -786,10 +790,10 @@ while 1
             end
             n_f_evals=n_f_evals+n;
         else
-            if trx
-                g=feval(grad,x',varargin{:});
+            if trx                
+                [~,g]=feval(fun,x',varargin{:});
             else
-                g=feval(grad,x,varargin{:});
+                [~,g]=feval(fun,x,varargin{:});
             end
             n_grad_evals=n_grad_evals+1;
         end
@@ -1084,7 +1088,7 @@ while 1
                     elseif isnan(f)
                         if dispwarn
                             disp(errmes)
-                            disp(error32)
+                            disp(error31)
                         end
                         exitflag=-3;
                         if trx
@@ -1105,9 +1109,9 @@ while 1
                         n_f_evals=n_f_evals+n;
                     else
                         if trx
-                            g=feval(grad,x',varargin{:});
+                            [~,g]=feval(fun,x',varargin{:});
                         else
-                            g=feval(grad,x,varargin{:});
+                            [~,g]=feval(fun,x,varargin{:});
                         end
                         n_grad_evals=n_grad_evals+1;
                     end
@@ -1210,9 +1214,9 @@ while 1
                         n_f_evals=n_f_evals+n;
                     else
                         if trx
-                            gt=feval(grad,x1',varargin{:});
+                            [~,gt]=feval(fun,x1',varargin{:});
                         else
-                            gt=feval(grad,x1,varargin{:});
+                            [~,gt]=feval(fun,x1,varargin{:});
                         end
                         n_grad_evals=n_grad_evals+1;
                     end
