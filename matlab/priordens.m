@@ -181,9 +181,9 @@ if tt8
         return
     end
     if nargout==2
-        [tmp, dlprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8))
+        [tmp, dlprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8));
     elseif nargout==3
-        [tmp, dlprior(id8), ds2lprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8))
+        [tmp, dlprior(id8), d2lprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8));
     end
 end
 
