@@ -89,7 +89,7 @@ end;
   estimated_params_init(use_calibration);
   end;
   
-  @#for optimizer in [1, 3, 13]
+  @#for optimizer in [1, 3, 4, 101, 13]
     @#if estimParams == 2 && optimizer == 13
         %skip due to buggy behavior in Octave
         if ~isoctave
@@ -104,7 +104,7 @@ end;
         , nograph
         , mode_compute = @{optimizer}        % specifies the optimizer for minimization of moments distance
         %, additional_optimizer_steps = [1 3 13]
-%        , optim = ('TolFun', 1e-6
+%        , optim = ('DerivativeCheck', 'on','FiniteDifferenceType','central'
 %                    ,'TolX', 1e-6
 %                    ,'MaxIter', 3000
 %                    ,'MaxFunEvals', 1D6
