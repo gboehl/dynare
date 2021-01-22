@@ -53,7 +53,7 @@ function [LIK, LIKK, a, P] = kalman_filter(Y,start,last,a,P,kalman_tol,riccati_t
 %! @table @ @var
 %! @item LIK
 %! Double scalar, value of (minus) the likelihood.
-%! @item likk
+%! @item LIKK
 %! Column vector of doubles, values of the density of each observation.
 %! @item a
 %! Vector (@var{mm}*1) of doubles, mean of the state vector at the end of the (sub)sample.
@@ -254,9 +254,9 @@ end
 if t <= last
     if analytic_derivation
         if analytic_derivation==2
-            [tmp, tmp2] = kalman_filter_ss(Y, t, last, a, T, K, iF, dF, Z, pp, Zflag, analytic_derivation, Da, DT, DYss, D2a, D2T, D2Yss);
+            [tmp, tmp2] = kalman_filter_ss(Y, t, last, a, T, K, iF, log_dF, Z, pp, Zflag, analytic_derivation, Da, DT, DYss, D2a, D2T, D2Yss);
         else
-            [tmp, tmp2] = kalman_filter_ss(Y, t, last, a, T, K, iF, dF, Z, pp, Zflag, analytic_derivation, Da, DT, DYss, asy_hess);
+            [tmp, tmp2] = kalman_filter_ss(Y, t, last, a, T, K, iF, log_dF, Z, pp, Zflag, analytic_derivation, Da, DT, DYss, asy_hess);
         end
         likk(s+1:end) = tmp2{1};
         dlikk(s+1:end,:) = tmp2{2};
