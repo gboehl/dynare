@@ -678,6 +678,9 @@ while 1
                 end
                 if ksm || kc>=mxtc
                     exitflag=-3;
+                    % don't return with NaN or Inf despite error code
+                    x=x1;
+                    f=f1;                  
                     if trx
                         x=x';
                     end
