@@ -42,7 +42,7 @@ function [fh,xh,gh,H,itct,fcount,retcodeh] = csminwel1(fcn,x0,H0,grad,crit,nit,m
 % http://sims.princeton.edu/yftp/optimize/mfiles/csminwel.m
 %
 % Copyright (C) 1993-2007 Christopher Sims
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,9 +79,9 @@ if ischar(fcn)
 end
 if ischar(grad)
     grad = str2func(grad);
-    grad_fun_provided=1;
+    grad_fun_provided = true;
 else
-    grad_fun_provided=0;
+    grad_fun_provided = false;
 end
 %tailstr = ')';
 %stailstr = [];
