@@ -70,24 +70,21 @@ switch minimizer_algorithm
         error('Optimization algorithm 1 requires the Optimization Toolbox')
     end
     % Set default optimization options for fmincon.
-    optim_options = optimset('display','iter', 'MaxFunEvals',100000, 'TolFun',1e-8, 'TolX',1e-6);
-    if ~isoctave
-        optim_options = optimset(optim_options, 'LargeScale','off');
-    end
+    optim_options = optimoptions('fmincon','display','iter', 'MaxFunEvals',100000, 'TolFun',1e-8, 'TolX',1e-6);
     if isoctave
         % Under Octave, use the active-set (i.e. octave_sqp of nonlin_min)
         % algorithm. On a simple example (fs2000.mod), the default algorithm
         % is not able to even move away from the initial point.
-        optim_options = optimset(optim_options, 'Algorithm','active-set');
+        optim_options = optimoptions(optim_options, 'Algorithm','active-set');
     end
     if ~isempty(options_.optim_opt)
-        eval(['optim_options = optimset(optim_options,' options_.optim_opt ');']);
+        eval(['optim_options = optimoptions(optim_options,' options_.optim_opt ');']);
     end
     if options_.silent_optimizer
-        optim_options = optimset(optim_options,'display','off');
+        optim_options = optimoptions(optim_options,'display','off');
     end
     if options_.analytic_derivation
-        optim_options = optimset(optim_options,'GradObj','on','TolX',1e-7);
+        optim_options = optimoptions(optim_options,'GradObj','on','TolX',1e-7); %alter default TolX
     end
     if ~isoctave
         [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
@@ -99,6 +96,7 @@ switch minimizer_algorithm
         [opt_par_values,fval,exitflag,output] = ...
             fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
     end
+    
   case 2
     %simulating annealing
     sa_options = options_.saopt;
@@ -157,15 +155,15 @@ switch minimizer_algorithm
         error('Optimization algorithm 3 requires the Optimization Toolbox')
     end
     % Set default optimization options for fminunc.
-    optim_options = optimset('display','iter','MaxFunEvals',100000,'TolFun',1e-8,'TolX',1e-6);
+    optim_options = optimoptions('fminunc','display','iter','MaxFunEvals',100000,'TolFun',1e-8,'TolX',1e-6);
     if ~isempty(options_.optim_opt)
-        eval(['optim_options = optimset(optim_options,' options_.optim_opt ');']);
+        eval(['optim_options = optimoptions(optim_options,' options_.optim_opt ');']);
     end
     if options_.analytic_derivation
-        optim_options = optimset(optim_options,'GradObj','on');
+        optim_options = optimoptions(optim_options,'GradObj','on');
     end
     if options_.silent_optimizer
-        optim_options = optimset(optim_options,'display','off');
+        optim_options = optimoptions(optim_options,'display','off');
     end
     if ~isoctave
         [opt_par_values,fval,exitflag] = fminunc(objective_function,start_par_value,optim_options,varargin{:});
@@ -174,6 +172,7 @@ switch minimizer_algorithm
         func = @(x) objective_function(x,varargin{:});
         [opt_par_values,fval,exitflag] = fminunc(func,start_par_value,optim_options);
     end
+    
   case 4
     % Set default options.
     H0 = 1e-4*eye(n_params);
@@ -514,12 +513,12 @@ switch minimizer_algorithm
         error('Optimization algorithm 2 requires the Global Optimization Toolbox')
     end
     % Set default optimization options for simulannealbnd.
-    optim_options = saoptimset('display','iter','TolFun',1e-8);
+    optim_options = optimoptions('simulannealbnd','display','iter','TolFun',1e-8);
     if ~isempty(options_.optim_opt)
-        eval(['optim_options = saoptimset(optim_options,' options_.optim_opt ');']);
+        eval(['optim_options = optimoptions(optim_options,' options_.optim_opt ');']);
     end
     if options_.silent_optimizer
-        optim_options = optimset(optim_options,'display','off');
+        optim_options = optimoptions(optim_options,'display','off');
     end
     func = @(x)objective_function(x,varargin{:});
     [opt_par_values,fval,exitflag,output] = simulannealbnd(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
@@ -530,20 +529,20 @@ switch minimizer_algorithm
     elseif ~isoctave && ~user_has_matlab_license('optimization_toolbox')
         error('Option mode_compute=13 requires the Optimization Toolbox')
     end
-    optim_options = optimset('display','iter','MaxFunEvals',5000,'MaxIter',5000,'TolFun',1e-6,'TolX',1e-6);
+    optim_options = optimoptions('lsqnonlin','display','iter','MaxFunEvals',5000,'MaxIter',5000,'TolFun',1e-6,'TolX',1e-6);
     if ~isempty(options_.optim_opt)
-        eval(['optim_options = optimset(optim_options,' options_.optim_opt ');']);
+        eval(['optim_options = optimoptions(optim_options,' options_.optim_opt ');']);
     end
     if options_.silent_optimizer
-        optim_options = optimset(optim_options,'display','off');
+        optim_options = optimoptions(optim_options,'Display','off');
     end
-    if ~isoctave        
+    if ~isoctave
         [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(objective_function,start_par_value,bounds(:,1),bounds(:,2),optim_options,varargin{:});
     else
         % Under Octave, use a wrapper, since lsqnonlin() does not have a 6th arg
         func = @(x)objective_function(x,varargin{:});
         [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
-    end    
+    end
   otherwise
     if ischar(minimizer_algorithm)
         if exist(minimizer_algorithm)
