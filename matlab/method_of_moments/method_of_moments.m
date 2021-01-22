@@ -182,9 +182,9 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
     if options_mom_.order > 3
         error('method_of_moments: perturbation orders higher than 3 are not implemented for GMM estimation, try using SMM.\n');
     end
-    options_mom_.mom = set_default_option(options_mom_.mom,'analytic_standard_errors',false);       % compute standard errors numerically (0) or analytically (1). Analytical derivatives are only available for GMM.
-    options_mom_.mom = set_default_option(options_mom_.mom,'analytic_jacobian',false);              % use analytic Jacobian in optimization, only available for GMM and gradient-based optimizers    
 end
+options_mom_.mom = set_default_option(options_mom_.mom,'analytic_standard_errors',false);       % compute standard errors numerically (0) or analytically (1). Analytical derivatives are only available for GMM.
+options_mom_.mom = set_default_option(options_mom_.mom,'analytic_jacobian',false);              % use analytic Jacobian in optimization, only available for GMM and gradient-based optimizers
 % initialize flag to compute derivs in objective function (needed for GMM with either analytic_standard_errors or analytic_jacobian )
 options_mom_.mom.compute_derivs = false;
     
