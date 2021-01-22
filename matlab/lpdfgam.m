@@ -7,13 +7,14 @@ function  [ldens,Dldens,D2ldens] = lpdfgam(x,a,b)
 %    b     [double]  m*n matrix or scalar, Second GAMMA distribution parameters (scale),
 %
 % OUTPUTS
-%    ldens [double]  m*n matrix of logged GAMMA densities evaluated at x.
-%
+%    ldens   [double]  m*n matrix of logged GAMMA densities evaluated at x.
+%    Dldens  [double]  m*n matrix of first derivatives of logged GAMMA densities.
+%    D2ldens [double]  m*n matrix of second derivatives of logged  matrix of logged GAMMA densities.
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,6 +43,7 @@ end
 
 
 if nargout >1
+    Dldens = ldens ;
     if length(a)==1
         Dldens(idx) = (a-1)./(x(idx)) - ones(length(idx),1)/b ;
     else
@@ -50,6 +52,7 @@ if nargout >1
 end
 
 if nargout == 3
+    D2ldens = ldens ;
     if length(a)==1
         D2ldens(idx) = -(a-1)./(x(idx)).^2;
     else
