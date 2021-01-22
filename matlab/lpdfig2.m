@@ -13,11 +13,13 @@ function [ldens,Dldens,D2ldens] = lpdfig2(x,s,nu)
 %
 % OUTPUTS
 %    ldens [double]  m*n matrix of logged INVERSE-GAMMA-2 densities evaluated at x.
+%    Dldens  [double]  m*n matrix of first derivatives of logged INVERSE-GAMMA-2 densities.
+%    D2ldens [double]  m*n matrix of second derivatives of logged  matrix of logged INVERSE-GAMMA-2 densities.
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2004-2017 Dynare Team
+% Copyright (C) 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,6 +46,7 @@ else
 end
 
 if nargout >1
+    Dldens = ldens;
     if length(s)==1
         Dldens(idx) = - .5*(nu+2)./(x(idx)) + .5*s./x(idx).^2;
     else
@@ -52,6 +55,7 @@ if nargout >1
 end
 
 if nargout == 3
+    D2ldens = ldens;
     if length(s)==1
         D2ldens(idx) = .5*(nu+2)./(x(idx)).^2 - s./x(idx).^3;
     else

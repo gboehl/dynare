@@ -7,13 +7,14 @@ function  [ldens,Dldens,D2ldens] = lpdfnorm(x,a,b)
 %    b     [double]  m*n matrix or scalar, Second GAUSSIAN distribution parameters (standard deviation).
 %
 % OUTPUTS
-%    ldens [double]  m*n matrix of logged GAUSSIAN densities evaluated at x.
-%
+%    ldens   [double]  m*n matrix of logged GAUSSIAN densities evaluated at x.
+%    Dldens  [double]  m*n matrix of first derivatives of logged GAUSSIAN densities.
+%    D2ldens [double]  m*n matrix of second derivatives of logged  matrix of GAUSSIAN densities.
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright (C) 2003-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
