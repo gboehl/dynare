@@ -220,6 +220,8 @@ for declaring variables and parameters are described below.
     ``stoch_simul``) and forecast will compute a simulation
     conditional on initial conditions and future information.
 
+    Note that exogenous deterministic variables cannot appear with a lead or a
+    lag in the model.
 
     *Options*
 
