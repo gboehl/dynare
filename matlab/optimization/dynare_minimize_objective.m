@@ -77,24 +77,37 @@ switch minimizer_algorithm
         % is not able to even move away from the initial point.
         optim_options = optimoptions(optim_options, 'Algorithm','active-set');
     end
+    if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1)
+        optim_options = optimoptions(optim_options,'GradObj','on','TolX',1e-7); %alter default TolX
+    end
     if ~isempty(options_.optim_opt)
         eval(['optim_options = optimoptions(optim_options,' options_.optim_opt ');']);
     end
     if options_.silent_optimizer
         optim_options = optimoptions(optim_options,'display','off');
     end
-    if options_.analytic_derivation
-        optim_options = optimoptions(optim_options,'GradObj','on','TolX',1e-7); %alter default TolX
-    end
-    if ~isoctave
-        [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
-            fmincon(objective_function,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options,varargin{:});
+    if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1) %use wrapper
+        func = @(x) analytic_gradient_wrapper(x,objective_function,varargin{:});
+        if ~isoctave
+            [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
+                fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
+        else
+            % Under Octave, use a wrapper, since fmincon() does not have an 11th
+            % arg. Also, only the first 4 output arguments are available.
+            [opt_par_values,fval,exitflag,output] = ...
+                fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
+        end
     else
-        % Under Octave, use a wrapper, since fmincon() does not have an 11th
-        % arg. Also, only the first 4 output arguments are available.
-        func = @(x) objective_function(x,varargin{:});
-        [opt_par_values,fval,exitflag,output] = ...
-            fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
+        if ~isoctave
+            [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
+                fmincon(objective_function,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options,varargin{:});
+        else
+            % Under Octave, use a wrapper, since fmincon() does not have an 11th
+            % arg. Also, only the first 4 output arguments are available.
+            func = @(x) objective_function(x,varargin{:});
+            [opt_par_values,fval,exitflag,output] = ...
+                fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
+        end    
     end
     
   case 2
@@ -159,20 +172,28 @@ switch minimizer_algorithm
     if ~isempty(options_.optim_opt)
         eval(['optim_options = optimoptions(optim_options,' options_.optim_opt ');']);
     end
-    if options_.analytic_derivation
-        optim_options = optimoptions(optim_options,'GradObj','on');
-    end
     if options_.silent_optimizer
         optim_options = optimoptions(optim_options,'display','off');
     end
-    if ~isoctave
-        [opt_par_values,fval,exitflag] = fminunc(objective_function,start_par_value,optim_options,varargin{:});
+    if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1)
+        optim_options = optimoptions(optim_options,'GradObj','on');
+        if ~isoctave
+            func = @(x) analytic_gradient_wrapper(x,objective_function,varargin{:});
+            [opt_par_values,fval,exitflag] = fminunc(func,start_par_value,optim_options);
+        else
+            % Under Octave, use a wrapper, since fminunc() does not have a 4th arg
+            func = @(x) analytic_gradient_wrapper(x,objective_function,varargin{:});
+            [opt_par_values,fval,exitflag] = fminunc(func,start_par_value,optim_options);
+        end
     else
-        % Under Octave, use a wrapper, since fminunc() does not have a 4th arg
-        func = @(x) objective_function(x,varargin{:});
-        [opt_par_values,fval,exitflag] = fminunc(func,start_par_value,optim_options);
+        if ~isoctave
+            [opt_par_values,fval,exitflag] = fminunc(objective_function,start_par_value,optim_options,varargin{:});
+        else
+            % Under Octave, use a wrapper, since fminunc() does not have a 4th arg
+            func = @(x) objective_function(x,varargin{:});
+            [opt_par_values,fval,exitflag] = fminunc(func,start_par_value,optim_options);
+        end
     end
-    
   case 4
     % Set default options.
     H0 = 1e-4*eye(n_params);
@@ -500,7 +521,12 @@ switch minimizer_algorithm
     if options_.silent_optimizer
         solveoptoptions.verbosity = 0;
     end
-    [opt_par_values,fval]=solvopt(start_par_value,objective_function,[],[],[],solveoptoptions,varargin{:});
+    if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1)
+        func = @(x) analytic_gradient_wrapper(x,objective_function,varargin{:});
+        [opt_par_values,fval]=solvopt(start_par_value,func,1,[],[],solveoptoptions);
+    else
+        [opt_par_values,fval]=solvopt(start_par_value,objective_function,[],[],[],solveoptoptions,varargin{:});
+    end
   case 102
     if isoctave
         error('Optimization algorithm 2 is not available under Octave')
