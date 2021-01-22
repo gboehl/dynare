@@ -1,5 +1,5 @@
-function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_, df] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, M_, options_mom_)
-% [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, M_, options_mom_)
+function [fval, info, exit_flag, df, junk1, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, M_, options_mom_)
+% [fval, info, exit_flag, df, junk1, oo_, M_, options_mom_] = method_of_moments_objective_function(xparam1, Bounds, oo_, estim_params_, M_, options_mom_)
 % -------------------------------------------------------------------------
 % This function evaluates the objective function for GMM/SMM estimation
 % =========================================================================
@@ -15,14 +15,13 @@ function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_, df] = meth
 %   o fval:                     value of the quadratic form of the moment difference (except for lsqnonlin, where this is done implicitly)
 %   o info:                     vector storing error code and penalty 
 %   o exit_flag:                0 if error, 1 if no error
-%   o junk1:                    empty matrix required for optimizer interface
-%   o junk2:                    empty matrix required for optimizer interface
+%   o df:                       analytical parameter Jacobian of the quadratic form of the moment difference (for GMM only)
+%   o junk1:                    empty matrix required for optimizer interface (Hessian would go here)
 %   o oo_:                      structure containing the results with the following updated fields:
 %      - mom.model_moments       [numMom x 1] vector with model moments
 %      - mom.Q                   value of the quadratic form of the moment difference
 %   o M_:                       Matlab's structure describing the model
 %   o options_mom_:             structure information about all settings (specified by the user, preprocessor, and taken from global options_)
-%   o df:                       analytical parameter Jacobian of the quadratic form of the moment difference (for GMM only)
 % -------------------------------------------------------------------------
 % This function is called by
 %  o method_of_moments.m
@@ -59,14 +58,18 @@ function [fval, info, exit_flag, junk1, junk2, oo_, M_, options_mom_, df] = meth
 %------------------------------------------------------------------------------
 % 0. Initialization of the returned variables and others...
 %------------------------------------------------------------------------------
-if options_mom_.vector_output == 1
-    if options_mom_.mom.penalized_estimator
-        df           = nan(size(oo_.mom.data_moments,1)+length(xparam1),length(xparam1));
+if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_jacobian
+    if options_mom_.vector_output == 1
+        if options_mom_.mom.penalized_estimator
+            df           = nan(size(oo_.mom.data_moments,1)+length(xparam1),length(xparam1));
+        else
+            df           = nan(size(oo_.mom.data_moments,1),length(xparam1));
+        end
     else
-        df           = nan(size(oo_.mom.data_moments,1),length(xparam1));
+        df           = nan(1,length(xparam1));
     end
 else
-    df           = nan(1,length(xparam1));
+    df=[]; %required to be empty by e.g. newrat
 end
 junk1        = [];
 junk2        = [];
