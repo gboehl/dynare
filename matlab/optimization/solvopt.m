@@ -200,7 +200,7 @@ end
 epsnorm=1.e-15;
 epsnorm2=1.e-30;    % epsilon & epsilon^2
 
-if constr, h1=-1                  % NLP: restricted to minimization
+if constr, h1=-1;                  % NLP: restricted to minimization
     cnteps=optim.TolXConstraint;                % Max. admissible residual
 else
     h1=sign(optim.minimizer_indicator);         % Minimize resp. maximize a function
@@ -219,7 +219,7 @@ knorms=0; gnorms=zeros(1,10);    % Gradient norms stored
                                  %---}
 
 %Display control ---{
-if optim.verbosity<=0, dispdata=0
+if optim.verbosity<=0, dispdata=0;
     if optim.verbosity==-1
         dispwarn=0;
     else
@@ -320,7 +320,7 @@ elseif abs(f)==Inf
 end
 xrec=x; frec=f;     % record point and function value
                     % Constrained problem
-if constr,  fp=f; kless=0
+if constr,  fp=f; kless=0;
     if trx
         fc=feval(func,x');
     else
@@ -541,7 +541,7 @@ while 1
                 xx=x;
             end
             if kj==0
-                kd=4
+                kd=4;
             end
             kj=kj+1;  w=-.9; h=h*2;             % use large coef. of space dilation
             if kj>2*kd
@@ -574,7 +574,7 @@ while 1
         % RESETTING ----{
         if kcheck>1
             idx=find(abs(g)>ZeroGrad); numelem=size(idx,2);
-            if numelem>0, grbnd=epsnorm*numelem^2
+            if numelem>0, grbnd=epsnorm*numelem^2;
                 if all(abs(g1(idx))<=abs(g(idx))*grbnd) || nrmz==0
                     if dispwarn
                         disp(wrnmes)
@@ -801,7 +801,7 @@ while 1
             n_grad_evals=n_grad_evals+1;
         end
         if size(g,2)==1
-            g=g'
+            g=g';
         end
         ng=norm(g);
         if isnan(ng)
@@ -926,7 +926,7 @@ while 1
         % DISPLAY THE CURRENT VALUES ----{
         if k==ld
             disp('Iter.# ..... Function ... Step Value ... Gradient Norm ');
-            disp(sprintf('%5i   %13.5e   %13.5e     %13.5e',k,f,dx,ng));
+            fprintf('%5i   %13.5e   %13.5e     %13.5e\n',k,f,dx,ng);
             ld=k+dispdata;
         end
         %----}
@@ -941,7 +941,7 @@ while 1
             termflag=0;
         end
         if knan
-            termflag=0
+            termflag=0;
         end
         if kc>=mxtc
             termflag=0;
