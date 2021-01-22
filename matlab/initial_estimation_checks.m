@@ -185,6 +185,11 @@ if DynareOptions.debug
 end
 DynareOptions.analytic_derivation=ana_deriv;
 
+if DynareOptions.mode_compute==13
+    error('Options mode_compute=13 is only compatible with quadratic objective functions')
+end
+
+
 % if DynareOptions.mode_compute==5
 %     if ~strcmp(func2str(objective_function),'dsge_likelihood')
 %         error('Options mode_compute=5 is not compatible with non linear filters or Dsge-VAR models!')
