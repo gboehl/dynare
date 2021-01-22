@@ -12,7 +12,7 @@ function options_ = default_option_values(M_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2018-2020 Dynare Team
+% Copyright (C) 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -695,9 +695,6 @@ options_ = initialize_ms_sbvar_options(M_, options_);
 options_.graph_save_formats.eps = 1;
 options_.graph_save_formats.pdf = 0;
 options_.graph_save_formats.fig = 0;
-
-% risky steady state
-options_.risky_steadystate = false;
 
 % endogenous prior
 options_.endogenous_prior = false;

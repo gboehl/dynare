@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2019 Dynare Team
+ * Copyright © 2008-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -24,6 +24,7 @@
 #include "dynare_exception.hh"
 
 #include <utility>
+#include <cassert>
 
 KordpDynare::KordpDynare(const std::vector<std::string> &endo,
                          const std::vector<std::string> &exo, int nexog, int npar,
@@ -68,35 +69,36 @@ KordpDynare::evaluateSystem(Vector &out, const ConstVector &yym, const ConstVect
 void
 KordpDynare::calcDerivativesAtSteady()
 {
-  if (dyn_md.empty())
+  assert(md.begin() == md.end());
+
+  std::vector<TwoDMatrix> dyn_md; // Model derivatives, in Dynare form
+
+  dyn_md.emplace_back(nY, nJcols); // Allocate Jacobian
+  dyn_md.back().zeros();
+
+  for (int i = 2; i <= nOrder; i++)
     {
-      dyn_md.emplace_back(nY, nJcols); // Allocate Jacobian
+      // Higher order derivatives, as sparse (3-column) matrices
+      dyn_md.emplace_back(static_cast<int>(NNZD[i-1]), 3);
       dyn_md.back().zeros();
-
-      for (int i = 2; i <= nOrder; i++)
-        {
-          // Higher order derivatives, as sparse (3-column) matrices
-          dyn_md.emplace_back(static_cast<int>(NNZD[i-1]), 3);
-          dyn_md.back().zeros();
-        }
-
-      Vector xx(nexog());
-      xx.zeros();
-
-      Vector out(nY);
-      out.zeros();
-      Vector llxSteady(nJcols-nExog);
-      LLxSteady(ySteady, llxSteady);
-
-      dynamicModelFile->eval(llxSteady, xx, params, ySteady, out, dyn_md);
     }
 
+  Vector xx(nexog());
+  xx.zeros();
+
+  Vector out(nY);
+  out.zeros();
+  Vector llxSteady(nJcols-nExog);
+  LLxSteady(ySteady, llxSteady);
+
+  dynamicModelFile->eval(llxSteady, xx, params, ySteady, out, dyn_md);
+
   for (int i = 1; i <= nOrder; i++)
-    populateDerivativesContainer(i);
+    populateDerivativesContainer(dyn_md, i);
 }
 
 void
-KordpDynare::populateDerivativesContainer(int ord)
+KordpDynare::populateDerivativesContainer(const std::vector<TwoDMatrix> &dyn_md, int ord)
 {
   const TwoDMatrix &g = dyn_md[ord-1];
 
@@ -215,12 +217,6 @@ KordpDynare::computeJacobianPermutation(const std::vector<int> &dr_order)
   dynToDynpp.resize(nJcols);
   for (int i = 0; i < nJcols; i++)
     dynToDynpp[dynppToDyn[i]] = i;
-}
-
-void
-KordpDynare::push_back_md(const mxArray *m)
-{
-  dyn_md.emplace_back(ConstTwoDMatrix{m});
 }
 
 DynareNameList::DynareNameList(std::vector<std::string> names_arg)

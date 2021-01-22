@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2020 Dynare Team
+ * Copyright © 2008-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -82,8 +82,8 @@ extern "C" {
   mexFunction(int nlhs, mxArray *plhs[],
               int nrhs, const mxArray *prhs[])
   {
-    if (nrhs < 3 || nlhs < 1 || nlhs > 2)
-      mexErrMsgTxt("Must have at least 3 input parameters and takes 1 or 2 output parameters.");
+    if (nrhs != 3 || nlhs < 1 || nlhs > 2)
+      mexErrMsgTxt("Must have exactly 3 input parameters and takes 1 or 2 output parameters.");
 
     // Give explicit names to input arguments
     const mxArray *dr_mx = prhs[0];
@@ -224,16 +224,6 @@ extern "C" {
                            ySteady, vCov, modParams, nStat, nPred, nForw, nBoth,
                            NNZD, nSteps, kOrder, journal, std::move(dynamicModelFile),
                            dr_order, llincidence);
-
-        // If model derivatives have been passed as arguments
-        if (nrhs > 3)
-          {
-            dynare.push_back_md(prhs[3]);
-            if (nrhs > 4)
-              dynare.push_back_md(prhs[4]);
-            if (nrhs > 5)
-              dynare.push_back_md(prhs[5]);
-          }
 
         // construct main K-order approximation class
         Approximation app(dynare, journal, nSteps, false, qz_criterium);

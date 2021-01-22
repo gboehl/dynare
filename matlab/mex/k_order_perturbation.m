@@ -1,13 +1,10 @@
-% [dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,DynareModel,DynareOptions,g1,g2,g3)
-% computes a k_order_petrubation solution for k=1,2,3
+% [dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,DynareModel,DynareOptions)
+% computes a k-th order perturbation solution
 %
 % INPUTS
 % dr:            struct   describing the reduced form solution of the model.
 % DynareModel:   struct   jobs's parameters
 % DynareOptions: struct   job's options
-% g1:            matrix   First order derivatives of the model (optional)
-% g2:            matrix   Second order derivatives of the model (optional)
-% g3:            matrix   Third order derivatives of the model (optional)
 %
 % OUTPUTS
 % dynpp_derivs   struct   Derivatives of the decision rule in Dynare++ format.
@@ -24,11 +21,11 @@
 %                          + if order ≥ 2: gyy, gyu, guu, gss
 %                          + if order ≥ 3: gyyy, gyyu, gyuu, guuu, gyss, guss
 %
-% k_order_perturbation is a compiled MEX function. It's source code is in
+% k_order_perturbation is a compiled MEX function. Its source code is in
 % dynare/mex/sources/k_order_perturbation.cc and it uses code provided by
 % dynare++
 
-% Copyright (C) 2013-2020 Dynare Team
+% Copyright (C) 2013-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

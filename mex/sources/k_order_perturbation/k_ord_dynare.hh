@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2019 Dynare Team
+ * Copyright © 2008-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -95,7 +95,6 @@ private:
   Vector &ySteady;
   Vector &params;
   TwoDMatrix &vCov;
-  std::vector<TwoDMatrix> dyn_md; // Model derivatives, in Dynare form
   TensorContainer<FSSparseTensor> md; // Model derivatives, in Dynare++ form
   DynareNameList dnl, denl;
   DynareStateNameList dsnl;
@@ -191,8 +190,6 @@ public:
     std::cerr << "KordpDynare::clone() not implemented" << std::endl;
     exit(EXIT_FAILURE);
   }
-  // Add model derivatives of a given order passed as argument to the MEX
-  void push_back_md(const mxArray *m);
 private:
   // Given the steady state in yS, returns in llxSteady the steady state extended with leads and lags
   void LLxSteady(const Vector &yS, Vector &llxSteady);
@@ -200,7 +197,7 @@ private:
      Dynare++ orderings of variables */
   void computeJacobianPermutation(const std::vector<int> &var_order);
   // Fills model derivatives in Dynare++ form (at a given order) given the Dynare form
-  void populateDerivativesContainer(int ord);
+  void populateDerivativesContainer(const std::vector<TwoDMatrix> &dyn_md, int ord);
 };
 
 #endif

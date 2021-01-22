@@ -24,7 +24,7 @@ function [dr, info] = stochastic_solvers(dr, task, M_, options_, oo_)
 %                                 info=6 -> The jacobian matrix evaluated at the steady state is complex.
 %                                 info=9 -> k_order_pert was unable to compute the solution
 
-% Copyright (C) 1996-2020 Dynare Team
+% Copyright (C) 1996-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -84,16 +84,11 @@ if M_.maximum_endo_lead==0 && M_.exo_det_nbr~=0
 end
 
 if options_.k_order_solver
-    if options_.risky_steadystate
-        [dr,info] = dyn_risky_steadystate_solver(oo_.steady_state,M_,dr, ...
-                                                 options_,oo_);
-    else
-        orig_order = options_.order;
-        options_.order = local_order;
-        dr = set_state_space(dr,M_,options_);
-        [dr,info] = k_order_pert(dr,M_,options_);
-        options_.order = orig_order;
-    end
+    orig_order = options_.order;
+    options_.order = local_order;
+    dr = set_state_space(dr,M_,options_);
+    [dr,info] = k_order_pert(dr,M_,options_);
+    options_.order = orig_order;
     return
 end
 
@@ -242,12 +237,6 @@ if M_.maximum_endo_lead == 0
         error(['2nd and 3rd order approximation not implemented for purely ' ...
                'backward models'])
     end
-elseif options_.risky_steadystate
-    orig_order = options_.order;
-    options_.order = local_order;
-    [dr,info] = dyn_risky_steadystate_solver(oo_.steady_state,M_,dr, ...
-                                             options_,oo_);
-    options_.order = orig_order;
 else
     % If required, use AIM solver if not check only
     if options_.aim_solver && (task == 0)
