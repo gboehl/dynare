@@ -6451,9 +6451,11 @@ block decomposition of the model (see :opt:`block`).
 
     .. option:: analytic_derivation
 
-       Triggers estimation with analytic gradient. The final hessian
-       is also computed analytically. Only works for stationary models
-       without missing observations, i.e. for ``kalman_algo<3``.
+       Triggers estimation with analytic gradient at ``order=1``. 
+       The final hessian at the mode is also computed analytically. 
+       Only works for stationary models without missing observations, 
+       i.e. for ``kalman_algo<3``. Optimizers that rely on analytic 
+       gradients are ``mode_compute=1,3,4,5,101``.  
 
     .. option:: ar = INTEGER
 
