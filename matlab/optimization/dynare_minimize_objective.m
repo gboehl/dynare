@@ -500,6 +500,34 @@ switch minimizer_algorithm
     % Minimize the penalized objective (note that the penalty is not updated).
     [opt_par_values, fval, exitflag, output] = particleswarm(objfun, length(start_par_value), LB, UB, particleswarmOptions);
     opt_par_values = opt_par_values(:);
+  case 13
+    % Matlab's lsqnonlin (Optimization toolbox needed).
+    if isoctave && ~user_has_octave_forge_package('optim')
+        error('Option mode_compute=13 requires the optim package')
+    elseif ~isoctave && ~user_has_matlab_license('optimization_toolbox')
+        error('Option mode_compute=13 requires the Optimization Toolbox')
+    end
+    optim_options = optimoptions('lsqnonlin','display','iter','MaxFunEvals',5000,'MaxIter',5000,'TolFun',1e-6,'TolX',1e-6);
+    if ~isempty(options_.optim_opt)
+        eval(['optim_options = optimoptions(optim_options,' options_.optim_opt ');']);
+    end
+    if options_.silent_optimizer
+        optim_options.Display='off';
+    end
+    if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1)
+        optim_options.SpecifyObjectiveGradient=true;
+        func = @(x) analytic_gradient_wrapper(x,objective_function,varargin{:});
+        [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = ...
+            lsqnonlin(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
+    else
+        if ~isoctave
+            [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(objective_function,start_par_value,bounds(:,1),bounds(:,2),optim_options,varargin{:});
+        else
+            % Under Octave, use a wrapper, since lsqnonlin() does not have a 6th arg
+            func = @(x)objective_function(x,varargin{:});
+            [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
+        end
+    end    
   case 101
     solveoptoptions = options_.solveopt;
     if ~isempty(options_.optim_opt)
@@ -548,34 +576,6 @@ switch minimizer_algorithm
     end
     func = @(x)objective_function(x,varargin{:});
     [opt_par_values,fval,exitflag,output] = simulannealbnd(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
-  case 13
-    % Matlab's lsqnonlin (Optimization toolbox needed).
-    if isoctave && ~user_has_octave_forge_package('optim')
-        error('Option mode_compute=13 requires the optim package')
-    elseif ~isoctave && ~user_has_matlab_license('optimization_toolbox')
-        error('Option mode_compute=13 requires the Optimization Toolbox')
-    end
-    optim_options = optimoptions('lsqnonlin','display','iter','MaxFunEvals',5000,'MaxIter',5000,'TolFun',1e-6,'TolX',1e-6);
-    if ~isempty(options_.optim_opt)
-        eval(['optim_options = optimoptions(optim_options,' options_.optim_opt ');']);
-    end
-    if options_.silent_optimizer
-        optim_options.Display='off';
-    end
-    if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1)
-        optim_options.SpecifyObjectiveGradient=true;
-        func = @(x) analytic_gradient_wrapper(x,objective_function,varargin{:});
-        [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = ...
-            lsqnonlin(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
-    else
-        if ~isoctave
-            [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(objective_function,start_par_value,bounds(:,1),bounds(:,2),optim_options,varargin{:});
-        else
-            % Under Octave, use a wrapper, since lsqnonlin() does not have a 6th arg
-            func = @(x)objective_function(x,varargin{:});
-            [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
-        end
-    end    
   otherwise
     if ischar(minimizer_algorithm)
         if exist(minimizer_algorithm)
