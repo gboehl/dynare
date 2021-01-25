@@ -76,7 +76,7 @@
     "markov_switching" "svar" "svar_global_identification_check"
     "external_function" "calib_smoother" "model_diagnostics" "extended_path"
     "smoother2histval" "perfect_foresight_setup" "perfect_foresight_solver"
-    "det_cond_forecast" "std" "corr" "prior_function" "posterior_function" "end")
+    "std" "corr" "prior_function" "posterior_function" "end")
   "Dynare statement keywords.")
 
 ;; Keywords that may appear in blocks, and that begin a statement which will be
