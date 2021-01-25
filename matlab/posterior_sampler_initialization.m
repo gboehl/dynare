@@ -225,7 +225,6 @@ if ~options_.load_mh_file && ~options_.mh_recover
     record.LastFileNumber = AnticipatedNumberOfFiles ;
     record.LastLineNumber = AnticipatedNumberOfLinesInTheLastFile;
     record.MCMCConcludedSuccessfully = 0;
-    record.MCMC_sampler=options_.posterior_sampler_options.posterior_sampling_method;
     record.ProposalScaleVec=bayestopt_.jscale;
     fprintf('Ok!\n');
     id = write_mh_history_file(MetropolisFolder, ModelName, record);
@@ -286,7 +285,7 @@ elseif options_.load_mh_file && ~options_.mh_recover
     end
     ilogpo2 = record.LastLogPost;
     ix2 = record.LastParameters;
-    [d,bayestopt_]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d);
+    [d,bayestopt_,record]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d);
     FirstBlock = 1;
     NumberOfPreviousSimulations = sum(record.MhDraws(:,1),1);
     fprintf('Estimation::mcmc: I am writing a new mh-history file... ');
@@ -368,7 +367,7 @@ elseif options_.mh_recover
         LastFileFullIndicator=1;
     end
     if ~isequal(options_.posterior_sampler_options.posterior_sampling_method,'slice')
-        [d,bayestopt_]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d);
+        [d,bayestopt_,record]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d);
     end
     %% Now find out what exactly needs to be redone
     % 1. Check if really something needs to be done
@@ -489,25 +488,32 @@ elseif options_.mh_recover
     FirstBlock = find(FBlock==1,1);
 end
 
-function [d,bayestopt_]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d)
-if isfield(record,'ProposalCovariance') && isfield(record,'ProposalCovariance')
-    if isfield(record,'MCMC_sampler')
-        if ~strcmp(record.MCMC_sampler,options_.posterior_sampler_options.posterior_sampling_method)
-            error(fprintf('Estimation::mcmc: The posterior_sampling_method differs from the one of the original chain. Please reset it to %s',record.MCMC_sampler))
+function [d,bayestopt_,record]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d)
+if ~options_.use_mh_covariance_matrix
+    if isfield(record,'ProposalCovariance') && isfield(record,'ProposalScaleVec')
+        fprintf('Estimation::mcmc: Recovering the previous proposal density.\n')
+        d=record.ProposalCovariance;
+        bayestopt_.jscale=record.ProposalScaleVec;
+    else
+        if ~isequal(options_.posterior_sampler_options.posterior_sampling_method,'slice')
+            % pass through input d unaltered
+            if options_.mode_compute~=0
+                fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by mode_compute\n.');
+            elseif ~isempty(options_.mode_file)
+                fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by the mode_file\n.');
+            else
+                error('Estimation::mcmc: No stored previous proposal density found, no mode-finding conducted, and no mode-file provided. I don''t know how to continue')
+            end
         end
     end
-    fprintf('Estimation::mcmc: Recovering the previous proposal density.\n')
-    d=record.ProposalCovariance;
-    bayestopt_.jscale=record.ProposalScaleVec;
 else
-    if ~isequal(options_.posterior_sampler_options.posterior_sampling_method,'slice')
-        % pass through input d unaltered
-        if options_.mode_compute~=0
-            fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by mode_compute\n.');
-        elseif ~isempty(options_.mode_file)
-            fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by the mode_file\n.');
-        else
-            error('Estimation::mcmc: No stored previous proposal density found, no mode-finding conducted, and no mode-file provided. I don''t know how to continue')
-        end
+    % pass through input d unaltered
+    fprintf('Estimation::mcmc: use_mh_covariance_matrix specified, continuing with proposal density implied by the previous MCMC run.\n.');
+end
+
+if isfield(record,'Sampler')
+    if ~strcmp(record.Sampler,options_.posterior_sampler_options.posterior_sampling_method)
+        warning('Estimation::mcmc: The posterior_sampling_method %s selected differs from the %s of the original chain. This may create problems with the convergence diagnostics.',options_.posterior_sampler_options.posterior_sampling_method,record.Sampler)
+        record.Sampler=options_.posterior_sampler_options.posterior_sampling_method; %update sampler used
     end
 end
