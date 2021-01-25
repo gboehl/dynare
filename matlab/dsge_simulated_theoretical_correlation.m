@@ -63,6 +63,7 @@ if ~posterior
     end
     options_.varlist = options_.prior_analysis_endo_var_list;
 end
+endo_names=options_.varlist;
 [ivar,vartan, options_] = get_variables_list(options_, M_);
 if ~posterior
     if exist('temp','var')
@@ -129,9 +130,9 @@ for file = 1:NumberOfDrawsFiles
         end
         if linea == NumberOfCorrLines
             if posterior
-                save([ M_.dname '/metropolis/' M_.fname '_PosteriorCorrelations' int2str(CorrFileNumber) '.mat' ],'Correlation_array');
+                save([ M_.dname '/metropolis/' M_.fname '_PosteriorCorrelations' int2str(CorrFileNumber) '.mat' ],'Correlation_array','endo_names');
             else
-                save([ M_.dname '/prior/moments/' M_.fname '_PriorCorrelations' int2str(CorrFileNumber) '.mat' ],'Correlation_array');
+                save([ M_.dname '/prior/moments/' M_.fname '_PriorCorrelations' int2str(CorrFileNumber) '.mat' ],'Correlation_array','endo_names');
             end
             CorrFileNumber = CorrFileNumber + 1;
             linea = 0;

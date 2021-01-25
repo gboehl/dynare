@@ -66,6 +66,7 @@ if ~posterior
     options_.varlist = options_.prior_analysis_endo_var_list;
 end
 [ivar,vartan,options_] = get_variables_list(options_,M_);
+endo_names=options_.varlist;
 if ~posterior
     if exist('temp','var')
         options_.varlist = temp;
@@ -178,9 +179,9 @@ for file = 1:NumberOfDrawsFiles
         end
         if linea == NumberOfDecompLines
             if posterior
-                save([M_.dname '/metropolis/' M_.fname '_PosteriorVarianceDecomposition' int2str(DecompFileNumber) '.mat' ],'Decomposition_array');
+                save([M_.dname '/metropolis/' M_.fname '_PosteriorVarianceDecomposition' int2str(DecompFileNumber) '.mat' ],'Decomposition_array','endo_names');
             else
-                save([M_.dname '/prior/moments/' M_.fname '_PriorVarianceDecomposition' int2str(DecompFileNumber) '.mat' ],'Decomposition_array');
+                save([M_.dname '/prior/moments/' M_.fname '_PriorVarianceDecomposition' int2str(DecompFileNumber) '.mat' ],'Decomposition_array','endo_names');
             end
             DecompFileNumber = DecompFileNumber + 1;
             linea = 0;
@@ -197,9 +198,9 @@ for file = 1:NumberOfDrawsFiles
         if ME_present
             if linea_ME == NumberOfDecompLines_ME
                 if posterior
-                    save([M_.dname '/metropolis/' M_.fname '_PosteriorVarianceDecompME' int2str(DecompFileNumber_ME) '.mat' ],'Decomposition_array_ME');
+                    save([M_.dname '/metropolis/' M_.fname '_PosteriorVarianceDecompME' int2str(DecompFileNumber_ME) '.mat' ],'Decomposition_array_ME','endo_names');
                 else
-                    save([M_.dname '/prior/moments/' M_.fname '_PriorVarianceDecompME' int2str(DecompFileNumber_ME) '.mat' ],'Decomposition_array_ME');
+                    save([M_.dname '/prior/moments/' M_.fname '_PriorVarianceDecompME' int2str(DecompFileNumber_ME) '.mat' ],'Decomposition_array_ME','endo_names');
                 end
                 DecompFileNumber_ME = DecompFileNumber_ME + 1;
                 linea_ME = 0;

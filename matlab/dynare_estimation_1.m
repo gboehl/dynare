@@ -541,6 +541,15 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                 if error_flag
                     error('Estimation::mcmc: I cannot compute the posterior moments for the endogenous variables!')
                 end
+                if options_.load_mh_file && options_.mh_replic==0 %user wants to recompute results
+                   [MetropolisFolder, info] = CheckPath('metropolis',M_.dname);
+                   if ~info
+                       generic_post_data_file_name={'Posterior2ndOrderMoments','decomposition','PosteriorVarianceDecomposition','correlation','PosteriorCorrelations','conditional decomposition','PosteriorConditionalVarianceDecomposition'};
+                       for ii=1:length(generic_post_data_file_name)
+                           delete_stale_file([MetropolisFolder filesep M_.fname '_' generic_post_data_file_name{1,ii} '*']);
+                       end
+                   end
+                end
                 oo_ = compute_moments_varendo('posterior',options_,M_,oo_,var_list_);
             end
             if options_.smoother || ~isempty(options_.filter_step_ahead) || options_.forecast

@@ -66,6 +66,7 @@ if ~posterior
     end
     options_.varlist = options_.prior_analysis_endo_var_list;
 end
+endo_names=options_.varlist;
 [ivar,vartan ] = get_variables_list(options_, M_);
 if ~posterior
     if exist('temp','var')
@@ -176,10 +177,10 @@ for file = 1:NumberOfDrawsFiles
             linea = 0;
             if posterior
                 save([M_.dname '/metropolis/' M_.fname '_PosteriorConditionalVarianceDecomposition' int2str(ConditionalDecompFileNumber) '.mat' ], ...
-                     'Conditional_decomposition_array');
+                     'Conditional_decomposition_array','endo_names');
             else
                 save([M_.dname '/prior/moments/' M_.fname '_PriorConditionalVarianceDecomposition' int2str(ConditionalDecompFileNumber) '.mat' ], ...
-                     'Conditional_decomposition_array');
+                     'Conditional_decomposition_array','endo_names');
             end
             if (ConditionalDecompFileNumber==NumberOfConditionalDecompFiles-1)% Prepare last round.
                 Conditional_decomposition_array = zeros(nvar, length(Steps),M_.exo_nbr,NumberOfLinesInTheLastConditionalDecompFile) ;
@@ -197,10 +198,10 @@ for file = 1:NumberOfDrawsFiles
                 linea_ME = 0;
                 if posterior
                     save([M_.dname '/metropolis/' M_.fname '_PosteriorConditionalVarianceDecompME' int2str(ConditionalDecompFileNumber_ME) '.mat' ], ...
-                         'Conditional_decomposition_array_ME');
+                         'Conditional_decomposition_array_ME','endo_names');
                 else
                     save([M_.dname '/prior/moments/' M_.fname '_PriorConditionalVarianceDecompME' int2str(ConditionalDecompFileNumber_ME) '.mat' ], ...
-                         'Conditional_decomposition_array_ME');
+                         'Conditional_decomposition_array_ME','endo_names');
                 end
                 if (ConditionalDecompFileNumber_ME==NumberOfConditionalDecompFiles_ME-1)% Prepare last round.
                     Conditional_decomposition_array_ME = zeros(nobs_ME, length(Steps),M_.exo_nbr+1,NumberOfLinesInTheLastConditionalDecompFile_ME) ;

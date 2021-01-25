@@ -62,6 +62,7 @@ if ~posterior
     end
     options_.varlist = options_.prior_analysis_endo_var_list;
 end
+endo_names=options_.varlist;
 [ivar,vartan] = get_variables_list(options_,M_);
 if ~posterior
     if exist('temp','var')
@@ -127,9 +128,9 @@ for file = 1:NumberOfDrawsFiles
         end
         if linea == NumberOfCovarLines
             if posterior
-                save([ M_.dname '/metropolis/' M_.fname '_Posterior2ndOrderMoments' int2str(CovarFileNumber) '.mat' ],'Covariance_matrix');
+                save([ M_.dname '/metropolis/' M_.fname '_Posterior2ndOrderMoments' int2str(CovarFileNumber) '.mat' ],'Covariance_matrix','endo_names');
             else
-                save([ M_.dname '/prior/moments/' M_.fname '_Prior2ndOrderMoments' int2str(CovarFileNumber) '.mat' ],'Covariance_matrix');
+                save([ M_.dname '/prior/moments/' M_.fname '_Prior2ndOrderMoments' int2str(CovarFileNumber) '.mat' ],'Covariance_matrix','endo_names');
             end
             CovarFileNumber = CovarFileNumber + 1;
             linea = 0;
