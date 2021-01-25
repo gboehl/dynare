@@ -42,7 +42,7 @@ function [fh,xh,gh,H,itct,fcount,retcodeh] = csminwel1(fcn,x0,H0,grad,crit,nit,m
 % http://sims.princeton.edu/yftp/optimize/mfiles/csminwel.m
 %
 % Copyright (C) 1993-2007 Christopher Sims
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,9 +79,9 @@ if ischar(fcn)
 end
 if ischar(grad)
     grad = str2func(grad);
-    grad_fun_provided=1;
+    grad_fun_provided = true;
 else
-    grad_fun_provided=0;
+    grad_fun_provided = false;
 end
 %tailstr = ')';
 %stailstr = [];
@@ -228,16 +228,16 @@ while ~done
         f2=f;f3=f;f1=f;retcode2=retcode1;retcode3=retcode1;
     end
     %how to pick gh and xh
-    if f3 < f - crit && badg3==0 && f3 < f2 && f3 < f1
+    if f3 < f - crit && badg3==0 && f3 < f2 && f3 < f1  %f3 has improved function, gradient is good and it is smaller than the other two
         ih=3;
         fh=f3;xh=x3;gh=g3;badgh=badg3;retcodeh=retcode3;
-    elseif f2 < f - crit && badg2==0 && f2 < f1
+    elseif f2 < f - crit && badg2==0 && f2 < f1         %f2 has improved function, gradient is good and it is smaller than f2
         ih=2;
         fh=f2;xh=x2;gh=g2;badgh=badg2;retcodeh=retcode2;
-    elseif f1 < f - crit && badg1==0
+    elseif f1 < f - crit && badg1==0                    %f1 has improved function, gradient is good
         ih=1;
         fh=f1;xh=x1;gh=g1;badgh=badg1;retcodeh=retcode1;
-    else
+    else                                                % stuck or bad gradient
         [fh,ih] = min([f1,f2,f3]);
         %disp_verbose(sprintf('ih = %d',ih))
         %eval(['xh=x' num2str(ih) ';'])
@@ -253,12 +253,10 @@ while ~done
             %eval(['retcodeh=retcode' num2str(ih) ';'])
         retcodei=[retcode1,retcode2,retcode3];
         retcodeh=retcodei(ih);
-        if exist('gh')
-            nogh=isempty(gh);
-        else
-            nogh=1;
-        end
-        if nogh
+        
+        nogh=isempty(gh);        
+        badgh=1;
+        if nogh %recompute gradient
             if NumGrad
                 [gh, badgh]=get_num_grad(method,fcn,penalty,fh,xh,epsilon,varargin{:});
             elseif grad_fun_provided
@@ -268,7 +266,6 @@ while ~done
                 badgh = ~cost_flag;
             end
         end
-        badgh=1;
     end
     %end of picking
     stuck = (abs(fh-f) < crit);

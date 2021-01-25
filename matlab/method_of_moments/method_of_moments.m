@@ -93,7 +93,6 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 % - [ ] deal with measurement errors (once @wmutschl has implemented this in identification toolbox)
 % - [ ] improve check for duplicate moments by using the cellfun and unique functions
 % - [ ] dirname option to save output to different directory not yet implemented
-% - [ ] add analytic_jacobian option for mode_compute 4 and 101
 
 % The TeX option crashes MATLAB R2014a run with "-nodisplay" option
 % (as is done from the testsuite).
@@ -183,9 +182,9 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
     if options_mom_.order > 3
         error('method_of_moments: perturbation orders higher than 3 are not implemented for GMM estimation, try using SMM.\n');
     end
-    options_mom_.mom = set_default_option(options_mom_.mom,'analytic_standard_errors',false);       % compute standard errors numerically (0) or analytically (1). Analytical derivatives are only available for GMM.
-    options_mom_.mom = set_default_option(options_mom_.mom,'analytic_jacobian',false);              % use analytic Jacobian in optimization, only available for GMM and gradient-based optimizers    
 end
+options_mom_.mom = set_default_option(options_mom_.mom,'analytic_standard_errors',false);       % compute standard errors numerically (0) or analytically (1). Analytical derivatives are only available for GMM.
+options_mom_.mom = set_default_option(options_mom_.mom,'analytic_jacobian',false);              % use analytic Jacobian in optimization, only available for GMM and gradient-based optimizers
 % initialize flag to compute derivs in objective function (needed for GMM with either analytic_standard_errors or analytic_jacobian )
 options_mom_.mom.compute_derivs = false;
     
@@ -352,7 +351,7 @@ options_mom_.vector_output= false;           % specifies whether the objective f
 
 optimizer_vec=[options_mom_.mode_compute;num2cell(options_mom_.additional_optimizer_steps)]; % at each stage one can possibly use different optimizers sequentially
 
-analytic_jacobian_optimizers = [1, 3, 13]; %these are currently supported, see to-do list
+analytic_jacobian_optimizers = [1, 3, 4, 13, 101]; %these are currently supported, see to-do list
 
 % -------------------------------------------------------------------------
 % Step 1d: Other options that need to be initialized
@@ -914,24 +913,11 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
             end
             if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_jacobian && ismember(optimizer_vec{optim_iter},analytic_jacobian_optimizers) %do this only for gradient-based optimizers
                 options_mom_.mom.compute_derivs = true;
-                objective_function1 = str2func('method_of_moments_objective_function_gradient_helper');
-                switch optimizer_vec{optim_iter}
-                    case 1
-                        options_mom_.optim_opt = [optim_opt0, ',''GradObj'',''on'''];   % make sure GradObj option is on for fmincon
-                    case 3
-                        options_mom_.optim_opt = [optim_opt0, ',''GradObj'',''on'''];   % make sure GradObj option is on for fmincon
-                    case 13
-                        options_mom_.optim_opt = [optim_opt0, ',''Jacobian'',''on'''];  % make sure Jacobian option is on for lsqnonlin
-                end
-                if strcmp(options_mom_.optim_opt(1),',')
-                    options_mom_.optim_opt(1) = []; %remove the comma if optim_opt was empty
-                end
             else
                 options_mom_.mom.compute_derivs = false;
-                objective_function1 = objective_function;
             end
             
-            [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function1, xparam0, optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_laplace.name, bayestopt_laplace, [],...
+            [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_laplace.name, bayestopt_laplace, [],...
                                                                   Bounds, oo_, estim_params_, M_, options_mom_);
             if options_mom_.vector_output
                 fval = fval'*fval;

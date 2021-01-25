@@ -83,8 +83,8 @@ if nargin > 6  && initialization
 end
 
 logged_prior_density = 0.0;
-dlprior = 0.0;
-d2lprior = 0.0;
+dlprior = zeros(1,length(x));
+d2lprior = dlprior;
 
 if tt1
     logged_prior_density = logged_prior_density + sum(lpdfgbeta(x(id1),p6(id1),p7(id1),p3(id1),p4(id1))) ;
@@ -181,9 +181,9 @@ if tt8
         return
     end
     if nargout==2
-        [tmp, dlprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8))
+        [tmp, dlprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8));
     elseif nargout==3
-        [tmp, dlprior(id8), ds2lprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8))
+        [tmp, dlprior(id8), d2lprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8));
     end
 end
 

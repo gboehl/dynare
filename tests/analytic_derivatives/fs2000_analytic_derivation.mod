@@ -61,29 +61,74 @@ var e_a; stderr 0.014;
 var e_m; stderr 0.005;
 end;
 
-steady;
-
-check;
+stoch_simul(order=1,periods=200, irf=0,nomoments,noprint);
+save('my_data.mat','gp_obs','gy_obs');
 
 estimated_params;
-alp, beta_pdf, 0.356, 0.02;
-bet, beta_pdf, 0.993, 0.002;
-gam, normal_pdf, 0.0085, 0.003;
-mst, normal_pdf, 1.0002, 0.007;
-rho, beta_pdf, 0.129, 0.1;
-psi, beta_pdf, 0.65, 0.05;
-del, beta_pdf, 0.01, 0.005;
-stderr e_a, inv_gamma_pdf, 0.035449, inf;
-stderr e_m, inv_gamma_pdf, 0.008862, inf;
+alp, 0.356;
+rho, 0.129;
+psi, 0.65;
+stderr e_a, 0.035449;
+stderr e_m, 0.008862;
 end;
 
 varobs gp_obs gy_obs;
 
 options_.solve_tolf = 1e-12;
 
-estimation(order=1,mode_compute=9,analytic_derivation,kalman_algo=1,datafile=fsdat_simul,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8);
-estimation(order=1,mode_compute=5,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=2,datafile=fsdat_simul,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8);
-estimation(order=1,mode_compute=4,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=1,datafile=fsdat_simul,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8);
-estimation(order=1,mode_compute=4,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=2,datafile=fsdat_simul,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8);
-//estimation(order=1,mode_compute=5,analytic_derivation,kalman_algo=3,datafile=fsdat_simul,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8);
-//estimation(order=1,mode_compute=5,analytic_derivation,kalman_algo=4,datafile=fsdat_simul,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8);
+estimation(order=1,mode_compute=9,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0,prior_trunc=0);
+if (isoctave && user_has_octave_forge_package('optim', '1.6')) || (~isoctave && user_has_matlab_license('optimization_toolbox'))
+    estimation(order=1,mode_compute=1,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0
+    %,optim = ('DerivativeCheck', 'on','FiniteDifferenceType','central')
+    );
+    estimation(order=1,mode_compute=3,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0);
+    estimation(order=1,mode_compute=101,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0);    
+end
+estimation(order=1,mode_compute=5,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=2,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0);
+estimation(order=1,mode_compute=4,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0);
+estimation(order=1,mode_compute=4,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=2,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0);
+options_.debug=1;
+estimation(order=1,mode_compute=0,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,plot_priors=0);
+fval_ML_1=oo_.likelihood_at_initial_parameters;
+estimation(order=1,mode_compute=0,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=2,datafile=my_data,nobs=192,mh_replic=0,plot_priors=0);
+fval_ML_2=oo_.likelihood_at_initial_parameters;
+options_.analytic_derivation=0;
+estimation(order=1,mode_compute=0,mode_file=fs2000_analytic_derivation_mode,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,plot_priors=0);
+fval_ML_3=oo_.likelihood_at_initial_parameters;
+
+if abs(fval_ML_1-fval_ML_2)>1e-5 || abs(fval_ML_1-fval_ML_3)>1e-5
+    error('Likelihood does not match')
+end
+options_.debug=0;
+
+estimated_params;
+alp, beta_pdf, 0.356, 0.02;
+rho, beta_pdf, 0.129, 0.100;
+psi, beta_pdf, 0.65, 0.05;
+stderr e_a, inv_gamma_pdf, 0.035449, inf;
+stderr e_m, inv_gamma_pdf, 0.008862, inf;
+end;
+
+estimation(order=1,mode_compute=9,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0,prior_trunc=0);
+if (isoctave && user_has_octave_forge_package('optim', '1.6')) || (~isoctave && user_has_matlab_license('optimization_toolbox'))
+    estimation(order=1,mode_compute=1,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0
+    %,optim = ('DerivativeCheck', 'on','FiniteDifferenceType','central')
+    );
+    estimation(order=1,mode_compute=3,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0);
+    estimation(order=1,mode_compute=101,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0);    
+end
+estimation(order=1,mode_compute=5,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=2,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0);
+estimation(order=1,mode_compute=4,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0);
+estimation(order=1,mode_compute=4,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=2,datafile=my_data,nobs=192,mh_replic=0,mh_nblocks=2,mh_jscale=0.8,plot_priors=0);
+options_.debug=1;
+estimation(order=1,mode_compute=0,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,plot_priors=0);
+fval_Bayes_1=oo_.likelihood_at_initial_parameters;
+estimation(order=1,mode_compute=0,mode_file=fs2000_analytic_derivation_mode,analytic_derivation,kalman_algo=2,datafile=my_data,nobs=192,mh_replic=0,plot_priors=0);
+fval_Bayes_2=oo_.likelihood_at_initial_parameters;
+options_.analytic_derivation=0;
+estimation(order=1,mode_compute=0,mode_file=fs2000_analytic_derivation_mode,kalman_algo=1,datafile=my_data,nobs=192,mh_replic=0,plot_priors=0);
+fval_Bayes_3=oo_.likelihood_at_initial_parameters;
+
+if abs(fval_Bayes_1-fval_Bayes_2)>1e-5 || abs(fval_Bayes_1-fval_Bayes_3)>1e-5
+    error('Likelihood does not match')
+end
