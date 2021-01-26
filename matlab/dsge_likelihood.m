@@ -140,7 +140,11 @@ SteadyState = [];
 trend_coeff = [];
 exit_flag   = 1;
 info        = zeros(4,1);
-DLIK        = [];
+if DynareOptions.analytic_derivation
+    DLIK        = NaN(1,length(xparam1));
+else
+    DLIK        = [];
+end
 Hess        = [];
 
 % Ensure that xparam1 is a column vector.
