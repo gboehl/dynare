@@ -51,23 +51,32 @@ if DynareOptions.order>1
     if BayesInfo.with_trend
         error('initial_estimation_checks:: particle filtering does not support trends')
     end
+    if DynareOptions.order>2 && DynareOptions.particle.pruning==1
+        error('initial_estimation_checks:: the particle filter with order>2 does not support pruning')
+    end
+    if DynareOptions.particle.pruning~=DynareOptions.pruning
+        warning('initial_estimation_checks:: the pruning settings differ between the particle filter and the one used for IRFs/simulations. Make sure this is intended.\n')
+    end
+end
+
+
+if DynareOptions.order>1 || (DynareOptions.order==1 && ~ischar(DynareOptions.mode_compute) && DynareOptions.mode_compute==11)
+    if DynareOptions.order==1 && DynareOptions.mode_compute==11
+        disp_string='mode_compute=11';
+    else
+        disp_string='particle filtering';
+    end
     if Model.H==0
-        error('initial_estimation_checks:: particle filtering requires measurement error on the observables')
+        error('initial_estimation_checks:: %s requires measurement error on the observables',disp_string)
     else
         if sum(diag(Model.H)>0)<length(DynareOptions.varobs)
-            error('initial_estimation_checks:: particle filtering requires as many measurement errors as observed variables')
+            error('initial_estimation_checks:: %s requires as many measurement errors as observed variables',disp_string)
         else
             [~,flag]=chol(Model.H);
             if flag
                 error('initial_estimation_checks:: the measurement error matrix must be positive definite')
             end
         end
-    end
-    if DynareOptions.order>2 && DynareOptions.particle.pruning==1
-        error('initial_estimation_checks:: the particle filter with order>2 does not support pruning')
-    end
-    if DynareOptions.particle.pruning~=DynareOptions.pruning
-        fprintf('initial_estimation_checks:: the pruning settings differ between the particle filter and the one used for IRFs/simulations. Make sure this is intended.\n')
     end
 end
 
