@@ -71,7 +71,7 @@ if EstimatedParameters.nvn
     end
     offset = offset+EstimatedParameters.nvn;
 else
-    H = zeros(size(DynareDataset.data, 1));
+    H = zeros(size(DynareDataset.data, 2));
 end
 
 % Get the off-diagonal elements of the covariance matrix for the structural innovations. Test if Q is positive definite.
