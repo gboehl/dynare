@@ -165,11 +165,13 @@ if nargout>4
         ReducedForm.use_k_order_solver = true;
         ReducedForm.dr = dr;
     else
+        n_states=size(dr.ghx,2);
+        n_shocks=size(dr.ghu,2);
         ReducedForm.use_k_order_solver = false;
-        ReducedForm.ghxx = zeros(size(restrict_variables_idx,1),size(dr.kstate,2));
-        ReducedForm.ghuu = zeros(size(restrict_variables_idx,1),size(dr.ghu,2));
-        ReducedForm.ghxu = zeros(size(restrict_variables_idx,1),size(dr.ghx,2));
-        ReducedForm.constant = ReducedForm.steadystate ;
+        ReducedForm.ghxx = zeros(size(restrict_variables_idx,1),n_states^2);
+        ReducedForm.ghuu = zeros(size(restrict_variables_idx,1),n_shocks^2);
+        ReducedForm.ghxu = zeros(size(restrict_variables_idx,1),n_states*n_shocks);
+        ReducedForm.constant = ReducedForm.steadystate;
     end
     ReducedForm.state_variables_steady_state = dr.ys(dr.order_var(state_variables_idx));
     ReducedForm.Q = Q;
