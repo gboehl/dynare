@@ -39,6 +39,10 @@ if M_.exo_nbr==0
     error('stoch_simul:: does not support having no varexo in the model. As a workaround you could define a dummy exogenous variable.')
 end
 
+if ismember(options_.solve_algo,[10,11])
+    error('stoch_simul:: perturbation solutions are not compatible with mixed complementarity problems and their solvers')
+end
+
 test_for_deep_parameters_calibration(M_);
 
 dr = oo_.dr;
