@@ -185,15 +185,22 @@ if setinitialcondition
     switch DynareOptions.particle.initialization
       case 1% Initial state vector covariance is the ergodic variance associated to the first order Taylor-approximation of the model.
         StateVectorMean = ReducedForm.state_variables_steady_state;%.constant(mf0);
-        StateVectorVariance = lyapunov_symm(ReducedForm.ghx(mf0,:),ReducedForm.ghu(mf0,:)*ReducedForm.Q*ReducedForm.ghu(mf0,:)',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
+        [A,B] = kalman_transition_matrix(dr,dr.restrict_var_list,dr.restrict_columns,Model.exo_nbr);
+        StateVectorVariance2 = lyapunov_symm(ReducedForm.ghx(mf0,:),ReducedForm.ghu(mf0,:)*ReducedForm.Q*ReducedForm.ghu(mf0,:)',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
+        StateVectorVariance = lyapunov_symm(A, B*ReducedForm.Q*B', DynareOptions.lyapunov_fixed_point_tol, ...
+                                        DynareOptions.qz_criterium, DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
+        StateVectorVariance = StateVectorVariance(mf0,mf0);
       case 2% Initial state vector covariance is a monte-carlo based estimate of the ergodic variance (consistent with a k-order Taylor-approximation of the model).
         StateVectorMean = ReducedForm.state_variables_steady_state;%.constant(mf0);
         old_DynareOptionsperiods = DynareOptions.periods;
         DynareOptions.periods = 5000;
-        y_ = simult(oo_.steady_state, dr, Model, DynareOptions, DynareResults);
-        y_ = y_(state_variables_idx,2001:5000);
+        old_DynareOptionspruning =  DynareOptions.pruning;
+        DynareOptions.pruning = DynareOptions.particle.pruning;
+        y_ = simult(dr.ys, dr, Model, DynareOptions, DynareResults);
+        y_ = y_(dr.order_var(state_variables_idx),2001:DynareOptions.periods);
         StateVectorVariance = cov(y_');
         DynareOptions.periods = old_DynareOptionsperiods;
+        DynareOptions.pruning = old_DynareOptionspruning;
         clear('old_DynareOptionsperiods','y_');
       case 3% Initial state vector covariance is a diagonal matrix.
         StateVectorMean = ReducedForm.state_variables_steady_state;%.constant(mf0);
