@@ -70,7 +70,7 @@ nx=length(x);
 xparam1=x;
 %ftol0=1.e-6;
 htol_base = max(1.e-7, ftol0);
-flagit=0;  % mode of computation of hessian in each iteration
+flagit=0;  % mode of computation of hessian in each iteration; hard-coded outer-product of gradients as it performed best in tests
 ftol=ftol0;
 gtol=1.e-3;
 htol=htol_base;
@@ -121,15 +121,16 @@ else
     h1=[];
 end
 H = igg;
-disp_verbose(['Gradient norm ',num2str(norm(gg))],Verbose)
-ee=eig(hh);
-disp_verbose(['Minimum Hessian eigenvalue ',num2str(min(ee))],Verbose)
-disp_verbose(['Maximum Hessian eigenvalue ',num2str(max(ee))],Verbose)
+if Verbose
+    disp_eigenvalues_gradient(gg,hh);   
+end
 g=gg;
 check=0;
-if max(eig(hh))<0
-    disp_verbose('Negative definite Hessian! Local maximum!',Verbose)
-    pause
+if Verbose
+    if max(eig(hh))<0
+        disp('Negative definite Hessian! Local maximum!')
+        pause
+    end
 end
 if Save_files
     save('m1.mat','x','hh','g','hhg','igg','fval0')
@@ -139,7 +140,9 @@ igrad=1;
 igibbs=1;
 inx=eye(nx);
 jit=0;
-nig=[];
+if Save_files
+    nig=[];
+end
 ig=ones(nx,1);
 ggx=zeros(nx,1);
 while norm(gg)>gtol && check==0 && jit<nit
@@ -176,7 +179,9 @@ while norm(gg)>gtol && check==0 && jit<nit
     x0 = check_bounds(x0,bounds);
     [fvala, x0, ig] = mr_gstep(h1,x0,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon, parameter_names,varargin{:});
     x0 = check_bounds(x0,bounds);
-    nig=[nig ig];
+    if Save_files
+        nig=[nig ig];
+    end
     disp_verbose('Sequence of univariate steps!!',Verbose)
     fval=fvala;
     if (fval0(icount)-fval)<ftol && flagit==0
@@ -225,15 +230,14 @@ while norm(gg)>gtol && check==0 && jit<nit
                 end
             end
         end
-        disp_verbose(['Actual dxnorm ',num2str(norm(x(:,end)-x(:,end-1)))],Verbose)
-        disp_verbose(['FVAL          ',num2str(fval)],Verbose)
-        disp_verbose(['Improvement   ',num2str(fval0(icount)-fval)],Verbose)
-        disp_verbose(['Ftol          ',num2str(ftol)],Verbose)
-        disp_verbose(['Htol          ',num2str(max(htol0))],Verbose)
-        disp_verbose(['Gradient norm  ',num2str(norm(gg))],Verbose)
-        ee=eig(hh);
-        disp_verbose(['Minimum Hessian eigenvalue ',num2str(min(ee))],Verbose)
-        disp_verbose(['Maximum Hessian eigenvalue ',num2str(max(ee))],Verbose)
+        if Verbose
+            disp(['Actual dxnorm ',num2str(norm(x(:,end)-x(:,end-1)))])
+            disp(['FVAL          ',num2str(fval)])
+            disp(['Improvement   ',num2str(fval0(icount)-fval)])
+            disp(['Ftol          ',num2str(ftol)])
+            disp(['Htol          ',num2str(max(htol0))])
+            disp_eigenvalues_gradient(gg,hh);
+        end
         g(:,icount+1)=gg;
     else
         df = fval0(icount)-fval;
@@ -285,13 +289,11 @@ while norm(gg)>gtol && check==0 && jit<nit
             hhg=hh;
             H = inv(hh);
         end
-        disp_verbose(['Gradient norm  ',num2str(norm(gg))],Verbose)
-        ee=eig(hh);
-        disp_verbose(['Minimum Hessian eigenvalue ',num2str(min(ee))],Verbose)
-        disp_verbose(['Maximum Hessian eigenvalue ',num2str(max(ee))],Verbose)
-        if max(eig(hh))<0
-            disp_verbose('Negative definite Hessian! Local maximum!',Verbose)
-            pause(1)
+        if Verbose
+            if max(eig(hh))<0
+                disp('Negative definite Hessian! Local maximum!')
+                pause(1)
+            end
         end
         t=toc(tic1);
         disp_verbose(['Elapsed time for iteration ',num2str(t),' s.'],Verbose)
@@ -339,3 +341,10 @@ inx = find(x<=bounds(:,1));
 if ~isempty(inx)
     x(inx) = bounds(inx,1)+eps;
 end
+
+function ee=disp_eigenvalues_gradient(gg,hh)
+
+disp(['Gradient norm  ',num2str(norm(gg))])
+ee=eig(hh);
+disp(['Minimum Hessian eigenvalue ',num2str(min(ee))])
+disp(['Maximum Hessian eigenvalue ',num2str(max(ee))])
