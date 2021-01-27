@@ -123,7 +123,7 @@ MODFILES = \
 	discretionary_policy/Gali_2015_chapter_3.mod \
 	discretionary_policy/Gali_2015_chapter_3_nonlinear.mod \
 	histval_initval_file/ramst_initval_file.mod \
-	histval_initval_file/ramst_data.mod \
+	histval_initval_file/ramst_data_generate.mod \
 	histval_initval_file/ramst_datafile.mod \
 	histval_initval_file/sim_exo_lead_lag.mod \
 	histval_initval_file/sim_exo_lead_lag_initvalf.mod \
@@ -358,7 +358,7 @@ MODFILES = \
 	shock_decomposition/fs2000_est_varlist.mod \
 	shock_decomposition/fs2000_cal_groups.mod \
 	shock_decomposition/ls2003_plot.mod \
-	shock_decomposition/shock_decomposition_backward.mod \
+	shock_decomposition/shock_decomp_backward.mod \
 	stochastic_purely_forward/stochastic_purely_forward.mod \
 	stochastic_purely_forward/stochastic_purely_forward_with_static.mod \
 	forecast/Hansen_exo_det_forecast.mod \
@@ -689,14 +689,14 @@ deterministic_simulations/lola_solve_one_boundary_mfs3.m.trs: deterministic_simu
 deterministic_simulations/lola_solve_one_boundary_mfs3.o.trs: deterministic_simulations/lola_solve_one_boundary.o.trs
 
 
-histval_initval_file/ramst_initval_file.m.trs: histval_initval_file/ramst_initval_file_data.m.tls histval_initval_file/ramst_data.m.trs
-histval_initval_file/ramst_initval_file.o.trs: histval_initval_file/ramst_initval_file_data.o.tls histval_initval_file/ramst_data.o.trs
+histval_initval_file/ramst_initval_file.m.trs: histval_initval_file/ramst_initval_file_data.m.tls histval_initval_file/ramst_data_generate.m.trs
+histval_initval_file/ramst_initval_file.o.trs: histval_initval_file/ramst_initval_file_data.o.tls histval_initval_file/ramst_data_generate.o.trs
 histval_initval_file/ramst_datafile.m.trs: histval_initval_file/ramst_initval_file_data.m.tls
 histval_initval_file/ramst_datafile.o.trs: histval_initval_file/ramst_initval_file_data.o.tls
 histval_initval_file/sim_exo_lead_lag_initvalf.m.trs: histval_initval_file/sim_exo_lead_lag.m.trs
 histval_initval_file/sim_exo_lead_lag_initvalf.o.trs: histval_initval_file/sim_exo_lead_lag.o.trs
-histval_initval_file_unit_tests.m.trs: histval_initval_file/ramst_data.m.trs
-histval_initval_file_unit_tests.o.trs: histval_initval_file/ramst_data.o.trs
+histval_initval_file_unit_tests.m.trs: histval_initval_file/ramst_data_generate.m.trs
+histval_initval_file_unit_tests.o.trs: histval_initval_file/ramst_data_generate.o.trs
 
 
 identification/rbc_ident/rbc_ident_varexo_only.m.trs: identification/rbc_ident/rbc_ident_std_as_structural_par.m.trs
