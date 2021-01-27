@@ -1,12 +1,12 @@
-function [fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, bayestopt_)
-% function [fval,info,exit_flag]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, bayestopt_)
+function [fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, bounds)
+% function [fval,info,exit_flag]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, bounds)
 % Checks whether parameter vector satisfies 
 %
 % INPUTS
 % - xparam1                 [double]              n by 1 vector, estimated parameters.
 % - M_                      [struct]              Matlab's structure describing the Model.
 % - estim_params_           [struct]              Matlab's structure describing the estimated_parameters.
-% - bayestopt_              [struct]              Matlab's structure specifying the bounds on the paramater values (initialized by dynare,aka bayesopt_).
+% - bounds                  [struct]              Matlab's structure specifying the bounds on the paramater values (initialized by dynare_estimation_init).
 %
 % OUTPUTS
 % - fval                    [double]              scalar, value of the likelihood or posterior kernel.
@@ -15,7 +15,7 @@ function [fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xpar
 % - Q                       [matrix]              Covariance matrix of structural shocks
 % - H                       [matrix]              Covariance matrix of measurement errors
 
-% Copyright (C) 2020 Dynare Team
+% Copyright (C) 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,22 +38,22 @@ info        = zeros(4,1);
 Q=[];
 H=[];
 % Return, with endogenous penalty, if some parameters are smaller than the lower bound of the prior domain.
-if any(xparam1<bayestopt_.lb)
-    k = find(xparam1(:) < bayestopt_.lb);
+if any(xparam1<bounds.lb)
+    k = find(xparam1(:) < bounds.lb);
     fval = Inf;
     exit_flag = 0;
     info(1) = 41;
-    info(4) = sum((bayestopt_.lb(k)-xparam1(k)).^2);
+    info(4) = sum((bounds.lb(k)-xparam1(k)).^2);
     return
 end
 
 % Return, with endogenous penalty, if some parameters are greater than the upper bound of the prior domain.
-if any(xparam1>bayestopt_.ub)
-    k = find(xparam1(:)>bayestopt_.ub);
+if any(xparam1>bounds.ub)
+    k = find(xparam1(:)>bounds.ub);
     fval = Inf;
     exit_flag = 0;
     info(1) = 42;
-    info(4) = sum((xparam1(k)-bayestopt_.ub(k)).^2);
+    info(4) = sum((xparam1(k)-bounds.ub(k)).^2);
     return
 end
 
