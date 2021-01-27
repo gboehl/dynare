@@ -70,7 +70,7 @@ switch minimizer_algorithm
         error('Optimization algorithm 1 requires the Optimization Toolbox')
     end
     % Set default optimization options for fmincon.
-    if ~isoctave && matlab_ver_less_than('8.1')
+    if isoctave || matlab_ver_less_than('8.1') 
         optim_options = optimset('display','iter', 'MaxFunEvals',100000, 'TolFun',1e-8, 'TolX',1e-6);
     else
         optim_options = optimoptions('fmincon','display','iter', 'MaxFunEvals',100000, 'TolFun',1e-8, 'TolX',1e-6);
@@ -79,24 +79,24 @@ switch minimizer_algorithm
         % Under Octave, use the active-set (i.e. octave_sqp of nonlin_min)
         % algorithm. On a simple example (fs2000.mod), the default algorithm
         % is not able to even move away from the initial point.
-        optim_options = optimoptions(optim_options, 'Algorithm','active-set');
+        optim_options = optimset(optim_options, 'Algorithm','active-set');
     end
     if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1)
-        if ~isoctave && matlab_ver_less_than('8.1')
+        if isoctave || matlab_ver_less_than('8.1') 
             optim_options = optimset('GradObj','on','TolX',1e-7);
         else            
             optim_options = optimoptions(optim_options,'GradObj','on','TolX',1e-7); %alter default TolX
         end
     end
     if ~isempty(options_.optim_opt)
-        if ~isoctave && matlab_ver_less_than('8.1')
+        if isoctave || matlab_ver_less_than('8.1') 
             eval(['optim_options = optimset(optim_options,' options_.optim_opt ');']);
         else           
             eval(['optim_options = optimoptions(optim_options,' options_.optim_opt ');']);
         end
     end
     if options_.silent_optimizer
-        if ~isoctave && matlab_ver_less_than('8.1')
+        if isoctave || matlab_ver_less_than('8.1') 
             optim_options = optimset(optim_options,'display','off');
         else           
             optim_options = optimoptions(optim_options,'display','off');
@@ -184,27 +184,27 @@ switch minimizer_algorithm
         error('Optimization algorithm 3 requires the Optimization Toolbox')
     end
     % Set default optimization options for fminunc.
-    if ~isoctave && matlab_ver_less_than('8.1')
+    if isoctave || matlab_ver_less_than('8.1') 
         optim_options = optimset('display','iter','MaxFunEvals',100000,'TolFun',1e-8,'TolX',1e-6);
     else
         optim_options = optimoptions('fminunc','display','iter','MaxFunEvals',100000,'TolFun',1e-8,'TolX',1e-6);
     end
     if ~isempty(options_.optim_opt)
-        if ~isoctave && matlab_ver_less_than('8.1')
+        if isoctave || matlab_ver_less_than('8.1') 
              eval(['optim_options = optimset(optim_options,' options_.optim_opt ');']);
         else
             eval(['optim_options = optimoptions(optim_options,' options_.optim_opt ');']);
         end
     end
     if options_.silent_optimizer
-        if ~isoctave && matlab_ver_less_than('8.1')
+        if isoctave || matlab_ver_less_than('8.1') 
             optim_options = optimset(optim_options,'display','off');
         else
             optim_options = optimoptions(optim_options,'display','off');
         end
     end
     if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1)
-         if ~isoctave && matlab_ver_less_than('8.1')
+         if isoctave || matlab_ver_less_than('8.1') 
             optim_options = optimset(optim_options,'GradObj','on');
         else           
             optim_options = optimoptions(optim_options,'GradObj','on');
@@ -566,20 +566,20 @@ switch minimizer_algorithm
         error('Optimization algorithm 2 requires the Global Optimization Toolbox')
     end
     % Set default optimization options for simulannealbnd.
-    if ~isoctave && matlab_ver_less_than('8.1')
+    if isoctave || matlab_ver_less_than('8.1') 
         optim_options = saoptimset('display','iter','TolFun',1e-8);
     else
         optim_options = optimoptions('simulannealbnd','display','iter','TolFun',1e-8);
     end   
     if ~isempty(options_.optim_opt)
-        if ~isoctave && matlab_ver_less_than('8.1')
+        if isoctave || matlab_ver_less_than('8.1') 
             eval(['optim_options = saoptimset(optim_options,' options_.optim_opt ');']);
         else
             eval(['optim_options = optimoptions(optim_options,' options_.optim_opt ');']);
         end
     end
     if options_.silent_optimizer
-        if ~isoctave && matlab_ver_less_than('8.1')
+        if isoctave || matlab_ver_less_than('8.1') 
             optim_options = optimset(optim_options,'display','off');
         else
             optim_options = optimoptions(optim_options,'display','off');
