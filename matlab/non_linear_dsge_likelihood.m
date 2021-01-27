@@ -26,7 +26,7 @@ function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,Model,DynareOptions,Bayes
 % - BayesInfo               [struct]              See INPUTS section.
 % - DynareResults           [struct]              Updated DynareResults structure described in INPUTS section.
 
-% Copyright (C) 2010-2019 Dynare Team
+% Copyright (C) 2010-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,7 +52,12 @@ DLIK            = [];
 Hess            = [];
 
 % Ensure that xparam1 is a column vector.
-xparam1 = xparam1(:);
+% (Don't do the transformation if xparam1 is empty, otherwise it would become a
+%  0×1 matrix, which create issues with older MATLABs when comparing with [] in
+%  check_bounds_and_definiteness_estimation)
+if ~isempty(xparam1)
+    xparam1 = xparam1(:);
+end
 
 % Issue an error if loglinear option is used.
 if DynareOptions.loglinear

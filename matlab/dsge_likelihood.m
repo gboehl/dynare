@@ -115,7 +115,7 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOpti
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2020 Dynare Team
+% Copyright (C) 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -148,7 +148,12 @@ end
 Hess        = [];
 
 % Ensure that xparam1 is a column vector.
-xparam1 = xparam1(:);
+% (Don't do the transformation if xparam1 is empty, otherwise it would become a
+%  0×1 matrix, which create issues with older MATLABs when comparing with [] in
+%  check_bounds_and_definiteness_estimation)
+if ~isempty(xparam1)
+    xparam1 = xparam1(:);
+end
 
 if DynareOptions.estimation_dll
     [fval,exit_flag,SteadyState,trend_coeff,info,params,H,Q] ...

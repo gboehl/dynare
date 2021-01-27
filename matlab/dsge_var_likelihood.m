@@ -37,7 +37,7 @@ function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright (C) 2006-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -69,7 +69,12 @@ prior = [];
 trend_coeff=[];
 
 % Ensure that xparam1 is a column vector.
-xparam1 = xparam1(:);
+% (Don't do the transformation if xparam1 is empty, otherwise it would become a
+%  0×1 matrix, which create issues with older MATLABs when comparing with [] in
+%  check_bounds_and_definiteness_estimation)
+if ~isempty(xparam1)
+    xparam1 = xparam1(:);
+end
 
 % Initialization of of the index for parameter dsge_prior_weight in Model.params.
 if isempty(dsge_prior_weight_idx)
