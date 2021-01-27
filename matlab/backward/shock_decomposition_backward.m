@@ -59,7 +59,7 @@ nperiods = simulations.nobs - initialconditions.nobs;
 decomposition = NaN(M_.endo_nbr, length(shocklist), nperiods);
 
 % Add auxiliary variables to simulation paths
-if exist(sprintf('+%s/dynamic_set_auxiliary_series', M_.fname), 'file')
+if exist(sprintf('+%s/dynamic_set_auxiliary_series.m', M_.fname), 'file')
     simulations = feval(sprintf('%s.dynamic_set_auxiliary_series', M_.fname), simulations, M_.params);
 end
 
@@ -89,7 +89,7 @@ for i = length(shocklist):-1:1
 
     % Compute simulation with the current shock or shock group removed
     simulations_new = simul_backward_model(initialconditions, nperiods, innovations);
-    if exist(sprintf('+%s/dynamic_set_auxiliary_series', M_.fname), 'file')
+    if exist(sprintf('+%s/dynamic_set_auxiliary_series.m', M_.fname), 'file')
         simulations_new = feval(sprintf('%s.dynamic_set_auxiliary_series', M_.fname), simulations_new, M_.params);
     end
 
