@@ -177,7 +177,7 @@ gg=(f1'-f_1')./(2.*hess_info.h1);
 
 if outer_product_gradient
     if hflag==2
-        gg=(f1'-f_1')./(2.*hess_info.h1);
+        % full numerical Hessian
         hessian_mat = zeros(size(f0,1),n*n);
         for i=1:n
             if i > 1
@@ -203,6 +203,7 @@ if outer_product_gradient
             i=i+1;
         end
     elseif hflag==1
+        % full numerical 2nd order derivs only in diagonal
         hessian_mat = zeros(size(f0,1),n*n);
         for i=1:n
             dum = (f1(:,i)+f_1(:,i)-2*f0)./(hess_info.h1(i)*h_1(i));
@@ -219,17 +220,19 @@ if outer_product_gradient
     hh_mat0=ggh'*ggh;  % outer product hessian
     A=diag(2.*hess_info.h1);  % rescaling matrix
                               % igg=inv(hh_mat);  % inverted rescaled outer product hessian
-    ihh=A'*(hh_mat\A);  % inverted outer product hessian
+    ihh=A'*(hh_mat\A);  % inverted outer product hessian (based on rescaling)
     if hflag>0 && min(eig(reshape(hessian_mat,n,n)))>0
         hh0 = A*reshape(hessian_mat,n,n)*A';  %rescaled second order derivatives
-        hh = reshape(hessian_mat,n,n);  %rescaled second order derivatives
+        hh = reshape(hessian_mat,n,n);  %second order derivatives
         sd0=sqrt(diag(hh0));   %rescaled 'standard errors' using second order derivatives
         sd=sqrt(diag(hh_mat));  %rescaled 'standard errors' using outer product
         hh_mat=hh_mat./(sd*sd').*(sd0*sd0');  %rescaled inverse outer product with 'true' std's
-        ihh=A'*(hh_mat\A);  % inverted outer product hessian
+        ihh=A'*(hh_mat\A);  % update inverted outer product hessian with 'true' std's 
         sd=sqrt(diag(ihh));   %standard errors
         sdh=sqrt(1./diag(hh));   %diagonal standard errors
         for j=1:length(sd)
+            % some heuristic normalizations of the standard errors that
+            % avoid numerical issues in outer product
             sd0(j,1)=min(prior_std(j), sd(j));  %prior std
             sd0(j,1)=10^(0.5*(log10(sd0(j,1))+log10(sdh(j,1))));
         end
