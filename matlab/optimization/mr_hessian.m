@@ -100,11 +100,7 @@ while i<n
     h10=hess_info.h1(i);
     hcheck=0;
     xh1(i)=x(i)+hess_info.h1(i);
-    try
-        [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
-    catch
-        fx=1.e8;
-    end
+    [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
     it=1;
     dx=(fx-f0);
     ic=0;
@@ -121,21 +117,13 @@ while i<n
             hess_info.h1(i) = min(hess_info.h1(i),0.5*hmax(i));
             hess_info.h1(i) = max(hess_info.h1(i),1.e-10);
             xh1(i)=x(i)+hess_info.h1(i);
-            try
-                [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
-            catch
-                fx=1.e8;
-            end
+            [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
         end
         if abs(dx(it))>(3*hess_info.htol)
             hess_info.h1(i)= hess_info.htol/abs(dx(it))*hess_info.h1(i);
             hess_info.h1(i) = max(hess_info.h1(i),1e-10);
             xh1(i)=x(i)+hess_info.h1(i);
-            try
-                [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
-            catch
-                fx=1.e8;
-            end
+            [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
             iter=0;
             while (fx-f0)==0 && iter<50
                 hess_info.h1(i)= hess_info.h1(i)*2;
@@ -238,9 +226,7 @@ if outer_product_gradient
         sd0=sqrt(diag(hh0));   %rescaled 'standard errors' using second order derivatives
         sd=sqrt(diag(hh_mat));  %rescaled 'standard errors' using outer product
         hh_mat=hh_mat./(sd*sd').*(sd0*sd0');  %rescaled inverse outer product with 'true' std's
-        igg=inv(hh_mat);   % rescaled outer product hessian with 'true' std's
         ihh=A'*(hh_mat\A);  % inverted outer product hessian
-        hh_mat0=inv(A)'*hh_mat*inv(A);  % outer product hessian with 'true' std's
         sd=sqrt(diag(ihh));   %standard errors
         sdh=sqrt(1./diag(hh));   %diagonal standard errors
         for j=1:length(sd)
