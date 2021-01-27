@@ -46,7 +46,7 @@ build_binaries:
       - dynare++/*/*/*.a
       - dynare++/integ/src/quadrature-points
       - dynare++/src/dynare++
-    expire_in: 1 week
+    expire_in: 3 days
 
 build_doc:
   stage: build
@@ -61,7 +61,7 @@ build_doc:
       - doc/*/*.pdf
       - dynare++/doc/*.pdf
       - preprocessor/doc/*/*.pdf
-    expire_in: 1 week
+    expire_in: 3 days
 
 pkg_source:
   stage: pkg
@@ -74,7 +74,7 @@ pkg_source:
   artifacts:
     paths:
       - dynare-*.tar.xz
-    expire_in: 1 week
+    expire_in: 3 days
   needs: []
 
 pkg_windows:
@@ -97,7 +97,7 @@ pkg_windows:
       - windows/exe/*
       - windows/7z/*
       - windows/zip/*
-    expire_in: 1 week
+    expire_in: 3 days
   needs: [ "build_doc" ]
 
 pkg_macOS:
@@ -115,7 +115,7 @@ pkg_macOS:
   artifacts:
     paths:
       - macOS/pkg/*
-    expire_in: 1 week
+    expire_in: 3 days
   needs: [ "build_doc" ]
 
 .test_matlab_template:
