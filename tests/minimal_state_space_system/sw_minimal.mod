@@ -425,7 +425,7 @@ Sigmay_min = minSS.C*Sigmax_min*minSS.C' + minSS.D*M_.Sigma_e*minSS.D';
 ([Sigmay_full(:) - Sigmay_min(:)]')
 sqrt(([diag(Sigmay_full), diag(Sigmay_min)]'))
 dx = norm( Sigmay_full - Sigmay_min, Inf);
-if dx > 2e-8
+if dx > 3e-8
     error(sprintf('something wrong with minimal state space computations, as numerical error is %d',dx))
 else
     fprintf('numerical error for moments computed from minimal state system is %d\n',dx)
