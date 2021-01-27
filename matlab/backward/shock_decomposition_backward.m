@@ -22,7 +22,7 @@ function decomposition = shock_decomposition_backward(simulations, initialcondit
 %                        and nperiods is the number of simulation periods (i.e. excluding the initial
 %                        conditions)
 
-% Copyright © 2020 Dynare Team
+% Copyright © 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -94,8 +94,16 @@ for i = length(shocklist):-1:1
     end
 
     % Compute the contribution of the current shock or shock group
-    contribution = simulations{M_.endo_names{:}}.data(initialconditions.nobs+1:end, :) ...
-                   - simulations_new{M_.endo_names{:}}.data(initialconditions.nobs+1:end, :);
+    if ~isoctave && matlab_ver_less_than('9.7')
+        % Workaround for MATLAB bug described in dseries#45
+        % The solution is to avoid using the "end" keyword
+        myend = nobs(simulations);
+        contribution = simulations{M_.endo_names{:}}.data(initialconditions.nobs+1:myend, :) ...
+                       - simulations_new{M_.endo_names{:}}.data(initialconditions.nobs+1:myend, :);
+    else
+        contribution = simulations{M_.endo_names{:}}.data(initialconditions.nobs+1:end, :) ...
+                       - simulations_new{M_.endo_names{:}}.data(initialconditions.nobs+1:end, :);
+    end
     decomposition(:, i, :) = contribution';
 
     simulations = simulations_new;
