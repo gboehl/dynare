@@ -60,3 +60,6 @@ end
 if abs(mean(oo_.SmoothedShocks.Mean.e_y))>1e-2 || abs(mean(oo_.SmoothedShocks.Mean.e_p))>1e-2 || abs(mean(oo_.SmoothedShocks.Median.e_y))>1e-2 || abs(mean(oo_.SmoothedShocks.Median.e_p))>1e-2
     error('Residuals are not mean 0')
 end
+
+fields_to_delete={'Constant','Smoother','SmoothedShocks','FilteredVariablesKStepAhead','FilteredVariablesKStepAheadVariances','FilteredVariables','SmoothedVariables','UpdatedVariables','PointForecast','MeanForecast','Filtered_Variables_1_step_ahead','Filtered_Variables_2_step_ahead','Filtered_Variables_4_step_ahead'};
+oo_=rmfield(oo_,fields_to_delete);
