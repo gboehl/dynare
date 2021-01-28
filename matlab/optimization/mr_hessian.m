@@ -207,11 +207,10 @@ if outer_product_gradient
         hessian_mat = zeros(size(f0,1),n*n);
         for i=1:n
             dum = (f1(:,i)+f_1(:,i)-2*f0)./(hess_info.h1(i)*h_1(i));
-            if dum>eps
-                hessian_mat(:,(i-1)*n+i)=dum;
-            else
-                hessian_mat(:,(i-1)*n+i)=max(eps, gg(i)^2);
-            end
+            hessian_mat(:,(i-1)*n+i)=dum;
+            if any(dum<=eps)
+                 hessian_mat(dum<=eps,(i-1)*n+i)=max(eps, gg(i)^2);
+            end                       
         end
     end
 
