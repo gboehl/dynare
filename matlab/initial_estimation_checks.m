@@ -51,6 +51,12 @@ if DynareOptions.order>1
     if BayesInfo.with_trend
         error('initial_estimation_checks:: particle filtering does not support trends')
     end
+    if DynareOptions.order>2 && DynareOptions.particle.pruning==1
+        error('initial_estimation_checks:: the particle filter with order>2 does not support pruning')
+    end
+    if DynareOptions.particle.pruning~=DynareOptions.pruning
+        fprintf('initial_estimation_checks:: the pruning settings differ between the particle filter and the one used for IRFs/simulations. Make sure this is intended.\n')
+    end
 end
 
 non_zero_ME=length(EstimatedParameters.H_entries_to_check_for_positive_definiteness);
@@ -162,6 +168,11 @@ if DynareOptions.debug
     DynareResults.likelihood_at_initial_parameters=fval;
 end
 DynareOptions.analytic_derivation=ana_deriv;
+
+if DynareOptions.mode_compute==13
+    error('Options mode_compute=13 is only compatible with quadratic objective functions')
+end
+
 
 % if DynareOptions.mode_compute==5
 %     if ~strcmp(func2str(objective_function),'dsge_likelihood')

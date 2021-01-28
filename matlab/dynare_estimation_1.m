@@ -177,16 +177,22 @@ catch % if check fails, provide info on using calibration if present
 end
 
 if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && options_.mh_posterior_mode_estimation==0
-    if options_.smoother
-        [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,options_,bayestopt_] = DsgeSmoother(xparam1,gend,transpose(data),data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
-        [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
-        if options_.forecast > 0
-            oo_.forecast = dyn_forecast(var_list_,M_,options_,oo_,'smoother',dataset_info);
+    if options_.order==1 && ~options_.particle.status
+        if options_.smoother
+            [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,options_,bayestopt_] = DsgeSmoother(xparam1,gend,transpose(data),data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
+            [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
+            if options_.forecast > 0
+                oo_.forecast = dyn_forecast(var_list_,M_,options_,oo_,'smoother',dataset_info);
+            end
+        end
+        %reset qz_criterium
+        options_.qz_criterium=qz_criterium_old;
+        return
+    else %allow to continue, e.g. with MCMC_jumping_covariance
+        if options_.smoother
+            error('Estimation:: Particle Smoothers are not yet implemented.')
         end
     end
-    %reset qz_criterium
-    options_.qz_criterium=qz_criterium_old;
-    return
 end
 
 %% Estimation of the posterior mode or likelihood mode
@@ -533,13 +539,26 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                 if error_flag
                     error('Estimation::mcmc: I cannot compute the posterior moments for the endogenous variables!')
                 end
+                if options_.load_mh_file && options_.mh_replic==0 %user wants to recompute results
+                   [MetropolisFolder, info] = CheckPath('metropolis',M_.dname);
+                   if ~info
+                       generic_post_data_file_name={'Posterior2ndOrderMoments','decomposition','PosteriorVarianceDecomposition','correlation','PosteriorCorrelations','conditional decomposition','PosteriorConditionalVarianceDecomposition'};
+                       for ii=1:length(generic_post_data_file_name)
+                           delete_stale_file([MetropolisFolder filesep M_.fname '_' generic_post_data_file_name{1,ii} '*']);
+                       end
+                   end
+                end
                 oo_ = compute_moments_varendo('posterior',options_,M_,oo_,var_list_);
             end
             if options_.smoother || ~isempty(options_.filter_step_ahead) || options_.forecast
                 if error_flag
                     error('Estimation::mcmc: I cannot compute the posterior statistics!')
                 end
-                prior_posterior_statistics('posterior',dataset_,dataset_info);
+                if options_.order==1 && ~options_.particle.status
+                    prior_posterior_statistics('posterior',dataset_,dataset_info); %get smoothed and filtered objects and forecasts
+                else
+                    error('Estimation::mcmc: Particle Smoothers are not yet implemented.')
+                end
             end
         else
             fprintf('Estimation:mcmc: sub_draws was set to 0. Skipping posterior computations.')
