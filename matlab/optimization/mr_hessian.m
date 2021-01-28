@@ -1,15 +1,15 @@
-function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,bounds,prior_std,varargin)
-% function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,bounds,prior_std,varargin)
+function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,bounds,prior_std,Save_files,varargin)
+% function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,func,penalty,hflag,htol0,hess_info,bounds,prior_std,Save_files,varargin)
 %  numerical gradient and Hessian, with 'automatic' check of numerical
 %  error
 %
 % adapted from Michel Juillard original routine hessian.m
 %
 % Inputs:
+%  - x                  parameter values
 %  - func               function handle. The function must give two outputs:
 %                       the log-likelihood AND the single contributions at times t=1,...,T
 %                       of the log-likelihood to compute outer product gradient
-%  - x                  parameter values
 %  - penalty            penalty due to error code
 %  - hflag              0: Hessian computed with outer product gradient, one point
 %                           increments for partial derivatives in gradients
@@ -26,6 +26,7 @@ function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,f
 %                           computation of Hessian
 %  - bounds                 prior bounds of parameters 
 %  - prior_std              prior standard devation of parameters (can be NaN)
+%  - Save_files             indicator whether files should be saved
 %  - varargin               other inputs
 %                           e.g. in dsge_likelihood
 %                           varargin{1} --> DynareDataset
@@ -99,11 +100,7 @@ while i<n
     h10=hess_info.h1(i);
     hcheck=0;
     xh1(i)=x(i)+hess_info.h1(i);
-    try
-        [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
-    catch
-        fx=1.e8;
-    end
+    [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
     it=1;
     dx=(fx-f0);
     ic=0;
@@ -120,21 +117,13 @@ while i<n
             hess_info.h1(i) = min(hess_info.h1(i),0.5*hmax(i));
             hess_info.h1(i) = max(hess_info.h1(i),1.e-10);
             xh1(i)=x(i)+hess_info.h1(i);
-            try
-                [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
-            catch
-                fx=1.e8;
-            end
+            [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
         end
         if abs(dx(it))>(3*hess_info.htol)
             hess_info.h1(i)= hess_info.htol/abs(dx(it))*hess_info.h1(i);
             hess_info.h1(i) = max(hess_info.h1(i),1e-10);
             xh1(i)=x(i)+hess_info.h1(i);
-            try
-                [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
-            catch
-                fx=1.e8;
-            end
+            [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
             iter=0;
             while (fx-f0)==0 && iter<50
                 hess_info.h1(i)= hess_info.h1(i)*2;
@@ -188,7 +177,7 @@ gg=(f1'-f_1')./(2.*hess_info.h1);
 
 if outer_product_gradient
     if hflag==2
-        gg=(f1'-f_1')./(2.*hess_info.h1);
+        % full numerical Hessian
         hessian_mat = zeros(size(f0,1),n*n);
         for i=1:n
             if i > 1
@@ -209,19 +198,17 @@ if outer_product_gradient
                 xh1(j)=x(j);
                 xh_1(i)=x(i);
                 xh_1(j)=x(j);
-                j=j+1;
             end
-            i=i+1;
         end
     elseif hflag==1
+        % full numerical 2nd order derivs only in diagonal
         hessian_mat = zeros(size(f0,1),n*n);
         for i=1:n
             dum = (f1(:,i)+f_1(:,i)-2*f0)./(hess_info.h1(i)*h_1(i));
-            if dum>eps
-                hessian_mat(:,(i-1)*n+i)=dum;
-            else
-                hessian_mat(:,(i-1)*n+i)=max(eps, gg(i)^2);
-            end
+            hessian_mat(:,(i-1)*n+i)=dum;
+            if any(dum<=eps)
+                 hessian_mat(dum<=eps,(i-1)*n+i)=max(eps, gg(i)^2);
+            end                       
         end
     end
 
@@ -230,26 +217,27 @@ if outer_product_gradient
     hh_mat0=ggh'*ggh;  % outer product hessian
     A=diag(2.*hess_info.h1);  % rescaling matrix
                               % igg=inv(hh_mat);  % inverted rescaled outer product hessian
-    ihh=A'*(hh_mat\A);  % inverted outer product hessian
+    ihh=A'*(hh_mat\A);  % inverted outer product hessian (based on rescaling)
     if hflag>0 && min(eig(reshape(hessian_mat,n,n)))>0
         hh0 = A*reshape(hessian_mat,n,n)*A';  %rescaled second order derivatives
-        hh = reshape(hessian_mat,n,n);  %rescaled second order derivatives
+        hh = reshape(hessian_mat,n,n);  %second order derivatives
         sd0=sqrt(diag(hh0));   %rescaled 'standard errors' using second order derivatives
         sd=sqrt(diag(hh_mat));  %rescaled 'standard errors' using outer product
         hh_mat=hh_mat./(sd*sd').*(sd0*sd0');  %rescaled inverse outer product with 'true' std's
-        igg=inv(hh_mat);   % rescaled outer product hessian with 'true' std's
-        ihh=A'*(hh_mat\A);  % inverted outer product hessian
-        hh_mat0=inv(A)'*hh_mat*inv(A);  % outer product hessian with 'true' std's
+        ihh=A'*(hh_mat\A);  % update inverted outer product hessian with 'true' std's 
         sd=sqrt(diag(ihh));   %standard errors
         sdh=sqrt(1./diag(hh));   %diagonal standard errors
         for j=1:length(sd)
+            % some heuristic normalizations of the standard errors that
+            % avoid numerical issues in outer product
             sd0(j,1)=min(prior_std(j), sd(j));  %prior std
             sd0(j,1)=10^(0.5*(log10(sd0(j,1))+log10(sdh(j,1))));
         end
+        inv_A=inv(A);
         ihh=ihh./(sd*sd').*(sd0*sd0');  %inverse outer product with modified std's
-        igg=inv(A)'*ihh*inv(A);  % inverted rescaled outer product hessian with modified std's
-        hh_mat=inv(igg);   % outer product rescaled hessian with modified std's
-        hh_mat0=inv(A)'*hh_mat*inv(A);  % outer product hessian with modified std's
+        igg=inv_A'*ihh*inv_A;  % inverted rescaled outer product hessian with modified std's
+        % hh_mat=inv(igg);   % outer product rescaled hessian with modified std's
+        hh_mat0=inv_A'/igg*inv_A;  % outer product hessian with modified std's
                                         %     sd0=sqrt(1./diag(hh0));   %rescaled 'standard errors' using second order derivatives
                                         %     sd=sqrt(diag(igg));  %rescaled 'standard errors' using outer product
                                         %     igg=igg./(sd*sd').*(sd0*sd0');  %rescaled inverse outer product with 'true' std's
@@ -267,7 +255,9 @@ if outer_product_gradient
         hessian_mat=hh_mat0(:);
     end
     hh1=hess_info.h1;
-    save hess.mat hessian_mat
+    if Save_files
+        save('hess.mat','hessian_mat')
+    end
 else
     hessian_mat=[];
     ihh=[];
