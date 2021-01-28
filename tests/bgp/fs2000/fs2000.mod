@@ -64,10 +64,14 @@ verbatim;
     bgp.write(M_);
     y = 1+(rand(M_.endo_nbr,1)-.5)*.25;
     g = ones(M_.endo_nbr,1);% 1+(rand(M_.endo_nbr,1)-.5)*.1;
-    if ~isoctave
-        options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-6,'StepTolerance',1e-6);
+    if ~isoctave || ~octave_ver_less_than('6') % MATLAB or Octave ≥ 6
+        if isoctave
+            options = optimset('Display','iter','Algorithm','levenberg-marquardt','MaxFunEvals',1000000,'MaxIter',100000,'GradObj','on','TolFun',1e-6,'TolX',1e-6);
+        else
+            options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-6,'StepTolerance',1e-6);
+        end
         [y, fval, exitflag] = fsolve(@fs2000.bgpfun, [y;g], options);
-    else
+    else % Octave < 6
         options = optimset('Display','iter','Algorithm','levenberg-marquardt','MaxFunEvals',1000000,'MaxIter',100000,'GradObj','on','TolFun',1e-6,'TolX',1e-6);
         h=str2func('fs2000.bgpfun'); %workaround for https://savannah.gnu.org/bugs/?46659 still present in Octave 5
         [y, fval, exitflag] = fsolve(h, [y;g], options);

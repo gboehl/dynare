@@ -21,8 +21,8 @@ verbatim;
     else
         options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-6,'StepTolerance',1e-6);
     end
-    if isoctave
-        % Octave can't take a function handle of a function in a package
+    if isoctave && octave_ver_less_than('6')
+        % Octave < 6 can't take a function handle of a function in a package
         % See https://savannah.gnu.org/bugs/index.php?46659
         fun = str2func('ramsey.bgpfun');
     else
