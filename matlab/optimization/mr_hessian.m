@@ -233,10 +233,11 @@ if outer_product_gradient
             sd0(j,1)=min(prior_std(j), sd(j));  %prior std
             sd0(j,1)=10^(0.5*(log10(sd0(j,1))+log10(sdh(j,1))));
         end
+        inv_A=inv(A);
         ihh=ihh./(sd*sd').*(sd0*sd0');  %inverse outer product with modified std's
-        igg=inv(A)'*ihh*inv(A);  % inverted rescaled outer product hessian with modified std's
-        hh_mat=inv(igg);   % outer product rescaled hessian with modified std's
-        hh_mat0=inv(A)'*hh_mat*inv(A);  % outer product hessian with modified std's
+        igg=inv_A'*ihh*inv_A;  % inverted rescaled outer product hessian with modified std's
+        % hh_mat=inv(igg);   % outer product rescaled hessian with modified std's
+        hh_mat0=inv_A'/igg*inv_A;  % outer product hessian with modified std's
                                         %     sd0=sqrt(1./diag(hh0));   %rescaled 'standard errors' using second order derivatives
                                         %     sd=sqrt(diag(igg));  %rescaled 'standard errors' using outer product
                                         %     igg=igg./(sd*sd').*(sd0*sd0');  %rescaled inverse outer product with 'true' std's
