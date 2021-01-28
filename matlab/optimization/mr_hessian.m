@@ -198,9 +198,7 @@ if outer_product_gradient
                 xh1(j)=x(j);
                 xh_1(i)=x(i);
                 xh_1(j)=x(j);
-                j=j+1;
             end
-            i=i+1;
         end
     elseif hflag==1
         % full numerical 2nd order derivs only in diagonal
