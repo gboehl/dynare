@@ -22,7 +22,7 @@ function plot_contributions(equationname, ds1, ds0)
 %      [name='Phillips curve']
 %      pi = beta*pi(1) + slope*y + lam;
 
-% Copyright (C) 2017-2019 Dynare Team
+% Copyright (C) 2017-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -189,7 +189,10 @@ cc = contribution(:,2:end);
 ccneg = cc(:,1:length(vnames)); ccneg(ccneg>=0) = nan;
 ccpos = cc(:,1:length(vnames)); ccpos(ccpos<0) = nan;
 H = bar(1:ds.nobs, ccneg, 'stacked');
-set(gca,'ColorOrderIndex',1);
+if ~isoctave && ~matlab_ver_less_than('9.7')
+    % For MATLAB ≥ R2019b, use the same color indexing scheme as with older releases
+    set(gca,'ColorOrderIndex',1);
+end
 B = bar(1:ds.nobs, ccpos, 'stacked');
 line_ = plot(1:ds.nobs, contribution(:,1), '-r', 'linewidth', 2);
 hold off
