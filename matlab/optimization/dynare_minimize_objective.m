@@ -552,7 +552,11 @@ switch minimizer_algorithm
         optim_options.Display='off';
     end
     if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1)
-        optim_options.SpecifyObjectiveGradient=true;
+        if isoctave || matlab_ver_less_than('9.0') % Option names changed in MATLAB R2016a
+            optim_options.Jacobian = 'on';
+        else
+            optim_options.SpecifyObjectiveGradient = true;
+        end
         func = @(x) analytic_gradient_wrapper(x,objective_function,varargin{:});
         [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = ...
             lsqnonlin(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
