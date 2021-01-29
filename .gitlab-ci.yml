@@ -40,10 +40,8 @@ build_binaries:
       - dynare++/src/*_tab.cc
       - dynare++/src/*_tab.hh
       - dynare++/src/*_ll.cc
-      - dynare++/*/*.o
-      - dynare++/*/*.a
-      - dynare++/*/*/*.o
-      - dynare++/*/*/*.a
+      - dynare++/**/*.o
+      - dynare++/**/*.a
       - dynare++/integ/src/quadrature-points
       - dynare++/src/dynare++
     expire_in: 3 days
@@ -57,8 +55,7 @@ build_doc:
   artifacts:
     paths:
       - doc/manual/build/
-      - doc/*.pdf
-      - doc/*/*.pdf
+      - doc/**/*.pdf
       - dynare++/doc/*.pdf
       - preprocessor/doc/*/*.pdf
     expire_in: 3 days
@@ -122,14 +119,9 @@ pkg_macOS:
   stage: test
   artifacts:
     paths:
-      - tests/*.m.log
-      - tests/*.m.trs
-      - tests/*/*.m.log
-      - tests/*/*.m.trs
-      - tests/*/*.jnl
-      - tests/*/*/*.m.log
-      - tests/*/*/*.m.trs
-      - tests/*/*/*.jnl
+      - tests/**/*.m.log
+      - tests/**/*.m.trs
+      - tests/**/*.jnl
       - tests/run_test_matlab_output.txt
     when: always
   needs: [ "build_binaries" ]
@@ -160,14 +152,9 @@ test_octave:
     - make -j $(nproc) -C tests check-octave
   artifacts:
     paths:
-      - tests/*.o.log
-      - tests/*.o.trs
-      - tests/*/*.o.log
-      - tests/*/*.o.trs
-      - tests/*/*.jnl
-      - tests/*/*/*.o.log
-      - tests/*/*/*.o.trs
-      - tests/*/*/*.jnl
+      - tests/**/*.o.log
+      - tests/**/*.o.trs
+      - tests/**/*.jnl
       - tests/run_test_octave_output.txt
     when: always
   needs: [ "build_binaries" ]
