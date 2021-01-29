@@ -51,7 +51,24 @@ function [dr, info, M, options, oo] = resol(check_flag, M, options, oo)
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 if isfield(oo,'dr')
-    dr = oo.dr;
+    if isfield(oo.dr,'kstate')
+        dr.kstate = oo.dr.kstate;
+    end
+    if isfield(oo.dr,'inv_order_var')
+        dr.inv_order_var = oo.dr.inv_order_var;
+    end
+    if isfield(oo.dr,'order_var')
+        dr.order_var = oo.dr.order_var;
+    end
+    if isfield(oo.dr,'restrict_var_list')
+        dr.restrict_var_list = oo.dr.restrict_var_list;
+    end
+    if isfield(oo.dr,'restrict_columns')
+        dr.restrict_columns = oo.dr.restrict_columns;
+    end
+    if isfield(oo.dr,'obs_var')
+        dr.obs_var = oo.dr.obs_var;
+    end
 end
 
 if M.exo_nbr == 0
