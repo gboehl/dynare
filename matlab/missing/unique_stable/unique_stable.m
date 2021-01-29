@@ -17,20 +17,28 @@
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-function r = unique_stable(x)
+function [r, idx] = unique_stable(x)
+
+idx = [];
 
 if iscell(x)
-    error('Cell arrays unsupported')
-end
-
-r = [];
-for i = 1:numel(x)
-    if ~ismember(x(i), r)
-        r = [ r, x(i) ];
+    r = {};
+    for i = 1:numel(x)
+        if ~ismember(x{i}, r)
+            r{end+1} = x{i};
+            idx(end+1) = i;
+        end
+    end
+else
+    r = [];
+    for i = 1:numel(x)
+        if ~ismember(x(i), r)
+            r(end+1) = x(i);
+            idx(end+1) = i;
+        end
     end
 end
+
 if size(x, 2) == 1
     r = r';
-end
-
 end
