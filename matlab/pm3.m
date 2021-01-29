@@ -264,7 +264,7 @@ else
         end
         if filter_step_ahead_indicator
             for K_step = 1:length(options_.filter_step_ahead)
-                name4=['Filtered_Variables_',num2str(K_step),'_step_ahead'];
+                name4=['Filtered_Variables_',num2str(options_.filter_step_ahead(K_step)),'_step_ahead'];
                 oo_.(name4).Mean.(name) = squeeze(Mean_filter_step_ahead(K_step,i,:));
                 oo_.(name4).Median.(name) = squeeze(Median_filter_step_ahead(K_step,i,:));
                 oo_.(name4).Var.(name) = squeeze(Var_filter_step_ahead(K_step,i,:));
