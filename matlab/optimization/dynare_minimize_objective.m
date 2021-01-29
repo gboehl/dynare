@@ -209,7 +209,7 @@ switch minimizer_algorithm
             func = @(x) analytic_gradient_wrapper(x,objective_function,varargin{:});
             [opt_par_values,fval,exitflag] = fminunc(func,start_par_value,optim_options);
         else
-            optim_options = optimset(optim_options,'display','off');
+            optim_options = optimset(optim_options,'GradObj','on');
             % Under Octave, use a wrapper, since fminunc() does not have a 4th arg
             func = @(x) analytic_gradient_wrapper(x,objective_function,varargin{:});
             [opt_par_values,fval,exitflag] = fminunc(func,start_par_value,optim_options);
