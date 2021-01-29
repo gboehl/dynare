@@ -63,7 +63,17 @@ eqlist = cell(MAX_NUMBER_OF_ELEMENTS, 4);
 tagnum = 1;
 eqnum = 0;
 for i=1:length(varargin)
-    model = importdata(sprintf('%s/model.inc', varargin{i}));
+    % Store all non-empty lines of model.inc in the “model” cell-array
+    fid = fopen(sprintf('%s/model.inc', varargin{i}));
+    model = {};
+    while ~feof(fid)
+        line = fgetl(fid);
+        if ~isempty(line)
+            model{end+1} = line;
+        end
+    end
+    fclose(fid);
+
     eqtag = false;
     for j=1:length(model)
         if isequationtag(model{j})
