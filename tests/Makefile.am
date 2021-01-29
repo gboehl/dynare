@@ -265,6 +265,10 @@ MODFILES = \
 	kalman/lik_init/fs2000_lik_init_3.mod \
 	kalman/lik_init/fs2000_lik_init_4.mod \
 	kalman/lik_init/fs2000_lik_init_5.mod \
+	kalman_initial_state/fs2000_smoother_only_initial_state.mod \
+	kalman_initial_state/fs2000_ns_smoother_only_initial_state.mod \
+	kalman_initial_state/fs2000_kalman_initial.mod \
+	kalman_initial_state/fs2000_kalman_initial_2_lag.mod \
 	kalman_filter_smoother/gen_data.mod \
 	kalman_filter_smoother/algo1.mod \
 	kalman_filter_smoother/algo2.mod \
@@ -561,6 +565,7 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	optimal_policy/Ramsey/ramsey_histval_xfail.mod \
 	particle/first_spec_xfail_0.mod \
 	particle/first_spec_xfail_1.mod \
+	kalman_initial_state/fs2000_kalman_initial_xfail.mod \
 	example1_extra_exo_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_1_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_2_xfail.mod
@@ -1139,6 +1144,7 @@ EXTRA_DIST = \
 	kalman_filter_smoother/fsdat_simul.m \
 	kalman/lik_init/fs2000_common.inc \
 	kalman/lik_init/fs2000_ns_common.inc \
+	kalman_initial_state/fs2000_common.inc \
 	kalman_filter_smoother/compare_results_simulation/fsdat_simul_logged.m \
 	kalman_filter_smoother/SOE_data_file.m \
 	kalman/likelihood_from_dynare/fs2000_model.inc \
