@@ -186,8 +186,8 @@ hold on
 cc = contribution(:,2:end);
 
 % Limit the matrices to what we care about
-ccneg = cc(:,1:length(vnames)); ccneg(ccneg>=0) = nan;
-ccpos = cc(:,1:length(vnames)); ccpos(ccpos<0) = nan;
+ccneg = cc(:,1:length(vnames)); ccneg(ccneg>=0) = 0;
+ccpos = cc(:,1:length(vnames)); ccpos(ccpos<0) = 0;
 H = bar(1:ds.nobs, ccneg, 'stacked');
 if ~isoctave && ~matlab_ver_less_than('9.7')
     % For MATLAB ≥ R2019b, use the same color indexing scheme as with older releases
@@ -201,5 +201,9 @@ lhs = strrep(lhs, '_', '\_');
 title(sprintf('Decomposition of %s', lhs))
 
 vnames = strrep(vnames,'_','\_');
-legend([H, line_], [vnames, lhs], 'location', 'northwest');
-
+if ~isoctave
+    legend([H, line_], [vnames, lhs], 'location', 'northwest');
+else
+    % Under Octave, H is a column vector
+    legend([H; line_], [vnames, lhs], 'location', 'northwest');
+end
