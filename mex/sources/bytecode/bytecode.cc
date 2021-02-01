@@ -739,17 +739,17 @@ main(int nrhs, const char *prhs[])
             }
         }
       int i = 0;
-      for (vector<s_plan>::iterator it = splan.begin(); it != splan.end(); it++)
+      for (auto & it : splan)
         {
           mexPrintf("----------------------------------------------------------------------------------------------------\n");
           mexPrintf("surprise #%d\n", i+1);
-          if (it->exo.length())
-            mexPrintf(" plan fliping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it->var.c_str(), it->var_num, it->exo.c_str(), it->exo_num);
+          if (it.exo.length())
+            mexPrintf(" plan fliping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num, it.exo.c_str(), it.exo_num);
           else
-            mexPrintf(" plan shocks on var=%s for the following periods and with the following values:\n", it->var.c_str());
-          for (vector<pair<int, double>>::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
+            mexPrintf(" plan shocks on var=%s for the following periods and with the following values:\n", it.var.c_str());
+          for (auto & it1 : it.per_value)
             {
-              mexPrintf("  %3d %10.5f\n", it1->first, it1->second);
+              mexPrintf("  %3d %10.5f\n", it1.first, it1.second);
             }
           i++;
         }
@@ -817,17 +817,17 @@ main(int nrhs, const char *prhs[])
             }
         }
       int i = 0;
-      for (vector<s_plan>::iterator it = spfplan.begin(); it != spfplan.end(); it++)
+      for (auto & it : spfplan)
         {
           mexPrintf("----------------------------------------------------------------------------------------------------\n");
           mexPrintf("perfect foresight #%d\n", i+1);
-          if (it->exo.length())
-            mexPrintf(" plan flipping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it->var.c_str(), it->var_num, it->exo.c_str(), it->exo_num);
+          if (it.exo.length())
+            mexPrintf(" plan flipping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num, it.exo.c_str(), it.exo_num);
           else
-            mexPrintf(" plan shocks on var=%s (%d) for the following periods and with the following values:\n", it->var.c_str(), it->var_num);
-          for (vector<pair<int, double>>::iterator it1 = it->per_value.begin(); it1 != it->per_value.end(); it1++)
+            mexPrintf(" plan shocks on var=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num);
+          for (auto & it1 : it.per_value)
             {
-              mexPrintf("  %3d %10.5f\n", it1->first, it1->second);
+              mexPrintf("  %3d %10.5f\n", it1.first, it1.second);
             }
           i++;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2011 Dynare Team
+ * Copyright © 2007-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -517,6 +517,6 @@ Free_Array(mxArray *array)
 void
 Free_global()
 {
-  for (map<string, mxArray *>::iterator it = mxglobal.begin(); it != mxglobal.end(); it++)
-    Free_Array(it->second);
+  for (auto & it : mxglobal)
+    Free_Array(it.second);
 }

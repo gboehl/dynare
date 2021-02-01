@@ -374,13 +374,13 @@ public:
     dollar = "$";
     pound = "£";
     tilde = "~";
-    for (unsigned int i = 0; i < str.length(); i++)
+    for (const char & i : str)
       {
-        if (dollar.compare(&str[i]) != 0 && pound.compare(&str[i]) != 0)
-          temp += str[i];
+        if (dollar.compare(&i) != 0 && pound.compare(&i) != 0)
+          temp += i;
         else
           {
-            if (dollar.compare(&str[i]) == 0)
+            if (dollar.compare(&i) == 0)
               pos1 = int (temp.length());
             else
               pos2 = int (temp.length());

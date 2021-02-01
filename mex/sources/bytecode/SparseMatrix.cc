@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2020 Dynare Team
+ * Copyright © 2007-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -2040,8 +2040,8 @@ dynSparseMatrix::Clear_u()
 void
 dynSparseMatrix::Print_u()
 {
-  for (unsigned int i = 0; i < u_liste.size(); i++)
-    mexPrintf("%d ", u_liste[i]);
+  for (int i : u_liste)
+    mexPrintf("%d ", i);
 }
 
 void

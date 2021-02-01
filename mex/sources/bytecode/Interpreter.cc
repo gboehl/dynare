@@ -461,12 +461,12 @@ Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_c
               memcpy(y_save, y, y_size*sizeof(double)*(periods+y_kmax+y_kmin));
               if (vector_table_conditional_local.size())
                 {
-                  for (vector_table_conditional_local_type::iterator it1 = vector_table_conditional_local.begin(); it1 != vector_table_conditional_local.end(); it1++)
+                  for (auto & it1 : vector_table_conditional_local)
                     {
-                      if (it1->is_cond)
+                      if (it1.is_cond)
                         {
                           //mexPrintf("y[%d] = %f\n", it1->var_endo + y_kmin * size, y[it1->var_endo + y_kmin * size]);
-                          y[it1->var_endo + y_kmin * size] = it1->constrained_value;
+                          y[it1.var_endo + y_kmin * size] = it1.constrained_value;
                         }
 
                     }
@@ -606,24 +606,24 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, vector<s_plan> 
 {
   vector<int> exogenous = fb->get_exogenous();
   vector<int> endogenous = fb->get_endogenous();
-  for (vector<s_plan>::iterator it = sconstrained_extended_path.begin(); it != sconstrained_extended_path.end(); it++)
+  for (auto & it : sconstrained_extended_path)
     {
-      if ((find(endogenous.begin(), endogenous.end(), it->exo_num) != endogenous.end()) && (find(exogenous.begin(), exogenous.end(), it->var_num) == exogenous.end()))
+      if ((find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()) && (find(exogenous.begin(), exogenous.end(), it.var_num) == exogenous.end()))
         {
           ostringstream tmp;
-          tmp << "\n the conditional forecast involving as constrained variable " << get_variable(SymbolType::endogenous, it->exo_num) << " and as endogenized exogenous " << get_variable(SymbolType::exogenous, it->var_num) << " that do not appear in block=" << Block_Count+1 << ")\n You should not use block in model options\n";
+          tmp << "\n the conditional forecast involving as constrained variable " << get_variable(SymbolType::endogenous, it.exo_num) << " and as endogenized exogenous " << get_variable(SymbolType::exogenous, it.var_num) << " that do not appear in block=" << Block_Count+1 << ")\n You should not use block in model options\n";
           throw FatalExceptionHandling(tmp.str());
         }
-      else if ((find(endogenous.begin(), endogenous.end(), it->exo_num) != endogenous.end()) && (find(exogenous.begin(), exogenous.end(), it->var_num) != exogenous.end()) && ((fb->get_type() == static_cast<uint8_t>(BlockSimulationType::evaluateForward)) || (fb->get_type() != static_cast<uint8_t>(BlockSimulationType::evaluateBackward))))
+      else if ((find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()) && (find(exogenous.begin(), exogenous.end(), it.var_num) != exogenous.end()) && ((fb->get_type() == static_cast<uint8_t>(BlockSimulationType::evaluateForward)) || (fb->get_type() != static_cast<uint8_t>(BlockSimulationType::evaluateBackward))))
         {
           ostringstream tmp;
           tmp << "\n the conditional forecast cannot be implemented for the block=" << Block_Count+1 << ") that has to be evaluated instead to be solved\n You should not use block in model options\n";
           throw FatalExceptionHandling(tmp.str());
         }
-      else if (find(previous_block_exogenous.begin(), previous_block_exogenous.end(), it->var_num) != previous_block_exogenous.end())
+      else if (find(previous_block_exogenous.begin(), previous_block_exogenous.end(), it.var_num) != previous_block_exogenous.end())
         {
           ostringstream tmp;
-          tmp << "\n the conditional forecast involves in the block " << Block_Count+1 << " the endogenized exogenous " << get_variable(SymbolType::exogenous, it->var_num) << " that appear also in a previous block\n You should not use block in model options\n";
+          tmp << "\n the conditional forecast involves in the block " << Block_Count+1 << " the endogenized exogenous " << get_variable(SymbolType::exogenous, it.var_num) << " that appear also in a previous block\n You should not use block in model options\n";
           throw FatalExceptionHandling(tmp.str());
         }
     }
@@ -908,9 +908,9 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
           mexPrintf("|%s|", elastic(dates[t], date_length+2, false).c_str());
           mexEvalString("drawnow;");
         }
-      for (vector<s_plan>::const_iterator it = sextended_path.begin(); it != sextended_path.end(); it++)
+      for (const auto & it : sextended_path)
         {
-          x[y_kmin + (it->exo_num - 1) * /*(nb_periods + y_kmax + y_kmin)*/ nb_row_x] = it->value[t];
+          x[y_kmin + (it.exo_num - 1) * /*(nb_periods + y_kmax + y_kmin)*/ nb_row_x] = it.value[t];
         }
 
       it_code = Init_Code;
