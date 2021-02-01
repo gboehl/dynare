@@ -57,164 +57,6 @@ Get_Argument(const mxArray *prhs)
 //#include <windows.h>
 #include <cstdio>
 
-#ifdef CUDA
-int
-GPU_Test_and_Info(cublasHandle_t *cublas_handle, cusparseHandle_t *cusparse_handle, cusparseMatDescr_t *descr)
-{
-  cudaDeviceProp deviceProp;
-  int device_count, device, version, version_max = 0;
-  cublasStatus_t cublas_status;
-  cudaError_t cuda_error;
-  *descr = 0;
-
-  /* ask cuda how many devices it can find */
-  cudaGetDeviceCount(&device_count);
-  if (device_count < 1)
-    {
-      /* if it couldn't find any fail out */
-      ostringstream tmp;
-      tmp << " Unable to find a CUDA device. Unable to implement CUDA solvers\n";
-      throw FatalExceptionHandling(tmp.str());
-    }
-  else
-    {
-      mexPrintf("-----------------------------------------\n");
-      for (int i = 0; i < device_count; i++)
-        {
-          cudaSetDevice(i);
-          // Statistics about the GPU device
-          cuda_error = cudaGetDeviceProperties(&deviceProp, i);
-          if (cuda_error != cudaSuccess)
-            {
-              ostringstream tmp;
-              tmp << "  bytecode cudaGetDeviceProperties failed\n";
-              throw FatalExceptionHandling(tmp.str());
-            }
-          mexPrintf("> GPU device %d: \"%s\" has:\n   - %d Multi-Processors,\n   - %d threads per multiprocessor,\n", i, deviceProp.name, deviceProp.multiProcessorCount, deviceProp.maxThreadsPerMultiProcessor);
-          mexEvalString("drawnow;");
-          version = (deviceProp.major * 0x10 + deviceProp.minor);
-          if (version >= version_max)
-            {
-              device = i;
-              version_max = version;
-            }
-          mexPrintf("   - %4.2fMhz clock rate,\n   - %2.0fMb of memory,\n   - %d.%d compute capabilities.\n", double (deviceProp.clockRate) / (1024 * 1024), double (deviceProp.totalGlobalMem) / (1024 * 1024), deviceProp.major, deviceProp.minor);
-          mexEvalString("drawnow;");
-        }
-    }
-  mexPrintf("> Device %d selected\n", device);
-  mexEvalString("drawnow;");
-
-  cuda_error = cudaSetDevice(device);
-  if (cuda_error != cudaSuccess)
-    {
-      ostringstream tmp;
-      tmp << "  bytecode cudaSetDevice failed\n";
-      throw FatalExceptionHandling(tmp.str());
-    }
-
-  if (version_max < 0x11)
-    {
-      ostringstream tmp;
-      tmp << "  bytecode requires a minimum CUDA compute 1.1 capability\n";
-      cudaDeviceReset();
-      throw FatalExceptionHandling(tmp.str());
-    }
-
-  // Initialize CuBlas library
-  cublas_status = cublasCreate(cublas_handle);
-  if (cublas_status != CUBLAS_STATUS_SUCCESS)
-    {
-      ostringstream tmp;
-      switch (cublas_status)
-        {
-        case CUBLAS_STATUS_NOT_INITIALIZED:
-          tmp << " the CUBLAS initialization failed.\n";
-          break;
-        case CUBLAS_STATUS_ALLOC_FAILED:
-          tmp << " the resources could not be allocated.\n";
-          break;
-        default:
-          tmp << " unknown error during the initialization of cusparse library.\n";
-        }
-      throw FatalExceptionHandling(tmp.str());
-    }
-
-  // Initialize the CuSparse library
-  cusparseStatus_t cusparse_status;
-  cusparse_status = cusparseCreate(cusparse_handle);
-  if (cusparse_status != CUSPARSE_STATUS_SUCCESS)
-    {
-      ostringstream tmp;
-      switch (cusparse_status)
-        {
-        case CUSPARSE_STATUS_NOT_INITIALIZED:
-          tmp << " the CUDA Runtime initialization failed.\n";
-          break;
-        case CUSPARSE_STATUS_ALLOC_FAILED:
-          tmp <<  " the resources could not be allocated.\n";
-          break;
-        case CUSPARSE_STATUS_ARCH_MISMATCH:
-          tmp <<  " the device compute capability (CC) is less than 1.1. The CC of at least 1.1 is required.\n";
-          break;
-        default:
-          tmp << " unknown error during the initialization of cusparse library.\n";
-        }
-      throw FatalExceptionHandling(tmp.str());
-    }
-
-  // Create and setup matrix descriptor
-  cusparse_status = cusparseCreateMatDescr(descr);
-  if (cusparse_status != CUSPARSE_STATUS_SUCCESS)
-    {
-      ostringstream tmp;
-      tmp << " Matrix descriptor initialization failed\n";
-      throw FatalExceptionHandling(tmp.str());
-    }
-  cusparseSetMatType(*descr, CUSPARSE_MATRIX_TYPE_GENERAL);
-  cusparseSetMatIndexBase(*descr, CUSPARSE_INDEX_BASE_ZERO);
-
-  mexPrintf("> Driver version:\n");
-  int cuda_version;
-  cuda_error = cudaDriverGetVersion(&cuda_version);
-  if (cuda_error != cudaSuccess)
-    {
-      ostringstream tmp;
-      tmp << " cudaGetVersion has failed\n";
-      throw FatalExceptionHandling(tmp.str());
-    }
-  mexPrintf("   - CUDA version %5.3f\n", double (cuda_version) / 1000);
-  int cublas_version;
-  cublas_status = cublasGetVersion(*cublas_handle, &cublas_version);
-  if (cublas_status != CUBLAS_STATUS_SUCCESS)
-    {
-      ostringstream tmp;
-      tmp << " cublasGetVersion has failed\n";
-      throw FatalExceptionHandling(tmp.str());
-    }
-  mexPrintf("   - CUBLAS version %5.3f\n", double (cublas_version) / 1000);
-  int cusparse_version;
-  cusparse_status = cusparseGetVersion(*cusparse_handle, &cusparse_version);
-  if (cusparse_status != CUSPARSE_STATUS_SUCCESS)
-    {
-      ostringstream tmp;
-      tmp << " cusparseGetVersion has failed\n";
-      throw FatalExceptionHandling(tmp.str());
-    }
-  mexPrintf("   - CUSPARSE version %5.3f\n", double (cusparse_version) / 1000);
-  mexPrintf("-----------------------------------------\n");
-  return device;
-}
-
-void
-GPU_close(cublasHandle_t cublas_handle, cusparseHandle_t cusparse_handle, cusparseMatDescr_t descr)
-{
-  cublasChk(cublasDestroy(cublas_handle), "in bytecode cublasDestroy failed\n");
-  cusparseChk(cusparseDestroyMatDescr(descr), "in bytecode cusparseDestroyMatDescr failed\n");
-  cusparseChk(cusparseDestroy(cusparse_handle), "in bytecode cusparseDestroy failed\n");
-}
-
-#endif
 string
 deblank(string x)
 {
@@ -437,12 +279,6 @@ main(int nrhs, const char *prhs[])
 
   int max_periods = 0;
 
-#ifdef CUDA
-  int CUDA_device = -1;
-  cublasHandle_t cublas_handle;
-  cusparseHandle_t cusparse_handle;
-  cusparseMatDescr_t descr;
-#endif
   try
     {
       Get_Arguments_and_global_variables(nrhs, prhs, count_array_argument,
@@ -1005,20 +841,9 @@ main(int nrhs, const char *prhs[])
     mexWarnMsgTxt("Not enough space. Filename is truncated.");
   string file_name = fname;
 
-#ifdef CUDA
-  try
-    {
-      if (stack_solve_algo == 7 && !steady_state)
-        CUDA_device = GPU_Test_and_Info(&cublas_handle, &cusparse_handle, &descr);
-    }
-  catch (GeneralExceptionHandling &feh)
-    {
-      mexErrMsgTxt(feh.GetErrorMsg().c_str());
-    }
-#else
   if (stack_solve_algo == 7 && !steady_state)
-    mexErrMsgTxt("bytecode has not been compiled with CUDA option. Bytecode Can't use options_.stack_solve_algo=7\n");
-#endif
+    mexErrMsgTxt("Bytecode: Can't use option stack_solve_algo=7\n");
+
   size_t size_of_direction = col_y*row_y*sizeof(double);
   auto *y = static_cast<double *>(mxMalloc(size_of_direction));
   error_msg.test_mxMalloc(y, __LINE__, __FILE__, __func__, size_of_direction);
@@ -1045,11 +870,7 @@ main(int nrhs, const char *prhs[])
   clock_t t0 = clock();
   Interpreter interprete(params, y, ya, x, steady_yd, steady_xd, direction, y_size, nb_row_x, nb_row_xd, periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, slowc, y_decal,
                          markowitz_c, file_name, minimal_solving_periods, stack_solve_algo, solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms, steady_state,
-                         print_it, col_x, col_y
-#ifdef CUDA
-                         , CUDA_device, cublas_handle, cusparse_handle, descr
-#endif
-                         );
+                         print_it, col_x, col_y);
   string f(fname);
   mxFree(fname);
   int nb_blocks = 0;
@@ -1077,11 +898,6 @@ main(int nrhs, const char *prhs[])
           mexErrMsgTxt(feh.GetErrorMsg().c_str());
         }
     }
-
-#ifdef CUDA
-  if (stack_solve_algo == 7 && !steady_state)
-    GPU_close(cublas_handle, cusparse_handle, descr);
-#endif
 
   clock_t t1 = clock();
   if (!steady_state && !evaluate && print)

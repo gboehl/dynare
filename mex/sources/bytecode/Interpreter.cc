@@ -33,16 +33,8 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
                          int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, double slowc_arg, int y_decal_arg, double markowitz_c_arg,
                          string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
                          bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
-                         bool steady_state_arg, bool print_it_arg, int col_x_arg, int col_y_arg
-#ifdef CUDA
-                         , const int CUDA_device_arg, cublasHandle_t cublas_handle_arg, cusparseHandle_t cusparse_handle_arg, cusparseMatDescr_t descr_arg
-#endif
-                         )
-: dynSparseMatrix(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, slowc_arg
-#ifdef CUDA
-                  , CUDA_device_arg, cublas_handle_arg, cusparse_handle_arg, descr_arg
-#endif
-                  )
+                         bool steady_state_arg, bool print_it_arg, int col_x_arg, int col_y_arg)
+: dynSparseMatrix(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, slowc_arg)
 {
   params = params_arg;
   y = y_arg;
