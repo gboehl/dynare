@@ -604,7 +604,7 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, vector<s_plan> 
           tmp << "\n the conditional forecast involving as constrained variable " << get_variable(SymbolType::endogenous, it.exo_num) << " and as endogenized exogenous " << get_variable(SymbolType::exogenous, it.var_num) << " that do not appear in block=" << Block_Count+1 << ")\n You should not use block in model options\n";
           throw FatalExceptionHandling(tmp.str());
         }
-      else if ((find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()) && (find(exogenous.begin(), exogenous.end(), it.var_num) != exogenous.end()) && ((fb->get_type() == static_cast<uint8_t>(BlockSimulationType::evaluateForward)) || (fb->get_type() != static_cast<uint8_t>(BlockSimulationType::evaluateBackward))))
+      else if ((find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()) && (find(exogenous.begin(), exogenous.end(), it.var_num) != exogenous.end()) && ((fb->get_type() == static_cast<uint8_t>(BlockSimulationType::evaluateForward)) || (fb->get_type() == static_cast<uint8_t>(BlockSimulationType::evaluateBackward))))
         {
           ostringstream tmp;
           tmp << "\n the conditional forecast cannot be implemented for the block=" << Block_Count+1 << ") that has to be evaluated instead to be solved\n You should not use block in model options\n";
