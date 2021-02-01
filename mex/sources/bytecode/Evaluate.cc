@@ -19,7 +19,7 @@
 
 #include <cstring>
 #include <sstream>
-#include <math.h>
+#include <cmath>
 #include "Evaluate.hh"
 
 #ifdef MATLAB_MEX_FILE

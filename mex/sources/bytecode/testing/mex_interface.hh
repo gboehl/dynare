@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2020 Dynare Team
+ * Copyright © 2007-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -23,7 +23,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
-#include <stdarg.h>
+#include <cstdarg>
 #include <map>
 #include <vector>
 #include <algorithm>

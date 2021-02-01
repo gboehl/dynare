@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2020 Dynare Team
+ * Copyright © 2007-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -20,7 +20,7 @@
 #include "Interpreter.hh"
 #include "ErrorHandling.hh"
 #include <ctime>
-#include <math.h>
+#include <cmath>
 
 #ifdef DEBUG_EX
 
@@ -55,7 +55,7 @@ Get_Argument(const mxArray *prhs)
 #endif
 
 //#include <windows.h>
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef CUDA
 int
