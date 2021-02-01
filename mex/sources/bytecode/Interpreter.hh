@@ -28,9 +28,6 @@
 #include "CodeInterpreter.hh"
 #include "SparseMatrix.hh"
 #include "Evaluate.hh"
-#ifdef LINBCG
-# include "linbcg.hh"
-#endif
 #include <dynmex.h>
 
 //#define DEBUGC

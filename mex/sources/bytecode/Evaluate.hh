@@ -26,9 +26,6 @@
 #include <cmath>
 #define BYTE_CODE
 #include "CodeInterpreter.hh"
-#ifdef LINBCG
-# include "linbcg.hh"
-#endif
 #include <dynmex.h>
 #include "ErrorHandling.hh"
 
