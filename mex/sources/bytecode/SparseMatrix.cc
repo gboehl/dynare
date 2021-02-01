@@ -88,8 +88,8 @@ t_umfpack_dl_defaults umfpack_dl_defaults;
 
 dynSparseMatrix::dynSparseMatrix()
 {
-  pivotva = NULL;
-  g_save_op = NULL;
+  pivotva = nullptr;
+  g_save_op = nullptr;
   g_nop_all = 0;
   mem_mngr.init_Mem();
   symbolic = true;
@@ -103,8 +103,8 @@ dynSparseMatrix::dynSparseMatrix()
   restart = 0;
   IM_i.clear();
   lu_inc_tol = 1e-10;
-  Symbolic = NULL;
-  Numeric = NULL;
+  Symbolic = nullptr;
+  Numeric = nullptr;
 #ifdef _MSC_VER
   // Get a handle to the DLL module.
   hinstLib = LoadLibrary(TEXT("libmwumfpack.dll"));
@@ -187,8 +187,8 @@ dynSparseMatrix::dynSparseMatrix(const int y_size_arg, const int y_kmin_arg, con
                                  ) :
   Evaluate(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, slowc_arg)
 {
-  pivotva = NULL;
-  g_save_op = NULL;
+  pivotva = nullptr;
+  g_save_op = nullptr;
   g_nop_all = 0;
   mem_mngr.init_Mem();
   symbolic = true;
@@ -202,8 +202,8 @@ dynSparseMatrix::dynSparseMatrix(const int y_size_arg, const int y_kmin_arg, con
   restart = 0;
   IM_i.clear();
   lu_inc_tol = 1e-10;
-  Symbolic = NULL;
-  Numeric = NULL;
+  Symbolic = nullptr;
+  Numeric = nullptr;
 #ifdef CUDA
   CUDA_device = CUDA_device_arg;
   cublas_handle = cublas_handle_arg;
@@ -380,28 +380,28 @@ dynSparseMatrix::At_Col(int c, int lag, NonZeroElem **first)
 void
 dynSparseMatrix::Delete(const int r, const int c)
 {
-  NonZeroElem *first = FNZE_R[r], *firsta = NULL;
+  NonZeroElem *first = FNZE_R[r], *firsta = nullptr;
 
   while (first->c_index != c)
     {
       firsta = first;
       first = first->NZE_R_N;
     }
-  if (firsta != NULL)
+  if (firsta != nullptr)
     firsta->NZE_R_N = first->NZE_R_N;
   if (first == FNZE_R[r])
     FNZE_R[r] = first->NZE_R_N;
   NbNZRow[r]--;
 
   first = FNZE_C[c];
-  firsta = NULL;
+  firsta = nullptr;
   while (first->r_index != r)
     {
       firsta = first;
       first = first->NZE_C_N;
     }
 
-  if (firsta != NULL)
+  if (firsta != nullptr)
     firsta->NZE_C_N = first->NZE_C_N;
   if (first == FNZE_C[c])
     FNZE_C[c] = first->NZE_C_N;
@@ -465,7 +465,7 @@ dynSparseMatrix::Insert(const int r, const int c, const int u_index, const int l
   NonZeroElem *firstn, *first, *firsta, *a;
   firstn = mem_mngr.mxMalloc_NZE();
   first = FNZE_R[r];
-  firsta = NULL;
+  firsta = nullptr;
   while (first->c_index < c && (a = first->NZE_R_N))
     {
       firsta = first;
@@ -479,18 +479,18 @@ dynSparseMatrix::Insert(const int r, const int c, const int u_index, const int l
     {
       if (first == FNZE_R[r])
         FNZE_R[r] = firstn;
-      if (firsta != NULL)
+      if (firsta != nullptr)
         firsta->NZE_R_N = firstn;
       firstn->NZE_R_N = first;
     }
   else
     {
       first->NZE_R_N = firstn;
-      firstn->NZE_R_N = NULL;
+      firstn->NZE_R_N = nullptr;
     }
   NbNZRow[r]++;
   first = FNZE_C[c];
-  firsta = NULL;
+  firsta = nullptr;
   while (first->r_index < r && (a = first->NZE_C_N))
     {
       firsta = first;
@@ -500,14 +500,14 @@ dynSparseMatrix::Insert(const int r, const int c, const int u_index, const int l
     {
       if (first == FNZE_C[c])
         FNZE_C[c] = firstn;
-      if (firsta != NULL)
+      if (firsta != nullptr)
         firsta->NZE_C_N = firstn;
       firstn->NZE_C_N = first;
     }
   else
     {
       first->NZE_C_N = firstn;
-      firstn->NZE_C_N = NULL;
+      firstn->NZE_C_N = nullptr;
     }
 
   NbNZCol[c]++;
@@ -654,7 +654,7 @@ dynSparseMatrix::Simple_Init(int Size, map<pair<pair<int, int>, int>, int> &IM, 
   test_mxMalloc(line_done, __LINE__, __FILE__, __func__, Size*sizeof(bool));
 
   mem_mngr.init_CHUNK_BLCK_SIZE(u_count);
-  g_save_op = NULL;
+  g_save_op = nullptr;
   g_nop_all = 0;
   i = Size*sizeof(NonZeroElem *);
   FNZE_R = static_cast<NonZeroElem **>(mxMalloc(i));
@@ -675,10 +675,10 @@ dynSparseMatrix::Simple_Init(int Size, map<pair<pair<int, int>, int>, int> &IM, 
   for (i = 0; i < Size; i++)
     {
       line_done[i] = false;
-      FNZE_C[i] = NULL;
-      FNZE_R[i] = NULL;
-      temp_NZE_C[i] = 0;
-      temp_NZE_R[i] = 0;
+      FNZE_C[i] = nullptr;
+      FNZE_R[i] = nullptr;
+      temp_NZE_C[i] = nullptr;
+      temp_NZE_R[i] = nullptr;
       NbNZRow[i] = 0;
       NbNZCol[i] = 0;
     }
@@ -693,19 +693,19 @@ dynSparseMatrix::Simple_Init(int Size, map<pair<pair<int, int>, int>, int> &IM, 
           NbNZRow[eq]++;
           NbNZCol[var]++;
           first = mem_mngr.mxMalloc_NZE();
-          first->NZE_C_N = NULL;
-          first->NZE_R_N = NULL;
+          first->NZE_C_N = nullptr;
+          first->NZE_R_N = nullptr;
           first->u_index = u_count1;
           first->r_index = eq;
           first->c_index = var;
           first->lag_index = lag;
-          if (FNZE_R[eq] == NULL)
+          if (FNZE_R[eq] == nullptr)
             FNZE_R[eq] = first;
-          if (FNZE_C[var] == NULL)
+          if (FNZE_C[var] == nullptr)
             FNZE_C[var] = first;
-          if (temp_NZE_R[eq] != NULL)
+          if (temp_NZE_R[eq] != nullptr)
             temp_NZE_R[eq]->NZE_R_N = first;
-          if (temp_NZE_C[var] != NULL)
+          if (temp_NZE_C[var] != nullptr)
             temp_NZE_C[var]->NZE_C_N = first;
           temp_NZE_R[eq] = first;
           temp_NZE_C[var] = first;
@@ -1065,7 +1065,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
     }
   else
     {
-      jacob_exo = NULL;
+      jacob_exo = nullptr;
     }
 #ifdef DEBUG
   int local_index;
@@ -1891,7 +1891,7 @@ dynSparseMatrix::Init_GE(int periods, int y_kmin, int y_kmax, int Size, map<pair
   line_done = static_cast<bool *>(mxMalloc(Size*periods*sizeof(bool)));
   test_mxMalloc(line_done, __LINE__, __FILE__, __func__, Size*periods*sizeof(bool));
   mem_mngr.init_CHUNK_BLCK_SIZE(u_count);
-  g_save_op = NULL;
+  g_save_op = nullptr;
   g_nop_all = 0;
   i = (periods+y_kmax+1)*Size*sizeof(NonZeroElem *);
   FNZE_R = static_cast<NonZeroElem **>(mxMalloc(i));
@@ -1915,10 +1915,10 @@ dynSparseMatrix::Init_GE(int periods, int y_kmin, int y_kmax, int Size, map<pair
     }
   for (int i = 0; i < (periods+y_kmax+1)*Size; i++)
     {
-      FNZE_C[i] = NULL;
-      FNZE_R[i] = NULL;
-      temp_NZE_C[i] = NULL;
-      temp_NZE_R[i] = NULL;
+      FNZE_C[i] = nullptr;
+      FNZE_R[i] = nullptr;
+      temp_NZE_C[i] = nullptr;
+      temp_NZE_R[i] = nullptr;
       NbNZRow[i] = 0;
       NbNZCol[i] = 0;
     }
@@ -1948,19 +1948,19 @@ dynSparseMatrix::Init_GE(int periods, int y_kmin, int y_kmax, int Size, map<pair
                   NbNZRow[eq]++;
                   NbNZCol[var]++;
                   first = mem_mngr.mxMalloc_NZE();
-                  first->NZE_C_N = NULL;
-                  first->NZE_R_N = NULL;
+                  first->NZE_C_N = nullptr;
+                  first->NZE_R_N = nullptr;
                   first->u_index = it4->second+u_count_init*t;
                   first->r_index = eq;
                   first->c_index = var;
                   first->lag_index = lag;
-                  if (FNZE_R[eq] == NULL)
+                  if (FNZE_R[eq] == nullptr)
                     FNZE_R[eq] = first;
-                  if (FNZE_C[var] == NULL)
+                  if (FNZE_C[var] == nullptr)
                     FNZE_C[var] = first;
-                  if (temp_NZE_R[eq] != NULL)
+                  if (temp_NZE_R[eq] != nullptr)
                     temp_NZE_R[eq]->NZE_R_N = first;
-                  if (temp_NZE_C[var] != NULL)
+                  if (temp_NZE_C[var] != nullptr)
                     temp_NZE_C[var]->NZE_C_N = first;
                   temp_NZE_R[eq] = first;
                   temp_NZE_C[var] = first;
@@ -3132,11 +3132,11 @@ dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned in
     B2_j[++B2_var] = B2_nze;
   while (A3_var < Size)
     A3_j[++A3_var] = A3_nze;
-  mxArray *d1 = NULL;
+  mxArray *d1 = nullptr;
   vector<pair<mxArray *, mxArray *>> triangular_form;
   double sumc = 0, C_sumc = 1000;
-  mxArray *B1_inv = NULL;
-  mxArray *B1_inv_t = NULL;
+  mxArray *B1_inv = nullptr;
+  mxArray *B1_inv_t = nullptr;
   for (int t = 1; t <= periods; t++)
     {
       if (abs(sumc / C_sumc -1) > 1e-10*res1)
@@ -3562,15 +3562,15 @@ dynSparseMatrix::Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double s
 
   status = umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info);
   if (status != UMFPACK_OK)
-    umfpack_dl_report_info((double *) NULL, Info);
+    umfpack_dl_report_info(nullptr, Info);
 
   status = umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info);
   if (status != UMFPACK_OK)
-    umfpack_dl_report_info((double *) NULL, Info);
+    umfpack_dl_report_info(nullptr, Info);
 
   status = umfpack_dl_solve(sys, Ap, Ai, Ax, res, B, Numeric, Control, Info);
   if (status != UMFPACK_OK)
-    umfpack_dl_report_info((double *) NULL, Info);
+    umfpack_dl_report_info(nullptr, Info);
   //double *res = mxGetPr(z);
   if (is_two_boundaries)
     for (int i = 0; i < n; i++)
@@ -4921,9 +4921,9 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
      precond = 1  => Incomplet LU decomposition*/
   size_t n = mxGetM(A_m);
   mxArray *L1, *U1, *Diag;
-  L1 = NULL;
-  U1 = NULL;
-  Diag = NULL;
+  L1 = nullptr;
+  U1 = nullptr;
+  Diag = nullptr;
 
   mxArray *rhs0[4];
   if (preconditioner == 0)
@@ -4978,7 +4978,7 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
     }
   double flags = 2;
   mxArray *z;
-  z = NULL;
+  z = nullptr;
   if (steady_state) /*Octave BicStab algorihtm involves a 0 division in case of a preconditionner equal to the LU decomposition of A matrix*/
     {
       mxArray *res = mult_SAT_B(Sparse_transpose(A_m), x0_m);
@@ -5469,7 +5469,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
 {
   /*Triangularisation at each period of a block using a simple gaussian Elimination*/
   t_save_op_s *save_op_s;
-  int *save_op = NULL, *save_opa = NULL, *save_opaa = NULL;
+  int *save_op = nullptr, *save_opa = nullptr, *save_opaa = nullptr;
   long int nop = 0, nopa = 0;
   bool record = false;
   double *piv_v;
@@ -5983,17 +5983,17 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                   if (save_opaa)
                     {
                       mxFree(save_opaa);
-                      save_opaa = NULL;
+                      save_opaa = nullptr;
                     }
                   if (save_opa)
                     {
                       mxFree(save_opa);
-                      save_opa = NULL;
+                      save_opa = nullptr;
                     }
                   if (save_op)
                     {
                       mxFree(save_op);
-                      save_op = NULL;
+                      save_op = nullptr;
                     }
                 }
               else if (save_opa && save_opaa)
@@ -6011,7 +6011,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                   if (save_opaa)
                     {
                       mxFree(save_opaa);
-                      save_opaa = NULL;
+                      save_opaa = nullptr;
                     }
                   save_opaa = save_opa;
                 }
@@ -6027,12 +6027,12 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                   if (save_opa)
                     {
                       mxFree(save_opa);
-                      save_opa = NULL;
+                      save_opa = nullptr;
                     }
                   if (save_opaa)
                     {
                       mxFree(save_opaa);
-                      save_opaa = NULL;
+                      save_opaa = nullptr;
                     }
                 }
             }
@@ -6271,9 +6271,9 @@ bool
 dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, int y_kmax, int size, bool cvg)
 {
   //int i;
-  mxArray *b_m = NULL, *A_m = NULL, *x0_m = NULL;
-  SuiteSparse_long *Ap = NULL, *Ai = NULL;
-  double *Ax = NULL, *b = NULL;
+  mxArray *b_m = nullptr, *A_m = nullptr, *x0_m = nullptr;
+  SuiteSparse_long *Ap = nullptr, *Ai = nullptr;
+  double *Ax = nullptr, *b = nullptr;
   int preconditioner = 1;
 
   try_at_iteration = 0;
@@ -6594,9 +6594,9 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
   u_count_alloc_save = u_count_alloc;
   clock_t t1 = clock();
   nop1 = 0;
-  mxArray *b_m = NULL, *A_m = NULL, *x0_m = NULL;
-  double *Ax = NULL, *b;
-  SuiteSparse_long *Ap = NULL, *Ai = NULL;
+  mxArray *b_m = nullptr, *A_m = nullptr, *x0_m = nullptr;
+  double *Ax = nullptr, *b;
+  SuiteSparse_long *Ap = nullptr, *Ai = nullptr;
 
   if (iter > 0)
     {

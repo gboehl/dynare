@@ -117,7 +117,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
   bool go_on = true;
   double ll;
   double rr;
-  double *jacob = NULL, *jacob_other_endo = NULL, *jacob_exo = NULL, *jacob_exo_det = NULL;
+  double *jacob = nullptr, *jacob_other_endo = nullptr, *jacob_exo = nullptr, *jacob_exo_det = nullptr;
   EQN_block = block_num;
   stack<double> Stack;
   ExternalFunctionType function_type = ExternalFunctionType::withoutDerivative;
@@ -1232,9 +1232,9 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                     }
                   input_arguments[nb_input_arguments+nb_add_input_arguments] = vv;
 #ifdef DEBUG
-                  mexCallMATLAB(0, NULL, 1, &input_arguments[0], "disp");
-                  mexCallMATLAB(0, NULL, 1, &input_arguments[1], "disp");
-                  mexCallMATLAB(0, NULL, 1, &input_arguments[2], "celldisp");
+                  mexCallMATLAB(0, nullptr, 1, &input_arguments[0], "disp");
+                  mexCallMATLAB(0, nullptr, 1, &input_arguments[1], "disp");
+                  mexCallMATLAB(0, nullptr, 1, &input_arguments[2], "celldisp");
                   mexPrintf("OK\n");
                   mexEvalString("drawnow;");
 #endif
@@ -1298,9 +1298,9 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                     }
                   input_arguments[nb_input_arguments+nb_add_input_arguments] = vv;
 #ifdef DEBUG
-                  mexCallMATLAB(0, NULL, 1, &input_arguments[0], "disp");
-                  mexCallMATLAB(0, NULL, 1, &input_arguments[1], "disp");
-                  mexCallMATLAB(0, NULL, 1, &input_arguments[2], "celldisp");
+                  mexCallMATLAB(0, nullptr, 1, &input_arguments[0], "disp");
+                  mexCallMATLAB(0, nullptr, 1, &input_arguments[1], "disp");
+                  mexCallMATLAB(0, nullptr, 1, &input_arguments[2], "celldisp");
                   mexPrintf("OK\n");
                   mexEvalString("drawnow;");
 #endif

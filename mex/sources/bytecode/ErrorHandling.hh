@@ -330,7 +330,7 @@ public:
       {
         nb_endo = 0;
         endo_name_length = 0;
-        P_endo_names = NULL;
+        P_endo_names = nullptr;
       }
     else
       {
@@ -342,7 +342,7 @@ public:
       {
         nb_exo = 0;
         exo_name_length = 0;
-        P_exo_names = NULL;
+        P_exo_names = nullptr;
       }
     else
       {
@@ -354,7 +354,7 @@ public:
       {
         nb_param = 0;
         param_name_length = 0;
-        P_param_names = NULL;
+        P_param_names = nullptr;
       }
     else
       {
@@ -602,7 +602,7 @@ public:
     double ll;
     ExpressionType equation_type = ExpressionType::TemporaryTerm;
     size_t found;
-    double *jacob = NULL, *jacob_other_endo = NULL, *jacob_exo = NULL, *jacob_exo_det = NULL;
+    double *jacob = nullptr, *jacob_other_endo = nullptr, *jacob_exo = nullptr, *jacob_exo_det = nullptr;
     ExternalFunctionType function_type = ExternalFunctionType::withoutDerivative;
 
     if (evaluate)
@@ -1856,9 +1856,9 @@ public:
                           }
                         input_arguments[nb_input_arguments+nb_add_input_arguments] = vv;
 #ifdef DEBUG
-                        mexCallMATLAB(0, NULL, 1, &input_arguments[0], "disp");
-                        mexCallMATLAB(0, NULL, 1, &input_arguments[1], "disp");
-                        mexCallMATLAB(0, NULL, 1, &input_arguments[2], "celldisp");
+                        mexCallMATLAB(0, nullptr, 1, &input_arguments[0], "disp");
+                        mexCallMATLAB(0, nullptr, 1, &input_arguments[1], "disp");
+                        mexCallMATLAB(0, nullptr, 1, &input_arguments[2], "celldisp");
                         mexPrintf("OK\n");
                         mexEvalString("drawnow;");
 #endif
@@ -1943,9 +1943,9 @@ public:
                           }
                         input_arguments[nb_input_arguments+nb_add_input_arguments] = vv;
 #ifdef DEBUG
-                        mexCallMATLAB(0, NULL, 1, &input_arguments[0], "disp");
-                        mexCallMATLAB(0, NULL, 1, &input_arguments[1], "disp");
-                        mexCallMATLAB(0, NULL, 1, &input_arguments[2], "celldisp");
+                        mexCallMATLAB(0, nullptr, 1, &input_arguments[0], "disp");
+                        mexCallMATLAB(0, nullptr, 1, &input_arguments[1], "disp");
+                        mexCallMATLAB(0, nullptr, 1, &input_arguments[2], "celldisp");
                         mexPrintf("OK\n");
                         mexEvalString("drawnow;");
 #endif
@@ -2224,7 +2224,7 @@ public:
   inline
   test_mxMalloc(void *z, int line, string file, string func, int amount)
   {
-    if (z == NULL && (amount > 0))
+    if (z == nullptr && (amount > 0))
       {
         ostringstream tmp;
         tmp << " mxMalloc: out of memory " << amount << " bytes required at line " << line << " in function " << func << " (file " << file;

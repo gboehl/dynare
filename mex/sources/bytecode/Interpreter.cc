@@ -65,7 +65,7 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
   y_decal = y_decal_arg;
   markowitz_c = markowitz_c_arg;
   filename = filename_arg;
-  T = NULL;
+  T = nullptr;
   minimal_solving_periods = minimal_solving_periods_arg;
   stack_solve_algo = stack_solve_algo_arg;
   solve_algo = solve_algo_arg;
@@ -775,7 +775,7 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
             mxFree(T);
           if (global_temporary_terms)
             {
-              if (GlobalTemporaryTerms == NULL)
+              if (GlobalTemporaryTerms == nullptr)
                 {
                   mexPrintf("GlobalTemporaryTerms is NULL\n"); mexEvalString("drawnow;");
                 }

@@ -324,7 +324,7 @@ Get_Arguments_and_global_variables(int nrhs,
                 {
                   *extended_path = true;
                   if ((i+1) >= nrhs)
-                    *ep_struct = NULL;
+                    *ep_struct = nullptr;
                   else
                     {
                       *ep_struct = mxDuplicateArray(prhs[i + 1]);
@@ -369,7 +369,7 @@ Get_Arguments_and_global_variables(int nrhs,
         }
     }
   *M_ = mexGetVariable("global", "M_");
-  if (*M_ == NULL)
+  if (*M_ == nullptr)
     {
       ostringstream tmp;
       tmp << " in main, global variable not found: M_\n";
@@ -377,14 +377,14 @@ Get_Arguments_and_global_variables(int nrhs,
     }
   /* Gets variables and parameters from global workspace of Matlab */
   *oo_ = mexGetVariable("global", "oo_");
-  if (*oo_ == NULL)
+  if (*oo_ == nullptr)
     {
       ostringstream tmp;
       tmp << " in main, global variable not found: oo_\n";
       throw FatalExceptionHandling(tmp.str());
     }
   *options_ = mexGetVariable("global", "options_");
-  if (*options_ == NULL)
+  if (*options_ == nullptr)
     {
       ostringstream tmp;
       tmp << " in main, global variable not found: options_\n";
@@ -404,13 +404,13 @@ main(int nrhs, const char *prhs[])
   mxArray *M_, *oo_, *options_;
   mxArray *GlobalTemporaryTerms;
 #ifndef DEBUG_EX
-  mxArray *block_structur = NULL;
+  mxArray *block_structur = nullptr;
 #else
   int nlhs = 0;
   char *plhs[1];
   load_global((char *) prhs[1]);
 #endif
-  mxArray *pfplan_struct = NULL;
+  mxArray *pfplan_struct = nullptr;
   ErrorMsg error_msg;
   size_t i, row_y = 0, col_y = 0, row_x = 0, col_x = 0, nb_row_xd = 0;
   size_t steady_row_y, steady_col_y;
@@ -420,12 +420,12 @@ main(int nrhs, const char *prhs[])
   bool steady_state = false;
   bool evaluate = false;
   int block = -1;
-  double *params = NULL;
-  double *yd = NULL, *xd = NULL;
+  double *params = nullptr;
+  double *yd = nullptr, *xd = nullptr;
   int count_array_argument = 0;
   bool global_temporary_terms = false;
   bool print = false, print_error = true, print_it = false;
-  double *steady_yd = NULL, *steady_xd = NULL;
+  double *steady_yd = nullptr, *steady_xd = nullptr;
   string plan, pfplan;
   bool extended_path;
   mxArray *extended_path_struct;
@@ -476,13 +476,13 @@ main(int nrhs, const char *prhs[])
 
   if (extended_path)
     {
-      if (extended_path_struct == NULL)
+      if (extended_path_struct == nullptr)
         {
           string tmp = "The 'extended_path' option must be followed by the extended_path descriptor";
           mexErrMsgTxt(tmp.c_str());
         }
       mxArray *date_str = mxGetField(extended_path_struct, 0, "date_str");
-      if (date_str == NULL)
+      if (date_str == nullptr)
         {
           string tmp = "date_str";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
@@ -491,28 +491,28 @@ main(int nrhs, const char *prhs[])
       int nb_periods = mxGetM(date_str) * mxGetN(date_str);
 
       mxArray *constrained_vars_ = mxGetField(extended_path_struct, 0, "constrained_vars_");
-      if (constrained_vars_ == NULL)
+      if (constrained_vars_ == nullptr)
         {
           string tmp = "constrained_vars_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
           mexErrMsgTxt(tmp.c_str());
         }
       mxArray *constrained_paths_ = mxGetField(extended_path_struct, 0, "constrained_paths_");
-      if (constrained_paths_ == NULL)
+      if (constrained_paths_ == nullptr)
         {
           string tmp = "constrained_paths_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
           mexErrMsgTxt(tmp.c_str());
         }
       mxArray *constrained_int_date_ = mxGetField(extended_path_struct, 0, "constrained_int_date_");
-      if (constrained_int_date_ == NULL)
+      if (constrained_int_date_ == nullptr)
         {
           string tmp = "constrained_int_date_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
           mexErrMsgTxt(tmp.c_str());
         }
       mxArray *constrained_perfect_foresight_ = mxGetField(extended_path_struct, 0, "constrained_perfect_foresight_");
-      if (constrained_perfect_foresight_ == NULL)
+      if (constrained_perfect_foresight_ == nullptr)
         {
           string tmp = "constrained_perfect_foresight_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
@@ -520,28 +520,28 @@ main(int nrhs, const char *prhs[])
         }
 
       mxArray *shock_var_ = mxGetField(extended_path_struct, 0, "shock_vars_");
-      if (shock_var_ == NULL)
+      if (shock_var_ == nullptr)
         {
           string tmp = "shock_vars_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
           mexErrMsgTxt(tmp.c_str());
         }
       mxArray *shock_paths_ = mxGetField(extended_path_struct, 0, "shock_paths_");
-      if (shock_paths_ == NULL)
+      if (shock_paths_ == nullptr)
         {
           string tmp = "shock_paths_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
           mexErrMsgTxt(tmp.c_str());
         }
       mxArray *shock_int_date_ = mxGetField(extended_path_struct, 0, "shock_int_date_");
-      if (shock_int_date_ == NULL)
+      if (shock_int_date_ == nullptr)
         {
           string tmp = "shock_int_date_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
           mexErrMsgTxt(tmp.c_str());
         }
       mxArray *shock_str_date_ = mxGetField(extended_path_struct, 0, "shock_str_date_");
-      if (shock_str_date_ == NULL)
+      if (shock_str_date_ == nullptr)
         {
           string tmp = "shock_str_date_";
           tmp.insert(0, "The extended_path description structure does not contain the member: ");
@@ -550,8 +550,8 @@ main(int nrhs, const char *prhs[])
       int nb_constrained = mxGetM(constrained_vars_) * mxGetN(constrained_vars_);
       int nb_controlled = 0;
       mxArray *options_cond_fcst_ = mxGetField(extended_path_struct, 0, "options_cond_fcst_");
-      mxArray *controlled_varexo = NULL;
-      if (options_cond_fcst_ != NULL)
+      mxArray *controlled_varexo = nullptr;
+      if (options_cond_fcst_ != nullptr)
         {
           controlled_varexo = mxGetField(options_cond_fcst_, 0, "controlled_varexo");
           nb_controlled = mxGetM(controlled_varexo) * mxGetN(controlled_varexo);
@@ -560,8 +560,8 @@ main(int nrhs, const char *prhs[])
               mexErrMsgTxt("The number of exogenized variables and the number of exogenous controlled variables should be equal.");
             }
         }
-      double *controlled_varexo_value = NULL;
-      if (controlled_varexo != NULL)
+      double *controlled_varexo_value = nullptr;
+      if (controlled_varexo != nullptr)
         controlled_varexo_value = mxGetPr(controlled_varexo);
       double *constrained_var_value = mxGetPr(constrained_vars_);
       sconditional_extended_path.resize(nb_constrained);
@@ -680,7 +680,7 @@ main(int nrhs, const char *prhs[])
   if (plan.length() > 0)
     {
       mxArray *plan_struct = mexGetVariable("base", plan.c_str());
-      if (plan_struct == NULL)
+      if (plan_struct == nullptr)
         {
           string tmp = plan;
           tmp.insert(0, "Can't find the plan: ");

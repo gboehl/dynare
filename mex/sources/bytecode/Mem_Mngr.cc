@@ -41,8 +41,8 @@ Mem_Mngr::init_Mem()
   Chunk_Stack.clear();
   CHUNK_SIZE = 0;
   Nb_CHUNK = 0;
-  NZE_Mem = NULL;
-  NZE_Mem_add = NULL;
+  NZE_Mem = nullptr;
+  NZE_Mem_add = nullptr;
   CHUNK_heap_pos = 0;
   NZE_Mem_Allocated.clear();
 }
