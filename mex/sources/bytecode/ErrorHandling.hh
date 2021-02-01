@@ -153,8 +153,8 @@ using namespace std;
 const int NO_ERROR_ON_EXIT = 0;
 const int ERROR_ON_EXIT = 1;
 
-typedef vector<pair<Tags, void * >> code_liste_type;
-typedef code_liste_type::const_iterator it_code_type;
+using code_liste_type = vector<pair<Tags, void *>>;
+using it_code_type = code_liste_type::const_iterator;
 
 class GeneralExceptionHandling
 {
@@ -282,8 +282,8 @@ struct table_conditional_local_type
   int var_exo, var_endo;
   double constrained_value;
 };
-typedef vector<table_conditional_local_type> vector_table_conditional_local_type;
-typedef map< int, vector_table_conditional_local_type > table_conditional_global_type;
+using vector_table_conditional_local_type = vector<table_conditional_local_type>;
+using table_conditional_global_type = map<int, vector_table_conditional_local_type>;
 #ifdef MATLAB_MEX_FILE
 extern "C" bool utIsInterruptPending();
 #endif

@@ -37,7 +37,7 @@ struct NonZeroElem
   NonZeroElem *NZE_R_N, *NZE_C_N;
 };
 
-typedef vector<NonZeroElem *> v_NonZeroElem;
+using v_NonZeroElem = vector<NonZeroElem *>;
 
 class Mem_Mngr
 {
