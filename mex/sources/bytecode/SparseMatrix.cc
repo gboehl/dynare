@@ -674,7 +674,7 @@ dynSparseMatrix::Simple_Init(int Size, map<pair<pair<int, int>, int>, int> &IM, 
   eq = -1;
   for (i = 0; i < Size; i++)
     {
-      line_done[i] = 0;
+      line_done[i] = false;
       FNZE_C[i] = NULL;
       FNZE_R[i] = NULL;
       temp_NZE_C[i] = 0;
@@ -1911,7 +1911,7 @@ dynSparseMatrix::Init_GE(int periods, int y_kmin, int y_kmax, int Size, map<pair
   for (int i = 0; i < periods*Size; i++)
     {
       b[i] = 0;
-      line_done[i] = 0;
+      line_done[i] = false;
     }
   for (int i = 0; i < (periods+y_kmax+1)*Size; i++)
     {
