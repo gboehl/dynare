@@ -25,9 +25,7 @@
 #define SMALL 1.0e-5;
 ///#define DEBUG
 
-Interpreter::~Interpreter()
-{
-}
+Interpreter::~Interpreter() = default;
 
 Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg, double *steady_x_arg,
                          double *direction_arg, size_t y_size_arg,
