@@ -250,7 +250,7 @@ mxAddField(mxArray *Struct, const char *fieldname)
     return -1;
   else
     {
-      Struct->field_name.push_back(fieldname);
+      Struct->field_name.emplace_back(fieldname);
       return Struct->field_name.size();
     }
 }
@@ -264,7 +264,7 @@ mxSetFieldByNumber(mxArray *Struct, mwIndex index, unsigned int field_number, mx
   if (field_number >= nfields)
     mexErrMsgTxt("field_number out of range in mxSetFieldByNumber\n");
   while (Struct->field_array.size() <= index)
-    Struct->field_array.push_back(vector<mxArray *>(nfields, NULL));
+    Struct->field_array.emplace_back(nfields, NULL);
   Struct->field_array[index][field_number] = pvalue;
 }
 
@@ -355,7 +355,7 @@ read_struct(FILE *fid)
           char name[512];
           fscanf(fid, "%s", name);
           if (j == 0)
-            fieldnames.push_back(name);
+            fieldnames.emplace_back(name);
           v_Array.push_back(read_Array(fid));
         }
       vv_Array.push_back(v_Array);

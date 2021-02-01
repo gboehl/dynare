@@ -406,14 +406,14 @@ public:
         for (unsigned int i = 0; i < endo_name_length; i++)
           if (P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)] != ' ')
             res << P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)];
-        Variable_list.push_back(make_pair(res.str(), make_pair(SymbolType::endogenous, variable_num)));
+        Variable_list.emplace_back(res.str(), make_pair(SymbolType::endogenous, variable_num));
       }
     for (unsigned int variable_num = 0; variable_num < static_cast<unsigned int>(nb_exo); variable_num++)
       {
         for (unsigned int i = 0; i < exo_name_length; i++)
           if (P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)] != ' ')
             res << P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)];
-        Variable_list.push_back(make_pair(res.str(), make_pair(SymbolType::exogenous, variable_num)));
+        Variable_list.emplace_back(res.str(), make_pair(SymbolType::exogenous, variable_num));
       }
   }
 

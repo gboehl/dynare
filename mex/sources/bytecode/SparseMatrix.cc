@@ -3172,7 +3172,7 @@ dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned in
           b1 = substract_A_B(b2, tmp);
           mxDestroyArray(tmp);
 
-          triangular_form.push_back(make_pair(S1, d1));
+          triangular_form.emplace_back(S1, d1);
           mxDestroyArray(A2_t);
         }
       A2 = mxDuplicateArray(A3);

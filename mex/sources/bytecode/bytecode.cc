@@ -673,7 +673,7 @@ main(int nrhs, const char *prhs[])
               string tmp = "Can not allocated memory to store the date_str in the extended path descriptor";
               mexErrMsgTxt(tmp.c_str());
             }
-          dates.push_back(string(buf)); //string(Dates[i]);
+          dates.emplace_back(buf); //string(Dates[i]);
           mxFree(buf);
         }
     }
