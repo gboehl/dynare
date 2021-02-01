@@ -368,7 +368,7 @@ Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_c
 #endif
       if (vector_table_conditional_local.size())
         {
-          it_code_type curr_it_code = it_code;
+          auto curr_it_code = it_code;
           evaluate_a_block(true);
           it_code = curr_it_code;
         }
@@ -395,7 +395,7 @@ Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_c
 #endif
       if (vector_table_conditional_local.size())
         {
-          it_code_type curr_it_code = it_code;
+          auto curr_it_code = it_code;
           evaluate_a_block(true);
           it_code = curr_it_code;
         }
@@ -428,7 +428,7 @@ Interpreter::simulate_a_block(vector_table_conditional_local_type vector_table_c
         }
       if (vector_table_conditional_local.size())
         {
-          it_code_type curr_it_code = it_code;
+          auto curr_it_code = it_code;
           evaluate_a_block(true);
           it_code = curr_it_code;
         }
@@ -663,7 +663,7 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
 #endif
           //it's a new block
           {
-            FBEGINBLOCK_ *fb = static_cast<FBEGINBLOCK_ *>(it_code->second);
+            auto *fb = static_cast<FBEGINBLOCK_ *>(it_code->second);
             Block_Contain = fb->get_Block_Contain();
             it_code++;
             if (constrained)
@@ -860,9 +860,9 @@ Interpreter::extended_path(string file_name, string bin_basename, bool evaluate,
     double *y_save = (double *) mxMalloc(size_of_direction);
     double *x_save = (double *) mxMalloc((periods + y_kmax + y_kmin) * col_x *sizeof(double));*/
   size_t size_of_direction = y_size*col_y*sizeof(double);
-  double *y_save = static_cast<double *>(mxMalloc(size_of_direction));
+  auto *y_save = static_cast<double *>(mxMalloc(size_of_direction));
   test_mxMalloc(y_save, __LINE__, __FILE__, __func__, size_of_direction);
-  double *x_save = static_cast<double *>(mxMalloc(nb_row_x * col_x *sizeof(double)));
+  auto *x_save = static_cast<double *>(mxMalloc(nb_row_x * col_x *sizeof(double)));
   test_mxMalloc(x_save, __LINE__, __FILE__, __func__, nb_row_x * col_x *sizeof(double));
 
   vector_table_conditional_local_type vector_table_conditional_local;
@@ -976,7 +976,7 @@ Interpreter::compute_blocks(string file_name, string bin_basename, bool evaluate
 
   //The big loop on intructions
   it_code = code_liste.begin();
-  it_code_type Init_Code = it_code;
+  auto Init_Code = it_code;
   vector<s_plan> s_plan_junk;
   vector_table_conditional_local_type vector_table_conditional_local_junk;
 

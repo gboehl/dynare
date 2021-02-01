@@ -1137,7 +1137,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
             mexPrintf("------------------------------\n");
             mexPrintf("CALL "); mexEvalString("drawnow;");
 #endif
-            FCALL_ *fc = static_cast<FCALL_ *>(it_code->second);
+            auto *fc = static_cast<FCALL_ *>(it_code->second);
             string function_name = fc->get_function_name();
 #ifdef DEBUG
             mexPrintf("function_name=%s ", function_name.c_str()); mexEvalString("drawnow;");
@@ -1505,7 +1505,7 @@ Evaluate::evaluate_over_periods(const bool forward)
     compute_block_time(0, false, false);
   else
     {
-      it_code_type begining = it_code;
+      auto begining = it_code;
       if (forward)
         {
           for (it_ = y_kmin; it_ < periods+y_kmin; it_++)

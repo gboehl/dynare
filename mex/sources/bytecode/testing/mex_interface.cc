@@ -102,7 +102,7 @@ mxGetPr(const mxArray *b_m)
 mxArray *
 mxCreateDoubleMatrix(unsigned int rows, unsigned int cols, mxData_type mx_type)
 {
-  mxArray *Array = new mxArray;
+  auto *Array = new mxArray;
   Array->type = mxDOUBLE_CLASS;
   Array->size_1 = rows;
   Array->size_2 = cols;
@@ -113,7 +113,7 @@ mxCreateDoubleMatrix(unsigned int rows, unsigned int cols, mxData_type mx_type)
 mxArray *
 mxCreateCharArray(unsigned int rows, unsigned int cols, mxData_type mx_type)
 {
-  mxArray *Array = new mxArray;
+  auto *Array = new mxArray;
   Array->type = mxCHAR_CLASS;
   Array->size_1 = rows;
   Array->size_2 = cols;
@@ -124,7 +124,7 @@ mxCreateCharArray(unsigned int rows, unsigned int cols, mxData_type mx_type)
 mxArray *
 mxCreateSparse(unsigned int rows, unsigned int cols, unsigned int nz_max, mxData_type mx_type)
 {
-  mxArray *Array = new mxArray;
+  auto *Array = new mxArray;
   Array->type = mxSPARSE_CLASS;
   Array->size_1 = rows;
   Array->size_2 = cols;
@@ -138,7 +138,7 @@ mxCreateSparse(unsigned int rows, unsigned int cols, unsigned int nz_max, mxData
 mxArray *
 mxCreateDoubleScalar(double value)
 {
-  mxArray *Array = new mxArray;
+  auto *Array = new mxArray;
   Array->type = mxSINGLE_CLASS;
   Array->size_1 = 1;
   Array->size_2 = 1;
@@ -156,7 +156,7 @@ mxCreatNULLMatrix()
 mxArray *
 mxCreateStructMatrix(unsigned int rows, unsigned int cols, unsigned int nfields, const vector<string> &fieldnames)
 {
-  mxArray *Array = new mxArray;
+  auto *Array = new mxArray;
   Array->type = mxSTRUCT_CLASS;
   Array->size_1 = rows;
   Array->size_2 = cols;
@@ -223,7 +223,7 @@ mexGetVariable(const char *space_name, const char *matrix_name)
 int
 mxGetFieldNumber(const mxArray *Struct, const char *field_name)
 {
-  vector<string>::const_iterator it = find(Struct->field_name.begin(), Struct->field_name.end(), field_name);
+  auto it = find(Struct->field_name.begin(), Struct->field_name.end(), field_name);
   if (it == Struct->field_name.end())
     {
       stringstream tmp;
@@ -293,7 +293,7 @@ mxDuplicateArray(const mxArray *array)
   unsigned int i;
   vector<mxArray *>::const_iterator it_v_array;
   vector<string>::const_iterator it_v_string;
-  mxArray *Array = (mxArray *) mxMalloc(sizeof(mxArray));
+  auto *Array = (mxArray *) mxMalloc(sizeof(mxArray));
   Array->type = array->type;
   Array->size_1 = array->size_1;
   Array->size_2 = Array->size_2;

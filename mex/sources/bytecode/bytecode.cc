@@ -42,7 +42,7 @@ string
 Get_Argument(const mxArray *prhs)
 {
   const mxArray *mxa = prhs;
-  mwSize buflen = mwSize(mxGetM(mxa) * mxGetN(mxa) + 1);
+  auto buflen = mwSize(mxGetM(mxa) * mxGetN(mxa) + 1);
   char *first_argument;
   first_argument = static_cast<char *>(mxCalloc(buflen, sizeof(char)));
   size_t status = mxGetString(mxa, first_argument, buflen);
@@ -946,11 +946,11 @@ main(int nrhs, const char *prhs[])
   field = mxGetFieldNumber(options_, "slowc");
   if (field < 0)
     mexErrMsgTxt("slows is not a field of options_");
-  double slowc = double (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
+  auto slowc = double (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
   field = mxGetFieldNumber(options_, "markowitz");
   if (field < 0)
     mexErrMsgTxt("markowitz is not a field of options_");
-  double markowitz_c = double (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
+  auto markowitz_c = double (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
   field = mxGetFieldNumber(options_, "minimal_solving_periods");
   if (field < 0)
     mexErrMsgTxt("minimal_solving_periods is not a field of options_");
@@ -1020,15 +1020,15 @@ main(int nrhs, const char *prhs[])
     mexErrMsgTxt("bytecode has not been compiled with CUDA option. Bytecode Can't use options_.stack_solve_algo=7\n");
 #endif
   size_t size_of_direction = col_y*row_y*sizeof(double);
-  double *y = static_cast<double *>(mxMalloc(size_of_direction));
+  auto *y = static_cast<double *>(mxMalloc(size_of_direction));
   error_msg.test_mxMalloc(y, __LINE__, __FILE__, __func__, size_of_direction);
-  double *ya = static_cast<double *>(mxMalloc(size_of_direction));
+  auto *ya = static_cast<double *>(mxMalloc(size_of_direction));
   error_msg.test_mxMalloc(ya, __LINE__, __FILE__, __func__, size_of_direction);
   direction = static_cast<double *>(mxMalloc(size_of_direction));
   error_msg.test_mxMalloc(direction, __LINE__, __FILE__, __func__, size_of_direction);
   memset(direction, 0, size_of_direction);
   /*mexPrintf("col_x : %d, row_x : %d\n",col_x, row_x);*/
-  double *x = static_cast<double *>(mxMalloc(col_x*row_x*sizeof(double)));
+  auto *x = static_cast<double *>(mxMalloc(col_x*row_x*sizeof(double)));
   error_msg.test_mxMalloc(x, __LINE__, __FILE__, __func__, col_x*row_x*sizeof(double));
   for (i = 0; i < row_x*col_x; i++)
     {

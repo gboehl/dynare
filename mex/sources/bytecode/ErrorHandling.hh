@@ -1767,7 +1767,7 @@ public:
               mexPrintf("------------------------------\n");
               mexPrintf("CALL "); mexEvalString("drawnow;");
 #endif
-              FCALL_ *fc = static_cast<FCALL_ *>(it_code->second);
+              auto *fc = static_cast<FCALL_ *>(it_code->second);
               string function_name = fc->get_function_name();
 #ifdef DEBUG
               mexPrintf("function_name=%s ", function_name.c_str()); mexEvalString("drawnow;");
@@ -2054,14 +2054,14 @@ public:
             mexPrintf("FLDTEF\n");
             mexPrintf("var=%d Stack.size()=%d\n", var, Stackf.size());
             {
-              map<unsigned int, double>::const_iterator it = TEF.find(var-1);
+              auto it = TEF.find(var-1);
               mexPrintf("FLD TEF[var-1]=%f done\n", it->second);
             }
             mexEvalString("drawnow;");
 #endif
             if (compute)
               {
-                map<unsigned int, double>::const_iterator it = TEF.find(var-1);
+                auto it = TEF.find(var-1);
                 Stackf.push(it->second);
               }
             tmp_out.str("");
@@ -2106,13 +2106,13 @@ public:
 #ifdef DEBUG
               mexPrintf("FLDTEFD\n");
               mexPrintf("indx=%d row=%d Stack.size()=%d\n", indx, row, Stack.size());
-              map<pair<unsigned int, unsigned int>, double>::const_iterator it = TEFD.find(make_pair(indx, row-1));
+              auto it = TEFD.find(make_pair(indx, row-1));
               mexPrintf("FLD TEFD[make_pair(indx, row)]=%f done\n", it->second);
               mexEvalString("drawnow;");
 #endif
               if (compute)
                 {
-                  map<pair<unsigned int, unsigned int>, double>::const_iterator it = TEFD.find(make_pair(indx, row-1));
+                  auto it = TEFD.find(make_pair(indx, row-1));
                   Stackf.push(it->second);
                 }
               tmp_out.str("");
@@ -2135,7 +2135,7 @@ public:
 #ifdef DEBUG
                   double rr = Stackf.top();
                   mexPrintf("rr=%f\n", rr);
-                  map<pair<unsigned int, pair<unsigned int, unsigned int>>, double>::const_iterator it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
+                  auto it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
                   mexPrintf("FSTP TEFDD[make_pair(indx, make_pair(row, col))]=%f done\n", it->second);
                   mexEvalString("drawnow;");
 #endif
@@ -2158,13 +2158,13 @@ public:
 #ifdef DEBUG
               mexPrintf("FLDTEFD\n");
               mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
-              map<pair<unsigned int, pair<unsigned int, unsigned int>>, double>::const_iterator it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
+              auto it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
               mexPrintf("FLD TEFD[make_pair(indx, make_pair(row, col))]=%f done\n", it->second);
               mexEvalString("drawnow;");
 #endif
               if (compute)
                 {
-                  map<pair<unsigned int, pair<unsigned int, unsigned int>>, double>::const_iterator it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
+                  auto it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
                   Stackf.push(it->second);
                 }
               tmp_out.str("");
