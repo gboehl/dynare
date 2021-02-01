@@ -32,59 +32,6 @@
 #endif
 
 using namespace std;
-#ifdef _MSC_VER
-# include <windows.h>
-HINSTANCE hinstLib;
-
-# define UMFPACK_INFO 90
-# define UMFPACK_CONTROL 20
-/* used in all UMFPACK_report_* routines: */
-# define UMFPACK_PRL 0 /* print level */
-/* returned by all routines that use Info: */
-# define UMFPACK_OK (0)
-# define UMFPACK_STATUS 0 /* UMFPACK_OK, or other result */
-
-typedef void (*t_umfpack_dl_free_numeric)(void **Numeric);
-t_umfpack_dl_free_numeric umfpack_dl_free_numeric;
-typedef void (*t_umfpack_dl_free_symbolic)(void **Symbolic);
-t_umfpack_dl_free_symbolic umfpack_dl_free_symbolic;
-typedef int64_t (*t_umfpack_dl_solve)(int64_t sys,
-                                      const int64_t Ap[],
-                                      const int64_t Ai[],
-                                      const double Ax[],
-                                      double X[],
-                                      const double B[],
-                                      void *Numeric,
-                                      const double Control[UMFPACK_CONTROL],
-                                      double Info[UMFPACK_INFO]);
-t_umfpack_dl_solve umfpack_dl_solve;
-typedef int64_t (*t_umfpack_dl_numeric)(const int64_t Ap[],
-                                        const int64_t Ai[],
-                                        const double Ax[],
-                                        void *Symbolic,
-                                        void **Numeric,
-                                        const double Control[UMFPACK_CONTROL],
-                                        double Info[UMFPACK_INFO]);
-t_umfpack_dl_numeric umfpack_dl_numeric;
-typedef int64_t (*t_umfpack_dl_symbolic)(int64_t n_row,
-                                         int64_t n_col,
-                                         const int64_t Ap[],
-                                         const int64_t Ai[],
-                                         const double Ax[],
-                                         void **Symbolic,
-                                         const double Control[UMFPACK_CONTROL],
-                                         double Info[UMFPACK_INFO]);
-t_umfpack_dl_symbolic umfpack_dl_symbolic;
-typedef void (*t_umfpack_dl_report_info)(const double Control[UMFPACK_CONTROL],
-                                         const double Info[UMFPACK_INFO]);
-t_umfpack_dl_report_info umfpack_dl_report_info;
-typedef void (*t_umfpack_dl_report_status)(const double Control[UMFPACK_CONTROL],
-                                           int64_t status);
-t_umfpack_dl_report_status umfpack_dl_report_status;
-typedef void (*t_umfpack_dl_defaults)(double Control[UMFPACK_CONTROL]);
-t_umfpack_dl_defaults umfpack_dl_defaults;
-
-#endif
 
 dynSparseMatrix::dynSparseMatrix()
 {
@@ -105,78 +52,6 @@ dynSparseMatrix::dynSparseMatrix()
   lu_inc_tol = 1e-10;
   Symbolic = nullptr;
   Numeric = nullptr;
-#ifdef _MSC_VER
-  // Get a handle to the DLL module.
-  hinstLib = LoadLibrary(TEXT("libmwumfpack.dll"));
-  // If the handle is valid, try to get the function address.
-  if (hinstLib)
-    {
-      umfpack_dl_free_numeric = (t_umfpack_dl_free_numeric) GetProcAddress(hinstLib, "umfpack_dl_free_numeric");
-      if (!umfpack_dl_free_numeric)
-        {
-          mexPrintf("umfpack_dl_free_numeric not found\n");
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_free_numeric is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_free_symbolic = (t_umfpack_dl_free_symbolic) GetProcAddress(hinstLib, "umfpack_dl_free_symbolic");
-      if (!umfpack_dl_free_symbolic)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_free_symbolic is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_solve = (t_umfpack_dl_solve) GetProcAddress(hinstLib, "umfpack_dl_free_solve");
-      if (!umfpack_dl_solve)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_solve is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_numeric = (t_umfpack_dl_numeric) GetProcAddress(hinstLib, "umfpack_dl_numeric");
-      if (!umfpack_dl_numeric)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_numeric is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_symbolic = (t_umfpack_dl_symbolic) GetProcAddress(hinstLib, "umfpack_dl_symbolic");
-      if (!umfpack_dl_symbolic)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_symbolic is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_report_info = (t_umfpack_dl_report_info) GetProcAddress(hinstLib, "umfpack_dl_report_info");
-      if (!umfpack_dl_report_info)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_report_info is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_report_status = (t_umfpack_dl_report_status) GetProcAddress(hinstLib, "umfpack_dl_report_status");
-      if (!umfpack_dl_report_status)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_report_status is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_defaults = (t_umfpack_dl_defaults) GetProcAddress(hinstLib, "umfpack_dl_defaults");
-      if (!umfpack_dl_defaults)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_defaults is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-    }
-  else
-    {
-      mexPrintf("library loading error\n");
-      ostringstream tmp;
-      tmp << " in main, libmwumfpack.dll not found. \n Check that \\Program files\\MATLAB\\RXXXXX\\bin\\win64 is in the current path.";
-      throw FatalExceptionHandling(tmp.str());
-    }
-#endif
 }
 
 dynSparseMatrix::dynSparseMatrix(const int y_size_arg, const int y_kmin_arg, const int y_kmax_arg, const bool print_it_arg, const bool steady_state_arg, const int periods_arg,
@@ -209,77 +84,6 @@ dynSparseMatrix::dynSparseMatrix(const int y_size_arg, const int y_kmin_arg, con
   cublas_handle = cublas_handle_arg;
   cusparse_handle = cusparse_handle_arg;
   CUDA_descr = descr_arg;
-#endif
-#ifdef _MSC_VER
-  // Get a handle to the DLL module.
-  hinstLib = LoadLibrary(TEXT("libmwumfpack.dll"));
-  // If the handle is valid, try to get the function address.
-  if (hinstLib != NULL)
-    {
-      umfpack_dl_free_numeric = (t_umfpack_dl_free_numeric) GetProcAddress(hinstLib, "umfpack_dl_free_numeric");
-      if (!umfpack_dl_free_numeric)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_free_numeric is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_free_symbolic = (t_umfpack_dl_free_symbolic) GetProcAddress(hinstLib, "umfpack_dl_free_symbolic");
-      if (!umfpack_dl_free_symbolic)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_free_symbolic is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_report_info = (t_umfpack_dl_report_info) GetProcAddress(hinstLib, "umfpack_dl_report_info");
-      if (!umfpack_dl_report_info)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_report_info is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_solve = (t_umfpack_dl_solve) GetProcAddress(hinstLib, "umfpack_dl_solve");
-      if (!umfpack_dl_solve)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_solve is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_numeric = (t_umfpack_dl_numeric) GetProcAddress(hinstLib, "umfpack_dl_numeric");
-      if (!umfpack_dl_numeric)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_numeric is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_symbolic = (t_umfpack_dl_symbolic) GetProcAddress(hinstLib, "umfpack_dl_symbolic");
-      if (!umfpack_dl_symbolic)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_symbolic is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_report_status = (t_umfpack_dl_report_status) GetProcAddress(hinstLib, "umfpack_dl_report_status");
-      if (!umfpack_dl_report_status)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_report_status is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      umfpack_dl_defaults = (t_umfpack_dl_defaults) GetProcAddress(hinstLib, "umfpack_dl_defaults");
-      if (!umfpack_dl_defaults)
-        {
-          ostringstream tmp;
-          tmp << " in libmwumfpack.dll, the function umfpack_dl_defaults is not found.";
-          throw FatalExceptionHandling(tmp.str());
-        }
-    }
-  else
-    {
-      mexPrintf("library loading error\n");
-      ostringstream tmp;
-      tmp << " in main, libmwumfpack.dll not found. \n Check that \\Program files\\MATLAB\\RXXXXX\\bin\\win64 in the current path.";
-      throw FatalExceptionHandling(tmp.str());
-    }
 #endif
 }
 
@@ -3332,17 +3136,7 @@ void
 dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_, vector_table_conditional_local_type vector_table_conditional_local)
 {
   SuiteSparse_long status, sys = 0;
-#ifndef _MSC_VER
   double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
-#else
-  double *Control, *Info, *res;
-  Control = (double *) mxMalloc(UMFPACK_CONTROL * sizeof(double));
-  test_mxMalloc(Control, __LINE__, __FILE__, __func__, UMFPACK_CONTROL * sizeof(double));
-  Info = (double *) mxMalloc(UMFPACK_INFO * sizeof(double));
-  test_mxMalloc(Info, __LINE__, __FILE__, __func__, UMFPACK_INFO * sizeof(double));
-  res = (double *) mxMalloc(n * sizeof(double));
-  test_mxMalloc(res, __LINE__, __FILE__, __func__, n * sizeof(double));
-#endif
 
   umfpack_dl_defaults(Control);
   Control[UMFPACK_PRL] = 5;
@@ -3449,28 +3243,13 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
   mxFree(Ai);
   mxFree(Ax);
   mxFree(b);
-#ifdef _MSC_VER
-  mxFree(Control);
-  mxFree(Info);
-  mxFree(res);
-#endif
 }
 
 void
 dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_)
 {
   SuiteSparse_long status, sys = 0;
-#ifndef _MSC_VER
   double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
-#else
-  double *Control, *Info, *res;
-  Control = (double *) mxMalloc(UMFPACK_CONTROL * sizeof(double));
-  test_mxMalloc(Control, __LINE__, __FILE__, __func__, UMFPACK_CONTROL * sizeof(double));
-  Info = (double *) mxMalloc(UMFPACK_INFO * sizeof(double));
-  test_mxMalloc(Info, __LINE__, __FILE__, __func__, UMFPACK_INFO * sizeof(double));
-  res = (double *) mxMalloc(n * sizeof(double));
-  test_mxMalloc(res, __LINE__, __FILE__, __func__, n * sizeof(double));
-#endif
 
   umfpack_dl_defaults(Control);
   Control[UMFPACK_PRL] = 5;
@@ -3528,11 +3307,6 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
   mxFree(Ai);
   mxFree(Ax);
   mxFree(b);
-#ifdef _MSC_VER
-  mxFree(Control);
-  mxFree(Info);
-  mxFree(res);
-#endif
 }
 
 void
@@ -3546,17 +3320,7 @@ dynSparseMatrix::Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double s
   double *Ax = mxGetPr(A_m);
   double *B = mxGetPr(b_m);
   SuiteSparse_long status, sys = 0;
-#ifndef _MSC_VER
   double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
-#else
-  double *Control, *Info, *res;
-  Control = (double *) mxMalloc(UMFPACK_CONTROL * sizeof(double));
-  test_mxMalloc(Control, __LINE__, __FILE__, __func__, UMFPACK_CONTROL * sizeof(double));
-  Info = (double *) mxMalloc(UMFPACK_INFO * sizeof(double));
-  test_mxMalloc(Info, __LINE__, __FILE__, __func__, UMFPACK_INFO * sizeof(double));
-  res = (double *) mxMalloc(n * sizeof(double));
-  test_mxMalloc(res, __LINE__, __FILE__, __func__, n * sizeof(double));
-#endif
   void *Symbolic, *Numeric;
   umfpack_dl_defaults(Control);
 
@@ -3590,12 +3354,6 @@ dynSparseMatrix::Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double s
       }
   mxDestroyArray(A_m);
   mxDestroyArray(b_m);
-#ifdef _MSC_VER
-  mxFree(Control);
-  mxFree(Info);
-  mxFree(res);
-#endif
-
 }
 
 #ifdef CUDA

@@ -1224,8 +1224,5 @@ main(int nrhs, const char *prhs[])
     mxFree(ya);
   if (direction)
     mxFree(direction);
-#ifdef _MSC_VER_
-  /*fFreeResult =*/ FreeLibrary(hinstLib);
-#endif
   return;
 }

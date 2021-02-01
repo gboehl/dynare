@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2017 Dynare Team
+ * Copyright © 2007-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -26,9 +26,7 @@
 #include <map>
 #include <ctime>
 #include "dynblas.h"
-#if !(defined _MSC_VER)
-# include "dynumfpack.h"
-#endif
+#include "dynumfpack.h"
 
 #ifdef CUDA
 # include "cuda.h"
@@ -102,9 +100,6 @@ const double mem_increasing_factor = 1.1;
 class dynSparseMatrix : public Evaluate
 {
 public:
-#if (defined _MSC_VER)
-  typedef int64_t SuiteSparse_long;
-#endif
   dynSparseMatrix();
   dynSparseMatrix(const int y_size_arg, const int y_kmin_arg, const int y_kmax_arg, const bool print_it_arg, const bool steady_state_arg, const int periods_arg, const int minimal_solving_periods_arg, const double slowc_arg
 #ifdef CUDA
