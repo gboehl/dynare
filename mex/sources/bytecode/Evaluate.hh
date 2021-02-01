@@ -29,11 +29,7 @@
 #ifdef LINBCG
 # include "linbcg.hh"
 #endif
-#ifndef DEBUG_EX
-# include <dynmex.h>
-#else
-# include "mex_interface.hh"
-#endif
+#include <dynmex.h>
 #include "ErrorHandling.hh"
 
 #define pow_ pow

@@ -32,11 +32,6 @@
 #include <cmath>
 #include <utility>
 
-#ifdef DEBUG_EX
-# include <math.h>
-# include "mex_interface.hh"
-#endif
-
 #ifdef OCTAVE_MEX_FILE
 # define CHAR_LENGTH 1
 #else

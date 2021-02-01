@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2017 Dynare Team
+ * Copyright © 2007-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -23,11 +23,7 @@
 #include "ErrorHandling.hh"
 #include <vector>
 #include <fstream>
-#ifndef DEBUG_EX
-# include <dynmex.h>
-#else
-# include "mex_interface.hh"
-#endif
+#include <dynmex.h>
 //using namespace std;
 
 struct NonZeroElem
