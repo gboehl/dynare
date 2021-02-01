@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2020 Dynare Team
+ * Copyright © 2007-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -490,43 +490,43 @@ public:
     if (!steady_state)
       switch (EQN_type)
         {
-        case TemporaryTerm:
+        case ExpressionType::TemporaryTerm:
           if (EQN_block_number > 1)
             Error_loc << "temporary term " << EQN_equation+1 << " in block " << EQN_block+1 << " at time " << it_;
           else
             Error_loc << "temporary term " << EQN_equation+1 << " at time " << it_;
           break;
-        case ModelEquation:
+        case ExpressionType::ModelEquation:
           if (EQN_block_number > 1)
             Error_loc << "equation " << EQN_equation+1 << " in block " << EQN_block+1 << " at time " << it_;
           else
             Error_loc << "equation " << EQN_equation+1 << " at time " << it_;
           break;
-        case FirstEndoDerivative:
+        case ExpressionType::FirstEndoDerivative:
           if (EQN_block_number > 1)
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           else
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           break;
-        case FirstOtherEndoDerivative:
+        case ExpressionType::FirstOtherEndoDerivative:
           if (EQN_block_number > 1)
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to other endogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           else
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to other endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           break;
-        case FirstExoDerivative:
+        case ExpressionType::FirstExoDerivative:
           if (EQN_block_number > 1)
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           else
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           break;
-        case FirstExodetDerivative:
+        case ExpressionType::FirstExodetDerivative:
           if (EQN_block_number > 1)
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           else
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           break;
-        case FirstParamDerivative:
+        case ExpressionType::FirstParamDerivative:
           if (EQN_block_number > 1)
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to parameter "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           else
@@ -538,43 +538,43 @@ public:
     else
       switch (EQN_type)
         {
-        case TemporaryTerm:
+        case ExpressionType::TemporaryTerm:
           if (EQN_block_number > 1)
             Error_loc << "temporary term " << EQN_equation+1 << " in block " << EQN_block+1;
           else
             Error_loc << "temporary term " << EQN_equation+1;
           break;
-        case ModelEquation:
+        case ExpressionType::ModelEquation:
           if (EQN_block_number > 1)
             Error_loc << "equation " << EQN_equation+1 << " in block " << EQN_block+1;
           else
             Error_loc << "equation " << EQN_equation+1;
           break;
-        case FirstEndoDerivative:
+        case ExpressionType::FirstEndoDerivative:
           if (EQN_block_number > 1)
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to endogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
           else
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
           break;
-        case FirstOtherEndoDerivative:
+        case ExpressionType::FirstOtherEndoDerivative:
           if (EQN_block_number > 1)
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to other endogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
           else
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to other endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
           break;
-        case FirstExoDerivative:
+        case ExpressionType::FirstExoDerivative:
           if (EQN_block_number > 1)
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
           else
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
           break;
-        case FirstExodetDerivative:
+        case ExpressionType::FirstExodetDerivative:
           if (EQN_block_number > 1)
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
           else
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
           break;
-        case FirstParamDerivative:
+        case ExpressionType::FirstParamDerivative:
           if (EQN_block_number > 1)
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to parameter "  << get_variable(SymbolType::endogenous, EQN_dvar1);
           else
@@ -599,7 +599,7 @@ public:
     double v1f, v2f, v3f = 0.0;
     bool go_on = true;
     double ll;
-    ExpressionType equation_type = TemporaryTerm;
+    ExpressionType equation_type = ExpressionType::TemporaryTerm;
     size_t found;
     double *jacob = NULL, *jacob_other_endo = NULL, *jacob_exo = NULL, *jacob_exo_det = NULL;
     ExternalFunctionType function_type = ExternalFunctionType::withoutDerivative;
@@ -623,61 +623,61 @@ public:
 #endif
         switch (it_code->first)
           {
-          case FNUMEXPR:
+          case Tags::FNUMEXPR:
             switch (static_cast<FNUMEXPR_ *>(it_code->second)->get_expression_type())
               {
-              case TemporaryTerm:
-                equation_type = TemporaryTerm;
+              case ExpressionType::TemporaryTerm:
+                equation_type = ExpressionType::TemporaryTerm;
                 break;
-              case ModelEquation:
-                equation_type = ModelEquation;
+              case ExpressionType::ModelEquation:
+                equation_type = ExpressionType::ModelEquation;
                 break;
-              case FirstEndoDerivative:
-                equation_type = FirstEndoDerivative;
+              case ExpressionType::FirstEndoDerivative:
+                equation_type = ExpressionType::FirstEndoDerivative;
                 break;
-              case FirstOtherEndoDerivative:
-                equation_type = FirstOtherEndoDerivative;
+              case ExpressionType::FirstOtherEndoDerivative:
+                equation_type = ExpressionType::FirstOtherEndoDerivative;
                 break;
-              case FirstExoDerivative:
-                equation_type = FirstExoDerivative;
+              case ExpressionType::FirstExoDerivative:
+                equation_type = ExpressionType::FirstExoDerivative;
                 break;
-              case FirstExodetDerivative:
-                equation_type = FirstExodetDerivative;
+              case ExpressionType::FirstExodetDerivative:
+                equation_type = ExpressionType::FirstExodetDerivative;
                 break;
-              case FirstParamDerivative:
-                equation_type = FirstParamDerivative;
+              case ExpressionType::FirstParamDerivative:
+                equation_type = ExpressionType::FirstParamDerivative;
                 break;
-              case SecondEndoDerivative:
-                equation_type = SecondEndoDerivative;
+              case ExpressionType::SecondEndoDerivative:
+                equation_type = ExpressionType::SecondEndoDerivative;
                 break;
-              case SecondExoDerivative:
-                equation_type = SecondExoDerivative;
+              case ExpressionType::SecondExoDerivative:
+                equation_type = ExpressionType::SecondExoDerivative;
                 break;
-              case SecondExodetDerivative:
-                equation_type = SecondExodetDerivative;
+              case ExpressionType::SecondExodetDerivative:
+                equation_type = ExpressionType::SecondExodetDerivative;
                 break;
-              case SecondParamDerivative:
-                equation_type = SecondExodetDerivative;
+              case ExpressionType::SecondParamDerivative:
+                equation_type = ExpressionType::SecondExodetDerivative;
                 break;
-              case ThirdEndoDerivative:
-                equation_type = ThirdEndoDerivative;
+              case ExpressionType::ThirdEndoDerivative:
+                equation_type = ExpressionType::ThirdEndoDerivative;
                 break;
-              case ThirdExoDerivative:
-                equation_type = ThirdExoDerivative;
+              case ExpressionType::ThirdExoDerivative:
+                equation_type = ExpressionType::ThirdExoDerivative;
                 break;
-              case ThirdExodetDerivative:
-                equation_type = ThirdExodetDerivative;
+              case ExpressionType::ThirdExodetDerivative:
+                equation_type = ExpressionType::ThirdExodetDerivative;
                 break;
-              case ThirdParamDerivative:
-                equation_type = ThirdExodetDerivative;
+              case ExpressionType::ThirdParamDerivative:
+                equation_type = ExpressionType::ThirdExodetDerivative;
                 break;
               default:
                 ostringstream tmp;
-                tmp << " in print_expression, expression type " << static_cast<FNUMEXPR_ *>(it_code->second)->get_expression_type() << " not implemented yet\n";
+                tmp << " in print_expression, expression type " << static_cast<int>(static_cast<FNUMEXPR_ *>(it_code->second)->get_expression_type()) << " not implemented yet\n";
                 throw FatalExceptionHandling(tmp.str());
               }
             break;
-          case FLDV:
+          case Tags::FLDV:
             //load a variable in the processor
             switch (static_cast<SymbolType>(static_cast<FLDV_ *>(it_code->second)->get_type()))
               {
@@ -753,8 +753,8 @@ public:
                 mexPrintf("FLDV: Unknown variable type\n");
               }
             break;
-          case FLDSV:
-          case FLDVS:
+          case Tags::FLDSV:
+          case Tags::FLDVS:
             //load a variable in the processor
             switch (static_cast<SymbolType>(static_cast<FLDSV_ *>(it_code->second)->get_type()))
               {
@@ -775,7 +775,7 @@ public:
                 Stack.push(get_variable(SymbolType::endogenous, var));
                 if (compute)
                   {
-                    if (it_code->first == FLDSV)
+                    if (it_code->first == Tags::FLDSV)
                       {
                         if (evaluate)
                           Stackf.push(ya[var]);
@@ -813,7 +813,7 @@ public:
                 mexPrintf("FLDSV: Unknown variable type\n");
               }
             break;
-          case FLDT:
+          case Tags::FLDT:
             //load a temporary variable in the processor
             var = static_cast<FLDT_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
@@ -825,7 +825,7 @@ public:
             if (compute)
               Stackf.push(T[var*(periods+y_kmin+y_kmax)+it_]);
             break;
-          case FLDST:
+          case Tags::FLDST:
             //load a temporary variable in the processor
             var = static_cast<FLDST_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
@@ -837,7 +837,7 @@ public:
             if (compute)
               Stackf.push(T[var]);
             break;
-          case FLDU:
+          case Tags::FLDU:
             //load u variable in the processor
             var = static_cast<FLDU_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
@@ -850,7 +850,7 @@ public:
             if (compute)
               Stackf.push(u[var]);
             break;
-          case FLDSU:
+          case Tags::FLDSU:
             //load u variable in the processor
             var = static_cast<FLDSU_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
@@ -862,7 +862,7 @@ public:
             if (compute)
               Stackf.push(u[var]);
             break;
-          case FLDR:
+          case Tags::FLDR:
             var = static_cast<FLDR_ *>(it_code->second)->get_pos();
 #ifdef DEBUG
             mexPrintf("FLDSR_ var=%d", var);
@@ -873,7 +873,7 @@ public:
             if (compute)
               Stackf.push(r[var]);
             break;
-          case FLDZ:
+          case Tags::FLDZ:
             //load 0 in the processor
 #ifdef DEBUG
             mexPrintf("FLDZ_");
@@ -884,7 +884,7 @@ public:
             if (compute)
               Stackf.push(0.0);
             break;
-          case FLDC:
+          case Tags::FLDC:
             //load a numerical constant in the processor
             ll = static_cast<FLDC_ *>(it_code->second)->get_value();
             tmp_out.str("");
@@ -896,7 +896,7 @@ public:
             if (compute)
               Stackf.push(ll);
             break;
-          case FSTPV:
+          case Tags::FSTPV:
             //load a variable in the processor
             go_on = false;
             switch (static_cast<SymbolType>(static_cast<FSTPV_ *>(it_code->second)->get_type()))
@@ -983,7 +983,7 @@ public:
                 mexPrintf("FSTPV: Unknown variable type\n");
               }
             break;
-          case FSTPSV:
+          case Tags::FSTPSV:
             go_on = false;
             //load a variable in the processor
             switch (static_cast<SymbolType>(static_cast<FSTPSV_ *>(it_code->second)->get_type()))
@@ -1044,7 +1044,7 @@ public:
                 mexPrintf("FSTPSV: Unknown variable type\n");
               }
             break;
-          case FSTPT:
+          case Tags::FSTPT:
             go_on = false;
             //store in a temporary variable from the processor
             var = static_cast<FSTPT_ *>(it_code->second)->get_pos();
@@ -1060,7 +1060,7 @@ public:
                 Stackf.pop();
               }
             break;
-          case FSTPST:
+          case Tags::FSTPST:
             go_on = false;
             //store in a temporary variable from the processor
             var = static_cast<FSTPST_ *>(it_code->second)->get_pos();
@@ -1076,7 +1076,7 @@ public:
                 Stackf.pop();
               }
             break;
-          case FSTPU:
+          case Tags::FSTPU:
             go_on = false;
             //store in u variable from the processor
             var = static_cast<FSTPU_ *>(it_code->second)->get_pos();
@@ -1093,7 +1093,7 @@ public:
                 Stackf.pop();
               }
             break;
-          case FSTPSU:
+          case Tags::FSTPSU:
             go_on = false;
             //store in u variable from the processor
             var = static_cast<FSTPSU_ *>(it_code->second)->get_pos();
@@ -1109,7 +1109,7 @@ public:
                 Stackf.pop();
               }
             break;
-          case FSTPR:
+          case Tags::FSTPR:
             go_on = false;
             //store in residual variable from the processor
             var = static_cast<FSTPR_ *>(it_code->second)->get_pos();
@@ -1125,7 +1125,7 @@ public:
                 Stackf.pop();
               }
             break;
-          case FSTPG:
+          case Tags::FSTPG:
             go_on = false;
             //store in derivative (g) variable from the processor
             var = static_cast<FSTPG_ *>(it_code->second)->get_pos();
@@ -1141,7 +1141,7 @@ public:
                 Stackf.pop();
               }
             break;
-          case FSTPG2:
+          case Tags::FSTPG2:
             go_on = false;
             //store in derivative (g) variable from the processor
             eq = static_cast<FSTPG2_ *>(it_code->second)->get_row();
@@ -1158,7 +1158,7 @@ public:
                 Stackf.pop();
               }
             break;
-          case FSTPG3:
+          case Tags::FSTPG3:
             //store in derivative (g) variable from the processor
 #ifdef DEBUG
             mexPrintf("FSTPG3\n");
@@ -1178,7 +1178,7 @@ public:
             pos_col = static_cast<FSTPG3_ *>(it_code->second)->get_col_pos();
             switch (equation_type)
               {
-              case FirstEndoDerivative:
+              case ExpressionType::FirstEndoDerivative:
 #ifdef DEBUG
                 mexPrintf("Endo eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);
 #endif
@@ -1188,14 +1188,14 @@ public:
                 tmp_out << "/*jacob(" << eq << ", " << pos_col << " var= " << var << ")*/ jacob(" << eq+size*pos_col+1 << ") = " << Stack.top();
                 Stack.pop();
                 break;
-              case FirstOtherEndoDerivative:
+              case ExpressionType::FirstOtherEndoDerivative:
                 if (compute)
                   jacob_other_endo[eq + size*pos_col] = r;
                 tmp_out.str("");
                 tmp_out << "jacob_other_endo(" << eq+size*pos_col+1 << ") = " << Stack.top();
                 Stack.pop();
                 break;
-              case FirstExoDerivative:
+              case ExpressionType::FirstExoDerivative:
 #ifdef DEBUG
                 mexPrintf("Exo eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);
 #endif
@@ -1205,7 +1205,7 @@ public:
                 tmp_out << "/*jacob_exo(" << eq << ", " << pos_col << " var=" << var << ")*/ jacob_exo(" << eq+size*pos_col+1 << ") = " << Stack.top();
                 Stack.pop();
                 break;
-              case FirstExodetDerivative:
+              case ExpressionType::FirstExodetDerivative:
                 if (compute)
                   jacob_exo_det[eq + size*pos_col] = r;
                 tmp_out.str("");
@@ -1214,7 +1214,7 @@ public:
                 break;
               default:
                 ostringstream tmp;
-                tmp << " in compute_block_time, variable " << EQN_type << " not used yet\n";
+                tmp << " in compute_block_time, variable " << static_cast<int>(EQN_type) << " not used yet\n";
                 //throw FatalExceptionHandling(tmp.str());
                 mexPrintf("%s", tmp.str().c_str());
               }
@@ -1224,7 +1224,7 @@ public:
             tmp_out.str("");
 #endif
             break;
-          case FBINARY:
+          case Tags::FBINARY:
             op = static_cast<FBINARY_ *>(it_code->second)->get_op_type();
             v2 = Stack.top();
             Stack.pop();
@@ -1559,7 +1559,7 @@ public:
                 ;
               }
             break;
-          case FUNARY:
+          case Tags::FUNARY:
             op = static_cast<FUNARY_ *>(it_code->second)->get_op_type();
             v1 = Stack.top();
             Stack.pop();
@@ -1723,7 +1723,7 @@ public:
                 ;
               }
             break;
-          case FTRINARY:
+          case Tags::FTRINARY:
             op = static_cast<FTRINARY_ *>(it_code->second)->get_op_type();
             v3 = Stack.top();
             Stack.pop();
@@ -1760,7 +1760,7 @@ public:
                 mexPrintf("Error unknown Trinary operator=%d\n", op); mexEvalString("drawnow;");
               }
             break;
-          case FCALL:
+          case Tags::FCALL:
             {
 #ifdef DEBUG
               mexPrintf("------------------------------\n");
@@ -2010,7 +2010,7 @@ public:
 #endif
               break;
             }
-          case FSTPTEF:
+          case Tags::FSTPTEF:
             go_on = false;
             var = static_cast<FSTPTEF_ *>(it_code->second)->get_number();
 #ifdef DEBUG
@@ -2047,7 +2047,7 @@ public:
             mexEvalString("drawnow;");
 #endif
             break;
-          case FLDTEF:
+          case Tags::FLDTEF:
             var = static_cast<FLDTEF_ *>(it_code->second)->get_number();
 #ifdef DEBUG
             mexPrintf("FLDTEF\n");
@@ -2072,7 +2072,7 @@ public:
 #endif
 
             break;
-          case FSTPTEFD:
+          case Tags::FSTPTEFD:
             {
               go_on = false;
               unsigned int indx = static_cast<FSTPTEFD_ *>(it_code->second)->get_indx();
@@ -2098,7 +2098,7 @@ public:
               Stack.pop();
             }
             break;
-          case FLDTEFD:
+          case Tags::FLDTEFD:
             {
               unsigned int indx = static_cast<FLDTEFD_ *>(it_code->second)->get_indx();
               unsigned int row = static_cast<FLDTEFD_ *>(it_code->second)->get_row();
@@ -2119,7 +2119,7 @@ public:
               Stack.push(tmp_out.str());
             }
             break;
-          case FSTPTEFDD:
+          case Tags::FSTPTEFDD:
             {
               go_on = false;
               unsigned int indx = static_cast<FSTPTEFDD_ *>(it_code->second)->get_indx();
@@ -2149,7 +2149,7 @@ public:
             }
 
             break;
-          case FLDTEFDD:
+          case Tags::FLDTEFDD:
             {
               unsigned int indx = static_cast<FLDTEFDD_ *>(it_code->second)->get_indx();
               unsigned int row = static_cast<FLDTEFDD_ *>(it_code->second)->get_row();
@@ -2171,17 +2171,17 @@ public:
               Stack.push(tmp_out.str());
             }
             break;
-          case FJMPIFEVAL:
+          case Tags::FJMPIFEVAL:
             tmp_out.str("");
             tmp_out << "if (~evaluate)";
             go_on = false;
             break;
-          case FJMP:
+          case Tags::FJMP:
             tmp_out.str("");
             tmp_out << "else";
             go_on = false;
             break;
-          case FCUML:
+          case Tags::FCUML:
             if (compute)
               {
                 v1f = Stackf.top();
@@ -2198,16 +2198,16 @@ public:
             tmp_out << v1 << " + " << v2;
             Stack.push(tmp_out.str());
             break;
-          case FENDBLOCK:
-          case FENDEQU:
+          case Tags::FENDBLOCK:
+          case Tags::FENDEQU:
             go_on = false;
             break;
-          case FOK:
+          case Tags::FOK:
             break;
           default:
             ostringstream tmp;
             mexPrintf("Error it_code->first=%d unknown\n", it_code->first); mexEvalString("drawnow;");
-            tmp << " in print_expression, unknown opcode " << it_code->first << "!! FENDEQU=" << FENDEQU << "\n";
+            tmp << " in print_expression, unknown opcode " << static_cast<int>(it_code->first) << "!! FENDEQU=" << static_cast<int>(Tags::FENDEQU) << "\n";
             throw FatalExceptionHandling(tmp.str());
           }
         it_code++;

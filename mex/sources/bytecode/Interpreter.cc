@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2020 Dynare Team
+ * Copyright © 2007-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -551,7 +551,7 @@ Interpreter::print_a_block()
   bool space = false;
   while (go_on)
     {
-      if (it_code->first == FENDBLOCK)
+      if (it_code->first == Tags::FENDBLOCK)
         {
           go_on = false;
           it_code++;
@@ -652,7 +652,7 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
     {
       switch (it_code->first)
         {
-        case FBEGINBLOCK:
+        case Tags::FBEGINBLOCK:
           Block_Count++;
 #ifdef DEBUG
           mexPrintf("---------------------------------------------------------\n");
@@ -745,14 +745,14 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
             }
 
           break;
-        case FEND:
+        case Tags::FEND:
 #ifdef DEBUG
           mexPrintf("FEND\n");
 #endif
           go_on = false;
           it_code++;
           break;
-        case FDIMT:
+        case Tags::FDIMT:
 #ifdef DEBUG
           mexPrintf("FDIMT size=%d\n", static_cast<FDIMT_ *>(it_code->second)->get_size());
 #endif
@@ -768,7 +768,7 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
           else
             it_code++;
           break;
-        case FDIMST:
+        case Tags::FDIMST:
 #ifdef DEBUG
           mexPrintf("FDIMST size=%d\n", static_cast<FDIMST_ *>(it_code->second)->get_size());
 #endif
@@ -798,7 +798,7 @@ Interpreter::MainLoop(string bin_basename, CodeLoad code, bool evaluate, int blo
           break;
         default:
           ostringstream tmp;
-          tmp << " in compute_blocks, unknown command " << it_code->first << " (block=" << Block_Count << ")\n";
+          tmp << " in compute_blocks, unknown command " << static_cast<int>(it_code->first) << " (block=" << Block_Count << ")\n";
           throw FatalExceptionHandling(tmp.str());
         }
     }
