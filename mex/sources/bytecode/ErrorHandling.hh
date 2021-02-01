@@ -30,6 +30,7 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <utility>
 #ifndef M_PI
 # define M_PI (3.14159265358979323846)
 #endif
@@ -165,7 +166,7 @@ public:
     FreeLibrary(hinstLib);
   };
 #endif
-  GeneralExceptionHandling(string ErrorMsg_arg) : ErrorMsg(ErrorMsg_arg)
+  GeneralExceptionHandling(string ErrorMsg_arg) : ErrorMsg{move(ErrorMsg_arg)}
   {
   };
   inline string
