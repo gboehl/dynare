@@ -23,7 +23,7 @@ function P=lyapunov_solver(T,R,Q,DynareOptions) % --*-- Unitary tests --*--
 %       Square-root solver for discrete-time Lyapunov equations (requires Matlab System Control toolbox
 %       or Octave control package)
 
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright (C) 2016-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -160,7 +160,7 @@ end
 %$    t(7) = 1;
 %$ end
 %$
-%$ if max(max(abs(Pstar1_large-Pstar2_large)))>1e-8
+%$ if max(max(abs(Pstar1_large-Pstar2_large)))>2e-8
 %$    t(8) = 0;
 %$ else
 %$    t(8) = 1;
@@ -176,7 +176,7 @@ end
 %$    t(9) = 1;
 %$ end
 %$
-%$ if max(max(abs(Pstar1_large-Pstar4_large)))>1e-8
+%$ if max(max(abs(Pstar1_large-Pstar4_large)))>2e-8
 %$    t(10) = 0;
 %$ else
 %$    t(10) = 1;
