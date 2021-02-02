@@ -1,4 +1,4 @@
-function DynareModel = parameters(varexpectationmodelname, DynareModel, DynareOutput)
+function DynareModel = update_parameters(varexpectationmodelname, DynareModel, DynareOutput)
 
 % Updates the VAR expectation reduced form parameters.
 %
@@ -13,7 +13,7 @@ function DynareModel = parameters(varexpectationmodelname, DynareModel, DynareOu
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

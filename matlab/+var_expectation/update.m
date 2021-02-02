@@ -8,7 +8,7 @@ function update(varexpectationmodelname)
 % OUTPUTS
 % None
 
-% Copyright (C) 2018 Dynare Team
+% Copyright (C) 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,4 +27,4 @@ function update(varexpectationmodelname)
 
 global M_ oo_
 
-M_ = var_expectation.update.parameters(varexpectationmodelname, M_, oo_);
+M_ = var_expectation.update_parameters(varexpectationmodelname, M_, oo_);
