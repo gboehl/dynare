@@ -6,7 +6,7 @@ function [dbase, info] = checkdatabase(dbase, DynareModel, inversionflag, simula
 % endogenous variables in difference (which may be lagged), or lags on the
 % exogenous variables, then thee routine complete the database.
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright (C) 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,7 +31,7 @@ if nargin<3
     inversionflag = false;
 end
 
-if exist(sprintf('+%s/dynamic_set_auxiliary_series', DynareModel.fname), 'file')
+if exist(sprintf('+%s/dynamic_set_auxiliary_series.m', DynareModel.fname), 'file')
     dbase = feval(sprintf('%s.dynamic_set_auxiliary_series', DynareModel.fname), dbase, DynareModel.params);
 end
 
