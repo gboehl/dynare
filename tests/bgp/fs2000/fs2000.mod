@@ -64,18 +64,22 @@ verbatim;
     bgp.write(M_);
     y = 1+(rand(M_.endo_nbr,1)-.5)*.25;
     g = ones(M_.endo_nbr,1);% 1+(rand(M_.endo_nbr,1)-.5)*.1;
-    if ~isoctave || ~octave_ver_less_than('6') % MATLAB or Octave ≥ 6
-        if isoctave
-            options = optimset('Display','iter','Algorithm','levenberg-marquardt','MaxFunEvals',1000000,'MaxIter',100000,'GradObj','on','TolFun',1e-6,'TolX',1e-6);
-        else
-            options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-6,'StepTolerance',1e-6);
-        end
-        [y, fval, exitflag] = fsolve(@fs2000.bgpfun, [y;g], options);
-    else % Octave < 6
+    if isoctave
         options = optimset('Display','iter','Algorithm','levenberg-marquardt','MaxFunEvals',1000000,'MaxIter',100000,'GradObj','on','TolFun',1e-6,'TolX',1e-6);
-        h=str2func('fs2000.bgpfun'); %workaround for https://savannah.gnu.org/bugs/?46659 still present in Octave 5
-        [y, fval, exitflag] = fsolve(h, [y;g], options);
+    elseif matlab_ver_less_than('9.0')
+        % See https://fr.mathworks.com/help/optim/ug/current-and-legacy-option-name-tables.html
+        options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunEvals',1000000,'MaxIter',100000,'Jacobian','on','TolFun',1e-6,'TolX',1e-6);
+    else
+        options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-6,'StepTolerance',1e-6);
     end
+    if isoctave && octave_ver_less_than('6')
+        % Octave < 6 can't take a function handle of a function in a package
+        % See https://savannah.gnu.org/bugs/index.php?46659
+        fun = str2func('fs2000.bgpfun');
+    else
+        fun = @fs2000.bgpfun;
+    end
+    [y, fval, exitflag] = fsolve(fun, [y;g], options);
     if exitflag<1
         error('Solution not found')
     end

@@ -49,6 +49,9 @@ verbatim;
     EG = NaN(MC,1);
     if isoctave
         options = optimset('Display', 'off', 'MaxFunEvals', 1000000,'MaxIter',100000,'Jacobian','on','TolFun',1e-8,'TolX',1e-8);
+    elseif matlab_ver_less_than('9.0')
+        % See https://fr.mathworks.com/help/optim/ug/current-and-legacy-option-name-tables.html
+        options = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt','MaxFunEvals',1000000,'MaxIter',100000,'Jacobian','on','TolFun',1e-8,'TolX',1e-8);
     else
         options = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-8,'StepTolerance',1e-8);
     end
