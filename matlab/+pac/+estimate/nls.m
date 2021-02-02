@@ -104,9 +104,9 @@ for i=1:length(objNames)
         end
         j = regexp(rhs, ['\<', objNames{i}, '\>']);
         if islaggedvariables
-            jlag = regexp(rhs, ['\<(', objNames{i}, '\(-1\))\>']);
+            jlag = regexp(rhs, ['\<', objNames{i}, '\(-1\)']);
             if ~isempty(jlag)
-                rhs = regexprep(rhs, ['\<(' objNames{i} '\(-1\))\>'], sprintf('data(1:end-1,%u)', k));
+                rhs = regexprep(rhs, ['\<' objNames{i} '\(-1\)'], sprintf('data(1:end-1,%u)', k));
             end
             if ~isempty(setdiff(j, jlag))
                 rhs = regexprep(rhs, ['\<' objNames{i} '\>'], sprintf('data(2:end,%u)', k));
