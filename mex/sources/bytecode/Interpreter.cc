@@ -870,8 +870,8 @@ Interpreter::extended_path(const string &file_name, const string &bin_basename, 
 
       it_code = Init_Code;
       vector_table_conditional_local.clear();
-      if (table_conditional_global.size())
-        vector_table_conditional_local = table_conditional_global.at(t);
+      if (auto it = table_conditional_global.find(t); it != table_conditional_global.end())
+        vector_table_conditional_local = it->second;
       if (t < nb_periods)
         MainLoop(bin_basename, code, evaluate, block, false, true, sconstrained_extended_path, vector_table_conditional_local);
       else
