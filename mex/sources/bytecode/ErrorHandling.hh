@@ -38,11 +38,9 @@
 # define CHAR_LENGTH 2
 #endif
 
-//#define DEBUG
 using namespace std;
 
-const int NO_ERROR_ON_EXIT = 0;
-const int ERROR_ON_EXIT = 1;
+constexpr int NO_ERROR_ON_EXIT = 0, ERROR_ON_EXIT = 1;
 
 using code_liste_type = vector<pair<Tags, void *>>;
 using it_code_type = code_liste_type::const_iterator;
@@ -60,7 +58,7 @@ public:
     return ErrorMsg;
   }
   inline void
-  completeErrorMsg(string ErrorMsg_arg)
+  completeErrorMsg(const string &ErrorMsg_arg)
   {
     ErrorMsg += ErrorMsg_arg;
   }
@@ -69,9 +67,9 @@ public:
 class FloatingPointExceptionHandling : public GeneralExceptionHandling
 {
 public:
-  FloatingPointExceptionHandling(string value) : GeneralExceptionHandling(string("Floating point error in bytecode: " + value))
+  FloatingPointExceptionHandling(const string &value) : GeneralExceptionHandling("Floating point error in bytecode: " + value)
   {
-  };
+  }
 };
 
 class LogExceptionHandling : public FloatingPointExceptionHandling
@@ -81,10 +79,8 @@ public:
   LogExceptionHandling(double value_arg) : FloatingPointExceptionHandling("log(X)"),
                                            value(value_arg)
   {
-    ostringstream tmp;
-    tmp << " with X=" << value << "\n";
-    completeErrorMsg(tmp.str());
-  };
+    completeErrorMsg(" with X=" + to_string(value) + "\n");
+  }
 };
 
 class Log10ExceptionHandling : public FloatingPointExceptionHandling
@@ -94,10 +90,8 @@ public:
   Log10ExceptionHandling(double value_arg) : FloatingPointExceptionHandling("log10(X)"),
                                              value(value_arg)
   {
-    ostringstream tmp;
-    tmp << " with X=" << value << "\n";
-    completeErrorMsg(tmp.str());
-  };
+    completeErrorMsg(" with X=" + to_string(value) + "\n");
+  }
 };
 
 class DivideExceptionHandling : public FloatingPointExceptionHandling
@@ -108,10 +102,8 @@ public:
                                                                   value1(value1_arg),
                                                                   value2(value2_arg)
   {
-    ostringstream tmp;
-    tmp << " with X=" << value2 << "\n";
-    completeErrorMsg(tmp.str());
-  };
+    completeErrorMsg(" with X=" + to_string(value2) + "\n");
+  }
 };
 
 class PowExceptionHandling : public FloatingPointExceptionHandling
@@ -122,12 +114,10 @@ public:
                                                                value1(value1_arg),
                                                                value2(value2_arg)
   {
-    ostringstream tmp;
     if (fabs(value1) > 1e-10)
-      tmp << " with X=" << value1 << "\n";
+      completeErrorMsg(" with X=" + to_string(value1) + "\n");
     else
-      tmp << " with X=" << value1 << " and a=" << value2 << "\n";
-    completeErrorMsg(tmp.str());
+      completeErrorMsg(" with X=" + to_string(value1) + " and a=" + to_string(value2) + "\n");
   };
 };
 
@@ -144,7 +134,8 @@ public:
 class FatalExceptionHandling : public GeneralExceptionHandling
 {
 public:
-  FatalExceptionHandling(string ErrorMsg_arg) : GeneralExceptionHandling("Fatal error in bytecode:")
+  FatalExceptionHandling(const string &ErrorMsg_arg)
+    : GeneralExceptionHandling("Fatal error in bytecode:")
   {
     completeErrorMsg(ErrorMsg_arg);
   };
@@ -191,8 +182,8 @@ public:
   vector<s_plan> splan, spfplan;
   vector<mxArray *> jacobian_block, jacobian_other_endo_block, jacobian_exo_block, jacobian_det_exo_block;
   map<unsigned int, double> TEF;
-  map<pair<unsigned int, unsigned int>, double > TEFD;
-  map<pair<unsigned int, pair<unsigned int, unsigned int>>, double > TEFDD;
+  map<pair<unsigned int, unsigned int>, double> TEFD;
+  map<tuple<unsigned int, unsigned int, unsigned int>, double> TEFDD;
 
   ExpressionType EQN_type;
   it_code_type it_code_expr;
@@ -201,7 +192,7 @@ public:
   size_t /*unsigned int*/ endo_name_length, exo_name_length, param_name_length;
   unsigned int EQN_equation, EQN_block, EQN_block_number;
   unsigned int EQN_dvar1, EQN_dvar2, EQN_dvar3;
-  vector<pair<string, pair<SymbolType, unsigned int>>> Variable_list;
+  vector<tuple<string, SymbolType, unsigned int>> Variable_list;
 
   inline
   ErrorMsg()
@@ -263,9 +254,9 @@ public:
         else
           {
             if (dollar.compare(&i) == 0)
-              pos1 = int (temp.length());
+              pos1 = static_cast<int>(temp.length());
             else
-              pos2 = int (temp.length());
+              pos2 = static_cast<int>(temp.length());
             if (pos1 >= 0 && pos2 >= 0)
               {
                 tmp_n.erase(pos1, pos2-pos1+1);
@@ -287,19 +278,19 @@ public:
         for (unsigned int i = 0; i < endo_name_length; i++)
           if (P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)] != ' ')
             res << P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)];
-        Variable_list.emplace_back(res.str(), make_pair(SymbolType::endogenous, variable_num));
+        Variable_list.emplace_back(res.str(), SymbolType::endogenous, variable_num);
       }
     for (unsigned int variable_num = 0; variable_num < static_cast<unsigned int>(nb_exo); variable_num++)
       {
         for (unsigned int i = 0; i < exo_name_length; i++)
           if (P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)] != ' ')
             res << P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)];
-        Variable_list.emplace_back(res.str(), make_pair(SymbolType::exogenous, variable_num));
+        Variable_list.emplace_back(res.str(), SymbolType::exogenous, variable_num);
       }
   }
 
   inline int
-  get_ID(const string variable_name, SymbolType *variable_type)
+  get_ID(const string &variable_name, SymbolType *variable_type)
   {
     if (!is_load_variable_list)
       {
@@ -311,19 +302,19 @@ public:
     bool notfound = true;
     while (notfound && i < static_cast<int>(n))
       {
-        if (variable_name == Variable_list[i].first)
+        if (variable_name == get<0>(Variable_list[i]))
           {
             notfound = false;
-            *variable_type = Variable_list[i].second.first;
-            return Variable_list[i].second.second;
+            *variable_type = get<1>(Variable_list[i]);
+            return get<2>(Variable_list[i]);
           }
         i++;
       }
-    return (-1);
+    return -1;
   }
 
   inline string
-  get_variable(const SymbolType variable_type, const unsigned int variable_num) const
+  get_variable(SymbolType variable_type, unsigned int variable_num) const
   {
     ostringstream res;
     switch (variable_type)
@@ -362,13 +353,13 @@ public:
       default:
         break;
       }
-    return (res.str());
+    return res.str();
   }
 
   inline string
   error_location(bool evaluate, bool steady_state, int size, int block_num, int it_, int Per_u_)
   {
-    stringstream Error_loc("");
+    stringstream Error_loc;
     if (!steady_state)
       switch (EQN_type)
         {
@@ -467,7 +458,7 @@ public:
         }
     it_code_type it_code_ret;
     Error_loc << endl << add_underscore_to_fpe("      " + print_expression(it_code_expr, evaluate, size, block_num, steady_state, Per_u_, it_, it_code_ret, true));
-    return (Error_loc.str());
+    return Error_loc.str();
   }
 
   inline string
@@ -1214,7 +1205,7 @@ public:
                 mexPrintf("<");
 #endif
                 if (compute)
-                  Stackf.push(double (v1f < v2f));
+                  Stackf.push(static_cast<double>(v1f < v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1236,7 +1227,7 @@ public:
                 mexPrintf(">");
 #endif
                 if (compute)
-                  Stackf.push(double (v1f > v2f));
+                  Stackf.push(static_cast<double>(v1f > v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1258,7 +1249,7 @@ public:
                 mexPrintf("<=");
 #endif
                 if (compute)
-                  Stackf.push(double (v1f <= v2f));
+                  Stackf.push(static_cast<double>(v1f <= v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1280,7 +1271,7 @@ public:
                 mexPrintf(">=");
 #endif
                 if (compute)
-                  Stackf.push(double (v1f >= v2f));
+                  Stackf.push(static_cast<double>(v1f >= v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1302,7 +1293,7 @@ public:
                 mexPrintf("==");
 #endif
                 if (compute)
-                  Stackf.push(double (v1f == v2f));
+                  Stackf.push(static_cast<double>(v1f == v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1324,7 +1315,7 @@ public:
                 mexPrintf("!=");
 #endif
                 if (compute)
-                  Stackf.push(double (v1f != v2f));
+                  Stackf.push(static_cast<double>(v1f != v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1380,7 +1371,7 @@ public:
                   Stack.pop();
                   if (compute)
                     {
-                      int derivOrder = int (nearbyint(Stackf.top()));
+                      int derivOrder = static_cast<int>(nearbyint(Stackf.top()));
                       Stackf.pop();
                       if (fabs(v1f) < near_zero && v2f > 0
                           && derivOrder > v2f
@@ -1967,7 +1958,7 @@ public:
                 {
 #ifdef DEBUG
                   double rr = Stackf.top();
-                  mexPrintf("FSTP TEFD[make_pair(indx, row)]=%f done\n", rr);
+                  mexPrintf("FSTP TEFD[{ indx, row }]=%f done\n", rr);
                   mexEvalString("drawnow;");
 #endif
                   Stackf.pop();
@@ -1987,13 +1978,13 @@ public:
 #ifdef DEBUG
               mexPrintf("FLDTEFD\n");
               mexPrintf("indx=%d row=%d Stack.size()=%d\n", indx, row, Stack.size());
-              auto it = TEFD.find(make_pair(indx, row-1));
-              mexPrintf("FLD TEFD[make_pair(indx, row)]=%f done\n", it->second);
+              auto it = TEFD.find({ indx, row-1 });
+              mexPrintf("FLD TEFD[{ indx, row }]=%f done\n", it->second);
               mexEvalString("drawnow;");
 #endif
               if (compute)
                 {
-                  auto it = TEFD.find(make_pair(indx, row-1));
+                  auto it = TEFD.find({ indx, row-1 });
                   Stackf.push(it->second);
                 }
               tmp_out.str("");
@@ -2016,8 +2007,8 @@ public:
 #ifdef DEBUG
                   double rr = Stackf.top();
                   mexPrintf("rr=%f\n", rr);
-                  auto it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
-                  mexPrintf("FSTP TEFDD[make_pair(indx, make_pair(row, col))]=%f done\n", it->second);
+                  auto it = TEFDD.find({ indx, row-1, col-1 });
+                  mexPrintf("FSTP TEFDD[{ indx, row, col }]=%f done\n", it->second);
                   mexEvalString("drawnow;");
 #endif
                   Stackf.pop();
@@ -2039,13 +2030,13 @@ public:
 #ifdef DEBUG
               mexPrintf("FLDTEFD\n");
               mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
-              auto it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
-              mexPrintf("FLD TEFD[make_pair(indx, make_pair(row, col))]=%f done\n", it->second);
+              auto it = TEFDD.find({ indx, row-1, col-1 });
+              mexPrintf("FLD TEFD[{ indx, row, col }]=%f done\n", it->second);
               mexEvalString("drawnow;");
 #endif
               if (compute)
                 {
-                  auto it = TEFDD.find(make_pair(indx, make_pair(row-1, col-1)));
+                  auto it = TEFDD.find({ indx, row-1, col-1 });
                   Stackf.push(it->second);
                 }
               tmp_out.str("");
@@ -2087,10 +2078,11 @@ public:
           case Tags::FOK:
             break;
           default:
-            ostringstream tmp;
             mexPrintf("Error it_code->first=%d unknown\n", it_code->first); mexEvalString("drawnow;");
-            tmp << " in print_expression, unknown opcode " << static_cast<int>(it_code->first) << "!! FENDEQU=" << static_cast<int>(Tags::FENDEQU) << "\n";
-            throw FatalExceptionHandling(tmp.str());
+            throw FatalExceptionHandling(" in print_expression, unknown opcode "
+                                         + to_string(static_cast<int>(it_code->first))
+                                         + "!! FENDEQU="
+                                         + to_string(static_cast<int>(Tags::FENDEQU)) + "\n");
           }
         it_code++;
       }
@@ -2098,21 +2090,15 @@ public:
     mexPrintf("print_expression end tmp_out.str().c_str()=%s\n", tmp_out.str().c_str()); mexEvalString("drawnow;");
 #endif
     it_code_ret = it_code;
-    return (tmp_out.str());
+    return tmp_out.str();
   }
-  void
 
-  inline
-  test_mxMalloc(void *z, int line, string file, string func, int amount)
+  static inline void
+  test_mxMalloc(void *z, int line, const string &file, const string &func, int amount)
   {
-    if (z == nullptr && (amount > 0))
-      {
-        ostringstream tmp;
-        tmp << " mxMalloc: out of memory " << amount << " bytes required at line " << line << " in function " << func << " (file " << file;
-        throw FatalExceptionHandling(tmp.str());
-      }
+    if (!z && amount > 0)
+      throw FatalExceptionHandling(" mxMalloc: out of memory " + to_string(amount) + " bytes required at line " + to_string(line) + " in function " + func + " (file " + file);
   }
-
 };
 
 #endif

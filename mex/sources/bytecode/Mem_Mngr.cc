@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2017 Dynare Team
+ * Copyright © 2007-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -24,16 +24,6 @@ Mem_Mngr::Mem_Mngr()
   swp_f = false;
   swp_f_b = 0;
 }
-/*void
-  Mem_Mngr::Print_heap()
-  {
-  unsigned int i;
-  mexPrintf("i   :");
-  for (i = 0; i < CHUNK_SIZE; i++)
-  mexPrintf("%3d ", i);
-  mexPrintf("\n");
-  }
-*/
 
 void
 Mem_Mngr::init_Mem()
@@ -50,7 +40,7 @@ Mem_Mngr::init_Mem()
 void
 Mem_Mngr::fixe_file_name(string filename_arg)
 {
-  filename_mem = filename_arg;
+  filename_mem = move(filename_arg);
 }
 
 void
@@ -67,12 +57,12 @@ Mem_Mngr::mxMalloc_NZE()
     {
       NonZeroElem *p1 = Chunk_Stack.back();
       Chunk_Stack.pop_back();
-      return (p1);
+      return p1;
     }
   else if (CHUNK_heap_pos < CHUNK_SIZE) /*there is enough allocated memory space available we keep it at the top of the heap*/
     {
       i = CHUNK_heap_pos++;
-      return (NZE_Mem_add[i]);
+      return NZE_Mem_add[i];
     }
   else /*We have to allocate extra memory space*/
     {
@@ -99,7 +89,7 @@ Mem_Mngr::mxMalloc_NZE()
       for (i = CHUNK_heap_pos; i < CHUNK_SIZE; i++)
         NZE_Mem_add[i] = const_cast<NonZeroElem *>(NZE_Mem+(i-CHUNK_heap_pos));
       i = CHUNK_heap_pos++;
-      return (NZE_Mem_add[i]);
+      return NZE_Mem_add[i];
     }
 }
 
@@ -111,7 +101,7 @@ Mem_Mngr::mxFree_NZE(void *pos)
   for (i = 0; i < Nb_CHUNK; i++)
     {
       gap = (reinterpret_cast<size_t>(pos)-reinterpret_cast<size_t>(NZE_Mem_add[i*CHUNK_BLCK_SIZE]))/sizeof(NonZeroElem);
-      if ((gap < CHUNK_BLCK_SIZE) && (gap >= 0))
+      if (gap < CHUNK_BLCK_SIZE && gap >= 0)
         break;
     }
   Chunk_Stack.push_back(static_cast<NonZeroElem *>(pos));

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2017 Dynare Team
+ * Copyright © 2007-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -29,8 +29,6 @@
 #include <dynmex.h>
 #include "ErrorHandling.hh"
 
-#define pow_ pow
-
 class Evaluate : public ErrorMsg
 {
 private:
@@ -43,10 +41,10 @@ protected:
   double divide(double a, double b);
   double log1(double a);
   double log10_1(double a);
-  void evaluate_over_periods(const bool forward);
+  void evaluate_over_periods(bool forward);
   void solve_simple_one_periods();
-  void solve_simple_over_periods(const bool forward);
-  void compute_block_time(const int Per_u_, const bool evaluate, const bool no_derivatives);
+  void solve_simple_over_periods(bool forward);
+  void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
   code_liste_type code_liste;
   it_code_type it_code;
   int Block_Count, Per_u_, Per_y_;
@@ -55,7 +53,6 @@ protected:
   double *direction;
   double solve_tolf;
   bool GaussSeidel;
-  map<pair<pair<int, int>, int>, int> IM_i;
   int equation, derivative_equation, derivative_variable;
   string filename;
   int stack_solve_algo, solve_algo;
@@ -77,13 +74,12 @@ public:
   bool steady_state;
   double slowc;
   Evaluate();
-  Evaluate(const int y_size_arg, const int y_kmin_arg, const int y_kmax_arg, const bool print_it_arg, const bool steady_state_arg, const int periods_arg, const int minimal_solving_periods_arg, const double slowc);
-  //typedef  void (Interpreter::*InterfpreterMemFn)(const int block_num, const int size, const bool steady_state, int it);
-  void set_block(const int size_arg, const int type_arg, string file_name_arg, string bin_base_name_arg, const int block_num_arg,
-                 const bool is_linear_arg, const int symbol_table_endo_nbr_arg, const int Block_List_Max_Lag_arg, const int Block_List_Max_Lead_arg, const int u_count_int_arg, const int block_arg);
-  void evaluate_complete(const bool no_derivatives);
-  bool compute_complete(const bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
-  void compute_complete_2b(const bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx);
+  Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg, int minimal_solving_periods_arg, double slowc);
+  void set_block(int size_arg, int type_arg, string file_name_arg, string bin_base_name_arg, int block_num_arg,
+                 bool is_linear_arg, int symbol_table_endo_nbr_arg, int Block_List_Max_Lag_arg, int Block_List_Max_Lead_arg, int u_count_int_arg, int block_arg);
+  void evaluate_complete(bool no_derivatives);
+  bool compute_complete(bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
+  void compute_complete_2b(bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx);
 
   bool compute_complete(double lambda, double *crit);
 };

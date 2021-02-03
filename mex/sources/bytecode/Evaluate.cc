@@ -20,6 +20,8 @@
 #include <cstring>
 #include <sstream>
 #include <cmath>
+#include <limits>
+
 #include "Evaluate.hh"
 
 #ifdef MATLAB_MEX_FILE
@@ -35,7 +37,7 @@ Evaluate::Evaluate()
   block = -1;
 }
 
-Evaluate::Evaluate(const int y_size_arg, const int y_kmin_arg, const int y_kmax_arg, const bool print_it_arg, const bool steady_state_arg, const int periods_arg, const int minimal_solving_periods_arg, const double slowc_arg) :
+Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg, int minimal_solving_periods_arg, double slowc_arg) :
   print_it(print_it_arg), minimal_solving_periods(minimal_solving_periods_arg)
 {
   symbol_table_endo_nbr = 0;
@@ -54,10 +56,10 @@ Evaluate::Evaluate(const int y_size_arg, const int y_kmin_arg, const int y_kmax_
 double
 Evaluate::pow1(double a, double b)
 {
-  double r = pow_(a, b);
+  double r = pow(a, b);
   if (isnan(r) || isinf(r))
     {
-      res1 = NAN;
+      res1 = std::numeric_limits<double>::quiet_NaN();
       r = 0.0000000000000000000000001;
       if (print_error)
         throw PowExceptionHandling(a, b);
@@ -71,7 +73,7 @@ Evaluate::divide(double a, double b)
   double r = a / b;
   if (isnan(r) || isinf(r))
     {
-      res1 = NAN;
+      res1 = std::numeric_limits<double>::quiet_NaN();
       r = 1e70;
       if (print_error)
         throw DivideExceptionHandling(a, b);
@@ -85,7 +87,7 @@ Evaluate::log1(double a)
   double r = log(a);
   if (isnan(r) || isinf(r))
     {
-      res1 = NAN;
+      res1 = std::numeric_limits<double>::quiet_NaN();
       r = -1e70;
       if (print_error)
         throw LogExceptionHandling(a);
@@ -99,7 +101,7 @@ Evaluate::log10_1(double a)
   double r = log(a);
   if (isnan(r) || isinf(r))
     {
-      res1 = NAN;
+      res1 = std::numeric_limits<double>::quiet_NaN();
       r = -1e70;
       if (print_error)
         throw Log10ExceptionHandling(a);
@@ -108,7 +110,7 @@ Evaluate::log10_1(double a)
 }
 
 void
-Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int block_num, const int size, const bool steady_state,*/ const bool no_derivative)
+Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 {
   int var = 0, lag = 0, op;
   unsigned int eq, pos_col;
@@ -702,11 +704,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
           //store in the jacobian matrix
           rr = Stack.top();
           if (EQN_type != ExpressionType::FirstEndoDerivative)
-            {
-              ostringstream tmp;
-              tmp << " in compute_block_time, impossible case " << static_cast<int>(EQN_type) << " not implement in static jacobian\n";
-              throw FatalExceptionHandling(tmp.str());
-            }
+            throw FatalExceptionHandling(" in compute_block_time, impossible case " + to_string(static_cast<int>(EQN_type)) + " not implement in static jacobian\n");
           eq = static_cast<FSTPG2_ *>(it_code->second)->get_row();
           var = static_cast<FSTPG2_ *>(it_code->second)->get_col();
 #ifdef DEBUG
@@ -779,9 +777,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               jacob_exo_det[eq + size*pos_col] = rr;
               break;
             default:
-              ostringstream tmp;
-              tmp << " in compute_block_time, variable " << static_cast<int>(EQN_type) << " not used yet\n";
-              throw FatalExceptionHandling(tmp.str());
+              throw FatalExceptionHandling(" in compute_block_time, variable " + to_string(static_cast<int>(EQN_type)) + " not used yet\n");
             }
 // #ifdef DEBUG
 //           tmp_out << "=>";
@@ -840,37 +836,37 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #endif
               break;
             case BinaryOpcode::less:
-              Stack.push(double (v1 < v2));
+              Stack.push(static_cast<double>(v1 < v2));
 #ifdef DEBUG
-              mexPrintf("v1=%f v2=%f v1 < v2 = %f\n", v1, v2, double (v1 < v2));
+              mexPrintf("v1=%f v2=%f v1 < v2 = %f\n", v1, v2, static_cast<double>(v1 < v2));
 #endif
               break;
             case BinaryOpcode::greater:
-              Stack.push(double (v1 > v2));
+              Stack.push(static_cast<double>(v1 > v2));
 #ifdef DEBUG
               tmp_out << " |" << v1 << ">" << v2 << "|";
 #endif
               break;
             case BinaryOpcode::lessEqual:
-              Stack.push(double (v1 <= v2));
+              Stack.push(static_cast<double>(v1 <= v2));
 #ifdef DEBUG
               tmp_out << " |" << v1 << "<=" << v2 << "|";
 #endif
               break;
             case BinaryOpcode::greaterEqual:
-              Stack.push(double (v1 >= v2));
+              Stack.push(static_cast<double>(v1 >= v2));
 #ifdef DEBUG
               tmp_out << " |" << v1 << ">=" << v2 << "|";
 #endif
               break;
             case BinaryOpcode::equalEqual:
-              Stack.push(double (v1 == v2));
+              Stack.push(static_cast<double>(v1 == v2));
 #ifdef DEBUG
               tmp_out << " |" << v1 << "==" << v2 << "|";
 #endif
               break;
             case BinaryOpcode::different:
-              Stack.push(double (v1 != v2));
+              Stack.push(static_cast<double>(v1 != v2));
 #ifdef DEBUG
               tmp_out << " |" << v1 << "!=" << v2 << "|";
 #endif
@@ -896,7 +892,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
               break;
             case BinaryOpcode::powerDeriv:
               {
-                int derivOrder = int (nearbyint(Stack.top()));
+                int derivOrder = static_cast<int>(nearbyint(Stack.top()));
                 Stack.pop();
                 try
                   {
@@ -941,9 +937,8 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
             default:
               {
                 mexPrintf("Error\n");
-                ostringstream tmp;
-                tmp << " in compute_block_time, unknown binary operator " << op << "\n";
-                throw FatalExceptionHandling(tmp.str());
+                throw FatalExceptionHandling(" in compute_block_time, unknown binary operator "
+                                             + to_string(op) + "\n");
               }
             }
           break;
@@ -981,7 +976,6 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                   go_on = false;
                 }
               Stack.push(tmp);
-              //if (isnan(res1))
 
 #ifdef DEBUG
               tmp_out << " |log(" << v1 << ")|";
@@ -1090,9 +1084,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
             default:
               {
                 mexPrintf("Error\n");
-                ostringstream tmp;
-                tmp << " in compute_block_time, unknown unary operator " << op << "\n";
-                throw FatalExceptionHandling(tmp.str());
+                throw FatalExceptionHandling(" in compute_block_time, unknown unary operator " + to_string(op) + "\n");
               }
             }
           break;
@@ -1121,9 +1113,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
             default:
               {
                 mexPrintf("Error\n");
-                ostringstream tmp;
-                tmp << " in compute_block_time, unknown trinary operator " << op << "\n";
-                throw FatalExceptionHandling(tmp.str());
+                throw FatalExceptionHandling(" in compute_block_time, unknown trinary operator " + to_string(op) + "\n");
               }
             }
           break;
@@ -1183,11 +1173,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                       Stack.pop();
                     }
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
-                    {
-                      ostringstream tmp;
-                      tmp << " external function: " << function_name << " not found";
-                      throw FatalExceptionHandling(tmp.str());
-                    }
+                    throw FatalExceptionHandling(" external function: " + function_name + " not found");
 
                   double *rr = mxGetPr(output_arguments[0]);
                   Stack.push(*rr);
@@ -1197,7 +1183,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                       double *FD1 = mxGetPr(output_arguments[1]);
                       size_t rows = mxGetN(output_arguments[1]);
                       for (unsigned int i = 0; i < rows; i++)
-                        TEFD[make_pair(indx, i)] = FD1[i];
+                        TEFD[{ indx, i }] = FD1[i];
                     }
                   if (function_type == ExternalFunctionType::withFirstAndSecondDerivative)
                     {
@@ -1208,7 +1194,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                       unsigned int k = 0;
                       for (unsigned int j = 0; j < cols; j++)
                         for (unsigned int i = 0; i < rows; i++)
-                          TEFDD[make_pair(indx, make_pair(i, j))] = FD2[k++];
+                          TEFDD[{ indx, i, j }] = FD2[k++];
                     }
                 }
                 break;
@@ -1240,11 +1226,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #endif
                   nb_input_arguments = 3;
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
-                    {
-                      ostringstream tmp;
-                      tmp << " external function: " << function_name << " not found";
-                      throw FatalExceptionHandling(tmp.str());
-                    }
+                    throw FatalExceptionHandling(" external function: " + function_name + " not found");
                   double *rr = mxGetPr(output_arguments[0]);
 #ifdef DEBUG
                   mexPrintf("*rr=%f\n", *rr);
@@ -1263,17 +1245,12 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                       Stack.pop();
                     }
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
-                    {
-                      ostringstream tmp;
-                      tmp << " external function: " << function_name << " not found";
-                      throw FatalExceptionHandling(tmp.str());
-                    }
+                    throw FatalExceptionHandling(" external function: " + function_name + " not found");
                   unsigned int indx = fc->get_indx();
                   double *FD1 = mxGetPr(output_arguments[0]);
-                  //mexPrint
                   size_t rows = mxGetN(output_arguments[0]);
                   for (unsigned int i = 0; i < rows; i++)
-                    TEFD[make_pair(indx, i)] = FD1[i];
+                    TEFD[{ indx, i }] = FD1[i];
                 }
                 break;
               case ExternalFunctionType::numericalSecondDerivative:
@@ -1306,11 +1283,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #endif
                   nb_input_arguments = 3;
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
-                    {
-                      ostringstream tmp;
-                      tmp << " external function: " << function_name << " not found";
-                      throw FatalExceptionHandling(tmp.str());
-                    }
+                    throw FatalExceptionHandling(" external function: " + function_name + " not found");
                   double *rr = mxGetPr(output_arguments[0]);
                   Stack.push(*rr);
                 }
@@ -1326,11 +1299,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                       Stack.pop();
                     }
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
-                    {
-                      ostringstream tmp;
-                      tmp << " external function: " << function_name << " not found";
-                      throw FatalExceptionHandling(tmp.str());
-                    }
+                    throw FatalExceptionHandling(" external function: " + function_name + " not found");
                   unsigned int indx = fc->get_indx();
                   double *FD2 = mxGetPr(output_arguments[2]);
                   size_t rows = mxGetM(output_arguments[0]);
@@ -1338,7 +1307,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
                   unsigned int k = 0;
                   for (unsigned int j = 0; j < cols; j++)
                     for (unsigned int i = 0; i < rows; i++)
-                      TEFDD[make_pair(indx, make_pair(i, j))] = FD2[k++];
+                      TEFDD[{ indx, i, j }] = FD2[k++];
                 }
                 break;
               }
@@ -1377,9 +1346,9 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #endif
             if (function_type == ExternalFunctionType::numericalFirstDerivative)
               {
-                TEFD[make_pair(indx, row-1)] = Stack.top();
+                TEFD[{ indx, row-1 }] = Stack.top();
 #ifdef DEBUG
-                mexPrintf("FSTP TEFD[make_pair(indx, row)]=%f done\n", TEFD[make_pair(indx, row-1)]);
+                mexPrintf("FSTP TEFD[{ indx, row }]=%f done\n", TEFD[{ indx, row-1 }]);
                 mexEvalString("drawnow;");
 #endif
                 Stack.pop();
@@ -1394,10 +1363,10 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #ifdef DEBUG
             mexPrintf("FLDTEFD\n");
             mexPrintf("indx=%d row=%d Stack.size()=%d\n", indx, row, Stack.size());
-            mexPrintf("FLD TEFD[make_pair(indx, row)]=%f done\n", TEFD[make_pair(indx, row-1)]);
+            mexPrintf("FLD TEFD[{ indx, row }]=%f done\n", TEFD[{ indx, row-1 }]);
             mexEvalString("drawnow;");
 #endif
-            Stack.push(TEFD[make_pair(indx, row-1)]);
+            Stack.push(TEFD[{ indx, row-1 }]);
           }
           break;
         case Tags::FSTPTEFDD:
@@ -1411,9 +1380,9 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #endif
             if (function_type == ExternalFunctionType::numericalSecondDerivative)
               {
-                TEFDD[make_pair(indx, make_pair(row-1, col-1))] = Stack.top();
+                TEFDD[{ indx, row-1, col-1 }] = Stack.top();
 #ifdef DEBUG
-                mexPrintf("FSTP TEFDD[make_pair(indx, make_pair(row, col))]=%f done\n", TEFDD[make_pair(indx, make_pair(row, col))]);
+                mexPrintf("FSTP TEFDD[{ indx, row, col }]=%f done\n", TEFDD[{ indx, row, col }]);
                 mexEvalString("drawnow;");
 #endif
                 Stack.pop();
@@ -1429,10 +1398,10 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 #ifdef DEBUG
             mexPrintf("FLDTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
-            mexPrintf("FLD TEFD[make_pair(indx, make_pair(row, col))]=%f done\n", TEFDD[make_pair(indx, make_pair(row, col))]);
+            mexPrintf("FLD TEFD[{ indx, row, col }]=%f done\n", TEFDD[{ indx, row, col }]);
             mexEvalString("drawnow;");
 #endif
-            Stack.push(TEFDD[make_pair(indx, make_pair(row-1, col-1))]);
+            Stack.push(TEFDD[{ indx, row-1, col-1 }]);
           }
           break;
         case Tags::FCUML:
@@ -1476,16 +1445,10 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
         case Tags::FOK:
           op = static_cast<FOK_ *>(it_code->second)->get_arg();
           if (Stack.size() > 0)
-            {
-              ostringstream tmp;
-              tmp << " in compute_block_time, stack not empty\n";
-              throw FatalExceptionHandling(tmp.str());
-            }
+            throw FatalExceptionHandling(" in compute_block_time, stack not empty\n");
           break;
         default:
-          ostringstream tmp;
-          tmp << " in compute_block_time, unknown opcode " << static_cast<int>(it_code->first) << "\n";
-          throw FatalExceptionHandling(tmp.str());
+          throw FatalExceptionHandling(" in compute_block_time, unknown opcode " + to_string(static_cast<int>(it_code->first)) + "\n");
         }
 #ifdef DEBUG
       mexPrintf("it_code++=%d\n", it_code);
@@ -1499,7 +1462,7 @@ Evaluate::compute_block_time(const int Per_u_, const bool evaluate, /*const int 
 }
 
 void
-Evaluate::evaluate_over_periods(const bool forward)
+Evaluate::evaluate_over_periods(bool forward)
 {
   if (steady_state)
     compute_block_time(0, false, false);
@@ -1535,7 +1498,7 @@ Evaluate::solve_simple_one_periods()
   double ya;
   double slowc_save = slowc;
   res1 = 0;
-  while (!(cvg || (iter > maxit_)))
+  while (!(cvg || iter > maxit_))
     {
       it_code = start_code;
       Per_y_ = it_*y_size;
@@ -1543,7 +1506,7 @@ Evaluate::solve_simple_one_periods()
       compute_block_time(0, false, false);
       if (!isfinite(res1))
         {
-          res1 = NAN;
+          res1 = std::numeric_limits<double>::quiet_NaN();
           while ((isinf(res1) || isnan(res1)) && (slowc > 1e-9))
             {
               it_code = start_code;
@@ -1559,7 +1522,6 @@ Evaluate::solve_simple_one_periods()
       double rr;
       rr = r[0];
       cvg = (fabs(rr) < solve_tolf);
-      //mexPrintf("g1=%x, g1[0]=%f, type=%d, block_num=%d, it_=%d y=%x\n", g1, g1[0], type, block_num, it_, y);
       if (cvg)
         continue;
       try
@@ -1575,15 +1537,12 @@ Evaluate::solve_simple_one_periods()
     }
   slowc = slowc_save;
   if (!cvg)
-    {
-      ostringstream tmp;
-      tmp << " in Solve Forward simple, convergence not achieved in block " << block_num+1 << ", after " << iter << " iterations\n";
-      throw FatalExceptionHandling(tmp.str());
-    }
+    throw FatalExceptionHandling(" in Solve Forward simple, convergence not achieved in block "
+                                 + to_string(block_num+1) + ", after " + to_string(iter) + " iterations\n");
 }
 
 void
-Evaluate::solve_simple_over_periods(const bool forward)
+Evaluate::solve_simple_over_periods(bool forward)
 {
   g1 = static_cast<double *>(mxMalloc(sizeof(double)));
   test_mxMalloc(g1, __LINE__, __FILE__, __func__, sizeof(double));
@@ -1615,13 +1574,13 @@ Evaluate::solve_simple_over_periods(const bool forward)
 }
 
 void
-Evaluate::set_block(const int size_arg, const int type_arg, string file_name_arg, string bin_base_name_arg, const int block_num_arg,
-                    const bool is_linear_arg, const int symbol_table_endo_nbr_arg, const int Block_List_Max_Lag_arg, const int Block_List_Max_Lead_arg, const int u_count_int_arg, const int block_arg)
+Evaluate::set_block(int size_arg, int type_arg, string file_name_arg, string bin_base_name_arg, int block_num_arg,
+                    bool is_linear_arg, int symbol_table_endo_nbr_arg, int Block_List_Max_Lag_arg, int Block_List_Max_Lead_arg, int u_count_int_arg, int block_arg)
 {
   size = size_arg;
   type = type_arg;
-  file_name = file_name_arg;
-  bin_base_name = bin_base_name_arg;
+  file_name = move(file_name_arg);
+  bin_base_name = move(bin_base_name_arg);
   block_num = block_num_arg;
   is_linear = is_linear_arg;
   symbol_table_endo_nbr = symbol_table_endo_nbr_arg;
@@ -1632,14 +1591,14 @@ Evaluate::set_block(const int size_arg, const int type_arg, string file_name_arg
 }
 
 void
-Evaluate::evaluate_complete(const bool no_derivatives)
+Evaluate::evaluate_complete(bool no_derivatives)
 {
   it_code = start_code;
   compute_block_time(0, false, no_derivatives);
 }
 
 void
-Evaluate::compute_complete_2b(const bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx)
+Evaluate::compute_complete_2b(bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx)
 {
   res1 = 0;
   *_res1 = 0;
@@ -1653,23 +1612,19 @@ Evaluate::compute_complete_2b(const bool no_derivatives, double *_res1, double *
       int shift = (it_-y_kmin) * size;
       compute_block_time(Per_u_, false, no_derivatives);
       if (!(isnan(res1) || isinf(res1)))
-        {
+        for (int i = 0; i < size; i++)
           {
-            for (int i = 0; i < size; i++)
+            double rr;
+            rr = r[i];
+            res[i+shift] = rr;
+            if (max_res < fabs(rr))
               {
-                double rr;
-                rr = r[i];
-                res[i+shift] = rr;
-                if (max_res < fabs(rr))
-                  {
-                    *_max_res = fabs(rr);
-                    *_max_res_idx = i;
-                  }
-                *_res2 += rr*rr;
-                *_res1 += fabs(rr);
+                *_max_res = fabs(rr);
+                *_max_res_idx = i;
               }
+            *_res2 += rr*rr;
+            *_res1 += fabs(rr);
           }
-        }
       else
         return;
     }
@@ -1678,7 +1633,7 @@ Evaluate::compute_complete_2b(const bool no_derivatives, double *_res1, double *
 }
 
 bool
-Evaluate::compute_complete(const bool no_derivatives, double &_res1, double &_res2, double &_max_res, int &_max_res_idx)
+Evaluate::compute_complete(bool no_derivatives, double &_res1, double &_res2, double &_max_res, int &_max_res_idx)
 {
   bool result;
   res1 = 0;
@@ -1686,23 +1641,21 @@ Evaluate::compute_complete(const bool no_derivatives, double &_res1, double &_re
   compute_block_time(0, false, no_derivatives);
   if (!(isnan(res1) || isinf(res1)))
     {
-      {
-        _res1 = 0;
-        _res2 = 0;
-        _max_res = 0;
-        for (int i = 0; i < size; i++)
-          {
-            double rr;
-            rr = r[i];
-            if (max_res < fabs(rr))
-              {
-                _max_res = fabs(rr);
-                _max_res_idx = i;
-              }
-            _res2 += rr*rr;
-            _res1 += fabs(rr);
-          }
-      }
+      _res1 = 0;
+      _res2 = 0;
+      _max_res = 0;
+      for (int i = 0; i < size; i++)
+        {
+          double rr;
+          rr = r[i];
+          if (max_res < fabs(rr))
+            {
+              _max_res = fabs(rr);
+              _max_res_idx = i;
+            }
+          _res2 += rr*rr;
+          _res1 += fabs(rr);
+        }
       result = true;
     }
   else
@@ -1714,7 +1667,6 @@ bool
 Evaluate::compute_complete(double lambda, double *crit)
 {
   double res1_ = 0, res2_ = 0, max_res_ = 0;
-  //double res1 = 0, res2, max_res;
   int max_res_idx_ = 0;
   if (steady_state)
     {
@@ -1727,28 +1679,18 @@ Evaluate::compute_complete(double lambda, double *crit)
       Per_u_ = 0;
       Per_y_ = 0;
       if (compute_complete(true, res1, res2, max_res, max_res_idx))
-        {
-          res2_ = res2;
-          /*res1_ = res1;
-            if (max_res > max_res_)
-            {
-            max_res = max_res_;
-            max_res_idx = max_res_idx_;
-            }*/
-        }
+        res2_ = res2;
       else
         return false;
     }
   else
     {
       for (int it = y_kmin; it < periods+y_kmin; it++)
-        {
-          for (int i = 0; i < size; i++)
-            {
-              int eq = index_vara[i];
-              y[eq+it*y_size] = ya[eq+it*y_size] + lambda * direction[eq+it*y_size];
-            }
-        }
+        for (int i = 0; i < size; i++)
+          {
+            int eq = index_vara[i];
+            y[eq+it*y_size] = ya[eq+it*y_size] + lambda * direction[eq+it*y_size];
+          }
       for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
         {
           Per_u_ = (it_-y_kmin)*u_count_int;

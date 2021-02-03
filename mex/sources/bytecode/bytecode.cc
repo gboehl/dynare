@@ -95,7 +95,7 @@ Get_Arguments_and_global_variables(int nrhs,
               steady_col_y = mxGetN(prhs[i]);
               break;
             case 4:
-              periods = int (mxGetScalar(prhs[i]));
+              periods = static_cast<int>(mxGetScalar(prhs[i]));
               break;
             case 5:
               *block_structur = mxDuplicateArray(prhs[i]);
@@ -165,11 +165,7 @@ Get_Arguments_and_global_variables(int nrhs,
                 *plan_struct_name = deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
               }
             else
-              {
-                ostringstream tmp;
-                tmp << " in main, unknown argument : " << Get_Argument(prhs[i]) << "\n";
-                throw FatalExceptionHandling(tmp.str());
-              }
+              throw FatalExceptionHandling(" in main, unknown argument : " + Get_Argument(prhs[i]) + "\n");
           }
     }
   if (count_array_argument > 0 && count_array_argument < 5)
@@ -177,34 +173,20 @@ Get_Arguments_and_global_variables(int nrhs,
       if (count_array_argument == 3 && steady_state)
         periods = 1;
       else
-        {
-          ostringstream tmp;
-          tmp << " in main, missing arguments. All the following arguments have to be indicated y, x, params, it_, ys\n";
-          throw FatalExceptionHandling(tmp.str());
-        }
+        throw FatalExceptionHandling(" in main, missing arguments. All the following arguments have to be indicated y, x, params, it_, ys\n");
     }
   *M_ = mexGetVariable("global", "M_");
-  if (*M_ == nullptr)
-    {
-      ostringstream tmp;
-      tmp << " in main, global variable not found: M_\n";
-      throw FatalExceptionHandling(tmp.str());
-    }
+  if (!*M_)
+    throw FatalExceptionHandling(" in main, global variable not found: M_\n");
+
   /* Gets variables and parameters from global workspace of Matlab */
   *oo_ = mexGetVariable("global", "oo_");
-  if (*oo_ == nullptr)
-    {
-      ostringstream tmp;
-      tmp << " in main, global variable not found: oo_\n";
-      throw FatalExceptionHandling(tmp.str());
-    }
+  if (!*oo_)
+    throw FatalExceptionHandling(" in main, global variable not found: oo_\n");
+
   *options_ = mexGetVariable("global", "options_");
-  if (*options_ == nullptr)
-    {
-      ostringstream tmp;
-      tmp << " in main, global variable not found: options_\n";
-      throw FatalExceptionHandling(tmp.str());
-    }
+  if (!*options_)
+    throw FatalExceptionHandling(" in main, global variable not found: options_\n");
 }
 
 /* The gateway routine */
@@ -352,9 +334,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           controlled_varexo = mxGetField(options_cond_fcst_, 0, "controlled_varexo");
           nb_controlled = mxGetM(controlled_varexo) * mxGetN(controlled_varexo);
           if (nb_controlled != nb_constrained)
-            {
-              mexErrMsgTxt("The number of exogenized variables and the number of exogenous controlled variables should be equal.");
-            }
+            mexErrMsgTxt("The number of exogenized variables and the number of exogenous controlled variables should be equal.");
         }
       double *controlled_varexo_value = nullptr;
       if (controlled_varexo != nullptr)
@@ -392,34 +372,25 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           int *constrained_int_date = static_cast<int *>(mxMalloc(nb_local_periods * sizeof(int)));
           error_msg.test_mxMalloc(constrained_int_date, __LINE__, __FILE__, __func__, nb_local_periods * sizeof(int));
           if (nb_periods < nb_local_periods)
-            {
-              ostringstream oss;
-              oss << nb_periods;
-              string tmp = oss.str();
-              tmp.insert(0, "The total number of simulation periods (");
-              tmp.append(") is lesser than the number of periods in the shock definitions (");
-              oss << nb_local_periods;
-              string tmp1 = oss.str();
-              tmp.append(tmp1);
-              tmp.append(")");
-              mexErrMsgTxt(tmp.c_str());
-            }
-          (sconditional_extended_path[i]).per_value.resize(nb_local_periods);
-          (sconditional_extended_path[i]).value.resize(nb_periods);
+            mexErrMsgTxt((string{"The total number of simulation periods ("} + to_string(nb_periods)
+                          + ") is lesser than the number of periods in the shock definitions ("
+                          + to_string(nb_local_periods)).c_str());
+
+          sconditional_extended_path[i].per_value.resize(nb_local_periods);
+          sconditional_extended_path[i].value.resize(nb_periods);
           for (int j = 0; j < nb_periods; j++)
             sconditional_extended_path[i].value[j] = 0;
           for (int j = 0; j < nb_local_periods; j++)
             {
-              constrained_int_date[j] = int (specific_constrained_int_date_[j]) - 1;
+              constrained_int_date[j] = static_cast<int>(specific_constrained_int_date_[j]) - 1;
               conditional_local.is_cond = true;
               conditional_local.var_exo = sconditional_extended_path[i].var_num - 1;
               conditional_local.var_endo = sconditional_extended_path[i].exo_num - 1;
               conditional_local.constrained_value = specific_constrained_paths_[j];
               table_conditional_global[constrained_int_date[j]][sconditional_extended_path[i].exo_num - 1] = conditional_local;
-              sconditional_extended_path[i].per_value[j] = make_pair(constrained_int_date[j], specific_constrained_paths_[j]);
+              sconditional_extended_path[i].per_value[j] = { constrained_int_date[j], specific_constrained_paths_[j] };
               sconditional_extended_path[i].value[constrained_int_date[j]] = specific_constrained_paths_[j];
-              if (max_periods < constrained_int_date[j] + 1)
-                max_periods = constrained_int_date[j] + 1;
+              max_periods = max(max_periods, constrained_int_date[j] + 1);
             }
           mxFree(constrained_int_date);
         }
@@ -435,28 +406,18 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           double *specific_shock_int_date_ = mxGetPr(mxGetCell(shock_int_date_, i));
           int nb_local_periods = mxGetM(Array_shock_paths_) * mxGetN(Array_shock_paths_);
           if (nb_periods < nb_local_periods)
-            {
-              ostringstream oss;
-              oss << nb_periods;
-              string tmp = oss.str();
-              tmp.insert(0, "The total number of simulation periods (");
-              tmp.append(") is lesser than the number of periods in the shock definitions (");
-              oss << nb_local_periods;
-              string tmp1 = oss.str();
-              tmp.append(tmp1);
-              tmp.append(")");
-              mexErrMsgTxt(tmp.c_str());
-            }
-          (sextended_path[i]).per_value.resize(nb_local_periods);
-          (sextended_path[i]).value.resize(nb_periods);
+            mexErrMsgTxt((string{"The total number of simulation periods ("} + to_string(nb_periods)
+                          + ") is lesser than the number of periods in the shock definitions ("
+                          + to_string(nb_local_periods)).c_str());
+          sextended_path[i].per_value.resize(nb_local_periods);
+          sextended_path[i].value.resize(nb_periods);
           for (int j = 0; j < nb_periods; j++)
             sextended_path[i].value[j] = 0;
           for (int j = 0; j < nb_local_periods; j++)
             {
-              sextended_path[i].per_value[j] = make_pair(int (specific_shock_int_date_[j]), specific_shock_paths_[j]);
-              sextended_path[i].value[int (specific_shock_int_date_[j]-1)] = specific_shock_paths_[j];
-              if (max_periods < int (specific_shock_int_date_[j]))
-                max_periods = int (specific_shock_int_date_[j]);
+              sextended_path[i].per_value[j] = { static_cast<int>(specific_shock_int_date_[j]), specific_shock_paths_[j] };
+              sextended_path[i].value[static_cast<int>(specific_shock_int_date_[j]-1)] = specific_shock_paths_[j];
+              max_periods = max(max_periods, static_cast<int>(specific_shock_int_date_[j]));
             }
         }
       for (int i = 0; i < nb_periods; i++)
@@ -528,10 +489,10 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           if (tmp)
             {
               size_t num_shocks = mxGetM(tmp);
-              (splan[i]).per_value.resize(num_shocks);
+              splan[i].per_value.resize(num_shocks);
               double *per_value = mxGetPr(tmp);
               for (int j = 0; j < static_cast<int>(num_shocks); j++)
-                (splan[i]).per_value[j] = make_pair(ceil(per_value[j]), per_value[j + num_shocks]);
+                splan[i].per_value[j] = { ceil(per_value[j]), per_value[j + num_shocks] };
             }
         }
       int i = 0;
@@ -543,10 +504,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             mexPrintf(" plan fliping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num, it.exo.c_str(), it.exo_num);
           else
             mexPrintf(" plan shocks on var=%s for the following periods and with the following values:\n", it.var.c_str());
-          for (auto & it1 : it.per_value)
-            {
-              mexPrintf("  %3d %10.5f\n", it1.first, it1.second);
-            }
+          for (auto &[period, value]: it.per_value)
+            mexPrintf("  %3d %10.5f\n", period, value);
           i++;
         }
     }
@@ -555,11 +514,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       pfplan_struct = mexGetVariable("base", pfplan.c_str());
       if (!pfplan_struct)
-        {
-          string tmp = pfplan;
-          tmp.insert(0, "Can't find the pfplan: ");
-          mexErrMsgTxt(tmp.c_str());
-        }
+        mexErrMsgTxt(("Can't find the pfplan: " + pfplan).c_str());
       size_t n_plan = mxGetN(pfplan_struct);
       spfplan.resize(n_plan);
       for (int i = 0; i < static_cast<int>(n_plan); i++)
@@ -607,9 +562,9 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             {
               size_t num_shocks = mxGetM(tmp);
               double *per_value = mxGetPr(tmp);
-              (spfplan[i]).per_value.resize(num_shocks);
+              spfplan[i].per_value.resize(num_shocks);
               for (int j = 0; j < static_cast<int>(num_shocks); j++)
-                spfplan[i].per_value[j] = make_pair(ceil(per_value[j]), per_value[j+ num_shocks]);
+                spfplan[i].per_value[j] = { ceil(per_value[j]), per_value[j+ num_shocks] };
             }
         }
       int i = 0;
@@ -621,10 +576,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             mexPrintf(" plan flipping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num, it.exo.c_str(), it.exo_num);
           else
             mexPrintf(" plan shocks on var=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num);
-          for (auto & it1 : it.per_value)
-            {
-              mexPrintf("  %3d %10.5f\n", it1.first, it1.second);
-            }
+          for (auto &[period, value] : it.per_value)
+            mexPrintf("  %3d %10.5f\n", period, value);
           i++;
         }
     }
@@ -660,17 +613,17 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
       int field = mxGetFieldNumber(M_, "maximum_lag");
       if (field >= 0)
-        y_kmin = int (floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field)))));
+        y_kmin = static_cast<int>(floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field)))));
       else
         mexErrMsgTxt("maximum_lag is not a field of M_");
       field = mxGetFieldNumber(M_, "maximum_lead");
       if (field >= 0)
-        y_kmax = int (floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field)))));
+        y_kmax = static_cast<int>(floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field)))));
       else
         mexErrMsgTxt("maximum_lead is not a field of M_");
       field = mxGetFieldNumber(M_, "maximum_endo_lag");
       if (field >= 0)
-        y_decal = max(0, y_kmin-int (floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field))))));
+        y_decal = max(0, y_kmin-static_cast<int>(floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field))))));
       else
         mexErrMsgTxt("maximum_endo_lag is not a field of M_");
 
@@ -678,7 +631,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         {
           int field = mxGetFieldNumber(options_, "periods");
           if (field >= 0)
-            periods = int (floor(*(mxGetPr(mxGetFieldByNumber(options_, 0, field)))));
+            periods = static_cast<int>(floor(*(mxGetPr(mxGetFieldByNumber(options_, 0, field)))));
           else
             mexErrMsgTxt("options_ is not a field of options_");
         }
@@ -711,7 +664,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   int field = mxGetFieldNumber(options_, "verbosity");
   int verbose = 0;
   if (field >= 0)
-    verbose = int (*mxGetPr((mxGetFieldByNumber(options_, 0, field))));
+    verbose = static_cast<int>(*mxGetPr((mxGetFieldByNumber(options_, 0, field))));
   else
     mexErrMsgTxt("verbosity is not a field of options_");
   if (verbose)
@@ -738,23 +691,23 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       else
         mexErrMsgTxt("maxit is not a field of options_.steady");
     }
-  int maxit_ = int (floor(*(mxGetPr(mxGetFieldByNumber(temporaryfield, 0, field)))));
+  int maxit_ = static_cast<int>(floor(*mxGetPr(mxGetFieldByNumber(temporaryfield, 0, field))));
   field = mxGetFieldNumber(options_, "slowc");
   if (field < 0)
     mexErrMsgTxt("slows is not a field of options_");
-  auto slowc = double (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
+  auto slowc = static_cast<double>(*mxGetPr(mxGetFieldByNumber(options_, 0, field)));
   field = mxGetFieldNumber(options_, "markowitz");
   if (field < 0)
     mexErrMsgTxt("markowitz is not a field of options_");
-  auto markowitz_c = double (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
+  auto markowitz_c = static_cast<double>(*mxGetPr(mxGetFieldByNumber(options_, 0, field)));
   field = mxGetFieldNumber(options_, "minimal_solving_periods");
   if (field < 0)
     mexErrMsgTxt("minimal_solving_periods is not a field of options_");
-  int minimal_solving_periods = int (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
+  int minimal_solving_periods = static_cast<int>(*mxGetPr(mxGetFieldByNumber(options_, 0, field)));
   field = mxGetFieldNumber(options_, "stack_solve_algo");
   if (field < 0)
     mexErrMsgTxt("stack_solve_algo is not a field of options_");
-  int stack_solve_algo = int (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
+  int stack_solve_algo = static_cast<int>(*mxGetPr(mxGetFieldByNumber(options_, 0, field)));
   int solve_algo;
   double solve_tolf;
 
@@ -762,12 +715,12 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       int field = mxGetFieldNumber(options_, "solve_algo");
       if (field >= 0)
-        solve_algo = int (*(mxGetPr(mxGetFieldByNumber(options_, 0, field))));
+        solve_algo = static_cast<int>(*mxGetPr(mxGetFieldByNumber(options_, 0, field)));
       else
         mexErrMsgTxt("solve_algo is not a field of options_");
       field = mxGetFieldNumber(options_, "solve_tolf");
       if (field >= 0)
-        solve_tolf = *(mxGetPr(mxGetFieldByNumber(options_, 0, field)));
+        solve_tolf = *mxGetPr(mxGetFieldByNumber(options_, 0, field));
       else
         mexErrMsgTxt("solve_tolf is not a field of options_");
     }
@@ -782,7 +735,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgTxt("dynatol is not a field of options_");
       field = mxGetFieldNumber(dynatol, "f");
       if (field >= 0)
-        solve_tolf = *mxGetPr((mxGetFieldByNumber(dynatol, 0, field)));
+        solve_tolf = *mxGetPr(mxGetFieldByNumber(dynatol, 0, field));
       else
         mexErrMsgTxt("f is not a field of options_.dynatol");
     }
@@ -793,9 +746,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   else
     mexErrMsgTxt("fname is not a field of M_");
   size_t buflen = mxGetM(mxa) * mxGetN(mxa) + 1;
-  char *fname;
-  fname = static_cast<char *>(mxCalloc(buflen+1, sizeof(char)));
-  size_t status = mxGetString(mxa, fname, int (buflen));
+  char *fname = static_cast<char *>(mxCalloc(buflen+1, sizeof(char)));
+  size_t status = mxGetString(mxa, fname, static_cast<int>(buflen));
   fname[buflen] = ' ';
   if (status != 0)
     mexWarnMsgTxt("Not enough space. Filename is truncated.");
@@ -812,17 +764,14 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   direction = static_cast<double *>(mxMalloc(size_of_direction));
   error_msg.test_mxMalloc(direction, __LINE__, __FILE__, __func__, size_of_direction);
   memset(direction, 0, size_of_direction);
-  /*mexPrintf("col_x : %d, row_x : %d\n",col_x, row_x);*/
   auto *x = static_cast<double *>(mxMalloc(col_x*row_x*sizeof(double)));
   error_msg.test_mxMalloc(x, __LINE__, __FILE__, __func__, col_x*row_x*sizeof(double));
   for (i = 0; i < row_x*col_x; i++)
-    {
-      x[i] = double (xd[i]);
-    }
+    x[i] = static_cast<double>(xd[i]);
   for (i = 0; i < row_y*col_y; i++)
     {
-      y[i] = double (yd[i]);
-      ya[i] = double (yd[i]);
+      y[i] = static_cast<double>(yd[i]);
+      ya[i] = static_cast<double>(yd[i]);
     }
   size_t y_size = row_y;
   size_t nb_row_x = row_x;
@@ -861,7 +810,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   clock_t t1 = clock();
   if (!steady_state && !evaluate && print)
-    mexPrintf("Simulation Time=%f milliseconds\n", 1000.0*(double (t1)-double (t0))/double (CLOCKS_PER_SEC));
+    mexPrintf("Simulation Time=%f milliseconds\n",
+              1000.0*(static_cast<double>(t1)-static_cast<double>(t0))/static_cast<double>(CLOCKS_PER_SEC));
   bool dont_store_a_structure = false;
   if (nlhs > 0)
     {
@@ -870,7 +820,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           if (evaluate)
             {
               vector<double> residual = interprete.get_residual();
-              plhs[0] = mxCreateDoubleMatrix(int (residual.size()/double (col_y)), int (col_y), mxREAL);
+              plhs[0] = mxCreateDoubleMatrix(static_cast<int>(residual.size()/static_cast<double>(col_y)),
+                                             static_cast<int>(col_y), mxREAL);
               pind = mxGetPr(plhs[0]);
               for (i = 0; i < residual.size(); i++)
                 pind[i] = residual[i];
@@ -882,7 +833,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 out_periods = max_periods + y_kmin;
               else
                 out_periods = row_y;
-              plhs[0] = mxCreateDoubleMatrix(out_periods, int (col_y), mxREAL);
+              plhs[0] = mxCreateDoubleMatrix(out_periods, static_cast<int>(col_y), mxREAL);
               pind = mxGetPr(plhs[0]);
               for (i = 0; i < out_periods*col_y; i++)
                 pind[i] = y[i];
@@ -895,7 +846,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             out_periods = max_periods + y_kmin;
           else
             out_periods = col_y;
-          plhs[0] = mxCreateDoubleMatrix(int (row_y), out_periods, mxREAL);
+          plhs[0] = mxCreateDoubleMatrix(static_cast<int>(row_y), out_periods, mxREAL);
           pind = mxGetPr(plhs[0]);
           if (evaluate)
             {
@@ -919,13 +870,12 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                   jacob_exo_field_number = 1;
                   jacob_exo_det_field_number = 2;
                   jacob_other_endo_field_number = 3;
-                  mwSize dims[1] = {static_cast<mwSize>(nb_blocks) };
+                  mwSize dims[1] = { static_cast<mwSize>(nb_blocks) };
                   plhs[1] = mxCreateStructArray(1, dims, 4, field_names);
                 }
               else if (!mxIsStruct(block_structur))
                 {
                   plhs[1] = interprete.get_jacob(0);
-                  //mexCallMATLAB(0,NULL, 1, &plhs[1], "disp");
                   dont_store_a_structure = true;
                 }
               else
@@ -960,17 +910,14 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             }
           else
             {
-              plhs[1] = mxCreateDoubleMatrix(int (row_x), int (col_x), mxREAL);
+              plhs[1] = mxCreateDoubleMatrix(static_cast<int>(row_x), static_cast<int>(col_x), mxREAL);
               pind = mxGetPr(plhs[1]);
               for (i = 0; i < row_x*col_x; i++)
-                {
-                  pind[i] = x[i];
-                }
-
+                pind[i] = x[i];
             }
           if (nlhs > 2)
             {
-              plhs[2] = mxCreateDoubleMatrix(int (row_y), int (col_y), mxREAL);
+              plhs[2] = mxCreateDoubleMatrix(static_cast<int>(row_y), static_cast<int>(col_y), mxREAL);
               pind = mxGetPr(plhs[2]);
               for (i = 0; i < row_y*col_y; i++)
                 pind[i] = y[i];
@@ -978,7 +925,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 {
                   mxArray *GlobalTemporaryTerms = interprete.get_Temporary_Terms();
                   size_t nb_temp_terms = mxGetM(GlobalTemporaryTerms);
-                  plhs[3] = mxCreateDoubleMatrix(int (nb_temp_terms), 1, mxREAL);
+                  plhs[3] = mxCreateDoubleMatrix(static_cast<int>(nb_temp_terms), 1, mxREAL);
                   pind = mxGetPr(plhs[3]);
                   double *tt = mxGetPr(GlobalTemporaryTerms);
                   for (i = 0; i < nb_temp_terms; i++)
@@ -996,5 +943,4 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mxFree(ya);
   if (direction)
     mxFree(direction);
-  return;
 }

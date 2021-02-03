@@ -24,7 +24,6 @@
 #include <vector>
 #include <fstream>
 #include <dynmex.h>
-//using namespace std;
 
 struct NonZeroElem
 {
@@ -38,7 +37,6 @@ using v_NonZeroElem = vector<NonZeroElem *>;
 class Mem_Mngr
 {
 public:
-  //void Print_heap();
   void init_Mem();
   void mxFree_NZE(void *pos);
   NonZeroElem *mxMalloc_NZE();
