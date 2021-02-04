@@ -234,7 +234,7 @@ options_.ep = ep;
 
 % Simulations of backward looking models options
 %
-bnlms.set_dynare_seed_to_default = 1;
+bnlms.set_dynare_seed_to_default = true;
 bnlms.innovation_distribution = 'gaussian';
 options_.bnlms = bnlms;
 
