@@ -28,7 +28,7 @@ function ds = dyn_ols(ds, fitted_names_dict, eqtags, model_name, param_names, ds
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
 
-% Copyright (C) 2017-2020 Dynare Team
+% Copyright (C) 2017-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -186,7 +186,7 @@ for i = 1:length(Y)
         oo_.ols.(tag).Yhat = ...
             feval(fitted_names_dict{idx, 3}, oo_.ols.(tag).Yhat);
     end
-    ds.(oo_.ols.(tag).Yhat.name) = oo_.ols.(tag).Yhat;
+    ds.(oo_.ols.(tag).Yhat.name{:}) = oo_.ols.(tag).Yhat;
 
     %% Calculate statistics
     % Estimate for sigma^2

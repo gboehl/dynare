@@ -30,7 +30,7 @@ function ds = olsgibbs(ds, eqtag, BetaPriorExpectation, BetaPriorVariance, s2, n
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright (C) 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -245,7 +245,7 @@ if any(idx) ...
     oo_.olsgibbs.(model_name).Yhat = ...
         feval(fitted_names_dict{idx, 3}, oo_.olsgibbs.(model_name).Yhat);
 end
-ds.(oo_.olsgibbs.(model_name).Yhat.name) = oo_.olsgibbs.(model_name).Yhat;
+ds.(oo_.olsgibbs.(model_name).Yhat.name{:}) = oo_.olsgibbs.(model_name).Yhat;
 
 % Compute and save posterior densities.
 for i=1:n
