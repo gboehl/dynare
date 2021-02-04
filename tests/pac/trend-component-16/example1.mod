@@ -85,6 +85,11 @@ pac.update.expectation('pacman');
 initialconditions = dseries(zeros(10, M_.endo_nbr+M_.exo_nbr), 2000Q1, vertcat(M_.endo_names,M_.exo_names));
 
 // Simulate the model for 500 periods
+if isoctave
+  // Use a different seed under Octave, the OLS estimation fails with the default one
+  options_.bnlms.set_dynare_seed_to_default = false;
+  set_dynare_seed(4);
+end
 TrueData = simul_backward_model(initialconditions, 5000);
 
 // Define a structure describing the parameters to be estimated (with initial conditions). 
