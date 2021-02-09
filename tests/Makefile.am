@@ -533,7 +533,7 @@ OLS_MODFILES = \
 	estimation/univariate/ols/ols_wc_3.mod \
 	estimation/univariate/ols/ols_date_range.mod \
 	estimation/univariate/ols/ols_param_names.mod \
-	estimation/univariate/ols/ols.mod \
+	estimation/univariate/ols/ols_base.mod \
 	ecb/SUR/sur_noniterative.mod \
 	ecb/SUR/sur_params_noniterative.mod \
 	ecb/SUR/panel_var_diff_NB_simulation_test.mod \

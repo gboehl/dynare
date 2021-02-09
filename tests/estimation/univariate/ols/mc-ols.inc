@@ -49,7 +49,7 @@ verbatim;
             error('There is probably an error in the OLS routine.')
         end
     else
-        if strcmp(M_.fname, 'ols')
+        if strcmp(M_.fname, 'ols_base')
             good = [0.025487074270635
                 -0.126705792250240
                 0.002639663639062
