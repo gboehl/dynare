@@ -17,14 +17,10 @@
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstring>
-#include <ctime>
 #include <sstream>
 #include <algorithm>
 
 #include "SparseMatrix.hh"
-
-using namespace std;
 
 dynSparseMatrix::dynSparseMatrix()
 {
@@ -174,7 +170,7 @@ dynSparseMatrix::Delete(int r, int c)
       firsta = first;
       first = first->NZE_R_N;
     }
-  if (firsta != nullptr)
+  if (firsta)
     firsta->NZE_R_N = first->NZE_R_N;
   if (first == FNZE_R[r])
     FNZE_R[r] = first->NZE_R_N;
@@ -188,7 +184,7 @@ dynSparseMatrix::Delete(int r, int c)
       first = first->NZE_C_N;
     }
 
-  if (firsta != nullptr)
+  if (firsta)
     firsta->NZE_C_N = first->NZE_C_N;
   if (first == FNZE_C[c])
     FNZE_C[c] = first->NZE_C_N;
@@ -265,7 +261,7 @@ dynSparseMatrix::Insert(int r, int c, int u_index, int lag_index)
     {
       if (first == FNZE_R[r])
         FNZE_R[r] = firstn;
-      if (firsta != nullptr)
+      if (firsta)
         firsta->NZE_R_N = firstn;
       firstn->NZE_R_N = first;
     }
@@ -286,7 +282,7 @@ dynSparseMatrix::Insert(int r, int c, int u_index, int lag_index)
     {
       if (first == FNZE_C[c])
         FNZE_C[c] = firstn;
-      if (firsta != nullptr)
+      if (firsta)
         firsta->NZE_C_N = firstn;
       firstn->NZE_C_N = first;
     }
@@ -475,13 +471,13 @@ dynSparseMatrix::Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM,
           first->r_index = eq;
           first->c_index = var;
           first->lag_index = lag;
-          if (FNZE_R[eq] == nullptr)
+          if (!FNZE_R[eq])
             FNZE_R[eq] = first;
-          if (FNZE_C[var] == nullptr)
+          if (!FNZE_C[var])
             FNZE_C[var] = first;
-          if (temp_NZE_R[eq] != nullptr)
+          if (temp_NZE_R[eq])
             temp_NZE_R[eq]->NZE_R_N = first;
-          if (temp_NZE_C[var] != nullptr)
+          if (temp_NZE_C[var])
             temp_NZE_C[var]->NZE_C_N = first;
           temp_NZE_R[eq] = first;
           temp_NZE_C[var] = first;
@@ -1238,9 +1234,9 @@ dynSparseMatrix::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t,
   long j = 0, i = 0;
   while (i < nop4 && OK)
     {
-      t_save_op_s *save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[i]));
-      t_save_op_s *save_opa_s = reinterpret_cast<t_save_op_s *>(&(save_opa[i]));
-      t_save_op_s *save_opaa_s = reinterpret_cast<t_save_op_s *>(&(save_opaa[i]));
+      t_save_op_s *save_op_s = reinterpret_cast<t_save_op_s *>(&save_op[i]);
+      t_save_op_s *save_opa_s = reinterpret_cast<t_save_op_s *>(&save_opa[i]);
+      t_save_op_s *save_opaa_s = reinterpret_cast<t_save_op_s *>(&save_opaa[i]);
       diff1[j] = save_op_s->first-save_opa_s->first;
       max_save_ops_first = max(max_save_ops_first, save_op_s->first+diff1[j]*(periods-beg_t));
       switch (save_op_s->operat)
@@ -1284,7 +1280,7 @@ dynSparseMatrix::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t,
           int i = j = 0;
           while (i < nop4)
             {
-              auto *save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[i]));
+              auto *save_op_s = reinterpret_cast<t_save_op_s *>(&save_op[i]);
               double *up = &u[save_op_s->first+t*diff1[j]];
               switch (save_op_s->operat)
                 {
@@ -1316,7 +1312,7 @@ dynSparseMatrix::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t,
           int gap = periods_beg_t-t;
           while (i < nop4)
             {
-              if (auto *save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[i]));
+              if (auto *save_op_s = reinterpret_cast<t_save_op_s *>(&save_op[i]);
                   save_op_s->lag < gap)
                 {
                   double *up = &u[save_op_s->first+t*diff1[j]];
@@ -2868,14 +2864,13 @@ dynSparseMatrix::Singular_display(int block, int Size)
 {
   bool zero_solution;
   Simple_Init(Size, IM_i, zero_solution);
-  NonZeroElem *first;
   mxArray *rhs[1] = { mxCreateDoubleMatrix(Size, Size, mxREAL) };
-  double *pind;
-  pind = mxGetPr(rhs[0]);
+  double *pind = mxGetPr(rhs[0]);
   for (int j = 0; j < Size * Size; j++)
     pind[j] = 0.0;
   for (int ii = 0; ii < Size; ii++)
     {
+      NonZeroElem *first;
       int nb_eq = At_Col(ii, &first);
       for (int j = 0; j < nb_eq; j++)
         {
@@ -2889,96 +2884,78 @@ dynSparseMatrix::Singular_display(int block, int Size)
   mexCallMATLAB(3, lhs, 1, rhs, "svd");
   mxArray *SVD_u = lhs[0];
   mxArray *SVD_s = lhs[1];
-  //mxArray* SVD_v = lhs[2];
   double *SVD_ps = mxGetPr(SVD_s);
   double *SVD_pu = mxGetPr(SVD_u);
   for (int i = 0; i < Size; i++)
-    {
-      if (abs(SVD_ps[i * (1 + Size)]) < 1e-12)
-        {
-          mexPrintf(" The following equations form a linear combination:\n    ");
-          double max_u = 0;
-          for (int j = 0; j < Size; j++)
-            if (abs(SVD_pu[j + i * Size]) > abs(max_u))
-              max_u = SVD_pu[j + i * Size];
-          vector<int> equ_list;
-          for (int j = 0; j < Size; j++)
-            {
-              double rr = SVD_pu[j + i * Size] / max_u;
-              if (rr < -1e-10)
-                {
-                  equ_list.push_back(j);
-                  if (rr != -1)
-                    mexPrintf(" - %3.2f*Dequ_%d_dy", abs(rr), j+1);
+    if (abs(SVD_ps[i * (1 + Size)]) < 1e-12)
+      {
+        mexPrintf(" The following equations form a linear combination:\n    ");
+        double max_u = 0;
+        for (int j = 0; j < Size; j++)
+          if (abs(SVD_pu[j + i * Size]) > abs(max_u))
+            max_u = SVD_pu[j + i * Size];
+        vector<int> equ_list;
+        for (int j = 0; j < Size; j++)
+          {
+            double rr = SVD_pu[j + i * Size] / max_u;
+            if (rr < -1e-10)
+              {
+                equ_list.push_back(j);
+                if (rr != -1)
+                  mexPrintf(" - %3.2f*Dequ_%d_dy", abs(rr), j+1);
+                else
+                  mexPrintf(" - Dequ_%d_dy", j+1);
+              }
+            else if (rr > 1e-10)
+              {
+                equ_list.push_back(j);
+                if (j > 0)
+                  if (rr != 1)
+                    mexPrintf(" + %3.2f*Dequ_%d_dy", rr, j+1);
                   else
-                    mexPrintf(" - Dequ_%d_dy", j+1);
-                }
-              else if (rr > 1e-10)
-                {
-                  equ_list.push_back(j);
-                  if (j > 0)
-                    if (rr != 1)
-                      mexPrintf(" + %3.2f*Dequ_%d_dy", rr, j+1);
-                    else
-                      mexPrintf(" + Dequ_%d_dy", j+1);
-                  else if (rr != 1)
-                    mexPrintf(" %3.2f*Dequ_%d_dy", rr, j+1);
-                  else
-                    mexPrintf(" Dequ_%d_dy", j+1);
-                }
-            }
-          mexPrintf(" = 0\n");
-          /*mexPrintf(" with:\n");
-            it_code = get_begin_block(block);
-            for (int j=0; j < Size; j++)
-            {
-            if (find(equ_list.begin(), equ_list.end(), j) != equ_list.end())
-            mexPrintf("  equ_%d: %s\n",j, print_expression(it_code_expr, false, Size, block, steady_state, 0, 0, it_code, true).c_str());
-            }*/
-        }
-    }
+                    mexPrintf(" + Dequ_%d_dy", j+1);
+                else if (rr != 1)
+                  mexPrintf(" %3.2f*Dequ_%d_dy", rr, j+1);
+                else
+                  mexPrintf(" Dequ_%d_dy", j+1);
+              }
+          }
+        mexPrintf(" = 0\n");
+      }
   mxDestroyArray(lhs[0]);
   mxDestroyArray(lhs[1]);
   mxDestroyArray(lhs[2]);
-  ostringstream tmp;
   if (block > 1)
-    tmp << " in Solve_ByteCode_Sparse_GaussianElimination, singular system in block " << block+1 << "\n";
+    throw FatalExceptionHandling(" in Solve_ByteCode_Sparse_GaussianElimination, singular system in block "
+                                 + to_string(block+1) + "\n");
   else
-    tmp << " in Solve_ByteCode_Sparse_GaussianElimination, singular system\n";
-  throw FatalExceptionHandling(tmp.str());
+    throw FatalExceptionHandling(" in Solve_ByteCode_Sparse_GaussianElimination, singular system\n");
 }
 
 bool
 dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int it_)
 {
-  bool one;
   int pivj = 0, pivk = 0;
-  double *piv_v;
-  int *pivj_v, *pivk_v, *NR;
-  int l, N_max;
-  NonZeroElem *first, *firsta, *first_suba;
-  double piv_abs;
-  NonZeroElem **bc;
-  bc = static_cast<NonZeroElem **>(mxMalloc(Size*sizeof(*bc)));
+  NonZeroElem **bc = static_cast<NonZeroElem **>(mxMalloc(Size*sizeof(*bc)));
   test_mxMalloc(bc, __LINE__, __FILE__, __func__, Size*sizeof(*bc));
-  piv_v = static_cast<double *>(mxMalloc(Size*sizeof(double)));
+  double *piv_v = static_cast<double *>(mxMalloc(Size*sizeof(double)));
   test_mxMalloc(piv_v, __LINE__, __FILE__, __func__, Size*sizeof(double));
-  pivj_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
+  int *pivj_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(pivj_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  pivk_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
+  int *pivk_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(pivk_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  NR = static_cast<int *>(mxMalloc(Size*sizeof(int)));
+  int *NR = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(NR, __LINE__, __FILE__, __func__, Size*sizeof(int));
 
   for (int i = 0; i < Size; i++)
     {
       /*finding the max-pivot*/
-      double piv = piv_abs = 0;
+      double piv = 0, piv_abs = 0;
+      NonZeroElem *first;
       int nb_eq = At_Col(i, &first);
-      l = 0;
-      N_max = 0;
-      one = false;
-      piv_abs = 0;
+      int l = 0;
+      int N_max = 0;
+      bool one = false;
       for (int j = 0; j < nb_eq; j++)
         {
           if (!line_done[first->r_index])
@@ -3005,15 +2982,12 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
                   if (NRow_jj > N_max)
                     N_max = NRow_jj;
                 }
-              else
+              else if (NRow_jj == 1)
                 {
-                  if (NRow_jj == 1)
-                    {
-                      if (piv_fabs > piv_abs)
-                        piv_abs = piv_fabs;
-                      if (NRow_jj > N_max)
-                        N_max = NRow_jj;
-                    }
+                  if (piv_fabs > piv_abs)
+                    piv_abs = piv_fabs;
+                  if (NRow_jj > N_max)
+                    N_max = NRow_jj;
                 }
               l++;
             }
@@ -3036,27 +3010,27 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
             }
           else
             {
-              ostringstream tmp;
               if (blck > 1)
-                tmp << " in Solve_ByteCode_Sparse_GaussianElimination, singular system in block " << blck+1 << "\n";
+                throw FatalExceptionHandling(" in Solve_ByteCode_Sparse_GaussianElimination, singular system in block "
+                                             + to_string(blck+1) + "\n");
               else
-                tmp << " in Solve_ByteCode_Sparse_GaussianElimination, singular system\n";
-              throw FatalExceptionHandling(tmp.str());
+                throw FatalExceptionHandling(" in Solve_ByteCode_Sparse_GaussianElimination, singular system\n");
             }
         }
       double markovitz = 0, markovitz_max = -9e70;
       if (!one)
-        {
-          for (int j = 0; j < l; j++)
-            {
-              if (N_max > 0 && NR[j] > 0)
-                {
-                  if (fabs(piv_v[j]) > 0)
-                    {
-                      if (markowitz_c > 0)
-                        markovitz = exp(log(fabs(piv_v[j])/piv_abs)-markowitz_c*log(static_cast<double>(NR[j])/static_cast<double>(N_max)));
-                      else
-                        markovitz = fabs(piv_v[j])/piv_abs;
+        for (int j = 0; j < l; j++)
+          {
+            if (N_max > 0 && NR[j] > 0)
+              {
+                if (fabs(piv_v[j]) > 0)
+                  {
+                    if (markowitz_c > 0)
+                      markovitz = exp(log(fabs(piv_v[j])/piv_abs)
+                                      -markowitz_c*log(static_cast<double>(NR[j])
+                                                       /static_cast<double>(N_max)));
+                    else
+                      markovitz = fabs(piv_v[j])/piv_abs;
                     }
                   else
                     markovitz = 0;
@@ -3070,35 +3044,34 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
                   pivk = pivk_v[j]; //positi
                   markovitz_max = markovitz;
                 }
-            }
-        }
+          }
       else
-        {
-          for (int j = 0; j < l; j++)
-            {
-              if (N_max > 0 && NR[j] > 0)
-                {
-                  if (fabs(piv_v[j]) > 0)
-                    {
-                      if (markowitz_c > 0)
-                        markovitz = exp(log(fabs(piv_v[j])/piv_abs)-markowitz_c*log(static_cast<double>(NR[j])/static_cast<double>(N_max)));
-                      else
-                        markovitz = fabs(piv_v[j])/piv_abs;
-                    }
-                  else
-                    markovitz = 0;
-                }
-              else
-                markovitz = fabs(piv_v[j])/piv_abs;
-              if (NR[j] == 1)
-                {
-                  piv = piv_v[j];
-                  pivj = pivj_v[j]; //Line number
-                  pivk = pivk_v[j]; //positi
-                  markovitz_max = markovitz;
-                }
-            }
-        }
+        for (int j = 0; j < l; j++)
+          {
+            if (N_max > 0 && NR[j] > 0)
+              {
+                if (fabs(piv_v[j]) > 0)
+                  {
+                    if (markowitz_c > 0)
+                      markovitz = exp(log(fabs(piv_v[j])/piv_abs)
+                                      -markowitz_c*log(static_cast<double>(NR[j])
+                                                       /static_cast<double>(N_max)));
+                    else
+                      markovitz = fabs(piv_v[j])/piv_abs;
+                  }
+                else
+                  markovitz = 0;
+              }
+            else
+              markovitz = fabs(piv_v[j])/piv_abs;
+            if (NR[j] == 1)
+              {
+                piv = piv_v[j];
+                pivj = pivj_v[j]; //Line number
+                pivk = pivk_v[j]; //positi
+                markovitz_max = markovitz;
+              }
+          }
       pivot[i] = pivj;
       pivotk[i] = pivk;
       pivotv[i] = piv;
@@ -3123,7 +3096,6 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
             bc[nb_eq_todo++] = first;
           first = first->NZE_C_N;
         }
-      //pragma omp parallel for
       for (int j = 0; j < nb_eq_todo; j++)
         {
           first = bc[j];
@@ -3137,67 +3109,65 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
           int l_sub = 0, l_piv = 0;
           int sub_c_index = first_sub->c_index, piv_c_index = first_piv->c_index;
           while (l_sub < nb_var_sub || l_piv < nb_var_piv)
-            {
-              if (l_sub < nb_var_sub && (sub_c_index < piv_c_index || l_piv >= nb_var_piv))
-                {
-                  first_sub = first_sub->NZE_R_N;
-                  if (first_sub)
-                    sub_c_index = first_sub->c_index;
-                  else
-                    sub_c_index = Size;
-                  l_sub++;
-                }
-              else if (sub_c_index > piv_c_index || l_sub >= nb_var_sub)
-                {
-                  int tmp_u_count = Get_u();
-                  Insert(row, first_piv->c_index, tmp_u_count, 0);
-                  u[tmp_u_count] = -u[first_piv->u_index]*first_elem;
-                  first_piv = first_piv->NZE_R_N;
-                  if (first_piv)
-                    piv_c_index = first_piv->c_index;
-                  else
-                    piv_c_index = Size;
-                  l_piv++;
-                }
-              else
-                {
-                  if (i == sub_c_index)
-                    {
-                      firsta = first;
-                      first_suba = first_sub->NZE_R_N;
-                      Delete(first_sub->r_index, first_sub->c_index);
-                      first = firsta->NZE_C_N;
-                      first_sub = first_suba;
-                      if (first_sub)
-                        sub_c_index = first_sub->c_index;
-                      else
-                        sub_c_index = Size;
-                      l_sub++;
-                      first_piv = first_piv->NZE_R_N;
-                      if (first_piv)
-                        piv_c_index = first_piv->c_index;
-                      else
-                        piv_c_index = Size;
-                      l_piv++;
-                    }
-                  else
-                    {
-                      u[first_sub->u_index] -= u[first_piv->u_index]*first_elem;
-                      first_sub = first_sub->NZE_R_N;
-                      if (first_sub)
-                        sub_c_index = first_sub->c_index;
-                      else
-                        sub_c_index = Size;
-                      l_sub++;
-                      first_piv = first_piv->NZE_R_N;
-                      if (first_piv)
-                        piv_c_index = first_piv->c_index;
-                      else
-                        piv_c_index = Size;
-                      l_piv++;
-                    }
-                }
-            }
+            if (l_sub < nb_var_sub && (sub_c_index < piv_c_index || l_piv >= nb_var_piv))
+              {
+                first_sub = first_sub->NZE_R_N;
+                if (first_sub)
+                  sub_c_index = first_sub->c_index;
+                else
+                  sub_c_index = Size;
+                l_sub++;
+              }
+            else if (sub_c_index > piv_c_index || l_sub >= nb_var_sub)
+              {
+                int tmp_u_count = Get_u();
+                Insert(row, first_piv->c_index, tmp_u_count, 0);
+                u[tmp_u_count] = -u[first_piv->u_index]*first_elem;
+                first_piv = first_piv->NZE_R_N;
+                if (first_piv)
+                  piv_c_index = first_piv->c_index;
+                else
+                  piv_c_index = Size;
+                l_piv++;
+              }
+            else
+              {
+                if (i == sub_c_index)
+                  {
+                    NonZeroElem *firsta = first;
+                    NonZeroElem *first_suba = first_sub->NZE_R_N;
+                    Delete(first_sub->r_index, first_sub->c_index);
+                    first = firsta->NZE_C_N;
+                    first_sub = first_suba;
+                    if (first_sub)
+                      sub_c_index = first_sub->c_index;
+                    else
+                      sub_c_index = Size;
+                    l_sub++;
+                    first_piv = first_piv->NZE_R_N;
+                    if (first_piv)
+                      piv_c_index = first_piv->c_index;
+                    else
+                      piv_c_index = Size;
+                    l_piv++;
+                  }
+                else
+                  {
+                    u[first_sub->u_index] -= u[first_piv->u_index]*first_elem;
+                    first_sub = first_sub->NZE_R_N;
+                    if (first_sub)
+                      sub_c_index = first_sub->c_index;
+                    else
+                      sub_c_index = Size;
+                    l_sub++;
+                    first_piv = first_piv->NZE_R_N;
+                    if (first_piv)
+                      piv_c_index = first_piv->c_index;
+                    else
+                      piv_c_index = Size;
+                    l_piv++;
+                  }
+              }
           u[b[row]] -= u[b[pivj]]*first_elem;
         }
     }
@@ -3220,35 +3190,26 @@ void
 dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool symbolic, int Block_number)
 {
   /*Triangularisation at each period of a block using a simple gaussian Elimination*/
-  t_save_op_s *save_op_s;
   int *save_op = nullptr, *save_opa = nullptr, *save_opaa = nullptr;
   long int nop = 0, nopa = 0;
   bool record = false;
-  double *piv_v;
-  double piv_abs;
-  int *pivj_v, *pivk_v, *NR;
+
   int pivj = 0, pivk = 0;
-  NonZeroElem *first;
-  int tmp_u_count, lag;
   int tbreak = 0, last_period = periods;
 
-  piv_v = static_cast<double *>(mxMalloc(Size*sizeof(double)));
+  double *piv_v = static_cast<double *>(mxMalloc(Size*sizeof(double)));
   test_mxMalloc(piv_v, __LINE__, __FILE__, __func__, Size*sizeof(double));
-  pivj_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
+  int *pivj_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(pivj_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  pivk_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
+  int *pivk_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(pivk_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  NR = static_cast<int *>(mxMalloc(Size*sizeof(int)));
+  int *NR = static_cast<int *>(mxMalloc(Size*sizeof(int)));
   test_mxMalloc(NR, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  //clock_t time00 = clock();
-  NonZeroElem **bc;
-  bc = static_cast<NonZeroElem **>(mxMalloc(Size*sizeof(first)));
-  test_mxMalloc(bc, __LINE__, __FILE__, __func__, Size*sizeof(first));
+  NonZeroElem **bc = static_cast<NonZeroElem **>(mxMalloc(Size*sizeof(NonZeroElem *)));
+  test_mxMalloc(bc, __LINE__, __FILE__, __func__, Size*sizeof(NonZeroElem *));
 
   for (int t = 0; t < periods; t++)
     {
-      /*clock_t time11 = clock();
-        mexPrintf("t=%d, record = %d\n",t, record);*/
 #ifdef MATLAB_MEX_FILE
       if (utIsInterruptPending())
         throw UserExceptionHandling();
@@ -3256,11 +3217,6 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
 
       if (record && symbolic)
         {
-          /*if (save_op)
-            {
-            mxFree(save_op);
-            save_op = NULL;
-            }*/
           save_op = static_cast<int *>(mxMalloc(nop*sizeof(int)));
           test_mxMalloc(save_op, __LINE__, __FILE__, __func__, nop*sizeof(int));
           nopa = nop;
@@ -3271,7 +3227,8 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
       for (int i = ti; i < Size+ti; i++)
         {
           /*finding the max-pivot*/
-          double piv = piv_abs = 0;
+          double piv = 0, piv_abs = 0;
+          NonZeroElem *first;
           int nb_eq = At_Col(i, 0, &first);
           if ((symbolic && t <= start_compare) || !symbolic)
             {
@@ -3303,15 +3260,12 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                           if (NRow_jj > N_max)
                             N_max = NRow_jj;
                         }
-                      else
+                      else if (NRow_jj == 1)
                         {
-                          if (NRow_jj == 1)
-                            {
-                              if (piv_fabs > piv_abs)
-                                piv_abs = piv_fabs;
-                              if (NRow_jj > N_max)
-                                N_max = NRow_jj;
-                            }
+                          if (piv_fabs > piv_abs)
+                            piv_abs = piv_fabs;
+                          if (NRow_jj > N_max)
+                            N_max = NRow_jj;
                         }
                       l++;
                     }
@@ -3320,61 +3274,61 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
               double markovitz = 0, markovitz_max = -9e70;
               int NR_max = 0;
               if (!one)
-                {
-                  for (int j = 0; j < l; j++)
-                    {
-                      if (N_max > 0 && NR[j] > 0)
-                        {
-                          if (fabs(piv_v[j]) > 0)
-                            {
-                              if (markowitz_c > 0)
-                                markovitz = exp(log(fabs(piv_v[j])/piv_abs)-markowitz_c*log(static_cast<double>(NR[j])/static_cast<double>(N_max)));
-                              else
-                                markovitz = fabs(piv_v[j])/piv_abs;
-                            }
-                          else
-                            markovitz = 0;
-                        }
-                      else
-                        markovitz = fabs(piv_v[j])/piv_abs;
-                      if (markovitz > markovitz_max)
-                        {
-                          piv = piv_v[j];
-                          pivj = pivj_v[j]; //Line number
-                          pivk = pivk_v[j]; //positi
-                          markovitz_max = markovitz;
-                          NR_max = NR[j];
-                        }
-                    }
-                }
+                for (int j = 0; j < l; j++)
+                  {
+                    if (N_max > 0 && NR[j] > 0)
+                      {
+                        if (fabs(piv_v[j]) > 0)
+                          {
+                            if (markowitz_c > 0)
+                              markovitz = exp(log(fabs(piv_v[j])/piv_abs)
+                                              -markowitz_c*log(static_cast<double>(NR[j])
+                                                               /static_cast<double>(N_max)));
+                            else
+                              markovitz = fabs(piv_v[j])/piv_abs;
+                          }
+                        else
+                          markovitz = 0;
+                      }
+                    else
+                      markovitz = fabs(piv_v[j])/piv_abs;
+                    if (markovitz > markovitz_max)
+                      {
+                        piv = piv_v[j];
+                        pivj = pivj_v[j]; //Line number
+                        pivk = pivk_v[j]; //positi
+                        markovitz_max = markovitz;
+                        NR_max = NR[j];
+                      }
+                  }
               else
-                {
-                  for (int j = 0; j < l; j++)
-                    {
-                      if (N_max > 0 && NR[j] > 0)
-                        {
-                          if (fabs(piv_v[j]) > 0)
-                            {
-                              if (markowitz_c > 0)
-                                markovitz = exp(log(fabs(piv_v[j])/piv_abs)-markowitz_c*log(static_cast<double>(NR[j])/static_cast<double>(N_max)));
-                              else
-                                markovitz = fabs(piv_v[j])/piv_abs;
-                            }
-                          else
-                            markovitz = 0;
-                        }
-                      else
-                        markovitz = fabs(piv_v[j])/piv_abs;
-                      if (NR[j] == 1)
-                        {
-                          piv = piv_v[j];
-                          pivj = pivj_v[j]; //Line number
-                          pivk = pivk_v[j]; //positi
-                          markovitz_max = markovitz;
-                          NR_max = NR[j];
-                        }
-                    }
-                }
+                for (int j = 0; j < l; j++)
+                  {
+                    if (N_max > 0 && NR[j] > 0)
+                      {
+                        if (fabs(piv_v[j]) > 0)
+                          {
+                            if (markowitz_c > 0)
+                              markovitz = exp(log(fabs(piv_v[j])/piv_abs)
+                                              -markowitz_c*log(static_cast<double>(NR[j])
+                                                               /static_cast<double>(N_max)));
+                            else
+                              markovitz = fabs(piv_v[j])/piv_abs;
+                          }
+                        else
+                          markovitz = 0;
+                      }
+                    else
+                      markovitz = fabs(piv_v[j])/piv_abs;
+                    if (NR[j] == 1)
+                      {
+                        piv = piv_v[j];
+                        pivj = pivj_v[j]; //Line number
+                        pivk = pivk_v[j]; //positi
+                        markovitz_max = markovitz;
+                        NR_max = NR[j];
+                      }
+                  }
               if (fabs(piv) < eps)
                 mexPrintf("==> Error NR_max=%d, N_max=%d and piv=%f, piv_abs=%f, markovitz_max=%f\n", NR_max, N_max, piv, piv_abs, markovitz_max);
               if (NR_max == 0)
@@ -3399,22 +3353,21 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
             {
               if (nop+1 >= nopa)
                 {
-                  nopa = long (mem_increasing_factor*static_cast<double>(nopa));
+                  nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
                   save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                 }
-              save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
+              t_save_op_s *save_op_s = reinterpret_cast<t_save_op_s *>(&save_op[nop]);
               save_op_s->operat = IFLD;
               save_op_s->first = pivk;
               save_op_s->lag = 0;
               nop += 2;
               if (piv_abs < eps)
                 {
-                  ostringstream tmp;
                   if (Block_number > 1)
-                    tmp << " in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system in block " << Block_number+1 << "\n";
+                    throw FatalExceptionHandling(" in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system in block "
+                                                 + to_string(Block_number+1) + "\n");
                   else
-                    tmp << " in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system\n";
-                  throw FatalExceptionHandling(tmp.str());
+                    throw FatalExceptionHandling(" in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system\n");
                 }
               /*divide all the non zeros elements of the line pivj by the max_pivot*/
               int nb_var = At_Row(pivj, &first);
@@ -3426,7 +3379,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                       nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
                       save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                     }
-                  save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[nop+j*2]));
+                  save_op_s = reinterpret_cast<t_save_op_s *>(&save_op[nop+j*2]);
                   save_op_s->operat = IFDIV;
                   save_op_s->first = first->u_index;
                   save_op_s->lag = first->lag_index;
@@ -3439,12 +3392,12 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                   nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
                   save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                 }
-              save_op_s = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
+              save_op_s = reinterpret_cast<t_save_op_s *>(&save_op[nop]);
               save_op_s->operat = IFDIV;
               save_op_s->first = b[pivj];
               save_op_s->lag = 0;
               nop += 2;
-              /*substract the elements on the non treated lines*/
+              // Substract the elements on the non treated lines
               nb_eq = At_Col(i, &first);
               NonZeroElem *first_piva;
               int nb_var_piva = At_Row(pivj, &first_piva);
@@ -3456,7 +3409,6 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                     bc[nb_eq_todo++] = first;
                   first = first->NZE_C_N;
                 }
-              //#pragma omp parallel for shared(nb_var_piva, first_piva, nopa, save_op) reduction(+:nop)
               for (int j = 0; j < nb_eq_todo; j++)
                 {
                   t_save_op_s *save_op_s_l;
@@ -3468,7 +3420,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                       nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
                       save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                     }
-                  save_op_s_l = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
+                  save_op_s_l = reinterpret_cast<t_save_op_s *>(&save_op[nop]);
                   save_op_s_l->operat = IFLD;
                   save_op_s_l->first = first->u_index;
                   save_op_s_l->lag = abs(first->lag_index);
@@ -3483,11 +3435,13 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                   int sub_c_index = first_sub->c_index;
                   int piv_c_index = first_piv->c_index;
                   int tmp_lag = first_sub->lag_index;
-                  while (l_sub < (nb_var_sub /*=NRow(row)*/) || l_piv < nb_var_piv)
+                  while (l_sub < nb_var_sub /*=NRow(row)*/ || l_piv < nb_var_piv)
                     {
                       if (l_sub < nb_var_sub && (sub_c_index < piv_c_index || l_piv >= nb_var_piv))
                         {
-                          //There is no nonzero element at row pivot for this column=> Nothing to do for the current element got to next column
+                          /* There is no nonzero element at row pivot for this
+                             column ⇒ Nothing to do for the current element got to
+                             next column */
                           first_sub = first_sub->NZE_R_N;
                           if (first_sub)
                             sub_c_index = first_sub->c_index;
@@ -3498,19 +3452,16 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                       else if (sub_c_index > piv_c_index || l_sub >= nb_var_sub)
                         {
                           // There is an nonzero element at row pivot but not at the current row=> insert a negative element in the current row
-                          tmp_u_count = Get_u();
-                          lag = first_piv->c_index/Size-row/Size;
-                          //#pragma omp critical
-                          {
-                            Insert(row, first_piv->c_index, tmp_u_count, lag);
-                          }
+                          int tmp_u_count = Get_u();
+                          int lag = first_piv->c_index/Size-row/Size;
+                          Insert(row, first_piv->c_index, tmp_u_count, lag);
                           u[tmp_u_count] = -u[first_piv->u_index]*first_elem;
                           if (nop+2 >= nopa)
                             {
                               nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
                               save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                             }
-                          save_op_s_l = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
+                          save_op_s_l = reinterpret_cast<t_save_op_s *>(&save_op[nop]);
                           save_op_s_l->operat = IFLESS;
                           save_op_s_l->first = tmp_u_count;
                           save_op_s_l->second = first_piv->u_index;
@@ -3529,10 +3480,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                             {
                               NonZeroElem *firsta = first;
                               NonZeroElem *first_suba = first_sub->NZE_R_N;
-                              //#pragma omp critical
-                              {
-                                Delete(first_sub->r_index, first_sub->c_index);
-                              }
+                              Delete(first_sub->r_index, first_sub->c_index);
                               first = firsta->NZE_C_N;
                               first_sub = first_suba;
                               if (first_sub)
@@ -3555,7 +3503,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                                   nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
                                   save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                                 }
-                              save_op_s_l = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
+                              save_op_s_l = reinterpret_cast<t_save_op_s *>(&save_op[nop]);
                               save_op_s_l->operat = IFSUB;
                               save_op_s_l->first = first_sub->u_index;
                               save_op_s_l->second = first_piv->u_index;
@@ -3583,7 +3531,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                       nopa = static_cast<long>(mem_increasing_factor*static_cast<double>(nopa));
                       save_op = static_cast<int *>(mxRealloc(save_op, nopa*sizeof(int)));
                     }
-                  save_op_s_l = reinterpret_cast<t_save_op_s *>(&(save_op[nop]));
+                  save_op_s_l = reinterpret_cast<t_save_op_s *>(&save_op[nop]);
                   save_op_s_l->operat = IFSUB;
                   save_op_s_l->first = b[row];
                   save_op_s_l->second = b[pivj];
@@ -3596,14 +3544,13 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
               nop += 2;
               if (piv_abs < eps)
                 {
-                  ostringstream tmp;
                   if (Block_number > 1)
-                    tmp << " in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system in block " << Block_number+1 << "\n";
+                    throw FatalExceptionHandling(" in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system in block "
+                                                 + to_string(Block_number+1) + "\n");
                   else
-                    tmp << " in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system\n";
-                  throw FatalExceptionHandling(tmp.str());
+                    throw FatalExceptionHandling(" in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system\n");
                 }
-              /*divide all the non zeros elements of the line pivj by the max_pivot*/
+              // Divide all the non zeros elements of the line pivj by the max_pivot
               int nb_var = At_Row(pivj, &first);
               for (int j = 0; j < nb_var; j++)
                 {
@@ -3613,7 +3560,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
               nop += nb_var*2;
               u[b[pivj]] /= piv;
               nop += 2;
-              /*substract the elements on the non treated lines*/
+              // Substract the elements on the non treated lines
               nb_eq = At_Col(i, &first);
               NonZeroElem *first_piva;
               int nb_var_piva = At_Row(pivj, &first_piva);
@@ -3625,7 +3572,6 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                     bc[nb_eq_todo++] = first;
                   first = first->NZE_C_N;
                 }
-              //#pragma omp parallel for shared(nb_var_piva, first_piva, nopa, save_op) reduction(+:nop)
               for (int j = 0; j < nb_eq_todo; j++)
                 {
                   NonZeroElem *first = bc[j];
@@ -3640,11 +3586,13 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                   int l_piv = 0;
                   int sub_c_index = first_sub->c_index;
                   int piv_c_index = first_piv->c_index;
-                  while (l_sub < (nb_var_sub /*= NRow(row)*/) || l_piv < nb_var_piv)
+                  while (l_sub < nb_var_sub /*= NRow(row)*/ || l_piv < nb_var_piv)
                     {
                       if (l_sub < nb_var_sub && (sub_c_index < piv_c_index || l_piv >= nb_var_piv))
                         {
-                          //There is no nonzero element at row pivot for this column=> Nothing to do for the current element got to next column
+                          /* There is no nonzero element at row pivot for this
+                             column ⇒ Nothing to do for the current element got to
+                             next column */
                           first_sub = first_sub->NZE_R_N;
                           if (first_sub)
                             sub_c_index = first_sub->c_index;
@@ -3654,13 +3602,12 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                         }
                       else if (sub_c_index > piv_c_index || l_sub >= nb_var_sub)
                         {
-                          // There is an nonzero element at row pivot but not at the current row=> insert a negative element in the current row
-                          tmp_u_count = Get_u();
-                          lag = first_piv->c_index/Size-row/Size;
-                          //#pragma omp critical
-                          {
-                            Insert(row, first_piv->c_index, tmp_u_count, lag);
-                          }
+                          /* There is an nonzero element at row pivot but not
+                             at the current row ⇒ insert a negative element in the
+                             current row */
+                          int tmp_u_count = Get_u();
+                          int lag = first_piv->c_index/Size-row/Size;
+                          Insert(row, first_piv->c_index, tmp_u_count, lag);
                           u[tmp_u_count] = -u[first_piv->u_index]*first_elem;
                           nop += 3;
                           first_piv = first_piv->NZE_R_N;
@@ -3676,10 +3623,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                             {
                               NonZeroElem *firsta = first;
                               NonZeroElem *first_suba = first_sub->NZE_R_N;
-                              //#pragma omp critical
-                              {
-                                Delete(first_sub->r_index, first_sub->c_index);
-                              }
+                              Delete(first_sub->r_index, first_sub->c_index);
                               first = firsta->NZE_C_N;
                               first_sub = first_suba;
                               if (first_sub)
@@ -3727,7 +3671,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
               mxFree(save_opa);
               mxFree(save_op);
             }
-          else if (record && (nop == nop1))
+          else if (record && nop == nop1)
             {
               if (t > static_cast<int>(periods*0.35))
                 {
@@ -3754,7 +3698,6 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                     {
                       tbreak = t;
                       tbreak_g = tbreak;
-                      //mexPrintf("time=%f\n",(1000.0*(static_cast<double>(clock())-static_cast<double>(time11)))/static_cast<double>(CLOCKS_PER_SEC));
                       break;
                     }
                 }
@@ -3791,16 +3734,12 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
           nop2 = nop1;
           nop1 = nop;
         }
-      //mexPrintf("time=%f\n",(1000.0*(static_cast<double>(clock())-static_cast<double>(time11)))/static_cast<double>(CLOCKS_PER_SEC));
     }
   mxFree(bc);
   mxFree(piv_v);
   mxFree(pivj_v);
   mxFree(pivk_v);
   mxFree(NR);
-  /*mexPrintf("tbreak=%d, periods=%d time required=%f\n",tbreak,periods, (1000.0*(static_cast<double>(clock())-static_cast<double>(time00)))/static_cast<double>(CLOCKS_PER_SEC));
-    mexEvalString("drawnow;");
-    time00 = clock();*/
   nop_all += nop;
   if (symbolic)
     {
@@ -3812,84 +3751,21 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
         mxFree(save_opaa);
     }
 
-  /*The backward substitution*/
+  // The backward substitution
   double slowc_lbx = slowc;
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
   slowc_save = slowc;
   bksub(tbreak, last_period, Size, slowc_lbx);
-  /*mexPrintf("remaining operations and bksub time required=%f\n",tbreak,periods, (1000.0*(static_cast<double>(clock())-static_cast<double>(time00)))/static_cast<double>(CLOCKS_PER_SEC));
-    mexEvalString("drawnow;");*/
   End_GE(Size);
-}
-
-void
-dynSparseMatrix::Grad_f_product(int n, mxArray *b_m, double *vectr, mxArray *A_m, SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b_)
-{
-  if ((solve_algo == 5 && steady_state) || (stack_solve_algo == 5 && !steady_state))
-    {
-      NonZeroElem *first;
-      for (int i = 0; i < n; i++)
-        {
-          double sum = 0;
-          first = FNZE_R[i];
-          if (first)
-            for (int k = 0; k < NbNZRow[i]; k++)
-              {
-                sum += u[first->u_index] * u[b[first->c_index]];
-                first = first->NZE_R_N;
-              }
-          vectr[i] = sum;
-        }
-    }
-  else
-    {
-      if (!((solve_algo == 6 && steady_state) || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state)))
-        {
-          mwIndex *Ai = mxGetIr(A_m);
-          if (!Ai)
-            {
-              ostringstream tmp;
-              tmp << " in Init_Matlab_Sparse_Simple, can't allocate Ai index vector\n";
-              throw FatalExceptionHandling(tmp.str());
-            }
-          mwIndex *Aj = mxGetJc(A_m);
-          if (!Aj)
-            {
-              ostringstream tmp;
-              tmp << " in Init_Matlab_Sparse_Simple, can't allocate Aj index vector\n";
-              throw FatalExceptionHandling(tmp.str());
-            }
-          double *A = mxGetPr(A_m);
-          if (!A)
-            {
-              ostringstream tmp;
-              tmp << " in Init_Matlab_Sparse_Simple, can't retrieve A matrix\n";
-              throw FatalExceptionHandling(tmp.str());
-            }
-          b_ = mxGetPr(b_m);
-          if (!b_)
-            {
-              ostringstream tmp;
-              tmp << " in Init_Matlab_Sparse_Simple, can't retrieve b matrix\n";
-              throw FatalExceptionHandling(tmp.str());
-            }
-        }
-      memset(vectr, 0, n * sizeof(double));
-      for (int i = 0; i < n; i++)
-        for (SuiteSparse_long j = Ap[i]; j < Ap[i+1]; j++)
-          vectr[Ai[j]] += Ax[j] * b_[i];
-    }
 }
 
 void
 dynSparseMatrix::Check_and_Correct_Previous_Iteration(int block_num, int y_size, int size, double crit_opt_old)
 {
-  double top = 1.0;
-  double bottom = 0.1;
   if (isnan(res1) || isinf(res1) || (res2 > g0 && iter > 0))
     {
-      while ((isnan(res1) || isinf(res1)))
+      while (isnan(res1) || isinf(res1))
         {
           prev_slowc_save = slowc_save;
           slowc_save /= 1.1;
@@ -3898,9 +3774,6 @@ dynSparseMatrix::Check_and_Correct_Previous_Iteration(int block_num, int y_size,
               int eq = index_vara[i];
               y[eq+it_*y_size] = ya[eq+it_*y_size] + slowc_save * direction[eq+it_*y_size];
             }
-          /*mexPrintf("reducing solwc_save = %e, it_=%d, y_size=%d, size=%d, y[%d]=%e, ya[%d]=%e,\n y[%d]=%e, ya[%d]=%e\n",slowc_save, it_, y_size, size-1, index_vara[0]+it_*y_size, y[index_vara[0]+it_*y_size], index_vara[0]+it_*y_size, ya[index_vara[0]+it_*y_size]
-            , index_vara[size-1]+it_*y_size, y[index_vara[size-1]+it_*y_size], index_vara[size-1]+it_*y_size, ya[index_vara[size-1]+it_*y_size]);*/
-          //mexPrintf("->slowc_save=%f\n",slowc_save);
           compute_complete(true, res1, res2, max_res, max_res_idx);
         }
 
@@ -3913,92 +3786,8 @@ dynSparseMatrix::Check_and_Correct_Previous_Iteration(int block_num, int y_size,
               int eq = index_vara[i];
               y[eq+it_*y_size] = ya[eq+it_*y_size] + slowc_save * direction[eq+it_*y_size];
             }
-          /*mexPrintf("reducing solwc_save = %e, it_=%d, y_size=%d, size=%d, y[%d]=%e, ya[%d]=%e,\n y[%d]=%e, ya[%d]=%e\n",slowc_save, it_, y_size, size-1, index_vara[0]+it_*y_size, y[index_vara[0]+it_*y_size], index_vara[0]+it_*y_size, ya[index_vara[0]+it_*y_size]                                                                                            , index_vara[size-1]+it_*y_size, y[index_vara[size-1]+it_*y_size], index_vara[size-1]+it_*y_size, ya[index_vara[size-1]+it_*y_size]);*/
-          //mexPrintf("->slowc_save=%f\n",slowc_save);
           compute_complete(true, res1, res2, max_res, max_res_idx);
         }
-      double ax = slowc_save-0.001, bx = slowc_save+0.001, cx = slowc_save, fa, fb, fc, xmin;
-      if (false /*slowc_save > 2e-1*/)
-        if (mnbrak(&ax, &bx, &cx, &fa, &fb, &fc))
-          if (golden(ax, bx, cx, 1e-1, solve_tolf, &xmin))
-            slowc_save = xmin;
-      //mexPrintf("cx=%f\n", cx);
-      //mexPrintf("ax= %f, bx=%f, cx=%f, fa=%f, fb=%f, fc=%d\n", ax, bx, cx, fa, fb, fc);
-
-      //if (!(isnan(res1) || isinf(res1))/* && !(isnan(g0) || isinf(g0))*//*|| (res2 > g0 && iter > 1)*/)
-      if (false)
-        {
-
-          auto *p = static_cast<double *>(mxMalloc(size * sizeof(double)));
-          test_mxMalloc(p, __LINE__, __FILE__, __func__, size * sizeof(double));
-          Grad_f_product(size, b_m_save, p, A_m_save, Ap_save, Ai_save, Ax_save, b_save);
-          double slope = 0.0;
-          for (int i = 1; i < size; i++)
-            slope += -direction[i] * p[i];
-          /*if (slope > 0)
-            mexPrintf("Roundoff in lnsearch\n");
-            else*/
-          {
-            prev_slowc_save = 1;
-            double crit_opt = res2/2;
-            double max_try_iteration = 100;
-            double small_ = 1.0e-4;
-            bool try_at_cvg = false;
-            while ((try_at_iteration < max_try_iteration) && (!try_at_cvg) && (abs(prev_slowc_save - slowc_save) > 1e-10))
-              {
-                crit_opt = res2 / 2;
-                if (slowc_save < 1e-7)
-                  {
-                    try_at_cvg = true;
-                    continue;
-                  }
-                else if ((crit_opt <= crit_opt_old + small_ * slowc_save * slope) && !(isnan(res1) || isinf(res1)))
-                  {
-                    try_at_cvg = true;
-                    continue;
-                  }
-                else if (try_at_iteration == 0)
-                  {
-                    prev_slowc_save = slowc_save;
-                    //slowc_save = max(- top * slope / ( (crit_opt - crit_opt_old - slope)), bottom);
-                    slowc_save /= 1.2;
-                  }
-                else
-                  {
-                    double t1 = crit_opt - slope * slowc_save - crit_opt_old;
-                    double t2 = glambda2 - slope * prev_slowc_save - crit_opt_old;
-                    double a = (1/(slowc_save * slowc_save) * t1 - 1/(prev_slowc_save * prev_slowc_save) * t2) / (slowc_save - prev_slowc_save);
-                    double b = (-prev_slowc_save/(slowc_save * slowc_save) * t1 + slowc_save/(prev_slowc_save * prev_slowc_save) * t2) / (slowc_save - prev_slowc_save);
-                    if (a == 0)
-                      slowc_save = max(min(-slope/(2 * b), top * slowc_save), bottom * slowc_save);
-                    else
-                      {
-                        double delta = b*b - 3 * a * slope;
-                        if (delta <= 0)
-                          slowc_save = top * slowc_save;
-                        else if (b <= 0)
-                          slowc_save = max(min(-b + sqrt(delta) / (3 * a), top * slowc_save), bottom * slowc_save);
-                        else
-                          slowc_save = max(min(-slope / (b + sqrt(delta)), top * slowc_save), bottom * slowc_save);
-                      }
-                  }
-                if (abs(prev_slowc_save - slowc_save) < 1e-10)
-                  slowc_save /= 1.1;
-                //mexPrintf("=>slowc_save=%f, prev_slowc_save=%f\n",slowc_save, prev_slowc_save);
-                prev_slowc_save = slowc_save;
-                glambda2 = crit_opt;
-                try_at_iteration++;
-                for (int i = 0; i < size; i++)
-                  {
-                    int eq = index_vara[i];
-                    y[eq+it_*y_size] = ya[eq+it_*y_size] + slowc_save * direction[eq+it_*y_size];
-                  }
-                compute_complete(true, res1, res2, max_res, max_res_idx);
-              }
-          }
-          mxFree(p);
-        }
-      //if (print_it)
       mexPrintf("Error: Simulation diverging, trying to correct it using slowc=%f\n", slowc_save);
       for (int i = 0; i < size; i++)
         {
@@ -4008,21 +3797,17 @@ dynSparseMatrix::Check_and_Correct_Previous_Iteration(int block_num, int y_size,
       compute_complete(false, res1, res2, max_res, max_res_idx);
     }
   else
-    {
-      //mexPrintf("slowc_save=%f res1=%f\n",slowc_save, res1);
-      for (int i = 0; i < size; i++)
-        {
-          int eq = index_vara[i];
-          y[eq+it_*y_size] = ya[eq+it_*y_size] + slowc_save * direction[eq+it_*y_size];
-        }
-    }
+    for (int i = 0; i < size; i++)
+      {
+        int eq = index_vara[i];
+        y[eq+it_*y_size] = ya[eq+it_*y_size] + slowc_save * direction[eq+it_*y_size];
+      }
   slowc_save = slowc;
 }
 
 bool
 dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, int y_kmax, int size, bool cvg)
 {
-  //int i;
   mxArray *b_m = nullptr, *A_m = nullptr, *x0_m = nullptr;
   SuiteSparse_long *Ap = nullptr, *Ai = nullptr;
   double *Ax = nullptr, *b = nullptr;
@@ -4058,16 +3843,16 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
           else
             mexPrintf(" dynare cannot improve the simulation in block %d at time %d (variable %d)\n", block_num+1, it_+1, index_vara[max_res_idx]+1);
           mexEvalString("drawnow;");
-          //return singular_system;
         }
       else
         {
-          ostringstream tmp;
           if (iter == 0)
-            tmp << " in Simulate_One_Boundary, The initial values of endogenous variables are too far from the solution.\nChange them!\n";
+            throw FatalExceptionHandling(" in Simulate_One_Boundary, The initial values of endogenous variables are too far from the solution.\nChange them!\n");
           else
-            tmp << " in Simulate_One_Boundary, Dynare cannot improve the simulation in block " << block_num+1 << " at time " << it_+1 << " (variable " << index_vara[max_res_idx]+1 << "%d)\n";
-          throw FatalExceptionHandling(tmp.str());
+            throw FatalExceptionHandling(" in Simulate_One_Boundary, Dynare cannot improve the simulation in block "
+                                         + to_string(block_num+1) + " at time " + to_string(it_+1)
+                                         + " (variable " + to_string(index_vara[max_res_idx]+1)
+                                         + "%d)\n");
         }
     }
   if (print_it)
@@ -4097,11 +3882,9 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
               break;
             case 7:
               mexPrintf(preconditioner_print_out("MODEL STEADY STATE: (method=GMRES)\n", preconditioner, true).c_str());
-              //mexPrintf("MODEL STEADY STATE: (method=GMRES)\n");
               break;
             case 8:
               mexPrintf(preconditioner_print_out("MODEL STEADY STATE: (method=BiCGStab)\n", preconditioner, true).c_str());
-              //mexPrintf("MODEL STEADY STATE: (method=BiCGStab)\n");
               break;
             default:
               mexPrintf("MODEL STEADY STATE: (method=Unknown - %d - )\n", stack_solve_algo);
@@ -4123,26 +3906,15 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
     {
       b_m = mxCreateDoubleMatrix(size, 1, mxREAL);
       if (!b_m)
-        {
-          ostringstream tmp;
-          tmp << " in Simulate_One_Boundary, can't allocate b_m vector\n";
-          throw FatalExceptionHandling(tmp.str());
-        }
+        throw FatalExceptionHandling(" in Simulate_One_Boundary, can't allocate b_m vector\n");
       A_m = mxCreateSparse(size, size, min(static_cast<int>(IM_i.size()*2), size * size), mxREAL);
       if (!A_m)
-        {
-          ostringstream tmp;
-          tmp << " in Simulate_One_Boundary, can't allocate A_m matrix\n";
-          throw FatalExceptionHandling(tmp.str());
-        }
+        throw FatalExceptionHandling(" in Simulate_One_Boundary, can't allocate A_m matrix\n");
       x0_m = mxCreateDoubleMatrix(size, 1, mxREAL);
       if (!x0_m)
-        {
-          ostringstream tmp;
-          tmp << " in Simulate_One_Boundary, can't allocate x0_m vector\n";
-          throw FatalExceptionHandling(tmp.str());
-        }
-      if (!((solve_algo == 6 && steady_state) || ((stack_solve_algo == 0 || stack_solve_algo == 4) && !steady_state)))
+        throw FatalExceptionHandling(" in Simulate_One_Boundary, can't allocate x0_m vector\n");
+      if (!((solve_algo == 6 && steady_state)
+            || ((stack_solve_algo == 0 || stack_solve_algo == 4) && !steady_state)))
         {
           Init_Matlab_Sparse_Simple(size, IM_i, A_m, b_m, zero_solution, x0_m);
           A_m_save = mxDuplicateArray(A_m);
@@ -4160,22 +3932,20 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
               Ax_save = static_cast<double *>(mxMalloc(Ap[size] * sizeof(double)));
               test_mxMalloc(Ax_save, __LINE__, __FILE__, __func__, Ap[size] * sizeof(double));
             }
-          memcpy(Ap_save, Ap, (size + 1) * sizeof(SuiteSparse_long));
-          memcpy(Ai_save, Ai, Ap[size] * sizeof(SuiteSparse_long));
-          memcpy(Ax_save, Ax, Ap[size] * sizeof(double));
-          memcpy(b_save, b, size * sizeof(double));
+          copy_n(Ap, size + 1, Ap_save);
+          copy_n(Ai, Ap[size], Ai_save);
+          copy_n(Ax, Ap[size], Ax_save);
+          copy_n(b, size, b_save);
         }
     }
   if (zero_solution)
-    {
-      for (int i = 0; i < size; i++)
-        {
-          int eq = index_vara[i];
-          double yy = -(y[eq+it_*y_size]);
-          direction[eq] = yy;
-          y[eq+it_*y_size] += slowc * yy;
-        }
-    }
+    for (int i = 0; i < size; i++)
+      {
+        int eq = index_vara[i];
+        double yy = -(y[eq+it_*y_size]);
+        direction[eq] = yy;
+        y[eq+it_*y_size] += slowc * yy;
+      }
   else
     {
       if ((solve_algo == 5 && steady_state) || (stack_solve_algo == 5 && !steady_state))
@@ -4215,8 +3985,7 @@ dynSparseMatrix::solve_non_linear(int block_num, int y_size, int y_kmin, int y_k
   bool cvg = false;
   iter = 0;
   glambda2 = g0 = very_big;
-  //try_at_iteration = 0;
-  while ((!cvg) && (iter < maxit_))
+  while (!cvg && iter < maxit_)
     {
       cvg = solve_linear(block_num, y_size, y_kmin, y_kmax, size, iter);
       g0 = res2;
@@ -4224,24 +3993,27 @@ dynSparseMatrix::solve_non_linear(int block_num, int y_size, int y_kmin, int y_k
     }
   if (!cvg)
     {
-      ostringstream tmp;
       if (steady_state)
-        tmp << " in Solve Forward complete, convergence not achieved in block " << block_num+1 << ", after " << iter << " iterations\n";
+        throw FatalExceptionHandling(" in Solve Forward complete, convergence not achieved in block "
+                                     + to_string(block_num+1) + ", after " + to_string(iter)
+                                     + " iterations\n");
       else
-        tmp << " in Solve Forward complete, convergence not achieved in block " << block_num+1 << ", at time " << it_ << ", after " << iter << " iterations\n";
-      throw FatalExceptionHandling(tmp.str());
+        throw FatalExceptionHandling(" in Solve Forward complete, convergence not achieved in block "
+                                     + to_string(block_num+1) + ", at time " + to_string(it_)
+                                     + ", after " + to_string(iter) + " iterations\n");
     }
 }
 
 void
-dynSparseMatrix::Simulate_Newton_One_Boundary(const bool forward)
+dynSparseMatrix::Simulate_Newton_One_Boundary(bool forward)
 {
   g1 = static_cast<double *>(mxMalloc(size*size*sizeof(double)));
   test_mxMalloc(g1, __LINE__, __FILE__, __func__, size*size*sizeof(double));
   r = static_cast<double *>(mxMalloc(size*sizeof(double)));
   test_mxMalloc(r, __LINE__, __FILE__, __func__, size*sizeof(double));
   iter = 0;
-  if ((solve_algo == 6 && steady_state) || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state))
+  if ((solve_algo == 6 && steady_state)
+      || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state))
     {
       Ap_save = static_cast<SuiteSparse_long *>(mxMalloc((size + 1) * sizeof(SuiteSparse_long)));
       test_mxMalloc(Ap_save, __LINE__, __FILE__, __func__, (size + 1) * sizeof(SuiteSparse_long));
@@ -4264,30 +4036,23 @@ dynSparseMatrix::Simulate_Newton_One_Boundary(const bool forward)
   else if (forward)
     {
       if (!is_linear)
-        {
-          for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
-            solve_non_linear(block_num, y_size, y_kmin, y_kmax, size);
-        }
+        for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
+          solve_non_linear(block_num, y_size, y_kmin, y_kmax, size);
       else
-        {
-          for (int it_ = y_kmin; it_ < periods+y_kmin; it_++)
-            solve_linear(block_num, y_size, y_kmin, y_kmax, size, 0);
-        }
+        for (int it_ = y_kmin; it_ < periods+y_kmin; it_++)
+          solve_linear(block_num, y_size, y_kmin, y_kmax, size, 0);
     }
   else
     {
       if (!is_linear)
-        {
-          for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
-            solve_non_linear(block_num, y_size, y_kmin, y_kmax, size);
-        }
+        for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
+          solve_non_linear(block_num, y_size, y_kmin, y_kmax, size);
       else
-        {
-          for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
-            solve_linear(block_num, y_size, y_kmin, y_kmax, size, 0);
-        }
+        for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
+          solve_linear(block_num, y_size, y_kmin, y_kmax, size, 0);
     }
-  if ((solve_algo == 6 && steady_state) || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state))
+  if ((solve_algo == 6 && steady_state)
+      || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state))
     {
       mxFree(Ap_save);
       mxFree(Ai_save);
@@ -4329,7 +4094,7 @@ dynSparseMatrix::preconditioner_print_out(string s, int preconditioner, bool ss)
 }
 
 void
-dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax, int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, unsigned int endo_name_length, char *P_endo_names, vector_table_conditional_local_type vector_table_conditional_local)
+dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax,int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, unsigned int endo_name_length, const char *P_endo_names, const vector_table_conditional_local_type &vector_table_conditional_local)
 {
   double top = 0.5;
   double bottom = 0.1;
@@ -4375,14 +4140,16 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
               else
                 mexPrintf("   variable %s (%d) at time %d = %f direction = %f\n", res.str().c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
             }
-          ostringstream Error;
           if (iter == 0)
-            Error << " in Simulate_Newton_Two_Boundaries, the initial values of endogenous variables are too far from the solution.\nChange them!\n";
+            throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, the initial values of endogenous variables are too far from the solution.\nChange them!\n");
           else
-            Error << " in Simulate_Newton_Two_Boundaries, dynare cannot improve the simulation in block " << blck+1 << " at time " << it_+1 << " (variable " << index_vara[max_res_idx]+1 << " = " << max_res << ")\n";
-          throw FatalExceptionHandling(Error.str());
+            throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, dynare cannot improve the simulation in block "
+                                         + to_string(blck+1) + " at time " + to_string(it_+1)
+                                         + " (variable " + to_string(index_vara[max_res_idx]+1)
+                                         + " = " + to_string(max_res) + ")\n");
         }
-      if (!(isnan(res1) || isinf(res1)) && !(isnan(g0) || isinf(g0)) && (stack_solve_algo == 4 || stack_solve_algo == 5))
+      if (!(isnan(res1) || isinf(res1)) && !(isnan(g0) || isinf(g0))
+          && (stack_solve_algo == 4 || stack_solve_algo == 5))
         {
           if (try_at_iteration == 0)
             {
@@ -4393,10 +4160,15 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
             {
               double t1 = res2 - gp0 * slowc_save - g0;
               double t2 = glambda2 - gp0 * prev_slowc_save - g0;
-              double a = (1/(slowc_save * slowc_save) * t1 - 1/(prev_slowc_save * prev_slowc_save) * t2) / (slowc_save - prev_slowc_save);
-              double b = (-prev_slowc_save/(slowc_save * slowc_save) * t1 + slowc_save/(prev_slowc_save * prev_slowc_save) * t2) / (slowc_save - prev_slowc_save);
+              double a = (1/(slowc_save * slowc_save) * t1
+                          - 1/(prev_slowc_save * prev_slowc_save) * t2)
+                / (slowc_save - prev_slowc_save);
+              double b = (-prev_slowc_save/(slowc_save * slowc_save) * t1
+                          + slowc_save/(prev_slowc_save * prev_slowc_save) * t2)
+                / (slowc_save - prev_slowc_save);
               prev_slowc_save = slowc_save;
-              slowc_save = max(min(-b + sqrt(b*b - 3 * a * gp0) / (3 * a), top * slowc_save), bottom * slowc_save);
+              slowc_save = max(min(-b + sqrt(b*b - 3 * a * gp0) / (3 * a),
+                                   top * slowc_save), bottom * slowc_save);
             }
           glambda2 = res2;
           try_at_iteration++;
@@ -4439,7 +4211,7 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
           markowitz_c = markowitz_c_s;
           alt_symbolic_count++;
         }
-      if (((res1/res1a-1) > -0.3) && symbolic && iter > 0)
+      if (res1/res1a-1 > -0.3 && symbolic && iter > 0)
         {
           if (restart > 2)
             {
@@ -4503,9 +4275,7 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
       mexEvalString("drawnow;");
     }
   if (cvg)
-    {
-      return;
-    }
+    return;
   else
     {
       if (stack_solve_algo == 5)
@@ -4514,27 +4284,15 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
         {
           b_m = mxCreateDoubleMatrix(periods*Size, 1, mxREAL);
           if (!b_m)
-            {
-              ostringstream tmp;
-              tmp << " in Simulate_Newton_Two_Boundaries, can't allocate b_m vector\n";
-              throw FatalExceptionHandling(tmp.str());
-            }
+            throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, can't allocate b_m vector\n");
           x0_m = mxCreateDoubleMatrix(periods*Size, 1, mxREAL);
           if (!x0_m)
-            {
-              ostringstream tmp;
-              tmp << " in Simulate_Newton_Two_Boundaries, can't allocate x0_m vector\n";
-              throw FatalExceptionHandling(tmp.str());
-            }
+            throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, can't allocate x0_m vector\n");
           if (stack_solve_algo != 0 && stack_solve_algo != 4 && stack_solve_algo != 7)
             {
               A_m = mxCreateSparse(periods*Size, periods*Size, IM_i.size()* periods*2, mxREAL);
               if (!A_m)
-                {
-                  ostringstream tmp;
-                  tmp << " in Simulate_Newton_Two_Boundaries, can't allocate A_m matrix\n";
-                  throw FatalExceptionHandling(tmp.str());
-                }
+                throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, can't allocate A_m matrix\n");
             }
           if (stack_solve_algo == 0 || stack_solve_algo == 4)
             Init_UMFPACK_Sparse(periods, y_kmin, y_kmax, Size, IM_i, &Ap, &Ai, &Ax, &b, x0_m, vector_table_conditional_local, blck);
@@ -4559,14 +4317,13 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
       mexPrintf("(** %f milliseconds **)\n", 1000.0*(static_cast<double>(t2) - static_cast<double>(t1))/static_cast<double>(CLOCKS_PER_SEC));
       mexEvalString("drawnow;");
     }
-  if ((!steady_state && (stack_solve_algo == 4 /*|| stack_solve_algo == 0*/)) /* || steady_state*/)
+  if (!steady_state && stack_solve_algo == 4)
     {
       clock_t t2 = clock();
       double ax = -0.1, bx = 1.1, cx = 0.5, fa, fb, fc, xmin;
 
       if (!mnbrak(&ax, &bx, &cx, &fa, &fb, &fc))
         return;
-      //mexPrintf("ax= %f, bx=%f, cx=%f, fa=%f, fb=%f, fc=%d\n", ax, bx, cx, fa, fb, fc);
       if (!golden(ax, bx, cx, 1e-1, solve_tolf, &xmin))
         return;
       slowc = xmin;
@@ -4577,7 +4334,6 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
   time00 = clock();
   if (tbreak_g == 0)
     tbreak_g = periods;
-  return;
 }
 
 void
@@ -4588,11 +4344,11 @@ dynSparseMatrix::fixe_u(double **u, int u_count_int, int max_lag_plus_max_lead_p
 #ifdef DEBUG
   mexPrintf("fixe_u : alloc(%d double)\n", u_count_alloc);
 #endif
-  (*u) = static_cast<double *>(mxMalloc(u_count_alloc*sizeof(double)));
+  *u = static_cast<double *>(mxMalloc(u_count_alloc*sizeof(double)));
   test_mxMalloc(*u, __LINE__, __FILE__, __func__, u_count_alloc*sizeof(double));
 #ifdef DEBUG
   mexPrintf("*u=%d\n", *u);
 #endif
-  memset((*u), 0, u_count_alloc*sizeof(double));
+  fill_n(*u, u_count_alloc, 0);
   u_count_init = max_lag_plus_max_lead_plus_1;
 }

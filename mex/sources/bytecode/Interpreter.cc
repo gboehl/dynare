@@ -17,9 +17,10 @@
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstring>
 #include <sstream>
 #include <algorithm>
+#include <cstring>
+
 #include "Interpreter.hh"
 
 constexpr double BIG = 1.0e+8, SMALL = 1.0e-5;
@@ -440,7 +441,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
               res1 = 0;
               max_res = 0;
               max_res_idx = 0;
-              memcpy(y_save, y, y_size*sizeof(double)*(periods+y_kmax+y_kmin));
+              copy_n(y, y_size*(periods+y_kmax+y_kmin), y_save);
               if (vector_table_conditional_local.size())
                 for (auto & it1 : vector_table_conditional_local)
                   if (it1.is_cond)
@@ -450,7 +451,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
               if (!(isnan(res1) || isinf(res1)))
                 cvg = (max_res < solve_tolf);
               if (isnan(res1) || isinf(res1) || (stack_solve_algo == 4 && iter > 0))
-                memcpy(y, y_save, y_size*sizeof(double)*(periods+y_kmax+y_kmin));
+                copy_n(y_save, y_size*(periods+y_kmax+y_kmin), y);
               u_count = u_count_saved;
               int prev_iter = iter;
               Simulate_Newton_Two_Boundaries(block_num, symbol_table_endo_nbr, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, endo_name_length, P_endo_names, vector_table_conditional_local);
@@ -736,9 +737,9 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
             mxFree(T);
           if (global_temporary_terms)
             {
-              if (GlobalTemporaryTerms == nullptr)
+              if (!GlobalTemporaryTerms)
                 {
-                  mexPrintf("GlobalTemporaryTerms is NULL\n");
+                  mexPrintf("GlobalTemporaryTerms is nullptr\n");
                   mexEvalString("drawnow;");
                 }
               if (var != static_cast<int>(mxGetNumberOfElements(GlobalTemporaryTerms)))

@@ -20,13 +20,13 @@
 #ifndef EVALUATE_HH_INCLUDED
 #define EVALUATE_HH_INCLUDED
 
-#include <stack>
 #include <vector>
 #include <string>
-#include <cmath>
+
+#include "dynmex.h"
+
 #define BYTE_CODE
 #include "CodeInterpreter.hh"
-#include <dynmex.h>
 #include "ErrorHandling.hh"
 
 class Evaluate : public ErrorMsg

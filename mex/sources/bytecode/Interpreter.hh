@@ -20,15 +20,16 @@
 #ifndef INTERPRETER_HH_INCLUDED
 #define INTERPRETER_HH_INCLUDED
 
-#include <stack>
 #include <vector>
 #include <string>
-#include <cmath>
+#include <cstddef>
+
+#include "dynmex.h"
+
+#include "ErrorHandling.hh"
+#include "SparseMatrix.hh"
 #define BYTE_CODE
 #include "CodeInterpreter.hh"
-#include "SparseMatrix.hh"
-#include "Evaluate.hh"
-#include <dynmex.h>
 
 using namespace std;
 

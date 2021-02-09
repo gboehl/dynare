@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <cstring>
-#include "Interpreter.hh"
-#include "ErrorHandling.hh"
+
 #include <ctime>
 #include <cmath>
+#include <cstring>
 
-void (*prev_fn)(int);
+#include "Interpreter.hh"
+#include "ErrorHandling.hh"
 
 string
 Get_Argument(const mxArray *prhs)
@@ -38,9 +38,6 @@ Get_Argument(const mxArray *prhs)
   mxFree(first_argument);
   return f;
 }
-
-//#include <windows.h>
-#include <cstdio>
 
 string
 deblank(string x)
@@ -254,82 +251,42 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   if (extended_path)
     {
-      if (extended_path_struct == nullptr)
-        {
-          string tmp = "The 'extended_path' option must be followed by the extended_path descriptor";
-          mexErrMsgTxt(tmp.c_str());
-        }
+      if (!extended_path_struct)
+        mexErrMsgTxt("The 'extended_path' option must be followed by the extended_path descriptor");
       mxArray *date_str = mxGetField(extended_path_struct, 0, "date_str");
-      if (date_str == nullptr)
-        {
-          string tmp = "date_str";
-          tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          mexErrMsgTxt(tmp.c_str());
-        }
+      if (!date_str)
+        mexErrMsgTxt("The extended_path description structure does not contain the member: date_str");
       int nb_periods = mxGetM(date_str) * mxGetN(date_str);
 
       mxArray *constrained_vars_ = mxGetField(extended_path_struct, 0, "constrained_vars_");
-      if (constrained_vars_ == nullptr)
-        {
-          string tmp = "constrained_vars_";
-          tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          mexErrMsgTxt(tmp.c_str());
-        }
+      if (!constrained_vars_)
+        mexErrMsgTxt("The extended_path description structure does not contain the member: constrained_vars_");
       mxArray *constrained_paths_ = mxGetField(extended_path_struct, 0, "constrained_paths_");
-      if (constrained_paths_ == nullptr)
-        {
-          string tmp = "constrained_paths_";
-          tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          mexErrMsgTxt(tmp.c_str());
-        }
+      if (!constrained_paths_)
+        mexErrMsgTxt("The extended_path description structure does not contain the member: constrained_paths_");
       mxArray *constrained_int_date_ = mxGetField(extended_path_struct, 0, "constrained_int_date_");
-      if (constrained_int_date_ == nullptr)
-        {
-          string tmp = "constrained_int_date_";
-          tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          mexErrMsgTxt(tmp.c_str());
-        }
+      if (!constrained_int_date_)
+        mexErrMsgTxt("The extended_path description structure does not contain the member: constrained_int_date_");
       mxArray *constrained_perfect_foresight_ = mxGetField(extended_path_struct, 0, "constrained_perfect_foresight_");
-      if (constrained_perfect_foresight_ == nullptr)
-        {
-          string tmp = "constrained_perfect_foresight_";
-          tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          mexErrMsgTxt(tmp.c_str());
-        }
-
+      if (!constrained_perfect_foresight_)
+        mexErrMsgTxt("The extended_path description structure does not contain the member: constrained_perfect_foresight_");
       mxArray *shock_var_ = mxGetField(extended_path_struct, 0, "shock_vars_");
-      if (shock_var_ == nullptr)
-        {
-          string tmp = "shock_vars_";
-          tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          mexErrMsgTxt(tmp.c_str());
-        }
+      if (!shock_var_)
+        mexErrMsgTxt("The extended_path description structure does not contain the member: shock_vars_");
       mxArray *shock_paths_ = mxGetField(extended_path_struct, 0, "shock_paths_");
-      if (shock_paths_ == nullptr)
-        {
-          string tmp = "shock_paths_";
-          tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          mexErrMsgTxt(tmp.c_str());
-        }
+      if (!shock_paths_)
+        mexErrMsgTxt("The extended_path description structure does not contain the member: shock_paths_");
       mxArray *shock_int_date_ = mxGetField(extended_path_struct, 0, "shock_int_date_");
-      if (shock_int_date_ == nullptr)
-        {
-          string tmp = "shock_int_date_";
-          tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          mexErrMsgTxt(tmp.c_str());
-        }
+      if (!shock_int_date_)
+        mexErrMsgTxt("The extended_path description structure does not contain the member: shock_int_date_");
       mxArray *shock_str_date_ = mxGetField(extended_path_struct, 0, "shock_str_date_");
-      if (shock_str_date_ == nullptr)
-        {
-          string tmp = "shock_str_date_";
-          tmp.insert(0, "The extended_path description structure does not contain the member: ");
-          mexErrMsgTxt(tmp.c_str());
-        }
+      if (!shock_str_date_)
+        mexErrMsgTxt("The extended_path description structure does not contain the member: shock_str_date_");
       int nb_constrained = mxGetM(constrained_vars_) * mxGetN(constrained_vars_);
       int nb_controlled = 0;
       mxArray *options_cond_fcst_ = mxGetField(extended_path_struct, 0, "options_cond_fcst_");
       mxArray *controlled_varexo = nullptr;
-      if (options_cond_fcst_ != nullptr)
+      if (options_cond_fcst_)
         {
           controlled_varexo = mxGetField(options_cond_fcst_, 0, "controlled_varexo");
           nb_controlled = mxGetM(controlled_varexo) * mxGetN(controlled_varexo);
@@ -337,7 +294,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             mexErrMsgTxt("The number of exogenized variables and the number of exogenous controlled variables should be equal.");
         }
       double *controlled_varexo_value = nullptr;
-      if (controlled_varexo != nullptr)
+      if (controlled_varexo)
         controlled_varexo_value = mxGetPr(controlled_varexo);
       double *constrained_var_value = mxGetPr(constrained_vars_);
       sconditional_extended_path.resize(nb_constrained);
@@ -372,7 +329,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           int *constrained_int_date = static_cast<int *>(mxMalloc(nb_local_periods * sizeof(int)));
           error_msg.test_mxMalloc(constrained_int_date, __LINE__, __FILE__, __func__, nb_local_periods * sizeof(int));
           if (nb_periods < nb_local_periods)
-            mexErrMsgTxt((string{"The total number of simulation periods ("} + to_string(nb_periods)
+            mexErrMsgTxt(("The total number of simulation periods (" + to_string(nb_periods)
                           + ") is lesser than the number of periods in the shock definitions ("
                           + to_string(nb_local_periods)).c_str());
 
@@ -426,10 +383,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           char *buf = static_cast<char *>(mxCalloc(buflen, sizeof(char)));
           int info = mxGetString(mxGetCell(date_str, i), buf, buflen);
           if (info)
-            {
-              string tmp = "Can not allocated memory to store the date_str in the extended path descriptor";
-              mexErrMsgTxt(tmp.c_str());
-            }
+            mexErrMsgTxt("Can not allocated memory to store the date_str in the extended path descriptor");
           dates.emplace_back(buf); //string(Dates[i]);
           mxFree(buf);
         }
@@ -437,12 +391,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (plan.length() > 0)
     {
       mxArray *plan_struct = mexGetVariable("base", plan.c_str());
-      if (plan_struct == nullptr)
-        {
-          string tmp = plan;
-          tmp.insert(0, "Can't find the plan: ");
-          mexErrMsgTxt(tmp.c_str());
-        }
+      if (!plan_struct)
+        mexErrMsgTxt(("Can't find the plan: " + plan).c_str());
       size_t n_plan = mxGetN(plan_struct);
       splan.resize(n_plan);
       for (int i = 0; i < static_cast<int>(n_plan); i++)
@@ -460,12 +410,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::exogenous || variable_type == SymbolType::exogenousDet)
                 splan[i].var_num = exo_num;
               else
-                {
-                  string tmp = name;
-                  tmp.insert(0, "the variable '");
-                  tmp.append("'  defined as var in plan is not an exogenous or a deterministic exogenous\n");
-                  mexErrMsgTxt(tmp.c_str());
-                }
+                mexErrMsgTxt(("The variable '" + string{name} + "'  defined as var in plan is not an exogenous or a deterministic exogenous\n").c_str());
             }
           tmp = mxGetField(plan_struct, i, "var");
           if (tmp)
@@ -478,12 +423,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::endogenous)
                 splan[i].exo_num = exo_num;
               else
-                {
-                  string tmp = name;
-                  tmp.insert(0, "the variable '");
-                  tmp.append("'  defined as exo in plan is not an endogenous variable\n");
-                  mexErrMsgTxt(tmp.c_str());
-                }
+                mexErrMsgTxt(("The variable '" + string{name} + "'  defined as exo in plan is not an endogenous variable\n").c_str());
             }
           tmp = mxGetField(plan_struct, i, "per_value");
           if (tmp)
@@ -532,12 +472,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::exogenous || variable_type == SymbolType::exogenousDet)
                 splan[i].var_num = exo_num;
               else
-                {
-                  string tmp = name;
-                  tmp.insert(0, "the variable '");
-                  tmp.append("' defined as var in pfplan is not an exogenous or a deterministic exogenous\n");
-                  mexErrMsgTxt(tmp.c_str());
-                }
+                mexErrMsgTxt(("The variable '" + string{name} + "' defined as var in pfplan is not an exogenous or a deterministic exogenous\n").c_str());
             }
           tmp = mxGetField(pfplan_struct, i, "exo");
           if (tmp)
@@ -550,12 +485,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::endogenous)
                 spfplan[i].exo_num = exo_num;
               else
-                {
-                  string tmp = name;
-                  tmp.insert(0, "the variable '");
-                  tmp.append("' defined as exo in pfplan  is not an endogenous variable\n");
-                  mexErrMsgTxt(tmp.c_str());
-                }
+                mexErrMsgTxt(("The variable '" + string{name} + "' defined as exo in pfplan  is not an endogenous variable\n").c_str());
             }
           tmp = mxGetField(pfplan_struct, i, "per_value");
           if (tmp)
@@ -828,11 +758,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             }
           else
             {
-              int out_periods;
-              if (extended_path)
-                out_periods = max_periods + y_kmin;
-              else
-                out_periods = row_y;
+              int out_periods = extended_path ? max_periods + y_kmin : row_y;
               plhs[0] = mxCreateDoubleMatrix(out_periods, static_cast<int>(col_y), mxREAL);
               pind = mxGetPr(plhs[0]);
               for (i = 0; i < out_periods*col_y; i++)
@@ -841,11 +767,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
       else
         {
-          int out_periods;
-          if (extended_path)
-            out_periods = max_periods + y_kmin;
-          else
-            out_periods = col_y;
+          int out_periods = extended_path ? max_periods + y_kmin : col_y;
           plhs[0] = mxCreateDoubleMatrix(static_cast<int>(row_y), out_periods, mxREAL);
           pind = mxGetPr(plhs[0]);
           if (evaluate)
@@ -862,7 +784,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         {
           if (evaluate)
             {
-              int jacob_field_number = 0, jacob_exo_field_number = 0, jacob_exo_det_field_number = 0, jacob_other_endo_field_number = 0;
+              int jacob_field_number = 0, jacob_exo_field_number = 0,
+                jacob_exo_det_field_number = 0, jacob_other_endo_field_number = 0;
               if (!block_structur)
                 {
                   const char *field_names[] = {"g1", "g1_x", "g1_xd", "g1_o"};
@@ -895,18 +818,16 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                     mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_other_endo to the structArray\n");
                 }
               if (!dont_store_a_structure)
-                {
-                  for (int i = 0; i < nb_blocks; i++)
-                    {
-                      mxSetFieldByNumber(plhs[1], i, jacob_field_number, interprete.get_jacob(i));
-                      if (!steady_state)
-                        {
-                          mxSetFieldByNumber(plhs[1], i, jacob_exo_field_number, interprete.get_jacob_exo(i));
-                          mxSetFieldByNumber(plhs[1], i, jacob_exo_det_field_number, interprete.get_jacob_exo_det(i));
-                          mxSetFieldByNumber(plhs[1], i, jacob_other_endo_field_number, interprete.get_jacob_other_endo(i));
-                        }
-                    }
-                }
+                for (int i = 0; i < nb_blocks; i++)
+                  {
+                    mxSetFieldByNumber(plhs[1], i, jacob_field_number, interprete.get_jacob(i));
+                    if (!steady_state)
+                      {
+                        mxSetFieldByNumber(plhs[1], i, jacob_exo_field_number, interprete.get_jacob_exo(i));
+                        mxSetFieldByNumber(plhs[1], i, jacob_exo_det_field_number, interprete.get_jacob_exo_det(i));
+                        mxSetFieldByNumber(plhs[1], i, jacob_other_endo_field_number, interprete.get_jacob_other_endo(i));
+                      }
+                  }
             }
           else
             {

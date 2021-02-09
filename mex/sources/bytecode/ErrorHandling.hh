@@ -20,17 +20,22 @@
 #ifndef ERROR_HANDLING
 #define ERROR_HANDLING
 
-#include <cstring>
-#include <iostream>
-#include <sstream>
+#include <vector>
+#include <utility>
+#include <string>
 #include <map>
+#include <tuple>
+#include <cstddef>
+#include <sstream>
+#include <iostream>
 #include <stack>
-#define BYTE_CODE
-#include "CodeInterpreter.hh"
-
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include <utility>
+
+#include "dynmex.h"
+
+#define BYTE_CODE
+#include "CodeInterpreter.hh"
 
 #ifdef OCTAVE_MEX_FILE
 # define CHAR_LENGTH 1
@@ -187,9 +192,9 @@ public:
 
   ExpressionType EQN_type;
   it_code_type it_code_expr;
-  /*unsigned int*/ size_t nb_endo, nb_exo, nb_param;
+  size_t nb_endo, nb_exo, nb_param;
   char *P_endo_names, *P_exo_names, *P_param_names;
-  size_t /*unsigned int*/ endo_name_length, exo_name_length, param_name_length;
+  size_t endo_name_length, exo_name_length, param_name_length;
   unsigned int EQN_equation, EQN_block, EQN_block_number;
   unsigned int EQN_dvar1, EQN_dvar2, EQN_dvar3;
   vector<tuple<string, SymbolType, unsigned int>> Variable_list;
@@ -243,10 +248,7 @@ public:
     string temp;
     int pos1 = -1, pos2 = -1;
     string tmp_n(str.length(), ' ');
-    string dollar, pound, tilde;
-    dollar = "$";
-    pound = "£";
-    tilde = "~";
+    string dollar{"$"}, pound{"£"}, tilde{"~"};
     for (const char & i : str)
       {
         if (dollar.compare(&i) != 0 && pound.compare(&i) != 0)
@@ -359,7 +361,7 @@ public:
   inline string
   error_location(bool evaluate, bool steady_state, int size, int block_num, int it_, int Per_u_)
   {
-    stringstream Error_loc;
+    ostringstream Error_loc;
     if (!steady_state)
       switch (EQN_type)
         {
@@ -406,7 +408,7 @@ public:
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to parameter " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           break;
         default:
-          return ("???");
+          return "???";
         }
     else
       switch (EQN_type)

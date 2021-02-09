@@ -20,10 +20,13 @@
 #ifndef MEM_MNGR_HH_INCLUDED
 #define MEM_MNGR_HH_INCLUDED
 
-#include "ErrorHandling.hh"
+#include <string>
 #include <vector>
 #include <fstream>
-#include <dynmex.h>
+
+#include "ErrorHandling.hh"
+
+using namespace std;
 
 struct NonZeroElem
 {

@@ -19,6 +19,8 @@
 
 #include "Mem_Mngr.hh"
 
+#include "dynmex.h"
+
 Mem_Mngr::Mem_Mngr()
 {
   swp_f = false;
