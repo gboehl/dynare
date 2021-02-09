@@ -1929,7 +1929,7 @@ dynSparseMatrix::Sparse_transpose(const mxArray *A_m)
   mwIndex *C_j = mxGetJc(C_m);
   double *C_d = mxGetPr(C_m);
   unsigned int nze_C = 0, nze_A = 0;
-  memset(C_j, 0, m_A);
+  fill_n(C_j, m_A+1, 0);
   map<pair<mwIndex, unsigned int>, double> B2;
   for (unsigned int i = 0; i < n_A; i++)
     while (nze_A < static_cast<unsigned int>(A_j[i+1]))
