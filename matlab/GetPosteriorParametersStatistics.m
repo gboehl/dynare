@@ -96,7 +96,7 @@ if np
     disp(tit2)
     ip = nvx+nvn+ncx+ncn+1;
     for i=1:np
-        if options_.mh_replic || options_.load_mh_file
+        if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
             Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             name = bayestopt_.name{ip};
@@ -139,7 +139,7 @@ if nvx
     disp('standard deviation of shocks')
     disp(tit2)
     for i=1:nvx
-        if options_.mh_replic
+        if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
             Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             k = estim_params_.var_exo(i,1);
@@ -183,7 +183,7 @@ if nvn
     disp(tit2)
     ip = nvx+1;
     for i=1:nvn
-        if options_.mh_replic
+        if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
             Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
@@ -222,7 +222,7 @@ if ncx
     disp(tit2)
     ip = nvx+nvn+1;
     for i=1:ncx
-        if options_.mh_replic
+        if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
             Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws,1,options_.mh_conf_sig);
             k1 = estim_params_.corrx(i,1);
@@ -272,7 +272,7 @@ if ncn
     disp(tit2)
     ip = nvx+nvn+ncx+1;
     for i=1:ncn
-        if options_.mh_replic
+        if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
             Draws = GetAllPosteriorDraws(ip,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             k1 = estim_params_.corrn(i,1);
