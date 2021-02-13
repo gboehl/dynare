@@ -195,38 +195,13 @@ end
 %% Estimation of the posterior mode or likelihood mode
 
 if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
-    %prepare settings for newrat
-    if options_.mode_compute==5
-        %get whether outer product Hessian is requested
-        newratflag=[];
-        if ~isempty(options_.optim_opt)
-            options_list = read_key_value_string(options_.optim_opt);
-            for i=1:rows(options_list)
-                if strcmp(options_list{i,1},'Hessian')
-                    newratflag=options_list{i,2};
-                end
-            end
-        end
-        if options_.analytic_derivation
-            options_analytic_derivation_old = options_.analytic_derivation;
-            options_.analytic_derivation = -1;
-            if ~isempty(newratflag) && newratflag~=0 %numerical hessian explicitly specified
-                error('newrat: analytic_derivation is incompatible with numerical Hessian.')
-            else %use default
-                newratflag=0; %exclude DYNARE numerical hessian
-            end
-        elseif ~options_.analytic_derivation
-            if isempty(newratflag)
-                newratflag=options_.newrat.hess; %use default numerical dynare hessian
-            end
-        end
-    end
 
     [xparam1, fval, exitflag, hh, options_, Scale, new_rat_hess_info] = dynare_minimize_objective(objective_function,xparam1,options_.mode_compute,options_,[bounds.lb bounds.ub],bayestopt_.name,bayestopt_,hh,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
     fprintf('\nFinal value of minus the log posterior (or likelihood):%f \n', fval);
 
-    if isnumeric(options_.mode_compute) && options_.mode_compute==5 && options_.analytic_derivation==-1 %reset options changed by newrat
-        options_.analytic_derivation = options_analytic_derivation_old; %reset
+    if isnumeric(options_.mode_compute) && options_.mode_compute==5
+        newratflag = new_rat_hess_info.newratflag;
+        new_rat_hess_info = new_rat_hess_info.new_rat_hess_info;
     elseif isnumeric(options_.mode_compute) && options_.mode_compute==6 %save scaling factor
         save([M_.fname '_optimal_mh_scale_parameter.mat'],'Scale');
         options_.mh_jscale = Scale;
@@ -240,8 +215,8 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 [~,~,~,~,hh] = feval(objective_function,xparam1, ...
                                      dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
                 options_.analytic_derivation = ana_deriv_old;
-            elseif ~isnumeric(options_.mode_compute) || ~(isequal(options_.mode_compute,5) && newratflag==1 && strcmp(func2str(objective_function),'dsge_likelihood'))
-                % with flag==0, we force to use the hessian from outer product gradient of optimizer 5
+            elseif ~isnumeric(options_.mode_compute) || ~(isequal(options_.mode_compute,5) && newratflag~=1 && strcmp(func2str(objective_function),'dsge_likelihood'))
+                % with flag==0 or 2, we force to use the hessian from outer product gradient of optimizer 5
                 if options_.hessian.use_penalized_objective
                     penalized_objective_function = str2func('penalty_objective_function');
                     hh = hessian(penalized_objective_function, xparam1, options_.gstep, objective_function, fval, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_);
@@ -260,7 +235,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 % with diagonal elements computed with numerical second order derivatives
                 %
                 % uses univariate filters, so to get max # of available
-                % densitities for outer product gradient
+                % densities for outer product gradient
                 kalman_algo0 = options_.kalman_algo;
                 compute_hessian = 1;
                 if ~((options_.kalman_algo == 2) || (options_.kalman_algo == 4))
