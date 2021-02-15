@@ -109,6 +109,8 @@ MODFILES = \
 	optimal_policy/nk_ramsey_expectation.mod \
 	optimal_policy/nk_ramsey_expectation_a.mod \
 	optimal_policy/mult_elimination_test.mod \
+	optimal_policy/neo_growth.mod \
+	optimal_policy/neo_growth_ramsey.mod \
 	optimal_policy/Ramsey/ramsey_ex_initval.mod \
 	optimal_policy/Ramsey/ramsey_ex.mod \
 	optimal_policy/Ramsey/ramsey_ex_initval_AR2.mod \
@@ -573,6 +575,10 @@ XFAIL_MODFILES = ramst_xfail.mod \
 MFILES = histval_initval_file/ramst_initval_file_data.m
 
 # Dependencies
+
+optimal_policy/neo_growth_ramsey.m.trs: optimal_policy/neo_growth.m.trs
+optimal_policy/neo_growth_ramsey.o.trs: optimal_policy/neo_growth.o.trs
+
 example1_use_dll.m.trs: example1.m.trs
 example1_use_dll.o.trs: example1.o.trs
 
