@@ -385,6 +385,7 @@ MODFILES = \
 	smoother2histval/fs2000_simul.mod \
 	smoother2histval/fs2000_smooth.mod \
 	smoother2histval/fs2000_smooth_stoch_simul.mod \
+	smoother2histval/fs2000_smooth_ML.mod \
 	optimizers/fs2000_1.mod \
 	optimizers/fs2000_2.mod \
 	optimizers/fs2000_3.mod \

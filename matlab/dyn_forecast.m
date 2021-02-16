@@ -87,7 +87,16 @@ switch task
     end
   case 'smoother'
     horizon = options.forecast;
-    y_smoothed = oo.SmoothedVariables;
+    if isnan(options.first_obs)
+        first_obs=1;
+    else
+        first_obs=options.first_obs;
+    end
+    if isfield(oo.SmoothedVariables,'Mean')
+        y_smoothed = oo.SmoothedVariables.Mean;
+    else
+        y_smoothed = oo.SmoothedVariables;
+    end
     y0 = zeros(M.endo_nbr,maximum_lag);
     for i = 1:M.endo_nbr
         v_name = M.endo_names{i};
@@ -110,7 +119,6 @@ switch task
     if isfield(oo.Smoother,'TrendCoeffs')
         var_obs = options.varobs;
         endo_names = M.endo_names;
-        order_var = oo.dr.order_var;
         i_var_obs = [];
         trend_coeffs = [];
         for i=1:length(var_obs)
@@ -122,9 +130,9 @@ switch task
             end
         end
         if ~isempty(trend_coeffs)
-            trend = trend_coeffs*(options.first_obs+gend-1+(1-M.maximum_lag:horizon));
+            trend = trend_coeffs*(first_obs+gend-1+(1-M.maximum_lag:horizon));
             if options.prefilter
-                trend = trend - repmat(mean(trend_coeffs*[options.first_obs:options.first_obs+gend-1],2),1,horizon+1); %subtract mean trend
+                trend = trend - repmat(mean(trend_coeffs*[first_obs:first_obs+gend-1],2),1,horizon+1); %subtract mean trend
             end
         end
     else
