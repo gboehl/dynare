@@ -121,7 +121,7 @@ else
 end
 
 % Determine number of periods
-n = size(smoothedvars.(tmp{1}));
+n = length(smoothedvars.(tmp{1}));
 
 if n < M_.maximum_endo_lag
     error('Not enough observations to create initial conditions')
