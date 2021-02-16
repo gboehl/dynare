@@ -1,4 +1,4 @@
-function expand_group(use_shock_groups,var_list_, ic)
+function expand_group(use_shock_groups,var_list_, ic, no_graph)
 % function expand_group(use_shock_groups,var_list_, ic)
 % Expands shocks contributions out of a group of shocks
 %
@@ -27,6 +27,9 @@ function expand_group(use_shock_groups,var_list_, ic)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+if nargin<4
+    no_graph=0;
+end
 filename = get(gcf,'filename');
 [filepath, name, ext]=fileparts(filename);
 M = evalin('base','M_');
@@ -56,7 +59,12 @@ M.exo_names = mydata.exo_names;
 options.plot_shock_decomp.interactive=0;
 options.plot_shock_decomp.expand=1;
 options.plot_shock_decomp.nodisplay=0;
-options.plot_shock_decomp.write_xls=0;
+if no_graph
+    options.no_graph.plot_shock_decomposition=1;
+    options.plot_shock_decomp.write_xls=1;
+else
+    options.plot_shock_decomp.write_xls=0;
+end
 %% set optimal colormap
 func = @(x) colorspace('RGB->Lab',x);
 MAP = distinguishable_colors(length(shocks)+1,'w',func);

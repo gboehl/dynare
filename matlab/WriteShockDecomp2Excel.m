@@ -28,7 +28,9 @@ function WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,Dyna
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-SteadyState=[];
+OutputDirectoryName = CheckPath('Output',DynareModel.dname);
+
+SteadyState=zeros(DynareModel.endo_nbr,1);
 fig_mode='';
 fig_mode1='';
 fig_name='';
@@ -114,15 +116,13 @@ for j=1:nvar
     end
 
     warning off
-    try
-        [STATUS,MESSAGE] = xlswrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
-    catch
-        if exist('xlwrite.m','file')
-            [STATUS] = xlwrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
-        else
-            fprintf('\nWriteShockDecomp2Excel: could not write Excel file. It seems Excel is not installed on your machine.\n')
-            fprintf('Please install the free xlwrite.m from https://mathworks.com/matlabcentral/fileexchange/38591-xlwrite-generate-xls-x-files-without-excel-on-mac-linux-win\n')
-        end
+    fig_name1 = strrep(fig_name1,' ','_');
+    fig_name1 = strrep(fig_name1,'.','');
+    
+    if ~ismac
+        [STATUS,MESSAGE] = xlswrite([OutputDirectoryName,filesep,DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
+    else
+        writetable(cell2table(d0), [OutputDirectoryName,filesep,DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1 '.xls'], 'Sheet', endo_names{i_var(j)},'WriteVariableNames',false);
     end
     warning on
 

@@ -24,7 +24,7 @@ function []=graph_decomp_detail(z,shock_names,endo_names,i_var,initial_date,Dyna
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%xf
+%
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -233,6 +233,8 @@ for j=1:nvar
                     browse_menu = uimenu(c,'Label','Browse group');
                     expand_menu = uimenu(c,'Label','Expand group','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' mydata.plot_shock_decomp.orig_varlist{j} ''',' int2str(ic) ')']);
                     set(expand_menu,'UserData',mydata,'Tag',['group' int2str(ic)]);
+                    save_expand2xls_menu = uimenu(c,'Label','Export group to xls','Callback',['expand_group(''' mydata.plot_shock_decomp.use_shock_groups ''',''' mydata.plot_shock_decomp.orig_varlist{j} ''',' int2str(ic) ', 1)']);
+                    set(save_expand2xls_menu,'Tag',['xls_group' int2str(ic)]);
                     for jmember = mydata.shock_group.shocks
                         uimenu('parent',browse_menu,'Label',char(jmember))
                     end

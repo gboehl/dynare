@@ -50,7 +50,7 @@ if size(varlist,1) == 0
     end
 end
 
-if isfield(options_.plot_shock_decomp,'init2shocks') % private trap for uimenu calls
+if isfield(options_.plot_shock_decomp,'init2shocks') && options_.plot_shock_decomp.realtime==0 % private trap for uimenu calls
     init2shocks=options_.plot_shock_decomp.init2shocks;
 else
     init2shocks=[];
@@ -59,7 +59,7 @@ if ~isempty(init2shocks)
     init2shocks=M_.init2shocks.(init2shocks);
 end
 
-
+orig_endo_names = M_.endo_names;
 epilogue_decomp=false;
 if exist_varlist && any(ismember(varlist,M_.epilogue_names))
     epilogue_decomp=true;
@@ -252,15 +252,15 @@ if ~isempty(init2shocks) && ~expand
     n=size(init2shocks,1);
     M_.exo_names_init=M_.exo_names;
     for i=1:n
-        j=strmatch(init2shocks{i}{1},M_.endo_names,'exact');
+        j=strmatch(init2shocks{i}{1},orig_endo_names,'exact');
         if ~isempty(init2shocks{i}{2})
             jj=strmatch(init2shocks{i}{2},M_.exo_names,'exact');
-            M_.exo_names_init{jj}=[M_.exo_names_init{jj} ' + ' M_.endo_names{j}];
-            z(:,jj,:)= z(:,jj,:) + oo_.initval_decomposition (:,j,:);
+            M_.exo_names_init{jj}=[M_.exo_names_init{jj} ' + ' orig_endo_names{j}];
+            z(:,jj,:)= z(:,jj,:) + oo_.initval_decomposition (:,j,1:size(z,3));
         else
-            z(:,end,:)= z(:,end,:) - oo_.initval_decomposition (:,j,:);
+            z(:,end,:)= z(:,end,:) - oo_.initval_decomposition (:,j,1:size(z,3));
         end
-        z(:,end-1,:)= z(:,end-1,:) - oo_.initval_decomposition (:,j,:);
+        z(:,end-1,:)= z(:,end-1,:) - oo_.initval_decomposition (:,j,1:size(z,3));
 
     end
 end
@@ -270,6 +270,9 @@ if ~epilogue_decomp
         steady_state = oo_.dr.ys;
     else
         steady_state = oo_.steady_state;
+    end
+    if isfield(oo_.shock_decomposition_info,'i_var') && (M_.endo_nbr<length(orig_endo_names))
+        steady_state=steady_state(oo_.shock_decomposition_info.i_var);
     end
 else
     steady_state = oo_.shock_decomposition_info.epilogue_steady_state;
