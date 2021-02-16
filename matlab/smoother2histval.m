@@ -171,7 +171,7 @@ end
 
 % Handle all endogenous variables to be copied
 data = zeros(M_.orig_maximum_endo_lag, length(invars));
-k = M_.orig_maximum_endo_lag - M_.maximum_endo_lag + 1: M_.orig_maximum_lag
+k = M_.orig_maximum_endo_lag - M_.maximum_endo_lag + 1: M_.orig_maximum_lag;
 for i = 1:length(invars)
     if isempty(strmatch(invars{i}, M_.endo_names, 'exact'))
         % Skip exogenous
