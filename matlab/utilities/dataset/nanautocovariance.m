@@ -55,8 +55,9 @@ function autocov = nanautocovariance(data,order)
 
 n = size(data,2);
 missing = isanynan(data);
-
-autocov = zeros(n, n, order);
+autocov = nan(n, n, order);
+order = min(size(data,1)-2,order);
+autocov(:, :, 1:order)=0;
 
 for lag=1:order
     if missing

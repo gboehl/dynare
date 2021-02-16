@@ -9,7 +9,7 @@ function xlag = lagged(x, n)
 % OUTPUT
 % xlag = backward shifted series
 
-% Copyright (C) 2017 Dynare Team
+% Copyright (C) 2017-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,4 +31,8 @@ if nargin==1
 end
 
 x=x(:);
-xlag=[NaN(n,1); x(1:end-n)];
+if n>0
+    xlag=[NaN(n,1); x(1:end-n)];
+else
+    xlag=[x(abs(n)+1:end); NaN(abs(n),1)];
+end
