@@ -28,6 +28,8 @@ function WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,Dyna
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
+OutputDirectoryName = CheckPath('Output',DynareModel.dname);
+
 SteadyState=zeros(DynareModel.endo_nbr,1);
 fig_mode='';
 fig_mode1='';
@@ -118,9 +120,9 @@ for j=1:nvar
     fig_name1 = strrep(fig_name1,'.','');
     
     if ~ismac
-        [STATUS,MESSAGE] = xlswrite([DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
+        [STATUS,MESSAGE] = xlswrite([OutputDirectoryName,filesep,DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
     else
-        writetable(cell2table(d0), [DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1 '.xls'], 'Sheet', endo_names{i_var(j)},'WriteVariableNames',false);
+        writetable(cell2table(d0), [OutputDirectoryName,filesep,DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1 '.xls'], 'Sheet', endo_names{i_var(j)},'WriteVariableNames',false);
     end
     warning on
 
