@@ -478,7 +478,6 @@ options_.filter_decomposition = false;
 options_.selected_variables_only = false;
 options_.contemporaneous_correlation = false;
 options_.initialize_estimated_parameters_with_the_prior_mode = 0;
-options_.estimation_dll = false;
 options_.estimation.moments_posterior_density.indicator = true;
 options_.estimation.moments_posterior_density.gridpoints = 2^9;
 options_.estimation.moments_posterior_density.bandwidth = 0; % Rule of thumb optimal bandwidth parameter.
