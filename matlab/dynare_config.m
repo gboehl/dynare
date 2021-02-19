@@ -103,7 +103,7 @@ if isoctave
     if ~octave_ver_less_than('4.4') && ~user_has_octave_forge_package('statistics')
         % Our replacement functions don't work under Octave (because of gamrnd, see
         % #1638), hence the statistics toolbox is now a hard requirement
-        error('You must install the "statistics" package from Octave Forge, either with your distribution package manager or with "pkg install -forge statistics"')
+        error('You must install the "statistics" package from Octave Forge, either with your distribution package manager or with "pkg install -forge io statistics"')
     end
 else
     if ~user_has_matlab_license('statistics_toolbox')
