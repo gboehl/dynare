@@ -1,6 +1,6 @@
 function info = ramsey_policy(var_list)
 
-% Copyright (C) 2007-2019 Dynare Team
+% Copyright (C) 2007-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -21,7 +21,6 @@ global options_ oo_ M_
 
 options_.ramsey_policy = 1;
 oldoptions = options_;
-options_.order = 1;
 
 %test whether specification matches
 inst_nbr = size(options_.instruments,1);

@@ -1,5 +1,5 @@
 /*
- * This file implements the baseline New Keynesian model of Jordi Galí (2008): Monetary Policy, Inflation,
+ * This file implements the baseline New Keynesian model of Jordi Galï¿½ (2008): Monetary Policy, Inflation,
  * and the Business Cycle, Princeton University Press, Chapter 5
  *
  * This implementation was written by Johannes Pfeifer. 
@@ -9,7 +9,7 @@
  */
 
 /*
- * Copyright (C) 2013-15 Johannes Pfeifer
+ * Copyright (C) 2013-21 Johannes Pfeifer
  *
  * This is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,7 +130,7 @@ end
 %Compute theoretical objective function
 V=betta/(1-betta)*(var_pi_theoretical+alpha_x*var_y_gap_theoretical); %evaluate at steady state in first period
 
-if isnan(oo_.planner_objective_value) || abs(V-oo_.planner_objective_value)>1e-10
+if any( [ isnan(oo_.planner_objective_value(2)), abs(V-oo_.planner_objective_value(2))>1e-10 ] )
     error('Computed welfare deviates from theoretical welfare')
 end
 end;
@@ -144,6 +144,6 @@ end;
 V=var_pi_theoretical+alpha_x*var_y_gap_theoretical+ betta/(1-betta)*(var_pi_theoretical+alpha_x*var_y_gap_theoretical); %evaluate at steady state in first period
  
 discretionary_policy(instruments=(i),irf=20,discretionary_tol=1e-12,planner_discount=betta) y_gap pi p u;
-if isnan(oo_.planner_objective_value) || abs(V-oo_.planner_objective_value)>1e-10
+if any( [ isnan(oo_.planner_objective_value(1)), abs(V-oo_.planner_objective_value(1))>1e-10 ] )
     error('Computed welfare deviates from theoretical welfare')
 end
