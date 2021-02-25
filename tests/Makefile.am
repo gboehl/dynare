@@ -580,6 +580,9 @@ MFILES = histval_initval_file/ramst_initval_file_data.m
 optimal_policy/neo_growth_ramsey.m.trs: optimal_policy/neo_growth.m.trs
 optimal_policy/neo_growth_ramsey.o.trs: optimal_policy/neo_growth.o.trs
 
+optimal_policy/neo_growth_ramsey_foresight.m.trs: optimal_policy/neo_growth_foresight.m.trs
+optimal_policy/neo_growth_ramsey_foresight.o.trs: optimal_policy/neo_growth_foresight.o.trs
+
 example1_use_dll.m.trs: example1.m.trs
 example1_use_dll.o.trs: example1.o.trs
 
@@ -1185,6 +1188,8 @@ EXTRA_DIST = \
 	observation_trends_and_prefiltering/Trend_model_calib_no_prefilter_common.inc \
 	observation_trends_and_prefiltering/Trend_load_data_common.inc \
 	observation_trends_and_prefiltering/Trend_no_prefilter_conditional_forecast.inc \
+	optimal_policy/neo_growth_common.inc \
+	optimal_policy/neo_growth_ramsey_common.inc \ 
 	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat \
 	optimizers/optimizer_function_wrapper.m \
 	optimizers/fs2000.common.inc \

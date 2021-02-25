@@ -16,19 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * This file computes a second-order approximation of the neo-classical growth model.
- * It is called by neo_growth_ramsey.mod to compare by-hand calculations of unconditional
+ /*
+ * This file simulates the neo-classical growth model in a perfect foresight framework.
+ * It is called by neo_growth_ramsey_foresight.mod to compare by-hand calculations of unconditional
  * and conditional welfares and the output of the evaluate_planner_objective function.
  */
 @#include "neo_growth_common.inc"
 
-shocks;
-var e;
-stderr 1;
+initval;
+z = 0;
 end;
 
 steady;
+
+shocks;
+var e;
+periods 1;
+values 1;
+end;
+
 resid;
 
-stoch_simul(order=2, irf=0);
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver;

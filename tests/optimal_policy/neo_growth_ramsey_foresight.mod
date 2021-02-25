@@ -16,36 +16,34 @@
  * You should have received a copy of the GNU General Public License
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * This file computes a second-order approximation of the neo-classical growth model.
+ /*
+ * This file simulates a perfect-foresight version of the neo-classical growth model.
  * It assesses the conditional and unconditional welfares computed by the evaluate_planner_objective function
- * and compares them to a by-hand assessment stemming from the results the model neo_growth.mod incur.
+ * and compares them to a by-hand assessment stemming from the results of the model neo_growth_foresight.mod
  */
 
 @#include "neo_growth_ramsey_common.inc"
 
 shocks;
 var e;
-stderr 1;
+periods 1;
+values 1;
 end;
 
-stoch_simul(order=2, irf=0);
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver;
 
 planner_objective_value = evaluate_planner_objective(M_, options_, oo_);
 
-if ~exist('neo_growth_results.mat','file');
-   error('neo_growth must be run first');
+if ~exist('neo_growth_foresight_results.mat','file');
+   error('neo_growth_foresight must be run first');
 end;
 
-oo1 = load('neo_growth_results','oo_');
-M1 = load('neo_growth_results','M_');
-options1 = load('neo_growth_results','options_');
-unc_W_hand = oo1.oo_.mean(strmatch('W',M1.M_.endo_names,'exact'));
-
-initial_condition_states = repmat(oo1.oo_.dr.ys,1,M1.M_.maximum_lag);
-shock_matrix = zeros(1,M1.M_.exo_nbr);
-y_sim = simult_(M1.M_,options1.options_,initial_condition_states,oo1.oo_.dr,shock_matrix,options1.options_.order);
-cond_W_hand=y_sim(strmatch('W',M1.M_.endo_names,'exact'),2);
+oo1 = load('neo_growth_foresight_results','oo_');
+M1 = load('neo_growth_foresight_results','M_');
+options1 = load('neo_growth_foresight_results','options_');
+cond_W_hand = oo1.oo_.endo_simul(strmatch('W',M1.M_.endo_names,'exact'),2);
+unc_W_hand = oo1.oo_.endo_simul(strmatch('W',M1.M_.endo_names,'exact'),end);
 
 if abs((unc_W_hand - planner_objective_value(1))/unc_W_hand) > 1e-6;
    error('Inaccurate unconditional welfare assessment');
