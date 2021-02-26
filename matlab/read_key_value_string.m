@@ -4,7 +4,7 @@ function c = read_key_value_string(s)
 % estimation command) into a cell (first column for the option name ans second column for the
 % option value).
 
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright © 2011-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -20,6 +20,9 @@ function c = read_key_value_string(s)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+
+% Remove unnecessary spaces after commas.
+s = regexprep(s, ',\s*', ',');
 
 i_opening_bracket = strfind(s,'(');
 i_closing_bracket = strfind(s,')');
