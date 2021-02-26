@@ -25,11 +25,12 @@ Dates
 Dates in a mod file
 -------------------
 
-Dynare understands dates in a mod file. Users can declare annual,
+Dynare understands dates in a mod file. Users can declare annual, bi-annual,
 quarterly, or monthly dates using the following syntax::
 
     1990Y
-    1990Q3
+    1990S2
+    1990Q4
     1990M11
 
 Behind the scene, Dynare’s preprocessor translates these expressions
@@ -164,20 +165,14 @@ The dates class
 
 .. class:: dates
 
-    :arg freq: equal to 1, 4, 12 or 365 (resp. for annual, quarterly,
+    :arg freq: equal to 1, 2, 4, 12 or 365 (resp. for annual, bi-annual, quarterly,
                monthly, or daily dates).
-    :arg time: a ``n*2`` array of integers. If `freq` is equal to 1,
-               4, or 12, the years are stored in the first column, the
-               subperiods (1 for annual dates, 1-4 for quarterly
-               dates, and 1-12 for monthly dates) are stored in the
-               second column. If `freq` is equal to 365, the first
-               column stores the number of days since the first day of
-               year 0, the second column is not used.
+    :arg time: a ``n*1`` array of integers, the number of periods since year 0 ().
 
     Each member is private, one can display the content of a member
-    but cannot change its value directly. Note that it is not possible
-    to mix frequencies in a ``dates`` object: all the elements must
-    have common frequency.
+    but cannot change its value directly. Note also that it is not
+    possible to mix frequencies in a ``dates`` object: all the
+    elements must have common frequency.
 
     The ``dates`` class has the following constructors:
 
@@ -187,12 +182,13 @@ The dates class
         |br| Returns an empty ``dates`` object with a given frequency
         (if the constructor is called with one input
         argument). ``FREQ`` is a character equal to ’Y’ or ’A’ for
-        annual dates, ’Q’ for quarterly dates, ’M’ for monthly dates,
-        or ’D’ for daily dates. Note that ``FREQ`` is not case
-        sensitive, so that, for instance, ’q’ is also allowed for
-        quarterly dates. The frequency can also be set with an integer
-        scalar equal to 1 (annual), 4 (quarterly), 12
-        (monthly), or 365 (daily). The instantiation of empty objects can be used to
+        annual dates, ’S’ or ’H’ for bi-annual dates, ’Q’ for
+        quarterly dates, ’M’ for monthly dates, or ’D’ for daily
+        dates. Note that ``FREQ`` is not case sensitive, so that, for
+        instance, ’q’ is also allowed for quarterly dates. The
+        frequency can also be set with an integer scalar equal to 1
+        (annual), 2 (bi-annual), 4 (quarterly), 12 (monthly), or 365
+        (daily). The instantiation of empty objects can be used to
         rename the ``dates`` class. For instance, if one only works
         with quarterly dates, object ``qq`` can be created as::
 
@@ -219,12 +215,17 @@ The dates class
         |br| Returns a ``dates`` object that represents a date as
         given by the string ``STRING``. This string has to be
         interpretable as a date (only strings of the following forms
-        are admitted: ``'1990Y'``, ``'1990A'``, ``'1990Q1'``,
-        ``'1990M2'``, or ``'2020-12-31'``), the routine ``isdate`` can
-        be used to test if a string is interpretable as a date. If
-        more than one argument is provided, they should all be dates
-        represented as strings, the resulting ``dates`` object
-        contains as many elements as arguments to the constructor.
+        are admitted: ``'1990Y'``, ``'1990A'``, ``1990S1``,
+        ``1990H1``, ``'1990Q1'``, ``'1990M2'``, or ``'2020-12-31'``),
+        the routine ``isdate`` can be used to test if a string is
+        interpretable as a date. If more than one argument is
+        provided, they should all be dates represented as strings, the
+        resulting ``dates`` object contains as many elements as
+        arguments to the constructor. For the daily dates, the string
+        must be of the form yyyy-mm-dd with two digits for the
+        months (mm) and days (dd), even if the number of days or
+        months is smaller than ten (in this case a leading 0 is
+        required).
 
 
     .. construct:: dates(DATES)
@@ -240,14 +241,14 @@ The dates class
 
     .. construct:: dates (FREQ, YEAR, SUBPERIOD[, S])
 
-        |br| where ``FREQ`` is a single character (’Y’, ’A’, ’Q’, ’M’,
-        ’D’) or integer (1, 4, 12, or 365) specifying the frequency,
-        ``YEAR`` and ``SUBPERIOD`` and ``S`` are ``n*1`` vectors of
-        integers. Returns a ``dates`` object with ``n`` elements. The
-        last argument, ``S``, is only to be used for daily
-        frequency. If ``FREQ`` is equal to ``'Y'``, ``'A'`` or ``1``,
-        the third argument is not needed (because ``SUBPERIOD`` is
-        necessarily a vector of ones in this case).
+        |br| where ``FREQ`` is a single character (’Y’, ’A’, ’S’, ’H’,
+        ’Q’, ’M’, ’D’) or integer (1, 2, 4, 12, or 365) specifying the
+        frequency, ``YEAR`` and ``SUBPERIOD`` and ``S`` are ``n*1``
+        vectors of integers. Returns a ``dates`` object with ``n``
+        elements. The last argument, ``S``, is only to be used for
+        daily frequency. If ``FREQ`` is equal to ``'Y'``, ``'A'`` or
+        ``1``, the third argument is not needed (because ``SUBPERIOD``
+        is necessarily a vector of ones in this case).
 
 
     *Example*
@@ -3142,3 +3143,115 @@ X-13 ARIMA-SEATS interface
                 >> o.forecast('maxlead',18,'probability',0.95,'save','(fct fvr)');
 
                 >> o.run();
+
+
+Miscellaneous
+=============
+
+Time aggregation
+----------------
+
+    |br| A set of functions allows to convert time series to lower frequencies:
+
+          - ``dseries2M`` converts daily time series object to monthly
+            time series object.
+
+          - ``dseries2Q`` converts daily or monthly time series object
+            to quarterly time series object.
+
+          - ``dseries2S`` converts daily, monthly, or quarterly time
+            series object to bi-annual time series object.
+
+          - ``dseries2Y`` converts daily, monthly, quarterly, or
+            bi-annual time series object to annual time series object.
+
+
+    |br| All these routines have two mandatory input arguments: the first one is a
+    ``dseries`` object, the second one the name (row char array) of the
+    aggregation method. Possible values for the second argument are:
+
+          - ``arithmetic-average`` (for growth rates),
+
+          - ``geometric-average`` (for growth factors),
+
+          - ``sum`` (for flow variables), and
+
+          - ``end-of-period`` (for stock variables).
+
+    *Example*
+
+            ::
+
+                >> ts = dseries(rand(12,1),'2000M1')
+
+                ts is a dseries object:
+
+                        | Variable_1
+                2000M1  | 0.55293
+                2000M2  | 0.14228
+                2000M3  | 0.38036
+                2000M4  | 0.39657
+                2000M5  | 0.57674
+                2000M6  | 0.019402
+                2000M7  | 0.57758
+                2000M8  | 0.9322
+                2000M9  | 0.10687
+                2000M10 | 0.73215
+                2000M11 | 0.97052
+                2000M12 | 0.60889
+
+                >> ds = dseries2Y(ts, 'end-of-period')
+
+                ds is a dseries object:
+
+                      | Variable_1
+                2000Y | 0.60889
+
+Create time series with a univariate model
+------------------------------------------
+
+    |br| It is possible to expand a ``dseries`` object recursively
+    with the ``from`` command. For instance to create a ``dseries`` object
+    containing the simulation of an ARMA(1,1) model:
+
+        ::
+
+           >> e = dseries(randn(100, 1), '2000Q1', 'e', '\varepsilon');
+           >> y = dseries(zeros(100, 1), '2000Q1', 'y');
+           >> from 2000Q2 to 2024Q4 do y(t)=.9*y(t-1)+e(t)-.4*e(t-1);
+           >> y
+
+           y is a dseries object:
+
+                  | y
+           2000Q1 | 0
+           2000Q2 | -0.95221
+           2000Q3 | -0.6294
+           2000Q4 | -1.8935
+           2001Q1 | -1.1536
+           2001Q2 | -1.5905
+           2001Q3 | 0.97056
+           2001Q4 | 1.1409
+           2002Q1 | -1.9255
+           2002Q2 | -0.29287
+                  |
+           2022Q2 | -1.4683
+           2022Q3 | -1.3758
+           2022Q4 | -1.2218
+           2023Q1 | -0.98145
+           2023Q2 | -0.96542
+           2023Q3 | -0.23203
+           2023Q4 | -0.34404
+           2024Q1 | 1.4606
+           2024Q2 | 0.901
+           2024Q3 | 2.4906
+           2024Q4 | 0.79661
+
+
+
+    The expression following the ``do`` keyword can be any univariate
+    equation, the only constraint is that the model cannot have
+    leads. It can be a static equation, or a very nonlinear backward
+    equation with an arbitrary number of lags. The ``from`` command
+    must be followed by a range, which is separated from the
+    (recursive) expression to be evaluated by the ``do`` command.
