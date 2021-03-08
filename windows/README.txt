@@ -52,14 +52,14 @@ Using Dynare with Octave
 Dynare also works on top of GNU Octave, a free clone of MATLAB® (see
 <https://www.octave.org>).
 
-This version of Dynare is compiled for Octave 5.2.0 (MinGW, 32-bit and 64-bit),
+This version of Dynare is compiled for Octave 6.2.0 (MinGW, 32-bit and 64-bit),
 and may not work with other versions of Octave. The recommended version of
 Octave can be downloaded at:
 
 — For 64-bit systems:
-  https://ftpmirror.gnu.org/gnu/octave/windows/octave-5.2.0_1-w64-installer.exe
+  https://ftpmirror.gnu.org/gnu/octave/windows/octave-6.2.0-w64-installer.exe
 — For 32-bit systems:
-  https://ftpmirror.gnu.org/gnu/octave/windows/octave-5.2.0_1-w32-installer.exe
+  https://ftpmirror.gnu.org/gnu/octave/windows/octave-6.2.0-w32-installer.exe
 
 Every time you run Octave, you should type the following command (assuming that
 you have installed Dynare at the standard location, and replacing ‘4.x.y’ by
