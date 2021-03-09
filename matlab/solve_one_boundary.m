@@ -263,8 +263,8 @@ for it_=start:incr:finish
                 if verbose==1
                     disp('steady: csolve')
                 end
-                [yn,info] = csolve(@local_fname, y(y_index_eq),@ ...
-                                   local_fname,1e-6,500, x, params, steady_state, y, y_index_eq, fname, 1);
+                [yn,info] = csolve(@local_fname, y(y_index_eq), ...
+                                   @local_fname,1e-6,500, x, params, steady_state, y, y_index_eq, fname, 1);
                 dx = ya - yn;
                 y(y_index_eq) = yn;
             elseif (stack_solve_algo==1 && is_dynamic) || (stack_solve_algo==0 && is_dynamic) || (~is_dynamic && (options.solve_algo==1 || options.solve_algo==6))
