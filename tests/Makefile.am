@@ -387,6 +387,7 @@ MODFILES = \
 	observation_trends_and_prefiltering/calib_smoother/Tr_prefil_f_obs_loglin_cal_smoother.mod \
 	observation_trends_and_prefiltering/ML/Trend_no_prefilter_selected_var.mod \
 	dynare-command-options/ramst.mod \
+	particle/first_spec.mod \
 	particle/local_state_space_iteration_k_test.mod
 
 PARTICLEFILES = \
@@ -613,6 +614,10 @@ lmmcp/sw_newton.o.trs: lmmcp/sw_lmmcp.o.trs
 
 discretionary_policy/dennis_1_estim.m.trs: discretionary_policy/dennis_1.m.trs
 discretionary_policy/dennis_1_estim.o.trs: discretionary_policy/dennis_1.o.trs
+
+
+particle/local_state_space_iteration_k_test.m.trs: particle/first_spec.m.trs
+particle/local_state_space_iteration_k_test.o.trs: particle/first_spec.o.trs
 
 
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
