@@ -3970,6 +3970,20 @@ The coefficients of the decision rules are stored as follows:
   unfolded :math:`G_3` matrix, they must be multiplied by 3 when
   computing the decision rules.
 
+Higher-order approximation
+--------------------------
+
+Higher-order approximations are simply a generalization of what is done at
+order 3.
+
+The steady state is stored in ``oo_.dr.ys`` and the constant correction is
+stored in ``oo_.dr.g_0``. The coefficient for orders 1, 2, 3, 4… are
+respectively stored in ``oo_.dr.g_0``, ``oo_.dr.g_1``, ``oo_.dr.g_2``,
+``oo_.dr.g_3``, ``oo_.dr.g_4``… The columns of those matrices correspond to
+multidimensional indices of state variables, in such a way that symmetric
+elements are never repeated (for more details, see the description of
+``oo_.dr.g_3`` in the third-order case).
+
 
 .. _estim:
 
