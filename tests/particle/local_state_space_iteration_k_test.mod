@@ -1,51 +1,29 @@
 /*
   Tests that local_state_space_iteration_2 and local_state_space_iteration_k
   (for k=2) return the same results.
+
+  This file must be run after first_spec.mod (both are based on the same model).
 */
 
-var y, k, a, h, b, c;
-varexo e, u;
+@#include "first_spec_common.inc"
 
-parameters beta, rho, alpha, delta, theta, psi, tau;
-
-alpha = 0.36;
-rho   = 0.95;
-tau   = 0.025;
-beta  = 0.99;
-delta = 0.025;
-psi   = 0;
-theta = 2.95;
-
-phi   = 0.1;
-
-model;
-c*theta*h^(1+psi)=(1-alpha)*y;
-k = beta*(((exp(b)*c)/(exp(b(+1))*c(+1)))
-    *(exp(b(+1))*alpha*y(+1)+(1-delta)*k));
-y = exp(a)*(k(-1)^alpha)*(h^(1-alpha));
-k = exp(b)*(y-c)+(1-delta)*k(-1);
-a = rho*a(-1)+tau*b(-1) + e;
-b = tau*a(-1)+rho*b(-1) + u;
-end;
-
-initval;
-y = 1.08068253095672;
-c = 0.80359242014163;
-h = 0.29175631001732;
-k = 11.08360443260358;
-a = 0;
-b = 0;
-e = 0;
-u = 0;
-end;
+varobs q ca;
 
 shocks;
-var e; stderr 0.009;
-var u; stderr 0.009;
-var e, u = phi*0.009*0.009;
+var eeps = 0.04^2;
+var nnu = 0.03^2;
+var q = 0.01^2;
+var ca = 0.01^2;
 end;
 
-stoch_simul(order=2, irf=0, k_order_solver);
+// Initialize various structures
+estimation(datafile='my_data.mat',order=2,mode_compute=0,mh_replic=0,filter_algorithm=sis,nonlinear_filter_initialization=2
+    ,cova_compute=0 %tell program that no covariance matrix was computed
+);
+
+stoch_simul(order=2, periods=200, irf=0, k_order_solver);
+
+// Really perform the test
 
 nparticles = 100;
 
@@ -57,7 +35,16 @@ epsilon = chol(M_.Sigma_e)*randn(M_.exo_nbr, nparticles);
 
 dr = oo_.dr;
 
-tStart1 = tic; for i=1:10000, ynext1 = local_state_space_iteration_2(yhat, epsilon, dr.ghx, dr.ghu, dr.ys(dr.order_var)+0.5*dr.ghs2, dr.ghxx, dr.ghuu, dr.ghxu, 1); end, tElapsed1 = toc(tStart1);
+// “rf” stands for “Reduced Form”
+rf_ghx = dr.ghx(dr.restrict_var_list, :);
+rf_ghu = dr.ghu(dr.restrict_var_list, :);
+rf_constant = dr.ys(dr.order_var)+0.5*dr.ghs2;
+rf_constant = rf_constant(dr.restrict_var_list, :);
+rf_ghxx = dr.ghxx(dr.restrict_var_list, :);
+rf_ghuu = dr.ghuu(dr.restrict_var_list, :);
+rf_ghxu = dr.ghxu(dr.restrict_var_list, :);
+
+tStart1 = tic; for i=1:10000, ynext1 = local_state_space_iteration_2(yhat, epsilon, rf_ghx, rf_ghu, rf_constant, rf_ghxx, rf_ghuu, rf_ghxu, 1); end, tElapsed1 = toc(tStart1);
 
 tStart2 = tic; for i=1:10000, ynext2 = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_); end, tElapsed2 = toc(tStart2);
 

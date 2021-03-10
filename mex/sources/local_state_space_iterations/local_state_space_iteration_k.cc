@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -41,15 +41,16 @@ struct ParticleWorker : public sthread::detach_thread
   const ConstGeneralMatrix &yhat, &epsilon;
   const Vector &ys_reordered;
   const UnfoldDecisionRule &dr;
+  const ConstVector &restrict_var_list;
   GeneralMatrix &ynext;
 
   ParticleWorker(int npred_both_arg, int exo_nbr_arg, std::pair<size_t, size_t> particle_range_arg,
                  const ConstGeneralMatrix &yhat_arg, const ConstGeneralMatrix &epsilon_arg,
                  const Vector &ys_reordered_arg, const UnfoldDecisionRule &dr_arg,
-                 GeneralMatrix &ynext_arg)
+                 const ConstVector &restrict_var_list_arg, GeneralMatrix &ynext_arg)
     : npred_both{npred_both_arg}, exo_nbr{exo_nbr_arg}, particle_range{std::move(particle_range_arg)},
       yhat{yhat_arg}, epsilon{epsilon_arg}, ys_reordered{ys_reordered_arg}, dr{dr_arg},
-      ynext{ynext_arg}
+      restrict_var_list{restrict_var_list_arg}, ynext{ynext_arg}
   {
   }
   void
@@ -58,16 +59,22 @@ struct ParticleWorker : public sthread::detach_thread
     Vector dyu(npred_both+exo_nbr);
     Vector dy(dyu, 0, npred_both);
     Vector u(dyu, npred_both, exo_nbr);
+    Vector ynext_col_allvars(ys_reordered.length());
 
     for (size_t i = particle_range.first; i < particle_range.second; i++)
       {
         dy = yhat.getCol(i);
         u = epsilon.getCol(i);
+
+        dr.eval(DecisionRule::emethod::horner, ynext_col_allvars, dyu);
+
+        ynext_col_allvars.add(1.0, ys_reordered);
+
+        /* Select only the variables in restrict_var_list, and copy back to the
+           result matrix */
         Vector ynext_col{ynext.getCol(i)};
-
-        dr.eval(DecisionRule::emethod::horner, ynext_col, dyu);
-
-        ynext_col.add(1.0, ys_reordered);
+        for (int j = 0; j < restrict_var_list.length(); j++)
+          ynext_col[j] = ynext_col_allvars[restrict_var_list[j]-1];
       }
   }
 };
@@ -107,6 +114,9 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   const mxArray *ys_mx = mxGetField(dr_mx, 0, "ys");
   if (!ys_mx || !mxIsDouble(ys_mx) || mxGetNumberOfElements(ys_mx) != static_cast<size_t>(endo_nbr))
     mexErrMsgTxt("Field dr.ys should be a double precision vector with endo_nbr elements");
+  const mxArray *restrict_var_list_mx = mxGetField(dr_mx, 0, "restrict_var_list");
+  if (!(restrict_var_list_mx && mxIsDouble(restrict_var_list_mx)))
+    mexErrMsgTxt("Field dr.restrict_var_list should be a double precision vector");
 
   size_t nparticles = mxGetN(yhat_mx);
   if (mxGetN(epsilon_mx) != nparticles)
@@ -125,6 +135,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   ConstGeneralMatrix epsilon{epsilon_mx};
   ConstVector ys{ys_mx};
   const double *order_var = mxGetPr(order_var_mx);
+  ConstVector restrict_var_list{restrict_var_list_mx};
 
   try
     {
@@ -163,7 +174,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                         exo_nbr, ys_reordered);
 
   // Create the result matrix
-  plhs[0] = mxCreateDoubleMatrix(endo_nbr, nparticles, mxREAL);
+  plhs[0] = mxCreateDoubleMatrix(restrict_var_list.length(), nparticles, mxREAL);
   GeneralMatrix ynext{plhs[0]};
 
   // Run the real job in parallel
@@ -174,6 +185,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   for (size_t i = 0; i < nparticles; i += part_by_thread)
     group.insert(std::make_unique<ParticleWorker>(npred+nboth, exo_nbr,
                                                   std::make_pair(i, std::min(i+part_by_thread, nparticles)),
-                                                  yhat, epsilon, ys_reordered, dr, ynext));
+                                                  yhat, epsilon, ys_reordered, dr, restrict_var_list,
+                                                  ynext));
   group.run();
 }

@@ -825,6 +825,10 @@ discretionary_policy/dennis_1_estim.o.trs: discretionary_policy/dennis_1.o.trs
 discretionary_policy/Gali_2015_chapter_3_nonlinear.m.trs: discretionary_policy/Gali_2015_chapter_3.m.trs
 discretionary_policy/Gali_2015_chapter_3_nonlinear.o.trs: discretionary_policy/Gali_2015_chapter_3.o.trs
 
+particle/local_state_space_iteration_k_test.m.trs: particle/first_spec.m.trs
+particle/local_state_space_iteration_k_test.o.trs: particle/first_spec.o.trs
+
+
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
 o/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.o.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
