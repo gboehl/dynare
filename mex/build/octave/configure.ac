@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright © 2009-2020 Dynare Team
+dnl Copyright © 2009-2021 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -37,12 +37,6 @@ CXXFLAGS="$($MKOCTFILE -p CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast"
 LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
 
 AC_CANONICAL_HOST
-case ${host_os} in
-  darwin*)
-    dnl The mkoctfile from Octave.app 4.4.1 does not add optimization flags in CXXFLAGS
-    CXXFLAGS+=" -O2"
-    ;;
-esac
 
 OCTAVE_VERSION=$($MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //')
 AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.4], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.4 at least (or disable Octave support with --disable-octave).])])
