@@ -1,4 +1,4 @@
-# Copyright © 2019-2020 Dynare Team
+# Copyright © 2019-2021 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -21,8 +21,7 @@ ROOT_PATH = $(realpath .)
 
 WGET_OPTIONS := --no-verbose --no-use-server-timestamps --retry-connrefused --retry-on-host-error
 
-.PHONY: all build octave \
-	build build-slicot build-x13as \
+.PHONY: all build build-slicot build-x13as \
 	clean-lib clean-libslicot clean-x13as-bin \
 	clean-src clean-slicot-src clean-x13as-src \
 	clean-tar clean-slicot-tar clean-x13as-tar \

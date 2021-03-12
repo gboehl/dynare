@@ -92,7 +92,6 @@ PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p \
       "$PKGFILES"/mex/matlab/maci64-7.9-9.3 \
       "$PKGFILES"/mex/matlab/maci64-9.4-9.9 \
-      "$PKGFILES"/mex/octave \
       "$PKGFILES"/doc/dynare++ \
       "$PKGFILES"/dynare++ \
       "$PKGFILES"/scripts \
@@ -149,26 +148,6 @@ CC=$CC CXX=$CXX ./configure \
   --with-matlab=/Applications/MATLAB_R2019b.app MATLAB_VERSION=R2019b
 make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.9
-
-
-##
-## Create mex for Octave
-##
-cd "$ROOTDIR"/mex/build/octave
-OCTAVE_VERSION=$(grep OCTAVE_VERSION "$ROOTDIR"/macOS/deps/versions.mk | cut -d'=' -f2 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-OCTAVE_USR_DIR="/Applications/Octave-$OCTAVE_VERSION.app/Contents/Resources/usr"
-OCTAVE_BIN_DIR="$OCTAVE_USR_DIR/Cellar/octave-octave-app@$OCTAVE_VERSION/$OCTAVE_VERSION/bin"
-PATH="$OCTAVE_BIN_DIR:$PATH" CC=$CC CXX=$CXX ./configure \
-  PACKAGE_VERSION="$VERSION" \
-  PACKAGE_STRING="dynare $VERSION" \
-  CXXFLAGS=-I/usr/local/include \
-  LDFLAGS="-static-libgcc -L$OCTAVE_USR_DIR/lib " \
-  --with-gsl="$LIB64"/gsl \
-  --with-matio="$LIB64"/matio \
-  --with-slicot="$LIB64"/Slicot/with-underscore
-PATH="$OCTAVE_BIN_DIR:$PATH" make -j"$NTHREADS"
-cp -L  "$ROOTDIR"/mex/octave/*                                       "$PKGFILES"/mex/octave
-echo -e "function v = supported_octave_version\nv=\"$OCTAVE_VERSION\";\nend" > "$PKGFILES"/matlab/supported_octave_version.m
 
 
 ##
