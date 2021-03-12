@@ -85,17 +85,6 @@ if ~isoctave
     p{end+1} = '/missing/vec';
 end
 
-% ordeig() doesn't exist in Octave < 5
-if isoctave && octave_ver_less_than('5')
-    p{end+1} = '/missing/ordeig';
-end
-
-%% intersect(…, 'stable') and unique(…, 'stable') doen't exist in Octave < 6
-if isoctave && octave_ver_less_than('6')
-    p{end+1} = '/missing/intersect_stable';
-    p{end+1} = '/missing/unique_stable';
-end
-
 % Replacements for functions of the MATLAB statistics toolbox
 if isoctave
     % Under Octave, these functions are in the statistics Forge package.
@@ -115,8 +104,8 @@ if ~exist('struct2array')
     p{end+1} = '/missing/struct2array';
 end
 
-% isfile is missing in Octave < 5 and Matlab < R2017b
-if (isoctave && octave_ver_less_than('5')) || (~isoctave && matlab_ver_less_than('9.3'))
+% isfile is missing in MATLAB < R2017b
+if ~isoctave && matlab_ver_less_than('9.3')
     p{end+1} = '/missing/isfile';
 end
 

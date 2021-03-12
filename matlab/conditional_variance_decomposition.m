@@ -17,7 +17,7 @@ function [ConditionalVarianceDecomposition, ConditionalVarianceDecomposition_ME]
 %                                                    h is the number of Steps
 %                                                    p is the number of state innovations and
 
-% Copyright (C) 2010-2020 Dynare Team
+% Copyright (C) 2010-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -89,11 +89,7 @@ end
 % Measurement error
 
 if ~all(diag(StateSpaceModel.measurement_error)==0)
-    if isoctave && octave_ver_less_than('6')
-        [observable_pos,index_subset,index_observables]=intersect_stable(SubsetOfVariables,StateSpaceModel.observable_pos);
-    else
-        [observable_pos,index_subset,index_observables]=intersect(SubsetOfVariables,StateSpaceModel.observable_pos,'stable');
-    end
+    [observable_pos,index_subset,index_observables]=intersect(SubsetOfVariables,StateSpaceModel.observable_pos,'stable');
     ME_Variance=diag(StateSpaceModel.measurement_error);
 
     ConditionalVarianceDecomposition_ME = zeros(length(observable_pos),length(Steps),number_of_state_innovations+1);

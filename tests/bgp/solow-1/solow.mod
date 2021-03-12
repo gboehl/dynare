@@ -55,18 +55,11 @@ verbatim;
     else
         options = optimoptions('fsolve','Display','off','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-8,'StepTolerance',1e-8);
     end
-    if isoctave && octave_ver_less_than('6')
-        % Octave < 6 can't take a function handle of a function in a package
-        % See https://savannah.gnu.org/bugs/index.php?46659
-        fun = str2func('solow.bgpfun');
-    else
-        fun = @solow.bgpfun;
-    end
     reverseStr = '';
     for i=1:MC
         y = 1+(rand(6,1)-.5)*.2;
         g = ones(6,1);
-        [y, fval, exitflag] = fsolve(fun, [y;g], options);
+        [y, fval, exitflag] = fsolve(@solow.bgpfun, [y;g], options);
         if exitflag>0
             KY(i) = y(6)/y(5);
             GY(i) = y(11);

@@ -24,16 +24,9 @@ verbatim;
     else
         options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-6,'StepTolerance',1e-6);
     end
-    if isoctave && octave_ver_less_than('6')
-        % Octave < 6 can't take a function handle of a function in a package
-        % See https://savannah.gnu.org/bugs/index.php?46659
-        fun = str2func('ramsey.bgpfun');
-    else
-        fun = @ramsey.bgpfun;
-    end
     y = 1+(rand(M_.endo_nbr,1)-.5)*.25;
     g = ones(M_.endo_nbr,1);% 1+(rand(M_.endo_nbr,1)-.5)*.1;
-    [y, fval, exitflag] = fsolve(fun, [y;g], options);
+    [y, fval, exitflag] = fsolve(@ramsey.bgpfun, [y;g], options);
     assert(max(abs(y(M_.endo_nbr+(1:M_.orig_endo_nbr))-1.02))<1e-6)
 
 end;

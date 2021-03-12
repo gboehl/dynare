@@ -303,10 +303,6 @@ end
 
 % Get indices in params0 for other parameters (optimizing agents share plus parameters related to exogenous variables).
 [~, params_id_2] = setdiff(1:length(ipnames_), params_id_1);
-if isoctave && octave_ver_less_than('6')
-    % Under Octave < 6, setdiff() behaves as with the 'legacy' option (i.e. pre-R2012b behaviour)
-    params_id_2 = params_id_2';
-end
 
 % Get indices in params0 for the parameters associated to the exogenous variables.
 params_id_3 = setdiff(params_id_2, params_id_0);

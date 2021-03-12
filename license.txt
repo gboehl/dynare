@@ -210,7 +210,7 @@ License: GPL-3+
 Files: matlab/lmmcp/catstruct.m
 Copyright: 2005 Jos van der Geest <jos@jasen.nl>
            2013 Christophe Gouel
-           2016-2017 Dynare Team
+           2016-2021 Dynare Team
 License: BSD-2-clause
 
 Files: matlab/lmmcp/lmmcp.m

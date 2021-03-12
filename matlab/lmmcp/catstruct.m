@@ -48,7 +48,7 @@ function A = catstruct(varargin)
 
 % Copyright (C) 2005 Jos van der Geest <jos@jasen.nl>
 % Copyright (C) 2013 Christophe Gouel
-% Copyright (C) 2016-2020 Dynare Team
+% Copyright (C) 2016-2021 Dynare Team
 %
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are
@@ -150,11 +150,7 @@ else
     FN = squeeze(FN) ;
     VAL = squeeze(VAL) ;
     MatlabVersion = version;
-    if isoctave && octave_ver_less_than('6')
-        [UFN,ind] = unique(FN) ;
-    else
-        [UFN,ind] = unique(FN,'legacy') ;
-    end
+    [UFN,ind] = unique(FN,'legacy') ;
 
     if numel(UFN) ~= numel(FN)
         warning('catstruct:DuplicatesFound','Fieldnames are not unique between structures.') ;

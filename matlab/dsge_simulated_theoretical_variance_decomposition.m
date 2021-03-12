@@ -18,7 +18,7 @@ function [nvar,vartan,NumberOfDecompFiles] = ...
 %   vartan            [char]     array of characters (with nvar rows).
 %   CovarFileNumber   [integer]  scalar, number of prior or posterior data files (for covariance).
 
-% Copyright (C) 2007-2020 Dynare Team
+% Copyright (C) 2007-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -87,11 +87,7 @@ MaXNumberOfDecompLines = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPer
 
 ME_present=0;
 if ~all(diag(M_.H)==0)
-    if isoctave && octave_ver_less_than('6')
-        [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
-    else
-        [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
-    end
+    [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
     if ~isempty(observable_pos_requested_vars)
         ME_present=1;
         nobs_ME=length(observable_pos_requested_vars);

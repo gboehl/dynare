@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2019 Dynare Team
+ * Copyright (C) 2019-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -72,14 +72,7 @@ verbatim;
     else
         options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-6,'StepTolerance',1e-6);
     end
-    if isoctave && octave_ver_less_than('6')
-        % Octave < 6 can't take a function handle of a function in a package
-        % See https://savannah.gnu.org/bugs/index.php?46659
-        fun = str2func('fs2000.bgpfun');
-    else
-        fun = @fs2000.bgpfun;
-    end
-    [y, fval, exitflag] = fsolve(fun, [y;g], options);
+    [y, fval, exitflag] = fsolve(@fs2000.bgpfun, [y;g], options);
     if exitflag<1
         error('Solution not found')
     end

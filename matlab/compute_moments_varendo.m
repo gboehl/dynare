@@ -17,7 +17,7 @@ function oo_ = compute_moments_varendo(type, options_, M_, oo_, var_list_)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2020 Dynare Team
+% Copyright (C) 2008-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -168,11 +168,7 @@ if options_.order==1
         end
         skipline();
         if ~all(diag(M_.H)==0)
-            if isoctave && octave_ver_less_than('6')
-                [observable_name_requested_vars, varlist_pos] = intersect_stable(var_list_, options_.varobs);
-            else
-                [observable_name_requested_vars, varlist_pos] = intersect(var_list_, options_.varobs, 'stable');
-            end
+            [observable_name_requested_vars, varlist_pos] = intersect(var_list_, options_.varobs, 'stable');
             if ~isempty(observable_name_requested_vars)
                 NumberOfObservedEndogenousVariables = length(observable_name_requested_vars);
                 temp = NaN(NumberOfObservedEndogenousVariables, NumberOfExogenousVariables+1);

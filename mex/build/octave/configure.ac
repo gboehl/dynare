@@ -39,7 +39,7 @@ LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
 AC_CANONICAL_HOST
 
 OCTAVE_VERSION=$($MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //')
-AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [4.4], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 4.4 at least (or disable Octave support with --disable-octave).])])
+AX_COMPARE_VERSION([$OCTAVE_VERSION], [lt], [6.2.0], [AC_MSG_ERROR([Your Octave is too old, please upgrade to version 6.2.0 at least (or disable Octave support with --disable-octave).])])
 
 AC_PROG_FC
 AC_PROG_CC
