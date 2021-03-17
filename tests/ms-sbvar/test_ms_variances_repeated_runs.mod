@@ -13,7 +13,7 @@ svar(variances, chain=1);
 set_dynare_seed(5);
 
 
-ms_estimation(datafile=data
+ms_estimation(datafile=msdata
 		,freq=4
 		,initial_year=1959
 		,final_year=2005
@@ -29,7 +29,7 @@ ms_forecast;
 ms_variance_decomposition;
 
 
-ms_estimation(datafile=data, file_tag=tmv_rr_sr
+ms_estimation(datafile=msdata, file_tag=tmv_rr_sr
 		,freq=4
 		,initial_year=1959
 		,final_year=2005
@@ -45,7 +45,7 @@ ms_forecast(file_tag=tmv_rr_sr);
 ms_variance_decomposition(file_tag=tmv_rr_sr);
 
 
-ms_estimation(datafile=data, file_tag=tmv_rr_sr, no_create_init
+ms_estimation(datafile=msdata, file_tag=tmv_rr_sr, no_create_init
 		,freq=4, output_file_tag=tmv_rr_tr
 		,initial_year=1959
 		,final_year=2005

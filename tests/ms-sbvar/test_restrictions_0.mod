@@ -9,5 +9,5 @@ restriction equation 1, coeff(Y,0) = 0;
 restriction equation 2, coeff(Y,0) = 0;
 end;
 
-sbvar(datafile = data,freq=4,initial_year=1959,final_year=2005,nlags=4);
+sbvar(datafile=msdata,freq=4,initial_year=1959,final_year=2005,nlags=4);
 
