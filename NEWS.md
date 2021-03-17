@@ -1,3 +1,67 @@
+Announcement for Dynare 4.6.4 (on 2021-03-18)
+=============================================
+
+We are pleased to announce the release of Dynare 4.6.4.
+
+This maintenance release fixes various bugs.
+
+The Windows, macOS and source packages are already available for download at
+[the Dynare website](https://www.dynare.org/download/).
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 7.9 (R2009b) to
+9.10 (R2021a), and with GNU Octave version 6.2.0 (under Windows).
+
+Here is a list of the problems identified in version 4.6.3 and that have been
+fixed in version 4.6.4:
+
+* Passing multiple shock values through a MATLAB/Octave vector in a `mshocks`
+  block would not work
+* The `mode_compute=12` option was broken
+* The `use_mh_covariance_matrix` option was ignored
+* The `load_mh_file` option together with `mh_replic=0` would not allow
+  computing `moments_varendo` for a different list of variables
+* The `forecast` option was ignored when using `mode_compute=0` without a
+  mode-file to execute the smoother
+* The `discretionary_policy` command would crash in the presence of news shocks
+* The `ramsey_constraints` block would crash if the constraints contained
+  defined `parameters`
+* Identification would display a wrong error message if a unit root was present
+  and `diffuse_filter` had been set
+* Particle filter estimation would crash if the initial state covariance became
+  singular for a draw
+* Particle filter estimation would crash if `k_order_solver` option was
+  specified with `options_.particle.pruning`
+* The initial state covariance in particle filter estimation could be `NaN`
+  when using `nonlinear_filter_initialization=2` despite
+  `options_.particles.pruning=1`
+* Output of `smoother` results when using particle filters would be based on
+  `order=1`
+* Output of `moments_varendo` results when using particle filters would be
+  based on `order=1`
+* When decreasing the `order` in `.mod` files, `oo_.dr` could contain stale
+  results from higher orders
+* Estimation results using the particle filter at `order=3` would be incorrect
+  if the restricted state space differed from the unrestricted one
+* The `mode_compute=102` option (SOLVEOPT) could return with `Inf` instead of
+  the last feasible value
+* Using `analytic_derivation` for Bayesian estimation would result in wrong
+  results when the multivariate Kalman filter entered the steady state stage
+* Using `analytic_derivation` for maximum likelihood estimation would result in
+  a crash
+* When using the Bayesian smoother with `filtered_vars`, the field for
+  `Filtered_Variables_X_step_ahead` used the length of vector instead of the
+  actual steps in `filter_step_ahead`
+* `mode_compute=1,3` crashed when `analytic_derivation` was specified
+* `mode_compute=1,3,102` did only allow for post-MATLAB 2016a option names
+* The `cova_compute=0` option was not working with user-defined
+  `MCMC_jumping_covariance`
+* The `mode_compute=1` option was not working with `analytic_derivation`
+* Not all commands were honouring the `M_.dname` folder when saving
+* LaTeX output of the simulated variance decomposition for observables with
+  measurement error could have a wrong variable label
+
 Announcement for Dynare 4.6.3 (on 2020-11-23)
 =============================================
 
