@@ -12,7 +12,7 @@ svar(variances, chain=1);
 
 set_dynare_seed(5);
 
-ms_estimation(datafile=data
+ms_estimation(datafile=msdata
 		,freq=4
 		,initial_year=1959
 		,final_year=2005
