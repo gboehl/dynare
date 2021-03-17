@@ -5,7 +5,7 @@
 # The binaries are cross compiled for Windows (32/64bits), Octave and MATLAB
 # (all supported versions).
 
-# Copyright © 2017-2020 Dynare Team
+# Copyright © 2017-2021 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -167,8 +167,8 @@ build_windows_matlab_mex_64_b ()
 		     PACKAGE_STRING="dynare $VERSION"
     make -j"$NTHREADS" all
     x86_64-w64-mingw32-strip -- **/*.mexw64
-    mkdir -p "$ROOT_DIRECTORY"/../mex/matlab/win64-9.4-9.9
-    mv -- **/*.mexw64 "$ROOT_DIRECTORY"/../mex/matlab/win64-9.4-9.9
+    mkdir -p "$ROOT_DIRECTORY"/../mex/matlab/win64-9.4-9.10
+    mv -- **/*.mexw64 "$ROOT_DIRECTORY"/../mex/matlab/win64-9.4-9.10
 }
 
 # Create Windows DLL binaries for Octave/MinGW (32bit)
