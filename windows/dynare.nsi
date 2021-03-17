@@ -90,9 +90,9 @@ Section "MEX files for MATLAB 64-bit, version 8.3 to 9.3 (R2014a to R2017b)"
  File ..\mex\matlab\win64-8.3-9.3\*.mexw64
 SectionEnd
 
-Section "MEX files for MATLAB 64-bit, version 9.4 to 9.9 (R2018a to R2020b)"
- SetOutPath $INSTDIR\mex\matlab\win64-9.4-9.9
- File ..\mex\matlab\win64-9.4-9.9\*.mexw64
+Section "MEX files for MATLAB 64-bit, version 9.4 to 9.10 (R2018a to R2021a)"
+ SetOutPath $INSTDIR\mex\matlab\win64-9.4-9.10
+ File ..\mex\matlab\win64-9.4-9.10\*.mexw64
 SectionEnd
 
 Section "MinGW compiler for MATLAB 64-bit"

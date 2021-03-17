@@ -94,7 +94,7 @@ PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p \
       "$PKGFILES"/preprocessor \
       "$PKGFILES"/mex/matlab/maci64-8.3-9.3 \
-      "$PKGFILES"/mex/matlab/maci64-9.4-9.9 \
+      "$PKGFILES"/mex/matlab/maci64-9.4-9.10 \
       "$PKGFILES"/doc/dynare++ \
       "$PKGFILES"/dynare++ \
       "$PKGFILES"/scripts \
@@ -158,7 +158,7 @@ make clean
   --with-slicot="$LIB64"/Slicot/with-underscore \
   --with-matlab=/Applications/MATLAB_R2019b.app
 make -j"$NTHREADS"
-cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.9
+cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.10
 
 
 ##
