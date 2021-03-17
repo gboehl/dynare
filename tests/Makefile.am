@@ -1136,7 +1136,7 @@ EXTRA_DIST = \
 	missing/simulate_data_with_missing_observations.m \
 	objectives/sgu_ex1.mat \
 	conditional_forecasts/2/fsdat_simul.m \
-	ms-sbvar/data.m \
+	ms-sbvar/msdata.m \
 	ms-sbvar/archive-files/ftd_2s_caseall_upperchol3v.m \
 	ms-sbvar/archive-files/ftd_2s_caseall_upperchol4v.m \
 	ms-sbvar/archive-files/ftd_2s_caseall_upperchol6v.m \
