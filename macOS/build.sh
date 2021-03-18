@@ -49,15 +49,17 @@ if [[ -z $VERSION ]]; then
     fi
 fi
 
-# Install location must be truncated for installation of `gcc`
-# If it's too long, the headers of the compiled libraries cannot be modified
-# obliging recompilation on the user's system. Truncate to 5 characters
-# To allow for distribution version to appear
-LOCATION=$(echo "$VERSION" | cut -f1 -d"-" | cut -c 1-5)
-if [[ "$VERSION" == *-unstable* || "$VERSION" == [a-zA-Z]* ]]; then
-    LOCATION="$LOCATION"-"$DATE"
+# Install location must not be too long for gcc.
+# Otherwise, the headers of the compiled libraries cannot be modified
+# obliging recompilation on the user's system.
+# If VERSION is not a official release number, then do some magic
+# to get something not too long, still more or less unique.
+if [[ "$VERSION" =~ ^[0-9\.]+$ ]]; then
+    LOCATION=$VERSION
+else
+    # Get the first component, truncate it to 5 characters, and add the date
+    LOCATION=$(echo "$VERSION" | cut -f1 -d"-" | cut -c 1-5)-"$DATE"
 fi
-
 
 ##
 ## Compile Dynare doc, dynare++, preprocessor, mex for MATLAB < 2018a
