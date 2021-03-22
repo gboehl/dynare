@@ -114,6 +114,22 @@ x = repmat(transpose(steadystate_x), 1+M.maximum_exo_lag+M.maximum_exo_lead, 1);
 
 % Evaluate the Jacobian of the dynamic model at the deterministic steady state.
 [d1, jacobian] = dynamicmodel(z, x, params, steadystate_y, M.maximum_exo_lag+1);
+if options.debug
+    column=find(all(jacobian==0,1));
+    if ~isempty(column)
+        fprintf('The dynamic Jacobian is singular. The problem derives from:\n')
+        for iter=1:length(column)
+            [var_row,var_index]=find(M.lead_lag_incidence==column(iter));            
+            if var_row==2
+                fprintf('The derivative with respect to %s being 0 for all equations.\n',M.endo_names{var_index})
+            elseif var_row==1
+                fprintf('The derivative with respect to the lag of %s being 0 for all equations.\n',M.endo_names{var_index})
+            elseif var_row==3
+                fprintf('The derivative with respect to the lead of %s being 0 for all equations.\n',M.endo_names{var_index})
+            end            
+        end
+    end   
+end
 
 % Check that the dynamic model was evaluated at the steady state.
 if max(abs(d1))>options.solve_tolf

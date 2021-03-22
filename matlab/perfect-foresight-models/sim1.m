@@ -6,14 +6,14 @@ function [endogenousvariables, info] = sim1(endogenousvariables, exogenousvariab
 % INPUTS
 %   - endogenousvariables [double] N*(T+M.maximum_lag+M.maximum_lead) array, paths for the endogenous variables (initial condition + initial guess + terminal condition).
 %   - exogenousvariables  [double] T*M array, paths for the exogenous variables.
-%   - steadystate       [double] N*1 array, steady state for the endogenous variables.
+%   - steadystate         [double] N*1 array, steady state for the endogenous variables.
 %   - M                   [struct] contains a description of the model.
 %   - options             [struct] contains various options.
 % OUTPUTS
 %   - endogenousvariables [double] N*(T+M.maximum_lag+M.maximum_lead) array, paths for the endogenous variables (solution of the perfect foresight model).
 %   - info                [struct] contains informations about the results.
 
-% Copyright (C) 1996-2019 Dynare Team
+% Copyright (C) 1996-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -65,7 +65,29 @@ for iter = 1:options.simul.maxit
     h2 = clock;
 
     [res, A] = perfect_foresight_problem(y, y0, yT, exogenousvariables, M.params, steadystate, periods, M, options);
-
+    % A is the stacked Jacobian with period x equations alongs the rows and
+    % periods times variables (in declaration order) along the columns
+    if options.debug && iter==1
+        row=find(all(A==0,2));
+        column=find(all(A==0,1));
+        if ~isempty(row) || ~isempty(column)
+            fprintf('The stacked Jacobian is singular. The problem derives from:\n')
+            if ~isempty(row)
+                time_period=ceil(row/ny);
+                equation=row-ny*(time_period-1);
+                for eq_iter=1:length(equation)
+                    fprintf('The derivative of equation %d at time %d is zero for all variables\n',equation(eq_iter),time_period(eq_iter));
+                end
+            end
+            if ~isempty(column)
+                time_period=ceil(column/ny);
+                variable=column-ny*(time_period-1);
+                for eq_iter=1:length(variable)
+                    fprintf('The derivative with respect to variable %d at time %d is zero for all equations\n',variable(eq_iter),time_period(eq_iter));
+                end
+            end            
+        end
+    end
     if options.endogenous_terminal_period && iter > 1
         for it = 1:periods
             if max(abs(res((it-1)*ny+(1:ny)))) < options.dynatol.f/1e7
