@@ -155,6 +155,10 @@ else
         record.AcceptanceRatio(offset+1:sum(nBlockPerCPU(1:j)))=fout(j).record.AcceptanceRatio(offset+1:sum(nBlockPerCPU(1:j)));
         record.FunctionEvalPerIteration(offset+1:sum(nBlockPerCPU(1:j)))=fout(j).record.FunctionEvalPerIteration(offset+1:sum(nBlockPerCPU(1:j)));
         record.LastSeeds(offset+1:sum(nBlockPerCPU(1:j)))=fout(j).record.LastSeeds(offset+1:sum(nBlockPerCPU(1:j)));
+        if j==1
+            record.ProposalCovariance=fout(j).record.ProposalCovariance;
+            record.ProposalScaleVec=fout(j).record.ProposalScaleVec;
+        end
     end
     options_.parallel_info.parallel_recover = 0;
 end
