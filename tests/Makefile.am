@@ -1193,7 +1193,7 @@ EXTRA_DIST = \
 	observation_trends_and_prefiltering/Trend_load_data_common.inc \
 	observation_trends_and_prefiltering/Trend_no_prefilter_conditional_forecast.inc \
 	optimal_policy/neo_growth_common.inc \
-	optimal_policy/neo_growth_ramsey_common.inc \ 
+	optimal_policy/neo_growth_ramsey_common.inc \
 	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat \
 	optimizers/optimizer_function_wrapper.m \
 	optimizers/fs2000.common.inc \
