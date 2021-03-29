@@ -47,6 +47,20 @@ case ${host_os} in
     ;;
 esac
 
+# Workaround for compilation under MSYS2.
+# There is (on 2021-03-29) a problem in the -static-libgfortran linker option that
+# affects the Dynare++ binaries.
+# See https://github.com/msys2/MINGW-packages/issues/7023
+# and https://github.com/msys2/MINGW-packages/issues/6986
+# Until this is fixed, the workaround is to add the --default-image-base-low linker
+# option.
+# We do *not* want to do this when cross-compiling from Debian (because the option does
+# not exist there), hence we test for cross-compilation before applying the workaround.
+AC_CANONICAL_BUILD
+if test "${host_os}" = mingw32 && test "${host_os}" = "${build_os}"; then
+    AM_LDFLAGS="$AM_LDFLAGS -Wl,--default-image-base-low"
+fi
+
 # Use C++ for testing headers
 AC_LANG([C++])
 
