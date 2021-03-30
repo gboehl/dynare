@@ -10,7 +10,7 @@ Currently the development team of Dynare is composed of:
 * Frédéric Karamé (Le Mans Université, Gains and CEPREMAP)
 * Junior Maih (Norges Bank)
 * Ferhat Mihoubi (Université Paris-Est Créteil, Érudite)
-* Willi Mutschler (University of Münster)
+* Willi Mutschler (University of Tübingen)
 * Johannes Pfeifer (Universität der Bundeswehr München)
 * Marco Ratto (European Commission, Joint Research Centre - JRC)
 * Sébastien Villemot (CEPREMAP)
