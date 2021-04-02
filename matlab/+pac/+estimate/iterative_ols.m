@@ -197,10 +197,10 @@ if is_exogenous_variables
             j = j+1;
             is_any_estimated_parameter_x = true;
             listofvariables2{j} = variable;
-            dataForExogenousVariables = [dataForExogenousVariables, additive.scaling_factor(i)*data{variable}.lag(additive.lags(i))];
+            dataForExogenousVariables = [dataForExogenousVariables, additive.scaling_factor(i)*data{variable}.lag(-additive.lags(i))];
         else
             is_any_calibrated_parameter_x = true;
-            tmp = data{variable}.lag(additive.lags(i)).data;
+            tmp = data{variable}.lag(-additive.lags(i)).data;
             if ~isnan(additive.params(i))
                 tmp = M_.params(additive.params(i))*tmp;
             end
@@ -234,10 +234,10 @@ if is_optim_exogenous_variables
             j = j+1;
             is_any_estimated_parameter_optim_x = true;
             listofvariables4{j} = variable;
-            dataForOptimExogenousVariables = [dataForOptimExogenousVariables, optim_additive.scaling_factor(i)*data{variable}.lag(optim_additive.lags(i))];
+            dataForOptimExogenousVariables = [dataForOptimExogenousVariables, optim_additive.scaling_factor(i)*data{variable}.lag(-optim_additive.lags(i))];
         else
             is_any_calibrated_parameter_optim_x = true;
-            tmp = data{variable}.lag(optim_additive.lags(i)).data;
+            tmp = data{variable}.lag(-optim_additive.lags(i)).data;
             if ~isnan(optim_additive.params(i))
                 tmp = M_.params(optim_additive.params(i))*tmp;
             end
