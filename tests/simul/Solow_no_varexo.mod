@@ -61,5 +61,5 @@ end;
 resid(1);
 steady;
 
-simul(periods=200);
+simul(periods=200, solve_algo=4);
 rplot k;

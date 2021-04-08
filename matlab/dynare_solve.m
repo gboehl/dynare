@@ -15,7 +15,7 @@ function [x, errorflag, fvec, fjac] = dynare_solve(f, x, options, varargin)
 % - fvec         [double]           n×1 vector, function value at x (f(x), used for debugging when errorflag is true).
 % - fjac         [double]           n×n matrix, Jacobian value at x (J(x), used for debugging when errorflag is true).
 
-% Copyright © 2001-2020 Dynare Team
+% Copyright © 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -225,8 +225,8 @@ if options.solve_algo == 0
     end
 elseif options.solve_algo==1
     [x, errorflag] = solve1(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, ...
-                       tolf, tolx, ...
-                       maxit, options.debug, arguments{:});
+                            tolf, tolx, ...
+                            maxit, options.debug, arguments{:});
 elseif options.solve_algo==9
     [x, errorflag] = trust_region(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, ...
                              tolf, tolx, ...

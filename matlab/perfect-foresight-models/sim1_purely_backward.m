@@ -2,7 +2,7 @@ function [endogenousvariables, info] = sim1_purely_backward(endogenousvariables,
 
 % Performs deterministic simulation of a purely backward model
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright © 2012-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,24 +29,31 @@ else
     iyb = [];
 end
 
-
 if ny0 ~= M.endo_nbr
     error('All endogenous variables must appear at the current period!')
 end
 
-dynamicmodel = str2func([M.fname,'.dynamic']);
+if ismember(options.solve_algo, [12,14]) && ~M.possible_to_use_solve_algo_12_14
+    error(M.message_solve_algo_12_14)
+end
 
-info.status = 1;
+dynamicmodel = str2func([M.fname,'.dynamic']);
+dynamicmodel_s = str2func('dynamic_backward_model_for_simulation');
+
+info.status = true;
 
 for it = M.maximum_lag + (1:options.periods)
-    yb = endogenousvariables(:,it-1);        % Values at previous period, also used as guess value for current period
-    yb1 = yb(iyb);
-    [tmp, check] = solve1(dynamicmodel, [yb1; yb], 1:M.endo_nbr, nyb+1:nyb+M.endo_nbr, ...
-                          1, options.gstep, options.dynatol.f, options.dynatol.x, ...
-                          options.simul.maxit, options.debug, exogenousvariables, ...
-                          M.params, steadystate, it);
-    if check
-        info.status = 0;
+    y = endogenousvariables(:,it-1);        % Values at previous period, also used as guess value for current period
+    ylag = y(iyb);
+    if ismember(options.solve_algo, [12,14])
+        [tmp, check] = dynare_solve(dynamicmodel_s, y, options, M.isloggedlhs, M.isauxdiffloggedrhs, M.endo_names, M.lhs, ...
+                                    dynamicmodel, ylag, exogenousvariables, M.params, steadystate, it);
+    else
+        [tmp, check] = dynare_solve(dynamicmodel_s, y, options, ...
+                                    dynamicmodel, ylag, exogenousvariables, M.params, steadystate, it);
     end
-    endogenousvariables(:,it) = tmp(nyb+1:nyb+M.endo_nbr);
+    if check
+        info.status = false;
+    end
+    endogenousvariables(:,it) = tmp;
 end
