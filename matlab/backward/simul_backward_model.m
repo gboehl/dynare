@@ -47,6 +47,10 @@ if ~M_.maximum_lag
     return
 end
 
+if ismember(options_.solve_algo, [12,14]) && ~M_.possible_to_use_solve_algo_12_14
+    error(M_.message_solve_algo_12_14)
+end
+
 if nargin<3
     Innovations = [];
 else
