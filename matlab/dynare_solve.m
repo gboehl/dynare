@@ -42,7 +42,7 @@ if isoctave
 else
     caller_file_name=stack(2).file;
 end
-if strcmp(caller_file_name,'solve_stacked_problem.m')
+if strcmp(caller_file_name, 'solve_stacked_problem.m') || strcmp(caller_file_name, 'sim1_purely_backward.m') 
     tolf = options.dynatol.f;
     tolx = options.dynatol.x;
 else
