@@ -13,7 +13,7 @@ function o = loadjson_(jsonfilename)
 % available under Octave. Old Matlab versions and Octave use
 % jsonlab as fallback. 
 
-% Copyright (C) 2020 Dynare Team
+% Copyright (C) 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,11 +36,6 @@ if isoctave() || matlab_ver_less_than('9.1')
 end
 
 json = fileread(jsonfilename);
-
-% Remove some escape characters that cannot be interpreted by jsondecode
-json = strrep(json, '\w', '\\w');
-json = strrep(json, '\_', '\\_');
-json = strrep(json, '\\\_', '\\_');
 
 o = jsondecode(json); clear('json');
 o = convertjsondecode(o);
