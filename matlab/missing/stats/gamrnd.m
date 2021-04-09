@@ -15,7 +15,7 @@ function rnd = gamrnd(a, b, method) % --*-- Unitary tests --*--
 %  The third input is a structure with two fields named `large` and `small`.
 %  These fields define the algorithms to be used if a>1 (large) or a<1 (small).
 
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright © 2006-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -129,12 +129,13 @@ end
 return
 
 %@test:1
-  method = struct('small', 'Weibull-rejection', 'large', 'Knuth');
-  n = 1000000;
-  m = 100;
-  a = 0.1;
-  b = 1.0;
-  try
+if ~isoctave && ~user_has_matlab_license('statistics_toolbox')
+    method = struct('small', 'Weibull-rejection', 'large', 'Knuth');
+    n = 1000000;
+    m = 100;
+    a = 0.1;
+    b = 1.0;
+    try
       mu = 0;
       s2 = 0;
       levels = .01:.01:10;
@@ -160,242 +161,281 @@ return
       t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
   end
   T = all(t);
+else
+    t = true(4, 1);
+    T = true;
+end
 %@eof:1
 
 %@test:2
-  method = struct('small', 'Johnk', 'large', 'Knuth');
-  n = 1000000;
-  m = 100;
-  a = 0.1;
-  b = 1.0;
-  try
-      mu = 0;
-      s2 = 0;
-      levels = .01:.01:10;
-      ecdf = zeros(length(levels),1);
-      for i = 1:m
-          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
-          mu = mu + mean(x);
-          s2 = s2 + var(x);
-          for j=1:length(levels)
-              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
-          end
-      end
-      mu = mu/m;
-      s2 = s2/m;
-      ecdf = ecdf/m;
-      t(1) = true;
-  catch
-      t(1) = false;
-  end
-  if t(1)
-      t(2) = abs(mu-a*b)<1e-3;
-      t(3) = abs(s2-a*b^2)<1e-3;
-      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
-  end
-  T = all(t);
+if ~isoctave && ~user_has_matlab_license('statistics_toolbox')
+    method = struct('small', 'Johnk', 'large', 'Knuth');
+    n = 1000000;
+    m = 100;
+    a = 0.1;
+    b = 1.0;
+    try
+        mu = 0;
+        s2 = 0;
+        levels = .01:.01:10;
+        ecdf = zeros(length(levels),1);
+        for i = 1:m
+            x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+            mu = mu + mean(x);
+            s2 = s2 + var(x);
+            for j=1:length(levels)
+                ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+            end
+        end
+        mu = mu/m;
+        s2 = s2/m;
+        ecdf = ecdf/m;
+        t(1) = true;
+    catch
+        t(1) = false;
+    end
+    if t(1)
+        t(2) = abs(mu-a*b)<1e-3;
+        t(3) = abs(s2-a*b^2)<1e-3;
+        t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+    end
+    T = all(t);
+else
+    t = true(4, 1);
+    T = true;
+end
 %@eof:2
 
 %@test:3
-  method = struct('small', 'Berman', 'large', 'Knuth');
-  n = 1000000;
-  m = 100;
-  a = 0.1;
-  b = 1.0;
-  try
-      mu = 0;
-      s2 = 0;
-      levels = .01:.01:10;
-      ecdf = zeros(length(levels),1);
-      for i = 1:m
-          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
-          mu = mu + mean(x);
-          s2 = s2 + var(x);
-          for j=1:length(levels)
-              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
-          end
-      end
-      mu = mu/m;
-      s2 = s2/m;
-      ecdf = ecdf/m;
-      t(1) = true;
-  catch
-      t(1) = false;
-  end
-  if t(1)
-      t(2) = abs(mu-a*b)<1e-3;
-      t(3) = abs(s2-a*b^2)<1e-3;
-      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
-  end
-  T = all(t);
+if ~isoctave && ~user_has_matlab_license('statistics_toolbox')
+    method = struct('small', 'Berman', 'large', 'Knuth');
+    n = 1000000;
+    m = 100;
+    a = 0.1;
+    b = 1.0;
+    try
+        mu = 0;
+        s2 = 0;
+        levels = .01:.01:10;
+        ecdf = zeros(length(levels),1);
+        for i = 1:m
+            x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+            mu = mu + mean(x);
+            s2 = s2 + var(x);
+            for j=1:length(levels)
+                ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+            end
+        end
+        mu = mu/m;
+        s2 = s2/m;
+        ecdf = ecdf/m;
+        t(1) = true;
+    catch
+        t(1) = false;
+    end
+    if t(1)
+        t(2) = abs(mu-a*b)<1e-3;
+        t(3) = abs(s2-a*b^2)<1e-3;
+        t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+    end
+    T = all(t);
+else
+    t = true(4, 1);
+    T = true;
+end
 %@eof:3
 
 %@test:4
-  method = struct('small', 'Ahrens-Dieter', 'large', 'Knuth');
-  n = 1000000;
-  m = 100;
-  a = 0.1;
-  b = 1.0;
-  try
-      mu = 0;
-      s2 = 0;
-      levels = .01:.01:10;
-      ecdf = zeros(length(levels),1);
-      for i = 1:m
-          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
-          mu = mu + mean(x);
-          s2 = s2 + var(x);
-          for j=1:length(levels)
-              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
-          end
-      end
-      mu = mu/m;
-      s2 = s2/m;
-      ecdf = ecdf/m;
-      t(1) = true;
-  catch
-      t(1) = false;
-  end
-  if t(1)
-      t(2) = abs(mu-a*b)<1e-3;
-      t(3) = abs(s2-a*b^2)<1e-3;
-      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
-  end
-  T = all(t);
+if ~isoctave && ~user_has_matlab_license('statistics_toolbox')
+    method = struct('small', 'Ahrens-Dieter', 'large', 'Knuth');
+    n = 1000000;
+    m = 100;
+    a = 0.1;
+    b = 1.0;
+    try
+        mu = 0;
+        s2 = 0;
+        levels = .01:.01:10;
+        ecdf = zeros(length(levels),1);
+        for i = 1:m
+            x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+            mu = mu + mean(x);
+            s2 = s2 + var(x);
+            for j=1:length(levels)
+                ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+            end
+        end
+        mu = mu/m;
+        s2 = s2/m;
+        ecdf = ecdf/m;
+        t(1) = true;
+    catch
+        t(1) = false;
+    end
+    if t(1)
+        t(2) = abs(mu-a*b)<1e-3;
+        t(3) = abs(s2-a*b^2)<1e-3;
+        t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+    end
+    T = all(t);
+else
+    t = true(4, 1);
+    T = true;
+end
 %@eof:4
 
 %@test:5
-  method = struct('small', 'Best', 'large', 'Knuth');
-  n = 1000000;
-  m = 100;
-  a = 0.1;
-  b = 1.0;
-  try
-      mu = 0;
-      s2 = 0;
-      levels = .01:.01:10;
-      ecdf = zeros(length(levels),1);
-      for i = 1:m
-          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
-          mu = mu + mean(x);
-          s2 = s2 + var(x);
-          for j=1:length(levels)
-              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
-          end
-      end
-      mu = mu/m;
-      s2 = s2/m;
-      ecdf = ecdf/m;
-      t(1) = true;
-  catch
-      t(1) = false;
-  end
-  if t(1)
-      t(2) = abs(mu-a*b)<1e-3;
-      t(3) = abs(s2-a*b^2)<1e-3;
-      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
-  end
-  T = all(t);
+if ~isoctave && ~user_has_matlab_license('statistics_toolbox')
+    method = struct('small', 'Best', 'large', 'Knuth');
+    n = 1000000;
+    m = 100;
+    a = 0.1;
+    b = 1.0;
+    try
+        mu = 0;
+        s2 = 0;
+        levels = .01:.01:10;
+        ecdf = zeros(length(levels),1);
+        for i = 1:m
+            x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+            mu = mu + mean(x);
+            s2 = s2 + var(x);
+            for j=1:length(levels)
+                ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+            end
+        end
+        mu = mu/m;
+        s2 = s2/m;
+        ecdf = ecdf/m;
+        t(1) = true;
+    catch
+        t(1) = false;
+    end
+    if t(1)
+        t(2) = abs(mu-a*b)<1e-3;
+        t(3) = abs(s2-a*b^2)<1e-3;
+        t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+    end
+    T = all(t);
+else
+    t = true(4, 1);
+    T = true;
+end
 %@eof:5
 
 %@test:6
-  method = struct('small', 'Weibull-rejection', 'large', 'Knuth');
-  n = 1000000;
-  m = 100;
-  a = 1.5;
-  b = 1.0;
-  try
-      mu = 0;
-      s2 = 0;
-      levels = .01:.01:15;
-      ecdf = zeros(length(levels),1);
-      for i = 1:m
-          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
-          mu = mu + mean(x);
-          s2 = s2 + var(x);
-          for j=1:length(levels)
-              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
-          end
-      end
-      mu = mu/m;
-      s2 = s2/m;
-      ecdf = ecdf/m;
-      t(1) = true;
-  catch
-      t(1) = false;
-  end
-  if t(1)
-      t(2) = abs(mu-a*b)<1e-3;
-      t(3) = abs(s2-a*b^2)<1e-3;
-      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
-  end
-  T = all(t);
+if ~isoctave && ~user_has_matlab_license('statistics_toolbox')
+    method = struct('small', 'Weibull-rejection', 'large', 'Knuth');
+    n = 1000000;
+    m = 100;
+    a = 1.5;
+    b = 1.0;
+    try
+        mu = 0;
+        s2 = 0;
+        levels = .01:.01:15;
+        ecdf = zeros(length(levels),1);
+        for i = 1:m
+            x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+            mu = mu + mean(x);
+            s2 = s2 + var(x);
+            for j=1:length(levels)
+                ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+            end
+        end
+        mu = mu/m;
+        s2 = s2/m;
+        ecdf = ecdf/m;
+        t(1) = true;
+    catch
+        t(1) = false;
+    end
+    if t(1)
+        t(2) = abs(mu-a*b)<1e-3;
+        t(3) = abs(s2-a*b^2)<1e-3;
+        t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+    end
+    T = all(t);
+else
+    t = true(4, 1);
+    T = true;
+end
 %@eof:6
 
 %@test:7
-  method = struct('small', 'Weibull-rejection', 'large', 'Cheng');
-  n = 1000000;
-  m = 100;
-  a = 1.5;
-  b = 1.0;
-  try
-      mu = 0;
-      s2 = 0;
-      levels = .01:.01:15;
-      ecdf = zeros(length(levels),1);
-      for i = 1:m
-          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
-          mu = mu + mean(x);
-          s2 = s2 + var(x);
-          for j=1:length(levels)
-              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
-          end
-      end
-      mu = mu/m;
-      s2 = s2/m;
-      ecdf = ecdf/m;
-      t(1) = true;
-  catch
-      t(1) = false;
-  end
-  if t(1)
-      t(2) = abs(mu-a*b)<1e-3;
-      t(3) = abs(s2-a*b^2)<1e-3;
-      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
-  end
-  T = all(t);
+if ~isoctave && ~user_has_matlab_license('statistics_toolbox')
+    method = struct('small', 'Weibull-rejection', 'large', 'Cheng');
+    n = 1000000;
+    m = 100;
+    a = 1.5;
+    b = 1.0;
+    try
+        mu = 0;
+        s2 = 0;
+        levels = .01:.01:15;
+        ecdf = zeros(length(levels),1);
+        for i = 1:m
+            x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+            mu = mu + mean(x);
+            s2 = s2 + var(x);
+            for j=1:length(levels)
+                ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+            end
+        end
+        mu = mu/m;
+        s2 = s2/m;
+        ecdf = ecdf/m;
+        t(1) = true;
+    catch
+        t(1) = false;
+    end
+    if t(1)
+        t(2) = abs(mu-a*b)<1e-3;
+        t(3) = abs(s2-a*b^2)<1e-3;
+        t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+    end
+    T = all(t);
+else
+    t = true(4, 1);
+    T = true;
+end
 %@eof:7
 
 %@test:8
-  method = struct('small', 'Weibull-rejection', 'large', 'Best');
-  n = 1000000;
-  m = 100;
-  a = 1.5;
-  b = 1.0;
-  try
-      mu = 0;
-      s2 = 0;
-      levels = .01:.01:15;
-      ecdf = zeros(length(levels),1);
-      for i = 1:m
-          x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
-          mu = mu + mean(x);
-          s2 = s2 + var(x);
-          for j=1:length(levels)
-              ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
-          end
-      end
-      mu = mu/m;
-      s2 = s2/m;
-      ecdf = ecdf/m;
-      t(1) = true;
-  catch
-      t(1) = false;
-  end
-  if t(1)
-      t(2) = abs(mu-a*b)<1e-3;
-      t(3) = abs(s2-a*b^2)<1e-3;
-      t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
-  end
-  T = all(t);
+if ~isoctave && ~user_has_matlab_license('statistics_toolbox')
+    method = struct('small', 'Weibull-rejection', 'large', 'Best');
+    n = 1000000;
+    m = 100;
+    a = 1.5;
+    b = 1.0;
+    try
+        mu = 0;
+        s2 = 0;
+        levels = .01:.01:15;
+        ecdf = zeros(length(levels),1);
+        for i = 1:m
+            x = gamrnd(ones(n, 1)*a, ones(n,1)*b, method);
+            mu = mu + mean(x);
+            s2 = s2 + var(x);
+            for j=1:length(levels)
+                ecdf(j) = ecdf(j)+sum(x<levels(j))/n;
+            end
+        end
+        mu = mu/m;
+        s2 = s2/m;
+        ecdf = ecdf/m;
+        t(1) = true;
+    catch
+        t(1) = false;
+    end
+    if t(1)
+        t(2) = abs(mu-a*b)<1e-3;
+        t(3) = abs(s2-a*b^2)<1e-3;
+        t(4) = max(abs(ecdf-gamcdf(transpose(levels), a, b)))<1e-3;
+    end
+    T = all(t);
+else
+    t = true(4, 1);
+    T = true;
+end
 %@eof:8
