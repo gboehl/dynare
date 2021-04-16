@@ -16,8 +16,14 @@ theta = 2.95;
 
 phi   = 0.1;
 
+/* The following statement is a regression test for #1782.
+   Here the “foo” variable definition depends on “bar”, but the symbol ID of
+   “foo” will be smaller than the symbol ID of “bar”. */
+model_local_variable foo $\text{foo}$;
+
 model;
-#foo = (exp(b)*c)/(exp(b(+1))*c(+1));
+#bar = exp(b)*c;
+#foo = bar/(exp(b(+1))*c(+1));
 c*theta*h^(1+psi)=(1-alpha)*y;
 k = beta*(foo
     *(exp(b(+1))*alpha*y(+1)+(1-delta)*k));
