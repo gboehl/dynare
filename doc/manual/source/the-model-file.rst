@@ -2958,7 +2958,7 @@ speed-up on large models.
 
        Solves the linearized version of the perfect foresight
        model. The model must be stationary. Only available with option
-       ``stack_solve_algo==0``.
+       ``stack_solve_algo==0`` or ``stack_solve_algo==7``.
 
     *Output*
 
