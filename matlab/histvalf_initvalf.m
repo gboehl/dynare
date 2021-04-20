@@ -12,7 +12,7 @@ function series = histvalf_initvalf(caller, M, options)
 %    series:           dseries containing selected data from a file or a dseries
 %
 
-% Copyright (C) 2003-2020 Dynare Team
+% Copyright (C) 2003-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,7 +32,7 @@ function series = histvalf_initvalf(caller, M, options)
 
 % dseries
 if isfield(options, 'series')
-    series = options.series;
+    series = evalin('base', options.series);
     dseries_ispresent = true;
 else
     dseries_ispresent = false;
