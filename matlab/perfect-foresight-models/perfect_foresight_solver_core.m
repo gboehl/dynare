@@ -11,7 +11,7 @@ function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
 % - oo_                 [struct] contains results
 % - maxerror            [double] contains the maximum absolute error
 
-% Copyright (C) 2015-2019 Dynare Team
+% Copyright (C) 2015-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -110,6 +110,8 @@ else
                     if isequal(options_.solve_algo, 10) 
                         if options_.ramsey_policy && isfield(M_,'ramsey_model_constraints') && ~isempty(M_.ramsey_model_constraints)
                             warning('Due to ramsey_constraints you should not specify your model as model(linear)!')
+                        elseif options_.lmmcp.status
+                            warning('Due to lmmcp option, you should not specify your model as model(linear)!')
                         else
                             warning('It would be more efficient to set option solve_algo equal to 0!')
                         end
