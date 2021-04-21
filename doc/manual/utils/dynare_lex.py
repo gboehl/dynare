@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2019 Dynare Team
+# Copyright (C) 2018-2021 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -70,7 +70,8 @@ class DynareLexer(RegexLexer):
 
     tokens = {
         'root': [
-            (r'\s*(%|//).*$', Comment),
+            (r'\s*(%|//).*$', Comment.Single),
+            (r'/(\\\n)?[*][\w\W]*?[*](\\\n)?/', Comment.Multiline),
 
             (words((
                 'model','steady_state_model','initval','endval','histval','epilogue',
@@ -81,6 +82,7 @@ class DynareLexer(RegexLexer):
                 'moment_calibration','identification','svar_identification',
                 'verbatim','end','node','cluster','paths','hooks'), prefix=r'\b', suffix=r'\s*\b'),Keyword.Reserved),
 
+            # FIXME: Commands following multiline comments are not highlighted properly.
             (words(commands + report_commands,
                    prefix=r'\b', suffix=r'\s*\b'),  Name.Entity),
 
