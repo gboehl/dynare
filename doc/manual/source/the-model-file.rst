@@ -26,6 +26,38 @@ present. To prevent cryptic error messages, it is strongly recommended
 to always only put one statement/command into each line and start a
 new line after each semicolon. [#feol]_
 
+Lines of codes can be commented out line by line or as a block. Single-line
+comments begin with ``//`` and stop at the end of the line. Multiline comments
+are introduced by ``/*`` and terminated by ``*/``.
+
+*Examples*
+
+  ::
+
+    // This is a single line comment
+
+
+  ::
+
+     var x; // This is a comment about x
+
+
+  ::
+
+    /* This is another inline comment about alpha */  alpha = 0.3;
+
+  ::
+
+    /*
+     This comment is spanning
+     two lines.
+    */
+
+Note that these comment marks should not be used in native MATLAB code regions
+where the `%` should be preferred instead to introduce a comment. In a
+``verbatim`` block, see :ref:`verbatim`, this would result in a crash since
+``//`` is not a valid MATLAB statement).
+
 Most Dynare commands have arguments and several accept options,
 indicated in parentheses after the command keyword. Several options
 are separated by commas.
@@ -11347,13 +11379,15 @@ substitution (like the C preprocessor or the PHP language). Note that
 it is possible to see the output of the macro processor by using the
 ``savemacro`` option of the ``dynare`` command (see :ref:`dyn-invoc`).
 
-The macro processor is invoked by placing *macro directives* in the
-``.mod`` file. Directives begin with an at-sign followed by a pound
-sign (``@#``). They produce no output, but give instructions to the
-macro processor. In most cases, directives occupy exactly one line of
-text. If needed, two backslashes (``\\``) at the end of the line
-indicate that the directive is continued on the next line. The main
-directives are:
+The macro processor is invoked by placing *macro directives* in the ``.mod``
+file. Directives begin with an at-sign followed by a pound sign (``@#``). They
+produce no output, but give instructions to the macro processor. In most cases,
+directives occupy exactly one line of text. If needed, two backslashes (``\\``)
+at the end of the line indicate that the directive is continued on the next
+line. Macro directives following ``//`` are not interpreted by the macro
+processor. For historical reasons, directives in commented blocks, *ie*
+surrounded by ``/*`` and ``*/``, are interpreted by the macro processor. The
+user should not rely on this behavior. The main directives are:
 
     * ``@#includepath``, paths to search for files that are to be included,
     * ``@#include``, for file inclusion,
@@ -12083,6 +12117,7 @@ to run simulations for three values: :math:`\rho = 0.8, 0.9,
     of values is directly given in the loop construct. The inconvenience is that
     you can not reuse the macro array in MATLAB/Octave.
 
+.. _verbatim:
 
 Verbatim inclusion
 ==================
