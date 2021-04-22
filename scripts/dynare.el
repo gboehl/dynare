@@ -1,7 +1,7 @@
 ;;; dynare.el --- major mode for editing Dynare mod files
 
 ;; Copyright © 2010 Yannick Kalantzis
-;; Copyright © 2019-2020 Dynare Team
+;; Copyright © 2019-2021 Dynare Team
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@
     '("model" "steady_state_model" "initval" "endval" "histval" "shocks"
       "shock_groups" "init2shocks" "mshocks" "estimated_params" "epilogue" "priors"
       "estimated_params_init" "estimated_params_bounds" "osr_params_bounds"
-      "observation_trends" "optim_weights" "homotopy_setup"
+      "observation_trends" "deterministic_trends" "optim_weights" "homotopy_setup"
       "conditional_forecast_paths" "svar_identification" "moment_calibration"
       "irf_calibration" "ramsey_constraints" "generate_irfs"
       "matched_moments" "verbatim")
