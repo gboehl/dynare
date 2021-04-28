@@ -507,8 +507,10 @@ The command will actually compute the marginal density for several models: first
 The syntax for computing (out-of-sample) forecasts is:
 
 \medskip
-\texttt{bvar\_forecast(}\textit{options\_list}\texttt{) }\textit{max\_number\_of\_lags}\texttt{;}
+\texttt{bvar\_forecast(}\textit{options\_list}\texttt{) }\textit{number\_of\_lags}\texttt{;}
 \medskip
+
+In contrast to the \texttt{bvar\_density}, you need to specify the actual lag length used, not the maximum lag length. Typically, the actual lag length should be based on the results from the \texttt{bvar\_density} command.
 
 The options are those describe above, plus a few ones:
 \begin{itemize}
