@@ -1,9 +1,12 @@
-function time_varying_information_set_solver(csv_file)
+function time_varying_information_set_solver(csv_file, terminal_steady_state_as_guess_value)
 
 global M_ oo_ options_ ys0_
 
-if isempty(csv_file)
-    error('A CSV file must be given as argument')
+if ~ischar(csv_file)
+    error('A CSV file must be given as first argument')
+end
+if ~islogical(terminal_steady_state_as_guess_value)
+    error('A boolean must be given as second argument')
 end
 
 periods = options_.periods;
@@ -43,10 +46,8 @@ if ~isempty(oo_.initval_series)
     error('histval_file/initval_file unsupported')
 end
 
-% Build initial paths for endos and exos
-% FIXME: guess values for endogenous are the initial steady state, we may want something else
-% (e.g. the terminal steady state as in regular perfect foresight)
-endo_simul = [repmat(oo_.steady_state, 1, M_.maximum_lag+periods) NaN(M_.endo_nbr, M_.maximum_lead)];
+% Build initial paths for endos and exos (only initial conditions are set, the rest is NaN)
+endo_simul = [repmat(oo_.steady_state, 1, M_.maximum_lag) NaN(M_.endo_nbr, periods+M_.maximum_lead)];
 exo_simul = [repmat(oo_.exo_steady_state',M_.maximum_lag,1); NaN(periods+M_.maximum_lead,M_.exo_nbr)];
 
 % Start main loop around informational periods
@@ -58,10 +59,17 @@ while info_period <= periods
     [oo_.steady_state,~,info] = evaluate_steady_state(steady_state_prev, M_, options_, oo_, true);
 
     options_.periods = periods - info_period + 1;
-    oo_.endo_simul = endo_simul(:, info_period:end);
+    oo_.endo_simul = endo_simul(:, info_period:end); % Take initial conditions + guess values from previous simulation
+    if terminal_steady_state_as_guess_value
+        % Overwrite guess value with terminal steady state
+        oo_.endo_simul(:, M_.maximum_lag+(1:periods-info_period+1)) = repmat(oo_.steady_state, 1, periods-info_period+1);
+    elseif info_period == 1
+        % Use initial steady state as guess value for first simulation if not using terminal steady state
+        oo_.endo_simul(:, M_.maximum_lag+(1:periods)) = repmat(steady_state_prev, 1, periods);
+    end
     oo_.endo_simul(:, end-M_.maximum_lead+1:end) = repmat(oo_.steady_state, 1, M_.maximum_lead);
     oo_.exo_simul = exo_simul(info_period:end, :);
-    oo_.exo_simul(M_.maximum_lag+1:M_.maximum_lag+periods-info_period+1, :) = shocks_info(:, info_period:end, info_period)';
+    oo_.exo_simul(M_.maximum_lag+(1:periods-info_period+1), :) = shocks_info(:, info_period:end, info_period)';
     oo_.exo_simul(end-M_.maximum_lead+1:end, :) = repmat(oo_.exo_steady_state, M_.maximum_lead, 1);
 
     perfect_foresight_solver;
