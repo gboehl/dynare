@@ -9,6 +9,10 @@ if ~islogical(terminal_steady_state_as_guess_value)
     error('A boolean must be given as second argument')
 end
 
+if ~isempty(ys0_)
+    error('Cannot be used in conjunction with endval')
+end
+
 periods = options_.periods;
 
 %% Read CSV file
@@ -50,6 +54,10 @@ end
 endo_simul = [repmat(oo_.steady_state, 1, M_.maximum_lag) NaN(M_.endo_nbr, periods+M_.maximum_lead)];
 exo_simul = [repmat(oo_.exo_steady_state',M_.maximum_lag,1); NaN(periods+M_.maximum_lead,M_.exo_nbr)];
 
+% Save initial steady state, for restoring it at the end
+initial_steady_state = oo_.steady_state;
+initial_exo_steady_state = oo_.exo_steady_state;
+
 % Start main loop around informational periods
 info_period = 1;
 while info_period <= periods
@@ -65,7 +73,7 @@ while info_period <= periods
         oo_.endo_simul(:, M_.maximum_lag+(1:periods-info_period+1)) = repmat(oo_.steady_state, 1, periods-info_period+1);
     elseif info_period == 1
         % Use initial steady state as guess value for first simulation if not using terminal steady state
-        oo_.endo_simul(:, M_.maximum_lag+(1:periods)) = repmat(steady_state_prev, 1, periods);
+        oo_.endo_simul(:, M_.maximum_lag+(1:periods)) = repmat(initial_steady_state, 1, periods);
     end
     oo_.endo_simul(:, end-M_.maximum_lead+1:end) = repmat(oo_.steady_state, 1, M_.maximum_lead);
     oo_.exo_simul = exo_simul(info_period:end, :);
@@ -90,5 +98,8 @@ end
 options_.periods = periods;
 oo_.endo_simul = endo_simul;
 oo_.exo_simul = exo_simul;
+
+oo_.steady_state = initial_steady_state;
+oo_.exo_steady_state = initial_exo_steady_state;
 
 end
