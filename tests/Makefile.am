@@ -423,7 +423,8 @@ MODFILES = \
 	bgp/solow-1/solow.mod \
 	bgp/nk-1/nk.mod \
 	bgp/ramsey-1/ramsey.mod \
-	dynare-command-options/ramst.mod
+	dynare-command-options/ramst.mod \
+	ramst_time_varying_information_set.mod
 
 ECB_MODFILES = \
 	var-expectations/1/example1.mod \
@@ -1232,7 +1233,8 @@ EXTRA_DIST = \
 	histval_initval_file/my_assert.m \
 	histval_initval_file/ramst_data.xls \
 	histval_initval_file/ramst_data.xlsx \
-	histval_initval_file/ramst_initval_file_data.m
+	histval_initval_file/ramst_initval_file_data.m \
+	ramst_time_varying_information_set_data.csv
 
 if ENABLE_MATLAB
 check-local: check-matlab
