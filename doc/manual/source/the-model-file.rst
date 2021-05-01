@@ -7821,11 +7821,11 @@ Shock Decomposition
         decomposition. Default: ``0``.
 
     .. option:: fast_realtime = INTEGER
+                fast_realtime = [INTEGER1:INTEGER2]
+                fast_realtime = [INTEGER1 INTEGER2 ...]
 
-        Runs the smoother only twice: once for the last in-sample and
-        once for the last out-of-sample data point, where the provided
-        integer defines the last observation (equivalent to
-        :opt:`nobs`). Default: not enabled.
+        Runs the smoother only for the data vintages provided
+        by the specified integer (vector).
 
     .. option:: with_epilogue
 

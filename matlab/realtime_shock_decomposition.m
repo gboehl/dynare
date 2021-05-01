@@ -116,56 +116,55 @@ if forecast_ && any(forecast_params)
     [~,~,~,~,~,~,oo1] = dynare_resolve(M1,options_,oo_);
 end
 
-if fast_realtime
-    skipline()
-    skipline()
-    running_text = 'Fast realtime shock decomposition ';
-    newString=sprintf(running_text);
-    fprintf(['%s'],newString);
-    options_.nobs=fast_realtime;
-    [oo0,M_,~,~,Smoothed_Variables_deviation_from_mean0] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
-    gend0 = size(oo0.SmoothedShocks.(M_.exo_names{1}),1);
-    prctdone=0.5;
-    if isoctave
-        printf([running_text,' %3.f%% done\r'], prctdone*100);
-    else
-        s0=repmat('\b',1,length(newString)+1);
-        newString=sprintf([running_text,' %3.1f%% done'], prctdone*100);
-        fprintf([s0,'%s'],newString);
-    end
-    options_.nobs=nobs;
-    [oo2,M_,~,~,Smoothed_Variables_deviation_from_mean2] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
-    prctdone=1;
-    if isoctave
-        printf([running_text,' %3.f%% done\r'], prctdone*100);
-    else
-        s0=repmat('\b',1,length(newString)+1);
-        newString=sprintf([running_text,' %3.1f%% done'], prctdone*100);
-        fprintf([s0,'%s'],newString);
-    end
-end
+gend0=0;
 
 skipline()
 skipline()
-running_text = 'Realtime shock decomposition ';
+if isequal(fast_realtime,0)
+    running_text = 'Realtime shock decomposition ';
+else
+    running_text = 'Fast realtime shock decomposition ';
+end
 newString=sprintf(running_text);
 fprintf(['%s'],newString);
 
 for j=presample+1:nobs
     %    evalin('base',['options_.nobs=' int2str(j) ';'])
     options_.nobs=j;
-    if ~fast_realtime
+    if isequal(fast_realtime,0)
         [oo,M_,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
         gend = size(oo.SmoothedShocks.(M_.exo_names{1}),1);
     else
-        gend = gend0+j-fast_realtime;
-        if j>fast_realtime
-            oo=oo2;
-            Smoothed_Variables_deviation_from_mean = Smoothed_Variables_deviation_from_mean2(:,1:gend);
+        if j<min(fast_realtime) && gend0<j
+            options_.nobs=min(fast_realtime);
+            [oo0,M_,~,~,Smoothed_Variables_deviation_from_mean0] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+            gend0 = size(oo0.SmoothedShocks.(M_.exo_names{1}),1);
+            options_.nobs=j;
+        end
+        
+        if ismember(j,fast_realtime) && gend0<j
+            [oo,M_,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+            gend = size(oo.SmoothedShocks.(M_.exo_names{1}),1);
+            gend0 = gend;
+            oo0=oo;
+            Smoothed_Variables_deviation_from_mean0=Smoothed_Variables_deviation_from_mean;
         else
+            if j>gend0
+                if j>max(fast_realtime)
+                    options_.nobs = nobs;
+                else
+                    options_.nobs=min(fast_realtime(fast_realtime>j));
+                end
+                [oo0,M_,~,~,Smoothed_Variables_deviation_from_mean0] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+                gend0 = size(oo0.SmoothedShocks.(M_.exo_names{1}),1);
+                options_.nobs=j;
+            end
+            
+            gend = j;
             oo=oo0;
             Smoothed_Variables_deviation_from_mean = Smoothed_Variables_deviation_from_mean0(:,1:gend);
         end
+        
     end
     % reduced form
     dr = oo.dr;
