@@ -357,6 +357,13 @@ by the ``dynare`` command.
         without executing the ``.mod`` file. See :ref:`conf-file`, for
         more information about the configuration file.
 
+    .. option:: parallel_use_psexec=true|false
+
+        For local execution under Windows operating system,
+        set ``parallel_use_psexec=false`` to use ``start``
+        instead of ``psexec``, to properly allocate affinity when there are
+        more than 32 cores in the local machine. [default=true]
+
     .. option:: -DMACRO_VARIABLE=MACRO_EXPRESSION
 
         Defines a macro-variable from the command line (the same effect as

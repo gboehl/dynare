@@ -465,6 +465,7 @@ options_.parallel = 0;
 options_.parallel_info.isHybridMatlabOctave = false;
 options_.parallel_info.leaveSlaveOpen = 0;
 options_.parallel_info.RemoteTmpFolder = '';
+options_.parallel_info.use_psexec = true;
 options_.number_of_grid_points_for_kde = 2^9;
 quarter = 1;
 years = [1 2 3 4 5 10 20 30 40 50];
