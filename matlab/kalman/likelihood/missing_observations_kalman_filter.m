@@ -32,7 +32,7 @@ function  [LIK, lik, a, P] = missing_observations_kalman_filter(data_index,numbe
 % NOTES
 %   The vector "lik" is used to evaluate the jacobian of the likelihood.
 
-% Copyright (C) 2004-2017 Dynare Team
+% Copyright (C) 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -76,6 +76,12 @@ smpl = last-start+1;
 
 % Initialize some variables.
 dF   = 1;
+isqvec = false;
+if ndim(Q)>2
+    Qvec = Q;
+    Q=Q(:,:,1);
+    isqvec = true;
+end
 QQ   = R*Q*transpose(R);   % Variance of R times the vector of structural innovations.
 t    = start;              % Initialization of the time index.
 lik  = zeros(smpl,1);      % Initialization of the vector gathering the densities.
@@ -89,6 +95,9 @@ rescale_prediction_error_covariance0=rescale_prediction_error_covariance;
 while notsteady && t<=last
     s  = t-start+1;
     d_index = data_index{t};
+    if isqvec
+        QQ = R*Qvec(:,:,t+1)*transpose(R);
+    end
     if isempty(d_index)
         a = T*a;
         P = T*P*transpose(T)+QQ;
@@ -147,7 +156,7 @@ while notsteady && t<=last
                 P = T*(P-K*P(z,:))*transpose(T)+QQ;
             end
             a = T*(a+K*v);
-            if t>=no_more_missing_observations
+            if t>=no_more_missing_observations && ~isqvec
                 notsteady = max(abs(K(:)-oldK))>riccati_tol;
                 oldK = K(:);
             end

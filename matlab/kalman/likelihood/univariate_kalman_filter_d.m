@@ -87,7 +87,7 @@ function [dLIK, dlikk, a, Pstar, llik] = univariate_kalman_filter_d(data_index, 
 %   Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 5, 6.4 + 7.2.5
 
-% Copyright (C) 2004-2018 Dynare Team
+% Copyright (C) 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -109,6 +109,12 @@ smpl = last-start+1;
 
 % Initialize some variables.
 dF   = 1;
+isqvec = false;
+if ndim(Q)>2
+    Qvec = Q;
+    Q=Q(:,:,1);
+    isqvec = true;
+end
 QQ   = R*Q*transpose(R);   % Variance of R times the vector of structural innovations.
 t    = start;              % Initialization of the time index.
 dlikk= zeros(smpl,1);      % Initialization of the vector gathering the densities.
@@ -159,6 +165,9 @@ while newRank && (t<=last)
         oldRank = 0;
     end
     a     = T*a;
+    if isqvec
+        QQ = R*Qvec(:,:,t+1)*transpose(R);
+    end
     Pstar = T*Pstar*T'+QQ;
     Pinf  = T*Pinf*T';
     if newRank

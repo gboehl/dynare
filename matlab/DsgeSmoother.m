@@ -171,7 +171,7 @@ elseif options_.lik_init == 3           % Diffuse Kalman filter
     if kalman_algo ~= 4
         kalman_algo = 3;
     else
-        if ~all(all(abs(H-diag(diag(H)))<1e-14))% ie, the covariance matrix is diagonal...
+        if ~all(all(abs(H-diag(diag(H)))<1e-14))% ie, the covariance matrix is not diagonal...
                                                 %Augment state vector (follows Section 6.4.3 of DK (2012))
             expanded_state_vector_for_univariate_filter=1;
             T  = blkdiag(T,zeros(vobs));
@@ -225,6 +225,10 @@ end
 ST = T;
 R1 = R;
 
+if options_.heteroskedastic_filter
+    Q=get_Qvec_heteroskedastic_filter(Q,smpl,M_);
+end
+
 if kalman_algo == 1 || kalman_algo == 3
     a_initial     = zeros(np,1);
     a_initial=set_Kalman_smoother_starting_values(a_initial,M_,oo_,options_);
@@ -255,7 +259,15 @@ if kalman_algo == 2 || kalman_algo == 4
             Z   = [Z, eye(vobs)];
             ST  = blkdiag(ST,zeros(vobs));
             np  = size(ST,1);
-            Q   = blkdiag(Q,H);
+            if options_.heteroskedastic_filter
+                Qvec=Q;
+                Q=NaN(size(Qvec,1)+size(H,1),size(Qvec,1)+size(H,1),smpl+1);
+                for kv=1:size(Qvec,3)
+                    Q(:,:,kv) = blkdiag(Qvec(:,:,kv),H);
+                end
+            else
+                Q   = blkdiag(Q,H);
+            end
             R1  = blkdiag(R,eye(vobs));
             if kalman_algo == 4
                 %recompute Schur state space transformation with

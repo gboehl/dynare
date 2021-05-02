@@ -42,6 +42,22 @@ function DynareResults = initial_estimation_checks(objective_function,xparam1,Dy
 maximum_number_non_missing_observations=max(sum(~isnan(DynareDataset.data(2:end,:)),2));
 init_number_non_missing_observations=sum(~isnan(DynareDataset.data(1,:)),2);
 
+if DynareOptions.heteroskedastic_filter
+    if DynareOptions.order>1 
+        error('initial_estimation_checks:: heteroskedastic shocks are only supported with the Kalman filter/smoother')
+    end
+    observations_by_period=sum(~isnan(DynareDataset.data),2);
+    base_shocks = find(diag(Model.Sigma_e));
+    zero_shocks = ~ismember(1:Model.exo_nbr,base_shocks);
+    non_zero_shocks_by_period=repmat(length(base_shocks),size(observations_by_period));
+    % check periods for which base shocks are scaled to zero
+    non_zero_shocks_by_period = non_zero_shocks_by_period-sum(Model.heteroskedastic_shocks.Qscale(base_shocks,1:DynareOptions.nobs)==0,1)';
+    % check periods for which base shocks are set to zero
+    non_zero_shocks_by_period = non_zero_shocks_by_period-sum(Model.heteroskedastic_shocks.Qvalue(base_shocks,1:DynareOptions.nobs)==0,1)';
+    % check periods for which other shocks are set to a positive number
+    non_zero_shocks_by_period = non_zero_shocks_by_period+sum(Model.heteroskedastic_shocks.Qvalue(zero_shocks,1:DynareOptions.nobs)>0,1)';
+end
+
 if DynareOptions.order>1
     if any(any(isnan(DynareDataset.data)))
         error('initial_estimation_checks:: particle filtering does not support missing observations')
@@ -95,8 +111,14 @@ if init_number_non_missing_observations>Model.exo_nbr+non_zero_ME
     end
 end
 
-if maximum_number_non_missing_observations>length(find(diag(Model.Sigma_e)))+non_zero_ME
-    error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance!'])
+if DynareOptions.heteroskedastic_filter
+    if any(observations_by_period>(non_zero_shocks_by_period+non_zero_ME))
+        error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance: Check heteroskedastic block and shocks calibration!'])
+    end
+else
+    if maximum_number_non_missing_observations>length(find(diag(Model.Sigma_e)))+non_zero_ME
+        error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance!'])
+    end
 end
 if init_number_non_missing_observations>length(find(diag(Model.Sigma_e)))+non_zero_ME
     if DynareOptions.no_init_estimation_check_first_obs

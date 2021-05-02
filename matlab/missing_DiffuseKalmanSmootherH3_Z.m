@@ -57,7 +57,7 @@ function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V] = missing_DiffuseKalma
 %   Models", S.J. Koopman and J. Durbin (2003), in Journal of Time Series
 %   Analysis, vol. 24(1), pp. 85-98.
 
-% Copyright (C) 2004-2018 Dynare Team
+% Copyright (C) 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -110,6 +110,12 @@ Pinf(:,:,1)     = Pinf1;
 Pstar1          = Pstar;
 Pinf1           = Pinf;
 rr              = size(Q,1); % number of structural shocks
+isqvec = false;
+if ndim(Q)>2
+    Qvec = Q;
+    Q=Q(:,:,1);
+    isqvec = true;
+end
 QQ              = R*Q*transpose(R);
 QRt             = Q*transpose(R);
 alphahat        = zeros(mm,smpl);
@@ -176,6 +182,9 @@ while newRank && t < smpl
     for jnk=2:nk
         aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
     end
+    if isqvec
+        QQ = R*Qvec(:,:,t+1)*transpose(R);
+    end
     Pstar(:,:,t+1) = T*Pstar(:,:,t)*T'+ QQ;
     Pinf(:,:,t+1) = T*Pinf(:,:,t)*T';
     if newRank
@@ -219,6 +228,9 @@ while notsteady && t<smpl
             % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
             % p. 157, DK (2012)
         end
+    end
+    if isqvec
+        QQ = R*Qvec(:,:,t+1)*transpose(R);
     end
     a1(:,t+1) = T*a(:,t);                                                   %transition according to (6.14) in DK (2012)
     P(:,:,t+1) = T*P(:,:,t)*T' + QQ;                                        %transition according to (6.14) in DK (2012)
@@ -288,6 +300,9 @@ while t > d+1
     end
     r(:,t) = ri;                                                            % DK (2012), below 6.15, r_{t-1}=r_{t,0}
     alphahat(:,t) = a1(:,t) + P1(:,:,t)*r(:,t);
+    if isqvec
+        QRt             = Qvec(:,:,t)*transpose(R);
+    end
     etahat(:,t) = QRt*r(:,t);
     ri = T'*ri;                                                             % KD (2003), eq. (23), equation for r_{t-1,p_{t-1}}
     if state_uncertainty_flag
@@ -339,6 +354,9 @@ if d
         end
         alphahat(:,t) = a1(:,t) + Pstar1(:,:,t)*r0(:,t) + Pinf1(:,:,t)*r1(:,t); % KD (2000), eq. (26)
         r(:,t)        = r0(:,t);
+        if isqvec
+            QRt             = Qvec(:,:,t)*transpose(R);
+        end
         etahat(:,t)   = QRt*r(:,t);                                         % KD (2000), eq. (27)
         if state_uncertainty_flag
             V(:,:,t)=Pstar(:,:,t)-Pstar(:,:,t)*N_0(:,:,t)*Pstar(:,:,t)...
@@ -371,6 +389,9 @@ if decomp_flag
         end
 
         % calculate eta_tm1t
+        if isqvec
+            QRt = Qvec(:,:,t)*transpose(R);
+        end
         eta_tm1t = QRt*ri_d;
         % calculate decomposition
         Ttok = eye(mm,mm);

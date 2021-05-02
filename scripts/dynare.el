@@ -82,7 +82,7 @@
 ;; Keywords that may appear in blocks, and that begin a statement which will be
 ;; closed by a semicolon
 (defvar dynare-statements-like
-  '("stderr" "values" "restriction" "exclusion" "upper_cholesky" "lower_cholesky")
+  '("stderr" "values" "scales" "restriction" "exclusion" "upper_cholesky" "lower_cholesky")
   "Dynare statements-like keywords.")
 
 ;; Those keywords that makes the lexer enter the DYNARE_BLOCK start condition
@@ -91,7 +91,7 @@
 ;; referenced in another eval-when-compile statement in dynare-calculate-indentation
 (eval-when-compile
   (defvar dynare-blocks
-    '("model" "steady_state_model" "initval" "endval" "histval" "shocks"
+    '("model" "steady_state_model" "initval" "endval" "histval" "shocks" "heteroskedastic_shocks"
       "shock_groups" "init2shocks" "mshocks" "estimated_params" "epilogue" "priors"
       "estimated_params_init" "estimated_params_bounds" "osr_params_bounds"
       "observation_trends" "deterministic_trends" "optim_weights" "homotopy_setup"

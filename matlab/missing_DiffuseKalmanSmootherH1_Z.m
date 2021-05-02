@@ -99,6 +99,12 @@ Pstar(:,:,1)    = Pstar1;
 Pinf            = zeros(spinf(1),spinf(2),smpl+1);
 Pinf(:,:,1)     = Pinf1;
 rr              = size(Q,1);
+isqvec = false;
+if ndim(Q)>2
+    Qvec = Q;
+    Q=Q(:,:,1);
+    isqvec = true;
+end
 QQ              = R*Q*transpose(R);
 QRt             = Q*transpose(R);
 alphahat        = zeros(mm,smpl);
@@ -117,6 +123,9 @@ t = 0;
 while rank(Pinf(:,:,t+1),diffuse_kalman_tol) && t<smpl
     t = t+1;
     di = data_index{t};
+    if isqvec
+        QQ = R*Qvec(:,:,t+1)*transpose(R);
+    end
     if isempty(di)
         %no observations, propagate forward without updating based on
         %observations
@@ -189,6 +198,9 @@ while notsteady && t<smpl
     t = t+1;
     P(:,:,t)=tril(P(:,:,t))+transpose(tril(P(:,:,t),-1));                   % make sure P is symmetric
     di = data_index{t};
+    if isqvec
+        QQ = R*Qvec(:,:,t+1)*transpose(R);
+    end
     if isempty(di)
         atilde(:,t)     = a(:,t);
         L(:,:,t)        = T;
@@ -265,6 +277,9 @@ while t>d+1
         end
     end
     alphahat(:,t)       = a(:,t) + P(:,:,t)*r(:,t);                         %DK (2012), eq. 4.35
+    if isqvec
+        QRt = Qvec(:,:,t)*transpose(R);
+    end
     etahat(:,t) = QRt*r(:,t);                                               %DK (2012), eq. 4.63
     if state_uncertainty_flag
         V(:,:,t)    = P(:,:,t)-P(:,:,t)*N(:,:,t)*P(:,:,t);                      %DK (2012), eq. 4.43
@@ -312,6 +327,9 @@ if d %diffuse periods
             end
         end
         alphahat(:,t)   = a(:,t) + Pstar(:,:,t)*r0(:,t) + Pinf(:,:,t)*r1(:,t);      % DK (2012), eq. 5.23
+        if isqvec
+            QRt = Qvec(:,:,t)*transpose(R);
+        end
         etahat(:,t)     = QRt*r0(:,t);                                              % DK (2012), p. 135
         if state_uncertainty_flag
             V(:,:,t)=Pstar(:,:,t)-Pstar(:,:,t)*N(:,:,t)*Pstar(:,:,t)...
@@ -328,6 +346,9 @@ if decomp_flag
     for t = max(d,1):smpl
         di = data_index{t};
         % calculate eta_tm1t
+        if isqvec
+            QRt = Qvec(:,:,t)*transpose(R);
+        end
         eta_tm1t = QRt*Z(di,:)'*iF(di,di,t)*v(di,t);
         AAA = P(:,:,t)*Z(di,:)'*ZRQinv(di,di)*bsxfun(@times,Z(di,:)*R,eta_tm1t');
         % calculate decomposition

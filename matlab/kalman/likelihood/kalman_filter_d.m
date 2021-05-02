@@ -37,7 +37,7 @@ function [dLIK,dlik,a,Pstar] = kalman_filter_d(Y, start, last, a, Pinf, Pstar, k
 %   Durbin/Koopman (2012): "Time Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 5 and 7.2
 
-% Copyright (C) 2004-2018 Dynare Team
+% Copyright (C) 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -59,6 +59,12 @@ smpl = last-start+1;
 
 % Initialize some variables.
 dF   = 1;
+isqvec = false;
+if ndim(Q)>2
+    Qvec = Q;
+    Q=Q(:,:,1);
+    isqvec = true;
+end
 QQ   = R*Q*transpose(R);   % Variance of R times the vector of structural innovations.
 t    = start;              % Initialization of the time index.
 dlik = zeros(smpl,1);      % Initialization of the vector gathering the densities.
@@ -70,6 +76,9 @@ while rank(Z*Pinf*Z',diffuse_kalman_tol) && (t<=last)
     s = t-start+1;
     v = Y(:,t)-Z*a;                                                     %get prediction error v^(0) in (5.13) DK (2012)
     Finf  = Z*Pinf*Z';                                                  % (5.7) in DK (2012)
+    if isqvec
+        QQ = R*Qvec(:,:,t+1)*transpose(R);
+    end
                                                                         %do case distinction based on whether F_{\infty,t} has full rank or 0 rank
     if rcond(Finf) < diffuse_kalman_tol                                 %F_{\infty,t} = 0
         if ~all(abs(Finf(:)) < diffuse_kalman_tol)                      %rank-deficient but not rank 0

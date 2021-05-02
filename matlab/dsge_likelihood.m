@@ -257,6 +257,7 @@ kalman_tol = DynareOptions.kalman_tol;
 diffuse_kalman_tol = DynareOptions.diffuse_kalman_tol;
 riccati_tol = DynareOptions.riccati_tol;
 Y = transpose(DynareDataset.data)-trend;
+smpl = size(Y,2);
 
 %------------------------------------------------------------------------------
 % 3. Initial condition of the Kalman filter
@@ -267,6 +268,10 @@ kalman_algo = DynareOptions.kalman_algo;
 diffuse_periods = 0;
 expanded_state_vector_for_univariate_filter=0;
 singular_diffuse_filter = 0;
+if DynareOptions.heteroskedastic_filter
+    Qvec=get_Qvec_heteroskedastic_filter(Q,smpl,Model);
+end
+    
 switch DynareOptions.lik_init
   case 1% Standard initialization with the steady state of the state equation.
     if kalman_algo~=2
@@ -304,6 +309,11 @@ switch DynareOptions.lik_init
         Z(i,BayesInfo.mf(i))=1;
     end
     Zflag = 1;
+    if DynareOptions.heteroskedastic_filter
+        QQ=Qvec;
+    else
+        QQ=Q;
+    end
     % Run diffuse kalman filter on first periods.
     if (kalman_algo==3)
         % Multivariate Diffuse Kalman Filter
@@ -315,13 +325,13 @@ switch DynareOptions.lik_init
             [dLIK,dlik,a_0_given_tm1,Pstar] = kalman_filter_d(Y, 1, size(Y,2), ...
                                                   a_0_given_tm1, Pinf, Pstar, ...
                                                   kalman_tol, diffuse_kalman_tol, riccati_tol, DynareOptions.presample, ...
-                                                  T,R,Q,H,Z,mm,pp,rr);
+                                                  T,R,QQ,H,Z,mm,pp,rr);
         else
             [dLIK,dlik,a_0_given_tm1,Pstar] = missing_observations_kalman_filter_d(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations, ...
                                                               Y, 1, size(Y,2), ...
                                                               a_0_given_tm1, Pinf, Pstar, ...
                                                               kalman_tol, diffuse_kalman_tol, riccati_tol, DynareOptions.presample, ...
-                                                              T,R,Q,H,Z,mm,pp,rr);
+                                                              T,R,QQ,H,Z,mm,pp,rr);
         end
         diffuse_periods = length(dlik);
         if isinf(dLIK)
@@ -359,7 +369,15 @@ switch DynareOptions.lik_init
                 Pinf  = blkdiag(Pinf,zeros(pp));
                 H1 = zeros(pp,1);
                 mmm   = mm+pp;
-
+                if DynareOptions.heteroskedastic_filter
+                    clear QQ
+                    for kv=1:size(Qvec,3)
+                        QQ(:,:,kv) = blkdiag(Qvec(:,:,kv),H);
+                    end
+                    Qvec=QQ;
+                else
+                    QQ = Q;
+                end
             end
         end
 
@@ -372,7 +390,7 @@ switch DynareOptions.lik_init
                                                          Y, 1, size(Y,2), ...
                                                          a_0_given_tm1, Pinf, Pstar, ...
                                                          kalman_tol, diffuse_kalman_tol, riccati_tol, DynareOptions.presample, ...
-                                                         T,R,Q,H1,Z,mmm,pp,rr);
+                                                         T,R,QQ,H1,Z,mmm,pp,rr);
         diffuse_periods = size(dlik,1);
     end
     if isnan(dLIK)
@@ -579,6 +597,9 @@ end
 %------------------------------------------------------------------------------
 % 4. Likelihood evaluation
 %------------------------------------------------------------------------------
+if DynareOptions.heteroskedastic_filter
+    Q=Qvec;
+end
 
 singularity_has_been_detected = false;
 % First test multivariate filter if specified; potentially abort and use univariate filter instead
@@ -689,7 +710,14 @@ if (kalman_algo==2) || (kalman_algo==4)
                 Z = [Z1, eye(pp)];
                 Zflag=1;
                 T = blkdiag(T,zeros(pp));
-                Q = blkdiag(Q,H);
+                if DynareOptions.heteroskedastic_filter
+                    clear Q
+                    for kv=1:size(Qvec,3)
+                        Q(:,:,kv) = blkdiag(Qvec(:,:,kv),H);
+                    end
+                else
+                    Q = blkdiag(Q,H);
+                end
                 R = blkdiag(R,eye(pp));
                 Pstar = blkdiag(Pstar,H);
                 Pinf  = blkdiag(Pinf,zeros(pp));
@@ -866,3 +894,4 @@ if isfield(M_,'filter_initial_state') && ~isempty(M_.filter_initial_state)
         end
     end
 end
+

@@ -2555,6 +2555,59 @@ blocks.
 
     See above for the meaning of the ``overwrite`` option.
 
+.. block:: heteroskedastic_shocks ;
+           heteroskedastic_shocks(overwrite);
+
+    |br| In *estimation context*, it implements heteroskedastic filters, where the standard error of shocks may unexpectedly change in every period. 
+    The standard deviation of shocks may be either provided directly or set/modified in each observed period by a scale factor.
+    If ``std0`` is the usual standard error for ``shock1``, then:
+
+    * using a scale factor in period ``t`` implies:  ``std(shock1|t)=std0(shock1)*scale(t)``
+    * using a provided value in period ``t`` implies: ``std(shock1|t)=value(t)``.
+
+    The block has a similar syntax as the ``shocks`` block in a perfect foresight context.
+    It should contain one or more occurrences of the following
+    group of three lines (for setting values)::
+
+      var VARIABLE_NAME;
+      periods INTEGER[:INTEGER] [[,] INTEGER[:INTEGER]]...;
+      values DOUBLE | (EXPRESSION)  [[,] DOUBLE | (EXPRESSION) ]...;
+
+    OR (for setting scale factors)::
+
+      var VARIABLE_NAME;
+      periods INTEGER[:INTEGER] [[,] INTEGER[:INTEGER]]...;
+      scales DOUBLE | (EXPRESSION)  [[,] DOUBLE | (EXPRESSION) ]...;
+
+    NOTE: ``scales`` and ``values`` cannot be simultaneously set for the same shock in the same period, but it is 
+    possible to set ``values`` for some periods and ``scales`` for other periods for the same shock.
+
+    *Example*
+
+    ::
+
+        heteroskedastic_shocks;
+
+        var e1;
+        periods 86:87 88:97;
+        scales 0.5 0;
+
+        var e2;
+        periods 86:87 88:97;
+        values 0.04 0.01;
+        end;
+
+        var e3;
+        periods 86:87;
+        values 0.04;
+        end;
+
+        var e3;
+        periods 88:97;
+        scales 0;
+
+        end;
+
 .. specvar:: Sigma_e
 
     |br| This special variable specifies directly the covariance
@@ -6428,6 +6481,11 @@ block decomposition of the model (see :opt:`block`).
        Note that the nonstationary variables in the model must be
        integrated processes (their first difference or k-difference
        must be stationary).
+
+    .. option:: heteroskedastic_filter
+
+       Runs filter, likelihood, and smoother using heteroskedastic definitions provided in
+       a ``heteroskedastic_shocks`` block.
 
     .. option:: selected_variables_only
 

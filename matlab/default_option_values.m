@@ -355,6 +355,7 @@ options_.dataset.nobs = NaN;
 options_.dataset.xls_sheet = [];
 options_.dataset.xls_range = [];
 options_.Harvey_scale_factor = 10;
+options_.heteroskedastic_filter = false;
 options_.MaxNumberOfBytes = 1e8;
 options_.MaximumNumberOfMegaBytes = 111;
 options_.analytic_derivation = 0; % Not a boolean, can also take values -1 or 2

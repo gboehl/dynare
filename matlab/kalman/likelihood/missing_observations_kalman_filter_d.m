@@ -42,7 +42,7 @@ function [dLIK,dlik,a,Pstar] = missing_observations_kalman_filter_d(data_index,n
 %   Second Edition, Ch. 5 and 7.2
 
 %
-% Copyright (C) 2004-2017 Dynare Team
+% Copyright (C) 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -65,6 +65,12 @@ smpl = last-start+1;
 
 % Initialize some variables.
 dF   = 1;
+isqvec = false;
+if ndim(Q)>2
+    Qvec = Q;
+    Q=Q(:,:,1);
+    isqvec = true;
+end
 QQ   = R*Q*transpose(R);   % Variance of R times the vector of structural innovations.
 t    = start;              % Initialization of the time index.
 dlik = zeros(smpl,1);      % Initialization of the vector gathering the densities.
@@ -79,6 +85,9 @@ s = 0;
 while rank(Pinf,diffuse_kalman_tol) && (t<=last)
     s = t-start+1;
     d_index = data_index{t};
+    if isqvec
+        QQ = R*Qvec(:,:,t+1)*transpose(R);
+    end
     if isempty(d_index)
         %no observations, propagate forward without updating based on
         %observations

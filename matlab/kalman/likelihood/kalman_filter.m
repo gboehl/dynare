@@ -71,7 +71,7 @@ function [LIK, LIKK, a, P] = kalman_filter(Y,start,last,a,P,kalman_tol,riccati_t
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2017 Dynare Team
+% Copyright (C) 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -114,6 +114,12 @@ smpl = last-start+1;
 
 % Initialize some variables.
 dF   = 1;
+isqvec = false;
+if ndim(Q)>2
+    Qvec = Q;
+    Q=Q(:,:,1);
+    isqvec = true;
+end
 QQ   = R*Q*transpose(R);   % Variance of R times the vector of structural innovations.
 t    = start;              % Initialization of the time index.
 likk = zeros(smpl,1);      % Initialization of the vector gathering the densities.
@@ -161,6 +167,9 @@ end
 rescale_prediction_error_covariance0=rescale_prediction_error_covariance;
 while notsteady && t<=last
     s = t-start+1;
+    if isqvec
+        QQ = R*Qvec(:,:,t+1)*transpose(R);
+    end
     if Zflag
         v  = Y(:,t)-Z*a;
         F  = Z*P*Z' + H;
@@ -227,7 +236,9 @@ while notsteady && t<=last
         end
         a = T*tmp;
         P = Ptmp;
-        notsteady = max(abs(K(:)-oldK))>riccati_tol;
+        if ~isqvec
+            notsteady = max(abs(K(:)-oldK))>riccati_tol;
+        end
         oldK = K(:);
     end
     t = t+1;

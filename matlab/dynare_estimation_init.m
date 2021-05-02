@@ -652,3 +652,37 @@ if options_.mh_replic || options_.load_mh_file
     [current_options, options_] = check_posterior_sampler_options([], options_, bounds);
     options_.posterior_sampler_options.current_options = current_options;
 end
+
+%% set heteroskedastic shocks
+if options_.heteroskedastic_filter
+    if options_.fast_kalman_filter
+        error('estimation option conflict: "heteroskedastic_filter" incompatible with "fast_kalman_filter"')
+    end
+    if options_.block
+        error('estimation option conflict: "heteroskedastic_filter" incompatible with block kalman filter')
+    end
+    if options_.analytic_derivation
+        error(['estimation option conflict: analytic_derivation isn''t available ' ...
+            'for heteroskedastic_filter'])
+    end
+    M_.heteroskedastic_shocks.Qvalue = NaN(M_.exo_nbr,options_.nobs);
+    M_.heteroskedastic_shocks.Qscale = NaN(M_.exo_nbr,options_.nobs);
+    xname = fieldnames(M_.heteroskedastic_shocks.Qhet);
+    for k=1:length(xname)
+        inx = strcmp(xname{k},M_.exo_names);
+        isqscale=false;
+        if isfield(M_.heteroskedastic_shocks.Qhet.(xname{k}),'scale')
+            M_.heteroskedastic_shocks.Qscale(inx,M_.heteroskedastic_shocks.Qhet.(xname{k}).time_scale)=M_.heteroskedastic_shocks.Qhet.(xname{k}).scale.^2;
+            isqscale=true;
+        end
+        if isfield(M_.heteroskedastic_shocks.Qhet.(xname{k}),'value')
+            if isqscale && ~isempty(intersect(M_.heteroskedastic_shocks.Qhet.(xname{k}).time_value,M_.heteroskedastic_shocks.Qhet.(xname{k}).time_scale))
+                fprintf('\ndynare_estimation_init: With the option "heteroskedastic_shocks" you cannot define\n')
+                fprintf('dynare_estimation_init: the scale and the value for the same shock \n')
+                fprintf('dynare_estimation_init: in the same period!\n')
+                error('Scale and value defined for the same shock in the same period with "heteroskedastic_shocks".')
+            end
+            M_.heteroskedastic_shocks.Qvalue(inx,M_.heteroskedastic_shocks.Qhet.(xname{k}).time_value)=M_.heteroskedastic_shocks.Qhet.(xname{k}).value.^2;
+        end    
+    end
+end

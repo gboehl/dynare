@@ -50,6 +50,8 @@ MODFILES = \
 	estimation/MH_recover/fs2000_recover.mod \
 	estimation/MH_recover/fs2000_recover_2.mod \
 	estimation/MH_recover/fs2000_recover_3.mod \
+	estimation/heteroskedastic_shocks/fs2000_het.mod \
+	estimation/heteroskedastic_shocks/fs2000_het_corr.mod \
 	estimation/t_proposal/fs2000_student.mod \
 	estimation/tune_mh_jscale/fs2000.mod \
 	estimation/method_of_moments/AnScho/AnScho_MoM.mod \
@@ -566,6 +568,8 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	optimal_policy/Ramsey/ramsey_ex_wrong_ss_file_xfail.mod \
 	estimation/fs2000_mixed_ML_xfail.mod \
 	estimation/fs2000_stochastic_singularity_xfail.mod \
+	estimation/heteroskedastic_shocks/fs2000_het_XFAIL.mod \
+	estimation/heteroskedastic_shocks/fs2000_het_XFAIL2.mod \
 	identification/ident_unit_root/ident_unit_root_xfail.mod \
 	identification/LindeTrabandt/LindeTrabandt2019_xfail.mod \
 	steady_state/Linear_steady_state_xfail.mod \
@@ -1179,6 +1183,8 @@ EXTRA_DIST = \
 	kalman/likelihood_from_dynare/fs2000ns_estimation_check.inc \
 	identification/as2007/G_QT.mat \
 	estimation/fsdat_simul.m \
+	estimation/heteroskedastic_shocks/fs2000_het_model.inc \
+	estimation/heteroskedastic_shocks/fs2000_het_check.inc \
 	ep/mean_preserving_spread.m \
 	ep/rbcii_steady_state.m \
 	decision_rules/example1_results_dyn_432.mat \

@@ -84,7 +84,7 @@ function [LIK, lik,a,P] = univariate_kalman_filter(data_index,number_of_observat
 %   Second Edition, Ch. 6.4 + 7.2.5
 
 
-% Copyright (C) 2004-2017 Dynare Team
+% Copyright (C) 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -116,6 +116,12 @@ end
 smpl = last-start+1;
 
 % Initialize some variables.
+isqvec = false;
+if ndim(Q)>2
+    Qvec = Q;
+    Q=Q(:,:,1);
+    isqvec = true;
+end
 QQ   = R*Q*transpose(R);   % Variance of R times the vector of structural innovations.
 t    = start;              % Initialization of the time index.
 lik  = zeros(smpl,pp);     % Initialization of the matrix gathering the densities at each time and each observable
@@ -164,6 +170,9 @@ end
 while notsteady && t<=last %loop over t
     s = t-start+1;
     d_index = data_index{t};
+    if isqvec
+        QQ = R*Qvec(:,:,t+1)*transpose(R);
+    end
     if Zflag
         z = Z(d_index,:);
     else
@@ -216,7 +225,7 @@ while notsteady && t<=last %loop over t
     end
     a = T*a;            %transition according to (6.14) in DK (2012)
     P = T*P*T' + QQ;    %transition according to (6.14) in DK (2012)
-    if t>=no_more_missing_observations
+    if t>=no_more_missing_observations && ~isqvec
         notsteady = max(abs(K(:)-oldK))>riccati_tol;
         oldK = K(:);
     end
