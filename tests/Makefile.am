@@ -44,6 +44,7 @@ MODFILES = \
 	estimation/fs2000_calibrated_covariance.mod \
 	estimation/fs2000_model_comparison.mod \
 	estimation/fs2000_fast.mod \
+	estimation/fs2000_init_from_previous.mod \
 	estimation/ls2003_endog_prior_restrict_estimation.mod \
 	estimation/independent_mh/fs2000_independent_mh.mod \
 	estimation/MH_recover/fs2000_recover.mod \
@@ -642,6 +643,8 @@ AIM/ls2003_2L2L_AIM.o.trs: AIM/ls2003_2L2L.o.trs
 
 estimation/fs2000_model_comparison.m.trs: estimation/fs2000.m.trs estimation/fs2000_initialize_from_calib.m.trs estimation/fs2000_calibrated_covariance.m.trs
 estimation/fs2000_model_comparison.o.trs: estimation/fs2000.o.trs estimation/fs2000_initialize_from_calib.o.trs estimation/fs2000_calibrated_covariance.o.trs
+estimation/fs2000_init_from_previous.m.trs: estimation/fs2000.m.trs
+estimation/fs2000_init_from_previous.o.trs: estimation/fs2000.o.trs
 
 optimizers/fs2000_102.m.trs: estimation/fs2000.m.trs
 optimizers/fs2000_102.o.trs: estimation/fs2000.o.trs

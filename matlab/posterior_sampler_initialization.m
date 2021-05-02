@@ -115,13 +115,80 @@ if ~options_.load_mh_file && ~options_.mh_recover
     if isempty(d)
         prior_draw(bayestopt_,options_.prior_trunc);
     end
+    if options_.mh_initialize_from_previous_mcmc.status
+        PreviousFolder0 = options_.mh_initialize_from_previous_mcmc.directory;
+        RecordFile0 = options_.mh_initialize_from_previous_mcmc.record;
+        PriorFile0 = options_.mh_initialize_from_previous_mcmc.prior;
+        if ~isempty(RecordFile0)
+            %% check for proper filesep char in user defined paths
+            RecordFile0=strrep(RecordFile0,'\',filesep);
+            if isempty(dir(RecordFile0))
+                disp('Estimation::mcmc: wrong value for mh_initialize_from_previous_mcmc_record option')
+                error('Estimation::mcmc: path to record file is not found')
+            else
+                record0=load(RecordFile0);
+            end
+            record0=record0.record;
+            MetropolisFolder0 = fileparts(RecordFile0);
+            PreviousFolder0=fileparts(MetropolisFolder0);
+            [~, ModelName0]=fileparts(PreviousFolder0);
+        else            
+            %% check for proper filesep char in user defined paths
+            PreviousFolder0=strrep(PreviousFolder0,'\',filesep);
+            MetropolisFolder0 = [PreviousFolder0 filesep 'metropolis'];
+            [~, ModelName0]=fileparts(PreviousFolder0);
+            record0=load_last_mh_history_file(MetropolisFolder0, ModelName0);
+        end
+        if ~isnan(record0.MCMCConcludedSuccessfully) && ~record0.MCMCConcludedSuccessfully
+            error('Estimation::mcmc: You are trying to load an MCMC that did not finish successfully. Please use mh_recover.')
+        end
+%         mh_files = dir([ MetropolisFolder0 filesep ModelName0 '_mh*.mat']);
+%         if ~length(mh_files)
+%             error('Estimation::mcmc: I cannot find any MH file to load here!')
+%         end
+        disp('Estimation::mcmc: Initializing from past Metropolis-Hastings simulations...')
+        disp(['Estimation::mcmc: Past MH path ' MetropolisFolder0 ])
+        disp(['Estimation::mcmc: Past model name ' ModelName0 ])
+        fprintf(fidlog,'  Loading initial values from previous MH\n');
+        fprintf(fidlog,'  Past MH path: %s\n', MetropolisFolder0 );
+        fprintf(fidlog,'  Past model name: %s\n', ModelName0);
+        fprintf(fidlog,' \n');
+        past_number_of_blocks = record0.Nblck;
+        if past_number_of_blocks ~= NumberOfBlocks
+            disp('Estimation::mcmc: The specified number of blocks doesn''t match with the previous number of blocks!')
+            disp(['Estimation::mcmc: You declared ' int2str(NumberOfBlocks) ' blocks, but the previous number of blocks was ' int2str(past_number_of_blocks) '.'])
+            disp(['Estimation::mcmc: I will run the Metropolis-Hastings with ' int2str(past_number_of_blocks) ' blocks.' ])
+            NumberOfBlocks = past_number_of_blocks;
+            options_.mh_nblck = NumberOfBlocks;
+        end
+        if ~isempty(PriorFile0)
+            if isempty(dir(PriorFile0))
+                disp('Estimation::mcmc: wrong value for mh_initialize_from_previous_mcmc_prior option')
+                error('Estimation::mcmc: path to prior file is not found')
+            else
+                bayestopt0 = load(PriorFile0);
+            end
+        else
+            bayestopt0 = load([PreviousFolder0 filesep 'prior' filesep 'definition.mat']);
+        end
+        [common_parameters,IA,IB] = intersect(bayestopt_.name,bayestopt0.bayestopt_.name);
+        new_estimated_parameters = ~ismember(bayestopt_.name,bayestopt0.bayestopt_.name);
+        ix2 = zeros(NumberOfBlocks,npar);
+        ilogpo2 = zeros(NumberOfBlocks,1);
+        ilogpo2(:,1) = record0.LastLogPost;
+        ix2(:,IA) = record0.LastParameters(:,IB);
+    else
+        new_estimated_parameters = true(1,npar);
+    end
     % Find initial values for the NumberOfBlocks chains...
-    if NumberOfBlocks > 1% Case 1: multiple chains
+    if NumberOfBlocks > 1 || options_.mh_initialize_from_previous_mcmc.status% Case 1: multiple chains
         set_dynare_seed('default');
         fprintf(fidlog,['  Initial values of the parameters:\n']);
         disp('Estimation::mcmc: Searching for initial values...')
-        ix2 = zeros(NumberOfBlocks,npar);
-        ilogpo2 = zeros(NumberOfBlocks,1);
+        if ~options_.mh_initialize_from_previous_mcmc.status
+            ix2 = zeros(NumberOfBlocks,npar);
+            ilogpo2 = zeros(NumberOfBlocks,1);
+        end
         for j=1:NumberOfBlocks
             validate    = 0;
             init_iter   = 0;
@@ -133,7 +200,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
                     candidate = rand_multivariate_normal( transpose(xparam1), d * options_.mh_init_scale, npar);
                 end
                 if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
-                    ix2(j,:) = candidate;
+                    ix2(j,new_estimated_parameters) = candidate(new_estimated_parameters);
                     ilogpo2(j) = - feval(TargetFun,ix2(j,:)',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
                     if ~isfinite(ilogpo2(j)) % if returned log-density is
                                              % Inf or Nan (penalized value)
@@ -212,11 +279,16 @@ if ~options_.load_mh_file && ~options_.mh_recover
     record.MAX_nruns=MAX_nruns;
     record.AcceptanceRatio = zeros(1,NumberOfBlocks);
     record.FunctionEvalPerIteration = NaN(1,NumberOfBlocks);
-    for j=1:NumberOfBlocks
-        % we set a different seed for the random generator for each block then we record the corresponding random generator state (vector)
-        set_dynare_seed(options_.DynareRandomStreams.seed+j);
-        % record.Seeds keeps a vector of the random generator state and not the scalar seed despite its name
-        [record.InitialSeeds(j).Unifor,record.InitialSeeds(j).Normal] = get_dynare_random_generator_state();
+    if options_.mh_initialize_from_previous_mcmc.status
+        record.InitialSeeds = record0.LastSeeds;
+    else
+        
+        for j=1:NumberOfBlocks
+            % we set a different seed for the random generator for each block then we record the corresponding random generator state (vector)
+            set_dynare_seed(options_.DynareRandomStreams.seed+j);
+            % record.Seeds keeps a vector of the random generator state and not the scalar seed despite its name
+            [record.InitialSeeds(j).Unifor,record.InitialSeeds(j).Normal] = get_dynare_random_generator_state();
+        end
     end
     record.InitialParameters = ix2;
     record.InitialLogPost = ilogpo2;

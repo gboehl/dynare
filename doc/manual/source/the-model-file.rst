@@ -5542,6 +5542,48 @@ block decomposition of the model (see :opt:`block`).
        density, and posterior statistics from an existing ``_results``
        file instead of recomputing them.
 
+    .. option:: mh_initialize_from_previous_mcmc
+
+       This option allows to pick initial values for new MCMC from a previous one, 
+       where the model specification, the number of estimated parameters, 
+       (some) prior might have changed (so a situation where ``load_mh_file`` would not work).
+       If an additional parameter is estimated, it is automatically initialized from prior_draw. 
+       Note that, if this option is used to skip the optimization step, you should use a sampling method which does not require
+       a proposal density, like slice. Otherwise, optimization should always be done beforehand or a mode file with
+       an appropriate posterior covariance matrix should be used.
+
+    .. option:: mh_initialize_from_previous_mcmc_directory = FILENAME
+
+       If ``mh_initialize_from_previous_mcmc`` is set, users must provide here 
+       the path to the standard FNAME folder from where to load prior definitions and
+       last MCMC values to be used to initialize the new MCMC. 
+
+       Example: if previous project directory is ``/my_previous_dir`` and FNAME is ``mymodel``, 
+       users should set the option as 
+
+       ``mh_initialize_from_previous_mcmc_directory = '/my_previous_dir/mymodel'``
+
+       Dynare will then look for the last record file into 
+
+       ``/my_previous_dir/mymodel/metropolis/mymodel_mh_history_<LAST>.mat``
+
+       and for the prior definition file into 
+
+       ``/my_previous_dir/mymodel/prior/definition.mat``
+
+    .. option:: mh_initialize_from_previous_mcmc_record = FILENAME
+
+       If ``mh_initialize_from_previous_mcmc`` is set, and whenever the standard file or directory tree
+       is not applicable to load initial values, users may directly provide here 
+       the path to the record file from which to load
+       values to be used to initialize the new MCMC.
+
+    .. option:: mh_initialize_from_previous_mcmc_prior = FILENAME
+
+       If ``mh_initialize_from_previous_mcmc`` is set, and whenever the standard file or directory tree
+       is not applicable to load initial values, users may directly provide here 
+       the path to the prior definition file, to get info in the priors used in previous MCMC.
+
     .. option:: optim = (NAME, VALUE, ...)
 
        A list of NAME and VALUE pairs. Can be used to set options for
