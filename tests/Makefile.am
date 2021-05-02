@@ -60,6 +60,7 @@ MODFILES = \
 	estimation/method_of_moments/AFVRR/AFVRR_M0.mod \
 	estimation/method_of_moments/AFVRR/AFVRR_MFB.mod \
 	estimation/method_of_moments/AFVRR/AFVRR_MFB_RRA.mod \
+	estimation/no_init_estimation_check_first_obs/fs2000_init_check.mod \
 	moments/example1_var_decomp.mod \
 	moments/example1_bp_test.mod \
 	moments/test_AR1_spectral_density.mod \
@@ -571,7 +572,9 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	kalman_initial_state/fs2000_kalman_initial_xfail.mod \
 	example1_extra_exo_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_1_xfail.mod \
-	estimation/tune_mh_jscale/fs2000_2_xfail.mod
+	estimation/tune_mh_jscale/fs2000_2_xfail.mod \
+	estimation/no_init_estimation_check_first_obs/fs2000_init_check_XFAIL.mod \
+	estimation/no_init_estimation_check_first_obs/fs2000_init_check_XFAIL2.mod
 
 MFILES = histval_initval_file/ramst_initval_file_data.m
 

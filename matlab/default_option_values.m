@@ -346,6 +346,7 @@ options_.ramsey.maxit = 500;
 
 % estimation
 options_.initial_period = NaN; %dates(1,1);
+options_.no_init_estimation_check_first_obs=false;
 options_.dataset.file = [];
 options_.dataset.series = [];
 options_.dataset.firstobs = dates();
