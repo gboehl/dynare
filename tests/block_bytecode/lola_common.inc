@@ -1,4 +1,13 @@
-// Tests option mfs=1 with block
+//  Based on Luca Marchiori/Olivier Pierrard(2012) LOLA 2.0: Luxembourg
+//  OverLapping generation model for policy Analysis
+
+/* Snippet common to several test files.
+
+   Macro-variables that can be defined to tune the computations:
+   - block
+   - mfs
+   - deterministic
+*/
 
 load lola_data.mat
 
@@ -143,9 +152,12 @@ set_param_value('bsY_iss',bsY_iss);
 NBRYb=NBR_iss/(phii_iss*gdp_iss);
 
 
-% =======================================================
-model(block, mfs=1);
-% ======================================================
+
+@#if block
+model(block, mfs=@{mfs});
+@#else
+model;
+@#endif
 
 %  Labor Market Variables in the home country
 %  ------------------------------------------ 
@@ -712,10 +724,9 @@ resid;
 steady(solve_algo=3);
 check;
 
-%========================================================
-endval;
-%========================================================
+@#if deterministic
 
+endval;
 @#for i in wg
 n@{i}=n@{i}_fss;
 n@{i}_f=n@{i}_f_fss;
@@ -917,7 +928,6 @@ NBR2=NBR;
 tauf2=tauf;
 tauw2=tauw;
 tauc2=tauc;
-
 end;
 
 %========================================================
@@ -929,49 +939,45 @@ steady(solve_algo=3);
 check;
 
 
-% ===================================================
 shocks;     
-% ===================================================
-
-var P00;																																																			
-   periods 1:99;																																																			
-   values (se_P00);																																																			
+  var P00;
+  periods 1:99;
+  values (se_P00);
  
 @#for i in nbg
-var beta@{i};																																																			
-   periods  1:99;																																																			
-   values (se_beta@{i});
-var beta@{i}_f;																																																			
-   periods  1:99;																																																			
-   values (se_beta@{i}_f);
-var PD@{i};																																																			
-   periods  1:99;																																																			
-   values (se_PD@{i});
+  var beta@{i};
+  periods  1:99;
+  values (se_beta@{i});
+
+  var beta@{i}_f;
+  periods  1:99;
+  values (se_beta@{i}_f);
+
+  var PD@{i};
+  periods  1:99;
+  values (se_PD@{i});
 @#endfor  
-																																																			
-var P00_foP00;																																																			
-   periods 1:99;																																																			
-   values (se_P00_foP00);	 																																																
 
-var eps_g;																																																			
-   periods 1:99;																																																			
-   values (se_eps_g);	
+  var P00_foP00;
+  periods 1:99;
+  values (se_P00_foP00);
 
-var eps_PensCorr_F;																																																			
-   periods 1:99;																																																			
-   values (se_eps_PensCorr_F);	
+  var eps_g;
+  periods 1:99;
+  values (se_eps_g);
 
-var eps_PensCorr_L;																																																			
-   periods 1:99;																																																			
-   values (se_eps_PensCorr_L);	
+  var eps_PensCorr_F;
+  periods 1:99;
+  values (se_eps_PensCorr_F);	
 
+  var eps_PensCorr_L;
+  periods 1:99;
+  values (se_eps_PensCorr_L);	
 end;
 
 % *******************************************
 % Numerical Simulation, Control Parameters
 % *******************************************
-
-model_info;
 
 perfect_foresight_setup(periods=125);
 perfect_foresight_solver(maxit=100);
@@ -980,8 +986,6 @@ if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')
 end
 
-mfs0=load('lola_solve_one_boundary_results');
-
-if max(max(oo_.endo_simul-mfs0.oo_.endo_simul)) > options_.dynatol.x
-   error('Inconsistency with mfs=0')
-end
+@#else // stochastic case, used by files under tests/block_bytecode/lola_*
+stoch_simul(order=1);
+@#endif

@@ -158,6 +158,10 @@ MODFILES = \
 	steady_state_operator/bytecode_test.mod \
 	block_bytecode/ireland.mod \
 	block_bytecode/ramst_normcdf_and_friends.mod \
+	block_bytecode/lola_solve_one_boundary.mod \
+	block_bytecode/lola_solve_one_boundary_mfs1.mod \
+	block_bytecode/lola_solve_one_boundary_mfs2.mod \
+	block_bytecode/lola_solve_one_boundary_mfs3.mod \
 	k_order_perturbation/fs2000k2a.mod \
 	k_order_perturbation/fs2000k2_use_dll.mod \
 	k_order_perturbation/fs2000k_1_use_dll.mod \
@@ -338,10 +342,6 @@ MODFILES = \
 	deterministic_simulations/multiple_lead_lags/sim_endo_lead_lag.mod \
 	deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.mod \
 	deterministic_simulations/multiple_lead_lags/sim_lead_lag.mod \
-	deterministic_simulations/lola_solve_one_boundary.mod \
-	deterministic_simulations/lola_solve_one_boundary_mfs1.mod \
-	deterministic_simulations/lola_solve_one_boundary_mfs2.mod \
-	deterministic_simulations/lola_solve_one_boundary_mfs3.mod \
 	deterministic_simulations/ramst_block_mfs1.mod \
 	deterministic_simulations/linear_approximation/sw.mod \
 	deterministic_simulations/multiple_lead_lags/AR2.mod \
@@ -696,13 +696,13 @@ deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.m.trs: determinist
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.o.trs: deterministic_simulations/rbc_det.o.trs
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.m.trs: deterministic_simulations/rbc_det.m.trs
 deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.o.trs: deterministic_simulations/rbc_det.o.trs
-deterministic_simulations/lola_solve_one_boundary_mfs1.m.trs: deterministic_simulations/lola_solve_one_boundary.m.trs
-deterministic_simulations/lola_solve_one_boundary_mfs1.o.trs: deterministic_simulations/lola_solve_one_boundary.o.trs
-deterministic_simulations/lola_solve_one_boundary_mfs2.m.trs: deterministic_simulations/lola_solve_one_boundary.m.trs
-deterministic_simulations/lola_solve_one_boundary_mfs2.o.trs: deterministic_simulations/lola_solve_one_boundary.o.trs
-deterministic_simulations/lola_solve_one_boundary_mfs3.m.trs: deterministic_simulations/lola_solve_one_boundary.m.trs
-deterministic_simulations/lola_solve_one_boundary_mfs3.o.trs: deterministic_simulations/lola_solve_one_boundary.o.trs
 
+block_bytecode/lola_solve_one_boundary_mfs1.m.trs: block_bytecode/lola_solve_one_boundary.m.trs
+block_bytecode/lola_solve_one_boundary_mfs1.o.trs: block_bytecode/lola_solve_one_boundary.o.trs
+block_bytecode/lola_solve_one_boundary_mfs2.m.trs: block_bytecode/lola_solve_one_boundary.m.trs
+block_bytecode/lola_solve_one_boundary_mfs2.o.trs: block_bytecode/lola_solve_one_boundary.o.trs
+block_bytecode/lola_solve_one_boundary_mfs3.m.trs: block_bytecode/lola_solve_one_boundary.m.trs
+block_bytecode/lola_solve_one_boundary_mfs3.o.trs: block_bytecode/lola_solve_one_boundary.o.trs
 
 histval_initval_file/ramst_initval_file.m.trs: histval_initval_file/ramst_initval_file_data.m.tls histval_initval_file/ramst_data_generate.m.trs
 histval_initval_file/ramst_initval_file.o.trs: histval_initval_file/ramst_initval_file_data.o.tls histval_initval_file/ramst_data_generate.o.trs
@@ -1109,6 +1109,8 @@ EXTRA_DIST = \
 	AIM/data_ca1.m \
 	AIM/fsdat.m \
 	block_bytecode/run_ls2003.m \
+	block_bytecode/lola_data.mat \
+	block_bytecode/lola_common.inc \
 	bvar_a_la_sims/bvar_sample.m \
 	dates/fsdat_simul.m \
 	dates/data_uav.xlsx \
@@ -1199,7 +1201,6 @@ EXTRA_DIST = \
 	optimizers/fs2000.common.inc \
 	estimation/MH_recover/fs2000.common.inc \
 	prior_posterior_function/posterior_function_demo.m \
-	deterministic_simulations/lola_data.mat \
 	k_order_perturbation/fs2000k++.mod \
 	lmmcp/sw-common-header.inc \
 	lmmcp/sw-common-footer.inc \
