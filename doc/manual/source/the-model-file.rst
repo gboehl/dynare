@@ -4416,10 +4416,15 @@ The coefficients of the decision rules are stored as follows:
   to all endogenous in the declaration order.
 * :math:`A` is stored in ``oo_.dr.ghx``. The matrix rows correspond to
   all endogenous in DR-order. The matrix columns correspond to state
-  variables in DR-order.
+  variables in DR-order, as given by ``oo_.dr.state_var``. (N.B.: if the
+  ``block`` option to the ``model`` block has been specified, then rows
+  are in declaration order, and columns are ordered
+  according to ``oo_.dr.state_var`` which may differ from DR-order.)
 * :math:`B` is stored ``oo_.dr.ghu``. The matrix rows correspond to
   all endogenous in DR-order. The matrix columns correspond to
-  exogenous variables in declaration order.
+  exogenous variables in declaration order.  (N.B.: if the
+  ``block`` option to the ``model`` block has been specified, then rows
+  are in declaration order.)
 
 Of course, the shown form of the approximation is only stylized,
 because it neglects the required different ordering in :math:`y^s` and
