@@ -162,6 +162,8 @@ MODFILES = \
 	block_bytecode/lola_solve_one_boundary_mfs1.mod \
 	block_bytecode/lola_solve_one_boundary_mfs2.mod \
 	block_bytecode/lola_solve_one_boundary_mfs3.mod \
+	block_bytecode/lola_stochastic.mod \
+	block_bytecode/lola_stochastic_block.mod \
 	k_order_perturbation/fs2000k2a.mod \
 	k_order_perturbation/fs2000k2_use_dll.mod \
 	k_order_perturbation/fs2000k_1_use_dll.mod \
@@ -703,6 +705,8 @@ block_bytecode/lola_solve_one_boundary_mfs2.m.trs: block_bytecode/lola_solve_one
 block_bytecode/lola_solve_one_boundary_mfs2.o.trs: block_bytecode/lola_solve_one_boundary.o.trs
 block_bytecode/lola_solve_one_boundary_mfs3.m.trs: block_bytecode/lola_solve_one_boundary.m.trs
 block_bytecode/lola_solve_one_boundary_mfs3.o.trs: block_bytecode/lola_solve_one_boundary.o.trs
+block_bytecode/lola_stochastic_block.m.trs: block_bytecode/lola_stochastic.m.trs
+block_bytecode/lola_stochastic_block.o.trs: block_bytecode/lola_stochastic.o.trs
 
 histval_initval_file/ramst_initval_file.m.trs: histval_initval_file/ramst_initval_file_data.m.tls histval_initval_file/ramst_data_generate.m.trs
 histval_initval_file/ramst_initval_file.o.trs: histval_initval_file/ramst_initval_file_data.o.tls histval_initval_file/ramst_data_generate.o.trs
