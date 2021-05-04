@@ -34,7 +34,7 @@ function [dr,info,M_,options_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
 %   none.
 %
 
-% Copyright (C) 2010-2020 Dynare Team
+% Copyright (C) 2010-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -63,13 +63,12 @@ end
 
 z = repmat(dr.ys,1,M_.maximum_lead + M_.maximum_lag + 1);
 zx = repmat([oo_.exo_simul oo_.exo_det_simul],M_.maximum_lead + M_.maximum_lag + 1, 1);
-if (isfield(M_,'block_structure'))
-    data = M_.block_structure.block;
-    Size = length(M_.block_structure.block);
-else
-    data = M_;
-    Size = 1;
+
+if ~isfield(M_,'block_structure')
+    error('Option ''block'' has not been specified')
 end
+data = M_.block_structure.block;
+
 if options_.bytecode
     [~, data]= bytecode('dynamic','evaluate', z, zx, M_.params, dr.ys, 1, data);
 else
@@ -93,7 +92,7 @@ n_sv = size(dr.state_var, 2);
 dr.ghx = zeros(M_.endo_nbr, length(dr.state_var));
 dr.exo_var = 1:M_.exo_nbr;
 dr.ghu = zeros(M_.endo_nbr, M_.exo_nbr);
-for i = 1:Size
+for i = 1:length(data)
     ghx = [];
     indexi_0 = 0;
     if (verbose)
