@@ -97,22 +97,30 @@ end
 %------------------------------------------------------------------------------
 % 2. call model setup & reduction program
 %------------------------------------------------------------------------------
-%store old setting of restricted var_list
-oldoo.restrict_var_list = oo_.dr.restrict_var_list;
-oldoo.restrict_columns = oo_.dr.restrict_columns;
-oo_.dr.restrict_var_list = bayestopt_.smoother_var_list;
-oo_.dr.restrict_columns = bayestopt_.smoother_restrict_columns;
-
-[T,R,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
+if ~options_.smoother_redux
+    
+    %store old setting of restricted var_list
+    oldoo.restrict_var_list = oo_.dr.restrict_var_list;
+    oldoo.restrict_columns = oo_.dr.restrict_columns;
+    oo_.dr.restrict_var_list = bayestopt_.smoother_var_list;
+    oo_.dr.restrict_columns = bayestopt_.smoother_restrict_columns;
+    
+    [T,R,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
+    
+    %get location of observed variables and requested smoothed variables in
+    %decision rules
+    bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
+    
+else
+    [T,R,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
+    bayestopt_.mf = bayestopt_.mf1;
+end
 
 if info~=0
     print_info(info,options_.noprint, options_);
     return
 end
 
-%get location of observed variables and requested smoothed variables in
-%decision rules
-bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
 if options_.noconstant
     constant = zeros(vobs,1);
 else
@@ -233,10 +241,10 @@ if kalman_algo == 1 || kalman_algo == 3
     a_initial     = zeros(np,1);
     a_initial=set_Kalman_smoother_starting_values(a_initial,M_,oo_,options_);
     a_initial=T*a_initial; %set state prediction for first Kalman step;    
-    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty] = missing_DiffuseKalmanSmootherH1_Z(a_initial,ST, ...
+    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d] = missing_DiffuseKalmanSmootherH1_Z(a_initial,ST, ...
                                                       Z,R1,Q,H,Pinf,Pstar, ...
                                                       data1,vobs,np,smpl,data_index, ...
-                                                      options_.nk,kalman_tol,diffuse_kalman_tol,options_.filter_decomposition,options_.smoothed_state_uncertainty);
+                                                      options_.nk,kalman_tol,diffuse_kalman_tol,options_.filter_decomposition,options_.smoothed_state_uncertainty,options_.filter_covariance,options_.smoother_redux);
     if isinf(alphahat)
         if kalman_algo == 1
             fprintf('\nDsgeSmoother: Switching to univariate filter. This may be a sign of stochastic singularity.\n')
@@ -289,13 +297,13 @@ if kalman_algo == 2 || kalman_algo == 4
     a_initial     = zeros(np,1);
     a_initial=set_Kalman_smoother_starting_values(a_initial,M_,oo_,options_);
     a_initial=ST*a_initial; %set state prediction for first Kalman step;
-    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty] = missing_DiffuseKalmanSmootherH3_Z(a_initial,ST, ...
+    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d] = missing_DiffuseKalmanSmootherH3_Z(a_initial,ST, ...
                                                       Z,R1,Q,diag(H), ...
                                                       Pinf,Pstar,data1,vobs,np,smpl,data_index, ...
                                                       options_.nk,kalman_tol,diffuse_kalman_tol, ...
-                                                      options_.filter_decomposition,options_.smoothed_state_uncertainty);
+                                                      options_.filter_decomposition,options_.smoothed_state_uncertainty,options_.filter_covariance,options_.smoother_redux);
+                                                  
 end
-
 
 if expanded_state_vector_for_univariate_filter && (kalman_algo == 2 || kalman_algo == 4)
     % extracting measurement errors
@@ -320,10 +328,122 @@ if expanded_state_vector_for_univariate_filter && (kalman_algo == 2 || kalman_al
     end
 end
 
-%reset old setting of restricted var_list
-oo_.dr.restrict_var_list = oldoo.restrict_var_list;
-oo_.dr.restrict_columns = oldoo.restrict_columns;
-
+if ~options_.smoother_redux    
+    %reset old setting of restricted var_list
+    oo_.dr.restrict_var_list = oldoo.restrict_var_list;
+    oo_.dr.restrict_columns = oldoo.restrict_columns;
+else
+    if options_.block == 0
+        ic = [ M_.nstatic+(1:M_.nspred) M_.endo_nbr+(1:size(oo_.dr.ghx,2)-M_.nspred) ]';
+    else
+        ic = oo_.dr.restrict_columns;
+    end
+    
+    [A,B] = kalman_transition_matrix(oo_.dr,(1:M_.endo_nbr)',ic,M_.exo_nbr);
+    iT = pinv(T);
+    Tstar = A(~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list),oo_.dr.restrict_var_list);
+    Rstar = B(~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list),:);
+    C = Tstar*iT;
+    D = Rstar-C*R;
+    static_var_list = ~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list);
+    ilagged = any(abs(C*T-Tstar)'>1.e-12);
+    static_var_list0 = static_var_list;
+    static_var_list0(static_var_list) = ilagged;
+    static_var_list(static_var_list) = ~ilagged;
+    % reconstruct smoothed variables
+    aaa=zeros(M_.endo_nbr,gend);
+    aaa(oo_.dr.restrict_var_list,:)=alphahat;
+    for k=1:gend
+        aaa(static_var_list,k) = C(~ilagged,:)*alphahat(:,k)+D(~ilagged,:)*etahat(:,k);
+    end
+    if any(ilagged)
+        for k=2:gend
+            aaa(static_var_list0,k) = Tstar(ilagged,:)*alphahat(:,k-1)+Rstar(ilagged,:)*etahat(:,k);
+        end
+    end
+    alphahat=aaa;
+    
+    % reconstruct updated variables
+    aaa=zeros(M_.endo_nbr,gend);
+    aaa(oo_.dr.restrict_var_list,:)=ahat;
+    for k=1:gend
+        aaa(static_var_list,k) = C(~ilagged,:)*ahat(:,k)+D(~ilagged,:)*eehat(:,k);
+    end
+    if any(ilagged)
+        for k=d+2:gend
+            aaa(static_var_list0,k) = Tstar(ilagged,:)*aahat(:,k-1)+Rstar(ilagged,:)*eehat(:,k);
+        end
+    end
+    ahat1=aaa;
+    % reconstruct aK
+    aaa = zeros(options_.nk,M_.endo_nbr,gend+options_.nk);
+    aaa(:,oo_.dr.restrict_var_list,:)=aK;   
+    for k=1:gend
+        for jnk=1:options_.nk
+            aaa(jnk,static_var_list,k+jnk) = C(~ilagged,:)*dynare_squeeze(aK(jnk,:,k+jnk));
+        end
+    end    
+    if any(ilagged)
+        for k=1:gend
+            aaa(1,static_var_list0,k+1) = Tstar(ilagged,:)*ahat(:,k);
+            for jnk=2:options_.nk
+                aaa(jnk,static_var_list0,k+jnk) = Tstar(ilagged,:)*dynare_squeeze(aK(jnk-1,:,k+jnk-1));
+            end
+        end
+    end
+    aK=aaa;
+    ahat=ahat1;
+    
+    % reconstruct P
+    if ~isempty(P)
+        PP=zeros(M_.endo_nbr,M_.endo_nbr,gend+1);
+        PP(oo_.dr.restrict_var_list,oo_.dr.restrict_var_list,:)=P;
+        DQD=D(~ilagged,:)*Q*transpose(D(~ilagged,:))+C(~ilagged,:)*R*Q*transpose(D(~ilagged,:))+D(~ilagged,:)*Q*transpose(C(~ilagged,:)*R);
+        DQR=D(~ilagged,:)*Q*transpose(R);
+        for k=1:gend+1
+            PP(static_var_list,static_var_list,k)=C(~ilagged,:)*P(:,:,k)*C(~ilagged,:)'+DQD;
+            PP(static_var_list,oo_.dr.restrict_var_list,k)=C(~ilagged,:)*P(:,:,k)+DQR;
+            PP(oo_.dr.restrict_var_list,static_var_list,k)=transpose(PP(static_var_list,oo_.dr.restrict_var_list,k));
+        end
+        P=PP;
+        clear('PP');
+    end
+    
+    % reconstruct state_uncertainty
+    if ~isempty(state_uncertainty)
+        mm=size(T,1);
+        ss=length(find(static_var_list));
+        sstate_uncertainty=zeros(M_.endo_nbr,M_.endo_nbr,gend);
+        sstate_uncertainty(oo_.dr.restrict_var_list,oo_.dr.restrict_var_list,:)=state_uncertainty(1:mm,1:mm,:);
+        for k=1:gend
+            sstate_uncertainty(static_var_list,static_var_list,k)=[C(~ilagged,:) D(~ilagged,:)]*state_uncertainty(:,:,k)*[C(~ilagged,:) D(~ilagged,:)]';
+            tmp = [C(~ilagged,:) D(~ilagged,:)]*state_uncertainty(:,:,k);
+            sstate_uncertainty(static_var_list,oo_.dr.restrict_var_list,k)=tmp(1:ss,1:mm);
+            sstate_uncertainty(oo_.dr.restrict_var_list,static_var_list,k)=transpose(sstate_uncertainty(static_var_list,oo_.dr.restrict_var_list,k));
+        end
+        state_uncertainty=sstate_uncertainty;
+        clear('sstate_uncertainty');
+    end
+        
+    % reconstruct PK TO DO!!
+    if ~isempty(PK)
+        PP = zeros(options_.nk,M_.endo_nbr,M_.endo_nbr,gend+options_.nk);
+        PP(:,oo_.dr.restrict_var_list,oo_.dr.restrict_var_list,:) = PK;
+        DQD=D(~ilagged,:)*Q*transpose(D(~ilagged,:))+C(~ilagged,:)*R*Q*transpose(D(~ilagged,:))+D(~ilagged,:)*Q*transpose(C(~ilagged,:)*R);
+        DQR=D(~ilagged,:)*Q*transpose(R);
+        for f=1:options_.nk
+            for k=1:gend
+                PP(f,static_var_list,static_var_list,k+f)=C(~ilagged,:)*squeeze(PK(f,:,:,k+f))*C(~ilagged,:)'+DQD;
+                PP(f,static_var_list,oo_.dr.restrict_var_list,k+f)=C(~ilagged,:)*squeeze(PK(f,:,:,k+f))+DQR;
+                PP(f,oo_.dr.restrict_var_list,static_var_list,k+f)=transpose(squeeze(PP(f,static_var_list,oo_.dr.restrict_var_list,k+f)));
+            end
+        end
+        PK=PP;
+        clear('PP');
+    end
+    
+    bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
+end
 
 function a=set_Kalman_smoother_starting_values(a,M_,oo_,options_)
 % function a=set_Kalman_smoother_starting_values(a,M_,oo_,options_)
@@ -352,3 +472,4 @@ if isfield(M_,'filter_initial_state') && ~isempty(M_.filter_initial_state)
         end
     end
 end
+

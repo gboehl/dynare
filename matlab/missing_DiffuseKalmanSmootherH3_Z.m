@@ -1,5 +1,5 @@
-function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag)
-% function [alphahat,epsilonhat,etahat,a1,P1,aK,PK,d,decomp] = missing_DiffuseKalmanSmootherH3_Z(T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,decomp_flag,state_uncertainty_flag)
+function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux)
+% function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux)
 % Computes the diffuse kalman smoother in the case of a singular var-cov matrix.
 % Univariate treatment of multivariate time series.
 %
@@ -16,13 +16,17 @@ function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V] = missing_DiffuseKalma
 %    pp:       number of observed variables
 %    mm:       number of state variables
 %    smpl:     sample size
-%    data_index                   [cell]      1*smpl cell of column vectors of indices.
-%    nk        number of forecasting periods
-%    kalman_tol   tolerance for zero divider
-%    diffuse_kalman_tol   tolerance for zero divider
-%    decomp_flag  if true, compute filter decomposition
-%    state_uncertainty_flag     if true, compute uncertainty about smoothed
+%    data_index:                [cell]      1*smpl cell of column vectors of indices.
+%    nk:                        number of forecasting periods
+%    kalman_tol:                tolerance for zero divider
+%    diffuse_kalman_tol:        tolerance for zero divider
+%    decomp_flag:               if true, compute filter decomposition
+%    state_uncertainty_flag:    if true, compute uncertainty about smoothed
 %                               state estimate
+%    decomp_flag:               if true, compute filter decomposition
+%    filter_covariance_flag:    if true, compute filter covariance
+%    smoother_redux:            if true, compute smoother on restricted
+%                               state space, recover static variables from this
 %
 % OUTPUTS
 %    alphahat: smoothed state variables (a_{t|T})
@@ -37,6 +41,9 @@ function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V] = missing_DiffuseKalma
 %              matrices (meaningless for periods 1:d)
 %    decomp:   decomposition of the effect of shocks on filtered values
 %    V:        3D array of state uncertainty matrices
+%    aalphahat:     filtered states in t-1|t
+%    eetahat:       updated shocks in t|t
+%    d:             number of diffuse periods
 %
 % Notes:
 %   Outputs are stored in decision-rule order, i.e. to get variables in order of declaration
@@ -78,7 +85,6 @@ function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V] = missing_DiffuseKalma
 % New output argument aK: 1-step to nk-stpe ahed predictions)
 % New input argument nk: max order of predictions in aK
 
-
 if size(H,2)>1
     error('missing_DiffuseKalmanSmootherH3_Z:: H is not a vector. This must not happens')
 end
@@ -102,7 +108,11 @@ Kstar           = zeros(mm,pp,smpl);
 Kinf            = zeros(spstar(1),pp,smpl);
 P               = zeros(mm,mm,smpl+1);
 P1              = P;
-PK              = zeros(nk,mm,mm,smpl+nk);
+if filter_covariance_flag
+    PK              = zeros(nk,mm,mm,smpl+nk);
+else
+    PK              = [];
+end
 Pstar           = zeros(spstar(1),spstar(2),smpl);
 Pstar(:,:,1)    = Pstar1;
 Pinf            = zeros(spinf(1),spinf(2),smpl);
@@ -120,10 +130,21 @@ QQ              = R*Q*transpose(R);
 QRt             = Q*transpose(R);
 alphahat        = zeros(mm,smpl);
 etahat          = zeros(rr,smpl);
+if smoother_redux
+    aalphahat       = alphahat;
+    eetahat         = etahat;
+else
+    aalphahat       = [];
+    eetahat         = [];
+end
 epsilonhat      = zeros(rr,smpl);
 r               = zeros(mm,smpl);
 if state_uncertainty_flag
-    V               = zeros(mm,mm,smpl);
+    if smoother_redux
+        V               = zeros(mm+rr,mm+rr,smpl);
+    else
+        V               = zeros(mm,mm,smpl);
+    end
     N               = zeros(mm,mm,smpl);
 else
     V=[];
@@ -229,18 +250,40 @@ while notsteady && t<smpl
             % p. 157, DK (2012)
         end
     end
+    if smoother_redux
+        ri=zeros(mm,1);
+        for st=t:-1:max(d+1,t-1)
+            di = flipud(data_index{st})';
+            for i = di
+                if Fi(i,st) > kalman_tol
+                    Li = eye(mm)-Ki(:,i,st)*Z(i,:)/Fi(i,st);
+                    ri = Z(i,:)'/Fi(i,st)*v(i,st)+Li'*ri;                             % DK (2012), 6.15, equation for r_{t,i-1}
+                end
+            end
+            if st==t-1
+                aalphahat(:,st) = a1(:,st) + P1(:,:,st)*ri;
+            else
+                eetahat(:,st) = QRt*ri;
+            end
+            ri = T'*ri;                                                             % KD (2003), eq. (23), equation for r_{t-1,p_{t-1}}
+        end
+    end
     if isqvec
         QQ = R*Qvec(:,:,t+1)*transpose(R);
     end
     a1(:,t+1) = T*a(:,t);                                                   %transition according to (6.14) in DK (2012)
     P(:,:,t+1) = T*P(:,:,t)*T' + QQ;                                        %transition according to (6.14) in DK (2012)
-    Pf          = P(:,:,t+1);
+    if filter_covariance_flag
+        Pf          = P(:,:,t+1);
+    end
     aK(1,:,t+1) = a1(:,t+1);
     for jnk=1:nk
-        if jnk>1
-            Pf = T*Pf*T' + QQ;
+        if filter_covariance_flag
+            if jnk>1
+                Pf = T*Pf*T' + QQ;
+            end
+            PK(jnk,:,:,t+jnk) = Pf;
         end
-        PK(jnk,:,:,t+jnk) = Pf;
         if jnk>1
             aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
         end
@@ -248,6 +291,9 @@ while notsteady && t<smpl
                                                                             %  notsteady   = ~(max(max(abs(P(:,:,t+1)-P(:,:,t))))<kalman_tol);
 end
 P1(:,:,t+1) = P(:,:,t+1);
+
+P1(:,:,t+1)=P(:,:,t+1);
+
 % $$$ P_s=tril(P(:,:,t))+tril(P(:,:,t),-1)';
 % $$$ P1_s=tril(P1(:,:,t))+tril(P1(:,:,t),-1)';
 % $$$ Fi_s = Fi(:,t);
@@ -307,7 +353,13 @@ while t > d+1
     ri = T'*ri;                                                             % KD (2003), eq. (23), equation for r_{t-1,p_{t-1}}
     if state_uncertainty_flag
         N(:,:,t) = Ni;                                                          % DK (2012), below 6.15, N_{t-1}=N_{t,0}
-        V(:,:,t) = P1(:,:,t)-P1(:,:,t)*N(:,:,t)*P1(:,:,t);                      % KD (2000), eq. (7) with N_{t-1} stored in N(:,:,t)
+        if smoother_redux
+            ptmp = [P1(:,:,t) R*Q; (R*Q)' Q];
+            ntmp = [N(:,:,t) zeros(mm,rr); zeros(rr,mm+rr)];
+            V(:,:,t)    = ptmp - ptmp*ntmp*ptmp;
+        else
+            V(:,:,t) = P1(:,:,t)-P1(:,:,t)*N(:,:,t)*P1(:,:,t);                      % KD (2000), eq. (7) with N_{t-1} stored in N(:,:,t)
+        end
         Ni = T'*Ni*T;                                                           % KD (2000), eq. (23), equation for N_{t-1,p_{t-1}}
     end
 end
@@ -359,10 +411,23 @@ if d
         end
         etahat(:,t)   = QRt*r(:,t);                                         % KD (2000), eq. (27)
         if state_uncertainty_flag
-            V(:,:,t)=Pstar(:,:,t)-Pstar(:,:,t)*N_0(:,:,t)*Pstar(:,:,t)...
-                     -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
-                     - Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t)...
-                     - Pinf(:,:,t)*N_2(:,:,t)*Pinf(:,:,t);                       % DK (2012), eq. 5.30
+            if smoother_redux
+                pstmp = [Pstar(:,:,t) R*Q; (R*Q)' Q];
+                pitmp = [Pinf(:,:,t) zeros(mm,rr); zeros(rr,mm+rr)];
+                ntmp0 = [N_0(:,:,t) zeros(mm,rr); zeros(rr,mm+rr)];
+                ntmp1 = [N_1(:,:,t) zeros(mm,rr); zeros(rr,mm+rr)];
+                ntmp2 = [N_2(:,:,t) zeros(mm,rr); zeros(rr,mm+rr)];
+                V(:,:,t)    = pstmp - pstmp*ntmp0*pstmp...
+                    -(pitmp*ntmp1*pstmp)'...
+                    - pitmp*ntmp1*pstmp...
+                    - pitmp*ntmp2*Pinf(:,:,t);                                   % DK (2012), eq. 5.30
+                
+            else
+                V(:,:,t)=Pstar(:,:,t)-Pstar(:,:,t)*N_0(:,:,t)*Pstar(:,:,t)...
+                    -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
+                    - Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t)...
+                    - Pinf(:,:,t)*N_2(:,:,t)*Pinf(:,:,t);                       % DK (2012), eq. 5.30
+            end
         end
         if t > 1
             r0(:,t-1) = T'*r0(:,t);                                         % KD (2000), below eq. (25) r_{t-1,p_{t-1}}=T'*r_{t,0}

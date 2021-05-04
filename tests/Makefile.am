@@ -297,6 +297,7 @@ MODFILES = \
 	kalman_filter_smoother/fs2000a.mod \
 	kalman_filter_smoother/fs2000_smoother_only.mod \
 	kalman_filter_smoother/fs2000_smoother_only_ns.mod \
+	kalman_filter_smoother/fs2000_smoother_redux.mod \
 	kalman_filter_smoother/test_compute_Pinf_Pstar_data.mod \
 	kalman_filter_smoother/test_compute_Pinf_Pstar.mod \
 	kalman_filter_smoother/SOE.mod \

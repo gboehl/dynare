@@ -6330,6 +6330,26 @@ block decomposition of the model (see :opt:`block`).
        (:math:`E_{t}{y_t}`). See below for a description of all these
        variables.
 
+    .. option:: smoother_redux
+
+       Triggers a faster computation of the smoothed endogenous variables and shocks for large models.
+       It runs the smoother only for the state variables (i.e. with the same representation used for 
+       likelihood computations) and computes the remaining variables ex-post.
+       Static unobserved objects (filtered, smoothed, updated, k-step ahead) are recovered, but there are
+       exceptions to a full recovery, depending on how static unobserved variables depend on the restricted 
+       state space adopted. For example, lagged shocks which are ONLY used to recover NON-observed static 
+       variables will not be recovered).  
+       For such exceptions, only the following output is provided:
+       
+           ``FilteredVariablesKStepAhead``: will be fully recovered
+
+           ``SmoothedVariables``, ``FilteredVariables``, ``UpdatedVariables``: recovered for all periods beyond period ``d+1``,
+            where ``d`` denotes the number of diffuse filtering steps.
+
+           ``FilteredVariablesKStepAheadVariances``, ``Variance``, and ``State_uncertainty`` cannot be recovered, and ZERO is provided as output.
+
+       If you need variances for those variables, either do not set the option, or declare the variable as observed, using NaNs as data points.
+
     .. option:: forecast = INTEGER
 
        Computes the posterior distribution of a forecast on INTEGER
@@ -8416,6 +8436,18 @@ Dynare can also run the smoother on a calibrated model:
     .. option:: filter_decomposition
 
         See :opt:`filter_decomposition`.
+
+    .. option:: filter_covariance
+
+        See :opt:`filter_covariance`.
+
+    .. option:: smoother_redux
+
+        See :opt:`smoother_redux`.
+
+    .. option:: kalman_algo = INTEGER
+
+        See :opt:`kalman_algo <kalman_algo = INTEGER>`.
 
     .. option:: diffuse_filter = INTEGER
 

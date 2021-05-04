@@ -428,6 +428,7 @@ options_.prefilter = 0;
 options_.presample = 0;
 options_.prior_trunc = 1e-10;
 options_.smoother = false;
+options_.smoother_redux = false;
 options_.posterior_max_subsample_draws = 1200;
 options_.sub_draws = [];
 options_.ME_plot_tol=1e-6;
