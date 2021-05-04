@@ -105,6 +105,7 @@ for i=1:gmhmaxlikOptions.iterations
     printline(58,'=')
     disp(['   Change in the posterior covariance matrix = ' num2str(dVariance) '.'])
     disp(['   Change in the posterior mean = ' num2str(dMean) '.'])
+    disp(['   Current mode = ' num2str(ModeValue)])
     disp(['   Mode improvement = ' num2str(abs(OldModeValue-ModeValue))])
     disp(['   New value of jscale = ' num2str(Scale)])
     printline(58,'=')
