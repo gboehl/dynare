@@ -1,7 +1,10 @@
 function [dr,info,M_,options_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
 % function [dr,info,M_,options_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
-% computes the reduced form solution of a rational expectations model
+% computes the reduced form solution of a rational expectations block-decomposed model
 % (first order approximation of the stochastic model around the deterministic steady state).
+%
+% NB: This code does not work with option mfs > 0. The preprocessor has a check to avoid this
+%     configuration. See also #1726.
 %
 % INPUTS
 %   dr         [matlab structure] Decision rules for stochastic simulations.

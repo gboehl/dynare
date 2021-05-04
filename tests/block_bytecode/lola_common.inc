@@ -716,13 +716,12 @@ tauc2=tauc;
 
 end;
 
-%========================================================
-% compute initial steady state and check eigenvalues 
-%========================================================
+%==============================
+% compute initial steady state
+%==============================
 
 resid;
 steady(solve_algo=3);
-check;
 
 @#if deterministic
 
@@ -930,13 +929,12 @@ tauw2=tauw;
 tauc2=tauc;
 end;
 
-%========================================================
-% compute final steady state and check eigenvalues 
-%========================================================
+%============================
+% compute final steady state
+%============================
 
 resid;
 steady(solve_algo=3);
-check;
 
 
 shocks;     
