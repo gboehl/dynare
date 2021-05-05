@@ -11,7 +11,7 @@ function WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,Dyna
 %   DynareModel     [structure]                     Dynare model structure
 %   DynareOptions   [structure]                     Dynare options structure
 
-% Copyright (C) 2016-2018 Dynare Team
+% Copyright (C) 2016-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -120,7 +120,7 @@ for j=1:nvar
     fig_name1 = strrep(fig_name1,'.','');
     
     if ~ismac
-        [STATUS,MESSAGE] = xlswrite([OutputDirectoryName,filesep,DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
+        STATUS = xlswrite([OutputDirectoryName,filesep,DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
     else
         writetable(cell2table(d0), [OutputDirectoryName,filesep,DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1 '.xls'], 'Sheet', endo_names{i_var(j)},'WriteVariableNames',false);
     end
