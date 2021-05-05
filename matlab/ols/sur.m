@@ -121,6 +121,10 @@ end
 %
 
 st = dbstack(1);
+if isoctave
+    % Workaround for bug in Octave 6, see https://savannah.gnu.org/bugs/?60531
+    st = st(2:end);
+end
 if ~isempty(st) && strcmp(st(1).name, 'surgibbs')
     varargout{1} = nobs;
     varargout{2} = X{param_names{:}}.data;

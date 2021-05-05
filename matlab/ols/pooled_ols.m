@@ -76,7 +76,11 @@ else
 end
 
 st = dbstack(1);
-if strcmp(st(1).name, 'pooled_fgls')
+if isoctave
+    % Workaround for bug in Octave 6, see https://savannah.gnu.org/bugs/?60531
+    st = st(2:end);
+end
+if ~isempty(st) && strcmp(st(1).name, 'pooled_fgls')
     save_structure_name = 'pooled_fgls';
 else
     save_structure_name = 'pooled_ols';
