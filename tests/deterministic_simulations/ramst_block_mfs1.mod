@@ -30,8 +30,6 @@ end;
 
 steady;
 
-check;
-
 shocks;
   var x;
   periods 1;

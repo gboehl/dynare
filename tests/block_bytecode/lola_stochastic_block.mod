@@ -19,7 +19,7 @@ if max(max(abs(oo_.dr.ghx(:, state_reorder) - ref.oo_.dr.ghx(ref.oo_.dr.inv_orde
     error('Error in ghx')
 end
 
-if max(max(abs(oo_.dr.ghu - ref.oo_.dr.ghu(ref.oo_.dr.inv_order_var, :)))) > 6e-9
+if max(max(abs(oo_.dr.ghu - ref.oo_.dr.ghu(ref.oo_.dr.inv_order_var, :)))) > 3e-8
     error('Error in ghu')
 end
 
