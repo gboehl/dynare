@@ -38,6 +38,12 @@ good = [6.791587808530124
   -0.530200000000000
   -0.397400000000000];
 
-if sum(abs(M_.params-good)) > 2e-14
+if isoctave
+  tolerance = 1e-2;
+else
+  tolerance = 2e-14;
+end
+
+if sum(abs(M_.params-good)) > tolerance
     error(['sum of M_.params - good was: ' num2str(sum(abs(M_.params-good)))]);
 end
