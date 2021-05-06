@@ -1,5 +1,5 @@
-function [alphahat,epsilonhat,etahat,a,P,aK,PK,decomp,V] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag)
-% function [alphahat,epsilonhat,etahat,a1,P,aK,PK,d,decomp] = missing_DiffuseKalmanSmootherH3_Z(T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,decomp_flag,state_uncertainty_flag)
+function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag)
+% function [alphahat,epsilonhat,etahat,a1,P1,aK,PK,d,decomp] = missing_DiffuseKalmanSmootherH3_Z(T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,decomp_flag,state_uncertainty_flag)
 % Computes the diffuse kalman smoother in the case of a singular var-cov matrix.
 % Univariate treatment of multivariate time series.
 %
@@ -31,7 +31,7 @@ function [alphahat,epsilonhat,etahat,a,P,aK,PK,decomp,V] = missing_DiffuseKalman
 %    a:        matrix of updated variables (a_{t|t})
 %    aK:       3D array of k step ahead filtered state variables (a_{t+k|t})
 %              (meaningless for periods 1:d)
-%    P:        3D array of one-step ahead forecast error variance
+%    P1:        3D array of one-step ahead forecast error variance
 %              matrices
 %    PK:       4D array of k-step ahead forecast error variance
 %              matrices (meaningless for periods 1:d)
@@ -221,18 +221,21 @@ while notsteady && t<smpl
         end
     end
     a1(:,t+1) = T*a(:,t);                                                   %transition according to (6.14) in DK (2012)
-    Pf          = P(:,:,t);
+    P(:,:,t+1) = T*P(:,:,t)*T' + QQ;                                        %transition according to (6.14) in DK (2012)
+    Pf          = P(:,:,t+1);
     aK(1,:,t+1) = a1(:,t+1);
     for jnk=1:nk
-        Pf = T*Pf*T' + QQ;
+        if jnk>1
+            Pf = T*Pf*T' + QQ;
+        end
         PK(jnk,:,:,t+jnk) = Pf;
         if jnk>1
             aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
         end
     end
-    P(:,:,t+1) = T*P(:,:,t)*T' + QQ;                                        %transition according to (6.14) in DK (2012)
                                                                             %  notsteady   = ~(max(max(abs(P(:,:,t+1)-P(:,:,t))))<kalman_tol);
 end
+P1(:,:,t+1) = P(:,:,t+1);
 % $$$ P_s=tril(P(:,:,t))+tril(P(:,:,t),-1)';
 % $$$ P1_s=tril(P1(:,:,t))+tril(P1(:,:,t),-1)';
 % $$$ Fi_s = Fi(:,t);
