@@ -280,8 +280,13 @@ clear(['+' fname '/driver'])
 try
     evalin('base',[fname '.driver']) ;
 catch ME
-    diary off
-    rethrow(ME)
+    W = evalin('base','whos');
+    diary off   
+    if ismember(fname,[W(:).name])
+        error('Your base workspace already contains a variable with the same name as the mod-file.\nYou need to delete it or rename the mod-file.')        
+    else        
+        rethrow(ME)    
+    end    
 end
 
 diary off
