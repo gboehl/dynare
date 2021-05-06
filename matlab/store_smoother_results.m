@@ -34,8 +34,9 @@ function [oo_, yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,da
 %                   oo_.Smoother.Variance: one-step ahead forecast error variance (declaration order)
 %                   oo_.Smoother.Constant: structure storing the constant term of the smoother
 %                   oo_.Smoother.Trend: structure storing the trend term of the smoother
-%                   oo_.FilteredVariablesKStepAhead: k-step ahead forecast error variance matrices (decision-rule order)
-%                   oo_.FilteredVariablesShockDecomposition: shock decomposition of k-step ahead filtered variables (decision-rule order)
+%                   oo_.FilteredVariablesKStepAhead: k-step ahead filtered variables (declaration order)
+%                   oo_.FilteredVariablesKStepAheadVariances: k-step ahead forecast error variance matrices (declaration order)
+%                   oo_.FilteredVariablesShockDecomposition: shock decomposition of k-step ahead filtered variables (declaration order)
 %                   oo_.FilteredVariables: structure storing the filtered variables
 %                   oo_.UpdatedVariables: structure storing the updated variables
 %                   oo_.SmoothedShocks: structure storing the smoothed shocks
