@@ -5116,6 +5116,16 @@ block decomposition of the model (see :opt:`block`).
 
        See :opt:`graph_format <graph_format = ( FORMAT, FORMAT... )>`.
 
+    .. option:: no_init_estimation_check_first_obs
+
+       Do not check for stochastic singularity in first period. If used, `ESTIMATION CHECKS`
+       does not return an error if the check fails only in first observation.
+       This should only be used when observing stock variables (e.g. capital) in first period, on top of their associated flow (e.g. investment).
+       Using this option may lead to a crash or provide undesired/wrong results for badly specified problems 
+       (e.g. the additional variable observed in first period is not predetermined).
+
+       For advanced use only.
+
     .. option:: lik_init = INTEGER
 
        Type of initialization of Kalman filter:

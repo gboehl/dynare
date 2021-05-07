@@ -39,7 +39,8 @@ function DynareResults = initial_estimation_checks(objective_function,xparam1,Dy
 
 %get maximum number of simultaneously observed variables for stochastic
 %singularity check
-maximum_number_non_missing_observations=max(sum(~isnan(DynareDataset.data),2));
+maximum_number_non_missing_observations=max(sum(~isnan(DynareDataset.data(2:end,:)),2));
+init_number_non_missing_observations=sum(~isnan(DynareDataset.data(1,:)),2);
 
 if DynareOptions.order>1
     if any(any(isnan(DynareDataset.data)))
@@ -82,12 +83,32 @@ end
 
 non_zero_ME=length(EstimatedParameters.H_entries_to_check_for_positive_definiteness);
 
+print_init_check_warning=false;
 if maximum_number_non_missing_observations>Model.exo_nbr+non_zero_ME
     error(['initial_estimation_checks:: Estimation can''t take place because there are less declared shocks than observed variables!'])
+end
+if init_number_non_missing_observations>Model.exo_nbr+non_zero_ME
+    if DynareOptions.no_init_estimation_check_first_obs
+        print_init_check_warning=true;
+    else
+        error(['initial_estimation_checks:: Estimation can''t take place because there are less declared shocks than observed variables in first period!'])
+    end
 end
 
 if maximum_number_non_missing_observations>length(find(diag(Model.Sigma_e)))+non_zero_ME
     error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance!'])
+end
+if init_number_non_missing_observations>length(find(diag(Model.Sigma_e)))+non_zero_ME
+    if DynareOptions.no_init_estimation_check_first_obs
+        print_init_check_warning=true;
+    else
+        error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance in first period!'])
+    end
+end
+if print_init_check_warning
+    fprintf('ESTIMATION_CHECKS: You decided to ignore test of stochastic singularity in first_obs.\n');
+    fprintf('ESTIMATION_CHECKS: If this was not done on purpose (typically when observing a stock variable [capital] in first period, on top of its flow [investment]),\n');
+    fprintf('ESTIMATION_CHECKS: it may lead to a crash or provide undesired/wrong results later on!\n');
 end
 
 if (any(BayesInfo.pshape  >0 ) && DynareOptions.mh_replic) && DynareOptions.mh_nblck<1

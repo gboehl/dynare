@@ -54,6 +54,9 @@ wsOct
 !/estimation/method_of_moments/RBC/RBC_Andreasen_Data_2.mat
 !/estimation/method_of_moments/AFVRR/AFVRR_data.mat
 !/estimation/method_of_moments/AFVRR/AFVRR_steady_helper.m
+!estimation/no_init_estimation_check_first_obs/fsdat_mat.m
+!estimation/no_init_estimation_check_first_obs/fsdat_mat_XFAIL.m
+!estimation/no_init_estimation_check_first_obs/fsdat_simul.m
 !/expectations/expectation_ss_old_steadystate.m
 !/external_function/extFunDeriv.m
 !/external_function/extFunNoDerivs.m
