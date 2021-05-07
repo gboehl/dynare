@@ -211,10 +211,12 @@ while notsteady && t<smpl
         P(:,:,t+1)  = T*P(:,:,t)*L(:,:,t)' + QQ;
     end
     a(:,t+1)    = T*atilde(:,t);
-    Pf          = P(:,:,t);
+    Pf          = P(:,:,t+1);
     aK(1,:,t+1) = a(:,t+1);
     for jnk=1:nk
-        Pf = T*Pf*T' + QQ;
+        if jnk>1
+            Pf = T*Pf*T' + QQ;
+        end
         PK(jnk,:,:,t+jnk) = Pf;
         if jnk>1
             aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
