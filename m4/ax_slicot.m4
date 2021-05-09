@@ -37,9 +37,11 @@ AC_DEFUN([AX_SLICOT],
   else
     LDFLAGS_SLICOT=""
   fi
-  ac_save_LDFLAGS="$LDFLAGS"
-  LDFLAGS_SAVED="$LDFLAGS"
+  ac_save_LDFLAGS=$LDFLAGS
 
+  # At this point we should add MATLAB_FCFLAGS to FCFLAGS for Windows (which has -fno-underscoring),
+  # but that does not work. The actual underscore test seems to happen at the very beginning of the
+  # macro. Hence the modification of FCFLAGS was moved higher (in mex/build/matlab/configure.ac).
   AC_FC_FUNC(sb02od)
 
   if test "$1" = matlab; then
@@ -56,7 +58,7 @@ AC_DEFUN([AX_SLICOT],
              [$($MKOCTFILE -p BLAS_LIBS) $($MKOCTFILE -p LAPACK_LIBS)])
   fi
 
-  LDFLAGS="$ac_save_LDFLAGS"
+  LDFLAGS=$ac_save_LDFLAGS
   AC_SUBST(LDFLAGS_SLICOT)
   AC_SUBST(LIBADD_SLICOT)
 ])

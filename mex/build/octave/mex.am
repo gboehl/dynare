@@ -5,10 +5,9 @@ AM_CPPFLAGS += -I$(top_srcdir)/../../sources
 DEFS += -DOCTAVE_MEX_FILE
 DEFS += -DMEXEXT=\".mex\"
 
-AM_CFLAGS = $(shell $(MKOCTFILE) -p CPICFLAG)
-AM_FFLAGS = $(shell $(MKOCTFILE) -p FPICFLAG)
-AM_FCFLAGS = $(shell $(MKOCTFILE) -p FPICFLAG)
-AM_CXXFLAGS = $(shell $(MKOCTFILE) -p CXXPICFLAG)
+AM_CFLAGS = $(shell $(MKOCTFILE) -p CPICFLAG) -Wall -Wno-parentheses
+AM_FCFLAGS = $(shell $(MKOCTFILE) -p FPICFLAG) -Wall
+AM_CXXFLAGS = $(shell $(MKOCTFILE) -p CXXPICFLAG) -Wall -Wno-parentheses -Wold-style-cast
 AM_LDFLAGS = $(shell $(MKOCTFILE) -p DL_LDFLAGS) -L"$(shell $(MKOCTFILE) -p OCTLIBDIR)"
 
 LIBS += $(shell $(MKOCTFILE) -p OCTAVE_LIBS)
@@ -16,7 +15,6 @@ LIBS += $(shell $(MKOCTFILE) -p BLAS_LIBS)
 LIBS += $(shell $(MKOCTFILE) -p LAPACK_LIBS)
 LIBS += $(shell $(MKOCTFILE) -p FFTW_LIBS)
 LIBS += $(shell $(MKOCTFILE) -p LIBS)
-LIBS += $(shell $(MKOCTFILE) -p FLIBS)
 
 mexdir = $(libdir)/dynare/mex/octave
 

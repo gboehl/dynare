@@ -30,20 +30,20 @@ MATLAB_CPPFLAGS="-I$MATLAB/extern/include"
 
 case ${MATLAB_ARCH} in
   glnxa64)
-    MATLAB_DEFS="$MATLAB_DEFS -D_GNU_SOURCE -DNDEBUG"
-    MATLAB_CFLAGS="-fexceptions -fno-omit-frame-pointer -fPIC -pthread -g -O2"
-    MATLAB_CXXFLAGS="-fno-omit-frame-pointer -fPIC -pthread -g -O2"
-    MATLAB_FCFLAGS="-fPIC -g -O2 -fexceptions"
+    MATLAB_DEFS="-D_GNU_SOURCE -DNDEBUG"
+    MATLAB_CFLAGS="-fexceptions -fPIC -pthread"
+    MATLAB_CXXFLAGS="-fPIC -pthread"
+    MATLAB_FCFLAGS="-fPIC -fexceptions"
     MATLAB_LDFLAGS_NOMAP="-shared -Wl,--no-undefined -Wl,-rpath-link,$MATLAB/bin/glnxa64 -L$MATLAB/bin/glnxa64"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,--version-script,$MATLAB/extern/lib/glnxa64/mexFunction.map"
     MATLAB_LIBS="-lmx -lmex -lmat -lm -lstdc++ -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
     ;;
   win64)
-    MATLAB_CFLAGS="-fexceptions -g -O2"
-    MATLAB_CXXFLAGS="-g -O2"
-    MATLAB_FCFLAGS="-g -O2 -fexceptions -fno-underscoring"
-    MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
+    MATLAB_CFLAGS="-fexceptions"
+    MATLAB_CXXFLAGS=""
+    MATLAB_FCFLAGS="-fexceptions -fno-underscoring"
+    MATLAB_DEFS="-DNDEBUG"
     # The hack for libquadmath is needed because -static-libgfortran
     # unfortunately does not imply the static linking of the former.
     # The last part about winpthread is a hack to avoid dynamically linking
@@ -57,10 +57,10 @@ case ${MATLAB_ARCH} in
     ax_mexopts_ok="yes"
     ;;
   maci64)
-    MATLAB_DEFS="$MATLAB_DEFS -DNDEBUG"
+    MATLAB_DEFS="-DNDEBUG"
     MATLAB_CFLAGS="-fno-common -fexceptions"
-    MATLAB_CXXFLAGS="$MATLAB_CFLAGS"
-    MATLAB_FCFLAGS="-g -O2 -fexceptions -fbackslash"
+    MATLAB_CXXFLAGS="-fno-common -fexceptions"
+    MATLAB_FCFLAGS="-fexceptions -fbackslash"
     MATLAB_LDFLAGS_NOMAP="-Wl,-twolevel_namespace -undefined error -bundle"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,-exported_symbols_list,\$(abs_top_srcdir)/mexFunction-MacOSX.map"
     # This -L flag is put here, hence later on the linker command line, so as

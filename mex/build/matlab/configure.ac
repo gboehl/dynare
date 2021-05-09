@@ -45,10 +45,6 @@ case ${host_os} in
     ;;
 esac
 
-CFLAGS="$MATLAB_CFLAGS -Wall -Wno-parentheses"
-FCFLAGS="$MATLAB_FCFLAGS -Wall"
-CXXFLAGS="$MATLAB_CXXFLAGS -Wall -Wno-parentheses -Wold-style-cast"
-
 AC_PROG_FC
 AC_PROG_CC
 AC_PROG_CC_C99
@@ -89,7 +85,13 @@ fi
 
 # Check for libslicot, needed by kalman_steady_state
 if test "$enable_mex_kalman_steady_state" = yes; then
+  # FCFLAGS must be temporarily modified, because otherwise -fno-underscoring is not
+  # taken into account by AC_FC_FUNC in the AX_SLICOT macro.
+  # For some obscure reason, it is necessary to do it at this level and not within the macro.
+  ac_save_FCFLAGS=$FCFLAGS
+  FCFLAGS="$FCFLAGS $MATLAB_FCFLAGS"
   AX_SLICOT([matlab])
+  FCFLAGS=$ac_save_FCFLAGS
   test "$has_slicot" != yes && AC_MSG_ERROR([slicot cannot be found. If you want to skip the compilation of the kalman_steady_state MEX, pass the --disable-mex-kalman-steady-state flag.])
 fi
 

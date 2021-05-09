@@ -26,14 +26,14 @@ AX_OCTAVE
 
 test "$ax_enable_octave" != yes && AC_MSG_ERROR([Octave cannot be found])
 
+# Let mkoctfile set the default compilers and flags (except for FC and FCFLAGS which are not supported)
+# NB: mkoctfile honors overrides via environment variables
 CC=$($MKOCTFILE -p CC)
 CXX=$($MKOCTFILE -p CXX)
 AR=$($MKOCTFILE -p AR)
 RANLIB=$($MKOCTFILE -p RANLIB)
-CFLAGS="$($MKOCTFILE -p CFLAGS) -Wall -Wno-parentheses"
-FCFLAGS="$($MKOCTFILE -p FFLAGS) -Wall -std=gnu" # Override -std=legacy that is in FFLAGS in Octave 5
-FFLAGS="$($MKOCTFILE -p FFLAGS) -Wall"
-CXXFLAGS="$($MKOCTFILE -p CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast"
+CFLAGS=$($MKOCTFILE -p CFLAGS)
+CXXFLAGS=$($MKOCTFILE -p CXXFLAGS)
 LDFLAGS="$($MKOCTFILE -p LFLAGS) $($MKOCTFILE -p LDFLAGS)"
 
 AC_CANONICAL_HOST
