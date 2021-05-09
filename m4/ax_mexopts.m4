@@ -29,25 +29,17 @@ AC_MSG_CHECKING([for options to compile MEX for MATLAB])
 MATLAB_CPPFLAGS="-I$MATLAB/extern/include"
 
 case ${MATLAB_ARCH} in
-  glnx86 | glnxa64)
+  glnxa64)
     MATLAB_DEFS="$MATLAB_DEFS -D_GNU_SOURCE -DNDEBUG"
-    MATLAB_CFLAGS="-fexceptions -fPIC -pthread -g -O2"
-    MATLAB_CXXFLAGS="-fPIC -pthread -g -O2"
+    MATLAB_CFLAGS="-fexceptions -fno-omit-frame-pointer -fPIC -pthread -g -O2"
+    MATLAB_CXXFLAGS="-fno-omit-frame-pointer -fPIC -pthread -g -O2"
     MATLAB_FCFLAGS="-fPIC -g -O2 -fexceptions"
-    MATLAB_LDFLAGS_NOMAP="-shared -Wl,--no-undefined -Wl,-rpath-link,$MATLAB/bin/${MATLAB_ARCH} -L$MATLAB/bin/${MATLAB_ARCH}"
-    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,--version-script,$MATLAB/extern/lib/${MATLAB_ARCH}/mexFunction.map"
+    MATLAB_LDFLAGS_NOMAP="-shared -Wl,--no-undefined -Wl,-rpath-link,$MATLAB/bin/glnxa64 -L$MATLAB/bin/glnxa64"
+    MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,--version-script,$MATLAB/extern/lib/glnxa64/mexFunction.map"
     MATLAB_LIBS="-lmx -lmex -lmat -lm -lstdc++ -lmwlapack -lmwblas"
-    if test "${MATLAB_ARCH}" = "glnx86"; then
-      MATLAB_DEFS="$MATLAB_DEFS -D_FILE_OFFSET_BITS=64"
-      MATLAB_CFLAGS="$MATLAB_CFLAGS -m32"
-      MATLAB_CXXFLAGS="$MATLAB_CXXFLAGS -m32"
-    else # glnxa64
-      MATLAB_CFLAGS="$MATLAB_CFLAGS -fno-omit-frame-pointer"
-      MATLAB_CXXFLAGS="$MATLAB_CXXFLAGS -fno-omit-frame-pointer"
-    fi
     ax_mexopts_ok="yes"
     ;;
-  win32 | win64)
+  win64)
     MATLAB_CFLAGS="-fexceptions -g -O2"
     MATLAB_CXXFLAGS="-g -O2"
     MATLAB_FCFLAGS="-g -O2 -fexceptions -fno-underscoring"
@@ -57,7 +49,7 @@ case ${MATLAB_ARCH} in
     # The last part about winpthread is a hack to avoid dynamically linking
     # against libwinpthread DLL (which is pulled in by libstdc++, even without
     # using threads, since we are using the POSIX threads version of MinGW)
-    MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -static-libgfortran -Wl,-Bstatic,--whole-archive -lquadmath -Wl,-Bdynamic,--no-whole-archive -shared -L$MATLAB/bin/${MATLAB_ARCH} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,-Bdynamic,--no-whole-archive"
+    MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -static-libgfortran -Wl,-Bstatic,--whole-archive -lquadmath -Wl,-Bdynamic,--no-whole-archive -shared -L$MATLAB/bin/win64 -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,-Bdynamic,--no-whole-archive"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP \$(abs_top_srcdir)/mex.def"
     MATLAB_LIBS="-lmex -lmx -lmat -lmwlapack -lmwblas"
     # Hack for static linking of libgomp, needed for OpenMP

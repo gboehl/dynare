@@ -5,7 +5,7 @@ dnl
 dnl AX_SLICOT([matlab])
 dnl AX_SLICOT([octave])
 dnl
-dnl Copyright © 2012-2019 Dynare Team
+dnl Copyright © 2012-2021 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -45,20 +45,7 @@ AC_DEFUN([AX_SLICOT],
   if test "$1" = matlab; then
     LDFLAGS="$LDFLAGS $MATLAB_LDFLAGS_NOMAP $LDFLAGS_SLICOT"
 
-    case ${MATLAB_ARCH} in
-       glnxa64 | win64 | maci64)
-         AX_COMPARE_VERSION([$MATLAB_VERSION], [ge], [7.8], [use_64_bit_indexing=yes], [use_64_bit_indexing=no])
-         ;;
-       *)
-         use_64_bit_indexing=no
-         ;;
-    esac
-
-    if test "$use_64_bit_indexing" = yes; then
-       AC_CHECK_LIB([slicot64_pic], [$sb02od], [LIBADD_SLICOT="-lslicot64_pic"], [has_slicot=no], [$MATLAB_LIBS])
-    else
-       AC_CHECK_LIB([slicot_pic], [$sb02od], [LIBADD_SLICOT="-lslicot_pic"], [has_slicot=no], [$MATLAB_LIBS])
-    fi
+    AC_CHECK_LIB([slicot64_pic], [$sb02od], [LIBADD_SLICOT="-lslicot64_pic"], [has_slicot=no], [$MATLAB_LIBS])
   else
     LDFLAGS="$LDFLAGS $($MKOCTFILE -p LFLAGS) $LDFLAGS_SLICOT"
     # Fallback on libslicot_pic if dynamic libslicot not found
