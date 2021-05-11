@@ -36,7 +36,7 @@ case ${MATLAB_ARCH} in
     MATLAB_FCFLAGS="-fPIC -fexceptions"
     MATLAB_LDFLAGS_NOMAP="-shared -Wl,--no-undefined -Wl,-rpath-link,$MATLAB/bin/glnxa64 -L$MATLAB/bin/glnxa64"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,--version-script,$MATLAB/extern/lib/glnxa64/mexFunction.map"
-    MATLAB_LIBS="-lmx -lmex -lmat -lm -lstdc++ -lmwlapack -lmwblas"
+    MATLAB_LIBS="-lmx -lmex -lmat -lm -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
     ;;
   win64)
