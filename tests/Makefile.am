@@ -1267,7 +1267,7 @@ check-matlab-ols: $(M_OLS_TRS_FILES)
 
 %.m.trs %.m.log: %.mod
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
-# The while loop is a workaround for this glibc bug: https://sourceware.org/bugzilla/show_bug.cgi?id=19329
+# The while loop is a workaround for this glibc bug: https://sourceware.org/bugzilla/show_bug.cgi?id=19329 (should be fixed in glibc 2.34, likely included in Debian “bookworm” 12)
 	@while ! [ -f $*.m.trs ] || head -1 $*.m.log | egrep -q '^Inconsistency detected by ld.so'; \
 	do \
 	DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
@@ -1286,7 +1286,7 @@ check-matlab-ols: $(M_OLS_TRS_FILES)
 
 %.m.trs %.m.log : %.m
 	@echo "`tput bold``tput setaf 8`MATLAB: $(CURDIR)/$*... `tput sgr0`"
-# The while loop is a workaround for this glibc bug: https://sourceware.org/bugzilla/show_bug.cgi?id=19329
+# The while loop is a workaround for this glibc bug: https://sourceware.org/bugzilla/show_bug.cgi?id=19329 (should be fixed in glibc 2.34, likely included in Debian “bookworm” 12)
 	@while ! [ -f $*.m.trs ] || head -1 $*.m.log | egrep -q '^Inconsistency detected by ld.so'; \
 	do \
 	DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" \
