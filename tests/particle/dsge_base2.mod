@@ -1,56 +1,56 @@
 // DGP
 @#ifndef RISKY_CALIBRATION
-@#define RISKY_CALIBRATION = 1
+    @#define RISKY_CALIBRATION = 1
 @#endif
 @#ifndef EXTREME_CALIBRATION
-@#define EXTREME_CALIBRATION = 0
+    @#define EXTREME_CALIBRATION = 0
 @#endif
 @#ifndef BENCHMARK_CALIBRATION
-@#define BENCHMARK_CALIBRATION = 0
+    @#define BENCHMARK_CALIBRATION = 0
 @#endif
 
 // ALGORITHM
 @#ifndef LINEAR_KALMAN
-@#define LINEAR_KALMAN = 0
+    @#define LINEAR_KALMAN = 0
 @#endif
 @#ifndef NON_LINEAR_KALMAN
-@#define NON_LINEAR_KALMAN = 1
+    @#define NON_LINEAR_KALMAN = 1
 @#endif
 @#ifndef ALGO_SIR
-@#define ALGO_SIR = 0
+    @#define ALGO_SIR = 0
 @#endif
 @#ifndef ALGO_SISmoothR
-@#define ALGO_SISmoothR = 0
+    @#define ALGO_SISmoothR = 0
 @#endif
 @#ifndef ALGO_APF
-@#define ALGO_APF = 0
+    @#define ALGO_APF = 0
 @#endif
 @#ifndef ALGO_CPF
-@#define ALGO_CPF = 0
+    @#define ALGO_CPF = 0
 @#endif
 @#ifndef ALGO_GPF
-@#define ALGO_GPF = 0
+    @#define ALGO_GPF = 0
 @#endif
 @#ifndef ALGO_GCF
-@#define ALGO_GCF = 0
+    @#define ALGO_GCF = 0
 @#endif
 @#ifndef ALGO_GUF
-@#define ALGO_GUF = 0
+    @#define ALGO_GUF = 0
 @#endif
 @#ifndef ALGO_GMPF
-@#define ALGO_GMPF = 0
+    @#define ALGO_GMPF = 0
 @#endif
 @#ifndef ALGO_GMCF
-@#define ALGO_GMCF = 0
+    @#define ALGO_GMCF = 0
 @#endif
 @#ifndef ALGO_ONLINE_1
-@#define ALGO_ONLINE_1 = 0
+    @#define ALGO_ONLINE_1 = 0
 @#endif
 @#ifndef ALGO_ONLINE_2
-@#define ALGO_ONLINE_2 = 0
+    @#define ALGO_ONLINE_2 = 0
 @#endif
 @#ifndef MCMC
-@#define MCMC = 0
+    @#define MCMC = 0
 @#endif
 
 var k A c l i y;
@@ -83,8 +83,6 @@ steady_state_model;
   A = 1;
 
 end;
-
-
 
 shocks;
 var e_a; stderr 0.035;
@@ -207,13 +205,11 @@ options_.threads.local_state_space_iteration_2 = 4;
 @#endif
 
 @#if ALGO_ONLINE_2
-  options_.particle.liu_west_delta = 0.9 ;
-  estimation(order=2,number_of_particles=1000,mode_compute=11,mh_replic=0);
+  estimation(order=2,number_of_particles=1000,mode_compute=11,mh_replic=0,particle_filter_options=('liu_west_delta',0.9));
 @#endif
 
 @#if ALGO_ONLINE_1
-  options_.particle.liu_west_delta = 0.9 ;
-  estimation(order=1,number_of_particles=1000,mode_compute=11,mh_replic=0);
+  estimation(order=1,number_of_particles=1000,mode_compute=11,mh_replic=0,particle_filter_options=('liu_west_delta',0.9));
 @#endif
 
 @#if MCMC

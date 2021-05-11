@@ -85,21 +85,7 @@ end
 if ~options_.dsge_var
     if options_.particle.status
         objective_function = str2func('non_linear_dsge_likelihood');
-        if strcmpi(options_.particle.filter_algorithm, 'sis')
-            options_.particle.algorithm = 'sequential_importance_particle_filter';
-        elseif strcmpi(options_.particle.filter_algorithm, 'apf')
-            options_.particle.algorithm = 'auxiliary_particle_filter';
-        elseif strcmpi(options_.particle.filter_algorithm, 'gf')
-            options_.particle.algorithm = 'gaussian_filter';
-        elseif strcmpi(options_.particle.filter_algorithm,  'gmf')
-            options_.particle.algorithm = 'gaussian_mixture_filter';
-        elseif strcmpi(options_.particle.filter_algorithm, 'cpf')
-            options_.particle.algorithm = 'conditional_particle_filter';
-        elseif strcmpi(options_.particle.filter_algorithm, 'nlkf')
-            options_.particle.algorithm = 'nonlinear_kalman_filter';
-        else
-            error(['Estimation: Unknown filter ' options_.particle.filter_algorithm])
-        end
+        [options_.particle] = check_particle_filter_options(options_.particle);
     else
         if options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter
             objective_function = str2func('occbin.IVF_posterior');
@@ -353,6 +339,14 @@ if ~options_.cova_compute
     stdh = NaN(length(xparam1),1);
 end
 
+if options_.particle.status && isfield(options_.particle,'posterior_sampler')
+    if strcmpi(options_.particle.posterior_sampler,'Herbst_Schorfheide')
+        Herbst_Schorfheide_sampler(objective_function,xparam1,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
+    elseif strcmpi(options_.particle.posterior_sampler,'DSMH')
+        DSMH_sampler(objective_function,xparam1,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
+    end
+end
+        
 if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     % display results table and store parameter estimates and standard errors in results
     oo_ = display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, prior_dist_names, 'Posterior', 'posterior');
