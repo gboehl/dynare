@@ -79,6 +79,12 @@ end
 
 if options_.loglinear
     oo_.Smoother.loglinear = true;
+    if ~isempty(M_.aux_vars) % deal with lead/lag of exogenous variables
+        exo_lead_lag_index = M_.orig_endo_nbr + find(([M_.aux_vars.type] == 2) | ([M_.aux_vars.type]  == 3));
+    else
+        exo_lead_lag_index =[];
+    end
+
 else
     oo_.Smoother.loglinear = false;
 end
@@ -137,6 +143,9 @@ if ~isempty(options_.nk) && options_.nk ~= 0
     i_endo_declaration_order = oo_.dr.order_var(i_endo_in_dr_matrices); %get indices of smoothed variables in name vector
     if  options_.loglinear %logged steady state must be used
         constant_all_variables=repmat(log(ys(i_endo_declaration_order))',[length(options_.filter_step_ahead),1,gend+max(options_.filter_step_ahead)]);
+        if ~isempty(exo_lead_lag_index) && any(ismember(i_endo_declaration_order,exo_lead_lag_index)) % deal with lead/lag of exogenous variables
+            constant_all_variables(:,ismember(i_endo_declaration_order,exo_lead_lag_index),:)=repmat(ys(i_endo_declaration_order(ismember(i_endo_declaration_order,exo_lead_lag_index)))',[length(options_.filter_step_ahead),1,gend+max(options_.filter_step_ahead)]);
+        end
     elseif ~options_.loglinear %unlogged steady state must be used
         constant_all_variables=repmat((ys(i_endo_declaration_order))',[length(options_.filter_step_ahead),1,gend+max(options_.filter_step_ahead)]);
     end
@@ -157,7 +166,11 @@ for i_endo_in_bayestopt_smoother_varlist=bayestopt_.smoother_saved_var_list'
     i_endo_declaration_order = oo_.dr.order_var(i_endo_in_dr); %get indices of smoothed variables in name vector
     %% Compute constant
     if  options_.loglinear == 1 %logged steady state must be used
-        constant_current_variable=repmat(log(ys(i_endo_declaration_order)),gend,1);
+        if ~isempty(exo_lead_lag_index) && ismember(i_endo_declaration_order,exo_lead_lag_index)% deal with lead/lag of exogenous variables
+            constant_current_variable=repmat(ys(i_endo_declaration_order),gend,1);
+        else
+            constant_current_variable=repmat(log(ys(i_endo_declaration_order)),gend,1);
+        end
     elseif options_.loglinear == 0 %unlogged steady state must be used
         constant_current_variable=repmat((ys(i_endo_declaration_order)),gend,1);
     end

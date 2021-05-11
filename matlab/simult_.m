@@ -42,7 +42,8 @@ y_ = zeros(size(y0,1),iter+M_.maximum_lag);
 y_(:,1) = y0;
 
 if options_.loglinear && ~options_.logged_steady_state
-    dr.ys=log(dr.ys);
+    k = get_all_variables_but_lagged_leaded_exogenous(M_);
+    dr.ys(k)=log(dr.ys(k));
 end
 
 if ~options_.k_order_solver || (options_.k_order_solver && options_.pruning) %if k_order_pert is not used or if we do not use Dynare++ with k_order_pert
