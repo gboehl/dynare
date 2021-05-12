@@ -85,7 +85,7 @@ for i = 1:horizon
 end
 if nargout==3
     var_yf_ME=var_yf;
-    [loc_H, loc_varlist] = ismember(options_.varobs', options_.varlist);
+    [loc_H, loc_varlist] = ismember(options_.varobs, var_list);
     loc_varlist(loc_varlist==0) = [];
     if ~isempty(loc_varlist)
         var_yf_ME(:,loc_varlist) = var_yf(:,loc_varlist)+repmat(diag(M_.H(loc_H,loc_H))', horizon, 1);
