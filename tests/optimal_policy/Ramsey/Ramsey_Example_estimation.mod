@@ -222,7 +222,7 @@ end;
         ramsey_model(instruments=(R),planner_discount=beta,planner_discount_latex_name=$\beta$); 
         
         //conduct stochastic simulations of the Ramsey problem
-        stoch_simul(order=1,irf=20,periods=500) pi_ann log_h R_ann log_C Z r_real;
+        stoch_simul(TeX,order=1,irf=20,periods=500) pi_ann log_h R_ann log_C Z r_real;
         evaluate_planner_objective;
         
         @# if Estimation_under_Ramsey==1
@@ -234,6 +234,7 @@ end;
             varobs log_C;
                 
             estimation(datafile=ramsey_simulation,mode_compute=5,mh_nblocks=1,mh_replic=0);
+            identification(parameter_set=posterior_mode);
         @# endif        
     @# endif
 @# endif

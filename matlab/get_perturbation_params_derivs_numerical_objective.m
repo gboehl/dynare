@@ -51,7 +51,7 @@ function [out,info] = get_perturbation_params_derivs_numerical_objective(params,
 
 %% Update stderr, corr and model parameters and compute perturbation approximation and steady state with updated parameters
 M = set_all_parameters(params,estim_params,M);
-[~,info,M,options,oo] = resol(0,M,options,oo);
+[~,info,M,options,oo] = compute_decision_rules(M,options,oo);
 Sigma_e = M.Sigma_e;
 
 if info(1) > 0
