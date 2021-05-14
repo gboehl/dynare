@@ -159,9 +159,9 @@ if order == 1
     [~, g1 ] = feval([fname,'.dynamic'], yy0, oo.exo_steady_state', params, oo.dr.ys, 1);
     %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     DYNAMIC = [Yss;
-               vec(g1(oo.dr.order_var,:))]; %add steady state and put rows of g1 in DR order
+               vec(g1)]; %add steady state and put rows of g1 in DR order
     dDYNAMIC = [oo.dr.derivs.dYss;
-                reshape(oo.dr.derivs.dg1(oo.dr.order_var,:,:),size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2),size(oo.dr.derivs.dg1,3)) ]; %reshape dg1 in DR order and add steady state
+                reshape(oo.dr.derivs.dg1,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2),size(oo.dr.derivs.dg1,3)) ]; %reshape dg1 in DR order and add steady state
     REDUCEDFORM = [Yss;
                    vec(oo.dr.ghx);
                    dyn_vech(oo.dr.ghu*Sigma_e*transpose(oo.dr.ghu))]; %in DR order
@@ -177,11 +177,11 @@ elseif order == 2
     %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     DYNAMIC = [Yss;
-               vec(g1(oo.dr.order_var,:));
-               vec(g2(oo.dr.order_var,:))]; %add steady state and put rows of g1 and g2 in DR order
+               vec(g1);
+               vec(g2)]; %add steady state and put rows of g1 and g2 in DR order
     dDYNAMIC = [oo.dr.derivs.dYss;
-                reshape(oo.dr.derivs.dg1(oo.dr.order_var,:,:),size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2),size(oo.dr.derivs.dg1,3));  %reshape dg1 in DR order
-                reshape(oo.dr.derivs.dg2(oo.dr.order_var,:),size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2)^2,size(oo.dr.derivs.dg1,3))]; %reshape dg2 in DR order
+                reshape(oo.dr.derivs.dg1,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2),size(oo.dr.derivs.dg1,3));  %reshape dg1 in DR order
+                reshape(oo.dr.derivs.dg2,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2)^2,size(oo.dr.derivs.dg1,3))]; %reshape dg2 in DR order
     REDUCEDFORM = [Yss;
                    vec(oo.dr.ghx);
                    dyn_vech(oo.dr.ghu*Sigma_e*transpose(oo.dr.ghu));
@@ -204,13 +204,13 @@ elseif order == 3
     %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     DYNAMIC = [Yss;
-               vec(g1(oo.dr.order_var,:));
-               vec(g2(oo.dr.order_var,:));
-               vec(g3(oo.dr.order_var,:))]; %add steady state and put rows of g1 and g2 in DR order
+               vec(g1);
+               vec(g2);
+               vec(g3)]; %add steady state and put rows of g1 and g2 in DR order
     dDYNAMIC = [oo.dr.derivs.dYss;
-                reshape(oo.dr.derivs.dg1(oo.dr.order_var,:,:),size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2),size(oo.dr.derivs.dg1,3));  %reshape dg1 in DR order
-                reshape(oo.dr.derivs.dg2(oo.dr.order_var,:),size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2)^2,size(oo.dr.derivs.dg1,3));
-                reshape(oo.dr.derivs.dg2(oo.dr.order_var,:),size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2)^2,size(oo.dr.derivs.dg1,3))]; %reshape dg3 in DR order
+                reshape(oo.dr.derivs.dg1,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2),size(oo.dr.derivs.dg1,3));  %reshape dg1 in DR order
+                reshape(oo.dr.derivs.dg2,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2)^2,size(oo.dr.derivs.dg1,3));
+                reshape(oo.dr.derivs.dg2,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2)^2,size(oo.dr.derivs.dg1,3))]; %reshape dg3 in DR order
     REDUCEDFORM = [Yss;
                    vec(oo.dr.ghx);
                    dyn_vech(oo.dr.ghu*Sigma_e*transpose(oo.dr.ghu));
