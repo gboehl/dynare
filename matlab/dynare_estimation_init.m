@@ -685,3 +685,14 @@ if options_.heteroskedastic_filter
         error('Scale and value defined for the same shock in the same period with "heteroskedastic_shocks".')
     end
 end
+
+if options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter
+    if isempty(options_.occbin.likelihood.IVF_shock_observable_mapping)
+        options_.occbin.likelihood.IVF_shock_observable_mapping=find(diag(M.Sigma_e)~=0);
+    else
+        zero_var_shocks=find(diag(M.Sigma_e)==0);
+        if any(ismember(options_.occbin.likelihood.IVF_shock_observable_mapping,zero_var_shocks))
+            error('IVF-filter: an observable is mapped to a zero variance shock.')
+        end
+    end
+end

@@ -76,6 +76,18 @@ if DynareOptions.order>1
     end
 end
 
+if (DynareOptions.occbin.likelihood.status && DynareOptions.occbin.likelihood.inversion_filter) || (DynareOptions.occbin.smoother.status && DynareOptions.occbin.smoother.inversion_filter)
+    err_index= find(diag(Model.Sigma_e)~=0);
+    if length(err_index)~=length(DynareOptions.varobs)
+        fprintf('initial_estimation_checks:: The IVF requires exactly as many shocks as observables.')
+    end
+    var_index=find(any(isnan(DynareDataset.data)));
+    if ~isempty(var_index)
+        fprintf('initial_estimation_checks:: The IVF requires exactly as many shocks as observables.\n')
+        fprintf('initial_estimation_checks:: The data series %s contains NaN, I am therefore dropping shock %s for these time points.\n',...
+            DynareOptions.varobs{var_index},Model.exo_names{DynareOptions.occbin.likelihood.IVF_shock_observable_mapping(var_index)})
+    end
+end
 
 if DynareOptions.order>1 || (DynareOptions.order==1 && ~ischar(DynareOptions.mode_compute) && DynareOptions.mode_compute==11)
     if DynareOptions.order==1 && DynareOptions.mode_compute==11

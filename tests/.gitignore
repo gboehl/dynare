@@ -120,6 +120,8 @@ wsOct
 !/ms-sbvar/data.m
 !/objectives/sgu_ex1.mat
 !/observation_trends_and_prefiltering/generate_trend_stationary_AR1.m
+!/occbin/filter/dataobsfile.mat
+!/occbin/filter/NKM_mh_mode_saved.mat
 !/optimal_policy/Ramsey/find_c.m
 !/optimal_policy/Ramsey/oo_ramsey_policy_initval.mat
 !/optimizers/optimizer_function_wrapper.m

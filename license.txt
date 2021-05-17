@@ -25,6 +25,32 @@ Files: *
 Copyright: 1996-2021 Dynare Team
 License: GPL-3+
 
+Files: matlab/+occbin/IVF_core.m
+       matlab/+occbin/make_chart.m
+       matlab/+occbin/map_regime.m
+       matlab/+occbin/match_function.m
+       matlab/+occbin/mkdata.m
+       matlab/+occbin/mkdatap_anticipated_2constraints_dyn.m
+       matlab/+occbin/mkdatap_anticipated_dyn.m
+       matlab/+occbin/process_constraint.m
+       matlab/+occbin/solve_one_constraint.m
+       matlab/+occbin/solve_two_constraints.m
+       matlab/+occbin/tokenize.m
+Copyright: none
+License: public-domain-occbin
+ Original authors: Luca Guerrieri and Matteo Iacoviello
+ Original file downloaded from:
+ https://www.matteoiacoviello.com/research_files/occbin_20140630.zip
+ Adapted for Dynare by Dynare Team.
+ .
+ This code is in the public domain and may be used freely.
+ However the authors would appreciate acknowledgement of the source by
+ citation of any of the following papers:
+ .
+ Luca Guerrieri and Matteo Iacoviello (2015): "OccBin: A toolkit for solving
+ dynamic models with occasionally binding constraints easily"
+ Journal of Monetary Economics 70, 22-38
+
 Files: matlab/AIM/SP*
 Copyright: none
 License: public-domain-aim

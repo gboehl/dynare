@@ -170,6 +170,22 @@ switch info(1)
         message = 'Particle Filter: Initial covariance of the states is not positive definite. Try a different nonlinear_filter_initialization';
     case 202
         message = 'Particle Filter: Initial covariance of the states based on simulation resulted in NaN/Inf. Use pruning or try a different nonlinear_filter_initialization';
+    case 301
+        message = 'IVF: The likelihood is Inf.';
+    case 302
+        message = 'IVF: The likelihood is NaN.';
+    case 303
+        message = 'IVF: The residuals are not 0.';        
+    case 304
+        message = 'IVF: The solver returned with an error code.';        
+    case 305
+        message = 'IVF: The returned shocks are bigger than 1e8.';        
+    case 310
+        message = 'Occbin: Simulation terminated with periodic solution (no convergence).';        
+    case 311
+        message = 'Occbin: Simulation did not converge, increase maxit or check_ahead_periods.';        
+    case 312
+        message = 'Occbin: Constraint(s) are binding at the end of the sample.';        
     otherwise
         message = 'This case shouldn''t happen. Contact the authors of Dynare';
 end

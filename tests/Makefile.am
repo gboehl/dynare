@@ -1,5 +1,11 @@
 MODFILES = \
 	walsh.mod \
+	occbin/model_irrcap_twoconstraints/dynrbc.mod \
+	occbin/model_irrcap_twoconstraints/dynrbc_0_std_shocks.mod \
+	occbin/model_borrcon/borrcon.mod \
+	occbin/model_borrcon/borrcon_0_std_shocks.mod \
+	occbin/filter/NKM.mod \
+	occbin/filter/NKM_0_std_shocks.mod \
 	optimizers/fs2000_6.mod \
 	moments/example1_hp_test.mod \
 	moments/fs2000_post_moments.mod \
@@ -594,6 +600,7 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	identification/LindeTrabandt/LindeTrabandt2019_xfail.mod \
 	steady_state/Linear_steady_state_xfail.mod \
 	optimal_policy/Ramsey/ramsey_histval_xfail.mod \
+	occbin/model_irrcap_twoconstraints/dynrbc_token_xfail.mod \
 	particle/first_spec_xfail_0.mod \
 	particle/first_spec_xfail_1.mod \
 	kalman_initial_state/fs2000_kalman_initial_xfail.mod \
@@ -616,6 +623,12 @@ optimal_policy/neo_growth_ramsey_foresight.o.trs: optimal_policy/neo_growth_fore
 
 optimal_policy/neo_growth_ramsey_k_order.m.trs: optimal_policy/neo_growth_k_order.m.trs
 optimal_policy/neo_growth_ramsey_k_order.o.trs: optimal_policy/neo_growth_k_order.o.trs
+
+occbin/model_irrcap_twoconstraints/dynrbc_0_std_shocks.m.trs: occbin/model_irrcap_twoconstraints/dynrbc.m.trs
+occbin/model_irrcap_twoconstraints/dynrbc_0_std_shocks.o.trs: occbin/model_irrcap_twoconstraints/dynrbc.o.trs
+
+occbin/model_borrcon/borrcon_0_std_shocks.m.trs: occbin/model_borrcon/borrcon.m.trs
+occbin/model_borrcon/borrcon_0_std_shocks.o.trs: occbin/model_borrcon/borrcon.o.trs
 
 example1_use_dll.m.trs: example1.m.trs
 example1_use_dll.o.trs: example1.o.trs
@@ -1245,6 +1258,10 @@ EXTRA_DIST = \
 	observation_trends_and_prefiltering/Trend_model_calib_no_prefilter_common.inc \
 	observation_trends_and_prefiltering/Trend_load_data_common.inc \
 	observation_trends_and_prefiltering/Trend_no_prefilter_conditional_forecast.inc \
+	occbin/model_borrcon/borrcon_common.inc \
+	occbin/model_irrcap_twoconstraints/dynrbc_common.inc \
+	occbin/filter/dataobsfile.mat \
+	occbin/filter/NKM_mh_mode_saved.mat \
 	optimal_policy/neo_growth_common.inc \
 	optimal_policy/neo_growth_ramsey_common.inc \
 	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat \
@@ -1478,6 +1495,8 @@ clean-local:
 		kalman/likelihood_from_dynare/fs_ns_dat_simul_corr_ME_missing.m \
 		kalman/likelihood_from_dynare/fs_ns_dat_simul_uncorr_ME.m \
 		kalman/likelihood_from_dynare/fs_ns_dat_simul_uncorr_ME_missing.m
+
+	rm -f occbin/filter/dataobsfile2.mat
 
 	find . -name "*.tex" -type f -delete
 	find . -name "*.aux" -type f -delete

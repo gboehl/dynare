@@ -64,7 +64,8 @@
     "write_latex_steady_state_model" "steady" "check" "simul" "stoch_simul"
     "var_model" "trend_component_model" "var_expectation_model" "pac_model"
     "dsample" "Sigma_e" "planner_objective" "ramsey_model" "ramsey_policy"
-    "evaluate_planner_objective"
+    "evaluate_planner_objective" "occbin_setup" "occbin_solver"
+    "occbin_write_regimes" "occbin_graph"
     "discretionary_policy" "identification" "bvar_density" "bvar_forecast"
     "dynare_sensitivity" "initval_file" "histval_file" "forecast"
     "shock_decomposition" "realtime_shock_decomposition"
@@ -84,7 +85,8 @@
 ;; Keywords that may appear in blocks, and that begin a statement which will be
 ;; closed by a semicolon
 (defvar dynare-statements-like
-  '("stderr" "values" "scales" "restriction" "exclusion" "upper_cholesky" "lower_cholesky")
+  '("stderr" "values" "scales" "restriction" "exclusion" "upper_cholesky" "lower_cholesky"
+    "bind" "relax" "error_bind" "error_relax")
   "Dynare statements-like keywords.")
 
 ;; Those keywords that makes the lexer enter the DYNARE_BLOCK start condition
@@ -99,7 +101,7 @@
       "observation_trends" "deterministic_trends" "optim_weights" "homotopy_setup"
       "conditional_forecast_paths" "svar_identification" "moment_calibration"
       "irf_calibration" "ramsey_constraints" "generate_irfs"
-      "matched_moments" "verbatim")
+      "matched_moments" "occbin_constraints" "verbatim")
     "Dynare block keywords."))
 
 ;; Mathematical functions and operators used in model equations (see "hand_side" in Bison file)

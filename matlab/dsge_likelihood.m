@@ -183,9 +183,34 @@ end
 %------------------------------------------------------------------------------
 % 2. call model setup & reduction program
 %------------------------------------------------------------------------------
+is_restrict_state_space = true;
+if DynareOptions.occbin.likelihood.status
+    occbin_options = set_occbin_options(DynareOptions, Model);
+    if occbin_options.opts_simul.restrict_state_space
+        [T,R,SteadyState,info,Model,DynareResults,TTx,RRx,CCx, T0, R0] = ...
+            occbin.dynare_resolve(Model,DynareOptions,DynareResults,[],'restrict');
+    else
+        is_restrict_state_space = false;
+        oldoo.restrict_var_list = DynareResults.dr.restrict_var_list;
+        oldoo.restrict_columns = DynareResults.dr.restrict_columns;
+        DynareResults.dr.restrict_var_list = BayesInfo.smoother_var_list;
+        DynareResults.dr.restrict_columns = BayesInfo.smoother_restrict_columns;
+    
+        % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
+        [T,R,SteadyState,info,Model,DynareOptions,DynareResults,TTx,RRx,CCx, T0, R0] = ...
+            occbin.dynare_resolve(Model,DynareOptions,DynareResults);
 
-% Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
-[T,R,SteadyState,info,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
+        DynareResults.dr.restrict_var_list = oldoo.restrict_var_list;
+        DynareResults.dr.restrict_columns = oldoo.restrict_columns;
+
+    end
+    occbin_.status = true;
+    occbin_.info= {DynareOptions, DynareResults, Model, occbin_options, TTx, RRx, CCx,T0,R0};
+else
+    % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
+    [T,R,SteadyState,info,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
+    occbin_.status = false;
+end
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
@@ -223,8 +248,14 @@ if info(1)
     return
 end
 
-% Define a vector of indices for the observed variables. Is this really usefull?...
-BayesInfo.mf = BayesInfo.mf1;
+if is_restrict_state_space
+%% Define a vector of indices for the observed variables. Is this really usefull?...
+    BayesInfo.mf = BayesInfo.mf1;
+else
+%get location of observed variables and requested smoothed variables in
+%decision rules
+    BayesInfo.mf = BayesInfo.smoother_var_list(BayesInfo.smoother_mf);
+end
 
 % Define the constant vector of the measurement equation.
 if DynareOptions.noconstant
@@ -283,7 +314,16 @@ switch DynareOptions.lik_init
     a     = zeros(mm,1);
     a=set_Kalman_starting_values(a,Model,DynareResults,DynareOptions,BayesInfo);
     a_0_given_tm1=T*a; %set state prediction for first Kalman step;
-    Zflag = 0;
+
+    if DynareOptions.occbin.likelihood.status
+        Z =zeros(length(BayesInfo.mf),size(T,1));
+        for i = 1:length(BayesInfo.mf)
+            Z(i,BayesInfo.mf(i))=1;
+        end
+        Zflag = 1;
+    else
+        Zflag = 0;
+    end
   case 2% Initialization with large numbers on the diagonal of the covariance matrix if the states (for non stationary models).
     if kalman_algo ~= 2
         % Use standard kalman filter except if the univariate filter is explicitely choosen.
@@ -294,7 +334,15 @@ switch DynareOptions.lik_init
     a     = zeros(mm,1);
     a = set_Kalman_starting_values(a,Model,DynareResults,DynareOptions,BayesInfo);
     a_0_given_tm1 = T*a; %set state prediction for first Kalman step;
-    Zflag = 0;
+    if DynareOptions.occbin.likelihood.status
+        Z =zeros(length(BayesInfo.mf),size(T,1));
+        for i = 1:length(BayesInfo.mf)
+            Z(i,BayesInfo.mf(i))=1;
+        end
+        Zflag = 1;
+    else
+        Zflag = 0;
+    end
   case 3% Diffuse Kalman filter (Durbin and Koopman)
         % Use standard kalman filter except if the univariate filter is explicitely choosen.
     if kalman_algo == 0
@@ -421,7 +469,15 @@ switch DynareOptions.lik_init
     a     = zeros(mm,1);
     a = set_Kalman_starting_values(a,Model,DynareResults,DynareOptions,BayesInfo);
     a_0_given_tm1 = T*a;    
-    Zflag = 0;
+    if DynareOptions.occbin.likelihood.status
+        Z =zeros(length(BayesInfo.mf),size(T,1));
+        for i = 1:length(BayesInfo.mf)
+            Z(i,BayesInfo.mf(i))=1;
+        end
+        Zflag = 1;
+    else
+        Zflag = 0;
+    end
   case 5            % Old diffuse Kalman filter only for the non stationary variables
     [eigenvect, eigenv] = eig(T);
     eigenv = diag(eigenv);
@@ -443,7 +499,15 @@ switch DynareOptions.lik_init
     a = zeros(mm,1);
     a = set_Kalman_starting_values(a,Model,DynareResults,DynareOptions,BayesInfo);
     a_0_given_tm1 = T*a;
-    Zflag = 0;
+    if DynareOptions.occbin.likelihood.status
+        Z =zeros(length(BayesInfo.mf),size(T,1));
+        for i = 1:length(BayesInfo.mf)
+            Z(i,BayesInfo.mf(i))=1;
+        end
+        Zflag = 1;
+    else
+        Zflag = 0;
+    end
   otherwise
     error('dsge_likelihood:: Unknown initialization approach for the Kalman filter!')
 end
@@ -604,7 +668,7 @@ end
 singularity_has_been_detected = false;
 % First test multivariate filter if specified; potentially abort and use univariate filter instead
 if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
-    if no_missing_data_flag
+    if no_missing_data_flag && ~DynareOptions.occbin.likelihood.status
         if DynareOptions.block
             LIK = block_kalman_filter(T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
         elseif DynareOptions.fast_kalman_filter
@@ -643,7 +707,7 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
                                                            kalman_tol, DynareOptions.riccati_tol, ...
                                                            DynareOptions.rescale_prediction_error_covariance, ...
                                                            DynareOptions.presample, ...
-                                                           T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods);
+                                                           T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods, occbin_);
         end
     end
     if analytic_derivation
@@ -895,3 +959,21 @@ if isfield(M_,'filter_initial_state') && ~isempty(M_.filter_initial_state)
     end
 end
 
+function occbin_options = set_occbin_options(DynareOptions, Model)
+
+% this builds the opts_simul options field needed by occbin.solver
+occbin_options.opts_simul = DynareOptions.occbin.simul;
+occbin_options.opts_simul.curb_retrench = DynareOptions.occbin.likelihood.curb_retrench;
+occbin_options.opts_simul.maxit = DynareOptions.occbin.likelihood.maxit;
+occbin_options.opts_simul.periods = DynareOptions.occbin.likelihood.periods;
+occbin_options.opts_simul.check_ahead_periods = DynareOptions.occbin.likelihood.check_ahead_periods;
+occbin_options.opts_simul.periodic_solution = DynareOptions.occbin.likelihood.periodic_solution;
+occbin_options.opts_simul.restrict_state_space = DynareOptions.occbin.likelihood.restrict_state_space;
+occbin_options.constraints = Model.occbin.constraint;
+
+occbin_options.opts_simul.full_output = DynareOptions.occbin.likelihood.full_output;
+occbin_options.opts_simul.piecewise_only = DynareOptions.occbin.likelihood.piecewise_only;
+if ~isempty(DynareOptions.occbin.smoother.init_binding_indicator)
+    occbin_options.opts_simul.init_binding_indicator = DynareOptions.occbin.likelihood.init_binding_indicator;
+    occbin_options.opts_simul.init_regime_history=DynareOptions.occbin.likelihood.init_regime_history;
+end

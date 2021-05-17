@@ -1,5 +1,5 @@
-function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux)
-% function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux)
+function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d,varargout] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux, occbin_)
+% function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux, occbin_)
 % Computes the diffuse kalman smoother in the case of a singular var-cov matrix.
 % Univariate treatment of multivariate time series.
 %
@@ -150,6 +150,71 @@ else
     V=[];
 end
 
+if ~occbin_.status
+    isoccbin = 0;
+    C=0;
+    TT=[];
+    RR=[];
+    CC=[];
+else
+    isoccbin = 1;
+    Qt = repmat(Q,[1 1 3]);
+    options_=occbin_.info{1};
+    oo_=occbin_.info{2};
+    M_=occbin_.info{3};
+    occbin_options=occbin_.info{4};
+    opts_regime = occbin_options.opts_regime;
+    %     first_period_occbin_update = inf;
+    if isfield(opts_regime,'regime_history') && ~isempty(opts_regime.regime_history)
+        opts_regime.regime_history=[opts_regime.regime_history(1) opts_regime.regime_history];
+    else
+        opts_regime.binding_indicator=zeros(smpl+2,length(M_.occbin.constraint));
+    end
+    occbin_options.opts_regime = opts_regime;
+    [~, ~, ~, regimes_] = occbin.check_regimes([], [], [], opts_regime, M_, oo_, options_);
+    if length(occbin_.info)>4
+        if length(occbin_.info)==6 && options_.smoother_redux
+            TT=repmat(T,1,1,smpl+1);
+            RR=repmat(R,1,1,smpl+1);
+            CC=repmat(zeros(mm,1),1,smpl+1);
+            T0=occbin_.info{5};
+            R0=occbin_.info{6};
+        else
+            
+            TT=occbin_.info{5};
+            RR=occbin_.info{6};
+            CC=occbin_.info{7};
+            %         TT = cat(3,TT,T);
+            %         RR = cat(3,RR,R);
+            %         CC = cat(2,CC,zeros(mm,1));
+            if options_.smoother_redux
+                my_order_var = oo_.dr.restrict_var_list;
+                CC = CC(my_order_var,:);
+                RR = RR(my_order_var,:,:);
+                TT = TT(my_order_var,my_order_var,:);
+                T0=occbin_.info{8};
+                R0=occbin_.info{9};
+            end
+            if size(TT,3)<(smpl+1)
+                TT=repmat(T,1,1,smpl+1);
+                RR=repmat(R,1,1,smpl+1);
+                CC=repmat(zeros(mm,1),1,smpl+1);
+            end
+        end
+        
+    else
+        TT=repmat(T,1,1,smpl+1);
+        RR=repmat(R,1,1,smpl+1);
+        CC=repmat(zeros(mm,1),1,smpl+1);
+    end
+    if ~smoother_redux
+        T0=T;
+        R0=R;
+        
+    end
+    
+end
+
 t = 0;
 icc=0;
 if ~isempty(Pinf(:,:,1))
@@ -182,8 +247,8 @@ while newRank && t < smpl
         elseif Fstar(i,t) > kalman_tol
             a(:,t)            = a(:,t) + Kstar(:,i,t)*v(i,t)/Fstar(i,t);    % KD (2000), eq. (17)
             Pstar(:,:,t)      = Pstar(:,:,t) - Kstar(:,i,t)*Kstar(:,i,t)'/Fstar(i,t);   % KD (2000), eq. (17)
-                                                                                        % Pinf is passed through unaltered, see eq. (17) of
-                                                                                        % Koopman/Durbin (2000)
+            % Pinf is passed through unaltered, see eq. (17) of
+            % Koopman/Durbin (2000)
         else
             % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
             % p. 157, DK (2012)
@@ -197,6 +262,10 @@ while newRank && t < smpl
         end
     else
         oldRank = 0;
+    end
+    if isoccbin,
+        TT(:,:,t+1)=  T;
+        RR(:,:,t+1)=  R;
     end
     a1(:,t+1) = T*a(:,t);
     aK(1,:,t+1) = a1(:,t+1);
@@ -221,7 +290,19 @@ while newRank && t < smpl
     end
 end
 
-
+if isoccbin
+    first_period_occbin_update = max(t+2,occbin_options.first_period_occbin_update);
+    if occbin_options.opts_regime.waitbar
+        hh = dyn_waitbar(0,'Occbin: Piecewise Kalman Filter');
+        set(hh,'Name','Occbin: Piecewise Kalman Filter.');
+        waitbar_indicator=1;
+    else
+        waitbar_indicator=0;
+    end
+else
+    first_period_occbin_update = inf;
+    waitbar_indicator=0;
+end
 d = t;
 P(:,:,d+1) = Pstar(:,:,d+1);
 Fstar = Fstar(:,1:d);
@@ -237,63 +318,166 @@ while notsteady && t<smpl
     a(:,t) = a1(:,t);
     P1(:,:,t) = P(:,:,t);
     di = data_index{t}';
-    for i=di
-        Zi = Z(i,:);
-        v(i,t)  = Y(i,t) - Zi*a(:,t);                                       % nu_{t,i} in 6.13 in DK (2012)
-        Fi(i,t) = Zi*P(:,:,t)*Zi' + H(i);                                   % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal
-        Ki(:,i,t) = P(:,:,t)*Zi';                                           % K_{t,i}*F_(i,t) in 6.13 in DK (2012)
-        if Fi(i,t) > kalman_tol
-            a(:,t) = a(:,t) + Ki(:,i,t)*v(i,t)/Fi(i,t);                     %filtering according to (6.13) in DK (2012)
-            P(:,:,t) = P(:,:,t) - Ki(:,i,t)*Ki(:,i,t)'/Fi(i,t);             %filtering according to (6.13) in DK (2012)
+    if t>=first_period_occbin_update
+        if waitbar_indicator
+            dyn_waitbar(t/smpl, hh, sprintf('Period %u of %u', t,smpl));
+        end
+        if isqvec
+            Qt = Qvec(:,:,t-1:t+1);
+        end
+        occbin_options.opts_regime.waitbar=0;
+        [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a(:,t-1),a1(:,t-1:t),P(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,v(:,t-1:t),Fi(:,t-1),Ki(:,:,t-1),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,oo_,options_,occbin_options,kalman_tol,nk);
+        if ~error_flag
+            regimes_(t:t+2)=tmp;
         else
-            % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
-            % p. 157, DK (2012)
+            varargout{1} = [];
+            varargout{2} = [];
+            varargout{3} = [];
+            varargout{4} = [];
+            return
         end
-    end
-    if smoother_redux
-        ri=zeros(mm,1);
-        for st=t:-1:max(d+1,t-1)
-            di = flipud(data_index{st})';
-            for i = di
-                if Fi(i,st) > kalman_tol
-                    Li = eye(mm)-Ki(:,i,st)*Z(i,:)/Fi(i,st);
-                    ri = Z(i,:)'/Fi(i,st)*v(i,st)+Li'*ri;                             % DK (2012), 6.15, equation for r_{t,i-1}
-                end
-            end
-            if st==t-1
-                aalphahat(:,st) = a1(:,st) + P1(:,:,st)*ri;
+
+        if smoother_redux
+            aalphahat(:,t-1) = aha(:,1);
+            eetahat(:,t) = etaha(:,2);
+        end
+        a(:,t) = ax(:,1);
+        a1(:,t) = a1x(:,2);
+        a1(:,t+1) = ax(:,2);
+        v(di,t) = vx(di,2);
+        Fi(di,t) = Fix(di,2);
+        Ki(:,di,t) = Kix(:,di,2);
+        TT(:,:,t:t+1) = Tx(:,:,1:2);
+        RR(:,:,t:t+1) = Rx(:,:,1:2);
+        CC(:,t:t+1) = Cx(:,1:2);
+        TTT(:,:,t)=TTx;
+        RRR(:,:,t)=RRx;
+        CCC(:,t)=CCx;
+        P(:,:,t) = Px(:,:,1);
+        P1(:,:,t) = P1x(:,:,2);
+        P(:,:,t+1) = Px(:,:,2);
+        for jnk=1:nk
+            PK(jnk,:,:,t+jnk) = Px(:,:,1+jnk);
+            aK(jnk,:,t+jnk) = ax(:,1+jnk);
+        end
+    else
+        for i=di
+            Zi = Z(i,:);
+            v(i,t)  = Y(i,t) - Zi*a(:,t);                                       % nu_{t,i} in 6.13 in DK (2012)
+            Fi(i,t) = Zi*P(:,:,t)*Zi' + H(i);                                   % F_{t,i} in 6.13 in DK (2012), relies on H being diagonal
+            Ki(:,i,t) = P(:,:,t)*Zi';                                           % K_{t,i}*F_(i,t) in 6.13 in DK (2012)
+            if Fi(i,t) > kalman_tol
+                a(:,t) = a(:,t) + Ki(:,i,t)*v(i,t)/Fi(i,t);                     %filtering according to (6.13) in DK (2012)
+                P(:,:,t) = P(:,:,t) - Ki(:,i,t)*Ki(:,i,t)'/Fi(i,t);             %filtering according to (6.13) in DK (2012)
             else
-                eetahat(:,st) = QRt*ri;
+                % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
+                % p. 157, DK (2012)
             end
-            ri = T'*ri;                                                             % KD (2003), eq. (23), equation for r_{t-1,p_{t-1}}
         end
-    end
-    if isqvec
-        QQ = R*Qvec(:,:,t+1)*transpose(R);
-    end
-    a1(:,t+1) = T*a(:,t);                                                   %transition according to (6.14) in DK (2012)
-    P(:,:,t+1) = T*P(:,:,t)*T' + QQ;                                        %transition according to (6.14) in DK (2012)
-    if filter_covariance_flag
-        Pf          = P(:,:,t+1);
-    end
-    aK(1,:,t+1) = a1(:,t+1);
-    for jnk=1:nk
+        if isqvec
+            QQ = R*Qvec(:,:,t)*transpose(R);
+        end
+        if smoother_redux
+            ri=zeros(mm,1);
+            for st=t:-1:max(d+1,t-1)
+                di = flipud(data_index{st})';
+                for i = di
+                    if Fi(i,st) > kalman_tol
+                        Li = eye(mm)-Ki(:,i,st)*Z(i,:)/Fi(i,st);
+                        ri = Z(i,:)'/Fi(i,st)*v(i,st)+Li'*ri;                             % DK (2012), 6.15, equation for r_{t,i-1}
+                    end
+                end
+                if st==t-1
+                    aalphahat(:,st) = a1(:,st) + P1(:,:,st)*ri;
+                else
+                    if isoccbin
+                        if isqvec
+                            QRt = Qvec(:,:,st)*transpose(RR(:,:,st));
+                        else
+                            QRt = Q*transpose(RR(:,:,st));
+                        end
+                        T = TT(:,:,st);
+                    else
+                        if isqvec
+                            QRt = Qvec(:,:,st)*transpose(R);
+                        end
+                    end
+                    eetahat(:,st) = QRt*ri;
+                end
+                ri = T'*ri;                                                             % KD (2003), eq. (23), equation for r_{t-1,p_{t-1}}
+            end
+        end
+        if isoccbin
+            if isqvec
+                QQ = RR(:,:,t+1)*Qvec(:,:,t+1)*transpose(RR(:,:,t+1));
+            else
+                QQ = RR(:,:,t+1)*Q*transpose(RR(:,:,t+1));
+            end
+            T = TT(:,:,t+1);
+            C = CC(:,t+1);
+        else
+            if isqvec
+                QQ = R*Qvec(:,:,t+1)*transpose(R);
+            end
+        end
+        a1(:,t+1) = T*a(:,t)+C;                                                 %transition according to (6.14) in DK (2012)
+        P(:,:,t+1) = T*P(:,:,t)*T' + QQ;                                        %transition according to (6.14) in DK (2012)
         if filter_covariance_flag
-            if jnk>1
-                Pf = T*Pf*T' + QQ;
-            end
-            PK(jnk,:,:,t+jnk) = Pf;
+            Pf          = P(:,:,t+1);
         end
-        if jnk>1
-            aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
+        aK(1,:,t+1) = a1(:,t+1);
+        if ~isempty(nk) && nk>1 && isoccbin 
+            opts_simul = occbin_options.opts_regime;
+            opts_simul.SHOCKS = zeros(nk,M_.exo_nbr);
+            if smoother_redux
+                tmp=zeros(M_.endo_nbr,1);
+                tmp(oo_.dr.restrict_var_list)=a(:,t);
+                opts_simul.endo_init = tmp(oo_.dr.inv_order_var);
+            else
+                opts_simul.endo_init = a(oo_.dr.inv_order_var,t);
+            end
+            opts_simul.init_regime = []; %regimes_(t);
+            options_.occbin.simul=opts_simul;
+            [~, out, ss] = occbin.solver(M_,oo_,options_);
+        end
+        for jnk=1:nk
+            if filter_covariance_flag
+                if jnk>1
+                    Pf = T*Pf*T' + QQ;
+                end
+                PK(jnk,:,:,t+jnk) = Pf;
+            end
+            if isoccbin 
+                if smoother_redux
+                    aK(jnk,:,t+jnk) = out.zpiece(jnk,oo_.dr.order_var(oo_.dr.restrict_var_list));
+                else
+                    aK(jnk,oo_.dr.inv_order_var,t+jnk) = out.zpiece(jnk,:);
+                end
+            elseif jnk>1
+                aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
+            end
         end
     end
-                                                                            %  notsteady   = ~(max(max(abs(P(:,:,t+1)-P(:,:,t))))<kalman_tol);
 end
+if waitbar_indicator
+    dyn_waitbar_close(hh); 
+end
+
 P1(:,:,t+1) = P(:,:,t+1);
 
-P1(:,:,t+1)=P(:,:,t+1);
-
+if ~isinf(first_period_occbin_update) && isoccbin
+    regimes_ = regimes_(2:smpl+1);
+else
+    regimes_ = struct();
+    TTT=TT;
+    RRR=RR;
+    CCC=CC;
+    %     return
+end
+varargout{1} = regimes_;
+varargout{2} = TTT;
+varargout{3} = RRR;
+varargout{4} = CCC;
 % $$$ P_s=tril(P(:,:,t))+tril(P(:,:,t),-1)';
 % $$$ P1_s=tril(P1(:,:,t))+tril(P1(:,:,t),-1)';
 % $$$ Fi_s = Fi(:,t);
@@ -346,8 +530,18 @@ while t > d+1
     end
     r(:,t) = ri;                                                            % DK (2012), below 6.15, r_{t-1}=r_{t,0}
     alphahat(:,t) = a1(:,t) + P1(:,:,t)*r(:,t);
-    if isqvec
-        QRt             = Qvec(:,:,t)*transpose(R);
+    if isoccbin
+        if isqvec
+            QRt = Qvec(:,:,t)*transpose(RR(:,:,t));
+        else
+            QRt = Q*transpose(RR(:,:,t));
+        end
+        R = RR(:,:,t);
+        T = TT(:,:,t);
+    else
+        if isqvec
+            QRt             = Qvec(:,:,t)*transpose(R);
+        end
     end
     etahat(:,t) = QRt*r(:,t);
     ri = T'*ri;                                                             % KD (2003), eq. (23), equation for r_{t-1,p_{t-1}}
@@ -383,8 +577,8 @@ if d
                 Linf    = eye(mm) - Kinf(:,i,t)*Z(i,:)/Finf(i,t);
                 L0      = (Kinf(:,i,t)*(Fstar(i,t)/Finf(i,t))-Kstar(:,i,t))*Z(i,:)/Finf(i,t);
                 r1(:,t) = Z(i,:)'*v(i,t)/Finf(i,t) + ...
-                          L0'*r0(:,t) + ...
-                          Linf'*r1(:,t);   % KD (2000), eq. (25) for r_1
+                    L0'*r0(:,t) + ...
+                    Linf'*r1(:,t);   % KD (2000), eq. (25) for r_1
                 r0(:,t) = Linf'*r0(:,t);   % KD (2000), eq. (25) for r_0
                 if state_uncertainty_flag
                     N_2(:,:,t)=Z(i,:)'/Finf(i,t)^2*Z(i,:)*Fstar(i,t) ...
@@ -406,8 +600,18 @@ if d
         end
         alphahat(:,t) = a1(:,t) + Pstar1(:,:,t)*r0(:,t) + Pinf1(:,:,t)*r1(:,t); % KD (2000), eq. (26)
         r(:,t)        = r0(:,t);
-        if isqvec
-            QRt             = Qvec(:,:,t)*transpose(R);
+        if isoccbin
+            if isqvec
+                QRt = Qvec(:,:,t)*transpose(RR(:,:,t));
+            else
+                QRt = Q*transpose(RR(:,:,t));
+            end
+            R = RR(:,:,t);
+            T = TT(:,:,t);
+        else
+            if isqvec
+                QRt             = Qvec(:,:,t)*transpose(R);
+            end
         end
         etahat(:,t)   = QRt*r(:,t);                                         % KD (2000), eq. (27)
         if state_uncertainty_flag
@@ -439,6 +643,8 @@ if d
             end
         end
     end
+else
+    alphahat0 = 0*a1(:,1) + P1(:,:,1)*ri;
 end
 
 if decomp_flag
@@ -452,10 +658,20 @@ if decomp_flag
                 ri_d = Z(i,:)'/Fi(i,t)*v(i,t)+ri_d-Ki(:,i,t)'*ri_d/Fi(i,t)*Z(i,:)';
             end
         end
-
+        
         % calculate eta_tm1t
-        if isqvec
-            QRt = Qvec(:,:,t)*transpose(R);
+        if isoccbin
+            if isqvec
+                QRt = Qvec(:,:,t)*transpose(RR(:,:,t));
+            else
+                QRt = Q*transpose(RR(:,:,t));
+            end
+            R = RR(:,:,t);
+            T = TT(:,:,t);
+        else
+            if isqvec
+                QRt = Qvec(:,:,t)*transpose(R);
+            end
         end
         eta_tm1t = QRt*ri_d;
         % calculate decomposition

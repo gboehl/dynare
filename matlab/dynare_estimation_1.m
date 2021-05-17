@@ -41,7 +41,6 @@ else
     reset_options_related_to_estimation = false;
 end
 
-
 %store qz_criterium
 qz_criterium_old=options_.qz_criterium;
 if isnan(options_.first_obs)
@@ -102,7 +101,11 @@ if ~options_.dsge_var
             error(['Estimation: Unknown filter ' options_.particle.filter_algorithm])
         end
     else
-        objective_function = str2func('dsge_likelihood');
+        if options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter
+            objective_function = str2func('occbin.IVF_posterior');
+        else
+            objective_function = str2func('dsge_likelihood');
+        end
     end
 else
     objective_function = str2func('dsge_var_likelihood');
@@ -176,8 +179,22 @@ end
 if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && options_.mh_posterior_mode_estimation==0
     if options_.order==1 && ~options_.particle.status
         if options_.smoother
-            [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,transpose(data),data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
-            [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
+            if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
+                [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, oo_, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
+                updated_variables = atT*nan;
+                measurement_error=[];
+                ys = oo_.dr.ys;
+                trend_coeff = zeros(length(options_.varobs_id),1);
+                bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
+                [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff);
+            else
+                if options_.occbin.smoother.status
+                    [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = occbin.DSGE_smoother(xparam1,gend,transpose(data),data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_,dataset_info);
+                else
+                [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,transpose(data),data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
+                end
+                [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
+            end
             if options_.forecast > 0
                 oo_.forecast = dyn_forecast(var_list_,M_,options_,oo_,'smoother',dataset_info);
             end
@@ -554,9 +571,22 @@ end
 if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.pshape> 0) && options_.load_mh_file)) ...
     || ~options_.smoother ) && ~options_.partial_information  % to be fixed
     %% ML estimation, or posterior mode without Metropolis-Hastings or Metropolis without Bayesian smoothes variables
-    [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_);
-    [oo_,yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
-
+    if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
+        [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, oo_, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
+        updated_variables = atT*nan;
+        measurement_error=[];
+        ys = oo_.dr.ys;
+        trend_coeff = zeros(length(options_.varobs_id),1);
+        bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
+        [oo_, yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff);
+    else
+        if options_.occbin.smoother.status
+            [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = occbin.DSGE_smoother(xparam1,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_,dataset_,dataset_info);
+        else
+            [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_);
+        end
+        [oo_,yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
+    end
     if ~options_.nograph
         [nbplt,nr,nc,lr,lc,nstar] = pltorg(M_.exo_nbr);
         if ~exist([M_.dname '/graphs'],'dir')

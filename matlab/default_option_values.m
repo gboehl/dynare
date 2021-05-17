@@ -412,6 +412,9 @@ options_.recursive_estimation_restart = 0;
 options_.MCMC_jumping_covariance='hessian';
 options_.use_calibration_initialization = 0;
 options_.endo_vars_for_moment_computations_in_estimation=[];
+% occbin options
+options_.occbin.likelihood.status=false;
+options_.occbin.smoother.status=false;
 
 % Run optimizer silently
 options_.silent_optimizer = false;

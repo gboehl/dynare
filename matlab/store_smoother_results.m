@@ -72,6 +72,20 @@ function [oo_, yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,da
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+%make sure there are no stale results
+field_names={'Smoother','SmoothedVariables','UpdatedVariables','FilteredVariables','FilteredVariablesKStepAhead','FilteredVariablesShockDecomposition','FilteredVariablesKStepAheadVariances','SmoothedShocks','SmoothedMeasurementErrors'};
+for field_iter=1:length(field_names)
+    if isfield(oo_,field_names(field_iter))
+        oo_=rmfield(oo_,field_names(field_iter));        
+    end
+end
+
+if options_.occbin.smoother.status
+    oo_.Smoother.occbin = true;
+else
+    oo_.Smoother.occbin = false;
+end
+
 gend=dataset_.nobs;
 if nargin<16
     Trend=zeros(options_.number_of_observed_variables,gend);

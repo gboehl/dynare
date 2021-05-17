@@ -1,20 +1,20 @@
-function [i_var, nvar, index_uniques] = varlist_indices(sublist, list)
+function [i_var, nvar, index_unique_present] = varlist_indices(sublist, list, nocheck_dummy)
 
-% returns the indices of a list of endogenous variables
+% returns the indices of a list of variables
 %
 % INPUT
 %   sublist     [cell of char arrays] sublist of variables
 %   list        [cell of char arrays] list of variables
 %
 % OUTPUT
-%   i_var                             variable indices in M_.endo_names
-%   nvar                              number of variables in varlist
-%   index_uniques                     indices of unique elements in varlist
+%   i_var                             variable indices in list
+%   nvar                              number of unique variables contained in list
+%   index_uniques                     indices of unique and present elements in sublist
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2010-2018 Dynare Team
+% Copyright (C) 2010-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,6 +31,9 @@ function [i_var, nvar, index_uniques] = varlist_indices(sublist, list)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+if nargin<3
+    nocheck_dummy=0;
+end
 if isempty(sublist)
     check = [];
     i_var = [];
@@ -38,27 +41,34 @@ else
     [check, i_var] = ismember(sublist, list);
 end
 
+indices_not_present=[];
 if ~all(check)
-    k = find(~check);
-    str = 'The following symbols are not endogenous variables:';
-    for ii = 1:length(k)
-        str = sprintf('%s %s', str, sublist{k(ii)});
+    k_not_present = find(~check);
+    if ~nocheck_dummy
+        str = 'The following symbols are not endogenous variables:';
+        for ii = 1:length(k_not_present)
+            str = sprintf('%s %s', str, sublist{k_not_present(ii)});
+        end
+        error(str)
+    else
+        indices_not_present=find(i_var==0);
     end
-    error(str)
 end
 
-nvar = length(i_var);
-[~, index_uniques, ~] = unique(i_var, 'first');
-index_uniques = sort(index_uniques);
-i_var_unique = i_var(index_uniques);
+nvar_present = length(i_var(check));
+[~, index_unique, ~] = unique(i_var, 'first');
+index_unique_present = index_unique(~ismember(index_unique,indices_not_present));
+index_unique_present = sort(index_unique_present);
+i_var_unique_present = i_var(index_unique_present);
 
-if length(i_var_unique)~=nvar
-    k = find(~ismember(1:nvar,index_uniques));
+if length(i_var_unique_present)~=nvar_present
+    k = find(~ismember((1:length(i_var))',index_unique_present) & i_var~=0);
     str = 'The following symbols are specified twice in the variable list and are considered only once:';
     for ii = 1:length(k)
-        str = sprintf('%s %s', str, sublist{k(ii)});
+        str = sprintf('%s %s', str, sublist{i_var(k(ii))});
     end
     warning('%s\n', str)
-    i_var = i_var_unique;
-    nvar = length(i_var);
 end
+
+i_var = i_var_unique_present;
+nvar = length(i_var);

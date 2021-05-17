@@ -73,6 +73,10 @@ if isempty(dataset)
 end
 options_=select_qz_criterium_value(options_);
 
-llik = -dsge_likelihood(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
+if options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter
+    llik = -occbin.IVF_posterior(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
+else    
+    llik = -dsge_likelihood(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
+end
 ldens = evaluate_prior(parameters,M_,estim_params_,oo_,options_,bayestopt_);
 llik = llik - ldens;
