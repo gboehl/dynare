@@ -26,7 +26,7 @@ ep = options.ep;
 if init% Compute first order solution (Perturbation)...
     endo_simul = simult_(M,options,initial_conditions,oo.dr,exo_simul(2:end,:),1);
 else
-    if nargin==20 && ~isempty(initialguess)
+    if nargin==19 && ~isempty(initialguess)
         % Note that the first column of initialguess should be equal to initial_conditions.
         endo_simul = initialguess;
     else
