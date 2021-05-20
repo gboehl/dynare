@@ -230,10 +230,12 @@ if ~options.block
         display_problematic_vars_Jacobian(infrow,infcol,M,dr.ys,'dynamic','MODEL_DIAGNOSTICS: ')
     end
     if any(any(~isreal(jacobia_)))
-        problem_dummy=1;
         [imagrow,imagcol]=find(abs(imag(jacobia_))>1e-15);
-        fprintf('\nMODEL_DIAGNOSTICS: The Jacobian of the dynamic model contains imaginary parts. The problem arises from: \n\n')
-        display_problematic_vars_Jacobian(imagrow,imagcol,M,dr.ys,'dynamic','MODEL_DIAGNOSTICS: ')
+        if ~isempty(imagrow)
+            problem_dummy=1;
+            fprintf('\nMODEL_DIAGNOSTICS: The Jacobian of the dynamic model contains imaginary parts. The problem arises from: \n\n')
+            display_problematic_vars_Jacobian(imagrow,imagcol,M,dr.ys,'dynamic','MODEL_DIAGNOSTICS: ')
+        end
     end
     if exist('hessian1','var')
         if any(any(isinf(hessian1) | isnan(hessian1)))
