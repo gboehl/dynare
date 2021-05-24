@@ -66,7 +66,7 @@ case ${MATLAB_ARCH} in
     # This -L flag is put here, hence later on the linker command line, so as
     # to avoid linking against the HDF5 shipped by MATLAB (which would
     # otherwise override the HDF5 from Homebrew)
-    MATLAB_LIBS="-L$MATLAB/bin/maci64 -lmx -lmex -lmat -lmwlapack -lmwblas -lstdc++"
+    MATLAB_LIBS="-L$MATLAB/bin/maci64 -lmx -lmex -lmat -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
     ;;
   *)
