@@ -321,6 +321,14 @@ options_ident = set_default_option(options_ident,'analytic_derivation_mode', opt
     %  1: kronecker products method to compute analytical derivatives as in Iskrev (2010) (only for order=1)
     % -1: numerical two-sided finite difference method to compute numerical derivatives of all identification Jacobians using function identification_numerical_objective.m (previously thet2tau.m)
     % -2: numerical two-sided finite difference method to compute numerically dYss, dg1, dg2, dg3, d2Yss and d2g1, the identification Jacobians are then computed analytically as with 0
+
+if options_.discretionary_policy || options_.ramsey_policy
+    if options_ident.analytic_derivation_mode~=-1
+        fprintf('dynare_identification: discretionary_policy and ramsey_policy require analytic_derivation_mode=-1. Resetting the option.')
+        options_ident.analytic_derivation_mode=-1;
+    end
+end
+    
 options_.analytic_derivation_mode = options_ident.analytic_derivation_mode; %overwrite setting in options_
 
 % initialize persistent variables in prior_draw

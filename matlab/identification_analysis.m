@@ -133,7 +133,7 @@ no_identification_minimal     = options_ident.no_identification_minimal;
 no_identification_spectrum    = options_ident.no_identification_spectrum;
 
 %Compute linear approximation and fill dr structure
-[oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
+[oo_.dr,info,M_,options_,oo_] = compute_decision_rules(M_,options_,oo_);
 
 if info(1) == 0 %no errors in solution
     % Compute parameter Jacobians for identification analysis

@@ -344,9 +344,17 @@ if analytic_derivation_mode == -1
     %Parameter Jacobian of dynamic model derivatives (wrt selected model parameters only)
     dYss_g = fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M, oo, options);
     ind_Yss = 1:endo_nbr;
-    ind_g1 = ind_Yss(end) + (1:endo_nbr*yy0ex0_nbr);
+    if options.discretionary_policy || options.ramsey_policy
+        ind_g1 = ind_Yss(end) + (1:M.eq_nbr*yy0ex0_nbr);
+    else
+        ind_g1 = ind_Yss(end) + (1:endo_nbr*yy0ex0_nbr);
+    end
     DERIVS.dYss = dYss_g(ind_Yss, :); %in tensor notation, wrt selected model parameters only
-    DERIVS.dg1 = reshape(dYss_g(ind_g1,:),[endo_nbr, yy0ex0_nbr, modparam_nbr]); %in tensor notation, wrt selected model parameters only
+    if options.discretionary_policy || options.ramsey_policy
+        DERIVS.dg1 = reshape(dYss_g(ind_g1,:),[M.eq_nbr, yy0ex0_nbr, modparam_nbr]); %in tensor notation, wrt selected model parameters only
+    else
+        DERIVS.dg1 = reshape(dYss_g(ind_g1,:),[endo_nbr, yy0ex0_nbr, modparam_nbr]); %in tensor notation, wrt selected model parameters only
+    end
     if order > 1
         ind_g2 = ind_g1(end) + (1:endo_nbr*yy0ex0_nbr^2);
         DERIVS.dg2 = reshape(sparse(dYss_g(ind_g2,:)),[endo_nbr, yy0ex0_nbr^2*modparam_nbr]); %blockwise in matrix notation, i.e. [dg2_dp1 dg2_dp2 ...], where dg2_dpj has dimension endo_nbr by yy0ex0_nbr^2
