@@ -283,7 +283,7 @@ catch ME
     W = evalin('caller','whos');
     diary off
     if ismember(fname,{W(:).name})
-        error('Your base workspace already contains a variable with the same name as the mod-file. You need to delete it or rename the mod-file.')
+        error('Your workspace already contains a variable with the same name as the mod-file. You need to delete it or rename the mod-file.')
     else
         rethrow(ME)
     end
