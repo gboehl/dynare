@@ -278,15 +278,15 @@ end
 clear(['+' fname '/driver'])
 
 try
-    evalin('base',[fname '.driver']) ;
+    evalin('base',[fname '.driver']);
 catch ME
-    W = evalin('base','whos');
+    W = evalin('caller','whos');
     diary off
     if ismember(fname,{W(:).name})
-        error('Your base workspace already contains a variable with the same name as the mod-file. You need to delete it or rename the mod-file.')        
+        error('Your base workspace already contains a variable with the same name as the mod-file. You need to delete it or rename the mod-file.')
     else
-        rethrow(ME)    
-    end    
+        rethrow(ME)
+    end
 end
 
 diary off
