@@ -123,3 +123,9 @@ save('fs2000_result.mat','oo_')
 options_.load_results_after_load_mh=1;
 estimation(mode_compute=0,mode_file=fs2000_mode,order=1, datafile=fsdat_simul, nobs=192, loglinear, mh_replic=0, mh_nblocks=1, mh_jscale=10,load_mh_file,smoother) gy_obs gp_obs;
 oo_.MarginalDensity.LaplaceApproximation = Laplace; %reset correct Laplace
+
+
+%test prior sampling
+options_.prior_draws=100;
+options_.no_graph.posterior=0;
+prior_posterior_statistics('prior',dataset_,dataset_info); %get smoothed and filtered objects and forecasts
