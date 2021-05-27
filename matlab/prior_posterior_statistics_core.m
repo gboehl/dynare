@@ -108,6 +108,9 @@ if ~strcmpi(type,'prior')
     if strcmpi(type,'posterior')
         logpost=myinputs.logpost;
     end
+else
+    x=(prior_draw(bayestopt_,options_.prior_trunc))';
+    options_=select_qz_criterium_value(options_);
 end
 if whoiam
     Parallel=myinputs.Parallel;
@@ -177,7 +180,7 @@ end
 if naK
     stock_filter_step_ahead =NaN(length(options_.filter_step_ahead),endo_nbr,gend+max(options_.filter_step_ahead),MAX_naK);
 end
-stock_param = NaN(MAX_nruns,size(myinputs.x,2));
+stock_param = NaN(MAX_nruns,size(x,2));
 stock_logpo = NaN(MAX_nruns,1);
 stock_ys = NaN(MAX_nruns,endo_nbr);
 if filter_covariance
@@ -187,11 +190,18 @@ if smoothed_state_uncertainty
     stock_smoothed_uncert = zeros(endo_nbr,endo_nbr,gend,MAX_n_smoothed_state_uncertainty);
 end
 
+opts_local = options_;
 for b=fpar:B
     if strcmpi(type,'prior')
-
-        [deep, logpo] = GetOneDraw(type,M_,estim_params_,oo_,options_,bayestopt_);
-
+        iter=1;
+        logpo=[];
+        while (isempty(logpo) || isinf(logpo)) && iter<1000
+            [deep, logpo] = GetOneDraw(type,M_,estim_params_,oo_,options_,bayestopt_);
+            iter=iter+1;
+        end
+        if iter==1000
+            fprintf('\nprior_posterior_statistics: unable to get a valid draw in 1000 tries. Giving up.')
+        end
     else
         deep = x(b,:);
         if strcmpi(type,'posterior')
@@ -203,9 +213,18 @@ for b=fpar:B
     M_ = set_all_parameters(deep,estim_params_,M_);
 
     if run_smoother
-        [dr,info,M_,options_,oo_] =compute_decision_rules(M_,options_,oo_);
-        [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,options_,bayestopt_] = ...
-            DsgeSmoother(deep,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
+        [dr,info,M_,opts_local,oo_] =compute_decision_rules(M_,opts_local,oo_);
+        if ismember(info(1),[3,4]) 
+            opts_local.qz_criterium = 1 + (opts_local.qz_criterium-1)*10; %loosen tolerance, useful for big models where BK conditions were tested on restricted state space
+            [dr,info,M_,opts_local,oo_] =compute_decision_rules(M_,opts_local,oo_);
+        end
+        if info(1)
+            message=get_error_message(info,opts_local);
+            fprintf('\nprior_posterior_statistics: One of the draws failed with the error:\n%s\n',message)
+            fprintf('prior_posterior_statistics: This should not happen. Please contact the developers.\n',message)
+        end
+        [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,opts_local,bayestopt_] = ...
+            DsgeSmoother(deep,gend,Y,data_index,missing_value,M_,oo_,opts_local,bayestopt_,estim_params_);
 
         stock_trend_coeff(options_.varobs_id,irun(9))=trend_coeff;
         stock_smoothed_trend(IdObs,:,irun(11))=trend_addition;
