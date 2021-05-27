@@ -152,7 +152,14 @@ switch DynareOptions.particle.initialization
     DynareOptions.pruning = DynareOptions.particle.pruning;
     y_ = simult(DynareResults.steady_state, dr,Model,DynareOptions,DynareResults);
     y_ = y_(dr.order_var(state_variables_idx),2001:5000); %state_variables_idx is in dr-order while simult_ is in declaration order
-    StateVectorVariance = cov(y_');
+    if any(any(isnan(y_))) ||  any(any(isinf(y_))) && ~ DynareOptions.pruning
+        fval = Inf;
+        info(1) = 202;
+        info(4) = 0.1;
+        exit_flag = 0;
+        return;        
+    end
+    StateVectorVariance = cov(y_');       
     DynareOptions.periods = old_DynareOptionsperiods;
     DynareOptions.pruning = old_DynareOptionspruning;
     clear('old_DynareOptionsperiods','y_');

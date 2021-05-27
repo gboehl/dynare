@@ -235,9 +235,9 @@ if ~isequal(DynareOptions.mode_compute,11) || ...
         fprintf('initial_estimation_checks:: If you think the latter is the case, you should try with different initial values for the estimated parameters.\n')
         error('initial_estimation_checks:: The forecast error variance in the multivariate Kalman filter became singular.')
     end
-    if info(1)==201
-        fprintf('initial_estimation_checks:: Initial covariance of the states is not positive definite. Try a different nonlinear_filter_initialization.\n')
-        error('initial_estimation_checks:: Initial covariance of the states is not positive definite. Try a different nonlinear_filter_initialization.')
+    if info(1)==201 || info(1)==202
+        message=get_error_message(info,DynareOptions);
+        error('initial_estimation_checks:: %s.',message)
     end
     %reset options
     DynareOptions.use_univariate_filters_if_singularity_is_detected=use_univariate_filters_if_singularity_is_detected_old;
