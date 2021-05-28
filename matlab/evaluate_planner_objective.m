@@ -98,11 +98,11 @@ if options_.ramsey_policy
         planner_objective_value(2) = W;
     else
     ys = oo_.dr.ys;
-        if options_.order == 1
+        if options_.order == 1 || M_.hessian_eq_zero
             [U] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
             planner_objective_value(1) = U/(1-beta);
             planner_objective_value(2) = U/(1-beta);  
-        elseif options_.order == 2
+        elseif options_.order == 2 && ~M_.hessian_eq_zero
             [U,Uy,Uyy] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
 
             Gy = dr.ghx(nstatic+(1:nspred),:);
