@@ -43,8 +43,13 @@ dynamicmodel_s = str2func('dynamic_backward_model_for_simulation');
 info.status = true;
 
 for it = M.maximum_lag + (1:options.periods)
-    y = endogenousvariables(:,it-1);        % Values at previous period, also used as guess value for current period
-    ylag = y(iyb);
+    if M.maximum_lag==0 && it==1
+        y = endogenousvariables(:,it);        % Values at previous period, also used as guess value for current period
+        ylag = [];        
+    else
+        y = endogenousvariables(:,it-1);        % Values at previous period, also used as guess value for current period
+        ylag = y(iyb);
+    end
     if ismember(options.solve_algo, [12,14])
         [tmp, check] = dynare_solve(dynamicmodel_s, y, options, M.isloggedlhs, M.isauxdiffloggedrhs, M.endo_names, M.lhs, ...
                                     dynamicmodel, ylag, exogenousvariables, M.params, steadystate, it);
