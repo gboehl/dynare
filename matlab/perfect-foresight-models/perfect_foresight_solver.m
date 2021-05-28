@@ -70,15 +70,24 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
         fprintf('Switching to a homotopy method...\n')
     end
 
-    if ~M_.maximum_lag
+    if ~M_.maximum_lag && M_.maximum_lead>0
         disp('Homotopy not implemented for purely forward models!')
         disp('Failed to solve the model!')
         disp('Return with empty oo_.endo_simul.')
         oo_.endo_simul = [];
         return
     end
-    if ~M_.maximum_lead
+
+    if ~M_.maximum_lead && M_.maximum_lag>0
         disp('Homotopy not implemented for purely backward models!')
+        disp('Failed to solve the model!')
+        disp('Return with empty oo_.endo_simul.')
+        oo_.endo_simul = [];
+        return
+    end
+
+    if ~M_.maximum_lead && ~M_.maximum_lag
+        disp('Homotopy not implemented for purely static models!')
         disp('Failed to solve the model!')
         disp('Return with empty oo_.endo_simul.')
         oo_.endo_simul = [];

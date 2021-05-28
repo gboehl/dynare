@@ -332,6 +332,7 @@ MODFILES = \
 	deterministic_simulations/purely_forward/ar1.mod \
 	deterministic_simulations/purely_forward/nk.mod \
 	deterministic_simulations/purely_backward/ar1.mod \
+	deterministic_simulations/purely_static/toto.mod \
 	deterministic_simulations/rbc_det1.mod \
 	deterministic_simulations/rbc_det2.mod \
 	deterministic_simulations/rbc_det3.mod \
