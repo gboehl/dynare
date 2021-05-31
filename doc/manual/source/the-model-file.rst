@@ -5051,7 +5051,7 @@ block decomposition of the model (see :opt:`block`).
        subdirectory of a directory, you must quote the
        argument. Default: ``<mod_file>``.
 
-    .. option:: xls_sheet = NAME
+    .. option:: xls_sheet = QUOTED_STRING
 
        The name of the sheet with the data in an Excel file.
 
@@ -7772,9 +7772,9 @@ Shock Decomposition
 
         See :opt:`diffuse_filter <diffuse_filter>`.
 
-    .. option:: xls_sheet = NAME
+    .. option:: xls_sheet = QUOTED_STRING
 
-        See :opt:`xls_sheet <xls_sheet = NAME>`.
+        See :opt:`xls_sheet <xls_sheet = QUOTED_STRING>`.
 
     .. option:: xls_range = RANGE
 
@@ -8468,9 +8468,9 @@ Dynare can also run the smoother on a calibrated model:
 
         See :opt:`diffuse_kalman_tol <diffuse_kalman_tol = DOUBLE>`.
 
-    .. option:: xls_sheet = NAME
+    .. option:: xls_sheet = QUOTED_STRING
 
-        See :opt:`xls_sheet <xls_sheet = NAME>`.
+        See :opt:`xls_sheet <xls_sheet = QUOTED_STRING>`.
 
     .. option:: xls_range = RANGE
 
@@ -10899,9 +10899,9 @@ below.
 
         See :ref:`datafile <dataf>`.
 
-    .. option:: xls_sheet = NAME
+    .. option:: xls_sheet = QUOTED_STRING
 
-        See :opt:`xls_sheet <xls_sheet = NAME>`.
+        See :opt:`xls_sheet <xls_sheet = QUOTED_STRING>`.
 
     .. option:: xls_range = RANGE
 
