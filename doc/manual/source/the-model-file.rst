@@ -97,6 +97,8 @@ observed:
 * FILENAME indicates a filename valid in the underlying operating
   system; it is necessary to put it between quotes when specifying the
   extension or if the filename contains a non-alphanumeric character;
+* QUOTED_STRING indicates an arbitrary string enclosed between (single)
+  quotes.
 
 
 .. _var-decl:
@@ -122,7 +124,7 @@ many loops. Rather, name investment ``invest``. Using ``inv`` is also
 not recommended as it already denotes the inverse operator. Commands
 for declaring variables and parameters are described below.
 
-.. command:: var VAR_NAME [$TEX_NAME$] [(long_name=QUOTED_STR|NAME=QUOTED_STR)]...;
+.. command:: var VAR_NAME [$TEX_NAME$] [(long_name=QUOTED_STRING|NAME=QUOTED_STRING)]...;
     var(deflator=MODEL_EXPR) VAR_NAME (... same options apply)
     var(log_deflator=MODEL_EXPR) VAR_NAME (... same options apply)
 
@@ -164,7 +166,7 @@ for declaring variables and parameters are described below.
 
     .. _long-name:
 
-    .. option:: long_name = QUOTED_STR
+    .. option:: long_name = QUOTED_STRING
 
         This is the long version of the variable name. Its value is
         stored in ``M_.endo_names_long`` (a column cell array, in the
@@ -174,11 +176,11 @@ for declaring variables and parameters are described below.
 
     .. _partitioning:
 
-    .. option:: NAME = QUOTED_STR
+    .. option:: NAME = QUOTED_STRING
 
         This is used to create a partitioning of variables. It results
         in the direct output in the ``.m`` file analogous to:
-        ``M_.endo_partitions.NAME = QUOTED_STR``;.
+        ``M_.endo_partitions.NAME = QUOTED_STRING``;.
 
     *Example (variable partitioning)*
 
@@ -190,7 +192,7 @@ for declaring variables and parameters are described below.
         var c $C$ (long_name=`Consumption');
 
 
-.. command :: varexo VAR_NAME [$TEX_NAME$] [(long_name=QUOTED_STR|NAME=QUOTED_STR)...];
+.. command :: varexo VAR_NAME [$TEX_NAME$] [(long_name=QUOTED_STRING|NAME=QUOTED_STRING)...];
 
     |br| This optional command declares the exogenous variables in the
     model. See :ref:`conv` for the syntax of ``VAR_NAME``. Optionally
@@ -235,7 +237,7 @@ for declaring variables and parameters are described below.
     declared with ``varexo``.
 
 
-.. command:: varexo_det VAR_NAME [$TEX_NAME$] [(long_name=QUOTED_STR|NAME=QUOTED_STR)...];
+.. command:: varexo_det VAR_NAME [$TEX_NAME$] [(long_name=QUOTED_STRING|NAME=QUOTED_STRING)...];
 
     |br| This optional command declares exogenous deterministic
     variables in a stochastic model. See :ref:`conv` for the syntax of
@@ -275,7 +277,7 @@ for declaring variables and parameters are described below.
             varexo_det tau;
 
 
-.. command :: parameters PARAM_NAME [$TEX_NAME$] [(long_name=QUOTED_STR|NAME=QUOTED_STR)...];
+.. command :: parameters PARAM_NAME [$TEX_NAME$] [(long_name=QUOTED_STRING|NAME=QUOTED_STRING)...];
 
     |br| This command declares parameters used in the model, in variable
     initialization or in shocks declarations. See :ref:`conv` for the
