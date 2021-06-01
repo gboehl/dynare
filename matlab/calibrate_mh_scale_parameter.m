@@ -1,5 +1,5 @@
 function Scale = calibrate_mh_scale_parameter(ObjectiveFunction, CovarianceMatrix, Parameters, MhBounds, options, varargin)
-
+% function Scale = calibrate_mh_scale_parameter(ObjectiveFunction, CovarianceMatrix, Parameters, MhBounds, options, varargin)
 % Tune the MH scale parameter so that the overall acceptance ratio is close to AcceptanceTarget.
 %
 % INPUTS
@@ -11,7 +11,31 @@ function Scale = calibrate_mh_scale_parameter(ObjectiveFunction, CovarianceMatri
 % - varargin                      [cell]         Additional arguments to be passed to ObjectiveFunction.
 %
 % OUTPUTS
-% - Scale                         [double]       scalar, optimal scale parameter for teh jumping distribution.
+% - Scale                         [double]       scalar, optimal scale parameter for the jumping distribution.
+%
+% Note: program terminates if c3 consecutive runs of stepsize draws occured where 
+%   i) the overall acceptance rate was less than c1 from target and 
+%   ii) less than c2 over the last stepsize=2000 draws.
+% Adjustment between steps takes place using a weighted average with the exponent being rho
+
+
+
+% Copyright (C) 2020-2021 Dynare Team
+%
+% This file is part of Dynare.
+%
+% Dynare is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Dynare is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 % Fire up the wait bar
 hh = dyn_waitbar(0,'Tuning of the scale parameter...');
@@ -73,7 +97,7 @@ while j<=options.maxiter
     prtfrc = j/options.maxiter;
     % Update the waitbar
     if ~mod(j, 10)
-        dyn_waitbar(prtfrc, hh, sprintf('Acceptance ratio [during last 500]: %f [%f]', isux/j, jsux/jj));
+        dyn_waitbar(prtfrc, hh, sprintf('Acceptance ratio [during last %u]: %f [%f]', options.stepsize, isux/j, jsux/jj));
     end
     % Adjust the value of the scale parameter.
     if ~mod(j, options.stepsize)
