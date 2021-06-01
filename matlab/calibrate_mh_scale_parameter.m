@@ -73,7 +73,7 @@ while j<=options.maxiter
     prtfrc = j/options.maxiter;
     % Update the waitbar
     if ~mod(j, 10)
-        dyn_waitbar(prtfrc, hh, sprintf('Acceptance ratio [during last 500]: %f [%f]', isux/j, jsux/jj));
+        dyn_waitbar(prtfrc, hh, sprintf('Acceptance ratio [during last %u]: %f [%f]', options.stepsize, isux/j, jsux/jj));
     end
     % Adjust the value of the scale parameter.
     if ~mod(j, options.stepsize)

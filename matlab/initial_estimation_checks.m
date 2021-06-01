@@ -290,6 +290,10 @@ if ~isequal(DynareOptions.mode_compute,11)
     disp(['Initial value of the log posterior (or likelihood): ' num2str(-fval)]);
 end
 
+if DynareOptions.mh_tune_jscale.status && (DynareOptions.mh_tune_jscale.maxiter<DynareOptions.mh_tune_jscale.stepsize)
+    warning('You specified mh_tune_jscale, but the maximum number of iterations is smaller than the step size. No update will take place.')
+end
+
 function evaluate_expression(expression,M_,oo_)
 % function evaluate_expression(expression,M_,oo_)
 %evaluates expressions relying on M_ and oo_ having their original names
