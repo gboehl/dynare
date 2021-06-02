@@ -324,9 +324,9 @@ elseif ismember(options.solve_algo, [2, 12, 4])
     end
 elseif options.solve_algo==3
     if jacobian_flag
-        [x, errorflag] = csolve(f, x, f, 1e-6, 500, arguments{:});
+        [x, errorflag] = csolve(f, x, f, tolf, maxit, arguments{:});
     else
-        [x, errorflag] = csolve(f, x, [], 1e-6, 500, arguments{:});
+        [x, errorflag] = csolve(f, x, [], tolf, maxit, arguments{:});
     end
     [fvec, fjac] = feval(f, x, arguments{:});
 elseif options.solve_algo==10
