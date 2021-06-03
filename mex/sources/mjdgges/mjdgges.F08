@@ -18,7 +18,7 @@
 !   eigval       [complex] (n×1) vector of generalized eigenvalues
 !   info         [integer] scalar, error code of dgges (or 30 if eigenvalue close to 0÷0)
 
-! Copyright © 2006-2020 Dynare Team
+! Copyright © 2006-2021 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -69,7 +69,9 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   integer(blint) :: n_bl, lwork, info_bl, sdim_bl
   real(real64), dimension(:), allocatable :: alpha_r, alpha_i, beta, work
   logical(bllog), dimension(:), allocatable :: bwork
-  real(real64), dimension(:), pointer :: s, t, z, info, sdim, vsl
+  ! The pointers used in the LAPACK call are marked as contiguous, to
+  ! avoid temporary copies beforehand.
+  real(real64), dimension(:), pointer, contiguous :: s, t, z, info, sdim, vsl
 #if MX_HAS_INTERLEAVED_COMPLEX
   complex(real64), dimension(:), pointer :: gev
 #else

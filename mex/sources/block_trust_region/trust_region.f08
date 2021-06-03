@@ -2,7 +2,7 @@
 !
 ! Implementation heavily inspired from the hybrj function from MINPACK
 
-! Copyright © 2019 Dynare Team
+! Copyright © 2019-2021 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -223,11 +223,14 @@ contains
   ! designates element-by-element multiplication),
   ! x is a convex combination of the Gauss-Newton and scaled gradient
   subroutine dogleg(r, b, d, delta, x, gn, recompute_gn)
-    real(real64), dimension(:), intent(in) :: b, d
-    real(real64), dimension(:,:), intent(in) :: r
+    ! The arrays used in BLAS/LAPACK calls are required to be contiguous, to
+    ! avoid temporary copies before calling BLAS/LAPACK.
+    real(real64), dimension(:), contiguous, intent(in) :: b
+    real(real64), dimension(:), intent(in) :: d
+    real(real64), dimension(:,:), contiguous, intent(in) :: r
     real(real64), intent(in) :: delta ! Radius of the trust region
     real(real64), dimension(:), intent(out) :: x ! Solution of the problem
-    real(real64), dimension(:), intent(inout) :: gn ! Gauss-Newton direction
+    real(real64), dimension(:), contiguous, intent(inout) :: gn ! Gauss-Newton direction
     logical, intent(in) :: recompute_gn ! Whether to re-compute Gauss-Newton direction
 
     integer(blint) :: n
