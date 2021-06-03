@@ -1,4 +1,4 @@
-! Copyright © 2019-2020 Dynare Team
+! Copyright © 2019-2021 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -25,6 +25,17 @@ module blas
   integer, parameter :: blint = int32
   integer, parameter :: bllog = 4 ! Logical kind, gfortran-specific
 #endif
+
+  interface
+     subroutine dgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
+       import :: blint, real64
+       character, intent(in) :: transa, transb
+       integer(blint), intent(in) :: m, n, k, lda, ldb, ldc
+       real(real64), dimension(*), intent(in) :: a, b
+       real(real64), intent(in) :: alpha, beta
+       real(real64), dimension(*), intent(inout) :: c
+     end subroutine dgemm
+  end interface
 
   interface
      subroutine dgemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
