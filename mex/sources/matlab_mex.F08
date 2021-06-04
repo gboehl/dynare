@@ -23,8 +23,12 @@
 !   • remove the “use” declarations
 !   • remove the “value” keywords
 !   • convert input character arrays to character(kind=c_char, len=*)
+!   • Fortran array pointers returned by the glue code must be marked
+!     “contiguous” (which is always the case for C arrays). This will help the
+!     Fortran compiler better optimize the code (in some cases, this will avoid
+!     array copies)
 
-! Copyright © 2019-2020 Dynare Team
+! Copyright © 2019-2021 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -281,21 +285,21 @@ contains
 #if MX_HAS_INTERLEAVED_COMPLEX
   function mxGetDoubles(pm)
     type(c_ptr), intent(in) :: pm
-    real(real64), dimension(:), pointer :: mxGetDoubles
+    real(real64), dimension(:), pointer, contiguous :: mxGetDoubles
     call c_f_pointer(mxGetDoubles_internal(pm), mxGetDoubles, [ mxGetNumberOfElements(pm) ])
   end function mxGetDoubles
 #endif
 
   function mxGetPr(pm)
     type(c_ptr), intent(in) :: pm
-    real(real64), dimension(:), pointer :: mxGetPr
+    real(real64), dimension(:), pointer, contiguous :: mxGetPr
     call c_f_pointer(mxGetPr_internal(pm), mxGetPr, [ mxGetNumberOfElements(pm) ])
   end function mxGetPr
 
 #if MX_HAS_INTERLEAVED_COMPLEX
   function mxGetInt32s(pa)
     type(c_ptr), intent(in) :: pa
-    integer(int32), dimension(:), pointer :: mxGetInt32s
+    integer(int32), dimension(:), pointer, contiguous :: mxGetInt32s
     call c_f_pointer(mxGetInt32s_internal(pa), mxGetInt32s, [ mxGetNumberOfElements(pa) ])
   end function mxGetInt32s
 #endif
@@ -303,20 +307,20 @@ contains
 #if MX_HAS_INTERLEAVED_COMPLEX
   function mxGetComplexDoubles(pa)
     type(c_ptr), intent(in) :: pa
-    complex(real64), dimension(:), pointer :: mxGetComplexDoubles
+    complex(real64), dimension(:), pointer, contiguous :: mxGetComplexDoubles
     call c_f_pointer(mxGetComplexDoubles_internal(pa), mxGetComplexDoubles, [ mxGetNumberOfElements(pa) ])
   end function mxGetComplexDoubles
 #else
   function mxGetPi(pm)
     type(c_ptr), intent(in) :: pm
-    real(real64), dimension(:), pointer :: mxGetPi
+    real(real64), dimension(:), pointer, contiguous :: mxGetPi
     call c_f_pointer(mxGetPi_internal(pm), mxGetPi, [ mxGetNumberOfElements(pm) ])
   end function mxGetPi
 #endif
 
   function mxGetLogicals(array_ptr)
     type(c_ptr), intent(in) :: array_ptr
-    logical(mxLogical), dimension(:), pointer :: mxGetLogicals
+    logical(mxLogical), dimension(:), pointer, contiguous :: mxGetLogicals
     call c_f_pointer(mxGetLogicals_internal(array_ptr), mxGetLogicals, [ mxGetNumberOfElements(array_ptr) ])
   end function mxGetLogicals
 
@@ -342,7 +346,7 @@ contains
   function mxArrayToString(pm)
     type(c_ptr), intent(in) :: pm
     character(kind=c_char, len=:), allocatable :: mxArrayToString
-    character(kind=c_char), dimension(:), pointer :: chararray
+    character(kind=c_char), dimension(:), pointer, contiguous :: chararray
     integer :: i
     call c_f_pointer(mxArrayToString_internal(pm), chararray, [ mxGetNumberOfElements(pm) ])
     ! Convert the character array into a character scalar (of length > 1)
