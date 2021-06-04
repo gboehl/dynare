@@ -17,6 +17,7 @@
 
 module blas
   use iso_fortran_env
+  implicit none
 
 #if defined(MATLAB_MEX_FILE) && __SIZEOF_POINTER__ == 8
   integer, parameter :: blint = int64
@@ -51,6 +52,7 @@ end module blas
 
 module lapack
   use blas
+  implicit none
 
   interface
      subroutine dgesv(n, nrhs, a, lda, ipiv, b, ldb, info)
