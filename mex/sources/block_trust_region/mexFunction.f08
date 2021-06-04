@@ -1,4 +1,4 @@
-! Copyright © 2019-2020 Dynare Team
+! Copyright © 2019-2021 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -45,43 +45,35 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
 
   if (nrhs < 4 .or. nlhs /= 2) then
      call mexErrMsgTxt("Must have at least 7 inputs and exactly 2 outputs")
-     return
   end if
 
   if (.not. ((mxIsChar(prhs(1)) .and. mxGetM(prhs(1)) == 1) .or. mxIsClass(prhs(1), "function_handle"))) then
      call mexErrMsgTxt("First argument (function) should be a string or a function handle")
-     return
   end if
 
   if (.not. (mxIsDouble(prhs(2)) .and. (mxGetM(prhs(2)) == 1 .or. mxGetN(prhs(2)) == 1))) then
      call mexErrMsgTxt("Second argument (initial guess) should be a real vector")
-     return
   end if
 
   if (.not. (mxIsScalar(prhs(3)) .and. mxIsNumeric(prhs(3)))) then
      call mexErrMsgTxt("Third argument (tolf) should be a numeric scalar")
-     return
   end if
 
   if (.not. (mxIsScalar(prhs(4)) .and. mxIsNumeric(prhs(4)))) then
      call mexErrMsgTxt("Fourth argument (tolx) should be a numeric scalar")
-     return
   end if
 
   if (.not. (mxIsScalar(prhs(5)) .and. mxIsNumeric(prhs(5)))) then
      call mexErrMsgTxt("Fifth argument (maxiter) should be a numeric scalar")
-     return
   end if
 
   if (.not. (mxIsLogicalScalar(prhs(6)))) then
      call mexErrMsgTxt("Sixth argument (debug) should be a logical scalar")
-     return
   end if
 
   if (.not. (mxIsStruct(prhs(7)) .and. &
        (mxGetNumberOfFields(prhs(7)) == 0 .or. mxGetNumberOfFields(prhs(7)) == 4))) then
      call mexErrMsgTxt("Seventh argument should be a struct with either 0 or 4 fields")
-     return
   end if
   specializedunivariateblocks = (mxGetNumberOfFields(prhs(7)) == 4)
 
@@ -101,7 +93,6 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
        tmp = mxGetField(prhs(7), 1_mwIndex, "isloggedlhs")
        if (.not. (c_associated(tmp) .and. mxIsLogical(tmp) .and. mxGetNumberOfElements(tmp) == size(x))) then
           call mexErrMsgTxt("Seventh argument must have a 'isloggedlhs' field of type logical, of same size as second argument")
-          return
        end if
        isloggedlhs => mxGetLogicals(tmp)
 
@@ -109,20 +100,17 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
        if (.not. (c_associated(tmp) .and. mxIsLogical(tmp) .and. mxGetNumberOfElements(tmp) == size(x))) then
           call mexErrMsgTxt("Seventh argument must have a 'isauxdiffloggedrhs' field of type &
                &logical, of same size as second argument")
-          return
        end if
        isauxdiffloggedrhs => mxGetLogicals(tmp)
 
        lhs = mxGetField(prhs(7), 1_mwIndex, "lhs")
        if (.not. (c_associated(lhs) .and. mxIsCell(lhs) .and. mxGetNumberOfElements(lhs) == size(x))) then
           call mexErrMsgTxt("Seventh argument must have a 'lhs' field of type cell, of same size as second argument")
-          return
        end if
 
        endo_names = mxGetField(prhs(7), 1_mwIndex, "endo_names")
        if (.not. (c_associated(endo_names) .and. mxIsCell(endo_names) .and. mxGetNumberOfElements(endo_names) == size(x))) then
           call mexErrMsgTxt("Seventh argument must have a 'endo_names' field of type cell, of same size as second argument")
-          return
        end if
      end block
 
@@ -194,7 +182,6 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
                   end if
                else
                   call mexErrMsgTxt("Algorithm solve_algo=14 cannot be used with this nonlinear problem")
-                  return
                end if
             end if
           end block
@@ -214,7 +201,6 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
        x_all => x
        if (size(x_indices) /= size(f_indices)) then
           call mexErrMsgTxt("Non-square block")
-          return
        end if
        x_block = x(x_indices)
        call trust_region_solve(x_block, matlab_fcn, info, tolx, tolf, maxiter)

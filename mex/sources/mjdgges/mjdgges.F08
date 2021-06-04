@@ -80,7 +80,6 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
 
   if (nrhs < 2 .or. nrhs > 4 .or. nlhs /= 6) then
      call mexErrMsgTxt("MJDGGES: takes 2, 3 or 4 input arguments and exactly 6 output arguments.")
-     return
   end if
 
   n = mxGetM(prhs(1))
@@ -88,14 +87,12 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
       .or. .not. mxIsDouble(prhs(2)) .or. mxIsComplex(prhs(2)) &
       .or. mxGetN(prhs(1)) /= n .or. mxGetM(prhs(2)) /= n .or. mxGetN(prhs(2)) /= n) then
      call mexErrMsgTxt("MJDGGES: first two arguments should be real matrices of the same dimension")
-     return
   end if
 
   ! Set criterium for stable eigenvalues
   if (nrhs >= 3 .and. mxGetM(prhs(3)) > 0) then
      if (.not. (mxIsScalar(prhs(3)) .and. mxIsNumeric(prhs(3)))) then
         call mexErrMsgTxt("MJDGGES: third argument (qz_criterium) should be a numeric scalar")
-        return
      end if
      criterium = mxGetScalar(prhs(3))
   else
@@ -106,7 +103,6 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   if (nrhs == 4 .and. mxGetM(prhs(4)) > 0) then
      if (.not. (mxIsScalar(prhs(4)) .and. mxIsNumeric(prhs(4)))) then
         call mexErrMsgTxt("MJDGGES: fourth argument (zhreshold) should be a numeric scalar")
-        return
      end if
      zhreshold = mxGetScalar(prhs(4))
   else
