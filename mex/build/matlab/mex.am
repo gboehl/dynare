@@ -8,7 +8,7 @@ DEFS += -DMATLAB_MEX_FILE
 DEFS += -DMEXEXT=\"$(MEXEXT)\"
 
 AM_CFLAGS = $(MATLAB_CFLAGS) -Wall -Wno-parentheses
-AM_FCFLAGS = $(MATLAB_FCFLAGS) -Wall
+AM_FCFLAGS = $(MATLAB_FCFLAGS) -Wall -Wimplicit-interface
 AM_CXXFLAGS = $(MATLAB_CXXFLAGS) -Wall -Wno-parentheses -Wold-style-cast
 AM_LDFLAGS = $(MATLAB_LDFLAGS)
 LIBS += $(MATLAB_LIBS)
