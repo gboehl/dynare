@@ -156,8 +156,10 @@ else
         record.FunctionEvalPerIteration(offset+1:sum(nBlockPerCPU(1:j)))=fout(j).record.FunctionEvalPerIteration(offset+1:sum(nBlockPerCPU(1:j)));
         record.LastSeeds(offset+1:sum(nBlockPerCPU(1:j)))=fout(j).record.LastSeeds(offset+1:sum(nBlockPerCPU(1:j)));
         if j==1
-            record.ProposalCovariance=fout(j).record.ProposalCovariance;
-            record.ProposalScaleVec=fout(j).record.ProposalScaleVec;
+            if isfield(fout(j).record,'ProposalCovariance') && isfield(fout(j).record,'ProposalScaleVec')
+                record.ProposalCovariance=fout(j).record.ProposalCovariance;
+                record.ProposalScaleVec=fout(j).record.ProposalScaleVec;
+            end
         end
     end
     options_.parallel_info.parallel_recover = 0;
