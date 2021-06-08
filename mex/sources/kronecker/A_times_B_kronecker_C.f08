@@ -19,8 +19,8 @@
 ! along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
-  use iso_fortran_env, only: real64
-  use iso_c_binding, only: c_int
+  use iso_fortran_env
+  use iso_c_binding
   use matlab_mex
   use blas
   implicit none
