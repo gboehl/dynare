@@ -16,7 +16,7 @@ classdef paragraph < handle
     % GNU General Public License for more details.
     %
     % You should have received a copy of the GNU General Public License
-    % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+    % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
     properties (SetAccess = private)
         balancedCols = true % Determines whether the text is spread out evenly across the columns when the Paragraph has more than one column. Default: true.
         cols = 1            % The number of columns for the Paragraph. Default: 1.

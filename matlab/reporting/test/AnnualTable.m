@@ -14,7 +14,7 @@ function rep = AnnualTable(rep, db_a, dc_a, seriesRootName, arange)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 shortNames = {'US', 'EU', 'JA', 'EA6', 'LA6', 'RC6'};
 longNames  = {'Coca Cola', 'Kinder Bueno', 'Pizza', ...

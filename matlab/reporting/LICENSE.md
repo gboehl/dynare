@@ -12,4 +12,4 @@
 >  General Public License for more details.
 
 >  A copy of the GNU General Public License is available here
->  <http://www.gnu.org/licenses/>.
+>  <https://www.gnu.org/licenses/>.

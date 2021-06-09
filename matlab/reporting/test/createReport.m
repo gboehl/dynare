@@ -16,7 +16,7 @@ function createReport(dc_a, dc_q, db_a, db_q)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 tic
 larange= dates('2007a'):dates('2014a');

@@ -27,7 +27,7 @@ function o = addData(o, varargin)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if length(o.table_data) >= 1
     error('@report_table.addData: You can only use addData once per table')

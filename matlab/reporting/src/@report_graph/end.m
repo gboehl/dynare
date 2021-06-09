@@ -28,7 +28,7 @@ function lastIndex = end(o, k, n)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 assert(k==1 && n==1, '@report_graph/end: graph only has one dimension');
 lastIndex = length(o.series);

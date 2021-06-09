@@ -14,7 +14,7 @@ function rep = CountryTablePage(rep, countryAbbr, countryName, db_q, dc_q, db_a,
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 seriesNames = {{'RS_', 'Short Term Interest Rate'}, ...
     {'RR_', 'Real Interest Rate'}, ...

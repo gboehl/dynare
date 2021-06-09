@@ -16,7 +16,7 @@ classdef report_series < handle
     % GNU General Public License for more details.
     %
     % You should have received a copy of the GNU General Public License
-    % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+    % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
     properties (SetAccess = private)
         data = ''                        % The dseries that provides the data for the graph. Default: none.
         graphFanShadeColor = ''          % The shading color to use between a series and the previously-added series in a graph. Useful for making fan charts. Default: empty.

@@ -14,7 +14,7 @@ function rep = CommResidTablePage(rep, db_q, dc_q, trange, vline_after)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 seriesNames = {{'RES_LRPOIL_GAP_WORLD'}, ...
     {'RES_LRPOIL_BAR_WORLD'}, ...

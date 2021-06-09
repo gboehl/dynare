@@ -14,7 +14,7 @@ function rep = CountryGraphPage(rep, countryAbbr, db_q, dc_q, prange, srange)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 startpoint = strings(prange(1));
 shaded = strings(srange(1));

@@ -16,7 +16,7 @@ classdef report_table < handle
     % GNU General Public License for more details.
     %
     % You should have received a copy of the GNU General Public License
-    % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+    % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
     properties (Access = private, Constant = true)
         titleFormatDefalut = {'\large'}
     end
@@ -187,7 +187,7 @@ function tf = allCellsAreDatesRange(dcell)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 assert(iscell(dcell));
 tf = true;
@@ -227,7 +227,7 @@ function tf = allCellsAreDates(dcell)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 assert(iscell(dcell));
 tf = true;

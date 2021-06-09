@@ -18,7 +18,7 @@ function initialize_reporting_toolbox()
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Find reporting source directory
 reporting_src_root = strrep(which('initialize_reporting_toolbox'), 'initialize_reporting_toolbox.m', '');

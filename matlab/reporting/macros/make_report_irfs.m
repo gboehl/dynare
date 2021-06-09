@@ -28,7 +28,7 @@ function make_report_irfs(M, oo, ticks_every, showOutput)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if ~isfield(oo, 'irfs')
     disp('make_report_irfs: oo_.irfs does not exist');
