@@ -37,7 +37,7 @@ function [QP,QPinv] = quadruplication(p)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 np = p*(p+1)*(p+2)*(p+3)/24;
 QP = spalloc(p^4,np,p^4);

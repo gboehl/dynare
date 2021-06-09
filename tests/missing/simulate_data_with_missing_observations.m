@@ -37,7 +37,7 @@ function data = simulate_data_with_missing_observations(n,m,S,options)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if n<=m
     error('n must be greater than m!')

@@ -30,7 +30,7 @@ function M_ = set_measurement_errors(xparam1,estim_params_,M_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 H = M_.H;
 Correlation_matrix_ME = M_.Correlation_matrix_ME;

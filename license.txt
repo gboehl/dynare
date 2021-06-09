@@ -473,7 +473,7 @@ License: GFDL-NIV-1.3+
  any later version published by the Free Software Foundation; with no
  Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
  .
- A copy of the license can be found at <http://www.gnu.org/licenses/fdl.txt>
+ A copy of the license can be found at <https://www.gnu.org/licenses/fdl.txt>
 
 License: GPL-2+ with Autoconf exception
  This program is free software; you can redistribute it and/or
@@ -487,7 +487,7 @@ License: GPL-2+ with Autoconf exception
  GNU General Public License for more details.
  .
  You should have received a copy of the GNU General Public License along
- with this program. If not, see <http://www.gnu.org/licenses/>.
+ with this program. If not, see <https://www.gnu.org/licenses/>.
  .
  As a special exception to the GNU General Public License, if
  you distribute this file as part of a program that contains a
@@ -507,7 +507,7 @@ License: GPL-3+
  GNU General Public License for more details.
  .
  You should have received a copy of the GNU General Public License
- along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+ along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 License: GPL-3+ with Autoconf exception
  This program is free software: you can redistribute it and/or modify it
@@ -521,7 +521,7 @@ License: GPL-3+ with Autoconf exception
  Public License for more details.
  .
  You should have received a copy of the GNU General Public License along
- with this program. If not, see <http://www.gnu.org/licenses/>.
+ with this program. If not, see <https://www.gnu.org/licenses/>.
  .
  As a special exception, the respective Autoconf Macro's copyright owner
  gives unlimited permission to copy, distribute and modify the configure
@@ -548,7 +548,7 @@ License: LGPL-2.1+
  General Public License for more details.
  .
  You should have received a copy of the GNU Lesser General Public License
- along with this library. If not, see <http://www.gnu.org/licenses/>.
+ along with this library. If not, see <https://www.gnu.org/licenses/>.
 
 License: LGPL-3+
  This program is free software: you can redistribute it and/or modify
@@ -562,7 +562,7 @@ License: LGPL-3+
  GNU Lesser General Public License for more details.
  .
  You should have received a copy of the GNU Lesser General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 License: CC-BY-SA-4.0
  Attribution-ShareAlike 4.0 International

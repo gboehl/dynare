@@ -28,7 +28,7 @@ function DynareModel = update_parameters(varexpectationmodelname, DynareModel, D
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Check that the first input is a row character array.
 if ~isrow(varexpectationmodelname)==1 || ~ischar(varexpectationmodelname)

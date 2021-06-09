@@ -32,7 +32,7 @@ function g = apprgrdn(x,f,fun,deltax,obj,varargin)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 n=max(size(x)); ee=ones(size(x));
 di=abs(x); idx=find(di<5e-15); di(idx)=5e-15*ee(idx);

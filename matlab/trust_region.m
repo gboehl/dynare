@@ -40,7 +40,7 @@ function [x,check,info] = trust_region(fcn,x0,j1,j2,jacobian_flag,gstep,tolf,tol
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 %
 % Initial author: Jaroslav Hajek <highegg@gmail.com>, for GNU Octave
 

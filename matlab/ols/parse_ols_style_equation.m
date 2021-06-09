@@ -33,7 +33,7 @@ function [Y, lhssub, X, residual, fp, lp] = parse_ols_style_equation(ds, ast)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 %% Check inputs
 if nargin ~= 2

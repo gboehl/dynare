@@ -21,7 +21,7 @@ function correct_flag=check_consistency_covariances(Covariance_matrix)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 %compute theoretical bound by assuming correlation of 1
 bound=diag(sqrt(diag(Covariance_matrix)))*ones(size(Covariance_matrix))*diag(sqrt(diag(Covariance_matrix)));

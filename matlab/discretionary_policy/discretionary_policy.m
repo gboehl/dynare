@@ -27,7 +27,7 @@ function [info, oo_, options_, M_] = discretionary_policy(M_, options_, oo_, var
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 M_=discretionary_policy_initialization(M_,options_);
 

@@ -26,7 +26,7 @@ function global_initialization()
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 global oo_ M_ options_ estim_params_ bayestopt_ estimation_info ex0_ ys0_ dataset_ dataset_info
 estim_params_ = [];

@@ -33,7 +33,7 @@ function trace_plot(options_,M_,estim_params_,type,blck,name1,name2)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Cet the column index:
 if strcmpi(type,'PosteriorDensity')

@@ -30,7 +30,7 @@ function [logged_prior_density, dlprior, d2lprior, info] = priordens(x, pshape, 
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 persistent id1 id2 id3 id4 id5 id6 id8
 persistent tt1 tt2 tt3 tt4 tt5 tt6 tt8

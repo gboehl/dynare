@@ -18,7 +18,7 @@ function check_input_arguments(DynareOptions, DynareModel, DynareResults)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if DynareOptions.stack_solve_algo < 0 || DynareOptions.stack_solve_algo > 7
     error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: stack_solve_algo must be between 0 and 7')

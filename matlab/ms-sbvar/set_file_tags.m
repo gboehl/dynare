@@ -26,7 +26,7 @@ function [options_]=set_file_tags(options_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if isempty(options_.ms.output_file_tag)
     options_.ms.output_file_tag = options_.ms.file_tag;

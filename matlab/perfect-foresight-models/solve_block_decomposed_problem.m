@@ -16,7 +16,7 @@ function oo_ = solve_block_decomposed_problem(options_, M_, oo_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 cutoff = 1e-15;
 

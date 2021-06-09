@@ -16,7 +16,7 @@ function dataset_ = initialize_dataset(datafile,varobs,first,nobs,logged_data_fl
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if isempty(datafile)
     error('Estimation::initialize_dataset: You have to declare a dataset file!')

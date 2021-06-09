@@ -29,7 +29,7 @@ function [x,f,abscissa,dens,binf,bsup] = draw_prior_density(indx,bayestopt_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 pshape  = bayestopt_.pshape;
 p3      = bayestopt_.p3;

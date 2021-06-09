@@ -44,7 +44,7 @@ function [x,fval,exitflag] = simplex_optimization_routine(objective_function,x,o
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Set verbose mode
 verbose = options.verbosity;

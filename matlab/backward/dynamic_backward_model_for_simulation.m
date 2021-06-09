@@ -15,7 +15,7 @@ function [r, J] = dynamic_backward_model_for_simulation(z, dynamicmodel, ylag, x
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Get indices of the variables appearing at time t.
 % NOTE: It is assumed that all variables appear at time t in the model.

@@ -36,7 +36,7 @@ function [forecast,info] = dyn_forecast(var_list,M,options,oo,task,dataset_info)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if nargin<6 && options.prefilter
     error('The prefiltering option is not allowed without providing a dataset')

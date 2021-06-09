@@ -17,7 +17,7 @@ function [endogenousvariables, info] = sim1_purely_static(endogenousvariables, e
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if nnz(M.lead_lag_incidence(1,:)) ~= M.endo_nbr
     error('All endogenous variables must appear at the current period!')

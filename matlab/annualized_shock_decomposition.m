@@ -47,7 +47,7 @@ function [z, endo_names, endo_names_tex, steady_state, i_var, oo_] = annualized_
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 opts = options_.plot_shock_decomp;
 nvar = length(i_var);

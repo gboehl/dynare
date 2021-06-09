@@ -64,7 +64,7 @@
  * GNU General Public License for more details.
  *
  * You can receive a copy of the GNU General Public License
- * at <http://www.gnu.org/licenses/>.
+ * at <https://www.gnu.org/licenses/>.
  */
 
 var labobs      ${lHOURS}$      (long_name='log hours worked') 

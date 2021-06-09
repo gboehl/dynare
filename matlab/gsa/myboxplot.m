@@ -21,7 +21,7 @@ function sout = myboxplot (data,notched,symbol,vertical,maxwhisker)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % % % % endif
 if nargin < 5 | isempty(maxwhisker), maxwhisker = 1.5; end

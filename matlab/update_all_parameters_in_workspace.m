@@ -17,7 +17,7 @@ function update_all_parameters_in_workspace(DynareModel)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 for i=1:length(DynareModel.params)
     assignin('base', DynareModel.param_names{i}, DynareModel.params(i));

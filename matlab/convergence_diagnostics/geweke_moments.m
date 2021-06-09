@@ -37,7 +37,7 @@ function [results_vec, results_struct] = geweke_moments(draws,Dynareoptions)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % REFERENCES: Geweke (1992), `Evaluating the accuracy of sampling-based
 % approaches to the calculation of posterior moments', in J.O. Berger,

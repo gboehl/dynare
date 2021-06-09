@@ -71,7 +71,7 @@ function [Outmatrix, OutFact] = Sampling_Function_2(p, k, r, UB, LB, GroupMat)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Parameters and initialisation of the output matrix
 sizea = k;

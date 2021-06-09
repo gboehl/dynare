@@ -15,7 +15,7 @@ function [shocks, spfm_exo_simul, innovations, DynareResults] = extended_path_sh
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Simulate shocks.
 if isempty(exogenousvariables)

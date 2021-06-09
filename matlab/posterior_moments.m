@@ -36,7 +36,7 @@ function [post_mean, post_median, post_var, hpd_interval, post_deciles, density]
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if nargin<4
     number_of_grid_points = 2^9;      % 2^9 = 512 !... Must be a power of two.

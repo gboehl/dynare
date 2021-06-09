@@ -17,7 +17,7 @@ function p = uperm(a)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 % Original author: Bruno Luong <brunoluong@yahoo.com>, April 20, 2014
 % https://groups.google.com/d/msg/comp.soft-sys.matlab/yQKVPTYrv6Q/gw1MzNd9sYkJ

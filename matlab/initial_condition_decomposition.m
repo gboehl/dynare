@@ -36,7 +36,7 @@ function oo_ = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 options_.plot_shock_decomp.colormap = options_.initial_condition_decomp.colormap;
 options_.plot_shock_decomp.nodisplay = options_.initial_condition_decomp.nodisplay;

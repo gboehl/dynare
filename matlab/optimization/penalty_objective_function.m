@@ -28,7 +28,7 @@ function [fval, exit_flag, arg1, arg2] = penalty_objective_function(x, fcn, base
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 [fval, info, exit_flag, arg1, arg2] = fcn(x, varargin{:});
 

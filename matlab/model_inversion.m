@@ -30,7 +30,7 @@ function [endogenousvariables, exogenousvariables] = model_inversion(constraints
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if ~isequal(nargin, 6)
     error('model_inversion: This routine require six input arguments!')

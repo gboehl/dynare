@@ -32,7 +32,7 @@ function [x, objectivevalue, errorflag] = gauss_newton(fun, x0)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 maxIter = 100;           % Maximum number of iteration.
 h = sqrt(eps(1.0));      % Pertubation size for numerical computation of the Jacobian matrix

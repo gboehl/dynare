@@ -61,7 +61,7 @@ function [dr,aimcode,rts]=dynAIMsolver1(jacobia_,M_,dr)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 aimcode=-1;
 neq= size(jacobia_,1); % no of equations

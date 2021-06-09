@@ -16,7 +16,7 @@ function send_endogenous_variables_to_workspace()
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 global M_ oo_
 
 for idx = 1:M_.endo_nbr

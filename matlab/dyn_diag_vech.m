@@ -23,7 +23,7 @@ function d = dyn_diag_vech(Vector)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 m = length(Vector);
 n = (sqrt(1+8*m)-1)/2;

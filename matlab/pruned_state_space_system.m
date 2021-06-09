@@ -110,7 +110,7 @@ function pruned_state_space = pruned_state_space_system(M, options, dr, indy, nl
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 
 %% MAIN IDEA:

@@ -39,7 +39,7 @@ function optimal_bandwidth = mh_optimal_bandwidth(data,number_of_draws,bandwidth
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Kernel specifications.
 if strcmpi(kernel_function,'gaussian')

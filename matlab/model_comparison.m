@@ -35,7 +35,7 @@ function oo = model_comparison(ModelNames,ModelPriors,oo,options_,fname)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 NumberOfModels = size(ModelNames,2);
 

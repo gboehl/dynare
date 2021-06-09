@@ -35,7 +35,7 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 check1 = 0;
 if options.bytecode

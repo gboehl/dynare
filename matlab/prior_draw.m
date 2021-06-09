@@ -41,7 +41,7 @@ function pdraw = prior_draw(BayesInfo, prior_trunc, uniform) % --*-- Unitary tes
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 persistent p6 p7 p3 p4 lb ub
 persistent uniform_index gaussian_index gamma_index beta_index inverse_gamma_1_index inverse_gamma_2_index weibull_index

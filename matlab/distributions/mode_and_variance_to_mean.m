@@ -32,7 +32,7 @@ function [mu, parameters] = mode_and_variance_to_mean(m,s2,distribution,lower_bo
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Check input aruments.
 if ~(nargin==3 || nargin==5 || nargin==4 )

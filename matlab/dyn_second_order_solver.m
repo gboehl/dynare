@@ -51,7 +51,7 @@ function dr = dyn_second_order_solver(jacobia,hessian_mat,dr,M,threads_BC)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 dr.ghxx = [];
 dr.ghuu = [];

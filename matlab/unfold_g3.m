@@ -19,7 +19,7 @@ function g3_unfolded = unfold_g3(g3, ny)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 [i, j, v] = find(g3);
 

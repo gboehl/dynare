@@ -53,7 +53,7 @@ function [ytrend,ycycle]=one_sided_hp_filter(y,lambda,x_user,P_user,discard)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if nargin < 2 || isempty(lambda)
     lambda = 1600; %If the user didn't provide a value for lambda, set it to the default value 1600

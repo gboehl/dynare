@@ -28,7 +28,7 @@ function display_conditional_variance_decomposition(conditional_decomposition_ar
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if size(conditional_decomposition_array,3)==M_.exo_nbr %no ME input
     shock_number=M_.exo_nbr;

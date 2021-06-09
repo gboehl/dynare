@@ -28,7 +28,7 @@ function irf_data=reshape_ascii_irf_data(endo_nbr, psize, horizon, ascii_data)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if psize <= 1
     irf_data = ascii_data;

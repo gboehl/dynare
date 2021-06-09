@@ -23,7 +23,7 @@ function objects = get_variables_and_parameters_in_expression(expr)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 objects = strsplit(expr, {'+','-','*','/','^', ...
                     'log(', 'log10(', 'ln(', 'exp(', ...

@@ -26,7 +26,7 @@ function options_=set_ms_simulation_file(options_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if isempty(options_.ms.simulation_file_tag)
     options_.ms.simulation_file_tag = options_.ms.file_tag;

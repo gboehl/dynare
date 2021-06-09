@@ -30,7 +30,7 @@ function plan = flip_plan(plan, exogenous, endogenous, expectation_type, date, v
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 if ~ischar(expectation_type) || size(expectation_type,1) ~= 1
     error(['in flip_plan the fourth argument should be a string containing the simulation type (''perfect_foresight'' or ''surprise'')']);
 end

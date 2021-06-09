@@ -30,7 +30,7 @@ function [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Get the tokens in the rhs member of the equation.
 rhs_ = get_variables_and_parameters_in_expression(rhs);

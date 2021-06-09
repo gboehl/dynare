@@ -15,7 +15,7 @@ function oo_ = posterior_analysis(type,arg1,arg2,arg3,options_,M_,oo_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 info = check_posterior_analysis_data(type,M_);
 SampleSize = options_.sub_draws;

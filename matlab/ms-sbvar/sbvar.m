@@ -30,7 +30,7 @@ function sbvar(M, options)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 clean_sbvar_files();
 options.data = read_variables(options.datafile,options.varobs,[],options.xls_sheet,options.xls_range);

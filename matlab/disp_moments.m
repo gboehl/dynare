@@ -26,7 +26,7 @@ function oo_=disp_moments(y,var_list,M_,options_,oo_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 warning_old_state = warning;
 warning off

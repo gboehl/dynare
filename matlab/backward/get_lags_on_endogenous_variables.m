@@ -17,7 +17,7 @@ function l = get_lags_on_endogenous_variables(DynareModel)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 l = zeros(DynareModel.orig_endo_nbr, 1);
 l(find(DynareModel.lead_lag_incidence(1,1:DynareModel.orig_endo_nbr))) = -1;

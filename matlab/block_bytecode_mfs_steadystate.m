@@ -17,7 +17,7 @@ function [r, g1] = block_bytecode_mfs_steadystate(y, b, y_all, exo, params, M)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 indx = M.block_structure_stat.block(b).variable;
 y_all(indx) = y;

@@ -21,7 +21,7 @@ function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, DynareOptions
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 pvalue_ks = options_mcf.pvalue_ks;
 pvalue_corr = options_mcf.pvalue_corr;

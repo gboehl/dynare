@@ -32,7 +32,7 @@ function dyn_table(title, preamble, afterward, rows, cols, indent, data)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 assert(ischar(title), 'title must be a char')
 assert(iscellstr(preamble) && iscellstr(afterward) && iscellstr(rows) && iscellstr(cols), ...

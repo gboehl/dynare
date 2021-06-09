@@ -32,7 +32,7 @@ function oo_ = compute_moments_varendo(type, options_, M_, oo_, var_list_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
 fprintf('Estimation::compute_moments_varendo: I''m computing endogenous moments (this may take a while)... \n');

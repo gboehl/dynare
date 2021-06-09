@@ -64,7 +64,7 @@ function [A,B,ys,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 [dr,info,Model,DynareOptions,DynareResults] =compute_decision_rules(Model,DynareOptions,DynareResults);
 

@@ -24,7 +24,7 @@ function k = get_all_variables_but_lagged_leaded_exogenous(M)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if isempty(M.aux_vars)
     k = 1:M.endo_nbr;

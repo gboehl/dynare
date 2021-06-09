@@ -46,7 +46,7 @@ function [condX, rankX, ind0, indno, ixno, Mco, Pco, jweak, jweak_pair] = identi
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 if issparse(X)
     X = full(X);

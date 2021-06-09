@@ -26,7 +26,7 @@ function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if options_.lmmcp.status
     options_.stack_solve_algo=7;

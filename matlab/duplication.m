@@ -29,7 +29,7 @@ function [Dp,DpMPinv] = duplication(p)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 % Original author: Thomas P Minka (tpminka@media.mit.edu), April 22, 2013
 

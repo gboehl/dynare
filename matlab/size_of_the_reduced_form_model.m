@@ -16,7 +16,7 @@ function mega = size_of_the_reduced_form_model(dr)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 names = fieldnames(dr);
 number_of_scalars = 0;

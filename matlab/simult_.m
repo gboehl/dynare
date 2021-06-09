@@ -32,7 +32,7 @@ function y_=simult_(M_,options_,y0,dr,ex_,iorder)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 iter = size(ex_,1);
 endo_nbr = M_.endo_nbr;

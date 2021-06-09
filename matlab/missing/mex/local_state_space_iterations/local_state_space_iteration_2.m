@@ -73,7 +73,7 @@ function [y,y_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,gh
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % AUTHOR(S) stephane DOT adjemian AT univ DASH lemans DOT fr
 %           frederic DOT karame AT univ DASH evry DOT fr

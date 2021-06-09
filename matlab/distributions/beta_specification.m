@@ -27,7 +27,7 @@ function [a, b] = beta_specification(mu, sigma2, lb, ub, name)   % --*-- Unitary
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if nargin<3
     lb = 0;

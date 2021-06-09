@@ -20,7 +20,7 @@ initialize_v_array(int dim_max, int log_max, T **v)
 ** GNU Lesser General Public License for more details.
 **
 ** You should have received a copy of the GNU Lesser General Public License
-** along with this program.  If not, see <http://www.gnu.org/licenses/>.
+** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 {
 #include "initialize_v_array.inc"

@@ -28,7 +28,7 @@ function dxp=getPowerDeriv(x,p,k)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if (abs(x) < 1e-12) && (p > 0) && (k > p) && (abs(p - round(p)) < 1e-12)
     dxp = 0;

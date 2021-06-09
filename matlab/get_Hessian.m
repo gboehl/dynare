@@ -25,7 +25,7 @@ function [Hess] = get_Hessian(T,R,Q,H,P,Y,DT,DYss,DOm,DH,DP,D2T,D2Yss,D2Om,D2H,D
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
 k = size(DT,3);                                 % number of structural parameters

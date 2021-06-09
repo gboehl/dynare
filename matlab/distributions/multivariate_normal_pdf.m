@@ -30,7 +30,7 @@ function density = multivariate_normal_pdf(X,Mean,Sigma_upper_chol,n)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 density = (2*pi)^(-.5*n) * ...
           prod(diag(Sigma_upper_chol))^(-1) * ...
           exp(-.5*(X-Mean)*(Sigma_upper_chol\(transpose(Sigma_upper_chol)\transpose(X-Mean))));

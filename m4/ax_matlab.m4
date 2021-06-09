@@ -14,7 +14,7 @@ dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 dnl GNU General Public License for more details.
 dnl
 dnl You should have received a copy of the GNU General Public License along
-dnl with this program. If not, see <http://www.gnu.org/licenses/>.
+dnl with this program. If not, see <https://www.gnu.org/licenses/>.
 dnl
 dnl As a special exception to the GNU General Public License, if
 dnl you distribute this file as part of a program that contains a

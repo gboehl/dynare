@@ -20,7 +20,7 @@ function y2 = dynvars_from_endo_simul(y, it_, M_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 y2 = y(:, it_+(-M_.maximum_endo_lag:M_.maximum_endo_lead));
 y2 = y2(find(M_.lead_lag_incidence'));

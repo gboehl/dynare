@@ -30,7 +30,7 @@ function plot_ms_variance_decomposition_error_bands(M_, options_, vddata, figure
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 nvars = M_.endo_nbr;
 endo_names = M_.endo_names;

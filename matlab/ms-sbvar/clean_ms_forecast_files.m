@@ -26,7 +26,7 @@ function clean_ms_forecast_files(file_tag)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 delete_dir_if_exists([file_tag filesep 'Forecast']);
 delete_dir_if_exists([file_tag filesep 'Output' filesep 'Forecast']);

@@ -26,7 +26,7 @@ function options = set_default_plot_shock_decomposition_options(options)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 options.plot_shock_decomp.use_shock_groups = '';
 options.plot_shock_decomp.colormap = '';

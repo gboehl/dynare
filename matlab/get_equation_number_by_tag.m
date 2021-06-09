@@ -24,7 +24,7 @@ function eqnumber = get_equation_number_by_tag(eqname, DynareModel)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 eqnumber = strmatch(eqname, DynareModel.equations_tags(strmatch('name', DynareModel.equations_tags(:,2), 'exact'), 3), 'exact');
 

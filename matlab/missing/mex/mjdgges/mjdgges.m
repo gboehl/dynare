@@ -33,7 +33,7 @@ function [ss, tt, zz, sdim, eigval, info] = mjdgges(e, d, qz_criterium, zhreshol
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if nargin > 5 || nargin < 2 || nargout > 7 || nargout == 0
     error('MJDGGES: takes 2, 3 or 4 input arguments and between 1 and 7 output arguments.')

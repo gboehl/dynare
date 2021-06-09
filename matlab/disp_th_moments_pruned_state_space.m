@@ -35,7 +35,7 @@ function oo_=disp_th_moments_pruned_state_space(dr,M_,options_,i_var,oo_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
 if options_.one_sided_hp_filter || options_.hp_filter || options_.bandpass.indicator

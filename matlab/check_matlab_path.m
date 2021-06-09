@@ -15,7 +15,7 @@ function check_matlab_path(change_path_flag)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if ~nargin || isempty(change_path_flag)
     change_path_flag = true;

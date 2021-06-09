@@ -52,7 +52,7 @@ function [forcs, e]= mcforecast3(cL,H,mcValue,shocks,forcs,T,R,mv,mu)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if cL
     e = zeros(size(mcValue,1),cL);

@@ -27,7 +27,7 @@ function clean_ms_mdd_files(file_tag, pt)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 delete_if_exists(['mdd_t' num2str(pt) '_' file_tag '.out']);
 delete_if_exists(['proposal_t' num2str(pt) '_' file_tag '.out']);

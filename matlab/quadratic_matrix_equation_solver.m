@@ -62,7 +62,7 @@ function [X,info] = quadratic_matrix_equation_solver(A,B,C,tol,maxit,line_search
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 provide_initial_condition_to_fastgensylv = 0;
 

@@ -15,7 +15,7 @@ function run_ls2003(block, storage, solve_algo, stack_solve_algo)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
   disp(['TEST: ls2003 (block=' num2str(block) ', bytecode=' ...
         num2str(storage==2) ', use_dll=' num2str(storage==1) ...

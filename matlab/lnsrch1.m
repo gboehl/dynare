@@ -39,7 +39,7 @@ function [x,f,fvec,check]=lnsrch1(xold, fold, g, p, stpmax, func, j1, j2, tolx, 
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 alf = 1e-4 ;
 alam = 1;

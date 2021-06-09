@@ -38,7 +38,7 @@ function [oo_,M_] = shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % indices of endogenous variables
 

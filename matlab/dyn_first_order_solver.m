@@ -36,7 +36,7 @@ function [dr, info] = dyn_first_order_solver(jacobia, DynareModel, dr, DynareOpt
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 persistent reorder_jacobian_columns innovations_idx index_s index_m index_c
 persistent index_p row_indx index_0m index_0p k1 k2 state_var

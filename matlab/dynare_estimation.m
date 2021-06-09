@@ -27,7 +27,7 @@ function oo_recursive_=dynare_estimation(var_list,dname)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 global options_ oo_ M_ dataset_ dataset_info
 

@@ -99,7 +99,7 @@ function [LIK, lik,a,P] = univariate_kalman_filter(data_index,number_of_observat
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % AUTHOR(S) stephane DOT adjemian AT univ DASH lemans DOT fr
 

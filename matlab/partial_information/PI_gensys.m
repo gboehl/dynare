@@ -31,7 +31,7 @@ function [G1pi,C,impact,nmat,TT1,TT2,gev,eu, DD, E2, E5, GAMMA, FL_RANK ]=PI_gen
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
 lastwarn('','');

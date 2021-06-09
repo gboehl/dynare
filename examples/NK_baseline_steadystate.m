@@ -30,7 +30,7 @@ function [ys,params,check] = NK_baseline_steadystate(ys,exo,M_,options_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % read out parameters to access them with their name
 NumberOfParameters = M_.param_nbr;

@@ -60,7 +60,7 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % initialize variable penalty
 penalty = 1e8;

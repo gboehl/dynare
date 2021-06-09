@@ -28,7 +28,7 @@ function results = prior_sampler(drsave,M_,bayestopt_,options_,oo_,estim_params_
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Initialization.
 prior_draw(bayestopt_, options_.prior_trunc);

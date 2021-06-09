@@ -29,7 +29,7 @@ function [i_var, nvar, index_uniques] = varlist_indices(sublist, list)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if isempty(sublist)
     check = [];

@@ -16,7 +16,7 @@ function [endogenousvariables, info] = sim1_purely_forward(endogenousvariables, 
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 ny0 = nnz(M.lead_lag_incidence(1,:));    % Number of variables at current period
 iyf = find(M.lead_lag_incidence(2,:)>0); % Indices of variables at next period

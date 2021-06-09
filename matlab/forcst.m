@@ -37,7 +37,7 @@ function [yf,int_width,int_width_ME]=forcst(dr,y0,horizon,var_list,M_,oo_,option
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 oo_=make_ex_(M_,options_,oo_);
 yf = simult_(M_,options_,y0,dr,zeros(horizon,M_.exo_nbr),1);

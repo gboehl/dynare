@@ -178,7 +178,7 @@ function [xopt, fopt,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 c=optim.step_length_c;
 t=optim.initial_temperature;

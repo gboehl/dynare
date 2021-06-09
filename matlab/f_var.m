@@ -15,7 +15,7 @@ function b=f_var(x,a,nx)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 x=reshape(x,nx,nx);
 b=x-a*x*a';

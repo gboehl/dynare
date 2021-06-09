@@ -20,7 +20,7 @@ function indcorr = stab_map_2(x,alpha2, pvalue_crit, fnam, dirname,xparam1,figti
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 %global bayestopt_ estim_params_ dr_ options_ ys_ fname_
 global bayestopt_ estim_params_ options_ oo_ M_

@@ -59,7 +59,7 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
 YY = [Y0; y; YT];

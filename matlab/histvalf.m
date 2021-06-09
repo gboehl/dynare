@@ -28,7 +28,7 @@ function [endo_histval, exo_histval, exo_det_histval] = histvalf(M, options)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 series = histvalf_initvalf('HISTVAL', M, options);
 k = M.orig_maximum_lag - M.maximum_lag + 1;

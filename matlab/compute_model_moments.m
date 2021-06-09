@@ -26,7 +26,7 @@ function moments=compute_model_moments(dr,M_,options_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 [ivar,vartan,options_] = get_variables_list(options_,M_);
 moments = th_autocovariances(dr,ivar,M_,options_,options_.nodecomposition);

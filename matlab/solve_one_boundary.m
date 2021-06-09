@@ -68,7 +68,7 @@ function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_stat
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
 Blck_size=size(y_index_eq,2);

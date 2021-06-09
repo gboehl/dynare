@@ -21,7 +21,7 @@ function [dbase, info] = checkdatabase(dbase, DynareModel, inversionflag, simula
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % if DynareModel.maximum_endo_lead
 %    error('The model (%s) is assumed to be backward!', DynareModel.fname)

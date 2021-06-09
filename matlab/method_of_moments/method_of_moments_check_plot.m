@@ -17,7 +17,7 @@ function method_of_moments_check_plot(fun,xparam,SE_vec,options_,M_,estim_params
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 TeX = options_.TeX;
 if ~isempty(SE_vec)

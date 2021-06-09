@@ -16,7 +16,7 @@ function [gy]=first_order(M_, dr, jacobia)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % fd = jacobia_
 % reorder jacobia_

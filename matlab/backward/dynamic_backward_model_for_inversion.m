@@ -15,7 +15,7 @@ function [r, J] = dynamic_backward_model_for_inversion(z, dynamicmodel, ylag, yc
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Set up y
 y = zeros(length(ylag)+ModelInversion.nyfree+ModelInversion.nyctrl,1);

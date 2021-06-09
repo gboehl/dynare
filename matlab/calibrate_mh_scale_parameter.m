@@ -35,7 +35,7 @@ function Scale = calibrate_mh_scale_parameter(ObjectiveFunction, CovarianceMatri
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Fire up the wait bar
 hh = dyn_waitbar(0,'Tuning of the scale parameter...');

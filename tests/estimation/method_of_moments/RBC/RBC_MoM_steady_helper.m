@@ -14,7 +14,7 @@
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 function [N, info]= RBC_MoM_steady_helper(THETA,ETAl,ETAc,BETTA,B,C_O_N,W)
 info=0;

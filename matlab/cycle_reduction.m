@@ -58,7 +58,7 @@ function [X, info] = cycle_reduction(A0, A1, A2, cvg_tol, ch) % --*-- Unitary te
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 max_it = 300;
 it = 0;

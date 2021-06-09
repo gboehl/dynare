@@ -25,7 +25,7 @@ function check_prior_bounds(xparam1,bounds,M_,estim_params_,options_,bayestopt_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 outside_bound_pars=find(xparam1 < bounds.lb | xparam1 > bounds.ub);
 if ~isempty(outside_bound_pars)

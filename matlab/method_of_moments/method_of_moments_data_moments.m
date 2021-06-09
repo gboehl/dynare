@@ -31,7 +31,7 @@ function [dataMoments, m_data] = method_of_moments_data_moments(data, oo_, match
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % -------------------------------------------------------------------------
 % Author(s): 
 % o Willi Mutschler (willi@mutschler.eu)

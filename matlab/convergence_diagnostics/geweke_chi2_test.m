@@ -41,7 +41,7 @@ function results_struct = geweke_chi2_test(results1,results2,results_struct,opti
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 %
 % ------------------------------------------------
 % REFERENCES: Geweke (1992), `Evaluating the accuracy of sampling-based

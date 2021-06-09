@@ -55,7 +55,7 @@ function mode_check(fun,x,hessian_mat,DynareDataset,DatasetInfo,DynareOptions,Mo
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 TeX = DynareOptions.TeX;
 if ~isempty(hessian_mat)

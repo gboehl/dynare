@@ -46,7 +46,7 @@ function [out,info] = get_perturbation_params_derivs_numerical_objective(params,
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 
 %% Update stderr, corr and model parameters and compute perturbation approximation and steady state with updated parameters

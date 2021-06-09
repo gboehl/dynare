@@ -15,7 +15,7 @@ function [nbplt,nr,nc,lr,lc,nstar] = pltorg(number)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 nrstar = 3;
 ncstar = 3;

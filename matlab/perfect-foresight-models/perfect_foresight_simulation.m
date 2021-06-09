@@ -33,7 +33,7 @@ function info = perfect_foresight_simulation(compute_linear_solution,steady_stat
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 global M_ options_ it_ oo_
 

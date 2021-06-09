@@ -26,7 +26,7 @@ function clean_sbvar_files()
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 delete_if_exists('outm.mat');
 delete_if_exists('g1.mat');

@@ -67,7 +67,7 @@ function var_sample_moments(nlag, var_trend_order, dataset_)%datafile,varobs,xls
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 LastObservation = dataset_.dates(end);
 FirstObservation = dataset_.dates(1)+nlag;

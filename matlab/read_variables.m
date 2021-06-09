@@ -32,7 +32,7 @@ function dyn_data_01=read_variables(file_name_01,var_names_01,dyn_data_01,xls_sh
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
 old_pwd = pwd;

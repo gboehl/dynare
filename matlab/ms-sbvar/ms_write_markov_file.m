@@ -25,7 +25,7 @@ function ms_write_markov_file(fname, options)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 n_chains = length(options.ms.ms_chain);
 nvars = length(options.varobs);

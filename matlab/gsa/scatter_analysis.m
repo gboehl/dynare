@@ -21,7 +21,7 @@ function indmcf = scatter_analysis(lpmat, xdata, options_scatter, DynareOptions)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 param_names = options_scatter.param_names;
 

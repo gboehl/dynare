@@ -30,7 +30,7 @@ function [x, errorflag, fvec, fjac] = dynare_solve(f, x, options, varargin)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 jacobian_flag = options.jacobian_flag; % true iff Jacobian is returned by f routine (as a second output argument).
 

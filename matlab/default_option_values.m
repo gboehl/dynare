@@ -27,7 +27,7 @@ function options_ = default_option_values(M_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 options_.datafile = '';
 options_.dirname = M_.fname;

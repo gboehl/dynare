@@ -34,7 +34,7 @@ function E = gensylv(kron_prod,A,B,C0,D)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 C = C0;
 for i=1:(kron_prod-1)
     C  = kron(C0,C);

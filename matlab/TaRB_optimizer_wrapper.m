@@ -37,7 +37,7 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff]  = TaRB_optimiz
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 par_vector(parameterindices,:)=optpar; %reassemble parameter
 [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff] = feval(TargetFun,par_vector,varargin{:}); %call target function

@@ -38,7 +38,7 @@ function P=lyapunov_solver(T,R,Q,DynareOptions) % --*-- Unitary tests --*--
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if DynareOptions.lyapunov_fp
     P = lyapunov_symm(T,R*Q*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, 3, DynareOptions.debug);

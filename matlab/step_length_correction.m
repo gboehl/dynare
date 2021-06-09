@@ -15,7 +15,7 @@ function c = step_length_correction(x,scale,i)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if isempty(scale)
     c = 10^round(log10(abs(x)));

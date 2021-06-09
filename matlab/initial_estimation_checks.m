@@ -35,7 +35,7 @@ function DynareResults = initial_estimation_checks(objective_function,xparam1,Dy
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 %get maximum number of simultaneously observed variables for stochastic
 %singularity check

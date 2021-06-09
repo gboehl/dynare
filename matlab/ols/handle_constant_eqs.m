@@ -28,7 +28,7 @@ function ast = handle_constant_eqs(ast)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if nargin ~= 1
     error('Incorrect number of arguments to function')

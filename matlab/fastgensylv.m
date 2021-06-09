@@ -54,7 +54,7 @@ function X = fastgensylv(A, B, C, D, tol,maxit,X0)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if size(A,1)~=size(D,1) || size(A,1)~=size(B,1) || size(C,2)~=size(D,2)
     error('fastgensylv:: Dimension error!')

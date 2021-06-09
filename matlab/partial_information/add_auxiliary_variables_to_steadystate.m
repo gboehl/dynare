@@ -17,7 +17,7 @@ function ys1 = add_auxiliary_variables_to_steadystate(ys,aux_vars,fname, ...
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 n = length(aux_vars);
 ys1 = [ys;zeros(n,1)];
 

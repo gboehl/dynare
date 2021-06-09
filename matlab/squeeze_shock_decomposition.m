@@ -27,7 +27,7 @@ function oo_ = squeeze_shock_decomposition(M_,oo_,options_,var_list_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if ~options_.shock_decomp.with_epilogue
     endo_names = M_.endo_names;

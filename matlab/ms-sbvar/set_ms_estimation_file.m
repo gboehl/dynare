@@ -32,7 +32,7 @@ function [options_, oo_]=set_ms_estimation_file(file_tag, options_, oo_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 options_.ms.free_param_file = ['est_free_' file_tag '.out'];
 if ~exist(options_.ms.free_param_file,'file')

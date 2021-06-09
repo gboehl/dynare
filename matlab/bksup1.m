@@ -27,7 +27,7 @@ function d = bksup1(c,ny,jcf,iyf,periods)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 ir = [(periods-2)*ny+1:ny+(periods-2)*ny] ;
 irf = iyf+(periods-1)*ny ;

@@ -39,7 +39,7 @@ function disp_identification(pdraws, ide_reducedform, ide_moments, ide_spectrum,
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 [SampleSize, totparam_nbr] = size(pdraws);
 no_identification_reducedform      = options_ident.no_identification_reducedform;

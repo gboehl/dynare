@@ -32,7 +32,7 @@ function [m,s,p6,p7,error_indicator] = uniform_specification(m,s,p3,p4)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 error_indicator=0;
 if ~(isnan(p3) || isnan(p4))
     p6 = p3;

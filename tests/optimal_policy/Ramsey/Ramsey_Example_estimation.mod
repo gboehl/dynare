@@ -61,7 +61,7 @@
  * GNU General Public License for more details.
  *
  * For a copy of the GNU General Public License,
- * see <http://www.gnu.org/licenses/>.
+ * see <https://www.gnu.org/licenses/>.
  */
 
 //**********Define which monetary policy setup to use *********** 

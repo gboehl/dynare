@@ -30,7 +30,7 @@ function write(DynareModel)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if DynareModel.maximum_lag  && ~DynareModel.maximum_lead
     i0 = transpose(DynareModel.lead_lag_incidence(1,:)); % Indices of the lagged variables.

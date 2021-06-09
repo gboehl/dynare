@@ -38,7 +38,7 @@ function lpkern = evaluate_posterior_kernel(parameters,M_,estim_params_,oo_,opti
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 [ldens,parameters] = evaluate_prior(parameters,M_,estim_params_,oo_,options_,bayestopt_);
 if nargin==6 %llik provided as an input

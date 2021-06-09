@@ -15,7 +15,7 @@ function o2WysrOISH  = load_m_file_data_legacy(datafile, U7ORsJ0vy3) % --*-- Uni
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 cXDHdrXnqo5KwwVpTRuc6OprAW = datafile(1:end-2);
 [pathtocXDHdrXnqo5KwwVpTRuc6OprAW,cXDHdrXnqo5KwwVpTRuc6OprAW,~] = fileparts(cXDHdrXnqo5KwwVpTRuc6OprAW);

@@ -46,7 +46,7 @@ function [nodes,weights] = gauss_hermite_weights_and_nodes(n)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Original author: stephane DOT adjemian AT univ DASH lemans DOT fr
 

@@ -30,7 +30,7 @@ function [Yvec, lhssubvec, Xmat, constrained] = put_in_sur_form(Y, lhssub, X)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 %% Check inputs
 if nargin ~= 3

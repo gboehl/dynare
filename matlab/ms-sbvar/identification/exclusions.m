@@ -31,7 +31,7 @@ function [Ui,Vi,n0,np,ixmC0Pres,Qi,Ri] = exclusions(nvar,nexo,options_ms)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 indxC0Pres = options_ms.cross_restrictions;
 nlags = options_ms.nlags;

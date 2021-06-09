@@ -28,7 +28,7 @@ function info=test_for_deep_parameters_calibration(M_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 plist = list_of_parameters_calibrated_as_NaN(M_);
 if ~isempty(plist)
     info=1;

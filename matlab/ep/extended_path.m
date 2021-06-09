@@ -34,7 +34,7 @@ function [ts, DynareResults] = extended_path(initialconditions, samplesize, exog
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 [initialconditions, innovations, pfm, ep, verbosity, DynareOptions, DynareResults] = ...
     extended_path_initialization(initialconditions, samplesize, exogenousvariables, DynareOptions, DynareModel, DynareResults);

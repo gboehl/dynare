@@ -38,7 +38,7 @@ function pooled_fgls(ds, param_common, param_regex, eqtags, model_name, param_na
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 global M_ oo_
 

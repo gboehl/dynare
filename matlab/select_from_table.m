@@ -14,7 +14,7 @@ function [indices] = select_from_table(table,key,value)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 candidates = table(strmatch(key,table(:,2),'exact'),:);
 if nargin == 2
     indices = cell2mat( candidates(:,1) );

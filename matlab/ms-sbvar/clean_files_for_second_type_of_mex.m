@@ -26,7 +26,7 @@ function clean_files_for_second_type_of_mex(M_, options_, type)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 tagtouse = options_.ms.file_tag;
 if ~strcmp(tagtouse, options_.ms.output_file_tag)

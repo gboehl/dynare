@@ -14,7 +14,7 @@ function [x,info] = dynare_solve_block_or_bytecode(y, exo, params, options, M)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 info = 0;
 x = y;

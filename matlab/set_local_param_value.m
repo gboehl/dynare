@@ -15,7 +15,7 @@ function M = set_local_param_value(pname,value,M)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
 i = strmatch(pname, M.param_names, 'exact');

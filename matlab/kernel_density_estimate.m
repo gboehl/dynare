@@ -39,7 +39,7 @@ function [abscissa,f] = kernel_density_estimate(data,number_of_grid_points,numbe
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if min(size(data))>1
     error('kernel_density_estimate:: data must be a one dimensional array.');

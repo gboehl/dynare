@@ -30,7 +30,7 @@ function [options_, oo_]=ms_irf(varlist, M_, options_, oo_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 disp('MS-SBVAR Impulse Response Function');
 options_ = set_file_tags(options_);

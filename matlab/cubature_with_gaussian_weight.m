@@ -32,7 +32,7 @@ function [nodes, weights] = cubature_with_gaussian_weight(d,n,method)  % --*-- U
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Set default.
 if nargin<3 || isempty(method)

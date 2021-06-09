@@ -41,7 +41,7 @@ function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,Model,DynareOptions,Bayes
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Initialization of the returned arguments.
 fval            = [];

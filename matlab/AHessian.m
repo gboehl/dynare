@@ -23,7 +23,7 @@ function [AHess, DLIK, LIK] = AHessian(T,R,Q,H,P,Y,DT,DYss,DOm,DH,DP,start,mf,ka
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
 k = size(DT,3);                                 % number of structural parameters

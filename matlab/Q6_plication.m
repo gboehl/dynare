@@ -38,7 +38,7 @@ function [DP6,DP6inv] = Q6_plication(p)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 np = p*(p+1)*(p+2)*(p+3)*(p+4)*(p+5)/(1*2*3*4*5*6);
 DP6 = spalloc(p^6,np,p^6);

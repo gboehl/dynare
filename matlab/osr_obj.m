@@ -32,7 +32,7 @@ function [loss,info,exit_flag,vx,junk]=osr_obj(x,i_params,i_var,weights)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 global M_ oo_ options_ optimal_Q_ it_
 %  global ys_ Sigma_e_ endo_nbr exo_nbr optimal_Q_ it_ ykmin_ options_

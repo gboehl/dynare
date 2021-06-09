@@ -23,7 +23,7 @@ function [final_year,final_subperiod]=check_datafile_years_assigned(options_)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 final_year = options_.ms.final_year;
 final_subperiod = options_.ms.final_subperiod;

@@ -51,7 +51,7 @@ function Ifac = mcmc_ifac(X, Nc)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 Nc = floor(min(Nc, length(X)/2));
 if mod(Nc,2)
