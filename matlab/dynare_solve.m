@@ -40,7 +40,11 @@ if isoctave
     [~, name, ext]=fileparts(stack(2).file);
     caller_file_name=[name,ext];
 else
-    caller_file_name=stack(2).file;
+    if size(stack,1)>1
+        caller_file_name=stack(2).file;
+    else
+        caller_file_name=stack(1).file;
+    end
 end
 if strcmp(caller_file_name, 'solve_stacked_problem.m') || strcmp(caller_file_name, 'sim1_purely_backward.m') 
     tolf = options.dynatol.f;
