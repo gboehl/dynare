@@ -29,7 +29,7 @@ function [nodes,W_m,W_c] = unscented_sigma_points(n,ParticleOptions)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 lambda = (ParticleOptions.unscented.alpha^2)*(n+ParticleOptions.unscented.kappa) - n ;
 nodes = [ zeros(n,1) ( sqrt(n+lambda).*([ eye(n) -eye(n)]) ) ]' ;

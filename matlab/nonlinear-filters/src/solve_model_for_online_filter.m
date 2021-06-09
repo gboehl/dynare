@@ -35,7 +35,7 @@ function [info, Model, DynareOptions, DynareResults, ReducedForm] = ...
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 persistent init_flag restrict_variables_idx state_variables_idx mf0 mf1 number_of_state_variables
 

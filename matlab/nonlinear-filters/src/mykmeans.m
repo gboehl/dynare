@@ -15,7 +15,7 @@ function [c,SqrtVariance,Weights] = mykmeans(x,g,init,cod)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 [n,m] = size(x) ;
 indold = zeros(1,m) ;

@@ -51,7 +51,7 @@ function resampled_output = resample(particles,weights,ParticleOptions)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 defaultmethod = 1; % For residual based method set this variable equal to 0.
 

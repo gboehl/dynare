@@ -15,7 +15,7 @@ function State_Particles = importance_sampling(StateMuPost,StateSqrtPPost,StateW
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 [Xdim,Gsecond] = size(StateMuPost) ;
 u = rand(numP,1);

@@ -30,7 +30,7 @@ function [nodes,weights] = spherical_radial_sigma_points(n)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 nodes = (sqrt(n)*([eye(n) -eye(n)]))' ;
 weights = (1/(2*n)) ;

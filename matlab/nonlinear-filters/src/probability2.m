@@ -29,7 +29,7 @@ function [density] = probability2(mu,S,X)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 dim = size(X,1) ;
 normfact = bsxfun(@power,(2*pi),(dim/2)) ;

@@ -35,7 +35,7 @@ function IncrementalWeights = gaussian_densities(obs,mut_t,sqr_Pss_t_t,st_t_1,sq
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % proposal density
 proposal = probability2(mut_t, sqr_Pss_t_t, particles);

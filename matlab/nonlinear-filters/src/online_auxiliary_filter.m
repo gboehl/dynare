@@ -36,7 +36,7 @@ function [pmean, pmode, pmedian, pstdev, p025, p975, covariance] = online_auxili
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Set seed for randn().
 set_dynare_seed('default');

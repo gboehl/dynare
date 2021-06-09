@@ -53,7 +53,7 @@ function new_particles = multivariate_smooth_resampling(particles,weights)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % AUTHOR(S) frederic DOT karame AT univ DASH lemans DOT fr
 %           stephane DOT adjemian AT univ DASH lemans DOT fr

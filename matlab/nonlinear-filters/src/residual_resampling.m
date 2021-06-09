@@ -45,7 +45,7 @@ function return_resample = residual_resampling(particles,weights,noise)
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % AUTHOR(S) frederic DOT karame AT univ DASH evry DOT fr
 %           stephane DOT adjemian AT univ DASH lemans DOT fr

@@ -52,7 +52,7 @@ function DSMH_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
 lambda = exp(bsxfun(@minus,options_.dsmh.H,1:1:options_.dsmh.H)/(options_.dsmh.H-1)*log(options_.dsmh.lambda1));
