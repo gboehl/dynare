@@ -1075,7 +1075,8 @@ M_TRS_FILES += 	run_block_byte_tests_matlab.m.trs \
 		run_all_unitary_tests.m.trs \
 		histval_initval_file_unit_tests.m.trs \
 		test_aggregate_routine_1_2.m.trs \
-		test_aggregate_routine_1_2_3.m.trs
+		test_aggregate_routine_1_2_3.m.trs \
+		run_kronecker_tests.m.trs
 
 M_XFAIL_TRS_FILES = $(patsubst %.mod, %.m.trs, $(XFAIL_MODFILES))
 
@@ -1085,7 +1086,8 @@ O_TRS_FILES += $(patsubst %.mod, %.o.trs, $(PARTICLEFILES))
 O_TRS_FILES += 	run_block_byte_tests_octave.o.trs \
 		run_reporting_test_octave.o.trs \
 		run_all_unitary_tests.o.trs \
-	 	histval_initval_file_unit_tests.o.trs
+		histval_initval_file_unit_tests.o.trs \
+		run_kronecker_tests.o.trs
 
 O_XFAIL_TRS_FILES = $(patsubst %.mod, %.o.trs, $(XFAIL_MODFILES))
 
@@ -1255,7 +1257,10 @@ EXTRA_DIST = \
 	histval_initval_file/my_assert.m \
 	histval_initval_file/ramst_data.xls \
 	histval_initval_file/ramst_data.xlsx \
-	histval_initval_file/ramst_initval_file_data.m
+	histval_initval_file/ramst_initval_file_data.m \
+	run_kronecker_tests.m \
+	kronecker/test_kron.m \
+	kronecker/nash_matrices.mat
 
 if ENABLE_MATLAB
 check-local: check-matlab

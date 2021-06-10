@@ -95,7 +95,6 @@ wsOct
 !/kalman_filter_smoother/testsmoother.m
 !/kalman_steady_state/test1.m
 !/kronecker/nash_matrices.mat
-!/kronecker/small_matrices.mat
 !/kronecker/test_kron.m
 !/load_octave_packages.m
 !/ls2003/data_ca1.m
@@ -152,6 +151,7 @@ wsOct
 !/run_all_unitary_tests.m
 !/run_block_byte_tests_matlab.m
 !/run_block_byte_tests_octave.m
+!/run_kronecker_tests.m
 !/run_m_script.m
 !/run_o_script.m
 !/run_reporting_test_matlab.m

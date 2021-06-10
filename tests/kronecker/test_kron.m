@@ -1,5 +1,5 @@
 function info = test_kron(test,number_of_threads)
-% Copyright (C) 2007-2020 Dynare Team
+% Copyright (C) 2007-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,10 +28,11 @@ if test == 1
     disp('')
     disp('I''m building the test problem...')
     tic
-    percentage_of_non_zero_elements = 10e-4;
-    NumberOfVariables = 549;%100;
-    NumberOfEquations = 256;%50
-    NumberOfColsInB   = 50 ; 
+    percentage_of_non_zero_elements = 1e-3;
+    NumberOfVariables = 120;
+    NumberOfEquations = 70;
+    NumberOfColsInB   = 50;
+    NumberOfColsInC   = 60;
     A = zeros(NumberOfEquations,NumberOfVariables^2);
     for i = 1:NumberOfEquations
         for j = 1:NumberOfVariables
@@ -47,38 +48,50 @@ if test == 1
     end
     A = sparse(A);
     B = randn(NumberOfVariables,NumberOfColsInB);
+    C = randn(NumberOfVariables,NumberOfColsInC);
     disp('Done!')
     toc
     disp('')
-    disp('Computation of A*kron(B,B) with the mex file (v1):')
+    disp('Computation of A*kron(B,B) with the mex file:')
     tic 
     D1 = sparse_hessian_times_B_kronecker_C(A,B,number_of_threads);
     toc
-    disp('')
-    disp('Computation of A*kron(B,B) with the mex file (v2):')
-    tic
-    D2 = sparse_hessian_times_B_kronecker_C(A,B,B,number_of_threads);
-    toc
-    disp('');
-    disp(['Difference between D1 and D2 = ' num2str(max(max(abs(D1-D2))))]);
-    if max(max(abs(D1-D2)))>1e-10
-        test1_1=0; 
-    end
-    disp(' ')
     disp('Computation of A*kron(B,B) with two nested loops:')
     tic
-    D3 = zeros(NumberOfEquations,NumberOfColsInB*NumberOfColsInB);
+    D2 = zeros(NumberOfEquations,NumberOfColsInB*NumberOfColsInB);
     k = 1;
     for i1 = 1:NumberOfColsInB
         for i2 = 1:NumberOfColsInB
-            D3(:,k) = A*kron(B(:,i1),B(:,i2)); 
+            D2(:,k) = A*kron(B(:,i1),B(:,i2));
             k = k+1;
         end
     end
     toc
     disp('');
-    disp(['Difference between D1 and D3 = ' num2str(max(max(abs(D1-D3))))]);
-    if max(max(abs(D1-D3)))>1e-10
+    disp(['Difference between D1 and D2 = ' num2str(max(max(abs(D1-D2))))]);
+    if max(max(abs(D1-D2)))>1e-13
+        test1_1=0; 
+    end
+    disp('')
+    disp('Computation of A*kron(B,C) with the mex file:')
+    tic
+    D3 = sparse_hessian_times_B_kronecker_C(A,B,C,number_of_threads);
+    toc
+    disp('Computation of A*kron(B,C) with two nested loops:')
+    tic
+    D4 = zeros(NumberOfEquations,NumberOfColsInB*NumberOfColsInC);
+    k = 1;
+    for i1 = 1:NumberOfColsInB
+        for i2 = 1:NumberOfColsInC
+            D4(:,k) = A*kron(B(:,i1),C(:,i2));
+            k = k+1;
+        end
+    end
+    toc
+    disp(' ')
+    disp('');
+    disp(['Difference between D3 and D4 = ' num2str(max(max(abs(D3-D4))))]);
+    if max(max(abs(D3-D4)))>1e-13
         test1_2=0; 
     end
 % $$$ FOR THE DIMENSIONS CONSIDERED HERE THIS PART WILL RESULT IN A OUT OF MEMORY ERROR.   
@@ -163,7 +176,7 @@ if test==3
     disp('Test with full format matrix -- 1(a)')
     D1 = A*kron(B,C);
     tic
-    D2 = A_times_B_kronecker_C(A,B,C,number_of_threads);
+    D2 = A_times_B_kronecker_C(A,B,C);
     toc
     disp(['Difference between D1 and D2 = ' num2str(max(max(abs(D1-D2))))]);
     if max(max(abs(D1-D2)))>1e-10
@@ -172,7 +185,7 @@ if test==3
     disp('Test with full format matrix -- 1(b)')
     D1 = A*kron(B,B);
     tic
-    D2 = A_times_B_kronecker_C(A,B,number_of_threads);
+    D2 = A_times_B_kronecker_C(A,B);
     toc
     disp(['Difference between D1 and D2 = ' num2str(max(max(abs(D1-D2))))]);
     if max(max(abs(D1-D2)))>1e-10
