@@ -59,7 +59,7 @@ while matd > tol && iter< max_iter
     A0=A1;
     iter=iter+1;
 end
-if iter==max_iter
+if iter==max_iter || isnan(matd)
     X=NaN(size(P0));
     exitflag=1;
     return
