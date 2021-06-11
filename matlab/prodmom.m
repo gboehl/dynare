@@ -68,6 +68,10 @@ end
 %  Use bivariate normal results when there are only two distinct indices
 %
 if m==2
+    if V(1,1)==0 || V(2,2)==0
+        y=0;
+        return
+    end
    rho = V(1,2)/sqrt(V(1,1)*V(2,2));
    y = V(1,1)^(nu(1)/2)*V(2,2)^(nu(2)/2)*bivmom(nu,rho);
    return  

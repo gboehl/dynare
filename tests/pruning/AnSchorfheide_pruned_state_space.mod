@@ -142,6 +142,9 @@ for iorder = 1:3
     if iorder < 3 && any([norm_E_yx norm_Var_y norm_Var_x norm_Corr_yi1 norm_Corr_yi2 norm_Corr_xi1 norm_Corr_xi2] > 1e-5)
         error('Something wrong with pruned_state_space.m compared to Andreasen et al 2018 Toolbox v2 at order %d.',iorder);
     end
+    if iorder == 3
+        oo_.pruned=pruned; %required by later tests
+    end       
 end
 % skipline();
 % fprintf('Note that at third order, there is an error in the computation of Var_z in Andreasen et al (2018)''s toolbox, @wmutschl is in contact to clarify this.\n');
