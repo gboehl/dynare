@@ -93,6 +93,13 @@ end
 %  Use bivariate normal results when there are only two distinct indices
 %
 if m==2
+    if V(1,1)==0 || V(2,2)==0
+        y=0;
+        if nargout>1
+            dy=zeros(1,size(dV,3));
+        end
+        return
+    end
     rho = V(1,2)/sqrt(V(1,1)*V(2,2));
     if nargout > 1
         drho = dC(ii(1),ii(2),:);

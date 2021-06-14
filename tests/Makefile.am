@@ -25,6 +25,7 @@ MODFILES = \
 	analytic_derivatives/BrockMirman_PertParamsDerivs.mod \
 	analytic_derivatives/burnside_3_order_PertParamsDerivs.mod \
 	pruning/AnSchorfheide_pruned_state_space.mod \
+	pruning/AS_pruned_state_space_red_shock.mod \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME.mod \
 	TeX/fs2000_corr_ME.mod \
 	estimation/MH_recover/fs2000_recover_tarb.mod \
@@ -845,6 +846,8 @@ discretionary_policy/Gali_2015_chapter_3_nonlinear.o.trs: discretionary_policy/G
 particle/local_state_space_iteration_k_test.m.trs: particle/first_spec.m.trs
 particle/local_state_space_iteration_k_test.o.trs: particle/first_spec.o.trs
 
+pruning/AS_pruned_state_space_red_shock.m.trs: pruning/AnSchorfheide_pruned_state_space.m.trs
+pruning/AS_pruned_state_space_red_shock.o.trs: pruning/AnSchorfheide_pruned_state_space.o.trs
 
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
