@@ -103,7 +103,7 @@ for t=1:sample_size
     if t>1
         fprintf('\nSubsample with %s first observations.\n\n', int2str(t))
     else
-        fprintf('\nSubsample with only the first observation.\n\n', int2str(t))
+        fprintf('\nSubsample with only the first observation.\n\n')
     end
     % Moments of parameters particles distribution
     m_bar = xparam*(weights');
