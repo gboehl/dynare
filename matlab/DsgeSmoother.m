@@ -4,7 +4,7 @@ function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,de
 % INPUTS
 %   o xparam1       [double]   (p*1) vector of (estimated) parameters.
 %   o gend          [integer]  scalar specifying the number of observations ==> varargin{1}.
-%   o data          [double]   (n*T) matrix of data.
+%   o Y             [double]   (n*T) matrix of data.
 %   o data_index    [cell]      1*smpl cell of column vectors of indices.
 %   o missing_value 1 if missing values, 0 otherwise
 %   o M_            [structure] decribing the model
