@@ -86,10 +86,16 @@ end % (while) loop over t
 dyn_waitbar_close(hh);
 
 % Set the initial period.
-if isnan(DynareOptions.initial_period)
+if isdates(DynareOptions.initial_period)
+    if ischar(DynareOptions.initial_period)
+        initial_period = dates(DynareOptions.initial_period);
+    else
+        initial_period = DynareOptions.initial_period;
+    end
+elseif isnan(DynareOptions.initial_period)
     initial_period = dates(1,1);
 else
-    initial_period = DynareOptions.initial_period;
+    error('Type of option initial_period is wrong.')
 end
 
 % Return the simulated time series.
