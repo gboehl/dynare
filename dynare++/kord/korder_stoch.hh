@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -457,6 +457,11 @@ public:
   getUnfoldDers() const
   {
     return _ug;
+  }
+  const FGSContainer &
+  getFoldDersS() const
+  {
+    return _fgs;
   }
 protected:
   template<Storage t>

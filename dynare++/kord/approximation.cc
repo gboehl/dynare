@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -240,11 +240,14 @@ void
 Approximation::saveRuleDerivs(const FGSContainer &g)
 {
   rule_ders = std::make_unique<FGSContainer>(g);
+  rule_ders_s = std::make_unique<FGSContainer>(4);
   rule_ders_ss = std::make_unique<FGSContainer>(4);
   for (auto &run : *rule_ders)
     {
-      auto ten = std::make_unique<FGSTensor>(ypart.nstat+ypart.npred, ypart.nyss(), *(run.second));
-      rule_ders_ss->insert(std::move(ten));
+      auto ten_s = std::make_unique<FGSTensor>(ypart.nstat, ypart.nys(), *(run.second));
+      rule_ders_s->insert(std::move(ten_s));
+      auto ten_ss = std::make_unique<FGSTensor>(ypart.nstat+ypart.npred, ypart.nyss(), *(run.second));
+      rule_ders_ss->insert(std::move(ten_ss));
     }
 }
 

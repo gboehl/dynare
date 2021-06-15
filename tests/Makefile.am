@@ -116,6 +116,8 @@ MODFILES = \
 	optimal_policy/mult_elimination_test.mod \
 	optimal_policy/neo_growth.mod \
 	optimal_policy/neo_growth_ramsey.mod \
+	optimal_policy/neo_growth_k_order.mod \
+	optimal_policy/neo_growth_ramsey_k_order.mod \
 	optimal_policy/Ramsey/ramsey_ex_initval.mod \
 	optimal_policy/Ramsey/ramsey_ex.mod \
 	optimal_policy/Ramsey/ramsey_ex_initval_AR2.mod \
@@ -596,6 +598,9 @@ optimal_policy/neo_growth_ramsey.o.trs: optimal_policy/neo_growth.o.trs
 
 optimal_policy/neo_growth_ramsey_foresight.m.trs: optimal_policy/neo_growth_foresight.m.trs
 optimal_policy/neo_growth_ramsey_foresight.o.trs: optimal_policy/neo_growth_foresight.o.trs
+
+optimal_policy/neo_growth_ramsey_k_order.m.trs: optimal_policy/neo_growth_k_order.m.trs
+optimal_policy/neo_growth_ramsey_k_order.o.trs: optimal_policy/neo_growth_k_order.o.trs
 
 example1_use_dll.m.trs: example1.m.trs
 example1_use_dll.o.trs: example1.o.trs

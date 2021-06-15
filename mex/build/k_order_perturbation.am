@@ -7,13 +7,9 @@ k_order_perturbation_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++
 k_order_perturbation_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)
 
 k_order_perturbation_LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_MATIO)
-k_order_perturbation_LDADD = ../libdynare++/libdynare++.a $(LIBADD_DLOPEN) $(LIBADD_MATIO)
+k_order_perturbation_LDADD = ../libdynare++/libdynare++.a ../libkorder/libkorder.a $(LIBADD_DLOPEN) $(LIBADD_MATIO)
 
-nodist_k_order_perturbation_SOURCES = \
-	k_order_perturbation.cc \
-	k_ord_dynare.cc \
-	dynamic_dll.cc \
-	dynamic_m.cc
+nodist_k_order_perturbation_SOURCES = k_order_perturbation.cc
 
 BUILT_SOURCES = $(nodist_k_order_perturbation_SOURCES)
 CLEANFILES = $(nodist_k_order_perturbation_SOURCES)

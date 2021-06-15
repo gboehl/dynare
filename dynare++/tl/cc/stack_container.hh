@@ -338,6 +338,65 @@ protected:
 };
 
 /* Here is the specialization of the StackContainer. We implement
+   here the x needed in DSGE context for welfare assessment. We implement getType() and define a constructor feeding the data and sizes.
+
+   It depends on four variables U(y,u,u',σ), the variable u' being introduced to enable additions with 4-variable tensors*/
+
+template<class _Ttype>
+class XContainer : public StackContainer<_Ttype>
+{
+public:
+  using _Tparent = StackContainer<_Ttype>;
+  using _Stype = StackContainerInterface<_Ttype>;
+  using _Ctype = typename _Tparent::_Ctype;
+  using itype = typename _Tparent::itype;
+  XContainer(const _Ctype *g, int ng)
+    : _Tparent(1, 1)
+  {
+    _Tparent::stack_sizes = { ng };
+    _Tparent::conts[0] = g;
+    _Tparent::calculateOffsets();
+  }
+
+  /* Here we say, what happens if we derive z. recall the top of the
+     file, how z looks, and code is clear. */
+
+  itype
+  getType(int i, const Symmetry &s) const override
+  {
+    if (i==0)
+      if (s[2] > 0)
+        return itype::zero;
+      else
+        return itype::matrix;
+
+    TL_RAISE("Wrong stack index in XContainer::getType");
+  }
+
+};
+
+class FoldedXContainer : public XContainer<FGSTensor>,
+                         public FoldedStackContainer
+{
+public:
+  using _Ctype = TensorContainer<FGSTensor>;
+  FoldedXContainer(const _Ctype *g, int ng)
+    : XContainer<FGSTensor>(g, ng)
+  {
+  }
+};
+
+class UnfoldedXContainer : public XContainer<UGSTensor>,
+                           public UnfoldedStackContainer
+{
+public:
+  using _Ctype = TensorContainer<UGSTensor>;
+  UnfoldedXContainer(const _Ctype *g, int ng)
+    : XContainer<UGSTensor>(g, ng)
+  {
+  }
+};
+/* Here is the specialization of the StackContainer. We implement
    here the z needed in DSGE context. We implement getType() and define
    a constructor feeding the data and sizes.
 

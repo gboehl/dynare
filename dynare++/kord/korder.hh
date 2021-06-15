@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -82,7 +82,11 @@ public:
   using Tgs = std::conditional_t<type == Storage::fold, FGSContainer, UGSContainer>;
   using Tgss = std::conditional_t<type == Storage::fold, FGSContainer, UGSContainer>;
   using TG = std::conditional_t<type == Storage::fold, FGSContainer, UGSContainer>;
+  using TU = std::conditional_t<type == Storage::fold, FGSContainer, UGSContainer>;
+  using TW = std::conditional_t<type == Storage::fold, FGSContainer, UGSContainer>;
+  using TWrond = std::conditional_t<type == Storage::fold, FGSContainer, UGSContainer>;
   using TZstack = std::conditional_t<type == Storage::fold, FoldedZContainer, UnfoldedZContainer>;
+  using TXstack = std::conditional_t<type == Storage::fold, FoldedXContainer, UnfoldedXContainer>;
   using TGstack = std::conditional_t<type == Storage::fold, FoldedGContainer, UnfoldedGContainer>;
   using Tm = std::conditional_t<type == Storage::fold, FNormalMoments, UNormalMoments>;
   using Tpol = std::conditional_t<type == Storage::fold, FTensorPolynomial, UTensorPolynomial>;
@@ -113,6 +117,7 @@ struct PartitionY
   const int npred;
   const int nboth;
   const int nforw;
+  PartitionY() : PartitionY(0,0,0,0) {}
   PartitionY(int num_stat, int num_pred,
              int num_both, int num_forw)
     : nstat(num_stat), npred(num_pred),
@@ -321,6 +326,11 @@ public:
   getUnfoldDers() const
   {
     return _ug;
+  }
+  const FGSContainer &
+  getFoldDersS() const
+  {
+    return _fgs;
   }
   static bool
   is_even(int i)

@@ -10,6 +10,7 @@ EXTRA_DIST = \
 	kronecker \
 	bytecode \
 	k_order_perturbation \
+	k_order_welfare \
 	kalman_steady_state \
 	ms-sbvar \
 	block_kalman_filter \

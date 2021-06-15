@@ -135,7 +135,9 @@ AC_CONFIG_FILES([Makefile
                  bytecode/Makefile
                  libdynare++/Makefile
                  gensylv/Makefile
+                 libkorder/Makefile
                  k_order_perturbation/Makefile
+                 k_order_welfare/Makefile
                  dynare_simul_/Makefile
                  kalman_steady_state/Makefile
                  ms_sbvar/Makefile

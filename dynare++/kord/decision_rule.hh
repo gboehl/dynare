@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -126,6 +126,7 @@ class DecisionRuleImpl : public ctraits<t>::Tpol, public DecisionRule
 protected:
   using _Tpol = typename ctraits<t>::Tpol;
   using _Tg = typename ctraits<t>::Tg;
+  using _TW = typename ctraits<t>::TW;
   using _Ttensor = typename ctraits<t>::Ttensor;
   using _Ttensym = typename ctraits<t>::Ttensym;
   const Vector ysteady;
@@ -148,6 +149,12 @@ public:
     : ctraits<t>::Tpol(yp.ny(), yp.nys()+nuu), ysteady(ys), ypart(yp), nu(nuu)
   {
     fillTensors(g, sigma);
+  }
+  DecisionRuleImpl(const _TW &W, int nys, int nuu,
+                   const ConstVector &ys)
+    : ctraits<t>::Tpol(1, nys+nuu), ysteady(ys), nu(nuu)
+  {
+    fillTensors(W, nys);
   }
   DecisionRuleImpl(const DecisionRuleImpl<t> &dr, const ConstVector &fixpoint)
     : ctraits<t>::Tpol(dr.ypart.ny(), dr.ypart.nys()+dr.nu),
@@ -179,6 +186,7 @@ public:
   }
 protected:
   void fillTensors(const _Tg &g, double sigma);
+  void fillTensors(const _TW &W, int nys);
   void centralize(const DecisionRuleImpl &dr);
 public:
   void eval(emethod em, Vector &out, const ConstVector &v) const override;
@@ -262,6 +270,50 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
         }
 
       this->insert(std::move(g_yud));
+    }
+}
+
+template<Storage t>
+void
+DecisionRuleImpl<t>::fillTensors(const _TW &W, int nys)
+{
+  IntSequence tns{nys, nu};
+  int dfact = 1;
+  for (int d = 0; d <= W.getMaxDim(); d++, dfact *= d)
+    {
+      auto W_yud = std::make_unique<_Ttensym>(1, nys+nu, d);
+      W_yud->zeros();
+
+      // fill tensor of ‘g_yud’ of dimension ‘d’
+      /* Here we have to fill the tensor [g_(yu)ᵈ]. So we go through all pairs
+         (i,j) such that i+j=d, and through all k from zero up to maximal
+         dimension minus d. In this way we go through all symmetries of
+         [g_yⁱuʲσᵏ] which will be added to [g_(yu)ᵈ].
+
+         Note that at the beginning, ‘dfact’ is a factorial of ‘d’. We
+         calculate ‘kfact’ is equal to k!. As indicated in
+         DecisionRuleImpl::fillTensors(), the added tensor is thus multiplied
+         with 1/(d!k!)·σᵏ. */
+
+      for (int i = 0; i <= d; i++)
+        {
+          int j = d-i;
+          int kfact = 1;
+          _Ttensor tmp(1, TensorDimens(Symmetry{i, j}, tns));
+          tmp.zeros();
+          for (int k = 0; k+d <= W.getMaxDim(); k++, kfact *= k)
+            {
+              Symmetry sym{i, j, 0, k};
+              if (W.check(sym))
+                {
+                  double mult = 1.0/dfact/kfact;
+                  tmp.add(mult, W.get(sym));
+                }
+            }
+          W_yud->addSubTensor(tmp);
+        }
+
+      this->insert(std::move(W_yud));
     }
 }
 
@@ -455,6 +507,11 @@ public:
   FoldDecisionRule(const ctraits<Storage::fold>::Tg &g, const PartitionY &yp, int nuu,
                    const ConstVector &ys, double sigma)
     : DecisionRuleImpl<Storage::fold>(g, yp, nuu, ys, sigma)
+  {
+  }
+  FoldDecisionRule(const ctraits<Storage::fold>::TW &W, int nys, int nuu,
+                   const ConstVector &ys)
+    : DecisionRuleImpl<Storage::fold>(W, nys, nuu, ys)
   {
   }
   FoldDecisionRule(const DecisionRuleImpl<Storage::fold> &dr, const ConstVector &fixpoint)

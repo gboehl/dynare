@@ -138,9 +138,29 @@ public:
     return nExog;
   }
   int
+  ny() const
+  {
+    return nStat+nBoth+nPred+nForw;
+  }
+  int
+  nys() const
+  {
+    return nBoth+nPred;
+  }
+  int
   order() const override
   {
     return nOrder;
+  }
+  const std::vector<int> &
+  getDynppToDyn() const
+  {
+    return dynppToDyn;
+  }
+  const std::vector<int> &
+  getDynToDynpp() const
+  {
+    return dynToDynpp;
   }
   const NameList &
   getAllEndoNames() const override

@@ -1,0 +1,22 @@
+mex_PROGRAMS = k_order_welfare
+
+TOPDIR = $(top_srcdir)/../../sources/k_order_welfare
+
+k_order_welfare_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR) -I$(TOPDIR)/../k_order_perturbation -I$(top_srcdir)/../../../dynare++/tl/cc -I$(top_srcdir)/../../../dynare++/kord -I$(top_srcdir)/../../../dynare++/src -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/utils/cc $(CPPFLAGS_MATIO)
+
+k_order_welfare_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)
+
+k_order_welfare_LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_MATIO)
+k_order_welfare_LDADD = ../libdynare++/libdynare++.a  ../libkorder/libkorder.a $(LIBADD_DLOPEN) $(LIBADD_MATIO)
+
+nodist_k_order_welfare_SOURCES = \
+	k_order_welfare.cc \
+	approximation_welfare.cc \
+	k_ord_objective.cc \
+	objective_m.cc
+
+BUILT_SOURCES = $(nodist_k_order_welfare_SOURCES)
+CLEANFILES = $(nodist_k_order_welfare_SOURCES)
+
+%.cc: $(TOPDIR)/%.cc
+	$(LN_S) -f $< $@

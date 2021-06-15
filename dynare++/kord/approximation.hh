@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -122,6 +122,7 @@ class Approximation
   DynamicModel &model;
   Journal &journal;
   std::unique_ptr<FGSContainer> rule_ders;
+  std::unique_ptr<FGSContainer> rule_ders_s;
   std::unique_ptr<FGSContainer> rule_ders_ss;
   std::unique_ptr<FoldDecisionRule> fdr;
   std::unique_ptr<UnfoldDecisionRule> udr;
@@ -154,6 +155,11 @@ public:
   get_rule_ders() const
   {
     return *rule_ders;
+  }
+  const FGSContainer &
+  get_rule_ders_s() const
+  {
+    return *rule_ders_s;
   }
   const FGSContainer &
   get_rule_ders_ss() const

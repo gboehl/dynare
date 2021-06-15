@@ -169,8 +169,8 @@ if options_.ramsey_policy
             planner_objective_value(2) = W;
         else
             %Order k code will go here!
-            fprintf('\nevaluate_planner_objective: order>2 not yet supported\n')
-            planner_objective_value(1) = NaN;
+            fprintf('\nevaluate_planner_objective: order>2 unconditional welfare calculation not yet supported\n')
+            planner_objective_value(1) = k_order_welfare(dr, M_, options_);
             planner_objective_value(2) = NaN;
             return
         end
