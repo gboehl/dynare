@@ -271,7 +271,7 @@ for t=1:sample_size
     for l=1:size(xparam,1)
         str = sprintf('%s\n %5.4f \t\t %7.5f \t\t %5.4f', str, lb95_xparam(l,t), mean_xparam(l,t), ub95_xparam(l,t));
     end
-    disp([str])
+    disp(str)
     disp('')
 end
 
