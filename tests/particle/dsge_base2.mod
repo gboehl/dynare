@@ -208,12 +208,12 @@ options_.threads.local_state_space_iteration_2 = 4;
 
 @#if ALGO_ONLINE_2
   options_.particle.liu_west_delta = 0.9 ;
-  estimation(order=2,number_of_particles=1000,mode_compute=11);
+  estimation(order=2,number_of_particles=1000,mode_compute=11,mh_replic=0);
 @#endif
 
 @#if ALGO_ONLINE_1
   options_.particle.liu_west_delta = 0.9 ;
-  estimation(order=1,number_of_particles=1000,mode_compute=11);
+  estimation(order=1,number_of_particles=1000,mode_compute=11,mh_replic=0);
 @#endif
 
 @#if MCMC
