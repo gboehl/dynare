@@ -32,7 +32,7 @@ function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2020 Dynare Team
+% Copyright (C) 2003-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -665,24 +665,23 @@ if options_.heteroskedastic_filter
         error(['estimation option conflict: analytic_derivation isn''t available ' ...
             'for heteroskedastic_filter'])
     end
+
     M_.heteroskedastic_shocks.Qvalue = NaN(M_.exo_nbr,options_.nobs);
     M_.heteroskedastic_shocks.Qscale = NaN(M_.exo_nbr,options_.nobs);
-    xname = fieldnames(M_.heteroskedastic_shocks.Qhet);
-    for k=1:length(xname)
-        inx = strcmp(xname{k},M_.exo_names);
-        isqscale=false;
-        if isfield(M_.heteroskedastic_shocks.Qhet.(xname{k}),'scale')
-            M_.heteroskedastic_shocks.Qscale(inx,M_.heteroskedastic_shocks.Qhet.(xname{k}).time_scale)=M_.heteroskedastic_shocks.Qhet.(xname{k}).scale.^2;
-            isqscale=true;
-        end
-        if isfield(M_.heteroskedastic_shocks.Qhet.(xname{k}),'value')
-            if isqscale && ~isempty(intersect(M_.heteroskedastic_shocks.Qhet.(xname{k}).time_value,M_.heteroskedastic_shocks.Qhet.(xname{k}).time_scale))
-                fprintf('\ndynare_estimation_init: With the option "heteroskedastic_shocks" you cannot define\n')
-                fprintf('dynare_estimation_init: the scale and the value for the same shock \n')
-                fprintf('dynare_estimation_init: in the same period!\n')
-                error('Scale and value defined for the same shock in the same period with "heteroskedastic_shocks".')
-            end
-            M_.heteroskedastic_shocks.Qvalue(inx,M_.heteroskedastic_shocks.Qhet.(xname{k}).time_value)=M_.heteroskedastic_shocks.Qhet.(xname{k}).value.^2;
-        end    
+
+    for k=1:length(M_.heteroskedastic_shocks.Qvalue_orig)
+        v = M_.heteroskedastic_shocks.Qvalue_orig(k);
+        M_.heteroskedastic_shocks.Qvalue(v.exo_id, v.periods) = v.value^2;
+    end
+    for k=1:length(M_.heteroskedastic_shocks.Qscale_orig)
+        v = M_.heteroskedastic_shocks.Qscale_orig(k);
+        M_.heteroskedastic_shocks.Qscale(v.exo_id, v.periods) = v.scale^2;
+    end
+
+    if any(any(~isnan(M_.heteroskedastic_shocks.Qvalue) & ~isnan(M_.heteroskedastic_shocks.Qscale)))
+        fprintf('\ndynare_estimation_init: With the option "heteroskedastic_shocks" you cannot define\n')
+        fprintf('dynare_estimation_init: the scale and the value for the same shock \n')
+        fprintf('dynare_estimation_init: in the same period!\n')
+        error('Scale and value defined for the same shock in the same period with "heteroskedastic_shocks".')
     end
 end
