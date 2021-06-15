@@ -298,10 +298,6 @@ if TeX
 end
 
 for plt = 1:nbplt
-    if TeX
-        NAMES = [];
-        TeXNAMES = [];
-    end
     hh = dyn_figure(DynareOptions.nodisplay,'Name','Parameters Trajectories');
     for k=1:length(pmean)
         subplot(nr,nc,k)
@@ -339,10 +335,6 @@ number_of_grid_points = 2^9;      % 2^9 = 512 !... Must be a power of two.
 bandwidth = 0;                    % Rule of thumb optimal bandwidth parameter.
 kernel_function = 'gaussian';     % Gaussian kernel for Fast Fourier Transform approximation.
 for plt = 1:nbplt
-    if TeX
-        NAMES = [];
-        TeXNAMES = [];
-    end
     hh = dyn_figure(DynareOptions.nodisplay,'Name','Parameters Densities');
     for k=1:length(pmean)
         subplot(nr,nc,k)
