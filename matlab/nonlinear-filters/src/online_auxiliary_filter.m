@@ -21,7 +21,7 @@ function [pmean, pmode, pmedian, pstdev, p025, p975, covariance] = online_auxili
 % - p975                     [double]    n×1 vector, 97.5 percent of the particles are below p975(i) for i=1,…,n.
 % - covariance               [double]    n×n matrix, covariance of the particles at the end of the sample.
 
-% Copyright (C) 2013-2019 Dynare Team
+% Copyright © 2013-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -307,8 +307,9 @@ for plt = 1:nbplt
         subplot(nr,nc,k)
         [name,texname] = get_the_name(k,TeX,Model,EstimatedParameters,DynareOptions);
         % Draw the surface for an interval containing 95% of the particles.
-        shade(1:sample_size, ub95_xparam(k,:)', 1:sample_size, lb95_xparam(k,:)', 'FillType',[1 2], 'LineStyle', 'none', 'Marker', 'none')
+        area(1:sample_size, ub95_xparam(k,:), 'FaceColor', [.9 .9 .9], 'BaseValue', min(lb95_xparam(k,:)));
         hold on
+        area(1:sample_size, lb95_xparam(k,:), 'FaceColor', [1 1 1], 'BaseValue', min(lb95_xparam(k,:)));
         % Draw the mean of particles.
         plot(1:sample_size, mean_xparam(k,:), '-k', 'linewidth', 2)
         if TeX
