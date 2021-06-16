@@ -7,6 +7,7 @@ MODFILES = \
 	lmmcp/rbcii.mod \
 	lmmcp/purely_backward.mod \
 	lmmcp/purely_forward.mod \
+	lmmcp/MCP_ramsey.mod \
 	ep/rbc_mc.mod \
 	estimation/TaRB/fs2000_tarb.mod \
 	observation_trends_and_prefiltering/MCMC/Trend_loglin_no_prefilt_first_obs_MC.mod \

@@ -52,9 +52,6 @@ etags = M_.equations_tags;
 for i=1:size(etags,1)
     if strcmp(etags{i,2},'mcp')
         eq_nbr = etags{i,1};
-        if ramsey_policy
-            eq_nbr = eq_nbr + M_.ramsey_eq_nbr;
-        end
         str = etags{i,3};
         kop = strfind(etags{i,3},'<');
         if ~isempty(kop)
