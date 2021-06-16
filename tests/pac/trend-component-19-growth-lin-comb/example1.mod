@@ -126,6 +126,7 @@ fprintf('Estimate of e_c_m: %f \n', e_c_m_iterative_ols)
 fprintf('Estimate of c_z_1: %f \n', c_z_1_iterative_ols)
 fprintf('Estimate of c_z_2: %f \n', c_z_2_iterative_ols)
 
-if any(abs(resid_nls-resid_iterative_ols).data > 1e-4)
+difference = abs(resid_nls-resid_iterative_ols);
+if any(difference.data > 1e-4)
    error('Iterative OLS and NLS do not provide consistent results.')
 end
