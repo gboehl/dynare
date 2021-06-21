@@ -21,9 +21,12 @@ set -ex
 
 ROOTDIR=$(pwd)/..
 
+# Set the GCC version
+GCC_VERSION=10
+
 # Set the compilers
-CC=gcc-10
-CXX=g++-10
+CC=gcc-$GCC_VERSION
+CXX=g++-$GCC_VERSION
 
 # Set the number of threads
 NTHREADS=$(nproc)
@@ -61,9 +64,22 @@ else
     LOCATION=$(echo "$VERSION" | cut -f1 -d"-" | cut -c 1-5)-"$DATE"
 fi
 
+## Hack for statically linking libquadmath, similar to the one used in
+## deps/Makefile for several libraries (there is no -static-libquadmath flag,
+## see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=46539).
+##
+## NB: The hack done for Windows (see m4/ax_mexopts.m4) does not work for two reasons:
+## - the macOS linker is different from GNU ld and does not have the equivalent of -Bstatic/-Bdynamic
+## - libgfortran.spec does not include --as-needed on macOS, hence it will link the library anyways
+## Also, it does not seem possible to override libgfortran.spec with the --specs option.
+QUADMATH_DIR=$(mktemp -d)
+ln -s /usr/local/opt/gcc/lib/gcc/$GCC_VERSION/libquadmath.a $QUADMATH_DIR
+
 ##
 ## Compile Dynare doc, dynare++, preprocessor, mex for MATLAB < 2018a
 ##
+## NB: In Homebrew, -static-libgfortran is implied by -static-libgcc (see “gfortran -dumpspecs”)
+## NB2: We use the hack for libquadmath in LDFLAGS
 cd "$ROOTDIR"
 [[ -f configure ]] || autoreconf -si
 ./configure \
@@ -72,7 +88,7 @@ cd "$ROOTDIR"
   CC=$CC \
   CXX=$CXX \
   CPPFLAGS=-I/usr/local/include \
-  LDFLAGS=-static-libgcc \
+  LDFLAGS="-static-libgcc -L$QUADMATH_DIR" \
   LEX=/usr/local/opt/flex/bin/flex \
   YACC=/usr/local/opt/bison/bin/bison \
   --with-gsl="$LIB64"/gsl \
@@ -154,7 +170,7 @@ make clean
   CC=$CC \
   CXX=$CXX \
   CPPFLAGS=-I/usr/local/include \
-  LDFLAGS=-static-libgcc \
+  LDFLAGS="-static-libgcc -L$QUADMATH_DIR" \
   --with-gsl="$LIB64"/gsl \
   --with-matio="$LIB64"/matio \
   --with-slicot="$LIB64"/Slicot/with-underscore \
