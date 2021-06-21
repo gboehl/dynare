@@ -436,7 +436,7 @@ folder where you want Dynare installed.
 
 - Prepare the Dynare sources:
 ```sh
-git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git`
+git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git
 cd dynare
 autoreconf -si
 ```
