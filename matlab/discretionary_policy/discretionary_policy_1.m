@@ -1,4 +1,4 @@
-function [dr, info, M_, options_, oo_]=discretionary_policy_1(Instruments, M_, options_, oo_)
+function [dr, info, M_, oo_]=discretionary_policy_1(Instruments, M_, options_, oo_)
 % Higher-level function for solving discretionary optimal policy
 % INPUTS
 % - Instruments   [cell]          array containing instrument names
@@ -10,7 +10,6 @@ function [dr, info, M_, options_, oo_]=discretionary_policy_1(Instruments, M_, o
 % - dr            [structure]     Reduced form model.
 % - info          [integer]       scalar or vector, error code.
 % - M_            [structure]     Matlab's structure describing the model (M_).
-% - options_      [structure]     Matlab's structure describing the current options (options_).
 % - oo_           [structure]     Matlab's structure containing the results (oo_).
 
 % Copyright (C) 2007-2020 Dynare Team

@@ -76,7 +76,7 @@ else
 end
 
 %% compute Kalman transition matrices and steady state with updated parameters
-[~,info,M,options,oo] = compute_decision_rules(M,options,oo);
+[~,info,M,oo] = compute_decision_rules(M,options,oo);
 options = rmfield(options,'options_ident');
 pruned = pruned_state_space_system(M, options, oo.dr, indvar, nlags, useautocorr, 0);
 

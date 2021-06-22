@@ -113,7 +113,7 @@ nobs = options_.nobs;
 if forecast_ && any(forecast_params)
     M1=M_;
     M1.params = forecast_params;
-    [~,~,~,~,~,~,oo1] = dynare_resolve(M1,options_,oo_);
+    [~,~,~,~,~,oo1] = dynare_resolve(M1,options_,oo_);
 end
 
 gend0=0;

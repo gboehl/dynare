@@ -80,7 +80,7 @@ end
 %------------------------------------------------------------------------------
 
 % Linearize the model around the deterministic sdteadystate and extract the matrices of the state equation (T and R).
-[dr, info, Model, DynareOptions, DynareResults] = resol(0, Model, DynareOptions, DynareResults);
+[dr, info, Model, DynareResults] = resol(0, Model, DynareOptions, DynareResults);
 
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 || ...

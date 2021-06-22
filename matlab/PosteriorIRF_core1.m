@@ -145,7 +145,7 @@ while fpar<B
     end
     stock_param(irun2,:) = deep;
     set_parameters(deep);
-    [dr,info,M_,options_,oo_] =compute_decision_rules(M_,options_,oo_);
+    [dr,info,M_,oo_] =compute_decision_rules(M_,options_,oo_);
     oo_.dr = dr;
     if info(1)
         nosaddle = nosaddle + 1;

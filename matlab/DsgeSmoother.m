@@ -1,4 +1,4 @@
-function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,decomp,trend_addition,state_uncertainty,M_,oo_,options_,bayestopt_] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_)
+function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,decomp,trend_addition,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_)
 % Estimation of the smoothed variables and innovations.
 %
 % INPUTS
@@ -34,7 +34,6 @@ function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,de
 %                                   about the smoothed state (decision-rule order)
 %   o M_            [structure] decribing the model
 %   o oo_           [structure] storing the results
-%   o options_      [structure] describing the options
 %   o bayestopt_    [structure] describing the priors
 %
 % Notes:
@@ -105,14 +104,14 @@ if ~options_.smoother_redux
     oo_.dr.restrict_var_list = bayestopt_.smoother_var_list;
     oo_.dr.restrict_columns = bayestopt_.smoother_restrict_columns;
     
-    [T,R,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
+    [T,R,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_);
     
     %get location of observed variables and requested smoothed variables in
     %decision rules
     bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
     
 else
-    [T,R,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
+    [T,R,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
     bayestopt_.mf = bayestopt_.mf1;
 end
 

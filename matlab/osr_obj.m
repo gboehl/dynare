@@ -47,7 +47,7 @@ M_.params(i_params) = x;
 
 % don't change below until the part where the loss function is computed
 it_ = M_.maximum_lag+1;
-[dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
+[dr,info,M_,oo_] = resol(0,M_,options_,oo_);
 
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ||...

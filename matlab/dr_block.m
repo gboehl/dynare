@@ -1,5 +1,5 @@
-function [dr,info,M_,options_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
-% function [dr,info,M_,options_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
+function [dr,info,M_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
+% function [dr,info,M_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
 % computes the reduced form solution of a rational expectations block-decomposed model
 % (first order approximation of the stochastic model around the deterministic steady state).
 %
@@ -26,7 +26,6 @@ function [dr,info,M_,options_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
 %                                 info=5: BK rank condition not satisfied.
 %                                 info=6: The jacobian matrix evaluated at the steady state is complex.
 %   M_         [matlab structure]
-%   options_   [matlab structure]
 %   oo_        [matlab structure]
 %
 % ALGORITHM
