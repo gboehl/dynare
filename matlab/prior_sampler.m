@@ -96,7 +96,7 @@ while iteration < NumberOfSimulations
     loop_indx = loop_indx+1;
     params = prior_draw();
     M_ = set_all_parameters(params,estim_params_,M_);
-    [T,R,~,INFO,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
+    [T,R,~,INFO,M_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
     dr=oo_.dr;
     if ~INFO(1)
         INFO=endogenous_prior_restrictions(T,R,M_,options_,oo_);

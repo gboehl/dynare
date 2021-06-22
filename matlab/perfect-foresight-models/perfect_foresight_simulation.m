@@ -74,7 +74,7 @@ else
 end
 
 if ~isstruct(compute_linear_solution) && compute_linear_solution
-    [dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
+    [dr,info,M_,oo_] = resol(0,M_,options_,oo_);
 elseif isstruct(compute_linear_solution)
     dr = compute_linear_solution;
     compute_linear_solution = 1;

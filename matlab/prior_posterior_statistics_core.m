@@ -213,17 +213,17 @@ for b=fpar:B
     M_ = set_all_parameters(deep,estim_params_,M_);
 
     if run_smoother
-        [dr,info,M_,opts_local,oo_] =compute_decision_rules(M_,opts_local,oo_);
+        [dr,info,M_,oo_] =compute_decision_rules(M_,opts_local,oo_);
         if ismember(info(1),[3,4]) 
             opts_local.qz_criterium = 1 + (opts_local.qz_criterium-1)*10; %loosen tolerance, useful for big models where BK conditions were tested on restricted state space
-            [dr,info,M_,opts_local,oo_] =compute_decision_rules(M_,opts_local,oo_);
+            [dr,info,M_,oo_] =compute_decision_rules(M_,opts_local,oo_);
         end
         if info(1)
             message=get_error_message(info,opts_local);
             fprintf('\nprior_posterior_statistics: One of the draws failed with the error:\n%s\n',message)
             fprintf('prior_posterior_statistics: This should not happen. Please contact the developers.\n',message)
         end
-        [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,opts_local,bayestopt_] = ...
+        [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,bayestopt_] = ...
             DsgeSmoother(deep,gend,Y,data_index,missing_value,M_,oo_,opts_local,bayestopt_,estim_params_);
 
         stock_trend_coeff(options_.varobs_id,irun(9))=trend_coeff;
@@ -354,7 +354,7 @@ for b=fpar:B
             stock_smoothed_uncert(dr.order_var,dr.order_var,:,irun(13)) = state_uncertainty;
         end
     else
-        [T,R,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
+        [T,R,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_);
     end
     stock_param(irun(5),:) = deep;
     stock_logpo(irun(5),1) = logpo;

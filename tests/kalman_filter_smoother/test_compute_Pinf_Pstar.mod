@@ -95,7 +95,7 @@ calib_smoother(datafile=Data,diffuse_filter);
 
 mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
 Q = M_.Sigma_e;
-[T,R,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
+[T,R,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_);
 
 [Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,options_.qz_criterium);
         

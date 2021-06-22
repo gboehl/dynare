@@ -310,9 +310,9 @@ if fload==0
         %try stoch_simul([]);
         try
             if ~ isempty(options_.endogenous_prior_restrictions.moment)
-                [Tt,Rr,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_);
+                [Tt,Rr,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_);
             else
-                [Tt,Rr,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
+                [Tt,Rr,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
             end
             infox(j,1)=info(1);
             if infox(j,1)==0 && ~exist('T','var')
@@ -681,7 +681,7 @@ if length(iunstable)>0 || length(iwrong)>0
         end
 
         M_ = set_all_parameters(x0,estim_params_,M_);
-        [oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
+        [oo_.dr,info,M_,oo_] = resol(0,M_,options_,oo_);
         %     stoch_simul([]);
     else
         disp('All parameter values in the specified ranges are not acceptable!')

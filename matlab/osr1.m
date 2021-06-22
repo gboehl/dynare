@@ -143,7 +143,7 @@ if ~options_.noprint
     fprintf('Objective function : %16.6g\n\n',f);
     skipline()
 end
-[oo_.dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
+[oo_.dr,info,M_,oo_] = resol(0,M_,options_,oo_);
 if ~info
     osr_res.error_indicator=0;
 end

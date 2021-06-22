@@ -1,4 +1,4 @@
-function [dr, info, M, options, oo] = resol(check_flag, M, options, oo)
+function [dr, info, M, oo] = resol(check_flag, M, options, oo)
 
 % Computes the perturbation based decision rules of the DSGE model (orders 1 to 3)
 %
@@ -12,7 +12,6 @@ function [dr, info, M, options, oo] = resol(check_flag, M, options, oo)
 % - dr            [structure]     Reduced form model.
 % - info          [integer]       scalar or vector, error code.
 % - M             [structure]     Matlab's structure describing the model (M_).
-% - options       [structure]     Matlab's structure describing the current options (options_).
 % - oo            [structure]     Matlab's structure containing the results (oo_).
 %
 % REMARKS
@@ -113,7 +112,7 @@ if options.loglinear
 end
 
 if options.block
-    [dr,info,M,options,oo] = dr_block(dr,check_flag,M,options,oo);
+    [dr,info,M,oo] = dr_block(dr,check_flag,M,options,oo);
     dr.edim = nnz(abs(dr.eigval) > options.qz_criterium);
     dr.sdim = dr.nd-dr.edim;
 else

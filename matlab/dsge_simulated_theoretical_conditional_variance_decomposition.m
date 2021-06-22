@@ -142,7 +142,7 @@ for file = 1:NumberOfDrawsFiles
             dr = temp.pdraws{linee,2};
         else
             M_=set_parameters_locally(M_,temp.pdraws{linee,1});
-			[dr,info,M_,options_,oo_] = compute_decision_rules(M_,options_,oo_)
+			[dr,info,M_,oo_] = compute_decision_rules(M_,options_,oo_)
         end
         if first_call
             endo_nbr = M_.endo_nbr;

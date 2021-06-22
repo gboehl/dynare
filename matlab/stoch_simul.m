@@ -99,14 +99,14 @@ elseif options_.discretionary_policy
     if ~options_.order==1
         error('discretionary_policy: only linear-quadratic problems can be solved');
     end
-    [~,info,M_,options_,oo_] = discretionary_policy_1(options_.instruments,M_,options_,oo_);
+    [~,info,M_,oo_] = discretionary_policy_1(options_.instruments,M_,options_,oo_);
 else
     if options_.logged_steady_state %if steady state was previously logged, undo this
         oo_.dr.ys=exp(oo_.dr.ys);
         oo_.steady_state=exp(oo_.steady_state);
         options_.logged_steady_state=0;
     end
-    [~,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
+    [~,info,M_,oo_] = resol(0,M_,options_,oo_);
 end
 
 if options_.loglinear && isfield(oo_.dr,'ys') && options_.logged_steady_state==0 %log steady state for correct display of decision rule

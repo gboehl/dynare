@@ -185,7 +185,7 @@ end
 %------------------------------------------------------------------------------
 
 % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
-[T,R,SteadyState,info,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
+[T,R,SteadyState,info,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
@@ -467,7 +467,7 @@ if analytic_derivation
     AHess = [];
     iv = DynareResults.dr.restrict_var_list;
     if nargin<10 || isempty(derivatives_info)
-        [A,B,nou,nou,Model,DynareOptions,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
+        [A,B,nou,nou,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
         if ~isempty(EstimatedParameters.var_exo)
             indexo=EstimatedParameters.var_exo(:,1);
         else

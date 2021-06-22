@@ -96,7 +96,7 @@ end
 %--------------------------------------------------------------------------
 
 % Compute linear approximation around the deterministic steady state
-[dr, info, M_, options_mom_, oo_] = resol(0, M_, options_mom_, oo_);
+[dr, info, M_, oo_] = resol(0, M_, options_mom_, oo_);
 
 % Return, with endogenous penalty when possible, if resol issues an error code
 if info(1)

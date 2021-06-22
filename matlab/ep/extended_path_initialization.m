@@ -78,7 +78,7 @@ dr = struct();
 if ep.init
     DynareOptions.order = 1;
     DynareResults.dr=set_state_space(dr,DynareModel,DynareOptions);
-    [dr,Info,DynareModel,DynareOptions,DynareResults] = resol(0,DynareModel,DynareOptions,DynareResults);
+    [dr,Info,DynareResults] = resol(0,DynareModel,DynareOptions,DynareResults);
 end
 
 % Do not use a minimal number of perdiods for the perfect foresight solver (with bytecode and blocks)

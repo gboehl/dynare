@@ -1,4 +1,4 @@
-function [A,B,ys,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,mode)
+function [A,B,ys,info,M_,oo_] = dynare_resolve(M_,options_,oo_,mode)
 % function [A,B,ys,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,mode)
 % Computes the linear approximation and the matrices A and B of the transition equation.
 %
@@ -14,7 +14,6 @@ function [A,B,ys,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,mode)
 % - ys                  [double]        vector of steady state values
 % - info                [double]        4 by 1 vector with exit flag and information
 % - M_                  [structure]     Matlab's structure describing the model
-% - options_            [structure]     Matlab's structure containing the options
 % - oo_                 [structure]     Matlab's structure containing the results
 
 % Copyright (C) 2001-2021 Dynare Team
@@ -34,7 +33,7 @@ function [A,B,ys,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,mode)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-[dr,info,M_,options_,oo_] =compute_decision_rules(M_,options_,oo_);
+[dr,info,M_,oo_] =compute_decision_rules(M_,options_,oo_);
 
 if info(1) > 0
     A = [];

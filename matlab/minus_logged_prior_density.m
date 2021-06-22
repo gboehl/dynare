@@ -122,7 +122,7 @@ end
 %-----------------------------
 
 M_ = set_all_parameters(xparams,EstimatedParams,DynareModel);
-[dr,info,DynareModel,DynareOptions,DynareResults] = resol(0,DynareModel,DynareOptions,DynareResults);
+[dr,info,DynareModel,DynareResults] = resol(0,DynareModel,DynareOptions,DynareResults);
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)

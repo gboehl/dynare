@@ -1,4 +1,4 @@
-function [dr,info,M_,options_,oo_] =compute_decision_rules(M_,options_,oo_)
+function [dr,info,M_,oo_] =compute_decision_rules(M_,options_,oo_)
 % function [dr,info,M_,options_,oo_] =compute_decision_rules(M_,options_,oo_)
 % INPUTS
 % - M_            [structure]     Matlab's structure describing the model (M_).
@@ -9,7 +9,6 @@ function [dr,info,M_,options_,oo_] =compute_decision_rules(M_,options_,oo_)
 % - dr            [structure]     Reduced form model.
 % - info          [integer]       scalar or vector, error code.
 % - M_            [structure]     Matlab's structure describing the model (M_).
-% - options_      [structure]     Matlab's structure describing the current options (options_).
 % - oo_           [structure]     Matlab's structure containing the results (oo_).
 
 % Copyright (C) 2020 Dynare Team
@@ -30,7 +29,7 @@ function [dr,info,M_,options_,oo_] =compute_decision_rules(M_,options_,oo_)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if options_.discretionary_policy
-    [dr,info,M_,options_,oo_] = discretionary_policy_1(options_.instruments,M_,options_,oo_);
+    [dr,info,M_,oo_] = discretionary_policy_1(options_.instruments,M_,options_,oo_);
 else
-    [dr,info,M_,options_,oo_] = resol(0,M_,options_,oo_);
+    [dr,info,M_,oo_] = resol(0,M_,options_,oo_);
 end
