@@ -125,7 +125,7 @@ Model.H = H;
 %------------------------------------------------------------------------------
 
 warning('off', 'MATLAB:nearlySingularMatrix')
-[~, ~, ~, info, Model, DynareOptions, DynareResults] = ...
+[~, ~, ~, info, Model, DynareResults] = ...
     dynare_resolve(Model, DynareOptions, DynareResults, 'restrict');
 warning('on', 'MATLAB:nearlySingularMatrix')
 
