@@ -7,9 +7,8 @@ class Isl < Formula
   # and update isl_version() function accordingly.  All other names will
   # result in isl_version() function returning "UNKNOWN" and hence break
   # package detection.
-  url "http://isl.gforge.inria.fr/isl-0.23.tar.xz"
-  mirror "https://deb.debian.org/debian/pool/main/i/isl/isl_0.23.orig.tar.xz"
-  sha256 "5efc53efaef151301f4e7dde3856b66812d8153dede24fab17673f801c8698f2"
+  url "http://isl.gforge.inria.fr/isl-0.24.tar.xz"
+  sha256 "043105cc544f416b48736fff8caf077fb0663a717d06b1113f16e391ac99ebad"
   license "MIT"
 
   livecheck do
@@ -18,12 +17,10 @@ class Isl < Formula
   end
 
   bottle do
-    root_url "https://homebrew.bintray.com/bottles"
-    cellar :any
-    sha256 "77907a43a415210de713d9e82588b452e5546a31b42194c7c75e07486d319a51" => :big_sur
-    sha256 "5b066bc471862c8d166082f0d1bf6b132aac0117f67e19bba139dfe907eb2614" => :arm64_big_sur
-    sha256 "bb4c986e9f49c7eea6349a536889e6223549885c0aab3d7692542cd48bc06481" => :catalina
-    sha256 "066330367dcc69e8d200a1d26a7f6ca580ecc3c397a686fa3b2fbd36d5d88ada" => :mojave
+    sha256 cellar: :any, arm64_big_sur: "cf7f8b77fc0e51bc9c9921306737176e6f9e03062255a525d9ab59cf91ed3d36"
+    sha256 cellar: :any, big_sur:       "d8c7026042e122143e0729bf3a596be77753b8cfeddcae200cd3a3c18176800c"
+    sha256 cellar: :any, catalina:      "f33ee49a23fbde05392be23110d14add72aaed390ffd3aefc400645eeb1772d4"
+    sha256 cellar: :any, mojave:        "34b71567d6bfb7e4cb4aced1d089fe6d72988af02775730be26b5bcea483d065"
   end
 
   head do
@@ -43,6 +40,7 @@ class Isl < Formula
                           "--prefix=#{prefix}",
                           "--with-gmp=system",
                           "--with-gmp-prefix=#{Formula["gmp"].opt_prefix}"
+    system "make"
     system "make", "install"
     (share/"gdb/auto-load").install Dir["#{lib}/*-gdb.py"]
   end
