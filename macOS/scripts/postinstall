@@ -36,8 +36,12 @@ if ! curl -s -m 4 https://github.com >/dev/null; then
 fi
 
 # Install Command Line Tools
-if [[ -z $(/usr/bin/xcode-select -print-path) ]]; then
-    touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress;
+# Checking that “xcode-select -print-path” returns a valid path is not enough, because
+# the contents of that directory might have been removed (this is the official way of
+# uninstalling CLT, see https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-HOW_CAN_I_UNINSTALL_THE_COMMAND_LINE_TOOLS_)
+# Hence we also check that the directory contains the git binary.
+if ! xcpath=$(/usr/bin/xcode-select -print-path) || [[ ! -x "$xcpath"/usr/bin/git ]]; then
+    touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
     SUC=$(softwareupdate -l |
               grep "\*.*Command Line" |
               grep -m1 "" |
@@ -46,27 +50,25 @@ if [[ -z $(/usr/bin/xcode-select -print-path) ]]; then
               tr -d '\n')
     # On macOS 10.15 softwareupdate output is preceded by "Label: "
     [[ $SUC == Label:* ]] && SUC=${SUC#"Label: "}
-    softwareupdate -i "$SUC" --verbose;
-    rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress;
+    softwareupdate -i "$SUC" --verbose
+    rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
     softwareupdate -l
 fi
 
 # If CLT installation didn't work, exit
-[[ -z $(/usr/bin/xcode-select -print-path) ]] && \
-    { \
-      osascript -e 'display alert "Dynare Installation Error" message "Not able to find Command Line Tools.\n\nCommand Line Tools is necessary to make Dynare work with the `use_dll` option on macOS.\n\nIf you cannot establish this connection or do not want to use the `use_dll` option of Dynare, please run the installer again and choose \"Customize\" from the \"Installation Type\" screen and uncheck the `GCC` option." as critical'; \
-      echo "Command Line Tools not installed"; \
-      exit 1; \
-    }
+if ! xcpath=$(/usr/bin/xcode-select -print-path) || [[ ! -x "$xcpath"/usr/bin/git ]]; then
+    osascript -e 'display alert "Dynare Installation Error" message "Not able to find Command Line Tools.\n\nCommand Line Tools is necessary to make Dynare work with the `use_dll` option on macOS.\n\nIf you cannot establish this connection or do not want to use the `use_dll` option of Dynare, please run the installer again and choose \"Customize\" from the \"Installation Type\" screen and uncheck the `GCC` option." as critical'
+    echo "Command Line Tools not installed"
+    exit 1
+fi
 
 # Ensure git is in the path
-[[ -z $(which git) ]] && \
-    { \
-      osascript -e 'display alert "Dynare Installation Error" message "Not able to find Git even though the Command Line Tools have already been installed. This is likely a problem with your PATH environment variable.\n\nGit is necessary to make Dynare work with the `use_dll` option on macOS.\n\nIf you cannot establish this connection or do not want to use the `use_dll` option of Dynare, please run the installer again and choose \"Customize\" from the \"Installation Type\" screen and uncheck the `GCC` option." as critical'; \
-      echo $PATH; \
-      echo "Git not found in PATH"; \
-      exit 1; \
-    }
+if ! which git >/dev/null; then
+    osascript -e 'display alert "Dynare Installation Error" message "Not able to find Git even though the Command Line Tools have already been installed. This is likely a problem with your PATH environment variable.\n\nGit is necessary to make Dynare work with the `use_dll` option on macOS.\n\nIf you cannot establish this connection or do not want to use the `use_dll` option of Dynare, please run the installer again and choose \"Customize\" from the \"Installation Type\" screen and uncheck the `GCC` option." as critical'
+    echo $PATH
+    echo "Git not found in PATH"
+    exit 1
+fi
 
 # Install Homebrew
 BREWDIR="$2"/.brew
