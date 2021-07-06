@@ -1,4 +1,4 @@
-function print_equations(variable_name, withexpansion)
+function str = print_equations(variable_name, withexpansion)
 
 % Prints equations where the variable appears in.
 %
@@ -83,6 +83,9 @@ for it = 1:length(M_.mapping.(variable_name).eqidx)
             warning('No VAR or PAC expectations found, continuing without expansion');
             withexpansion = false;
         end
+    end
+    if nargout
+        str = sprintf('%s = %s;\n', model{M_.mapping.(variable_name).eqidx(it)}.lhs, rhs);
     end
     fprintf('%s = %s;\n', model{M_.mapping.(variable_name).eqidx(it)}.lhs, rhs);
 end

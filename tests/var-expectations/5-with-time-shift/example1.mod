@@ -24,7 +24,8 @@ var_model(model_name = toto, eqtags = [ 'X' 'Y' 'Z' ]);
 ** variable:         the name of the variable to be forecasted (mandatory).
 ** horizon:          the horizon forecast (mandatory).
 ** discount:         the discount factor, which can be a value or a declared parameter (default is 1.0, no discounting).
-**
+** time_shift:       shifts the information set to the past, must be a non positive scalar. By default, expectations
+**                   about `variable` in period `t+horizon` are formed in period t (time_shift=0)
 **
 ** The `horizon` parameter can be an integer in which case the (discounted) `horizon` step ahead forecast
 ** is computed using the VAR model `var_model_name`. Alternatively, `horizon` can be a range. In this case
@@ -36,8 +37,7 @@ var_model(model_name = toto, eqtags = [ 'X' 'Y' 'Z' ]);
 ** where the sum is over h=0,…,∞ and the conditional expectations are computed with VAR model `var_model_name`.
 */
 
-var_expectation_model(model_name = varexp, expression = x, auxiliary_model_name = toto, horizon = 0:Inf, discount = beta)  ;
-
+var_expectation_model(model_name = varexp, expression = x, auxiliary_model_name = toto, time_shift=-2, horizon = 15:50, discount = beta)  ;
 
 model;
 [ name = 'X' ]
@@ -67,5 +67,3 @@ weights = M_.params(M_.var_expectation.varexp.param_indices);
 if weights(2) || ~weights(3) || weights(5) || ~weights(1) || ~weights(4) || ~weights(6)
    error('Wrong reduced form parameter for VAR_EXPECTATION_MODEL')
 end
-
-save('weights.mat','weights');

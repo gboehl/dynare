@@ -74,6 +74,10 @@ end
 
 id = 0;
 
+if isequal(expectationmodelkind, 'var')
+    timeindices = (0:(maxlag-1))+abs(expectationmodel.time_shift);
+end
+
 for i=1:maxlag
     for j=1:length(auxmodel.list_of_variables_in_companion_var)
         id = id+1;
@@ -114,8 +118,8 @@ for i=1:maxlag
         end
         switch expectationmodelkind
           case 'var'
-            if i>1
-                variable = sprintf('%s(-%d)', variable, i-1);
+            if timeindices(i)
+                variable = sprintf('%s(-%d)', variable, timeindices(i));
             end
           case 'pac'
             variable = sprintf('%s(-%d)', variable, i);

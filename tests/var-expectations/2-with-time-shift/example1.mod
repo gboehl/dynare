@@ -24,6 +24,8 @@ var_model(model_name = toto, eqtags = [ 'X' 'Y' 'Z' ]);
 ** variable:         the name of the variable to be forecasted (mandatory).
 ** horizon:          the horizon forecast (mandatory).
 ** discount:         the discount factor, which can be a value or a declared parameter (default is 1.0, no discounting).
+** time_shift:       shifts the information set to the past, must be a non positive scalar. By default, expectations
+**                   about `variable` in period `t+horizon` are formed in period t (time_shift=0)
 **
 **
 ** The `horizon` parameter can be an integer in which case the (discounted) `horizon` step ahead forecast
@@ -36,7 +38,7 @@ var_model(model_name = toto, eqtags = [ 'X' 'Y' 'Z' ]);
 ** where the sum is over h=0,…,∞ and the conditional expectations are computed with VAR model `var_model_name`.
 */
 
-var_expectation_model(model_name = varexp, expression = x, auxiliary_model_name = toto, horizon = 0:Inf, discount = beta)  ;
+var_expectation_model(model_name = varexp, expression = x, auxiliary_model_name = toto, time_shift=-2, horizon = 2, discount = beta)  ;
 
 
 model;
@@ -50,22 +52,35 @@ y = d*y(-2) + e*z(-1) + e_y;
 foo = .5*foo(-1) + var_expectation(varexp);
 end;
 
+
 // Initialize the VAR expectation model, will build the companion matrix of the VAR.
 var_expectation.initialize('varexp')
 
 // Update VAR_EXPECTATION reduced form parameters
 var_expectation.update('varexp');
 
-/*
-** REMARK The VAR model is such that x depends on past values of x
-** (xₜ₋₁ and xₜ₋₂) and on zₜ₋₂. Consequently the reduced
-** form parameters associated to yₜ₋₁, yₜ₋₂ have to be zero.
-*/
+// Print equations where the variable appears in
+fprintf('x is in: \n')
+print_equations('x')
+fprintf('\n')
 
-weights = M_.params(M_.var_expectation.varexp.param_indices);
+fprintf('y is in: \n')
+str = print_equations('y', true);
+fprintf('\n')
 
-if weights(2) || ~weights(3) || weights(5) || ~weights(1) || ~weights(4) || ~weights(6)
-   error('Wrong reduced form parameter for VAR_EXPECTATION_MODEL')
+
+if ~isfield(M_.var_expectation.varexp, 'time_shift') || ~isequal(M_.var_expectation.varexp.time_shift, -2)
+    error('Preprocessor does not honour time_shift option as expected.')
 end
 
-save('weights.mat','weights');
+str = strrep(str, 'foo = .5*foo(-1)', '');
+str = strrep(str, '+ var_expectation_model_varexp_x_0*x(-2)', '');
+str = strrep(str, '+ var_expectation_model_varexp_y_0*y(-2)', '');
+str = strrep(str, '+ var_expectation_model_varexp_z_0*z(-2)', '');
+str = strrep(str, '+ var_expectation_model_varexp_x_1*x(-3)', '');
+str = strrep(str, '+ var_expectation_model_varexp_y_1*y(-3)', '');
+str = strrep(str, '+ var_expectation_model_varexp_z_1*z(-3)', '');
+str = strrep(str, ';', '');
+if ~isempty(strtrim(str))
+    error('Printed equation is wrong.')
+end

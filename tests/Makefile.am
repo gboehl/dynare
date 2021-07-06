@@ -440,12 +440,19 @@ MODFILES = \
 
 ECB_MODFILES = \
 	var-expectations/1/example1.mod \
+    var-expectations/1-with-time-shift-a/example1.mod \
 	var-expectations/2/example1.mod \
+	var-expectations/2-with-time-shift/example1.mod \
 	var-expectations/3/example1.mod \
+	var-expectations/3-with-time-shift/example1.mod \
 	var-expectations/4/example1.mod \
+	var-expectations/4-with-time-shift/example1.mod \
 	var-expectations/5/example1.mod \
+	var-expectations/5-with-time-shift/example1.mod \
 	var-expectations/6/example1.mod \
 	var-expectations/6/substitution.mod \
+	var-expectations/6-with-time-shift/example1.mod \
+	var-expectations/6-with-time-shift/substitution.mod \
 	var-expectations/7/example1.mod \
 	var-expectations/7/substitution.mod \
 	var-expectations/8/example1.mod \
@@ -588,7 +595,8 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_1_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_2_xfail.mod \
 	estimation/no_init_estimation_check_first_obs/fs2000_init_check_XFAIL.mod \
-	estimation/no_init_estimation_check_first_obs/fs2000_init_check_XFAIL2.mod
+	estimation/no_init_estimation_check_first_obs/fs2000_init_check_XFAIL2.mod \
+	var-expectations/1-with-time-shift-b/example1.mod
 
 MFILES = histval_initval_file/ramst_initval_file_data.m
 
@@ -821,6 +829,8 @@ kalman/likelihood_from_dynare/fs2000ns_corr_ME_missing.o.trs: kalman/likelihood_
 
 var-expectations/6/substitution.m.trs: var-expectations/6/example1.m.trs
 var-expectations/6/substitution.o.trs: var-expectations/6/example1.o.trs
+var-expectations/6-with-time-shift/substitution.m.trs: var-expectations/6-with-time-shift/example1.m.trs
+var-expectations/6-with-time-shift/substitution.o.trs: var-expectations/6-with-time-shift/example1.o.trs
 var-expectations/7/substitution.m.trs: var-expectations/7/example1.m.trs
 var-expectations/7/substitution.o.trs: var-expectations/7/example1.o.trs
 var-expectations/8/substitution.m.trs: var-expectations/8/example1.m.trs
@@ -838,6 +848,9 @@ lmmcp/sw_newton.o.trs: lmmcp/sw_lmmcp.o.trs
 
 var-expectations/4/example1.m.trs: var-expectations/3/example1.m.trs
 var-expectations/4/example1.o.trs: var-expectations/3/example1.o.trs
+
+var-expectations/4-with-time-shift/example1.m.trs: var-expectations/3-with-time-shift/example1.m.trs
+var-expectations/4-with-time-shift/example1.o.trs: var-expectations/3-with-time-shift/example1.o.trs
 
 trend-component-and-var-models/tcm7.m.trs: trend-component-and-var-models/tcm6.m.trs
 trend-component-and-var-models/tcm7.o.trs: trend-component-and-var-models/tcm6.o.trs

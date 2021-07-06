@@ -84,6 +84,18 @@ if discountfactor>1
     error('The discount cannot be greater than one.')
 end
 
+% Set timeshift
+if isfield(varexpectationmodel, 'time_shift')
+    timeshift = varexpectationmodel.time_shift;
+else
+    timeshift = 0;
+end
+
+% Throw an error if timeshift is positive
+if timeshift>0
+    error('Option time_shift of the var_expectation command cannot be positive.')
+end
+
 % Set variables_id in VAR model
 m = length(varexpectationmodel.expr.vars);
 variables_id_in_var = NaN(m,1);
@@ -148,11 +160,17 @@ if length(horizon)==1
     elseif horizon>1 
         parameters = alpha*mpower(discountfactor*CompanionMatrix, varexpectationmodel.horizon);
     end
+    if timeshift<0
+        parameters = parameters*mpower(CompanionMatrix, -timeshift);
+    end
 else
     % Compute the reduced form parameters of the discounted sum of forecasts between t+horizon(1) and
     % t+horizon(2). Not that horzizon(2) need not be finite.
     if horizon(1)==0 && isinf(horizon(2))
         parameters = alpha/(eye(n)-discountfactor*CompanionMatrix);
+        if timeshift<0
+            parameters = parameters*mpower(CompanionMatrix, -timeshift);
+        end
     elseif horizon(1)>0 && isinf(horizon(2))
         % Define the discounted companion matrix
         DiscountedCompanionMatrix = discountfactor*CompanionMatrix;
@@ -162,8 +180,14 @@ else
             tmp1 = tmp1 + mpower(DiscountedCompanionMatrix, h); 
         end
         tmp1 = alpha*tmp1;
+        if timeshift<0
+            tmp1 = tmp1*mpower(CompanionMatrix, -timeshift);
+        end
         % Second compute the parameters implied by the discounted sum from h=0 to h=Inf 
         tmp2 = alpha/(eye(n)-DiscountedCompanionMatrix);
+        if timeshift<0
+            tmp2 = tmp2*mpower(CompanionMatrix, -timeshift);
+        end
         % Finally
         parameters = tmp2-tmp1;
     elseif isfinite(horizon(2))
@@ -174,6 +198,9 @@ else
             tmp = tmp + mpower(DiscountedCompanionMatrix, h);
         end
         parameters = alpha*tmp;
+        if timeshift<0
+            parameters = parameters*mpower(CompanionMatrix, -timeshift);
+        end
     end
 end
 
