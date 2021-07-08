@@ -943,7 +943,7 @@ The model is declared inside a ``model`` block:
 
         end;
 
-    More information on tags is available on the `Dynare wiki`_.
+    More information on tags is available at `<https://archives.dynare.org/DynareWiki/EquationsTags>`__.
 
     *Options*
 
@@ -972,7 +972,7 @@ The model is declared inside a ``model`` block:
         Perform the block decomposition of the model, and exploit it
         in computations (steady-state, deterministic simulation,
         stochastic simulation with first order approximation and
-        estimation). See `Dynare wiki`_ for details on the algorithms
+        estimation). See `<https://archives.dynare.org/DynareWiki/FastDeterministicSimulationAndSteadyStateComputation>`__ for details on the algorithms
         used in deterministic simulation and steady-state computation.
 
     .. option:: bytecode
@@ -1301,7 +1301,7 @@ variables is stored in ``M_.orig_endo_nbr``, and the number of
 endogenous variables after the creation of auxiliary variables is
 stored in ``M_.endo_nbr``.
 
-See `Dynare wiki`_ for more technical details on auxiliary variables.
+See `<https://archives.dynare.org/DynareWiki/AuxiliaryVariables>`__ for more technical details on auxiliary variables.
 
 
 .. _init-term-cond:
@@ -3661,7 +3661,7 @@ Computing the stochastic solution
     The IRFs are computed as the difference between the trajectory of
     a variable following a shock at the beginning of period ``1`` and
     its steady state value. More details on the computation of IRFs
-    can be found on the `Dynare wiki`_.
+    can be found at `<https://archives.dynare.org/DynareWiki/IrFs>`__.
 
     Variance decomposition, correlation, autocorrelation are only
     displayed for variables with strictly positive variance. Impulse
@@ -5442,7 +5442,7 @@ block decomposition of the model (see :opt:`block`).
            ``6``
 
                 Uses a Monte-Carlo based optimization routine (see
-                `Dynare wiki`_ for more details).
+                `<https://archives.dynare.org/DynareWiki/MonteCarloOptimization>`__ for more details).
 
            ``7``
 
@@ -10730,7 +10730,7 @@ below.
 .. command:: sbvar (OPTIONS...);
 
     |br| To be documented. For now, see the wiki:
-    `<https://www.dynare.org/DynareWiki/SbvarOptions>`__
+    `<https://archives.dynare.org/DynareWiki/SbvarOptions>`__
 
     *Options*
 
@@ -12468,7 +12468,6 @@ Misc commands
     and ``morefloats``.
 
 
-.. _Dynare wiki: https://archives.dynare.org/DynareWiki/
 .. _io: https://octave.sourceforge.io/io/
 .. _AIM website: https://www.federalreserve.gov/econres/ama-index.htm
 
