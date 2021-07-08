@@ -170,7 +170,7 @@ msys2: lib64-msys2 mingw64
 
 MSYS2_EXCLUDES := --exclude .MTREE --exclude .BUILDINFO --exclude .PKGINFO
 
-lib64-msys2: tarballs/mingw-w64-x86_64-boost-$(MINGW64_BOOST_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gsl-$(MINGW64_GSL_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-openblas-$(MINGW64_OPENBLAS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-matio-$(MINGW64_MATIO_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-hdf5-$(MINGW64_HDF5_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-szip-$(MINGW64_SZIP_VERSION)-any.pkg.tar.xz
+lib64-msys2: tarballs/mingw-w64-x86_64-boost-$(MINGW64_BOOST_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gsl-$(MINGW64_GSL_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-openblas-$(MINGW64_OPENBLAS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-matio-$(MINGW64_MATIO_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-hdf5-$(MINGW64_HDF5_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libaec-$(MINGW64_LIBAEC_VERSION)-any.pkg.tar.zst
 	rm -rf $@
 	mkdir $@
 	for f in $^; do tar xf $$f --directory $@ --strip-components 1 $(MSYS2_EXCLUDES); done
@@ -181,16 +181,12 @@ mingw64: tarballs/mingw-w64-x86_64-gcc-$(MINGW64_GCC_VERSION)-any.pkg.tar.zst ta
 	for f in $^; do tar xf $$f $(MSYS2_EXCLUDES); done
 	touch $@
 
-tarballs/mingw-w64-x86_64-%-any.pkg.tar.xz:
-	wget $(WGET_OPTIONS) -O $@ http://repo.msys2.org/mingw/x86_64/$(notdir $@)
-
 tarballs/mingw-w64-x86_64-%-any.pkg.tar.zst:
 	wget $(WGET_OPTIONS) -O $@ http://repo.msys2.org/mingw/x86_64/$(notdir $@)
 
 clean-msys2:
 	rm -rf lib64-msys2
 	rm -rf mingw64
-	rm -f tarballs/mingw-w64-x86_64-*.tar.xz
 	rm -f tarballs/mingw-w64-x86_64-*.tar.zst
 
 #

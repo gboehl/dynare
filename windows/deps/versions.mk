@@ -35,16 +35,16 @@ MINGW64_ZLIB_VERSION = 1.2.11-9
 
 # Dependency of matio
 # pacman -Ss mingw-w64-x86_64-hdf5
-MINGW64_HDF5_VERSION = 1.12.0-3
+MINGW64_HDF5_VERSION = 1.12.0-4
 
-# Dependency of HDF5
-# pacman -Ss mingw-w64-x86_64-szip
-MINGW64_SZIP_VERSION = 2.1.1-2
+# Dependency of HDF5 (provides szip library)
+# pacman -Ss mingw-w64-x86_64-libaec
+MINGW64_LIBAEC_VERSION = 1.0.5-2
 
 ## MinGW packages for the embedded compiler
 
 # pacman -Ss mingw-w64-x86_64-gcc$
-MINGW64_GCC_VERSION = 10.3.0-2
+MINGW64_GCC_VERSION = 10.3.0-5
 
 # pacman -Ss mingw-w64-x86_64-gmp
 MINGW64_GMP_VERSION = 6.2.1-2
@@ -53,13 +53,13 @@ MINGW64_GMP_VERSION = 6.2.1-2
 MINGW64_BINUTILS_VERSION = 2.36.1-3
 
 # pacman -Ss mingw-w64-x86_64-headers-git
-MINGW64_HEADERS_VERSION = 9.0.0.6215.788f57701-2
+MINGW64_HEADERS_VERSION = 9.0.0.6246.ae63cde27-1
 
 # pacman -Ss mingw-w64-x86_64-crt-git
-MINGW64_CRT_VERSION = 9.0.0.6215.788f57701-2
+MINGW64_CRT_VERSION = 9.0.0.6246.ae63cde27-1
 
 # pacman -Ss mingw-w64-x86_64-winpthreads-git
-MINGW64_WINPTHREADS_VERSION = 9.0.0.6215.788f57701-1
+MINGW64_WINPTHREADS_VERSION = 9.0.0.6246.ae63cde27-1
 
 # pacman -Ss mingw-w64-x86_64-zstd
 MINGW64_ZSTD_VERSION = 1.5.0-1
