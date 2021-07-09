@@ -325,6 +325,9 @@ options_.minimal_solving_periods = 1;
 options_.endogenous_terminal_period = false;
 options_.no_homotopy = false;
 
+% Perfect foresight with expectation errors
+options_.pfwee.terminal_steady_state_as_guess_value = false;
+
 % Solution
 options_.order = 2;
 options_.pruning = false;

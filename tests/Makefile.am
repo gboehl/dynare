@@ -364,6 +364,7 @@ MODFILES = \
 	deterministic_simulations/rbc_det_stack_solve_algo_7.mod \
 	deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lag.mod \
 	deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.mod \
+	deterministic_simulations/pfwee.mod \
 	lmmcp/rbc.mod \
 	lmmcp/sw_lmmcp.mod \
 	lmmcp/sw_newton.mod \
@@ -1279,7 +1280,8 @@ EXTRA_DIST = \
 	histval_initval_file/ramst_initval_file_data.m \
 	run_kronecker_tests.m \
 	kronecker/test_kron.m \
-	kronecker/nash_matrices.mat
+	kronecker/nash_matrices.mat \
+	deterministic_simulations/pfwee.csv
 
 if ENABLE_MATLAB
 check-local: check-matlab

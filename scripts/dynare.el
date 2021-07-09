@@ -76,6 +76,8 @@
     "markov_switching" "svar" "svar_global_identification_check"
     "external_function" "calib_smoother" "model_diagnostics" "extended_path"
     "smoother2histval" "perfect_foresight_setup" "perfect_foresight_solver"
+    "perfect_foresight_with_expectation_errors_setup"
+    "perfect_foresight_with_expectation_errors_solver"
     "std" "corr" "prior_function" "posterior_function" "end")
   "Dynare statement keywords.")
 
