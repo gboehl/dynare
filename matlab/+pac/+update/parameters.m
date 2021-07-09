@@ -159,9 +159,11 @@ for e=1:number_of_pac_eq
         % Growth neutrality as returned by hVector is valid iff
         % there is no exogenous variables in the model and in the
         % absence of non optimizing agents.
-        gg = -(growthneutrality-1);
-        cc = 1.0-gamma*gg;
+        gg = -(growthneutrality-1); % Finite sum of autoregressive parameters + infinite sum of the coefficients in the PAC expectation term.
+        cc = 1.0-gamma*gg;          % First adjustment of the growth neutrality correction (should also be divided by gamma, done below at the end of this section).
+        % We may have to further change the correction if we have nonzero mean exogenous variables.
         if isfield(equations.(eqtag), 'optim_additive')
+            % Exogenous variables are present in the λ part (optimizing agents).
             tmp = 0;
             for i=1:length(equations.(eqtag).optim_additive.params)
                 if isnan(equations.(eqtag).optim_additive.params(i)) && equations.(eqtag).optim_additive.bgp(i)
@@ -173,17 +175,21 @@ for e=1:number_of_pac_eq
             cc = cc - gamma*tmp;
         end
         if gamma<1
-            tmp = 0;
-            for i=1:length(equations.(eqtag).non_optimizing_behaviour.params)
-                if isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && equations.(eqtag).non_optimizing_behaviour.bgp(i)
-                    tmp = tmp + equations.(eqtag).non_optimizing_behaviour.scaling_factor(i);
-                elseif ~isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && equations.(eqtag).non_optimizing_behaviour.bgp(i)
-                    tmp = tmp + DynareModel.params(equations.(eqtag).non_optimizing_behaviour.params(i))*equations.(eqtag).non_optimizing_behaviour.scaling_factor(i);
+            if isfield(equations.(eqtag), 'non_optimizing_behaviour.params')
+                % Exogenous variables are present in the 1-λ part (rule of thumb agents).
+                tmp = 0;
+                for i=1:length(equations.(eqtag).non_optimizing_behaviour.params)
+                    if isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && equations.(eqtag).non_optimizing_behaviour.bgp(i)
+                        tmp = tmp + equations.(eqtag).non_optimizing_behaviour.scaling_factor(i);
+                    elseif ~isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && equations.(eqtag).non_optimizing_behaviour.bgp(i)
+                        tmp = tmp + DynareModel.params(equations.(eqtag).non_optimizing_behaviour.params(i))*equations.(eqtag).non_optimizing_behaviour.scaling_factor(i);
+                    end
                 end
+                cc = cc - (1.0-gamma)*tmp;
             end
-            cc = cc - (1.0-gamma)*tmp;
         end
         if isfield(equations.(eqtag), 'additive')
+            % Exogenous variables are present outside of the λ and (1-λ) parts (or we have exogenous variables in a "pure" PAC equation.
             tmp = 0;
             for i=1:length(equations.(eqtag).additive.params)
                 if isnan(equations.(eqtag).additive.params(i)) && equations.(eqtag).additive.bgp(i)
@@ -194,6 +200,6 @@ for e=1:number_of_pac_eq
             end
             cc = cc - tmp;
         end
-        DynareModel.params(pacmodel.growth_neutrality_param_index) = cc;
+        DynareModel.params(pacmodel.growth_neutrality_param_index) = cc/gamma;
     end
 end
