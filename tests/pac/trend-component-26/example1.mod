@@ -1,6 +1,6 @@
 // --+ options: json=compute, stochastic +--
 
-var x1 x2 x1bar x2bar z y x u v s;
+var x1 x2 x1bar x2bar z y x u v s dx2 dv;
 
 varexo ex1 ex2 ex1bar ex2bar ez ey ex eu ev es;
 
@@ -45,7 +45,7 @@ lambda = 0.5; // Share of optimizing agents.
 
 trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], targets=['eq:x1bar', 'eq:x2bar']);
 
-pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman);
+pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman, growth=.25*diff(x1(-1))+.25*diff(x1(-2))+.25*diff(x1(-3))+.25*diff(x1(-4)));
 
 model;
 
@@ -77,8 +77,11 @@ x1bar = x1bar(-1) + ex1bar;
 x2bar = x2bar(-1) + ex2bar;
 
 [name='zpac']
-diff(z) = lambda*(e_c_m*(x1(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + c_z_s*s + c_z_dv*diff(v) ) + (1-lambda)*( cy*y + cx*x) + c_z_u*u + c_z_dx2*diff(x2) + ez;
+diff(z) = lambda*(e_c_m*(x1(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + c_z_s*s + c_z_dv*dv ) + (1-lambda)*( cy*y + cx*x) + c_z_u*u + c_z_dx2*dx2 + ez;
 
+  dx2 = diff(x2);
+
+  dv = diff(v);
 end;
 
 shocks;
@@ -97,46 +100,46 @@ end;
 // Initialize the PAC model (build the Companion VAR representation for the auxiliary model).
 pac.initialize('pacman');
 
-// Update the parameters of the PAC expectation model (h0 and h1 vectors).
+// Exogenous variables with non zero mean:
+pac.bgp.set('pacman', 'zpac', 's', .2);
+pac.bgp.set('pacman', 'zpac', 'x', .2);
+pac.bgp.set('pacman', 'zpac', 'dx2', .2);
+
+// Update the parameters of the PAC expectation model (h0 and h1 vectors, growth neutrality correction).
 pac.update.expectation('pacman');
 
-// Exogenous variables with non zero mean:
-pac.bgp.set('pacman', 'zpac', 'c_z_s', true);
-pac.bgp.set('pacman', 'zpac', 'cx', true);
-pac.bgp.set('pacman', 'zpac', 'c_z_dx2', true);
-
-id = find(strcmp('c_z_s', M_.param_names));
-id = find(id==M_.pac.pacman.equations.eq0.additive.params);
+id = find(strcmp('s', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.additive.vars);
 if ~pac.bgp.get('pacman', 'zpac', 'additive', id)
    error('bgp field in additive is wrong.')
 end
 
-id = find(strcmp('c_z_dv', M_.param_names));
-id = find(id==M_.pac.pacman.equations.eq0.additive.params);
+id = find(strcmp('dv', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.additive.vars);
 if pac.bgp.get('pacman', 'zpac', 'additive', id)
    error('bgp field in additive is wrong.')
 end
 
-id = find(strcmp('cx', M_.param_names));
-id = find(id==M_.pac.pacman.equations.eq0.non_optimizing_behaviour.params);
+id = find(strcmp('x', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.non_optimizing_behaviour.vars);
 if ~pac.bgp.get('pacman', 'zpac', 'non_optimizing_behaviour', id)
    error('bgp field in non_optimizing_behaviour is wrong.')
 end
 
-id = find(strcmp('cy', M_.param_names));
-id = find(id==M_.pac.pacman.equations.eq0.non_optimizing_behaviour.params);
+id = find(strcmp('y', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.non_optimizing_behaviour.vars);
 if pac.bgp.get('pacman', 'zpac', 'non_optimizing_behaviour', id)
    error('bgp field in non_optimizing_behaviour is wrong.')
 end
 
-id = find(strcmp('c_z_dx2', M_.param_names));
-id = find(id==M_.pac.pacman.equations.eq0.optim_additive.params);
+id = find(strcmp('dx2', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.optim_additive.vars);
 if ~pac.bgp.get('pacman', 'zpac', 'optim_additive', id)
    error('bgp field in optim_additive is wrong.')
 end
 
-id = find(strcmp('c_z_u', M_.param_names));
-id = find(id==M_.pac.pacman.equations.eq0.additive.params);
+id = find(strcmp('u', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.additive.vars);
 if pac.bgp.get('pacman', 'zpac', 'optim_additive', id)
    error('bgp field in optim_additive is wrong.')
 end

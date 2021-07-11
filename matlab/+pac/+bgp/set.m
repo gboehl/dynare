@@ -1,6 +1,17 @@
-function dummy = set(pacmodel, paceq, parameter, isnonzeromean)
+function dummy = set(pacmodel, paceq, variable, nonzeromean)
 
-% Copyright (C) 2019 Dynare Team
+% Provide information about long run levels of exogenous variables in PAC equation.
+%
+% INPUTS
+% - pacmodel       [char]    1×n array, name of the PAC model
+% - paceq          [char]    1×m array, name of the PAC equation
+% - variable       [char]    1×p array, name of the variable (exogenous variable in the PAC equation)
+% - nonzeromean    [double]  scalar, mean of the exogenous variable
+%
+% OUPUTS
+% - dummy          [double]  empty array.
+
+% Copyright © 2019-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,39 +33,39 @@ global M_
 eqtag = M_.pac.(pacmodel).tag_map{strcmp(paceq, M_.pac.(pacmodel).tag_map(:,1)),2};
 
 dummy = [];
-idp = find(strcmp(parameter, M_.param_names));
-if ~isempty(idp)
+ide = find(strcmp(variable, M_.endo_names));
+if ~isempty(ide)
     if isfield(M_.pac.(pacmodel).equations.(eqtag), 'additive') && length(M_.pac.(pacmodel).equations.(eqtag).additive.vars)>1
         if ~isfield(M_.pac.(pacmodel).equations.(eqtag).additive, 'bgp')
-            M_.pac.(pacmodel).equations.(eqtag).additive.bgp = false(1, length(M_.pac.(pacmodel).equations.(eqtag).additive.params));
+            M_.pac.(pacmodel).equations.(eqtag).additive.bgp = zeros(1, length(M_.pac.(pacmodel).equations.(eqtag).additive.params));
         end
-        [isparam, ip] = ismember(idp, M_.pac.(pacmodel).equations.(eqtag).additive.params);
-        if isparam
-            M_.pac.(pacmodel).equations.(eqtag).additive.bgp(ip) = isnonzeromean;
+        [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).additive.vars);
+        if isvar
+            M_.pac.(pacmodel).equations.(eqtag).additive.bgp(ie) = nonzeromean;
             return
         end
     end
     if isfield(M_.pac.(pacmodel).equations.(eqtag), 'optim_additive')
         if ~isfield(M_.pac.(pacmodel).equations.(eqtag).optim_additive, 'bgp')
-            M_.pac.(pacmodel).equations.(eqtag).optim_additive.bgp = false(1, length(M_.pac.(pacmodel).equations.(eqtag).optim_additive.params));
+            M_.pac.(pacmodel).equations.(eqtag).optim_additive.bgp = zeros(1, length(M_.pac.(pacmodel).equations.(eqtag).optim_additive.params));
         end
-        [isparam, ip] = ismember(idp, M_.pac.(pacmodel).equations.(eqtag).optim_additive.params);
-        if isparam
-            M_.pac.(pacmodel).equations.(eqtag).optim_additive.bgp(ip) = isnonzeromean;
+        [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).optim_additive.vars);
+        if isvar
+            M_.pac.(pacmodel).equations.(eqtag).optim_additive.bgp(ie) = nonzeromean;
             return
         end
     end
     if isfield(M_.pac.(pacmodel).equations.(eqtag), 'non_optimizing_behaviour')
         if ~isfield(M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour, 'bgp')
-            M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.bgp = false(1, length(M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.params));
+            M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.bgp = zeros(1, length(M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.params));
         end
-        [isparam, ip] = ismember(idp, M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.params);
-        if isparam
-            M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.bgp(ip) = isnonzeromean;
+        [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.vars);
+        if isvar
+            M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.bgp(ie) = nonzeromean;
             return
         end
     end
-    warning('Parameter %s is not associated to an exogenous variable in equation %s.', parameter, paceq)
+    warning('%s is not an exogenous variable in equation %s.', variable, paceq)
 else
-    error('Parameter %s is unknown.', parameter)
+    error('Endogenous variable %s is unknown.', variable)
 end
