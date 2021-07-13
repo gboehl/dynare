@@ -519,6 +519,15 @@ by the ``dynare`` command.
        those in M-files. This is equivalent to the :opt:`use_dll` option of
        the ``model`` block.
 
+    .. option:: nocommutativity
+
+       This option tells the preprocessor not to use the commutativity of
+       addition and multiplication when looking for common subexpressions. As a
+       consequence, when using this option, equations in various outputs
+       (LaTeX, JSON…) will appear as the user entered them (without terms or
+       factors swapped). Note that using this option may have a performance
+       impact on the preprocessing stage, though it is likely to be small.
+
     These options can be passed to the preprocessor by listing them
     after the name of the ``.mod`` file. They can alternatively be
     defined in the first line of the ``.mod`` file, this avoids typing
