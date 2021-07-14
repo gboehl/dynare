@@ -218,6 +218,10 @@ if DynareOptions.ramsey_policy
     end
 end
 
+if ~isreal(DynareDataset.data)
+    error('initial_estimation_checks: the data contains complex values.')
+end
+
 % Evaluate the likelihood.
 ana_deriv = DynareOptions.analytic_derivation;
 DynareOptions.analytic_derivation=0;
