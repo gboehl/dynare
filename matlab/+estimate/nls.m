@@ -53,6 +53,10 @@ global M_ oo_ options_
 
 islaggedvariables = ~isempty(regexp(rhs, '\w+\(-(\d+)\)', 'match')); % Do we have lags on the RHS?
 
+if ~isempty(regexp(rhs, '\w+\(\d+\)', 'match'))
+    error('Cannot estimate an equation ith leads.')
+end
+
 % Update database (for auxiliaries)
 data = feval([M_.fname '.dynamic_set_auxiliary_series'], data, M_.params);
 
