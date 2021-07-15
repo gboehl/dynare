@@ -66,6 +66,7 @@ MODFILES = \
 	estimation/method_of_moments/AFVRR/AFVRR_MFB.mod \
 	estimation/method_of_moments/AFVRR/AFVRR_MFB_RRA.mod \
 	estimation/no_init_estimation_check_first_obs/fs2000_init_check.mod \
+	estimation/example_nls.mod \
 	moments/example1_var_decomp.mod \
 	moments/example1_bp_test.mod \
 	moments/test_AR1_spectral_density.mod \
