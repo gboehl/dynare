@@ -51,7 +51,7 @@ global M_ oo_ options_
 [LHS, RHS] = get_lhs_and_rhs(eqname, M_, true);  % Without introducing the auxiliaries
 [lhs, rhs] = get_lhs_and_rhs(eqname, M_);        % With auxiliaries.
 
-islaggedvariables = contains(rhs, '(-1)');       % Do we have lags on the RHS?
+islaggedvariables = ~isempty(regexp(rhs, '\w+\(-(\d+)\)', 'match')); % Do we have lags on the RHS?
 
 % Update database (for auxiliaries)
 data = feval([M_.fname '.dynamic_set_auxiliary_series'], data, M_.params);
