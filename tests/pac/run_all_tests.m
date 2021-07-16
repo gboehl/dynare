@@ -1,6 +1,6 @@
 function run_all_tests()
 
-% Copyright (C) 2018 Dynare Team
+% Copyright © 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -23,6 +23,9 @@ r = [r; run_this_test('var-1')];
 r = [r; run_this_test('var-2')];
 r = [r; run_this_test('var-3')];
 r = [r; run_this_test('var-4')];
+r = [r; run_this_test('var-5')];
+r = [r; run_this_test('var-6')];
+r = [r; run_this_test('var-7')];
 
 r = [r; run_this_test('trend-component-1')];
 r = [r; run_this_test('trend-component-2')];
@@ -31,6 +34,8 @@ r = [r; run_this_test('trend-component-4')];
 r = [r; run_this_test('trend-component-5')];
 r = [r; run_this_test('trend-component-6')];
 r = [r; run_this_test('trend-component-7')];
+r = [r; run_this_test('trend-component-8-mc-iterative-ols')];
+r = [r; run_this_test('trend-component-8-mc-nls')];
 r = [r; run_this_test('trend-component-9')];
 r = [r; run_this_test('trend-component-10')];
 r = [r; run_this_test('trend-component-11')];
@@ -40,7 +45,25 @@ r = [r; run_this_test('trend-component-13b')];
 r = [r; run_this_test('trend-component-14')];
 r = [r; run_this_test('trend-component-15')];
 r = [r; run_this_test('trend-component-16')];
+r = [r; run_this_test('trend-component-17')];
+r = [r; run_this_test('trend-component-18')];
+r = [r; run_this_test('trend-component-19')];
 r = [r; run_this_test('trend-component-19-growth-lin-comb')];
+r = [r; run_this_test('trend-component-20-1')];
+r = [r; run_this_test('trend-component-20-2')];
+r = [r; run_this_test('trend-component-20-3')];
+r = [r; run_this_test('trend-component-20-4')];
+r = [r; run_this_test('trend-component-21')];
+r = [r; run_this_test('trend-component-22')];
+r = [r; run_this_test('trend-component-23')];
+r = [r; run_this_test('trend-component-24')];
+r = [r; run_this_test('trend-component-25')];
+r = [r; run_this_test('trend-component-26')];
+r = [r; run_this_test('trend-component-27')];
+r = [r; run_this_test('trend-component-28')];
+r = [r; run_this_test('trend-component-29')];
+r = [r; run_this_test('trend-component-30')];
+r = [r; run_this_test('trend-component-31')];
 
 print_results(r);
 

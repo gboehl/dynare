@@ -42,9 +42,9 @@ if nargin < 2
 end
 
 if strcmp(auxiliary_model_type, 'var')
-    AR = feval([M_.fname '.var_ar'], auxiliary_model_name, M_.params);
+    [AR, ~] = feval(sprintf('%s.varmatrices', M_.fname), auxiliary_model_name, M_.params, M_.var.(auxiliary_model_name).structural);
 elseif strcmp(auxiliary_model_type, 'trend_component')
-    [AR, A0, A0star] = feval([M_.fname '.trend_component_ar_a0'], auxiliary_model_name, M_.params);
+    [AR, A0, A0star] = feval(sprintf('%s.trend_component_ar_a0', M_.fname), auxiliary_model_name, M_.params);
 else
     error('Unknown type of auxiliary model.')
 end

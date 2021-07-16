@@ -461,6 +461,8 @@ ECB_MODFILES = \
 	var-expectations/8/substitution.mod \
 	var-expectations/9/example1.mod \
 	var-expectations/10/example1.mod \
+	var-expectations/11/example1.mod \
+	var-expectations/12/example1.mod \
 	trend-component-and-var-models/vm1.mod \
 	trend-component-and-var-models/vm2.mod \
 	trend-component-and-var-models/vm3.mod \
@@ -494,6 +496,8 @@ ECB_MODFILES = \
 	pac/var-5/substitution.mod \
 	pac/var-6/example1.mod \
 	pac/var-6/substitution.mod \
+	pac/var-7/example1.mod \
+	pac/var-7/substitution.mod \
 	pac/trend-component-1/example1.mod \
 	pac/trend-component-2/example1.mod \
 	pac/trend-component-3/example1.mod \
@@ -842,6 +846,8 @@ pac/var-5/substitution.m.trs: pac/var-5/example1.m.trs
 pac/var-5/substitution.o.trs: pac/var-5/example1.o.trs
 pac/var-6/substitution.m.trs: pac/var-6/example1.m.trs
 pac/var-6/substitution.o.trs: pac/var-6/example1.o.trs
+pac/var-7/substitution.m.trs: pac/var-7/example1.m.trs
+pac/var-7/substitution.o.trs: pac/var-7/example1.o.trs
 pac/trend-component-14/substitution.m.trs: pac/trend-component-14/example1.m.trs
 pac/trend-component-14/substitution.o.trs: pac/trend-component-14/example1.o.trs
 
