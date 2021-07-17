@@ -42,7 +42,8 @@ if nargin < 2
 end
 
 if strcmp(auxiliary_model_type, 'var')
-    [AR, ~] = feval(sprintf('%s.varmatrices', M_.fname), auxiliary_model_name, M_.params, M_.var.(auxiliary_model_name).structural);
+    [AR, ~, Constant] = feval(sprintf('%s.varmatrices', M_.fname), auxiliary_model_name, M_.params, M_.var.(auxiliary_model_name).structural);
+    isconstant = any(abs(Constant)>0);
 elseif strcmp(auxiliary_model_type, 'trend_component')
     [AR, A0, A0star] = feval(sprintf('%s.trend_component_ar_a0', M_.fname), auxiliary_model_name, M_.params);
 else
@@ -57,11 +58,17 @@ n = length(M_.(auxiliary_model_type).(auxiliary_model_name).lhs);
 
 switch auxiliary_model_type
   case 'var'
-    oo_.var.(auxiliary_model_name).CompanionMatrix = zeros(n*p);
-    oo_.var.(auxiliary_model_name).CompanionMatrix(1:n,1:n) = AR(:,:,1);
+    oo_.var.(auxiliary_model_name).CompanionMatrix = zeros(n*p+isconstant);
+    oo_.var.(auxiliary_model_name).CompanionMatrix(isconstant+(1:n),isconstant+(1:n)) = AR(:,:,1);
     for i = 2:p
-        oo_.var.(auxiliary_model_name).CompanionMatrix(1:n,(i-1)*n+(1:n)) = AR(:,:,i);
-        oo_.var.(auxiliary_model_name).CompanionMatrix((i-1)*n+(1:n),(i-2)*n+(1:n)) = eye(n);
+        oo_.var.(auxiliary_model_name).CompanionMatrix(isconstant+(1:n),isconstant+(i-1)*n+(1:n)) = AR(:,:,i);
+        oo_.var.(auxiliary_model_name).CompanionMatrix(isconstant+(i-1)*n+(1:n),isconstant+(i-2)*n+(1:n)) = eye(n);
+    end
+    if isconstant
+        oo_.var.(auxiliary_model_name).CompanionMatrix(1,1) = 1;
+        for i=1:n
+            oo_.var.(auxiliary_model_name).CompanionMatrix(1+i,1) = Constant(i);
+        end
     end
     M_.var.(auxiliary_model_name).list_of_variables_in_companion_var = M_.endo_names(M_.var.(auxiliary_model_name).lhs);
     if nargout
