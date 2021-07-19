@@ -1,5 +1,5 @@
-function [data_mat]=make_linear_model_data(n_periods,dr_A,dr_B,endo_names,exo_names,wish_list,shock_pos,shock_size_vec,var_init)
-% function [data_mat]=make_linear_model_data(n_periods,dr_A,dr_B,endo_names,exo_names,wish_list,shock_pos,shock_size_vec,var_init)
+function [data_mat]=mkdata(n_periods,dr_A,dr_B,endo_names,exo_names,wish_list,shock_pos,shock_size_vec,var_init)
+% function [data_mat]=mkdata(n_periods,dr_A,dr_B,endo_names,exo_names,wish_list,shock_pos,shock_size_vec,var_init)
 % Inputs:
 % - n_periods       [integer]   number of simulation periods
 % - dr_A            [double]    [n by n] transition matrix
