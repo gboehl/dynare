@@ -7,9 +7,9 @@ varexo erra;
 
 
 // parameters
-parameters ALPHA, DELTAK, BETA, GAMMAC, RHOA, PHI, PSI, PSINEG, INEG, IRR;
+parameters ALPHA, DELTAK, BETA, GAMMAC, RHOA, PHI, PSI, PSINEG;
 
-model(occbin);
+model;
 
 # zkss = ((1/BETA-1+DELTAK)/ALPHA)^(1/(ALPHA-1));
 # zcss = -DELTAK*zkss + zkss^ALPHA;
@@ -19,33 +19,43 @@ model(occbin);
 
 /////////////////////////////////////////////////////////////////
 // 1.
--exp(c)^(-GAMMAC)*(1+2*INEG*PSI*(exp(k)/exp(k(-1))-1)/exp(k(-1)))
-+ BETA*exp(c(1))^(-GAMMAC)*((1-DELTAK)-2*INEG*PSI*(exp(k(1))/exp(k)-1)*
+[name='Euler', bind = 'INEG'] 
+-exp(c)^(-GAMMAC)*(1+2*PSI*(exp(k)/exp(k(-1))-1)/exp(k(-1)))
++ BETA*exp(c(1))^(-GAMMAC)*((1-DELTAK)-2*PSI*(exp(k(1))/exp(k)-1)*
   (-exp(k(1))/exp(k)^2)+ALPHA*exp(a(1))*exp(k)^(ALPHA-1))= 
   -lambdak+BETA*(1-DELTAK)*lambdak(1);
 
+[name='Euler', relax = 'INEG']
+-exp(c)^(-GAMMAC) + BETA*exp(c(1))^(-GAMMAC)*(1-DELTAK+ALPHA*exp(a(1))*exp(k)^(ALPHA-1))= 
+  -lambdak+BETA*(1-DELTAK)*lambdak(1);
+
 // 2.
-exp(c)+exp(k)-(1-DELTAK)*exp(k(-1))+
-INEG*PSI*(exp(k)/exp(k(-1))-1)^2=exp(a)*exp(k(-1))^(ALPHA);
+[name='Budget constraint',bind = 'INEG'] 
+exp(c)+exp(k)-(1-DELTAK)*exp(k(-1))+PSI*(exp(k)/exp(k(-1))-1)^2=exp(a)*exp(k(-1))^(ALPHA);
+
+[name='Budget constraint',relax = 'INEG']
+exp(c)+exp(k)-(1-DELTAK)*exp(k(-1))=exp(a)*exp(k(-1))^(ALPHA);
 
 // 3.
-[pswitch = 'INEG', 
-//         bind = 'exp(i+i_ss)<-0.000001', 
-//         relax = 'exp(i+i_ss)>-0.000001' ]
-        bind = 'i<-b', 
-        relax = 'i>-0.000001' ]
 exp(i) = exp(k)-(1-DELTAK)*exp(k(-1));
 
 // 4.
-[pswitch = 'IRR', 
-        bind = 'i<PHI-1', 
-        relax = 'lambdak<0' ]
-lambdak*(1-IRR) + IRR*(i - log(PHI*ziss)) = 0;
+[name='investment',bind='IRR,INEG']
+(i - log(PHI*ziss)) = 0;
+[name='investment',relax='IRR']
+lambdak=0;
+[name='investment',bind='IRR',relax='INEG']
+(i - log(PHI*ziss)) = 0;
 
 // 5. 
 a = RHOA*a(-1)+erra;
 
 
+end;
+
+occbin_constraints;
+name 'IRR'; bind i<PHI-1; relax lambdak<0;
+name 'INEG'; bind i<-b; relax i>-0.000001; // Failure here because b does not exist
 end;
 
 steady_state_model;
@@ -68,8 +78,6 @@ GAMMAC=2;
 RHOA = 0.9;
 PHI = 0.975;
 PSI = 5;        % adjustment cost for capital if investment is negative
-INEG = 0;
-IRR = 0;
 
 shocks;
   var erra; stderr 0.015;

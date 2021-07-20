@@ -18,8 +18,6 @@ GAMMAC=2;
 RHOA = 0.9;
 PHI = 0.975;
 PSI = 5;        % adjustment cost for capital if investment is negative
-INEG = 0;
-IRR = 0;
 
 shocks;
   var erra; stderr 0.015;

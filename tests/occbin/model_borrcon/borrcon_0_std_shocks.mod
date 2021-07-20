@@ -13,12 +13,15 @@ var b ${b}$ (long_name='borrowing')
 
 varexo junk1 u junk2 ;
 
-parameters RHO ${\rho}$, BETA ${\beta}$, M $M$, R $R$, SIGMA ${\sigma}$, GAMMAC $\gamma_c$, relax_borrcon  ;
+parameters RHO ${\rho}$, BETA ${\beta}$, M $M$, R $R$, SIGMA ${\sigma}$, GAMMAC $\gamma_c$;
 
 model;
 ec = c(1);
 c = y + b - R*b(-1) ;
-(1-relax_borrcon)*(b - M*y) +  relax_borrcon*lb = 0;
+[name = 'borrowing', bind='borrcon']
+lb = 0;
+[name = 'borrowing', relax='borrcon']
+b = M*y;  
 lb = 1/c^GAMMAC - BETA*R/c(+1)^GAMMAC +junk1 + junk2;
 log(y) = RHO*log(y(-1)) + u ;
 c_hat = log(c) - log(steady_state(c));
@@ -27,7 +30,7 @@ y_hat = log(y) - log(steady_state(y));
 end;
 
 occbin_constraints;
-name 'relax_borrcon'; bind lb<-STEADY_STATE(lb); relax b>M*y; error_bind abs(lb+STEADY_STATE(lb)); error_relax abs(b-M*y);
+name 'borrcon'; bind lb<-STEADY_STATE(lb); relax b>M*y; error_bind abs(lb+STEADY_STATE(lb)); error_relax abs(b-M*y);
 end;
 
 steady_state_model;
@@ -44,7 +47,6 @@ RHO   = 0.9;
 SIGMA = 0.05;
 M = 1;
 GAMMAC = 1;
-relax_borrcon = 0;
 
 shocks;
 var u; stderr SIGMA;

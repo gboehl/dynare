@@ -77,9 +77,6 @@ parameters
     phiy        // Output responsiveness
     nu          // Investment adjustment cost
     sigups      // Utilization    
-        
-    // Switching parameters
-    zlb 
  ;
 
 
@@ -108,7 +105,6 @@ sigs     = 0.005;     // Standard deviation
 sigi     = 0.002;      // Standard deviation
 phipi    = 2.0;       // Inflation responsiveness
 phiy     = 0.5;       // Output responsiveness
-zlb      = 0 ;         // ZLB dummy
 inomlb   = 1 ;         // Inom LB  
         
 // ---------------- Model -----------------------------------------------//               
@@ -179,8 +175,10 @@ model;
     [name = 'Notional Interest Rate (9)']
     inomnot = inomnot(-1)^rhoi*(inombar*pigap^phipi*yg^phiy)^(1-rhoi)*exp(mp);    
     
-    [name = 'Nominal Interest Rate (10)']
-    inom = (inomnot*(1-zlb)+zlb*inomlb);   
+    [name = 'Nominal Interest Rate (10)', bind='zlb']
+    inom = inomlb;
+    [name = 'Nominal Interest Rate (10)', relax='zlb']
+    inom = inomnot;
                   
     [name = 'Inverse MUC (11)']
     lam = c-h*c(-1)/g;
