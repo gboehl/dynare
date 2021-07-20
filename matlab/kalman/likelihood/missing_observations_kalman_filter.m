@@ -107,7 +107,7 @@ if occbin_.status
     opts_regime.binding_indicator = occbin_options.opts_simul.init_binding_indicator;
     first_period_occbin_update = max(t+1,options_.occbin.likelihood.first_period_occbin_update);
     if isempty(opts_regime.binding_indicator) && isempty(opts_regime.regime_history)
-        opts_regime.binding_indicator=zeros(last+2,length(M_.occbin.constraint));
+        opts_regime.binding_indicator=zeros(last+2,M_.occbin.constraint_nbr);
     end
     [~, ~, ~, regimes_] = occbin.check_regimes([], [], [], opts_regime, M_, oo_, options_);
     if length(occbin_.info)>4

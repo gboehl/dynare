@@ -168,7 +168,7 @@ else
     if isfield(opts_regime,'regime_history') && ~isempty(opts_regime.regime_history)
         opts_regime.regime_history=[opts_regime.regime_history(1) opts_regime.regime_history];
     else
-        opts_regime.binding_indicator=zeros(smpl+2,length(M_.occbin.constraint));
+        opts_regime.binding_indicator=zeros(smpl+2,M_.occbin.constraint_nbr);
     end
     occbin_options.opts_regime = opts_regime;
     [~, ~, ~, regimes_] = occbin.check_regimes([], [], [], opts_regime, M_, oo_, options_);

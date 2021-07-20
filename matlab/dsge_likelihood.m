@@ -969,7 +969,6 @@ occbin_options.opts_simul.periods = DynareOptions.occbin.likelihood.periods;
 occbin_options.opts_simul.check_ahead_periods = DynareOptions.occbin.likelihood.check_ahead_periods;
 occbin_options.opts_simul.periodic_solution = DynareOptions.occbin.likelihood.periodic_solution;
 occbin_options.opts_simul.restrict_state_space = DynareOptions.occbin.likelihood.restrict_state_space;
-occbin_options.constraints = Model.occbin.constraint;
 
 occbin_options.opts_simul.full_output = DynareOptions.occbin.likelihood.full_output;
 occbin_options.opts_simul.piecewise_only = DynareOptions.occbin.likelihood.piecewise_only;

@@ -108,12 +108,10 @@ opts_simul.periods = options_.occbin.smoother.periods;
 opts_simul.check_ahead_periods = options_.occbin.smoother.check_ahead_periods;
 opts_simul.full_output = options_.occbin.smoother.full_output;
 opts_simul.piecewise_only = options_.occbin.smoother.piecewise_only;
-constraints = M_.occbin.constraint;
 % init_mode = options_.occbin.smoother.init_mode; % 0 = standard;  1 = unconditional frcsts zero shocks+smoothed states in each period
 % init_mode = 0;
 occbin_options = struct();
 
-occbin_options.constraints = constraints;
 occbin_options.first_period_occbin_update = options_.occbin.smoother.first_period_occbin_update;
 occbin_options.opts_regime = opts_simul; % this builds the opts_simul options field needed by occbin.solver
 occbin_options.opts_regime.binding_indicator = options_.occbin.likelihood.init_binding_indicator;
@@ -207,7 +205,7 @@ while is_changed && maxiter>iter && ~is_periodic
     opts_regime.regime_history = regime_history;
     [TT, RR, CC, regime_history] = occbin.check_regimes(TT, RR, CC, opts_regime, M_, oo_, options_);
     is_changed = ~isequal(regime_history0(iter,:),regime_history);
-    if length(constraints)==2
+    if M_.occbin.constraint_nbr==2
         for k=1:size(regime_history0,2)
             isdiff_regime(k,1) = ~isequal(regime_history0(end,k).regime1,regime_history(k).regime1);
             isdiff_start(k,1) = ~isequal(regime_history0(end,k).regimestart1,regime_history(k).regimestart1);
@@ -257,7 +255,7 @@ while is_changed && maxiter>iter && ~is_periodic
         regime_new = regime_;
         start_ = regime_;
         start_new = regime_;
-        if length(constraints)==2
+        if M_.occbin.constraint_nbr==2
             indx_init_1 = find(isdiff_(:,1));
             if ~isempty(indx_init_1)
                 qq={regime_history0(end,indx_init_1).regime1}';

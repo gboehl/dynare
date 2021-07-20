@@ -76,7 +76,7 @@ if solve_DM
     [DM.Cbarmat, DM.Bbarmat, DM.Abarmat, DM.Jbarmat] = occbin.get_deriv(M_base,data.ys);
     
     Mstar_= M_base;
-    Mstar_.params(M_.occbin.constraint(1).pswitch_index)= 1;
+    Mstar_.params(M_.occbin.pswitch(1))= 1;
     [DM.Cstarbarmat, DM.Bstarbarmat, DM.Astarbarmat, DM.Jstarbarmat, DM.Dstarbarmat] = occbin.get_deriv(Mstar_,data.ys);
     
     [DM.decrulea,DM.decruleb]=occbin.get_pq(dr_base);
@@ -167,7 +167,7 @@ for shock_period = 1:n_shocks_periods
                 regime_start(end)-1,binding_indicator,...
                 data.exo_pos,data.shocks_sequence(shock_period,:),endo_init,update_flag);
             
-            [binding, relax, err]=feval([M_.fname,'.eval_difference'],zdatalinear_,M_,dr_base.ys);
+            [binding, relax, err]=feval([M_.fname,'.occbin_difference'],zdatalinear_,M_.params,dr_base.ys);
 
             % check if changes to the hypothesis of the duration for each
             % regime

@@ -40,9 +40,8 @@ gend = size(binding_indicator,1);
 if gend ==0
     gend = length(regime_history)+1;
 end
-number_of_constraints = length(M_.occbin.constraint);
 
-if number_of_constraints==1
+if M_.occbin.constraint_nbr==1
     base_regime.regime = 0;
     base_regime.regimestart = 1;
 else
@@ -71,7 +70,7 @@ opts_simul.piecewise_only=1;
 for tp=1:gend-1
     change_it = 0;
     if ~isempty(binding_indicator)
-        if number_of_constraints==1
+        if M_.occbin.constraint_nbr==1
             if regime_history(tp).regime(1) > binding_indicator(tp+1,1)
                 regime_history(tp).regime = [0 regime_history(tp).regime];
                 regime_history(tp).regimestart = [1 regime_history(tp).regimestart+1];
@@ -123,7 +122,7 @@ for tp=1:gend-1
             RR(:,:,tp+1) = RR(:,:,jt);
             CC(:,tp+1) = CC(:,jt);
         else
-            if number_of_constraints==1
+            if M_.occbin.constraint_nbr==1
                 nperi = max(regime_history(tp).regimestart);
             else
                 nperi = max([regime_history(tp).regimestart1 regime_history(tp).regimestart2]);

@@ -66,9 +66,8 @@ sto.a1=a1;
 sto.P=P;
 sto.P1=P1;
 
-number_constr = length(M_.occbin.constraint);
 base_regime = struct();
-if number_constr==1
+if M_.occbin.constraint_nbr==1
     base_regime.regime = 0;
     base_regime.regimestart = 1;
 else
@@ -125,14 +124,14 @@ options_.occbin.simul=opts_simul;
 [~, out, ss] = occbin.solver(M_,oo_,options_);
 
 regimes_ = out.regime_history;
-if number_constr==1
+if M_.occbin.constraint_nbr==1
     myregime = [regimes_.regime];
 else
     myregime = [regimes_.regime1 regimes_.regime2];
 end
 etahat_hist = {etahat};
 regime_hist = {regimes0(1)};
-if number_constr==1
+if M_.occbin.constraint_nbr==1
     regime_end = regimes0(1).regimestart(end);
 end
 lik_hist=lik;
@@ -149,14 +148,14 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
     while ~isequal(regimes_(1),regimes0(1)) && ~is_periodic && ~out.error_flag && niter<=options_.occbin.likelihood.max_number_of_iterations
         niter=niter+1;
         oldstart=1;
-        if number_constr==1 && length(regimes0(1).regimestart)>1
+        if M_.occbin.constraint_nbr==1 && length(regimes0(1).regimestart)>1
             oldstart = regimes0(1).regimestart(end);
         end
         newstart=1;
-        if number_constr==1 && length(regimes_(1).regimestart)>1
+        if M_.occbin.constraint_nbr==1 && length(regimes_(1).regimestart)>1
             newstart = regimes_(1).regimestart(end);
         end
-        if number_constr==1 && (newstart-oldstart)>2 && options_.occbin.filter.use_relaxation
+        if M_.occbin.constraint_nbr==1 && (newstart-oldstart)>2 && options_.occbin.filter.use_relaxation
             regimestart = max(oldstart+2,round(0.5*(newstart+oldstart)));
             regimestart = min(regimestart,oldstart+4);
             if regimestart<=regimes_(1).regimestart(end-1)
@@ -181,7 +180,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         end
         newguess=0;
         regime_hist(niter) = {regimes_(1)};
-        if number_constr==1 
+        if M_.occbin.constraint_nbr==1
             regime_end(niter) = regimes_(1).regimestart(end);
         end
         [a, a1, P, P1, v, alphahat, etahat, lik] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood);
@@ -196,7 +195,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
             opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
         end
 %         opts_simul.init_regime=regimes_(1);
-        if number_constr==1
+        if M_.occbin.constraint_nbr==1
             myregimestart = [regimes_.regimestart];
         else
             myregimestart = [regimes_.regimestart1 regimes_.regimestart2];
@@ -212,7 +211,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
             end
             is_periodic =  any(is_periodic);
             if is_periodic
-                if nguess<3 && number_constr==1
+                if nguess<3 && M_.occbin.constraint_nbr==1
                     newguess=1;
                     is_periodic=0;
                     nguess=nguess+1;
@@ -240,7 +239,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                     regimes_ = regimes0;
                     % force projection conditional on previous regime
                     opts_simul.init_regime=regimes0(1);
-                    if number_constr==1
+                    if M_.occbin.constraint_nbr==1
                         myregimestart = [regimes0.regimestart];
                     else
                         myregimestart = [regimes0.regimestart1 regimes0.regimestart2];
@@ -258,7 +257,7 @@ end
 error_flag = out.error_flag;
 if ~error_flag && niter>options_.occbin.likelihood.max_number_of_iterations && ~isequal(regimes_(1),regimes0(1))
     error_flag = 1;
-    if number_constr==1 % try some other regime
+    if M_.occbin.constraint_nbr==1 % try some other regime
         [ll, il]=sort(lik_hist);
         [ll, il]=sort(regime_end);
         rr=regime_hist(il(2:3));
@@ -294,7 +293,7 @@ if ~error_flag && niter>options_.occbin.likelihood.max_number_of_iterations && ~
                 opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
             end
             %         opts_simul.init_regime=regimes_(1);
-            if number_constr==1
+            if M_.occbin.constraint_nbr==1
                 myregimestart = [regimes_.regimestart];
             else
                 myregimestart = [regimes_.regimestart1 regimes_.regimestart2];

@@ -46,10 +46,8 @@ Files: matlab/+occbin/make_chart.m
        matlab/+occbin/mkdata.m
        matlab/+occbin/mkdatap_anticipated_2constraints_dyn.m
        matlab/+occbin/mkdatap_anticipated_dyn.m
-       matlab/+occbin/process_constraint.m
        matlab/+occbin/solve_one_constraint.m
        matlab/+occbin/solve_two_constraints.m
-       matlab/+occbin/tokenize.m
 Copyright: none
 License: public-domain-occbin
  Original authors: Luca Guerrieri and Matteo Iacoviello
