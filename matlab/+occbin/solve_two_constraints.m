@@ -177,6 +177,17 @@ for shock_period = 1:n_shocks_periods
         regime_history(shock_period).regime2 = regime_2;
         regime_history(shock_period).regimestart2 = regime_start_2;
         if shock_period==1 || shock_period>1 && any(data.shocks_sequence(shock_period,:)) % first period or shock happening
+            if iter==1 && opts_simul_.reset_regime_in_new_period
+                binding_indicator=false(size(binding_indicator));
+                binding_indicator_history{iter}=binding_indicator;
+                % analyse violvec and isolate contiguous periods in the other regime.
+                [regime_1, regime_start_1, error_code_period(1)]=occbin.map_regime(binding_indicator(:,1),opts_simul_.debug);
+                regime_history(shock_period).regime1 = regime_1;
+                regime_history(shock_period).regimestart1 = regime_start_1;
+                [regime_2, regime_start_2, error_code_period(2)]=occbin.map_regime(binding_indicator(:,2),opts_simul_.debug);
+                regime_history(shock_period).regime2 = regime_2;
+                regime_history(shock_period).regimestart2 = regime_start_2;
+            end
             Tmax=max([regime_start_1(end) regime_start_2(end)])-1;
             [zdatalinear_, SS_out.T(:,:,shock_period), SS_out.R(:,:,shock_period), SS_out.C(:,shock_period), SS, update_flag]=occbin.mkdatap_anticipated_2constraints_dyn(nperiods_0,...
                 DM,Tmax,...
@@ -271,22 +282,28 @@ for shock_period = 1:n_shocks_periods
             binding_indicator_history{iter}=binding_indicator;
         end
     end
-    if regime_change_this_iteration && max_iter>1
-        disp_verbose(['occbin solver: period ' int2str(shock_period) ':'],opts_simul_.debug)
-        if is_periodic
-            disp_verbose('Occbin solver loops between two regimes.',opts_simul_.debug)
-            if periodic_solution
-                disp_verbose(['Max error:' num2str(min_err) '.'],opts_simul_.debug)
+    if regime_change_this_iteration
+        if max_iter>opts_simul_.algo_truncation
+            disp_verbose(['occbin solver: period ' int2str(shock_period) ':'],opts_simul_.debug)
+            if is_periodic
+                disp_verbose('Occbin solver loops between two regimes.',opts_simul_.debug)
+                if periodic_solution
+                    disp_verbose(['Max error:' num2str(min_err) '.'],opts_simul_.debug)
+                else
+                    error_flag = 310;
+                    if opts_simul_.waitbar; dyn_waitbar_close(hh); end
+                    return;
+                end
             else
-                error_flag = 310;
+                disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
+                error_flag = 311;
                 if opts_simul_.waitbar; dyn_waitbar_close(hh); end
                 return;
             end
         else
-            disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
-            error_flag = 311;
-            if opts_simul_.waitbar; dyn_waitbar_close(hh); end
-            return;
+            % if max_iter <= truncation, we force indicator to equal the
+            % last guess
+            binding_indicator = binding_indicator_history{end};
         end
     end
     if any(error_code_period)

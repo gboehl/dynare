@@ -163,6 +163,15 @@ for shock_period = 1:n_shocks_periods
         
         % get the hypothesized piece wise linear solution
         if shock_period==1 || shock_period>1 && any(data.shocks_sequence(shock_period,:))
+            if iter==1 && opts_simul_.reset_regime_in_new_period
+                binding_indicator=false(size(binding_indicator));
+                binding_indicator_history{iter}=binding_indicator;
+                % analyse violvec and isolate contiguous periods in the other regime.
+                [regime, regime_start, error_code_period]=occbin.map_regime(binding_indicator,opts_simul_.debug);
+                regime_history(shock_period).regime = regime;
+                regime_history(shock_period).regimestart = regime_start;
+            end
+            
             [zdatalinear_, SS_out.T(:,:,shock_period), SS_out.R(:,:,shock_period), SS_out.C(:,shock_period), SS, update_flag]=occbin.mkdatap_anticipated_dyn(nperiods_0,DM,...
                 regime_start(end)-1,binding_indicator,...
                 data.exo_pos,data.shocks_sequence(shock_period,:),endo_init,update_flag);
@@ -243,22 +252,26 @@ for shock_period = 1:n_shocks_periods
         
     end
     
-    if regime_change_this_iteration ==1 && max_iter>1
-        disp_verbose(['occbin solver:: period ' int2str(shock_period) '::'],opts_simul_.debug)
-        if is_periodic
-            disp_verbose('Occbin solver loops between two regimes.',opts_simul_.debug)
-            if periodic_solution
-                disp_verbose(['Max error:' num2str(merr) '.'],opts_simul_.debug)
+    if regime_change_this_iteration ==1 
+        if max_iter>opts_simul_.algo_truncation
+            disp_verbose(['occbin solver:: period ' int2str(shock_period) '::'],opts_simul_.debug)
+            if is_periodic
+                disp_verbose('Occbin solver loops between two regimes.',opts_simul_.debug)
+                if periodic_solution
+                    disp_verbose(['Max error:' num2str(merr) '.'],opts_simul_.debug)
+                else
+                    if opts_simul_.waitbar; dyn_waitbar_close(hh); end
+                    error_flag = 310;
+                    return
+                end
             else
+                disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
                 if opts_simul_.waitbar; dyn_waitbar_close(hh); end
-                error_flag = 310;
+                error_flag = 311;
                 return
             end
         else
-            disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
-            if opts_simul_.waitbar; dyn_waitbar_close(hh); end
-            error_flag = 311;
-            return
+            binding_indicator = binding_indicator_history{end};
         end
     end
     if any(error_code_period)
