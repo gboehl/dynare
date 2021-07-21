@@ -53,8 +53,8 @@ a = RHOA*a(-1)+erra;
 end;
 
 occbin_constraints;
-name 'IRR'; bind i<PHI-1; relax lambdak<0; error_bind abs(i-(PHI-1)); error_relax abs(lambdak-0);
-name 'INEG'; bind i<-0.000001; relax i>-0.000001; error_bind abs(i-0.000001); error_relax abs(i-0.000001);
+name 'IRR'; bind i-steady_state(i)<log(PHI); relax lambdak<0; error_bind abs(i-steady_state(i)-log(PHI)); error_relax abs(lambdak-0);
+name 'INEG'; bind i-steady_state(i)<-0.000001; relax i-steady_state(i)>-0.000001; error_bind abs(i-steady_state(i)-0.000001); error_relax abs(i-steady_state(i)-0.000001);
 end;
 
 @#include "dynrbc_common.inc"

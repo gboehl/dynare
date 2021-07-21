@@ -167,7 +167,7 @@ for shock_period = 1:n_shocks_periods
                 regime_start(end)-1,binding_indicator,...
                 data.exo_pos,data.shocks_sequence(shock_period,:),endo_init,update_flag);
             
-            [binding, relax, err]=feval([M_.fname,'.occbin_difference'],zdatalinear_,M_.params,dr_base.ys);
+            [binding, relax, err]=feval([M_.fname,'.occbin_difference'],zdatalinear_+repmat(dr_base.ys',size(zdatalinear_,1),1),M_.params,dr_base.ys);
 
             % check if changes to the hypothesis of the duration for each
             % regime

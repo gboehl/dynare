@@ -207,7 +207,7 @@ model;
 end;
 
 occbin_constraints;
-name 'zlb'; bind inom+inombar <=  inomlb; relax inom+inombar > inomlb;
+name 'zlb'; bind inom <=  inomlb; relax inom > inomlb;
 end;
 
 // ---------------- Steady state -----------------------------------------//        
