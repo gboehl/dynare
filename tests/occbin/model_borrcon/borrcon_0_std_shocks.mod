@@ -29,7 +29,7 @@ y_hat = log(y) - log(steady_state(y));
 end;
 
 occbin_constraints;
-name 'borrcon'; bind lb<-STEADY_STATE(lb); relax b>M*y; error_bind abs(lb+STEADY_STATE(lb)); error_relax abs(b-M*y);
+name 'borrcon'; bind lb<0; relax b>M*y; error_bind abs(lb); error_relax abs(b-M*y);
 end;
 
 steady_state_model;

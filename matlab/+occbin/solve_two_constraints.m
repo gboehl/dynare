@@ -145,7 +145,7 @@ for shock_period = 1:n_shocks_periods
     while (regime_change_this_iteration && iter<max_iter && ~is_periodic)
         iter = iter +1;
         if any(binding_indicator(end,:)) && nperiods_0<opts_simul_.max_periods
-            binding_indicator = [binding_indicator; false(2,1)];
+            binding_indicator = [binding_indicator; false(1,2)];
             nperiods_0 = nperiods_0 + 1;
             disp_verbose(['nperiods has been endogenously increased up to ' int2str(nperiods_0) '.'],opts_simul_.debug)
         end
@@ -183,7 +183,7 @@ for shock_period = 1:n_shocks_periods
                 binding_indicator,...
                 data.exo_pos,data.shocks_sequence(shock_period,:),endo_init, update_flag);
             
-            [binding, relax, err]=feval([M_.fname,'.occbin_difference'],zdatalinear_,M_.params,dr.ys);
+            [binding, relax, err]=feval([M_.fname,'.occbin_difference'],zdatalinear_+repmat(dr.ys',size(zdatalinear_,1),1),M_.params,dr.ys);
             binding_constraint_new=[binding.constraint_1;binding.constraint_2];
             relaxed_constraint_new = [relax.constraint_1;relax.constraint_2];
             
