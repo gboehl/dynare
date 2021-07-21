@@ -1,15 +1,11 @@
 function Herbst_Schorfheide_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
-% function Herbst_Schorfheide_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
+% function Herbst_Schorfheide_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
 % SMC sampler from JAE 2014 .
 %
 % INPUTS
 %   o TargetFun  [char]     string specifying the name of the objective
 %                           function (posterior kernel).
-%   o ProposalFun  [char]   string specifying the name of the proposal
-%                           density
 %   o xparam1    [double]   (p*1) vector of parameters to be estimated (initial values).
-%   o sampler_options       structure
-%            .invhess       [double]   (p*p) matrix, posterior covariance matrix (at the mode).
 %   o mh_bounds  [double]   (p*2) matrix defining lower and upper bounds for the parameters.
 %   o dataset_              data structure
 %   o dataset_info          dataset info structure
@@ -37,7 +33,7 @@ function Herbst_Schorfheide_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset
 % Then the comments write here can be used for all the other pairs of
 % parallel functions and also for management functions.
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,7 +52,7 @@ function Herbst_Schorfheide_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset
 
 
 % Create the tempering schedule
-phi = bsxfun(@power,(bsxfun(@minus,1:1:options_.HSsmc.nphi,1)/(options_.HSsmc.nphi-1)),options_.HSsmc.lambda) ; 
+phi = bsxfun(@power,(bsxfun(@minus,1:1:options_.HSsmc.nphi,1)/(options_.HSsmc.nphi-1)),options_.HSsmc.lambda) ;
 % tuning for MH algorithms matrices
 zhat    = 0 ;                                    % normalization constant
 csim    = zeros(options_.HSsmc.nphi,1) ;         % scale parameter
@@ -66,7 +62,7 @@ acptsim = zeros(options_.HSsmc.nphi,1) ;         % average acceptance rate
 [ param, tlogpost_i, loglik, npar, ~, bayestopt_] = ...
     SMC_samplers_initialization(TargetFun, xparam1, mh_bounds, dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_,options_.HSsmc.nparticles);
 weights = ones(options_.HSsmc.nparticles,1)/options_.HSsmc.nparticles ;
-% The Herbst and Schorfheide sampler starts here 
+% The Herbst and Schorfheide sampler starts here
 for i=2:options_.HSsmc.nphi
     % (a) Correction
     % incremental weights
@@ -80,26 +76,26 @@ for i=2:options_.HSsmc.nphi
     % (b) Selection
     ESSsim(i) = 1/sum(weights.^2) ;
     if (ESSsim(i) < options_.HSsmc.nparticles/2)
-      indx_resmpl = smc_resampling(weights,rand(1,1),options_.HSsmc.nparticles) ;
-      param = param(:,indx_resmpl) ;
-      loglik = loglik(indx_resmpl) ;
-      tlogpost_i = tlogpost_i(indx_resmpl) ;
-      weights = ones(options_.HSsmc.nparticles,1)/options_.HSsmc.nparticles  ;
+        indx_resmpl = smc_resampling(weights,rand(1,1),options_.HSsmc.nparticles) ;
+        param = param(:,indx_resmpl) ;
+        loglik = loglik(indx_resmpl) ;
+        tlogpost_i = tlogpost_i(indx_resmpl) ;
+        weights = ones(options_.HSsmc.nparticles,1)/options_.HSsmc.nparticles  ;
     end
     % (c) Mutation
     options_.HSsmc.c = options_.HSsmc.c*modified_logit(0.95,0.1,16.0,options_.HSsmc.acpt-options_.HSsmc.trgt) ;
     % Calculate estimates of mean and variance
     mu = param*weights ;
-    z = bsxfun(@minus,param,mu) ; 
+    z = bsxfun(@minus,param,mu) ;
     R = z*(bsxfun(@times,z',weights)) ;
     Rchol = chol(R)' ;
-    % Mutation 
+    % Mutation
     if options_.HSsmc.option_mutation==1
-      [param,tlogpost_i,loglik,options_.HSsmc.acpt] = mutation_RW(TargetFun,param,tlogpost_i,loglik,phi,i,options_.HSsmc.c*Rchol,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_) ;
+        [param,tlogpost_i,loglik,options_.HSsmc.acpt] = mutation_RW(TargetFun,param,tlogpost_i,loglik,phi,i,options_.HSsmc.c*Rchol,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_) ;
     elseif options_.HSsmc.option_mutation==2
-      inv_R = inv(options_.HSsmc.c^2*R) ;
-      Rdiagchol = sqrt(diag(R)) ;
-      [param,tlogpost_i,loglik,options_.HSsmc.acpt] = mutation_Mixture(TargetFun,param,tlogpost_i,loglik,phi,i,options_.HSsmc.c*Rchol,options_.HSsmc.c*Rdiagchol,inv_R,mu,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_) ;
+        inv_R = inv(options_.HSsmc.c^2*R) ;
+        Rdiagchol = sqrt(diag(R)) ;
+        [param,tlogpost_i,loglik,options_.HSsmc.acpt] = mutation_Mixture(TargetFun,param,tlogpost_i,loglik,phi,i,options_.HSsmc.c*Rchol,options_.HSsmc.c*Rdiagchol,inv_R,mu,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_) ;
     end
     acptsim(i) = options_.HSsmc.acpt ;
     csim(i) = options_.HSsmc.c ;
@@ -110,7 +106,7 @@ for i=2:options_.HSsmc.nphi
     fprintf(' %accept. = %5.4f \n', acptsim(i));
 end
 indx_resmpl = smc_resampling(weights,rand(1,1),options_.HSsmc.nparticles);
-distrib_param = param(:,indx_resmpl);   
+distrib_param = param(:,indx_resmpl);
 fprintf(' Log_lik = %5.4f \n', zhat);
 
 mean_xparam = mean(distrib_param,2);
@@ -151,99 +147,99 @@ bandwidth = 0;                    % Rule of thumb optimal bandwidth parameter.
 kernel_function = 'gaussian';     % Gaussian kernel for Fast Fourier Transform approximation.
 plt = 1 ;
 %for plt = 1:nbplt,
+if TeX
+    NAMES = [];
+    TeXNAMES = [];
+end
+hh = dyn_figure(options_.nodisplay,'Name','Parameters Densities');
+for k=1:npar %min(nstar,npar-(plt-1)*nstar)
+    subplot(ceil(sqrt(npar)),floor(sqrt(npar)),k)
+    %kk = (plt-1)*nstar+k;
+    [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_);
+    optimal_bandwidth = mh_optimal_bandwidth(distrib_param(k,:)',options_.HSsmc.nparticles,bandwidth,kernel_function);
+    [density(:,1),density(:,2)] = kernel_density_estimate(distrib_param(k,:)',number_of_grid_points,...
+        options_.HSsmc.nparticles,optimal_bandwidth,kernel_function);
+    plot(density(:,1),density(:,2));
+    hold on
     if TeX
-        NAMES = [];
-        TeXNAMES = [];
+        title(texname,'interpreter','latex')
+    else
+        title(name,'interpreter','none')
     end
-    hh = dyn_figure(options_.nodisplay,'Name','Parameters Densities');
-    for k=1:npar %min(nstar,npar-(plt-1)*nstar)
-        subplot(ceil(sqrt(npar)),floor(sqrt(npar)),k)
-        %kk = (plt-1)*nstar+k;
-        [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_);
-        optimal_bandwidth = mh_optimal_bandwidth(distrib_param(k,:)',options_.HSsmc.nparticles,bandwidth,kernel_function);
-        [density(:,1),density(:,2)] = kernel_density_estimate(distrib_param(k,:)',number_of_grid_points,...
-                                                          options_.HSsmc.nparticles,optimal_bandwidth,kernel_function);
-        plot(density(:,1),density(:,2));
-        hold on
-        if TeX
-            title(texname,'interpreter','latex')
-        else
-            title(name,'interpreter','none')
-        end
-        hold off
-        axis tight
-        drawnow
-    end
-    dyn_saveas(hh,[ M_.fname '_param_density' int2str(plt) ],options_.nodisplay,options_.graph_format);
-    if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-        % TeX eps loader file
-        fprintf(fidTeX,'\\begin{figure}[H]\n');
-        fprintf(fidTeX,'\\centering \n');
-        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%_param_density%s}\n',min(k/floor(sqrt(npar)),1),M_.fname,int2str(plt));
-        fprintf(fidTeX,'\\caption{Parameter densities based on the Herbst/Schorfheide sampler.}');
-        fprintf(fidTeX,'\\label{Fig:ParametersDensities:%s}\n',int2str(plt));
-        fprintf(fidTeX,'\\end{figure}\n');
-        fprintf(fidTeX,' \n');
-    end
+    hold off
+    axis tight
+    drawnow
+end
+dyn_saveas(hh,[ M_.fname '_param_density' int2str(plt) ],options_.nodisplay,options_.graph_format);
+if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
+    % TeX eps loader file
+    fprintf(fidTeX,'\\begin{figure}[H]\n');
+    fprintf(fidTeX,'\\centering \n');
+    fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%_param_density%s}\n',min(k/floor(sqrt(npar)),1),M_.fname,int2str(plt));
+    fprintf(fidTeX,'\\caption{Parameter densities based on the Herbst/Schorfheide sampler.}');
+    fprintf(fidTeX,'\\label{Fig:ParametersDensities:%s}\n',int2str(plt));
+    fprintf(fidTeX,'\\end{figure}\n');
+    fprintf(fidTeX,' \n');
+end
 %end
 
 function [param,tlogpost_i,loglik,acpt] = mutation_RW(TargetFun,param,tlogpost_i,loglik,phi,i,cRchol,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_)
-    acpt = 0.0 ;
-    tlogpost_i = tlogpost_i + (phi(i)-phi(i-1))*loglik ;
-    for j=1:options_.HSsmc.nparticles
-        validate= 0;
-        while validate==0 
-            candidate = param(:,j) + cRchol*randn(size(param,1),1) ;
-            if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
-                [tlogpostx,loglikx] = tempered_likelihood(TargetFun,candidate,phi(i),dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
-                if isfinite(loglikx) % if returned log-density is not Inf or Nan (penalized value)
-                    validate = 1;
-                    if rand(1,1)<exp(tlogpostx-tlogpost_i(j)) % accept
-                        acpt = acpt + 1 ;
-                        param(:,j) = candidate;
-                        loglik(j) = loglikx;
-                        tlogpost_i(j) = tlogpostx;
-                    end
+acpt = 0.0 ;
+tlogpost_i = tlogpost_i + (phi(i)-phi(i-1))*loglik ;
+for j=1:options_.HSsmc.nparticles
+    validate= 0;
+    while validate==0
+        candidate = param(:,j) + cRchol*randn(size(param,1),1) ;
+        if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
+            [tlogpostx,loglikx] = tempered_likelihood(TargetFun,candidate,phi(i),dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
+            if isfinite(loglikx) % if returned log-density is not Inf or Nan (penalized value)
+                validate = 1;
+                if rand(1,1)<exp(tlogpostx-tlogpost_i(j)) % accept
+                    acpt = acpt + 1 ;
+                    param(:,j) = candidate;
+                    loglik(j) = loglikx;
+                    tlogpost_i(j) = tlogpostx;
                 end
             end
         end
     end
-    acpt = acpt/options_.HSsmc.nparticles;
-    
+end
+acpt = acpt/options_.HSsmc.nparticles;
+
 function [param,tlogpost_i,loglik,acpt] = mutation_Mixture(TargetFun,param,tlogpost_i,loglik,phi,i,cRchol,cRdiagchol,invR,mu,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_)
-    acpt = 0.0 ;
-    tlogpost_i = tlogpost_i + (phi(i)-phi(i-1))*loglik ;
-    for j=1:options_.HSsmc.nparticles
-        qx = 0 ;
-        q0 = 0 ;
-        alpind = rand(1,1) ;
-        validate= 0;
-        while validate==0 
-            if alpind<options_.HSsmc.alp % RW, no need to modify qx and q0 
-                candidate = param(:,j) + cRchol*randn(size(param,1),1);
-            elseif alpind<options_.HSsmc.alp + (1-options_.HSsmc.alp/2) % random walk with diagonal cov no need to modify qx and q0
-                candidate = param(:,j) + cRdiagchol*randn(size(param,1),1);
-            else % Proposal densities
-                candidate = mu + cRchol*randn(size(param,1),1);
-                qx = -.5*(candidate-mu)'*invR*(candidate-mu) ; % no need of the constants in the acceptation rule
-                q0 = -.5*(param(:,j)-mu)'*invR*(param(:,j)-mu) ; 
-            end 
-            if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
-                [tlogpostx,loglikx] = tempered_likelihood(TargetFun,candidate,phi(i),dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
-                if isfinite(loglikx) % if returned log-density is not Inf or Nan (penalized value)
-                    validate = 1;
-                    if rand(1,1)<exp((tlogpostx-qx)-(tlogpost_i(j)-q0)) % accept
-                        acpt = acpt + 1 ;
-                        param(:,j) = candidate;
-                        loglik(j) = loglikx;
-                        tlogpost_i(j) = tlogpostx;
-                    end
+acpt = 0.0 ;
+tlogpost_i = tlogpost_i + (phi(i)-phi(i-1))*loglik ;
+for j=1:options_.HSsmc.nparticles
+    qx = 0 ;
+    q0 = 0 ;
+    alpind = rand(1,1) ;
+    validate= 0;
+    while validate==0
+        if alpind<options_.HSsmc.alp % RW, no need to modify qx and q0
+            candidate = param(:,j) + cRchol*randn(size(param,1),1);
+        elseif alpind<options_.HSsmc.alp + (1-options_.HSsmc.alp/2) % random walk with diagonal cov no need to modify qx and q0
+            candidate = param(:,j) + cRdiagchol*randn(size(param,1),1);
+        else % Proposal densities
+            candidate = mu + cRchol*randn(size(param,1),1);
+            qx = -.5*(candidate-mu)'*invR*(candidate-mu) ; % no need of the constants in the acceptation rule
+            q0 = -.5*(param(:,j)-mu)'*invR*(param(:,j)-mu) ;
+        end
+        if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
+            [tlogpostx,loglikx] = tempered_likelihood(TargetFun,candidate,phi(i),dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
+            if isfinite(loglikx) % if returned log-density is not Inf or Nan (penalized value)
+                validate = 1;
+                if rand(1,1)<exp((tlogpostx-qx)-(tlogpost_i(j)-q0)) % accept
+                    acpt = acpt + 1 ;
+                    param(:,j) = candidate;
+                    loglik(j) = loglikx;
+                    tlogpost_i(j) = tlogpostx;
                 end
             end
         end
-    end 
-    acpt = acpt/options_.HSsmc.nparticles;
+    end
+end
+acpt = acpt/options_.HSsmc.nparticles;
 
 function x = modified_logit(a,b,c,d)
-  tmp = exp(c*d) ;  
-  x =  a + b*tmp/(1 + tmp) ;
+tmp = exp(c*d) ;
+x =  a + b*tmp/(1 + tmp) ;
