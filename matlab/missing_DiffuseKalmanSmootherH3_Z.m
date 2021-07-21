@@ -212,6 +212,13 @@ else
         R0=R;
         
     end
+    if ~isinf(occbin_options.first_period_occbin_update)
+        % initialize state matrices (otherwise they are set to 0 for
+        % t<first_period_occbin_update!)
+        TTT=repmat(T0,1,1,smpl+1);
+        RRR=repmat(R0,1,1,smpl+1);
+        CCC=repmat(zeros(length(T0),1),1,smpl+1);
+    end
     
 end
 
