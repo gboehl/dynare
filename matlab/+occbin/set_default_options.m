@@ -160,6 +160,7 @@ if ismember(flag,{'shock_decomp','all'})
 end
 
 if ismember(flag,{'simul','all'})
+    options_occbin_.simul.algo_truncation = 1;
     options_occbin_.simul.debug = false;
     options_occbin_.simul.curb_retrench=false;
     options_occbin_.simul.endo_init=zeros(M_.endo_nbr,1);
@@ -174,6 +175,7 @@ if ismember(flag,{'simul','all'})
     options_occbin_.simul.check_ahead_periods=200;
     options_occbin_.simul.periodic_solution=true;
     options_occbin_.simul.piecewise_only = false;
+    options_occbin_.simul.reset_regime_in_new_period = false;
     options_occbin_.simul.restrict_state_space=false;
     options_occbin_.simul.SHOCKS=zeros(1,M_.exo_nbr);
     options_occbin_.simul.waitbar=true;

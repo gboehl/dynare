@@ -366,6 +366,7 @@ else
     if options_.occbin.smoother.status
         % reconstruct occbin smoother
         if length_varargin>0
+            % sequence of regimes is provided in input
             isoccbin=1;
         else
             isoccbin=0;
@@ -431,6 +432,8 @@ else
                 bbb(oo_.dr.inv_order_var,k) = out.zpiece(1,:);
             end
         end
+        % do not overwrite accurate computations using reduced st. space
+        bbb(oo_.dr.restrict_var_list,:)=ahat;
         ahat0=ahat;
         ahat=bbb;
         if ~isempty(P)

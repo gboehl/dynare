@@ -35,14 +35,14 @@ end
 xls_filename = options_.occbin.write_regimes.filename;
 
 if isfield(regime_history,'regime')
-    Header = {'time', 'regime sequence', 'starting period of regime'};
+    Header = {'time', 'regime_sequence', 'starting_period_of_regime'};
     for tp=1:length(T)
         xlsmat{tp,1}=T(tp);
         xlsmat{tp,2}=int2str(regime_history(tp).regime);
         xlsmat{tp,3}=int2str(regime_history(tp).regimestart);
     end
 else
-    Header = {'time', 'regime sequence 1', 'starting period of regime 1', 'regime sequence 2', 'starting period of regime 2'};
+    Header = {'time', 'regime_sequence_1', 'starting_period_of_regime_1', 'regime_sequence_2', 'starting_period_of_regime_2'};
     for tp=1:length(T)
         xlsmat{tp,1}=T(tp);
         xlsmat{tp,2}=int2str(regime_history(tp).regime1);
