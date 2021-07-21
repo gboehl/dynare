@@ -128,7 +128,7 @@ if M_.occbin.constraint_nbr==1
 else
     myregime = [regimes_.regime1 regimes_.regime2];
 end
-regime_hist = {regimes0};
+regime_hist = {regimes0(1)};
 if M_.occbin.constraint_nbr==1
     regime_end = regimes0(1).regimestart(end);
 end
@@ -180,7 +180,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
             CC(:,2)=ss.C(my_order_var,1);
         end
         newguess=0;
-        regime_hist(niter) = {regimes_};
+        regime_hist(niter) = {regimes_(1)};
         if M_.occbin.constraint_nbr==1
             regime_end(niter) = regimes_(1).regimestart(end);
         end
@@ -199,7 +199,9 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
             opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
         end
         %         end
-        %         opts_simul.init_regime=regimes_(1); %% why don't we use this ???
+        if not(options_.occbin.filter.use_relaxation)
+            opts_simul.init_regime=regimes_(1); 
+        end
         if M_.occbin.constraint_nbr==1
             myregimestart = [regimes_.regimestart];
         else
@@ -212,7 +214,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         regimes_ = out.regime_history;
         if niter>1
             for kiter=1:niter-1
-                is_periodic(kiter) = isequal(regime_hist{kiter}, regimes_);
+                is_periodic(kiter) = isequal(regime_hist{kiter}, regimes_(1));
             end
             is_periodic =  any(is_periodic);
             if is_periodic
@@ -288,7 +290,13 @@ if error_flag==0 && niter>options_.occbin.likelihood.max_number_of_iterations &&
         CC(:,2) = CCx(:,end);
         [a, a1, P, P1, v, Fi, Ki, alphahat, etahat] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
         opts_simul.SHOCKS(1,:) = etahat(:,2)';
-        opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
+        if occbin_options.opts_algo.restrict_state_space
+            tmp=zeros(M_.endo_nbr,1);
+            tmp(oo_.dr.restrict_var_list,1)=alphahat(:,1);
+            opts_simul.endo_init = tmp(oo_.dr.inv_order_var,1);
+        else
+            opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
+        end
         if M_.occbin.constraint_nbr==1
             myregimestart = [regimes_.regimestart];
         else

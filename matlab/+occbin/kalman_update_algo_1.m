@@ -194,7 +194,9 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         else
             opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
         end
-%         opts_simul.init_regime=regimes_(1);
+        if not(options_.occbin.filter.use_relaxation)
+            opts_simul.init_regime=regimes_(1);
+        end
         if M_.occbin.constraint_nbr==1
             myregimestart = [regimes_.regimestart];
         else
