@@ -1,15 +1,11 @@
 function DSMH_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
-% function DSMH_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
+% function DSMH_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
 % Dynamic Striated Metropolis-Hastings algorithm.
 %
 % INPUTS
 %   o TargetFun  [char]     string specifying the name of the objective
 %                           function (posterior kernel).
-%   o ProposalFun  [char]   string specifying the name of the proposal
-%                           density
 %   o xparam1    [double]   (p*1) vector of parameters to be estimated (initial values).
-%   o sampler_options       structure
-%            .invhess       [double]   (p*p) matrix, posterior covariance matrix (at the mode).
 %   o mh_bounds  [double]   (p*2) matrix defining lower and upper bounds for the parameters.
 %   o dataset_              data structure
 %   o dataset_info          dataset info structure
@@ -37,7 +33,7 @@ function DSMH_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_
 % Then the comments write here can be used for all the other pairs of
 % parallel functions and also for management functions.
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,7 +52,7 @@ function DSMH_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_
 
 
 lambda = exp(bsxfun(@minus,options_.dsmh.H,1:1:options_.dsmh.H)/(options_.dsmh.H-1)*log(options_.dsmh.lambda1));
-c = 0.055 ; 
+c = 0.055 ;
 
 % Step 0: Initialization of the sampler
 [ param, tlogpost_iminus1, loglik, npar, ~, bayestopt_] = ...
@@ -65,24 +61,24 @@ c = 0.055 ;
 ESS = zeros(options_.dsmh.H,1) ;
 zhat = 1 ;
 
-% The DSMH starts here 
-  for i=2:options_.dsmh.H
+% The DSMH starts here
+for i=2:options_.dsmh.H
     disp('');
-    disp('Tempered iteration');  
-	disp(i) ;
-    % Step 1: sort the densities and compute IS weigths 
+    disp('Tempered iteration');
+    disp(i) ;
+    % Step 1: sort the densities and compute IS weigths
     [tlogpost_iminus1,loglik,param] = sort_matrices(tlogpost_iminus1,loglik,param) ;
     [tlogpost_i,weights,zhat,ESS,mu,Omegachol] = compute_IS_weights_and_moments(param,tlogpost_iminus1,loglik,lambda,i,zhat,ESS) ;
     % Step 2: tune c_i
     c = tune_c(TargetFun,param,tlogpost_i,lambda,i,c,Omegachol,weights,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
     % Step 3: Metropolis step
     [param,tlogpost_iminus1,loglik] = mutation_DSMH(TargetFun,param,tlogpost_i,tlogpost_iminus1,loglik,lambda,i,c,Omegachol,weights,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
-  end
-  
+end
+
 weights = exp(loglik*(lambda(end)-lambda(end-1)));
 weights = weights/sum(weights);
 indx_resmpl = smc_resampling(weights,rand(1,1),options_.dsmh.number_of_particles);
-distrib_param = param(:,indx_resmpl);   
+distrib_param = param(:,indx_resmpl);
 
 mean_xparam = mean(distrib_param,2);
 %mat_var_cov = bsxfun(@minus,distrib_param,mean_xparam) ;
@@ -123,134 +119,134 @@ kernel_function = 'gaussian';     % Gaussian kernel for Fast Fourier Transform a
 
 plt = 1 ;
 %for plt = 1:nbplt,
+if TeX
+    NAMES = [];
+    TeXNAMES = [];
+end
+hh = dyn_figure(options_.nodisplay,'Name','Parameters Densities');
+for k=1:npar %min(nstar,npar-(plt-1)*nstar)
+    subplot(ceil(sqrt(npar)),floor(sqrt(npar)),k)
+    %kk = (plt-1)*nstar+k;
+    [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_);
+    optimal_bandwidth = mh_optimal_bandwidth(distrib_param(k,:)',options_.dsmh.number_of_particles,bandwidth,kernel_function);
+    [density(:,1),density(:,2)] = kernel_density_estimate(distrib_param(k,:)',number_of_grid_points,...
+        options_.dsmh.number_of_particles,optimal_bandwidth,kernel_function);
+    plot(density(:,1),density(:,2));
+    hold on
     if TeX
-        NAMES = [];
-        TeXNAMES = [];
+        title(texname,'interpreter','latex')
+    else
+        title(name,'interpreter','none')
     end
-    hh = dyn_figure(options_.nodisplay,'Name','Parameters Densities');
-    for k=1:npar %min(nstar,npar-(plt-1)*nstar)
-        subplot(ceil(sqrt(npar)),floor(sqrt(npar)),k)
-        %kk = (plt-1)*nstar+k;
-        [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_);
-        optimal_bandwidth = mh_optimal_bandwidth(distrib_param(k,:)',options_.dsmh.number_of_particles,bandwidth,kernel_function);
-        [density(:,1),density(:,2)] = kernel_density_estimate(distrib_param(k,:)',number_of_grid_points,...
-                                                          options_.dsmh.number_of_particles,optimal_bandwidth,kernel_function);
-        plot(density(:,1),density(:,2));
-        hold on
-        if TeX
-            title(texname,'interpreter','latex')
-        else
-            title(name,'interpreter','none')
-        end
-        hold off
-        axis tight
-        drawnow
-    end
-    dyn_saveas(hh,[ M_.fname '_param_density' int2str(plt) ],options_.nodisplay,options_.graph_format);
-    if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-        % TeX eps loader file
-        fprintf(fidTeX,'\\begin{figure}[H]\n');
-        fprintf(fidTeX,'\\centering \n');
-        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%_param_density%s}\n',min(k/floor(sqrt(npar)),1),M_.fname,int2str(plt));
-        fprintf(fidTeX,'\\caption{Parameter densities based on the Dynamic Striated Metropolis-Hastings algorithm.}');
-        fprintf(fidTeX,'\\label{Fig:ParametersDensities:%s}\n',int2str(plt));
-        fprintf(fidTeX,'\\end{figure}\n');
-        fprintf(fidTeX,' \n');
-    end
+    hold off
+    axis tight
+    drawnow
+end
+dyn_saveas(hh,[ M_.fname '_param_density' int2str(plt) ],options_.nodisplay,options_.graph_format);
+if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
+    % TeX eps loader file
+    fprintf(fidTeX,'\\begin{figure}[H]\n');
+    fprintf(fidTeX,'\\centering \n');
+    fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%_param_density%s}\n',min(k/floor(sqrt(npar)),1),M_.fname,int2str(plt));
+    fprintf(fidTeX,'\\caption{Parameter densities based on the Dynamic Striated Metropolis-Hastings algorithm.}');
+    fprintf(fidTeX,'\\label{Fig:ParametersDensities:%s}\n',int2str(plt));
+    fprintf(fidTeX,'\\end{figure}\n');
+    fprintf(fidTeX,' \n');
+end
 %end
-    
-function [tlogpost_iminus1,loglik,param] = sort_matrices(tlogpost_iminus1,loglik,param)
-    [~,indx_ord] = sortrows(tlogpost_iminus1);
-    tlogpost_iminus1 = tlogpost_iminus1(indx_ord);
-    param = param(:,indx_ord);
-    loglik = loglik(indx_ord);
 
-function [tlogpost_i,weights,zhat,ESS,mu,Omegachol] = compute_IS_weights_and_moments(param,tlogpost_iminus1,loglik,lambda,i,zhat,ESS)    
-    if i==1 
-		tlogpost_i = tlogpost_iminus1 + loglik*lambda(i); 
-    else 
-		tlogpost_i = tlogpost_iminus1 + loglik*(lambda(i)-lambda(i-1));
-    end
-    weights = exp(tlogpost_i-tlogpost_iminus1);
-    zhat = (mean(weights))*zhat ;
-    weights = weights/sum(weights);
-    ESS(i) = 1/sum(weights.^2);
-    % estimates of mean and variance
-    mu = param*weights;
-    z = bsxfun(@minus,param,mu);
-    Omega = z*diag(weights)*z';
-    Omegachol = chol(Omega)';
+function [tlogpost_iminus1,loglik,param] = sort_matrices(tlogpost_iminus1,loglik,param)
+[~,indx_ord] = sortrows(tlogpost_iminus1);
+tlogpost_iminus1 = tlogpost_iminus1(indx_ord);
+param = param(:,indx_ord);
+loglik = loglik(indx_ord);
+
+function [tlogpost_i,weights,zhat,ESS,mu,Omegachol] = compute_IS_weights_and_moments(param,tlogpost_iminus1,loglik,lambda,i,zhat,ESS)
+if i==1
+    tlogpost_i = tlogpost_iminus1 + loglik*lambda(i);
+else
+    tlogpost_i = tlogpost_iminus1 + loglik*(lambda(i)-lambda(i-1));
+end
+weights = exp(tlogpost_i-tlogpost_iminus1);
+zhat = (mean(weights))*zhat ;
+weights = weights/sum(weights);
+ESS(i) = 1/sum(weights.^2);
+% estimates of mean and variance
+mu = param*weights;
+z = bsxfun(@minus,param,mu);
+Omega = z*diag(weights)*z';
+Omegachol = chol(Omega)';
 
 function c = tune_c(TargetFun,param,tlogpost_i,lambda,i,c,Omegachol,weights,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_)
-	disp('tuning c_i...');
-    disp('Initial value =');
-    disp(c) ;
-    npar = size(param,1);
-    lower_prob = (.5*(options_.dsmh.alpha0+options_.dsmh.alpha1))^5;
-    upper_prob = (.5*(options_.dsmh.alpha0+options_.dsmh.alpha1))^(1/5);
-	stop=0 ;
-	while stop==0
-		acpt = 0.0;
-		indx_resmpl = smc_resampling(weights,rand(1,1),options_.dsmh.G);
-		param0 = param(:,indx_resmpl);
-		tlogpost0 = tlogpost_i(indx_resmpl);
-		for j=1:options_.dsmh.G
-			for l=1:options_.dsmh.K
-			    validate = 0;
-			    while validate == 0 
-					candidate = param0(:,j) + sqrt(c)*Omegachol*randn(npar,1);
-					if all(candidate >= mh_bounds.lb) && all(candidate <= mh_bounds.ub)
-						[tlogpostx,loglikx] = tempered_likelihood(TargetFun,candidate,lambda(i),dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
-						if isfinite(loglikx) % if returned log-density is not Inf or Nan (penalized value)
-						    validate = 1;
-            				if rand(1,1)<exp(tlogpostx-tlogpost0(j)) % accept
-                        	  acpt = acpt + 1/(options_.dsmh.G*options_.dsmh.K);
-                              param0(:,j)= candidate;
-                              tlogpost0(j) = tlogpostx;
-            				end
-						end
-					end
- 				end
-			end 
-        end
-        disp('Acceptation rate =') ;
-        disp(acpt) ;
-		if options_.dsmh.alpha0<=acpt && acpt<=options_.dsmh.alpha1
-			disp('done!');
-			stop=1;
-		else
-			if acpt<lower_prob
-			  c = c/5;
-			elseif lower_prob<=acpt && acpt<=upper_prob
-			  c = c*log(.5*(options_.dsmh.alpha0+options_.dsmh.alpha1))/log(acpt);
-			else
-			  c = 5*c;
+disp('tuning c_i...');
+disp('Initial value =');
+disp(c) ;
+npar = size(param,1);
+lower_prob = (.5*(options_.dsmh.alpha0+options_.dsmh.alpha1))^5;
+upper_prob = (.5*(options_.dsmh.alpha0+options_.dsmh.alpha1))^(1/5);
+stop=0 ;
+while stop==0
+    acpt = 0.0;
+    indx_resmpl = smc_resampling(weights,rand(1,1),options_.dsmh.G);
+    param0 = param(:,indx_resmpl);
+    tlogpost0 = tlogpost_i(indx_resmpl);
+    for j=1:options_.dsmh.G
+        for l=1:options_.dsmh.K
+            validate = 0;
+            while validate == 0
+                candidate = param0(:,j) + sqrt(c)*Omegachol*randn(npar,1);
+                if all(candidate >= mh_bounds.lb) && all(candidate <= mh_bounds.ub)
+                    [tlogpostx,loglikx] = tempered_likelihood(TargetFun,candidate,lambda(i),dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
+                    if isfinite(loglikx) % if returned log-density is not Inf or Nan (penalized value)
+                        validate = 1;
+                        if rand(1,1)<exp(tlogpostx-tlogpost0(j)) % accept
+                            acpt = acpt + 1/(options_.dsmh.G*options_.dsmh.K);
+                            param0(:,j)= candidate;
+                            tlogpost0(j) = tlogpostx;
+                        end
+                    end
+                end
             end
-            disp('Trying with c= ') ;
-            disp(c) 
-		end
-	end
+        end
+    end
+    disp('Acceptation rate =') ;
+    disp(acpt) ;
+    if options_.dsmh.alpha0<=acpt && acpt<=options_.dsmh.alpha1
+        disp('done!');
+        stop=1;
+    else
+        if acpt<lower_prob
+            c = c/5;
+        elseif lower_prob<=acpt && acpt<=upper_prob
+            c = c*log(.5*(options_.dsmh.alpha0+options_.dsmh.alpha1))/log(acpt);
+        else
+            c = 5*c;
+        end
+        disp('Trying with c= ') ;
+        disp(c)
+    end
+end
 
 function [out_param,out_tlogpost_iminus1,out_loglik] = mutation_DSMH(TargetFun,param,tlogpost_i,tlogpost_iminus1,loglik,lambda,i,c,Omegachol,weights,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_)
-    indx_levels = (1:1:options_.dsmh.M-1)*options_.dsmh.N*options_.dsmh.G/options_.dsmh.M;
-    npar = size(param,1) ;
-    p = 1/(10*options_.dsmh.tau);
-    disp('Metropolis step...'); 
-    % build the dynamic grid of levels
-    levels = [0.0;tlogpost_iminus1(indx_levels)];
-	% initialize the outputs 
-	out_param = param;
-	out_tlogpost_iminus1 = tlogpost_i;
-	out_loglik = loglik;
-	% resample and initialize the starting groups 
-	indx_resmpl = smc_resampling(weights,rand(1,1),options_.dsmh.G);
-    param0 = param(:,indx_resmpl);
-    tlogpost_iminus10 = tlogpost_iminus1(indx_resmpl);
-    tlogpost_i0 = tlogpost_i(indx_resmpl);
-    loglik0 = loglik(indx_resmpl);
-    % Start the Metropolis 
-    for l=1:options_.dsmh.N*options_.dsmh.tau
-      for j=1:options_.dsmh.G
+indx_levels = (1:1:options_.dsmh.M-1)*options_.dsmh.N*options_.dsmh.G/options_.dsmh.M;
+npar = size(param,1) ;
+p = 1/(10*options_.dsmh.tau);
+disp('Metropolis step...');
+% build the dynamic grid of levels
+levels = [0.0;tlogpost_iminus1(indx_levels)];
+% initialize the outputs
+out_param = param;
+out_tlogpost_iminus1 = tlogpost_i;
+out_loglik = loglik;
+% resample and initialize the starting groups
+indx_resmpl = smc_resampling(weights,rand(1,1),options_.dsmh.G);
+param0 = param(:,indx_resmpl);
+tlogpost_iminus10 = tlogpost_iminus1(indx_resmpl);
+tlogpost_i0 = tlogpost_i(indx_resmpl);
+loglik0 = loglik(indx_resmpl);
+% Start the Metropolis
+for l=1:options_.dsmh.N*options_.dsmh.tau
+    for j=1:options_.dsmh.G
         u1 = rand(1,1);
         u2 = rand(1,1);
         if u1<p
@@ -264,9 +260,9 @@ function [out_param,out_tlogpost_iminus1,out_loglik] = mutation_DSMH(TargetFun,p
             indx = floor( (k-1)*options_.dsmh.N*options_.dsmh.G/options_.dsmh.M+1 + u2*(options_.dsmh.N*options_.dsmh.G/options_.dsmh.M-1) );
             if i==1
                 alp = (loglik(indx)-loglik0(j))*lambda(i);
-            else 
+            else
                 alp = (loglik(indx)-loglik0(j))*(lambda(i)-lambda(i-1));
-            end 
+            end
             if u2<exp(alp)
                 param0(:,j) = param(:,indx);
                 tlogpost_i0(j) = tlogpost_i(indx);
@@ -274,33 +270,32 @@ function [out_param,out_tlogpost_iminus1,out_loglik] = mutation_DSMH(TargetFun,p
                 tlogpost_iminus10(j) = tlogpost_iminus1(indx);
             end
         else
-		    validate= 0;
-		    while validate==0 
-				candidate = param0(:,j) + sqrt(c)*Omegachol*randn(npar,1);
-				if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
-					[tlogpostx,loglikx] = tempered_likelihood(TargetFun,candidate,lambda(i),dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
-					if isfinite(loglikx) % if returned log-density is not Inf or Nan (penalized value)
-					    validate = 1;
+            validate= 0;
+            while validate==0
+                candidate = param0(:,j) + sqrt(c)*Omegachol*randn(npar,1);
+                if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
+                    [tlogpostx,loglikx] = tempered_likelihood(TargetFun,candidate,lambda(i),dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
+                    if isfinite(loglikx) % if returned log-density is not Inf or Nan (penalized value)
+                        validate = 1;
                         if u2<exp(tlogpostx-tlogpost_i0(j)) % accept
-                        	param0(:,j) = candidate;
-                        	tlogpost_i0(j) = tlogpostx;
+                            param0(:,j) = candidate;
+                            tlogpost_i0(j) = tlogpostx;
                             loglik0(j) = loglikx;
-            				if i==1 
-                            	tlogpost_iminus10(j) = tlogpostx-loglikx*lambda(i);
-                            else                 	
-                        		tlogpost_iminus10(j) = tlogpostx-loglikx*(lambda(i)-lambda(i-1));
-                            end     
+                            if i==1
+                                tlogpost_iminus10(j) = tlogpostx-loglikx*lambda(i);
+                            else
+                                tlogpost_iminus10(j) = tlogpostx-loglikx*(lambda(i)-lambda(i-1));
+                            end
                         end
-					end
-				end
-			end
+                    end
+                end
+            end
         end
-      end
-      if mod(l,options_.dsmh.tau)==0 
+    end
+    if mod(l,options_.dsmh.tau)==0
         rang = (l/options_.dsmh.tau-1)*options_.dsmh.G+1:l*options_.dsmh.G/options_.dsmh.tau;
         out_param(:,rang) = param0;
         out_tlogpost_iminus1(rang) = tlogpost_i0;
         out_loglik(rang) = loglik0;
-      end
     end
-    
+end
