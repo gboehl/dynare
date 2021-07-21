@@ -70,11 +70,11 @@ if solve_DM %recompute solution matrices
     [DM.Cbarmat ,DM.Bbarmat, DM.Abarmat, DM.Jbarmat] = occbin.get_deriv(M00_,data.ys);
     
     M10_ = M00_;
-    M10_.params(strmatch(M_.params(M_.occbin.pswitch(1)),M00_.param_names,'exact'))= 1;
+    M10_.params(M_.occbin.pswitch(1))= 1;
     [DM.Cbarmat10, DM.Bbarmat10, DM.Abarmat10, DM.Jbarmat10, DM.Dbarmat10] = occbin.get_deriv(M10_,data.ys);
     
     M01_ = M00_;
-    M01_.params(strmatch(M_.params(M_.occbin.pswitch(2)),M00_.param_names,'exact'))= 1;
+    M01_.params(M_.occbin.pswitch(2))= 1;
     [DM.Cbarmat01, DM.Bbarmat01, DM.Abarmat01, DM.Jbarmat01, DM.Dbarmat01] = occbin.get_deriv(M01_,data.ys);
     
     M11_ = M00_;
