@@ -44,6 +44,7 @@ end
 if strcmp(auxiliary_model_type, 'var')
     [AR, ~, Constant] = feval(sprintf('%s.varmatrices', M_.fname), auxiliary_model_name, M_.params, M_.var.(auxiliary_model_name).structural);
     isconstant = any(abs(Constant)>0);
+    M_.var.(auxiliary_model_name).isconstant = isconstant; % FIXME Could be done by preprocessor instead…
 elseif strcmp(auxiliary_model_type, 'trend_component')
     [AR, A0, A0star] = feval(sprintf('%s.trend_component_ar_a0', M_.fname), auxiliary_model_name, M_.params);
 else

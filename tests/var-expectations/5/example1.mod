@@ -63,6 +63,6 @@ var_expectation.update('varexp');
 
 weights = M_.params(M_.var_expectation.varexp.param_indices);
 
-if weights(2) || ~weights(3) || weights(5) || ~weights(1) || ~weights(4) || ~weights(6)
+if weights(3) || ~weights(4) || weights(6) || ~weights(2) || ~weights(5) || ~weights(7) || weights(1)
    error('Wrong reduced form parameter for VAR_EXPECTATION_MODEL')
 end

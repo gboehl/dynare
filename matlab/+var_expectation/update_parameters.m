@@ -13,7 +13,7 @@ function DynareModel = update_parameters(varexpectationmodelname, DynareModel, D
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2018-2021 Dynare Team
+% Copyright © 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -205,4 +205,13 @@ else
 end
 
 % Update reduced form parameters in M_.params.
-DynareModel.params(varexpectationmodel.param_indices) = parameters;
+if isequal(varexpectationmodel.auxiliary_model_type, 'var')
+    if DynareModel.var.(varexpectationmodel.auxiliary_model_name).isconstant
+        DynareModel.params(varexpectationmodel.param_indices) = parameters;
+    else
+        DynareModel.params(varexpectationmodel.param_indices(1)) = .0;
+        DynareModel.params(varexpectationmodel.param_indices(2:end)) = parameters;
+    end
+else
+    DynareModel.params(varexpectationmodel.param_indices) = parameters;
+end

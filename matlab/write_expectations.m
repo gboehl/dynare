@@ -12,7 +12,7 @@ function [expression, growthneutralitycorrection] = write_expectations(eqname, e
 % - expression                  [string]    Unrolled expectation expression.
 % - growthneutralitycorrection  [string]
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -76,6 +76,17 @@ id = 0;
 
 if isequal(expectationmodelkind, 'var')
     timeindices = (0:(maxlag-1))+abs(expectationmodel.time_shift);
+end
+
+if isequal(expectationmodelkind, 'var') && isequal(expectationmodel.auxiliary_model_type, 'var')
+    id = id+1;
+    expression = sprintf('%s', M_.param_names{expectationmodel.param_indices(id)});
+end
+
+if isequal(expectationmodelkind, 'pac') && isequal(expectationmodel.auxiliary_model_type, 'var')
+    id = id+1;
+    expression = sprintf('%s+%s', M_.param_names{expectationmodel.equations.(eqtag).h0_param_indices(id)}, ...
+                         M_.param_names{expectationmodel.equations.(eqtag).h1_param_indices(id)});
 end
 
 for i=1:maxlag

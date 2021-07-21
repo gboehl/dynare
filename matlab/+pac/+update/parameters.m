@@ -13,7 +13,7 @@ function DynareModel = parameters(pacname, DynareModel, DynareOutput, verbose)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright © 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -135,6 +135,16 @@ for e=1:number_of_pac_eq
     end
     % Update the parameters related to the stationary components.
     if ~isempty(h0)
+        if isequal(pacmodel.auxiliary_model_type, 'var')
+            if DynareModel.var.(pacmodel.auxiliary_model_name).isconstant
+                DynareModel.params(equations.(eqtag).h0_param_indices) = h0;
+            else
+                DynareModel.params(equations.(eqtag).h0_param_indices(1)) = .0;
+                DynareModel.params(equations.(eqtag).h0_param_indices(2:end)) = h0;
+            end
+        else
+            DynareModel.params(equations.(eqtag).h0_param_indices) = h0;
+        end
         DynareModel.params(pacmodel.equations.(eqtag).h0_param_indices) = h0;
     else
         if ~isempty(equations.(eqtag).h0_param_indices)
@@ -143,7 +153,16 @@ for e=1:number_of_pac_eq
     end
     % Update the parameters related to the nonstationary components.
     if ~isempty(h1)
-        DynareModel.params(equations.(eqtag).h1_param_indices) = h1;
+        if isequal(pacmodel.auxiliary_model_type, 'var')
+            if DynareModel.var.(pacmodel.auxiliary_model_name).isconstant
+                DynareModel.params(equations.(eqtag).h1_param_indices) = h1;
+            else
+                DynareModel.params(equations.(eqtag).h1_param_indices(1)) = .0;
+                DynareModel.params(equations.(eqtag).h1_param_indices(2:end)) = h1;
+            end
+        else
+            DynareModel.params(equations.(eqtag).h1_param_indices) = h1;
+        end
     else
         if ~isempty(equations.(eqtag).h1_param_indices)
             DynareModel.params(equations.(eqtag).h1_param_indices) = .0;

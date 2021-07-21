@@ -22,7 +22,7 @@ function print_expectations(eqname, expectationmodelname, expectationmodelkind, 
 %
 % The variable expectationmodelkind can take two values 'var' or 'pac'.
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright © 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -249,6 +249,17 @@ maxlag = max(auxmodel.max_lag);
 if isequal(expectationmodel.auxiliary_model_type, 'trend_component')
     % Need to add a lag since the error correction equations are rewritten in levels.
     maxlag = maxlag+1;
+end
+
+if isequal(expectationmodelkind, 'var') && isequal(expectationmodel.auxiliary_model_type, 'var')
+    id = id+1;
+    expression = sprintf('%1.16f', M_.params(expectationmodel.param_indices(id)));
+end
+
+if isequal(expectationmodelkind, 'pac') && isequal(expectationmodel.auxiliary_model_type, 'var')
+    id = id+1;
+    expression = sprintf('%1.16f', M_.params(expectationmodel.equations.(eqtag).h0_param_indices(id))+ ...
+                         M_.params(expectationmodel.equations.(eqtag).h1_param_indices(id)));
 end
 
 for i=1:maxlag
