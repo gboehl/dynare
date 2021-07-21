@@ -1,4 +1,3 @@
-// --+ options: nostrict +--
 //Test Occbin with 1 constraint and redundant shocks; also checks whether defaults for error_* are correct
 
 var b ${b}$ (long_name='borrowing')
