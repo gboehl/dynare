@@ -78,6 +78,11 @@ end
 
 if post_metropolis
     tmp = fieldnames(smoothedvars.Mean);
+    if length(tmp)~=M_.endo_nbr
+        warning(['You are using smoother2histval although smoothed values have not'...
+            'been computed for all endogenous and auxiliary variables.'...
+            'The value of these variables will be set to 0.'])
+    end
     tmpexo = fieldnames(smoothedshocks.Mean);
 else
     tmp = fieldnames(smoothedvars);
