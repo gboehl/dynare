@@ -89,8 +89,6 @@ extern "C" {
                    int nrhs, const mxArray *prhs[])
   {
 
-    mexPrintf("k_order_welfare\n");
-
     const mxArray *dr_mx = prhs[0];
     const mxArray *M_mx = prhs[1];
     const mxArray *options_mx = prhs[2];
