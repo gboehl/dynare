@@ -1,13 +1,22 @@
 function planner_objective_value = evaluate_planner_objective(M_,options_,oo_)
-
+% function planner_objective_value = evaluate_planner_objective(M_,options_,oo_)
+% INPUTS
+%   M_:        (structure) model description
+%   options_:  (structure) options
+%   oo_:       (structure) output results
 % OUTPUT
-% Returns a vector containing first order or second-order approximations of 
+%  planner_objective_value (double)
+% 
+%Returns a vector containing first order or second-order approximations of 
 % - the unconditional expectation of the planner's objective function
 % - the conditional expectation of the planner's objective function starting from the non-stochastic steady state and allowing for future shocks
 % depending on the value of options_.order.
+%
+% SPECIAL REQUIREMENTS
+%   none
 
 % ALGORITHM
-% Welfare verifies
+% Welfare satifies
 % W(y_{t-1}, u_t, sigma) = U(h(y_{t-1}, u_t, sigma)) + beta E_t W(g(y_{t-1}, u_t, sigma), u_t, sigma)
 % where
 % - W is the welfare function
@@ -20,7 +29,7 @@ function planner_objective_value = evaluate_planner_objective(M_,options_,oo_)
 % - beta is the planner's discount factor
 % - E_t is the expectation operator given information at time t i.e. (y_{t-1}, u_t, sigma)
 
-% The unconditional expectation of the planner's objective function verifies
+% The unconditional expectation of the planner's objective function satisfies
 % E(W) = E(U)/(1-beta)
 % The conditional expectation of the planner's objective function given (y_{t-1}, u_t, sigma) coincides with the welfare function delineated above.
 
@@ -51,14 +60,6 @@ function planner_objective_value = evaluate_planner_objective(M_,options_,oo_)
 
 % In the deterministic case, resorting to approximations for welfare is no longer required as it is possible to simulate the model given initial conditions for pre-determined variables and terminal conditions for forward-looking variables, whether these initial and terminal conditions are explicitly or implicitly specified. Assuming that the number of simulated periods is high enough for the new steady-state to be reached, the new unconditional welfare is thus the last period's welfare. As for the conditional welfare, it can be derived using backward recursions on the equation W = U + beta*W(+1) starting from the final unconditional steady-state welfare.
 
-% INPUTS
-%   M_:        (structure) model description
-%   options_:  (structure) options
-%   oo_:       (structure) output results
-%
-% SPECIAL REQUIREMENTS
-%   none
-
 % Copyright (C) 2007-2021 Dynare Team
 %
 % This file is part of Dynare.
@@ -77,6 +78,9 @@ function planner_objective_value = evaluate_planner_objective(M_,options_,oo_)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 dr = oo_.dr;
+if isempty(options_.qz_criterium)
+    options_.qz_criterium = 1+1e-6;
+end
 
 exo_nbr = M_.exo_nbr;
 nstatic = M_.nstatic;
@@ -132,7 +136,10 @@ if options_.ramsey_policy
                 options_.noprint = 1;
             end
             var_list = M_.endo_names(dr.order_var(nstatic+(1:nspred)));
-            [info, oo_, options_] = stoch_simul(M_, options_, oo_, var_list); %get decision rules and moments
+            if options_.pruning
+                fprintf('evaluate_planner_objective: pruning option is not supported and will be ignored\n')
+            end
+            oo_=disp_th_moments(dr,var_list,M_,options_,oo_);
             if ~old_noprint
                 options_.noprint = 0;
             end
@@ -198,7 +205,7 @@ elseif options_.discretionary_policy
         options_.noprint = 1;
     end
     var_list = M_.endo_names(dr.order_var(nstatic+(1:nspred)));
-    [info, oo_, options_] = stoch_simul(M_, options_, oo_, var_list); %get decision rules and moments
+    oo_=disp_th_moments(dr,var_list,M_,options_,oo_);
     if ~old_noprint
         options_.noprint = 0;
     end
