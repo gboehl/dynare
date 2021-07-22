@@ -1,7 +1,8 @@
 function [nvar,vartan,CorrFileNumber] = dsge_simulated_theoretical_correlation(SampleSize,nar,M_,options_,oo_,type)
 % function [nvar,vartan,CorrFileNumber] = dsge_simulated_theoretical_correlation(SampleSize,nar,M_,options_,oo_,type)
 % This function computes the posterior or prior distribution of the endogenous
-% variables' second order moments.
+% variables' second order moments. Actual computations are done in
+% dsge_simulated_theoretical_covariance, see https://git.dynare.org/Dynare/dynare/-/issues/1769
 %
 % INPUTS
 %   SampleSize   [integer]          scalar, number of simulations.
@@ -17,7 +18,7 @@ function [nvar,vartan,CorrFileNumber] = dsge_simulated_theoretical_correlation(S
 %   vartan         [char]           array of characters (with nvar rows).
 %   CorrFileNumber [integer]        scalar, number of prior or posterior data files (for correlation).
 
-% Copyright (C) 2007-2020 Dynare Team
+% Copyright (C) 2007-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,120 +35,15 @@ function [nvar,vartan,CorrFileNumber] = dsge_simulated_theoretical_correlation(S
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-nodecomposition = 1;
+nvar = length(ivar);
+[ivar,vartan, options_] = get_variables_list(options_, M_);
 
 % Get informations about the _posterior_draws files.
 if strcmpi(type,'posterior')
-    NumberOfDrawsFiles = length(dir([M_.dname '/metropolis/' M_.fname '_' type '_draws*' ]));
-    posterior = 1;
+    CorrFileNumber = length(dir([M_.dname '/metropolis/' M_.fname '_PosteriorCorrelations*']));
 elseif strcmpi(type,'prior')
-    NumberOfDrawsFiles = length(dir([M_.dname '/prior/draws/' type '_draws*' ]));
-    CheckPath('prior/moments',M_.dname);
-    posterior = 0;
+    CorrFileNumber = length(dir([M_.dname '/prior/moments/' M_.fname '_PriorCorrelations*']));
 else
     disp('dsge_simulated_theoretical_correlation:: Unknown type!');
     error()
 end
-
-%delete old stale files before creating new ones
-if posterior
-    delete_stale_file([M_.dname '/metropolis/' M_.fname '_PosteriorCorrelations*']);
-else
-    delete_stale_file([M_.dname '/prior/moments/' M_.fname '_PriorCorrelations*']);
-end
-
-% Set varlist (vartan)
-if ~posterior
-    if isfield(options_,'varlist')
-        temp = options_.varlist;
-    end
-    options_.varlist = options_.prior_analysis_endo_var_list;
-end
-endo_names=options_.varlist;
-[ivar,vartan, options_] = get_variables_list(options_, M_);
-if ~posterior
-    if exist('temp','var')
-        options_.varlist = temp;
-    end
-end
-nvar = length(ivar);
-
-if options_.pruning
-    obs_var=NaN(nvar,1);
-    for i=1:nvar
-        obs_var(i,1) = find(strcmp(M_.endo_names(ivar(i),:), M_.endo_names(oo_.dr.order_var)));
-    end
-end
-
-% Set the size of the auto-correlation function to nar.
-oldnar = options_.ar;
-options_.ar = nar;
-
-% Number of lines in posterior data files.
-MaXNumberOfCorrLines = ceil(options_.MaxNumberOfBytes/(nvar*nvar*nar)/8);
-
-if SampleSize<=MaXNumberOfCorrLines
-    Correlation_array = zeros(SampleSize,nvar,nvar,nar);
-    NumberOfCorrFiles = 1;
-else
-    Correlation_array = zeros(MaXNumberOfCorrLines,nvar,nvar,nar);
-    NumberOfLinesInTheLastCorrFile = mod(SampleSize,MaXNumberOfCorrLines);
-    NumberOfCorrFiles = ceil(SampleSize/MaXNumberOfCorrLines);
-end
-
-NumberOfCorrLines = rows(Correlation_array);
-CorrFileNumber = 1;
-
-% Compute 2nd order moments and save them in *_[Posterior, Prior]Correlations* files
-linea = 0;
-for file = 1:NumberOfDrawsFiles
-    if posterior
-        temp=load([M_.dname '/metropolis/' M_.fname '_' type '_draws' num2str(file) ]);
-    else
-        temp=load([M_.dname '/prior/draws/' type '_draws' num2str(file) ]);
-    end
-    NumberOfDraws = rows(temp.pdraws);
-    isdrsaved = columns(temp.pdraws)-1;
-    for linee = 1:NumberOfDraws
-        linea = linea+1;
-        if isdrsaved
-            M_=set_parameters_locally(M_,temp.pdraws{linee,1});% Needed to update the covariance matrix of the state innovations.
-            dr = temp.pdraws{linee,2};
-        else
-            M_=set_parameters_locally(M_,temp.pdraws{linee,1});
-            [dr,info,M_,oo_] = compute_decision_rules(M_,options_,oo_);
-        end
-        if ~options_.pruning
-            tmp = th_autocovariances(dr,ivar,M_,options_,nodecomposition);
-        else
-            pruned_state_space = pruned_state_space_system(M_, options_, dr, obs_var, options_.ar, 1, 0);
-            for i=1:nar
-                tmp{i+1} = pruned_state_space.Corr_yi(:,:,i);                
-            end
-        end
-        for i=1:nar
-            Correlation_array(linea,:,:,i) = tmp{i+1};
-        end
-        if linea == NumberOfCorrLines
-            if posterior
-                save([ M_.dname '/metropolis/' M_.fname '_PosteriorCorrelations' int2str(CorrFileNumber) '.mat' ],'Correlation_array','endo_names');
-            else
-                save([ M_.dname '/prior/moments/' M_.fname '_PriorCorrelations' int2str(CorrFileNumber) '.mat' ],'Correlation_array','endo_names');
-            end
-            CorrFileNumber = CorrFileNumber + 1;
-            linea = 0;
-            test = CorrFileNumber-NumberOfCorrFiles;
-            if ~test% Prepare the last round...
-                Correlation_array = zeros(NumberOfLinesInTheLastCorrFile,nvar,nvar,nar);
-                NumberOfCorrLines = NumberOfLinesInTheLastCorrFile;
-                CorrFileNumber = CorrFileNumber - 1;
-            elseif test<0
-                Correlation_array = zeros(MaXNumberOfCorrLines,nvar,nvar,nar);
-            else
-                clear('Correlation_array');
-            end
-        end
-    end
-end
-
-options_.ar = oldnar;
