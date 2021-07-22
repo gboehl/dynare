@@ -4956,7 +4956,8 @@ block decomposition of the model (see :opt:`block`).
     computed on the variables listed after the ``estimation``
     command. Alternatively, one can choose to compute these quantities
     on all endogenous or on all observed variables (see
-    ``consider_all_endogenous`` and ``consider_only_observed`` options
+    ``consider_all_endogenous``, ``consider_all_endogenous_and_auxiliary``,
+    and ``consider_only_observed`` options
     below). If no variable is listed after the estimation command,
     then Dynare will interactively ask which variable set to use.
 
@@ -6755,6 +6756,14 @@ block decomposition of the model (see :opt:`block`).
        filtered variables and forecasts (when requested) on all the
        endogenous variables. This is equivalent to manually listing
        all the endogenous variables after the ``estimation`` command.
+
+    .. option:: consider_all_endogenous_and_auxiliary
+
+       Compute the posterior moments, smoothed variables, k-step ahead
+       filtered variables and forecasts (when requested) on all the
+       endogenous variables and the auxiliary variables introduced by the
+       preprocessor. This option is useful when e.g. running ``smoother2histval``
+       on the results of the Kalman smoother.
 
     .. option:: consider_only_observed
 
