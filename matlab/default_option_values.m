@@ -246,8 +246,6 @@ particle.status = false;
 % How do we initialize the states?
 particle.initialization = 1;
 particle.initial_state_prior_std = .1;
-% Set the default order of approximation of the model (perturbation).
-particle.perturbation = 2;
 % Set the default number of particles.
 particle.number_of_particles = 5000;
 % Set the default approximation order (Smolyak)
@@ -292,7 +290,8 @@ particle.liu_west_chol_sigma_bar = .01 ;
 % Options for setting the weights in conditional particle filters.
 particle.cpf_weights_method.amisanotristani = true;
 particle.cpf_weights_method.murrayjonesparslow = false;
-% Copy ep structure in options_ global structure
+particle.particle_filter_options ='';
+% Copy particle structure in options_ global structure
 options_.particle = particle;
 options_.rwgmh.init_scale = 1e-4 ;
 options_.rwgmh.scale_chain = 1 ;
