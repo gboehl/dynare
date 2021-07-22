@@ -1,4 +1,4 @@
-function [x,check] = solve1(func,x,j1,j2,jacobian_flag,gstep,tolf,tolx,maxit,debug,varargin)
+function [x,check] = solve1(func,x,j1,j2,jacobian_flag,gstep,tolf,tolx,maxit,fake,debug,varargin)
 % Solves systems of non linear equations of several variables
 %
 % INPUTS
@@ -13,6 +13,7 @@ function [x,check] = solve1(func,x,j1,j2,jacobian_flag,gstep,tolf,tolx,maxit,deb
 %    tolf             tolerance for residuals
 %    tolx             tolerance for solution variation
 %    maxit            maximum number of iterations
+%    fake             unused argument (compatibity with trust_region).
 %    debug            debug flag
 %    varargin:        list of extra arguments to the function
 %
@@ -23,7 +24,7 @@ function [x,check] = solve1(func,x,j1,j2,jacobian_flag,gstep,tolf,tolx,maxit,deb
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright © 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

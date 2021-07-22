@@ -1,4 +1,4 @@
-function [x,check,info] = trust_region(fcn,x0,j1,j2,jacobian_flag,gstep,tolf,tolx,maxiter,debug,varargin)
+function [x,check,info] = trust_region(fcn,x0,j1,j2,jacobian_flag,gstep,tolf,tolx,maxiter,factor,debug,varargin)
 % Solves systems of non linear equations of several variables, using a
 % trust-region method.
 %
@@ -14,6 +14,7 @@ function [x,check,info] = trust_region(fcn,x0,j1,j2,jacobian_flag,gstep,tolf,tol
 %    tolf             tolerance for residuals
 %    tolx             tolerance for solution variation
 %    maxiter          maximum number of iterations
+%    factor           real scalar, determines the initial step bound
 %    debug            debug flag
 %    varargin:        list of arguments following bad_cond_flag
 %
@@ -101,7 +102,7 @@ while (niter < maxiter && ~info)
     if (niter == 1)
         xn = norm (dg .* x(j2));
         % FIXME: something better?
-        delta = max (xn, 1);
+        delta = max (xn, 1)*factor;
     end
 
     % Get trust-region model (dogleg) minimizer.
