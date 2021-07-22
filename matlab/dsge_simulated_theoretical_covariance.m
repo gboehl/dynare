@@ -1,5 +1,5 @@
-function [nvar,vartan,CovarFileNumber] = dsge_simulated_theoretical_covariance(SampleSize,M_,options_,oo_,type)
-% function [nvar,vartan,CovarFileNumber] = dsge_simulated_theoretical_covariance(SampleSize,M_,options_,oo_,type)
+function [nvar,vartan,CovarFileNumber] = dsge_simulated_theoretical_covariance(SampleSize,nar,M_,options_,oo_,type)
+% function [nvar,vartan,CovarFileNumber] = dsge_simulated_theoretical_covariance(SampleSize,nar,M_,options_,oo_,type)
 % This function computes the posterior or prior distribution of the endogenous
 % variables second order moments.
 %
@@ -16,7 +16,7 @@ function [nvar,vartan,CovarFileNumber] = dsge_simulated_theoretical_covariance(S
 %   vartan            [char]     array of characters (with nvar rows).
 %   CovarFileNumber   [integer]  scalar, number of prior or posterior data files (for covariance).
 
-% Copyright (C) 2007-2020 Dynare Team
+% Copyright (C) 2007-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,8 +51,10 @@ end
 %delete old stale files before creating new ones
 if posterior
     delete_stale_file([M_.dname '/metropolis/' M_.fname '_Posterior2ndOrderMoments*'])
+    delete_stale_file([M_.dname '/metropolis/' M_.fname '_PosteriorCorrelations*']);
 else
     delete_stale_file([M_.dname '/prior/moments/' M_.fname '_Prior2ndOrderMoments*'])
+    delete_stale_file([M_.dname '/prior/moments/' M_.fname '_PriorCorrelations*']);
 end
 
 % Set varlist (vartan)
@@ -77,12 +79,12 @@ if options_.pruning
         obs_var(i,1) = find(strcmp(M_.endo_names(ivar(i),:), M_.endo_names(oo_.dr.order_var)));
     end
 end
-% Set the size of the auto-correlation function to zero.
-nar = options_.ar;
-options_.ar = 0;
+
+options_.ar = nar;
 
 % Number of lines in posterior data files.
 MaXNumberOfCovarLines = ceil(options_.MaxNumberOfBytes/(nvar*(nvar+1)/2)/8);
+MaXNumberOfCorrLines = ceil(options_.MaxNumberOfBytes/(nvar*nvar*nar)/8);
 
 if SampleSize<=MaXNumberOfCovarLines
     Covariance_matrix = zeros(SampleSize,nvar*(nvar+1)/2);
@@ -92,12 +94,23 @@ else
     NumberOfLinesInTheLastCovarFile = mod(SampleSize,MaXNumberOfCovarLines);
     NumberOfCovarFiles = ceil(SampleSize/MaXNumberOfCovarLines);
 end
+if SampleSize<=MaXNumberOfCorrLines
+    Correlation_array = zeros(SampleSize,nvar,nvar,nar);
+    NumberOfCorrFiles = 1;
+else
+    Correlation_array = zeros(MaXNumberOfCorrLines,nvar,nvar,nar);
+    NumberOfLinesInTheLastCorrFile = mod(SampleSize,MaXNumberOfCorrLines);
+    NumberOfCorrFiles = ceil(SampleSize/MaXNumberOfCorrLines);
+end
 
 NumberOfCovarLines = rows(Covariance_matrix);
 CovarFileNumber = 1;
+NumberOfCorrLines = rows(Correlation_array);
+CorrFileNumber = 1;
 
 % Compute 2nd order moments and save them in *_[Posterior, Prior]2ndOrderMoments* files
-linea = 0;
+linea_cov = 0;
+linea_corr = 0;
 for file = 1:NumberOfDrawsFiles
     if posterior
         temp=load([M_.dname '/metropolis/' M_.fname '_' type '_draws' num2str(file) ]);
@@ -107,7 +120,8 @@ for file = 1:NumberOfDrawsFiles
     NumberOfDraws = rows(temp.pdraws);
     isdrsaved = columns(temp.pdraws)-1;
     for linee = 1:NumberOfDraws
-        linea = linea+1;
+        linea_cov = linea_cov+1;
+        linea_corr = linea_corr+1;
         if isdrsaved
             M_=set_parameters_locally(M_,temp.pdraws{linee,1});% Needed to update the covariance matrix of the state innovations.
             dr = temp.pdraws{linee,2};
@@ -120,20 +134,27 @@ for file = 1:NumberOfDrawsFiles
         else
             pruned_state_space = pruned_state_space_system(M_, options_, dr, obs_var, options_.ar, 1, 0);
             tmp{1} = pruned_state_space.Var_y;            
+            for i=1:nar
+                tmp{i+1} = pruned_state_space.Corr_yi(:,:,i);                
+            end
         end
         for i=1:nvar
             for j=i:nvar
-                Covariance_matrix(linea,symmetric_matrix_index(i,j,nvar)) = tmp{1}(i,j);
+                Covariance_matrix(linea_cov,symmetric_matrix_index(i,j,nvar)) = tmp{1}(i,j);
             end
         end
-        if linea == NumberOfCovarLines
+        for i=1:nar
+            Correlation_array(linea_corr,:,:,i) = tmp{i+1};
+        end
+
+        if linea_cov == NumberOfCovarLines
             if posterior
                 save([ M_.dname '/metropolis/' M_.fname '_Posterior2ndOrderMoments' int2str(CovarFileNumber) '.mat' ],'Covariance_matrix','endo_names');
             else
                 save([ M_.dname '/prior/moments/' M_.fname '_Prior2ndOrderMoments' int2str(CovarFileNumber) '.mat' ],'Covariance_matrix','endo_names');
             end
             CovarFileNumber = CovarFileNumber + 1;
-            linea = 0;
+            linea_cov = 0;
             test = CovarFileNumber-NumberOfCovarFiles;
             if ~test% Prepare the last round...
                 Covariance_matrix = zeros(NumberOfLinesInTheLastCovarFile,nvar*(nvar+1)/2);
@@ -144,7 +165,24 @@ for file = 1:NumberOfDrawsFiles
                 clear('Covariance_matrix');
             end
         end
+        if linea_corr == NumberOfCorrLines
+            if posterior
+                save([ M_.dname '/metropolis/' M_.fname '_PosteriorCorrelations' int2str(CorrFileNumber) '.mat' ],'Correlation_array','endo_names');
+            else
+                save([ M_.dname '/prior/moments/' M_.fname '_PriorCorrelations' int2str(CorrFileNumber) '.mat' ],'Correlation_array','endo_names');
+            end
+            CorrFileNumber = CorrFileNumber + 1;
+            linea_corr = 0;
+            test = CorrFileNumber-NumberOfCorrFiles;
+            if ~test% Prepare the last round...
+                Correlation_array = zeros(NumberOfLinesInTheLastCorrFile,nvar,nvar,nar);
+                NumberOfCorrLines = NumberOfLinesInTheLastCorrFile;
+                CorrFileNumber = CorrFileNumber - 1;
+            elseif test<0
+                Correlation_array = zeros(MaXNumberOfCorrLines,nvar,nvar,nar);
+            else
+                clear('Correlation_array');
+            end
+        end        
     end
 end
-
-options_.ar = nar;

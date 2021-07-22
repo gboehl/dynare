@@ -97,7 +97,7 @@ end
 if posterior
     for i=1:NumberOfEndogenousVariables
         for j=i:NumberOfEndogenousVariables
-            oo_ = posterior_analysis('variance', var_list_{i}, var_list_{j}, [], options_, M_, oo_);
+            oo_ = posterior_analysis('variance', var_list_{i}, var_list_{j}, NumberOfLags, options_, M_, oo_);
         end
     end
 else
