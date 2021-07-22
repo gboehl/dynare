@@ -59,10 +59,12 @@ if options_.dsge_var && options_.bayesian_irf
 end
 
 if ~isempty(varlist) && ~isempty(options_.endo_vars_for_moment_computations_in_estimation)
-    error('You cannot use the consider_all_endogenous or consider_all_observed options when listing variables after the estimation command')
+    error('You cannot use the consider_all_endogenous, consider_all_endogenous_and_auxiliary or consider_all_observed options when listing variables after the estimation command')
 elseif isempty(varlist) && ~isempty(options_.endo_vars_for_moment_computations_in_estimation)
     if strcmp(options_.endo_vars_for_moment_computations_in_estimation,'all_endogenous_variables')
         varlist = M_.endo_names(1:M_.orig_endo_nbr);
+    elseif strcmp(options_.endo_vars_for_moment_computations_in_estimation,'all_endogenous_and_auxiliary_variables')
+        varlist = M_.endo_names;
     elseif strcmp(options_.endo_vars_for_moment_computations_in_estimation,'only_observed_variables')
         varlist = options_.varobs;
     else
@@ -119,6 +121,7 @@ elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in
                 disp(' [1] Consider all the endogenous variables.')
                 disp(' [2] Consider all the observed endogenous variables.')
                 disp(' [3] Stop Dynare and change the mod file.')
+                disp(' [4] Consider all the endogenous and auxiliary variables.')
                 skipline()
                 choice = input('options [default is 1] =  ');
                 if isempty(choice)
@@ -130,9 +133,11 @@ elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in
                     varlist = options_.varobs;
                 elseif choice==3
                     varlist = cell(0);
+                elseif choice==4
+                    varlist = M_.endo_names;
                 else
                     skipline()
-                    disp('YOU HAVE TO ANSWER 1, 2 or 3!')
+                    disp('YOU HAVE TO ANSWER 1, 2, 3 or 4!')
                     skipline()
                 end
             end
