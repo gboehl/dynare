@@ -31,8 +31,13 @@ end;
 
 stoch_simul(order=6, irf=0);
 
+evaluate_planner_objective;
+
 [condWelfare, U_dynpp, W_dynpp, U_dyn, W_dyn] = k_order_welfare(oo_.dr, M_, options_);
 
+if condWelfare~=oo_.planner_objective_value(1)
+    error('Values do not match');
+end
 if ~exist('neo_growth_k_order_results.mat','file');
    error('neo_growth_k_order must be run first');
 end;
