@@ -31,7 +31,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   real(real64), dimension(:), allocatable, target :: x
   type(dm_block), dimension(:), allocatable, target :: blocks
   integer :: info, i
-  real(real64) :: tolf, tolx
+  real(real64) :: tolf, tolx, factor
   integer :: maxiter
   real(real64), dimension(:), allocatable :: fvec
   real(real64), dimension(:,:), allocatable :: fjac
@@ -67,22 +67,28 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
      call mexErrMsgTxt("Fifth argument (maxiter) should be a numeric scalar")
   end if
 
-  if (.not. (mxIsLogicalScalar(prhs(6)))) then
-     call mexErrMsgTxt("Sixth argument (debug) should be a logical scalar")
+  if (.not. (mxIsScalar(prhs(6)) .and. mxIsNumeric(prhs(6)))) then
+     call mexErrMsgTxt("Sixth argument (factor) should be a numeric scalar")
   end if
 
-  if (.not. (mxIsStruct(prhs(7)) .and. &
-       (mxGetNumberOfFields(prhs(7)) == 0 .or. mxGetNumberOfFields(prhs(7)) == 4))) then
-     call mexErrMsgTxt("Seventh argument should be a struct with either 0 or 4 fields")
+  if (.not. (mxIsLogicalScalar(prhs(7)))) then
+     call mexErrMsgTxt("Seventh argument (debug) should be a logical scalar")
   end if
-  specializedunivariateblocks = (mxGetNumberOfFields(prhs(7)) == 4)
+
+  if (.not. (mxIsStruct(prhs(8)) .and. &
+       (mxGetNumberOfFields(prhs(8)) == 0 .or. mxGetNumberOfFields(prhs(8)) == 4))) then
+     call mexErrMsgTxt("Eighth argument should be a struct with either 0 or 4 fields")
+  end if
+
+  specializedunivariateblocks = (mxGetNumberOfFields(prhs(8)) == 4)
 
   func => prhs(1)
   tolf = mxGetScalar(prhs(3))
   tolx = mxGetScalar(prhs(4))
   maxiter = int(mxGetScalar(prhs(5)))
-  debug = mxGetScalar(prhs(6)) == 1._c_double
-  extra_args => prhs(8:nrhs) ! Extra arguments to func are in argument 8 and subsequent ones
+  factor = mxGetScalar(prhs(6))
+  debug = mxGetScalar(prhs(7)) == 1._c_double
+  extra_args => prhs(9:nrhs) ! Extra arguments to func are in argument 9 and subsequent ones
   associate (x_mat => mxGetPr(prhs(2)))
     allocate(x(size(x_mat)))
     x = x_mat
@@ -90,25 +96,25 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   if (specializedunivariateblocks) then
      block
        type(c_ptr) :: tmp
-       tmp = mxGetField(prhs(7), 1_mwIndex, "isloggedlhs")
+       tmp = mxGetField(prhs(8), 1_mwIndex, "isloggedlhs")
        if (.not. (c_associated(tmp) .and. mxIsLogical(tmp) .and. mxGetNumberOfElements(tmp) == size(x))) then
           call mexErrMsgTxt("Seventh argument must have a 'isloggedlhs' field of type logical, of same size as second argument")
        end if
        isloggedlhs => mxGetLogicals(tmp)
 
-       tmp = mxGetField(prhs(7), 1_mwIndex, "isauxdiffloggedrhs")
+       tmp = mxGetField(prhs(8), 1_mwIndex, "isauxdiffloggedrhs")
        if (.not. (c_associated(tmp) .and. mxIsLogical(tmp) .and. mxGetNumberOfElements(tmp) == size(x))) then
           call mexErrMsgTxt("Seventh argument must have a 'isauxdiffloggedrhs' field of type &
                &logical, of same size as second argument")
        end if
        isauxdiffloggedrhs => mxGetLogicals(tmp)
 
-       lhs = mxGetField(prhs(7), 1_mwIndex, "lhs")
+       lhs = mxGetField(prhs(8), 1_mwIndex, "lhs")
        if (.not. (c_associated(lhs) .and. mxIsCell(lhs) .and. mxGetNumberOfElements(lhs) == size(x))) then
           call mexErrMsgTxt("Seventh argument must have a 'lhs' field of type cell, of same size as second argument")
        end if
 
-       endo_names = mxGetField(prhs(7), 1_mwIndex, "endo_names")
+       endo_names = mxGetField(prhs(8), 1_mwIndex, "endo_names")
        if (.not. (c_associated(endo_names) .and. mxIsCell(endo_names) .and. mxGetNumberOfElements(endo_names) == size(x))) then
           call mexErrMsgTxt("Seventh argument must have a 'endo_names' field of type cell, of same size as second argument")
        end if
@@ -203,7 +209,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
           call mexErrMsgTxt("Non-square block")
        end if
        x_block = x(x_indices)
-       call trust_region_solve(x_block, matlab_fcn, info, tolx, tolf, maxiter)
+       call trust_region_solve(x_block, matlab_fcn, info, tolx, tolf, maxiter, factor)
        x(x_indices) = x_block
      end block
 
@@ -222,7 +228,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   if (maxval(abs(fvec)) > tolf) then
      if (debug) &
           call mexPrintf_trim_newline("DYNARE_SOLVE (solve_algo=13|14): residuals still too large, solving for the whole model")
-     call trust_region_solve(x, matlab_fcn, info, tolx, tolf, maxiter)
+     call trust_region_solve(x, matlab_fcn, info, tolx, tolf, maxiter, factor)
   else
      info = 1
   end if

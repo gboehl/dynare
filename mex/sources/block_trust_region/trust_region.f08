@@ -28,7 +28,7 @@ module trust_region
   public :: trust_region_solve
 
 contains
-  subroutine trust_region_solve(x, f, info, tolx, tolf, maxiter)
+  subroutine trust_region_solve(x, f, info, tolx, tolf, maxiter, factor)
 
     real(real64), dimension(:), intent(inout) :: x ! On entry: guess value; on exit: solution
     interface
@@ -47,9 +47,11 @@ contains
     integer, intent(out) :: info
     real(real64), intent(in), optional :: tolx, tolf ! Tolerances in x and f
     integer, intent(in), optional :: maxiter ! Maximum number of iterations
+    real(real64), intent(in), optional :: factor ! Used in determining the initial step bound.
 
     real(real64) :: tolx_actual, tolf_actual
     integer :: maxiter_actual
+    real(real64) :: factor_actual
     integer, parameter :: maxslowiter = 15 ! Maximum number of consecutive iterations with slow progress
     real(real64), parameter :: macheps = epsilon(x)
     real(real64) :: delta ! Radius of the trust region
@@ -78,6 +80,11 @@ contains
        maxiter_actual = maxiter
     else
        maxiter_actual = 50
+    end if
+    if (present(factor)) then
+       factor_actual = factor
+    else
+       factor_actual = 100.0_real64
     end if
 
     niter = 1
@@ -123,6 +130,7 @@ contains
             else
                delta = 1
             end if
+            delta = delta*factor
          end if
 
          ! Get trust-region model (dogleg) minimizer

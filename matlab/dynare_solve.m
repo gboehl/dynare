@@ -370,7 +370,7 @@ elseif ismember(options.solve_algo, [13, 14])
         auxstruct.isloggedlhs = isloggedlhs;
         auxstruct.isauxdiffloggedrhs = isauxdiffloggedrhs;
     end
-    [x, errorflag] = block_trust_region(f, x, tolf, options.solve_tolx, maxit, options.debug, auxstruct, arguments{:});
+    [x, errorflag] = block_trust_region(f, x, tolf, options.solve_tolx, maxit, options.trust_region_initial_step_bound_factor, options.debug, auxstruct, arguments{:});
     [fvec, fjac] = feval(f, x, arguments{:});
 else
     error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9,10,11,12,13,14]')
