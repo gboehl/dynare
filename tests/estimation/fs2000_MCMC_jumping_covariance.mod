@@ -84,9 +84,9 @@ options_.mode_compute=4;
 options_.plot_priors=0;
 estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=1000,mh_nblocks=1,mh_jscale=0.8,mcmc_jumping_covariance=hessian);
 
-load fs2000_MCMC_jumping_covariance_mode hh;
+load('fs2000_MCMC_jumping_covariance/Output/fs2000_MCMC_jumping_covariance_mode','hh');
 jumping_covariance=diag(diag(hh));
-save test_matrix.mat jumping_covariance;
+save('test_matrix.mat','jumping_covariance');
 
 estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=1000,mh_nblocks=1,mh_jscale=0.01,mcmc_jumping_covariance=prior_variance);
 estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=1000,mh_nblocks=1,mh_jscale=0.0001,mcmc_jumping_covariance=identity_matrix);

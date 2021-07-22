@@ -38,7 +38,7 @@ if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed');
 end
 
-base_results=load('sim_exo_lead_lag_results.mat');
+base_results=load(['sim_exo_lead_lag' filesep 'Output' filesep 'sim_exo_lead_lag_results.mat']);
 if max(max(abs(base_results.oo_.endo_simul(1:5,:) - oo_.endo_simul(1:5,:)))) > 1e-8
     error('Simulation with leads and lags doesn''t match the one with auxiliary variables')
 end
@@ -63,7 +63,7 @@ if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed');
 end
 
-base_results=load('sim_exo_lead_lag_results.mat');
+base_results=load(['sim_exo_lead_lag' filesep 'Output' filesep 'sim_exo_lead_lag_results.mat']);
 if max(max(abs(base_results.oo_.endo_simul(1:5,:) - oo_.endo_simul(1:5,:)))) > 1e-8
     error('Simulation with leads and lags doesn''t match the one with auxiliary variables')
 end
@@ -84,7 +84,7 @@ if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed');
 end
 
-base_results=load('sim_exo_lead_lag_results.mat');
+base_results=load(['sim_exo_lead_lag' filesep 'Output' filesep 'sim_exo_lead_lag_results.mat']);
 if max(max(abs(base_results.oo_.endo_simul(1:5,:) - oo_.endo_simul(1:5,:)))) > 1e-8
     error('Simulation with leads and lags doesn''t match the one with auxiliary variables')
 end
@@ -105,7 +105,7 @@ if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed');
 end
 
-base_results=load('sim_exo_lead_lag_results.mat');
+base_results=load(['sim_exo_lead_lag' filesep 'Output' filesep 'sim_exo_lead_lag_results.mat']);
 if max(max(abs(base_results.oo_.endo_simul(1:5,:) - oo_.endo_simul(1:5,:)))) > 1e-8
     error('Simulation with leads and lags doesn''t match the one with auxiliary variables')
 end
@@ -126,7 +126,7 @@ if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed');
 end
 
-base_results=load('sim_exo_lead_lag_results.mat');
+base_results=load(['sim_exo_lead_lag' filesep 'Output' filesep 'sim_exo_lead_lag_results.mat']);
 if max(max(abs(base_results.oo_.endo_simul(1:5,:) - oo_.endo_simul(1:5,:)))) > 1e-8
     error('Simulation with leads and lags doesn''t match the one with auxiliary variables')
 end

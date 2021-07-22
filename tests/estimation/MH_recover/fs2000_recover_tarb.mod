@@ -8,7 +8,7 @@ copyfile([M_.dname filesep 'metropolis' filesep M_.dname '_mh1_blck1.mat'],[M_.d
 copyfile([M_.dname filesep 'metropolis' filesep M_.dname '_mh2_blck2.mat'],[M_.dname '_mh2_blck2.mat'])
 delete([M_.dname filesep 'metropolis' filesep M_.dname '_mh2_blck2.mat'])
 
-estimation(posterior_sampling_method='tailored_random_block_metropolis_hastings',order=1, datafile='../fsdat_simul',mode_compute=0,mode_file=fs2000_recover_mode, nobs=192, loglinear, mh_replic=2000, mh_nblocks=2, mh_jscale=0.8,mh_recover);
+estimation(posterior_sampling_method='tailored_random_block_metropolis_hastings',order=1, datafile='../fsdat_simul',mode_compute=0,mode_file='fs2000_recover/Output/fs2000_recover_mode', nobs=192, loglinear, mh_replic=2000, mh_nblocks=2, mh_jscale=0.8,mh_recover);
 
 %check first unaffected chain
 temp1=load([M_.dname '_mh1_blck1.mat']);

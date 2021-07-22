@@ -59,7 +59,7 @@ end;
 
 @#include "dynrbc_common.inc"
 
-orig_results=load('dynrbc_results.mat');
+orig_results=load(['dynrbc' filesep 'Output' filesep 'dynrbc_results.mat']);
 if max(max(abs(oo_.occbin.piecewise-orig_results.oo_.occbin.piecewise)))>1e-10
     error('Results do not match')
 end

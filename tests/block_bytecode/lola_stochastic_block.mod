@@ -8,7 +8,7 @@
 
 [~, state_reorder] = sort(oo_.dr.state_var);
 
-ref = load('lola_stochastic_results.mat');
+ref = load(['lola_stochastic' filesep 'Output' filesep 'lola_stochastic_results.mat']);
 
 [~, ref_state_reorder] = sort(ref.oo_.dr.state_var);
 

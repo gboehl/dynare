@@ -69,7 +69,7 @@ end;
 
 stoch_simul(loglinear,order=1);
 
-D = load('example4_loglinear_lagged_exogenous_results');
+D = load(['example4_loglinear_lagged_exogenous' filesep 'Output' filesep 'example4_loglinear_lagged_exogenous_results']);
 
 test1 = D.oo_.dr.ghx - oo_.dr.ghx;
 if norm(test1) > 1e-16;

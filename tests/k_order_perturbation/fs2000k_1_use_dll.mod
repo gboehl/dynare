@@ -73,11 +73,11 @@ steady;
 
 stoch_simul(order=2,k_order_solver,irf=0);
 
-if ~exist('fs2000k2_use_dll_results.mat','file');
+if ~exist(['fs2000k2_use_dll' filesep 'Output' filesep 'fs2000k2_use_dll_results.mat'],'file');
    error('fs2000k2_use_dll must be run first');
 end;
 
-oo1 = load('fs2000k2_use_dll_results','oo_');
+oo1 = load(['fs2000k2_use_dll' filesep 'Output' filesep 'fs2000k2_use_dll_results'],'oo_');
 
 dr0 = oo1.oo_.dr;
 dr = oo_.dr;

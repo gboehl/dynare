@@ -31,6 +31,10 @@ function dynare_estimation_1(var_list_,dname)
 
 global M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info
 
+if ~exist([M_.dname filesep 'Output'],'dir')
+    mkdir(M_.dname,'Output');
+end
+
 if isempty(estim_params_)
     mode_compute_o = options_.mode_compute;
     mh_replic_o = options_.mh_replic;
@@ -206,7 +210,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
         newratflag = new_rat_hess_info.newratflag;
         new_rat_hess_info = new_rat_hess_info.new_rat_hess_info;
     elseif isnumeric(options_.mode_compute) && options_.mode_compute==6 %save scaling factor
-        save([M_.fname '_optimal_mh_scale_parameter.mat'],'Scale');
+        save([M_.dname filesep 'Output' filesep M_.fname '_optimal_mh_scale_parameter.mat'],'Scale');
         options_.mh_jscale = Scale;
         bayestopt_.jscale(:) = options_.mh_jscale;
     end
@@ -260,9 +264,9 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
     end
     parameter_names = bayestopt_.name;
     if options_.cova_compute || options_.mode_compute==5 || options_.mode_compute==6
-        save([M_.fname '_mode.mat'],'xparam1','hh','parameter_names','fval');
+        save([M_.dname filesep 'Output' filesep M_.fname '_mode.mat'],'xparam1','hh','parameter_names','fval');
     else
-        save([M_.fname '_mode.mat'],'xparam1','parameter_names','fval');
+        save([M_.dname filesep 'Output' filesep M_.fname '_mode.mat'],'xparam1','parameter_names','fval');
     end
 end
 
@@ -375,7 +379,7 @@ end
 
 if np > 0
     pindx = estim_params_.param_vals(:,1);
-    save([M_.fname '_params.mat'],'pindx');
+    save([M_.dname filesep 'Output' filesep M_.fname '_params.mat'],'pindx');
 end
 
 switch options_.MCMC_jumping_covariance
@@ -472,7 +476,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
     else
         %get stored results if required
         if options_.load_mh_file && options_.load_results_after_load_mh
-            oo_load_mh=load([M_.fname '_results'],'oo_');
+            oo_load_mh=load([M_.dname filesep 'Output' filesep M_.fname '_results'],'oo_');
         end
         if ~options_.nodiagnostic
             if (options_.mh_replic>0 || (options_.load_mh_file && ~options_.load_results_after_load_mh))
@@ -778,7 +782,7 @@ end
 
 if np > 0
     pindx = estim_params_.param_vals(:,1);
-    save([M_.fname '_pindx.mat'] ,'pindx');
+    save([M_.dname filesep 'Output' filesep M_.fname '_pindx.mat'] ,'pindx');
 end
 
 %reset qz_criterium

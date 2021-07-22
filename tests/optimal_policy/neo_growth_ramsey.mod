@@ -33,13 +33,13 @@ stoch_simul(order=2, irf=0);
 
 planner_objective_value = evaluate_planner_objective(M_, options_, oo_);
 
-if ~exist('neo_growth_results.mat','file');
+if ~exist(['neo_growth' filesep 'Output' filesep 'neo_growth_results.mat'],'file');
    error('neo_growth must be run first');
 end;
 
-oo1 = load('neo_growth_results','oo_');
-M1 = load('neo_growth_results','M_');
-options1 = load('neo_growth_results','options_');
+oo1 = load(['neo_growth' filesep 'Output' filesep 'neo_growth_results'],'oo_');
+M1 = load(['neo_growth' filesep 'Output' filesep 'neo_growth_results'],'M_');
+options1 = load(['neo_growth' filesep 'Output' filesep 'neo_growth_results'],'options_');
 unc_W_hand = oo1.oo_.mean(strmatch('W',M1.M_.endo_names,'exact'));
 
 initial_condition_states = repmat(oo1.oo_.dr.ys,1,M1.M_.maximum_lag);

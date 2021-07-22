@@ -548,7 +548,8 @@ by the ``dynare`` command.
     results in the workspace available for further processing. More
     details are given under the relevant computing tasks. The
     ``M_``,``oo_``, and ``options_`` structures are saved in a file
-    called ``FILENAME_results.mat``. If they exist, ``estim_params_``,
+    called ``FILENAME_results.mat`` located in the ``MODFILENAME/Output`` folder.
+    If they exist, ``estim_params_``,
     ``bayestopt_``, ``dataset_``, ``oo_recursive_`` and
     ``estimation_info`` are saved in the same file. Note that Matlab 
     by default only allows ``.mat``-files up to 2GB. You can lift this 

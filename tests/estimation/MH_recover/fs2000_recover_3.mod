@@ -5,14 +5,14 @@
 
 options_.MaxNumberOfBytes=2000*11*8/4;
 estimation(order=1, datafile='../fsdat_simul',nobs=192, loglinear, mh_replic=1000, mh_nblocks=2, mh_jscale=0.8);
-estimation(order=1,mode_compute=0,mode_file=fs2000_recover_3_mode, datafile='../fsdat_simul',nobs=192, loglinear, load_mh_file,mh_replic=1000, mh_nblocks=2, mh_jscale=0.8);
+estimation(order=1,mode_compute=0,mode_file='fs2000_recover_3/Output/fs2000_recover_3_mode', datafile='../fsdat_simul',nobs=192, loglinear, load_mh_file,mh_replic=1000, mh_nblocks=2, mh_jscale=0.8);
 copyfile([M_.dname filesep 'metropolis' filesep M_.dname '_mh1_blck1.mat'],[M_.dname '_mh1_blck1.mat'])
 copyfile([M_.dname filesep 'metropolis' filesep M_.dname '_mh3_blck2.mat'],[M_.dname '_mh3_blck2.mat'])
 copyfile([M_.dname filesep 'metropolis' filesep M_.dname '_mh4_blck2.mat'],[M_.dname '_mh4_blck2.mat'])
 delete([M_.dname filesep 'metropolis' filesep M_.dname '_mh3_blck2.mat'])
 delete([M_.dname filesep 'metropolis' filesep M_.dname '_mh4_blck2.mat'])
 
-estimation(order=1, datafile='../fsdat_simul',mode_compute=0,mode_file=fs2000_recover_3_mode, nobs=192, loglinear, mh_replic=2000, mh_nblocks=2, mh_jscale=0.8,mh_recover);
+estimation(order=1, datafile='../fsdat_simul',mode_compute=0,mode_file='fs2000_recover_3/Output/fs2000_recover_3_mode', nobs=192, loglinear, mh_replic=2000, mh_nblocks=2, mh_jscale=0.8,mh_recover);
 
 %check first unaffected chain
 temp1=load([M_.dname '_mh1_blck1.mat']);

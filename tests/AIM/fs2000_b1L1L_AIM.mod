@@ -92,7 +92,7 @@ steady(nocheck);
  
 stoch_simul(aim_solver, order=1, irf=0);
  
-benchmark = load('fs2000_b1L1L_results');
+benchmark = load(['fs2000_b1L1L' filesep 'Output' filesep 'fs2000_b1L1L_results']);
 threshold = 1e-8;
  
 if max(max(abs(benchmark.oo_.dr.ghx-oo_.dr.ghx) > threshold));

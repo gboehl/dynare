@@ -43,7 +43,7 @@ end;
 
 stoch_simul(aim_solver, order=1,irf=0);
  
-benchmark = load('ls2003_2L2L_results');
+benchmark = load(['ls2003_2L2L' filesep 'Output' filesep 'ls2003_2L2L_results']);
 threshold = 1e-8;
  
 if max(max(abs(benchmark.oo_.dr.ghx-oo_.dr.ghx) > threshold));

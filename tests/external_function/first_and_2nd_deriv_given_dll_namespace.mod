@@ -47,7 +47,7 @@ end;
 
 stoch_simul;
 
-L = load('benchmark_results.mat');
+L = load(['benchmark' filesep 'Output' filesep 'benchmark_results.mat']);
 if max(max(abs(L.oo_.dr.ghu - oo_.dr.ghu))) > 1e-12
   error('Failure in external function')
 end

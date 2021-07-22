@@ -1412,13 +1412,6 @@ clean-local:
 	rm -f $(patsubst %.trs, %.json, $(O_TRS_FILES))
 	rm -f $(patsubst %.trs, %.json, $(O_XFAIL_TRS_FILES))
 
-	rm -f $(patsubst %.mod, %_results.mat, $(MODFILES))
-	rm -f $(patsubst %.mod, %_mode.mat, $(MODFILES))
-	rm -f $(patsubst %.mod, %_mh_mode.mat, $(MODFILES))
-	rm -f $(patsubst %.mod, %_mean.mat, $(MODFILES))
-	rm -f $(patsubst %.mod, %_pindx.mat, $(MODFILES))
-	rm -f $(patsubst %.mod, %_params.mat, $(MODFILES))
-	rm -f $(patsubst %.mod, %_simul, $(MODFILES))
 	rm -f $(patsubst %.mod, %.log, $(MODFILES))
 
 	rm -rf $(patsubst %.mod, %, $(MODFILES))

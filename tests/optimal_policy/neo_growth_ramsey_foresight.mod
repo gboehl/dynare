@@ -39,9 +39,9 @@ if ~exist('neo_growth_foresight_results.mat','file');
    error('neo_growth_foresight must be run first');
 end;
 
-oo1 = load('neo_growth_foresight_results','oo_');
-M1 = load('neo_growth_foresight_results','M_');
-options1 = load('neo_growth_foresight_results','options_');
+oo1 = load(['neo_growth_foresight' filesep 'Output' filesep 'neo_growth_foresight_results'],'oo_');
+M1 = load(['neo_growth_foresight' filesep 'Output' filesep 'neo_growth_foresight_results'],'M_');
+options1 = load(['neo_growth_foresight' filesep 'Output' filesep 'neo_growth_foresight_results'],'options_');
 cond_W_hand = oo1.oo_.endo_simul(strmatch('W',M1.M_.endo_names,'exact'),2);
 unc_W_hand = oo1.oo_.endo_simul(strmatch('W',M1.M_.endo_names,'exact'),end);
 

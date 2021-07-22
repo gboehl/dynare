@@ -44,11 +44,11 @@ end;
 
 stoch_simul(nograph);
 
-if ~exist('example1_results.mat','file');
+if ~exist(['example1' filesep 'Output' filesep 'example1_results.mat'],'file');
    error('example1 must be run first');
 end;
 
-oo1 = load('example1_results','oo_');
+oo1 = load(['example1' filesep 'Output' filesep 'example1_results'],'oo_');
 
 dr0 = oo1.oo_.dr;
 dr = oo_.dr;

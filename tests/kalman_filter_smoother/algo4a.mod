@@ -34,7 +34,7 @@ end;
 varobs dw dx y z;
        
 estimation(datafile=data,first_obs=1000,nobs=200,mh_replic=0,diffuse_filter);
-//estimation(datafile=data,first_obs=1000,nobs=200,mh_replic=0,mode_compute=0,mode_file=algo3_mode,diffuse_filter);
+//estimation(datafile=data,first_obs=1000,nobs=200,mh_replic=0,mode_compute=0,mode_file='algo3/Output/algo3_mode',diffuse_filter);
 
 //checking smoother consistency
 X = oo_.SmoothedVariables;

@@ -93,7 +93,7 @@ ramsey_model(planner_discount=0.99);
 stoch_simul(order=1,irf=0);
 evaluate_planner_objective;
 
-o1=load('nk_ramsey_expectation_results');
+o1=load(['nk_ramsey_expectation' filesep 'Output' filesep 'nk_ramsey_expectation_results']);
 if (norm(o1.oo_.dr.ghx-oo_.dr.ghx,inf) > 1e-12)
    error('ghx doesn''t match')
 end

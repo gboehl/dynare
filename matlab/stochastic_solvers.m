@@ -128,7 +128,7 @@ elseif local_order == 2
         if ~isempty(infrow)
             fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains Inf.\n')
             fprintf('STOCHASTIC_SOLVER: Try running model_diagnostics to find the source of the problem.\n')
-            save([M_.fname '_debug.mat'],'hessian1')
+            save([M_.dname filesep 'Output' filesep M_.fname '_debug.mat'],'hessian1')
         end
     end
     if ~isempty(infrow)
@@ -140,7 +140,7 @@ elseif local_order == 2
         if ~isempty(nanrow)
             fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains NaN.\n')
             fprintf('STOCHASTIC_SOLVER: Try running model_diagnostics to find the source of the problem.\n')
-            save([M_.fname '_debug.mat'],'hessian1')
+            save([M_.dname filesep 'Output' filesep M_.fname '_debug.mat'],'hessian1')
         end
     end
     if ~isempty(nanrow)
@@ -155,7 +155,7 @@ if options_.debug
     if ~isempty(infrow)
         fprintf('\nSTOCHASTIC_SOLVER: The Jacobian of the dynamic model contains Inf. The problem is associated with:\n\n')
         display_problematic_vars_Jacobian(infrow,infcol,M_,dr.ys,'dynamic','STOCHASTIC_SOLVER: ')
-        save([M_.fname '_debug.mat'],'jacobia_')
+        save([M_.dname filesep 'Output' filesep M_.fname '_debug.mat'],'jacobia_')
     end
 end
 
@@ -184,7 +184,7 @@ if options_.debug
     if ~isempty(nanrow)
         fprintf('\nSTOCHASTIC_SOLVER: The Jacobian of the dynamic model contains NaN. The problem is associated with:\n\n')
         display_problematic_vars_Jacobian(nanrow,nancol,M_,dr.ys,'dynamic','STOCHASTIC_SOLVER: ')
-        save([M_.fname '_debug.mat'],'jacobia_')
+        save([M_.dname filesep 'Output' filesep M_.fname '_debug.mat'],'jacobia_')
     end
 end
 

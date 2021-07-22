@@ -51,11 +51,11 @@ end;
 
 stoch_simul;
 
-if ~exist('example1long_results.mat','file');
+if ~exist(['example1long' filesep 'Output' filesep 'example1long_results.mat'],'file');
    error('example1long must be run first');
 end;
 
-oo1 = load('example1long_results','oo_');
+oo1 = load(['example1long' filesep 'Output' filesep 'example1long_results'],'oo_');
 
 dr0 = oo1.oo_.dr;
 dr = oo_.dr;

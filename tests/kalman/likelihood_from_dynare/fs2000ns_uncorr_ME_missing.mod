@@ -12,7 +12,7 @@ stderr Y_obs, 0.05;
 //corr gp_obs, gy_obs,0;
 end;
 
-@#define mode_file_name="fs2000ns_uncorr_ME_missing_mode"
+@#define mode_file_name="'fs2000ns_uncorr_ME_missing/Output/fs2000ns_uncorr_ME_missing_mode'"
 @#define data_file_name="fs_ns_dat_simul_uncorr_ME_missing"
 
 @#include "fs2000ns_estimation_check.inc" 

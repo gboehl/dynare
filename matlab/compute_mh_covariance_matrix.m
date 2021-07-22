@@ -78,4 +78,4 @@ hh = inv(posterior_covariance);
 fval = posterior_kernel_at_the_mode;
 parameter_names = bayestopt_.name;
 
-save([M_.fname '_mh_mode.mat'],'xparam1','hh','fval','parameter_names');
+save([M_.dname filesep 'Output' filesep M_.fname '_mh_mode.mat'],'xparam1','hh','fval','parameter_names');

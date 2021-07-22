@@ -219,7 +219,7 @@ end;
 planner_objective 0.5*((siggma+(varphi+alppha)/(1-alppha))*y_hat^2+epsilon/0.0215*pi^2)/100;
 discretionary_policy(order=1,instruments=(R),irf=20,planner_discount=betta, periods=0) y_hat pi_ann log_y log_N log_W_real log_P;
 
-temp=load('Gali_2015_chapter_3_results.mat');
+temp=load(['Gali_2015_chapter_3' filesep 'Output' filesep 'Gali_2015_chapter_3_results.mat']);
 if abs(oo_.planner_objective_value-temp.oo_.planner_objective_value)>1e-6
     warning('Planner objective does not match linear model')
 end

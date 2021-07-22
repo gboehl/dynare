@@ -68,7 +68,7 @@ model_diagnostics;
 check;
 stoch_simul(order=2,irf=0);
 
-o1 = load('ds1_results','oo_');
+o1 = load(['ds1' filesep 'Output' filesep 'ds1_results'],'oo_');
 oo1 = o1.oo_.dr;
 oo2 = oo_.dr;
 if any(abs(oo1.ghxx-oo2.ghxx) > 1e-14);error('ds1 with missing variable doesn''t reproduce ds2');end;

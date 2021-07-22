@@ -3890,7 +3890,8 @@ Computing the stochastic solution
        requested (i.e. ``periods`` :math:`>` 0). Note that if this
        option is greater than 1, the additional series will not be
        used for computing the empirical moments but will simply be
-       saved in binary form to the file ``FILENAME_simul``. Default:
+       saved in binary form to the file ``FILENAME_simul`` in the 
+       ``FILENAME/Output``-folder. Default:
        ``1``.
 
     .. option:: solve_algo = INTEGER
@@ -5297,7 +5298,8 @@ block decomposition of the model (see :opt:`block`).
        achieve an acceptance rate of
        :ref:`AcceptanceRateTarget<art>`. The resulting scale parameter
        will be saved into a file named
-       ``MODEL_FILENAME_mh_scale.mat.`` This file can be loaded in
+       ``MODEL_FILENAME_mh_scale.mat`` in the ``FILENAME/Output``-folder.
+       This file can be loaded in
        subsequent runs via the ``posterior_sampler_options`` option
        :ref:`scale_file <scale-file>`. Both ``mode_compute=6`` and
        ``scale_file`` will overwrite any value specified in
@@ -5378,7 +5380,8 @@ block decomposition of the model (see :opt:`block`).
        Name of the file containing previous value for the mode. When
        computing the mode, Dynare stores the mode (``xparam1``) and
        the hessian (``hh``, only if ``cova_compute=1``) in a file
-       called ``MODEL_FILENAME_mode.mat``. After a successful run of
+       called ``MODEL_FILENAME_mode.mat`` in the ``FILENAME/Output``-folder. 
+       After a successful run of
        the estimation command, the ``mode_file`` will be disabled to
        prevent other function calls from implicitly using an updated
        ``mode-file``. Thus, if the mod-file contains subsequent

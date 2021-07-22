@@ -66,7 +66,7 @@ order = DynareOptions.order;
 replic = DynareOptions.simul_replic;
 
 if replic > 1
-    fname = [DynareModel.fname,'_simul'];
+    fname = [DynareModel.dname filesep 'Output' DynareModel.fname,'_simul'];
     fh = fopen(fname,'w+');
 end
 

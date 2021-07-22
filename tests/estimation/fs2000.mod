@@ -104,11 +104,11 @@ options_.smoother=0;
 options_.moments_varendo=0;
 options_.forecast=0;   
 copyfile([M_.dname filesep 'metropolis' filesep M_.dname '_mh1_blck1.mat'],[M_.dname '_mh1_blck1.mat'])
-estimation(mode_compute=0,mode_file=fs2000_mode,order=1, datafile=fsdat_simul, nobs=192, loglinear, mh_replic=1500, mh_nblocks=1, mh_jscale=0.8);
+estimation(mode_compute=0,mode_file='fs2000/Output/fs2000_mode',order=1, datafile=fsdat_simul, nobs=192, loglinear, mh_replic=1500, mh_nblocks=1, mh_jscale=0.8);
 hh=eye(size(bayestopt_.name,1));
-save('fs2000_mode.mat','hh','-append')
+save('fs2000/Output/fs2000_mode.mat','hh','-append')
 Laplace = oo_.MarginalDensity.LaplaceApproximation; %save Laplace approximation which will be overwritten with set hh otherwise
-estimation(mode_compute=0,mode_file=fs2000_mode,order=1, datafile=fsdat_simul, nobs=192, loglinear, mh_replic=1500, mh_nblocks=1, mh_jscale=10,load_mh_file);
+estimation(mode_compute=0,mode_file='fs2000/Output/fs2000_mode',order=1, datafile=fsdat_simul, nobs=192, loglinear, mh_replic=1500, mh_nblocks=1, mh_jscale=10,load_mh_file);
 
 temp1=load([M_.dname '_mh1_blck1.mat']);
 temp2=load([M_.dname filesep 'metropolis' filesep M_.dname '_mh1_blck1.mat']);
@@ -121,7 +121,7 @@ end
         
 save('fs2000_result.mat','oo_')        
 options_.load_results_after_load_mh=1;
-estimation(mode_compute=0,mode_file=fs2000_mode,order=1, datafile=fsdat_simul, nobs=192, loglinear, mh_replic=0, mh_nblocks=1, mh_jscale=10,load_mh_file,smoother) gy_obs gp_obs;
+estimation(mode_compute=0,mode_file='fs2000/Output/fs2000_mode',order=1, datafile=fsdat_simul, nobs=192, loglinear, mh_replic=0, mh_nblocks=1, mh_jscale=10,load_mh_file,smoother) gy_obs gp_obs;
 oo_.MarginalDensity.LaplaceApproximation = Laplace; %reset correct Laplace
 
 

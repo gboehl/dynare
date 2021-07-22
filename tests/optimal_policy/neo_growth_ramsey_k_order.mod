@@ -38,13 +38,13 @@ evaluate_planner_objective;
 if condWelfare~=oo_.planner_objective_value(1)
     error('Values do not match');
 end
-if ~exist('neo_growth_k_order_results.mat','file');
+if ~exist(['neo_growth_k_order' filesep 'Output' filesep 'neo_growth_k_order_results.mat'],'file');
    error('neo_growth_k_order must be run first');
 end;
 
-oo = load('neo_growth_k_order_results','oo_');
-M = load('neo_growth_k_order_results','M_');
-options = load('neo_growth_k_order_results','options_');
+oo = load(['neo_growth_k_order' filesep 'Output' filesep 'neo_growth_k_order_results'],'oo_');
+M = load(['neo_growth_k_order' filesep 'Output' filesep 'neo_growth_k_order_results'],'M_');
+options = load(['neo_growth_k_order' filesep 'Output' filesep 'neo_growth_k_order_results'],'options_');
 
 ind_U = strmatch('U', M.M_.endo_names,'exact');
 ind_W = strmatch('W', M.M_.endo_names,'exact');

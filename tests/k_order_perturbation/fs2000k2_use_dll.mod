@@ -66,11 +66,11 @@ steady;
 
 stoch_simul(order=2,k_order_solver,periods=1000);
 
-if ~exist('fs2000k2a_results.mat','file');
+if ~exist(['fs2000k2a' filesep 'Output' filesep 'fs2000k2a_results.mat'],'file');
    error('fs2000k2a must be run first');
 end;
 
-oo1 = load('fs2000k2a_results','oo_');
+oo1 = load(['fs2000k2a' filesep 'Output' filesep 'fs2000k2a_results'],'oo_');
 
 dr0 = oo1.oo_.dr;
 dr = oo_.dr;

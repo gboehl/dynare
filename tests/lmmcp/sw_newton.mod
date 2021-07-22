@@ -71,7 +71,7 @@ simul(periods=1000);
 
 newton_solution_is_wrong = abs(evaluate_max_dynamic_residual(str2func('sw_newton.dynamic'), oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1000, size(oo_.endo_simul, 1), 1, M_.lead_lag_incidence))>options_.dynatol.f;
 
-lmmcp = load('sw_lmmcp_results');
+lmmcp = load(['sw_lmmcp' filesep 'Output' filesep 'sw_lmmcp_results']);
 
 lmmcp_solution_is_wrong = abs(evaluate_max_dynamic_residual(str2func('sw_newton.dynamic'), lmmcp.oo_.endo_simul, lmmcp.oo_.exo_simul, M_.params, oo_.steady_state, 1000, size(oo_.endo_simul, 1), 1, M_.lead_lag_incidence))>options_.dynatol.f;
 

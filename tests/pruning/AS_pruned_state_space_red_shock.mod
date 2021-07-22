@@ -144,7 +144,7 @@ for iorder = 1:3
         error('Something wrong with pruned_state_space.m compared to Andreasen et al 2018 Toolbox v2 at order %d.',iorder);
     end
     if iorder==3
-        pruned_without_shock = load('AnSchorfheide_pruned_state_space_results.mat');
+        pruned_without_shock = load(['AnSchorfheide_pruned_state_space' filesep 'Output' filesep 'AnSchorfheide_pruned_state_space_results.mat']);
         pruned_without_shock = pruned_without_shock.oo_.pruned;
         norm_E_yx   = norm(pruned.E_y   - pruned_without_shock.E_y , Inf);
         fprintf('max(sum(abs(E[y;x]''))): %d\n',norm_E_yx);

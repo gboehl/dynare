@@ -154,7 +154,7 @@ else
 end
 
 if options_.debug
-    save([M_.fname '_debug.mat'],'jacobia_')
+    save([M_.dname filesep 'Output' filesep M_.fname '_debug.mat'],'jacobia_')
 end
 
 dr=set_state_space(dr,M_,options_);

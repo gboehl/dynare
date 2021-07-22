@@ -92,11 +92,11 @@ if ~isempty(options_.mode_file)
     load(options_.mode_file,'xparam1')
 end
 if options_.opt_gsa.ppost
-    c=load([fname_,'_mean.mat'],'xparam1');
+    c=load([M_.dname filesep 'Output' filesep fname_,'_mean.mat'],'xparam1');
     xparam1_mean=c.xparam1;
     clear c
-elseif ~isempty(options_.mode_file) && exist([fname_,'_mean.mat'])==2
-    c=load([fname_,'_mean.mat'],'xparam1');
+elseif ~isempty(options_.mode_file) && exist([M_.dname filesep 'Output' filesep fname_,'_mean.mat'])==2
+    c=load([M_.dname filesep 'Output' filesep fname_,'_mean.mat'],'xparam1');
     xparam1_mean=c.xparam1;
     clear c
 end

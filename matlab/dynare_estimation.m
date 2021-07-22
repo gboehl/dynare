@@ -101,7 +101,7 @@ if nnobs>1 || nfirstobs > 1
         end
         dynare_estimation_1(var_list,M_.dname);
         if isequal(i,1) && options_.mode_compute ~= 0
-            options_.mode_file = [M_.fname '_mode'];
+            options_.mode_file = [M_.dname filesep 'Output' filesep M_.fname '_mode'];
         end
         if options_.recursive_estimation_restart
             for j=1:options_.recursive_estimation_restart

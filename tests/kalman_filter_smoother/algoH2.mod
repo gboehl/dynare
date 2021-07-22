@@ -35,7 +35,7 @@ end;
 varobs dw dx dy z;
        
 //estimation(datafile=data,first_obs=1000,nobs=200,mh_replic=0,kalman_algo=2);
-estimation(datafile=data,first_obs=1000,nobs=200,mh_replic=0,mode_compute=0,mode_file=algoH1_mode,kalman_algo=2,filtered_vars,smoothed_state_uncertainty);
+estimation(datafile=data,first_obs=1000,nobs=200,mh_replic=0,mode_compute=0,mode_file='algoH1/Output/algoH1_mode',kalman_algo=2,filtered_vars,smoothed_state_uncertainty);
 
 //checking smoother consistency
 X = oo_.SmoothedVariables;
@@ -60,7 +60,7 @@ if max(max(abs(dat(1000:1199,:)-S(:,[2:4 1])-ME))) > 1e-10;
    error('Test fails');
 end;    
 
-o1 = load('algoH1_results');
+o1 = load(['algoH1' filesep 'Output' filesep 'algoH1_results.mat']);
 obj_endo={'SmoothedVariables'; 'FilteredVariables'; 'UpdatedVariables'};
 obj_exo = {'SmoothedShocks';}; 
 nobj_endo = size(obj_endo,1);

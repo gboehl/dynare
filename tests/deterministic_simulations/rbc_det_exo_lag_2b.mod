@@ -79,6 +79,6 @@ end
 rplot Consumption;
 rplot Capital;
 
-O=load('rbc_det_exo_lag_2a_results');
+O=load(['rbc_det_exo_lag_2a' filesep 'Output' filesep 'rbc_det_exo_lag_2a_results']);
 
 fataltest(oo_.endo_simul(1:M_.orig_endo_nbr,:),O.oo_.endo_simul(1:O.M_.orig_endo_nbr,:),1);

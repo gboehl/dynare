@@ -81,7 +81,7 @@ end
 rplot Consumption;
 rplot Capital;
 
-D = load('rbc_det_results');
+D = load(['rbc_det' filesep 'Output' filesep 'rbc_det_results']);
 
 if norm(D.oo_.endo_simul(1:D.M_.orig_endo_nbr,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(1:M_.orig_endo_nbr,M_.maximum_lag+1:end-M_.maximum_lead)) > 1e-30;
    disp(D.oo_.endo_simul(1:D.M_.orig_endo_nbr,D.M_.maximum_lag+1:end-D.M_.maximum_lead) - oo_.endo_simul(1:M_.orig_endo_nbr,M_.maximum_lag+1:end-M_.maximum_lead));
@@ -102,7 +102,7 @@ end
 rplot Consumption;
 rplot Capital;
 
-D = load('rbc_det_results');
+D = load(['rbc_det' filesep 'Output' filesep 'rbc_det_results']);
 if isoctave && options_.solve_algo==0
     %%acount for somehow weaker convergence criterion in Octave's fsolve
     tol_crit=1e-4;

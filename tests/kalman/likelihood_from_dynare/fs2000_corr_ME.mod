@@ -12,7 +12,7 @@ stderr gy_obs, 1;
 corr gp_obs, gy_obs,0;
 end;
 
-@#define mode_file_name="fs2000_corr_ME_mode"
+@#define mode_file_name="'fs2000_corr_ME/Output/fs2000_corr_ME_mode'"
 @#define data_file_name="fsdat_simul_corr_ME"
 
 @#include "fs2000_estimation_check.inc" 
