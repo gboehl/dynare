@@ -23,7 +23,7 @@ r=1;
 end;
 
 histval;
-r(0)=1;
+a(0)=-1;
 end;
 
 steady_state_model;
@@ -42,4 +42,5 @@ end;
 options_.dr_display_tol=0;
 planner_objective(ln(c)-phi*((n^(1+gamma))/(1+gamma)));
 ramsey_model(planner_discount=0.99,instruments=(r));
-stoch_simul(order=1,periods=500);
+stoch_simul(order=1);
+evaluate_planner_objective;
