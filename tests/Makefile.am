@@ -1305,7 +1305,21 @@ EXTRA_DIST = \
 	run_kronecker_tests.m \
 	kronecker/test_kron.m \
 	kronecker/nash_matrices.mat \
-	deterministic_simulations/pfwee.csv
+	deterministic_simulations/pfwee.csv \
+	solver-test-functions/brown.m \
+	solver-test-functions/broydenbanded.m \
+	solver-test-functions/broydentridiagonal.m \
+	solver-test-functions/chebyquad.m \
+	solver-test-functions/discreteboundaryvalue.m \
+	solver-test-functions/discreteintegralequation.m \
+	solver-test-functions/helicalvalley.m \
+	solver-test-functions/powell1.m \
+	solver-test-functions/powell2.m \
+	solver-test-functions/rosenbrock.m \
+	solver-test-functions/trigonometric.m \
+	solver-test-functions/variablydimensioned.m \
+	solver-test-functions/watson.m \
+	solver-test-functions/wood.m
 
 if ENABLE_MATLAB
 check-local: check-matlab
