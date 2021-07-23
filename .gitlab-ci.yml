@@ -10,12 +10,10 @@ variables:
 # - if VERSION was already set (when manually running a pipeline), use it
 # - if we are in the official Dynare repository:
 #   + if on a tag: use the tag
-#   + if on master: use 4.7-unstable-$TIMESTAMP-$COMMIT
-#   + on another branch: use $BRANCH-$TIMESTAMP-$COMMIT
+#   + otherwise: use $BRANCH-$TIMESTAMP-$COMMIT
 # - if in a personal repository: use $USER-$TIMESTAMP-$COMMIT
 before_script:
   - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ -n $CI_COMMIT_TAG ]] && export VERSION=$CI_COMMIT_TAG'
-  - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ $CI_COMMIT_REF_NAME == master ]] && export VERSION=4.7-unstable-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
   - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && export VERSION=$CI_COMMIT_REF_NAME-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
   - '[[ -z $VERSION ]] && export VERSION=$CI_PROJECT_NAMESPACE-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
 
@@ -184,10 +182,10 @@ test_dynare++:
 # those jobs to start before the “test” and “pkg” stages have succeeded. Hence
 # we stick to the “dependencies” keyword.
 
-deploy_manual_unstable:
+deploy_manual_stable:
   stage: deploy
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^4\.7\.[0-9]+$/'
       when: on_success
     - when: never
   tags:
@@ -197,12 +195,13 @@ deploy_manual_unstable:
   script:
     - rm -rf doc/manual/build/html/_static/mathjax
     - ln -s /usr/share/javascript/mathjax doc/manual/build/html/_static/mathjax
-    - rsync --recursive --links --delete doc/manual/build/html/ /srv/www.dynare.org/manual-unstable/
+    - rsync --recursive --links --delete doc/manual/build/html/ /srv/www.dynare.org/manual/
+    - cp doc/manual/build/latex/dynare-manual.pdf /srv/www.dynare.org/manual.pdf
 
-deploy_snapshot_unstable:
+deploy_release_stable:
   stage: deploy
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^4\.7\.[0-9]+$/'
       when: on_success
     - when: never
   tags:
@@ -213,10 +212,30 @@ deploy_snapshot_unstable:
     - pkg_macOS
   script:
     - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/cepremap-comodo-sectigo-code-signing.p12 -n Dynare -i https://www.dynare.org -t http://timestamp.comodoca.com -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
-    - cp *.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
-    - f=(windows/exe/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe
-    - f=(windows/7z/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-7z/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-7z/dynare-latest-win.7z
-    - f=(windows/zip/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip
-    - f=(macOS/pkg/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/macos/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/macos/dynare-latest-macos.pkg
-    - ~/update-snapshot-list.sh
+    - cp *.tar.xz /srv/www.dynare.org/release/source/
+    - cp windows/exe/* /srv/www.dynare.org/release/windows/
+    - cp windows/7z/* /srv/www.dynare.org/release/windows-7z/
+    - cp windows/zip/* /srv/www.dynare.org/release/windows-zip/
+    - cp macOS/pkg/* /srv/www.dynare.org/release/macos/
+    - ~/update-release-list.sh
     - curl -X POST -F token="$WEBSITE_PIPELINE_TRIGGER_TOKEN" -F ref=master https://git.dynare.org/api/v4/projects/40/trigger/pipeline
+
+deploy_beta_stable:
+  stage: deploy
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^4\.7(\.[0-9]+)?-(beta|rc)[0-9]+$/'
+      when: on_success
+    - when: never
+  tags:
+    - restricted
+  dependencies:
+    - pkg_source
+    - pkg_windows
+    - pkg_macOS
+  script:
+    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/dynare-object-signing.p12 -n Dynare -i https://www.dynare.org -t http://timestamp.digicert.com -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
+    - cp *.tar.xz /srv/www.dynare.org/beta/source/
+    - cp windows/exe/* /srv/www.dynare.org/beta/windows/
+    - cp windows/7z/* /srv/www.dynare.org/beta/windows-7z/
+    - cp windows/zip/* /srv/www.dynare.org/beta/windows-zip/
+    - cp macOS/pkg/* /srv/www.dynare.org/beta/macos/
