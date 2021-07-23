@@ -17,19 +17,8 @@ function check_model(DynareModel)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-xlen = DynareModel.maximum_exo_lag+DynareModel.maximum_exo_lead + 1;
-if ~ DynareModel.lead_lag_incidence(DynareModel.maximum_lag+1,:) > 0
-    error ('RESOL: Error in model specification: some variables don"t appear as current') ;
-end
-
-if xlen > 1
-    error (['RESOL: stochastic exogenous variables must appear only at the' ...
-            ' current period. Use additional endogenous variables']) ;
-end
-
-if (DynareModel.exo_det_nbr > 0) && (DynareModel.maximum_lag > 1 || DynareModel.maximum_lead > 1)
-    error(['Exogenous deterministic variables are currently only allowed in' ...
-           ' models with leads and lags on only one period'])
+if ~all(DynareModel.lead_lag_incidence(DynareModel.maximum_lag+1,:) > 0)
+    warning('Problem in the model specification: some variables don''t appear as current. Check whether this is desired.');
 end
 
 if ~check_consistency_covariances(DynareModel.Sigma_e)
