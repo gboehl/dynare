@@ -36,7 +36,7 @@ if nargin==1
         fjac(4,1) = 2*sqrt(10)*(x(1)-x(4));
         fjac(4,4) = -fjac(4,1);
     end
-elseif nargin
+elseif ~nargin
     if nargout==1
         fval = [3; -1; 0; 1];
     else

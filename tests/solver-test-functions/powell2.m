@@ -28,7 +28,7 @@ if nargin==1
         fjac(2,1) = -exp(x(1));
         fjac(2,2) = -exp(x(2));
     end
-elseif nargin
+elseif ~nargin
     if nargout==1
         fval = [0; 1];
     else

@@ -49,7 +49,7 @@ if nargin==1
         fjac(3,2) = 0;
         fjac(3,3) = 1;
     end
-elseif nargin
+elseif ~nargin
     if nargout==1
         fval = [-1; 0; 0];
     else

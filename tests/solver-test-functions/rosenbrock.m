@@ -28,7 +28,7 @@ if nargin==1
         fjac(2,1) = -20*x(1);
         fjac(2,2) = 10;
     end
-elseif nargin
+elseif ~nargin
     if nargout==1
         fval = [10000; 1];
     else

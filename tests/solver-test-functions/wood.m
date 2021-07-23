@@ -45,7 +45,7 @@ if nargin==1
         fjac(4,3) = -2*C6*x(3);
         fjac(4,4) = C6+C4;
     end
-elseif nargin
+elseif ~nargin
     if nargout==1
         fval = [-3; -1; -3; -1];
     else
