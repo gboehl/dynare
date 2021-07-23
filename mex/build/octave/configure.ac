@@ -18,7 +18,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.62])
-AC_INIT([dynare], [4.7-unstable])
+AC_INIT([dynare], [4.7.0])
 AC_CONFIG_SRCDIR([configure.ac])
 AM_INIT_AUTOMAKE([-Wall -Wno-portability foreign])
 
