@@ -4859,8 +4859,7 @@ block decomposition of the model (see :opt:`block`).
 
        Sets the same generalized beta distribution as before, but now
        truncates this distribution to ``[-0.5,1]`` through the use of
-       LOWER_BOUND and UPPER_BOUND. Hence, the prior does not
-       integrate to ``1`` anymore.
+       LOWER_BOUND and UPPER_BOUND. 
 
     *Parameter transformation*
 
