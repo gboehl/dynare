@@ -5233,8 +5233,8 @@ block decomposition of the model (see :opt:`block`).
 
     .. option:: conf_sig = DOUBLE
 
-       Confidence interval used for classical forecasting after
-       estimation. See :ref:`conf_sig <confsig>`.
+       Level of significance of the confidence interval used for classical forecasting after
+       estimation. Default: 0.9.
 
     .. option:: mh_conf_sig = DOUBLE
 
@@ -12508,11 +12508,11 @@ Misc commands
          very time-consuming, and use of this option may be
          counter-productive in those cases.
 
-.. [#f3] See option :ref:`conf_sig <confsig>` to change the size of
-         the HPD interval.
+.. [#f3] See options :ref:`conf_sig <confsig>` and :opt:`mh_conf_sig <mh_conf_sig = DOUBLE>`
+         to change the size of the HPD interval.
 
-.. [#f4] See option :ref:`conf_sig <confsig>` to change the size of
-         the HPD interval.
+.. [#f4] See options :ref:`conf_sig <confsig>` () and :opt:`mh_conf_sig <mh_conf_sig = DOUBLE>`
+         to change the size of the HPD interval.
 
 .. [#f5] When the shocks are correlated, it is the decomposition of
          orthogonalized shocks via Cholesky decomposition according to
