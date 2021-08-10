@@ -77,7 +77,6 @@ if ~options_.occbin.simul.piecewise_only
     out.linear    = out.linear + out.ys';
 end
 out.piecewise = out.piecewise+ out.ys';
-out.exo_simul = options_.occbin.simul.SHOCKS;
 out.exo_pos = options_.occbin.simul.exo_pos;
 
 oo_.occbin=out;
