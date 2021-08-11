@@ -446,7 +446,7 @@ end;
 % These are the moments used in the paper; corresponds to momentSet=2 in the replication files
 
 matched_moments;
-%mean
+%first moments: all
 Obs_Gr_C;
 Obs_Gr_I;
 Obs_Infl;
@@ -456,53 +456,39 @@ Obs_xhr40;
 Obs_GoY;
 Obs_hours;
 
-% all variances
+%second moments
+% (i) all variances, (2) all covariances excluding GoY and hours, (3) own first autocovariances
 Obs_Gr_C*Obs_Gr_C;
-Obs_Gr_I*Obs_Gr_I;
-Obs_Infl*Obs_Infl;
-Obs_r1*Obs_r1;
-Obs_r40*Obs_r40;
-Obs_xhr40*Obs_xhr40;
-Obs_GoY*Obs_GoY;
-Obs_hours*Obs_hours;
-
-% covariance excluding GoY and hours
 Obs_Gr_C*Obs_Gr_I;
 Obs_Gr_C*Obs_Infl;
 Obs_Gr_C*Obs_r1;
 Obs_Gr_C*Obs_r40;
 Obs_Gr_C*Obs_xhr40;
-%Obs_Gr_C*Obs_GoY;
-%Obs_Gr_C*Obs_hours;
 
+Obs_Gr_I*Obs_Gr_I;
 Obs_Gr_I*Obs_Infl;
 Obs_Gr_I*Obs_r1;
 Obs_Gr_I*Obs_r40;
 Obs_Gr_I*Obs_xhr40;
-%Obs_Gr_I*Obs_GoY;
-%Obs_Gr_I*Obs_hours;
 
+Obs_Infl*Obs_Infl;
 Obs_Infl*Obs_r1;
 Obs_Infl*Obs_r40;
 Obs_Infl*Obs_xhr40;
-%Obs_Infl*Obs_GoY;
-%Obs_Infl*Obs_hours;
 
+Obs_r1*Obs_r1;
 Obs_r1*Obs_r40;
 Obs_r1*Obs_xhr40;
-%Obs_r1*Obs_GoY;
-%Obs_r1*Obs_hours;
 
+Obs_r40*Obs_r40;
 Obs_r40*Obs_xhr40;
-%Obs_r40*Obs_GoY;
-%Obs_r40*Obs_hours;
 
-%Obs_xhr40*Obs_GoY;
-%Obs_xhr40*Obs_hours;
+Obs_xhr40*Obs_xhr40;
 
-%Obs_GoY*Obs_hours;
+Obs_GoY*Obs_GoY;
 
-%first autocovariance
+Obs_hours*Obs_hours;
+
 Obs_Gr_C*Obs_Gr_C(-1);
 Obs_Gr_I*Obs_Gr_I(-1);
 Obs_Infl*Obs_Infl(-1);
@@ -512,6 +498,7 @@ Obs_xhr40*Obs_xhr40(-1);
 Obs_GoY*Obs_GoY(-1);
 Obs_hours*Obs_hours(-1);
 end;
+
 
 %--------------------------------------------------------------------------
 % Create Data
