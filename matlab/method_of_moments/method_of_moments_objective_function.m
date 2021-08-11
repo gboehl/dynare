@@ -20,6 +20,9 @@ function [fval, info, exit_flag, df, junk1, oo_, M_, options_mom_] = method_of_m
 %   o oo_:                      structure containing the results with the following updated fields:
 %      - mom.model_moments       [numMom x 1] vector with model moments
 %      - mom.Q                   value of the quadratic form of the moment difference
+%      - mom.model_moments_params_derivs
+%                                [numMom x numParams] Jacobian matrix of derivatives of model_moments with respect to estimated parameters
+%                                (only for GMM with analytical derivatives)
 %   o M_:                       Matlab's structure describing the model
 %   o options_mom_:             structure information about all settings (specified by the user, preprocessor, and taken from global options_)
 % -------------------------------------------------------------------------

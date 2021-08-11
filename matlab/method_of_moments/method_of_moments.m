@@ -92,6 +92,7 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 % - [ ] SMM with extended path
 % - [ ] deal with measurement errors (once @wmutschl has implemented this in identification toolbox)
 % - [ ] dirname option to save output to different directory not yet implemented
+% - [ ] display scaled moments
 
 % The TeX option crashes MATLAB R2014a run with "-nodisplay" option
 % (as is done from the testsuite).
@@ -151,7 +152,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     options_mom_.mom = set_default_option(options_mom_.mom,'bartlett_kernel_lag',20);               % bandwith in optimal weighting matrix
     options_mom_.mom = set_default_option(options_mom_.mom,'penalized_estimator',false);            % include deviation from prior mean as additional moment restriction and use prior precision as weight
     options_mom_.mom = set_default_option(options_mom_.mom,'verbose',false);                        % display and store intermediate estimation results
-    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix',{'DIAGONAL'; 'DIAGONAL'});   % weighting matrix in moments distance objective function at each iteration of estimation;
+    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix',{'DIAGONAL'; 'OPTIMAL'});   % weighting matrix in moments distance objective function at each iteration of estimation;
                                                                                                            % possible values are 'OPTIMAL', 'IDENTITY_MATRIX' ,'DIAGONAL' or a filename. Size of cell determines stages in iterated estimation.
     options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix_scaling_factor',1);    % scaling of weighting matrix in objective function
     options_mom_.mom = set_default_option(options_mom_.mom,'se_tolx',1e-5);                         % step size for numerical computation of standard errors
@@ -166,10 +167,10 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
     options_mom_.mom = set_default_option(options_mom_.mom,'burnin',500);                           % number of periods dropped at beginning of simulation
     options_mom_.mom = set_default_option(options_mom_.mom,'bounded_shock_support',false);          % trim shocks in simulation to +- 2 stdev
     options_mom_.mom = set_default_option(options_mom_.mom,'seed',24051986);                        % seed used in simulations
-    options_mom_.mom = set_default_option(options_mom_.mom,'simulation_multiple',5);                % multiple of the data length used for simulation
+    options_mom_.mom = set_default_option(options_mom_.mom,'simulation_multiple',7);                % multiple of the data length used for simulation
     if options_mom_.mom.simulation_multiple < 1
         fprintf('The simulation horizon is shorter than the data. Dynare resets the simulation_multiple to 5.\n')
-        options_mom_.mom.simulation_multiple = 5;
+        options_mom_.mom.simulation_multiple = 7;
     end
 end
 if strcmp(options_mom_.mom.mom_method,'GMM')
@@ -477,7 +478,7 @@ end
 bayestopt_laplace=bayestopt_;
 
 % Check on specified priors and penalized estimation
-if any(bayestopt_laplace.pshape > 0) % prior specified, not ML
+if any(bayestopt_laplace.pshape > 0) % prior specified
     if ~options_mom_.mom.penalized_estimator
         fprintf('\nPriors were specified, but the penalized_estimator-option was not set.\n')
         fprintf('Dynare sets penalized_estimator to 1. Conducting %s with penalty.\n',options_mom_.mom.mom_method)
@@ -835,7 +836,6 @@ if size(options_mom_.mom.weighting_matrix,1)>1 && ~(any(strcmpi('diagonal',optio
     fprintf('\nYou did not specify the use of an optimal or diagonal weighting matrix. There is no point in running an iterated method of moments.\n')
 end
 
-optim_opt0 = options_mom_.optim_opt; % store original options set by user
 for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
     fprintf('Estimation stage %u\n',stage_iter);
     Woptflag = false;
