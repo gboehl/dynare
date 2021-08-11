@@ -1,23 +1,23 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage{bibmad,graphicx,latexsym,amssymb,times}
-\usepackage[cp850]{inputenc}
+\usepackage{graphicx,latexsym,amssymb,times}
+\usepackage[utf8]{inputenc}
 
 \begin{document}
 \title{Stochastic simulations with {\sc Dynare}. \\ A practical guide.}
-\author{Fabrice Collard (GREMAQ, University of Toulouse)\\Adapted for Dynare 4.1\\ by Michel Juillard and S\'ebastien Villemot (CEPREMAP)}
+\author{Fabrice Collard (GREMAQ, University of Toulouse)\\Adapted for Dynare 4.x\\ by Michel Juillard and S\'ebastien Villemot (CEPREMAP)}
 \date{First draft: February 2001\hspace{10mm}This draft: December 2009.}
 \maketitle
 This document describes a model involving both endogenous and exogenous state variable. We first describe the theoretical model, before showing how the perturbation method is implemented in {\sc Dynare}.
 
-\section{A theoretical model} 
-We consider an economy that consists of a large number of dynastic households and a large number of firms. Firms are producing a homogeneous final product that can be either consumed or invested by means of capital and labor services. Firms own their capital stock and hire labor supplied by the households. Households own the firms. In each and every period three perfectly competitive markets open --- the markets for consumption goods, labor services, and financial capital in the form of firms' shares. 
+\section{A theoretical model}
+We consider an economy that consists of a large number of dynastic households and a large number of firms. Firms are producing a homogeneous final product that can be either consumed or invested by means of capital and labor services. Firms own their capital stock and hire labor supplied by the households. Households own the firms. In each and every period three perfectly competitive markets open --- the markets for consumption goods, labor services, and financial capital in the form of firms' shares.
 Household preferences are characterized by the lifetime utility function:
 \begin{equation}
   E_t\sum_{\tau=t}^{\infty}{\beta^\star}^{\tau-t} \left(\log(c_t)-\theta\frac{h_t^{1+\psi}}{1+\psi}\right)
   \label{eq:ut}
 \end{equation}
 \noindent where $0<\beta^\star<1$ is a constant discount factor, $c_t$ is consumption in period
-$t$, $h_t$ is the fraction of total available time devoted to productive activity in period $t$, $\theta>0$ and $\psi\geqslant 0$. We assume that there exists a central planner that determines hours, consumption and capital accumulation maximizing the household's utility function subject to the following budget constraint 
+$t$, $h_t$ is the fraction of total available time devoted to productive activity in period $t$, $\theta>0$ and $\psi\geqslant 0$. We assume that there exists a central planner that determines hours, consumption and capital accumulation maximizing the household's utility function subject to the following budget constraint
 \begin{equation}
   c_t+i_t=y_t
   \label{eq:bud}
@@ -44,7 +44,7 @@ a_t\\b_t
 \left(
 \begin{array}{cc}
 \rho&\tau\\
-\tau&\rho\\ 
+\tau&\rho\\
 \end{array}
 \right)\left(
 \begin{array}{c}
@@ -57,7 +57,7 @@ a_{t-1}\\b_{t-1}
 \end{array}
 \right)  \label{eq:process}
 \end{equation}
-where $|\rho+\tau|<1$ and $|\rho-\tau|<1 $ for sake of stationarity and 
+where $|\rho+\tau|<1$ and $|\rho-\tau|<1 $ for sake of stationarity and
 \begin{eqnarray*}
 E(\varepsilon_t)&=& 0,\\
 E(\nu_t)&=& 0,\\
@@ -65,7 +65,7 @@ E(\varepsilon_t\varepsilon_s)&=&\left\{
 \begin{array}{lcl}
 \sigma^2_\varepsilon & \mbox{ if } & t=s \\
 0 & \mbox{ if } & t\neq s \\
-\end{array}\right. \mbox{, }\\ 
+\end{array}\right. \mbox{, }\\
 E(\nu_t\nu_s)&=&\left\{
 \begin{array}{lcl}
 \sigma^2_\nu & \mbox{ if } & t=s \\
@@ -75,24 +75,24 @@ E(\varepsilon_t\nu_s)&=&\left\{
 \begin{array}{lcl}
 \varphi\sigma_\varepsilon\sigma_\nu & \mbox{ if } & t=s \\
 0 & \mbox{ if } & t\neq s \\
-\end{array}\right. \mbox{. } 
+\end{array}\right. \mbox{. }
 \end{eqnarray*}
 
- 
+
 \section{Dynamic Equilibrium}
-The dynamic equilibrium of this economy follows from the first order conditions for optimality: 
+The dynamic equilibrium of this economy follows from the first order conditions for optimality:
 \begin{eqnarray*}
 &&c_t \theta h_t^{1+\psi}=(1-\alpha) y_t \\
 &&\beta E_t\left[\left(\frac{\exp(b_t) c_t}{\exp(b_{t+1})c_{t+1}}\right)\left(\exp(b_{t+1})\alpha \frac{y_{t+1}}{k_{t+1}}+1-\delta\right)\right]=1\\
 &&y_t=\exp(a_t) k_t^\alpha h_t^{1-\alpha} \\
 &&k_{t+1}=\exp(b_t)(y_t-c_t)+(1-\delta)k_t \\
 &&a_t=\rho a_{t-1}+\tau b_{t-1}+\varepsilon_t \\
-&&b_t=\tau a_{t-1}+\rho b_{t-1}+\nu_t 
+&&b_t=\tau a_{t-1}+\rho b_{t-1}+\nu_t
 \end{eqnarray*}
 \section{The {\sc dynare} code}
 The {\sc dynare} code is straightforward to write, as the equilibrium is written in the natural way. The whole code is reported at the end of the section. Before that we proceed step by step.
 \paragraph{Preamble}
-The preamble consists of the some declarations to setup the endogenous and exogenous variables, the parameters and assign values to these parameters. 
+The preamble consists of the some declarations to setup the endogenous and exogenous variables, the parameters and assign values to these parameters.
 \begin{enumerate}
 \item {\tt var y, c, k, h, a, b;} specifies the endogenous variables in the model since we have output ({\tt y}), consumption ({\tt c}), capital ({\tt k}), hours ({\tt h}) and the two shocks ({\tt a, b}).
 \item {\tt varexo e, u;} specifies the exogenous variables in the model --- namely the innovations of the shocks, since we have the innovation of the non--incorporated shock ({\tt e}), and the innovation of the incorporated shock ({\tt u}).
@@ -133,9 +133,9 @@ theta = 2.95;
 \end{enumerate}
 
 \paragraph{Declaration of the model:}
-This step is done in a straightforward way. It starts with the instruction {\tt model;} and ends with {\tt end;}, in between all equilibrium conditions are written exactly the way we write it ``by hand''. However, there is a simple rule that should be kept in mind when the model is written. Let us consider a variable $x$: 
+This step is done in a straightforward way. It starts with the instruction {\tt model;} and ends with {\tt end;}, in between all equilibrium conditions are written exactly the way we write it ``by hand''. However, there is a simple rule that should be kept in mind when the model is written. Let us consider a variable $x$:
 \begin{itemize}
-\item If $x$ is decided in period $t$ then we simply write ${\tt x}$. 
+\item If $x$ is decided in period $t$ then we simply write ${\tt x}$.
 \item When the variable is decided in $t-1$, such as the capital stock in our simple model, we write ${\tt x(-1)}$. \item Finally, when a variable is decided in the next period, $t+1$, such as consumption in the Euler equation, we write ${\tt x(+1)}$.
 \end{itemize}
 Hence the required code to declare our model in {\sc Dynare} will be:
@@ -164,7 +164,7 @@ end;
 \end{verbatim}
 so that the level of consumption is actually given by ${\tt exp(c)}$.
 \paragraph{Solving the model}
-\begin{enumerate} 
+\begin{enumerate}
 \item Now we need to provide numerical initial conditions for the computation of the deterministic steady state. This is done with the sequence between {\tt initval;} and {\tt end;}. Each variable, endogenous or exogenous, should be initialized. In our example, we give the exact values of the deterministic equilibrium in absence of shocks. This takes the form
 \begin{verbatim}
 initval;
@@ -206,12 +206,12 @@ Number of periods on which to compute the IRFs (default = 40)
 \item {\tt nofunctions}:
 Doesn't print the coefficients of the approximated solution
 \item {\tt nomoments}:
-Doesn't print moments of the endogenous variables 
+Doesn't print moments of the endogenous variables
 \item {\tt order} = [1,2,3]:
 Order of Taylor approximation (default = 2)
 \item {\tt replic} = Integer:
 Number of simulated series used to compute the IRFs (default = 1, if order = 1, and 50 otherwise)
-\end{itemize} 
+\end{itemize}
 
 In our first example, we use simply:
 \begin{verbatim}
@@ -324,8 +324,8 @@ end;
 
 stoch_simul(periods=2000, drop=200);
 \end{verbatim}
-\bibliographystyle{Usmad}
-\bibliography{/papers/biblio/michel}
+%\bibliographystyle{Usmad}
+%\bibliography{/papers/biblio/michel}
 
 \end{document}
 

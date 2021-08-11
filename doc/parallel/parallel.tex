@@ -1,14 +1,15 @@
 % ----------------------------------------------------------------
 % AMS-LaTeX Paper ************************************************
 % **** -----------------------------------------------------------
-\documentclass[12pt,a4paper,pdftex,nofootinbib]{article}
-\usepackage[cp1252]{inputenc}
+\documentclass[12pt,a4paper,pdftex]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath}
-\usepackage[pdftex]{graphicx}
+\usepackage{graphicx}
 \usepackage{epstopdf}
 \usepackage{natbib}
 \usepackage{verbatim}
-\usepackage[pdftex]{color}
+\usepackage{xcolor}
 \usepackage{psfrag}
 \usepackage{setspace}
 \usepackage{rotating}
@@ -48,6 +49,15 @@
 
 \def \supp{{\rm supp}}
 \def \var{{\rm var}}
+
+\usepackage[pdfpagelabels]{hyperref}
+\hypersetup{
+pdfproducer = {LaTeX},
+colorlinks,
+linkcolor=blue,
+filecolor=yellow,
+urlcolor=green,
+citecolor=green}
 
 % ----------------------------------------------------------------
 \begin{document}
@@ -349,7 +359,7 @@ Finally, the DYNARE command line options are:
   \item \verb"parallel": trigger the parallel computation using the first cluster specified in config file
   \item \verb"parallel=<clustername>": trigger the parallel computation, using the given cluster
   \item \verb"parallel_slave_open_mode": use the leaveSlaveOpen mode in the cluster
-  \item \verb"parallel_test": just test the cluster, don’t actually run the MOD file
+  \item \verb"parallel_test": just test the cluster, don't actually run the MOD file
 
  \end{itemize}
 
@@ -828,7 +838,7 @@ The modified \verb"random_walk_metropolis_hastings.m" is therefore:
 \noindent\begin{tabular}[b]{| p{\linewidth} |}
 \hline
 \begin{verbatim}
-function random_walk_metropolis_hastings(TargetFun,ProposalFun,…,varargin)
+function random_walk_metropolis_hastings(TargetFun,ProposalFun,\ldots,varargin)
 [...]
 % here we wrap all local variables needed by the <*>_core function
 localVars = struct('TargetFun', TargetFun, ...
@@ -970,11 +980,11 @@ On the other hand, under the parallel implementation, a parallel monitoring plot
 
 \section{Parallel DYNARE: testing}
 We checked the new parallel platform for DYNARE performing a number of tests, using different models and computer architectures. We present here all tests performed with Windows XP/MATLAB. However, similar tests were performed successfully under Linux/Ubuntu environment.
-In the Bayesian estimation of DSGE models with DYNARE, most of the computing time is devoted to the posterior parameter estimation with the Metropolis algorithm. The first and second tests are therefore focused on the parallelization of the Random Walking Metropolis Hastings algorithm (Sections \ref{s:test1}-\ref{s:test2}). In addition, further tests (Sections \ref{s:test3}-\ref{s:test4}) are devoted to test all the parallelized functions in DYNARE. Finally, we compare the two parallel implementations of the Metropolis Hastings algorithms, available in DYNARE: the Independent and the Random Walk (Section \ref{s:test5}).
+In the Bayesian estimation of DSGE models with DYNARE, most of the computing time is devoted to the posterior parameter estimation with the Metropolis algorithm. The first and second tests are therefore focused on the parallelization of the Random Walking Metropolis Hastings algorithm (Sections \ref{s:test1}-\ref{s:test2}). In addition, further tests (Sections \ref{s:test3}-\ref{s:test4}) are devoted to test all the parallelized functions in DYNARE. %Finally, we compare the two parallel implementations of the Metropolis Hastings algorithms, available in DYNARE: the Independent and the Random Walk (Section \ref{s:test5}).
 
 \subsection{Test 1.}\label{s:test1}
 The main goal here was to evaluate the parallel package on a \emph{fixed hardware platform} and using chains of \emph{variable length}. The model used for testing is a modification of \cite{Hradisky_etal_2006}. This is a small scale open economy DSGE model with 6 observed variables, 6 endogenous variables and 19 parameters to be estimated.
-We estimated the model on a bi-processor machine (Fujitsu Siemens, Celsius R630) powered with an Intel(R) Xeon(TM) CPU 2.80GHz Hyper Treading Technology; first with the original serial Metropolis and subsequently using the parallel solution, to take advantage of the two processors technology. We ran chains of increasing length: 2500, 5000, 10,000, 50,000, 100,000, 250,000, 1,000,000.
+We estimated the model on a bi-processor machine (Fujitsu Siemens, Celsius R630) powered with an Intel\textsuperscript{\textregistered} Xeon\texttrademark CPU 2.80GHz Hyper Treading Technology; first with the original serial Metropolis and subsequently using the parallel solution, to take advantage of the two processors technology. We ran chains of increasing length: 2500, 5000, 10,000, 50,000, 100,000, 250,000, 1,000,000.
 
 \begin{figure}[!ht]
 \begin{centering}
@@ -997,8 +1007,8 @@ Overall results are given in Figure \ref{fig:test_time_comp}, showing the comput
 The scope of the second test was to verify if results were robust over different hardware platforms.
 We estimated the model with chain lengths of 1,000,000 runs on the following hardware platforms:
 \begin{itemize}
-\item Single processor machine: Intel(R) Pentium4(R) CPU 3.40GHz with Hyper Treading Technology (Fujitsu-Siemens Scenic Esprimo);
-\item Bi-processor machine: two CPU's Intel(R) Xeon(TM) 2.80GHz Hyper Treading Technology (Fujitsu-Siemens, Celsius R630);
+\item Single processor machine: Intel\textsuperscript{\textregistered} Pentium4\textsuperscript{\textregistered} CPU 3.40GHz with Hyper Treading Technology (Fujitsu-Siemens Scenic Esprimo);
+\item Bi-processor machine: two CPU's Intel\textsuperscript{\textregistered} Xeon\texttrademark 2.80GHz Hyper Treading Technology (Fujitsu-Siemens, Celsius R630);
 \item Dual core machine: Intel Centrino T2500 2.00GHz Dual Core  (Fujitsu-Siemens, LifeBook S Series).
 \end{itemize}
 
@@ -1042,7 +1052,7 @@ Unplugged network cable. &
 Given the excellent results reported above, we have parallelized many other DYNARE functions. This implies that parallel instances can be invoked many times during a single DYNARE session. Under the basic parallel toolbox implementation, that we call the `Open/Close' strategy, this implies that MATLAB instances are opened and closed many times by system calls, possibly slowing down the computation, specially for `entry-level' computer resources. As mentioned before, this suggested to implement an alternative strategy for the parallel toolbox, that we call the `Always-Open' strategy, where the slave MATLAB threads, once opened, stay alive and wait for new tasks assigned by the master until the full DYNARE procedure is completed. We show next the tests of these latest implementations.
 
 \subsection{Test 3}\label{s:test3}
-In this Section we use the \cite{Lubik2003} model as test function\footnote{The \cite{Lubik2003} model is also selected as the `official' test model for the parallel toolbox in DYNARE.} and a very simple computer class, quite diffuse nowadays: Netbook personal Computer. In particular we used the Dell Mini 10 with Processor Intel® Atom™ Z520 (1,33 GHz, 533 MHz), 1 GB di RAM (with Hyper-trading). First, we tested the computational gain of running a full Bayesian estimation: Metropolis (two parallel chains), MCMC diagnostics, posterior IRF's and filtered, smoothed, forecasts, etc. In other words, we designed DYNARE sessions that invoke all parallelized functions. Results are shown in Figures \ref{fig:netbook_complete_openclose}-\ref{fig:netbook_partial_openclose}.
+In this Section we use the \cite{Lubik2003} model as test function\footnote{The \cite{Lubik2003} model is also selected as the `official' test model for the parallel toolbox in DYNARE.} and a very simple computer class, quite diffuse nowadays: Netbook personal Computer. In particular we used the Dell Mini 10 with Processor Intel\textsuperscript{\textregistered} Atom\texttrademark Z520 (1,33 GHz, 533 MHz), 1 GB di RAM (with Hyper-trading). First, we tested the computational gain of running a full Bayesian estimation: Metropolis (two parallel chains), MCMC diagnostics, posterior IRF's and filtered, smoothed, forecasts, etc. In other words, we designed DYNARE sessions that invoke all parallelized functions. Results are shown in Figures \ref{fig:netbook_complete_openclose}-\ref{fig:netbook_partial_openclose}.
 \begin{figure}[p]
 \begin{centering}
   % Requires \usepackage{graphicx}
@@ -1143,49 +1153,49 @@ The methodology identified for parallelizing MATLAB codes within DYNARE proved t
 \begin{figure}
 \begin{centering}
   % Requires \usepackage{graphicx}
-  \epsfxsize=250pt \epsfbox{RWMH_quest1_PriorsAndPosteriors1Comp.pdf}
+  \epsfxsize=300pt \epsfbox{RWMH_quest1_PriorsAndPosteriors1Comp.pdf}
   \caption{Prior (grey lines) and posterior density of estimated parameters (black = 100,000 runs; red = 1,000,000 runs) using the RWMH algorithm \citep[QUEST III model][]{Ratto_et_al_EconModel2009}.}\label{fig:quest_RWMH_comp1}
 \end{centering}
 \end{figure}
 \begin{figure}
 \begin{centering}
   % Requires \usepackage{graphicx}
-  \epsfxsize=250pt \epsfbox{RWMH_quest1_PriorsAndPosteriors2Comp.pdf}
+  \epsfxsize=300pt \epsfbox{RWMH_quest1_PriorsAndPosteriors2Comp.pdf}
   \caption{Prior (grey lines) and posterior density of estimated parameters (black = 100,000 runs; red = 1,000,000 runs) using the RWMH algorithm \citep[QUEST III model][]{Ratto_et_al_EconModel2009}.}\label{fig:quest_RWMH_comp2}
 \end{centering}
 \end{figure}
 \begin{figure}
 \begin{centering}
   % Requires \usepackage{graphicx}
-  \epsfxsize=250pt \epsfbox{RWMH_quest1_PriorsAndPosteriors3Comp.pdf}
+  \epsfxsize=300pt \epsfbox{RWMH_quest1_PriorsAndPosteriors3Comp.pdf}
   \caption{Prior (grey lines) and posterior density of estimated parameters (black = 100,000 runs; red = 1,000,000 runs) using the RWMH algorithm \citep[QUEST III model][]{Ratto_et_al_EconModel2009}.}\label{fig:quest_RWMH_comp3}
 \end{centering}
 \end{figure}
 \begin{figure}
 \begin{centering}
   % Requires \usepackage{graphicx}
-  \epsfxsize=250pt \epsfbox{RWMH_quest1_PriorsAndPosteriors4Comp.pdf}
+  \epsfxsize=300pt \epsfbox{RWMH_quest1_PriorsAndPosteriors4Comp.pdf}
   \caption{Prior (grey lines) and posterior density of estimated parameters (black = 100,000 runs; red = 1,000,000 runs) using the RWMH algorithm \citep[QUEST III model][]{Ratto_et_al_EconModel2009}.}\label{fig:quest_RWMH_comp4}
 \end{centering}
 \end{figure}
 \begin{figure}
 \begin{centering}
   % Requires \usepackage{graphicx}
-  \epsfxsize=250pt \epsfbox{RWMH_quest1_PriorsAndPosteriors5Comp.pdf}
+  \epsfxsize=300pt \epsfbox{RWMH_quest1_PriorsAndPosteriors5Comp.pdf}
   \caption{Prior (grey lines) and posterior density of estimated parameters (black = 100,000 runs; red = 1,000,000 runs) using the RWMH algorithm \citep[QUEST III model][]{Ratto_et_al_EconModel2009}.}\label{fig:quest_RWMH_comp5}
 \end{centering}
 \end{figure}
 \begin{figure}
 \begin{centering}
   % Requires \usepackage{graphicx}
-  \epsfxsize=250pt \epsfbox{RWMH_quest1_PriorsAndPosteriors6Comp.pdf}
+  \epsfxsize=300pt \epsfbox{RWMH_quest1_PriorsAndPosteriors6Comp.pdf}
   \caption{Prior (grey lines) and posterior density of estimated parameters (black = 100,000 runs; red = 1,000,000 runs) using the RWMH algorithm \citep[QUEST III model][]{Ratto_et_al_EconModel2009}.}\label{fig:quest_RWMH_comp6}
 \end{centering}
 \end{figure}
 \begin{figure}
 \begin{centering}
   % Requires \usepackage{graphicx}
-  \epsfxsize=250pt \epsfbox{RWMH_quest1_PriorsAndPosteriors7Comp.pdf}
+  \epsfxsize=300pt \epsfbox{RWMH_quest1_PriorsAndPosteriors7Comp.pdf}
   \caption{Prior (grey lines) and posterior density of estimated parameters (black = 100,000 runs; red = 1,000,000 runs) using the RWMH algorithm \citep[QUEST III model][]{Ratto_et_al_EconModel2009}.}\label{fig:quest_RWMH_comp7}
 \end{centering}
 \end{figure}
