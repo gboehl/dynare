@@ -91,7 +91,6 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 % - [ ] add option to use autocorrelations (we have useautocorr in identification toolbox already)
 % - [ ] SMM with extended path
 % - [ ] deal with measurement errors (once @wmutschl has implemented this in identification toolbox)
-% - [ ] improve check for duplicate moments by using the cellfun and unique functions
 % - [ ] dirname option to save output to different directory not yet implemented
 
 % The TeX option crashes MATLAB R2014a run with "-nodisplay" option
@@ -384,85 +383,66 @@ for i=1:options_mom_.obs_nbr
 end
 
 % -------------------------------------------------------------------------
-% Step 2: Checks and transformations for matched moments structure (preliminary)
+% Step 2: Checks and transformations for matched_moments structure
 % -------------------------------------------------------------------------
+M_.matched_moments_orig = M_.matched_moments; %save original structure
 
-% Initialize indices
-options_mom_.mom.index.E_y       = false(options_mom_.obs_nbr,1);                      %unconditional first order product moments
-options_mom_.mom.index.E_yy      = false(options_mom_.obs_nbr,options_mom_.obs_nbr);   %unconditional second order product moments
-options_mom_.mom.index.E_yyt     = false(options_mom_.obs_nbr,options_mom_.obs_nbr,0); %unconditional temporal second order product moments
-options_mom_.mom.index.E_y_pos   = zeros(options_mom_.obs_nbr,1);                      %position in matched moments block
-options_mom_.mom.index.E_yy_pos  = zeros(options_mom_.obs_nbr,options_mom_.obs_nbr);   %position in matched moments block
-options_mom_.mom.index.E_yyt_pos = zeros(options_mom_.obs_nbr,options_mom_.obs_nbr,0); %position in matched moments block
+% higher-order product moments not supported yet for GMM
+if strcmp(options_mom_.mom.mom_method, 'GMM') && any(cellfun(@sum,M_.matched_moments(:,3))> 2)
+    error('method_of_moments: GMM does not yet support product moments higher than 2. Change row %d in ''matched_moments'' block.',jm);
+end
 
+% check for duplicate moment conditions
 for jm=1:size(M_.matched_moments,1)
-    % higher-order product moments not supported yet for GMM
-    if strcmp(options_mom_.mom.mom_method, 'GMM') && sum(M_.matched_moments{jm,3}) > 2
-        error('method_of_moments: GMM does not yet support product moments higher than 2. Change row %d in ''matched_moments'' block.',jm);
-    end
-    % Check if declared variables are also observed (needed as otherwise the dataset variables won't coincide)
-    if any(~ismember(oo_.dr.inv_order_var(M_.matched_moments{jm,1})', oo_.dr.obs_var))
-        error('method_of_moments: Variables in row %d in ''matched_moments'' block need to be declared as VAROBS.', jm)
-    end
-    
-    if strcmp(options_mom_.mom.mom_method, 'GMM')
-    % Check (for now) that only lags are declared
-        if any(M_.matched_moments{jm,2}>0)
-            error('method_of_moments: Leads in row %d in the ''matched_moments'' block are not supported for GMM, shift the moments and declare only lags.', jm)
+    % expand powers to vector of ones
+    if any(M_.matched_moments{jm,3}>1)
+        tmp1=[]; tmp2=[]; tmp3=[];
+        for jjm=1:length(M_.matched_moments{jm,3})
+            tmp1 = [tmp1 repmat(M_.matched_moments{jm,1}(jjm),[1 M_.matched_moments{jm,3}(jjm)]) ];
+            tmp2 = [tmp2 repmat(M_.matched_moments{jm,2}(jjm),[1 M_.matched_moments{jm,3}(jjm)]) ];
+            tmp3 = [tmp3 repmat(1,[1 M_.matched_moments{jm,3}(jjm)]) ];
         end
-        % Check (for now) that first declared variable has zero lag
-        if M_.matched_moments{jm,2}(1)~=0
-            error('method_of_moments: The first variable declared in row %d in the ''matched_moments'' block is not allowed to have a lead or lag for GMM;\n                   reorder the variables in the row such that the first variable has zero lag!',jm)
-        end
+        M_.matched_moments{jm,1} = tmp1;
+        M_.matched_moments{jm,2} = tmp2;
+        M_.matched_moments{jm,3} = tmp3;
     end
-    vars = oo_.dr.inv_order_var(M_.matched_moments{jm,1})';
-    if sum(M_.matched_moments{jm,3}) == 1
-        % First-order product moment
-        vpos = (oo_.dr.obs_var == vars);
-        options_mom_.mom.index.E_y(vpos,1) = true;
-        options_mom_.mom.index.E_y_pos(vpos,1) = jm;
-        M_.matched_moments{jm,4}=['E(',M_.endo_names{M_.matched_moments{jm,1}},')'];
-        M_.matched_moments{jm,5}=['$E(',M_.endo_names_tex{M_.matched_moments{jm,1}},')$'];
-    elseif sum(M_.matched_moments{jm,3}) == 2
-        % Second-order product moment
-        idx1 = (oo_.dr.obs_var == vars(1));
-        idx2 = (oo_.dr.obs_var == vars(2));
-        lag1 = M_.matched_moments{jm,2}(1);
-        lag2 = M_.matched_moments{jm,2}(2);
-        if lag1==0 && lag2==0 % contemporaneous covariance matrix
-            options_mom_.mom.index.E_yy(idx1,idx2) = true;
-            options_mom_.mom.index.E_yy(idx2,idx1) = true;
-            options_mom_.mom.index.E_yy_pos(idx1,idx2) = jm;
-            options_mom_.mom.index.E_yy_pos(idx2,idx1) = jm;
-            M_.matched_moments{jm,4}=['E(',M_.endo_names{M_.matched_moments{jm,1}(1)},',',M_.endo_names{M_.matched_moments{jm,1}(2)},')'];
-            M_.matched_moments{jm,5}=['$E({',M_.endo_names_tex{M_.matched_moments{jm,1}(1)},'}_t,{',M_.endo_names_tex{M_.matched_moments{jm,1}(1)},'}_t)$'];
-        elseif lag1==0 && lag2 < 0
-            options_mom_.mom.index.E_yyt(idx1,idx2,-lag2) = true;
-            options_mom_.mom.index.E_yyt_pos(idx1,idx2,-lag2) = jm;
-            M_.matched_moments{jm,4}=['E(',M_.endo_names{M_.matched_moments{jm,1}(1)},',',M_.endo_names{M_.matched_moments{jm,1}(2)},'(',num2str(lag2),'))'];
-            M_.matched_moments{jm,5}=['$E({',M_.endo_names_tex{M_.matched_moments{jm,1}(1)},'}_t\times{',M_.endo_names_tex{M_.matched_moments{jm,1}(1)},'_{t',num2str(lag2) ,'})$'];
-        end
-    end
+    % shift time structure to focus only on lags
+    M_.matched_moments{jm,2} = M_.matched_moments{jm,2} - max(M_.matched_moments{jm,2});
+    % sort such that t=0 variable comes first
+    [M_.matched_moments{jm,2},idx_sort] = sort(M_.matched_moments{jm,2},'descend');
+    M_.matched_moments{jm,1} = M_.matched_moments{jm,1}(idx_sort);
+    M_.matched_moments{jm,3} = M_.matched_moments{jm,3}(idx_sort);    
 end
 
-%Remove duplicate elements
-UniqueMomIdx = [nonzeros(options_mom_.mom.index.E_y_pos); nonzeros(tril(options_mom_.mom.index.E_yy_pos)); nonzeros(options_mom_.mom.index.E_yyt_pos)];
-DuplicateMoms = setdiff(1:size(M_.matched_moments,1),UniqueMomIdx);
-if ~isempty(DuplicateMoms)
-    fprintf('Found and removed duplicate declared moments in ''matched_moments'' block in rows: %s.\n',num2str(DuplicateMoms))
+% find duplicate rows in cell array by making groups according to powers as we can then use cell2mat for the unique function
+powers = cellfun(@sum,M_.matched_moments(:,3))';
+UniqueMomIdx = [];
+for jpow = unique(powers)
+    idx1 = find(powers==jpow);
+    [~,idx2] = unique(cell2mat(M_.matched_moments(idx1,:)),'rows');
+    UniqueMomIdx = [UniqueMomIdx idx1(idx2)];
 end
-%reorder M_.matched_moments to be compatible with options_mom_.mom.index
-M_.matched_moments = M_.matched_moments(UniqueMomIdx,:);
-if strcmp(options_mom_.mom.mom_method,'SMM')
-    options_mom_.mom=rmfield(options_mom_.mom,'index');
+
+% remove duplicate elements
+DuplicateMoms = setdiff(1:size(M_.matched_moments_orig,1),UniqueMomIdx);
+if ~isempty(DuplicateMoms)    
+    fprintf('Found and removed duplicate declared moments in ''matched_moments'' block in rows:\n %s.\n',num2str(DuplicateMoms))
+    fprintf('Dynare will continue with remaining moment conditions\n');
+end
+
+if strcmp(options_mom_.mom.mom_method, 'SMM')
+    % for SMM we can keep the original structure but get rid of duplicate moments
+    M_.matched_moments = M_.matched_moments_orig(sort(UniqueMomIdx),:);    
+elseif strcmp(options_mom_.mom.mom_method, 'GMM')
+    % for GMM we use the transformed matched_moments structure
+    M_.matched_moments = M_.matched_moments(sort(UniqueMomIdx),:);
 end
 
 % Check if both prefilter and first moments were specified
-options_mom_.mom.first_moment_indicator = find(cellfun(@(x) sum(abs(x))==1,M_.matched_moments(:,3)))';
-if options_mom_.prefilter && ~isempty(options_mom_.mom.first_moment_indicator)
-    fprintf('Centered moments requested (prefilter option is set); therefore, ignore declared first moments in ''matched_moments'' block in rows: %u.\n',options_mom_.mom.first_moment_indicator');
-    M_.matched_moments(options_mom_.mom.first_moment_indicator,:)=[]; %remove first moments entries
-    options_mom_.mom.first_moment_indicator = [];
+first_moment_indicator = find(cellfun(@(x) sum(abs(x))==1,M_.matched_moments(:,3)))';
+if options_mom_.prefilter && ~isempty(first_moment_indicator)
+    fprintf('Centered moments requested (prefilter option is set); therefore, ignore declared first moments in ''matched_moments'' block.\n');
+    M_.matched_moments(first_moment_indicator,:)=[]; %remove first moments entries    
 end
 options_mom_.mom.mom_nbr = size(M_.matched_moments,1);
 
@@ -972,15 +952,39 @@ end
 % -------------------------------------------------------------------------
 % Step 9: Display estimation results
 % -------------------------------------------------------------------------
-title = ['Data moments and model moments (',options_mom_.mom.mom_method,')'];
-headers = {'Moment','Data','Model','% dev. target'};
-labels= M_.matched_moments(:,4);
-data_mat=[oo_.mom.data_moments oo_.mom.model_moments 100*abs((oo_.mom.model_moments-oo_.mom.data_moments)./oo_.mom.data_moments)];
+title = ['Comparison of data moments and model moments (',options_mom_.mom.mom_method,')'];
+headers = {'Moment','Data','Model'};
+for jm = 1:size(M_.matched_moments,1)
+    lables_tmp = 'E[';
+    lables_tmp_tex = 'E \left[ ';
+    for jvar = 1:length(M_.matched_moments{jm,1})
+        lables_tmp = [lables_tmp M_.endo_names{M_.matched_moments{jm,1}(jvar)}];
+        lables_tmp_tex = [lables_tmp_tex, '{', M_.endo_names_tex{M_.matched_moments{jm,1}(jvar)}, '}'];
+        if M_.matched_moments{jm,2}(jvar) ~= 0
+            lables_tmp = [lables_tmp, '(', num2str(M_.matched_moments{jm,2}(jvar)), ')'];
+            lables_tmp_tex = [lables_tmp_tex, '_{t', num2str(M_.matched_moments{jm,2}(jvar)), '}'];
+        else
+            lables_tmp_tex = [lables_tmp_tex, '_{t}'];
+        end
+        if M_.matched_moments{jm,3}(jvar) > 1
+            lables_tmp = [lables_tmp, '^', num2str(M_.matched_moments{jm,3}(jvar))];
+            lables_tmp_tex = [lables_tmp_tex, '^{', num2str(M_.matched_moments{jm,3}(jvar)) '}'];
+        end
+        if jvar == length(M_.matched_moments{jm,1})
+            lables_tmp = [lables_tmp, ']'];
+            lables_tmp_tex = [lables_tmp_tex, ' \right]'];
+        else
+            lables_tmp = [lables_tmp, '*'];
+            lables_tmp_tex = [lables_tmp_tex, ' \times '];
+        end
+    end
+    labels{jm,1} = lables_tmp;
+    labels_TeX{jm,1} = lables_tmp_tex;
+end
+data_mat=[oo_.mom.data_moments oo_.mom.model_moments ];
 dyntable(options_mom_, title, headers, labels, data_mat, cellofchararraymaxlength(labels)+2, 10, 7);
-if options_mom_.TeX
-    lh = cellofchararraymaxlength(labels)+2;
-    labels_TeX = M_.matched_moments(:,5);
-    dyn_latex_table(M_, options_mom_, title, 'sim_corr_matrix', headers, labels_TeX, data_mat, lh, 10, 7);
+if options_mom_.TeX    
+    dyn_latex_table(M_, options_mom_, title, ['comparison_moments_', options_mom_.mom.mom_method], headers, labels_TeX, data_mat, cellofchararraymaxlength(labels)+2, 10, 7);
 end
 
 if options_mom_.mode_check.status
