@@ -62,7 +62,13 @@ MODFILES = \
 	estimation/heteroskedastic_shocks/fs2000_het_corr.mod \
 	estimation/t_proposal/fs2000_student.mod \
 	estimation/tune_mh_jscale/fs2000.mod \
-	estimation/method_of_moments/AnScho/AnScho_MoM.mod \
+	estimation/method_of_moments/AnScho/AnScho_matched_moments.mod \
+	estimation/method_of_moments/AnScho/AnScho_GMM_estimParams0.mod \
+	estimation/method_of_moments/AnScho/AnScho_GMM_estimParams1.mod \
+	estimation/method_of_moments/AnScho/AnScho_GMM_estimParams2.mod \
+	estimation/method_of_moments/AnScho/AnScho_SMM_estimParams0.mod \
+	estimation/method_of_moments/AnScho/AnScho_SMM_estimParams1.mod \
+	estimation/method_of_moments/AnScho/AnScho_SMM_estimParams2.mod \
 	estimation/method_of_moments/RBC/RBC_MoM_Andreasen.mod \
 	estimation/method_of_moments/RBC/RBC_MoM_SMM_ME.mod \
 	estimation/method_of_moments/RBC/RBC_MoM_prefilter.mod \
@@ -1273,6 +1279,8 @@ EXTRA_DIST = \
 	lmmcp/sw-common-header.inc \
 	lmmcp/sw-common-footer.inc \
 	estimation/tune_mh_jscale/fs2000.inc \
+	estimation/method_of_moments/AnScho/AnScho_MoM_common.inc \
+	estimation/method_of_moments/AnScho/AnScho_MoM_data_2.mat \
 	estimation/method_of_moments/RBC/RBC_MoM_common.inc \
 	estimation/method_of_moments/RBC/RBC_MoM_steady_helper.m \
 	estimation/method_of_moments/AFVRR/AFVRR_common.inc \
