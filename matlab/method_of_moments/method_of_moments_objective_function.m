@@ -154,65 +154,55 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
     end
     
     oo_.mom.model_moments = NaN(options_mom_.mom.mom_nbr,1);
-    offset = 0;
-    % First moments
-    if ~options_mom_.prefilter && isfield(options_mom_.mom.index,'E_y') && nnz(options_mom_.mom.index.E_y) > 0
-        E_y = pruned_state_space.E_y;
-        E_y_nbr = nnz(options_mom_.mom.index.E_y);
-        oo_.mom.model_moments(offset+1:E_y_nbr,1) = E_y(options_mom_.mom.index.E_y);
-        if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
-            oo_.mom.model_moments_params_derivs(offset+1:E_y_nbr,:) = pruned_state_space.dE_y(options_mom_.mom.index.E_y,:);
-        end
-        offset = offset + E_y_nbr;
-    end
-    % Second moments
-    % Contemporaneous covariance
-    if isfield(options_mom_.mom.index,'E_yy') && nnz(options_mom_.mom.index.E_yy) > 0
-        if options_mom_.prefilter
-            E_yy = pruned_state_space.Var_y;
+    for jm = 1:size(M_.matched_moments,1)
+        % First moments
+        if ~options_mom_.prefilter && (sum(M_.matched_moments{jm,3}) == 1)
+            idx1 = (oo_.dr.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}) );
+            oo_.mom.model_moments(jm,1) = pruned_state_space.E_y(idx1);
             if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
-                dE_yy = pruned_state_space.dVar_y;
-            end            
-        else
-            E_yy = pruned_state_space.Var_y + pruned_state_space.E_y*pruned_state_space.E_y';
-            if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
-                dE_yy = pruned_state_space.dVar_y;
-                for jp=1:totparam_nbr
-                    dE_yy(:,:,jp) = dE_yy(:,:,jp) + pruned_state_space.dE_y(:,jp)*pruned_state_space.E_y' + pruned_state_space.E_y*pruned_state_space.dE_y(:,jp)';
-                end
+                oo_.mom.model_moments_params_derivs(jm,:) = pruned_state_space.dE_y(idx1,:);
             end
         end
-        E_yy_nbr = nnz(tril(options_mom_.mom.index.E_yy));
-        oo_.mom.model_moments(offset+(1:E_yy_nbr),1) = E_yy(tril(options_mom_.mom.index.E_yy));
-        if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
-            oo_.mom.model_moments_params_derivs(offset+(1:E_yy_nbr),:) = reshape(dE_yy(repmat(tril(options_mom_.mom.index.E_yy),[1 1 totparam_nbr])),E_yy_nbr,totparam_nbr);
-        end
-        offset = offset + E_yy_nbr;
-    end
-    % Lead/lags covariance
-    if isfield(options_mom_.mom.index,'E_yyt') && nnz(options_mom_.mom.index.E_yyt) > 0
-        if options_mom_.prefilter
-            E_yyt = pruned_state_space.Var_yi;
-            if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
-                dE_yyt = pruned_state_space.dVar_yi;
+        % Second moments
+        if (sum(M_.matched_moments{jm,3}) == 2)
+            idx1 = (oo_.dr.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}(1)) );
+            idx2 = (oo_.dr.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}(2)) );
+            if nnz(M_.matched_moments{jm,2}) == 0
+                % Covariance
+                if options_mom_.prefilter
+                    oo_.mom.model_moments(jm,1) = pruned_state_space.Var_y(idx1,idx2);
+                    if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
+                        oo_.mom.model_moments_params_derivs(jm,:) = pruned_state_space.dVar_y(idx1,idx2,:);
+                    end
+                else
+                    oo_.mom.model_moments(jm,1) = pruned_state_space.Var_y(idx1,idx2) + pruned_state_space.E_y(idx1)*pruned_state_space.E_y(idx2)';
+                    if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
+                        for jp=1:totparam_nbr
+                            oo_.mom.model_moments_params_derivs(jm,jp) = pruned_state_space.dVar_y(idx1,idx2,jp) + pruned_state_space.dE_y(idx1,jp)*pruned_state_space.E_y(idx2)' + pruned_state_space.E_y(idx1)*pruned_state_space.dE_y(idx2,jp)';
+                        end
+                    end
+                end            
+            else
+                % Autocovariance
+                lag = -M_.matched_moments{jm,2}(2); %note that leads/lags in matched_moments are transformed such that first entry is always 0 and the second is a lag
+                if options_mom_.prefilter
+                    oo_.mom.model_moments(jm,1) = pruned_state_space.Var_yi(idx1,idx2,lag);
+                    if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
+                        oo_.mom.model_moments_params_derivs(jm,:) = pruned_state_space.dVar_yi(idx1,idx2,lag,:);
+                    end
+                else
+                    oo_.mom.model_moments(jm,1) = pruned_state_space.Var_yi(idx1,idx2,lag) + pruned_state_space.E_y(idx1)*pruned_state_space.E_y(idx2)';
+                    if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
+                        for jp=1:totparam_nbr
+                            oo_.mom.model_moments_params_derivs(jm,jp) = vec( pruned_state_space.dVar_yi(idx1,idx2,lag,jp) + pruned_state_space.dE_y(idx1,jp)*pruned_state_space.E_y(idx2)' + pruned_state_space.E_y(idx1)*pruned_state_space.dE_y(idx2,jp)');
+                        end
+                    end
+                end            
             end
-        else
-            E_yyt = pruned_state_space.Var_yi + repmat(pruned_state_space.E_y*pruned_state_space.E_y',[1 1 size(pruned_state_space.Var_yi,3)]);
-            if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
-                dE_yyt = pruned_state_space.dVar_yi;
-                for jp=1:totparam_nbr
-                    dE_yyt(:,:,:,jp) = dE_yyt(:,:,:,jp) + repmat(pruned_state_space.dE_y(:,jp)*pruned_state_space.E_y',[1 1 size(pruned_state_space.Var_yi,3)])...
-                                                        + repmat(pruned_state_space.E_y*pruned_state_space.dE_y(:,jp)',[1 1 size(pruned_state_space.Var_yi,3)]);
-                end
-            end
-        end
-        E_yyt_nbr = nnz(options_mom_.mom.index.E_yyt);
-        oo_.mom.model_moments(offset+(1:E_yyt_nbr),1) = E_yyt(options_mom_.mom.index.E_yyt);
-        if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
-            oo_.mom.model_moments_params_derivs(offset+(1:E_yyt_nbr),:) = reshape(dE_yyt(repmat(options_mom_.mom.index.E_yyt,[1 1 1 totparam_nbr])),E_yyt_nbr,totparam_nbr);
-        end
+        end        
     end
-
+    
+    
 elseif strcmp(options_mom_.mom.mom_method,'SMM')
     %------------------------------------------------------------------------------
     % 3. Compute Moments of the model solution for normal innovations
