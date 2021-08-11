@@ -50,6 +50,7 @@ wsOct
 !/ep/mean_preserving_spread.m
 !/ep/rbcii_steady_state.m
 !/estimation/fsdat_simul.m
+!/estimation/method_of_moments/AnScho/AnScho_MoM_data_2.mat
 !/estimation/method_of_moments/RBC/RBC_MoM_steady_helper.m
 !/estimation/method_of_moments/RBC/RBC_Andreasen_Data_2.mat
 !/estimation/method_of_moments/AFVRR/AFVRR_data.mat
