@@ -106,6 +106,7 @@ opts_simul.maxit = options_.occbin.smoother.maxit;
 opts_simul.waitbar = options_.occbin.smoother.waitbar;
 opts_simul.periods = options_.occbin.smoother.periods;
 opts_simul.check_ahead_periods = options_.occbin.smoother.check_ahead_periods;
+opts_simul.periodic_solution = options_.occbin.smoother.periodic_solution;
 opts_simul.full_output = options_.occbin.smoother.full_output;
 opts_simul.piecewise_only = options_.occbin.smoother.piecewise_only;
 % init_mode = options_.occbin.smoother.init_mode; % 0 = standard;  1 = unconditional frcsts zero shocks+smoothed states in each period

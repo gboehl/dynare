@@ -58,9 +58,8 @@ end
 
 % set inputs      
 
-occbin_setup;
-options_.occbin.smoother.debug=1;
-occbin_solver(simul_periods=200,simul_maxit=200,simul_curb_retrench,simul_check_ahead_periods=200);
+occbin_setup(smoother_debug);
+occbin_solver(simul_debug,simul_periodic_solution,simul_periods=200,simul_maxit=200,simul_curb_retrench,simul_check_ahead_periods=200);
 occbin_write_regimes(filename='test',periods=[1:100]);
 
 %% Modify to plot IRFs 
