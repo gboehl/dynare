@@ -15,7 +15,7 @@ class and methods for dates. Below, you will first find the class and
 methods used for creating and dealing with dates and then the class
 used for using time series. Dynare also provides an interface to the
 X-13 ARIMA-SEATS seasonal adjustment program produced, distributed, and
-maintained by the US Census Bureau.
+maintained by the US Census Bureau (2017).
 
 
 Dates
