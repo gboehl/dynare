@@ -4069,7 +4069,7 @@ Computing the stochastic solution
 
        Triggers the computation and display of the theoretical
        spectral density of the (filtered) model variables. Results are
-       stored in ´´oo_.SpectralDensity´´, defined below. Default: do
+       stored in ``oo_.SpectralDensity``, defined below. Default: do
        not request spectral density estimates.
 
     .. option:: hp_ngrid = INTEGER
@@ -4621,7 +4621,383 @@ multidimensional indices of state variables, in such a way that symmetric
 elements are never repeated (for more details, see the description of
 ``oo_.dr.g_3`` in the third-order case).
 
+Occasionally binding constraints (OCCBIN)
+==============
 
+Dynare allows simulating models with up to two occasionally-binding constraints by 
+relying on a piecewise linear solution as in *Guerrieri and Iacoviello (2015)*.
+It also allows estimating such models employing either the inversion filter of
+*Cuba-Borda, Guerrieri, and Iacoviello (2019)* or the piecewise Kalman filter of
+*Giovannini, Pfeiffer, and Ratto (2021)*. To trigger computations involving 
+occasionally-binding constraints requires 
+
+#. defining and naming the occasionally-binding constraints using an ``occbin_constraints``-block
+#. specifying the model equations for the respective regimes in the ``model``-block using appropriate equation tags.
+#. potentially specifying a sequence of surprise shocks using a ``shocks(surprise)``-block
+#. setting up Occbin simulations or estimation with ``occbin_setup``
+#. triggering a simulation with ``occbin_solver`` or running ``estimation`` or ``calib_smoother``.
+ 
+All of these elements are discussed in the following.
+
+
+.. block:: occbin_constraints ;
+
+    |br| The ``occbin_constraints``-block specifies the occasionally-binding constraints. It contains
+    one or two of the following lines:
+
+      name 'STRING'; bind EXPRESSION; [relax EXPRESSION;] [error_bind EXPRESSION;] [error_relax EXPRESSION;]
+
+    ``STRING`` is the name of constraint that is used to reference the constraint in ``relax/bind`` 
+    equation-tags to identify the respective regime (see below). The ``bind``-expresssion is mandatory and defines 
+    a logical condition that is evaluated in the baseline (non-binding) regime to check whether the 
+    constraint becomes binding. In contrast, the ``relax``-expression is optional and specifies a 
+    logical condition that is evaluated in the binding regime to check whether the regime returns 
+    to the baseline non-binding state. If not specified, Dynare will simply check in the binding 
+    regime whether the ``bind``-expression evaluates to false. However, there are cases 
+    where the ``bind``-expression cannot be evaluated in the binding regime(s), because 
+    the variables involved are constant by definition so that e.g. the value of the Lagrange 
+    multiplier on the complementary slackness condition needs to be checked. In these cases, 
+    it is necessary to provide an explicit condition that can be evaluated in the binding 
+    regime that allows to check whether it should be left.
+
+    Three things are important to keep in mind when specifying the expressions. 
+    First, feasible expressions may only contain contemporaneous endogenous variables. 
+    If you want to include leads/lags or exogenous variables, you need to define 
+    an auxiliary variable. Second, Dynare will at the current stage not linearly 
+    approximate the entered expressions. Because Occbin will work with a linearized 
+    model, consistency will often require the user to enter a linearized constraint. 
+    Otherwise, the condition employed for checking constraint violations may differ 
+    from the one employed within model simulations based on the piecewise-linear 
+    model solution. Third, in contrast to the original Occbin replication codes, the 
+    variables used in expressions are not automatically demeaned, i.e. they refer to 
+    the levels, not deviations from the steady state. To access the steady state 
+    level of a variable, the ``STEADY_STATE()``-operator can be used.
+
+    The ``error_bind`` and ``error_relax``-options are optional and allow specifying 
+    numerical criteria for the size of the respective constraint violations employed 
+    in numerical routines. By default, Dynare will simply use the absolute value of 
+    the ``bind`` and ``relax`` inequalities. But occasionnally, user-specified 
+    expressions perform better.
+
+    *Example*
+
+        ::
+
+            occbin_constraints;
+                name 'IRR'; bind log_Invest-log(steady_state(Invest))<log(phi); relax Lambda<0;
+                name 'INEG'; bind log_Invest-log(steady_state(Invest))<0;
+            end;
+
+        IRR is a constraint for irreversible investment that becomes binding if investment drops below its 
+        steady state by more than 0.025 percent in the non-binding regime. The constraint will be relaxed whenever 
+        the associated Lagrange multiplier ``Lambda`` in the binding regime becomes negative. Note that the 
+        constraint here takes on a linear form to be consistent with a piecewise linear model solution
+
+    The specification of the model equations belonging to the respective regimes is done in the ``model``-block,
+    with equation tags indicating to which regime a particular equation belongs. All equations that differ across
+    regimes must have a ``name``-tag attached to them that allows uniquely identifying different versions of the
+    same equation. The name of the constraints specified is then used in conjunction with a ``bind`` or ``relax`` 
+    tag to indicate to which regime a particular equation belongs. In case of more than one occasionally-binding
+    constraint, if an equation belongs to several regimes (e.g. both constraints binding), the 
+    constraint name tags must be separated by a comma. If only one name tag is present, 
+    the respective equation is assumed to hold for both states of the other constraint.
+    
+
+    *Example*
+
+        ::
+
+            [name='investment',bind='IRR,INEG']
+            (log_Invest - log(phi*steady_state(Invest))) = 0;
+            [name='investment',relax='IRR']
+            Lambda=0;
+            [name='investment',bind='IRR',relax='INEG']
+            (log_Invest - log(phi*steady_state(Invest))) = 0;
+
+        The three entered equations for the investment condition define the model 
+        equation for all four possible combinations of the two constraints. The 
+        first equation defines the model equation in the regime where both the 
+        IRR and INEG constraint are binding. The second equation defines the 
+        model equation for the regimes where the IRR constraint is non-binding, 
+        regardless of whether the INEG constraint is binding or not. Finally, 
+        the last equation defines the model equation for the final regime where the 
+        IRR constraint is binding, but the INEG one is not.
+
+.. block:: shocks(surprise) ;
+           shocks(surprise,overwrite);
+
+    |br| The ``shocks(surprise)``-block allows specifying a sequence of temporary changes in 
+    the value of exogenous variables that in each period come as a surprise to agents, i.e.
+    are not anticipated. Note that to actually use the specified shocks in subsequent commands 
+    like ``occbin_solver``, the block needs to be followed by a call to ``occbin_setup``.
+
+    The block mirrors the perfect foresight syntax in that it should contain one or more 
+    occurrences of the following group of three lines::
+
+      var VARIABLE_NAME;
+      periods INTEGER[:INTEGER] [[,] INTEGER[:INTEGER]]...;
+      values DOUBLE | (EXPRESSION)  [[,] DOUBLE | (EXPRESSION) ]...;
+
+    *Example* (with vector values and overwrite option)
+
+    ::
+
+        shockssequence = randn(100,1)*0.02;
+
+        shocks(surprise,overwrite);
+        var epsilon;
+        periods 1:100;
+        values (shockssequence);
+        end;
+
+.. command:: occbin_setup ;
+             occbin_setup (OPTIONS...);
+
+    |br| Prepares a simulation with occasionally binding constraints. This command 
+    will also translate the contents of a ``shocks(surprise)``-block for use
+    in subsequent commands.
+
+    In order to conduct ``estimation`` with occasionally binding constraints, it needs to be 
+    prefaced by a call to ``occbin_setup`` to trigger the use of either the inversion filter 
+    or the piecewise Kalman filter (default). An issue that can arise in the context of 
+    estimation is a structural shock dropping out of the model in a particular regime. 
+    For example, at the zero lower bound on interest rates, the monetary policy shock 
+    in the Taylor rule will not appear anymore. This may create a problem 
+    of stochastic singularity if there are then more observables than shocks. To 
+    avoid this issue, the data points for the zero interest rate should be set 
+    to NaN and the standard deviation of the associated shock set to 0 for the 
+    corresponding periods using the ``heteroskedastic_shocks``-block. 
+
+    *Example*
+
+        ::
+
+            occbin_setup(likelihood_inversion_filter,smoother_inversion_filter);            
+            estimation(smoother,heteroskedastic_filter,...);
+
+    The above piece of code sets up an estimation employing the inversion filter for both the likelihood
+    evaluation and the smoother, while also accounting for ``heteroskedastic_shocks`` using the 
+    ``heteroskedastic_filter``-option.
+
+    Be aware that Occbin has largely command-specific options, i.e. there are separate
+    options to control the behavior of Occbin when called by the smoother or when 
+    computing the likelihood. These latter commands will not inherit the options 
+    potentially previously set for simulations.    
+
+    *Options*
+
+    .. option:: simul_periods = INTEGER
+
+       Number of periods of the simulation. Default: 100.
+
+    .. option:: simul_maxit = INTEGER
+
+       Maximum number of iterations when trying to find the regimes of the piecewise solution.
+       Default: 30.
+
+    .. option:: simul_check_ahead_periods = INTEGER
+
+       Number of periods for which to check ahead for return to the baseline regime. 
+       This number should be chosen large enough, because Occbin requires the simulation
+       to return to the baseline regime at the end of time. Default: 200.
+
+    .. option:: simul_curb_retrench
+
+       Instead of basing the initial regime guess for the current iteration on the last iteration, update 
+       the guess only one period at a time. This will slow down the iterations, but may lead to
+       more robust convergence behavior. Default: not enabled.
+
+    .. option:: simul_periodic_solution
+
+       Accept a periodic solution where the solution alternates between two sets of results
+       across iterations, i.e. is not found to be unique. Default: not enabled.
+
+    .. option:: simul_debug
+
+       Provide additional debugging information during solving. Default: not enabled.
+
+    .. option:: smoother_periods = INTEGER
+
+       Number of periods employed during the simulation when called by the smoother 
+       (equivalent of ``simul_periods``). Default: 100.
+
+    .. option:: smoother_maxit = INTEGER
+
+       Maximum number of iterations employed during the simulation when called by the smoother 
+       (equivalent of ``simul_maxit``). Default: 30.
+
+    .. option:: smoother_check_ahead_periods = INTEGER
+
+       Number of periods for which to check ahead for return to the baseline regime during the 
+       simulation when called by the smoother (equivalent of ``simul_check_ahead_periods``). Default: 200.
+
+    .. option:: smoother_curb_retrench
+
+       Have the smoother invoke the ``simul_curb_retrench``-option during simulations. 
+       Default: not enabled.
+
+    .. option:: smoother_periodic_solution
+
+       Accept periodic solution where solution alternates between two sets of results (equivalent of ``simul_periodic_solution``).
+       Default: not enabled.
+
+    .. option:: likelihood_periods = INTEGER
+
+       Number of periods employed during the simulation when computing the likelihood 
+       (equivalent of ``simul_periods``). Default: 100.
+
+    .. option:: likelihood_maxit = INTEGER
+
+       Maximum number of iterations employed during the simulation when computing the likelihood  
+       (equivalent of ``simul_maxit``). Default: 30.
+
+    .. option:: likelihood_check_ahead_periods = INTEGER
+
+       Number of periods for which to check ahead for return to the baseline regime during the 
+       simulation when computing the likelihood  (equivalent of ``simul_check_ahead_periods``). Default: 200.
+
+    .. option:: likelihood_curb_retrench
+
+       Have the likelihood computation invoke the ``simul_curb_retrench``-option during simulations. 
+       Default: not enabled.
+
+    .. option:: likelihood_periodic_solution
+
+       Accept periodic solution where solution alternates between two sets of results (equivalent of ``simul_periodic_solution``).
+       Default: not enabled.
+
+    .. option:: likelihood_inversion_filter
+
+       Employ the inversion filter of *Cuba-Borda, Guerrieri, and Iacoviello (2019)* when estimating 
+       the model. Default: not enabled.
+
+    .. option:: likelihood_piecewise_kalman_filter
+
+       Employ the piecewise Kalman filter of *Giovannini, Pfeiffer, and Ratto (2021)* when estimating 
+       the model. Default: enabled.
+
+    .. option:: likelihood_max_kalman_iterations
+
+       Maximum number of iterations of the outer loop for the piecewise Kalman filter. Default: 10.
+
+    .. option:: smoother_inversion_filter
+
+       Employ the inversion filter of *Cuba-Borda, Guerrieri, and Iacoviello (2019)* when running the 
+       smoother. Default: not enabled.
+
+    .. option:: smoother_piecewise_kalman_filter
+
+       Employ the piecewise Kalman filter of *Giovannini, Pfeiffer, and Ratto (2021)* when running the 
+       smoother. Default: enabled.
+
+    .. option:: filter_use_relaxation
+
+       ..
+
+   *Output*
+
+    The paths for the exogenous variables are stored into
+    ``options_.occbin.simul.SHOCKS``.
+
+.. command:: occbin_solver ;
+             occbin_solver (OPTIONS...);
+
+    |br| Computes a simulation with occasionally-binding constraints based on
+    a piecewise-linear solution. 
+
+    Note that ``occbin_setup`` must be called before this command in order for 
+    the simulation to take into account previous ``shocks(surprise)``-commands.
+
+    *Options*
+
+    .. option:: simul_periods = INTEGER
+
+        See :opt:`simul_periods <simul_periods = INTEGER>`.
+
+    .. option:: simul_maxit = INTEGER
+
+        See :opt:`simul_maxit <simul_maxit = INTEGER>`.
+
+    .. option:: simul_check_ahead_periods = INTEGER
+
+        See :opt:`simul_check_ahead_periods <simul_check_ahead_periods = INTEGER>`.
+
+    .. option:: simul_curb_retrench
+
+        See :opt:`simul_curb_retrench`.
+
+    .. option:: simul_debug
+
+        See :opt:`simul_debug`.
+
+    *Output*
+
+    The command outputs various objects into ``oo_.occbin``.
+
+.. matvar:: oo_.occbin.piecewise
+
+    |br| Matrix storing the simulations based on the piecewise-linear solution.
+    The variables are arranged column by column, in order of declaration (as in
+    ``M_.endo_names``), while the the rows correspond to the ``simul_periods``.
+
+.. matvar:: oo_.occbin.linear
+
+    |br| Matrix storing the simulations based on the linear solution, i.e. ignoring
+    the occasionally binding constraint(s). The variables are arranged column by column, 
+    in order of declaration (as in ``M_.endo_names``), while the the rows correspond to 
+    the ``simul_periods``.
+
+.. matvar:: oo_.occbin.shocks_sequence
+
+    |br| Matrix storing the shock sequence employed during the simulation. The shocks are arranged 
+    column by column, with their order in ``M_.exo_names`` stored in ``oo_.occbin.exo_pos``. The 
+    the rows correspond to the number of shock periods specified in a `surprise(shocks)`-block, which
+    may be smaller than ``simul_periods``.
+
+.. matvar:: oo_.occbin.regime_history
+
+    |br| Structure storing information on the regime history, conditional on the shock that 
+    happened in the respective period (stored along the rows). The subfield ``regime`` contains 
+    a vector storing the regime state, while the the subfield ``regimestart`` indicates the 
+    expected start of the respective regime state. For example, if row 40 contains ``[1,0]`` for 
+    ``regime2`` and  ``[1,6]`` for ``regimestart2``, it indicates that - after the shock in period 40
+    has occurred - the second constraint became binding (1) and is expected to revert to non-binding (0) six periods
+    later.
+
+.. matvar:: oo_.occbin.ys
+
+    |br| Vector of steady state values
+
+.. command:: occbin_graph [VARIABLE_NAME...];
+             occbin_graph (OPTIONS...) [VARIABLE_NAME...];
+
+    |br| Plots a graph comparing the simulation results of the piecewise-linear solution
+    with the occasionally binding contraints to the linear solution ignoring the constraint.
+
+    *Options*
+
+    .. option:: noconstant
+
+       Omit the steady state in the graphs.
+    
+.. command:: occbin_write_regimes ;
+             occbin_write_regimes (OPTIONS...);
+
+    |br| Write the information on the regime history stored in ``oo_.occbin.regime_history``
+    into an Excel file stored in the ``FILENAME/Output``-folder.
+
+    *Options*
+
+    .. option:: periods = INTEGER
+
+       Number of periods for which to write the expected regime durations. Default: write all
+       available periods.
+
+    .. option:: filename = FILENAME
+
+       Name of the Excel-file to write. Default: ``FILENAME_occbin_regimes``.
+
+    
 .. _estim:
 
 Estimation based on likelihood
@@ -7351,7 +7727,7 @@ block decomposition of the model (see :opt:`block`).
             ``VarianceDecompositionME``
 
                 Same as `VarianceDecomposition`_, but contains
-                theh decomposition of the measured as opposed to the
+                the decomposition of the measured as opposed to the
                 actual variable. The joint contribution of the
                 measurement error will be saved in a field named
                 ``ME``.

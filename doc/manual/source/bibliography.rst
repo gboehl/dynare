@@ -23,6 +23,7 @@ Bibliography
 * Collard, Fabrice and Michel Juillard (2001a): “Accuracy of stochastic perturbation methods: The case of asset pricing models,” *Journal of Economic Dynamics and Control*, 25, 979–999.
 * Collard, Fabrice and Michel Juillard (2001b): “A Higher-Order Taylor Expansion Approach to Simulation of Stochastic Forward-Looking Models with an Application to a Non-Linear Phillips Curve,” *Computational Economics*, 17, 125–139.
 * Corana, Angelo, M. Marchesi, Claudio Martini, and Sandro Ridella (1987): “Minimizing multimodal functions of continuous variables with the “simulated annealing” algorithm”, *ACM Transactions on Mathematical Software*, 13(3), 262–280.
+* Cuba-Borda, Pablo, Luca Guerrieri, and Matteo Iacoviello (2019): "Likelihood evaluation of models with occasionally binding constraints", Journal of Applied Econometrics, 34(7), 1073-1085
 * Del Negro, Marco and Frank Schorfheide (2004): “Priors from General Equilibrium Models for VARs”, *International Economic Review*, 45(2), 643–673.
 * Dennis, Richard (2007): “Optimal Policy In Rational Expectations Models: New Solution Algorithms”, *Macroeconomic Dynamics*, 11(1), 31–55.
 * Duffie, Darrel and Kenneth J. Singleton (1993): “Simulated Moments Estimation of Markov Models of Asset Prices”, *Econometrica*, 61(4), 929-952.
@@ -34,7 +35,9 @@ Bibliography
 * Ferris, Michael C. and Todd S. Munson (1999): “Interfaces to PATH 3.0: Design, Implementation and Usage”, *Computational Optimization and Applications*, 12(1), 207–227.
 * Geweke, John (1992): “Evaluating the accuracy of sampling-based approaches to the calculation of posterior moments,” in J.O. Berger, J.M. Bernardo, A.P. Dawid, and A.F.M. Smith (eds.) Proceedings of the Fourth Valencia International Meeting on Bayesian Statistics, pp. 169–194, Oxford University Press.
 * Geweke, John (1999): “Using simulation methods for Bayesian econometric models: Inference, development and communication,” *Econometric Reviews*, 18(1), 1–73.
+* Giovannini, Massimo, Philipp Pfeiffer, and Marco Ratto (2021), “Efficient and robust inference of models with occasionally binding constraints,” Working Papers 2021-03, Joint Research Centre, European Commission 
 * Giordani, Paolo, Michael Pitt, and Robert Kohn (2011): “Bayesian Inference for Time Series State Space Models” in: *The Oxford Handbook of Bayesian Econometrics*, ed. by John Geweke, Gary Koop, and Herman van Dijk, Oxford University Press, 61–124.
+* Guerrieri, Luca and Matteo Iacoviello (2015): “OccBin: A toolkit for solving dynamic models with occasionally binding constraints easily,” *Journal of Monetary Economics*, 70, 22–38.
 * Goffe, William L., Gary D. Ferrier, and John Rogers (1994): “Global Optimization of Statistical Functions with Simulated Annealing,” *Journal of Econometrics*, 60(1/2), 65–100.
 * Hansen, Lars P. (1982): “Large sample properties of generalized method of moments estimators,” Econometrica, 50(4), 1029–1054.
 * Hansen, Nikolaus and Stefan Kern (2004): “Evaluating the CMA Evolution Strategy on Multimodal Test Functions”. In: *Eighth International Conference on Parallel Problem Solving from Nature PPSN VIII*, Proceedings, Berlin: Springer, 282–291.
