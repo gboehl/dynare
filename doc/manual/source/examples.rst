@@ -57,6 +57,11 @@ description, please refer to the comments inside the files themselves.
     (2010)*. It demonstrates how to use an explicit steady state file
     to update parameters and call a numerical solver.
 
+``Occbin_example.mod``
+
+    RBC model with two occasionally binding constraints. Demonstrates 
+    how to set up Occbin.
+
 ``Ramsey_Example.mod``
 
     File demonstrating how to conduct optimal policy experiments in a 
