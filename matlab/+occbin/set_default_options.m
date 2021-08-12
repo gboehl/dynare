@@ -73,14 +73,14 @@ if ismember(flag,{'likelihood','all'})
     options_occbin_.likelihood.init_binding_indicator = false(0);
     options_occbin_.likelihood.inversion_filter = false;
     options_occbin_.likelihood.IVF_shock_observable_mapping = [];
-    options_occbin_.likelihood.maxit = 50; % this is for occbin solver algo
+    options_occbin_.likelihood.maxit = 30; % this is for occbin solver algo
     options_occbin_.likelihood.max_number_of_iterations = 10; % this is for occbin_kalman_update loop
     options_occbin_.likelihood.periods = 100;
     options_occbin_.likelihood.check_ahead_periods=200;
-    options_occbin_.likelihood.periodic_solution=true;
+    options_occbin_.likelihood.periodic_solution=false;
     options_occbin_.likelihood.piecewise_only = true;
     options_occbin_.likelihood.restrict_state_space = true;
-    options_occbin_.likelihood.status=true;
+    options_occbin_.likelihood.status=true; %initialized to false in default_option_values
     options_occbin_.likelihood.use_updated_regime = true;
     options_occbin_.likelihood.waitbar=false;
 end
@@ -168,12 +168,11 @@ if ismember(flag,{'simul','all'})
     options_occbin_.simul.init_regime=[];
     options_occbin_.simul.init_binding_indicator=false(0);
     options_occbin_.simul.exo_pos=1:M_.exo_nbr;
-    options_occbin_.simul.local=true;
-    options_occbin_.simul.maxit=10;
+    options_occbin_.simul.maxit=30;
     options_occbin_.simul.max_periods=inf;
-    options_occbin_.simul.periods=30;
+    options_occbin_.simul.periods=100;
     options_occbin_.simul.check_ahead_periods=200;
-    options_occbin_.simul.periodic_solution=true;
+    options_occbin_.simul.periodic_solution=false;
     options_occbin_.simul.piecewise_only = false;
     options_occbin_.simul.reset_regime_in_new_period = false;
     options_occbin_.simul.restrict_state_space=false;
@@ -196,6 +195,7 @@ if ismember(flag,{'smoother','all'})
     options_occbin_.smoother.max_number_of_iterations = 10; % this is for smoother loop
     options_occbin_.smoother.periods = 100;
     options_occbin_.smoother.check_ahead_periods=200;
+    options_occbin_.smoother.periodic_solution=false;
     options_occbin_.smoother.piecewise_only = true;
     options_occbin_.smoother.plot = true;
     options_occbin_.smoother.status=true;

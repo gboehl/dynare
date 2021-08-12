@@ -32,13 +32,23 @@ options_ = occbin.set_option(options_,options_occbin_,'simul.periods');
 options_ = occbin.set_option(options_,options_occbin_,'simul.curb_retrench');
 options_ = occbin.set_option(options_,options_occbin_,'simul.maxit');
 options_ = occbin.set_option(options_,options_occbin_,'simul.check_ahead_periods');
+options_ = occbin.set_option(options_,options_occbin_,'simul.debug');
+options_ = occbin.set_option(options_,options_occbin_,'simul.periodic_solution');
 options_ = occbin.set_option(options_,options_occbin_,'smoother.periods');
 options_ = occbin.set_option(options_,options_occbin_,'smoother.curb_retrench');
 options_ = occbin.set_option(options_,options_occbin_,'smoother.maxit');
 options_ = occbin.set_option(options_,options_occbin_,'smoother.check_ahead_periods');
+options_ = occbin.set_option(options_,options_occbin_,'smoother.debug');
+options_ = occbin.set_option(options_,options_occbin_,'smoother.periodic_solution');
+options_ = occbin.set_option(options_,options_occbin_,'smoother.inversion_filter');
+options_ = occbin.set_option(options_,options_occbin_,'likelihood.periods');
+options_ = occbin.set_option(options_,options_occbin_,'likelihood.curb_retrench');
+options_ = occbin.set_option(options_,options_occbin_,'likelihood.maxit');
+options_ = occbin.set_option(options_,options_occbin_,'likelihood.check_ahead_periods');
+options_ = occbin.set_option(options_,options_occbin_,'likelihood.periodic_solution');
+options_ = occbin.set_option(options_,options_occbin_,'likelihood.max_number_of_iterations');
 options_ = occbin.set_option(options_,options_occbin_,'filter.use_relaxation');
 options_ = occbin.set_option(options_,options_occbin_,'likelihood.inversion_filter');
-options_ = occbin.set_option(options_,options_occbin_,'smoother.inversion_filter');
 
 if isfield(M_,'surprise_shocks') && ~isempty(M_.surprise_shocks)
     temp=zeros(max(cat(2,M_.surprise_shocks.periods)),M_.exo_nbr);
