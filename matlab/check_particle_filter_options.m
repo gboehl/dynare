@@ -111,12 +111,6 @@ if ~isempty(particle_options.particle_filter_options)
                 else
                     particle_options.liu_west_delta=options_list{i,2};
                 end
-            case 'liu_west_chol_sigma_bar'
-                if options_list{i,2} <= 0
-                    error('check_particle_filter_options:: the liu_west_chol_sigma_bar option takes a positive argument');
-                else
-                    particle_options.liu_west_chol_sigma_bar=options_list{i,2};
-                end
                 
             otherwise
                 warning(['check_particle_filter_options: Unknown option (' options_list{i,1} ')!'])
