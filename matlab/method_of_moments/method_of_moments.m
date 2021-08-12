@@ -215,7 +215,11 @@ end
 
 % Optimization options that can be set by the user in the mod file, otherwise default values are provided
 options_mom_ = set_default_option(options_mom_,'huge_number',1e7);               % value for replacing the infinite bounds on parameters by finite numbers. Used by some optimizers for numerical reasons
-options_mom_ = set_default_option(options_mom_,'mode_compute',13);               % specifies the optimizer for minimization of moments distance
+if (isoctave && user_has_octave_forge_package('optim')) || (~isoctave && user_has_matlab_license('optimization_toolbox'))
+    options_mom_ = set_default_option(options_mom_,'mode_compute',13);               % specifies lsqnonlin as default optimizer for minimization of moments distance
+else
+    options_mom_ = set_default_option(options_mom_,'mode_compute',4);               % specifies csminwel as fallback default option for minimization of moments distance
+end
 options_mom_ = set_default_option(options_mom_,'additional_optimizer_steps',[]); % vector of additional mode-finders run after mode_compute
 options_mom_ = set_default_option(options_mom_,'optim_opt',[]);                  % a list of NAME and VALUE pairs to set options for the optimization routines. Available options depend on mode_compute
 options_mom_ = set_default_option(options_mom_,'silent_optimizer',false);        % run minimization of moments distance silently without displaying results or saving files in between
