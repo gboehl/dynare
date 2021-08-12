@@ -3621,8 +3621,8 @@ corresponding to a random draw of the shocks.
 
 The main algorithm for solving stochastic models relies on a Taylor
 approximation, up to third order, of the expectation functions (see
-*Judd (1996)*, *Collard and Juillard (2001a)*, *Collard and Juillard
-(2001b)*, and *Schmitt-Grohé and Uríbe (2004)*). The details of the
+*Judd (1996)*, *Collard and Juillard (2001a, 2001b)*, and 
+*Schmitt-Grohé and Uríbe (2004)*). The details of the
 Dynare implementation of the first order solution are given in
 *Villemot (2011)*. Such a solution is computed using the
 ``stoch_simul`` command.
@@ -4630,7 +4630,8 @@ Estimation based on likelihood
 Provided that you have observations on some endogenous variables, it
 is possible to use Dynare to estimate some or all parameters. Both
 maximum likelihood (as in *Ireland (2004)*) and Bayesian techniques
-(as in *Rabanal and Rubio-Ramirez (2003)*, *Schorfheide (2000)* or
+(as in *Fernández-Villaverde and Rubio-Ramírez (2004)*,
+*Rabanal and Rubio-Ramirez (2003)*, *Schorfheide (2000)* or
 *Smets and Wouters (2003)*) are available. Using Bayesian methods, it
 is possible to estimate DSGE models, VAR models, or a combination of
 the two techniques called DSGE-VAR.
@@ -4947,7 +4948,7 @@ block decomposition of the model (see :opt:`block`).
     * Posterior mean and highest posterior density interval (shortest
       credible set) from posterior simulation
     * Convergence diagnostic table when only one MCM chain is used or
-      Metropolis-Hastings convergence graphs documented in *Pfeiffer
+      Metropolis-Hastings convergence graphs documented in *Pfeifer
       (2014)* in case of multiple MCM chains
     * Table with numerical inefficiency factors of the MCMC
     * Graphs with prior, posterior, and mode
@@ -6554,8 +6555,8 @@ block decomposition of the model (see :opt:`block`).
 
        Order of approximation around the deterministic steady
        state. When greater than 1, the likelihood is evaluated with a
-       particle or nonlinear filter (see *Fernandez-Villaverde and
-       Rubio-Ramirez (2005)*). Default is ``1``, i.e. the likelihood
+       particle or nonlinear filter (see *Fernández-Villaverde and
+       Rubio-Ramírez (2005)*). Default is ``1``, i.e. the likelihood
        of the linearized model is evaluated using a standard Kalman
        filter.
 
