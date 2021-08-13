@@ -3327,6 +3327,34 @@ blocks in the model structure and use this information to aid the
 solution process. These solution algorithms can provide a significant
 speed-up on large models.
 
+.. warning:: Be careful when employing auxiliary variables in the context
+    of perfect foresight computations. The same model may work for stochastic
+    simulations, but fail for perfect foresight simulations. The issue arises
+    when an equation suddenly only contains variables dated ``t+1`` (or ``t-1``
+    for that matter). In this case, the derivative in the last (first) period
+    with respect to all variables will be 0, rendering the stacked Jacobian singular.
+
+    *Example*
+
+        Consider the following specification of an Euler equation with log utility:
+
+        ::
+
+            Lambda = beta*C(-1)/C;
+            Lambda(+1)*R(+1)= 1;
+
+
+        Clearly, the derivative of the second equation with respect to all endogenous
+        variables at time ``t`` is zero, causing ``perfect_foresight_solver`` to generally
+        fail. This is due to the use of the Lagrange multiplier ``Lambda``  as an auxiliary
+        variable. Instead, employing the identical
+
+        ::
+
+            beta*C/C(+1)*R(+1)= 1;
+
+        will work.
+
 .. command:: perfect_foresight_setup ;
              perfect_foresight_setup (OPTIONS...);
 
@@ -10112,6 +10140,51 @@ with ``discretionary_policy`` or for optimal simple rules with ``osr``
 
 Optimal policy under commitment (Ramsey)
 ----------------------------------------
+
+Dynare allows to automatically compute optimal policy choices of a Ramsey planner
+who takes the specified private sector equilibrium conditions into account and commits
+to future policy choices. Doing so requires specifying the private sector equilibrium
+conditions in the ``model``-block and a ``planner_objective`` as well as potentially some
+``instruments`` to facilitate computations.
+
+
+.. warning:: Be careful when employing forward-looking auxiliary variables in the context
+    of timeless perspective Ramsey computations. They may alter the problem the Ramsey
+    planner will solve for the first period, although they seemingly leave the private
+    sector equilibrium unaffected. The reason is the planner optimizes with respect to variables
+    dated ``t`` and takes the value of time 0 variables as given, because they are predetermined.
+    This set of initially predetermined variables will change with forward-looking definitions.
+    Thus, users are strongly advised to use model-local variables instead.
+
+    *Example*
+
+        Consider a perfect foresight example where the Euler equation for the
+        return to capital is given by
+
+        ::
+
+            1/C=beta*1/C(+1)*(R(+1)+(1-delta))
+
+        The job of the Ramsey planner in period ``1`` is to choose :math:`C_1` and :math:`R_1`, taking as given
+        :math:`C_0`. The above equation may seemingly equivalently be written as
+
+        ::
+
+             1/C=beta*1/C(+1)*(R_cap);
+             R_cap=R(+1)+(1-delta);
+
+        due to perfect foresight. However, this changes the problem of the Ramsey planner in the first period
+        to choosing :math:`C_1` and :math:`R_1`, taking as given both :math:`C_0` and :math:`R^{cap}_0`. Thus,
+        the relevant return to capital in the Euler equation of the first period is not a
+        choice of the planner anymore due to the forward-looking nature of the definition in the second line!
+
+        A correct specification would be to instead define ``R_cap`` as a model-local variable:
+
+        ::
+
+             1/C=beta*1/C(+1)*(R_cap);
+             #R_cap=R(+1)+(1-delta);
+
 
 .. command:: ramsey_model (OPTIONS...);
 
