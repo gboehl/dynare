@@ -62,12 +62,8 @@ detail the algorithm implemented in Dynare for computing the first order
 approximated solution of nonlinear rational expectations models.\footnote{This
   algorithm is available using the \texttt{stoch\_simul} command of Dynare. The
   original implementation of this algorithm was done by Michel Juillard, using
-  MATLAB, and is available in the \texttt{matlab/dr1.m} file which is
-  distributed with Dynare. Another implementation was done by the author, in
-  C++, in the \texttt{DecisionRules} class, in the
-  \texttt{mex/sources/estimation} directory of the source tree. The notations
-  used in the present paper are closer to the C++ implementation than to the
-  MATLAB implementation.}
+  MATLAB, and is available in the \texttt{matlab/dyn\_first\_order\_solver.m} file which is
+  distributed with Dynare.}
 
 This algorithm is based on a generalized Schur decomposition---also known as
 the QZ decomposition---and is therefore essentially a variation on the
