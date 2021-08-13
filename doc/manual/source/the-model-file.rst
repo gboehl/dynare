@@ -7266,6 +7266,58 @@ block decomposition of the model (see :opt:`block`).
        ``nonlinear_filter_initialization=1`` (initialization based on
        the first order approximation of the model).
 
+    .. option:: particle_filter_options = (NAME, VALUE, ...)
+
+       A list of NAME and VALUE pairs. Can be used to set some fine-grained
+       options for the particle filter routines. The set of available options
+       depends on the selected filter routine.
+
+       More information on particle filter options is available at
+       `<https://git.dynare.org/Dynare/dynare/-/wikis/Particle-filters>`__.
+
+
+       Available options are:
+
+           ``'pruning'``
+
+               Enable pruning for particle filter-related simulations. Default: ``false``.
+
+           ``'liu_west_delta'``
+
+               Set the value for delta for the Liu/West online filter. Default: ``0.99``.
+
+           ``'unscented_alpha'``
+
+               Set the value for alpha for unscented transforms. Default: ``1``.
+
+           ``'unscented_beta'``
+
+               Set the value for beta for unscented transforms. Default: ``2``.
+
+           ``'unscented_kappa'``
+
+               Set the value for kappa for unscented transforms. Default: ``1``.
+
+           ``'initial_state_prior_std'``
+
+               Value of the diagonal elements for the initial covariance of the state
+               variables when employing ``nonlinear_filter_initialization=3``. Default: ``1``.
+
+           ``'mixture_state_variables'``
+
+               Number of mixture components in the Gaussian-mixture filter (gmf)
+               for the state variables. Default: ``5``.
+
+           ``'mixture_structural_shocks'``
+
+               Number of mixture components in the Gaussian-mixture filter (gmf)
+               for the structural shocks. Default: ``1``.
+
+           ``'mixture_measurement_shocks'``
+
+               Number of mixture components in the Gaussian-mixture filter (gmf)
+               for the measurement errors. Default: ``1``.
+
     *Note*
 
     If no ``mh_jscale`` parameter is used for a parameter in
