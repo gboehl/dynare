@@ -1,5 +1,5 @@
-function W_opt = method_of_moments_optimal_weighting_matrix(m_data, moments, q_lag)
-% W_opt = method_of_moments_optimal_weighting_matrix(m_data, moments, q_lag)
+function W_opt = optimal_weighting_matrix(m_data, moments, q_lag)
+% W_opt = optimal_weighting_matrix(m_data, moments, q_lag)
 % -------------------------------------------------------------------------
 % This function computes the optimal weigthing matrix by a Bartlett kernel with maximum lag q_lag
 % Adapted from replication codes of
@@ -14,7 +14,7 @@ function W_opt = method_of_moments_optimal_weighting_matrix(m_data, moments, q_l
 %   o W_opt                  [numMom x numMom]  optimal weighting matrix
 % -------------------------------------------------------------------------
 % This function is called by
-%  o method_of_moments.m
+%  o mom.run.m
 % -------------------------------------------------------------------------
 % This function calls:
 %  o CorrMatrix (embedded)

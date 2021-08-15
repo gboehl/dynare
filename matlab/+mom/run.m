@@ -1,5 +1,5 @@
-function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, estim_params_, M_, options_mom_)
-%function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, estim_params_, M_, options_mom_)
+function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_, M_, options_mom_)
+%function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_, M_, options_mom_)
 % -------------------------------------------------------------------------
 % This function performs a method of moments estimation with the following steps:
 %   Step 0: Check if required structures and options exist
@@ -49,11 +49,11 @@ function [oo_, options_mom_, M_] = method_of_moments(bayestopt_, options_, oo_, 
 %  o get_all_parameters.m
 %  o get_matrix_entries_for_psd_check.m
 %  o makedataset.m
-%  o method_of_moments_check_plot.m
-%  o method_of_moments_data_moments.m
-%  o method_of_moments_objective_function.m
-%  o method_of_moments_optimal_weighting_matrix
-%  o method_of_moments_standard_errors
+%  o mom.check_plot.m
+%  o mom.data_moments.m
+%  o mom.objective_function.m
+%  o mom.optimal_weighting_matrix
+%  o mom-standard_errors
 %  o plot_priors.m
 %  o print_info.m
 %  o prior_bounds.m
@@ -628,7 +628,7 @@ end
 fprintf('Computing data moments. Note that NaN values in the moments (due to leads and lags or missing data) are replaced by the mean of the corresponding moment\n');
 
 % Get data moments for the method of moments
-[oo_.mom.data_moments, oo_.mom.m_data] = method_of_moments_data_moments(dataset_.data, oo_, M_.matched_moments, options_mom_);
+[oo_.mom.data_moments, oo_.mom.m_data] = mom.data_moments(dataset_.data, oo_, M_.matched_moments, options_mom_);
 
 % Get shock series for SMM and set variance correction factor
 if strcmp(options_mom_.mom.mom_method,'SMM')
@@ -715,7 +715,7 @@ end
 % -------------------------------------------------------------------------
 % Step 6: checks for objective function at initial parameters
 % -------------------------------------------------------------------------
-objective_function = str2func('method_of_moments_objective_function');
+objective_function = str2func('mom.objective_function');
 
 try
     % Check for NaN or complex values of moment-distance-funtion evaluated
@@ -851,19 +851,19 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
             fprintf('  - diagonal of optimal weighting matrix (Bartlett kernel with %d lags)\n', options_mom_.mom.bartlett_kernel_lag);
             if stage_iter == 1
                 fprintf('    and using data-moments as initial estimate of model-moments\n');
-                weighting_matrix = diag(diag(  method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.data_moments, options_mom_.mom.bartlett_kernel_lag)  ));
+                weighting_matrix = diag(diag(  mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.data_moments, options_mom_.mom.bartlett_kernel_lag)  ));
             else
                 fprintf('    and using previous stage estimate of model-moments\n');
-                weighting_matrix = diag(diag(  method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag)  ));
+                weighting_matrix = diag(diag(  mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag)  ));
             end            
         case 'optimal'
             fprintf('  - optimal weighting matrix (Bartlett kernel with %d lags)\n', options_mom_.mom.bartlett_kernel_lag);
             if stage_iter == 1
                 fprintf('    and using data-moments as initial estimate of model-moments\n');
-                weighting_matrix = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.data_moments, options_mom_.mom.bartlett_kernel_lag);
+                weighting_matrix = mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.data_moments, options_mom_.mom.bartlett_kernel_lag);
             else
                 fprintf('    and using previous stage estimate of model-moments\n');
-                weighting_matrix = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
+                weighting_matrix = mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
                 Woptflag = true;
             end            
         otherwise %user specified matrix in file
@@ -922,7 +922,7 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
     [fval, ~, ~,~,~, oo_] = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_);
     options_mom_.mom.compute_derivs = false; % reset to not compute derivatives in objective function during optimization
     
-    SE = method_of_moments_standard_errors(xparam1, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Woptflag);
+    SE = mom.standard_errors(xparam1, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Woptflag);
     
     % Store results in output structure
     oo_.mom = display_estimation_results_table(xparam1,SE,M_,options_mom_,estim_params_,bayestopt_laplace,oo_.mom,prior_dist_names,sprintf('%s (STAGE %u)',options_mom_.mom.mom_method,stage_iter),sprintf('%s_stage_%u',lower(options_mom_.mom.mom_method),stage_iter));
@@ -934,7 +934,7 @@ end
 if options_mom_.mom.mom_nbr > length(xparam1)
     %get optimal weighting matrix for J test, if necessary
     if ~Woptflag
-        W_opt = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
+        W_opt = mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
         oo_j=oo_;
         oo_j.mom.Sw = chol(W_opt);
         [fval] = feval(objective_function, xparam1, Bounds, oo_j, estim_params_, M_, options_mom_);
@@ -992,7 +992,7 @@ if options_mom_.TeX
 end
 
 if options_mom_.mode_check.status
-    method_of_moments_check_plot(objective_function,xparam1,SE,options_mom_,M_,estim_params_,Bounds,bayestopt_laplace,...
+    mom.check_plot(objective_function,xparam1,SE,options_mom_,M_,estim_params_,Bounds,bayestopt_laplace,...
         Bounds, oo_, estim_params_, M_, options_mom_)
 end
 
