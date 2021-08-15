@@ -1,5 +1,5 @@
-function [SE_values, Asympt_Var] = method_of_moments_standard_errors(xparam, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Wopt_flag)
-% [SE_values, Asympt_Var] = method_of_moments_standard_errors(xparam, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Wopt_flag)
+function [SE_values, Asympt_Var] = standard_errors(xparam, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Wopt_flag)
+% [SE_values, Asympt_Var] = standard_errors(xparam, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Wopt_flag)
 % -------------------------------------------------------------------------
 % This function computes standard errors to the method of moments estimates
 % Adapted from replication codes of
@@ -7,7 +7,7 @@ function [SE_values, Asympt_Var] = method_of_moments_standard_errors(xparam, obj
 % =========================================================================
 % INPUTS
 %   o xparam:                   value of estimated parameters as returned by set_prior()
-%   o objective_function        string of objective function, either method_of_moments_GMM.m or method_of_moments_SMM.m
+%   o objective_function        string of objective function
 %   o Bounds:                   structure containing parameter bounds
 %   o oo_:                      structure for results
 %   o estim_params_:            structure describing the estimated_parameters
@@ -20,13 +20,13 @@ function [SE_values, Asympt_Var] = method_of_moments_standard_errors(xparam, obj
 %   o Asympt_Var                 [nparam x nparam] asymptotic covariance matrix
 % -------------------------------------------------------------------------
 % This function is called by
-%  o method_of_moments.m
+%  o mom.run.m
 % -------------------------------------------------------------------------
 % This function calls:
 %  o get_the_name
 %  o get_error_message
-%  o method_of_moments_objective_function
-%  o method_of_moments_optimal_weighting_matrix  
+%  o mom.objective_function
+%  o mom.optimal_weighting_matrix  
 % =========================================================================
 % Copyright (C) 2020-2021 Dynare Team
 %
@@ -109,7 +109,7 @@ if Wopt_flag
     Asympt_Var  = 1/T*((D'*WW*D)\eye(dim_params));
 else
     % We do not have the optimal weighting matrix yet    
-    WWopt      = method_of_moments_optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
+    WWopt      = mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
     S          = WWopt\eye(size(WWopt,1));
     AA         = (D'*WW*D)\eye(dim_params);
     Asympt_Var = 1/T*AA*D'*WW*S*WW*D*AA;
