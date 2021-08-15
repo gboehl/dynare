@@ -956,7 +956,7 @@ The model is declared inside a ``model`` block:
 
         end;
 
-    More information on tags is available at `<https://archives.dynare.org/DynareWiki/EquationsTags>`__.
+    More information on tags is available at `<https://git.dynare.org/Dynare/dynare/-/wikis/Equations-Tags>`__.
 
     *Options*
 
