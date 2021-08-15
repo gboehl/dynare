@@ -617,6 +617,19 @@ not in EXPRESSION):
     Exogenous and exogenous deterministic variables may not appear in
     MODEL_EXPRESSION.
 
+    .. warning::
+
+        The concept of a steady state is ambiguous in a perfect foresight
+        context with permament and potentially anticipated shocks occuring.
+        Dynare will use the contents of ``oo_.steady_state`` as its reference
+        for calls to the ``STEADY_STATE()``-operator. In the presence of
+        ``endval``, this implies that the terminal state provided by the
+        user is used. This may be a steady state computed by Dynare (if ``endval``
+        is followed by ``steady``) or simply the terminal state provided by the
+        user (if ``endval`` is not followed by ``steady``). Put differently,
+        Dynare will not automatically compute the steady state conditional on
+        the specificed value of the exogenous variables in the respective periods.
+
 .. operator:: EXPECTATION (INTEGER) (MODEL_EXPRESSION)
 
     This operator is used to take the expectation of some expression
