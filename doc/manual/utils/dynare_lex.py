@@ -36,7 +36,7 @@ class DynareLexer(RegexLexer):
         "dynare","var","varexo","varexo_det","parameters","change_type","model_local_variable",
         "predetermined_variables","trend_var","log_trend_var","external_function",
         "write_latex_original_model","write_latex_dynamic_model",
-        "write_latex_static_model","resid","initval_file","histval_file","dsample",
+        "write_latex_static_model","write_latex_steady_state_model","resid","initval_file","histval_file","dsample",
         "periods","values","corr","steady","check","model_diagnostics","model_info",
         "print_bytecode_dynamic_model"," print_bytecode_static_model",
         "perfect_foresight_setup","perfect_foresight_solver","simul","stoch_simul",
@@ -52,7 +52,8 @@ class DynareLexer(RegexLexer):
         "save_params_and_steady_state","load_params_and_steady_state",
         "dynare_version","write_latex_definitions","write_latex_parameter_table",
         "write_latex_prior_table","collect_latex_files","prior_function",
-        "posterior_function","generate_trace_plots","evaluate_planner_objective")
+        "posterior_function","generate_trace_plots","evaluate_planner_objective",
+        "occbin_setup","occbin_solver","occbin_write_regimes","occbin_graph","method_of_moments")
 
     report_commands = ("report","addPage","addSection","addGraph","addTable",
         "addSeries","addParagraph","addVspace","write","compile")
@@ -80,6 +81,7 @@ class DynareLexer(RegexLexer):
                 'shock_groups','conditional_forecast_paths','optim_weights',
                 'osr_params_bounds','ramsey_constraints','irf_calibration',
                 'moment_calibration','identification','svar_identification',
+                'matched_moments','occbin_constraints','surprise','overwrite',
                 'verbatim','end','node','cluster','paths','hooks'), prefix=r'\b', suffix=r'\s*\b'),Keyword.Reserved),
 
             # FIXME: Commands following multiline comments are not highlighted properly.
