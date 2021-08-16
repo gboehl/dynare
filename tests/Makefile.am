@@ -77,6 +77,7 @@ MODFILES = \
 	estimation/method_of_moments/AFVRR/AFVRR_M0.mod \
 	estimation/method_of_moments/AFVRR/AFVRR_MFB.mod \
 	estimation/method_of_moments/AFVRR/AFVRR_MFB_RRA.mod \
+	estimation/system_prior_restriction/Gali_2015.mod \
 	estimation/no_init_estimation_check_first_obs/fs2000_init_check.mod \
 	estimation/example_nls.mod \
 	moments/example1_var_decomp.mod \
@@ -150,7 +151,7 @@ MODFILES = \
 	histval_initval_file/ramst_datafile.mod \
 	histval_initval_file/sim_exo_lead_lag.mod \
 	histval_initval_file/sim_exo_lead_lag_initvalf.mod \
-        ramst_normcdf_and_friends.mod \
+    ramst_normcdf_and_friends.mod \
 	ramst_vec.mod \
 	ramst_mshocks_vec.mod \
 	example1_varexo_det.mod \
@@ -1243,6 +1244,8 @@ EXTRA_DIST = \
 	estimation/fsdat_simul.m \
 	estimation/heteroskedastic_shocks/fs2000_het_model.inc \
 	estimation/heteroskedastic_shocks/fs2000_het_check.inc \
+	estimation/system_prior_restriction/Gali_2015_PC_slope.m \
+	estimation/system_prior_restriction/Gali_2015_prior_restrictions.m \
 	ep/mean_preserving_spread.m \
 	ep/rbcii_steady_state.m \
 	decision_rules/example1_results_dyn_432.mat \

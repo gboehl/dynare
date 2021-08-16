@@ -51,6 +51,12 @@ description, please refer to the comments inside the files themselves.
     Small open economy RBC model with shocks to the growth trend,
     presented in *Aguiar and Gopinath (2004)*.
 
+``Gali_2015.mod``
+
+    Basic New Keynesian model of *Galí (2015)*, Chapter 3 showing how to
+    i) use "system prior"-type prior restrictions as in *Andrle and Plašil (2018)*
+    and ii) run prior/posterior-functions.
+
 ``NK_baseline.mod``
 
     Baseline New Keynesian Model estimated in *Fernández-Villaverde
