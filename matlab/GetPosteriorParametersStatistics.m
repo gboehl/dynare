@@ -63,7 +63,7 @@ clear record;
 header_width = row_header_width(M_, estim_params_, bayestopt_);
 hpd_interval=[num2str(options_.mh_conf_sig*100), '% HPD interval'];
 tit2 = sprintf('%-*s %12s %12s %23s %8s %12s\n',header_width,' ','prior mean','post. mean',hpd_interval,'prior','pstdev');
-pformat =      '%-*s %12.3f % 12.4f %11.4f %11.4f %7s %12.4f';
+pformat =      '%-*s %12.3f % 12.4f %11.4f %11.4f %8s %12.4f';
 
 skipline(2)
 disp('ESTIMATION RESULTS')
