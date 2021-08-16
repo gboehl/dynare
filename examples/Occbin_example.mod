@@ -1,18 +1,18 @@
 /*
  * This file shows how to solve an RBC model with two occasionally binding constraints:
  *  1. The INEG constraint implements quadratic capital adjustment costs if investment
- *      falls below its steady state. If investment is above steady state, there are no 
+ *      falls below its steady state. If investment is above steady state, there are no
  *      adjustment costs
- *  2. The IRR constraint implements irreversible investment. Investment cannot be lower 
+ *  2. The IRR constraint implements irreversible investment. Investment cannot be lower
  *      than a factor phi of its steady state.
  *
  * Notes:
- *  - This mod-file is based on an example originally provided by Luca Guerrieri 
+ *  - This mod-file is based on an example originally provided by Luca Guerrieri
  *      and Matteo Iacoviello provided at https://www.matteoiacoviello.com/research_files/occbin_20140630.zip
  *  - The INEG constraint should theoretically be log_Invest-log(steady_state(Invest))<0, but this will lead
  *      to numerical issues. Instead we allow for a small negative value of <-0.000001
  *
- * Please note that the following copyright notice only applies to this Dynare 
+ * Please note that the following copyright notice only applies to this Dynare
  * implementation of the model.
  */
 
@@ -42,8 +42,8 @@ var A           $A$         (long_name='TFP')
     log_K       ${\hat K}$  (long_name='log capital')
     log_Invest  ${\hat I}$  (long_name='log investment')
     log_C       ${\hat C}$  (long_name='log consumption')
-    ;    
- 
+    ;
+
 varexo epsilon $\varepsilon$        (long_name='TFP shock');
 
 parameters alpha    $\alpha$        (long_name='capital share')
@@ -66,7 +66,7 @@ psi = 5;
 
 model;
 // 1.
-[name='Euler', bind = 'INEG'] 
+[name='Euler', bind = 'INEG']
 -C^(-sigma)*(1+2*psi*(K/K(-1)-1)/K(-1))+ beta*C(+1)^(-sigma)*((1-delta)-2*psi*(K(+1)/K-1)*
   (-K(+1)/K^2)+alpha*exp(A(+1))*K^(alpha-1))= -Lambda+beta*(1-delta)*Lambda(+1);
 
@@ -74,7 +74,7 @@ model;
 -C^(-sigma) + beta*C(+1)^(-sigma)*(1-delta+alpha*exp(A(+1))*K^(alpha-1))= -Lambda+beta*(1-delta)*Lambda(+1);
 
 // 2.
-[name='Budget constraint',bind = 'INEG'] 
+[name='Budget constraint',bind = 'INEG']
 C+K-(1-delta)*K(-1)+psi*(K/K(-1)-1)^2=exp(A)*K(-1)^(alpha);
 
 [name='Budget constraint',relax = 'INEG']
@@ -92,7 +92,7 @@ Lambda=0;
 [name='investment',bind='IRR',relax='INEG']
 (log_Invest - log(phi*steady_state(Invest))) = 0;
 
-// 5. 
+// 5.
 [name='LOM TFP']
 A = rho*A(-1)+epsilon;
 

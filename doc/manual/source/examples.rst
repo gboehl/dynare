@@ -59,7 +59,7 @@ description, please refer to the comments inside the files themselves.
 
 ``Occbin_example.mod``
 
-    RBC model with two occasionally binding constraints. Demonstrates 
+    RBC model with two occasionally binding constraints. Demonstrates
     how to set up Occbin.
 
 ``Ramsey_Example.mod``

@@ -35,7 +35,7 @@ Bibliography
 * Ferris, Michael C. and Todd S. Munson (1999): “Interfaces to PATH 3.0: Design, Implementation and Usage”, *Computational Optimization and Applications*, 12(1), 207–227.
 * Geweke, John (1992): “Evaluating the accuracy of sampling-based approaches to the calculation of posterior moments,” in J.O. Berger, J.M. Bernardo, A.P. Dawid, and A.F.M. Smith (eds.) Proceedings of the Fourth Valencia International Meeting on Bayesian Statistics, pp. 169–194, Oxford University Press.
 * Geweke, John (1999): “Using simulation methods for Bayesian econometric models: Inference, development and communication,” *Econometric Reviews*, 18(1), 1–73.
-* Giovannini, Massimo, Philipp Pfeiffer, and Marco Ratto (2021), “Efficient and robust inference of models with occasionally binding constraints,” Working Papers 2021-03, Joint Research Centre, European Commission 
+* Giovannini, Massimo, Philipp Pfeiffer, and Marco Ratto (2021), “Efficient and robust inference of models with occasionally binding constraints,” Working Papers 2021-03, Joint Research Centre, European Commission
 * Giordani, Paolo, Michael Pitt, and Robert Kohn (2011): “Bayesian Inference for Time Series State Space Models” in: *The Oxford Handbook of Bayesian Econometrics*, ed. by John Geweke, Gary Koop, and Herman van Dijk, Oxford University Press, 61–124.
 * Guerrieri, Luca and Matteo Iacoviello (2015): “OccBin: A toolkit for solving dynamic models with occasionally binding constraints easily,” *Journal of Monetary Economics*, 70, 22–38.
 * Goffe, William L., Gary D. Ferrier, and John Rogers (1994): “Global Optimization of Statistical Functions with Simulated Annealing,” *Journal of Econometrics*, 60(1/2), 65–100.
