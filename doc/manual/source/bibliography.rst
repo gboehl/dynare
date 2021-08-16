@@ -8,7 +8,8 @@ Bibliography
 * Adjemian, Stéphane, Matthieu Darracq Parriès and Stéphane Moyen (2008): “Towards a monetary policy evaluation framework”, *European Central Bank Working Paper*, 942.
 * Aguiar, Mark and Gopinath, Gita (2004): “Emerging Market Business Cycles: The Cycle is the Trend,” *NBER* Working Paper, 10734.
 * Amisano, Gianni and Tristani, Oreste (2010): “Euro area inflation persistence in an estimated nonlinear DSGE model”, *Journal of Economic Dynamics and Control*, 34(10), 1837–1858.
-* Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2018): “The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,” *Review of Economic Studies*, 85(1), pp. 1-49.
+* Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez (2018): “The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications,” *Review of Economic Studies*, 85(1), 1-49.
+* Andrle, Michal and Miroslav Plašil (2018): “Econometrics with system priors,” *Economics Letters*, 172, 134-137.
 * Andrews, Donald W.K (1991): “Heteroskedasticity and autocorrelation consistent covariance matrix estimation”, *Econometrica*, 59(3), 817–858.
 * Backus, David K., Patrick J. Kehoe, and Finn E. Kydland (1992): “International Real Business Cycles,” *Journal of Political Economy*, 100(4), 745–775.
 * Baxter, Marianne and Robert G. King (1999): “Measuring Business Cycles: Approximate Band-pass Filters for Economic Time Series,” *Review of Economics and Statistics*, 81(4), 575–593.
@@ -33,6 +34,7 @@ Bibliography
 * Fernández-Villaverde, Jesús and Juan Rubio-Ramírez (2004): “Comparing Dynamic Equilibrium Economies to Data: A Bayesian Approach,” *Journal of Econometrics*, 123, 153–187.
 * Fernández-Villaverde, Jesús and Juan Rubio-Ramírez (2005): “Estimating Dynamic Equilibrium Economies: Linear versus Nonlinear Likelihood,” *Journal of Applied Econometrics*, 20, 891–910.
 * Ferris, Michael C. and Todd S. Munson (1999): “Interfaces to PATH 3.0: Design, Implementation and Usage”, *Computational Optimization and Applications*, 12(1), 207–227.
+* Galí, Jordi (2015): “Monetary Policy, Inflation, and the Business Cycle,” 2nd Edition, Princeton University Press, Princeton.
 * Geweke, John (1992): “Evaluating the accuracy of sampling-based approaches to the calculation of posterior moments,” in J.O. Berger, J.M. Bernardo, A.P. Dawid, and A.F.M. Smith (eds.) Proceedings of the Fourth Valencia International Meeting on Bayesian Statistics, pp. 169–194, Oxford University Press.
 * Geweke, John (1999): “Using simulation methods for Bayesian econometric models: Inference, development and communication,” *Econometric Reviews*, 18(1), 1–73.
 * Giovannini, Massimo, Philipp Pfeiffer, and Marco Ratto (2021), “Efficient and robust inference of models with occasionally binding constraints,” Working Papers 2021-03, Joint Research Centre, European Commission
