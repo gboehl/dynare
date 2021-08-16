@@ -37,7 +37,7 @@ class DynareLexer(RegexLexer):
         "predetermined_variables","trend_var","log_trend_var","external_function",
         "write_latex_original_model","write_latex_dynamic_model",
         "write_latex_static_model","write_latex_steady_state_model","resid","initval_file","histval_file","dsample",
-        "periods","values","corr","steady","check","model_diagnostics","model_info",
+        "periods","values","scales","corr","stderr","steady","check","model_diagnostics","model_info",
         "print_bytecode_dynamic_model"," print_bytecode_static_model",
         "perfect_foresight_setup","perfect_foresight_solver","simul","stoch_simul",
         "extended_path","varobs","estimation","unit_root_vars","bvar_density",
@@ -81,7 +81,7 @@ class DynareLexer(RegexLexer):
                 'shock_groups','conditional_forecast_paths','optim_weights',
                 'osr_params_bounds','ramsey_constraints','irf_calibration',
                 'moment_calibration','identification','svar_identification',
-                'matched_moments','occbin_constraints','surprise','overwrite',
+                'matched_moments','occbin_constraints','surprise','overwrite','bind','relax',
                 'verbatim','end','node','cluster','paths','hooks'), prefix=r'\b', suffix=r'\s*\b'),Keyword.Reserved),
 
             # FIXME: Commands following multiline comments are not highlighted properly.
