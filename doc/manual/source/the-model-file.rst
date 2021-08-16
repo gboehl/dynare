@@ -7641,82 +7641,82 @@ Estimation based on moments
 ===========================
 
 Provided that you have observations on some endogenous variables, it
-is possible to use Dynare to estimate some or all parameters using a 
-method of moments approach. Both the Simulated Method of Moments (SMM) 
-and the Generalized Method of Moments (GMM) are available. The general 
-idea is to minimize the distance between unconditional model moments 
-and corresponding data moments (so called orthogonality or moment 
-conditions). For SMM, Dynare computes model moments via stochastic 
-simulations based on the perturbation approximation up to any order, 
-whereas for GMM model moments are computed in closed-form based on the 
-pruned state-space representation of the perturbation solution up to third 
-order. The implementation of SMM is inspired by *Born and Pfeifer (2014)* 
-and *Ruge-Murcia (2012)*, whereas the one for GMM is adapted from 
-*Andreasen, Fernández-Villaverde and Rubio-Ramírez (2018)* and *Mutschler 
-(2018)*. Successful estimation heavily relies on the accuracy and efficiency of 
-the perturbation approximation, so it is advised to tune this as much as 
+is possible to use Dynare to estimate some or all parameters using a
+method of moments approach. Both the Simulated Method of Moments (SMM)
+and the Generalized Method of Moments (GMM) are available. The general
+idea is to minimize the distance between unconditional model moments
+and corresponding data moments (so called orthogonality or moment
+conditions). For SMM, Dynare computes model moments via stochastic
+simulations based on the perturbation approximation up to any order,
+whereas for GMM model moments are computed in closed-form based on the
+pruned state-space representation of the perturbation solution up to third
+order. The implementation of SMM is inspired by *Born and Pfeifer (2014)*
+and *Ruge-Murcia (2012)*, whereas the one for GMM is adapted from
+*Andreasen, Fernández-Villaverde and Rubio-Ramírez (2018)* and *Mutschler
+(2018)*. Successful estimation heavily relies on the accuracy and efficiency of
+the perturbation approximation, so it is advised to tune this as much as
 possible (see :ref:`stoch-sol-simul`). The method of moments estimator is consistent
-and asymptotically normally distributed given certain regularity conditions 
-(see *Duffie and Singleton (1993)* for SMM and *Hansen (1982)* for GMM). 
-For instance, it is required to have at least as many moment conditions as 
-estimated parameters (over-identified or just identified). Moreover, the 
-Jacobian of the moments with respect to the estimated parameters needs to 
+and asymptotically normally distributed given certain regularity conditions
+(see *Duffie and Singleton (1993)* for SMM and *Hansen (1982)* for GMM).
+For instance, it is required to have at least as many moment conditions as
+estimated parameters (over-identified or just identified). Moreover, the
+Jacobian of the moments with respect to the estimated parameters needs to
 have full rank. :ref:`identification-analysis` helps to check this regularity condition.
 
-In the over-identified case of declaring more moment conditions than estimated parameters, the 
-choice of :opt:`weighting_matrix <weighting_matrix = ['WM1','WM2',...,'WMn']>` 
-matters for the efficiency of the estimation, because the estimated 
-orthogonality conditions are random variables with unequal variances and 
-usually non-zero cross-moment covariances. A weighting matrix allows to  
-re-weight moments to put more emphasis on moment conditions that are 
-more informative or better measured (in the sense of having a smaller 
-variance). To achieve asymptotic efficiency, the weighting matrix needs to 
-be chosen such that, after appropriate scaling, it has a probability limit 
-proportional to the inverse of the covariance matrix of the limiting 
-distribution of the vector of orthogonality conditions. Dynare uses a 
-Newey-West-type estimator with a Bartlett kernel to compute an estimate of this 
-so-called optimal weighting matrix. Note that in this over-identified case, 
-it is advised to perform the estimation in at least two stages by setting 
+In the over-identified case of declaring more moment conditions than estimated parameters, the
+choice of :opt:`weighting_matrix <weighting_matrix = ['WM1','WM2',...,'WMn']>`
+matters for the efficiency of the estimation, because the estimated
+orthogonality conditions are random variables with unequal variances and
+usually non-zero cross-moment covariances. A weighting matrix allows to
+re-weight moments to put more emphasis on moment conditions that are
+more informative or better measured (in the sense of having a smaller
+variance). To achieve asymptotic efficiency, the weighting matrix needs to
+be chosen such that, after appropriate scaling, it has a probability limit
+proportional to the inverse of the covariance matrix of the limiting
+distribution of the vector of orthogonality conditions. Dynare uses a
+Newey-West-type estimator with a Bartlett kernel to compute an estimate of this
+so-called optimal weighting matrix. Note that in this over-identified case,
+it is advised to perform the estimation in at least two stages by setting
 e.g. :opt:`weighting_matrix=['DIAGONAL','DIAGONAL'] <weighting_matrix = ['WM1','WM2',...,'WMn']>`
-so that the computation of the optimal weighting matrix benefits from the 
-consistent estimation of the previous stages. The optimal weighting matrix 
-is used to compute standard errors and the J-test of overidentifying 
-restrictions, which tests whether the model and selection of moment 
-conditions fits the data sufficiently well. If the null hypothesis of a 
-"valid" model is rejected, then something is (most likely) wrong with either your model 
+so that the computation of the optimal weighting matrix benefits from the
+consistent estimation of the previous stages. The optimal weighting matrix
+is used to compute standard errors and the J-test of overidentifying
+restrictions, which tests whether the model and selection of moment
+conditions fits the data sufficiently well. If the null hypothesis of a
+"valid" model is rejected, then something is (most likely) wrong with either your model
 or selection of orthogonality conditions.
 
-In case the (presumed) global minimum of the moment distance function is 
-located  in a region of the parameter space that 
-is typically considered unlikely (`dilemma of absurd parameters`), you may 
-opt to choose the :opt:`penalized_estimator <penalized_estimator>` option. 
-Similar to adding priors to the likelihood, this option incorporates prior 
-knowledge (i.e. the prior mean) as additional moment restrictions and 
-weights them by their prior precision to guide the minimization algorithm 
-to more plausible regions of the parameter space. Ideally, these regions are 
-characterized by only slightly worse values of the objective function. Note that 
+In case the (presumed) global minimum of the moment distance function is
+located  in a region of the parameter space that
+is typically considered unlikely (`dilemma of absurd parameters`), you may
+opt to choose the :opt:`penalized_estimator <penalized_estimator>` option.
+Similar to adding priors to the likelihood, this option incorporates prior
+knowledge (i.e. the prior mean) as additional moment restrictions and
+weights them by their prior precision to guide the minimization algorithm
+to more plausible regions of the parameter space. Ideally, these regions are
+characterized by only slightly worse values of the objective function. Note that
 adding prior information comes at the cost of a loss in efficiency of the estimator.
 
 .. command:: varobs VARIABLE_NAME...;
-    
-    |br| Required. All variables used in the :bck:`matched_moments` block 
+
+    |br| Required. All variables used in the :bck:`matched_moments` block
     need to be observable. See :ref:`varobs <varobs>` for more details.
 
 .. block:: matched_moments ;
 
     |br| This block specifies the product moments which are used in estimation.
-    Currently, only linear product moments (e.g. 
-    :math:`E[y_t], E[y_t^2], E[x_t y_t], E[y_t y_{t-1}], E[y_t^3 x^2_{t-4}]`) 
-    are supported. For other functions like :math:`E[\log(y_t)e^{x_t}]` you 
-    need to declare auxiliary endogenous variables. 
+    Currently, only linear product moments (e.g.
+    :math:`E[y_t], E[y_t^2], E[x_t y_t], E[y_t y_{t-1}], E[y_t^3 x^2_{t-4}]`)
+    are supported. For other functions like :math:`E[\log(y_t)e^{x_t}]` you
+    need to declare auxiliary endogenous variables.
 
     Each line inside of the block should be of the form::
 
         VARIABLE_NAME(LEAD/LAG)^POWER*VARIABLE_NAME(LEAD/LAG)^POWER*...*VARIABLE_NAME(LEAD/LAG)^POWER;
-    
-    where `VARIABLE_NAME` is the name of a declared observable variable, 
-    `LEAD/LAG` is either a negative integer for lags or a positive one 
-    for leads, and `POWER` is a positive integer indicating the exponent on 
+
+    where `VARIABLE_NAME` is the name of a declared observable variable,
+    `LEAD/LAG` is either a negative integer for lags or a positive one
+    for leads, and `POWER` is a positive integer indicating the exponent on
     the variable. You can omit `LEAD/LAG` equal to `0` or `POWER` equal to `1`.
 
     *Example*
@@ -7729,36 +7729,36 @@ adding prior information comes at the cost of a loss in efficiency of the estima
             matched_moments;
             c;
             y;
-            c*c;            
+            c*c;
             c*y;
             y^2;
             c*c(3);
             y(1)^2*c(-4)^3;
             c(-5)^3*y(0)^2;
             end;
-        
+
     *Limitations*
 
-    1. For GMM, Dynare can only compute the theoretical mean, covariance, and 
+    1. For GMM, Dynare can only compute the theoretical mean, covariance, and
     autocovariances (i.e. first and second moments). Higher-order moments are only supported for SMM.
 
-    2. By default, the product moments are not demeaned, unless the 
-    :opt:`prefilter <prefilter = INTEGER>` option is set to 1. That is, by default, 
+    2. By default, the product moments are not demeaned, unless the
+    :opt:`prefilter <prefilter = INTEGER>` option is set to 1. That is, by default,
     `c*c` corresponds to :math:`E[c_t^2]` and not to :math:`Var[c_t]=E[c_t^2]-E[c_t]^2`.
-    
+
     *Output*
 
-    Dynare translates the :bck:`matched_moments` block into a cell array 
+    Dynare translates the :bck:`matched_moments` block into a cell array
     ``M_.matched_moments`` where:
-    
+
     * the first column contains a vector of indices for the chosen variables in declaration order
     * the second column contains the corresponding vector of leads and lags
     * the third column contains the corresponding vector of powers
 
-    During the estimation phase, Dynare will eliminate all redundant or duplicate 
-    orthogonality conditions in ``M_.matched_moments`` and display which 
-    conditions were removed. In the example above, this would be the case for the  
-    last row, which is the same as the second-to-last one. The original block is 
+    During the estimation phase, Dynare will eliminate all redundant or duplicate
+    orthogonality conditions in ``M_.matched_moments`` and display which
+    conditions were removed. In the example above, this would be the case for the
+    last row, which is the same as the second-to-last one. The original block is
     saved in ``M_.matched_moments_orig``.
 
 .. block:: estimated_params ;
@@ -7775,12 +7775,12 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
 .. command:: method_of_moments (OPTIONS...);
 
-    |br| This command runs the method of moments estimation. The following 
+    |br| This command runs the method of moments estimation. The following
     information will be displayed in the command window:
 
     * Overview of options chosen by the user
     * Estimation results for each stage and iteration
-    * Value of minimized moment distance objective function    
+    * Value of minimized moment distance objective function
     * Result of the J-test
     * Table of data moments and estimated model moments
 
@@ -7793,28 +7793,28 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
     .. option:: datafile = FILENAME
 
-        The name of the file containing the data. See 
+        The name of the file containing the data. See
         :opt:`datafile <datafile = FILENAME>` for the meaning and syntax.
 
     *Options common for SMM and GMM*
 
     .. option:: order = INTEGER
-        
-        Order of perturbation approximation. For GMM only orders 1|2|3 are 
-        supported. For SMM, you can choose an arbitrary order. Note that the 
-        order set in other functions will not overwrite the default. 
+
+        Order of perturbation approximation. For GMM only orders 1|2|3 are
+        supported. For SMM, you can choose an arbitrary order. Note that the
+        order set in other functions will not overwrite the default.
         Default: ``1``.
-    
+
     .. option:: pruning
 
-        Discard higher order terms when iteratively computing simulations 
-        of the solution. See :opt:`pruning <pruning>` for more details. 
+        Discard higher order terms when iteratively computing simulations
+        of the solution. See :opt:`pruning <pruning>` for more details.
         Default: not set for SMM, always set for GMM.
 
     .. option:: penalized_estimator
 
-        This option includes deviations of the estimated parameters from the 
-        prior mean as additional moment restrictions and weights them by 
+        This option includes deviations of the estimated parameters from the
+        prior mean as additional moment restrictions and weights them by
         their prior precision.
         Default: not set.
 
@@ -7831,9 +7831,9 @@ adding prior information comes at the cost of a loss in efficiency of the estima
            ``OPTIMAL``
 
                 Uses the optimal weighting matrix computed by a Newey-West-type
-                estimate with a Bartlett kernel. At the first 
-                stage, the data-moments are used as initial estimate of the 
-                model moments, whereas at subsequent stages the previous estimate 
+                estimate with a Bartlett kernel. At the first
+                stage, the data-moments are used as initial estimate of the
+                model moments, whereas at subsequent stages the previous estimate
                 of model moments will be used when computing
                 the optimal weighting matrix.
 
@@ -7844,8 +7844,8 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
            ``FILENAME``
 
-                The name of the mat-file (extension ``.mat``) containing a 
-                user-specified weighting matrix. The file must include a positive definite 
+                The name of the mat-file (extension ``.mat``) containing a
+                user-specified weighting matrix. The file must include a positive definite
                 square matrix called `weighting_matrix` with both dimensions
                 equal to the number of orthogonality conditions.
 
@@ -7860,17 +7860,17 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
     .. option:: bartlett_kernel_lag = INTEGER
 
-        Bandwidth of kernel for computing the optimal weighting matrix. 
+        Bandwidth of kernel for computing the optimal weighting matrix.
         Default: ``20``.
 
     .. option:: se_tolx = DOUBLE
-        
-        Step size for numerical differentiation when computing standard 
+
+        Step size for numerical differentiation when computing standard
         errors with a two-sided finite difference method.
         Default: ``1e-5``.
 
     .. option:: verbose
-        
+
         Display and store intermediate estimation results in ``oo_.mom``.
         Default: not set.
 
@@ -7878,7 +7878,7 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
     .. option:: burnin = INTEGER
 
-        Number of periods dropped at the beginning of simulation. 
+        Number of periods dropped at the beginning of simulation.
         Default: ``500``.
 
     .. option:: bounded_shock_support
@@ -7893,32 +7893,32 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
     .. option:: simulation_multiple = INTEGER
 
-        Multiple of data length used for simulation. 
+        Multiple of data length used for simulation.
         Default: ``7``.
 
     *GMM-specific options*
 
     .. option:: analytic_standard_errors
 
-        Compute standard errors using analytical derivatives of moments 
+        Compute standard errors using analytical derivatives of moments
         with respect to estimated parameters.
-        Default: not set, i.e. standard errors are computed using a two-sided 
+        Default: not set, i.e. standard errors are computed using a two-sided
         finite difference method, see :opt:`se_tolx <se_tolx = DOUBLE>`.
 
     *General options*
 
-    .. option:: dirname = FILENAME 
+    .. option:: dirname = FILENAME
 
-        Directory in which to store ``estimation`` output. 
+        Directory in which to store ``estimation`` output.
         See :opt:`dirname <dirname = FILENAME>` for more details.
         Default: ``<mod_file>``.
 
     .. option:: graph_format = FORMAT
 
-        Specify the file format(s) for graphs saved to disk. 
+        Specify the file format(s) for graphs saved to disk.
         See :opt:`graph_format <graph_format = FORMAT>` for more details.
         Default: ``eps``.
-    
+
     .. option:: nodisplay
 
         See :opt:`nodisplay`. Default: not set.
@@ -7933,7 +7933,7 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
     .. option:: plot_priors = INTEGER
 
-       Control the plotting of priors. 
+       Control the plotting of priors.
        See :opt:`plot_priors <plot_priors = INTEGER>` for more details.
        Default: ``1``, i.e. plot priors.
 
@@ -7955,13 +7955,13 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
     .. option:: nobs = INTEGER
 
-        See :opt:`nobs <nobs = INTEGER>`.  
+        See :opt:`nobs <nobs = INTEGER>`.
         Default: all observations are considered.
 
     .. option:: prefilter = INTEGER
 
-        A value of 1 means that the estimation procedure will demean each data 
-        series by its empirical mean and each model moment by its theoretical 
+        A value of 1 means that the estimation procedure will demean each data
+        series by its empirical mean and each model moment by its theoretical
         mean. See :opt:`prefilter <prefilter = INTEGER>` for more details.
         Default: `0`, i.e. no prefiltering.
 
@@ -7971,7 +7971,7 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
     .. option:: xls_sheet = QUOTED_STRING
 
-        See :opt:`xls_sheet <xls_sheet = QUOTED_STRING>`.        
+        See :opt:`xls_sheet <xls_sheet = QUOTED_STRING>`.
 
     .. option:: xls_range = RANGE
 
@@ -7991,13 +7991,13 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
     .. option:: additional_optimizer_steps = [INTEGER|FUNCTION_NAME,INTEGER|FUNCTION_NAME,...]
 
-        Vector of additional minimization algorithms run after 
-        ``mode_compute``. If :opt:`verbose` option is set, then the additional estimation 
+        Vector of additional minimization algorithms run after
+        ``mode_compute``. If :opt:`verbose` option is set, then the additional estimation
         results are saved into the ``oo_.mom`` structure prefixed with `verbose_`.
         Default: no additional optimization iterations.
 
     .. option:: optim = (NAME, VALUE, ...)
-    
+
         See :opt:`optim <optim = (NAME, VALUE, ...)>`.
 
     .. option:: silent_optimizer
@@ -8008,17 +8008,17 @@ adding prior information comes at the cost of a loss in efficiency of the estima
     *Numerical algorithms options*
 
     .. option:: aim_solver
-    
+
         See :opt:`aim_solver <aim_solver>`. Default: not set.
 
     .. option:: k_order_solver
-    
-        See :opt:`k_order_solver <k_order_solver>`. 
+
+        See :opt:`k_order_solver <k_order_solver>`.
         Default: disabled for order 1 and 2, enabled for order 3 and above.
 
     .. option:: dr = OPTION
 
-        See :opt:`dr <dr = OPTION>`. Default: ``default``, i.e. generalized 
+        See :opt:`dr <dr = OPTION>`. Default: ``default``, i.e. generalized
         Schur decomposition.
 
     .. option:: dr_cycle_reduction_tol = DOUBLE
@@ -8038,7 +8038,7 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
     .. option:: lyapunov = OPTION
 
-        See :opt:`lyapunov <lyapunov = OPTION>`. Default: ``default``, i.e. 
+        See :opt:`lyapunov <lyapunov = OPTION>`. Default: ``default``, i.e.
         based on Bartlets-Stewart algorithm.
 
     .. option:: lyapunov_complex_threshold = DOUBLE
@@ -8079,12 +8079,12 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
     .. option:: schur_vec_tol = DOUBLE
 
-        Tolerance level used to find nonstationary variables in Schur decomposition 
+        Tolerance level used to find nonstationary variables in Schur decomposition
         of the transition matrix. Default: ``1e-11``.
 
     .. option:: mode_check
 
-       Plots univariate slices through the moments distance objective function around the 
+       Plots univariate slices through the moments distance objective function around the
        computed minimum for each estimated parameter. This is
        helpful to diagnose problems with the optimizer.
        Default: not set.
@@ -8107,14 +8107,14 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
     *Output*
 
-    ``method_of_moments`` stores user options in a structure called 
-    `options_mom_` in the global workspace. After running the estimation, 
+    ``method_of_moments`` stores user options in a structure called
+    `options_mom_` in the global workspace. After running the estimation,
     the parameters ``M_.params`` and the covariance matrices of the shocks
-    ``M_.Sigma_e`` and of the measurement errors ``M_.H`` are set to the 
-    parameters that minimize the quadratic moments distance objective 
+    ``M_.Sigma_e`` and of the measurement errors ``M_.H`` are set to the
+    parameters that minimize the quadratic moments distance objective
     function. The estimation results are stored in the ``oo_.mom`` structure
     with the following fields:
-     
+
     .. matvar:: oo_.mom.data_moments
 
         Variable set by the ``method_of_moments`` command. Stores the mean
@@ -8127,30 +8127,30 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
         Variable set by the ``method_of_moments`` command. Stores the selected
         empirical moments at each point in time. NaN values due to leads/lags
-        or missing data are replaced by the corresponding mean of the moment. 
+        or missing data are replaced by the corresponding mean of the moment.
         Matrix of dimension time periods times number of orthogonality conditions.
 
 
-    .. matvar:: oo_.mom.Sw 
+    .. matvar:: oo_.mom.Sw
 
-        Variable set by the ``method_of_moments`` command. Stores the 
+        Variable set by the ``method_of_moments`` command. Stores the
         Cholesky decomposition of the currently used weighting matrix.
         Square matrix of dimensions equal to the number of orthogonality
         conditions.
 
 
-    .. matvar:: oo_.mom.model_moments 
+    .. matvar:: oo_.mom.model_moments
 
-        Variable set by the ``method_of_moments`` command. Stores the implied 
+        Variable set by the ``method_of_moments`` command. Stores the implied
         selected model moments given the current parameter guess. Model moments
         are computed in closed-form from the pruned state-space system for GMM,
         whereas for SMM these are based on averages of simulated data. Vector of dimension equal
         to the number of orthogonality conditions.
 
 
-    .. matvar:: oo_.mom.Q 
+    .. matvar:: oo_.mom.Q
 
-        Variable set by the ``method_of_moments`` command. Stores the scalar 
+        Variable set by the ``method_of_moments`` command. Stores the scalar
         value of the quadratic moment's distance objective function.
 
 
@@ -8159,7 +8159,7 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         Variable set by the ``method_of_moments`` command. Stores the analytically
         computed Jacobian matrix of the derivatives of the model moments with
         respect to the estimated parameters. Only for GMM with :opt:`analytic_standard_errors`.
-        Matrix with dimension equal to the number of orthogonality conditions 
+        Matrix with dimension equal to the number of orthogonality conditions
         times number of estimated parameters.
 
 
@@ -8167,18 +8167,18 @@ adding prior information comes at the cost of a loss in efficiency of the estima
     .. matvar:: oo_.mom.smm_stage_*_mode
     .. matvar:: oo_.mom.verbose_gmm_stage_*_mode
     .. matvar:: oo_.mom.verbose_smm_stage_*_mode
-    
+
         Variables set by the ``method_of_moments`` command when estimating
-        with GMM or SMM. Stores the estimated values at stages 1, 2,.... 
+        with GMM or SMM. Stores the estimated values at stages 1, 2,....
         The structures contain the following fields:
-        
+
         - ``measurement_errors_corr``: estimated correlation between two measurement errors
         - ``measurement_errors_std``: estimated standard deviation of measurement errors
         - ``parameters``: estimated model parameters
         - ``shocks_corr``: estimated correlation between two structural shocks.
         - ``shocks_std``: estimated standard deviation of structural shocks.
 
-        If the :opt:`verbose` option is set, additional fields prefixed with 
+        If the :opt:`verbose` option is set, additional fields prefixed with
         ``verbose_`` are saved for all :opt:`additional_optimizer_steps<additional_optimizer_steps = [INTEGER|FUNCTION_NAME,INTEGER|FUNCTION_NAME,...]>`.
 
     .. matvar:: oo_.mom.gmm_stage_*_std_at_mode
@@ -8187,28 +8187,28 @@ adding prior information comes at the cost of a loss in efficiency of the estima
     .. matvar:: oo_.mom.verbose_smm_stage_*_std_at_mode
 
         Variables set by the ``method_of_moments`` command when estimating
-        with GMM or SMM. Stores the estimated standard errors at stages 1, 2,.... 
+        with GMM or SMM. Stores the estimated standard errors at stages 1, 2,....
         The structures contain the following fields:
-        
+
         - ``measurement_errors_corr``: standard error of estimated correlation between two measurement errors
         - ``measurement_errors_std``: standard error of estimated standard deviation of measurement errors
         - ``parameters``: standard error of estimated model parameters
         - ``shocks_corr``: standard error of estimated correlation between two structural shocks.
         - ``shocks_std``: standard error of estimated standard deviation of structural shocks.
 
-        If the :opt:`verbose` option is set, additional fields prefixed with 
+        If the :opt:`verbose` option is set, additional fields prefixed with
         ``verbose_`` are saved for all :opt:`additional_optimizer_steps<additional_optimizer_steps = [INTEGER|FUNCTION_NAME,INTEGER|FUNCTION_NAME,...]>`.
 
 
     .. matvar:: oo_.mom.J_test
 
         Variable set by the ``method_of_moments`` command. Structure where the
-        value of the test statistic is saved into a field called ``j_stat``, the 
-        degress of freedom into a field called ``degrees_freedom`` and the p-value 
+        value of the test statistic is saved into a field called ``j_stat``, the
+        degress of freedom into a field called ``degrees_freedom`` and the p-value
         of the test statistic into a field called ``p_val``.
 
 
-    
+
 Model Comparison
 ================
 
