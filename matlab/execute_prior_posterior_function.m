@@ -68,12 +68,9 @@ elseif strcmpi(type,'prior')
         else
             error('The prior distributions are not properly set up.')
         end
-        if exist([M_.fname '_prior_restrictions.m'])
-            error('prior_function currently does not support endogenous prior restrictions.')
-            %options_.plot_priors=0;
-            %[~,~,~,~, M_, options_, oo_, ~, ~] = ...
-            %    dynare_estimation_init(M_.endo_names, M_.fname, 1, M_, options_, oo_, estim_params_, bayestopt_);
-        end
+    end
+    if exist([M_.fname '_prior_restrictions.m'])
+        warning('prior_function currently does not support endogenous prior restrictions. They will be ignored. Consider using a prior_function with nobs=1.')
     end
     prior_draw(bayestopt_, options_.prior_trunc);
 else
