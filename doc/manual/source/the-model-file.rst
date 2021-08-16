@@ -8466,7 +8466,8 @@ adding prior information comes at the cost of a loss in efficiency of the estima
     .. option:: mode_compute = INTEGER | FUNCTION_NAME
 
         See :opt:`mode_compute <mode_compute = INTEGER | FUNCTION_NAME>`.
-        Default: ``13``, i.e. ``lsqnonlin``.
+        Default: ``13``, i.e. ``lsqnonlin`` if the Matlab Optimization Toolbox or
+        the Octave optim-package are present, ``4``, i.e. ``csminwel`` otherwise.
 
     .. option:: additional_optimizer_steps = [INTEGER|FUNCTION_NAME,INTEGER|FUNCTION_NAME,...]
 
