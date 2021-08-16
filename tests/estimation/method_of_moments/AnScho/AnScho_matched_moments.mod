@@ -17,7 +17,7 @@ iINT  = strmatch('INT',  M_.endo_names,'exact');
 %   - third entry: power
 
 matched_moments_orig = {
-    
+
     %first-order product moments
     [iYGR       ]  [0 ],  [1];
     [iYGR       ]  [-1],  [1];
@@ -27,7 +27,7 @@ matched_moments_orig = {
     [iINFL      ]  [2 ],  [1];
     [iINT       ]  [-2],  [1];
     [iINT       ]  [2 ],  [1];
-    
+
     %second-order contemporenous product moments
     [iYGR       ]  [0     ],  [2  ];
     [iYGR       ]  [-1    ],  [2  ];
@@ -54,7 +54,7 @@ matched_moments_orig = {
     [iYGR  iINFL]  [5  -3],  [1 1];
     [iYGR  iINFL]  [5  -3],  [1 1];
     [iINT  iINFL]  [2   3],  [1 1];
-    
+
     [iYGR            ]  [0      ],  [3     ];
     [iYGR  iYGR      ]  [-3  -3 ],  [1  2  ];
     [iYGR  iYGR      ]  [-3  -3 ],  [1  2  ];
@@ -64,12 +64,12 @@ matched_moments_orig = {
     [iINFL iINT      ]  [1   0 ],   [4  2  ];
     [iYGR  iINFL iINT]  [0  -3  5],   [2  4  6];
     [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];
-    [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];    
+    [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];
 };
 
 % Removed duplicate moment conditions
 matched_moments_no_duplicate= {
-    
+
     %first-order product moments
     [iYGR       ]  [0 ],  [1];
 %    [iYGR       ]  [-1],  [1];
@@ -79,7 +79,7 @@ matched_moments_no_duplicate= {
     [iINFL      ]  [2 ],  [1];
     [iINT       ]  [-2],  [1];
 %    [iINT       ]  [2 ],  [1];
-    
+
     %second-order contemporenous product moments
     [iYGR       ]  [0     ],  [2  ];
 %    [iYGR       ]  [-1    ],  [2  ];
@@ -106,7 +106,7 @@ matched_moments_no_duplicate= {
     [iYGR  iINFL]  [5  -3],  [1 1];
 %    [iYGR  iINFL]  [5  -3],  [1 1];
     [iINT  iINFL]  [2   3],  [1 1];
-    
+
     [iYGR            ]  [0      ],  [3     ];
 %    [iYGR  iYGR      ]  [-3  -3 ],  [1  2  ];
 %    [iYGR  iYGR      ]  [-3  -3 ],  [1  2  ];
@@ -116,7 +116,7 @@ matched_moments_no_duplicate= {
 %    [iINFL iINT      ]  [1   0 ],   [4  2  ];
     [iYGR  iINFL iINT]  [0  -3  5],   [2  4  6];
 %    [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];
-%    [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];    
+%    [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];
 };
 
 

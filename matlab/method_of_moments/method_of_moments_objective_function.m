@@ -184,7 +184,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
                             oo_.mom.model_moments_params_derivs(jm,jp) = pruned_state_space.dVar_y(idx1,idx2,jp) + pruned_state_space.dE_y(idx1,jp)*pruned_state_space.E_y(idx2)' + pruned_state_space.E_y(idx1)*pruned_state_space.dE_y(idx2,jp)';
                         end
                     end
-                end            
+                end
             else
                 % Autocovariance
                 lag = -M_.matched_moments{jm,2}(2); %note that leads/lags in matched_moments are transformed such that first entry is always 0 and the second is a lag
@@ -200,12 +200,12 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
                             oo_.mom.model_moments_params_derivs(jm,jp) = vec( pruned_state_space.dVar_yi(idx1,idx2,lag,jp) + pruned_state_space.dE_y(idx1,jp)*pruned_state_space.E_y(idx2)' + pruned_state_space.E_y(idx1)*pruned_state_space.dE_y(idx2,jp)');
                         end
                     end
-                end            
+                end
             end
-        end        
+        end
     end
-    
-    
+
+
 elseif strcmp(options_mom_.mom.mom_method,'SMM')
     %------------------------------------------------------------------------------
     % 3. Compute Moments of the model solution for normal innovations

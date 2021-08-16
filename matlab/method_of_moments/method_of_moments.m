@@ -416,7 +416,7 @@ for jm=1:size(M_.matched_moments,1)
     % sort such that t=0 variable comes first
     [M_.matched_moments{jm,2},idx_sort] = sort(M_.matched_moments{jm,2},'descend');
     M_.matched_moments{jm,1} = M_.matched_moments{jm,1}(idx_sort);
-    M_.matched_moments{jm,3} = M_.matched_moments{jm,3}(idx_sort);    
+    M_.matched_moments{jm,3} = M_.matched_moments{jm,3}(idx_sort);
 end
 
 % find duplicate rows in cell array by making groups according to powers as we can then use cell2mat for the unique function
@@ -430,14 +430,14 @@ end
 
 % remove duplicate elements
 DuplicateMoms = setdiff(1:size(M_.matched_moments_orig,1),UniqueMomIdx);
-if ~isempty(DuplicateMoms)    
+if ~isempty(DuplicateMoms)
     fprintf('Found and removed duplicate declared moments in ''matched_moments'' block in rows:\n %s.\n',num2str(DuplicateMoms))
     fprintf('Dynare will continue with remaining moment conditions\n');
 end
 
 if strcmp(options_mom_.mom.mom_method, 'SMM')
     % for SMM we can keep the original structure but get rid of duplicate moments
-    M_.matched_moments = M_.matched_moments_orig(sort(UniqueMomIdx),:);    
+    M_.matched_moments = M_.matched_moments_orig(sort(UniqueMomIdx),:);
 elseif strcmp(options_mom_.mom.mom_method, 'GMM')
     % for GMM we use the transformed matched_moments structure
     M_.matched_moments = M_.matched_moments(sort(UniqueMomIdx),:);
@@ -447,7 +447,7 @@ end
 first_moment_indicator = find(cellfun(@(x) sum(abs(x))==1,M_.matched_moments(:,3)))';
 if options_mom_.prefilter && ~isempty(first_moment_indicator)
     fprintf('Centered moments requested (prefilter option is set); therefore, ignore declared first moments in ''matched_moments'' block.\n');
-    M_.matched_moments(first_moment_indicator,:)=[]; %remove first moments entries    
+    M_.matched_moments(first_moment_indicator,:)=[]; %remove first moments entries
 end
 options_mom_.mom.mom_nbr = size(M_.matched_moments,1);
 
@@ -987,7 +987,7 @@ for jm = 1:size(M_.matched_moments,1)
 end
 data_mat=[oo_.mom.data_moments oo_.mom.model_moments ];
 dyntable(options_mom_, title, headers, labels, data_mat, cellofchararraymaxlength(labels)+2, 10, 7);
-if options_mom_.TeX    
+if options_mom_.TeX
     dyn_latex_table(M_, options_mom_, title, ['comparison_moments_', options_mom_.mom.mom_method], headers, labels_TeX, data_mat, cellofchararraymaxlength(labels)+2, 10, 7);
 end
 
