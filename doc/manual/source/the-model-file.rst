@@ -4933,7 +4933,10 @@ All of these elements are discussed in the following.
 
     .. option:: filter_use_relaxation
 
-       ..
+       Triggers relaxation within the guess and verify algorithm used in the update step of the piecewise
+       Kalman filter. When old and new guess regime differ to much, use a new guess closer to the previous guess.
+       In case of multiple solutions, tends to provide an occasionally binding regime with a shorter duration (typically preferable).
+       Specifying this option may slow down convergence. Default: not enabled.
 
    *Output*
 
