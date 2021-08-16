@@ -4663,7 +4663,7 @@ elements are never repeated (for more details, see the description of
 ``oo_.dr.g_3`` in the third-order case).
 
 Occasionally binding constraints (OCCBIN)
-==============
+=========================================
 
 Dynare allows simulating models with up to two occasionally-binding constraints by 
 relying on a piecewise linear solution as in *Guerrieri and Iacoviello (2015)*.
