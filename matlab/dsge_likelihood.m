@@ -670,7 +670,7 @@ singularity_has_been_detected = false;
 if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
     if no_missing_data_flag && ~DynareOptions.occbin.likelihood.status
         if DynareOptions.block
-            LIK = block_kalman_filter(T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
+            [LIK,lik] = block_kalman_filter(T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
         elseif DynareOptions.fast_kalman_filter
             if diffuse_periods
                 %kalman_algo==3 requires no diffuse periods (stationary
