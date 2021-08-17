@@ -294,6 +294,8 @@ MODFILES = \
 	kalman/lik_init/fs2000_lik_init_3.mod \
 	kalman/lik_init/fs2000_lik_init_4.mod \
 	kalman/lik_init/fs2000_lik_init_5.mod \
+	kalman/block/fs2000.mod \
+	kalman/block/fs2000_missing_data.mod \
 	kalman_initial_state/fs2000_smoother_only_initial_state.mod \
 	kalman_initial_state/fs2000_ns_smoother_only_initial_state.mod \
 	kalman_initial_state/fs2000_kalman_initial.mod \

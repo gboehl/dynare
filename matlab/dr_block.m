@@ -61,11 +61,18 @@ end
 %verbose = options_.verbosity;
 if options_.order > 1
     error('2nd and 3rd order approximation not implemented with block option')
+else
+    if options_.loglinear
+        error('The loglinear option is not yet supported in first order approximation for a block decomposed model');
+    end
 end
 
 z = repmat(dr.ys,1,M_.maximum_lead + M_.maximum_lag + 1);
 zx = repmat([oo_.exo_simul oo_.exo_det_simul],M_.maximum_lead + M_.maximum_lag + 1, 1);
-
+if isempty(zx)
+    zx = [repmat(oo_.exo_steady_state',M_.maximum_lead + M_.maximum_lag + 1,1) repmat(oo_.exo_det_steady_state',M_.maximum_lead + M_.maximum_lag + 1,1)];
+end
+    
 if ~isfield(M_,'block_structure')
     error('Option ''block'' has not been specified')
 end
