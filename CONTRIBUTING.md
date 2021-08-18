@@ -99,3 +99,33 @@ It's useful to contribute `.mod` files that test some aspect of Dynare that is n
 1. Push and create a pull request as described above
 
 ### Unitary Tests
+
+So-called unitary tests allow the test suite to check the correct functioning of the Matlab functions contained in Dynare. To add a unitary test you need to 
+1. add the keyword ` % --*-- Unitary tests --*--` at the end of the `function` header to tell the testsuite that the file contains unitary tests. 1. Add the particular tests at the end of the file (either after a `return` or the closing `end`) by
+   a. Starting a test with `%@test:INTEGER` 
+   b. Adding a Matlab test code that provides a pass/fail indicator `T` that takes on `true` if the test passed.
+   c. Closing the test with `%@eof:INTEGER`
+   where `INTEGER` denotes the number of the test.
+
+An example testing the correct functionality of mode-computations for a normal distribution is
+
+```
+function m = compute_prior_mode(hyperparameters,shape) % --*-- Unitary tests --*--
+
+end
+
+%@test:1
+% Normal density
+try
+    m1 = compute_prior_mode([1 1],3);
+    t(1) = true;
+catch
+    t(1) = false;
+end
+%$
+if t(1)
+    t(2) = dassert(m1,1,1e-6);
+end
+T = all(t);
+%@eof:1
+```
