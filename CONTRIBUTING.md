@@ -101,7 +101,8 @@ It's useful to contribute `.mod` files that test some aspect of Dynare that is n
 ### Unitary Tests
 
 So-called unitary tests allow the test suite to check the correct functioning of the Matlab functions contained in Dynare. To add a unitary test you need to 
-1. add the keyword ` % --*-- Unitary tests --*--` at the end of the `function` header to tell the testsuite that the file contains unitary tests. 1. Add the particular tests at the end of the file (either after a `return` or the closing `end`) by
+1. add the keyword ` % --*-- Unitary tests --*--` at the end of the `function` header to tell the testsuite that the file contains unitary tests. 
+1. Add the particular tests at the end of the file (either after a `return` or the closing `end`) by
    a. Starting a test with `%@test:INTEGER` 
    b. Adding a Matlab test code that provides a pass/fail indicator `T` that takes on `true` if the test passed.
    c. Closing the test with `%@eof:INTEGER`
