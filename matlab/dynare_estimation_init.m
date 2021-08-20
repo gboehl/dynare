@@ -621,7 +621,7 @@ end
 
 % If the steady state of the observed variables is non zero, set noconstant equal 0 ()
 if (~options_.loglinear && all(abs(oo_.steady_state(bayestopt_.mfys))<1e-9)) || (options_.loglinear && all(abs(log(oo_.steady_state(bayestopt_.mfys)))<1e-9))
-    options_.noconstant = 1;
+    options_.noconstant = 0; %identifying the constant based on just the initial parameter value is not feasible
 else
     options_.noconstant = 0;
     % If the data are prefiltered then there must not be constants in the
