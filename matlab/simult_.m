@@ -53,8 +53,12 @@ if ~options_.k_order_solver || (options_.k_order_solver && options_.pruning) %if
 end
 
 if options_.k_order_solver && ~options_.pruning % Call dynare++ routines.
-    ex_ = [zeros(M_.maximum_lag,M_.exo_nbr); ex_];
-    y_ = dynare_simul_(options_.order,M_.nstatic,M_.npred,M_.nboth,M_.nfwrd,exo_nbr, ...
+    ex_ = [zeros(M_.maximum_lag,M_.exo_nbr); ex_];     
+    if options_.order~=iorder
+        error(['The k_order_solver requires the specified approximation order to be '...
+                'consistent with the one used for computing the decision rules'])
+    end
+    y_ = dynare_simul_(iorder,M_.nstatic,M_.npred,M_.nboth,M_.nfwrd,exo_nbr, ...
                        y_(dr.order_var,1),ex_',M_.Sigma_e,options_.DynareRandomStreams.seed, ...
                        dr.ys(dr.order_var),dr);
     y_(dr.order_var,:) = y_;
