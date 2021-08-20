@@ -124,10 +124,10 @@ for plt = 1:nbplt
         end
         binding_lower_bound=0;
         binding_upper_bound=0;
-        if isequal(x(kk),BoundsInfo.lb(kk))
+        if abs(x(kk)-BoundsInfo.lb(kk))<1e-8
             binding_lower_bound=1;
             bound_value=BoundsInfo.lb(kk);
-        elseif isequal(x(kk),BoundsInfo.ub(kk))
+        elseif abs(x(kk)-BoundsInfo.ub(kk))<1e-8
             binding_upper_bound=1;
             bound_value=BoundsInfo.ub(kk);
         end
