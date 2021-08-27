@@ -144,6 +144,9 @@ AC_CONFIG_FILES([Makefile
                  block_kalman_filter/Makefile
 		         sobol/Makefile
 		         local_state_space_iterations/Makefile
+                 libkordersim/Makefile 
+                 folded_to_unfolded_dr/Makefile
+                 local_state_space_iteration_fortran/Makefile 
                  perfect_foresight_problem/Makefile
                  num_procs/Makefile
                  block_trust_region/Makefile

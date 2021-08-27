@@ -16,6 +16,9 @@ EXTRA_DIST = \
 	block_kalman_filter \
 	sobol \
 	local_state_space_iterations \
+	libkordersim \
+	folded_to_unfolded_dr \
+	local_state_space_iteration_fortran \
 	gensylv \
 	dynare_simul_ \
 	perfect_foresight_problem \
