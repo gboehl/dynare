@@ -105,7 +105,7 @@ for plt = 1:nbplt
         kk = (plt-1)*nstar+k;
         [name,texname] = get_the_name(kk,TeX,Model,EstimatedParameters,DynareOptions);
         xx = x;
-        if x(kk)~=0 || ~isinf(BoundsInfo.lb(kk)) || ~isinf(BoundsInfo.lb(kk))
+        if x(kk)~=0 && ~isinf(BoundsInfo.lb(kk)) && ~isinf(BoundsInfo.ub(kk))
             l1 = max(BoundsInfo.lb(kk),(1-sign(x(kk))*ll)*x(kk)); m1 = 0; %lower bound
             l2 = min(BoundsInfo.ub(kk),(1+sign(x(kk))*ll)*x(kk)); %upper bound
         else
@@ -124,10 +124,10 @@ for plt = 1:nbplt
         end
         binding_lower_bound=0;
         binding_upper_bound=0;
-        if isequal(x(kk),BoundsInfo.lb(kk))
+        if abs(x(kk)-BoundsInfo.lb(kk))<1e-8
             binding_lower_bound=1;
             bound_value=BoundsInfo.lb(kk);
-        elseif isequal(x(kk),BoundsInfo.ub(kk))
+        elseif abs(x(kk)-BoundsInfo.ub(kk))<1e-8
             binding_upper_bound=1;
             bound_value=BoundsInfo.ub(kk);
         end
