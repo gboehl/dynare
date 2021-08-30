@@ -707,7 +707,7 @@ test_for_deep_parameters_calibration(M_);
 
 % If steady state of observed variables is non zero, set noconstant equal 0
 if all(abs(oo_.steady_state(oo_.dr.order_var(oo_.dr.obs_var)))<1e-9)
-    options_mom_.noconstant = 1;
+    options_mom_.noconstant = 0; %identifying the constant based on just the initial parameter value is not feasible
 else
     options_mom_.noconstant = 0;
 end
