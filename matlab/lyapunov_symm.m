@@ -108,7 +108,7 @@ if size(a,1) == 1
 end
 
 if method<2
-    [U,T] = schur(a);
+    [U,T] = schur(full(a));
     e1 = abs(ordeig(T)) > 2-qz_criterium;
     k = sum(e1);       % Number of unit roots.
     n = length(e1)-k;  % Number of stationary variables.

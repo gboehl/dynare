@@ -66,7 +66,7 @@ else
 end
 
 %@test:1
-%$ t = NaN(10,1);
+%$ t = NaN(13,1);
 %$ options_.lyapunov_complex_threshold = 1e-15;
 %$ options_.qz_zero_threshold = 1e-6;
 %$ options_.qz_criterium=1-options_.qz_zero_threshold;
@@ -136,51 +136,72 @@ end
 %$    t(4) = 0;
 %$ end
 %$
+%$ % Standard with sparse matrix
+%$ try
+%$    Pstar5_small = lyapunov_solver(sparse(T_small),sparse(R_small),sparse(Q_small),options_);
+%$    Pstar5_large = lyapunov_solver(sparse(T_large),sparse(R_large),sparse(Q_large),options_);
+%$    t(5) = 1;
+%$ catch
+%$    t(5) = 0;
+%$ end
+%$ 
 %$ % Test the results.
 %$
 %$ if max(max(abs(Pstar1_small-Pstar2_small)))>1e-8
-%$    t(5) = 0;
-%$ else
-%$    t(5) = 1;
-%$ end
-%$
-%$ if (isoctave && user_has_octave_forge_package('control')) || (~isoctave && user_has_matlab_license('control_toolbox'))
-%$    if max(max(abs(Pstar1_small-Pstar3_small)))>1e-8
-%$       t(6) = 0;
-%$    else
-%$       t(6) = 1;
-%$    end
+%$    t(6) = 0;
 %$ else
 %$    t(6) = 1;
 %$ end
 %$
-%$ if max(max(abs(Pstar1_small-Pstar4_small)))>1e-8
-%$    t(7) = 0;
+%$ if (isoctave && user_has_octave_forge_package('control')) || (~isoctave && user_has_matlab_license('control_toolbox'))
+%$    if max(max(abs(Pstar1_small-Pstar3_small)))>1e-8
+%$       t(7) = 0;
+%$    else
+%$       t(7) = 1;
+%$    end
 %$ else
 %$    t(7) = 1;
 %$ end
 %$
-%$ if max(max(abs(Pstar1_large-Pstar2_large)))>2e-8
+%$ if max(max(abs(Pstar1_small-Pstar4_small)))>1e-8
 %$    t(8) = 0;
 %$ else
 %$    t(8) = 1;
 %$ end
 %$
-%$ if (isoctave && user_has_octave_forge_package('control')) || (~isoctave && user_has_matlab_license('control_toolbox'))
-%$    if max(max(abs(Pstar1_large-Pstar3_large)))>1e-8
-%$       t(9) = 0;
-%$    else
-%$       t(9) = 1;
-%$    end
+%$ if max(max(abs(Pstar1_small-Pstar5_small)))>1e-8
+%$    t(9) = 0;
 %$ else
 %$    t(9) = 1;
 %$ end
-%$
-%$ if max(max(abs(Pstar1_large-Pstar4_large)))>2e-8
+%$ 
+%$ if max(max(abs(Pstar1_large-Pstar2_large)))>2e-8
 %$    t(10) = 0;
 %$ else
 %$    t(10) = 1;
 %$ end
 %$
+%$ if (isoctave && user_has_octave_forge_package('control')) || (~isoctave && user_has_matlab_license('control_toolbox'))
+%$    if max(max(abs(Pstar1_large-Pstar3_large)))>1e-8
+%$       t(11) = 0;
+%$    else
+%$       t(11) = 1;
+%$    end
+%$ else
+%$    t(11) = 1;
+%$ end
+%$
+%$ if max(max(abs(Pstar1_large-Pstar4_large)))>2e-8
+%$    t(12) = 0;
+%$ else
+%$    t(12) = 1;
+%$ end
+%$
+%$ if max(max(abs(Pstar1_large-Pstar5_large)))>2e-8
+%$    t(13) = 0;
+%$ else
+%$    t(13) = 1;
+%$ end
+%$ 
 %$ T = all(t);
 %@eof:1
