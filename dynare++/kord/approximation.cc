@@ -154,7 +154,7 @@ Approximation::walkStochSteady()
       JournalRecordPair pa(journal);
       pa << "Approximation about stochastic steady for sigma=" << sigma_so_far+dsigma << endrec;
 
-      Vector last_steady(model.getSteady());
+      Vector last_steady(const_cast<const Vector &>(model.getSteady()));
 
       // calculate fix-point of the last rule for ‘dsigma’
       /* We form the DRFixPoint object from the last rule with σ=dsigma. Then
@@ -180,7 +180,7 @@ Approximation::walkStochSteady()
          minus the old steady state. Then we create StochForwardDerivs object,
          which calculates the derivatives of g** expectations at new sigma and
          new steady. */
-      Vector dy(model.getSteady());
+      Vector dy(const_cast<const Vector &>(model.getSteady()));
       dy.add(-1.0, last_steady);
 
       StochForwardDerivs<Storage::fold> hh(ypart, model.nexog(), *rule_ders_ss, mom, dy,
