@@ -67,7 +67,6 @@ if ishock==0
 else
     npar=estim_params_.np+nshock;
 end
-skipline();
 title_string=['Correlation analysis for ',fnam];
 title_string_tex=['Correlation analysis for ',strrep(fnam,'_','\\_')];
 
@@ -181,9 +180,13 @@ for j=1:npar
 end
 
 if j2==0
+    skipline();
     disp(['No correlation term with pvalue <', num2str(pvalue_crit),' and |corr. coef.| >',num2str(alpha2),' found for ',fnam])
 else
     headers={'Parameters'; 'corrcoef'};
+    if ~options_.noprint
+        skipline();
+    end
     dyntable(options_,title_string,headers, name, data_mat, 0, 7, 3);
     if options_.TeX
         dyn_latex_table(M_, options_, title_string_tex, fig_nam_tex_table, headers, name_tex, data_mat, 0, 7, 3);
