@@ -37,7 +37,7 @@ AC_DEFUN([AX_SLICOT],
   else
     LDFLAGS_SLICOT=""
   fi
-  ac_save_LDFLAGS=$LDFLAGS
+  my_save_LDFLAGS=$LDFLAGS
 
   # At this point we should add MATLAB_FCFLAGS to FCFLAGS for Windows (which has -fno-underscoring),
   # but that does not work. The actual underscore test seems to happen at the very beginning of the
@@ -47,9 +47,13 @@ AC_DEFUN([AX_SLICOT],
   if test "$1" = matlab; then
     LDFLAGS="$LDFLAGS $MATLAB_LDFLAGS_NOMAP $LDFLAGS_SLICOT"
 
+    # Add MATLAB_CFLAGS to get the -fPIC on Linux/x86_64 (otherwise linking fails)
+    my_save_CFLAGS=$CFLAGS
+    CFLAGS="$CFLAGS $MATLAB_CFLAGS"
     AC_CHECK_LIB([slicot64_pic], [$sb02od], [LIBADD_SLICOT="-lslicot64_pic"], [has_slicot=no], [$MATLAB_LIBS])
+    CFLAGS=$my_save_CFLAGS
   else
-    LDFLAGS="$LDFLAGS $($MKOCTFILE -p LFLAGS) $LDFLAGS_SLICOT"
+    LDFLAGS="$LDFLAGS $LDFLAGS_SLICOT"
     # Fallback on libslicot_pic if dynamic libslicot not found
     AC_CHECK_LIB([slicot], [$sb02od], [LIBADD_SLICOT="-lslicot"],
              [
@@ -58,7 +62,7 @@ AC_DEFUN([AX_SLICOT],
              [$($MKOCTFILE -p BLAS_LIBS) $($MKOCTFILE -p LAPACK_LIBS)])
   fi
 
-  LDFLAGS=$ac_save_LDFLAGS
+  LDFLAGS=$my_save_LDFLAGS
   AC_SUBST(LDFLAGS_SLICOT)
   AC_SUBST(LIBADD_SLICOT)
 ])
