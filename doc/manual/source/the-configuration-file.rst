@@ -384,6 +384,6 @@ set up Dynare for parallel execution.
     #so we only need to provide the name of the exe file
     MatlabOctavePath=matlab
     #Dynare path you are using
-    DynarePath=C:/dynare/2016-05-10/matlab
+    DynarePath=C:/dynare/4.7.0/matlab
 
 .. _PsTools: https://technet.microsoft.com/sysinternals/pstools.aspx
