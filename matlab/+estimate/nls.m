@@ -136,9 +136,26 @@ else
     end
 end
 
-% Remove residuals from the equation. Note that a plus or minus will
-% remain in the equation, but this seems to be without consequence.
+% Remove residuals from the equation. Note that a plus or minus will remain in the equation
 rhs = regexprep(rhs, rname, '');
+
+% FIXME The JSON output for rhs (with aux variables substitutions) is not always
+% the same regarding to the position of the residual. If the residual appears at
+% the end of the equation, after the removal of rname the rhs will end with a +
+% symbol which will result in a crash later when evaluating the sum of square
+% residuals. If the residual appears at the begining of the equation, after the
+% removal of rname the rhs will begin with a + symbol which is just awful (but
+% will not cause any trouble).
+
+% Remove trailing + (if any, introduced when removing residual)
+if isequal(rhs(end), '+')
+    rhs = rhs(1:end-1);
+end
+
+% Remove leading + (if any, introduced when removing residual)
+if isequal(rhs(1), '+')
+    rhs = rhs(2:end);
+end
 
 %
 % Rewrite and print the equation.
