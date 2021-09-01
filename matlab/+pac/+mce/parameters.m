@@ -11,7 +11,7 @@ function parameters(pacname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -69,8 +69,18 @@ for e=1:number_of_pac_eq
     % Get PAC equation
     pac_equation = equations.(eqtag);
     % Get Error correction and autoregressive parameters in PAC equation
-    a = NaN(1+pac_equation.max_lag, 1);
-    a(1) = M_.params(pac_equation.ec.params);
-    a(1+(1:pac_equation.max_lag)) = M_.params(pac_equation.ar.params);
-    M_.params(pac_equation.mce.alpha) = a2alpha(a);
+    params = NaN(2+pac_equation.max_lag, 1);
+    params(1) = M_.params(pac_equation.ec.params);
+    params(1+(1:pac_equation.max_lag)) = M_.params(pac_equation.ar.params);
+    params(end) = M_.params(pacmodel.discount_index);
+    [G, alpha, beta] = buildGmatrixWithAlphaAndBeta(params);
+    M_.params(pac_equation.mce.alpha) = alpha;
+    if isfield(pacmodel, 'growth_neutrality_param_index')
+        A = [alpha; 1];
+        A_1 = polyval(A, 1.0);
+        A_b = polyval(A, beta);
+        m = length(alpha);
+        d = A_1*A_b*(iota(m, m)'*inv((eye(m)-G)*(eye(m)-G))*iota(m, m));
+        M_.params(pacmodel.growth_neutrality_param_index) = 1-sum(params(2:end-1))-d;
+    end
 end
