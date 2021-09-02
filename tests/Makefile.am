@@ -1153,6 +1153,7 @@ EXTRA_DIST = \
 	run_m_script.m \
 	load_octave_packages.m \
 	$(MODFILES) \
+	$(PARTICLEFILES) \
 	$(XFAIL_MODFILES) \
 	$(MFILES) \
 	run_block_byte_tests_matlab.m \
@@ -1253,6 +1254,7 @@ EXTRA_DIST = \
 	shock_decomposition/fsdat_simul.m \
 	smoother2histval/fsdat_simul.m \
 	particle/first_spec_common.inc \
+	particle/risky.m \
 	optimal_policy/Ramsey/find_c.m \
 	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat \
 	observation_trends_and_prefiltering/generate_trend_stationary_AR1.m \
@@ -1288,10 +1290,15 @@ EXTRA_DIST = \
 	estimation/method_of_moments/AnScho/AnScho_MoM_data_2.mat \
 	estimation/method_of_moments/RBC/RBC_MoM_common.inc \
 	estimation/method_of_moments/RBC/RBC_MoM_steady_helper.m \
+	estimation/method_of_moments/RBC/RBC_Andreasen_Data_2.mat \
 	estimation/method_of_moments/AFVRR/AFVRR_common.inc \
 	estimation/method_of_moments/AFVRR/AFVRR_steady_helper.m \
+	estimation/method_of_moments/AFVRR/AFVRR_data_mat \
 	estimation/univariate/data.csv \
 	estimation/univariate/ols/mc-ols.inc \
+	estimation/no_init_estimation_check_first_obs/fsdat_simul.m \
+	estimation/no_init_estimation_check_first_obs/fsdat_dat.m \
+	estimation/no_init_estimation_check_first_obs/fsdat_dat_XFAIL.m \
 	ecb/SURGibbs/fishdata.csv \
 	test_aggregate_routine_1_2.m \
 	test_aggregate_routine_1_2_3.m \
