@@ -1293,12 +1293,12 @@ EXTRA_DIST = \
 	estimation/method_of_moments/RBC/RBC_Andreasen_Data_2.mat \
 	estimation/method_of_moments/AFVRR/AFVRR_common.inc \
 	estimation/method_of_moments/AFVRR/AFVRR_steady_helper.m \
-	estimation/method_of_moments/AFVRR/AFVRR_data_mat \
+	estimation/method_of_moments/AFVRR/AFVRR_data.mat \
 	estimation/univariate/data.csv \
 	estimation/univariate/ols/mc-ols.inc \
 	estimation/no_init_estimation_check_first_obs/fsdat_simul.m \
-	estimation/no_init_estimation_check_first_obs/fsdat_dat.m \
-	estimation/no_init_estimation_check_first_obs/fsdat_dat_XFAIL.m \
+	estimation/no_init_estimation_check_first_obs/fsdat_mat.m \
+	estimation/no_init_estimation_check_first_obs/fsdat_mat_XFAIL.m \
 	ecb/SURGibbs/fishdata.csv \
 	test_aggregate_routine_1_2.m \
 	test_aggregate_routine_1_2_3.m \
