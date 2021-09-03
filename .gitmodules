@@ -7,9 +7,6 @@
 [submodule "contrib/ms-sbvar/TZcode"]
 	path = contrib/ms-sbvar/TZcode
 	url = ../../contrib/TZcode.git
-[submodule "contrib/dmm"]
-	path = contrib/dmm
-	url = ../../contrib/dmm.git
 [submodule "matlab/utilities/tests"]
 	path = matlab/utilities/tests
 	url = ../../Dynare/m-unit-tests.git
