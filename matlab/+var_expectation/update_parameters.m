@@ -108,6 +108,10 @@ for i = 1:m
     end
 end
 
+if isfield(auxmodel, 'isconstant') && auxmodel.isconstant
+    variables_id_in_var = variables_id_in_var+1;
+end
+
 % Get the horizon parameter.
 horizon = varexpectationmodel.horizon;
 
