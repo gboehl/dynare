@@ -110,9 +110,15 @@ for e=1:number_of_pac_eq
         if varmodel.nonstationary(id)
             idns = id;
             ids = [];
+            if varmodel.isconstant
+                idns = idns+1;
+            end
         else
             idns = [];
             ids = id;
+            if varmodel.isconstant
+                ids = ids+1;
+            end
         end
     else
         % Trend component model is assumed.
