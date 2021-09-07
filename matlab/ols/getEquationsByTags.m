@@ -72,5 +72,9 @@ for i = 1:length(tagvalue)
     end
 end
 assert(~isempty(idx2keep), 'getEquationsByTags: no equations selected');
-ast = ast(unique(idx2keep, 'stable'));
+if isoctave && octave_ver_less_than('6')
+    ast = ast(unique_stable(idx2keep));
+else
+    ast = ast(unique(idx2keep, 'stable'));
+end
 end

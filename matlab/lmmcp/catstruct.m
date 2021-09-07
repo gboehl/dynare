@@ -150,7 +150,11 @@ else
     FN = squeeze(FN) ;
     VAL = squeeze(VAL) ;
     MatlabVersion = version;
-    [UFN,ind] = unique(FN,'legacy') ;
+    if isoctave && octave_ver_less_than('6')
+        [UFN,ind] = unique(FN) ;
+    else
+        [UFN,ind] = unique(FN,'legacy') ;
+    end
 
     if numel(UFN) ~= numel(FN)
         warning('catstruct:DuplicatesFound','Fieldnames are not unique between structures.') ;

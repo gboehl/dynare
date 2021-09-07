@@ -168,7 +168,11 @@ if options_.order==1
         end
         skipline();
         if ~all(diag(M_.H)==0)
-            [observable_name_requested_vars, varlist_pos] = intersect(var_list_, options_.varobs, 'stable');
+            if isoctave && octave_ver_less_than('6')
+                [observable_name_requested_vars, varlist_pos] = intersect_stable(var_list_, options_.varobs);
+            else
+                [observable_name_requested_vars, varlist_pos] = intersect(var_list_, options_.varobs, 'stable');
+            end
             if ~isempty(observable_name_requested_vars)
                 NumberOfObservedEndogenousVariables = length(observable_name_requested_vars);
                 temp = NaN(NumberOfObservedEndogenousVariables, NumberOfExogenousVariables+1);

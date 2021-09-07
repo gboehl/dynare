@@ -84,6 +84,12 @@ if ~isoctave
     p{end+1} = '/missing/vec';
 end
 
+%% intersect(…, 'stable') and unique(…, 'stable') doen't exist in Octave < 6
+if isoctave && octave_ver_less_than('6')
+    p{end+1} = '/missing/intersect_stable';
+    p{end+1} = '/missing/unique_stable';
+end
+
 % Replacements for functions of the MATLAB statistics toolbox
 if isoctave
     % Under Octave, these functions are in the statistics Forge package.

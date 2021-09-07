@@ -111,7 +111,11 @@ for i=1:length(varargin)
     end
 end
 eqlist = eqlist(1:eqnum,:);
-[~, idx] = unique(eqlist(:,1), 'stable');
+if isoctave && octave_ver_less_than('6')
+    [~, idx] = unique_stable(eqlist(:,1));
+else
+    [~, idx] = unique(eqlist(:,1), 'stable');
+end
 eqlist = eqlist(idx, :);
 
 % Get endogenous variables.
@@ -134,7 +138,11 @@ for i=1:length(varargin)
     fclose(fid);
 end
 elist = elist(1:enum,:);
-[~, idx] = unique(elist(:,1), 'stable');
+if isoctave && octave_ver_less_than('6')
+    [~, idx] = unique_stable(elist(:,1));
+else
+    [~, idx] = unique(elist(:,1), 'stable');
+end
 elist = elist(idx,:);
 
 % Get exogenous variables.
@@ -162,7 +170,11 @@ for i=1:length(varargin)
     fclose(fid);
 end
 xlist = xlist(1:xnum,:);
-[~, idx] = unique(xlist(:,1), 'stable');
+if isoctave && octave_ver_less_than('6')
+    [~, idx] = unique_stable(xlist(:,1));
+else
+    [~, idx] = unique(xlist(:,1), 'stable');
+end
 xlist = xlist(idx,:);
 
 % Get parameter values.
