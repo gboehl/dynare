@@ -58,7 +58,7 @@ if max(abs(base_results.oo_.exo_simul(1:end-base_results.M_.maximum_lead-base_re
 end
 
 clear base_results;
-base_results_aux_vars=load(['sim_exo_lead_lag_aux_vars' filesep 'Output' filesep 'sim_exo_lead_lag_aux_vars_results.mat']);
+base_results_aux_vars=load(['sim_endo_lead_lag_aux_vars' filesep 'Output' filesep 'sim_endo_lead_lag_aux_vars_results.mat']);
 if max(abs(base_results_aux_vars.oo_.endo_simul(strmatch('z_backward_lag_2',base_results_aux_vars.M_.endo_names,'exact'),1:end-base_results_aux_vars.M_.maximum_lead) -...
     oo_.endo_simul(strmatch('AUX_ENDO_LAG_2_2',M_.endo_names,'exact'),1:end-M_.maximum_lag)))>1e-8 
     error('Translation of endogenous variables is wrong')
