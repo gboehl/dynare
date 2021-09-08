@@ -100,7 +100,9 @@ end
 if (norm(o1.oo_.dr.ghu-oo_.dr.ghu,inf) > 1e-12)
    error('ghu doesn''t match')
 end
-if (abs(o1.oo_.planner_objective_value(1)-oo_.planner_objective_value(1)) > 1e-12)
+if (abs(o1.oo_.planner_objective_value.conditional.zero_initial_multiplier-oo_.planner_objective_value.conditional.zero_initial_multiplier) > 1e-12 ... 
+   || abs(o1.oo_.planner_objective_value.conditional.steady_initial_multiplier-oo_.planner_objective_value.conditional.steady_initial_multiplier) > 1e-12 ... 
+   || abs(o1.oo_.planner_objective_value.unconditional-oo_.planner_objective_value.unconditional) > 1e-12)
    error('planner objective value doesn''t match')
 end
 

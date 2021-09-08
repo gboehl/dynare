@@ -130,7 +130,7 @@ end
 %Compute theoretical objective function
 V=betta/(1-betta)*(var_pi_theoretical+alpha_x*var_y_gap_theoretical); %evaluate at steady state in first period
 
-if any( [ isnan(oo_.planner_objective_value(2)), abs(V-oo_.planner_objective_value(2))>1e-10 ] )
+if any( [ isnan(oo_.planner_objective_value.conditional.zero_initial_multiplier), abs(V-oo_.planner_objective_value.conditional.zero_initial_multiplier)>1e-10 ] )
     error('Computed welfare deviates from theoretical welfare')
 end
 end;
@@ -144,6 +144,6 @@ end;
 V=var_pi_theoretical+alpha_x*var_y_gap_theoretical+ betta/(1-betta)*(var_pi_theoretical+alpha_x*var_y_gap_theoretical); %evaluate at steady state in first period
  
 discretionary_policy(instruments=(i),irf=20,discretionary_tol=1e-12,planner_discount=betta) y_gap pi p u;
-if any( [ isnan(oo_.planner_objective_value(1)), abs(V-oo_.planner_objective_value(1))>1e-10 ] )
+if any( [ isnan(oo_.planner_objective_value.conditional.steady_initial_multiplier), abs(V-oo_.planner_objective_value.conditional.steady_initial_multiplier)>1e-10 ] )
     error('Computed welfare deviates from theoretical welfare')
 end
