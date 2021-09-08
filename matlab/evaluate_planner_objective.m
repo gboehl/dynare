@@ -5,12 +5,14 @@ function planner_objective_value = evaluate_planner_objective(M_,options_,oo_)
 %   options_:  (structure) options
 %   oo_:       (structure) output results
 % OUTPUT
-%  planner_objective_value (double)
+%  planner_objective_value (structure)
 %
-%Returns a vector containing first order or second-order approximations of
-% - the unconditional expectation of the planner's objective function
-% - the conditional expectation of the planner's objective function starting from the non-stochastic steady state and allowing for future shocks
-% depending on the value of options_.order.
+%Returns a structure containing approximations of
+% - the unconditional expectation of the planner's objective function in the field unconditional
+% - the conditional expectations of the planner's objective function starting from the non-stochastic steady state in the field conditional
+%   - with Lagrange multipliers initially set to zero in the field zero_initial_multiplier
+%   - with lagrange multipliers initially set to their initial values in the field steady_initial_multiplier
+% Approximations are consistent with the order specified in options_order.
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -38,8 +40,6 @@ function planner_objective_value = evaluate_planner_objective(M_,options_,oo_)
 % Taking the unconditional expectation yields E(U) = Ubar and E(W) = Ubar/(1-beta)
 % As for conditional welfare, a first-order approximation leads to
 % W = Wbar + W_y yhat_{t-1} + W_u u_t
-% The approximated conditional expectation of the planner's objective function taking at the non-stochastic steady-state and allowing for future shocks thus verifies
-% W (y, 0, 1) = Wbar
 
 % Similarly, taking the unconditional expectation of a second-order approximation of utility around the non-stochastic steady state yields a second-order approximation of unconditional welfare
 % E(W) = (1 - beta)^{-1} ( Ubar + U_x h_y E(yhat) + 0.5 ( (U_xx h_y^2 + U_x h_yy) E(yhat^2) + (U_xx h_u^2 + U_x h_uu) E(u^2) + U_x h_ss )
@@ -48,8 +48,6 @@ function planner_objective_value = evaluate_planner_objective(M_,options_,oo_)
 % As for conditional welfare, the second-order approximation of welfare around the non-stochastic steady state leads to
 % W(y_{t-1}, u_t, sigma) = Wbar + W_y yhat_{t-1} + W_u u_t + W_yu yhat_{t-1} ⊗ u_t + 0.5 ( W_yy yhat_{t-1}^2 + W_uu u_t^2 + W_ss )
 % The derivatives of W taken at the non-stochastic steady state can be computed as in Kamenik and Juillard (2004) "Solving Stochastic Dynamic Equilibrium Models: A k-Order Perturbation Approach".
-% The approximated conditional expectation of the planner's objective function starting from the non-stochastic steady-state and allowing for future shocks thus verifies
-% W(y,0,1) = Wbar + 0.5*Wss
 
 % In the discretionary case, the model is assumed to be linear and the utility is assumed to be linear-quadratic. This changes 2 aspects of the results delinated above:
 % 1) the second-order derivatives of the policy and transition functions h and g are zero.
@@ -87,7 +85,6 @@ nstatic = M_.nstatic;
 nspred = M_.nspred;
 beta = get_optimal_policy_discount_factor(M_.params, M_.param_names);
 
-planner_objective_value = zeros(2,1);
 if options_.ramsey_policy
     if oo_.gui.ran_perfect_foresight
         T = size(oo_.endo_simul,2);
@@ -98,14 +95,52 @@ if options_.ramsey_policy
             [U] = feval([M_.fname '.objective.static'],oo_.endo_simul(:,t),oo_.exo_simul(t,:), M_.params);
             W = U + beta*W;
         end
-        planner_objective_value(1) = EW;
-        planner_objective_value(2) = W;
+        planner_objective_value = struct("conditional", W, "unconditional", EW);
     else
+        planner_objective_value = struct("conditional", struct("zero_initial_multiplier", 0., "steady_initial_multiplier", 0.), "unconditional", 0.);
         ys = oo_.dr.ys;
         if options_.order == 1 || M_.hessian_eq_zero
-            [U] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
-            planner_objective_value(1) = U/(1-beta);
-            planner_objective_value(2) = U/(1-beta);
+            [U,Uy] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
+
+            Gy = dr.ghx(nstatic+(1:nspred),:);
+            Gu = dr.ghu(nstatic+(1:nspred),:);
+
+            gy(dr.order_var,:) = dr.ghx;
+            gu(dr.order_var,:) = dr.ghu;
+
+            %% Unconditional welfare
+
+            EW = U/(1-beta);
+            
+            planner_objective_value.unconditional = EW;
+
+            %% Conditional welfare starting from the non-stochastic steady-state (i) with Lagrange multipliers set to their steady-state value (ii) with Lagrange multipliers set to 0
+            
+            Wbar = U/(1-beta);
+            Wy = Uy*gy/(eye(nspred)-beta*Gy);
+            Wu = Uy*gu + beta*Wy*Gu;
+            
+            % initialize Lagrange multipliers to their steady-state values in yhat_L_SS
+            yhat_L_SS = ys;
+            % initialize Lagrange multipliers to 0 in yhat_L_0
+            yhat_L_0 = zeros(M_.endo_nbr,1);
+            if ~isempty(M_.endo_histval)
+               % initialize endogenous state variable to histval if necessary
+               yhat_L_SS(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
+               yhat_L_0(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
+            else
+               yhat_L_0(1:M_.orig_endo_nbr) = ys(1:M_.orig_endo_nbr);
+            end
+            yhat_L_0 = yhat_L_0(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
+            yhat_L_SS = yhat_L_SS(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
+            u = oo_.exo_simul(1,:)';
+
+            W_L_SS = Wbar+Wy*yhat_L_SS+Wu*u;
+            W_L_0 = Wbar+Wy*yhat_L_0+Wu*u;
+          
+            planner_objective_value.conditional.steady_initial_multiplier = W_L_SS;
+            planner_objective_value.conditional.zero_initial_multiplier = W_L_0;
+
         elseif options_.order == 2 && ~M_.hessian_eq_zero
             [U,Uy,Uyy] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
             
@@ -127,6 +162,7 @@ if options_.ramsey_policy
             
             Uyygygy = A_times_B_kronecker_C(Uyy,gy,gy);
             Uyygugu = A_times_B_kronecker_C(Uyy,gu,gu);
+            Uyygugy = A_times_B_kronecker_C(Uyy,gu,gy);
             
             %% Unconditional welfare
             
@@ -157,10 +193,13 @@ if options_.ramsey_policy
             EU = U + Uy*gy*Eyhat + 0.5*((Uyygygy + Uy*gyy)*Eyhatyhat + (Uyygugu + Uy*guu)*Euu + Uy*gss);
             EW = EU/(1-beta);
             
-            %% Conditional welfare starting from the non-stochastic steady-state
-            
+            planner_objective_value.unconditional = EW;
+
+            %% Conditional welfare starting from the non-stochastic steady-state (i) with Lagrange multipliers set to their steady-state value (ii) with Lagrange multipliers set to 0
+             
             Wbar = U/(1-beta);
             Wy = Uy*gy/(eye(nspred)-beta*Gy);
+            Wu = Uy*gu + beta*Wy*Gu;
             
             if isempty(options_.qz_criterium)
                 options_.qz_criterium = 1+1e-6;
@@ -168,23 +207,55 @@ if options_.ramsey_policy
             %solve Lyapunuv equation Wyy=gy'*Uyy*gy+Uy*gyy+beta*Wy*Gyy+beta*Gy'Wyy*Gy
             Wyy = reshape(lyapunov_symm(sqrt(beta)*Gy',reshape(Uyygygy + Uy*gyy + beta*Wy*Gyy,nspred,nspred),options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold, 3, options_.debug),1,nspred*nspred);
             Wyygugu = A_times_B_kronecker_C(Wyy,Gu,Gu);
+            Wyygugy = A_times_B_kronecker_C(Wyy,Gu,Gy);
             Wuu = Uyygugu + Uy*guu + beta*(Wyygugu + Wy*Guu);
             Wss = (Uy*gss + beta*(Wy*Gss + Wuu*M_.Sigma_e(:)))/(1-beta);
-            W = Wbar + 0.5*Wss;
-            
-            planner_objective_value(1) = EW;
-            planner_objective_value(2) = W;
+            Wyu = Uyygugy + Uy*gyu + beta*(Wyygugy + Wy*Gyu);
+
+            % initialize Lagrange multipliers to their steady-state values in yhat_L_SS
+            yhat_L_SS = ys;
+            % initialize Lagrange multipliers to 0 in yhat_L_0
+            yhat_L_0 = zeros(M_.endo_nbr,1);
+            if ~isempty(M_.endo_histval)
+               % initialize endogenous state variable to histval if necessary
+               yhat_L_SS(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
+               yhat_L_0(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
+            else
+               yhat_L_0(1:M_.orig_endo_nbr) = ys(1:M_.orig_endo_nbr);
+            end
+            yhat_L_0 = yhat_L_0(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
+            yhat_L_SS = yhat_L_SS(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
+            u = oo_.exo_simul(1,:)';
+
+            Wyu_yu_L_SS = A_times_B_kronecker_C(Wyu,yhat_L_SS,u);
+            Wyy_yy_L_SS = A_times_B_kronecker_C(Wyy,yhat_L_SS,yhat_L_SS);
+            Wuu_uu_L_SS = A_times_B_kronecker_C(Wuu,u,u);
+            W_L_SS = Wbar+Wy*yhat_L_SS+Wu*u+Wyu_yu_L_SS+0.5*(Wss+Wyy_yy_L_SS+Wuu_uu_L_SS);
+
+            Wyu_yu_L_0 = A_times_B_kronecker_C(Wyu,yhat_L_0,u);
+            Wyy_yy_L_0 = A_times_B_kronecker_C(Wyy,yhat_L_0,yhat_L_0);
+            Wuu_uu_L_0 = A_times_B_kronecker_C(Wuu,u,u);
+            W_L_0 = Wbar+Wy*yhat_L_0+Wu*u+Wyu_yu_L_0+0.5*(Wss+Wyy_yy_L_0+Wuu_uu_L_0);
+          
+            planner_objective_value.conditional.steady_initial_multiplier = W_L_SS;
+            planner_objective_value.conditional.zero_initial_multiplier = W_L_0;
         else
             %Order k code will go here!
-            fprintf('\nevaluate_planner_objective: order>2 unconditional welfare calculation not yet supported\n')
-            planner_objective_value(1) = k_order_welfare(dr, M_, options_);
-            planner_objective_value(2) = NaN;
+            if ~isempty(M_.endo_histval)
+               fprintf('\nevaluate_planner_objective: order>2 conditional and unconditional welfare calculations not yet supported when an histval block is provided\n')
+            else
+               fprintf('\nevaluate_planner_objective: order>2 conditional welfare with initial Lagrange multipliers set to zero and unconditional welfare calculations not yet supported\n')
+               planner_objective_value.conditional.steady_initial_multiplier = k_order_welfare(dr, M_, options_);
+               planner_objective_value.conditional.zero_initial_multiplier = NaN;
+               planner_objective_value.unconditional = NaN;
+            end
             return
         end
     end
 elseif options_.discretionary_policy
     ys = oo_.dr.ys;
-    
+    planner_objective_value = struct("conditional", struct("zero_initial_multiplier", 0., "steady_initial_multiplier", 0.), "unconditional", 0.);
+
     [U,Uy,Uyy] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
     
     Gy = dr.ghx(nstatic+(1:nspred),:);
@@ -196,6 +267,7 @@ elseif options_.discretionary_policy
     
     Uyygygy = A_times_B_kronecker_C(Uyy,gy,gy);
     Uyygugu = A_times_B_kronecker_C(Uyy,gu,gu);
+    Uyygugy = A_times_B_kronecker_C(Uyy,gu,gy);
     
     %% Unconditional welfare
     
@@ -222,34 +294,65 @@ elseif options_.discretionary_policy
     
     EU = U + Uy*gy*Eyhat + 0.5*(Uyygygy*Eyhatyhat + Uyygugu*Euu);
     EW = EU/(1-beta);
-    
-    
+    planner_objective_value.unconditional = EW;
+
     %% Conditional welfare starting from the non-stochastic steady-state
     
     Wbar = U/(1-beta);
     Wy = Uy*gy/(eye(nspred)-beta*Gy);
-    
+    Wu = Uy*gu + beta*Wy*Gu;
+
     %solve Lyapunuv equation Wyy=gy'*Uyy*gy+beta*Gy'Wyy*Gy
     Wyy = reshape(lyapunov_symm(sqrt(beta)*Gy',reshape(Uyygygy,nspred,nspred),options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold, 3, options_.debug),1,nspred*nspred);
     Wyygugu = A_times_B_kronecker_C(Wyy,Gu,Gu);
+    Wyygugy = A_times_B_kronecker_C(Wyy,Gu,Gy);
     Wuu = Uyygugu + beta*Wyygugu;
     Wss = beta*Wuu*M_.Sigma_e(:)/(1-beta);
-    W = Wbar + 0.5*Wss;
-    
-    planner_objective_value(1) = EW;
-    planner_objective_value(2) = W;
+    Wyu = Uyygugy + beta*Wyygugy;
+
+    % initialize Lagrange multipliers to their steady-state values in yhat_L_SS
+    yhat_L_SS = ys;
+    % initialize Lagrange multipliers to 0 in yhat_L_0
+    yhat_L_0 = zeros(M_.endo_nbr,1);
+    if ~isempty(M_.endo_histval)
+       % initialize endogenous state variable to histval if necessary
+       yhat_L_SS(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
+       yhat_L_0(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
+    else
+       yhat_L_0(1:M_.orig_endo_nbr) = ys(1:M_.orig_endo_nbr);
+    end
+    yhat_L_0 = yhat_L_0(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
+    yhat_L_SS = yhat_L_SS(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
+    u = oo_.exo_simul(1,:)';
+
+    Wyu_yu_L_SS = A_times_B_kronecker_C(Wyu,yhat_L_SS,u);
+    Wyy_yy_L_SS = A_times_B_kronecker_C(Wyy,yhat_L_SS,yhat_L_SS);
+    Wuu_uu_L_SS = A_times_B_kronecker_C(Wuu,u,u);
+    W_L_SS = Wbar+Wy*yhat_L_SS+Wu*u+Wyu_yu_L_SS+0.5*(Wss+Wyy_yy_L_SS+Wuu_uu_L_SS);
+
+    Wyu_yu_L_0 = A_times_B_kronecker_C(Wyu,yhat_L_0,u);
+    Wyy_yy_L_0 = A_times_B_kronecker_C(Wyy,yhat_L_0,yhat_L_0);
+    Wuu_uu_L_0 = A_times_B_kronecker_C(Wuu,u,u);
+    W_L_0 = Wbar+Wy*yhat_L_0+Wu*u+Wyu_yu_L_0+0.5*(Wss+Wyy_yy_L_0+Wuu_uu_L_0);
+   
+    planner_objective_value.conditional.steady_initial_multiplier = W_L_SS;
+    planner_objective_value.conditional.zero_initial_multiplier = W_L_0;
 end
 if ~options_.noprint
     if options_.ramsey_policy
         if oo_.gui.ran_perfect_foresight
-            fprintf('\nSimulated value of unconditional welfare:  %10.8f\n', planner_objective_value(1))
-            fprintf('\nSimulated value of conditional welfare:  %10.8f\n', planner_objective_value(2))
+             fprintf('\nSimulated value of unconditional welfare:  %10.8f\n', planner_objective_value.unconditional)
+             fprintf('\nSimulated value of conditional welfare:  %10.8f\n', planner_objective_value.conditional)
         else
-            fprintf('\nApproximated value of unconditional welfare:  %10.8f\n', planner_objective_value(1))
-            fprintf('\nApproximated value of conditional welfare:  %10.8f\n', planner_objective_value(2))
+             fprintf('\nApproximated value of unconditional welfare:  %10.8f\n', planner_objective_value.unconditional)
+             fprintf('\nApproximated value of conditional welfare:\n')
+             fprintf('    - with initial Lagrange multipliers set to 0: %10.8f\n', planner_objective_value.conditional.zero_initial_multiplier)
+             fprintf('    - with initial Lagrange multipliers set to steady state: %10.8f\n\n', planner_objective_value.conditional.steady_initial_multiplier)
         end
     elseif options_.discretionary_policy
-        fprintf('\nApproximated value of unconditional welfare with discretionary policy:  %10.8f\n', planner_objective_value(1))
-        fprintf('\nApproximated value of conditional welfare with discretionary policy:  %10.8f\n', planner_objective_value(2))
+          fprintf('\nApproximated value of unconditional welfare with discretionary policy:  %10.8f\n', planner_objective_value.unconditional)
+          fprintf('\nApproximated value of conditional welfare with discretionary policy:\n')
+          fprintf('    - with initial Lagrange multipliers set to 0: %10.8f\n', planner_objective_value.conditional.zero_initial_multiplier)
+          fprintf('    - with initial Lagrange multipliers set to steady state: %10.8f\n\n', planner_objective_value.conditional.steady_initial_multiplier)
     end
 end

@@ -45,9 +45,9 @@ options1 = load(['neo_growth_foresight' filesep 'Output' filesep 'neo_growth_for
 cond_W_hand = oo1.oo_.endo_simul(strmatch('W',M1.M_.endo_names,'exact'),2);
 unc_W_hand = oo1.oo_.endo_simul(strmatch('W',M1.M_.endo_names,'exact'),end);
 
-if abs((unc_W_hand - planner_objective_value(1))/unc_W_hand) > 1e-6;
+if abs((unc_W_hand - planner_objective_value.unconditional)/unc_W_hand) > 1e-6;
    error('Inaccurate unconditional welfare assessment');
 end;
-if abs((cond_W_hand - planner_objective_value(2))/cond_W_hand) > 1e-6;
+if abs((cond_W_hand - planner_objective_value.conditional)/cond_W_hand) > 1e-6;
    error('Inaccurate conditional welfare assessment');
 end;
