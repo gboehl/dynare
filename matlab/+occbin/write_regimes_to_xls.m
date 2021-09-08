@@ -51,14 +51,18 @@ else
         xlsmat{tp,5}=int2str(regime_history(tp).regimestart2);
     end
 end
-filename=[OutputDirectoryName filesep xls_filename '.xls'];
-if matlab_ver_less_than('9.3')
-    if exist(filename,'file')
-        delete(filename)
-    end    
+if ~ispc && ~isoctave && matlab_ver_less_than('9.0')
+    % On GNU/Linux and macOS, with MATLAB < R2016a, “writeable” can’t write Excel files
+    warning('This version of MATLAB is too old and cannot create Excel files. The Occbin regimes will rather be written to a CSV file')
+    filename=[OutputDirectoryName filesep xls_filename '.csv'];
 else
-    if isfile(filename)
-        delete(filename)
-    end
+    filename=[OutputDirectoryName filesep xls_filename '.xls'];
 end
-writetable(array2table(xlsmat,'VariableNames',Header), filename, 'Sheet', 'Regimes'); 
+if isfile(filename)
+    delete(filename)
+end
+if ~ispc && ~isoctave && matlab_ver_less_than('9.0') % See above
+    writetable(array2table(xlsmat,'VariableNames',Header), filename);
+else
+    writetable(array2table(xlsmat,'VariableNames',Header), filename, 'Sheet', 'Regimes');
+end

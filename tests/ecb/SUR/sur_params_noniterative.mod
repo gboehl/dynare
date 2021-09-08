@@ -206,8 +206,8 @@ else
         0.480506381923643
         -0.111002148299648
         1.000000000000000];
-    if max(abs(BETA' - good)) > 1e-14
-        error(['sum of BETA'' - good was: ' num2str(sum(abs(BETA - good)))]);
+    if max(abs(BETA' - good)) > 2e-14
+        error(['sum of BETA'' - good was: ' num2str(sum(abs(BETA' - good)))]);
     end
     return
 end

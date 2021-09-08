@@ -98,7 +98,11 @@ if T_max > 0
     for i = T_max-1:-1:1        
         tmp = 0*binding_indicator;
         tmp(1:end-i+1,:) = binding_indicator(i:end,:);
-        itmp = find(~any(dictionary.binding_indicator(1:length(tmp)*2,:)-tmp(:)));
+        if ~isoctave && matlab_ver_less_than('9.1') % Automatic broadcasting was introduced in MATLAB R2016b
+            itmp = find(~any(bsxfun(@minus, dictionary.binding_indicator(1:length(tmp)*2,:), tmp(:))));
+        else
+            itmp = find(~any(dictionary.binding_indicator(1:length(tmp)*2,:)-tmp(:)));
+        end
         if ~isempty(itmp)
             ireg(i) = itmp;
         else
