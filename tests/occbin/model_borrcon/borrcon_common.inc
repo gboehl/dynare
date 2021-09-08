@@ -17,7 +17,11 @@ ylabels = char(percent,percent,percent,level);
 figtitle = 'Simulated variables';
 legendlist = cellstr(char('Piecewise Linear','Linear'));
 
-options_.TeX=1;
+if isoctave || ~matlab_ver_less_than('8.4')
+    % For some unknown reason, MATLAB R2014a crashes with TeX labels
+    % when -nodisplay is passed (as in the testsuite)
+    options_.TeX=1;
+end
 occbin_graph;
 occbin_graph c_hat b_hat y_hat;
 

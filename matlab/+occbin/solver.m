@@ -74,9 +74,17 @@ end
 
 % add back steady state
 if ~options_.occbin.simul.piecewise_only
-    out.linear    = out.linear + out.ys';
+    if ~isoctave && matlab_ver_less_than('9.1') % Automatic broadcasting was introduced in MATLAB R2016b
+        out.linear = bsxfun(@plus, out.linear, out.ys');
+    else
+        out.linear = out.linear + out.ys';
+    end
 end
-out.piecewise = out.piecewise+ out.ys';
+if ~isoctave && matlab_ver_less_than('9.1') % Automatic broadcasting was introduced in MATLAB R2016b
+    out.piecewise = bsxfun(@plus, out.piecewise, out.ys');
+else
+    out.piecewise = out.piecewise + out.ys';
+end
 out.exo_pos = options_.occbin.simul.exo_pos;
 
 oo_.occbin=out;

@@ -21,14 +21,14 @@ M.orig_maximum_lag = 2;
 caller = 'INITVAL';
 
 options = struct();
-options.series = "ds";
+options.series = 'ds';
 ds1 = histvalf_initvalf(caller, M, options);
 
 failed_tests = my_assert(failed_tests, all(all(ds1 == ds)), 'basic test');
 num_tests = num_tests + 1;
 
 options = struct();
-options.series = "ds1";
+options.series = 'ds1';
 options.first_obs = 2;
 ds1 = histvalf_initvalf(caller, M, options);
 failed_tests = my_assert(failed_tests, ds1.init == dates('2Y'), ...
@@ -36,7 +36,7 @@ failed_tests = my_assert(failed_tests, ds1.init == dates('2Y'), ...
 num_tests = num_tests + 1;
 
 options = struct();
-options.series = "ds";
+options.series = 'ds';
 options.first_obs = 2;
 options.last_obs = 9;
 ds1 = histvalf_initvalf(caller, M, options);
@@ -47,7 +47,7 @@ failed_tests = my_assert(failed_tests, ds1.last == dates('9Y'), ...
 num_tests = num_tests + 2;
 
 options = struct();
-options.series = "ds";
+options.series = 'ds';
 options.last_obs = 9;
 ds1 = histvalf_initvalf(caller, M, options);
 failed_tests = my_assert(failed_tests, ds1.init == dates('1Y'), ...
@@ -57,7 +57,7 @@ failed_tests = my_assert(failed_tests, ds1.last == dates('9Y'), ...
 num_tests = num_tests + 2;
 
 options = struct();
-options.series = "ds";
+options.series = 'ds';
 options.first_obs = 2;
 options.last_obs = 9;
 options.nobs = 8;
@@ -69,7 +69,7 @@ failed_tests = my_assert(failed_tests, ds1.last == dates('9Y'), ...
 num_tests = num_tests + 2;
 
 options = struct();
-options.series = "ds";
+options.series = 'ds';
 options.last_obs = 9;
 options.nobs = 8;
 ds1 = histvalf_initvalf(caller, M, options);
@@ -80,7 +80,7 @@ failed_tests = my_assert(failed_tests, ds1.last == dates('9Y'), ...
 num_tests = num_tests + 2;
 
 options = struct();
-options.series = "ds";
+options.series = 'ds';
 options.first_obs = 2;
 options.last_obs = 9;
 options.nobs = 7;
@@ -98,7 +98,7 @@ end
 num_tests = num_tests + 1;
 
 options = struct();
-options.series = "ds";
+options.series = 'ds';
 options.first_obs = 0;
 
 try
@@ -113,7 +113,7 @@ end
 num_tests = num_tests + 1;
 
 options = struct();
-options.series = "ds";
+options.series = 'ds';
 options.last_obs = 11;
 
 try
