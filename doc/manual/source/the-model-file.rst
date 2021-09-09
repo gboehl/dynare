@@ -3216,7 +3216,14 @@ Getting information about the model
 .. command:: model_info ;
              model_info (OPTIONS...);
 
-    |br| This command provides information about:
+    |br| This command provides information about the model. 
+
+    When used outside the context of the ``block`` option of the ``model`` block`,
+    it will provide a list of predetermined state variables, forward-looking variables,
+    and purely static variables.
+
+    When used in conjunction with the ``block`` option of the ``model`` block,
+    it displays:
 
     * The normalization of the model: an endogenous variable is
       attributed to each equation of the model;
@@ -3224,8 +3231,6 @@ Getting information about the model
       indicates its type, the equations number and endogenous
       variables belonging to this block.
 
-    This command can only be used in conjunction with the ``block``
-    option of the ``model`` block.
 
     There are five different types of blocks depending on the
     simulation method used:
