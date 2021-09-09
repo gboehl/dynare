@@ -120,20 +120,7 @@ if options_.ramsey_policy
             Wy = Uy*gy/(eye(nspred)-beta*Gy);
             Wu = Uy*gu + beta*Wy*Gu;
             
-            % initialize Lagrange multipliers to their steady-state values in yhat_L_SS
-            yhat_L_SS = ys;
-            % initialize Lagrange multipliers to 0 in yhat_L_0
-            yhat_L_0 = zeros(M_.endo_nbr,1);
-            if ~isempty(M_.endo_histval)
-               % initialize endogenous state variable to histval if necessary
-               yhat_L_SS(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
-               yhat_L_0(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
-            else
-               yhat_L_0(1:M_.orig_endo_nbr) = ys(1:M_.orig_endo_nbr);
-            end
-            yhat_L_0 = yhat_L_0(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
-            yhat_L_SS = yhat_L_SS(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
-            u = oo_.exo_simul(1,:)';
+            [yhat_L_SS,yhat_L_0, u]=get_initial_state(ys,M_,dr,oo_);
 
             W_L_SS = Wbar+Wy*yhat_L_SS+Wu*u;
             W_L_0 = Wbar+Wy*yhat_L_0+Wu*u;
@@ -212,20 +199,7 @@ if options_.ramsey_policy
             Wss = (Uy*gss + beta*(Wy*Gss + Wuu*M_.Sigma_e(:)))/(1-beta);
             Wyu = Uyygugy + Uy*gyu + beta*(Wyygugy + Wy*Gyu);
 
-            % initialize Lagrange multipliers to their steady-state values in yhat_L_SS
-            yhat_L_SS = ys;
-            % initialize Lagrange multipliers to 0 in yhat_L_0
-            yhat_L_0 = zeros(M_.endo_nbr,1);
-            if ~isempty(M_.endo_histval)
-               % initialize endogenous state variable to histval if necessary
-               yhat_L_SS(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
-               yhat_L_0(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
-            else
-               yhat_L_0(1:M_.orig_endo_nbr) = ys(1:M_.orig_endo_nbr);
-            end
-            yhat_L_0 = yhat_L_0(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
-            yhat_L_SS = yhat_L_SS(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
-            u = oo_.exo_simul(1,:)';
+            [yhat_L_SS,yhat_L_0, u]=get_initial_state(ys,M_,dr,oo_);
 
             Wyu_yu_L_SS = A_times_B_kronecker_C(Wyu,yhat_L_SS,u);
             Wyy_yy_L_SS = A_times_B_kronecker_C(Wyy,yhat_L_SS,yhat_L_SS);
@@ -310,20 +284,7 @@ elseif options_.discretionary_policy
     Wss = beta*Wuu*M_.Sigma_e(:)/(1-beta);
     Wyu = Uyygugy + beta*Wyygugy;
 
-    % initialize Lagrange multipliers to their steady-state values in yhat_L_SS
-    yhat_L_SS = ys;
-    % initialize Lagrange multipliers to 0 in yhat_L_0
-    yhat_L_0 = zeros(M_.endo_nbr,1);
-    if ~isempty(M_.endo_histval)
-       % initialize endogenous state variable to histval if necessary
-       yhat_L_SS(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
-       yhat_L_0(1:M_.orig_endo_nbr) = M_.endo_histval(1:M_.orig_endo_nbr);
-    else
-       yhat_L_0(1:M_.orig_endo_nbr) = ys(1:M_.orig_endo_nbr);
-    end
-    yhat_L_0 = yhat_L_0(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
-    yhat_L_SS = yhat_L_SS(dr.order_var(nstatic+(1:nspred)),1)-ys(dr.order_var(nstatic+(1:nspred)));
-    u = oo_.exo_simul(1,:)';
+    [yhat_L_SS,yhat_L_0, u]=get_initial_state(ys,M_,dr,oo_);
 
     Wyu_yu_L_SS = A_times_B_kronecker_C(Wyu,yhat_L_SS,u);
     Wyy_yy_L_SS = A_times_B_kronecker_C(Wyy,yhat_L_SS,yhat_L_SS);
@@ -356,3 +317,46 @@ if ~options_.noprint
           fprintf('    - with initial Lagrange multipliers set to steady state: %10.8f\n\n', planner_objective_value.conditional.steady_initial_multiplier)
     end
 end
+
+function [yhat_L_SS,yhat_L_0, u]=get_initial_state(ys,M_,dr,oo_)
+
+% initialize Lagrange multipliers to their steady-state values in yhat_L_SS
+yhat_L_SS = ys;
+% initialize Lagrange multipliers to 0 in yhat_L_0
+yhat_L_0 = zeros(M_.endo_nbr,1);
+if ~isempty(M_.aux_vars)
+mult_indicator=([M_.aux_vars(:).type]==6);
+mult_indices=[M_.aux_vars(mult_indicator).endo_index];
+else
+    mult_indices=[];
+end
+non_mult_indices=~ismember(1:M_.endo_nbr,mult_indices);
+if ~isempty(M_.endo_histval)
+    % initialize endogenous state variable to histval if necessary
+    yhat_L_SS(non_mult_indices) = M_.endo_histval(non_mult_indices);
+    yhat_L_0(non_mult_indices) = M_.endo_histval(non_mult_indices);
+else
+    yhat_L_0(non_mult_indices) = ys(non_mult_indices);
+end
+yhat_L_0 = yhat_L_0(dr.order_var(M_.nstatic+(1:M_.nspred)),1)-ys(dr.order_var(M_.nstatic+(1:M_.nspred)));
+yhat_L_SS = yhat_L_SS(dr.order_var(M_.nstatic+(1:M_.nspred)),1)-ys(dr.order_var(M_.nstatic+(1:M_.nspred)));
+if ~isempty(M_.det_shocks)
+    if ~all(oo_.exo_simul(1,:)==0)
+        fprintf(['\nevaluate_planner_objective: oo_.exo_simul contains simulated values for the initial period.\n'...
+            'evaluate_planner_objective: Dynare will ignore them and use the provided initial condition.\n'])        
+    end
+    u =oo_.exo_steady_state;
+    periods=[M_.det_shocks(:).periods];
+    if ~all(periods==0)
+        fprintf(['\nevaluate_planner_objective: Shock values for periods other than the intial period 0 have been provided.\n' ...
+                  'evaluate_planner_objective: Note that they will be ignored.\n'])
+    end
+    shock_indices=find(periods==0);    
+    if any([M_.det_shocks(shock_indices).multiplicative])
+        fprintf(['\nevaluate_planner_objective: Shock values need to be specified as additive.\n'])        
+    end
+    u([M_.det_shocks(shock_indices).exo_id])=[M_.det_shocks(shock_indices).value];
+else
+    u = oo_.exo_simul(1,:)'; %first value of simulation series (set by simult.m if periods>0), 1 otherwise    
+end
+    
