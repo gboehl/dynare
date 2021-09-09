@@ -1299,10 +1299,13 @@ the form ``MULT_i``, where *i* represents the constraint with which
 the multiplier is associated (counted from the order of declaration in
 the model block).
 
-The last type of auxiliary variables is introduced by the
+Auxiliary variables are also introduced by the
 ``differentiate_forward_vars`` option of the model block. The new
 variables take the form ``AUX_DIFF_FWRD_i``, and are equal to
 ``x-x(-1)`` for some endogenous variable ``x``.
+
+Finally, auxiliary variables will arise in the context of employing the 
+``diff``-operator.
 
 Once created, all auxiliary variables are included in the set of
 endogenous variables. The output of decision rules (see below) is such
@@ -1314,7 +1317,7 @@ variables is stored in ``M_.orig_endo_nbr``, and the number of
 endogenous variables after the creation of auxiliary variables is
 stored in ``M_.endo_nbr``.
 
-See `<https://archives.dynare.org/DynareWiki/AuxiliaryVariables>`__ for more technical details on auxiliary variables.
+See `<https://git.dynare.org/Dynare/dynare/-/wikis/Auxiliary-variables>`__ for more technical details on auxiliary variables.
 
 
 .. _init-term-cond:
