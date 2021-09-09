@@ -60,6 +60,9 @@ if ~isempty(aux_index)
                 str = sprintf('%s', M_.endo_names{M_.aux_vars(aux_index).endo_index});
             end
             return
+        case 7
+            % currently unused
+            error('This type of auxiliary variable should not occur, please contact the developers.')
         case 8
             % Diff operator
             str = sprintf('diff(%s)', M_.endo_names{M_.aux_vars(aux_index).orig_index});
@@ -74,6 +77,9 @@ if ~isempty(aux_index)
             end
             str = sprintf('diff(%s(-%u))', M_.endo_names{M_.aux_vars(j).orig_index}, lags);
             return
+        case 10
+            % Variable created when diff was taken of unary operator (log, exp)
+            error('This type of auxiliary variable should not occur, please contact the developers.')
         case 11
             % Leaded diff
             leads = 0;

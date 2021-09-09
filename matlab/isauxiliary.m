@@ -4,7 +4,7 @@ function b = isauxiliary(var, types)
 %
 % INPUTS
 % - var       [string]    Name of the variable.
-% - types      [integer]  vector of type of auxiliary variables.
+% - types     [integer]  vector of type of auxiliary variables.
 %
 % OUTPUTS
 % - b         [logical]
@@ -20,13 +20,13 @@ function b = isauxiliary(var, types)
 %   -  4     Expectation (substitute for Expectation Operator)
 %   -  5,    Diff forward (substitute for the differentiate of a forward variable)
 %   -  6,    Multipliers for FOC of Ramsey Problem
-%   -  7,    Variable for var_model with order > abs(min_lag()) present in model
+%   -  7,    currently not used, see SymbolTable.hh
 %   -  8,    Variable for Diff operator
 %   -  9,    Lag on Diff
-%   - 10,    Unary operator (log, exp)
+%   - 10,    Variable created when diff was taken of unary operator (log, exp)
 %   - 11,    Lead on Diff
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright (C) 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
