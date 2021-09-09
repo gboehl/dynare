@@ -12,7 +12,7 @@ phi=1;
 rho=0.95;
 
 model;
-a = rho*a(-1)+u;
+a = rho*a(-1)+u+u(-1);
 1/c = beta*r/(c(+1)*pai(+1));
 pai*(pai-1)/c = beta*pai(+1)*(pai(+1)-1)/c(+1)+epsilon*phi*n^(gamma+1)/omega -exp(a)*n*(epsilon-1)/(omega*c);
 exp(a)*n = c+(omega/2)*(pai-1)^2;
@@ -23,6 +23,7 @@ r=1;
 end;
 
 histval;
+u(0)=1;
 a(0)=-1;
 end;
 
@@ -36,11 +37,30 @@ end;
 shocks;
 var u; stderr 0.008;
 var u;
-periods 1;
+periods 0;
 values 1;
 end;
 options_.dr_display_tol=0;
 planner_objective(ln(c)-phi*((n^(1+gamma))/(1+gamma)));
 ramsey_model(planner_discount=0.99,instruments=(r));
+stoch_simul(order=1);
+evaluate_planner_objective;
+stoch_simul(order=2);
+evaluate_planner_objective;
+
+
+
+initval;
+r=1;
+end;
+
+histval;
+u(0)=0;
+a(0)=0;
+end;
+
+shocks(overwrite);
+var u; stderr 0.008;
+end;
 stoch_simul(order=1);
 evaluate_planner_objective;
