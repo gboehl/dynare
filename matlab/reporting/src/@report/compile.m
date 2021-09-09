@@ -79,7 +79,9 @@ if isempty(opts.compiler)
         middle = ' ';
         opts.compiler = ['"' strtrim(opts.compiler) '"'];
     elseif isunix
-        [status, opts.compiler] = system('which pdflatex');
+        % “which” has been deprecated in Debian Bookworm; rather use “command -v”
+        % which should work with any reasonably recent GNU/Linux shell
+        [status, opts.compiler] = system('command -v pdflatex');
     end
     assert(status == 0, ...
            '@report.compile: Could not find a tex compiler on your system');
