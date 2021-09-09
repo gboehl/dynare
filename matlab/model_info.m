@@ -19,6 +19,7 @@ function model_info(varargin)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 global M_;
+
 if sum(strcmp(varargin,'static')) > 0
     static_ = 1;
 else
@@ -38,7 +39,9 @@ else
     block_structre_str = 'block_structure';
     nb_leadlag = 3;
 end
-if(isfield(M_,block_structre_str))
+
+
+if isfield(M_,block_structre_str)
     if static_
         block_structure = M_.block_structure_stat;
     else
@@ -108,7 +111,7 @@ if(isfield(M_,block_structre_str))
             fprintf('\n\n');
         end
     end
-
+    
     %printing the gross incidence matrix
     IM_star = char([kron(ones(M_.endo_nbr, M_.endo_nbr-1), double(blanks(3))) double(blanks(M_.endo_nbr)')]);
     for i = 1:nb_leadlag
@@ -136,7 +139,7 @@ if(isfield(M_,block_structre_str))
         fprintf('\n                                          Gross incidence matrix\n');
         fprintf('                                          =======================\n');
         disp([topp; bott]);
-
+        
         %printing the reordered incidence matrix
         IM_star_reordered = char([kron(ones(M_.endo_nbr, M_.endo_nbr-1), double(blanks(3))) double(blanks(M_.endo_nbr)')]);
         eq(block_structure.equation_reordered) = seq;
@@ -179,7 +182,7 @@ if(isfield(M_,block_structre_str))
             end
         end
         fprintf('1: non nul element, X: non nul element related to a state variable\n');
-
+        
         cur_block = 1;
         i_last = 0;
         block = {};
@@ -205,7 +208,7 @@ if(isfield(M_,block_structre_str))
                 end
             end
         end
-
+        
         bott = [int2str(block_structure.equation_reordered') blanks(M_.endo_nbr)' blanks(M_.endo_nbr)' IM_star_reordered];
         fprintf('\n                                          Reordered incidence matrix\n');
         fprintf('                                          ==========================\n');
@@ -213,46 +216,123 @@ if(isfield(M_,block_structre_str))
         fprintf('1: non nul element, X: non nul element related to a state variable\n');
     end
 else
-    fprintf('There is no block decomposition of the model.\nUse ''block'' model''s option.\n');
+    % print states
+    if M_.maximum_endo_lag~=0
+        lag_index=find(M_.lead_lag_incidence(1,:));
+        fprintf('\nThe following variables appear with a lag and are therefore states:\n')
+        for var_iter=1:length(lag_index)
+            print_line(M_.endo_names,lag_index(var_iter),-1,M_)
+        end
+    else
+        lag_index=[];
+    end
+    
+    %print forward-looking variables
+    if M_.maximum_endo_lead~=0
+        lead_index = find(M_.lead_lag_incidence(M_.maximum_lag+2,:));
+        fprintf('\nThe following variables appear with a lead and are therefore forward-looking variables:\n')
+        for var_iter=1:length(lead_index)
+            print_line(M_.endo_names,lead_index(var_iter),1,M_)
+        end
+    else
+        lead_index=[];
+    end
+    
+    %print purely static ones
+    static_index = setdiff(1:M_.endo_nbr,union(lag_index,lead_index));
+    if ~isempty(static_index)
+        fprintf('\nThe following variables do not appear with a lead or lag and are therefore purely static variables:\n')
+        for var_iter=1:length(static_index)
+            print_line(M_.endo_names,static_index(var_iter),0,M_)
+        end
+    end
+    skipline;
+end
+
+end
+
+function print_line(names,var_index,lead_lag,M_)
+
+    if var_index<=M_.orig_endo_nbr
+        if iscell(names)
+            if lead_lag==0
+                fprintf('%s\n',names{var_index})
+            else
+                fprintf('%s(%d)\n',names{var_index},lead_lag)
+            end
+        else
+            if lead_lag==0
+                fprintf('%s\n',names(var_index))
+            else
+                fprintf('%s(%d)\n',names(var_index),lead_lag)
+            end
+        end
+    else
+        aux_index=find([M_.aux_vars(:).endo_index]==var_index);
+        aux_type=M_.aux_vars(aux_index).type;
+        if isempty(M_.aux_vars(aux_index).orig_lead_lag)
+            if ismember(aux_type,[1,3])
+                str = subst_auxvar(var_index, -1, M_);
+            elseif ismember(aux_type,[0,2])
+                str = subst_auxvar(var_index, 1, M_);
+            else
+                if lead_lag==0
+                    str = subst_auxvar(var_index, [], M_);
+                else
+                    str = subst_auxvar(var_index, lead_lag, M_);
+                end
+            end
+        else
+            str = subst_auxvar(var_index, M_.aux_vars(aux_index).orig_lead_lag, M_);
+        end
+        aux_orig_expression=M_.aux_vars(aux_index).orig_expr;
+        if isempty(aux_orig_expression)
+            fprintf('%s\n',str);
+        else
+            fprintf('%s (original expression %s) \n',str,aux_orig_expression);
+        end
+    end
+
 end
 
 function ret=Sym_type(type)
-UNKNOWN=0;
-EVALUATE_FORWARD=1;
-EVALUATE_BACKWARD=2;
-SOLVE_FORWARD_SIMPLE=3;
-SOLVE_BACKWARD_SIMPLE=4;
-SOLVE_TWO_BOUNDARIES_SIMPLE=5;
-SOLVE_FORWARD_COMPLETE=6;
-SOLVE_BACKWARD_COMPLETE=7;
-SOLVE_TWO_BOUNDARIES_COMPLETE=8;
-EVALUATE_FORWARD_R=9;
-EVALUATE_BACKWARD_R=10;
-switch (type)
-  case (UNKNOWN)
-    ret='UNKNOWN                     ';
-  case {EVALUATE_FORWARD,EVALUATE_FORWARD_R}
-    ret='EVALUATE FORWARD            ';
-  case {EVALUATE_BACKWARD,EVALUATE_BACKWARD_R}
-    ret='EVALUATE BACKWARD            ';
-  case SOLVE_FORWARD_SIMPLE
-    ret='SOLVE FORWARD SIMPLE        ';
-  case SOLVE_BACKWARD_SIMPLE
-    ret='SOLVE BACKWARD SIMPLE        ';
-  case SOLVE_TWO_BOUNDARIES_SIMPLE
-    ret='SOLVE TWO BOUNDARIES SIMPLE  ';
-  case SOLVE_FORWARD_COMPLETE
-    ret='SOLVE FORWARD COMPLETE      ';
-  case SOLVE_BACKWARD_COMPLETE
-    ret='SOLVE BACKWARD COMPLETE      ';
-  case SOLVE_TWO_BOUNDARIES_COMPLETE
-    ret='SOLVE TWO BOUNDARIES COMPLETE';
+    UNKNOWN=0;
+    EVALUATE_FORWARD=1;
+    EVALUATE_BACKWARD=2;
+    SOLVE_FORWARD_SIMPLE=3;
+    SOLVE_BACKWARD_SIMPLE=4;
+    SOLVE_TWO_BOUNDARIES_SIMPLE=5;
+    SOLVE_FORWARD_COMPLETE=6;
+    SOLVE_BACKWARD_COMPLETE=7;
+    SOLVE_TWO_BOUNDARIES_COMPLETE=8;
+    EVALUATE_FORWARD_R=9;
+    EVALUATE_BACKWARD_R=10;
+    switch (type)
+        case (UNKNOWN)
+            ret='UNKNOWN                     ';
+        case {EVALUATE_FORWARD,EVALUATE_FORWARD_R}
+            ret='EVALUATE FORWARD            ';
+        case {EVALUATE_BACKWARD,EVALUATE_BACKWARD_R}
+            ret='EVALUATE BACKWARD            ';
+        case SOLVE_FORWARD_SIMPLE
+            ret='SOLVE FORWARD SIMPLE        ';
+        case SOLVE_BACKWARD_SIMPLE
+            ret='SOLVE BACKWARD SIMPLE        ';
+        case SOLVE_TWO_BOUNDARIES_SIMPLE
+            ret='SOLVE TWO BOUNDARIES SIMPLE  ';
+        case SOLVE_FORWARD_COMPLETE
+            ret='SOLVE FORWARD COMPLETE      ';
+        case SOLVE_BACKWARD_COMPLETE
+            ret='SOLVE BACKWARD COMPLETE      ';
+        case SOLVE_TWO_BOUNDARIES_COMPLETE
+            ret='SOLVE TWO BOUNDARIES COMPLETE';
+    end
 end
-
 
 function ret = barre(n)
-s = [];
-for i=1:n
-    s = [s '|'];
+    s = [];
+    for i=1:n
+        s = [s '|'];
+    end
+    ret = s;
 end
-ret = s;
