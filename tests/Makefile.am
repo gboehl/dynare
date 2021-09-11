@@ -679,6 +679,9 @@ kalman_filter_smoother/algo4.o.trs: kalman_filter_smoother/algo3.o.trs
 kalman_filter_smoother/test_compute_Pinf_Pstar.m.trs: kalman_filter_smoother/test_compute_Pinf_Pstar_data.m.trs
 kalman_filter_smoother/test_compute_Pinf_Pstar.o.trs: kalman_filter_smoother/test_compute_Pinf_Pstar_data.o.trs
 
+optimal_policy/Ramsey/ramsey_ex.m.trs: optimal_policy/Ramsey/ramsey_ex_initval.m.trs
+optimal_policy/Ramsey/ramsey_ex.o.trs: optimal_policy/Ramsey/ramsey_ex_initval.o.trs
+
 optimal_policy/nk_ramsey_expectation_a.m.trs: optimal_policy/nk_ramsey_expectation.m.trs
 optimal_policy/nk_ramsey_expectation_a.o.trs: optimal_policy/nk_ramsey_expectation.o.trs
 
@@ -1510,6 +1513,8 @@ clean-local:
 		kalman/likelihood_from_dynare/fs_ns_dat_simul_uncorr_ME_missing.m
 
 	rm -f occbin/filter/dataobsfile2.mat
+
+	rm -f optimal_policy/Ramsey/oo_ramsey_policy_initval.mat
 
 	find . -name "*.tex" -type f -delete
 	find . -name "*.aux" -type f -delete
