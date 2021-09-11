@@ -347,11 +347,15 @@ if ~isempty(M_.det_shocks)
     end
     u =oo_.exo_steady_state;
     periods=[M_.det_shocks(:).periods];
-    if ~all(periods==0)
-        fprintf(['\nevaluate_planner_objective: Shock values for periods other than the intial period 0 have been provided.\n' ...
+    if any(periods==0)
+        fprintf(['\nevaluate_planner_objective: M_.det_shocks contains values for the predetermined t=0 period.\n'...
+            'evaluate_planner_objective: Dynare will ignore them. Use histval to set the value of lagged innovations.\n'])
+    end
+    if any(periods>1)
+        fprintf(['\nevaluate_planner_objective: Shock values for periods not contained in the initial information set (t=1) have been provided.\n' ...
                   'evaluate_planner_objective: Note that they will be ignored.\n'])
     end
-    shock_indices=find(periods==0);    
+    shock_indices=find(periods==1);    
     if any([M_.det_shocks(shock_indices).multiplicative])
         fprintf(['\nevaluate_planner_objective: Shock values need to be specified as additive.\n'])        
     end
