@@ -45,11 +45,20 @@ unc_W_hand = oo1.oo_.mean(strmatch('W',M1.M_.endo_names,'exact'));
 initial_condition_states = repmat(oo1.oo_.dr.ys,1,M1.M_.maximum_lag);
 shock_matrix = zeros(1,M1.M_.exo_nbr);
 y_sim = simult_(M1.M_,options1.options_,initial_condition_states,oo1.oo_.dr,shock_matrix,options1.options_.order);
-cond_W_hand=y_sim(strmatch('W',M1.M_.endo_names,'exact'),2);
+cond_W_hand_L_SS=y_sim(strmatch('W',M1.M_.endo_names,'exact'),2);
 
-if abs((unc_W_hand - planner_objective_value(1))/unc_W_hand) > 1e-6;
+if abs((unc_W_hand - planner_objective_value.unconditional)/unc_W_hand) > 1e-6;
    error('Inaccurate unconditional welfare assessment');
 end;
-if abs((cond_W_hand - planner_objective_value(2))/cond_W_hand) > 1e-6;
-   error('Inaccurate conditional welfare assessment');
+if abs(cond_W_hand_L_SS - planner_objective_value.conditional.steady_initial_multiplier) > 1e-6;
+   error('Inaccurate conditional welfare with Lagrange multiplier set to its steady-state value');
+end;
+
+initial_condition_states = zeros(M1.M_.endo_nbr,M1.M_.maximum_lag);
+initial_condition_states(1:M1.M_.orig_endo_nbr,:) = repmat(oo1.oo_.dr.ys(1:M1.M_.orig_endo_nbr),1,M1.M_.maximum_lag);
+shock_matrix = zeros(1,M1.M_.exo_nbr);
+y_sim = simult_(M1.M_,options1.options_,initial_condition_states,oo1.oo_.dr,shock_matrix,options1.options_.order);
+cond_W_hand_L_0=y_sim(strmatch('W',M1.M_.endo_names,'exact'),2);
+if abs(cond_W_hand_L_0 - planner_objective_value.conditional.zero_initial_multiplier) > 1e-6;
+   error('Inaccurate conditional welfare with zero Lagrange multiplier');
 end;

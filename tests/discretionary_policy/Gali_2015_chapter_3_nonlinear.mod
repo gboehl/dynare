@@ -1,5 +1,5 @@
 /*
- * This file implements the baseline New Keynesian model of Jordi Galí (2015): Monetary Policy, Inflation,
+ * This file implements the baseline New Keynesian model of Jordi Galï¿½ (2015): Monetary Policy, Inflation,
  * and the Business Cycle, Princeton University Press, Second Edition, Chapter 3
  *
  * Note that this mod-file implements the non-linear first order conditions and that the IRFs show the log-deviations
@@ -220,8 +220,10 @@ planner_objective 0.5*((siggma+(varphi+alppha)/(1-alppha))*y_hat^2+epsilon/0.021
 discretionary_policy(order=1,instruments=(R),irf=20,planner_discount=betta, periods=0) y_hat pi_ann log_y log_N log_W_real log_P;
 
 temp=load(['Gali_2015_chapter_3' filesep 'Output' filesep 'Gali_2015_chapter_3_results.mat']);
-if abs(oo_.planner_objective_value-temp.oo_.planner_objective_value)>1e-6
-    warning('Planner objective does not match linear model')
+if abs(oo_.planner_objective_value.unconditional-temp.oo_.planner_objective_value.unconditional)>1e-6 ... 
+    || abs(oo_.planner_objective_value.conditional.zero_initial_multiplier-temp.oo_.planner_objective_value.conditional.zero_initial_multiplier)>1e-6 ... 
+    ||  abs(oo_.planner_objective_value.conditional.steady_initial_multiplier-temp.oo_.planner_objective_value.conditional.steady_initial_multiplier)>1e-6 ... 
+   warning('Planner objective does not match linear model')
 end
 if max(max(abs([temp.oo_.irfs.y_eps_a; temp.oo_.irfs.w_real_eps_a; temp.oo_.irfs.n_eps_a; temp.oo_.irfs.pi_ann_eps_a]-...
         [oo_.irfs.log_y_eps_a; oo_.irfs.log_W_real_eps_a; oo_.irfs.log_N_eps_a; oo_.irfs.pi_ann_eps_a])))>1e-6
