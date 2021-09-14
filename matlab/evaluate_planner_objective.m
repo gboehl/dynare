@@ -95,9 +95,9 @@ if options_.ramsey_policy
             [U] = feval([M_.fname '.objective.static'],oo_.endo_simul(:,t),oo_.exo_simul(t,:), M_.params);
             W = U + beta*W;
         end
-        planner_objective_value = struct("conditional", W, "unconditional", EW);
+        planner_objective_value = struct('conditional', W, 'unconditional', EW);
     else
-        planner_objective_value = struct("conditional", struct("zero_initial_multiplier", 0., "steady_initial_multiplier", 0.), "unconditional", 0.);
+        planner_objective_value = struct('conditional', struct('zero_initial_multiplier', 0., 'steady_initial_multiplier', 0.), 'unconditional', 0.);
         ys = oo_.dr.ys;
         if options_.order == 1 || M_.hessian_eq_zero
             [U,Uy] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
@@ -228,7 +228,7 @@ if options_.ramsey_policy
     end
 elseif options_.discretionary_policy
     ys = oo_.dr.ys;
-    planner_objective_value = struct("conditional", struct("zero_initial_multiplier", 0., "steady_initial_multiplier", 0.), "unconditional", 0.);
+    planner_objective_value = struct('conditional', struct('zero_initial_multiplier', 0., 'steady_initial_multiplier', 0.), 'unconditional', 0.);
 
     [U,Uy,Uyy] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
     
