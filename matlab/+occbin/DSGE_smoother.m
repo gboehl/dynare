@@ -268,7 +268,12 @@ while is_changed && maxiter>iter && ~is_periodic
                 qq={regime_history(indx_init_1).regimestart1}';
                 for j=1:length(qq), start_new(j,1) = {int2str(qq{j})}; end
                 disp('Time points where regime 1 differs')
-                disp(table(indx_init_1, regime_, start_, regime_new, start_new))
+                if ~isoctave
+                    disp(table(indx_init_1, regime_, start_, regime_new, start_new))
+                else % The table() function is not implemented in Octave, print something more or less equivalent (though much less readable)
+                    disp(vertcat({'indx_init_1', 'regime_', 'start_', 'regime_new', 'start_new'}, ...
+                                 horzcat(num2cell(indx_init_1), regime_, start_, regime_new, start_new)))
+                end
             end
             
             indx_init_2 = find(isdiff_(:,2));
@@ -286,7 +291,12 @@ while is_changed && maxiter>iter && ~is_periodic
                 qq={regime_history(indx_init_2).regimestart2}';
                 for j=1:length(qq), start_new(j,1) = {int2str(qq{j})}; end
                 disp('Time points where regime 2 differs ')
-                disp(table(indx_init_2, regime_, start_, regime_new, start_new))
+                if ~isoctave
+                    disp(table(indx_init_2, regime_, start_, regime_new, start_new))
+                else % The table() function is not implemented in Octave, print something more or less equivalent (though much less readable)
+                    disp(vertcat({'indx_init_2', 'regime_', 'start_', 'regime_new', 'start_new'}, ...
+                                 horzcat(num2cell(indx_init_2), regime_, start_, regime_new, start_new)))
+                end
             end
         else
             indx_init_1 = find(isdiff_(:,1));
@@ -300,7 +310,12 @@ while is_changed && maxiter>iter && ~is_periodic
                 qq={regime_history(indx_init_1).regimestart}';
                 for j=1:length(qq), start_new(j,1) = {int2str(qq{j})}; end
                 disp('Time points where regime differs')
-                disp(table(indx_init_1, regime_, start_, regime_new, start_new))
+                if ~isoctave
+                    disp(table(indx_init_1, regime_, start_, regime_new, start_new))
+                else % The table() function is not implemented in Octave, print something more or less equivalent (though much less readable)
+                    disp(vertcat({'indx_init_1', 'regime_', 'start_', 'regime_new', 'start_new'}, ...
+                                 horzcat(num2cell(indx_init_1), regime_, start_, regime_new, start_new)))
+                end
             end
 
         end

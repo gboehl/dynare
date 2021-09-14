@@ -318,7 +318,7 @@ varobs yg inom pi;
             datafile=dataobsfile2, mode_file=NKM_mh_mode_saved,
             mode_compute=0, nobs=120, first_obs=1,
             mh_replic=0, plot_priors=0, smoother,
-            graph_format=(fig), nodisplay,consider_all_endogenous,heteroskedastic_filter);
+            nodisplay,consider_all_endogenous,heteroskedastic_filter);
     
     oo0=oo_;
     
@@ -330,7 +330,7 @@ varobs yg inom pi;
             datafile=dataobsfile2, mode_file=NKM_mh_mode_saved,
             mode_compute=0, nobs=120, first_obs=1,
             mh_replic=0, plot_priors=0, smoother,
-            graph_format=(fig), nodisplay, consider_all_endogenous,heteroskedastic_filter);
+            nodisplay, consider_all_endogenous,heteroskedastic_filter);
             
     // show initial condition effect of IF
     figure,
