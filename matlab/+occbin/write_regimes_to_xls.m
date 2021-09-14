@@ -51,18 +51,20 @@ else
         xlsmat{tp,5}=int2str(regime_history(tp).regimestart2);
     end
 end
-if ~ispc && ~isoctave && matlab_ver_less_than('9.0')
-    % On GNU/Linux and macOS, with MATLAB < R2016a, “writeable” can’t write Excel files
-    warning('This version of MATLAB is too old and cannot create Excel files. The Occbin regimes will rather be written to a CSV file')
-    filename=[OutputDirectoryName filesep xls_filename '.csv'];
-else
-    filename=[OutputDirectoryName filesep xls_filename '.xls'];
-end
+
+filename=[OutputDirectoryName filesep xls_filename '.xls'];
+
 if isfile(filename)
     delete(filename)
 end
-if ~ispc && ~isoctave && matlab_ver_less_than('9.0') % See above
-    writetable(array2table(xlsmat,'VariableNames',Header), filename);
+
+if isoctave || (~ispc && matlab_ver_less_than('9.0'))
+    % “writetable” and “array2table” don’t exist under Octave
+    % On GNU/Linux and macOS, with MATLAB < R2016a, “writeable” can’t write Excel files
+    if isoctave && ~user_has_octave_forge_package('io')
+        error('The io package is required to write XLS files from Octave')
+    end
+    xlswrite(filename, vertcat(Header, xlsmat));
 else
     writetable(array2table(xlsmat,'VariableNames',Header), filename, 'Sheet', 'Regimes');
 end
