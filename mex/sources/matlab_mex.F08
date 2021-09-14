@@ -229,6 +229,14 @@ module matlab_mat
      end function mxIsClass_internal
 
      ! Structure
+     type(c_ptr) function mxCreateStructMatrix_internal(m, n, nfields, fieldnames) bind(c, name="mxCreateStructMatrix"//API_VER2)
+       use iso_c_binding
+       import :: mwSize
+       integer(mwSize), intent(in), value :: m, n
+       integer(c_int), intent(in), value :: nfields
+       type(c_ptr), dimension(*), intent(in) :: fieldnames
+     end function mxCreateStructMatrix_internal
+
      logical(c_bool) function mxIsStruct(pm) bind(c, name="mxIsStruct"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
@@ -329,6 +337,20 @@ contains
     character(kind=c_char, len=*), intent(in) :: classname
     mxIsclass = mxIsclass_internal(pm, classname // c_null_char)
   end function mxIsClass
+
+  type(c_ptr) function mxCreateStructMatrix(m, n, fieldnames)
+    integer(mwSize), intent(in) :: m, n
+    character(kind=c_char, len=*), dimension(:), intent(in) :: fieldnames
+
+    character(kind=c_char, len=len(fieldnames)+1), dimension(size(fieldnames)), target :: fieldnames_zero ! Stores zero-terminated strings
+    type(c_ptr), dimension(size(fieldnames)) :: fieldnames_ptr ! C arrays of strings
+    integer :: i
+    do i = 1,size(fieldnames)
+       fieldnames_zero(i) = trim(fieldnames(i)) // c_null_char
+       fieldnames_ptr(i) = c_loc(fieldnames_zero(i))
+    end do
+    mxCreateStructMatrix = mxCreateStructMatrix_internal(m, n, size(fieldnames), fieldnames_ptr)
+  end function mxCreateStructMatrix
 
   type(c_ptr) function mxGetField(pm, index, fieldname)
     type(c_ptr), intent(in) :: pm
