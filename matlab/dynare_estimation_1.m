@@ -12,7 +12,7 @@ function dynare_estimation_1(var_list_,dname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2018 Dynare Team
+% Copyright (C) 2003-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,6 +32,11 @@ function dynare_estimation_1(var_list_,dname)
 global M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info
 
 if ~exist([M_.dname filesep 'Output'],'dir')
+    if isoctave && ~exist(M_.dname)
+        % See https://savannah.gnu.org/bugs/index.php?61166
+        % This workaround is needed for recursive estimation.
+        mkdir(M_.dname)
+    end
     mkdir(M_.dname,'Output');
 end
 
