@@ -43,55 +43,32 @@ if isempty(ide)
 end
 
 if ~isempty(ide)
-    if isfield(M_.pac.(pacmodel).equations.(eqtag), 'additive')
-        if ~isfield(M_.pac.(pacmodel).equations.(eqtag).additive, 'bgp')
-            M_.pac.(pacmodel).equations.(eqtag).additive.bgp = zeros(1, length(M_.pac.(pacmodel).equations.(eqtag).additive.params));
-        end
-        [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).additive.vars);
-        if isvar
-            if xflag
-                assert(~M_.pac.(pacmodel).equations.(eqtag).additive.isendo(ie), 'Variable type issue.')
-            else
-                assert(M_.pac.(pacmodel).equations.(eqtag).additive.isendo(ie), 'Variable type issue.')
-            end
-            M_.pac.(pacmodel).equations.(eqtag).additive.bgp(ie) = nonzeromean;
-            return
-        end
-    end
-    if isfield(M_.pac.(pacmodel).equations.(eqtag), 'optim_additive')
-        if ~isfield(M_.pac.(pacmodel).equations.(eqtag).optim_additive, 'bgp')
-            M_.pac.(pacmodel).equations.(eqtag).optim_additive.bgp = zeros(1, length(M_.pac.(pacmodel).equations.(eqtag).optim_additive.params));
-        end
-        [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).optim_additive.vars);
-        if isvar
-            if xflag
-                assert(~M_.pac.(pacmodel).equations.(eqtag).optim_additive.isendo(ie), 'Variable type issue.')
-            else
-                assert(M_.pac.(pacmodel).equations.(eqtag).optim_additive.isendo(ie), 'Variable type issue.')
-            end
-            M_.pac.(pacmodel).equations.(eqtag).optim_additive.bgp(ie) = nonzeromean;
-            return
-        end
-    end
-    if isfield(M_.pac.(pacmodel).equations.(eqtag), 'non_optimizing_behaviour')
-        if ~isfield(M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour, 'bgp')
-            M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.bgp = zeros(1, length(M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.params));
-        end
-        [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.vars);
-        if isvar
-            if xflag
-                assert(~M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.isendo(ie), 'Variable type issue.')
-            else
-                assert(M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.isendo(ie), 'Variable type issue.')
-            end
-            M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.bgp(ie) = nonzeromean;
-            return
-        end
-    end
+    [M_, done] = writebgpfield('additive', pacmodel, eqtag, ide, xflag, nonzeromean, M_);
+    if done, return, end
+    [M_, done] = writebgpfield('optim_additive', pacmodel, eqtag, ide, xflag, nonzeromean, M_);
+    if done, return, end
+    [M_, done] = writebgpfield('non_optimizing_behaviour', pacmodel, eqtag, ide, xflag, nonzeromean, M_);
+    if done, return, end
     warning('%s is not an exogenous variable in equation %s.', variable, paceq)
 else
     error('Endogenous/Exogenous variable %s is unknown.', variable)
 end
 
 
-function 
+function [M_, done] = writebgpfield(type, pacmodel, eqtag, ide, xflag, nonzeromean, M_)
+done = false;
+if isfield(M_.pac.(pacmodel).equations.(eqtag), type)
+    if ~isfield(M_.pac.(pacmodel).equations.(eqtag).additive, 'bgp')
+        M_.pac.(pacmodel).equations.(eqtag).(type).bgp = zeros(1, length(M_.pac.(pacmodel).equations.(eqtag).(type).params));
+    end
+    [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).(type).vars);
+    if isvar
+        if xflag
+            assert(~M_.pac.(pacmodel).equations.(eqtag).(type).isendo(ie), 'Variable type issue.')
+        else
+            assert(M_.pac.(pacmodel).equations.(eqtag).(type).isendo(ie), 'Variable type issue.')
+        end
+        M_.pac.(pacmodel).equations.(eqtag).(type).bgp(ie) = nonzeromean;
+        done = true;
+    end
+end
