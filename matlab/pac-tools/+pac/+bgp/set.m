@@ -43,7 +43,7 @@ if isempty(ide)
 end
 
 if ~isempty(ide)
-    if isfield(M_.pac.(pacmodel).equations.(eqtag), 'additive') && length(M_.pac.(pacmodel).equations.(eqtag).additive.vars)>1
+    if isfield(M_.pac.(pacmodel).equations.(eqtag), 'additive')
         if ~isfield(M_.pac.(pacmodel).equations.(eqtag).additive, 'bgp')
             M_.pac.(pacmodel).equations.(eqtag).additive.bgp = zeros(1, length(M_.pac.(pacmodel).equations.(eqtag).additive.params));
         end
@@ -92,3 +92,6 @@ if ~isempty(ide)
 else
     error('Endogenous/Exogenous variable %s is unknown.', variable)
 end
+
+
+function 
