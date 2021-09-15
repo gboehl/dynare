@@ -1299,10 +1299,13 @@ the form ``MULT_i``, where *i* represents the constraint with which
 the multiplier is associated (counted from the order of declaration in
 the model block).
 
-The last type of auxiliary variables is introduced by the
+Auxiliary variables are also introduced by the
 ``differentiate_forward_vars`` option of the model block. The new
 variables take the form ``AUX_DIFF_FWRD_i``, and are equal to
 ``x-x(-1)`` for some endogenous variable ``x``.
+
+Finally, auxiliary variables will arise in the context of employing the 
+``diff``-operator.
 
 Once created, all auxiliary variables are included in the set of
 endogenous variables. The output of decision rules (see below) is such
@@ -1314,7 +1317,7 @@ variables is stored in ``M_.orig_endo_nbr``, and the number of
 endogenous variables after the creation of auxiliary variables is
 stored in ``M_.endo_nbr``.
 
-See `<https://archives.dynare.org/DynareWiki/AuxiliaryVariables>`__ for more technical details on auxiliary variables.
+See `<https://git.dynare.org/Dynare/dynare/-/wikis/Auxiliary-variables>`__ for more technical details on auxiliary variables.
 
 
 .. _init-term-cond:
@@ -3216,7 +3219,14 @@ Getting information about the model
 .. command:: model_info ;
              model_info (OPTIONS...);
 
-    |br| This command provides information about:
+    |br| This command provides information about the model. 
+
+    When used outside the context of the ``block`` option of the ``model`` block`,
+    it will provide a list of predetermined state variables, forward-looking variables,
+    and purely static variables.
+
+    When used in conjunction with the ``block`` option of the ``model`` block,
+    it displays:
 
     * The normalization of the model: an endogenous variable is
       attributed to each equation of the model;
@@ -3224,8 +3234,6 @@ Getting information about the model
       indicates its type, the equations number and endogenous
       variables belonging to this block.
 
-    This command can only be used in conjunction with the ``block``
-    option of the ``model`` block.
 
     There are five different types of blocks depending on the
     simulation method used:

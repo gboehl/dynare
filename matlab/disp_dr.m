@@ -144,9 +144,9 @@ end
 for k=1:nx
     flag = 0;
     if isfield(dr,'state_var')
-        str1 = subst_auxvar(dr.state_var(k),-1);
+        str1 = subst_auxvar(dr.state_var(k),-1,M_);
     else
-        str1 = subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2);
+        str1 = subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2,M_);
     end
     if options_.loglinear
         str = sprintf(label_format,['log(',str1,')']);
@@ -181,8 +181,8 @@ if order > 1
     for k = 1:nx
         for j = 1:k
             flag = 0;
-            str1 = sprintf('%s,%s',subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2), ...
-                           subst_auxvar(k1(klag(j,1)),klag(j,2)-M_.maximum_lag-2));
+            str1 = sprintf('%s,%s',subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2,M_), ...
+                           subst_auxvar(k1(klag(j,1)),klag(j,2)-M_.maximum_lag-2,M_));
             str = sprintf(label_format, str1);
             for i=1:nvar
                 if k == j
@@ -223,7 +223,7 @@ if order > 1
     for k = 1:nx
         for j = 1:nu
             flag = 0;
-            str1 = sprintf('%s,%s',subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2), M_.exo_names{j});
+            str1 = sprintf('%s,%s',subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2,M_), M_.exo_names{j});
             str = sprintf(label_format,str1);
             for i=1:nvar
                 x = dr.ghxu(ivar(i),(k-1)*nu+j);
@@ -237,74 +237,6 @@ if order > 1
 end
 end
 
-% Given the index of an endogenous (possibly an auxiliary var), and a
-% lead/lag, creates a string of the form "x(lag)".
-% In the case of auxiliary vars for lags, replace by the original variable
-% name, and compute the lead/lag accordingly.
-function str = subst_auxvar(aux_index, aux_lead_lag)
-global M_
-
-if aux_index <= M_.orig_endo_nbr
-    str = sprintf('%s(%d)', M_.endo_names{aux_index}, aux_lead_lag);
-    return
-end
-for i = 1:length(M_.aux_vars)
-    if M_.aux_vars(i).endo_index == aux_index
-        switch M_.aux_vars(i).type
-          case 0
-            % endo leads >= 2
-            str = sprintf('%s(%d)', M_.endo_names{aux_index}, aux_lead_lag);
-            return
-          case 1
-            % endo lags >= 2
-            orig_name = M_.endo_names{M_.aux_vars(i).orig_index};
-          case 2
-            % exo leads >= 1
-            orig_name = M_.exo_names{M_.aux_vars(i).orig_index};
-          case 3
-            % exo lags >= 1
-            orig_name = M_.exo_names{M_.aux_vars(i).orig_index};
-          case 4
-            % Expectation operator
-            str = sprintf('EXPECTATION(%d)(...)', aux_lead_lag);
-            return
-          case 6
-            % Ramsey's multipliers
-            str = sprintf('%s(%d)', M_.endo_names{M_.aux_vars(i).endo_index}, aux_lead_lag);
-            return
-          case 8
-            % Diff operator
-            str = sprintf('diff(%s)', M_.endo_names{M_.aux_vars(i).orig_index});
-            return
-          case 9
-            % Lagged diff
-            lags = 0;
-            j = i;
-            while M_.aux_vars(j).type==9
-                j = M_.aux_vars(j).orig_index;
-                lags = lags+1;
-            end
-            str = sprintf('diff(%s(-%u))', M_.endo_names{M_.aux_vars(j).orig_index}, lags);
-            return
-          case 11
-            % Leaded diff
-            leads = 0;
-            j = i;
-            while M_.aux_vars(j).type==11
-                j = M_.aux_vars(j).orig_index;
-                lags = lags+1;
-            end
-            str = sprintf('diff(%s(%u))', M_.endo_names{M_.aux_vars(j).orig_index}, leads);
-            return
-          otherwise
-            error('Invalid auxiliary type: %s', M_.endo_names{aux_index})
-        end
-        str = sprintf('%s(%d)', orig_name, M_.aux_vars(i).orig_lead_lag+aux_lead_lag);
-        return
-    end
-end
-error('Could not find aux var: %s', M_.endo_names{aux_index})
-end
 
 function [str,flag]=get_print_string(str, x, value_format_zero, value_format_float, flag, options_)
 if abs(x) >= options_.dr_display_tol
