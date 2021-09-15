@@ -33,7 +33,15 @@ global M_
 eqtag = M_.pac.(pacmodel).tag_map{strcmp(paceq, M_.pac.(pacmodel).tag_map(:,1)),2};
 
 dummy = [];
+
 ide = find(strcmp(variable, M_.endo_names));
+xflag = false;
+if isempty(ide)
+    % variable is not an endogenous variable
+    ide = find(strcmp(variable, M_.exo_names));
+    xflag = true;
+end
+
 if ~isempty(ide)
     if isfield(M_.pac.(pacmodel).equations.(eqtag), 'additive') && length(M_.pac.(pacmodel).equations.(eqtag).additive.vars)>1
         if ~isfield(M_.pac.(pacmodel).equations.(eqtag).additive, 'bgp')
@@ -41,6 +49,11 @@ if ~isempty(ide)
         end
         [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).additive.vars);
         if isvar
+            if xflag
+                assert(~M_.pac.(pacmodel).equations.(eqtag).additive.isendo(ie), 'Variable type issue.')
+            else
+                assert(M_.pac.(pacmodel).equations.(eqtag).additive.isendo(ie), 'Variable type issue.')
+            end
             M_.pac.(pacmodel).equations.(eqtag).additive.bgp(ie) = nonzeromean;
             return
         end
@@ -51,6 +64,11 @@ if ~isempty(ide)
         end
         [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).optim_additive.vars);
         if isvar
+            if xflag
+                assert(~M_.pac.(pacmodel).equations.(eqtag).optim_additive.isendo(ie), 'Variable type issue.')
+            else
+                assert(M_.pac.(pacmodel).equations.(eqtag).optim_additive.isendo(ie), 'Variable type issue.')
+            end
             M_.pac.(pacmodel).equations.(eqtag).optim_additive.bgp(ie) = nonzeromean;
             return
         end
@@ -61,11 +79,16 @@ if ~isempty(ide)
         end
         [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.vars);
         if isvar
+            if xflag
+                assert(~M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.isendo(ie), 'Variable type issue.')
+            else
+                assert(M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.isendo(ie), 'Variable type issue.')
+            end
             M_.pac.(pacmodel).equations.(eqtag).non_optimizing_behaviour.bgp(ie) = nonzeromean;
             return
         end
     end
     warning('%s is not an exogenous variable in equation %s.', variable, paceq)
 else
-    error('Endogenous variable %s is unknown.', variable)
+    error('Endogenous/Exogenous variable %s is unknown.', variable)
 end
