@@ -58,4 +58,10 @@ eparams.beta = 1;
 
 simulations.ey = dseries(NaN); // Reset residuals of the equation to NaN.
 
-estimate.nls('eq4y', eparams, simulations, dates('3Y'):simulations.dates(end));
+if ~isoctave
+    % Under Octave, estimate.nls (provided by matlab/+estimate/nls.m) is not
+    % accessible because there is a function which has the same name as the
+    % +estimate package, namely matlab/cli/estimate.m. This is a known Octave
+    % bug (https://savannah.gnu.org/bugs/?func=detailitem&item_id=46889).
+    estimate.nls('eq4y', eparams, simulations, dates('3Y'):simulations.dates(end));
+end
