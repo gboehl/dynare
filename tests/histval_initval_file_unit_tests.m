@@ -148,6 +148,11 @@ fprintf(fh, '%f ', y);
 fprintf(fh, '];\n');
 fclose(fh);
 
+if isoctave
+    % To ensure that Octave sees the newly-created data.m script
+    rehash
+end
+
 M.endo_nbr = 1;
 M.orig_endo_nbr = 1;
 M.endo_names = {'y'};
