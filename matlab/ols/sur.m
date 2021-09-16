@@ -170,7 +170,7 @@ for i = 1:maxit
     end
     beta0 = oo_.sur.(model_name).beta;
     if i == maxit
-        warning('maximum nuber of iterations reached')
+        warning('maximum number of iterations reached')
     end
 end
 
