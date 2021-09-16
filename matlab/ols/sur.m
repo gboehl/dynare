@@ -121,8 +121,8 @@ end
 %
 
 st = dbstack(1);
-if isoctave
-    % Workaround for bug in Octave 6, see https://savannah.gnu.org/bugs/?60531
+if isoctave && octave_ver_less_than('6.3.0')
+    % Workaround for https://savannah.gnu.org/bugs/?60531, fixed in 6.3.0
     st = st(2:end);
 end
 if ~isempty(st) && strcmp(st(1).name, 'surgibbs')
