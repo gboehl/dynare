@@ -1431,6 +1431,10 @@ in this case ``initval`` is used to specify the terminal conditions.
     steady state computation will still be triggered by subsequent
     commands (``stoch_simul``, ``estimation``...).
 
+    As such, ``initval`` allows specifying the initial instrument value for 
+    steady state finding when providing an analytical conditional steady state
+    file for ``ramsey_model``-computations.
+
     It is not necessary to declare 0 as initial value for exogenous
     stochastic variables, since it is the only possible value.
 
@@ -1776,8 +1780,9 @@ in this case ``initval`` is used to specify the terminal conditions.
           histval-block nevertheless takes the unlogged starting
           values.
         * In :comm:`Ramsey policy <ramsey_model>`, where it also
-          specifies the values of the endogenous states at which the
-          objective function of the planner is computed. Note that the
+          specifies the values of the endogenous states (including 
+          lagged exogenous) at which the objective function of the 
+          planner is computed. Note that the
           initial values of the Lagrange multipliers associated with
           the planner’s problem cannot be set (see
           :comm:`evaluate_planner_objective`).
@@ -2438,6 +2443,16 @@ blocks.
     arbitrary expressions are also allowed, but you have to enclose
     them inside parentheses.
 
+    The feasible range of ``periods`` is from 0 to the number of ``periods`` 
+    specified in ``perfect_foresight_setup``. 
+
+    .. warning:: Note that the first endogenous simulation period is period 1. 
+        Thus, a shock value specified for the initial period 0 may conflict with
+        (i.e. may overwrite or be overwritten by) values for the 
+        initial period specified with ``initval`` or ``endval`` (depending on 
+        the exact context). Users should always verify the correct setting 
+        of ``oo_.exo_simul`` after ``perfect_foresight_setup``. 
+
     *Example* (with scalar values)
 
     ::
@@ -2522,6 +2537,27 @@ blocks.
        var u; stderr 0.009;
        corr e, u = 0.8;
        var v, w = 2;
+       end;
+
+    |br| *In stochastic optimal policy context*   
+    
+    When computing conditional welfare in a ``ramsey_model`` or ``discretionary_policy`` 
+    context, welfare is conditional on the state values inherited by planner when making 
+    choices in the first period. The information set of the first period includes the 
+    respective exogenous shock realizations. Thus, their known value can be specified 
+    using the perfect foresight syntax. Note that i) all other values specified for 
+    periods than period 1 will be ignored and ii) the value of lagged shocks (e.g. 
+    in the case of news shocks) is specified with ``histval``.
+
+    *Example*
+
+    ::
+
+       shocks;
+        var u; stderr 0.008;
+        var u;
+        periods 1;
+        values 1;
        end;
 
     *Mixing deterministic and stochastic shocks*
@@ -10169,6 +10205,84 @@ with ``discretionary_policy`` or for optimal simple rules with ``osr``
 
     With ``discretionary_policy``, the objective function must be quadratic.
 
+.. command:: evaluate_planner_objective ;
+
+    This command computes, displays, and stores the value of the
+    planner objective function under Ramsey policy or discretion in 
+    ``oo_.planner_objective_value``. It will provide both unconditional welfare 
+    and welfare conditional on the initial (i.e. period 0) values of the endogenous 
+    and exogenous state variables inherited by the planner. In a deterministic context, 
+    the respective initial values are set using ``initval`` or ``histval`` (depending 
+    on the exact context). 
+
+    In a stochastic context, if no initial state values have 
+    been specified with ``histval``, their values are taken to be the steady state
+    values. Because conditional welfare is computed conditional on optimal
+    policy by the planner in the first endogenous period (period 1), it is conditional
+    on the information set in the period 1. This information set includes both the 
+    predetermined states inherited from period 0 (specified via ``histval`` for both 
+    endogenous and lagged exogenous states) as well as the period 1 values of
+    the exogenous shocks. The latter are specified using the perfect foresight syntax 
+    of the shocks-block. 
+
+    *Example (stochastic context)*
+
+        ::
+
+            var a ...;
+            varexo u;
+
+            model;
+            a = rho*a(-1)+u+u(-1);
+            ...
+            end;
+
+            histval;
+            u(0)=1;
+            a(0)=-1;
+            end;
+
+            shocks;
+            var u; stderr 0.008;
+            var u;
+            periods 1;
+            values 1;
+            end;
+
+            evaluate_planner_objective;
+
+
+    .. matvar:: oo_.planner_objective_value.unconditional
+
+    Scalar storing the value of unconditional welfare. In a perfect foresight context,
+    it corresponds to welfare in the long-run, approximated as welfare in the terminal 
+    simulation period. 
+
+    .. matvar:: oo_.planner_objective_value.conditional
+
+    In a perfect foresight context, this field will be a scalar storing the value of 
+    welfare conditional on the specified initial condition and zero initial Lagrange
+    multipliers. 
+
+    In a stochastic context, it will have two subfields:
+
+    .. matvar:: oo_.planner_objective_value.conditional.steady_initial_multiplier
+
+    Stores the value of the planner objective when the initial
+    Lagrange multipliers associated with the planner’s problem are set
+    to their steady state values (see :comm:`ramsey_policy`).
+
+    .. matvar:: oo_.planner_objective_value.conditional.zero_initial_multiplier
+
+    Stores the value of the planner objective when the initial
+    Lagrange multipliers associated with the planner’s problem are set
+    to 0, i.e. it is assumed that the planner exploits its
+    ability to surprise private agents in the first period of
+    implementing Ramsey policy. This value corresponds to the planner 
+    implementating optimal policy for the first time and committing not to
+    re-optimize in the future.
+
+
 Optimal policy under commitment (Ramsey)
 ----------------------------------------
 
@@ -10298,38 +10412,18 @@ conditions in the ``model``-block and a ``planner_objective`` as well as potenti
             i > 0;
             end;
 
-.. command:: evaluate_planner_objective ;
-
-    This command computes, displays, and stores the value of the
-    planner objective function
-    under Ramsey policy in ``oo_.planner_objective_value``, given the
-    initial values of the endogenous state variables. If not specified
-    with ``histval``, they are taken to be at their steady state
-    values. The result is a 1 by 2 vector, where the first entry
-    stores the value of the planner objective when the initial
-    Lagrange multipliers associated with the planner’s problem are set
-    to their steady state values (see :comm:`ramsey_policy`).
-
-    In contrast, the second entry stores the value of the planner
-    objective with initial Lagrange multipliers of the planner’s
-    problem set to 0, i.e. it is assumed that the planner exploits its
-    ability to surprise private agents in the first period of
-    implementing Ramsey policy. This is the value of implementating
-    optimal policy for the first time and committing not to
-    re-optimize in the future.
-
 .. command:: ramsey_policy [VARIABLE_NAME...];
              ramsey_policy (OPTIONS...) [VARIABLE_NAME...];
 
-    |br| This command is formally equivalent to the calling sequence
+    |br| This command is deprecated and formally equivalent to the calling sequence
 
         ::
 
             ramsey_model;
-            stoch_simul(order=1);
+            stoch_simul;
             evaluate_planner_objective;
 
-    It computes the first order approximation of the
+    It computes an approximation of the
     policy that maximizes the policy maker’s objective function
     subject to the constraints provided by the equilibrium path of the
     private economy and under commitment to this optimal policy. The
@@ -10342,20 +10436,9 @@ conditions in the ``model``-block and a ``planner_objective`` as well as potenti
     around this steady state of the endogenous variables and the
     Lagrange multipliers.
 
-    This first order approximation to the optimal policy conducted by
-    Dynare is not to be confused with a naive linear quadratic
-    approach to optimal policy that can lead to spurious welfare
-    rankings (see *Kim and Kim (2003)*). In the latter, the optimal
-    policy would be computed subject to the first order approximated
-    FOCs of the private economy. In contrast, Dynare first computes
-    the FOCs of the Ramsey planner’s problem subject to the nonlinear
-    constraints that are the FOCs of the private economy and only then
-    approximates these FOCs of planner’s problem to first
-    order. Thereby, the second order terms that are required for a
-    second-order correct welfare evaluation are preserved.
-
     Note that the variables in the list after the ``ramsey_policy``
-    command can also contain multiplier names. In that case, Dynare
+    or ``stoch_simul``-command can also contain multiplier names, but 
+    in a case-sensititve way (e.g. ``MULT_1``). In that case, Dynare
     will for example display the IRFs of the respective multipliers
     when ``irf>0``.
 
@@ -10376,16 +10459,12 @@ conditions in the ``model``-block and a ``planner_objective`` as well as potenti
         ``steady_state_model`` block or a ``_steadystate.m`` file. See
         below.
 
-    Note that only a first order approximation of the optimal Ramsey
-    policy is available, leading to a second-order accurate welfare
-    ranking (i.e. ``order=1`` must be specified).
-
     *Output*
 
     This command generates all the output variables of
     ``stoch_simul``. For specifying the initial values for the
     endogenous state variables (except for the Lagrange multipliers),
-    see :bck:`histval`.
+    see above.
 
 
     *Steady state*
@@ -10409,7 +10488,8 @@ Optimal policy under discretion
 
     It is possible to use the :comm:`estimation` command after the
     ``discretionary_policy`` command, in order to estimate the model with
-    optimal policy under discretion.
+    optimal policy under discretion and :comm:`evaluate_planner_objective`
+    to compute welfare.
 
     *Options*
 
