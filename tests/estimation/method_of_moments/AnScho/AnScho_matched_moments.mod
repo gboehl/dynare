@@ -62,9 +62,9 @@ matched_moments_orig = {
     [iINT  iINFL     ]  [-2  -1 ],  [2  4  ];
     [iINFL iINT      ]  [1   0 ],   [4  2  ];
     [iINFL iINT      ]  [1   0 ],   [4  2  ];
-    [iYGR  iINFL iINT]  [0  -3  5],   [2  4  6];
-    [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];
-    [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];
+%    [iYGR  iINFL iINT]  [0  -3  5],   [2  4  6];
+%    [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];
+%    [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];
 };
 
 % Removed duplicate moment conditions
@@ -114,7 +114,7 @@ matched_moments_no_duplicate= {
     [iINT  iINFL     ]  [-2  -1 ],  [2  4  ];
 %    [iINFL iINT      ]  [1   0 ],   [4  2  ];
 %    [iINFL iINT      ]  [1   0 ],   [4  2  ];
-    [iYGR  iINFL iINT]  [0  -3  5],   [2  4  6];
+%    [iYGR  iINFL iINT]  [0  -3  5],   [2  4  6];
 %    [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];
 %    [iINFL iYGR  iINT]  [-3  0  5],   [4  2  6];
 };
