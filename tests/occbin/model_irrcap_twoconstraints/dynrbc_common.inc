@@ -83,7 +83,7 @@ occbin_graph(noconstant) c erra lambdak k i a k;
     verbatim;
     c=oo_.occbin.endo_piecewise.c;
     end;
-    save('datasim','c');
+    save('datasim.mat','c');
     varobs c;
     
     occbin_solver(simul_periods=200,simul_maxit=200,simul_curb_retrench,simul_check_ahead_periods=200);
