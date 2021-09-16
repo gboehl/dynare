@@ -4,7 +4,7 @@ function dyn_waitbar_close(h)
 % octave and when console_mode=1
 
 %
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright (C) 2011-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,7 +22,7 @@ function dyn_waitbar_close(h)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 global options_
 
-if isoctave || options_.console_mode
+if options_.console_mode
     clear dyn_waitbar;
     diary on
     fprintf('\n');
