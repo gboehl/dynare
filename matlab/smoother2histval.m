@@ -188,11 +188,16 @@ for i = 1:length(invars)
     
     v = s((period-M_.maximum_lag+1):period);
     if ~isfield(opts, 'outfile')
-        j = strmatch(outvars{i}, M_.endo_names, 'exact');
-        if isempty(j)
-            error(['smoother2histval: output variable ' outvars{i} ' does not exist.'])
-        else
-            M_.endo_histval(j, :) = v(k);
+        j_endo = strmatch(outvars{i}, M_.endo_names, 'exact');
+        if ~isempty(j_endo) 
+            M_.endo_histval(j_endo, :) = v;
+        end
+        j_exo = strmatch(outvars{i}, M_.exo_names, 'exact');
+        if ~isempty(j_exo)
+            M_.exo_histval(j_exo, :) = v;
+        end
+        if isempty(j_endo) && isempty(j_exo)
+            error(['smoother2histval: output variable ' outvars{i} ' does not exist.'])            
         end
     else
         data(:, i) = v';
