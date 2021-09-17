@@ -31,11 +31,11 @@ else
     incidence = 0;
 end
 if static_
-    fprintf('                                          Informations about %s (static model)\n',M_.fname);
+    fprintf('                                          Information about %s (static model)\n',M_.fname);
     block_structre_str = 'block_structure_stat';
     nb_leadlag = 1;
 else
-    fprintf('                                          Informations about %s (dynamic model)\n',M_.fname);
+    fprintf('                                          Information about %s (dynamic model)\n',M_.fname);
     block_structre_str = 'block_structure';
     nb_leadlag = 3;
 end
@@ -69,7 +69,7 @@ if isfield(M_,block_structre_str)
     fprintf('===============================================================================================================\n');
     fprintf('\n');
     if static_
-        fprintf('%-30s %s','the variable','is used in equations Contemporaneously');
+        fprintf('%-30s %s','the variable','is used in the following equations contemporaneously');
         if(size(block_structure.incidence.sparse_IM,1)>0)
             IM=sortrows(block_structure.incidence.sparse_IM,2);
         else
@@ -88,9 +88,9 @@ if isfield(M_,block_structre_str)
     else
         for k=1:M_.maximum_endo_lag+M_.maximum_endo_lead+1
             if(k==M_.maximum_endo_lag+1)
-                fprintf('%-30s %s','the variable','is used in equations Contemporaneously');
+                fprintf('%-30s %s','the variable','is used in the following equations Contemporaneously');
             elseif(k<M_.maximum_endo_lag+1)
-                fprintf('%-30s %s %d','the variable','is used in equations with lag ',M_.maximum_endo_lag+1-k);
+                fprintf('%-30s %s %d','the variable','is used in the following equations with lag ',M_.maximum_endo_lag+1-k);
             else
                 fprintf('%-30s %s %d','the variable','is used in equations with lead ',k-(M_.maximum_endo_lag+1));
             end
