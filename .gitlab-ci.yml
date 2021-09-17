@@ -156,7 +156,6 @@ test_octave:
       - tests/run_test_octave_output.txt
     when: always
   needs: [ "build_binaries" ]
-  when: manual
 
 test_dynare++:
   stage: test
