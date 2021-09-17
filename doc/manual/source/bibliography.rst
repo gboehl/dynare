@@ -15,6 +15,8 @@ Bibliography
 * Baxter, Marianne and Robert G. King (1999): “Measuring Business Cycles: Approximate Band-pass Filters for Economic Time Series,” *Review of Economics and Statistics*, 81(4), 575–593.
 * Born, Benjamin and Johannes Pfeifer (2014): “Policy risk and the business cycle”, *Journal of Monetary Economics*, 68, 68-85.
 * Boucekkine, Raouf (1995): “An alternative methodology for solving nonlinear forward-looking models,” *Journal of Economic Dynamics and Control*, 19, 711–734.
+* Brayton, Flint and Peter Tinsley (1996): "A Guide to FRB/US: A Macroeconomic Model of the United States", *Finance and Economics Discussion Series*, 1996-42.
+* Brayton, Flint, Morris Davis and Peter Tulip (2000): "Polynomial Adjustment Costs in FRB/US", *Unpublished manuscript*.
 * Brooks, Stephen P., and Andrew Gelman (1998): “General methods for monitoring convergence of iterative simulations,” *Journal of Computational and Graphical Statistics*, 7, pp. 434–455.
 * Cardoso, Margarida F., R. L. Salcedo and S. Feyo de Azevedo (1996): “The simplex simulated annealing approach to continuous non-linear optimization,” *Computers & Chemical Engineering*, 20(9), 1065-1080.
 * Chib, Siddhartha and Srikanth Ramamurthy (2010): “Tailored randomized block MCMC methods with application to DSGE models,” *Journal of Econometrics*, 155, 19–38.
