@@ -1007,3 +1007,10 @@ if isoctave
 else
     warning on
 end
+
+if isoctave && isfield(options_, 'prior_restrictions') && ...
+   isfield(options_.prior_restrictions, 'routine')
+    % Octave crashes if it tries to save function handles (to the _results.mat file)
+    % See https://savannah.gnu.org/bugs/?43215
+    options_.prior_restrictions.routine = [];
+end
