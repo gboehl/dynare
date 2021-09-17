@@ -53,13 +53,14 @@ class DynareLexer(RegexLexer):
         "dynare_version","write_latex_definitions","write_latex_parameter_table",
         "write_latex_prior_table","collect_latex_files","prior_function",
         "posterior_function","generate_trace_plots","evaluate_planner_objective",
-        "occbin_setup","occbin_solver","occbin_write_regimes","occbin_graph","method_of_moments")
+        "occbin_setup","occbin_solver","occbin_write_regimes","occbin_graph","method_of_moments",
+        "var_model","trend_component_model","var_expectation_model","pac_model")
 
     report_commands = ("report","addPage","addSection","addGraph","addTable",
         "addSeries","addParagraph","addVspace","write","compile")
 
     operators = (
-        "STEADY_STATE","EXPECTATION")
+        "STEADY_STATE","EXPECTATION","var_expectation","pac_expectation")
 
     macro_dirs = (
         "@#includepath", "@#include", "@#define", "@#if",

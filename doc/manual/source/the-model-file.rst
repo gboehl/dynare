@@ -2712,7 +2712,7 @@ blocks.
 .. block:: heteroskedastic_shocks ;
            heteroskedastic_shocks(overwrite);
 
-    |br| In *estimation context*, it implements heteroskedastic filters, where the standard error of shocks may unexpectedly change in every period. 
+    |br| In *estimation context*, it implements heteroskedastic filters, where the standard error of shocks may unexpectedly change in every period.
     The standard deviation of shocks may be either provided directly or set/modified in each observed period by a scale factor.
     If ``std0`` is the usual standard error for ``shock1``, then:
 
@@ -3802,7 +3802,7 @@ corresponding to a random draw of the shocks.
 
 The main algorithm for solving stochastic models relies on a Taylor
 approximation, up to third order, of the expectation functions (see
-*Judd (1996)*, *Collard and Juillard (2001a, 2001b)*, and 
+*Judd (1996)*, *Collard and Juillard (2001a, 2001b)*, and
 *Schmitt-Grohé and Uríbe (2004)*). The details of the
 Dynare implementation of the first order solution are given in
 *Villemot (2011)*. Such a solution is computed using the
@@ -4073,7 +4073,7 @@ Computing the stochastic solution
        requested (i.e. ``periods`` :math:`>` 0). Note that if this
        option is greater than 1, the additional series will not be
        used for computing the empirical moments but will simply be
-       saved in binary form to the file ``FILENAME_simul`` in the 
+       saved in binary form to the file ``FILENAME_simul`` in the
        ``FILENAME/Output``-folder. Default:
        ``1``.
 
@@ -4131,9 +4131,9 @@ Computing the stochastic solution
        third order its generalization by *Andreasen,
        Fernández-Villaverde and Rubio-Ramírez (2018)* is used.
        Not available above third order. When specified, theoretical moments
-       are based on the pruned state space, i.e. the computation of second moments 
-       uses all terms as in *Andreasen, Fernández-Villaverde and Rubio-Ramírez (2018), page 10* 
-       as opposed to simply providing a second-order accurate result based on the 
+       are based on the pruned state space, i.e. the computation of second moments
+       uses all terms as in *Andreasen, Fernández-Villaverde and Rubio-Ramírez (2018), page 10*
+       as opposed to simply providing a second-order accurate result based on the
        linear solution as in *Kim, Kim, Schaumburg and Sims (2008)*.
 
     .. option:: partial_information
@@ -4555,7 +4555,7 @@ which is described below.
        the endogenous variables (such as a ZLB on the nominal interest
        rate or a model with irreversible investment). For specifying the
        necessary ``mcp``-tag, see :opt:`lmmcp`.
-       
+
 
 Typology and ordering of variables
 ----------------------------------
@@ -4806,7 +4806,7 @@ elements are never repeated (for more details, see the description of
 Occasionally binding constraints (OCCBIN)
 =========================================
 
-Dynare allows simulating models with up to two occasionally-binding constraints by 
+Dynare allows simulating models with up to two occasionally-binding constraints by
 relying on a piecewise linear solution as in *Guerrieri and Iacoviello (2015)*.
 It also allows estimating such models employing either the inversion filter of
 *Cuba-Borda, Guerrieri, Iacoviello, and Zhong (2019)* or the piecewise Kalman filter of
@@ -5789,7 +5789,7 @@ block decomposition of the model (see :opt:`block`).
        Do not check for stochastic singularity in first period. If used, `ESTIMATION CHECKS`
        does not return an error if the check fails only in first observation.
        This should only be used when observing stock variables (e.g. capital) in first period, on top of their associated flow (e.g. investment).
-       Using this option may lead to a crash or provide undesired/wrong results for badly specified problems 
+       Using this option may lead to a crash or provide undesired/wrong results for badly specified problems
        (e.g. the additional variable observed in first period is not predetermined).
 
        For advanced use only.
@@ -5849,8 +5849,8 @@ block decomposition of the model (see :opt:`block`).
 
     .. option:: mh_replic = INTEGER
 
-       Number of replications for each chain of the Metropolis-Hastings algorithm. 
-       The number of draws should be sufficient to achieve convergence of the MCMC and 
+       Number of replications for each chain of the Metropolis-Hastings algorithm.
+       The number of draws should be sufficient to achieve convergence of the MCMC and
        to meaningfully compute posterior objects. Default: ``20000``.
 
     .. option:: sub_draws = INTEGER
@@ -5984,7 +5984,7 @@ block decomposition of the model (see :opt:`block`).
        Name of the file containing previous value for the mode. When
        computing the mode, Dynare stores the mode (``xparam1``) and
        the hessian (``hh``, only if ``cova_compute=1``) in a file
-       called ``MODEL_FILENAME_mode.mat`` in the ``FILENAME/Output``-folder. 
+       called ``MODEL_FILENAME_mode.mat`` in the ``FILENAME/Output``-folder.
        After a successful run of
        the estimation command, the ``mode_file`` will be disabled to
        prevent other function calls from implicitly using an updated
@@ -6231,44 +6231,44 @@ block decomposition of the model (see :opt:`block`).
 
     .. option:: mh_initialize_from_previous_mcmc
 
-       This option allows to pick initial values for new MCMC from a previous one, 
-       where the model specification, the number of estimated parameters, 
+       This option allows to pick initial values for new MCMC from a previous one,
+       where the model specification, the number of estimated parameters,
        (some) prior might have changed (so a situation where ``load_mh_file`` would not work).
-       If an additional parameter is estimated, it is automatically initialized from prior_draw. 
+       If an additional parameter is estimated, it is automatically initialized from prior_draw.
        Note that, if this option is used to skip the optimization step, you should use a sampling method which does not require
        a proposal density, like slice. Otherwise, optimization should always be done beforehand or a mode file with
        an appropriate posterior covariance matrix should be used.
 
     .. option:: mh_initialize_from_previous_mcmc_directory = FILENAME
 
-       If ``mh_initialize_from_previous_mcmc`` is set, users must provide here 
+       If ``mh_initialize_from_previous_mcmc`` is set, users must provide here
        the path to the standard FNAME folder from where to load prior definitions and
-       last MCMC values to be used to initialize the new MCMC. 
+       last MCMC values to be used to initialize the new MCMC.
 
-       Example: if previous project directory is ``/my_previous_dir`` and FNAME is ``mymodel``, 
-       users should set the option as 
+       Example: if previous project directory is ``/my_previous_dir`` and FNAME is ``mymodel``,
+       users should set the option as
 
        ``mh_initialize_from_previous_mcmc_directory = '/my_previous_dir/mymodel'``
 
-       Dynare will then look for the last record file into 
+       Dynare will then look for the last record file into
 
        ``/my_previous_dir/mymodel/metropolis/mymodel_mh_history_<LAST>.mat``
 
-       and for the prior definition file into 
+       and for the prior definition file into
 
        ``/my_previous_dir/mymodel/prior/definition.mat``
 
     .. option:: mh_initialize_from_previous_mcmc_record = FILENAME
 
        If ``mh_initialize_from_previous_mcmc`` is set, and whenever the standard file or directory tree
-       is not applicable to load initial values, users may directly provide here 
+       is not applicable to load initial values, users may directly provide here
        the path to the record file from which to load
        values to be used to initialize the new MCMC.
 
     .. option:: mh_initialize_from_previous_mcmc_prior = FILENAME
 
        If ``mh_initialize_from_previous_mcmc`` is set, and whenever the standard file or directory tree
-       is not applicable to load initial values, users may directly provide here 
+       is not applicable to load initial values, users may directly provide here
        the path to the prior definition file, to get info in the priors used in previous MCMC.
 
     .. option:: optim = (NAME, VALUE, ...)
@@ -6952,14 +6952,14 @@ block decomposition of the model (see :opt:`block`).
     .. option:: smoother_redux
 
        Triggers a faster computation of the smoothed endogenous variables and shocks for large models.
-       It runs the smoother only for the state variables (i.e. with the same representation used for 
+       It runs the smoother only for the state variables (i.e. with the same representation used for
        likelihood computations) and computes the remaining variables ex-post.
        Static unobserved objects (filtered, smoothed, updated, k-step ahead) are recovered, but there are
-       exceptions to a full recovery, depending on how static unobserved variables depend on the restricted 
-       state space adopted. For example, lagged shocks which are ONLY used to recover NON-observed static 
-       variables will not be recovered).  
+       exceptions to a full recovery, depending on how static unobserved variables depend on the restricted
+       state space adopted. For example, lagged shocks which are ONLY used to recover NON-observed static
+       variables will not be recovered).
        For such exceptions, only the following output is provided:
-       
+
            ``FilteredVariablesKStepAhead``: will be fully recovered
 
            ``SmoothedVariables``, ``FilteredVariables``, ``UpdatedVariables``: recovered for all periods beyond period ``d+1``,
@@ -7251,11 +7251,11 @@ block decomposition of the model (see :opt:`block`).
 
     .. option:: analytic_derivation
 
-       Triggers estimation with analytic gradient at ``order=1``. 
-       The final hessian at the mode is also computed analytically. 
-       Only works for stationary models without missing observations, 
-       i.e. for ``kalman_algo<3``. Optimizers that rely on analytic 
-       gradients are ``mode_compute=1,3,4,5,101``.  
+       Triggers estimation with analytic gradient at ``order=1``.
+       The final hessian at the mode is also computed analytically.
+       Only works for stationary models without missing observations,
+       i.e. for ``kalman_algo<3``. Optimizers that rely on analytic
+       gradients are ``mode_compute=1,3,4,5,101``.
 
     .. option:: ar = INTEGER
 
@@ -10087,19 +10087,19 @@ the :comm:`bvar_forecast` command.
 
 .. block:: filter_initial_state ;
 
-    |br| This block specifies the initial values of the endogenous states at the beginning 
-    of the Kalman filter recursions. That is, if the Kalman filter recursion starts with 
-    time t=1 being the first observation, this block provides the state estimate at time 0 
-    given information at time 0, :math:`E_0(x_0)`. If nothing is specified, the initial condition is assumed to be at 
+    |br| This block specifies the initial values of the endogenous states at the beginning
+    of the Kalman filter recursions. That is, if the Kalman filter recursion starts with
+    time t=1 being the first observation, this block provides the state estimate at time 0
+    given information at time 0, :math:`E_0(x_0)`. If nothing is specified, the initial condition is assumed to be at
     the steady state (which is the unconditional mean for a stationary model).
 
-    This block is terminated by ``end;``. 
-    
+    This block is terminated by ``end;``.
+
     Each line inside of the block should be of the form::
 
         VARIABLE_NAME(INTEGER)=EXPRESSION;
 
-    ``EXPRESSION`` is any valid expression returning a numerical value and can contain parameter values. This 
+    ``EXPRESSION`` is any valid expression returning a numerical value and can contain parameter values. This
     allows specifying relationships that will be honored during estimation. ``INTEGER`` refers to the lag
     with which a variable appears. By convention in Dynare, period 1 is the first period. Going backwards in time,
     the first period before the start of the simulation is period 0, then period -1, and so on.
@@ -10628,8 +10628,8 @@ Optimal policy under discretion
     under discretion. The algorithm implemented is essentially an LQ
     solver, and is described by *Dennis (2007)*.
 
-    You must ensure that your objective is quadratic. Regarding the model, it must 
-    either be linear or solved at first order with an analytical steady state provided. 
+    You must ensure that your objective is quadratic. Regarding the model, it must
+    either be linear or solved at first order with an analytical steady state provided.
     In the first case, you should set the ``linear`` option of the
     ``model`` block.
 
@@ -12819,6 +12819,576 @@ form:
             // annualized growth rate of y
             gya = ya/ya(-4)-1;
             end;
+
+
+.. _semi-strutural:
+
+Semi-structural models
+======================
+
+Dynare provides tools for semi-structural models, in the vain of the FRB/US
+model (see *Brayton and Tinsley (1996)*), where expectations are not necessarily
+model consistent but based on a VAR auxiliary model. In the following, it is
+assumed that each equation is written as ``VARIABLE = EXPRESSION`` or
+``T(VARIABLE) = EXPRESSION`` where ``T(VARIABLE)`` stands for a transformation
+of an endogenous variable (``log`` or ``diff``). This representation, where each
+equation determines the endogenous variable on the LHS, can be exploited when
+simulating the model (see algorithms 12 and 14 in :ref:`solve_algo <solvalg>`)
+and is mandatory to define auxiliary models used for computing expectations (see
+below).
+
+
+Auxiliary models
+----------------
+
+The auxiliary models defined in this section are linear backward-looking models
+that can be rewritten as a VAR(1). These models are used to form expectations.
+
+.. command:: var_model (OPTIONS...);
+
+   |br| Picks equations in the ``model`` block to form a VAR model. This model can
+   be used as an auxiliary model in ``var_expectation_model`` or
+   ``pac_model``. It must be of the following form:
+
+    .. math ::
+
+        Y_t = \mathbf{c} + \sum_{i=1}^p A_i Y_{t-i} + \varepsilon_t
+
+   or
+
+    .. math ::
+
+        A_0 Y_t = \mathbf{c} + \sum_{i=1}^p A_i Y_{t-i} + \varepsilon_t
+
+   if the VAR is structural (see below), where :math:`Y_t` and
+   :math:`\varepsilon_t` are :math:`n\times 1` vectors, :math:`\mathbf{c}` is a
+   :math:`n\times 1` vector of parameters, :math:`A_i` (:math:`i=0,\ldots,p`)
+   are :math:`n\times n` matrices of parameters, and :math:`A_0` is non
+   singular square matrix. Vector :math:`\mathbf{c}` and matrices :math:`A_i`
+   (:math:`i=0,\ldots,p`) are set by Dynare by parsing the equations in the
+   ``model`` block. Then, Dynare builds a VAR(1) model for :math:`\mathcal{Y}_t =
+   (1, Y_t, \ldots, Y_{t-p+1})'` as:
+
+    .. math ::
+
+        \begin{pmatrix}
+        1\\
+        Y_t\\
+        Y_{t-1}\\
+        \vdots\\
+        \vdots\\
+        Y_{t-p+1}
+        \end{pmatrix}
+        =
+        \underbrace{
+        \begin{pmatrix}
+        1 & 0_n' & \ldots & \ldots & \ldots & 0_n'\\
+        \mathbf{c} & A_1 & A_2 & \ldots & \ldots & A_p\\
+        0_n & I_n & O_n & \ldots & \ldots & O_n\\
+        0_n & O_n & I_n & O_n & \ldots & O_n\\
+        \vdots & O_n & \ddots  & \ddots & \ddots & \vdots \\
+        0_n & O_n & \ldots & O_n & I_n & O_n
+        \end{pmatrix}}_{\mathcal{C}}
+        \begin{pmatrix}
+        1\\
+        Y_{t-1}\\
+        Y_{t-2}\\
+        \vdots\\
+        \vdots\\
+        Y_{t-p}
+        \end{pmatrix}
+        +
+        \begin{pmatrix}
+        0\\
+        \varepsilon_t\\
+        0_n\\
+        \vdots\\
+        \vdots\\
+        0_n
+        \end{pmatrix}
+
+   If the VAR does not have a constant, we remove the first line of the system
+   and the first column of the companion matrix :math:`\mathcal{C}.` Dynare
+   only saves the companion in ``oo_.var.MODEL_NAME.CompanionMatrix``, since that is
+   the only information required to compute the expectations.
+          
+   *Options*
+
+    .. option:: model_name = STRING
+
+    Name of the VAR model, will be referenced in ``var_expectation_model`` or ``pac_model`` as an auxiliary model.
+
+    .. option:: eqtags = [QUOTED_STRING[, QUOTED_STRING[, ...]]]
+
+    List of equations in the ``model`` block (referenced using the equation tag ``name``) used to build the VAR model.
+
+    .. option:: structural
+
+    By default the VAR model is not structural, *i.e.* each equation must
+    contain exactly one contemporaneous variable (on the LHS). If the
+    ``structural`` option is provided then any variable defined in the system
+    can appear at time :math:`t` in each equation. Internally Dynare will
+    rewrite this model as a reduced form VAR (by inverting matrix :math:`A_0`).
+
+   *Example*
+
+       ::
+
+          var_model(model_name = toto, eqtags = [ 'X', 'Y', 'Z' ]);
+
+          model;
+
+          [ name = 'X' ]
+          x = a*x(-1) + b*x(-2) + c*z(-2) + e_x;
+
+          [ name = 'Z' ]
+          z = f*z(-1) + e_z;
+
+          [ name = 'Y' ]
+          y = d*y(-2) + e*z(-1) + e_y;
+
+          end;
+
+
+.. command:: trend_component_model (OPTIONS...);
+
+   |br| Picks equations in the model block to form a trend component model. This
+   model can be used as an auxiliary model in ``var_expectation_model`` or
+   ``pac_model``. It must be of the following form:
+
+    .. math ::
+
+         \begin{cases}
+           \Delta X_t &= A_0 (X_{t-1}-C_0 Z_{t-1}) + \sum_{i=1}^p A_i \Delta X_{t-i} + \varepsilon_t\\
+           Z_t &= Z_{t-1} + \eta_t
+         \end{cases}
+
+   where :math:`X_t` and :math:`Z_t` are :math:`n\times 1` and :math:`m\times 1` vectors of endogenous variables, :math:`\varepsilon_t` and :math:`\eta_t` are :math:`n\times 1` and :math:`m\times 1` vectors of exogenous variables, :math:`A_i` (:math:`i=0,\ldots,p`) are :math:`n\times n` matrices of parameters, and :math:`C_0` is a :math:`n\times m` matrix. This model can also be cast into a VAR(1) model by first rewriting it in levels. Let :math:`Y_t = (X_t',Z_t')'` and :math:`\zeta_t = (\varepsilon_t',\eta_t')'`, we have:
+
+    .. math ::
+
+            Y_t = \sum_{i=1}^{p+1} B_i Y_{t-i} + \zeta_t
+
+   with
+
+    .. math ::
+
+             B_1 = \begin{pmatrix}
+             I_n+A_0+A_1 & -\Lambda\\
+             O_{m,n} & I_m
+             \end{pmatrix}
+
+   where :math:`\Lambda = A_0C_0`,
+
+    .. math ::
+
+             B_i = \begin{pmatrix}
+             A_i-A_{i-1} & O_{n,m}\\
+             O_{m,n} & O_m
+             \end{pmatrix}
+
+   for :math:`i=2,\ldots,p`, and
+
+    .. math ::
+
+             B_{p+1} = \begin{pmatrix}
+             -A_p & O_{n,m}\\
+             O_{m,n} & O_m
+             \end{pmatrix}
+
+   This VAR(p+1) in levels can be rewritten as a VAR(1) model, the companion matrix will
+   be stored in ``oo_.trend_component.MODEL_NAME.CompanionMatrix``.
+
+   *Options*
+
+    .. option:: model_name = STRING
+
+    Name of the trend component model, will be referenced in ``var_expectation_model`` or ``pac_model`` as an auxiliary model.
+
+    .. option:: eqtags = [QUOTED_STRING[, QUOTED_STRING[, ...]]]
+
+    List of equations in the ``model`` block (referenced using the equation tag ``name``) used to build the trend component model.
+
+    .. option:: targets = [QUOTED_STRING[, QUOTED_STRING[, ...]]]
+
+    List of targets, corresponding to the variables in vector :math:`Z_t`, referenced using the equation tag ``name``) of the associated equation in the ``model`` block. ``target`` must be a subset of ``eqtags``.
+
+   *Example*
+
+       ::
+
+          trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], targets=['eq:x1bar', 'eq:x2bar']);
+
+          model;
+
+          [name='eq:x1', data_type='nonstationary']
+          diff(x1) = a_x1_0*(x1(-1)-x1bar(-1))+a_x1_0_*(x2(-1)-x2bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;
+
+          [name='eq:x2', data_type='nonstationary']
+          diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;
+
+          [name='eq:x1bar', data_type='nonstationary']
+          x1bar = x1bar(-1) + ex1bar;
+
+          [name='eq:x2bar', data_type='nonstationary']
+          x2bar = x2bar(-1) + ex2bar;
+
+          end;
+
+VAR expectations
+----------------
+
+Suppose we wish to forecast a variable :math:`y_t` and that
+:math:`y_t` is an element of vector of variables :math:`\mathcal{Y}_t` whose law of
+motion is described by a VAR(1) model :math:`\mathcal{Y}_t =
+\mathcal{C}\mathcal{Y}_t+\epsilon_t`. More generally, :math:`y_t` may
+be a linear combination of the scalar variables in
+:math:`\mathcal{Y}_t`. Let the vector :math:`\alpha` be such that
+:math:`y_t = \alpha'\mathcal{Y}_t` (:math:`\alpha` is a selection
+vector if :math:`y_t` is a variable in :math:`\mathcal{Y}_t`, *i.e.* a
+column of an identity matrix, or an arbitrary vector defining the
+weights of a linear combination). Then the best prediction, in the sense of the minimisation of the RMSE, for
+:math:`y_{t+h}` given the information in :math:`t-s` (we observe all the variables up to time :math:`t-s`) is:
+
+   .. math ::
+
+      y_{t+h|t-s} = \mathbb E[y_{t+h}|\mathcal{Y}_{\underline{t-s}}] = \alpha\mathcal{C}^{h+s} \mathcal{Y}_{t-s}
+
+In a semi-structural model, variables appearing in :math:`t+h` (*e.g.*
+expected output gap in an IS curve or expected inflation in a Phillips
+curve) will be replaced by the expectation implied by an auxiliary VAR
+model. Another use case is for the computation of permanent
+incomes. Typically, consumption will depend on something like:
+
+   .. math ::
+
+      \sum_{h=0}^{\infty} \beta^h y_{t+h}
+
+The conditional expectation of this variable can be evaluated based on
+the same auxilary model:
+
+   .. math ::
+
+      \mathbb E \left[\sum_{h=0}^{\infty} \beta^h y_{t+h}\Biggl| \mathcal{Y}_{\underline{t-s}}\right] = \alpha \mathcal{C}^s(I-\mathcal{C})^{-1}\mathcal{Y}_{t-s}
+
+More generally, it is possible to consider finite discounted sums.
+
+.. command:: var_expectation_model (OPTIONS...);
+
+   |br| Declares a model used to forecast an endogenous variable or linear
+   combination of variables in :math:`t+h`. More generally, the same model can
+   be used to forecast the discounted flow of a variable or a linear expression of variables:
+
+   .. math ::
+
+             \sum_{h=a}^b \mathbb \beta^{h-\tau}E_{t-\tau}[y_{t+h}]
+
+   where :math:`(a,b)\in\mathbb N^2` with :math:`a<b`, :math:`\beta\in(0,1]` is a discount factor, :math:`\tau` is a finite positive integer.
+
+   *Options*
+
+    .. option:: model_name = STRING
+
+    Name of the VAR based expectation model, will be referenced in the ``model`` block.
+
+    .. option:: auxiliary_model = STRING
+
+    Name of the associated auxiliary model, defined with ``var_model`` or ``trend_component_model``.
+
+    .. option:: expression = STRING | QUOTED_STRING
+
+    Name of the variable or expression (linear combination of variables) to be expected. The quotes are mandatory if an expression is expected.
+
+    .. option:: discount = PARAMETER_NAME | DOUBLE
+
+    Discount factor (:math:`\beta`).
+
+    .. option:: horizon = INTEGER | [INTEGER:INTEGER]
+
+    The horizon of prevision (:math:`h`), or the range of periods over which the discounted sum is expected (the upper bound can be ``Ìnf``).
+
+    .. option:: time_shift = INTEGER
+
+    Shift of the information set (:math:`\tau`), default value is 0.
+
+
+.. operator:: var_expectation (NAME_OF_VAR_EXPECTATION_MODEL);
+
+   |br| This operator is used instead of a leaded variable, e.g. ``X(1)``, in the
+   ``model`` block to substitute a model-consistent forecast with a forecast
+   based on a VAR model.
+
+  *Example*
+
+      ::
+
+          var_model(model_name=toto, eqtags=['X', 'Y', 'Z']);
+
+          var_expectation_model(model_name=varexp, expression=x, auxiliary_model_name=toto, horizon=1, discount=beta);
+
+
+          model;
+
+          [name='X']
+          x = a*x(-1) + b*x(-2) + c*z(-2) + e_x;
+
+          [name='Z']
+          z = f*z(-1) + e_z;
+
+          [name='Y']
+          y = d*y(-2) + e*z(-1) + e_y;
+
+          foo = .5*foo(-1) + var_expectation(varexp);
+
+          end;
+
+      In this example ``var_expectation(varexp)`` stands for the one step ahead expectation of ``x``, as a replacement for ``x(1)``.
+
+
+.. matcomm::  var_expectation.initialize(NAME_OF_VAR_EXPECTATION_MODEL);
+
+  |br| Initialise the VAR expectation model, by building the companion matrix of the auxiliary model.
+
+  |br|
+
+.. matcomm::  var_expectation.update(NAME_OF_VAR_EXPECTATION_MODEL);
+
+  |br| Update VAR expectation model reduced form parameters.
+
+  |br|
+
+
+  *Example (continued)*
+
+      ::
+
+          var_expectation.initialize('varexp');
+
+          var_expectation.update('varexp');
+
+PAC equation
+------------
+
+In its simplest form, a PAC equation breaks down changes in a variable of
+interest :math:`y` into three contributions: (*i*) the lagged deviation from a
+target :math:`y^{\star}`, (*ii*) the lagged changes in the variable :math:`y`,
+and (*iii*) the expected changes in the target :math:`y^{\star}`:
+
+  .. math ::
+
+      \Delta y_t = a_0(y_{t-1}^{\star}-y_{t-1}) + \sum_{i=1}^{m-1} a_i \Delta y_{t-i} + \sum_{i=0}^{\infty} d_i \Delta y^{\star}_{t+i}  +\varepsilon_t
+
+*Brayton et alii (2000)* shows how such an equation can be derived from the
+minimisation of a quadratic cost function penalising deviations from the
+target and non-smoothness of :math:`y`. They also show that the parameters
+:math:`(d_i)_{i\in\mathbb N}` are non linear functions of the :math:`m`
+parameters :math:`a_i`. To simulate or estimate this equation we need to figure
+out how to determine the expected changes of the target. This can be done as in
+the previous section using VAR based expectations, or considering model
+consistent expectations (MCE).
+
+To ensure that the endogenous variable :math:`y` is equal to its target
+:math:`y^{\star}` in the (deterministic) long run, *i.e.* that the error
+correction is zero in the long run, we can optionally add a growth neutrality
+correction to this equation. Suppose that the long run growth rate, for
+:math:`y` and :math:`y^{\star}`, then in the long run (assuming that the data
+are in logs) we must have:
+
+  .. math ::
+
+      g = a_0(y^{\star}_{\infty}-y_{\infty}) + g\sum_{i=1}^{m-1} a_i + g\sum_{i=0}^{\infty} d_i
+
+      \Leftrightarrow a_0(y^{\star}_{\infty}-y_{\infty}) = \left(1-\sum_{i=1}^{m-1} a_i-\sum_{i=0}^{\infty} d_i\right) g
+
+
+Unless additional restrictions are placed on the coefficients
+:math:`(a_i)_{i=0}^{m-1}`, i.e. on the form of the minimised cost function, there is
+no reason for the right-hand side to be zero. Instead, we can optionally add the
+right hand side to the PAC equation, to ensure that the error correction term is
+asymptotically zero.
+
+The PAC equations can be generalised by adding exogenous variables. This can be
+done in two, non exclusive, manners. We can replace the PAC equation by a convex
+combination of the original PAC equation (derived from an optimisation program)
+and a linear expression involving exogenous variables (referred as the rule of thumb part as
+opposed to the part derived from the minimisation of a cost function):
+
+  .. math ::
+
+      \Delta y_t = \lambda \left(a_0(y_{t-1}^{\star}-y_{t-1}) + \sum_{i=1}^{m-1} a_i \Delta y_{t-i} + \sum_{i=0}^{\infty} d_i \Delta y^{\star}_{t+i}\right) + (1-\lambda)\gamma'X_t +\varepsilon_t
+
+where :math:`\lambda\in[0,1]` is the weight of the pure PAC equation. Or we can
+simply add the exogenous variables to the PAC equation (without the weight
+:math:`\lambda`):
+
+  .. math ::
+
+      \Delta y_t = a_0(y_{t-1}^{\star}-y_{t-1}) + \sum_{i=1}^{m-1} a_i \Delta y_{t-i} + \sum_{i=0}^{\infty} d_i \Delta y^{\star}_{t+i} + \gamma'X_t +\varepsilon_t
+
+
+.. command:: pac_model (OPTIONS...);
+
+   |br| Declares a PAC model. A `.mod` file can have more than one PAC model or PAC equation, but each PAC equation must be associated to a different PAC model.
+
+   *Options*
+
+    .. option:: model_name = STRING
+
+    Name of the PAC model, will be referenced in the ``model`` block.
+
+    .. option:: auxiliary_model = STRING
+
+    Name of the associated auxiliary model, defined with ``var_model`` or
+    ``trend_component_model``, to compute the VAR based expectations for the
+    expected changes in the target, *i.e.* to evaluate
+    :math:`\sum_{i=0}^{\infty} d_i \Delta y^{\star}_{t+i}`. The infinite sum
+    will then be replaced by a linear combination of the variables involved in
+    the companion representation of the auxiliary model. The weights defining
+    the linear combination are nonlinear functions of the
+    :math:`(a_i)_{i=0}^{m-1}` coefficients in the PAC equation. This option is
+    not mandatory, if absent Dynare understands that the expected changes of the
+    target have to be computed under the MCE assumption. This is done by
+    rewriting recursively the infinite sum as shown in equation 10 of *Brayton et alii (2000)*.
+
+    .. option:: discount = PARAMETER_NAME | DOUBLE
+
+    Discount factor (:math:`\beta`) appearing in the definition of the cost function.
+
+    .. option:: growth = PARAMETER_NAME | VARIABLE_NAME | EXPRESSION | DOUBLE
+
+    If present a growth neutrality correction is added to the PAC equation. The
+    user must ensure that the provided value (or long term level if a variable
+    or expression is given) is consistent with the asymptotic growth rate of the
+    endogenous variable.
+
+
+.. operator:: pac_expectation (NAME_OF_PAC_MODEL);
+
+   |br| This operator is used instead of the infinite sum,
+   :math:`\sum_{i=0}^{\infty} d_i \Delta y^{\star}_{t+i}`, in a PAC equation
+   defined in the ``model`` block. Depending on the assumption regarding the
+   formation of expectations, it will be replaced by a linear combination of
+   the variables involved in the companion representation of the auxiliary model
+   or by a recursive forward equation.
+
+   |br|
+
+.. matcomm::  pac.initialize(NAME_OF_PAC_MODEL);
+.. matcomm::  pac.update(NAME_OF_PAC_MODEL);
+
+  |br| Same as in the previous section for the VAR expectations, initialise the
+  PAC model, by building the companion matrix of the auxiliary model, and
+  computes the reduced form parameters of the PAC equation (the weights in the
+  linear combination of the variables involved in the companion representation
+  of the auxiliary model, or the parameters of the recursive representation of
+  the infinite sum in the MCE case).
+
+
+*Example*
+
+    ::
+
+         trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], targets=['eq:x1bar', 'eq:x2bar']);
+
+         pac_model(auxiliary_model_name=toto, discount=beta, growth=diff(x1(-1)), model_name=pacman);
+
+         model;
+
+         [name='eq:y']
+         y = rho_1*y(-1) + rho_2*y(-2) + ey;
+
+         [name='eq:x1']
+         diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;     
+
+         [name='eq:x2']
+         diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;     
+
+         [name='eq:x1bar']
+         x1bar = x1bar(-1) + ex1bar;
+
+         [name='eq:x2bar']
+         x2bar = x2bar(-1) + ex2bar;
+
+         [name='zpac']
+         diff(z) = e_c_m*(x1(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
+
+         end;
+
+         pac.initialize('pacman');
+
+         pac.update.expectation('pacman');
+
+
+Estimation of a PAC equation
+----------------------------
+
+The PAC equation, introduced in the previous section, can be estimated. This
+equation is nonlinear with respect to the estimated parameters
+:math:`(a_i)_{i=0}^{m-1}`, since the reduced form parameters (in the computation
+of the infinite sum) are nonlinear functions of the autoregressive parameters
+and the error correction parameter. *Brayton et alii (2000)* shows how to
+estimate the PAC equation by iterative OLS. Although this approach is
+implemented in Dynare, mainly for comparison purposes, we also propose NLS
+estimation which is much preferable (asymptotic properties of NLS being more
+solidly grounded).
+
+
+.. warning:: The estimation routines described below require the option
+             `json=compute` be passed to the preprocessor (via the command line
+             or at the top of the `.mod` file, see :ref:`dyn-invoc`).
+
+
+.. matcomm::  pac.estimate.nls(EQNAME, GUESS, DATA, RANGE[, ALGO]);
+.. matcomm::  pac.estimate.iterative_ols(EQNAME, GUESS, DATA, RANGE);
+
+              |br| Trigger the NLS or iterative OLS estimation of a PAC
+              equation. ``EQNAME`` is a row char array designating the PAC
+              equation to be estimated (the PAC equation must have a name
+              specified with an equation tag). ``DATA`` is a ``dseries`` object
+              containing the data required for the estimation (*i.e.* data for
+              all the endogenous and exogenous variables in the equation). The
+              residual of the PAC equation must also be a member of ``DATA``,
+              but filled with ``NaN`` values. ``RANGE`` is a ``dates`` object
+              defining the time span of the sample. ``ALGO`` is a row char array
+              used to select the method (or minimisation algorithm) for NLS.
+              Possible values are : ``'fmincon'``, ``'fminunc'``,
+              ``'fminsearch'``, ``'lsqnonlin'``, ``'particleswarm'``,
+              ``'csminwel'``, ``'simplex'``, ``'annealing'``, and
+              ``'GaussNewton'``. The first four algorithms require the Mathworks
+              Optimisation toolbox. The fifth algorithm requires the Mathworks
+              Global Optimisation toolbox. When the optimisation algorithm
+              allows it, we impose constraints on the error correction
+              parameter, which must be positive and smaller than 1 (it the case
+              for ``'fmincon'``, ``'lsqnonlin'``, ``'particleswarm'``, and
+              ``'annealing'``). ``GUESS`` is a structure containing the initial
+              guess values for the estimated parameters. Each field is the name
+              of a parameter in the PAC equation and holds the initial guess for
+              this parameter. If some parameters are calibrated, then they
+              should not be members of the ``GUESS`` structure (and values have
+              to be provided in the ``.mod`` file before the call to the
+              estimation routine).
+
+              For the NLS routine the estimation results are displayed in a
+              table after the estimation. For both the NLS and iterative OLS
+              routines, the results are saved in ``oo_`` (under the fields
+              ``nls`` or ``iterative_ols``). Also, the values of the parameters
+              are updated in ``M_.params``.
+
+*Example (continued)*
+
+    ::
+
+       // Set the initial guess for the estimated parameters
+       clear eparams
+       eparams.e_c_m =  .9;
+       eparams.c_z_1 =  .5;
+       eparams.c_z_2 =  .2;
+
+       // Define the dataset used for estimation
+       edata = TrueData;
+       edata.ez = dseries(NaN); // Set to NaN the residual of the equation.
+
+       pac.estimate.nls('zpac', eparams, edata, 2005Q1:2005Q1+200, 'annealing');
 
 
 Displaying and saving results
