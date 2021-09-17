@@ -24,7 +24,7 @@ function smoother2histval(opts)
 %
 % The function also uses the value of option_.parameter_set
 
-% Copyright (C) 2014-2018 Dynare Team
+% Copyright (C) 2014-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -49,7 +49,6 @@ if ~isfield(opts, 'infile')
     end
     smoothedvars = oo_.SmoothedVariables;
     smoothedshocks = oo_.SmoothedShocks;
-    steady_state = oo_.steady_state;
 else
     S = load(opts.infile);
     if ~isfield(S, 'oo_') || ~isfield(S.oo_, 'SmoothedVariables')
@@ -57,7 +56,6 @@ else
     end
     smoothedvars = S.oo_.SmoothedVariables;
     smoothedshocks = S.oo_.SmoothedShocks;
-    steady_state = S.oo_.steady_state;
 end
 
 % Hack to determine if oo_.SmoothedVariables was computed after a Metropolis
@@ -79,9 +77,9 @@ end
 if post_metropolis
     tmp = fieldnames(smoothedvars.Mean);
     if length(tmp)~=M_.endo_nbr
-        warning(['You are using smoother2histval although smoothed values have not'...
+        warning(['You are using smoother2histval although smoothed values have not '...
             'been computed for all endogenous and auxiliary variables.'...
-            'The value of these variables will be set to 0.'])
+            'The value of these variables will be set to their steady state.'])
     end
     tmpexo = fieldnames(smoothedshocks.Mean);
 else
@@ -94,7 +92,6 @@ if isempty(options_.parameter_set)
     if post_metropolis
         smoothedvars = smoothedvars.Mean;
         smoothedshocks = smoothedshocks.Mean;
-        steady_state = zeros(size(steady_state));
     end
 else
     switch options_.parameter_set
@@ -112,14 +109,12 @@ else
         end
         smoothedvars = smoothedvars.Mean;
         smoothedshocks = smoothedshocks.Mean;
-        steady_state = zeros(size(steady_state));
       case 'posterior_median'
         if ~post_metropolis
             error('Option parameter_set=posterior_median is not consistent with computed smoothed values.')
         end
         smoothedvars = smoothedvars.Median;
         smoothedshocks = smoothedshocks.Median;
-        steady_state = zeros(size(steady_state));
       otherwise
         error([ 'Option parameter_set=' options_.parameter_set ' unsupported.' ])
     end
@@ -171,20 +166,27 @@ if ~isfield(opts, 'outfile')
     M_.endo_histval = repmat(oo_.steady_state, 1, M_.maximum_lag);
 else
     % Output to a file
+    data = zeros(M_.maximum_endo_lag, length(invars));
+    for i=1:length(outvars)
+        j = strmatch(outvars{i}, M_.endo_names, 'exact');
+        if ~isempty(j)
+            data(:,i)=oo_.steady_state(j);
+        end
+    end
     o = dseries();
 end
 
 % Handle all endogenous variables to be copied
-data = zeros(M_.orig_maximum_endo_lag, length(invars));
-k = M_.orig_maximum_endo_lag - M_.maximum_endo_lag + 1: M_.orig_maximum_lag;
 for i = 1:length(invars)
-    if isempty(strmatch(invars{i}, M_.endo_names, 'exact'))
-        % Skip exogenous
-        continue
+    if ~isempty(strmatch(invars{i}, M_.endo_names, 'exact')) 
+        s = smoothedvars.(invars{i});
+    elseif ~isempty(strmatch(invars{i}, M_.exo_names, 'exact'))
+        s = smoothedshocks.(invars{i});
+    else
+        error('smoother2histval: unknown input variable')
     end
-    s = smoothedvars.(invars{i});
-    j = strmatch(invars{i}, M_.endo_names, 'exact');
-    v = s((period-M_.orig_maximum_endo_lag+1):period);% + steady_state(j);
+    
+    v = s((period-M_.maximum_lag+1):period);
     if ~isfield(opts, 'outfile')
         j = strmatch(outvars{i}, M_.endo_names, 'exact');
         if isempty(j)
