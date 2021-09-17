@@ -179,7 +179,11 @@ end
 % Handle all endogenous variables to be copied
 for i = 1:length(invars)
     if ~isempty(strmatch(invars{i}, M_.endo_names, 'exact')) 
-        s = smoothedvars.(invars{i});
+        if oo_.Smoother.loglinear
+            s = exp(smoothedvars.(invars{i}));
+        else
+            s = smoothedvars.(invars{i});
+        end
     elseif ~isempty(strmatch(invars{i}, M_.exo_names, 'exact'))
         s = smoothedshocks.(invars{i});
     else
