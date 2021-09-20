@@ -723,6 +723,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
       catch (GeneralExceptionHandling &feh)
         {
+          // Release the lock on dynamic.bin for MATLAB+Windows, see #1815
+          interprete.Close_SaveCode();
           mexErrMsgTxt(feh.GetErrorMsg().c_str());
         }
     }
@@ -734,6 +736,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
       catch (GeneralExceptionHandling &feh)
         {
+          // Release the lock on dynamic.bin for MATLAB+Windows, see #1815
+          interprete.Close_SaveCode();
           mexErrMsgTxt(feh.GetErrorMsg().c_str());
         }
     }
