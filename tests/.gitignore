@@ -48,7 +48,7 @@ wsOct
 !/ep/ar_steadystate.m
 !/ep/exact_solution.m
 !/ep/mean_preserving_spread.m
-!/ep/rbcii_steady_state.m
+!/ep/rbcii_steadystate.m
 !/estimation/fsdat_simul.m
 !/estimation/method_of_moments/AnScho/AnScho_MoM_data_2.mat
 !/estimation/method_of_moments/RBC/RBC_MoM_steady_helper.m
