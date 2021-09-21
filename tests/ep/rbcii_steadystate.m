@@ -1,5 +1,7 @@
-function [ys_, params, info] = rbcii_steadystate2(ys_, exo_, params)
+function [ys_, params, info] = rbcii_steadystate(ys_, exo_, M_, options_)
      
+    params = M_.params;
+
     % Flag initialization (equal to zero if the deterministic steady state exists) 
     info = 0;
     
