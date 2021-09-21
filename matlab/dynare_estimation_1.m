@@ -171,7 +171,7 @@ catch % if check fails, provide info on using calibration if present
     rethrow(e);
 end
 
-if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && options_.mh_posterior_mode_estimation==0
+if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && ~options_.mh_posterior_mode_estimation
     if options_.order==1 && ~options_.particle.status
         if options_.smoother
             if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
@@ -475,6 +475,8 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
     %% Here I discard first mh_drop percent of the draws:
     CutSample(M_, options_, estim_params_);
     if options_.mh_posterior_mode_estimation
+        [~,~,posterior_mode,~] = compute_mh_covariance_matrix();
+        oo_=fill_mh_mode(posterior_mode',NaN(length(posterior_mode),1),M_,options_,estim_params_,bayestopt_,oo_,'posterior');
         %reset qz_criterium
         options_.qz_criterium=qz_criterium_old;
         return
