@@ -10225,6 +10225,10 @@ with ``discretionary_policy`` or for optimal simple rules with ``osr``
     the exogenous shocks. The latter are specified using the perfect foresight syntax 
     of the shocks-block. 
 
+    At the current stage, the stochastic context does not support the ``pruning`` option.
+    At ``order>3``, only the computation of conditional welfare with steady state Lagrange 
+    multipliers is supported.
+    
     *Example (stochastic context)*
 
         ::
@@ -10279,7 +10283,7 @@ with ``discretionary_policy`` or for optimal simple rules with ``osr``
     to 0, i.e. it is assumed that the planner exploits its
     ability to surprise private agents in the first period of
     implementing Ramsey policy. This value corresponds to the planner 
-    implementating optimal policy for the first time and committing not to
+    implementing optimal policy for the first time and committing not to
     re-optimize in the future.
 
 
