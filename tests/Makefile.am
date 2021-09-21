@@ -1249,7 +1249,7 @@ EXTRA_DIST = \
 	estimation/system_prior_restriction/Gali_2015_PC_slope.m \
 	estimation/system_prior_restriction/Gali_2015_prior_restrictions.m \
 	ep/mean_preserving_spread.m \
-	ep/rbcii_steady_state.m \
+	ep/rbcii_steadystate.m \
 	decision_rules/example1_results_dyn_432.mat \
 	decision_rules/third_order/comparison_policy_functions_dynare_mathematica.m \
 	decision_rules/third_order/FV_2011_policyfunctions.mat \
