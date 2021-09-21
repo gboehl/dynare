@@ -8,7 +8,19 @@ DEFS += -DMEXEXT=\".mex\"
 AM_CFLAGS = $(shell $(MKOCTFILE) -p CPICFLAG) -Wall -Wno-parentheses
 AM_FCFLAGS = $(shell $(MKOCTFILE) -p FPICFLAG) -Wall -Wimplicit-interface
 AM_CXXFLAGS = $(shell $(MKOCTFILE) -p CXXPICFLAG) -Wall -Wno-parentheses -Wold-style-cast
-AM_LDFLAGS = $(shell $(MKOCTFILE) -p DL_LDFLAGS) -L"$(shell $(MKOCTFILE) -p OCTLIBDIR)"
+AM_LDFLAGS = $(shell $(MKOCTFILE) -p DL_LDFLAGS)
+
+# Mimick the behaviour of mkoctfile: link against Octave libraries on Windows only
+# (it is required there, otherwise we get a link failure)
+if WINDOWS_API
+AM_LDFLAGS += -L"$(shell $(MKOCTFILE) -p OCTLIBDIR)"
+LIBS += $(shell $(MKOCTFILE) -p OCTAVE_LIBS)
+endif
+
+# Unconditionally link against BLAS/LAPACK, since we tend to use them in
+# many MEX files
+LIBS += $(shell $(MKOCTFILE) -p BLAS_LIBS)
+LIBS += $(shell $(MKOCTFILE) -p LAPACK_LIBS)
 
 mexdir = $(libdir)/dynare/mex/octave
 

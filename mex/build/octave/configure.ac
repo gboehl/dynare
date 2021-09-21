@@ -98,6 +98,17 @@ case ${host_os} in
     ;;
 esac
 
+# Define an automake conditional for the Windows platform
+case ${host_os} in
+  *mingw32*)
+        windows_api=yes
+        ;;
+  *)
+        windows_api=no
+        ;;
+esac
+AM_CONDITIONAL([WINDOWS_API], [test ${windows_api} = yes])
+
 # Construct final output message
 if test "$enable_mex_dynareplusplus" = yes; then
    BUILD_GENSYLV_KORDER_DYNSIMUL_MEX_OCTAVE="yes"
