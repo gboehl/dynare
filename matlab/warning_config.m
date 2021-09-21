@@ -49,9 +49,11 @@ if isoctave
     warning('off', 'Octave:classdef-to-struct');
     warning('off', 'Octave:legacy-function'); % For strmatch and isdir
 
-    % The following is necessary because of matlab/+pac/+bgp/{get,set}.m
+    % The following is necessary because of matlab/pac-tools/+pac/+bgp/{get,set}.m
     % which triggers this bug: https://savannah.gnu.org/bugs/?46849
-    % The warning can be reenabled once the bug is fixed.
+    % The warning can be reenabled once the bug is fixed (and the files
+    % mentioned above can then be moved back to matlab/+pac/+bgp/,
+    % see #1817).
     warning('off', 'Octave:shadowed-function');
 else
     % In MATLAB >= 7.7, don't display a warning if we use deprecated
