@@ -10,12 +10,6 @@ AM_FCFLAGS = $(shell $(MKOCTFILE) -p FPICFLAG) -Wall -Wimplicit-interface
 AM_CXXFLAGS = $(shell $(MKOCTFILE) -p CXXPICFLAG) -Wall -Wno-parentheses -Wold-style-cast
 AM_LDFLAGS = $(shell $(MKOCTFILE) -p DL_LDFLAGS) -L"$(shell $(MKOCTFILE) -p OCTLIBDIR)"
 
-LIBS += $(shell $(MKOCTFILE) -p OCTAVE_LIBS)
-LIBS += $(shell $(MKOCTFILE) -p BLAS_LIBS)
-LIBS += $(shell $(MKOCTFILE) -p LAPACK_LIBS)
-LIBS += $(shell $(MKOCTFILE) -p FFTW_LIBS)
-LIBS += $(shell $(MKOCTFILE) -p LIBS)
-
 mexdir = $(libdir)/dynare/mex/octave
 
 all-local: $(PROGRAMS)
