@@ -250,6 +250,15 @@ module matlab_mat
        character(c_char), dimension(*), intent(in) :: fieldname
      end function mxGetField_internal
 
+     subroutine mxSetField_internal(pm, index, fieldname, pvalue) bind(c, name="mxSetField"//API_VER2)
+       use iso_c_binding
+       import :: mwIndex
+       type(c_ptr), intent(in), value :: pm
+       type(c_ptr), intent(in), value :: pvalue
+       integer(mwIndex), intent(in), value :: index
+       character(c_char), dimension(*), intent(in) :: fieldname
+     end subroutine mxSetField_internal
+
      integer(c_int) function mxGetNumberOfFields(pm) bind(c, name="mxGetNumberOfFields"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
@@ -358,6 +367,14 @@ contains
     character(kind=c_char, len=*), intent(in) :: fieldname
     mxGetField = mxGetField_internal(pm, index-1, fieldname // c_null_char)
   end function mxGetField
+
+  subroutine mxSetField(pm, index, fieldname, pvalue)
+       type(c_ptr), intent(in) :: pm
+       type(c_ptr), intent(in) :: pvalue
+       integer(mwIndex), intent(in) :: index
+       character(kind=c_char, len=*), intent(in) :: fieldname
+       call mxSetField_internal(pm, index-1, fieldname // c_null_char, pvalue)
+  end subroutine mxSetField
 
   type(c_ptr) function mxGetCell(pm, index)
     type(c_ptr), intent(in) :: pm

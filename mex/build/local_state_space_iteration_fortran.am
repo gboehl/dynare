@@ -1,0 +1,14 @@
+mex_PROGRAMS = local_state_space_iteration_fortran 
+
+local_state_space_iteration_fortran_FCFLAGS = $(AM_FCFLAGS) -Warray-temporaries -I../libkordersim
+
+nodist_local_state_space_iteration_fortran_SOURCES = \
+	mexFunction.f08
+
+local_state_space_iteration_fortran_LDADD = ../libkordersim/libkordersim.a
+
+BUILT_SOURCES = $(nodist_local_state_space_iteration_fortran_SOURCES)
+CLEANFILES = $(nodist_local_state_space_iteration_fortran_SOURCES)
+
+%.f08: $(top_srcdir)/../../sources/local_state_space_iteration_fortran/%.f08
+	$(LN_S) -f $< $@
