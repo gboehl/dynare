@@ -24,7 +24,7 @@ end;
 
 steady;
 
-initval_file(filename = ramst_initval_file_data_row_vec_mat);
+initval_file(datafile = ramst_initval_file_data_row_vec_mat);
 perfect_foresight_setup(periods=200);
 if oo_.exo_simul(2) ~= 1.2
   error('initval_file problem with exogenous variable');
@@ -40,7 +40,7 @@ end
 oo_.exo_simul = [];
 oo_.endo_simul = [];
 
-initval_file(filename = ramst_initval_file_data_col_vec_mat);
+initval_file(datafile = ramst_initval_file_data_col_vec_mat);
 
 perfect_foresight_setup(periods=200);
 if oo_.exo_simul(2) ~= 1.2
@@ -55,7 +55,7 @@ if ~oo_.deterministic_simulation.status
 end
 
 if ispc()
-    initval_file(filename = ramst_initval_file_excel);
+    initval_file(datafile = ramst_initval_file_excel);
     perfect_foresight_setup(periods=200);
     perfect_foresight_solver;
     if ~oo_.deterministic_simulation.status
