@@ -30,7 +30,7 @@ gamma =  .7;
 
 trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], targets=['eq:x1bar', 'eq:x2bar']);
 
-pac_model(discount=beta, model_name=pacman, steady_state_growth=.0);
+pac_model(discount=beta, model_name=pacman);
 
 model;
 
