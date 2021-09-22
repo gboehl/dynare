@@ -5848,9 +5848,11 @@ block decomposition of the model (see :opt:`block`).
        crashed chain with the respective last random number generator
        state is currently not supported.
 
-    .. option:: mh_mode = INTEGER
+    .. option:: mh_posterior_mode_estimation
 
-        ...
+       Skip optimizer-based mode-finding and instead compute the mode based 
+       on a run of a MCMC. The MCMC will start at the prior mode and use the prior
+       variances to compute the inverse Hessian.
 
     .. option:: mode_file = FILENAME
 

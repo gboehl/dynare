@@ -308,7 +308,7 @@ if init
         % slice posterior sampler does not require mode or hessian to run
         % needs to be set to 1 to skip parts in dynare_estimation_1.m
         % requiring posterior maximization/calibrated smoother before MCMC
-        options_.mh_posterior_mode_estimation=1;
+        options_.mh_posterior_mode_estimation=true;
 
         if ~ posterior_sampler_options.slice_initialize_with_mode
             % by default, slice sampler should trigger
@@ -324,7 +324,7 @@ if init
                 disp('check_posterior_sampler_options:: but no mode file nor posterior maximization is selected,')
                 error('check_posterior_sampler_options:: The option "slice_initialize_with_mode" is inconsistent with mode_compute=0 or empty mode_file.')
             else
-                options_.mh_posterior_mode_estimation=0;
+                options_.mh_posterior_mode_estimation=false;
             end
         end
 
@@ -335,7 +335,7 @@ if init
         end
 
         % moreover slice must be associated to:
-        %     options_.mh_posterior_mode_estimation = 0;
+        %     options_.mh_posterior_mode_estimation = false;
         % this is done below, but perhaps preprocessing should do this?
 
         if ~isempty(posterior_sampler_options.mode)
@@ -425,7 +425,7 @@ if strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
     end
     % needs to be re-set to zero otherwise posterior analysis is filtered
     % out in dynare_estimation_1.m
-    options_.mh_posterior_mode_estimation = 0;
+    options_.mh_posterior_mode_estimation = false;
 end
 
 return
