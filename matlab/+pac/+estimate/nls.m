@@ -164,6 +164,13 @@ fprintf(fid, 'r = %s-(%s);\n', lhs, rhs);
 fprintf(fid, 's = r''*r;\n');
 fclose(fid);
 
+% Workaround for Octave bug https://savannah.gnu.org/bugs/?46282
+% Octave will randomly fail to read the ssr_* file generated in the +folder
+if isoctave
+    rename(['+' M_.fname], ['+' M_.fname '-tmp']);
+    rename(['+' M_.fname '-tmp'], ['+' M_.fname]);
+end
+
 % Copy (sub)sample data in a matrix.
 DATA = data([range(1)-1, range]).data;
 
