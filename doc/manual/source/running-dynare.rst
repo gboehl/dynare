@@ -229,7 +229,7 @@ by the ``dynare`` command.
     .. option:: json = parse|check|transform|compute
 
         Causes the preprocessor to output a version of the ``.mod`` file in
-        JSON format to ``<<M_.dname>>/model/json/``.
+        JSON format to ``<<M_.fname>>/model/json/``.
         When the JSON output is created depends on the value
         passed. These values represent various steps of processing in the
         preprocessor.
