@@ -41,7 +41,7 @@ switch mexname
   case 'local_state_space_iteration_2'
     options_.threads.local_state_space_iteration_2 = n;
   case 'local_state_space_iteration_k'
-    options_.threads.local_state_space_iteration_2 = n;
+    options_.threads.local_state_space_iteration_k = n;
   case 'perfect_foresight_problem'
     options_.threads.perfect_foresight_problem = n;
   case 'k_order_perturbation'
