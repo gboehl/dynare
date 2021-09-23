@@ -123,3 +123,36 @@ for T = 1:size(oo_.endo_simul,2)
   end
   xlag = oo_.endo_simul(2,T);
 end
+
+% Verify that the simulated time series is correct with the Fortran routine k_order_simul
+
+order = options_.order;
+nstat = M_.nstatic;
+npred = M_.npred;
+nboth = M_.nboth;
+nfwrd = M_.nfwrd;
+nexog = M_.exo_nbr;
+ystart = oo_.dr.ys(oo_.dr.order_var,1);
+ex_ = [zeros(M_.maximum_lag,M_.exo_nbr), oo_.exo_simul'];
+ysteady = oo_.dr.ys(oo_.dr.order_var);
+dr = oo_.dr;
+
+vcov = M_.Sigma_e;
+seed = options_.DynareRandomStreams;
+
+tStart1 = tic; fortran_endo_simul = k_order_simul(order, nstat, npred, nboth, nfwrd, nexog, ystart, ex_, ysteady, dr); tElapsed1 = toc(tStart1);
+tStart2 = tic; dynare_endo_simul = dynare_simul_(order, nstat, npred, nboth, nfwrd, nexog, ystart,ex_,vcov,seed, ysteady, dr); tElapsed2 = toc(tStart2);
+
+if (max(abs(oo_.endo_simul-fortran_endo_simul(oo_.dr.order_var,2:end))) > 1e-10)
+    error('Error in k_order_simul: inaccurate simulation');
+end;
+
+if tElapsed1<tElapsed2
+    skipline()
+    dprintf('k_order_simul is %5.2f times faster than dynare_simul_', tElapsed2/tElapsed1)
+    skipline()
+else
+    skipline()
+    dprintf('k_order_simul is %5.2f times slower than dynare_simul_', tElapsed1/tElapsed2)
+    skipline()
+end
