@@ -1,6 +1,6 @@
 mex_PROGRAMS = local_state_space_iteration_fortran 
 
-local_state_space_iteration_fortran_FCFLAGS = $(AM_FCFLAGS) -Warray-temporaries -I../libkordersim
+local_state_space_iteration_fortran_FCFLAGS = $(AM_FCFLAGS) -I../libkordersim
 
 nodist_local_state_space_iteration_fortran_SOURCES = \
 	mexFunction.f08

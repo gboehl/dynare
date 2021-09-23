@@ -1,6 +1,6 @@
 mex_PROGRAMS = folded_to_unfolded_dr 
 
-folded_to_unfolded_dr_FCFLAGS = $(AM_FCFLAGS) -Warray-temporaries -I../libkordersim
+folded_to_unfolded_dr_FCFLAGS = $(AM_FCFLAGS) -I../libkordersim
 
 nodist_folded_to_unfolded_dr_SOURCES = \
 	mexFunction.f08
