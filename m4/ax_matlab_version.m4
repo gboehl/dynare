@@ -44,6 +44,9 @@ fi
 if test -n "$MATLAB_VERSION"; then
   dnl Convert a release number (Rnnnnx) into a version number (x.y)
   case $MATLAB_VERSION in
+    *2021b | *2021B)
+      MATLAB_VERSION="9.11"
+      ;;
     *2021a | *2021A)
       MATLAB_VERSION="9.10"
       ;;
