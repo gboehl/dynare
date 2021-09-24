@@ -16,21 +16,14 @@
 ! along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 !  input:
-!       order    the order of approximation, needs order+1 derivatives
-!       nstat
-!       npred
-!       nboth
-!       nforw
-!       nexog
-!       ystart   starting value (full vector of endogenous)
-!       shocks   matrix of shocks (nexog x number of period)
-!       vcov     covariance matrix of shocks (nexog x nexog)
-!       seed     integer seed
-!       ysteady  full vector of decision rule's steady
-!       dr       structure containing matrices of derivatives (g_0, g_1,…)
-
+!       yhat     values of endogenous variables
+!       epsilon  values of the exgogenous shock
+!       dr       struct containing the folded tensors g_0, g_1, ...
+!       M        struct containing the model features
+!       options  struct containing the model options
+!       udr      struct containing the model unfolded tensors
 !  output:
-!       res      simulated results
+!       ynext    simulated next-period results
 
 subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    use iso_fortran_env
@@ -45,14 +38,12 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    type(c_ptr), dimension(*), intent(out) :: plhs
    integer(c_int), intent(in), value :: nlhs, nrhs
    type(c_ptr) :: M_mx, options_mx, dr_mx, yhat_mx, epsilon_mx, udr_mx, tmp
-   type(pol), dimension(:), allocatable, target :: fdr, udr
+   type(pol), dimension(:), allocatable, target :: udr
    integer :: order, nstatic, npred, nboth, nfwrd, exo_nbr, endo_nbr, nparticles, nys, nvar, nrestricted
    real(real64), dimension(:), allocatable :: order_var, ys, ys_reordered, restrict_var_list, dyu
    real(real64), dimension(:,:), allocatable :: yhat, e, ynext, ynext_all
-   type(pascal_triangle) :: p
-   type(uf_matching), dimension(:), allocatable :: matching 
    type(horner), dimension(:), allocatable :: h
-   integer :: i, d, j, m, n
+   integer :: i, j, m, n
    character(kind=c_char, len=10) :: fieldname
 
    yhat_mx = prhs(1)
@@ -63,9 +54,6 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    udr_mx = prhs(6)
 
    ! Checking the consistence and validity of input arguments
-   ! if (nrhs /= 5 .or. nlhs /= 1) then
-   !    call mexErrMsgTxt("Must have exactly 5 inputs and 1 output")
-   ! end if
    if (nrhs /= 6 .or. nlhs /= 1) then
       call mexErrMsgTxt("Must have exactly 5 inputs and 1 output")
    end if
@@ -142,7 +130,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    yhat = reshape(mxGetPr(yhat_mx), [nys, nparticles])
    e = reshape(mxGetPr(epsilon_mx), [exo_nbr, nparticles])
 
-   allocate(h(0:order), fdr(0:order), udr(0:order)) 
+   allocate(h(0:order), udr(0:order)) 
    do i = 0, order
       write (fieldname, '(a2, i1)') "g_", i
       tmp = mxGetField(udr_mx, 1_mwIndex, trim(fieldname))
