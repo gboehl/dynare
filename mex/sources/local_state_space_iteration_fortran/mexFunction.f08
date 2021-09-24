@@ -40,7 +40,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    type(c_ptr) :: M_mx, options_mx, dr_mx, yhat_mx, epsilon_mx, udr_mx, tmp
    type(pol), dimension(:), allocatable, target :: udr
    integer :: order, nstatic, npred, nboth, nfwrd, exo_nbr, endo_nbr, nparticles, nys, nvar, nrestricted
-   real(real64), dimension(:), allocatable :: order_var, ys, ys_reordered, restrict_var_list, dyu
+   real(real64), dimension(:), allocatable :: ys_reordered, dyu
+   real(real64), dimension(:), pointer, contiguous :: order_var, ys, restrict_var_list
    real(real64), dimension(:,:), allocatable :: yhat, e, ynext, ynext_all
    type(horner), dimension(:), allocatable :: h
    integer :: i, j, m, n
@@ -90,17 +91,16 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
       if (.not. (mxIsDouble(order_var_mx) .and. int(mxGetNumberOfElements(order_var_mx)) == endo_nbr)) then
          call mexErrMsgTxt("Field dr.order_var should be a double precision vector with endo_nbr elements")
       end if
-      allocate(order_var(endo_nbr))
-      order_var = mxGetPr(order_var_mx)
+      order_var => mxGetPr(order_var_mx)
    end associate
 
    associate (ys_mx => mxGetField(dr_mx, 1_mwIndex, "ys"))
       if (.not. (mxIsDouble(ys_mx) .and. int(mxGetNumberOfElements(ys_mx)) == endo_nbr)) then
          call mexErrMsgTxt("Field dr.ys should be a double precision vector with endo_nbr elements")
       end if
-      allocate(ys(endo_nbr), ys_reordered(endo_nbr))
-      ys = mxGetPr(ys_mx)
+      ys => mxGetPr(ys_mx)
       ! Construct the reordered steady state
+      allocate(ys_reordered(endo_nbr))
       do i=1, endo_nbr
          ys_reordered(i) = ys(int(order_var(i)))
       end do
@@ -111,8 +111,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
          call mexErrMsgTxt("Field dr.restrict_var_list should be a double precision vector")
       end if
       nrestricted = size(mxGetPr(restrict_var_list_mx))
-      allocate(restrict_var_list(nrestricted))
-      restrict_var_list = mxGetPr(restrict_var_list_mx)
+      restrict_var_list => mxGetPr(restrict_var_list_mx)
    end associate
 
    nparticles = int(mxGetN(yhat_mx));

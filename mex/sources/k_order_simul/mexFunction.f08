@@ -45,9 +45,9 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    type(pol), dimension(:), allocatable, target :: fdr, udr
    integer :: order, nstatic, npred, nboth, nfwrd, exo_nbr, endo_nbr, nys, nvar, nper
    real(real64), dimension(:,:), allocatable :: shocks, sim
-   real(real64), dimension(:), allocatable :: ysteady, ystart, ysteady_pred, ystart_pred, dyu
+   real(real64), dimension(:), allocatable :: ysteady_pred, ystart_pred, dyu
+   real(real64), dimension(:), pointer, contiguous :: ysteady, ystart
    type(pascal_triangle) :: p
-   type(uf_matching), dimension(:), allocatable :: matching 
    type(horner), dimension(:), allocatable :: h
    integer :: i, t, d, m, n
    character(kind=c_char, len=10) :: fieldname
@@ -112,8 +112,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    if (endo_nbr /= int(mxGetM(ystart_mx))) then
       call mexErrMsgTxt("ystart should have nstat+npred+nboth+nforw rows")
    end if
-   allocate(ystart(endo_nbr))
-   ystart = mxGetPr(ystart_mx)
+   ystart => mxGetPr(ystart_mx)
 
    if (exo_nbr /= int(mxGetM(shocks_mx))) then
       call mexErrMsgTxt("shocks should have nexog rows")
@@ -125,8 +124,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    if (.not. (int(mxGetM(ysteady_mx)) == endo_nbr)) then
       call mexErrMsgTxt("ysteady should have nstat+npred+nboth+nforw rows")
    end if
-   allocate(ysteady(endo_nbr))
-   ysteady = mxGetPr(ysteady_mx)
+   ysteady => mxGetPr(ysteady_mx)
 
    allocate(h(0:order), fdr(0:order), udr(0:order)) 
    do i = 0, order
@@ -146,13 +144,15 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    if (order > 1) then
       ! Compute the useful binomial coefficients from Pascal's triangle
       p = pascal_triangle(nvar+order-1)
-      allocate(matching(2:order))
-      ! Pinpointing the corresponding offsets between folded and unfolded tensors
-      do d=2,order
-         allocate(matching(d)%folded(nvar**d))
-         call fill_folded_indices(matching(d)%folded, nvar, d, p) 
-         udr(d)%g = fdr(d)%g(:,matching(d)%folded)
-      end do
+      block
+        type(uf_matching), dimension(2:order) :: matching
+        ! Pinpointing the corresponding offsets between folded and unfolded tensors
+        do d=2,order
+           allocate(matching(d)%folded(nvar**d))
+           call fill_folded_indices(matching(d)%folded, nvar, d, p)
+           udr(d)%g = fdr(d)%g(:,matching(d)%folded)
+        end do
+      end block
    end if
 
    allocate(dyu(nvar), ystart_pred(nys), ysteady_pred(nys), sim(endo_nbr,nper))
