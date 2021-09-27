@@ -40,7 +40,7 @@ end;
 planner_objective(ln(c)-phi*((n^(1+gamma))/(1+gamma)));
 ramsey_policy(planner_discount=0.99,order=1,instruments=(r));
 oo_ramsey_policy_initval=oo_;
-save oo_ramsey_policy_initval oo_ramsey_policy_initval;
+save oo_ramsey_policy_initval.mat oo_ramsey_policy_initval;
 stoch_simul(periods=0, order=1, irf=25, nograph);
 if max(abs((oo_ramsey_policy_initval.steady_state-oo_.steady_state)))>1e-5 ...
     || max(abs(oo_ramsey_policy_initval.dr.ys-oo_.dr.ys))>1e-5 ...
