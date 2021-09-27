@@ -1261,7 +1261,6 @@ EXTRA_DIST = \
 	particle/first_spec_common.inc \
 	particle/risky.m \
 	optimal_policy/Ramsey/find_c.m \
-	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat \
 	observation_trends_and_prefiltering/generate_trend_stationary_AR1.m \
 	observation_trends_and_prefiltering/Trend_diagnostics_MCMC_common.inc \
 	observation_trends_and_prefiltering/Trend_diagnostics_calib_common.inc \
@@ -1282,7 +1281,6 @@ EXTRA_DIST = \
 	occbin/filter/NKM_mh_mode_saved.mat \
 	optimal_policy/neo_growth_common.inc \
 	optimal_policy/neo_growth_ramsey_common.inc \
-	optimal_policy/Ramsey/oo_ramsey_policy_initval.mat \
 	optimizers/optimizer_function_wrapper.m \
 	optimizers/fs2000.common.inc \
 	estimation/MH_recover/fs2000.common.inc \
