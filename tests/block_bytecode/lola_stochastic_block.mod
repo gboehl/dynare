@@ -15,7 +15,7 @@ ref = load(['lola_stochastic' filesep 'Output' filesep 'lola_stochastic_results.
 /* NB: With block, the rows of ghx and ghu are in declaration order (and not in
        DR-order as in non-block mode) */
 
-if max(max(abs(oo_.dr.ghx(:, state_reorder) - ref.oo_.dr.ghx(ref.oo_.dr.inv_order_var, ref_state_reorder)))) > 2e-9
+if max(max(abs(oo_.dr.ghx(:, state_reorder) - ref.oo_.dr.ghx(ref.oo_.dr.inv_order_var, ref_state_reorder)))) > 3e-9
     error('Error in ghx')
 end
 
