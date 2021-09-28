@@ -1,6 +1,6 @@
 dnl Detect the MATIO Library.
 dnl
-dnl Copyright © 2012-2014 Dynare Team
+dnl Copyright © 2012-2021 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -19,7 +19,7 @@ dnl along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 AC_DEFUN([AX_MATIO],
 [
-AC_ARG_WITH(matio, AC_HELP_STRING([--with-matio=DIR], [prefix to MATIO installation]),
+AC_ARG_WITH(matio, AS_HELP_STRING([--with-matio=DIR], [prefix to MATIO installation]),
             matio_prefix="$withval", matio_prefix="")
 
   has_matio=yes

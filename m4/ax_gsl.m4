@@ -2,7 +2,7 @@ dnl Detect GSL.
 dnl We don't use the official M4 macro since it relies on the script gsl-config,
 dnl which does not work when cross-compiling.
 dnl
-dnl Copyright © 2010-2012 Dynare Team
+dnl Copyright © 2010-2021 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -21,7 +21,7 @@ dnl along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 AC_DEFUN([AX_GSL],
 [
-AC_ARG_WITH(gsl, AC_HELP_STRING([--with-gsl=DIR], [prefix to GSL installation]),
+AC_ARG_WITH(gsl, AS_HELP_STRING([--with-gsl=DIR], [prefix to GSL installation]),
             gsl_prefix="$withval", gsl_prefix="")
 
   has_gsl=yes

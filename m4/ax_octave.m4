@@ -1,6 +1,6 @@
 dnl ax_octave.m4 --- check for Octave
 dnl
-dnl Copyright © 2020 Dynare Team
+dnl Copyright © 2020-2021 Dynare Team
 dnl
 dnl This program is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU General Public License as
@@ -30,7 +30,7 @@ dnl of that program.
 # Sets ax_enable_octave=yes if successful, ax_enable_octave=no otherwise
 AC_DEFUN([AX_OCTAVE],
 [dnl
-AC_ARG_WITH([octave], AC_HELP_STRING([--with-octave=PATH], [Path to search for Octave installation]),
+AC_ARG_WITH([octave], AS_HELP_STRING([--with-octave=PATH], [Path to search for Octave installation]),
 [
   if test -n "$withval"; then
     if test -x "$withval/bin/octave" && test -x "$withval/bin/mkoctfile"; then

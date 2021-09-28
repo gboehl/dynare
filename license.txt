@@ -311,7 +311,7 @@ License: LGPL-2.1+
 
 Files: m4/ax_matlab_arch.m4 m4/ax_matlab.m4 m4/ax_mexext.m4
 Copyright: 2002-2003 Ralph Schleicher
-           2009-2019 Dynare Team
+           2009-2021 Dynare Team
 License: GPL-2+ with Autoconf exception
 
 Files: scripts/dynare.el

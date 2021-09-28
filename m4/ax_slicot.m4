@@ -28,7 +28,7 @@ AC_DEFUN([AX_SLICOT],
     AC_MSG_ERROR([Argument to autoconf slicot macro must be either 'matlab' or 'octave'])
   fi
 
-  AC_ARG_WITH(slicot, AC_HELP_STRING([--with-slicot=DIR], [prefix to SLICOT installation]),
+  AC_ARG_WITH(slicot, AS_HELP_STRING([--with-slicot=DIR], [prefix to SLICOT installation]),
               slicot_prefix="$withval", slicot_prefix="")
   has_slicot=yes
 

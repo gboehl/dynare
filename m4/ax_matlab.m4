@@ -1,7 +1,7 @@
 dnl ax_matlab.m4 --- check for MATLAB.
 dnl
 dnl Copyright © 2000-2003 Ralph Schleicher
-dnl Copyright © 2009 Dynare Team
+dnl Copyright © 2009-2021 Dynare Team
 dnl
 dnl This program is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU General Public License as
@@ -31,7 +31,7 @@ AC_DEFUN([AX_MATLAB],
 [dnl
 AC_PREREQ([2.50])
 ax_enable_matlab=
-AC_ARG_WITH([matlab], AC_HELP_STRING([--with-matlab=ARG], [check for MATLAB [[yes]]]),
+AC_ARG_WITH([matlab], AS_HELP_STRING([--with-matlab=ARG], [check for MATLAB [[yes]]]),
 [case $withval in
   yes | no)
     # Explicitly enable or disable MATLAB but determine
