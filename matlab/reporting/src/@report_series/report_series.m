@@ -108,8 +108,10 @@ classdef report_series < handle
     methods (Hidden = true)
         tf = isZero(o)
     end
-    methods (Access = private)
+    methods
         dd = getRange(o)
+    end
+    methods (Access = private)
         s = getTexName(o)
         o = printSeries(o, fid, dser, dates, precision)
         d = setDataToZeroFromZeroTol(o, ds)
