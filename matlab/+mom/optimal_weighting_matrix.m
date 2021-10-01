@@ -3,7 +3,7 @@ function W_opt = optimal_weighting_matrix(m_data, moments, q_lag)
 % -------------------------------------------------------------------------
 % This function computes the optimal weigthing matrix by a Bartlett kernel with maximum lag q_lag
 % Adapted from replication codes of
-%  o Andreasen, Fern·ndez-Villaverde, Rubio-RamÌrez (2018): "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications", Review of Economic Studies, 85(1):1-49.
+%  o Andreasen, Fern√°ndez-Villaverde, Rubio-Ram√≠rez (2018): "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications", Review of Economic Studies, 85(1):1-49.
 % =========================================================================
 % INPUTS
 %  o m_data                  [T x numMom]       selected data moments at each point in time

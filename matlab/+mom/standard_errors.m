@@ -3,7 +3,7 @@ function [SE_values, Asympt_Var] = standard_errors(xparam, objective_function, B
 % -------------------------------------------------------------------------
 % This function computes standard errors to the method of moments estimates
 % Adapted from replication codes of
-%  o Andreasen, Fern·ndez-Villaverde, Rubio-RamÌrez (2018): "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications", Review of Economic Studies, 85(1):1-49.
+%  o Andreasen, Fern√°ndez-Villaverde, Rubio-Ram√≠rez (2018): "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications", Review of Economic Studies, 85(1):1-49.
 % =========================================================================
 % INPUTS
 %   o xparam:                   value of estimated parameters as returned by set_prior()
