@@ -62,11 +62,11 @@ install-exec-local:
 	$(LN_S) -f $(bindir)/dynare-preprocessor$(EXEEXT) $(DESTDIR)$(pkglibdir)/matlab/preprocessor64/dynare_m$(EXEEXT)
 # We don’t fail over doc install rules, since the user may deliberately not have compiled them
 # (e.g. with the “nodoc” option under Debian)
-	$(MKDIR_P) $(docdir)
-	-cp doc/*.pdf doc/gsa/gsa.pdf doc/parallel/parallel.pdf doc/dseries-and-reporting/dseriesReporting.pdf preprocessor/doc/preprocessor/preprocessor.pdf preprocessor/doc/macroprocessor/macroprocessor.pdf doc/manual/build/latex/dynare-manual.pdf $(docdir)
-	-cp -r doc/manual/build/html $(docdir)/dynare-manual.html
-	$(MKDIR_P) $(docdir)/dynare++
-	-cp dynare++/doc/*.pdf $(docdir)/dynare++
+	$(MKDIR_P) $(DESTDIR)$(docdir)
+	-cp doc/*.pdf doc/gsa/gsa.pdf doc/parallel/parallel.pdf doc/dseries-and-reporting/dseriesReporting.pdf preprocessor/doc/preprocessor/preprocessor.pdf preprocessor/doc/macroprocessor/macroprocessor.pdf doc/manual/build/latex/dynare-manual.pdf $(DESTDIR)$(docdir)
+	-cp -r doc/manual/build/html $(DESTDIR)$(docdir)/dynare-manual.html
+	$(MKDIR_P) $(DESTDIR)$(docdir)/dynare++
+	-cp dynare++/doc/*.pdf $(DESTDIR)$(docdir)/dynare++
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(pkglibdir)
