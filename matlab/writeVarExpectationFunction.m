@@ -129,7 +129,7 @@ if var_model_order > 1
     mu = [mu; zeros(lm*var_model_order-lm, 1)];
 end
 fprintf(fid, '\n%%%% Calculate %d-step-ahead forecast for VAR(%d) written as VAR(1)\n', max(horizon), var_model_order);
-fprintf(fid, '%%  Follows Lütkepohl (2005) pg 15 & 34\n');
+fprintf(fid, '%%  Follows LÃ¼tkepohl (2005) pg 15 & 34\n');
 if max(horizon) == 1
     printInsideOfLoop(fid, mu, A, false);
     fprintf(fid, 'ret(1, :) = y(1:%d);\n', lm);
