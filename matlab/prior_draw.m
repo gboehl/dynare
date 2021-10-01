@@ -268,7 +268,7 @@ end
 %$
 %$ if t(1)
 %$     t(2) = all(abs(m0-BayesInfo.p1)<3e-3);
-%$     t(3) = all(all(abs(v0-diag(BayesInfo.p2.^2))<3e-3));
+%$     t(3) = all(all(abs(v0-diag(BayesInfo.p2.^2))<5e-3));
 %$ end
 %$ T = all(t);
 %@eof:1
