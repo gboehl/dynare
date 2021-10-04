@@ -216,7 +216,8 @@ by the ``dynare`` command.
 
     .. option:: notime
 
-        Do not print the total computing time at the end of the driver.
+        Do not print the total computing time at the end of the driver, and do
+        not save that total computing time to ``oo_.time``.
 
     .. option:: transform_unary_ops
 
@@ -581,6 +582,11 @@ by the ``dynare`` command.
         obtained for the sample ranging to the `i` -th observation is
         saved in the `i` -th field. The fields for non-estimated
         endpoints are empty.
+
+    .. matvar:: oo_.time
+
+        Total computing time of the Dynare run, in seconds. This field is not
+        set if the :opt:`notime` option has been used.
 
     *Example*
 
