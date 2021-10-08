@@ -21,9 +21,8 @@ Note: Dynare comes with an automated uninstaller, which you can run from the
 Using Dynare with MATLAB®
 ─────────────────────────
 
-Dynare requires MATLAB® version 8.3 (R2014a) or above. With older versions of
-MATLAB®, it may fail or give unexpected results. Only 64-bit versions are
-supported.
+Dynare requires MATLAB®, any version ranging from 8.3 (R2014a) to 9.11
+(R2021b). Only 64-bit versions are supported.
 
 To use Dynare, you just have to add the ‘matlab’ subdirectory of your Dynare
 installation to MATLAB® path. You have two options for doing that:
