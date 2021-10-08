@@ -339,8 +339,7 @@ Tested on
 
 ## Windows
 
-- Install [MSYS2](http://www.msys2.org) (pick the 64-bit version, unless you
-  have a 32-bit Windows, in which case see below)
+- Install [MSYS2](http://www.msys2.org)
 - Run a MSYS MinGW 64-bit shell
 - Update the system:
 ```sh
