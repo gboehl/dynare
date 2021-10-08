@@ -87,6 +87,9 @@ be under ``/usr/share/doc/dynare`` (only on Debian, Ubuntu and Linux Mint).
 On macOS
 --------
 
+With MATLAB
+^^^^^^^^^^^
+
 To install Dynare for use with MATLAB, execute the automated installer called
 ``dynare-4.x.y.pkg`` (where *4.x.y* is the version number), and follow the
 instructions. The default installation directory is
@@ -99,7 +102,7 @@ settings (see :ref:`words-warning`).
 
 By default, the installer installs a version of GCC (for use with :opt:`use_dll`)
 in the installation directory, under the ``.brew`` folder. To do so, it also
-installs a version of `Homebrew <https://brew.sh>`__ in the same folder and
+installs a version of Homebrew_ in the same folder and
 Xcode Command Line Tools (this is an Apple product) in a system folder.
 
 All of this requires a bit of time and hard disk space. The amount of time it
@@ -112,8 +115,25 @@ MB.
 If you do not use the :opt:`use_dll` option, you have the choice to forgo the
 installation of GCC and hence Dynare will only take about 50 MB of disk space.
 
-Dynare for Octave works with Octave installed via the package located here:
-`https://octave-app.org <https://octave-app.org>`__.
+With Octave
+^^^^^^^^^^^
+
+We don’t provide Dynare packages for macOS with Octave support, but there is a
+Dynare package with Octave support in Homebrew_.
+
+Once Homebrew_ is installed, run a terminal and install Dynare (and Octave) by
+typing the following::
+
+  brew install dynare
+
+Then open Octave by running the following in the same terminal::
+
+  octave --gui
+
+Finally, at the Octave prompt, install some add-ons (you only have to do it
+once)::
+
+  octave:1> pkg install -forge io statistics control struct optim
 
 
 For other systems
@@ -154,12 +174,22 @@ install liboctave-dev``).
 Prerequisites on macOS
 ----------------------
 
+With MATLAB
+^^^^^^^^^^^
+
 Dynare now ships a compilation environment that can be used with the
 :opt:`use_dll` option. To install this environment correctly, the Dynare
 installer ensures that the Xcode Command Line Tools (an Apple product) have
 been installed on a system folder. To install the Xcode Command Line Tools
 yourself, simply type ``xcode-select --install`` into the Terminal
 (``/Applications/Utilities/Terminal.app``) prompt.
+
+With Octave
+^^^^^^^^^^^
+
+The compiler can be installed via Homebrew_. In a terminal, run::
+
+  brew install gcc-11
 
 Configuration
 =============
@@ -221,10 +251,9 @@ command; the packaging does it for you. Under Arch Linux, you need to do::
 
   octave:1> addpath /usr/lib/dynare/matlab
 
-Under macOS, assuming you have installed Octave via `https://octave-app.org
-<https://octave-app.org>`__, type::
+Under macOS, assuming you have installed Dynare via Homebrew_::
 
-  octave:1> addpath /Applications/Dynare/4.x.y/matlab
+  octave:1> addpath /usr/local/lib/dynare/matlab
 
 If you don’t want to type this command every time you run Octave, you
 can put it in a file called ``.octaverc`` in your home directory
@@ -271,3 +300,4 @@ Dynare unusable.
 .. _Dynare website: https://www.dynare.org/
 .. _Dynare wiki: https://git.dynare.org/Dynare/dynare/wikis
 .. _Octave-Forge: https://octave.sourceforge.io/
+.. _Homebrew: https://brew.sh
