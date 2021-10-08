@@ -7,18 +7,18 @@ Installation and configuration
 Software requirements
 =====================
 
-Packaged versions of Dynare are available for Windows (7, 8.1, 10), several GNU/Linux
-distributions (Debian, Ubuntu, Linux Mint, Arch Linux) and macOS
-10.11 or later. Dynare should work on other systems, but some compilation steps
-are necessary in that case.
+Packaged versions of Dynare are available for Windows (7, 8.1, 10 and 11),
+several GNU/Linux distributions (Debian, Ubuntu, Linux Mint, Arch Linux) and
+macOS (11). Dynare should work on other systems, but some compilation steps are
+necessary in that case.
 
 In order to run Dynare, you need one of the following:
 
-* MATLAB version 8.3 (R2014a) or above;
-* GNU Octave version 4.4 or above, with the statistics package from
-  `Octave-Forge`_. Note however that the Dynare installers for Windows and
-  macOS require a more specific version of Octave, as indicated on the download
-  page.
+* MATLAB, any version ranging from 8.3 (R2014a) to 9.11 (R2021b);
+* GNU Octave, any version ranging from 5.2.0 to 6.3.0, with the statistics
+  package from `Octave-Forge`_. Note however that the Dynare installer for
+  Windows requires a more specific version of Octave, as indicated on the
+  download page.
 
 The following optional extensions are also useful to benefit from
 extra features, but are in no way required:
