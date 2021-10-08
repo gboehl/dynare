@@ -1,8 +1,10 @@
 #! /bin/sh
 
-## Attention à garder -static-libgcc et -static-libstdc++ dans LDFLAGS et
-## DL_LDFLAGS lors des mises à jour de ce fichier
-## Garder aussi BINDIR dans DEFAULT_LFLAGS (pour UMFPACK)
+## Make sure to keep -static-libgcc, -static-libstdc++ and -static-libgfortran in LDFLAGS and
+## DL_LDFLAGS when updating this file.
+## This is needed to cope for differences between the MinGW libraries shipped by the official Octave
+## package for Windows, and the MinGW libraries from Debian used on the runners.
+## Also keep BINDIR in DEFAULT_LFLAGS (for UMFPACK)
 
 # Exit immediately on any error.
 set -e
@@ -72,7 +74,7 @@ fi
 : ${DEPEND_EXTRA_SED_PATTERN=""}
 
 : ${DL_LD="x86_64-w64-mingw32-g++"}
-: ${DL_LDFLAGS="-shared -static-libgcc -static-libstdc++"}
+: ${DL_LDFLAGS="-shared -static-libgcc -static-libstdc++ -static-libgfortran"}
 
 : ${RLD_FLAG=""}
 : ${RDYNAMIC_FLAG=""}
@@ -88,7 +90,7 @@ fi
 : ${LIBS="-lpsapi -lgdi32 -lm"}
 : ${FLIBS="-lm -lgfortran -lmingw32 -lmoldname -lmingwex -lmsvcrt -lquadmath -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32"}
 : ${LD_CXX="x86_64-w64-mingw32-g++"}
-: ${LDFLAGS="-static-libgcc -static-libstdc++"}
+: ${LDFLAGS="-static-libgcc -static-libstdc++ -static-libgfortran"}
 : ${LD_STATIC_FLAG=""}
 : ${LFLAGS=$DEFAULT_LFLAGS}
 : ${F77_INTEGER_8_FLAG=""}
