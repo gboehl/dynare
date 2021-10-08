@@ -80,7 +80,7 @@ available in the `Arch User Repository`_. The needed sources can be
 downloaded from the `package status in Arch Linux`_.
 
 Dynare will be installed under ``/usr/lib/dynare``. Documentation will
-be under ``/usr/share/doc/dynare-doc`` (only on Debian, Ubuntu and Linux Mint).
+be under ``/usr/share/doc/dynare`` (only on Debian, Ubuntu and Linux Mint).
 
 
 On macOS
