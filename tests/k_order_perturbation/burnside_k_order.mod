@@ -53,7 +53,7 @@
 
  */
 
-@#define k =7 
+@#define k =7
 
 var y x;
 varexo e;
@@ -133,7 +133,7 @@ nboth = M_.nboth;
 nfwrd = M_.nfwrd;
 nexog = M_.exo_nbr;
 ystart = oo_.dr.ys(oo_.dr.order_var,1);
-ex_ = [zeros(M_.maximum_lag,M_.exo_nbr), oo_.exo_simul'];
+ex_ = oo_.exo_simul';
 ysteady = oo_.dr.ys(oo_.dr.order_var);
 dr = oo_.dr;
 
@@ -143,7 +143,7 @@ seed = options_.DynareRandomStreams;
 tStart1 = tic; fortran_endo_simul = k_order_simul(order, nstat, npred, nboth, nfwrd, nexog, ystart, ex_, ysteady, dr); tElapsed1 = toc(tStart1);
 tStart2 = tic; dynare_endo_simul = dynare_simul_(order, nstat, npred, nboth, nfwrd, nexog, ystart,ex_,vcov,seed, ysteady, dr); tElapsed2 = toc(tStart2);
 
-if max(max(abs(oo_.endo_simul-fortran_endo_simul(oo_.dr.order_var,2:end)))) > 1e-10
+if max(max(abs(oo_.endo_simul-fortran_endo_simul(oo_.dr.order_var,:)))) > 1e-10
     error('Error in k_order_simul: inaccurate simulation');
 end;
 
