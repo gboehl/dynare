@@ -169,6 +169,7 @@ end;
 planner_objective pi^2 +(((1-theta)*(1-betta*theta)/theta*((1-alppha)/(1-alppha+alppha*epsilon)))*(siggma+(phi+alppha)/(1-alppha)))/epsilon*y_gap^2;
 
 ramsey_model(instruments=(i),planner_discount=betta);
+resid;
 stoch_simul(order=1,irf=13) x pi p u;
 
 verbatim;
