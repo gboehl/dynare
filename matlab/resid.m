@@ -102,11 +102,11 @@ if nargout == 0
     ind = [];
     disp('Residuals of the static equations:')
     skipline()
-    for i=1:M_.orig_endo_nbr
-        if abs(z(i)) < options_.solve_tolf/100
+    for i=1:M_.orig_eq_nbr
+        if abs(z(i+M_.ramsey_eq_nbr)) < options_.solve_tolf/100
             tmp = 0;
         else
-            tmp = z(i);
+            tmp = z(i+M_.ramsey_eq_nbr);
         end
         if istag
             tg = tags(cell2mat(tags(:,1)) == i,2:3); % all tags for equation i
