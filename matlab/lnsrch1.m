@@ -64,8 +64,10 @@ if ~isfinite(summ)
         fprintf('\nAn infinite element was encountered when trying to solve equation(s) %s \n',eq_number_string)
         fprintf('with respect to the variable(s): %s.\n',var_string)
         fprintf('The values of the endogenous variables when the problem was encountered were:\n')
+        label_width=size(char(Model.endo_names),2)+2;
+        label_string=sprintf('%%-%us %%8.4g \\n',label_width);
         for ii=1:length(xold)
-            fprintf('%-s % 8.4g \n', Model.endo_names{ii}, xold(ii));
+            fprintf(label_string, Model.endo_names{ii}, xold(ii));
         end
         skipline();
     end
