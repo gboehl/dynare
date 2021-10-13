@@ -545,6 +545,16 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                        for ii=1:length(generic_post_data_file_name)
                            delete_stale_file([MetropolisFolder filesep M_.fname '_' generic_post_data_file_name{1,ii} '*']);
                        end
+                       % restore compatibility for loading pre-4.6.2 runs where estim_params_ was not saved; see 6e06acc7 and !1944
+                       NumberOfDrawsFiles = length(dir([M_.dname '/metropolis/' M_.fname '_posterior_draws*' ]));
+                       if NumberOfDrawsFiles>0
+                           temp=load([M_.dname '/metropolis/' M_.fname '_posterior_draws1']);
+                           if ~isfield(temp,'estim_params_')
+                               for file_iter=1:NumberOfDrawsFiles
+                                   save([M_.dname '/metropolis/' M_.fname '_posterior_draws' num2str(file_iter)],'estim_params_','-append') 
+                               end
+                           end
+                       end
                    end
                 end
                 oo_ = compute_moments_varendo('posterior',options_,M_,oo_,var_list_);
