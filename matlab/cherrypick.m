@@ -134,10 +134,22 @@ for i=1:length(eqtags)
     end
     if ~isempty(ispac)
         [rhs, growthneutralitycorrection] = write_expectations(eqtags{i}, ispac.name, 'pac');
-        lhs = sprintf('%s_PE', eqtags{i});
-        RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), lhs);
-        if ~isempty(growthneutralitycorrection)
-            RHS = sprintf('%s + %s', RHS, growthneutralitycorrection);
+        if ~isempty(rhs)
+            lhs = sprintf('%s_PE', eqtags{i});
+            if isempty(growthneutralitycorrection)
+                RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), lhs);
+            else
+                RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), sprintf('%s+%s', lhs, growthneutralitycorrection));
+            end
+        else
+            % MCE version of the PAC equation.
+            [rhs, growthneutralitycorrection] = write_pac_mce_expectations(eqtags{i}, ispac.name);
+            lhs = sprintf('%s_Z', eqtags{i});
+            if isempty(growthneutralitycorrection)
+                RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), lhs);
+            else
+                RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), sprintf('%s+%s', lhs, growthneutralitycorrection));
+            end
         end
     end
     % Print equation for unrolled PAC/VAR-expectation and update
