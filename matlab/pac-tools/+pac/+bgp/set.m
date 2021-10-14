@@ -59,7 +59,7 @@ function [M_, done] = writebgpfield(type, pacmodel, eqtag, ide, xflag, nonzerome
 done = false;
 if isfield(M_.pac.(pacmodel).equations.(eqtag), type)
     if ~isfield(M_.pac.(pacmodel).equations.(eqtag).additive, 'bgp')
-        M_.pac.(pacmodel).equations.(eqtag).(type).bgp = zeros(1, length(M_.pac.(pacmodel).equations.(eqtag).(type).params));
+        M_.pac.(pacmodel).equations.(eqtag).(type).bgp = repmat({false}, 1, length(M_.pac.(pacmodel).equations.(eqtag).(type).params));
     end
     [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).(type).vars);
     if isvar
@@ -68,7 +68,7 @@ if isfield(M_.pac.(pacmodel).equations.(eqtag), type)
         else
             assert(M_.pac.(pacmodel).equations.(eqtag).(type).isendo(ie), 'Variable type issue.')
         end
-        M_.pac.(pacmodel).equations.(eqtag).(type).bgp(ie) = nonzeromean;
+        M_.pac.(pacmodel).equations.(eqtag).(type).bgp{ie} = nonzeromean;
         done = true;
     end
 end

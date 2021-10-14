@@ -173,7 +173,7 @@ for e=1:number_of_pac_eq
         if ~isempty(equations.(eqtag).h1_param_indices)
             DynareModel.params(equations.(eqtag).h1_param_indices) = .0;
         end
-    end 
+    end
     % Update the parameter related to the growth neutrality correction.
     if isfield(equations.(eqtag), 'non_optimizing_behaviour')
         gamma = DynareModel.params(equations.(eqtag).share_of_optimizing_agents_index);
@@ -185,46 +185,61 @@ for e=1:number_of_pac_eq
         % there is no exogenous variables in the model and in the
         % absence of non optimizing agents.
         gg = -(growthneutrality-1); % Finite sum of autoregressive parameters + infinite sum of the coefficients in the PAC expectation term.
-        cc = 1.0-gamma*gg;          % First adjustment of the growth neutrality correction (should also be divided by gamma, done below at the end of this section).
-        % We may have to further change the correction if we have nonzero mean exogenous variables.
+        cc = 1.0/gamma-gg;          % First adjustment of the growth neutrality correction (should also be divided by gamma, done below at the end of this section).
+                                    % We may have to further change the correction if we have nonzero mean exogenous variables.
+        ll = 0.0;
         if isfield(equations.(eqtag), 'optim_additive')
             % Exogenous variables are present in the λ part (optimizing agents).
-            tmp = 0;
+            tmp0 = 0;
             for i=1:length(equations.(eqtag).optim_additive.params)
-                if isnan(equations.(eqtag).optim_additive.params(i)) && equations.(eqtag).optim_additive.bgp(i)
-                    tmp = tmp + equations.(eqtag).optim_additive.scaling_factor(i)*equations.(eqtag).optim_additive.bgp(i);
-                elseif ~isnan(equations.(eqtag).optim_additive.params(i)) && equations.(eqtag).optim_additive.bgp(i)
-                    tmp = tmp + DynareModel.params(equations.(eqtag).optim_additive.params(i))*equations.(eqtag).optim_additive.scaling_factor(i)*equations.(eqtag).optim_additive.bgp(i);
+                if isnan(equations.(eqtag).optim_additive.params(i)) && islogical(equations.(eqtag).optim_additive.bgp{i}) && equations.(eqtag).optim_additive.bgp{i}
+                    tmp0 = tmp0 + equations.(eqtag).optim_additive.scaling_factor(i);
+                elseif ~isnan(equations.(eqtag).optim_additive.params(i)) && islogical(equations.(eqtag).optim_additive.bgp{i}) && equations.(eqtag).optim_additive.bgp{i}
+                    tmp0 = tmp0 + DynareModel.params(equations.(eqtag).optim_additive.params(i))*equations.(eqtag).optim_additive.scaling_factor(i);
+                elseif ~islogical(equations.(eqtag).optim_additive.bgp{i})
+                    error('It is not possible to provide a value for the mean of an exogenous variable appearing in the optimal part of the PAC equation.')
                 end
             end
-            cc = cc - gamma*tmp;
+            cc = cc - tmp0;
         end
         if gamma<1
             if isfield(equations.(eqtag), 'non_optimizing_behaviour.params')
                 % Exogenous variables are present in the 1-λ part (rule of thumb agents).
-                tmp = 0;
+                tmp0 = 0;
+                tmp1 = 0;
                 for i=1:length(equations.(eqtag).non_optimizing_behaviour.params)
-                    if isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && equations.(eqtag).non_optimizing_behaviour.bgp(i)
-                        tmp = tmp + equations.(eqtag).non_optimizing_behaviour.scaling_factor(i)*equations.(eqtag).non_optimizing_behaviour.bgp(i);
-                    elseif ~isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && equations.(eqtag).non_optimizing_behaviour.bgp(i)
-                        tmp = tmp + DynareModel.params(equations.(eqtag).non_optimizing_behaviour.params(i))*equations.(eqtag).non_optimizing_behaviour.scaling_factor(i)*equations.(eqtag).non_optimizing_behaviour.bgp(i);
+                    if isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && islogical(equations.(eqtag).non_optimizing_behaviour.bgp{i}) && equations.(eqtag).non_optimizing_behaviour.bgp{i}
+                        tmp0 = tmp0 + equations.(eqtag).non_optimizing_behaviour.scaling_factor(i);
+                    elseif ~isnan(equations.(eqtag).non_optimizing_behaviour.params(i)) && islogical(equations.(eqtag).non_optimizing_behaviour.bgp{i}) && equations.(eqtag).non_optimizing_behaviour.bgp{i}
+                        tmp0 = tmp0 + DynareModel.params(equations.(eqtag).non_optimizing_behaviour.params(i))*equations.(eqtag).non_optimizing_behaviour.scaling_factor(i);
+                    elseif ~islogical(equations.(eqtag).non_optimizing_behaviour.bgp{i}) && isnumeric(equations.(eqtag).non_optimizing_behaviour.bgp{i}) && isnan(equations.(eqtag).non_optimizing_behaviour.params(i))
+                        tmp1 = tmp1 + equations.(eqtag).non_optimizing_behaviour.scaling_factor(i)*equations.(eqtag).non_optimizing_behaviour.bgp{i};
+                    elseif ~islogical(equations.(eqtag).non_optimizing_behaviour.bgp{i}) && isnumeric(equations.(eqtag).non_optimizing_behaviour.bgp{i}) && ~isnan(equations.(eqtag).non_optimizing_behaviour.params(i))
+                        tmp1 = tmp1 + equations.(eqtag).non_optimizing_behaviour.scaling_factor(i)*equations.(eqtag).non_optimizing_behaviour.params(i)*equations.(eqtag).non_optimizing_behaviour.bgp{i};
                     end
                 end
-                cc = cc - (1.0-gamma)*tmp;
+                cc = cc - (1.0-gamma)*tmp0/gamma;
+                ll = -(1.0-gamma)*tmp1/gamma; % TODO: ll should be added as a constant in the PAC equation (under the λ part) when unrolling pac_expectation.
             end
         end
         if isfield(equations.(eqtag), 'additive')
             % Exogenous variables are present outside of the λ and (1-λ) parts (or we have exogenous variables in a "pure" PAC equation.
-            tmp = 0;
+            tmp0 = 0;
+            tmp1 = 0;
             for i=1:length(equations.(eqtag).additive.params)
-                if isnan(equations.(eqtag).additive.params(i)) && equations.(eqtag).additive.bgp(i)
-                    tmp = tmp + equations.(eqtag).additive.scaling_factor(i)*equations.(eqtag).additive.bgp(i);
-                elseif ~isnan(equations.(eqtag).additive.params(i)) && equations.(eqtag).additive.bgp(i)
-                    tmp = tmp + DynareModel.params(equations.(eqtag).additive.params(i))*equations.(eqtag).additive.scaling_factor(i)*equations.(eqtag).additive.bgp(i);
+                if isnan(equations.(eqtag).additive.params(i)) && islogical(equations.(eqtag).additive.bgp{i}) && equations.(eqtag).additive.bgp{i}
+                    tmp0 = tmp0 + equations.(eqtag).additive.scaling_factor(i);
+                elseif ~isnan(equations.(eqtag).additive.params(i)) && islogical(equations.(eqtag).additive.bgp{i}) && equations.(eqtag).additive.bgp{i}
+                    tmp0 = tmp0 + DynareModel.params(equations.(eqtag).additive.params(i))*equations.(eqtag).additive.scaling_factor(i);
+                elseif ~islogical(equations.(eqtag).additive.bgp{i}) && isnumeric(equations.(eqtag).additive.bgp{i}) && isnan(equations.(eqtag).additive.params(i))
+                    tmp1 = tmp1 + equations.(eqtag).additive.scaling_factor(i)*equations.(eqtag).additive.bgp{i};
+                elseif ~islogical(equations.(eqtag).additive.bgp{i}) && isnumeric(equations.(eqtag).additive.bgp{i}) && ~isnan(equations.(eqtag).additive.params(i))
+                    tmp1 = tmp1 + equations.(eqtag).additive.scaling_factor(i)*equations.(eqtag).additive.params(i)*equations.(eqtag).additive.bgp{i};
                 end
             end
-            cc = cc - tmp;
+            cc = cc - tmp0/gamma;
+            ll = ll - tmp1/gamma; % TODO: ll should be added as a constant in the PAC equation (under the λ part) when unrolling pac_expectation.
         end
-        DynareModel.params(pacmodel.growth_neutrality_param_index) = cc/gamma;
+        DynareModel.params(pacmodel.growth_neutrality_param_index) = cc; % Multiplies the variable or expression provided though the growth option in command pac_model.
     end
 end
