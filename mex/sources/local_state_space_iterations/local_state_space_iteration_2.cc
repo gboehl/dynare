@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2019 Dynare Team
+ * Copyright © 2010-2021 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -80,16 +80,10 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
           int variable_ = variable + particle_;
           // +ghx·yhat2+ghu·u
 #ifdef FIRST_ORDER_LOOP
-          for (int column = 0, column_ = 0; column < q; column++, column_ += m)
-            {
-              int i1 = variable+column_;
-              int i2 = column+particle__;
-              int i3 = column+particle___;
-              y2[variable_] += ghx[i1]*yhat2[i2];
-              y2[variable_] += ghu[i1]*epsilon[i3];
-            }
-          for (int column = q, column_ = q*m; column < n; column++, column_ += m)
+          for (int column = 0, column_ = 0; column < n; column++, column_ += m)
             y2[variable_] += ghx[variable+column_]*yhat2[column+particle__];
+          for (int column = 0, column_ = 0; column < q; column++, column_ += m)
+            y2[variable_] += ghu[variable+column_]*epsilon[column+particle___];
 #endif
           // +ghxx·yhat1⊗yhat1
           for (int i = 0; i < n*(n+1)/2; i++)
@@ -163,16 +157,10 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
           int variable_ = variable + particle_;
           // +ghx·yhat+ghu·u
 #ifdef FIRST_ORDER_LOOP
-          for (int column = 0, column_ = 0; column < q; column++, column_ += m)
-            {
-              int i1 = variable+column_;
-              int i2 = column+particle__;
-              int i3 = column+particle___;
-              y[variable_] += ghx[i1]*yhat[i2];
-              y[variable_] += ghu[i1]*epsilon[i3];
-            }
-          for (int column = q, column_ = q*m; column < n; column++, column_ += m)
+          for (int column = 0, column_ = 0; column < n; column++, column_ += m)
             y[variable_] += ghx[variable+column_]*yhat[column+particle__];
+          for (int column = 0, column_ = 0; column < q; column++, column_ += m)
+            y[variable_] += ghu[variable+column_]*epsilon[column+particle___];
 #endif
           // +ghxx·yhat⊗yhat
           for (int i = 0; i < n*(n+1)/2; i++)
