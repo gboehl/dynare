@@ -1,6 +1,6 @@
 function dummy = get(pacmodel, paceq, kind, id)
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -19,4 +19,4 @@ function dummy = get(pacmodel, paceq, kind, id)
 
 global M_
 
-dummy = M_.pac.(pacmodel).equations.(M_.pac.(pacmodel).tag_map{strcmp(paceq, M_.pac.(pacmodel).tag_map(:,1)),2}).(kind).bgp(id);
+dummy = M_.pac.(pacmodel).equations.(M_.pac.(pacmodel).tag_map{strcmp(paceq, M_.pac.(pacmodel).tag_map(:,1)),2}).(kind).bgp{id};

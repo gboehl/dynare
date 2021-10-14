@@ -36,7 +36,7 @@ c_z_2 = -.1;
 c_z_dx2 = .3;
 c_z_u = .3;
 c_z_dv = .4;
-c_z_s  = -.2; 
+c_z_s  = -.2;
 cx = 1.0;
 cy = 1.0;
 
@@ -101,45 +101,117 @@ end;
 pac.initialize('pacman');
 
 // Exogenous variables with non zero mean:
-pac.bgp.set('pacman', 'zpac', 's', .2);
-pac.bgp.set('pacman', 'zpac', 'x', .2);
-pac.bgp.set('pacman', 'zpac', 'dx2', .2);
+pac.bgp.set('pacman', 'zpac', 's', true);
+pac.bgp.set('pacman', 'zpac', 'x', .0);
+pac.bgp.set('pacman', 'zpac', 'dx2', .0);
 
 // Update the parameters of the PAC expectation model (h0 and h1 vectors, growth neutrality correction).
 pac.update.expectation('pacman');
 
 id = find(strcmp('s', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.optim_additive.vars);
+if ~pac.bgp.get('pacman', 'zpac', 'optim_additive', id)
+    error('bgp field in optim_additive for variable s is wrong.')
+end
+
+id = find(strcmp('s', M_.endo_names));
 id = find(id==M_.pac.pacman.equations.eq0.additive.vars);
-if ~pac.bgp.get('pacman', 'zpac', 'additive', id)
-   error('bgp field in additive is wrong.')
+if ~isempty(id)
+    error('Variable s should not be under M_.pac.pacman.equations.eq0.additive.')
+end
+
+id = find(strcmp('s', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.non_optimizing_behaviour.vars);
+if ~isempty(id)
+    error('Variable s should not be under M_.pac.pacman.equations.eq0.non_optimizing_behaviour.')
+end
+
+id = find(strcmp('dv', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.optim_additive.vars);
+if pac.bgp.get('pacman', 'zpac', 'optim_additive', id)
+   error('bgp field in optim_additive for variable dv is wrong.')
 end
 
 id = find(strcmp('dv', M_.endo_names));
 id = find(id==M_.pac.pacman.equations.eq0.additive.vars);
-if pac.bgp.get('pacman', 'zpac', 'additive', id)
-   error('bgp field in additive is wrong.')
+if ~isempty(id)
+    error('Variable dv should not be under M_.pac.pacman.equations.eq0.additive.')
+end
+
+id = find(strcmp('dv', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.non_optimizing_behaviour.vars);
+if ~isempty(id)
+    error('Variable dv should not be under M_.pac.pacman.equations.eq0.non_optimizing_behaviour.')
 end
 
 id = find(strcmp('x', M_.endo_names));
 id = find(id==M_.pac.pacman.equations.eq0.non_optimizing_behaviour.vars);
-if ~pac.bgp.get('pacman', 'zpac', 'non_optimizing_behaviour', id)
-   error('bgp field in non_optimizing_behaviour is wrong.')
+if ~(abs(pac.bgp.get('pacman', 'zpac', 'non_optimizing_behaviour', id))<1e-12)
+    error('bgp field in non_optimizing_behaviour for variable x is wrong.')
+end
+
+id = find(strcmp('x', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.optim_additive.vars);
+if ~isempty(id)
+    error('Variable x should not be under M_.pac.pacman.equations.eq0.optim_additive.')
+end
+
+id = find(strcmp('x', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.additive.vars);
+if ~isempty(id)
+    error('Variable x should not be under M_.pac.pacman.equations.eq0.additive.')
 end
 
 id = find(strcmp('y', M_.endo_names));
 id = find(id==M_.pac.pacman.equations.eq0.non_optimizing_behaviour.vars);
-if pac.bgp.get('pacman', 'zpac', 'non_optimizing_behaviour', id)
-   error('bgp field in non_optimizing_behaviour is wrong.')
+if ~islogical(pac.bgp.get('pacman', 'zpac', 'non_optimizing_behaviour', id)) || pac.bgp.get('pacman', 'zpac', 'non_optimizing_behaviour', id)
+   error('bgp field in non_optimizing_behaviour for variable y is wrong.')
+end
+
+id = find(strcmp('y', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.optim_additive.vars);
+if ~isempty(id)
+    error('Variable y should not be under M_.pac.pacman.equations.eq0.optim_additive.')
+end
+
+id = find(strcmp('y', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.additive.vars);
+if ~isempty(id)
+    error('Variable y should not be under M_.pac.pacman.equations.eq0.additive.')
+end
+
+id = find(strcmp('dx2', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.additive.vars);
+if ~(abs(pac.bgp.get('pacman', 'zpac', 'additive', id))<1e-12)
+    error('bgp field in additive is wrong.')
+end
+
+id = find(strcmp('dx2', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.non_optimizing_behaviour.vars);
+if ~isempty(id)
+    error('Variable y should not be under M_.pac.pacman.equations.eq0.non_optimizing_behaviour.')
 end
 
 id = find(strcmp('dx2', M_.endo_names));
 id = find(id==M_.pac.pacman.equations.eq0.optim_additive.vars);
-if ~pac.bgp.get('pacman', 'zpac', 'optim_additive', id)
-   error('bgp field in optim_additive is wrong.')
+if ~isempty(id)
+    error('Variable dx2 should not be under M_.pac.pacman.equations.eq0.optim_additive.')
 end
 
 id = find(strcmp('u', M_.endo_names));
 id = find(id==M_.pac.pacman.equations.eq0.additive.vars);
-if pac.bgp.get('pacman', 'zpac', 'optim_additive', id)
-   error('bgp field in optim_additive is wrong.')
+if ~islogical(pac.bgp.get('pacman', 'zpac', 'additive', id)) || pac.bgp.get('pacman', 'zpac', 'additive', id)
+   error('bgp field in additive for variable u is wrong.')
+end
+
+id = find(strcmp('u', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.non_optimizing_behaviour.vars);
+if ~isempty(id)
+    error('Variable u should not be under M_.pac.pacman.equations.eq0.non_optimizing_behaviour.')
+end
+
+id = find(strcmp('u', M_.endo_names));
+id = find(id==M_.pac.pacman.equations.eq0.optim_additive.vars);
+if ~isempty(id)
+    error('Variable u should not be under M_.pac.pacman.equations.eq0.optim_additive.')
 end
