@@ -1,9 +1,10 @@
 mex_PROGRAMS = local_state_space_iteration_2 local_state_space_iteration_3 local_state_space_iteration_k
 
-nodist_local_state_space_iteration_2_SOURCES = local_state_space_iteration_2.cc
+nodist_local_state_space_iteration_2_SOURCES = local_state_space_iteration_2.cc lssi2_avx2.S lssi2_avx512.S
 nodist_local_state_space_iteration_3_SOURCES = local_state_space_iteration_3.f08
 nodist_local_state_space_iteration_k_SOURCES = local_state_space_iteration_k.f08
 
+local_state_space_iteration_2_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../sources/local_state_space_iterations
 local_state_space_iteration_2_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
 local_state_space_iteration_2_LDFLAGS = $(AM_LDFLAGS) $(OPENMP_LDFLAGS)
 
@@ -24,4 +25,7 @@ CLEANFILES = $(nodist_local_state_space_iteration_2_SOURCES) \
 	$(LN_S) -f $< $@
 
 %.cc: $(top_srcdir)/../../sources/local_state_space_iterations/%.cc
+	$(LN_S) -f $< $@
+
+%.S: $(top_srcdir)/../../sources/local_state_space_iterations/%.S
 	$(LN_S) -f $< $@

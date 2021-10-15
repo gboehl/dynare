@@ -26,11 +26,15 @@
 #include <algorithm>
 #include <tuple>
 #include <string>
+#include <thread>
+#include <cstdlib>
 
 #include <dynmex.h>
 #include <dynblas.h>
 
 #include <omp.h>
+
+#include "lssi2.hh"
 
 /*
   Uncomment the following line to use BLAS instead of loops when computing
@@ -136,18 +140,22 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
     }
 }
 
+/* Generic kernel for the iteration without pruning.
+   More specialized kernels are implemented in assembly. */
 void
-ss2Iteration(double *y, const double *yhat, const double *epsilon,
-             const double *ghx, const double *ghu,
-             const double *constant, const double *ghxx, const double *ghuu, const double *ghxu,
-             blas_int m, blas_int n, blas_int q, blas_int s, int number_of_threads)
+lssi2_generic(double *y, const double *yhat, const double *epsilon,
+              const double *ghx, const double *ghu,
+              const double *constant, const double *ghxx, const double *ghuu, const double *ghxu,
+              blas_int m, blas_int n, blas_int q, blas_int s,
+              int number_of_threads)
 {
+  auto [ii1, ii2, ii3] = set_vector_of_indices(n, m); // vector indices for ghxx
+  auto [jj1, jj2, jj3] = set_vector_of_indices(q, m); // vector indices for ghuu
+
 #ifdef USE_BLAS_AT_FIRST_ORDER
   const double one = 1.0;
   const blas_int ONE = 1;
 #endif
-  auto [ii1, ii2, ii3] = set_vector_of_indices(n, m); // vector indices for ghxx
-  auto [jj1, jj2, jj3] = set_vector_of_indices(q, m); // vector indices for ghuu
 #pragma omp parallel for num_threads(number_of_threads)
   for (int particle = 0; particle < s; particle++)
     {
@@ -195,6 +203,65 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
               y[variable_] += ghxu[variable+i]*epsilon[s]*yhat[v];
         }
     }
+}
+
+void
+ss2Iteration(double *y, const double *yhat, const double *epsilon,
+             const double *ghx, const double *ghu,
+             const double *constant, const double *ghxx, const double *ghuu, const double *ghxu,
+             blas_int m, blas_int n, blas_int q, blas_int s, int number_of_threads)
+{
+  std::string kernel{"auto"};
+  if (char *kstr = getenv("DYNARE_LSSI2_KERNEL"); kstr && *kstr != '\0')
+    kernel = kstr;
+
+  // Runtime selection of kernel
+#if defined(__x86_64__) && defined(__LP64__)
+  if ((kernel == "auto" &&__builtin_cpu_supports("avx512f"))
+      || kernel == "avx512")
+    {
+      int it_total {s/8};
+      int it_per_thread {it_total / number_of_threads};
+      std::vector<std::jthread> threads;
+      for (int i {0}; i < number_of_threads; i++)
+        {
+          int offset {i*it_per_thread*8};
+          int s2 {i == number_of_threads - 1 ? it_total*8 - offset : it_per_thread*8};
+          threads.emplace_back(lssi2_avx512, y+offset*m, yhat+offset*n, epsilon+offset*q,
+                               ghx, ghu, constant, ghxx, ghuu, ghxu,
+                               static_cast<int>(m), static_cast<int>(n), static_cast<int>(q), s2);
+        }
+      if (int rem {s % 8}; rem != 0)
+        // If s is not a multiple of 8, use the generic routine to finish the computation
+        lssi2_generic(y+(s-rem)*m, yhat+(s-rem)*n, epsilon+(s-rem)*q,
+                      ghx, ghu, constant, ghxx, ghuu, ghxu, m, n, q, rem, 1);
+    }
+  else if ((kernel == "auto" &&__builtin_cpu_supports("avx2") && __builtin_cpu_supports("fma"))
+           || kernel == "avx2")
+    {
+      int it_total {s/4};
+      int it_per_thread {it_total / number_of_threads};
+      std::vector<std::jthread> threads;
+      for (int i {0}; i < number_of_threads; i++)
+        {
+          int offset {i*it_per_thread*4};
+          int s2 {i == number_of_threads - 1 ? it_total*4 - offset : it_per_thread*4};
+          threads.emplace_back(lssi2_avx2, y+offset*m, yhat+offset*n, epsilon+offset*q,
+                               ghx, ghu, constant, ghxx, ghuu, ghxu,
+                               static_cast<int>(m), static_cast<int>(n), static_cast<int>(q), s2);
+        }
+      if (int rem {s % 4}; rem != 0)
+        // If s is not a multiple of 4, use the generic routine to finish the computation
+        lssi2_generic(y+(s-rem)*m, yhat+(s-rem)*n, epsilon+(s-rem)*q,
+                      ghx, ghu, constant, ghxx, ghuu, ghxu, m, n, q, rem, 1);
+    }
+  else
+#endif
+    if (kernel == "auto" || kernel == "generic")
+      lssi2_generic(y, yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu,
+                    m, n, q, s, number_of_threads);
+    else
+      mexErrMsgTxt(("Unknown kernel: " + kernel).c_str());
 }
 
 void

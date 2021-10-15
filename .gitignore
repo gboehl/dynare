@@ -90,10 +90,12 @@ doc/internals/ltxpng
 /mex/build/matlab/*/*.cc
 /mex/build/matlab/*/*.f08
 /mex/build/matlab/*/*.F08
+/mex/build/matlab/*/*.S
 /mex/build/octave/*/*.c
 /mex/build/octave/*/*.cc
 /mex/build/octave/*/*.f08
 /mex/build/octave/*/*.F08
+/mex/build/octave/*/*.S
 
 # Fortran modules
 /mex/build/matlab/*/*.mod
