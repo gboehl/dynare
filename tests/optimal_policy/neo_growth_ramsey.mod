@@ -54,6 +54,15 @@ if abs(cond_W_hand_L_SS - planner_objective_value.conditional.steady_initial_mul
    error('Inaccurate conditional welfare with Lagrange multiplier set to its steady-state value');
 end;
 
+if abs(oo_.mean(strmatch('U',M_.endo_names,'exact'))-oo1.oo_.mean(strmatch('U',M1.M_.endo_names,'exact')))>1e-6
+    error('Utility inconsistent');
+end
+
+if abs(planner_objective_value.unconditional-oo_.mean(strmatch('U',M_.endo_names,'exact'))/(1-beta)) > 1e-6;
+   error('Unconditional welfare assessment does not match utility');
+end;
+
+
 initial_condition_states = zeros(M1.M_.endo_nbr,M1.M_.maximum_lag);
 initial_condition_states(1:M1.M_.orig_endo_nbr,:) = repmat(oo1.oo_.dr.ys(1:M1.M_.orig_endo_nbr),1,M1.M_.maximum_lag);
 shock_matrix = zeros(1,M1.M_.exo_nbr);
