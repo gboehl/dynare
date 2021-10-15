@@ -9,7 +9,7 @@ gamma = 1;
 delta = 0.012;
 alpha = 0.4;
 rho = 0.95;
-s = 0.007;
+s = 0.07; % increased by a factor of 10 from 0.007 to increase risk correction
 
 model;
 c^(-gamma)=beta*c(+1)^(-gamma)*(alpha*exp(z(+1))*k^(alpha-1)+1-delta);
