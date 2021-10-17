@@ -4712,7 +4712,7 @@ Occasionally binding constraints (OCCBIN)
 Dynare allows simulating models with up to two occasionally-binding constraints by 
 relying on a piecewise linear solution as in *Guerrieri and Iacoviello (2015)*.
 It also allows estimating such models employing either the inversion filter of
-*Cuba-Borda, Guerrieri, and Iacoviello (2019)* or the piecewise Kalman filter of
+*Cuba-Borda, Guerrieri, Iacoviello, and Zhong (2019)* or the piecewise Kalman filter of
 *Giovannini, Pfeiffer, and Ratto (2021)*. To trigger computations involving
 occasionally-binding constraints requires
 
@@ -4953,7 +4953,7 @@ All of these elements are discussed in the following.
 
     .. option:: likelihood_inversion_filter
 
-       Employ the inversion filter of *Cuba-Borda, Guerrieri, and Iacoviello (2019)* when estimating
+       Employ the inversion filter of *Cuba-Borda, Guerrieri, Iacoviello, and Zhong (2019)* when estimating
        the model. Default: not enabled.
 
     .. option:: likelihood_piecewise_kalman_filter
@@ -4967,7 +4967,7 @@ All of these elements are discussed in the following.
 
     .. option:: smoother_inversion_filter
 
-       Employ the inversion filter of *Cuba-Borda, Guerrieri, and Iacoviello (2019)* when running the
+       Employ the inversion filter of *Cuba-Borda, Guerrieri, Iacoviello, and Zhong (2019)* when running the
        smoother. Default: not enabled.
 
     .. option:: smoother_piecewise_kalman_filter
