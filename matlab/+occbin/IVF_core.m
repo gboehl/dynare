@@ -19,7 +19,7 @@ function [filtered_errs, resids, Emat, stateval, error_code] = IVF_core(M_,oo_,o
 % - obs                     [T by N_obs]    observed data        
 % - init_val                [N by 1]        initial value of endogenous variables
 
-% Original authors: Pablo Cuba-Borda, Luca Guerrieri, Matteo Iacoviello and Molin Zhong
+% Original authors: Pablo Cuba-Borda, Luca Guerrieri, Matteo Iacoviello, and Molin Zhong
 % Original file downloaded from:
 % http://www.lguerrieri.com/jae-replication.zip
 % Adapted for Dynare by Dynare Team.
@@ -28,7 +28,7 @@ function [filtered_errs, resids, Emat, stateval, error_code] = IVF_core(M_,oo_,o
 % However the authors would appreciate acknowledgement of the source by
 % citation of any of the following papers:
 %
-% Pablo Cuba-Borda, Luca Guerrieri, and Matteo Iacoviello (2019): "Likelihood evaluation of models 
+% Pablo Cuba-Borda, Luca Guerrieri, Matteo Iacoviello, and Molin Zhong (2019): "Likelihood evaluation of models 
 % with occasionally binding constraints", Journal of Applied Econometrics,
 % 34(7), 1073-1085
 

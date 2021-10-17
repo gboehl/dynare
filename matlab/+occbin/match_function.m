@@ -28,7 +28,7 @@ function [resids, grad, state_out, E, M_, out] = match_function(err_0, obs_list,
 % However the authors would appreciate acknowledgement of the source by
 % citation of any of the following papers:
 %
-% Pablo Cuba-Borda, Luca Guerrieri, and Matteo Iacoviello (2019): "Likelihood evaluation of models 
+% Pablo Cuba-Borda, Luca Guerrieri, Matteo Iacoviello, and Molin Zhong (2019): "Likelihood evaluation of models 
 % with occasionally binding constraints", Journal of Applied Econometrics,
 % 34(7), 1073-1085
 

@@ -29,7 +29,7 @@ Files: matlab/+occbin/IVF_core.m
        matlab/+occbin/match_function.m
 Copyright: none
 License: public-domain-inversion-filter
- Original authors: Pablo Cuba-Borda, Luca Guerrieri, and Matteo Iacoviello
+ Original authors: Pablo Cuba-Borda, Luca Guerrieri, Matteo Iacoviello, and Molin Zhong
  Original file downloaded from:
  http://www.lguerrieri.com/jae-replication.zip
  Adapted for Dynare by Dynare Team.
@@ -38,7 +38,7 @@ License: public-domain-inversion-filter
  However the authors would appreciate acknowledgement of the source by
  citation of any of the following papers:
  .
- Pablo Cuba-Borda, Luca Guerrieri, and Matteo Iacoviello (2019): "Likelihood evaluation of models
+ Pablo Cuba-Borda, Luca Guerrieri, Matteo Iacoviello, and Molin Zhong (2019): "Likelihood evaluation of models
  with occasionally binding constraints", Journal of Applied Econometrics, 34(7), 1073-1085
 
 Files: matlab/+occbin/make_chart.m
