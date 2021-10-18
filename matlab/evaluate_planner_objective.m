@@ -43,7 +43,8 @@ function planner_objective_value = evaluate_planner_objective(M_,options_,oo_)
 
 % Similarly, taking the unconditional expectation of a second-order approximation of utility around the non-stochastic steady state yields a second-order approximation of unconditional welfare
 % E(W) = (1 - beta)^{-1} ( Ubar + U_x h_y E(yhat) + 0.5 ( (U_xx h_y^2 + U_x h_yy) E(yhat^2) + (U_xx h_u^2 + U_x h_uu) E(u^2) + U_x h_ss )
-% where E(yhat), E(yhat^2) and E(u^2) can be derived from oo_.mean and oo_.var
+% where E(yhat), E(yhat^2) and E(u^2) can be derived from oo_.mean and oo_.var. 
+% Importantly, E(yhat) and E(yhat^2) are second-order approximations, which is not the same as approximations computed with all the information provided by decision rules approximated up to the second order. The latter might include terms that are order 3 or 4 for the approximation of E(yhat^2), which we exclude here.
 
 % As for conditional welfare, the second-order approximation of welfare around the non-stochastic steady state leads to
 % W(y_{t-1}, u_t, sigma) = Wbar + W_y yhat_{t-1} + W_u u_t + W_yu yhat_{t-1} ⊗ u_t + 0.5 ( W_yy yhat_{t-1}^2 + W_uu u_t^2 + W_ss )
@@ -173,8 +174,7 @@ if options_.ramsey_policy
             Ey = oo_.mean;
             Eyhat = Ey - ys(dr.order_var(nstatic+(1:nspred)));
             
-            var_corr = Eyhat*Eyhat';
-            Eyhatyhat = oo_.var(:) + var_corr(:);
+            Eyhatyhat = oo_.var(:)
             Euu = M_.Sigma_e(:);
             
             EU = U + Uy*gy*Eyhat + 0.5*((Uyygygy + Uy*gyy)*Eyhatyhat + (Uyygugu + Uy*guu)*Euu + Uy*gss);
@@ -262,8 +262,7 @@ elseif options_.discretionary_policy
     Ey = oo_.mean;
     Eyhat = Ey - ys(dr.order_var(nstatic+(1:nspred)));
     
-    var_corr = Eyhat*Eyhat';
-    Eyhatyhat = oo_.var(:) + var_corr(:);
+    Eyhatyhat = oo_.var(:);
     Euu = M_.Sigma_e(:);
     
     EU = U + Uy*gy*Eyhat + 0.5*(Uyygygy*Eyhatyhat + Uyygugu*Euu);
