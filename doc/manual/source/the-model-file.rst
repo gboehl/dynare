@@ -4220,7 +4220,8 @@ Computing the stochastic solution
     variance-covariance of the endogenous variables. Contains
     theoretical variance if the ``periods`` option is not present and simulated variance
     otherwise. Only available for ``order<4``. At ``order=2`` it will be be
-    a second-order accurate approximation. At ``order=3``, theoretical moments
+    a second-order accurate approximation (i.e. ignoring terms of order 3 and 4 that would
+    arise when using the full second-order policy function). At ``order=3``, theoretical moments
     are only available with ``pruning``. The variables are arranged in declaration order.
 
 .. matvar:: oo_.var_list
@@ -10229,7 +10230,8 @@ with ``discretionary_policy`` or for optimal simple rules with ``osr``
 
     At the current stage, the stochastic context does not support the ``pruning`` option.
     At ``order>3``, only the computation of conditional welfare with steady state Lagrange 
-    multipliers is supported.
+    multipliers is supported. Note that at `order=2`, the output is based on the second-order
+    accurate approximation of the variance stored in `oo_.var`.
     
     *Example (stochastic context)*
 
