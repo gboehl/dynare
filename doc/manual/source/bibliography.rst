@@ -24,7 +24,7 @@ Bibliography
 * Collard, Fabrice and Michel Juillard (2001a): “Accuracy of stochastic perturbation methods: The case of asset pricing models,” *Journal of Economic Dynamics and Control*, 25, 979–999.
 * Collard, Fabrice and Michel Juillard (2001b): “A Higher-Order Taylor Expansion Approach to Simulation of Stochastic Forward-Looking Models with an Application to a Non-Linear Phillips Curve,” *Computational Economics*, 17, 125–139.
 * Corana, Angelo, M. Marchesi, Claudio Martini, and Sandro Ridella (1987): “Minimizing multimodal functions of continuous variables with the “simulated annealing” algorithm”, *ACM Transactions on Mathematical Software*, 13(3), 262–280.
-* Cuba-Borda, Pablo, Luca Guerrieri, and Matteo Iacoviello (2019): "Likelihood evaluation of models with occasionally binding constraints", Journal of Applied Econometrics, 34(7), 1073-1085
+* Cuba-Borda, Pablo, Luca Guerrieri, Matteo Iacoviello, and Molin Zhong (2019): "Likelihood evaluation of models with occasionally binding constraints", Journal of Applied Econometrics, 34(7), 1073-1085
 * Del Negro, Marco and Frank Schorfheide (2004): “Priors from General Equilibrium Models for VARs”, *International Economic Review*, 45(2), 643–673.
 * Dennis, Richard (2007): “Optimal Policy In Rational Expectations Models: New Solution Algorithms”, *Macroeconomic Dynamics*, 11(1), 31–55.
 * Duffie, Darrel and Kenneth J. Singleton (1993): “Simulated Moments Estimation of Markov Models of Asset Prices”, *Econometrica*, 61(4), 929-952.
