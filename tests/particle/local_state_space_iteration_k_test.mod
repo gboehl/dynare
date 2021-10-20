@@ -25,7 +25,8 @@ stoch_simul(order=2, periods=200, irf=0, k_order_solver);
 
 // Really perform the test
 
-nparticles = 100;
+nparticles = options_.particle.number_of_particles;
+nsims = 1e6/nparticles;
 
 /* We generate particles using realistic distributions (though this is not
    strictly needed) */
@@ -44,12 +45,12 @@ rf_ghxx = dr.ghxx(dr.restrict_var_list, :);
 rf_ghuu = dr.ghuu(dr.restrict_var_list, :);
 rf_ghxu = dr.ghxu(dr.restrict_var_list, :);
 
-tStart1 = tic; for i=1:10000, ynext1 = local_state_space_iteration_2(yhat, epsilon, rf_ghx, rf_ghu, rf_constant, rf_ghxx, rf_ghuu, rf_ghxu, options_.threads.local_state_space_iteration_2); end, tElapsed1 = toc(tStart1);
+tStart1 = tic; for i=1:nsims, ynext1 = local_state_space_iteration_2(yhat, epsilon, rf_ghx, rf_ghu, rf_constant, rf_ghxx, rf_ghuu, rf_ghxu, options_.threads.local_state_space_iteration_2); end, tElapsed1 = toc(tStart1);
 
-tStart2 = tic; for i=1:10000, ynext2 = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_); end, tElapsed2 = toc(tStart2);
+tStart2 = tic; for i=1:nsims, ynext2 = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_); end, tElapsed2 = toc(tStart2);
 
 
-tStart3 = tic; [udr] = folded_to_unfolded_dr(dr, M_, options_); for i=1:10000, ynext3 = local_state_space_iteration_fortran(yhat, epsilon, dr, M_, options_, udr); end, tElapsed3 = toc(tStart3);
+tStart3 = tic; [udr] = folded_to_unfolded_dr(dr, M_, options_); for i=1:nsims, ynext3 = local_state_space_iteration_fortran(yhat, epsilon, dr, M_, options_, udr); end, tElapsed3 = toc(tStart3);
 
 if max(max(abs(ynext1-ynext2))) > 1e-14
     error('Inconsistency between local_state_space_iteration_2 and local_state_space_iteration_k')
@@ -80,9 +81,9 @@ end
 
 stoch_simul(order=3, periods=200, irf=0, k_order_solver);
 
-tStart31 = tic; for i=1:10000, ynext31 = local_state_space_iteration_k(yhat, epsilon, oo_.dr, M_, options_); end, tElapsed31 = toc(tStart31);
+tStart31 = tic; for i=1:nsims, ynext31 = local_state_space_iteration_k(yhat, epsilon, oo_.dr, M_, options_); end, tElapsed31 = toc(tStart31);
 
-tStart32 = tic; [udr] = folded_to_unfolded_dr(oo_.dr, M_, options_); for i=1:10000, ynext32 = local_state_space_iteration_fortran(yhat, epsilon, oo_.dr, M_, options_, udr); end, tElapsed32 = toc(tStart32);
+tStart32 = tic; [udr] = folded_to_unfolded_dr(oo_.dr, M_, options_); for i=1:nsims, ynext32 = local_state_space_iteration_fortran(yhat, epsilon, oo_.dr, M_, options_, udr); end, tElapsed32 = toc(tStart32);
 
 if max(max(abs(ynext31-ynext32))) > 1e-14
     error('Inconsistency between local_state_space_iteration_2 and local_state_space_iteration_fortran')
