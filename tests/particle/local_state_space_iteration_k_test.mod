@@ -90,10 +90,10 @@ end
 
 if tElapsed32<tElapsed31
     skipline()
-    dprintf('local_state_space_iteration_fortran is %5.2f times faster than local_state_space_iteration_k', tElapsed2/tElapsed1)
+    dprintf('local_state_space_iteration_fortran is %5.2f times faster than local_state_space_iteration_k', tElapsed31/tElapsed32)
     skipline()
 else
     skipline()
-    dprintf('local_state_space_iteration_fortran is %5.2f times slower than local_state_space_iteration_k', tElapsed1/tElapsed2)
+    dprintf('local_state_space_iteration_fortran is %5.2f times slower than local_state_space_iteration_k', tElapsed32/tElapsed31)
     skipline()
 end
