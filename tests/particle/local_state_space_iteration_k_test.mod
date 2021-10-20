@@ -44,7 +44,7 @@ rf_ghxx = dr.ghxx(dr.restrict_var_list, :);
 rf_ghuu = dr.ghuu(dr.restrict_var_list, :);
 rf_ghxu = dr.ghxu(dr.restrict_var_list, :);
 
-tStart1 = tic; for i=1:10000, ynext1 = local_state_space_iteration_2(yhat, epsilon, rf_ghx, rf_ghu, rf_constant, rf_ghxx, rf_ghuu, rf_ghxu, 1); end, tElapsed1 = toc(tStart1);
+tStart1 = tic; for i=1:10000, ynext1 = local_state_space_iteration_2(yhat, epsilon, rf_ghx, rf_ghu, rf_constant, rf_ghxx, rf_ghuu, rf_ghxu, options_.threads.local_state_space_iteration_2); end, tElapsed1 = toc(tStart1);
 
 tStart2 = tic; for i=1:10000, ynext2 = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_); end, tElapsed2 = toc(tStart2);
 
