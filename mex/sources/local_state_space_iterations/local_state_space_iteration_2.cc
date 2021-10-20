@@ -85,7 +85,7 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
           for (int column = 0, column_ = 0; column < q; column++, column_ += m)
             y2[variable_] += ghu[variable+column_]*epsilon[column+particle___];
 #endif
-          // +ghxx·yhat1⊗yhat1
+          // +½ghxx·yhat1⊗yhat1
           for (int i = 0; i < n*(n+1)/2; i++)
             {
               int i1 = particle__+ii1[i];
@@ -95,7 +95,7 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
               else
                 y2[variable_] += ghxx[variable+ii3[i]]*yhat1[i1]*yhat1[i2];
             }
-          // +ghuu·u⊗u
+          // +½ghuu·u⊗u
           for (int j = 0; j < q*(q+1)/2; j++)
             {
               int j1 = particle___+jj1[j];
@@ -162,7 +162,7 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
           for (int column = 0, column_ = 0; column < q; column++, column_ += m)
             y[variable_] += ghu[variable+column_]*epsilon[column+particle___];
 #endif
-          // +ghxx·yhat⊗yhat
+          // +½ghxx·yhat⊗yhat
           for (int i = 0; i < n*(n+1)/2; i++)
             {
               int i1 = particle__+ii1[i];
@@ -172,7 +172,7 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
               else
                 y[variable_] += ghxx[variable+ii3[i]]*yhat[i1]*yhat[i2];
             }
-          // +ghuu·u⊗u
+          // +½ghuu·u⊗u
           for (int j = 0; j < q*(q+1)/2; j++)
             {
               int j1 = particle___+jj1[j];
@@ -205,7 +205,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     prhs[8] yhat_         [double]  [OPTIONAL] n×s array, time t particles (pruning additional latent variables).
     prhs[9] ss            [double]  [OPTIONAL] m×1 array, steady state for the union of the states and the observed variables (needed for the pruning mode).
 
-    prhs[9 or 11]         [double]  num of threads
+    prhs[8 or 10]         [double]  num of threads
 
     plhs[0] y             [double]  n×s array, time t+1 particles.
     plhs[1] y_            [double]  n×s array, time t+1 particles for the pruning latent variables.
@@ -223,8 +223,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   size_t s = mxGetN(prhs[0]); // Number of particles.
   size_t q = mxGetM(prhs[1]); // Number of innovations.
   size_t m = mxGetM(prhs[2]); // Number of elements in the union of states and observed variables.
-  //mexPrintf("\n s (the number of column of yhat) is equal to %d.", s);
-  //mexPrintf("\n The number of column of epsilon is %d.", mxGetN(prhs[1]));
   // Check the dimensions.
   if (s != mxGetN(prhs[1]) // Number of columns for epsilon
       || n != mxGetN(prhs[2]) // Number of columns for ghx
