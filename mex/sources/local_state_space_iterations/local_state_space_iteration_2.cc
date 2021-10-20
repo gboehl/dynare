@@ -31,7 +31,13 @@
 
 #include <omp.h>
 
-#define FIRST_ORDER_LOOP 1 // Comment out this line to use mkl-blas instead of loops when computing ghx*yhat and ghu*epsilon
+/*
+  Uncomment the following line to use BLAS instead of loops when computing
+  ghx·yhat and ghu·epsilon.
+  N.B.: Under MATLAB, this only works in single-threaded mode, otherwise one
+  gets a crash (because of the incompatibility between Intel and GNU OpenMPs).
+*/
+//#define USE_BLAS_AT_FIRST_ORDER
 
 std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>
 set_vector_of_indices(int n, int r)
@@ -57,7 +63,7 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
                      const double *constant, const double *ghxx, const double *ghuu, const double *ghxu, const double *ss,
                      blas_int m, blas_int n, blas_int q, blas_int s, int number_of_threads)
 {
-#ifndef FIRST_ORDER_LOOP
+#ifdef USE_BLAS_AT_FIRST_ORDER
   const double one = 1.0;
   const blas_int ONE = 1;
 #endif
@@ -71,7 +77,7 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
       int particle___ = particle*q;
       std::copy_n(constant, m, &y2[particle_]);
       std::copy_n(ss, m, &y1[particle_]);
-#ifndef FIRST_ORDER_LOOP
+#ifdef USE_BLAS_AT_FIRST_ORDER
       dgemv("N", &m, &n, &one, ghx, &m, &yhat2[particle__], &ONE, &one, &y2[particle_], &ONE);
       dgemv("N", &m, &q, &one, ghu, &m, &epsilon[particle___], &ONE, &one, &y2[particle_], &ONE);
 #endif
@@ -79,7 +85,7 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
         {
           int variable_ = variable + particle_;
           // +ghx·yhat2+ghu·u
-#ifdef FIRST_ORDER_LOOP
+#ifndef USE_BLAS_AT_FIRST_ORDER
           for (int column = 0, column_ = 0; column < n; column++, column_ += m)
             y2[variable_] += ghx[variable+column_]*yhat2[column+particle__];
           for (int column = 0, column_ = 0; column < q; column++, column_ += m)
@@ -109,7 +115,7 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
           for (int v = particle__, i = 0; v < particle__+n; v++)
             for (int s = particle___; s < particle___+q; s++, i += m)
               y2[variable_] += ghxu[variable+i]*epsilon[s]*yhat2[v];
-#ifdef FIRST_ORDER_LOOP
+#ifndef USE_BLAS_AT_FIRST_ORDER
           for (int column = 0, column_ = 0; column < q; column++, column_ += m)
             {
               int i1 = variable+column_;
@@ -122,7 +128,7 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
             y1[variable_] += ghx[variable+column_]*yhat1[column+particle__];
 #endif
         }
-#ifndef FIRST_ORDER_LOOP
+#ifdef USE_BLAS_AT_FIRST_ORDER
       dgemv("N", &m, &n, &one, &ghx[0], &m, &yhat1[particle__], &ONE, &one, &y1[particle_], &ONE);
       dgemv("N", &m, &q, &one, &ghu[0], &m, &epsilon[particle___], &ONE, &one, &y1[particle_], &ONE);
 #endif
@@ -135,7 +141,7 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
              const double *constant, const double *ghxx, const double *ghuu, const double *ghxu,
              blas_int m, blas_int n, blas_int q, blas_int s, int number_of_threads)
 {
-#ifndef FIRST_ORDER_LOOP
+#ifdef USE_BLAS_AT_FIRST_ORDER
   const double one = 1.0;
   const blas_int ONE = 1;
 #endif
@@ -148,7 +154,7 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
       int particle__ = particle*n;
       int particle___ = particle*q;
       std::copy_n(constant, m, &y[particle_]);
-#ifndef FIRST_ORDER_LOOP
+#ifdef USE_BLAS_AT_FIRST_ORDER
       dgemv("N", &m, &n, &one, ghx, &m, &yhat[particle__], &ONE, &one, &y[particle_], &ONE);
       dgemv("N", &m, &q, &one, ghu, &m, &epsilon[particle___], &ONE, &one, &y[particle_], &ONE);
 #endif
@@ -156,7 +162,7 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
         {
           int variable_ = variable + particle_;
           // +ghx·yhat+ghu·u
-#ifdef FIRST_ORDER_LOOP
+#ifndef USE_BLAS_AT_FIRST_ORDER
           for (int column = 0, column_ = 0; column < n; column++, column_ += m)
             y[variable_] += ghx[variable+column_]*yhat[column+particle__];
           for (int column = 0, column_ = 0; column < q; column++, column_ += m)
@@ -257,16 +263,19 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       yhat_ = mxGetPr(prhs[8]);
       ss = mxGetPr(prhs[9]);
     }
+  int numthreads = static_cast<int>(mxGetScalar(prhs[nrhs == 9 ? 8 : 10]));
+#if defined(USE_BLAS_AT_FIRST_ORDER) && defined(MATLAB_MEX_FILE)
+  if (numthreads != 1)
+    mexErrMsgTxt("Parallelization is not possible when compiled with USE_BLAS_AT_FIRST_ORDER.");
+#endif
   if (nrhs == 9)
     {
-      int numthreads = static_cast<int>(mxGetScalar(prhs[8]));
       plhs[0] = mxCreateDoubleMatrix(m, s, mxREAL);
       double *y = mxGetPr(plhs[0]);
       ss2Iteration(y, yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, static_cast<int>(m), static_cast<int>(n), static_cast<int>(q), static_cast<int>(s), numthreads);
     }
   else
     {
-      int numthreads = static_cast<int>(mxGetScalar(prhs[10]));
       plhs[0] = mxCreateDoubleMatrix(m, s, mxREAL);
       plhs[1] = mxCreateDoubleMatrix(m, s, mxREAL);
       double *y = mxGetPr(plhs[0]);
