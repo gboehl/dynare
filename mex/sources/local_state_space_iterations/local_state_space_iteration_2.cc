@@ -213,8 +213,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     prhs[8 or 10]         [double]  num of threads
 
-    plhs[0] y             [double]  n×s array, time t+1 particles.
-    plhs[1] y_            [double]  n×s array, time t+1 particles for the pruning latent variables.
+    plhs[0] y             [double]  m×s array, time t+1 particles.
+    plhs[1] y_            [double]  m×s array, time t+1 particles for the pruning latent variables.
   */
 
   // Check the number of input and output.
