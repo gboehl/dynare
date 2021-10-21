@@ -378,3 +378,5 @@ fclose(fid);
 fprintf('Expectation dseries expression is saved in %s.\n', filename);
 
 skipline();
+
+rehash
