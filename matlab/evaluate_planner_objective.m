@@ -168,6 +168,13 @@ if options_.ramsey_policy
                 options_.noprint = 0;
             end
             
+            if any(isnan(oo_.mean)) || any(isnan(oo_.mean))
+                fprintf('evaluate_planner_objective: encountered NaN moments in the endogenous variables often associated\n')
+                fprintf('evaluate_planner_objective: with either non-stationary variables or singularity due e.g. including\n')
+                fprintf('evaluate_planner_objective: the planner objective function (or additive parts of it) in the model.\n')
+                fprintf('evaluate_planner_objective: I will replace the NaN with a large number, but tread carefully,\n')
+                fprintf('evaluate_planner_objective: check your model, and watch out for strange results.\n')
+            end
             oo_.mean(isnan(oo_.mean)) = options_.huge_number;
             oo_.var(isnan(oo_.var)) = options_.huge_number;
             
