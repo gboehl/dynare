@@ -174,7 +174,7 @@ if options_.ramsey_policy
             Ey = oo_.mean;
             Eyhat = Ey - ys(dr.order_var(nstatic+(1:nspred)));
             
-            Eyhatyhat = oo_.var(:)
+            Eyhatyhat = oo_.var(:);
             Euu = M_.Sigma_e(:);
             
             EU = U + Uy*gy*Eyhat + 0.5*((Uyygygy + Uy*gyy)*Eyhatyhat + (Uyygugu + Uy*guu)*Euu + Uy*gss);
