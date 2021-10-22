@@ -140,8 +140,16 @@ dr = oo_.dr;
 vcov = M_.Sigma_e;
 seed = options_.DynareRandomStreams;
 
-tStart1 = tic; fortran_endo_simul = k_order_simul(order, nstat, npred, nboth, nfwrd, nexog, ystart, ex_, ysteady, dr); tElapsed1 = toc(tStart1);
-tStart2 = tic; dynare_endo_simul = dynare_simul_(order, nstat, npred, nboth, nfwrd, nexog, ystart,ex_,vcov,seed, ysteady, dr); tElapsed2 = toc(tStart2);
+%do 1 call to get k_order_simul into memory (dynare_simul_ was already called within stoch_simul)
+fortran_endo_simul = k_order_simul(order, nstat, npred, nboth, nfwrd, nexog, ystart, ex_, ysteady, dr);
+
+tElapsed=NaN(2,1000);
+for ii=1:1000
+
+tStart1 = tic; fortran_endo_simul = k_order_simul(order, nstat, npred, nboth, nfwrd, nexog, ystart, ex_, ysteady, dr); tElapsed(1,ii) = toc(tStart1);
+tStart2 = tic; dynare_endo_simul = dynare_simul_(order, nstat, npred, nboth, nfwrd, nexog, ystart,ex_,vcov,seed, ysteady, dr); tElapsed(2,ii) = toc(tStart2);
+end
+
 
 if max(max(abs(oo_.endo_simul-fortran_endo_simul(oo_.dr.order_var,:)))) > 1e-10
     error('Error in k_order_simul: inaccurate simulation');
@@ -151,6 +159,8 @@ if max(max(abs(dynare_endo_simul-fortran_endo_simul))) > 1e-10
     error('Error in k_order_simul: inaccurate simulation');
 end;
 
+tElapsed1=mean(tElapsed(1,:))
+tElapsed2=mean(tElapsed(2,:))
 if tElapsed1<tElapsed2
     skipline()
     dprintf('k_order_simul is %5.2f times faster than dynare_simul_', tElapsed2/tElapsed1)
