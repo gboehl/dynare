@@ -216,7 +216,11 @@ if M_.maximum_endo_lead == 0
     % backward models: simplified code exist only at order == 1
     if local_order == 1
         [k1,~,k2] = find(kstate(:,4));
-        dr.state_var = k2;
+        if M_.maximum_endo_lag
+            dr.state_var = find(M_.lead_lag_incidence(1,:));
+        else
+            dr.state_var = [];
+        end
         dr.ghx(:,k1) = -b\jacobia_(:,k2);
         if M_.exo_nbr
             dr.ghu =  -b\jacobia_(:,nz+1:end);
