@@ -33,7 +33,7 @@
 
 /*
   Uncomment the following line to use BLAS instead of loops when computing
-  ghx·yhat and ghu·epsilon.
+  ghx·ŷ and ghu·ε.
   N.B.: Under MATLAB, this only works in single-threaded mode, otherwise one
   gets a crash (because of the incompatibility between Intel and GNU OpenMPs).
 */
@@ -84,14 +84,14 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
       for (int variable = 0; variable < m; variable++)
         {
           int variable_ = variable + particle_;
-          // +ghx·yhat2+ghu·u
+          // +ghx·ŷ₂+ghu·ε
 #ifndef USE_BLAS_AT_FIRST_ORDER
           for (int column = 0, column_ = 0; column < n; column++, column_ += m)
             y2[variable_] += ghx[variable+column_]*yhat2[column+particle__];
           for (int column = 0, column_ = 0; column < q; column++, column_ += m)
             y2[variable_] += ghu[variable+column_]*epsilon[column+particle___];
 #endif
-          // +½ghxx·yhat1⊗yhat1
+          // +½ghxx·ŷ₁⊗ŷ₁
           for (int i = 0; i < n*(n+1)/2; i++)
             {
               int i1 = particle__+ii1[i];
@@ -101,7 +101,7 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
               else
                 y2[variable_] += ghxx[variable+ii3[i]]*yhat1[i1]*yhat1[i2];
             }
-          // +½ghuu·u⊗u
+          // +½ghuu·ε⊗ε
           for (int j = 0; j < q*(q+1)/2; j++)
             {
               int j1 = particle___+jj1[j];
@@ -111,7 +111,7 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
               else
                 y2[variable_] += ghuu[variable+jj3[j]]*epsilon[j1]*epsilon[j2];
             }
-          // +ghxu·yhat1⊗u
+          // +ghxu·ŷ₁⊗ε
           for (int v = particle__, i = 0; v < particle__+n; v++)
             for (int s = particle___; s < particle___+q; s++, i += m)
               y2[variable_] += ghxu[variable+i]*epsilon[s]*yhat2[v];
@@ -161,14 +161,14 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
       for (int variable = 0; variable < m; variable++)
         {
           int variable_ = variable + particle_;
-          // +ghx·yhat+ghu·u
+          // +ghx·ŷ+ghu·ε
 #ifndef USE_BLAS_AT_FIRST_ORDER
           for (int column = 0, column_ = 0; column < n; column++, column_ += m)
             y[variable_] += ghx[variable+column_]*yhat[column+particle__];
           for (int column = 0, column_ = 0; column < q; column++, column_ += m)
             y[variable_] += ghu[variable+column_]*epsilon[column+particle___];
 #endif
-          // +½ghxx·yhat⊗yhat
+          // +½ghxx·ŷ⊗ŷ
           for (int i = 0; i < n*(n+1)/2; i++)
             {
               int i1 = particle__+ii1[i];
@@ -178,7 +178,7 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
               else
                 y[variable_] += ghxx[variable+ii3[i]]*yhat[i1]*yhat[i2];
             }
-          // +½ghuu·u⊗u
+          // +½ghuu·ε⊗ε
           for (int j = 0; j < q*(q+1)/2; j++)
             {
               int j1 = particle___+jj1[j];
@@ -188,7 +188,7 @@ ss2Iteration(double *y, const double *yhat, const double *epsilon,
               else
                 y[variable_] += ghuu[variable+jj3[j]]*epsilon[j1]*epsilon[j2];
             }
-          // +ghxu·yhat⊗u
+          // +ghxu·ŷ⊗ε
           for (int v = particle__, i = 0; v < particle__+n; v++)
             for (int s = particle___; s < particle___+q; s++, i += m)
               y[variable_] += ghxu[variable+i]*epsilon[s]*yhat[v];
