@@ -251,6 +251,10 @@ if isequal(expectationmodel.auxiliary_model_type, 'trend_component')
     maxlag = maxlag+1;
 end
 
+if isequal(expectationmodelkind, 'var')
+    timeindices = (0:(maxlag-1))+abs(expectationmodel.time_shift);
+end
+
 if isequal(expectationmodelkind, 'var') && isequal(expectationmodel.auxiliary_model_type, 'var')
     id = id+1;
     expression = sprintf('%1.16f', M_.params(expectationmodel.param_indices(id)));
@@ -302,8 +306,8 @@ for i=1:maxlag
         end
         switch expectationmodelkind
           case 'var'
-            if i>1
-                variable = sprintf('dbase.%s(-%d)', variable, i-1);
+            if timeindices(i)>0
+                variable = sprintf('dbase.%s(-%d)', variable, timeindices(i));
             else
                 variable = sprintf('dbase.%s', variable);
             end
