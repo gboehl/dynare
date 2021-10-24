@@ -12,13 +12,15 @@ function print_expectations(eqname, expectationmodelname, expectationmodelkind, 
 % None
 %
 % REMARKS
-% The routine creates two text files
+% print_expectations creates two text files
 %
 % - {expectationmodelname}-parameters.inc     which contains the declaration of the parameters specific to the expectation model kind term.
 % - {expectationmodelname}-expression.inc     which contains the expanded version of the expectation model kind term.
 %
 % These routines are saved under the {modfilename}/model/{expectationmodelkind} subfolder, and can be
 % used after in another mod file (ie included with the macro directive @#include).
+%
+% print_expectations also creates a matlab routine to evaluate the expectations (returning a dseries object).
 %
 % The variable expectationmodelkind can take two values 'var' or 'pac'.
 

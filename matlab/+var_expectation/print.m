@@ -15,10 +15,11 @@ function print(varexpectationmodelname, withcalibration)
 % - {varexpectationmodelname}-parameters.inc     which contains the declaration of the parameters specific to the expectation model kind term.
 % - {varexpectationmodelname}-expression.inc     which contains the expanded version of the expectation model kind term.
 %
-% These routines are saved under the {modfilename}/model/varexpectationmodel subfolder, and can be
-% used after in another mod file (ie included with the macro directive @#include).
+% These routines are saved under the {modfilename}/model/varexpectationmodel subfolder, and can be used
+% after in another mod file (ie included with the macro directive @#include). A matlab routine is also
+% created for evaluating (dseries) the var-expectations.
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright © 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
