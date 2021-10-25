@@ -273,7 +273,7 @@ elseif ~options.bytecode && ~options.block
                 [infrow,infcol]=find(isinf(jacob) | isnan(jacob));
                 fprintf('\nSTEADY:  The Jacobian contains Inf or NaN. The problem arises from: \n\n')
                 for ii=1:length(infrow)
-                    fprintf('STEADY:  Derivative of Equation %d with respect to Variable %s  (initial value of %s: %g) \n',infrow(ii),deblank(M.endo_names(infcol(ii),:)),deblank(M.endo_names(infcol(ii),:)),ys_init(infcol(ii)))
+                    fprintf('STEADY:  Derivative of Equation %d with respect to Variable %s  (initial value of %s: %g) \n',infrow(ii),M.endo_names{infcol(ii),:},M.endo_names{infcol(ii),:},ys_init(infcol(ii)))
                 end
                 fprintf('Check whether your model is truly linear. Put "resid(1);" before "steady;" to see the problematic equations.\n')
             end
