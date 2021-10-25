@@ -155,7 +155,7 @@ for plt = 1:nbplt
             else
                 y(i,1) = NaN;
                 if DynareOptions.debug
-                    fprintf('mode_check:: could not solve model for parameter %s at value %4.3f, error code: %u\n',name,z(i),info(1))
+                    fprintf('mode_check:: could not solve model for parameter %s at value %4.3f, error code: %u (%s)\n',name,z(i),info(1),get_error_message(info, DynareOptions))
                 end
             end
             if ~DynareOptions.mode_check.nolik
