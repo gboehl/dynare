@@ -10,9 +10,8 @@ AM_FCFLAGS = $(shell $(MKOCTFILE) -p FPICFLAG) -Wall -Wimplicit-interface
 AM_CXXFLAGS = $(shell $(MKOCTFILE) -p CXXPICFLAG) -Wall -Wno-parentheses -Wold-style-cast
 AM_LDFLAGS = $(shell $(MKOCTFILE) -p DL_LDFLAGS)
 
-# Mimick the behaviour of mkoctfile: link against Octave libraries on Windows only
-# (it is required there, otherwise we get a link failure)
-if WINDOWS_API
+# See the comments in configure.ac
+if LINK_OCTAVE_LIBS
 AM_LDFLAGS += -L"$(shell $(MKOCTFILE) -p OCTLIBDIR)"
 LIBS += $(shell $(MKOCTFILE) -p OCTAVE_LIBS)
 endif

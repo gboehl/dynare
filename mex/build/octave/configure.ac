@@ -98,16 +98,24 @@ case ${host_os} in
     ;;
 esac
 
-# Define an automake conditional for the Windows platform
+# Determine whether to link MEX files against the Octave libraries.
+# mkoctfile no longer does this by default but in practice it is needed
+# for Windows and macOS.
 case ${host_os} in
   *mingw32*)
-        windows_api=yes
+        # This is hardcoded in src/mkoctfile.cc.in.
+        link_octave_libs=yes
+        ;;
+  *darwin*)
+        # Under macOS, the Homebrew formula passes --enable-link-all-dependencies
+        # to the configure script.
+        link_octave_libs=yes
         ;;
   *)
-        windows_api=no
+        link_octave_libs=no
         ;;
 esac
-AM_CONDITIONAL([WINDOWS_API], [test ${windows_api} = yes])
+AM_CONDITIONAL([LINK_OCTAVE_LIBS], [test ${link_octave_libs} = yes])
 
 # Construct final output message
 if test "$enable_mex_dynareplusplus" = yes; then
