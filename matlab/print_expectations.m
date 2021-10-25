@@ -91,14 +91,18 @@ end
 expectationmodel = M_.(expectationmodelfield).(expectationmodelname);
 
 % Get the name of the associated VAR model and test its existence.
-if ~isfield(M_.(expectationmodel.auxiliary_model_type), expectationmodel.auxiliary_model_name)
-    switch expectationmodelkind
-      case 'var'
-        error('Unknown VAR/TREND_COMPONENT model (%s) in VAR_EXPECTATION_MODEL (%s)!', expectationmodel.auxiliary_model_name, expectationmodelname)
-      case 'pac'
-        error('Unknown VAR/TREND_COMPONENT model (%s) in PAC_EXPECTATION_MODEL (%s)!', expectationmodel.auxiliary_model_name, expectationmodelname)
-      otherwise
+if isfield(M_.(expectationmodelfield), 'auxiliary_model_type')
+    if ~isfield(M_.(expectationmodel.auxiliary_model_type), expectationmodel.auxiliary_model_name)
+        switch expectationmodelkind
+          case 'var'
+            error('Unknown VAR/TREND_COMPONENT model (%s) in VAR_EXPECTATION_MODEL (%s)!', expectationmodel.auxiliary_model_name, expectationmodelname)
+          case 'pac'
+            error('Unknown VAR/TREND_COMPONENT model (%s) in PAC_EXPECTATION_MODEL (%s)!', expectationmodel.auxiliary_model_name, expectationmodelname)
+          otherwise
+        end
     end
+else
+    error('print method does not work in PAC/MCE.')
 end
 
 auxmodel = M_.(expectationmodel.auxiliary_model_type).(expectationmodel.auxiliary_model_name);
