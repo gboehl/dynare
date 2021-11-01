@@ -74,7 +74,7 @@ for e=1:number_of_pac_eq
     params(1+(1:pac_equation.max_lag)) = M_.params(pac_equation.ar.params);
     params(end) = M_.params(pacmodel.discount_index);
     [G, alpha, beta] = buildGmatrixWithAlphaAndBeta(params);
-    M_.params(pac_equation.mce.alpha) = alpha;
+    M_.params(pac_equation.mce.alpha) = flip(alpha);
     if isfield(pacmodel, 'growth_neutrality_param_index')
         if isfield(equations.(eqtag), 'non_optimizing_behaviour')
             gamma = M_.params(equations.(eqtag).share_of_optimizing_agents_index);
