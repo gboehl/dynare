@@ -99,7 +99,11 @@ if options_.ramsey_policy
         planner_objective_value = struct('conditional', W, 'unconditional', EW);
     else
         planner_objective_value = struct('conditional', struct('zero_initial_multiplier', 0., 'steady_initial_multiplier', 0.), 'unconditional', 0.);
-        ys = oo_.dr.ys;
+        if isempty(oo_.dr) || ~isfield(oo_.dr,'ys')
+            error('evaluate_planner_objective requires decision rules to have previously been computed (e.g. by stoch_simul)')
+        else
+            ys = oo_.dr.ys;
+        end
         if options_.order == 1 || M_.hessian_eq_zero
             [U,Uy] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
 
