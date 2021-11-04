@@ -147,7 +147,7 @@ AtomAssignings::add_assignment(int asgn_off, const string &str, int name_len,
   if (lname2expr.find(name) != lname2expr.end())
     {
       // Prevent the occurrence of #415
-      std::cerr << "Changing the value of " << name << " is not supported. Aborting." << std::endl;
+      std::cerr << "Changing the value of " << name << " through a second assignment (e.g. in initval) is not supported. Aborting." << std::endl;
       exit(EXIT_FAILURE);
     }
   lname2expr[name] = order.size()-1;
