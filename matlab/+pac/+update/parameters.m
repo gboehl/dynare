@@ -133,6 +133,12 @@ for e=1:number_of_pac_eq
     else
         growth_flag = false;
     end
+    % Do we have rule of thumb agents? γ is the share of optimizing agents.
+    if isfield(equations.(eqtag), 'non_optimizing_behaviour')
+        gamma = DynareModel.params(equations.(eqtag).share_of_optimizing_agents_index);
+    else
+        gamma = 1.0;
+    end
     % Get h0 and h1 vectors (plus the parameter for the growth neutrality correction).
     if growth_flag
         [h0, h1, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, ids, idns, pacmodel.auxiliary_model_type);
@@ -175,11 +181,6 @@ for e=1:number_of_pac_eq
         end
     end
     % Update the parameter related to the growth neutrality correction.
-    if isfield(equations.(eqtag), 'non_optimizing_behaviour')
-        gamma = DynareModel.params(equations.(eqtag).share_of_optimizing_agents_index);
-    else
-        gamma = 1.0;
-    end
     if growth_flag
         % Growth neutrality as returned by hVector is valid iff
         % there is no exogenous variables in the model and in the
