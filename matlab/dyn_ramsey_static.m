@@ -43,7 +43,7 @@ options_.steadystate.nocheck = 1; %locally disable checking because Lagrange mul
 nl_func = @(x) dyn_ramsey_static_1(x,M,options_,oo);
 
 % check_static_model is a subfunction
-if check_static_model(ys_init,M,options_,oo) && ~options_.steadystate_flag
+if ~options_.steadystate_flag && check_static_model(ys_init,M,options_,oo)
     steady_state = ys_init;
     return
 elseif options_.steadystate_flag
