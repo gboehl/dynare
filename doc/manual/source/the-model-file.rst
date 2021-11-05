@@ -399,7 +399,7 @@ for declaring variables and parameters are described below.
 .. command:: trend_var (growth_factor = MODEL_EXPR) VAR_NAME [$LATEX_NAME$]...;
 
     |br| This optional command declares the trend variables in the
-    model. See ref:`conv` for the syntax of MODEL_EXPR and
+    model. See :ref:`conv` for the syntax of MODEL_EXPR and
     VAR_NAME. Optionally it is possible to give a
     LaTeX name to the variable.
 
