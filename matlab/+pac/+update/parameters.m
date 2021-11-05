@@ -186,7 +186,7 @@ for e=1:number_of_pac_eq
         % there is no exogenous variables in the model and in the
         % absence of non optimizing agents.
         gg = -(growthneutrality-1); % Finite sum of autoregressive parameters + infinite sum of the coefficients in the PAC expectation term.
-        cc = 1.0/gamma-gg;          % First adjustment of the growth neutrality correction (should also be divided by gamma, done below at the end of this section).
+        cc = 1.0-gg*gamma;          % First adjustment of the growth neutrality correction (should also be divided by gamma, done below at the end of this section).
                                     % We may have to further change the correction if we have nonzero mean exogenous variables.
         ll = 0.0;
         if isfield(equations.(eqtag), 'optim_additive')
@@ -201,7 +201,7 @@ for e=1:number_of_pac_eq
                     error('It is not possible to provide a value for the mean of an exogenous variable appearing in the optimal part of the PAC equation.')
                 end
             end
-            cc = cc - tmp0;
+            cc = cc - tmp0*gamma;
         end
         if gamma<1
             if isfield(equations.(eqtag), 'non_optimizing_behaviour') && isfield(equations.(eqtag).non_optimizing_behaviour, 'params')
@@ -219,7 +219,7 @@ for e=1:number_of_pac_eq
                         tmp1 = tmp1 + equations.(eqtag).non_optimizing_behaviour.scaling_factor(i)*equations.(eqtag).non_optimizing_behaviour.params(i)*equations.(eqtag).non_optimizing_behaviour.bgp{i};
                     end
                 end
-                cc = cc - (1.0-gamma)*tmp0/gamma;
+                cc = cc - (1.0-gamma)*tmp0;
                 ll = -(1.0-gamma)*tmp1/gamma; % TODO: ll should be added as a constant in the PAC equation (under the λ part) when unrolling pac_expectation.
             end
         end
@@ -238,9 +238,9 @@ for e=1:number_of_pac_eq
                     tmp1 = tmp1 + equations.(eqtag).additive.scaling_factor(i)*equations.(eqtag).additive.params(i)*equations.(eqtag).additive.bgp{i};
                 end
             end
-            cc = cc - tmp0/gamma;
+            cc = cc - tmp0;
             ll = ll - tmp1/gamma; % TODO: ll should be added as a constant in the PAC equation (under the λ part) when unrolling pac_expectation.
         end
-        DynareModel.params(pacmodel.growth_neutrality_param_index) = cc; % Multiplies the variable or expression provided though the growth option in command pac_model.
+        DynareModel.params(pacmodel.growth_neutrality_param_index) = cc/gamma; % Multiplies the variable or expression provided though the growth option in command pac_model.
     end
 end
