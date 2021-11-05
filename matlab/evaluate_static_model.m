@@ -20,7 +20,7 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2020 Dynare Team
+% Copyright (C) 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -61,6 +61,10 @@ else
             end
         end
     else
-        residuals = feval(fh_static,ys,exo_ss,params);
+        if nargout<3
+            residuals = feval(fh_static,ys,exo_ss,params);
+        else
+            [residuals, jacob] = feval(fh_static,ys,exo_ss,params);
+        end
     end
 end
