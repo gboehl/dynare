@@ -204,7 +204,7 @@ for e=1:number_of_pac_eq
             cc = cc - tmp0;
         end
         if gamma<1
-            if isfield(equations.(eqtag), 'non_optimizing_behaviour.params')
+            if isfield(equations.(eqtag), 'non_optimizing_behaviour') && isfield(equations.(eqtag).non_optimizing_behaviour, 'params')
                 % Exogenous variables are present in the 1-λ part (rule of thumb agents).
                 tmp0 = 0;
                 tmp1 = 0;
