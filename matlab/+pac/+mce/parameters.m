@@ -103,7 +103,6 @@ for e=1:number_of_pac_eq
             cc = cc - tmp0;
         end
         if gamma<1
-            equations.(eqtag).('non_optimizing_behaviour')
             if isfield(equations.(eqtag), 'non_optimizing_behaviour') && isfield(equations.(eqtag).non_optimizing_behaviour, 'params')
                 % Exogenous variables are present in the 1-λ part (rule of thumb agents).
                 tmp0 = 0;
@@ -138,7 +137,6 @@ for e=1:number_of_pac_eq
                     tmp1 = tmp1 + equations.(eqtag).additive.scaling_factor(i)*equations.(eqtag).additive.params(i)*equations.(eqtag).additive.bgp{i};
                 end
             end
-            cc
             cc = cc - tmp0/gamma;
             ll = ll - tmp1/gamma; % TODO: ll should be added as a constant in the PAC equation (under the λ part) when unrolling pac_expectation.
         end
