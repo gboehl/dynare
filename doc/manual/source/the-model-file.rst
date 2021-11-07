@@ -4969,7 +4969,8 @@ All of these elements are discussed in the following.
     .. option:: smoother_inversion_filter
 
        Employ the inversion filter of *Cuba-Borda, Guerrieri, Iacoviello, and Zhong (2019)* when running the
-       smoother. Default: not enabled.
+       smoother. The underlying assumption is that the system starts at the steady state. In this case, the 
+       inversion filter will provide the required smoother output. Default: not enabled.
 
     .. option:: smoother_piecewise_kalman_filter
 
