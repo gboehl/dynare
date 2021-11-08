@@ -399,7 +399,7 @@ for declaring variables and parameters are described below.
 .. command:: trend_var (growth_factor = MODEL_EXPR) VAR_NAME [$LATEX_NAME$]...;
 
     |br| This optional command declares the trend variables in the
-    model. See ref:`conv` for the syntax of MODEL_EXPR and
+    model. See :ref:`conv` for the syntax of MODEL_EXPR and
     VAR_NAME. Optionally it is possible to give a
     LaTeX name to the variable.
 
@@ -4969,7 +4969,8 @@ All of these elements are discussed in the following.
     .. option:: smoother_inversion_filter
 
        Employ the inversion filter of *Cuba-Borda, Guerrieri, Iacoviello, and Zhong (2019)* when running the
-       smoother. Default: not enabled.
+       smoother. The underlying assumption is that the system starts at the steady state. In this case, the 
+       inversion filter will provide the required smoother output. Default: not enabled.
 
     .. option:: smoother_piecewise_kalman_filter
 
