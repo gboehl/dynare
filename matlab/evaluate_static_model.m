@@ -39,8 +39,14 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 
 check1 = 0;
 if options.bytecode
-    residuals = bytecode('evaluate','static',ys,...
+    if nargout<3
+        [residuals]= bytecode('evaluate','static',ys,...
                          exo_ss, params, ys, 1);
+    else
+        [residuals, junk]= bytecode('evaluate','static',ys,...
+            exo_ss, params, ys, 1);
+        jacob = junk.g1;
+    end      
 else
     fh_static = str2func([M.fname '.static']);
     if options.block
@@ -59,6 +65,9 @@ else
                 %temporary terms
                 [~, ~, T] = feval(fh_static,b,ys,exo_ss,params,T);
             end
+        end
+        if nargout==3
+            jacob=NaN(length(ys));
         end
     else
         if nargout<3
