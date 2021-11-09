@@ -1,7 +1,7 @@
 variables:
   MATLAB_VERSION: R2021b
   OLD_MATLAB_VERSION: R2014a
-  OCTAVE_VERSION: 6.3.0
+  OCTAVE_VERSION: 6.4.0
 
 before_script:
   - git clone https://git.dynare.org/Dynare/dseries.git
