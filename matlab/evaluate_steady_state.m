@@ -57,7 +57,11 @@ if options.ramsey_policy
         [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M, ...
                                                       options,steadystate_check_flag);
         %test whether it solves model conditional on the instruments
-        resids = evaluate_static_model(ys,exo_ss,params,M,options);
+        if ~options.debug
+            resids = evaluate_static_model(ys,exo_ss,params,M,options);
+        else
+            [resids, ~ , jacob]= evaluate_static_model(ys,exo_ss,params,M,options);
+        end
         n_multipliers=M.ramsey_eq_nbr;
         nan_indices=find(isnan(resids(n_multipliers+1:end)));
 
@@ -132,6 +136,30 @@ if options.ramsey_policy
                 fprintf('%s\n',M.endo_names{nanrow(iter)});
             end
         end
+        nan_indices_mult=find(isnan(resids(1:n_multipliers)));
+        if any(nan_indices_mult)
+            fprintf('evaluate_steady_state: The steady state results NaN for auxiliary equation %u.\n',nan_indices_mult);            
+            fprintf('evaluate_steady_state: This is often a sign of problems.\n');            
+        end
+        [infrow,infcol]=find(isinf(jacob));
+
+        if ~isempty(infrow)
+            fprintf('\nevaluate_steady_state: The Jacobian of the dynamic model contains Inf. The problem is associated with:\n\n')
+            display_problematic_vars_Jacobian(infrow,infcol,M,ys,'static','evaluate_steady_state: ')
+        end
+        
+        if ~isreal(jacob)
+            [imagrow,imagcol]=find(abs(imag(jacob))>1e-15);
+            fprintf('\nevaluate_steady_state: The Jacobian of the dynamic model contains imaginary parts. The problem arises from: \n\n')
+            display_problematic_vars_Jacobian(imagrow,imagcol,M,ys,'static','evaluate_steady_state: ')
+        end
+        
+        [nanrow,nancol]=find(isnan(jacob));
+        if ~isempty(nanrow)
+            fprintf('\nevaluate_steady_state: The Jacobian of the dynamic model contains NaN. The problem is associated with:\n\n')
+            display_problematic_vars_Jacobian(nanrow,nancol,M,ys,'static','evaluate_steady_state: ')
+        end
+
     end
     %either if no steady state file or steady state file without problems
     [ys,params,info] = dyn_ramsey_static(ys_init,M,options,oo);

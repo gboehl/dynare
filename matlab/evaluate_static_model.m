@@ -20,7 +20,7 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2020 Dynare Team
+% Copyright (C) 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,8 +39,14 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 
 check1 = 0;
 if options.bytecode
-    residuals = bytecode('evaluate','static',ys,...
+    if nargout<3
+        [residuals]= bytecode('evaluate','static',ys,...
                          exo_ss, params, ys, 1);
+    else
+        [residuals, junk]= bytecode('evaluate','static',ys,...
+            exo_ss, params, ys, 1);
+        jacob = junk.g1;
+    end      
 else
     fh_static = str2func([M.fname '.static']);
     if options.block
@@ -60,7 +66,14 @@ else
                 [~, ~, T] = feval(fh_static,b,ys,exo_ss,params,T);
             end
         end
+        if nargout==3
+            jacob=NaN(length(ys));
+        end
     else
-        residuals = feval(fh_static,ys,exo_ss,params);
+        if nargout<3
+            residuals = feval(fh_static,ys,exo_ss,params);
+        else
+            [residuals, jacob] = feval(fh_static,ys,exo_ss,params);
+        end
     end
 end
