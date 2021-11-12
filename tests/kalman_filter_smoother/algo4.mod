@@ -35,7 +35,7 @@ end;
 
 varobs w x y;
 
-estimation(datafile=data,first_obs=1000,nobs=200,mh_replic=0,mode_compute=0,mode_file='algo3/Output/algo3_mode',diffuse_filter,kalman_algo=4,filtered_vars,smoothed_state_uncertainty);
+estimation(datafile=data_algo,first_obs=1000,nobs=200,mh_replic=0,mode_compute=0,mode_file='algo3/Output/algo3_mode',diffuse_filter,kalman_algo=4,filtered_vars,smoothed_state_uncertainty);
 
 //checking smoother consistency
 X = oo_.SmoothedVariables;
@@ -52,7 +52,7 @@ if max(max(abs(err))) > 1e-10;
    error('Test fails');
 end;
 
-d=load('data');
+d=load('data_algo');
 dat = [d.w d.x d.y];
 if max(max(abs(dat(1000:1199,:)-S(:,[7:9])))) > 1e-10;
    error('Test fails');

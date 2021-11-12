@@ -91,7 +91,7 @@ varobs v1, v2, v3;
 
 options_.qz_criterium = 1+1e-6;
 
-calib_smoother(datafile=Data,diffuse_filter);
+calib_smoother(datafile=data_Pinf_Pstar,diffuse_filter);
 
 mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
 Q = M_.Sigma_e;

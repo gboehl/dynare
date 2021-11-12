@@ -32,7 +32,7 @@ end;
 
 varobs dw dx dy z;
 
-estimation(datafile=data,first_obs=1000,nobs=200,mh_replic=0,filtered_vars,smoothed_state_uncertainty);
+estimation(datafile=data_algo,first_obs=1000,nobs=200,mh_replic=0,filtered_vars,smoothed_state_uncertainty);
 
 //checking smoother consistency
 X = oo_.SmoothedVariables;
@@ -49,7 +49,7 @@ if max(max(abs(err))) > 1e-10;
    error('Test fails')
 end;
 
-d=load('data');
+d=load('data_algo');
 dat = [d.dw d.dx d.dy d.z];
 if max(max(abs(dat(1000:1199,:)-S(:,[2:4 1])))) > 1e-10;
    error('Test fails');

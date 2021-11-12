@@ -86,4 +86,4 @@ end;
 
 stoch_simul(order=1,irf=20,periods=500);
 
-save Data.mat v1 v2 v3;
+save data_Pinf_Pstar.mat v1 v2 v3;
