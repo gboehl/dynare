@@ -219,6 +219,7 @@ All the prerequisites are packaged:
 - `texlive-plain-generic`
 - `lmodern` (for macroprocessor PDF)
 - `python3-sphinx`
+- `tex-gyre`
 - `latexmk`
 - `libjs-mathjax`
 - `doxygen`
@@ -226,12 +227,13 @@ All the prerequisites are packaged:
 
 You can install them all at once with:
 ```sh
-apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx latexmk libjs-mathjax doxygen x13as
+apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as
 ```
 If you use MATLAB, we strongly advise to also `apt install matlab-support` and confirm to rename the GCC libraries shipped with MATLAB to avoid possible conflicts with GCC libraries shipped by your distribution.
 
 Tested on
-- Debian 10
+- Debian “Buster” 10
+- Debian “Bullseye” 11
 - Ubuntu 20.04
 - Ubuntu 20.10
 
