@@ -21,7 +21,7 @@ e_c_m =  .1;
 c_z_1 =  .7;
 c_z_2 = -.3;
 
-@#include "example1/model/pac-expectations/eq0-pacman-parameters.inc"
+@#include "example1/model/pac-expectations/pacman-parameters.inc"
 
 model;
 
@@ -33,9 +33,9 @@ diff(x) = b_x_1*y(-2) + b_x_2*diff(x(-1)) + g*(1-b_x_2)  + ex ;
 
 [name='eq:pac']
 diff(z) = e_c_m*(x(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) +
-@#include "example1/model/pac-expectations/eq0-pacman-growth-neutrality-correction.inc"
+@#include "example1/model/pac-expectations/pacman-growth-neutrality-correction.inc"
 +
-@#include "example1/model/pac-expectations/eq0-pacman-expression.inc"
+@#include "example1/model/pac-expectations/pacman-expression.inc"
 + ez;
 
 end;

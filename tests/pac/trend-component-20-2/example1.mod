@@ -51,10 +51,10 @@ y = rho_1*y(-1) + rho_2*y(-2) + ey;
 x = rho_3*x(-1) + rho_4*x(-2) + ex;
 
 [name='eq:x1']
-diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;     
+diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;
 
 [name='eq:x2']
-diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;     
+diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;
 
 [name='eq:x1bar']
 x1bar = x1bar(-1) + ex1bar;
@@ -67,6 +67,6 @@ diff(z) = lambda*(e_c_m*(x1(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) 
 
 end;
 
-if ~isequal(M_.endo_names(M_.pac.pacman.equations.eq0.non_optimizing_behaviour.vars), {'y'; 'x'})
+if ~isequal(M_.endo_names(M_.pac.pacman.non_optimizing_behaviour.vars), {'y'; 'x'})
    error('PAC non_optimizing_behaviour.vars field is wrong.')
 end

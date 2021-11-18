@@ -40,10 +40,10 @@ model;
 y = rho_1*y(-1) + rho_2*y(-2) + ey;
 
 [name='eq:x1']
-diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;     
+diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;
 
 [name='eq:x2']
-diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;     
+diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;
 
 [name='eq:x1bar']
 x1bar = x1bar(-1) + ex1bar;
@@ -69,6 +69,6 @@ end;
 // Initialize the PAC model (build the Companion VAR representation for the auxiliary model).
 pac.initialize('pacman');
 
-if ~isequal(M_.pac.pacman.equations.(M_.pac.pacman.tag_map{strcmp(M_.pac.pacman.tag_map(:,1), 'zpac'),2}).ec.istarget, [true, false])
+if ~isequal(M_.pac.pacman.ec.istarget, [true, false])
    error('ec.istarget vector is wrong.')
 end

@@ -1,7 +1,6 @@
-function [pacmodl, lhs, rhs, pnames, enames, xnames, rname, pid, eid, xid, pnames_, ipnames_, params, data, islaggedvariables, eqtag] = ...
-    init(M_, oo_, eqname, params, data, range)
+function [pacmodl, lhs, rhs, pnames, enames, xnames, rname, pid, eid, xid, pnames_, ipnames_, params, data, islaggedvariables] =  init(M_, oo_, eqname, params, data, range)
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright © 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,10 +31,16 @@ pacmodl = regexp(RHS, pattern, 'names');
 pacmodl = pacmodl.name;
 
 % Get the transformed equation to be estimated.
-[lhs, rhs] = get_lhs_and_rhs(eqname, M_);
+[lhs, rhs, json] = get_lhs_and_rhs(eqname, M_);
 
-% Get the equation tag (in M_.pac.(pacmodl).equations)
-eqtag = M_.pac.(pacmodl).tag_map{strcmp(M_.pac.(pacmodl).tag_map(:,1), eqname),2};
+% Get definition of aux. variable for pac expectation...
+auxrhs = json.model{strmatch(sprintf('pac_expectation_%s', pacmodl), M_.lhs, 'exact')}.rhs; 
+
+% ... and substitute in rhs.
+rhs = strrep(rhs, sprintf('pac_expectation_%s', pacmodl), auxrhs);
+
+% Get pacmodel properties
+pacmodel = M_.pac.(pacmodl);
 
 % Get the parameters and variables in the PAC equation.
 [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_in_equation(lhs, rhs, M_);
@@ -70,15 +75,15 @@ end
 stack = dbstack;
 ipnames__ = ipnames_;                              % The user provided order.
 if isequal(stack(2).name, 'iterative_ols')
-    ipnames_ = [M_.pac.(pacmodl).equations.(eqtag).ec.params; M_.pac.(pacmodl).equations.(eqtag).ar.params'];
-    if isfield(M_.pac.(pacmodl).equations.(eqtag), 'optim_additive')
-        ipnames_ = [ipnames_; M_.pac.(pacmodl).equations.(eqtag).optim_additive.params(~isnan(M_.pac.(pacmodl).equations.(eqtag).optim_additive.params))'];
+    ipnames_ = [pacmodel.ec.params; pacmodel.ar.params'];
+    if isfield(pacmodel, 'optim_additive')
+        ipnames_ = [ipnames_; pacmodel.optim_additive.params(~isnan(pacmodel.optim_additive.params))'];
     end
-    if isfield(M_.pac.(pacmodl).equations.(eqtag), 'additive')
-        ipnames_ = [ipnames_; M_.pac.(pacmodl).equations.(eqtag).additive.params(~isnan(M_.pac.(pacmodl).equations.(eqtag).additive.params))'];
+    if isfield(pacmodel, 'additive')
+        ipnames_ = [ipnames_; pacmodel.additive.params(~isnan(pacmodel.additive.params))'];
     end
-    if isfield(M_.pac.(pacmodl).equations.(eqtag), 'share_of_optimizing_agents_index')
-        ipnames_ = [ipnames_; M_.pac.(pacmodl).equations.(eqtag).share_of_optimizing_agents_index];
+    if isfield(pacmodel, 'share_of_optimizing_agents_index')
+        ipnames_ = [ipnames_; pacmodel.share_of_optimizing_agents_index];
     end
     for i=1:length(ipnames_)
         if ~ismember(ipnames_(i), ipnames__)

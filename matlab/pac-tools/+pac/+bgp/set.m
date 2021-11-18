@@ -1,4 +1,4 @@
-function dummy = set(pacmodel, paceq, variable, nonzeromean)
+function dummy = set(pacmodl, paceq, variable, nonzeromean)
 
 % Provide information about long run levels of exogenous variables in PAC equation.
 %
@@ -30,9 +30,9 @@ function dummy = set(pacmodel, paceq, variable, nonzeromean)
 
 global M_
 
-eqtag = M_.pac.(pacmodel).tag_map{strcmp(paceq, M_.pac.(pacmodel).tag_map(:,1)),2};
-
 dummy = [];
+
+pacmodel = M_.pac.(pacmodl);
 
 ide = find(strcmp(variable, M_.endo_names));
 xflag = false;
@@ -43,32 +43,32 @@ if isempty(ide)
 end
 
 if ~isempty(ide)
-    [M_, done] = writebgpfield('additive', pacmodel, eqtag, ide, xflag, nonzeromean, M_);
-    if done, return, end
-    [M_, done] = writebgpfield('optim_additive', pacmodel, eqtag, ide, xflag, nonzeromean, M_);
-    if done, return, end
-    [M_, done] = writebgpfield('non_optimizing_behaviour', pacmodel, eqtag, ide, xflag, nonzeromean, M_);
-    if done, return, end
+    [pacmodel, done] = writebgpfield('additive', pacmodel, ide, xflag, nonzeromean);
+    if done, M_.pac.(pacmodl) = pacmodel; return, end
+    [pacmodel, done] = writebgpfield('optim_additive', pacmodel, ide, xflag, nonzeromean);
+    if done, M_.pac.(pacmodl) = pacmodel; return, end
+    [pacmodel, done] = writebgpfield('non_optimizing_behaviour', pacmodel, ide, xflag, nonzeromean);
+    if done, M_.pac.(pacmodl) = pacmodel; return, end
     warning('%s is not an exogenous variable in equation %s.', variable, paceq)
 else
     error('Endogenous/Exogenous variable %s is unknown.', variable)
 end
 
 
-function [M_, done] = writebgpfield(type, pacmodel, eqtag, ide, xflag, nonzeromean, M_)
+function [pacmodel, done] = writebgpfield(type, pacmodel, ide, xflag, nonzeromean, M_)
 done = false;
-if isfield(M_.pac.(pacmodel).equations.(eqtag), type)
-    if ~isfield(M_.pac.(pacmodel).equations.(eqtag).additive, 'bgp')
-        M_.pac.(pacmodel).equations.(eqtag).(type).bgp = repmat({false}, 1, length(M_.pac.(pacmodel).equations.(eqtag).(type).params));
+if isfield(pacmodel, type)
+    if ~isfield(pacmodel.additive, 'bgp')
+        pacmodel.(type).bgp = repmat({false}, 1, length(pacmodel.(type).params));
     end
-    [isvar, ie] = ismember(ide, M_.pac.(pacmodel).equations.(eqtag).(type).vars);
+    [isvar, ie] = ismember(ide, pacmodel.(type).vars);
     if isvar
         if xflag
-            assert(~M_.pac.(pacmodel).equations.(eqtag).(type).isendo(ie), 'Variable type issue.')
+            assert(~pacmodel.(type).isendo(ie), 'Variable type issue.')
         else
-            assert(M_.pac.(pacmodel).equations.(eqtag).(type).isendo(ie), 'Variable type issue.')
+            assert(pacmodel.(type).isendo(ie), 'Variable type issue.')
         end
-        M_.pac.(pacmodel).equations.(eqtag).(type).bgp{ie} = nonzeromean;
+        pacmodel.(type).bgp{ie} = nonzeromean;
         done = true;
     end
 end

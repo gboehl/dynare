@@ -9,7 +9,7 @@ function str = print_equations(variable_name, withexpansion)
 % OUTPUTS
 % None
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -61,14 +61,26 @@ model = jsonfile.model;
 
 % Print the equations the variable appears in.
 for it = 1:length(M_.mapping.(variable_name).eqidx)
-    rhs = model{M_.mapping.(variable_name).eqidx(it)}.rhs;
+    if M_.mapping.(variable_name).eqidx(it)>length(model)
+        % Equations appended by the preprocessor for auxiliary variables are not displayed, except if it is an aux variable
+        % for the PAC expectation.
+        % TODO Probably should do the same for VAR expectation.
+        if isfield(M_, 'lhs') && isequal(M_.lhs{M_.mapping.(variable_name).eqidx(it)}(1:16), 'pac_expectation_')
+            id = M_.mapping.(M_.lhs{M_.mapping.(variable_name).eqidx(it)}).eqidx(1);
+        else
+            continue
+        end
+    else
+        id = M_.mapping.(variable_name).eqidx(it);
+    end
+    rhs = model{id}.rhs;
     if withexpansion
         if isfield(M_, 'pac') && contains(rhs, 'pac_expectation')
             % Get the index of the equation's PAC model.
             models = fieldnames(M_.pac);
             idx = find(~cellfun('isempty',cellfun(@(s)find(contains(rhs,s)),models,'uni',0)));
             % Get the expanded PAC_EXPECTATION term.
-            [pac_expression, growthneutralitycorrection] = write_expectations(M_.pac.(models{idx}).tag_map(:,1), models{idx}, 'pac', true);
+            [pac_expression, growthneutralitycorrection] = write_expectations(models{idx}, 'pac', true);
             expression = [sprintf('\n\t + %s', growthneutralitycorrection) TransformExpandedExpr(pac_expression)];
             rhs = strrep(rhs, ['+pac_expectation(model_name = ' models{idx} ')'], expression);
         elseif isfield(M_, 'var_expectation') && contains(rhs, 'var_expectation')
@@ -76,7 +88,7 @@ for it = 1:length(M_.mapping.(variable_name).eqidx)
             models = fieldnames(M_.var_expectation);
             idx = find(~cellfun('isempty',cellfun(@(s)find(contains(rhs,s)),models,'uni',0)));
             % Get the expanded VAR_EXPECTATION term.
-            expression = write_expectations('fake', models{idx}, 'var', true);
+            expression = write_expectations(models{idx}, 'var', true);
             expression = TransformExpandedExpr(expression);
             rhs = strrep(rhs, ['+var_expectation(model_name = ' models{idx} ')'], expression);
         elseif ~isfield(M_, 'pac') && ~isfield(M_, 'var_expectation')
@@ -87,7 +99,7 @@ for it = 1:length(M_.mapping.(variable_name).eqidx)
     if nargout
         str = sprintf('%s = %s;\n', model{M_.mapping.(variable_name).eqidx(it)}.lhs, rhs);
     end
-    fprintf('%s = %s;\n', model{M_.mapping.(variable_name).eqidx(it)}.lhs, rhs);
+    fprintf('%s = %s;\n', model{id}.lhs, rhs);
 end
 
 function [transformed_expression] = TransformExpandedExpr(expression)

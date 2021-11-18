@@ -20,8 +20,7 @@ parameters
        a_x1_0 a_x1_1 a_x1_2 a_x1_x2_1 a_x1_x2_2
 	   a_x2_0 a_x2_1 a_x2_2 a_x2_x1_1 a_x2_x1_2
 	   e_c_m c_z_1 c_z_2 c_z_dx2 c_z_u c_z_dv c_z_s cx cy beta
-       lambda
-       px3;
+       lambda;
 
 rho_1 =  .9;
 rho_2 = -.2;
@@ -48,14 +47,12 @@ c_z_2 = -.1;
 c_z_dx2 = .3;
 c_z_u = .3;
 c_z_dv = .4;
-c_z_s  = -.2; 
+c_z_s  = -.2;
 cx = 1.0;
 cy = 1.0;
 
 
 lambda = 0.5; // Share of optimizing agents.
-
-px3 = -.1;
 
 trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], targets=['eq:x1bar', 'eq:x2bar']);
 

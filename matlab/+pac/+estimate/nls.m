@@ -42,7 +42,7 @@ function nls(eqname, params, data, range, optimizer, varargin)
 % is available only if the matylab optimization toolbox is installed), the
 % remaining inputs are the options (key/value) passed to the optimizers.
 
-% Copyright (C) 2018-2021 Dynare Team
+% Copyright © 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -72,11 +72,11 @@ if nargin>4 && (isequal(optimizer, 'GaussNewton') || isequal(optimizer, 'lsqnonl
     end
 end
 
-[pacmodl, lhs, rhs, pnames, enames, xnames, ~, pid, eid, xid, ~, ipnames_, params, data, islaggedvariables, eqtag] = ...
+[pacmodl, lhs, rhs, pnames, enames, xnames, ~, pid, eid, xid, ~, ipnames_, params, data, islaggedvariables] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
 % Check that the error correction term is correct.
-if M_.pac.(pacmodl).equations.(eqtag).ec.istarget(2)
+if M_.pac.(pacmodl).ec.istarget(2)
     error(['\nThe error correction term in PAC equation (%s) is not correct.\nThe ' ...
            'error correction term should be the difference between a trend\n' ...
            'and the level of the endogenous variable.'], pacmodl);
@@ -197,8 +197,8 @@ else
         % Nothing to do here.
       case 'lsqnonlin'
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = 0.0;
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),2)  = 1.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),1)  = 0.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),2)  = 1.0;
       case 'fmincon'
         if isoctave && ~user_has_octave_forge_package('optim', '1.6')
             error('Optimization algorithm ''fmincon'' requires the optim package, version 1.6 or higher')
@@ -207,8 +207,8 @@ else
         end
         minalgo = 1;
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = 0.0;
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),2)  = 1.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),1)  = 0.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),2)  = 1.0;
       case 'fminunc'
         if isoctave && ~user_has_octave_forge_package('optim')
             error('Optimization algorithm ''fminunc'' requires the optim package')
@@ -230,8 +230,8 @@ else
       case 'annealing'
         minalgo = 2;
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = 0.0;
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),2)  = 1.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),1)  = 0.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),2)  = 1.0;
         parameter_names = fieldnames(params);
       case 'particleswarm'
         if isoctave
@@ -241,8 +241,8 @@ else
         end
         minalgo = 12;
         bounds = ones(length(params0),1)*[-Inf,Inf];
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = 0.0;
-        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).equations.(eqtag).ec.params)),1)  = 1.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),1)  = 0.0;
+        bounds(strcmp(fieldnames(params), M_.param_names(M_.pac.(pacmodl).ec.params)),1)  = 1.0;
         parameter_names = fieldnames(params);
       otherwise
         msg = sprintf('%s is not an implemented optimization routine.\n', optimizer);
@@ -330,15 +330,15 @@ C = C/T;
 
 % Save results
 lhs = eval(strrep(lhs, 'data', 'data(range(1)-1:range(end)).data'));
-oo_.pac.(pacmodl).equations.(eqtag).lhs = dseries(lhs, range(1), sprintf('%s_lhs', eqtag));
-oo_.pac.(pacmodl).equations.(eqtag).fit = dseries(lhs-r, range(1), sprintf('%s_fit', eqtag));
-oo_.pac.(pacmodl).equations.(eqtag).residual = dseries(r, range(1), sprintf('%s_residual', eqtag));
-oo_.pac.(pacmodl).equations.(eqtag).ssr = SSR;
-oo_.pac.(pacmodl).equations.(eqtag).R2 = 1-var(r)/var(lhs);
-oo_.pac.(pacmodl).equations.(eqtag).parnames = fieldnames(params);
-oo_.pac.(pacmodl).equations.(eqtag).estimator = params1;
-oo_.pac.(pacmodl).equations.(eqtag).covariance = C;
-oo_.pac.(pacmodl).equations.(eqtag).student = params1./(sqrt(diag(C)));
+oo_.pac.(pacmodl).lhs = dseries(lhs, range(1), 'lhs');
+oo_.pac.(pacmodl).fit = dseries(lhs-r, range(1), 'fit');
+oo_.pac.(pacmodl).residual = dseries(r, range(1), 'residual');
+oo_.pac.(pacmodl).ssr = SSR;
+oo_.pac.(pacmodl).R2 = 1-var(r)/var(lhs);
+oo_.pac.(pacmodl).parnames = fieldnames(params);
+oo_.pac.(pacmodl).estimator = params1;
+oo_.pac.(pacmodl).covariance = C;
+oo_.pac.(pacmodl).student = params1./(sqrt(diag(C)));
 
 % Also save estimated parameters in M_
 M_.params(ipnames_) = params1;

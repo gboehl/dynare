@@ -1,14 +1,15 @@
-function [h0, h1, longruncorrectionparameter] = hVectors(params, H, ids, idns, auxmodel)
+function [h, lrcp] = hVectors(params, H, auxmodel, kind, id)
 
 % INPUTS
 % - params          [double]     (m+1)*1 vector, PAC parameters (lag polynomial coefficients and discount factor).
 % - H               [double]     (np*np) matrix, companion matrix of the VAR(p) model.
-% - ids             [integer]    n*1 vector, selection of the stationary components of the VAR.
-% - idns            [integer]    n*1 vector, selection of the non stationary components of the VAR.
+% - auxmodel        [char]       kind of auxiliary model, possible values are: 'var' and 'trend_component'.
+% - kind            [char]       kind of expectation in PAC equation (See FRB/US doc), possible values are 'll', 'dl' and 'dd'.
+% - id              [integer]    scalar, index pointing to the target in the auxiliary model.
 %
 % OUTPUTS
-% - h0              [double]     1*n vector.
-% - h1              [double]     1*n vector.
+% - h               [double]     1*n vector of weights (used to compute the linear combination of the variables in the companion VAR representation of the auxiliary model).
+% - lrcp            [double]     scalar, parameter for the growth neutrality correction.
 %
 % REMARKS
 % The parameters are ordered as follows in the params vector:
@@ -17,7 +18,7 @@ function [h0, h1, longruncorrectionparameter] = hVectors(params, H, ids, idns, a
 %    params(2:end-1) ⟶ Autoregressive parameters.
 %    params(end)     ⟶ Discount factor.
 
-% Copyright (C) 2018 Dynare Team
+% Copyright © 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,28 +49,24 @@ A_b = polyval(A, beta);
 m = length(alpha);
 n = length(H);
 
-tmp = eye(n*m)-kron(G, transpose(H));
+tmp = eye(n*m)-kron(G, transpose(H)); % inv(W2)
 
-if isempty(ids)
-    h0 = [];
-else
-    h0 = A_1*A_b*((kron(iota(m, m), H))'*(tmp\kron(iota(m, m), iota(n, ids))));
+switch kind
+  case 'll'
+    h = A_1*A_b*((kron(iota(m, m), H))'*(tmp\kron(iota(m, m), iota(n, id))));
+  case 'dd'
+    h = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), H')*(tmp\kron(iota(m, m), iota(n, id))));
+  case 'dl'
+    h = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), (H'-eye(length(H))))*(tmp\kron(iota(m, m), iota(n, id))));
+  otherwise
+    error('Unknown kind value in PAC model.')
 end
 
-if nargout>1
-    if isempty(idns)
-        h1 = [];
+if nargin>1
+    if isequal(kind, 'll')
+        lrcp = NaN;
     else
-        switch auxmodel
-          case {'var', 'trend_component'}
-            h1 = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), H')*(tmp\kron(iota(m, m), iota(n, idns))));
-          case 'Need to check in which case we should trigger this one...'
-            h1 = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), (H'-eye(length(H))))*(tmp\kron(iota(m, m), iota(n, idns))));
-        end
+        d = A_1*A_b*(iota(m, m)'*inv((eye(m)-G)*(eye(m)-G))*iota(m, m));
+        lrcp = (1-sum(params(2:end-1))-d);
     end
-end
-
-if nargout>2
-    d = A_1*A_b*(iota(m, m)'*inv((eye(m)-G)*(eye(m)-G))*iota(m, m));
-    longruncorrectionparameter = (1-sum(params(2:end-1))-d);
 end

@@ -43,10 +43,10 @@ gg = g;
 y = rho_1*y(-1) + rho_2*y(-2) + ey;
 
 [name='eq:x1']
-diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;     
+diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;
 
 [name='eq:x2']
-diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;     
+diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;
 
 [name='eq:x1bar']
 x1bar = x1bar(-1) + ex1bar;
@@ -72,7 +72,7 @@ initialconditions = dseries(zeros(10, M_.endo_nbr+M_.exo_nbr), 2000Q1, vertcat(M
 TrueData = simul_backward_model(initialconditions, 5000);
 
 // NLS estimation
-// Define a structure describing the parameters to be estimated (with initial conditions). 
+// Define a structure describing the parameters to be estimated (with initial conditions).
 clear eparams
 eparams.e_c_m = .5;
 eparams.c_z_1 = .2;
@@ -85,7 +85,7 @@ pac.estimate.nls('zpac', eparams, edata, 2005Q1:2000Q1+200, 'lsqnonlin');
 e_c_m_nls = M_.params(strmatch('e_c_m', M_.param_names, 'exact'));
 c_z_1_nls = M_.params(strmatch('c_z_1', M_.param_names, 'exact'));
 c_z_2_nls = M_.params(strmatch('c_z_2', M_.param_names, 'exact'));
-resid_nls = oo_.pac.pacman.equations.eq0.residual;
+resid_nls = oo_.pac.pacman.residual;
 
 fprintf('Estimate of e_c_m: %f \n', e_c_m_nls)
 fprintf('Estimate of c_z_1: %f \n', c_z_1_nls)
@@ -94,7 +94,7 @@ fprintf('Estimate of c_z_2: %f \n', c_z_2_nls)
 skipline(2)
 
 // Iterative OLS estimation using estimates from NLS
-// Define a structure describing the parameters to be estimated (with initial conditions). 
+// Define a structure describing the parameters to be estimated (with initial conditions).
 clear eparams
 eparams.e_c_m = e_c_m_nls;
 eparams.c_z_1 = c_z_1_nls;
@@ -120,7 +120,7 @@ fprintf('\n')
 e_c_m_iterative_ols = M_.params(strmatch('e_c_m', M_.param_names, 'exact'));
 c_z_1_iterative_ols = M_.params(strmatch('c_z_1', M_.param_names, 'exact'));
 c_z_2_iterative_ols = M_.params(strmatch('c_z_2', M_.param_names, 'exact'));
-resid_iterative_ols = oo_.pac.pacman.equations.eq0.residual;
+resid_iterative_ols = oo_.pac.pacman.residual;
 
 fprintf('Estimate of e_c_m: %f \n', e_c_m_iterative_ols)
 fprintf('Estimate of c_z_1: %f \n', c_z_1_iterative_ols)

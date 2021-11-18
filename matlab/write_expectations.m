@@ -1,9 +1,8 @@
-function [expression, growthneutralitycorrection] = write_expectations(eqname, expectationmodelname, expectationmodelkind, iscrlf)
+function [expression, growthneutralitycorrection] = write_expectations(expectationmodelname, expectationmodelkind, iscrlf)
 
 % Prints the exansion of the VAR_EXPECTATION or PAC_EXPECTATION term in files.
 %
 % INPUTS
-% - eqname                      [string]    Name of the equation.
 % - epxpectationmodelname       [string]    Name of the expectation model.
 % - expectationmodelkind        [string]    Kind of the expectation model ('var' or 'pac').
 % - iscrlf                      [string]    Adds carriage return after each additive term if true.
@@ -36,8 +35,6 @@ if ismember(expectationmodelkind, {'var', 'pac'})
         expectationmodelfield = 'var_expectation';
     else
         expectationmodelfield = 'pac';
-        % Get the equation tag (in M_.pac.(pacmodl).equations)
-        eqtag = M_.pac.(expectationmodelname).tag_map{strcmp(M_.pac.(expectationmodelname).tag_map(:,1), eqname),2};
     end
 else
     error('Value of third input argument must be ''var'' or ''pac''.')
@@ -49,7 +46,7 @@ if nargout>1 && isequal(expectationmodelkind, 'var')
     error('Cannot return more than one argument if the expectation model is a VAR.')
 end
 
-if nargin<4
+if nargin<3
     iscrlf = false;
 end
 
@@ -85,8 +82,7 @@ end
 
 if isequal(expectationmodelkind, 'pac') && isequal(expectationmodel.auxiliary_model_type, 'var')
     id = id+1;
-    expression = sprintf('%s+%s', M_.param_names{expectationmodel.equations.(eqtag).h0_param_indices(id)}, ...
-                         M_.param_names{expectationmodel.equations.(eqtag).h1_param_indices(id)});
+    expression = sprintf('%s', M_.param_names{expectationmodel.h_param_indices(id)});
 end
 
 for i=1:maxlag
@@ -114,17 +110,7 @@ for i=1:maxlag
           case 'var'
             parameter = M_.param_names{expectationmodel.param_indices(id)};
           case 'pac'
-            parameter = '';
-            if ~isempty(expectationmodel.equations.(eqtag).h0_param_indices)
-                parameter = M_.param_names{expectationmodel.equations.(eqtag).h0_param_indices(id)};
-            end
-            if ~isempty(expectationmodel.equations.(eqtag).h1_param_indices)
-                if isempty(parameter)
-                    parameter = M_.param_names{expectationmodel.equations.(eqtag).h1_param_indices(id)};
-                else
-                    parameter = sprintf('(%s+%s)', parameter, M_.param_names{expectationmodel.equations.(eqtag).h1_param_indices(id)});
-                end
-            end
+            parameter = M_.param_names{expectationmodel.h_param_indices(id)};
           otherwise
         end
         switch expectationmodelkind

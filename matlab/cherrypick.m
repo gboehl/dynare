@@ -129,12 +129,12 @@ try
         isvar = regexp(RHS, 'var_expectation\(model_name = (?<name>\w+)\)', 'names');
         ispac = regexp(RHS, 'pac_expectation\(model_name = (?<name>\w+)\)', 'names');
         if ~isempty(isvar)
-            rhs = write_expectations(eqtags{i}, isvar.name, 'var');
+            rhs = write_expectations(isvar.name, 'var');
             lhs = sprintf('%s_VE', eqtags{i});
             RHS = strrep(RHS, sprintf('var_expectation(model_name = %s)', isvar.name), lhs);
         end
         if ~isempty(ispac)
-            [rhs, growthneutralitycorrection] = write_expectations(eqtags{i}, ispac.name, 'pac');
+            [rhs, growthneutralitycorrection] = write_expectations(ispac.name, 'pac');
             if ~isempty(rhs)
                 lhs = sprintf('%s_PE', eqtags{i});
                 if isempty(growthneutralitycorrection)
