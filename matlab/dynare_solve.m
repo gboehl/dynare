@@ -95,7 +95,7 @@ if jacobian_flag
             info = 0;
             return;
         end
-        disp('Randomize initial guess...')
+        disp_verbose('Randomize initial guess...',options.verbosity)
         % Let's try random numbers for the variables initialized with the default value.
         wrong_initial_guess_flag = true;
         % First try with positive numbers.
@@ -323,7 +323,7 @@ elseif ismember(options.solve_algo, [2, 12, 4])
     end
     fvec = feval(f, x, arguments{:});
     if max(abs(fvec))>tolf
-        disp('Call solver on the full nonlinear problem.')
+        disp_verbose('Call solver on the full nonlinear problem.',options.verbosity)
         [x, errorflag] = solver(f, x, 1:nn, 1:nn, jacobian_flag, ...
                                 options.gstep, tolf, options.solve_tolx, maxit, ...
                                 options.trust_region_initial_step_bound_factor, ...
