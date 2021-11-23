@@ -22,7 +22,7 @@ function [ys,params,info] = evaluate_steady_state(ys_init,M,options,oo,steadysta
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2020 Dynare Team
+% Copyright (C) 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,6 +52,11 @@ if length(M.aux_vars) > 0 && ~steadystate_flag && M.set_auxiliary_variables
 end
 
 if options.ramsey_policy
+    if options.block
+        % The current implementation needs the Jacobian of the full model, which is not
+        % provided by the block-decomposed routines.
+        error('The ''block'' option is not compatible with ''ramsey_model''/''ramsey_policy''');
+    end
     if steadystate_flag
         % explicit steady state file
         [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M, ...
