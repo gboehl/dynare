@@ -1,0 +1,14 @@
+mex_PROGRAMS = k_order_mean 
+
+k_order_mean_FCFLAGS = $(AM_FCFLAGS) -I../libkordersim
+
+nodist_k_order_mean_SOURCES = \
+	mexFunction.f08
+
+k_order_mean_LDADD = ../libkordersim/libkordersim.a
+
+BUILT_SOURCES = $(nodist_k_order_mean_SOURCES)
+CLEANFILES = $(nodist_k_order_mean_SOURCES)
+
+%.f08: $(top_srcdir)/../../sources/k_order_mean/%.f08
+	$(LN_S) -f $< $@
