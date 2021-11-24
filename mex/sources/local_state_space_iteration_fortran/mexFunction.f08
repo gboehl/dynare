@@ -17,7 +17,7 @@
 
 !  input:
 !       yhat     values of endogenous variables
-!       epsilon  values of the exgogenous shock
+!       epsilon  values of the exogenous shock
 !       dr       struct containing the folded tensors g_0, g_1, ...
 !       M        struct containing the model features
 !       options  struct containing the model options
