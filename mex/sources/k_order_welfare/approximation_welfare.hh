@@ -31,14 +31,9 @@ class ApproximationWelfare
   double discount_factor;
   std::unique_ptr<FGSContainer> rule_ders;
   std::unique_ptr<FGSContainer> rule_ders_s;
-  std::unique_ptr<FGSContainer> unc_ders;
   std::unique_ptr<FGSContainer> cond_ders;
-  std::unique_ptr<FoldDecisionRule> unc_fdr;
   std::unique_ptr<FoldDecisionRule> cond_fdr;
-  Vector cond;
-  // const FNormalMoments mom;
   IntSequence nvs;
-  // TwoDMatrix ss;
   Journal &journal;
 public:
   ApproximationWelfare(KordwDynare &w, double discount_factor, const FGSContainer &rule_ders, const FGSContainer &rule_ders_s, Journal &j);
@@ -59,30 +54,16 @@ public:
     return *rule_ders_s;
   }
   const FGSContainer &
-  get_unc_ders() const
-  {
-    return *unc_ders;
-  }
-  const FGSContainer &
   get_cond_ders() const
   {
     return *cond_ders;
   }
-  const Vector &
-  getCond() const
-  {
-    return cond;
-  }
-  const FoldDecisionRule & getFoldUncWel() const;
-  const FoldDecisionRule & getUnfoldUncWel() const;
   const FoldDecisionRule & getFoldCondWel() const;
-  const FoldDecisionRule & getUnfoldCondWel() const;
 
   void approxAtSteady();
 
 protected:
-  void saveRuleDerivs(const FGSContainer &U, const FGSContainer &W);
-  void calcStochShift();
+  void saveRuleDerivs(const FGSContainer &W);
 };
 
 #endif

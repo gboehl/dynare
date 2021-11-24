@@ -59,7 +59,6 @@ DynareMxArrayToString(const mxArray *mxFldp)
    )
 */
 
-std::vector<std::string> U_fieldnames;
 std::vector<std::string> W_fieldnames;
 
 void
@@ -278,113 +277,25 @@ extern "C" {
     ApproximationWelfare appwel(welfare, discount_factor, app.get_rule_ders(), app.get_rule_ders_s(), journal);
     appwel.approxAtSteady();
 
-    // Conditional welfare approximation at non-stochastic steady state when stochastic shocks are enabled
-    const Vector &cond_approx = appwel.getCond();
-    plhs[0] = mxCreateDoubleMatrix(cond_approx.length(), 1, mxREAL);
-    std::copy_n(cond_approx.base(), cond_approx.length(), mxGetPr(plhs[0]));
+   const FoldDecisionRule &cond_fdr = appwel.getFoldCondWel();
+   // Add possibly missing field names
+   for (int i = static_cast<int>(W_fieldnames.size()); i <= kOrder; i++)
+      W_fieldnames.emplace_back("W_" + std::to_string(i));
+   // Create structure for storing derivatives in Dynare++ format
+   const char *W_fieldnames_c[kOrder+1];
+   for (int i = 0; i <= kOrder; i++)
+      W_fieldnames_c[i] = W_fieldnames[i].c_str();
+   plhs[0] = mxCreateStructMatrix(1, 1, kOrder+1, W_fieldnames_c);
 
-    if (nlhs > 1)
-      {
-        const FoldDecisionRule &unc_fdr = appwel.getFoldUncWel();
-        // Add possibly missing field names
-        for (int i = static_cast<int>(U_fieldnames.size()); i <= kOrder; i++)
-          U_fieldnames.emplace_back("U_" + std::to_string(i));
-        // Create structure for storing derivatives in Dynare++ format
-        const char *U_fieldnames_c[kOrder+1];
-        for (int i = 0; i <= kOrder; i++)
-          U_fieldnames_c[i] = U_fieldnames[i].c_str();
-        plhs[1] = mxCreateStructMatrix(1, 1, kOrder+1, U_fieldnames_c);
-
-        // Fill that structure
-        for (int i = 0; i <= kOrder; i++)
-          {
-            const FFSTensor &t = unc_fdr.get(Symmetry{i});
-            mxArray *tmp = mxCreateDoubleMatrix(t.nrows(), t.ncols(), mxREAL);
-            const ConstVector &vec = t.getData();
-            assert(vec.skip() == 1);
-            std::copy_n(vec.base(), vec.length(), mxGetPr(tmp));
-            mxSetField(plhs[1], 0, ("U_" + std::to_string(i)).c_str(), tmp);
-          }
-
-        if (nlhs > 2)
-          {
-            const FoldDecisionRule &cond_fdr = appwel.getFoldCondWel();
-            // Add possibly missing field names
-            for (int i = static_cast<int>(W_fieldnames.size()); i <= kOrder; i++)
-              W_fieldnames.emplace_back("W_" + std::to_string(i));
-            // Create structure for storing derivatives in Dynare++ format
-            const char *W_fieldnames_c[kOrder+1];
-            for (int i = 0; i <= kOrder; i++)
-              W_fieldnames_c[i] = W_fieldnames[i].c_str();
-            plhs[2] = mxCreateStructMatrix(1, 1, kOrder+1, W_fieldnames_c);
-      
-            // Fill that structure
-            for (int i = 0; i <= kOrder; i++)
-              {
-                const FFSTensor &t = cond_fdr.get(Symmetry{i});
-                mxArray *tmp = mxCreateDoubleMatrix(t.nrows(), t.ncols(), mxREAL);
-                const ConstVector &vec = t.getData();
-                assert(vec.skip() == 1);
-                std::copy_n(vec.base(), vec.length(), mxGetPr(tmp));
-                mxSetField(plhs[2], 0, ("W_" + std::to_string(i)).c_str(), tmp);
-              }
-            if (nlhs > 3)
-              {
-
-                const FGSContainer &U = appwel.get_unc_ders();
-
-                size_t nfields = (kOrder == 1 ? 2 : (kOrder == 2 ? 6 : 12));
-                const char *c_fieldnames[] = { "Uy", "Uu", "Uyy", "Uyu", "Uuu", "Uss", "Uyyy", "Uyyu", "Uyuu", "Uuuu", "Uyss", "Uuss" };
-                plhs[3] = mxCreateStructMatrix(1, 1, nfields, c_fieldnames);
-
-                copy_derivatives(plhs[3], Symmetry{1, 0, 0, 0}, U, "Uy");
-                copy_derivatives(plhs[3], Symmetry{0, 1, 0, 0}, U, "Uu");
-                if (kOrder >= 2)
-                  {
-                    copy_derivatives(plhs[3], Symmetry{2, 0, 0, 0}, U, "Uyy");
-                    copy_derivatives(plhs[3], Symmetry{0, 2, 0, 0}, U, "Uuu");
-                    copy_derivatives(plhs[3], Symmetry{1, 1, 0, 0}, U, "Uyu");
-                    copy_derivatives(plhs[3], Symmetry{0, 0, 0, 2}, U, "Uss");
-                  }
-                if (kOrder >= 3)
-                  {
-                    copy_derivatives(plhs[3], Symmetry{3, 0, 0, 0}, U, "Uyyy");
-                    copy_derivatives(plhs[3], Symmetry{0, 3, 0, 0}, U, "Uuuu");
-                    copy_derivatives(plhs[3], Symmetry{2, 1, 0, 0}, U, "Uyyu");
-                    copy_derivatives(plhs[3], Symmetry{1, 2, 0, 0}, U, "Uyuu");
-                    copy_derivatives(plhs[3], Symmetry{1, 0, 0, 2}, U, "Uyss");
-                    copy_derivatives(plhs[3], Symmetry{0, 1, 0, 2}, U, "Uuss");
-                  }
-
-                if (nlhs > 4)
-                  {
-                    const FGSContainer &W = appwel.get_cond_ders();
-
-                    size_t nfields = (kOrder == 1 ? 2 : (kOrder == 2 ? 6 : 12));
-                    const char *c_fieldnames[] = { "Wy", "Wu", "Wyy", "Wyu", "Wuu", "Wss", "Wyyy", "Wyyu", "Wyuu", "Wuuu", "Wyss", "Wuss" };
-                    plhs[4] = mxCreateStructMatrix(1, 1, nfields, c_fieldnames);
-
-                    copy_derivatives(plhs[4], Symmetry{1, 0, 0, 0}, W, "Wy");
-                    copy_derivatives(plhs[4], Symmetry{0, 1, 0, 0}, W, "Wu");
-                    if (kOrder >= 2)
-                      {
-                        copy_derivatives(plhs[4], Symmetry{2, 0, 0, 0}, W, "Wyy");
-                        copy_derivatives(plhs[4], Symmetry{0, 2, 0, 0}, W, "Wuu");
-                        copy_derivatives(plhs[4], Symmetry{1, 1, 0, 0}, W, "Wyu");
-                        copy_derivatives(plhs[4], Symmetry{0, 0, 0, 2}, W, "Wss");
-                      }
-                    if (kOrder >= 3)
-                      {
-                        copy_derivatives(plhs[4], Symmetry{3, 0, 0, 0}, W, "Wyyy");
-                        copy_derivatives(plhs[4], Symmetry{0, 3, 0, 0}, W, "Wuuu");
-                        copy_derivatives(plhs[4], Symmetry{2, 1, 0, 0}, W, "Wyyu");
-                        copy_derivatives(plhs[4], Symmetry{1, 2, 0, 0}, W, "Wyuu");
-                        copy_derivatives(plhs[4], Symmetry{1, 0, 0, 2}, W, "Wyss");
-                        copy_derivatives(plhs[4], Symmetry{0, 1, 0, 2}, W, "Wuss");
-                      }
-                  }
-              }
-          }
-      }
+   // Fill that structure
+   for (int i = 0; i <= kOrder; i++)
+   {
+      const FFSTensor &t = cond_fdr.get(Symmetry{i});
+      mxArray *tmp = mxCreateDoubleMatrix(t.nrows(), t.ncols(), mxREAL);
+      const ConstVector &vec = t.getData();
+      assert(vec.skip() == 1);
+      std::copy_n(vec.base(), vec.length(), mxGetPr(tmp));
+      mxSetField(plhs[0], 0, ("W_" + std::to_string(i)).c_str(), tmp);
+   }
   } // end of mexFunction()
 } // end of extern C
