@@ -24,7 +24,7 @@ function disp_identification(pdraws, ide_reducedform, ide_moments, ide_spectrum,
 % This function is called by
 %   * dynare_identification.m
 % =========================================================================
-% Copyright (C) 2010-2019 Dynare Team
+% Copyright (C) 2010-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -82,7 +82,7 @@ for jide = 1:4
     %% Set output strings depending on test
     if jide == 1
         strTest = 'REDUCED-FORM'; strJacobian = 'Tau'; strMeaning = 'Jacobian of steady state and reduced-form solution matrices';
-        if ~no_identification_reducedform
+        if ~no_identification_reducedform && ~ isempty(fieldnames(ide_reducedform))
             noidentification = 0; ide = ide_reducedform;
             if SampleSize == 1
                 Jacob = ide.dREDUCEDFORM;
@@ -97,7 +97,7 @@ for jide = 1:4
         elseif options_ident.order == 3
             strMeaning = 'Jacobian of first-order minimal system and third-order accurate mean';
         end
-        if ~no_identification_minimal
+        if ~no_identification_minimal && ~(length(ide_minimal.minimal_state_space)==1 && ide_minimal.minimal_state_space==0)
             noidentification = 0; ide = ide_minimal;
             if SampleSize == 1
                 Jacob = ide.dMINIMAL;
@@ -110,7 +110,7 @@ for jide = 1:4
         if options_ident.order > 1
             strTest = 'SPECTRUM (Mutschler, 2015)';
         end
-        if ~no_identification_spectrum
+        if ~no_identification_spectrum && ~isempty(fieldnames(ide_spectrum))
             noidentification = 0; ide = ide_spectrum;
             if SampleSize == 1
                 Jacob = ide.dSPECTRUM;
@@ -123,7 +123,7 @@ for jide = 1:4
         if options_ident.order > 1
             strTest = 'MOMENTS (Mutschler, 2015)'; strJacobian = 'Mbar';
         end
-        if ~no_identification_moments
+        if ~no_identification_moments && ~isempty(fieldnames(ide_moments))
             noidentification = 0; ide = ide_moments;
             if SampleSize == 1
                 Jacob = ide.si_dMOMENTS;
@@ -136,20 +136,39 @@ for jide = 1:4
     if ~noidentification
         %% display problematic parameters computed by identifcation_checks.m
         if ~checks_via_subsets
-            if any(ide.ino) || any(any(ide.ind0==0)) || any(any(ide.jweak_pair))
+            EffectiveSampleSize=SampleSize;
+            non_minimal_state_space_error=0;
+            if SampleSize>1 && jide==2  && any(~ide.minimal_state_space)
+                EffectiveSampleSize=SampleSize-sum(~ide.minimal_state_space);
+                non_minimal_state_space_error=1;
+                ide.ino(~ide.minimal_state_space,:)=[];
+                ide.ind0(~ide.minimal_state_space,:)=[];
+                ide.jweak_pair(~ide.minimal_state_space,:)=[];
+                ide.minimal_state_space(~ide.minimal_state_space,:)=[];
+            end
+            if any(ide.ino) || any(any(ide.ind0==0)) || any(any(ide.jweak_pair)) || non_minimal_state_space_error
                 no_warning_message_display=0;
                 skipline()
                 disp([upper(strTest), ':'])
                 disp('    !!!WARNING!!!');
                 if SampleSize>1
-                    disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient for ', num2str(length(find(ide.ino))),' out of ',int2str(SampleSize),' MC runs!'  ]),
+                    if non_minimal_state_space_error
+                        fprintf(['\n    The minimal state space could not be computed for %u out of %u cases.\n'],SampleSize-EffectiveSampleSize,SampleSize);
+                    end
+                    if jide==2
+                        if sum(ide.ino & ide.minimal_state_space)>0
+                        disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient for ', num2str(sum(ide.ino & ide.minimal_state_space)),' out of ',int2str(EffectiveSampleSize),' effective MC runs!'  ])
+                        end
+                    else
+                        disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient for ', num2str(sum(ide.ino)),' out of ',int2str(EffectiveSampleSize),' effective MC runs!'  ]),
+                    end
                 else
                     disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient!']),
                 end
                 skipline()
                 for j=1:totparam_nbr
                     if any(ide.ind0(:,j)==0)
-                        pno = 100*length(find(ide.ind0(:,j)==0))/SampleSize;
+                        pno = 100*length(find(ide.ind0(:,j)==0))/EffectiveSampleSize;
                         if SampleSize>1
                             disp(['    ',name{j},' is not identified for ',num2str(pno),'% of MC runs!' ])
                         else
@@ -166,7 +185,7 @@ for jide = 1:4
                         [jx,jy]=find(jmap_pair==j);
                         jstore=[jstore jx(1) jy(1)];
                         if SampleSize > 1
-                            disp(['    [',name{jx(1)},',',name{jy(1)},'] are PAIRWISE collinear for ',num2str((iweak)/SampleSize*100),'% of MC runs!' ])
+                            disp(['    [',name{jx(1)},',',name{jy(1)},'] are PAIRWISE collinear for ',num2str((iweak)/EffectiveSampleSize*100),'% of MC runs!' ])
                         else
                             disp(['    [',name{jx(1)},',',name{jy(1)},'] are PAIRWISE collinear!' ])
                         end
@@ -176,7 +195,7 @@ for jide = 1:4
                     iweak = length(find(ide.jweak(:,j)));
                     if iweak && ~ismember(j,jstore)
                         if SampleSize>1
-                            disp(['    ',name{j},' is collinear w.r.t. all other parameters for ',num2str(iweak/SampleSize*100),'% of MC runs!' ])
+                            disp(['    ',name{j},' is collinear w.r.t. all other parameters for ',num2str(iweak/EffectiveSampleSize*100),'% of MC runs!' ])
                         else
                             disp(['    ',name{j},' is collinear w.r.t. all other parameters!' ])
                         end
@@ -241,7 +260,7 @@ end
 
 
 
-%% Advanced identificaton patterns
+%% Advanced identification patterns
 if SampleSize==1 && options_ident.advanced
     skipline()
     for j=1:size(ide_moments.cosndMOMENTS,2)

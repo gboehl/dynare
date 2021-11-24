@@ -1,5 +1,5 @@
-function [ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] = identification_checks_via_subsets(ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, totparam_nbr, modparam_nbr, options_ident)
-%[ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] = identification_checks_via_subsets(ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, totparam_nbr, modparam_nbr, options_ident)
+function [ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] = identification_checks_via_subsets(ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, totparam_nbr, modparam_nbr, options_ident,error_indicator)
+%[ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] = identification_checks_via_subsets(ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, totparam_nbr, modparam_nbr, options_ident,error_indicator)
 % -------------------------------------------------------------------------
 % Finds problematic sets of paramters via checking the necessary rank condition
 % of the Jacobians for all possible combinations of parameters. The rank is
@@ -23,22 +23,23 @@ function [ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] 
 % INPUTS
 %   ide_reducedform:    [structure] Containing results from identification
 %                       analysis based on the reduced-form solution (Ratto
-%                       and Iskrev, 2011). If ide_reducedform.no_identification_reducedform
-%                       is 1 then the search for problematic parameter sets will be skipped
+%                       and Iskrev, 2011). If either options_ident.no_identification_reducedform
+%                       or error_indicator.identification_reducedform are 1 then the search for problematic parameter sets will be skipped
 %   ide_moments:        [structure] Containing results from identification
-%                       analysis based on moments (Iskrev, 2010). If
-%                       ide_moments.no_identification_moments is 1 then the search for
+%                       analysis based on moments (Iskrev, 2010). If either
+%                       options_ident.no_identification_moments or error_indicator.identification_moments are 1 then the search for
 %                       problematic parameter sets will be skipped
 %   ide_spectrum:       [structure] Containing results from identification
 %                       analysis based on the spectrum (Qu and Tkachenko, 2012).
-%                       If ide_spectrum.no_identification_spectrum is 1 then the search for
+%                       If either options_ident.no_identification_spectrum or error_indicator.identification_spectrum are 1 then the search for
 %                       problematic parameter sets will be skipped
 %   ide_minimal:        [structure] Containing results from identification
 %                       analysis based on the minimal state space system
-%                       (Komunjer and Ng, 2011). If ide_minimal.no_identification_minimal
-%                       is 1 then the search for problematic parameter sets will be skipped
+%                       (Komunjer and Ng, 2011). If either options_ident.no_identification_minimal or
+%                       error_indicator.identification_minimal are 1 then the search for problematic parameter sets will be skipped
 %   totparam_nbr:       [integer] number of estimated stderr, corr and model parameters
 %   numzerotolrank:     [double] tolerance level for rank compuations
+%   error_indicator     [structure] indicators whether objects could be computed
 % -------------------------------------------------------------------------
 % OUTPUTS
 %   ide_reducedform, ide_moments, ide_spectrum, ide_minimal are augmented by the
@@ -51,7 +52,7 @@ function [ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] 
 % This function is called by
 %   * identification_analysis.m
 % =========================================================================
-% Copyright (C) 2019 Dynare Team
+% Copyright (C) 2019-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -113,7 +114,7 @@ else
 end
 
 % initialize for reduced form solution criteria
-if ~no_identification_reducedform
+if ~no_identification_reducedform && ~error_indicator.identification_reducedform
     dREDUCEDFORM = ide_reducedform.dREDUCEDFORM;
     dREDUCEDFORM(ide_reducedform.ind_dREDUCEDFORM,:) = dREDUCEDFORM(ide_reducedform.ind_dREDUCEDFORM,:)./ide_reducedform.norm_dREDUCEDFORM; %normalize
     if strcmp(tol_rank,'robust')
@@ -136,7 +137,7 @@ else
 end
 
 % initialize for moments criteria
-if ~no_identification_moments
+if ~no_identification_moments && ~error_indicator.identification_moments
     dMOMENTS = ide_moments.dMOMENTS;
     dMOMENTS(ide_moments.ind_dMOMENTS,:) = dMOMENTS(ide_moments.ind_dMOMENTS,:)./ide_moments.norm_dMOMENTS; %normalize
     if strcmp(tol_rank,'robust')
@@ -159,7 +160,7 @@ else
 end
 
 % initialize for spectrum criteria
-if ~no_identification_spectrum
+if ~no_identification_spectrum && ~error_indicator.identification_spectrum
     dSPECTRUM = ide_spectrum.tilda_dSPECTRUM; %tilda dSPECTRUM is normalized dSPECTRUM matrix in identification_analysis.m
     %alternative normalization
     %dSPECTRUM = ide_spectrum.dSPECTRUM;
@@ -184,7 +185,7 @@ else
 end
 
 % initialize for minimal system criteria
-if ~no_identification_minimal
+if ~no_identification_minimal && ~error_indicator.identification_minimal
     dMINIMAL = ide_minimal.dMINIMAL;
     dMINIMAL(ide_minimal.ind_dMINIMAL,:) = dMINIMAL(ide_minimal.ind_dMINIMAL,:)./ide_minimal.norm_dMINIMAL; %normalize
     dMINIMAL_par  = dMINIMAL(:,1:totparam_nbr);       %part of dMINIMAL that is dependent on parameters
@@ -223,7 +224,7 @@ for j=1:totparam_nbr
             end
         end
     end
-    if ~no_identification_reducedform
+    if ~no_identification_reducedform && ~error_indicator.identification_reducedform
         % Columns correspond to single parameters, i.e. full rank would be equal to 1
         if strcmp(tol_rank,'robust')
             if rank(full(dREDUCEDFORM(:,j))) == 0
@@ -235,7 +236,7 @@ for j=1:totparam_nbr
             end
         end
     end
-    if ~no_identification_moments        
+    if ~no_identification_moments && ~error_indicator.identification_moments
         % Columns correspond to single parameters, i.e. full rank would be equal to 1
         if strcmp(tol_rank,'robust')
             if rank(full(dMOMENTS(:,j))) == 0
@@ -247,13 +248,13 @@ for j=1:totparam_nbr
             end
         end
     end
-    if ~no_identification_spectrum
+    if ~no_identification_spectrum && ~error_indicator.identification_spectrum
         % Diagonal values correspond to single parameters, absolute value needs to be greater than tolerance level
         if abs(dSPECTRUM(j,j)) < tol_rank
             spectrum_problpars{1} = [spectrum_problpars{1};j];
         end
     end
-    if ~no_identification_minimal
+    if ~no_identification_minimal && ~error_indicator.identification_minimal
         % Columns of dMINIMAL_par correspond to single parameters, needs to be augmented with dMINIMAL_rest (part that is independent of parameters),
         % full rank would be equal to 1+dMINIMAL_fixed_rank_nbr
         if strcmp(tol_rank,'robust')
@@ -278,7 +279,7 @@ if ~no_identification_dynamic
         indparam_dDYNAMIC(dynamic_problpars{1}) = []; %remove single unidentified parameters from higher-order sets of indparam
     end
 end
-if ~no_identification_reducedform
+if ~no_identification_reducedform && ~error_indicator.identification_reducedform
     if size(reducedform_problpars{1},1) == (totparam_nbr - rank_dREDUCEDFORM)
         %found all nonidentified parameter sets
         no_identification_reducedform = 1; %skip in the following
@@ -287,7 +288,7 @@ if ~no_identification_reducedform
         indparam_dREDUCEDFORM(reducedform_problpars{1}) = []; %remove single unidentified parameters from higher-order sets of indparam
     end
 end
-if ~no_identification_moments
+if ~no_identification_moments && ~error_indicator.identification_moments
     if size(moments_problpars{1},1) == (totparam_nbr - rank_dMOMENTS)
         %found all nonidentified parameter sets
         no_identification_moments = 1; %skip in the following
@@ -296,7 +297,7 @@ if ~no_identification_moments
         indparam_dMOMENTS(moments_problpars{1}) = []; %remove single unidentified parameters from higher-order sets of indparam
     end
 end
-if ~no_identification_spectrum
+if ~no_identification_spectrum && ~error_indicator.identification_spectrum
     if size(spectrum_problpars{1},1) == (totparam_nbr - rank_dSPECTRUM)
         %found all nonidentified parameter sets
         no_identification_spectrum = 1; %skip in the following
@@ -305,7 +306,7 @@ if ~no_identification_spectrum
         indparam_dSPECTRUM(spectrum_problpars{1}) = []; %remove single unidentified parameters from higher-order sets of indparam
     end
 end
-if ~no_identification_minimal
+if ~no_identification_minimal && ~error_indicator.identification_minimal
     if size(minimal_problpars{1},1) == (totparam_nbr + dMINIMAL_fixed_rank_nbr - rank_dMINIMAL)
         %found all nonidentified parameter sets
         no_identification_minimal = 1; %skip in the following
@@ -323,7 +324,11 @@ indtotparam = unique([indparam_dDYNAMIC indparam_dREDUCEDFORM indparam_dMOMENTS 
 for j=2:min(length(indtotparam),max_dim_subsets_groups) % Check j-element subsets
     h = dyn_waitbar(0,['Brute force collinearity for ' int2str(j) ' parameters.']);
     %Step1: get all possible unique subsets of j elements
-    if ~no_identification_dynamic || ~no_identification_reducedform || ~no_identification_moments || ~no_identification_spectrum || ~no_identification_minimal
+    if ~no_identification_dynamic ...
+            || (~no_identification_reducedform && ~error_indicator.identification_reducedform)...
+            || (~no_identification_moments && ~error_indicator.identification_moments)...
+            || (~no_identification_spectrum && ~error_indicator.identification_spectrum)...
+            || (~no_identification_minimal && ~error_indicator.identification_minimal)
         indexj=nchoosek(int16(indtotparam),j);  %  int16 speeds up nchoosek
         % One could also use a mex version of nchoosek to speed this up, e.g.VChooseK from https://de.mathworks.com/matlabcentral/fileexchange/26190-vchoosek
     end
@@ -335,25 +340,25 @@ for j=2:min(length(indtotparam),max_dim_subsets_groups) % Check j-element subset
     else
         indexj_dDYNAMIC = [];
     end
-    if ~no_identification_reducedform
+    if ~no_identification_reducedform && ~error_indicator.identification_reducedform
         indexj_dREDUCEDFORM = RemoveProblematicParameterSets(indexj,reducedform_problpars);
         rankj_dREDUCEDFORM  = zeros(size(indexj_dREDUCEDFORM,1),1);
     else
         indexj_dREDUCEDFORM = [];
     end
-    if ~no_identification_moments
+    if ~no_identification_moments && ~error_indicator.identification_moments
         indexj_dMOMENTS = RemoveProblematicParameterSets(indexj,moments_problpars);
         rankj_dMOMENTS = zeros(size(indexj_dMOMENTS,1),1);
     else
         indexj_dMOMENTS = [];
     end
-    if ~no_identification_spectrum
+    if ~no_identification_spectrum && ~error_indicator.identification_spectrum
         indexj_dSPECTRUM = RemoveProblematicParameterSets(indexj,spectrum_problpars);
         rankj_dSPECTRUM = zeros(size(indexj_dSPECTRUM,1),1);
     else
         indexj_dSPECTRUM = [];
     end
-    if ~no_identification_minimal
+    if ~no_identification_minimal && ~error_indicator.identification_minimal
         indexj_dMINIMAL = RemoveProblematicParameterSets(indexj,minimal_problpars);
         rankj_dMINIMAL = zeros(size(indexj_dMINIMAL,1),1);
     else
@@ -375,7 +380,7 @@ for j=2:min(length(indtotparam),max_dim_subsets_groups) % Check j-element subset
                 end
             end
         end
-        if ~no_identification_reducedform
+        if ~no_identification_reducedform && ~error_indicator.identification_reducedform
             k_dREDUCEDFORM = k_dREDUCEDFORM+1;
             if k_dREDUCEDFORM <= size(indexj_dREDUCEDFORM,1)
                 dREDUCEDFORM_j = dREDUCEDFORM(:,indexj_dREDUCEDFORM(k_dREDUCEDFORM,:)); % pick columns that correspond to parameter subset
@@ -386,7 +391,7 @@ for j=2:min(length(indtotparam),max_dim_subsets_groups) % Check j-element subset
                 end
             end
         end
-        if ~no_identification_moments
+        if ~no_identification_moments && ~error_indicator.identification_moments
             k_dMOMENTS = k_dMOMENTS+1;
             if k_dMOMENTS <= size(indexj_dMOMENTS,1)
                 dMOMENTS_j = dMOMENTS(:,indexj_dMOMENTS(k_dMOMENTS,:)); % pick columns that correspond to parameter subset
@@ -397,7 +402,7 @@ for j=2:min(length(indtotparam),max_dim_subsets_groups) % Check j-element subset
                 end
             end
         end
-        if ~no_identification_minimal
+        if ~no_identification_minimal && ~error_indicator.identification_minimal
             k_dMINIMAL = k_dMINIMAL+1;
             if k_dMINIMAL <= size(indexj_dMINIMAL,1)
                 dMINIMAL_j = [dMINIMAL_par(:,indexj_dMINIMAL(k_dMINIMAL,:)) dMINIMAL_rest]; % pick columns in dMINIMAL_par that correspond to parameter subset and augment with parameter-indepdendet part dMINIMAL_rest
@@ -408,7 +413,7 @@ for j=2:min(length(indtotparam),max_dim_subsets_groups) % Check j-element subset
                 end
             end
         end
-        if ~no_identification_spectrum
+        if ~no_identification_spectrum && ~error_indicator.identification_spectrum
             k_dSPECTRUM = k_dSPECTRUM+1;
             if k_dSPECTRUM <= size(indexj_dSPECTRUM,1)
                 dSPECTRUM_j = dSPECTRUM(indexj_dSPECTRUM(k_dSPECTRUM,:),indexj_dSPECTRUM(k_dSPECTRUM,:)); % pick rows and columns that correspond to parameter subset
@@ -426,16 +431,16 @@ for j=2:min(length(indtotparam),max_dim_subsets_groups) % Check j-element subset
     if ~no_identification_dynamic
         dynamic_problpars{j} = indexj_dDYNAMIC(rankj_dDYNAMIC < j,:);
     end
-    if ~no_identification_reducedform
+    if ~no_identification_reducedform && ~error_indicator.identification_reducedform
         reducedform_problpars{j} = indexj_dREDUCEDFORM(rankj_dREDUCEDFORM < j,:);
     end
-    if ~no_identification_moments
+    if ~no_identification_moments && ~error_indicator.identification_moments
         moments_problpars{j} = indexj_dMOMENTS(rankj_dMOMENTS < j,:);
     end
-    if ~no_identification_minimal
+    if ~no_identification_minimal && ~error_indicator.identification_minimal
         minimal_problpars{j} = indexj_dMINIMAL(rankj_dMINIMAL < (j+dMINIMAL_fixed_rank_nbr),:);
     end
-    if ~no_identification_spectrum
+    if ~no_identification_spectrum && ~error_indicator.identification_spectrum
         spectrum_problpars{j} = indexj_dSPECTRUM(rankj_dSPECTRUM < j,:);
     end
 %     % Optional Step 5: % remove redundant 2-sets, eg. if the problematic sets are [(p1,p2);(p1,p3);(p2,p3)], then the unique problematic parameter sets are actually only [(p1,p2),(p1,p3)]        

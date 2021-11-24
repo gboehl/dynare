@@ -1,5 +1,5 @@
-function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, options_ident] = identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
-% [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, options_ident] = identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
+function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, error_indicator] = identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
+% [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, error_indicator] = identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
 % -------------------------------------------------------------------------
 % This function wraps all identification analysis, i.e. it
 % (1) wraps functions for the theoretical identification analysis based on moments (Iskrev, 2010),
@@ -47,8 +47,8 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 %                         info about first-order perturbation derivatives, used in dsge_likelihood.m
 %    * info               [integer]
 %                         output from dynare_resolve
-%    * options_ident      [structure]
-%                         updated identification options
+%    * error_indicator    [structure]
+%                         indicator on problems
 % -------------------------------------------------------------------------
 % This function is called by
 %   * dynare_identification.m
@@ -71,7 +71,7 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 %   * stoch_simul
 %   * vec
 % =========================================================================
-% Copyright (C) 2008-2020 Dynare Team
+% Copyright (C) 2008-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -115,7 +115,6 @@ if ~isempty(estim_params_)
 end
 
 %get options (see dynare_identification.m for description of options)
-order               = options_ident.order;
 nlags               = options_ident.ar;
 advanced            = options_ident.advanced;
 replic              = options_ident.replic;
@@ -126,11 +125,11 @@ checks_via_subsets  = options_ident.checks_via_subsets;
 tol_deriv           = options_ident.tol_deriv;
 tol_rank            = options_ident.tol_rank;
 tol_sv              = options_ident.tol_sv;
-no_identification_strength    = options_ident.no_identification_strength;
-no_identification_reducedform = options_ident.no_identification_reducedform;
-no_identification_moments     = options_ident.no_identification_moments;
-no_identification_minimal     = options_ident.no_identification_minimal;
-no_identification_spectrum    = options_ident.no_identification_spectrum;
+error_indicator.identification_strength=0;
+error_indicator.identification_reducedform=0;
+error_indicator.identification_moments=0;
+error_indicator.identification_minimal=0;
+error_indicator.identification_spectrum=0;
 
 %Compute linear approximation and fill dr structure
 [oo_.dr,info,M_,oo_] = compute_decision_rules(M_,options_,oo_);
@@ -140,71 +139,71 @@ if info(1) == 0 %no errors in solution
     [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params_, M_, oo_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs);
     if isempty(dMINIMAL)
         % Komunjer and Ng is not computed if (1) minimality conditions are not fullfilled or (2) there are more shocks and measurement errors than observables, so we need to reset options
-        no_identification_minimal = 1;
-        options_ident.no_identification_minimal = 1;
+        error_indicator.identification_minimal = 1;
+        %options_ident.no_identification_minimal = 1;
     end
 
     if init
         %check stationarity
-        if ~no_identification_moments
+        if ~options_ident.no_identification_moments
             if any(any(isnan(MOMENTS)))
                 if options_.diffuse_filter == 1 % use options_ as it inherits diffuse_filter from options_ident if set by user
                     error('There are NaN''s in the theoretical moments. Make sure that for non-stationary models stationary transformations of non-stationary observables are used for checking identification. [TIP: use first differences].')
                 else
                     error('There are NaN''s in the theoretical moments. Please check whether your model has units roots, and you forgot to set diffuse_filter=1.' )
                 end
+                error_indicator.identification_moments=1;
             end
             ind_dMOMENTS = (find(max(abs(dMOMENTS'),[],1) > tol_deriv)); %index for non-zero rows
             if isempty(ind_dMOMENTS) && any(any(isnan(dMOMENTS)))                
-                error('There are NaN in the dMOMENTS matrix.' )
-            end
-            
+                error('There are NaN in the dMOMENTS matrix.')
+                error_indicator.identification_moments=1;
+            end            
         end
-        if ~no_identification_spectrum
+        if ~options_ident.no_identification_spectrum
             ind_dSPECTRUM = (find(max(abs(dSPECTRUM'),[],1) > tol_deriv)); %index for non-zero rows
             if any(any(isnan(dSPECTRUM)))
                 warning_SPECTRUM = 'WARNING: There are NaN in the dSPECTRUM matrix. Note that identification based on spectrum does not support non-stationary models (yet).\n';
                 warning_SPECTRUM = [warning_SPECTRUM '         Skip identification analysis based on spectrum.\n'];
                 fprintf(warning_SPECTRUM);
-                %reset options to neither display nor plot dSPECTRUM anymore
-                no_identification_spectrum = 1;
-                options_ident.no_identification_spectrum = 1;
+                %set indicator to neither display nor plot dSPECTRUM anymore
+                error_indicator.identification_spectrum = 1;                
             end
         end
-        if ~no_identification_minimal
+        if ~options_ident.no_identification_minimal
             ind_dMINIMAL = (find(max(abs(dMINIMAL'),[],1) > tol_deriv)); %index for non-zero rows
             if any(any(isnan(dMINIMAL)))
                 warning_MINIMAL = 'WARNING: There are NaN in the dMINIMAL matrix. Note that identification based on minimal system does not support non-stationary models (yet).\n';
                 warning_MINIMAL = [warning_MINIMAL '         Skip identification analysis based on minimal system.\n'];
                 fprintf(warning_MINIMAL);
-                %reset options to neither display nor plot dMINIMAL anymore
-                no_identification_minimal = 1;
-                options_ident.no_identification_minimal = 1;
+                %set indicator to neither display nor plot dMINIMAL anymore
+                error_indicator.identification_minimal = 1;
             end
         end
-        if no_identification_moments && no_identification_minimal && no_identification_spectrum
+        %The following cannot be reached yet due to erroring out when
+        %error_indicator.identification_moments is triggered
+        if error_indicator.identification_moments && error_indicator.identification_minimal && error_indicator.identification_spectrum
             %display error if all three criteria fail            
             error(sprintf('identification_analyis: Stationarity condition(s) failed and/or diffuse_filter option missing.\nMake sure that for non-stationary models stationary transformations of non-stationary observables are used for checking identification.\n[TIP: use first differences].'));
         end
 
         % Check order conditions
-        if ~no_identification_moments
+        if ~options_ident.no_identification_moments && ~error_indicator.identification_moments
             %check order condition of Iskrev (2010)
             while length(ind_dMOMENTS) < totparam_nbr && nlags < 10
                 %Try to add lags to autocovariogram if order condition fails
                 disp('The number of moments with non-zero derivative is smaller than the number of parameters')
                 disp(['Try increasing ar = ', int2str(nlags+1)])
                 nlags = nlags + 1;
-                options_ident.no_identification_minimal  = 1; %do not recompute dMINIMAL
-                options_ident.no_identification_spectrum = 1; %do not recompute dSPECTRUM
-                options_ident.ar = nlags;     %store new lag number
-                options_.ar      = nlags;     %store new lag number
-                [~, ~, ~, ~, ~, ~, MOMENTS, dMOMENTS, ~, ~, ~, ~] = get_identification_jacobians(estim_params_, M_, oo_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs);
+                options_ident_local=options_ident;
+                options_ident_local.no_identification_minimal  = 1; %do not recompute dMINIMAL
+                options_ident_local.no_identification_spectrum = 1; %do not recompute dSPECTRUM
+                options_ident_local.ar = nlags;     %store new lag number
+                options_.ar      = nlags;           %store new lag number
+                [~, ~, ~, ~, ~, ~, MOMENTS, dMOMENTS, ~, ~, ~, ~] = get_identification_jacobians(estim_params_, M_, oo_, options_, options_ident_local, indpmodel, indpstderr, indpcorr, indvobs);
 
                 ind_dMOMENTS = (find(max(abs(dMOMENTS'),[],1) > tol_deriv)); %new index with non-zero rows
             end
-            options_ident.no_identification_minimal  = no_identification_minimal;  % reset option to original setting
-            options_ident.no_identification_spectrum = no_identification_spectrum; % reset option to original setting
             if length(ind_dMOMENTS) < totparam_nbr
                 warning_MOMENTS = 'WARNING: Order condition for dMOMENTS failed: There are not enough moments and too many parameters.\n';
                 warning_MOMENTS = [warning_MOMENTS '         The number of moments with non-zero derivative is smaller than the number of parameters up to 10 lags.\n'];
@@ -212,31 +211,30 @@ if info(1) == 0 %no errors in solution
                 warning_MOMENTS = [warning_MOMENTS '         Skip identification analysis based on moments.\n'];
                 warning_MOMENTS = [warning_MOMENTS '         Skip identification strenght analysis.\n'];
                 fprintf(warning_MOMENTS);
-                %reset options to neither display nor plot dMOMENTS anymore
-                no_identification_moments = 1;
-                options_ident.no_identification_moments = 1;
-                no_identification_strength = 1;
-                options_ident.no_identification_strength = 1;
+                %set indicator to neither display nor plot dMOMENTS anymore
+                error_indicator.identification_moments = 1;
+                %options_ident.no_identification_moments = 1;
+                error_indicator.identification_strength = 1;
+                %options_ident.no_identification_strength = 1;
             end
         end
-        if ~no_identification_minimal
+        if ~options_ident.no_identification_minimal && ~error_indicator.identification_minimal
             if length(ind_dMINIMAL) < size(dMINIMAL,2)
                 warning_MINIMAL = 'WARNING: Order condition for dMINIMAL failed: There are too many parameters or too few observable variables.\n';
                 warning_MINIMAL = [warning_MINIMAL '         The number of minimal system elements with non-zero derivative is smaller than the number of parameters.\n'];
                 warning_MINIMAL = [warning_MINIMAL '         Either reduce the list of parameters, or increase number of observables.\n'];
                 warning_MINIMAL = [warning_MINIMAL '         Skip identification analysis based on minimal state space system.\n'];
                 fprintf(warning_MINIMAL);
-                %resest options to neither display nor plot dMINIMAL anymore
-                no_identification_minimal = 1;
-                options_ident.no_identification_minimal = 1;
+                %set indicator to neither display nor plot dMINIMAL anymore
+                error_indicator.identification_minimal = 1;                
             end
         end
         %Note that there is no order condition for dSPECTRUM, as the matrix is always of dimension totparam_nbr by totparam_nbr
-        if no_identification_moments && no_identification_minimal && no_identification_spectrum
+        if error_indicator.identification_moments && error_indicator.identification_minimal && error_indicator.identification_spectrum
             %error if all three criteria fail
             error('identification_analyis: Order condition(s) failed');
         end
-        if ~no_identification_reducedform
+        if ~options_ident.no_identification_reducedform && ~error_indicator.identification_reducedform
             ind_dREDUCEDFORM = (find(max(abs(dREDUCEDFORM'),[],1) > tol_deriv)); %index with non-zero rows
         end
         ind_dDYNAMIC = (find(max(abs(dDYNAMIC'),[],1) > tol_deriv)); %index with non-zero rows
@@ -244,16 +242,16 @@ if info(1) == 0 %no errors in solution
 
     DYNAMIC = DYNAMIC(ind_dDYNAMIC); %focus only on non-zero entries
     si_dDYNAMIC = (dDYNAMIC(ind_dDYNAMIC,:)); %focus only on non-zero rows
-    if ~no_identification_reducedform
+    if ~options_ident.no_identification_reducedform && ~error_indicator.identification_reducedform
         REDUCEDFORM = REDUCEDFORM(ind_dREDUCEDFORM); %focus only on non-zero entries
         si_dREDUCEDFORM = (dREDUCEDFORM(ind_dREDUCEDFORM,:)); %focus only on non-zero rows
     end
 
-    if ~no_identification_moments
+    if ~options_ident.no_identification_moments && ~error_indicator.identification_moments
         MOMENTS = MOMENTS(ind_dMOMENTS); %focus only on non-zero entries
         si_dMOMENTS   = (dMOMENTS(ind_dMOMENTS,:)); %focus only on non-zero derivatives
-%% MOMENTS IDENTIFICATION STRENGTH ANALYSIS
-        if ~no_identification_strength && init %only for initialization of persistent vars
+        %% MOMENTS IDENTIFICATION STRENGTH ANALYSIS
+        if ~options_ident.no_identification_strength && ~error_indicator.identification_strength && init %only for initialization of persistent vars
             ide_strength_dMOMENTS        = NaN(1,totparam_nbr); %initialize
             ide_strength_dMOMENTS_prior  = NaN(1,totparam_nbr); %initialize
             ide_uncert_unnormaliz = NaN(1,totparam_nbr); %initialize
@@ -438,7 +436,7 @@ if info(1) == 0 %no errors in solution
     ide_dynamic.dDYNAMIC      = dDYNAMIC;
     ide_dynamic.DYNAMIC       = DYNAMIC;
 
-    if ~no_identification_reducedform
+    if ~options_ident.no_identification_reducedform && ~error_indicator.identification_reducedform
         if normalize_jacobians
             norm_dREDUCEDFORM = max(abs(si_dREDUCEDFORM),[],2);
             norm_dREDUCEDFORM = norm_dREDUCEDFORM(:,ones(totparam_nbr,1));
@@ -453,7 +451,7 @@ if info(1) == 0 %no errors in solution
         ide_reducedform.REDUCEDFORM       = REDUCEDFORM;
     end
 
-    if ~no_identification_moments
+    if ~options_ident.no_identification_moments && ~error_indicator.identification_moments
         if normalize_jacobians
             norm_dMOMENTS = max(abs(si_dMOMENTS),[],2);
             norm_dMOMENTS = norm_dMOMENTS(:,ones(totparam_nbr,1));
@@ -469,7 +467,7 @@ if info(1) == 0 %no errors in solution
 
         if advanced
             % here we do not normalize (i.e. we set norm_dMOMENTS=1) as the OLS in ident_bruteforce is very sensitive to norm_dMOMENTS
-            [ide_moments.pars, ide_moments.cosndMOMENTS] = ident_bruteforce(dMOMENTS(ind_dMOMENTS,:), max_dim_cova_group, options_.TeX, options_ident.name_tex, options_ident.tittxt, options_ident.tol_deriv);
+            [ide_moments.pars, ide_moments.cosndMOMENTS] = ident_bruteforce(dMOMENTS(ind_dMOMENTS,:), max_dim_cova_group, options_.TeX, options_ident.name_tex, options_ident.tittxt, tol_deriv);
         end
 
         %here we focus on the unnormalized S and V, which is then used in plot_identification.m and for prior_mc > 1
@@ -485,7 +483,7 @@ if info(1) == 0 %no errors in solution
         end
     end
 
-    if ~no_identification_minimal
+    if ~options_ident.no_identification_minimal && ~error_indicator.identification_minimal
         if normalize_jacobians
             ind_dMINIMAL = (find(max(abs(dMINIMAL'),[],1) > tol_deriv)); %index for non-zero rows
             norm_dMINIMAL = max(abs(dMINIMAL(ind_dMINIMAL,:)),[],2);
@@ -499,7 +497,7 @@ if info(1) == 0 %no errors in solution
         ide_minimal.dMINIMAL      = dMINIMAL;
     end
 
-    if ~no_identification_spectrum
+    if ~options_ident.no_identification_spectrum && ~error_indicator.identification_spectrum
         if normalize_jacobians
             ind_dSPECTRUM = (find(max(abs(dSPECTRUM'),[],1) > tol_deriv)); %index for non-zero rows
             tilda_dSPECTRUM = zeros(size(dSPECTRUM));
@@ -523,23 +521,33 @@ if info(1) == 0 %no errors in solution
     if checks_via_subsets
         % identification_checks_via_subsets is only for debugging
         [ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] = ...
-            identification_checks_via_subsets(ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, totparam_nbr, modparam_nbr, options_ident);
+            identification_checks_via_subsets(ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, totparam_nbr, modparam_nbr, options_ident, error_indicator);
+         if ~error_indicator.identification_minimal
+             ide_minimal.minimal_state_space=1;
+         else
+             ide_minimal.minimal_state_space=0;
+         end
     else
         [ide_dynamic.cond, ide_dynamic.rank, ide_dynamic.ind0, ide_dynamic.indno, ide_dynamic.ino, ide_dynamic.Mco, ide_dynamic.Pco, ide_dynamic.jweak, ide_dynamic.jweak_pair] = ...
             identification_checks(dDYNAMIC(ind_dDYNAMIC,:)./norm_dDYNAMIC, 1, tol_rank, tol_sv, modparam_nbr);
-        if ~no_identification_reducedform
+        if ~options_ident.no_identification_reducedform && ~error_indicator.identification_reducedform
             [ide_reducedform.cond, ide_reducedform.rank, ide_reducedform.ind0, ide_reducedform.indno, ide_reducedform.ino, ide_reducedform.Mco, ide_reducedform.Pco, ide_reducedform.jweak, ide_reducedform.jweak_pair] = ...
                 identification_checks(dREDUCEDFORM(ind_dREDUCEDFORM,:)./norm_dREDUCEDFORM, 1, tol_rank, tol_sv, totparam_nbr);
         end
-        if ~no_identification_moments
+        if ~options_ident.no_identification_moments && ~error_indicator.identification_moments
             [ide_moments.cond, ide_moments.rank, ide_moments.ind0, ide_moments.indno, ide_moments.ino, ide_moments.Mco, ide_moments.Pco, ide_moments.jweak, ide_moments.jweak_pair] = ...
                 identification_checks(dMOMENTS(ind_dMOMENTS,:)./norm_dMOMENTS, 1, tol_rank, tol_sv, totparam_nbr);
         end
-        if ~no_identification_minimal
-            [ide_minimal.cond, ide_minimal.rank, ide_minimal.ind0, ide_minimal.indno, ide_minimal.ino, ide_minimal.Mco, ide_minimal.Pco, ide_minimal.jweak, ide_minimal.jweak_pair] = ...
-                identification_checks(dMINIMAL(ind_dMINIMAL,:)./norm_dMINIMAL, 2, tol_rank, tol_sv, totparam_nbr);
+        if ~options_ident.no_identification_minimal 
+            if ~error_indicator.identification_minimal
+                [ide_minimal.cond, ide_minimal.rank, ide_minimal.ind0, ide_minimal.indno, ide_minimal.ino, ide_minimal.Mco, ide_minimal.Pco, ide_minimal.jweak, ide_minimal.jweak_pair] = ...
+                    identification_checks(dMINIMAL(ind_dMINIMAL,:)./norm_dMINIMAL, 2, tol_rank, tol_sv, totparam_nbr);
+                ide_minimal.minimal_state_space=1;
+            else
+                ide_minimal.minimal_state_space=0;
+            end
         end
-        if ~no_identification_spectrum
+        if ~options_ident.no_identification_spectrum && ~error_indicator.identification_spectrum
             [ide_spectrum.cond, ide_spectrum.rank, ide_spectrum.ind0, ide_spectrum.indno, ide_spectrum.ino, ide_spectrum.Mco, ide_spectrum.Pco, ide_spectrum.jweak, ide_spectrum.jweak_pair] = ...
                 identification_checks(tilda_dSPECTRUM, 3, tol_rank, tol_sv, totparam_nbr);
         end
