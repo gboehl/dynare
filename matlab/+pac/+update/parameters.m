@@ -66,56 +66,118 @@ if ~isfield(varcalib, 'CompanionMatrix') || any(isnan(varcalib.CompanionMatrix(:
 end
 
 % Show the equations where this PAC model is used.
-fprintf('PAC model %s is used in equation %s.\n', pacname, pacmodel.eq_name);
-skipline()
+if verbose
+    fprintf('PAC model %s is used in equation %s.\n', pacname, pacmodel.eq_name);
+    skipline()
+end
+
+% Do we need to decompose the PAC expectation?
+if isfield(pacmodel, 'components')
+    numberofcomponents = length(pacmodel.components);
+else
+    numberofcomponents = 0;
+end
 
 % Build the vector of PAC parameters (ECM parameter + autoregressive parameters).
 pacvalues = DynareModel.params([pacmodel.ec.params; pacmodel.ar.params(1:pacmodel.max_lag)']);
-% Get the indices for the stationary/nonstationary variables in the VAR system.
-id = find(strcmp(DynareModel.endo_names{pacmodel.ec.vars(pacmodel.ec.istarget)}, varmodel.list_of_variables_in_companion_var));
-if isempty(id)
-    % Find the auxiliary variables if any
-    ad = find(cell2mat(cellfun(@(x) isauxiliary(x, [8 10]), varmodel.list_of_variables_in_companion_var, 'UniformOutput', false)));
-    if isempty(ad)
-        error('Cannot find the trend variable in the Companion VAR/VECM model.')
-    else
-        for i=1:length(ad)
-            auxinfo = DynareModel.aux_vars(get_aux_variable_id(varmodel.list_of_variables_in_companion_var{ad(i)}));
-            if isequal(auxinfo.endo_index, pacmodel.ec.vars(pacmodel.ec.istarget))
-                id = ad(i);
-                break
-            end
-            if isequal(auxinfo.type, 8) && isequal(auxinfo.orig_index, pacmodel.ec.vars(pacmodel.ec.istarget))
-                id = ad(i);
-                break
-            end
-        end
-    end
-    if isempty(id)
-        error('Cannot find the trend variable in the Companion VAR/VECM model.')
-    end
-end
 
-% Infer the kind of PAC exoectation
-if isequal(pacmodel.auxiliary_model_type, 'var')
-    if varmodel.nonstationary(id)
-        kind = 'dd';
-        if varmodel.isconstant
-            id = id+1;
-        end
-    else
-        kind = 'll'
-        if varmodel.isconstant
-            id = id+1;
+% Get the indices for the stationary/nonstationary variables in the VAR system.
+if numberofcomponents
+    id = cell(numberofcomponents, 1);
+    for i=1:numberofcomponents
+        id(i) = {find(strcmp(DynareModel.endo_names{pacmodel.components(i).endo_var}, varmodel.list_of_variables_in_companion_var))};
+        if isempty(id{i})
+            % Find the auxiliary variables if any
+            ad = find(cell2mat(cellfun(@(x) isauxiliary(x, [8 10]), varmodel.list_of_variables_in_companion_var, 'UniformOutput', false)));
+            if isempty(ad)
+                error('Cannot find the trend variable in the Companion VAR/VECM model.')
+            else
+                for j=1:length(ad)
+                    auxinfo = DynareModel.aux_vars(get_aux_variable_id(varmodel.list_of_variables_in_companion_var{ad(j)}));
+                    if isequal(auxinfo.endo_index, pacmodel.components(i).endo_var)
+                        id(i) = {ad(j)};
+                        break
+                    end
+                    if isequal(auxinfo.type, 8) && isequal(auxinfo.orig_index, pacmodel.components(i).endo_var)
+                        id(i) = {ad(j)};
+                        break
+                    end
+                end
+            end
+            if isempty(id{i})
+                error('Cannot find the trend variable in the Companion VAR/VECM model.')
+            end
         end
     end
 else
-    % Trend component model is assumed.
-    kind = 'dd';
+    id = {find(strcmp(DynareModel.endo_names{pacmodel.ec.vars(pacmodel.ec.istarget)}, varmodel.list_of_variables_in_companion_var))};
+    if isempty(id{1})
+        % Find the auxiliary variables if any
+        ad = find(cell2mat(cellfun(@(x) isauxiliary(x, [8 10]), varmodel.list_of_variables_in_companion_var, 'UniformOutput', false)));
+        if isempty(ad)
+            error('Cannot find the trend variable in the Companion VAR/VECM model.')
+        else
+            for i=1:length(ad)
+                auxinfo = DynareModel.aux_vars(get_aux_variable_id(varmodel.list_of_variables_in_companion_var{ad(i)}));
+                if isequal(auxinfo.endo_index, pacmodel.ec.vars(pacmodel.ec.istarget))
+                    id = {ad(i)};
+                    break
+                end
+                if isequal(auxinfo.type, 8) && isequal(auxinfo.orig_index, pacmodel.ec.vars(pacmodel.ec.istarget))
+                    id = {ad(i)};
+                    break
+                end
+            end
+        end
+        if isempty(id{1})
+            error('Cannot find the trend variable in the Companion VAR/VECM model.')
+        end
+    end
+end
+
+if ~numberofcomponents
+    % Infer the kind of PAC exoectation
+    if isequal(pacmodel.auxiliary_model_type, 'var')
+        if varmodel.nonstationary(id{1})
+            kind = {'dd'};
+            if varmodel.isconstant
+                id{1} = id{1}+1;
+            end
+        else
+            kind = {'ll'};
+            if varmodel.isconstant
+                id{1} = id{1}+1;
+            end
+        end
+    else
+        % Trend component model is assumed.
+        kind = {'dd'};
+    end
+else
+    if varmodel.isconstant
+        for i=1:numberofcomponents
+            id{i} = id{i}+1;
+        end
+    end
 end
 
 % Override kind with the information provided by the user or update M_.pac
-
+if ~numberofcomponents
+    if ~isempty(pacmodel.kind)
+        kind = {pacmodel.kind};
+    else
+        pacmodel.kind = kind{1};
+    end
+else
+    kind = cell(numberofcomponents,1);
+    for i=1:numberofcomponents
+        if isempty(pacmodel.components(i).kind)
+            error('kind declaration is mandatory for each component in pac_target_info.')
+        else
+            kind{i} = pacmodel.components(i).kind;
+        end
+    end
+end
 
 % Get the value of the discount factor.
 beta = DynareModel.params(pacmodel.discount_index);
@@ -125,6 +187,12 @@ if isfield(pacmodel, 'growth_str')
     growth_flag = true;
 else
     growth_flag = false;
+    for i=1:numberofcomponents
+        if isfield(pacmodel.components(i), 'growth_str')
+            growth_flag = true;
+            break
+        end
+    end
 end
 
 % Do we have rule of thumb agents? γ is the share of optimizing agents.
@@ -136,84 +204,114 @@ end
 
 % Get h vector (plus the parameter for the growth neutrality correction).
 if growth_flag
-    [h, growthneutrality] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, pacmodel.auxiliary_model_type, kind, id);
+    h = cell(1,length(id));
+    growthneutrality = cell(1,length(id));
+    for i=1:length(id)
+        [h{i}, growthneutrality{i}] = hVectors([pacvalues; beta], varcalib.CompanionMatrix, pacmodel.auxiliary_model_type, kind{i}, id{i});
+    end
 else
-    h = hVectors([pacvalues; beta], varcalib.CompanionMatrix, pacmodel.auxiliary_model_type, kind, id);
+    h = cell(1,length(id));
+    for i=1:length(id)
+        h(i) = {hVectors([pacvalues; beta], varcalib.CompanionMatrix, pacmodel.auxiliary_model_type, kind{i}, id{i})};
+    end
 end
 
 % Update M_.params with h
 if isequal(pacmodel.auxiliary_model_type, 'var')
     if DynareModel.var.(pacmodel.auxiliary_model_name).isconstant
-        DynareModel.params(pacmodel.h_param_indices) = h;
+        if isfield(pacmodel, 'h_param_indices')
+            % No decomposition
+            DynareModel.params(pacmodel.h_param_indices) = h{1};
+        else
+            for i=1:numberofcomponents
+                DynareModel.params(pacmodel.components(i).h_param_indices) = h{i};
+            end
+        end
     else
-        DynareModel.params(pacmodel.h_param_indices(1)) = .0;
-        DynareModel.params(pacmodel.h_param_indices(2:end)) = h;
-    end
+        if isfield(pacmodel, 'h_param_indices')
+            % No decomposition
+            DynareModel.params(pacmodel.h_param_indices(1)) = .0;
+            DynareModel.params(pacmodel.h_param_indices(2:end)) = h{1};
+        else
+            for i=1:numberofcomponents
+                DynareModel.params(pacmodel.components(i).h_param_indices(1)) = .0;
+                DynareModel.params(pacmodel.components(i).h_param_indices(2:end)) = h{i};
+            end
+        end
+    end % If the auxiliary model (VAR) has no constant.
 else
-    DynareModel.params(pacmodel.h_param_indices) = h;
-end
-
+    DynareModel.params(pacmodel.h_param_indices) = h{1};
+end % if auxiliary model is a VAR
 
 % Update the parameter related to the growth neutrality correction.
 if growth_flag
     % Growth neutrality as returned by hVector is valid iff
     % there is no exogenous variables in the model and in the
     % absence of non optimizing agents.
-    gg = -(growthneutrality-1); % Finite sum of autoregressive parameters + infinite sum of the coefficients in the PAC expectation term.
-    cc = 1.0-gg*gamma;          % First adjustment of the growth neutrality correction (should also be divided by gamma, done below at the end of this section).
-                                % We may have to further change the correction if we have nonzero mean exogenous variables.
-    ll = 0.0;
-    if isfield(pacmodel, 'optim_additive')
-        % Exogenous variables are present in the λ part (optimizing agents).
-        tmp0 = 0;
-        for i=1:length(pacmodel.optim_additive.params)
-            if isnan(pacmodel.optim_additive.params(i)) && islogical(pacmodel.optim_additive.bgp{i}) && pacmodel.optim_additive.bgp{i}
-                tmp0 = tmp0 + pacmodel.optim_additive.scaling_factor(i);
-            elseif ~isnan(pacmodel.optim_additive.params(i)) && islogical(pacmodel.optim_additive.bgp{i}) && pacmodel.optim_additive.bgp{i}
-                tmp0 = tmp0 + DynareModel.params(pacmodel.optim_additive.params(i))*pacmodel.optim_additive.scaling_factor(i);
-            elseif ~islogical(pacmodel.optim_additive.bgp{i})
-                error('It is not possible to provide a value for the mean of an exogenous variable appearing in the optimal part of the PAC equation.')
-            end
+    for j=1:length(id)
+        if isnan(growthneutrality{j})
+            continue
         end
-        cc = cc - tmp0*gamma;
-    end
-    if gamma<1
-        if isfield(pacmodel, 'non_optimizing_behaviour') && isfield(pacmodel.non_optimizing_behaviour, 'params')
-            % Exogenous variables are present in the 1-λ part (rule of thumb agents).
+        gg = -(growthneutrality{j}-1); % Finite sum of autoregressive parameters + infinite sum of the coefficients in the PAC expectation term.
+        cc = 1.0-gg*gamma;          % First adjustment of the growth neutrality correction (should also be divided by gamma, done below at the end of this section).
+                                    % We may have to further change the correction if we have nonzero mean exogenous variables.
+        ll = 0.0;
+        if isfield(pacmodel, 'optim_additive')
+            % Exogenous variables are present in the λ part (optimizing agents).
             tmp0 = 0;
-            tmp1 = 0;
-            for i=1:length(pacmodel.non_optimizing_behaviour.params)
-                if isnan(pacmodel.non_optimizing_behaviour.params(i)) && islogical(pacmodel.non_optimizing_behaviour.bgp{i}) && pacmodel.non_optimizing_behaviour.bgp{i}
-                    tmp0 = tmp0 + pacmodel.non_optimizing_behaviour.scaling_factor(i);
-                elseif ~isnan(pacmodel.non_optimizing_behaviour.params(i)) && islogical(pacmodel.non_optimizing_behaviour.bgp{i}) && pacmodel.non_optimizing_behaviour.bgp{i}
-                    tmp0 = tmp0 + DynareModel.params(pacmodel.non_optimizing_behaviour.params(i))*pacmodel.non_optimizing_behaviour.scaling_factor(i);
-                elseif ~islogical(pacmodel.non_optimizing_behaviour.bgp{i}) && isnumeric(pacmodel.non_optimizing_behaviour.bgp{i}) && isnan(pacmodel.non_optimizing_behaviour.params(i))
-                    tmp1 = tmp1 + pacmodel.non_optimizing_behaviour.scaling_factor(i)*pacmodel.non_optimizing_behaviour.bgp{i};
-                elseif ~islogical(pacmodel.non_optimizing_behaviour.bgp{i}) && isnumeric(pacmodel.non_optimizing_behaviour.bgp{i}) && ~isnan(pacmodel.non_optimizing_behaviour.params(i))
-                    tmp1 = tmp1 + pacmodel.non_optimizing_behaviour.scaling_factor(i)*pacmodel.non_optimizing_behaviour.params(i)*pacmodel.non_optimizing_behaviour.bgp{i};
+            for i=1:length(pacmodel.optim_additive.params)
+                if isnan(pacmodel.optim_additive.params(i)) && islogical(pacmodel.optim_additive.bgp{i}) && pacmodel.optim_additive.bgp{i}
+                    tmp0 = tmp0 + pacmodel.optim_additive.scaling_factor(i);
+                elseif ~isnan(pacmodel.optim_additive.params(i)) && islogical(pacmodel.optim_additive.bgp{i}) && pacmodel.optim_additive.bgp{i}
+                    tmp0 = tmp0 + DynareModel.params(pacmodel.optim_additive.params(i))*pacmodel.optim_additive.scaling_factor(i);
+                elseif ~islogical(pacmodel.optim_additive.bgp{i})
+                    error('It is not possible to provide a value for the mean of an exogenous variable appearing in the optimal part of the PAC equation.')
                 end
             end
-            cc = cc - (1.0-gamma)*tmp0;
-            ll = -(1.0-gamma)*tmp1/gamma; % TODO: ll should be added as a constant in the PAC equation (under the λ part) when unrolling pac_expectation.
+            cc = cc - tmp0*gamma;
         end
-    end
-    if isfield(pacmodel, 'additive')
-        % Exogenous variables are present outside of the λ and (1-λ) parts (or we have exogenous variables in a "pure" PAC equation.
-        tmp0 = 0;
-        tmp1 = 0;
-        for i=1:length(pacmodel.additive.params)
-            if isnan(pacmodel.additive.params(i)) && islogical(pacmodel.additive.bgp{i}) && pacmodel.additive.bgp{i}
-                tmp0 = tmp0 + pacmodel.additive.scaling_factor(i);
-            elseif ~isnan(pacmodel.additive.params(i)) && islogical(pacmodel.additive.bgp{i}) && pacmodel.additive.bgp{i}
-                tmp0 = tmp0 + DynareModel.params(pacmodel.additive.params(i))*pacmodel.additive.scaling_factor(i);
-            elseif ~islogical(pacmodel.additive.bgp{i}) && isnumeric(pacmodel.additive.bgp{i}) && isnan(pacmodel.additive.params(i))
-                tmp1 = tmp1 + pacmodel.additive.scaling_factor(i)*pacmodel.additive.bgp{i};
-            elseif ~islogical(pacmodel.additive.bgp{i}) && isnumeric(pacmodel.additive.bgp{i}) && ~isnan(pacmodel.additive.params(i))
-                tmp1 = tmp1 + pacmodel.additive.scaling_factor(i)*pacmodel.additive.params(i)*pacmodel.additive.bgp{i};
+        if gamma<1
+            if isfield(pacmodel, 'non_optimizing_behaviour') && isfield(pacmodel.non_optimizing_behaviour, 'params')
+                % Exogenous variables are present in the 1-λ part (rule of thumb agents).
+                tmp0 = 0;
+                tmp1 = 0;
+                for i=1:length(pacmodel.non_optimizing_behaviour.params)
+                    if isnan(pacmodel.non_optimizing_behaviour.params(i)) && islogical(pacmodel.non_optimizing_behaviour.bgp{i}) && pacmodel.non_optimizing_behaviour.bgp{i}
+                        tmp0 = tmp0 + pacmodel.non_optimizing_behaviour.scaling_factor(i);
+                    elseif ~isnan(pacmodel.non_optimizing_behaviour.params(i)) && islogical(pacmodel.non_optimizing_behaviour.bgp{i}) && pacmodel.non_optimizing_behaviour.bgp{i}
+                        tmp0 = tmp0 + DynareModel.params(pacmodel.non_optimizing_behaviour.params(i))*pacmodel.non_optimizing_behaviour.scaling_factor(i);
+                    elseif ~islogical(pacmodel.non_optimizing_behaviour.bgp{i}) && isnumeric(pacmodel.non_optimizing_behaviour.bgp{i}) && isnan(pacmodel.non_optimizing_behaviour.params(i))
+                        tmp1 = tmp1 + pacmodel.non_optimizing_behaviour.scaling_factor(i)*pacmodel.non_optimizing_behaviour.bgp{i};
+                    elseif ~islogical(pacmodel.non_optimizing_behaviour.bgp{i}) && isnumeric(pacmodel.non_optimizing_behaviour.bgp{i}) && ~isnan(pacmodel.non_optimizing_behaviour.params(i))
+                        tmp1 = tmp1 + pacmodel.non_optimizing_behaviour.scaling_factor(i)*pacmodel.non_optimizing_behaviour.params(i)*pacmodel.non_optimizing_behaviour.bgp{i};
+                    end
+                end
+                cc = cc - (1.0-gamma)*tmp0;
+                ll = -(1.0-gamma)*tmp1/gamma; % TODO: ll should be added as a constant in the PAC equation (under the λ part) when unrolling pac_expectation.
             end
         end
-        cc = cc - tmp0;
-        ll = ll - tmp1/gamma; % TODO: ll should be added as a constant in the PAC equation (under the λ part) when unrolling pac_expectation.
+        if isfield(pacmodel, 'additive')
+            % Exogenous variables are present outside of the λ and (1-λ) parts (or we have exogenous variables in a "pure" PAC equation.
+            tmp0 = 0;
+            tmp1 = 0;
+            for i=1:length(pacmodel.additive.params)
+                if isnan(pacmodel.additive.params(i)) && islogical(pacmodel.additive.bgp{i}) && pacmodel.additive.bgp{i}
+                    tmp0 = tmp0 + pacmodel.additive.scaling_factor(i);
+                elseif ~isnan(pacmodel.additive.params(i)) && islogical(pacmodel.additive.bgp{i}) && pacmodel.additive.bgp{i}
+                    tmp0 = tmp0 + DynareModel.params(pacmodel.additive.params(i))*pacmodel.additive.scaling_factor(i);
+                elseif ~islogical(pacmodel.additive.bgp{i}) && isnumeric(pacmodel.additive.bgp{i}) && isnan(pacmodel.additive.params(i))
+                    tmp1 = tmp1 + pacmodel.additive.scaling_factor(i)*pacmodel.additive.bgp{i};
+                elseif ~islogical(pacmodel.additive.bgp{i}) && isnumeric(pacmodel.additive.bgp{i}) && ~isnan(pacmodel.additive.params(i))
+                    tmp1 = tmp1 + pacmodel.additive.scaling_factor(i)*pacmodel.additive.params(i)*pacmodel.additive.bgp{i};
+                end
+            end
+            cc = cc - tmp0;
+            ll = ll - tmp1/gamma; % TODO: ll should be added as a constant in the PAC equation (under the λ part) when unrolling pac_expectation.
+        end
+        if isfield(pacmodel, 'growth_neutrality_param_index')
+            DynareModel.params(pacmodel.growth_neutrality_param_index) = cc/gamma; % Multiplies the variable or expression provided though the growth option in command pac_model.
+        else
+            DynareModel.params(pacmodel.components(j).growth_neutrality_param_index) = cc/gamma; % Multiplies the variable or expression provided though the growth option in command pac_model.
+        end
     end
-    DynareModel.params(pacmodel.growth_neutrality_param_index) = cc/gamma; % Multiplies the variable or expression provided though the growth option in command pac_model.
 end

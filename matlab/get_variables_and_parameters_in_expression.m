@@ -8,7 +8,7 @@ function objects = get_variables_and_parameters_in_expression(expr)
 % OUTPUTS
 % - objects    [cell]             cell of row char arrays, names of the variables and parameters in expr.
 
-% Copyright (C) 2020 Dynare Team
+% Copyright © 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -25,16 +25,27 @@ function objects = get_variables_and_parameters_in_expression(expr)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-objects = strsplit(expr, {'+','-','*','/','^', ...
+if iscell(expr)
+    objects = splitexpr(expr{1});
+    for i=2:length(expr)
+        objects = [objects, splitexpr(expr{i})];
+    end
+else
+    objects = splitexpr(expr);
+end
+
+% Filter out the numbers, punctuation.
+objects(cellfun(@(x) all(isstrprop(x, 'digit')+isstrprop(x, 'punct')), objects)) = [];
+
+                        % Filter out empty elements.
+                        objects(cellfun(@(x) all(isempty(x)), objects)) = [];
+
+
+                        function o = splitexpr(expr)
+                        o = strsplit(expr, {'+','-','*','/','^', ...
                     'log(', 'log10(', 'ln(', 'exp(', ...
                     'sqrt(', 'abs(', 'sign(', ...
                     'sin(', 'cos(', 'tan(', 'asin(', 'acos(', 'atan(', ...
                     'min(', 'max(', ...
                     'normcdf(', 'normpdf(', 'erf(', ...
                     'diff(', 'adl(', '(', ')', '\n', '\t', ' '});
-
-% Filter out the numbers, punctuation.
-objects(cellfun(@(x) all(isstrprop(x, 'digit')+isstrprop(x, 'punct')), objects)) = [];
-
-% Filter out empty elements.
-objects(cellfun(@(x) all(isempty(x)), objects)) = [];

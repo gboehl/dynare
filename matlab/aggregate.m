@@ -90,7 +90,7 @@ for i=1:length(varargin)
                     model{j} = strrep(model{j}, eqtagname{1}, eqtagname_);
                 end
             else
-                model{j} = eqtagname_;
+                model{j} = strcat('[', eqtagname_, ']');
             end
             % Add equation tag with block name.
             if ~isempty(rootfolder)

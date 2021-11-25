@@ -518,6 +518,15 @@ ECB_MODFILES = \
 	pac/var-6/substitution.mod \
 	pac/var-7/example1.mod \
 	pac/var-7/substitution.mod \
+	pac/var-8/example1.mod \
+	pac/var-8/substitution.mod \
+	pac/var-8e/example1.mod \
+	pac/var-9/example1.mod \
+	pac/var-9/substitution.mod \
+	pac/var-9e/example1.mod \
+	pac/var-10e/example1.mod \
+	pac/var-10e/example2.mod \
+	pac/var-11e/example1.mod \
 	pac/trend-component-1/example1.mod \
 	pac/trend-component-2/example1.mod \
 	pac/trend-component-3/example1.mod \
@@ -878,6 +887,12 @@ pac/var-6/substitution.m.trs: pac/var-6/example1.m.trs
 pac/var-6/substitution.o.trs: pac/var-6/example1.o.trs
 pac/var-7/substitution.m.trs: pac/var-7/example1.m.trs
 pac/var-7/substitution.o.trs: pac/var-7/example1.o.trs
+pac/var-8/substitution.m.trs: pac/var-8/example1.m.trs
+pac/var-8/substitution.o.trs: pac/var-8/example1.o.trs
+pac/var-9/substitution.m.trs: pac/var-9/example1.m.trs
+pac/var-9/substitution.o.trs: pac/var-9/example1.o.trs
+pac/var-10e/example2.m.trs: pac/var-10e/example1.m.trs
+pac/var-10e/example2.o.trs: pac/var-10e/example1.o.trs
 pac/trend-component-14/substitution.m.trs: pac/trend-component-14/example1.m.trs
 pac/trend-component-14/substitution.o.trs: pac/trend-component-14/example1.o.trs
 

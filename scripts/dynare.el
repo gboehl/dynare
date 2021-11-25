@@ -102,7 +102,7 @@
       "osr_params_bounds" "observation_trends" "deterministic_trends" "optim_weights"
       "homotopy_setup" "conditional_forecast_paths" "svar_identification"
       "moment_calibration" "irf_calibration" "ramsey_constraints" "generate_irfs"
-      "matched_moments" "occbin_constraints" "model_replace" "verbatim")
+      "matched_moments" "occbin_constraints" "model_replace" "verbatim" "pac_target_info")
     "Dynare block keywords."))
 
 ;; Mathematical functions and operators used in model equations (see "hand_side" in Bison file)

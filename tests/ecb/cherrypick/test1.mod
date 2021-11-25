@@ -45,7 +45,7 @@ c_z_2 = -.1;
 c_z_dx2 = .3;
 c_z_u = .3;
 c_z_dv = .4;
-c_z_s  = -.2; 
+c_z_s  = -.2;
 cx = 1.0;
 cy = 1.0;
 
@@ -54,7 +54,7 @@ lambda = 0.5; // Share of optimizing agents.
 
 trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], targets=['eq:x1bar', 'eq:x2bar']);
 
-pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman);
+pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman, auxname=rototo);
 
 model;
 
@@ -125,7 +125,7 @@ pac.update.expectation('pacman');
 // variables and exogenous variables in .inc files under ./simulation-files folder. Note that
 // innovations ex1bar and ex2bar will not appear in the equations.
 verbatim;
-  cherrypick('test1', 'simulation-files1', {'z1', 'z2', 'z3'}, true);
-  cherrypick('test1', 'simulation-files2', {'zpac', 'eq:x1', 'eq:x', 'eq:y'}, true);
-  aggregate('toto.mod', {}, '', 'simulation-files1', 'simulation-files2');
+  cherrypick('test1', 'simulation-files-1-a', {'z1', 'z2', 'z3'}, true);
+  cherrypick('test1', 'simulation-files-1-b', {'zpac', 'eq:x1', 'eq:x', 'eq:y'}, true);
+  aggregate('toto1.mod', {}, '', 'simulation-files-1-a', 'simulation-files-1-b');
 end;

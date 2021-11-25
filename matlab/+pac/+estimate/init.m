@@ -30,14 +30,28 @@ pattern = '(\(model_name\s*=\s*)(?<name>\w+)\)';
 pacmodl = regexp(RHS, pattern, 'names');
 pacmodl = pacmodl.name;
 
+pacmodel = M_.pac.(pacmodl);
+
 % Get the transformed equation to be estimated.
 [lhs, rhs, json] = get_lhs_and_rhs(eqname, M_);
 
 % Get definition of aux. variable for pac expectation...
-auxrhs = json.model{strmatch(sprintf('pac_expectation_%s', pacmodl), M_.lhs, 'exact')}.rhs; 
+if isfield(pacmodel, 'aux_id')
+    auxrhs = {M_.lhs{pacmodel.aux_id}, json.model{pacmodel.aux_id}.rhs};
+elseif isfield(pacmodel, 'components')
+    auxrhs = cell(length(pacmodel.components), 2);
+    for i=1:length(pacmodel.components)
+        auxrhs{i,1} = M_.lhs{pacmodel.components(i).aux_id};
+        auxrhs{i,2} = sprintf('(%s)', json.model{pacmodel.components(i).aux_id}.rhs);
+    end
+else
+    error('Cannot find auxiliary variables for PAC expectation.')
+end
 
 % ... and substitute in rhs.
-rhs = strrep(rhs, sprintf('pac_expectation_%s', pacmodl), auxrhs);
+for i=1:rows(auxrhs)
+    rhs = strrep(rhs, auxrhs{i,1}, auxrhs{i,2});
+end
 
 % Get pacmodel properties
 pacmodel = M_.pac.(pacmodl);

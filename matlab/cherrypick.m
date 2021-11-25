@@ -82,10 +82,10 @@ try
         % Get the original equation.
         [LHS, RHS] = get_lhs_and_rhs(eqtags{i}, M_, true, json);
         % Get the parameters, endogenous and exogenous variables in the current equation.
-        [pnames, ~, xnames] = get_variables_and_parameters_in_equation(LHS, RHS, M_);
+        [pnames, enames, xnames] = get_variables_and_parameters_in_equation(LHS, RHS, M_);
         lhs_expression = LHS;
         LHS = get_variables_and_parameters_in_expression(LHS);
-        enames = LHS;
+        enames = union(enames, LHS);
         if length(LHS)>1
             error('Expressions with more than one variable on the LHS are not allowed.')
         end
@@ -111,7 +111,11 @@ try
         end
         % Remove residual from equation if required.
         if noresids
-            exogenous_variables_to_be_removed = ~ismember(xnames, M_.simulation_exo_names);
+            if isfield(M_, 'simulation_exo_names')
+                exogenous_variables_to_be_removed = ~ismember(xnames, M_.simulation_exo_names);
+            else
+                exogenous_variables_to_be_removed = false(size(xnames));
+            end
             if any(exogenous_variables_to_be_removed)
                 switch sum(exogenous_variables_to_be_removed)
                   case 1
@@ -128,30 +132,76 @@ try
         % Unroll expectation terms if any.
         isvar = regexp(RHS, 'var_expectation\(model_name = (?<name>\w+)\)', 'names');
         ispac = regexp(RHS, 'pac_expectation\(model_name = (?<name>\w+)\)', 'names');
+        istar = regexp(RHS, 'pac_target_nonstationary\(model_name = (?<name>\w+)\)', 'names');
         if ~isempty(isvar)
             rhs = write_expectations(isvar.name, 'var');
-            lhs = sprintf('%s_VE', eqtags{i});
-            RHS = strrep(RHS, sprintf('var_expectation(model_name = %s)', isvar.name), lhs);
+            auxlhs = sprintf('%s_VE', eqtags{i});
+            RHS = strrep(RHS, sprintf('var_expectation(model_name = %s)', isvar.name), auxlhs);
         end
         if ~isempty(ispac)
-            [rhs, growthneutralitycorrection] = write_expectations(ispac.name, 'pac');
+            if isfield(M_.pac.(ispac.name), 'components')
+                [rhs, growthneutralitycorrection] = write_expectations(ispac.name, 'pac', false, false);
+            else
+                [rhs, growthneutralitycorrection] = write_expectations(ispac.name, 'pac');
+            end
             if ~isempty(rhs)
-                lhs = sprintf('%s_PE', eqtags{i});
-                if isempty(growthneutralitycorrection)
+                if iscell(rhs) % PAC expectations are decomposed.
+                    auxlhs = cell(size(rhs));
+                    for k=1:length(M_.pac.(ispac.name).components)
+                        if isequal(k, 1)
+                            lhs = M_.lhs{M_.pac.(ispac.name).components(k).aux_id};
+                            auxlhs{k} = lhs;
+                            if ~isempty(growthneutralitycorrection{k})
+                                lhs = sprintf('%s+%s', lhs, growthneutralitycorrection{k});
+                            end
+                            if  ~isequal(M_.pac.(ispac.name).components(k).coeff_str, '1')
+                                if isempty(growthneutralitycorrection{k})
+                                    lhs = sprintf('%s*%s', M_.pac.(ispac.name).components(k).coeff_str, lhs);
+                                else
+                                    lhs = sprintf('%s*(%s)', M_.pac.(ispac.name).components(k).coeff_str, lhs);
+                                end
+                            end
+                        else
+                            lhs_ = M_.lhs{M_.pac.(ispac.name).components(k).aux_id};
+                            auxlhs{k} = lhs_;
+                            if ~isempty(growthneutralitycorrection{k})
+                                lhs_ = sprintf('%s+%s', lhs_, growthneutralitycorrection{k});
+                            end
+                            if  ~isequal(M_.pac.(ispac.name).components(k).coeff_str, '1')
+                                if isempty(growthneutralitycorrection{k})
+                                    lhs_ = sprintf('%s*%s', M_.pac.(ispac.name).components(k).coeff_str, lhs_);
+                                else
+                                    lhs_ = sprintf('%s*(%s)', M_.pac.(ispac.name).components(k).coeff_str, lhs_);
+                                end
+                            end
+                            lhs = sprintf('%s+%s', lhs, lhs_);
+                        end
+                    end
                     RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), lhs);
                 else
-                    RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), sprintf('%s+%s', lhs, growthneutralitycorrection));
+                    auxlhs = M_.lhs{M_.pac.(ispac.name).aux_id};
+                    if isempty(growthneutralitycorrection)
+                        RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), auxlhs);
+                    else
+                        RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), sprintf('%s+%s', auxlhs, growthneutralitycorrection));
+                    end
                 end
             else
                 % MCE version of the PAC equation.
                 [rhs, growthneutralitycorrection] = write_pac_mce_expectations(eqtags{i}, ispac.name);
-                lhs = sprintf('%s_Z', eqtags{i});
+                auxlhs = sprintf('%s_Z', eqtags{i});
                 if isempty(growthneutralitycorrection)
-                    RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), lhs);
+                    RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), auxlhs);
                 else
-                    RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), sprintf('%s+%s', lhs, growthneutralitycorrection));
+                    RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), sprintf('%s+%s', auxlhs, growthneutralitycorrection));
                 end
             end
+        end
+        if ~isempty(istar)
+            % Note that auxlhs and rhs are already defined in the previous block, it is not possible to be here if isempty(ispac) is true.
+            auxlhs{end+1} = M_.endo_names{M_.pac.(ispac.name).ec.vars(M_.pac.(ispac.name).ec.istarget)};
+            rhs{end+1} = M_.aux_vars(strmatch(auxlhs{end}, M_.endo_names, 'exact')==[M_.aux_vars(:).endo_index]).orig_expr;
+            RHS = strrep(RHS, sprintf('pac_target_nonstationary(model_name = %s)', ispac.name), sprintf('%s(-1)', auxlhs{end}));
         end
         % Print equation for unrolled PAC/VAR-expectation and update
         % list of parameters and endogenous variables (if any).
@@ -160,13 +210,28 @@ try
             % will not return the lhs variable in expectation_enames since
             % the name is created on the fly and is not a  member of M_.endo_names.
             expectation_pnames = get_variables_and_parameters_in_equation('', rhs, M_);
-            expectation_enames = get_variables_and_parameters_in_expression(lhs);
+            expectation_enames = get_variables_and_parameters_in_expression(auxlhs);
             expectation_xnames = get_variables_and_parameters_in_expression(rhs);
             pnames = union(pnames, expectation_pnames);
             xnames = union(xnames, setdiff(expectation_xnames, expectation_pnames));
             enames = union(enames, expectation_enames);
-            fprintf(fid, '[name=''%s'']\n', lhs);
-            fprintf(fid, '%s = %s;\n\n', lhs, rhs);
+            if ischar(rhs)
+                fprintf(fid, '[name=''%s'']\n', auxlhs);
+                fprintf(fid, '%s = %s;\n\n', auxlhs, rhs);
+            else
+                for k=1:length(rhs)
+                    fprintf(fid, '[name=''%s'']\n', auxlhs{k});
+                    fprintf(fid, '%s = %s;\n\n', auxlhs{k}, rhs{k});
+                end
+            end
+            if isfield(M_.pac.(ispac.name), 'components')
+                for k=1:length(M_.pac.(ispac.name).components)
+                    if ~isequal(M_.pac.(ispac.name).components(k).coeff_str, '1')
+                        params = get_variables_and_parameters_in_expression(M_.pac.(ispac.name).components(k).coeff_str);
+                        pnames = union(pnames, params);
+                    end
+                end
+            end
         else
             pRHS = get_variables_and_parameters_in_equation('', RHS, M_);
             xRHS = get_variables_and_parameters_in_expression(RHS);

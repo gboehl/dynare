@@ -127,13 +127,29 @@ switch expectationmodelkind
     end
   case 'pac'
     parameter_declaration = 'parameters';
-    for i=1:length(expectationmodel.h_param_indices)
-        parameter_declaration = sprintf('%s %s', parameter_declaration, M_.param_names{expectationmodel.h_param_indices(i)});
+    if isfield(expectationmodel, 'h_param_indices')
+        for i=1:length(expectationmodel.h_param_indices)
+            parameter_declaration = sprintf('%s %s', parameter_declaration, M_.param_names{expectationmodel.h_param_indices(i)});
+        end
+    else
+        for j=1:length(expectationmodel.components)
+            for i=1:length(expectationmodel.components(j).h_param_indices)
+                parameter_declaration = sprintf('%s %s', parameter_declaration, M_.param_names{expectationmodel.components(j).h_param_indices(i)});
+            end
+        end
     end
     fprintf(fid, '%s;\n\n', parameter_declaration);
     if withcalibration
-        for i=1:length(expectationmodel.h_param_indices)
-            fprintf(fid, '%s = %1.16f;\n', M_.param_names{expectationmodel.h_param_indices(i)}, M_.params(expectationmodel.h_param_indices(i)));
+        if isfield(expectationmodel, 'h_param_indices')
+            for i=1:length(expectationmodel.h_param_indices)
+                fprintf(fid, '%s = %1.16f;\n', M_.param_names{expectationmodel.h_param_indices(i)}, M_.params(expectationmodel.h_param_indices(i)));
+            end
+        else
+            for j=1:length(expectationmodel.components)
+                for i=1:length(expectationmodel.components(j).h_param_indices)
+                    fprintf(fid, '%s = %1.16f;\n', M_.param_names{expectationmodel.components(j).h_param_indices(i)}, M_.params(expectationmodel.components(j).h_param_indices(i)));
+                end
+            end
         end
     end
     if isfield(expectationmodel, 'growth_neutrality_param_index')
@@ -145,10 +161,20 @@ switch expectationmodelkind
         growth_correction = true;
     else
         growth_correction = false;
+        if isfield(expectationmodel, 'components')
+            for j=1:length(expectationmodel.components)
+                if isfield(expectationmodel.components(j), 'growth_neutrality_param_index') && ~isempty(expectationmodel.components(j).growth_neutrality_param_index)
+                    fprintf(fid, '\n');
+                    fprintf(fid, 'parameters %s;\n\n', M_.param_names{expectationmodel.components(j).growth_neutrality_param_index});
+                    if withcalibration
+                        fprintf(fid, '%s = %1.16f;\n', M_.param_names{expectationmodel.components(j).growth_neutrality_param_index}, M_.params(expectationmodel.components(j).growth_neutrality_param_index));
+                    end
+                    growth_correction = true;
+                end
+            end
+        end
     end
-  otherwise
 end
-
 fclose(fid);
 
 skipline()
@@ -211,6 +237,13 @@ fprintf(fid, 'ds = dseries();\n\n');
 
 id = 0;
 
+clear('expression');
+
+% Get coefficient values in the target (if any)
+if exist(sprintf('+%s/pac_target_coefficients.m', M_.fname), 'file')
+    targetcoefficients = feval(sprintf('%s.pac_target_coefficients', M_.fname), expectationmodelname, M_.params);
+end
+
 maxlag = max(auxmodel.max_lag);
 if isequal(expectationmodel.auxiliary_model_type, 'trend_component')
     % Need to add a lag since the error correction equations are rewritten in levels.
@@ -222,13 +255,23 @@ if isequal(expectationmodelkind, 'var')
 end
 
 if isequal(expectationmodelkind, 'var') && isequal(expectationmodel.auxiliary_model_type, 'var')
+    % Constant in the VAR auxiliary model
     id = id+1;
     expression = sprintf('%1.16f', M_.params(expectationmodel.param_indices(id)));
 end
 
 if isequal(expectationmodelkind, 'pac') && isequal(expectationmodel.auxiliary_model_type, 'var')
+    % Constant in the VAR auxiliary model
     id = id+1;
-    expression = sprintf('%1.16f', M_.params(expectationmodel.h_param_indices(id)));
+    if isfield(expectationmodel, 'h_param_indices')
+        constant = M_.params(expectationmodel.h_param_indices(id));
+    else
+        constant = 0;
+        for j=1:length(expectationmodel.components)
+            constant = constant + targetcoefficients(j)*M_.params(expectationmodel.components(j).h_param_indices(id));
+        end
+    end
+    expression = sprintf('%1.16f', constant);
 end
 
 for i=1:maxlag
@@ -256,7 +299,14 @@ for i=1:maxlag
           case 'var'
             parameter = M_.params(expectationmodel.param_indices(id));
           case 'pac'
-            parameter = M_.params(expectationmodel.h_param_indices(id));
+            if isfield(expectationmodel, 'h_param_indices')
+                parameter = M_.params(expectationmodel.h_param_indices(id));
+            else
+                parameter = 0;
+                for k=1:length(expectationmodel.components)
+                    parameter = parameter+targetcoefficients(k)*M_.params(expectationmodel.components(k).h_param_indices(id));
+                end
+            end
           otherwise
         end
         switch expectationmodelkind
@@ -275,61 +325,115 @@ for i=1:maxlag
                 variable = sprintf('%s.%s()', variable, transformations{k});
             end
         end
-        if isequal(id, 1)
-            if isequal(expectationmodelkind, 'pac') && growth_correction
-                pgrowth = M_.params(expectationmodel.growth_neutrality_param_index);
-                linearCombination = '';
-                for iter = 1:numel(expectationmodel.growth_linear_comb)
+        if exist('expression','var')
+            if parameter>=0
+                expression = sprintf('%s+%1.16f*%s', expression, parameter, variable);
+            elseif parameter<0
+                expression = sprintf('%s-%1.16f*%s', expression, -parameter, variable);
+            end
+        else
+            if parameter>=0
+                expression = sprintf('%1.16f*%s', parameter, variable);
+            elseif parameter<0
+                expression = sprintf('-%1.16f*%s', -parameter, variable);
+            end
+        end
+    end
+end
+
+if isequal(expectationmodelkind, 'pac') && growth_correction
+    if isfield(expectationmodel, 'growth_neutrality_param_index')
+        pgrowth = M_.params(expectationmodel.growth_neutrality_param_index);
+        for iter = 1:numel(expectationmodel.growth_linear_comb)
+            vgrowth='';
+            if expectationmodel.growth_linear_comb(iter).exo_id > 0
+                vgrowth = strcat('dbase.', M_.exo_names{expectationmodel.growth_linear_comb(iter).exo_id});
+            elseif expectationmodel.growth_linear_comb(iter).endo_id > 0
+                vgrowth = strcat('dbase.', M_.endo_names{expectationmodel.growth_linear_comb(iter).endo_id});
+            end
+            if expectationmodel.growth_linear_comb(iter).lag ~= 0
+                vgrowth = sprintf('%s(%d)', vgrowth, expectationmodel.growth_linear_comb(iter).lag);
+            end
+            if expectationmodel.growth_linear_comb(iter).param_id > 0
+                if ~isempty(vgrowth)
+                    vgrowth = sprintf('%1.16f*%s',M_.params(expectationmodel.growth_linear_comb(iter).param_id), vgrowth);
+                else
+                    vgrowth = num2str(M_.params(expectationmodel.growth_linear_comb(iter).param_id), '%1.16f');
+                end
+            end
+            if abs(expectationmodel.growth_linear_comb(iter).constant) ~= 1
+                if ~isempty(vgrowth)
+                    vgrowth = sprintf('%1.16f*%s', expectationmodel.growth_linear_comb(iter).constant, vgrowth);
+                else
+                    vgrowth = num2str(expectationmodel.growth_linear_comb(iter).constant, '%1.16f');
+                end
+            end
+            if iter > 1
+                if expectationmodel.growth_linear_comb(iter).constant > 0
+                    linearCombination = sprintf('%s+%s', linearCombination, vgrowth);
+                else
+                    linearCombination = sprintf('%s-%s', linearCombination, vgrowth);
+                end
+            else
+                linearCombination = vgrowth;
+            end
+        end % loop over growth linear combination elements
+        growthcorrection = sprintf('%1.16f*(%s)', pgrowth, linearCombination);
+    else
+        first = true;
+        for i=1:length(expectationmodel.components)
+            if ~isequal(expectationmodel.components(i).kind, 'll') && isfield(expectationmodel.components(i), 'growth_neutrality_param_index') && isfield(expectationmodel.components(i), 'growth_linear_comb') && ~isempty(expectationmodel.components(i).growth_linear_comb) 
+                pgrowth = targetcoefficients(i)*M_.params(expectationmodel.components(i).growth_neutrality_param_index);
+                for iter = 1:numel(expectationmodel.components(i).growth_linear_comb)
                     vgrowth='';
-                    if expectationmodel.growth_linear_comb(iter).exo_id > 0
-                        vgrowth = strcat('dbase.', M_.exo_names{expectationmodel.growth_linear_comb(iter).exo_id});
-                    elseif expectationmodel.growth_linear_comb(iter).endo_id > 0
-                        vgrowth = strcat('dbase.', M_.endo_names{expectationmodel.growth_linear_comb(iter).endo_id});
+                    if expectationmodel.components(i).growth_linear_comb(iter).exo_id > 0
+                        vgrowth = strcat('dbase.', M_.exo_names{expectationmodel.components(i).growth_linear_comb(iter).exo_id});
+                    elseif expectationmodel.components(i).growth_linear_comb(iter).endo_id > 0
+                        vgrowth = strcat('dbase.', M_.endo_names{expectationmodel.components(i).growth_linear_comb(iter).endo_id});
+                        % TODO Check if we should not substitute auxiliary variables with original transformed variables here.
                     end
-                    if expectationmodel.growth_linear_comb(iter).lag ~= 0
-                        vgrowth = sprintf('%s(%d)', vgrowth, expectationmodel.growth_linear_comb(iter).lag);
+                    if expectationmodel.components(i).growth_linear_comb(iter).lag ~= 0
+                        vgrowth = sprintf('%s(%d)', vgrowth, expectationmodel.components(i).growth_linear_comb(iter).lag);
                     end
-                    if expectationmodel.growth_linear_comb(iter).param_id > 0
+                    if expectationmodel.components(i).growth_linear_comb(iter).param_id > 0
                         if ~isempty(vgrowth)
-                            vgrowth = sprintf('%1.16f*%s',M_.params(expectationmodel.growth_linear_comb(iter).param_id), vgrowth);
+                            vgrowth = sprintf('%1.16f*%s',M_.params(expectationmodel.components(i).growth_linear_comb(iter).param_id), vgrowth);
                         else
-                            vgrowth = num2str(M_.params(expectationmodel.growth_linear_comb(iter).param_id), '%1.16f');
+                            vgrowth = num2str(M_.params(expectationmodel.components(i).growth_linear_comb(iter).param_id), '%1.16f');
                         end
                     end
-                    if abs(expectationmodel.growth_linear_comb(iter).constant) ~= 1
+                    if abs(expectationmodel.components(i).growth_linear_comb(iter).constant) ~= 1
                         if ~isempty(vgrowth)
-                            vgrowth = sprintf('%1.16f*%s', expectationmodel.growth_linear_comb(iter).constant, vgrowth);
+                            vgrowth = sprintf('%1.16f*%s', expectationmodel.components(i).growth_linear_comb(iter).constant, vgrowth);
                         else
-                            vgrowth = num2str(expectationmodel.growth_linear_comb(iter).constant, '%1.16f');
+                            vgrowth = num2str(expectationmodel.components(i).growth_linear_comb(iter).constant, '%1.16f');
                         end
                     end
                     if iter > 1
-                        if expectationmodel.growth_linear_comb(iter).constant > 0
+                        if expectationmodel.components(i).growth_linear_comb(iter).constant > 0
                             linearCombination = sprintf('%s+%s', linearCombination, vgrowth);
                         else
                             linearCombination = sprintf('%s-%s', linearCombination, vgrowth);
                         end
                     else
-                        linearCombination=vgrowth;
+                        linearCombination = vgrowth;
+                    end
+                end % loop over growth linear combination elements
+                if first
+                    growthcorrection = sprintf('%1.16f*(%s)', pgrowth, linearCombination);
+                    first = false;
+                else
+                    if pgrowth>0
+                        growthcorrection = sprintf('%s+%1.16f*(%s)', growthcorrection, pgrowth, linearCombination);
+                    elseif pgrowth<0
+                        growthcorrection = sprintf('%s-%1.16f*(%s)', growthcorrection, -pgrowth, linearCombination);
                     end
                 end
-                if parameter >= 0
-                    expression = sprintf('%1.16f*(%s)+%1.16f*%s', pgrowth, linearCombination, parameter, variable);
-                else
-                    expression = sprintf('%1.16f*(%s)-%1.16f*%s', pgrowth, linearCombination, -parameter, variable);
-                end
-            else
-                expression = sprintf('%1.16f*%s', parameter, variable);
-            end
-        else
-            if parameter>=0
-                expression = sprintf('%s+%1.16f*%s', expression, parameter, variable);
-            else
-                expression = sprintf('%s-%1.16f*%s', expression, -parameter, variable);
             end
         end
     end
-end
+    expression = sprintf('%s+%s', expression, growthcorrection);
+end % growth_correction
 
 fprintf(fid, 'ds.%s = %s;', expectationmodelname, expression);
 fclose(fid);

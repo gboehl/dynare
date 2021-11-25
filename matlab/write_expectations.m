@@ -1,4 +1,4 @@
-function [expression, growthneutralitycorrection] = write_expectations(expectationmodelname, expectationmodelkind, iscrlf)
+function [expression, growthneutralitycorrection] = write_expectations(expectationmodelname, expectationmodelkind, iscrlf, aggregate)
 
 % Prints the exansion of the VAR_EXPECTATION or PAC_EXPECTATION term in files.
 %
@@ -48,6 +48,16 @@ end
 
 if nargin<3
     iscrlf = false;
+    aggregate = true;
+end
+
+if nargin<4
+    aggregate = true;
+end
+
+if isfield(expectationmodel, 'h_param_indices')
+    % Disaggregation requires components...
+    aggregate = true;
 end
 
 % Get the name of the associated VAR model and test its existence.
@@ -82,7 +92,29 @@ end
 
 if isequal(expectationmodelkind, 'pac') && isequal(expectationmodel.auxiliary_model_type, 'var')
     id = id+1;
-    expression = sprintf('%s', M_.param_names{expectationmodel.h_param_indices(id)});
+    if isfield(expectationmodel, 'h_param_indices')
+        expression = sprintf('%s', M_.param_names{expectationmodel.h_param_indices(id)});
+    else
+        if aggregate
+            if isequal(expectationmodel.components(1).coeff_str, '1')
+                expression = sprintf('%s', M_.param_names{expectationmodel.components(1).h_param_indices(id)});
+            else
+                expression = sprintf('%s*%s', expectationmodel.components(1).coeff_str, M_.param_names{expectationmodel.components(1).h_param_indices(id)});
+            end
+            for i=2:length(expectationmodel.components)
+                if isequal(expectationmodel.components(i).coeff_str, '1')
+                    expression = sprintf('%s+%s', expression, M_.param_names{expectationmodel.components(i).h_param_indices(id)});
+                else
+                    expression = sprintf('%s+%s*%s', expression, expectationmodel.components(i).coeff_str, M_.param_names{expectationmodel.components(i).h_param_indices(id)});
+                end
+            end
+        else
+            expression = cell(length(expectationmodel.components), 1);
+            for i=1:length(expectationmodel.components)
+                expression(i) = {M_.param_names{expectationmodel.components(i).h_param_indices(id)}};
+            end
+        end
+    end
 end
 
 for i=1:maxlag
@@ -110,7 +142,31 @@ for i=1:maxlag
           case 'var'
             parameter = M_.param_names{expectationmodel.param_indices(id)};
           case 'pac'
-            parameter = M_.param_names{expectationmodel.h_param_indices(id)};
+            if isfield(expectationmodel, 'h_param_indices')
+                parameter = M_.param_names{expectationmodel.h_param_indices(id)};
+            else
+                if aggregate
+                    % TODO Check if we can have parameters entering with a minus sign in the linear combination defining the target.
+                    if isequal(expectationmodel.components(1).coeff_str, '1')
+                        parameter = M_.param_names{expectationmodel.components(1).h_param_indices(id)};
+                    else
+                        parameter = sprintf('%s*%s', expectationmodel.components(1).coeff_str, M_.param_names{expectationmodel.components(1).h_param_indices(id)});
+                    end
+                    for k=2:length(expectationmodel.components)
+                        if isequal(expectationmodel.components(k).coeff_str, '1')
+                            parameter = sprintf('%s+%s', parameter, M_.param_names{expectationmodel.components(k).h_param_indices(id)});
+                        else
+                            parameter = sprintf('%s+%s*%s', parameter, expectationmodel.components(k).coeff_str, M_.param_names{expectationmodel.components(k).h_param_indices(id)});
+                        end
+                    end
+                    parameter = sprintf('(%s)', parameter);
+                else
+                    parameter = cell(length(expectationmodel.components), 1);
+                    for k=1:length(expectationmodel.components)
+                        parameter(k) = {M_.param_names{expectationmodel.components(k).h_param_indices(id)}};
+                    end
+                end
+            end
           otherwise
         end
         switch expectationmodelkind
@@ -128,19 +184,45 @@ for i=1:maxlag
             end
         end
         if isequal(id, 1)
-            if iscrlf
-                expression = sprintf('%s*%s\n', parameter, variable);
+            if aggregate
+                if iscrlf
+                    expression = sprintf('%s*%s\n', parameter, variable);
+                else
+                    expression = sprintf('%s*%s', parameter, variable);
+                end
             else
-                expression = sprintf('%s*%s', parameter, variable);
+                for k=1:length(expectationmodel.components)
+                    if iscrlf
+                        expression(k) = {sprintf('%s*%s\n', parameter{k}, variable)};
+                    else
+                        expression(k) = {sprintf('%s*%s', parameter{k}, variable)};
+                    end
+                end
             end
         else
-            if iscrlf
-                expression = sprintf('%s + %s*%s\n', expression, parameter, variable);
+            if aggregate
+                if iscrlf
+                    expression = sprintf('%s + %s*%s\n', expression, parameter, variable);
+                else
+                    expression = sprintf('%s + %s*%s', expression, parameter, variable);
+                end
             else
-                expression = sprintf('%s + %s*%s', expression, parameter, variable);
+                for k=1:length(expectationmodel.components)
+                    if iscrlf
+                        expression(k) = {sprintf('%s + %s*%s\n', expression{k}, parameter{k}, variable)};
+                    else
+                        expression(k) = {sprintf('%s + %s*%s', expression{k}, parameter{k}, variable)};
+                    end
+                end
             end
         end
     end
+end
+
+if aggregate
+    growthneutralitycorrection = ''
+else
+    growthneutralitycorrection = {};
 end
 
 if isfield(expectationmodel, 'growth_neutrality_param_index')
@@ -150,7 +232,65 @@ if isfield(expectationmodel, 'growth_neutrality_param_index')
         growthneutralitycorrection = sprintf('%s*(%s)', M_.param_names{expectationmodel.growth_neutrality_param_index}, expectationmodel.growth_str);
     end
 else
-    growthneutralitycorrection = '';
+    if isfield(expectationmodel, 'components')
+        if aggregate
+            growthneutralitycorrection = '';
+            for i=1:length(expectationmodel.components)
+                if ~isequal(expectationmodel.components(i).kind, 'll')
+                    if isfield(expectationmodel.components(i), 'growth_neutrality_param_index')
+                        if isempty(growthneutralitycorrection)
+                            if ~isempty(expectationmodel.components(i).growth_str)
+                                if isequal(expectationmodel.components(i).coeff_str, '1')
+                                    if numel(expectationmodel.components(i).growth_linear_comb) == 1
+                                        growthneutralitycorrection = sprintf('%s*%s', M_.param_names{expectationmodel.components(i).growth_neutrality_param_index}, expectationmodel.components(i).growth_str);
+                                    else
+                                        growthneutralitycorrection = sprintf('%s*(%s)', M_.param_names{expectationmodel.components(i).growth_neutrality_param_index}, expectationmodel.components(i).growth_str);
+                                    end
+                                else
+                                    if numel(expectationmodel.components(i).growth_linear_comb) == 1
+                                        growthneutralitycorrection = sprintf('%s*%s*%s', expectationmodel.components(i).coeff_str, M_.param_names{expectationmodel.components(i).growth_neutrality_param_index}, expectationmodel.components(i).growth_str);
+                                    else
+                                        growthneutralitycorrection = sprintf('%s*%s*(%s)', expectationmodel.components(i).coeff_str, M_.param_names{expectationmodel.components(i).growth_neutrality_param_index}, expectationmodel.components(i).growth_str);
+                                    end
+                                end
+                            end
+                        else
+                            if ~isempty(expectationmodel.components(i).growth_str)
+                                if isequal(expectationmodel.components(i).coeff_str, '1')
+                                    if numel(expectationmodel.components(i).growth_linear_comb) == 1
+                                        growthneutralitycorrection = sprintf('%s+%s*%s', growthneutralitycorrection, M_.param_names{expectationmodel.components(i).growth_neutrality_param_index}, expectationmodel.components(i).growth_str);
+                                    else
+                                        growthneutralitycorrection = sprintf('%s+%s*(%s)', growthneutralitycorrection, M_.param_names{expectationmodel.components(i).growth_neutrality_param_index}, expectationmodel.components(i).growth_str);
+                                    end
+                                else
+                                    if numel(expectationmodel.components(i).growth_linear_comb) == 1
+                                        growthneutralitycorrection = sprintf('%s+%s*%s*%s', growthneutralitycorrection, expectationmodel.components(i).coeff_str, M_.param_names{expectationmodel.components(i).growth_neutrality_param_index}, expectationmodel.components(i).growth_str);
+                                    else
+                                        growthneutralitycorrection = sprintf('%s+%s*%s*(%s)', growthneutralitycorrection, expectationmodel.components(i).coeff_str, M_.param_names{expectationmodel.components(i).growth_neutrality_param_index}, expectationmodel.components(i).growth_str);
+                                    end
+                                end
+                            end
+                        end
+                    end % if growth neutrality correction for this component
+                end % if non stationary component
+            end
+        else
+            growthneutralitycorrection = repmat({''}, length(expectationmodel.components), 1);
+            for i=1:length(growthneutralitycorrection)
+                if ~isequal(expectationmodel.components(i).kind, 'll')
+                    if isfield(expectationmodel.components(i), 'growth_neutrality_param_index')
+                        if ~isempty(expectationmodel.components(i).growth_str)
+                            if numel(expectationmodel.components(i).growth_linear_comb) == 1
+                                growthneutralitycorrection(i) = {sprintf('%s*%s', M_.param_names{expectationmodel.components(i).growth_neutrality_param_index}, expectationmodel.components(i).growth_str)};
+                            else
+                                growthneutralitycorrection(i) = {sprintf('%s*(%s)', M_.param_names{expectationmodel.components(i).growth_neutrality_param_index}, expectationmodel.components(i).growth_str)};
+                            end
+                        end
+                    end % if growth neutrality correction for this component
+                end % if non stationary component
+            end
+        end % if aggregate
+    end
 end
 
 if nargout==1 && ~isempty(growthneutralitycorrection)
