@@ -40,6 +40,24 @@ endo_names = M.endo_names;
 lead_lag_incidence = M.lead_lag_incidence;
 maximum_endo_lag = M.maximum_endo_lag;
 
+if options.ramsey_policy
+    %test whether specification matches
+    inst_nbr = size(options.instruments,1);
+    if inst_nbr~=0
+        orig_endo_aux_nbr = M.orig_endo_nbr + min(find([M.aux_vars.type] == 6)) - 1;
+        implied_inst_nbr = orig_endo_aux_nbr - M.orig_eq_nbr;
+        if inst_nbr>implied_inst_nbr
+            error('You have specified more instruments than there are omitted equations')
+        elseif inst_nbr<implied_inst_nbr
+            error('You have specified fewer instruments than there are omitted equations')
+        end
+    else
+        if options.steadystate_flag
+            error('You have specified a steady state file, but not provided an instrument. Either delete the steady state file or provide an instrument')
+        end
+    end
+end
+
 problem_dummy=0;
 %
 % missing variables at the current period
