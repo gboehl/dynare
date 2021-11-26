@@ -198,7 +198,7 @@ if options_.ramsey_policy
             Wbar = U/(1-beta);
             Wy = Uy*gy/(eye(nspred)-beta*Gy);
             Wu = Uy*gu + beta*Wy*Gu;
-            
+
             if isempty(options_.qz_criterium)
                 options_.qz_criterium = 1+1e-6;
             end
@@ -225,16 +225,43 @@ if options_.ramsey_policy
             planner_objective_value.conditional.steady_initial_multiplier = W_L_SS;
             planner_objective_value.conditional.zero_initial_multiplier = W_L_0;
         else
-            %Order k code will go here!
-            if ~isempty(M_.endo_histval)
-               fprintf('\nevaluate_planner_objective: order>2 conditional and unconditional welfare calculations not yet supported when an histval block is provided\n')
-            else
-               fprintf('\nevaluate_planner_objective: order>2 conditional welfare with initial Lagrange multipliers set to zero and unconditional welfare calculations not yet supported\n')
-               planner_objective_value.conditional.steady_initial_multiplier = k_order_welfare(dr, M_, options_);
-               planner_objective_value.conditional.zero_initial_multiplier = NaN;
-               planner_objective_value.unconditional = NaN;
+            % Computes the welfare decision rule
+            [W] = k_order_welfare(dr,M_,options_);
+            % Appends the welfare decision rule to the endogenous variables decision
+            % rule
+            g = dr;
+            for i=0:options_.order
+               eval("g.g_"+num2str(i)+" = [dr.g_"+num2str(i)+"; W.W_"+num2str(i)+"];");
             end
-            return
+            % Amends the steady-state vector accordingly
+            [U] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
+            ysteady = [ys(oo_.dr.order_var); U/(1-beta)];
+
+            % Generates the sequence of shocks to compute unconditional welfare
+            nper = 10000;
+            nburn = 1000;
+            chol_S = chol(M_.Sigma_e);
+            exo_simul = chol_S*randn(nper,M_.exo_nbr)';
+            yhat_start = zeros(M_.endo_nbr+1,1);
+            [moment] = k_order_mean(options_.order, M_.nstatic, M_.npred, M_.nboth, M_.nfwrd+1, M_.exo_nbr, 1, nburn, yhat_start, exo_simul, ysteady, g);
+
+            % Stores the result for unconditional welfare
+            planner_objective_value.unconditional = moment(end);
+
+            % Conditional welfare
+            % Gets initial values
+            [yhat_L_SS,yhat_L_0, u] = get_initial_state(ys,M_,dr,oo_);
+
+            % Conditional welfare (i) with Lagrange multipliers set to their
+            % steady-state values
+            yhat_start(M_.nstatic+1:M_.nstatic+M_.npred+M_.nboth) = yhat_L_SS;
+            [moment,sim] = k_order_mean(options_.order, M_.nstatic, M_.npred, M_.nboth, M_.nfwrd+1, M_.exo_nbr, 1, 0, yhat_start, u, ysteady, g);
+            planner_objective_value.conditional.steady_initial_multiplier = sim(end,1);
+
+            % Conditional welfare (ii) with Lagrange multipliers set to 0
+            yhat_start(M_.nstatic+1:M_.nstatic+M_.npred+M_.nboth) = yhat_L_0;
+            [moment,sim] = k_order_mean(options_.order, M_.nstatic, M_.npred, M_.nboth, M_.nfwrd+1, M_.exo_nbr, 1, nburn, yhat_start, u, ysteady, g);
+            planner_objective_value.conditional.zero_initial_multiplier = sim(end,1);
         end
     end
 elseif options_.discretionary_policy

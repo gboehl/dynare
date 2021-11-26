@@ -33,11 +33,8 @@ stoch_simul(order=6, irf=0);
 
 evaluate_planner_objective;
 
-[condWelfare, U_dynpp, W_dynpp, U_dyn, W_dyn] = k_order_welfare(oo_.dr, M_, options_);
+[W_dynpp] = k_order_welfare(oo_.dr, M_, options_);
 
-if condWelfare~=oo_.planner_objective_value.conditional.steady_initial_multiplier
-   error('Inaccurate conditional welfare with Lagrange multiplier set to its steady-state value');
-end
 if ~exist(['neo_growth_k_order' filesep 'Output' filesep 'neo_growth_k_order_results.mat'],'file');
    error('neo_growth_k_order must be run first');
 end;
@@ -46,20 +43,16 @@ oo = load(['neo_growth_k_order' filesep 'Output' filesep 'neo_growth_k_order_res
 M = load(['neo_growth_k_order' filesep 'Output' filesep 'neo_growth_k_order_results'],'M_');
 options = load(['neo_growth_k_order' filesep 'Output' filesep 'neo_growth_k_order_results'],'options_');
 
-ind_U = strmatch('U', M.M_.endo_names,'exact');
 ind_W = strmatch('W', M.M_.endo_names,'exact');
 
 err = -1e6;
 for i = 1:options_.order
-   field_U = strcat('U_', num2str(i));
    field_W = strcat('W_', num2str(i));
    g_i = eval(strcat('oo.oo_.dr.g_', num2str(i)));
-   tmp_err = max(U_dynpp.(field_U) - g_i(ind_U, :));
-   err = max(err, tmp_err);
    tmp_err = max(W_dynpp.(field_W) - g_i(ind_W, :));
    err = max(err, tmp_err);
 end
 
 if err > 1e-10;
-   error('Inaccurate assessment of the derivatives of the felicity and the welfare functions');
+   error('Inaccurate assessment of the derivatives of the welfare function');
 end;

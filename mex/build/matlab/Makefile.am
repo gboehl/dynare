@@ -4,7 +4,7 @@ SUBDIRS = mjdgges kronecker bytecode block_kalman_filter sobol perfect_foresight
 
 # libdynare++ must come before gensylv, k_order_perturbation, dynare_simul_
 if ENABLE_MEX_DYNAREPLUSPLUS
-SUBDIRS += libdynare++ gensylv libkorder dynare_simul_ k_order_perturbation k_order_welfare local_state_space_iterations libkordersim folded_to_unfolded_dr local_state_space_iteration_fortran k_order_simul
+SUBDIRS += libdynare++ gensylv libkorder dynare_simul_ k_order_perturbation k_order_welfare local_state_space_iterations libkordersim folded_to_unfolded_dr local_state_space_iteration_fortran k_order_simul k_order_mean
 endif
 
 if ENABLE_MEX_MS_SBVAR
