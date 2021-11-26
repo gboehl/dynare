@@ -319,8 +319,7 @@ Copyright: 2010 Yannick Kalantzis
            2019 Dynare Team
 License: GPL-3+
 
-Files: mex/sources/dynare_simul_/dynare_simul_.cc
-       mex/sources/gensylv/gensylv.cc
+Files: mex/sources/gensylv/gensylv.cc
 Copyright: 2005-2011 Ondra Kamenik
            2019 Dynare Team
 License: GPL-3+

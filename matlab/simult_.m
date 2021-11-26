@@ -17,7 +17,7 @@ function y_=simult_(M_,options_,y0,dr,ex_,iorder)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2020 Dynare Team
+% Copyright (C) 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -58,9 +58,8 @@ if options_.k_order_solver && ~options_.pruning % Call dynare++ routines.
                 'consistent with the one used for computing the decision rules'])
     end
     y_start=y_(:,1); %store first period required for output
-    y_ = dynare_simul_(iorder,M_.nstatic,M_.npred,M_.nboth,M_.nfwrd,exo_nbr, ...
-                       y_start(dr.order_var,:),ex_',M_.Sigma_e,options_.DynareRandomStreams.seed, ...
-                       dr.ys(dr.order_var),dr);
+    y_ = k_order_simul(iorder,M_.nstatic,M_.npred,M_.nboth,M_.nfwrd,exo_nbr, ...
+                       y_start(dr.order_var,:),ex_',dr.ys(dr.order_var),dr);
     y_(dr.order_var,:) = y_;
     y_=[y_start y_];
 else

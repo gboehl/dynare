@@ -155,7 +155,6 @@ AC_CONFIG_FILES([Makefile
                  libkorder/Makefile
                  k_order_perturbation/Makefile
                  k_order_welfare/Makefile
-                 dynare_simul_/Makefile
                  kalman_steady_state/Makefile
                  ms_sbvar/Makefile
                  block_kalman_filter/Makefile
