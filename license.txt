@@ -10,6 +10,7 @@ Upstream-Contact: Dynare Team, whose members in 2021 are:
                   - Willi Mutschler <willi@mutschler.eu>
                   - Johannes Pfeifer <jpfeifer@gmx.de>
                   - Marco Ratto <marco.ratto@ec.europa.eu>
+                  - Normann Rion <normann@dynare.org>
                   - Sébastien Villemot <sebastien@dynare.org>
                   Former Dynare Team members include:
                   - Abdeljabar Benzougar
