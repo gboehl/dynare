@@ -275,6 +275,12 @@ if nstatic > 0
     b11 = b(1:nstatic, nstatic+1:end);
     temp(:,index_m) = temp(:,index_m)-A(1:nstatic,:);
     temp = b10\(temp-b11*ghx);
+    if DynareOptions.debug
+        if any(any(~isfinite(temp)))
+            fprintf('\ndyn_first_order_solver: infinite/NaN elements encountered when solving for the static variables\n')
+            fprintf('dyn_first_order_solver: This often arises if there is a singularity.\n\n')
+        end
+    end
     ghx = [temp; ghx];
     temp = [];
 end
