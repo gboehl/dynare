@@ -277,25 +277,25 @@ extern "C" {
     ApproximationWelfare appwel(welfare, discount_factor, app.get_rule_ders(), app.get_rule_ders_s(), journal);
     appwel.approxAtSteady();
 
-   const FoldDecisionRule &cond_fdr = appwel.getFoldCondWel();
-   // Add possibly missing field names
-   for (int i = static_cast<int>(W_fieldnames.size()); i <= kOrder; i++)
+    const FoldDecisionRule &cond_fdr = appwel.getFoldCondWel();
+    // Add possibly missing field names
+    for (int i = static_cast<int>(W_fieldnames.size()); i <= kOrder; i++)
       W_fieldnames.emplace_back("W_" + std::to_string(i));
-   // Create structure for storing derivatives in Dynare++ format
-   const char *W_fieldnames_c[kOrder+1];
-   for (int i = 0; i <= kOrder; i++)
+    // Create structure for storing derivatives in Dynare++ format
+    const char *W_fieldnames_c[kOrder+1];
+    for (int i = 0; i <= kOrder; i++)
       W_fieldnames_c[i] = W_fieldnames[i].c_str();
-   plhs[0] = mxCreateStructMatrix(1, 1, kOrder+1, W_fieldnames_c);
+    plhs[0] = mxCreateStructMatrix(1, 1, kOrder+1, W_fieldnames_c);
 
-   // Fill that structure
-   for (int i = 0; i <= kOrder; i++)
-   {
-      const FFSTensor &t = cond_fdr.get(Symmetry{i});
-      mxArray *tmp = mxCreateDoubleMatrix(t.nrows(), t.ncols(), mxREAL);
-      const ConstVector &vec = t.getData();
-      assert(vec.skip() == 1);
-      std::copy_n(vec.base(), vec.length(), mxGetPr(tmp));
-      mxSetField(plhs[0], 0, ("W_" + std::to_string(i)).c_str(), tmp);
-   }
+    // Fill that structure
+    for (int i = 0; i <= kOrder; i++)
+      {
+        const FFSTensor &t = cond_fdr.get(Symmetry{i});
+        mxArray *tmp = mxCreateDoubleMatrix(t.nrows(), t.ncols(), mxREAL);
+        const ConstVector &vec = t.getData();
+        assert(vec.skip() == 1);
+        std::copy_n(vec.base(), vec.length(), mxGetPr(tmp));
+        mxSetField(plhs[0], 0, ("W_" + std::to_string(i)).c_str(), tmp);
+      }
   } // end of mexFunction()
 } // end of extern C
