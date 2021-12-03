@@ -101,7 +101,10 @@ end
 % save_realtime=0;
 save_realtime = options_.shock_decomp.save_realtime;
 % array of time points in the range options_.presample+1:options_.nobs
-
+if isnan(options_.nobs)
+    error('realtime_shock_decomposition: the nobs-option must be set.')
+end
+    
 zreal = zeros(endo_nbr+length(M_.epilogue_names)*with_epilogue,nshocks+2,options_.nobs+forecast_);
 zcond = zeros(endo_nbr+length(M_.epilogue_names)*with_epilogue,nshocks+2,options_.nobs);
 
