@@ -10209,7 +10209,8 @@ with ``discretionary_policy`` or for optimal simple rules with ``osr``
 
     With ``discretionary_policy``, the objective function must be quadratic.
 
-.. command:: evaluate_planner_objective ;
+.. command:: evaluate_planner_objective;
+             evaluate_planner_objective (OPTIONS...);
 
     This command computes, displays, and stores the value of the
     planner objective function under Ramsey policy or discretion in 
@@ -10234,6 +10235,20 @@ with ``discretionary_policy`` or for optimal simple rules with ``osr``
     multipliers is supported. Note that at `order=2`, the output is based on the second-order
     accurate approximation of the variance stored in `oo_.var`.
     
+    *Options*
+    
+    .. option:: periods = INTEGER
+
+       The value of the option specifies the number of periods to use in the
+       simulations in the computation of unconditional welfare at higher order.
+       
+       Default: ``10000``.
+
+    .. option:: drop = INTEGER
+
+        The number of burn-in draws out of ``periods`` discarded before computing 
+        the unconditional welfare at higher order. Default: ``1000``.
+
     *Example (stochastic context)*
 
         ::
