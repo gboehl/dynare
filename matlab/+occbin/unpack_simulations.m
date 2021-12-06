@@ -29,10 +29,10 @@ function oo_=unpack_simulations(M_,oo_,options_)
 
 for i=1:M_.endo_nbr
     % unpack the IRFs
-    oo_.occbin.endo_linear.(M_.endo_names{i})= oo_.occbin.linear(:,i);
-    oo_.occbin.endo_piecewise.(M_.endo_names{i})=oo_.occbin.piecewise(:,i);
-    oo_.occbin.endo_ss.(M_.endo_names{i})=oo_.occbin.ys(i);
+    oo_.occbin.endo_linear.(M_.endo_names{i})= oo_.occbin.simul.linear(:,i);
+    oo_.occbin.endo_piecewise.(M_.endo_names{i})=oo_.occbin.simul.piecewise(:,i);
+    oo_.occbin.endo_ss.(M_.endo_names{i})=oo_.occbin.simul.ys(i);
 end
-for i=1:length(oo_.occbin.exo_pos)
+for i=1:length(oo_.occbin.simul.exo_pos)
     oo_.occbin.exo.(M_.exo_names{i})=options_.occbin.simul.SHOCKS(:,i);
 end

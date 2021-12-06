@@ -338,3 +338,4 @@ varobs yg inom pi;
     subplot(223)
     plot([oo0.SmoothedShocks.epss oo_.SmoothedShocks.epss]), title('epss')
     legend('PKF','IF')
+    occbin_write_regimes(smoother);

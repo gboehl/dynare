@@ -98,7 +98,7 @@ occbin_graph(noconstant) c erra lambdak k i a k;
     figtitle = 'Smoothed variables (piecewise)';
     legendlist = cellstr(char('Simulated','Piecewise smoother'));
 
-    shock_vector=[oo_.occbin.shocks_sequence./100; zeros(length(oo_.occbin.endo_piecewise.c)-size(oo_.occbin.shocks_sequence,1),size(oo_.occbin.shocks_sequence,2))];
+    shock_vector=[oo_.occbin.simul.shocks_sequence./100; zeros(length(oo_.occbin.endo_piecewise.c)-size(oo_.occbin.simul.shocks_sequence,1),size(oo_.occbin.simul.shocks_sequence,2))];
     line1=100*[oo_.occbin.endo_piecewise.c-oo_.occbin.endo_ss.c,oo_.occbin.endo_piecewise.lambdak/100,oo_.occbin.endo_piecewise.k-oo_.occbin.endo_ss.k,oo_.occbin.endo_piecewise.i-oo_.occbin.endo_ss.i,oo_.occbin.endo_piecewise.a-oo_.occbin.endo_ss.a, shock_vector];
     line2=100*[oo_.occbin.smoother.SmoothedVariables.c-oo_.occbin.endo_ss.c,oo_.occbin.smoother.SmoothedVariables.lambdak/100,oo_.occbin.smoother.SmoothedVariables.k-oo_.occbin.endo_ss.k,oo_.occbin.smoother.SmoothedVariables.i-oo_.occbin.endo_ss.i,oo_.occbin.smoother.SmoothedVariables.a-oo_.occbin.endo_ss.a, oo_.occbin.smoother.SmoothedShocks.erra/100];
     occbin.make_chart(titlelist,legendlist,figtitle,ylabels,cat(3,line1,line2));

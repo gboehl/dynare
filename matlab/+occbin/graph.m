@@ -42,9 +42,9 @@ end
 var_list_plots=var_list(index_uniques);
 var_list_TeX = M_.endo_names_tex(i_var);
 
-data_to_plot(:,:,1)=oo_.occbin.piecewise(:,i_var);
-if isfield(oo_.occbin,'linear')
-    data_to_plot(:,:,2)=oo_.occbin.linear(:,i_var);
+data_to_plot(:,:,1)=oo_.occbin.simul.piecewise(:,i_var);
+if isfield(oo_.occbin,'simul') && isfield(oo_.occbin.simul,'linear')
+    data_to_plot(:,:,2)=oo_.occbin.simul.linear(:,i_var);
     legend_list = {'Piecewise Linear','Linear'};
 else
     legend_list = {'Piecewise Linear'};
@@ -54,7 +54,7 @@ nperiods=size(data_to_plot,1);
 ndim=size(data_to_plot,3);
 
 if ~options_.occbin.graph.steady_state
-    data_to_plot=data_to_plot-repmat(oo_.occbin.ys(i_var)',nperiods,1,ndim);
+    data_to_plot=data_to_plot-repmat(oo_.occbin.simul.ys(i_var)',nperiods,1,ndim);
 end
 
 %get exogenous variables
@@ -65,14 +65,14 @@ var_list_TeX = [var_list_TeX; M_.exo_names_tex(i_var_exo)];
 if number_of_plots_to_draw_exo>0
     exo_index=NaN(number_of_plots_to_draw_exo);
     for ii=1:length(i_var_exo)
-        temp_index=find(oo_.occbin.exo_pos==i_var_exo(ii));
+        temp_index=find(oo_.occbin.simul.exo_pos==i_var_exo(ii));
         if ~isempty(temp_index)
             exo_index(ii)=temp_index;
         else
             error('%s was not part of the shocks for Occbin.', var_list{i_var_exo(ii)});
         end
     end
-    data_to_plot(:,end+1:end+number_of_plots_to_draw_exo,1)=[oo_.occbin.shocks_sequence(:,exo_index); zeros(nperiods-size(oo_.occbin.shocks_sequence,1),number_of_plots_to_draw_exo)];
+    data_to_plot(:,end+1:end+number_of_plots_to_draw_exo,1)=[oo_.occbin.simul.shocks_sequence(:,exo_index); zeros(nperiods-size(oo_.occbin.simul.shocks_sequence,1),number_of_plots_to_draw_exo)];
     data_to_plot(:,end+1:end+number_of_plots_to_draw_exo,2)=NaN;
 end
 

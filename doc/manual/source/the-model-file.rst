@@ -5024,37 +5024,39 @@ All of these elements are discussed in the following.
 
     The command outputs various objects into ``oo_.occbin``.
 
-.. matvar:: oo_.occbin.piecewise
+.. matvar:: oo_.occbin.simul.piecewise
 
     |br| Matrix storing the simulations based on the piecewise-linear solution.
     The variables are arranged column by column, in order of declaration (as in
     ``M_.endo_names``), while the the rows correspond to the ``simul_periods``.
 
-.. matvar:: oo_.occbin.linear
+.. matvar:: oo_.occbin.simul.linear
 
     |br| Matrix storing the simulations based on the linear solution, i.e. ignoring
     the occasionally binding constraint(s). The variables are arranged column by column,
     in order of declaration (as in ``M_.endo_names``), while the the rows correspond to
     the ``simul_periods``.
 
-.. matvar:: oo_.occbin.shocks_sequence
+.. matvar:: oo_.occbin.simul.shocks_sequence
 
     |br| Matrix storing the shock sequence employed during the simulation. The shocks are arranged
     column by column, with their order in ``M_.exo_names`` stored in ``oo_.occbin.exo_pos``. The
     the rows correspond to the number of shock periods specified in a `surprise(shocks)`-block, which
     may be smaller than ``simul_periods``.
 
-.. matvar:: oo_.occbin.regime_history
+.. matvar:: oo_.occbin.simul.regime_history
 
     |br| Structure storing information on the regime history, conditional on the shock that
-    happened in the respective period (stored along the rows). The subfield ``regime`` contains
+    happened in the respective period (stored along the rows). ``type`` is equal to either ``smoother`` 
+    or ``simul``, depending on whether the output comes from a run of simulations or the smoother.
+    The subfield ``regime`` contains
     a vector storing the regime state, while the the subfield ``regimestart`` indicates the
     expected start of the respective regime state. For example, if row 40 contains ``[1,0]`` for
     ``regime2`` and  ``[1,6]`` for ``regimestart2``, it indicates that - after the shock in period 40
-    has occurred - the second constraint became binding (1) and is expected to revert to non-binding (0) six periods
-    later.
+    has occurred - the second constraint became binding (1) and is expected to revert to non-binding (0) after 
+    six periods including the current one, i.e. period 45.
 
-.. matvar:: oo_.occbin.ys
+.. matvar:: oo_.occbin.simul.ys
 
     |br| Vector of steady state values
 
@@ -5073,8 +5075,8 @@ All of these elements are discussed in the following.
 .. command:: occbin_write_regimes ;
              occbin_write_regimes (OPTIONS...);
 
-    |br| Write the information on the regime history stored in ``oo_.occbin.regime_history``
-    into an Excel file stored in the ``FILENAME/Output``-folder.
+    |br| Write the information on the regime history stored in ``oo_.occbin.simul.regime_history``
+    or ````oo_.occbin.smoother.regime_history`` into an Excel file stored in the ``FILENAME/Output``-folder.
 
     *Options*
 
@@ -5087,6 +5089,13 @@ All of these elements are discussed in the following.
 
        Name of the Excel-file to write. Default: ``FILENAME_occbin_regimes``.
 
+    .. option:: simul
+
+       Selects the regime history from the last run of simulations. Default: enabled.
+
+    .. option:: smoother
+
+       Selects the regime history from the last run of the smoother. Default: use ``simul``.
 
 .. _estim:
 
