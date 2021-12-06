@@ -1,9 +1,9 @@
-function write_regimes_to_xls(regime_history,M_,options_)
-% function write_regimes_to_xls(regime_history,M_,options_)
+function write_regimes_to_xls(occbin_struct,M_,options_)
+% function write_regimes_to_xls(occbin_struct,M_,options_)
 % writes regime results to Excel-file
 %
 % INPUTS
-% - regime_history  [struct]    information on the regimes
+% - occbin_struct   [struct]    occbin structure containing information on the regimes
 % - M_              [struct]    Matlab's structure describing the model
 % - options_        [struct]    Matlab's structure describing the current options
 
@@ -25,6 +25,16 @@ function write_regimes_to_xls(regime_history,M_,options_)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 OutputDirectoryName = CheckPath('Output',M_.dname);
+
+if strcmpi(options_.occbin.write_regimes.type,'simul') || strcmpi(options_.occbin.write_regimes.type,'smoother')
+    if isfield(occbin_struct,options_.occbin.write_regimes.type) && isfield(occbin_struct.(options_.occbin.write_regimes.type),'regime_history')
+        regime_history=occbin_struct.(lower(options_.occbin.write_regimes.type)).regime_history;
+    else
+        error('write_regimes_to_xls: the required field does not exist');    
+    end
+else
+    error('write_regimes_to_xls: output type can only be simul or smoother.')
+end
 
 if isempty(options_.occbin.write_regimes.periods)
     T=1:length(regime_history);

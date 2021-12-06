@@ -87,4 +87,4 @@ else
 end
 out.exo_pos = options_.occbin.simul.exo_pos;
 
-oo_.occbin=out;
+oo_.occbin.simul=out;

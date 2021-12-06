@@ -54,6 +54,6 @@ end;
 @#include "borrcon_common.inc"
 
 orig_results=load(['borrcon' filesep 'Output' filesep 'borrcon_results.mat']);
-if max(max(abs(oo_.occbin.piecewise-orig_results.oo_.occbin.piecewise)))>1e-10
+if max(max(abs(oo_.occbin.simul.piecewise-orig_results.oo_.occbin.simul.piecewise)))>1e-10
     error('Results do not match')
 end

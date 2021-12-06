@@ -37,6 +37,7 @@ if ismember(flag,{'all'})
     options_occbin_.solver.solve_tolf=1e-5;
     options_occbin_.solver.maxit=10;
     options_occbin_.write_regimes.periods=[];
+    options_occbin_.write_regimes.type='simul';
     options_occbin_.write_regimes.filename=[M_.fname '_occbin_regimes'];
 end
 
