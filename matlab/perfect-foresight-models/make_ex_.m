@@ -10,7 +10,7 @@ function oo_ = make_ex_(M_, options_, oo_)
 % OUTPUTS
 % - oo_          [struct]   Updated dynare results structure
 
-% Copyright (C) 1996-2020 Dynare Team
+% Copyright (C) 1996-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -78,6 +78,9 @@ end
 
 % Add temporary shocks
 if isfield(M_, 'det_shocks')
+    if ~isempty(M_.det_shocks) && any([M_.det_shocks.periods]==0) && ~M_.maximum_lag
+        error('make_ex_: The model does not have lags, so you cannot set values for period 0'); %leads are taken care of by preprocessor
+    end
     for i = 1:length(M_.det_shocks)
         k = M_.det_shocks(i).periods + M_.maximum_lag;
         ivar = M_.det_shocks(i).exo_id;
