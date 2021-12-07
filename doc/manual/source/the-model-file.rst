@@ -716,6 +716,15 @@ MODEL_EXPRESSION and EXPRESSION:
 
     Trigonometric functions.
 
+.. function:: sinh(x)
+.. function:: cosh(x)
+.. function:: tanh(x)
+.. function:: asinh(x)
+.. function:: acosh(x)
+.. function:: atanh(x)
+
+    Hyperbolic functions.
+
 .. function:: max(a, b)
 .. function:: min(a, b)
 

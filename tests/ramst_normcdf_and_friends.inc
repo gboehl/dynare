@@ -1,7 +1,7 @@
-// Tests the normcdf(), normpdf(), erf(), erfc() and trigonometric functions
+// Tests the normcdf(), normpdf(), erf(), erfc(), trigonometric and hyperbolic functions
 
-var c k t u v w sin_x cos_x tan_x asin_y acos_y atan_y;
-varexo x y;
+var c k t u v w sin_x cos_x tan_x asin_y acos_y atan_y sinh_x cosh_x tanh_x asinh_zz acosh_zz atanh_z;
+varexo x y z zz;
 
 parameters alph gam delt bet aa;
 alph=0.5;
@@ -27,11 +27,19 @@ tan_x = tan(x);
 asin_y = asin(y);
 acos_y = acos(y);
 atan_y = atan(y);
+sinh_x = sinh(x);
+cosh_x = cosh(x);
+tanh_x = tanh(x);
+asinh_zz = asinh(zz);
+acosh_zz = acosh(zz);
+atanh_z = atanh(z);
 end;
 
 initval;
 x = 1;
 y = 0;
+z = 0.1;
+zz = 1.1;
 k = ((delt+bet)/(1.0*aa*alph))^(1/(alph-1));
 c = aa*k^alph-delt*k;
 t = 0;
@@ -51,6 +59,12 @@ values 1.2;
 var y;
 periods 1,2;
 values 0.5, 1;
+var z;
+periods 1;
+values 0.5;
+var zz;
+periods 1;
+values 1.2;
 end;
 
 simul(periods=20);
@@ -146,6 +160,65 @@ if (abs(oo_.endo_simul(atan_y_pos,1) - atan(0)) > 1e-10) || ...
         (abs(oo_.endo_simul(atan_y_pos, 2) - atan(0.5)) > 1e-10) || ...
         (abs(oo_.endo_simul(atan_y_pos, 3) - atan(1)) > 1e-10)
    error('Test failed in dynamic @{mode_name} for atan')
+end
+
+// Hyperbolic
+
+sinh_x_pos=strmatch('sinh_x',M_.endo_names,'exact');
+if(abs(oo_.steady_state(sinh_x_pos) - sinh(1)) > 1e-10)
+   error('Test failed in static @{mode_name} for sinh')
+end
+
+if (abs(oo_.endo_simul(sinh_x_pos, 2) - sinh(1.2)) > 1e-10)
+   error('Test failed in dynamic @{mode_name} for sinh')
+end
+
+cosh_x_pos=strmatch('cosh_x',M_.endo_names,'exact');
+if(abs(oo_.steady_state(cosh_x_pos) - cosh(1)) > 1e-10)
+   error('Test failed in static @{mode_name} for cosh')
+end
+
+if (abs(oo_.endo_simul(cosh_x_pos, 2) - cosh(1.2)) > 1e-10)
+   error('Test failed in dynamic @{mode_name} for cosh')
+end
+
+tanh_x_pos=strmatch('tanh_x',M_.endo_names,'exact');
+if(abs(oo_.steady_state(tanh_x_pos) - tanh(1)) > 1e-10)
+   error('Test failed in static @{mode_name} for tanh')
+end
+
+if (abs(oo_.endo_simul(tanh_x_pos, 2) - tanh(1.2)) > 1e-10)
+   error('Test failed in dynamic @{mode_name} for tanh')
+end
+
+asinh_zz_pos=strmatch('asinh_zz',M_.endo_names,'exact');
+if(abs(oo_.steady_state(asinh_zz_pos) - asinh(1.1)) > 1e-10)
+   error('Test failed in static @{mode_name} for asinh')
+end
+
+if (abs(oo_.endo_simul(asinh_zz_pos,1) - asinh(1.1)) > 1e-10) || ...
+        (abs(oo_.endo_simul(asinh_zz_pos, 2) - asinh(1.2)) > 1e-10)
+   error('Test failed in dynamic @{mode_name} for asinh')
+end
+
+acosh_zz_pos=strmatch('acosh_zz',M_.endo_names,'exact');
+if(abs(oo_.steady_state(acosh_zz_pos) - acosh(1.1)) > 1e-10)
+   error('Test failed in static @{mode_name} for acosh')
+end
+
+if (abs(oo_.endo_simul(acosh_zz_pos,1) - acosh(1.1)) > 1e-10) || ...
+        (abs(oo_.endo_simul(acosh_zz_pos, 2) - acosh(1.2)) > 1e-10)
+   error('Test failed in dynamic @{mode_name} for acosh')
+end
+
+atanh_z_pos=strmatch('atanh_z',M_.endo_names,'exact');
+if(abs(oo_.steady_state(atanh_z_pos) - atanh(0.1)) > 1e-10)
+   error('Test failed in static @{mode_name} for atanh')
+end
+
+if (abs(oo_.endo_simul(atanh_z_pos,1) - atanh(0.1)) > 1e-10) || ...
+        (abs(oo_.endo_simul(atanh_z_pos, 2) - atanh(0.5)) > 1e-10)
+   error('Test failed in dynamic @{mode_name} for atanh')
 end
 
 /*
