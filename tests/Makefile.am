@@ -151,7 +151,9 @@ MODFILES = \
 	histval_initval_file/ramst_datafile.mod \
 	histval_initval_file/sim_exo_lead_lag.mod \
 	histval_initval_file/sim_exo_lead_lag_initvalf.mod \
-    ramst_normcdf_and_friends.mod \
+	ramst_normcdf_and_friends_mfile.mod \
+	ramst_normcdf_and_friends_use_dll.mod \
+	ramst_normcdf_and_friends_bytecode.mod \
 	ramst_vec.mod \
 	ramst_mshocks_vec.mod \
 	example1_varexo_det.mod \
@@ -179,7 +181,6 @@ MODFILES = \
 	steady_state_operator/block.mod \
 	steady_state_operator/bytecode_test.mod \
 	block_bytecode/ireland.mod \
-	block_bytecode/ramst_normcdf_and_friends.mod \
 	block_bytecode/lola_solve_one_boundary.mod \
 	block_bytecode/lola_solve_one_boundary_mfs1.mod \
 	block_bytecode/lola_solve_one_boundary_mfs2.mod \
@@ -1343,7 +1344,8 @@ EXTRA_DIST = \
 	solver-test-functions/trigonometric.m \
 	solver-test-functions/variablydimensioned.m \
 	solver-test-functions/watson.m \
-	solver-test-functions/wood.m
+	solver-test-functions/wood.m \
+	ramst_normcdf_and_friends.inc
 
 if ENABLE_MATLAB
 check-local: check-matlab
