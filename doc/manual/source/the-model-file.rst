@@ -749,6 +749,11 @@ MODEL_EXPRESSION and EXPRESSION:
 
     Gauss error function.
 
+.. function:: erfc(x)
+
+    Complementary error function, *i.e.*
+    :math:`\mathrm{erfc}(x) = 1-\mathrm{erf}(x)`.
+
 
 External functions
 ^^^^^^^^^^^^^^^^^^

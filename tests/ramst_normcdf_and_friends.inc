@@ -1,6 +1,6 @@
-// Tests the normcdf(), normpdf(), erf() and trigonometric functions
+// Tests the normcdf(), normpdf(), erf(), erfc() and trigonometric functions
 
-var c k t u v sin_x cos_x tan_x asin_y acos_y atan_y;
+var c k t u v w sin_x cos_x tan_x asin_y acos_y atan_y;
 varexo x y;
 
 parameters alph gam delt bet aa;
@@ -20,6 +20,7 @@ c^(-gam) - (1+bet)^(-1)*(aa*alph*x(+1)*k^(alph-1) + 1 - delt)*c(+1)^(-gam);
 t = normcdf(x, 2, 3);
 u = normpdf(x, 1, 0.5);
 v = erf(x);
+w = erfc(x);
 sin_x = sin(x);
 cos_x = cos(x);
 tan_x = tan(x);
@@ -36,6 +37,7 @@ c = aa*k^alph-delt*k;
 t = 0;
 u = 0;
 v = 0;
+w = 0;
 end;
 
 steady;
@@ -59,6 +61,14 @@ end
 
 if (abs(oo_.endo_simul(5, 2) - erf(1.2)) > 1e-10)
    error('Test failed in dynamic @{mode_name} for erf')
+end
+
+if(abs(oo_.steady_state(6) - erfc(1)) > 1e-10)
+   error('Test failed in static @{mode_name} for erfc')
+end
+
+if (abs(oo_.endo_simul(6, 2) - erfc(1.2)) > 1e-10)
+   error('Test failed in dynamic @{mode_name} for erfc')
 end
 
 if(abs(oo_.steady_state(4) - normpdf(1, 1, 0.5)) > 1e-10)

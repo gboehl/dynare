@@ -1080,6 +1080,13 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 
 #endif
               break;
+            case UnaryOpcode::erfc:
+              Stack.push(erfc(v1));
+#ifdef DEBUG
+              tmp_out << " |erfc(" << v1 << ")|";
+
+#endif
+              break;
             default:
               {
                 mexPrintf("Error\n");

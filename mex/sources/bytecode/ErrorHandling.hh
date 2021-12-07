@@ -1593,6 +1593,13 @@ public:
                 tmp_out << "erf(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
+              case UnaryOpcode::erfc:
+                if (compute)
+                  Stackf.push(erfc(v1f));
+                tmp_out.str("");
+                tmp_out << "erfc(" << v1 << ")";
+                Stack.push(tmp_out.str());
+                break;
               default:
                 mexPrintf("Error unknown Binary operator=%d\n", op); mexEvalString("drawnow;");
                 ;
