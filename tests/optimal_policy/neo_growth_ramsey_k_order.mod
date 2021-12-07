@@ -31,9 +31,7 @@ end;
 
 stoch_simul(order=6, irf=0);
 
-options_.ramsey.nperiods = 10000;
-options_.ramsey.drop = 1000;
-evaluate_planner_objective;
+evaluate_planner_objective(periods=10000,drop=1000);
 
 [W_dynpp] = k_order_welfare(oo_.dr, M_, options_);
 

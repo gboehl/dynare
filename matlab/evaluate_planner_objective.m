@@ -240,9 +240,9 @@ if options_.ramsey_policy
             i_exo_var = setdiff([1:M_.exo_nbr],find(diag(M_.Sigma_e) == 0));
             nxs = length(i_exo_var);
             chol_S = chol(M_.Sigma_e(i_exo_var,i_exo_var));
-            exo_simul = zeros(M_.exo_nbr,options_.ramsey.nperiods);
+            exo_simul = zeros(M_.exo_nbr,options_.ramsey.periods);
             if ~isempty(M_.Sigma_e)
-                exo_simul(i_exo_var,:) = chol_S*randn(nxs,options_.ramsey.nperiods);
+                exo_simul(i_exo_var,:) = chol_S*randn(nxs,options_.ramsey.periods);
             end
             yhat_start = zeros(M_.endo_nbr+1,1);
             [moment] = k_order_mean(options_.order, M_.nstatic, M_.npred, M_.nboth, M_.nfwrd+1, M_.exo_nbr, 1, options_.ramsey.drop, yhat_start, exo_simul, ysteady, dr);

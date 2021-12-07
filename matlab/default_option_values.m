@@ -345,6 +345,8 @@ options_.ramsey_policy = false;
 options_.instruments = {};
 options_.timeless = 0;
 options_.ramsey.maxit = 500;
+options_.ramsey.periods = 10000;
+options_.ramsey.drop = 1000;
 
 % estimation
 options_.initial_period = NaN; %dates(1,1);
