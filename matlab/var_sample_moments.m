@@ -1,4 +1,4 @@
-function var_sample_moments(nlag, var_trend_order, dataset_)%datafile,varobs,xls_sheet,xls_range)
+function dataset_info=var_sample_moments(nlag, var_trend_order, dataset_, dataset_info)%datafile,varobs,xls_sheet,xls_range)
 % Computes the sample moments of a VAR model.
 %
 % The VAR(p) model is defined by:
@@ -37,22 +37,21 @@ function var_sample_moments(nlag, var_trend_order, dataset_)%datafile,varobs,xls
 %                                       =  0 constant and no linear trend,
 %                                       =  1 constant and linear trend.
 %   o dataset_            [dseries] The sample.
+%   o dataset_info        [structure] data set information
 %
 % OUTPUTS
-%   o YtY                 [double]  Y'*Y an m*m matrix.
-%   o XtY                 [double]  X'*Y an (mp+q)*m matrix.
-%   o YtX                 [double]  Y'*X an m*(mp+q) matrix.
-%   o XtX                 [double]  X'*X an (mp+q)*(mp+q) matrix.
-%   o Y                   [double]  Y a T*m matrix.
-%   o X                   [double]  X a T*(mp+q) matrix.
+%   dataset_info          [structure] containing the following new fields
+%   o mYY                 [double]  Y'*Y an m*m matrix.
+%   o mXY                 [double]  X'*Y an (mp+q)*m matrix.
+%   o mYX                 [double]  Y'*X an m*(mp+q) matrix.
+%   o mXX                 [double]  X'*X an (mp+q)*(mp+q) matrix.
+%   o Ydata               [double]  Y a T*m matrix.
+%   o Xdata               [double]  X a T*(mp+q) matrix.
 %
 % SPECIAL REQUIREMENTS
 %   None.
-%
-% REMARKS
-%   Outputs are saved in the base workspace (not returned by the function).
 
-% Copyright (C) 2007-2014 Dynare Team
+% Copyright (C) 2007-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -102,12 +101,17 @@ for t=1:NumberOfObservations
 end
 
 if (var_trend_order == 1)
-    X(:,end) = transpose(1:NumberOfObservations)
+    X(:,end) = transpose(1:NumberOfObservations);
 end
-
-assignin('base', 'mYY', Y'*Y);
-assignin('base', 'mYX', Y'*X);
-assignin('base', 'mXY', X'*Y);
-assignin('base', 'mXX', X'*X);
-assignin('base', 'Ydata', Y);
-assignin('base', 'Xdata', X);
+dataset_info.mYY=Y'*Y;
+dataset_info.mYX=Y'*X;
+dataset_info.mXY=X'*Y;
+dataset_info.mXX=X'*X;
+dataset_info.Ydata=Y;
+dataset_info.Xdata=X;
+% assignin('base', 'mYY', Y'*Y);
+% assignin('base', 'mYX', Y'*X);
+% assignin('base', 'mXY', X'*Y);
+% assignin('base', 'mXX', X'*X);
+% assignin('base', 'Ydata', Y);
+% assignin('base', 'Xdata', X);
