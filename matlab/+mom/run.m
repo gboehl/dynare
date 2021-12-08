@@ -454,6 +454,12 @@ options_mom_.mom.mom_nbr = size(M_.matched_moments,1);
 % Get maximum lag number for autocovariances/autocorrelations
 options_mom_.ar = max(cellfun(@max,M_.matched_moments(:,2))) - min(cellfun(@min,M_.matched_moments(:,2)));
 
+%check that only observed variables are involved in moments
+not_observed_variables=setdiff(oo_.dr.inv_order_var([M_.matched_moments{:,1}]),oo_.dr.obs_var);
+if ~isempty(not_observed_variables)
+    error('\nmethod_of_moments: You specified moments involving %s, but it is not a varobs.',M_.endo_names{oo_.dr.order_var(not_observed_variables)})
+end
+
 % -------------------------------------------------------------------------
 % Step 3: Checks and transformations for estimated parameters, priors, and bounds
 % -------------------------------------------------------------------------
