@@ -43,9 +43,9 @@ worry about your own files.
 On Windows
 ----------
 
-Execute the automated installer called ``dynare-4.x.y-win.exe`` (where
-``4.x.y`` is the version number), and follow the instructions. The
-default installation directory is ``c:\dynare\4.x.y``.
+Execute the automated installer called ``dynare-x.y-win.exe`` (where
+``x.y`` is the version number), and follow the instructions. The
+default installation directory is ``c:\dynare\x.y``.
 
 After installation, this directory will contain several
 sub-directories, among which are ``matlab``, ``mex`` and ``doc``.
@@ -91,9 +91,9 @@ With MATLAB
 ^^^^^^^^^^^
 
 To install Dynare for use with MATLAB, execute the automated installer called
-``dynare-4.x.y.pkg`` (where *4.x.y* is the version number), and follow the
+``dynare-x.y.pkg`` (where *x.y* is the version number), and follow the
 instructions. The default installation directory is
-``/Applications/Dynare/4.x.y``. After installation, this directory will contain
+``/Applications/Dynare/x.y``. After installation, this directory will contain
 several sub-directories, among which are ``matlab``, ``mex``, and ``doc``.
 
 Note that several versions of Dynare can coexist (by default in
@@ -213,20 +213,20 @@ installation to MATLAB path. You have two options for doing that:
 * Using the ``addpath`` command in the MATLAB command window:
 
   Under Windows, assuming that you have installed Dynare in the
-  standard location, and replacing ``4.x.y`` with the correct version
+  standard location, and replacing ``x.y`` with the correct version
   number, type::
 
-    >> addpath c:/dynare/4.x.y/matlab
+    >> addpath c:/dynare/x.y/matlab
 
   Under GNU/Linux, type::
 
     >> addpath /usr/lib/dynare/matlab
 
   Under macOS, assuming that you have installed Dynare in the standard
-  location, and replacing ``4.x.y`` with the correct version number,
+  location, and replacing ``x.y`` with the correct version number,
   type::
 
-    >> addpath /Applications/Dynare/4.x.y/matlab
+    >> addpath /Applications/Dynare/x.y/matlab
 
   MATLAB will not remember this setting next time you run it, and you
   will have to do it again.
@@ -248,10 +248,10 @@ installation to Octave path, using the ``addpath`` at the Octave
 command prompt.
 
 Under Windows, assuming that you have installed Dynare in the standard
-location, and replacing “*4.x.y*” with the correct version number,
+location, and replacing “*x.y*” with the correct version number,
 type::
 
-  octave:1> addpath c:/dynare/4.x.y/matlab
+  octave:1> addpath c:/dynare/x.y/matlab
 
 Under Debian, Ubuntu or Linux Mint, there is no need to use the ``addpath``
 command; the packaging does it for you. Under Arch Linux, you need to do::

@@ -28,10 +28,10 @@ To use Dynare, you just have to add the ‘matlab’ subdirectory of your Dynare
 installation to MATLAB® path. You have two options for doing that:
 
 — Use the addpath command, by typing the following (assuming that you have
-  installed Dynare at the standard location, and replacing ‘4.x.y’ by the correct
+  installed Dynare at the standard location, and replacing ‘x.y’ by the correct
   version number):
 
-    addpath c:\dynare\4.x.y\matlab
+    addpath c:\dynare\x.y\matlab
 
   MATLAB® will not remember this setting next time you run it, and you will
   have to do it again.
@@ -58,10 +58,10 @@ Octave can be downloaded at:
   https://ftpmirror.gnu.org/gnu/octave/windows/octave-6.4.0-w64-installer.exe
 
 Every time you run Octave, you should type the following command (assuming that
-you have installed Dynare at the standard location, and replacing ‘4.x.y’ by
+you have installed Dynare at the standard location, and replacing ‘x.y’ by
 the correct version number):
 
-  addpath c:\dynare\4.x.y\matlab
+  addpath c:\dynare\x.y\matlab
 
 Note: if you don't want to type this command every time you run Octave, you can
 put it in a file called ‘.octaverc’ in your home directory
