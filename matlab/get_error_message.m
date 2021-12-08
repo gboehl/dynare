@@ -166,6 +166,8 @@ switch info(1)
         message = 'Aim: A is NAN or INF.';
     case 164
         message = 'Aim: Problem in SPEIG.';
+    case 180
+        message = 'SMM: simulation resulted in NaN/Inf. You may need to enable pruning.';
     case 201
         message = 'Particle Filter: Initial covariance of the states is not positive definite. Try a different nonlinear_filter_initialization';
     case 202
