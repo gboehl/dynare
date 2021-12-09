@@ -155,9 +155,11 @@ if size(stationary_vars, 1) > 0
 end
 
 if isempty(i1)
-    skipline()
-    disp('All endogenous are constant or non stationary, not displaying correlations and auto-correlations')
-    skipline()
+    if ~options_.noprint
+        skipline()
+        disp('All endogenous are constant or non stationary, not displaying correlations and auto-correlations')
+        skipline()
+    end
     return
 end
 
