@@ -136,7 +136,7 @@ end
 
 % Solve the Dsge model and get the matrices of the reduced form solution. T and R are the matrices of the
 % state equation
-[T,R,SteadyState,info,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
+[T,R,SteadyState,info] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
