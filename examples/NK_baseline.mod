@@ -169,7 +169,7 @@ algorithm, while the parameters initialized here are only set once for the initi
 values of the parameters they depend on:
 
 gammma1=mu_z*mu_I/betta-(1-delta);
-R=1+(PIbar*mu_z/betta-1);
+Rbar=1+(PIbar*mu_z/betta-1);
 Lambdax=exp(LambdaYd);
 LambdaYd= (LambdaA+alppha*Lambdamu)/(1-alppha);
 */
