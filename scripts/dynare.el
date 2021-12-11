@@ -107,8 +107,9 @@
 ;; Mathematical functions and operators used in model equations (see "hand_side" in Bison file)
 (defvar dynare-functions
   '("expectation" "var_expectation" "pac_expectation" "exp" "diff" "adl" "log"
-    "ln" "log10" "sin" "cos" "tan" "asin" "acos" "atan" "sqrt" "cbrt" "abs"
-    "sign" "max" "min" "normcdf" "normpdf" "erf" "steady_state")
+    "ln" "log10" "sin" "cos" "tan" "asin" "acos" "atan"
+    "sinh" "cosh" "tanh" "asinh" "acosh" "atanh" "sqrt" "cbrt" "abs"
+    "sign" "max" "min" "normcdf" "normpdf" "erf" "erfc" "steady_state")
   "Dynare mathematical functions and operators.")
 
 (defvar dynare-constants
