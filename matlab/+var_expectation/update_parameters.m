@@ -179,8 +179,8 @@ else
         % Define the discounted companion matrix
         DiscountedCompanionMatrix = discountfactor*CompanionMatrix;
         % First compute the parameters implied by the discounted sum from h=0 to h=horizon(1)-1
-        tmp1 = eye(n);
-        for h=1:horizon(1)
+        tmp1 = zeros(n);
+        for h=0:horizon(1)-1
             tmp1 = tmp1 + mpower(DiscountedCompanionMatrix, h); 
         end
         tmp1 = alpha*tmp1;
