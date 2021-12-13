@@ -60,6 +60,7 @@ MODFILES = \
 	estimation/MH_recover/fs2000_recover_3.mod \
 	estimation/heteroskedastic_shocks/fs2000_het.mod \
 	estimation/heteroskedastic_shocks/fs2000_het_corr.mod \
+	estimation/heteroskedastic_shocks/fs2000_het_sample_restriction.mod \
 	estimation/t_proposal/fs2000_student.mod \
 	estimation/tune_mh_jscale/fs2000.mod \
 	estimation/method_of_moments/AnScho/AnScho_matched_moments.mod \
