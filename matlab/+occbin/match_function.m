@@ -37,19 +37,18 @@ options_.occbin.simul=opts_simul;
 options_.occbin.simul.full_output=1;
 options_.noprint = 1;
 [~, out, ss] = occbin.solver(M_,oo_,options_);
-state_out= out.piecewise(1,:)' - out.ys;
-
-E = ss.R(:,opts_simul.exo_pos);
-grad = ss.R(opts_simul.varobs_id,opts_simul.exo_pos);
 
 nobs = size(obs_list,1);
 resids = zeros(nobs,1);
 
 if ~out.error_flag
-    % -- add observation block in model ---%
-    %   % put in model file
+    state_out= out.piecewise(1,:)' - out.ys;
+    
+    E = ss.R(:,opts_simul.exo_pos);
+    grad = ss.R(opts_simul.varobs_id,opts_simul.exo_pos);
     resids = (out.piecewise(1,opts_simul.varobs_id)-current_obs)'; %-out.endo_ss.(obs_list{this_obs});
 else
+    grad = NaN(length(opts_simul.varobs_id),length(opts_simul.exo_pos));
     resids = resids+100;
 end
 
