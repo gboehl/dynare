@@ -1,4 +1,30 @@
 function Qvec=get_Qvec_heteroskedastic_filter(Q,smpl,Model)
+% function Qvec=get_Qvec_heteroskedastic_filter(Q,smpl,Model)
+% 
+% INPUTS
+%   Q:      baseline non-heteroskadastic covariance matrix of shocks
+%   smpl:   scalar storing end of sample
+%   Model:  structure storing the model information
+% Outputs:
+%   Qvec:   [n_exo by n_exo by smpl] array of covariance matrices
+
+% Copyright (C) 2020-21 Dynare Team
+%
+% This file is part of Dynare.
+%
+% Dynare is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% Dynare is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
+
 isqdiag = all(all(abs(Q-diag(diag(Q)))<1e-14)); % ie, the covariance matrix is diagonal...
 Qvec=repmat(Q,[1 1 smpl+1]);
 for k=1:smpl

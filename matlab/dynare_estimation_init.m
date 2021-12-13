@@ -671,11 +671,13 @@ if options_.heteroskedastic_filter
 
     for k=1:length(M_.heteroskedastic_shocks.Qvalue_orig)
         v = M_.heteroskedastic_shocks.Qvalue_orig(k);
-        M_.heteroskedastic_shocks.Qvalue(v.exo_id, v.periods) = v.value^2;
+        temp_periods=v.periods(v.periods<=options_.nobs+options_.first_obs);
+        M_.heteroskedastic_shocks.Qvalue(v.exo_id, temp_periods-(options_.first_obs-1)) = v.value^2;
     end
     for k=1:length(M_.heteroskedastic_shocks.Qscale_orig)
         v = M_.heteroskedastic_shocks.Qscale_orig(k);
-        M_.heteroskedastic_shocks.Qscale(v.exo_id, v.periods) = v.scale^2;
+        temp_periods=v.periods(v.periods<=options_.nobs+options_.first_obs);
+        M_.heteroskedastic_shocks.Qscale(v.exo_id, temp_periods-(options_.first_obs-1)) = v.scale^2;
     end
 
     if any(any(~isnan(M_.heteroskedastic_shocks.Qvalue) & ~isnan(M_.heteroskedastic_shocks.Qscale)))
