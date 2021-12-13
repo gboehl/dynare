@@ -1,9 +1,17 @@
-function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_u_tilde,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DynareInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
-% Evaluates the posterior kernel of the bvar-dsge model.
+function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_u_tilde,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DataSetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
+% Evaluates the posterior kernel of the BVAR-DSGE model.
 %
 % INPUTS
-%   o xparam1       [double]     Vector of model's parameters.
-%   o gend          [integer]    Number of observations (without conditionning observations for the lags).
+%   o xparam1               [double]    Vector of model's parameters.
+%   o gend                  [integer]   Number of observations (without conditionning observations for the lags).
+%   o DynareDataset         [dseries]   object storing the dataset     
+%   o DataSetInfo           [structure] storing informations about the sample.
+%   o DynareOptions         [structure] describing the options
+%   o Model                 [structure] decribing the model
+%   o EstimatedParameters   [structure] characterizing parameters to be estimated
+%   o BayesInfo             [structure] describing the priors
+%   o BoundsInfo            [structure] containing prior bounds
+%   o DynareResults         [structure] storing the results
 %
 % OUTPUTS
 %   o fval          [double]     Value of the posterior kernel at xparam1.
@@ -54,8 +62,6 @@ function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-persistent dsge_prior_weight_idx
-
 % Initialize some of the output arguments.
 fval = [];
 exit_flag = 1;
@@ -77,9 +83,7 @@ if ~isempty(xparam1)
 end
 
 % Initialization of of the index for parameter dsge_prior_weight in Model.params.
-if isempty(dsge_prior_weight_idx)
-    dsge_prior_weight_idx = strmatch('dsge_prior_weight', Model.param_names);
-end
+dsge_prior_weight_idx = strmatch('dsge_prior_weight', Model.param_names);
 
 % Get the number of estimated (dsge) parameters.
 nx = EstimatedParameters.nvx + EstimatedParameters.np;
@@ -101,10 +105,9 @@ if ~DynareOptions.noconstant
 end
 
 % Get empirical second order moments for the observed variables.
-mYY = evalin('base', 'mYY');
-mYX = evalin('base', 'mYX');
-mXY = evalin('base', 'mXY');
-mXX = evalin('base', 'mXX');
+mYY= DataSetInfo.mYY;
+mYX= DataSetInfo.mYX;
+mXX= DataSetInfo.mXX;
 
 Model = set_all_parameters(xparam1,EstimatedParameters,Model);
 
@@ -133,7 +136,7 @@ end
 
 % Solve the Dsge model and get the matrices of the reduced form solution. T and R are the matrices of the
 % state equation
-[T,R,SteadyState,info,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
+[T,R,SteadyState,info] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
@@ -205,10 +208,6 @@ if ~DynareOptions.noconstant
 end
 
 GYY = TheoreticalAutoCovarianceOfTheObservedVariables(:,:,1);
-
-assignin('base','GYY',GYY);
-assignin('base','GXX',GXX);
-assignin('base','GYX',GYX);
 
 iGXX = inv(GXX);
 PHI_star = iGXX*transpose(GYX); %formula (22), DS (2004)

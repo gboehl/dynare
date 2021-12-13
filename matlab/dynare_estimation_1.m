@@ -115,10 +115,10 @@ if options_.dsge_var
         error('Estimation::DsgeVarLikelihood: I cannot estimate a DSGE-VAR model with missing observations!')
     end
     if options_.noconstant
-        var_sample_moments(options_.dsge_varlag, -1, dataset_);
+        dataset_info=var_sample_moments(options_.dsge_varlag, -1, dataset_, dataset_info);
     else
         % The steady state is non zero ==> a constant in the VAR is needed!
-        var_sample_moments(options_.dsge_varlag, 0, dataset_);
+        dataset_info=var_sample_moments(options_.dsge_varlag, 0, dataset_, dataset_info);
     end
 end
 
