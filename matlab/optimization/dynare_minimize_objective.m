@@ -26,7 +26,7 @@ function [opt_par_values,fval,exitflag,hessian_mat,options_,Scale,new_rat_hess_i
 %   none.
 %
 %
-% Copyright (C) 2014-2019 Dynare Team
+% Copyright (C) 2014-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,7 +43,9 @@ function [opt_par_values,fval,exitflag,hessian_mat,options_,Scale,new_rat_hess_i
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-
+if isfield(options_,'occbin') && ((options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter) || (options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter))
+    warning('off','MATLAB:nearlySingularMatrix')    
+end
 %% set bounds and parameter names if not already set
 n_params=size(start_par_value,1);
 if isempty(bounds)
@@ -648,6 +650,10 @@ switch minimizer_algorithm
     else
         error(['Optimization algorithm ' int2str(minimizer_algorithm) ' is unknown!'])
     end
+end
+
+if isfield(options_,'occbin') && ((options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter) || (options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter))
+    warning('on','MATLAB:nearlySingularMatrix')
 end
 
 end
