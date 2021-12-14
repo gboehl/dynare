@@ -79,6 +79,7 @@
     "smoother2histval" "perfect_foresight_setup" "perfect_foresight_solver"
     "perfect_foresight_with_expectation_errors_setup"
     "perfect_foresight_with_expectation_errors_solver"
+    "compilation_setup"
     "std" "corr" "prior_function" "posterior_function" "end")
   "Dynare statement keywords.")
 
