@@ -117,6 +117,10 @@ else
                 end
                 minSYS.dD = SYS.dD;
             end
+        else
+            minSYS = []; 
+            minns = [];
+            return;
         end
     catch
         minreal_flag = 0; % if something went wrong use below procedure

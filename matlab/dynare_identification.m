@@ -481,7 +481,7 @@ if iload <=0
     end
     options_ident.tittxt = parameters; %title text for graphs and figures
     % perform identification analysis for single point
-    [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info, options_ident] = ...
+    [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info] = ...
         identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end implies initialization of persistent variables
     if info(1)~=0
         % there are errors in the solution algorithm
@@ -498,7 +498,7 @@ if iload <=0
                 params = prior_draw();
                 options_ident.tittxt = 'Random_prior_params'; %title text for graphs and figures
                 % perform identification analysis
-                [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info, options_ident] = ...
+                [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info] = ...
                     identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
             end
         end
@@ -552,7 +552,7 @@ if iload <=0
         end
         options_ident.tittxt = []; % clear title text for graphs and figures
         % run identification analysis
-        [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, ide_derivatives_info, info, options_MC] = ...
+        [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, ide_derivatives_info, info, error_indicator] = ...
             identification_analysis(params, indpmodel, indpstderr, indpcorr, options_MC, dataset_info, prior_exist, 0); % the 0 implies that we do not initialize persistent variables anymore
 
         if iteration==0 && info(1)==0 % preallocate storage in the first admissable run
@@ -564,7 +564,7 @@ if iload <=0
             STO_si_dDYNAMIC          = zeros([size(ide_dynamic.si_dDYNAMIC, 1), modparam_nbr, MAX_RUNS_BEFORE_SAVE_TO_FILE]);
             STO_DYNAMIC              = zeros(size(ide_dynamic.DYNAMIC, 1), SampleSize);
             IDE_DYNAMIC.ind_dDYNAMIC = ide_dynamic.ind_dDYNAMIC;
-            IDE_DYNAMIC.in0          = zeros(SampleSize, modparam_nbr);
+            IDE_DYNAMIC.ino          = zeros(SampleSize, modparam_nbr);
             IDE_DYNAMIC.ind0         = zeros(SampleSize, modparam_nbr);
             IDE_DYNAMIC.jweak        = zeros(SampleSize, modparam_nbr);
             IDE_DYNAMIC.jweak_pair   = zeros(SampleSize, modparam_nbr*(modparam_nbr+1)/2);
@@ -576,7 +576,7 @@ if iload <=0
                 STO_si_dREDUCEDFORM              = zeros([size(ide_reducedform.si_dREDUCEDFORM, 1), totparam_nbr, MAX_RUNS_BEFORE_SAVE_TO_FILE]);
                 STO_REDUCEDFORM                  = zeros(size(ide_reducedform.REDUCEDFORM, 1), SampleSize);
                 IDE_REDUCEDFORM.ind_dREDUCEDFORM = ide_reducedform.ind_dREDUCEDFORM;
-                IDE_REDUCEDFORM.in0              = zeros(SampleSize, 1);
+                IDE_REDUCEDFORM.ino              = zeros(SampleSize, 1);
                 IDE_REDUCEDFORM.ind0             = zeros(SampleSize, totparam_nbr);
                 IDE_REDUCEDFORM.jweak            = zeros(SampleSize, totparam_nbr);
                 IDE_REDUCEDFORM.jweak_pair       = zeros(SampleSize, totparam_nbr*(totparam_nbr+1)/2);
@@ -593,7 +593,7 @@ if iload <=0
                 STO_si_dMOMENTS          = zeros([size(ide_moments.si_dMOMENTS, 1), totparam_nbr, MAX_RUNS_BEFORE_SAVE_TO_FILE]);
                 STO_MOMENTS              = zeros(size(ide_moments.MOMENTS, 1), SampleSize);
                 IDE_MOMENTS.ind_dMOMENTS = ide_moments.ind_dMOMENTS;
-                IDE_MOMENTS.in0          = zeros(SampleSize, 1);
+                IDE_MOMENTS.ino          = zeros(SampleSize, 1);
                 IDE_MOMENTS.ind0         = zeros(SampleSize, totparam_nbr);
                 IDE_MOMENTS.jweak        = zeros(SampleSize, totparam_nbr);
                 IDE_MOMENTS.jweak_pair   = zeros(SampleSize, totparam_nbr*(totparam_nbr+1)/2);
@@ -611,7 +611,7 @@ if iload <=0
             if ~options_MC.no_identification_spectrum
                 STO_dSPECTRUM              = zeros([size(ide_spectrum.dSPECTRUM, 1), size(ide_spectrum.dSPECTRUM, 2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);
                 IDE_SPECTRUM.ind_dSPECTRUM = ide_spectrum.ind_dSPECTRUM;
-                IDE_SPECTRUM.in0           = zeros(SampleSize, 1);
+                IDE_SPECTRUM.ino           = zeros(SampleSize, 1);
                 IDE_SPECTRUM.ind0          = zeros(SampleSize, totparam_nbr);
                 IDE_SPECTRUM.jweak         = zeros(SampleSize, totparam_nbr);
                 IDE_SPECTRUM.jweak_pair    = zeros(SampleSize, totparam_nbr*(totparam_nbr+1)/2);
@@ -626,12 +626,13 @@ if iload <=0
             if ~options_MC.no_identification_minimal
                 STO_dMINIMAL             = zeros([size(ide_minimal.dMINIMAL, 1), size(ide_minimal.dMINIMAL, 2), MAX_RUNS_BEFORE_SAVE_TO_FILE]);
                 IDE_MINIMAL.ind_dMINIMAL = ide_minimal.ind_dMINIMAL;
-                IDE_MINIMAL.in0          = zeros(SampleSize, 1);
+                IDE_MINIMAL.ino          = zeros(SampleSize, 1);
                 IDE_MINIMAL.ind0         = zeros(SampleSize, totparam_nbr);
                 IDE_MINIMAL.jweak        = zeros(SampleSize, totparam_nbr);
                 IDE_MINIMAL.jweak_pair   = zeros(SampleSize, totparam_nbr*(totparam_nbr+1)/2);
                 IDE_MINIMAL.cond         = zeros(SampleSize, 1);
                 IDE_MINIMAL.Mco          = zeros(SampleSize, totparam_nbr);
+                IDE_MINIMAL.minimal_state_space = zeros(SampleSize, 1);
             else
                 STO_dMINIMAL = {};
                 IDE_MINIMAL  = {};
@@ -654,7 +655,7 @@ if iload <=0
             IDE_DYNAMIC.Mco(iteration,:)        = ide_dynamic.Mco;
 
             % store results for reduced form
-            if ~options_MC.no_identification_reducedform
+            if ~options_MC.no_identification_reducedform && ~error_indicator.identification_reducedform
                 STO_REDUCEDFORM(:,iteration)            = ide_reducedform.REDUCEDFORM;
                 STO_si_dREDUCEDFORM(:,:,run_index)      = ide_reducedform.si_dREDUCEDFORM;
                 IDE_REDUCEDFORM.cond(iteration,1)       = ide_reducedform.cond;
@@ -666,7 +667,7 @@ if iload <=0
             end
 
             % store results for moments
-            if ~options_MC.no_identification_moments
+            if ~options_MC.no_identification_moments && ~error_indicator.identification_moments
                 STO_MOMENTS(:,iteration)            = ide_moments.MOMENTS;
                 STO_si_dMOMENTS(:,:,run_index)      = ide_moments.si_dMOMENTS;
                 IDE_MOMENTS.cond(iteration,1)       = ide_moments.cond;
@@ -680,7 +681,7 @@ if iload <=0
             end
 
             % store results for spectrum
-            if ~options_MC.no_identification_spectrum
+            if ~options_MC.no_identification_spectrum && ~error_indicator.identification_spectrum
                 STO_dSPECTRUM(:,:,run_index)         = ide_spectrum.dSPECTRUM;
                 IDE_SPECTRUM.cond(iteration,1)       = ide_spectrum.cond;
                 IDE_SPECTRUM.ino(iteration,1)        = ide_spectrum.ino;
@@ -691,14 +692,19 @@ if iload <=0
             end
 
             % store results for minimal system
-            if ~options_MC.no_identification_minimal
-                STO_dMINIMAL(:,:,run_index)         = ide_minimal.dMINIMAL;
-                IDE_MINIMAL.cond(iteration,1)       = ide_minimal.cond;
-                IDE_MINIMAL.ino(iteration,1)        = ide_minimal.ino;
-                IDE_MINIMAL.ind0(iteration,:)       = ide_minimal.ind0;
-                IDE_MINIMAL.jweak(iteration,:)      = ide_minimal.jweak;
-                IDE_MINIMAL.jweak_pair(iteration,:) = ide_minimal.jweak_pair;
-                IDE_MINIMAL.Mco(iteration,:)        = ide_minimal.Mco;
+            if ~options_MC.no_identification_minimal 
+                if ~error_indicator.identification_minimal
+                    STO_dMINIMAL(:,:,run_index)                  = ide_minimal.dMINIMAL;
+                    IDE_MINIMAL.cond(iteration,1)                = ide_minimal.cond;
+                    IDE_MINIMAL.ino(iteration,1)                 = ide_minimal.ino;
+                    IDE_MINIMAL.ind0(iteration,:)                = ide_minimal.ind0;
+                    IDE_MINIMAL.jweak(iteration,:)               = ide_minimal.jweak;
+                    IDE_MINIMAL.jweak_pair(iteration,:)          = ide_minimal.jweak_pair;
+                    IDE_MINIMAL.Mco(iteration,:)                 = ide_minimal.Mco;
+                    IDE_MINIMAL.minimal_state_space(iteration,:) = ide_minimal.minimal_state_space;
+                else
+                    IDE_MINIMAL.minimal_state_space(iteration,:) = ide_minimal.minimal_state_space;
+                end
             end
 
             % save results to file: either to avoid running into memory issues, i.e. (run_index==MAX_RUNS_BEFORE_SAVE_TO_FILE) or if finished (iteration==SampleSize)
@@ -900,7 +906,7 @@ if SampleSize > 1
                 fprintf('\nTesting %s.\n',tittxt);
                 if ~iload
                     options_ident.tittxt = tittxt; %title text for graphs and figures
-                    [ide_moments_max, ide_spectrum_max, ide_minimal_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, derivatives_info_max, info_max, options_ident] = ...
+                    [ide_moments_max, ide_spectrum_max, ide_minimal_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, derivatives_info_max, info_max] = ...
                         identification_analysis(pdraws(jmax,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes some persistent variables
                     save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_max', 'ide_moments_max', 'ide_spectrum_max', 'ide_minimal_max','ide_reducedform_max', 'ide_dynamic_max', 'jmax', '-append');
                 end
@@ -918,7 +924,7 @@ if SampleSize > 1
                 fprintf('Testing %s.\n',tittxt);
                 if ~iload
                     options_ident.tittxt = tittxt; %title text for graphs and figures
-                    [ide_moments_min, ide_spectrum_min, ide_minimal_min, ide_hess_min, ide_reducedform_min, ide_dynamic_min, derivatives_info_min, info_min, options_ident] = ...
+                    [ide_moments_min, ide_spectrum_min, ide_minimal_min, ide_hess_min, ide_reducedform_min, ide_dynamic_min, derivatives_info_min, info_min] = ...
                         identification_analysis(pdraws(jmin,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes persistent variables
                     save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_min', 'ide_moments_min','ide_spectrum_min','ide_minimal_min','ide_reducedform_min', 'ide_dynamic_min', 'jmin', '-append');
                 end
@@ -940,7 +946,7 @@ if SampleSize > 1
                     fprintf('\nTesting %s.\n',tittxt);
                     if ~iload
                         options_ident.tittxt = tittxt; %title text for graphs and figures
-                        [ide_moments_(j), ide_spectrum_(j), ide_minimal_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), derivatives_info_(j), info_resolve, options_ident] = ...
+                        [ide_moments_(j), ide_spectrum_(j), ide_minimal_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), derivatives_info_(j), info_resolve] = ...
                             identification_analysis(pdraws(jcrit(j),:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
                     end
                     advanced0 = options_ident.advanced; options_ident.advanced = 1; %make sure advanced setting is on
