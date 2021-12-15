@@ -228,7 +228,9 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                                      dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
                 options_.analytic_derivation = ana_deriv_old;
             elseif ~isnumeric(options_.mode_compute) || ~(isequal(options_.mode_compute,5) && newratflag~=1 && strcmp(func2str(objective_function),'dsge_likelihood'))
-                % with flag==0 or 2, we force to use the hessian from outer product gradient of optimizer 5
+                % enter here if i) not mode_compute_5, ii) if mode_compute_5 and newratflag==1; 
+                % with flag==0 or 2 and dsge_likelihood, we force to use
+                % the hessian from outer product gradient of optimizer 5 below
                 if options_.hessian.use_penalized_objective
                     penalized_objective_function = str2func('penalty_objective_function');
                     hh = hessian(penalized_objective_function, xparam1, options_.gstep, objective_function, fval, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_);
@@ -237,7 +239,8 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                 end
                 hh = reshape(hh, nx, nx);
             elseif isnumeric(options_.mode_compute) && isequal(options_.mode_compute,5)
-                % other numerical hessian options available with optimizer 5
+                % other numerical hessian options available with optimizer
+                % 5 and dsge_likelihood
                 %
                 % if newratflag == 0
                 % compute outer product gradient of optimizer 5
