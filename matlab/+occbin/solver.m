@@ -68,7 +68,6 @@ end
 out.error_flag=error_flag;
 if error_flag
     print_info(error_flag, options_.noprint, options_)
-    out=[];
     return;
 end
 

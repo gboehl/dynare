@@ -2663,12 +2663,10 @@ blocks.
         var e2;
         periods 86:87 88:97;
         values 0.04 0.01;
-        end;
 
         var e3;
         periods 86:87;
         values 0.04;
-        end;
 
         var e3;
         periods 88:97;
