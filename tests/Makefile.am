@@ -49,6 +49,7 @@ MODFILES = \
 	estimation/fs2000_with_weibull_prior.mod \
 	estimation/fs2000_initialize_from_calib.mod	\
 	estimation/fs2000_estimated_params_init.mod	\
+	estimation/fs2000_estimated_params_remove.mod	\
 	estimation/fs2000_calibrated_covariance.mod \
 	estimation/fs2000_model_comparison.mod \
 	estimation/fs2000_fast.mod \
@@ -93,6 +94,7 @@ MODFILES = \
 	ramst_static_tag.mod \
 	ramst_static_tag_block.mod \
 	ramst_mshocks.mod \
+	ramst_model_edit.mod \
 	on-the-fly/ex1.mod \
 	on-the-fly/ex2.mod \
 	on-the-fly/ex3.mod \
@@ -903,6 +905,9 @@ particle/local_state_space_iteration_k_test.o.trs: particle/first_spec.o.trs
 
 pruning/AS_pruned_state_space_red_shock.m.trs: pruning/AnSchorfheide_pruned_state_space.m.trs
 pruning/AS_pruned_state_space_red_shock.o.trs: pruning/AnSchorfheide_pruned_state_space.o.trs
+
+ramst_model_edit.m.trs: ramst.m.trs
+ramst_model_edit.o.trs: ramst.o.trs
 
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))

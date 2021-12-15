@@ -79,7 +79,7 @@
     "smoother2histval" "perfect_foresight_setup" "perfect_foresight_solver"
     "perfect_foresight_with_expectation_errors_setup"
     "perfect_foresight_with_expectation_errors_solver"
-    "compilation_setup"
+    "compilation_setup" "model_remove" "model_options" "var_remove"
     "std" "corr" "prior_function" "posterior_function" "end")
   "Dynare statement keywords.")
 
@@ -98,11 +98,11 @@
   (defvar dynare-blocks
     '("model" "steady_state_model" "initval" "endval" "histval" "shocks" "heteroskedastic_shocks"
       "shock_groups" "init2shocks" "mshocks" "estimated_params" "epilogue" "priors"
-      "estimated_params_init" "estimated_params_bounds" "osr_params_bounds"
-      "observation_trends" "deterministic_trends" "optim_weights" "homotopy_setup"
-      "conditional_forecast_paths" "svar_identification" "moment_calibration"
-      "irf_calibration" "ramsey_constraints" "generate_irfs"
-      "matched_moments" "occbin_constraints" "verbatim")
+      "estimated_params_init" "estimated_params_bounds" "estimated_params_remove"
+      "osr_params_bounds" "observation_trends" "deterministic_trends" "optim_weights"
+      "homotopy_setup" "conditional_forecast_paths" "svar_identification"
+      "moment_calibration" "irf_calibration" "ramsey_constraints" "generate_irfs"
+      "matched_moments" "occbin_constraints" "model_replace" "verbatim")
     "Dynare block keywords."))
 
 ;; Mathematical functions and operators used in model equations (see "hand_side" in Bison file)

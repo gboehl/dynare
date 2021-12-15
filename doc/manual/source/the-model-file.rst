@@ -332,6 +332,11 @@ for declaring variables and parameters are described below.
         Here, in the whole model file, ``alpha`` and ``beta`` will be
         endogenous and ``y`` and ``w`` will be parameters.
 
+.. command:: var_remove VAR_NAME | PARAM_NAME...;
+
+    Removes the listed variables (or parameters) from the model. Removing a
+    variable that has already been used in a model equation or elsewhere will
+    lead to an error.
 
 .. command:: predetermined_variables VAR_NAME...;
 
@@ -972,6 +977,11 @@ The model is declared inside a ``model`` block:
 
     More information on tags is available at `<https://git.dynare.org/Dynare/dynare/-/wikis/Equations-Tags>`__.
 
+    There can be several ``model`` blocks, in which case they are simply
+    concatenated. The set of effective options is also the concatenation of the
+    options declared in all the blocks, but in that case you may rather want to
+    use the :comm:`model_options` command.
+
     *Options*
 
     .. option:: linear
@@ -1130,6 +1140,82 @@ The model is declared inside a ``model`` block:
          x = a*x(-1)+b*y(+1)+e_x;
          y = d*y(-1)+e_y;
          end;
+
+.. command:: model_options (OPTIONS...);
+
+    This command accepts the same options as the :bck:`model` block.
+
+    The purpose of this statement is to specify the options that apply to the
+    whole model, when there are several ``model`` blocks, so as to restore the
+    symmetry between those blocks (since otherwise one ``model`` block would
+    typically bear the options, while the other ones would typically have no
+    option).
+
+.. command:: model_remove (TAGS...);
+
+    This command removes equations that appeared in a previous :bck:`model`
+    block.
+
+    The equations must be specified by a list of tag values, separated by
+    commas. Each element of the list is either a simple quoted string, in which
+    case it designates an equation by its ``name`` tag; or a tag name (without
+    quotes), followed by an equal sign, then by the tag value (within quotes).
+
+    Each removed equation must either have an ``endogenous`` tag, or have a
+    left hand side containing a single endogenous variable. The corresponding
+    endogenous variable will be either turned into an exogenous (if it is still
+    used in somewhere in the model at that point), otherwise it will be removed
+    from the model.
+
+    *Example*
+
+        ::
+
+         var c k dummy1 dummy2;
+
+         model;
+           c + k - aa*x*k(-1)^alph - (1-delt)*k(-1) + dummy1;
+           c^(-gam) - (1+bet)^(-1)*(aa*alph*x(+1)*k^(alph-1) + 1 - delt)*c(+1)^(-gam);
+           [ name = 'eq:dummy1', endogenous = 'dummy1' ]
+           c*k = dummy1;
+           [ foo = 'eq:dummy2' ]
+           log(dummy2) = k + 2;
+         end;
+
+         model_remove('eq:dummy1', foo = 'eq:dummy2');
+
+        In the above example, the last two equations will be removed,
+        ``dummy1`` will be turned into an exogenous, and ``dummy2`` will be
+        removed.
+
+
+.. block:: model_replace (TAGS...);
+
+    This block replaces several equations in the model. It removes the
+    equations given by the tags list (with the same syntax as in
+    :comm:`model_remove`), and it adds equations given within the block (with
+    the same syntax as :bck:`model`).
+
+    No variable is removed or has its type changed in the process.
+
+    *Example*
+
+        ::
+
+         var c k;
+
+         model;
+           c + k - aa*x*k(-1)^alph - (1-delt)*k(-1);
+           [ name = 'dummy' ]
+           c*k = 1;
+         end;
+
+         model_replace('dummy');
+           c^(-gam) = (1+bet)^(-1)*(aa*alph*x(+1)*k^(alph-1) + 1 - delt)*c(+1)^(-gam);
+         end;
+
+        In the above example, the dummy equation is replaced by a proper
+        Euler equation.
 
 
 Dynare has the ability to output the original list of model equations
@@ -5381,6 +5467,9 @@ block decomposition of the model (see :opt:`block`).
             end;
 
 
+    It is possible to have several ``estimated_params`` blocks, in which case
+    they will be concatenated.
+
 .. block:: estimated_params_init ;
            estimated_params_init (OPTIONS...);
 
@@ -5420,6 +5509,14 @@ block decomposition of the model (see :opt:`block`).
     See :bck:`estimated_params`, for the meaning and syntax of the
     various components.
 
+.. block:: estimated_params_remove ;
+
+    |br| This block partially undoes the effect of a previous
+    :bck:`estimated_params` block, by removing some parameters from the estimation.
+
+    Each line has the following syntax::
+
+        stderr VARIABLE_NAME | corr VARIABLE_NAME_1, VARIABLE_NAME_2 | PARAMETER_NAME;
 
 .. _estim-comm:
 
