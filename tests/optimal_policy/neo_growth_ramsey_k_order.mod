@@ -35,7 +35,7 @@ evaluate_planner_objective;
 
 [condWelfare, U_dynpp, W_dynpp, U_dyn, W_dyn] = k_order_welfare(oo_.dr, M_, options_);
 
-if condWelfare~=oo_.planner_objective_value.conditional.steady_initial_multiplier
+if abs(condWelfare - oo_.planner_objective_value.conditional.steady_initial_multiplier) > 1e-13
    error('Inaccurate conditional welfare with Lagrange multiplier set to its steady-state value');
 end
 if ~exist(['neo_growth_k_order' filesep 'Output' filesep 'neo_growth_k_order_results.mat'],'file');
