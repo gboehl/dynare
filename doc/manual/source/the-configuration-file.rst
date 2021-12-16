@@ -161,6 +161,13 @@ For a UNIX grid:
           the master to the slaves can be done without passwords, or
           using an SSH agent.
 
+.. warning:: Compatibility considerations between master and slave
+
+    It is highly recommended to use the same version of Dynare on both the
+    master and all slaves. Different versions regularly cause problems like
+    zero acceptance rates during estimation. When upgrading to a newer Dynare
+    version do not forget to adjust the ``DynarePath``.
+
 We now turn to the description of the configuration directives. Note
 that comments in the configuration file can be provided by separate
 lines starting with a hashtag (#).
