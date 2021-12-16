@@ -2734,7 +2734,9 @@ blocks.
       scales DOUBLE | (EXPRESSION)  [[,] DOUBLE | (EXPRESSION) ]...;
 
     NOTE: ``scales`` and ``values`` cannot be simultaneously set for the same shock in the same period, but it is 
-    possible to set ``values`` for some periods and ``scales`` for other periods for the same shock.
+    possible to set ``values`` for some periods and ``scales`` for other periods for the same shock. There can be
+    only one ``scales`` and ``values`` directive each for a given shock, so all affected periods must be set in one
+    statement.
 
     *Example*
 
@@ -2743,20 +2745,16 @@ blocks.
         heteroskedastic_shocks;
 
         var e1;
-        periods 86:87 88:97;
-        scales 0.5 0;
+        periods 86:87, 89:97;
+        scales 0.5, 0;
+
+        var e1;
+        periods 88;
+        values 0.1;
 
         var e2;
         periods 86:87 88:97;
         values 0.04 0.01;
-
-        var e3;
-        periods 86:87;
-        values 0.04;
-
-        var e3;
-        periods 88:97;
-        scales 0;
 
         end;
 
