@@ -181,7 +181,7 @@ for var_iter_1=1:nvars
 end
 
 // case with measurement error
-estimated_params;
+estimated_params(overwrite);
 alp, beta_pdf, 0.356, 0.02;
 bet, beta_pdf, 0.993, 0.002;
 gam, normal_pdf, 0.0085, 0.003;

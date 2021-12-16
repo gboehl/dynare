@@ -116,7 +116,7 @@ estimation(order=1,datafile=fsdat_simul,mode_check,smoother,filter_decomposition
 
 
 
-estimated_params;
+estimated_params(overwrite);
 //alp, beta_pdf, 0.356, 0.02;
 gam, normal_pdf, 0.0085, 0.003;
 //del, beta_pdf, 0.01, 0.005;

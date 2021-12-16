@@ -5276,6 +5276,7 @@ block decomposition of the model (see :opt:`block`).
             end;
 
 .. block:: estimated_params ;
+           estimated_params (overwrite) ;
 
     |br| This block lists all parameters to be estimated and specifies
     bounds and priors as necessary.
@@ -5465,8 +5466,14 @@ block decomposition of the model (see :opt:`block`).
             end;
 
 
-    It is possible to have several ``estimated_params`` blocks, in which case
-    they will be concatenated.
+    It is possible to have several ``estimated_params`` blocks. By default,
+    subsequent blocks are concatenated with the previous ones; this can be
+    useful when building models in a modular fashion (see also
+    :bck:`estimated_params_remove` for that use case). However, if an
+    ``estimated_params`` block has the ``overwrite`` option, its contents
+    becomes the new list of estimated parameters, cancelling previous blocks;
+    this can be useful when doing several estimations in a single ``.mod``
+    file.
 
 .. block:: estimated_params_init ;
            estimated_params_init (OPTIONS...);

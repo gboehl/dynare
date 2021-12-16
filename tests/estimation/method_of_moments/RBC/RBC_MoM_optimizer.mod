@@ -72,9 +72,8 @@ options_.solveopt.TolXConstraint=1e-3;
 
 
 @#for estimParams in [0, 1, 2]
-  clear estim_params_;
   @#if estimParams == 0
-    estimated_params;
+    estimated_params(overwrite);
         %DELTA,         0.025;
         %BETTA,         0.984;
         %B,             0.5;
@@ -87,7 +86,7 @@ options_.solveopt.TolXConstraint=1e-3;
   @#endif
 
   @#if estimParams == 1
-    estimated_params;
+    estimated_params(overwrite);
         %DELTA,         ,        0,           1;
         %BETTA,         ,        0,           1;
         %B,             ,        0,           1;
@@ -100,7 +99,7 @@ options_.solveopt.TolXConstraint=1e-3;
   @#endif
 
   @#if estimParams == 2
-    estimated_params;
+    estimated_params(overwrite);
         %DELTA,         0.025,         0,           1,  normal_pdf, 0.02, 0.5;
         %BETTA,         0.98,         0,           1,  beta_pdf, 0.90, 0.25;
         %B,             0.45,         0,           1,  normal_pdf, 0.40, 0.5;
