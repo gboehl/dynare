@@ -82,6 +82,8 @@ MODFILES = \
 	estimation/system_prior_restriction/Gali_2015.mod \
 	estimation/no_init_estimation_check_first_obs/fs2000_init_check.mod \
 	estimation/example_nls.mod \
+	estimation/univariate/nls/staticmodel.mod \
+	estimation/univariate/nls/dynamicmodel.mod \
 	moments/example1_var_decomp.mod \
 	moments/example1_bp_test.mod \
 	moments/test_AR1_spectral_density.mod \
@@ -632,7 +634,8 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_2_xfail.mod \
 	estimation/no_init_estimation_check_first_obs/fs2000_init_check_XFAIL.mod \
 	estimation/no_init_estimation_check_first_obs/fs2000_init_check_XFAIL2.mod \
-	var-expectations/1-with-time-shift-b/example1.mod
+	var-expectations/1-with-time-shift-b/example1.mod \
+	estimation/univariate/nls/staticmodelx.mod
 
 MFILES = histval_initval_file/ramst_initval_file_data.m
 
