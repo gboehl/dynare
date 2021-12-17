@@ -127,14 +127,22 @@ if options.ramsey_policy
         end
     end
     if options.debug
-        infrow=find(isinf(ys_init));
+        if steadystate_flag
+            infrow=find(isinf(ys_init(1:M.orig_endo_nbr)));
+        else
+            infrow=find(isinf(ys_init));
+        end
         if ~isempty(infrow)
             fprintf('\nevaluate_steady_state: The initial values for the steady state of the following variables are Inf:\n');
             for iter=1:length(infrow)
                 fprintf('%s\n',M.endo_names{infrow(iter)});
             end
         end
-        nanrow=find(isnan(ys_init));
+        if steadystate_flag
+            nanrow=find(isnan(ys_init(1:M.orig_endo_nbr)));
+        else
+            nanrow=find(isnan(ys_init));
+        end
         if ~isempty(nanrow)
             fprintf('\nevaluate_steady_state: The initial values for the steady state of the following variables are NaN:\n');
             for iter=1:length(nanrow)
