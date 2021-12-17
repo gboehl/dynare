@@ -290,6 +290,16 @@ if nargin<5
     options_.optim_opt = '''verbosity'',0';
 end
 
+%
+% Check that we are able to evaluate the Sum of Squared Residuals on the initial guess
+%
+
+ssr0 = ssrfun(params0);
+
+if isnan(ssr0) || isinf(ssr0) || ~isreal(ssr0)
+    error('Cannot evaluate the Sum of Squared Residuals on the initial guess.')
+end
+
 if is_gauss_newton
     [params1, SSR, exitflag] = gauss_newton(resfun, params0);
 elseif is_lsqnonlin
