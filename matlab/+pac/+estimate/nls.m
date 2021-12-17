@@ -75,6 +75,8 @@ end
 [pacmodl, lhs, rhs, pnames, enames, xnames, ~, pid, eid, xid, ~, ipnames_, params, data, islaggedvariables] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
+dLHS = M_.aux_vars(strmatch(lhs,M_.endo_names, 'exact')==[M_.aux_vars(:).endo_index]).orig_expr;
+
 % Check that the error correction term is correct.
 if M_.pac.(pacmodl).ec.istarget(2)
     error(['\nThe error correction term in PAC equation (%s) is not correct.\nThe ' ...
@@ -261,34 +263,8 @@ end
 
 % Set options if provided as input arguments to nls routine.
 oldopt = options_.optim_opt;
-if nargin>5
-    if mod(nargin-5, 2)
-        error('Options must come by key/value pairs.')
-    end
-    i = 1;
-    opt = '';
-    while i<nargin-5
-        if i==1
-            opt = sprintf('''%s''', varargin{i});
-        else
-            opt = sprintf('%s,''%s''', opt, varargin{i});
-        end
-        if isnumeric(varargin{i+1})
-            opt = sprintf('%s,%s', opt, num2str(varargin{i+1}));
-        else
-            opt = sprintf('%s,''%s''', opt, varargin{i+1});
-        end
-        i = i+2;
-    end
-    options_.optim_opt = opt;
-else
-    options_.optim_opt = [];
-end
-if nargin<5
-    % If default optimization algorithm is used (csminwel), do not print
-    % iterations.
-    options_.optim_opt = '''verbosity'',0';
-end
+[noprint, opt] = opt4nls(varargin);
+options_.optim_opt = opt;
 
 %
 % Check that we are able to evaluate the Sum of Squared Residuals on the initial guess
@@ -344,6 +320,7 @@ oo_.pac.(pacmodl).lhs = dseries(lhs, range(1), 'lhs');
 oo_.pac.(pacmodl).fit = dseries(lhs-r, range(1), 'fit');
 oo_.pac.(pacmodl).residual = dseries(r, range(1), 'residual');
 oo_.pac.(pacmodl).ssr = SSR;
+oo_.pac.(pacmodl).s2 = SSR/T;
 oo_.pac.(pacmodl).R2 = 1-var(r)/var(lhs);
 oo_.pac.(pacmodl).parnames = fieldnames(params);
 oo_.pac.(pacmodl).estimator = params1;
@@ -353,3 +330,16 @@ oo_.pac.(pacmodl).student = params1./(sqrt(diag(C)));
 % Also save estimated parameters in M_
 M_.params(ipnames_) = params1;
 M_ = pac.update.parameters(pacmodl, M_, oo_, false);
+
+if ~noprint
+    title = ['NLS Estimation of equation ''' eqname ''''];
+    preamble = {['Dependent Variable: ' dLHS], ...
+                sprintf('Observations: %d from %s to %s\n', (range(end)-range(1))+1, range(1).char, range(end).char)};
+
+    afterward = {sprintf('R^2: %f', oo_.pac.(pacmodl).R2), ...
+                 sprintf('s^2: %f', oo_.pac.(pacmodl).s2)}; ...
+
+    dyn_table(title, preamble, afterward, oo_.pac.(pacmodl).parnames, ...
+              {'Estimates','t-statistic','Std. Error'}, 4, ...
+              [oo_.pac.(pacmodl).estimator oo_.pac.(pacmodl).student sqrt(diag(C))]);
+end

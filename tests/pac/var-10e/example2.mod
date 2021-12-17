@@ -80,10 +80,6 @@ e_c_m_nls = M_.params(strmatch('e_c_m', M_.param_names, 'exact'));
 c_z_1_nls = M_.params(strmatch('c_z_1', M_.param_names, 'exact'));
 c_z_2_nls = M_.params(strmatch('c_z_2', M_.param_names, 'exact'));
 
-disp(sprintf('Estimate of e_c_m: %f', e_c_m_nls))
-disp(sprintf('Estimate of c_z_1: %f', c_z_1_nls))
-disp(sprintf('Estimate of c_z_2: %f', c_z_2_nls))
-
 % Check consistency with disaggregated target
 ts1 = dseries('example1.data.mat');
 ts2 = dseries('example2.data.mat');

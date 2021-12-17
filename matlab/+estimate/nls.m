@@ -355,49 +355,11 @@ end
 
 % Set options if provided as input arguments to nls routine.
 oldopt = options_.optim_opt;
-if nargin>5
-    if mod(nargin-5, 2)
-        error('Options must come by key/value pairs.')
-    end
-    i = 1;
-    while i<nargin-5
-        if isequal(varargin{i}, 'noprint')
-            noprint = varargin{i+1};
-            i = i+2;
-            continue
-        else
-            if ~exist('opt', 'var')
-                opt = sprintf('''%s''', varargin{i});
-            else
-                opt = sprintf('%s,''%s''', opt, varargin{i});
-            end
-            if isnumeric(varargin{i+1})
-                opt = sprintf('%s,%s', opt, num2str(varargin{i+1}));
-            else
-                opt = sprintf('%s,''%s''', opt, varargin{i+1});
-            end
-            i = i+2;
-        end
-        options_.optim_opt = opt;
-    end
-end
-
-if ~exist('opt', 'var')
-    options_.optim_opt = [];
-end
-
-if ~exist('noprint', 'var')
-    noprint = false;
-end
-
-if nargin<5
-    % If default optimization algorithm is used (csminwel), do not print
-    % iterations.
-    options_.optim_opt = '''verbosity'',0';
-end
+[noprint, opt] = opt4nls(varargin);
+options_.optim_opt = opt;
 
 %
-% Check that we are able to evaluate the Sum of Squared Residuals on the initial guess
+% Check that we are able to evaluate the Sum of uared Residuals on the initial guess
 %
 
 ssr0 = ssrfun(params0);
