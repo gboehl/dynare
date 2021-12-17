@@ -58,7 +58,9 @@ if ~isempty(regexp(rhs, '\w+\(\d+\)', 'match'))
 end
 
 % Update database (for auxiliaries)
-data = feval([M_.fname '.dynamic_set_auxiliary_series'], data, M_.params);
+if M_.endo_nbr>M_.orig_endo_nbr
+    data = feval([M_.fname '.dynamic_set_auxiliary_series'], data, M_.params);
+end
 
 %
 % Check estimation range.

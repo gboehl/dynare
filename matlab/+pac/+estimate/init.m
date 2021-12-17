@@ -116,7 +116,9 @@ pnames_ = pnames_(permutation);
 params = orderfields(params, permutation);
 
 % Add the auxiliary variables in the dataset.
-data = feval([M_.fname '.dynamic_set_auxiliary_series'], data, M_.params);
+if M_.endo_nbr>M_.orig_endo_nbr
+    data = feval([M_.fname '.dynamic_set_auxiliary_series'], data, M_.params);
+end
 
 % Check that the data for endogenous variables have values.
 if any(isnan(data{enames{:}}(range).data(:)))
