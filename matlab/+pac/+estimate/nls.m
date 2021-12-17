@@ -87,7 +87,7 @@ end
 % List of objects to be replaced
 objNames = [pnames; enames; xnames];
 objIndex = [pid; eid; xid];
-objTypes = [ones(length(pid), 1); 2*ones(length(eid), 1); 3*ones(length(eid), 1);];
+objTypes = [ones(length(pid), 1); 2*ones(length(eid)+length(xid), 1)];
 
 [~,I] = sort(cellfun(@length, objNames), 'descend');
 objNames = objNames(I);
@@ -99,7 +99,7 @@ for i=1:length(objNames)
     switch objTypes(i)
       case 1
         rhs = strrep(rhs, objNames{i}, sprintf('DynareModel.params(%u)', objIndex(i)));
-      case {2,3}
+      case 2
         k = find(strcmp(objNames{i}, data.name));
         if isempty(k)
             error('Variable %s is missing in the database.', objNames{i})
