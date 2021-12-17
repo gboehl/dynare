@@ -83,4 +83,4 @@ eparams.c_z_2   =  .2;
 // Define the dataset used for estimation
 edata = TrueData;
 edata.ez = dseries(NaN(TrueData.nobs, 1), 2000Q1, 'ez');
-pac.estimate.nls('zpac', eparams, edata, 2005Q1:2005Q1+4000, 'fmincon');
+pac.estimate.nls('zpac', eparams, edata, 2005Q1:2005Q1+4000, 'annealing', 'verbosity', 0);
