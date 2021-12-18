@@ -67,9 +67,9 @@ end
 %
 
 levels = regexp(RHS, '[\w+]\(-(?<lags>\d)\)', 'names');
-diffs = regexp(RHS, '[diff\(\w+\)', 'match');
+diffs = regexp(RHS, 'diff\(\w+\)', 'match');
 diffl = regexp(RHS, 'diff\([\w+]\(-(?<lags>\d)\)\)', 'names');
-ddiffs = regexp(RHS, '[diff\(diff\(\w+\)\)', 'match');
+ddiffs = regexp(RHS, 'diff\(diff\(\w+\)\)', 'match');
 ddiffl = regexp(RHS, 'diff\(diff\([\w+]\(-(?<lags>\d)\)\)\)', 'names');
 
 if isempty(levels)
