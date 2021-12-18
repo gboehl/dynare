@@ -51,7 +51,7 @@ global M_ oo_ options_
 [LHS, RHS] = get_lhs_and_rhs(eqname, M_, true);  % Without introducing the auxiliaries
 [lhs, rhs] = get_lhs_and_rhs(eqname, M_);        % With auxiliaries.
 
-islaggedvariables = ~isempty(regexp(rhs, '\w+\(-(\d+)\)', 'match')); % Do we have lags on the RHS?
+islaggedvariables = ~isempty(regexp(rhs, '\w+\(-(\d+)\)', 'match')); % Do we have lags on the RHS (with aux)?
 
 if ~isempty(regexp(rhs, '\w+\(\d+\)', 'match'))
     error('Cannot estimate an equation ith leads.')
@@ -105,7 +105,12 @@ if range(end)>data.dates(end)
 end
 
 % Copy (sub)sample data in a matrix.
-DATA = data([range(1)-1, range]).data;
+if islaggedvariables
+    DATA = data([range(1)-1, range]).data;
+else
+    % No lagged variables in the RHS
+    DATA = data(range).data;
+end
 
 % Get the parameters and variables in the equation.
 [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_in_equation(lhs, rhs, M_);
@@ -173,7 +178,8 @@ objNames = objNames(I);
 objIndex = objIndex(I);
 objTypes = objTypes(I);
 
-% Substitute parameters and variables.
+% Substitute parameters and variables. Note that in the transformed model (we consider rhs
+% instead of RHS) the maximum lag is 1.
 for i=1:length(objNames)
     switch objTypes(i)
       case 1
@@ -411,9 +417,13 @@ C = inv(A)*B*inv(A); % C is the asymptotic covariance of sqrt(T) times the vecto
 C = C/T;
 
 % Save results
-lhs = eval(strrep(lhs, 'data', 'data(range(1)-1:range(end)).data'));
-oo_.nls.(eqname).lhs = dseries(lhs, range(1), sprintf('%s_lhs', eqname));
-oo_.nls.(eqname).fit = dseries(lhs-r, range(1), sprintf('%s_fit', eqname));
+dlhs = eval(strrep(lhs, 'data', 'data(range(1)-real(islaggedvariables):range(end)).data')); % REMARK: If lagged variables are present in the estimated equation (ie rhs) then an observation
+                                                                                            % has been appended to the dataset (period range(1)-1) and the left hand side has been replaced
+                                                                                            % by data(2:end,lhs_id) in the matlab routine generated to evaluate the residuals (it is also the value
+                                                                                            % hold by string variable lhs). Hence to evaluate the left hand side variable used for estimation,
+                                                                                            % between range(1) and range(end) we need here to append the same observation in period range(1)-1.
+oo_.nls.(eqname).lhs = dseries(dlhs, range(1), sprintf('%s_lhs', eqname));
+oo_.nls.(eqname).fit = dseries(dlhs-r, range(1), sprintf('%s_fit', eqname));
 oo_.nls.(eqname).residual = dseries(r, range(1), sprintf('%s_residual', eqname));
 oo_.nls.(eqname).ssr = SSR;
 oo_.nls.(eqname).s2 = SSR/T;
