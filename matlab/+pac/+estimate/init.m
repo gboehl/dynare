@@ -59,29 +59,8 @@ pacmodel = M_.pac.(pacmodl);
 % Get the parameters and variables in the PAC equation.
 [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_in_equation(lhs, rhs, M_);
 
-% Get the list of estimated parameters
-pnames_ = fieldnames(params);
-
-% Check that the estimated parameters are used in the PAC equation.
-ParametersNotInPAC = setdiff(pnames_, pnames);
-if ~isempty(ParametersNotInPAC)
-    skipline()
-    if length(ParametersNotInPAC)>1
-        list = sprintf('  %s\n', ParametersNotInPAC{:});
-        remk = sprintf('  The following parameters:\n\n%s\n  do not appear in the PAC equation.', list);
-    else
-        remk = sprintf('  Parameter %s does not appear in the PAC equation.', ParametersNotInPAC{1});
-    end
-    disp(remk)
-    skipline()
-    error('The estimated parameters must be used in equation %s.', eqname)
-end
-
-% Get indices of estimated parameters.
-ipnames_ = zeros(size(pnames_));
-for i=1:length(ipnames_)
-    ipnames_(i) = find(strcmp(pnames_{i}, M_.param_names));
-end
+% Get list and indices of estimated parameters.
+ipnames_ = get_estimated_parameters_indices(params, pnames, eqname, M_);
 
 % If equation is estimated by recursive OLS, ensure that the error
 % correction parameter comes first, followed by the autoregressive
@@ -112,6 +91,7 @@ ipnames_(isnan(ipnames_)) = [];
 
 % Reorder params if needed.
 [~, permutation] = ismember(ipnames__, ipnames_);
+pnames_ = fieldnames(params);
 pnames_ = pnames_(permutation);
 params = orderfields(params, permutation);
 

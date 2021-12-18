@@ -168,96 +168,16 @@ end
 % Rewrite and print the equation.
 %
 
-% List of objects to be replaced
-objNames = [pnames; enames; xnames];
-objIndex = [pid; eid; xid];
-objTypes = [ones(length(pid), 1); 2*ones(length(eid)+length(xid), 1)];
-
-[~,I] = sort(cellfun(@length, objNames), 'descend');
-objNames = objNames(I);
-objIndex = objIndex(I);
-objTypes = objTypes(I);
-
-% Substitute parameters and variables. Note that in the transformed model (we consider rhs
-% instead of RHS) the maximum lag is 1.
-for i=1:length(objNames)
-    switch objTypes(i)
-      case 1
-        rhs = strrep(rhs, objNames{i}, sprintf('DynareModel.params(%u)', objIndex(i)));
-      case 2
-        k = find(strcmp(objNames{i}, data.name));
-        if isempty(k)
-            error('Variable %s is missing in the database.', objNames{i})
-        end
-        j = regexp(rhs, ['\<', objNames{i}, '\>']);
-        if islaggedvariables
-            jlag = regexp(rhs, ['\<', objNames{i}, '\(-1\)']);
-            if ~isempty(jlag)
-                rhs = regexprep(rhs, ['\<' objNames{i} '\(-1\)'], sprintf('data(1:end-1,%u)', k));
-            end
-            if ~isempty(setdiff(j, jlag))
-                rhs = regexprep(rhs, ['\<' objNames{i} '\>'], sprintf('data(2:end,%u)', k));
-            end
-        else
-            rhs = regexprep(rhs, ['\<' objNames{i} '\>'], sprintf('data(:,%u)', k));
-        end
-        if contains(lhs, objNames{i})
-            if islaggedvariables
-                lhs = strrep(lhs, objNames{i}, sprintf('data(2:end,%u)', k));
-            else
-                lhs = strrep(lhs, objNames{i}, sprintf('data(:,%u)', k));
-            end
-        end
-    end
-end
-
-% Allow elementwise operations
-rhs = strrep(rhs, '^', '.^');
-rhs = strrep(rhs, '/', './');
-rhs = strrep(rhs, '*', '.*');
+[rhs, lhs] = rewrite_equation_with_tables(rhs, lhs, islaggedvariables, pnames, enames, xnames, pid, eid, xid, data);
 
 % Get list and indices of estimated parameters.
-pnames_ = fieldnames(params);
-ipnames_ = zeros(size(pnames_));
-for i=1:length(ipnames_)
-    ipnames_(i) = find(strcmp(pnames_{i}, M_.param_names));
-end
+ipnames_ = get_estimated_parameters_indices(params, pnames, eqname, M_);
 
 % Create a routine for evaluating the residuals of the nonlinear model
-fun = ['r_' eqname];
-fid = fopen(['+' M_.fname filesep() fun '.m'], 'w');
-fprintf(fid, 'function r = %s(params, data, DynareModel, DynareOutput)\n', fun);
-fprintf(fid, '\n');
-fprintf(fid, '%% Evaluates the residuals for equation %s.\n', eqname);
-fprintf(fid, '%% File created by Dynare (%s).\n', datetime);
-fprintf(fid, '\n');
-for i=1:length(ipnames_)
-    fprintf(fid, 'DynareModel.params(%u) = params(%u);\n', ipnames_(i), i);
-end
-fprintf(fid, '\n');
-fprintf(fid, 'r = %s-(%s);\n', lhs, rhs);
-fclose(fid);
+write_residuals_routine(lhs, rhs, eqname, ipnames_, M_);
 
 % Create a routine for evaluating the sum of squared residuals of the nonlinear model
-fun = ['ssr_' eqname];
-fid = fopen(['+' M_.fname filesep() fun '.m'], 'w');
-fprintf(fid, 'function [s, fake1, fake2, fake3, fake4] = %s(params, data, DynareModel, DynareOutput)\n', fun);
-fprintf(fid, '\n');
-fprintf(fid, '%% Evaluates the sum of square residuals for equation %s.\n', eqname);
-fprintf(fid, '%% File created by Dynare (%s).\n', datetime);
-fprintf(fid, '\n');
-fprintf(fid, 'fake1 = 0;\n');
-fprintf(fid, 'fake2 = [];\n');
-fprintf(fid, 'fake3 = [];\n');
-fprintf(fid, 'fake4 = [];\n');
-fprintf(fid, '\n');
-for i=1:length(ipnames_)
-    fprintf(fid, 'DynareModel.params(%u) = params(%u);\n', ipnames_(i), i);
-end
-fprintf(fid, '\n');
-fprintf(fid, 'r = %s-(%s);\n', lhs, rhs);
-fprintf(fid, 's = r''*r;\n');
-fclose(fid);
+write_ssr_routine(lhs, rhs, eqname, ipnames_, M_);
 
 % Workaround for Octave bug https://savannah.gnu.org/bugs/?46282
 % Octave will randomly fail to read the ssr_* file generated in the +folder
