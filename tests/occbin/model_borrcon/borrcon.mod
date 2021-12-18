@@ -1,4 +1,8 @@
-//Test Occbin with 1 constraint and redundant shocks; also checks whether defaults for error_* are correct
+/*
+Test Occbin with 1 constraint; Note that the reference regime is one where the borrowing 
+constraint is binding, i.e. the relax condition specifies the condition where we return to
+the reference regime with a binding constraint.
+*/
 
 var b ${b}$ (long_name='borrowing')
     c ${c}$ (long_name='vonsumption')
@@ -6,7 +10,7 @@ var b ${b}$ (long_name='borrowing')
     lb ${\lambda}$ (long_name='Lagrange multiplier')
     y ${y}$ (long_name='Output')
     c_hat ${\hat c}$
-    b_hat ${\hat c}$
+    b_hat ${\hat b}$
     y_hat ${\hat y}$    
     ;
 varexo u $u$;
