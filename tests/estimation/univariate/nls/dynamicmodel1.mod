@@ -45,4 +45,10 @@ eparams.gamma = 0.6;
 eparams.rho = 0.3;
 
 // Call estimation routine.
-estimate.nls('eqy', eparams, simulations, 1001Y:5000Y, 'annealing')
+if ~isoctave
+    % Under Octave, estimate.nls (provided by matlab/+estimate/nls.m) is not
+    % accessible because there is a function which has the same name as the
+    % +estimate package, namely matlab/cli/estimate.m. This is a known Octave
+    % bug (https://savannah.gnu.org/bugs/?func=detailitem&item_id=46889).
+    estimate.nls('eqy', eparams, simulations, 1001Y:5000Y, 'annealing')
+end

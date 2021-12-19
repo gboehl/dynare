@@ -81,9 +81,9 @@ MODFILES = \
 	estimation/method_of_moments/AFVRR/AFVRR_MFB_RRA.mod \
 	estimation/system_prior_restriction/Gali_2015.mod \
 	estimation/no_init_estimation_check_first_obs/fs2000_init_check.mod \
-	estimation/example_nls.mod \
 	estimation/univariate/nls/staticmodel.mod \
-	estimation/univariate/nls/dynamicmodel.mod \
+	estimation/univariate/nls/dynamicmodel1.mod \
+	estimation/univariate/nls/dynamicmodel2.mod \
 	moments/example1_var_decomp.mod \
 	moments/example1_bp_test.mod \
 	moments/test_AR1_spectral_density.mod \
