@@ -220,7 +220,7 @@ for i=1:maxlag
 end
 
 if aggregate
-    growthneutralitycorrection = ''
+    growthneutralitycorrection = '';
 else
     growthneutralitycorrection = {};
 end
