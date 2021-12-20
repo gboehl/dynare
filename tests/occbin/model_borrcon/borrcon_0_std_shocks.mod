@@ -6,7 +6,7 @@ var b ${b}$ (long_name='borrowing')
     lb ${\lambda}$ (long_name='Lagrange multiplier')
     y ${y}$ (long_name='Output')
     c_hat ${\hat c}$
-    b_hat ${\hat c}$
+    b_hat ${\hat b}$
     y_hat ${\hat y}$    
 ;
 
