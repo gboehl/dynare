@@ -1,16 +1,16 @@
-function lpk = evaluate_posterior_kernel(parameters)
+function smoother(parameters, varlist)
 
-% Evaluates the posterior kernel function.
+% Computes smoothed variables.
 %
 % INPUTS
-% - parameters    [char,double]    If row char array, possible values are 'posterior mode', 'posterior mean',
-%                                  'posterior median', 'prior mode' or 'prior mean'. Otherwise, parmaters must
-%                                  be a vector of doubles (arbitrary values for the parameters).
+% - parameters    [char]    If row char array, possible values are 'posterior mode', 'posterior mean',
+%                           'posterior median', 'mle mode', 'prior mode', 'prior mean' or 'calibration'.
+% - varlist       [cell]    list of endogenous variables.
 %
 % OUTPUTS
 % None
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,9 +29,10 @@ function lpk = evaluate_posterior_kernel(parameters)
 
 global M_ estim_params_ oo_ options_ bayestopt_
 
-lpk = evaluate_posterior_kernel(parameters, M_, estim_params_, oo_, options_, bayestopt_);
-
-if ~nargout
-    dprintf('\nValue of the logged posterior kernel: %20.6f\n', lpk);
-    clear ('lpk'); % Do not display the value returned by the function.
+if nargin<2
+    varlist = {};
 end
+
+parameters = strrep(parameters, ' ', '_');
+
+[oo_, M_, options_, bayestopt_, Smoothed_variables_declaration_order_deviation_form] = evaluate_smoother(parameters, varlist, M_, oo_, options_, bayestopt_, estim_params_);

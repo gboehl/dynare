@@ -1,4 +1,4 @@
-function ldens = evaluate_prior(parameters)
+function ldens = prior(parameters)
 
 % Evaluates the posterior kernel function.
 %

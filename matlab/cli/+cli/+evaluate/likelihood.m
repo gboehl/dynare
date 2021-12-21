@@ -1,4 +1,4 @@
-function llik = evaluate_likelihood(parameters)
+function llik = likelihood(parameters)
 
 % Evaluates the likelihood function.
 %
