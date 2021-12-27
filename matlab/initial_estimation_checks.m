@@ -72,7 +72,7 @@ if DynareOptions.order>1
         error('initial_estimation_checks:: the particle filter with order>2 does not support pruning')
     end
     if DynareOptions.particle.pruning~=DynareOptions.pruning
-        warning('initial_estimation_checks:: the pruning settings differ between the particle filter and the one used for IRFs/simulations. Make sure this is intended.\n')
+        warning('initial_estimation_checks:: the pruning settings differ between the particle filter and the one used for IRFs/simulations. Make sure this is intended.')
     end
 end
 
