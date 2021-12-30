@@ -12,7 +12,7 @@ function perfect_foresight_setup()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 1996-2019 Dynare Team
+% Copyright (C) 1996-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,7 +53,7 @@ end
 
 if ~isempty(M_.det_shocks) && options_.periods<max([M_.det_shocks.periods])
     % Some expected shocks happen after the terminal period.
-    mess = sprintf('Problem with the declaration of the expected shocks:\n');
+    mess = sprintf('\nPERFECT_FORESIGHT_SETUP: Problem with the declaration of the expected shocks:\n');
     for i=1:length(M_.det_shocks)
         if any(M_.det_shocks(i).periods>options_.periods)
             mess = sprintf('%s\n   At least one expected value for %s has been declared after the terminal period.', mess, M_.exo_names{M_.det_shocks(i).exo_id});
