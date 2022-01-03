@@ -243,7 +243,11 @@ id = 0;
 if isfield(expectationmodel, 'h_param_indices')
     decompose = false;
 else
-    decompose = true;
+    if isequal(expectationmodelkind, 'pac')
+        decompose = true;
+    else
+        decompose = false;
+    end
 end
 
 clear('expression');
