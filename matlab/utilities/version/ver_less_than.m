@@ -12,7 +12,7 @@ function tf = ver_less_than(ver1, ver2) % --*-- Unitary tests --*--
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015-2021 Dynare Team
+% Copyright (C) 2015-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -107,25 +107,25 @@ return
 %@test:1
 ver1='4.4';
 ver2='4.5.2';
-t(1)=dassert(ver_less_than(ver1,ver2),true)
+t(1)=dassert(ver_less_than(ver1,ver2),true);
 T = all(t);
 %@eof:1
 %@test:2
 ver1='4.4';
 ver2='6-unstable-2021-12-15-1737-21a8a579';
-t(1)=dassert(ver_less_than(ver1,ver2),true)
+t(1)=dassert(ver_less_than(ver1,ver2),true);
 T = all(t);
 %@eof:2
 %@test:3
 ver1='5.0';
 ver2='5.1';
-t(1)=dassert(ver_less_than(ver1,ver2),true)
+t(1)=dassert(ver_less_than(ver1,ver2),true);
 T = all(t);
 %@eof:3
 %@test:4
 ver1='6-unstable-2021-12-18-1227-c43777f6';
 ver2='6-unstable-2021-12-19-1953-d841fc7c';
-t(1)=dassert(ver_less_than(ver1,ver2),true)
+t(1)=dassert(ver_less_than(ver1,ver2),true);
 T = all(t);
 %@eof:4
 % %@test:5
