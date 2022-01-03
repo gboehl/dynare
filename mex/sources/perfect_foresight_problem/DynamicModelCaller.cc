@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -139,7 +139,10 @@ DynamicModelMatlabCaller::eval(int it, double *resid)
 
     mxArray *exception = mexCallMATLABWithTrap(1, plhs, 6, prhs, funcname.c_str());
     if (exception)
-      error_msg = std::string{"An error occurred when calling "} + funcname;
+      {
+        error_msg = std::string{"An error occurred when calling "} + funcname;
+        return; // Avoid manipulating null pointers in plhs, see #1832
+      }
 
     mxDestroyArray(T_mx);
     T_mx = plhs[0];
@@ -152,7 +155,10 @@ DynamicModelMatlabCaller::eval(int it, double *resid)
 
     mxArray *exception = mexCallMATLABWithTrap(1, plhs, 7, prhs, funcname.c_str());
     if (exception)
-      error_msg = std::string{"An error occurred when calling "} + funcname;
+      {
+        error_msg = std::string{"An error occurred when calling "} + funcname;
+        return; // Avoid manipulating null pointers in plhs, see #1832
+      }
 
     if (mxIsComplex(plhs[0]))
       plhs[0] = cmplxToReal(plhs[0]);
@@ -169,7 +175,10 @@ DynamicModelMatlabCaller::eval(int it, double *resid)
 
       mxArray *exception = mexCallMATLABWithTrap(1, plhs, 7, prhs, funcname.c_str());
       if (exception)
-        error_msg = std::string{"An error occurred when calling "} + funcname;
+        {
+          error_msg = std::string{"An error occurred when calling "} + funcname;
+          return; // Avoid manipulating null pointers in plhs, see #1832
+        }
 
       if (jacobian_mx)
         {
