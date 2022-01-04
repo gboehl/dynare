@@ -183,7 +183,7 @@ test_dynare++:
 deploy_manual_stable:
   stage: deploy
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^4\.7\.[0-9]+$/'
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^5\.[0-9]+$/'
       when: on_success
     - when: never
   tags:
@@ -199,7 +199,7 @@ deploy_manual_stable:
 deploy_release_stable:
   stage: deploy
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^4\.7\.[0-9]+$/'
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^5\.[0-9]+$/'
       when: on_success
     - when: never
   tags:
@@ -221,7 +221,7 @@ deploy_release_stable:
 deploy_beta_stable:
   stage: deploy
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^4\.7(\.[0-9]+)?-(beta|rc)[0-9]+$/'
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^5(\.[0-9]+)?-(beta|rc)[0-9]+$/'
       when: on_success
     - when: never
   tags:
