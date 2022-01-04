@@ -542,6 +542,9 @@ switch minimizer_algorithm
     opt_par_values = opt_par_values(:);
   case 13
     % Matlab's lsqnonlin (Optimization toolbox needed).
+    if ~isfield(options_,'mom')
+        error('Option mode_compute=13 is available only for method_of_moments estimation.')
+    end
     if isoctave && ~user_has_octave_forge_package('optim')
         error('Option mode_compute=13 requires the optim package')
     elseif ~isoctave && ~user_has_matlab_license('optimization_toolbox')

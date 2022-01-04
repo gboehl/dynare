@@ -6102,7 +6102,7 @@ block decomposition of the model (see :opt:`block`).
                 routine (available under MATLAB if the Optimization Toolbox is
                 installed; available under Octave if the `optim
                 <https://octave.sourceforge.io/optim/>`__ package from
-                Octave-Forge is installed).
+                Octave-Forge is installed). Only supported for ``method_of_moments``. 
 
            ``101``
 
