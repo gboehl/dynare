@@ -52,6 +52,9 @@ AM_PROG_AR
 
 AX_CXX11_THREAD
 
+# Get the size of a pthread_t instance, needed by pthread.F08
+AC_CHECK_SIZEOF([pthread_t], [], [#include <pthread.h>])
+
 # Check for dlopen(), needed by k_order_perturbation DLL
 AC_CHECK_LIB([dl], [dlopen], [LIBADD_DLOPEN="-ldl"], [])
 AC_SUBST([LIBADD_DLOPEN])

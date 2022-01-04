@@ -40,7 +40,7 @@ clean-local:
 		cd $(top_srcdir)/../../octave && rm -f $(PROGRAMS); \
 	fi
 
-# Rules for the Fortran 2008 interface to MEX and BLAS/LAPACK functions
+# Rules for the Fortran 2008 interface to MEX, BLAS/LAPACK and pthread functions
 matlab_mat.mod: matlab_mex.o
 matlab_mex.mod: matlab_mex.o
 
@@ -51,4 +51,9 @@ blas.mod: blas_lapack.o
 lapack.mod: blas_lapack.o
 
 blas_lapack.F08: $(top_srcdir)/../../sources/blas_lapack.F08
+	$(LN_S) -f $< $@
+
+pthread.mod: pthread.o
+
+pthread.F08: $(top_srcdir)/../../sources/pthread.F08
 	$(LN_S) -f $< $@

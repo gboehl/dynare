@@ -618,7 +618,8 @@ PARTICLEFILES = \
 	particle/dsge_base2.mod \
 	particle/first_spec.mod \
 	particle/first_spec_MCMC.mod \
-	particle/local_state_space_iteration_k_test.mod
+	particle/local_state_space_iteration_k_test.mod \
+	particle/local_it_k_test_parallel.mod
 
 
 XFAIL_MODFILES = ramst_xfail.mod \
@@ -927,6 +928,9 @@ discretionary_policy/Gali_2015_chapter_3_nonlinear.o.trs: discretionary_policy/G
 
 particle/local_state_space_iteration_k_test.m.trs: particle/first_spec.m.trs
 particle/local_state_space_iteration_k_test.o.trs: particle/first_spec.o.trs
+
+particle/local_it_k_test_parallel.m.trs: particle/first_spec.m.trs
+particle/local_it_k_test_parallel.o.trs: particle/first_spec.o.trs
 
 pruning/AS_pruned_state_space_red_shock.m.trs: pruning/AnSchorfheide_pruned_state_space.m.trs
 pruning/AS_pruned_state_space_red_shock.o.trs: pruning/AnSchorfheide_pruned_state_space.o.trs

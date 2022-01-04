@@ -7,7 +7,9 @@ nodist_libkordersim_a_SOURCES = \
 	sort.f08 \
 	partitions.f08 \
 	simulation.f08 \
-	struct.f08
+	struct.f08 \
+	pthread.F08 \
+	pparticle.f08
 
 BUILT_SOURCES = $(nodist_libkordersim_a_SOURCES)
 CLEANFILES = $(nodist_libkordersim_a_SOURCES)
@@ -24,6 +26,9 @@ partitions.mod: partitions.o
 
 simulation.o: partitions.mod lapack.mod
 simulation.mod: simulation.o
+
+pparticle.o: simulation.mod matlab_mex.mod
+pparticle.mod: pparticle.o
 
 %.f08: $(top_srcdir)/../../sources/libkordersim/%.f08
 	$(LN_S) -f $< $@
