@@ -135,12 +135,12 @@ License: GPL-3+
 
 Files: matlab/commutation.m matlab/duplication.m
 Copyright: 1997 Tom Minka <minka@microsoft.com>
-           2019 Dynare Team
+           2019-2020 Dynare Team
 License: GPL-3+
 
 Files: matlab/allVL1.m
 Copyright: 2007-2010 Bruno Luong <brunoluong@yahoo.com> 
-           2019 Dynare Team
+           2020 Dynare Team
 License: GPL-3+
 Comment: The original author gave authorization to change
  the license from BSD-2-clause to GPL-3+ and redistribute 
@@ -148,7 +148,7 @@ Comment: The original author gave authorization to change
 
 Files: matlab/uperm.m
 Copyright: 2014 Bruno Luong <brunoluong@yahoo.com> 
-           2019 Dynare Team
+           2020 Dynare Team
 License: GPL-3+
 Comment: The original author gave authorization to change
  the license from BSD-2-clause to GPL-3+ and redistribute 
@@ -271,16 +271,21 @@ Copyright: 2005-2010 Pascal Getreuer
 License: BSD-2-clause
 
 Files: doc/*.rst doc/*.tex doc/*.svg doc/*.pdf doc/*.bib
-Copyright: 1996-2020 Dynare Team
+Copyright: 1996-2022 Dynare Team
 License: GFDL-NIV-1.3+
 
-Files: doc/dr.tex doc/dr.bib doc/bvar-a-la-sims.tex
+Files: doc/dr.tex doc/dr.bib
 Copyright: 2007-2011 Sébastien Villemot
+License: GFDL-NIV-1.3+
+
+Files: doc/bvar-a-la-sims.tex
+Copyright: 2007-2017 Sébastien Villemot
+           2016-2017 Johannes Pfeifer
 License: GFDL-NIV-1.3+
 
 Files: dynare++/*
 Copyright: 2004-2011 Ondra Kamenik
-           2019 Dynare Team
+           2019-2021 Dynare Team
 License: GPL-3+
 
 Files: m4/ax_blas.m4 m4/ax_lapack.m4
@@ -317,12 +322,12 @@ License: GPL-2+ with Autoconf exception
 
 Files: scripts/dynare.el
 Copyright: 2010 Yannick Kalantzis
-           2019 Dynare Team
+           2019-2021 Dynare Team
 License: GPL-3+
 
 Files: mex/sources/gensylv/gensylv.cc
 Copyright: 2005-2011 Ondra Kamenik
-           2019 Dynare Team
+           2019-2020 Dynare Team
 License: GPL-3+
 
 Files: mex/sources/sobol/sobol.hh mex/sources/sobol/initialize_v_array.hh
@@ -333,7 +338,7 @@ License: LGPL-3+
 
 Files: macOS/brewfiles/*
 Copyright: 2009-2019 Homebrew contributors
-           2019 Dynare Team
+           2019-2021 Dynare Team
 License: BSD-2-clause
 
 Files: preprocessor/m4/ax_boost_base.m4
@@ -361,7 +366,7 @@ Copyright: 2008 Boretti Mathieu <boretti@eig.unige.ch>
 License: LGPL-2.1+
 
 Files: preprocessor/doc/macroprocessor/*
-Copyright: 2008-2019 Dynare Team
+Copyright: 2008-2021 Dynare Team
 License: CC-BY-SA-4.0
 
 Files: preprocessor/doc/preprocessor/*
