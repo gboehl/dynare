@@ -11156,7 +11156,10 @@ IRF and moment calibration can be defined in ``irf_calibration`` and
 
     When ``(INTEGER:INTEGER)`` is used, the restriction is considered
     to be fulfilled by a logical OR. A list of restrictions must
-    always be fulfilled with logical AND.
+    always be fulfilled with logical AND. The moment restrictions generally apply to
+    auto- and cross-correlations between variables. The only exception is a restriction
+    on the unconditional variance of an endogenous variable, specified as shown in 
+    the example below.
 
     *Example*
 
@@ -11164,12 +11167,12 @@ IRF and moment calibration can be defined in ``irf_calibration`` and
 
             moment_calibration;
             y_obs,y_obs, [0.5, 1.5]; //[unconditional variance]
-            y_obs,y_obs(-(1:4)), +; //[sign restriction for first year acf with logical OR]
+            y_obs,y_obs(-(1:4)), +; //[sign restriction for first year autocorrelation with logical OR]
             @#for ilag in -2:2
-            y_obs,R_obs(@{ilag}), -; //[-2:2 ccf with logical AND]
+            y_obs,R_obs(@{ilag}), -; //[-2:2 cross correlation with logical AND]
             @#endfor
             @#for ilag in -4:4
-            y_obs,pie_obs(@{ilag}), -; //[-4_4 ccf with logical AND]
+            y_obs,pie_obs(@{ilag}), -; //[-4_4 cross correlation with logical AND]
             @#endfor
             end;
 
