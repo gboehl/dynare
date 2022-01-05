@@ -2855,24 +2855,27 @@ Finding the steady state with Dynare nonlinear solver
 
            ``12``
 
-                Specialized version of ``2`` for models where all the
-                equations have one endogenous variable on the left
-                hand side and where each equation determines a
-                different endogenous variable. Only expression allowed
-                on the left hand side is the natural logarithm of an
-                endogenous variable. Univariate blocks are solved by
-                evaluating the expression on the right hand
-                side.
+                Specialized version of ``2`` for models where all the equations
+                have one endogenous variable on the left hand side and where
+                each equation determines a different endogenous variable. Only
+                expressions allowed on the left hand side are the natural
+                logarithm of an endogenous variable, the first difference of an
+                endogenous variable (with the ``diff`` operator), or the first
+                difference of the logarithm of an endogenous variable.
+                Univariate blocks are solved by evaluating the expression on the
+                right hand side.
 
            ``14``
 
-                Specialized version of ``4`` for models where all the
-                equations have one endogenous variable on the left
-                hand side and where each equation determines a
-                different endogenous variable. Only expression allowed
-                on the left hand side is the natural logarithm of an
-                endogenous variable. Univariate blocks are solved by
-                evaluating the expression on the right hand side.
+                Specialized version of ``4`` for models where all the equations
+                have one endogenous variable on the left hand side and where
+                each equation determines a different endogenous variable. Only
+                expressions allowed on the left hand side are the natural
+                logarithm of an endogenous variable, the first difference of an
+                endogenous variable (with the ``diff`` operator), or the first
+                difference of the logarithm of an endogenous variable..
+                Univariate blocks are solved by evaluating the expression on the
+                right hand side.
 
        |br| Default value is ``4``.
 
