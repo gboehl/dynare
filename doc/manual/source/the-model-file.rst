@@ -12910,10 +12910,11 @@ that can be rewritten as a VAR(1). These models are used to form expectations.
         0_n
         \end{pmatrix}
 
-   If the VAR does not have a constant, we remove the first line of the system
-   and the first column of the companion matrix :math:`\mathcal{C}.` Dynare
-   only saves the companion in ``oo_.var.MODEL_NAME.CompanionMatrix``, since that is
-   the only information required to compute the expectations.
+   assuming that we are dealing with a reduced form VAR. If the VAR does not
+   have a constant, we remove the first line of the system and the first column
+   of the companion matrix :math:`\mathcal{C}.` Dynare only saves the companion
+   in ``oo_.var.MODEL_NAME.CompanionMatrix``, since that is the only information
+   required to compute the expectations.
           
    *Options*
 
@@ -13024,16 +13025,16 @@ that can be rewritten as a VAR(1). These models are used to form expectations.
 
           model;
 
-          [name='eq:x1', data_type='nonstationary']
+          [name='eq:x1']
           diff(x1) = a_x1_0*(x1(-1)-x1bar(-1))+a_x1_0_*(x2(-1)-x2bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;
 
-          [name='eq:x2', data_type='nonstationary']
+          [name='eq:x2']
           diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;
 
-          [name='eq:x1bar', data_type='nonstationary']
+          [name='eq:x1bar']
           x1bar = x1bar(-1) + ex1bar;
 
-          [name='eq:x2bar', data_type='nonstationary']
+          [name='eq:x2bar']
           x2bar = x2bar(-1) + ex2bar;
 
           end;
@@ -13044,18 +13045,18 @@ VAR expectations
 Suppose we wish to forecast a variable :math:`y_t` and that
 :math:`y_t` is an element of vector of variables :math:`\mathcal{Y}_t` whose law of
 motion is described by a VAR(1) model :math:`\mathcal{Y}_t =
-\mathcal{C}\mathcal{Y}_t+\epsilon_t`. More generally, :math:`y_t` may
+\mathcal{C}\mathcal{Y}_{t-1}+\epsilon_t`. More generally, :math:`y_t` may
 be a linear combination of the scalar variables in
 :math:`\mathcal{Y}_t`. Let the vector :math:`\alpha` be such that
 :math:`y_t = \alpha'\mathcal{Y}_t` (:math:`\alpha` is a selection
 vector if :math:`y_t` is a variable in :math:`\mathcal{Y}_t`, *i.e.* a
 column of an identity matrix, or an arbitrary vector defining the
 weights of a linear combination). Then the best prediction, in the sense of the minimisation of the RMSE, for
-:math:`y_{t+h}` given the information in :math:`t-s` (we observe all the variables up to time :math:`t-s`) is:
+:math:`y_{t+h}` given the information in :math:`t-\tau` (we observe all the variables up to time :math:`t-\tau`) is:
 
    .. math ::
 
-      y_{t+h|t-s} = \mathbb E[y_{t+h}|\mathcal{Y}_{\underline{t-s}}] = \alpha\mathcal{C}^{h+s} \mathcal{Y}_{t-s}
+      y_{t+h|t-\tau} = \mathbb E[y_{t+h}|\mathcal{Y}_{\underline{t-\tau}}] = \alpha\mathcal{C}^{h+\tau} \mathcal{Y}_{t-\tau}
 
 In a semi-structural model, variables appearing in :math:`t+h` (*e.g.*
 expected output gap in an IS curve or expected inflation in a Phillips
@@ -13065,14 +13066,13 @@ incomes. Typically, consumption will depend on something like:
 
    .. math ::
 
-      \sum_{h=0}^{\infty} \beta^h y_{t+h}
+      \sum_{h=0}^{\infty} \beta^h y_{t+h|t-\tau}
 
-The conditional expectation of this variable can be evaluated based on
-the same auxilary model:
+Assuming that $\beta<1$ and knowing the limit of geometric series,  the conditional expectation of this variable can be evaluated based on the same auxiliary model:
 
    .. math ::
 
-      \mathbb E \left[\sum_{h=0}^{\infty} \beta^h y_{t+h}\Biggl| \mathcal{Y}_{\underline{t-s}}\right] = \alpha \mathcal{C}^s(I-\mathcal{C})^{-1}\mathcal{Y}_{t-s}
+      \mathbb E \left[\sum_{h=0}^{\infty} \beta^h y_{t+h}\Biggl| \mathcal{Y}_{\underline{t-\tau}}\right] = \alpha \mathcal{C}^\tau(I-\mathcal{C})^{-1}\mathcal{Y}_{t-\tau}
 
 More generally, it is possible to consider finite discounted sums.
 
@@ -13192,8 +13192,8 @@ consistent expectations (MCE).
 
 To ensure that the endogenous variable :math:`y` is equal to its target
 :math:`y^{\star}` in the (deterministic) long run, *i.e.* that the error
-correction is zero in the long run, we can optionally add a growth neutrality
-correction to this equation. Suppose that the long run growth rate, for
+correction term is zero in the long run, we can optionally add a growth neutrality
+correction to this equation. Suppose that $g$ is the long run growth rate, for
 :math:`y` and :math:`y^{\star}`, then in the long run (assuming that the data
 are in logs) we must have:
 
@@ -13220,7 +13220,7 @@ opposed to the part derived from the minimisation of a cost function):
 
       \Delta y_t = \lambda \left(a_0(y_{t-1}^{\star}-y_{t-1}) + \sum_{i=1}^{m-1} a_i \Delta y_{t-i} + \sum_{i=0}^{\infty} d_i \Delta y^{\star}_{t+i}\right) + (1-\lambda)\gamma'X_t +\varepsilon_t
 
-where :math:`\lambda\in[0,1]` is the weight of the pure PAC equation. Or we can
+where :math:`\lambda\in[0,1]` is the weight of the pure PAC equation, :math:`\gamma` is a :math:`k\times 1` vector of parameters and :math:`X_t` a :math:`k\times 1` vector of variables. Or we can
 simply add the exogenous variables to the PAC equation (without the weight
 :math:`\lambda`):
 
@@ -13332,7 +13332,7 @@ of the infinite sum) are nonlinear functions of the autoregressive parameters
 and the error correction parameter. *Brayton et alii (2000)* shows how to
 estimate the PAC equation by iterative OLS. Although this approach is
 implemented in Dynare, mainly for comparison purposes, we also propose NLS
-estimation which is much preferable (asymptotic properties of NLS being more
+estimation, which is much preferable (asymptotic properties of NLS being more
 solidly grounded).
 
 
@@ -13363,7 +13363,8 @@ solidly grounded).
               allows it, we impose constraints on the error correction
               parameter, which must be positive and smaller than 1 (it the case
               for ``'fmincon'``, ``'lsqnonlin'``, ``'particleswarm'``, and
-              ``'annealing'``). ``GUESS`` is a structure containing the initial
+              ``'annealing'``). The default optimisation algorithm is
+              ``'csminwel'``. ``GUESS`` is a structure containing the initial
               guess values for the estimated parameters. Each field is the name
               of a parameter in the PAC equation and holds the initial guess for
               this parameter. If some parameters are calibrated, then they
@@ -13382,7 +13383,6 @@ solidly grounded).
     ::
 
        // Set the initial guess for the estimated parameters
-       clear eparams
        eparams.e_c_m =  .9;
        eparams.c_z_1 =  .5;
        eparams.c_z_2 =  .2;
