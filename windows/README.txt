@@ -15,7 +15,7 @@ You can also get more information on the Dynare homepage:
   https://www.dynare.org
 
 Note: Dynare comes with an automated uninstaller, which you can run from the
-“Add/Remove Programs” menu of the Control Panel.
+“Add or remove programs” menu of the Control Panel.
 
 
 Using Dynare with MATLAB®
