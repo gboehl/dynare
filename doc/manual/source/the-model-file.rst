@@ -12714,8 +12714,13 @@ below).
 Auxiliary models
 ----------------
 
-The auxiliary models defined in this section are linear backward-looking models
-that can be rewritten as a VAR(1). These models are used to form expectations.
+The two auxiliary models defined in this section are linear backward-looking models
+used to form expectations. Both models can be recast as VAR(1)-processes and
+therefore offer isomorphic ways of specifying the expectations process, but differ
+in their convenience of specifying features like cointegration and error correction.
+``var_model`` directly specifies a VAR, while ``trend_component_model`` allows to define
+a trend target to which the endogenous variables may be attracted in the long-run
+(i.e. an error correction model).
 
 .. command:: var_model (OPTIONS...);
 
@@ -12739,8 +12744,8 @@ that can be rewritten as a VAR(1). These models are used to form expectations.
    are :math:`n\times n` matrices of parameters, and :math:`A_0` is non
    singular square matrix. Vector :math:`\mathbf{c}` and matrices :math:`A_i`
    (:math:`i=0,\ldots,p`) are set by Dynare by parsing the equations in the
-   ``model`` block. Then, Dynare builds a VAR(1) model for :math:`\mathcal{Y}_t =
-   (1, Y_t, \ldots, Y_{t-p+1})'` as:
+   ``model`` block. Then, Dynare builds a VAR(1)-companion form model for
+   :math:`\mathcal{Y}_t = (1, Y_t, \ldots, Y_{t-p+1})'` as:
 
     .. math ::
 
@@ -12771,6 +12776,7 @@ that can be rewritten as a VAR(1). These models are used to form expectations.
         Y_{t-p}
         \end{pmatrix}
         +
+        \underbrace{
         \begin{pmatrix}
         0\\
         \varepsilon_t\\
@@ -12778,19 +12784,25 @@ that can be rewritten as a VAR(1). These models are used to form expectations.
         \vdots\\
         \vdots\\
         0_n
-        \end{pmatrix}
+        \end{pmatrix}}_{\mathcal{\epsilon}_t}
 
-   assuming that we are dealing with a reduced form VAR. If the VAR does not
-   have a constant, we remove the first line of the system and the first column
-   of the companion matrix :math:`\mathcal{C}.` Dynare only saves the companion
-   in ``oo_.var.MODEL_NAME.CompanionMatrix``, since that is the only information
-   required to compute the expectations.
-          
+   assuming that we are dealing with a reduced form VAR (otherwise, the right-hand
+   side would additionally be premultiplied by :math:`A_0^{-1}.` to obtain the reduced
+   for representation). If the VAR does not have a constant, we remove the first
+   line of the system and the first column of the companion matrix
+   :math:`\mathcal{C}.` Dynare only saves the companion matrix, since that
+   is the only information required to compute the expectations.
+
+   .. matvar:: oo_.var.MODEL_NAME.CompanionMatrix
+
+       Reduced form companion matrix of the ``var_model``.
+
    *Options*
 
     .. option:: model_name = STRING
 
-    Name of the VAR model, will be referenced in ``var_expectation_model`` or ``pac_model`` as an auxiliary model.
+    Name of the VAR model, which will be referenced in ``var_expectation_model`` or ``pac_model``
+    as an `auxiliary_model`. Needs to be a valid Matlab field name.
 
     .. option:: eqtags = [QUOTED_STRING[, QUOTED_STRING[, ...]]]
 
@@ -12802,7 +12814,7 @@ that can be rewritten as a VAR(1). These models are used to form expectations.
     contain exactly one contemporaneous variable (on the LHS). If the
     ``structural`` option is provided then any variable defined in the system
     can appear at time :math:`t` in each equation. Internally Dynare will
-    rewrite this model as a reduced form VAR (by inverting matrix :math:`A_0`).
+    rewrite this model as a reduced form VAR (by inverting the implied matrix :math:`A_0`).
 
    *Example*
 
@@ -12837,7 +12849,14 @@ that can be rewritten as a VAR(1). These models are used to form expectations.
            Z_t &= Z_{t-1} + \eta_t
          \end{cases}
 
-   where :math:`X_t` and :math:`Z_t` are :math:`n\times 1` and :math:`m\times 1` vectors of endogenous variables, :math:`\varepsilon_t` and :math:`\eta_t` are :math:`n\times 1` and :math:`m\times 1` vectors of exogenous variables, :math:`A_i` (:math:`i=0,\ldots,p`) are :math:`n\times n` matrices of parameters, and :math:`C_0` is a :math:`n\times m` matrix. This model can also be cast into a VAR(1) model by first rewriting it in levels. Let :math:`Y_t = (X_t',Z_t')'` and :math:`\zeta_t = (\varepsilon_t',\eta_t')'`, we have:
+   where :math:`X_t` and :math:`Z_t` are :math:`n\times 1` and :math:`m\times 1` vectors
+   of endogenous variables. :math:`Z_t` defines the trend target to whose linear combination
+   :math:`C_0 Z_t` the endogenous variables :math:`X_t` will be attracted, provided the implied
+   error correction matrix :math:`A_0` is negative definite. :math:`\varepsilon_t` and :math:`\eta_t` are :math:`n\times 1`
+   and :math:`m\times 1` vectors of exogenous variables, :math:`A_i` (:math:`i=0,\ldots,p`)
+   are :math:`n\times n` matrices of parameters, and :math:`C_0` is a :math:`n\times m` matrix.
+   This model can also be cast into a VAR(1) model by first rewriting it in levels. Let
+   :math:`Y_t = (X_t',Z_t')'` and :math:`\zeta_t = (\varepsilon_t',\eta_t')'`. Then we have:
 
     .. math ::
 
@@ -12870,14 +12889,18 @@ that can be rewritten as a VAR(1). These models are used to form expectations.
              O_{m,n} & O_m
              \end{pmatrix}
 
-   This VAR(p+1) in levels can be rewritten as a VAR(1) model, the companion matrix will
-   be stored in ``oo_.trend_component.MODEL_NAME.CompanionMatrix``.
+   This VAR(p+1) in levels can again be rewritten as a VAR(1)-companion model form.
+
+   .. matvar:: oo_.trend_component.MODEL_NAME.CompanionMatrix
+
+       Reduced form companion matrix of the ``trend_component_model``.
 
    *Options*
 
     .. option:: model_name = STRING
 
-    Name of the trend component model, will be referenced in ``var_expectation_model`` or ``pac_model`` as an auxiliary model.
+    Name of the trend component model, will be referenced in ``var_expectation_model``
+    or ``pac_model`` as an `auxiliary_model`. Needs to be a valid Matlab field name.
 
     .. option:: eqtags = [QUOTED_STRING[, QUOTED_STRING[, ...]]]
 
@@ -12922,15 +12945,16 @@ be a linear combination of the scalar variables in
 vector if :math:`y_t` is a variable in :math:`\mathcal{Y}_t`, *i.e.* a
 column of an identity matrix, or an arbitrary vector defining the
 weights of a linear combination). Then the best prediction, in the sense of the minimisation of the RMSE, for
-:math:`y_{t+h}` given the information in :math:`t-\tau` (we observe all the variables up to time :math:`t-\tau`) is:
+:math:`y_{t+h}` given the information set at :math:`t-\tau` (which we assume to include all observables
+up to time :math:`t-\tau`, :math:`\mathcal{Y}_{\underline{t-\tau}}`) is:
 
    .. math ::
 
       y_{t+h|t-\tau} = \mathbb E[y_{t+h}|\mathcal{Y}_{\underline{t-\tau}}] = \alpha\mathcal{C}^{h+\tau} \mathcal{Y}_{t-\tau}
 
 In a semi-structural model, variables appearing in :math:`t+h` (*e.g.*
-expected output gap in an IS curve or expected inflation in a Phillips
-curve) will be replaced by the expectation implied by an auxiliary VAR
+the expected output gap in a dynamic IS curve or expected inflation in a
+(New Keynesian) Phillips curve) will be replaced by the expectation implied by an auxiliary VAR
 model. Another use case is for the computation of permanent
 incomes. Typically, consumption will depend on something like:
 
@@ -12938,11 +12962,11 @@ incomes. Typically, consumption will depend on something like:
 
       \sum_{h=0}^{\infty} \beta^h y_{t+h|t-\tau}
 
-Assuming that $\beta<1$ and knowing the limit of geometric series,  the conditional expectation of this variable can be evaluated based on the same auxiliary model:
+Assuming that $0<\beta<1$ and knowing the limit of geometric series, the conditional expectation of this variable can be evaluated based on the same auxiliary model:
 
    .. math ::
 
-      \mathbb E \left[\sum_{h=0}^{\infty} \beta^h y_{t+h}\Biggl| \mathcal{Y}_{\underline{t-\tau}}\right] = \alpha \mathcal{C}^\tau(I-\mathcal{C})^{-1}\mathcal{Y}_{t-\tau}
+      \mathbb E \left[\sum_{h=0}^{\infty} \beta^h y_{t+h}\Biggl| \mathcal{Y}_{\underline{t-\tau}}\right] = \alpha \mathcal{C}^\tau(I-\beta\mathcal{C})^{-1}\mathcal{Y}_{t-\tau}
 
 More generally, it is possible to consider finite discounted sums.
 
@@ -12954,15 +12978,16 @@ More generally, it is possible to consider finite discounted sums.
 
    .. math ::
 
-             \sum_{h=a}^b \mathbb \beta^{h-\tau}E_{t-\tau}[y_{t+h}]
+             \sum_{h=a}^b \mathbb \beta^{h-\tau}\mathbb E[y_{t+h}|\mathcal{Y}_{\underline{t-\tau}}]
 
-   where :math:`(a,b)\in\mathbb N^2` with :math:`a<b`, :math:`\beta\in(0,1]` is a discount factor, :math:`\tau` is a finite positive integer.
+   where :math:`(a,b)\in\mathbb N^2` with :math:`a<b`, :math:`\beta\in(0,1]` is a discount factor,
+   and :math:`\tau` is a finite positive integer.
 
    *Options*
 
     .. option:: model_name = STRING
 
-    Name of the VAR based expectation model, will be referenced in the ``model`` block.
+    Name of the VAR based expectation model, which will be referenced in the ``model`` block.
 
     .. option:: auxiliary_model = STRING
 
@@ -12978,7 +13003,8 @@ More generally, it is possible to consider finite discounted sums.
 
     .. option:: horizon = INTEGER | [INTEGER:INTEGER]
 
-    The horizon of prevision (:math:`h`), or the range of periods over which the discounted sum is expected (the upper bound can be ``Ìnf``).
+    The upper limit :math:`b` of the horizon :math:`h` (in which case :math:`a=0`), or range of periods
+    :math:`a:b` over which the discounted sum is computed (the upper bound can be ``Inf``).
 
     .. option:: time_shift = INTEGER
 
@@ -13020,13 +13046,17 @@ More generally, it is possible to consider finite discounted sums.
 
 .. matcomm::  var_expectation.initialize(NAME_OF_VAR_EXPECTATION_MODEL);
 
-  |br| Initialise the VAR expectation model, by building the companion matrix of the auxiliary model.
+  |br| Initialise the `var_expectation_model` by building the companion matrix
+  of the associated auxiliary `var_model`. Needs to be executed before attempts to simulate or
+  estimate the model.
 
   |br|
 
 .. matcomm::  var_expectation.update(NAME_OF_VAR_EXPECTATION_MODEL);
 
-  |br| Update VAR expectation model reduced form parameters.
+  |br| Update/compute the reduced form parameters of `var_expectation_model`. Needs to be executed
+  before attempts to simulate or estimate the model and requires the auxiliary `var_model` to have
+  previously been initialized.
 
   |br|
 
@@ -13038,6 +13068,10 @@ More generally, it is possible to consider finite discounted sums.
           var_expectation.initialize('varexp');
 
           var_expectation.update('varexp');
+
+.. warning:: Changes to the parameters of the underlying auxiliary `var_model` require calls to
+    `var_expectation.initialize` and `var_expectation.update` to become effective. Changes to the
+    `var_expectation_model` or its associated parameters require a call to `var_expectation.update`.
 
 PAC equation
 ------------
@@ -13052,18 +13086,19 @@ and (*iii*) the expected changes in the target :math:`y^{\star}`:
       \Delta y_t = a_0(y_{t-1}^{\star}-y_{t-1}) + \sum_{i=1}^{m-1} a_i \Delta y_{t-i} + \sum_{i=0}^{\infty} d_i \Delta y^{\star}_{t+i}  +\varepsilon_t
 
 *Brayton et alii (2000)* shows how such an equation can be derived from the
-minimisation of a quadratic cost function penalising deviations from the
-target and non-smoothness of :math:`y`. They also show that the parameters
-:math:`(d_i)_{i\in\mathbb N}` are non linear functions of the :math:`m`
-parameters :math:`a_i`. To simulate or estimate this equation we need to figure
-out how to determine the expected changes of the target. This can be done as in
-the previous section using VAR based expectations, or considering model
-consistent expectations (MCE).
+minimisation of a quadratic cost function penalising expected deviations from
+the target and non-smoothness of :math:`y`, where future costs are discounted
+(with discount factor :math:`\beta`). They also show that the parameters
+:math:`(d_i)_{i\in\mathbb N}` are non-linear functions of the :math:`m`
+parameters :math:`a_i` and the discount factor :math:`\beta`. To simulate or
+estimate this equation we need to figure out how to determine the expected
+changes of the target. This can be done as in the previous section using VAR
+based expectations, or considering model consistent expectations (MCE).
 
 To ensure that the endogenous variable :math:`y` is equal to its target
 :math:`y^{\star}` in the (deterministic) long run, *i.e.* that the error
 correction term is zero in the long run, we can optionally add a growth neutrality
-correction to this equation. Suppose that $g$ is the long run growth rate, for
+correction to this equation. Suppose that :math:`g` is the long run growth rate, for
 :math:`y` and :math:`y^{\star}`, then in the long run (assuming that the data
 are in logs) we must have:
 
@@ -13084,13 +13119,16 @@ The PAC equations can be generalised by adding exogenous variables. This can be
 done in two, non exclusive, manners. We can replace the PAC equation by a convex
 combination of the original PAC equation (derived from an optimisation program)
 and a linear expression involving exogenous variables (referred as the rule of thumb part as
-opposed to the part derived from the minimisation of a cost function):
+opposed to the part derived from the minimisation of a cost function; not to be confused with
+exogenous shocks):
 
   .. math ::
 
       \Delta y_t = \lambda \left(a_0(y_{t-1}^{\star}-y_{t-1}) + \sum_{i=1}^{m-1} a_i \Delta y_{t-i} + \sum_{i=0}^{\infty} d_i \Delta y^{\star}_{t+i}\right) + (1-\lambda)\gamma'X_t +\varepsilon_t
 
-where :math:`\lambda\in[0,1]` is the weight of the pure PAC equation, :math:`\gamma` is a :math:`k\times 1` vector of parameters and :math:`X_t` a :math:`k\times 1` vector of variables. Or we can
+where :math:`\lambda\in[0,1]` is the weight of the pure PAC equation,
+:math:`\gamma` is a :math:`k\times 1` vector of parameters, and :math:`X_t` a
+:math:`k\times 1` vector of variables in the rule of thumb part. Or we can
 simply add the exogenous variables to the PAC equation (without the weight
 :math:`\lambda`):
 
@@ -13125,7 +13163,8 @@ simply add the exogenous variables to the PAC equation (without the weight
 
     .. option:: discount = PARAMETER_NAME | DOUBLE
 
-    Discount factor (:math:`\beta`) appearing in the definition of the cost function.
+    Discount factor (:math:`\beta`) for future expected costs appearing in the
+    definition of the cost function.
 
     .. option:: growth = PARAMETER_NAME | VARIABLE_NAME | EXPRESSION | DOUBLE
 
@@ -13171,10 +13210,10 @@ simply add the exogenous variables to the PAC equation (without the weight
          y = rho_1*y(-1) + rho_2*y(-2) + ey;
 
          [name='eq:x1']
-         diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;     
+         diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;
 
          [name='eq:x2']
-         diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;     
+         diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;
 
          [name='eq:x1bar']
          x1bar = x1bar(-1) + ex1bar;
@@ -13205,6 +13244,10 @@ implemented in Dynare, mainly for comparison purposes, we also propose NLS
 estimation, which is much preferable (asymptotic properties of NLS being more
 solidly grounded).
 
+Note that it is currently not feasible to estimate the PAC equation jointly with
+the remaining parameters of the model using e.g. Bayesian techniques. Thus, estimation
+of the PAC equation can only be conducted conditional on the values of the parameters
+of the auxiliary model.
 
 .. warning:: The estimation routines described below require the option
              `json=compute` be passed to the preprocessor (via the command line
@@ -13220,7 +13263,8 @@ solidly grounded).
               specified with an equation tag). ``DATA`` is a ``dseries`` object
               containing the data required for the estimation (*i.e.* data for
               all the endogenous and exogenous variables in the equation). The
-              residual of the PAC equation must also be a member of ``DATA``,
+              residual values of the PAC equation (which correspond to a defined
+              `varexo`) must also be a member of ``DATA``,
               but filled with ``NaN`` values. ``RANGE`` is a ``dates`` object
               defining the time span of the sample. ``ALGO`` is a row char array
               used to select the method (or minimisation algorithm) for NLS.
@@ -13263,6 +13307,10 @@ solidly grounded).
 
        pac.estimate.nls('zpac', eparams, edata, 2005Q1:2005Q1+200, 'annealing');
 
+.. warning:: The specification of `GUESS` and `DATA` involves the use of structures.
+    As such, their subfields will not be cleared across Dynare runs as the structures
+    stay in the workspace. Be careful to clear these structures from the memory
+    (e.g. within the mod-file) when e.g. changing which parameters are calibrated.
 
 Displaying and saving results
 =============================
