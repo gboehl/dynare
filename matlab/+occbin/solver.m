@@ -1,10 +1,10 @@
 function [oo_, out, ss] = solver(M_,oo_,options_)
-% function [oo_, out, ss] = solver(M_,oo_,options_,opts_simul)
+% function [oo_, out, ss] = solver(M_,oo_,options_)
 % Solves the model with an OBC and produces simulations/IRFs
 %
 % INPUT: 
-% - opts_simul          [structure]     Occbin simulation options
 % - M_                  [structure]     Matlab's structure describing the model
+% - oo_                 [structure]     Matlab's structure containing the results
 % - options_            [structure]     Matlab's structure containing the options
 %
 % OUTPUT: 
