@@ -423,13 +423,14 @@ else
                 tmp(oo_.dr.restrict_var_list,1)=aahat(:,k-1);
                 opts_simul.endo_init = tmp(oo_.dr.inv_order_var,1);
                 opts_simul.init_regime = []; %regimes_(k);
+                opts_simul.waitbar=0;
                 options_.occbin.simul=opts_simul;
                 [~, out] = occbin.solver(M_,oo_,options_);
                 % regime in out should be identical to regimes_(k-2) moved one
                 % period ahead (so if regimestart was [1 5] it should be [1 4]
                 % in out
                 %         end
-                bbb(oo_.dr.inv_order_var,k) = out.zpiece(1,:);
+                bbb(oo_.dr.inv_order_var,k) = out.piecewise(1,:);
             end
         end
         % do not overwrite accurate computations using reduced st. space
@@ -466,6 +467,7 @@ else
             tmp(oo_.dr.restrict_var_list,1)=ahat0(:,k-1);
             opts_simul.endo_init = tmp(oo_.dr.inv_order_var,1);
             opts_simul.init_regime = []; %regimes_(k);
+            opts_simul.waitbar=0;
             options_.occbin.simul=opts_simul;
             [~, out] = occbin.solver(M_,oo_,options_);
             % regime in out should be identical to regimes_(k-2) moved one
@@ -473,7 +475,7 @@ else
             % in out
             %         end
             for jnk=1:options_.nk
-                aaa(jnk,oo_.dr.inv_order_var,k+jnk-1) = out.zpiece(jnk,:);
+                aaa(jnk,oo_.dr.inv_order_var,k+jnk-1) = out.piecewise(jnk,:);
             end
         end
         aK=aaa;
@@ -525,6 +527,9 @@ else
         end
         ahat1=aaa;
         % reconstruct aK
+        if isempty(options_.nk)
+            options_.nk=1;
+        end
         aaa = zeros(options_.nk,M_.endo_nbr,gend+options_.nk);
         aaa(:,oo_.dr.restrict_var_list,:)=aK;
         for k=1:gend
