@@ -65,7 +65,7 @@ if length(i_var_unique_present)~=nvar_present
     k = find(~ismember((1:length(i_var))',index_unique_present) & i_var~=0);
     str = 'The following symbols are specified twice in the variable list and are considered only once:';
     for ii = 1:length(k)
-        str = sprintf('%s %s', str, sublist{i_var(k(ii))});
+        str = sprintf('%s %s', str, sublist{k(ii)});
     end
     warning('%s\n', str)
 end

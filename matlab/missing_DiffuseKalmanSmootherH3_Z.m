@@ -444,6 +444,7 @@ while notsteady && t<smpl
                 opts_simul.endo_init = a(oo_.dr.inv_order_var,t);
             end
             opts_simul.init_regime = []; %regimes_(t);
+            opts_simul.waitbar=0;
             options_.occbin.simul=opts_simul;
             [~, out, ss] = occbin.solver(M_,oo_,options_);
         end
@@ -456,9 +457,9 @@ while notsteady && t<smpl
             end
             if isoccbin 
                 if smoother_redux
-                    aK(jnk,:,t+jnk) = out.zpiece(jnk,oo_.dr.order_var(oo_.dr.restrict_var_list));
+                    aK(jnk,:,t+jnk) = out.piecewise(jnk,oo_.dr.order_var(oo_.dr.restrict_var_list));
                 else
-                    aK(jnk,oo_.dr.inv_order_var,t+jnk) = out.zpiece(jnk,:);
+                    aK(jnk,oo_.dr.inv_order_var,t+jnk) = out.piecewise(jnk,:);
                 end
             elseif jnk>1
                 aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));

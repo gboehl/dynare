@@ -224,6 +224,8 @@ for b=fpar:B
             fprintf('prior_posterior_statistics: This should not happen. Please contact the developers.\n',message)
         end
         if options_.occbin.smoother.status
+            opts_local.occbin.simul.waitbar=0;
+            opts_local.occbin.smoother.waitbar = 0;
             [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,bayestopt_] = ...
                 occbin.DSGE_smoother(deep,gend,Y,data_index,missing_value,M_,oo_,opts_local,bayestopt_,estim_params_);
         else
