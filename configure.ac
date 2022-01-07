@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright © 2009-2021 Dynare Team
+dnl Copyright © 2009-2022 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -18,7 +18,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.62])
-AC_INIT([dynare], [5.0])
+AC_INIT([dynare], [5.1])
 AC_CONFIG_SRCDIR([preprocessor/src/DynareMain.cc])
 AM_INIT_AUTOMAKE([1.11 -Wall -Wno-portability foreign no-dist-gzip dist-xz tar-pax])
 
