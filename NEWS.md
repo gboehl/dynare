@@ -37,12 +37,12 @@ Major user-visible changes
    parameters by (i) Generalized Method of Moments (GMM) up to 3rd-order pruned
    perturbation approximation or (ii) Simulated Method of Moments (SMM) up to
    any perturbation approximation order. The toolbox is inspired by replication
-   codes accompanied to Andreasen et al. (2018), Born and Pfeifer (2014), and
+   codes accompanying Andreasen et al. (2018), Born and Pfeifer (2014), and
    Mutschler (2018). It is accessible via the new `method_of_moments` command
    and the new `matched_moments` block. Moreover, by default, a new non-linear
    least squares optimizer based on `lsqnonlin` is used for minimizing the
    method of moments objective function (available under `mode_compute=13`).
-   GMM can further benefit from using Gradient-based optimizers (using
+   GMM can further benefit from using gradient-based optimizers (using
    `analytic_standard_errors` option and/or passing `'Jacobian','on'` to the
    optimization options) as the Jacobian of the moment conditions can be
    computed analytically.
@@ -51,7 +51,7 @@ Major user-visible changes
    together with the inversion filter of Cuba-Borda, Guerrieri, Iacoviello, and
    Zhong (2019) and the piecewise Kalman filter of Giovannini, Pfeiffer, and
    Ratto (2021). It is available via the new block `occbin_constraints` and the
-   new commands `occbin_setup`, `occbin_solver`, `occbin_graph` and
+   new commands `occbin_setup`, `occbin_solver`, `occbin_graph`, and
    `occbin_write_regimes`.
 
  - Stochastic simulations
@@ -65,14 +65,14 @@ Major user-visible changes
 
  - Estimation
 
-    - Performance optimization to pruned state space system and Lyapunov
+    - Performance optimization to pruned state space systems and Lyapunov
       solvers.
 
     - New option `mh_posterior_mode_estimation` to `estimation` to perform
       mode-finding by running the MCMC.
 
-    - New heteroskedastic filter and smoother, where shocks standard error may
-      *unexpectedly* change in every period. Triggered by
+    - New heteroskedastic filter and smoother, where shock standard errors may
+      *unexpectedly* change in every period. Triggered by the
       `heteroskedastic_filter` option of the `estimation` command, and
       configured via the `heteroskedastic_shocks` block.
 
@@ -93,7 +93,7 @@ Major user-visible changes
       string as value. The former unquoted syntax is still accepted, but no
       longer recommended.
 
-    - New option `particle_filter_options` to set various particle filter options
+    - New option `particle_filter_options` to set various particle filter options.
 
  - Perfect foresight and extended path
 
@@ -106,9 +106,9 @@ Major user-visible changes
     - In deterministic models (perfect foresight or extended path), exogenous
       variables with lead/lags are now replaced by auxiliary variables. This
       brings those models in line with the transformation done on stochastic
-      models. However note that transformation is still not exactly the same
+      models. However, note that the transformation is still not exactly the same
       between the two classes of models, because there is no need to take into
-      account the Jensen inequality on the latter. In deterministic models,
+      account the Jensen inequality for the latter. In deterministic models,
       there is a one-to-one mapping between exogenous with lead/lags and
       auxiliaries, while in stochastic models, an auxiliary endogenous may
       correspond to a more complex nonlinear expression.
@@ -132,7 +132,7 @@ Major user-visible changes
  - Identification
 
     - New option `schur_vec_tol` to the `identification` command, for setting
-      the tolerance level used to find nonstationary variables in Schur
+      the tolerance level used to find nonstationary variables in the Schur
       decomposition of the transition matrix.
 
     - The `identification` command now supports optimal policy.
@@ -175,7 +175,7 @@ Major user-visible changes
     - Routines for converting between time series frequencies (e.g. daily to
       monthly) have been added.
 
-    - dseries now support bi-annual and daily frequency data.
+    - dseries now supports bi-annual and daily frequency data.
 
     - dseries can now import data from [DBnomics](https://db.nomics.world), via
       the [mdbnomics](https://git.dynare.org/dbnomics/mdbnomics) plugin. Note
@@ -206,7 +206,7 @@ Major user-visible changes
       parallel local clusters: when `true` (the default), use `psexec` to spawn
       processes; when `false`, use `start`.
 
-    - when compiling from source, it is no longer necessary to pass the
+    - When compiling from source, it is no longer necessary to pass the
       `MATLAB_VERSION` version to the configure script; the version is now
       automatically detected.
 
@@ -225,7 +225,7 @@ Incompatible changes
    now located in a dedicated `preprocessor` subdirectory.
 
  - The `dynare` command no longer accepts `output=dynamic` and `output=first`
-   (those options actually had no effect).
+   (these options actually had no effect).
 
  - The minimal required MATLAB version is now R2014a (8.3).
 
@@ -252,7 +252,7 @@ Bugs that were present in 4.6.4 and that have been fixed in 5.0
 * `estimation` would ignore the mean of non-zero observables if the mean was 0
   for the initial parameter vector
 * `mode_check` would crash if a parameter was estimated to be exactly 0
-* `load_mh_file` would not be able to load proposal density if the previous run
+* `load_mh_file` would not be able to load the proposal density if the previous run
   was done in parallel
 * `load_mh_file` would not work with MCMC runs from Dynare versions before
   4.6.2
@@ -266,7 +266,7 @@ Bugs that were present in 4.6.4 and that have been fixed in 5.0
 * The `planner_objective` values were not based on the correct initialization
   of auxiliary variables (if any were present)
 * The `nostrict` command line option was not ignoring unused endogenous
-  variables in `initval`, `endval` and `histval`
+  variables in `initval`, `endval`, and `histval`
 * `prior_posterior_statistics_core` could crash for models with eigenvalues
   very close to 1
 * The display of the equation numbers in `debug` mode related to issues in the
@@ -275,7 +275,7 @@ Bugs that were present in 4.6.4 and that have been fixed in 5.0
   related to optimal policy (`ramsey_model`, `discretionary_policy`) into
   account
 * `bytecode` would lock the `dynamic.bin` file upon encountering an exception,
-  requiring a restart of MATLAB to able to rerun the file
+  requiring a restart of MATLAB to be able to rerun the file
 * Estimation with the `block` model option would crash when calling the block
   Kalman filter
 * The `block` model option would crash if no `initval` statement was present
@@ -308,8 +308,8 @@ Bugs that were present in 4.6.4 and that have been fixed in 5.0
 References
 ----------
 
- - Andreasen et al. (2018): “The Pruned State-Space System for Non-Linear DSGE
-   Models: Theory and Empirical Applications,” Review of Economic Studies,
+ - Andreasen et al. (2018): “The pruned state-space system for non-linear DSGE
+   models: Theory and empirical applications,” Review of Economic Studies,
    85(1), 1–49
 
  - Angelini, Bokan, Christoffel, Ciccarelli and Zimic (2019): “Introducing
@@ -319,18 +319,18 @@ References
  - Born and Pfeifer (2014): “Policy risk and the business cycle,” Journal of
    Monetary Economics, 68, 68–85
 
- - Brayton, Davis and Tulip (2000): “Polynomial Adjustment Costs in FRB/US,”
+ - Brayton, Davis and Tulip (2000): “Polynomial adjustment costs in FRB/US,”
    Unpublished manuscript
 
- - Brayton, Laubach and Reifschneider (2014): “The FRB/US Model: A Tool for
-   Macroeconomic Policy Analysis,” FEDS Notes. Washington: Board of Governors
+ - Brayton, Laubach, and Reifschneider (2014): “The FRB/US Model: A tool for
+   macroeconomic policy analysis,” FEDS Notes. Washington: Board of Governors
    of the Federal Reserve System, https://doi.org/10.17016/2380-7172.0012
 
  - Cuba-Borda, Guerrieri, Iacoviello, and Zhong (2019): “Likelihood evaluation
    of models with occasionally binding constraints,” Journal of Applied
    Econometrics, 34(7), 1073–1085
 
- - Giovannini, Pfeiffer and Ratto (2021): “Efficient and robust inference of
+ - Giovannini, Pfeiffer, and Ratto (2021): “Efficient and robust inference of
    models with occasionally binding constraints,” Working Paper 2021-03, Joint
    Research Centre, European Commission
 
