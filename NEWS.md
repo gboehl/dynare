@@ -1,3 +1,347 @@
+Announcement for Dynare 5.0 (on 2022-01-07)
+===========================================
+
+We are pleased to announce the release of Dynare 5.0.
+
+This major release adds new features and fixes various bugs.
+
+The Windows, macOS and source packages are already available for download at
+[the Dynare website](https://www.dynare.org/download/).
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 8.3 (R2014a) to
+9.11 (R2021b), and with GNU Octave version 6.4.0 (under Windows).
+
+The new tools for semi-structural models and the improvements on the nonlinear
+solvers were funded by the ECB. Special thanks to Nikola Bokan (ECB) for his
+contributions and numerous bug reports and fixes.
+
+Major user-visible changes
+--------------------------
+
+ - New routines for simulating semi-structural (backward) models where
+   some equations incorporate expectations based on future values of a VAR or
+   trend component model. See the `var_model`, `trend_component_model` and
+   `var_expectation_model` commands, and the `var_expectation` operator.
+
+ - New routines for simulating semi-structural models where some equations are
+   specified using the polynomial adjustment costs (PAC) approach, as in the
+   FRB/US model (see Brayton et al., 2014 and Brayton et al., 2000) and the
+   ECB-BASE model (see Angelini et al., 2019). The forward-looking terms of the
+   PAC equations can be computed either using a satellite VAR model, or using
+   full model-consistent expectations. See the `pac_model` command and the
+   `pac_expectation` operator.
+
+ - New Method of Moments toolbox that provides functionality to estimate
+   parameters by (i) Generalized Method of Moments (GMM) up to 3rd-order pruned
+   perturbation approximation or (ii) Simulated Method of Moments (SMM) up to
+   any perturbation approximation order. The toolbox is inspired by replication
+   codes accompanied to Andreasen et al. (2018), Born and Pfeifer (2014), and
+   Mutschler (2018). It is accessible via the new `method_of_moments` command
+   and the new `matched_moments` block. Moreover, by default, a new non-linear
+   least squares optimizer based on `lsqnonlin` is used for minimizing the
+   method of moments objective function (available under `mode_compute=13`).
+   GMM can further benefit from using Gradient-based optimizers (using
+   `analytic_standard_errors` option and/or passing `'Jacobian','on'` to the
+   optimization options) as the Jacobian of the moment conditions can be
+   computed analytically.
+
+ - Implementation of the Occbin algorithm by Guerrieri and Iacoviello (2015),
+   together with the inversion filter of Cuba-Borda, Guerrieri, Iacoviello, and
+   Zhong (2019) and the piecewise Kalman filter of Giovannini, Pfeiffer, and
+   Ratto (2021). It is available via the new block `occbin_constraints` and the
+   new commands `occbin_setup`, `occbin_solver`, `occbin_graph` and
+   `occbin_write_regimes`.
+
+ - Stochastic simulations
+
+    - `stoch_simul` now supports theoretical moments at `order=3` with
+      `pruning`.
+
+    - `stoch_simul` now reports second moments based on the pruned state space
+      if the `pruning` option is set (in previous Dynare releases it would
+      report a second-order accurate result based on the linear solution).
+
+ - Estimation
+
+    - Performance optimization to pruned state space system and Lyapunov
+      solvers.
+
+    - New option `mh_posterior_mode_estimation` to `estimation` to perform
+      mode-finding by running the MCMC.
+
+    - New heteroskedastic filter and smoother, where shocks standard error may
+      *unexpectedly* change in every period. Triggered by
+      `heteroskedastic_filter` option of the `estimation` command, and
+      configured via the `heteroskedastic_shocks` block.
+
+    - New option `mh_tune_guess` for setting the initial value for
+      `mh_tune_jscale`.
+
+    - New option `smoother_redux` to `estimation` and `calib_smoother` to
+      trigger computing the Kalman smoother on a restricted state space instead
+      of the full one.
+
+    - New block `filter_initial_state` for setting the initial condition of the
+      Kalman filter/smoother.
+
+    - New option `mh_initialize_from_previous_mcmc` to the `estimation` command
+      that allows to pick initial values for a new MCMC from a previous one.
+
+    - The `xls_sheet` option of the `estimation` command now takes a quoted
+      string as value. The former unquoted syntax is still accepted, but no
+      longer recommended.
+
+    - New option `particle_filter_options` to set various particle filter options
+
+ - Perfect foresight and extended path
+
+    - New specialized algorithm in `perfect_foresight_solver` to deal with
+      purely static problems.
+
+    - The `debug` option of `perfect_foresight_solver` provides debugging
+      information if the Jacobian is singular.
+
+    - In deterministic models (perfect foresight or extended path), exogenous
+      variables with lead/lags are now replaced by auxiliary variables. This
+      brings those models in line with the transformation done on stochastic
+      models. However note that transformation is still not exactly the same
+      between the two classes of models, because there is no need to take into
+      account the Jensen inequality on the latter. In deterministic models,
+      there is a one-to-one mapping between exogenous with lead/lags and
+      auxiliaries, while in stochastic models, an auxiliary endogenous may
+      correspond to a more complex nonlinear expression.
+
+ - Optimal policy
+
+    - Several improvements to `evaluate_planner_objective`:
+
+       - it now applies a consistent approximation order when doing the
+         computation;
+       - in addition to the conditional welfare, it now also provides the
+         unconditional welfare;
+       - in a stochastic context, it now works with higher order approximation
+         (only the conditional welfare is available for order ⩾ 3);
+       - it now also works in a perfect foresight context.
+
+    - `discretionary_policy` is now able to solve nonlinear models (it will
+      then use their first-order approximation, and the analytical steady state
+      must be provided).
+
+ - Identification
+
+    - New option `schur_vec_tol` to the `identification` command, for setting
+      the tolerance level used to find nonstationary variables in Schur
+      decomposition of the transition matrix.
+
+    - The `identification` command now supports optimal policy.
+
+ - Shock decomposition
+
+    - The `fast_realtime` option of the `realtime_shock_decomposition` command
+      now accepts a vector of integers, which runs the smoother for all the
+      specified data vintages.
+
+ - Macro processor
+
+    - Macroprocessor variables can be defined without a value (they are
+      assigned integer 1).
+
+ - LaTeX and JSON outputs
+
+    - New `nocommutativity` option to the `dynare` command. This option tells
+      the preprocessor not to use the commutativity of addition and
+      multiplication when looking for common subexpressions. As a consequence,
+      when using this option, equations in various outputs (LaTeX, JSON…) will
+      appear as the user entered them (without terms or factors swapped). Note
+      that using this option may have a performance impact on the preprocessing
+      stage, though it is likely to be small.
+
+    - Model-local variables are now substituted out as part of the various
+      model transformations. This means that they will no longer appear in
+      LaTeX or in JSON files (for the latter, they are still visible with
+      `json=parse` or `json=check`).
+
+ - Compilation of the model (`use_dll` option)
+
+    - Block decomposition (option `block` of `model`) can now be used in
+      conjunction with the `use_dll` option.
+
+    - The `use_dll` option can now directly be given to the `dynare` command.
+
+ - dseries classes
+
+    - Routines for converting between time series frequencies (e.g. daily to
+      monthly) have been added.
+
+    - dseries now support bi-annual and daily frequency data.
+
+    - dseries can now import data from [DBnomics](https://db.nomics.world), via
+      the [mdbnomics](https://git.dynare.org/dbnomics/mdbnomics) plugin. Note
+      that this does not yet work under Octave. For the time being, the
+      DBnomics plugin must be installed separately.
+
+ - Misc improvements
+
+    - The `histval_file` and `initval_file` commands have been made more
+      flexible and now have functionalities similar to the `datafile` option of
+      the `estimation` command.
+
+    - When using the `loglinear` option, the output from Dynare now clearly
+      shows that the results reported concern the log of the original variable.
+
+    - Options `block` and `bytecode` of `model` can now be used in conjunction
+      with model-local variables (variables declared with a pound-sign `#`).
+
+    - The `model_info` command now prints the typology of endogenous variables
+      for non-block decomposed models.
+
+    - The total computing time of a run (in seconds) is now saved to `oo_.time`.
+
+    - New `notime` option to the `dynare` command, to disable the printing and
+      the saving of the total computing time.
+
+    - New `parallel_use_psexec` command-line Windows-specific option for
+      parallel local clusters: when `true` (the default), use `psexec` to spawn
+      processes; when `false`, use `start`.
+
+    - when compiling from source, it is no longer necessary to pass the
+      `MATLAB_VERSION` version to the configure script; the version is now
+      automatically detected.
+
+Incompatible changes
+--------------------
+
+ - Dynare will now generally save its output in the `MODFILENAME/Output` folder
+   (or the `DIRNAME/Output` folder if the `dirname` option was specified)
+   instead of the main directory. Most importantly, this concerns the
+   `_results.mat` and the `_mode.mat` files.
+
+ - The structure of the `oo_.planner_objective` field has been changed, in
+   relation to the improvements to `evaluate_planner_objective`.
+
+ - The preprocessor binary has been renamed to `dynare-preprocessor`, and is
+   now located in a dedicated `preprocessor` subdirectory.
+
+ - The `dynare` command no longer accepts `output=dynamic` and `output=first`
+   (those options actually had no effect).
+
+ - The minimal required MATLAB version is now R2014a (8.3).
+
+ - The 32-bit support has been dropped for Windows.
+
+Bugs that were present in 4.6.4 and that have been fixed in 5.0
+---------------------------------------------------------------
+
+* Equations marked with `static`-tags were not detrended when a `deflator` was
+  specified
+* Parallel execution of `dsge_var` estimation was broken
+* The preprocessor would incorrectly simplify forward-looking constant
+  equations of the form `x(+1)=0` to imply `x=0`
+* Under some circumstances, the use of the `model_local_variable` statement
+  would lead to a crash of the preprocessor
+* When using the `block`-option without `bytecode` the residuals of the static
+  model were incorrectly displayed
+* When using `k_order_solver`, the `simult_` function ignored requested
+  approximation orders that differed from the one used to compute the decision
+  rules
+* Stochastic simulations of the `k_order_solver` without `pruning` iterated on
+  the policy function with a zero shock vector for the first (non-endogenous)
+  period
+* `estimation` would ignore the mean of non-zero observables if the mean was 0
+  for the initial parameter vector
+* `mode_check` would crash if a parameter was estimated to be exactly 0
+* `load_mh_file` would not be able to load proposal density if the previous run
+  was done in parallel
+* `load_mh_file` would not work with MCMC runs from Dynare versions before
+  4.6.2
+* `ramsey_model` would not correctly work with `lmmcp`
+* `ramsey_model` would crash if a non-scalar error code was encountered during
+  steady state finding.
+* Using undefined objects in the `planner_objective` function would yield an
+  erroneous error message about the objective containing exogenous variables
+* `model_diagnostics` did not correctly handle a previous `loglinear` option
+* `solve_algo=3` (csolve) would ignore user-set `maxit` and `tolf` options
+* The `planner_objective` values were not based on the correct initialization
+  of auxiliary variables (if any were present)
+* The `nostrict` command line option was not ignoring unused endogenous
+  variables in `initval`, `endval` and `histval`
+* `prior_posterior_statistics_core` could crash for models with eigenvalues
+  very close to 1
+* The display of the equation numbers in `debug` mode related to issues in the
+  Jacobian would not correctly take auxiliary equations into account
+* The `resid` command was not correctly taking auxiliary and missing equations
+  related to optimal policy (`ramsey_model`, `discretionary_policy`) into
+  account
+* `bytecode` would lock the `dynamic.bin` file upon encountering an exception,
+  requiring a restart of MATLAB to able to rerun the file
+* Estimation with the `block` model option would crash when calling the block
+  Kalman filter
+* The `block` model option would crash if no `initval` statement was present
+* Having a variable with the same name as the mod-file present in the base
+  workspace would result in a crash
+* `oo_.FilteredVariablesKStepAheadVariances` was wrongly computed in the Kalman
+  smoother based on the previous period forecast error variance
+* Forecasts after `estimation` would not work if there were lagged exogenous
+  variables present
+* Forecasts after `estimation` with MC would crash if measurement errors were
+  present
+* Smoother results would be infinity for auxiliary variables associated with
+  lagged exogenous variables
+* In rare cases, the posterior Kalman smoother could crash due to previously
+  accepted draws violating the Blanchard-Kahn conditions when using an
+  unrestricted state space
+* `perfect_foresight_solver` would crash for purely static problems
+* Monte Carlo sampling in `identification` would crash if the minimal state
+  space for the Komunjer and Ng test could not be computed
+* Monte Carlo sampling in `identification` would skip the computation of
+  identification statistics for all subsequent parameter draws if an error was
+  triggered by one draw
+* The `--steps`-option of Dynare++ was broken
+* `smoother2histval` would crash if variable names were too similar
+* `smoother2histval` was not keeping track of whether previously stored results
+  were generated with `loglinear`
+* The `initval_file` option was not supporting Dynare’s translation of a model
+  into a one lead/lag-model via auxiliary variables
+
+References
+----------
+
+ - Andreasen et al. (2018): “The Pruned State-Space System for Non-Linear DSGE
+   Models: Theory and Empirical Applications,” Review of Economic Studies,
+   85(1), 1–49
+
+ - Angelini, Bokan, Christoffel, Ciccarelli and Zimic (2019): “Introducing
+   ECB-BASE: The blueprint the new ECB semi-structural model for the euro area,”
+   ECB Working Paper no. 2315
+
+ - Born and Pfeifer (2014): “Policy risk and the business cycle,” Journal of
+   Monetary Economics, 68, 68–85
+
+ - Brayton, Davis and Tulip (2000): “Polynomial Adjustment Costs in FRB/US,”
+   Unpublished manuscript
+
+ - Brayton, Laubach and Reifschneider (2014): “The FRB/US Model: A Tool for
+   Macroeconomic Policy Analysis,” FEDS Notes. Washington: Board of Governors
+   of the Federal Reserve System, https://doi.org/10.17016/2380-7172.0012
+
+ - Cuba-Borda, Guerrieri, Iacoviello, and Zhong (2019): “Likelihood evaluation
+   of models with occasionally binding constraints,” Journal of Applied
+   Econometrics, 34(7), 1073–1085
+
+ - Giovannini, Pfeiffer and Ratto (2021): “Efficient and robust inference of
+   models with occasionally binding constraints,” Working Paper 2021-03, Joint
+   Research Centre, European Commission
+
+ - Guerrieri and Iacoviello (2015): “OccBin: A toolkit for solving dynamic
+   models with occasionally binding constraints easily,” Journal of Monetary
+   Economics, 70, 22–38
+
+ - Mutschler (2018): “Higher-order statistics for DSGE models,” Econometrics
+   and Statistics, 6(C), 44–56
+
+
 Announcement for Dynare 4.6.4 (on 2021-03-18)
 =============================================
 
