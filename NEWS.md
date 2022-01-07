@@ -14,8 +14,8 @@ This release is compatible with MATLAB versions ranging from 8.3 (R2014a) to
 9.11 (R2021b), and with GNU Octave version 6.4.0 (under Windows).
 
 The new tools for semi-structural models and the improvements on the nonlinear
-solvers were funded by the ECB. Special thanks to Nikola Bokan (ECB) for his
-contributions and numerous bug reports and fixes.
+solvers were funded by the European Central Bank. Special thanks to Nikola
+Bokan (ECB) for his contributions and numerous bug reports and fixes.
 
 Major user-visible changes
 --------------------------
