@@ -5,31 +5,38 @@ class Gcc < Formula
     # Branch from the Darwin maintainer of GCC with Apple Silicon support,
     # located at https://github.com/iains/gcc-darwin-arm64 and
     # backported with his help to gcc-11 branch. Too big for a patch.
-    url "https://github.com/fxcoudert/gcc/archive/refs/tags/gcc-11.1.0-arm-20210504.tar.gz"
-    sha256 "ce862b4a4bdc8f36c9240736d23cd625a48af82c2332d2915df0e16e1609a74c"
-    version "11.1.0"
+    url "https://github.com/fxcoudert/gcc/archive/refs/tags/gcc-11.2.0-arm-20211124.tar.gz"
+    sha256 "d7f8af7a0d9159db2ee3c59ffb335025a3d42547784bee321d58f2b4712ca5fd"
+    version "11.2.0"
   else
-    url "https://ftp.gnu.org/gnu/gcc/gcc-11.1.0/gcc-11.1.0.tar.xz"
-    mirror "https://ftpmirror.gnu.org/gcc/gcc-11.1.0/gcc-11.1.0.tar.xz"
-    sha256 "4c4a6fb8a8396059241c2e674b85b351c26a5d678274007f076957afa1cc9ddf"
+    url "https://ftp.gnu.org/gnu/gcc/gcc-11.2.0/gcc-11.2.0.tar.xz"
+    mirror "https://ftpmirror.gnu.org/gcc/gcc-11.2.0/gcc-11.2.0.tar.xz"
+    sha256 "d08edc536b54c372a1010ff6619dd274c0f1603aa49212ba20f7aa2cda36fa8b"
+
+    # Darwin 21 (Monterey) support
+    patch do
+      url "https://github.com/iains/gcc-darwin-arm64/commit/20f61faaed3b335d792e38892d826054d2ac9f15.patch?full_index=1"
+      sha256 "c0605179a856ca046d093c13cea4d2e024809ec2ad4bf3708543fc3d2e60504b"
+    end
   end
   license "GPL-3.0-or-later" => { with: "GCC-exception-3.1" }
-  revision 1
-  head "https://gcc.gnu.org/git/gcc.git"
+  revision 3
+  head "https://gcc.gnu.org/git/gcc.git", branch: "master"
 
+  # We can't use `url :stable` here due to the ARM-specific branch above.
   livecheck do
-    # Should be
-    # url :stable
-    # but that does not work with the ARM-specific branch above
-    url "https://ftp.gnu.org/gnu/gcc/gcc-11.1.0"
-    regex(%r{href=.*?gcc[._-]v?(\d+(?:\.\d+)+)(?:/?["' >]|\.t)}i)
+    url "https://ftp.gnu.org/gnu/gcc/"
+    regex(%r{href=["']?gcc[._-]v?(\d+(?:\.\d+)+)(?:/?["' >]|\.t)}i)
   end
 
   bottle do
-    sha256 cellar: :any, arm64_big_sur: "5ad4c157cf19f01c6acfed380db28ff15276f02f4b5d6a20f5a7034583b174aa"
-    sha256 cellar: :any, big_sur:       "4ec68e83ce46f4c686a4c9a7f90a748705543826da81e4c74c78d210b6c66c81"
-    sha256 cellar: :any, catalina:      "c8405807d9bdab853432100e8d85bf3b4c7d4a4123067f099699a492d40a430b"
-    sha256 cellar: :any, mojave:        "cac0a37271b71e40b3df7b9fa83190c11dfcd9640d8b3d02bc2ba2bae5b964ac"
+    rebuild 1
+    sha256 cellar: :any, arm64_monterey: "2d179246426328ee69b94a25b8bd4c25caeff0699b5ecb4b3d258fe4efd3673e"
+    sha256 cellar: :any, arm64_big_sur:  "9dbb002aa1aab75071fe1a5432fd3ee61378d711aebe0d35d0ca7226a4225451"
+    sha256 cellar: :any, monterey:       "198f5312ecfe6fc6437b55e2fb3bb380e8c597ae6fa255f8f7d0be90306e7601"
+    sha256 cellar: :any, big_sur:        "d2d4543675948c7adf3f1d4934dc651b864f66d5dad6fb3c8bdcfc6f5eef42e6"
+    sha256 cellar: :any, catalina:       "e721b6a3195d2a1e73e4c12d34d0138bc5ebe6a37fb1a8d63ad733316e944c59"
+    sha256 cellar: :any, x86_64_linux:   "3717134ab0f56e7eeb167c4f4a993c81329d6c1248dae5ee6e39f59cfdfa0eee"
   end
 
   # The bottles are built on systems with the CLT installed, and do not work
@@ -50,6 +57,15 @@ class Gcc < Formula
 
   # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
   cxxstdlib_check :skip
+
+  # Fix for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102992
+  # Working around a macOS Monterey bug
+  if MacOS.version == :monterey
+    patch do
+      url "https://gcc.gnu.org/git/?p=gcc.git;a=patch;h=fabe8cc41e9b01913e2016861237d1d99d7567bf"
+      sha256 "9d3c2c91917cdc37d11385bdeba005cd7fa89efdbdf7ca38f7de3f6fa8a8e51b"
+    end
+  end
 
   def version_suffix
     if build.head?
@@ -74,10 +90,11 @@ class Gcc < Formula
     cpu = Hardware::CPU.arm? ? "aarch64" : "x86_64"
 
     args = %W[
-      --prefix=#{prefix}
-      --libdir=#{lib}/gcc/#{version_suffix}
+      --prefix=#{opt_prefix}
+      --libdir=#{opt_lib}/gcc/#{version_suffix}
       --disable-nls
       --enable-checking=release
+      --with-gcc-major-version-only
       --enable-languages=#{languages.join(",")}
       --program-suffix=-#{version_suffix}
       --with-gmp=#{Formula["gmp"].opt_prefix}
@@ -91,16 +108,16 @@ class Gcc < Formula
     # libphobos is part of gdc
     args << "--enable-libphobos" if Hardware::CPU.intel?
 
-    on_macos do
+    if OS.mac?
       args << "--build=#{cpu}-apple-darwin#{OS.kernel_version.major}"
       args << "--with-system-zlib"
 
-      # Xcode 10 dropped 32-bit support
-      args << "--disable-multilib" if DevelopmentTools.clang_build_version >= 1000
+      # Xcode 10 dropped 32-bit Intel support
+      args << "--disable-multilib" if Hardware::CPU.intel? && DevelopmentTools.clang_build_version >= 1000
 
-      # Workaround for Xcode 12.5 bug on Intel
+      # Workaround for Xcode 12.5 bug on Intel, remove in next version
       # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100340
-      args << "--without-build-config" if Hardware::CPU.intel? && DevelopmentTools.clang_build_version >= 1205
+      args << "--without-build-config" if Hardware::CPU.intel? && DevelopmentTools.clang_build_version == 1205
 
       # System headers may not be in /usr/include
       sdk = MacOS.sdk_path_if_needed
@@ -108,13 +125,7 @@ class Gcc < Formula
         args << "--with-native-system-header-dir=/usr/include"
         args << "--with-sysroot=#{sdk}"
       end
-
-      # Ensure correct install names when linking against libgcc_s;
-      # see discussion in https://github.com/Homebrew/legacy-homebrew/pull/34303
-      inreplace "libgcc/config/t-slibgcc-darwin", "@shlib_slibdir@", "#{HOMEBREW_PREFIX}/lib/gcc/#{version_suffix}"
-    end
-
-    on_linux do
+    else
       # Fix cc1: error while loading shared libraries: libisl.so.15
       args << "--with-boot-ldflags=-static-libstdc++ -static-libgcc #{ENV["LDFLAGS"]}"
 
@@ -128,24 +139,21 @@ class Gcc < Formula
 
     mkdir "build" do
       system "../configure", *args
+      system "make"
 
-      on_macos do
-        # Use -headerpad_max_install_names in the build,
-        # otherwise updated load commands won't fit in the Mach-O header.
-        # This is needed because `gcc` avoids the superenv shim.
-        system "make", "BOOT_LDFLAGS=-Wl,-headerpad_max_install_names"
-        system "make", "install"
-      end
+      # On Linux, strip the binaries
+      install_target = OS.mac? ? "install" : "install-strip"
 
-      on_linux do
-        system "make"
-        system "make", "install-strip"
-      end
+      # To make sure GCC does not record cellar paths, we configure it with
+      # opt_prefix as the prefix. Then we use DESTDIR to install into a
+      # temporary location, then move into the cellar path.
+      system "make", install_target, "DESTDIR=#{Pathname.pwd}/../instdir"
+      mv Dir[Pathname.pwd/"../instdir/#{opt_prefix}/*"], prefix
 
       bin.install_symlink bin/"gfortran-#{version_suffix}" => "gfortran"
       bin.install_symlink bin/"gdc-#{version_suffix}" => "gdc" if Hardware::CPU.intel?
 
-      on_linux do
+      if OS.linux?
         # Only the newest brewed gcc should install gfortan libs as we can only have one.
         lib.install_symlink Dir[lib/"gcc/#{version_suffix}/libgfortran.*"]
       end
@@ -167,7 +175,7 @@ class Gcc < Formula
   end
 
   def post_install
-    on_linux do
+    if OS.linux?
       gcc = bin/"gcc-#{version_suffix}"
       libgcc = Pathname.new(Utils.safe_popen_read(gcc, "-print-libgcc-file-name")).parent
       raise "command failed: #{gcc} -print-libgcc-file-name" if $CHILD_STATUS.exitstatus.nonzero?
@@ -226,6 +234,7 @@ class Gcc < Formula
       #     Noted that it should only be passed for the `gcc@*` formulae.
       #   * `-L#{HOMEBREW_PREFIX}/lib` instructs gcc to find the rest
       #     brew libraries.
+      # Note: *link will silently add #{libdir} first to the RPATH
       libdir = HOMEBREW_PREFIX/"lib/gcc/#{version_suffix}"
       specs.write specs_string + <<~EOS
         *cpp_unique_options:
@@ -235,9 +244,13 @@ class Gcc < Formula
         #{glibc_installed ? "-nostdlib -L#{libgcc}" : "+"} -L#{libdir} -L#{HOMEBREW_PREFIX}/lib
 
         *link:
-        + --dynamic-linker #{HOMEBREW_PREFIX}/lib/ld.so -rpath #{libdir} -rpath #{HOMEBREW_PREFIX}/lib
+        + --dynamic-linker #{HOMEBREW_PREFIX}/lib/ld.so -rpath #{libdir}
+
+        *homebrew_rpath:
+        -rpath #{HOMEBREW_PREFIX}/lib
 
       EOS
+      inreplace(specs, " %o ", "\\0%(homebrew_rpath) ")
     end
   end
 
