@@ -15,7 +15,7 @@ function dyntable(options_, title, headers, labels, values, label_width, val_wid
 % OUTPUTS
 % none
 
-% Copyright (C) 2002-2018 Dynare Team
+% Copyright (C) 2002-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -46,12 +46,12 @@ label_format_leftbound  = sprintf('%%-%ds', label_width);
 
 
 % Set width of other columns
-if all(~isfinite(values))
+if all(all(~isfinite(values)))
     values_length = 4;
 else
     values_length = max(ceil(max(max(log10(abs(values(isfinite(values))))))),1)+val_precis+1;
 end
-if any(values) < 0 %add one character for minus sign
+if any(any(values < 0)) %add one character for minus sign
     values_length = values_length+1;
 end
 headers_length = cellofchararraymaxlength(headers(2:end));
