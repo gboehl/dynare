@@ -10,7 +10,7 @@ function warning_config()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2021 Dynare Team
+% Copyright (C) 2008-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,8 +41,8 @@ if isoctave
     warning('off', 'Octave:num-to-str');
     warning('off', 'Octave:resize-on-range-error');
     warning('off', 'Octave:str-to-num');
-    warning('off', 'Octave:array-as-scalar');
-    warning('off', 'Octave:array-as-vector');
+    warning('off', 'Octave:array-to-scalar');
+    warning('off', 'Octave:array-to-vector');
     warning('off', 'Octave:mixed-string-concat');
     warning('off', 'Octave:variable-switch-label');
     warning('off', 'Octave:fortran-indexing');
