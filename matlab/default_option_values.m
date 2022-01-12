@@ -286,6 +286,7 @@ particle.mixture_structural_shocks = 1 ;
 particle.mixture_measurement_shocks = 1 ;
 % Online approach
 particle.liu_west_delta = 0.99 ;
+particle.liu_west_max_resampling_tries = 5000;
 % Options for setting the weights in conditional particle filters.
 particle.cpf_weights_method.amisanotristani = true;
 particle.cpf_weights_method.murrayjonesparslow = false;
