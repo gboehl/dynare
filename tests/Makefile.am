@@ -529,6 +529,10 @@ ECB_MODFILES = \
 	pac/var-10e/example1.mod \
 	pac/var-10e/example2.mod \
 	pac/var-11e/example1.mod \
+	pac/var-12/example1.mod \
+	pac/var-12/example2.mod \
+	pac/var-12/example11.mod \
+	pac/var-12/example12.mod \
 	pac/trend-component-1/example1.mod \
 	pac/trend-component-2/example1.mod \
 	pac/trend-component-3/example1.mod \

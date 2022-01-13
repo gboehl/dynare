@@ -299,23 +299,7 @@ for i=1:maxlag
     for j=1:length(auxmodel.list_of_variables_in_companion_var)
         id = id+1;
         variable = auxmodel.list_of_variables_in_companion_var{j};
-        transformations = {};
-        ida = get_aux_variable_id(variable);
-        op = 0;
-        while ida
-            op = op+1;
-            if isequal(M_.aux_vars(ida).type, 8)
-                transformations(op) = {'diff'};
-                variable = M_.endo_names{M_.aux_vars(ida).orig_index};
-                ida = get_aux_variable_id(variable);
-            elseif isequal(M_.aux_vars(ida).type, 10)
-                transformations(op) = {M_.aux_vars(ida).unary_op};
-                variable = M_.endo_names{M_.aux_vars(ida).orig_index};
-                ida = get_aux_variable_id(variable);
-            else
-                error('This case is not implemented.')
-            end
-        end
+        [variable, transformations] = rewrite_aux_variable(variable, M_);
         switch expectationmodelkind
           case 'var'
             parameter = M_.params(expectationmodel.param_indices(id));
@@ -378,13 +362,31 @@ if isequal(expectationmodelkind, 'pac') && growth_correction
         for iter = 1:numel(expectationmodel.growth_linear_comb)
             vgrowth='';
             if expectationmodel.growth_linear_comb(iter).exo_id > 0
-                vgrowth = strcat('dbase.', M_.exo_names{expectationmodel.growth_linear_comb(iter).exo_id});
+                variable = M_.exo_names{expectationmodel.growth_linear_comb(iter).exo_id};
             elseif expectationmodel.growth_linear_comb(iter).endo_id > 0
-                vgrowth = strcat('dbase.', M_.endo_names{expectationmodel.growth_linear_comb(iter).endo_id});
+                variable = M_.endo_names{expectationmodel.growth_linear_comb(iter).endo_id};
             end
-            if expectationmodel.growth_linear_comb(iter).lag ~= 0
-                vgrowth = sprintf('%s(%d)', vgrowth, expectationmodel.growth_linear_comb(iter).lag);
+            [variable, transformations] = rewrite_aux_variable(variable, M_);
+            if isempty(transformations)
+                if expectationmodel.growth_linear_comb(iter).lag ~= 0
+                    variable = sprintf('%s(%d)', variable, expectationmodel.growth_linear_comb(iter).lag);
+                end
+            else
+                for k=rows(transformations):-1:1
+                    if isequal(transformations{k,1}, 'lag')
+                        variable = sprintf('%s.lag(%u)', variable, -transformations{k,2});
+                    elseif isequal(transformations{k,1}, 'diff')
+                        if isempty(transformations{k,2})
+                            variable = sprintf('%s.%s()', variable, transformations{k,1});
+                        else
+                            variable = sprintf('%s(-%u).%s()', variable, transformations{k,2}, transformations{k,1});
+                        end
+                    else
+                        variable = sprintf('%s.%s()', variable, transformations{k});
+                    end
+                end
             end
+            vgrowth = strcat('dbase.', variable);
             if expectationmodel.growth_linear_comb(iter).param_id > 0
                 if ~isempty(vgrowth)
                     vgrowth = sprintf('%1.16f*%s',M_.params(expectationmodel.growth_linear_comb(iter).param_id), vgrowth);
@@ -418,14 +420,31 @@ if isequal(expectationmodelkind, 'pac') && growth_correction
                 for iter = 1:numel(expectationmodel.components(i).growth_linear_comb)
                     vgrowth='';
                     if expectationmodel.components(i).growth_linear_comb(iter).exo_id > 0
-                        vgrowth = strcat('dbase.', M_.exo_names{expectationmodel.components(i).growth_linear_comb(iter).exo_id});
+                        variable = M_.exo_names{expectationmodel.components(i).growth_linear_comb(iter).exo_id};
                     elseif expectationmodel.components(i).growth_linear_comb(iter).endo_id > 0
-                        vgrowth = strcat('dbase.', M_.endo_names{expectationmodel.components(i).growth_linear_comb(iter).endo_id});
-                        % TODO Check if we should not substitute auxiliary variables with original transformed variables here.
+                        variable = M_.endo_names{expectationmodel.components(i).growth_linear_comb(iter).endo_id};
                     end
-                    if expectationmodel.components(i).growth_linear_comb(iter).lag ~= 0
-                        vgrowth = sprintf('%s(%d)', vgrowth, expectationmodel.components(i).growth_linear_comb(iter).lag);
+                    [variable, transformations] = rewrite_aux_variable(variable, M_);
+                    if isempty(transformations)
+                        if expectationmodel.components(i).growth_linear_comb(iter).lag ~= 0
+                            variable = sprintf('%s(%d)', variable, expectationmodel.components(i).growth_linear_comb(iter).lag);
+                        end
+                    else
+                        for k=rows(transformations):-1:1
+                            if isequal(transformations{k,1}, 'lag')
+                                variable = sprintf('%s.lag(%u)', variable, -transformations{k,2});
+                            elseif isequal(transformations{k,1}, 'diff')
+                                if isempty(transformations{k,2})
+                                    variable = sprintf('%s.%s()', variable, transformations{k,1});
+                                else
+                                    variable = sprintf('%s(-%u).%s()', variable, transformations{k,2}, transformations{k,1});
+                                end
+                            else
+                                variable = sprintf('%s.%s()', variable, transformations{k});
+                            end
+                        end
                     end
+                    vgrowth = strcat('dbase.', variable);
                     if expectationmodel.components(i).growth_linear_comb(iter).param_id > 0
                         if ~isempty(vgrowth)
                             vgrowth = sprintf('%1.16f*%s',M_.params(expectationmodel.components(i).growth_linear_comb(iter).param_id), vgrowth);
