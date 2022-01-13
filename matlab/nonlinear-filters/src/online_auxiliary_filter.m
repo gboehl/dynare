@@ -119,7 +119,7 @@ for t=1:sample_size
         % model resolution
         [info, Model, DynareOptions, DynareResults, ReducedForm] = ...
             solve_model_for_online_filter(false, fore_xparam(:,i), DynareDataset, DynareOptions, Model, EstimatedParameters, BayesInfo, bounds, DynareResults);
-        if ~info
+        if ~info(1)
             steadystate = ReducedForm.steadystate;
             state_variables_steady_state = ReducedForm.state_variables_steady_state;
             % Set local state space model (second-order approximation).
@@ -166,13 +166,15 @@ for t=1:sample_size
     wtilde = zeros(1, number_of_particles);
     for i=1:number_of_particles
         info = 12042009;
-        while info
+        counter=0;
+        while info(1) && counter <DynareOptions.particle.liu_west_max_resampling_tries
+            counter=counter+1;
             candidate = xparam(:,i) + chol_sigma_bar*randn(number_of_parameters, 1);
             if all(candidate>=bounds.lb) && all(candidate<=bounds.ub)
                 % model resolution for new parameters particles
                 [info, Model, DynareOptions, DynareResults, ReducedForm] = ...
                     solve_model_for_online_filter(false, candidate, DynareDataset, DynareOptions, Model, EstimatedParameters, BayesInfo, bounds, DynareResults) ;
-                if ~info
+                if ~info(1)
                     xparam(:,i) = candidate ;
                     steadystate = ReducedForm.steadystate;
                     state_variables_steady_state = ReducedForm.state_variables_steady_state;
@@ -208,6 +210,13 @@ for t=1:sample_size
                     PredictionError = bsxfun(@minus,Y(t,:)', tmp(mf1,:));
                     wtilde(i) = w_stage1(i)*exp(-.5*(const_lik+log(det(ReducedForm.H))+sum(PredictionError.*(ReducedForm.H\PredictionError), 1)));
                 end
+            end
+            if counter==DynareOptions.particle.liu_west_max_resampling_tries
+                fprintf('\nLiu & West particle filter: I haven''t been able to solve the model in %u tries.\n',DynareOptions.particle.liu_west_max_resampling_tries)
+                fprintf('Liu & West particle filter: The last error message was: %s\n',get_error_message(info))
+                fprintf('Liu & West particle filter: You can try to increase liu_west_max_resampling_tries, but most\n')
+                fprintf('Liu & West particle filter: likely there is an issue with the model.\n')
+                error('Liu & West particle filter: unable to solve the model.')
             end
         end
     end
