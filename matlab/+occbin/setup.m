@@ -56,7 +56,7 @@ if isfield(M_,'surprise_shocks') && ~isempty(M_.surprise_shocks)
         ivar = M_.surprise_shocks(ii).exo_id;
         temp(M_.surprise_shocks(ii).periods,ivar) = M_.surprise_shocks(ii).value;
     end    
-    shock_index=~all(temp==0);
+    shock_index=~all(temp==0,1);
     options_.occbin.simul.SHOCKS=temp(:,shock_index);
     options_.occbin.simul.exo_pos=find(shock_index);
 end
