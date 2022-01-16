@@ -234,7 +234,7 @@ else
     initial_period = options_.initial_period;
 end
 
-ts = dseries(transpose(oo_.endo_simul), initial_period, M_.endo_names);
+ts = dseries([transpose(oo_.endo_simul(1:M_.orig_endo_nbr,:)), oo_.exo_simul], initial_period, [M_.endo_names(1:M_.orig_endo_nbr); M_.exo_names]);
 assignin('base', 'Simulated_time_series', ts);
 if oo_.deterministic_simulation.status
     oo_.gui.ran_perfect_foresight = true;
