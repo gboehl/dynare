@@ -361,32 +361,35 @@ if isequal(expectationmodelkind, 'pac') && growth_correction
         pgrowth = M_.params(expectationmodel.growth_neutrality_param_index);
         for iter = 1:numel(expectationmodel.growth_linear_comb)
             vgrowth='';
+            variable = [];
             if expectationmodel.growth_linear_comb(iter).exo_id > 0
                 variable = M_.exo_names{expectationmodel.growth_linear_comb(iter).exo_id};
             elseif expectationmodel.growth_linear_comb(iter).endo_id > 0
                 variable = M_.endo_names{expectationmodel.growth_linear_comb(iter).endo_id};
             end
-            [variable, transformations] = rewrite_aux_variable(variable, M_);
-            if isempty(transformations)
-                if expectationmodel.growth_linear_comb(iter).lag ~= 0
-                    variable = sprintf('%s(%d)', variable, expectationmodel.growth_linear_comb(iter).lag);
-                end
-            else
-                for k=rows(transformations):-1:1
-                    if isequal(transformations{k,1}, 'lag')
-                        variable = sprintf('%s.lag(%u)', variable, -transformations{k,2});
-                    elseif isequal(transformations{k,1}, 'diff')
-                        if isempty(transformations{k,2})
-                            variable = sprintf('%s.%s()', variable, transformations{k,1});
+            if ~isempty(variable)
+                [variable, transformations] = rewrite_aux_variable(variable, M_);
+                if isempty(transformations)
+                    if expectationmodel.growth_linear_comb(iter).lag ~= 0
+                        variable = sprintf('%s(%d)', variable, expectationmodel.growth_linear_comb(iter).lag);
+                    end
+                else
+                    for k=rows(transformations):-1:1
+                        if isequal(transformations{k,1}, 'lag')
+                            variable = sprintf('%s.lag(%u)', variable, -transformations{k,2});
+                        elseif isequal(transformations{k,1}, 'diff')
+                            if isempty(transformations{k,2})
+                                variable = sprintf('%s.%s()', variable, transformations{k,1});
+                            else
+                                variable = sprintf('%s(-%u).%s()', variable, transformations{k,2}, transformations{k,1});
+                            end
                         else
-                            variable = sprintf('%s(-%u).%s()', variable, transformations{k,2}, transformations{k,1});
+                            variable = sprintf('%s.%s()', variable, transformations{k});
                         end
-                    else
-                        variable = sprintf('%s.%s()', variable, transformations{k});
                     end
                 end
+                vgrowth = strcat('dbase.', variable);
             end
-            vgrowth = strcat('dbase.', variable);
             if expectationmodel.growth_linear_comb(iter).param_id > 0
                 if ~isempty(vgrowth)
                     vgrowth = sprintf('%1.16f*%s',M_.params(expectationmodel.growth_linear_comb(iter).param_id), vgrowth);
@@ -408,8 +411,8 @@ if isequal(expectationmodelkind, 'pac') && growth_correction
                     linearCombination = sprintf('%s-%s', linearCombination, vgrowth);
                 end
             else
-                linearCombination = vgrowth;
-            end
+                    linearCombination = vgrowth;
+                end
         end % loop over growth linear combination elements
         growthcorrection = sprintf('%1.16f*(%s)', pgrowth, linearCombination);
     else
@@ -419,32 +422,35 @@ if isequal(expectationmodelkind, 'pac') && growth_correction
                 pgrowth = targetcoefficients(i)*M_.params(expectationmodel.components(i).growth_neutrality_param_index);
                 for iter = 1:numel(expectationmodel.components(i).growth_linear_comb)
                     vgrowth='';
+                    variable=[];
                     if expectationmodel.components(i).growth_linear_comb(iter).exo_id > 0
                         variable = M_.exo_names{expectationmodel.components(i).growth_linear_comb(iter).exo_id};
                     elseif expectationmodel.components(i).growth_linear_comb(iter).endo_id > 0
                         variable = M_.endo_names{expectationmodel.components(i).growth_linear_comb(iter).endo_id};
                     end
-                    [variable, transformations] = rewrite_aux_variable(variable, M_);
-                    if isempty(transformations)
-                        if expectationmodel.components(i).growth_linear_comb(iter).lag ~= 0
-                            variable = sprintf('%s(%d)', variable, expectationmodel.components(i).growth_linear_comb(iter).lag);
-                        end
-                    else
-                        for k=rows(transformations):-1:1
-                            if isequal(transformations{k,1}, 'lag')
-                                variable = sprintf('%s.lag(%u)', variable, -transformations{k,2});
-                            elseif isequal(transformations{k,1}, 'diff')
-                                if isempty(transformations{k,2})
-                                    variable = sprintf('%s.%s()', variable, transformations{k,1});
+                    if ~isempty(variable)
+                        [variable, transformations] = rewrite_aux_variable(variable, M_);
+                        if isempty(transformations)
+                            if expectationmodel.components(i).growth_linear_comb(iter).lag ~= 0
+                                variable = sprintf('%s(%d)', variable, expectationmodel.components(i).growth_linear_comb(iter).lag);
+                            end
+                        else
+                            for k=rows(transformations):-1:1
+                                if isequal(transformations{k,1}, 'lag')
+                                    variable = sprintf('%s.lag(%u)', variable, -transformations{k,2});
+                                elseif isequal(transformations{k,1}, 'diff')
+                                    if isempty(transformations{k,2})
+                                        variable = sprintf('%s.%s()', variable, transformations{k,1});
+                                    else
+                                        variable = sprintf('%s(-%u).%s()', variable, transformations{k,2}, transformations{k,1});
+                                    end
                                 else
-                                    variable = sprintf('%s(-%u).%s()', variable, transformations{k,2}, transformations{k,1});
+                                    variable = sprintf('%s.%s()', variable, transformations{k});
                                 end
-                            else
-                                variable = sprintf('%s.%s()', variable, transformations{k});
                             end
                         end
+                        vgrowth = strcat('dbase.', variable);
                     end
-                    vgrowth = strcat('dbase.', variable);
                     if expectationmodel.components(i).growth_linear_comb(iter).param_id > 0
                         if ~isempty(vgrowth)
                             vgrowth = sprintf('%1.16f*%s',M_.params(expectationmodel.components(i).growth_linear_comb(iter).param_id), vgrowth);
