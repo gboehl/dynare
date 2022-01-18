@@ -172,7 +172,7 @@ if options_.ramsey_policy
                 options_.noprint = 0;
             end
             
-            if any(isnan(oo_.mean)) || any(isnan(oo_.mean))
+            if any(isnan(oo_.mean)) || any(any(isnan(oo_.var)))
                 fprintf('evaluate_planner_objective: encountered NaN moments in the endogenous variables often associated\n')
                 fprintf('evaluate_planner_objective: with either non-stationary variables or singularity due e.g. including\n')
                 fprintf('evaluate_planner_objective: the planner objective function (or additive parts of it) in the model.\n')
