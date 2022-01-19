@@ -531,6 +531,7 @@ ECB_MODFILES = \
 	pac/var-11e/example1.mod \
 	pac/var-12/example1.mod \
 	pac/var-12/example2.mod \
+	pac/var-12/example3.mod \
 	pac/var-12/example4.mod \
 	pac/var-12/example11.mod \
 	pac/var-12/example12.mod \

@@ -379,9 +379,9 @@ if isequal(expectationmodelkind, 'pac') && growth_correction
                             variable = sprintf('%s.lag(%u)', variable, -transformations{k,2});
                         elseif isequal(transformations{k,1}, 'diff')
                             if isempty(transformations{k,2})
-                                variable = sprintf('%s.%s()', variable, transformations{k,1});
+                                variable = sprintf('%s.diff()', variable);
                             else
-                                variable = sprintf('%s(-%u).%s()', variable, transformations{k,2}, transformations{k,1});
+                                variable = sprintf('%s.lag(%u).diff()', variable, transformations{k,2});
                             end
                         else
                             variable = sprintf('%s.%s()', variable, transformations{k});
@@ -440,9 +440,9 @@ if isequal(expectationmodelkind, 'pac') && growth_correction
                                     variable = sprintf('%s.lag(%u)', variable, -transformations{k,2});
                                 elseif isequal(transformations{k,1}, 'diff')
                                     if isempty(transformations{k,2})
-                                        variable = sprintf('%s.%s()', variable, transformations{k,1});
+                                        variable = sprintf('%s.diff()', variable);
                                     else
-                                        variable = sprintf('%s(-%u).%s()', variable, transformations{k,2}, transformations{k,1});
+                                        variable = sprintf('%s.lag(%u).diff()', variable, transformations{k,2});
                                     end
                                 else
                                     variable = sprintf('%s.%s()', variable, transformations{k});

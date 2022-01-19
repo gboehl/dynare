@@ -40,12 +40,6 @@ model;
 
 end;
 
-shocks;
-  var ex = 1.0;
-  var ey = 1.0;
-  var ez = 1.0;
-end;
-
 // Initialize the PAC model (build the Companion VAR representation for the auxiliary model).
 pac.initialize('pacman');
 
