@@ -1996,6 +1996,13 @@ in this case ``initval`` is used to specify the terminal conditions.
 	file as the only dates necessary for initialization are before
 	that date.
 
+    .. option:: last_simulation_period = {INTEGER | DATE}
+
+	The observation number in the file or the date (see
+	:ref:`dates <dates-members>`) at which the simulation (or the forecast) is
+	ending. This option avoids to have to compute the maximum
+	number of leads in the model.
+
     .. option:: last_obs = {INTEGER | DATE}
 
         The observaton number or the date (see
@@ -2264,6 +2271,13 @@ in this case ``initval`` is used to specify the terminal conditions.
 	the first period of simulation doesn’t need to exist in the
 	file as the only dates necessary for initialization are before
 	that date.
+
+    .. option:: last_simulation_period = {INTEGER | DATE}
+
+	The observation number in the file or the date (see
+	:ref:`dates <dates-members>`) at which the simulation (or the forecast) is
+	ending. This option avoids to have to compute the maximum
+	number of leads in the model.
 
     .. option:: last_obs = {INTEGER | DATE}
 

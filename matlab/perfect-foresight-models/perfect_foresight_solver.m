@@ -228,14 +228,23 @@ end
 
 dyn2vec(M_, oo_, options_);
 
-if ~isdates(options_.initial_period) && isnan(options_.initial_period)
+if isfield(oo_, 'initval_series') && ~isempty(oo_.initval_series)
+    initial_period = oo_.initval_series.dates(1)+(M_.orig_maximum_lag-1);
+elseif ~isdates(options_.initial_period) && isnan(options_.initial_period)
     initial_period = dates(1,1);
 else
     initial_period = options_.initial_period;
 end
 
 ts = dseries([transpose(oo_.endo_simul(1:M_.orig_endo_nbr,:)), oo_.exo_simul], initial_period, [M_.endo_names(1:M_.orig_endo_nbr); M_.exo_names]);
+
+if isfield(oo_, 'initval_series') && ~isempty(oo_.initval_series)
+    names = ts.name;
+    ts = merge(oo_.initval_series{names{:}}, ts);
+end
+
 assignin('base', 'Simulated_time_series', ts);
+
 if oo_.deterministic_simulation.status
     oo_.gui.ran_perfect_foresight = true;
 end

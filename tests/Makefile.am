@@ -152,6 +152,7 @@ MODFILES = \
 	discretionary_policy/Gali_2015_chapter_3.mod \
 	discretionary_policy/Gali_2015_chapter_3_nonlinear.mod \
 	histval_initval_file/ramst_initval_file.mod \
+	histval_initval_file/ramst_initval_file_with_dseries.mod \
 	histval_initval_file/ramst_data_generate.mod \
 	histval_initval_file/ramst_datafile.mod \
 	histval_initval_file/sim_exo_lead_lag.mod \

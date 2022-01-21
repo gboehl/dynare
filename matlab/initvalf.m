@@ -1,18 +1,17 @@
-function series = initvalf(M, options) 
-% function initvalf(M)
-%
-% handles options for histvalf() and initvalf()
+function [series, p] = initvalf(DynareModel, options)
+
+% Handles options for histvalf() and initvalf()
 %
 % INPUTS
-%    caller:           string, name of calling function
-%    M:                model structure
-%    options:          options specific to initivalf
+% - caller           [char]      row array, name of calling function
+% - DynareModel      [struct]    model description, a.k.a M_
+% - options          [struct]    options specific to initivalf
 %
 % OUTPUTS
-%    series:           dseries containing selected data from a file or a dseries
-%
+% - series           [dseries]   selected data from a file or a dseries
+% - p                [integer]   number of periods (excluding the initial and terminal conditions)
 
-% Copyright (C) 2003-2020 Dynare Team
+% Copyright © 2003-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,4 +28,4 @@ function series = initvalf(M, options)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-series = histvalf_initvalf('INITVALF', M, options);
+[series, p] = histvalf_initvalf('INITVALF', DynareModel, options);

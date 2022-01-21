@@ -17,6 +17,7 @@ M.exo_nbr = 1;
 M.exo_names = {'Variable_4'};
 M.exo_det_nbr = 0;
 M.orig_maximum_lag = 2;
+M.orig_maximum_lead = 0;
 
 caller = 'INITVAL';
 
