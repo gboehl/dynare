@@ -68,8 +68,8 @@ estimated_params;
 alp, 0.356;
 rho, 0.129;
 psi, 0.65;
-stderr e_a, 0.035449;
-stderr e_m, 0.008862;
+stderr e_a, 0.035449, 0, inf;
+stderr e_m, 0.008862, 0, inf;
 end;
 
 varobs gp_obs gy_obs;
