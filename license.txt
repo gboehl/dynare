@@ -285,7 +285,7 @@ License: GFDL-NIV-1.3+
 
 Files: dynare++/*
 Copyright: 2004-2011 Ondra Kamenik
-           2019-2021 Dynare Team
+           2019-2022 Dynare Team
 License: GPL-3+
 
 Files: m4/ax_blas.m4 m4/ax_lapack.m4

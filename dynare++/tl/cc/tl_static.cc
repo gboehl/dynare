@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -51,7 +51,7 @@ namespace TLStatic
   init(int dim, int nvar)
   {
     // Check that tensor indices will not overflow (they are stored as signed int, hence on 31 bits)
-    if (std::log2(nvar)*dim > std::numeric_limits<int>::digits)
+    if (std::log2(nvar)*dim >= std::numeric_limits<int>::digits)
       throw TLException(__FILE__, __LINE__, "Problem too large, you should decrease the approximation order");
 
     std::lock_guard<std::mutex>{mut};
