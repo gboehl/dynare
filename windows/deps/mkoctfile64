@@ -1,10 +1,8 @@
 #! /bin/sh
 
-## Make sure to keep -static-libgcc, -static-libstdc++ and -static-libgfortran in LDFLAGS and
-## DL_LDFLAGS when updating this file.
-## This is needed to cope for differences between the MinGW libraries shipped by the official Octave
-## package for Windows, and the MinGW libraries from Debian used on the runners.
-## Also keep BINDIR in DEFAULT_LFLAGS (for UMFPACK)
+## Make sure to keep -static-libgcc, -static-libstdc++ and -static-libgfortran
+## in DL_LDFLAGS when updating this file.
+## Also keep BINDIR in DEFAULT_LDFLAGS (for UMFPACK).
 
 # Exit immediately on any error.
 set -e
@@ -44,9 +42,9 @@ if [ "$INCLUDEDIR" != /usr/include ]; then
   DEFAULT_INCFLAGS="$DEFAULT_INCFLAGS -I$INCLUDEDIR"
 fi
 
-DEFAULT_LFLAGS="-L$OCTLIBDIR -L$BINDIR"
+DEFAULT_LDFLAGS="-L$OCTLIBDIR -L$BINDIR"
 if [ "$LIBDIR" != /usr/lib ]; then
-  DEFAULT_LFLAGS="$DEFAULT_LFLAGS -L$LIBDIR"
+  DEFAULT_LDFLAGS="$DEFAULT_LDFLAGS -L$LIBDIR"
 fi
 
 # Default values for these variables are filled in when Octave is
@@ -90,9 +88,9 @@ fi
 : ${LIBS="-lpsapi -lgdi32 -lm"}
 : ${FLIBS="-lm -lgfortran -lmingw32 -lmoldname -lmingwex -lmsvcrt -lquadmath -lpthread -ladvapi32 -lshell32 -luser32 -lkernel32"}
 : ${LD_CXX="x86_64-w64-mingw32-g++"}
-: ${LDFLAGS="-static-libgcc -static-libstdc++ -static-libgfortran"}
+: ${LDFLAGS=$DEFAULT_LDFLAGS}
 : ${LD_STATIC_FLAG=""}
-: ${LFLAGS=$DEFAULT_LFLAGS}
+: ${LFLAGS=$DEFAULT_LDFLAGS}
 : ${F77_INTEGER_8_FLAG=""}
 
 : ${ALL_FFLAGS="$FFLAGS $F77_INTEGER_8_FLAG"}
