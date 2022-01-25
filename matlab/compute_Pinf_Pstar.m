@@ -48,6 +48,16 @@ function [Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,qz_criterium, restrict_colum
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 np = size(T,1);
+if iszero(Q)
+    % this may happen if users set Q=0 and use heteroskedastic shocks to set
+    % variances period by period
+    % this in practice triggers a form of conditional filter where states
+    % are initialized at st. state with zero variances
+    Pstar=T*0;
+    Pinf=T*0;
+    return
+end
+
 if nargin == 6
     indx = restrict_columns;
     indx0=find(~ismember([1:np],indx));
