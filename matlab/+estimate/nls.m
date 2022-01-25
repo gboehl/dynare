@@ -28,7 +28,7 @@ function nls(eqname, params, data, range, optimizer, varargin)
 %     equation must have NaN values in the object.
 % [4] It is assumed that the residual is additive.
 
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -182,8 +182,7 @@ write_ssr_routine(lhs, rhs, eqname, ipnames_, M_);
 % Workaround for Octave bug https://savannah.gnu.org/bugs/?46282
 % Octave will randomly fail to read the ssr_* file generated in the +folder
 if isoctave
-    rename(['+' M_.fname], ['+' M_.fname '-tmp']);
-    rename(['+' M_.fname '-tmp'], ['+' M_.fname]);
+    path(path)
 end
 
 % Create a function handle returning the sum of square residuals for a given vector of parameters.
