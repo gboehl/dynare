@@ -69,7 +69,14 @@ parameter_names = bayestopt_.name;
 save([M_.dname filesep 'Output' filesep M_.fname '_mean.mat'],'xparam1','hh','parameter_names','SIGMA');
 
 fprintf('Estimation::marginal density: I''m computing the posterior log marginal density (modified harmonic mean)... ');
-logdetSIGMA = log(det(SIGMA));
+try 
+    % use this robust option to avoid inf/nan
+    logdetSIGMA = 2*sum(log(diag(chol(SIGMA)))); 
+catch
+    % in case SIGMA is not positive definite
+    logdetSIGMA = nan;
+    fprintf('Estimation::marginal density: the covariance of MCMC draws is not positive definite. You may have too few MCMC draws.');
+end
 invSIGMA = hh;
 marginal = zeros(9,2);
 linee = 0;
