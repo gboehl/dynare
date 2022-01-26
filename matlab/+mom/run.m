@@ -121,7 +121,7 @@ if isempty(estim_params_) % structure storing the info about estimated parameter
         error('method_of_moments: The ''estimated_params'' block must not be empty')
     end
 end
-if isempty(M_.matched_moments) % structure storing the moments used for the method of moments estimation
+if ~isfield(M_,'matched_moments') || isempty(M_.matched_moments) % structure storing the moments used for the method of moments estimation
     error('method_of_moments: You need to provide a ''matched_moments'' block')
 end
 if ~isempty(bayestopt_) && any(bayestopt_.pshape==0) && any(bayestopt_.pshape~=0)
