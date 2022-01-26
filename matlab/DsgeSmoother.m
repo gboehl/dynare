@@ -430,7 +430,7 @@ else
                 % period ahead (so if regimestart was [1 5] it should be [1 4]
                 % in out
                 %         end
-                bbb(oo_.dr.inv_order_var,k) = out.piecewise(1,:);
+                bbb(oo_.dr.inv_order_var,k) = out.piecewise(1,:) - out.ys';
             end
         end
         % do not overwrite accurate computations using reduced st. space
@@ -475,7 +475,7 @@ else
             % in out
             %         end
             for jnk=1:options_.nk
-                aaa(jnk,oo_.dr.inv_order_var,k+jnk-1) = out.piecewise(jnk,:);
+                aaa(jnk,oo_.dr.inv_order_var,k+jnk-1) = out.piecewise(jnk,:) - out.ys';
             end
         end
         aK=aaa;
