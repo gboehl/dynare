@@ -21,7 +21,7 @@ function simulations = simul_backward_linear_model(initialconditions, samplesize
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided thrtough the histval block.
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright (C) 2012-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,11 +39,11 @@ function simulations = simul_backward_linear_model(initialconditions, samplesize
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if DynareModel.maximum_lead
-    error('Model defined in %s.mod is not backward.', M_.fname)
+    error('Model defined in %s.mod is not backward.', DynareModel.fname)
 end
 
 if ~DynareModel.maximum_lag
-    error('Model defined in %s.mod is not backward.', M_.fname)
+    error('Model defined in %s.mod is not backward.', DynareModel.fname)
 end
 
 if nargin<6
