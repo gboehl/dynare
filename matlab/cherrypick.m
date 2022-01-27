@@ -224,7 +224,7 @@ try
                     fprintf(fid, '%s = %s;\n\n', auxlhs{k}, rhs{k});
                 end
             end
-            if isfield(M_.pac.(ispac.name), 'components')
+            if ~isempty(ispac) && isfield(M_.pac.(ispac.name), 'components')
                 for k=1:length(M_.pac.(ispac.name).components)
                     if ~isequal(M_.pac.(ispac.name).components(k).coeff_str, '1')
                         params = get_variables_and_parameters_in_expression(M_.pac.(ispac.name).components(k).coeff_str);
