@@ -185,7 +185,9 @@ while is_changed && maxiter>iter && ~is_periodic
     [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options,TT,RR,CC);%     T1=TT;
     sto_etahat(iter)={etahat};
     regime_history0(iter,:) = regime_history;
-    save('info1','regime_history0');
+    if occbin_smoother_debug
+        save('info1','regime_history0');
+    end
     
     sto_CC = CC;
     sto_RR = RR;
