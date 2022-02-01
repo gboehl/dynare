@@ -1,6 +1,8 @@
 /*
-  Tests that local_state_space_iteration_2 and local_state_space_iteration_k
-  (for k=2) return the same results.
+  Tests that :
+  (i) local_state_space_iteration_2, local_state_space_iteration_k and local_state_space_iteration_fortran
+  (for k=2) return the same results
+  (ii) local_state_space_iteration_k and local_state_space_iteration_fortran return the same results for k=3 without parallelization.
 
   This file must be run after first_spec.mod (both are based on the same model).
 */
@@ -35,6 +37,9 @@ yhat = chol(oo_.var(state_idx,state_idx))*randn(M_.npred+M_.nboth, nparticles);
 epsilon = chol(M_.Sigma_e)*randn(M_.exo_nbr, nparticles);
 
 dr = oo_.dr;
+options_.threads.local_state_space_iteration_fortran = 1;
+options_.threads.local_state_space_iteration_k = 1;
+
 
 // “rf” stands for “Reduced Form”
 rf_ghx = dr.ghx(dr.restrict_var_list, :);
@@ -86,7 +91,7 @@ tStart31 = tic; for i=1:nsims, ynext31 = local_state_space_iteration_k(yhat, eps
 tStart32 = tic; [udr] = folded_to_unfolded_dr(oo_.dr, M_, options_); for i=1:nsims, ynext32 = local_state_space_iteration_fortran(yhat, epsilon, oo_.dr, M_, options_, udr); end, tElapsed32 = toc(tStart32);
 
 if max(max(abs(ynext31-ynext32))) > 1e-14
-    error('Inconsistency between local_state_space_iteration_2 and local_state_space_iteration_fortran')
+    error('Inconsistency between local_state_space_iteration_k and local_state_space_iteration_fortran')
 end
 
 if tElapsed32<tElapsed31

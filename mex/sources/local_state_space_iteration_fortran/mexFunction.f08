@@ -30,21 +30,21 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    use iso_c_binding
    use struct
    use matlab_mex
-   use partitions
-   use simulation
+   use pthread
+   use pparticle
    implicit none
 
    type(c_ptr), dimension(*), intent(in), target :: prhs
    type(c_ptr), dimension(*), intent(out) :: plhs
    integer(c_int), intent(in), value :: nlhs, nrhs
    type(c_ptr) :: M_mx, options_mx, dr_mx, yhat_mx, epsilon_mx, udr_mx, tmp
-   type(pol), dimension(:), allocatable, target :: udr
-   integer :: order, nstatic, npred, nboth, nfwrd, exo_nbr, endo_nbr, nparticles, nys, nvar, nrestricted
-   real(real64), dimension(:), allocatable :: ys_reordered, dyu
+   type(pol), dimension(:), allocatable :: udr
+   integer :: order, nstatic, npred, nboth, nfwrd, exo_nbr, endo_nbr, nparticles, nys, nvar, nrestricted, nm
    real(real64), dimension(:), pointer, contiguous :: order_var, ys, restrict_var_list
-   real(real64), dimension(:,:), allocatable :: yhat, e, ynext, ynext_all
-   type(horner), dimension(:), allocatable :: h
-   integer :: i, j, m, n
+   real(real64), allocatable :: yhat(:,:), e(:,:), ynext(:,:), ys_reordered(:)
+   integer :: i, m, n, rc
+   type(c_pthread_t), allocatable :: threads(:)
+   integer, allocatable, target :: routines(:)
    character(kind=c_char, len=10) :: fieldname
 
    yhat_mx = prhs(1)
@@ -114,6 +114,13 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
       restrict_var_list => mxGetPr(restrict_var_list_mx)
    end associate
 
+   associate (thread_mx => mxGetField(options_mx, 1_mwIndex, "threads"))
+      if (.not. c_associated(thread_mx)) then
+         call mexErrMsgTxt("Cannot find `threads' in options_")
+      end if
+      nm = get_int_field(thread_mx, "local_state_space_iteration_fortran")
+   end associate
+
    nparticles = int(mxGetN(yhat_mx));
    if (int(mxGetN(epsilon_mx)) /= nparticles) then
       call mexErrMsgTxt("epsilon and yhat don't have the same number of columns")
@@ -125,11 +132,12 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
       call mexErrMsgTxt("epsilon should be a double precision matrix with exo_nbr rows")
    end if
 
-   allocate(yhat(nys, nparticles), e(exo_nbr, nparticles), ynext(nrestricted, nparticles), ynext_all(endo_nbr, nparticles))
+   allocate(yhat(nys, nparticles), e(exo_nbr, nparticles), ynext(nrestricted, nparticles))
    yhat = reshape(mxGetPr(yhat_mx), [nys, nparticles])
    e = reshape(mxGetPr(epsilon_mx), [exo_nbr, nparticles])
 
-   allocate(h(0:order), udr(0:order)) 
+
+   allocate(udr(0:order)) 
    do i = 0, order
       write (fieldname, '(a2, i1)') "g_", i
       tmp = mxGetField(udr_mx, 1_mwIndex, trim(fieldname))
@@ -138,23 +146,45 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
       end if
       m = int(mxGetM(tmp))
       n = int(mxGetN(tmp))
-      allocate(udr(i)%g(m,n), h(i)%c(endo_nbr, nvar**i))
+      allocate(udr(i)%g(m,n))
       udr(i)%g(1:m,1:n) = reshape(mxGetPr(tmp), [m,n])
    end do
 
-   ! Using the Horner algorithm to evaluate the decision rule at the chosen yhat and epsilon
-   allocate(dyu(nvar))
-   do j=1,nparticles
-      dyu(1:nys) = yhat(:,j) 
-      dyu(nys+1:) = e(:,j) 
-      call eval(h, dyu, udr, endo_nbr, nvar, order)
-      ynext_all(:,j) = h(0)%c(:,1) + ys_reordered
-      do i=1,nrestricted
-         ynext(i,j) = ynext_all(int(restrict_var_list(i)),j) 
-      end do
-   end do
+   ! Initializing the global structure containing
+   ! useful information for threads
+   thread_data%nm = nm
+   thread_data%nys = nys
+   thread_data%endo_nbr = endo_nbr
+   thread_data%nvar = nvar
+   thread_data%order = order
+   thread_data%nrestricted = nrestricted
+   thread_data%nparticles = nparticles
+   thread_data%yhat = yhat
+   thread_data%e = e
+   thread_data%ynext = ynext
+   thread_data%udr = udr
+   thread_data%ys_reordered = ys_reordered
+   thread_data%restrict_var_list = restrict_var_list
 
+   allocate(threads(nm), routines(nm))
+   routines = [ (i, i = 1, nm) ]
+
+   if (nm == 1) then
+      call thread_eval(c_loc(routines(1)))
+   else
+      ! Creating the threads
+      do i = 1, nm
+         rc = c_pthread_create(threads(i), c_null_ptr, c_funloc(thread_eval), c_loc(routines(i)))
+      end do
+
+      ! Joining the threads
+      do i = 1, nm
+         rc = c_pthread_join(threads(i), c_loc(routines(i)))
+      end do
+   end if
+
+   ! Returning the result
    plhs(1) = mxCreateDoubleMatrix(int(size(restrict_var_list), mwSize), int(nparticles, mwSize), mxREAL)
-   mxGetPr(plhs(1)) = reshape(ynext, [size(ynext)])
- 
+   mxGetPr(plhs(1)) = reshape(thread_data%ynext, [size(thread_data%ynext)])
+
 end subroutine mexFunction
