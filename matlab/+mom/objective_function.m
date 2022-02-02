@@ -221,7 +221,7 @@ elseif strcmp(options_mom_.mom.mom_method,'SMM')
     y_sim = simult_(M_, options_mom_, dr.ys, dr, scaled_shock_series, options_mom_.order);
     % provide meaningful penalty if data is nan or inf
     if any(any(isnan(y_sim))) || any(any(isinf(y_sim)))
-        if options_mom_.mode_compute==13
+        if options_mom_.vector_output == 1 % lsqnonlin requires vector output
             fval = Inf(size(oo_.mom.Sw,1),1);
         else
             fval = Inf;
@@ -229,7 +229,7 @@ elseif strcmp(options_mom_.mom.mom_method,'SMM')
         info(1)=180;
         info(4) = 0.1;
         exit_flag = 0;
-        if options_mom_.mode_compute == 13
+        if options_mom_.vector_output == 1 % lsqnonlin requires vector output
             fval = ones(size(oo_.mom.dataMoments,1),1)*options_mom_.huge_number;
         end
         return
