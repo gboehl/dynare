@@ -462,7 +462,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
     if options_.mh_replic || options_.load_mh_file
         posterior_sampler_options = options_.posterior_sampler_options.current_options;
         posterior_sampler_options.invhess = invhess;
-        [posterior_sampler_options, options_] = check_posterior_sampler_options(posterior_sampler_options, options_);
+        [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, options_, bounds, bayestopt_);
         % store current options in global
         options_.posterior_sampler_options.current_options = posterior_sampler_options;
         if options_.mh_replic

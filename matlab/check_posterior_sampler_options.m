@@ -1,19 +1,23 @@
-function [posterior_sampler_options, options_] = check_posterior_sampler_options(posterior_sampler_options, options_, bounds)
+function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, options_, bounds, bayestopt_)
 
-% function [posterior_sampler_options, options_] = check_posterior_sampler_options(posterior_sampler_options, options_, bounds)
+% function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, options_, bounds, bayestopt_)
 % initialization of posterior samplers
 %
 % INPUTS
 %   posterior_sampler_options:       posterior sampler options
 %   options_:       structure storing the options
+%   bounds:         structure containing prior bounds
+%   bayestopt_:     structure storing information about priors
 
 % OUTPUTS
 %   posterior_sampler_options:       checked posterior sampler options
+%   options_:       structure storing the options
+%   bayestopt_:     structure storing information about priors
 %
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright (C) 2015-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -86,7 +90,6 @@ if init
                     % will overwrite jscale from set_prior.m
                     if exist(options_list{i,2},'file') || exist([options_list{i,2},'.mat'],'file')
                         tmp = load(options_list{i,2},'Scale');
-                        global bayestopt_
                         bayestopt_.mh_jscale = tmp.Scale;
                         options_.mh_jscale = tmp.Scale;
                         bayestopt_.jscale = ones(size(bounds.lb,1),1)*tmp.Scale;
@@ -152,7 +155,6 @@ if init
                     % will overwrite jscale from set_prior.m
                     if exist(options_list{i,2},'file') || exist([options_list{i,2},'.mat'],'file')
                         tmp = load(options_list{i,2},'Scale');
-                        global bayestopt_
                         bayestopt_.mh_jscale = tmp.Scale;
                         options_.mh_jscale = tmp.Scale;
                         bayestopt_.jscale = ones(size(bounds.lb,1),1)*tmp.Scale;
