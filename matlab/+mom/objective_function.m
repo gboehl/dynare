@@ -230,7 +230,7 @@ elseif strcmp(options_mom_.mom.mom_method,'SMM')
         info(4) = 0.1;
         exit_flag = 0;
         if options_mom_.vector_output == 1 % lsqnonlin requires vector output
-            fval = ones(size(oo_.mom.dataMoments,1),1)*options_mom_.huge_number;
+            fval = ones(size(oo_.mom.data_moments,1),1)*options_mom_.huge_number;
         end
         return
     end
