@@ -29,7 +29,7 @@ module pthread
 
    type, bind(c), public :: c_pthread_t
       private
-      integer(kind=c_char) :: hidden(pthread_size)
+      character(kind=c_char) :: hidden(pthread_size)
    end type c_pthread_t
 
    interface
