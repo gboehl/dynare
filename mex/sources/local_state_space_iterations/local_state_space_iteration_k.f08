@@ -1,4 +1,4 @@
-! Copyright © 2021 Dynare Team
+! Copyright © 2021-2022 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -118,7 +118,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
       if (.not. c_associated(thread_mx)) then
          call mexErrMsgTxt("Cannot find `threads' in options_")
       end if
-      nm = get_int_field(thread_mx, "local_state_space_iteration_fortran")
+      nm = get_int_field(thread_mx, "local_state_space_iteration_k")
    end associate
 
    nparticles = int(mxGetN(yhat_mx));

@@ -1,8 +1,5 @@
 /*
-  Tests that :
-  (i) local_state_space_iteration_2, local_state_space_iteration_k and local_state_space_iteration_fortran
-  (for k=2) return the same results
-  (ii) local_state_space_iteration_k and local_state_space_iteration_fortran return the same results for k=3 without parallelization.
+  Tests that local_state_space_iteration_2 and local_state_space_iteration_k (for k=2) return the same results
 
   This file must be run after first_spec.mod (both are based on the same model).
 */
@@ -37,8 +34,6 @@ yhat = chol(oo_.var(state_idx,state_idx))*randn(M_.npred+M_.nboth, nparticles);
 epsilon = chol(M_.Sigma_e)*randn(M_.exo_nbr, nparticles);
 
 dr = oo_.dr;
-options_.threads.local_state_space_iteration_fortran = 1;
-options_.threads.local_state_space_iteration_k = 1;
 
 
 // “rf” stands for “Reduced Form”
@@ -52,16 +47,10 @@ rf_ghxu = dr.ghxu(dr.restrict_var_list, :);
 
 tStart1 = tic; for i=1:nsims, ynext1 = local_state_space_iteration_2(yhat, epsilon, rf_ghx, rf_ghu, rf_constant, rf_ghxx, rf_ghuu, rf_ghxu, options_.threads.local_state_space_iteration_2); end, tElapsed1 = toc(tStart1);
 
-tStart2 = tic; for i=1:nsims, ynext2 = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_); end, tElapsed2 = toc(tStart2);
-
-
-tStart3 = tic; [udr] = folded_to_unfolded_dr(dr, M_, options_); for i=1:nsims, ynext3 = local_state_space_iteration_fortran(yhat, epsilon, dr, M_, options_, udr); end, tElapsed3 = toc(tStart3);
+tStart2 = tic; [udr] = folded_to_unfolded_dr(dr, M_, options_); for i=1:nsims, ynext2 = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_, udr); end, tElapsed2 = toc(tStart2);
 
 if max(max(abs(ynext1-ynext2))) > 1e-14
     error('Inconsistency between local_state_space_iteration_2 and local_state_space_iteration_k')
-end
-if max(max(abs(ynext1-ynext3))) > 1e-14
-    error('Inconsistency between local_state_space_iteration_2 and local_state_space_iteration_fortran')
 end
 
 if tElapsed1<tElapsed2
@@ -71,35 +60,5 @@ if tElapsed1<tElapsed2
 else
     skipline()
     dprintf('local_state_space_iteration_2 is %5.2f times slower than local_state_space_iteration_k', tElapsed1/tElapsed2)
-    skipline()
-end
-
-if tElapsed1<tElapsed3
-    skipline()
-    dprintf('local_state_space_iteration_2 is %5.2f times faster than local_state_space_iteration_fortran', tElapsed3/tElapsed1)
-    skipline()
-else
-    skipline()
-    dprintf('local_state_space_iteration_2 is %5.2f times slower than local_state_space_iteration_fortran', tElapsed1/tElapsed3)
-    skipline()
-end
-
-stoch_simul(order=3, periods=200, irf=0, k_order_solver);
-
-tStart31 = tic; for i=1:nsims, ynext31 = local_state_space_iteration_k(yhat, epsilon, oo_.dr, M_, options_); end, tElapsed31 = toc(tStart31);
-
-tStart32 = tic; [udr] = folded_to_unfolded_dr(oo_.dr, M_, options_); for i=1:nsims, ynext32 = local_state_space_iteration_fortran(yhat, epsilon, oo_.dr, M_, options_, udr); end, tElapsed32 = toc(tStart32);
-
-if max(max(abs(ynext31-ynext32))) > 1e-14
-    error('Inconsistency between local_state_space_iteration_k and local_state_space_iteration_fortran')
-end
-
-if tElapsed32<tElapsed31
-    skipline()
-    dprintf('local_state_space_iteration_fortran is %5.2f times faster than local_state_space_iteration_k', tElapsed31/tElapsed32)
-    skipline()
-else
-    skipline()
-    dprintf('local_state_space_iteration_fortran is %5.2f times slower than local_state_space_iteration_k', tElapsed32/tElapsed31)
     skipline()
 end

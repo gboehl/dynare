@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright © 2009-2021 Dynare Team
+dnl Copyright © 2009-2022 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -165,7 +165,6 @@ AC_CONFIG_FILES([Makefile
 		         local_state_space_iterations/Makefile
                  libkordersim/Makefile
                  folded_to_unfolded_dr/Makefile
-                 local_state_space_iteration_fortran/Makefile
                  k_order_simul/Makefile
                  k_order_mean/Makefile
                  perfect_foresight_problem/Makefile

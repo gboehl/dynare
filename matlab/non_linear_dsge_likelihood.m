@@ -26,7 +26,7 @@ function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,Model,DynareOptions,Bayes
 % - BayesInfo               [struct]              See INPUTS section.
 % - DynareResults           [struct]              Updated DynareResults structure described in INPUTS section.
 
-% Copyright (C) 2010-2021 Dynare Team
+% Copyright (C) 2010-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -127,6 +127,7 @@ ReducedForm.mf1 = mf1;
 if DynareOptions.k_order_solver && ~(DynareOptions.particle.pruning && DynareOptions.order==2)
     ReducedForm.use_k_order_solver = true;
     ReducedForm.dr = dr;
+    ReducedForm.udr = folded_to_unfolded_dr(dr, Model, DynareOptions);
 else
     ReducedForm.use_k_order_solver = false;
     ReducedForm.ghx  = dr.ghx(restrict_variables_idx,:);

@@ -18,7 +18,6 @@ EXTRA_DIST = \
 	local_state_space_iterations \
 	libkordersim \
 	folded_to_unfolded_dr \
-	local_state_space_iteration_fortran \
 	k_order_simul \
    k_order_mean \
 	gensylv \

@@ -1,4 +1,4 @@
-! Copyright © 2021 Dynare Team
+! Copyright © 2021-2022 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -15,7 +15,7 @@
 ! You should have received a copy of the GNU General Public License
 ! along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-! Routines and data structures for multithreading over particles in local_state_space_iteration_fortran
+! Routines and data structures for multithreading over particles in local_state_space_iteration_k
 module pparticle
    use iso_c_binding
    use simulation
