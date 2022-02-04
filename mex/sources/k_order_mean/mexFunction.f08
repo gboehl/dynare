@@ -1,4 +1,4 @@
-! Copyright © 2021 Dynare Team
+! Copyright © 2021-2022 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -30,6 +30,7 @@
 !       dr              structure containing the matrices for the decision rule (g_0, g_1,…)
 !  output:
 !       mean            estimated `order_moment`-order moment for the full vector of e
+!       sim             [optional] matrix of simulations on which the moment was computed
 
 subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    use iso_fortran_env
@@ -67,6 +68,10 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    shocks_mx = prhs(10)
    ysteady_mx = prhs(11)
    dr_mx = prhs(12)
+
+   ! Check the number of output arguments
+   if (nlhs < 1 .or. nlhs > 2) &
+      call mexErrMsgTxt("Must have 1 or 2 outputs")
 
    ! Checking the consistence and validity of input arguments
    if (nrhs /= 12) then
@@ -193,8 +198,9 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    ! Generating output
    plhs(1) = mxCreateDoubleMatrix(int(endo_nbr, mwSize), 1_mwSize, mxREAL)
    mxGetPr(plhs(1)) = mean
-   plhs(2) = mxCreateDoubleMatrix(int(endo_nbr, mwSize), int(nper, mwSize), mxREAL)
-   mxGetPr(plhs(2)) = reshape(sim, [size(sim)])
-
+   if (nlhs > 1) then
+      plhs(2) = mxCreateDoubleMatrix(int(endo_nbr, mwSize), int(nper, mwSize), mxREAL)
+      mxGetPr(plhs(2)) = reshape(sim, [size(sim)])
+   end if
 
 end subroutine mexFunction
