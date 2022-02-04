@@ -21,7 +21,7 @@ function [pmean, pmode, pmedian, pstdev, p025, p975, covariance] = online_auxili
 % - p975                     [double]    n×1 vector, 97.5 percent of the particles are below p975(i) for i=1,…,n.
 % - covariance               [double]    n×n matrix, covariance of the particles at the end of the sample.
 
-% Copyright © 2013-2021 Dynare Team
+% Copyright © 2013-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -125,6 +125,7 @@ for t=1:sample_size
             % Set local state space model (second-order approximation).
             if ReducedForm.use_k_order_solver
                 dr = ReducedForm.dr;
+                udr = ReducedForm.udr;
             else
                 constant = ReducedForm.constant;
                 % Set local state space model (first-order approximation).
@@ -138,7 +139,7 @@ for t=1:sample_size
             % particle likelihood contribution
             yhat = bsxfun(@minus, StateVectors(:,i), state_variables_steady_state);
             if ReducedForm.use_k_order_solver
-                tmp = local_state_space_iteration_k(yhat, zeros(number_of_structural_innovations, 1), dr, Model, DynareOptions);
+                tmp = local_state_space_iteration_k(yhat, zeros(number_of_structural_innovations, 1), dr, Model, DynareOptions, udr);
             else
                 if pruning
                     yhat_ = bsxfun(@minus,StateVectors_(:,i),state_variables_steady_state);
@@ -181,6 +182,7 @@ for t=1:sample_size
                     % Set local state space model (second order approximation).
                     if ReducedForm.use_k_order_solver
                         dr = ReducedForm.dr;
+                        udr = ReducedForm.udr;
                     else
                         constant = ReducedForm.constant;
                         % Set local state space model (first-order approximation).
@@ -196,7 +198,7 @@ for t=1:sample_size
                     % compute particles likelihood contribution
                     yhat = bsxfun(@minus,StateVectors(:,i), state_variables_steady_state);
                     if ReducedForm.use_k_order_solver
-                        tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions);
+                        tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
                     else
                         if pruning
                             yhat_ = bsxfun(@minus,StateVectors_(:,i), state_variables_steady_state);

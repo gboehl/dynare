@@ -20,7 +20,7 @@ function [info, Model, DynareOptions, DynareResults, ReducedForm] = ...
 % - DynareResults            [struct]     Dynare results (oo_).
 % - ReducedForm              [struct]     Reduced form model.
 
-% Copyright (C) 2013-2019 Dynare Team
+% Copyright (C) 2013-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -164,6 +164,7 @@ if nargout>4
     elseif DynareOptions.order>=3
         ReducedForm.use_k_order_solver = true;
         ReducedForm.dr = dr;
+        ReducedForm.udr = folded_to_unfolded_dr(dr, Model, DynareOptions);
     else
         n_states=size(dr.ghx,2);
         n_shocks=size(dr.ghu,2);

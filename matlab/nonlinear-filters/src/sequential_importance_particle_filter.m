@@ -2,7 +2,7 @@ function [LIK,lik] = sequential_importance_particle_filter(ReducedForm,Y,start,P
 
 % Evaluates the likelihood of a nonlinear model with a particle filter (optionally with resampling).
 
-% Copyright (C) 2011-2015 Dynare Team
+% Copyright (C) 2011-2022 Dynare Team
 %
 % This file is part of Dynare (particles module).
 %
@@ -51,6 +51,7 @@ end
 
 if ReducedForm.use_k_order_solver
     dr = ReducedForm.dr;
+    udr = ReducedForm.udr;
 else
     % Set local state space model (first order approximation).
     ghx  = ReducedForm.ghx;
@@ -106,7 +107,7 @@ for t=1:sample_size
         [tmp, tmp_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_2);
     else
         if ReducedForm.use_k_order_solver
-            tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions);
+            tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
         else
             tmp = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
         end

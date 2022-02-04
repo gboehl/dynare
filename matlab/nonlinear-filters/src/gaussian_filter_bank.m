@@ -22,7 +22,7 @@ function [PredictedStateMean, PredictedStateVarianceSquareRoot, StateVectorMean,
 % NOTES
 %   The vector "lik" is used to evaluate the jacobian of the likelihood.
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright (C) 2009-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,6 +41,7 @@ function [PredictedStateMean, PredictedStateVarianceSquareRoot, StateVectorMean,
 
 if ReducedForm.use_k_order_solver
     dr = ReducedForm.dr;
+    udr = ReducedForm.udr;
 else
     % Set local state space model (first-order approximation).
     ghx  = ReducedForm.ghx;
@@ -81,7 +82,7 @@ StateVectors = sigma_points(1:number_of_state_variables,:);
 epsilon = sigma_points(number_of_state_variables+1:number_of_state_variables+number_of_structural_innovations,:);
 yhat = bsxfun(@minus, StateVectors, state_variables_steady_state);
 if ReducedForm.use_k_order_solver
-    tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions);
+    tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
 else
     tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);
 end

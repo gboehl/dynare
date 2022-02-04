@@ -3,7 +3,7 @@ function [LIK,lik] = auxiliary_particle_filter(ReducedForm,Y,start,ParticleOptio
 % Evaluates the likelihood of a nonlinear model with the auxiliary particle filter
 % allowing eventually resampling.
 %
-% Copyright (C) 2011-2019 Dynare Team
+% Copyright (C) 2011-2022 Dynare Team
 %
 % This file is part of Dynare (particles module).
 %
@@ -42,6 +42,7 @@ number_of_particles = ParticleOptions.number_of_particles;
 
 if ReducedForm.use_k_order_solver
     dr = ReducedForm.dr;
+    udr = ReducedForm.udr;
 else
     % Set local state space model (first order approximation).
     ghx  = ReducedForm.ghx;
@@ -96,7 +97,7 @@ for t=1:sample_size
         if ReducedForm.use_k_order_solver
             tmp = 0;
             for i=1:size(nodes)
-                tmp = tmp + nodes_weights(i)*local_state_space_iteration_k(yhat, nodes(i,:)'*ones(1,number_of_particles), dr, Model, DynareOptions);
+                tmp = tmp + nodes_weights(i)*local_state_space_iteration_k(yhat, nodes(i,:)'*ones(1,number_of_particles), dr, Model, DynareOptions, udr);
             end
         else
             tmp = 0;
@@ -121,7 +122,7 @@ for t=1:sample_size
         StateVectors_ = tmp_(mf0,:);
     else
         if ReducedForm.use_k_order_solver
-            tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions);
+            tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
         else
             tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);
         end
