@@ -206,7 +206,7 @@ All the prerequisites are packaged:
 - `libmatio-dev`
 - `libslicot-dev` and `libslicot-pic`
 - `libsuitesparse-dev`
-- `flex`
+- `flex` and `libfl-dev`
 - `bison`
 - `autoconf`
 - `automake`
@@ -227,7 +227,7 @@ All the prerequisites are packaged:
 
 You can install them all at once with:
 ```sh
-apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as
+apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex libfl-dev bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as
 ```
 If you use MATLAB, we strongly advise to also `apt install matlab-support` and confirm to rename the GCC libraries shipped with MATLAB to avoid possible conflicts with GCC libraries shipped by your distribution.
 
