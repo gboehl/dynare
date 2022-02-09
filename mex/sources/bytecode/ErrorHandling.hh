@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2021 Dynare Team
+ * Copyright © 2007-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -203,6 +203,8 @@ public:
   ErrorMsg()
   {
     mxArray *M_ = mexGetVariable("global", "M_");
+    if (!M_)
+      mexErrMsgTxt("Can't find global variable M_");
     if (mxGetFieldNumber(M_, "endo_names") == -1)
       {
         nb_endo = 0;
