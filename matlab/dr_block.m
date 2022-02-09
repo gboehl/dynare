@@ -36,7 +36,7 @@ function [dr,info,M_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
 %   none.
 %
 
-% Copyright (C) 2010-2021 Dynare Team
+% Copyright (C) 2010-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -399,11 +399,11 @@ for i = 1:length(data)
         %% ------------------------------------------------------------------
         %Solve Backward complete
         if maximum_lead > 0 && n_fwrd > 0
-            data(i).eigval = eig(- jacob(: , n_pred + n - n_fwrd + 1: n_pred + n))/ ...
-                jacob(: , n_pred + n + 1 : n_pred + n + n_fwrd);
+            tmp = -jacob(: , n_pred + 1 : n_pred + n) \ ...
+                   jacob(: , n_pred + n + 1 : n_pred + n + n_fwrd);
+            data(i).eigval = 1 ./ eig(tmp(n_static+1:end, :));
             data(i).rank = sum(abs(data(i).eigval) > 0);
-            full_rank = (rcond(jacob(: , n_pred + n + 1 : n_pred + n + ...
-                                     n_fwrd)) > 1e-9);
+            full_rank = (rcond(jacob(: , n_pred + 1 : n_pred + n)) > 1e-9);
         else
             data(i).eigval = [];
             data(i).rank = 0;
