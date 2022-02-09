@@ -3256,7 +3256,7 @@ Getting information about the model
 
     |br| This command provides information about the model. 
 
-    When used outside the context of the ``block`` option of the ``model`` block`,
+    When used outside the context of the ``block`` option of the ``model`` block,
     it will provide a list of predetermined state variables, forward-looking variables,
     and purely static variables.
 
@@ -3273,60 +3273,60 @@ Getting information about the model
     There are five different types of blocks depending on the
     simulation method used:
 
-    * ‘EVALUATE FORWARD’
+    * ``EVALUATE FORWARD``
 
-      In this case the block contains only equations where
+      In this case the block contains only equations where the
       endogenous variable attributed to the equation appears
-      currently on the left hand side and where no forward looking
+      at current period on the left hand side and where no forward looking
       endogenous variables appear. The block has the form:
       :math:`y_{j,t} = f_j(y_t, y_{t-1}, \ldots, y_{t-k})`.
 
-    * ‘EVALUATE BACKWARD’
+    * ``EVALUATE BACKWARD``
 
-      The block contains only equations where endogenous variable
-      attributed to the equation appears currently on the left hand
+      The block contains only equations where the endogenous variable
+      attributed to the equation appears at current period on the left hand
       side and where no backward looking endogenous variables
       appear. The block has the form: :math:`y_{j,t} = f_j(y_t,
       y_{t+1}, \ldots, y_{t+k})`.
 
-    * ‘SOLVE BACKWARD x’
+    * ``SOLVE BACKWARD x``
 
-      The block contains only equations where endogenous variable
-      attributed to the equation does not appear currently on the
+      The block contains only equations where the endogenous variable
+      attributed to the equation does not appear at current period on the
       left hand side and where no forward looking endogenous
       variables appear. The block has the form: :math:`g_j(y_{j,t},
-      y_t, y_{t-1}, \ldots, y_{t-k})=0`. x is equal to ‘SIMPLE’
-      if the block has only one equation. If several equation
-      appears in the block, x is equal to ‘COMPLETE’.
+      y_t, y_{t-1}, \ldots, y_{t-k})=0`. ``x`` is equal to ``SIMPLE``
+      if the block has only one equation. If several equations
+      appear in the block, ``x`` is equal to ``COMPLETE``.
 
-    * ‘SOLVE FORWARD x’
+    * ``SOLVE FORWARD x``
 
-      The block contains only equations where endogenous variable
-      attributed to the equation does not appear currently on the
+      The block contains only equations where the endogenous variable
+      attributed to the equation does not appear at current period on the
       left hand side and where no backward looking endogenous
       variables appear. The block has the form: :math:`g_j(y_{j,t},
-      y_t, y_{t+1}, \ldots, y_{t+k})=0`. x is equal to ‘SIMPLE’
-      if the block has only one equation. If several equation
-      appears in the block, x is equal to ‘COMPLETE’.
+      y_t, y_{t+1}, \ldots, y_{t+k})=0`. ``x`` is equal to ``SIMPLE``
+      if the block has only one equation. If several equations
+      appear in the block, ``x`` is equal to ``COMPLETE``.
 
-    * ‘SOLVE TWO BOUNDARIES x’
+    * ``SOLVE TWO BOUNDARIES x``
 
       The block contains equations depending on both forward and
       backward variables. The block looks like: :math:`g_j(y_{j,t},
       y_t, y_{t-1}, \ldots, y_{t-k} ,y_t, y_{t+1}, \ldots,
-      y_{t+k})=0`. x is equal to ‘SIMPLE’ if the block has only
-      one equation. If several equation appears in the block, x is
-      equal to ‘COMPLETE’.
+      y_{t+k})=0`. ``x`` is equal to ``SIMPLE`` if the block has only
+      one equation. If several equations appear in the block, ``x`` is
+      equal to ``COMPLETE``.
 
     *Options*
 
-    .. option:: 'static'
+    .. option:: static
 
        Prints out the block decomposition of the static
-       model. Without ’static’ option model_info displays the block
+       model. Without the ``static`` option, ``model_info`` displays the block
        decomposition of the dynamic model.
 
-    .. option:: 'incidence'
+    .. option:: incidence
 
        Displays the gross incidence matrix and the reordered incidence
        matrix of the block decomposed model.

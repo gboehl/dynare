@@ -1,7 +1,7 @@
-function model_info(varargin)
-%function model_info;
+function model_info(options_model_info_)
+%function model_info(options_model_info_)
 
-% Copyright (C) 2008-2018 Dynare Team
+% Copyright (C) 2008-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -20,16 +20,9 @@ function model_info(varargin)
 
 global M_;
 
-if sum(strcmp(varargin,'static')) > 0
-    static_ = 1;
-else
-    static_ = 0;
-end
-if sum(strcmp(varargin,'incidence')) > 0
-    incidence = 1;
-else
-    incidence = 0;
-end
+static_ = isfield(options_model_info_, 'static') && options_model_info_.static;
+incidence = isfield(options_model_info_, 'incidence') && options_model_info_.incidence;
+
 if static_
     fprintf('                                          Information about %s (static model)\n',M_.fname);
     block_structre_str = 'block_structure_stat';
