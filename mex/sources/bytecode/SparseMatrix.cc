@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2021 Dynare Team
+ * Copyright © 2007-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -2584,53 +2584,6 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
   mxFree(Ai);
   mxFree(Ax);
   mxFree(b);
-}
-
-void
-dynSparseMatrix::Solve_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int it_)
-{
-  SuiteSparse_long n = mxGetM(A_m);
-
-  auto *Ap = reinterpret_cast<SuiteSparse_long *>(mxGetJc(A_m));
-
-  auto *Ai = reinterpret_cast<SuiteSparse_long *>(mxGetIr(A_m));
-  double *Ax = mxGetPr(A_m);
-  double *B = mxGetPr(b_m);
-  SuiteSparse_long status, sys = 0;
-  double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
-  void *Symbolic, *Numeric;
-  umfpack_dl_defaults(Control);
-
-  status = umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info);
-  if (status != UMFPACK_OK)
-    umfpack_dl_report_info(nullptr, Info);
-
-  status = umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info);
-  if (status != UMFPACK_OK)
-    umfpack_dl_report_info(nullptr, Info);
-
-  status = umfpack_dl_solve(sys, Ap, Ai, Ax, res, B, Numeric, Control, Info);
-  if (status != UMFPACK_OK)
-    umfpack_dl_report_info(nullptr, Info);
-
-  if (is_two_boundaries)
-    for (int i = 0; i < n; i++)
-      {
-        int eq = index_vara[i+Size*y_kmin];
-        double yy = -(res[i] + y[eq]);
-        direction[eq] = yy;
-        y[eq] += slowc_l * yy;
-      }
-  else
-    for (int i = 0; i < n; i++)
-      {
-        int eq = index_vara[i];
-        double yy = -(res[i] + y[eq+it_*y_size]);
-        direction[eq] = yy;
-        y[eq+it_*y_size] += slowc_l * yy;
-      }
-  mxDestroyArray(A_m);
-  mxDestroyArray(b_m);
 }
 
 void
