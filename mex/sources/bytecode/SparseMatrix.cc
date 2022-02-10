@@ -3914,7 +3914,7 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
       if (!x0_m)
         throw FatalExceptionHandling(" in Simulate_One_Boundary, can't allocate x0_m vector\n");
       if (!((solve_algo == 6 && steady_state)
-            || ((stack_solve_algo == 0 || stack_solve_algo == 4) && !steady_state)))
+            || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state)))
         {
           Init_Matlab_Sparse_Simple(size, IM_i, A_m, b_m, zero_solution, x0_m);
           A_m_save = mxDuplicateArray(A_m);
