@@ -3947,11 +3947,11 @@ dynSparseMatrix::solve_non_linear(int block_num, int y_size, int y_kmin, int y_k
   if (!cvg)
     {
       if (steady_state)
-        throw FatalExceptionHandling(" in Solve Forward complete, convergence not achieved in block "
+        throw FatalExceptionHandling(" in Solve Forward/Backward Complete, convergence not achieved in block "
                                      + to_string(block_num+1) + ", after " + to_string(iter)
                                      + " iterations\n");
       else
-        throw FatalExceptionHandling(" in Solve Forward complete, convergence not achieved in block "
+        throw FatalExceptionHandling(" in Solve Forward/Backward Complete, convergence not achieved in block "
                                      + to_string(block_num+1) + ", at time " + to_string(it_)
                                      + ", after " + to_string(iter) + " iterations\n");
     }
