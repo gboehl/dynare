@@ -5873,7 +5873,7 @@ block decomposition of the model (see :opt:`block`).
        After a successful run of
        the estimation command, the ``mode_file`` will be disabled to
        prevent other function calls from implicitly using an updated
-       ``mode-file``. Thus, if the mod-file contains subsequent
+       mode-file. Thus, if the ``.mod`` file contains subsequent
        ``estimation`` commands, the ``mode_file`` option, if desired,
        needs to be specified again.
 
