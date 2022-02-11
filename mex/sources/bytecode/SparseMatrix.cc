@@ -3955,7 +3955,7 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
       else if ((solve_algo == 8 && steady_state) || (stack_solve_algo == 3 && !steady_state))
         Solve_Matlab_BiCGStab(A_m, b_m, size, slowc, block_num, false, it_, x0_m, preconditioner);
       else if ((solve_algo == 6 && steady_state) || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state))
-        Solve_LU_UMFPack(Ap, Ai, Ax, b, size, size, slowc, true, 0);
+        Solve_LU_UMFPack(Ap, Ai, Ax, b, size, size, slowc, false, it_);
     }
   return singular_system;
 }
