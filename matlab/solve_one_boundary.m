@@ -53,7 +53,7 @@ function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_stat
 %   none.
 %
 
-% Copyright (C) 1996-2020 Dynare Team
+% Copyright (C) 1996-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -191,24 +191,19 @@ for it_=start:incr:finish
             ya_save=ya;
             g1a=g1;
             if is_dynamic && stack_solve_algo==4
-                lambda=1;
                 stpmx = 100 ;
-                if is_dynamic
-                    stpmax = stpmx*max([sqrt(ya'*ya);size(y_index_eq,2)]);
-                else
-                    stpmax = stpmx*max([sqrt(ya'*ya);size(y_index_eq,2)]);
-                end
+                stpmax = stpmx*max([sqrt(ya'*ya);size(y_index_eq,2)]);
                 nn=1:size(y_index_eq,2);
                 g = (r'*g1)';
                 f = 0.5*r'*r;
                 p = -g1\r ;
                 [ya,f,r,check]=lnsrch1(ya,f,g,p,stpmax, ...
                                        'lnsrch1_wrapper_one_boundary',nn, ...
-                                       y_index_eq, options.solve_tolx, M.lead_lag_incidence(M.maximum_endo_lag+1, :), fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_);
+                                       nn, options.solve_tolx, y_index_eq, fname, Block_Num, y, x, params, steady_state, T(:, it_), it_, M);
+                dx = ya - y(y_index_eq, it_);
+                y(y_index_eq, it_) = ya;
                 %% Recompute temporary terms, since they are not given as output of lnsrch1
                 [~, ~, T(:, it_)] = feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
-                dx = ya' - y(index_eq, it_);
-                y(index_eq, it_) = ya;
             elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0)) || (~is_dynamic && options.solve_algo==6)
                 if verbose && ~is_dynamic
                     disp('steady: Sparse LU ')

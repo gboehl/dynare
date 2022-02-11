@@ -1,5 +1,5 @@
 var y y_s R pie dq pie_s de A y_obs pie_obs R_obs vv ww pure_forward;
-varexo e_R e_q e_ys e_pies e_A e_pure_forward;
+varexo e_R e_q e_ys e_pies e_A e_pure_forward e_vv e_ww;
 
 parameters psi1 psi2 psi3 rho_R tau alpha rr k rho_q rho_A rho_ys rho_pies;
 
@@ -40,19 +40,10 @@ A = rho_A*A(-1)+e_A;
 y_obs = y-y(-1)+A;
 pie_obs = 4*pie;
 R_obs = 4*R;
-vv = 0.2*ww+0.5*vv(-1)+1;
-ww = 0.1*vv+0.5*ww(-1)+2;
-/* A lt=
- 0.5*vv-0.2*ww = 1
--0.1*vv+0.5*ww = 2
-[ 0.5 -0.2][vv]   [1]
-                =
-[-0.1  0.5][ww]   [2]
-det = 0.25-0.02 = 0.23
-[vv]           [0.5  0.2] [1]           [0.9]   [3.91304]
-     = 1/0.23*                = 1/0.23*       = 
-[ww]           [0.1  0.5] [2]           [1.1]   [4.7826]
-*/
+
+// Solve backward complete block (nonlinear)
+vv = 0.2*ww+0.5*vv(-1)+e_vv;
+ww = min(0.1*vv+0.5*ww(-1), 200)+e_ww;
 
 /* Test a purely forward variable (thus within a block of type “evaluate
    backward”). See #1727. */
@@ -83,6 +74,14 @@ values 0.5;
 var e_pure_forward;
 periods 19;
 values 1;
+
+var e_vv;
+periods 9;
+values 0.2;
+
+var e_ww;
+periods 12;
+values -0.4;
 end;
 
 simul(periods=20, markowitz=0, stack_solve_algo = @{stack_solve_algo});
