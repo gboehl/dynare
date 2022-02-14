@@ -73,6 +73,7 @@ function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_stat
 
 Blck_size=size(y_index_eq,2);
 correcting_factor=0.01;
+ilu_setup.type='crout';
 ilu_setup.droptol=1e-10;
 max_resa=1e100;
 reduced = 0;
