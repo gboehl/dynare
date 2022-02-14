@@ -58,7 +58,6 @@ public:
   void fixe_u(double **u, int u_count_int, int max_lag_plus_max_lead_plus_1);
   void Read_SparseMatrix(const string &file_name, int Size, int periods, int y_kmin, int y_kmax, bool two_boundaries, int stack_solve_algo, int solve_algo);
   void Close_SaveCode();
-  void Read_file(string file_name, int periods, int u_size1, int y_size, int y_kmin, int y_kmax, int &nb_endo, int &u_count, int &u_count_init, double *u);
   void Singular_display(int block, int Size);
   void End_Solver();
   double g0, gp0, glambda2;
