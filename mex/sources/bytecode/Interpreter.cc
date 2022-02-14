@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2021 Dynare Team
+ * Copyright © 2007-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -892,12 +892,9 @@ Interpreter::extended_path(const string &file_name, const string &bin_basename, 
 
       if (old_print_it)
         {
-          ostringstream res, res1;
-          for (unsigned int i = 0; i < endo_name_length; i++)
-            if (P_endo_names[CHAR_LENGTH*(max_res_idx+i*y_size)] != ' ')
-              res << P_endo_names[CHAR_LENGTH*(max_res_idx+i*y_size)];
+          ostringstream res1;
           res1 << std::scientific << max_res;
-          mexPrintf("%s|%s| %4d  |  x  |\n", elastic(res.str(), endo_name_length_l+2, true).c_str(), elastic(res1.str(), real_max_length+2, false).c_str(), iter);
+          mexPrintf("%s|%s| %4d  |  x  |\n", elastic(P_endo_names[max_res_idx], endo_name_length_l+2, true).c_str(), elastic(res1.str(), real_max_length+2, false).c_str(), iter);
           mexPrintf(line.c_str());
           mexEvalString("drawnow;");
         }
