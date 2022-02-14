@@ -4,12 +4,10 @@ The Dynare Reference Manual, version |version|
 Currently the development team of Dynare is composed of:
 
 * Stéphane Adjemian (Le Mans Université, Gains)
-* Houtan Bastani
 * Michel Juillard (Banque de France)
 * Sumudu Kankanamge (Toulouse School of Economics and CEPREMAP)
 * Frédéric Karamé (Le Mans Université, Gains and CEPREMAP)
 * Junior Maih (Norges Bank)
-* Ferhat Mihoubi (Université Paris-Est Créteil, Érudite)
 * Willi Mutschler (University of Tübingen)
 * Johannes Pfeifer (Universität der Bundeswehr München)
 * Marco Ratto (European Commission, Joint Research Centre - JRC)
@@ -18,12 +16,14 @@ Currently the development team of Dynare is composed of:
 
 The following people used to be members of the team:
 
+* Houtan Bastani
 * Abdeljabar Benzougar
 * Alejandro Buesa
 * Fabrice Collard
 * Assia Ezzeroug
 * Dóra Kocsis
 * Stéphane Lhuissier
+* Ferhat Mihoubi
 * George Perendia
 
 Copyright © 1996-2022, Dynare Team.
