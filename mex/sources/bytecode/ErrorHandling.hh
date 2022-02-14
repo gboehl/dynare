@@ -37,12 +37,6 @@
 #define BYTE_CODE
 #include "CodeInterpreter.hh"
 
-#ifdef OCTAVE_MEX_FILE
-# define CHAR_LENGTH 1
-#else
-# define CHAR_LENGTH 2
-#endif
-
 using namespace std;
 
 constexpr int NO_ERROR_ON_EXIT = 0, ERROR_ON_EXIT = 1;
@@ -192,9 +186,8 @@ public:
 
   ExpressionType EQN_type;
   it_code_type it_code_expr;
-  size_t nb_endo, nb_exo, nb_param;
-  char *P_endo_names, *P_exo_names, *P_param_names;
-  size_t endo_name_length, exo_name_length, param_name_length;
+  size_t endo_name_length; // Maximum length of endogenous names
+  vector<string> P_endo_names, P_exo_names, P_param_names;
   unsigned int EQN_equation, EQN_block, EQN_block_number;
   unsigned int EQN_dvar1, EQN_dvar2, EQN_dvar3;
   vector<tuple<string, SymbolType, unsigned int>> Variable_list;
@@ -205,42 +198,33 @@ public:
     mxArray *M_ = mexGetVariable("global", "M_");
     if (!M_)
       mexErrMsgTxt("Can't find global variable M_");
-    if (mxGetFieldNumber(M_, "endo_names") == -1)
-      {
-        nb_endo = 0;
-        endo_name_length = 0;
-        P_endo_names = nullptr;
-      }
-    else
-      {
-        nb_endo = mxGetM(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "endo_names")));
-        endo_name_length = mxGetN(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "endo_names")));
-        P_endo_names = reinterpret_cast<char *>(mxGetPr(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "endo_names"))));
-      }
-    if (mxGetFieldNumber(M_, "exo_names") == -1)
-      {
-        nb_exo = 0;
-        exo_name_length = 0;
-        P_exo_names = nullptr;
-      }
-    else
-      {
-        nb_exo = mxGetM(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "exo_names")));
-        exo_name_length = mxGetN(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "exo_names")));
-        P_exo_names = reinterpret_cast<char *>(mxGetPr(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "exo_names"))));
-      }
-    if (mxGetFieldNumber(M_, "param_names") == -1)
-      {
-        nb_param = 0;
-        param_name_length = 0;
-        P_param_names = nullptr;
-      }
-    else
-      {
-        nb_param = mxGetM(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "param_names")));
-        param_name_length = mxGetN(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "param_names")));
-        P_param_names = reinterpret_cast<char *>(mxGetPr(mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, "param_names"))));
-      }
+
+    auto get_field_names = [&](const char *symbol_type)
+    {
+      vector<string> r;
+      if (mxGetFieldNumber(M_, symbol_type) != -1)
+        {
+          auto M_field = mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, symbol_type));
+          if (!mxIsCell(M_field))
+            mexErrMsgTxt((string{"M_."} + symbol_type + " is not a cell array").c_str());
+          for (size_t i = 0; i < mxGetNumberOfElements(M_field); i++)
+            {
+              const mxArray *cell_mx = mxGetCell(M_field, i);
+              if (!(cell_mx && mxIsChar(cell_mx)))
+                mexErrMsgTxt((string{"M_."} + symbol_type + " contains a cell which is not a character array").c_str());
+              r.emplace_back(mxArrayToString(cell_mx));
+            }
+        }
+      return r;
+    };
+    P_endo_names = get_field_names("endo_names");
+    P_exo_names = get_field_names("exo_names");
+    P_param_names = get_field_names("param_names");
+
+    endo_name_length = 0;
+    for (const auto &n : P_endo_names)
+      endo_name_length = max(endo_name_length, n.size());
+
     is_load_variable_list = false;
   }
 
@@ -276,21 +260,10 @@ public:
   inline void
   load_variable_list()
   {
-    ostringstream res;
-    for (unsigned int variable_num = 0; variable_num < static_cast<unsigned int>(nb_endo); variable_num++)
-      {
-        for (unsigned int i = 0; i < endo_name_length; i++)
-          if (P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)] != ' ')
-            res << P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)];
-        Variable_list.emplace_back(res.str(), SymbolType::endogenous, variable_num);
-      }
-    for (unsigned int variable_num = 0; variable_num < static_cast<unsigned int>(nb_exo); variable_num++)
-      {
-        for (unsigned int i = 0; i < exo_name_length; i++)
-          if (P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)] != ' ')
-            res << P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)];
-        Variable_list.emplace_back(res.str(), SymbolType::exogenous, variable_num);
-      }
+    for (unsigned int variable_num = 0; variable_num < P_endo_names.size(); variable_num++)
+      Variable_list.emplace_back(P_endo_names[variable_num], SymbolType::endogenous, variable_num);
+    for (unsigned int variable_num = 0; variable_num < P_exo_names.size(); variable_num++)
+      Variable_list.emplace_back(P_exo_names[variable_num], SymbolType::exogenous, variable_num);
   }
 
   inline int
@@ -320,44 +293,32 @@ public:
   inline string
   get_variable(SymbolType variable_type, unsigned int variable_num) const
   {
-    ostringstream res;
     switch (variable_type)
       {
       case SymbolType::endogenous:
-        if (variable_num <= nb_endo)
-          {
-            for (unsigned int i = 0; i < endo_name_length; i++)
-              if (P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)] != ' ')
-                res << P_endo_names[CHAR_LENGTH*(variable_num+i*nb_endo)];
-          }
+        if (variable_num < P_endo_names.size())
+          return P_endo_names[variable_num];
         else
           mexPrintf("=> Unknown endogenous variable # %d", variable_num);
         break;
       case SymbolType::exogenous:
       case SymbolType::exogenousDet:
-        if (variable_num <= nb_exo)
-          {
-            for (unsigned int i = 0; i < exo_name_length; i++)
-              if (P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)] != ' ')
-                res << P_exo_names[CHAR_LENGTH*(variable_num+i*nb_exo)];
-          }
+        if (variable_num < P_exo_names.size())
+          return P_exo_names[variable_num];
         else
           mexPrintf("=> Unknown exogenous variable # %d", variable_num);
         break;
       case SymbolType::parameter:
-        if (variable_num <= nb_param)
-          {
-            for (unsigned int i = 0; i < param_name_length; i++)
-              if (P_param_names[CHAR_LENGTH*(variable_num+i*nb_param)] != ' ')
-                res << P_param_names[CHAR_LENGTH*(variable_num+i*nb_param)];
-          }
+        if (variable_num < P_param_names.size())
+          return P_param_names[variable_num];
         else
           mexPrintf("=> Unknown parameter # %d", variable_num);
         break;
       default:
         break;
       }
-    return res.str();
+    cerr << "ErrorHandling::get_variable: Internal error";
+    exit(EXIT_FAILURE); // Silence GCC warning
   }
 
   inline string

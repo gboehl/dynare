@@ -4094,7 +4094,7 @@ dynSparseMatrix::preconditioner_print_out(string s, int preconditioner, bool ss)
 }
 
 void
-dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax,int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, unsigned int endo_name_length, const char *P_endo_names, const vector_table_conditional_local_type &vector_table_conditional_local)
+dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax,int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, unsigned int endo_name_length, const vector<string> &P_endo_names, const vector_table_conditional_local_type &vector_table_conditional_local)
 {
   double top = 0.5;
   double bottom = 0.1;
@@ -4124,10 +4124,6 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
           mexPrintf("res1 = %f, res2 = %f g0 = %f iter = %d\n", res1, res2, g0, iter);
           for (int j = 0; j < y_size; j++)
             {
-              ostringstream res;
-              for (unsigned int i = 0; i < endo_name_length; i++)
-                if (P_endo_names[CHAR_LENGTH*(j+i*y_size)] != ' ')
-                  res << P_endo_names[CHAR_LENGTH*(j+i*y_size)];
               bool select = false;
               for (int i = 0; i < Size; i++)
                 if (j == index_vara[i])
@@ -4136,9 +4132,9 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
                     break;
                   }
               if (select)
-                mexPrintf("-> variable %s (%d) at time %d = %f direction = %f\n", res.str().c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
+                mexPrintf("-> variable %s (%d) at time %d = %f direction = %f\n", P_endo_names[j].c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
               else
-                mexPrintf("   variable %s (%d) at time %d = %f direction = %f\n", res.str().c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
+                mexPrintf("   variable %s (%d) at time %d = %f direction = %f\n", P_endo_names[j].c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
             }
           if (iter == 0)
             throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, the initial values of endogenous variables are too far from the solution.\nChange them!\n");
