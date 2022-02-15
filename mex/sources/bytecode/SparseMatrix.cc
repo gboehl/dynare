@@ -4039,7 +4039,7 @@ dynSparseMatrix::Simulate_Newton_One_Boundary(bool forward)
         for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
           solve_non_linear(block_num, y_size, y_kmin, y_kmax, size);
       else
-        for (int it_ = y_kmin; it_ < periods+y_kmin; it_++)
+        for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
           solve_linear(block_num, y_size, y_kmin, y_kmax, size, 0);
     }
   else
