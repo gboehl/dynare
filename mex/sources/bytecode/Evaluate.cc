@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2021 Dynare Team
+ * Copyright © 2013-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -26,15 +26,6 @@
 #ifdef MATLAB_MEX_FILE
 extern "C" bool utIsInterruptPending();
 #endif
-
-Evaluate::Evaluate()
-{
-  symbol_table_endo_nbr = 0;
-  Block_List_Max_Lag = 0;
-  Block_List_Max_Lead = 0;
-  u_count_int = 0;
-  block = -1;
-}
 
 Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg, int minimal_solving_periods_arg, double slowc_arg) :
   print_it(print_it_arg), minimal_solving_periods(minimal_solving_periods_arg)

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2021 Dynare Team
+ * Copyright © 2007-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -73,7 +73,6 @@ protected:
 public:
   bool steady_state;
   double slowc;
-  Evaluate();
   Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg, int minimal_solving_periods_arg, double slowc);
   void set_block(int size_arg, int type_arg, string file_name_arg, string bin_base_name_arg, int block_num_arg,
                  bool is_linear_arg, int symbol_table_endo_nbr_arg, int Block_List_Max_Lag_arg, int Block_List_Max_Lead_arg, int u_count_int_arg, int block_arg);

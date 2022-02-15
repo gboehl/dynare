@@ -22,27 +22,6 @@
 
 #include "SparseMatrix.hh"
 
-dynSparseMatrix::dynSparseMatrix()
-{
-  pivotva = nullptr;
-  g_save_op = nullptr;
-  g_nop_all = 0;
-  mem_mngr.init_Mem();
-  symbolic = true;
-  alt_symbolic = false;
-  alt_symbolic_count = 0;
-  max_u = 0;
-  min_u = 0x7FFFFFFF;
-  res1a = 9.0e60;
-  tbreak_g = 0;
-  start_compare = 0;
-  restart = 0;
-  IM_i.clear();
-  lu_inc_tol = 1e-10;
-  Symbolic = nullptr;
-  Numeric = nullptr;
-}
-
 dynSparseMatrix::dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg,
                                  int minimal_solving_periods_arg, double slowc_arg) :
   Evaluate(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, slowc_arg)

@@ -51,7 +51,6 @@ constexpr double mem_increasing_factor = 1.1;
 class dynSparseMatrix : public Evaluate
 {
 public:
-  dynSparseMatrix();
   dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg, int minimal_solving_periods_arg, double slowc_arg);
   void Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax, int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, unsigned int endo_name_length, const vector<string> &P_endo_names, const vector_table_conditional_local_type &vector_table_conditional_local);
   void Simulate_Newton_One_Boundary(bool forward);
