@@ -3855,25 +3855,13 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
                                          + "%d)\n");
         }
     }
+
   if (print_it)
     {
       if (steady_state)
         {
           switch (solve_algo)
             {
-            case 0:
-              mexPrintf("MODEL STEADY STATE: MATLAB fsolve\n");
-              break;
-            case 1:
-              mexPrintf("MODEL STEADY STATE: MATLAB solve1\n");
-              break;
-            case 2:
-            case 4:
-              mexPrintf("MODEL STEADY STATE: block decomposition + MATLAB solve1\n");
-              break;
-            case 3:
-              mexPrintf("MODEL STEADY STATE: MATLAB csolve\n");
-              break;
             case 5:
               mexPrintf("MODEL STEADY STATE: (method=ByteCode own solver)\n");
               break;
@@ -3886,8 +3874,6 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
             case 8:
               mexPrintf(preconditioner_print_out("MODEL STEADY STATE: (method=BiCGStab)\n", preconditioner, true).c_str());
               break;
-            default:
-              mexPrintf("MODEL STEADY STATE: (method=Unknown - %d - )\n", stack_solve_algo);
             }
         }
 

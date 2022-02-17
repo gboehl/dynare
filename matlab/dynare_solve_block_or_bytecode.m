@@ -1,5 +1,5 @@
 function [x,info] = dynare_solve_block_or_bytecode(y, exo, params, options, M)
-% Copyright (C) 2010-2020 Dynare Team
+% Copyright (C) 2010-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,7 +52,7 @@ if options.block && ~options.bytecode
         [~, x, T, g1] = feval([M.fname '.static'], b, ss, exo, params, T);
     end
 elseif options.bytecode
-    if options.solve_algo > 4
+    if options.solve_algo >= 5 && options.solve_algo <= 8
         try
             x = bytecode('static', x, exo, params);
         catch ME
@@ -61,13 +61,14 @@ elseif options.bytecode
             return
         end
     elseif options.block
+        T = NaN(M.block_structure_stat.tmp_nbr, 1);
         for b = 1:length(M.block_structure_stat.block)
             if M.block_structure_stat.block(b).Simulation_Type ~= 1 && ...
                     M.block_structure_stat.block(b).Simulation_Type ~= 2
                 [y, check] = dynare_solve('block_bytecode_mfs_steadystate', ...
                                           x(M.block_structure_stat ...
                                             .block(b).variable), ...
-                                          options, b, x, exo, params, M);
+                                          options, b, x, exo, params, T, M);
                 if check
                     %                    error(['STEADY: convergence problems in block '
                     %                    int2str(b)])
@@ -75,16 +76,16 @@ elseif options.bytecode
                     return
                 end
                 x(M.block_structure_stat.block(b).variable) = y;
-            else
-                try
-                    [nulldev, nulldev1, x] = bytecode(x, exo, params, ...
-                                                      x, 1, x, 'evaluate', 'static', ...
-                                                      ['block = ' int2str(b)]);
-                catch ME
-                    disp(ME.message);
-                    info = 1;
-                    return
-                end
+            end
+            % Compute endogenous if the block is of type evaluate forward/backward
+            % Also update the temporary terms vector (needed for the dynare_solve case)
+            try
+                [~, ~, x, T] = bytecode(x, exo, params, x, 1, x, T, 'evaluate', 'static', ...
+                                        ['block = ' int2str(b)]);
+            catch ME
+                disp(ME.message);
+                info = 1;
+                return
             end
         end
     else
