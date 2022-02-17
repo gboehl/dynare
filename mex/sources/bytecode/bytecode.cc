@@ -69,6 +69,10 @@ Get_Arguments_and_global_variables(int nrhs,
   *extended_path = false;
   for (int i = 0; i < nrhs; i++)
     {
+#ifdef DEBUG
+      if (mxIsChar(prhs[i]))
+        mexPrintf("Arg %d: %s\n", i, Get_Argument(prhs[i]).c_str());
+#endif
       if (!mxIsChar(prhs[i]))
         {
           switch (count_array_argument)
@@ -220,6 +224,11 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   int max_periods = 0;
 
+#ifdef DEBUG
+  mexPrintf("**************************************\n");
+  mexPrintf("ENTERING BYTECODE: nargin=%d, nargout=%d\n", nrhs, nlhs);
+#endif
+
   try
     {
       Get_Arguments_and_global_variables(nrhs, prhs, count_array_argument,
@@ -238,6 +247,9 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       mexErrMsgTxt(feh.GetErrorMsg().c_str());
     }
+#ifdef DEBUG
+  mexPrintf("**************************************\n");
+#endif
   if (!count_array_argument)
     {
       int field = mxGetFieldNumber(M_, "params");
