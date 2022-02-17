@@ -197,6 +197,7 @@ options_mom_ = set_default_option(options_mom_,'noprint',false);       % do not 
 options_mom_ = set_default_option(options_mom_,'plot_priors',true);    % control plotting of priors
 options_mom_ = set_default_option(options_mom_,'prior_trunc',1e-10);   % probability of extreme values of the prior density that is ignored when computing bounds for the parameters
 options_mom_ = set_default_option(options_mom_,'TeX',false);           % print TeX tables and graphics
+options_mom_ = set_default_option(options_mom_,'verbosity',false);           % print TeX tables and graphics
 
 % Data and model options that can be set by the user in the mod file, otherwise default values are provided
 options_mom_ = set_default_option(options_mom_,'first_obs',1);     % number of first observation
