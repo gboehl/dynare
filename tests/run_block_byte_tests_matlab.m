@@ -1,4 +1,4 @@
-% Copyright (C) 2011-2020 Dynare Team
+% Copyright (C) 2011-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,7 +50,7 @@ for blockFlag = 0:1
             solve_algos = [1:4 6:9];
             stack_solve_algos = 0:4;
         else
-            solve_algos = 1:8;
+            solve_algos = 1:9;
             stack_solve_algos = 0:5;
         end
         if has_optimization_toolbox
