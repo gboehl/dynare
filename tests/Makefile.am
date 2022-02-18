@@ -534,6 +534,7 @@ ECB_MODFILES = \
 	pac/var-12/example2.mod \
 	pac/var-12/example3.mod \
 	pac/var-12/example4.mod \
+	pac/var-12/example5.mod \
 	pac/var-12/example11.mod \
 	pac/var-12/example12.mod \
 	pac/trend-component-1/example1.mod \
@@ -1567,6 +1568,8 @@ clean-local:
 	rm -f occbin/filter/dataobsfile2.mat
 
 	rm -f optimal_policy/Ramsey/oo_ramsey_policy_initval.mat
+
+	rm -rf tests/pac/var-12/toto
 
 	find . -name "*.tex" -type f -delete
 	find . -name "*.aux" -type f -delete
