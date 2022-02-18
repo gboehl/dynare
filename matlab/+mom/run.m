@@ -197,6 +197,7 @@ options_mom_ = set_default_option(options_mom_,'noprint',false);       % do not 
 options_mom_ = set_default_option(options_mom_,'plot_priors',true);    % control plotting of priors
 options_mom_ = set_default_option(options_mom_,'prior_trunc',1e-10);   % probability of extreme values of the prior density that is ignored when computing bounds for the parameters
 options_mom_ = set_default_option(options_mom_,'TeX',false);           % print TeX tables and graphics
+options_mom_ = set_default_option(options_mom_,'verbosity',false);           % print TeX tables and graphics
 
 % Data and model options that can be set by the user in the mod file, otherwise default values are provided
 options_mom_ = set_default_option(options_mom_,'first_obs',1);     % number of first observation
@@ -251,6 +252,7 @@ options_mom_ = set_default_option(options_mom_,'qz_criterium',1-1e-6);          
                                                                                         % Note that unit roots are only possible at first-order, at higher order we set it to 1 in pruned_state_space_system and focus only on stationary observables.
 options_mom_ = set_default_option(options_mom_,'qz_zero_threshold',1e-6);               % value used to test if a generalized eigenvalue is 0/0 in the generalized Schur decomposition
 options_mom_ = set_default_option(options_mom_,'schur_vec_tol',1e-11);                  % tolerance level used to find nonstationary variables in Schur decomposition of the transition matrix.
+options_mom_ = set_default_option(options_mom_,'trust_region_initial_step_bound_factor',1); % used in dynare_solve for trust_region
 if options_mom_.order > 2
     fprintf('Dynare will use ''k_order_solver'' as the order>2\n');
     options_mom_.k_order_solver = true;
