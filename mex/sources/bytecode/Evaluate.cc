@@ -134,9 +134,6 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 
   while (go_on)
     {
-#ifdef DEBUG
-      mexPrintf("it_code->first=%d\n", it_code->first);
-#endif
       switch (it_code->first)
         {
         case Tags::FNUMEXPR:
@@ -1447,9 +1444,6 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
         default:
           throw FatalExceptionHandling(" in compute_block_time, unknown opcode " + to_string(static_cast<int>(it_code->first)) + "\n");
         }
-#ifdef DEBUG
-      mexPrintf("it_code++=%d\n", it_code);
-#endif
       it_code++;
     }
 #ifdef DEBUG

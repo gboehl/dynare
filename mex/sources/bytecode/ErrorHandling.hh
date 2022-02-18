@@ -521,11 +521,6 @@ public:
               {
               case SymbolType::parameter:
                 var = static_cast<FLDV_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-                mexPrintf("FLDV_ Param var=%d\n", var);
-                mexPrintf("get_variable(SymbolType::parameter, var)=%s\n", get_variable(SymbolType::parameter, var).c_str());
-                mexEvalString("drawnow;");
-#endif
                 Stack.push(get_variable(SymbolType::parameter, var));
                 if (compute)
                   Stackf.push(params[var]);
@@ -533,12 +528,6 @@ public:
               case SymbolType::endogenous:
                 var = static_cast<FLDV_ *>(it_code->second)->get_pos();
                 lag = static_cast<FLDV_ *>(it_code->second)->get_lead_lag();
-#ifdef DEBUG
-                mexPrintf("FLDV_ endo var=%d, lag=%d\n", var, lag);
-                mexPrintf("get_variable(SymbolType::endogenous, var)=%s, compute=%d\n", get_variable(SymbolType::endogenous, var).c_str(), compute);
-                mexPrintf("it_=%d, lag=%d, y_size=%d, var=%d, y=%x\n", it_, lag, y_size, var, y);
-                mexEvalString("drawnow;");
-#endif
                 tmp_out.str("");
                 if (lag > 0)
                   tmp_out << get_variable(SymbolType::endogenous, var) << "(+" << lag << ")";
@@ -558,9 +547,6 @@ public:
               case SymbolType::exogenous:
                 var = static_cast<FLDV_ *>(it_code->second)->get_pos();
                 lag = static_cast<FLDV_ *>(it_code->second)->get_lead_lag();
-#ifdef DEBUG
-                mexPrintf("FLDV_ exo var=%d, lag=%d", var, lag);
-#endif
                 tmp_out.str("");
                 if (lag != 0)
                   tmp_out << get_variable(SymbolType::exogenous, var) << "(" << lag << ")";
@@ -573,9 +559,6 @@ public:
               case SymbolType::exogenousDet:
                 var = static_cast<FLDV_ *>(it_code->second)->get_pos();
                 lag = static_cast<FLDV_ *>(it_code->second)->get_lead_lag();
-#ifdef DEBUG
-                mexPrintf("FLDV_ exo_det var=%d, lag=%d", var, lag);
-#endif
                 tmp_out.str("");
                 if (lag != 0)
                   tmp_out << get_variable(SymbolType::exogenousDet, var) << "(" << lag << ")";
@@ -598,18 +581,12 @@ public:
               {
               case SymbolType::parameter:
                 var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-                mexPrintf("FLDSV_ param var=%d", var);
-#endif
                 Stack.push(get_variable(SymbolType::parameter, var));
                 if (compute)
                   Stackf.push(params[var]);
                 break;
               case SymbolType::endogenous:
                 var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-                mexPrintf("FLDSV_ endo var=%d", var);
-#endif
                 Stack.push(get_variable(SymbolType::endogenous, var));
                 if (compute)
                   {
@@ -626,21 +603,12 @@ public:
                 break;
               case SymbolType::exogenous:
                 var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-                mexPrintf("FLDSV_ exo var=%d", var);
-#endif
                 Stack.push(get_variable(SymbolType::exogenous, var));
-#ifdef DEBUG
-                mexPrintf("oka var=%d, Stack.size()=%d x=%x\n", var, Stack.size(), x);
-#endif
                 if (compute)
                   Stackf.push(x[var]);
                 break;
               case SymbolType::exogenousDet:
                 var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-                mexPrintf("FLDSV_ exo_det var=%d", var);
-#endif
                 Stack.push(get_variable(SymbolType::exogenousDet, var));
                 if (compute)
                   Stackf.push(x[var]);
@@ -654,9 +622,6 @@ public:
           case Tags::FLDT:
             //load a temporary variable in the processor
             var = static_cast<FLDT_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-            mexPrintf("FLDT_ var=%d", var);
-#endif
             tmp_out.str("");
             tmp_out << "T" << var+1;
             Stack.push(tmp_out.str());
@@ -666,9 +631,6 @@ public:
           case Tags::FLDST:
             //load a temporary variable in the processor
             var = static_cast<FLDST_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-            mexPrintf("FLDST_ var=%d", var);
-#endif
             tmp_out.str("");
             tmp_out << "T" << var+1;
             Stack.push(tmp_out.str());
@@ -678,9 +640,6 @@ public:
           case Tags::FLDU:
             //load u variable in the processor
             var = static_cast<FLDU_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-            mexPrintf("FLDU_ var=%d", var);
-#endif
             tmp_out.str("");
             tmp_out << "u(" << var+1 << " + it_)";
             Stack.push(tmp_out.str());
@@ -691,9 +650,6 @@ public:
           case Tags::FLDSU:
             //load u variable in the processor
             var = static_cast<FLDSU_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-            mexPrintf("FLDSU_ var=%d", var);
-#endif
             tmp_out.str("");
             tmp_out << "u(" << var+1 << ")";
             Stack.push(tmp_out.str());
@@ -702,9 +658,6 @@ public:
             break;
           case Tags::FLDR:
             var = static_cast<FLDR_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-            mexPrintf("FLDSR_ var=%d", var);
-#endif
             tmp_out.str("");
             tmp_out << "residual(" << var+1 << ")";
             Stack.push(tmp_out.str());
@@ -713,9 +666,6 @@ public:
             break;
           case Tags::FLDZ:
             //load 0 in the processor
-#ifdef DEBUG
-            mexPrintf("FLDZ_");
-#endif
             tmp_out.str("");
             tmp_out << 0;
             Stack.push(tmp_out.str());
@@ -726,9 +676,6 @@ public:
             //load a numerical constant in the processor
             ll = static_cast<FLDC_ *>(it_code->second)->get_value();
             tmp_out.str("");
-#ifdef DEBUG
-            mexPrintf("FLDC_ ll=%f", ll);
-#endif
             tmp_out << ll;
             Stack.push(tmp_out.str());
             if (compute)
@@ -741,9 +688,6 @@ public:
               {
               case SymbolType::parameter:
                 var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-                mexPrintf("FSTPV_ param var=%d", var);
-#endif
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -758,9 +702,6 @@ public:
               case SymbolType::endogenous:
                 var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
                 lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
-#ifdef DEBUG
-                mexPrintf("FSTPV_ endo var=%d, lag=%d", var, lag);
-#endif
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -780,9 +721,6 @@ public:
               case SymbolType::exogenous:
                 var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
                 lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
-#ifdef DEBUG
-                mexPrintf("FSTPV_ exo var=%d, lag=%d", var, lag);
-#endif
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -800,9 +738,6 @@ public:
               case SymbolType::exogenousDet:
                 var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
                 lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
-#ifdef DEBUG
-                mexPrintf("FSTPV_ exodet var=%d, lag=%d", var, lag);
-#endif
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -828,9 +763,6 @@ public:
               {
               case SymbolType::parameter:
                 var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-                mexPrintf("FSTPSV_ param var=%d", var);
-#endif
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -845,9 +777,6 @@ public:
                 break;
               case SymbolType::endogenous:
                 var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-                mexPrintf("FSTPSV_ endo var=%d", var);
-#endif
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -863,9 +792,6 @@ public:
               case SymbolType::exogenous:
               case SymbolType::exogenousDet:
                 var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-                mexPrintf("FSTPSV_ exo var=%d", var);
-#endif
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -886,9 +812,6 @@ public:
             go_on = false;
             //store in a temporary variable from the processor
             var = static_cast<FSTPT_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-            mexPrintf("FSTPT_ var=%d", var);
-#endif
             tmp_out.str("");
             tmp_out << "T" << var+1 << " = " << Stack.top();
             Stack.pop();
@@ -902,9 +825,6 @@ public:
             go_on = false;
             //store in a temporary variable from the processor
             var = static_cast<FSTPST_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-            mexPrintf("FSTPST_ var=%d", var);
-#endif
             tmp_out.str("");
             tmp_out << "T" << var+1 << " = " << Stack.top();
             Stack.pop();
@@ -918,9 +838,6 @@ public:
             go_on = false;
             //store in u variable from the processor
             var = static_cast<FSTPU_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-            mexPrintf("FSTPU_ var=%d", var);
-#endif
             tmp_out.str("");
             tmp_out << "u(" << var+1 << " + it_) = " << Stack.top();
             var += Per_u_;
@@ -935,9 +852,6 @@ public:
             go_on = false;
             //store in u variable from the processor
             var = static_cast<FSTPSU_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-            mexPrintf("FSTPSU_ var=%d", var);
-#endif
             tmp_out.str("");
             tmp_out << "u(" << var+1 << ") = " << Stack.top();
             Stack.pop();
@@ -951,9 +865,6 @@ public:
             go_on = false;
             //store in residual variable from the processor
             var = static_cast<FSTPR_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-            mexPrintf("FSTPR_ var=%d", var);
-#endif
             tmp_out.str("");
             tmp_out << "residual(" << var+1 << ") = " << Stack.top();
             Stack.pop();
@@ -967,9 +878,6 @@ public:
             go_on = false;
             //store in derivative (g) variable from the processor
             var = static_cast<FSTPG_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-            mexPrintf("FSTG_ var=%d", var);
-#endif
             tmp_out.str("");
             tmp_out << "g1[" << var+1 << "] = " << Stack.top();
             Stack.pop();
@@ -984,9 +892,6 @@ public:
             //store in derivative (g) variable from the processor
             eq = static_cast<FSTPG2_ *>(it_code->second)->get_row();
             var = static_cast<FSTPG2_ *>(it_code->second)->get_col();
-#ifdef DEBUG
-            mexPrintf("FSTG2_ eq=%d var=%d", eq, var);
-#endif
             tmp_out.str("");
             tmp_out << "/*jacob(" << eq << ", " << var << ")*/ jacob(" << eq+size*var+1 << ") = " << Stack.top();
             Stack.pop();
@@ -998,10 +903,6 @@ public:
             break;
           case Tags::FSTPG3:
             //store in derivative (g) variable from the processor
-#ifdef DEBUG
-            mexPrintf("FSTPG3\n");
-            mexEvalString("drawnow;");
-#endif
             double r;
             unsigned int pos_col;
             go_on = false;
@@ -1017,9 +918,6 @@ public:
             switch (equation_type)
               {
               case ExpressionType::FirstEndoDerivative:
-#ifdef DEBUG
-                mexPrintf("Endo eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);
-#endif
                 if (compute)
                   jacob[eq + size*pos_col] = r;
                 tmp_out.str("");
@@ -1034,9 +932,6 @@ public:
                 Stack.pop();
                 break;
               case ExpressionType::FirstExoDerivative:
-#ifdef DEBUG
-                mexPrintf("Exo eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);
-#endif
                 if (compute)
                   jacob_exo[eq + size*pos_col] = r;
                 tmp_out.str("");
@@ -1056,11 +951,6 @@ public:
                 //throw FatalExceptionHandling(tmp.str());
                 mexPrintf("%s", tmp.str().c_str());
               }
-#ifdef DEBUG
-            tmp_out << "=>";
-            mexPrintf(" g1[%d](%f)=%s\n", var, g1[var], tmp_out.str().c_str());
-            tmp_out.str("");
-#endif
             break;
           case Tags::FBINARY:
             op = static_cast<FBINARY_ *>(it_code->second)->get_op_type();
@@ -1078,9 +968,6 @@ public:
             switch (static_cast<BinaryOpcode>(op))
               {
               case BinaryOpcode::plus:
-#ifdef DEBUG
-                mexPrintf("+");
-#endif
                 if (compute)
                   Stackf.push(v1f + v2f);
                 tmp_out.str("");
@@ -1088,9 +975,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::minus:
-#ifdef DEBUG
-                mexPrintf("-");
-#endif
                 if (compute)
                   Stackf.push(v1f - v2f);
                 tmp_out.str("");
@@ -1110,9 +994,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::times:
-#ifdef DEBUG
-                mexPrintf("*");
-#endif
                 if (compute)
                   Stackf.push(v1f * v2f);
                 tmp_out.str("");
@@ -1132,9 +1013,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::divide:
-#ifdef DEBUG
-                mexPrintf("/");
-#endif
                 if (compute)
                   {
                     r = v1f / v2f;
@@ -1166,9 +1044,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::less:
-#ifdef DEBUG
-                mexPrintf("<");
-#endif
                 if (compute)
                   Stackf.push(static_cast<double>(v1f < v2f));
                 tmp_out.str("");
@@ -1188,9 +1063,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::greater:
-#ifdef DEBUG
-                mexPrintf(">");
-#endif
                 if (compute)
                   Stackf.push(static_cast<double>(v1f > v2f));
                 tmp_out.str("");
@@ -1210,9 +1082,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::lessEqual:
-#ifdef DEBUG
-                mexPrintf("<=");
-#endif
                 if (compute)
                   Stackf.push(static_cast<double>(v1f <= v2f));
                 tmp_out.str("");
@@ -1232,9 +1101,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::greaterEqual:
-#ifdef DEBUG
-                mexPrintf(">=");
-#endif
                 if (compute)
                   Stackf.push(static_cast<double>(v1f >= v2f));
                 tmp_out.str("");
@@ -1254,9 +1120,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::equalEqual:
-#ifdef DEBUG
-                mexPrintf("==");
-#endif
                 if (compute)
                   Stackf.push(static_cast<double>(v1f == v2f));
                 tmp_out.str("");
@@ -1276,9 +1139,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::different:
-#ifdef DEBUG
-                mexPrintf("!=");
-#endif
                 if (compute)
                   Stackf.push(static_cast<double>(v1f != v2f));
                 tmp_out.str("");
@@ -1298,9 +1158,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::power:
-#ifdef DEBUG
-                mexPrintf("^");
-#endif
                 if (compute)
                   {
                     r = pow(v1f, v2f);
@@ -1367,14 +1224,8 @@ public:
                   tmp_out << "(" << v1 << ", " << v2 << ", " << v3 << ")";
                   Stack.push(tmp_out.str());
                 }
-#ifdef DEBUG
-                tmp_out << " |PowerDeriv(" << v1 << ", " << v2 << v3 << ")|";
-#endif
                 break;
               case BinaryOpcode::max:
-#ifdef DEBUG
-                mexPrintf("max");
-#endif
                 if (compute)
                   Stackf.push(max(v1f, v2f));
                 tmp_out.str("");
@@ -1382,9 +1233,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::min:
-#ifdef DEBUG
-                mexPrintf("min");
-#endif
                 if (compute)
                   Stackf.push(min(v1f, v2f));
                 tmp_out.str("");
@@ -1607,36 +1455,15 @@ public:
             break;
           case Tags::FCALL:
             {
-#ifdef DEBUG
-              mexPrintf("------------------------------\n");
-              mexPrintf("CALL "); mexEvalString("drawnow;");
-#endif
               auto *fc = static_cast<FCALL_ *>(it_code->second);
               string function_name = fc->get_function_name();
-#ifdef DEBUG
-              mexPrintf("function_name=%s ", function_name.c_str()); mexEvalString("drawnow;");
-#endif
               unsigned int nb_input_arguments = fc->get_nb_input_arguments();
-#ifdef DEBUG
-              mexPrintf("nb_input_arguments=%d ", nb_input_arguments); mexEvalString("drawnow;");
-#endif
               unsigned int nb_output_arguments = fc->get_nb_output_arguments();
-#ifdef DEBUG
-              mexPrintf("nb_output_arguments=%d\n", nb_output_arguments); mexEvalString("drawnow;");
-#endif
 
               mxArray *output_arguments[3];
               string arg_func_name = fc->get_arg_func_name();
-#ifdef DEBUG
-              mexPrintf("arg_func_name.length() = %d\n", arg_func_name.length());
-              mexPrintf("arg_func_name.c_str() = %s\n", arg_func_name.c_str());
-#endif
               unsigned int nb_add_input_arguments = fc->get_nb_add_input_arguments();
               function_type = fc->get_function_type();
-#ifdef DEBUG
-              mexPrintf("function_type=%d ExternalFunctionWithoutDerivative=%d\n", function_type, ExternalFunctionType::withoutDerivative);
-              mexEvalString("drawnow;");
-#endif
               mxArray **input_arguments;
               switch (function_type)
                 {
@@ -1647,10 +1474,6 @@ public:
                     if (compute)
                       {
                         input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
-#ifdef DEBUG
-                        mexPrintf("Stack.size()=%d\n", Stack.size());
-                        mexEvalString("drawnow;");
-#endif
                         for (unsigned int i = 0; i < nb_input_arguments; i++)
                           {
                             mxArray *vv = mxCreateDoubleScalar(Stackf.top());
@@ -1692,26 +1515,13 @@ public:
                         for (unsigned int i = 0; i < nb_add_input_arguments; i++)
                           {
                             double rr = Stackf.top();
-#ifdef DEBUG
-                            mexPrintf("i=%d rr = %f Stack.size()=%d\n", i, rr, Stack.size());
-#endif
                             mxSetCell(vv, nb_add_input_arguments - (i+1), mxCreateDoubleScalar(rr));
                             Stackf.pop();
                           }
                         input_arguments[nb_input_arguments+nb_add_input_arguments] = vv;
-#ifdef DEBUG
-                        mexCallMATLAB(0, nullptr, 1, &input_arguments[0], "disp");
-                        mexCallMATLAB(0, nullptr, 1, &input_arguments[1], "disp");
-                        mexCallMATLAB(0, nullptr, 1, &input_arguments[2], "celldisp");
-                        mexPrintf("OK\n");
-                        mexEvalString("drawnow;");
-#endif
                         nb_input_arguments = 3;
                         mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str());
                         double *rr = mxGetPr(output_arguments[0]);
-#ifdef DEBUG
-                        mexPrintf("*rr=%f\n", *rr);
-#endif
                         Stackf.push(*rr);
                       }
                     tmp_out.str("");
@@ -1779,20 +1589,10 @@ public:
                         for (unsigned int i = 0; i < nb_add_input_arguments; i++)
                           {
                             double rr = Stackf.top();
-#ifdef DEBUG
-                            mexPrintf("i=%d rr = %f\n", i, rr);
-#endif
                             mxSetCell(vv, (nb_add_input_arguments - 1) - i, mxCreateDoubleScalar(rr));
                             Stackf.pop();
                           }
                         input_arguments[nb_input_arguments+nb_add_input_arguments] = vv;
-#ifdef DEBUG
-                        mexCallMATLAB(0, nullptr, 1, &input_arguments[0], "disp");
-                        mexCallMATLAB(0, nullptr, 1, &input_arguments[1], "disp");
-                        mexCallMATLAB(0, nullptr, 1, &input_arguments[2], "celldisp");
-                        mexPrintf("OK\n");
-                        mexEvalString("drawnow;");
-#endif
                         nb_input_arguments = 3;
                         mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str());
                         double *rr = mxGetPr(output_arguments[0]);
@@ -1849,26 +1649,13 @@ public:
                   }
                   break;
                 }
-#ifdef DEBUG
-              mexPrintf("end CALL\n");
-              mexEvalString("drawnow;");
-#endif
               break;
             }
           case Tags::FSTPTEF:
             go_on = false;
             var = static_cast<FSTPTEF_ *>(it_code->second)->get_number();
-#ifdef DEBUG
-            mexPrintf("FSTPTEF\n");
-            mexPrintf("var=%d Stack.size()=%d\n", var, Stack.size());
-#endif
             if (compute)
               {
-#ifdef DEBUG
-                double rr = Stackf.top();
-                mexPrintf("FSTP TEF(var-1)=%f done\n", rr);
-                mexEvalString("drawnow;");
-#endif
                 Stackf.pop();
               }
             tmp_out.str("");
@@ -1887,22 +1674,9 @@ public:
                 break;
               }
             Stack.pop();
-#ifdef DEBUG
-            mexPrintf("end FSTPEF\n");
-            mexEvalString("drawnow;");
-#endif
             break;
           case Tags::FLDTEF:
             var = static_cast<FLDTEF_ *>(it_code->second)->get_number();
-#ifdef DEBUG
-            mexPrintf("FLDTEF\n");
-            mexPrintf("var=%d Stack.size()=%d\n", var, Stackf.size());
-            {
-              auto it = TEF.find(var-1);
-              mexPrintf("FLD TEF[var-1]=%f done\n", it->second);
-            }
-            mexEvalString("drawnow;");
-#endif
             if (compute)
               {
                 auto it = TEF.find(var-1);
@@ -1911,10 +1685,6 @@ public:
             tmp_out.str("");
             tmp_out << "TEF(" << var << ")";
             Stack.push(tmp_out.str());
-#ifdef DEBUG
-            mexPrintf("end FLDTEF\n");
-            mexEvalString("drawnow;");
-#endif
 
             break;
           case Tags::FSTPTEFD:
@@ -1922,17 +1692,8 @@ public:
               go_on = false;
               unsigned int indx = static_cast<FSTPTEFD_ *>(it_code->second)->get_indx();
               unsigned int row = static_cast<FSTPTEFD_ *>(it_code->second)->get_row();
-#ifdef DEBUG
-              mexPrintf("FSTPTEFD\n");
-              mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
-#endif
               if (compute)
                 {
-#ifdef DEBUG
-                  double rr = Stackf.top();
-                  mexPrintf("FSTP TEFD[{ indx, row }]=%f done\n", rr);
-                  mexEvalString("drawnow;");
-#endif
                   Stackf.pop();
                 }
               tmp_out.str("");
@@ -1947,13 +1708,6 @@ public:
             {
               unsigned int indx = static_cast<FLDTEFD_ *>(it_code->second)->get_indx();
               unsigned int row = static_cast<FLDTEFD_ *>(it_code->second)->get_row();
-#ifdef DEBUG
-              mexPrintf("FLDTEFD\n");
-              mexPrintf("indx=%d row=%d Stack.size()=%d\n", indx, row, Stack.size());
-              auto it = TEFD.find({ indx, row-1 });
-              mexPrintf("FLD TEFD[{ indx, row }]=%f done\n", it->second);
-              mexEvalString("drawnow;");
-#endif
               if (compute)
                 {
                   auto it = TEFD.find({ indx, row-1 });
@@ -1970,19 +1724,8 @@ public:
               unsigned int indx = static_cast<FSTPTEFDD_ *>(it_code->second)->get_indx();
               unsigned int row = static_cast<FSTPTEFDD_ *>(it_code->second)->get_row();
               unsigned int col = static_cast<FSTPTEFDD_ *>(it_code->second)->get_col();
-#ifdef DEBUG
-              mexPrintf("FSTPTEFD\n");
-              mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
-#endif
               if (compute)
                 {
-#ifdef DEBUG
-                  double rr = Stackf.top();
-                  mexPrintf("rr=%f\n", rr);
-                  auto it = TEFDD.find({ indx, row-1, col-1 });
-                  mexPrintf("FSTP TEFDD[{ indx, row, col }]=%f done\n", it->second);
-                  mexEvalString("drawnow;");
-#endif
                   Stackf.pop();
                 }
               tmp_out.str("");
@@ -1999,13 +1742,6 @@ public:
               unsigned int indx = static_cast<FLDTEFDD_ *>(it_code->second)->get_indx();
               unsigned int row = static_cast<FLDTEFDD_ *>(it_code->second)->get_row();
               unsigned int col = static_cast<FSTPTEFDD_ *>(it_code->second)->get_col();
-#ifdef DEBUG
-              mexPrintf("FLDTEFD\n");
-              mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
-              auto it = TEFDD.find({ indx, row-1, col-1 });
-              mexPrintf("FLD TEFD[{ indx, row, col }]=%f done\n", it->second);
-              mexEvalString("drawnow;");
-#endif
               if (compute)
                 {
                   auto it = TEFDD.find({ indx, row-1, col-1 });
@@ -2058,9 +1794,6 @@ public:
           }
         it_code++;
       }
-#ifdef DEBUG
-    mexPrintf("print_expression end tmp_out.str().c_str()=%s\n", tmp_out.str().c_str()); mexEvalString("drawnow;");
-#endif
     it_code_ret = it_code;
     return tmp_out.str();
   }
