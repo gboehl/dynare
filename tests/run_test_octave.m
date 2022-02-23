@@ -1,4 +1,4 @@
-## Copyright (C) 2009-2017 Dynare Team
+## Copyright (C) 2009-2022 Dynare Team
 ##
 ## This file is part of Dynare.
 ##
@@ -31,10 +31,6 @@ addpath([top_test_dir filesep '..' filesep 'matlab']);
 if !strcmp(dynare_version(), getenv("DYNARE_VERSION"))
     error("Incorrect version of Dynare is being tested")
 endif
-
-## Ask gnuplot to create graphics in text mode
-graphics_toolkit gnuplot;
-setenv("GNUTERM", "dumb");
 
 ## Test MOD files listed in Makefile.am
 name = getenv("FILESTEM");
