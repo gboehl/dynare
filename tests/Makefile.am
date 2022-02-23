@@ -1435,7 +1435,7 @@ check-matlab-ols: $(M_OLS_TRS_FILES)
 %.o.trs %.o.log: %.mod
 	@echo "`tput bold``tput setaf 8`OCTAVE: $(CURDIR)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" FILESTEM="$*" \
-		$(OCTAVE) --no-init-file --silent --no-history --path "$*.mod" run_test_octave.m > $*.o.log 2>&1 || \
+		$(OCTAVE) --no-window-system --no-init-file --silent --no-history --path "$*.mod" run_test_octave.m > $*.o.log 2>&1 || \
 	printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.mod\n:elapsed-time: 0.0\n" > $*.o.trs
 	@if test -z "$(filter $*.o.trs,$(O_XFAIL_TRS_FILES))"; then pass_color=2; fail_color=1; else pass_color=1; fail_color=2; fi; \
 	if grep -q ":test-result: PASS" $*.o.trs; then \
@@ -1450,7 +1450,7 @@ check-matlab-ols: $(M_OLS_TRS_FILES)
 %.o.trs %.o.log : %.m
 	@echo "`tput bold``tput setaf 8`OCTAVE: $(CURDIR)/$*... `tput sgr0`"
 	@DYNARE_VERSION="$(PACKAGE_VERSION)" TOP_TEST_DIR="$(CURDIR)" \
-		$(OCTAVE) --no-init-file --silent --no-history $< > $*.o.log 2>&1 || \
+		$(OCTAVE) --no-window-system --no-init-file --silent --no-history $< > $*.o.log 2>&1 || \
 		printf ":test-result: FAIL\n:number-tests: 1\n:number-failed-tests: 1\n:list-of-failed-tests: $*.m\n:elapsed-time: 0.0\n" > $*.o.trs
 	@echo "`tput bold``tput setaf 8`OCTAVE: $(CURDIR)/$* Done!`tput sgr0`"
 
@@ -1464,7 +1464,7 @@ check-matlab-ols: $(M_OLS_TRS_FILES)
 %.o.tls : %.m
 	@echo "`tput bold``tput setaf 8`OCTAVE: $(CURDIR)/$*... `tput sgr0`"
 	@TOP_TEST_DIR="$(CURDIR)"  FILESTEM="$*" \
-		$(OCTAVE) --no-init-file --silent --no-history run_o_script.m 2>&1
+		$(OCTAVE) --no-window-system --no-init-file --silent --no-history run_o_script.m 2>&1
 	@touch $*.o.tls
 	@echo "`tput bold``tput setaf 8`OCTAVE: $(CURDIR)/$* Done!`tput sgr0`"
 

@@ -30,11 +30,6 @@ if !strcmp(dynare_version(), getenv("DYNARE_VERSION"))
     error("Incorrect version of Dynare is being tested")
 endif
 
-## Ask gnuplot to create graphics in text mode
-## Note that setenv() was introduced in Octave 3.0.2, for compatibility
-## with MATLAB
-putenv("GNUTERM", "dumb")
-
 ## Test block_bytecode/ls2003.mod with various combinations of
 ## block/bytecode/solve_algo/stack_solve_algo
 failedBlock = {};

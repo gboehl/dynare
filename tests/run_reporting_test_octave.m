@@ -1,4 +1,4 @@
-## Copyright (C) 2013-2019 Dynare Team
+## Copyright (C) 2013-2022 Dynare Team
 ##
 ## This file is part of Dynare.
 ##
@@ -24,11 +24,6 @@ addpath([top_test_dir filesep '..' filesep 'matlab']);
 if !strcmp(dynare_version(), getenv("DYNARE_VERSION"))
     error("Incorrect version of Dynare is being tested")
 endif
-
-## Ask gnuplot to create graphics in text mode
-## Note that setenv() was introduced in Octave 3.0.2, for compatibility
-## with MATLAB
-putenv("GNUTERM", "dumb")
 
 ## To add default directories, empty dseries objects
 dynare_config();
