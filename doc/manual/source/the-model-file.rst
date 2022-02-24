@@ -9907,7 +9907,7 @@ the :comm:`bvar_forecast` command.
     variables. This is done using the reduced form first order
     state-space representation of the DSGE model by finding the
     structural shocks that are needed to match the restricted
-    paths. Consider the an augmented state space representation that
+    paths. Consider the augmented state space representation that
     stacks both predetermined and non-predetermined variables into a
     vector :math:`y_{t}`:
 
@@ -9915,43 +9915,83 @@ the :comm:`bvar_forecast` command.
 
            y_t=Ty_{t-1}+R\varepsilon_t
 
-    Both :math:`y_t` and :math:`\varepsilon_t` are split up into
-    controlled and uncontrolled ones to get:
+    Both :math:`y_t` and :math:`\varepsilon_t` are split up into controlled and
+    uncontrolled ones, and we assume without loss of generality that the
+    constrained endogenous variables and the controlled shocks come first :
 
         .. math::
 
-           y_t(contr\_vars)=Ty_{t-1}(contr\_vars)+R(contr\_vars,uncontr\_shocks)\varepsilon_t(uncontr\_shocks) \\
-           + R(contr\_vars,contr\_shocks)\varepsilon_t(contr\_shocks)
+           \begin{pmatrix}
+           y_{c,t}\\
+           y_{u,t}
+           \end{pmatrix}
+           =
+           \begin{pmatrix}
+           T_{c,c} & T_{c,u}\\
+           T_{u,c} & T_{u,u}
+           \end{pmatrix}
+           \begin{pmatrix}
+           y_{c,t-1}\\
+           y_{u,t-1}
+           \end{pmatrix}
+           +
+           \begin{pmatrix}
+           R_{c,c} & R_{c,u}\\
+           R_{u,c} & R_{u,u}
+           \end{pmatrix}
+           \begin{pmatrix}
+           \varepsilon_{c,t}\\
+           \varepsilon_{u,t}
+           \end{pmatrix}
 
-    which can be solved algebraically for :math:`\varepsilon_t(contr\_shocks)`.
+    where matrices :math:`T` and :math:`R` are partitioned consistently with the
+    vectors of endogenous variables and innovations. Provided that matrix
+    :math:`R_{c,c}` is square and full rank (a necessary condition is that the
+    number of free endogenous variables matches the number of free innovations),
+    given :math:`y_{c,t}`, :math:`\varepsilon_{u,t}` and :math:`y_{t-1}` the
+    first block of equations can be solved for :math:`\varepsilon_{c,t}`:
 
-    Using these controlled shocks, the state-space representation can
-    be used for forecasting. A few things need to be noted. First, it
-    is assumed that controlled exogenous variables are fully under
-    control of the policy maker for all forecast periods and not just
-    for the periods where the endogenous variables are controlled. For
-    all uncontrolled periods, the controlled exogenous variables are
-    assumed to be 0. This implies that there is no forecast
-    uncertainty arising from these exogenous variables in uncontrolled
-    periods. Second, by making use of the first order state space
-    solution, even if a higher-order approximation was performed, the
-    conditional forecasts will be based on a first order
-    approximation. Third, although controlled exogenous variables are
-    taken as instruments perfectly under the control of the
-    policy-maker, they are nevertheless random and unforeseen shocks
-    from the perspective of the households. That is, households are in
-    each period surprised by the realization of a shock that keeps the
-    controlled endogenous variables at their respective level. Fourth,
-    keep in mind that if the structural innovations are correlated,
-    because the calibrated or estimated covariance matrix has non zero
-    off diagonal elements, the results of the conditional forecasts
-    will depend on the ordering of the innovations (as declared after
-    ``varexo``). As in VAR models, a Cholesky decomposition is used to
-    factorize the covariance matrix and identify orthogonal
-    impulses. It is preferable to declare the correlations in the
-    model block (explicitly imposing the identification restrictions),
-    unless you are satisfied with the implicit identification
-    restrictions implied by the Cholesky decomposition.
+        .. math::
+
+           \varepsilon_{c,t} = R_{c,c}^{-1}\bigl( y_{c,t} - T_{c,c}y_{c,t} - T_{c,u}y_{u,t}  - R_{c,u}\varepsilon_{u,t}\bigr)
+
+    and :math:`y_{u,t}` can be updated by evaluating the second block of equations:
+
+        .. math::
+
+           y_{u,t} = T_{u,c}y_{c,t-1} + T_{u,u}y_{u,t-1} +  R_{u,c}\varepsilon_{c,t} + R_{u,u}\varepsilon_{u,t}    
+
+    By iterating over these two blocks of equations, we can build a forecast for
+    all the endogenous variables in the system conditional on paths for a subset of the
+    endogenous variables. If the distribution of the free innovations
+    :math:`\varepsilon_{u,t}` is provided (*i.e.* some of them have positive
+    variances) this exercise is replicated (the number of replication is
+    controlled by the option :opt:`replic` described below) by drawing different
+    sequences of free innovations. The result is a predictive distribution for
+    the uncontrolled endogenous variables, :math:`y_{u,t}`, that Dynare will use to report
+    confidence bands around the point conditional forecast.
+
+    A few things need to be noted. First, the controlled
+    exogenous variables are set to zero for the uncontrolled periods. This implies
+    that there is no forecast uncertainty arising from these exogenous variables
+    in uncontrolled periods. Second, by making use of the first order state
+    space solution, even if a higher-order approximation was performed, the
+    conditional forecasts will be based on a first order approximation. Since
+    the controlled exogenous variables are identified on the basis of the
+    reduced form model (*i.e.* after solving for the expectations), they are
+    unforeseen shocks from the perspective of the agents in the model. That is,
+    agents expect the endogenous variables to return to their respective steady
+    state levels but are surprised in each period by the realisation of shocks
+    keeping the endogenous variables along a predefined (unexpected) path.
+    Fourth, if the structural innovations are correlated, because the calibrated
+    or estimated covariance matrix has non zero off diagonal elements, the
+    results of the conditional forecasts will depend on the ordering of the
+    innovations (as declared after ``varexo``). As in VAR models, a Cholesky
+    decomposition is used to factorise the covariance matrix and identify
+    orthogonal impulses. It is preferable to declare the correlations in the
+    model block (explicitly imposing the identification restrictions), unless
+    you are satisfied with the implicit identification restrictions implied by
+    the Cholesky decomposition.
 
     This command has to be called after ``estimation`` or ``stoch_simul``.
 
@@ -9982,7 +10022,7 @@ the :comm:`bvar_forecast` command.
 
     .. option:: replic = INTEGER
 
-        Number of simulations. Default: ``5000``.
+        Number of simulations used to compute the conditional forecast uncertainty. Default: ``5000``.
 
     .. option:: conf_sig = DOUBLE
 
