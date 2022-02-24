@@ -45,7 +45,7 @@ switch info(1)
     case 7
         message = sprintf('One of the eigenvalues is close to 0/0 (the absolute value of numerator and denominator is smaller than %5.4f!\n If you believe that the model has a unique solution you can try to reduce the value of qz_zero_threshold.',DynareOptions.qz_zero_threshold);
     case 8
-        if size(info,2)>=2
+        if size(info,2)>=2 && info(2)~=0
             global M_;
             disp_string = M_.param_names{info(2)};
             for ii=1:length(info)-2
