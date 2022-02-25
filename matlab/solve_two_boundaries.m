@@ -47,7 +47,7 @@ function [y, T, oo]= solve_two_boundaries(fname, y, x, params, steady_state, T, 
 %   none.
 %
 
-% Copyright (C) 1996-2020 Dynare Team
+% Copyright (C) 1996-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -187,8 +187,8 @@ while ~(cvg==1 || iter>maxit_)
                 B1_inv = inv(g1a(Elem, Elem));
                 if (t < periods)
                     S1 = B1_inv * g1a(Elem, Elem_1);
+                    g1a(Elem, Elem_1) = S1;
                 end
-                g1a(Elem, Elem_1) = S1;
                 b(Elem) = B1_inv * b(Elem);
                 g1a(Elem, Elem) = ones(Blck_size, Blck_size);
                 if t<periods
@@ -203,6 +203,7 @@ while ~(cvg==1 || iter>maxit_)
             dx = ya;
             dx(y_Elem) = za - ya(y_Elem);
             ya(y_Elem) = ya(y_Elem) + lambda*dx(y_Elem);
+            y(y_index, y_kmin + periods) = ya(y_Elem);
             for t=periods-1:-1:1
                 first_elem = (t-1)*Blck_size+1;
                 last_elem = t*Blck_size;
