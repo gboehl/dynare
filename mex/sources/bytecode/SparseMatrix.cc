@@ -1646,7 +1646,7 @@ dynSparseMatrix::Check_the_Solution(int periods, int y_kmin, int y_kmax, int Siz
 }
 
 mxArray *
-dynSparseMatrix::substract_A_B(const mxArray *A_m, const mxArray *B_m)
+dynSparseMatrix::subtract_A_B(const mxArray *A_m, const mxArray *B_m)
 {
   size_t n_A = mxGetN(A_m);
   size_t m_A = mxGetM(A_m);
@@ -1665,7 +1665,7 @@ dynSparseMatrix::substract_A_B(const mxArray *A_m, const mxArray *B_m)
 }
 
 mxArray *
-dynSparseMatrix::Sparse_substract_SA_SB(const mxArray *A_m, const mxArray *B_m)
+dynSparseMatrix::Sparse_subtract_SA_SB(const mxArray *A_m, const mxArray *B_m)
 {
   size_t n_A = mxGetN(A_m);
   size_t m_A = mxGetM(A_m);
@@ -2199,13 +2199,13 @@ dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned in
           mxArray *A2_t = Sparse_transpose(A2);
           mxArray *tmp = Sparse_mult_SAT_SB(A2_t, S1);
           mxDestroyArray(B1);
-          B1 = Sparse_substract_SA_SB(B2, tmp);
+          B1 = Sparse_subtract_SA_SB(B2, tmp);
           mxDestroyArray(tmp);
 
           tmp = mult_SAT_B(A2_t, d1);
           mxDestroyArray(A2_t);
           mxDestroyArray(b1);
-          b1 = substract_A_B(b2, tmp);
+          b1 = subtract_A_B(b2, tmp);
           mxDestroyArray(tmp);
 
           mxDestroyArray(A2);
@@ -2279,7 +2279,7 @@ dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned in
       mxArray *tmp = mult_SAT_B(S1_t, d1);
       mxDestroyArray(S1_t);
       mxDestroyArray(d1);
-      d1 = substract_A_B(d1_next, tmp);
+      d1 = subtract_A_B(d1_next, tmp);
       d1_d = mxGetPr(d1);
       mxDestroyArray(d1_next);
       mxDestroyArray(tmp);
@@ -2994,7 +2994,7 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
           first = first->NZE_R_N;
         }
       u[b[pivj]] /= piv;
-      /*substract the elements on the non treated lines*/
+      /*subtract the elements on the non treated lines*/
       nb_eq = At_Col(i, &first);
       NonZeroElem *first_piva;
       int nb_var_piva = At_Row(pivj, &first_piva);
@@ -3306,7 +3306,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
               save_op_s->first = b[pivj];
               save_op_s->lag = 0;
               nop += 2;
-              // Substract the elements on the non treated lines
+              // Subtract the elements on the non treated lines
               nb_eq = At_Col(i, &first);
               NonZeroElem *first_piva;
               int nb_var_piva = At_Row(pivj, &first_piva);
@@ -3469,7 +3469,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
               nop += nb_var*2;
               u[b[pivj]] /= piv;
               nop += 2;
-              // Substract the elements on the non treated lines
+              // Subtract the elements on the non treated lines
               nb_eq = At_Col(i, &first);
               NonZeroElem *first_piva;
               int nb_var_piva = At_Row(pivj, &first_piva);
