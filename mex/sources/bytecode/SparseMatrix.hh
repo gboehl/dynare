@@ -118,7 +118,6 @@ private:
   static mxArray *Sparse_mult_SAT_B(const mxArray *A_m, const mxArray *B_m);
   static mxArray *mult_SAT_B(const mxArray *A_m, const mxArray *B_m);
   static mxArray *Sparse_substract_SA_SB(const mxArray *A_m, const mxArray *B_m);
-  static mxArray *Sparse_substract_A_SB(const mxArray *A_m, const mxArray *B_m);
   static mxArray *substract_A_B(const mxArray *A_m, const mxArray *B_m);
 protected:
   stack<double> Stack;

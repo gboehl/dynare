@@ -1665,29 +1665,6 @@ dynSparseMatrix::substract_A_B(const mxArray *A_m, const mxArray *B_m)
 }
 
 mxArray *
-dynSparseMatrix::Sparse_substract_A_SB(const mxArray *A_m, const mxArray *B_m)
-{
-  size_t n_B = mxGetN(B_m);
-  size_t m_B = mxGetM(B_m);
-  mwIndex *B_i = mxGetIr(B_m);
-  mwIndex *B_j = mxGetJc(B_m);
-  size_t total_nze_B = B_j[n_B];
-  double *B_d = mxGetPr(B_m);
-  mxArray *C_m = mxDuplicateArray(A_m);
-  double *C_d = mxGetPr(C_m);
-  unsigned int nze_B = 0;
-  unsigned int B_col = 0;
-  while (nze_B < total_nze_B)
-    {
-      while (nze_B >= static_cast<unsigned int>(B_j[B_col+1]) && (nze_B < total_nze_B))
-        B_col++;
-      C_d[B_col*m_B+B_i[nze_B]] -= B_d[nze_B];
-      nze_B++;
-    }
-  return C_m;
-}
-
-mxArray *
 dynSparseMatrix::Sparse_substract_SA_SB(const mxArray *A_m, const mxArray *B_m)
 {
   size_t n_A = mxGetN(A_m);
