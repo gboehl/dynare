@@ -113,11 +113,17 @@ private:
   int complete(int beg_t, int Size, int periods, int *b);
   void bksub(int tbreak, int last_period, int Size, double slowc_l);
   void simple_bksub(int it_, int Size, double slowc_l);
+  // Computes Aᵀ where A is are sparse. The result is sparse.
   static mxArray *Sparse_transpose(const mxArray *A_m);
+  // Computes Aᵀ·B where A and B are sparse. The result is sparse.
   static mxArray *Sparse_mult_SAT_SB(const mxArray *A_m, const mxArray *B_m);
+  // Computes Aᵀ·B where A is sparse and B is dense. The result is sparse.
   static mxArray *Sparse_mult_SAT_B(const mxArray *A_m, const mxArray *B_m);
+  // Computes Aᵀ·B where A is sparse and B is dense. The result is dense.
   static mxArray *mult_SAT_B(const mxArray *A_m, const mxArray *B_m);
+  // Computes A−B where A and B are sparse. The result is sparse.
   static mxArray *Sparse_substract_SA_SB(const mxArray *A_m, const mxArray *B_m);
+  // Computes A−B where A and B are dense. The result is dense.
   static mxArray *substract_A_B(const mxArray *A_m, const mxArray *B_m);
 protected:
   stack<double> Stack;
