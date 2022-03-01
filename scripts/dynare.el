@@ -1,7 +1,7 @@
 ;;; dynare.el --- major mode for editing Dynare mod files
 
 ;; Copyright © 2010 Yannick Kalantzis
-;; Copyright © 2019-2021 Dynare Team
+;; Copyright © 2019-2022 Dynare Team
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@
     "smoother2histval" "perfect_foresight_setup" "perfect_foresight_solver"
     "perfect_foresight_with_expectation_errors_setup"
     "perfect_foresight_with_expectation_errors_solver"
-    "compilation_setup"
+    "compilation_setup" "resid"
     "std" "corr" "prior_function" "posterior_function" "end")
   "Dynare statement keywords.")
 
