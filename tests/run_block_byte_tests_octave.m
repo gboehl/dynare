@@ -20,6 +20,9 @@
 ## Before every call to Dynare, the contents of the workspace is saved in
 ## 'wsOct', and reloaded after Dynare has finished (this is necessary since
 ## Dynare does a 'clear -all').
+## Note that we take care of clearing oo_ before saving the workspace,
+## otherwise the newly created oo_ will be scratched upon loading,
+## thus making the path comparison bogus.
 
 top_test_dir = getenv('TOP_TEST_DIR');
 addpath([top_test_dir filesep 'utils']);
@@ -53,7 +56,7 @@ for blockFlag = 0:1
 
         # Workaround for strange race condition related to the static/dynamic
         # files (especially when we switch to/from use_dll)
-        rmdir('+ls2003_tmp', 's')
+        rmdir('+ls2003_tmp', 's');
         pause(1)
 
         for i = 1:length(solve_algos)
@@ -78,6 +81,7 @@ for blockFlag = 0:1
             else
                 try
                     old_path = path;
+                    clear oo_ # Ensure that oo_.endo_simul won’t be overwritten when loading wsOct
                     save wsOct
                     run_ls2003(blockFlag, storageFlag, solve_algos(i), default_stack_solve_algo)
                     load wsOct
@@ -85,7 +89,7 @@ for blockFlag = 0:1
                     ## Test against the reference simulation path
                     load('test.mat','y_ref');
                     diff = oo_.endo_simul - y_ref;
-                    if abs(diff) > options_.dynatol.x
+                    if max(max(abs(diff))) > options_.dynatol.x
                         failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'];
                         differr.message = ["ERROR: simulation path differs from the reference path" ];
                         printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(solve_algos(i)) ',' num2str(default_stack_solve_algo) ')'], differr);
@@ -102,6 +106,7 @@ for blockFlag = 0:1
             num_block_tests = num_block_tests + 1;
             try
                 old_path = path;
+                clear oo_ # Ensure that oo_.endo_simul won’t be overwritten when loading wsOct
                 save wsOct
                 run_ls2003(blockFlag, storageFlag, default_solve_algo, stack_solve_algos(i))
                 load wsOct
@@ -109,7 +114,7 @@ for blockFlag = 0:1
                 ## Test against the reference simulation path
                 load('test.mat','y_ref');
                 diff = oo_.endo_simul - y_ref;
-                if abs(diff) > options_.dynatol.x
+                if max(max(abs(diff))) > options_.dynatol.x
                     failedBlock{size(failedBlock,2)+1} = ['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'];
                     differr.message = ["ERROR: simulation path differs from the reference path" ];
                     printMakeCheckOctaveErrMsg(['block_bytecode' filesep 'run_ls2003.m(' num2str(blockFlag) ',' num2str(storageFlag) ',' num2str(default_solve_algo) ',' num2str(stack_solve_algos(i)) ')'], differr);
