@@ -31,7 +31,9 @@ function z = resid(options_resid_)
 
 global M_ options_ oo_
 
-non_zero = isfield(options_resid_, 'non_zero') && options_resid_.non_zero;
+% Properly handle the case where no input argument is given, e.g. when
+% writing “z = resid;” in a .mod file (hence not using the preprocessor syntax).
+non_zero = nargin > 0 && isfield(options_resid_, 'non_zero') && options_resid_.non_zero;
 
 tags  = M_.equations_tags;
 istag = 0;
