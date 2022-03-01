@@ -48,4 +48,4 @@ e = 0;
 u = 0;
 end;
 
-resid('title');
+resid(non_zero);

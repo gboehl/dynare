@@ -4,7 +4,7 @@
  */
 
 /*
- * Copyright (C) 2001-2016 Dynare Team
+ * Copyright (C) 2001-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -56,7 +56,7 @@ k = log(11.08360443260358);
 a = 0;
 b = 0;
 end;
-resid(1);
+resid;
 shocks;
 var e; stderr 0.009;
 var u; stderr 0.009;

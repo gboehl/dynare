@@ -78,7 +78,7 @@ mu     = ((c-(chihab*c/g))^(-tau))-chihab*bet*((c*g-chihab*c)^(-tau));
 ez     = 0;
 end;
 
-resid(1);
+resid;
 
 steady;                      
 

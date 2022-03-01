@@ -22,7 +22,7 @@ x = xbar;
 y = beta*exp(theta*xbar)/(1-beta*exp(theta*xbar));
 end;
 
-resid(1);
+resid;
 
 steady;
 

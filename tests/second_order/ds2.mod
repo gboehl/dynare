@@ -62,7 +62,7 @@ initval;
   ze_1 = log(betabar)+yk_1;
 end;
 
-resid(1);
+resid;
 steady;
 model_diagnostics;
 check;

@@ -110,7 +110,7 @@ var u_sigma_tb; stderr 1;
 var u_sigma_r; stderr 1;
 end;
 
-resid(1);
+resid;
 
 options_.solve_tolf=1E-12;
 steady(solve_algo=3);

@@ -58,7 +58,7 @@ y=k^alpha;
 c=(1-s)*y;
 invest=y-c;
 end;
-resid(1);
+resid;
 steady;
 
 simul(periods=200, solve_algo=4);

@@ -1,10 +1,10 @@
-function z = resid(junk)
-% function z = resid(junk)
+function z = resid(options_resid_)
+% function z = resid(options_resid_)
 %
 % Computes static residuals associated with the guess values.
 %
 % INPUTS
-%    junk:   dummy value for backward compatibility
+%    options_resid_:   options to resid
 %
 % OUTPUTS
 %    z:      residuals
@@ -12,7 +12,7 @@ function z = resid(junk)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2020 Dynare Team
+% Copyright (C) 2001-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,10 +31,7 @@ function z = resid(junk)
 
 global M_ options_ oo_
 
-tagname = 'name';
-if nargin && ischar(junk)
-    tagname = junk;
-end
+non_zero = isfield(options_resid_, 'non_zero') && options_resid_.non_zero;
 
 tags  = M_.equations_tags;
 istag = 0;
@@ -80,23 +77,30 @@ if nargout == 0
     ind = [];
     disp('Residuals of the static equations:')
     skipline()
+    any_non_zero_residual = false;
     for i=1:M_.orig_eq_nbr
         if abs(z(i+M_.ramsey_eq_nbr)) < options_.solve_tolf/100
             tmp = 0;
         else
             tmp = z(i+M_.ramsey_eq_nbr);
+            any_non_zero_residual = true;
         end
         if istag
             tg = tags(cell2mat(tags(:,1)) == i,2:3); % all tags for equation i
-            ind = strmatch( tagname, cellstr( tg(:,1) ) );
+            ind = strmatch('name', cellstr( tg(:,1) ) );
         end
-        if ~istag || length(ind) == 0
-            disp(['Equation number ' int2str(i) ' : ' num2str(tmp)])
-        else
-            t1 = tg( ind , 2 );
-            s = cell2mat(t1);
-            disp( ['Equation number ', int2str(i) ,' : ', num2str(tmp) ,' : ' s])
+        if ~(non_zero && tmp == 0)
+            if ~istag || length(ind) == 0
+                disp(['Equation number ' int2str(i) ' : ' num2str(tmp)])
+            else
+                t1 = tg( ind , 2 );
+                s = cell2mat(t1);
+                disp( ['Equation number ', int2str(i) ,' : ', num2str(tmp) ,' : ' s])
+            end
         end
+    end
+    if non_zero && ~any_non_zero_residual
+        disp('All residuals are zero')
     end
     skipline(2)
 end

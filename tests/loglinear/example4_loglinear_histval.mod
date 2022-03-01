@@ -4,7 +4,7 @@
  */
 
 /*
- * Copyright (C) 2001-2010 Dynare Team
+ * Copyright (C) 2001-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -57,7 +57,7 @@ a = 1;
 b = 1;
 end;
 
-resid(1);
+resid;
 shocks;
 var e; stderr 0.009;
 var u; stderr 0.009;

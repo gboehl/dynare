@@ -1928,6 +1928,12 @@ in this case ``initval`` is used to specify the terminal conditions.
     in the last ``initval`` or ``endval`` block (or the steady state
     file if you provided one, see :ref:`st-st`).
 
+    *Options*
+
+    .. option:: non_zero
+
+        Only display non-zero residuals.
+
 .. command:: initval_file (OPTIONS...);
 
     |br| In a deterministic setup, this command is used to specify a
