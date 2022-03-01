@@ -429,7 +429,10 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
       test_mxMalloc(y_save, __LINE__, __FILE__, __func__, y_size*sizeof(double)*(periods+y_kmax+y_kmin));
       start_code = it_code;
       iter = 0;
-      if (!is_linear)
+      if (!is_linear
+          || stack_solve_algo == 4) // On linear blocks, stack_solve_algo=4 may
+                                    // need more than one iteration to find the
+                                    // optimal (unitary!) path length
         {
           cvg = false;
           glambda2 = g0 = very_big;
