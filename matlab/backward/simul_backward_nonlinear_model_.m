@@ -49,7 +49,7 @@ end
 % Simulations (call a Newton-like algorithm for each period).
 for it = initialconditions.nobs+(1:samplesize)
     if debug
-        dprintf('Période t = %s.', num2str(it-initialconditions.nobs));
+        dprintf('Period t = %s.', num2str(it-initialconditions.nobs));
     end
     y_ = DynareOutput.endo_simul(:,it-1);
     ylag = y_(iy1);                    % Set lagged variables.
