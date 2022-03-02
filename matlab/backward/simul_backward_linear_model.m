@@ -3,7 +3,7 @@ function simulations = simul_backward_linear_model(initialconditions, samplesize
 % Simulates a stochastic linear backward looking model.
 %
 % INPUTS
-% - initialconditions   [double]      n*1 vector, initial conditions for the endogenous variables.
+% - initialconditions   [dseries]     initial conditions for the endogenous variables.
 % - samplesize          [integer]     scalar, number of periods for the simulation.
 % - DynareOptions       [struct]      Dynare's options_ global structure.
 % - DynareModel         [struct]      Dynare's M_ global structure.
@@ -21,7 +21,7 @@ function simulations = simul_backward_linear_model(initialconditions, samplesize
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided thrtough the histval block.
 
-% Copyright (C) 2012-2021 Dynare Team
+% Copyright © 2012-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

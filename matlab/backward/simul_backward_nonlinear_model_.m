@@ -3,7 +3,7 @@ function [ysim, xsim] = simul_backward_nonlinear_model_(initialconditions, sampl
 % Simulates a stochastic non linear backward looking model with arbitrary precision (a deterministic solver is used).
 %
 % INPUTS
-% - initial_conditions  [double]      n*1 vector, initial conditions for the endogenous variables.
+% - initial_conditions  [dseries]     initial conditions for the endogenous variables.
 % - sample_size         [integer]     scalar, number of periods for the simulation.
 % - DynareOptions       [struct]      Dynare's options_ global structure.
 % - DynareModel         [struct]      Dynare's M_ global structure.
@@ -21,7 +21,7 @@ function [ysim, xsim] = simul_backward_nonlinear_model_(initialconditions, sampl
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided thrtough the histval block.
 
-% Copyright © 2017-2020 Dynare Team
+% Copyright © 2017-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

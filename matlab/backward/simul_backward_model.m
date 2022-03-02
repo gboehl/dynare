@@ -3,7 +3,7 @@ function simulation = simul_backward_model(initialconditions, samplesize, innova
 % Simulates a stochastic backward looking model (with arbitrary precision).
 %
 % INPUTS
-% - initialconditions   [double]      n*1 vector, initial conditions for the endogenous variables.
+% - initialconditions   [dseries]     initial conditions for the endogenous variables.
 % - samplesize          [integer]     scalar, number of periods for the simulation.
 % - innovations         [dseries]     innovations to be used for the simulation.
 %
@@ -18,7 +18,7 @@ function simulation = simul_backward_model(initialconditions, samplesize, innova
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided thrtough the histval block.
 
-% Copyright (C) 2012-2019 Dynare Team
+% Copyright © 2012-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
