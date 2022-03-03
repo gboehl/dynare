@@ -1,4 +1,4 @@
-function [x, errorflag] = solve1(func, x, j1, j2, jacobian_flag, gstep, tolf, tolx, maxit, fake, debug, varargin)
+function [x, errorflag, exitflag] = solve1(func, x, j1, j2, jacobian_flag, gstep, tolf, tolx, maxit, fake, debug, varargin)
 
 % Solves systems of non linear equations of several variables
 %
@@ -61,6 +61,7 @@ idCpx = ~isreal(fvec);
 if any(idInf)
     disp('SOLVE1: during the resolution of the non-linear system, the evaluation of the following equation(s) resulted in a non-finite number:')
     disp(j1(idInf)')
+    exitflag = -1;
     errorflag = true;
     return
 end
@@ -68,6 +69,7 @@ end
 if any(idNan)
     disp('SOLVE1: during the resolution of the non-linear system, the evaluation of the following equation(s) resulted in a nan:')
     disp(j1(idNan)')
+    exitflag = -1;
     errorflag = true;
     return
 end
@@ -75,6 +77,7 @@ end
 if any(idNan)
     disp('SOLVE1: during the resolution of the non-linear system, the evaluation of the following equation(s) resulted in a complex number:')
     disp(j1(idCpx)')
+    exitflag = -1;
     errorflag = true;
     return
 end
@@ -83,6 +86,7 @@ f = 0.5*(fvec'*fvec);
 
 if max(abs(fvec))<tolf*tolf
     % Initial guess is a solution
+    exitflag = 1;
     return
 end
 
@@ -136,28 +140,38 @@ for its = 1:maxit
         den = max([f;0.5*nn]) ;
         if max(abs(g).*max([abs(x(j2)') ones(1,nn)])')/den < tolmin
             if max(abs(x(j2)-xold(j2))./max([abs(x(j2)') ones(1,nn)])') < tolx
-                disp (' ')
-                disp (['SOLVE: Iteration ' num2str(its)])
-                disp (['Convergence on dX.'])
-                disp (x)
+                exitflag = -3;
+                if nargout<3
+                    skipline()
+                    dprintf('SOLVE: Iteration %s', num2str(its))
+                    disp('Convergence on dX.')
+                    skipline()
+                end
                 return
             end
         else
-            disp (' ')
-            disp (['SOLVE: Iteration ' num2str(its)])
-            disp (['Spurious convergence.'])
-            disp (x)
+            exitflag = -2;
+            if nargout<3
+                skipline()
+                dprintf('SOLVE: Iteration %s', num2str(its))
+                disp('Spurious convergence.')
+                disp(x)
+            end
             return
         end
     elseif max(abs(fvec)) < tolf
+        exitflag = 1;
         return
     end
 end
 
 errorflag = true;
-skipline()
-disp('SOLVE: maxit has been reached')
+exitflag = 0;
 
+if nargout<3
+    skipline()
+    disp('SOLVE: maxit has been reached')
+end
 % 01/14/01 MJ lnsearch is now a separate function
 % 01/16/01 MJ added varargin to function evaluation
 % 04/13/01 MJ added test  f < tolf !!

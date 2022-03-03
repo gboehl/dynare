@@ -137,13 +137,25 @@ for it = initialconditions.nobs+(1:samplesize)
             skipline()
             switch exitflag
               case 0
-                dprint('Returned value for exitflag is 0 (maximum number of iterations or evaluation reached).')
+                disp('Returned value for exitflag is 0 (maximum number of iterations or evaluation reached).')
               case -1
-                dprint('Returned value for exitflag is -1 (objective function stopped algorithm).')
+                if options.solve_algo==0
+                    disp('Returned value for exitflag is -1 (objective function stopped algorithm).')
+                elseif options.solve_algo==1
+                    disp('Returned value for exitflag is -1 (objective function cannot be evaluated at the initial guess).')
+                end
               case -3
-                dprint('Returned value for exitflag is -3 (Trust region radius became too small, trust-region-dogleg algorithm).')
+                if options.solve_algo==0
+                    disp('Returned value for exitflag is -3 (Trust region radius became too small, trust-region-dogleg algorithm).')
+                elseif options.solve_algo==1
+                    disp('Returned value for exitflag is -3 (Convergence too slow).')
+                end
               case -2
-                dprint('Returned value for exitflag is -2.')
+                if options.solve_algo==0
+                    disp('Returned value for exitflag is -2.')
+                elseif options.solve_algo==1
+                    disp('Returned value for exitflag is -2 (Spurious convergence).')
+                end
             end
         end
         break
@@ -154,7 +166,6 @@ end
 
 ysim = DynareOutput.endo_simul(1:DynareModel.orig_endo_nbr,:);
 xsim = DynareOutput.exo_simul;
-
 
 function display_names_of_problematic_equations(DynareModel, TruthTable)
 for i=1:DynareModel.orig_endo_nbr
