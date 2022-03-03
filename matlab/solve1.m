@@ -96,9 +96,9 @@ for its = 1:maxit
         [fvec,fjac] = feval(func,x, varargin{:});
         fvec = fvec(j1);
         fjac = fjac(j1,j2);
+        g = (fvec'*fjac)';
     else
         dh = max(abs(x(j2)),gstep(1)*ones(nn,1))*eps^(1/3);
-
         for j = 1:nn
             xdh = x;
             xdh(j2(j)) = xdh(j2(j))+dh(j);
@@ -107,8 +107,6 @@ for its = 1:maxit
             g(j) = fvec'*fjac(:,j);
         end
     end
-
-    g = (fvec'*fjac)';
     if debug
         disp(['cond(fjac) ' num2str(condest(fjac))])
     end
