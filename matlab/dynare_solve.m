@@ -1,4 +1,4 @@
-function [x, errorflag, fvec, fjac] = dynare_solve(f, x, options, varargin)
+function [x, errorflag, fvec, fjac, exitflag] = dynare_solve(f, x, options, varargin)
 
 % Solves a nonlinear system of equations, f(x) = 0 with n unknowns
 % and n equations.
@@ -15,7 +15,7 @@ function [x, errorflag, fvec, fjac] = dynare_solve(f, x, options, varargin)
 % - fvec         [double]           n×1 vector, function value at x (f(x), used for debugging when errorflag is true).
 % - fjac         [double]           n×n matrix, Jacobian value at x (J(x), used for debugging when errorflag is true).
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,6 +31,8 @@ function [x, errorflag, fvec, fjac] = dynare_solve(f, x, options, varargin)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
+
+exitflag = nan;
 
 jacobian_flag = options.jacobian_flag; % true iff Jacobian is returned by f routine (as a second output argument).
 

@@ -56,12 +56,12 @@ for it = initialconditions.nobs+(1:samplesize)
     y = y_;                            % A good guess for the initial conditions is the previous values for the endogenous variables.
     try
         if ismember(DynareOptions.solve_algo, [12,14])
-            [DynareOutput.endo_simul(:,it), errorflag] = ...
+            [DynareOutput.endo_simul(:,it), errorflag, ~, ~, exitflag] = ...
                 dynare_solve(model_dynamic_s, y, DynareOptions, ...
                              DynareModel.isloggedlhs, DynareModel.isauxdiffloggedrhs, DynareModel.endo_names, DynareModel.lhs, ...
                              model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
         else
-            [DynareOutput.endo_simul(:,it), errorflag] = ...
+            [DynareOutput.endo_simul(:,it), errorflag, ~, ~, exitflag] = ...
                 dynare_solve(model_dynamic_s, y, DynareOptions, ...
                              model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
         end
@@ -130,8 +130,25 @@ for it = initialconditions.nobs+(1:samplesize)
             display_names_of_problematic_equations(DynareModel, residuals_evaluating_to_nan);
             skipline()
         end
-        % TODO Implement same checks with the jacobian matrix.
+        %
+        % Display value of exitflag if available (fsolve, solve_algo=0, only)
+        %
+        if ~isnan(exitflag)
+            skipline()
+            switch exitflag
+              case 0
+                dprint('Returned value for exitflag is 0 (maximum number of iterations or evaluation reached).')
+              case -1
+                dprint('Returned value for exitflag is -1 (objective function stopped algorithm).')
+              case -3
+                dprint('Returned value for exitflag is -3 (Trust region radius became too small, trust-region-dogleg algorithm).')
+              case -2
+                dprint('Returned value for exitflag is -2.')
+            end
+        end
         break
+        % TODO Implement same checks with the jacobian matrix.
+        % TODO Modify other solvers to return an exitflag.
     end
 end
 
