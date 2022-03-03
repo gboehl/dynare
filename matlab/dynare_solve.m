@@ -193,7 +193,7 @@ if options.solve_algo == 0
         options4fsolve.Jacobian = 'off';
     end
     if ~isoctave
-        [x, ~, exitval] = fsolve(f, x, options4fsolve, arguments{:});
+        [x, ~, exitflag] = fsolve(f, x, options4fsolve, arguments{:});
     else
         % Under Octave, use a wrapper, since fsolve() does not have a 4th arg
         if ischar(f)
@@ -205,15 +205,14 @@ if options.solve_algo == 0
         % The Octave version of fsolve does not converge when it starts from the solution
         fvec = feval(f, x);
         if max(abs(fvec)) >= tolf
-            [x, ~,exitval] = fsolve(f, x, options4fsolve);
+            [x, ~, exitflag] = fsolve(f, x, options4fsolve);
         else
-            exitval = 3;
+            exitflag = 3;
         end
     end
-
-    if exitval == 1
+    if exitflag == 1
         errorflag = false;
-    elseif exitval > 1
+    elseif exitflag > 1
         if ischar(f)
             f2 = str2func(f);
         else
