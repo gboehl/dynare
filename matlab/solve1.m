@@ -1,4 +1,5 @@
-function [x,check] = solve1(func,x,j1,j2,jacobian_flag,gstep,tolf,tolx,maxit,fake,debug,varargin)
+function [x, errorflag] = solve1(func, x, j1, j2, jacobian_flag, gstep, tolf, tolx, maxit, fake, debug, varargin)
+
 % Solves systems of non linear equations of several variables
 %
 % INPUTS
@@ -19,12 +20,12 @@ function [x,check] = solve1(func,x,j1,j2,jacobian_flag,gstep,tolf,tolx,maxit,fak
 %
 % OUTPUTS
 %    x:               results
-%    check=1:         the model can not be solved
+%    errorflag=1:     the model can not be solved
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,7 +49,7 @@ tolmin = tolx ;
 
 stpmx = 100 ;
 
-check = 0 ;
+errorflag = false ;
 
 fvec = feval(func,x,varargin{:});
 fvec = fvec(j1);
@@ -60,50 +61,50 @@ idCpx = ~isreal(fvec);
 if any(idInf)
     disp('SOLVE1: during the resolution of the non-linear system, the evaluation of the following equation(s) resulted in a non-finite number:')
     disp(j1(idInf)')
-    check = 1;
+    errorflag = true;
     return
 end
 
 if any(idNan)
     disp('SOLVE1: during the resolution of the non-linear system, the evaluation of the following equation(s) resulted in a nan:')
     disp(j1(idNan)')
-    check = 1;
+    errorflag = true;
     return
 end
 
 if any(idNan)
     disp('SOLVE1: during the resolution of the non-linear system, the evaluation of the following equation(s) resulted in a complex number:')
     disp(j1(idCpx)')
-    check = 1;
+    errorflag = true;
     return
 end
 
+f = 0.5*(fvec'*fvec);
 
-f = 0.5*(fvec'*fvec) ;
-
-if max(abs(fvec)) < tolf*tolf
-    return ;
+if max(abs(fvec))<tolf*tolf
+    % Initial guess is a solution
+    return
 end
 
 stpmax = stpmx*max([sqrt(x'*x);nn]) ;
 first_time = 1;
 if ~jacobian_flag
-    fjac = zeros(nn,nn) ;
+    fjac = zeros(nn,nn);
 end
 for its = 1:maxit
     if jacobian_flag
-        [fvec,fjac] = feval(func,x,varargin{:});
+        [fvec,fjac] = feval(func,x, varargin{:});
         fvec = fvec(j1);
         fjac = fjac(j1,j2);
     else
         dh = max(abs(x(j2)),gstep(1)*ones(nn,1))*eps^(1/3);
 
         for j = 1:nn
-            xdh = x ;
-            xdh(j2(j)) = xdh(j2(j))+dh(j) ;
+            xdh = x;
+            xdh(j2(j)) = xdh(j2(j))+dh(j);
             t = feval(func,xdh,varargin{:});
-            fjac(:,j) = (t(j1) - fvec)./dh(j) ;
-            g(j) = fvec'*fjac(:,j) ;
+            fjac(:,j) = (t(j1) - fvec)./dh(j);
+            g(j) = fvec'*fjac(:,j);
         end
     end
 
@@ -125,14 +126,15 @@ for its = 1:maxit
     xold = x ;
     fold = f ;
 
-    [x, f, fvec, check] = lnsrch1(xold, fold, g, p, stpmax, func, j1, j2, tolx, varargin{:});
+    [x, f, fvec, lnsearchflag] = lnsrch1(xold, fold, g, p, stpmax, func, j1, j2, tolx, varargin{:});
 
     if debug
         disp([its f])
         disp([xold x])
     end
 
-    if check > 0
+    if lnsearchflag
+        errorflag = true;
         den = max([f;0.5*nn]) ;
         if max(abs(g).*max([abs(x(j2)') ones(1,nn)])')/den < tolmin
             if max(abs(x(j2)-xold(j2))./max([abs(x(j2)') ones(1,nn)])') < tolx
@@ -149,13 +151,12 @@ for its = 1:maxit
             disp (x)
             return
         end
-
     elseif max(abs(fvec)) < tolf
         return
     end
 end
 
-check = 1;
+errorflag = true;
 skipline()
 disp('SOLVE: maxit has been reached')
 
