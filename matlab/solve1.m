@@ -54,6 +54,8 @@ fvec = feval(func,x,varargin{:});
 fvec = fvec(j1);
 
 idInf = isinf(fvec);
+idNan = isnan(fvec);
+idCpx = ~isreal(fvec);
 
 if any(idInf)
     disp('SOLVE1: during the resolution of the non-linear system, the evaluation of the following equation(s) resulted in a non-finite number:')
@@ -61,6 +63,21 @@ if any(idInf)
     check = 1;
     return
 end
+
+if any(idNan)
+    disp('SOLVE1: during the resolution of the non-linear system, the evaluation of the following equation(s) resulted in a nan:')
+    disp(j1(idNan)')
+    check = 1;
+    return
+end
+
+if any(idNan)
+    disp('SOLVE1: during the resolution of the non-linear system, the evaluation of the following equation(s) resulted in a complex number:')
+    disp(j1(idCpx)')
+    check = 1;
+    return
+end
+
 
 f = 0.5*(fvec'*fvec) ;
 
