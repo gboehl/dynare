@@ -53,12 +53,11 @@ check = 0 ;
 fvec = feval(func,x,varargin{:});
 fvec = fvec(j1);
 
-i = find(~isfinite(fvec));
+idInf = isinf(fvec);
 
-if ~isempty(i)
-    disp(['SOLVE1: during the resolution of the non-linear system, the evaluation of the following ' ...
-          'equation(s) resulted in a non-finite number:'])
-    disp(j1(i)')
+if any(idInf)
+    disp('SOLVE1: during the resolution of the non-linear system, the evaluation of the following equation(s) resulted in a non-finite number:')
+    disp(j1(idInf)')
     check = 1;
     return
 end
