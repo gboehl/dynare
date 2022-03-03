@@ -56,25 +56,97 @@ for it = initialconditions.nobs+(1:samplesize)
     y = y_;                            % A good guess for the initial conditions is the previous values for the endogenous variables.
     try
         if ismember(DynareOptions.solve_algo, [12,14])
-            [DynareOutput.endo_simul(:,it), info] = ...
+            [DynareOutput.endo_simul(:,it), errorflag] = ...
                 dynare_solve(model_dynamic_s, y, DynareOptions, ...
                              DynareModel.isloggedlhs, DynareModel.isauxdiffloggedrhs, DynareModel.endo_names, DynareModel.lhs, ...
                              model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
         else
-            [DynareOutput.endo_simul(:,it), info] = ...
+            [DynareOutput.endo_simul(:,it), errorflag] = ...
                 dynare_solve(model_dynamic_s, y, DynareOptions, ...
                              model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
         end
-        if info
-            error('Newton failed!')
+        if errorflag
+            error()
         end
     catch
-        DynareOutput.endo_simul(:, 1:it-1);
         DynareOutput.endo_simul = DynareOutput.endo_simul(:, 1:it-1);
         dprintf('Newton failed on iteration i = %s.', num2str(it-initialconditions.nobs));
+        ytm = DynareOutput.endo_simul(:,end);
+        xtt = DynareOutput.exo_simul(it,:);
+        skipline()
+        dprintf('Values of the endogenous variables before the nonlinear solver failure')
+        dprintf('----------------------------------------------------------------------')
+        skipline()
+        dyntable(DynareOptions, '', {'VARIABLES','VALUES'}, DynareModel.endo_names(1:DynareModel.orig_endo_nbr), ytm(1:DynareModel.orig_endo_nbr), [], [], 6)
+        skipline()
+        dprintf('Values of the exogenous variables before the nonlinear solver failure')
+        dprintf('---------------------------------------------------------------------')
+        skipline()
+        dyntable(DynareOptions, '', {'VARIABLES','VALUES'}, DynareModel.exo_names, transpose(DynareOutput.exo_simul(it,:)), [], [], 6)
+        skipline(2)
+        %
+        % Get equation tags if any
+        %
+        if isfield(DynareModel, 'equations_tags')
+            etags = cell(DynareModel.orig_endo_nbr, 1);
+            for i = 1:DynareModel.orig_endo_nbr
+                equations_tags = DynareModel.equations_tags(cellfun(@(x) isequal(x, i), DynareModel.equations_tags(:,1)), :);
+                name = equations_tags(strcmpi(equations_tags(:,2), 'name'),:);
+                if isempty(name)
+                    eqtags{i} = int2str(i);
+                else
+                    if rows(name)>1
+                        error('Something is wrong in the equation tags.')
+                    else
+                        eqtags(i) = name(3);
+                    end
+                end
+            end
+        else
+            etags = split(int2str(1:DynareModel.orig_endo_nbr), '  ');
+        end
+        %
+        % Evaluate and check the residuals
+        %
+        r = feval(model_dynamic, [ytm; ytm(iy1)], DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+        residuals_evaluating_to_nan = isnan(r);
+        residuals_evaluating_to_inf = isinf(r);
+        residuals_evaluating_to_complex = ~isreal(r);
+        if any(residuals_evaluating_to_nan)
+            dprintf('Following equations are evaluating to NaN:')
+            skipline()
+            display_names_of_problematic_equations(DynareModel, residuals_evaluating_to_nan);
+            skipline()
+        end
+        if any(residuals_evaluating_to_inf)
+            dprintf('Following equations are evaluating to Inf:')
+            skipline()
+            display_names_of_problematic_equations(DynareModel, residuals_evaluating_to_nan);
+            skipline()
+        end
+        if any(residuals_evaluating_to_complex)
+            dprintf('Following equations are evaluating to a complex number:')
+            skipline()
+            display_names_of_problematic_equations(DynareModel, residuals_evaluating_to_nan);
+            skipline()
+        end
+        % TODO Implement same checks with the jacobian matrix.
         break
     end
 end
 
 ysim = DynareOutput.endo_simul(1:DynareModel.orig_endo_nbr,:);
 xsim = DynareOutput.exo_simul;
+
+
+function display_names_of_problematic_equations(DynareModel, TruthTable)
+for i=1:DynareModel.orig_endo_nbr
+    if TruthTable(i)
+        dprintf(' - %s', eqtags{i})
+    end
+end
+for i=DynareModel.orig_endo_nbr+1:DynareModel.endo_nbr
+    if TruthTable(i)
+        dprintf(' - Auxiliary equation for %s', DynareModel.endo_names{i})
+    end
+end
