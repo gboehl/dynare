@@ -70,6 +70,7 @@ for it = initialconditions.nobs+(1:samplesize)
         end
     catch
         DynareOutput.endo_simul(:, 1:it-1);
+        DynareOutput.endo_simul = DynareOutput.endo_simul(:, 1:it-1);
         dprintf('Newton failed on iteration i = %s.', num2str(it-initialconditions.nobs));
         break
     end
