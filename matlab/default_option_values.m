@@ -474,6 +474,27 @@ options_.posterior_sampler_options.slice.save_tmp_file=1;
 options_.posterior_sampler_options.imh.proposal_distribution = 'rand_multivariate_normal';
 options_.posterior_sampler_options.imh.use_mh_covariance_matrix=0;
 options_.posterior_sampler_options.imh.save_tmp_file=0;
+% Herbst and Schorfeide SMC Sampler
+%options_.posterior_sampler = 'Herbst_Schorfheide' ;
+options_.posterior_sampler_options.HSsmc.nphi= 25 ;
+options_.posterior_sampler_options.HSsmc.lambda = 2 ;
+options_.posterior_sampler_options.HSsmc.nparticles = 20000 ;
+options_.posterior_sampler_options.HSsmc.c = 0.5 ;
+options_.posterior_sampler_options.HSsmc.acpt = 0.25 ;
+options_.posterior_sampler_options.HSsmc.trgt = 0.25 ;
+options_.posterior_sampler_options.HSsmc.option_mutation = 1 ;
+options_.posterior_sampler_options.HSsmc.alp = .9 ;
+% DSMH: Dynamic Striated Metropolis-Hastings algorithm
+%options_.posterior_sampler = 'DSMH' ;
+options_.posterior_sampler_options.dsmh.H = 25 ;
+options_.posterior_sampler_options.dsmh.N = 20 ;
+options_.posterior_sampler_options.dsmh.G = 10 ;
+options_.posterior_sampler_options.dsmh.K = 50 ;
+options_.posterior_sampler_options.dsmh.lambda1 = 0.1 ;
+options_.posterior_sampler_options.dsmh.nparticles = 20000 ;
+options_.posterior_sampler_options.dsmh.alpha0 = 0.2 ;
+options_.posterior_sampler_options.dsmh.alpha1 = 0.3 ; 
+options_.posterior_sampler_options.dsmh.tau = 10 ;
 
 options_.trace_plot_ma = 200;
 options_.mh_autocorrelation_function_size = 30;
