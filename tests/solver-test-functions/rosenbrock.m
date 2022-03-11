@@ -20,7 +20,7 @@ function [fval, fjac] = rosenbrock(x)
 if nargin==1
     fval = zeros(2, 1);
     fval(1) = 1.0-x(1);
-    fval(2) = 10.0*(x(2)-fval(1)*fval(1));
+    fval(2) = 10.0*(x(2)-x(1)*x(1));
     if nargout>1
         fjac = zeros(2);
         fjac(1,1) = -1;
