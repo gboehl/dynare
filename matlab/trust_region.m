@@ -1,32 +1,42 @@
-function [x,check,info] = trust_region(fcn,x0,j1,j2,jacobian_flag,gstep,tolf,tolx,maxiter,factor,debug,varargin)
+function [x, errorflag, info] = trust_region(objfun, x, j1, j2, jacobianflag, gstep, tolf, tolx, maxiter, factor, debug, varargin)
+
 % Solves systems of non linear equations of several variables, using a
 % trust-region method.
 %
 % INPUTS
-%    fcn:             name of the function to be solved
-%    x0:              guess values
-%    j1:              equations index for which the model is solved
-%    j2:              unknown variables index
-%    jacobian_flag=true: jacobian given by the 'func' function
-%    jacobian_flag=false: jacobian obtained numerically
-%    gstep            increment multiplier in numercial derivative
-%                     computation
-%    tolf             tolerance for residuals
-%    tolx             tolerance for solution variation
-%    maxiter          maximum number of iterations
-%    factor           real scalar, determines the initial step bound
-%    debug            debug flag
-%    varargin:        list of arguments following bad_cond_flag
+% - objfun         [function handle, char]      name of the routine evaluating the system of nonlinear equations (and possibly jacobian).
+% - x              [double]                     n×1 vector, initial guess for the solution.
+% - j1             [integer]                    vector, equation indices defining a subproblem to be solved.
+% - j2             [integer]                    vector, unknown variable indices to be solved for in the subproblem.
+% - jacobianflag   [logical]                    scalar, if true the jacobian matrix is expected to be returned as a second output argument when calling objfun, otherwise
+%                                               the jacobian is computed numerically.
+% - gstep          [double]                     scalar, increment multiplier in numerical derivative computation (only used if jacobianflag value is false).
+% - tolf           [double]                     scalar, tolerance for residuals.
+% - tolx           [double]                     scalar, tolerance for solution variation.
+% - maxiter        [integer]                    scalar, maximum number of iterations;
+% - factor         [double]                     scalar, determines the initial step bound.
+% - debug          [logical]                    scalar, dummy argument.
+% - varargin:      [cell]                       list of additional arguments to be passed to objfun.
 %
 % OUTPUTS
-%    x:               results
-%    check=1:         the model can not be solved
-%    info:            detailed exitcode
-% SPECIAL REQUIREMENTS
-%    none
+% - x              [double]                     n⨱1 vector, solution of the nonlinear system of equations.
+% - errorflag      [logical]                    scalar, false iff nonlinear solver is successful.
+% - info           [integer]                    scalar, information about the failure.
+%
+% REMARKS
+% [1] j1 and j2 muyst have the same number of elements.
+% [2] debug is here for compatibility purpose (see solve1), it does not affect the output.
+% [3] Possible values for info are:
+%
+%       -1 if the initial guess is a solution of the nonlinear system of equations.
+%        0 if the nonlinear solver failed because the problem is ill behaved at the initial guess.
+%        1 if the nonlinear solver found a solution.
+%        2 if the maximum number of iterations has been reached.
+%        3 if spurious convergence (trust region radius is too small).
+%        4 if iteration is not making good progress, as measured by the improvement from the last 15 iterations.
+%        5 if no further improvement in the approximate solution x is possible (xtol is too small).
 
-% Copyright (C) 2008-2012 VZLU Prague, a.s.
-% Copyright (C) 2014-2021 Dynare Team
+% Copyright © 2014-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,186 +52,275 @@ function [x,check,info] = trust_region(fcn,x0,j1,j2,jacobian_flag,gstep,tolf,tol
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-%
-% Initial author: Jaroslav Hajek <highegg@gmail.com>, for GNU Octave
 
-if (ischar (fcn))
-    fcn = str2func (fcn);
+% Convert to function handle if necessary
+if ischar(objfun)
+    objfun = str2func(objfun);
 end
 
+%
+% Set constants
+%
+
+radiusfactor = .5;
+actualreductionthreshold = .001;
+relativereductionthreshold = .1;
+
+% number of equations
 n = length(j1);
 
-% These defaults are rather stringent. I think that normally, user
-% prefers accuracy to performance.
+%
+% Initialization
+%
 
-macheps = eps (class (x0));
+errorflag = true;
 
-niter = 1;
-
-x = x0;
+iter = 1;
 info = 0;
+delta = 0.0;
 
-% Initial evaluation.
-% Handle arbitrary shapes of x and f and remember them.
-fvec = fcn (x, varargin{:});
-fvec = fvec(j1);
-fn = norm (fvec);
-recompute_jacobian = true;
+ncsucc = 0; ncslow = 0;
 
-% Outer loop.
-while (niter < maxiter && ~info)
+%
+% Attempt to evaluate the residuals and jacobian matrix on the initial guess
+%
 
-    % Calculate Jacobian (possibly via FD).
-    if recompute_jacobian
-        if jacobian_flag
-            [~, fjac] = fcn (x, varargin{:});
-            fjac = fjac(j1,j2);
-        else
-            dh = max(abs(x(j2)),gstep(1)*ones(n,1))*eps^(1/3);
-
-            for j = 1:n
-                xdh = x ;
-                xdh(j2(j)) = xdh(j2(j))+dh(j) ;
-                t = fcn(xdh,varargin{:});
-                fjac(:,j) = (t(j1) - fvec)./dh(j) ;
-            end
+try
+    if jacobianflag
+        [fval, fjac] = objfun(x, varargin{:});
+        fval = fval(j1);
+        fjac = fjac(j1,j2);
+    else
+        fval = objfun(x, varargin{:});
+        fval = fval(j1);
+        dh = max(abs(x(j2)), gstep(1)*ones(n,1))*eps^(1/3);
+        fjac = zeros(n);
+        for j = 1:n
+            xdh = x;
+            xdh(j2(j)) = xdh(j2(j))+dh(j);
+            Fval = objfun(xdh, varargin{:});
+            fjac(:,j) = (Fval(j1)-fval)./dh(j);
         end
-        recompute_jacobian = false;
     end
+    fnorm = norm(fval);
+catch
+    % System of equation cannot be evaluated at the initial guess.
+    return
+end
 
-    % Get column norms, use them as scaling factors.
-    jcn = sqrt(sum(fjac.*fjac))';
-    if (niter == 1)
-        dg = jcn;
-        dg(dg == 0) = 1;
+if any(isnan(fval)) || any(isinf(fval)) || any(~isreal(fval)) || any(isnan(fjac(:))) || any(isinf(fjac(:))) || any(~isreal(fjac(:)))
+    % System of equations is ill-behaved at the initial guess. 
+    return
+end
+
+if fnorm<tolf
+    % Initial guess is a solution.
+    errorflag = false;
+    info = -1;
+    return
+end
+
+%
+% Main loop
+%
+
+while iter<=maxiter && ~info
+    % Compute the columns norm ofr the Jacobian matrix.
+    fjacnorm = transpose(sqrt(sum((fjac.*fjac))));
+    if iter==1
+        % On the first iteration, calculate the norm of the scaled vector of unknowns x
+        % and initialize the step bound delta. Scaling is done according to the norms of
+        % the columns of the initial jacobian.
+        fjacnorm__ = fjacnorm;
+        fjacnorm__(fjacnorm<eps(1.0)) = 1.0;
+        xnorm = norm(fjacnorm__.*x(j2));
+        if xnorm>0
+            delta = xnorm*factor;
+        else
+            delta = factor;
+        end
     else
-        % Rescale adaptively.
-        dg = max (dg, jcn);
+        fjacnorm__ = max(.1*fjacnorm__, fjacnorm);
+        xnorm = norm(fjacnorm__.*x(j2));
     end
-
-    if (niter == 1)
-        xn = norm (dg .* x(j2));
-        % FIXME: something better?
-        delta = max (xn, 1)*factor;
+    % Determine the direction p (with trust region model defined in dogleg routine).
+    p = dogleg(fjac, fval, fjacnorm__, delta);
+    % Compute the norm of p.
+    pnorm = norm(fjacnorm__.*p);
+    xx = x;
+    x0 = x;
+    % Move along the direction p. Set a candidate value for x and predicted improvement for f.
+    xx(j2) = x(j2) - p;
+    ww = fval - fjac*p;
+    % Evaluate the function at xx and calculate its norm.
+    try
+        fval1 = objfun(xx, varargin{:});
+        fval1 = fval1(j1);
+    catch
+        % If evaluation of the residuals returns an error, then restart but with a smaller radius of the trust region.
+        delta = delta*radiusfactor;
+        iter = iter+1;
+        continue
     end
-
-    % Get trust-region model (dogleg) minimizer.
-    s = - dogleg (fjac, fvec, dg, delta);
-    w = fvec + fjac * s;
-
-    sn = norm (dg .* s);
-    if (niter == 1)
-        delta = min (delta, sn);
+    if any(isnan(fval1)) || any(isinf(fval1)) || any(~isreal(fval1))
+        % If evaluation of the residuals returns a NaN, an infinite number or a complex number, then restart but with a smaller radius of the trust region.
+        delta = delta*radiusfactor;
+        iter = iter+1;
+        continue
     end
-
-    x2 = x;
-    x2(j2) = x2(j2) + s;
-    fvec1 = fcn (x2, varargin{:});
-    fvec1 = fvec1(j1);
-    fn1 = norm (fvec1);
-
-    if (fn1 < fn)
-        % Scaled actual reduction.
-        actred = 1 - (fn1/fn)^2;
+    fnorm1 = norm(fval1);
+    if fnorm1<tolf
+        x = xx;
+        errorflag = false;
+        info = 1;
+        continue
+    end
+    % Compute the scaled actual reduction.
+    if fnorm1<fnorm
+        actualreduction = 1.0-(fnorm1/fnorm)^2;
     else
-        actred = -1;
+        actualreduction = -1.0;
     end
-
-    % Scaled predicted reduction, and ratio.
-    t = norm (w);
-    if (t < fn)
-        prered = 1 - (t/fn)^2;
-        ratio = actred / prered;
+    % Compute the scaled predicted reduction and the ratio of the actual to the
+    % predicted reduction.
+    tt = norm(ww);
+    if tt<fnorm
+        predictedreduction = 1.0 - (tt/fnorm)^2;
     else
-        prered = 0;
+        predictedreduction = 0.0;
+    end
+    if predictedreduction>0
+        ratio = actualreduction/predictedreduction;
+    else
         ratio = 0;
     end
-
-    % Update delta.
-    if (ratio < 0.1)
-        delta = 0.5*delta;
-        if (delta <= 1e1*macheps*xn)
-            % Trust region became uselessly small.
-            if (fn1 <= tolf)
-                info = 1;
-            else
-                info = -3;
-            end
-            break
+    % Update the radius of the trust region if need be.
+    if iter==1
+        % On first iteration adjust the initial step bound.
+        delta = min(delta, pnorm);
+    end
+    if ratio<relativereductionthreshold
+        % Reduction is much smaller than predicted… Reduce the radius of the trust region.
+        ncsucc = 0;
+        delta = delta*radiusfactor;
+    else
+        ncsucc = ncsucc + 1;
+        if abs(ratio-1.0)<relativereductionthreshold
+            delta = pnorm/radiusfactor;
+        elseif ratio>=radiusfactor || ncsucc>1
+            delta = max(delta, pnorm/radiusfactor);
         end
-    elseif (abs (1-ratio) <= 0.1)
-        delta = 1.4142*sn;
-    elseif (ratio >= 0.5)
-        delta = max (delta, 1.4142*sn);
     end
-
-    if (ratio >= 1e-4)
-        % Successful iteration.
-        x(j2) = x(j2) + s;
-        xn = norm (dg .* x(j2));
-        fvec = fvec1;
-        fn = fn1;
-        recompute_jacobian = true;
+    if ratio>1e-4
+        % Successful iteration. Update x, xnorm, fval, fnorm and fjac.
+        x = xx;
+        fval = fval1;
+        xnorm = norm(fjacnorm__.*x(j2));
+        fnorm = fnorm1;
     end
-
-    niter = niter + 1;
-
-
-    % Tests for termination condition
-    if (fn <= tolf)
-        info = 1;
+    % Determine the progress of the iteration.
+    ncslow = ncslow+1;
+    if actualreduction>=actualreductionthreshold
+        ncslow = 0;
+    end
+    iter = iter+1;
+    if iter==maxiter
+        info = 2;
+        x(:) = inf;
+        continue
+    end
+    if delta<tolx*xnorm
+        info = 3;
+        x(:) = inf;
+        errorflag = true;
+        continue
+    end
+    % Tests for termination and stringent tolerances.
+    if max(.1*delta, pnorm)<=10*eps(xnorm)*xnorm
+        % xtol is too small. no further improvement in
+        % the approximate solution x is possible.
+        info = 5;
+        x(:) = inf;
+        errorflag = true;
+        continue
+    end
+    if ncslow==15
+        info = 4;
+        x(:) = inf;
+        errorflag = true;
+        continue
+    end
+    % Compute the jacobian for the next iteration.
+    if jacobianflag
+        try
+            [~, fjac] = objfun(x, varargin{:});
+            fjac = fjac(j1,j2);
+        catch
+            % If evaluation of the Jacobian matrix returns an error, then restart but with a smaller radius of the trust region.
+            x = x0;
+            delta = delta*radiusfactor;
+            continue
+        end
+    else
+        dh = max(abs(x(j2)), gstep(1)*ones(n,1))*eps^(1/3);
+        for j = 1:n
+            xdh = x;
+            xdh(j2(j)) = xdh(j2(j))+dh(j);
+            Fval = objfun(xdh, varargin{:});
+            fjac(:,j) = (Fval(j1)-fval)./dh(j);
+        end
+    end
+    if any(isnan(fjac(:))) || any(isinf(fjac(:))) || any(~isreal(fjac(:)))
+        % If evaluation of the Jacobian matrix returns NaNs, an infinite numbers or a complex numbers, then restart but with a smaller radius of the trust region.
+        x = x0;
+        delta = delta*radiusfactor;
     end
 end
-if info==1
-    check = 0;
-else
-    check = 1;
-end
-end
 
-
-% Solve the double dogleg trust-region least-squares problem:
-% Minimize norm(r*x-b) subject to the constraint norm(d.*x) <= delta,
-% x being a convex combination of the gauss-newton and scaled gradient.
-
-% TODO: error checks
-% TODO: handle singularity, or leave it up to mldivide?
 
 function x = dogleg (r, b, d, delta)
-% Get Gauss-Newton direction.
+% Compute the Gauss-Newton direction.
 if isoctave || matlab_ver_less_than('9.3')
-   % The decomposition() function does not exist in Octave and MATLAB < R2017b
+    % The decomposition() function does not exist in Octave and MATLAB < R2017b
     x = r \ b;
 else
     x = decomposition(r, 'CheckCondition', false) \ b;
 end
-xn = norm (d .* x);
-if (xn > delta)
-    % GN is too big, get scaled gradient.
-    s = (r' * b) ./ d;
-    sn = norm (s);
-    if (sn > 0)
-        % Normalize and rescale.
-        s = (s / sn) ./ d;
+% Compute norm of scaled x
+qnorm = norm(d.*x);
+if qnorm<=delta
+    % Gauss-Newton direction is acceptable. There is nothing to do here.
+else
+    % Gauss-Newton direction is not acceptable…
+    % Compute the scale gradient direction and its norm
+    s = (r'*b)./d;
+    gnorm = norm(s);
+    if gnorm>0
+        % Normalize and rescale → gradient direction.
+        s = (s/gnorm)./d;
         % Get the line minimizer in s direction.
-        tn = norm (r*s);
-        snm = (sn / tn) / tn;
-        if (snm < delta)
-            % Get the dogleg path minimizer.
-            bn = norm (b);
-            dxn = delta/xn; snmd = snm/delta;
-            t = (bn/sn) * (bn/xn) * snmd;
-            t = t - dxn * snmd^2 + sqrt ((t-dxn)^2 + (1-dxn^2)*(1-snmd^2));
-            alpha = dxn*(1-snmd^2) / t;
+        temp0 = norm(r*s);
+        sgnorm = gnorm/(temp0*temp0);
+        if sgnorm<delta
+            % The scaled gradient direction is not acceptable…
+            % Compute the point along the dogleg at which the
+            % quadratic is minimized.
+            bnorm = norm(b);
+            temp1 = delta/qnorm;
+            temp2 = sgnorm/delta;
+            temp0 = bnorm*bnorm*temp2/(gnorm*qnorm);
+            temp0 = temp0 - temp1*temp2*temp2 + sqrt((temp0-temp1)^2+(1.0-temp1*temp1)*(1.0-temp2*temp2));
+            alpha = temp1*(1.0-temp2*temp2)/temp0;
         else
-            alpha = 0;
+            % The scaled gradient direction is acceptable.
+            alpha = 0.0;
         end
     else
-        alpha = delta / xn;
-        snm = 0;
+        % If the norm of the scaled gradient direction is zero.
+        alpha = delta/qnorm;
+        sgnorm = 0.0;
     end
-    % Form the appropriate convex combination.
-    x = alpha * x + ((1-alpha) * min (snm, delta)) * s;
+    % Form the appropriate  convex combination of the Gauss-Newton direction and the
+    % scaled gradient direction.
+    x = alpha*x + (1.0-alpha)*min(sgnorm, delta)*s;
 end
-end
-

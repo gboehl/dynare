@@ -33,176 +33,120 @@ factor = 10;
 
 auxstruct = struct();
 
+% List of function handles
+objfun = { @rosenbrock,
+           @powell1,
+           @powell2,
+           @wood,
+           @helicalvalley,
+           @watson,
+           @chebyquad,
+           @brown,
+           @discreteboundaryvalue,
+           @discreteintegralequation,
+           @trigonometric,
+           @variablydimensioned,
+           @broydentridiagonal,
+           @broydenbanded };
+
+% FIXME block_trust_region (mex) or trust_region (matlab) do not work for all n (not sure we can fix that).
+% FIXME block_trust_region (mex) and trust_region (matlab) do not behave the same (spurious convergence for powell2 and trigonometric with block_trust_region).
+
+%
+% Test mex routine
+%
+
 t0 = clock;
 
-try
+for i=1:length(objfun)
     NumberOfTests = NumberOfTests+1;
-    x = rosenbrock();
-    [x, errorflag] = block_trust_region(@rosenbrock, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
+    switch func2str(objfun{i})
+         case 'helicalvalley'
+           % FIXME block_trust_region is diverging if x(1)<0.
+           x = helicalvalley();
+           x(1) = 5;
+      case 'chebyquad'
+        % Fails with a system of 10 equations. 
+        x = objfun{i}(nan(9,1));
+      case {'watson', 'brown', 'discreteintegralequation', 'discreteboundaryvalue', 'chebyquad', 'trigonometric', 'variablydimensioned', 'broydenbanded', 'broydentridiagonal'}
+        x = objfun{i}(nan(4,1));
+      otherwise
+        x = objfun{i}();
     end
-catch
-    testFailed = testFailed+1;
+    try
+        [x, errorflag] = block_trust_region(objfun{i}, x, tolf, tolx, maxit, factor, false, auxstruct);
+        if isequal(func2str(objfun{i}), 'powell2')
+            if ~errorflag
+                testFailed = testFailed+1;
+                if debug
+                    dprintf('Nonlinear solver is expected to fail on %s function but did not return an error.', func2str(objfun{i}))
+                end
+            end
+        else
+            if errorflag || norm(objfun{i}(x))>tolf
+                testFailed = testFailed+1;
+                if debug
+                    dprintf('Nonlinear solver (mex) failed on %s function (norm(f(x))=%s).', func2str(objfun{i}), num2str(norm(objfun{i}(x))))
+                end
+            end
+        end
+    catch
+        testFailed = testFailed+1;
+        if debug
+            dprintf('Nonlinear solver (mex) failed on %s function.', func2str(objfun{i}))
+        end
+    end
 end
 
-try
+t1 = clock; etime(t1, t0)
+
+%
+% Test matlab routine
+%
+
+for i=1:length(objfun)
     NumberOfTests = NumberOfTests+1;
-    x = powell1();
-    [x, errorflag] = block_trust_region(@powell1, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
+    switch func2str(objfun{i})
+      case 'chebyquad'
+        % Fails with a system of 10 equations. 
+        x = objfun{i}(nan(9,1));
+      case {'watson', 'brown', 'discreteintegralequation', 'discreteboundaryvalue', 'trigonometric', 'variablydimensioned', 'broydenbanded', 'broydentridiagonal'}
+        x = objfun{i}(nan(10,1));
+      otherwise
+        x = objfun{i}();
     end
-catch
-    testFailed = testFailed+1;
+    try
+        [x, errorflag, info] = trust_region(objfun{i}, x, 1:length(x), 1:length(x), true, [], tolf, tolx, maxit, factor);
+        if isequal(func2str(objfun{i}), 'powell2')
+            if ~errorflag
+                testFailed = testFailed+1;
+                if debug
+                    dprintf('Nonlinear solver is expected to fail on %s function but did not return an error.', func2str(objfun{i}))
+                end
+            end
+            if info~=3
+                testFailed = testFailed+1;
+                if debug
+                    dprintf('Nonlinear solver is expected to fail on %s function with info==3 but did not the correct value of info.', func2str(objfun{i}))
+                end
+            end
+        else
+            if errorflag
+                testFailed = testFailed+1;
+                if debug
+                    dprintf('Nonlinear solver failed on %s function (info=%s).', func2str(objfun{i}), int2str(info))
+                end
+            end
+        end
+    catch
+        testFailed = testFailed+1;
+        if debug
+            dprintf('Nonlinear solver failed on %s function.', func2str(objfun{i}))
+        end
+    end
 end
 
-try
-    NumberOfTests = NumberOfTests+1;
-    x = powell2();
-    [x, errorflag] = block_trust_region(@powell2, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-try
-    NumberOfTests = NumberOfTests+1;
-    x = wood();
-    [x, errorflag] = block_trust_region(@wood, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-try
-    NumberOfTests = NumberOfTests+1;
-    % FIXME block_trust_region is diverging if x(1)<0. Note that trust_region is not finding the
-    % solution for the same initial conditions. 
-    x = helicalvalley();
-    x(1) = 5;
-    [x, errorflag] = block_trust_region(@helicalvalley, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-try
-    NumberOfTests = NumberOfTests+1;
-    n = 10;
-    x = watson(nan(n,1));
-    [x, errorflag] = block_trust_region(@watson, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-try
-    NumberOfTests = NumberOfTests+1;
-    % FIXME block_trust_region does not work for all n. 
-    n = 9;
-    x = chebyquad(nan(n,1));
-    [x, errorflag] = block_trust_region(@chebyquad, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-try
-    NumberOfTests = NumberOfTests+1;
-    n = 10;
-    x = brown(nan(n,1));
-    [x, errorflag] = block_trust_region(@brown, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-try
-    NumberOfTests = NumberOfTests+1;
-    n = 10;
-    x = discreteboundaryvalue(nan(n,1));
-    [x, errorflag] = block_trust_region(@discreteboundaryvalue, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-try
-    NumberOfTests = NumberOfTests+1;
-    n = 10;
-    x = discreteintegralequation(nan(n,1));
-    [x, errorflag] = block_trust_region(@discreteintegralequation, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-try
-    NumberOfTests = NumberOfTests+1;
-    n = 10;
-    x = trigonometric(nan(n,1));
-    [x, errorflag] = block_trust_region(@trigonometric, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-try
-    NumberOfTests = NumberOfTests+1;
-    n = 10;
-    x = variablydimensioned(nan(n,1));
-    [x, errorflag] = block_trust_region(@variablydimensioned, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-try
-    NumberOfTests = NumberOfTests+1;
-    n = 10;
-    x = broydentridiagonal(nan(n,1));
-    [x, errorflag] = block_trust_region(@broydentridiagonal, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-try
-    NumberOfTests = NumberOfTests+1;
-    n = 10;
-    x = broydenbanded(nan(n,1));
-    [x, errorflag] = block_trust_region(@broydenbanded, x, tolf, tolx, maxit, factor, false, auxstruct);
-    if errorflag
-        testFailed = testFailed+1;
-    end
-catch
-    testFailed = testFailed+1;
-end
-
-t1 = clock;
+t2 = clock; etime(t2, t1)
 
 if ~debug
     cd(getenv('TOP_TEST_DIR'));
@@ -216,14 +160,14 @@ else
     fid = fopen('nonlinearsolvers.m.trs', 'w+');
 end
 if testFailed
-  fprintf(fid,':test-result: FAIL\n');
+    fprintf(fid,':test-result: FAIL\n');
 else
-  fprintf(fid,':test-result: PASS\n');
+    fprintf(fid,':test-result: PASS\n');
 end
 fprintf(fid,':number-tests: %i\n', NumberOfTests);
 fprintf(fid,':number-failed-tests: %i\n', testFailed);
 fprintf(fid,':list-of-passed-tests: nonlinearsolvers.m\n');
-fprintf(fid,':elapsed-time: %f\n', etime(t1, t0));
+fprintf(fid,':elapsed-time: %f\n', etime(t2, t0));
 fclose(fid);
 
 if ~debug

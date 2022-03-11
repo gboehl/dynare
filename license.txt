@@ -118,11 +118,6 @@ Copyright: 2011 Lawrence J. Christiano, Mathias Trabandt and Karl Walentin
            2013-2017 Dynare Team
 License: GPL-3+
 
-Files: matlab/trust_region.m
-Copyright: 2008-2012 VZLU Prague, a.s.
-           2014-2021 Dynare Team
-License: GPL-3+
-
 Files: matlab/one_sided_hp_filter.m
 Copyright: 2010-2015 Alexander Meyer-Gohde
            2015-2017 Dynare Team

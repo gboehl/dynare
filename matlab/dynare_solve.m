@@ -14,6 +14,7 @@ function [x, errorflag, fvec, fjac, exitflag] = dynare_solve(f, x, options, vara
 % - errorflag    [logical]          scalar, true iff the model can not be solved.
 % - fvec         [double]           n×1 vector, function value at x (f(x), used for debugging when errorflag is true).
 % - fjac         [double]           n×n matrix, Jacobian value at x (J(x), used for debugging when errorflag is true).
+% - exitflag     [integer]          scalar,
 
 % Copyright © 2001-2022 Dynare Team
 %
@@ -94,7 +95,7 @@ if jacobian_flag
     if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) ...
             || any(~isreal(fvec)) || any(~isreal(fjac(:)))
         if max(abs(fvec)) < tolf %return if initial value solves problem
-            info = 0;
+            exitflag = -1;
             return;
         end
         disp_verbose('Randomize initial guess...',options.verbosity)
@@ -231,10 +232,7 @@ if options.solve_algo == 0
 elseif options.solve_algo==1
     [x, errorflag, exitflag] = solve1(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, [], options.debug, arguments{:});
 elseif options.solve_algo==9
-    [x, errorflag] = trust_region(f,x, 1:nn, 1:nn, jacobian_flag, options.gstep, ...
-                                  tolf, tolx, maxit, ...
-                                  options.trust_region_initial_step_bound_factor, ...
-                                  options.debug, arguments{:});
+    [x, errorflag, exitflag] = trust_region(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, options.trust_region_initial_step_bound_factor, options.debug, arguments{:});
 elseif ismember(options.solve_algo, [2, 12, 4])
     if ismember(options.solve_algo, [2, 12])
         solver = @solve1;
@@ -310,11 +308,11 @@ elseif ismember(options.solve_algo, [2, 12, 4])
                 dprintf('DYNARE_SOLVE (solve_algo=2|4|12): solving block %u with trust_region routine.', i);
             end
         end
-        [x, errorflag] = solver(f, x, j1(j), j2(j), jacobian_flag, ...
-                                options.gstep, ...
-                                tolf, options.solve_tolx, maxit, ...
-                                options.trust_region_initial_step_bound_factor, ...
-                                options.debug, arguments{:});
+        [x, errorflag, exitflag] = solver(f, x, j1(j), j2(j), jacobian_flag, ...
+                                          options.gstep, ...
+                                          tolf, options.solve_tolx, maxit, ...
+                                          options.trust_region_initial_step_bound_factor, ...
+                                          options.debug, arguments{:});
         fre = true;
         if errorflag
             return
@@ -323,10 +321,10 @@ elseif ismember(options.solve_algo, [2, 12, 4])
     fvec = feval(f, x, arguments{:});
     if max(abs(fvec))>tolf
         disp_verbose('Call solver on the full nonlinear problem.',options.verbosity)
-        [x, errorflag] = solver(f, x, 1:nn, 1:nn, jacobian_flag, ...
-                                options.gstep, tolf, options.solve_tolx, maxit, ...
-                                options.trust_region_initial_step_bound_factor, ...
-                                options.debug, arguments{:});
+        [x, errorflag, exitflag] = solver(f, x, 1:nn, 1:nn, jacobian_flag, ...
+                                          options.gstep, tolf, options.solve_tolx, maxit, ...
+                                          options.trust_region_initial_step_bound_factor, ...
+                                          options.debug, arguments{:});
     end
 elseif options.solve_algo==3
     if jacobian_flag
