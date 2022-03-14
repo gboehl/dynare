@@ -1,5 +1,5 @@
 function [dr,info,M_,oo_] =compute_decision_rules(M_,options_,oo_)
-% function [dr,info,M_,options_,oo_] =compute_decision_rules(M_,options_,oo_)
+% function [dr,info,M_,oo_] =compute_decision_rules(M_,options_,oo_)
 % INPUTS
 % - M_            [structure]     Matlab's structure describing the model (M_).
 % - options_      [structure]     Matlab's structure describing the current options (options_).
