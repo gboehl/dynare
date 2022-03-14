@@ -112,10 +112,9 @@ parameters must not have the same name as Dynare commands or built-in
 functions. In this respect, Dynare is not case-sensitive. For example,
 do not use ``Ln`` or ``Sigma_e`` to name your variable. Not conforming
 to this rule might yield hard-to-debug error messages or
-crashes. Second, to minimize interference with MATLAB or Octave
-functions that may be called by Dynare or user-defined steady state
-files, it is recommended to avoid using the name of MATLAB
-functions. In particular when working with steady state files, do not
+crashes. Second, when employing user-defined steady state files it is 
+recommended to avoid using the name of MATLAB functions as this may cause 
+conflicts. In particular, when working with user-defined steady state files, do not
 use correctly-spelled greek names like `alpha`, because there are
 MATLAB functions of the same name. Rather go for ``alppha`` or
 ``alph``. Lastly, please do not name a variable or parameter
