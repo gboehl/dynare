@@ -20,7 +20,7 @@ function SampleAddress = selec_posterior_draws(SampleSize,drsize)
 %   None.
 %
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright (C) 2006-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -113,9 +113,9 @@ if info
                 load([BaseName '_mh' num2str(mhfile) '_blck' num2str(mhblck) '.mat'],'x2')
             end
             pdraws(i,1) = {x2(SampleAddress(i,4),:)};
-            if info-1
+            if info==2
                 set_parameters(pdraws{i,1});
-                [dr,info,M_,oo_] =compute_decision_rules(M_,options_,oo_);
+                [dr,~,M_,oo_] =compute_decision_rules(M_,options_,oo_);
                 pdraws(i,2) = { dr };
             end
             old_mhfile = mhfile;
@@ -140,9 +140,9 @@ if info
                 load([BaseName '_mh' num2str(mhfile) '_blck' num2str(mhblck) '.mat'],'x2')
             end
             pdraws(linee,1) = {x2(SampleAddress(i,4),:)};
-            if info-1
+            if info==2
                 set_parameters(pdraws{linee,1});
-                [dr,info,M_,options_,oo_] = compute_decision_rules(M_,options_,oo_);
+                [dr,~,M_,oo_] = compute_decision_rules(M_,options_,oo_);
                 pdraws(linee,2) = { dr };
             end
             old_mhfile = mhfile;
