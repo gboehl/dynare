@@ -310,6 +310,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
   max_res_idx = 0;
   bool cvg;
   double *y_save;
+  double another_slowc_save;
 #ifdef DEBUG
   mexPrintf("simulate_a_block type = %d, periods=%d, y_kmin=%d, y_kmax=%d\n", type, periods, y_kmin, y_kmax);
   mexEvalString("drawnow;");
@@ -429,6 +430,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
       test_mxMalloc(y_save, __LINE__, __FILE__, __func__, y_size*sizeof(double)*(periods+y_kmax+y_kmin));
       start_code = it_code;
       iter = 0;
+      another_slowc_save = slowc; // slowc is modified when stack_solve_algo=4, so save it
       if (!is_linear
           || stack_solve_algo == 4) // On linear blocks, stack_solve_algo=4 may
                                     // need more than one iteration to find the
@@ -485,6 +487,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
           Simulate_Newton_Two_Boundaries(block_num, symbol_table_endo_nbr, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, endo_name_length, P_endo_names, vector_table_conditional_local);
           max_res = 0; max_res_idx = 0;
         }
+      slowc = another_slowc_save; // slowc is modified when stack_solve_algo=4, so restore it
       it_code = end_code;
       if (r)
         mxFree(r);
