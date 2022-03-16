@@ -106,9 +106,9 @@ for it_=start:incr:finish
         if verbose
             disp(['iteration : ' int2str(iter+1) ' => ' num2str(max_res) ' time = ' int2str(it_)])
             if is_dynamic
-                disp([M.endo_names{y_index_eq} num2str([y(y_index_eq, it_) r g1])])
+                disp([char(M.endo_names{y_index_eq}) repmat(' ', numel(y_index_eq), 1) num2str([y(y_index_eq, it_) r g1])])
             else
-                disp([M.endo_names{y_index_eq} num2str([y(y_index_eq) r g1])])
+                disp([char(M.endo_names{y_index_eq}) repmat(' ', numel(y_index_eq), 1) num2str([y(y_index_eq) r g1])])
             end
         end
         if ~isreal(max_res) || isnan(max_res)
