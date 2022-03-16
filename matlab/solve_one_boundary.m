@@ -252,32 +252,15 @@ for it_=start:incr:finish
                 end
                 while flag1>0
                     [L1, U1]=ilu(g1,ilu_setup);
-                    phat = ya - U1 \ (L1 \ r);
-                    if is_dynamic
-                        y(y_index_eq, it_) = phat;
-                    else
-                        y(y_index_eq) = phat;
-                    end
-                    if is_dynamic
-                        [r, ~, T(:, it_), g1] = feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, ...
-                                                   steady_state, T(:, it_), it_, false);
-                    else
-                        [r, ~, T, g1] = feval(fname, Block_Num, y, x, params, T);
-                    end
-                    if max(abs(r))>=options.solve_tolf
-                        [dx,flag1] = bicgstab(g1,-r,1e-7,Blck_size,L1,U1);
-                    else
-                        flag1 = 0;
-                        dx = phat - ya;
-                    end
+                    [dx,flag1] = bicgstab(g1,-r,1e-6,Blck_size,L1,U1);
                     if flag1>0 || reduced
                         if verbose
                             if(flag1==1)
-                                disp(['Error in simul: No convergence inside BICGSTAB after ' num2str(iter,'%6d') ' iterations, in block' num2str(Block_Num,'%3d')])
+                                disp(['Error in simul: No convergence inside BiCGStab after ' num2str(iter,'%6d') ' iterations, in block' num2str(Block_Num,'%3d')])
                             elseif(flag1==2)
                                 disp(['Error in simul: Preconditioner is ill-conditioned, in block' num2str(Block_Num,'%3d')])
                             elseif(flag1==3)
-                                disp(['Error in simul: GMRES stagnated (Two consecutive iterates were the same.), in block' num2str(Block_Num,'%3d')])
+                                disp(['Error in simul: BiCGStab stagnated (Two consecutive iterates were the same.), in block' num2str(Block_Num,'%3d')])
                             end
                         end
                         ilu_setup.droptol = ilu_setup.droptol/10;
