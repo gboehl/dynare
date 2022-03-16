@@ -2554,7 +2554,7 @@ dynSparseMatrix::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double
   mxArray *lhs0[2];
   mxArray *rhs0[2] = { A_m, Setup };
   if (mexCallMATLAB(2, lhs0, 2, rhs0, "ilu"))
-    throw FatalExceptionHandling("In GMRES, the incomplet LU decomposition (ilu) ahs failed.");
+    throw FatalExceptionHandling("In GMRES, the incomplete LU decomposition (ilu) has failed.");
   mxArray *L1 = lhs0[0];
   mxArray *U1 = lhs0[1];
   /*[za,flag1] = gmres(g1a,b,Blck_size,1e-6,Blck_size*periods,L1,U1);*/
@@ -2652,7 +2652,7 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
       mxArray *lhs0[2];
       mxArray *rhs0[2] = { A_m, Setup };
       if (mexCallMATLAB(2, lhs0, 2, rhs0, "ilu"))
-        throw FatalExceptionHandling(" In BiCGStab, the incomplet LU decomposition (ilu) ahs failed.\n");
+        throw FatalExceptionHandling(" In BiCGStab, the incomplete LU decomposition (ilu) has failed.\n");
       L1 = lhs0[0];
       U1 = lhs0[1];
       mxDestroyArray(Setup);
@@ -3973,12 +3973,12 @@ dynSparseMatrix::preconditioner_print_out(string s, int preconditioner, bool ss)
       break;
     case 1:
       if (ss)
-        tmp.append("incomplet lutp on static jacobian");
+        tmp.append("incomplete lutp on static jacobian");
       else
-        tmp.append("incomplet lu0 on dynamic jacobian");
+        tmp.append("incomplete lu0 on dynamic jacobian");
       break;
     case 2:
-      tmp.append("incomplet lutp on dynamic jacobian");
+      tmp.append("incomplete lutp on dynamic jacobian");
       break;
     case 3:
       tmp.append("lu on static jacobian");
