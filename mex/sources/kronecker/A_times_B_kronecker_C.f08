@@ -1,7 +1,7 @@
 ! This MEX file computes A·(B⊗C) or A·(B⊗B) without explicitly building B⊗C or
 ! B⊗B, so that one can consider large matrices B and/or C.
 
-! Copyright © 2007-2021 Dynare Team
+! Copyright © 2007-2022 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -36,9 +36,9 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
      call mexErrMsgTxt("A_times_B_kronecker_C takes 2 or 3 input arguments and provides 1 output argument")
   end if
 
-  if (.not. mxIsDouble(prhs(1)) .or. mxIsComplex(prhs(1)) &
-       .or. .not. mxIsDouble(prhs(2)) .or. mxIsComplex(prhs(2))) then
-     call mexErrMsgTxt("A_times_B_kronecker_C: first two arguments should be real matrices")
+  if (.not. mxIsDouble(prhs(1)) .or. mxIsComplex(prhs(1)) .or. mxIsSparse(prhs(1)) &
+       .or. .not. mxIsDouble(prhs(2)) .or. mxIsComplex(prhs(2)) .or. mxIsSparse(prhs(2))) then
+     call mexErrMsgTxt("A_times_B_kronecker_C: first two arguments should be real dense matrices")
   end if
   mA = mxGetM(prhs(1))
   nA = mxGetN(prhs(1))
@@ -49,8 +49,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
 
   if (nrhs == 3) then
      ! A·(B⊗C) is to be computed.
-     if (.not. mxIsDouble(prhs(3)) .or. mxIsComplex(prhs(3))) then
-        call mexErrMsgTxt("A_times_B_kronecker_C: third argument should be a real matrix")
+     if (.not. mxIsDouble(prhs(3)) .or. mxIsComplex(prhs(3)) .or. mxIsSparse(prhs(3))) then
+        call mexErrMsgTxt("A_times_B_kronecker_C: third argument should be a real dense matrix")
      end if
      mC = mxGetM(prhs(3))
      nC = mxGetN(prhs(3))

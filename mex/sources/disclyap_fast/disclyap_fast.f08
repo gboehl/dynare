@@ -20,7 +20,7 @@
 ! This is a Fortran translation of a code originally written by Joe Pearlman
 ! and Alejandro Justiniano.
 
-! Copyright © 2020-2021 Dynare Team
+! Copyright © 2020-2022 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -64,10 +64,10 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   end if
 
   n = mxGetM(prhs(1))
-  if (.not. mxIsDouble(prhs(1)) .or. mxIsComplex(prhs(1)) &
-      .or. .not. mxIsDouble(prhs(2)) .or. mxIsComplex(prhs(2)) &
+  if (.not. mxIsDouble(prhs(1)) .or. mxIsComplex(prhs(1)) .or. mxIsSparse(prhs(1)) &
+      .or. .not. mxIsDouble(prhs(2)) .or. mxIsComplex(prhs(2)) .or. mxIsSparse(prhs(2)) &
       .or. mxGetN(prhs(1)) /= n .or. mxGetM(prhs(2)) /= n .or. mxGetN(prhs(2)) /= n) then
-     call mexErrMsgTxt("disclyap_fast: first two arguments should be real matrices of the same dimension")
+     call mexErrMsgTxt("disclyap_fast: first two arguments should be real dense matrices of the same dimension")
   end if
 
   if (.not. (mxIsScalar(prhs(3)) .and. mxIsNumeric(prhs(3)))) then

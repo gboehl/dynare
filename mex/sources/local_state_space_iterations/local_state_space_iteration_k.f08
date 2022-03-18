@@ -58,11 +58,13 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    if (nrhs /= 6 .or. nlhs /= 1) then
       call mexErrMsgTxt("Must have exactly 5 inputs and 1 output")
    end if
-   if (.not. (mxIsDouble(yhat_mx) .and. mxGetM(yhat_mx) >= 1 .and. mxGetN(yhat_mx) >= 1)) then
-      call mexErrMsgTxt("1st argument (yhat) should be a real vector")
+   if (.not. (mxIsDouble(yhat_mx) .and. mxGetM(yhat_mx) >= 1 .and. mxGetN(yhat_mx) >= 1) &
+        .or. mxIsComplex(yhat_mx) .or. mxIsSparse(yhat_mx)) then
+      call mexErrMsgTxt("1st argument (yhat) should be a real dense vector")
    end if
-   if (.not. (mxIsDouble(epsilon_mx) .and. mxGetM(epsilon_mx) >= 1 .or. mxGetN(epsilon_mx) == 1)) then
-      call mexErrMsgTxt("2nd argument (epsilon) should be a real vector")
+   if (.not. (mxIsDouble(epsilon_mx) .and. mxGetM(epsilon_mx) >= 1 .or. mxGetN(epsilon_mx) == 1) &
+        .or. mxIsComplex(epsilon_mx) .or. mxIsSparse(epsilon_mx)) then
+      call mexErrMsgTxt("2nd argument (epsilon) should be a real dense vector")
    end if
    if (.not. mxIsStruct(dr_mx)) then
       call mexErrMsgTxt("3rd argument (dr) should be a struct")
@@ -88,15 +90,17 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    nvar = nys + exo_nbr
 
    associate (order_var_mx => mxGetField(dr_mx, 1_mwIndex, "order_var"))
-      if (.not. (mxIsDouble(order_var_mx) .and. int(mxGetNumberOfElements(order_var_mx)) == endo_nbr)) then
-         call mexErrMsgTxt("Field dr.order_var should be a double precision vector with endo_nbr elements")
+     if (.not. (mxIsDouble(order_var_mx) .and. int(mxGetNumberOfElements(order_var_mx)) == endo_nbr) &
+          .or. mxIsComplex(order_var_mx) .or. mxIsSparse(order_var_mx)) then
+         call mexErrMsgTxt("Field dr.order_var should be a real dense vector with endo_nbr elements")
       end if
       order_var => mxGetPr(order_var_mx)
    end associate
 
    associate (ys_mx => mxGetField(dr_mx, 1_mwIndex, "ys"))
-      if (.not. (mxIsDouble(ys_mx) .and. int(mxGetNumberOfElements(ys_mx)) == endo_nbr)) then
-         call mexErrMsgTxt("Field dr.ys should be a double precision vector with endo_nbr elements")
+      if (.not. (mxIsDouble(ys_mx) .and. int(mxGetNumberOfElements(ys_mx)) == endo_nbr) &
+          .or. mxIsComplex(ys_mx) .or. mxIsSparse(ys_mx)) then
+         call mexErrMsgTxt("Field dr.ys should be a real dense vector with endo_nbr elements")
       end if
       ys => mxGetPr(ys_mx)
       ! Construct the reordered steady state
@@ -107,8 +111,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    end associate
 
    associate (restrict_var_list_mx => mxGetField(dr_mx, 1_mwIndex, "restrict_var_list"))
-      if (.not. (mxIsDouble(restrict_var_list_mx))) then
-         call mexErrMsgTxt("Field dr.restrict_var_list should be a double precision vector")
+      if (.not. mxIsDouble(restrict_var_list_mx) .or. mxIsComplex(restrict_var_list_mx) .or. mxIsSparse(restrict_var_list_mx)) then
+         call mexErrMsgTxt("Field dr.restrict_var_list should be a real dense vector")
       end if
       nrestricted = size(mxGetPr(restrict_var_list_mx))
       restrict_var_list => mxGetPr(restrict_var_list_mx)

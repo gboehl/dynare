@@ -1,4 +1,4 @@
-! Copyright © 2021 Dynare Team
+! Copyright © 2021-2022 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -85,14 +85,16 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    if (.not. (mxIsScalar(nexog_mx)) .and. mxIsNumeric(nexog_mx)) then
       call mexErrMsgTxt("6th argument (nexog) should be a numeric scalar")
    end if
-   if (.not. (mxIsDouble(ystart_mx) .and. (mxGetM(ystart_mx) == 1 .or. mxGetN(ystart_mx) == 1))) then
-      call mexErrMsgTxt("7th argument (ystart) should be a real vector")
+   if (.not. (mxIsDouble(ystart_mx) .and. (mxGetM(ystart_mx) == 1 .or. mxGetN(ystart_mx) == 1)) &
+        .or. mxIsComplex(ystart_mx) .or. mxIsSparse(ystart_mx)) then
+      call mexErrMsgTxt("7th argument (ystart) should be a real dense vector")
    end if
-   if (.not. (mxIsDouble(shocks_mx))) then
-      call mexErrMsgTxt("8th argument (shocks) should be a real matrix")
+   if (.not. mxIsDouble(shocks_mx) .or. mxIsComplex(shocks_mx) .or. mxIsSparse(shocks_mx)) then
+      call mexErrMsgTxt("8th argument (shocks) should be a real dense matrix")
    end if
-   if (.not. (mxIsDouble(ysteady_mx) .and. (mxGetM(ysteady_mx) == 1 .or. mxGetN(ysteady_mx) == 1))) then
-      call mexErrMsgTxt("9th argument (ysteady) should be a real vector")
+   if (.not. (mxIsDouble(ysteady_mx) .and. (mxGetM(ysteady_mx) == 1 .or. mxGetN(ysteady_mx) == 1)) &
+        .or. mxIsComplex(ysteady_mx) .or. mxIsSparse(ysteady_mx)) then
+      call mexErrMsgTxt("9th argument (ysteady) should be a real dense vector")
    end if
    if (.not. mxIsStruct(dr_mx)) then
       call mexErrMsgTxt("10th argument (dr) should be a struct")
@@ -130,7 +132,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    do i = 0, order
       write (fieldname, '(a2, i1)') "g_", i
       tmp = mxGetField(dr_mx, 1_mwIndex, trim(fieldname))
-      if (.not. (c_associated(tmp) .and. mxIsDouble(tmp))) then
+      if (.not. (c_associated(tmp) .and. mxIsDouble(tmp) .and. .not. mxIsComplex(tmp) .and. .not. mxIsSparse(tmp))) then
          call mexErrMsgTxt(trim(fieldname)//" is not allocated in dr")
       end if
       m = int(mxGetM(tmp))

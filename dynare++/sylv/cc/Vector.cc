@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -125,8 +125,8 @@ Vector::Vector(mxArray *p)
   : len{static_cast<int>(mxGetNumberOfElements(p))},
     data{mxGetPr(p)}, destroy{false}
 {
-  if (!mxIsDouble(p))
-    throw SYLV_MES_EXCEPTION("This is not a MATLAB array of doubles.");
+  if (!mxIsDouble(p) || mxIsComplex(p) || mxIsSparse(p))
+    throw SYLV_MES_EXCEPTION("This is not a dense array of real doubles.");
 }
 #endif
 

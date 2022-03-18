@@ -1,4 +1,4 @@
-! Copyright © 2019-2021 Dynare Team
+! Copyright © 2019-2022 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -51,8 +51,9 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
      call mexErrMsgTxt("First argument (function) should be a string or a function handle")
   end if
 
-  if (.not. (mxIsDouble(prhs(2)) .and. (mxGetM(prhs(2)) == 1 .or. mxGetN(prhs(2)) == 1))) then
-     call mexErrMsgTxt("Second argument (initial guess) should be a real vector")
+  if (.not. (mxIsDouble(prhs(2)) .and. (mxGetM(prhs(2)) == 1 .or. mxGetN(prhs(2)) == 1)) &
+       .or. mxIsComplex(prhs(2)) .or. mxIsSparse(prhs(2))) then
+     call mexErrMsgTxt("Second argument (initial guess) should be a real dense vector")
   end if
 
   if (.not. (mxIsScalar(prhs(3)) .and. mxIsNumeric(prhs(3)))) then

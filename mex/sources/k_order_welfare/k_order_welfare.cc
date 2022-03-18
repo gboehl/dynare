@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Dynare Team
+ * Copyright © 2021-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -194,8 +194,8 @@ extern "C" {
       mexErrMsgTxt("The derivatives were not computed for the required order. Make sure that you used the right order option inside the `stoch_simul' command");
 
     const mxArray *nnzderivatives_obj_mx = mxGetField(M_mx, 0, "NNZDerivatives_objective");
-    if (!(nnzderivatives_obj_mx && mxIsDouble(nnzderivatives_obj_mx)))
-      mexErrMsgTxt("M_.NNZDerivatives should be a double precision array");
+    if (!(nnzderivatives_obj_mx && mxIsDouble(nnzderivatives_obj_mx) && !mxIsComplex(nnzderivatives_obj_mx) && !mxIsSparse(nnzderivatives_obj_mx)))
+      mexErrMsgTxt("M_.NNZDerivatives should be a real dense array");
     ConstVector NNZD_obj{nnzderivatives_obj_mx};
     if (NNZD.length() < kOrder || NNZD_obj[kOrder-1] == -1)
       mexErrMsgTxt("The derivatives were not computed for the required order. Make sure that you used the right order option inside the `stoch_simul' command");
@@ -211,21 +211,24 @@ extern "C" {
     std::vector<std::string> exoNames = DynareMxArrayToString(exo_names_mx);
 
     const mxArray *dynamic_tmp_nbr_mx = mxGetField(M_mx, 0, "dynamic_tmp_nbr");
-    if (!(dynamic_tmp_nbr_mx && mxIsDouble(dynamic_tmp_nbr_mx) && mxGetNumberOfElements(dynamic_tmp_nbr_mx) >= static_cast<size_t>(kOrder+1)))
+    if (!(dynamic_tmp_nbr_mx && mxIsDouble(dynamic_tmp_nbr_mx) && !mxIsComplex(dynamic_tmp_nbr_mx)
+          && !mxIsSparse(dynamic_tmp_nbr_mx) && mxGetNumberOfElements(dynamic_tmp_nbr_mx) >= static_cast<size_t>(kOrder+1)))
       mexErrMsgTxt("M_.dynamic_tmp_nbr should be a double precision array with strictly more elements than the order of derivation");
     int ntt = std::accumulate(mxGetPr(dynamic_tmp_nbr_mx), mxGetPr(dynamic_tmp_nbr_mx)+kOrder+1, 0);
 
     // Extract various fields from dr
     const mxArray *ys_mx = mxGetField(dr_mx, 0, "ys"); // and not in order of dr.order_var
-    if (!(ys_mx && mxIsDouble(ys_mx)))
-      mexErrMsgTxt("dr.ys should be a double precision array");
+    if (!(ys_mx && mxIsDouble(ys_mx) && !mxIsComplex(ys_mx) && !mxIsSparse(ys_mx)))
+      mexErrMsgTxt("dr.ys should be a real dense array");
     Vector ySteady{ConstVector{ys_mx}};
     if (!ySteady.isFinite())
       mexErrMsgTxt("dr.ys contains NaN or Inf");
 
     const mxArray *order_var_mx = mxGetField(dr_mx, 0, "order_var");
-    if (!(order_var_mx && mxIsDouble(order_var_mx) && mxGetNumberOfElements(order_var_mx) == static_cast<size_t>(nEndo)))
-      mexErrMsgTxt("dr.order_var should be a double precision array of M_.endo_nbr elements");
+    if (!(order_var_mx && mxIsDouble(order_var_mx) && !mxIsComplex(order_var_mx)
+          && !mxIsSparse(order_var_mx)
+          && mxGetNumberOfElements(order_var_mx) == static_cast<size_t>(nEndo)))
+      mexErrMsgTxt("dr.order_var should be a real dense array of M_.endo_nbr elements");
     std::vector<int> dr_order(nEndo);
     std::transform(mxGetPr(order_var_mx), mxGetPr(order_var_mx)+nEndo, dr_order.begin(),
                    [](double x) { return static_cast<int>(x)-1; });
@@ -262,8 +265,10 @@ extern "C" {
     app.walkStochSteady();
 
     const mxArray *objective_tmp_nbr_mx = mxGetField(M_mx, 0, "objective_tmp_nbr");
-    if (!(objective_tmp_nbr_mx && mxIsDouble(objective_tmp_nbr_mx) && mxGetNumberOfElements(objective_tmp_nbr_mx) >= static_cast<size_t>(kOrder+1)))
-      mexErrMsgTxt("M_.objective_tmp_nbr should be a double precision array with strictly more elements than the order of derivation");
+    if (!(objective_tmp_nbr_mx && mxIsDouble(objective_tmp_nbr_mx)
+          && !mxIsComplex(objective_tmp_nbr_mx) && !mxIsSparse(objective_tmp_nbr_mx)
+          && mxGetNumberOfElements(objective_tmp_nbr_mx) >= static_cast<size_t>(kOrder+1)))
+      mexErrMsgTxt("M_.objective_tmp_nbr should be a real dense array with strictly more elements than the order of derivation");
     int ntt_objective = std::accumulate(mxGetPr(objective_tmp_nbr_mx), mxGetPr(objective_tmp_nbr_mx)+kOrder+1, 0);
 
     //Getting derivatives of the planner's objective function

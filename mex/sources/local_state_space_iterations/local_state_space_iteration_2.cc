@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2021 Dynare Team
+ * Copyright © 2010-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -25,6 +25,7 @@
 #include <vector>
 #include <algorithm>
 #include <tuple>
+#include <string>
 
 #include <dynmex.h>
 #include <dynblas.h>
@@ -224,6 +225,15 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (nlhs > 2)
     mexErrMsgTxt("Too many output arguments.");
 
+  auto check_input_real_dense_array = [=](int i)
+  {
+    if (!mxIsDouble(prhs[i]) || mxIsComplex(prhs[i]) || mxIsSparse(prhs[i]))
+      mexErrMsgTxt(("Input argument " + std::to_string(i+1) + " should be a real dense array").c_str());
+  };
+
+  for (int i = 0; i < 8; i++)
+    check_input_real_dense_array(i);
+
   // Get dimensions.
   size_t n = mxGetM(prhs[0]); // Number of states.
   size_t s = mxGetN(prhs[0]); // Number of particles.
@@ -243,10 +253,15 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       || n*q != mxGetN(prhs[7])) // Number of rows for ghxu
     mexErrMsgTxt("Input dimension mismatch!.");
   if (nrhs > 9)
-    if (n != mxGetM(prhs[8]) // Number of rows for yhat_
-        || s != mxGetN(prhs[8]) // Number of columns for yhat_
-        || m != mxGetM(prhs[9])) // Number of rows for ss
-      mexErrMsgTxt("Input dimension mismatch!.");
+    {
+      for (int i = 8; i < 10; i++)
+        check_input_real_dense_array(i);
+
+      if (n != mxGetM(prhs[8]) // Number of rows for yhat_
+          || s != mxGetN(prhs[8]) // Number of columns for yhat_
+          || m != mxGetM(prhs[9])) // Number of rows for ss
+        mexErrMsgTxt("Input dimension mismatch!.");
+    }
 
   // Get Input arrays.
   const double *yhat = mxGetPr(prhs[0]);
@@ -263,7 +278,14 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       yhat_ = mxGetPr(prhs[8]);
       ss = mxGetPr(prhs[9]);
     }
-  int numthreads = static_cast<int>(mxGetScalar(prhs[nrhs == 9 ? 8 : 10]));
+
+  const mxArray *numthreads_mx = prhs[nrhs == 9 ? 8 : 10];
+  if (!(mxIsScalar(numthreads_mx) && mxIsNumeric(numthreads_mx)))
+    mexErrMsgTxt("Last argument should be a numeric scalar");
+  int numthreads = static_cast<int>(mxGetScalar(numthreads_mx));
+  if (numthreads <= 0)
+    mexErrMsgTxt("Last argument should be a positive integer");
+
 #if defined(USE_BLAS_AT_FIRST_ORDER) && defined(MATLAB_MEX_FILE)
   if (numthreads != 1)
     mexErrMsgTxt("Parallelization is not possible when compiled with USE_BLAS_AT_FIRST_ORDER.");

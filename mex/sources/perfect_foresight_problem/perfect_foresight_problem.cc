@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2020 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -65,14 +65,16 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   mwIndex maximum_endo_lag = static_cast<mwIndex>(mxGetScalar(maximum_endo_lag_mx));
 
   const mxArray *dynamic_tmp_nbr_mx = mxGetField(M_mx, 0, "dynamic_tmp_nbr");
-  if (!(dynamic_tmp_nbr_mx && mxIsDouble(dynamic_tmp_nbr_mx) && mxGetNumberOfElements(dynamic_tmp_nbr_mx) >= 2))
-    mexErrMsgTxt("M_.dynamic_tmp_nbr should be a double array of at least 2 elements");
+  if (!(dynamic_tmp_nbr_mx && mxIsDouble(dynamic_tmp_nbr_mx) && mxGetNumberOfElements(dynamic_tmp_nbr_mx) >= 2)
+      || mxIsComplex(dynamic_tmp_nbr_mx) || mxIsSparse(dynamic_tmp_nbr_mx))
+    mexErrMsgTxt("M_.dynamic_tmp_nbr should be a real dense array of at least 2 elements");
   size_t ntt = mxGetPr(dynamic_tmp_nbr_mx)[0] + mxGetPr(dynamic_tmp_nbr_mx)[1];
 
   const mxArray *lead_lag_incidence_mx = mxGetField(M_mx, 0, "lead_lag_incidence");
   if (!(lead_lag_incidence_mx && mxIsDouble(lead_lag_incidence_mx) && mxGetM(lead_lag_incidence_mx) == static_cast<size_t>(2+maximum_endo_lag)
-        && mxGetN(lead_lag_incidence_mx) == static_cast<size_t>(ny)))
-    mexErrMsgTxt("M_.lead_lag_incidence should be a double precision matrix with 2+M_.maximum_endo_lag rows and M_.endo_nbr columns");
+        && mxGetN(lead_lag_incidence_mx) == static_cast<size_t>(ny))
+      || mxIsComplex(lead_lag_incidence_mx) || mxIsSparse(lead_lag_incidence_mx))
+    mexErrMsgTxt("M_.lead_lag_incidence should be a real dense matrix with 2+M_.maximum_endo_lag rows and M_.endo_nbr columns");
   const double *lead_lag_incidence = mxGetPr(lead_lag_incidence_mx);
 
   const mxArray *has_external_function_mx = mxGetField(M_mx, 0, "has_external_function");

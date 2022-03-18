@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005-2011 Ondra Kamenik
- * Copyright © 2019-2020 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -54,11 +54,24 @@ extern "C" {
     if (nhrs != 5 || nlhs > 2 || nlhs < 1)
       mexErrMsgTxt("Gensylv: Must have exactly 5 input args and either 1 or 2 output args.");
 
+    if (!(mxIsScalar(prhs[0]) && mxIsNumeric(prhs[0])))
+      mexErrMsgTxt("First argument should be a numeric scalar");
+
     auto order = static_cast<int>(mxGetScalar(prhs[0]));
     const mxArray *const A = prhs[1];
     const mxArray *const B = prhs[2];
     const mxArray *const C = prhs[3];
     const mxArray *const D = prhs[4];
+
+    if (!mxIsDouble(A) || mxIsComplex(A) || mxIsSparse(A))
+      mexErrMsgTxt("Matrix A must be a real dense matrix.");
+    if (!mxIsDouble(B) || mxIsComplex(B) || mxIsSparse(B))
+      mexErrMsgTxt("Matrix B must be a real dense matrix.");
+    if (!mxIsDouble(C) || mxIsComplex(C) || mxIsSparse(C))
+      mexErrMsgTxt("Matrix C must be a real dense matrix.");
+    if (!mxIsDouble(D) || mxIsComplex(D) || mxIsSparse(D))
+      mexErrMsgTxt("Matrix D must be a real dense matrix.");
+
     const mwSize *const Adims = mxGetDimensions(A);
     const mwSize *const Bdims = mxGetDimensions(B);
     const mwSize *const Cdims = mxGetDimensions(C);

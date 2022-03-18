@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -87,7 +87,7 @@ class DynamicModelMatlabCaller : public DynamicModelCaller
 private:
   std::string basename;
   mxArray *T_mx, *y_mx, *it_mx, *T_flag_mx, *jacobian_mx, *x_mx, *params_mx, *steady_state_mx;
-  /* Given a complex matrix, returns a real matrix of same size.
+  /* Given a complex dense matrix (of double floats), returns a real dense matrix of same size.
      Real elements of the original matrix are copied as-is to the new one.
      Complex elements are replaced by NaNs.
      Destroys the original matrix. */

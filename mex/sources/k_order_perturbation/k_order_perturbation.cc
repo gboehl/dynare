@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2021 Dynare Team
+ * Copyright © 2008-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -133,15 +133,16 @@ extern "C" {
     std::string fname{mxArrayToString(fname_mx)};
 
     const mxArray *params_mx = mxGetField(M_mx, 0, "params");
-    if (!(params_mx && mxIsDouble(params_mx)))
-      mexErrMsgTxt("M_.params should be a double precision array");
+    if (!(params_mx && mxIsDouble(params_mx) && !mxIsComplex(params_mx) && !mxIsSparse(params_mx)))
+      mexErrMsgTxt("M_.params should be a real dense array");
     Vector modParams{ConstVector{params_mx}};
     if (!modParams.isFinite())
       mexErrMsgTxt("M_.params contains NaN or Inf");
 
     const mxArray *sigma_e_mx = mxGetField(M_mx, 0, "Sigma_e");
-    if (!(sigma_e_mx && mxIsDouble(sigma_e_mx) && mxGetM(sigma_e_mx) == mxGetN(sigma_e_mx)))
-      mexErrMsgTxt("M_.Sigma_e should be a double precision square matrix");
+    if (!(sigma_e_mx && mxIsDouble(sigma_e_mx) && !mxIsComplex(sigma_e_mx) && !mxIsSparse(sigma_e_mx)
+          && mxGetM(sigma_e_mx) == mxGetN(sigma_e_mx)))
+      mexErrMsgTxt("M_.Sigma_e should be a real dense square matrix");
     TwoDMatrix vCov{ConstTwoDMatrix{sigma_e_mx}};
     if (!vCov.isFinite())
       mexErrMsgTxt("M_.Sigma_e contains NaN or Inf");
@@ -156,13 +157,16 @@ extern "C" {
     const int nPar = get_int_field(M_mx, "param_nbr");
 
     const mxArray *lead_lag_incidence_mx = mxGetField(M_mx, 0, "lead_lag_incidence");
-    if (!(lead_lag_incidence_mx && mxIsDouble(lead_lag_incidence_mx) && mxGetM(lead_lag_incidence_mx) == 3
+    if (!(lead_lag_incidence_mx && mxIsDouble(lead_lag_incidence_mx)
+          && !mxIsComplex(lead_lag_incidence_mx) && !mxIsSparse(lead_lag_incidence_mx)
+          && mxGetM(lead_lag_incidence_mx) == 3
           && mxGetN(lead_lag_incidence_mx) == static_cast<size_t>(nEndo)))
-      mexErrMsgTxt("M_.lead_lag_incidence should be a double precision matrix with 3 rows and M_.endo_nbr columns");
+      mexErrMsgTxt("M_.lead_lag_incidence should be a real dense matrix with 3 rows and M_.endo_nbr columns");
     ConstTwoDMatrix llincidence{lead_lag_incidence_mx};
 
     const mxArray *nnzderivatives_mx = mxGetField(M_mx, 0, "NNZDerivatives");
-    if (!(nnzderivatives_mx && mxIsDouble(nnzderivatives_mx)))
+    if (!(nnzderivatives_mx && mxIsDouble(nnzderivatives_mx) && !mxIsComplex(nnzderivatives_mx)
+          && !mxIsSparse(nnzderivatives_mx)))
       mexErrMsgTxt("M_.NNZDerivatives should be a double precision array");
     ConstVector NNZD{nnzderivatives_mx};
     if (NNZD.length() < kOrder || NNZD[kOrder-1] == -1)
@@ -179,21 +183,24 @@ extern "C" {
     std::vector<std::string> exoNames = DynareMxArrayToString(exo_names_mx);
 
     const mxArray *dynamic_tmp_nbr_mx = mxGetField(M_mx, 0, "dynamic_tmp_nbr");
-    if (!(dynamic_tmp_nbr_mx && mxIsDouble(dynamic_tmp_nbr_mx) && mxGetNumberOfElements(dynamic_tmp_nbr_mx) >= static_cast<size_t>(kOrder+1)))
-      mexErrMsgTxt("M_.dynamic_tmp_nbr should be a double precision array with strictly more elements than the order of derivation");
+    if (!(dynamic_tmp_nbr_mx && mxIsDouble(dynamic_tmp_nbr_mx) && !mxIsComplex(dynamic_tmp_nbr_mx)
+          && !mxIsSparse(dynamic_tmp_nbr_mx)
+          && mxGetNumberOfElements(dynamic_tmp_nbr_mx) >= static_cast<size_t>(kOrder+1)))
+      mexErrMsgTxt("M_.dynamic_tmp_nbr should be a real dense array with strictly more elements than the order of derivation");
     int ntt = std::accumulate(mxGetPr(dynamic_tmp_nbr_mx), mxGetPr(dynamic_tmp_nbr_mx)+kOrder+1, 0);
 
     // Extract various fields from dr
     const mxArray *ys_mx = mxGetField(dr_mx, 0, "ys"); // and not in order of dr.order_var
-    if (!(ys_mx && mxIsDouble(ys_mx)))
-      mexErrMsgTxt("dr.ys should be a double precision array");
+    if (!(ys_mx && mxIsDouble(ys_mx) && !mxIsComplex(ys_mx) && !mxIsSparse(ys_mx)))
+      mexErrMsgTxt("dr.ys should be a real dense array");
     Vector ySteady{ConstVector{ys_mx}};
     if (!ySteady.isFinite())
       mexErrMsgTxt("dr.ys contains NaN or Inf");
 
     const mxArray *order_var_mx = mxGetField(dr_mx, 0, "order_var");
-    if (!(order_var_mx && mxIsDouble(order_var_mx) && mxGetNumberOfElements(order_var_mx) == static_cast<size_t>(nEndo)))
-      mexErrMsgTxt("dr.order_var should be a double precision array of M_.endo_nbr elements");
+    if (!(order_var_mx && mxIsDouble(order_var_mx) && !mxIsComplex(order_var_mx) && !mxIsSparse(order_var_mx)
+          && mxGetNumberOfElements(order_var_mx) == static_cast<size_t>(nEndo)))
+      mexErrMsgTxt("dr.order_var should be a real dense array of M_.endo_nbr elements");
     std::vector<int> dr_order(nEndo);
     std::transform(mxGetPr(order_var_mx), mxGetPr(order_var_mx)+nEndo, dr_order.begin(),
                    [](double x) { return static_cast<int>(x)-1; });

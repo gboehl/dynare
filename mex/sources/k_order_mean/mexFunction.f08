@@ -77,37 +77,39 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    if (nrhs /= 12) then
       call mexErrMsgTxt("Must have exactly 12 inputs")
    end if
-   if (.not. (mxIsScalar(order_mx)) .and. mxIsNumeric(order_mx)) then
+   if (.not. (mxIsScalar(order_mx) .and. mxIsNumeric(order_mx))) then
       call mexErrMsgTxt("1st argument (order) should be a numeric scalar")
    end if
-   if (.not. (mxIsScalar(nstatic_mx)) .and. mxIsNumeric(nstatic_mx)) then
+   if (.not. (mxIsScalar(nstatic_mx) .and. mxIsNumeric(nstatic_mx))) then
       call mexErrMsgTxt("2nd argument (nstat) should be a numeric scalar")
    end if
-   if (.not. (mxIsScalar(npred_mx)) .and. mxIsNumeric(npred_mx)) then
+   if (.not. (mxIsScalar(npred_mx) .and. mxIsNumeric(npred_mx))) then
       call mexErrMsgTxt("3rd argument (npred) should be a numeric scalar")
    end if
-   if (.not. (mxIsScalar(nboth_mx)) .and. mxIsNumeric(nboth_mx)) then
+   if (.not. (mxIsScalar(nboth_mx) .and. mxIsNumeric(nboth_mx))) then
       call mexErrMsgTxt("4th argument (nboth) should be a numeric scalar")
    end if
-   if (.not. (mxIsScalar(nfwrd_mx)) .and. mxIsNumeric(nfwrd_mx)) then
+   if (.not. (mxIsScalar(nfwrd_mx) .and. mxIsNumeric(nfwrd_mx))) then
       call mexErrMsgTxt("5th argument (nforw) should be a numeric scalar")
    end if
-   if (.not. (mxIsScalar(nexog_mx)) .and. mxIsNumeric(nexog_mx)) then
+   if (.not. (mxIsScalar(nexog_mx) .and. mxIsNumeric(nexog_mx))) then
       call mexErrMsgTxt("6th argument (nexog) should be a numeric scalar")
    end if
-   if (.not. (mxIsScalar(order_moment_mx)) .and. mxIsNumeric(order_moment_mx)) then
+   if (.not. (mxIsScalar(order_moment_mx) .and. mxIsNumeric(order_moment_mx))) then
       call mexErrMsgTxt("7th argument (order_moment) should be a numeric scalar")
    end if
-   if (.not. (mxIsScalar(nburn_mx)) .and. mxIsNumeric(nburn_mx)) then
+   if (.not. (mxIsScalar(nburn_mx) .and. mxIsNumeric(nburn_mx))) then
       call mexErrMsgTxt("8th argument (nburn) should be a numeric scalar")
    end if
-   if (.not. (mxIsDouble(yhat_start_mx) .and. (mxGetM(yhat_start_mx) == 1 .or. mxGetN(yhat_start_mx) == 1))) then
-      call mexErrMsgTxt("9th argument (yhat_start) should be a real vector")
+   if (.not. (mxIsDouble(yhat_start_mx) .and. (mxGetM(yhat_start_mx) == 1 .or. mxGetN(yhat_start_mx) == 1)) &
+        .or. mxIsComplex(yhat_start_mx) .or. mxIsSparse(yhat_start_mx)) then
+      call mexErrMsgTxt("9th argument (yhat_start) should be a real dense vector")
    end if
-   if (.not. (mxIsDouble(shocks_mx))) then
-      call mexErrMsgTxt("10th argument (shocks) should be a real matrix")
+   if (.not. (mxIsDouble(shocks_mx)) .or. mxIsComplex(shocks_mx) .or. mxIsSparse(shocks_mx)) then
+      call mexErrMsgTxt("10th argument (shocks) should be a real dense matrix")
    end if
-   if (.not. (mxIsDouble(ysteady_mx) .and. (mxGetM(ysteady_mx) == 1 .or. mxGetN(ysteady_mx) == 1))) then
+   if (.not. (mxIsDouble(ysteady_mx) .and. (mxGetM(ysteady_mx) == 1 .or. mxGetN(ysteady_mx) == 1)) &
+        .or. mxIsComplex(ysteady_mx) .or. mxIsSparse(ysteady_mx)) then
       call mexErrMsgTxt("11th argument (ysteady) should be a real vector")
    end if
    if (.not. mxIsStruct(dr_mx)) then

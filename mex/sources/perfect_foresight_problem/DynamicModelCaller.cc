@@ -160,6 +160,12 @@ DynamicModelMatlabCaller::eval(int it, double *resid)
         return; // Avoid manipulating null pointers in plhs, see #1832
       }
 
+    if (!mxIsDouble(plhs[0]) || mxIsSparse(plhs[0]))
+      {
+        error_msg = "Residuals should be a dense array of double floats";
+        return;
+      }
+
     if (mxIsComplex(plhs[0]))
       plhs[0] = cmplxToReal(plhs[0]);
 
@@ -186,6 +192,12 @@ DynamicModelMatlabCaller::eval(int it, double *resid)
           jacobian_mx = nullptr;
         }
 
+      if (!mxIsDouble(plhs[0]) || mxIsSparse(plhs[0]))
+        {
+          error_msg = "Jacobian should be a dense array of double floats";
+          return;
+        }
+
       if (mxIsComplex(plhs[0]))
         jacobian_mx = cmplxToReal(plhs[0]);
       else
@@ -196,6 +208,8 @@ DynamicModelMatlabCaller::eval(int it, double *resid)
     }
 }
 
+/* NB: This is a duplicate of DynamicModelMFile::cmplxToReal() in
+   k_order_perturbation MEX */
 mxArray *
 DynamicModelMatlabCaller::cmplxToReal(mxArray *cmplx_mx)
 {

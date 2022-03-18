@@ -28,7 +28,7 @@
 !     Fortran compiler better optimize the code (in some cases, this will avoid
 !     array copies)
 
-! Copyright © 2019-2021 Dynare Team
+! Copyright © 2019-2022 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -176,6 +176,11 @@ module matlab_mat
        integer(mwSize), intent(in), value :: m, n, nzmax
        integer(mxComplexity), intent(in), value :: ComplexFlag
      end function mxCreateSparse
+
+     logical(c_bool) function mxIsSparse(pm) bind(c, name="mxIsSparse"//API_VER)
+       use iso_c_binding
+       type(c_ptr), intent(in), value :: pm
+     end function mxIsSparse
 
      type(c_ptr) function mxGetIr(pm) bind(c, name="mxGetIr"//API_VER2)
        use iso_c_binding

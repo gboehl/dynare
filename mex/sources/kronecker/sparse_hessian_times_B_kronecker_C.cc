@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2021 Dynare Team
+ * Copyright © 2007-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -141,8 +141,12 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       return; // Needed to shut up some GCC warnings
     }
 
-  if (!mxIsSparse(prhs[0]))
-    mexErrMsgTxt("sparse_hessian_times_B_kronecker_C: First input must be a sparse (dynare) hessian matrix.");
+  if (!mxIsDouble(prhs[0]) || mxIsComplex(prhs[0]) || !mxIsSparse(prhs[0]))
+    mexErrMsgTxt("sparse_hessian_times_B_kronecker_C: First input must be a real sparse matrix.");
+  if (!mxIsDouble(prhs[1]) || mxIsComplex(prhs[1]) || mxIsSparse(prhs[1]))
+    mexErrMsgTxt("sparse_hessian_times_B_kronecker_C: Second input must be a real dense matrix.");
+  if (nrhs == 4 && (!mxIsDouble(prhs[2]) || mxIsComplex(prhs[2]) || mxIsSparse(prhs[2])))
+    mexErrMsgTxt("sparse_hessian_times_B_kronecker_C: Third input must be a real dense matrix.");
 
   // Get & Check dimensions (columns and rows):
   size_t mA = mxGetM(prhs[0]);
@@ -166,12 +170,21 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   int numthreads;
   const double *B = mxGetPr(prhs[1]);
   const double *C;
-  numthreads = static_cast<int>(mxGetScalar(prhs[2]));
+  const mxArray *numthreads_mx;
   if (nrhs == 4)
     {
       C = mxGetPr(prhs[2]);
-      numthreads = static_cast<int>(mxGetScalar(prhs[3]));
+      numthreads_mx = prhs[3];
     }
+  else
+    numthreads_mx = prhs[2];
+
+  if (!(mxIsScalar(numthreads_mx) && mxIsNumeric(numthreads_mx)))
+    mexErrMsgTxt("sparse_hessian_times_B_kronecker_C: Last input must be a numeric scalar.");
+  numthreads = static_cast<int>(mxGetScalar(numthreads_mx));
+  if (numthreads <= 0)
+    mexErrMsgTxt("sparse_hessian_times_B_kronecker_C: Last input must be a positive integer.");
+
   // Sparse (dynare) hessian matrix.
   const mwIndex *isparseA = mxGetIr(prhs[0]);
   const mwIndex *jsparseA = mxGetJc(prhs[0]);
