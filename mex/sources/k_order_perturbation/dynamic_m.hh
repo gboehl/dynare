@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2019 Dynare Team
+ * Copyright © 2010-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -33,7 +33,15 @@ class DynamicModelMFile : public DynamicModelAC
 {
 private:
   const std::string DynamicMFilename;
+  /* Unpack a sparse matrix (of double floats) into a TwoDMatrix object.
+     Real elements of the original matrix are copied as-is to the new one.
+     Complex elements are replaced by NaNs. */
   static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix &tdm);
+  /* Given a complex dense matrix (of double floats), returns a real dense matrix of same size.
+     Real elements of the original matrix are copied as-is to the new one.
+     Complex elements are replaced by NaNs.
+     Destroys the original matrix. */
+  static mxArray *cmplxToReal(mxArray *m);
 public:
   explicit DynamicModelMFile(const std::string &modName, int ntt_arg);
   virtual ~DynamicModelMFile() = default;

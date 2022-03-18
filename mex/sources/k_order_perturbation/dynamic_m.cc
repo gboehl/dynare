@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2020 Dynare Team
+ * Copyright © 2010-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -30,6 +30,36 @@ DynamicModelMFile::DynamicModelMFile(const std::string &modName, int ntt_arg) :
 {
 }
 
+/* NB: This is a duplicate of DynamicModelMatlabCaller::cmplxToReal() in
+   perfect_foresight_problem MEX */
+mxArray *
+DynamicModelMFile::cmplxToReal(mxArray *cmplx_mx)
+{
+  mxArray *real_mx = mxCreateDoubleMatrix(mxGetM(cmplx_mx), mxGetN(cmplx_mx), mxREAL);
+
+#if MX_HAS_INTERLEAVED_COMPLEX
+  mxComplexDouble *cmplx = mxGetComplexDoubles(cmplx_mx);
+#else
+  double *cmplx_real = mxGetPr(cmplx_mx);
+  double *cmplx_imag = mxGetPi(cmplx_mx);
+#endif
+  double *real = mxGetPr(real_mx);
+
+  for (size_t i = 0; i < mxGetNumberOfElements(cmplx_mx); i++)
+#if MX_HAS_INTERLEAVED_COMPLEX
+    if (cmplx[i].imag == 0.0)
+      real[i] = cmplx[i].real;
+#else
+    if (cmplx_imag[i] == 0.0)
+      real[i] = cmplx_real[i];
+#endif
+    else
+      real[i] = std::numeric_limits<double>::quiet_NaN();
+
+  mxDestroyArray(cmplx_mx);
+  return real_mx;
+}
+
 void
 DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix &tdm)
 {
@@ -43,8 +73,6 @@ DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, 
      zeros in the values vector when calling sparse(). */
   assert(tdm.nrows() >= mxGetNzmax(sparseMat));
 
-  double *ptr = mxGetPr(sparseMat);
-
   int rind = 0;
   int output_row = 0;
 
@@ -53,7 +81,21 @@ DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, 
       {
         tdm.get(output_row, 0) = rowIdxVector[rind] + 1;
         tdm.get(output_row, 1) = i + 1;
-        tdm.get(output_row, 2) = ptr[rind];
+        if (!mxIsComplex(sparseMat))
+          tdm.get(output_row, 2) = mxGetPr(sparseMat)[rind];
+        else
+          {
+            double real, imag;
+#if MX_HAS_INTERLEAVED_COMPLEX
+            mxComplexDouble cmplx = mxGetComplexDoubles(sparseMat)[rind];
+            real = cmplx.real;
+            imag = cmplx.imag;
+#else
+            real = mxGetPr(sparseMat)[rind];
+            imag = mxGetPi(sparseMat)[rind];
+#endif
+            tdm.get(output_row, 2) = imag == 0.0 ? real : std::numeric_limits<double>::quiet_NaN();
+          }
         output_row++;
       }
 
@@ -113,6 +155,12 @@ DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParam
     if (retVal != 0)
       throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
+    if (!mxIsDouble(plhs[0]) || mxIsSparse(plhs[0]))
+      throw DynareException(__FILE__, __LINE__, "Residual should be a dense array of double floats");
+
+    if (mxIsComplex(plhs[0]))
+      plhs[0] = cmplxToReal(plhs[0]);
+
     residual = Vector{plhs[0]};
     mxDestroyArray(plhs[0]);
   }
@@ -127,14 +175,23 @@ DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParam
       if (retVal != 0)
         throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
+      if (!mxIsDouble(plhs[0]))
+        throw DynareException(__FILE__, __LINE__, "Derivatives matrix at order " + std::to_string(i) + "should be an array of double floats");
+
       if (i == 1)
         {
+          if (mxIsSparse(plhs[0]))
+            throw DynareException(__FILE__, __LINE__, "Derivatives matrix at order " + std::to_string(i) + " should be dense");
           assert(static_cast<int>(mxGetM(plhs[0])) == md[i-1].nrows());
           assert(static_cast<int>(mxGetN(plhs[0])) == md[i-1].ncols());
           std::copy_n(mxGetPr(plhs[0]), mxGetM(plhs[0])*mxGetN(plhs[0]), md[i-1].base());
         }
       else
-        unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[0], md[i-1]);
+        {
+          if (!mxIsSparse(plhs[0]))
+            throw DynareException(__FILE__, __LINE__, "Derivatives matrix at order " + std::to_string(i) + " should be sparse");
+          unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[0], md[i-1]);
+        }
 
       mxDestroyArray(plhs[0]);
     }
