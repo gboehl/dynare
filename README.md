@@ -67,7 +67,7 @@ a 32-bit Octave.
 A number of tools and libraries are needed in order to recompile everything. You don't necessarily need to install everything, depending on what you want to compile.
 
 - A POSIX compliant shell and an implementation of Make (mandatory)
-- The [GNU Compiler Collection](http://gcc.gnu.org/), version 8 or later, with
+- The [GNU Compiler Collection](http://gcc.gnu.org/), version 9 or later, with
   gcc, g++ and gfortran (mandatory)
 - [MATLAB](https://mathworks.com) (if you want to compile the MEX for MATLAB)
 - [GNU Octave](http://www.octave.org) with
