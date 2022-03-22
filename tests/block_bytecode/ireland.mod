@@ -60,7 +60,6 @@ k=k+0.000001;
 end;
 
 options_.dynatol.f=1e-12;
-options_.slowc=1;
 steady(solve_algo=2,maxit=50);
 
 options_.dynatol.f=4e-5;
