@@ -1,4 +1,4 @@
-# Copyright © 2017-2019 Dynare Team
+# Copyright © 2017-2022 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -15,11 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-.PHONY: all deps clean-deps clean clean-all install build
+.PHONY: build deps clean-deps clean clean-all install
 
 NTHREADS=$(shell nproc)
 
-all: build
+build: deps
+	./build.sh
 
 deps:
 	make -C deps -j$(NTHREADS)
@@ -34,6 +35,3 @@ clean-all: clean-deps clean
 
 install:
 	./install-packages.sh
-
-build: deps
-	./build.sh
