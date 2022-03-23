@@ -41,7 +41,7 @@ end
 
 y=oo_.endo_simul;
 T=NaN(M_.block_structure.dyn_tmp_nbr, options_.periods+M_.maximum_lag+M_.maximum_lead);
-oo_.deterministic_simulation.status = 0;
+oo_.deterministic_simulation.status = false;
 
 funcname = [ M_.fname '.dynamic'];
 

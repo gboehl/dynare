@@ -12,7 +12,7 @@ function perfect_foresight_solver()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 1996-2020 Dynare Team
+% Copyright (C) 1996-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -155,7 +155,7 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
         % Solve for the paths of the endogenous variables.
         [oo_,me] = perfect_foresight_solver_core(M_,options_,oo_);
 
-        if oo_.deterministic_simulation.status == 1
+        if oo_.deterministic_simulation.status
             current_weight = new_weight;
             if current_weight >= 1
                 if ~options_.noprint
@@ -210,15 +210,15 @@ if ~isreal(oo_.endo_simul(:)) % cannot happen with bytecode or the perfect_fores
     residuals = perfect_foresight_problem(yy(:), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_, options_);
 
     if max(abs(residuals))< options_.dynatol.f
-        oo_.deterministic_simulation.status = 1;
+        oo_.deterministic_simulation.status = true;
         oo_.endo_simul=real(oo_.endo_simul);
     else
-        oo_.deterministic_simulation.status = 0;
+        oo_.deterministic_simulation.status = false;
         disp('Simulation terminated with imaginary parts in the residuals or endogenous variables.')
     end
 end
 
-if oo_.deterministic_simulation.status == 1
+if oo_.deterministic_simulation.status
     if ~options_.noprint
         fprintf('Perfect foresight solution found.\n\n')
     end

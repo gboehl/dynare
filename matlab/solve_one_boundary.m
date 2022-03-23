@@ -88,10 +88,10 @@ else
 end
 
 for it_=start:incr:finish
-    cvg=0;
+    cvg=false;
     iter=0;
     g1=spalloc( Blck_size, Blck_size, nze);
-    while ~(cvg==1 || iter>maxit_)
+    while ~(cvg || iter>maxit_)
         if is_dynamic
             [r, yy, T(:, it_), g1] = feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
             y(:, it_) = yy(M.lead_lag_incidence(M.maximum_endo_lag+1,:));
@@ -112,9 +112,9 @@ for it_=start:incr:finish
             end
         end
         if ~isreal(max_res) || isnan(max_res)
-            cvg = 0;
+            cvg = false;
         elseif is_linear && iter>0
-            cvg = 1;
+            cvg = true;
         else
             cvg=(max_res<solve_tolf);
         end
@@ -290,7 +290,7 @@ for it_=start:incr:finish
             max_resa = max_res;
         end
     end
-    if cvg==0
+    if ~cvg
         if verbose
             if cutoff == 0
                 fprintf('Error in simul: Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "options_.simul.maxit\".\n',Block_Num, it_,iter);

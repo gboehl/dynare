@@ -66,7 +66,7 @@ function [y, T, oo]= solve_two_boundaries(fname, y, x, params, steady_state, T, 
 
 verbose = options.verbosity;
 
-cvg=0;
+cvg=false;
 iter=0;
 Per_u_=0;
 Blck_size=size(y_index,2);
@@ -79,7 +79,7 @@ ilu_setup.thresh = 1;
 ilu_setup.udiag = 0;
 max_resa=1e100;
 reduced = 0;
-while ~(cvg==1 || iter>maxit_)
+while ~(cvg || iter>maxit_)
     r = NaN(Blck_size, periods);
     g1a = spalloc(Blck_size*periods, Blck_size*periods, nze*periods);
     for it_ = y_kmin+(1:periods)
@@ -104,9 +104,9 @@ while ~(cvg==1 || iter>maxit_)
         max_res = (-max_res^2)^0.5;
     end
     if ~isreal(max_res) || isnan(max_res)
-        cvg = 0;
+        cvg = false;
     elseif is_linear && iter>0
-        cvg = 1;
+        cvg = true;
     else
         cvg=(max_res<solve_tolf);
     end
