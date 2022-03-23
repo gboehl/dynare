@@ -127,7 +127,7 @@ while ~(cvg || iter>maxit_)
                         if correcting_factor<max_factor
                             correcting_factor=correcting_factor*4;
                             if verbose
-                                disp(['The Jacobain matrix is singular, det(Jacobian)=' num2str(detJ,'%f') '.']);
+                                disp(['The Jacobian matrix is singular, det(Jacobian)=' num2str(detJ,'%f') '.']);
                                 disp(['    trying to correct the Jacobian matrix:']);
                                 disp(['    correcting_factor=' num2str(correcting_factor,'%f') ' max(Jacobian)=' num2str(full(max_factor),'%f')]);
                             end
