@@ -143,6 +143,14 @@ for it_=start:incr:finish
                                 if verbose
                                     disp('The singularity of the jacobian matrix could not be corrected')
                                 end
+                                if is_dynamic
+                                    oo_.deterministic_simulation.status = false;
+                                    oo_.deterministic_simulation.error = max_res;
+                                    oo_.deterministic_simulation.iterations = iter;
+                                    oo_.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
+                                    oo_.deterministic_simulation.block(Block_Num).error = max_res;
+                                    oo_.deterministic_simulation.block(Block_Num).iterations = iter;
+                                end
                                 info = -Block_Num*10;
                                 return
                             end
@@ -275,16 +283,11 @@ for it_=start:incr:finish
                     end
                 end
             else
-                if verbose
-                    disp('unknown option : ')
-                    if is_dynamic
-                        disp(['options_.stack_solve_algo = ' num2str(stack_solve_algo) ' not implemented'])
-                    else
-                        disp(['options_.solve_algo = ' num2str(options.solve_algo) ' not implemented'])
-                    end
+                if is_dynamic
+                    error(['options_.stack_solve_algo = ' num2str(stack_solve_algo) ' not implemented'])
+                else
+                    error(['options_.solve_algo = ' num2str(options.solve_algo) ' not implemented'])
                 end
-                info = -Block_Num*10;
-                return
             end
             iter=iter+1;
             max_resa = max_res;

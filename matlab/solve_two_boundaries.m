@@ -136,6 +136,12 @@ while ~(cvg || iter>maxit_)
                             continue
                         else
                             disp('The singularity of the jacobian matrix could not be corrected');
+                            oo.deterministic_simulation.status = false;
+                            oo.deterministic_simulation.error = max_res;
+                            oo.deterministic_simulation.iterations = iter;
+                            oo.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
+                            oo.deterministic_simulation.block(Block_Num).error = max_res;
+                            oo.deterministic_simulation.block(Block_Num).iterations = iter;
                             return
                         end
                     end
