@@ -84,7 +84,10 @@ elseif isfield(options_gsa,'neighborhood_width') && options_gsa.neighborhood_wid
     options_.mode_file='';
 end
 
-options_.order = 1;
+if options_.order~=1
+    warning('dynare_sensitivity: dynare_sensitivity does only support order=1, resetting to order=1.')
+    options_.order = 1;
+end
 
 if ~isempty(options_gsa.datafile) || isempty(bayestopt_) || options_gsa.rmse
     if isempty(options_gsa.datafile) && options_gsa.rmse
