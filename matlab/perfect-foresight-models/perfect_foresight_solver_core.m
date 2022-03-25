@@ -47,7 +47,7 @@ if options_.linear && (isequal(options_.stack_solve_algo, 0) || isequal(options_
     options_.linear_approximation = true;
 end
 
-if options_.slowc != 1 && (options_.block || options_.bytecode)
+if options_.slowc ~= 1 && (options_.block || options_.bytecode)
     % The code is buggy and leads to wrong results, so forbid this combination
     error('Changing the value of the slowc option is not supported with block and/or bytecode option')
 end
