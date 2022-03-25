@@ -50,7 +50,6 @@ objfun = { @rosenbrock,
            @broydenbanded };
 
 % FIXME block_trust_region (mex) or trust_region (matlab) do not work for all n (not sure we can fix that).
-% FIXME block_trust_region (mex) and trust_region (matlab) do not behave the same (spurious convergence for powell2 and trigonometric with block_trust_region).
 
 %
 % Test mex routine
@@ -76,6 +75,14 @@ for i=1:length(objfun)
     try
         [x, errorflag, exitflag] = block_trust_region(objfun{i}, x, tolf, tolx, maxit, factor, false, auxstruct);
         if isequal(func2str(objfun{i}), 'powell2')
+            if ~errorflag
+                testFailed = testFailed+1;
+                if debug
+                    dprintf('Nonlinear solver is expected to fail on %s function but did not return an error.', func2str(objfun{i}))
+                end
+            end
+        elseif isequal(func2str(objfun{i}), 'trigonometric')
+            % FIXME block_trust_region (mex) fails, with exit code equal to 4, but not trust_region (matlab). Would be nice to undertsand the difference. 
             if ~errorflag
                 testFailed = testFailed+1;
                 if debug
