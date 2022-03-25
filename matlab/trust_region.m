@@ -109,7 +109,7 @@ catch
 end
 
 if any(isnan(fval)) || any(isinf(fval)) || any(~isreal(fval)) || any(isnan(fjac(:))) || any(isinf(fjac(:))) || any(~isreal(fjac(:)))
-    % System of equations is ill-behaved at the initial guess. 
+    % System of equations is ill-behaved at the initial guess.
     return
 end
 
@@ -251,6 +251,7 @@ while iter<=maxiter && ~info
         continue
     end
     % Compute the jacobian for the next iteration.
+    fjac0 = fjac;
     if jacobianflag
         try
             [~, fjac] = objfun(x, varargin{:});
@@ -258,6 +259,7 @@ while iter<=maxiter && ~info
         catch
             % If evaluation of the Jacobian matrix returns an error, then restart but with a smaller radius of the trust region.
             x = x0;
+            fjac = fjac0;
             delta = delta*radiusfactor;
             continue
         end
@@ -273,6 +275,7 @@ while iter<=maxiter && ~info
     if any(isnan(fjac(:))) || any(isinf(fjac(:))) || any(~isreal(fjac(:)))
         % If evaluation of the Jacobian matrix returns NaNs, an infinite numbers or a complex numbers, then restart but with a smaller radius of the trust region.
         x = x0;
+        fjac = fjac0;
         delta = delta*radiusfactor;
     end
 end
