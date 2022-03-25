@@ -11,7 +11,7 @@ function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
 % - oo_                 [struct] contains results
 % - maxerror            [double] contains the maximum absolute error
 
-% Copyright (C) 2015-2021 Dynare Team
+% Copyright (C) 2015-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,6 +45,11 @@ end
 
 if options_.linear && (isequal(options_.stack_solve_algo, 0) || isequal(options_.stack_solve_algo, 7))
     options_.linear_approximation = true;
+end
+
+if options_.slowc != 1 && (options_.block || options_.bytecode)
+    % The code is buggy and leads to wrong results, so forbid this combination
+    error('Changing the value of the slowc option is not supported with block and/or bytecode option')
 end
 
 if options_.block
