@@ -75,6 +75,7 @@ pac.update.expectation('pacman');
 initialconditions = dseries(zeros(10, M_.endo_nbr+M_.exo_nbr), 2000Q1, vertcat(M_.endo_names,M_.exo_names));
 
 // Simulate the model for 500 periods
+options_.solve_algo = 9;
 TrueData = simul_backward_model(initialconditions, 500);
 
 TrueData.save('example1.data')
