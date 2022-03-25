@@ -43,8 +43,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   logical :: fre ! True if the last block has been solved (i.e. not evaluated), so that residuals must be updated
   integer, dimension(:), allocatable :: evaled_cols ! If fre=.false., lists the columns that have been evaluated so far without updating the residuals
 
-  if (nrhs < 4 .or. nlhs /= 2) then
-     call mexErrMsgTxt("Must have at least 7 inputs and exactly 2 outputs")
+  if (nrhs < 4 .or. nlhs /= 3) then
+     call mexErrMsgTxt("Must have at least 7 inputs and exactly 3 outputs")
   end if
 
   if (.not. ((mxIsChar(prhs(1)) .and. mxGetM(prhs(1)) == 1) .or. mxIsClass(prhs(1), "function_handle"))) then
@@ -231,14 +231,18 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
           call mexPrintf_trim_newline("DYNARE_SOLVE (solve_algo=13|14): residuals still too large, solving for the whole model")
      call trust_region_solve(x, matlab_fcn, info, tolx, tolf, maxiter, factor)
   else
-     info = 1
+     if (size(blocks).gt.1) then
+        ! Note that the value of info may be different across blocks
+        info = 1
+     end if
   end if
 
   plhs(1) = mxCreateDoubleMatrix(int(size(x, 1), mwSize), 1_mwSize, mxREAL)
   mxGetPr(plhs(1)) = x
-  if (info == 1) then
+  if ((info == 1) .or. (info == -1)) then
      plhs(2) = mxCreateDoubleScalar(0._c_double)
   else
      plhs(2) = mxCreateDoubleScalar(1._c_double)
   end if
+  plhs(3) = mxCreateDoubleScalar(dble(info))
 end subroutine mexFunction
