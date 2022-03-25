@@ -132,7 +132,7 @@ contains
          real(real64) :: xnorm ! Norm of rescaled x
          real(real64), dimension(size(x)) :: p ! Candidate increment computed by dogleg
          real(real64) :: pnorm ! Norm of rescaled p
-         real(real64), dimension(size(x)) :: x2 ! Candidate x for next iteration
+         real(real64), dimension(size(x)) :: x2, x0 ! Candidate x for next iteration and copy of x
          real(real64), dimension(size(x)) :: fvec2 ! Candidate function values
          real(real64) :: fn2 ! Norm of the candidate function values
          real(real64), dimension(size(x)) :: w ! Candidate in the approximated linear model
@@ -212,8 +212,17 @@ contains
 
          ! If successful iteration, move x and update various variables
          if (ratio >= 1e-4_real64) then
+            x0 = x
             x = x2
             call f_and_update_norms
+            if (any(isnan(fvec)) .or. any(isnan(fjac))) then
+               x = x0
+               call f_and_update_norms
+               delta = delta / 2
+               ncslow = ncslow + 1
+               niter = niter + 1
+               cycle
+            end if
             xnorm = norm2(dg * x)
          end if
 
