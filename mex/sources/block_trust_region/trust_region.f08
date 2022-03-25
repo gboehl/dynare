@@ -40,10 +40,13 @@ contains
        end subroutine f
     end interface
     ! Exit code:
+    ! -1 = initial guess is a solution of the nonlinear system of equations
+    !  0 = nonlinear system of equations ill-behaved at the initial guess
     !  1 = success (relative error between two consecutive iterates is at most tolx)
     !  2 = maximum number of iterations reached
-    !  3 = tolx is too small, no further improvement of the approximate solution x is possible
+    !  3 = spurious convergence (trust region radius is too small)
     !  4 = iteration is not making good progress, as measured by the improvement from the last maxslowiter iterations
+    !  5 = tolx is too small, no further improvement of the approximate solution x is possible
     integer, intent(out) :: info
     real(real64), intent(in), optional :: tolx, tolf ! Tolerances in x and f
     integer, intent(in), optional :: maxiter ! Maximum number of iterations
@@ -95,7 +98,20 @@ contains
     ! Initial function evaluation
     call f_and_update_norms
 
+    ! Test if the nonlinear system of equations is well behaved at the initial guess.
+    if (any(isnan(fvec))) return
+    if (any(isnan(fjac))) return
+
+    ! Do not iterate if the initial guess is a solution of the nonlinear system of equations.
+    if (norm2(fvec)<tolf_actual) then
+       info =  -1
+       return
+    end if
+
     do
+       ! Exit loop if info is nonzero
+       if (info /= 0) exit
+
        ! Compute scaling factors
        if (niter == 1) then
           where (jcn /= 0)
@@ -143,6 +159,13 @@ contains
          x2 = x + p
          call f(x2, fvec2)
          fn2 = norm2(fvec2)
+
+         ! Test for convergence
+         if (fn2 .lt. tolf_actual) then
+            x = x2
+            info = 1
+            cycle
+         end if
 
          ! Actual reduction
          if (fn2 < fn) then
@@ -200,17 +223,25 @@ contains
 
          ! Increment iteration counter and exit if maximum reached
          niter = niter + 1
-         if (niter == maxiter_actual) info = 2
+         if (niter == maxiter_actual) then
+            info = 2
+            cycle
+         end if
 
-         ! Test for convergence
-         if (delta <= tolx_actual*xnorm .or. fn <= tolf_actual) info = 1
+         if (delta <= tolx_actual*xnorm) then
+            info = 3
+            cycle
+         end if
 
          ! Tests for termination and stringent tolerances
-         if (max(0.1_real64*delta, pnorm) <= 10*epsilon(xnorm)*xnorm) info = 3
+         if (max(0.1_real64*delta, pnorm) <= 10*epsilon(xnorm)*xnorm) then
+            info = 5
+            cycle
+         end if
+
          if (ncslow == maxslowiter) info = 4
        end block
 
-       if (info /= 0) exit
     end do
   contains
     ! Given x, updates fvec, fjac, fn and jcn
