@@ -81,6 +81,8 @@ delta = 0.0;
 
 ncsucc = 0; ncslow = 0;
 
+xinit = x;
+
 %
 % Attempt to evaluate the residuals and jacobian matrix on the initial guess
 %
@@ -226,12 +228,12 @@ while iter<=maxiter && ~info
     iter = iter+1;
     if iter==maxiter
         info = 2;
-        x(:) = inf;
+        x = xinit;
         continue
     end
     if delta<tolx*xnorm
         info = 3;
-        x(:) = inf;
+        x = xinit;
         errorflag = true;
         continue
     end
@@ -240,13 +242,13 @@ while iter<=maxiter && ~info
         % xtol is too small. no further improvement in
         % the approximate solution x is possible.
         info = 5;
-        x(:) = inf;
+        x = xinit;
         errorflag = true;
         continue
     end
     if ncslow==15
         info = 4;
-        x(:) = inf;
+        x = xinit;
         errorflag = true;
         continue
     end
