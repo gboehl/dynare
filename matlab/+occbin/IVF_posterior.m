@@ -50,7 +50,7 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOpti
 DLIK=[];
 Hess=[];
 trend_coeff = [];
-obs = obs_info.rawdata;
+obs = dataset_.data;
 obs_list = DynareOptions.varobs(:);
 exit_flag   = 1;
 
