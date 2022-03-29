@@ -76,6 +76,12 @@ if DynareOptions.order>1
     end
 end
 
+if DynareOptions.occbin.likelihood.status || DynareOptions.occbin.smoother.status
+    if DynareOptions.prefilter
+        error('initial_estimation_checks:: Occbin is incompatible with the prefilter option due to the sample mean generally not corresponding to the steady state with an occasionally binding constraint.')
+    end
+end
+
 if (DynareOptions.occbin.likelihood.status && DynareOptions.occbin.likelihood.inversion_filter) || (DynareOptions.occbin.smoother.status && DynareOptions.occbin.smoother.inversion_filter)
     err_index= find(diag(Model.Sigma_e)~=0);
     if length(err_index)~=length(DynareOptions.varobs)
