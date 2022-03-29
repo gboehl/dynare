@@ -231,7 +231,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
           call mexPrintf_trim_newline("DYNARE_SOLVE (solve_algo=13|14): residuals still too large, solving for the whole model")
      call trust_region_solve(x, matlab_fcn, info, tolx, tolf, maxiter, factor)
   else
-     if (size(blocks).gt.1) then
+     if (size(blocks) > 1) then
         ! Note that the value of info may be different across blocks
         info = 1
      end if
@@ -239,10 +239,10 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
 
   plhs(1) = mxCreateDoubleMatrix(int(size(x, 1), mwSize), 1_mwSize, mxREAL)
   mxGetPr(plhs(1)) = x
-  if ((info == 1) .or. (info == -1)) then
+  if (info == 1 .or. info == -1) then
      plhs(2) = mxCreateDoubleScalar(0._c_double)
   else
      plhs(2) = mxCreateDoubleScalar(1._c_double)
   end if
-  plhs(3) = mxCreateDoubleScalar(dble(info))
+  plhs(3) = mxCreateDoubleScalar(real(info, c_double))
 end subroutine mexFunction
