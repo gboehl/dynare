@@ -206,6 +206,14 @@ options_mom_ = set_default_option(options_mom_,'nobs',NaN);        % number of o
 options_mom_ = set_default_option(options_mom_,'prefilter',false); % demean each data series by its empirical mean and use centered moments
 options_mom_ = set_default_option(options_mom_,'xls_sheet',1);     % name of sheet with data in Excel
 options_mom_ = set_default_option(options_mom_,'xls_range','');    % range of data in Excel sheet
+% temporary workaround for https://git.dynare.org/Dynare/dseries/-/issues/51
+if options_mom_.xls_sheet~=1
+    evalin('base','options_.xls_sheet=options_mom_.xls_sheet');
+end
+if ~isempty(options_mom_.xls_range)
+    evalin('base','options_.xls_range=options_mom_.xls_range');
+end
+
 % Recursive estimation and forecast are not supported
 if numel(options_mom_.nobs)>1
     error('method_of_moments: Recursive estimation and forecast for samples is not supported. Please set an integer as ''nobs''.');
