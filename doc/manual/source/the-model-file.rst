@@ -124,7 +124,9 @@ not recommended as it already denotes the inverse operator. Commands
 for declaring variables and parameters are described below.
 
 .. command:: var VAR_NAME [$TEX_NAME$] [(long_name=QUOTED_STRING|NAME=QUOTED_STRING)]...;
+    var(log) VAR_NAME [$TEX_NAME$] [(long_name=QUOTED_STRING|NAME=QUOTED_STRING)]...;
     var(deflator=MODEL_EXPR) VAR_NAME (... same options apply)
+    var(log, deflator=MODEL_EXPR) VAR_NAME (... same options apply)
     var(log_deflator=MODEL_EXPR) VAR_NAME (... same options apply)
 
     |br| This required command declares the endogenous variables in
@@ -138,14 +140,28 @@ for declaring variables and parameters are described below.
     in the order of declaration, in a column cell array
     ``M_.endo_names``.
 
-    *Options*
-
     If the model is nonstationary and is to be written as such in the
     ``model`` block, Dynare will need the trend deflator for the
     appropriate endogenous variables in order to stationarize the
     model. The trend deflator must be provided alongside the variables
     that follow this trend.
 
+    *Options*
+
+    .. option:: log
+
+        In addition to the endogenous variable(s) thus declared, this option
+        also triggers the creation of auxiliary variable(s) equal to the log of
+        the corresponding endogenous variable(s). For example, given a
+        ``var(log) y`` statement, two endogenous will be created (``y`` and
+        ``LOG_y``), and an auxiliary equation linking the two will also be
+        added (equal to ``LOG_y = log(y)``). Moreover, every occurence of ``y``
+        in the model will be replaced by ``exp(LOG_y)``. This option is for
+        example useful when one wants to perform a loglinear approximation of
+        some variable(s) in the context of a first-order stochastic
+        approximation; or when one wants to ensure the variable(s) stay(s) in
+        the definition domain of the function defining the steady state or the
+        dynamic residuals when the nonlinear solver is used.
 
     .. option:: deflator = MODEL_EXPR
 
@@ -155,6 +171,8 @@ for declaring variables and parameters are described below.
         the ``trend_var, log_trend_var, var`` and ``parameters``
         commands. The deflator is assumed to be multiplicative; for an
         additive deflator, use ``log_deflator``.
+        This option can be used together with the ``log`` option (the latter
+        must come first).
 
     .. option:: log_deflator = MODEL_EXPR
 
@@ -162,6 +180,10 @@ for declaring variables and parameters are described below.
         be additive instead of multiplicative (or, to put it
         otherwise, the declared variable is equal to the log of a
         variable with a multiplicative trend).
+        This option cannot be used together with the ``log`` option, because it
+        would not make much sense from an economic point of view (the
+        corresponding auxiliary variable would correspond to the log taken
+        two times on a variable with a multiplicative trend).
 
     .. _long-name:
 

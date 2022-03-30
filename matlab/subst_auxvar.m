@@ -11,7 +11,7 @@ function str = subst_auxvar(var_index, aux_lead_lag, M_)
 % OUTPUTS
 % - str                 [string]    name of auxiliary
 
-% Copyright (C) 2001-2021 Dynare Team
+% Copyright (C) 2001-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -61,8 +61,9 @@ if ~isempty(aux_index)
             end
             return
         case 7
-            % currently unused
-            error('This type of auxiliary variable should not occur, please contact the developers.')
+            % Log-transformation of a variable
+            str = sprintf('log(%s(%d))', M_.endo_names{M_.aux_vars(aux_index).orig_index}, aux_lead_lag);
+            return;
         case 8
             % Diff operator
             str = sprintf('diff(%s)', M_.endo_names{M_.aux_vars(aux_index).orig_index});

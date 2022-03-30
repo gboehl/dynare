@@ -461,7 +461,11 @@ MODFILES = \
 	bgp/solow-1/solow.mod \
 	bgp/nk-1/nk.mod \
 	bgp/ramsey-1/ramsey.mod \
-	dynare-command-options/ramst.mod
+	dynare-command-options/ramst.mod \
+	log_transform/example1.mod \
+	log_transform/ramst.mod \
+	log_transform/fs2000_nonstationary.mod \
+	log_transform/nk_ramsey.mod
 
 ECB_MODFILES = \
 	var-expectations/1/example1.mod \
@@ -937,6 +941,10 @@ pruning/AS_pruned_state_space_red_shock.o.trs: pruning/AnSchorfheide_pruned_stat
 
 ramst_model_edit.m.trs: ramst.m.trs
 ramst_model_edit.o.trs: ramst.o.trs
+
+log_transform/ramst.m.trs: ramst.m.trs
+log_transform/ramst.o.trs: ramst.o.trs
+
 
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
