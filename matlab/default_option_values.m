@@ -12,7 +12,7 @@ function options_ = default_option_values(M_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2018-2021 Dynare Team
+% Copyright (C) 2018-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,7 +38,6 @@ options_.rplottype = 0;
 options_.smpl = 0;
 options_.dynatol.f = 1e-5;
 options_.dynatol.x = 1e-5;
-options_.slowc = 1;
 options_.timing = 0;
 options_.gstep = ones(2,1);
 options_.gstep(1) = 1e-2;

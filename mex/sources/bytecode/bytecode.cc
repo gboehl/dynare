@@ -634,10 +634,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgTxt("maxit is not a field of options_.steady");
     }
   int maxit_ = static_cast<int>(floor(*mxGetPr(mxGetFieldByNumber(temporaryfield, 0, field))));
-  field = mxGetFieldNumber(options_, "slowc");
-  if (field < 0)
-    mexErrMsgTxt("slows is not a field of options_");
-  auto slowc = static_cast<double>(*mxGetPr(mxGetFieldByNumber(options_, 0, field)));
   field = mxGetFieldNumber(options_, "markowitz");
   if (field < 0)
     mexErrMsgTxt("markowitz is not a field of options_");
@@ -722,7 +718,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   size_t nb_row_x = row_x;
 
   clock_t t0 = clock();
-  Interpreter interprete(params, y, ya, x, steady_yd, steady_xd, direction, y_size, nb_row_x, nb_row_xd, periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, slowc, y_decal,
+  Interpreter interprete(params, y, ya, x, steady_yd, steady_xd, direction, y_size, nb_row_x, nb_row_xd, periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, y_decal,
                          markowitz_c, file_name, minimal_solving_periods, stack_solve_algo, solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms, steady_state,
                          print_it, col_x, col_y);
   string f(fname);

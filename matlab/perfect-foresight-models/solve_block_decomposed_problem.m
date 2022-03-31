@@ -72,10 +72,10 @@ for blk = 1:length(M_.block_structure.block)
            M_.block_structure.block(blk).Simulation_Type == 6 || ... % solveForwardComplete
            M_.block_structure.block(blk).Simulation_Type == 7        % solveBackwardComplete
         is_forward = M_.block_structure.block(blk).Simulation_Type == 3 || M_.block_structure.block(blk).Simulation_Type == 6;
-        [y, T, oo_] = solve_one_boundary(funcname, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, options_.slowc, cutoff, options_.stack_solve_algo, is_forward, true, false, M_, options_, oo_);
+        [y, T, oo_] = solve_one_boundary(funcname, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, is_forward, true, false, M_, options_, oo_);
     elseif M_.block_structure.block(blk).Simulation_Type == 5 || ... % solveTwoBoundariesSimple
            M_.block_structure.block(blk).Simulation_Type == 8        % solveTwoBoundariesComplete
-        [y, T, oo_] = solve_two_boundaries(funcname, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).maximum_lag, M_.block_structure.block(blk).maximum_lead, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, options_.slowc, cutoff, options_.stack_solve_algo, options_, M_, oo_);
+        [y, T, oo_] = solve_two_boundaries(funcname, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).maximum_lag, M_.block_structure.block(blk).maximum_lead, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, options_, M_, oo_);
     end
 
     tmp = y(M_.block_structure.block(blk).variable, :);

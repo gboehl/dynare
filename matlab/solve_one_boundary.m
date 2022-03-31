@@ -1,5 +1,5 @@
 function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_state, T, ...
-                                                y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options, oo_)
+                                                y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options, oo_)
 % Computes the deterministic simulation of a block of equation containing
 % lead or lag variables
 %
@@ -21,8 +21,6 @@ function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_stat
 %   y_kmin              [integer]       maximum number of lag in the model
 %   maxit_              [integer]       maximum number of iteration in Newton
 %   solve_tolf          [double]        convergence criteria
-%   lambda              [double]        initial value of step size in
-%   Newton
 %   cutoff              [double]        cutoff to correct the direction in Newton in case
 %                                       of singular jacobian matrix
 %   stack_solve_algo    [integer]       linear solver method used in the
@@ -76,6 +74,7 @@ correcting_factor=0.01;
 ilu_setup.type='crout';
 ilu_setup.droptol=1e-10;
 max_resa=1e100;
+lambda = 1; % Length of Newton step
 reduced = 0;
 if is_forward
     incr = 1;

@@ -1,4 +1,4 @@
-function [y, T, oo]= solve_two_boundaries(fname, y, x, params, steady_state, T, y_index, nze, periods, y_kmin_l, y_kmax_l, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, lambda, cutoff, stack_solve_algo,options,M, oo)
+function [y, T, oo]= solve_two_boundaries(fname, y, x, params, steady_state, T, y_index, nze, periods, y_kmin_l, y_kmax_l, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo,options,M, oo)
 % Computes the deterministic simulation of a block of equation containing
 % both lead and lag variables using relaxation methods
 %
@@ -22,8 +22,6 @@ function [y, T, oo]= solve_two_boundaries(fname, y, x, params, steady_state, T, 
 %   y_kmin              [integer]       maximum number of lag in the model
 %   maxit_              [integer]       maximum number of iteration in Newton
 %   solve_tolf          [double]        convergence criteria
-%   lambda              [double]        initial value of step size in
-%   Newton
 %   cutoff              [double]        cutoff to correct the direction in Newton in case
 %                                       of singular jacobian matrix
 %   stack_solve_algo    [integer]       linear solver method used in the
@@ -78,6 +76,7 @@ ilu_setup.milu = 'off';
 ilu_setup.thresh = 1;
 ilu_setup.udiag = 0;
 max_resa=1e100;
+lambda = 1; % Length of Newton step
 reduced = 0;
 while ~(cvg || iter>maxit_)
     r = NaN(Blck_size, periods);

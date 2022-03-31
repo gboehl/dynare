@@ -27,7 +27,7 @@
 extern "C" bool utIsInterruptPending();
 #endif
 
-Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg, int minimal_solving_periods_arg, double slowc_arg) :
+Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg, int minimal_solving_periods_arg) :
   print_it(print_it_arg), minimal_solving_periods(minimal_solving_periods_arg)
 {
   symbol_table_endo_nbr = 0;
@@ -40,7 +40,6 @@ Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it
   y_kmax = y_kmax_arg;
   periods = periods_arg;
   steady_state = steady_state_arg;
-  slowc = slowc_arg;
 }
 
 double
@@ -1487,7 +1486,7 @@ Evaluate::solve_simple_one_periods()
   bool cvg = false;
   int iter = 0;
   double ya;
-  double slowc_save = slowc;
+  double slowc = 1;
   res1 = 0;
   while (!(cvg || iter > maxit_))
     {
@@ -1526,7 +1525,6 @@ Evaluate::solve_simple_one_periods()
         }
       iter++;
     }
-  slowc = slowc_save;
   if (!cvg)
     throw FatalExceptionHandling(" in Solve Forward simple, convergence not achieved in block "
                                  + to_string(block_num+1) + ", after " + to_string(iter) + " iterations\n");

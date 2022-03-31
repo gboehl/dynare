@@ -15,7 +15,7 @@ function [endogenousvariables, info] = sim1_lbj(endogenousvariables, exogenousva
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2017 Dynare Team
+% Copyright (C) 1996-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -91,11 +91,11 @@ for iter = 1:options.simul.maxit
         c(ic,nrc) = s\c(ic,nrc);
         c = bksup1(c, ny, nrc, iyf, options.periods);
         c = reshape(c, ny, options.periods+1);
-        endogenousvariables(:,it_init+(0:options.periods)) = endogenousvariables(:,it_init+(0:options.periods))+options.slowc*c;
+        endogenousvariables(:,it_init+(0:options.periods)) = endogenousvariables(:,it_init+(0:options.periods))+c;
     else
         c = bksup1(c, ny, nrc, iyf, options.periods);
         c = reshape(c, ny, options.periods);
-        endogenousvariables(:,it_init+(0:options.periods-1)) = endogenousvariables(:,it_init+(0:options.periods-1))+options.slowc*c;
+        endogenousvariables(:,it_init+(0:options.periods-1)) = endogenousvariables(:,it_init+(0:options.periods-1))+c;
     end
     err = max(max(abs(c./options.scalv')));
     if verbose

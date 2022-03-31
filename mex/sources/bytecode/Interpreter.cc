@@ -28,11 +28,11 @@ constexpr double BIG = 1.0e+8, SMALL = 1.0e-5;
 Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg, double *steady_x_arg,
                          double *direction_arg, size_t y_size_arg,
                          size_t nb_row_x_arg, size_t nb_row_xd_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
-                         int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, double slowc_arg, int y_decal_arg, double markowitz_c_arg,
+                         int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, int y_decal_arg, double markowitz_c_arg,
                          string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
                          bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
                          bool steady_state_arg, bool print_it_arg, int col_x_arg, int col_y_arg)
-: dynSparseMatrix(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, slowc_arg)
+: dynSparseMatrix(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg)
 {
   params = params_arg;
   y = y_arg;
@@ -47,8 +47,8 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
   maxit_ = maxit_arg_;
   solve_tolf = solve_tolf_arg;
   size_of_direction = size_of_direction_arg;
-  slowc = slowc_arg;
-  slowc_save = slowc;
+  slowc = 1;
+  slowc_save = 1;
   y_decal = y_decal_arg;
   markowitz_c = markowitz_c_arg;
   filename = filename_arg;
@@ -310,7 +310,6 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
   max_res_idx = 0;
   bool cvg;
   double *y_save;
-  double another_slowc_save;
 #ifdef DEBUG
   mexPrintf("simulate_a_block type = %d, periods=%d, y_kmin=%d, y_kmax=%d\n", type, periods, y_kmin, y_kmax);
   mexEvalString("drawnow;");
@@ -430,7 +429,6 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
       test_mxMalloc(y_save, __LINE__, __FILE__, __func__, y_size*sizeof(double)*(periods+y_kmax+y_kmin));
       start_code = it_code;
       iter = 0;
-      another_slowc_save = slowc; // slowc is modified when stack_solve_algo=4, so save it
       if (!is_linear
           || stack_solve_algo == 4) // On linear blocks, stack_solve_algo=4 may
                                     // need more than one iteration to find the
@@ -487,7 +485,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
           Simulate_Newton_Two_Boundaries(block_num, symbol_table_endo_nbr, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, endo_name_length, P_endo_names, vector_table_conditional_local);
           max_res = 0; max_res_idx = 0;
         }
-      slowc = another_slowc_save; // slowc is modified when stack_solve_algo=4, so restore it
+      slowc = 1; // slowc is modified when stack_solve_algo=4, so restore it
       it_code = end_code;
       if (r)
         mxFree(r);

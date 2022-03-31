@@ -23,8 +23,8 @@
 #include "SparseMatrix.hh"
 
 dynSparseMatrix::dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg,
-                                 int minimal_solving_periods_arg, double slowc_arg) :
-  Evaluate(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, slowc_arg)
+                                 int minimal_solving_periods_arg) :
+  Evaluate(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg)
 {
   pivotva = nullptr;
   g_save_op = nullptr;

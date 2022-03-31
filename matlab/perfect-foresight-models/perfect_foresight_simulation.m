@@ -18,7 +18,7 @@ function info = perfect_foresight_simulation(compute_linear_solution,steady_stat
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2009-2015 Dynare Team
+% Copyright (C) 2009-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -143,11 +143,11 @@ for iter = 1:options_.simul.maxit
         end
         c = bksup0(c,ny,nrc,iyf,icf,periods);
         c = reshape(c,ny,periods+1);
-        oo_.endo_simul(:,it_init+(0:periods)) = oo_.endo_simul(:,it_init+(0:periods))+options_.slowc*c;
+        oo_.endo_simul(:,it_init+(0:periods)) = oo_.endo_simul(:,it_init+(0:periods))+c;
     else% Terminal condition is Y_{T}=Y^{\star}
         c = bksup0(c,ny,nrc,iyf,icf,periods);
         c = reshape(c,ny,periods);
-        oo_.endo_simul(:,it_init+(0:periods-1)) = oo_.endo_simul(:,it_init+(0:periods-1))+options_.slowc*c;
+        oo_.endo_simul(:,it_init+(0:periods-1)) = oo_.endo_simul(:,it_init+(0:periods-1))+c;
     end
     err = max(max(abs(c)));
     info.iterations.time(iter)  = etime(clock,h2);
