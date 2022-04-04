@@ -70,8 +70,10 @@ function [R,indef, E, P]=chol_SE(A,pivoting)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if sum(sum(abs(A-A'))) > 0
+if sum(sum(abs(A-A'))) > 1e-8
     error('A is not symmetric')
+elseif sum(sum(abs(A-A'))) > 0
+    A=(A+A')/2;
 end
 
 if nargin==1
@@ -93,7 +95,7 @@ E=zeros(n,1);
 
 % Find the maximum magnitude of the diagonal elements. If any diagonal element is negative, then phase1 is false.
 gammma=max(diag(A));
-if any(diag(A)) < 0
+if any(diag(A) < 0)
     phase1 = 0;
 end
 
@@ -120,7 +122,7 @@ for j = 1:n-1
     if phase1
         if pivoting==1
             % Find index of maximum diagonal element A(i,i) where i>=j
-            [tmp,imaxd] = max(diag(A(j:n,j:n)));
+            [~,imaxd] = max(diag(A(j:n,j:n)));
             imaxd=imaxd+j-1;
             % Pivot to the top the row and column with the max diag
             if (imaxd ~= j)
@@ -190,7 +192,7 @@ for j = 1:n-1
         if j ~= n-1
             if pivoting
                 % Find the minimum negative Gershgorin bound
-                [tmp,iming] = min(g(j:n));
+                [~,iming] = min(g(j:n));
                 iming=iming+j-1;
                 % Pivot to the top the row and column with the
                 % minimum negative Gershgorin bound
