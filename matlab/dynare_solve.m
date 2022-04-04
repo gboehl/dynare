@@ -66,6 +66,9 @@ end
 errorflag = false;
 nn = size(x,1);
 
+% Keep a copy of the initial guess.
+x0 = x;
+
 % Get status of the initial guess (default values?)
 if any(x)
     % The current initial guess is not the default for all the variables.
@@ -168,7 +171,7 @@ end
 % Exit with error if no initial guess has been found.
 if wrong_initial_guess_flag
     errorflag = true;
-    x = NaN(size(fvec));
+    x = x0;
     return
 end
 
