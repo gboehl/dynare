@@ -181,7 +181,7 @@ if options.solve_algo == 0
             error('You can''t use solve_algo=0 since you don''t have MATLAB''s Optimization Toolbox')
         end
     end
-    options4fsolve=optimset('fsolve');
+    options4fsolve = optimset('fsolve');
     options4fsolve.MaxFunEvals = 50000;
     options4fsolve.MaxIter = maxit;
     options4fsolve.TolFun = tolf;
@@ -205,13 +205,7 @@ if options.solve_algo == 0
             f2 = f;
         end
         f = @(x) f2(x, arguments{:});
-        % The Octave version of fsolve does not converge when it starts from the solution
-        fvec = feval(f, x);
-        if max(abs(fvec)) >= tolf
-            [x, ~, exitflag] = fsolve(f, x, options4fsolve);
-        else
-            exitflag = 3;
-        end
+        [x, ~, exitflag] = fsolve(f, x, options4fsolve);
     end
     if exitflag == 1
         errorflag = false;
