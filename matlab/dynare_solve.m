@@ -96,8 +96,8 @@ if jacobian_flag
     [fvec, fjac] = feval(f, x, arguments{:});
     wrong_initial_guess_flag = false;
     if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) || any(~isreal(fvec)) || any(~isreal(fjac(:)))
-        if max(abs(fvec)) < tolf
-            % return if initial value solves problem
+        if ~ismember(options.solve_algo,[10,11]) && max(abs(fvec))< tolf
+            % return if initial value solves the problem except if a mixed complementarity problem is to be solved (complementarity conditions may not be satisfied)
             exitflag = -1;
             return;
         end
@@ -132,8 +132,8 @@ if jacobian_flag
 else
     fvec = feval(f, x, arguments{:});
     fjac = zeros(nn, nn);
-    if max(abs(fvec)) < tolf
-        % return if initial value solves problem
+    if ~ismember(options.solve_algo,[10,11]) && max(abs(fvec)) < tolf
+        % return if initial value solves the problem except if a mixed complementarity problem is to be solved (complementarity conditions may not be satisfied)
         exitflag = -1;
         return;
     end
@@ -173,12 +173,6 @@ if wrong_initial_guess_flag
     errorflag = true;
     x = x0;
     return
-end
-
-% this test doesn't check complementarity conditions and is not used for
-% mixed complementarity problems
-if (~ismember(options.solve_algo,[10,11])) && (max(abs(fvec)) < tolf)
-    return ;
 end
 
 if options.solve_algo == 0
