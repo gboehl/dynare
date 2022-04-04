@@ -92,13 +92,13 @@ end
 if jacobian_flag
     [fvec, fjac] = feval(f, x, arguments{:});
     wrong_initial_guess_flag = false;
-    if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) ...
-            || any(~isreal(fvec)) || any(~isreal(fjac(:)))
-        if max(abs(fvec)) < tolf %return if initial value solves problem
+    if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) || any(~isreal(fvec)) || any(~isreal(fjac(:)))
+        if max(abs(fvec)) < tolf
+            % return if initial value solves problem
             exitflag = -1;
             return;
         end
-        disp_verbose('Randomize initial guess...',options.verbosity)
+        disp_verbose('Randomize initial guess...', options.verbosity)
         % Let's try random numbers for the variables initialized with the default value.
         wrong_initial_guess_flag = true;
         % First try with positive numbers.
@@ -129,6 +129,11 @@ if jacobian_flag
 else
     fvec = feval(f, x, arguments{:});
     fjac = zeros(nn, nn);
+    if max(abs(fvec)) < tolf
+        % return if initial value solves problem
+        exitflag = -1;
+        return;
+    end
     wrong_initial_guess_flag = false;
     if ~all(isfinite(fvec))
         % Let's try random numbers for the variables initialized with the default value.
