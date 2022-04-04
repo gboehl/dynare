@@ -87,7 +87,7 @@ if nargout == 0
             tmp = z(i+M_.ramsey_eq_nbr);
         end
         if istag
-            tg = tags(cell2mat(tags(:,1)) == i,2:3); % all tags for equation i
+            tg = tags(cell2mat(tags(:,1)) == i+M_.ramsey_eq_nbr,2:3); % all tags for equation i
             ind = strmatch( tagname, cellstr( tg(:,1) ) );
         end
         if ~istag || length(ind) == 0
