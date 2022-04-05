@@ -88,7 +88,7 @@ if nargout == 0
             any_non_zero_residual = true;
         end
         if istag
-            tg = tags(cell2mat(tags(:,1)) == i,2:3); % all tags for equation i
+            tg = tags(cell2mat(tags(:,1)) == i+M_.ramsey_eq_nbr,2:3); % all tags for equation i
             ind = strmatch('name', cellstr( tg(:,1) ) );
         end
         if ~(non_zero && tmp == 0)
