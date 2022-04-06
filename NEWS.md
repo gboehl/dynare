@@ -1,3 +1,83 @@
+Announcement for Dynare 5.1 (on 2022-04-06)
+===========================================
+
+We are pleased to announce the release of Dynare 5.1.
+
+This maintenance release fixes various bugs.
+
+The Windows, macOS and source packages are already available for download at
+[the Dynare website](https://www.dynare.org/download/).
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 8.3 (R2014a) to
+9.12 (R2022a), and with GNU Octave version 6.4.0 (under Windows).
+
+Here is a list of the problems identified in version 5.0 and that have been
+fixed in version 5.1:
+
+* Various problems with perfect foresight simulations in combination with
+  `block` and/or `bytecode` options of the `model` block:
+  + Simulation with `bytecode` and `stack_solve_algo=4` could give incorrect
+    results if the model has a linear block of type “Solve two boundaries
+    simple/complete”
+  + Simulation with `bytecode` and `stack_solve_algo=1` could fail to converge
+  + Simulation with `block` (but without `bytecode`) and `stack_solve_algo=1`
+    gave wrong results in the last simulation period if the model has a block
+    of type “Solve two boundaries simple/complete”
+  + Simulation with `bytecode` and `block` would give incorrect results if the
+    model has a linear block of type “Solve forward simple/complete”
+  + Simulation with `block` (but without `bytecode`) would crash or give
+    incorrect results if the model has a block of type “Solve forward/backward
+    simple/complete”
+  + Simulation with `bytecode`, `block` and `stack_solve_algo={0,1,4}` would
+    crash or give incorrect results if the model has a block of type “Solve
+    forward/backward complete”
+  + Simulation with `block` (but without `bytecode`) gave incorrect results if
+    the model has a block of type “Solve backward simple/complete”
+  + Simulation with `block` (with or without `bytecode`) could give incorrect
+    results if the model has a nonlinear block of type “Solve forward/backward
+    simple/complete”
+  + Simulation with `bytecode`, `block` and `stack_solve_algo=4` could give
+    incorrect results if the model has a block of type “Solve backward/forward
+    simple/complete” that follows a block of type “Solve two boundaries” (in
+    the sense of the dependency graph)
+  + The convergence criterion in simulations with `block` (but without
+    `bytecode`) was incorrect: the value of the `tolf` option from the `steady`
+    command was used instead of the value of `tolf` option from the
+    `perfect_foresight_solver` command
+* Various problems with steady state computation in combination with `block`
+  and/or `bytecode` options of the `model` block:
+  + Steady state computation with `bytecode` and `block` could fail if some
+    equations are marked `[static]`
+  + Steady state computation with `bytecode`, `block` and `solve_algo` ⩽ 4 or ⩾
+    9 could fail
+  + Steady state computation with `bytecode`, `block` and `solve_algo=6` would
+    crash or give incorrect results if the model has a block of type “Solve
+    forward/backward complete”
+* The `check` command would crash or give incorrect results when using the
+  `block` option of the `model` block and if the model has a block of type
+  “Solve backward complete”
+* The `static` and `incidence` options of the `model_info` command did not work
+  as documented in the reference manual
+* Various problems with the `method_of_moments` command:
+  + It would crash if no `matched_moments` block is present
+  + It would always load the full range of the first Excel sheet instead of the
+    `xls_range` of the specified `xls_sheet`
+  + SMM would crash if a parameter draw triggers an error during
+    `additional_optimizer_steps = 13`
+  + The `debug` option could not be passed to the command
+* In the `estimation` command, the `scale_file` field of the
+  `posterior_sampler_options` option did not correctly load the scale
+* The `moments_varendo` option of the `estimation` command could crash for
+  large models
+* The `resid` command would not show `name` tags when used in conjunction with
+  the `ramsey_model` command
+* Simulations with the `occbin_solver` command would not work if there is only
+  a surprise shock in the first period
+* The Liu & West auxiliary particle filter could enter infinite loops
+
+
 Announcement for Dynare 5.0 (on 2022-01-07)
 ===========================================
 
