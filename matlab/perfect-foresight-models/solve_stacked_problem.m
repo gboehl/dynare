@@ -13,7 +13,7 @@ function [endogenousvariables, info] = solve_stacked_problem(endogenousvariables
 % - endogenousvariables [double] N*T array, paths for the endogenous variables (solution of the perfect foresight model).
 % - info                [struct] contains informations about the results.
 
-% Copyright (C) 2015-2019 Dynare Team
+% Copyright © 2015-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -46,14 +46,14 @@ if (options.solve_algo == 10 || options.solve_algo == 11)% mixed complementarity
         options.mcppath.lb = repmat(lb,options.periods,1);
         options.mcppath.ub = repmat(ub,options.periods,1);
     end
-    [y, check] = dynare_solve(@perfect_foresight_mcp_problem,z(:),options, ...
-                              dynamicmodel, y0, yT, ...
-                              exogenousvariables, M.params, steadystate, ...
-                              M.maximum_lag, options.periods, M.endo_nbr, i_cols, ...
-                              i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
-                              eq_index);
+    [y, check, ~, ~, errorcode] = dynare_solve(@perfect_foresight_mcp_problem,z(:),options, ...
+                                               dynamicmodel, y0, yT, ...
+                                               exogenousvariables, M.params, steadystate, ...
+                                               M.maximum_lag, options.periods, M.endo_nbr, i_cols, ...
+                                               i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
+                                               eq_index);
 else
-    [y, check] = dynare_solve(@perfect_foresight_problem,z(:), options, y0, yT, exogenousvariables, M.params, steadystate, options.periods, M, options);
+    [y, check, ~, ~, errorcode] = dynare_solve(@perfect_foresight_problem,z(:), options, y0, yT, exogenousvariables, M.params, steadystate, options.periods, M, options);
 end
 
 if all(imag(y)<.1*options.dynatol.x)
@@ -68,6 +68,9 @@ endogenousvariables(:, M.maximum_lag+(1:options.periods)) = reshape(y, M.endo_nb
 
 if check
     info.status = false;
+    if options.debug
+        dprintf('solve_stacked_problem: Nonlinear solver routine failed with errorcode=%i.', errorcode)
+    end
 else
     info.status = true;
 end

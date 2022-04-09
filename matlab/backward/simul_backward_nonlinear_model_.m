@@ -56,17 +56,17 @@ for it = initialconditions.nobs+(1:samplesize)
     y = y_;                            % A good guess for the initial conditions is the previous values for the endogenous variables.
     try
         if ismember(DynareOptions.solve_algo, [12,14])
-            [DynareOutput.endo_simul(:,it), errorflag, ~, ~, exitflag] = ...
+            [DynareOutput.endo_simul(:,it), errorflag, ~, ~, errorcode] = ...
                 dynare_solve(model_dynamic_s, y, DynareOptions, ...
                              DynareModel.isloggedlhs, DynareModel.isauxdiffloggedrhs, DynareModel.endo_names, DynareModel.lhs, ...
                              model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
         else
-            [DynareOutput.endo_simul(:,it), errorflag, ~, ~, exitflag] = ...
+            [DynareOutput.endo_simul(:,it), errorflag, ~, ~, errorcode] = ...
                 dynare_solve(model_dynamic_s, y, DynareOptions, ...
                              model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
         end
         if errorflag
-            error()
+            error('Nonlinear solver routine failed with errorcode=%i in period %i.', errorcode, it)
         end
     catch
         DynareOutput.endo_simul = DynareOutput.endo_simul(:, 1:it-1);
@@ -108,7 +108,7 @@ for it = initialconditions.nobs+(1:samplesize)
         %
         % Evaluate and check the residuals
         %
-        r = feval(model_dynamic, [ytm; ytm(iy1)], DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+        [r, J] = feval(model_dynamic, [ytm; ytm(iy1)], DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
         residuals_evaluating_to_nan = isnan(r);
         residuals_evaluating_to_inf = isinf(r);
         residuals_evaluating_to_complex = ~isreal(r);
@@ -129,34 +129,6 @@ for it = initialconditions.nobs+(1:samplesize)
             skipline()
             display_names_of_problematic_equations(DynareModel, residuals_evaluating_to_nan);
             skipline()
-        end
-        %
-        % Display value of exitflag if available (fsolve, solve_algo=0, only)
-        %
-        if ~isnan(exitflag)
-            skipline()
-            switch exitflag
-              case 0
-                disp('Returned value for exitflag is 0 (maximum number of iterations or evaluation reached).')
-              case -1
-                if options.solve_algo==0
-                    disp('Returned value for exitflag is -1 (objective function stopped algorithm).')
-                elseif options.solve_algo==1
-                    disp('Returned value for exitflag is -1 (objective function cannot be evaluated at the initial guess).')
-                end
-              case -3
-                if options.solve_algo==0
-                    disp('Returned value for exitflag is -3 (Trust region radius became too small, trust-region-dogleg algorithm).')
-                elseif options.solve_algo==1
-                    disp('Returned value for exitflag is -3 (Convergence too slow).')
-                end
-              case -2
-                if options.solve_algo==0
-                    disp('Returned value for exitflag is -2.')
-                elseif options.solve_algo==1
-                    disp('Returned value for exitflag is -2 (Spurious convergence).')
-                end
-            end
         end
         break
         % TODO Implement same checks with the jacobian matrix.

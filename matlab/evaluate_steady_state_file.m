@@ -19,7 +19,7 @@ function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright © 2001-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -127,5 +127,5 @@ elseif ~isempty(options.steadystate_partial)
     for i = 1:nov
         indv(i) = strmatch(ssvar(i), M.endo_names, 'exact');
     end
-    [ys,~] = dynare_solve('restricted_steadystate', ys(indv), options, exo_ss,indv);
+    ys = dynare_solve('restricted_steadystate', ys(indv), options, exo_ss,indv);
 end

@@ -1,6 +1,6 @@
 function [endogenousvariables, info] = solve_stacked_linear_problem(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M, options)
 
-% Copyright (C) 2015-2019 Dynare Team
+% Copyright © 2015-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,12 +41,12 @@ jendo = transpose(1:nd);
 z = bsxfun(@minus, z, steadystate_y);
 x = bsxfun(@minus, exogenousvariables, steadystate_x');
 
-[y, check] = dynare_solve(@linear_perfect_foresight_problem,z(:), options, ...
-                          jacobian, y0-steadystate_y, yT-steadystate_y, ...
-                          x, M.params, steadystate_y, ...
-                          M.maximum_lag, options.periods, M.endo_nbr, i_cols, ...
-                          i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
-                          jendo, jexog);
+[y, check, ~, ~, errorcode] = dynare_solve(@linear_perfect_foresight_problem,z(:), options, ...
+                                           jacobian, y0-steadystate_y, yT-steadystate_y, ...
+                                           x, M.params, steadystate_y, ...
+                                           M.maximum_lag, options.periods, M.endo_nbr, i_cols, ...
+                                           i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
+                                           jendo, jexog);
 
 if all(imag(y)<.1*options.dynatol.x)
     if ~isreal(y)
@@ -60,6 +60,9 @@ endogenousvariables = [y0 bsxfun(@plus,reshape(y,M.endo_nbr,options.periods), st
 
 if check
     info.status = false;
+    if options.debug
+        dprintf('solve_stacked_linear_problem: Nonlinear solver routine failed with errorcode=%i.', errorcode)
+    end
 else
     info.status = true;
 end

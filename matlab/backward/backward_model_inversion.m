@@ -14,7 +14,7 @@ function [endogenousvariables, exogenousvariables] = backward_model_inversion(co
 %
 % REMARKS
 
-% Copyright (C) 2017 Dynare Team
+% Copyright © 2017-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -108,9 +108,9 @@ for t = 1:nobs(constraints)
     % values) and the free exogenous variables (initialized with 0).
     z = [Y(freeendogenousvariables_id,ity-1); zeros(nxfree, 1)];
     % Solves for z.
-    [z, failed] = dynare_solve(model_dtransf, z, DynareOptions, model_dynamic, ylag, ycur, X, DynareModel.params, DynareOutput.steady_state, itx, ModelInversion);
+    [z, failed, ~, ~, errorcode] = dynare_solve(model_dtransf, z, DynareOptions, model_dynamic, ylag, ycur, X, DynareModel.params, DynareOutput.steady_state, itx, ModelInversion);
     if failed
-        error('Enable to solve the system of equations!')
+        error('Nonlinear solver failed with errorcode=%i', errorcode)
     end
     % Update the matrix of exogenous variables.
     X(itx,freeinnovations_id) = z(nyfree+(1:nxfree));

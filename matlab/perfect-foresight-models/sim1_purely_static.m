@@ -2,7 +2,7 @@ function [endogenousvariables, info] = sim1_purely_static(endogenousvariables, e
 
 % Performs deterministic simulation of a purely static model
 
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,14 +36,17 @@ y = endogenousvariables(:,1);
 
 for it = 1:options.periods
     if ismember(options.solve_algo, [12,14])
-        [tmp, check] = dynare_solve(dynamicmodel_s, y, options, M.isloggedlhs, M.isauxdiffloggedrhs, M.endo_names, M.lhs, ...
-                                    dynamicmodel, exogenousvariables, M.params, steadystate, it);
+        [tmp, check, ~, ~, errorcode] = dynare_solve(dynamicmodel_s, y, options, M.isloggedlhs, M.isauxdiffloggedrhs, M.endo_names, M.lhs, ...
+                                                     dynamicmodel, exogenousvariables, M.params, steadystate, it);
     else
-        [tmp, check] = dynare_solve(dynamicmodel_s, y, options, ...
-                                    dynamicmodel, exogenousvariables, M.params, steadystate, it);
+        [tmp, check, ~, ~, errorcode] = dynare_solve(dynamicmodel_s, y, options, ...
+                                                     dynamicmodel, exogenousvariables, M.params, steadystate, it);
     end
     if check
         info.status = false;
+        if options.debug
+            dprintf('sim1_purely_static: Nonlinear solver routine failed with errorcode=%i in period %i.', errorcode, it)
+        end
     end
     endogenousvariables(:,it) = tmp;
     y = endogenousvariables(:,it);

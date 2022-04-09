@@ -13,7 +13,7 @@ function [endogenousvariables, exogenousvariables] = static_model_inversion(cons
 %
 % REMARKS
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -103,9 +103,9 @@ for t = 1:nobs(constraints)
     % values) and the free exogenous variables (initialized with 0).
     z = [Y(freeendogenousvariables_id,ity); zeros(nxfree, 1)];
     % Solves for z.
-    [z, failed] = dynare_solve(model_stransf, z, DynareOptions, model_dynamic, ycur, X(itx, :), DynareModel.params, ModelInversion);
-    if failed
-        error('Enable to solve the system of equations!')
+    [z, errorflag, ~, ~, errorcode] = dynare_solve(model_stransf, z, DynareOptions, model_dynamic, ycur, X(itx, :), DynareModel.params, ModelInversion);
+    if errorflag
+        error('Enable to solve the system of equations (with error code %i).', errorcode)
     end
     % Update the matrix of exogenous variables.
     X(itx,freeinnovations_id) = z(nyfree+(1:nxfree));

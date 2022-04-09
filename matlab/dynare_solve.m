@@ -1,4 +1,4 @@
-function [x, errorflag, fvec, fjac, exitflag] = dynare_solve(f, x, options, varargin)
+function [x, errorflag, fvec, fjac, errorcode] = dynare_solve(f, x, options, varargin)
 
 % Solves a nonlinear system of equations, f(x) = 0 with n unknowns
 % and n equations.
@@ -14,7 +14,13 @@ function [x, errorflag, fvec, fjac, exitflag] = dynare_solve(f, x, options, vara
 % - errorflag    [logical]          scalar, true iff the model can not be solved.
 % - fvec         [double]           n×1 vector, function value at x (f(x), used for debugging when errorflag is true).
 % - fjac         [double]           n×n matrix, Jacobian value at x (J(x), used for debugging when errorflag is true).
-% - exitflag     [integer]          scalar,
+% - errorcode    [integer]          scalar.
+%
+% REMARKS
+% Interpretation of the error code depends on the algorithm, except if value of errorcode is
+%
+%        -10  -> System of equation ill-behaved at the initial guess (Inf, Nans or complex numbers).
+%        -11  -> Initial guess is a solution of the system of equations.
 
 % Copyright © 2001-2022 Dynare Team
 %
@@ -33,8 +39,6 @@ function [x, errorflag, fvec, fjac, exitflag] = dynare_solve(f, x, options, vara
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-exitflag = nan;
-
 jacobian_flag = options.jacobian_flag; % true iff Jacobian is returned by f routine (as a second output argument).
 
 % Set tolerance parameter depending the the caller function.
@@ -49,7 +53,7 @@ else
         caller_file_name=stack(1).file;
     end
 end
-if strcmp(caller_file_name, 'solve_stacked_problem.m') || strcmp(caller_file_name, 'sim1_purely_backward.m') 
+if strcmp(caller_file_name, 'solve_stacked_problem.m') || strcmp(caller_file_name, 'sim1_purely_backward.m')
     tolf = options.dynatol.f;
     tolx = options.dynatol.x;
 else
@@ -63,7 +67,7 @@ else
     maxit = options.steady.maxit;
 end
 
-errorflag = false;
+errorflag = false; % Let's be optimistic!
 nn = size(x,1);
 
 % Keep a copy of the initial guess.
@@ -98,7 +102,7 @@ if jacobian_flag
     if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) || any(~isreal(fvec)) || any(~isreal(fjac(:)))
         if ~ismember(options.solve_algo,[10,11]) && max(abs(fvec))< tolf
             % return if initial value solves the problem except if a mixed complementarity problem is to be solved (complementarity conditions may not be satisfied)
-            exitflag = -1;
+            errorcode = -11;
             return;
         end
         disp_verbose('Randomize initial guess...', options.verbosity)
@@ -134,7 +138,7 @@ else
     fjac = zeros(nn, nn);
     if ~ismember(options.solve_algo,[10,11]) && max(abs(fvec)) < tolf
         % return if initial value solves the problem except if a mixed complementarity problem is to be solved (complementarity conditions may not be satisfied)
-        exitflag = -1;
+        errorcode = -11;
         return;
     end
     wrong_initial_guess_flag = false;
@@ -170,6 +174,7 @@ end
 
 % Exit with error if no initial guess has been found.
 if wrong_initial_guess_flag
+    errorcode = -10;
     errorflag = true;
     x = x0;
     return
@@ -196,7 +201,7 @@ if options.solve_algo == 0
         options4fsolve.Jacobian = 'off';
     end
     if ~isoctave
-        [x, ~, exitflag] = fsolve(f, x, options4fsolve, arguments{:});
+        [x, ~, errorcode] = fsolve(f, x, options4fsolve, arguments{:});
     else
         % Under Octave, use a wrapper, since fsolve() does not have a 4th arg
         if ischar(f)
@@ -205,19 +210,20 @@ if options.solve_algo == 0
             f2 = f;
         end
         f = @(x) f2(x, arguments{:});
-        [x, ~, exitflag] = fsolve(f, x, options4fsolve);
+        [x, ~, errorcode] = fsolve(f, x, options4fsolve);
     end
-    if exitflag == 1
+    if errorcode==1
         errorflag = false;
-    elseif exitflag > 1
-        if ischar(f)
-            f2 = str2func(f);
-        else
-            f2 = f;
+    elseif errorcode>1
+        if ~isoctave
+            if ischar(f)
+                f2 = str2func(f);
+            else
+                f2 = f;
+            end
+            f = @(x) f2(x, arguments{:});
         end
-        f = @(x) f2(x, arguments{:});
-        fvec = feval(f, x);
-        if max(abs(fvec)) >= tolf
+        if max(abs(fvec)) > tolf
             errorflag = true;
         else
             errorflag = false;
@@ -225,10 +231,13 @@ if options.solve_algo == 0
     else
         errorflag = true;
     end
+    [fvec, fjac] = feval(f, x, arguments{:});
 elseif options.solve_algo==1
-    [x, errorflag, exitflag] = solve1(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, [], options.debug, arguments{:});
+    [x, errorflag, errorcode] = solve1(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, [], options.debug, arguments{:});
+    [fvec, fjac] = feval(f, x, arguments{:});
 elseif options.solve_algo==9
-    [x, errorflag, exitflag] = trust_region(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, options.trust_region_initial_step_bound_factor, options.debug, arguments{:});
+    [x, errorflag, errorcode] = trust_region(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, options.trust_region_initial_step_bound_factor, options.debug, arguments{:});
+    [fvec, fjac] = feval(f, x, arguments{:});
 elseif ismember(options.solve_algo, [2, 12, 4])
     if ismember(options.solve_algo, [2, 12])
         solver = @solve1;
@@ -304,11 +313,11 @@ elseif ismember(options.solve_algo, [2, 12, 4])
                 dprintf('DYNARE_SOLVE (solve_algo=2|4|12): solving block %u with trust_region routine.', i);
             end
         end
-        [x, errorflag, exitflag] = solver(f, x, j1(j), j2(j), jacobian_flag, ...
-                                          options.gstep, ...
-                                          tolf, options.solve_tolx, maxit, ...
-                                          options.trust_region_initial_step_bound_factor, ...
-                                          options.debug, arguments{:});
+        [x, errorflag, errorcode] = solver(f, x, j1(j), j2(j), jacobian_flag, ...
+                                           options.gstep, ...
+                                           tolf, options.solve_tolx, maxit, ...
+                                           options.trust_region_initial_step_bound_factor, ...
+                                           options.debug, arguments{:});
         fre = true;
         if errorflag
             return
@@ -317,27 +326,34 @@ elseif ismember(options.solve_algo, [2, 12, 4])
     fvec = feval(f, x, arguments{:});
     if max(abs(fvec))>tolf
         disp_verbose('Call solver on the full nonlinear problem.',options.verbosity)
-        [x, errorflag, exitflag] = solver(f, x, 1:nn, 1:nn, jacobian_flag, ...
-                                          options.gstep, tolf, options.solve_tolx, maxit, ...
-                                          options.trust_region_initial_step_bound_factor, ...
-                                          options.debug, arguments{:});
+        [x, errorflag, errorcode] = solver(f, x, 1:nn, 1:nn, jacobian_flag, ...
+                                           options.gstep, tolf, options.solve_tolx, maxit, ...
+                                           options.trust_region_initial_step_bound_factor, ...
+                                           options.debug, arguments{:});
     end
+    [fvec, fjac] = feval(f, x, arguments{:});
 elseif options.solve_algo==3
     if jacobian_flag
-        [x, errorflag] = csolve(f, x, f, tolf, maxit, arguments{:});
+        [x, errorcode] = csolve(f, x, f, tolf, maxit, arguments{:});
     else
-        [x, errorflag] = csolve(f, x, [], tolf, maxit, arguments{:});
+        [x, errorcode] = csolve(f, x, [], tolf, maxit, arguments{:});
+    end
+    if errorcode==0
+        errorflag = false;
+    else
+        errorflag = true;
     end
     [fvec, fjac] = feval(f, x, arguments{:});
 elseif options.solve_algo==10
     % LMMCP
     olmmcp = options.lmmcp;
-    [x, ~, exitflag] = lmmcp(f, x, olmmcp.lb, olmmcp.ub, olmmcp, arguments{:});
-    if exitflag==1
+    [x, fvec, errorcode, ~, fjac] = lmmcp(f, x, olmmcp.lb, olmmcp.ub, olmmcp, arguments{:});
+    if errorcode==1
         errorflag = false;
     else
         errorflag = true;
     end
+    [fvec, fjac] = feval(f, x, arguments{:});
 elseif options.solve_algo == 11
     % PATH mixed complementary problem
     % PATH linear mixed complementary problem
@@ -355,6 +371,8 @@ elseif options.solve_algo == 11
     catch
         errorflag = true;
     end
+    errorcode = nan; % There is no error code for this algorithm, as PATH is closed source it is unlikely we can fix that.
+    [fvec, fjac] = feval(f, x, arguments{:});
 elseif ismember(options.solve_algo, [13, 14])
     if ~jacobian_flag
         error('DYNARE_SOLVE: option solve_algo=13|14 needs computed Jacobian')
@@ -366,7 +384,7 @@ elseif ismember(options.solve_algo, [13, 14])
         auxstruct.isloggedlhs = isloggedlhs;
         auxstruct.isauxdiffloggedrhs = isauxdiffloggedrhs;
     end
-    [x, errorflag, exitflag] = block_trust_region(f, x, tolf, options.solve_tolx, maxit, options.trust_region_initial_step_bound_factor, options.debug, auxstruct, arguments{:});
+    [x, errorflag, errorcode] = block_trust_region(f, x, tolf, options.solve_tolx, maxit, options.trust_region_initial_step_bound_factor, options.debug, auxstruct, arguments{:});
     [fvec, fjac] = feval(f, x, arguments{:});
 else
     error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9,10,11,12,13,14]')

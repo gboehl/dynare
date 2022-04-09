@@ -2,7 +2,7 @@ function [endogenousvariables, info] = sim1_purely_backward(endogenousvariables,
 
 % Performs deterministic simulation of a purely backward model
 
-% Copyright © 2012-2021 Dynare Team
+% Copyright © 2012-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,14 +39,17 @@ for it = M.maximum_lag + (1:options.periods)
     y = endogenousvariables(:,it-1);        % Values at previous period, also used as guess value for current period
     ylag = y(iyb);
     if ismember(options.solve_algo, [12,14])
-        [tmp, check] = dynare_solve(dynamicmodel_s, y, options, M.isloggedlhs, M.isauxdiffloggedrhs, M.endo_names, M.lhs, ...
-                                    dynamicmodel, ylag, exogenousvariables, M.params, steadystate, it);
+        [tmp, check, ~, ~, errorcode] = dynare_solve(dynamicmodel_s, y, options, M.isloggedlhs, M.isauxdiffloggedrhs, M.endo_names, M.lhs, ...
+                                                     dynamicmodel, ylag, exogenousvariables, M.params, steadystate, it);
     else
-        [tmp, check] = dynare_solve(dynamicmodel_s, y, options, ...
-                                    dynamicmodel, ylag, exogenousvariables, M.params, steadystate, it);
+        [tmp, check, ~, ~, errorcode] = dynare_solve(dynamicmodel_s, y, options, ...
+                                                     dynamicmodel, ylag, exogenousvariables, M.params, steadystate, it);
     end
     if check
         info.status = false;
+        if options.debug
+            dprintf('sim1_purely_backward: Nonlinear solver routine failed with errorcode=%i. in period %i', errorcode, it)
+        end
     end
     endogenousvariables(:,it) = tmp;
 end

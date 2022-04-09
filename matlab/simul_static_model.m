@@ -15,7 +15,7 @@ function simulation = simul_static_model(samplesize, innovations)
 % [2] The last input argument is not mandatory. If absent we use random draws and rescale them with the informations provided
 %     through the shocks block.
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -88,9 +88,9 @@ staticmodel = str2fun(sprintf('%s.static', M_.fname));
 % Simulations (call a Newton-like algorithm for each period).
 for t=1:samplesize
     y = zeros(M_.endo_nbr, 1);
-    [oo_.endo_simul(:,t), info] = dynare_solve(staticmodel, y, options_, oo_.exo_simul(t,:), M_.params);
+    [oo_.endo_simul(:,t), info, ~, ~, errorcode] = dynare_solve(staticmodel, y, options_, oo_.exo_simul(t,:), M_.params);
     if info
-        error('Newton failed!')
+        error('Newton failed (with error code %i).', errorcode)
     end
 end
 

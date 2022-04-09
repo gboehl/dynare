@@ -1,6 +1,6 @@
-function [flag,endo_simul,err,y] = solve_stochastic_perfect_foresight_model_1(endo_simul,exo_simul,Options,pfm,order,varargin)
+function [errorflag, endo_simul, errorcode, y] = solve_stochastic_perfect_foresight_model_1(endo_simul, exo_simul, Options, pfm, order, varargin)
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright © 2012-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,9 +22,9 @@ if nargin < 6
 else
     homotopy_parameter = varargin{1};
 end
+
 flag = 0;
 err = 0;
-stop = 0;
 
 EpOptions = Options.ep;
 
@@ -143,7 +143,7 @@ Options.steady.maxit = 100;
 y = repmat(steady_state,block_nbr,1);
 Options.solve_algo = Options.ep.solve_algo;
 Options.steady.maxit = Options.ep.maxit;
-[y,info] = dynare_solve(@ep_problem_2,y,Options,exo_simul,pfm);
+[y, errorflag, ~, ~, errorcode] = dynare_solve(@ep_problem_2,y,Options,exo_simul,pfm);
 if info
     flag = 1;
     err = info;
