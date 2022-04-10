@@ -85,14 +85,12 @@ if options_.ramsey_policy && ~options_.ACES_solver
         M_.maximum_lag = orig_model.maximum_lag;
         M_.maximum_endo_lag = orig_model.maximum_endo_lag;
     end
-    old_solve_algo = options_.solve_algo;
-    %  options_.solve_algo = 1;
-    opt = options_;
-    opt.jacobian_flag = false;
+    o_jacobian_flag = options_.jacobian_flag;
+    options_.jacobian_flag = false;
     oo_.steady_state = dynare_solve('ramsey_static', oo_.steady_state, ...
                                     options_.ramsey.maxit, options_.solve_tolf, options_.solve_tolx, ...
-                                    opt, M_, options_, oo_, it_);
-    options_.solve_algo = old_solve_algo;
+                                    options_, M_, options_, oo_, it_);
+    options_.jacobian_flag = o_jacobian_flag;
     [~,~,multbar] = ramsey_static(oo_.steady_state,M_,options_,oo_,it_);
     [jacobia_,M_] = ramsey_dynamic(oo_.steady_state,multbar,M_,options_,oo_,it_);
     klen = M_.maximum_lag + M_.maximum_lead + 1;

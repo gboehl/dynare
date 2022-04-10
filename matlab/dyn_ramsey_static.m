@@ -63,9 +63,10 @@ elseif options_.steadystate_flag
     else
         %solve for instrument, using multivariate solver, starting at
         %initial value for instrument
-        opt = options_;
-        opt.jacobian_flag = false;
-        [inst_val, errorflag] = dynare_solve(nl_func, ys_init(k_inst), options_.ramsey.maxit, options_.solve_tolf, options_.solve_tolx, opt);
+        o_jacobian_flag = options_.jacobian_flag;
+        options_.jacobian_flag = false;
+        [inst_val, errorflag] = dynare_solve(nl_func, ys_init(k_inst), options_.ramsey.maxit, options_.solve_tolf, options_.solve_tolx, options_);
+        options_.jacobian_flag = o_jacobian_flag;
         if errorflag
             check=81;
         end
@@ -77,9 +78,10 @@ elseif options_.steadystate_flag
 else
     n_var = M.orig_endo_nbr;
     xx = oo.steady_state(1:n_var);
-    opt = options_;
-    opt.jacobian_flag = false;
-    [xx, errorflag] = dynare_solve(nl_func, xx, options_.ramsey.maxit, options_.solve_tolf, options_.solve_tolx, opt);
+    o_jacobian_flag = options_.jacobian_flag;
+    options_.jacobian_flag = false;
+    [xx, errorflag] = dynare_solve(nl_func, xx, options_.ramsey.maxit, options_.solve_tolf, options_.solve_tolx, options_);
+    options_.jacobian_flag = o_jacobian_flag;
     if errorflag
         check=81;
     end
