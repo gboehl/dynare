@@ -1,6 +1,8 @@
 function [r, J] = dynamic_backward_model_for_simulation(z, dynamicmodel, ylag, x, params, steady_state, it_)
 
-% Copyright (C) 2017 Dynare Team
+% Dynamic routine's wrapper used by dynare_solve.
+
+% Copyright © 2017-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

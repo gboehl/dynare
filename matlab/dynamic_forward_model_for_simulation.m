@@ -1,5 +1,7 @@
 function [r, J] = dynamic_forward_model_for_simulation(z, dynamicmodel, ylead, x, params, steady_state, it_)
 
+% Dynamic routine's wrapper used by dynare_solve.
+
 % Copyright © 2022 Dynare Team
 %
 % This file is part of Dynare.
