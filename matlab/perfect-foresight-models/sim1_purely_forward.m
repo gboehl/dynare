@@ -1,7 +1,7 @@
 function [endogenousvariables, info] = sim1_purely_forward(endogenousvariables, exogenousvariables, steadystate, M, options)
 % Performs deterministic simulation of a purely forward model
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright © 2012-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -25,21 +25,25 @@ if ny0 ~= M.endo_nbr
     error('All endogenous variables must appear at the current period!')
 end
 
-dynamicmodel = str2func([M.fname,'.dynamic']);
+dynamicmodel = str2func(sprintf('%s.%s', M.fname, 'dynamic'));
+dynamicmodel_s = str2func('dynamic_forward_model_for_simulation');
 
 info.status = 1;
 
 for it = options.periods:-1:1
     yf = endogenousvariables(:,it+1); % Values at next period, also used as guess value for current period
-    yf1 = yf(iyf);
-    % TODO Call dynare_solve instead.
-    [tmp, check] = solve1(dynamicmodel, [yf; yf1], 1:M.endo_nbr, 1:M.endo_nbr, ...
-                          1, options.gstep, options.dynatol.f, ...
-                          options.dynatol.x, options.simul.maxit, [], ...
-                          options.debug, exogenousvariables, M.params, steadystate, ...
-                          it+M.maximum_lag);
+    if ismember(options.solve_algo, [12,14])
+        [tmp, check, ~, ~, errorcode] = dynare_solve(dynamicmodel_s, yf, options, M.isloggedlhs, M.isauxdiffloggedrhs, M.endo_names, M.lhs, ...
+                                                     dynamicmodel, yf(iyf), exogenousvariables, M.params, steadystate, it);
+    else
+        [tmp, check, ~, ~, errorcode] = dynare_solve(dynamicmodel_s, yf, options, ...
+                                                     dynamicmodel, yf(iyf), exogenousvariables, M.params, steadystate, it);
+    end
     if check
         info.status = 0;
+        if option.debug
+            dprintf('sim1_purely_forward: Nonlinear solver routine failed with errorcode=%i in period %i.', errorcode, it)
+        end
     end
     endogenousvariables(:,it) = tmp(1:M.endo_nbr);
 end

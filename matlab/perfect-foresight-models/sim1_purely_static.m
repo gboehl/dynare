@@ -27,7 +27,7 @@ if ismember(options.solve_algo, [12,14]) && ~M.possible_to_use_solve_algo_12_14
     error(M.message_solve_algo_12_14)
 end
 
-dynamicmodel = str2func([M.fname,'.dynamic']);
+dynamicmodel = str2func(sprintf('%s.%s', M.fname, 'dynamic'));
 dynamicmodel_s = str2func('dynamic_static_model_for_simulation');
 
 info.status = true;
