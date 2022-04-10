@@ -28,7 +28,7 @@ end
 dynamicmodel = str2func(sprintf('%s.%s', M.fname, 'dynamic'));
 dynamicmodel_s = str2func('dynamic_forward_model_for_simulation');
 
-info.status = 1;
+info.status = true;
 
 for it = options.periods:-1:1
     yf = endogenousvariables(:,it+1); % Values at next period, also used as guess value for current period
@@ -40,10 +40,9 @@ for it = options.periods:-1:1
                                                      dynamicmodel, yf(iyf), exogenousvariables, M.params, steadystate, it);
     end
     if check
-        info.status = 0;
-        if option.debug
-            dprintf('sim1_purely_forward: Nonlinear solver routine failed with errorcode=%i in period %i.', errorcode, it)
-        end
+        info.status = false;
+        dprintf('sim1_purely_forward: Nonlinear solver routine failed with errorcode=%i in period %i.', errorcode, it)
+        break
     end
     endogenousvariables(:,it) = tmp(1:M.endo_nbr);
 end
