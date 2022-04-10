@@ -48,7 +48,7 @@ c_z_2 = -.1;
 c_z_dx2 = .3;
 c_z_u = .3;
 c_z_dv = .4;
-c_z_s  = -.2; 
+c_z_s  = -.2;
 cx = 1.0;
 cy = 1.0;
 
@@ -122,6 +122,7 @@ init = rand(10, M_.endo_nbr+M_.exo_nbr);
 initialconditions = dseries(init, 2000Q1, vertcat(M_.endo_names,M_.exo_names));
 
 // Simulate the model for 500 periods
+options_.dynatol.f = 1e-9;
 TrueData = simul_backward_model(initialconditions, 500);
 TrueData_ = copy(TrueData);
 

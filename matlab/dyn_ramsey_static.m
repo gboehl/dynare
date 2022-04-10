@@ -1,6 +1,5 @@
-function [steady_state,params,check] = dyn_ramsey_static(ys_init,M,options_,oo)
+function [steady_state, params, check] = dyn_ramsey_static(ys_init, M, options_, oo)
 
-% function  [steady_state,params,check] = dyn_ramsey_static_(ys_init,M,options_,oo)
 % Computes the steady state for optimal policy
 %
 % INPUTS
@@ -18,7 +17,7 @@ function [steady_state,params,check] = dyn_ramsey_static(ys_init,M,options_,oo)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2020 Dynare Team
+% Copyright © 2003-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,9 +65,8 @@ elseif options_.steadystate_flag
         %initial value for instrument
         opt = options_;
         opt.jacobian_flag = false;
-        [inst_val,info1] = dynare_solve(nl_func,ys_init(k_inst), ...
-                                        opt);
-        if info1~=0
+        [inst_val, errorflag] = dynare_solve(nl_func, ys_init(k_inst), options_.ramsey.maxit, options_.solve_tolf, options_.solve_tolx, opt);
+        if errorflag
             check=81;
         end
     end
@@ -81,8 +79,8 @@ else
     xx = oo.steady_state(1:n_var);
     opt = options_;
     opt.jacobian_flag = false;
-    [xx,info1] = dynare_solve(nl_func,xx,opt);
-    if info1~=0
+    [xx, errorflag] = dynare_solve(nl_func, xx, options_.ramsey.maxit, options_.solve_tolf, options_.solve_tolx, opt);
+    if errorflag
         check=81;
     end
     [~,~,steady_state] = nl_func(xx);

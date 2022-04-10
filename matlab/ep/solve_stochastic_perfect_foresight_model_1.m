@@ -143,9 +143,5 @@ Options.steady.maxit = 100;
 y = repmat(steady_state,block_nbr,1);
 Options.solve_algo = Options.ep.solve_algo;
 Options.steady.maxit = Options.ep.maxit;
-[y, errorflag, ~, ~, errorcode] = dynare_solve(@ep_problem_2,y,Options,exo_simul,pfm);
-if info
-    flag = 1;
-    err = info;
-end
+[y, errorflag, ~, ~, errorcode] = dynare_solve(@ep_problem_2, y, Options.simul.maxit, Options.dynatol.f, Options.dynatol.x, Options, exo_simul, pfm);
 endo_simul(:,2) = y(1:ny);

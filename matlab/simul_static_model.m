@@ -88,7 +88,7 @@ staticmodel = str2fun(sprintf('%s.static', M_.fname));
 % Simulations (call a Newton-like algorithm for each period).
 for t=1:samplesize
     y = zeros(M_.endo_nbr, 1);
-    [oo_.endo_simul(:,t), info, ~, ~, errorcode] = dynare_solve(staticmodel, y, options_, oo_.exo_simul(t,:), M_.params);
+    [oo_.endo_simul(:,t), info, ~, ~, errorcode] = dynare_solve(staticmodel, y, options_.simul.maxit, options_.dynatol.f, options_.dynatol.x, options_, oo_.exo_simul(t,:), M_.params);
     if info
         error('Newton failed (with error code %i).', errorcode)
     end

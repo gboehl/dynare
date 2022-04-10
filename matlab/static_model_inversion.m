@@ -103,7 +103,8 @@ for t = 1:nobs(constraints)
     % values) and the free exogenous variables (initialized with 0).
     z = [Y(freeendogenousvariables_id,ity); zeros(nxfree, 1)];
     % Solves for z.
-    [z, errorflag, ~, ~, errorcode] = dynare_solve(model_stransf, z, DynareOptions, model_dynamic, ycur, X(itx, :), DynareModel.params, ModelInversion);
+    [z, errorflag, ~, ~, errorcode] = dynare_solve(model_stransf, z, DynareOptions.simul.maxit, DynareOptions.dynatol.f, DynareOptions.dynatol.x, ...
+                                                   DynareOptions, model_dynamic, ycur, X(itx, :), DynareModel.params, ModelInversion);
     if errorflag
         error('Enable to solve the system of equations (with error code %i).', errorcode)
     end

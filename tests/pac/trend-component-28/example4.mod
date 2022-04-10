@@ -119,7 +119,7 @@ init = ones(10, M_.endo_nbr+M_.exo_nbr);
 initialconditions = dseries(init, 2000Q1, vertcat(M_.endo_names,M_.exo_names));
 
 // Simulate the model for 500 periods
-options_.solve_tolf = 1e-9;
+options_.dynatol.f = 1e-9;
 TrueData = simul_backward_model(initialconditions, 5000);
 TrueData_ = copy(TrueData);
 

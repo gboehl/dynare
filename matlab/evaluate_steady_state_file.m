@@ -127,5 +127,5 @@ elseif ~isempty(options.steadystate_partial)
     for i = 1:nov
         indv(i) = strmatch(ssvar(i), M.endo_names, 'exact');
     end
-    ys = dynare_solve('restricted_steadystate', ys(indv), options, exo_ss,indv);
+    ys = dynare_solve('restricted_steadystate', ys(indv), options.steady.maxit, options.dynatol.f, options.dynatol.x, options, exo_ss, indv);
 end

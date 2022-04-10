@@ -1,5 +1,6 @@
 function [x,info] = dynare_solve_block_or_bytecode(y, exo, params, options, M)
-% Copyright (C) 2010-2022 Dynare Team
+
+% Copyright © 2010-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -25,12 +26,11 @@ if options.block && ~options.bytecode
         if M.block_structure_stat.block(b).Simulation_Type ~= 1 && ...
                 M.block_structure_stat.block(b).Simulation_Type ~= 2
             if options.solve_algo <= 4 || options.solve_algo >= 9
-                [y, check] = dynare_solve('block_mfs_steadystate', ...
-                                          ss(M.block_structure_stat.block(b).variable), ...
-                                          options, b, ss, exo, params, T, M);
-                if check ~= 0
-                    %                    error(['STEADY: convergence
-                    %                    problems in block ' int2str(b)])
+                [y, errorflag] = dynare_solve('block_mfs_steadystate', ...
+                                              ss(M.block_structure_stat.block(b).variable), ...
+                                              options.simul.maxit, options.solve_tolf, options.solve_tolx, ...
+                                              options, b, ss, exo, params, T, M);
+                if errorflag
                     info = 1;
                     return
                 end
@@ -65,13 +65,11 @@ elseif options.bytecode
         for b = 1:length(M.block_structure_stat.block)
             if M.block_structure_stat.block(b).Simulation_Type ~= 1 && ...
                     M.block_structure_stat.block(b).Simulation_Type ~= 2
-                [y, check] = dynare_solve('block_bytecode_mfs_steadystate', ...
-                                          x(M.block_structure_stat ...
-                                            .block(b).variable), ...
-                                          options, b, x, exo, params, T, M);
-                if check
-                    %                    error(['STEADY: convergence problems in block '
-                    %                    int2str(b)])
+                [y, errorflag] = dynare_solve('block_bytecode_mfs_steadystate', ...
+                                              x(M.block_structure_stat.block(b).variable), ...
+                                              options.simul.maxit, options.solve_tolf, options.solve_tolx, ...
+                                              options, b, x, exo, params, T, M);
+                if errorflag
                     info = 1;
                     return
                 end
@@ -89,10 +87,10 @@ elseif options.bytecode
             end
         end
     else
-        [x, check] = dynare_solve('bytecode_steadystate', y, ...
-                                  options, exo, params);
-        if check
-            %            error('STEADY: convergence problems')
+        [x, errorflag] = dynare_solve('bytecode_steadystate', y, ...
+                                      options.simul.maxit, options.solve_tolf, options.solve_tolx, ...
+                                      options, exo, params);
+        if errorflag
             info = 1;
             return
         end

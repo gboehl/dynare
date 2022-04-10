@@ -91,9 +91,8 @@ else
                                     oo_.exo_det_steady_state], M_.params))) > options_.solve_tolf
                 opt = options_;
                 opt.jacobian_flag = false;
-                [dr.ys,check1] = dynare_solve(fh,dr.ys,opt,...
-                                              [oo_.exo_steady_state; ...
-                                    oo_.exo_det_steady_state], M_.params);
+                [dr.ys, check1] = dynare_solve(fh,dr.ys, options.steady_.maxit, options_.solve_tolf, options_.solve_tolx, ...
+                                               opt, [oo_.exo_steady_state; oo_.exo_det_steady_state], M_.params);
             end
         else
             % linear models

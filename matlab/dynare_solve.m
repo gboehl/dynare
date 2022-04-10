@@ -1,4 +1,4 @@
-function [x, errorflag, fvec, fjac, errorcode] = dynare_solve(f, x, options, varargin)
+function [x, errorflag, fvec, fjac, errorcode] = dynare_solve(f, x, maxit, tolf, tolx, options, varargin)
 
 % Solves a nonlinear system of equations, f(x) = 0 with n unknowns
 % and n equations.
@@ -41,32 +41,6 @@ function [x, errorflag, fvec, fjac, errorcode] = dynare_solve(f, x, options, var
 
 jacobian_flag = options.jacobian_flag; % true iff Jacobian is returned by f routine (as a second output argument).
 
-% Set tolerance parameter depending the the caller function.
-stack = dbstack;
-if isoctave
-    [~, name, ext]=fileparts(stack(2).file);
-    caller_file_name=[name,ext];
-else
-    if size(stack,1)>1
-        caller_file_name=stack(2).file;
-    else
-        caller_file_name=stack(1).file;
-    end
-end
-if strcmp(caller_file_name, 'solve_stacked_problem.m') || strcmp(caller_file_name, 'sim1_purely_backward.m')
-    tolf = options.dynatol.f;
-    tolx = options.dynatol.x;
-else
-    tolf = options.solve_tolf;
-    tolx = options.solve_tolx;
-end
-
-if strcmp(caller_file_name,'dyn_ramsey_static.m')
-    maxit = options.ramsey.maxit;
-else
-    maxit = options.steady.maxit;
-end
-
 errorflag = false; % Let's be optimistic!
 nn = size(x,1);
 
@@ -96,6 +70,7 @@ else
 end
 
 % checking initial values
+% TODO We should have an option to deactivate the randomization.
 if jacobian_flag
     [fvec, fjac] = feval(f, x, arguments{:});
     wrong_initial_guess_flag = false;

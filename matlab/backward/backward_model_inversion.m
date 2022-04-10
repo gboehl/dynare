@@ -108,7 +108,9 @@ for t = 1:nobs(constraints)
     % values) and the free exogenous variables (initialized with 0).
     z = [Y(freeendogenousvariables_id,ity-1); zeros(nxfree, 1)];
     % Solves for z.
-    [z, failed, ~, ~, errorcode] = dynare_solve(model_dtransf, z, DynareOptions, model_dynamic, ylag, ycur, X, DynareModel.params, DynareOutput.steady_state, itx, ModelInversion);
+    [z, failed, ~, ~, errorcode] = dynare_solve(model_dtransf, z, ...
+                                                DynareOptions.simul.maxit, DynareOptions.dynatol.f, DynareOptions.dynatol.x, ...
+                                                DynareOptions, model_dynamic, ylag, ycur, X, DynareModel.params, DynareOutput.steady_state, itx, ModelInversion);
     if failed
         error('Nonlinear solver failed with errorcode=%i', errorcode)
     end

@@ -89,7 +89,9 @@ if options_.ramsey_policy && ~options_.ACES_solver
     %  options_.solve_algo = 1;
     opt = options_;
     opt.jacobian_flag = false;
-    oo_.steady_state = dynare_solve('ramsey_static',oo_.steady_state,opt,M_,options_,oo_,it_);
+    oo_.steady_state = dynare_solve('ramsey_static', oo_.steady_state, ...
+                                    options_.ramsey.maxit, options_.solve_tolf, options_.solve_tolx, ...
+                                    opt, M_, options_, oo_, it_);
     options_.solve_algo = old_solve_algo;
     [~,~,multbar] = ramsey_static(oo_.steady_state,M_,options_,oo_,it_);
     [jacobia_,M_] = ramsey_dynamic(oo_.steady_state,multbar,M_,options_,oo_,it_);
