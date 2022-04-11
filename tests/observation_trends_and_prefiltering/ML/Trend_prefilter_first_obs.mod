@@ -1,18 +1,18 @@
 @#include "../Trend_model_prefilter_common.inc"
 
 addpath('..');
-generate_trend_stationary_AR1;
+generate_trend_stationary_AR1(M_.fname);
 
-estimation(order=1,datafile='AR1_trend_data_with_constant',
+estimation(order=1,datafile='Trend_prefilter_first_obs_AR1_trend_data_with_constant',
     mh_replic=0,mode_compute=4,
     filtered_vars, filter_step_ahead = [1,2,4],        
     first_obs=1000,diffuse_filter,smoother,forecast=100,prefilter=1) P_obs Y_obs junk2;
 
-load('AR1_trend_data_with_constant');
+load('Trend_prefilter_first_obs_AR1_trend_data_with_constant');
 @#include "../Trend_load_data_common.inc" 
 
 
-loaded_par=load('orig_params');
+loaded_par=load('Trend_prefilter_first_obs_orig_params');
 
 if max(abs((M_.params-loaded_par.orig_params([1:4,7:8]))./loaded_par.orig_params([1:4,7:8])))>0.03
     error('Parameter estimates do not match')
