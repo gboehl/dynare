@@ -49,9 +49,6 @@ Emat = zeros(M_.endo_nbr,nerrs,sample_length);
 error_code = zeros(4,1);
 %solver options (set locally)
 options_.solve_algo = options_.occbin.solver.solve_algo;
-options_.solve_tolf = options_.occbin.solver.solve_tolf;
-options_.solve_tolx = options_.occbin.solver.solve_tolx;
-options_.options.steady.maxit = options_.occbin.solver.maxit;
 options_.jacobian_flag=1;
 
 opts_simul = options_.occbin.simul;
@@ -85,8 +82,7 @@ for this_period=1:sample_length
     opts_simul.exo_pos=err_index(inan); %err_index is predefined mapping from observables to shocks
     opts_simul.endo_init = init_val_old;
     opts_simul.SHOCKS = filtered_errs_init(this_period,inan);
-    % TODO We should probably have a specific field for maxit (new option?)
-    [err_vals_out, exitflag] = dynare_solve(@occbin.match_function, filtered_errs_init(this_period,inan)', options_.steady.maxit, options_.solve_tolf, options_.solve_tolx, options_, obs_list, current_obs, opts_simul, M_, oo_, options_);
+    [err_vals_out, exitflag] = dynare_solve(@occbin.match_function, filtered_errs_init(this_period,inan)', options_.occbin.solver.maxit, options_.occbin.solver.solve_tolf, options_.occbin.solver.solve_tolx, options_, obs_list, current_obs, opts_simul, M_, oo_, options_);
 
     if exitflag
         filtered_errs=NaN;
