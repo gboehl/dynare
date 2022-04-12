@@ -1,6 +1,6 @@
 function perfect_foresight_with_expectation_errors_setup
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -58,9 +58,9 @@ oo_.pfwee.shocks_info = NaN(M_.exo_nbr, periods, periods); % 2nd dimension is re
 for i = 1:size(raw_csv, 2)
     exo_id = strmatch(exo_header_names{i}, M_.exo_names, 'exact');
     period_id = raw_csv(1, i);
-    oo_.pfwee.terminal_info(exo_id, period_id) = raw_csv(2, i);
     % Ignore irrelevant periods when copying shocks information
-    oo_.pfwee.shocks_info(exo_id, period_id:end, period_id) = raw_csv(2+period_id:end, i);
+    oo_.pfwee.shocks_info(exo_id, period_id:end, period_id) = raw_csv(1+period_id:end-1, i);
+    oo_.pfwee.terminal_info(exo_id, period_id) = raw_csv(end, i);
 end
 
 % Build initial paths for endos and exos (only initial conditions are set, the rest is NaN)

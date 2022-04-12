@@ -1,6 +1,5 @@
 Exo,x,x,x,x,x,x,x
 Period (info),1,2,3,4,5,6,7
-Terminal,1,1.1,1.2,1.2,1.2,1.1,1.1
 Period 1 (real),1.2,,,,,,
 Period 2 (real),1,1.3,,,,,
 Period 3 (real),1,1,1.4,,,,
@@ -8,3 +7,4 @@ Period 4 (real),1,1,1,1,,,
 Period 5 (real),1,1,1,1,1,,
 Period 6 (real),1,1,1,1,1,1.1,
 Period 7 (real),1,1,1,1,1,1.1,1.1
+Terminal,1,1.1,1.2,1.2,1.2,1.1,1.1
