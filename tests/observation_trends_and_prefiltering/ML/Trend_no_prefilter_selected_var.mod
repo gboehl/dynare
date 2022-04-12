@@ -63,9 +63,9 @@ estimated_params_init(use_calibration);
 end;
 
 addpath('..');
-generate_trend_stationary_AR1;
+generate_trend_stationary_AR1(M_.fname);
 
-estimation(order=1,datafile='AR1_trend_data_with_constant',mh_replic=0,
+estimation(order=1,datafile='Trend_no_prefilter_selected_var_AR1_trend_data_with_constant',mh_replic=0,
         mode_compute=4,first_obs=1,nobs=1000,
         filtered_vars, filter_step_ahead = [1,2,4],        
         diffuse_filter,filter_covariance,smoother,forecast=0,prefilter=0,filter_decomposition) P_obs Y_obs junk2;
@@ -82,7 +82,7 @@ oo_.UpdatedVariables  = [];
 oo_.SmoothedShocks  = [];
 
 set_dynare_seed('default');
-estimation(order=1,datafile='AR1_trend_data_with_constant',mh_replic=0,
+estimation(order=1,datafile='Trend_no_prefilter_selected_var_AR1_trend_data_with_constant',mh_replic=0,
         mode_compute=4,first_obs=1,nobs=1000,
         filtered_vars, filter_step_ahead = [1,2,4],        
         diffuse_filter,smoother,forecast=0,filter_covariance,prefilter=0,filter_decomposition,selected_variables_only) P_obs Y_obs junk2;
