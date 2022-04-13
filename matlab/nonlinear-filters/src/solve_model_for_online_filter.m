@@ -20,7 +20,7 @@ function [info, Model, DynareOptions, DynareResults, ReducedForm] = ...
 % - DynareResults            [struct]     Dynare results (oo_).
 % - ReducedForm              [struct]     Reduced form model.
 
-% Copyright (C) 2013-2022 Dynare Team
+% Copyright © 2013-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

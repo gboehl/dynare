@@ -1,7 +1,7 @@
 function n = neff(w)
 % Evaluates the criterion for resampling
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright © 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -22,7 +22,7 @@ function  IncrementalWeights = gaussian_mixture_densities(obs, StateMuPrior, Sta
 % NOTES
 %   The vector "lik" is used to evaluate the jacobian of the likelihood.
 
-% Copyright (C) 2009-2019 Dynare Team
+% Copyright © 2009-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

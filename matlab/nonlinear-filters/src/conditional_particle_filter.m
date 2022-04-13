@@ -35,7 +35,7 @@ function [LIK,lik] = conditional_particle_filter(ReducedForm, Y, s, ParticleOpti
 % it has been derived in a linear context and is implemented in a nonlinear
 % context. That is why particle resampling is performed.
 
-% Copyright (C) 2009-2020 Dynare Team
+% Copyright © 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

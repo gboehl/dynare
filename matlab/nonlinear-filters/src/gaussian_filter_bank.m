@@ -22,7 +22,7 @@ function [PredictedStateMean, PredictedStateVarianceSquareRoot, StateVectorMean,
 % NOTES
 %   The vector "lik" is used to evaluate the jacobian of the likelihood.
 
-% Copyright (C) 2009-2022 Dynare Team
+% Copyright © 2009-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

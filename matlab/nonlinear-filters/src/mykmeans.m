@@ -1,6 +1,6 @@
 function [c,SqrtVariance,Weights] = mykmeans(x,g,init,cod)
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright © 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

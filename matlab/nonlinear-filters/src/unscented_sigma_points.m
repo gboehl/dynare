@@ -14,7 +14,7 @@ function [nodes,W_m,W_c] = unscented_sigma_points(n,ParticleOptions)
 %
 % NOTES
 %
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright © 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %
