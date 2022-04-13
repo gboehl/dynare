@@ -14,7 +14,7 @@ function innovation_paths = reversed_extended_path(controlled_variable_names, co
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2010-2018 Dynare Team.
+% Copyright © 2010-2018 Dynare Team.
 %
 % This file is part of Dynare.
 %

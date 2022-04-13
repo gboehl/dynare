@@ -9,7 +9,7 @@ function b = islagof(v1, v2)
 % OUTPUTS
 % - b         [logical]
 
-% Copyright (C) 2018 Dynare Team
+% Copyright © 2018 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -15,7 +15,7 @@ function M_ = set_measurement_errors(xparam1,estim_params_,M_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2017 Dynare Team
+% Copyright © 2017 Dynare Team
 %
 % This file is part of Dynare.
 %

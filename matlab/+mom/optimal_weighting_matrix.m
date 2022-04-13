@@ -19,7 +19,7 @@ function W_opt = optimal_weighting_matrix(m_data, moments, q_lag)
 % This function calls:
 %  o CorrMatrix (embedded)
 % =========================================================================
-% Copyright (C) 2020-2021 Dynare Team
+% Copyright © 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

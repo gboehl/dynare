@@ -1,6 +1,6 @@
 function [flag,endo_simul,err] = solve_perfect_foresight_model(endo_simul,exo_simul,pfm)
 
-% Copyright (C) 2012-2020 Dynare Team
+% Copyright © 2012-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

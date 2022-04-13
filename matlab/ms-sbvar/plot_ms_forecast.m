@@ -15,7 +15,7 @@ function plot_ms_forecast(M_, options_, forecast, figure_name)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2018 Dynare Team
+% Copyright © 2011-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

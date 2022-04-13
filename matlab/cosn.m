@@ -20,7 +20,7 @@ function [co, b, yhat] = cosn(H)
 %   * identification_checks.m
 %   * ident_bruteforce.m
 % =========================================================================
-% Copyright (C) 2008-2019 Dynare Team
+% Copyright © 2008-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

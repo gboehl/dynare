@@ -1,6 +1,6 @@
 function check_model(DynareModel)
 
-% Copyright (C) 2005-2013 Dynare Team
+% Copyright © 2005-2013 Dynare Team
 %
 % This file is part of Dynare.
 %

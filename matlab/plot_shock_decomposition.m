@@ -11,7 +11,7 @@ function [out, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2016-2019 Dynare Team
+% Copyright © 2016-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

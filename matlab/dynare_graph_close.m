@@ -11,7 +11,7 @@ function dynare_graph_close()
 % SPECIAL REQUIREMENT
 %   none
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright © 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

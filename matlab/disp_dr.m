@@ -10,7 +10,7 @@ function disp_dr(dr,order,var_list)
 % OUTPUTS
 % none
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright © 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

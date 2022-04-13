@@ -19,7 +19,7 @@ function [deviations, baseline, irfs] = backward_model_irf(initialcondition, inn
 %   argument.
 % - If second argument is not empty, periods must not be greater than innovationbaseline.nobs.
 
-% Copyright (C) 2017-2020 Dynare Team
+% Copyright © 2017-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

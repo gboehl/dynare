@@ -15,7 +15,7 @@ function dyntable(options_, title, headers, labels, values, label_width, val_wid
 % OUTPUTS
 % none
 
-% Copyright (C) 2002-2022 Dynare Team
+% Copyright © 2002-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

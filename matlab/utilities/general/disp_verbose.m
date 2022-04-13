@@ -2,7 +2,7 @@ function disp_verbose(input_string,Verbose)
 % function disp_verbose(input_string,Verbose)
 % Prints input_string unless Verbose=0 is requested
 %
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright © 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

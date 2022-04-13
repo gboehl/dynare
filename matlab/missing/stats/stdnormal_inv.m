@@ -8,9 +8,8 @@ function inv = stdnormal_inv (x)
 % Original file: statistics/distributions/stdnormal_inv.m
 % Original author: KH <Kurt.Hornik@wu-wien.ac.at>
 
-% Copyright (C) 1995, 1996, 1997, 1998, 2000, 2002, 2005, 2006, 2007
-%               Kurt Hornik
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright © 1995, 1996, 1997, 1998, 2000, 2002, 2005, 2006, 2007 Kurt Hornik
+% Copyright © 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

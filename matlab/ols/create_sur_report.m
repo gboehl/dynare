@@ -11,7 +11,7 @@ function create_sur_report()
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019 Dynare Team
 %
 % This file is part of Dynare.
 %

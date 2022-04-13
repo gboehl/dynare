@@ -44,7 +44,7 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 1996-2020 Dynare Team
+% Copyright © 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

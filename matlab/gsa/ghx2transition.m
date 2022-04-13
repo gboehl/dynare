@@ -6,7 +6,7 @@ function [A,B] = ghx2transition(mm,iv,ic,aux)
 % marco.ratto@ec.europa.eu
 %
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright © 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

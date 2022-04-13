@@ -42,7 +42,7 @@ function [a, a1, P, P1, v, T, R, C, regimes_, error_flag, M_, lik, etahat] = kal
 % Philipp Pfeiffer, Marco Ratto (2021), Efficient and robust inference of models with occasionally binding
 % constraints, Working Papers 2021-03, Joint Research Centre, European Commission 
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -13,7 +13,7 @@ function [endo_histval, exo_histval, exo_det_histval] = histvalf(M, options)
 %    none
 
 
-% Copyright (C) 2014-2021 Dynare Team
+% Copyright © 2014-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

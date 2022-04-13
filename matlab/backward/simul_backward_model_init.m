@@ -3,7 +3,7 @@ function [initialconditions, samplesize, innovations, DynareOptions, DynareModel
 
 % Initialization of the routines simulating backward models.
 
-% Copyright (C) 2017-2019 Dynare Team
+% Copyright © 2017-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

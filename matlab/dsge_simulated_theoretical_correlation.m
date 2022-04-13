@@ -18,7 +18,7 @@ function [nvar,vartan,CorrFileNumber] = dsge_simulated_theoretical_correlation(S
 %   vartan         [char]           array of characters (with nvar rows).
 %   CorrFileNumber [integer]        scalar, number of prior or posterior data files (for correlation).
 
-% Copyright (C) 2007-2021 Dynare Team
+% Copyright © 2007-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

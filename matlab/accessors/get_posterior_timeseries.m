@@ -8,7 +8,7 @@ function r = get_posterior_timeseries(type, endo)
 % For forecasts, returns the "point" forecast (i.e. with uncertainty about both
 %  parameters and shocks).
 
-% Copyright (C) 2020 Dynare Team
+% Copyright © 2020 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -4,7 +4,7 @@ function [y, info_convergence, endogenousvariablespaths] = extended_path_core(pe
                                                   debug,order,M,pfm,algo,solve_algo,stack_solve_algo,...
                                                   olmmcp,options,oo,initialguess)
 
-% Copyright (C) 2016-2020 Dynare Team
+% Copyright © 2016-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

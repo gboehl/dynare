@@ -12,7 +12,7 @@ function h = dyn_figure(nodisplay, varargin)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright © 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

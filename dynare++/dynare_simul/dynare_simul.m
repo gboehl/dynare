@@ -66,8 +66,8 @@
 %
 %   "DSGE Models with Dynare++. A Tutorial.", Ondra Kamenik, 2005
 
-% Copyright (C) 2005-2011, Ondra Kamenik
-% Copyright (C) 2020, Dynare Team
+% Copyright © 2005-2011, Ondra Kamenik
+% Copyright © 2020, Dynare Team
 
 
 function r = dynare_simul(varargin)

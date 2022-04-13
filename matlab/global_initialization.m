@@ -11,7 +11,7 @@ function global_initialization()
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2018 Dynare Team
+% Copyright © 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,7 +1,7 @@
 // Test that the presence of a non estimated parameter in the estimated_params_init block does not lead to a crash.
 
 /*
- * Copyright (C) 2004-2017 Dynare Team
+ * Copyright © 2004-2017 Dynare Team
  *
  * This file is part of Dynare.
  *

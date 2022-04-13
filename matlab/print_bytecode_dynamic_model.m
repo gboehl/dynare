@@ -11,7 +11,7 @@ function print_bytecode_dynamic_model()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright © 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -23,7 +23,7 @@ function get_ar_ec_matrices(model_name, model_type)
 %
 %   NONE
 
-% Copyright (C) 2018 Dynare Team
+% Copyright © 2018 Dynare Team
 %
 % This file is part of Dynare.
 %

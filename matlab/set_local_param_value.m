@@ -1,6 +1,6 @@
 function M = set_local_param_value(pname,value,M)
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright © 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

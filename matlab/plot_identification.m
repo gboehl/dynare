@@ -19,7 +19,7 @@ function plot_identification(params, idemoments, idehess, idemodel, idelre, adva
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2008-2021 Dynare Team
+% Copyright © 2008-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

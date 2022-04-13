@@ -16,7 +16,7 @@ function [dataMoments, m_data] = data_moments(data, oo_, matched_moments_, optio
 %  o mom.run.m
 %  o mom.objective_function.m
 % =========================================================================
-% Copyright (C) 2020-2021 Dynare Team
+% Copyright © 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

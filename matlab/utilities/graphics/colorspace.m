@@ -81,8 +81,8 @@ function varargout = colorspace(Conversion,varargin)
 %  correspond respectively to red ("long"), green ("medium"), and blue
 %  ("short").
 
-% Copyright (C) 2005-2010 Pascal Getreuer
-% Copyright (C) 2017 Dynare Team
+% Copyright © 2005-2010 Pascal Getreuer
+% Copyright © 2017 Dynare Team
 %
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are

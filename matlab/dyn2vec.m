@@ -14,7 +14,7 @@ function [z,zss]=dyn2vec(M_, oo_, options_, s1, s2)
 %   none
 %
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright © 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -40,7 +40,7 @@ function [nam, texnam] = get_the_name(k, TeX, M_, estim_params_, options_)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2018 Dynare Team
+% Copyright © 2004-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

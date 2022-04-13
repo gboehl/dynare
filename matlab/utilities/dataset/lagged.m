@@ -9,7 +9,7 @@ function xlag = lagged(x, n)
 % OUTPUT
 % xlag = backward shifted series
 
-% Copyright (C) 2017-2021 Dynare Team
+% Copyright © 2017-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

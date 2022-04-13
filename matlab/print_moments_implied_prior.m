@@ -14,7 +14,7 @@ function print_moments_implied_prior(ModelInfo, mm, vm, mv, vv)
 %                                           endogenous variables
 
 
-% Copyright (C) 2016-2018 Dynare Team
+% Copyright © 2016-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

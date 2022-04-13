@@ -2,7 +2,7 @@
 % Andreasen, Fernandez-Villaverde, Rubio-Ramirez (2018), The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications, Review of Economic Studies, 85, p. 1-49
 % Adapted for Dynare by Willi Mutschler (@wmutschl, willi@mutschler.eu), Jan 2021
 % =========================================================================
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

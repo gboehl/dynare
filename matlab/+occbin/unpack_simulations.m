@@ -10,7 +10,7 @@ function oo_=unpack_simulations(M_,oo_,options_)
 % Outputs
 % - oo_                 [structure]     Matlab's structure containing the results
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

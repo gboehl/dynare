@@ -21,7 +21,7 @@ function str = writecellofchar(c)
 %
 %{'a', '['b'; 'c']', 'd'}
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright © 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

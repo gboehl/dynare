@@ -27,7 +27,7 @@ function ds = surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eq
 %   Combination of Direct Monte Carlo and Importance Sampling Techniques.
 %   Bayesian Analysis Volume 5, Number 1, pp. 65-96.
 
-% Copyright (C) 2017-2021 Dynare Team
+% Copyright © 2017-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

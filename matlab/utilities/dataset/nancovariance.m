@@ -30,7 +30,7 @@ function CovarianceMatrix = nancovariance(data)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011-2014 Dynare Team
+% Copyright © 2011-2014 Dynare Team
 %
 % This file is part of Dynare.
 %

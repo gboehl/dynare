@@ -4,8 +4,8 @@ function  scatter_mcf(X,Y,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, D
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 
-% Copyright (C) 2014-2016 European Commission
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright © 2014-2016 European Commission
+% Copyright © 2014-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

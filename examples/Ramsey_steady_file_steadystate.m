@@ -16,7 +16,7 @@ function [ys,params,check] = Ramsey_steady_file_steadystate(ys,exo,M_,options_)
 %   - check     [scalar] set to 0 if steady state computation worked and to
 %                    1 of not (allows to impose restrictions on parameters)
 
-% Copyright (C) 2020 Dynare Team
+% Copyright © 2020 Dynare Team
 %
 % This file is part of Dynare.
 %

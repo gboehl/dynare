@@ -8,7 +8,7 @@ function forecast_graphs(var_list,M_, oo_,options_)
 %   o oo_                   outputs structure
 %   o options_              options structure
 
-% Copyright (C) 2008-2018 Dynare Team
+% Copyright © 2008-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -52,7 +52,7 @@ function [ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] 
 % This function is called by
 %   * identification_analysis.m
 % =========================================================================
-% Copyright (C) 2019-2021 Dynare Team
+% Copyright © 2019-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

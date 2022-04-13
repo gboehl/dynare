@@ -17,7 +17,7 @@ function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sam
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015-2022 Dynare Team
+% Copyright © 2015-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

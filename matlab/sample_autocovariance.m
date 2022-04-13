@@ -13,7 +13,7 @@ function [autocov,autocor] = sample_autocovariance(data,q)
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright © 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

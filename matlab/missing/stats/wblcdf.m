@@ -10,7 +10,7 @@ function p = wblcdf(x, scale, shape)   % --*-- Unitary tests --*--
 % OUTPUTS
 % - p     [double] Positive scalar between
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright © 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

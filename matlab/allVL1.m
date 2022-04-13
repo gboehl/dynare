@@ -39,8 +39,8 @@ function v = allVL1(n, L1, L1ops, MaxNbSol)
 
 % Retrieved from https://www.mathworks.com/matlabcentral/fileexchange/17818-all-permutations-of-integers-with-sum-criteria
 % =========================================================================
-% Copyright (C) 2007-2010 Bruno Luong <brunoluong@yahoo.com>
-% Copyright (C) 2020 Dynare Team
+% Copyright © 2007-2010 Bruno Luong <brunoluong@yahoo.com>
+% Copyright © 2020 Dynare Team
 %
 % This file is part of Dynare.
 %

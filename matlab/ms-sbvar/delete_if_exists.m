@@ -11,7 +11,7 @@ function delete_if_exists(fname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011 Dynare Team
+% Copyright © 2011 Dynare Team
 %
 % This file is part of Dynare.
 %

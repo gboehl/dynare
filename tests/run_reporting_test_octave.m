@@ -1,4 +1,4 @@
-## Copyright (C) 2013-2022 Dynare Team
+## Copyright © 2013-2022 Dynare Team
 ##
 ## This file is part of Dynare.
 ##

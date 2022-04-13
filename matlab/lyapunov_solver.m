@@ -23,7 +23,7 @@ function P=lyapunov_solver(T,R,Q,DynareOptions) % --*-- Unitary tests --*--
 %       Square-root solver for discrete-time Lyapunov equations (requires Matlab System Control toolbox
 %       or Octave control package)
 
-% Copyright (C) 2016-2022 Dynare Team
+% Copyright © 2016-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,7 +1,7 @@
 function pick
 %
-% Copyright (C) 2001-2017 European Commission
-% Copyright (C) 2017 DynareTeam
+% Copyright © 2001-2017 European Commission
+% Copyright © 2017 DynareTeam
 
 % This file is part of GLUEWIN
 % GLUEWIN is a MATLAB code designed for analysing the output

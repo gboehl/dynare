@@ -19,7 +19,7 @@ function Simulations = extended_path_mc(initialconditions, samplesize, replic, e
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2016-2020 Dynare Team
+% Copyright © 2016-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

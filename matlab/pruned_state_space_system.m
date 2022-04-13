@@ -95,7 +95,7 @@ function pruned_state_space = pruned_state_space_system(M, options, dr, indy, nl
 %   * quadruplication.m
 %   * vec.m
 % =========================================================================
-% Copyright (C) 2019-2020 Dynare Team
+% Copyright © 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

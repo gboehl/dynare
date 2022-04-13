@@ -45,8 +45,8 @@ function  [raftery_lewis] = raftery_lewis(runs,q,r,s)
 %
 % ----------------------------------------------------
 
-% Copyright (C) 2016 Benjamin Born and Johannes Pfeifer
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright © 2016 Benjamin Born and Johannes Pfeifer
+% Copyright © 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

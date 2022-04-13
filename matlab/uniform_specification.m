@@ -17,7 +17,7 @@ function [m,s,p6,p7,error_indicator] = uniform_specification(m,s,p3,p4)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2004-2017 Dynare Team
+% Copyright © 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

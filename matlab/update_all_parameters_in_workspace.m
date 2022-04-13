@@ -2,7 +2,7 @@ function update_all_parameters_in_workspace(DynareModel)
 
 % Updates all parameter values in Matlab/Octave base workspace.
 
-% Copyright (C) 2018 Dynare Team
+% Copyright © 2018 Dynare Team
 %
 % This file is part of Dynare.
 %

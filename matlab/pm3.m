@@ -24,7 +24,7 @@ function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryNa
 % See also the comment in posterior_sampler.m funtion.
 
 
-% Copyright (C) 2007-2018 Dynare Team
+% Copyright © 2007-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

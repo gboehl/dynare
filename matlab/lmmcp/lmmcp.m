@@ -90,9 +90,9 @@ function [x,FVAL,EXITFLAG,OUTPUT,JACOB] = lmmcp(FUN,x,lb,ub,options,varargin)
 % confirming the free software status of lmmcp and granting unlimited
 % permission to use, copy, modifiy or redistribute the file.
 
-% Copyright (C) 2005 Christian Kanzow and Stefania Petra
-% Copyright (C) 2013 Christophe Gouel
-% Copyright (C) 2014-2017 Dynare Team
+% Copyright © 2005 Christian Kanzow and Stefania Petra
+% Copyright © 2013 Christophe Gouel
+% Copyright © 2014-2017 Dynare Team
 %
 % Unlimited permission is granted to everyone to use, copy, modify or
 % distribute this software.

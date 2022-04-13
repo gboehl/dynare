@@ -12,7 +12,7 @@ function data_set = det_cond_forecast(varargin)
 %  dataset                [dseries]     Returns a dseries containing the forecasted endgenous variables and shocks
 %
 
-% Copyright (C) 2013-2020 Dynare Team
+% Copyright © 2013-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

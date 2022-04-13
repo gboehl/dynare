@@ -22,7 +22,7 @@ function save_params_and_steady_state(filename)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2018 Dynare Team
+% Copyright © 2008-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

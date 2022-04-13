@@ -17,7 +17,7 @@ function datatomfile (s, var_list, names)
 % provided, all the variables as defined in M_.endo_names will be saved in
 % the generated m file.
 
-% Copyright (C) 2001-2020 Dynare Team
+% Copyright © 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

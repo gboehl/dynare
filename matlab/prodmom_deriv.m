@@ -33,8 +33,8 @@ function [y,dy] = prodmom_deriv(V,ii,nu,dV,dC)
 %  Kotz, Balakrishnan, and Johnson (2000), Continuous Multivariate 
 %  Distributions, Vol. 1, p.261
 % =========================================================================
-% Copyright (C) 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
-% Copyright (C) 2019-2020 Dynare Team
+% Copyright © 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
+% Copyright © 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

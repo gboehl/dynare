@@ -1,7 +1,7 @@
 % Forward-looking example model from Koop, Pesaran, Smith (2013, JBES)
 % created by Willi Mutschler (@wmutschl, willi@mutschler.eu)
 % =========================================================================
-% Copyright (C) 2020 Dynare Team
+% Copyright © 2020 Dynare Team
 %
 % This file is part of Dynare.
 %

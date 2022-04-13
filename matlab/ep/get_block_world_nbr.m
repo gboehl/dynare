@@ -1,6 +1,6 @@
 function [block_nbr,world_nbr] = get_block_world_nbr(algo,nnodes,order,periods)
 
-% Copyright (C) 2014 Dynare Team
+% Copyright © 2014 Dynare Team
 %
 % This file is part of Dynare.
 %

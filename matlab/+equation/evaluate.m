@@ -1,6 +1,6 @@
 function [ds, json] = evaluate(ds, eqtags, firstperiod, lastperiod, json)
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019 Dynare Team
 %
 % This file is part of Dynare.
 %

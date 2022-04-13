@@ -26,7 +26,7 @@ function [A,B,ys,info,M_,oo_,TT, RR, CC, A0, B0] ...
 % - A0                  [double]        State transition matrix (unrestricted state space)
 % - B0                  [double]        shock impact matrix (unrestricted state space)
 
-% Copyright (C) 2001-2021 Dynare Team
+% Copyright © 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -11,7 +11,7 @@ function delete_dir_if_exists(dirname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2016 Dynare Team
+% Copyright © 2011-2016 Dynare Team
 %
 % This file is part of Dynare.
 %

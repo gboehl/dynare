@@ -1,6 +1,6 @@
 function [endo_simul,info] = dyn_lmmcp(M,options,oo)
 
-% Copyright (C) 2014 Dynare Team
+% Copyright © 2014 Dynare Team
 %
 % This file is part of Dynare.
 %

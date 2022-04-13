@@ -14,7 +14,7 @@ function [] = Tracing()
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright © 2010-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

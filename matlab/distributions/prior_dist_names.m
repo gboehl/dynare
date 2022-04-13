@@ -1,7 +1,7 @@
 function pnames=prior_dist_names
 %function pnames=prior_dist_names
 % Provides the name strings for the prior distribution codes in bayestopt_.pshape
-% Copyright (C) 2020 Dynare Team
+% Copyright © 2020 Dynare Team
 %
 % This file is part of Dynare.
 %

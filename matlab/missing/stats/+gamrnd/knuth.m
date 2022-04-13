@@ -9,7 +9,7 @@ function  g = knuth(a, b)
 % OUTPUTS
 % - g    [double]     n*1 vector, gamma variates.
 
-% Copyright (C) 2006-2020 Dynare Team
+% Copyright © 2006-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

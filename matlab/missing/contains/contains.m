@@ -12,7 +12,7 @@ function tf = contains(string, pattern, varargin)
 % OUTPUT
 % - tf   [logical]
 %
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019 Dynare Team
 %
 % This file is part of Dynare.
 %

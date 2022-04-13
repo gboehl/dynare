@@ -24,7 +24,7 @@ function [theta, fxsim, neval] = rotated_slice_sampler(objective_function,theta,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright © 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

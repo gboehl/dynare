@@ -10,7 +10,7 @@ function [G, alpha, beta] = buildGmatrixWithAlphaAndBeta(params)
 % - alpha     [double]    m*1 vector of PAC parameters.
 % - beta      [double]    scalar, discount factor.
 
-% Copyright (C) 2018 Dynare Team
+% Copyright © 2018 Dynare Team
 %
 % This file is part of Dynare.
 %

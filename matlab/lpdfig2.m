@@ -19,7 +19,7 @@ function [ldens,Dldens,D2ldens] = lpdfig2(x,s,nu)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2004-2021 Dynare Team
+% Copyright © 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

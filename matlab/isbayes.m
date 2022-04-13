@@ -2,7 +2,7 @@ function l = isbayes(estim_params_)
 
 % Returns true iff bayesian priors over parameters are defined.
 
-% Copyright (C) 2016 Dynare Team
+% Copyright © 2016 Dynare Team
 %
 % This file is part of Dynare.
 %

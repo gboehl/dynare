@@ -30,7 +30,7 @@ function ra = lnsrch1_wrapper_two_boundaries(ya, fname, blk, y, y_index, x, ...
 %   none.
 %
 
-% Copyright (C) 2009-2020 Dynare Team
+% Copyright © 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

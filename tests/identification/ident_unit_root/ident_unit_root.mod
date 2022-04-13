@@ -1,7 +1,7 @@
 % Tests Identification command with ML and unit roots/diffuse filter option
 % Created by Johannes Pfeifer (@JohannesPfeifer, jpfeifer@gmx.de)
 % =========================================================================
-% Copyright (C) 2015-2020 Dynare Team
+% Copyright © 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

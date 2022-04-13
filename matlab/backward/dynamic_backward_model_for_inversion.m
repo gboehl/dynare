@@ -1,6 +1,6 @@
 function [r, J] = dynamic_backward_model_for_inversion(z, dynamicmodel, ylag, ycur, x, params, steady_state, it_, ModelInversion)
 
-% Copyright (C) 2017 Dynare Team
+% Copyright © 2017 Dynare Team
 %
 % This file is part of Dynare.
 %

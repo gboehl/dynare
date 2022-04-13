@@ -26,7 +26,7 @@ function  [par, logpost, accepted, neval] = posterior_sampler_iteration(TargetFu
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015-18 Dynare Team
+% Copyright © 2015-18 Dynare Team
 %
 % This file is part of Dynare.
 %

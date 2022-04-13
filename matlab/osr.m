@@ -21,7 +21,7 @@ function osr_res = osr(var_list, params, i_var,W)
 % SPECIAL REQUIREMENTS
 %   none.
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright © 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

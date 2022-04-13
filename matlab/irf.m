@@ -18,7 +18,7 @@ function y = irf(M_, options_, dr, e1, long, drop, replic, iorder)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2019 Dynare Team
+% Copyright © 2003-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

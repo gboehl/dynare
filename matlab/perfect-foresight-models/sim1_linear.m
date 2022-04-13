@@ -38,7 +38,7 @@ function [endogenousvariables, info] = sim1_linear(endogenousvariables, exogenou
 % to center the variables around the deterministic steady state to solve the
 % perfect foresight model.
 
-% Copyright (C) 2015-2020 Dynare Team
+% Copyright © 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

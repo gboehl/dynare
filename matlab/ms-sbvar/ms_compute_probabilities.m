@@ -14,7 +14,7 @@ function [options_, oo_]=ms_compute_probabilities(M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2020 Dynare Team
+% Copyright © 2011-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

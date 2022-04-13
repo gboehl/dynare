@@ -32,7 +32,7 @@ function [dr, info, M, oo] = resol(check_flag, M, options, oo)
 %   info(1)=24    ->    M_.params has been updated in the steadystate routine and has some NaNs.
 %   info(1)=30    ->    Ergodic variance can't be computed.
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright © 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

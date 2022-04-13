@@ -1,6 +1,6 @@
 function overallacceptanceratio = compute_overall_acceptance_ratio(MetropolisFolder, ModelName)
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright © 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

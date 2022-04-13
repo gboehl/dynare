@@ -16,7 +16,7 @@ function osr_res = osr1(i_params,i_var,weights)
 %   Uses Newton-type optimizer csminwel to directly solve quadratic
 %   osr-problem
 %
-% Copyright (C) 2005-2019 Dynare Team
+% Copyright © 2005-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

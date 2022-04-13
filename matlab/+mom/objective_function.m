@@ -36,7 +36,7 @@ function [fval, info, exit_flag, df, junk1, oo_, M_, options_mom_] = objective_f
 %  o resol
 %  o set_all_parameters
 % =========================================================================
-% Copyright (C) 2020-2021 Dynare Team
+% Copyright © 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

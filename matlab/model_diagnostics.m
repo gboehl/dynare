@@ -16,7 +16,7 @@ function model_diagnostics(M,options,oo)
 %   none.
 %
 
-% Copyright (C) 1996-2020 Dynare Team
+% Copyright © 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

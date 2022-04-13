@@ -21,7 +21,7 @@ function [forecast,info] = dyn_forecast(var_list,M,options,oo,task,dataset_info)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2018 Dynare Team
+% Copyright © 2003-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

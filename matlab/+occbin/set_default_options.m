@@ -10,7 +10,7 @@ function options_occbin_ = set_default_options(options_occbin_,M_,flag)
 % OUTPUTS
 % - options_occbin_ [structure]     Matlab's structure describing the current options
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

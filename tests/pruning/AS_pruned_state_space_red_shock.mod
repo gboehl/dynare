@@ -11,7 +11,7 @@
 % Created by @wmutschl (Willi Mutschler, willi@mutschler.eu)
 %
 % =========================================================================
-% Copyright (C) 2020 Dynare Team
+% Copyright © 2020 Dynare Team
 %
 % This file is part of Dynare.
 %

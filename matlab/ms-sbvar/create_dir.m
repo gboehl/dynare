@@ -11,7 +11,7 @@ function create_dir(dirname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011 Dynare Team
+% Copyright © 2011 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,6 +1,6 @@
 function oo_ = posterior_analysis(type,arg1,arg2,arg3,options_,M_,oo_)
 
-% Copyright (C) 2008-2021 Dynare Team
+% Copyright © 2008-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

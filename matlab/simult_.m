@@ -17,7 +17,7 @@ function y_=simult_(M_,options_,y0,dr,ex_,iorder)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2021 Dynare Team
+% Copyright © 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

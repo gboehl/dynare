@@ -1,7 +1,7 @@
 function oo_ = solve_block_decomposed_problem(options_, M_, oo_)
 % Computes deterministic simulation with block option without bytecode
 
-% Copyright (C) 2020-2022 Dynare Team
+% Copyright © 2020-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

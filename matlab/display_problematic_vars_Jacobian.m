@@ -16,7 +16,7 @@ function []=display_problematic_vars_Jacobian(problemrow,problemcol,M_,x,type,ca
 %   none.
 %
 
-% Copyright (C) 2014-2021 Dynare Team
+% Copyright © 2014-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

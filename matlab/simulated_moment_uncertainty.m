@@ -12,7 +12,7 @@ function [cmm, mm] = simulated_moment_uncertainty(indx, periods, replic,options_
 %   - cmm:      [n_moments by n_moments] covariance matrix of simulated moments
 %   - mm:       [n_moments by replic] matrix of moments
 
-% Copyright (C) 2009-2018 Dynare Team
+% Copyright © 2009-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

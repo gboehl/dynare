@@ -22,7 +22,7 @@ function alpha = a2alpha(a)
 %
 % Note that the last elements of input a are (a_0, a_1, ..., a_{m-1}).
 
-% Copyright (C) 2018 Dynare Team
+% Copyright © 2018 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -20,7 +20,7 @@ function Scale = calibrate_mh_scale_parameter(ObjectiveFunction, CovarianceMatri
 
 
 
-% Copyright (C) 2020-2021 Dynare Team
+% Copyright © 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -24,7 +24,7 @@ function disp_identification(pdraws, ide_reducedform, ide_moments, ide_spectrum,
 % This function is called by
 %   * dynare_identification.m
 % =========================================================================
-% Copyright (C) 2010-2021 Dynare Team
+% Copyright © 2010-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

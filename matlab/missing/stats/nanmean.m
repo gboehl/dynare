@@ -14,7 +14,7 @@ function y = nanmean(x, dim)
 % (2) Works with vector and matrices, not implemented for arrays with more
 % than two dimensions.
 
-% Copyright (C) 2011-2018 Dynare Team
+% Copyright © 2011-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

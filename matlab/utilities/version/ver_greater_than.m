@@ -12,7 +12,7 @@ function tf = ver_greater_than(ver1, ver2)  % --*-- Unitary tests --*--
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015-2021 Dynare Team
+% Copyright © 2015-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,6 +1,6 @@
 function [r, J] = static_model_for_inversion(z, dynamicmodel, ycur, x, params, ModelInversion)
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019 Dynare Team
 %
 % This file is part of Dynare.
 %

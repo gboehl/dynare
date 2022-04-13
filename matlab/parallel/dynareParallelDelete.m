@@ -11,7 +11,7 @@ function dynareParallelDelete(fname,pname,Parallel)
 %  None
 %
 %
-% Copyright (C) 2009-2020 Dynare Team
+% Copyright © 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -5,8 +5,8 @@ function scatter_plots(X,xp,vnames,plotsymbol, fnam, dirname, figtitle, xparam1,
 % marco.ratto@ec.europa.eu
 %
 
-% Copyright (C) 2017 European Commission
-% Copyright (C) 2017 Dynare Team
+% Copyright © 2017 European Commission
+% Copyright © 2017 Dynare Team
 %
 % This file is part of Dynare.
 %

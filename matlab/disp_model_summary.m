@@ -8,7 +8,7 @@ function disp_model_summary(M,dr,options)
 %   dr        [matlab structure] Decision rules
 %   options   [matlab structure] Options
 %
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright © 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

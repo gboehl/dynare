@@ -27,7 +27,7 @@ function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
 
-% Copyright (C) 2017-2019 Dynare Team
+% Copyright © 2017-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

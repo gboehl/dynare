@@ -16,7 +16,7 @@ function [A,B,ys,info,M_,oo_] = dynare_resolve(M_,options_,oo_,mode)
 % - M_                  [structure]     Matlab's structure describing the model
 % - oo_                 [structure]     Matlab's structure containing the results
 
-% Copyright (C) 2001-2021 Dynare Team
+% Copyright © 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

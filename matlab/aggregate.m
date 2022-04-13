@@ -2,7 +2,7 @@ function aggregate(ofile, dynopt, rootfolder, varargin)
 
 % Agregates cherry-picked models.
 
-% Copyright (C) 2019-2021 Dynare Team
+% Copyright © 2019-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

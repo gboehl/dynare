@@ -15,7 +15,7 @@ function [PRCDirSnapshot]=dynareParallelGetNewFiles(PRCDir,Parallel,PRCDirSnapsh
 %
 %
 %
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright © 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

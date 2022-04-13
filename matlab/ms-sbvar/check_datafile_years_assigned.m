@@ -8,7 +8,7 @@ function [final_year,final_subperiod]=check_datafile_years_assigned(options_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2012-2013 Dynare Team
+% Copyright © 2012-2013 Dynare Team
 %
 % This file is part of Dynare.
 %

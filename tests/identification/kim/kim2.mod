@@ -1,6 +1,6 @@
 % Created by Marco Ratto (@rattoma, marco.ratto@ec.europa.eu)
 % =========================================================================
-% Copyright (C) 2010-2020 Dynare Team
+% Copyright © 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -46,7 +46,7 @@ if [ $COPYLINES -ge 2 ]; then
     exit 1
 fi
 
-COPYLINE=$(grep -o -E "Copyright \(C\) ([[:digit:]]{4}-)?[[:digit:]]{4} Dynare Team" $1)
+COPYLINE=$(grep -o -E "Copyright © ([[:digit:]]{4}-)?[[:digit:]]{4} Dynare Team" $1)
 
 if [ -z "$COPYLINE" ]; then
     COPYLINE=$(grep Copyright $1)
@@ -54,9 +54,9 @@ if [ -z "$COPYLINE" ]; then
     exit 1
 fi
 
-ACTUALYEAR=$(echo $COPYLINE | sed "s/Copyright (C) \([0-9]\{4\}-\)\?\([0-9]\{4\}\) Dynare Team/\2/")
+ACTUALYEAR=$(echo $COPYLINE | sed "s/Copyright © \([0-9]\{4\}-\)\?\([0-9]\{4\}\) Dynare Team/\2/")
 
 if [ $GITYEAR -gt $ACTUALYEAR ]; then
-    sed -i "s/Copyright (C) \([0-9]\{4\}\)\(-[0-9]\{4\}\)\? Dynare Team/Copyright (C) \1-$GITYEAR Dynare Team/" $1
+    sed -i "s/Copyright © \([0-9]\{4\}\)\(-[0-9]\{4\}\)\? Dynare Team/Copyright © \1-$GITYEAR Dynare Team/" $1
     echo "$1: Updating to $GITYEAR"
 fi

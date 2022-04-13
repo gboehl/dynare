@@ -14,7 +14,7 @@ function plan = basic_plan(plan, exogenous, expectation_type, date, value)
 %  plan                   [structure]        Returns a structure containing the updated forecast scenario.
 %
 %
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright © 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

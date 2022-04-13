@@ -13,7 +13,7 @@ function forecast_data=reshape_ascii_forecast_data(endo_nbr, psize, horizon, asc
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright © 2011-2012 Dynare Team
 %
 % This file is part of Dynare.
 %

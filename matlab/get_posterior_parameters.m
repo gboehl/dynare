@@ -15,7 +15,7 @@ function xparam = get_posterior_parameters(type,M_,estim_params_,oo_,options_,fi
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright © 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

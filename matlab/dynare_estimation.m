@@ -12,7 +12,7 @@ function oo_recursive_=dynare_estimation(var_list,dname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2021 Dynare Team
+% Copyright © 2003-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -11,7 +11,7 @@ function DynareModel = set_exogenous_variables_for_simulation(DynareModel)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019 Dynare Team
 %
 % This file is part of Dynare.
 %

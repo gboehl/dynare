@@ -22,7 +22,7 @@ function plot_ms_variance_decomposition(M_, options_, vd, figure_name, varargin)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2018 Dynare Team
+% Copyright © 2011-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

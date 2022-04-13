@@ -23,8 +23,8 @@ function [y,dy] = bivmom(p,rho)
 % Note that there is a typo in Eq.(46.25), there should be an extra rho in front 
 % of the equation.
 % =========================================================================
-% Copyright (C) 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
-% Copyright (C) 2019-2020 Dynare Team
+% Copyright © 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
+% Copyright © 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -11,7 +11,7 @@ function [hasLicense] = user_has_matlab_license(toolbox)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2012-2020 Dynare Team
+% Copyright © 2012-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

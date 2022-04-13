@@ -14,7 +14,7 @@ function [fval, grad, hess, exit_flag]=analytic_gradient_wrapper(x, fcn, varargi
 % - hess                      Hessian of the objective function
 % - exit_flag     [integer]   scalar, flag returned by
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

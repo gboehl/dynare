@@ -13,7 +13,7 @@ function [fval, exit_flag, arg1, arg2] = penalty_objective_function(x, fcn, base
 % - exit_flag     [integer]   scalar, flag returned by fcn (third output).
 % - arg1, arg2                fourth and fifth output arguments of the objective function.
 
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright © 2016-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

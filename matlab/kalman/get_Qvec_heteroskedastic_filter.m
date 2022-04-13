@@ -8,7 +8,7 @@ function Qvec=get_Qvec_heteroskedastic_filter(Q,smpl,Model)
 % Outputs:
 %   Qvec:   [n_exo by n_exo by smpl] array of covariance matrices
 
-% Copyright (C) 2020-21 Dynare Team
+% Copyright © 2020-21 Dynare Team
 %
 % This file is part of Dynare.
 %

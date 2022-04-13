@@ -12,7 +12,7 @@ function z = resid(options_resid_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2001-2022 Dynare Team
+% Copyright © 2001-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

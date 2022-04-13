@@ -22,7 +22,7 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff]  = TaRB_optimiz
 %   o trend_coeff [double]  Matrix of doubles, coefficients of the deterministic trend in the measurement equation
 %
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright © 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

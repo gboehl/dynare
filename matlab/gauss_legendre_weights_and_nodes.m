@@ -40,7 +40,7 @@ function [nodes,weights] = gauss_legendre_weights_and_nodes(n,a,b)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright © 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

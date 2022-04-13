@@ -30,7 +30,7 @@ function c = nandemean(x)
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2011 Dynare Team
+% Copyright © 2011 Dynare Team
 %
 % This file is part of Dynare.
 %

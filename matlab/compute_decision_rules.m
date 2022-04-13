@@ -11,7 +11,7 @@ function [dr,info,M_,oo_] =compute_decision_rules(M_,options_,oo_)
 % - M_            [structure]     Matlab's structure describing the model (M_).
 % - oo_           [structure]     Matlab's structure containing the results (oo_).
 
-% Copyright (C) 2020 Dynare Team
+% Copyright © 2020 Dynare Team
 %
 % This file is part of Dynare.
 %

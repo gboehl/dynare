@@ -38,7 +38,7 @@ function out = identification_numerical_objective(params, outputflag, estim_para
 %   * resol
 %   * vec
 % =========================================================================
-% Copyright (C) 2011-2020 Dynare Team
+% Copyright © 2011-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

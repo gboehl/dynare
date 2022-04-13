@@ -28,7 +28,7 @@ function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
 % [1] Results are stored in oo_.conditional_forecast.
 % [2] Use the function plot_icforecast to plot the results.
 
-% Copyright (C) 2006-2020 Dynare Team
+% Copyright © 2006-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

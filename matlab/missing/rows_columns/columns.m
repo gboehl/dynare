@@ -2,7 +2,7 @@ function c = columns(M)
 % Computes the number of columns of a matrix
 % NOTE: this function is builtin in Octave
 
-% Copyright (C) 2008-2009 Dynare Team
+% Copyright © 2008-2009 Dynare Team
 %
 % This file is part of Dynare.
 %

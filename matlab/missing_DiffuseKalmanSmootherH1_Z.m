@@ -57,7 +57,7 @@ function [alphahat,epsilonhat,etahat,atilde,P,aK,PK,decomp,V,aalphahat,eetahat,d
 %   Durbin/Koopman (2012): "Time Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 5
 
-% Copyright (C) 2004-2021 Dynare Team
+% Copyright © 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

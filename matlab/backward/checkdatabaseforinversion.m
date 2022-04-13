@@ -5,7 +5,7 @@ function [dbase, info] = checkdatabaseforinversion(dbase, DynareModel)
 % adds auxiliary variables, for lags greater than 1 on endogebnous variables
 % or lags on the exogenous variables.
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright © 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

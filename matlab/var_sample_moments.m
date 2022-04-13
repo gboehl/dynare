@@ -51,7 +51,7 @@ function dataset_info=var_sample_moments(nlag, var_trend_order, dataset_, datase
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2007-2021 Dynare Team
+% Copyright © 2007-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

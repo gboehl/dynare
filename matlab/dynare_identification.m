@@ -46,7 +46,7 @@ function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, ST
 %    * skipline
 %    * vnorm
 % =========================================================================
-% Copyright (C) 2010-2021 Dynare Team
+% Copyright © 2010-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

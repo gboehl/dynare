@@ -22,7 +22,7 @@ function oo_ = ...
 % OUTPUTS
 %   oo_          [structure]        Dynare structure where the results are saved.
 
-% Copyright (C) 2017-2020 Dynare Team
+% Copyright © 2017-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

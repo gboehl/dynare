@@ -13,7 +13,7 @@ function o = loadjson_(jsonfilename)
 % available under Octave. Old Matlab versions and Octave use
 % jsonlab as fallback. 
 
-% Copyright (C) 2020-2021 Dynare Team
+% Copyright © 2020-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,6 +1,6 @@
 function residuals = evaluate_dynamic_model(dynamicmodel, endogenousvariables, exogenousvariables, params, steadystate, leadlagincidence, samplesize)
 
-% Copyright (C) 2016 Dynare Team
+% Copyright © 2016 Dynare Team
 %
 % This file is part of Dynare.
 %

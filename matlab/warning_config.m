@@ -10,7 +10,7 @@ function warning_config()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2008-2022 Dynare Team
+% Copyright © 2008-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

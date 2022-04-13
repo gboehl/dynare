@@ -52,7 +52,7 @@ function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, alphahat, 
 % constraints, Working Papers 2021-03, Joint Research Centre, European Commission 
 
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

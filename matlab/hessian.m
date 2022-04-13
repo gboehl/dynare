@@ -26,7 +26,7 @@ function hessian_mat = hessian(func,x, gstep, varargin) % --*-- Unitary tests --
 %    none
 %
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright © 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

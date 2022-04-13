@@ -13,7 +13,7 @@ function [h_minus_1, h, h_plus_1, h_exo, resid] = get_deriv(M_, ys_)
 % - h_exo      [N by N_exo] derivative matrix with respect to exogenous variables
 % - resid      [N by 1]     vector of residuals
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

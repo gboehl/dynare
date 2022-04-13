@@ -16,7 +16,7 @@ function [ldens,Dldens,D2ldens] = lpdfgweibull(x,a,b,c)  % --*-- Unitary tests -
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2015-2020 Dynare Team
+% Copyright © 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

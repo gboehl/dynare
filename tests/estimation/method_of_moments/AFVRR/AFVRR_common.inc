@@ -3,7 +3,7 @@
 % Original code by Martin M. Andreasen, Jan 2016
 % Adapted for Dynare by Willi Mutschler (@wmutschl, willi@mutschler.eu), Jan 2021
 % =========================================================================
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

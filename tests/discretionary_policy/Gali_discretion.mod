@@ -9,7 +9,7 @@
  */
 
 /*
- * Copyright (C) 2013-21 Johannes Pfeifer
+ * Copyright © 2013-21 Johannes Pfeifer
  *
  * This is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

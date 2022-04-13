@@ -8,7 +8,7 @@ function info = isquare(A)
 % OUTPUTS
 % - info    [logical]
 
-% Copyright (C) 2013-2018 Dynare Team
+% Copyright © 2013-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

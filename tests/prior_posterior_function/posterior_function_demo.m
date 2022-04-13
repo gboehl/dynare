@@ -24,7 +24,7 @@ function output_cell =posterior_function_demo(xparam1,M_,options_,oo_,estim_para
 %   output_cell  [1 by n cell]   1 by n Matlab cell allowing to store any
 %                                desired computation or result (strings, matrices, structures, etc.)
 
-% Copyright (C) 2015 Dynare Team
+% Copyright © 2015 Dynare Team
 %
 % This file is part of Dynare.
 %

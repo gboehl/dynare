@@ -71,7 +71,7 @@ function [LIK, LIKK, a, P] = kalman_filter(Y,start,last,a,P,kalman_tol,riccati_t
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2021 Dynare Team
+% Copyright © 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

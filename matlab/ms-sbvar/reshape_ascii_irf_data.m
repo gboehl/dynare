@@ -13,7 +13,7 @@ function irf_data=reshape_ascii_irf_data(endo_nbr, psize, horizon, ascii_data)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright © 2011-2012 Dynare Team
 %
 % This file is part of Dynare.
 %

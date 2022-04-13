@@ -16,7 +16,7 @@
  */
 
 /*
- * Copyright (C) 2013 Dynare Team
+ * Copyright © 2013 Dynare Team
  *
  * This file is part of Dynare.
  *

@@ -5,7 +5,7 @@ function y2 = dynvars_from_endo_simul(y, it_, M_)
 % expected by the dynamic.m file (i.e. whose indices are described by
 % M_.lead_lag_incidence)
 
-% Copyright (C) 2020 Dynare Team
+% Copyright © 2020 Dynare Team
 %
 % This file is part of Dynare.
 %

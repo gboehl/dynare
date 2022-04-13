@@ -21,7 +21,7 @@ function oo_ = initial_condition_decomposition(M_,oo_,options_,varlist,bayestopt
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright © 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

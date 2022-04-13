@@ -26,7 +26,7 @@ function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,Model,DynareOptions,Bayes
 % - BayesInfo               [struct]              See INPUTS section.
 % - DynareResults           [struct]              Updated DynareResults structure described in INPUTS section.
 
-% Copyright (C) 2010-2022 Dynare Team
+% Copyright © 2010-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -32,7 +32,7 @@ function  [LIK, lik, a, P] = missing_observations_kalman_filter(data_index,numbe
 % NOTES
 %   The vector "lik" is used to evaluate the jacobian of the likelihood.
 
-% Copyright (C) 2004-2021 Dynare Team
+% Copyright © 2004-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

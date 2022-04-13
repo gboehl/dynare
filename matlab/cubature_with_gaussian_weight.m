@@ -17,7 +17,7 @@ function [nodes, weights] = cubature_with_gaussian_weight(d,n,method)  % --*-- U
 %     ∫   f(x) × e        dx
 %      -∞
 
-% Copyright (C) 2012-2019 Dynare Team
+% Copyright © 2012-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

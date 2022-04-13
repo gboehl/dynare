@@ -9,7 +9,7 @@ function b = isolder(f, F) % --*-- Unitary tests --*--
 % OUTPUT
 % - b   [logical]
 
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright © 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,4 +1,4 @@
-## Copyright (C) 2016 Dynare Team
+## Copyright © 2016 Dynare Team
 ##
 ## This file is part of Dynare.
 ##

@@ -12,7 +12,7 @@ function dyn_graph=dynare_graph_init(figure_name,nplot,line_types,line_width)
 % SPECIAL REQUIREMENT
 %   none
 
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright © 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

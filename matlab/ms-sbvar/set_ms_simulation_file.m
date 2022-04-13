@@ -11,7 +11,7 @@ function options_=set_ms_simulation_file(options_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011-2012 Dynare Team
+% Copyright © 2011-2012 Dynare Team
 %
 % This file is part of Dynare.
 %

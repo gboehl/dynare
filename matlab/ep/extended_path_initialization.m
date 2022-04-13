@@ -16,7 +16,7 @@ function [initial_conditions, innovations, pfm, ep, verbosity, DynareOptions, Dy
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2016-2020 Dynare Team
+% Copyright © 2016-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

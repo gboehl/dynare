@@ -1,6 +1,6 @@
 function dcompare(s1)
 
-% Copyright (C) 2001-2017 Dynare Team
+% Copyright © 2001-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

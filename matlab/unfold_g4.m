@@ -4,7 +4,7 @@ function g4_unfolded = unfold_g4(g4, ny)
 % of (static or dynamic) variables in the jacobian, returns
 % an unfolded version of the same matrix (i.e. with symmetric elements).
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019 Dynare Team
 %
 % This file is part of Dynare.
 %

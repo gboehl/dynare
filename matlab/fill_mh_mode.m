@@ -16,7 +16,7 @@ function oo_=fill_mh_mode(xparam1,stdh,M_,options_,estim_params_,bayestopt_,oo_,
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2005-2021 Dynare Team
+% Copyright © 2005-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

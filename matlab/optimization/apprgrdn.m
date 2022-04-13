@@ -15,9 +15,9 @@ function g = apprgrdn(x,f,fun,deltax,obj,varargin)
 % structure
 %
 %
-% Copyright (C) 1997-2008, Alexei Kuntsevich and Franz Kappel
-% Copyright (C) 2008-2015 Giovanni Lombardo
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright © 1997-2008, Alexei Kuntsevich and Franz Kappel
+% Copyright © 2008-2015 Giovanni Lombardo
+% Copyright © 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -9,7 +9,7 @@ function set_dynare_threads(mexname,n)
 % OUTPUTS
 %  none.
 
-% Copyright (C) 2009-2019 Dynare Team
+% Copyright © 2009-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

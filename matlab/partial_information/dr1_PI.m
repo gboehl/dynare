@@ -40,7 +40,7 @@ function [dr,info,M_,options_,oo_] = dr1_PI(dr,task,M_,options_,oo_)
 %   none.
 %
 
-% Copyright (C) 1996-2018 Dynare Team
+% Copyright © 1996-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

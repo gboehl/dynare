@@ -15,7 +15,7 @@ function [g,grad,hess,flag] = moment_function(xparams,sample_moments,dataset,opt
 % SPECIAL REQUIREMENTS
 %  The user has to provide a file where the moment conditions are defined.
 
-% Copyright (C) 2010-2019 Dynare Team
+% Copyright © 2010-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

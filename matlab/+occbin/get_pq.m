@@ -9,7 +9,7 @@ function [p,q]=get_pq(dr)
 % - p           [N by N]     transition matrix ghu in declaration order
 % - q           [N by N_exo] shock response matrix ghx in declaration order
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

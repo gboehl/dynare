@@ -3,7 +3,7 @@
 % and to check whether all kronflags are working
 % created by Willi Mutschler (@wmutschl, willi@mutschler.eu)
 % =========================================================================
-% Copyright (C) 2019-2020 Dynare Team
+% Copyright © 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

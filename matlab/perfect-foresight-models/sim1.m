@@ -13,7 +13,7 @@ function [endogenousvariables, info] = sim1(endogenousvariables, exogenousvariab
 %   - endogenousvariables [double] N*(T+M.maximum_lag+M.maximum_lead) array, paths for the endogenous variables (solution of the perfect foresight model).
 %   - info                [struct] contains informations about the results.
 
-% Copyright (C) 1996-2021 Dynare Team
+% Copyright © 1996-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -59,7 +59,7 @@ function planner_objective_value = evaluate_planner_objective(M_,options_,oo_)
 
 % In the deterministic case, resorting to approximations for welfare is no longer required as it is possible to simulate the model given initial conditions for pre-determined variables and terminal conditions for forward-looking variables, whether these initial and terminal conditions are explicitly or implicitly specified. Assuming that the number of simulated periods is high enough for the new steady-state to be reached, the new unconditional welfare is thus the last period's welfare. As for the conditional welfare, it can be derived using backward recursions on the equation W = U + beta*W(+1) starting from the final unconditional steady-state welfare.
 
-% Copyright (C) 2007-2021 Dynare Team
+% Copyright © 2007-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

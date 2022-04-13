@@ -17,7 +17,7 @@ function [ConditionalVarianceDecomposition, ConditionalVarianceDecomposition_ME]
 %                                                    h is the number of Steps
 %                                                    p is the number of state innovations and
 
-% Copyright (C) 2010-2021 Dynare Team
+% Copyright © 2010-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

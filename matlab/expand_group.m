@@ -10,7 +10,7 @@ function expand_group(use_shock_groups,var_list_, ic, no_graph)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2016-2018 Dynare Team
+% Copyright © 2016-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

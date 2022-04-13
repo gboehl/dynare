@@ -16,8 +16,8 @@
  */
 
 /*
- * Copyright (C) 2016-20 Johannes Pfeifer
- * Copyright (C) 2020 Dynare Team
+ * Copyright © 2016-20 Johannes Pfeifer
+ * Copyright © 2020 Dynare Team
  *
  * This is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

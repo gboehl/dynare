@@ -2,7 +2,7 @@ function r = rows(x)
 % Computes the number of rows of a matrix
 % NOTE: this function is builtin in Octave
 
-% Copyright (C) 2005-2009 Dynare Team
+% Copyright © 2005-2009 Dynare Team
 %
 % This file is part of Dynare.
 %

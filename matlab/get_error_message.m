@@ -10,7 +10,7 @@ function message = get_error_message(info, DynareOptions)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2020 Dynare Team
+% Copyright © 2005-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

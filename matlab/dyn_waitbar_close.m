@@ -4,7 +4,7 @@ function dyn_waitbar_close(h)
 % octave and when console_mode=1
 
 %
-% Copyright (C) 2011-2021 Dynare Team
+% Copyright © 2011-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

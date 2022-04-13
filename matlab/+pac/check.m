@@ -12,7 +12,7 @@ function errorcode = check(eqname, errorflag)
 %                            3  ->  Possible calibration issue on the error correction term (should be positive),
 %                            4  ->  Error correction term is missing.
 
-% Copyright (C) 2018 Dynare Team
+% Copyright © 2018 Dynare Team
 %
 % This file is part of Dynare.
 %

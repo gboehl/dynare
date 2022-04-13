@@ -74,7 +74,7 @@ function [LIK, LIKK, a, P] = kalman_filter_fast(Y,start,last,a,P,kalman_tol,ricc
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2004-2017 Dynare Team
+% Copyright © 2004-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -14,7 +14,7 @@
 */
 
 /*
- * Copyright (C) 2014 Johannes Pfeifer
+ * Copyright © 2014 Johannes Pfeifer
  *
  * This file is part of Dynare.
  *

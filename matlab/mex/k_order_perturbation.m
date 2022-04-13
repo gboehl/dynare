@@ -25,7 +25,7 @@
 % dynare/mex/sources/k_order_perturbation.cc and it uses code provided by
 % dynare++
 
-% Copyright (C) 2013-2021 Dynare Team
+% Copyright © 2013-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

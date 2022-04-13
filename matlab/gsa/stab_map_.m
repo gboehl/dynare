@@ -34,8 +34,8 @@ function x0 = stab_map_(OutputDirectoryName,opt_gsa)
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 
-% Copyright (C) 2012-2016 European Commission
-% Copyright (C) 2012-2018 Dynare Team
+% Copyright © 2012-2016 European Commission
+% Copyright © 2012-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

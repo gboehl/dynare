@@ -16,7 +16,7 @@ function subsamples_indx = get_existing_subsamples_indx(name1, name2)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2012 Dynare Team
+% Copyright © 2012 Dynare Team
 %
 % This file is part of Dynare.
 %

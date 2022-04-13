@@ -24,8 +24,8 @@ function [lnpriormom] = endogenous_prior(data,dataset_info, Pstar,BayesInfo,H)
 % appropriate adjustment to the following code.
 
 
-% Copyright (C) 2011 Lawrence J. Christiano, Mathias Trabandt and Karl Walentin
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright © 2011 Lawrence J. Christiano, Mathias Trabandt and Karl Walentin
+% Copyright © 2013-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -31,7 +31,7 @@ function [condX, rankX, ind0, indno, ixno, Mco, Pco, jweak, jweak_pair] = identi
 %    * dyn_vech
 %    * vnorm
 % =========================================================================
-% Copyright (C) 2010-2019 Dynare Team
+% Copyright © 2010-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

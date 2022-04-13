@@ -10,8 +10,8 @@ function pdf = betapdf (x, a, b)
 % Original author: KH <Kurt.Hornik@wu-wien.ac.at>
 % Modified by Michel Juillard <michel.juillard@mjui.fr> for large values of a and b
 
-% Copyright (C) 1995, 1996, 1997, 2005, 2006, 2007 Kurt Hornik
-% Copyright (C) 2008-2011 Dynare Team
+% Copyright © 1995, 1996, 1997, 2005, 2006, 2007 Kurt Hornik
+% Copyright © 2008-2011 Dynare Team
 %
 % This file is part of Dynare.
 %

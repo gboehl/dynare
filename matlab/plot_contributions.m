@@ -22,7 +22,7 @@ function plot_contributions(equationname, ds1, ds0)
 %      [name='Phillips curve']
 %      pi = beta*pi(1) + slope*y + lam;
 
-% Copyright (C) 2017-2021 Dynare Team
+% Copyright © 2017-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

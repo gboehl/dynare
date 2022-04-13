@@ -5,7 +5,7 @@ function  y=PCL_Part_info_irf( H, varobs, ivar, M_, dr, irfpers,ii)
 % Pearlman, Currie and Levine 1986 solution.
 % 22/10/06 - Version 2 for new Riccati with 4 params instead 5
 
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright © 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

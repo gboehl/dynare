@@ -6,7 +6,7 @@ function log_prior_val=Gali_2015_prior_restrictions(M_, oo_, options_, dataset_,
 % 0.03. As the slope is a composite of other parameters with independent
 % priors, a separate function is required to do this.
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

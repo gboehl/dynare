@@ -1,7 +1,7 @@
 function erase_compiled_function(func)
 % erase compiled function with name 'func'
 
-% Copyright (C) 2006-2009 Dynare Team
+% Copyright © 2006-2009 Dynare Team
 %
 % This file is part of Dynare.
 %

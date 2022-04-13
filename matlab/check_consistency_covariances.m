@@ -6,7 +6,7 @@ function correct_flag=check_consistency_covariances(Covariance_matrix)
 % Outputs: correct_flag         [scalar] 0 if not consistent, 1 otherwise
 % Inputs: Covariance_matrix     [matrix] covariance matrix to be checked
 
-% Copyright (C) 2013 Dynare Team
+% Copyright © 2013 Dynare Team
 %
 % This file is part of Dynare.
 %

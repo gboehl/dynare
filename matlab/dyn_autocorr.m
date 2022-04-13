@@ -12,7 +12,7 @@ function acf = dyn_autocorr(y, ar)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2015-16 Dynare Team
+% Copyright © 2015-16 Dynare Team
 %
 % This file is part of Dynare.
 %

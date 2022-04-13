@@ -14,7 +14,7 @@ function fileList = dynareParallelListAllFiles(dirName,PRCDir,Parallel)
 %  OUTPUTS
 %  o fileList          []   ...
 %
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright © 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

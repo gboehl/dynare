@@ -3,7 +3,7 @@ function S = shiftS(S,n)
 %
 % Removes the first n elements of a one dimensional cell array.
 
-% Copyright (C) 2013-2014 Dynare Team
+% Copyright © 2013-2014 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -15,7 +15,7 @@ function [logged_prior_density, dlprior, d2lprior, info] = priordens(x, pshape, 
 %    info                  [double]  error code for index of Inf-prior parameter
 %
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright © 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

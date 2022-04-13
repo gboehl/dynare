@@ -19,7 +19,7 @@ function [info] = convertAimCodeToInfo(aimCode)
 % OUTPUTS
 %   info        [integer]    Code to be used to print error in print_info.m
 
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright © 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -18,7 +18,7 @@ function [xparams, logpost] = GetOneDraw(type,M_,estim_params_,oo_,options_,baye
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2017 Dynare Team
+% Copyright © 2005-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

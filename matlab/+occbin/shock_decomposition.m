@@ -9,7 +9,7 @@ function oo_ = shock_decomposition(oo_, M_, options_, vname)
 % OUTPUT
 % - oo_           [structure]     Matlab's structure containing the results (oo_).
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -12,7 +12,7 @@ function [A0, A0star, AR, B] = get_companion_matrix(auxiliary_model_name, auxili
 % OUTPUTS
 % - None
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright © 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -10,7 +10,7 @@ function InitializeComputationalEnvironment()
 % OUTPUTS
 % None
 %
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright © 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

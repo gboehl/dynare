@@ -9,7 +9,7 @@ function g = best_1983(a, b)
 % OUTPUTS
 % - g    [double]     n*1 vector, gamma variates.
 
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright © 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

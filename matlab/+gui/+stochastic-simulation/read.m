@@ -13,7 +13,7 @@ function read(json)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2019-2020 Dynare Team
+% Copyright © 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,6 +1,6 @@
 function [sR,sG] = restricted_steadystate(y,x,indx)
 
-% Copyright (C) 2006-2009 Dynare Team
+% Copyright © 2006-2009 Dynare Team
 %
 % This file is part of Dynare.
 %

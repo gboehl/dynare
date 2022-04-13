@@ -11,7 +11,7 @@ function [M_, options_] = setup(M_,options_, options_occbin_)
 % - M_                  [structure]     Matlab's structure describing the model
 % - options_occbin_     [structure]     Matlab's structure containing Occbin options
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

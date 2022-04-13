@@ -8,8 +8,8 @@ function inv = chi2inv (x, n)
 % Original file: statistics/distributions/chi2inv.m
 % Original author: TT <Teresa.Twaroch@ci.tuwien.ac.at>
 
-% Copyright (C) 1995, 1996, 1997, 2005, 2006, 2007 Kurt Hornik
-% Copyright (C) 2008-2009 Dynare Team
+% Copyright © 1995, 1996, 1997, 2005, 2006, 2007 Kurt Hornik
+% Copyright © 2008-2009 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,6 +1,6 @@
 function A = isoctave()
 
-% Copyright (C) 2013-2016 Dynare Team
+% Copyright © 2013-2016 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -23,7 +23,7 @@ function [oo_,M_] = shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2009-2020 Dynare Team
+% Copyright © 2009-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

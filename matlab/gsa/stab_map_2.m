@@ -5,8 +5,8 @@ function indcorr = stab_map_2(x,alpha2, pvalue_crit, fnam, dirname,xparam1,figti
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 
-% Copyright (C) 2011-2016 European Commission
-% Copyright (C) 2011-2018 Dynare Team
+% Copyright © 2011-2016 European Commission
+% Copyright © 2011-2018 Dynare Team
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify

@@ -4,8 +4,8 @@ function y = myprctilecol(x,p)
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 
-% Copyright (C) 2012 European Commission
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright © 2012 European Commission
+% Copyright © 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

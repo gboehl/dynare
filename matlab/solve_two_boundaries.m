@@ -45,7 +45,7 @@ function [y, T, oo]= solve_two_boundaries(fname, y, x, params, steady_state, T, 
 %   none.
 %
 
-% Copyright (C) 1996-2022 Dynare Team
+% Copyright © 1996-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

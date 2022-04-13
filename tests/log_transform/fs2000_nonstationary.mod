@@ -1,7 +1,7 @@
 // Test for var(log, deflator=…)
 
 /*
- * Copyright (C) 2004-2022 Dynare Team
+ * Copyright © 2004-2022 Dynare Team
  *
  * This file is part of Dynare.
  *

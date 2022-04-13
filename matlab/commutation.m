@@ -20,8 +20,8 @@ function k = commutation(n, m, sparseflag)
 % This function calls
 %   * vec (embedded)
 % =========================================================================
-% Copyright (C) 1997 Tom Minka <minka@microsoft.com>
-% Copyright (C) 2019-2020 Dynare Team
+% Copyright © 1997 Tom Minka <minka@microsoft.com>
+% Copyright © 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

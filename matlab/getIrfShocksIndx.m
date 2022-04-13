@@ -8,7 +8,7 @@ function irf_shocks_indx=getIrfShocksIndx()
 % Outputs:
 %   irf_shocks_indx: [1 by n_irf_shocks] vector storing the indices
 %
-% Copyright (C) 2011-2018 Dynare Team
+% Copyright © 2011-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

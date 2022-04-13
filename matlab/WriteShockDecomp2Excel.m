@@ -11,7 +11,7 @@ function WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,Dyna
 %   DynareModel     [structure]                     Dynare model structure
 %   DynareOptions   [structure]                     Dynare options structure
 
-% Copyright (C) 2016-2021 Dynare Team
+% Copyright © 2016-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

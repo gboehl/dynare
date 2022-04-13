@@ -16,7 +16,7 @@ function [ldens,Dldens,D2ldens] = lpdfgbeta(x,a,b,aa,bb)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2021 Dynare Team
+% Copyright © 2003-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -22,7 +22,7 @@ function [llik,parameters] = evaluate_likelihood(parameters,M_,estim_params_,oo_
 % [2] This function use persistent variables for the dataset and the description of the missing observations. Consequently, if this function
 %     is called more than once (by changing the value of parameters) the sample *must not* change.
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright © 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

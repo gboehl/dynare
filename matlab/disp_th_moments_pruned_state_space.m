@@ -20,7 +20,7 @@ function oo_=disp_th_moments_pruned_state_space(dr,M_,options_,i_var,oo_)
 %           autocorr        [cell] Cell storing the theoretical autocorrelation
 %           contemporaneous_correlation [matrix] matrix of contemporaneous correlations
 %
-% Copyright (C) 2020 Dynare Team
+% Copyright © 2020 Dynare Team
 %
 % This file is part of Dynare.
 %

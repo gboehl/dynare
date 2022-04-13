@@ -20,7 +20,7 @@ function [pars, cosnJ] = ident_bruteforce(J, max_dim_cova_group, TeX, name_tex, 
 % This function is called by
 %   * identification_analysis.m
 % =========================================================================
-% Copyright (C) 2009-2019 Dynare Team
+% Copyright © 2009-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

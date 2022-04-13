@@ -3,8 +3,8 @@ function [gend, data] = read_data()
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 
-% Copyright (C) 2012-2015 European Commission
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright © 2012-2015 European Commission
+% Copyright © 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

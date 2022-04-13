@@ -2,7 +2,7 @@ function [hasPackage] = user_has_octave_forge_package(package, min_version)
 % Checks for the availability of a given Octave Forge package
 % Optionally, a minimal version can be required for the package
 
-% Copyright (C) 2012-2019 Dynare Team
+% Copyright © 2012-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

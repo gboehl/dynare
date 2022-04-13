@@ -57,7 +57,7 @@ function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,de
 % SPECIAL REQUIREMENTS
 %   None
 
-% Copyright (C) 2006-2020 Dynare Team
+% Copyright © 2006-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

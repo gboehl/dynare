@@ -12,7 +12,7 @@ function write_latex_definitions
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2013-2019 Dynare Team
+% Copyright © 2013-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

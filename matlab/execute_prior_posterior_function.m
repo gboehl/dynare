@@ -17,7 +17,7 @@ function oo_=execute_prior_posterior_function(posterior_function_name,M_,options
 % OUTPUTS
 %   oo_          [structure]     Matlab/Octave structure gathering the results (initialized by dynare, see @ref{oo_}).
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright © 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %

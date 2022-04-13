@@ -10,7 +10,7 @@ function forecasts = backward_model_forecast(initialcondition, listofvariables, 
 % OUTPUTS
 % - forecast            [dseries]
 
-% Copyright (C) 2017-2018 Dynare Team
+% Copyright © 2017-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

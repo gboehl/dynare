@@ -13,7 +13,7 @@ function w=row_header_width(M_,estim_params_,bayestopt_)
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2018 Dynare Team
+% Copyright © 2006-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

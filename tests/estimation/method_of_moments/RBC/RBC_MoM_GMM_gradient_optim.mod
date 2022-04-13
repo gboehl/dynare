@@ -1,7 +1,7 @@
 % Test whether gradient-based optimizers are able to use analytical
 % Jacobian of moments in GMM estimation
 %
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

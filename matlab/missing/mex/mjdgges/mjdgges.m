@@ -18,7 +18,7 @@ function [ss, tt, zz, sdim, eigval, info] = mjdgges(e, d, qz_criterium, zhreshol
 % SPECIAL REQUIREMENTS
 %   none.
 
-% Copyright (C) 1996-2020 Dynare Team
+% Copyright © 1996-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

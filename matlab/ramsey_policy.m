@@ -1,6 +1,6 @@
 function info = ramsey_policy(var_list)
 
-% Copyright (C) 2007-2021 Dynare Team
+% Copyright © 2007-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

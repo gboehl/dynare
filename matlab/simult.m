@@ -45,7 +45,7 @@ function [y_out,DynareResults] =simult(y0, dr,DynareModel,DynareOptions,DynareRe
 %! @end deftypefn
 %@eod:
 
-% Copyright (C) 2001-2019 Dynare Team
+% Copyright © 2001-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

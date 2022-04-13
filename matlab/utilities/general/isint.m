@@ -15,7 +15,7 @@ function [l,c,d] = isint(a)
 %  NOTES
 %    p+q is equal to the product of m by n.
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright © 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

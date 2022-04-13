@@ -14,7 +14,7 @@ function d=hess_element(func,element1,element2,args)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2010-2020 Dynare Team
+% Copyright © 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -15,7 +15,7 @@ function [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_
 % - eid         [Integer]           n*1 vector of indices in M_.endo_names for the listed parameters in endogenous.
 % - xid         [Integer]           m*1 vector of indices in M_.exo_names for the listed parameters in exogenous.
 
-% Copyright (C) 2018-2020 Dynare Team
+% Copyright © 2018-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

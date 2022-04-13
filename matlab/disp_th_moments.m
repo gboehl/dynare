@@ -2,7 +2,7 @@ function oo_ = disp_th_moments(dr, var_list, M_, options_, oo_)
 
 % Display theoretical moments of variables
 
-% Copyright (C) 2001-2021 Dynare Team
+% Copyright © 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

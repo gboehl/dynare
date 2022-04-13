@@ -157,8 +157,8 @@ function [xmin, ...      % minimum search point of last iteration
                             %   passes two additional parameters to the function MYFUN2.
                             %
 
-% Copyright (C) 2001-2012 Nikolaus Hansen,
-% Copyright (C) 2012-2017 Dynare Team
+% Copyright © 2001-2012 Nikolaus Hansen,
+% Copyright © 2012-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

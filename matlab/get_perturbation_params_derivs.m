@@ -102,7 +102,7 @@ function DERIVS = get_perturbation_params_derivs(M, options, estim_params, oo, i
 %   * sylvester3a
 %   * get_perturbation_params_derivs_numerical_objective
 % =========================================================================
-% Copyright (C) 2019-2020 Dynare Team
+% Copyright © 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

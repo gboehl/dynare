@@ -11,7 +11,7 @@ function clean_sbvar_files()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2010-2011 Dynare Team
+% Copyright © 2010-2011 Dynare Team
 %
 % This file is part of Dynare.
 %

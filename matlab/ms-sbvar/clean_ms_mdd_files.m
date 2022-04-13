@@ -12,7 +12,7 @@ function clean_ms_mdd_files(file_tag, pt)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2011 Dynare Team
+% Copyright © 2011 Dynare Team
 %
 % This file is part of Dynare.
 %

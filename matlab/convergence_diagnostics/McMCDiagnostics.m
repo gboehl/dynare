@@ -16,7 +16,7 @@ function oo_ = McMCDiagnostics(options_, estim_params_, M_, oo_)
 % PARALLEL CONTEXT
 % See the comment in posterior_sampler.m funtion.
 
-% Copyright (C) 2005-2018 Dynare Team
+% Copyright © 2005-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

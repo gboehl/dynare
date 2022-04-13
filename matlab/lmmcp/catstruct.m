@@ -46,9 +46,9 @@ function A = catstruct(varargin)
 % Originally downloaded from MATLAB central:
 % http://www.mathworks.com/matlabcentral/fileexchange/7842-catstruct
 
-% Copyright (C) 2005 Jos van der Geest <jos@jasen.nl>
-% Copyright (C) 2013 Christophe Gouel
-% Copyright (C) 2016-2021 Dynare Team
+% Copyright © 2005 Jos van der Geest <jos@jasen.nl>
+% Copyright © 2013 Christophe Gouel
+% Copyright © 2016-2021 Dynare Team
 %
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are

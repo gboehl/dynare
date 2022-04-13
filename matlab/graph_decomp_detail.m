@@ -11,7 +11,7 @@ function []=graph_decomp_detail(z,shock_names,endo_names,i_var,initial_date,Dyna
 %   DynareModel     [structure]                     Dynare model structure
 %   DynareOptions   [structure]                     Dynare options structure
 
-% Copyright (C) 2010-2018 Dynare Team
+% Copyright © 2010-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

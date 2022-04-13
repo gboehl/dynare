@@ -4,7 +4,7 @@ function CDF = chi2cdf(x, n)
 %  CDF at X of the chi-square distribution with N degrees of freedom.
 % Original file: statistics/distributions/chi2inv.m
 
-% Copyright (C) 2013 Dynare Team
+% Copyright © 2013 Dynare Team
 %
 % This file is part of Dynare.
 %

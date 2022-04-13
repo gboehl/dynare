@@ -5,8 +5,8 @@ function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, DynareOptions
 % marco.ratto@ec.europa.eu
 %
 
-% Copyright (C) 2014 European Commission
-% Copyright (C) 2016-2018 Dynare Team
+% Copyright © 2014 European Commission
+% Copyright © 2016-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

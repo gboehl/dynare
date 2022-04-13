@@ -12,7 +12,7 @@ function [dr, info, M_, oo_]=discretionary_policy_1(Instruments, M_, options_, o
 % - M_            [structure]     Matlab's structure describing the model (M_).
 % - oo_           [structure]     Matlab's structure containing the results (oo_).
 
-% Copyright (C) 2007-2020 Dynare Team
+% Copyright © 2007-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

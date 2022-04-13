@@ -14,7 +14,7 @@ function [i_var, nvar, index_unique_present] = varlist_indices(sublist, list, no
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2010-2021 Dynare Team
+% Copyright © 2010-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,7 +1,7 @@
 function [vdec, corr, autocorr, z, zz] = th_moments(dr,var_list)
 % [vdec, corr, autocorr, z, zz] = th_moments(dr,var_list)
 
-% Copyright (C) 2012-2018 Dynare Team
+% Copyright © 2012-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

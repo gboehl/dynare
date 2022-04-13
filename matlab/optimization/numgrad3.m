@@ -10,8 +10,8 @@ function [g, badg] = numgrad3(fcn,f0,x,penalty,epsilon,varargin)
 % Original file downloaded from:
 % http://sims.princeton.edu/yftp/optimize/mfiles/numgrad.m
 
-% Copyright (C) 1993-2007 Christopher Sims
-% Copyright (C) 2008-2016 Dynare Team
+% Copyright © 1993-2007 Christopher Sims
+% Copyright © 2008-2016 Dynare Team
 %
 % This file is part of Dynare.
 %

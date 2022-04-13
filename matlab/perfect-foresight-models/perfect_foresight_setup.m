@@ -12,7 +12,7 @@ function perfect_foresight_setup()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 1996-2021 Dynare Team
+% Copyright © 1996-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

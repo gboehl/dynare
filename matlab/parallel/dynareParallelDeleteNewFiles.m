@@ -15,7 +15,7 @@ function dynareParallelDeleteNewFiles(PRCDir,Parallel,PRCDirSnapshot,varargin)
 %
 %
 %
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright © 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -18,7 +18,7 @@ function mh_autocorrelation_function(options_,M_,estim_params_,type,blck,name1,n
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright (C) 2003-2017 Dynare Team
+% Copyright © 2003-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

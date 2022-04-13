@@ -13,7 +13,7 @@ function myoutput=pm3_core(myinputs,fpar,nvar,whoiam, ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 
-% Copyright (C) 2007-2018 Dynare Team
+% Copyright © 2007-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

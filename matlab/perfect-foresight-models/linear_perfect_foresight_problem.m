@@ -16,7 +16,7 @@ function [residuals,JJacobian] = linear_perfect_foresight_problem(y, dynamicjaco
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2015-2020 Dynare Team
+% Copyright © 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

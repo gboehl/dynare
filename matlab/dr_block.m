@@ -36,7 +36,7 @@ function [dr,info,M_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
 %   none.
 %
 
-% Copyright (C) 2010-2022 Dynare Team
+% Copyright © 2010-2022 Dynare Team
 %
 % This file is part of Dynare.
 %

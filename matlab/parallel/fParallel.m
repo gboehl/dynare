@@ -18,7 +18,7 @@ function fParallel(fblck,nblck,whoiam,ThisMatlab,fname)
 % OUTPUTS
 %   None
 %
-% Copyright (C) 2006-2017 Dynare Team
+% Copyright © 2006-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

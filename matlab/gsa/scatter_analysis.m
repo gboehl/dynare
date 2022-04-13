@@ -5,8 +5,8 @@ function indmcf = scatter_analysis(lpmat, xdata, options_scatter, DynareOptions)
 % marco.ratto@ec.europa.eu
 %
 
-% Copyright (C) 2017 European Commission
-% Copyright (C) 2017 Dynare Team
+% Copyright © 2017 European Commission
+% Copyright © 2017 Dynare Team
 %
 % This file is part of Dynare.
 %

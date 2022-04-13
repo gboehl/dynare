@@ -18,7 +18,7 @@ function [Y, lhssub, X, residual, fp, lp] = parse_ols_style_equation(ds, ast)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019 Dynare Team
 %
 % This file is part of Dynare.
 %

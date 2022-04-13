@@ -1,6 +1,6 @@
 function [info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list)
 
-% Copyright (C) 2001-2021 Dynare Team
+% Copyright © 2001-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

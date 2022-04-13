@@ -24,7 +24,7 @@ function [x,f,fvec,check]=lnsrch1(xold, fold, g, p, stpmax, func, j1, j2, tolx, 
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2018 Dynare Team
+% Copyright © 2001-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

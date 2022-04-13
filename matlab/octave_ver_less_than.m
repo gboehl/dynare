@@ -15,7 +15,7 @@ function r = octave_ver_less_than(verstr)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2008-2019 Dynare Team
+% Copyright © 2008-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

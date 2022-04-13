@@ -31,7 +31,7 @@ function [out,info] = get_perturbation_params_derivs_numerical_objective(params,
 %   * resol
 %   * dyn_vech
 % =========================================================================
-% Copyright (C) 2019-2020 Dynare Team
+% Copyright © 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

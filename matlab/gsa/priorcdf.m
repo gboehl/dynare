@@ -11,7 +11,7 @@ function xcum = priorcdf(para, pshape, p6, p7, p3, p4)
 %         8 is WEIBULL(s, k)
 % Adapted by M. Ratto from MJ priordens.m
 
-% Copyright (C) 2012-2015 Dynare Team
+% Copyright © 2012-2015 Dynare Team
 %
 % This file is part of Dynare.
 %

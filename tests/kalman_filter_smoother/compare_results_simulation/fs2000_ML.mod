@@ -17,7 +17,7 @@
  */
 
 /*
- * Copyright (C) 2004-2019 Dynare Team
+ * Copyright © 2004-2019 Dynare Team
  *
  * This file is part of Dynare.
  *

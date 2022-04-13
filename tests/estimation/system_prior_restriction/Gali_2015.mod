@@ -20,7 +20,7 @@
  */
 
 /*
- * Copyright (C) 2021 Dynare Team
+ * Copyright © 2021 Dynare Team
  *
  * This file is part of Dynare.
  *

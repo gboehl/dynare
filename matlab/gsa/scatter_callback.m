@@ -5,8 +5,8 @@ function  scatter_callback(K, type)
 % marco.ratto@ec.europa.eu
 %
 
-% Copyright (C) 2017 European Commission
-% Copyright (C) 2018 Dynare Team
+% Copyright © 2017 European Commission
+% Copyright © 2018 Dynare Team
 %
 % This file is part of Dynare.
 %

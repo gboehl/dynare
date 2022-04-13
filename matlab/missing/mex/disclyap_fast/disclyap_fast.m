@@ -21,7 +21,7 @@ function [X,exitflag]=disclyap_fast(G,V,tol,check_flag,max_iter)
 % Joe Pearlman and Alejandro Justiniano
 % 3/5/2005
 
-% Copyright (C) 2010-2020 Dynare Team
+% Copyright © 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

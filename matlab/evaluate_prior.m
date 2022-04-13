@@ -21,7 +21,7 @@ function [ldens,parameters] = evaluate_prior(parameters,M_,estim_params_,oo_,opt
 % REMARKS
 % [1] This function cannot evaluate the prior density of a dsge-var model...
 
-% Copyright (C) 2009-2017 Dynare Team
+% Copyright © 2009-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -4,8 +4,8 @@ function map_calibration(OutputDirectoryName, Model, DynareOptions, DynareResult
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 
-% Copyright (C) 2014-2016 European Commission
-% Copyright (C) 2014-2018 Dynare Team
+% Copyright © 2014-2016 European Commission
+% Copyright © 2014-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

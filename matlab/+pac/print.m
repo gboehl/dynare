@@ -19,7 +19,7 @@ function print(pacexpectationmodelname, eqname, withcalibration)
 % These routines are saved under the {modfilename}/model/pacexpectationmodel subfolder, and can be
 % used after in another mod file (ie included with the macro directive @#include).
 
-% Copyright (C) 2018-2019 Dynare Team
+% Copyright © 2018-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

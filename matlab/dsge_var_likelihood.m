@@ -45,7 +45,7 @@ function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright (C) 2006-2021 Dynare Team
+% Copyright © 2006-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

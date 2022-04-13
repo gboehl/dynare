@@ -11,7 +11,7 @@ function print_info(info, noprint, DynareOptions)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2005-2020 Dynare Team
+% Copyright © 2005-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

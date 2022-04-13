@@ -95,7 +95,7 @@ function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dM
 %   * pruned_state_space_system
 %   * vec
 % =========================================================================
-% Copyright (C) 2010-2020 Dynare Team
+% Copyright © 2010-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

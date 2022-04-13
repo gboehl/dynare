@@ -1,7 +1,7 @@
 % Stochastic growth model of Brock and Mirman (1972) with technology shock
 % created by Willi Mutschler (@wmutschl, willi@mutschler.eu)
 % =========================================================================
-% Copyright (C) 2019-2020 Dynare Team
+% Copyright © 2019-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

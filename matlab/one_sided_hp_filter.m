@@ -37,8 +37,8 @@ function [ytrend,ycycle]=one_sided_hp_filter(y,lambda,x_user,P_user,discard)
 %   Time Series Analysis, with the exception of H, which is equivalent to his H'.
 
 
-% Copyright (C) 2010-2015 Alexander Meyer-Gohde
-% Copyright (C) 2015-2017 Dynare Team
+% Copyright © 2010-2015 Alexander Meyer-Gohde
+% Copyright © 2015-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

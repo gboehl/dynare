@@ -14,7 +14,7 @@
  */
 
 /*
- * Copyright (C) 2004-2020 Dynare Team
+ * Copyright © 2004-2020 Dynare Team
  *
  * This file is part of Dynare.
  *

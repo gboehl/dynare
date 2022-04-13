@@ -1,6 +1,6 @@
 function run_ls2003(block, storage, solve_algo, stack_solve_algo)
 
-% Copyright (C) 2010-2013 Dynare Team
+% Copyright © 2010-2013 Dynare Team
 %
 % This file is part of Dynare.
 %

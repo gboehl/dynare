@@ -32,7 +32,7 @@ function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2003-2021 Dynare Team
+% Copyright © 2003-2021 Dynare Team
 %
 % This file is part of Dynare.
 %

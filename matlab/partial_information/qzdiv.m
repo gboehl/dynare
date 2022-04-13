@@ -9,8 +9,8 @@ function [A,B,Q,Z] = qzdiv(stake,A,B,Q,Z)
 % Original file downloaded from:
 % http://sims.princeton.edu/yftp/gensys/mfiles/qzdiv.m
 
-% Copyright (C) 1993-2007 Christopher Sims
-% Copyright (C) 2008-2017 Dynare Team
+% Copyright © 1993-2007 Christopher Sims
+% Copyright © 2008-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

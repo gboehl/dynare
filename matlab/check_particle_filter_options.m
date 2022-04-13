@@ -11,7 +11,7 @@ function [particle_options] = check_particle_filter_options(particle_options)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2021 Dynare Team
+% Copyright © 2021 Dynare Team
 %
 % This file is part of Dynare.
 %

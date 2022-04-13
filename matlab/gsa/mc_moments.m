@@ -1,6 +1,6 @@
 function [vdec, cc, ac] = mc_moments(mm, ss, dr)
 
-% Copyright (C) 2012-2018 Dynare Team
+% Copyright © 2012-2018 Dynare Team
 %
 % This file is part of Dynare.
 %

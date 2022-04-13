@@ -15,7 +15,7 @@ function plot_priors(bayestopt_,M_,estim_params_,options_,optional_title)
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright (C) 2004-2020 Dynare Team
+% Copyright © 2004-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

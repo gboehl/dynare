@@ -6,8 +6,8 @@ function gsa_plotmatrix(type,varargin)
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 
-% Copyright (C) 2011-2012 European Commission
-% Copyright (C) 2011-2017 Dynare Team
+% Copyright © 2011-2012 European Commission
+% Copyright © 2011-2017 Dynare Team
 %
 % This file is part of Dynare.
 %

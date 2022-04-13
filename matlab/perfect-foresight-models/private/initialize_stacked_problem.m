@@ -30,7 +30,7 @@ function [options, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, i
 % - i_cols_J0           [double] indices of contemporaneous variables appearing in M.lead_lag_incidence (relevant in problems with periods=1)
 % - dynamicmodel        [handle] function handle to _dynamic-file
 
-% Copyright (C) 2015-2020 Dynare Team
+% Copyright © 2015-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

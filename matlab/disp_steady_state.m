@@ -13,7 +13,7 @@ function disp_steady_state(M,oo,options)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2020 Dynare Team
+% Copyright © 2001-2020 Dynare Team
 %
 % This file is part of Dynare.
 %
