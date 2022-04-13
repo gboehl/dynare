@@ -17,7 +17,7 @@ function write(o, fid, pg, sec, row, col, rep_dir)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2020 Dynare Team
+% Copyright © 2013-2020 Dynare Team
 %
 % This file is part of Dynare.
 %

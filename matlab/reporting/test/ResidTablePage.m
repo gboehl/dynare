@@ -1,5 +1,5 @@
 function rep = ResidTablePage(rep, countryAbbr, countryName, db_q, dc_q, trange, vline_after)
-% Copyright (C) 2011-2019 Dynare Team
+% Copyright © 2011-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

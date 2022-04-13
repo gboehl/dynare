@@ -1,7 +1,7 @@
 classdef report_data < handle
     % report_data Class to write a page to the report
     %
-    % Copyright (C) 2019 Dynare Team
+    % Copyright © 2019 Dynare Team
     %
     % This file is part of Dynare.
     %

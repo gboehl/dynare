@@ -12,7 +12,7 @@ function o = addVspace(o, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2019 Dynare Team
+% Copyright © 2019 Dynare Team
 %
 % This file is part of Dynare.
 %

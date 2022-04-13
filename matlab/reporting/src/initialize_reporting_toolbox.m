@@ -3,7 +3,7 @@ function initialize_reporting_toolbox()
 %
 % Function to set the necessary paths for the Reporting toolbox
 %
-% Copyright (C) 2015-2019 Dynare Team
+% Copyright © 2015-2019 Dynare Team
 %
 % This file is part of Dynare.
 %

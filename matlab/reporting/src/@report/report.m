@@ -1,7 +1,7 @@
 classdef report < handle
     % report Class
     %
-    % Copyright (C) 2013-2019 Dynare Team
+    % Copyright © 2013-2019 Dynare Team
     %
     % This file is part of Dynare.
     %

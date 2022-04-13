@@ -1,7 +1,7 @@
 function ymax = ymax(o, dd)
 %function ymax = ymax(o, dd)
 
-% Copyright (C) 2014-2015 Dynare Team
+% Copyright © 2014-2015 Dynare Team
 %
 % This file is part of Dynare.
 %

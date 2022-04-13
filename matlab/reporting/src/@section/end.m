@@ -13,7 +13,7 @@ function lastIndex = end(o, k, n)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2013-2015 Dynare Team
+% Copyright © 2013-2015 Dynare Team
 %
 % This file is part of Dynare.
 %

@@ -1,7 +1,7 @@
 classdef report_table < handle
     % report_table Class
     %
-    % Copyright (C) 2013-2019 Dynare Team
+    % Copyright © 2013-2019 Dynare Team
     %
     % This file is part of Dynare.
     %
@@ -172,7 +172,7 @@ function tf = allCellsAreDatesRange(dcell)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014-2015 Dynare Team
+% Copyright © 2014-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -212,7 +212,7 @@ function tf = allCellsAreDates(dcell)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2014-2015 Dynare Team
+% Copyright © 2014-2015 Dynare Team
 %
 % This file is part of Dynare.
 %

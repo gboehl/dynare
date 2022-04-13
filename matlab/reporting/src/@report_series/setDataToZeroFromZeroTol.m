@@ -1,7 +1,7 @@
 function d = setDataToZeroFromZeroTol(o, ds)
 %function d = setDataToZeroFromZeroTol(o, ds)
 
-% Copyright (C) 2014-2015 Dynare Team
+% Copyright © 2014-2015 Dynare Team
 %
 % This file is part of Dynare.
 %
