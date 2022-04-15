@@ -34,7 +34,9 @@ AR=$($MKOCTFILE -p AR)
 RANLIB=$($MKOCTFILE -p RANLIB)
 CFLAGS=$($MKOCTFILE -p CFLAGS)
 CXXFLAGS=$($MKOCTFILE -p CXXFLAGS)
-LDFLAGS=$($MKOCTFILE -p LDFLAGS)
+# The --link-stand-alone is needed since Octave 7 to avoid inserting -shared, which
+# is undesirable for generic LDFLAGS.
+LDFLAGS=$($MKOCTFILE --link-stand-alone -p LDFLAGS)
 
 AC_CANONICAL_HOST
 

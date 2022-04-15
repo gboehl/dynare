@@ -2,6 +2,8 @@
 
 ## Make sure to keep -static-libgcc, -static-libstdc++ and -static-libgfortran
 ## in DL_LDFLAGS when updating this file.
+## Do not add -shared in LDFLAGS (i.e. this file should mimick “mkoctfile
+## --link-stand-alone”, see the top of mex/build/configure.ac).
 ## Also keep BINDIR in DEFAULT_LDFLAGS (for UMFPACK).
 
 # Exit immediately on any error.
