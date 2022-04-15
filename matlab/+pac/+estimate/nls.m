@@ -98,7 +98,7 @@ write_ssr_routine(lhs, rhs, eqname, ipnames_, M_, pacmodl);
 
 % Workaround for Octave bug https://savannah.gnu.org/bugs/?46282
 % Octave will randomly fail to read the ssr_* file generated in the +folder
-if isoctave
+if isoctave && octave_ver_less_than('7')
     path(path)
 end
 
