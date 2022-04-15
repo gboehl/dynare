@@ -63,7 +63,7 @@ function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_,
 %  o set_all_parameters.m
 %  o test_for_deep_parameters_calibration.m
 % =========================================================================
-% Copyright © 2020-2021 Dynare Team
+% Copyright © 2020-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -1018,11 +1018,7 @@ fprintf('\n==== Method of Moments Estimation (%s) Completed ====\n\n',options_mo
 % Step 9: Clean up
 % -------------------------------------------------------------------------
 %reset warning state
-if isoctave
-    warning('on')
-else
-    warning on
-end
+warning_config;
 
 if isoctave && isfield(options_, 'prior_restrictions') && ...
    isfield(options_.prior_restrictions, 'routine')

@@ -46,7 +46,7 @@ function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, ST
 %    * skipline
 %    * vnorm
 % =========================================================================
-% Copyright © 2010-2021 Dynare Team
+% Copyright © 2010-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -968,11 +968,7 @@ if SampleSize > 1
 end
 
 %reset warning state
-if isoctave
-    warning('on')
-else
-    warning on
-end
+warning_config;
 
 fprintf('\n==== Identification analysis completed ====\n\n')
 

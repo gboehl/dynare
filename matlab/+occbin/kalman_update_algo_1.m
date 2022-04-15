@@ -42,7 +42,7 @@ function [a, a1, P, P1, v, T, R, C, regimes_, error_flag, M_, lik, etahat] = kal
 % Philipp Pfeiffer, Marco Ratto (2021), Efficient and robust inference of models with occasionally binding
 % constraints, Working Papers 2021-03, Joint Research Centre, European Commission 
 
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -323,7 +323,7 @@ P(:,:,2) = T(:,:,2)*P(:,:,1)*transpose(T(:,:,2))+QQ;
 regimes_=regimes_(1:3);
 etahat=etahat(:,2);
 
-warning on
+warning_config;
 end
 
 function [a, a1, P, P1, v, alphahat, etahat, lik] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, rescale_prediction_error_covariance, IF_likelihood)
@@ -424,5 +424,5 @@ while t > 1
     end
 end
 
-warning on
+warning_config;
 end
