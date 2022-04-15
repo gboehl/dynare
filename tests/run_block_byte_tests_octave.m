@@ -61,8 +61,10 @@ for blockFlag = 0:1
 
         # Workaround for strange race condition related to the static/dynamic
         # files (especially when we switch to/from use_dll)
-        rmdir('+ls2003_tmp', 's');
-        pause(1)
+        if exist('+ls2003_tmp')
+            rmdir('+ls2003_tmp', 's');
+            pause(1)
+        endif
 
         for i = 1:length(solve_algos)
             num_block_tests = num_block_tests + 1;
