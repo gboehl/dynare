@@ -64,15 +64,15 @@ if ismember(options.solve_algo, [12, 14])
     isauxdiffloggedrhs = varargin{2};
     endo_names = varargin{3};
     lhs = varargin{4};
-    arguments = varargin(5:end);
+    args = varargin(5:end);
 else
-    arguments = varargin;
+    args = varargin;
 end
 
 % checking initial values
 % TODO We should have an option to deactivate the randomization.
 if jacobian_flag
-    [fvec, fjac] = feval(f, x, arguments{:});
+    [fvec, fjac] = feval(f, x, args{:});
     wrong_initial_guess_flag = false;
     if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) || any(~isreal(fvec)) || any(~isreal(fjac(:)))
         if ~ismember(options.solve_algo,[10,11]) && max(abs(fvec))< tolf
@@ -88,7 +88,7 @@ if jacobian_flag
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = rand(in0, 1)*10;
-            [fvec, fjac] = feval(f, x, arguments{:});
+            [fvec, fjac] = feval(f, x, args{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
         end
         % If all previous attempts failed, try with real numbers.
@@ -96,7 +96,7 @@ if jacobian_flag
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = randn(in0, 1)*10;
-            [fvec, fjac] = feval(f, x, arguments{:});
+            [fvec, fjac] = feval(f, x, args{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
         end
         % Last tentative, ff all previous attempts failed, try with negative numbers.
@@ -104,12 +104,12 @@ if jacobian_flag
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = -rand(in0, 1)*10;
-            [fvec, fjac] = feval(f, x, arguments{:});
+            [fvec, fjac] = feval(f, x, args{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
         end
     end
 else
-    fvec = feval(f, x, arguments{:});
+    fvec = feval(f, x, args{:});
     fjac = zeros(nn, nn);
     if ~ismember(options.solve_algo,[10,11]) && max(abs(fvec)) < tolf
         % return if initial value solves the problem except if a mixed complementarity problem is to be solved (complementarity conditions may not be satisfied)
@@ -125,7 +125,7 @@ else
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = rand(in0, 1)*10;
-            fvec = feval(f, x, arguments{:});
+            fvec = feval(f, x, args{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec));
         end
         % If all previous attempts failed, try with real numbers.
@@ -133,7 +133,7 @@ else
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = randn(in0, 1)*10;
-            fvec = feval(f, x, arguments{:});
+            fvec = feval(f, x, args{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec));
         end
         % Last tentative, ff all previous attempts failed, try with negative numbers.
@@ -141,7 +141,7 @@ else
         while wrong_initial_guess_flag && tentative_number<=in0*10
             tentative_number = tentative_number+1;
             x(idx) = -rand(in0, 1)*10;
-            fvec = feval(f, x, arguments{:});
+            fvec = feval(f, x, args{:});
             wrong_initial_guess_flag = ~all(isfinite(fvec));
         end
     end
@@ -176,7 +176,7 @@ if options.solve_algo == 0
         options4fsolve.Jacobian = 'off';
     end
     if ~isoctave
-        [x, ~, errorcode] = fsolve(f, x, options4fsolve, arguments{:});
+        [x, ~, errorcode] = fsolve(f, x, options4fsolve, args{:});
     else
         % Under Octave, use a wrapper, since fsolve() does not have a 4th arg
         if ischar(f)
@@ -184,7 +184,7 @@ if options.solve_algo == 0
         else
             f2 = f;
         end
-        f = @(x) f2(x, arguments{:});
+        f = @(x) f2(x, args{:});
         [x, ~, errorcode] = fsolve(f, x, options4fsolve);
     end
     if errorcode==1
@@ -196,7 +196,7 @@ if options.solve_algo == 0
             else
                 f2 = f;
             end
-            f = @(x) f2(x, arguments{:});
+            f = @(x) f2(x, args{:});
         end
         if max(abs(fvec)) > tolf
             errorflag = true;
@@ -206,13 +206,13 @@ if options.solve_algo == 0
     else
         errorflag = true;
     end
-    [fvec, fjac] = feval(f, x, arguments{:});
+    [fvec, fjac] = feval(f, x, args{:});
 elseif options.solve_algo==1
-    [x, errorflag, errorcode] = solve1(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, [], options.debug, arguments{:});
-    [fvec, fjac] = feval(f, x, arguments{:});
+    [x, errorflag, errorcode] = solve1(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, [], options.debug, args{:});
+    [fvec, fjac] = feval(f, x, args{:});
 elseif options.solve_algo==9
-    [x, errorflag, errorcode] = trust_region(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, options.trust_region_initial_step_bound_factor, options.debug, arguments{:});
-    [fvec, fjac] = feval(f, x, arguments{:});
+    [x, errorflag, errorcode] = trust_region(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, options.trust_region_initial_step_bound_factor, options.debug, args{:});
+    [fvec, fjac] = feval(f, x, args{:});
 elseif ismember(options.solve_algo, [2, 12, 4])
     if ismember(options.solve_algo, [2, 12])
         solver = @solve1;
@@ -226,7 +226,7 @@ elseif ismember(options.solve_algo, [2, 12, 4])
         for j = 1:nn
             xdh = x ;
             xdh(j) = xdh(j)+dh(j) ;
-            fjac(:,j) = (feval(f, xdh, arguments{:})-fvec)./dh(j) ;
+            fjac(:,j) = (feval(f, xdh, args{:})-fvec)./dh(j) ;
         end
     end
     [j1,j2,r,s] = dmperm(fjac);
@@ -251,13 +251,13 @@ elseif ismember(options.solve_algo, [2, 12, 4])
                     if fre || any(JAC(r(i), s(i)+(1:l)))
                         % Reevaluation of the residuals is required because the current RHS depends on
                         % variables that potentially have been updated previously.
-                        z = feval(f, x, arguments{:});
+                        z = feval(f, x, args{:});
                         l = 0;
                         fre = false;
                     end
                 else
                     % First iteration requires the evaluation of the residuals.
-                    z = feval(f, x, arguments{:});
+                    z = feval(f, x, args{:});
                 end
                 l = l+1;
                 if isequal(lhs{j1(j)}, endo_names{j2(j)}) || isequal(lhs{j1(j)}, sprintf('log(%s)', endo_names{j2(j)}))
@@ -292,43 +292,43 @@ elseif ismember(options.solve_algo, [2, 12, 4])
                                            options.gstep, ...
                                            tolf, options.solve_tolx, maxit, ...
                                            options.trust_region_initial_step_bound_factor, ...
-                                           options.debug, arguments{:});
+                                           options.debug, args{:});
         fre = true;
         if errorflag
             return
         end
     end
-    fvec = feval(f, x, arguments{:});
+    fvec = feval(f, x, args{:});
     if max(abs(fvec))>tolf
         disp_verbose('Call solver on the full nonlinear problem.',options.verbosity)
         [x, errorflag, errorcode] = solver(f, x, 1:nn, 1:nn, jacobian_flag, ...
                                            options.gstep, tolf, options.solve_tolx, maxit, ...
                                            options.trust_region_initial_step_bound_factor, ...
-                                           options.debug, arguments{:});
+                                           options.debug, args{:});
     end
-    [fvec, fjac] = feval(f, x, arguments{:});
+    [fvec, fjac] = feval(f, x, args{:});
 elseif options.solve_algo==3
     if jacobian_flag
-        [x, errorcode] = csolve(f, x, f, tolf, maxit, arguments{:});
+        [x, errorcode] = csolve(f, x, f, tolf, maxit, args{:});
     else
-        [x, errorcode] = csolve(f, x, [], tolf, maxit, arguments{:});
+        [x, errorcode] = csolve(f, x, [], tolf, maxit, args{:});
     end
     if errorcode==0
         errorflag = false;
     else
         errorflag = true;
     end
-    [fvec, fjac] = feval(f, x, arguments{:});
+    [fvec, fjac] = feval(f, x, args{:});
 elseif options.solve_algo==10
     % LMMCP
     olmmcp = options.lmmcp;
-    [x, fvec, errorcode, ~, fjac] = lmmcp(f, x, olmmcp.lb, olmmcp.ub, olmmcp, arguments{:});
+    [x, fvec, errorcode, ~, fjac] = lmmcp(f, x, olmmcp.lb, olmmcp.ub, olmmcp, args{:});
     if errorcode==1
         errorflag = false;
     else
         errorflag = true;
     end
-    [fvec, fjac] = feval(f, x, arguments{:});
+    [fvec, fjac] = feval(f, x, args{:});
 elseif options.solve_algo == 11
     % PATH mixed complementary problem
     % PATH linear mixed complementary problem
@@ -340,14 +340,14 @@ elseif options.solve_algo == 11
     omcppath = options.mcppath;
     global mcp_data
     mcp_data.func = f;
-    mcp_data.args = arguments;
+    mcp_data.args = args;
     try
         [x, fval, jac, mu] = pathmcp(x,omcppath.lb,omcppath.ub,'mcp_func',omcppath.A,omcppath.b,omcppath.t,omcppath.mu0);
     catch
         errorflag = true;
     end
     errorcode = nan; % There is no error code for this algorithm, as PATH is closed source it is unlikely we can fix that.
-    [fvec, fjac] = feval(f, x, arguments{:});
+    [fvec, fjac] = feval(f, x, args{:});
 elseif ismember(options.solve_algo, [13, 14])
     if ~jacobian_flag
         error('DYNARE_SOLVE: option solve_algo=13|14 needs computed Jacobian')
@@ -359,8 +359,8 @@ elseif ismember(options.solve_algo, [13, 14])
         auxstruct.isloggedlhs = isloggedlhs;
         auxstruct.isauxdiffloggedrhs = isauxdiffloggedrhs;
     end
-    [x, errorflag, errorcode] = block_trust_region(f, x, tolf, options.solve_tolx, maxit, options.trust_region_initial_step_bound_factor, options.debug, auxstruct, arguments{:});
-    [fvec, fjac] = feval(f, x, arguments{:});
+    [x, errorflag, errorcode] = block_trust_region(f, x, tolf, options.solve_tolx, maxit, options.trust_region_initial_step_bound_factor, options.debug, auxstruct, args{:});
+    [fvec, fjac] = feval(f, x, args{:});
 else
     error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9,10,11,12,13,14]')
 end
