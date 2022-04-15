@@ -1,4 +1,4 @@
-% Copyright © 2013-2020 Dynare Team
+% Copyright © 2013-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,7 +39,7 @@ if isoctave
 end
 
 % Set random seed, for reproducibility
-if isoctave
+if isoctave && octave_ver_less_than('7')
     randn('state',1);
     rand('state',1);
 else
