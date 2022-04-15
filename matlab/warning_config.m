@@ -41,6 +41,7 @@ if isoctave
     warning('off', 'Octave:num-to-str');
     warning('off', 'Octave:resize-on-range-error');
     warning('off', 'Octave:str-to-num');
+    warning('off', 'Octave:array-as-logical');
     warning('off', 'Octave:array-to-scalar');
     warning('off', 'Octave:array-to-vector');
     warning('off', 'Octave:mixed-string-concat');
