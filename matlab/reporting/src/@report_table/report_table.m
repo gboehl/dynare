@@ -1,7 +1,7 @@
 classdef report_table < handle
     % report_table Class
     %
-    % Copyright © 2013-2019 Dynare Team
+    % Copyright © 2013-2022 Dynare Team
     %
     % This file is part of Dynare.
     %
@@ -73,9 +73,13 @@ classdef report_table < handle
             end
 
             % Octave 5.1.0 has not implemented `properties` and issues a warning when using `fieldnames`
-            warning('off')
+            if isoctave
+                warnstate = warning('off', 'Octave:classdef-to-struct');
+            end
             optNames = fieldnames(o);
-            warning('on')
+            if isoctave
+                warning(warnstate);
+            end
 
             % overwrite default values
             for pair = reshape(varargin, 2, [])
