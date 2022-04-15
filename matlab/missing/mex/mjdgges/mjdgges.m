@@ -18,7 +18,7 @@ function [ss, tt, zz, sdim, eigval, info] = mjdgges(e, d, qz_criterium, zhreshol
 % SPECIAL REQUIREMENTS
 %   none.
 
-% Copyright © 1996-2020 Dynare Team
+% Copyright © 1996-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,7 +40,7 @@ if nargin > 5 || nargin < 2 || nargout > 7 || nargout == 0
 end
 
 if isoctave
-    error('Octave unsupported, since it does not have real qz, ordqz and ordeig')
+    error('Octave unsupported, since it does not have real qz')
 end
 
 [me, ne] = size(e);
