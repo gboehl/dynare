@@ -9,11 +9,10 @@ function o = loadjson_(jsonfilename)
 % - o              [struct]    content of the JSON file.
 %
 % REMARKS
-% jsondecode builtin was introduced in Matlab R2016b and is not
-% available under Octave. Old Matlab versions and Octave use
-% jsonlab as fallback. 
+% jsondecode builtin was introduced in MATLAB R2016b and in Octave 7.
+% Older MATLAB and Octave versions use jsonlab as fallback.
 
-% Copyright © 2020-2021 Dynare Team
+% Copyright © 2020-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,7 +29,7 @@ function o = loadjson_(jsonfilename)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if isoctave() || matlab_ver_less_than('9.1')
+if (isoctave && octave_ver_less_than('7')) || (~isoctave && matlab_ver_less_than('9.1'))
     o = loadjson(jsonfilename);
     return
 end
