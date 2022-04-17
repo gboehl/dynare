@@ -8,7 +8,7 @@ function objects = get_variables_and_parameters_in_expression(expr)
 % OUTPUTS
 % - objects    [cell]             cell of row char arrays, names of the variables and parameters in expr.
 
-% Copyright © 2020-2021 Dynare Team
+% Copyright © 2020-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,15 +37,12 @@ end
 % Filter out the numbers, punctuation.
 objects(cellfun(@(x) all(isstrprop(x, 'digit')+isstrprop(x, 'punct')), objects)) = [];
 
-                        % Filter out empty elements.
-                        objects(cellfun(@(x) all(isempty(x)), objects)) = [];
+% Filter out functions
+objects(cellfun(@(x) ismember(x, {'log', 'log10', 'ln', 'exp', 'sqrt', 'abs', 'sign', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'min', 'max', 'normcdf', 'normpdf', 'erf', 'diff', 'adl'}), objects)) = [];
+
+% Filter out empty elements.
+objects(cellfun(@(x) all(isempty(x)), objects)) = [];
 
 
-                        function o = splitexpr(expr)
-                        o = strsplit(expr, {'+','-','*','/','^', ...
-                    'log(', 'log10(', 'ln(', 'exp(', ...
-                    'sqrt(', 'abs(', 'sign(', ...
-                    'sin(', 'cos(', 'tan(', 'asin(', 'acos(', 'atan(', ...
-                    'min(', 'max(', ...
-                    'normcdf(', 'normpdf(', 'erf(', ...
-                    'diff(', 'adl(', '(', ')', '\n', '\t', ' '});
+function o = splitexpr(expr)
+o = strsplit(expr, {'+','-','*','/','^', '(', ')', '\n', '\t', ' '});
