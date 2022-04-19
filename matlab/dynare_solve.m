@@ -184,20 +184,11 @@ if options.solve_algo == 0
         else
             f2 = f;
         end
-        f = @(x) f2(x, args{:});
-        [x, ~, errorcode] = fsolve(f, x, options4fsolve);
+        [x, ~, errorcode] = fsolve(@(x) f2(x, args{:}), x, options4fsolve);
     end
     if errorcode==1
         errorflag = false;
     elseif errorcode>1
-        if ~isoctave
-            if ischar(f)
-                f2 = str2func(f);
-            else
-                f2 = f;
-            end
-            f = @(x) f2(x, args{:});
-        end
         if max(abs(fvec)) > tolf
             errorflag = true;
         else
