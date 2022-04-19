@@ -176,7 +176,7 @@ if options.solve_algo == 0
         options4fsolve.Jacobian = 'off';
     end
     if ~isoctave
-        [x, ~, errorcode] = fsolve(f, x, options4fsolve, args{:});
+        [x, fvec, errorcode, ~, fjac] = fsolve(f, x, options4fsolve, args{:});
     else
         % Under Octave, use a wrapper, since fsolve() does not have a 4th arg
         if ischar(f)
@@ -184,7 +184,7 @@ if options.solve_algo == 0
         else
             f2 = f;
         end
-        [x, ~, errorcode] = fsolve(@(x) f2(x, args{:}), x, options4fsolve);
+        [x, fvec, errorcode, ~, fjac] = fsolve(@(x) f2(x, args{:}), x, options4fsolve);
     end
     if errorcode==1
         errorflag = false;
@@ -197,7 +197,6 @@ if options.solve_algo == 0
     else
         errorflag = true;
     end
-    [fvec, fjac] = feval(f, x, args{:});
 elseif options.solve_algo==1
     [x, errorflag, errorcode] = solve1(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, [], options.debug, args{:});
     [fvec, fjac] = feval(f, x, args{:});
