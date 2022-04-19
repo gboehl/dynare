@@ -118,19 +118,19 @@ for it = initialconditions.nobs+(1:samplesize)
         if any(residuals_evaluating_to_nan)
             dprintf('Following equations are evaluating to NaN:')
             skipline()
-            display_names_of_problematic_equations(DynareModel, residuals_evaluating_to_nan);
+            display_names_of_problematic_equations(DynareModel, eqtags, residuals_evaluating_to_nan);
             skipline()
         end
         if any(residuals_evaluating_to_inf)
             dprintf('Following equations are evaluating to Inf:')
             skipline()
-            display_names_of_problematic_equations(DynareModel, residuals_evaluating_to_nan);
+            display_names_of_problematic_equations(DynareModel, eqtags, residuals_evaluating_to_inf);
             skipline()
         end
         if any(residuals_evaluating_to_complex)
             dprintf('Following equations are evaluating to a complex number:')
             skipline()
-            display_names_of_problematic_equations(DynareModel, residuals_evaluating_to_nan);
+            display_names_of_problematic_equations(DynareModel, eqtags, residuals_evaluating_to_complex);
             skipline()
         end
         break
@@ -142,7 +142,7 @@ end
 ysim = DynareOutput.endo_simul(1:DynareModel.orig_endo_nbr,:);
 xsim = DynareOutput.exo_simul;
 
-function display_names_of_problematic_equations(DynareModel, TruthTable)
+function display_names_of_problematic_equations(DynareModel, eqtags, TruthTable)
 for i=1:DynareModel.orig_endo_nbr
     if TruthTable(i)
         dprintf(' - %s', eqtags{i})
