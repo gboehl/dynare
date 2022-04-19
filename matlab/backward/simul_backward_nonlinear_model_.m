@@ -111,7 +111,7 @@ for it = initialconditions.nobs+(1:samplesize)
         %
         % Evaluate and check the residuals
         %
-        [r, J] = feval(model_dynamic, [ytm; ytm(iy1)], DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+        [r, J] = feval(model_dynamic_s, ytm, model_dynamic, ytm(iy1), DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
         residuals_evaluating_to_nan = isnan(r);
         residuals_evaluating_to_inf = isinf(r);
         residuals_evaluating_to_complex = ~isreal(r);
