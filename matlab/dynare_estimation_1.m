@@ -12,7 +12,7 @@ function dynare_estimation_1(var_list_,dname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2003-2021 Dynare Team
+% Copyright © 2003-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,7 +32,7 @@ function dynare_estimation_1(var_list_,dname)
 global M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info
 
 if ~exist([M_.dname filesep 'Output'],'dir')
-    if isoctave && ~exist(M_.dname)
+    if isoctave && octave_ver_less_than('7') && ~exist(M_.dname)
         % See https://savannah.gnu.org/bugs/index.php?61166
         % This workaround is needed for recursive estimation.
         mkdir(M_.dname)
