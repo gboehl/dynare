@@ -390,6 +390,7 @@ MODFILES = \
 	deterministic_simulations/rbc_det_stack_solve_algo_7_exo_lead.mod \
 	deterministic_simulations/pfwee.mod \
 	deterministic_simulations/pfwee_constant_sim_length.mod \
+	deterministic_simulations/pfwee_learnt_in.mod \
 	lmmcp/rbc.mod \
 	lmmcp/sw_lmmcp.mod \
 	lmmcp/sw_newton.mod \

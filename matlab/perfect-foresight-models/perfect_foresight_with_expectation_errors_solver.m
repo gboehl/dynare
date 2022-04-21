@@ -17,11 +17,11 @@ function perfect_foresight_with_expectation_errors_solver
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ oo_ options_
+global M_ oo_ options_ ys0_
 
-% Save initial steady state, for restoring it at the end
-initial_steady_state = oo_.steady_state;
-initial_exo_steady_state = oo_.exo_steady_state;
+% Save original steady state, for restoring it at the end
+orig_steady_state = oo_.steady_state;
+orig_exo_steady_state = oo_.exo_steady_state;
 
 % Same for periods (it will be modified before calling perfect_foresight_solver if constants_simulation_length option is false)
 periods = options_.periods;
@@ -34,6 +34,11 @@ exo_simul = oo_.exo_simul;
 % Start main loop around informational periods
 info_period = 1;
 increment = 0;
+if isempty(ys0_)
+    initial_steady_state = oo_.steady_state;
+else
+    initial_steady_state = ys0_;
+end
 while info_period <= periods
     % Compute terminal steady state as anticipated
     oo_.exo_steady_state = oo_.pfwee.terminal_info(:, info_period);
@@ -88,6 +93,6 @@ oo_.endo_simul = endo_simul;
 oo_.exo_simul = exo_simul;
 
 % Restore some values
-oo_.steady_state = initial_steady_state;
-oo_.exo_steady_state = initial_exo_steady_state;
+oo_.steady_state = orig_steady_state;
+oo_.exo_steady_state = orig_exo_steady_state;
 options_.periods = periods;

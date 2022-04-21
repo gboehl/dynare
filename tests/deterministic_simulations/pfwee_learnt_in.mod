@@ -1,5 +1,5 @@
 /* Tests perfect_foresight_with_expectation_errors_{setup,solver}
-   using a CSV datafile */
+   using the shocks(learnt_in=…) and endval(learnt_in=…) syntax */
 
 var c k;
 varexo x;
@@ -27,7 +27,52 @@ steady;
 
 check;
 
-perfect_foresight_with_expectation_errors_setup(periods = 7, datafile = 'pfwee.csv');
+// Describe the same scenario as in pfwee.csv, but using the Dynare syntax
+
+shocks;
+  var x;
+  periods 1;
+  values 1.2;
+end;
+
+shocks(learnt_in = 2);
+  var x;
+  periods 2;
+  values 1.3;
+end;
+
+endval(learnt_in = 2);
+  x = 1.1;
+end;
+
+shocks(learnt_in = 3);
+  var x;
+  periods 3;
+  values 1.4;
+end;
+
+endval(learnt_in = 3);
+  x = 1.2;
+end;
+
+// Dummy block, that will be overwritten by the next one
+shocks(learnt_in = 6);
+  var x;
+  periods 6:8;
+  values 10;
+end;
+
+shocks(learnt_in = 6, overwrite);
+  var x;
+  periods 6:7;
+  values 1.1;
+end;
+
+endval(learnt_in = 6);
+  x = 1.1;
+end;
+
+perfect_foresight_with_expectation_errors_setup(periods = 7);
 
 // First simulation with default options
 perfect_foresight_with_expectation_errors_solver;
