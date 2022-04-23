@@ -66,7 +66,10 @@ order = DynareOptions.order;
 replic = DynareOptions.simul_replic;
 
 if replic > 1
-    fname = [DynareModel.dname filesep 'Output' DynareModel.fname,'_simul'];
+    if ~exist([DynareModel.dname '/Output'],'dir')
+        mkdir(DynareModel.dname,'Output');
+    end
+    fname = [DynareModel.dname filesep 'Output' filesep DynareModel.fname,'_simul'];
     fh = fopen(fname,'w+');
 end
 
