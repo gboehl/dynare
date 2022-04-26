@@ -98,7 +98,18 @@ else
             idx = find([M_.learnt_shocks.learnt_in] == p);
             for i = 1:length(idx)
                 j = idx(i);
-                oo_.pfwee.shocks_info(M_.learnt_shocks(j).exo_id, M_.learnt_shocks(j).periods, p) = M_.learnt_shocks(j).value;
+                exo_id = M_.learnt_shocks(j).exo_id;
+                prds = M_.learnt_shocks(j).periods;
+                switch M_.learnt_shocks(j).type
+                    case 'level'
+                        oo_.pfwee.shocks_info(exo_id, prds, p) = M_.learnt_shocks(j).value;
+                    case 'add'
+                        oo_.pfwee.shocks_info(exo_id, prds, p) = oo_.pfwee.shocks_info(exo_id, prds, p) + M_.learnt_shocks(j).value;
+                    case 'multiply'
+                        oo_.pfwee.shocks_info(exo_id, prds, p) = oo_.pfwee.shocks_info(exo_id, prds, p) .* M_.learnt_shocks(j).value;
+                    otherwise
+                        error('Unknown type in M_.learnt_shocks')
+                end
             end
         end
     end

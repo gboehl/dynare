@@ -87,7 +87,7 @@
 ;; closed by a semicolon
 (defvar dynare-statements-like
   '("stderr" "values" "scales" "restriction" "exclusion" "upper_cholesky" "lower_cholesky"
-    "bind" "relax" "error_bind" "error_relax")
+    "bind" "relax" "error_bind" "error_relax" "add" "multiply")
   "Dynare statements-like keywords.")
 
 ;; Those keywords that makes the lexer enter the DYNARE_BLOCK start condition
