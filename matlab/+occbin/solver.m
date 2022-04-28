@@ -51,7 +51,16 @@ else
 end
 
 if solve_dr
+    if isempty(options_.qz_criterium)
+        options_.qz_criterium = 1+1e-6;
+    end
+
     [dr,error_flag,M_,oo_] = resol(0,M_,options_,oo_);
+    out.error_flag=error_flag;
+    if error_flag
+        print_info(error_flag, options_.noprint, options_)
+        return;
+    end
     oo_.dr = dr;
     sto_dr=dr;
     sto_M=M_;
