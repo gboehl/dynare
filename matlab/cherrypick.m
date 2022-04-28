@@ -315,7 +315,11 @@ if ~isempty(plist)
     for i=1:length(plist)
         id = strcmp(plist{i}, M_.param_names);
         if any(id)
-            fprintf(fid, '%s = %s;\n', plist{i}, num2str(M_.params(id), 16));
+            if isnan(M_.params(id))
+                warning('Parameter %s has no value.', plist{i})
+            else
+                fprintf(fid, '%s = %s;\n', plist{i}, num2str(M_.params(id), 16));
+            end
         end
     end
     fclose(fid);
