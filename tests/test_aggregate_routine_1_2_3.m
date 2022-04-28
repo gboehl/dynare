@@ -12,7 +12,7 @@ dynare_config();
 disp('');
 disp(['***  TESTING: test_aggregate_routine_1_2_3.m.trs ***']);
 try
-    aggregate('toto3.mod', {}, 'ecb/aggregate/1', 'ecb/aggregate/2', 'ecb/aggregate/3');
+    aggregate('toto3.mod', {}, '', 'ecb/aggregate/1', 'ecb/aggregate/2', 'ecb/aggregate/3');
     testFailed = false;
 catch
     testFailed = true;
