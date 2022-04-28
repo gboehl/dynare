@@ -166,7 +166,7 @@ xlist = xlist(1:xnum,:);
 xlist = xlist(idx,:);
 
 % Get parameter values.
-calibration = '';
+pArray = cell(0, 3);
 for i=1:length(varargin)
     fid = fopen(sprintf('%s/parameter-values.inc', varargin{i}));
     if fid<0
@@ -176,10 +176,49 @@ for i=1:length(varargin)
     end
     cline = fgetl(fid);
     while ischar(cline)
-        calibration = sprintf('%s\n%s', calibration, cline);
+        tmp = textscan(cline, '%s = %f', 'Delimiter', {';','=',' '});
+        pArray(end+1,1) = tmp{1};
+        pArray{end,2} = tmp{2};
+        pArray{end,3} = varargin{i};
         cline = fgetl(fid);
     end
     fclose(fid);
+end
+
+if rows(pArray)>1
+    irow = 2;
+    while irow<=rows(pArray)
+        ispreviouslydefined = strcmpi(pArray{irow,1}, pArray(1:irow-1,1));
+        if any(ispreviouslydefined)
+            if isnan(pArray{ispreviouslydefined,2})
+                if ~isnan(pArray{irow,2})
+                    % Remove first assignment (with NaN)
+                    pArray(ispreviouslydefined,:) = [];
+                else
+                    % Remove second assignment (both assigments are NaNs)
+                    pArray(irow,:) = [];
+                end
+            elseif isnan(pArray{irow,2})
+                % New assigment is NaN but not the previous one.
+                pArray(irow,:) = [];
+            else
+                % Check that the values are identical in both assignments.
+                if abs(pArray{ispreviouslydefined,2}-pArray{irow,2})>1e-10
+                    error('More than one assigment for parameter %s with different values (see cherrypicked files in %s and %s).', pArray{irow,1}, pArray{irow,3}, pArray{ispreviouslydefined,3});
+                else
+                    % Remove last assignement (duplicate).
+                    pArray(irow,:) = [];
+                end
+            end
+        else
+            irow = irow+1;
+        end
+    end
+end
+
+calibration = '';
+for i=1:rows(pArray)
+    calibration = sprintf('%s%s = %f;\n', calibration, pArray{i,1}, pArray{i,2});
 end
 
 % Move the endogenous variables which are not LHS of an equation
