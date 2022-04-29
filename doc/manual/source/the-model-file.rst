@@ -2905,10 +2905,14 @@ Finding the steady state with Dynare nonlinear solver
 
     *Options*
 
+    .. _steady_maxit:
+
     .. option:: maxit = INTEGER
 
        Determines the maximum number of iterations used in the
        non-linear solver. The default value of ``maxit`` is 50.
+
+    .. _steady_tolf:
 
     .. option:: tolf = DOUBLE
 
@@ -3083,6 +3087,8 @@ Finding the steady state with Dynare nonlinear solver
        ``steady_state_model`` block. This is useful for models with
        unit roots as, in this case, the steady state is not unique or
        doesn’t exist.
+
+    .. _steady_markowitz:
 
     .. option:: markowitz = DOUBLE
 
@@ -3492,6 +3498,9 @@ Getting information about the model
 Deterministic simulation
 ========================
 
+Perfect foresight
+-----------------
+
 When the framework is deterministic, Dynare can be used for models
 with the assumption of perfect foresight. Typically, the system is
 supposed to be in a state of equilibrium before a period ``1`` when the
@@ -3835,6 +3844,328 @@ speed-up on large models.
     regarding columns and rows is the opposite of the convention for
     ``oo_.endo_simul``!
 
+Perfect foresight with expectation errors
+-----------------------------------------
+
+The solution under perfect foresight that was presented in the previous section
+makes the assumption that agents learn the complete path of future shocks in
+period 1, without making any expectation errors.
+
+One may however want to study a scenario where it turns out that agents make
+expectation errors, in the sense that the path they had anticipated in period 1
+does not realize exactly. More precisely, in some simulation periods, they may
+receive new information that makes them revise their anticipation for the path
+of future shocks. Also, under this scenario, it is assumed that agents
+behave as under perfect foresight, *i.e.* they take their decisions as if there
+was no uncertainty and they knew exactly the path of future shocks; the new
+information that they may receive comes as a total suprise to them.
+
+Such a scenario can be solved by Dynare using the
+``perfect_foresight_with_expectation_errors_setup`` and
+``perfect_foresight_with_expectation_errors_solver`` commands, alongside ``shocks``
+and ``endval`` blocks which are given a special ``learnt_in`` option.
+
+.. block:: shocks(learnt_in=INTEGER) ;
+           shocks(learnt_in=INTEGER,overwrite) ;
+
+    |br| The ``shocks(learnt_in=INTEGER)`` can be used to specify temporary
+    shocks that are learnt in a specific period. It should contain one or more
+    occurences of the following group of three lines, with the same semantics
+    as a regular :bck:`shocks` block::
+
+      var VARIABLE_NAME;
+      periods INTEGER[:INTEGER] [[,] INTEGER[:INTEGER]]...;
+      values DOUBLE | (EXPRESSION)  [[,] DOUBLE | (EXPRESSION) ]...;
+
+    If the period in which information is learnt is greater or equal than 2,
+    then it is possible to specify the shock values in deviation with respect
+    to the values that were expected from the perspective of the previous
+    period. If the new information consists of an addition to the
+    previously-anticipated value, the ``values`` keyword can be replaced by the
+    ``add`` keyword; similarly, if the new information consists of an addition to the
+    previously-anticipated value, the ``values`` keyword can be replaced by the
+    ``multiply`` keyword.
+
+    The ``overwrite`` option says that this block cancels and replaces previous
+    ``shocks`` blocks that have the same ``learnt_in`` option.
+
+    Note that a ``shocks(learnt_in=1)`` block is equivalent to a regular
+    :bck:`shocks` block.
+
+    *Example*
+
+    ::
+
+        shocks(learnt_in=1);
+          var x;
+          periods 1:2 3:4 5;
+          values 1 1.2 1.4;
+        end;
+
+        shocks(learnt_in=2);
+          var x;
+          periods 3:4;
+          add 0.1;
+        end;
+
+        shocks(learnt_in=4);
+          var x;
+          periods 5;
+          multiply 2;
+        end;
+
+    This syntax means that:
+      - from the perspective of period 1, ``x`` is expected to be equal to 1 in
+        periods 1 and 2, to 1.2 in periods 3 and 4, and to 1.4 in period 5;
+      - from the perspective of periods 2 (and 3), ``x`` is expected to be
+        equal to 1 in period 2, to 1.3 in periods 3 and 4, and to 1.4 in period
+        5;
+      - from the perspective of periods 4 (and following), ``x`` is expected to
+        be equal to 1.3 in period 4, and to 2.8 in period 5.
+
+.. block:: endval(learnt_in=INTEGER) ;
+
+    |br| The ``endval(learnt_in=INTEGER)`` can be used to specify temporary
+    shocks that are learnt in a specific period.
+
+    Note that an ``endval(learnt_in=1)`` block is equivalent to a regular
+    :bck:`endval` block.
+
+    *Example*
+
+    ::
+
+        endval(learnt_in = 2);
+          x = 1.1;
+        end;
+
+    This syntax means that, in period 2, the agents learn that the terminal
+    condition for ``x`` will be 1.1. This value will be the realized one,
+    unless there is another ``endval(learnt_in=p)`` block with ``p>2``.
+
+.. command:: perfect_foresight_with_expectation_errors_setup ;
+             perfect_foresight_with_expectation_errors_setup (OPTIONS...);
+
+    |br| Prepares a perfect foresight simulation with expectation errors, by
+    extracting the contents of the ``initval``, ``endval`` and ``shocks``
+    blocks (the latter two types of blocks typically used with the
+    ``learnt_in`` option); alternatively, the information about future shocks
+    can be given in a CSV file using the ``datafile`` option.
+
+    This command must always be called before running the simulation
+    with ``perfect_foresight_with_expectation_errors_solver``.
+
+    Note that this command makes the assumption that the terminal condition is
+    always a steady state. Hence, it will recompute the terminal steady state
+    as many times as the anticipation about the terminal condition changes. In
+    particular, the information about endogenous variables that may be given in
+    the ``endval`` block is ignored.
+
+    *Options*
+
+    .. option:: periods = INTEGER
+
+       Number of periods of the simulation.
+
+    .. option:: datafile = FILENAME
+
+       Used to specify the information about future shocks and their
+       anticipation, as an alternative to ``shocks`` and ``endval`` blocks.
+
+       The file has the following format:
+
+       - the first column is ignored (can be used to add descriptive labels)
+       - the first line contains names of exogenous variables
+       - the second line contains, in columns, indices of periods *at which*
+         expectations are formed; the information set used in a given period is
+         described by all the columns for which that line is equal to the
+         period index
+       - the subsequent lines correspond to the periods *for which*
+         expectations are formed, one period per line; each line gives the
+         values of present and future exogenous variables, as seen from the
+         period given in the second line
+       - the last line corresponds to the terminal condition for exogenous
+         variables, as anticipated in the various informational periods
+
+       If ``p`` is the value of the ``periods`` option and ``k`` is the number
+       of exogenous variables, then the CSV file has ``p+3`` lines and
+       ``k×p+1`` columns.
+
+       Concretely, the value of a given exogenous in period ``t``, as anticipated
+       from period ``s``, is given in line ``t+2``, and in the column which has
+       the name of the variable on the first line and ``s`` on the second
+       line. Of course, values in cells corresponding to ``t<s`` are ignored.
+
+    .. option:: solve_algo = INTEGER
+
+       See :ref:`solve_algo <solvalg>`. Used when computing the terminal steady state.
+
+    .. option:: tolf = DOUBLE
+
+       See :ref:`tolf <steady_tolf>`. Used when computing the terminal steady state.
+
+    .. option:: maxit = INTEGER
+
+       See :ref:`maxit <steady_maxit>`. Used when computing the terminal steady state.
+
+    .. option:: markowitz = DOUBLE
+
+       See :ref:`markowitz <steady_markowitz>`.  Used when computing the terminal steady state.
+
+    *Output*
+
+    ``oo_.exo_simul`` and ``oo_.endo_simul`` are initialized before the
+    simulation. Temporary shocks are stored in ``oo_.pfwee.shocks_info``,
+    terminal conditions for exogenous variables are stored in
+    ``oo_.pfwee.terminal_info``, and terminal steady states are stored in
+    ``oo_.pfwee.terminal_steady_state``.
+
+    *Example*
+
+    Here is a CSV file example that could be given to the ``datafile`` option
+    (adding some extra padding space for clarity):
+
+      ::
+
+         Exogenous      ,   x,   x,   x,   x,   x,   x,   x
+         Period   (info),   1,   2,   3,   4,   5,   6,   7
+         Period 1 (real), 1.2,    ,    ,    ,    ,    ,
+         Period 2 (real),   1, 1.3,    ,    ,    ,    ,
+         Period 3 (real),   1,   1, 1.4,    ,    ,    ,
+         Period 4 (real),   1,   1,   1,   1,    ,    ,
+         Period 5 (real),   1,   1,   1,   1,   1,    ,
+         Period 6 (real),   1,   1,   1,   1,   1, 1.1,
+         Period 7 (real),   1,   1,   1,   1,   1, 1.1, 1.1
+         Terminal (real),   1, 1.1, 1.2, 1.2, 1.2, 1.1, 1.1
+
+    In this example, there is only one exogenous variable (``x``), and 7
+    simulation periods. In the first period, agents learn a contemporary
+    shock (1.2), but anticipate no further shock. In period 2, they learn an
+    unexpected contemporary shock (1.3), and also a change in the terminal
+    condition (1.1). In period 3 again there is an unexpected contemporary
+    shock and a change in the terminal condition. No new information comes
+    in period 4 and 5. In period 6, an unexpected permanent shock is learnt.
+    No new information comes in period 7.
+
+    Alternatively, instead of using a CSV file, the same sequence of
+    information sets could be described using the following blocks:
+
+      ::
+
+         initval;
+           x = 1;
+         end;
+
+         steady;
+
+         shocks(learnt_in = 1);
+           var x;
+           periods 1;
+           values 1.2;
+         end;
+
+         shocks(learnt_in = 2);
+           var x;
+           periods 2;
+           values 1.3;
+         end;
+
+         endval(learnt_in = 2);
+           x = 1.1;
+         end;
+
+         shocks(learnt_in = 3);
+           var x;
+           periods 3;
+           values 1.4;
+         end;
+
+         endval(learnt_in = 3);
+           x = 1.2;
+         end;
+
+         shocks(learnt_in = 6);
+           var x;
+           periods 6:7;
+           values 1.1;
+         end;
+
+         endval(learnt_in = 6);
+           x = 1.1;
+         end;
+
+.. command:: perfect_foresight_with_expectation_solver ;
+             perfect_foresight_with_expectation_solver (OPTIONS...);
+
+    |br| Computes the perfect foresight simulation with expectation errors
+    of the model.
+
+    Note that ``perfect_foresight_with_expectation_errors_setup`` must be
+    called before this command, in order to setup the environment for the
+    simulation.
+
+    *Options*
+
+    This command accepts all the options of :comm:`perfect_foresight_solver`,
+    with the same semantics, plus the following ones:
+
+    .. option:: terminal_steady_state_as_guess_value
+
+        By default, the initial guess for the computation of the path of
+        endogenous is the initial steady state (when using the information set
+        from period 1) or the previously simulated path (when using an
+        information set that is different from that of period 1). When this
+        option is given, the initial guess is instead the terminal steady
+        state.
+
+    .. option:: constant_simulation_length
+
+        By default, every time the information set changes, the simulation with
+        the new information set is shorter than the previous one (because the
+        terminal date is getting closer). When this option is set, every new
+        simulation has the same length (as specified by the `periods`` option
+        of :comm:`perfect_foresight_with_expectation_errors_setup`; as a
+        consequence, the simulated paths as stored in ``oo_.endo_simul`` will
+        be longer when this option is set (if `s` is the last period in which
+        the information set is modified, then they will contain `s+periods-1`
+        periods, excluding initial and terminal conditions).
+
+    *Output*
+
+    The simulated paths of endogenous variables are available in
+    ``oo_.endo_simul``.
+
+.. matvar:: oo_.pfwee.shocks_info
+
+    |br| This variable stores the temporary shocks used during perfect
+    foresight simulations with expectation errors, after
+    :comm:`perfect_foresight_with_expectation_errors_setup` has been run. It is
+    a three-dimensional matrix: first dimension correspond to exogenous
+    variables (in declaration order); second dimension corresponds to real
+    time; third dimension corresponds to informational time. In other words,
+    the value of exogenous indexed ``k`` in period ``t``, as anticipated from
+    period ``s``, is stored in ``oo_.pfwee.shocks_info(k,t,s)``.
+
+.. matvar:: oo_.pfwee.terminal_info
+
+    |br| This variable stores the terminal conditions for exogenous variables
+    used during perfect foresight simulations with expectation errors, after
+    :comm:`perfect_foresight_with_expectation_errors_setup` has been run. It is
+    a matrix, whose lines correspond to exogenous variables (in declaration
+    order), and whose columns correspond to informational time. In other words,
+    the terminal condition for exogenous indexed ``k``, as anticipated from
+    period ``s``, is stored in ``oo_.pfwee.terminal_info(k,s)``.
+
+.. matvar:: oo_.pfwee.terminal_steady_state
+
+    |br| This variable stores the terminal steady states for endogenous
+    variables used during perfect foresight simulations with expectation
+    errors, after :comm:`perfect_foresight_with_expectation_errors_setup` has
+    been run. It is a matrix, whose lines correspond to endogenous variables
+    (in declaration order), and whose columns correspond to informational time.
+    In other words, the terminal steady state for endogenous indexed ``k``, as
+    anticipated from period ``s``, is stored in
+    ``oo_.pfwee.terminal_steady_state(k,s)``.
 
 .. _stoch-sol:
 
