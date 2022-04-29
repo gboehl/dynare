@@ -30,7 +30,7 @@ function [M,oo,info,ip,ix,ixd] = homotopy1(values, step_nbr, M, options, oo)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2008-2017 Dynare Team
+% Copyright © 2008-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -85,7 +85,7 @@ for i=1:step_nbr+1
     oo.exo_steady_state(values(ix,2)) = points(ix,i);
     oo.exo_det_steady_state(values(ixd,2)) = points(ixd,i);
 
-    [steady_state,M.params,info] = steady_(M,options,oo);
+    [steady_state,M.params,info] = evaluate_steady_state(oo.steady_state,M,options,oo,~options.steadystate.nocheck);
     if info(1) == 0
         % if homotopy step is not successful, current values of steady
         % state are not modified

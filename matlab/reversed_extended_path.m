@@ -14,7 +14,7 @@ function innovation_paths = reversed_extended_path(controlled_variable_names, co
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright © 2010-2018 Dynare Team.
+% Copyright © 2010-2022 Dynare Team.
 %
 % This file is part of Dynare.
 %
@@ -44,7 +44,7 @@ end
 data = dataset.data(dataset.first_observation:dataset.first_observation+dataset.number_of_observations,:);
 
 % Compute the deterministic steady state.
-steady_;
+[oo_.steady_state, M_.params] = evaluate_steady_state(oo_.steady_state, M_, options_, oo_, ~options_.steadystate.nocheck);
 
 %  Compute the first order perturbation reduced form.
 old_options_order = options_.order; options_.order = 1;

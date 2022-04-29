@@ -11,7 +11,7 @@ function steady()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2001-2019 Dynare Team
+% Copyright © 2001-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,7 +77,7 @@ if info(1)
     end
 end
 
-[oo_.steady_state,M_.params,info] = steady_(M_,options_,oo_);
+[oo_.steady_state,M_.params,info] = evaluate_steady_state(oo_.steady_state,M_,options_,oo_,~options_.steadystate.nocheck);
 
 if info(1) == 0
     if ~options_.noprint

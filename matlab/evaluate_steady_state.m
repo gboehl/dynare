@@ -39,6 +39,23 @@ function [ys,params,info] = evaluate_steady_state(ys_init,M,options,oo,steadysta
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+if options.solve_algo < 0 || options.solve_algo > 14
+    error('STEADY: solve_algo must be between 0 and 14')
+end
+
+if ~options.bytecode && ~options.block && options.solve_algo > 4 && ...
+        options.solve_algo < 9
+    error('STEADY: you can''t use solve_algo = {5,6,7,8} without block nor bytecode options')
+end
+
+if ~options.bytecode && options.block && options.solve_algo == 5
+    error('STEADY: you can''t use solve_algo = 5 without bytecode option')
+end
+
+if isoctave && options.solve_algo == 11
+    error(['STEADY: you can''t use solve_algo = %u under Octave'],options.solve_algo)
+end
+
 info = 0;
 check = 0;
 

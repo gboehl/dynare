@@ -98,7 +98,7 @@ while iter <= step_nbr
 
     old_ss = oo.steady_state;
 
-    [steady_state,params,info] = steady_(M,options,oo);
+    [steady_state,params,info] = evaluate_steady_state(old_ss,M,options,oo,~options.steadystate.nocheck);
     if info(1) == 0
         oo.steady_state = steady_state;
         M.params = params;
