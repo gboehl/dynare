@@ -27,7 +27,7 @@ steady;
 
 check;
 
-shocks;
+shocks(learnt_in = 1);
   var x;
   periods 1:2;
   values 1.2;
