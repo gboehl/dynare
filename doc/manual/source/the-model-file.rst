@@ -3858,7 +3858,7 @@ receive new information that makes them revise their anticipation for the path
 of future shocks. Also, under this scenario, it is assumed that agents
 behave as under perfect foresight, *i.e.* they take their decisions as if there
 was no uncertainty and they knew exactly the path of future shocks; the new
-information that they may receive comes as a total suprise to them.
+information that they may receive comes as a total surprise to them.
 
 Such a scenario can be solved by Dynare using the
 ``perfect_foresight_with_expectation_errors_setup`` and
