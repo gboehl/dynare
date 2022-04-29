@@ -115,6 +115,24 @@ else
     end
 end
 
+%% Compute the terminal steady state for all informational periods
+oo_.pfwee.terminal_steady_state = NaN(M_.endo_nbr, periods);
+orig_exo_steady_state = oo_.exo_steady_state;
+for p = 1:periods
+    if p > 1 && all(oo_.pfwee.terminal_info(:, p) == oo_.pfwee.terminal_info(:, p-1))
+        oo_.pfwee.terminal_steady_state(:, p) = oo_.pfwee.terminal_steady_state(:, p-1);
+    else
+        if p == 1
+            init = oo_.steady_state;
+        else
+            init = oo_.pfwee.terminal_steady_state(:, p-1);
+        end
+        oo_.exo_steady_state = oo_.pfwee.terminal_info(:, p);
+        oo_.pfwee.terminal_steady_state(:, p) = evaluate_steady_state(init, M_, options_, oo_, true);
+    end
+end
+oo_.exo_steady_state = orig_exo_steady_state;
+
 % Build initial paths for endos and exos (only initial conditions are set, the rest is NaN)
 if isempty(ys0_)
     oo_.endo_simul = [repmat(oo_.steady_state, 1, M_.maximum_lag) NaN(M_.endo_nbr, periods+M_.maximum_lead)];

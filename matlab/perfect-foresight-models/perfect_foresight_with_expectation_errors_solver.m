@@ -42,8 +42,7 @@ end
 while info_period <= periods
     % Compute terminal steady state as anticipated
     oo_.exo_steady_state = oo_.pfwee.terminal_info(:, info_period);
-    steady_state_prev = oo_.steady_state;
-    [oo_.steady_state,~,info] = evaluate_steady_state(steady_state_prev, M_, options_, oo_, true);
+    oo_.steady_state = oo_.pfwee.terminal_steady_state(:, info_period);
 
     if options_.pfwee.constant_simulation_length && increment > 0
         endo_simul = [ endo_simul NaN(M_.endo_nbr, increment)];
