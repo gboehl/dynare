@@ -3494,7 +3494,7 @@ Deterministic simulation
 
 When the framework is deterministic, Dynare can be used for models
 with the assumption of perfect foresight. Typically, the system is
-supposed to be in a state of equilibrium before a period ‘1’ when the
+supposed to be in a state of equilibrium before a period ``1`` when the
 news of a contemporaneous or of a future shock is learned by the
 agents in the model. The purpose of the simulation is to describe the
 reaction in anticipation of, then in reaction to the shock, until the
@@ -3504,8 +3504,8 @@ which one must approximate by an horizon of simulation far enough in
 the future. Another exercise for which Dynare is well suited is to
 study the transition path to a new equilibrium following a permanent
 shock. For deterministic simulations, the numerical problem consists
-of solving a nonlinar system of simultaneous equations in n endogenous
-variables in T periods. Dynare offers several algorithms for solving
+of solving a nonlinear system of simultaneous equations in ``n`` endogenous
+variables in ``T`` periods. Dynare offers several algorithms for solving
 this problem, which can be chosen via the ``stack_solve_algo``
 option. By default (``stack_solve_algo=0``), Dynare uses a Newton-type
 method to solve the simultaneous equation system. Because the
