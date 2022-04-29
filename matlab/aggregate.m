@@ -216,6 +216,16 @@ if rows(pArray)>1
     end
 end
 
+if any(isnan([pArray{:,2}]))
+    msg  ='';
+    for i=1:rows(pArray)
+        if isnan(pArray{i,2})
+            msg = sprintf('%sParameter %s has no value.\n', msg, pArray{i,1});
+        end
+    end
+    error(msg)
+end
+
 calibration = '';
 for i=1:rows(pArray)
     calibration = sprintf('%s%s = %f;\n', calibration, pArray{i,1}, pArray{i,2});
