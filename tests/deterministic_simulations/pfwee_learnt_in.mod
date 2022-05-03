@@ -50,7 +50,7 @@ shocks(learnt_in = 3);
 end;
 
 endval(learnt_in = 3);
-  x = 1.2;
+  x += 0.1;
 end;
 
 // Dummy block, that will be overwritten by the next one
@@ -67,7 +67,7 @@ shocks(learnt_in = 6, overwrite);
 end;
 
 endval(learnt_in = 6);
-  x = 1.1;
+  x *= 0.75;
 end;
 
 perfect_foresight_with_expectation_errors_setup(periods = 7);
@@ -106,7 +106,7 @@ oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 // Information arriving in period 3 (temp shocks + permanent shock in future)
 oo_.exo_simul(4,1) = 1.4;
 oo_.exo_simul(8,1) = 1.5;
-oo_.exo_steady_state = 1.2;
+oo_.exo_steady_state = 1.1+0.1;
 oo_.exo_simul(end, 1) = oo_.exo_steady_state;
 oo_.steady_state = evaluate_steady_state(oo_.steady_state, M_, options_, oo_, true);
 oo_.endo_simul(:, end) = oo_.steady_state;
@@ -122,7 +122,7 @@ oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 // Information arriving in period 6 (temp shocks + permanent shock)
 oo_.exo_simul(7,1) = 1*0.8;
 oo_.exo_simul(8,1) = 1.5*0.8;
-oo_.exo_steady_state = 1.1;
+oo_.exo_steady_state = (1.1+0.1)*0.75;
 oo_.exo_simul(end, 1) = oo_.exo_steady_state;
 oo_.steady_state = evaluate_steady_state(oo_.steady_state, M_, options_, oo_, true);
 oo_.endo_simul(:, end) = oo_.steady_state;

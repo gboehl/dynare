@@ -3915,6 +3915,7 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
         end;
 
     This syntax means that:
+
       - from the perspective of period 1, ``x`` is expected to be equal to 1 in
         periods 1 and 2, to 1.2 in periods 3 and 4, and to 1.4 in period 5;
       - from the perspective of periods 2 (and 3), ``x`` is expected to be
@@ -3925,23 +3926,40 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
 
 .. block:: endval(learnt_in=INTEGER) ;
 
-    |br| The ``endval(learnt_in=INTEGER)`` can be used to specify temporary
-    shocks that are learnt in a specific period.
+    |br| The ``endval(learnt_in=INTEGER)`` can be used to specify terminal
+    conditions that are learnt in a specific period.
 
     Note that an ``endval(learnt_in=1)`` block is equivalent to a regular
     :bck:`endval` block.
+
+    It is possible to express the terminal condition by specifying the level of
+    the exogenous variable (using an equal symbol, as in a regular
+    :bck:`endval` blocks without the ``learnt_in`` option). But it is also
+    possible to express the terminal condition as an addition to the value
+    expected from the perspective of the previous previous period (using the
+    ``+=`` operator), or as a multiplicative factor over that previously
+    expected value (using the ``*=`` operator).
 
     *Example*
 
     ::
 
-        endval(learnt_in = 2);
+        endval(learnt_in = 3);
           x = 1.1;
+          y += 0.1;
+          z *= 2;
         end;
 
-    This syntax means that, in period 2, the agents learn that the terminal
-    condition for ``x`` will be 1.1. This value will be the realized one,
-    unless there is another ``endval(learnt_in=p)`` block with ``p>2``.
+    This syntax means that, in period 3, the agents learn that:
+
+      - the terminal condition for ``x`` will be 1.1;
+      - the terminal condition for ``y`` will be 0.1 above the terminal
+        condition for ``y`` that was expected from the perspective of period 2;
+      - the terminal condition for ``z`` will be 2 times the terminal condition
+        for ``z`` that was expected from the perspective of period 2.
+
+    Those values will be the realized ones, unless there is another
+    ``endval(learnt_in=p)`` block with ``p>3``.
 
 .. command:: perfect_foresight_with_expectation_errors_setup ;
              perfect_foresight_with_expectation_errors_setup (OPTIONS...);

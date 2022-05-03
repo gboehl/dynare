@@ -90,7 +90,17 @@ else
             idx = find([M_.learnt_endval.learnt_in] == p);
             for i = 1:length(idx)
                 j = idx(i);
-                oo_.pfwee.terminal_info(M_.learnt_endval(j).exo_id, p) = M_.learnt_endval(j).value;
+                exo_id = M_.learnt_endval(j).exo_id;
+                switch M_.learnt_endval(j).type
+                    case 'level'
+                        oo_.pfwee.terminal_info(exo_id, p) = M_.learnt_endval(j).value;
+                    case 'add'
+                        oo_.pfwee.terminal_info(exo_id, p) = oo_.pfwee.terminal_info(exo_id, p) + M_.learnt_endval(j).value;
+                    case 'multiply'
+                        oo_.pfwee.terminal_info(exo_id, p) = oo_.pfwee.terminal_info(exo_id, p) * M_.learnt_endval(j).value;
+                    otherwise
+                        error('Unknown type in M_.learnt_endval')
+                end
             end
         end
         oo_.pfwee.shocks_info(:, :, p) = oo_.pfwee.shocks_info(:, :, p-1);
