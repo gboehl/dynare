@@ -7,7 +7,7 @@ DEFS += -DMEXEXT=\".mex\"
 
 AM_CFLAGS = $(shell $(MKOCTFILE) -p CPICFLAG) -Wall -Wno-parentheses
 AM_FCFLAGS = $(shell $(MKOCTFILE) -p FPICFLAG) -Wall -Wimplicit-interface
-AM_CXXFLAGS = $(shell $(MKOCTFILE) -p CXXPICFLAG) -Wall -Wno-parentheses -Wold-style-cast
+AM_CXXFLAGS = -std=gnu++20 $(shell $(MKOCTFILE) -p CXXPICFLAG) -Wall -Wno-parentheses -Wold-style-cast
 AM_LDFLAGS = $(shell $(MKOCTFILE) -p DL_LDFLAGS)
 
 # See the comments in configure.ac

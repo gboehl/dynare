@@ -292,19 +292,6 @@ Files: m4/ax_compare_version.m4
 Copyright: 2008 Tim Toolan <toolan@ele.uri.edu>
 License: FSFAP
 
-Files: m4/ax_cxx_compile_stdcxx.m4
-       m4/ax_cxx_compile_stdcxx_17.m4
-Copyright: 2008 Benjamin Kosnik <bkoz@redhat.com>
-           2012 Zack Weinberg <zackw@panix.com>
-           2013 Roy Stogner <roystgnr@ices.utexas.edu>
-           2014, 2015 Google Inc.; contributed by Alexey Sokolov <sokolov@google.com>
-           2015 Paul Norman <penorman@mac.com>
-           2015 Moritz Klammler <moritz@klammler.eu>
-           2016, 2018 Krzesimir Nowak <qdlacz@gmail.com>
-           2019 Enji Cooper <yaneurabeya@gmail.com>
-           2020 Jason Merrill <jason@redhat.com>
-License: FSFAP
-
 Files: m4/ax_latex_class.m4 m4/ax_latex_test.m4
 Copyright: 2008 Boretti Mathieu <boretti@eig.unige.ch>
            2009 Dynare Team
@@ -339,19 +326,6 @@ License: BSD-2-clause
 Files: preprocessor/m4/ax_boost_base.m4
 Copyright: 2008-2009 Thomas Porschberg <thomas@randspringer.de>
            2009 Peter Adolphs
-License: FSFAP
-
-Files: preprocessor/m4/ax_cxx_compile_stdcxx.m4
-       preprocessor/m4/ax_cxx_compile_stdcxx_17.m4
-Copyright: 2008 Benjamin Kosnik <bkoz@redhat.com>
-           2012 Zack Weinberg <zackw@panix.com>
-           2013 Roy Stogner <roystgnr@ices.utexas.edu>
-           2014, 2015 Google Inc.; contributed by Alexey Sokolov <sokolov@google.com>
-           2015 Paul Norman <penorman@mac.com>
-           2015 Moritz Klammler <moritz@klammler.eu>
-           2016, 2018 Krzesimir Nowak <qdlacz@gmail.com>
-           2019 Enji Cooper <yaneurabeya@gmail.com>
-           2020 Jason Merrill <jason@redhat.com>
 License: FSFAP
 
 Files: preprocessor/m4/ax_latex_class.m4
