@@ -59,6 +59,27 @@ if options.ramsey_policy
 end
 
 problem_dummy=0;
+
+%naming conflict in steady state file
+if options.steadystate_flag == 1
+    if strmatch('ys',M.endo_names,'exact') 
+        disp(['MODEL_DIAGNOSTICS: using the name ys for an endogenous variable will typically conflict with the internal naming in user-defined steady state files.'])
+        problem_dummy=1;
+    end
+    if strmatch('ys',M.param_names,'exact')
+        disp(['MODEL_DIAGNOSTICS: using the name ys for a parameter will typically conflict with the internal naming in user-defined steady state files.'])
+        problem_dummy=1;
+    end
+    if strmatch('M_',M.endo_names,'exact') 
+        disp(['MODEL_DIAGNOSTICS: using the name M_ for an endogenous variable will typically conflict with the internal naming in user-defined steady state files.'])
+        problem_dummy=1;
+    end
+    if strmatch('M_',M.param_names,'exact')
+        disp(['MODEL_DIAGNOSTICS: using the name M_ for a parameter will typically conflict with the internal naming in user-defined steady state files.'])
+        problem_dummy=1;
+    end
+end
+
 %
 % missing variables at the current period
 %
