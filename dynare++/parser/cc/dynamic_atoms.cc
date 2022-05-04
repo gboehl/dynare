@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -380,7 +380,7 @@ DynamicAtoms::print() const
     }
   std::cout << "indices:\n";
   for (auto indice : indices)
-    std::cout << "t=" << indice.first << u8" ⇒ " << indice.second << "\n";
+    std::cout << "t=" << indice.first << " ⇒ " << indice.second << "\n";
 }
 
 /** Note that the str has been parsed by the lexicographic
@@ -606,7 +606,7 @@ VarOrdering::print() const
     std::cout << " " << der_atom;
   std::cout << "\nmap:\n";
   for (auto position : positions)
-    std::cout << " [" << position.first << u8"→" << position.second << "]";
+    std::cout << " [" << position.first << "→" << position.second << "]";
   std::cout << "\ny2outer:\n";
   for (int i : y2outer)
     std::cout << " " <<  i;

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -714,12 +714,12 @@ EvalTree::eval(int t)
 void
 EvalTree::print() const
 {
-  std::cout <<   "last_op=" << last_operation << '\n'
-            <<   "         0     1     2     3     4     5     6     7     8     9\n"
-            << u8"────────────────────────────────────────────────────────────────\n";
+  std::cout << "last_op=" << last_operation << '\n'
+            << "         0     1     2     3     4     5     6     7     8     9\n"
+            << "────────────────────────────────────────────────────────────────\n";
   for (int i = 0; i <= (last_operation+1)/10; i++)
     {
-      std::cout << std::setw(3) << i << u8"│";
+      std::cout << std::setw(3) << i << "│";
       int j = 0;
       while (j < 10 && 10*i+j < last_operation+1)
         {
@@ -727,7 +727,7 @@ EvalTree::print() const
           if (flags[k])
             std::cout << " " << std::setw(5) << std::setprecision(1) << values[k];
           else
-            std::cout << u8" ─────";
+            std::cout << " ─────";
           j++;
         }
       std::cout << "\n";

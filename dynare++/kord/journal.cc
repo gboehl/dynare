@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019-2020 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -145,11 +145,11 @@ JournalRecord::writePrefix(const SystemResources &f)
   std::ostringstream s;
   s << std::setfill('0');
   writeFloatTabular(s, f.elapsed, 7);
-  s << u8"│" << recChar << std::setw(5) << ord << u8"│";
+  s << "│" << recChar << std::setw(5) << ord << "│";
   writeFloatTabular(s, f.load_avg, 3);
-  s << u8"│";
+  s << "│";
   writeFloatTabular(s, f.mem_avail/mb, 5);
-  s << u8"│      │ ";
+  s << "│      │ ";
   for (int i = 0; i < 2*journal.getDepth(); i++)
     s << ' ';
   prefix = s.str();
@@ -164,13 +164,13 @@ JournalRecordPair::writePrefixForEnd(const SystemResources &f)
   std::ostringstream s;
   s << std::setfill('0');
   writeFloatTabular(s, f.elapsed+difnow.elapsed, 7);
-  s << u8"│E" << std::setw(5) << ord << u8"│";
+  s << "│E" << std::setw(5) << ord << "│";
   writeFloatTabular(s, difnow.load_avg, 3);
-  s << u8"│";
+  s << "│";
   writeFloatTabular(s, difnow.mem_avail/mb, 5);
-  s << u8"│";
+  s << "│";
   writeFloatTabular(s, difnow.majflt/mb, 6);
-  s << u8"│ ";
+  s << "│ ";
   for (int i = 0; i < 2*journal.getDepth(); i++)
     s << ' ';
   prefix_end = s.str();
@@ -202,8 +202,8 @@ Journal::printHeader()
 {
   *this << "Dynare++ v. " << VERSION << '\n'
         << '\n'
-        << u8"Copyright © 2004-2011 Ondra Kamenik\n"
-        << u8"Copyright © 2019-2020 Dynare Team\n"
+        << "Copyright © 2004-2011 Ondra Kamenik\n"
+        << "Copyright © 2019-2020 Dynare Team\n"
         << "Dynare++ comes with ABSOLUTELY NO WARRANTY and is distributed under the GNU GPL,\n"
         << "version 3 or later (see https://www.gnu.org/licenses/gpl.html)\n"
         << "\n\n"
@@ -229,11 +229,11 @@ Journal::printHeader()
 #endif
                          )
         << "\n\n"
-        << u8"  ┌────╼ elapsed time (seconds)                     \n"
-        << u8"  │       ┌────╼ record unique identifier           \n"
-        << u8"  │       │     ┌────╼ load average                 \n"
-        << u8"  │       │     │    ┌────╼ available memory (MB)   \n"
-        << u8"  │       │     │    │     ┌─────╼ major faults (MB)\n"
-        << u8"  │       │     │    │     │                        \n"
-        << u8"  ╽       ╽     ╽    ╽     ╽                        \n";
+        << "  ┌────╼ elapsed time (seconds)                     \n"
+        << "  │       ┌────╼ record unique identifier           \n"
+        << "  │       │     ┌────╼ load average                 \n"
+        << "  │       │     │    ┌────╼ available memory (MB)   \n"
+        << "  │       │     │    │     ┌─────╼ major faults (MB)\n"
+        << "  │       │     │    │     │                        \n"
+        << "  ╽       ╽     ╽    ╽     ╽                        \n";
 }

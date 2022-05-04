@@ -1,6 +1,6 @@
 /*
  * Copyright © 2006 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -192,7 +192,7 @@ AtomAssignings::print() const
   expr.print();
   std::cout << "Left names:\n";
   for (auto it : lname2expr)
-    std::cout << it.first << u8" ⇒ " << expr.formula(it.second) << " (t=" << order[it.second] << ")\n";
+    std::cout << it.first << " ⇒ " << expr.formula(it.second) << " (t=" << order[it.second] << ")\n";
 }
 
 void

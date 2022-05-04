@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -275,7 +275,7 @@ FirstOrder::journalEigs()
         if (i == sdim || i == ypart.nys())
           {
             JournalRecord jr(journal);
-            jr << u8"──────────────────────────────────────────────────── ";
+            jr << "──────────────────────────────────────────────────── ";
             if (i == sdim)
               jr << "sdim";
             else

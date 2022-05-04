@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -39,7 +39,7 @@ FaaDiBruno::calculate(const StackContainer<FGSTensor> &cont,
       fine_cont.multAndAdd(l, f, out);
       JournalRecord recc(journal);
       recc << "dim=" << l << " avmem=" << mem_mb << " tmpmem=" << p_size_mb << " max=" << max
-           << " stacks=" << cont.numStacks() << u8"→" << fine_cont.numStacks() << endrec;
+           << " stacks=" << cont.numStacks() << "→" << fine_cont.numStacks() << endrec;
     }
 }
 
@@ -77,7 +77,7 @@ FaaDiBruno::calculate(const StackContainer<UGSTensor> &cont,
       fine_cont.multAndAdd(l, f, out);
       JournalRecord recc(journal);
       recc << "dim=" << l << " avmem=" << mem_mb << " tmpmem=" << p_size_mb << " max=" << max
-           << " stacks=" << cont.numStacks() << u8"→" << fine_cont.numStacks() << endrec;
+           << " stacks=" << cont.numStacks() << "→" << fine_cont.numStacks() << endrec;
     }
 }
 

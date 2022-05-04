@@ -1,6 +1,6 @@
 /*
  * Copyright © 2006 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -219,7 +219,7 @@ NLSolver::solve(Vector &xx, int &iter)
   JournalRecord rec(journal);
   rec <<    "Iter   lambda      residual" << endrec;
   JournalRecord rec1(journal);
-  rec1 << u8"───────────────────────────" << endrec;
+  rec1 << "───────────────────────────" << endrec;
 
   x = const_cast<const Vector &>(xx);
   iter = 0;

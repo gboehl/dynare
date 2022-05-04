@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Dynare Team
+ * Copyright © 2021-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -324,7 +324,7 @@ KOrderWelfare::KOrderWelfare(int num_stat, int num_pred,
   for (int ord = 1; ord <= order; ord++)
     {
       JournalRecordPair pa(journal);
-      pa << u8"Unconditional welfare : performing step for order = " << ord << "\n" << endrec;
+      pa << "Unconditional welfare : performing step for order = " << ord << "\n" << endrec;
       for (int j = 0; j <= ord; j++)
         for (int i = 0; i <= j; i++)
           {

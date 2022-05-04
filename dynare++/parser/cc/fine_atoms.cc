@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -529,8 +529,8 @@ FineAtoms::print() const
 
   std::cout << "endo atoms map:\n";
   for (unsigned int i = 0; i < endo_atoms_map.size(); i++)
-    std::cout << i << u8" → " << endo_atoms_map[i] << "\n";
+    std::cout << i << " → " << endo_atoms_map[i] << "\n";
   std::cout << "exo atoms map:\n";
   for (unsigned int i = 0; i < exo_atoms_map.size(); i++)
-    std::cout << i << u8" → " << exo_atoms_map[i] << "\n";
+    std::cout << i << " → " << exo_atoms_map[i] << "\n";
 }

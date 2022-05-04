@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Dynare Team
+ * Copyright © 2021-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -245,7 +245,7 @@ std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrderWelfare::faaDiBrunoU(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
-  pa << u8"Faà Di Bruno U container for " << sym << endrec;
+  pa << "Faà Di Bruno U container for " << sym << endrec;
   auto res = std::make_unique<typename ctraits<t>::Ttensor>(1, TensorDimens(sym, nvs));
   FaaDiBruno bruno(journal);
   bruno.calculate(Xstack<t>(), u, *res);
@@ -258,7 +258,7 @@ std::unique_ptr<typename ctraits<t>::Ttensor>
 KOrderWelfare::faaDiBrunoW(const Symmetry &sym) const
 {
   JournalRecordPair pa(journal);
-  pa << u8"Faà Di Bruno G container for " << sym << endrec;
+  pa << "Faà Di Bruno G container for " << sym << endrec;
   TensorDimens tdims(sym, nvs);
   auto res = std::make_unique<typename ctraits<t>::Ttensor>(1, tdims);
   FaaDiBruno bruno(journal);

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2006 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -179,10 +179,10 @@ StaticFineAtoms::print() const
   StaticAtoms::print();
   std::cout << "endo atoms map:\n";
   for (unsigned int i = 0; i < endo_atoms_map.size(); i++)
-    std::cout << i << u8" → " << endo_atoms_map[i] << "\n";
+    std::cout << i << " → " << endo_atoms_map[i] << "\n";
   std::cout << "exo atoms map:\n";
   for (unsigned int i = 0; i < exo_atoms_map.size(); i++)
-    std::cout << i << u8" → " << exo_atoms_map[i] << "\n";
+    std::cout << i << " → " << exo_atoms_map[i] << "\n";
   std::cout << "der atoms:\n";
   for (unsigned int i = 0; i < der_atoms.size(); i++)
     std::cout << i << "\t" << der_atoms[i] << "\n";

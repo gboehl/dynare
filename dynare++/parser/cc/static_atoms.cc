@@ -1,6 +1,6 @@
 /*
  * Copyright © 2006 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -106,5 +106,5 @@ StaticAtoms::print() const
   varnames.print();
   std::cout << "map to tree indices:\n";
   for (auto var : vars)
-    std::cout << var.first << u8"\t→\t" << var.second << "\n";
+    std::cout << var.first << "\t→\t" << var.second << "\n";
 }

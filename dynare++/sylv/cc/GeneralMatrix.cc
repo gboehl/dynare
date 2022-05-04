@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -474,7 +474,7 @@ void
 ConstGeneralMatrix::multInvLeft(Vector &d) const
 {
   if (d.skip() != 1)
-    throw SYLV_MES_EXCEPTION(u8"Skip≠1 not implemented in ConstGeneralMatrix::multInvLeft(Vector&)");
+    throw SYLV_MES_EXCEPTION("Skip≠1 not implemented in ConstGeneralMatrix::multInvLeft(Vector&)");
 
   multInvLeft("N", d.length(), 1, d.length(), d.base());
 }
@@ -484,7 +484,7 @@ void
 ConstGeneralMatrix::multInvLeftTrans(Vector &d) const
 {
   if (d.skip() != 1)
-    throw SYLV_MES_EXCEPTION(u8"Skip≠1 not implemented in ConstGeneralMatrix::multInvLeft(Vector&)");
+    throw SYLV_MES_EXCEPTION("Skip≠1 not implemented in ConstGeneralMatrix::multInvLeft(Vector&)");
 
   multInvLeft("T", d.length(), 1, d.length(), d.base());
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2006 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -87,12 +87,12 @@ AtomSubstitutions::get_new4old(const string &oldname, int tshift) const
 void
 AtomSubstitutions::print() const
 {
-  std::cout << u8"Atom Substitutions:\nOld ⇒ New:\n";
+  std::cout << "Atom Substitutions:\nOld ⇒ New:\n";
   for (const auto &it : old2new)
     for (const auto &itt : it.second)
-      std::cout << "    " << it.first << u8" ⇒ [" << itt.first << ", " << itt.second << "]\n";
+      std::cout << "    " << it.first << " ⇒ [" << itt.first << ", " << itt.second << "]\n";
 
-  std::cout << u8"Old ⇐ New:\n";
+  std::cout << "Old ⇐ New:\n";
   for (const auto &it : new2old)
     std::cout << "    [" << it.second.first << ", " << it.second.second << "] ⇐ " << it.first << '\n';
 }
