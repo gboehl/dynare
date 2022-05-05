@@ -67,30 +67,29 @@ a 32-bit Octave.
 A number of tools and libraries are needed in order to recompile everything. You don't necessarily need to install everything, depending on what you want to compile.
 
 - A POSIX compliant shell and an implementation of Make (mandatory)
-- The [GNU Compiler Collection](http://gcc.gnu.org/), version 8 or later, with
+- The [GNU Compiler Collection](https://gcc.gnu.org/), version 8 or later, with
   gcc, g++ and gfortran (mandatory)
 - [MATLAB](https://mathworks.com) (if you want to compile the MEX for MATLAB)
-- [GNU Octave](http://www.octave.org) with
+- [GNU Octave](https://www.octave.org) with
   - the development headers (if you want to compile the MEX for Octave)
   - the development libraries corresponding to the [UMFPACK](https://people.engr.tamu.edu/davis/suitesparse.html) packaged with Octave
-  - Optionally, the [Control](https://wiki.octave.org/Control_package), [IO](https://wiki.octave.org/IO_package), [Optimization](https://wiki.octave.org/Optimization_package) and [Statistics](https://wiki.octave.org/Statistics_package) package either installed via your package manager or through [Octave Forge](https://wiki.octave.org/Category:Octave_Forge).
-
-- [Boost libraries](http://www.boost.org), version 1.36 or later
-- [Bison](http://www.gnu.org/software/bison/), version 3.2 or later (only if you get the source through Git)
-- [Flex](http://flex.sourceforge.net/), version 2.5.4 or later (only if you get the source through Git)
-- [Autoconf](http://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git)
-- [Automake](http://www.gnu.org/software/automake/), version 1.11.2 or later (only if you get the source through Git)
-- An implementation of BLAS and LAPACK: either [ATLAS](http://math-atlas.sourceforge.net/), [OpenBLAS](http://xianyi.github.com/OpenBLAS/), Netlib ([BLAS](http://www.netlib.org/blas/), [LAPACK](http://www.netlib.org/lapack/)) or [MKL](http://software.intel.com/en-us/intel-mkl/) (only if you want to build Dynare++)
-- [MAT File I/O library](http://sourceforge.net/projects/matio/), version 1.5 or later (if you want to compile Markov-Switching code, the estimation DLL, k-order DLL and Dynare++)
+  - Optionally, the [Control](https://octave.sourceforge.io/control/), [IO](https://octave.sourceforge.io/io/), [Optimization](https://octave.sourceforge.io/optim/) and [Statistics](https://octave.sourceforge.io/statistics/) package either installed via your package manager or through [Octave Forge](https://octave.sourceforge.io/).
+- [Boost libraries](https://www.boost.org), version 1.36 or later
+- [Bison](https://www.gnu.org/software/bison/), version 3.2 or later (only if you get the source through Git)
+- [Flex](https://github.com/westes/flex), version 2.5.4 or later (only if you get the source through Git)
+- [Autoconf](https://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git)
+- [Automake](https://www.gnu.org/software/automake/), version 1.11.2 or later (only if you get the source through Git)
+- An implementation of BLAS and LAPACK: either [ATLAS](http://math-atlas.sourceforge.net/), [OpenBLAS](https://www.openblas.net/), Netlib ([BLAS](https://www.netlib.org/blas/), [LAPACK](https://www.netlib.org/lapack/)) or [MKL](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html) (only if you want to build Dynare++)
+- [MAT File I/O library](https://sourceforge.net/projects/matio/), version 1.5 or later (if you want to compile Markov-Switching code, the estimation DLL, k-order DLL and Dynare++)
 - [SLICOT](http://www.slicot.org) (if you want to compile the Kalman steady state DLL)
-- [GSL library](http://www.gnu.org/software/gsl/) (if you want to compile Markov-Switching code)
+- [GSL library](https://www.gnu.org/software/gsl/) (if you want to compile Markov-Switching code)
 - A decent LaTeX distribution (if you want to compile PDF documentation),
   ideally with Beamer
 - For building the reference manual:
-  - [Sphinx](http://www.sphinx-doc.org/)
+  - [Sphinx](https://www.sphinx-doc.org/)
   - [MathJax](https://www.mathjax.org/)
-- [Doxygen](http://www.stack.nl/%7Edimitri/doxygen/) (if you want to build Dynare preprocessor source documentation)
-- [X-13ARIMA-SEATS Seasonal Adjustment Program](https://www.census.gov/srd/www/x13as/)
+- [Doxygen](https://www.doxygen.nl) (if you want to build Dynare preprocessor source documentation)
+- [X-13ARIMA-SEATS Seasonal Adjustment Program](https://www.census.gov/data/software/x13as.html)
 
 ### Preparing the sources
 
