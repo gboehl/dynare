@@ -228,27 +228,29 @@ public:
     is_load_variable_list = false;
   }
 
+  /* Given a string which possibly contains a floating-point exception
+    (materialized by an operator between braces), returns a string spanning two
+    lines, the second line containing tildes (~) under the faulty operator. */
   inline string
   add_underscore_to_fpe(const string &str)
   {
     string temp;
     int pos1 = -1, pos2 = -1;
     string tmp_n(str.length(), ' ');
-    string dollar{"$"}, pound{"£"}, tilde{"~"};
     for (const char & i : str)
       {
-        if (dollar.compare(&i) != 0 && pound.compare(&i) != 0)
+        if (i != '{' && i != '}')
           temp += i;
         else
           {
-            if (dollar.compare(&i) == 0)
+            if (i == '{')
               pos1 = static_cast<int>(temp.length());
             else
               pos2 = static_cast<int>(temp.length());
             if (pos1 >= 0 && pos2 >= 0)
               {
                 tmp_n.erase(pos1, pos2-pos1+1);
-                tmp_n.insert(pos1, pos2-pos1, tilde[0]);
+                tmp_n.insert(pos1, pos2-pos1, '~');
                 pos1 = pos2 = -1;
               }
           }
@@ -1025,14 +1027,8 @@ public:
                 tmp_out << v1;
                 if (found != string::npos)
                   tmp_out << ")";
-                if (compute)
-                  {
-                    if (isinf(r))
-                      tmp_out << "$";
-                    tmp_out << " / ";
-                    if (isinf(r))
-                      tmp_out << "£";
-                  }
+                if (compute && isinf(r))
+                  tmp_out << "{ / }";
                 else
                   tmp_out << " / ";
                 found = v2.find(" ");
@@ -1170,13 +1166,8 @@ public:
                 tmp_out << v1;
                 if (found != string::npos)
                   tmp_out << ")";
-                if (compute)
-                  {
-                    if (isnan(r))
-                      tmp_out << "$ ^ " << "£";
-                    else
-                      tmp_out << " ^ ";
-                  }
+                if (compute && isnan(r))
+                  tmp_out << "{ ^ }";
                 else
                   tmp_out << " ^ ";
                 found = v2.find(" ");
@@ -1212,13 +1203,8 @@ public:
                         }
                     }
                   tmp_out.str("");
-                  if (compute)
-                    {
-                      if (isnan(r))
-                        tmp_out << "$ PowerDeriv " << "£";
-                      else
-                        tmp_out << "PowerDeriv";
-                    }
+                  if (compute && isnan(r))
+                    tmp_out << "{PowerDeriv}";
                   else
                     tmp_out << "PowerDeriv";
                   tmp_out << "(" << v1 << ", " << v2 << ", " << v3 << ")";
@@ -1277,15 +1263,11 @@ public:
                     Stackf.push(r);
                   }
                 tmp_out.str("");
-                if (compute)
-                  {
-                    if (isnan(r))
-                      tmp_out << "$log" << "£" << "(" << v1 << ")";
-                    else
-                      tmp_out << "log(" << v1 << ")";
-                  }
+                if (compute && isnan(r))
+                  tmp_out << "{log}";
                 else
-                  tmp_out << "log(" << v1 << ")";
+                  tmp_out << "log";
+                tmp_out << "(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::log10:
@@ -1295,15 +1277,11 @@ public:
                     Stackf.push(r);
                   }
                 tmp_out.str("");
-                if (compute)
-                  {
-                    if (isnan(r))
-                      tmp_out << "$log10" << "£" << "(" << v1 << ")";
-                    else
-                      tmp_out << "log10(" << v1 << ")";
-                  }
+                if (compute && isnan(r))
+                  tmp_out << "{log10}";
                 else
-                  tmp_out << "log10(" << v1 << ")";
+                  tmp_out << "log10";
+                tmp_out << "(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::cos:
