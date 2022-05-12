@@ -77,163 +77,165 @@ else
     end
 end
 
+return
+
 %@test:1
-%$ n = 2;
-%$ q = 3;
-%$
-%$ yhat = zeros(n,1);
-%$ epsilon = zeros(q,1);
-%$ ghx = rand(n,n);
-%$ ghu = rand(n,q);
-%$ constant = ones(n,1);
-%$ ghxx = rand(n,n*n);
-%$ ghuu = rand(n,q*q);
-%$ ghxu = rand(n,n*q);
-%$ yhat_ = zeros(n,1);
-%$ ss = ones(n,1);
-%$
-%$ % Call the tested routine.
-%$ for i=1:10
-%$     y1 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
-%$     [y2,y2_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
-%$ end
-%$
-%$ % Check the results.
-%$ t(1) = dassert(y1,ones(n,1));
-%$ t(2) = dassert(y2,ones(n,1));
-%$ t(3) = dassert(y2_,ones(n,1));
-%$ T = all(t);
+n = 2;
+q = 3;
+
+yhat = zeros(n,1);
+epsilon = zeros(q,1);
+ghx = rand(n,n);
+ghu = rand(n,q);
+constant = ones(n,1);
+ghxx = rand(n,n*n);
+ghuu = rand(n,q*q);
+ghxu = rand(n,n*q);
+yhat_ = zeros(n,1);
+ss = ones(n,1);
+
+% Call the tested routine.
+for i=1:10
+    y1 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
+    [y2,y2_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
+end
+
+% Check the results.
+t(1) = dassert(y1,ones(n,1));
+t(2) = dassert(y2,ones(n,1));
+t(3) = dassert(y2_,ones(n,1));
+T = all(t);
 %@eof:1
 
 %@test:2
-%$ old_path = pwd;
-%$ cd([fileparts(which('dynare')) '/../tests/']);
-%$ dynare('dsge_base2');
-%$ load dsge_base2;
-%$ cd(old_path);
-%$ dr = oo_.dr;
-%$ clear('oo_','options_','M_');
-%$ delete([fileparts(which('dynare')) '/../tests/dsge_base2.mat']);
-%$ istates = dr.nstatic+(1:dr.npred);
-%$ n = dr.npred;
-%$ q = size(dr.ghu,2);
-%$ yhat = zeros(n,1);
-%$ epsilon = zeros(q,1);
-%$ ghx = dr.ghx(istates,:);
-%$ ghu = dr.ghu(istates,:);
-%$ constant = dr.ys(istates,:)+dr.ghs2(istates,:);
-%$ ghxx = dr.ghxx(istates,:);
-%$ ghuu = dr.ghuu(istates,:);
-%$ ghxu = dr.ghxu(istates,:);
-%$ yhat_ = zeros(n,1);
-%$ ss = dr.ys(istates,:);
-%$
-%$ t = ones(2,1);
-%$
-%$ % Call the tested routine.
-%$ try
-%$     y1 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
-%$ catch
-%$     t(1) = 0;
-%$ end
-%$ try
-%$     [y2,y2_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
-%$ catch
-%$     t(2) = 0;
-%$ end
-%$
-%$ % Check the results.
-%$ T = all(t);
+old_path = pwd;
+cd([fileparts(which('dynare')) '/../tests/']);
+dynare('dsge_base2');
+load dsge_base2;
+cd(old_path);
+dr = oo_.dr;
+clear('oo_','options_','M_');
+delete([fileparts(which('dynare')) '/../tests/dsge_base2.mat']);
+istates = dr.nstatic+(1:dr.npred);
+n = dr.npred;
+q = size(dr.ghu,2);
+yhat = zeros(n,1);
+epsilon = zeros(q,1);
+ghx = dr.ghx(istates,:);
+ghu = dr.ghu(istates,:);
+constant = dr.ys(istates,:)+dr.ghs2(istates,:);
+ghxx = dr.ghxx(istates,:);
+ghuu = dr.ghuu(istates,:);
+ghxu = dr.ghxu(istates,:);
+yhat_ = zeros(n,1);
+ss = dr.ys(istates,:);
+
+t = ones(2,1);
+
+% Call the tested routine.
+try
+    y1 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
+catch
+    t(1) = 0;
+end
+try
+    [y2,y2_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
+catch
+    t(2) = 0;
+end
+
+% Check the results.
+T = all(t);
 %@eof:2
 
 %@test:3
-%$ Bohrbug = 1; % A bug that manifests reliably under a possibly unknown but well-defined set of conditions.
-%$ if ~Bohrbug
-%$     n = 2;
-%$     q = 3;
-%$
-%$     yhat = .01*randn(n,1);
-%$     epsilon = .001*randn(q,1);
-%$     ghx = rand(n,n);
-%$     ghu = rand(n,q);
-%$     constant = ones(n,1);
-%$     ghxx = rand(n,n*n);
-%$     ghuu = rand(n,q*q);
-%$     ghxu = rand(n,n*q);
-%$     yhat_ = zeros(n,1);
-%$     ss = ones(n,1);
-%$
-%$     % Call the tested routine (mex version).
-%$     y1a = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
-%$     [y2a,y2a_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
-%$
-%$     % Call the tested routine (matlab version)
-%$     path_to_mex = fileparts(which(['qmc_sequence.' mexext]));
-%$     where_am_i_coming_from = pwd;
-%$     cd(path_to_mex);
-%$     tar('local_state_space_iteration_2.tar',['local_state_space_iteration_2.' mexext]);
-%$     cd(where_am_i_coming_from);
-%$     dynare_config();
-%$     y1b = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
-%$     [y2b,y2b_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
-%$     cd(path_to_mex);
-%$     untar('local_state_space_iteration_2.tar');
-%$     delete('local_state_space_iteration_2.tar');
-%$     cd(where_am_i_coming_from);
-%$     dynare_config();
-%$     % Check the results.
-%$     t(1) = dassert(y1a,y1b);
-%$     t(2) = dassert(y2a,y2b);
-%$     t(3) = dassert(y2a_,y2b_);
-%$     T = all(t);
-%$ else
-%$     t(1) = 1;
-%$     T = all(t);
-%$ end
+Bohrbug = 1; % A bug that manifests reliably under a possibly unknown but well-defined set of conditions.
+if ~Bohrbug
+    n = 2;
+    q = 3;
+
+    yhat = .01*randn(n,1);
+    epsilon = .001*randn(q,1);
+    ghx = rand(n,n);
+    ghu = rand(n,q);
+    constant = ones(n,1);
+    ghxx = rand(n,n*n);
+    ghuu = rand(n,q*q);
+    ghxu = rand(n,n*q);
+    yhat_ = zeros(n,1);
+    ss = ones(n,1);
+
+    % Call the tested routine (mex version).
+    y1a = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
+    [y2a,y2a_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
+
+    % Call the tested routine (matlab version)
+    path_to_mex = fileparts(which(['qmc_sequence.' mexext]));
+    where_am_i_coming_from = pwd;
+    cd(path_to_mex);
+    tar('local_state_space_iteration_2.tar',['local_state_space_iteration_2.' mexext]);
+    cd(where_am_i_coming_from);
+    dynare_config();
+    y1b = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
+    [y2b,y2b_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
+    cd(path_to_mex);
+    untar('local_state_space_iteration_2.tar');
+    delete('local_state_space_iteration_2.tar');
+    cd(where_am_i_coming_from);
+    dynare_config();
+    % Check the results.
+    t(1) = dassert(y1a,y1b);
+    t(2) = dassert(y2a,y2b);
+    t(3) = dassert(y2a_,y2b_);
+    T = all(t);
+else
+    t(1) = 1;
+    T = all(t);
+end
 %@eof:3
 
 
 %@test:4
-%$ % TIMING TEST (parallelization with openmp)
-%$ old_path = pwd;
-%$ cd([fileparts(which('dynare')) '/../tests/']);
-%$ dynare('dsge_base2');
-%$ load dsge_base2;
-%$ cd(old_path);
-%$ dr = oo_.dr;
-%$ clear('oo_','options_','M_');
-%$ delete([fileparts(which('dynare')) '/../tests/dsge_base2.mat']);
-%$ istates = dr.nstatic+(1:dr.npred);
-%$ n = dr.npred;
-%$ q = size(dr.ghu,2);
-%$ yhat = zeros(n,10000000);
-%$ epsilon = zeros(q,10000000);
-%$ ghx = dr.ghx(istates,:);
-%$ ghu = dr.ghu(istates,:);
-%$ constant = dr.ys(istates,:)+dr.ghs2(istates,:);
-%$ ghxx = dr.ghxx(istates,:);
-%$ ghuu = dr.ghuu(istates,:);
-%$ ghxu = dr.ghxu(istates,:);
-%$ yhat_ = zeros(n,10000000);
-%$ ss = dr.ys(istates,:);
-%$
-%$ t = NaN(4,1);
-%$ tic, for i=1:10, y1 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1); end
-%$ t1 = toc;
-%$ tic, for i=1:10, y2 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,2); end
-%$ t2 = toc;
-%$ t(1) = dassert(y1,y2,1e-15); clear('y1');
-%$ tic, for i=1:10, y3 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,3); end
-%$ t3 = toc;
-%$ t(2) = dassert(y2,y3,1e-15); clear('y2');
-%$ tic, for i=1:10, y4 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,4); end
-%$ t4 = toc;
-%$ t(3) = dassert(y4,y3,1e-15); clear('y3','y4');
-%$ t(4) = (t1>t2) && (t2>t3) && (t3>t4);
-%$ if ~t(4)
-%$     disp('Timmings:')
-%$     [t1, t2, t3, t4]
-%$ end
-%$ % Check the results.
-%$ T = all(t);
+% TIMING TEST (parallelization with openmp)
+old_path = pwd;
+cd([fileparts(which('dynare')) '/../tests/']);
+dynare('dsge_base2');
+load dsge_base2;
+cd(old_path);
+dr = oo_.dr;
+clear('oo_','options_','M_');
+delete([fileparts(which('dynare')) '/../tests/dsge_base2.mat']);
+istates = dr.nstatic+(1:dr.npred);
+n = dr.npred;
+q = size(dr.ghu,2);
+yhat = zeros(n,10000000);
+epsilon = zeros(q,10000000);
+ghx = dr.ghx(istates,:);
+ghu = dr.ghu(istates,:);
+constant = dr.ys(istates,:)+dr.ghs2(istates,:);
+ghxx = dr.ghxx(istates,:);
+ghuu = dr.ghuu(istates,:);
+ghxu = dr.ghxu(istates,:);
+yhat_ = zeros(n,10000000);
+ss = dr.ys(istates,:);
+
+t = NaN(4,1);
+tic, for i=1:10, y1 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1); end
+t1 = toc;
+tic, for i=1:10, y2 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,2); end
+t2 = toc;
+t(1) = dassert(y1,y2,1e-15); clear('y1');
+tic, for i=1:10, y3 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,3); end
+t3 = toc;
+t(2) = dassert(y2,y3,1e-15); clear('y2');
+tic, for i=1:10, y4 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,4); end
+t4 = toc;
+t(3) = dassert(y4,y3,1e-15); clear('y3','y4');
+t(4) = (t1>t2) && (t2>t3) && (t3>t4);
+if ~t(4)
+    disp('Timmings:')
+    [t1, t2, t3, t4]
+end
+% Check the results.
+T = all(t);
 %@eof:4
