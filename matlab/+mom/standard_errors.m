@@ -87,10 +87,19 @@ else
             D(:,i) = (oo__p.mom.model_moments - oo__m.mom.model_moments)/(2*eps_value);
         else
             problpar = get_the_name(i,options_mom_.TeX, M_, estim_params_, options_mom_);
-            message_p = get_error_message(info_p, options_mom_);
-            message_m = get_error_message(info_m, options_mom_);        
-
-            warning('method_of_moments:info','Cannot compute the Jacobian for parameter %s - no standard errors available\n %s %s\nCheck your bounds and/or priors, or use a different optimizer.\n',problpar, message_p, message_m)
+            if info_p(1)==42
+                warning('method_of_moments:info','Cannot compute the Jacobian using finite differences for parameter %s due to hitting the upper bound - no standard errors available.\n',problpar)
+            else
+                message_p = get_error_message(info_p, options_mom_);
+            end
+            if info_m(1)==41
+                warning('method_of_moments:info','Cannot compute the Jacobian using finite differences for parameter %s due to hitting the lower bound - no standard errors available.\n',problpar)
+            else
+                message_m = get_error_message(info_m, options_mom_);        
+            end
+            if info_m(1)~=41 && info_p(1)~=42
+                warning('method_of_moments:info','Cannot compute the Jacobian using finite differences for parameter %s - no standard errors available\n %s %s\nCheck your priors or use a different optimizer.\n',problpar, message_p, message_m)
+            end
             Asympt_Var = NaN(length(xparam),length(xparam));
             SE_values = NaN(length(xparam),1);
             return
