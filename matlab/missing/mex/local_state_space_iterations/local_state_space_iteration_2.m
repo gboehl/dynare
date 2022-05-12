@@ -93,13 +93,13 @@ ghuu = rand(n,q*q);
 ghxu = rand(n,n*q);
 yhat_ = zeros(n,1);
 ss = ones(n,1);
-
+addpath(sprintf('%s/missing/mex/local_state_space_iterations', fileparts(which('dynare'))))
 % Call the tested routine.
 for i=1:10
     y1 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
     [y2,y2_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
 end
-
+rmpath(sprintf('%s/missing/mex/local_state_space_iterations', fileparts(which('dynare'))))
 % Check the results.
 t(1) = dassert(y1,ones(n,1));
 t(2) = dassert(y2,ones(n,1));
