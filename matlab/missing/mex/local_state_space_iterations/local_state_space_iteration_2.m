@@ -44,36 +44,37 @@ function [y, y_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, consta
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if nargin==9
-    pruning = 0;
+    pruning = false;
     if nargout>1
-        error('local_state_space_iteration_2:: Numbers of input and output argument are inconsistent!')
+        error('local_state_space_iteration_2:: Numbers of input and output argument are inconsistent.')
     end
 elseif nargin==11
-    pruning = 1; yhat_ = a; ss = b;
+    pruning = true;
+    yhat_ = a;
+    ss = b;
     if nargout~=2
-        error('local_state_space_iteration_2:: Numbers of input and output argument are inconsistent!')
+        error('local_state_space_iteration_2:: Numbers of input and output argument are inconsistent.')
     end
 else
-    error('local_state_space_iteration_2:: Wrong number of input arguments!')
+    error('local_state_space_iteration_2:: Wrong number of input arguments.')
 end
 
-switch pruning
-  case 0
+if pruning
     for i =1:size(yhat,2)
         y(:,i) = constant + ghx*yhat(:,i) + ghu*epsilon(:,i) ...
-                 + A_times_B_kronecker_C(.5*ghxx,yhat(:,i))  ...
-                 + A_times_B_kronecker_C(.5*ghuu,epsilon(:,i)) ...
-                 + A_times_B_kronecker_C(ghxu,yhat(:,i),epsilon(:,i));
-    end
-  case 1
-    for i =1:size(yhat,2)
-        y(:,i) = constant + ghx*yhat(:,i) + ghu*epsilon(:,i) ...
-                 + A_times_B_kronecker_C(.5*ghxx,yhat_(:,i))  ...
-                 + A_times_B_kronecker_C(.5*ghuu,epsilon(:,i)) ...
-                 + A_times_B_kronecker_C(ghxu,yhat_(:,i),epsilon(:,i));
+                 + A_times_B_kronecker_C(.5*ghxx, yhat_(:,i))  ...
+                 + A_times_B_kronecker_C(.5*ghuu, epsilon(:,i)) ...
+                 + A_times_B_kronecker_C(ghxu, yhat_(:,i), epsilon(:,i));
     end
     y_ = ghx*yhat_+ghu*epsilon;
-    y_ = bsxfun(@plus,y_,ss);
+    y_ = bsxfun(@plus, y_, ss);
+else
+    for i =1:size(yhat,2)
+        y(:,i) = constant + ghx*yhat(:,i) + ghu*epsilon(:,i) ...
+                 + A_times_B_kronecker_C(.5*ghxx, yhat(:,i))  ...
+                 + A_times_B_kronecker_C(.5*ghuu, epsilon(:,i)) ...
+                 + A_times_B_kronecker_C(ghxu, yhat(:,i), epsilon(:,i));
+    end
 end
 
 %@test:1
