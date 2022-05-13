@@ -115,7 +115,7 @@ ss2Iteration_pruning(double *y2, double *y1, const double *yhat2, const double *
           // +ghxu·ŷ₁⊗ε
           for (int v = particle__, i = 0; v < particle__+n; v++)
             for (int s = particle___; s < particle___+q; s++, i += m)
-              y2[variable_] += ghxu[variable+i]*epsilon[s]*yhat2[v];
+                y2[variable_] += ghxu[variable+i]*epsilon[s]*yhat1[v];
 #ifndef USE_BLAS_AT_FIRST_ORDER
           for (int column = 0, column_ = 0; column < q; column++, column_ += m)
             {
