@@ -1,4 +1,4 @@
-function [y, y_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, a, b, c)
+function [y, y_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, a, b, c) % --*-- Unitary tests --*--
 
 % Given the demeaned states (yhat) and structural innovations (epsilon), this routine computes the level of selected endogenous variables when the
 % model is approximated by an order two taylor expansion around the deterministic steady state. Depending on the number of input/output
@@ -109,116 +109,103 @@ T = all(t);
 
 %@test:2
 old_path = pwd;
-cd([fileparts(which('dynare')) '/../tests/']);
-dynare('dsge_base2');
-load dsge_base2;
+cd([fileparts(which('dynare')) '/../tests/particle']);
+load dsgebase2data;
 cd(old_path);
-dr = oo_.dr;
-clear('oo_','options_','M_');
-delete([fileparts(which('dynare')) '/../tests/dsge_base2.mat']);
-istates = dr.nstatic+(1:dr.npred);
-n = dr.npred;
-q = size(dr.ghu,2);
-yhat = zeros(n,1);
-epsilon = zeros(q,1);
-ghx = dr.ghx(istates,:);
-ghu = dr.ghu(istates,:);
-constant = dr.ys(istates,:)+dr.ghs2(istates,:);
-ghxx = dr.ghxx(istates,:);
-ghuu = dr.ghuu(istates,:);
-ghxu = dr.ghxu(istates,:);
-yhat_ = zeros(n,1);
-ss = dr.ys(istates,:);
-
-t = ones(2,1);
-
-% Call the tested routine.
+n = length(state_variables_idx);
+q = size(ReducedForm.ghu,2);
+yhatinit = randn(n,1);
+epsilon = randn(q,2);
+ghx = ReducedForm.ghx(state_variables_idx,:);
+ghu = ReducedForm.ghu(state_variables_idx,:);
+constant = ReducedForm.constant(state_variables_idx,:);
+ghxx = ReducedForm.ghxx(state_variables_idx,:);
+ghuu = ReducedForm.ghuu(state_variables_idx,:);
+ghxu = ReducedForm.ghxu(state_variables_idx,:);
+yhatinit_ = randn(n,1);
+ss = ReducedForm.state_variables_steady_state;
+t = true(6,1);
+% Call the tested routine (matlab).
+addpath(sprintf('%s/missing/mex/local_state_space_iterations', fileparts(which('dynare'))))
 try
-    y1 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
+    yhat1 = local_state_space_iteration_2(yhatinit, epsilon(:,1), ghx, ghu, constant, ghxx, ghuu, ghxu, 1);
+    yhat1 = local_state_space_iteration_2(yhat1, epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, 1);
 catch
-    t(1) = 0;
+    t(1) = false;
 end
 try
-    [y2,y2_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
+    [yhat2, yhat2_] = local_state_space_iteration_2(yhatinit, epsilon(:,1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhatinit_, ss, 1);
+    [yhat2, yhat2_] = local_state_space_iteration_2(yhat2, epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat2_, ss, 1);
 catch
-    t(2) = 0;
+    t(2) = false;
 end
-
-% Check the results.
+rmpath(sprintf('%s/missing/mex/local_state_space_iterations', fileparts(which('dynare'))))
+% Call the tested routine (mex).
+try
+    yhat3 = local_state_space_iteration_2(yhatinit, epsilon(:,1), ghx, ghu, constant, ghxx, ghuu, ghxu, 1);
+    yhat3 = local_state_space_iteration_2(yhat3, epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, 1);
+catch
+    t(3) = false;
+end
+try
+    [yhat4, yhat4_] = local_state_space_iteration_2(yhatinit, epsilon(:,1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhatinit_, ss, 1);
+    [yhat4, yhat4_] = local_state_space_iteration_2(yhat4, epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat4_, ss, 1);
+catch
+    t(4) = false;
+end
+t(5) = max(abs(yhat1-yhat3))<1e-10; % Compare matlab and mex routines without pruning.
+t(6) = max(abs(yhat2-yhat4))<1e-10; % Compare matlab and mex routines with pruning. 
+                                    % Check the results.
 T = all(t);
 %@eof:2
 
 %@test:3
-Bohrbug = 1; % A bug that manifests reliably under a possibly unknown but well-defined set of conditions.
-if ~Bohrbug
-    n = 2;
-    q = 3;
-
-    yhat = .01*randn(n,1);
-    epsilon = .001*randn(q,1);
-    ghx = rand(n,n);
-    ghu = rand(n,q);
-    constant = ones(n,1);
-    ghxx = rand(n,n*n);
-    ghuu = rand(n,q*q);
-    ghxu = rand(n,n*q);
-    yhat_ = zeros(n,1);
-    ss = ones(n,1);
-
-    % Call the tested routine (mex version).
-    y1a = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
-    [y2a,y2a_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
-
-    % Call the tested routine (matlab version)
-    path_to_mex = fileparts(which(['qmc_sequence.' mexext]));
-    where_am_i_coming_from = pwd;
-    cd(path_to_mex);
-    tar('local_state_space_iteration_2.tar',['local_state_space_iteration_2.' mexext]);
-    cd(where_am_i_coming_from);
-    dynare_config();
-    y1b = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
-    [y2b,y2b_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
-    cd(path_to_mex);
-    untar('local_state_space_iteration_2.tar');
-    delete('local_state_space_iteration_2.tar');
-    cd(where_am_i_coming_from);
-    dynare_config();
-    % Check the results.
-    t(1) = dassert(y1a,y1b);
-    t(2) = dassert(y2a,y2b);
-    t(3) = dassert(y2a_,y2b_);
-    T = all(t);
-else
-    t(1) = 1;
-    T = all(t);
-end
+n = 2;
+q = 3;
+yhat = .01*randn(n,1);
+epsilon = .001*randn(q,1);
+ghx = rand(n,n);
+ghu = rand(n,q);
+constant = ones(n,1);
+ghxx = rand(n,n*n);
+ghuu = rand(n,q*q);
+ghxu = rand(n,n*q);
+yhat_ = zeros(n,1);
+ss = ones(n,1);
+% Call the tested routine (mex version).
+y1a = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
+[y2a,y2a_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
+% Call the tested routine (matlab version)
+addpath(sprintf('%s/missing/mex/local_state_space_iterations', fileparts(which('dynare'))))
+y1b = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
+[y2b,y2b_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
+rmpath(sprintf('%s/missing/mex/local_state_space_iterations', fileparts(which('dynare'))))
+% Check the results.
+t(1) = max(abs(y1a-y1b))<1e-6;
+t(2) = max(abs(y2a-y2b))<1e-6;
+t(3) = max(abs(y2a_-y2b_))<1e-6;
+T = all(t);
 %@eof:3
-
 
 %@test:4
 % TIMING TEST (parallelization with openmp)
 old_path = pwd;
-cd([fileparts(which('dynare')) '/../tests/']);
-dynare('dsge_base2');
-load dsge_base2;
+cd([fileparts(which('dynare')) '/../tests/particle']);
+load dsgebase2data;
 cd(old_path);
-dr = oo_.dr;
-clear('oo_','options_','M_');
-delete([fileparts(which('dynare')) '/../tests/dsge_base2.mat']);
-istates = dr.nstatic+(1:dr.npred);
-n = dr.npred;
-q = size(dr.ghu,2);
-yhat = zeros(n,10000000);
-epsilon = zeros(q,10000000);
-ghx = dr.ghx(istates,:);
-ghu = dr.ghu(istates,:);
-constant = dr.ys(istates,:)+dr.ghs2(istates,:);
-ghxx = dr.ghxx(istates,:);
-ghuu = dr.ghuu(istates,:);
-ghxu = dr.ghxu(istates,:);
-yhat_ = zeros(n,10000000);
-ss = dr.ys(istates,:);
-
+n = length(state_variables_idx);
+q = size(ReducedForm.ghu,2);
+yhat = randn(n,10000000);
+epsilon = .01*randn(q,10000000);
+ghx = ReducedForm.ghx(state_variables_idx,:);
+ghu = ReducedForm.ghu(state_variables_idx,:);
+constant = ReducedForm.constant(state_variables_idx,:);
+ghxx = ReducedForm.ghxx(state_variables_idx,:);
+ghuu = ReducedForm.ghuu(state_variables_idx,:);
+ghxu = ReducedForm.ghxu(state_variables_idx,:);
+yhatinit_ = randn(n,1);
+ss = ReducedForm.state_variables_steady_state;
+yhat_ = randn(n,10000000);
 t = NaN(4,1);
 tic, for i=1:10, y1 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1); end
 t1 = toc;

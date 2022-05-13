@@ -1307,6 +1307,7 @@ EXTRA_DIST = \
 	smoother2histval/fsdat_simul.m \
 	particle/first_spec_common.inc \
 	particle/risky.m \
+	particle/dsgebase2data.mat \
 	optimal_policy/Ramsey/find_c.m \
 	observation_trends_and_prefiltering/generate_trend_stationary_AR1.m \
 	observation_trends_and_prefiltering/Trend_diagnostics_MCMC_common.inc \
