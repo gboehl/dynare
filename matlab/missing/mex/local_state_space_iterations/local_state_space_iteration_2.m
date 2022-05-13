@@ -161,34 +161,6 @@ T = all(t);
 %@eof:2
 
 %@test:3
-n = 2;
-q = 3;
-yhat = .01*randn(n,1);
-epsilon = .001*randn(q,1);
-ghx = rand(n,n);
-ghu = rand(n,q);
-constant = ones(n,1);
-ghxx = rand(n,n*n);
-ghuu = rand(n,q*q);
-ghxu = rand(n,n*q);
-yhat_ = zeros(n,1);
-ss = ones(n,1);
-% Call the tested routine (mex version).
-y1a = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
-[y2a,y2a_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
-% Call the tested routine (matlab version)
-addpath(sprintf('%s/missing/mex/local_state_space_iterations', fileparts(which('dynare'))))
-y1b = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1);
-[y2b,y2b_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,ss,1);
-rmpath(sprintf('%s/missing/mex/local_state_space_iterations', fileparts(which('dynare'))))
-% Check the results.
-t(1) = max(abs(y1a-y1b))<1e-6;
-t(2) = max(abs(y2a-y2b))<1e-6;
-t(3) = max(abs(y2a_-y2b_))<1e-6;
-T = all(t);
-%@eof:3
-
-%@test:4
 % TIMING TEST (parallelization with openmp)
 old_path = pwd;
 cd([fileparts(which('dynare')) '/../tests/particle']);
@@ -226,4 +198,4 @@ if ~t(4)
 end
 % Check the results.
 T = all(t);
-%@eof:4
+%@eof:3
