@@ -113,29 +113,30 @@ cd([fileparts(which('dynare')) '/../tests/particle']);
 load dsgebase2data;
 cd(old_path);
 n = length(state_variables_idx);
+m = rows(ReducedForm.ghx);
 q = size(ReducedForm.ghu,2);
 yhatinit = randn(n,1);
 epsilon = randn(q,2);
-ghx = ReducedForm.ghx(state_variables_idx,:);
-ghu = ReducedForm.ghu(state_variables_idx,:);
-constant = ReducedForm.constant(state_variables_idx,:);
-ghxx = ReducedForm.ghxx(state_variables_idx,:);
-ghuu = ReducedForm.ghuu(state_variables_idx,:);
-ghxu = ReducedForm.ghxu(state_variables_idx,:);
+ghx = ReducedForm.ghx;
+ghu = ReducedForm.ghu;
+constant = ReducedForm.constant;
+ghxx = ReducedForm.ghxx;
+ghuu = ReducedForm.ghuu;
+ghxu = ReducedForm.ghxu;
 yhatinit_ = randn(n,1);
-ss = ReducedForm.state_variables_steady_state;
+steadystate = ReducedForm.steadystate;
 t = true(6,1);
 % Call the tested routine (matlab).
 addpath(sprintf('%s/missing/mex/local_state_space_iterations', fileparts(which('dynare'))))
 try
     yhat1 = local_state_space_iteration_2(yhatinit, epsilon(:,1), ghx, ghu, constant, ghxx, ghuu, ghxu, 1);
-    yhat1 = local_state_space_iteration_2(yhat1, epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, 1);
+    yhat1 = local_state_space_iteration_2(yhat1(state_variables_idx), epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, 1);
 catch
     t(1) = false;
 end
 try
-    [yhat2, yhat2_] = local_state_space_iteration_2(yhatinit, epsilon(:,1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhatinit_, ss, 1);
-    [yhat2, yhat2_] = local_state_space_iteration_2(yhat2, epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat2_, ss, 1);
+    [yhat2, yhat2_] = local_state_space_iteration_2(yhatinit, epsilon(:,1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhatinit_, steadystate, 1);
+    [yhat2, yhat2_] = local_state_space_iteration_2(yhat2(state_variables_idx), epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat2_(state_variables_idx), steadystate, 1);
 catch
     t(2) = false;
 end
@@ -143,18 +144,18 @@ rmpath(sprintf('%s/missing/mex/local_state_space_iterations', fileparts(which('d
 % Call the tested routine (mex).
 try
     yhat3 = local_state_space_iteration_2(yhatinit, epsilon(:,1), ghx, ghu, constant, ghxx, ghuu, ghxu, 1);
-    yhat3 = local_state_space_iteration_2(yhat3, epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, 1);
+    yhat3 = local_state_space_iteration_2(yhat3(state_variables_idx), epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, 1);
 catch
     t(3) = false;
 end
 try
-    [yhat4, yhat4_] = local_state_space_iteration_2(yhatinit, epsilon(:,1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhatinit_, ss, 1);
-    [yhat4, yhat4_] = local_state_space_iteration_2(yhat4, epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat4_, ss, 1);
+    [yhat4, yhat4_] = local_state_space_iteration_2(yhatinit, epsilon(:,1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhatinit_, steadystate, 1);
+    [yhat4, yhat4_] = local_state_space_iteration_2(yhat4(state_variables_idx), epsilon(:,2), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat4_(state_variables_idx), steadystate, 1);
 catch
     t(4) = false;
 end
-t(5) = max(abs(yhat1-yhat3))<1e-10; % Compare matlab and mex routines without pruning.
-t(6) = max(abs(yhat2-yhat4))<1e-10; % Compare matlab and mex routines with pruning. 
+t(5) = max(abs(yhat1-yhat3))<1e-12; % Compare matlab and mex routines without pruning.
+t(6) = max(abs(yhat2-yhat4))<1e-12; % Compare matlab and mex routines with pruning.
                                     % Check the results.
 T = all(t);
 %@eof:2
