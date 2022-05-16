@@ -62,15 +62,6 @@ Vector::operator=(const Vector &v)
 }
 
 Vector &
-Vector::operator=(Vector &&v)
-{
-  if (v.len != len)
-    throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
-  copy(v.data, v.s);
-  return *this;
-}
-
-Vector &
 Vector::operator=(const ConstVector &v)
 {
   if (v.len != len)

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -73,7 +73,10 @@ public:
   explicit Vector(mxArray *p);
 #endif
   Vector &operator=(const Vector &v);
-  Vector &operator=(Vector &&v);
+  /* The move-assignment operator is not implemented, because moving pointers
+     across class instances would break the “reference semantics” that the
+     Vector class implements. The copy-assignment operator is thus used as a
+     fallback. */
   Vector &operator=(const ConstVector &v);
   double &
   operator[](int i)
