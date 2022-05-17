@@ -4757,6 +4757,18 @@ All of these elements are discussed in the following.
     the levels, not deviations from the steady state. To access the steady state
     level of a variable, the ``STEADY_STATE()``-operator can be used.
 
+    Finally, it's worth keeping in mind that for each simulation period, Occbin will check 
+    the respective conditions for whether the current regime should be left. Small numerical 
+    differences from the cutoff point for a regime can sometimes lead to oscillations between
+    regimes and cause a spurious periodic solution. Such cases may be prevented by introducing 
+    a small buffer between the two regimes, e.g.
+
+    ::
+
+        occbin_constraints;
+        name 'ELB'; bind inom <= iss-1e8; relax inom > iss+1e-8;
+        end;
+
     The ``error_bind`` and ``error_relax``-options are optional and allow specifying
     numerical criteria for the size of the respective constraint violations employed
     in numerical routines. By default, Dynare will simply use the absolute value of
@@ -4894,7 +4906,9 @@ All of these elements are discussed in the following.
     .. option:: simul_periodic_solution
 
        Accept a periodic solution where the solution alternates between two sets of results
-       across iterations, i.e. is not found to be unique. Default: not enabled.
+       across iterations, i.e. is not found to be unique. This is sometimes caused by spurious numerical errors
+       that lead to oscillations between regiems and may be prevented by allowing for a small buffer in regime 
+       transitions. Default: not enabled.
 
     .. option:: simul_debug
 
