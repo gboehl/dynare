@@ -153,11 +153,6 @@ else
     needs_set_auxiliary_variables = 0;
 end
 
-% value and Jacobian of objective function
-ex = zeros(1,M.exo_nbr);
-[U,Uy,Uyy] = feval([fname '.objective.static'],x,ex, params);
-Uyy = reshape(Uyy,endo_nbr,endo_nbr);
-
 % set multipliers and auxiliary variables that
 % depends on multipliers to 0 to compute residuals
 if (options_.bytecode)
@@ -171,7 +166,6 @@ end
 % index of multipliers and corresponding equations
 % the auxiliary variables before the Lagrange multipliers are treated
 % as ordinary endogenous variables
-aux_eq = [1:orig_endo_aux_nbr, orig_endo_aux_nbr+orig_eq_nbr+1:size(fJ,1)];
 A = fJ(1:orig_endo_aux_nbr,orig_endo_nbr+find(aux_vars_type==6));
 y = res(1:orig_endo_aux_nbr);
 mult = -A\y;
