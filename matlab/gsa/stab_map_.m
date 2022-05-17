@@ -70,12 +70,10 @@ nliv   = opt_gsa.morris_nliv;
 ntra   = opt_gsa.morris_ntra;
 
 dr_ = oo_.dr;
-%if isfield(dr_,'ghx'),
 ys_ = oo_.dr.ys;
 nspred = M_.nspred; %size(dr_.ghx,2);
 nboth = M_.nboth;
 nfwrd = M_.nfwrd;
-%end
 fname_ = M_.fname;
 
 np = estim_params_.np;
@@ -85,12 +83,6 @@ nshock = nshock + estim_params_.ncx;
 nshock = nshock + estim_params_.ncn;
 lpmat0=zeros(Nsam,0);
 xparam1=[];
-
-pshape = bayestopt_.pshape(nshock+1:end);
-p1 = bayestopt_.p1(nshock+1:end);
-p2 = bayestopt_.p2(nshock+1:end);
-p3 = bayestopt_.p3(nshock+1:end);
-p4 = bayestopt_.p4(nshock+1:end);
 
 [~,~,~,lb,ub,~] = set_prior(estim_params_,M_,options_); %Prepare bounds
 if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
@@ -144,10 +136,6 @@ options_.nomoments=1;
 options_.irf=0;
 options_.noprint=1;
 if fload==0
-    %   if prepSA
-    %     T=zeros(size(dr_.ghx,1),size(dr_.ghx,2)+size(dr_.ghu,2),Nsam/2);
-    %   end
-
     if isfield(dr_,'ghx')
         egg=zeros(length(dr_.eigval),Nsam);
     end
@@ -159,9 +147,6 @@ if fload==0
         Nsam=size(lpmat,1);
         lpmat0 = lpmat(:,1:nshock);
         lpmat = lpmat(:,nshock+1:end);
-        %     elseif opt_gsa.morris==3,
-        %         lpmat = prep_ide(Nsam,np,5);
-        %         Nsam=size(lpmat,1);
     else
         if np<52 && ilptau>0
             [lpmat] = qmc_sequence(np, int64(1), 0, Nsam)';
@@ -178,16 +163,7 @@ if fload==0
 
         end
     end
-    %   try
-    dummy=prior_draw_gsa(1); %initialize persistent variables
-                             %   catch
-                             %     if pprior,
-                             %       if opt_gsa.prior_range==0;
-                             %         error('Some unknown prior is specified or ML estimation,: use prior_range=1 option!!');
-                             %       end
-                             %     end
-                             %
-                             %   end
+    dummy=prior_draw_gsa(1); 
     if pprior
         for j=1:nshock
             if opt_gsa.morris~=1
@@ -198,62 +174,16 @@ if fload==0
             end
         end
         if opt_gsa.prior_range
-            %       if opt_gsa.identification,
-            %         deltx=min(0.001, 1/Nsam/2);
-            %         for j=1:np,
-            %           xdelt(:,:,j)=prior_draw_gsa(0,[lpmat0 lpmat]+deltx);
-            %         end
-            %       end
             for j=1:np
                 lpmat(:,j)=lpmat(:,j).*(bounds.ub(j+nshock)-bounds.lb(j+nshock))+bounds.lb(j+nshock);
             end
         else
             xx=prior_draw_gsa(0,[lpmat0 lpmat]);
-            %       if opt_gsa.identification,
-            %         deltx=min(0.001, 1/Nsam/2);
-            %         ldum=[lpmat0 lpmat];
-            %         ldum = prior_draw_gsa(0,ldum+deltx);
-            %         for j=1:nshock+np,
-            %           xdelt(:,:,j)=xx;
-            %           xdelt(:,j,j)=ldum(:,j);
-            %         end
-            %         clear ldum
-            %       end
             lpmat0=xx(:,1:nshock);
             lpmat=xx(:,nshock+1:end);
             clear xx;
         end
     else
-        %         for j=1:nshock,
-        %             xparam1(j) = oo_.posterior_mode.shocks_std.(bayestopt_.name{j});
-        %             sd(j) = oo_.posterior_std.shocks_std.(bayestopt_.name{j});
-        %             lpmat0(:,j) = randperm(Nsam)'./(Nsam+1); %latin hypercube
-        %             lb = max(bayestopt_.lb(j), xparam1(j)-2*sd(j));
-        %             ub1=xparam1(j)+(xparam1(j) - lb); % define symmetric range around the mode!
-        %             ub = min(bayestopt_.ub(j),ub1);
-        %             if ub<ub1,
-        %                 lb=xparam1(j)-(ub-xparam1(j)); % define symmetric range around the mode!
-        %             end
-        %             lpmat0(:,j) = lpmat0(:,j).*(ub-lb)+lb;
-        %         end
-        %         %
-        %         for j=1:np,
-        %             xparam1(j+nshock) = oo_.posterior_mode.parameters.(bayestopt_.name{j+nshock});
-        %             sd(j+nshock) = oo_.posterior_std.parameters.(bayestopt_.name{j+nshock});
-        %             lb = max(bayestopt_.lb(j+nshock),xparam1(j+nshock)-2*sd(j+nshock));
-        %             ub1=xparam1(j+nshock)+(xparam1(j+nshock) - lb); % define symmetric range around the mode!
-        %             ub = min(bayestopt_.ub(j+nshock),ub1);
-        %             if ub<ub1,
-        %                 lb=xparam1(j+nshock)-(ub-xparam1(j+nshock)); % define symmetric range around the mode!
-        %             end
-        %             %ub = min(bayestopt_.ub(j+nshock),xparam1(j+nshock)+2*sd(j+nshock));
-        %             if np>30 & np<52
-        %                 lpmat(:,j) = lpmat(randperm(Nsam),j).*(ub-lb)+lb;
-        %             else
-        %                 lpmat(:,j) = lpmat(:,j).*(ub-lb)+lb;
-        %             end
-        %         end
-        %load([fname_,'_mode'])
         if neighborhood_width>0 && isempty(options_.mode_file)
             xparam1 = get_all_parameters(estim_params_,M_);
         else
@@ -358,10 +288,6 @@ if fload==0
             if prepSA
                 jstab=jstab+1;
                 T(:,:,jstab) = [dr_.ghx dr_.ghu];
-                %         [A,B] = ghx2transition(squeeze(T(:,:,jstab)), ...
-                %           bayestopt_.restrict_var_list, ...
-                %           bayestopt_.restrict_columns, ...
-                %           bayestopt_.restrict_aux);
             end
             if ~exist('nspred','var')
                 nspred = dr_.nspred; %size(dr_.ghx,2);
@@ -415,40 +341,6 @@ if fload==0
     iwrong=iwrong(find(iwrong));  % dynare could not find solution
     ixun=iunstable(find(~ismember(iunstable,[iindeterm,iwrong,inorestriction]))); % explosive roots
 
-    %     % map stable samples
-    %     istable=[1:Nsam];
-    %     for j=1:Nsam,
-    %         if any(isnan(egg(1:nspred,j)))
-    %             istable(j)=0;
-    %         else
-    %             if abs(egg(nspred,j))>=options_.qz_criterium; %(1-(options_.qz_criterium-1)); %1-1.e-5;
-    %                 istable(j)=0;
-    %                 %elseif (dr_.nboth | dr_.nfwrd) & abs(egg(nspred+1,j))<=options_.qz_criterium; %1+1.e-5;
-    %             elseif (nboth | nfwrd) & abs(egg(nspred+1,j))<=options_.qz_criterium; %1+1.e-5;
-    %                 istable(j)=0;
-    %             end
-    %         end
-    %     end
-    %     istable=istable(find(istable));  % stable params
-    %
-    %     % map unstable samples
-    %     iunstable=[1:Nsam];
-    %     for j=1:Nsam,
-    %         %if abs(egg(dr_.npred+1,j))>1+1.e-5 & abs(egg(dr_.npred,j))<1-1.e-5;
-    %         %if (dr_.nboth | dr_.nfwrd),
-    %         if ~any(isnan(egg(1:5,j)))
-    %             if (nboth | nfwrd),
-    %                 if abs(egg(nspred+1,j))>options_.qz_criterium & abs(egg(nspred,j))<options_.qz_criterium; %(1-(options_.qz_criterium-1));
-    %                     iunstable(j)=0;
-    %                 end
-    %             else
-    %                 if abs(egg(nspred,j))<options_.qz_criterium; %(1-(options_.qz_criterium-1));
-    %                     iunstable(j)=0;
-    %                 end
-    %             end
-    %         end
-    %     end
-    %     iunstable=iunstable(find(iunstable));   % unstable params
     bkpprior.pshape=bayestopt_.pshape;
     bkpprior.p1=bayestopt_.p1;
     bkpprior.p2=bayestopt_.p2;
@@ -496,17 +388,12 @@ else
         options_.irf=0;
         options_.noprint=1;
         [~, oo_, options_] = stoch_simul(M_, options_, oo_, []);
-        %T=zeros(size(dr_.ghx,1),size(dr_.ghx,2)+size(dr_.ghu,2),length(istable));
         ntrans=length(istable);
         yys=NaN(length(ys_),ntrans);
         for j=1:ntrans
             M_.params(estim_params_.param_vals(:,1)) = lpmat(istable(j),:)';
             %stoch_simul([]);
             [Tt,Rr,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
-            % This syntax is not compatible with the current version of dynare_resolve [stepan].
-            %[Tt,Rr,SteadyState,info] = dynare_resolve(bayestopt_.restrict_var_list,...
-            %    bayestopt_.restrict_columns,...
-            %    bayestopt_.restrict_aux);
             if ~exist('T','var')
                 T=zeros(size(dr_.ghx,1),size(dr_.ghx,2)+size(dr_.ghu,2),ntrans);
             end
@@ -682,7 +569,6 @@ if length(iunstable)>0 || length(iwrong)>0
 
         M_ = set_all_parameters(x0,estim_params_,M_);
         [oo_.dr,info,M_,oo_] = resol(0,M_,options_,oo_);
-        %     stoch_simul([]);
     else
         disp('All parameter values in the specified ranges are not acceptable!')
         x0=[];
