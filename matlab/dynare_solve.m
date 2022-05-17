@@ -180,6 +180,7 @@ if options.solve_algo == 0
     options4fsolve.MaxFunEvals = 50000;
     options4fsolve.MaxIter = maxit;
     options4fsolve.TolFun = tolf;
+    options4fsolve.TolX = tolx;
     if options.debug==1
         options4fsolve.Display = 'final';
     else
