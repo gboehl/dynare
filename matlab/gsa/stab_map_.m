@@ -175,7 +175,9 @@ if fload==0
         end
         if opt_gsa.prior_range
             for j=1:np
-                lpmat(:,j)=lpmat(:,j).*(bounds.ub(j+nshock)-bounds.lb(j+nshock))+bounds.lb(j+nshock);
+                lower_bound=max(-options_.huge_number,bounds.lb(j+nshock));
+                upper_bound=min(options_.huge_number,bounds.ub(j+nshock));
+                lpmat(:,j)=lpmat(:,j).*(upper_bound-lower_bound)+lower_bound;
             end
         else
             xx=prior_draw_gsa(0,[lpmat0 lpmat]);
