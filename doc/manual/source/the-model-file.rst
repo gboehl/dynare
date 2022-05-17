@@ -4733,16 +4733,22 @@ All of these elements are discussed in the following.
 
     ``STRING`` is the name of constraint that is used to reference the constraint in ``relax/bind``
     equation-tags to identify the respective regime (see below). The ``bind``-expresssion is mandatory and defines
-    a logical condition that is evaluated in the baseline (non-binding) regime to check whether the
+    a logical condition that is evaluated in the baseline/steady state regime to check whether the specified
     constraint becomes binding. In contrast, the ``relax``-expression is optional and specifies a
     logical condition that is evaluated in the binding regime to check whether the regime returns
-    to the baseline non-binding state. If not specified, Dynare will simply check in the binding
+    to the baseline/steady state regime. If not specified, Dynare will simply check in the binding
     regime whether the ``bind``-expression evaluates to false. However, there are cases
     where the ``bind``-expression cannot be evaluated in the binding regime(s), because
     the variables involved are constant by definition so that e.g. the value of the Lagrange
     multiplier on the complementary slackness condition needs to be checked. In these cases,
     it is necessary to provide an explicit condition that can be evaluated in the binding
-    regime that allows to check whether it should be left.
+    regime that allows to check whether it should be left. 
+
+    Note that the baseline regime denotes the steady state of the model where the economy will 
+    settle in the long-run without shocks. For that matter, it may be one where e.g. a borrowing
+    constraint is binding. In that type of setup, the ``bind``-condition is used to specify the 
+    condition when this borrowing constraint becomes non-binding so that the alternative regime 
+    is entered. 
 
     Three things are important to keep in mind when specifying the expressions.
     First, feasible expressions may only contain contemporaneous endogenous variables.
