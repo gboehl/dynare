@@ -86,6 +86,10 @@ nstatic = M_.nstatic;
 nspred = M_.nspred;
 beta = get_optimal_policy_discount_factor(M_.params, M_.param_names);
 
+if beta>=1
+    fprintf('evaluate_planner_objective: the planner discount factor is not strictly smaller than 1. Unconditional welfare will not be finite.\n')
+end
+
 if options_.ramsey_policy
     if oo_.gui.ran_perfect_foresight
         T = size(oo_.endo_simul,2);
