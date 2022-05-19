@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -89,7 +89,7 @@ public:
     std::copy_n(s.data, length, data);
   }
   // Move constructor
-  IntSequence(IntSequence &&s)
+  IntSequence(IntSequence &&s) noexcept
     : data{std::exchange(s.data, nullptr)}, length{std::exchange(s.length, 0)},
       destroy{std::exchange(s.destroy, false)}
   {
