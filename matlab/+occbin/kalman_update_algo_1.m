@@ -1,5 +1,5 @@
 function [a, a1, P, P1, v, T, R, C, regimes_, error_flag, M_, lik, etahat] = kalman_update_algo_1(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,oo_,options_,occbin_options)
-% function [a, a1, P, P1, v, T, R, C, regimes_, info, M_, lik, etahat] = kalman_update_algo_1(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,oo_,options_,occbin_options)
+% function [a, a1, P, P1, v, T, R, C, regimes_, error_flag, M_, lik, etahat] = kalman_update_algo_1(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,oo_,options_,occbin_options)
 % INPUTS
 % - a               [N by 1]                t-1's state estimate
 % - a1              [N by 2]               state predictions made at t-1:t
@@ -61,6 +61,12 @@ function [a, a1, P, P1, v, T, R, C, regimes_, error_flag, M_, lik, etahat] = kal
 
 warning off
 
+regimes_=[]; %make sure it is always set
+R=[];
+C=[];
+lik=Inf;
+etahat=[];
+
 sto.a=a;
 sto.a1=a1;
 sto.P=P;
@@ -94,17 +100,19 @@ PZI         = P1(:,:,t)*ZZ'*iF(di,di,t);
 L(:,:,t)    = eye(mm)-PZI*ZZ;
 
 if ~options_.occbin.filter.use_relaxation
-    [a, a1, P, P1, v, alphahat, etahat, lik] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood);
+    [a, a1, P, P1, v, alphahat, etahat, lik, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood);
 else
     [~,~,~,~,~,~, TTx, RRx, CCx] ...
         = occbin.dynare_resolve(M_,options_,oo_, base_regime,'reduced_state_space',T0,R0);
+    regimes0(1)=base_regime;
     TT(:,:,2) = TTx(:,:,end);
     RR(:,:,2) = RRx(:,:,end);
     CC(:,2) = CCx(:,end);
-    [a, a1, P, P1, v, alphahat, etahat, lik] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood);
-    regimes0(1)=base_regime;
+    [a, a1, P, P1, v, alphahat, etahat, lik, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood);
 end
-
+if error_flag
+    return;
+end
 
 %% run here the occbin simul
 opts_simul = occbin_options.opts_simul;
@@ -121,7 +129,12 @@ else
     my_order_var = oo_.dr.order_var;
 end
 options_.occbin.simul=opts_simul;
+options_.noprint=1;
 [~, out, ss] = occbin.solver(M_,oo_,options_);
+if out.error_flag
+    error_flag = out.error_flag;
+    return;
+end
 
 regimes_ = out.regime_history;
 if M_.occbin.constraint_nbr==1
@@ -205,6 +218,10 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         opts_simul.periods = max(opts_simul.periods,max(myregimestart));
         options_.occbin.simul=opts_simul;
         [~, out, ss] = occbin.solver(M_,oo_,options_);
+        if out.error_flag
+            error_flag = out.error_flag;
+            return;
+        end
         regimes0=regimes_;
         regimes_ = out.regime_history;
         if niter>1
@@ -250,6 +267,10 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                     opts_simul.maxit=1;
                     options_.occbin.simul=opts_simul;
                     [~, out, ss] = occbin.solver(M_,oo_,options_);
+                    if out.error_flag
+                        error_flag = out.error_flag;
+                        return;
+                    end
                 end
             end
         end
@@ -303,6 +324,10 @@ if ~error_flag && niter>options_.occbin.likelihood.max_number_of_iterations && ~
             opts_simul.periods = max(opts_simul.periods,max(myregimestart));
             options_.occbin.simul=opts_simul;
             [~, out, ss] = occbin.solver(M_,oo_,options_);
+            if out.error_flag
+                error_flag = out.error_flag;
+                return;
+            end
             if isequal(out.regime_history(1),regimes_(1))
                 error_flag=0;
                 break
@@ -326,7 +351,12 @@ etahat=etahat(:,2);
 warning_config;
 end
 
-function [a, a1, P, P1, v, alphahat, etahat, lik] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, rescale_prediction_error_covariance, IF_likelihood)
+function [a, a1, P, P1, v, alphahat, etahat, lik, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, rescale_prediction_error_covariance, IF_likelihood)
+alphahat=[];
+etahat=[];
+lik=Inf; 
+error_flag=0;
+
 warning off
 if nargin<18
     IF_likelihood=0;
@@ -354,6 +384,10 @@ else
     v(di,t)      = Y(di,t) - ZZ*a(:,t);
     F = ZZ*P(:,:,t)*ZZ' + H(di,di);
     sig=sqrt(diag(F));
+    if any(any(isnan(F)))
+        error_flag=1;
+        return;
+    end
     if rank(F)<size(F,1) 
         % here we trap cases when some OBC regime triggers singularity 
         % e.g. no shock to interest rate at ZLB
