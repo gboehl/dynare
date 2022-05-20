@@ -161,41 +161,45 @@ T = all(t);
 %@eof:2
 
 %@test:3
-% TIMING TEST (parallelization with openmp)
-old_path = pwd;
-cd([fileparts(which('dynare')) '/../tests/particle']);
-load dsgebase2data;
-cd(old_path);
-n = length(state_variables_idx);
-q = size(ReducedForm.ghu,2);
-yhat = randn(n,10000000);
-epsilon = .01*randn(q,10000000);
-ghx = ReducedForm.ghx(state_variables_idx,:);
-ghu = ReducedForm.ghu(state_variables_idx,:);
-constant = ReducedForm.constant(state_variables_idx,:);
-ghxx = ReducedForm.ghxx(state_variables_idx,:);
-ghuu = ReducedForm.ghuu(state_variables_idx,:);
-ghxu = ReducedForm.ghxu(state_variables_idx,:);
-yhatinit_ = randn(n,1);
-ss = ReducedForm.state_variables_steady_state;
-yhat_ = randn(n,10000000);
-t = NaN(4,1);
-tic, for i=1:10, y1 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1); end
-t1 = toc;
-tic, for i=1:10, y2 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,2); end
-t2 = toc;
-t(1) = dassert(y1,y2,1e-15); clear('y1');
-tic, for i=1:10, y3 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,3); end
-t3 = toc;
-t(2) = dassert(y2,y3,1e-15); clear('y2');
-tic, for i=1:10, y4 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,4); end
-t4 = toc;
-t(3) = dassert(y4,y3,1e-15); clear('y3','y4');
-t(4) = (t1>t2) && (t2>t3) && (t3>t4);
-if ~t(4)
-    disp('Timmings:')
-    [t1, t2, t3, t4]
+if false
+    % TIMING TEST (parallelization with openmp)
+    old_path = pwd;
+    cd([fileparts(which('dynare')) '/../tests/particle']);
+    load dsgebase2data;
+    cd(old_path);
+    n = length(state_variables_idx);
+    q = size(ReducedForm.ghu,2);
+    yhat = randn(n,10000000);
+    epsilon = .01*randn(q,10000000);
+    ghx = ReducedForm.ghx(state_variables_idx,:);
+    ghu = ReducedForm.ghu(state_variables_idx,:);
+    constant = ReducedForm.constant(state_variables_idx,:);
+    ghxx = ReducedForm.ghxx(state_variables_idx,:);
+    ghuu = ReducedForm.ghuu(state_variables_idx,:);
+    ghxu = ReducedForm.ghxu(state_variables_idx,:);
+    yhatinit_ = randn(n,1);
+    ss = ReducedForm.state_variables_steady_state;
+    yhat_ = randn(n,10000000);
+    t = NaN(4,1);
+    tic, for i=1:10, y1 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,1); end
+    t1 = toc;
+    tic, for i=1:10, y2 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,2); end
+    t2 = toc;
+    t(1) = dassert(y1,y2,1e-15); clear('y1');
+    tic, for i=1:10, y3 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,3); end
+    t3 = toc;
+    t(2) = dassert(y2,y3,1e-15); clear('y2');
+    tic, for i=1:10, y4 = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,4); end
+    t4 = toc;
+    t(3) = dassert(y4,y3,1e-15); clear('y3','y4');
+    t(4) = (t1>t2) && (t2>t3) && (t3>t4);
+    if ~t(4)
+        disp('Timmings:')
+        [t1, t2, t3, t4]
+    end
+    % Check the results.
+    T = all(t);
+else
+    T = true;
 end
-% Check the results.
-T = all(t);
 %@eof:3
