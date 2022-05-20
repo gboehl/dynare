@@ -101,7 +101,7 @@ git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git
 cd dynare
 autoreconf -si
 ```
-The last line runs Autoconf and Automake in order to prepare the build environment (this is not necessary if you got the sources from an official source archive or the source snapshot). If you want a certain version (e.g. 4.6) , then add `--single-branch --branch 4.6` to the git clone command.
+The last line runs Autoconf and Automake in order to prepare the build environment (this is not necessary if you got the sources from an official source archive or the source snapshot). If you want a certain version (e.g. 5.x) , then add `--single-branch --branch 5.x` to the git clone command.
 
 ### Configuring the build tree
 
