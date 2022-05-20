@@ -463,6 +463,31 @@ MODFILES = \
 	bgp/solow-1/solow.mod \
 	bgp/nk-1/nk.mod \
 	bgp/ramsey-1/ramsey.mod \
+	model-inversion/bk-1/solow_ces.mod \
+	model-inversion/bk-2/solow_ces.mod \
+	model-inversion/bk-3a/varmodel.mod \
+	model-inversion/bk-3a-nlsolve/varmodel.mod \
+	model-inversion/bk-3b/varmodel.mod \
+	model-inversion/bk-3b-nlsolve/varmodel.mod \
+	model-inversion/bk-4/varmodel.mod \
+	model-inversion/bk-4-nlsolve/varmodel.mod \
+	model-inversion/bk-5/varmodel.mod \
+	model-inversion/bk-5-nlsolve/varmodel.mod \
+	model-inversion/bk-6/varmodel.mod \
+	model-inversion/bk-7/varmodel.mod \
+	model-inversion/bk-8/varmodel.mod \
+	model-inversion/bk-9/msm1.mod \
+	model-inversion/bk-9/msm2.mod \
+	model-inversion/bk-diff-1/varmodel.mod \
+	model-inversion/bk-diff-2/varmodel.mod \
+	model-inversion/bk-diff-3/varmodel.mod \
+	model-inversion/bk-diff-4/varmodel.mod \
+	model-inversion/bk-diff-5/varmodel.mod \
+	model-inversion/nk-1/simulate.mod \
+	model-inversion/nk-1/invert.mod \
+	model-inversion/nk-2/simulate.mod \
+	model-inversion/nk-2/invert.mod \
+	model-inversion/nk-2/z_check_inversion.mod \
 	dynare-command-options/ramst.mod \
 	log_transform/example1.mod \
 	log_transform/ramst.mod \
@@ -947,6 +972,14 @@ ramst_model_edit.o.trs: ramst.o.trs
 log_transform/ramst.m.trs: ramst.m.trs
 log_transform/ramst.o.trs: ramst.o.trs
 
+model-inversion/nk-1/invert.m.trs: model-inversion/nk-1/simulate.m.trs
+model-inversion/nk-1/invert.o.trs: model-inversion/nk-1/simulate.o.trs
+
+model-inversion/nk-2/invert.m.trs: model-inversion/nk-2/simulate.m.trs
+model-inversion/nk-2/invert.o.trs: model-inversion/nk-2/simulate.o.trs
+
+model-inversion/nk-2/z_check_inversion.m.trs: model-inversion/nk-2/invert.m.trs
+model-inversion/nk-2/z_check_inversion.o.trs: model-inversion/nk-2/invert.o.trs
 
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
@@ -1159,6 +1192,10 @@ o/ecb: $(patsubst %.mod, %.o.trs, $(filter ecb/%.mod, $(MODFILES)))
 estimation/univariate: m/estimation/univariate o/estimation/univariate
 m/estimation/univariate: $(patsubst %.mod, %.m.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
 o/estimation/univariate: $(patsubst %.mod, %.o.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
+
+particle: m/model-inversion o/model-inversion
+m/model-inversion: $(patsubst %.mod, %.m.trs, $(filter model-inversion/%.mod, $(MODFILES)))
+o/model-inversion: $(patsubst %.mod, %.o.trs, $(filter model-inversion/%.mod, $(MODFILES)))
 
 # ECB files
 M_ECB_TRS_FILES = $(patsubst %.mod, %.m.trs, $(ECB_MODFILES))
