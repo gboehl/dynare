@@ -95,7 +95,8 @@ A number of tools and libraries are needed in order to recompile everything. You
 
 If you have downloaded the sources from an official source archive or the source snapshot, just unpack it.
 
-If you want to use Git, do the following from a terminal:
+If you want to use Git, do the following from a terminal (note that you must
+have the [Git LFS](https://git-lfs.github.com/) extension installed):
 ```sh
 git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git
 cd dynare
