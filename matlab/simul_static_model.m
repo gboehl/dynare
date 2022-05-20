@@ -83,7 +83,7 @@ else
     oo_.exo_simul = Innovations;
 end
 
-staticmodel = str2fun(sprintf('%s.static', M_.fname));
+staticmodel = str2func(sprintf('%s.static', M_.fname));
 
 % Simulations (call a Newton-like algorithm for each period).
 for t=1:samplesize
