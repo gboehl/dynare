@@ -200,6 +200,7 @@ if false
     % Check the results.
     T = all(t);
 else
+    t = 1;
     T = true;
 end
 %@eof:3
