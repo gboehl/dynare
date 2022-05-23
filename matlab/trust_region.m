@@ -220,7 +220,11 @@ if (xn > delta)
         snm = 0;
     end
     % Form the appropriate convex combination.
-    x = alpha * x + ((1-alpha) * min (snm, delta)) * s;
+    if alpha>0
+        x = alpha * x + ((1-alpha) * min (snm, delta)) * s;
+    else %prevent zero weight on Inf evaluating to NaN
+        x = min(snm, delta)*s;
+    end
 end
 end
 
