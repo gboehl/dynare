@@ -61,11 +61,15 @@ function [a, a1, P, P1, v, T, R, C, regimes_, error_flag, M_, lik, etahat] = kal
 
 warning off
 
-regimes_=[]; %make sure it is always set
-R=[];
-C=[];
+regimes_(1).regime=false;
+regimes_(2).regime=false;
+regimes_(3).regime=false;
+regimes_(1).regimestart=NaN;
+regimes_(2).regimestart=NaN;
+regimes_(3).regimestart=NaN;
+R=NaN(size(RR));
+C=NaN(size(CC));
 lik=Inf;
-etahat=[];
 
 sto.a=a;
 sto.a1=a1;
@@ -111,6 +115,8 @@ else
     [a, a1, P, P1, v, alphahat, etahat, lik, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood);
 end
 if error_flag
+    etahat=NaN(size(QQQ,1),1);
+    T=NaN(size(TT));
     return;
 end
 
@@ -352,8 +358,8 @@ warning_config;
 end
 
 function [a, a1, P, P1, v, alphahat, etahat, lik, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, rescale_prediction_error_covariance, IF_likelihood)
-alphahat=[];
-etahat=[];
+alphahat=NaN(size(a));
+etahat=NaN(size(QQQ,1),2);
 lik=Inf; 
 error_flag=0;
 
