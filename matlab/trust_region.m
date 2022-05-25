@@ -327,5 +327,9 @@ else
     end
     % Form the appropriate  convex combination of the Gauss-Newton direction and the
     % scaled gradient direction.
-    x = alpha*x + (1.0-alpha)*min(sgnorm, delta)*s;
+    if alpha>0
+        x = alpha*x + (1.0-alpha)*min(sgnorm, delta)*s;
+    else %prevent zero weight on Inf evaluating to NaN
+        x = min(sgnorm, delta)*s;
+    end
 end
