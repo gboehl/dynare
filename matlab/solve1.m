@@ -101,7 +101,20 @@ for its = 1:maxit
     end
     if rcond_fjac < sqrt(eps)
         fjac2=fjac'*fjac;
-        p=-(fjac2+sqrt(nn*eps)*max(sum(abs(fjac2)))*eye(nn))\(fjac'*fvec);
+        temp=max(sum(abs(fjac2)));
+        if temp>0
+            p=-(fjac2+sqrt(nn*eps)*temp*eye(nn))\(fjac'*fvec);
+        else
+            errorflag = true;
+            errorcode = 5;
+            if nargout<3
+                skipline()
+                dprintf('SOLVE: Iteration %s', num2str(its))
+                disp('Zero Jacobian.')
+                skipline()
+            end
+            return
+        end
     else
         p = -fjac\fvec ;
     end
