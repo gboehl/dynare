@@ -203,7 +203,7 @@ if fload==0
             for j=1:np
                 ub=xparam1(j+nshock)*(1+sign(xparam1(j+nshock))*neighborhood_width);
                 lb=xparam1(j+nshock)*(1-sign(xparam1(j+nshock))*neighborhood_width);
-                if bounds.ub(j+nshock)>=xparam1(j) && bounds.lb(j)<=xparam1(j+nshock)
+                if bounds.ub(j+nshock)>=xparam1(j+nshock) && bounds.lb(j+nshock)<=xparam1(j+nshock)
                     ub=min([bounds.ub(j+nshock) ub]);
                     lb=max([bounds.lb(j+nshock) lb]);
                 else
