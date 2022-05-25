@@ -188,6 +188,8 @@ switch info(1)
         message = 'Occbin: Simulation did not converge, increase maxit or check_ahead_periods.';        
     case 312
         message = 'Occbin: Constraint(s) are binding at the end of the sample.';        
+    case 320
+        message = 'Piecewise linear Kalman filter: There was a problem in obtaining the likelihood.';        
     otherwise
         message = 'This case shouldn''t happen. Contact the authors of Dynare';
 end

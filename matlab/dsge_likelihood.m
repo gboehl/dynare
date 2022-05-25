@@ -708,6 +708,12 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
                                                            DynareOptions.rescale_prediction_error_covariance, ...
                                                            DynareOptions.presample, ...
                                                            T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods, occbin_);
+            if occbin_.status && isinf(LIK)
+                fval = Inf;
+                info(1) = 320;
+                exit_flag = 0;
+                return
+            end
         end
     end
     if analytic_derivation
