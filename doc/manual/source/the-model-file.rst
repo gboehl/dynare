@@ -2920,6 +2920,15 @@ Finding the steady state with Dynare nonlinear solver
        value. Iteration will cease when the residuals are smaller than
        ``tolf``. Default: ``eps^(1/3)``
 
+    .. _steady_tolx
+
+    .. option:: tolx = DOUBLE
+
+       Convergence criterion for termination based on the step tolerance 
+       along. Iteration will cease when the attempted step size is smaller than
+       ``tolx``. Default: ``eps^(2/3)``
+
+
     .. _solvalg:
 
     .. option:: solve_algo = INTEGER
@@ -4021,6 +4030,10 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
     .. option:: tolf = DOUBLE
 
        See :ref:`tolf <steady_tolf>`. Used when computing the terminal steady state.
+
+    .. option:: tolx = DOUBLE
+
+       See :ref:`tolx <steady_tolx>`. Used when computing the terminal steady state.
 
     .. option:: maxit = INTEGER
 
@@ -11205,7 +11218,7 @@ Optimal Simple Rules (OSR)
         proves impossible to improve the function value by more than
         tolf. This option is now deprecated and will be removed in a
         future release of Dynare. Use ``optim`` instead to set
-        optimizer-specific values. Default: ``e-7``.
+        optimizer-specific values. Default: ``1e-7``.
 
     .. option:: silent_optimizer
 
