@@ -5361,6 +5361,11 @@ All of these elements are discussed in the following.
     to NaN and the standard deviation of the associated shock set to 0 for the
     corresponding periods using the ``heteroskedastic_shocks``-block.
 
+    Note that models with unit roots will require the user to specify the ``diffuse_filter``-option as 
+    otherwise Blanchard-Kahn errors will be triggered. For the piecewise Kalman filter, the 
+    initialization steps in the diffuse filter will always rely on the model solved for the baseline 
+    regime, without checking whether this is the actual regime in the first period(s).
+
     *Example*
 
         ::
@@ -5469,7 +5474,8 @@ All of these elements are discussed in the following.
     .. option:: likelihood_piecewise_kalman_filter
 
        Employ the piecewise Kalman filter of *Giovannini, Pfeiffer, and Ratto (2021)* when estimating
-       the model. Default: enabled.
+       the model. Note that this filter is incompatible with univariate Kalman filters, i.e. ``kalman_algo=2,4``. 
+       Default: enabled.
 
     .. option:: likelihood_max_kalman_iterations
 
@@ -7500,7 +7506,9 @@ block decomposition of the model (see :opt:`block`).
        Koopman (2012)* and *Koopman and Durbin (2003)* for the
        multivariate and *Koopman and Durbin (2000)* for the univariate
        filter) to estimate models with non-stationary observed
-       variables.
+       variables. This option will also reset the ``qz_criterium`` to 
+       count unit root variables towards the stable variables. Trying to estimate 
+       a model with unit roots will otherwise result in a Blanchard-Kahn error.
 
        When ``diffuse_filter`` is used the ``lik_init`` option of
        ``estimation`` has no effect.
