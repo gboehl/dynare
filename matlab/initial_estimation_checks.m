@@ -20,7 +20,7 @@ function DynareResults = initial_estimation_checks(objective_function,xparam1,Dy
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright (C) 2003-2018 Dynare Team
+% Copyright © 2003-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,6 +79,12 @@ end
 if DynareOptions.occbin.likelihood.status || DynareOptions.occbin.smoother.status
     if DynareOptions.prefilter
         error('initial_estimation_checks:: Occbin is incompatible with the prefilter option due to the sample mean generally not corresponding to the steady state with an occasionally binding constraint.')
+    end
+    if ~DynareOptions.occbin.likelihood.inversion_filter && (DynareOptions.kalman_algo==2 || DynareOptions.kalman_algo==4)
+        error('initial_estimation_checks:: Occbin is incompatible with the selected univariate Kalman filter.')        
+    end
+    if DynareOptions.fast_kalman_filter
+        error('initial_estimation_checks:: Occbin is incompatible with the fast Kalman filter.')        
     end
 end
 
