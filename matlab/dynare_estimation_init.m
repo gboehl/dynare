@@ -534,8 +534,11 @@ if options_.analytic_derivation
     end
 end
 
-% If jscale isn't specified for an estimated parameter, use global option options_.jscale, set to 0.2, by default.
+% If jscale isn't specified for an estimated parameter, use global option options_.jscale, set to optimal value for a normal distribution by default.
 % Note that check_posterior_sampler_options and mode_compute=6 may overwrite the setting
+if isempty(options_.mh_jscale)
+    options_.mh_jscale=2.38/sqrt(length(xparam1));
+end
 k = find(isnan(bayestopt_.jscale));
 bayestopt_.jscale(k) = options_.mh_jscale;
 

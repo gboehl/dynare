@@ -197,7 +197,14 @@ if ~options_.load_mh_file && ~options_.mh_recover
                 if isempty(d)
                     candidate = prior_draw();
                 else
-                    candidate = rand_multivariate_normal( transpose(xparam1), d * options_.mh_init_scale, npar);
+                    if isfield(options_,'mh_init_scale')
+                        if trial==1
+                            fprintf('\nposterior_sampler_initialization: the mh_init_scale-option is deprecated. You should use the mh_init_scale_factor-option instead.\n')
+                        end
+                        candidate = rand_multivariate_normal( transpose(xparam1), d * options_.mh_init_scale, npar);
+                    else
+                        candidate = rand_multivariate_normal( transpose(xparam1), d * options_.mh_init_scale_factor*options_.mh_jscale, npar);
+                    end
                 end
                 if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
                     ix2(j,new_estimated_parameters) = candidate(new_estimated_parameters);
@@ -219,13 +226,25 @@ if ~options_.load_mh_file && ~options_.mh_recover
                 if init_iter > 100 && validate == 0
                     disp(['Estimation::mcmc: I couldn''t get a valid initial value in 100 trials.'])
                     if options_.nointeractive
-                        disp(['Estimation::mcmc: I reduce mh_init_scale by 10 percent:'])
-                        options_.mh_init_scale = .9*options_.mh_init_scale;
-                        disp(sprintf('Estimation::mcmc: Parameter mh_init_scale is now equal to %f.',options_.mh_init_scale))
+                        disp(['Estimation::mcmc: I reduce mh_init_scale_factor by 10 percent:'])
+                        if isfield(options_,'mh_init_scale')
+                           options_.mh_init_scale = .9*options_.mh_init_scale; 
+                           fprintf('Estimation::mcmc: Parameter mh_init_scale is now equal to %f.\n',options_.mh_init_scale)
+                        else
+                            options_.mh_init_scale_factor = .9*options_.mh_init_scale_factor;
+                            fprintf('Estimation::mcmc: Parameter mh_init_scale_factor is now equal to %f.\n',options_.mh_init_scale_factor)
+                        end
+                        fprintf('Estimation::mcmc: Parameter mh_init_scale_factor is now equal to %f.\n',options_.mh_init_scale_factor)
                     else
-                        disp(['Estimation::mcmc: You should reduce mh_init_scale...'])
-                        disp(sprintf('Estimation::mcmc: Parameter mh_init_scale is equal to %f.',options_.mh_init_scale))
-                        options_.mh_init_scale = input('Estimation::mcmc: Enter a new value...  ');
+                        if isfield(options_,'mh_init_scale')
+                            disp(['Estimation::mcmc: You should reduce mh_init_scale...'])
+                            fprintf('Estimation::mcmc: Parameter mh_init_scale is equal to %f.\n',options_.mh_init_scale)
+                            options_.mh_init_scale_factor = input('Estimation::mcmc: Enter a new value...  ');
+                        else
+                            disp(['Estimation::mcmc: You should reduce mh_init_scale_factor...'])
+                            fprintf('Estimation::mcmc: Parameter mh_init_scale_factor is equal to %f.\n',options_.mh_init_scale_factor)
+                            options_.mh_init_scale_factor = input('Estimation::mcmc: Enter a new value...  ');
+                        end
                     end
                     trial = trial+1;
                 end
