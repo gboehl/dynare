@@ -2944,8 +2944,11 @@ Finding the steady state with Dynare nonlinear solver
 
     .. option:: markowitz = DOUBLE
 
-       Value of the Markowitz criterion, used to select the
-       pivot. Only used when ``solve_algo = 5``. Default: 0.5.
+       Value of the Markowitz criterion (:math:(0,\infty)`) used to select the
+       pivot with sparse Gaussian elimination (``solve_algo = 5``). This criterion 
+       governs the tradeoff between selecting the pivot resulting in the most 
+       accurate solution (low ``markowitz`` values) and the one that preserves 
+       maximum sparsity (high ``markowitz`` values). Default: 0.5.
 
     *Example*
 
