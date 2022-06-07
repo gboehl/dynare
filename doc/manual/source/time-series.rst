@@ -1025,8 +1025,9 @@ The dseries class
         ``.xls/.xlsx`` (Octave only supports ``.xlsx`` files and the
         `io <https://octave.sourceforge.io/io/>`__ package from
         Octave-Forge must be installed). The extension of the file
-        should be explicitly provided. A typical ``.m`` file will have
-        the following form::
+        should be explicitly provided. 
+
+        A typical ``.m`` file will have the following form::
 
             FREQ__ = 4;
             INIT__ = '1994Q3';
@@ -1050,6 +1051,12 @@ The dseries class
         defined in *FILENAME* is reset to *INITIAL_DATE*. This is
         typically usefull if ``INIT__`` is not provided in the data
         file.
+
+        If an ``.xlsx`` file is used, the first row should be a header 
+        containing the variable names. The first column may contain date 
+        information that must correspond to a valid date format recognized 
+        by Dynare. If such date information is specified in the first column, 
+        its header name must be left empty.
 
     .. construct:: dseries (DATA_MATRIX[,INITIAL_DATE[,LIST_OF_NAMES[,TEX_NAMES]]])
                    dseries (DATA_MATRIX[,RANGE_OF_DATES[,LIST_OF_NAMES[,TEX_NAMES]]])
