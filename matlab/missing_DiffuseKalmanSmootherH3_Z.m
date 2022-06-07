@@ -433,7 +433,7 @@ while notsteady && t<smpl
             Pf          = P(:,:,t+1);
         end
         aK(1,:,t+1) = a1(:,t+1);
-        if ~isempty(nk) && nk>1 && isoccbin 
+        if ~isempty(nk) && nk>1 && isoccbin && (t>=first_period_occbin_update || isinf(first_period_occbin_update))
             opts_simul = occbin_options.opts_regime;
             opts_simul.SHOCKS = zeros(nk,M_.exo_nbr);
             if smoother_redux
@@ -455,11 +455,11 @@ while notsteady && t<smpl
                 end
                 PK(jnk,:,:,t+jnk) = Pf;
             end
-            if isoccbin 
+            if isoccbin && (t>=first_period_occbin_update || isinf(first_period_occbin_update))
                 if smoother_redux
-                    aK(jnk,:,t+jnk) = out.piecewise(jnk,oo_.dr.order_var(oo_.dr.restrict_var_list));
+                    aK(jnk,:,t+jnk) = out.piecewise(jnk,oo_.dr.order_var(oo_.dr.restrict_var_list)) - out.ys(oo_.dr.order_var(oo_.dr.restrict_var_list))';
                 else
-                    aK(jnk,oo_.dr.inv_order_var,t+jnk) = out.piecewise(jnk,:);
+                    aK(jnk,oo_.dr.inv_order_var,t+jnk) = out.piecewise(jnk,:) - out.ys';
                 end
             elseif jnk>1
                 aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
@@ -486,6 +486,9 @@ varargout{1} = regimes_;
 varargout{2} = TTT;
 varargout{3} = RRR;
 varargout{4} = CCC;
+varargout{5} = TT;
+varargout{6} = RR;
+varargout{7} = CC;
 % $$$ P_s=tril(P(:,:,t))+tril(P(:,:,t),-1)';
 % $$$ P1_s=tril(P1(:,:,t))+tril(P1(:,:,t),-1)';
 % $$$ Fi_s = Fi(:,t);

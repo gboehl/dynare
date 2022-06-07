@@ -319,7 +319,7 @@ if kalman_algo == 2 || kalman_algo == 4
     a_initial     = zeros(np,1);
     a_initial=set_Kalman_smoother_starting_values(a_initial,M_,oo_,options_);
     a_initial=ST*a_initial; %set state prediction for first Kalman step;
-    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d, regimes_,TT,RR,CC] = missing_DiffuseKalmanSmootherH3_Z(a_initial,ST, ...
+    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d, regimes_,TT,RR,CC,TTx,RRx,CCx] = missing_DiffuseKalmanSmootherH3_Z(a_initial,ST, ...
         Z,R1,Q,diag(H), ...
         Pinf,Pstar,data1,vobs,np,smpl,data_index, ...
         options_.nk,kalman_tol,diffuse_kalman_tol, ...
@@ -386,9 +386,11 @@ else
         else
             opts_simul = options_.occbin.simul;
         end
+        % reconstruct smoothed variables
         aaa=zeros(M_.endo_nbr,gend);
         aaa(oo_.dr.restrict_var_list,:)=alphahat;
-        for k=2:gend
+        iTx = zeros(size(TTx));
+        for k=1:gend
             if isoccbin
                 A = TT(:,:,k);
                 B = RR(:,:,k);
@@ -396,20 +398,53 @@ else
             else
                 C=0;
             end
-            aaa(:,k) = C+A*aaa(:,k-1)+B*etahat(:,k);
+            iT = pinv(TTx(:,:,k));
+            % store pinv
+            iTx(:,:,k) = iT;
+            Tstar = A(~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list),oo_.dr.restrict_var_list);
+            Rstar = B(~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list),:);
+            Cstar = C(~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list));
+            AS = Tstar*iT;
+            BS = Rstar-AS*RRx(:,:,k);
+            CS = Cstar-AS*CCx(:,k);
+            static_var_list = ~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list);
+            ilagged = any(abs(AS*TTx(:,:,k)-Tstar)'>1.e-12);
+            static_var_list0 = static_var_list;
+            static_var_list0(static_var_list) = ilagged;
+            static_var_list(static_var_list) = ~ilagged;
+            aaa(static_var_list,k) = AS(~ilagged,:)*alphahat(:,k)+BS(~ilagged,:)*etahat(:,k)+CS(~ilagged);
+            if any(ilagged) && k>1
+                aaa(static_var_list0,k) = Tstar(ilagged,:)*alphahat(:,k-1)+Rstar(ilagged,:)*etahat(:,k)+Cstar(ilagged);
+            end
+            
         end
         alphahat=aaa;
-        aaa=zeros(M_.endo_nbr,gend);
+
+        % reconstruct updated variables
         bbb=zeros(M_.endo_nbr,gend);
-        bbb(oo_.dr.restrict_var_list,:)=ahat;
-        aaa(oo_.dr.restrict_var_list,:)=aahat;
-        for k=d+2:gend
+        bbb(oo_.dr.restrict_var_list,:)=ahat; % this is t|t
+        for k=1:gend
             if isoccbin
                 A = TT(:,:,k);
                 B = RR(:,:,k);
                 C = CC(:,k);
-                bbb(:,k) = C+A*aaa(:,k-1)+B*eehat(:,k);
-            else
+                iT = iTx(:,:,k);
+                Tstar = A(~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list),oo_.dr.restrict_var_list);
+                Rstar = B(~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list),:);
+                Cstar = C(~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list));
+                AS = Tstar*iT;
+                BS = Rstar-AS*RRx(:,:,k);
+                CS = Cstar-AS*CCx(:,k);
+                static_var_list = ~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list);
+                ilagged = any(abs(AS*TTx(:,:,k)-Tstar)'>1.e-12);
+                static_var_list0 = static_var_list;
+                static_var_list0(static_var_list) = ilagged;
+                static_var_list(static_var_list) = ~ilagged;
+                bbb(static_var_list,k) = AS(~ilagged,:)*ahat(:,k)+BS(~ilagged,:)*eehat(:,k)+CS(~ilagged);
+                if any(ilagged) && k>d+1
+                    bbb(static_var_list0,k) = Tstar(ilagged,:)*aahat(:,k-1)+Rstar(ilagged,:)*eehat(:,k)+Cstar(ilagged);
+                end
+            elseif k>d+1
                 opts_simul.curb_retrench = options_.occbin.smoother.curb_retrench;
                 opts_simul.waitbar = options_.occbin.smoother.waitbar;
                 opts_simul.maxit = options_.occbin.smoother.maxit;
@@ -430,11 +465,9 @@ else
                 % period ahead (so if regimestart was [1 5] it should be [1 4]
                 % in out
                 %         end
-                bbb(oo_.dr.inv_order_var,k) = out.piecewise(1,:);
+                bbb(oo_.dr.inv_order_var,k) = out.piecewise(1,:) - out.ys';
             end
         end
-        % do not overwrite accurate computations using reduced st. space
-        bbb(oo_.dr.restrict_var_list,:)=ahat;
         ahat0=ahat;
         ahat=bbb;
         if ~isempty(P)
@@ -475,7 +508,7 @@ else
             % in out
             %         end
             for jnk=1:options_.nk
-                aaa(jnk,oo_.dr.inv_order_var,k+jnk-1) = out.piecewise(jnk,:);
+                aaa(jnk,oo_.dr.inv_order_var,k+jnk-1) = out.piecewise(jnk,:) - out.ys';
             end
         end
         aK=aaa;
