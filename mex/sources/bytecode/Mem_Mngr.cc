@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2021 Dynare Team
+ * Copyright © 2007-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -99,10 +99,10 @@ void
 Mem_Mngr::mxFree_NZE(void *pos)
 {
   unsigned int i;
-  size_t gap;
+  ptrdiff_t gap;
   for (i = 0; i < Nb_CHUNK; i++)
     {
-      gap = (reinterpret_cast<size_t>(pos)-reinterpret_cast<size_t>(NZE_Mem_add[i*CHUNK_BLCK_SIZE]))/sizeof(NonZeroElem);
+      gap = (reinterpret_cast<ptrdiff_t>(pos)-reinterpret_cast<ptrdiff_t>(NZE_Mem_add[i*CHUNK_BLCK_SIZE]))/sizeof(NonZeroElem);
       if (gap < CHUNK_BLCK_SIZE && gap >= 0)
         break;
     }
