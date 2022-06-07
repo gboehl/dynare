@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -119,7 +119,7 @@ public:
   {
     return pt;
   }
-  const int
+  int
   getNum() const
   {
     return num;
