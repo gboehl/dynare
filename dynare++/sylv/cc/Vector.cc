@@ -52,8 +52,8 @@ Vector::operator=(const Vector &v)
     throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
 
   if (s == v.s
-      && (data <= v.data && v.data < data+len*s
-          || v.data <= data && data < v.data+v.len*v.s)
+      && ((data <= v.data && v.data < data+len*s)
+          || (v.data <= data && data < v.data+v.len*v.s))
       && (data-v.data) % s == 0)
     throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
 
@@ -67,8 +67,8 @@ Vector::operator=(const ConstVector &v)
   if (v.len != len)
     throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
   if (s == v.s
-      && (data <= v.data && v.data < data+len*s
-          || v.data <= data && data < v.data+v.len*v.s)
+      && ((data <= v.data && v.data < data+len*s)
+          || (v.data <= data && data < v.data+v.len*v.s))
       && (data-v.data) % s == 0)
     throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
 

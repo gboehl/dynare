@@ -186,8 +186,8 @@ TestRunnable::level_kron(bool trans, const std::string &mname, const std::string
   MMMatrixIn mmc(cname);
 
   int length = power(m, depth)*n;
-  if (level > 0 && mmt.row() != m
-      || level == 0 && mmt.row() != n
+  if ((level > 0 && mmt.row() != m)
+      || (level == 0 && mmt.row() != n)
       || mmv.row() != length
       || mmc.row() != length)
     {

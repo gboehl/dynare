@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -85,8 +85,8 @@ namespace ogp
     operator<(const Operation &op) const
     {
       return (code < op.code
-              || code == op.code
-              && (op1 < op.op1 || op1 == op.op1 && op2 < op.op2));
+              || (code == op.code
+                  && (op1 < op.op1 || (op1 == op.op1 && op2 < op.op2))));
     }
     /** Returns a number of operands. */
     int
@@ -98,7 +98,7 @@ namespace ogp
     size_t
     hashval() const
     {
-      return op2+1 + (op1+1)^15 + static_cast<int>(code)^30;
+      return (op2+1 + op1+1)^(15 + static_cast<int>(code))^30;
     }
 
     code_t
