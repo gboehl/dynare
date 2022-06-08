@@ -1,4 +1,4 @@
-function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviation_form]=evaluate_smoother(parameters,var_list,M_,oo_,options_,bayestopt_,estim_params_)
+function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviation_form,initial_date]=evaluate_smoother(parameters,var_list,M_,oo_,options_,bayestopt_,estim_params_)
 % Evaluate the smoother at parameters.
 %
 % INPUTS
@@ -29,6 +29,7 @@ function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviat
 %                           order of declaration of variables (M_.endo_names)
 %                           in deviations from their respective mean, i.e.
 %                           without trend and constant part (used for shock_decomposition)
+%    o initial_date [dseries]   initial period, used for shock_decomposition
 %
 % SPECIAL REQUIREMENTS
 %    None
@@ -61,7 +62,8 @@ if ischar(parameters) && strcmp(parameters,'calibration')
     options_.smoother=1;
 end
 
-[dataset_,dataset_info,xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_] = dynare_estimation_init(var_list, M_.fname, [], M_, options_, oo_, estim_params_, bayestopt_);
+[dataset_,dataset_info, ~, ~, M_, options_, oo_, estim_params_,bayestopt_] = dynare_estimation_init(var_list, M_.fname, [], M_, options_, oo_, estim_params_, bayestopt_);
+initial_date=dataset_.firstdate; 
 
 % set the qz_criterium
 options_=select_qz_criterium_value(options_);
