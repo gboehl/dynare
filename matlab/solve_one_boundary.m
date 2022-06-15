@@ -23,12 +23,7 @@ function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_stat
 %   solve_tolf          [double]        convergence criteria
 %   cutoff              [double]        cutoff to correct the direction in Newton in case
 %                                       of singular jacobian matrix
-%   stack_solve_algo    [integer]       linear solver method used in the
-%                                       Newton algorithm :
-%                                            - 1 sparse LU
-%                                            - 2 GMRES
-%                                            - 3 BicGStab
-%                                            - 4 Optimal path length
+%   stack_solve_algo    [integer]       linear solver method used in the Newton algorithm
 %   is_forward          [logical]       Whether the block has to be solved forward
 %                                       If false, the block is solved backward
 %   is_dynamic          [logical]       If true, the block belongs to the dynamic file
@@ -212,7 +207,7 @@ for it_=start:incr:finish
                 y(y_index_eq, it_) = ya;
                 %% Recompute temporary terms, since they are not given as output of lnsrch1
                 [~, ~, T(:, it_)] = feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
-            elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0)) || (~is_dynamic && options.solve_algo==6)
+            elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0 || stack_solve_algo==6)) || (~is_dynamic && options.solve_algo==6)
                 if verbose && ~is_dynamic
                     disp('steady: Sparse LU ')
                 end

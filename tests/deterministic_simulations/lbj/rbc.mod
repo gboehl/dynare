@@ -80,6 +80,27 @@ end
 oo0 = oo_;
 
 perfect_foresight_setup(periods=400);
+perfect_foresight_solver(stack_solve_algo=1);
+
+if ~oo_.deterministic_simulation.status
+   error('Perfect foresight simulation failed')
+end
+
+oo1 = oo_;
+
+maxabsdiff = max(max(abs(oo0.endo_simul-oo1.endo_simul)));
+
+if max(max(abs(oo0.endo_simul-oo1.endo_simul)))>options_.dynatol.x
+    error('stack_solve_algo={0,1} return different paths for the endogenous variables!')
+else
+    skipline()
+    fprintf('Maximum (absolute) differrence between paths is %s', num2str(maxabsdiff))
+    skipline()
+end
+
+% Also test stack_solve_algo=6, which is a synonymous for stack_solve_algo=1
+
+perfect_foresight_setup(periods=400);
 perfect_foresight_solver(stack_solve_algo=6);
 
 if ~oo_.deterministic_simulation.status

@@ -319,7 +319,8 @@ dynSparseMatrix::Read_SparseMatrix(const string &file_name, int Size, int period
           for (int j = 0; j < Size; j++)
             IM_i[{ j, Size*(periods+y_kmax), 0 }] = j;
         }
-      else if (stack_solve_algo >= 0 && stack_solve_algo <= 4)
+      else if ((stack_solve_algo >= 0 && stack_solve_algo <= 4)
+               || stack_solve_algo == 6)
         {
           for (int i = 0; i < u_count_init-Size; i++)
             {
@@ -350,7 +351,8 @@ dynSparseMatrix::Read_SparseMatrix(const string &file_name, int Size, int period
               IM_i[{ eq, var, lag }] = val;
             }
         }
-      else if (((stack_solve_algo >= 0 && stack_solve_algo <= 4) && !steady_state)
+      else if ((((stack_solve_algo >= 0 && stack_solve_algo <= 4)
+                 || stack_solve_algo == 6) && !steady_state)
                || ((solve_algo >= 6 || solve_algo <= 8) && steady_state))
         {
           for (int i = 0; i < u_count_init; i++)
@@ -3799,7 +3801,8 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
       if (!x0_m)
         throw FatalExceptionHandling(" in Simulate_One_Boundary, can't allocate x0_m vector\n");
       if (!((solve_algo == 6 && steady_state)
-            || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state)))
+            || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4
+                 || stack_solve_algo == 6) && !steady_state)))
         {
           Init_Matlab_Sparse_Simple(size, IM_i, A_m, b_m, zero_solution, x0_m);
           A_m_save = mxDuplicateArray(A_m);
@@ -3839,7 +3842,7 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
         Solve_Matlab_GMRES(A_m, b_m, size, slowc, block_num, false, it_, x0_m);
       else if ((solve_algo == 8 && steady_state) || (stack_solve_algo == 3 && !steady_state))
         Solve_Matlab_BiCGStab(A_m, b_m, size, slowc, block_num, false, it_, x0_m, preconditioner);
-      else if ((solve_algo == 6 && steady_state) || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state))
+      else if ((solve_algo == 6 && steady_state) || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4 || stack_solve_algo == 6) && !steady_state))
         Solve_LU_UMFPack(Ap, Ai, Ax, b, size, size, slowc, false, it_);
     }
   return singular_system;
@@ -3898,7 +3901,7 @@ dynSparseMatrix::Simulate_Newton_One_Boundary(bool forward)
   test_mxMalloc(r, __LINE__, __FILE__, __func__, size*sizeof(double));
   iter = 0;
   if ((solve_algo == 6 && steady_state)
-      || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state))
+      || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4 || stack_solve_algo == 6) && !steady_state))
     {
       Ap_save = static_cast<SuiteSparse_long *>(mxMalloc((size + 1) * sizeof(SuiteSparse_long)));
       test_mxMalloc(Ap_save, __LINE__, __FILE__, __func__, (size + 1) * sizeof(SuiteSparse_long));
@@ -3937,7 +3940,7 @@ dynSparseMatrix::Simulate_Newton_One_Boundary(bool forward)
           solve_linear(block_num, y_size, y_kmin, y_kmax, size, 0);
     }
   if ((solve_algo == 6 && steady_state)
-      || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4) && !steady_state))
+      || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4 || stack_solve_algo == 6) && !steady_state))
     {
       mxFree(Ap_save);
       mxFree(Ai_save);
@@ -4126,7 +4129,8 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
               mexPrintf("MODEL SIMULATION: (method=Sparse LU)\n");
               break;
             case 1:
-              mexPrintf("MODEL SIMULATION: (method=Relaxation)\n");
+            case 6:
+              mexPrintf("MODEL SIMULATION: (method=LBJ)\n");
               break;
             case 2:
               mexPrintf(preconditioner_print_out("MODEL SIMULATION: (method=GMRES)\n", preconditioner, false).c_str());
@@ -4178,7 +4182,7 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
         }
       if (stack_solve_algo == 0 || stack_solve_algo == 4)
         Solve_LU_UMFPack(Ap, Ai, Ax, b, Size * periods, Size, slowc, true, 0, vector_table_conditional_local);
-      else if (stack_solve_algo == 1)
+      else if (stack_solve_algo == 1 || stack_solve_algo == 6)
         Solve_Matlab_Relaxation(A_m, b_m, Size, slowc, 0);
       else if (stack_solve_algo == 2)
         Solve_Matlab_GMRES(A_m, b_m, Size, slowc, blck, true, 0, x0_m);

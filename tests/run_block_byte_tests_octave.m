@@ -45,13 +45,13 @@ for blockFlag = 0:1
         default_stack_solve_algo = 0;
         if !blockFlag && storageFlag != 2
             solve_algos = [0:4 9];
-            stack_solve_algos = [0 6];
+            stack_solve_algos = [0 1 6];
         elseif blockFlag && storageFlag != 2
             solve_algos = [0:4 6:9];
-            stack_solve_algos = 0:4;
+            stack_solve_algos = [0:4 6];
         else
             solve_algos = 0:9;
-            stack_solve_algos = 0:5;
+            stack_solve_algos = 0:6;
         endif
 
         # Workaround for strange race condition related to the static/dynamic

@@ -182,7 +182,7 @@ while ~(cvg || iter>maxit_)
             dx = g1a\b- ya;
             ya = ya + lambda*dx;
             y(y_index, y_kmin+(1:periods))=reshape(ya',length(y_index),periods);
-        elseif stack_solve_algo==1
+        elseif stack_solve_algo==1 || stack_solve_algo==6
             for t=1:periods
                 first_elem = (t-1)*Blck_size+1;
                 last_elem = t*Blck_size;

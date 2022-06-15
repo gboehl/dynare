@@ -94,7 +94,7 @@ else
                     [oo_.endo_simul, oo_.deterministic_simulation] = ...
                         sim1(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
                 end
-              case 6
+              case {1 6}
                 if options_.linear_approximation
                     error('Invalid value of stack_solve_algo option!')
                 end

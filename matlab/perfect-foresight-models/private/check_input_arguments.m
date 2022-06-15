@@ -3,7 +3,7 @@ function check_input_arguments(DynareOptions, DynareModel, DynareResults)
 %Conducts checks for inconsistent/missing inputs to deterministic
 %simulations
 
-% Copyright © 2015-2017 Dynare Team
+% Copyright © 2015-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -25,18 +25,14 @@ if DynareOptions.stack_solve_algo < 0 || DynareOptions.stack_solve_algo > 7
 end
 
 if ~DynareOptions.block && ~DynareOptions.bytecode && DynareOptions.stack_solve_algo ~= 0 ...
-        && DynareOptions.stack_solve_algo ~= 6 && DynareOptions.stack_solve_algo ~= 7
-    error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: you must use stack_solve_algo=0 or stack_solve_algo=6 when not using block nor bytecode option')
+        && DynareOptions.stack_solve_algo ~= 1 && DynareOptions.stack_solve_algo ~= 6 ...
+        && DynareOptions.stack_solve_algo ~= 7
+    error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: you must use stack_solve_algo={0,1,6,7} when not using block nor bytecode option')
 end
 
 if DynareOptions.block && ~DynareOptions.bytecode && DynareOptions.stack_solve_algo == 5
     error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: you can''t use stack_solve_algo = 5 without bytecode option')
 end
-
-if (DynareOptions.block || DynareOptions.bytecode) && DynareOptions.stack_solve_algo == 6
-    error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: you can''t use stack_solve_algo = 6 with block or bytecode option')
-end
-
 
 if isempty(DynareResults.endo_simul) || any(size(DynareResults.endo_simul) ~= [ DynareModel.endo_nbr, DynareModel.maximum_lag+DynareOptions.periods+DynareModel.maximum_lead ])
 

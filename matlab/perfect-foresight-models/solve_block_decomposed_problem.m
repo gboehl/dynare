@@ -22,8 +22,8 @@ cutoff = 1e-15;
 
 if options_.stack_solve_algo==0
     mthd='Sparse LU';
-elseif options_.stack_solve_algo==1
-    mthd='Relaxation';
+elseif options_.stack_solve_algo==1 || options_.stack_solve_algo==6
+    mthd='LBJ';
 elseif options_.stack_solve_algo==2
     mthd='GMRES';
 elseif options_.stack_solve_algo==3

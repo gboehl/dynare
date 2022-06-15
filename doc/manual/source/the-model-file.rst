@@ -3533,10 +3533,9 @@ method to solve the simultaneous equation system. Because the
 resulting Jacobian is in the order of ``n`` by ``T`` and hence will be
 very large for long simulations with many variables, Dynare makes use
 of the sparse matrix capacities of MATLAB/Octave. A slower but
-potentially less memory consuming alternative (``stack_solve_algo=6``)
+potentially less memory consuming alternative (``stack_solve_algo=1``)
 is based on a Newton-type algorithm first proposed by *Laffargue
-(1990)* and *Boucekkine (1995)*, which uses relaxation
-techniques. Thereby, the algorithm avoids ever storing the full
+(1990)* and *Boucekkine (1995)*, which avoids ever storing the full
 Jacobian. The details of the algorithm can be found in *Juillard
 (1996)*. The third type of algorithms makes use of block decomposition
 techniques (divide-and-conquer methods) that exploit the structure of
@@ -3654,9 +3653,15 @@ speed-up on large models.
 
            ``1``
 
-               Use a Newton algorithm with a sparse LU solver at each
-               iteration (requires ``bytecode`` and/or ``block``
-               option, see :ref:`model-decl`).
+               Use the Laffargue-Boucekkine-Juillard (LBJ) algorithm proposed
+               in *Juillard (1996)*. It is slower than ``stack_solve_algo=0``,
+               but may be less memory consuming on big models. Note that if the
+               ``block`` option is used (see :ref:`model-decl`), a simple
+               Newton algorithm with sparse matrices is used for blocks which
+               are purely backward or forward (of type ``SOLVE BACKWARD`` or
+               ``SOLVE FORWARD``, see :comm:`model_info`), since LBJ only makes
+               sense on blocks with both leads and lags (of type ``SOLVE TWO
+               BOUNDARIES``).
 
            ``2``
 
@@ -3686,10 +3691,8 @@ speed-up on large models.
 
            ``6``
 
-               Use the historical algorithm proposed in *Juillard
-               (1996)*: it is slower than ``stack_solve_algo=0``, but
-               may be less memory consuming on big models (not
-               available with ``bytecode`` and/or ``block`` options).
+               Synonymous for ``stack_solve_algo=1``. Kept for historical
+               reasons.
 
            ``7``
 
