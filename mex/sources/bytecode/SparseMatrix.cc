@@ -333,20 +333,8 @@ dynSparseMatrix::Read_SparseMatrix(const string &file_name, int Size, int period
           for (int j = 0; j < Size; j++)
             IM_i[{ Size*(periods+y_kmax), 0, j }] = j;
         }
-      else if (stack_solve_algo == 7)
-        {
-          for (int i = 0; i < u_count_init-Size; i++)
-            {
-              int val;
-              SaveCode.read(reinterpret_cast<char *>(&eq), sizeof(eq));
-              SaveCode.read(reinterpret_cast<char *>(&var), sizeof(var));
-              SaveCode.read(reinterpret_cast<char *>(&lag), sizeof(lag));
-              SaveCode.read(reinterpret_cast<char *>(&val), sizeof(val));
-              IM_i[{ eq, lag, var - lag * Size }] = val;
-            }
-          for (int j = 0; j < Size; j++)
-            IM_i[{ Size*(periods+y_kmax), 0, j }] = j;
-        }
+      else
+        mexErrMsgTxt("Invalid value for solve_algo or stack_solve_algo");
     }
   else
     {
@@ -362,7 +350,7 @@ dynSparseMatrix::Read_SparseMatrix(const string &file_name, int Size, int period
               IM_i[{ eq, var, lag }] = val;
             }
         }
-      else if (((stack_solve_algo >= 0 || stack_solve_algo <= 4) && !steady_state)
+      else if (((stack_solve_algo >= 0 && stack_solve_algo <= 4) && !steady_state)
                || ((solve_algo >= 6 || solve_algo <= 8) && steady_state))
         {
           for (int i = 0; i < u_count_init; i++)
@@ -375,6 +363,8 @@ dynSparseMatrix::Read_SparseMatrix(const string &file_name, int Size, int period
               IM_i[{ var - lag*Size, -lag, eq }] = val;
             }
         }
+      else
+        mexErrMsgTxt("Invalid value for solve_algo or stack_solve_algo");
     }
   index_vara = static_cast<int *>(mxMalloc(Size*(periods+y_kmin+y_kmax)*sizeof(int)));
   test_mxMalloc(index_vara, __LINE__, __FILE__, __func__, Size*(periods+y_kmin+y_kmax)*sizeof(int));
@@ -4150,11 +4140,6 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
             case 5:
               mexPrintf("MODEL SIMULATION: (method=ByteCode own solver)\n");
               break;
-            case 7:
-              mexPrintf(preconditioner_print_out("MODEL SIMULATION: (method=GPU BiCGStab)\n", preconditioner, false).c_str());
-              break;
-            default:
-              mexPrintf("MODEL SIMULATION: (method=Unknown - %d - )\n", stack_solve_algo);
             }
         }
       mexPrintf("-----------------------------------\n");
@@ -4179,7 +4164,7 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
           x0_m = mxCreateDoubleMatrix(periods*Size, 1, mxREAL);
           if (!x0_m)
             throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, can't allocate x0_m vector\n");
-          if (stack_solve_algo != 0 && stack_solve_algo != 4 && stack_solve_algo != 7)
+          if (stack_solve_algo != 0 && stack_solve_algo != 4)
             {
               A_m = mxCreateSparse(periods*Size, periods*Size, IM_i.size()* periods*2, mxREAL);
               if (!A_m)
