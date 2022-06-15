@@ -1113,7 +1113,7 @@ The model is declared inside a ``model`` block:
     .. option:: parallel_local_files = ( FILENAME [, FILENAME]... )
 
         Declares a list of extra files that should be transferred to
-        slave nodes when doing a parallel computation (see
+        follower nodes when doing a parallel computation (see
         :ref:`paral-conf`).
 
     .. option:: balanced_growth_test_tol = DOUBLE

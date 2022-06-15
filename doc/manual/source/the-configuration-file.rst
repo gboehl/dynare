@@ -119,7 +119,7 @@ tasks which require very little inter-process communication.
 
 The parallelization is done by running several MATLAB or Octave
 processes, either on local or on remote machines. Communication
-between master and slave processes are done through SMB on Windows and
+between leader and follower processes are done through SMB on Windows and
 SSH on UNIX. Input and output data, and also some short status
 messages, are exchanged through network filesystems. Currently the
 system works only with homogenous grids: only Windows or only Unix
@@ -140,25 +140,25 @@ and for other options related to the parallelization engine, see
 :ref:`dyn-invoc`.
 
 You also need to verify that the following requirements are met by
-your cluster (which is composed of a master and of one or more
-slaves):
+your cluster (which is composed of a leader and of one or more
+followers):
 
 For a Windows grid:
 
         * a standard Windows network (SMB) must be in place;
         * the `PsTools`_ suite must be installed in the path of the
           master Windows machine;
-        * the Windows user on the master machine has to be user of any
-          other slave machine in the cluster, and that user will be
+        * the Windows user on the leader machine has to be user of any
+          other follower machine in the cluster, and that user will be
           used for the remote computations.
         * detailed step-by-step setup instructions can be found in
           :ref:`win-ssg`.
 
 For a UNIX grid:
 
-        * SSH must be installed on the master and on the slave machines;
+        * SSH must be installed on the leader and on the follower machines;
         * SSH keys must be installed so that the SSH connection from
-          the master to the slaves can be done without passwords, or
+          the leader to the follower can be done without passwords, or
           using an SSH agent.
 
 .. warning:: Compatibility considerations between master and slave
