@@ -147,7 +147,7 @@ For a Windows grid:
 
         * a standard Windows network (SMB) must be in place;
         * the `PsTools`_ suite must be installed in the path of the
-          master Windows machine;
+          leader Windows machine;
         * the Windows user on the leader machine has to be user of any
           other follower machine in the cluster, and that user will be
           used for the remote computations.
@@ -161,10 +161,10 @@ For a UNIX grid:
           the leader to the follower can be done without passwords, or
           using an SSH agent.
 
-.. warning:: Compatibility considerations between master and slave
+.. warning:: Compatibility considerations between leader and follower
 
     It is highly recommended to use the same version of Dynare on both the
-    master and all slaves. Different versions regularly cause problems like
+    leader and all followers. Different versions regularly cause problems like
     zero acceptance rates during estimation. When upgrading to a newer Dynare
     version do not forget to adjust the ``DynarePath``.
 

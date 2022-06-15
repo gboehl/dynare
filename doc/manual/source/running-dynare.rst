@@ -346,9 +346,9 @@ by the ``dynare`` command.
         quotes<quote-note>` for info on passing a ``FILENAME`` argument
         containing spaces.
 
-    .. option:: parallel_slave_open_mode
+    .. option:: parallel_follower_open_mode
 
-        Instructs Dynare to leave the connection to the slave node
+        Instructs Dynare to leave the connection to the follower node
         open after computation is complete, closing this connection
         only when Dynare finishes processing.
 
