@@ -14285,7 +14285,7 @@ Macro directives
             @#define w = [ "US", "EA" ]       // String array
             @#define u = [ 1, ["EA"] ]        // Mixed array
             @#define z = 3 + v[2]             // Equals 5
-            @#define t = ("US" in w)          // Equals 1 (true)
+            @#define t = ("US" in w)          // Equals true
             @#define f(x) = " " + x + y       // Function `f` with argument `x`
                                               // returns the string ' ' + x + 'US'
 
