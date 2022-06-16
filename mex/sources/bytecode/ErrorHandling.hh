@@ -34,8 +34,8 @@
 
 #include "dynmex.h"
 
-#define BYTE_CODE
-#include "CodeInterpreter.hh"
+#define BYTECODE_MEX
+#include "Bytecode.hh"
 
 using namespace std;
 
@@ -1186,9 +1186,9 @@ public:
                     {
                       int derivOrder = static_cast<int>(nearbyint(Stackf.top()));
                       Stackf.pop();
-                      if (fabs(v1f) < near_zero && v2f > 0
+                      if (fabs(v1f) < power_deriv_near_zero && v2f > 0
                           && derivOrder > v2f
-                          && fabs(v2f-nearbyint(v2f)) < near_zero)
+                          && fabs(v2f-nearbyint(v2f)) < power_deriv_near_zero)
                         {
                           r = 0.0;
                           Stackf.push(r);

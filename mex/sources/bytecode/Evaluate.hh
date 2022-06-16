@@ -25,8 +25,8 @@
 
 #include "dynmex.h"
 
-#define BYTE_CODE
-#include "CodeInterpreter.hh"
+#define BYTECODE_MEX
+#include "Bytecode.hh"
 #include "ErrorHandling.hh"
 
 class Evaluate : public ErrorMsg

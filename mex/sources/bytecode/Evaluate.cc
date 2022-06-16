@@ -22,6 +22,7 @@
 #include <limits>
 
 #include "Evaluate.hh"
+#include "CommonEnums.hh"
 
 #ifdef MATLAB_MEX_FILE
 extern "C" bool utIsInterruptPending();
@@ -882,9 +883,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 Stack.pop();
                 try
                   {
-                    if (fabs(v1) < near_zero && v2 > 0
+                    if (fabs(v1) < power_deriv_near_zero && v2 > 0
                         && derivOrder > v2
-                        && fabs(v2-nearbyint(v2)) < near_zero)
+                        && fabs(v2-nearbyint(v2)) < power_deriv_near_zero)
                       Stack.push(0.0);
                     else
                       {
