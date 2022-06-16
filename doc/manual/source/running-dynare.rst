@@ -365,14 +365,15 @@ by the ``dynare`` command.
         instead of ``psexec``, to properly allocate affinity when there are
         more than 32 cores in the local machine. [default=true]
 
-    .. option:: -DMACRO_VARIABLE=MACRO_EXPRESSION
+    .. option:: -DMACRO_VARIABLE[=MACRO_EXPRESSION]
 
         Defines a macro-variable from the command line (the same effect as
         using the Macro directive ``@#define`` in a model file, see
         :ref:`macro-proc-lang`). See the :ref:`note on quotes<quote-note>` for
         info on passing a ``MACRO_EXPRESSION`` argument containing spaces. Note
         that an expression passed on the command line can reference variables
-        defined before it.
+        defined before it. If ``MACRO_EXPRESSION`` is omitted, the variable is
+        assigned the ``true`` logical value.
 
         *Example*
 
@@ -380,7 +381,7 @@ by the ``dynare`` command.
 
             .. code-block:: matlab
 
-               >> dynare <<modfile.mod>> -DA=true '-DB="A string with space"' -DC=[1,2,3] '-DD=[ i in C when i > 1 ]'
+               >> dynare <<modfile.mod>> -DA=true '-DB="A string with space"' -DC=[1,2,3] '-DD=[ i in C when i > 1 ]' -DE
 
     .. option:: -I<<path>>
 

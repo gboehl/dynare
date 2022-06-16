@@ -14278,7 +14278,7 @@ Macro directives
 
         ::
 
-            @#define var                      // Equals 1
+            @#define var                      // Equals true
             @#define x = 5                    // Real
             @#define y = "US"                 // String
             @#define v = [ 1, 2, 4 ]          // Real array

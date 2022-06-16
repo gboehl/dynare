@@ -103,7 +103,12 @@ e = 0;
 u = 0;
 end;
 
-@#define DEFINEDvar=0
+@#define DEFINEDvar
+
+// See preprocessor#43
+@#if !(DEFINEDvar == true)
+@#error "A variable defined without a value should be equal to logical true"
+@#endif
 
 @#ifndef DEFINEDvar
 @#error "IFNDEF PROBLEM"
