@@ -229,9 +229,6 @@ elseif ismember(options.solve_algo, [2, 12, 4])
     fre = false;
     for i=length(r)-1:-1:1
         blocklength = r(i+1)-r(i);
-        if s(i+1)-s(i) ~= blocklength
-            error('DYNARE_SOLVE (solve_algo=2|4|12): the Dulmage-Mendelsohn decomposition returned a non-square block. This means that the Jacobian is singular. You may want to try another value for solve_algo.')
-        end
         if options.debug
             dprintf('DYNARE_SOLVE (solve_algo=2|4|12): solving block %u of size %u.', i, blocklength);
         end

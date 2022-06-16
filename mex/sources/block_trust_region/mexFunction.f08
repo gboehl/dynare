@@ -207,9 +207,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
        f_indices => blocks(i)%row_indices
        x_all => x
        if (size(x_indices) /= size(f_indices)) then
-          call mexErrMsgTxt("DYNARE_SOLVE (solve_algo=13|14): the Dulmage-Mendelsohn &
-               &decomposition returned a non-square block. This means that the &
-               &Jacobian is singular. You may want to try another value for solve_algo.")
+          call mexErrMsgTxt("Non-square block")
        end if
        x_block = x(x_indices)
        call trust_region_solve(x_block, matlab_fcn, info, tolx, tolf, maxiter, factor)
