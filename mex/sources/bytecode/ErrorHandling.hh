@@ -1761,8 +1761,6 @@ public:
           case Tags::FENDEQU:
             go_on = false;
             break;
-          case Tags::FOK:
-            break;
           default:
             mexPrintf("Error it_code->first=%d unknown\n", it_code->first); mexEvalString("drawnow;");
             throw FatalExceptionHandling(" in print_expression, unknown opcode "

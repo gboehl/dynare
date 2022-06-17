@@ -1112,9 +1112,6 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             }
           break;
 
-        case Tags::FPUSH:
-          break;
-
         case Tags::FCALL:
           {
 #ifdef DEBUG
@@ -1435,11 +1432,6 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           mexEvalString("drawnow;");
 #endif
           it_code += static_cast<FJMP_ *>(it_code->second)->get_pos() /*- 1 */;
-          break;
-        case Tags::FOK:
-          op = static_cast<FOK_ *>(it_code->second)->get_arg();
-          if (Stack.size() > 0)
-            throw FatalExceptionHandling(" in compute_block_time, stack not empty\n");
           break;
         default:
           throw FatalExceptionHandling(" in compute_block_time, unknown opcode " + to_string(static_cast<int>(it_code->first)) + "\n");
