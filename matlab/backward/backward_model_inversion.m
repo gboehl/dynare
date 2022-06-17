@@ -93,7 +93,7 @@ for i=1:nyctrl
 end
 
 % Exogenous variables.
-X = exogenousvariables.data;
+X = exogenousvariables{exo_names{:}}.data;
 
 % Inversion of the model, solvers for the free endogenous and exogenous variables (call a Newton-like algorithm in each period).
 ity = 2;

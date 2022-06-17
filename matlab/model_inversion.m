@@ -77,6 +77,8 @@ end
 endo_names = DynareModel.endo_names;
 exo_names = DynareModel.exo_names;
 
+exogenousvariables = exogenousvariables{exo_names{:}};
+
 % Use specidalized routine if the model is backward looking.
 if ~DynareModel.maximum_lead
     if DynareModel.maximum_lag
