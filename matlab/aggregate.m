@@ -228,7 +228,7 @@ end
 
 calibration = '';
 for i=1:rows(pArray)
-    calibration = sprintf('%s%s = %f;\n', calibration, pArray{i,1}, pArray{i,2});
+    calibration = sprintf('%s%s = %s;\n', calibration, pArray{i,1}, num2str(pArray{i,2}, 16));
 end
 
 % Move the endogenous variables which are not LHS of an equation
