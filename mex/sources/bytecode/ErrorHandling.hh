@@ -366,12 +366,6 @@ public:
           else
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
           break;
-        case ExpressionType::FirstParamDerivative:
-          if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to parameter "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
-          else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to parameter " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
-          break;
         default:
           return "???";
         }
@@ -413,12 +407,6 @@ public:
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
           else
             Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
-          break;
-        case ExpressionType::FirstParamDerivative:
-          if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to parameter "  << get_variable(SymbolType::endogenous, EQN_dvar1);
-          else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to parameter " << get_variable(SymbolType::endogenous, EQN_dvar1);
           break;
         default:
           return ("???");
@@ -483,33 +471,6 @@ public:
                 break;
               case ExpressionType::FirstExodetDerivative:
                 equation_type = ExpressionType::FirstExodetDerivative;
-                break;
-              case ExpressionType::FirstParamDerivative:
-                equation_type = ExpressionType::FirstParamDerivative;
-                break;
-              case ExpressionType::SecondEndoDerivative:
-                equation_type = ExpressionType::SecondEndoDerivative;
-                break;
-              case ExpressionType::SecondExoDerivative:
-                equation_type = ExpressionType::SecondExoDerivative;
-                break;
-              case ExpressionType::SecondExodetDerivative:
-                equation_type = ExpressionType::SecondExodetDerivative;
-                break;
-              case ExpressionType::SecondParamDerivative:
-                equation_type = ExpressionType::SecondExodetDerivative;
-                break;
-              case ExpressionType::ThirdEndoDerivative:
-                equation_type = ExpressionType::ThirdEndoDerivative;
-                break;
-              case ExpressionType::ThirdExoDerivative:
-                equation_type = ExpressionType::ThirdExoDerivative;
-                break;
-              case ExpressionType::ThirdExodetDerivative:
-                equation_type = ExpressionType::ThirdExodetDerivative;
-                break;
-              case ExpressionType::ThirdParamDerivative:
-                equation_type = ExpressionType::ThirdExodetDerivative;
                 break;
               default:
                 ostringstream tmp;
