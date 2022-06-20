@@ -1027,11 +1027,11 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 #ifdef DEBUG
             mexPrintf("function_name=%s ", function_name.c_str()); mexEvalString("drawnow;");
 #endif
-            unsigned int nb_input_arguments = fc->get_nb_input_arguments();
+            int nb_input_arguments{fc->get_nb_input_arguments()};
 #ifdef DEBUG
             mexPrintf("nb_input_arguments=%d ", nb_input_arguments); mexEvalString("drawnow;");
 #endif
-            unsigned int nb_output_arguments = fc->get_nb_output_arguments();
+            int nb_output_arguments{fc->get_nb_output_arguments()};
 #ifdef DEBUG
             mexPrintf("nb_output_arguments=%d\n", nb_output_arguments); mexEvalString("drawnow;");
 #endif
@@ -1042,7 +1042,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             mexPrintf("arg_func_name.length() = %d\n", arg_func_name.length());
             mexPrintf("arg_func_name.c_str() = %s\n", arg_func_name.c_str());
 #endif
-            unsigned int nb_add_input_arguments = fc->get_nb_add_input_arguments();
+            int nb_add_input_arguments{fc->get_nb_add_input_arguments()};
             function_type = fc->get_function_type();
 #ifdef DEBUG
             mexPrintf("function_type=%d ExternalFunctionWithoutDerivative=%d\n", function_type, ExternalFunctionType::withoutDerivative);
@@ -1061,7 +1061,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                   mexPrintf("Stack.size()=%d\n", Stack.size());
                   mexEvalString("drawnow;");
 #endif
-                  for (unsigned int i = 0; i < nb_input_arguments; i++)
+                  for (int i{0}; i < nb_input_arguments; i++)
                     {
                       mxArray *vv = mxCreateDoubleScalar(Stack.top());
                       input_arguments[nb_input_arguments - i - 1] = vv;
@@ -1074,21 +1074,21 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                   Stack.push(*rr);
                   if (function_type == ExternalFunctionType::withFirstDerivative || function_type == ExternalFunctionType::withFirstAndSecondDerivative)
                     {
-                      unsigned int indx = fc->get_indx();
+                      int indx{fc->get_indx()};
                       double *FD1 = mxGetPr(output_arguments[1]);
                       size_t rows = mxGetN(output_arguments[1]);
-                      for (unsigned int i = 0; i < rows; i++)
+                      for (int i{0}; i < static_cast<int>(rows); i++)
                         TEFD[{ indx, i }] = FD1[i];
                     }
                   if (function_type == ExternalFunctionType::withFirstAndSecondDerivative)
                     {
-                      unsigned int indx = fc->get_indx();
+                      int indx{fc->get_indx()};
                       double *FD2 = mxGetPr(output_arguments[2]);
                       size_t rows = mxGetM(output_arguments[2]);
                       size_t cols = mxGetN(output_arguments[2]);
-                      unsigned int k = 0;
-                      for (unsigned int j = 0; j < cols; j++)
-                        for (unsigned int i = 0; i < rows; i++)
+                      int k{0};
+                      for (int j{0}; j < static_cast<int>(cols); j++)
+                        for (int i{0}; i < static_cast<int>(rows); i++)
                           TEFDD[{ indx, i, j }] = FD2[k++];
                     }
                 }
@@ -1102,7 +1102,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                   vv = mxCreateDoubleScalar(fc->get_row());
                   input_arguments[1] = vv;
                   vv = mxCreateCellMatrix(1, nb_add_input_arguments);
-                  for (unsigned int i = 0; i < nb_add_input_arguments; i++)
+                  for (int i = 0; i < nb_add_input_arguments; i++)
                     {
                       double rr = Stack.top();
 #ifdef DEBUG
@@ -1133,7 +1133,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 {
                   input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, nb_input_arguments * sizeof(mxArray *));
-                  for (unsigned int i = 0; i < nb_input_arguments; i++)
+                  for (int i{0}; i < nb_input_arguments; i++)
                     {
                       mxArray *vv = mxCreateDoubleScalar(Stack.top());
                       input_arguments[(nb_input_arguments - 1) - i] = vv;
@@ -1141,10 +1141,10 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                     }
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
                     throw FatalExceptionHandling(" external function: " + function_name + " not found");
-                  unsigned int indx = fc->get_indx();
+                  int indx{fc->get_indx()};
                   double *FD1 = mxGetPr(output_arguments[0]);
                   size_t rows = mxGetN(output_arguments[0]);
-                  for (unsigned int i = 0; i < rows; i++)
+                  for (int i{0}; i < static_cast<int>(rows); i++)
                     TEFD[{ indx, i }] = FD1[i];
                 }
                 break;
@@ -1159,7 +1159,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                   vv = mxCreateDoubleScalar(fc->get_col());
                   input_arguments[2] = vv;
                   vv = mxCreateCellMatrix(1, nb_add_input_arguments);
-                  for (unsigned int i = 0; i < nb_add_input_arguments; i++)
+                  for (int i{0}; i < nb_add_input_arguments; i++)
                     {
                       double rr = Stack.top();
 #ifdef DEBUG
@@ -1187,7 +1187,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 {
                   input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, nb_input_arguments * sizeof(mxArray *));
-                  for (unsigned int i = 0; i < nb_input_arguments; i++)
+                  for (int i{0}; i < nb_input_arguments; i++)
                     {
                       mxArray *vv = mxCreateDoubleScalar(Stack.top());
                       input_arguments[i] = vv;
@@ -1195,13 +1195,13 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                     }
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
                     throw FatalExceptionHandling(" external function: " + function_name + " not found");
-                  unsigned int indx = fc->get_indx();
+                  int indx{fc->get_indx()};
                   double *FD2 = mxGetPr(output_arguments[2]);
                   size_t rows = mxGetM(output_arguments[0]);
                   size_t cols = mxGetN(output_arguments[0]);
-                  unsigned int k = 0;
-                  for (unsigned int j = 0; j < cols; j++)
-                    for (unsigned int i = 0; i < rows; i++)
+                  int k{0};
+                  for (int j{0}; j < static_cast<int>(cols); j++)
+                    for (int i{0}; i < static_cast<int>(rows); i++)
                       TEFDD[{ indx, i, j }] = FD2[k++];
                 }
                 break;
@@ -1233,8 +1233,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FSTPTEFD:
           {
-            unsigned int indx = static_cast<FSTPTEFD_ *>(it_code->second)->get_indx();
-            unsigned int row = static_cast<FSTPTEFD_ *>(it_code->second)->get_row();
+            int indx{static_cast<FSTPTEFD_ *>(it_code->second)->get_indx()};
+            int row{static_cast<FSTPTEFD_ *>(it_code->second)->get_row()};
 #ifdef DEBUG
             mexPrintf("FSTPTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
@@ -1253,8 +1253,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDTEFD:
           {
-            unsigned int indx = static_cast<FLDTEFD_ *>(it_code->second)->get_indx();
-            unsigned int row = static_cast<FLDTEFD_ *>(it_code->second)->get_row();
+            int indx{static_cast<FLDTEFD_ *>(it_code->second)->get_indx()};
+            int row{static_cast<FLDTEFD_ *>(it_code->second)->get_row()};
 #ifdef DEBUG
             mexPrintf("FLDTEFD\n");
             mexPrintf("indx=%d row=%d Stack.size()=%d\n", indx, row, Stack.size());
@@ -1266,9 +1266,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FSTPTEFDD:
           {
-            unsigned int indx = static_cast<FSTPTEFDD_ *>(it_code->second)->get_indx();
-            unsigned int row = static_cast<FSTPTEFDD_ *>(it_code->second)->get_row();
-            unsigned int col = static_cast<FSTPTEFDD_ *>(it_code->second)->get_col();
+            int indx{static_cast<FSTPTEFDD_ *>(it_code->second)->get_indx()};
+            int row{static_cast<FSTPTEFDD_ *>(it_code->second)->get_row()};
+            int col{static_cast<FSTPTEFDD_ *>(it_code->second)->get_col()};
 #ifdef DEBUG
             mexPrintf("FSTPTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
@@ -1287,9 +1287,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDTEFDD:
           {
-            unsigned int indx = static_cast<FLDTEFDD_ *>(it_code->second)->get_indx();
-            unsigned int row = static_cast<FLDTEFDD_ *>(it_code->second)->get_row();
-            unsigned int col = static_cast<FSTPTEFDD_ *>(it_code->second)->get_col();
+            int indx{static_cast<FLDTEFDD_ *>(it_code->second)->get_indx()};
+            int row{static_cast<FLDTEFDD_ *>(it_code->second)->get_row()};
+            int col{static_cast<FSTPTEFDD_ *>(it_code->second)->get_col()};
 #ifdef DEBUG
             mexPrintf("FLDTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());

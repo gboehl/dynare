@@ -563,7 +563,7 @@ Interpreter::ReadCodeFile(string file_name, CodeLoad &code)
   EQN_block_number = code.get_block_number();
   if (!code_liste.size())
     throw FatalExceptionHandling(" in compute_blocks, " + file_name + ".cod cannot be opened\n");
-  if (block >= static_cast<int>(code.get_block_number()))
+  if (block >= code.get_block_number())
     throw FatalExceptionHandling(" in compute_blocks, input argument block = " + to_string(block+1)
                                  + " is greater than the number of blocks in the model ("
                                  + to_string(code.get_block_number()) + " see M_.block_structure_stat.block)\n");

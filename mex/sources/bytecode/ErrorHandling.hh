@@ -180,16 +180,16 @@ public:
   double *g2, *g1, *r, *res;
   vector<s_plan> splan, spfplan;
   vector<mxArray *> jacobian_block, jacobian_other_endo_block, jacobian_exo_block, jacobian_det_exo_block;
-  map<unsigned int, double> TEF;
-  map<pair<unsigned int, unsigned int>, double> TEFD;
-  map<tuple<unsigned int, unsigned int, unsigned int>, double> TEFDD;
+  map<int, double> TEF;
+  map<pair<int, int>, double> TEFD;
+  map<tuple<int, int, int>, double> TEFDD;
 
   ExpressionType EQN_type;
   it_code_type it_code_expr;
   size_t endo_name_length; // Maximum length of endogenous names
   vector<string> P_endo_names, P_exo_names, P_param_names;
-  unsigned int EQN_equation, EQN_block, EQN_block_number;
-  unsigned int EQN_dvar1, EQN_dvar2, EQN_dvar3;
+  int EQN_equation, EQN_block, EQN_block_number;
+  int EQN_dvar1, EQN_dvar2, EQN_dvar3;
   vector<tuple<string, SymbolType, unsigned int>> Variable_list;
 
   inline
@@ -870,7 +870,7 @@ public:
           case Tags::FSTPG3:
             //store in derivative (g) variable from the processor
             double r;
-            unsigned int pos_col;
+            int pos_col;
             go_on = false;
             if (compute)
               {
@@ -1399,12 +1399,12 @@ public:
             {
               auto *fc = static_cast<FCALL_ *>(it_code->second);
               string function_name = fc->get_function_name();
-              unsigned int nb_input_arguments = fc->get_nb_input_arguments();
-              unsigned int nb_output_arguments = fc->get_nb_output_arguments();
+              int nb_input_arguments{fc->get_nb_input_arguments()};
+              int nb_output_arguments{fc->get_nb_output_arguments()};
 
               mxArray *output_arguments[3];
               string arg_func_name = fc->get_arg_func_name();
-              unsigned int nb_add_input_arguments = fc->get_nb_add_input_arguments();
+              int nb_add_input_arguments{fc->get_nb_add_input_arguments()};
               function_type = fc->get_function_type();
               mxArray **input_arguments;
               switch (function_type)
@@ -1416,7 +1416,7 @@ public:
                     if (compute)
                       {
                         input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
-                        for (unsigned int i = 0; i < nb_input_arguments; i++)
+                        for (int i{0}; i < nb_input_arguments; i++)
                           {
                             mxArray *vv = mxCreateDoubleScalar(Stackf.top());
                             input_arguments[nb_input_arguments - i - 1] = vv;
@@ -1429,12 +1429,12 @@ public:
                     tmp_out.str("");
                     tmp_out << function_name << "(";
                     vector<string> ss(nb_input_arguments);
-                    for (unsigned int i = 0; i < nb_input_arguments; i++)
+                    for (int i{0}; i < nb_input_arguments; i++)
                       {
                         ss[nb_input_arguments-i-1] = Stack.top();
                         Stack.pop();
                       }
-                    for (unsigned int i = 0; i < nb_input_arguments; i++)
+                    for (int i{0}; i < nb_input_arguments; i++)
                       {
                         tmp_out << ss[i];
                         if (i < nb_input_arguments - 1)
@@ -1454,7 +1454,7 @@ public:
                         vv = mxCreateDoubleScalar(fc->get_row());
                         input_arguments[1] = vv;
                         vv = mxCreateCellMatrix(1, nb_add_input_arguments);
-                        for (unsigned int i = 0; i < nb_add_input_arguments; i++)
+                        for (int i{0}; i < nb_add_input_arguments; i++)
                           {
                             double rr = Stackf.top();
                             mxSetCell(vv, nb_add_input_arguments - (i+1), mxCreateDoubleScalar(rr));
@@ -1470,12 +1470,12 @@ public:
                     tmp_out << function_name << "(";
                     tmp_out << arg_func_name.c_str() << ", " << fc->get_row() << ", {";
                     vector<string> ss(nb_input_arguments);
-                    for (unsigned int i = 0; i < nb_add_input_arguments; i++)
+                    for (int i{0}; i < nb_add_input_arguments; i++)
                       {
                         ss[nb_add_input_arguments-i-1] = Stack.top();
                         Stack.pop();
                       }
-                    for (unsigned int i = 0; i < nb_add_input_arguments; i++)
+                    for (int i{0}; i < nb_add_input_arguments; i++)
                       {
                         tmp_out << ss[i];
                         if (i < nb_add_input_arguments - 1)
@@ -1490,7 +1490,7 @@ public:
                     if (compute)
                       {
                         input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
-                        for (unsigned int i = 0; i < nb_input_arguments; i++)
+                        for (int i{0}; i < nb_input_arguments; i++)
                           {
                             mxArray *vv = mxCreateDoubleScalar(Stackf.top());
                             input_arguments[(nb_input_arguments - 1) - i] = vv;
@@ -1501,12 +1501,12 @@ public:
                     tmp_out.str("");
                     tmp_out << function_name << "(";
                     vector<string> ss(nb_input_arguments);
-                    for (unsigned int i = 0; i < nb_input_arguments; i++)
+                    for (int i{0}; i < nb_input_arguments; i++)
                       {
                         ss[nb_input_arguments-i-1] = Stack.top();
                         Stack.pop();
                       }
-                    for (unsigned int i = 0; i < nb_input_arguments; i++)
+                    for (int i{0}; i < nb_input_arguments; i++)
                       {
                         tmp_out << ss[i];
                         if (i < nb_input_arguments - 1)
@@ -1528,7 +1528,7 @@ public:
                         vv = mxCreateDoubleScalar(fc->get_col());
                         input_arguments[2] = vv;
                         vv = mxCreateCellMatrix(1, nb_add_input_arguments);
-                        for (unsigned int i = 0; i < nb_add_input_arguments; i++)
+                        for (int i{0}; i < nb_add_input_arguments; i++)
                           {
                             double rr = Stackf.top();
                             mxSetCell(vv, (nb_add_input_arguments - 1) - i, mxCreateDoubleScalar(rr));
@@ -1544,12 +1544,12 @@ public:
                     tmp_out << function_name << "(";
                     tmp_out << arg_func_name.c_str() << ", " << fc->get_row() << ", " << fc->get_col() << ", {";
                     vector<string> ss(nb_input_arguments);
-                    for (unsigned int i = 0; i < nb_add_input_arguments; i++)
+                    for (int i{0}; i < nb_add_input_arguments; i++)
                       {
                         ss[nb_add_input_arguments-i-1] = Stack.top();
                         Stack.pop();
                       }
-                    for (unsigned int i = 0; i < nb_add_input_arguments; i++)
+                    for (int i{0}; i < nb_add_input_arguments; i++)
                       {
                         tmp_out << ss[i];
                         if (i < nb_add_input_arguments - 1)
@@ -1564,7 +1564,7 @@ public:
                     if (compute)
                       {
                         input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
-                        for (unsigned int i = 0; i < nb_input_arguments; i++)
+                        for (int i{0}; i < nb_input_arguments; i++)
                           {
                             mxArray *vv = mxCreateDoubleScalar(Stackf.top());
                             input_arguments[i] = vv;
@@ -1575,12 +1575,12 @@ public:
                     tmp_out.str("");
                     tmp_out << function_name << "(";
                     vector<string> ss(nb_input_arguments);
-                    for (unsigned int i = 0; i < nb_input_arguments; i++)
+                    for (int i{0}; i < nb_input_arguments; i++)
                       {
                         ss[nb_input_arguments-i-1] = Stack.top();
                         Stack.pop();
                       }
-                    for (unsigned int i = 0; i < nb_input_arguments; i++)
+                    for (int i{0}; i < nb_input_arguments; i++)
                       {
                         tmp_out << ss[i];
                         if (i < nb_input_arguments - 1)
@@ -1632,8 +1632,8 @@ public:
           case Tags::FSTPTEFD:
             {
               go_on = false;
-              unsigned int indx = static_cast<FSTPTEFD_ *>(it_code->second)->get_indx();
-              unsigned int row = static_cast<FSTPTEFD_ *>(it_code->second)->get_row();
+              int indx{static_cast<FSTPTEFD_ *>(it_code->second)->get_indx()};
+              int row{static_cast<FSTPTEFD_ *>(it_code->second)->get_row()};
               if (compute)
                 {
                   Stackf.pop();
@@ -1648,8 +1648,8 @@ public:
             break;
           case Tags::FLDTEFD:
             {
-              unsigned int indx = static_cast<FLDTEFD_ *>(it_code->second)->get_indx();
-              unsigned int row = static_cast<FLDTEFD_ *>(it_code->second)->get_row();
+              int indx{static_cast<FLDTEFD_ *>(it_code->second)->get_indx()};
+              int row{static_cast<FLDTEFD_ *>(it_code->second)->get_row()};
               if (compute)
                 {
                   auto it = TEFD.find({ indx, row-1 });
@@ -1663,9 +1663,9 @@ public:
           case Tags::FSTPTEFDD:
             {
               go_on = false;
-              unsigned int indx = static_cast<FSTPTEFDD_ *>(it_code->second)->get_indx();
-              unsigned int row = static_cast<FSTPTEFDD_ *>(it_code->second)->get_row();
-              unsigned int col = static_cast<FSTPTEFDD_ *>(it_code->second)->get_col();
+              int indx{static_cast<FSTPTEFDD_ *>(it_code->second)->get_indx()};
+              int row{static_cast<FSTPTEFDD_ *>(it_code->second)->get_row()};
+              int col{static_cast<FSTPTEFDD_ *>(it_code->second)->get_col()};
               if (compute)
                 {
                   Stackf.pop();
@@ -1681,9 +1681,9 @@ public:
             break;
           case Tags::FLDTEFDD:
             {
-              unsigned int indx = static_cast<FLDTEFDD_ *>(it_code->second)->get_indx();
-              unsigned int row = static_cast<FLDTEFDD_ *>(it_code->second)->get_row();
-              unsigned int col = static_cast<FSTPTEFDD_ *>(it_code->second)->get_col();
+              int indx{static_cast<FLDTEFDD_ *>(it_code->second)->get_indx()};
+              int row{static_cast<FLDTEFDD_ *>(it_code->second)->get_row()};
+              int col{static_cast<FSTPTEFDD_ *>(it_code->second)->get_col()};
               if (compute)
                 {
                   auto it = TEFDD.find({ indx, row-1, col-1 });
