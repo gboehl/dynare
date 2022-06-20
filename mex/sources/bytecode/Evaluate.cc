@@ -102,7 +102,10 @@ Evaluate::log10_1(double a)
 void
 Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 {
-  int var = 0, lag = 0, op;
+  int var{0}, lag{0};
+  UnaryOpcode op1;
+  BinaryOpcode op2;
+  TrinaryOpcode op3;
   unsigned int eq, pos_col;
   ostringstream tmp_out;
   double v1, v2, v3;
@@ -200,7 +203,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDV:
           //load a variable in the processor
-          switch (static_cast<SymbolType>(static_cast<FLDV_ *>(it_code->second)->get_type()))
+          switch (static_cast<FLDV_ *>(it_code->second)->get_type())
             {
             case SymbolType::parameter:
               var = static_cast<FLDV_ *>(it_code->second)->get_pos();
@@ -253,7 +256,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDSV:
           //load a variable in the processor
-          switch (static_cast<SymbolType>(static_cast<FLDSV_ *>(it_code->second)->get_type()))
+          switch (static_cast<FLDSV_ *>(it_code->second)->get_type())
             {
             case SymbolType::parameter:
               var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
@@ -301,7 +304,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDVS:
           //load a variable in the processor
-          switch (static_cast<SymbolType>(static_cast<FLDVS_ *>(it_code->second)->get_type()))
+          switch (static_cast<FLDVS_ *>(it_code->second)->get_type())
             {
             case SymbolType::parameter:
               var = static_cast<FLDVS_ *>(it_code->second)->get_pos();
@@ -411,7 +414,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FSTPV:
           //load a variable in the processor
-          switch (static_cast<SymbolType>(static_cast<FSTPV_ *>(it_code->second)->get_type()))
+          switch (static_cast<FSTPV_ *>(it_code->second)->get_type())
             {
             case SymbolType::parameter:
               var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
@@ -461,7 +464,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FSTPSV:
           //load a variable in the processor
-          switch (static_cast<SymbolType>(static_cast<FSTPSV_ *>(it_code->second)->get_type()))
+          switch (static_cast<FSTPSV_ *>(it_code->second)->get_type())
             {
             case SymbolType::parameter:
               var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
@@ -676,15 +679,15 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
 
         case Tags::FBINARY:
-          op = static_cast<FBINARY_ *>(it_code->second)->get_op_type();
+          op2 = static_cast<FBINARY_ *>(it_code->second)->get_op_type();
 #ifdef DEBUG
-          mexPrintf("FBINARY, op=%d\n", op);
+          mexPrintf("FBINARY, op=%d\n", static_cast<int>(op2));
 #endif
           v2 = Stack.top();
           Stack.pop();
           v1 = Stack.top();
           Stack.pop();
-          switch (static_cast<BinaryOpcode>(op))
+          switch (op2)
             {
             case BinaryOpcode::plus:
               Stack.push(v1 + v2);
@@ -826,18 +829,18 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               {
                 mexPrintf("Error\n");
                 throw FatalExceptionHandling(" in compute_block_time, unknown binary operator "
-                                             + to_string(op) + "\n");
+                                             + to_string(static_cast<int>(op2)) + "\n");
               }
             }
           break;
         case Tags::FUNARY:
-          op = static_cast<FUNARY_ *>(it_code->second)->get_op_type();
+          op1 = static_cast<FUNARY_ *>(it_code->second)->get_op_type();
           v1 = Stack.top();
           Stack.pop();
 #ifdef DEBUG
-          mexPrintf("FUNARY, op=%d\n", op);
+          mexPrintf("FUNARY, op=%d\n", static_cast<int>(op1));
 #endif
-          switch (static_cast<UnaryOpcode>(op))
+          switch (op1)
             {
             case UnaryOpcode::uminus:
               Stack.push(-v1);
@@ -979,19 +982,19 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             default:
               {
                 mexPrintf("Error\n");
-                throw FatalExceptionHandling(" in compute_block_time, unknown unary operator " + to_string(op) + "\n");
+                throw FatalExceptionHandling(" in compute_block_time, unknown unary operator " + to_string(static_cast<int>(op1)) + "\n");
               }
             }
           break;
         case Tags::FTRINARY:
-          op = static_cast<FTRINARY_ *>(it_code->second)->get_op_type();
+          op3 = static_cast<FTRINARY_ *>(it_code->second)->get_op_type();
           v3 = Stack.top();
           Stack.pop();
           v2 = Stack.top();
           Stack.pop();
           v1 = Stack.top();
           Stack.pop();
-          switch (static_cast<TrinaryOpcode>(op))
+          switch (op3)
             {
             case TrinaryOpcode::normcdf:
               Stack.push(0.5*(1+erf((v1-v2)/v3/M_SQRT2)));
@@ -1008,7 +1011,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             default:
               {
                 mexPrintf("Error\n");
-                throw FatalExceptionHandling(" in compute_block_time, unknown trinary operator " + to_string(op) + "\n");
+                throw FatalExceptionHandling(" in compute_block_time, unknown trinary operator " + to_string(static_cast<int>(op3)) + "\n");
               }
             }
           break;
@@ -1457,7 +1460,7 @@ Evaluate::solve_simple_over_periods(bool forward)
 }
 
 void
-Evaluate::set_block(int size_arg, int type_arg, string file_name_arg, string bin_base_name_arg, int block_num_arg,
+Evaluate::set_block(int size_arg, BlockSimulationType type_arg, string file_name_arg, string bin_base_name_arg, int block_num_arg,
                     bool is_linear_arg, int symbol_table_endo_nbr_arg, int Block_List_Max_Lag_arg, int Block_List_Max_Lead_arg, int u_count_int_arg, int block_arg)
 {
   size = size_arg;

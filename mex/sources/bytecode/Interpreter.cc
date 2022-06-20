@@ -70,7 +70,7 @@ Interpreter::evaluate_a_block(bool initialization)
 {
   it_code_type begining;
 
-  switch (static_cast<BlockSimulationType>(type))
+  switch (type)
     {
     case BlockSimulationType::evaluateForward:
       if (steady_state)
@@ -314,7 +314,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
   mexPrintf("simulate_a_block type = %d, periods=%d, y_kmin=%d, y_kmax=%d\n", type, periods, y_kmin, y_kmax);
   mexEvalString("drawnow;");
 #endif
-  switch (static_cast<BlockSimulationType>(type))
+  switch (type)
     {
     case BlockSimulationType::evaluateForward:
 #ifdef DEBUG
@@ -503,7 +503,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
       End_Solver();
       break;
     default:
-      throw FatalExceptionHandling(" in simulate_a_block, Unknown type = " + to_string(type) + "\n");
+      throw FatalExceptionHandling(" in simulate_a_block, Unknown type = " + to_string(static_cast<int>(type)) + "\n");
       return ERROR_ON_EXIT;
     }
   return NO_ERROR_ON_EXIT;
@@ -585,8 +585,8 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, const vector<s_
                                      + ")\n You should not use block in model options\n");
       else if (find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()
                && find(exogenous.begin(), exogenous.end(), it.var_num) != exogenous.end()
-               && (fb->get_type() == static_cast<uint8_t>(BlockSimulationType::evaluateForward)
-                   || fb->get_type() == static_cast<uint8_t>(BlockSimulationType::evaluateBackward)))
+               && (fb->get_type() == BlockSimulationType::evaluateForward
+                   || fb->get_type() == BlockSimulationType::evaluateBackward))
         throw FatalExceptionHandling("\n the conditional forecast cannot be implemented for the block="
                                      + to_string(Block_Count+1) + ") that has to be evaluated instead to be solved\n You should not use block in model options\n");
       else if (find(previous_block_exogenous.begin(), previous_block_exogenous.end(), it.var_num)

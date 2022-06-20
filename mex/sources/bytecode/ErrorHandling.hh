@@ -419,7 +419,10 @@ public:
   inline string
   print_expression(it_code_type it_code, bool evaluate, int size, int block_num, bool steady_state, int Per_u_, int it_, it_code_type &it_code_ret, bool compute) const
   {
-    int var, lag = 0, op, eq;
+    int var, lag{0}, eq;
+    UnaryOpcode op1;
+    BinaryOpcode op2;
+    TrinaryOpcode op3;
     stack<string> Stack;
     stack<double> Stackf;
     ostringstream tmp_out, tmp_out2;
@@ -480,7 +483,7 @@ public:
             break;
           case Tags::FLDV:
             //load a variable in the processor
-            switch (static_cast<SymbolType>(static_cast<FLDV_ *>(it_code->second)->get_type()))
+            switch (static_cast<FLDV_ *>(it_code->second)->get_type())
               {
               case SymbolType::parameter:
                 var = static_cast<FLDV_ *>(it_code->second)->get_pos();
@@ -540,7 +543,7 @@ public:
           case Tags::FLDSV:
           case Tags::FLDVS:
             //load a variable in the processor
-            switch (static_cast<SymbolType>(static_cast<FLDSV_ *>(it_code->second)->get_type()))
+            switch (static_cast<FLDSV_ *>(it_code->second)->get_type())
               {
               case SymbolType::parameter:
                 var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
@@ -647,7 +650,7 @@ public:
           case Tags::FSTPV:
             //load a variable in the processor
             go_on = false;
-            switch (static_cast<SymbolType>(static_cast<FSTPV_ *>(it_code->second)->get_type()))
+            switch (static_cast<FSTPV_ *>(it_code->second)->get_type())
               {
               case SymbolType::parameter:
                 var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
@@ -722,7 +725,7 @@ public:
           case Tags::FSTPSV:
             go_on = false;
             //load a variable in the processor
-            switch (static_cast<SymbolType>(static_cast<FSTPSV_ *>(it_code->second)->get_type()))
+            switch (static_cast<FSTPSV_ *>(it_code->second)->get_type())
               {
               case SymbolType::parameter:
                 var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
@@ -916,7 +919,7 @@ public:
               }
             break;
           case Tags::FBINARY:
-            op = static_cast<FBINARY_ *>(it_code->second)->get_op_type();
+            op2 = static_cast<FBINARY_ *>(it_code->second)->get_op_type();
             v2 = Stack.top();
             Stack.pop();
             v1 = Stack.top();
@@ -928,7 +931,7 @@ public:
                 v1f = Stackf.top();
                 Stackf.pop();
               }
-            switch (static_cast<BinaryOpcode>(op))
+            switch (op2)
               {
               case BinaryOpcode::plus:
                 if (compute)
@@ -1188,12 +1191,12 @@ public:
                 break;
               case BinaryOpcode::equal:
               default:
-                mexPrintf("Error unknown Unary operator=%d\n", op); mexEvalString("drawnow;");
+                mexPrintf("Error unknown binary operator=%d\n", static_cast<int>(op2)); mexEvalString("drawnow;");
                 ;
               }
             break;
           case Tags::FUNARY:
-            op = static_cast<FUNARY_ *>(it_code->second)->get_op_type();
+            op1 = static_cast<FUNARY_ *>(it_code->second)->get_op_type();
             v1 = Stack.top();
             Stack.pop();
             if (compute)
@@ -1201,7 +1204,7 @@ public:
                 v1f = Stackf.top();
                 Stackf.pop();
               }
-            switch (static_cast<UnaryOpcode>(op))
+            switch (op1)
               {
               case UnaryOpcode::uminus:
                 if (compute)
@@ -1351,12 +1354,12 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               default:
-                mexPrintf("Error unknown Binary operator=%d\n", op); mexEvalString("drawnow;");
+                mexPrintf("Error unknown unary operator=%d\n", static_cast<int>(op1)); mexEvalString("drawnow;");
                 ;
               }
             break;
           case Tags::FTRINARY:
-            op = static_cast<FTRINARY_ *>(it_code->second)->get_op_type();
+            op3 = static_cast<FTRINARY_ *>(it_code->second)->get_op_type();
             v3 = Stack.top();
             Stack.pop();
             v2 = Stack.top();
@@ -1372,7 +1375,7 @@ public:
                 v1f = Stackf.top();
                 Stackf.pop();
               }
-            switch (static_cast<TrinaryOpcode>(op))
+            switch (op3)
               {
               case TrinaryOpcode::normcdf:
                 if (compute)
@@ -1389,7 +1392,7 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               default:
-                mexPrintf("Error unknown Trinary operator=%d\n", op); mexEvalString("drawnow;");
+                mexPrintf("Error unknown trinary operator=%d\n", static_cast<int>(op3)); mexEvalString("drawnow;");
               }
             break;
           case Tags::FCALL:
