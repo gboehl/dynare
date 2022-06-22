@@ -195,7 +195,7 @@ clean-msys2:
 
 tarballs/x13assrc_V$(X13AS_VERSION).tar.gz:
 	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ https://www.census.gov/ts/x13as/unix/x13assrc_V$(X13AS_VERSION).tar.gz
+	wget $(WGET_OPTIONS) -O $@ https://ftp.debian.org/debian/pool/non-free/x/x13as/x13as_$(subst _,-,$(X13AS_VERSION)).orig.tar.gz
 
 sources64/x13as-$(X13AS_VERSION): tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
 	rm -rf sources64/x13as-*
