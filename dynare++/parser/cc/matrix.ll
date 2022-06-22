@@ -1,7 +1,7 @@
 /* -*- C++ -*- */
 /*
  * Copyright © 2006-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -63,7 +63,8 @@ extern void matrix_error(std::string);
 }
 
 . {
-        matrix_error(std::string{"Unrecognized character "} + matrix_text);
+  using namespace std::string_literals;
+  matrix_error("Unrecognized character "s + matrix_text);
 }
 
 %%

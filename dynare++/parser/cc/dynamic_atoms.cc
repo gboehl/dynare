@@ -335,7 +335,7 @@ DynamicAtoms::lagmap(const string &name) const
   auto it = vars.find(name);
   if (vars.end() == it)
     throw ogu::Exception(__FILE__, __LINE__,
-                         std::string("Couldn't find the name ")
+                         "Couldn't find the name "
                          + name + " in DynamicAtoms::lagmap");
   return it->second;
 }

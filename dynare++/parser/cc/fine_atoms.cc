@@ -38,7 +38,7 @@ AllvarOuterOrdering::AllvarOuterOrdering(const vector<string> &allvar_outer,
         allvar.push_back(s);
       else
         throw ogu::Exception(__FILE__, __LINE__,
-                             string("Variable ") + s + " is not a declared symbol in AllvarOuterOrdering constructor");
+                             "Variable " + s + " is not a declared symbol in AllvarOuterOrdering constructor");
     }
 
   // fill in endo2all and exo2all
@@ -54,7 +54,7 @@ AllvarOuterOrdering::AllvarOuterOrdering(const vector<string> &allvar_outer,
             exo2all[it->second] = i;
           else
             throw ogu::Exception(__FILE__, __LINE__,
-                                 string("Name ") + allvar[i] + " is neither endogenous nor exogenous variable in AllvarOuterOrdering constructor");
+                                 "Name " + allvar[i] + " is neither endogenous nor exogenous variable in AllvarOuterOrdering constructor");
         }
     }
 
@@ -67,11 +67,11 @@ AllvarOuterOrdering::AllvarOuterOrdering(const vector<string> &allvar_outer,
     iexo++;
   if (iendo < endo2all.size())
     throw ogu::Exception(__FILE__, __LINE__,
-                         string("Endogenous variable ") + atoms.get_endovars()[iendo]
+                         "Endogenous variable " + atoms.get_endovars()[iendo]
                          +" not found in outer all ordering in AllvarOuterOrdering constructor");
   if (iexo < exo2all.size())
     throw ogu::Exception(__FILE__, __LINE__,
-                         string("Exogenous variable ") + atoms.get_exovars()[iexo]
+                         "Exogenous variable " + atoms.get_exovars()[iexo]
                          +" not found in outer all ordering in AllvarOuterOrdering constructor");
 }
 
@@ -94,7 +94,7 @@ FineAtoms::FineAtoms(const FineAtoms &fa)
     {
       if (!varnames.query(param))
         throw ogu::Exception(__FILE__, __LINE__,
-                             string("Parameter ") + param + " does not exist in FineAtoms copy cosntructor");
+                             "Parameter " + param + " does not exist in FineAtoms copy cosntructor");
       params.push_back(param);
       param_outer_map.emplace(param, params.size()-1);
     }
@@ -103,7 +103,7 @@ FineAtoms::FineAtoms(const FineAtoms &fa)
     {
       if (!varnames.query(endovar))
         throw ogu::Exception(__FILE__, __LINE__,
-                             string("Endo variable ") + endovar + " does not exist in FineAtoms copy constructor");
+                             "Endo variable " + endovar + " does not exist in FineAtoms copy constructor");
       endovars.push_back(endovar);
       endo_outer_map.emplace(endovar, endovars.size()-1);
     }
@@ -112,7 +112,7 @@ FineAtoms::FineAtoms(const FineAtoms &fa)
     {
       if (!varnames.query(exovar))
         throw ogu::Exception(__FILE__, __LINE__,
-                             string("Exo variable ") + exovar + " does not exist in FineAtoms copy cosntructor");
+                             "Exo variable " + exovar + " does not exist in FineAtoms copy cosntructor");
       exovars.push_back(exovar);
       exo_outer_map.emplace(exovar, exovars.size()-1);
     }
@@ -137,7 +137,7 @@ FineAtoms::check_variable(const string &name) const
     return DynamicAtoms::check_variable(name);
   else
     {
-      throw ParserException(string("Variable <")+str+"> not declared.", 0);
+      throw ParserException("Variable <"+str+"> not declared.", 0);
       return -1;
     }
 }
@@ -419,7 +419,7 @@ FineAtoms::name2outer_allvar(const string &name) const
     }
 
   throw ogu::Exception(__FILE__, __LINE__,
-                       string("Name ") + name + " is neither endo nor exo variable in FineAtoms::name2outer_allvar");
+                       "Name " + name + " is neither endo nor exo variable in FineAtoms::name2outer_allvar");
   return -1;
 }
 
@@ -427,7 +427,7 @@ void
 FineAtoms::register_uniq_endo(string name)
 {
   if (varnames.query(name))
-    throw ogp::ParserException(string("Endogenous variable <")+name+"> is not unique.", 0);
+    throw ogp::ParserException("Endogenous variable <"+name+"> is not unique.", 0);
   varnames.insert(name);
   endovars.push_back(name);
   endo_outer_map.emplace(std::move(name), endovars.size()-1);
@@ -437,7 +437,7 @@ void
 FineAtoms::register_uniq_exo(string name)
 {
   if (varnames.query(name))
-    throw ogp::ParserException(string("Exogenous variable <")+name+"> is not unique.", 0);
+    throw ogp::ParserException("Exogenous variable <"+name+"> is not unique.", 0);
   varnames.insert(name);
   exovars.push_back(name);
   exo_outer_map.emplace(std::move(name), exovars.size()-1);
@@ -447,7 +447,7 @@ void
 FineAtoms::register_uniq_param(string name)
 {
   if (varnames.query(name))
-    throw ogp::ParserException(string("Parameter <")+name+"> is not unique.", 0);
+    throw ogp::ParserException("Parameter <"+name+"> is not unique.", 0);
   varnames.insert(name);
   params.push_back(name);
   param_outer_map.emplace(std::move(name), params.size()-1);

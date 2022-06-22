@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -37,12 +37,13 @@ DynareParams::DynareParams(int argc, char **argv)
     do_irfs_all(true), do_centralize(true), qz_criterium(1.0+1e-6),
     help(false), version(false)
 {
-  if (argc == 1 || std::string{argv[1]} == "--help")
+  using namespace std::string_literals;
+  if (argc == 1 || argv[1] == "--help"s)
     {
       help = true;
       return;
     }
-  if (argc == 1 || std::string{argv[1]} == "--version")
+  if (argc == 1 || argv[1] == "--version"s)
     {
       version = true;
       return;

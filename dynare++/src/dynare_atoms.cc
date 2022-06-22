@@ -1,6 +1,6 @@
 /*
  * Copyright © 2006 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -36,7 +36,7 @@ void
 DynareStaticAtoms::register_name(string name)
 {
   if (varnames.query(name))
-    throw ogp::ParserException(string("The name ")+name+" is not unique.", 0);
+    throw ogp::ParserException("The name "+name+" is not unique.", 0);
   StaticAtoms::register_name(std::move(name));
 }
 
@@ -44,7 +44,7 @@ int
 DynareStaticAtoms::check_variable(const string &name) const
 {
   if (!varnames.query(name))
-    throw ogp::ParserException(std::string("Unknown name <")+name+">", 0);
+    throw ogp::ParserException("Unknown name <"+name+">", 0);
   auto it = vars.find(name);
   if (it == vars.end())
     return -1;
@@ -63,7 +63,7 @@ DynareDynamicAtoms::parse_variable(const string &in, std::string &out, int &ll) 
       left++;
       auto right = in.find_first_of(")}", left);
       if (string::npos == right)
-        throw ogp::ParserException(string("Syntax error when parsing Dynare atom <")+in+">.", 0);
+        throw ogp::ParserException("Syntax error when parsing Dynare atom <"+in+">.", 0);
       ll = std::stoi(in.substr(left, right-left));
     }
   else

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2006-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -549,7 +549,7 @@ int
 DynareParser::parse_pldiscount(const string &str)
 {
   if (!atoms.is_type(str, DynareDynamicAtoms::atype::param))
-    throw ogp::ParserException(std::string{"Name "} + str + " is not a parameter", 0);
+    throw ogp::ParserException("Name " + str + " is not a parameter", 0);
 
   int t = atoms.index(str, 0);
   if (t == -1)

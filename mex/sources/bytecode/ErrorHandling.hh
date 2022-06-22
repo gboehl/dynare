@@ -206,12 +206,12 @@ public:
         {
           auto M_field = mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, symbol_type));
           if (!mxIsCell(M_field))
-            mexErrMsgTxt((string{"M_."} + symbol_type + " is not a cell array").c_str());
+            mexErrMsgTxt(("M_."s + symbol_type + " is not a cell array").c_str());
           for (size_t i = 0; i < mxGetNumberOfElements(M_field); i++)
             {
               const mxArray *cell_mx = mxGetCell(M_field, i);
               if (!(cell_mx && mxIsChar(cell_mx)))
-                mexErrMsgTxt((string{"M_."} + symbol_type + " contains a cell which is not a character array").c_str());
+                mexErrMsgTxt(("M_."s + symbol_type + " contains a cell which is not a character array").c_str());
               r.emplace_back(mxArrayToString(cell_mx));
             }
         }

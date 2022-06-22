@@ -82,7 +82,7 @@ int
 StaticFineAtoms::check_variable(const string &name) const
 {
   if (!varnames.query(name))
-    throw ParserException(string("Variable <")+name+"> not declared.", 0);
+    throw ParserException("Variable <"+name+"> not declared.", 0);
   return index(name);
 }
 
@@ -150,7 +150,7 @@ void
 StaticFineAtoms::register_uniq_endo(string name)
 {
   if (varnames.query(name))
-    throw ogp::ParserException(string("Endogenous variable <")+name+"> is not unique.", 0);
+    throw ogp::ParserException("Endogenous variable <"+name+"> is not unique.", 0);
   varnames.insert(name);
   register_endo(std::move(name));
 }
@@ -159,7 +159,7 @@ void
 StaticFineAtoms::register_uniq_exo(string name)
 {
   if (varnames.query(name))
-    throw ogp::ParserException(string("Exogenous variable <")+name+"> is not unique.", 0);
+    throw ogp::ParserException("Exogenous variable <"+name+"> is not unique.", 0);
   varnames.insert(name);
   register_exo(std::move(name));
 }
@@ -168,7 +168,7 @@ void
 StaticFineAtoms::register_uniq_param(string name)
 {
   if (varnames.query(name))
-    throw ogp::ParserException(string("Parameter <")+name+"> is not unique.", 0);
+    throw ogp::ParserException("Parameter <"+name+"> is not unique.", 0);
   varnames.insert(name);
   register_param(std::move(name));
 }
@@ -192,8 +192,7 @@ void
 StaticFineAtoms::register_endo(string name)
 {
   if (!varnames.query(name))
-    throw ogp::ParserException(string("Endogenous variable <")
-                               +name+"> not found in storage.", 0);
+    throw ogp::ParserException("Endogenous variable <"+name+"> not found in storage.", 0);
   endovars.push_back(name);
   endo_outer_map.emplace(std::move(name), endovars.size()-1);
 }
@@ -202,8 +201,7 @@ void
 StaticFineAtoms::register_exo(string name)
 {
   if (!varnames.query(name))
-    throw ogp::ParserException(string("Exogenous variable <")
-                               +name+"> not found in storage.", 0);
+    throw ogp::ParserException("Exogenous variable <"+name+"> not found in storage.", 0);
   exovars.push_back(name);
   exo_outer_map.emplace(std::move(name), exovars.size()-1);
 }
@@ -212,7 +210,7 @@ void
 StaticFineAtoms::register_param(string name)
 {
   if (!varnames.query(name))
-    throw ogp::ParserException(string("Parameter <")+name+"> not found in storage.", 0);
+    throw ogp::ParserException("Parameter <"+name+"> not found in storage.", 0);
   params.push_back(name);
   param_outer_map.emplace(std::move(name), params.size()-1);
 }

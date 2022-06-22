@@ -375,7 +375,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           double *specific_shock_int_date_ = mxGetPr(mxGetCell(shock_int_date_, i));
           int nb_local_periods = mxGetM(Array_shock_paths_) * mxGetN(Array_shock_paths_);
           if (nb_periods < nb_local_periods)
-            mexErrMsgTxt((string{"The total number of simulation periods ("} + to_string(nb_periods)
+            mexErrMsgTxt(("The total number of simulation periods (" + to_string(nb_periods)
                           + ") is lesser than the number of periods in the shock definitions ("
                           + to_string(nb_local_periods)).c_str());
           sextended_path[i].per_value.resize(nb_local_periods);
@@ -422,7 +422,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::exogenous || variable_type == SymbolType::exogenousDet)
                 splan[i].var_num = exo_num;
               else
-                mexErrMsgTxt(("The variable '" + string{name} + "'  defined as var in plan is not an exogenous or a deterministic exogenous\n").c_str());
+                mexErrMsgTxt(("The variable '"s + name + "'  defined as var in plan is not an exogenous or a deterministic exogenous\n").c_str());
             }
           tmp = mxGetField(plan_struct, i, "var");
           if (tmp)
@@ -435,7 +435,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::endogenous)
                 splan[i].exo_num = exo_num;
               else
-                mexErrMsgTxt(("The variable '" + string{name} + "'  defined as exo in plan is not an endogenous variable\n").c_str());
+                mexErrMsgTxt(("The variable '"s + name + "'  defined as exo in plan is not an endogenous variable\n").c_str());
             }
           tmp = mxGetField(plan_struct, i, "per_value");
           if (tmp)
@@ -484,7 +484,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::exogenous || variable_type == SymbolType::exogenousDet)
                 splan[i].var_num = exo_num;
               else
-                mexErrMsgTxt(("The variable '" + string{name} + "' defined as var in pfplan is not an exogenous or a deterministic exogenous\n").c_str());
+                mexErrMsgTxt(("The variable '"s + name + "' defined as var in pfplan is not an exogenous or a deterministic exogenous\n").c_str());
             }
           tmp = mxGetField(pfplan_struct, i, "exo");
           if (tmp)
@@ -497,7 +497,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::endogenous)
                 spfplan[i].exo_num = exo_num;
               else
-                mexErrMsgTxt(("The variable '" + string{name} + "' defined as exo in pfplan  is not an endogenous variable\n").c_str());
+                mexErrMsgTxt(("The variable '"s + name + "' defined as exo in pfplan  is not an endogenous variable\n").c_str());
             }
           tmp = mxGetField(pfplan_struct, i, "per_value");
           if (tmp)

@@ -140,7 +140,7 @@ DynamicModelMatlabCaller::eval(int it, double *resid)
     mxArray *exception = mexCallMATLABWithTrap(1, plhs, 6, prhs, funcname.c_str());
     if (exception)
       {
-        error_msg = std::string{"An error occurred when calling "} + funcname;
+        error_msg = "An error occurred when calling " + funcname;
         return; // Avoid manipulating null pointers in plhs, see #1832
       }
 
@@ -156,7 +156,7 @@ DynamicModelMatlabCaller::eval(int it, double *resid)
     mxArray *exception = mexCallMATLABWithTrap(1, plhs, 7, prhs, funcname.c_str());
     if (exception)
       {
-        error_msg = std::string{"An error occurred when calling "} + funcname;
+        error_msg = "An error occurred when calling " + funcname;
         return; // Avoid manipulating null pointers in plhs, see #1832
       }
 
@@ -182,7 +182,7 @@ DynamicModelMatlabCaller::eval(int it, double *resid)
       mxArray *exception = mexCallMATLABWithTrap(1, plhs, 7, prhs, funcname.c_str());
       if (exception)
         {
-          error_msg = std::string{"An error occurred when calling "} + funcname;
+          error_msg = "An error occurred when calling " + funcname;
           return; // Avoid manipulating null pointers in plhs, see #1832
         }
 

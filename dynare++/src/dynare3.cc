@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -46,7 +46,7 @@ DynareNameList::selectIndices(const std::vector<std::string> &ns) const
         j++;
       if (j == getNum())
         throw DynareException(__FILE__, __LINE__,
-                              std::string("Couldn't find name for ") + n
+                              "Couldn't find name for " + n
                               +" in DynareNameList::selectIndices");
       res.push_back(j);
     }
@@ -62,7 +62,7 @@ Dynare::Dynare(const std::string &modname, int ord, double sstol, Journal &jr)
 {
   std::ifstream f{modname};
   if (f.fail())
-    throw DynareException(__FILE__, __LINE__, std::string{"Could not open model file "}+modname);
+    throw DynareException(__FILE__, __LINE__, "Could not open model file "+modname);
 
   std::ostringstream buffer;
   buffer << f.rdbuf();

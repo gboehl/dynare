@@ -95,7 +95,7 @@ AtomAssignings::add_assignment_to_double(string name, double val)
   catch (const ParserException &e)
     {
       // should never happen
-      throw ParserException(string("Error parsing double ")+buf.str()+": "+e.message(), 0);
+      throw ParserException("Error parsing double "+buf.str()+": "+e.message(), 0);
     }
 
   // register name of the left hand side and put to lname2expr
