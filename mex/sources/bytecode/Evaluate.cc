@@ -107,7 +107,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
   BinaryOpcode op2;
   TrinaryOpcode op3;
   unsigned int eq, pos_col;
+#ifdef DEBUG
   ostringstream tmp_out;
+#endif
   double v1, v2, v3;
   bool go_on = true;
   double ll;
@@ -1277,7 +1279,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               {
                 TEFDD[{ indx, row-1, col-1 }] = Stack.top();
 #ifdef DEBUG
-                mexPrintf("FSTP TEFDD[{ indx, row, col }]=%f done\n", TEFDD[{ indx, row, col }]);
+                mexPrintf("FSTP TEFDD[{ indx, row-1, col-1 }]=%f done\n", TEFDD[{ indx, row-1, col-1 }]);
                 mexEvalString("drawnow;");
 #endif
                 Stack.pop();
@@ -1293,7 +1295,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 #ifdef DEBUG
             mexPrintf("FLDTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
-            mexPrintf("FLD TEFD[{ indx, row, col }]=%f done\n", TEFDD[{ indx, row, col }]);
+            mexPrintf("FLD TEFD[{ indx, row-1, col-1 }]=%f done\n", TEFDD[{ indx, row-1, col-1 }]);
             mexEvalString("drawnow;");
 #endif
             Stack.push(TEFDD[{ indx, row-1, col-1 }]);
