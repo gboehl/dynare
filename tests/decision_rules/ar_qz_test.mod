@@ -11,6 +11,12 @@ ar1=phi*ar1(-1)+e;
 junk=0.9*junk(+1);
 end;
 
+steady_state_model;
+white_noise=0;
+ar1=0;
+junk=0;
+end;
+
 shocks;
 var e = 1;
 end;
