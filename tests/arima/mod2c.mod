@@ -15,6 +15,12 @@ dy = rho_y*dy(-1)+a2*coint_err(-1)+e_y;
 coint_err = dx-b*dy+coint_err(-1);
 end;
 
+steady_state_model;
+dx=0;
+dy=0;
+coint_err=0;
+end;
+
 estimated_params;
 rho_x,NORMAL_PDF,0.5,0.1;
 rho_y,NORMAL_PDF,-0.3,0.1;
