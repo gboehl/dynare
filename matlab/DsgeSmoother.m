@@ -151,7 +151,7 @@ else
     trend_addition=zeros(size(constant,1),gend);
     trend = constant*ones(1,gend);
 end
-start = options_.presample+1;
+
 np    = size(T,1);
 mf    = bayestopt_.mf;
 % ------------------------------------------------------------------------------
