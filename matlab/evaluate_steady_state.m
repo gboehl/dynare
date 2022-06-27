@@ -74,6 +74,9 @@ if options.ramsey_policy
         % provided by the block-decomposed routines.
         error('The ''block'' option is not compatible with ''ramsey_model''/''ramsey_policy''');
     end
+    if ~isfinite(M.params(strmatch('optimal_policy_discount_factor',M.param_names,'exact')))
+        fprintf('\nevaluate_steady_state: the planner_discount is NaN/Inf. That will cause problems.\n')
+    end
     if steadystate_flag
         % explicit steady state file
         [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M, ...
