@@ -311,11 +311,29 @@ elseif ismember(options.solve_algo, [2, 12, 4])
                 dprintf('DYNARE_SOLVE (solve_algo=2|4|12): solving block %u with trust_region routine.', i);
             end
         end
-        [x, errorflag] = solver(f, x, j1(j), j2(j), jacobian_flag, ...
-                                options.gstep, ...
-                                tolf, options.solve_tolx, ...
-                                maxit, options.debug, args{:});
-        fre = true;
+        blockcolumns=s(i+1)-s(i);
+        if blockcolumns ~= blocklength
+            %non-square-block in DM; check whether initial value is solution
+            [fval_check, fjac] = feval(f, x, args{:});
+            if norm(fval_check(j1(j))) < tolf
+                errorflag = false;
+                errorcode = 0;
+                continue
+            end
+        end
+        if blockcolumns>=blocklength
+            %(under-)determined block
+            [x, errorflag, errorcode] = solver(f, x, j1(j), j2(j), jacobian_flag, ...
+                options.gstep, ...
+                tolf, options.solve_tolx, maxit, ...
+                options.debug, args{:});
+            fre = true;
+        else
+            fprintf('\nDYNARE_SOLVE (solve_algo=2|4|12): the Dulmage-Mendelsohn decomposition returned a non-square block. This means that the Jacobian is singular. You may want to try another value for solve_algo.\n')
+            %overdetermined block
+            errorflag = true;
+            errorcode = 0;
+        end
         if errorflag
             return
         end
