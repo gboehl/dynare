@@ -155,7 +155,7 @@ if param_nbr>0 && (rankX<rankrequired || min(1-Mco)<tol_rank)
     end
     ee0 = [rankX+1:size([Xparnonzero Xrest],2)]; %look into last columns with singular values of problematic parameter sets (except single parameters)
     for j=1:length(ee0)
-        % linearely dependent parameters
+        % linearly dependent parameters
         ixno = ixno + 1;
         if test_flag == 2
             temp = (abs(ee1(:,ee0(j))) > tol_sv)';
