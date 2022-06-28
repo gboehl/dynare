@@ -160,7 +160,7 @@ for jide = 1:4
                         disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient for ', num2str(sum(ide.ino & ide.minimal_state_space)),' out of ',int2str(EffectiveSampleSize),' effective MC runs!'  ])
                         end
                     else
-                        disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient for ', num2str(sum(ide.ino)),' out of ',int2str(EffectiveSampleSize),' effective MC runs!'  ]),
+                        disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient for ', num2str(sum(ide.ino~=0)),' out of ',int2str(EffectiveSampleSize),' effective MC runs!'  ]),
                     end
                 else
                     disp(['    The rank of ', strJacobian, ' (', strMeaning, ') is deficient!']),
