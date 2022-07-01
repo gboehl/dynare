@@ -1,7 +1,7 @@
-function [forecast,info] = dyn_forecast(var_list,M,options,oo,task,dataset_info)
-% function dyn_forecast(var_list,M,options,oo,task,dataset_info)
+function forecast = dyn_forecast(var_list,M,options,oo,task,dataset_info)
+% function forecast = dyn_forecast(var_list,M,options,oo,task,dataset_info)
 %   computes mean forecast for a given value of the parameters
-%   compues also confidence band for the forecast
+%   computes also confidence bands for the forecast
 %
 % INPUTS
 %   var_list:    list of variables (character matrix)
@@ -13,15 +13,21 @@ function [forecast,info] = dyn_forecast(var_list,M,options,oo,task,dataset_info)
 %   dataset_info:   Various informations about the dataset (descriptive statistics and missing observations).
 
 % OUTPUTS
-%   nothing is returned but the procedure saves output
-%   in oo_.forecast.Mean
-%      oo_.forecast.HPDinf
-%      oo_.forecast.HPDsup
-%
+%   forecast:   structure containing fields
+%                   Mean:       point estimate
+%                   HPDinf:     lower bound of confidence band, ignoring
+%                               measurement error
+%                   HPDsup:     upper bound of confidence band, ignoring
+%                               measurement error
+%                   HPDinf_ME:  lower bound of confidence band, accounting
+%                               for measurement error
+%                   HPDsup_ME:  upper bound of confidence band, accounting
+%                               for measurement error
+%                   Exogenous:  path for var_exo_det
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2003-2018 Dynare Team
+% Copyright © 2003-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,13 +44,15 @@ function [forecast,info] = dyn_forecast(var_list,M,options,oo,task,dataset_info)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+if ~isfield(oo,'dr') || isempty(oo.dr)
+  error('dyn_forecast: the decision rules have not been computed. Did you forget a stoch_simul-command?')
+end
+
 if nargin<6 && options.prefilter
     error('The prefiltering option is not allowed without providing a dataset')
 elseif nargin==6
     mean_varobs=dataset_info.descriptive.mean';
 end
-
-info = 0;
 
 oo=make_ex_(M,options,oo);
 
