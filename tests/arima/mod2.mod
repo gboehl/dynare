@@ -16,6 +16,13 @@ x = x(-1)+dx;
 y = y(-1)+dy;
 end;
 
+steady_state_model;
+dx=0;
+x=0;
+dy=0;
+y=0;
+end;
+
 shocks;
 var e_x; stderr 0.01;
 var e_y; stderr 0.01;

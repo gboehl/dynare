@@ -11,6 +11,11 @@ dx = rho_x*dx(-1)+e_x;
 dy = rho_y*dy(-1)+e_y;
 end;
 
+steady_state_model;
+dx=0;
+dy=0;
+end;
+
 estimated_params;
 rho_x,NORMAL_PDF,0.5,0.1;
 rho_y,NORMAL_PDF,-0.3,0.1;

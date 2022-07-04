@@ -13,6 +13,13 @@ x = x(-1)+dx;
 y = y(-1)+dy;
 end;
 
+steady_state_model;
+dx=0;
+x=0;
+dy=0;
+y=0;
+end;
+
 estimated_params;
 rho_x,NORMAL_PDF,0.5,0.1;
 rho_y,NORMAL_PDF,-0.3,0.1;

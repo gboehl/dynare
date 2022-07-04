@@ -18,6 +18,13 @@ var e_x; stderr 0.01;
 var e_y; stderr 0.01;
 end;
 
+steady_state_model;
+dx=0;
+x=0;
+dy=0;
+y=0;
+end;
+
 stoch_simul(order=1,periods=1000,irf=0,nomoments);
 
 datatomfile('data1',[]);
