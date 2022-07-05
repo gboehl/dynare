@@ -87,6 +87,8 @@ extern "C" {
   void mexFunction(int nlhs, mxArray *plhs[],
                    int nrhs, const mxArray *prhs[])
   {
+    if (nlhs != 1 || nrhs != 3)
+      mexErrMsgTxt("Must have exactly 3 input arguments and 1 output argument");
 
     const mxArray *dr_mx = prhs[0];
     const mxArray *M_mx = prhs[1];
