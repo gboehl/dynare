@@ -90,7 +90,7 @@ smoother2histval;
 forecast;
 forecast_smoother2histval=oo_.forecast;
 
-[forecast_smoother,info] = dyn_forecast(var_list_,M_,options_,oo_,'smoother');
+[forecast_smoother] = dyn_forecast(var_list_,M_,options_,oo_,'smoother');
 
 if max(abs(struct2array(forecast_estimation.Mean)-struct2array(forecast_smoother2histval.Mean)))>1e-6
     error('Forecasts do not match')
