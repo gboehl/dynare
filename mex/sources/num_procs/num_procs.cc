@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -23,7 +23,7 @@
 
 void
 mexFunction(int nlhs, mxArray *plhs[],
-            int nrhs, const mxArray *prhs[])
+            int nrhs, [[maybe_unused]] const mxArray *prhs[])
 {
   if (nrhs != 0 || nlhs != 1)
     mexErrMsgTxt("Must have zero input argument and one output argument");

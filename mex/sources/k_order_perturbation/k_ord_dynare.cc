@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2021 Dynare Team
+ * Copyright © 2008-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -52,15 +52,18 @@ KordpDynare::solveDeterministicSteady()
 }
 
 void
-KordpDynare::evaluateSystem(Vector &out, const ConstVector &yy, const Vector &xx)
+KordpDynare::evaluateSystem(Vector &out, [[maybe_unused]] const ConstVector &yy,
+                            [[maybe_unused]] const Vector &xx)
 {
   // This method is only called when checking the residuals at steady state (Approximation::check), so return zero residuals
   out.zeros();
 }
 
 void
-KordpDynare::evaluateSystem(Vector &out, const ConstVector &yym, const ConstVector &yy,
-                            const ConstVector &yyp, const Vector &xx)
+KordpDynare::evaluateSystem(Vector &out, [[maybe_unused]] const ConstVector &yym,
+                            [[maybe_unused]] const ConstVector &yy,
+                            [[maybe_unused]] const ConstVector &yyp,
+                            [[maybe_unused]] const Vector &xx)
 {
   // This method is only called when checking the residuals at steady state (Approximation::check), so return zero residuals
   out.zeros();

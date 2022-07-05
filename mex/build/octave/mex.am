@@ -7,7 +7,7 @@ DEFS += -DMEXEXT=\".mex\"
 
 AM_CFLAGS = $(shell $(MKOCTFILE) -p CPICFLAG) -Wall -Wno-parentheses # TODO: use same warnings as C++
 AM_FCFLAGS = $(shell $(MKOCTFILE) -p FPICFLAG) -Wall -Wimplicit-interface
-AM_CXXFLAGS = -std=gnu++20 $(shell $(MKOCTFILE) -p CXXPICFLAG) -Wall -Wno-dangling-else -Wextra -Wno-unused-parameter -Wold-style-cast
+AM_CXXFLAGS = -std=gnu++20 $(shell $(MKOCTFILE) -p CXXPICFLAG) -Wall -Wno-dangling-else -Wextra -Wold-style-cast
 AM_LDFLAGS = $(shell $(MKOCTFILE) -p DL_LDFLAGS)
 
 # See the comments in configure.ac

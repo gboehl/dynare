@@ -9,7 +9,7 @@ DEFS += -DMEXEXT=\"$(MEXEXT)\"
 
 AM_CFLAGS = $(MATLAB_CFLAGS) -Wall -Wno-parentheses # TODO: use same warnings as C++
 AM_FCFLAGS = $(MATLAB_FCFLAGS) -Wall -Wimplicit-interface
-AM_CXXFLAGS = -std=gnu++20 $(MATLAB_CXXFLAGS) -Wall -Wno-dangling-else -Wextra -Wno-unused-parameter -Wold-style-cast
+AM_CXXFLAGS = -std=gnu++20 $(MATLAB_CXXFLAGS) -Wall -Wno-dangling-else -Wextra -Wold-style-cast
 AM_LDFLAGS = $(MATLAB_LDFLAGS)
 LIBS += $(MATLAB_LIBS)
 

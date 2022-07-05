@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2019 Dynare Team
+ * Copyright © 2007-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -60,7 +60,7 @@ public:
   double *dd_index;
   double *K, *a, *K_P, *P_t_t1, *tmp, *P;
 public:
-  BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
+  BlockKalmanFilter(int nrhs, const mxArray *prhs[]);
   bool block_kalman_filter(int nlhs, mxArray *plhs[]);
   void block_kalman_filter_ss();
   void return_results_and_clean(int nlhs, mxArray *plhs[]);

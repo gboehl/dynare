@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2020 Dynare Team
+ * Copyright © 2007-2022 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -141,10 +141,8 @@ det(const double *F, int dim, const lapack_int *ipiv)
   return det;
 }
 
-BlockKalmanFilter::BlockKalmanFilter(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+BlockKalmanFilter::BlockKalmanFilter(int nrhs, const mxArray *prhs[])
 {
-  if (nlhs > 2)
-    mexErrMsgTxt("block_kalman_filter provides at most 2 output argument.");
   if (nrhs != 13 && nrhs != 16)
     mexErrMsgTxt("block_kalman_filter requires exactly \n  13 input arguments for standard Kalman filter \nor\n  16 input arguments for missing observations Kalman filter.");
   if (nrhs == 16)
@@ -817,6 +815,9 @@ BlockKalmanFilter::block_kalman_filter(int nlhs, mxArray *plhs[])
 void
 BlockKalmanFilter::return_results_and_clean(int nlhs, mxArray *plhs[])
 {
+  if (nlhs > 2)
+    mexErrMsgTxt("block_kalman_filter provides at most 2 output argument.");
+
   if (nlhs >= 1)
     {
       plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
@@ -843,7 +844,7 @@ BlockKalmanFilter::return_results_and_clean(int nlhs, mxArray *plhs[])
 void
 mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  BlockKalmanFilter block_kalman_filter(nlhs, plhs, nrhs, prhs);
+  BlockKalmanFilter block_kalman_filter(nrhs, prhs);
   if (block_kalman_filter.block_kalman_filter(nlhs, plhs))
     block_kalman_filter.return_results_and_clean(nlhs, plhs);
 }
