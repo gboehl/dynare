@@ -242,9 +242,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.push(x[it_+lag+var*nb_row_x]);
               break;
             case SymbolType::exogenousDet:
-              var = static_cast<FLDV_ *>(it_code->second)->get_pos();
-              lag = static_cast<FLDV_ *>(it_code->second)->get_lead_lag();
-              Stack.push(x[it_+lag+var*nb_row_xd]);
+              mexErrMsgTxt("FLDV: exogenous deterministic not supported");
               break;
             case SymbolType::modelLocalVariable:
 #ifdef DEBUG
@@ -288,11 +286,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.push(x[var]);
               break;
             case SymbolType::exogenousDet:
-              var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-              mexPrintf("FLDSV xd[var=%d]\n", var);
-#endif
-              Stack.push(x[var]);
+              mexErrMsgTxt("FLDSV: exogenous deterministic not supported");
               break;
             case SymbolType::modelLocalVariable:
 #ifdef DEBUG
@@ -330,11 +324,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.push(x[var]);
               break;
             case SymbolType::exogenousDet:
-              var = static_cast<FLDVS_ *>(it_code->second)->get_pos();
-#ifdef DEBUG
-              mexPrintf("FLDVS xd[%d]\n", var);
-#endif
-              Stack.push(x[var]);
+              mexErrMsgTxt("FLDVS: exogenous deterministic not supported");
               break;
             case SymbolType::modelLocalVariable:
 #ifdef DEBUG
@@ -450,15 +440,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.pop();
               break;
             case SymbolType::exogenousDet:
-              var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
-              lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
-              x[it_+lag+var*nb_row_xd] = Stack.top();
-#ifdef DEBUG
-              tmp_out << "=>";
-              mexPrintf(" x[%d, %d](%f)=%s\n", it_+lag, var, x[it_+lag+var*nb_row_xd], tmp_out.str().c_str());
-              tmp_out.str("");
-#endif
-              Stack.pop();
+              mexErrMsgTxt("FSTPV: exogenous deterministic not supported");
               break;
             default:
               mexPrintf("FSTPV: Unknown variable type\n");
@@ -484,7 +466,6 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.pop();
               break;
             case SymbolType::exogenous:
-            case SymbolType::exogenousDet:
               var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
               x[var] = Stack.top();
 #ifdef DEBUG
@@ -493,6 +474,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               tmp_out.str("");
 #endif
               Stack.pop();
+              break;
+            case SymbolType::exogenousDet:
+              mexErrMsgTxt("FSTPSV: exogenous deterministic not supported");
               break;
             default:
               mexPrintf("FSTPSV: Unknown variable type\n");

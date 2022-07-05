@@ -1,4 +1,4 @@
-// Test for varexo_det and forecast command at order 1
+// Test for varexo_det and forecast command at order 1 with bytecode
 
 var y, c, k, a, h, b;
 varexo e,u;
@@ -16,8 +16,7 @@ theta = 2.95;
 
 phi   = 0.1;
 
-//model(bytecode);
-model;
+model(bytecode);
 c*theta*h^(1+psi)=(1-alpha)*y;
 k = beta*(((exp(b)*c)/(exp(b(+1))*c(+1)))
     *(exp(b(+1))*alpha*y(+1)+(1-delta)*k));
@@ -40,7 +39,6 @@ ahat = 0;
 bhat = 0;
 end;
 
-//simul(periods=20);
 shocks;
 var e; stderr 0.009;
 var u; stderr 0.009;

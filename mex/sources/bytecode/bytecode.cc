@@ -199,7 +199,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   mxArray *block_structur = nullptr;
   mxArray *pfplan_struct = nullptr;
   ErrorMsg error_msg;
-  size_t i, row_y = 0, col_y = 0, row_x = 0, col_x = 0, nb_row_xd = 0;
+  size_t i, row_y = 0, col_y = 0, row_x = 0, col_x = 0;
   size_t steady_row_y, steady_col_y;
   int y_kmin = 0, y_kmax = 0, y_decal = 0;
   unsigned int periods = 1;
@@ -419,10 +419,10 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               splan[i].var = name;
               SymbolType variable_type = SymbolType::endogenous;
               int exo_num = emsg.get_ID(name, &variable_type);
-              if (variable_type == SymbolType::exogenous || variable_type == SymbolType::exogenousDet)
+              if (variable_type == SymbolType::exogenous)
                 splan[i].var_num = exo_num;
               else
-                mexErrMsgTxt(("The variable '"s + name + "'  defined as var in plan is not an exogenous or a deterministic exogenous\n").c_str());
+                mexErrMsgTxt(("The variable '"s + name + "'  defined as var in plan is not an exogenous\n").c_str());
             }
           tmp = mxGetField(plan_struct, i, "var");
           if (tmp)
@@ -481,10 +481,10 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               spfplan[i].var = name;
               SymbolType variable_type = SymbolType::endogenous;
               int exo_num = emsg.get_ID(name, &variable_type);
-              if (variable_type == SymbolType::exogenous || variable_type == SymbolType::exogenousDet)
+              if (variable_type == SymbolType::exogenous)
                 splan[i].var_num = exo_num;
               else
-                mexErrMsgTxt(("The variable '"s + name + "' defined as var in pfplan is not an exogenous or a deterministic exogenous\n").c_str());
+                mexErrMsgTxt(("The variable '"s + name + "' defined as var in pfplan is not an exogenous\n").c_str());
             }
           tmp = mxGetField(pfplan_struct, i, "exo");
           if (tmp)
@@ -551,7 +551,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           xd = mxGetPr(exo_sim_arr);
           row_x = mxGetM(exo_sim_arr);
           col_x = mxGetN(exo_sim_arr);
-          nb_row_xd = row_x;
         }
       int field = mxGetFieldNumber(M_, "maximum_lag");
       if (field >= 0)
@@ -600,7 +599,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           xd = mxGetPr(exo_steady_state_arr);
           row_x = mxGetM(exo_steady_state_arr);
           col_x = mxGetN(exo_steady_state_arr);
-          nb_row_xd = row_x;
         }
     }
   int field = mxGetFieldNumber(options_, "verbosity");
@@ -718,7 +716,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   size_t nb_row_x = row_x;
 
   clock_t t0 = clock();
-  Interpreter interprete(params, y, ya, x, steady_yd, steady_xd, direction, y_size, nb_row_x, nb_row_xd, periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, y_decal,
+  Interpreter interprete(params, y, ya, x, steady_yd, steady_xd, direction, y_size, nb_row_x, periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, y_decal,
                          markowitz_c, file_name, minimal_solving_periods, stack_solve_algo, solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms, steady_state,
                          print_it, col_x, col_y);
   string f(fname);
