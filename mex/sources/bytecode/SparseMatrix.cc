@@ -1175,7 +1175,7 @@ dynSparseMatrix::Print_u() const
 }
 
 void
-dynSparseMatrix::End_GE(int Size)
+dynSparseMatrix::End_GE()
 {
   mem_mngr.Free_All();
   mxFree(FNZE_R);
@@ -1978,7 +1978,7 @@ dynSparseMatrix::golden(double ax, double bx, double cx, double tol, double solv
 }
 
 void
-dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Size, double slowc_l, int it_)
+dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Size, double slowc_l)
 {
   double *b_m_d = mxGetPr(b_m);
   if (!b_m_d)
@@ -3014,7 +3014,7 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
 
   slowc_save = slowc;
   simple_bksub(it_, Size, slowc_lbx);
-  End_GE(Size);
+  End_GE();
   mxFree(piv_v);
   mxFree(pivj_v);
   mxFree(pivk_v);
@@ -3594,11 +3594,11 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
     ya[i] = y[i];
   slowc_save = slowc;
   bksub(tbreak, last_period, Size, slowc_lbx);
-  End_GE(Size);
+  End_GE();
 }
 
 void
-dynSparseMatrix::Check_and_Correct_Previous_Iteration(int block_num, int y_size, int size, double crit_opt_old)
+dynSparseMatrix::Check_and_Correct_Previous_Iteration(int y_size, int size)
 {
   if (isnan(res1) || isinf(res1) || (res2 > g0 && iter > 0))
     {
@@ -3643,7 +3643,7 @@ dynSparseMatrix::Check_and_Correct_Previous_Iteration(int block_num, int y_size,
 }
 
 bool
-dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, int y_kmax, int size, bool cvg)
+dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int size)
 {
   mxArray *b_m = nullptr, *A_m = nullptr, *x0_m = nullptr;
   SuiteSparse_long *Ap = nullptr, *Ai = nullptr;
@@ -3785,17 +3785,16 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int y_kmin, in
 }
 
 bool
-dynSparseMatrix::solve_linear(int block_num, int y_size, int y_kmin, int y_kmax, int size, int iter)
+dynSparseMatrix::solve_linear(int block_num, int y_size, int size, int iter)
 {
   bool cvg = false;
-  double crit_opt_old = res2/2;
   compute_complete(false, res1, res2, max_res, max_res_idx);
   cvg = (max_res < solve_tolf);
   if (!cvg || isnan(res1) || isinf(res1))
     {
       if (iter)
-        Check_and_Correct_Previous_Iteration(block_num, y_size, size, crit_opt_old);
-      bool singular_system = Simulate_One_Boundary(block_num, y_size, y_kmin, y_kmax, size, cvg);
+        Check_and_Correct_Previous_Iteration(y_size, size);
+      bool singular_system = Simulate_One_Boundary(block_num, y_size, size);
       if (singular_system)
         Singular_display(block_num, size);
     }
@@ -3803,7 +3802,7 @@ dynSparseMatrix::solve_linear(int block_num, int y_size, int y_kmin, int y_kmax,
 }
 
 void
-dynSparseMatrix::solve_non_linear(int block_num, int y_size, int y_kmin, int y_kmax, int size)
+dynSparseMatrix::solve_non_linear(int block_num, int y_size, int size)
 {
   max_res_idx = 0;
   bool cvg = false;
@@ -3811,7 +3810,7 @@ dynSparseMatrix::solve_non_linear(int block_num, int y_size, int y_kmin, int y_k
   glambda2 = g0 = very_big;
   while (!cvg && iter < maxit_)
     {
-      cvg = solve_linear(block_num, y_size, y_kmin, y_kmax, size, iter);
+      cvg = solve_linear(block_num, y_size, size, iter);
       g0 = res2;
       iter++;
     }
@@ -3853,27 +3852,27 @@ dynSparseMatrix::Simulate_Newton_One_Boundary(bool forward)
     {
       it_ = 0;
       if (!is_linear)
-        solve_non_linear(block_num, y_size, 0, 0, size);
+        solve_non_linear(block_num, y_size, size);
       else
-        solve_linear(block_num, y_size, 0, 0, size, 0);
+        solve_linear(block_num, y_size, size, 0);
     }
   else if (forward)
     {
       if (!is_linear)
         for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
-          solve_non_linear(block_num, y_size, y_kmin, y_kmax, size);
+          solve_non_linear(block_num, y_size, size);
       else
         for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
-          solve_linear(block_num, y_size, y_kmin, y_kmax, size, 0);
+          solve_linear(block_num, y_size, size, 0);
     }
   else
     {
       if (!is_linear)
         for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
-          solve_non_linear(block_num, y_size, y_kmin, y_kmax, size);
+          solve_non_linear(block_num, y_size, size);
       else
         for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
-          solve_linear(block_num, y_size, y_kmin, y_kmax, size, 0);
+          solve_linear(block_num, y_size, size, 0);
     }
   if ((solve_algo == 6 && steady_state)
       || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4 || stack_solve_algo == 6) && !steady_state))
@@ -3918,7 +3917,7 @@ dynSparseMatrix::preconditioner_print_out(string s, int preconditioner, bool ss)
 }
 
 void
-dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax,int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, unsigned int endo_name_length, const vector<string> &P_endo_names, const vector_table_conditional_local_type &vector_table_conditional_local)
+dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax,int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, const vector<string> &P_endo_names, const vector_table_conditional_local_type &vector_table_conditional_local)
 {
   double top = 0.5;
   double bottom = 0.1;
@@ -4119,7 +4118,7 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
       if (stack_solve_algo == 0 || stack_solve_algo == 4)
         Solve_LU_UMFPack(Ap, Ai, Ax, b, Size * periods, Size, slowc, true, 0, vector_table_conditional_local);
       else if (stack_solve_algo == 1 || stack_solve_algo == 6)
-        Solve_Matlab_Relaxation(A_m, b_m, Size, slowc, 0);
+        Solve_Matlab_Relaxation(A_m, b_m, Size, slowc);
       else if (stack_solve_algo == 2)
         Solve_Matlab_GMRES(A_m, b_m, Size, slowc, blck, true, 0, x0_m);
       else if (stack_solve_algo == 3)

@@ -52,7 +52,7 @@ class dynSparseMatrix : public Evaluate
 {
 public:
   dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg, int minimal_solving_periods_arg);
-  void Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax, int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, unsigned int endo_name_length, const vector<string> &P_endo_names, const vector_table_conditional_local_type &vector_table_conditional_local);
+  void Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax, int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, const vector<string> &P_endo_names, const vector_table_conditional_local_type &vector_table_conditional_local);
   void Simulate_Newton_One_Boundary(bool forward);
   void fixe_u(double **u, int u_count_int, int max_lag_plus_max_lead_plus_1);
   void Read_SparseMatrix(const string &file_name, int Size, int periods, int y_kmin, int y_kmax, bool two_boundaries, int stack_solve_algo, int solve_algo);
@@ -71,12 +71,12 @@ private:
   void Init_Matlab_Sparse_Simple(int Size, const map<tuple<int, int, int>, int> &IM, const mxArray *A_m, const mxArray *b_m, bool &zero_solution, const mxArray *x0_m) const;
   void Init_UMFPACK_Sparse_Simple(int Size, const map<tuple<int, int, int>, int> &IM, SuiteSparse_long **Ap, SuiteSparse_long **Ai, double **Ax, double **b, bool &zero_solution, const mxArray *x0_m) const;
   void Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM, bool &zero_solution);
-  void End_GE(int Size);
+  void End_GE();
   bool mnbrak(double *ax, double *bx, double *cx, double *fa, double *fb, double *fc);
   bool golden(double ax, double bx, double cx, double tol, double solve_tolf, double *xmin);
   void Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool symbolic, int Block_number);
   bool Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int it_);
-  void Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Size, double slowc_l, int it_);
+  void Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Size, double slowc_l);
   void Solve_Matlab_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int it_);
   static void Print_UMFPack(const SuiteSparse_long *Ap, const SuiteSparse_long *Ai, const double *Ax, int n);
   static void Printfull_UMFPack(const SuiteSparse_long *Ap, const SuiteSparse_long *Ai, const double *Ax, const double *b, int n);
@@ -87,10 +87,10 @@ private:
   void End_Matlab_LU_UMFPack();
   void Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double slowc, int block, bool is_two_boundaries, int it_, mxArray *x0_m);
   void Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, double slowc, int block, bool is_two_boundaries, int it_, mxArray *x0_m, int precond);
-  void Check_and_Correct_Previous_Iteration(int block_num, int y_size, int size, double crit_opt_old);
-  bool Simulate_One_Boundary(int blck, int y_size, int y_kmin, int y_kmax, int Size, bool cvg);
-  bool solve_linear(int block_num, int y_size, int y_kmin, int y_kmax, int size, int iter);
-  void solve_non_linear(int block_num, int y_size, int y_kmin, int y_kmax, int size);
+  void Check_and_Correct_Previous_Iteration(int y_size, int size);
+  bool Simulate_One_Boundary(int blck, int y_size, int size);
+  bool solve_linear(int block_num, int y_size, int size, int iter);
+  void solve_non_linear(int block_num, int y_size, int size);
   string preconditioner_print_out(string s, int preconditioner, bool ss);
   bool compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, int periods, long nop4, int Size);
   void Insert(int r, int c, int u_index, int lag_index);
