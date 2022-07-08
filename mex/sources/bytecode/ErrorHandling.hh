@@ -435,7 +435,7 @@ public:
     ExpressionType equation_type = ExpressionType::TemporaryTerm;
     size_t found;
     double *jacob = nullptr, *jacob_other_endo = nullptr, *jacob_exo = nullptr, *jacob_exo_det = nullptr;
-    ExternalFunctionType function_type = ExternalFunctionType::withoutDerivative;
+    ExternalFunctionCallType call_type{ExternalFunctionCallType::levelWithoutDerivative};
 
     if (evaluate)
       {
@@ -1383,13 +1383,13 @@ public:
               mxArray *output_arguments[3];
               string arg_func_name = fc->get_arg_func_name();
               int nb_add_input_arguments{fc->get_nb_add_input_arguments()};
-              function_type = fc->get_function_type();
+              call_type = fc->get_call_type();
               mxArray **input_arguments;
-              switch (function_type)
+              switch (call_type)
                 {
-                case ExternalFunctionType::withoutDerivative:
-                case ExternalFunctionType::withFirstDerivative:
-                case ExternalFunctionType::withFirstAndSecondDerivative:
+                case ExternalFunctionCallType::levelWithoutDerivative:
+                case ExternalFunctionCallType::levelWithFirstDerivative:
+                case ExternalFunctionCallType::levelWithFirstAndSecondDerivative:
                   {
                     if (compute)
                       {
@@ -1422,7 +1422,7 @@ public:
                     Stack.push(tmp_out.str());
                   }
                   break;
-                case ExternalFunctionType::numericalFirstDerivative:
+                case ExternalFunctionCallType::numericalFirstDerivative:
                   {
                     if (compute)
                       {
@@ -1463,7 +1463,7 @@ public:
                     Stack.push(tmp_out.str());
                   }
                   break;
-                case ExternalFunctionType::firstDerivative:
+                case ExternalFunctionCallType::separatelyProvidedFirstDerivative:
                   {
                     if (compute)
                       {
@@ -1494,7 +1494,7 @@ public:
                     Stack.push(tmp_out.str());
                   }
                   break;
-                case ExternalFunctionType::numericalSecondDerivative:
+                case ExternalFunctionCallType::numericalSecondDerivative:
                   {
                     if (compute)
                       {
@@ -1537,7 +1537,7 @@ public:
                     Stack.push(tmp_out.str());
                   }
                   break;
-                case ExternalFunctionType::secondDerivative:
+                case ExternalFunctionCallType::separatelyProvidedSecondDerivative:
                   {
                     if (compute)
                       {
@@ -1579,15 +1579,15 @@ public:
                 Stackf.pop();
               }
             tmp_out.str("");
-            switch (function_type)
+            switch (call_type)
               {
-              case ExternalFunctionType::withoutDerivative:
+              case ExternalFunctionCallType::levelWithoutDerivative:
                 tmp_out << "TEF(" << var << ") = " << Stack.top();
                 break;
-              case ExternalFunctionType::withFirstDerivative:
+              case ExternalFunctionCallType::levelWithFirstDerivative:
                 tmp_out << "[TEF(" << var << "), TEFD(" << var << ") ]= " << Stack.top();
                 break;
-              case ExternalFunctionType::withFirstAndSecondDerivative:
+              case ExternalFunctionCallType::levelWithFirstAndSecondDerivative:
                 tmp_out << "[TEF(" << var << "), TEFD(" << var << "), TEFDD(" << var << ") ]= " << Stack.top();
                 break;
               default:
@@ -1617,9 +1617,9 @@ public:
                   Stackf.pop();
                 }
               tmp_out.str("");
-              if (function_type == ExternalFunctionType::numericalFirstDerivative)
+              if (call_type == ExternalFunctionCallType::numericalFirstDerivative)
                 tmp_out << "TEFD(" << indx << ", " << row << ") = " << Stack.top();
-              else if (function_type == ExternalFunctionType::firstDerivative)
+              else if (call_type == ExternalFunctionCallType::separatelyProvidedFirstDerivative)
                 tmp_out << "TEFD(" << indx << ") = " << Stack.top();
               Stack.pop();
             }
@@ -1649,9 +1649,9 @@ public:
                   Stackf.pop();
                 }
               tmp_out.str("");
-              if (function_type == ExternalFunctionType::numericalSecondDerivative)
+              if (call_type == ExternalFunctionCallType::numericalSecondDerivative)
                 tmp_out << "TEFDD(" << indx << ", " << row << ", " << col << ") = " << Stack.top();
-              else if (function_type == ExternalFunctionType::secondDerivative)
+              else if (call_type == ExternalFunctionCallType::separatelyProvidedSecondDerivative)
                 tmp_out << "TEFDD(" << indx << ") = " << Stack.top();
               Stack.pop();
             }

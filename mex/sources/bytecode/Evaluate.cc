@@ -117,7 +117,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
   double *jacob = nullptr, *jacob_other_endo = nullptr, *jacob_exo = nullptr, *jacob_exo_det = nullptr;
   EQN_block = block_num;
   stack<double> Stack;
-  ExternalFunctionType function_type = ExternalFunctionType::withoutDerivative;
+  ExternalFunctionCallType call_type{ExternalFunctionCallType::levelWithoutDerivative};
 
 #ifdef DEBUG
   mexPrintf("compute_block_time\n");
@@ -1029,17 +1029,17 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             mexPrintf("arg_func_name.c_str() = %s\n", arg_func_name.c_str());
 #endif
             int nb_add_input_arguments{fc->get_nb_add_input_arguments()};
-            function_type = fc->get_function_type();
+            call_type = fc->get_call_type();
 #ifdef DEBUG
-            mexPrintf("function_type=%d ExternalFunctionWithoutDerivative=%d\n", function_type, ExternalFunctionType::withoutDerivative);
+            mexPrintf("call_type=%d ExternalFunctionCallTypeWithoutDerivative=%d\n", call_type, ExternalFunctionCallType::withoutDerivative);
             mexEvalString("drawnow;");
 #endif
             mxArray **input_arguments;
-            switch (function_type)
+            switch (call_type)
               {
-              case ExternalFunctionType::withoutDerivative:
-              case ExternalFunctionType::withFirstDerivative:
-              case ExternalFunctionType::withFirstAndSecondDerivative:
+              case ExternalFunctionCallType::levelWithoutDerivative:
+              case ExternalFunctionCallType::levelWithFirstDerivative:
+              case ExternalFunctionCallType::levelWithFirstAndSecondDerivative:
                 {
                   input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, nb_input_arguments * sizeof(mxArray *));
@@ -1058,7 +1058,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 
                   double *rr = mxGetPr(output_arguments[0]);
                   Stack.push(*rr);
-                  if (function_type == ExternalFunctionType::withFirstDerivative || function_type == ExternalFunctionType::withFirstAndSecondDerivative)
+                  if (call_type == ExternalFunctionCallType::levelWithFirstDerivative
+                      || call_type == ExternalFunctionCallType::levelWithFirstAndSecondDerivative)
                     {
                       int indx{fc->get_indx()};
                       double *FD1 = mxGetPr(output_arguments[1]);
@@ -1066,7 +1067,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                       for (int i{0}; i < static_cast<int>(rows); i++)
                         TEFD[{ indx, i }] = FD1[i];
                     }
-                  if (function_type == ExternalFunctionType::withFirstAndSecondDerivative)
+                  if (call_type == ExternalFunctionCallType::levelWithFirstAndSecondDerivative)
                     {
                       int indx{fc->get_indx()};
                       double *FD2 = mxGetPr(output_arguments[2]);
@@ -1079,7 +1080,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                     }
                 }
                 break;
-              case ExternalFunctionType::numericalFirstDerivative:
+              case ExternalFunctionCallType::numericalFirstDerivative:
                 {
                   input_arguments = static_cast<mxArray **>(mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *)));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, (nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
@@ -1115,7 +1116,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                   Stack.push(*rr);
                 }
                 break;
-              case ExternalFunctionType::firstDerivative:
+              case ExternalFunctionCallType::separatelyProvidedFirstDerivative:
                 {
                   input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, nb_input_arguments * sizeof(mxArray *));
@@ -1134,7 +1135,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                     TEFD[{ indx, i }] = FD1[i];
                 }
                 break;
-              case ExternalFunctionType::numericalSecondDerivative:
+              case ExternalFunctionCallType::numericalSecondDerivative:
                 {
                   input_arguments = static_cast<mxArray **>(mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *)));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, (nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *));
@@ -1169,7 +1170,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                   Stack.push(*rr);
                 }
                 break;
-              case ExternalFunctionType::secondDerivative:
+              case ExternalFunctionCallType::separatelyProvidedSecondDerivative:
                 {
                   input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
                   test_mxMalloc(input_arguments, __LINE__, __FILE__, __func__, nb_input_arguments * sizeof(mxArray *));
@@ -1225,7 +1226,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             mexPrintf("FSTPTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
 #endif
-            if (function_type == ExternalFunctionType::numericalFirstDerivative)
+            if (call_type == ExternalFunctionCallType::numericalFirstDerivative)
               {
                 TEFD[{ indx, row-1 }] = Stack.top();
 #ifdef DEBUG
@@ -1259,7 +1260,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             mexPrintf("FSTPTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
 #endif
-            if (function_type == ExternalFunctionType::numericalSecondDerivative)
+            if (call_type == ExternalFunctionCallType::numericalSecondDerivative)
               {
                 TEFDD[{ indx, row-1, col-1 }] = Stack.top();
 #ifdef DEBUG
