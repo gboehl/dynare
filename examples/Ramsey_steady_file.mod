@@ -8,7 +8,7 @@
  * - This mod-files allows to simulate a simple New Keynesian Model with Rotemberg price 
  *      adjustment costs under fully optimal monetary under commitment (Ramsey)
  *
- *  - This files shows how to use a userd-defined conditional steady state file in the Ramsey case. It takes
+ *  - This files shows how to use a user-defined conditional steady state file in the Ramsey case. It takes
  *      the value of the defined instrument R as given and then computes the rest of the steady 
  *      state, including the steady state inflation rate, based on this value. The initial value 
  *      of the instrument for steady state search must then be defined in an initval-block.
@@ -22,7 +22,7 @@
  */
 
 /*
- * Copyright (C) 2019 Dynare Team
+ * Copyright © 2019-2022 Dynare Team
  *
  * This is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
