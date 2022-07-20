@@ -1031,7 +1031,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             int nb_add_input_arguments{fc->get_nb_add_input_arguments()};
             call_type = fc->get_call_type();
 #ifdef DEBUG
-            mexPrintf("call_type=%d ExternalFunctionCallTypeWithoutDerivative=%d\n", call_type, ExternalFunctionCallType::withoutDerivative);
+            mexPrintf("call_type=%d ExternalFunctionCallTypeWithoutDerivative=%d\n", call_type, ExternalFunctionCallType::levelWithoutDerivative);
             mexEvalString("drawnow;");
 #endif
             mxArray **input_arguments;
