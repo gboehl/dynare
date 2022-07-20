@@ -2,7 +2,7 @@ mex_PROGRAMS = bytecode
 
 TOPDIR = $(top_srcdir)/../../sources/bytecode
 
-bytecode_CPPFLAGS =  -Wno-maybe-uninitialized $(AM_CPPFLAGS) -I$(TOPDIR) -I$(top_srcdir)/../../../preprocessor/src
+bytecode_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR) -I$(top_srcdir)/../../../preprocessor/src
 
 nodist_bytecode_SOURCES = \
 	bytecode.cc \
