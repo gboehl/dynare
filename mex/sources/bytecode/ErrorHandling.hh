@@ -1682,23 +1682,6 @@ public:
             tmp_out << "else";
             go_on = false;
             break;
-          case Tags::FCUML:
-            if (compute)
-              {
-                v1f = Stackf.top();
-                Stackf.pop();
-                v2f = Stackf.top();
-                Stackf.pop();
-                Stackf.push(v1f+v2f);
-              }
-            v1 = Stack.top();
-            Stack.pop();
-            v2 = Stack.top();
-            Stack.pop();
-            tmp_out.str("");
-            tmp_out << v1 << " + " << v2;
-            Stack.push(tmp_out.str());
-            break;
           case Tags::FENDBLOCK:
           case Tags::FENDEQU:
             go_on = false;

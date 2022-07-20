@@ -1286,13 +1286,6 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             Stack.push(TEFDD[{ indx, row-1, col-1 }]);
           }
           break;
-        case Tags::FCUML:
-          v1 = Stack.top();
-          Stack.pop();
-          v2 = Stack.top();
-          Stack.pop();
-          Stack.push(v1+v2);
-          break;
         case Tags::FENDBLOCK:
           //it's the block end
 #ifdef DEBUG
