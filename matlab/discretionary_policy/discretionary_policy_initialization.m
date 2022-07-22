@@ -41,7 +41,7 @@ if isfield(M_,'orig_model')
     M_.maximum_endo_lag = M_.orig_model.maximum_endo_lag;
 end
 
-instr_nbr=M_.orig_endo_nbr-M_.orig_eq_nbr;
+instr_nbr=M_.endo_nbr-M_.eq_nbr;
 
 if instr_nbr==0
     error('discretionary_policy:: There are no available instruments, because the model has as many equations as variables.')
