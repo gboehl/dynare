@@ -189,6 +189,15 @@ if options.solve_algo == 0
     else
         options4fsolve.Display = 'off';
     end
+    %% This one comes last, so that the user can override Dynare
+    if ~isempty(options.fsolve_options)
+        if isoctave
+            eval(['options4fsolve = optimset(options4fsolve,' options.fsolve_options ');']);
+        else
+            eval(['options4fsolve = optimoptions(options4fsolve,' options.fsolve_options ');']);
+        end
+    end
+
     if ~isoctave
         [x, fvec, errorcode, ~, fjac] = fsolve(f, x, options4fsolve, args{:});
     else

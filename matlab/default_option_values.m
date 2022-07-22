@@ -107,9 +107,12 @@ options_.bvar_prior_flat = false;
 options_.bvar_prior_train = 0;
 options_.bvar.conf_sig = 0.6;
 
-% Initialize the field that will contain the optimization algorigthm's options declared in the
-% estimation command (if anny).
+% Initialize the field that will contain the optimization algorithm's options declared in the
+% estimation command (if any).
 options_.optim_opt = [];
+
+% Same for options to fsolve
+options_.fsolve_options = [];
 
 % Optimization algorithm [6] gmhmaxlik
 gmhmaxlik.iterations = 3;

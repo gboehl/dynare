@@ -3107,6 +3107,19 @@ Finding the steady state with Dynare nonlinear solver
        accurate solution (low ``markowitz`` values) and the one that preserves 
        maximum sparsity (high ``markowitz`` values). Default: 0.5.
 
+    .. option:: fsolve_options = (NAME, VALUE, ...)
+
+       A list of NAME and VALUE pairs. Can be used to set options for the
+       ``fsolve`` routine, which is selected when ``solve_algo = 0`` (this
+       option has no effect for other values of ``solve_algo``). For the list
+       of available name/value pairs, see the documentation of ``fsolve`` in
+       the MATLAB or Octave manual. Note that Dynare already uses the values of
+       the ``maxit``, ``tolf`` and ``tolx`` options of the ``steady`` command
+       for initializing the corresponding options passed to ``fsolve``, so you
+       should not need to override those. Also note that you should not try to
+       override the value of the ``Jacobian`` or ``SpecifyObjectiveGradient``
+       option.
+
     *Example*
 
     See :ref:`init-term-cond`.

@@ -182,6 +182,7 @@ MODFILES = \
 	steady_state/example1_trust_region.mod \
 	steady_state/example1_block_trust_region.mod \
 	steady_state/Gali_2015_chapter_6_4.mod \
+	steady_state/ramst_solve_algo_0.mod \
 	steady_state_operator/standard.mod \
 	steady_state_operator/use_dll.mod \
 	steady_state_operator/block.mod \
