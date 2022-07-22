@@ -194,14 +194,24 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
         end if
      end if
 
+     if (size(blocks(i)%col_indices) /= size(blocks(i)%row_indices)) then
+        ! Non-square block in DM decomposition
+        ! Before erroring out, check whether we are not already at the solution for this block
+        ! See also #1851
+        if (norm2(fvec(blocks(i)%row_indices)) < tolf) then
+           cycle
+        else
+           call mexErrMsgTxt("DYNARE_SOLVE (solve_algo=13|14): the Dulmage-Mendelsohn &
+                &decomposition returned a non-square block. This means that the &
+                &Jacobian is singular. You may want to try another value for solve_algo.")
+        end if
+     end if
+
      block
        real(real64), dimension(size(blocks(i)%col_indices)) :: x_block
        x_indices => blocks(i)%col_indices
        f_indices => blocks(i)%row_indices
        x_all => x
-       if (size(x_indices) /= size(f_indices)) then
-          call mexErrMsgTxt("Non-square block")
-       end if
        x_block = x(x_indices)
        call trust_region_solve(x_block, matlab_fcn, info, tolx, tolf, maxiter)
        x(x_indices) = x_block
