@@ -161,20 +161,33 @@ if options.solve_algo == 0
             error('You can''t use solve_algo=0 since you don''t have MATLAB''s Optimization Toolbox')
         end
     end
-    options4fsolve = optimset('fsolve');
-    options4fsolve.MaxFunEvals = 50000;
-    options4fsolve.MaxIter = maxit;
-    options4fsolve.TolFun = tolf;
-    options4fsolve.TolX = tolx;
-    if options.debug==1
+    if isoctave
+        options4fsolve = optimset('fsolve');
+    else
+        options4fsolve = optimoptions('fsolve');
+    end
+    if isoctave || matlab_ver_less_than('9.0') % Option names changed in MATLAB R2016a
+        options4fsolve.MaxFunEvals = 50000;
+        options4fsolve.MaxIter = maxit;
+        options4fsolve.TolFun = tolf;
+        options4fsolve.TolX = tolx;
+        if jacobian_flag
+            options4fsolve.Jacobian = 'on';
+        else
+            options4fsolve.Jacobian = 'off';
+        end
+    else
+        options4fsolve.MaxFunctionEvaluations = 50000;
+        options4fsolve.MaxIterations = maxit;
+        options4fsolve.FunctionTolerance = tolf;
+        options4fsolve.StepTolerance = tolx;
+        options4fsolve.SpecifyObjectiveGradient = jacobian_flag;
+    end
+    %% NB: The Display option is accepted but not honoured under Octave (as of version 7)
+    if options.debug
         options4fsolve.Display = 'final';
     else
         options4fsolve.Display = 'off';
-    end
-    if jacobian_flag
-        options4fsolve.Jacobian = 'on';
-    else
-        options4fsolve.Jacobian = 'off';
     end
     if ~isoctave
         [x, fvec, errorcode, ~, fjac] = fsolve(f, x, options4fsolve, args{:});
