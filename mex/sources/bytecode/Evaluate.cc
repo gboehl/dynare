@@ -118,6 +118,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
   EQN_block = block_num;
   stack<double> Stack;
   ExternalFunctionCallType call_type{ExternalFunctionCallType::levelWithoutDerivative};
+  it_code_type it_code_expr;
 
 #ifdef DEBUG
   mexPrintf("compute_block_time\n");
@@ -704,7 +705,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 }
               catch (FloatingPointExceptionHandling &fpeh)
                 {
-                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(evaluate, steady_state, size, block_num, it_, Per_u_).c_str());
+                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
                   go_on = false;
                 }
               Stack.push(tmp);
@@ -758,7 +759,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 }
               catch (FloatingPointExceptionHandling &fpeh)
                 {
-                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(evaluate, steady_state, size, block_num, it_, Per_u_).c_str());
+                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
                   go_on = false;
                 }
               Stack.push(tmp);
@@ -787,7 +788,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                   }
                 catch (FloatingPointExceptionHandling &fpeh)
                   {
-                    mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(evaluate, steady_state, size, block_num, it_, Per_u_).c_str());
+                    mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
                     go_on = false;
                   }
               }
@@ -849,7 +850,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 }
               catch (FloatingPointExceptionHandling &fpeh)
                 {
-                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(evaluate, steady_state, size, block_num, it_, Per_u_).c_str());
+                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
                   go_on = false;
                 }
               Stack.push(tmp);
@@ -865,7 +866,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 }
               catch (FloatingPointExceptionHandling &fpeh)
                 {
-                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(evaluate, steady_state, size, block_num, it_, Per_u_).c_str());
+                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
                   go_on = false;
                 }
               Stack.push(tmp);

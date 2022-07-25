@@ -532,7 +532,8 @@ Interpreter::print_a_block()
         }
       else
         {
-          string s = print_expression(it_code, false, size, block_num, steady_state, Per_u_, it_, it_code, false);
+          string s;
+          tie(s, it_code) = print_expression(it_code);
           if (s == "if (evaluate)" || s == "else")
             space = false;
           if (s.length() > 0)

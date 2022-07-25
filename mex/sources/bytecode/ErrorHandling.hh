@@ -165,35 +165,18 @@ extern "C" bool utIsInterruptPending();
 
 class ErrorMsg
 {
+protected:
+  ExpressionType EQN_type;
+  int EQN_equation, EQN_block, EQN_block_number, EQN_dvar1;
+  size_t endo_name_length; // Maximum length of endogenous names
+  vector<string> P_endo_names;
 private:
   bool is_load_variable_list;
-
-public:
-  double *y, *ya;
-  int y_size;
-  double *T;
-  int nb_row_x, col_x, col_y;
-  int y_kmin, y_kmax, periods;
-  double *x, *params;
-  double *u;
-  double *steady_y, *steady_x;
-  double *g2, *g1, *r, *res;
-  vector<s_plan> splan, spfplan;
-  vector<mxArray *> jacobian_block, jacobian_other_endo_block, jacobian_exo_block, jacobian_det_exo_block;
-  map<int, double> TEF;
-  map<pair<int, int>, double> TEFD;
-  map<tuple<int, int, int>, double> TEFDD;
-
-  ExpressionType EQN_type;
-  it_code_type it_code_expr;
-  size_t endo_name_length; // Maximum length of endogenous names
-  vector<string> P_endo_names, P_exo_names, P_param_names;
-  int EQN_equation, EQN_block, EQN_block_number;
-  int EQN_dvar1, EQN_dvar2, EQN_dvar3;
+  vector<string> P_exo_names, P_param_names;
   vector<tuple<string, SymbolType, unsigned int>> Variable_list;
 
-  inline
-  ErrorMsg()
+public:
+  ErrorMsg() : is_load_variable_list {false}
   {
     mxArray *M_ = mexGetVariable("global", "M_");
     if (!M_)
@@ -224,14 +207,14 @@ public:
     endo_name_length = 0;
     for (const auto &n : P_endo_names)
       endo_name_length = max(endo_name_length, n.size());
-
-    is_load_variable_list = false;
   }
 
+private:
   /* Given a string which possibly contains a floating-point exception
     (materialized by an operator between braces), returns a string spanning two
-    lines, the second line containing tildes (~) under the faulty operator. */
-  inline string
+    lines, the first line containing the original string without the braces,
+    the second line containing tildes (~) under the faulty operator. */
+  string
   add_underscore_to_fpe(const string &str)
   {
     string temp;
@@ -259,23 +242,22 @@ public:
     return temp;
   }
 
-  inline void
+  void
   load_variable_list()
   {
-    for (unsigned int variable_num = 0; variable_num < P_endo_names.size(); variable_num++)
+    if (exchange(is_load_variable_list, true))
+      return;
+    for (size_t variable_num {0}; variable_num < P_endo_names.size(); variable_num++)
       Variable_list.emplace_back(P_endo_names[variable_num], SymbolType::endogenous, variable_num);
-    for (unsigned int variable_num = 0; variable_num < P_exo_names.size(); variable_num++)
+    for (size_t variable_num {0}; variable_num < P_exo_names.size(); variable_num++)
       Variable_list.emplace_back(P_exo_names[variable_num], SymbolType::exogenous, variable_num);
   }
 
-  inline int
+public:
+  int
   get_ID(const string &variable_name, SymbolType *variable_type)
   {
-    if (!is_load_variable_list)
-      {
-        load_variable_list();
-        is_load_variable_list = true;
-      }
+    load_variable_list();
     size_t n = Variable_list.size();
     int i = 0;
     bool notfound = true;
@@ -292,7 +274,8 @@ public:
     return -1;
   }
 
-  inline string
+protected:
+  string
   get_variable(SymbolType variable_type, unsigned int variable_num) const
   {
     switch (variable_type)
@@ -325,8 +308,8 @@ public:
     exit(EXIT_FAILURE); // Silence GCC warning
   }
 
-  inline string
-  error_location(bool evaluate, bool steady_state, int size, int block_num, int it_, int Per_u_)
+  string
+  error_location(it_code_type expr_begin, it_code_type faulty_op, bool steady_state, int it_)
   {
     ostringstream Error_loc;
     if (!steady_state)
@@ -413,40 +396,33 @@ public:
         default:
           return ("???");
         }
-    it_code_type it_code_ret;
-    Error_loc << endl << add_underscore_to_fpe("      " + print_expression(it_code_expr, evaluate, size, block_num, steady_state, Per_u_, it_, it_code_ret, true));
+    auto [expr_str, it_code_ret] = print_expression(expr_begin, faulty_op);
+    Error_loc << endl << add_underscore_to_fpe("      " + expr_str);
     return Error_loc.str();
   }
 
-  inline string
-  print_expression(it_code_type it_code, bool evaluate, int size, int block_num, bool steady_state, int Per_u_, int it_, it_code_type &it_code_ret, bool compute) const
+  /* Prints a bytecode expression in human readable form.
+     If faulty_op is not default constructed, it should point to a tag withing
+     the expression that created a floating point exception, in which case the
+     corresponding mathematical operator will be printed within braces.
+     The second output argument points to the tag past the expression. */
+  pair<string, it_code_type>
+  print_expression(it_code_type expr_begin, it_code_type faulty_op = {}) const
   {
     int var, lag{0}, eq;
     UnaryOpcode op1;
     BinaryOpcode op2;
     TrinaryOpcode op3;
     stack<string> Stack;
-    stack<double> Stackf;
     ostringstream tmp_out, tmp_out2;
     string v1, v2, v3;
-    double v1f, v2f, v3f = 0.0;
     bool go_on = true;
     double ll;
     ExpressionType equation_type = ExpressionType::TemporaryTerm;
     size_t found;
-    double *jacob = nullptr, *jacob_other_endo = nullptr, *jacob_exo = nullptr, *jacob_exo_det = nullptr;
     ExternalFunctionCallType call_type{ExternalFunctionCallType::levelWithoutDerivative};
 
-    if (evaluate)
-      {
-        jacob = mxGetPr(jacobian_block[block_num]);
-        if (!steady_state)
-          {
-            jacob_other_endo = mxGetPr(jacobian_other_endo_block[block_num]);
-            jacob_exo = mxGetPr(jacobian_exo_block[block_num]);
-            jacob_exo_det = mxGetPr(jacobian_det_exo_block[block_num]);
-          }
-      }
+    it_code_type it_code {expr_begin};
 
     while (go_on)
       {
@@ -490,8 +466,6 @@ public:
               case SymbolType::parameter:
                 var = static_cast<FLDV_ *>(it_code->second)->get_pos();
                 Stack.push(get_variable(SymbolType::parameter, var));
-                if (compute)
-                  Stackf.push(params[var]);
                 break;
               case SymbolType::endogenous:
                 var = static_cast<FLDV_ *>(it_code->second)->get_pos();
@@ -504,13 +478,6 @@ public:
                 else
                   tmp_out << get_variable(SymbolType::endogenous, var);
                 Stack.push(tmp_out.str());
-                if (compute)
-                  {
-                    if (evaluate)
-                      Stackf.push(ya[(it_+lag)*y_size+var]);
-                    else
-                      Stackf.push(y[(it_+lag)*y_size+var]);
-                  }
                 break;
               case SymbolType::exogenous:
                 var = static_cast<FLDV_ *>(it_code->second)->get_pos();
@@ -521,8 +488,6 @@ public:
                 else
                   tmp_out << get_variable(SymbolType::exogenous, var);
                 Stack.push(tmp_out.str());
-                if (compute)
-                  Stackf.push(x[it_+lag+var*nb_row_x]);
                 break;
               case SymbolType::exogenousDet:
                 mexErrMsgTxt("FLDV: exogenous deterministic not supported");
@@ -541,30 +506,14 @@ public:
               case SymbolType::parameter:
                 var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
                 Stack.push(get_variable(SymbolType::parameter, var));
-                if (compute)
-                  Stackf.push(params[var]);
                 break;
               case SymbolType::endogenous:
                 var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
                 Stack.push(get_variable(SymbolType::endogenous, var));
-                if (compute)
-                  {
-                    if (it_code->first == Tags::FLDSV)
-                      {
-                        if (evaluate)
-                          Stackf.push(ya[var]);
-                        else
-                          Stackf.push(y[var]);
-                      }
-                    else
-                      Stackf.push(steady_y[var]);
-                  }
                 break;
               case SymbolType::exogenous:
                 var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
                 Stack.push(get_variable(SymbolType::exogenous, var));
-                if (compute)
-                  Stackf.push(x[var]);
                 break;
               case SymbolType::exogenousDet:
                 mexErrMsgTxt("FLDSV: exogenous deterministic not supported");
@@ -581,8 +530,6 @@ public:
             tmp_out.str("");
             tmp_out << "T" << var+1;
             Stack.push(tmp_out.str());
-            if (compute)
-              Stackf.push(T[var*(periods+y_kmin+y_kmax)+it_]);
             break;
           case Tags::FLDST:
             //load a temporary variable in the processor
@@ -590,8 +537,6 @@ public:
             tmp_out.str("");
             tmp_out << "T" << var+1;
             Stack.push(tmp_out.str());
-            if (compute)
-              Stackf.push(T[var]);
             break;
           case Tags::FLDU:
             //load u variable in the processor
@@ -599,9 +544,6 @@ public:
             tmp_out.str("");
             tmp_out << "u(" << var+1 << " + it_)";
             Stack.push(tmp_out.str());
-            var += Per_u_;
-            if (compute)
-              Stackf.push(u[var]);
             break;
           case Tags::FLDSU:
             //load u variable in the processor
@@ -609,24 +551,18 @@ public:
             tmp_out.str("");
             tmp_out << "u(" << var+1 << ")";
             Stack.push(tmp_out.str());
-            if (compute)
-              Stackf.push(u[var]);
             break;
           case Tags::FLDR:
             var = static_cast<FLDR_ *>(it_code->second)->get_pos();
             tmp_out.str("");
             tmp_out << "residual(" << var+1 << ")";
             Stack.push(tmp_out.str());
-            if (compute)
-              Stackf.push(r[var]);
             break;
           case Tags::FLDZ:
             //load 0 in the processor
             tmp_out.str("");
             tmp_out << 0;
             Stack.push(tmp_out.str());
-            if (compute)
-              Stackf.push(0.0);
             break;
           case Tags::FLDC:
             //load a numerical constant in the processor
@@ -634,8 +570,6 @@ public:
             tmp_out.str("");
             tmp_out << ll;
             Stack.push(tmp_out.str());
-            if (compute)
-              Stackf.push(ll);
             break;
           case Tags::FSTPV:
             //load a variable in the processor
@@ -649,11 +583,6 @@ public:
                 tmp_out.str("");
                 tmp_out << get_variable(SymbolType::parameter, var) << " = " << tmp_out2.str();
                 Stack.pop();
-                if (compute)
-                  {
-                    params[var] = Stackf.top();
-                    Stackf.pop();
-                  }
                 break;
               case SymbolType::endogenous:
                 var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
@@ -668,11 +597,6 @@ public:
                   tmp_out << "(" << lag << ")";
                 tmp_out << " = " << tmp_out2.str();
                 Stack.pop();
-                if (compute)
-                  {
-                    y[(it_+lag)*y_size+var] = Stackf.top();
-                    Stackf.pop();
-                  }
                 break;
               case SymbolType::exogenous:
                 var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
@@ -685,11 +609,6 @@ public:
                   tmp_out << "(" << lag << ")";
                 tmp_out << " = " << tmp_out2.str();
                 Stack.pop();
-                if (compute)
-                  {
-                    x[it_+lag+var*nb_row_x] = Stackf.top();
-                    Stackf.pop();
-                  }
                 break;
               case SymbolType::exogenousDet:
                 mexErrMsgTxt("FSTPV: exogenous deterministic not supported");
@@ -711,11 +630,6 @@ public:
                 tmp_out << get_variable(SymbolType::parameter, var);
                 tmp_out << " = " << tmp_out2.str();
                 Stack.pop();
-                if (compute)
-                  {
-                    params[var] = Stackf.top();
-                    Stackf.pop();
-                  }
                 break;
               case SymbolType::endogenous:
                 var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
@@ -725,11 +639,6 @@ public:
                 tmp_out << get_variable(SymbolType::endogenous, var);
                 tmp_out << " = " << tmp_out2.str();
                 Stack.pop();
-                if (compute)
-                  {
-                    y[var] = Stackf.top();
-                    Stackf.pop();
-                  }
                 break;
               case SymbolType::exogenous:
                 var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
@@ -739,11 +648,6 @@ public:
                 tmp_out << get_variable(SymbolType::exogenous, var);
                 tmp_out << " = " << tmp_out2.str();
                 Stack.pop();
-                if (compute)
-                  {
-                    x[var] = Stackf.top();
-                    Stackf.pop();
-                  }
                 break;
               case SymbolType::exogenousDet:
                 mexErrMsgTxt("FSTPSV: exogenous deterministic not supported");
@@ -759,11 +663,6 @@ public:
             tmp_out.str("");
             tmp_out << "T" << var+1 << " = " << Stack.top();
             Stack.pop();
-            if (compute)
-              {
-                T[var*(periods+y_kmin+y_kmax)+it_] = Stackf.top();
-                Stackf.pop();
-              }
             break;
           case Tags::FSTPST:
             go_on = false;
@@ -772,11 +671,6 @@ public:
             tmp_out.str("");
             tmp_out << "T" << var+1 << " = " << Stack.top();
             Stack.pop();
-            if (compute)
-              {
-                T[var] = Stackf.top();
-                Stackf.pop();
-              }
             break;
           case Tags::FSTPU:
             go_on = false;
@@ -784,13 +678,7 @@ public:
             var = static_cast<FSTPU_ *>(it_code->second)->get_pos();
             tmp_out.str("");
             tmp_out << "u(" << var+1 << " + it_) = " << Stack.top();
-            var += Per_u_;
             Stack.pop();
-            if (compute)
-              {
-                u[var] = Stackf.top();
-                Stackf.pop();
-              }
             break;
           case Tags::FSTPSU:
             go_on = false;
@@ -799,11 +687,6 @@ public:
             tmp_out.str("");
             tmp_out << "u(" << var+1 << ") = " << Stack.top();
             Stack.pop();
-            if (compute)
-              {
-                u[var] = Stackf.top();
-                Stackf.pop();
-              }
             break;
           case Tags::FSTPR:
             go_on = false;
@@ -812,11 +695,6 @@ public:
             tmp_out.str("");
             tmp_out << "residual(" << var+1 << ") = " << Stack.top();
             Stack.pop();
-            if (compute)
-              {
-                r[var] = Stackf.top();
-                Stackf.pop();
-              }
             break;
           case Tags::FSTPG:
             go_on = false;
@@ -825,11 +703,6 @@ public:
             tmp_out.str("");
             tmp_out << "g1[" << var+1 << "] = " << Stack.top();
             Stack.pop();
-            if (compute)
-              {
-                g1[var] = Stackf.top();
-                Stackf.pop();
-              }
             break;
           case Tags::FSTPG2:
             go_on = false;
@@ -837,57 +710,31 @@ public:
             eq = static_cast<FSTPG2_ *>(it_code->second)->get_row();
             var = static_cast<FSTPG2_ *>(it_code->second)->get_col();
             tmp_out.str("");
-            tmp_out << "/*jacob(" << eq << ", " << var << ")*/ jacob(" << eq+size*var+1 << ") = " << Stack.top();
+            tmp_out << "jacob(" << eq+1 << ", " << var+1 << ") = " << Stack.top();
             Stack.pop();
-            if (compute)
-              {
-                jacob[eq + size*var] = Stackf.top();
-                Stackf.pop();
-              }
             break;
           case Tags::FSTPG3:
             //store in derivative (g) variable from the processor
-            double r;
-            int pos_col;
             go_on = false;
-            if (compute)
-              {
-                r = Stackf.top();
-                Stackf.pop();
-              }
+            int pos_col;
             eq = static_cast<FSTPG3_ *>(it_code->second)->get_row();
             var = static_cast<FSTPG3_ *>(it_code->second)->get_col();
             lag = static_cast<FSTPG3_ *>(it_code->second)->get_lag();
             pos_col = static_cast<FSTPG3_ *>(it_code->second)->get_col_pos();
+            tmp_out.str("");
             switch (equation_type)
               {
               case ExpressionType::FirstEndoDerivative:
-                if (compute)
-                  jacob[eq + size*pos_col] = r;
-                tmp_out.str("");
-                tmp_out << "/*jacob(" << eq << ", " << pos_col << " var= " << var << ")*/ jacob(" << eq+size*pos_col+1 << ") = " << Stack.top();
-                Stack.pop();
+                tmp_out << "jacob";
                 break;
               case ExpressionType::FirstOtherEndoDerivative:
-                if (compute)
-                  jacob_other_endo[eq + size*pos_col] = r;
-                tmp_out.str("");
-                tmp_out << "jacob_other_endo(" << eq+size*pos_col+1 << ") = " << Stack.top();
-                Stack.pop();
+                tmp_out << "jacob_other_endo";
                 break;
               case ExpressionType::FirstExoDerivative:
-                if (compute)
-                  jacob_exo[eq + size*pos_col] = r;
-                tmp_out.str("");
-                tmp_out << "/*jacob_exo(" << eq << ", " << pos_col << " var=" << var << ")*/ jacob_exo(" << eq+size*pos_col+1 << ") = " << Stack.top();
-                Stack.pop();
+                tmp_out << "jacob_exo";
                 break;
               case ExpressionType::FirstExodetDerivative:
-                if (compute)
-                  jacob_exo_det[eq + size*pos_col] = r;
-                tmp_out.str("");
-                tmp_out << "/*jacob_exo_det(" << eq << ", " << pos_col << " var=" << var << ")*/ jacob_exo_det(" << eq+size*pos_col+1 << ") = " << Stack.top();
-                Stack.pop();
+                tmp_out << "jacob_exo_det";
                 break;
               default:
                 ostringstream tmp;
@@ -895,6 +742,8 @@ public:
                 //throw FatalExceptionHandling(tmp.str());
                 mexPrintf("%s", tmp.str().c_str());
               }
+            tmp_out << "(" << eq+1 << ", " << pos_col+1 << " [var=" << var+1 << ", lag=" << lag << "]) = " << Stack.top();
+            Stack.pop();
             break;
           case Tags::FBINARY:
             op2 = static_cast<FBINARY_ *>(it_code->second)->get_op_type();
@@ -902,25 +751,14 @@ public:
             Stack.pop();
             v1 = Stack.top();
             Stack.pop();
-            if (compute)
-              {
-                v2f = Stackf.top();
-                Stackf.pop();
-                v1f = Stackf.top();
-                Stackf.pop();
-              }
             switch (op2)
               {
               case BinaryOpcode::plus:
-                if (compute)
-                  Stackf.push(v1f + v2f);
                 tmp_out.str("");
                 tmp_out << v1 << " + " << v2;
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::minus:
-                if (compute)
-                  Stackf.push(v1f - v2f);
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -938,8 +776,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::times:
-                if (compute)
-                  Stackf.push(v1f * v2f);
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -957,11 +793,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::divide:
-                if (compute)
-                  {
-                    r = v1f / v2f;
-                    Stackf.push(r);
-                  }
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -969,7 +800,7 @@ public:
                 tmp_out << v1;
                 if (found != string::npos)
                   tmp_out << ")";
-                if (compute && isinf(r))
+                if (it_code == faulty_op)
                   tmp_out << "{ / }";
                 else
                   tmp_out << " / ";
@@ -982,8 +813,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::less:
-                if (compute)
-                  Stackf.push(static_cast<double>(v1f < v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1001,8 +830,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::greater:
-                if (compute)
-                  Stackf.push(static_cast<double>(v1f > v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1020,8 +847,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::lessEqual:
-                if (compute)
-                  Stackf.push(static_cast<double>(v1f <= v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1039,8 +864,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::greaterEqual:
-                if (compute)
-                  Stackf.push(static_cast<double>(v1f >= v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1058,8 +881,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::equalEqual:
-                if (compute)
-                  Stackf.push(static_cast<double>(v1f == v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1077,8 +898,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::different:
-                if (compute)
-                  Stackf.push(static_cast<double>(v1f != v2f));
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1096,11 +915,6 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::power:
-                if (compute)
-                  {
-                    r = pow(v1f, v2f);
-                    Stackf.push(r);
-                  }
                 tmp_out.str("");
                 found = v1.find(" ");
                 if (found != string::npos)
@@ -1108,7 +922,7 @@ public:
                 tmp_out << v1;
                 if (found != string::npos)
                   tmp_out << ")";
-                if (compute && isnan(r))
+                if (it_code == faulty_op)
                   tmp_out << "{ ^ }";
                 else
                   tmp_out << " ^ ";
@@ -1124,28 +938,8 @@ public:
                 {
                   v3 = Stack.top();
                   Stack.pop();
-                  if (compute)
-                    {
-                      int derivOrder = static_cast<int>(nearbyint(Stackf.top()));
-                      Stackf.pop();
-                      if (fabs(v1f) < power_deriv_near_zero && v2f > 0
-                          && derivOrder > v2f
-                          && fabs(v2f-nearbyint(v2f)) < power_deriv_near_zero)
-                        {
-                          r = 0.0;
-                          Stackf.push(r);
-                        }
-                      else
-                        {
-                          double dxp = pow(v1f, v2f-derivOrder);
-                          for (int i = 0; i < derivOrder; i++)
-                            dxp *= v2f--;
-                          Stackf.push(dxp);
-                          r = dxp;
-                        }
-                    }
                   tmp_out.str("");
-                  if (compute && isnan(r))
+                  if (it_code == faulty_op)
                     tmp_out << "{PowerDeriv}";
                   else
                     tmp_out << "PowerDeriv";
@@ -1154,15 +948,11 @@ public:
                 }
                 break;
               case BinaryOpcode::max:
-                if (compute)
-                  Stackf.push(max(v1f, v2f));
                 tmp_out.str("");
                 tmp_out << "max(" << v1 << ", " << v2 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case BinaryOpcode::min:
-                if (compute)
-                  Stackf.push(min(v1f, v2f));
                 tmp_out.str("");
                 tmp_out << "min(" << v1 << ", " << v2 << ")";
                 Stack.push(tmp_out.str());
@@ -1177,35 +967,21 @@ public:
             op1 = static_cast<FUNARY_ *>(it_code->second)->get_op_type();
             v1 = Stack.top();
             Stack.pop();
-            if (compute)
-              {
-                v1f = Stackf.top();
-                Stackf.pop();
-              }
             switch (op1)
               {
               case UnaryOpcode::uminus:
-                if (compute)
-                  Stackf.push(-v1f);
                 tmp_out.str("");
                 tmp_out << " -" << v1;
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::exp:
-                if (compute)
-                  Stackf.push(exp(v1f));
                 tmp_out.str("");
                 tmp_out << "exp(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::log:
-                if (compute)
-                  {
-                    r = log(v1f);
-                    Stackf.push(r);
-                  }
                 tmp_out.str("");
-                if (compute && isnan(r))
+                if (it_code == faulty_op)
                   tmp_out << "{log}";
                 else
                   tmp_out << "log";
@@ -1213,13 +989,8 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::log10:
-                if (compute)
-                  {
-                    r = log10(v1f);
-                    Stackf.push(r);
-                  }
                 tmp_out.str("");
-                if (compute && isnan(r))
+                if (it_code == faulty_op)
                   tmp_out << "{log10}";
                 else
                   tmp_out << "log10";
@@ -1227,106 +998,76 @@ public:
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::cos:
-                if (compute)
-                  Stackf.push(cos(v1f));
                 tmp_out.str("");
                 tmp_out << "cos(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::sin:
-                if (compute)
-                  Stackf.push(sin(v1f));
                 tmp_out.str("");
                 tmp_out << "sin(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::tan:
-                if (compute)
-                  Stackf.push(tan(v1f));
                 tmp_out.str("");
                 tmp_out << "tan(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::acos:
-                if (compute)
-                  Stackf.push(acos(v1f));
                 tmp_out.str("");
                 tmp_out << "acos(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::asin:
-                if (compute)
-                  Stackf.push(asin(v1f));
                 tmp_out.str("");
                 tmp_out << "asin(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::atan:
-                if (compute)
-                  Stackf.push(atan(v1f));
                 tmp_out.str("");
                 tmp_out << "atan(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::cosh:
-                if (compute)
-                  Stackf.push(cosh(v1f));
                 tmp_out.str("");
                 tmp_out << "cosh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::sinh:
-                if (compute)
-                  Stackf.push(sinh(v1f));
                 tmp_out.str("");
                 tmp_out << "sinh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::tanh:
-                if (compute)
-                  Stackf.push(tanh(v1f));
                 tmp_out.str("");
                 tmp_out << "tanh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::acosh:
-                if (compute)
-                  Stackf.push(acosh(v1f));
                 tmp_out.str("");
                 tmp_out << "acosh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::asinh:
-                if (compute)
-                  Stackf.push(asinh(v1f));
                 tmp_out.str("");
                 tmp_out << "asinh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::atanh:
-                if (compute)
-                  Stackf.push(atanh(v1f));
                 tmp_out.str("");
                 tmp_out << "atanh(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::sqrt:
-                if (compute)
-                  Stackf.push(sqrt(v1f));
                 tmp_out.str("");
                 tmp_out << "sqrt(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::erf:
-                if (compute)
-                  Stackf.push(erf(v1f));
                 tmp_out.str("");
                 tmp_out << "erf(" << v1 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case UnaryOpcode::erfc:
-                if (compute)
-                  Stackf.push(erfc(v1f));
                 tmp_out.str("");
                 tmp_out << "erfc(" << v1 << ")";
                 Stack.push(tmp_out.str());
@@ -1344,27 +1085,14 @@ public:
             Stack.pop();
             v1 = Stack.top();
             Stack.pop();
-            if (compute)
-              {
-                v3f = Stackf.top();
-                Stackf.pop();
-                v2f = Stackf.top();
-                Stackf.pop();
-                v1f = Stackf.top();
-                Stackf.pop();
-              }
             switch (op3)
               {
               case TrinaryOpcode::normcdf:
-                if (compute)
-                  Stackf.push(0.5*(1+erf((v1f-v2f)/v3f/M_SQRT2)));
                 tmp_out.str("");
                 tmp_out << "normcdf(" << v1 << ", " << v2 << ", " << v3 << ")";
                 Stack.push(tmp_out.str());
                 break;
               case TrinaryOpcode::normpdf:
-                if (compute)
-                  Stackf.push(1/(v3f*sqrt(2*M_PI)*exp(pow((v1f-v2f)/v3f, 2)/2)));
                 tmp_out.str("");
                 tmp_out << "normpdf(" << v1 << ", " << v2 << ", " << v3 << ")";
                 Stack.push(tmp_out.str());
@@ -1378,32 +1106,16 @@ public:
               auto *fc = static_cast<FCALL_ *>(it_code->second);
               string function_name = fc->get_function_name();
               int nb_input_arguments{fc->get_nb_input_arguments()};
-              int nb_output_arguments{fc->get_nb_output_arguments()};
 
-              mxArray *output_arguments[3];
               string arg_func_name = fc->get_arg_func_name();
               int nb_add_input_arguments{fc->get_nb_add_input_arguments()};
               call_type = fc->get_call_type();
-              mxArray **input_arguments;
               switch (call_type)
                 {
                 case ExternalFunctionCallType::levelWithoutDerivative:
                 case ExternalFunctionCallType::levelWithFirstDerivative:
                 case ExternalFunctionCallType::levelWithFirstAndSecondDerivative:
                   {
-                    if (compute)
-                      {
-                        input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
-                        for (int i{0}; i < nb_input_arguments; i++)
-                          {
-                            mxArray *vv = mxCreateDoubleScalar(Stackf.top());
-                            input_arguments[nb_input_arguments - i - 1] = vv;
-                            Stackf.pop();
-                          }
-                        mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str());
-                        double *rr = mxGetPr(output_arguments[0]);
-                        Stackf.push(*rr);
-                      }
                     tmp_out.str("");
                     tmp_out << function_name << "(";
                     vector<string> ss(nb_input_arguments);
@@ -1424,26 +1136,6 @@ public:
                   break;
                 case ExternalFunctionCallType::numericalFirstDerivative:
                   {
-                    if (compute)
-                      {
-                        input_arguments = static_cast<mxArray **>(mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *)));
-                        mxArray *vv = mxCreateString(arg_func_name.c_str());
-                        input_arguments[0] = vv;
-                        vv = mxCreateDoubleScalar(fc->get_row());
-                        input_arguments[1] = vv;
-                        vv = mxCreateCellMatrix(1, nb_add_input_arguments);
-                        for (int i{0}; i < nb_add_input_arguments; i++)
-                          {
-                            double rr = Stackf.top();
-                            mxSetCell(vv, nb_add_input_arguments - (i+1), mxCreateDoubleScalar(rr));
-                            Stackf.pop();
-                          }
-                        input_arguments[nb_input_arguments+nb_add_input_arguments] = vv;
-                        nb_input_arguments = 3;
-                        mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str());
-                        double *rr = mxGetPr(output_arguments[0]);
-                        Stackf.push(*rr);
-                      }
                     tmp_out.str("");
                     tmp_out << function_name << "(";
                     tmp_out << arg_func_name.c_str() << ", " << fc->get_row() << ", {";
@@ -1465,17 +1157,6 @@ public:
                   break;
                 case ExternalFunctionCallType::separatelyProvidedFirstDerivative:
                   {
-                    if (compute)
-                      {
-                        input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
-                        for (int i{0}; i < nb_input_arguments; i++)
-                          {
-                            mxArray *vv = mxCreateDoubleScalar(Stackf.top());
-                            input_arguments[(nb_input_arguments - 1) - i] = vv;
-                            Stackf.pop();
-                          }
-                        mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str());
-                      }
                     tmp_out.str("");
                     tmp_out << function_name << "(";
                     vector<string> ss(nb_input_arguments);
@@ -1496,28 +1177,6 @@ public:
                   break;
                 case ExternalFunctionCallType::numericalSecondDerivative:
                   {
-                    if (compute)
-                      {
-                        input_arguments = static_cast<mxArray **>(mxMalloc((nb_input_arguments+1+nb_add_input_arguments) * sizeof(mxArray *)));
-                        mxArray *vv = mxCreateString(arg_func_name.c_str());
-                        input_arguments[0] = vv;
-                        vv = mxCreateDoubleScalar(fc->get_row());
-                        input_arguments[1] = vv;
-                        vv = mxCreateDoubleScalar(fc->get_col());
-                        input_arguments[2] = vv;
-                        vv = mxCreateCellMatrix(1, nb_add_input_arguments);
-                        for (int i{0}; i < nb_add_input_arguments; i++)
-                          {
-                            double rr = Stackf.top();
-                            mxSetCell(vv, (nb_add_input_arguments - 1) - i, mxCreateDoubleScalar(rr));
-                            Stackf.pop();
-                          }
-                        input_arguments[nb_input_arguments+nb_add_input_arguments] = vv;
-                        nb_input_arguments = 3;
-                        mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str());
-                        double *rr = mxGetPr(output_arguments[0]);
-                        Stackf.push(*rr);
-                      }
                     tmp_out.str("");
                     tmp_out << function_name << "(";
                     tmp_out << arg_func_name.c_str() << ", " << fc->get_row() << ", " << fc->get_col() << ", {";
@@ -1539,17 +1198,6 @@ public:
                   break;
                 case ExternalFunctionCallType::separatelyProvidedSecondDerivative:
                   {
-                    if (compute)
-                      {
-                        input_arguments = static_cast<mxArray **>(mxMalloc(nb_input_arguments * sizeof(mxArray *)));
-                        for (int i{0}; i < nb_input_arguments; i++)
-                          {
-                            mxArray *vv = mxCreateDoubleScalar(Stackf.top());
-                            input_arguments[i] = vv;
-                            Stackf.pop();
-                          }
-                        mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str());
-                      }
                     tmp_out.str("");
                     tmp_out << function_name << "(";
                     vector<string> ss(nb_input_arguments);
@@ -1574,10 +1222,6 @@ public:
           case Tags::FSTPTEF:
             go_on = false;
             var = static_cast<FSTPTEF_ *>(it_code->second)->get_number();
-            if (compute)
-              {
-                Stackf.pop();
-              }
             tmp_out.str("");
             switch (call_type)
               {
@@ -1597,11 +1241,6 @@ public:
             break;
           case Tags::FLDTEF:
             var = static_cast<FLDTEF_ *>(it_code->second)->get_number();
-            if (compute)
-              {
-                auto it = TEF.find(var-1);
-                Stackf.push(it->second);
-              }
             tmp_out.str("");
             tmp_out << "TEF(" << var << ")";
             Stack.push(tmp_out.str());
@@ -1612,10 +1251,6 @@ public:
               go_on = false;
               int indx{static_cast<FSTPTEFD_ *>(it_code->second)->get_indx()};
               int row{static_cast<FSTPTEFD_ *>(it_code->second)->get_row()};
-              if (compute)
-                {
-                  Stackf.pop();
-                }
               tmp_out.str("");
               if (call_type == ExternalFunctionCallType::numericalFirstDerivative)
                 tmp_out << "TEFD(" << indx << ", " << row << ") = " << Stack.top();
@@ -1628,11 +1263,6 @@ public:
             {
               int indx{static_cast<FLDTEFD_ *>(it_code->second)->get_indx()};
               int row{static_cast<FLDTEFD_ *>(it_code->second)->get_row()};
-              if (compute)
-                {
-                  auto it = TEFD.find({ indx, row-1 });
-                  Stackf.push(it->second);
-                }
               tmp_out.str("");
               tmp_out << "TEFD(" << indx << ", " << row << ")";
               Stack.push(tmp_out.str());
@@ -1644,10 +1274,6 @@ public:
               int indx{static_cast<FSTPTEFDD_ *>(it_code->second)->get_indx()};
               int row{static_cast<FSTPTEFDD_ *>(it_code->second)->get_row()};
               int col{static_cast<FSTPTEFDD_ *>(it_code->second)->get_col()};
-              if (compute)
-                {
-                  Stackf.pop();
-                }
               tmp_out.str("");
               if (call_type == ExternalFunctionCallType::numericalSecondDerivative)
                 tmp_out << "TEFDD(" << indx << ", " << row << ", " << col << ") = " << Stack.top();
@@ -1662,11 +1288,6 @@ public:
               int indx{static_cast<FLDTEFDD_ *>(it_code->second)->get_indx()};
               int row{static_cast<FLDTEFDD_ *>(it_code->second)->get_row()};
               int col{static_cast<FSTPTEFDD_ *>(it_code->second)->get_col()};
-              if (compute)
-                {
-                  auto it = TEFDD.find({ indx, row-1, col-1 });
-                  Stackf.push(it->second);
-                }
               tmp_out.str("");
               tmp_out << "TEFDD(" << indx << ", " << row << ", " << col << ")";
               Stack.push(tmp_out.str());
@@ -1695,11 +1316,11 @@ public:
           }
         it_code++;
       }
-    it_code_ret = it_code;
-    return tmp_out.str();
+    return { tmp_out.str(), it_code };
   }
-
-  static inline void
+  
+public:
+  static void
   test_mxMalloc(void *z, int line, const string &file, const string &func, int amount)
   {
     if (!z && amount > 0)

@@ -33,7 +33,21 @@ class Evaluate : public ErrorMsg
 {
 private:
   int EQN_lag1, EQN_lag2, EQN_lag3;
+  map<int, double> TEF;
+  map<pair<int, int>, double> TEFD;
+  map<tuple<int, int, int>, double> TEFDD;
+
 protected:
+  double *y, *ya;
+  int y_size;
+  double *T;
+  int nb_row_x, col_x, col_y;
+  int y_kmin, y_kmax, periods;
+  double *x, *params;
+  double *u;
+  double *steady_y, *steady_x;
+  double *g1, *r, *res;
+  vector<mxArray *> jacobian_block, jacobian_other_endo_block, jacobian_exo_block, jacobian_det_exo_block;
   mxArray *GlobalTemporaryTerms;
   it_code_type start_code, end_code;
   double pow1(double a, double b);
