@@ -32,7 +32,6 @@
 class Evaluate : public ErrorMsg
 {
 private:
-  unsigned int EQN_dvar1, EQN_dvar2, EQN_dvar3;
   int EQN_lag1, EQN_lag2, EQN_lag3;
 protected:
   mxArray *GlobalTemporaryTerms;
