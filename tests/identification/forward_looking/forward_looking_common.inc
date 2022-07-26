@@ -1,7 +1,7 @@
 % Forward-looking example model from Koop, Pesaran, Smith (2013, JBES)
 % created by Willi Mutschler (@wmutschl, willi@mutschler.eu)
 % =========================================================================
-% Copyright (C) 2020 Dynare Team
+% Copyright © 2020-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,53 +18,39 @@
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
-var r x p;
-varexo e_M e_D e_S;
-varobs r x p;
+var
+  r  ${r}$    (long_name='interest rate')
+  x  ${x}$    (long_name='output-gap')
+  p  ${\pi}$  (long_name='inflation')
+;
+varexo
+  e_M  ${\varepsilon^M}$  (long_name='monetary policy shock')
+  e_D  ${\varepsilon^D}$  (long_name='demand shock')
+  e_S  ${\varepsilon^S}$  (long_name='supply shock')
+;
+parameters
+  PSI    ${\psi}$    (long_name='inflation elasticity Taylor rule')
+  TAU    ${\tau}$    (long_name='intertemporal elasticity of subsitution')
+  BETA   ${\beta}$   (long_name='discount factor')
+  KAPPA  ${\kappa}$  (long_name='slope Phillips curve')
+;
 
-parameters PSI TAU BETA KAPPA;
-
-PSI=1.1;
-TAU=2;
-BETA=0.9;
-KAPPA=0.6;
+PSI = 1.1;
+TAU = 2;
+BETA = 0.9;
+KAPPA = 0.6;
 
 model;
+[name='Taylor rule']
 r = PSI*p + e_M;
+[name='New Keynesian IS curve']
 x = x(+1) - 1/TAU*(r-p(+1)) + e_D;
+[name='New Keynesian Phillips curve']
 p = BETA*p(+1) + KAPPA*x + e_S;
 end;
 
 shocks;
-var e_M = 1;
-var e_D = 1;
-var e_S = 1;
+  var e_M = 1;
+  var e_D = 1;
+  var e_S = 1;
 end;
-
-steady;
-check;
-
-estimated_params;
-PSI,   1.1;
-TAU,   2;
-BETA,  0.9;
-KAPPA, 0.6;
-end;
-
-identification; %this triggers sylvester3a with empty ghx
-
-% as a side note, we have the true solution:
-% [r;x;p] = TRUE_SOLUTION*[e_M;e_D;e_S] (ghx is empty)
-A = [1 0 -PSI; 1/TAU 1 0; 0 -KAPPA 1];
-TRUE_SOLUTION1 = inv(A);
-TRUE_SOLUTION2 = 1/(KAPPA*PSI/TAU +1)*[1         KAPPA*PSI PSI;
-                                      -1/TAU     1         -PSI/TAU;
-                                      -KAPPA/TAU KAPPA     1];
-% note that BETA drops out from the solution
-
-if max(max(abs(TRUE_SOLUTION1 - oo_.dr.ghu))) > 1e-15
-    error('Something wrong with perturbation');
-end
-if max(max(abs(TRUE_SOLUTION2 - oo_.dr.ghu))) > 1e-15
-    error('Something wrong with perturbation');
-end

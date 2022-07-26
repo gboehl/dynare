@@ -262,7 +262,8 @@ MODFILES = \
 	identification/rbc_ident/rbc_ident_std_as_structural_par.mod \
 	identification/rbc_ident/rbc_ident_varexo_only.mod \
 	identification/correlated_errors/fs2000_corr.mod \
-	identification/forward_looking/forward_looking.mod \
+	identification/forward_looking/forward_looking_empty_ghx.mod \
+    identification/forward_looking/forward_looking_varobs_x.mod \
 	simul/example1.mod \
 	simul/Solow_no_varexo.mod \
 	simul/simul_ZLB_purely_forward.mod \
@@ -1245,6 +1246,7 @@ EXTRA_DIST = \
 	kalman/likelihood_from_dynare/fs2000ns_model.inc \
 	kalman/likelihood_from_dynare/fs2000ns_estimation_check.inc \
 	identification/as2007/G_QT.mat \
+	identification/forward_looking/forward_looking_common.inc \
 	estimation/fsdat_simul.m \
 	estimation/heteroskedastic_shocks/fs2000_het_model.inc \
 	estimation/heteroskedastic_shocks/fs2000_het_check.inc \
