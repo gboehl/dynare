@@ -45,7 +45,7 @@ T = DM.decrulea;
 CONST = zeros(n_vars,1);
 R = DM.decruleb;
 
-if nargin<7
+if nargin<7 || isempty(init)
     init=zeros(n_vars,1);
 end
 
@@ -90,10 +90,46 @@ if T_max > 0
             dictionary.ss(1).R = temp(:,n_vars+1:n_vars+n_exo);
             dictionary.ss(1).C = temp(:,n_vars+n_exo+1:end);
         end
+        % we do not know what is the last binding regime between 10 01 and 11!\
+        ireg(T_max)=1;
+        icount = 1;
+    else
+        icount=length(dictionary.ss);
+        % check if last binding regime was already stored
+        tmp = 0*binding_indicator;
+        tmp(1:end-T_max+1,:) = binding_indicator(T_max:end,:);
+        if ~isoctave && ~matlab_ver_less_than('9.1') % Automatic broadcasting was introduced in MATLAB R2016b
+            itmp = find(~any(bsxfun(@minus, dictionary.binding_indicator(1:length(tmp)*2,:), tmp(:))));
+        else
+            itmp = find(~any(dictionary.binding_indicator(1:length(tmp)*2,:)-tmp(:)));
+        end
+        if ~isempty(itmp)
+            ireg(T_max) = itmp;
+        else
+            icount=icount+1;
+            ireg(T_max) = icount;
+            tmp = [binding_indicator(T_max,:); zeros(size(binding_indicator,1)-1,2)];
+            dictionary.binding_indicator(:,icount) = tmp(:);
+            if (binding_indicator(T_max,1) && ~binding_indicator(T_max,2))
+                temp = -(DM.Abarmat10*DM.decrulea+DM.Bbarmat10)\[DM.Cbarmat10 DM.Jbarmat10 DM.Dbarmat10];
+                dictionary.ss(icount).T = temp(:,1:n_vars);
+                dictionary.ss(icount).R = temp(:,n_vars+1:n_vars+n_exo);
+                dictionary.ss(icount).C = temp(:,n_vars+n_exo+1:end);
+            elseif (binding_indicator(T_max,1) && binding_indicator(T_max,2))
+                temp = -(DM.Abarmat11*DM.decrulea+DM.Bbarmat11)\[DM.Cbarmat11 DM.Jbarmat11 DM.Dbarmat11];
+                dictionary.ss(icount).T = temp(:,1:n_vars);
+                dictionary.ss(icount).R = temp(:,n_vars+1:n_vars+n_exo);
+                dictionary.ss(icount).C = temp(:,n_vars+n_exo+1:end);
+            else
+                temp = -(DM.Abarmat01*DM.decrulea+DM.Bbarmat01)\[DM.Cbarmat01 DM.Jbarmat01 DM.Dbarmat01];
+                dictionary.ss(icount).T = temp(:,1:n_vars);
+                dictionary.ss(icount).R = temp(:,n_vars+1:n_vars+n_exo);
+                dictionary.ss(icount).C = temp(:,n_vars+n_exo+1:end);
+            end
+        end
+
     end
-    ireg(T_max)=1;
     
-    icount=length(dictionary.ss);    
     
     for i = T_max-1:-1:1        
         tmp = 0*binding_indicator;
