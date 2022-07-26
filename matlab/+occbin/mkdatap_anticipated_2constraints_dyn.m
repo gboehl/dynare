@@ -98,7 +98,7 @@ if T_max > 0
         % check if last binding regime was already stored
         tmp = 0*binding_indicator;
         tmp(1:end-T_max+1,:) = binding_indicator(T_max:end,:);
-        if ~isoctave && ~matlab_ver_less_than('9.1') % Automatic broadcasting was introduced in MATLAB R2016b
+        if ~isoctave && matlab_ver_less_than('9.1') % Automatic broadcasting was introduced in MATLAB R2016b
             itmp = find(~any(bsxfun(@minus, dictionary.binding_indicator(1:length(tmp)*2,:), tmp(:))));
         else
             itmp = find(~any(dictionary.binding_indicator(1:length(tmp)*2,:)-tmp(:)));
