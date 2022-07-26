@@ -320,6 +320,13 @@ varobs yg inom pi;
             nodisplay,consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
     
     oo0=oo_;
+    // use smoother_redux
+    estimation(
+            datafile=dataobsfile2, mode_file=NKM_mh_mode_saved,
+            mode_compute=0, nobs=120, first_obs=1,
+            mh_replic=0, plot_priors=0, smoother, smoother_redux,
+            nodisplay,consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
+
     // use inversion filter (note that IF provides smoother together with likelihood)
     occbin_setup(likelihood_inversion_filter,smoother_inversion_filter);
             
