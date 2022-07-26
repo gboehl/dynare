@@ -588,7 +588,7 @@ end
 
 if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.pshape> 0) && options_.load_mh_file)) ...
     || ~options_.smoother ) && ~options_.partial_information  % to be fixed
-    %% ML estimation, or posterior mode without Metropolis-Hastings or Metropolis without Bayesian smoothes variables
+    %% ML estimation, or posterior mode without Metropolis-Hastings or Metropolis without Bayesian smoothed variables
     if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
         [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, oo_, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
         updated_variables = atT*nan;
