@@ -478,8 +478,9 @@ else
         end
         
         if ~isempty(state_uncertainty)
+            mm=size(T,1);
             sstate_uncertainty=zeros(M_.endo_nbr,M_.endo_nbr,gend);
-            sstate_uncertainty(oo_.dr.restrict_var_list,oo_.dr.restrict_var_list,:)=state_uncertainty;
+            sstate_uncertainty(oo_.dr.restrict_var_list,oo_.dr.restrict_var_list,:)=state_uncertainty(1:mm,1:mm,:);
             state_uncertainty=sstate_uncertainty;
             clear sstate_uncertainty
         end
