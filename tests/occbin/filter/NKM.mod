@@ -317,7 +317,7 @@ varobs yg inom pi;
             datafile=dataobsfile2, mode_file=NKM_mh_mode_saved,
             mode_compute=0, nobs=120, first_obs=1,
             mh_replic=0, plot_priors=0, smoother,
-            nodisplay,consider_all_endogenous,heteroskedastic_filter);
+            nodisplay,consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
     
     oo0=oo_;
     // use inversion filter (note that IF provides smoother together with likelihood)
@@ -327,7 +327,7 @@ varobs yg inom pi;
             datafile=dataobsfile2, mode_file=NKM_mh_mode_saved,
             mode_compute=0, nobs=120, first_obs=1,
             mh_replic=0, plot_priors=0, smoother,
-            nodisplay, consider_all_endogenous,heteroskedastic_filter);
+            nodisplay, consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
             
     // show initial condition effect of IF
     figure,

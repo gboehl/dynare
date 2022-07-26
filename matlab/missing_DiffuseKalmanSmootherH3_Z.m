@@ -341,6 +341,9 @@ while notsteady && t<smpl
             varargout{2} = [];
             varargout{3} = [];
             varargout{4} = [];
+            varargout{5} = [];
+            varargout{6} = [];
+            varargout{7} = [];
             return
         end
 
@@ -363,6 +366,7 @@ while notsteady && t<smpl
         P(:,:,t) = Px(:,:,1);
         P1(:,:,t) = P1x(:,:,2);
         P(:,:,t+1) = Px(:,:,2);
+        aK(1,:,t+1) = a1(:,t+1);
         for jnk=1:nk
             PK(jnk,:,:,t+jnk) = Px(:,:,1+jnk);
             aK(jnk,:,t+jnk) = ax(:,1+jnk);
@@ -455,14 +459,16 @@ while notsteady && t<smpl
                 end
                 PK(jnk,:,:,t+jnk) = Pf;
             end
-            if isoccbin && (t>=first_period_occbin_update || isinf(first_period_occbin_update))
-                if smoother_redux
-                    aK(jnk,:,t+jnk) = out.piecewise(jnk,oo_.dr.order_var(oo_.dr.restrict_var_list)) - out.ys(oo_.dr.order_var(oo_.dr.restrict_var_list))';
+            if jnk>1
+                if isoccbin && (t>=first_period_occbin_update || isinf(first_period_occbin_update))
+                    if smoother_redux
+                        aK(jnk,:,t+jnk) = out.piecewise(jnk,oo_.dr.order_var(oo_.dr.restrict_var_list)) - out.ys(oo_.dr.order_var(oo_.dr.restrict_var_list))';
+                    else
+                        aK(jnk,oo_.dr.inv_order_var,t+jnk) = out.piecewise(jnk,:) - out.ys';
+                    end
                 else
-                    aK(jnk,oo_.dr.inv_order_var,t+jnk) = out.piecewise(jnk,:) - out.ys';
+                    aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
                 end
-            elseif jnk>1
-                aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
             end
         end
     end

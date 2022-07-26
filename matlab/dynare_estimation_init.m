@@ -700,3 +700,18 @@ if options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_fil
         end
     end
 end
+
+if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
+    if ~isempty(options_.nk)
+        fprintf('dynare_estimation_init: the inversion filter does not support filter_step_ahead. Disabling the option.\n')        
+        options_.nk=[];
+    end
+    if options_.filter_covariance
+        fprintf('dynare_estimation_init: the inversion filter does not support filter_covariance. Disabling the option.\n')        
+        options_.filter_covariance=false;
+    end
+    if options_.smoothed_state_uncertainty
+        fprintf('dynare_estimation_init: the inversion filter does not support smoothed_state_uncertainty. Disabling the option.\n')        
+        options_.smoothed_state_uncertainty=false;
+    end
+end
