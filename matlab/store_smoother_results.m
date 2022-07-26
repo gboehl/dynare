@@ -72,6 +72,18 @@ function [oo_, yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,da
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+if nargin<15
+    PK=[];
+end
+if nargin<16
+    decomp=[];
+end
+gend=dataset_.nobs;
+if nargin<17
+    Trend=zeros(options_.number_of_observed_variables,gend);
+end
+
+
 %make sure there are no stale results
 field_names={'Smoother','SmoothedVariables','UpdatedVariables','FilteredVariables','FilteredVariablesKStepAhead','FilteredVariablesShockDecomposition','FilteredVariablesKStepAheadVariances','SmoothedShocks','SmoothedMeasurementErrors'};
 for field_iter=1:length(field_names)
@@ -86,10 +98,6 @@ else
     oo_.Smoother.occbin = false;
 end
 
-gend=dataset_.nobs;
-if nargin<16
-    Trend=zeros(options_.number_of_observed_variables,gend);
-end
 
 if options_.loglinear
     oo_.Smoother.loglinear = true;
