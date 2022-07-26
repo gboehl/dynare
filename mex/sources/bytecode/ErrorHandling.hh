@@ -29,6 +29,7 @@
 #include <sstream>
 #include <iostream>
 #include <stack>
+#include <optional>
 #define _USE_MATH_DEFINES
 #include <cmath>
 
@@ -407,7 +408,7 @@ protected:
      corresponding mathematical operator will be printed within braces.
      The second output argument points to the tag past the expression. */
   pair<string, it_code_type>
-  print_expression(it_code_type expr_begin, it_code_type faulty_op = {}) const
+  print_expression(const it_code_type &expr_begin, const optional<it_code_type> &faulty_op = nullopt) const
   {
     int var, lag{0}, eq;
     UnaryOpcode op1;
