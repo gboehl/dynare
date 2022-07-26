@@ -17,6 +17,10 @@ function disp_identification(pdraws, ide_reducedform, ide_moments, ide_spectrum,
 %                       (Komunjer and Ng, 2011).
 %   name:               [totparam_nbr by 1] string cell of parameter names
 %   options_ident:      [structure] identification options
+%   error_indicator     [structure] 
+%                       boolean information on errors (1 is an error, 0 is no error)
+%                       while computing the criteria
+
 % -------------------------------------------------------------------------
 % OUTPUTS
 %   * all output is printed on the command line
@@ -97,7 +101,7 @@ for jide = 1:4
         elseif options_ident.order == 3
             strMeaning = 'Jacobian of first-order minimal system and third-order accurate mean';
         end
-        if ~no_identification_minimal && ~(length(ide_minimal.minimal_state_space)==1 && ide_minimal.minimal_state_space==0)
+        if ~no_identification_minimal && ~(length(ide_minimal.minimal_state_space)==1 && ide_minimal.minimal_state_space==0) && isfield(ide_minimal,'dMINIMAL')
             noidentification = 0; ide = ide_minimal;
             if SampleSize == 1
                 Jacob = ide.dMINIMAL;
@@ -261,7 +265,7 @@ end
 
 
 %% Advanced identification patterns
-if SampleSize==1 && options_ident.advanced
+if SampleSize==1 && options_ident.advanced && ~isempty(fieldnames(ide_moments))
     skipline()
     for j=1:size(ide_moments.cosndMOMENTS,2)
         pax=NaN(totparam_nbr,totparam_nbr);
