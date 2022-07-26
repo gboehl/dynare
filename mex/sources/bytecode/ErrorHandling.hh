@@ -341,15 +341,15 @@ protected:
           break;
         case ExpressionType::FirstExoDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(SymbolType::exogenous, EQN_dvar1) << " at time " << it_;
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(SymbolType::exogenous, EQN_dvar1) << " at time " << it_;
           break;
         case ExpressionType::FirstExodetDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(SymbolType::exogenousDet, EQN_dvar1) << " at time " << it_;
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::exogenousDet, EQN_dvar1) << " at time " << it_;
           break;
         default:
           return "???";
@@ -383,15 +383,15 @@ protected:
           break;
         case ExpressionType::FirstExoDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(SymbolType::exogenous, EQN_dvar1);
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(SymbolType::exogenous, EQN_dvar1);
           break;
         case ExpressionType::FirstExodetDerivative:
           if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(SymbolType::exogenousDet, EQN_dvar1);
           else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
+            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::exogenousDet, EQN_dvar1);
           break;
         default:
           return ("???");
