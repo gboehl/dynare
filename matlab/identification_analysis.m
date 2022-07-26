@@ -29,6 +29,8 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 %                         0: prior does not exist. Identification is checked for all stderr and model parameters, but no corr parameters
 %    * init               [integer]
 %                         flag for initialization of persistent vars. This is needed if one may want to make more calls to identification in the same mod file
+%    * error_indicator    [structure] 
+%                         boolean information on errors (1 is an error, 0 is no error) while computing the criteria stored in fields identification_strength, identification_reducedform, identification_moments, identification_minimal, identification_spectrum
 % -------------------------------------------------------------------------
 % OUTPUTS
 %    * ide_moments        [structure]
@@ -209,7 +211,7 @@ if info(1) == 0 %no errors in solution
                 warning_MOMENTS = [warning_MOMENTS '         The number of moments with non-zero derivative is smaller than the number of parameters up to 10 lags.\n'];
                 warning_MOMENTS = [warning_MOMENTS '         Either reduce the list of parameters, or further increase ar, or increase number of observables.\n'];
                 warning_MOMENTS = [warning_MOMENTS '         Skip identification analysis based on moments.\n'];
-                warning_MOMENTS = [warning_MOMENTS '         Skip identification strenght analysis.\n'];
+                warning_MOMENTS = [warning_MOMENTS '         Skip identification strength analysis.\n'];
                 fprintf(warning_MOMENTS);
                 %set indicator to neither display nor plot dMOMENTS anymore
                 error_indicator.identification_moments = 1;
@@ -472,7 +474,11 @@ if info(1) == 0 %no errors in solution
 
         %here we focus on the unnormalized S and V, which is then used in plot_identification.m and for prior_mc > 1
         [~, S, V] = svd(dMOMENTS(ind_dMOMENTS,:),0);
-        S = diag(S);
+        if size(S,1) == 1
+            S = S(1); % edge case that S is not a matrix but a row vector
+        else
+            S = diag(S);
+        end
         S = [S;zeros(size(dMOMENTS,2)-length(ind_dMOMENTS),1)];
         if totparam_nbr > 8
             ide_moments.S = S([1:4, end-3:end]);
