@@ -42,8 +42,7 @@ using namespace std;
 
 constexpr int NO_ERROR_ON_EXIT = 0, ERROR_ON_EXIT = 1;
 
-using code_liste_type = vector<pair<Tags, void *>>;
-using it_code_type = code_liste_type::const_iterator;
+using it_code_type = instructions_list_t::const_iterator;
 
 class GeneralExceptionHandling
 {
@@ -431,10 +430,10 @@ protected:
         if (utIsInterruptPending())
           throw UserExceptionHandling();
 #endif
-        switch (it_code->first)
+        switch ((*it_code)->op_code)
           {
           case Tags::FNUMEXPR:
-            switch (static_cast<FNUMEXPR_ *>(it_code->second)->get_expression_type())
+            switch (static_cast<FNUMEXPR_ *>(*it_code)->get_expression_type())
               {
               case ExpressionType::TemporaryTerm:
                 equation_type = ExpressionType::TemporaryTerm;
@@ -456,21 +455,21 @@ protected:
                 break;
               default:
                 ostringstream tmp;
-                tmp << " in print_expression, expression type " << static_cast<int>(static_cast<FNUMEXPR_ *>(it_code->second)->get_expression_type()) << " not implemented yet\n";
+                tmp << " in print_expression, expression type " << static_cast<int>(static_cast<FNUMEXPR_ *>(*it_code)->get_expression_type()) << " not implemented yet\n";
                 throw FatalExceptionHandling(tmp.str());
               }
             break;
           case Tags::FLDV:
             //load a variable in the processor
-            switch (static_cast<FLDV_ *>(it_code->second)->get_type())
+            switch (static_cast<FLDV_ *>(*it_code)->get_type())
               {
               case SymbolType::parameter:
-                var = static_cast<FLDV_ *>(it_code->second)->get_pos();
+                var = static_cast<FLDV_ *>(*it_code)->get_pos();
                 Stack.push(get_variable(SymbolType::parameter, var));
                 break;
               case SymbolType::endogenous:
-                var = static_cast<FLDV_ *>(it_code->second)->get_pos();
-                lag = static_cast<FLDV_ *>(it_code->second)->get_lead_lag();
+                var = static_cast<FLDV_ *>(*it_code)->get_pos();
+                lag = static_cast<FLDV_ *>(*it_code)->get_lead_lag();
                 tmp_out.str("");
                 if (lag > 0)
                   tmp_out << get_variable(SymbolType::endogenous, var) << "(+" << lag << ")";
@@ -481,8 +480,8 @@ protected:
                 Stack.push(tmp_out.str());
                 break;
               case SymbolType::exogenous:
-                var = static_cast<FLDV_ *>(it_code->second)->get_pos();
-                lag = static_cast<FLDV_ *>(it_code->second)->get_lead_lag();
+                var = static_cast<FLDV_ *>(*it_code)->get_pos();
+                lag = static_cast<FLDV_ *>(*it_code)->get_lead_lag();
                 tmp_out.str("");
                 if (lag != 0)
                   tmp_out << get_variable(SymbolType::exogenous, var) << "(" << lag << ")";
@@ -502,18 +501,18 @@ protected:
           case Tags::FLDSV:
           case Tags::FLDVS:
             //load a variable in the processor
-            switch (static_cast<FLDSV_ *>(it_code->second)->get_type())
+            switch (static_cast<FLDSV_ *>(*it_code)->get_type())
               {
               case SymbolType::parameter:
-                var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
+                var = static_cast<FLDSV_ *>(*it_code)->get_pos();
                 Stack.push(get_variable(SymbolType::parameter, var));
                 break;
               case SymbolType::endogenous:
-                var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
+                var = static_cast<FLDSV_ *>(*it_code)->get_pos();
                 Stack.push(get_variable(SymbolType::endogenous, var));
                 break;
               case SymbolType::exogenous:
-                var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
+                var = static_cast<FLDSV_ *>(*it_code)->get_pos();
                 Stack.push(get_variable(SymbolType::exogenous, var));
                 break;
               case SymbolType::exogenousDet:
@@ -527,34 +526,34 @@ protected:
             break;
           case Tags::FLDT:
             //load a temporary variable in the processor
-            var = static_cast<FLDT_ *>(it_code->second)->get_pos();
+            var = static_cast<FLDT_ *>(*it_code)->get_pos();
             tmp_out.str("");
             tmp_out << "T" << var+1;
             Stack.push(tmp_out.str());
             break;
           case Tags::FLDST:
             //load a temporary variable in the processor
-            var = static_cast<FLDST_ *>(it_code->second)->get_pos();
+            var = static_cast<FLDST_ *>(*it_code)->get_pos();
             tmp_out.str("");
             tmp_out << "T" << var+1;
             Stack.push(tmp_out.str());
             break;
           case Tags::FLDU:
             //load u variable in the processor
-            var = static_cast<FLDU_ *>(it_code->second)->get_pos();
+            var = static_cast<FLDU_ *>(*it_code)->get_pos();
             tmp_out.str("");
             tmp_out << "u(" << var+1 << " + it_)";
             Stack.push(tmp_out.str());
             break;
           case Tags::FLDSU:
             //load u variable in the processor
-            var = static_cast<FLDSU_ *>(it_code->second)->get_pos();
+            var = static_cast<FLDSU_ *>(*it_code)->get_pos();
             tmp_out.str("");
             tmp_out << "u(" << var+1 << ")";
             Stack.push(tmp_out.str());
             break;
           case Tags::FLDR:
-            var = static_cast<FLDR_ *>(it_code->second)->get_pos();
+            var = static_cast<FLDR_ *>(*it_code)->get_pos();
             tmp_out.str("");
             tmp_out << "residual(" << var+1 << ")";
             Stack.push(tmp_out.str());
@@ -567,7 +566,7 @@ protected:
             break;
           case Tags::FLDC:
             //load a numerical constant in the processor
-            ll = static_cast<FLDC_ *>(it_code->second)->get_value();
+            ll = static_cast<FLDC_ *>(*it_code)->get_value();
             tmp_out.str("");
             tmp_out << ll;
             Stack.push(tmp_out.str());
@@ -575,10 +574,10 @@ protected:
           case Tags::FSTPV:
             //load a variable in the processor
             go_on = false;
-            switch (static_cast<FSTPV_ *>(it_code->second)->get_type())
+            switch (static_cast<FSTPV_ *>(*it_code)->get_type())
               {
               case SymbolType::parameter:
-                var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
+                var = static_cast<FSTPV_ *>(*it_code)->get_pos();
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -586,8 +585,8 @@ protected:
                 Stack.pop();
                 break;
               case SymbolType::endogenous:
-                var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
-                lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
+                var = static_cast<FSTPV_ *>(*it_code)->get_pos();
+                lag = static_cast<FSTPV_ *>(*it_code)->get_lead_lag();
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -600,8 +599,8 @@ protected:
                 Stack.pop();
                 break;
               case SymbolType::exogenous:
-                var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
-                lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
+                var = static_cast<FSTPV_ *>(*it_code)->get_pos();
+                lag = static_cast<FSTPV_ *>(*it_code)->get_lead_lag();
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -621,10 +620,10 @@ protected:
           case Tags::FSTPSV:
             go_on = false;
             //load a variable in the processor
-            switch (static_cast<FSTPSV_ *>(it_code->second)->get_type())
+            switch (static_cast<FSTPSV_ *>(*it_code)->get_type())
               {
               case SymbolType::parameter:
-                var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
+                var = static_cast<FSTPSV_ *>(*it_code)->get_pos();
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -633,7 +632,7 @@ protected:
                 Stack.pop();
                 break;
               case SymbolType::endogenous:
-                var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
+                var = static_cast<FSTPSV_ *>(*it_code)->get_pos();
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -642,7 +641,7 @@ protected:
                 Stack.pop();
                 break;
               case SymbolType::exogenous:
-                var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
+                var = static_cast<FSTPSV_ *>(*it_code)->get_pos();
                 tmp_out2.str("");
                 tmp_out2 << Stack.top();
                 tmp_out.str("");
@@ -660,7 +659,7 @@ protected:
           case Tags::FSTPT:
             go_on = false;
             //store in a temporary variable from the processor
-            var = static_cast<FSTPT_ *>(it_code->second)->get_pos();
+            var = static_cast<FSTPT_ *>(*it_code)->get_pos();
             tmp_out.str("");
             tmp_out << "T" << var+1 << " = " << Stack.top();
             Stack.pop();
@@ -668,7 +667,7 @@ protected:
           case Tags::FSTPST:
             go_on = false;
             //store in a temporary variable from the processor
-            var = static_cast<FSTPST_ *>(it_code->second)->get_pos();
+            var = static_cast<FSTPST_ *>(*it_code)->get_pos();
             tmp_out.str("");
             tmp_out << "T" << var+1 << " = " << Stack.top();
             Stack.pop();
@@ -676,7 +675,7 @@ protected:
           case Tags::FSTPU:
             go_on = false;
             //store in u variable from the processor
-            var = static_cast<FSTPU_ *>(it_code->second)->get_pos();
+            var = static_cast<FSTPU_ *>(*it_code)->get_pos();
             tmp_out.str("");
             tmp_out << "u(" << var+1 << " + it_) = " << Stack.top();
             Stack.pop();
@@ -684,7 +683,7 @@ protected:
           case Tags::FSTPSU:
             go_on = false;
             //store in u variable from the processor
-            var = static_cast<FSTPSU_ *>(it_code->second)->get_pos();
+            var = static_cast<FSTPSU_ *>(*it_code)->get_pos();
             tmp_out.str("");
             tmp_out << "u(" << var+1 << ") = " << Stack.top();
             Stack.pop();
@@ -692,7 +691,7 @@ protected:
           case Tags::FSTPR:
             go_on = false;
             //store in residual variable from the processor
-            var = static_cast<FSTPR_ *>(it_code->second)->get_pos();
+            var = static_cast<FSTPR_ *>(*it_code)->get_pos();
             tmp_out.str("");
             tmp_out << "residual(" << var+1 << ") = " << Stack.top();
             Stack.pop();
@@ -700,7 +699,7 @@ protected:
           case Tags::FSTPG:
             go_on = false;
             //store in derivative (g) variable from the processor
-            var = static_cast<FSTPG_ *>(it_code->second)->get_pos();
+            var = static_cast<FSTPG_ *>(*it_code)->get_pos();
             tmp_out.str("");
             tmp_out << "g1[" << var+1 << "] = " << Stack.top();
             Stack.pop();
@@ -708,8 +707,8 @@ protected:
           case Tags::FSTPG2:
             go_on = false;
             //store in derivative (g) variable from the processor
-            eq = static_cast<FSTPG2_ *>(it_code->second)->get_row();
-            var = static_cast<FSTPG2_ *>(it_code->second)->get_col();
+            eq = static_cast<FSTPG2_ *>(*it_code)->get_row();
+            var = static_cast<FSTPG2_ *>(*it_code)->get_col();
             tmp_out.str("");
             tmp_out << "jacob(" << eq+1 << ", " << var+1 << ") = " << Stack.top();
             Stack.pop();
@@ -718,10 +717,10 @@ protected:
             //store in derivative (g) variable from the processor
             go_on = false;
             int pos_col;
-            eq = static_cast<FSTPG3_ *>(it_code->second)->get_row();
-            var = static_cast<FSTPG3_ *>(it_code->second)->get_col();
-            lag = static_cast<FSTPG3_ *>(it_code->second)->get_lag();
-            pos_col = static_cast<FSTPG3_ *>(it_code->second)->get_col_pos();
+            eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
+            var = static_cast<FSTPG3_ *>(*it_code)->get_col();
+            lag = static_cast<FSTPG3_ *>(*it_code)->get_lag();
+            pos_col = static_cast<FSTPG3_ *>(*it_code)->get_col_pos();
             tmp_out.str("");
             switch (equation_type)
               {
@@ -747,7 +746,7 @@ protected:
             Stack.pop();
             break;
           case Tags::FBINARY:
-            op2 = static_cast<FBINARY_ *>(it_code->second)->get_op_type();
+            op2 = static_cast<FBINARY_ *>(*it_code)->get_op_type();
             v2 = Stack.top();
             Stack.pop();
             v1 = Stack.top();
@@ -965,7 +964,7 @@ protected:
               }
             break;
           case Tags::FUNARY:
-            op1 = static_cast<FUNARY_ *>(it_code->second)->get_op_type();
+            op1 = static_cast<FUNARY_ *>(*it_code)->get_op_type();
             v1 = Stack.top();
             Stack.pop();
             switch (op1)
@@ -1079,7 +1078,7 @@ protected:
               }
             break;
           case Tags::FTRINARY:
-            op3 = static_cast<FTRINARY_ *>(it_code->second)->get_op_type();
+            op3 = static_cast<FTRINARY_ *>(*it_code)->get_op_type();
             v3 = Stack.top();
             Stack.pop();
             v2 = Stack.top();
@@ -1104,7 +1103,7 @@ protected:
             break;
           case Tags::FCALL:
             {
-              auto *fc = static_cast<FCALL_ *>(it_code->second);
+              auto *fc = static_cast<FCALL_ *>(*it_code);
               string function_name = fc->get_function_name();
               int nb_input_arguments{fc->get_nb_input_arguments()};
 
@@ -1222,7 +1221,7 @@ protected:
             }
           case Tags::FSTPTEF:
             go_on = false;
-            var = static_cast<FSTPTEF_ *>(it_code->second)->get_number();
+            var = static_cast<FSTPTEF_ *>(*it_code)->get_number();
             tmp_out.str("");
             switch (call_type)
               {
@@ -1241,7 +1240,7 @@ protected:
             Stack.pop();
             break;
           case Tags::FLDTEF:
-            var = static_cast<FLDTEF_ *>(it_code->second)->get_number();
+            var = static_cast<FLDTEF_ *>(*it_code)->get_number();
             tmp_out.str("");
             tmp_out << "TEF(" << var << ")";
             Stack.push(tmp_out.str());
@@ -1250,8 +1249,8 @@ protected:
           case Tags::FSTPTEFD:
             {
               go_on = false;
-              int indx{static_cast<FSTPTEFD_ *>(it_code->second)->get_indx()};
-              int row{static_cast<FSTPTEFD_ *>(it_code->second)->get_row()};
+              int indx{static_cast<FSTPTEFD_ *>(*it_code)->get_indx()};
+              int row{static_cast<FSTPTEFD_ *>(*it_code)->get_row()};
               tmp_out.str("");
               if (call_type == ExternalFunctionCallType::numericalFirstDerivative)
                 tmp_out << "TEFD(" << indx << ", " << row << ") = " << Stack.top();
@@ -1262,8 +1261,8 @@ protected:
             break;
           case Tags::FLDTEFD:
             {
-              int indx{static_cast<FLDTEFD_ *>(it_code->second)->get_indx()};
-              int row{static_cast<FLDTEFD_ *>(it_code->second)->get_row()};
+              int indx{static_cast<FLDTEFD_ *>(*it_code)->get_indx()};
+              int row{static_cast<FLDTEFD_ *>(*it_code)->get_row()};
               tmp_out.str("");
               tmp_out << "TEFD(" << indx << ", " << row << ")";
               Stack.push(tmp_out.str());
@@ -1272,9 +1271,9 @@ protected:
           case Tags::FSTPTEFDD:
             {
               go_on = false;
-              int indx{static_cast<FSTPTEFDD_ *>(it_code->second)->get_indx()};
-              int row{static_cast<FSTPTEFDD_ *>(it_code->second)->get_row()};
-              int col{static_cast<FSTPTEFDD_ *>(it_code->second)->get_col()};
+              int indx{static_cast<FSTPTEFDD_ *>(*it_code)->get_indx()};
+              int row{static_cast<FSTPTEFDD_ *>(*it_code)->get_row()};
+              int col{static_cast<FSTPTEFDD_ *>(*it_code)->get_col()};
               tmp_out.str("");
               if (call_type == ExternalFunctionCallType::numericalSecondDerivative)
                 tmp_out << "TEFDD(" << indx << ", " << row << ", " << col << ") = " << Stack.top();
@@ -1286,9 +1285,9 @@ protected:
             break;
           case Tags::FLDTEFDD:
             {
-              int indx{static_cast<FLDTEFDD_ *>(it_code->second)->get_indx()};
-              int row{static_cast<FLDTEFDD_ *>(it_code->second)->get_row()};
-              int col{static_cast<FSTPTEFDD_ *>(it_code->second)->get_col()};
+              int indx{static_cast<FLDTEFDD_ *>(*it_code)->get_indx()};
+              int row{static_cast<FLDTEFDD_ *>(*it_code)->get_row()};
+              int col{static_cast<FSTPTEFDD_ *>(*it_code)->get_col()};
               tmp_out.str("");
               tmp_out << "TEFDD(" << indx << ", " << row << ", " << col << ")";
               Stack.push(tmp_out.str());
@@ -1309,9 +1308,9 @@ protected:
             go_on = false;
             break;
           default:
-            mexPrintf("Error it_code->first=%d unknown\n", it_code->first); mexEvalString("drawnow;");
+            mexPrintf("Error tag=%d unknown\n", (*it_code)->op_code); mexEvalString("drawnow;");
             throw FatalExceptionHandling(" in print_expression, unknown opcode "
-                                         + to_string(static_cast<int>(it_code->first))
+                                         + to_string(static_cast<int>((*it_code)->op_code))
                                          + "!! FENDEQU="
                                          + to_string(static_cast<int>(Tags::FENDEQU)) + "\n");
           }

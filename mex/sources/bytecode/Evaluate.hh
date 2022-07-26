@@ -58,7 +58,7 @@ protected:
   void solve_simple_one_periods();
   void solve_simple_over_periods(bool forward);
   void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
-  code_liste_type code_liste;
+  instructions_list_t code_liste;
   it_code_type it_code;
   int Block_Count, Per_u_, Per_y_;
   int it_;

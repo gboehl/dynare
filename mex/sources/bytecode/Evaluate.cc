@@ -140,21 +140,21 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 
   while (go_on)
     {
-      switch (it_code->first)
+      switch ((*it_code)->op_code)
         {
         case Tags::FNUMEXPR:
 #ifdef DEBUG
           mexPrintf("FNUMEXPR\n");
 #endif
           it_code_expr = it_code;
-          switch (static_cast<FNUMEXPR_ *>(it_code->second)->get_expression_type())
+          switch (static_cast<FNUMEXPR_ *>(*it_code)->get_expression_type())
             {
             case ExpressionType::TemporaryTerm:
 #ifdef DEBUG
               mexPrintf("TemporaryTerm\n");
 #endif
               EQN_type = ExpressionType::TemporaryTerm;
-              EQN_equation = static_cast<FNUMEXPR_ *>(it_code->second)->get_equation();
+              EQN_equation = static_cast<FNUMEXPR_ *>(*it_code)->get_equation();
 #ifdef DEBUG
               mexPrintf("EQN_equation=%d\n", EQN_equation); mexEvalString("drawnow;");
 #endif
@@ -164,52 +164,52 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               mexPrintf("ModelEquation\n");
 #endif
               EQN_type = ExpressionType::ModelEquation;
-              EQN_equation = static_cast<FNUMEXPR_ *>(it_code->second)->get_equation();
+              EQN_equation = static_cast<FNUMEXPR_ *>(*it_code)->get_equation();
               break;
             case ExpressionType::FirstEndoDerivative:
 #ifdef DEBUG
               mexPrintf("FirstEndoDerivative\n");
 #endif
               EQN_type = ExpressionType::FirstEndoDerivative;
-              EQN_equation = static_cast<FNUMEXPR_ *>(it_code->second)->get_equation();
-              EQN_dvar1 = static_cast<FNUMEXPR_ *>(it_code->second)->get_dvariable1();
-              EQN_lag1 = static_cast<FNUMEXPR_ *>(it_code->second)->get_lag1();
+              EQN_equation = static_cast<FNUMEXPR_ *>(*it_code)->get_equation();
+              EQN_dvar1 = static_cast<FNUMEXPR_ *>(*it_code)->get_dvariable1();
+              EQN_lag1 = static_cast<FNUMEXPR_ *>(*it_code)->get_lag1();
               break;
             case ExpressionType::FirstOtherEndoDerivative:
 #ifdef DEBUG
               mexPrintf("FirstOtherEndoDerivative\n");
 #endif
               EQN_type = ExpressionType::FirstOtherEndoDerivative;
-              EQN_equation = static_cast<FNUMEXPR_ *>(it_code->second)->get_equation();
-              EQN_dvar1 = static_cast<FNUMEXPR_ *>(it_code->second)->get_dvariable1();
-              EQN_lag1 = static_cast<FNUMEXPR_ *>(it_code->second)->get_lag1();
+              EQN_equation = static_cast<FNUMEXPR_ *>(*it_code)->get_equation();
+              EQN_dvar1 = static_cast<FNUMEXPR_ *>(*it_code)->get_dvariable1();
+              EQN_lag1 = static_cast<FNUMEXPR_ *>(*it_code)->get_lag1();
               break;
             case ExpressionType::FirstExoDerivative:
 #ifdef DEBUG
               mexPrintf("FirstExoDerivative\n");
 #endif
               EQN_type = ExpressionType::FirstExoDerivative;
-              EQN_equation = static_cast<FNUMEXPR_ *>(it_code->second)->get_equation();
-              EQN_dvar1 = static_cast<FNUMEXPR_ *>(it_code->second)->get_dvariable1();
-              EQN_lag1 = static_cast<FNUMEXPR_ *>(it_code->second)->get_lag1();
+              EQN_equation = static_cast<FNUMEXPR_ *>(*it_code)->get_equation();
+              EQN_dvar1 = static_cast<FNUMEXPR_ *>(*it_code)->get_dvariable1();
+              EQN_lag1 = static_cast<FNUMEXPR_ *>(*it_code)->get_lag1();
               break;
             case ExpressionType::FirstExodetDerivative:
 #ifdef DEBUG
               mexPrintf("FirstExodetDerivative\n");
 #endif
               EQN_type = ExpressionType::FirstExodetDerivative;
-              EQN_equation = static_cast<FNUMEXPR_ *>(it_code->second)->get_equation();
-              EQN_dvar1 = static_cast<FNUMEXPR_ *>(it_code->second)->get_dvariable1();
-              EQN_lag1 = static_cast<FNUMEXPR_ *>(it_code->second)->get_lag1();
+              EQN_equation = static_cast<FNUMEXPR_ *>(*it_code)->get_equation();
+              EQN_dvar1 = static_cast<FNUMEXPR_ *>(*it_code)->get_dvariable1();
+              EQN_lag1 = static_cast<FNUMEXPR_ *>(*it_code)->get_lag1();
               break;
             }
           break;
         case Tags::FLDV:
           //load a variable in the processor
-          switch (static_cast<FLDV_ *>(it_code->second)->get_type())
+          switch (static_cast<FLDV_ *>(*it_code)->get_type())
             {
             case SymbolType::parameter:
-              var = static_cast<FLDV_ *>(it_code->second)->get_pos();
+              var = static_cast<FLDV_ *>(*it_code)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDV Param[var=%d]\n", var);
               tmp_out << " params[" << var << "](" << params[var] << ")";
@@ -217,8 +217,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.push(params[var]);
               break;
             case SymbolType::endogenous:
-              var = static_cast<FLDV_ *>(it_code->second)->get_pos();
-              lag = static_cast<FLDV_ *>(it_code->second)->get_lead_lag();
+              var = static_cast<FLDV_ *>(*it_code)->get_pos();
+              lag = static_cast<FLDV_ *>(*it_code)->get_lead_lag();
 #ifdef DEBUG
               if (evaluate)
                 mexPrintf("FLDV y[var=%d, lag=%d, it_=%d], y_size=%d evaluate=%d, ya[%d]=%f\n", var, lag, it_, y_size, evaluate, (it_+lag)*y_size+var, ya[(it_+lag)*y_size+var]);
@@ -234,8 +234,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 #endif
               break;
             case SymbolType::exogenous:
-              var = static_cast<FLDV_ *>(it_code->second)->get_pos();
-              lag = static_cast<FLDV_ *>(it_code->second)->get_lead_lag();
+              var = static_cast<FLDV_ *>(*it_code)->get_pos();
+              lag = static_cast<FLDV_ *>(*it_code)->get_lead_lag();
 #ifdef DEBUG
               mexPrintf("FLDV x[var=%d, lag=%d, it_=%d], nb_row_x=%d evaluate=%d x[%d]=%f\n", var, lag, it_, nb_row_x, evaluate, it_+lag+var*nb_row_x, x[it_+lag+var*nb_row_x]);
               //tmp_out << " x[" << it_+lag << ", " << var << "](" << x[it_+lag+var*nb_row_x] << ")";
@@ -257,10 +257,10 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDSV:
           //load a variable in the processor
-          switch (static_cast<FLDSV_ *>(it_code->second)->get_type())
+          switch (static_cast<FLDSV_ *>(*it_code)->get_type())
             {
             case SymbolType::parameter:
-              var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
+              var = static_cast<FLDSV_ *>(*it_code)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDSV Param[var=%d]=%f\n", var, params[var]);
               tmp_out << " params[" << var << "](" << params[var] << ")";
@@ -268,7 +268,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.push(params[var]);
               break;
             case SymbolType::endogenous:
-              var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
+              var = static_cast<FLDSV_ *>(*it_code)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDSV y[var=%d]=%f\n", var, ya[var]);
               tmp_out << " y[" << var << "](" << y[var] << ")";
@@ -279,7 +279,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 Stack.push(y[var]);
               break;
             case SymbolType::exogenous:
-              var = static_cast<FLDSV_ *>(it_code->second)->get_pos();
+              var = static_cast<FLDSV_ *>(*it_code)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDSV x[var=%d]\n", var);
               tmp_out << " x[" << var << "](" << x[var] << ")";
@@ -301,24 +301,24 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDVS:
           //load a variable in the processor
-          switch (static_cast<FLDVS_ *>(it_code->second)->get_type())
+          switch (static_cast<FLDVS_ *>(*it_code)->get_type())
             {
             case SymbolType::parameter:
-              var = static_cast<FLDVS_ *>(it_code->second)->get_pos();
+              var = static_cast<FLDVS_ *>(*it_code)->get_pos();
 #ifdef DEBUG
               mexPrintf("params[%d]\n", var);
 #endif
               Stack.push(params[var]);
               break;
             case SymbolType::endogenous:
-              var = static_cast<FLDVS_ *>(it_code->second)->get_pos();
+              var = static_cast<FLDVS_ *>(*it_code)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDVS steady_y[%d]\n", var);
 #endif
               Stack.push(steady_y[var]);
               break;
             case SymbolType::exogenous:
-              var = static_cast<FLDVS_ *>(it_code->second)->get_pos();
+              var = static_cast<FLDVS_ *>(*it_code)->get_pos();
 #ifdef DEBUG
               mexPrintf("FLDVS x[%d] \n", var);
 #endif
@@ -339,7 +339,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDT:
           //load a temporary variable in the processor
-          var = static_cast<FLDT_ *>(it_code->second)->get_pos();
+          var = static_cast<FLDT_ *>(*it_code)->get_pos();
 #ifdef DEBUG
           mexPrintf("FLDT T[it_=%d var=%d, y_kmin=%d, y_kmax=%d == %d]=>%f\n", it_, var, y_kmin, y_kmax, var*(periods+y_kmin+y_kmax)+it_, T[var*(periods+y_kmin+y_kmax)+it_]);
           tmp_out << " T[" << it_ << ", " << var << "](" << T[var*(periods+y_kmin+y_kmax)+it_] << ")";
@@ -348,7 +348,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDST:
           //load a temporary variable in the processor
-          var = static_cast<FLDST_ *>(it_code->second)->get_pos();
+          var = static_cast<FLDST_ *>(*it_code)->get_pos();
 #ifdef DEBUG
           mexPrintf("FLDST T[%d]", var);
 #endif
@@ -360,7 +360,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDU:
           //load u variable in the processor
-          var = static_cast<FLDU_ *>(it_code->second)->get_pos();
+          var = static_cast<FLDU_ *>(*it_code)->get_pos();
           var += Per_u_;
 #ifdef DEBUG
           mexPrintf("FLDU u[%d]\n", var);
@@ -370,7 +370,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDSU:
           //load u variable in the processor
-          var = static_cast<FLDSU_ *>(it_code->second)->get_pos();
+          var = static_cast<FLDSU_ *>(*it_code)->get_pos();
 #ifdef DEBUG
           mexPrintf("FLDSU u[%d]\n", var);
           tmp_out << " u[" << var << "](" << u[var] << ")";
@@ -379,7 +379,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDR:
           //load u variable in the processor
-          var = static_cast<FLDR_ *>(it_code->second)->get_pos();
+          var = static_cast<FLDR_ *>(*it_code)->get_pos();
 #ifdef DEBUG
           mexPrintf("FLDR r[%d]\n", var);
 #endif
@@ -397,7 +397,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDC:
           //load a numerical constant in the processor
-          ll = static_cast<FLDC_ *>(it_code->second)->get_value();
+          ll = static_cast<FLDC_ *>(*it_code)->get_value();
 #ifdef DEBUG
           mexPrintf("FLDC = %f\n", ll);
           tmp_out << " " << ll;
@@ -407,10 +407,10 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FSTPV:
           //load a variable in the processor
-          switch (static_cast<FSTPV_ *>(it_code->second)->get_type())
+          switch (static_cast<FSTPV_ *>(*it_code)->get_type())
             {
             case SymbolType::parameter:
-              var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
+              var = static_cast<FSTPV_ *>(*it_code)->get_pos();
 #ifdef DEBUG
               mexPrintf("FSTPV params[%d]\n", var);
 #endif
@@ -418,8 +418,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.pop();
               break;
             case SymbolType::endogenous:
-              var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
-              lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
+              var = static_cast<FSTPV_ *>(*it_code)->get_pos();
+              lag = static_cast<FSTPV_ *>(*it_code)->get_lead_lag();
               y[(it_+lag)*y_size+var] = Stack.top();
 #ifdef DEBUG
               tmp_out << "=>";
@@ -429,8 +429,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.pop();
               break;
             case SymbolType::exogenous:
-              var = static_cast<FSTPV_ *>(it_code->second)->get_pos();
-              lag = static_cast<FSTPV_ *>(it_code->second)->get_lead_lag();
+              var = static_cast<FSTPV_ *>(*it_code)->get_pos();
+              lag = static_cast<FSTPV_ *>(*it_code)->get_lead_lag();
               x[it_+lag+var*nb_row_x] = Stack.top();
 #ifdef DEBUG
               tmp_out << "=>";
@@ -449,15 +449,15 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FSTPSV:
           //load a variable in the processor
-          switch (static_cast<FSTPSV_ *>(it_code->second)->get_type())
+          switch (static_cast<FSTPSV_ *>(*it_code)->get_type())
             {
             case SymbolType::parameter:
-              var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
+              var = static_cast<FSTPSV_ *>(*it_code)->get_pos();
               params[var] = Stack.top();
               Stack.pop();
               break;
             case SymbolType::endogenous:
-              var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
+              var = static_cast<FSTPSV_ *>(*it_code)->get_pos();
               y[var] = Stack.top();
 #ifdef DEBUG
               tmp_out << "=>";
@@ -467,7 +467,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.pop();
               break;
             case SymbolType::exogenous:
-              var = static_cast<FSTPSV_ *>(it_code->second)->get_pos();
+              var = static_cast<FSTPSV_ *>(*it_code)->get_pos();
               x[var] = Stack.top();
 #ifdef DEBUG
               tmp_out << "=>";
@@ -488,7 +488,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 #ifdef DEBUG
           mexPrintf("FSTPT\n");
 #endif
-          var = static_cast<FSTPT_ *>(it_code->second)->get_pos();
+          var = static_cast<FSTPT_ *>(*it_code)->get_pos();
           T[var*(periods+y_kmin+y_kmax)+it_] = Stack.top();
 #ifdef DEBUG
           tmp_out << "=>";
@@ -503,7 +503,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 #ifdef DEBUG
           mexPrintf("FSTPST\n");
 #endif
-          var = static_cast<FSTPST_ *>(it_code->second)->get_pos();
+          var = static_cast<FSTPST_ *>(*it_code)->get_pos();
 #ifdef DEBUG
           mexPrintf("var=%d\n", var);
 #endif
@@ -517,7 +517,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FSTPU:
           //store in u variable from the processor
-          var = static_cast<FSTPU_ *>(it_code->second)->get_pos();
+          var = static_cast<FSTPU_ *>(*it_code)->get_pos();
           var += Per_u_;
 #ifdef DEBUG
           mexPrintf("FSTPU\n");
@@ -533,7 +533,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FSTPSU:
           //store in u variable from the processor
-          var = static_cast<FSTPSU_ *>(it_code->second)->get_pos();
+          var = static_cast<FSTPSU_ *>(*it_code)->get_pos();
 #ifdef DEBUG
           /*if (var >= u_count_alloc || var < 0)
             mexPrintf("Erreur var=%d\n", var);*/
@@ -548,7 +548,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FSTPR:
           //store in residual variable from the processor
-          var = static_cast<FSTPR_ *>(it_code->second)->get_pos();
+          var = static_cast<FSTPR_ *>(*it_code)->get_pos();
 #ifdef DEBUG
           tmp_out << "=>";
           mexPrintf("FSTPR r[%d]", var);
@@ -568,7 +568,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           mexPrintf("FSTPG\n");
           mexEvalString("drawnow;");
 #endif
-          var = static_cast<FSTPG_ *>(it_code->second)->get_pos();
+          var = static_cast<FSTPG_ *>(*it_code)->get_pos();
           g1[var] = Stack.top();
 #ifdef DEBUG
           tmp_out << "=>";
@@ -583,8 +583,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           rr = Stack.top();
           if (EQN_type != ExpressionType::FirstEndoDerivative)
             throw FatalExceptionHandling(" in compute_block_time, impossible case " + to_string(static_cast<int>(EQN_type)) + " not implement in static jacobian\n");
-          eq = static_cast<FSTPG2_ *>(it_code->second)->get_row();
-          var = static_cast<FSTPG2_ *>(it_code->second)->get_col();
+          eq = static_cast<FSTPG2_ *>(*it_code)->get_row();
+          var = static_cast<FSTPG2_ *>(*it_code)->get_col();
 #ifdef DEBUG
           mexPrintf("FSTPG2 eq=%d, var=%d\n", eq, var);
           mexEvalString("drawnow;");
@@ -607,10 +607,10 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           switch (EQN_type)
             {
             case ExpressionType::FirstEndoDerivative:
-              eq = static_cast<FSTPG3_ *>(it_code->second)->get_row();
-              var = static_cast<FSTPG3_ *>(it_code->second)->get_col();
-              lag = static_cast<FSTPG3_ *>(it_code->second)->get_lag();
-              pos_col = static_cast<FSTPG3_ *>(it_code->second)->get_col_pos();
+              eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
+              var = static_cast<FSTPG3_ *>(*it_code)->get_col();
+              lag = static_cast<FSTPG3_ *>(*it_code)->get_lag();
+              pos_col = static_cast<FSTPG3_ *>(*it_code)->get_col_pos();
 #ifdef DEBUG
               mexPrintf("Endo eq=%d, pos_col=%d, size=%d, jacob=%x\n", eq, pos_col, size, jacob);
               mexPrintf("jacob=%x\n", jacob);
@@ -618,11 +618,11 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               jacob[eq + size*pos_col] = rr;
               break;
             case ExpressionType::FirstOtherEndoDerivative:
-              //eq = static_cast<FSTPG3_ *>(it_code->second)->get_row();
+              //eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
               eq = EQN_equation;
-              var = static_cast<FSTPG3_ *>(it_code->second)->get_col();
-              lag = static_cast<FSTPG3_ *>(it_code->second)->get_lag();
-              pos_col = static_cast<FSTPG3_ *>(it_code->second)->get_col_pos();
+              var = static_cast<FSTPG3_ *>(*it_code)->get_col();
+              lag = static_cast<FSTPG3_ *>(*it_code)->get_lag();
+              pos_col = static_cast<FSTPG3_ *>(*it_code)->get_col_pos();
 #ifdef DEBUG
               mexPrintf("other_endo eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);
               mexEvalString("drawnow;");
@@ -630,11 +630,11 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               jacob_other_endo[eq + size*pos_col] = rr;
               break;
             case ExpressionType::FirstExoDerivative:
-              //eq = static_cast<FSTPG3_ *>(it_code->second)->get_row();
+              //eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
               eq = EQN_equation;
-              var = static_cast<FSTPG3_ *>(it_code->second)->get_col();
-              lag = static_cast<FSTPG3_ *>(it_code->second)->get_lag();
-              pos_col = static_cast<FSTPG3_ *>(it_code->second)->get_col_pos();
+              var = static_cast<FSTPG3_ *>(*it_code)->get_col();
+              lag = static_cast<FSTPG3_ *>(*it_code)->get_lag();
+              pos_col = static_cast<FSTPG3_ *>(*it_code)->get_col_pos();
 #ifdef DEBUG
               mexPrintf("Exo eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);
               mexEvalString("drawnow;");
@@ -642,11 +642,11 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               jacob_exo[eq + size*pos_col] = rr;
               break;
             case ExpressionType::FirstExodetDerivative:
-              //eq = static_cast<FSTPG3_ *>(it_code->second)->get_row();
+              //eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
               eq = EQN_equation;
-              var = static_cast<FSTPG3_ *>(it_code->second)->get_col();
-              lag = static_cast<FSTPG3_ *>(it_code->second)->get_lag();
-              pos_col = static_cast<FSTPG3_ *>(it_code->second)->get_col_pos();
+              var = static_cast<FSTPG3_ *>(*it_code)->get_col();
+              lag = static_cast<FSTPG3_ *>(*it_code)->get_lag();
+              pos_col = static_cast<FSTPG3_ *>(*it_code)->get_col_pos();
 #ifdef DEBUG
               mexPrintf("Exo det eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);
               mexEvalString("drawnow;");
@@ -666,7 +666,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
 
         case Tags::FBINARY:
-          op2 = static_cast<FBINARY_ *>(it_code->second)->get_op_type();
+          op2 = static_cast<FBINARY_ *>(*it_code)->get_op_type();
 #ifdef DEBUG
           mexPrintf("FBINARY, op=%d\n", static_cast<int>(op2));
 #endif
@@ -821,7 +821,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             }
           break;
         case Tags::FUNARY:
-          op1 = static_cast<FUNARY_ *>(it_code->second)->get_op_type();
+          op1 = static_cast<FUNARY_ *>(*it_code)->get_op_type();
           v1 = Stack.top();
           Stack.pop();
 #ifdef DEBUG
@@ -974,7 +974,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             }
           break;
         case Tags::FTRINARY:
-          op3 = static_cast<FTRINARY_ *>(it_code->second)->get_op_type();
+          op3 = static_cast<FTRINARY_ *>(*it_code)->get_op_type();
           v3 = Stack.top();
           Stack.pop();
           v2 = Stack.top();
@@ -1009,7 +1009,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             mexPrintf("------------------------------\n");
             mexPrintf("CALL "); mexEvalString("drawnow;");
 #endif
-            auto *fc = static_cast<FCALL_ *>(it_code->second);
+            auto *fc = static_cast<FCALL_ *>(*it_code);
             string function_name = fc->get_function_name();
 #ifdef DEBUG
             mexPrintf("function_name=%s ", function_name.c_str()); mexEvalString("drawnow;");
@@ -1197,7 +1197,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           }
           break;
         case Tags::FSTPTEF:
-          var = static_cast<FSTPTEF_ *>(it_code->second)->get_number();
+          var = static_cast<FSTPTEF_ *>(*it_code)->get_number();
 #ifdef DEBUG
           mexPrintf("FSTPTEF\n");
           mexPrintf("var=%d Stack.size()=%d\n", var, Stack.size());
@@ -1210,7 +1210,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           Stack.pop();
           break;
         case Tags::FLDTEF:
-          var = static_cast<FLDTEF_ *>(it_code->second)->get_number();
+          var = static_cast<FLDTEF_ *>(*it_code)->get_number();
 #ifdef DEBUG
           mexPrintf("FLDTEF\n");
           mexPrintf("var=%d Stack.size()=%d\n", var, Stack.size());
@@ -1221,8 +1221,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FSTPTEFD:
           {
-            int indx{static_cast<FSTPTEFD_ *>(it_code->second)->get_indx()};
-            int row{static_cast<FSTPTEFD_ *>(it_code->second)->get_row()};
+            int indx{static_cast<FSTPTEFD_ *>(*it_code)->get_indx()};
+            int row{static_cast<FSTPTEFD_ *>(*it_code)->get_row()};
 #ifdef DEBUG
             mexPrintf("FSTPTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
@@ -1241,8 +1241,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDTEFD:
           {
-            int indx{static_cast<FLDTEFD_ *>(it_code->second)->get_indx()};
-            int row{static_cast<FLDTEFD_ *>(it_code->second)->get_row()};
+            int indx{static_cast<FLDTEFD_ *>(*it_code)->get_indx()};
+            int row{static_cast<FLDTEFD_ *>(*it_code)->get_row()};
 #ifdef DEBUG
             mexPrintf("FLDTEFD\n");
             mexPrintf("indx=%d row=%d Stack.size()=%d\n", indx, row, Stack.size());
@@ -1254,9 +1254,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FSTPTEFDD:
           {
-            int indx{static_cast<FSTPTEFDD_ *>(it_code->second)->get_indx()};
-            int row{static_cast<FSTPTEFDD_ *>(it_code->second)->get_row()};
-            int col{static_cast<FSTPTEFDD_ *>(it_code->second)->get_col()};
+            int indx{static_cast<FSTPTEFDD_ *>(*it_code)->get_indx()};
+            int row{static_cast<FSTPTEFDD_ *>(*it_code)->get_row()};
+            int col{static_cast<FSTPTEFDD_ *>(*it_code)->get_col()};
 #ifdef DEBUG
             mexPrintf("FSTPTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
@@ -1275,9 +1275,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           break;
         case Tags::FLDTEFDD:
           {
-            int indx{static_cast<FLDTEFDD_ *>(it_code->second)->get_indx()};
-            int row{static_cast<FLDTEFDD_ *>(it_code->second)->get_row()};
-            int col{static_cast<FSTPTEFDD_ *>(it_code->second)->get_col()};
+            int indx{static_cast<FLDTEFDD_ *>(*it_code)->get_indx()};
+            int row{static_cast<FLDTEFDD_ *>(*it_code)->get_row()};
+            int col{static_cast<FSTPTEFDD_ *>(*it_code)->get_col()};
 #ifdef DEBUG
             mexPrintf("FLDTEFD\n");
             mexPrintf("indx=%d Stack.size()=%d\n", indx, Stack.size());
@@ -1305,21 +1305,21 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           if (evaluate)
             {
 #ifdef DEBUG
-              mexPrintf("FJMPIFEVAL length=%d\n", static_cast<FJMPIFEVAL_ *>(it_code->second)->get_pos());
+              mexPrintf("FJMPIFEVAL length=%d\n", static_cast<FJMPIFEVAL_ *>(*it_code)->get_pos());
               mexEvalString("drawnow;");
 #endif
-              it_code += static_cast<FJMPIFEVAL_ *>(it_code->second)->get_pos() /* - 1*/;
+              it_code += static_cast<FJMPIFEVAL_ *>(*it_code)->get_pos() /* - 1*/;
             }
           break;
         case Tags::FJMP:
 #ifdef DEBUG
-          mexPrintf("FJMP length=%d\n", static_cast<FJMP_ *>(it_code->second)->get_pos());
+          mexPrintf("FJMP length=%d\n", static_cast<FJMP_ *>(*it_code)->get_pos());
           mexEvalString("drawnow;");
 #endif
-          it_code += static_cast<FJMP_ *>(it_code->second)->get_pos() /*- 1 */;
+          it_code += static_cast<FJMP_ *>(*it_code)->get_pos() /*- 1 */;
           break;
         default:
-          throw FatalExceptionHandling(" in compute_block_time, unknown opcode " + to_string(static_cast<int>(it_code->first)) + "\n");
+          throw FatalExceptionHandling(" in compute_block_time, unknown opcode " + to_string(static_cast<int>((*it_code)->op_code)) + "\n");
         }
       it_code++;
     }

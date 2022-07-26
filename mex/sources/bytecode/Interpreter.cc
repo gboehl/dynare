@@ -525,7 +525,7 @@ Interpreter::print_a_block()
   bool space = false;
   while (go_on)
     {
-      if (it_code->first == Tags::FENDBLOCK)
+      if ((*it_code)->op_code == Tags::FENDBLOCK)
         {
           go_on = false;
           it_code++;
@@ -619,7 +619,7 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
 
   while (go_on)
     {
-      switch (it_code->first)
+      switch ((*it_code)->op_code)
         {
         case Tags::FBEGINBLOCK:
           Block_Count++;
@@ -632,7 +632,7 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
 #endif
           //it's a new block
           {
-            auto *fb = static_cast<FBEGINBLOCK_ *>(it_code->second);
+            auto *fb = static_cast<FBEGINBLOCK_ *>(*it_code);
             Block_Contain = fb->get_Block_Contain();
             it_code++;
             if (constrained)
@@ -720,9 +720,9 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
           break;
         case Tags::FDIMT:
 #ifdef DEBUG
-          mexPrintf("FDIMT size=%d\n", static_cast<FDIMT_ *>(it_code->second)->get_size());
+          mexPrintf("FDIMT size=%d\n", static_cast<FDIMT_ *>(*it_code)->get_size());
 #endif
-          var = static_cast<FDIMT_ *>(it_code->second)->get_size();
+          var = static_cast<FDIMT_ *>(*it_code)->get_size();
           if (T)
             mxFree(T);
           T = static_cast<double *>(mxMalloc(var*(periods+y_kmin+y_kmax)*sizeof(double)));
@@ -734,9 +734,9 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
           break;
         case Tags::FDIMST:
 #ifdef DEBUG
-          mexPrintf("FDIMST size=%d\n", static_cast<FDIMST_ *>(it_code->second)->get_size());
+          mexPrintf("FDIMST size=%d\n", static_cast<FDIMST_ *>(*it_code)->get_size());
 #endif
-          var = static_cast<FDIMST_ *>(it_code->second)->get_size();
+          var = static_cast<FDIMST_ *>(*it_code)->get_size();
           if (T)
             mxFree(T);
           if (global_temporary_terms)
@@ -763,7 +763,7 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
           break;
         default:
           throw FatalExceptionHandling(" in compute_blocks, unknown command "
-                                       + to_string(static_cast<int>(it_code->first)) + " (block="
+                                       + to_string(static_cast<int>((*it_code)->op_code)) + " (block="
                                        + to_string(Block_Count) + ")\n");
         }
     }
@@ -908,8 +908,8 @@ Interpreter::extended_path(const string &file_name, const string &bin_basename, 
     y[i] = y_save[i];
   for (int j = 0; j < col_x * nb_row_x; j++)
     x[j] = x_save[j];
-  if (Init_Code->second)
-    mxFree(Init_Code->second);
+  if (*Init_Code)
+    mxFree(*Init_Code);
   if (y_save)
     mxFree(y_save);
   if (x_save)
@@ -934,7 +934,7 @@ Interpreter::compute_blocks(const string &file_name, const string &bin_basename,
 
   MainLoop(bin_basename, code, evaluate, block, true, false, s_plan_junk, vector_table_conditional_local_junk);
 
-  mxFree(Init_Code->second);
+  mxFree(*Init_Code);
   nb_blocks = Block_Count+1;
   if (T && !global_temporary_terms)
     mxFree(T);
