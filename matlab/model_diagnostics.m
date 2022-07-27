@@ -33,8 +33,6 @@ function model_diagnostics(M,options,oo)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global jacob
-
 endo_nbr = M.endo_nbr;
 endo_names = M.endo_names;
 lead_lag_incidence = M.lead_lag_incidence;
@@ -174,7 +172,11 @@ for b=1:nb
         display_problematic_vars_Jacobian(imagrow,imagcol,M,dr.ys,'static','MODEL_DIAGNOSTICS: ')
     end
     try
-        rank_jacob = rank(jacob); %can sometimes fail
+        if isoctave || matlab_ver_less_than('9.12') || isempty(options_.jacobian_tolerance)
+            rank_jacob = rank(jacob); %can sometimes fail
+        else
+            rank_jacob = rank(jacob,options_.jacobian_tolerance); %can sometimes fail
+        end
     catch
         rank_jacob=size(jacob,1);
     end
@@ -185,7 +187,11 @@ for b=1:nb
               'singular'])
         disp(['MODEL_DIAGNOSTICS:  there is ' num2str(endo_nbr-rank_jacob) ...
               ' colinear relationships between the variables and the equations'])
-        ncol = null(jacob);
+        if isoctave || matlab_ver_less_than('9.12') || isempty(options_.jacobian_tolerance)
+            ncol = null(jacob);
+        else
+            ncol = null(jacob,options_.jacobian_tolerance); %can sometimes fail
+        end
         n_rel = size(ncol,2);
         for i = 1:n_rel
             if n_rel  > 1
@@ -200,7 +206,11 @@ for b=1:nb
             end
             fprintf('%s\n',endo_names{k})
         end
-        neq = null(jacob');
+        if isoctave || matlab_ver_less_than('9.12') || isempty(options_.jacobian_tolerance)
+            neq = null(jacob'); %can sometimes fail
+        else
+            neq = null(jacob',options_.jacobian_tolerance); %can sometimes fail
+        end
         n_rel = size(neq,2);
         for i = 1:n_rel
             if n_rel  > 1
