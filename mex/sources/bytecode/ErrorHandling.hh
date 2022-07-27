@@ -312,90 +312,45 @@ protected:
   error_location(it_code_type expr_begin, it_code_type faulty_op, bool steady_state, int it_)
   {
     ostringstream Error_loc;
+    switch (EQN_type)
+      {
+      case ExpressionType::TemporaryTerm:
+        Error_loc << "temporary term";
+        break;
+      case ExpressionType::ModelEquation:
+        Error_loc << "equation";
+        break;
+      case ExpressionType::FirstEndoDerivative:
+      case ExpressionType::FirstOtherEndoDerivative:
+      case ExpressionType::FirstExoDerivative:
+      case ExpressionType::FirstExodetDerivative:
+        Error_loc << "first order derivative of equation";
+        break;
+      }
+    Error_loc << " " << EQN_equation+1;
+    if (EQN_block_number > 1)
+      Error_loc << " in block " << EQN_block+1;
+    switch (EQN_type)
+      {
+      case ExpressionType::TemporaryTerm:
+      case ExpressionType::ModelEquation:
+        break;
+      case ExpressionType::FirstEndoDerivative:
+        Error_loc << " with respect to endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
+        break;
+      case ExpressionType::FirstOtherEndoDerivative:
+        Error_loc << " with respect to other endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
+        break;
+      case ExpressionType::FirstExoDerivative:
+        Error_loc << " with respect to exogenous variable " << get_variable(SymbolType::exogenous, EQN_dvar1);
+        break;
+      case ExpressionType::FirstExodetDerivative:
+        Error_loc << " with respect to deterministic exogenous variable " << get_variable(SymbolType::exogenousDet, EQN_dvar1);
+        break;
+      }
     if (!steady_state)
-      switch (EQN_type)
-        {
-        case ExpressionType::TemporaryTerm:
-          if (EQN_block_number > 1)
-            Error_loc << "temporary term " << EQN_equation+1 << " in block " << EQN_block+1 << " at time " << it_;
-          else
-            Error_loc << "temporary term " << EQN_equation+1 << " at time " << it_;
-          break;
-        case ExpressionType::ModelEquation:
-          if (EQN_block_number > 1)
-            Error_loc << "equation " << EQN_equation+1 << " in block " << EQN_block+1 << " at time " << it_;
-          else
-            Error_loc << "equation " << EQN_equation+1 << " at time " << it_;
-          break;
-        case ExpressionType::FirstEndoDerivative:
-          if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
-          else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
-          break;
-        case ExpressionType::FirstOtherEndoDerivative:
-          if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to other endogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
-          else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to other endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1) << " at time " << it_;
-          break;
-        case ExpressionType::FirstExoDerivative:
-          if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(SymbolType::exogenous, EQN_dvar1) << " at time " << it_;
-          else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(SymbolType::exogenous, EQN_dvar1) << " at time " << it_;
-          break;
-        case ExpressionType::FirstExodetDerivative:
-          if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(SymbolType::exogenousDet, EQN_dvar1) << " at time " << it_;
-          else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::exogenousDet, EQN_dvar1) << " at time " << it_;
-          break;
-        default:
-          return "???";
-        }
-    else
-      switch (EQN_type)
-        {
-        case ExpressionType::TemporaryTerm:
-          if (EQN_block_number > 1)
-            Error_loc << "temporary term " << EQN_equation+1 << " in block " << EQN_block+1;
-          else
-            Error_loc << "temporary term " << EQN_equation+1;
-          break;
-        case ExpressionType::ModelEquation:
-          if (EQN_block_number > 1)
-            Error_loc << "equation " << EQN_equation+1 << " in block " << EQN_block+1;
-          else
-            Error_loc << "equation " << EQN_equation+1;
-          break;
-        case ExpressionType::FirstEndoDerivative:
-          if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to endogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
-          else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
-          break;
-        case ExpressionType::FirstOtherEndoDerivative:
-          if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to other endogenous variable "  << get_variable(SymbolType::endogenous, EQN_dvar1);
-          else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to other endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
-          break;
-        case ExpressionType::FirstExoDerivative:
-          if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to exogenous variable "  << get_variable(SymbolType::exogenous, EQN_dvar1);
-          else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to exogenous variable " << get_variable(SymbolType::exogenous, EQN_dvar1);
-          break;
-        case ExpressionType::FirstExodetDerivative:
-          if (EQN_block_number > 1)
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " in block " << EQN_block+1 << " with respect to deterministic exogenous variable "  << get_variable(SymbolType::exogenousDet, EQN_dvar1);
-          else
-            Error_loc << "first order derivative of equation " << EQN_equation+1 << " with respect to deterministic exogenous variable " << get_variable(SymbolType::exogenousDet, EQN_dvar1);
-          break;
-        default:
-          return ("???");
-        }
+      Error_loc << " at time " << it_;
+
     auto [expr_str, it_code_ret] = print_expression(expr_begin, faulty_op);
     Error_loc << endl << add_underscore_to_fpe("      " + expr_str);
     return Error_loc.str();
@@ -409,18 +364,41 @@ protected:
   pair<string, it_code_type>
   print_expression(const it_code_type &expr_begin, const optional<it_code_type> &faulty_op = nullopt) const
   {
-    int var, lag{0}, eq;
-    UnaryOpcode op1;
-    BinaryOpcode op2;
-    TrinaryOpcode op3;
-    stack<string> Stack;
-    ostringstream tmp_out, tmp_out2;
-    string v1, v2, v3;
-    bool go_on = true;
-    double ll;
-    ExpressionType equation_type = ExpressionType::TemporaryTerm;
-    size_t found;
-    ExternalFunctionCallType call_type{ExternalFunctionCallType::levelWithoutDerivative};
+    /* First element is output string, 2nd element is precedence of last
+       operator, 3rd element is opcode if the last operator was a binary
+       operator.
+       Use same precedence values as in the preprocessor for MATLAB or JSON output:
+       – 0: = (assignment)
+       – 1: == !=
+       – 2: < > <= >=
+       – 3: + -
+       – 4: * /
+       – 5: ^ powerDeriv
+       – 100: everything else */
+    stack<tuple<string, int, optional<BinaryOpcode>>> Stack;
+    bool go_on {true};
+    ExpressionType equation_type {ExpressionType::ModelEquation};
+    ExternalFunctionCallType call_type {ExternalFunctionCallType::levelWithoutDerivative};
+
+    auto lag_to_string = [](int l) -> string
+    {
+      if (l > 0)
+        return "(+" + to_string(l) + ")";
+      else if (l < 0)
+        return "(" + to_string(l) + ")";
+      else
+        return {};
+    };
+
+    // Helper for FST* tags
+    auto assign_lhs = [&](const string &lhs)
+    {
+      auto &[str, prec, opcode] {Stack.top()};
+      str.insert(0, lhs + " = ");
+      prec = 0;
+      opcode = BinaryOpcode::equal;
+      go_on = false;
+    };
 
     it_code_type it_code {expr_begin};
 
@@ -454,853 +432,530 @@ protected:
                 equation_type = ExpressionType::FirstExodetDerivative;
                 break;
               default:
-                ostringstream tmp;
-                tmp << " in print_expression, expression type " << static_cast<int>(static_cast<FNUMEXPR_ *>(*it_code)->get_expression_type()) << " not implemented yet\n";
-                throw FatalExceptionHandling(tmp.str());
+                throw FatalExceptionHandling{" in print_expression, expression type "
+                                             + to_string(static_cast<int>(static_cast<FNUMEXPR_ *>(*it_code)->get_expression_type()))
+                                             + " not implemented yet\n"};
               }
             break;
           case Tags::FLDV:
-            //load a variable in the processor
-            switch (static_cast<FLDV_ *>(*it_code)->get_type())
-              {
-              case SymbolType::parameter:
-                var = static_cast<FLDV_ *>(*it_code)->get_pos();
-                Stack.push(get_variable(SymbolType::parameter, var));
-                break;
-              case SymbolType::endogenous:
-                var = static_cast<FLDV_ *>(*it_code)->get_pos();
-                lag = static_cast<FLDV_ *>(*it_code)->get_lead_lag();
-                tmp_out.str("");
-                if (lag > 0)
-                  tmp_out << get_variable(SymbolType::endogenous, var) << "(+" << lag << ")";
-                else if (lag < 0)
-                  tmp_out << get_variable(SymbolType::endogenous, var) << "(" << lag << ")";
-                else
-                  tmp_out << get_variable(SymbolType::endogenous, var);
-                Stack.push(tmp_out.str());
-                break;
-              case SymbolType::exogenous:
-                var = static_cast<FLDV_ *>(*it_code)->get_pos();
-                lag = static_cast<FLDV_ *>(*it_code)->get_lead_lag();
-                tmp_out.str("");
-                if (lag != 0)
-                  tmp_out << get_variable(SymbolType::exogenous, var) << "(" << lag << ")";
-                else
-                  tmp_out << get_variable(SymbolType::exogenous, var);
-                Stack.push(tmp_out.str());
-                break;
-              case SymbolType::exogenousDet:
-                mexErrMsgTxt("FLDV: exogenous deterministic not supported");
-                break;
-              case SymbolType::modelLocalVariable:
-                break;
-              default:
-                mexPrintf("FLDV: Unknown variable type\n");
+            {
+              int var {static_cast<FLDV_ *>(*it_code)->get_pos()};
+              int lag {static_cast<FLDV_ *>(*it_code)->get_lead_lag()};
+              switch (SymbolType type {static_cast<FLDV_ *>(*it_code)->get_type()};
+                      type)
+                {
+                case SymbolType::parameter:
+                case SymbolType::endogenous:
+                case SymbolType::exogenous:
+                case SymbolType::exogenousDet:
+                  Stack.emplace(get_variable(type, var) + lag_to_string(lag), 100, nullopt);
+                  break;
+                default:
+                  throw FatalExceptionHandling{"FLDV: Unknown variable type\n"};
               }
+            }
             break;
           case Tags::FLDSV:
+            {
+              int var {static_cast<FLDSV_ *>(*it_code)->get_pos()};
+              switch (SymbolType type {static_cast<FLDSV_ *>(*it_code)->get_type()};
+                      type)
+                {
+                case SymbolType::parameter:
+                case SymbolType::endogenous:
+                case SymbolType::exogenous:
+                case SymbolType::exogenousDet:
+                  Stack.emplace(get_variable(type, var), 100, nullopt);
+                  break;
+                default:
+                  throw FatalExceptionHandling{"FLDSV: Unknown variable type\n"};
+                }
+            }
+            break;
           case Tags::FLDVS:
-            //load a variable in the processor
-            switch (static_cast<FLDSV_ *>(*it_code)->get_type())
-              {
-              case SymbolType::parameter:
-                var = static_cast<FLDSV_ *>(*it_code)->get_pos();
-                Stack.push(get_variable(SymbolType::parameter, var));
-                break;
-              case SymbolType::endogenous:
-                var = static_cast<FLDSV_ *>(*it_code)->get_pos();
-                Stack.push(get_variable(SymbolType::endogenous, var));
-                break;
-              case SymbolType::exogenous:
-                var = static_cast<FLDSV_ *>(*it_code)->get_pos();
-                Stack.push(get_variable(SymbolType::exogenous, var));
-                break;
-              case SymbolType::exogenousDet:
-                mexErrMsgTxt("FLDSV: exogenous deterministic not supported");
-                break;
-              case SymbolType::modelLocalVariable:
-                break;
-              default:
-                mexPrintf("FLDSV: Unknown variable type\n");
-              }
+            {
+              int var {static_cast<FLDVS_ *>(*it_code)->get_pos()};
+              switch (SymbolType type {static_cast<FLDVS_ *>(*it_code)->get_type()};
+                      type)
+                {
+                case SymbolType::parameter:
+                case SymbolType::endogenous:
+                case SymbolType::exogenous:
+                case SymbolType::exogenousDet:
+                  Stack.emplace(get_variable(type, var), 100, nullopt);
+                  break;
+                default:
+                  throw FatalExceptionHandling{"FLDVS: Unknown variable type\n"};
+                }
+            }
             break;
           case Tags::FLDT:
-            //load a temporary variable in the processor
-            var = static_cast<FLDT_ *>(*it_code)->get_pos();
-            tmp_out.str("");
-            tmp_out << "T" << var+1;
-            Stack.push(tmp_out.str());
+            Stack.emplace("T" + to_string(static_cast<FLDT_ *>(*it_code)->get_pos() + 1), 100, nullopt);
             break;
           case Tags::FLDST:
-            //load a temporary variable in the processor
-            var = static_cast<FLDST_ *>(*it_code)->get_pos();
-            tmp_out.str("");
-            tmp_out << "T" << var+1;
-            Stack.push(tmp_out.str());
+            Stack.emplace("T" + to_string(static_cast<FLDST_ *>(*it_code)->get_pos() + 1), 100, nullopt);
             break;
           case Tags::FLDU:
-            //load u variable in the processor
-            var = static_cast<FLDU_ *>(*it_code)->get_pos();
-            tmp_out.str("");
-            tmp_out << "u(" << var+1 << " + it_)";
-            Stack.push(tmp_out.str());
+            Stack.emplace("u(" + to_string(static_cast<FLDU_ *>(*it_code)->get_pos() + 1) + " + it_)", 100, nullopt);
             break;
           case Tags::FLDSU:
-            //load u variable in the processor
-            var = static_cast<FLDSU_ *>(*it_code)->get_pos();
-            tmp_out.str("");
-            tmp_out << "u(" << var+1 << ")";
-            Stack.push(tmp_out.str());
+            Stack.emplace("u(" + to_string(static_cast<FLDSU_ *>(*it_code)->get_pos() + 1) + ")", 100, nullopt);
             break;
           case Tags::FLDR:
-            var = static_cast<FLDR_ *>(*it_code)->get_pos();
-            tmp_out.str("");
-            tmp_out << "residual(" << var+1 << ")";
-            Stack.push(tmp_out.str());
+            Stack.emplace("residual(" + to_string(static_cast<FLDR_ *>(*it_code)->get_pos() + 1) + ")", 100, nullopt);
             break;
           case Tags::FLDZ:
-            //load 0 in the processor
-            tmp_out.str("");
-            tmp_out << 0;
-            Stack.push(tmp_out.str());
+            Stack.emplace("0", 100, nullopt);
             break;
           case Tags::FLDC:
-            //load a numerical constant in the processor
-            ll = static_cast<FLDC_ *>(*it_code)->get_value();
-            tmp_out.str("");
-            tmp_out << ll;
-            Stack.push(tmp_out.str());
+            Stack.emplace(to_string(static_cast<FLDC_ *>(*it_code)->get_value()), 100, nullopt);
             break;
           case Tags::FSTPV:
-            //load a variable in the processor
-            go_on = false;
-            switch (static_cast<FSTPV_ *>(*it_code)->get_type())
-              {
-              case SymbolType::parameter:
-                var = static_cast<FSTPV_ *>(*it_code)->get_pos();
-                tmp_out2.str("");
-                tmp_out2 << Stack.top();
-                tmp_out.str("");
-                tmp_out << get_variable(SymbolType::parameter, var) << " = " << tmp_out2.str();
-                Stack.pop();
-                break;
-              case SymbolType::endogenous:
-                var = static_cast<FSTPV_ *>(*it_code)->get_pos();
-                lag = static_cast<FSTPV_ *>(*it_code)->get_lead_lag();
-                tmp_out2.str("");
-                tmp_out2 << Stack.top();
-                tmp_out.str("");
-                tmp_out << get_variable(SymbolType::endogenous, var);
-                if (lag > 0)
-                  tmp_out << "(+" << lag << ")";
-                else if (lag < 0)
-                  tmp_out << "(" << lag << ")";
-                tmp_out << " = " << tmp_out2.str();
-                Stack.pop();
-                break;
-              case SymbolType::exogenous:
-                var = static_cast<FSTPV_ *>(*it_code)->get_pos();
-                lag = static_cast<FSTPV_ *>(*it_code)->get_lead_lag();
-                tmp_out2.str("");
-                tmp_out2 << Stack.top();
-                tmp_out.str("");
-                tmp_out << get_variable(SymbolType::exogenous, var);
-                if (lag != 0)
-                  tmp_out << "(" << lag << ")";
-                tmp_out << " = " << tmp_out2.str();
-                Stack.pop();
-                break;
-              case SymbolType::exogenousDet:
-                mexErrMsgTxt("FSTPV: exogenous deterministic not supported");
-                break;
-              default:
-                mexPrintf("FSTPV: Unknown variable type\n");
-              }
+            {
+              int var {static_cast<FSTPV_ *>(*it_code)->get_pos()};
+              int lag {static_cast<FSTPV_ *>(*it_code)->get_lead_lag()};
+              switch (SymbolType type {static_cast<FSTPV_ *>(*it_code)->get_type()};
+                      type)
+                {
+                case SymbolType::parameter:
+                case SymbolType::endogenous:
+                case SymbolType::exogenous:
+                case SymbolType::exogenousDet:
+                  assign_lhs(get_variable(type, var) + lag_to_string(lag));
+                  break;
+                default:
+                  throw FatalExceptionHandling{"FSTPV: Unknown variable type\n"};
+                }
+            }
             break;
           case Tags::FSTPSV:
-            go_on = false;
-            //load a variable in the processor
-            switch (static_cast<FSTPSV_ *>(*it_code)->get_type())
-              {
-              case SymbolType::parameter:
-                var = static_cast<FSTPSV_ *>(*it_code)->get_pos();
-                tmp_out2.str("");
-                tmp_out2 << Stack.top();
-                tmp_out.str("");
-                tmp_out << get_variable(SymbolType::parameter, var);
-                tmp_out << " = " << tmp_out2.str();
-                Stack.pop();
-                break;
-              case SymbolType::endogenous:
-                var = static_cast<FSTPSV_ *>(*it_code)->get_pos();
-                tmp_out2.str("");
-                tmp_out2 << Stack.top();
-                tmp_out.str("");
-                tmp_out << get_variable(SymbolType::endogenous, var);
-                tmp_out << " = " << tmp_out2.str();
-                Stack.pop();
-                break;
-              case SymbolType::exogenous:
-                var = static_cast<FSTPSV_ *>(*it_code)->get_pos();
-                tmp_out2.str("");
-                tmp_out2 << Stack.top();
-                tmp_out.str("");
-                tmp_out << get_variable(SymbolType::exogenous, var);
-                tmp_out << " = " << tmp_out2.str();
-                Stack.pop();
-                break;
-              case SymbolType::exogenousDet:
-                mexErrMsgTxt("FSTPSV: exogenous deterministic not supported");
-                break;
-              default:
-                mexPrintf("FSTPSV: Unknown variable type\n");
-              }
+            {
+              int var {static_cast<FSTPSV_ *>(*it_code)->get_pos()};
+              switch (SymbolType type {static_cast<FSTPSV_ *>(*it_code)->get_type()};
+                      type)
+                {
+                case SymbolType::parameter:
+                case SymbolType::endogenous:
+                case SymbolType::exogenous:
+                case SymbolType::exogenousDet:
+                  assign_lhs(get_variable(type, var));
+                  break;
+                default:
+                  throw FatalExceptionHandling{"FSTPSV: Unknown variable type\n"};
+                }
+            }
             break;
           case Tags::FSTPT:
-            go_on = false;
-            //store in a temporary variable from the processor
-            var = static_cast<FSTPT_ *>(*it_code)->get_pos();
-            tmp_out.str("");
-            tmp_out << "T" << var+1 << " = " << Stack.top();
-            Stack.pop();
+            assign_lhs("T" + to_string(static_cast<FSTPT_ *>(*it_code)->get_pos() + 1));
             break;
           case Tags::FSTPST:
-            go_on = false;
-            //store in a temporary variable from the processor
-            var = static_cast<FSTPST_ *>(*it_code)->get_pos();
-            tmp_out.str("");
-            tmp_out << "T" << var+1 << " = " << Stack.top();
-            Stack.pop();
+            assign_lhs("T" + to_string(static_cast<FSTPST_ *>(*it_code)->get_pos() + 1));
             break;
           case Tags::FSTPU:
-            go_on = false;
-            //store in u variable from the processor
-            var = static_cast<FSTPU_ *>(*it_code)->get_pos();
-            tmp_out.str("");
-            tmp_out << "u(" << var+1 << " + it_) = " << Stack.top();
-            Stack.pop();
+            assign_lhs("u(" + to_string(static_cast<FSTPU_ *>(*it_code)->get_pos() + 1) + " + it_)");
             break;
           case Tags::FSTPSU:
-            go_on = false;
-            //store in u variable from the processor
-            var = static_cast<FSTPSU_ *>(*it_code)->get_pos();
-            tmp_out.str("");
-            tmp_out << "u(" << var+1 << ") = " << Stack.top();
-            Stack.pop();
+            assign_lhs("u(" + to_string(static_cast<FSTPSU_ *>(*it_code)->get_pos() + 1) + ")");
             break;
           case Tags::FSTPR:
-            go_on = false;
-            //store in residual variable from the processor
-            var = static_cast<FSTPR_ *>(*it_code)->get_pos();
-            tmp_out.str("");
-            tmp_out << "residual(" << var+1 << ") = " << Stack.top();
-            Stack.pop();
+            assign_lhs("residual(" + to_string(static_cast<FSTPR_ *>(*it_code)->get_pos() + 1) + ")");
             break;
           case Tags::FSTPG:
-            go_on = false;
-            //store in derivative (g) variable from the processor
-            var = static_cast<FSTPG_ *>(*it_code)->get_pos();
-            tmp_out.str("");
-            tmp_out << "g1[" << var+1 << "] = " << Stack.top();
-            Stack.pop();
+            assign_lhs("g1(" + to_string(static_cast<FSTPG_ *>(*it_code)->get_pos() + 1) + ")");
             break;
           case Tags::FSTPG2:
-            go_on = false;
-            //store in derivative (g) variable from the processor
-            eq = static_cast<FSTPG2_ *>(*it_code)->get_row();
-            var = static_cast<FSTPG2_ *>(*it_code)->get_col();
-            tmp_out.str("");
-            tmp_out << "jacob(" << eq+1 << ", " << var+1 << ") = " << Stack.top();
-            Stack.pop();
+            {
+              int eq {static_cast<FSTPG2_ *>(*it_code)->get_row()};
+              int var {static_cast<FSTPG2_ *>(*it_code)->get_col()};
+              assign_lhs("jacob(" + to_string(eq+1) + ", " + to_string(var+1) + ")");
+            }
             break;
           case Tags::FSTPG3:
-            //store in derivative (g) variable from the processor
-            go_on = false;
-            int pos_col;
-            eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
-            var = static_cast<FSTPG3_ *>(*it_code)->get_col();
-            lag = static_cast<FSTPG3_ *>(*it_code)->get_lag();
-            pos_col = static_cast<FSTPG3_ *>(*it_code)->get_col_pos();
-            tmp_out.str("");
-            switch (equation_type)
+            {
+              int eq {static_cast<FSTPG3_ *>(*it_code)->get_row()};
+              int var {static_cast<FSTPG3_ *>(*it_code)->get_col()};
+              int lag {static_cast<FSTPG3_ *>(*it_code)->get_lag()};
+              int col_pos {static_cast<FSTPG3_ *>(*it_code)->get_col_pos()};
+              string matrix_name { [&]
               {
-              case ExpressionType::FirstEndoDerivative:
-                tmp_out << "jacob";
-                break;
-              case ExpressionType::FirstOtherEndoDerivative:
-                tmp_out << "jacob_other_endo";
-                break;
-              case ExpressionType::FirstExoDerivative:
-                tmp_out << "jacob_exo";
-                break;
-              case ExpressionType::FirstExodetDerivative:
-                tmp_out << "jacob_exo_det";
-                break;
-              default:
-                ostringstream tmp;
-                tmp << " in compute_block_time, variable " << static_cast<int>(EQN_type) << " not used yet\n";
-                //throw FatalExceptionHandling(tmp.str());
-                mexPrintf("%s", tmp.str().c_str());
-              }
-            tmp_out << "(" << eq+1 << ", " << pos_col+1 << " [var=" << var+1 << ", lag=" << lag << "]) = " << Stack.top();
-            Stack.pop();
-            break;
-          case Tags::FBINARY:
-            op2 = static_cast<FBINARY_ *>(*it_code)->get_op_type();
-            v2 = Stack.top();
-            Stack.pop();
-            v1 = Stack.top();
-            Stack.pop();
-            switch (op2)
-              {
-              case BinaryOpcode::plus:
-                tmp_out.str("");
-                tmp_out << v1 << " + " << v2;
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::minus:
-                tmp_out.str("");
-                found = v1.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v1;
-                if (found != string::npos)
-                  tmp_out << ")";
-                tmp_out << " - ";
-                found = v2.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v2;
-                if (found != string::npos)
-                  tmp_out << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::times:
-                tmp_out.str("");
-                found = v1.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v1;
-                if (found != string::npos)
-                  tmp_out << ")";
-                tmp_out << " * ";
-                found = v2.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v2;
-                if (found != string::npos)
-                  tmp_out << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::divide:
-                tmp_out.str("");
-                found = v1.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v1;
-                if (found != string::npos)
-                  tmp_out << ")";
-                if (it_code == faulty_op)
-                  tmp_out << "{ / }";
-                else
-                  tmp_out << " / ";
-                found = v2.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v2;
-                if (found != string::npos)
-                  tmp_out << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::less:
-                tmp_out.str("");
-                found = v1.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v1;
-                if (found != string::npos)
-                  tmp_out << ")";
-                tmp_out << " < ";
-                found = v2.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v2;
-                if (found != string::npos)
-                  tmp_out << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::greater:
-                tmp_out.str("");
-                found = v1.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v1;
-                if (found != string::npos)
-                  tmp_out << ")";
-                tmp_out << " > ";
-                found = v2.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v2;
-                if (found != string::npos)
-                  tmp_out << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::lessEqual:
-                tmp_out.str("");
-                found = v1.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v1;
-                if (found != string::npos)
-                  tmp_out << ")";
-                tmp_out << " <= ";
-                found = v2.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v2;
-                if (found != string::npos)
-                  tmp_out << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::greaterEqual:
-                tmp_out.str("");
-                found = v1.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v1;
-                if (found != string::npos)
-                  tmp_out << ")";
-                tmp_out << " >= ";
-                found = v2.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v2;
-                if (found != string::npos)
-                  tmp_out << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::equalEqual:
-                tmp_out.str("");
-                found = v1.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v1;
-                if (found != string::npos)
-                  tmp_out << ")";
-                tmp_out << " == ";
-                found = v2.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v2;
-                if (found != string::npos)
-                  tmp_out << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::different:
-                tmp_out.str("");
-                found = v1.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v1;
-                if (found != string::npos)
-                  tmp_out << ")";
-                tmp_out << " != ";
-                found = v2.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v2;
-                if (found != string::npos)
-                  tmp_out << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::power:
-                tmp_out.str("");
-                found = v1.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v1;
-                if (found != string::npos)
-                  tmp_out << ")";
-                if (it_code == faulty_op)
-                  tmp_out << "{ ^ }";
-                else
-                  tmp_out << " ^ ";
-                found = v2.find(" ");
-                if (found != string::npos)
-                  tmp_out << "(";
-                tmp_out << v2;
-                if (found != string::npos)
-                  tmp_out << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::powerDeriv:
-                {
-                  v3 = Stack.top();
-                  Stack.pop();
-                  tmp_out.str("");
-                  if (it_code == faulty_op)
-                    tmp_out << "{PowerDeriv}";
-                  else
-                    tmp_out << "PowerDeriv";
-                  tmp_out << "(" << v1 << ", " << v2 << ", " << v3 << ")";
-                  Stack.push(tmp_out.str());
-                }
-                break;
-              case BinaryOpcode::max:
-                tmp_out.str("");
-                tmp_out << "max(" << v1 << ", " << v2 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::min:
-                tmp_out.str("");
-                tmp_out << "min(" << v1 << ", " << v2 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case BinaryOpcode::equal:
-              default:
-                mexPrintf("Error unknown binary operator=%d\n", static_cast<int>(op2)); mexEvalString("drawnow;");
-                ;
-              }
+                switch (equation_type)
+                  {
+                  case ExpressionType::FirstEndoDerivative:
+                    return "jacob";
+                  case ExpressionType::FirstOtherEndoDerivative:
+                    return "jacob_other_endo";
+                  case ExpressionType::FirstExoDerivative:
+                    return "jacob_exo";
+                  case ExpressionType::FirstExodetDerivative:
+                    return "jacob_exo_det";
+                  default:
+                    throw FatalExceptionHandling{" unknown equation type " + to_string(static_cast<int>(equation_type)) + "\n"};
+                  }
+              }() };
+
+              assign_lhs(matrix_name + "(" + to_string(eq+1) + ", " + to_string(col_pos+1)
+                         + " [var=" + to_string(var+1) + ", lag=" + to_string(lag) + "])");
+            }
             break;
           case Tags::FUNARY:
-            op1 = static_cast<FUNARY_ *>(*it_code)->get_op_type();
-            v1 = Stack.top();
-            Stack.pop();
-            switch (op1)
+            {
+              UnaryOpcode op {static_cast<FUNARY_ *>(*it_code)->get_op_type()};
+              auto [arg, prec_arg, op_arg] {Stack.top()};
+              Stack.pop();
+
+              ostringstream s;
+
+              // Always put parenthesis around uminus nodes
+              if (op == UnaryOpcode::uminus)
+                s << "(";
+
+              s << [&]
               {
-              case UnaryOpcode::uminus:
-                tmp_out.str("");
-                tmp_out << " -" << v1;
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::exp:
-                tmp_out.str("");
-                tmp_out << "exp(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::log:
-                tmp_out.str("");
-                if (it_code == faulty_op)
-                  tmp_out << "{log}";
-                else
-                  tmp_out << "log";
-                tmp_out << "(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::log10:
-                tmp_out.str("");
-                if (it_code == faulty_op)
-                  tmp_out << "{log10}";
-                else
-                  tmp_out << "log10";
-                tmp_out << "(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::cos:
-                tmp_out.str("");
-                tmp_out << "cos(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::sin:
-                tmp_out.str("");
-                tmp_out << "sin(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::tan:
-                tmp_out.str("");
-                tmp_out << "tan(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::acos:
-                tmp_out.str("");
-                tmp_out << "acos(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::asin:
-                tmp_out.str("");
-                tmp_out << "asin(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::atan:
-                tmp_out.str("");
-                tmp_out << "atan(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::cosh:
-                tmp_out.str("");
-                tmp_out << "cosh(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::sinh:
-                tmp_out.str("");
-                tmp_out << "sinh(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::tanh:
-                tmp_out.str("");
-                tmp_out << "tanh(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::acosh:
-                tmp_out.str("");
-                tmp_out << "acosh(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::asinh:
-                tmp_out.str("");
-                tmp_out << "asinh(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::atanh:
-                tmp_out.str("");
-                tmp_out << "atanh(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::sqrt:
-                tmp_out.str("");
-                tmp_out << "sqrt(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::erf:
-                tmp_out.str("");
-                tmp_out << "erf(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case UnaryOpcode::erfc:
-                tmp_out.str("");
-                tmp_out << "erfc(" << v1 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              default:
-                mexPrintf("Error unknown unary operator=%d\n", static_cast<int>(op1)); mexEvalString("drawnow;");
-                ;
-              }
+                switch (op)
+                  {
+                  case UnaryOpcode::uminus:
+                    return "-";
+                  case UnaryOpcode::exp:
+                    return "exp";
+                  case UnaryOpcode::log:
+                    return it_code == faulty_op ? "{log}" : "log";
+                  case UnaryOpcode::log10:
+                    return it_code == faulty_op ? "{log10}" : "log10";
+                  case UnaryOpcode::cos:
+                    return "cos";
+                  case UnaryOpcode::sin:
+                    return "sin";
+                  case UnaryOpcode::tan:
+                    return "tan";
+                  case UnaryOpcode::acos:
+                    return "acos";
+                  case UnaryOpcode::asin:
+                    return "asin";
+                  case UnaryOpcode::atan:
+                    return "atan";
+                  case UnaryOpcode::cosh:
+                    return "cosh";
+                  case UnaryOpcode::sinh:
+                    return "sinh";
+                  case UnaryOpcode::tanh:
+                    return "tanh";
+                  case UnaryOpcode::acosh:
+                    return "acosh";
+                  case UnaryOpcode::asinh:
+                    return "asinh";
+                  case UnaryOpcode::atanh:
+                    return "atanh";
+                  case UnaryOpcode::sqrt:
+                    return "sqrt";
+                  case UnaryOpcode::cbrt:
+                    return "cbrt";
+                  case UnaryOpcode::erf:
+                    return "erf";
+                  case UnaryOpcode::erfc:
+                    return "erfc";
+                  case UnaryOpcode::abs:
+                    return "abs";
+                  case UnaryOpcode::sign:
+                    return "sign";
+                  case UnaryOpcode::steadyState:
+                    return "steady_state";
+                  case UnaryOpcode::steadyStateParamDeriv:
+                  case UnaryOpcode::steadyStateParam2ndDeriv:
+                    throw FatalExceptionHandling{"Unexpected derivative of steady_state operator"};
+                  case UnaryOpcode::expectation:
+                    throw FatalExceptionHandling{"Unexpected expectation operator"};
+                  case UnaryOpcode::diff:
+                    return "diff";
+                  case UnaryOpcode::adl:
+                    return "adl";
+                  }
+                throw FatalExceptionHandling{"Unknown opcode"};
+              }();
+
+              /* Print argument. Enclose it with parentheses if:
+                 - current opcode is not uminus, or
+                 - current opcode is uminus and argument has lowest precedence */
+              bool close_parenthesis {false};
+              if (op != UnaryOpcode::uminus
+                  || (op == UnaryOpcode::uminus && prec_arg < 100))
+                {
+                  s << "(";
+                  close_parenthesis = true;
+                }
+              s << arg;
+              if (close_parenthesis)
+                s << ")";
+
+              // Close parenthesis for uminus
+              if (op == UnaryOpcode::uminus)
+                s << ")";
+
+              Stack.emplace(s.str(), 100, nullopt);
+            }
+            break;
+          case Tags::FBINARY:
+            {
+              BinaryOpcode op {static_cast<FBINARY_ *>(*it_code)->get_op_type()};
+              auto [arg2, prec_arg2, op_arg2] {Stack.top()};
+              Stack.pop();
+              auto [arg1, prec_arg1, op_arg1] {Stack.top()};
+              Stack.pop();
+
+              if (op == BinaryOpcode::max)
+                Stack.emplace("max(" + arg1 + ", " + arg2 + ")", 100, nullopt);
+              else if (op == BinaryOpcode::min)
+                Stack.emplace("min(" + arg1 + ", " + arg2 + ")", 100, nullopt);
+              else if (op == BinaryOpcode::powerDeriv)
+                {
+                  auto [arg3, prec_arg3, op_arg3] {Stack.top()};
+                  Stack.pop();
+                  Stack.emplace((it_code == faulty_op ? "{PowerDeriv}(" : "PowerDeriv(") + arg1
+                                + ", " + arg2 + ", " + arg2 + ")", 100, nullopt);
+                }
+              else
+                {
+                  ostringstream s;
+                  int prec { [&]
+                  {
+                    switch (op)
+                      {
+                      case BinaryOpcode::equal:
+                        return 0;
+                      case BinaryOpcode::equalEqual:
+                      case BinaryOpcode::different:
+                        return 1;
+                      case BinaryOpcode::lessEqual:
+                      case BinaryOpcode::greaterEqual:
+                      case BinaryOpcode::less:
+                      case BinaryOpcode::greater:
+                        return 2;
+                      case BinaryOpcode::plus:
+                      case BinaryOpcode::minus:
+                        return 3;
+                      case BinaryOpcode::times:
+                      case BinaryOpcode::divide:
+                        return 4;
+                      case BinaryOpcode::power:
+                      case BinaryOpcode::powerDeriv:
+                        return 5;
+                      case BinaryOpcode::min:
+                      case BinaryOpcode::max:
+                        return 100;
+                      }
+                    throw FatalExceptionHandling{"Unknown opcode"};
+                  }() };
+
+                  /* Print left argument. If left argument has a lower
+                     precedence, or if current and left argument are both power
+                     operators, add parenthesis around left argument. */
+                  bool close_parenthesis {false};
+                  if (prec_arg1 < prec
+                      || (op == BinaryOpcode::power && op_arg1 == BinaryOpcode::power))
+                    {
+                      s << "(";
+                      close_parenthesis = true;
+                    }
+                  s << arg1;
+                  if (close_parenthesis)
+                    s << ")";
+
+                  s << [&]
+                  {
+                    switch (op)
+                    {
+                    case BinaryOpcode::plus:
+                      return "+";
+                    case BinaryOpcode::minus:
+                      return "-";
+                    case BinaryOpcode::times:
+                      return "*";
+                    case BinaryOpcode::divide:
+                      return it_code == faulty_op ? "{ / }" : "/";
+                    case BinaryOpcode::less:
+                      return " < ";
+                    case BinaryOpcode::greater:
+                      return " > ";
+                    case BinaryOpcode::lessEqual:
+                      return " <= ";
+                    case BinaryOpcode::greaterEqual:
+                      return " >= ";
+                    case BinaryOpcode::equalEqual:
+                      return " == ";
+                    case BinaryOpcode::different:
+                      return " != ";
+                    case BinaryOpcode::power:
+                      return it_code == faulty_op ? "{ ^ }" : "^";
+                    case BinaryOpcode::powerDeriv:
+                    case BinaryOpcode::max:
+                    case BinaryOpcode::min:
+                      throw FatalExceptionHandling{"Should not arrive here"};
+                    case BinaryOpcode::equal:
+                      return " = ";
+                    }
+                    throw FatalExceptionHandling{"Unknown opcode"};
+                  }();
+
+                  /* Print right argument. Add parenthesis around right argument if:
+                     - its precedence is lower than that of the current node
+                     - it is a power operator and current operator is also a power operator
+                     - it has same precedence as current operator and current operator is
+                     either a minus or a divide */
+                  close_parenthesis = false;
+                  if (prec_arg2 < prec
+                      || (op == BinaryOpcode::power && op_arg2 == BinaryOpcode::power)
+                      || (prec_arg2 == prec && (op == BinaryOpcode::minus || op == BinaryOpcode::divide)))
+                    {
+                      s << "(";
+                      close_parenthesis = true;
+                    }
+                  s << arg2;
+                  if (close_parenthesis)
+                    s << ")";
+
+                  Stack.emplace(s.str(), prec, op);
+                }
+            }
             break;
           case Tags::FTRINARY:
-            op3 = static_cast<FTRINARY_ *>(*it_code)->get_op_type();
-            v3 = Stack.top();
-            Stack.pop();
-            v2 = Stack.top();
-            Stack.pop();
-            v1 = Stack.top();
-            Stack.pop();
-            switch (op3)
+            {
+              TrinaryOpcode op {static_cast<FTRINARY_ *>(*it_code)->get_op_type()};
+              auto [arg3, prec_arg3, op_arg3] {Stack.top()};
+              Stack.pop();
+              auto [arg2, prec_arg2, op_arg2] {Stack.top()};
+              Stack.pop();
+              auto [arg1, prec_arg1, op_arg1] {Stack.top()};
+              Stack.pop();
+
+              string opname { [&]
               {
-              case TrinaryOpcode::normcdf:
-                tmp_out.str("");
-                tmp_out << "normcdf(" << v1 << ", " << v2 << ", " << v3 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              case TrinaryOpcode::normpdf:
-                tmp_out.str("");
-                tmp_out << "normpdf(" << v1 << ", " << v2 << ", " << v3 << ")";
-                Stack.push(tmp_out.str());
-                break;
-              default:
-                mexPrintf("Error unknown trinary operator=%d\n", static_cast<int>(op3)); mexEvalString("drawnow;");
-              }
+                switch (op)
+                  {
+                  case TrinaryOpcode::normcdf:
+                    return "normcdf";
+                  case TrinaryOpcode::normpdf:
+                    return "normpdf";
+                  }
+                throw FatalExceptionHandling{"Unknown opcode"};
+              }() };
+
+              Stack.emplace(opname + "(" + arg1 + ", " + arg2 + ", " + arg3 + ")", 100, nullopt);
+            }
             break;
           case Tags::FCALL:
             {
               auto *fc = static_cast<FCALL_ *>(*it_code);
-              string function_name = fc->get_function_name();
+              string function_name {fc->get_function_name()};
               int nb_input_arguments{fc->get_nb_input_arguments()};
-
-              string arg_func_name = fc->get_arg_func_name();
               int nb_add_input_arguments{fc->get_nb_add_input_arguments()};
+              string arg_func_name {fc->get_arg_func_name()};
+              ostringstream s;
+
+              auto print_args = [&](int nargs)
+              {
+                vector<string> ss(nargs);
+                for (int i {0}; i < nargs; i++)
+                  {
+                    ss[nargs-i-1] = get<0>(Stack.top());
+                    Stack.pop();
+                  }
+                for (int i {0}; i < nargs; i++)
+                  {
+                    if (i > 0)
+                      s << ", ";
+                    s << ss[i];
+                  }
+              };
+
               call_type = fc->get_call_type();
               switch (call_type)
                 {
                 case ExternalFunctionCallType::levelWithoutDerivative:
                 case ExternalFunctionCallType::levelWithFirstDerivative:
                 case ExternalFunctionCallType::levelWithFirstAndSecondDerivative:
-                  {
-                    tmp_out.str("");
-                    tmp_out << function_name << "(";
-                    vector<string> ss(nb_input_arguments);
-                    for (int i{0}; i < nb_input_arguments; i++)
-                      {
-                        ss[nb_input_arguments-i-1] = Stack.top();
-                        Stack.pop();
-                      }
-                    for (int i{0}; i < nb_input_arguments; i++)
-                      {
-                        tmp_out << ss[i];
-                        if (i < nb_input_arguments - 1)
-                          tmp_out << ", ";
-                      }
-                    tmp_out << ")";
-                    Stack.push(tmp_out.str());
-                  }
+                case ExternalFunctionCallType::separatelyProvidedFirstDerivative:
+                case ExternalFunctionCallType::separatelyProvidedSecondDerivative:
+                  s << function_name << "(";
+                  print_args(nb_input_arguments);
+                  s << ")";
                   break;
                 case ExternalFunctionCallType::numericalFirstDerivative:
-                  {
-                    tmp_out.str("");
-                    tmp_out << function_name << "(";
-                    tmp_out << arg_func_name.c_str() << ", " << fc->get_row() << ", {";
-                    vector<string> ss(nb_input_arguments);
-                    for (int i{0}; i < nb_add_input_arguments; i++)
-                      {
-                        ss[nb_add_input_arguments-i-1] = Stack.top();
-                        Stack.pop();
-                      }
-                    for (int i{0}; i < nb_add_input_arguments; i++)
-                      {
-                        tmp_out << ss[i];
-                        if (i < nb_add_input_arguments - 1)
-                          tmp_out << ", ";
-                      }
-                    tmp_out << "})";
-                    Stack.push(tmp_out.str());
-                  }
-                  break;
-                case ExternalFunctionCallType::separatelyProvidedFirstDerivative:
-                  {
-                    tmp_out.str("");
-                    tmp_out << function_name << "(";
-                    vector<string> ss(nb_input_arguments);
-                    for (int i{0}; i < nb_input_arguments; i++)
-                      {
-                        ss[nb_input_arguments-i-1] = Stack.top();
-                        Stack.pop();
-                      }
-                    for (int i{0}; i < nb_input_arguments; i++)
-                      {
-                        tmp_out << ss[i];
-                        if (i < nb_input_arguments - 1)
-                          tmp_out << ", ";
-                      }
-                    tmp_out << ")";
-                    Stack.push(tmp_out.str());
-                  }
+                  s << function_name << "(" << arg_func_name << ", " << fc->get_row()+1 << ", {";
+                  print_args(nb_add_input_arguments);
+                  s << "})";
                   break;
                 case ExternalFunctionCallType::numericalSecondDerivative:
-                  {
-                    tmp_out.str("");
-                    tmp_out << function_name << "(";
-                    tmp_out << arg_func_name.c_str() << ", " << fc->get_row() << ", " << fc->get_col() << ", {";
-                    vector<string> ss(nb_input_arguments);
-                    for (int i{0}; i < nb_add_input_arguments; i++)
-                      {
-                        ss[nb_add_input_arguments-i-1] = Stack.top();
-                        Stack.pop();
-                      }
-                    for (int i{0}; i < nb_add_input_arguments; i++)
-                      {
-                        tmp_out << ss[i];
-                        if (i < nb_add_input_arguments - 1)
-                          tmp_out << ", ";
-                      }
-                    tmp_out << "})";
-                    Stack.push(tmp_out.str());
-                  }
-                  break;
-                case ExternalFunctionCallType::separatelyProvidedSecondDerivative:
-                  {
-                    tmp_out.str("");
-                    tmp_out << function_name << "(";
-                    vector<string> ss(nb_input_arguments);
-                    for (int i{0}; i < nb_input_arguments; i++)
-                      {
-                        ss[nb_input_arguments-i-1] = Stack.top();
-                        Stack.pop();
-                      }
-                    for (int i{0}; i < nb_input_arguments; i++)
-                      {
-                        tmp_out << ss[i];
-                        if (i < nb_input_arguments - 1)
-                          tmp_out << ", ";
-                      }
-                    tmp_out << ")";
-                    Stack.push(tmp_out.str());
-                  }
+                  s << function_name << "(" << arg_func_name << ", " << fc->get_row()+1 << ", " << fc->get_col()+1 << ", {";
+                  print_args(nb_add_input_arguments);
+                  s << "})";
                   break;
                 }
-              break;
+              Stack.emplace(s.str(), 100, nullopt);
             }
+            break;
           case Tags::FSTPTEF:
-            go_on = false;
-            var = static_cast<FSTPTEF_ *>(*it_code)->get_number();
-            tmp_out.str("");
-            switch (call_type)
+            {
+              int indx {static_cast<FSTPTEF_ *>(*it_code)->get_number()};
+              switch (call_type)
               {
               case ExternalFunctionCallType::levelWithoutDerivative:
-                tmp_out << "TEF(" << var << ") = " << Stack.top();
+                assign_lhs("TEF(" + to_string(indx+1) + ")");
                 break;
               case ExternalFunctionCallType::levelWithFirstDerivative:
-                tmp_out << "[TEF(" << var << "), TEFD(" << var << ") ]= " << Stack.top();
+                assign_lhs("[TEF(" + to_string(indx+1) + "), TEFD("  + to_string(indx+1) + ") ]");
                 break;
               case ExternalFunctionCallType::levelWithFirstAndSecondDerivative:
-                tmp_out << "[TEF(" << var << "), TEFD(" << var << "), TEFDD(" << var << ") ]= " << Stack.top();
+                assign_lhs("[TEF(" + to_string(indx+1) + "), TEFD("  + to_string(indx+1) + "), TEFDD("  + to_string(indx+1) + ") ]");
                 break;
               default:
-                break;
+                throw FatalExceptionHandling{"Unexpected external function call type"};
               }
-            Stack.pop();
+            }
             break;
           case Tags::FLDTEF:
-            var = static_cast<FLDTEF_ *>(*it_code)->get_number();
-            tmp_out.str("");
-            tmp_out << "TEF(" << var << ")";
-            Stack.push(tmp_out.str());
-
+            Stack.emplace("TEF(" + to_string(static_cast<FLDTEF_ *>(*it_code)->get_number()+1) + ")", 100, nullopt);
             break;
           case Tags::FSTPTEFD:
             {
-              go_on = false;
-              int indx{static_cast<FSTPTEFD_ *>(*it_code)->get_indx()};
-              int row{static_cast<FSTPTEFD_ *>(*it_code)->get_row()};
-              tmp_out.str("");
+              int indx {static_cast<FSTPTEFD_ *>(*it_code)->get_indx()};
+              int row {static_cast<FSTPTEFD_ *>(*it_code)->get_row()};
               if (call_type == ExternalFunctionCallType::numericalFirstDerivative)
-                tmp_out << "TEFD(" << indx << ", " << row << ") = " << Stack.top();
+                assign_lhs("TEFD(" + to_string(indx+1) + ", " + to_string(row+1) + ")");
               else if (call_type == ExternalFunctionCallType::separatelyProvidedFirstDerivative)
-                tmp_out << "TEFD(" << indx << ") = " << Stack.top();
-              Stack.pop();
+                assign_lhs("TEFD(" + to_string(indx+1) + ")");
             }
             break;
           case Tags::FLDTEFD:
             {
-              int indx{static_cast<FLDTEFD_ *>(*it_code)->get_indx()};
-              int row{static_cast<FLDTEFD_ *>(*it_code)->get_row()};
-              tmp_out.str("");
-              tmp_out << "TEFD(" << indx << ", " << row << ")";
-              Stack.push(tmp_out.str());
+              int indx {static_cast<FLDTEFD_ *>(*it_code)->get_indx()};
+              int row {static_cast<FLDTEFD_ *>(*it_code)->get_row()};
+              Stack.emplace("TEFD(" + to_string(indx+1) + ", " + to_string(row+1) + ")", 100, nullopt);
             }
             break;
           case Tags::FSTPTEFDD:
             {
-              go_on = false;
-              int indx{static_cast<FSTPTEFDD_ *>(*it_code)->get_indx()};
-              int row{static_cast<FSTPTEFDD_ *>(*it_code)->get_row()};
-              int col{static_cast<FSTPTEFDD_ *>(*it_code)->get_col()};
-              tmp_out.str("");
+              int indx {static_cast<FSTPTEFDD_ *>(*it_code)->get_indx()};
+              int row {static_cast<FSTPTEFDD_ *>(*it_code)->get_row()};
+              int col {static_cast<FSTPTEFDD_ *>(*it_code)->get_col()};
               if (call_type == ExternalFunctionCallType::numericalSecondDerivative)
-                tmp_out << "TEFDD(" << indx << ", " << row << ", " << col << ") = " << Stack.top();
+                assign_lhs("TEFDD(" + to_string(indx+1) + ", " + to_string(row+1) + ", " + to_string(col+1) + ")");
               else if (call_type == ExternalFunctionCallType::separatelyProvidedSecondDerivative)
-                tmp_out << "TEFDD(" << indx << ") = " << Stack.top();
-              Stack.pop();
+                assign_lhs("TEFDD(" + to_string(indx+1) + ")");
             }
-
             break;
           case Tags::FLDTEFDD:
             {
-              int indx{static_cast<FLDTEFDD_ *>(*it_code)->get_indx()};
-              int row{static_cast<FLDTEFDD_ *>(*it_code)->get_row()};
-              int col{static_cast<FSTPTEFDD_ *>(*it_code)->get_col()};
-              tmp_out.str("");
-              tmp_out << "TEFDD(" << indx << ", " << row << ", " << col << ")";
-              Stack.push(tmp_out.str());
+              int indx {static_cast<FLDTEFDD_ *>(*it_code)->get_indx()};
+              int row {static_cast<FLDTEFDD_ *>(*it_code)->get_row()};
+              int col {static_cast<FSTPTEFDD_ *>(*it_code)->get_col()};
+              Stack.emplace("TEFDD(" + to_string(indx+1) + ", " + to_string(row+1) + ", " + to_string(col+1) + ")", 100, nullopt);
             }
             break;
           case Tags::FJMPIFEVAL:
-            tmp_out.str("");
-            tmp_out << "if (~evaluate)";
+            Stack.emplace("if (~evaluate)", 100, nullopt);
             go_on = false;
             break;
           case Tags::FJMP:
-            tmp_out.str("");
-            tmp_out << "else";
+            Stack.emplace("else", 100, nullopt);
             go_on = false;
             break;
           case Tags::FENDBLOCK:
@@ -1308,15 +963,12 @@ protected:
             go_on = false;
             break;
           default:
-            mexPrintf("Error tag=%d unknown\n", (*it_code)->op_code); mexEvalString("drawnow;");
             throw FatalExceptionHandling(" in print_expression, unknown opcode "
-                                         + to_string(static_cast<int>((*it_code)->op_code))
-                                         + "!! FENDEQU="
-                                         + to_string(static_cast<int>(Tags::FENDEQU)) + "\n");
+                                         + to_string(static_cast<int>((*it_code)->op_code)) + "\n");
           }
         it_code++;
       }
-    return { tmp_out.str(), it_code };
+    return { get<0>(Stack.top()), it_code };
   }
   
 public:
