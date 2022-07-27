@@ -1,3 +1,94 @@
+Announcement for Dynare 5.2 (on 2022-07-27)
+===========================================
+
+We are pleased to announce the release of Dynare 5.2.
+
+This maintenance release fixes various bugs.
+
+The Windows, macOS and source packages are already available for download at
+[the Dynare website](https://www.dynare.org/download/).
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 8.3 (R2014a) to
+9.12 (R2022a), and with GNU Octave version 6.4.0 (under Windows).
+
+Note for macOS users with an Apple Silicon processor, and who are also MATLAB
+users: the official MATLAB version for use on those processors is still the
+Intel version (running through Rosetta 2), so the official Dynare package for
+download on our website is built for Intel only. However, since Mathworks has
+released a beta version of MATLAB for Apple Silicon, we created a beta package
+of Dynare that you can try with it. See this forum thread for more details:
+https://forum.dynare.org/t/testers-wanted-release-of-dynare-5-x-beta-for-apple-silicon-m1-m2-chips/20499
+
+Here is a list of the problems identified in version 5.1 and that have been
+fixed in version 5.2:
+
+* Problems with the `steady_state` operator:
+  + if a `steady_state` operator contained an algebraic expression appearing
+    multiple times in the model and sufficiently complex to trigger the
+    creation of a temporary term, then the result of the operator would be
+    wrong (the operator was essentially ignored)
+  + if a `steady_state` operator contained a call to an external function, then
+    the result of the operator would be wrong (the operator was essentially
+    ignored). A proper fix to this problem would require substantial
+    architectural changes, so for now it is forbidden to use an external
+    function inside a `steady_state` operator
+* Pruning in particle filtering at order 2 was not using the exact same formula
+  as the original Kim et al. (2008) paper. A second-order term entered the
+  cross-product between states and shocks, where it should have been a
+  first-order term. This however would not lead to explosive trajectories in
+  practice
+* The `simul_replic` option of the `stoch_simul` command would not store the
+  binary file in the `Output` folder
+* Problems with Ramsey policy (`ramsey_model`/`ramsey_policy` commands):
+  + steady state files would not work when auxiliary variables included
+    Lagrange multipliers
+  + for linear competitive equilibrium laws of motion, welfare evaluated at
+    higher order was erroneously equated to steady state welfare
+* The `discretionary_policy` command would not always correctly infer the
+  number of instruments and equations, leading to spurious error messages
+* Perfect foresight simulations of purely forward or backward models would
+  crash if complex numbers were encountered
+* When using both `block` and `bytecode` options of the `model` block, if the
+  model was such that a sufficiently complex algebraic expression appeared both
+  in the residuals and in the derivatives, leading to the creation of a
+  temporary term, then the results could be incorrect under some circumstances
+* When using the `bytecode` option of the `model` block, leads of more than
+  +127 or lags of less than -128 were not correctly handled
+* Problems with the solver under occasionally binding constraints
+  (`occbin_solver` command):
+  + when solving the baseline regime, it would not properly handle errors like
+    Blanchard-Kahn violations
+  + the piecewise linear Kalman filter (PKF) would crash if the model solution
+    could not be computed for a parameter draw
+  + the `oo_.FilteredVariablesKStepAhead` and `oo_.UpdatedVariables`
+    MATLAB/Octave variables would contain the steady state twice
+  + the inversion filter would crash if the `filter_step_ahead` or
+    `state_uncertainty` options were requested
+  + the PKF would crash if `filter_step_ahead=1` was specified
+  + the PKF would crash if the `state_uncertainty` option was specified
+    together with the `smoother_redux` option
+  + the last regime before the system is back to normal times in the
+    two-constraints case could be wrongly set, possibly leading to wrong
+    simulations, lack of convergence or crashes
+* Problems with identification (`identification` command):
+  + with `prior_mc>1` specified, it would incorrectly display the share of rank
+    deficient Jacobians
+  + it would crash during plotting or displaying identification strength when
+    the necessary identification criteria based on moments could not be
+    computed
+* The `plot_shock_decomposition` command would crash if invalid field names
+  were encountered
+* The `shock_decomposition` command would not pass specified initial dates to
+  generated plots
+* Various pathological cases encountered in steady state finding could lead to
+  a crash
+* The `solve_algo=0` option of the `steady` command would not honor `tolx`
+* In the `dynare_sensitivity` command, stability mapping would not correctly
+  honor the prior bounds
+
+
 Announcement for Dynare 5.1 (on 2022-04-06)
 ===========================================
 
