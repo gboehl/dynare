@@ -257,7 +257,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       params = mxGetPr(mxGetFieldByNumber(M_, 0, field));
     }
 
-  ErrorMsg emsg;
+  BasicSymbolTable symbol_table;
   vector<string> dates;
 
   if (extended_path)
@@ -416,8 +416,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               char name[100];
               mxGetString(tmp, name, 100);
               splan[i].var = name;
-              SymbolType variable_type = SymbolType::endogenous;
-              int exo_num = emsg.get_ID(name, &variable_type);
+              auto [variable_type, exo_num] = symbol_table.getIDAndType(name);
               if (variable_type == SymbolType::exogenous)
                 splan[i].var_num = exo_num;
               else
@@ -429,8 +428,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               char name[100];
               mxGetString(tmp, name, 100);
               splan[i].exo = name;
-              SymbolType variable_type;
-              int exo_num = emsg.get_ID(name, &variable_type);
+              auto [variable_type, exo_num] = symbol_table.getIDAndType(name);
               if (variable_type == SymbolType::endogenous)
                 splan[i].exo_num = exo_num;
               else
@@ -478,8 +476,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               char name[100];
               mxGetString(tmp, name, 100);
               spfplan[i].var = name;
-              SymbolType variable_type = SymbolType::endogenous;
-              int exo_num = emsg.get_ID(name, &variable_type);
+              auto [variable_type, exo_num] = symbol_table.getIDAndType(name);
               if (variable_type == SymbolType::exogenous)
                 splan[i].var_num = exo_num;
               else
@@ -491,8 +488,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               char name[100];
               mxGetString(tmp, name, 100);
               spfplan[i].exo = name;
-              SymbolType variable_type;
-              int exo_num = emsg.get_ID(name, &variable_type);
+              auto [variable_type, exo_num] = symbol_table.getIDAndType(name);
               if (variable_type == SymbolType::endogenous)
                 spfplan[i].exo_num = exo_num;
               else
@@ -715,9 +711,11 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   size_t nb_row_x = row_x;
 
   clock_t t0 = clock();
-  Interpreter interprete(params, y, ya, x, steady_yd, steady_xd, direction, y_size, nb_row_x, periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, y_decal,
-                         markowitz_c, file_name, minimal_solving_periods, stack_solve_algo, solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms, steady_state,
-                         print_it, col_x, col_y);
+  Interpreter interprete {params, y, ya, x, steady_yd, steady_xd, direction, y_size, nb_row_x,
+                          periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, y_decal,
+                          markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
+                          solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms,
+                          steady_state, print_it, col_x, col_y, symbol_table};
   string f(fname);
   mxFree(fname);
   int nb_blocks = 0;

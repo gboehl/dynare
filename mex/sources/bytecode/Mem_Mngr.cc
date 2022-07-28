@@ -71,19 +71,19 @@ Mem_Mngr::mxMalloc_NZE()
       CHUNK_SIZE += CHUNK_BLCK_SIZE;
       Nb_CHUNK++;
       NZE_Mem = static_cast<NonZeroElem *>(mxMalloc(CHUNK_BLCK_SIZE*sizeof(NonZeroElem))); /*The block of memory allocated*/
-      error_msg.test_mxMalloc(NZE_Mem, __LINE__, __FILE__, __func__, CHUNK_BLCK_SIZE*sizeof(NonZeroElem));
+      ErrorMsg::test_mxMalloc(NZE_Mem, __LINE__, __FILE__, __func__, CHUNK_BLCK_SIZE*sizeof(NonZeroElem));
       NZE_Mem_Allocated.push_back(NZE_Mem);
       if (!NZE_Mem)
         mexPrintf("Not enough memory available\n");
       if (NZE_Mem_add)
         {
           NZE_Mem_add = static_cast<NonZeroElem **>(mxRealloc(NZE_Mem_add, CHUNK_SIZE*sizeof(NonZeroElem *))); /*We have to redefine the size of pointer on the memory*/
-          error_msg.test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
+          ErrorMsg::test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
         }
       else
         {
           NZE_Mem_add = static_cast<NonZeroElem **>(mxMalloc(CHUNK_SIZE*sizeof(NonZeroElem *))); /*We have to define the size of pointer on the memory*/
-          error_msg.test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
+          ErrorMsg::test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
         }
 
       if (!NZE_Mem_add)

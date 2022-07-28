@@ -49,7 +49,7 @@ public:
               int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, int y_decal_arg, double markowitz_c_arg,
               string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
               bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
-              bool steady_state_arg, bool print_it_arg, int col_x_arg, int col_y_arg);
+              bool steady_state_arg, bool print_it_arg, int col_x_arg, int col_y_arg, BasicSymbolTable &symbol_table_arg);
   bool extended_path(const string &file_name, const string &bin_basename, bool evaluate, int block, int &nb_blocks, int nb_periods, const vector<s_plan> &sextended_path, const vector<s_plan> &sconstrained_extended_path, const vector<string> &dates, const table_conditional_global_type &table_conditional_global);
   bool compute_blocks(const string &file_name, const string &bin_basename, bool evaluate, int block, int &nb_blocks);
   void check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, const vector<s_plan> &sconstrained_extended_path);

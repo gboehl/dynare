@@ -48,7 +48,6 @@ public:
   Mem_Mngr();
   void fixe_file_name(string filename_arg);
   bool swp_f;
-  ErrorMsg error_msg;
 private:
   v_NonZeroElem Chunk_Stack;
   unsigned int CHUNK_SIZE, CHUNK_BLCK_SIZE, Nb_CHUNK;

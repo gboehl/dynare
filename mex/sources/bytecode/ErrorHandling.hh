@@ -38,6 +38,8 @@
 #define BYTECODE_MEX
 #include "Bytecode.hh"
 
+#include "BasicSymbolTable.hh"
+
 using namespace std;
 
 constexpr int NO_ERROR_ON_EXIT = 0, ERROR_ON_EXIT = 1;
@@ -166,48 +168,12 @@ extern "C" bool utIsInterruptPending();
 class ErrorMsg
 {
 protected:
+  ErrorMsg(BasicSymbolTable &symbol_table_arg) : symbol_table {symbol_table_arg}
+  {
+  }
+  BasicSymbolTable &symbol_table;
   ExpressionType EQN_type;
   int EQN_equation, EQN_block, EQN_block_number, EQN_dvar1;
-  size_t endo_name_length; // Maximum length of endogenous names
-  vector<string> P_endo_names;
-private:
-  bool is_load_variable_list;
-  vector<string> P_exo_names, P_param_names;
-  vector<tuple<string, SymbolType, unsigned int>> Variable_list;
-
-public:
-  ErrorMsg() : is_load_variable_list {false}
-  {
-    mxArray *M_ = mexGetVariable("global", "M_");
-    if (!M_)
-      mexErrMsgTxt("Can't find global variable M_");
-
-    auto get_field_names = [&](const char *symbol_type)
-    {
-      vector<string> r;
-      if (mxGetFieldNumber(M_, symbol_type) != -1)
-        {
-          auto M_field = mxGetFieldByNumber(M_, 0, mxGetFieldNumber(M_, symbol_type));
-          if (!mxIsCell(M_field))
-            mexErrMsgTxt(("M_."s + symbol_type + " is not a cell array").c_str());
-          for (size_t i = 0; i < mxGetNumberOfElements(M_field); i++)
-            {
-              const mxArray *cell_mx = mxGetCell(M_field, i);
-              if (!(cell_mx && mxIsChar(cell_mx)))
-                mexErrMsgTxt(("M_."s + symbol_type + " contains a cell which is not a character array").c_str());
-              r.emplace_back(mxArrayToString(cell_mx));
-            }
-        }
-      return r;
-    };
-    P_endo_names = get_field_names("endo_names");
-    P_exo_names = get_field_names("exo_names");
-    P_param_names = get_field_names("param_names");
-
-    endo_name_length = 0;
-    for (const auto &n : P_endo_names)
-      endo_name_length = max(endo_name_length, n.size());
-  }
 
 private:
   /* Given a string which possibly contains a floating-point exception
@@ -241,72 +207,7 @@ private:
     return line1 + "\n" + line2;
   }
 
-  void
-  load_variable_list()
-  {
-    if (exchange(is_load_variable_list, true))
-      return;
-    for (size_t variable_num {0}; variable_num < P_endo_names.size(); variable_num++)
-      Variable_list.emplace_back(P_endo_names[variable_num], SymbolType::endogenous, variable_num);
-    for (size_t variable_num {0}; variable_num < P_exo_names.size(); variable_num++)
-      Variable_list.emplace_back(P_exo_names[variable_num], SymbolType::exogenous, variable_num);
-  }
-
-public:
-  int
-  get_ID(const string &variable_name, SymbolType *variable_type)
-  {
-    load_variable_list();
-    size_t n = Variable_list.size();
-    int i = 0;
-    bool notfound = true;
-    while (notfound && i < static_cast<int>(n))
-      {
-        if (variable_name == get<0>(Variable_list[i]))
-          {
-            notfound = false;
-            *variable_type = get<1>(Variable_list[i]);
-            return get<2>(Variable_list[i]);
-          }
-        i++;
-      }
-    return -1;
-  }
-
 protected:
-  string
-  get_variable(SymbolType variable_type, unsigned int variable_num) const
-  {
-    switch (variable_type)
-      {
-      case SymbolType::endogenous:
-        if (variable_num < P_endo_names.size())
-          return P_endo_names[variable_num];
-        else
-          mexPrintf("=> Unknown endogenous variable # %d", variable_num);
-        break;
-      case SymbolType::exogenous:
-        if (variable_num < P_exo_names.size())
-          return P_exo_names[variable_num];
-        else
-          mexPrintf("=> Unknown exogenous variable # %d", variable_num);
-        break;
-      case SymbolType::exogenousDet:
-        mexErrMsgTxt("get_variable: exogenous deterministic not supported");
-        break;
-      case SymbolType::parameter:
-        if (variable_num < P_param_names.size())
-          return P_param_names[variable_num];
-        else
-          mexPrintf("=> Unknown parameter # %d", variable_num);
-        break;
-      default:
-        break;
-      }
-    cerr << "ErrorHandling::get_variable: Internal error";
-    exit(EXIT_FAILURE); // Silence GCC warning
-  }
-
   string
   error_location(it_code_type expr_begin, it_code_type faulty_op, bool steady_state, int it_)
   {
@@ -335,16 +236,16 @@ protected:
       case ExpressionType::ModelEquation:
         break;
       case ExpressionType::FirstEndoDerivative:
-        Error_loc << " with respect to endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
+        Error_loc << " with respect to endogenous variable " << symbol_table.getName(SymbolType::endogenous, EQN_dvar1);
         break;
       case ExpressionType::FirstOtherEndoDerivative:
-        Error_loc << " with respect to other endogenous variable " << get_variable(SymbolType::endogenous, EQN_dvar1);
+        Error_loc << " with respect to other endogenous variable " << symbol_table.getName(SymbolType::endogenous, EQN_dvar1);
         break;
       case ExpressionType::FirstExoDerivative:
-        Error_loc << " with respect to exogenous variable " << get_variable(SymbolType::exogenous, EQN_dvar1);
+        Error_loc << " with respect to exogenous variable " << symbol_table.getName(SymbolType::exogenous, EQN_dvar1);
         break;
       case ExpressionType::FirstExodetDerivative:
-        Error_loc << " with respect to deterministic exogenous variable " << get_variable(SymbolType::exogenousDet, EQN_dvar1);
+        Error_loc << " with respect to deterministic exogenous variable " << symbol_table.getName(SymbolType::exogenousDet, EQN_dvar1);
         break;
       }
     if (!steady_state)
@@ -447,7 +348,7 @@ protected:
                 case SymbolType::endogenous:
                 case SymbolType::exogenous:
                 case SymbolType::exogenousDet:
-                  Stack.emplace(get_variable(type, var) + lag_to_string(lag), 100, nullopt);
+                  Stack.emplace(symbol_table.getName(type, var) + lag_to_string(lag), 100, nullopt);
                   break;
                 default:
                   throw FatalExceptionHandling{"FLDV: Unknown variable type\n"};
@@ -464,7 +365,7 @@ protected:
                 case SymbolType::endogenous:
                 case SymbolType::exogenous:
                 case SymbolType::exogenousDet:
-                  Stack.emplace(get_variable(type, var), 100, nullopt);
+                  Stack.emplace(symbol_table.getName(type, var), 100, nullopt);
                   break;
                 default:
                   throw FatalExceptionHandling{"FLDSV: Unknown variable type\n"};
@@ -481,7 +382,7 @@ protected:
                 case SymbolType::endogenous:
                 case SymbolType::exogenous:
                 case SymbolType::exogenousDet:
-                  Stack.emplace(get_variable(type, var), 100, nullopt);
+                  Stack.emplace(symbol_table.getName(type, var), 100, nullopt);
                   break;
                 default:
                   throw FatalExceptionHandling{"FLDVS: Unknown variable type\n"};
@@ -520,7 +421,7 @@ protected:
                 case SymbolType::endogenous:
                 case SymbolType::exogenous:
                 case SymbolType::exogenousDet:
-                  assign_lhs(get_variable(type, var) + lag_to_string(lag));
+                  assign_lhs(symbol_table.getName(type, var) + lag_to_string(lag));
                   break;
                 default:
                   throw FatalExceptionHandling{"FSTPV: Unknown variable type\n"};
@@ -537,7 +438,7 @@ protected:
                 case SymbolType::endogenous:
                 case SymbolType::exogenous:
                 case SymbolType::exogenousDet:
-                  assign_lhs(get_variable(type, var));
+                  assign_lhs(symbol_table.getName(type, var));
                   break;
                 default:
                   throw FatalExceptionHandling{"FSTPSV: Unknown variable type\n"};

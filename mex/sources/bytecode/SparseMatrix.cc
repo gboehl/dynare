@@ -23,8 +23,8 @@
 #include "SparseMatrix.hh"
 
 dynSparseMatrix::dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg,
-                                 int minimal_solving_periods_arg) :
-  Evaluate(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg)
+                                 int minimal_solving_periods_arg, BasicSymbolTable &symbol_table_arg) :
+  Evaluate {y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg}
 {
   pivotva = nullptr;
   g_save_op = nullptr;
@@ -3917,7 +3917,7 @@ dynSparseMatrix::preconditioner_print_out(string s, int preconditioner, bool ss)
 }
 
 void
-dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax,int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, const vector<string> &P_endo_names, const vector_table_conditional_local_type &vector_table_conditional_local)
+dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax,int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, const vector_table_conditional_local_type &vector_table_conditional_local)
 {
   double top = 0.5;
   double bottom = 0.1;
@@ -3955,9 +3955,9 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
                     break;
                   }
               if (select)
-                mexPrintf("-> variable %s (%d) at time %d = %f direction = %f\n", P_endo_names[j].c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
+                mexPrintf("-> variable %s (%d) at time %d = %f direction = %f\n", symbol_table.getName(SymbolType::endogenous, j).c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
               else
-                mexPrintf("   variable %s (%d) at time %d = %f direction = %f\n", P_endo_names[j].c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
+                mexPrintf("   variable %s (%d) at time %d = %f direction = %f\n", symbol_table.getName(SymbolType::endogenous, j).c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
             }
           if (iter == 0)
             throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, the initial values of endogenous variables are too far from the solution.\nChange them!\n");

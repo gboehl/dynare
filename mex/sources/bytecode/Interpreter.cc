@@ -31,8 +31,8 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
                          int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, int y_decal_arg, double markowitz_c_arg,
                          string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
                          bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
-                         bool steady_state_arg, bool print_it_arg, int col_x_arg, int col_y_arg)
-: dynSparseMatrix(y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg)
+                         bool steady_state_arg, bool print_it_arg, int col_x_arg, int col_y_arg, BasicSymbolTable &symbol_table_arg)
+: dynSparseMatrix {y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg}
 {
   params = params_arg;
   y = y_arg;
@@ -456,7 +456,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
                 copy_n(y_save, y_size*(periods+y_kmax+y_kmin), y);
               u_count = u_count_saved;
               int prev_iter = iter;
-              Simulate_Newton_Two_Boundaries(block_num, symbol_table_endo_nbr, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, P_endo_names, vector_table_conditional_local);
+              Simulate_Newton_Two_Boundaries(block_num, symbol_table_endo_nbr, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, vector_table_conditional_local);
               iter++;
               if (iter > prev_iter)
                 {
@@ -481,7 +481,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
           end_code = it_code;
 
           cvg = false;
-          Simulate_Newton_Two_Boundaries(block_num, symbol_table_endo_nbr, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, P_endo_names, vector_table_conditional_local);
+          Simulate_Newton_Two_Boundaries(block_num, symbol_table_endo_nbr, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, vector_table_conditional_local);
           max_res = 0; max_res_idx = 0;
         }
       slowc = 1; // slowc is modified when stack_solve_algo=4, so restore it
@@ -579,8 +579,8 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, const vector<s_
       if (find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()
           && find(exogenous.begin(), exogenous.end(), it.var_num) == exogenous.end())
         throw FatalExceptionHandling("\n the conditional forecast involving as constrained variable "
-                                     + get_variable(SymbolType::endogenous, it.exo_num)
-                                     + " and as endogenized exogenous " + get_variable(SymbolType::exogenous, it.var_num)
+                                     + symbol_table.getName(SymbolType::endogenous, it.exo_num)
+                                     + " and as endogenized exogenous " + symbol_table.getName(SymbolType::exogenous, it.var_num)
                                      + " that do not appear in block=" + to_string(Block_Count+1)
                                      + ")\n You should not use block in model options\n");
       else if (find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()
@@ -593,7 +593,7 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, const vector<s_
                != previous_block_exogenous.end())
         throw FatalExceptionHandling("\n the conditional forecast involves in the block "
                                      + to_string(Block_Count+1) + " the endogenized exogenous "
-                                     + get_variable(SymbolType::exogenous, it.var_num)
+                                     + symbol_table.getName(SymbolType::exogenous, it.var_num)
                                      + " that appear also in a previous block\n You should not use block in model options\n");
     }
   for (auto it : exogenous)
@@ -830,7 +830,7 @@ Interpreter::extended_path(const string &file_name, const string &bin_basename, 
   vector_table_conditional_local_type vector_table_conditional_local;
   vector_table_conditional_local.clear();
 
-  int endo_name_length_l = endo_name_length;
+  int endo_name_length_l = static_cast<int>(symbol_table.maxEndoNameLength());
   for (int j = 0; j < col_x* nb_row_x; j++)
     {
       x_save[j] = x[j];
@@ -898,7 +898,7 @@ Interpreter::extended_path(const string &file_name, const string &bin_basename, 
         {
           ostringstream res1;
           res1 << std::scientific << max_res;
-          mexPrintf("%s|%s| %4d  |  x  |\n", elastic(P_endo_names[max_res_idx], endo_name_length_l+2, true).c_str(), elastic(res1.str(), real_max_length+2, false).c_str(), iter);
+          mexPrintf("%s|%s| %4d  |  x  |\n", elastic(symbol_table.getName(SymbolType::endogenous, max_res_idx), endo_name_length_l+2, true).c_str(), elastic(res1.str(), real_max_length+2, false).c_str(), iter);
           mexPrintf(line.c_str());
           mexEvalString("drawnow;");
         }

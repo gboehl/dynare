@@ -9,7 +9,8 @@ nodist_bytecode_SOURCES = \
 	Interpreter.cc \
 	Mem_Mngr.cc \
 	SparseMatrix.cc \
-	Evaluate.cc
+	Evaluate.cc \
+	BasicSymbolTable.cc
 
 BUILT_SOURCES = $(nodist_bytecode_SOURCES)
 CLEANFILES = $(nodist_bytecode_SOURCES)
