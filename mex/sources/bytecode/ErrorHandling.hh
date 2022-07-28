@@ -627,7 +627,7 @@ protected:
                   auto [arg3, prec_arg3, op_arg3] {Stack.top()};
                   Stack.pop();
                   Stack.emplace((it_code == faulty_op ? "{PowerDeriv}(" : "PowerDeriv(") + arg1
-                                + ", " + arg2 + ", " + arg2 + ")", 100, nullopt);
+                                + ", " + arg2 + ", " + arg3 + ")", 100, nullopt);
                 }
               else
                 {
