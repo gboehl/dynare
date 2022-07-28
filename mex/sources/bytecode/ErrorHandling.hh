@@ -214,32 +214,31 @@ private:
     (materialized by an operator between braces), returns a string spanning two
     lines, the first line containing the original string without the braces,
     the second line containing tildes (~) under the faulty operator. */
-  string
+  static string
   add_underscore_to_fpe(const string &str)
   {
-    string temp;
-    int pos1 = -1, pos2 = -1;
-    string tmp_n(str.length(), ' ');
-    for (const char & i : str)
+    string line1;
+    optional<size_t> pos1, pos2;
+    string line2(str.length(), ' ');
+    for (char i : str)
       {
         if (i != '{' && i != '}')
-          temp += i;
+          line1 += i;
         else
           {
             if (i == '{')
-              pos1 = static_cast<int>(temp.length());
+              pos1 = line1.length();
             else
-              pos2 = static_cast<int>(temp.length());
-            if (pos1 >= 0 && pos2 >= 0)
+              pos2 = line1.length();
+            if (pos1 && pos2)
               {
-                tmp_n.erase(pos1, pos2-pos1+1);
-                tmp_n.insert(pos1, pos2-pos1, '~');
-                pos1 = pos2 = -1;
+                line2.replace(*pos1, *pos2-*pos1, *pos2-*pos1, '~');
+                pos1.reset();
+                pos2.reset();
               }
           }
       }
-    temp += "\n" + tmp_n;
-    return temp;
+    return line1 + "\n" + line2;
   }
 
   void
