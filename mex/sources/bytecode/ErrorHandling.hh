@@ -80,7 +80,10 @@ public:
   LogExceptionHandling(double value_arg) : FloatingPointExceptionHandling("log(X)"),
                                            value(value_arg)
   {
-    completeErrorMsg(" with X=" + to_string(value) + "\n");
+    // We don’t use std::to_string(), because it uses fixed formatting
+    ostringstream s;
+    s << " with X=" << defaultfloat << value << "\n";
+    completeErrorMsg(s.str());
   }
 };
 
@@ -91,7 +94,10 @@ public:
   Log10ExceptionHandling(double value_arg) : FloatingPointExceptionHandling("log10(X)"),
                                              value(value_arg)
   {
-    completeErrorMsg(" with X=" + to_string(value) + "\n");
+    // We don’t use std::to_string(), because it uses fixed formatting
+    ostringstream s;
+    s << " with X=" << defaultfloat << value << "\n";
+    completeErrorMsg(s.str());
   }
 };
 
@@ -103,7 +109,10 @@ public:
                                                                   value1(value1_arg),
                                                                   value2(value2_arg)
   {
-    completeErrorMsg(" with X=" + to_string(value2) + "\n");
+    // We don’t use std::to_string(), because it uses fixed formatting
+    ostringstream s;
+    s << " with X=" << defaultfloat << value2 << "\n";
+    completeErrorMsg(s.str());
   }
 };
 
@@ -115,10 +124,13 @@ public:
                                                                value1(value1_arg),
                                                                value2(value2_arg)
   {
-    if (fabs(value1) > 1e-10)
-      completeErrorMsg(" with X=" + to_string(value1) + "\n");
-    else
-      completeErrorMsg(" with X=" + to_string(value1) + " and a=" + to_string(value2) + "\n");
+    // We don’t use std::to_string(), because it uses fixed formatting
+    ostringstream s;
+    s << " with X=" << defaultfloat << value1;
+    if (fabs(value1) <= 1e-10)
+      s << " and a=" << value2;
+    s << "\n";
+    completeErrorMsg(s.str());
   };
 };
 
@@ -408,7 +420,12 @@ protected:
             Stack.emplace("0", 100, nullopt);
             break;
           case Tags::FLDC:
-            Stack.emplace(to_string(static_cast<FLDC_ *>(*it_code)->get_value()), 100, nullopt);
+            {
+              // We don’t use std::to_string(), because it uses fixed formatting
+              ostringstream s;
+              s << defaultfloat << static_cast<FLDC_ *>(*it_code)->get_value();
+              Stack.emplace(s.str(), 100, nullopt);
+            }
             break;
           case Tags::FSTPV:
             {
