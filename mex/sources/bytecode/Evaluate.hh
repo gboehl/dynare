@@ -23,6 +23,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <optional>
 
 #define BYTECODE_MEX
 #include "Bytecode.hh"
