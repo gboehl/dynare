@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef INTERPRETER_HH_INCLUDED
-#define INTERPRETER_HH_INCLUDED
+#ifndef _INTERPRETER_HH
+#define _INTERPRETER_HH
 
 #include <vector>
 #include <string>
@@ -88,4 +88,4 @@ public:
   }
 };
 
-#endif
+#endif // _INTERPRETER_HH

@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MEM_MNGR_HH_INCLUDED
-#define MEM_MNGR_HH_INCLUDED
+#ifndef _MEM_MNGR_HH
+#define _MEM_MNGR_HH
 
 #include <string>
 #include <vector>
@@ -60,4 +60,4 @@ private:
   string filename_mem;
 };
 
-#endif
+#endif // _MEM_MNGR_HH

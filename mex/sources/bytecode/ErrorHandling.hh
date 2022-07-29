@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ERROR_HANDLING
-#define ERROR_HANDLING
+#ifndef _ERROR_HANDLING_HH
+#define _ERROR_HANDLING_HH
 
 #include <vector>
 #include <utility>
@@ -897,4 +897,4 @@ public:
   }
 };
 
-#endif
+#endif // _ERROR_HANDLING_HH

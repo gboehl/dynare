@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SPARSEMATRIX_HH_INCLUDED
-#define SPARSEMATRIX_HH_INCLUDED
+#ifndef _SPARSEMATRIX_HH
+#define _SPARSEMATRIX_HH
 
 #include <utility>
 #include <vector>
@@ -174,4 +174,4 @@ protected:
   mxArray *A_m_save, *b_m_save;
 };
 
-#endif
+#endif // _SPARSEMATRIX_HH

@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef EVALUATE_HH_INCLUDED
-#define EVALUATE_HH_INCLUDED
+#ifndef _EVALUATE_HH
+#define _EVALUATE_HH
 
 #include <vector>
 #include <string>
@@ -96,4 +96,4 @@ public:
   bool compute_complete(double lambda, double *crit);
 };
 
-#endif
+#endif // _EVALUATE_HH
