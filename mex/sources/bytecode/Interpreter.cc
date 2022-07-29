@@ -297,7 +297,7 @@ Interpreter::evaluate_a_block(bool initialization)
       mxFree(r);
       break;
     case BlockSimulationType::unknown:
-      throw FatalExceptionHandling("UNKNOWN block simulation type: impossible case");
+      throw FatalException{"UNKNOWN block simulation type: impossible case"};
     }
 }
 
@@ -467,9 +467,9 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
                 }
             }
           if (!cvg)
-            throw FatalExceptionHandling(" in Solve two boundaries, convergence not achieved in block "
-                                         + to_string(block_num+1) + ", after "
-                                         + to_string(iter) + " iterations\n");
+            throw FatalException{"In Solve two boundaries, convergence not achieved in block "
+                                 + to_string(block_num+1) + ", after "
+                                 + to_string(iter) + " iterations"};
         }
       else
         {
@@ -502,7 +502,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
       End_Solver();
       break;
     default:
-      throw FatalExceptionHandling(" in simulate_a_block, Unknown type = " + to_string(static_cast<int>(type)) + "\n");
+      throw FatalException{"In simulate_a_block, Unknown type = " + to_string(static_cast<int>(type))};
       return ERROR_ON_EXIT;
     }
   return NO_ERROR_ON_EXIT;
@@ -562,11 +562,11 @@ Interpreter::ReadCodeFile(string file_name, CodeLoad &code)
   code_liste = code.get_op_code(file_name);
   EQN_block_number = code.get_block_number();
   if (!code_liste.size())
-    throw FatalExceptionHandling(" in compute_blocks, " + file_name + ".cod cannot be opened\n");
+    throw FatalException{"In compute_blocks, " + file_name + ".cod cannot be opened"};
   if (block >= code.get_block_number())
-    throw FatalExceptionHandling(" in compute_blocks, input argument block = " + to_string(block+1)
-                                 + " is greater than the number of blocks in the model ("
-                                 + to_string(code.get_block_number()) + " see M_.block_structure_stat.block)\n");
+    throw FatalException{"In compute_blocks, input argument block = " + to_string(block+1)
+                         + " is greater than the number of blocks in the model ("
+                         + to_string(code.get_block_number()) + " see M_.block_structure_stat.block)"};
 }
 
 void
@@ -578,23 +578,23 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, const vector<s_
     {
       if (find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()
           && find(exogenous.begin(), exogenous.end(), it.var_num) == exogenous.end())
-        throw FatalExceptionHandling("\n the conditional forecast involving as constrained variable "
-                                     + symbol_table.getName(SymbolType::endogenous, it.exo_num)
-                                     + " and as endogenized exogenous " + symbol_table.getName(SymbolType::exogenous, it.var_num)
-                                     + " that do not appear in block=" + to_string(Block_Count+1)
-                                     + ")\n You should not use block in model options\n");
+        throw FatalException{"\nThe conditional forecast involving as constrained variable "
+                             + symbol_table.getName(SymbolType::endogenous, it.exo_num)
+                             + " and as endogenized exogenous " + symbol_table.getName(SymbolType::exogenous, it.var_num)
+                             + " that do not appear in block=" + to_string(Block_Count+1)
+                             + ")\nYou should not use block in model options"};
       else if (find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()
                && find(exogenous.begin(), exogenous.end(), it.var_num) != exogenous.end()
                && (fb->get_type() == BlockSimulationType::evaluateForward
                    || fb->get_type() == BlockSimulationType::evaluateBackward))
-        throw FatalExceptionHandling("\n the conditional forecast cannot be implemented for the block="
-                                     + to_string(Block_Count+1) + ") that has to be evaluated instead to be solved\n You should not use block in model options\n");
+        throw FatalException{"\nThe conditional forecast cannot be implemented for the block="
+                             + to_string(Block_Count+1) + ") that has to be evaluated instead to be solved\nYou should not use block in model options"};
       else if (find(previous_block_exogenous.begin(), previous_block_exogenous.end(), it.var_num)
                != previous_block_exogenous.end())
-        throw FatalExceptionHandling("\n the conditional forecast involves in the block "
-                                     + to_string(Block_Count+1) + " the endogenized exogenous "
-                                     + symbol_table.getName(SymbolType::exogenous, it.var_num)
-                                     + " that appear also in a previous block\n You should not use block in model options\n");
+        throw FatalException{"\nThe conditional forecast involves in the block "
+                             + to_string(Block_Count+1) + " the endogenized exogenous "
+                             + symbol_table.getName(SymbolType::exogenous, it.var_num)
+                             + " that appear also in a previous block\nYou should not use block in model options"};
     }
   for (auto it : exogenous)
     previous_block_exogenous.push_back(it);
@@ -762,9 +762,9 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
             it_code++;
           break;
         default:
-          throw FatalExceptionHandling(" in compute_blocks, unknown command "
-                                       + to_string(static_cast<int>((*it_code)->op_code)) + " (block="
-                                       + to_string(Block_Count) + ")\n");
+          throw FatalException{"In compute_blocks, unknown command "
+                               + to_string(static_cast<int>((*it_code)->op_code)) + " (block="
+                               + to_string(Block_Count) + ")"};
         }
     }
   max_res = max_res_local;

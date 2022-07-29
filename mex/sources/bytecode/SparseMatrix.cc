@@ -296,10 +296,10 @@ dynSparseMatrix::Read_SparseMatrix(const string &file_name, int Size, int period
         {
           ostringstream tmp;
           if (steady_state)
-            tmp << " in Read_SparseMatrix, " << file_name << "/model/bytecode/static.bin cannot be opened\n";
+            tmp << "In Read_SparseMatrix, " << file_name << "/model/bytecode/static.bin cannot be opened";
           else
-            tmp << " in Read_SparseMatrix, " << file_name << "/model/bytecode/dynamic.bin cannot be opened\n";
-          throw FatalExceptionHandling(tmp.str());
+            tmp << "In Read_SparseMatrix, " << file_name << "/model/bytecode/dynamic.bin cannot be opened";
+          throw FatalException{tmp.str()};
         }
     }
   IM_i.clear();
@@ -335,7 +335,7 @@ dynSparseMatrix::Read_SparseMatrix(const string &file_name, int Size, int period
             IM_i[{ Size*(periods+y_kmax), 0, j }] = j;
         }
       else
-        mexErrMsgTxt("Invalid value for solve_algo or stack_solve_algo");
+        throw FatalException{"Invalid value for solve_algo or stack_solve_algo"};
     }
   else
     {
@@ -366,7 +366,7 @@ dynSparseMatrix::Read_SparseMatrix(const string &file_name, int Size, int period
             }
         }
       else
-        mexErrMsgTxt("Invalid value for solve_algo or stack_solve_algo");
+        throw FatalException{"Invalid value for solve_algo or stack_solve_algo"};
     }
   index_vara = static_cast<int *>(mxMalloc(Size*(periods+y_kmin+y_kmax)*sizeof(int)));
   test_mxMalloc(index_vara, __LINE__, __FILE__, __func__, Size*(periods+y_kmin+y_kmax)*sizeof(int));
@@ -476,19 +476,19 @@ dynSparseMatrix::Init_Matlab_Sparse_Simple(int Size, const map<tuple<int, int, i
 {
   double *b = mxGetPr(b_m);
   if (!b)
-    throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, can't retrieve b vector\n");
+    throw FatalException{"In Init_Matlab_Sparse_Simple, can't retrieve b vector"};
   double *x0 = mxGetPr(x0_m);
   if (!x0)
-    throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, can't retrieve x0 vector\n");
+    throw FatalException{"In Init_Matlab_Sparse_Simple, can't retrieve x0 vector"};
   mwIndex *Ai = mxGetIr(A_m);
   if (!Ai)
-    throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, can't allocate Ai index vector\n");
+    throw FatalException{"In Init_Matlab_Sparse_Simple, can't allocate Ai index vector"};
   mwIndex *Aj = mxGetJc(A_m);
   if (!Aj)
-    throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, can't allocate Aj index vector\n");
+    throw FatalException{"In Init_Matlab_Sparse_Simple, can't allocate Aj index vector"};
   double *A = mxGetPr(A_m);
   if (!A)
-    throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, can't retrieve A matrix\n");
+    throw FatalException{"In Init_Matlab_Sparse_Simple, can't retrieve A matrix"};
 
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
@@ -521,28 +521,28 @@ dynSparseMatrix::Init_Matlab_Sparse_Simple(int Size, const map<tuple<int, int, i
         }
 #ifdef DEBUG
       if (index < 0 || index >= u_count_alloc || index > Size + Size*Size)
-        throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, index (" + to_string(index)
-                                     + ") out of range for u vector max = "
-                                     + to_string(Size+Size*Size)
-                                     + " allocated = " + to_string(u_count_alloc) + "\n");
+        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(index)
+                             + ") out of range for u vector max = "
+                             + to_string(Size+Size*Size)
+                             + " allocated = " + to_string(u_count_alloc)};
       if (NZE >= max_nze)
-        throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, exceeds the capacity of A_m sparse matrix\n");
+        throw FatalException{"In Init_Matlab_Sparse_Simple, exceeds the capacity of A_m sparse matrix"};
 #endif
       A[NZE] = u[index];
       Ai[NZE] = eq;
       NZE++;
 #ifdef DEBUG
       if (eq < 0 || eq >= Size)
-        throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, index (" + to_string(eq)
-                                     + ") out of range for b vector\n");
+        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(eq)
+                             + ") out of range for b vector"};
       if (var < 0 || var >= Size)
-        throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, index (" + to_string(var)
-                                     + ") out of range for index_vara vector\n");
+        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(var)
+                             + ") out of range for index_vara vector"};
       if (index_vara[var] < 0 || index_vara[var] >= y_size)
-        throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, index ("
-                                     + to_string(index_vara[var])
-                                     + ") out of range for y vector max=" + to_string(y_size)
-                                     +" (0)\n");
+        throw FatalException{"In Init_Matlab_Sparse_Simple, index ("
+                             + to_string(index_vara[var])
+                             + ") out of range for y vector max=" + to_string(y_size)
+                             +" (0)"};
 #endif
     }
   Aj[Size] = NZE;
@@ -554,23 +554,23 @@ dynSparseMatrix::Init_UMFPACK_Sparse_Simple(int Size, const map<tuple<int, int, 
   *b = static_cast<double *>(mxMalloc(Size * sizeof(double)));
   test_mxMalloc(*b, __LINE__, __FILE__, __func__, Size * sizeof(double));
   if (!(*b))
-    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, can't retrieve b vector\n");
+    throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve b vector"};
   double *x0 = mxGetPr(x0_m);
   if (!x0)
-    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse_Simple, can't retrieve x0 vector\n");
+    throw FatalException{"In Init_UMFPACK_Sparse_Simple, can't retrieve x0 vector"};
   *Ap = static_cast<SuiteSparse_long *>(mxMalloc((Size+1) * sizeof(SuiteSparse_long)));
   test_mxMalloc(*Ap, __LINE__, __FILE__, __func__, (Size+1) * sizeof(SuiteSparse_long));
   if (!(*Ap))
-    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, can't allocate Ap index vector\n");
+    throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ap index vector"};
   size_t prior_nz = IM.size();
   *Ai = static_cast<SuiteSparse_long *>(mxMalloc(prior_nz * sizeof(SuiteSparse_long)));
   test_mxMalloc(*Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
   if (!(*Ai))
-    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, can't allocate Ai index vector\n");
+    throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ai index vector"};
   *Ax = static_cast<double *>(mxMalloc(prior_nz * sizeof(double)));
   test_mxMalloc(*Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
   if (!(*Ax))
-    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, can't retrieve Ax matrix\n");
+    throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve Ax matrix"};
   for (int i = 0; i < Size; i++)
     {
       int eq = index_vara[i];
@@ -605,28 +605,28 @@ dynSparseMatrix::Init_UMFPACK_Sparse_Simple(int Size, const map<tuple<int, int, 
         }
 #ifdef DEBUG
       if (index < 0 || index >= u_count_alloc || index > Size + Size*Size)
-        throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, index (" + to_string(index)
-                                     + ") out of range for u vector max = "
-                                     + to_string(Size+Size*Size)
-                                     + " allocated = " + to_string(u_count_alloc) + "\n");
+        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(index)
+                             + ") out of range for u vector max = "
+                             + to_string(Size+Size*Size)
+                             + " allocated = " + to_string(u_count_alloc)};
       if (NZE >= max_nze)
-        throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, exceeds the capacity of A_m sparse matrix\n");
+        throw FatalException{"In Init_Matlab_Sparse_Simple, exceeds the capacity of A_m sparse matrix"};
 #endif
       (*Ax)[NZE] = u[index];
       (*Ai)[NZE] = eq;
       NZE++;
 #ifdef DEBUG
       if (eq < 0 || eq >= Size)
-        throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, index (" + to_string(eq)
-                                     + ") out of range for b vector\n");
+        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(eq)
+                             + ") out of range for b vector"};
       if (var < 0 || var >= Size)
-        throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, index (" + to_string(var)
-                                     + ") out of range for index_vara vector\n");
+        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(var)
+                             + ") out of range for index_vara vector"};
       if (index_vara[var] < 0 || index_vara[var] >= y_size)
-        throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, index ("
-                                     + to_string(index_vara[var])
-                                     + ") out of range for y vector max=" + to_string(y_size)
-                                     + " (0)\n");
+        throw FatalException{"In Init_Matlab_Sparse_Simple, index ("
+                             + to_string(index_vara[var])
+                             + ") out of range for y vector max=" + to_string(y_size)
+                             + " (0)"};
 #endif
     }
   (*Ap)[Size] = NZE;
@@ -659,23 +659,23 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
   int n = periods * Size;
   *b = static_cast<double *>(mxMalloc(n * sizeof(double)));
   if (!(*b))
-    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, can't retrieve b vector\n");
+    throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve b vector"};
   double *x0 = mxGetPr(x0_m);
   if (!x0)
-    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse_Simple, can't retrieve x0 vector\n");
+    throw FatalException{"In Init_UMFPACK_Sparse_Simple, can't retrieve x0 vector"};
   *Ap = static_cast<SuiteSparse_long *>(mxMalloc((n+1) * sizeof(SuiteSparse_long)));
   test_mxMalloc(*Ap, __LINE__, __FILE__, __func__, (n+1) * sizeof(SuiteSparse_long));
   if (!(*Ap))
-    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, can't allocate Ap index vector\n");
+    throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ap index vector"};
   size_t prior_nz = IM.size() * periods;
   *Ai = static_cast<SuiteSparse_long *>(mxMalloc(prior_nz * sizeof(SuiteSparse_long)));
   test_mxMalloc(*Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
   if (!(*Ai))
-    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, can't allocate Ai index vector\n");
+    throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ai index vector"};
   *Ax = static_cast<double *>(mxMalloc(prior_nz * sizeof(double)));
   test_mxMalloc(*Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
   if (!(*Ax))
-    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, can't retrieve Ax matrix\n");
+    throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve Ax matrix"};
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
 #ifdef DEBUG
@@ -760,20 +760,19 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
 
 #ifdef DEBUG
                               if (local_index < 0 || local_index >= Size * periods)
-                                throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, index ("
-                                                             + to_string(local_index)
-                                                             + ") out of range for b vector\n");
+                                throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                                     + to_string(local_index)
+                                                     + ") out of range for b vector"};
                               if (k + row_x*flip_exo < 0 || k + row_x*flip_exo >= row_x * col_x)
-                                throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, index ("
-                                                             + to_string(var+Size*(y_kmin+t+lag))
-                                                             + ") out of range for jacob_exo vector\n");
+                                throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                                     + to_string(var+Size*(y_kmin+t+lag))
+                                                     + ") out of range for jacob_exo vector"};
                               if (t+y_kmin+flip_exo*nb_row_x < 0
                                   || t+y_kmin+flip_exo*nb_row_x >= nb_row_x * this->col_x)
-                                throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, index ("
-                                                             + to_string(index_vara[var+Size*(y_kmin+t+lag)])
-                                                             + ") out of range for x vector max="
-                                                             + to_string(nb_row_x * this->col_x)
-                                                             + "\n");
+                                throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                                     + to_string(index_vara[var+Size*(y_kmin+t+lag)])
+                                                     + ") out of range for x vector max="
+                                                     + to_string(nb_row_x * this->col_x)};
 #endif
                               u[k] -= jacob_exo[k + row_x*flip_exo] * x[t+y_kmin+flip_exo*nb_row_x];
                             }
@@ -792,7 +791,7 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
                 {
 #ifdef DEBUG
                   if (NZE >= max_nze)
-                    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, exceeds the capacity of A_m sparse matrix\n");
+                    throw FatalException{"In Init_UMFPACK_Sparse, exceeds the capacity of A_m sparse matrix"};
 #endif
                   if (!fliped)
                     {
@@ -804,21 +803,20 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
                     {
 #ifdef DEBUG
                       if (eq - lag * Size < 0 || eq  - lag * Size >= Size * periods)
-                        throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, index ("
-                                                     + to_string(eq  - lag * Size)
-                                                     + ") out of range for b vector\n");
+                        throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                             + to_string(eq  - lag * Size)
+                                             + ") out of range for b vector"};
                       if (var+Size*(y_kmin+t) < 0
                           || var+Size*(y_kmin+t) >= Size*(periods+y_kmin+y_kmax))
-                        throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, index ("
-                                                     + to_string(var+Size*(y_kmin+t))
-                                                     + ") out of range for index_vara vector\n");
+                        throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                             + to_string(var+Size*(y_kmin+t))
+                                             + ") out of range for index_vara vector"};
                       if (index_vara[var+Size*(y_kmin+t)] < 0
                           || index_vara[var+Size*(y_kmin+t)] >= y_size*(periods+y_kmin+y_kmax))
-                        throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, index ("
-                                                     + to_string(index_vara[var+Size*(y_kmin+t)])
-                                                     + ") out of range for y vector max="
-                                                     + to_string(y_size*(periods+y_kmin+y_kmax))
-                                                     + "\n");
+                        throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                             + to_string(index_vara[var+Size*(y_kmin+t)])
+                                             + ") out of range for y vector max="
+                                             + to_string(y_size*(periods+y_kmin+y_kmax))};
 #endif
                       (*b)[eq - lag * Size] += u[index] * y[index_vara[var+Size*(y_kmin+t)]];
                     }
@@ -828,20 +826,20 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
                 {
 #ifdef DEBUG
                   if (eq < 0 || eq >= Size * periods)
-                    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, index ("
-                                                 + to_string(eq)
-                                                 + ") out of range for b vector\n");
+                    throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                         + to_string(eq)
+                                         + ") out of range for b vector"};
                   if (var+Size*(y_kmin+t+lag) < 0
                       || var+Size*(y_kmin+t+lag) >= Size*(periods+y_kmin+y_kmax))
-                    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, index ("
-                                                 + to_string(var+Size*(y_kmin+t+lag))
-                                                 + ") out of range for index_vara vector\n");
+                    throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                         + to_string(var+Size*(y_kmin+t+lag))
+                                         + ") out of range for index_vara vector"};
                   if (index_vara[var+Size*(y_kmin+t+lag)] < 0
                       || index_vara[var+Size*(y_kmin+t+lag)] >= y_size*(periods+y_kmin+y_kmax))
-                    throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, index ("
-                                                 + to_string(index_vara[var+Size*(y_kmin+t+lag)])
-                                                 + ") out of range for y vector max="
-                                                 + to_string(y_size*(periods+y_kmin+y_kmax)) + "\n");
+                    throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                         + to_string(index_vara[var+Size*(y_kmin+t+lag)])
+                                         + ") out of range for y vector max="
+                                         + to_string(y_size*(periods+y_kmin+y_kmax))};
 #endif
                   (*b)[eq] += u[index+lag*u_count_init]*y[index_vara[var+Size*(y_kmin+t+lag)]];
                 }
@@ -850,11 +848,11 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
             {
 #ifdef DEBUG
               if (index < 0 || index >= u_count_alloc)
-                throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, index (" + to_string(index)
-                                             + ") out of range for u vector\n");
+                throw FatalException{"In Init_UMFPACK_Sparse, index (" + to_string(index)
+                                     + ") out of range for u vector"};
               if (eq < 0 || eq >= (Size*periods))
-                throw FatalExceptionHandling(" in Init_UMFPACK_Sparse, index (" + to_string(eq)
-                                             + ") out of range for b vector\n");
+                throw FatalException{"In Init_UMFPACK_Sparse, index (" + to_string(eq)
+                                     + ") out of range for b vector"};
 #endif
               (*b)[eq] += u[index];
             }
@@ -912,19 +910,19 @@ dynSparseMatrix::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Siz
   double *b = mxGetPr(b_m);
 
   if (!b)
-    throw FatalExceptionHandling(" in Init_Matlab_Sparse, can't retrieve b vector\n");
+    throw FatalException{"In Init_Matlab_Sparse, can't retrieve b vector"};
   double *x0 = mxGetPr(x0_m);
   if (!x0)
-    throw FatalExceptionHandling(" in Init_Matlab_Sparse_Simple, can't retrieve x0 vector\n");
+    throw FatalException{"In Init_Matlab_Sparse_Simple, can't retrieve x0 vector"};
   mwIndex *Aj = mxGetJc(A_m);
   if (!Aj)
-    throw FatalExceptionHandling(" in Init_Matlab_Sparse, can't allocate Aj index vector\n");
+    throw FatalException{"In Init_Matlab_Sparse, can't allocate Aj index vector"};
   mwIndex *Ai = mxGetIr(A_m);
   if (!Ai)
-    throw FatalExceptionHandling(" in Init_Matlab_Sparse, can't allocate Ai index vector\n");
+    throw FatalException{"In Init_Matlab_Sparse, can't allocate Ai index vector"};
   double *A = mxGetPr(A_m);
   if (!A)
-    throw FatalExceptionHandling(" in Init_Matlab_Sparse, can't retrieve A matrix\n");
+    throw FatalException{"In Init_Matlab_Sparse, can't retrieve A matrix"};
 
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
@@ -963,12 +961,12 @@ dynSparseMatrix::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Siz
                 {
 #ifdef DEBUG
                   if (index < 0 || index >= u_count_alloc || index > Size + Size*Size)
-                    throw FatalExceptionHandling(" in Init_Matlab_Sparse, index (" + to_string(index)
-                                                 + ") out of range for u vector max = "
-                                                 + to_string(Size+Size*Size) + " allocated = "
-                                                 + to_string(u_count_alloc) + "\n");
+                    throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(index)
+                                         + ") out of range for u vector max = "
+                                         + to_string(Size+Size*Size) + " allocated = "
+                                         + to_string(u_count_alloc)};
                   if (NZE >= max_nze)
-                    throw FatalExceptionHandling(" in Init_Matlab_Sparse, exceeds the capacity of A_m sparse matrix\n");
+                    throw FatalException{"In Init_Matlab_Sparse, exceeds the capacity of A_m sparse matrix"};
 #endif
                   A[NZE] = u[index];
                   Ai[NZE] = eq - lag * Size;
@@ -978,19 +976,19 @@ dynSparseMatrix::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Siz
                 {
 #ifdef DEBUG
                   if (eq < 0 || eq >= Size * periods)
-                    throw FatalExceptionHandling(" in Init_Matlab_Sparse, index (" + to_string(eq)
-                                                 + ") out of range for b vector\n");
+                    throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(eq)
+                                         + ") out of range for b vector"};
                   if (var+Size*(y_kmin+t+lag) < 0
                       || var+Size*(y_kmin+t+lag) >= Size*(periods+y_kmin+y_kmax))
-                    throw FatalExceptionHandling(" in Init_Matlab_Sparse, index ("
-                                                 + to_string(var+Size*(y_kmin+t+lag))
-                                                 + ") out of range for index_vara vector\n");
+                    throw FatalException{"In Init_Matlab_Sparse, index ("
+                                         + to_string(var+Size*(y_kmin+t+lag))
+                                         + ") out of range for index_vara vector"};
                   if (index_vara[var+Size*(y_kmin+t+lag)] < 0
                       || index_vara[var+Size*(y_kmin+t+lag)] >= y_size*(periods+y_kmin+y_kmax))
-                    throw FatalExceptionHandling(" in Init_Matlab_Sparse, index ("
-                                                 + to_string(index_vara[var+Size*(y_kmin+t+lag)])
-                                                 + ") out of range for y vector max="
-                                                 + to_string(y_size*(periods+y_kmin+y_kmax)) + "\n");
+                    throw FatalException{"In Init_Matlab_Sparse, index ("
+                                         + to_string(index_vara[var+Size*(y_kmin+t+lag)])
+                                         + ") out of range for y vector max="
+                                         + to_string(y_size*(periods+y_kmin+y_kmax))};
 #endif
                   b[eq] += u[index+lag*u_count_init]*y[index_vara[var+Size*(y_kmin+t+lag)]];
                 }
@@ -999,11 +997,11 @@ dynSparseMatrix::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Siz
             {
 #ifdef DEBUG
               if (index < 0 || index >= u_count_alloc)
-                throw FatalExceptionHandling(" in Init_Matlab_Sparse, index (" + to_string(index)
-                                             + ") out of range for u vector\n");
+                throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(index)
+                                     + ") out of range for u vector"};
               if (eq < 0 || eq >= (Size*periods))
-                throw FatalExceptionHandling(" in Init_Matlab_Sparse, index (" + to_string(eq)
-                                             + ") out of range for b vector\n");
+                throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(eq)
+                                     + ") out of range for b vector"};
 #endif
               b[eq] += u[index];
             }
@@ -1146,8 +1144,8 @@ dynSparseMatrix::Get_u()
           u_count_alloc += 5*u_count_alloc_save;
           u = static_cast<double *>(mxRealloc(u, u_count_alloc*sizeof(double)));
           if (!u)
-            throw FatalExceptionHandling(" in Get_u, memory exhausted (realloc("
-                                         + to_string(u_count_alloc*sizeof(double)) + "))\n");
+            throw FatalException{"In Get_u, memory exhausted (realloc("
+                                 + to_string(u_count_alloc*sizeof(double)) + "))"};
           int i = u_count;
           u_count++;
           return i;
@@ -1227,8 +1225,8 @@ dynSparseMatrix::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t,
           i += 3;
           break;
         default:
-          throw FatalExceptionHandling(" in compare, unknown operator = "
-                                       + to_string(save_op_s->operat) + "\n");
+          throw FatalException{"In compare, unknown operator = "
+                               + to_string(save_op_s->operat)};
         }
       j++;
     }
@@ -1243,8 +1241,8 @@ dynSparseMatrix::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t,
           u_count_alloc += max_save_ops_first;
           u = static_cast<double *>(mxRealloc(u, u_count_alloc*sizeof(double)));
           if (!u)
-            throw FatalExceptionHandling(" in compare, memory exhausted (realloc("
-                                         + to_string(u_count_alloc*sizeof(double)) + "))\n");
+            throw FatalException{"In compare, memory exhausted (realloc("
+                                 + to_string(u_count_alloc*sizeof(double)) + "))"};
         }
       for (int t = 1; t < periods-beg_t-y_kmax; t++)
         {
@@ -1982,16 +1980,16 @@ dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned in
 {
   double *b_m_d = mxGetPr(b_m);
   if (!b_m_d)
-    throw FatalExceptionHandling(" in Solve_Matlab_Relaxation, can't retrieve b_m vector\n");
+    throw FatalException{"In Solve_Matlab_Relaxation, can't retrieve b_m vector"};
   mwIndex *A_m_i = mxGetIr(A_m);
   if (!A_m_i)
-    throw FatalExceptionHandling(" in Solve_Matlab_Relaxation, can't retrieve Ir vector of matrix A\n");
+    throw FatalException{"In Solve_Matlab_Relaxation, can't retrieve Ir vector of matrix A"};
   mwIndex *A_m_j = mxGetJc(A_m);
   if (!A_m_j)
-    throw FatalExceptionHandling(" in Solve_Matlab_Relaxation, can't retrieve Jc vectior of matrix A\n");
+    throw FatalException{"In Solve_Matlab_Relaxation, can't retrieve Jc vectior of matrix A"};
   double *A_m_d = mxGetPr(A_m);
   if (!A_m_d)
-    throw FatalExceptionHandling(" in Solve_Matlab_Relaxation, can't retrieve double float data of matrix A\n");
+    throw FatalException{"In Solve_Matlab_Relaxation, can't retrieve double float data of matrix A"};
 
   /* Extract submatrices from the upper-left corner of A and subvectors at the
      beginning of b, so that the system looks like:
@@ -2321,7 +2319,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
         {
           umfpack_dl_report_info(Control, Info);
           umfpack_dl_report_status(Control, status);
-          throw FatalExceptionHandling(" umfpack_dl_symbolic failed\n");
+          throw FatalException{"umfpack_dl_symbolic failed"};
         }
     }
   if (iter > 0)
@@ -2331,14 +2329,14 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
-      throw FatalExceptionHandling(" umfpack_dl_numeric failed\n");
+      throw FatalException{"umfpack_dl_numeric failed"};
     }
   status = umfpack_dl_solve(sys, Ap, Ai, Ax, res, b, Numeric, Control, Info);
   if (status != UMFPACK_OK)
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
-      throw FatalExceptionHandling(" umfpack_dl_solve failed\n");
+      throw FatalException{"umfpack_dl_solve failed"};
     }
 
   if (vector_table_conditional_local.size())
@@ -2428,7 +2426,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
         {
           umfpack_dl_report_info(Control, Info);
           umfpack_dl_report_status(Control, status);
-          throw FatalExceptionHandling(" umfpack_dl_symbolic failed\n");
+          throw FatalException{"umfpack_dl_symbolic failed"};
         }
     }
   if (iter > 0)
@@ -2438,14 +2436,14 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
-      throw FatalExceptionHandling(" umfpack_dl_numeric failed\n");
+      throw FatalException{"umfpack_dl_numeric failed"};
     }
   status = umfpack_dl_solve(sys, Ap, Ai, Ax, res, b, Numeric, Control, Info);
   if (status != UMFPACK_OK)
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
-      throw FatalExceptionHandling(" umfpack_dl_solve failed\n");
+      throw FatalException{"umfpack_dl_solve failed"};
     }
 
   if (is_two_boundaries)
@@ -2482,7 +2480,7 @@ dynSparseMatrix::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double
   mxArray *lhs0[2];
   mxArray *rhs0[2] = { A_m, Setup };
   if (mexCallMATLAB(2, lhs0, 2, rhs0, "ilu"))
-    throw FatalExceptionHandling("In GMRES, the incomplete LU decomposition (ilu) has failed.");
+    throw FatalException("In GMRES, the incomplete LU decomposition (ilu) has failed");
   mxArray *L1 = lhs0[0];
   mxArray *U1 = lhs0[1];
   /*[za,flag1] = gmres(g1a,b,Blck_size,1e-6,Blck_size*periods,L1,U1);*/
@@ -2580,7 +2578,7 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
       mxArray *lhs0[2];
       mxArray *rhs0[2] = { A_m, Setup };
       if (mexCallMATLAB(2, lhs0, 2, rhs0, "ilu"))
-        throw FatalExceptionHandling(" In BiCGStab, the incomplete LU decomposition (ilu) has failed.\n");
+        throw FatalException{"In BiCGStab, the incomplete LU decomposition (ilu) has failed"};
       L1 = lhs0[0];
       U1 = lhs0[1];
       mxDestroyArray(Setup);
@@ -2763,10 +2761,10 @@ dynSparseMatrix::Singular_display(int block, int Size)
   mxDestroyArray(lhs[1]);
   mxDestroyArray(lhs[2]);
   if (block > 1)
-    throw FatalExceptionHandling(" in Solve_ByteCode_Sparse_GaussianElimination, singular system in block "
-                                 + to_string(block+1) + "\n");
+    throw FatalException{"In Solve_ByteCode_Sparse_GaussianElimination, singular system in block "
+                         + to_string(block+1)};
   else
-    throw FatalExceptionHandling(" in Solve_ByteCode_Sparse_GaussianElimination, singular system\n");
+    throw FatalException{"In Solve_ByteCode_Sparse_GaussianElimination, singular system"};
 }
 
 bool
@@ -2842,16 +2840,16 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
               if (blck > 1)
                 mexPrintf("Error: singular system in Simulate_NG in block %d\n", blck+1);
               else
-                mexPrintf("Error: singular system in Simulate_NG\n");
+                mexPrintf("Error: singular system in Simulate_NG");
               return true;
             }
           else
             {
               if (blck > 1)
-                throw FatalExceptionHandling(" in Solve_ByteCode_Sparse_GaussianElimination, singular system in block "
-                                             + to_string(blck+1) + "\n");
+                throw FatalException{"In Solve_ByteCode_Sparse_GaussianElimination, singular system in block "
+                                     + to_string(blck+1)};
               else
-                throw FatalExceptionHandling(" in Solve_ByteCode_Sparse_GaussianElimination, singular system\n");
+                throw FatalException{"In Solve_ByteCode_Sparse_GaussianElimination, singular system"};
             }
         }
       double markovitz = 0, markovitz_max = -9e70;
@@ -3049,7 +3047,7 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
     {
 #ifdef MATLAB_MEX_FILE
       if (utIsInterruptPending())
-        throw UserExceptionHandling();
+        throw UserException{};
 #endif
 
       if (record && symbolic)
@@ -3201,10 +3199,10 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
               if (piv_abs < eps)
                 {
                   if (Block_number > 1)
-                    throw FatalExceptionHandling(" in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system in block "
-                                                 + to_string(Block_number+1) + "\n");
+                    throw FatalException{"In Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system in block "
+                                         + to_string(Block_number+1)};
                   else
-                    throw FatalExceptionHandling(" in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system\n");
+                    throw FatalException{"In Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system"};
                 }
               /*divide all the non zeros elements of the line pivj by the max_pivot*/
               int nb_var = At_Row(pivj, &first);
@@ -3382,10 +3380,10 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
               if (piv_abs < eps)
                 {
                   if (Block_number > 1)
-                    throw FatalExceptionHandling(" in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system in block "
-                                                 + to_string(Block_number+1) + "\n");
+                    throw FatalException{"In Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system in block "
+                                         + to_string(Block_number+1)};
                   else
-                    throw FatalExceptionHandling(" in Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system\n");
+                    throw FatalException{"In Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system"};
                 }
               // Divide all the non zeros elements of the line pivj by the max_pivot
               int nb_var = At_Row(pivj, &first);
@@ -3684,12 +3682,11 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int size)
       else
         {
           if (iter == 0)
-            throw FatalExceptionHandling(" in Simulate_One_Boundary, The initial values of endogenous variables are too far from the solution.\nChange them!\n");
+            throw FatalException{"In Simulate_One_Boundary, The initial values of endogenous variables are too far from the solution. Change them!"};
           else
-            throw FatalExceptionHandling(" in Simulate_One_Boundary, Dynare cannot improve the simulation in block "
-                                         + to_string(block_num+1) + " at time " + to_string(it_+1)
-                                         + " (variable " + to_string(index_vara[max_res_idx]+1)
-                                         + "%d)\n");
+            throw FatalException{"In Simulate_One_Boundary, Dynare cannot improve the simulation in block "
+                                 + to_string(block_num+1) + " at time " + to_string(it_+1)
+                                 + " (variable " + to_string(index_vara[max_res_idx]+1)};
         }
     }
 
@@ -3729,13 +3726,13 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int size)
     {
       b_m = mxCreateDoubleMatrix(size, 1, mxREAL);
       if (!b_m)
-        throw FatalExceptionHandling(" in Simulate_One_Boundary, can't allocate b_m vector\n");
+        throw FatalException{"In Simulate_One_Boundary, can't allocate b_m vector"};
       A_m = mxCreateSparse(size, size, min(static_cast<int>(IM_i.size()*2), size * size), mxREAL);
       if (!A_m)
-        throw FatalExceptionHandling(" in Simulate_One_Boundary, can't allocate A_m matrix\n");
+        throw FatalException{"In Simulate_One_Boundary, can't allocate A_m matrix"};
       x0_m = mxCreateDoubleMatrix(size, 1, mxREAL);
       if (!x0_m)
-        throw FatalExceptionHandling(" in Simulate_One_Boundary, can't allocate x0_m vector\n");
+        throw FatalException{"In Simulate_One_Boundary, can't allocate x0_m vector"};
       if (!((solve_algo == 6 && steady_state)
             || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4
                  || stack_solve_algo == 6) && !steady_state)))
@@ -3817,13 +3814,13 @@ dynSparseMatrix::solve_non_linear(int block_num, int y_size, int size)
   if (!cvg)
     {
       if (steady_state)
-        throw FatalExceptionHandling(" in Solve Forward/Backward Complete, convergence not achieved in block "
-                                     + to_string(block_num+1) + ", after " + to_string(iter)
-                                     + " iterations\n");
+        throw FatalException{"In Solve Forward/Backward Complete, convergence not achieved in block "
+                             + to_string(block_num+1) + ", after " + to_string(iter)
+                             + " iterations"};
       else
-        throw FatalExceptionHandling(" in Solve Forward/Backward Complete, convergence not achieved in block "
-                                     + to_string(block_num+1) + ", at time " + to_string(it_)
-                                     + ", after " + to_string(iter) + " iterations\n");
+        throw FatalException{"In Solve Forward/Backward Complete, convergence not achieved in block "
+                             + to_string(block_num+1) + ", at time " + to_string(it_)
+                             + ", after " + to_string(iter) + " iterations"};
     }
 }
 
@@ -3960,12 +3957,12 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
                 mexPrintf("   variable %s (%d) at time %d = %f direction = %f\n", symbol_table.getName(SymbolType::endogenous, j).c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
             }
           if (iter == 0)
-            throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, the initial values of endogenous variables are too far from the solution.\nChange them!\n");
+            throw FatalException{"In Simulate_Newton_Two_Boundaries, the initial values of endogenous variables are too far from the solution. Change them!"};
           else
-            throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, dynare cannot improve the simulation in block "
-                                         + to_string(blck+1) + " at time " + to_string(it_+1)
-                                         + " (variable " + to_string(index_vara[max_res_idx]+1)
-                                         + " = " + to_string(max_res) + ")\n");
+            throw FatalException{"In Simulate_Newton_Two_Boundaries, dynare cannot improve the simulation in block "
+                                 + to_string(blck+1) + " at time " + to_string(it_+1)
+                                 + " (variable " + to_string(index_vara[max_res_idx]+1)
+                                 + " = " + to_string(max_res) + ")"};
         }
       if (!(isnan(res1) || isinf(res1)) && !(isnan(g0) || isinf(g0))
           && (stack_solve_algo == 4 || stack_solve_algo == 5))
@@ -4099,15 +4096,15 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
         {
           b_m = mxCreateDoubleMatrix(periods*Size, 1, mxREAL);
           if (!b_m)
-            throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, can't allocate b_m vector\n");
+            throw FatalException{"In Simulate_Newton_Two_Boundaries, can't allocate b_m vector"};
           x0_m = mxCreateDoubleMatrix(periods*Size, 1, mxREAL);
           if (!x0_m)
-            throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, can't allocate x0_m vector\n");
+            throw FatalException{"In Simulate_Newton_Two_Boundaries, can't allocate x0_m vector"};
           if (stack_solve_algo != 0 && stack_solve_algo != 4)
             {
               A_m = mxCreateSparse(periods*Size, periods*Size, IM_i.size()* periods*2, mxREAL);
               if (!A_m)
-                throw FatalExceptionHandling(" in Simulate_Newton_Two_Boundaries, can't allocate A_m matrix\n");
+                throw FatalException{"In Simulate_Newton_Two_Boundaries, can't allocate A_m matrix"};
             }
           if (stack_solve_algo == 0 || stack_solve_algo == 4)
             Init_UMFPACK_Sparse(periods, y_kmin, y_kmax, Size, IM_i, &Ap, &Ai, &Ax, &b, x0_m, vector_table_conditional_local, blck);

@@ -46,115 +46,90 @@ constexpr int NO_ERROR_ON_EXIT = 0, ERROR_ON_EXIT = 1;
 
 using it_code_type = instructions_list_t::const_iterator;
 
-class GeneralExceptionHandling
+struct GeneralException
 {
-  string ErrorMsg;
-public:
-  GeneralExceptionHandling(string ErrorMsg_arg) : ErrorMsg{move(ErrorMsg_arg)}
-  {
-  };
-  inline string
-  GetErrorMsg()
-  {
-    return ErrorMsg;
-  }
-  inline void
-  completeErrorMsg(const string &ErrorMsg_arg)
-  {
-    ErrorMsg += ErrorMsg_arg;
-  }
+  const string message;
 };
 
-class FloatingPointExceptionHandling : public GeneralExceptionHandling
+struct FloatingPointException : public GeneralException
 {
-public:
-  FloatingPointExceptionHandling(const string &value) : GeneralExceptionHandling("Floating point error in bytecode: " + value)
+  FloatingPointException(const string &details) :
+    GeneralException {"Floating point error: " + details}
   {
   }
 };
 
-class LogExceptionHandling : public FloatingPointExceptionHandling
+struct LogException : public FloatingPointException
 {
-  double value;
-public:
-  LogExceptionHandling(double value_arg) : FloatingPointExceptionHandling("log(X)"),
-                                           value(value_arg)
+  LogException(double value) :
+    FloatingPointException { [=]
+    {
+      // We don’t use std::to_string(), because it uses fixed formatting
+      ostringstream s;
+      s << "log(X) with X=" << defaultfloat << value;
+      return s.str();
+    }() }
   {
-    // We don’t use std::to_string(), because it uses fixed formatting
-    ostringstream s;
-    s << " with X=" << defaultfloat << value << "\n";
-    completeErrorMsg(s.str());
   }
 };
 
-class Log10ExceptionHandling : public FloatingPointExceptionHandling
+struct Log10Exception : public FloatingPointException
 {
-  double value;
-public:
-  Log10ExceptionHandling(double value_arg) : FloatingPointExceptionHandling("log10(X)"),
-                                             value(value_arg)
+  Log10Exception(double value) :
+    FloatingPointException { [=]
+    {
+      // We don’t use std::to_string(), because it uses fixed formatting
+      ostringstream s;
+      s << "log10(X) with X=" << defaultfloat << value;
+      return s.str();
+    }() }
   {
-    // We don’t use std::to_string(), because it uses fixed formatting
-    ostringstream s;
-    s << " with X=" << defaultfloat << value << "\n";
-    completeErrorMsg(s.str());
   }
 };
 
-class DivideExceptionHandling : public FloatingPointExceptionHandling
+struct DivideException : public FloatingPointException
 {
-  double value1, value2;
-public:
-  DivideExceptionHandling(double value1_arg, double value2_arg) : FloatingPointExceptionHandling("a/X"),
-                                                                  value1(value1_arg),
-                                                                  value2(value2_arg)
+  DivideException(double divisor) :
+    FloatingPointException { [=]
+    {
+      // We don’t use std::to_string(), because it uses fixed formatting
+      ostringstream s;
+      s << "a/X with X=" << defaultfloat << divisor;
+      return s.str();
+    }() }
   {
-    // We don’t use std::to_string(), because it uses fixed formatting
-    ostringstream s;
-    s << " with X=" << defaultfloat << value2 << "\n";
-    completeErrorMsg(s.str());
   }
 };
 
-class PowExceptionHandling : public FloatingPointExceptionHandling
+struct PowException : public FloatingPointException
 {
-  double value1, value2;
-public:
-  PowExceptionHandling(double value1_arg, double value2_arg) : FloatingPointExceptionHandling("X^a"),
-                                                               value1(value1_arg),
-                                                               value2(value2_arg)
+  PowException(double base, double exponent) :
+    FloatingPointException { [=]
+    {
+      // We don’t use std::to_string(), because it uses fixed formatting
+      ostringstream s;
+      s << "X^a with X=" << defaultfloat << base;
+      if (fabs(base) <= 1e-10)
+        s << " and a=" << exponent;
+      return s.str();
+    }() }
   {
-    // We don’t use std::to_string(), because it uses fixed formatting
-    ostringstream s;
-    s << " with X=" << defaultfloat << value1;
-    if (fabs(value1) <= 1e-10)
-      s << " and a=" << value2;
-    s << "\n";
-    completeErrorMsg(s.str());
-  };
+  }
 };
 
-class UserExceptionHandling : public GeneralExceptionHandling
+struct UserException : public GeneralException
 {
-  double value;
-public:
-  UserExceptionHandling() : GeneralExceptionHandling("Fatal error in bytecode:")
+  UserException() : GeneralException {"User break"}
   {
-    completeErrorMsg(" User break\n");
-  };
+  }
 };
 
-class FatalExceptionHandling : public GeneralExceptionHandling
+struct FatalException : public GeneralException
 {
-public:
-  FatalExceptionHandling(const string &ErrorMsg_arg)
-    : GeneralExceptionHandling("Fatal error in bytecode:")
+  FatalException(const string &details) :
+    GeneralException {"Fatal error: " + details}
   {
-    completeErrorMsg(ErrorMsg_arg);
-  };
-  FatalExceptionHandling() : GeneralExceptionHandling("")
-  {
-  };
+  }
 };
 
 struct s_plan
@@ -318,7 +293,7 @@ protected:
       {
 #ifdef MATLAB_MEX_FILE
         if (utIsInterruptPending())
-          throw UserExceptionHandling();
+          throw UserException{};
 #endif
         switch ((*it_code)->op_code)
           {
@@ -344,9 +319,9 @@ protected:
                 equation_type = ExpressionType::FirstExodetDerivative;
                 break;
               default:
-                throw FatalExceptionHandling{" in print_expression, expression type "
-                                             + to_string(static_cast<int>(static_cast<FNUMEXPR_ *>(*it_code)->get_expression_type()))
-                                             + " not implemented yet\n"};
+                throw FatalException{"In print_expression, expression type "
+                                     + to_string(static_cast<int>(static_cast<FNUMEXPR_ *>(*it_code)->get_expression_type()))
+                                     + " not implemented yet"};
               }
             break;
           case Tags::FLDV:
@@ -363,7 +338,7 @@ protected:
                   Stack.emplace(symbol_table.getName(type, var) + lag_to_string(lag), 100, nullopt);
                   break;
                 default:
-                  throw FatalExceptionHandling{"FLDV: Unknown variable type\n"};
+                  throw FatalException{"FLDV: Unknown variable type"};
               }
             }
             break;
@@ -380,7 +355,7 @@ protected:
                   Stack.emplace(symbol_table.getName(type, var), 100, nullopt);
                   break;
                 default:
-                  throw FatalExceptionHandling{"FLDSV: Unknown variable type\n"};
+                  throw FatalException{"FLDSV: Unknown variable type"};
                 }
             }
             break;
@@ -397,7 +372,7 @@ protected:
                   Stack.emplace(symbol_table.getName(type, var), 100, nullopt);
                   break;
                 default:
-                  throw FatalExceptionHandling{"FLDVS: Unknown variable type\n"};
+                  throw FatalException{"FLDVS: Unknown variable type"};
                 }
             }
             break;
@@ -441,7 +416,7 @@ protected:
                   assign_lhs(symbol_table.getName(type, var) + lag_to_string(lag));
                   break;
                 default:
-                  throw FatalExceptionHandling{"FSTPV: Unknown variable type\n"};
+                  throw FatalException{"FSTPV: Unknown variable type"};
                 }
             }
             break;
@@ -458,7 +433,7 @@ protected:
                   assign_lhs(symbol_table.getName(type, var));
                   break;
                 default:
-                  throw FatalExceptionHandling{"FSTPSV: Unknown variable type\n"};
+                  throw FatalException{"FSTPSV: Unknown variable type"};
                 }
             }
             break;
@@ -506,7 +481,7 @@ protected:
                   case ExpressionType::FirstExodetDerivative:
                     return "jacob_exo_det";
                   default:
-                    throw FatalExceptionHandling{" unknown equation type " + to_string(static_cast<int>(equation_type)) + "\n"};
+                    throw FatalException{"Unknown equation type " + to_string(static_cast<int>(equation_type))};
                   }
               }() };
 
@@ -578,15 +553,15 @@ protected:
                     return "steady_state";
                   case UnaryOpcode::steadyStateParamDeriv:
                   case UnaryOpcode::steadyStateParam2ndDeriv:
-                    throw FatalExceptionHandling{"Unexpected derivative of steady_state operator"};
+                    throw FatalException{"Unexpected derivative of steady_state operator"};
                   case UnaryOpcode::expectation:
-                    throw FatalExceptionHandling{"Unexpected expectation operator"};
+                    throw FatalException{"Unexpected expectation operator"};
                   case UnaryOpcode::diff:
                     return "diff";
                   case UnaryOpcode::adl:
                     return "adl";
                   }
-                throw FatalExceptionHandling{"Unknown opcode"};
+                throw FatalException{"Unknown opcode"};
               }();
 
               /* Print argument. Enclose it with parentheses if:
@@ -659,7 +634,7 @@ protected:
                       case BinaryOpcode::max:
                         return 100;
                       }
-                    throw FatalExceptionHandling{"Unknown opcode"};
+                    throw FatalException{"Unknown opcode"};
                   }() };
 
                   /* Print left argument. If left argument has a lower
@@ -705,11 +680,11 @@ protected:
                     case BinaryOpcode::powerDeriv:
                     case BinaryOpcode::max:
                     case BinaryOpcode::min:
-                      throw FatalExceptionHandling{"Should not arrive here"};
+                      throw FatalException{"Should not arrive here"};
                     case BinaryOpcode::equal:
                       return " = ";
                     }
-                    throw FatalExceptionHandling{"Unknown opcode"};
+                    throw FatalException{"Unknown opcode"};
                   }();
 
                   /* Print right argument. Add parenthesis around right argument if:
@@ -752,7 +727,7 @@ protected:
                   case TrinaryOpcode::normpdf:
                     return "normpdf";
                   }
-                throw FatalExceptionHandling{"Unknown opcode"};
+                throw FatalException{"Unknown opcode"};
               }() };
 
               Stack.emplace(opname + "(" + arg1 + ", " + arg2 + ", " + arg3 + ")", 100, nullopt);
@@ -824,7 +799,7 @@ protected:
                 assign_lhs("[TEF(" + to_string(indx+1) + "), TEFD("  + to_string(indx+1) + "), TEFDD("  + to_string(indx+1) + ") ]");
                 break;
               default:
-                throw FatalExceptionHandling{"Unexpected external function call type"};
+                throw FatalException{"Unexpected external function call type"};
               }
             }
             break;
@@ -880,8 +855,8 @@ protected:
             go_on = false;
             break;
           default:
-            throw FatalExceptionHandling(" in print_expression, unknown opcode "
-                                         + to_string(static_cast<int>((*it_code)->op_code)) + "\n");
+            throw FatalException{"In print_expression, unknown opcode "
+                                 + to_string(static_cast<int>((*it_code)->op_code))};
           }
         it_code++;
       }
@@ -893,7 +868,7 @@ public:
   test_mxMalloc(void *z, int line, const string &file, const string &func, int amount)
   {
     if (!z && amount > 0)
-      throw FatalExceptionHandling(" mxMalloc: out of memory " + to_string(amount) + " bytes required at line " + to_string(line) + " in function " + func + " (file " + file);
+      throw FatalException{"mxMalloc: out of memory " + to_string(amount) + " bytes required at line " + to_string(line) + " in function " + func + " (file " + file};
   }
 };
 

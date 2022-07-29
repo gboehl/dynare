@@ -53,7 +53,7 @@ Evaluate::pow1(double a, double b)
       res1 = std::numeric_limits<double>::quiet_NaN();
       r = 0.0000000000000000000000001;
       if (print_error)
-        throw PowExceptionHandling(a, b);
+        throw PowException{a, b};
     }
   return r;
 }
@@ -67,7 +67,7 @@ Evaluate::divide(double a, double b)
       res1 = std::numeric_limits<double>::quiet_NaN();
       r = 1e70;
       if (print_error)
-        throw DivideExceptionHandling(a, b);
+        throw DivideException{b};
     }
   return r;
 }
@@ -81,7 +81,7 @@ Evaluate::log1(double a)
       res1 = std::numeric_limits<double>::quiet_NaN();
       r = -1e70;
       if (print_error)
-        throw LogExceptionHandling(a);
+        throw LogException{a};
     }
   return r;
 }
@@ -95,7 +95,7 @@ Evaluate::log10_1(double a)
       res1 = std::numeric_limits<double>::quiet_NaN();
       r = -1e70;
       if (print_error)
-        throw Log10ExceptionHandling(a);
+        throw Log10Exception{a};
     }
   return r;
 }
@@ -136,7 +136,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
     }
 #ifdef MATLAB_MEX_FILE
   if (utIsInterruptPending())
-    throw UserExceptionHandling();
+    throw UserException{};
 #endif
 
   while (go_on)
@@ -244,7 +244,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.push(x[it_+lag+var*nb_row_x]);
               break;
             case SymbolType::exogenousDet:
-              mexErrMsgTxt("FLDV: exogenous deterministic not supported");
+              throw FatalException{"FLDV: exogenous deterministic not supported"};
               break;
             case SymbolType::modelLocalVariable:
 #ifdef DEBUG
@@ -288,7 +288,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.push(x[var]);
               break;
             case SymbolType::exogenousDet:
-              mexErrMsgTxt("FLDSV: exogenous deterministic not supported");
+              throw FatalException{"FLDSV: exogenous deterministic not supported"};
               break;
             case SymbolType::modelLocalVariable:
 #ifdef DEBUG
@@ -326,7 +326,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.push(x[var]);
               break;
             case SymbolType::exogenousDet:
-              mexErrMsgTxt("FLDVS: exogenous deterministic not supported");
+              throw FatalException{"FLDVS: exogenous deterministic not supported"};
               break;
             case SymbolType::modelLocalVariable:
 #ifdef DEBUG
@@ -442,7 +442,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.pop();
               break;
             case SymbolType::exogenousDet:
-              mexErrMsgTxt("FSTPV: exogenous deterministic not supported");
+              throw FatalException{"FSTPV: exogenous deterministic not supported"};
               break;
             default:
               mexPrintf("FSTPV: Unknown variable type\n");
@@ -478,7 +478,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               Stack.pop();
               break;
             case SymbolType::exogenousDet:
-              mexErrMsgTxt("FSTPSV: exogenous deterministic not supported");
+              throw FatalException{"FSTPSV: exogenous deterministic not supported"};
               break;
             default:
               mexPrintf("FSTPSV: Unknown variable type\n");
@@ -583,7 +583,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           //store in the jacobian matrix
           rr = Stack.top();
           if (EQN_type != ExpressionType::FirstEndoDerivative)
-            throw FatalExceptionHandling(" in compute_block_time, impossible case " + to_string(static_cast<int>(EQN_type)) + " not implement in static jacobian\n");
+            throw FatalException{"In compute_block_time, impossible case " + to_string(static_cast<int>(EQN_type))
+                                 + " not implement in static jacobian"};
           eq = static_cast<FSTPG2_ *>(*it_code)->get_row();
           var = static_cast<FSTPG2_ *>(*it_code)->get_col();
 #ifdef DEBUG
@@ -656,7 +657,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               jacob_exo_det[eq + size*pos_col] = rr;
               break;
             default:
-              throw FatalExceptionHandling(" in compute_block_time, variable " + to_string(static_cast<int>(EQN_type)) + " not used yet\n");
+              throw FatalException{"In compute_block_time, variable " + to_string(static_cast<int>(EQN_type)) + " not used yet"};
             }
 // #ifdef DEBUG
 //           tmp_out << "=>";
@@ -704,9 +705,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 {
                   tmp = divide(v1, v2);
                 }
-              catch (FloatingPointExceptionHandling &fpeh)
+              catch (FloatingPointException &fpeh)
                 {
-                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
+                  mexPrintf("%s\n      %s\n", fpeh.message.c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
                   go_on = false;
                 }
               Stack.push(tmp);
@@ -758,9 +759,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 {
                   tmp = pow1(v1, v2);
                 }
-              catch (FloatingPointExceptionHandling &fpeh)
+              catch (FloatingPointException &fpeh)
                 {
-                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
+                  mexPrintf("%s\n      %s\n", fpeh.message.c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
                   go_on = false;
                 }
               Stack.push(tmp);
@@ -787,9 +788,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                         Stack.push(dxp);
                       }
                   }
-                catch (FloatingPointExceptionHandling &fpeh)
+                catch (FloatingPointException &fpeh)
                   {
-                    mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
+                    mexPrintf("%s\n      %s\n", fpeh.message.c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
                     go_on = false;
                   }
               }
@@ -816,8 +817,8 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             default:
               {
                 mexPrintf("Error\n");
-                throw FatalExceptionHandling(" in compute_block_time, unknown binary operator "
-                                             + to_string(static_cast<int>(op2)) + "\n");
+                throw FatalException{"In compute_block_time, unknown binary operator "
+                                     + to_string(static_cast<int>(op2))};
               }
             }
           break;
@@ -849,9 +850,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 {
                   tmp = log1(v1);
                 }
-              catch (FloatingPointExceptionHandling &fpeh)
+              catch (FloatingPointException &fpeh)
                 {
-                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
+                  mexPrintf("%s\n      %s\n", fpeh.message.c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
                   go_on = false;
                 }
               Stack.push(tmp);
@@ -865,9 +866,9 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                 {
                   tmp = log10_1(v1);
                 }
-              catch (FloatingPointExceptionHandling &fpeh)
+              catch (FloatingPointException &fpeh)
                 {
-                  mexPrintf("%s      %s\n", fpeh.GetErrorMsg().c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
+                  mexPrintf("%s\n      %s\n", fpeh.message.c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
                   go_on = false;
                 }
               Stack.push(tmp);
@@ -970,7 +971,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             default:
               {
                 mexPrintf("Error\n");
-                throw FatalExceptionHandling(" in compute_block_time, unknown unary operator " + to_string(static_cast<int>(op1)) + "\n");
+                throw FatalException{"In compute_block_time, unknown unary operator " + to_string(static_cast<int>(op1))};
               }
             }
           break;
@@ -999,7 +1000,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
             default:
               {
                 mexPrintf("Error\n");
-                throw FatalExceptionHandling(" in compute_block_time, unknown trinary operator " + to_string(static_cast<int>(op3)) + "\n");
+                throw FatalException{"In compute_block_time, unknown trinary operator " + to_string(static_cast<int>(op3))};
               }
             }
           break;
@@ -1056,7 +1057,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                       Stack.pop();
                     }
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
-                    throw FatalExceptionHandling(" external function: " + function_name + " not found");
+                    throw FatalException{"External function: " + function_name + " not found"};
 
                   double *rr = mxGetPr(output_arguments[0]);
                   Stack.push(*rr);
@@ -1110,7 +1111,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 #endif
                   nb_input_arguments = 3;
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
-                    throw FatalExceptionHandling(" external function: " + function_name + " not found");
+                    throw FatalException{"External function: " + function_name + " not found"};
                   double *rr = mxGetPr(output_arguments[0]);
 #ifdef DEBUG
                   mexPrintf("*rr=%f\n", *rr);
@@ -1129,7 +1130,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                       Stack.pop();
                     }
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
-                    throw FatalExceptionHandling(" external function: " + function_name + " not found");
+                    throw FatalException{"External function: " + function_name + " not found"};
                   int indx{fc->get_indx()};
                   double *FD1 = mxGetPr(output_arguments[0]);
                   size_t rows = mxGetN(output_arguments[0]);
@@ -1167,7 +1168,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 #endif
                   nb_input_arguments = 3;
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
-                    throw FatalExceptionHandling(" external function: " + function_name + " not found");
+                    throw FatalException{"External function: " + function_name + " not found"};
                   double *rr = mxGetPr(output_arguments[0]);
                   Stack.push(*rr);
                 }
@@ -1183,7 +1184,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                       Stack.pop();
                     }
                   if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments, input_arguments, function_name.c_str()))
-                    throw FatalExceptionHandling(" external function: " + function_name + " not found");
+                    throw FatalException{"External function: " + function_name + " not found"};
                   int indx{fc->get_indx()};
                   double *FD2 = mxGetPr(output_arguments[2]);
                   size_t rows = mxGetM(output_arguments[0]);
@@ -1320,7 +1321,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
           it_code += static_cast<FJMP_ *>(*it_code)->get_pos() /*- 1 */;
           break;
         default:
-          throw FatalExceptionHandling(" in compute_block_time, unknown opcode " + to_string(static_cast<int>((*it_code)->op_code)) + "\n");
+          throw FatalException{"In compute_block_time, unknown opcode " + to_string(static_cast<int>((*it_code)->op_code))};
         }
       it_code++;
     }
@@ -1397,16 +1398,16 @@ Evaluate::solve_simple_one_periods()
         {
           y[Block_Contain[0].Variable + Per_y_] += -slowc *divide(rr, g1[0]);
         }
-      catch (FloatingPointExceptionHandling &fpeh)
+      catch (FloatingPointException &fpeh)
         {
-          mexPrintf("%s      \n", fpeh.GetErrorMsg().c_str());
+          mexPrintf("%s\n      \n", fpeh.message.c_str());
           mexPrintf("      Singularity in block %d", block_num+1);
         }
       iter++;
     }
   if (!cvg)
-    throw FatalExceptionHandling(" in Solve Forward simple, convergence not achieved in block "
-                                 + to_string(block_num+1) + ", after " + to_string(iter) + " iterations\n");
+    throw FatalException{"In Solve Forward simple, convergence not achieved in block "
+                         + to_string(block_num+1) + ", after " + to_string(iter) + " iterations"};
 }
 
 void

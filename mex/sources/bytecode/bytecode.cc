@@ -166,7 +166,7 @@ Get_Arguments_and_global_variables(int nrhs,
                 *plan_struct_name = deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
               }
             else
-              throw FatalExceptionHandling(" in main, unknown argument : " + Get_Argument(prhs[i]) + "\n");
+              throw FatalException{"In main, unknown argument : " + Get_Argument(prhs[i])};
           }
     }
   if (count_array_argument > 0 && count_array_argument < 5)
@@ -174,20 +174,20 @@ Get_Arguments_and_global_variables(int nrhs,
       if (count_array_argument == 3 && steady_state)
         periods = 1;
       else
-        throw FatalExceptionHandling(" in main, missing arguments. All the following arguments have to be indicated y, x, params, it_, ys\n");
+        throw FatalException{"In main, missing arguments. All the following arguments have to be indicated y, x, params, it_, ys"};
     }
   *M_ = mexGetVariable("global", "M_");
   if (!*M_)
-    throw FatalExceptionHandling(" in main, global variable not found: M_\n");
+    throw FatalException{"In main, global variable not found: M_"};
 
   /* Gets variables and parameters from global workspace of Matlab */
   *oo_ = mexGetVariable("global", "oo_");
   if (!*oo_)
-    throw FatalExceptionHandling(" in main, global variable not found: oo_\n");
+    throw FatalException{"In main, global variable not found: oo_"};
 
   *options_ = mexGetVariable("global", "options_");
   if (!*options_)
-    throw FatalExceptionHandling(" in main, global variable not found: options_\n");
+    throw FatalException{"In main, global variable not found: options_"};
 }
 
 /* The gateway routine */
@@ -242,9 +242,9 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                          print, print_error, &GlobalTemporaryTerms,
                                          &plan, &pfplan, &extended_path, &extended_path_struct);
     }
-  catch (GeneralExceptionHandling &feh)
+  catch (GeneralException &feh)
     {
-      mexErrMsgTxt(feh.GetErrorMsg().c_str());
+      mexErrMsgTxt(feh.message.c_str());
     }
 #ifdef DEBUG
   mexPrintf("**************************************\n");
@@ -420,7 +420,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::exogenous)
                 splan[i].var_num = exo_num;
               else
-                mexErrMsgTxt(("The variable '"s + name + "'  defined as var in plan is not an exogenous\n").c_str());
+                mexErrMsgTxt(("The variable '"s + name + "'  defined as var in plan is not an exogenous").c_str());
             }
           tmp = mxGetField(plan_struct, i, "var");
           if (tmp)
@@ -432,7 +432,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::endogenous)
                 splan[i].exo_num = exo_num;
               else
-                mexErrMsgTxt(("The variable '"s + name + "'  defined as exo in plan is not an endogenous variable\n").c_str());
+                mexErrMsgTxt(("The variable '"s + name + "'  defined as exo in plan is not an endogenous variable").c_str());
             }
           tmp = mxGetField(plan_struct, i, "per_value");
           if (tmp)
@@ -480,7 +480,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::exogenous)
                 splan[i].var_num = exo_num;
               else
-                mexErrMsgTxt(("The variable '"s + name + "' defined as var in pfplan is not an exogenous\n").c_str());
+                mexErrMsgTxt(("The variable '"s + name + "' defined as var in pfplan is not an exogenous").c_str());
             }
           tmp = mxGetField(pfplan_struct, i, "exo");
           if (tmp)
@@ -492,7 +492,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               if (variable_type == SymbolType::endogenous)
                 spfplan[i].exo_num = exo_num;
               else
-                mexErrMsgTxt(("The variable '"s + name + "' defined as exo in pfplan  is not an endogenous variable\n").c_str());
+                mexErrMsgTxt(("The variable '"s + name + "' defined as exo in pfplan  is not an endogenous variable").c_str());
             }
           tmp = mxGetField(pfplan_struct, i, "per_value");
           if (tmp)
@@ -685,10 +685,10 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   string file_name = fname;
 
   if (stack_solve_algo == 7 && !steady_state)
-    mexErrMsgTxt("Bytecode: Can't use option stack_solve_algo=7\n");
+    mexErrMsgTxt("Bytecode: Can't use option stack_solve_algo=7");
 
   if (steady_state && !evaluate && (solve_algo < 5 || solve_algo > 8))
-    mexErrMsgTxt("Bytecode: solve_algo must be between 5 and 8 when using the internal steady state solver\n");
+    mexErrMsgTxt("Bytecode: solve_algo must be between 5 and 8 when using the internal steady state solver");
 
   size_t size_of_direction = col_y*row_y*sizeof(double);
   auto *y = static_cast<double *>(mxMalloc(size_of_direction));
@@ -727,11 +727,11 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         {
           interprete.extended_path(f, f, evaluate, block, nb_blocks, max_periods, sextended_path, sconditional_extended_path, dates, table_conditional_global);
         }
-      catch (GeneralExceptionHandling &feh)
+      catch (GeneralException &feh)
         {
           // Release the lock on dynamic.bin for MATLAB+Windows, see #1815
           interprete.Close_SaveCode();
-          mexErrMsgTxt(feh.GetErrorMsg().c_str());
+          mexErrMsgTxt(feh.message.c_str());
         }
     }
   else
@@ -740,11 +740,11 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         {
           interprete.compute_blocks(f, f, evaluate, block, nb_blocks);
         }
-      catch (GeneralExceptionHandling &feh)
+      catch (GeneralException &feh)
         {
           // Release the lock on dynamic.bin for MATLAB+Windows, see #1815
           interprete.Close_SaveCode();
-          mexErrMsgTxt(feh.GetErrorMsg().c_str());
+          mexErrMsgTxt(feh.message.c_str());
         }
     }
 
@@ -816,16 +816,16 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                   plhs[1] = block_structur;
                   jacob_field_number = mxAddField(plhs[1], "g1");
                   if (jacob_field_number == -1)
-                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob to the structArray\n");
+                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob to the structArray");
                   jacob_exo_field_number = mxAddField(plhs[1], "g1_x");
                   if (jacob_exo_field_number == -1)
-                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_exo to the structArray\n");
+                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_exo to the structArray");
                   jacob_exo_det_field_number = mxAddField(plhs[1], "g1_xd");
                   if (jacob_exo_det_field_number == -1)
-                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_exo_det to the structArray\n");
+                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_exo_det to the structArray");
                   jacob_other_endo_field_number = mxAddField(plhs[1], "g1_o");
                   if (jacob_other_endo_field_number == -1)
-                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_other_endo to the structArray\n");
+                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_other_endo to the structArray");
                 }
               if (!dont_store_a_structure)
                 for (int i = 0; i < nb_blocks; i++)

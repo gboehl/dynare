@@ -72,12 +72,12 @@ BasicSymbolTable::getName(SymbolType type, int tsid) const
         case SymbolType::parameter:
           return param_names.at(tsid);
         default:
-          mexErrMsgTxt(("Unsupported symbol type: " + to_string(static_cast<int>(type)) + "\n").c_str());
+          mexErrMsgTxt(("Unsupported symbol type: " + to_string(static_cast<int>(type))).c_str());
         }
     }
   catch (out_of_range &)
     {
-      mexErrMsgTxt(("Unknown symbol with ID " + to_string(tsid) + " and type " + to_string(static_cast<int>(type)) + "\n").c_str());
+      mexErrMsgTxt(("Unknown symbol with ID " + to_string(tsid) + " and type " + to_string(static_cast<int>(type))).c_str());
     }
   exit(EXIT_FAILURE); // Silence GCC warning
 }
@@ -91,7 +91,7 @@ BasicSymbolTable::getIDAndType(const string &name) const
     }
   catch (out_of_range &)
     {
-      mexErrMsgTxt(("Unknown symbol: " + name + "\n").c_str());
+      mexErrMsgTxt(("Unknown symbol: " + name).c_str());
     }
   exit(EXIT_FAILURE); // Silence GCC warning
 }
