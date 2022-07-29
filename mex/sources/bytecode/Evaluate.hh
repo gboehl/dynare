@@ -22,22 +22,30 @@
 
 #include <vector>
 #include <string>
-
-#include "dynmex.h"
+#include <map>
 
 #define BYTECODE_MEX
 #include "Bytecode.hh"
 #include "ErrorHandling.hh"
+#include "BasicSymbolTable.hh"
 
-class Evaluate : public ErrorMsg
+using it_code_type = instructions_list_t::const_iterator;
+
+class Evaluate
 {
 private:
+  ExpressionType EQN_type;
+  int EQN_equation, EQN_block, EQN_dvar1;
   int EQN_lag1, EQN_lag2, EQN_lag3;
   map<int, double> TEF;
   map<pair<int, int>, double> TEFD;
   map<tuple<int, int, int>, double> TEFDD;
 
+  string error_location(it_code_type expr_begin, it_code_type faulty_op, bool steady_state, int it_) const;
+
 protected:
+  BasicSymbolTable &symbol_table;
+  int EQN_block_number;
   double *y, *ya;
   int y_size;
   double *T;
@@ -84,6 +92,14 @@ protected:
   int block_num, symbol_table_endo_nbr, Block_List_Max_Lag, Block_List_Max_Lead, u_count_int, block;
   string file_name, bin_base_name;
   bool Gaussian_Elimination, is_linear;
+
+  /* Prints a bytecode expression in human readable form.
+     If faulty_op is not default constructed, it should point to a tag withing
+     the expression that created a floating point exception, in which case the
+     corresponding mathematical operator will be printed within braces.
+     The second output argument points to the tag past the expression. */
+  pair<string, it_code_type> print_expression(const it_code_type &expr_begin, const optional<it_code_type> &faulty_op = nullopt) const;
+
 public:
   bool steady_state;
   Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg, int minimal_solving_periods_arg, BasicSymbolTable &symbol_table_arg);

@@ -43,6 +43,23 @@ struct t_save_op_s
   int first, second;
 };
 
+struct s_plan
+{
+  string var, exo;
+  int var_num, exo_num;
+  vector<pair<int, double>> per_value;
+  vector<double> value;
+};
+
+struct table_conditional_local_type
+{
+  bool is_cond;
+  int var_exo, var_endo;
+  double constrained_value;
+};
+using vector_table_conditional_local_type = vector<table_conditional_local_type>;
+using table_conditional_global_type = map<int, vector_table_conditional_local_type>;
+
 constexpr int IFLD = 0, IFDIV = 1, IFLESS = 2, IFSUB = 3, IFLDZ = 4, IFMUL = 5, IFSTP = 6, IFADD = 7;
 constexpr double eps = 1e-15, very_big = 1e24;
 constexpr int alt_symbolic_count_max = 1;

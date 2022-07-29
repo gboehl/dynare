@@ -338,7 +338,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           double *specific_constrained_int_date_ = mxGetPr(mxGetCell(constrained_int_date_, i));
           int nb_local_periods = mxGetM(Array_constrained_paths_) * mxGetN(Array_constrained_paths_);
           int *constrained_int_date = static_cast<int *>(mxMalloc(nb_local_periods * sizeof(int)));
-          ErrorMsg::test_mxMalloc(constrained_int_date, __LINE__, __FILE__, __func__, nb_local_periods * sizeof(int));
+          test_mxMalloc(constrained_int_date, __LINE__, __FILE__, __func__, nb_local_periods * sizeof(int));
           if (nb_periods < nb_local_periods)
             mexErrMsgTxt(("The total number of simulation periods (" + to_string(nb_periods)
                           + ") is lesser than the number of periods in the shock definitions ("
@@ -692,14 +692,14 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   size_t size_of_direction = col_y*row_y*sizeof(double);
   auto *y = static_cast<double *>(mxMalloc(size_of_direction));
-  ErrorMsg::test_mxMalloc(y, __LINE__, __FILE__, __func__, size_of_direction);
+  test_mxMalloc(y, __LINE__, __FILE__, __func__, size_of_direction);
   auto *ya = static_cast<double *>(mxMalloc(size_of_direction));
-  ErrorMsg::test_mxMalloc(ya, __LINE__, __FILE__, __func__, size_of_direction);
+  test_mxMalloc(ya, __LINE__, __FILE__, __func__, size_of_direction);
   direction = static_cast<double *>(mxMalloc(size_of_direction));
-  ErrorMsg::test_mxMalloc(direction, __LINE__, __FILE__, __func__, size_of_direction);
+  test_mxMalloc(direction, __LINE__, __FILE__, __func__, size_of_direction);
   memset(direction, 0, size_of_direction);
   auto *x = static_cast<double *>(mxMalloc(col_x*row_x*sizeof(double)));
-  ErrorMsg::test_mxMalloc(x, __LINE__, __FILE__, __func__, col_x*row_x*sizeof(double));
+  test_mxMalloc(x, __LINE__, __FILE__, __func__, col_x*row_x*sizeof(double));
   for (i = 0; i < row_x*col_x; i++)
     x[i] = static_cast<double>(xd[i]);
   for (i = 0; i < row_y*col_y; i++)

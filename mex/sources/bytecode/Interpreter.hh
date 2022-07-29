@@ -33,6 +33,8 @@
 
 using namespace std;
 
+constexpr int NO_ERROR_ON_EXIT {0}, ERROR_ON_EXIT {1};
+
 class Interpreter : public dynSparseMatrix
 {
 private:
