@@ -61,14 +61,10 @@ function [a, a1, P, P1, v, T, R, C, regimes_, error_flag, M_, lik, etahat] = kal
 
 warning off
 
-regimes_(1).regime=false;
-regimes_(2).regime=false;
-regimes_(3).regime=false;
-regimes_(1).regimestart=NaN;
-regimes_(2).regimestart=NaN;
-regimes_(3).regimestart=NaN;
+options_.noprint = true;
 R=NaN(size(RR));
 C=NaN(size(CC));
+T=NaN(size(TT));
 lik=Inf;
 
 sto.a=a;
@@ -86,6 +82,7 @@ else
     base_regime.regime2 = 0;
     base_regime.regimestart2 = 1;
 end
+regimes_ = [base_regime base_regime base_regime];
 
 mm=size(a,1);
 %% store info in t=1
@@ -116,7 +113,6 @@ else
 end
 if error_flag
     etahat=NaN(size(QQQ,1),1);
-    T=NaN(size(TT));
     return;
 end
 
@@ -135,10 +131,10 @@ else
     my_order_var = oo_.dr.order_var;
 end
 options_.occbin.simul=opts_simul;
-options_.noprint=1;
 [~, out, ss] = occbin.solver(M_,oo_,options_);
 if out.error_flag
     error_flag = out.error_flag;
+    etahat=etahat(:,2);
     return;
 end
 
@@ -226,6 +222,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         [~, out, ss] = occbin.solver(M_,oo_,options_);
         if out.error_flag
             error_flag = out.error_flag;
+            etahat=etahat(:,2);
             return;
         end
         regimes0=regimes_;
@@ -275,6 +272,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                     [~, out, ss] = occbin.solver(M_,oo_,options_);
                     if out.error_flag
                         error_flag = out.error_flag;
+                        etahat=etahat(:,2);
                         return;
                     end
                 end
@@ -332,6 +330,7 @@ if ~error_flag && niter>options_.occbin.likelihood.max_number_of_iterations && ~
             [~, out, ss] = occbin.solver(M_,oo_,options_);
             if out.error_flag
                 error_flag = out.error_flag;
+                etahat=etahat(:,2);
                 return;
             end
             if isequal(out.regime_history(1),regimes_(1))
@@ -343,15 +342,16 @@ if ~error_flag && niter>options_.occbin.likelihood.max_number_of_iterations && ~
     end
 end
 
-a = out.piecewise(1:2,my_order_var)' - repmat(out.ys(my_order_var),1,2);
+if ~error_flag
+    a = out.piecewise(1:2,my_order_var)' - repmat(out.ys(my_order_var),1,2);
+    regimes_=regimes_(1:3);
+end
 T = ss.T(my_order_var,my_order_var,1:2);
 R = ss.R(my_order_var,:,1:2);
 C = ss.C(my_order_var,1:2);
 QQ = R(:,:,2)*QQQ(:,:,3)*transpose(R(:,:,2));
 P(:,:,1) = P(:,:,2);
 P(:,:,2) = T(:,:,2)*P(:,:,1)*transpose(T(:,:,2))+QQ;
-% P = cat(3,P(:,:,2),P2);
-regimes_=regimes_(1:3);
 etahat=etahat(:,2);
 
 warning_config;
@@ -368,6 +368,7 @@ if nargin<18
     IF_likelihood=0;
 end
 t=2;
+lik=0;
 %% forward pass
 % given updated variables and covarnace in t=1, we make the step to t=2
 T = TT(:,:,t);
