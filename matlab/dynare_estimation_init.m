@@ -641,7 +641,7 @@ end
 estim_params_= get_matrix_entries_for_psd_check(M_,estim_params_);
 
 if options_.load_results_after_load_mh
-    if ~exist([M_.fname '_results.mat'],'file')
+    if ~exist([M_.dname filesep 'Output' filesep M_.fname '_results.mat'],'file')
         fprintf('\ndynare_estimation_init:: You specified the load_results_after_load_mh, but no _results.mat-file\n')
         fprintf('dynare_estimation_init:: was found. Results will be recomputed.\n')
         options_.load_results_after_load_mh=0;
