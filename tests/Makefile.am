@@ -1195,7 +1195,7 @@ estimation/univariate: m/estimation/univariate o/estimation/univariate
 m/estimation/univariate: $(patsubst %.mod, %.m.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
 o/estimation/univariate: $(patsubst %.mod, %.o.trs, $(filter estimation/univariate/%.mod, $(MODFILES)))
 
-particle: m/model-inversion o/model-inversion
+model-inversion: m/model-inversion o/model-inversion
 m/model-inversion: $(patsubst %.mod, %.m.trs, $(filter model-inversion/%.mod, $(MODFILES)))
 o/model-inversion: $(patsubst %.mod, %.o.trs, $(filter model-inversion/%.mod, $(MODFILES)))
 
