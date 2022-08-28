@@ -172,10 +172,10 @@ for b=1:nb
         display_problematic_vars_Jacobian(imagrow,imagcol,M,dr.ys,'static','MODEL_DIAGNOSTICS: ')
     end
     try
-        if isoctave || matlab_ver_less_than('9.12') || isempty(options_.jacobian_tolerance)
+        if isoctave || matlab_ver_less_than('9.12') || isempty(options.jacobian_tolerance)
             rank_jacob = rank(jacob); %can sometimes fail
         else
-            rank_jacob = rank(jacob,options_.jacobian_tolerance); %can sometimes fail
+            rank_jacob = rank(jacob,options.jacobian_tolerance); %can sometimes fail
         end
     catch
         rank_jacob=size(jacob,1);
@@ -187,10 +187,10 @@ for b=1:nb
               'singular'])
         disp(['MODEL_DIAGNOSTICS:  there is ' num2str(endo_nbr-rank_jacob) ...
               ' colinear relationships between the variables and the equations'])
-        if isoctave || matlab_ver_less_than('9.12') || isempty(options_.jacobian_tolerance)
+        if isoctave || matlab_ver_less_than('9.12') || isempty(options.jacobian_tolerance)
             ncol = null(jacob);
         else
-            ncol = null(jacob,options_.jacobian_tolerance); %can sometimes fail
+            ncol = null(jacob,options.jacobian_tolerance); %can sometimes fail
         end
         n_rel = size(ncol,2);
         for i = 1:n_rel
@@ -206,10 +206,10 @@ for b=1:nb
             end
             fprintf('%s\n',endo_names{k})
         end
-        if isoctave || matlab_ver_less_than('9.12') || isempty(options_.jacobian_tolerance)
+        if isoctave || matlab_ver_less_than('9.12') || isempty(options.jacobian_tolerance)
             neq = null(jacob'); %can sometimes fail
         else
-            neq = null(jacob',options_.jacobian_tolerance); %can sometimes fail
+            neq = null(jacob',options.jacobian_tolerance); %can sometimes fail
         end
         n_rel = size(neq,2);
         for i = 1:n_rel
