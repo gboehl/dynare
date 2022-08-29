@@ -971,7 +971,9 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
             %    / N / mean(diagC) / sigma^2;
             % Catch non-sensible values
             if ~isfinite(val)
-                warning('Non-finite fitness range');
+                if verbosemodulo>0
+                    warning('Dynare:CMAES:nonFiniteFitnessRange','Non-finite fitness range');
+                end
                 val = max(bnd.dfithist);
             elseif val == 0 % happens if all points are out of bounds
                 val = min(bnd.dfithist(bnd.dfithist>0));  % seems not to make sense, given all solutions are out of bounds
