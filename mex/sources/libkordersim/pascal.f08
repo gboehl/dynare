@@ -60,12 +60,27 @@ contains
 
    ! Returns ⎛n⎞ stored in pascal_triangle p
    !         ⎝k⎠
- 
-   type(integer) function get(k,n,p)
+   integer function get(k,n,p)
       integer, intent(in) :: k, n
       type(pascal_triangle), intent(in) :: p
       get = p%lines(n)%coeffs(k+1)
    end function get
+
+   ! Returns ⎛        d        ⎞
+   !         ⎝ k₁, k₂, ..., kₙ ⎠
+   integer function multinomial(k,d,p)
+      integer, intent(in) :: k(:), d
+      type(pascal_triangle), intent(in) :: p
+      integer :: s, i
+      s = d 
+      multinomial = 1
+      i = 1
+      do while (s > 0)
+         multinomial = multinomial*get(k(i), s, p)         
+         s = s-k(i)
+         i = i+1
+      end do
+   end function 
 
 end module pascal
 
@@ -86,4 +101,10 @@ end module pascal
 !          end if
 !       end do
 !    end do
+
+!    d = 3
+!    p = pascal_triangle(d)
+!    print '(i2)', multinomial([1,2,3], d, p) ! should print 60
+!    print '(i2)', multinomial([0,0,0,3], d, p) ! should print 20
+
 ! end program test

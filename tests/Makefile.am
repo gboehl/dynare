@@ -652,7 +652,8 @@ PARTICLEFILES = \
 	particle/dsge_base2.mod \
 	particle/first_spec.mod \
 	particle/first_spec_MCMC.mod \
-	particle/local_state_space_iteration_k_test.mod
+	particle/local_state_space_iteration_k_test.mod \
+	particle/local_state_space_iteration_3_test.mod
 
 
 XFAIL_MODFILES = ramst_xfail.mod \
@@ -958,6 +959,9 @@ discretionary_policy/dennis_1_estim.m.trs: discretionary_policy/dennis_1.m.trs
 discretionary_policy/dennis_1_estim.o.trs: discretionary_policy/dennis_1.o.trs
 discretionary_policy/Gali_2015_chapter_3_nonlinear.m.trs: discretionary_policy/Gali_2015_chapter_3.m.trs
 discretionary_policy/Gali_2015_chapter_3_nonlinear.o.trs: discretionary_policy/Gali_2015_chapter_3.o.trs
+
+particle/local_state_space_iteration_3_test.m.trs: particle/first_spec.m.trs
+particle/local_state_space_iteration_3_test.o.trs: particle/first_spec.o.trs
 
 particle/local_state_space_iteration_k_test.m.trs: particle/first_spec.m.trs
 particle/local_state_space_iteration_k_test.o.trs: particle/first_spec.o.trs
