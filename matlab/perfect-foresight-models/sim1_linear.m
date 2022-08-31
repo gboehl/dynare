@@ -132,7 +132,7 @@ if options.debug
 end
 
 % Check that the dynamic model was evaluated at the steady state.
-if ~options_.steadystate.nocheck &&  max(abs(d1))>options.solve_tolf
+if ~options.steadystate.nocheck &&  max(abs(d1))>options.solve_tolf
     error('Jacobian is not evaluated at the steady state!')
 end
 
