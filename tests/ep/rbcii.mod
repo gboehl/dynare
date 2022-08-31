@@ -51,7 +51,7 @@ end;
     steady(nocheck);
 
     options_.ep.stochastic.order = 0;
-!*
+
     ts = extended_path([], 200, [], options_, M_, oo_);
     ts.save('rbcii-sim-data');
 
