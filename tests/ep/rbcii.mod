@@ -6,19 +6,7 @@ varexo EfficiencyInnovation;
 
 parameters beta, theta, tau, alpha, psi, delta, rho, effstar, sigma;
 
-/*
-** Calibration
-*/
-
-beta    =  0.990;
-theta   =  0.357;
-tau     =  2.000;
-alpha   =  0.450;
-psi     = -0.200;
-delta   =  0.020;
-rho     =  0.800;
-effstar =  1.000;
-sigma   =  0.100;
+@#include "rbcii-calibration.inc"
 
 model(use_dll);
 
@@ -63,11 +51,12 @@ end;
     steady(nocheck);
 
     options_.ep.stochastic.order = 0;
-
-    ts = extended_path([], 20, [], options_, M_, oo_);
+!*
+    ts = extended_path([], 200, [], options_, M_, oo_);
+    ts.save('rbcii-sim-data');
 
     options_.ep.stochastic.order = 1;
-    ts1_4 = extended_path([], 20, [], options_, M_, oo_);
+    ts1_4 = extended_path([], 200, [], options_, M_, oo_);
 
 @#else
 

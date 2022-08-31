@@ -1,15 +1,14 @@
 % RBC model  with  irreversible  investment  constraint, implemented using MCP tag.
 
 var k, y, L, c, A, a, mu, i;
+
 varexo epsilon;
+
 parameters beta, theta, tau, alpha, psi, delta, rho, Astar;
 
-beta = 0.9900;  theta = 0.3570;
-tau = 2.0000;   alpha = 0.4500;
-psi = -0.1000;  delta = 0.0200;
-rho = 0.8000;   Astar = 1.0000;
+@#include "rbcii-calibration.inc"
 
-model;
+model(use_dll);
   a = rho*a(-1) + epsilon;
   A = Astar*exp(a);
   y = A*(alpha*k(-1)^psi+(1-alpha)*L^psi)^(1/psi);
@@ -51,8 +50,16 @@ shocks;
   stderr 0.10;
 end;
 
-extended_path(periods=50,lmmcp);
+extended_path(periods=200,lmmcp);
 
 if any(oo_.endo_simul(strmatch('i',M_.endo_names,'exact'),:)<-1e-6)
-    error('lmmcp tag did not work')
+    error('lmmcp tag did not work.')
 end
+
+ds = dseries('rbcii-sim-data.mat');
+
+if any(abs(transpose(oo_.endo_simul(strmatch('i',M_.endo_names,'exact'),:))-ds.Investment.data)>1e-6)
+    error('Simulation with lmmcp returns different results.')
+end
+
+delete rbcii-sim-data.mat

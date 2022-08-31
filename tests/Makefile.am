@@ -983,6 +983,9 @@ model-inversion/nk-2/invert.o.trs: model-inversion/nk-2/simulate.o.trs
 model-inversion/nk-2/z_check_inversion.m.trs: model-inversion/nk-2/invert.m.trs
 model-inversion/nk-2/z_check_inversion.o.trs: model-inversion/nk-2/invert.o.trs
 
+ep/rbcii_MCP.m.trs: ep/rbcii.m.trs
+ep/rbcii_MCP.o.trs: ep/rbcii.o.trs
+
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
 o/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.o.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
