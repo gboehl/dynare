@@ -74,7 +74,7 @@ if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
 end
 
-if options_.rplottype == 0
+if options_.rplottype == 0 %all in one plot
     hh=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
     plot(ix(i),y(:,i)) ;
     if options_.TeX
@@ -98,7 +98,7 @@ if options_.rplottype == 0
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         create_TeX_loader(fidTeX,[M_.dname, '/graphs/', 'SimulatedTrajectory_' s1{1}],'Simulated trajectories','SimulatedTrajectory_',s1{1},1)
     end
-elseif options_.rplottype == 1
+elseif options_.rplottype == 1 %separate figures each
     for j = 1:size(y,1)
         hh=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
         plot(ix(i),y(j,i)) ;
@@ -114,7 +114,7 @@ elseif options_.rplottype == 1
             create_TeX_loader(fidTeX,[M_.dname, '/graphs/', 'SimulatedTrajectory_' s1{j}],'Simulated trajectories','SimulatedTrajectory_',s1{j},1);
         end
     end
-elseif options_.rplottype == 2
+elseif options_.rplottype == 2 %different subplots
     hh=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
     nl = max(1,fix(size(y,1)/4)) ;
     nc = ceil(size(y,1)/nl) ;

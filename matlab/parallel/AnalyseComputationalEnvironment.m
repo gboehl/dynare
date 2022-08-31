@@ -104,7 +104,7 @@ dynareParallelMkDir(RemoteTmpFolder,DataInput);
 ErrorCode=0;
 
 
-for Node=1:length(DataInput) % To obtain a recoursive function remove the 'for'
+for Node=1:length(DataInput) % To obtain a recursive function remove the 'for'
                              % and use AnalyseComputationalEnvironment with differents input!
 
 

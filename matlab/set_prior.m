@@ -1,5 +1,5 @@
 function [xparam1, estim_params_, bayestopt_, lb, ub, M_]=set_prior(estim_params_, M_, options_)
-% function [xparam1,estim_params_,bayestopt_,lb,ub]=set_prior(estim_params_)
+% function [xparam1,estim_params_,bayestopt_,lb,ub, M_]=set_prior(estim_params_, M_, options_)
 % sets prior distributions
 %
 % INPUTS
