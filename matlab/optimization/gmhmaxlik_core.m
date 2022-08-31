@@ -149,7 +149,6 @@ j = 1;
 isux = 0;
 ilogpo2 = - feval(ObjFun,ix2,varargin{:});
 while j<= NumberOfIterations
-    j = j+1;
     proposal = iScale*dd*randn(npar,1) + ix2;
     if all(proposal > mh_bounds(:,1)) && all(proposal < mh_bounds(:,2))
         logpo2 = - feval(ObjFun,proposal,varargin{:});
@@ -176,6 +175,7 @@ while j<= NumberOfIterations
     MeanPar = oldMeanPar + (1/j)*(ix2-oldMeanPar);
     CovJump = CovJump + oldMeanPar*oldMeanPar' - MeanPar*MeanPar' + ...
               (1/j)*(ix2*ix2' - CovJump - oldMeanPar*oldMeanPar');
+    j = j+1;
 end
 dyn_waitbar_close(hh);
 PostVar = CovJump;
