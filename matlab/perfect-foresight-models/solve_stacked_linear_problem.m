@@ -28,7 +28,7 @@ in = find(M.lead_lag_incidence(3,:)');
 [d1,jacobian] = dynamicmodel(steadystate_y([ip; ic; in]), transpose(steadystate_x), M.params, steadystate_y, 1);
 
 % Check that the dynamic model was evaluated at the steady state.
-if max(abs(d1))>1e-12
+if ~options.steadystate.nocheck && max(abs(d1))>1e-12
     error('Jacobian is not evaluated at the steady state!')
 end
 
