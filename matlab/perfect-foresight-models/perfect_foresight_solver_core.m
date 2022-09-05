@@ -31,6 +31,8 @@ function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
 if options_.lmmcp.status
     options_.stack_solve_algo=7;
     options_.solve_algo = 10;
+elseif options_.stack_solve_algo==7 && options_.solve_algo == 11
+    options_.lmmcp.status = 1; %Path solver
 end
 
 periods = options_.periods;
