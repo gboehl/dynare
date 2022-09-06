@@ -22,7 +22,7 @@ set -ex
 ROOTDIR=$(pwd)/..
 
 # Set the GCC version
-GCC_VERSION=11
+GCC_VERSION=12
 
 # Set the compilers
 CC=gcc-$GCC_VERSION
