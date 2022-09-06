@@ -18,13 +18,13 @@ MATLAB64_VERSION = 20200930
 ## Build dependencies
 
 # pacman -Ss mingw-w64-x86_64-boost
-MINGW64_BOOST_VERSION = 1.79.0-3
+MINGW64_BOOST_VERSION = 1.80.0-1
 
 # pacman -Ss mingw-w64-x86_64-gsl
 MINGW64_GSL_VERSION = 2.7.1-1
 
 # pacman -Ss mingw-w64-x86_64-openblas
-MINGW64_OPENBLAS_VERSION = 0.3.20-3
+MINGW64_OPENBLAS_VERSION = 0.3.21-3
 
 # pacman -Ss mingw-w64-x86_64-matio
 MINGW64_MATIO_VERSION = 1.5.23-1
@@ -44,22 +44,22 @@ MINGW64_LIBAEC_VERSION = 1.0.6-2
 ## MinGW packages for the embedded compiler
 
 # pacman -Ss mingw-w64-x86_64-gcc$
-MINGW64_GCC_VERSION = 12.1.0-2
+MINGW64_GCC_VERSION = 12.2.0-1
 
 # pacman -Ss mingw-w64-x86_64-gmp
 MINGW64_GMP_VERSION = 6.2.1-3
 
 # pacman -Ss mingw-w64-x86_64-binutils
-MINGW64_BINUTILS_VERSION = 2.38-3
+MINGW64_BINUTILS_VERSION = 2.39-2
 
 # pacman -Ss mingw-w64-x86_64-headers-git
-MINGW64_HEADERS_VERSION = 10.0.0.r32.g89bacd2be-1
+MINGW64_HEADERS_VERSION = 10.0.0.r72.g1dd2a4993-1
 
 # pacman -Ss mingw-w64-x86_64-crt-git
-MINGW64_CRT_VERSION = 10.0.0.r32.g89bacd2be-1
+MINGW64_CRT_VERSION = 10.0.0.r72.g1dd2a4993-1
 
 # pacman -Ss mingw-w64-x86_64-winpthreads-git
-MINGW64_WINPTHREADS_VERSION = 10.0.0.r32.g89bacd2be-1
+MINGW64_WINPTHREADS_VERSION = 10.0.0.r72.g1dd2a4993-1
 
 # pacman -Ss mingw-w64-x86_64-zstd
 MINGW64_ZSTD_VERSION = 1.5.2-2
