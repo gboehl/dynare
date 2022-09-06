@@ -6,6 +6,7 @@ EXTRA_DIST = \
 	blas_lapack.F08 \
 	defines.F08 \
 	matlab_mex.F08 \
+	pthread.F08 \
 	mjdgges \
 	kronecker \
 	bytecode \
