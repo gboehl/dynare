@@ -107,7 +107,7 @@ if info
 end
 
 % check if ys is steady state
-options.debug=1; %locally set debug option to 1
+options.debug=true; %locally set debug option to true
 if options.logged_steady_state %if steady state was previously logged, undo this
     oo.dr.ys=exp(oo.dr.ys);
     oo.steady_state=exp(oo.steady_state);
