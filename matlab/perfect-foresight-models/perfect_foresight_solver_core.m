@@ -116,7 +116,7 @@ else
                     [oo_.endo_simul, oo_.deterministic_simulation] = ...
                         solve_stacked_linear_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
                 else
-                    [oo_.endo_simul, oo_.deterministic_simulation] = ...
+                    [oo_.endo_simul, oo_.deterministic_simulation, residuals] = ...
                         solve_stacked_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
                 end
               otherwise
@@ -128,7 +128,7 @@ end
 
 if nargout>1
     if options_.lmmcp.status
-        maxerror = NaN; % Could be improved
+        maxerror = max(max(abs(residuals)));
     elseif options_.block && ~options_.bytecode
         maxerror = oo_.deterministic_simulation.error;
     else

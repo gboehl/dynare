@@ -1,4 +1,4 @@
-function [endogenousvariables, info] = solve_stacked_problem(endogenousvariables, exogenousvariables, steadystate, M, options)
+function [endogenousvariables, info, residuals] = solve_stacked_problem(endogenousvariables, exogenousvariables, steadystate, M, options)
 
 % Solves the perfect foresight model using dynare_solve
 %
@@ -12,6 +12,7 @@ function [endogenousvariables, info] = solve_stacked_problem(endogenousvariables
 % OUTPUTS
 % - endogenousvariables [double] N*T array, paths for the endogenous variables (solution of the perfect foresight model).
 % - info                [struct] contains informations about the results.
+% - residuals           [double] N*T array, residuals of the equations (with 0 for initial condition)
 
 % Copyright © 2015-2022 Dynare Team
 %
@@ -46,7 +47,7 @@ if (options.solve_algo == 10 || options.solve_algo == 11)% mixed complementarity
         options.mcppath.lb = repmat(lb,options.periods,1);
         options.mcppath.ub = repmat(ub,options.periods,1);
     end
-    [y, check, ~, ~, errorcode] = dynare_solve(@perfect_foresight_mcp_problem, z(:), ...
+    [y, check, res, ~, errorcode] = dynare_solve(@perfect_foresight_mcp_problem, z(:), ...
                                                options.simul.maxit, options.dynatol.f, options.dynatol.x, ...
                                                options, ...
                                                dynamicmodel, y0, yT, ...
@@ -54,8 +55,10 @@ if (options.solve_algo == 10 || options.solve_algo == 11)% mixed complementarity
                                                M.maximum_lag, options.periods, M.endo_nbr, i_cols, ...
                                                i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
                                                eq_index);
+    eq_to_ignore=find(isfinite(lb) | isfinite(ub));
+
 else
-    [y, check, ~, ~, errorcode] = dynare_solve(@perfect_foresight_problem, z(:), ...
+    [y, check, res, ~, errorcode] = dynare_solve(@perfect_foresight_problem, z(:), ...
                                                options.simul.maxit, options.dynatol.f, options.dynatol.x, ...
                                                options, y0, yT, exogenousvariables, M.params, steadystate, options.periods, M, options);
 end
@@ -69,6 +72,11 @@ else
 end
 
 endogenousvariables(:, M.maximum_lag+(1:options.periods)) = reshape(y, M.endo_nbr, options.periods);
+residuals=zeros(size(endogenousvariables));
+residuals(:, M.maximum_lag+(1:options.periods)) = reshape(res, M.endo_nbr, options.periods);
+if (options.solve_algo == 10 || options.solve_algo == 11)% mixed complementarity problem
+    residuals(eq_to_ignore,endogenousvariables(eq_to_ignore,:)<=lb(eq_to_ignore)+eps | endogenousvariables(eq_to_ignore,:)>=ub(eq_to_ignore)-eps)=0;
+end
 
 if check
     info.status = false;
