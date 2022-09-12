@@ -57,8 +57,13 @@ if any(oo_.endo_simul(strmatch('i',M_.endo_names,'exact'),:)<-1e-6)
 end
 
 ds = dseries('rbcii-sim-data.mat');
+if isoctave
+    tolerance=5e-5;
+else
+    tolerance=1e-6;
+end
 
-if any(abs(transpose(oo_.endo_simul(strmatch('i',M_.endo_names,'exact'),:))-ds.Investment.data)>1e-6)
+if any(abs(transpose(oo_.endo_simul(strmatch('i',M_.endo_names,'exact'),:))-ds.Investment.data)>tolerance)
     error('Simulation with lmmcp returns different results.')
 end
 
