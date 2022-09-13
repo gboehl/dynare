@@ -50,7 +50,7 @@ for it = M.maximum_lag + (1:options.periods)
     end
     if check
         info.status = false;
-        dprintf('sim1_purely_backward: Nonlinear solver routine failed with errorcode=%i. in period %i', errorcode, it)
+        dprintf('sim1_purely_backward: Nonlinear solver routine failed with errorcode=%i in period %i', errorcode, it)
         break
     end
     endogenousvariables(:,it) = tmp;
