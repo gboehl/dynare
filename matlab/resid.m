@@ -37,7 +37,7 @@ non_zero = nargin > 0 && isfield(options_resid_, 'non_zero') && options_resid_.n
 
 tags  = M_.equations_tags;
 istag = 0;
-if length(tags)
+if ~isempty(tags)
     istag = 1;
 end
 
@@ -70,14 +70,27 @@ z = evaluate_static_model(oo_.steady_state, [oo_.exo_steady_state; ...
                                              oo_.exo_det_steady_state], ...
                           M_.params, M_, options_);
 
+if ismember(options_.solve_algo,[10,11])
+    [lb,ub,eq_index] = get_complementarity_conditions(M_,options_.ramsey_policy);
+    eq_to_check=find(isfinite(lb) | isfinite(ub));
+    eq_to_ignore=eq_to_check(oo_.steady_state(eq_to_check,:)<=lb(eq_to_check)+eps | oo_.steady_state(eq_to_check,:)>=ub(eq_to_check)-eps);
+    z(eq_index(eq_to_ignore))=0;
+    disp_string=' (accounting for MCP tags)';
+else
+    if istag && ~isempty(strmatch('mcp',M_.equations_tags(:,2),'exact'))
+        disp_string=' (ignoring MCP tags)';
+    else
+        disp_string='';
+    end
+end
 M_.Sigma_e = Sigma_e;
 
 
 % Display the non-zero residuals if no return value
 if nargout == 0
-    skipline(4)
+    skipline(2)
     ind = [];
-    disp('Residuals of the static equations:')
+    fprintf('Residuals of the static equations%s:',disp_string)
     skipline()
     any_non_zero_residual = false;
     for i=1:M_.orig_eq_nbr

@@ -280,11 +280,27 @@ elseif steadystate_flag
     end
 elseif ~options.bytecode && ~options.block
     if ~options.linear
-        % non linear model
         static_model = str2func(sprintf('%s.static', M.fname));
-        [ys, check] = dynare_solve(@static_problem, ys_init, ...
-                                   options.steady.maxit, options.solve_tolf, options.solve_tolx, ...
-                                   options, exo_ss, params, M.endo_nbr, static_model);
+        % non linear model
+        if  ismember(options.solve_algo,[10,11])
+            [lb,ub,eq_index] = get_complementarity_conditions(M,options.ramsey_policy);
+            if options.solve_algo == 10
+                options.lmmcp.lb = lb;
+                options.lmmcp.ub = ub;
+            elseif options.solve_algo == 11
+                options.mcppath.lb = lb;
+                options.mcppath.ub = ub;
+            end
+            [ys,check,fvec] = dynare_solve(@static_mcp_problem,...
+                ys_init,...
+                options.steady.maxit, options.solve_tolf, options.solve_tolx, ...
+                options, exo_ss, params,...
+                M.endo_nbr,static_model,eq_index);
+        else
+            [ys, check] = dynare_solve(@static_problem, ys_init, ...
+                options.steady.maxit, options.solve_tolf, options.solve_tolx, ...
+                options, exo_ss, params, M.endo_nbr, static_model);
+        end
         if check && options.debug
             [ys, check, fvec, fjac, errorcode] = dynare_solve(@static_problem, ys_init, ...
                                                               options.steady.maxit, options.solve_tolf, options.solve_tolx, ...
@@ -412,3 +428,9 @@ function [resids,jac] = static_problem(y,x,params,nvar,fh_static_model)
 [r,j] = fh_static_model(y,x,params);
 resids = r(1:nvar);
 jac = j(1:nvar,1:nvar);
+
+
+function [resids,jac] = static_mcp_problem(y,x,params,nvar,fh_static_model,eq_index)
+[r,j] = fh_static_model(y,x,params);
+resids = r(eq_index);
+jac = j(eq_index,1:nvar);

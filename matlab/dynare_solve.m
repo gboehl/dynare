@@ -354,12 +354,14 @@ elseif options.solve_algo==10
     % LMMCP
     olmmcp = options.lmmcp;
     [x, fvec, errorcode, ~, fjac] = lmmcp(f, x, olmmcp.lb, olmmcp.ub, olmmcp, args{:});
+    eq_to_check=find(isfinite(olmmcp.lb) | isfinite(olmmcp.ub));
+    eq_to_ignore=eq_to_check(x(eq_to_check,:)<=olmmcp.lb(eq_to_check)+eps | x(eq_to_check,:)>=olmmcp.ub(eq_to_check)-eps);
+    fvec(eq_to_ignore)=0;
     if errorcode==1
         errorflag = false;
     else
         errorflag = true;
     end
-    [fvec, fjac] = feval(f, x, args{:});
 elseif options.solve_algo == 11
     % PATH mixed complementary problem
     % PATH linear mixed complementary problem
@@ -378,7 +380,9 @@ elseif options.solve_algo == 11
         errorflag = true;
     end
     errorcode = nan; % There is no error code for this algorithm, as PATH is closed source it is unlikely we can fix that.
-    [fvec, fjac] = feval(f, x, args{:});
+    eq_to_check=find(isfinite(omcppath.lb) | isfinite(omcppath.ub));
+    eq_to_ignore=eq_to_check(x(eq_to_check,:)<=omcppath.lb(eq_to_check)+eps | x(eq_to_check,:)>=omcppath.ub(eq_to_check)-eps);
+    fvec(eq_to_ignore)=0;
 elseif ismember(options.solve_algo, [13, 14])
     if ~jacobian_flag
         error('DYNARE_SOLVE: option solve_algo=13|14 needs computed Jacobian')
