@@ -6900,9 +6900,11 @@ block decomposition of the model (see :opt:`block`).
                    ``'InitialCovarianceMatrix'``
 
                        Initial covariance matrix of the jumping
-                       distribution. Default is ``'previous'`` if
+                       distribution. It is also used to initialize the covariance 
+                       matrix during recursive updating. Default is ``'previous'`` if
                        option ``mode_file`` is used, ``'prior'``
-                       otherwise.
+                       otherwise. The user can also specify ``'identity'``, which will
+                       use an identity matrix with a diagonal of 0.1.
 
                    ``'nclimb-mh'``
 
