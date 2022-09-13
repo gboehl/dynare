@@ -2993,7 +2993,9 @@ Finding the steady state with Dynare nonlinear solver
            ``10``
 
                 Levenberg-Marquardt mixed complementarity problem
-                (LMMCP) solver (*Kanzow and Petra (2004)*).
+                (LMMCP) solver (*Kanzow and Petra (2004)*). The complementarity 
+                conditions are specified with an ``mcp`` equation tag, see
+                :opt:`lmmcp`. 
 
            ``11``
 
@@ -3764,16 +3766,27 @@ speed-up on large models.
        the endogenous variables (such as a ZLB on the nominal interest
        rate or a model with irreversible investment). This option is
        equivalent to ``stack_solve_algo=7`` **and**
-       ``solve_algo=10``. Using the LMMCP solver requires a particular
-       model setup as the goal is to get rid of any min/max operators
-       and complementary slackness conditions that might introduce a
-       singularity into the Jacobian. This is done by attaching an
-       equation tag (see :ref:`model-decl`) with the ``mcp`` keyword
-       to affected equations. This tag states that the equation to
-       which the tag is attached has to hold unless the expression
-       within the tag is binding. For instance, a ZLB on the nominal
-       interest rate would be specified as follows in the model
-       block::
+       ``solve_algo=10``. Using the LMMCP solver avoids the need for min/max 
+       operators and explicit complementary slackness conditions in the model
+       as they will typically introduce a singularity into the Jacobian. This is 
+       done by setting the problem up as a mixed complementarity problem (MCP) of the form:
+
+       .. math::
+             LB = X   &\Rightarrow   F(X)>0\\
+ 
+             LB\leq X \leq UB &\Rightarrow   F(X)=0\\
+
+             X =UB &\Rightarrow   F(X)<0.
+ 
+       where :math:`X` denotes the vector of endogenous variables, :math:`F(X)` the equations
+       of the model, :math:`LB` denotes a lower bound, and :math:`UB` an upper bound. Such a setup
+       is implemented by attaching an equation tag (see :ref:`model-decl`) 
+       with the ``mcp`` keyword to the affected equations. This tag states that 
+       the equation to which the tag is attached has to hold unless the inequality
+       constraint within the tag is binding. 
+
+       For instance, a ZLB on the nominal interest rate would be specified 
+       as follows in the model block::
 
             model;
                ...
@@ -3791,20 +3804,27 @@ speed-up on large models.
        slackness condition). By restricting the value of ``r`` coming
        out of this equation, the ``mcp`` tag also avoids using
        ``max(r,-1.94478)`` for other occurrences of ``r`` in the rest
-       of the model. It is important to keep in mind that, because the
+       of the model. Two things are important to keep in mind. First, because the
        ``mcp`` tag effectively replaces a complementary slackness
        condition, it cannot be simply attached to any
        equation. Rather, it must be attached to the correct affected
        equation as otherwise the solver will solve a different problem
-       than originally intended. Also, since the problem to be solved
-       is nonlinear, the sign of the residuals of the dynamic equation
-       matters. In the previous example, for the nominal interest rate
-       rule, if the LHS and RHS are reversed the sign of the residuals
-       (the difference between the LHS and the RHS) will change and it
-       may happen that solver fails to identify the solution path. More
-       generally, convergence of the nonlinear solver is not guaranteed
-       when using mathematically equivalent representations of the same
-       equation.
+       than originally intended. Second, the sign of the residual of the dynamic 
+       equation must conform to the MCP setup outlined above. In case of the ZLB,
+       we are dealing with a lower bound. Consequently, the dynamic equation 
+       needs to return a positive residual. Dynare by default computes the residual 
+       of an equation ``LHS=RHS`` as ``residual=LHS-RHS``, while an implicit equation 
+       ``LHS`` is interpreted as ``LHS=0``. For the above equation this implies
+ 
+           ``residual= r - (rho*r(-1) + (1-rho)*(gpi*Infl+gy*YGap) + e);`` 
+ 
+       which is correct, since it will be positive if the implied interest rate 
+       ``rho*r(-1) + (1-rho)*(gpi*Infl+gy*YGap) + e`` is  
+       below ``r=-1.94478``. In contrast, specifying the equation as 
+
+            ``rho*r(-1) + (1-rho)*(gpi*Infl+gy*YGap) + e = r;```
+
+       would be wrong.
 
        Note that in the current implementation, the content of the
        ``mcp`` equation tag is not parsed by the preprocessor. The
