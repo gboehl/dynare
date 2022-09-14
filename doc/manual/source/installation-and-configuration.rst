@@ -7,7 +7,7 @@ Installation and configuration
 Software requirements
 =====================
 
-Packaged versions of Dynare are available for Windows (8.1, 10 and 11), several
+Packaged versions of Dynare are available for Windows (10 and 11), several
 GNU/Linux distributions (Debian, Ubuntu, Linux Mint, Arch Linux), macOS (12
 “Monterey”), and FreeBSD. Dynare should work on other systems, but some
 compilation steps are necessary in that case.
