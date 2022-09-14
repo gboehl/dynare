@@ -95,6 +95,9 @@ var C       $C$                 (long_name='Consumption')
     r_real  ${r^{ann,real}}$    (long_name='Annualized net real interest rate')
     y_nat   ${y^{nat}}$         (long_name='Natural (flex price) output')
     y_gap   ${r^{gap}}$         (long_name='Output gap')
+    @#if Optimal_policy==0
+        Welfare ${W}$           (long_name='Welfare')
+    @#endif
 ;
 
 varexo epsilon ${\varepsilon}$     (long_name='TFP shock')
@@ -154,6 +157,10 @@ model;
     y_nat=exp(Z)*sqrt((theta-1)/theta*(1+tau)/chi);
     [name='output gap']
     y_gap=log_C-log(y_nat);
+    @#if Optimal_policy==0
+        [name='Definition Welfare']
+        Welfare=log(C)-chi/2*h^2+beta*Welfare(+1);
+        @#endif
 end;
 
 steady_state_model;
@@ -171,6 +178,10 @@ steady_state_model;
     r_real=4*log((1+R)/pi);
     y_nat=sqrt((theta-1)/theta*(1+tau)/chi);
     y_gap=log_C-log(y_nat);
+    @#if Optimal_policy==0
+        Welfare=1/(1-beta)*(log(C)-chi/2*h^2);
+    @#endif
+
 end;
 
 @# if defined(Ramsey) && Ramsey==1
@@ -186,7 +197,7 @@ end;
 
 @#if Optimal_policy==0
     //use Taylor rule
-    stoch_simul(order=2) pi_ann log_h R_ann log_C Z r_real y_nat;
+    stoch_simul(order=2) pi_ann log_h R_ann log_C Z r_real y_nat Welfare;
 @#else
     @# if !defined(Ramsey) || Ramsey==0
         //use OSR Taylor rule
