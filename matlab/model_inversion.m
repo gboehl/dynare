@@ -1,21 +1,24 @@
 function [endogenousvariables, exogenousvariables] = model_inversion(constraints, ...
                                                   exogenousvariables, ...
                                                   initialconditions, DynareModel, DynareOptions, DynareOutput)
-
+% function [endogenousvariables, exogenousvariables] = model_inversion(constraints, ...
+%                                                   exogenousvariables, ...
+%                                                   initialconditions, DynareModel, DynareOptions, DynareOutput)
 % INPUTS
 % - constraints         [dseries]        with N constrained endogenous variables from t1 to t2.
 % - exogenousvariables  [dseries]        with Q exogenous variables.
 % - initialconditions   [dseries]        with M endogenous variables starting before t1 (M initialcond must contain at least the state variables).
 % - DynareModel         [struct]         M_, Dynare global structure containing informations related to the model.
 % - DynareOptions       [struct]         options_, Dynare global structure containing all the options.
+% - DynareOutput        [struct]         oo_, Dynare global structure containing all the options.
 %
 % OUTPUTS
-% - endogenous          [dseries]
-% - exogenous           [dseries]
+% - endogenousvariables          [dseries]
+% - exogenousvariables           [dseries]
 %
 % REMARKS
 
-% Copyright © 2018-2019 Dynare Team
+% Copyright © 2018-2021 Dynare Team
 %
 % This file is part of Dynare.
 %
