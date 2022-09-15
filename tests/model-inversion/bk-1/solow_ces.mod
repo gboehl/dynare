@@ -113,6 +113,12 @@ TruePopulation = TrueData.Population;
 TrueEfficiencyTimesPopulation = TrueEfficiency*TruePopulation;
 EfficiencyTimesPopulation = endogenousvariables.Efficiency*endogenousvariables.Population;
 
-if max(abs(TrueEfficiencyTimesPopulation(2Y:100Y).data-EfficiencyTimesPopulation(2Y:100Y).data))>1e-5
-   error('Model inversion is not consitent with true innovations.')
+if isoctave
+    tolerance=2e-5;
+else
+    tolerance=1e-5;
+end
+
+if max(abs(TrueEfficiencyTimesPopulation(2Y:100Y).data-EfficiencyTimesPopulation(2Y:100Y).data))>tolerance
+   error('Model inversion is not consistent with true innovations.')
 end
