@@ -1519,7 +1519,7 @@ The dseries class
 
 
     .. dseriesmethod:: B = detrend (A, m)
-                       dentrend_ (A, m)
+                       detrend_ (A, m)
 
         |br| Detrends ``dseries`` object ``A`` with a fitted
         polynomial of order ``m``. Note that each variable is
