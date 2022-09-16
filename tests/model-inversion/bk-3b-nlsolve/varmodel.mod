@@ -70,8 +70,12 @@ steady;
 
 check;
 
-TrueData = simul_backward_model([], 200);
+if isoctave 
+    options_.bnlms.set_dynare_seed_to_default=false;
+    set_dynare_seed(1);
+end
 
+TrueData = simul_backward_model([], 200);
 // Set the periods where some of the endogenous variables will be constrained.
 subsample = 3Y:100Y;
 
@@ -93,11 +97,11 @@ if max(abs(constrainedpaths(subsample).y1.data-endogenousvariables(subsample).y1
 end
 
 if max(abs(exogenousvariables(subsample).e2.data-SimulatedData(subsample).e2.data))>1e-12
-   error('Constraint on e1 path is not satisfied!')
+   error('Constraint on e2 path is not satisfied!')
 end
 
 if max(abs(exogenousvariables(subsample).e3.data-SimulatedData(subsample).e3.data))>1e-12
-   error('Constraint on e2 path is not satisfied!')
+   error('Constraint on e3 path is not satisfied!')
 end
 
 // Check consistency of the results.
@@ -110,5 +114,5 @@ if max(abs(SimulatedData(subsample).y3.data-endogenousvariables(subsample).y3.da
 end
 
 if max(abs(exogenousvariables(subsample).e1.data-SimulatedData(subsample).e1.data))>1e-12
-   error('Model inversion is not consistent with true innovations (e3)')
+   error('Model inversion is not consistent with true innovations (e1)')
 end
