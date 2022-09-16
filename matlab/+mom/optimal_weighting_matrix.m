@@ -67,6 +67,7 @@ end
 % The estimate of W
 W_opt = S\eye(size(S,1));
 
+W_opt=(W_opt+W_opt')/2; %assure symmetry
 end
 
 % The correlation matrix
