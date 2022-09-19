@@ -1,5 +1,5 @@
 function simulation = simul_backward_model(initialconditions, samplesize, innovations)
-
+% function simulation = simul_backward_model(initialconditions, samplesize, innovations)
 % Simulates a stochastic backward looking model (with arbitrary precision).
 %
 % INPUTS
@@ -16,7 +16,7 @@ function simulation = simul_backward_model(initialconditions, samplesize, innova
 % [2] The last input argument is not mandatory. If absent we use random draws and rescale them with the informations provided
 %     through the shocks block.
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
-%     provided thrtough the histval block.
+%     provided through the histval block.
 
 % Copyright © 2012-2022 Dynare Team
 %
