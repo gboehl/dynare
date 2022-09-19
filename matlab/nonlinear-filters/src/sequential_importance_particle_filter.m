@@ -37,6 +37,8 @@ steadystate = ReducedForm.steadystate;
 constant = ReducedForm.constant;
 state_variables_steady_state = ReducedForm.state_variables_steady_state;
 
+order = DynareOptions.order;
+
 % Set persistent variables (if needed).
 if isempty(init_flag)
     mf0 = ReducedForm.mf0;
@@ -61,6 +63,15 @@ else
     ghxx = ReducedForm.ghxx;
     ghuu = ReducedForm.ghuu;
     ghxu = ReducedForm.ghxu;
+    if order == 3
+        % Set local state space model (third order approximation).
+        ghxxx = ReducedForm.ghxxx;
+        ghuuu = ReducedForm.ghuuu;
+        ghxxu = ReducedForm.ghxxu;
+        ghxuu = ReducedForm.ghxuu;
+        ghxss = ReducedForm.ghxss;
+        ghuss = ReducedForm.ghuss;
+    end
 end
 
 % Get covariance matrices.
@@ -95,7 +106,19 @@ set_dynare_seed('default');
 weights = ones(1,number_of_particles)/number_of_particles ;
 StateVectors = bsxfun(@plus,StateVectorVarianceSquareRoot*randn(state_variance_rank,number_of_particles),StateVectorMean);
 if pruning
-    StateVectors_ = StateVectors;
+    if order == 2
+        StateVectors_ = StateVectors;
+        state_variables_steady_state_ = state_variables_steady_state;
+        mf0_ = mf0;
+    elseif order == 3
+        StateVectors_ = repmat(StateVectors,2,1);
+        state_variables_steady_state_ = repmat(state_variables_steady_state,2,1);
+        mf0_ = repmat(mf0,1,2); 
+        mask = number_of_state_variables+1:2*number_of_state_variables;
+        mf0_(mask) = mf0_(mask)+size(ghx,1);
+    else
+        error('Pruning is not available for orders > 3');
+    end
 end
 
 % Loop over observations
@@ -103,13 +126,25 @@ for t=1:sample_size
     yhat = bsxfun(@minus,StateVectors,state_variables_steady_state);
     epsilon = Q_lower_triangular_cholesky*randn(number_of_structural_innovations,number_of_particles);
     if pruning
-        yhat_ = bsxfun(@minus,StateVectors_,state_variables_steady_state);
-        [tmp, tmp_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_2);
+        yhat_ = bsxfun(@minus,StateVectors_,state_variables_steady_state_);
+        if order == 2
+            [tmp, tmp_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_2);
+        elseif order == 3
+            [tmp, tmp_] = local_state_space_iteration_3(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,ghxxx,ghuuu,ghxxu,ghxuu,ghxss,ghuss,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_3);
+        else
+            error('Pruning is not available for orders > 3');
+        end
     else
         if ReducedForm.use_k_order_solver
             tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
         else
-            tmp = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
+            if order == 2
+                tmp = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
+            elseif order == 3
+                tmp = local_state_space_iteration_3(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,ghxxx,ghuuu,ghxxu,ghxuu,ghxss,ghuss,ThreadsOptions.local_state_space_iteration_3);
+            else
+                error('Order > 3: use_k_order_solver should be set to true');
+            end
         end
     end
     %PredictedObservedMean = tmp(mf1,:)*transpose(weights);
@@ -129,7 +164,7 @@ for t=1:sample_size
     weights = wtilde/sum(wtilde);
     if (ParticleOptions.resampling.status.generic && neff(weights)<ParticleOptions.resampling.threshold*sample_size) || ParticleOptions.resampling.status.systematic
         if pruning
-            temp = resample([tmp(mf0,:)' tmp_(mf0,:)'],weights',ParticleOptions);
+            temp = resample([tmp(mf0,:)' tmp_(mf0_,:)'],weights',ParticleOptions);
             StateVectors = temp(:,1:number_of_state_variables)';
             StateVectors_ = temp(:,number_of_state_variables+1:2*number_of_state_variables)';
         else
@@ -139,7 +174,7 @@ for t=1:sample_size
     elseif ParticleOptions.resampling.status.none
         StateVectors = tmp(mf0,:);
         if pruning
-            StateVectors_ = tmp_(mf0,:);
+            StateVectors_ = tmp_(mf0_,:);
         end
     end
 end

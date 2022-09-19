@@ -49,6 +49,7 @@ bounds = prior_bounds(BayesInfo, DynareOptions.prior_trunc); % Reset bounds as l
 % initialization of state particles
 [~, Model, DynareOptions, DynareResults, ReducedForm] = solve_model_for_online_filter(true, xparam1, DynareDataset, DynareOptions, Model, EstimatedParameters, BayesInfo, bounds, DynareResults);
 
+order = DynareOptions.order;
 mf0 = ReducedForm.mf0;
 mf1 = ReducedForm.mf1;
 number_of_particles = DynareOptions.particle.number_of_particles;
@@ -64,8 +65,14 @@ StateVectorMean = ReducedForm.StateVectorMean;
 StateVectorVarianceSquareRoot = chol(ReducedForm.StateVectorVariance)';
 state_variance_rank = size(StateVectorVarianceSquareRoot,2);
 StateVectors = bsxfun(@plus,StateVectorVarianceSquareRoot*randn(state_variance_rank,number_of_particles),StateVectorMean);
-if DynareOptions.order<3 && pruning
-    StateVectors_ = StateVectors;
+if pruning
+    if order == 2
+        StateVectors_ = StateVectors;
+    elseif order == 3
+        StateVectors_ = repmat(StateVectors,2,1);
+    else
+        error('Pruning is not available for orders > 3');
+    end
 end
 
 % parameters for the Liu & West filter
@@ -135,6 +142,25 @@ for t=1:sample_size
                 ghxx = ReducedForm.ghxx;
                 ghuu = ReducedForm.ghuu;
                 ghxu = ReducedForm.ghxu;
+                if (order == 3)
+                    % Set local state space model (third order approximation).
+                    ghxxx = ReducedForm.ghxxx;
+                    ghuuu = ReducedForm.ghuuu;
+                    ghxxu = ReducedForm.ghxxu;
+                    ghxuu = ReducedForm.ghxuu;
+                    ghxss = ReducedForm.ghxss;
+                    ghuss = ReducedForm.ghuss;
+                end
+                if pruning
+                    if order == 2
+                        state_variables_steady_state_ = state_variables_steady_state;
+                    elseif order == 3
+                        state_variables_steady_state_ = repmat(state_variables_steady_state,2,1);
+                    else
+                        error('Pruning is not available for orders > 3');
+                    end
+                end
+
             end
             % particle likelihood contribution
             yhat = bsxfun(@minus, StateVectors(:,i), state_variables_steady_state);
@@ -142,10 +168,22 @@ for t=1:sample_size
                 tmp = local_state_space_iteration_k(yhat, zeros(number_of_structural_innovations, 1), dr, Model, DynareOptions, udr);
             else
                 if pruning
-                    yhat_ = bsxfun(@minus,StateVectors_(:,i),state_variables_steady_state);
-                    [tmp, ~] = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_2);
+                    yhat_ = bsxfun(@minus,StateVectors_(:,i),state_variables_steady_state_);
+                    if order == 2
+                        [tmp, ~] = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_2);
+                    elseif order == 3
+                        [tmp, ~] = local_state_space_iteration_3(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_3);
+                    else
+                        error('Pruning is not available for orders > 3');
+                    end
                 else
-                    tmp = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, DynareOptions.threads.local_state_space_iteration_2);
+                    if order == 2
+                        tmp = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, DynareOptions.threads.local_state_space_iteration_2);
+                    elseif order == 3
+                        tmp = local_state_space_iteration_3(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, DynareOptions.threads.local_state_space_iteration_3);
+                    else
+                        error('Order > 3: use_k_order_solver should be set to true');
+                    end
                 end
             end
             PredictionError = bsxfun(@minus,Y(t,:)', tmp(mf1,:));
@@ -192,6 +230,28 @@ for t=1:sample_size
                         ghxx = ReducedForm.ghxx;
                         ghuu = ReducedForm.ghuu;
                         ghxu = ReducedForm.ghxu;
+                        if (order == 3)
+                            % Set local state space model (third order approximation).
+                            ghxxx = ReducedForm.ghxxx;
+                            ghuuu = ReducedForm.ghuuu;
+                            ghxxu = ReducedForm.ghxxu;
+                            ghxuu = ReducedForm.ghxuu;
+                            ghxss = ReducedForm.ghxss;
+                            ghuss = ReducedForm.ghuss;
+                        end
+                        if pruning
+                            if order == 2
+                                state_variables_steady_state_ = state_variables_steady_state;
+                                mf0_ = mf0;
+                            elseif order == 3
+                                state_variables_steady_state_ = repmat(state_variables_steady_state,2,1);
+                                mf0_ = repmat(mf0,1,2); 
+                                mask = number_of_state_variables+1:2*number_of_state_variables;
+                                mf0_(mask) = mf0_(mask)+size(ghx,1);
+                            else
+                                error('Pruning is not available for orders > 3');
+                            end
+                        end
                     end
                     % Get covariance matrices and structural shocks
                     epsilon = chol(ReducedForm.Q)'*randn(number_of_structural_innovations, 1);
@@ -201,11 +261,23 @@ for t=1:sample_size
                         tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
                     else
                         if pruning
-                            yhat_ = bsxfun(@minus,StateVectors_(:,i), state_variables_steady_state);
-                            [tmp, tmp_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_2);
-                            StateVectors_(:,i) = tmp_(mf0,:);
+                            yhat_ = bsxfun(@minus,StateVectors_(:,i), state_variables_steady_state_);
+                            if order == 2
+                                [tmp, tmp_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_2);
+                            elseif order == 3
+                                [tmp, tmp_] = local_state_space_iteration_3(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_3);
+                            else
+                                error('Pruning is not available for orders > 3');
+                            end
+                            StateVectors_(:,i) = tmp_(mf0_,:);
                         else
-                            tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, DynareOptions.threads.local_state_space_iteration_2);
+                            if order == 2
+                                tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, DynareOptions.threads.local_state_space_iteration_2);
+                            elseif order == 3
+                                tmp = local_state_space_iteration_3(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, DynareOptions.threads.local_state_space_iteration_3);
+                            else
+                                error('Order > 3: use_k_order_solver should be set to true');
+                            end
                         end
                     end
                     StateVectors(:,i) = tmp(mf0,:);

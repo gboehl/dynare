@@ -2,7 +2,7 @@ function initial_distribution = auxiliary_initialization(ReducedForm,Y,start,Par
 
 % Evaluates the likelihood of a nonlinear model with a particle filter allowing eventually resampling.
 
-% Copyright © 2011-2017 Dynare Team
+% Copyright © 2011-2022 Dynare Team
 %
 % This file is part of Dynare (particles module).
 %
@@ -45,6 +45,8 @@ if isempty(init_flag)
     init_flag = 1;
 end
 
+order = DynareOptions.order;
+
 % Set local state space model (first order approximation).
 ghx  = ReducedForm.ghx;
 ghu  = ReducedForm.ghu;
@@ -52,6 +54,14 @@ ghu  = ReducedForm.ghu;
 ghxx = ReducedForm.ghxx;
 ghuu = ReducedForm.ghuu;
 ghxu = ReducedForm.ghxu;
+if (order == 3)
+   ghxxx = ReducedForm.ghxxx;
+   ghuuu = ReducedForm.ghuuu;
+   ghxxu = ReducedForm.ghxxu;
+   ghxuu = ReducedForm.ghxuu;
+   ghxss = ReducedForm.ghxss;
+   ghuss = ReducedForm.ghuss;
+end
 
 % Get covariance matrices
 Q = ReducedForm.Q;
@@ -87,7 +97,13 @@ yhat = bsxfun(@minus,StateVectors,state_variables_steady_state);
 %    yhat_ = bsxfun(@minus,StateVectors_,state_variables_steady_state);
 %    [tmp, tmp_] = local_state_space_iteration_2(yhat,zeros(number_of_structural_innovations,number_of_particles),ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_2);
 %else
-tmp = local_state_space_iteration_2(yhat,zeros(number_of_structural_innovations,number_of_particles),ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
+if (order == 2)
+   tmp = local_state_space_iteration_2(yhat,zeros(number_of_structural_innovations,number_of_particles),ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
+elseif (order == 3)
+   tmp = local_state_space_iteration_3(yhat,zeros(number_of_structural_innovations,number_of_particles),ghx,ghu,constant,ghxx,ghuu,ghxu,ghxxx,ghuuu,ghxxu,ghxuu,ghxss,ghuss,ThreadsOptions.local_state_space_iteration_3);
+else
+   error('Orders > 3 not allowed');
+end
 %end
 PredictedObservedMean = weights*(tmp(mf1,:)');
 PredictionError = bsxfun(@minus,Y(:,t),tmp(mf1,:));
