@@ -75,7 +75,7 @@ endogenousvariables(:, M.maximum_lag+(1:options.periods)) = reshape(y, M.endo_nb
 residuals=zeros(size(endogenousvariables));
 residuals(:, M.maximum_lag+(1:options.periods)) = reshape(res, M.endo_nbr, options.periods);
 if (options.solve_algo == 10 || options.solve_algo == 11)% mixed complementarity problem
-    residuals(eq_to_ignore,endogenousvariables(eq_to_ignore,:)<=lb(eq_to_ignore)+eps | endogenousvariables(eq_to_ignore,:)>=ub(eq_to_ignore)-eps)=0;
+    residuals(eq_to_ignore,bsxfun(@le, endogenousvariables(eq_to_ignore,:), lb(eq_to_ignore)+eps) | bsxfun(@ge,endogenousvariables(eq_to_ignore,:),ub(eq_to_ignore)-eps))=0;
 end
 
 if check
