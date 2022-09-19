@@ -159,7 +159,7 @@ for t=1:sample_size
     indx = resample(0, tau_tilde', DynareOptions.particle);
     StateVectors = StateVectors(:,indx);
     xparam = fore_xparam(:,indx);
-    if DynareOptions.order>=3 && pruning
+    if pruning
         StateVectors_ = StateVectors_(:,indx);
     end
     w_stage1 = weights(indx)./tau_tilde(indx);
