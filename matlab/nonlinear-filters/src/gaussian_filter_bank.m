@@ -39,6 +39,8 @@ function [PredictedStateMean, PredictedStateVarianceSquareRoot, StateVectorMean,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+order = DynareOptions.order;
+
 if ReducedForm.use_k_order_solver
     dr = ReducedForm.dr;
     udr = ReducedForm.udr;
@@ -50,6 +52,15 @@ else
     ghxx = ReducedForm.ghxx;
     ghuu = ReducedForm.ghuu;
     ghxu = ReducedForm.ghxu;
+    if order == 3
+        % Set local state space model (third order approximation).
+        ghxxx = ReducedForm.ghxxx;
+        ghuuu = ReducedForm.ghuuu;
+        ghxxu = ReducedForm.ghxxu;
+        ghxuu = ReducedForm.ghxuu;
+        ghxss = ReducedForm.ghxss;
+        ghuss = ReducedForm.ghuss;
+    end
 end
 
 constant = ReducedForm.constant;
@@ -84,7 +95,13 @@ yhat = bsxfun(@minus, StateVectors, state_variables_steady_state);
 if ReducedForm.use_k_order_solver
     tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
 else
-    tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);
+    if order == 2
+        tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);
+    elseif order == 3
+        tmp = local_state_space_iteration_3(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, ThreadsOptions.local_state_space_iteration_3);
+    else
+        error('Order > 3: use_k_order_solver should be set to true');
+    end
 end
 
 PredictedStateMean = tmp(mf0,:)*weights;

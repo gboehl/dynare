@@ -17,6 +17,7 @@ function measure = measurement_equations(StateVectors,ReducedForm,ThreadsOptions
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+order = DynareOptions.order;
 mf1 = ReducedForm.mf1;
 if ReducedForm.use_k_order_solver
     dr = ReducedForm.dr;
@@ -27,6 +28,14 @@ else
     ghxx = ReducedForm.ghxx(mf1,:);
     ghuu = ReducedForm.ghuu(mf1,:);
     ghxu = ReducedForm.ghxu(mf1,:);
+    if order == 3
+        ghxxx = ReducedForm.ghxxx(mf1,:);
+        ghuuu = ReducedForm.ghuuu(mf1,:);
+        ghxxu = ReducedForm.ghxxu(mf1,:);
+        ghxuu = ReducedForm.ghxuu(mf1,:);
+        ghxss = ReducedForm.ghxss(mf1,:);
+        ghuss = ReducedForm.ghuss(mf1,:);
+    end
 end
 constant = ReducedForm.constant(mf1,:);
 state_variables_steady_state = ReducedForm.state_variables_steady_state;
@@ -36,5 +45,11 @@ if ReducedForm.use_k_order_solver
     tmp = local_state_space_iteration_k(yhat, zeros(number_of_structural_innovations, size(yhat,2)), dr, Model, DynareOptions, udr);
     measure = tmp(mf1,:);
 else
-    measure = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, size(yhat,2)), ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);
+    if order == 2
+        measure = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, size(yhat,2)), ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);
+    elseif order == 3
+        measure = local_state_space_iteration_3(yhat, zeros(number_of_structural_innovations, size(yhat,2)), ghx, ghu, constant, ghxx, ghuu, ghxu, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, ThreadsOptions.local_state_space_iteration_3);
+    else
+        error('Order > 3: use_k_order_solver should be set to true');
+    end
 end
