@@ -24,6 +24,8 @@ function [LIK,lik] = auxiliary_particle_filter(ReducedForm,Y,start,ParticleOptio
 if isempty(start)
     start = 1;
 end
+% Get perturbation order
+order = DynareOptions.order;
 
 % Set flag for prunning
 pruning = ParticleOptions.pruning;
@@ -36,6 +38,7 @@ state_variables_steady_state = ReducedForm.state_variables_steady_state;
 mf0 = ReducedForm.mf0;
 mf1 = ReducedForm.mf1;
 sample_size = size(Y,2);
+number_of_state_variables = length(mf0);
 number_of_observed_variables = length(mf1);
 number_of_structural_innovations = length(ReducedForm.Q);
 number_of_particles = ParticleOptions.number_of_particles;
@@ -76,33 +79,32 @@ weights = ones(1,number_of_particles)/number_of_particles ;
 StateVectors = bsxfun(@plus,StateVectorVarianceSquareRoot*randn(state_variance_rank,number_of_particles),StateVectorMean);
 %StateVectors = bsxfun(@plus,zeros(state_variance_rank,number_of_particles),StateVectorMean);
 if pruning
-    StateVectors_ = StateVectors;
+    if order == 2
+        StateVectors_ = StateVectors;
+        state_variables_steady_state_ = state_variables_steady_state;
+        mf0_ = mf0;
+    else
+        error('Pruning is not available for orders > 2');
+    end
 end
-
-nodes = zeros(1,number_of_structural_innovations) ;
-nodes_weights = ones(number_of_structural_innovations,1) ;
 
 for t=1:sample_size
     yhat = bsxfun(@minus,StateVectors,state_variables_steady_state);
     if pruning
-        yhat_ = bsxfun(@minus,StateVectors_,state_variables_steady_state);
-        tmp = 0 ;
-        tmp_ = 0 ;
-        for i=1:size(nodes)
-            [tmp1, tmp1_] = local_state_space_iteration_2(yhat,nodes(i,:)'*ones(1,number_of_particles),ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_2);
-            tmp = tmp + nodes_weights(i)*tmp1 ;
-            tmp_ = tmp_ + nodes_weights(i)*tmp1_ ;
+        yhat_ = bsxfun(@minus,StateVectors_,state_variables_steady_state_);
+        if order == 2
+            [tmp, tmp_] = local_state_space_iteration_2(yhat,zeros(number_of_structural_innovations,number_of_particles),ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_2);
+        else
+            error('Pruning is not available for orders > 2');
         end
     else
         if ReducedForm.use_k_order_solver
-            tmp = 0;
-            for i=1:size(nodes)
-                tmp = tmp + nodes_weights(i)*local_state_space_iteration_k(yhat, nodes(i,:)'*ones(1,number_of_particles), dr, Model, DynareOptions, udr);
-            end
+            tmp = local_state_space_iteration_k(yhat, zeros(number_of_structural_innovations,number_of_particles), dr, Model, DynareOptions, udr);
         else
-            tmp = 0;
-            for i=1:size(nodes)
-                tmp = tmp + nodes_weights(i)*local_state_space_iteration_2(yhat,nodes(i,:)'*ones(1,number_of_particles),ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
+            if order == 2
+                tmp = local_state_space_iteration_2(yhat,zeros(number_of_structural_innovations,number_of_particles),ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
+            else
+                error('Order > 2: use_k_order_solver should be set to true');
             end
         end
     end
@@ -118,13 +120,21 @@ for t=1:sample_size
     weights_stage_1 = weights(indx)./tau_tilde(indx) ;
     epsilon = Q_lower_triangular_cholesky*randn(number_of_structural_innovations,number_of_particles);
     if pruning
-        [tmp, tmp_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_2);
-        StateVectors_ = tmp_(mf0,:);
+        if order == 2
+            [tmp, tmp_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_2);
+        else
+            error('Pruning is not available for orders > 2');
+        end
+        StateVectors_ = tmp_(mf0_,:);
     else
         if ReducedForm.use_k_order_solver
             tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
         else
-            tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);
+            if order == 2
+                tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);
+            else
+                error('Order > 2: use_k_order_solver should be set to true');
+            end
         end
     end
     StateVectors = tmp(mf0,:);
@@ -135,9 +145,8 @@ for t=1:sample_size
     if (ParticleOptions.resampling.status.generic && neff(weights)<ParticleOptions.resampling.threshold*sample_size) || ParticleOptions.resampling.status.systematic
         if pruning
             temp = resample([StateVectors' StateVectors_'],weights',ParticleOptions);
-            number_of_state_variables=size(StateVectors,1);
             StateVectors = temp(:,1:number_of_state_variables)';
-            StateVectors_ = temp(:,number_of_state_variables+1:2*number_of_state_variables)';
+            StateVectors_ = temp(:,number_of_state_variables+1:end)';
         else
             StateVectors = resample(StateVectors',weights',ParticleOptions)';
         end
