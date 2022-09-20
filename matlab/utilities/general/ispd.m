@@ -24,7 +24,7 @@ function [test, penalty] = ispd(A)
 %! @end deftypefn
 %@eod:
 
-% Copyright © 2007-2017 Dynare Team
+% Copyright © 2007-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,16 +45,20 @@ if ~isquare(A)
     error(['ispd:: Input argument ' inputname(1) ' has to be a square matrix!'])
 end
 
-[cholA, info] = chol(A);
+[~, info] = chol(A);
 test = ~info;
 
 if nargout>1
     penalty = 0;
     if info
-        a = diag(eig(A));
-        k = find(a<0);
-        if k > 0
-            penalty = sum(-a(k));
+        if isoctave && any(any(~isfinite(A))) % workaround for https://savannah.gnu.org/bugs/index.php?63082
+            penalty = 1;
+        else
+            a = diag(eig(A));
+            k = find(a<0);
+            if k > 0
+                penalty = sum(-a(k));
+            end
         end
     end
 end
