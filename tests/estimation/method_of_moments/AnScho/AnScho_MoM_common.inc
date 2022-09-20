@@ -210,10 +210,10 @@ method_of_moments(
     , se_tolx=1e-6                        % step size for numerical computation of standard errors
 
 % Options for SMM
-        % , burnin=500                        % number of periods dropped at beginning of simulation
+         , burnin=50                        % number of periods dropped at beginning of simulation
         , bounded_shock_support             % trim shocks in simulation to +- 2 stdev
         % , seed = 24051986                   % seed used in simulations
-        % , simulation_multiple = 5           % multiple of the data length used for simulation
+         , simulation_multiple = 5           % multiple of the data length used for simulation
 
 % Options for GMM
 @#if MoM_Method == "GMM"
@@ -244,7 +244,7 @@ method_of_moments(
     , mode_compute = 0
     @#else
     , mode_compute = 13                   % specifies the optimizer for minimization of moments distance
-    , additional_optimizer_steps = [1]    % vector of additional mode-finders run after mode_compute
+    , additional_optimizer_steps = [4]    % vector of additional mode-finders run after mode_compute
     , mode_check                             % plot the target function for values around the computed minimum for each estimated parameter in turn
     @#endif
     % optim: a list of NAME and VALUE pairs to set options for the optimization routines. Available options depend on mode_compute, some exemplary common options:
@@ -272,7 +272,7 @@ method_of_moments(
     % , sylvester_fixed_point_tol = 1e-12      % convergence criterion used in the fixed point Sylvester solver
     % , qz_criterium = 0.999999                % value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving first order problems
     % , qz_zero_threshold = 1e-6               % value used to test if a generalized eigenvalue is 0/0 in the generalized Schur decomposition
-    % , schur_vec_tol=1e-11                    % tolerance level used to find nonstationary variables in Schur decomposition of the transition matrix    
+    % , schur_vec_tol=1e-11                    % tolerance level used to find nonstationary variables in Schur decomposition of the transition matrix
     % , mode_check_neighbourhood_size = 5      % width of the window (expressed in percentage deviation) around the computed minimum to be displayed on the diagnostic plots
     % , mode_check_symmetric_plots=1           % ensure that the check plots are symmetric around the minimum
     % , mode_check_number_of_points = 20       % number of points around the minimum where the target function is evaluated (for each parameter)
