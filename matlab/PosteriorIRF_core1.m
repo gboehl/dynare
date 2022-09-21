@@ -144,7 +144,7 @@ while fpar<B
         deep = x(fpar,:);
     end
     stock_param(irun2,:) = deep;
-    set_parameters(deep);
+    M_ = set_parameters_locally(M_, deep);
     [dr,info,M_,oo_] =compute_decision_rules(M_,options_,oo_);
     oo_.dr = dr;
     if info(1)
