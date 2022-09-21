@@ -35,6 +35,11 @@ function y = irf(M_, options_, dr, e1, long, drop, replic, iorder)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+if options_.loglinear && ~options_.logged_steady_state
+    dr.ys = log_variable(1:M_.endo_nbr,dr.ys,M_);
+    options_.logged_steady_state=1;
+end
+
 if M_.maximum_lag >= 1
     temps = repmat(dr.ys,1,M_.maximum_lag);
 else
