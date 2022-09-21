@@ -174,7 +174,7 @@ while fpar<B
     end
     SS(M_.exo_names_orig_ord,M_.exo_names_orig_ord) = M_.Sigma_e+1e-14*eye(M_.exo_nbr);
     SS = transpose(chol(SS));
-    irf_shocks_indx = getIrfShocksIndx();
+    irf_shocks_indx = getIrfShocksIndx(M_, options_);
     for i=irf_shocks_indx
         if SS(i,i) > 1e-13
             if options_.order>1 && options_.relative_irf % normalize shock to 0.01 before IRF generation for GIRFs; multiply with 100 later

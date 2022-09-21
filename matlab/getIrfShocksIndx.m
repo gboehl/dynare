@@ -1,14 +1,15 @@
-function irf_shocks_indx=getIrfShocksIndx()
-% irf_shocks_indx=getIrfShocksIndx()
+function irf_shocks_indx=getIrfShocksIndx(M_, options_)
+% irf_shocks_indx=getIrfShocksIndx(M_, options_)
 % returns the unique indices of the exogenous shocks specified for IRF
 % generation using the irf_shocks-command
 %
 % Inputs:
-%   none
+% - M_            [structure]     Matlab's structure describing the model (M_).
+% - options_      [structure]     Matlab's structure describing the current options (options_).
 % Outputs:
-%   irf_shocks_indx: [1 by n_irf_shocks] vector storing the indices
+% - irf_shocks_indx: [1 by n_irf_shocks] vector storing the indices
 %
-% Copyright © 2011-2018 Dynare Team
+% Copyright © 2011-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -24,8 +25,6 @@ function irf_shocks_indx=getIrfShocksIndx()
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-global M_ options_
 
 if (isfield(options_,'irf_shocks')==0)
     irf_shocks_indx = M_.exo_names_orig_ord;

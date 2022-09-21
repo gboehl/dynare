@@ -58,7 +58,7 @@ for i=1:nvar
 end
 
 % Get index of shocks for requested IRFs
-irf_shocks_indx = getIrfShocksIndx();
+irf_shocks_indx = getIrfShocksIndx(M_, options_);
 
 % Set various parameters & Check or create directories
 nvx  = estim_params_.nvx;
