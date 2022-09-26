@@ -1,4 +1,4 @@
-# Copyright © 2019-2021 Dynare Team
+# Copyright © 2019-2022 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -17,6 +17,7 @@
 
 include versions.mk
 
+GCC_VERSION = 12
 ROOT_PATH = $(realpath .)
 
 WGET_OPTIONS := --no-verbose --no-use-server-timestamps --retry-connrefused --retry-on-host-error
@@ -142,8 +143,17 @@ sources64/x13as-$(X13AS_VERSION): tarballs/x13as_asciisrc-v$(X13AS_VERSION).tar.
 	tar xf $< --directory $@
 
 lib64/x13as/x13as: sources64/x13as-$(X13AS_VERSION)
+	# Statically link x13as (see #1865).
+	# Using -static is not possible, it does not work under Darwin.
+	# Implement an ugly workaround in the absence of -static-libquadmath flag.
+	# In particular, gcc must be used as the linker, because gfortran does not
+	# honour static linking of libquadmath.
+	# Once the -static-libquadmath flag is added (GCC 13? ; see
+	# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=46539), go back to using
+	# gfortran as the linker with -static-libgfortran and
+	# -static-libquadmath flags, and drop the GCC_VERSION variable.
 	cd $< && sed -i '' 's/-static//g' makefile.gf
-	make -C $< -f makefile.gf FC=gfortran LINKER=gfortran FFLAGS="-O2 -std=legacy" PROGRAM=x13as
+	make -C $< -f makefile.gf FC=gfortran LINKER=gcc-$(GCC_VERSION) FFLAGS="-O2 -std=legacy" LDFLAGS=-static-libgcc LIBS="/usr/local/lib/gcc/current/libgfortran.a /usr/local/lib/gcc/current/libquadmath.a" PROGRAM=x13as
 	strip $</x13as
 	mkdir -p $(dir $@)
 	cp $</x13as $@
