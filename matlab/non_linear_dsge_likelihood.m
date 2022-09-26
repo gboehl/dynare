@@ -124,10 +124,13 @@ ReducedForm.H = H;
 ReducedForm.mf0 = mf0;
 ReducedForm.mf1 = mf1;
 
-if DynareOptions.k_order_solver && ~(DynareOptions.particle.pruning && DynareOptions.order==2)
+if DynareOptions.order>3
     ReducedForm.use_k_order_solver = true;
     ReducedForm.dr = dr;
     ReducedForm.udr = folded_to_unfolded_dr(dr, Model, DynareOptions);
+    if pruning
+        error('Pruning is not available for orders > 3');
+    end
 else
     ReducedForm.use_k_order_solver = false;
     ReducedForm.ghx  = dr.ghx(restrict_variables_idx,:);
@@ -135,6 +138,14 @@ else
     ReducedForm.ghxx = dr.ghxx(restrict_variables_idx,:);
     ReducedForm.ghuu = dr.ghuu(restrict_variables_idx,:);
     ReducedForm.ghxu = dr.ghxu(restrict_variables_idx,:);
+    if DynareOptions.order==3
+        ReducedForm.ghxxx = dr.ghxxx(restrict_variables_idx,:);
+        ReducedForm.ghuuu = dr.ghuuu(restrict_variables_idx,:);
+        ReducedForm.ghxxu = dr.ghxxu(restrict_variables_idx,:);
+        ReducedForm.ghxuu = dr.ghxuu(restrict_variables_idx,:);
+        ReducedForm.ghxss = dr.ghxss(restrict_variables_idx,:);
+        ReducedForm.ghuss = dr.ghuss(restrict_variables_idx,:);
+    end
 end
 
 % Set initial condition.

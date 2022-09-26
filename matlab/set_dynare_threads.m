@@ -40,6 +40,8 @@ switch mexname
     options_.threads.kronecker.sparse_hessian_times_B_kronecker_C = n;
   case 'local_state_space_iteration_2'
     options_.threads.local_state_space_iteration_2 = n;
+  case 'local_state_space_iteration_3'
+    options_.threads.local_state_space_iteration_3 = n;
   case 'local_state_space_iteration_k'
     options_.threads.local_state_space_iteration_k = n;
   case 'perfect_foresight_problem'

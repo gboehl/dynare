@@ -108,8 +108,8 @@ if options_.discretionary_policy
     end
 end
 
-% Check the perturbation order (k order perturbation based nonlinear filters are not yet implemented for k>1).
-if options_.order>2 && options_.particle.pruning
+% Check the perturbation order for pruning (k order perturbation based nonlinear filters are not yet implemented for k>3).
+if options_.order>3 && options_.particle.pruning
     error('Higher order nonlinear filters are not compatible with pruning option.')
 end
 
