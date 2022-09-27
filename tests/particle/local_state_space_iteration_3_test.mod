@@ -52,9 +52,6 @@ rf_ghxuu = dr.ghxuu(dr.restrict_var_list, :);
 rf_ghxss = dr.ghxss(dr.restrict_var_list, :);
 rf_ghuss = dr.ghuss(dr.restrict_var_list, :);
 
-options_.threads.local_state_space_iteration_3 = 12;
-options_.threads.local_state_space_iteration_k = 12;
-
 % Without pruning
 tStart1 = tic; for i=1:nsims, ynext1 = local_state_space_iteration_3(yhat, epsilon, rf_ghx, rf_ghu, rf_constant, rf_ghxx, rf_ghuu, rf_ghxu, rf_ghxxx, rf_ghuuu, rf_ghxxu, rf_ghxuu, rf_ghxss, rf_ghuss, options_.threads.local_state_space_iteration_3); end, tElapsed1 = toc(tStart1);
 tStart2 = tic; [udr] = folded_to_unfolded_dr(dr, M_, options_); for i=1:nsims, ynext2 = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_, udr); end, tElapsed2 = toc(tStart2);
