@@ -105,6 +105,11 @@ module matlab_mat
        type(c_ptr), intent(in), value :: pm
      end function mxGetN
 
+     logical(c_bool) function mxIsEmpty(pm) bind(c, name="mxIsEmpty"//API_VER)
+       use iso_c_binding
+       type(c_ptr), intent(in), value :: pm
+     end function mxIsEmpty
+
      !! Create, Query, and Access Data Types
 
      ! Numeric types

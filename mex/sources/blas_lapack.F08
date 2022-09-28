@@ -93,4 +93,16 @@ module lapack
        integer(blint), intent(out) :: info
      end subroutine dpotrf
   end interface
+
+  interface
+     function dlange(norm, m, n, a, lda, work)
+       import :: blint, real64
+       character, intent(in) :: norm
+       integer(blint), intent(in) :: m, n, lda
+       real(real64), dimension(*), intent(in) :: a
+       real(real64), dimension(*), intent(out) :: work
+       real(real64) :: dlange
+     end function dlange
+  end interface
+  
 end module lapack

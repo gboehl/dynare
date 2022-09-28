@@ -1,0 +1,17 @@
+mex_PROGRAMS = cycle_reduction 
+
+nodist_cycle_reduction_SOURCES = \
+	mexFunction.f08 \
+	matlab_mex.F08 \
+	blas_lapack.F08
+
+BUILT_SOURCES = $(nodist_cycle_reduction_SOURCES)
+CLEANFILES = $(nodist_cycle_reduction_SOURCES)
+
+mexFunction.o: matlab_mex.mod blas.mod lapack.mod
+
+%.f08: $(top_srcdir)/../../sources/cycle_reduction/%.f08
+	$(LN_S) -f $< $@
+
+%.F08: $(top_srcdir)/../../sources/cycle_reduction/%.F08
+	$(LN_S) -f $< $@
