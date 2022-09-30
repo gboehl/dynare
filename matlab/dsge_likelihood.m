@@ -711,6 +711,7 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
             if occbin_.status && isinf(LIK)
                 fval = Inf;
                 info(1) = 320;
+                info(4) = 0.1;
                 exit_flag = 0;
                 return
             end
