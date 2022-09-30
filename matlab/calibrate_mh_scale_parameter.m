@@ -66,7 +66,7 @@ Parameters = Parameters';
 try
     dd = chol(CovarianceMatrix);
 catch
-    error('The covariance matrix has to be a symetric positive definite matrix!')
+    error('The covariance matrix has to be a symmetric positive definite matrix!')
 end
 
 % Set parameters related to the proposal distribution
