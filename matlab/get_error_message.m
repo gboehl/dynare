@@ -189,7 +189,13 @@ switch info(1)
     case 312
         message = 'Occbin: Constraint(s) are binding at the end of the sample.';        
     case 320
-        message = 'Piecewise linear Kalman filter: There was a problem in obtaining the likelihood.';        
+        message = 'Piecewise linear Kalman filter: There was a problem in obtaining the likelihood.';
+    case 401
+        message = 'Cycle reduction reached the iteration limit. Try increasing maxit.';
+    case 402
+        message = 'Cycle reduction terminated with NaN/Inf.';
+    case 403
+        message = 'Cycle reduction converged to a solution that does not solve the matrix equation.';
     otherwise
         message = 'This case shouldn''t happen. Contact the authors of Dynare';
 end

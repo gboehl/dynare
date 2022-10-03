@@ -216,7 +216,8 @@ end
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ||...
                 info(1) == 20 || info(1) == 21 || info(1) == 23 || info(1) == 26 || ...
-                info(1) == 81 || info(1) == 84 ||  info(1) == 85 ||  info(1) == 86
+                info(1) == 81 || info(1) == 84 ||  info(1) == 85 ||  info(1) == 86 || ...
+                info(1) == 401 || info(1) == 402 || info(1) == 403 %cycle reduction
         %meaningful second entry of output that can be used
         fval = Inf;
         info(4) = info(2);
