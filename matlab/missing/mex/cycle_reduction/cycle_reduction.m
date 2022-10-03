@@ -88,14 +88,13 @@ while cont
         if norm(A2,1) < cvg_tol
             cont = 0;
         end
-    elseif isnan(crit) || it == max_it
-        if crit < cvg_tol
-            info(1) = 4;
-            info(2) = log(norm(A2,1));
-        else
-            info(1) = 3;
-            info(2) = log(norm(A1,1));
-        end
+    elseif it == max_it
+        info(1) = 401;
+        info(2) = log(norm(A1,1));
+        return
+    elseif isnan(crit)
+        info(1) = 402;
+        info(2) = log(norm(A1,1))
         return
     end
     it = it + 1;
@@ -105,9 +104,11 @@ X = -Ahat1\A0_0;
 
 if (nargin == 5 && ~isempty(ch) )
     %check the solution
-    res = A0_0 + A1_0 * X + A2_0 * X * X;
-    if (sum(sum(abs(res))) > cvg_tol)
-        disp(['the norm residual of the residu ' num2str(res) ' compare to the tolerance criterion ' num2str(cvg_tol)]);
+    res = norm(A0_0 + A1_0 * X + A2_0 * X * X, 1);
+    if (res > cvg_tol)
+        info(1) = 403
+        info(2) = log(res)
+        error(['The norm of the residual is ' num2str(res) ' whereas the tolerance criterion is ' num2str(cvg_tol)]);
     end
 end
 

@@ -169,6 +169,7 @@ AC_CONFIG_FILES([Makefile
                  perfect_foresight_problem/Makefile
                  num_procs/Makefile
                  block_trust_region/Makefile
-                 disclyap_fast/Makefile])
+                 disclyap_fast/Makefile
+                 cycle_reduction/Makefile])
 
 AC_OUTPUT

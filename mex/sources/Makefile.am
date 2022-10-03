@@ -25,7 +25,8 @@ EXTRA_DIST = \
 	perfect_foresight_problem \
 	num_procs \
 	block_trust_region \
-	disclyap_fast
+	disclyap_fast \
+	cycle_reduction
 
 clean-local:
 	rm -rf `find mex/sources -name *.o`
