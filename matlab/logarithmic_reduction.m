@@ -77,20 +77,27 @@ while cc>tol && kk<=maxit
     tmp1 = (eye(n)-tmp0*[tmp0(:,n+i);tmp0(:,i)])\[tmp0(:,i)*tmp0(:,i),tmp0(:,n+i)*tmp0(:,n+i)];
     X1 = X0 + U0*tmp1(:,n+i);
     U1 = U0*tmp1(:,i);
-    cc = max(max(abs(X1-X0)));
+    cc = norm(X1-X0,1);
+    if isnan(cc)
+        info(1) = 412;
+        info(2) = -1.;
+        return
+    end
     X0 = X1; U0 = U1;
     tmp0 = tmp1;
     kk = kk+1;
 end
 
 if kk==maxit
-    disp(['logarithmic_reduction:: Convergence not achieved after ' int2str(maxit) ' iterations!']);
-    info = 1;
+    info(1) = 411;
+    info(2) = log(cc);
 end
 
 if nargin>5 && check
-    if max(max(abs(A*X1*X1 + B*X1 + C)))>tol
-        disp(['logarithmic_reduction:: Algotithm did not converge to the solution of the matrix quadratic equation!']);
-        info = 1;
+    res = norm(A*X1*X1 + B*X1 + C, 1); 
+    if res>tol
+        info(1) = 413;
+        info(2) = log(res);
+        dprintf('The norm of the residual is %s whereas the tolerance criterion is %s', num2str(res), num2str(tol));
     end
 end
