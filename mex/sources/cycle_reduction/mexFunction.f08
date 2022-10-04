@@ -99,7 +99,7 @@ loop: do
             info(2) = log(residual)
             write (cvg_tol_str,"(es8.2)") cvg_tol
             write (residual_str,"(es8.2)") residual
-            call mexErrMsgTxt("The norm of the residual is "&
+            call mexPrintf("The norm of the residual is "&
                           &// trim(residual_str) // &
                           &", whereas the tolerance criterion is " &
                            // trim(cvg_tol_str) // "." )

@@ -54,8 +54,8 @@ tElapsed1 = 0.;
 try
    tic; [X1,info] = cycle_reduction_matlab(C,B,A,cvg_tol,[0.]); tElapsed1 = toc;
    disp(['Elapsed time for the Matlab cycle reduction algorithm is: ' num2str(tElapsed1) ' (n=' int2str(n) ').'])
-   R = C+B*X1+A*X1*X1;
-   if (max(abs(R(:))) > cvg_tol)
+   R = norm(C+B*X1+A*X1*X1,1);
+   if (R > cvg_tol)
       testFailed = testFailed+1;
       if debug
          dprintf('Matlab cycle_reduction solution is wrong')
@@ -74,8 +74,8 @@ tElapsed2 = 0.;
 try
    tic; [X2,info] = cycle_reduction(C,B,A,cvg_tol,[0.]); tElapsed2 = toc;
    disp(['Elapsed time for the Fortran cycle reduction algorithm is: ' num2str(tElapsed2) ' (n=' int2str(n) ').'])
-   R = C+B*X2+A*X2*X2;
-   if (max(abs(R(:))) > cvg_tol)
+   R = norm(C+B*X2+A*X2*X2,1);
+   if (R > cvg_tol)
       testFailed = testFailed+1;
       if debug
          dprintf('Fortran cycle_reduction solution is wrong')
@@ -90,7 +90,7 @@ end
 
 % 3. Compare solutions of the Fortran and Matlab routines
 NumberOfTests = NumberOfTests+1;
-if (max(abs(X1(:) - X2(:))) > cvg_tol)
+if (norm(X1 - X2, 1) > cvg_tol)
    testFailed = testFailed+1;
    if debug
       dprintf('Fortran and Matlab cycle reduction solutions differ');

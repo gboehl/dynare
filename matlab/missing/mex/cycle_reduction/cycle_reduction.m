@@ -108,7 +108,7 @@ if (nargin == 5 && ~isempty(ch) )
     if (res > cvg_tol)
         info(1) = 403
         info(2) = log(res)
-        error(['The norm of the residual is ' num2str(res) ' whereas the tolerance criterion is ' num2str(cvg_tol)]);
+        dprintf('The norm of the residual is %s whereas the tolerance criterion is %s', num2str(res), num2str(cvg_tol));
     end
 end
 
