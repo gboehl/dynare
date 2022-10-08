@@ -290,7 +290,7 @@ if error_flag==0 && niter>options_.occbin.likelihood.max_number_of_iterations &&
         CC(:,2) = CCx(:,end);
         [a, a1, P, P1, v, Fi, Ki, alphahat, etahat] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
         opts_simul.SHOCKS(1,:) = etahat(:,2)';
-        if occbin_options.opts_algo.restrict_state_space
+        if opts_simul.restrict_state_space
             tmp=zeros(M_.endo_nbr,1);
             tmp(oo_.dr.restrict_var_list,1)=alphahat(:,1);
             opts_simul.endo_init = tmp(oo_.dr.inv_order_var,1);
