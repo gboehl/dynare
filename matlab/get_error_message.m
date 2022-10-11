@@ -196,6 +196,12 @@ switch info(1)
         message = 'Cycle reduction terminated with NaN/Inf.';
     case 403
         message = 'Cycle reduction converged to a solution that does not solve the matrix equation.';
+    case 411
+        message = 'Logarithmic reduction reached the iteration limit. Try increasing maxit.';
+    case 412
+        message = 'Logarithmic reduction terminated with NaN/Inf.';
+    case 413
+        message = 'Logarithmic reduction converged to a solution that does not solve the matrix equation.';
     otherwise
         message = 'This case shouldn''t happen. Contact the authors of Dynare';
 end
