@@ -15,10 +15,10 @@
 ! You should have received a copy of the GNU General Public License
 ! along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-! Implements the cyclic reduction algorithm described in
+! Implements the logarithmic reduction algorithm described in
 ! D.A. Bini, G. Latouche, B. Meini (2002), "Solving matrix polynomial equations arising in queueing problems", Linear Algebra and its Applications 340, pp. 222-244
-! D.A. Bini, B. Meini (1996), "On the solution of a nonlinear matrix equation arising in queueing problems", SIAM J. Matrix Anal. Appl. 17, pp. 906-926.
-module c_reduction
+
+module l_reduction
    use lapack
    use blas
    use matlab_mex
@@ -26,109 +26,124 @@ module c_reduction
 
 contains
 
-   ! Cycle reduction algorithm
-   subroutine cycle_reduction(A0, A1, A2, X, cvg_tol, check, info)
+   ! Logarithmic reduction algorithm
+   subroutine logarithmic_reduction(A0, A1, A2, G, cvg_tol, check, max_it, info)
       real(real64), dimension(:,:), intent(in) :: A0, A1, A2
-      real(real64), dimension(:,:), intent(inout) :: X
+      real(real64), dimension(:,:), intent(inout) :: G
       real(real64), intent(in) :: cvg_tol
       logical, intent(in) :: check
+      integer, intent(in) :: max_it
       real(c_double), dimension(2), intent(inout) :: info
       
-      real(real64), dimension(:,:), allocatable :: A02, &
-      Q0, Q2, Ahat, invA1_A02, A1i, A0_tmp, A1_tmp
-      integer :: it, n, dn, max_it
+      real(real64), dimension(:,:), allocatable :: tmp_inv, tmp, D02, Id, P, &
+     &A1_tmp, A0_tmp, G_new, P_new
+      integer :: it, n, dn, i, j
       integer(blint) :: info_inv
       integer(blint), dimension(:), allocatable :: ipiv
-      real(real64) :: residual, crit
+      real(real64) :: crit
       character(kind=c_char, len=10) :: cvg_tol_str, residual_str
 
-      Ahat = A1
-      A1i = A1
       n = size(A0,1)
       dn = 2*n
-      allocate(A02(n,dn), ipiv(n), invA1_A02(n,dn), Q0(n,dn), Q2(n,dn))
-      A02(:,1:n) = A0
-      A02(:,n+1:dn) = A2
+      allocate(D02(n,dn), ipiv(n), Id(n,n), tmp(n,dn), G_new(n,n), P_new(n,n))
+      info = [0._c_double,0._c_double]
+      ! Set the identity matrix
+      do j=1,n
+         do i=1,n
+            if (i == j) then            
+               Id(i,j) = 1.
+            else
+               Id(i,j) = 0.
+            end if
+         end do
+      end do
+
+      ! Initialization: D02_0
+      D02(:,1:n) = A0
+      D02(:,n+1:dn) = A2
+      tmp_inv = -A1
+      call left_divide(tmp_inv, D02, ipiv, info_inv)
+      G = D02(:,1:n)
+      P = D02(:,n+1:dn)
       it = 0
-      max_it = 300
 loop: do
-         ! Computing [A0;A2]*(A1\[A0 A2]) 
-         A1_tmp = A1i
-         invA1_A02 = A02
-         call left_divide(A1_tmp, invA1_A02, ipiv, info_inv)
-         call matmul_add("N", "N", 1._real64, A02(:,1:n), invA1_A02, 0._real64, Q0)
-         call matmul_add("N", "N", 1._real64, A02(:,n+1:dn), invA1_A02, 0._real64, Q2)
-         ! Updating A02, A1 and Ahat
-         A1i = A1i - Q0(:,n+1:dn) - Q2(:,1:n)
-         A02(:,1:n) = -Q0(:,1:n)
-         A02(:,n+1:dn) = -Q2(:,n+1:dn)
-         Ahat = Ahat-Q2(:,1:n)
-         crit = norm(A02(:,1:n),"1")
+         ! Computing E1_(i+1)
+         tmp_inv = Id
+         call matmul_add("N", "N", -1._real64, D02(:,1:n), D02(:,n+1:dn), 1._real64, tmp_inv)
+         call matmul_add("N", "N", -1._real64, D02(:,n+1:dn), D02(:,1:n), 1._real64, tmp_inv)
+         ! Computing matrices [D0^2 D2^2], id est -E0_(i+1) and -E2_(i+1)
+         call matmul_add("N", "N", 1._real64, D02(:,1:n), D02(:,1:n), 0._real64, tmp(:,1:n))
+         call matmul_add("N", "N", 1._real64, D02(:,n+1:dn), D02(:,n+1:dn), 0._real64, tmp(:,n+1:dn))
+         ! Computing D0_(i+1) and D2_(i+1)
+         call left_divide(tmp_inv, tmp, ipiv, info_inv)
+         ! Computing G_(i+1) = G_i + P_i*D0_(i+1)
+         G_new = G
+         call matmul_add("N", "N", 1._real64, P, tmp(:,1:n), 1._real64, G_new)
+         ! Computing P_(i+1)
+         call matmul_add("N", "N", 1._real64, P, tmp(:,n+1:dn), 0._real64, P_new)
+         crit = norm(G_new - G,"1")
          ! Checking for stopping conditions
          if (crit < cvg_tol) then
-            if (norm(A02(:,n+1:dn), "1") < cvg_tol) then
-               exit loop
-            end if
+            exit loop
          elseif (it == max_it) then
-            info(1) = 401._c_double
-            info(2) = real(log(norm(A1i,"1")), c_double)
+            info(1) = 411._c_double
+            info(2) = real(log(crit), c_double)
             exit loop
          elseif (isnan(crit) .or. (info_inv /= 0_blint)) then
-            info(1) = 402._c_double
-            info(2) = real(log(norm(A1i,"1")), c_double)
+            info(1) = 412._c_double
+            info(2) = -1._c_double
             exit loop
          end if
          it = it + 1
+         G = G_new
+         P = P_new
+         D02 = tmp
       end do loop
-
-      ! Computing X = -Ahat\A0
-      X = -A0
-      call left_divide(Ahat, X, ipiv, info_inv)
 
       ! Checking residuals if necessary
       if (check) then
          ! A1_tmp <- A2*X + A1
          A1_tmp = A1
-         call matmul_add("N", "N", 1._real64, A2, X, 1._real64, A1_tmp)
+         call matmul_add("N", "N", 1._real64, A2, G, 1._real64, A1_tmp)
          ! A0_tmp <- A1_tmp*X + A0
          A0_tmp = A0
-         call matmul_add("N", "N", 1._real64, A1_tmp, X, 1._real64, A0_tmp)
-         residual = norm(A0_tmp, "1")
-         if (residual>cvg_tol) then
-            info(1) = 403._c_double
-            info(2) = log(residual)
+         call matmul_add("N", "N", 1._real64, A1_tmp, G, 1._real64, A0_tmp)
+         crit = norm(A0_tmp, "1")
+         if (crit>cvg_tol) then
+            info(1) = 413._c_double
+            info(2) = real(log(crit), c_double)
             write (cvg_tol_str,"(es8.2)") cvg_tol
-            write (residual_str,"(es8.2)") residual
+            write (residual_str,"(es8.2)") crit
             call mexPrintf("The norm of the residual is "&
                           &// trim(residual_str) // &
                           &", whereas the tolerance criterion is " &
-                           // trim(cvg_tol_str) // "." )
+                          // trim(cvg_tol_str) // "." )
          end if
       end if
-   end subroutine cycle_reduction
+   end subroutine logarithmic_reduction
 
-end module c_reduction
+end module l_reduction
 
 subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
-   use c_reduction
+   use l_reduction 
    implicit none   
 
    type(c_ptr), dimension(*), intent(in), target :: prhs
    type(c_ptr), dimension(*), intent(out) :: plhs
    integer(c_int), intent(in), value :: nlhs, nrhs
 
-   integer :: i, n
+   integer :: i, n, max_it
    character(kind=c_char, len=2) :: num2str 
    real(real64) :: cvg_tol
-   real(real64), dimension(:,:), pointer,  contiguous :: A0, A1, A2, X
    real(real64), dimension(2) :: info
+   real(real64), dimension(:,:), pointer,  contiguous :: A0, A1, A2, X
    logical :: check
 
    ! 0. Checking the consistency and validity of input arguments
-   if (nrhs < 4) then
-      call mexErrMsgTxt("Must have at least 4 inputs")
+   if (nrhs < 5) then
+      call mexErrMsgTxt("Must have at least 5 inputs")
    end if
-   if (nrhs > 5) then
+   if (nrhs > 6) then
       call mexErrMsgTxt("Too many input arguments")
    end if
    if (nlhs > 2) then
@@ -139,20 +154,23 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
       if (.not. (c_associated(prhs(i)) .and. mxIsDouble(prhs(i)) .and. & 
           (.not. mxIsComplex(prhs(i))) .and. (.not. mxIsSparse(prhs(i))))) then
             write (num2str,"(i2)") i
-            call mexErrMsgTxt("Argument" // trim(num2str) // " should be a real dense matrix")
+            call mexErrMsgTxt("Argument " // trim(num2str) // " should be a real dense matrix")
       end if
    end do
-   if (.not. (c_associated(prhs(4)) .and. mxIsScalar(prhs(4)) .and. &
-       mxIsNumeric(prhs(4)))) then
-      call mexErrMsgTxt("Argument 4 should be a numeric scalar")
-   end if
+   do i=4,5
+      if (.not. (c_associated(prhs(i)) .and. mxIsScalar(prhs(i)) .and. &
+         mxIsNumeric(prhs(i)))) then
+            write (num2str,"(i2)") i
+            call mexErrMsgTxt("Argument " // trim(num2str) // " should be a numeric scalar")
+      end if
+   end do
 
    check = .false.
-   if (nrhs == 5) then
-      if (.not. (c_associated(prhs(5)))) then
-         call mexErrMsgTxt("Argument 5 should be a Matlab object")
+   if (nrhs == 6) then
+      if (.not. (c_associated(prhs(6)))) then
+         call mexErrMsgTxt("Argument 6 should be a Matlab object")
       else
-         if (.not. (mxIsEmpty(prhs(5)))) then
+         if (.not. (mxIsEmpty(prhs(6)))) then
             check = .true.
          end if
       end if
@@ -169,21 +187,22 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    end if
    
    ! 1. Storing the relevant information in Fortran format
-   A0(1:n,1:n) => mxGetPr(prhs(1))
+   A2(1:n,1:n) => mxGetPr(prhs(1))
    A1(1:n,1:n) => mxGetPr(prhs(2))
-   A2(1:n,1:n) => mxGetPr(prhs(3))
+   A0(1:n,1:n) => mxGetPr(prhs(3))
    cvg_tol = mxGetScalar(prhs(4))
+   max_it = int(mxGetScalar(prhs(5)))
    info = [0._c_double,0._c_double]
 
    plhs(1) = mxCreateDoubleMatrix(int(n, mwSize), int(n, mwSize), mxREAL)
    X(1:n,1:n) => mxGetPr(plhs(1))
 
-   ! 2. Calling the Cycle Reduction algorithm
-   call cycle_reduction(A0, A1, A2, X, cvg_tol, check, info)
+   ! 2. Calling the Logarithmic Reduction algorithm
+   call logarithmic_reduction(A0, A1, A2, X, cvg_tol, check, max_it, info)
 
    ! 3. Editing the information output if necessary
    if (nlhs == 2) then
-      if (info(1) == 0.) then
+      if (info(1) == 0._c_double) then
          plhs(2) = mxCreateDoubleScalar(0._c_double)
       else
          plhs(2) = mxCreateDoubleMatrix(1_mwSize, 2_mwSize, mxREAL)

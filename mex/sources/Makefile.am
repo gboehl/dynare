@@ -26,7 +26,8 @@ EXTRA_DIST = \
 	num_procs \
 	block_trust_region \
 	disclyap_fast \
-	cycle_reduction
+	cycle_reduction \
+	logarithmic_reduction
 
 clean-local:
 	rm -rf `find mex/sources -name *.o`
