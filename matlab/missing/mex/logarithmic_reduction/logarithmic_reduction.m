@@ -80,7 +80,7 @@ while cc>tol && kk<=maxit
     cc = norm(X1-X0,1);
     if isnan(cc)
         info(1) = 412;
-        info(2) = -1.;
+        info(2) = 1;
         return
     end
     X0 = X1; U0 = U1;

@@ -91,7 +91,7 @@ loop: do
             exit loop
          elseif (isnan(crit) .or. (info_inv /= 0_blint)) then
             info(1) = 412._c_double
-            info(2) = -1._c_double
+            info(2) = 1._c_double
             exit loop
          end if
          it = it + 1
