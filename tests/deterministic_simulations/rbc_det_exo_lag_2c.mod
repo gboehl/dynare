@@ -62,7 +62,10 @@ ExpectedTerm=beta*((((Consumption^theta)*((1-Labour)^(1-theta)))^(1-tau))/Consum
 LagrangeMultiplier=0;
 end;
 
-//steady;
+initval;
+EfficiencyInnovation=0;
+end;
+steady;
 
 shocks;
 var EfficiencyInnovation;

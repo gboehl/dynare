@@ -63,6 +63,11 @@ end;
 
 //steady;
 
+initval;
+EfficiencyInnovation=0;
+end;
+steady;
+
 shocks;
 var EfficiencyInnovation;
 periods 1;

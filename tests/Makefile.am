@@ -278,6 +278,8 @@ MODFILES = \
 	simul/simul_ZLB_purely_forward_no_solution.mod \
 	simul/Irreversible_investment.mod \
 	simul/linear_state_space_arma.mod \
+	perfect_foresight/initval_endval_blocks/initval_endval_test.mod \
+	perfect_foresight/initval_endval_blocks/histval_initval_test.mod \
 	conditional_forecasts/1/fs2000_cal.mod \
 	conditional_forecasts/2/fs2000_est.mod \
 	conditional_forecasts/3/fs2000_conditional_forecast_initval.mod \
