@@ -140,6 +140,10 @@ for shock_period = 1:n_shocks_periods
             binding_indicator = [binding_indicator; false ];
             nperiods_0 = nperiods_0 + 1;
             disp_verbose(['nperiods has been endogenously increased up to ' int2str(nperiods_0) '.'],opts_simul_.debug)
+        elseif nperiods_0>=opts_simul_.max_periods
+            % enforce endogenously increased nperiods to not violate max_periods
+            binding_indicator = binding_indicator(1:opts_simul_.max_periods+1);
+            binding_indicator(end)=false;
         end
         if length(binding_indicator)<(nperiods_0 + 1)
             binding_indicator=[binding_indicator; false(nperiods_0 + 1-length(binding_indicator),1)];
@@ -184,11 +188,17 @@ for shock_period = 1:n_shocks_periods
             
             [binding, relax, err]=feval([M_.fname,'.occbin_difference'],zdatalinear_+repmat(dr_base.ys',size(zdatalinear_,1),1),M_.params,dr_base.ys);
 
+            if ~isinf(opts_simul_.max_periods) && opts_simul_.max_periods<length(binding_indicator)
+                end_periods = opts_simul_.max_periods;
+            else
+                end_periods = length(binding_indicator);
+            end
             % check if changes to the hypothesis of the duration for each
             % regime
-            if any(binding.constraint_1 & ~binding_indicator) || any(relax.constraint_1 & binding_indicator)
-                err_viol = err.binding_constraint_1(binding.constraint_1 & ~binding_indicator);
-                err_relax = err.relax_constraint_1(relax.constraint_1 & binding_indicator);
+            if any(binding.constraint_1(1:end_periods) & ~binding_indicator(1:end_periods)) || any(relax.constraint_1(1:end_periods) & binding_indicator(1:end_periods))
+
+                err_viol = err.binding_constraint_1(binding.constraint_1(1:end_periods) & ~binding_indicator(1:end_periods));
+                err_relax = err.relax_constraint_1(relax.constraint_1(1:end_periods) & binding_indicator(1:end_periods));
                 max_err(iter) = max(abs([err_viol;err_relax]));
                 regime_change_this_iteration = true;
             else

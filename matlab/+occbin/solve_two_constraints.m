@@ -148,6 +148,10 @@ for shock_period = 1:n_shocks_periods
             binding_indicator = [binding_indicator; false(1,2)];
             nperiods_0 = nperiods_0 + 1;
             disp_verbose(['nperiods has been endogenously increased up to ' int2str(nperiods_0) '.'],opts_simul_.debug)
+        elseif nperiods_0>=opts_simul_.max_periods
+            % enforce endogenously increased nperiods to not violate max_periods
+            binding_indicator = binding_indicator(1:opts_simul_.max_periods+1,:);
+            binding_indicator(end,:)=false(1,2);
         end
         if size(binding_indicator,1)<(nperiods_0 + 1)
             binding_indicator=[binding_indicator; false(nperiods_0 + 1-size(binding_indicator,1),2)];
@@ -179,6 +183,7 @@ for shock_period = 1:n_shocks_periods
         if shock_period==1 || shock_period>1 && any(data.shocks_sequence(shock_period,:)) % first period or shock happening
             if iter==1 && opts_simul_.reset_regime_in_new_period
                 if opts_simul_.reset_check_ahead_periods_in_new_period
+                    % I re-set check ahead periods to initial value, when in previous period it was endogenously increased
                     nperiods_0 = max(opts_simul_.check_ahead_periods,n_periods-n_shocks_periods);
                     binding_indicator = false(nperiods_0+1,2);
                 else
@@ -200,16 +205,23 @@ for shock_period = 1:n_shocks_periods
                 data.exo_pos,data.shocks_sequence(shock_period,:),endo_init, update_flag);
             
             [binding, relax, err]=feval([M_.fname,'.occbin_difference'],zdatalinear_+repmat(dr.ys',size(zdatalinear_,1),1),M_.params,dr.ys);
-            binding_constraint_new=[binding.constraint_1;binding.constraint_2];
-            relaxed_constraint_new = [relax.constraint_1;relax.constraint_2];
+
+            if ~isinf(opts_simul_.max_periods) && opts_simul_.max_periods<length(binding_indicator)
+                end_periods = opts_simul_.max_periods;
+            else
+                end_periods = length(binding_indicator);
+            end
+            binding_constraint_new=[binding.constraint_1(1:end_periods);binding.constraint_2(1:end_periods)];
+            relaxed_constraint_new = [relax.constraint_1(1:end_periods);relax.constraint_2(1:end_periods)];
+            my_binding_indicator = binding_indicator(1:end_periods,:);
             
-            err_binding_constraint_new = [err.binding_constraint_1; err.binding_constraint_2];
-            err_relaxed_constraint_new = [err.relax_constraint_1; err.relax_constraint_2];
+            err_binding_constraint_new = [err.binding_constraint_1(1:end_periods); err.binding_constraint_2(1:end_periods)];
+            err_relaxed_constraint_new = [err.relax_constraint_1(1:end_periods); err.relax_constraint_2(1:end_periods)];
             
             % check if changes_
-            if any(binding_constraint_new & ~binding_indicator(:)) || any(relaxed_constraint_new & binding_indicator(:))
-                err_violation = err_binding_constraint_new(binding_constraint_new & ~binding_indicator(:));
-                err_relax = err_relaxed_constraint_new(relaxed_constraint_new & binding_indicator(:));
+            if any(binding_constraint_new & ~my_binding_indicator(:)) || any(relaxed_constraint_new & my_binding_indicator(:))
+                err_violation = err_binding_constraint_new(binding_constraint_new & ~my_binding_indicator(:));
+                err_relax = err_relaxed_constraint_new(relaxed_constraint_new & my_binding_indicator(:));
                 max_err(iter) = max(abs([err_violation;err_relax]));
                 regime_change_this_iteration = true;
             else
