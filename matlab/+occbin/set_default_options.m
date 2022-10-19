@@ -175,6 +175,7 @@ if ismember(flag,{'simul','all'})
     options_occbin_.simul.check_ahead_periods=200;
     options_occbin_.simul.periodic_solution=false;
     options_occbin_.simul.piecewise_only = false;
+    options_occbin_.simul.reset_check_ahead_periods_in_new_period = false;
     options_occbin_.simul.reset_regime_in_new_period = false;
     options_occbin_.simul.restrict_state_space=false;
     options_occbin_.simul.SHOCKS=zeros(1,M_.exo_nbr);
