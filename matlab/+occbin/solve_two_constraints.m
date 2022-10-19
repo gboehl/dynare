@@ -133,20 +133,24 @@ for shock_period = 1:n_shocks_periods
         dyn_waitbar(shock_period/n_shocks_periods, hh, sprintf('Period %u of %u', shock_period,n_shocks_periods));
     end
     regime_change_this_iteration=true;
+    nperiods_endogenously_increased = false;
     iter = 0;
     guess_history_it = false;
     if guess_history && (shock_period<=length(regime_history_guess)) %beyond guess regime history
         guess_history_it = true;
     end
     is_periodic=false;
+    is_periodic_loop=false;
     binding_indicator_history={};
     max_err = NaN(max_iter,1);
+    regime_violates_constraint_in_expectation = false(max_iter,1);
     
-    while (regime_change_this_iteration && iter<max_iter && ~is_periodic)
+    while (regime_change_this_iteration && iter<max_iter && ~is_periodic && ~is_periodic_loop)
         iter = iter +1;
         if any(binding_indicator(end,:)) && nperiods_0<opts_simul_.max_periods
             binding_indicator = [binding_indicator; false(1,2)];
             nperiods_0 = nperiods_0 + 1;
+            nperiods_endogenously_increased = true;
             disp_verbose(['nperiods has been endogenously increased up to ' int2str(nperiods_0) '.'],opts_simul_.debug)
         elseif nperiods_0>=opts_simul_.max_periods
             % enforce endogenously increased nperiods to not violate max_periods
@@ -248,17 +252,43 @@ for shock_period = 1:n_shocks_periods
             end
             binding_indicator = reshape(binding_indicator,nperiods_0+1,2);
             
-            if iter>1 && regime_change_this_iteration
-                is_periodic=false(1,iter-1);
+            if iter>1 && regime_change_this_iteration && ~nperiods_endogenously_increased
+                % check for periodic solution only if nperiods is not
+                % increased endogenously
+                % first check for infinite loop
+                is_periodic_loop = false(iter-1,1);
                 for kiter=1:iter-1
-                    vvv = [binding_indicator_history{kiter}; false(size(binding_indicator,1)- size(binding_indicator_history{kiter},1), 2)];
-                    is_periodic(kiter) = isequal(vvv, binding_indicator);
+                    if size(binding_indicator,1)== size(binding_indicator_history{kiter},1)
+                        %                     vvv = [binding_indicator_history{kiter}; false(size(binding_indicator,1)- size(binding_indicator_history{kiter},1), 1)];
+                        %                     is_periodic(kiter) = isequal(vvv, binding_indicator);
+                        is_periodic_loop(kiter) = isequal(binding_indicator_history{kiter}, binding_indicator);
+                    else
+                        is_periodic_loop(kiter) = false;
+                    end
+                end
+%                 is_periodic_loop_all =is_periodic_loop;
+                is_periodic_loop =  any(is_periodic_loop);
+                % only accept periodicity where regimes differ by one
+                % period!
+                is_periodic=false(1,iter-1);
+                for kiter=iter-1
+                    if size(binding_indicator,1)== size(binding_indicator_history{kiter},1)
+                        %                     vvv = [binding_indicator_history{kiter}; false(size(binding_indicator,1)- size(binding_indicator_history{kiter},1), 1)];
+                        %                     is_periodic(kiter) = isequal(vvv, binding_indicator);
+                        is_periodic(kiter) = isequal(binding_indicator_history{kiter}, binding_indicator) && length(find(binding_indicator_history{iter}(:,1)-binding_indicator(:,1)))<=1  && length(find(binding_indicator_history{iter}(:,2)-binding_indicator(:,2)))<=1;
+                    else
+                        is_periodic(kiter)=false;
+                    end
                 end
                 is_periodic_all = is_periodic;
                 is_periodic =  any(is_periodic);
                 if is_periodic && periodic_solution
-                    [min_err,index_min_err]=min(max_err(find(is_periodic_all,1):end));
                     inx = find(is_periodic_all,1):iter;
+                    inx1 = inx(find(~regime_violates_constraint_in_expectation(inx)));
+                    if not(isempty(inx1))
+                        inx=inx1;
+                    end
+                    [min_err,index_min_err]=min(max_err(inx));
                     inx = inx(index_min_err);
                     binding_indicator=binding_indicator_history{inx}; %select regime history with same result, but smallest error
                     if inx<iter %update if needed
@@ -312,8 +342,13 @@ for shock_period = 1:n_shocks_periods
                     return;
                 end
             else
+                if is_periodic_loop
+                    disp_verbose('Did not converge -- infinite loop of regimes.',opts_simul_.debug)
+                    error_flag = 313;
+                else
                 disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
                 error_flag = 311;
+                end
                 if opts_simul_.waitbar; dyn_waitbar_close(hh); end
                 return;
             end
