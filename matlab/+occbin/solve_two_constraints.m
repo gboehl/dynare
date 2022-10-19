@@ -178,7 +178,12 @@ for shock_period = 1:n_shocks_periods
         regime_history(shock_period).regimestart2 = regime_start_2;
         if shock_period==1 || shock_period>1 && any(data.shocks_sequence(shock_period,:)) % first period or shock happening
             if iter==1 && opts_simul_.reset_regime_in_new_period
-                binding_indicator=false(size(binding_indicator));
+                if opts_simul_.reset_check_ahead_periods_in_new_period
+                    nperiods_0 = max(opts_simul_.check_ahead_periods,n_periods-n_shocks_periods);
+                    binding_indicator = false(nperiods_0+1,2);
+                else
+                    binding_indicator=false(size(binding_indicator));
+                end
                 binding_indicator_history{iter}=binding_indicator;
                 % analyse violvec and isolate contiguous periods in the other regime.
                 [regime_1, regime_start_1, error_code_period(1)]=occbin.map_regime(binding_indicator(:,1),opts_simul_.debug);

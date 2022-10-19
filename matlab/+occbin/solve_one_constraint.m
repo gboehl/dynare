@@ -164,7 +164,13 @@ for shock_period = 1:n_shocks_periods
         % get the hypothesized piece wise linear solution
         if shock_period==1 || shock_period>1 && any(data.shocks_sequence(shock_period,:))
             if iter==1 && opts_simul_.reset_regime_in_new_period
-                binding_indicator=false(size(binding_indicator));
+                if opts_simul_.reset_check_ahead_periods_in_new_period
+                    % I re-set check ahead periods to initial value, when in previous period it was endogenously increased
+                    nperiods_0 = max(opts_simul_.check_ahead_periods,n_periods-n_shocks_periods);
+                    binding_indicator = false(nperiods_0+1,1);
+                else
+                    binding_indicator=false(size(binding_indicator));
+                end
                 binding_indicator_history{iter}=binding_indicator;
                 % analyse violvec and isolate contiguous periods in the other regime.
                 [regime, regime_start, error_code_period]=occbin.map_regime(binding_indicator,opts_simul_.debug);
@@ -267,7 +273,7 @@ for shock_period = 1:n_shocks_periods
             else
                 disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
                 if opts_simul_.waitbar; dyn_waitbar_close(hh); end
-                error_flag = 311;
+                    error_flag = 311;
                 return
             end
         else
