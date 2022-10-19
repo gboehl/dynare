@@ -30,7 +30,7 @@ function [data_mat]=mkdata(n_periods,dr_A,dr_B,endo_names,exo_names,wish_list,sh
 % given decision rule
 neqs = size(endo_names,1);
 
-if nargin<9
+if nargin<9 || isempty(var_init)
     var_init = zeros(neqs,1);
 end
 

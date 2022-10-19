@@ -48,7 +48,7 @@ T = DM.decrulea;
 CONST = zeros(n_vars,1);
 R = DM.decruleb;
 
-if nargin<7
+if nargin<7 || isempty(init)
     init=zeros(n_vars,1);
 end
 
