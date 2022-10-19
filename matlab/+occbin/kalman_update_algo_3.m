@@ -69,12 +69,21 @@ function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, alphahat, 
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+warning off
+
+options_.noprint = true;
+T=[];
+R=[];
+C=[];
+regimes_ = struct();
+
 if isempty(nk)
     nk=1;
 end
 nk=max(nk,1);
 
-opts_simul = occbin_options.opts_regime;base_regime = struct();
+opts_simul = occbin_options.opts_regime;
+base_regime = struct();
 if M_.occbin.constraint_nbr==1
     base_regime.regime = 0;
     base_regime.regimestart = 1;
@@ -121,6 +130,10 @@ end
 
 options_.occbin.simul=opts_simul;
 [~, out, ss] = occbin.solver(M_,oo_,options_);
+if out.error_flag
+    error_flag = out.error_flag;
+    return;
+end
 
 regimes_ = out.regime_history;
 if M_.occbin.constraint_nbr==1
@@ -210,6 +223,10 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         opts_simul.periods = max(opts_simul.periods,max(myregimestart));
         options_.occbin.simul=opts_simul;
         [~, out, ss] = occbin.solver(M_,oo_,options_);
+        if out.error_flag
+            error_flag = out.error_flag;
+            return;
+        end
         regimes0=regimes_;
         regimes_ = out.regime_history;
         if niter>1
