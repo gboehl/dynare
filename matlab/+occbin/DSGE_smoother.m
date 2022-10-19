@@ -139,6 +139,7 @@ opts_simul.exo_pos = 1:M_.exo_nbr;
 opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
 opts_simul.init_regime=regime_history; % use realtime regime for guess, to avoid multiple solution issues!
 options_.occbin.simul=opts_simul;
+options_.noprint = true;
 [~, out, ss] = occbin.solver(M_,oo_,options_);
 regime_history = out.regime_history;
 if options_.smoother_redux
@@ -330,7 +331,9 @@ end
 regime_history0(max(iter+1,1),:) = regime_history;
 oo_.occbin.smoother.regime_history=regime_history0(end,:);
 oo_.occbin.smoother.regime_history_iter=regime_history0;
+if occbin_smoother_debug
 save('info1','regime_history0')
+end
 
 if (maxiter==iter && is_changed) || is_periodic
     disp(['Occbin smoother did not converge.'])
