@@ -363,6 +363,12 @@ else
         ic = oo_.dr.restrict_columns;
     end
     
+    if isempty(options_.nk)
+        nk=1;
+    else
+        nk=options_.nk;
+    end
+        
     if options_.occbin.smoother.status
         % reconstruct occbin smoother
         if length_varargin>0
@@ -452,7 +458,7 @@ else
                 opts_simul.check_ahead_periods = options_.occbin.smoother.check_ahead_periods;
                 opts_simul.full_output = options_.occbin.smoother.full_output;
                 opts_simul.piecewise_only = options_.occbin.smoother.piecewise_only;
-                opts_simul.SHOCKS = zeros(options_.nk,M_.exo_nbr);
+                opts_simul.SHOCKS = zeros(nk,M_.exo_nbr);
                 opts_simul.SHOCKS(1,:) =  eehat(:,k);
                 tmp=zeros(M_.endo_nbr,1);
                 tmp(oo_.dr.restrict_var_list,1)=aahat(:,k-1);
@@ -485,7 +491,7 @@ else
             clear sstate_uncertainty
         end
         
-        aaa = zeros(options_.nk,M_.endo_nbr,gend+options_.nk);
+        aaa = zeros(nk,M_.endo_nbr,gend+nk);
         aaa(:,oo_.dr.restrict_var_list,:)=aK;
         
         for k=2:gend+1
@@ -496,7 +502,7 @@ else
             opts_simul.check_ahead_periods = options_.occbin.smoother.check_ahead_periods;
             opts_simul.full_output = options_.occbin.smoother.full_output;
             opts_simul.piecewise_only = options_.occbin.smoother.piecewise_only;
-            opts_simul.SHOCKS = zeros(options_.nk,M_.exo_nbr);
+            opts_simul.SHOCKS = zeros(nk,M_.exo_nbr);
             tmp=zeros(M_.endo_nbr,1);
             tmp(oo_.dr.restrict_var_list,1)=ahat0(:,k-1);
             opts_simul.endo_init = tmp(oo_.dr.inv_order_var,1);
@@ -508,14 +514,14 @@ else
             % period ahead (so if regimestart was [1 5] it should be [1 4]
             % in out
             %         end
-            for jnk=1:options_.nk
+            for jnk=1:nk
                 aaa(jnk,oo_.dr.inv_order_var,k+jnk-1) = out.piecewise(jnk,:) - out.ys';
             end
         end
         aK=aaa;
         
         if ~isempty(PK)
-            PP = zeros(options_.nk,M_.endo_nbr,M_.endo_nbr,gend+options_.nk);
+            PP = zeros(nk,M_.endo_nbr,M_.endo_nbr,gend+nk);
             PP(:,oo_.dr.restrict_var_list,oo_.dr.restrict_var_list,:) = PK;
             PK=PP;
             clear PP
@@ -561,20 +567,17 @@ else
         end
         ahat1=aaa;
         % reconstruct aK
-        if isempty(options_.nk)
-            options_.nk=1;
-        end
-        aaa = zeros(options_.nk,M_.endo_nbr,gend+options_.nk);
+        aaa = zeros(nk,M_.endo_nbr,gend+nk);
         aaa(:,oo_.dr.restrict_var_list,:)=aK;
         for k=1:gend
-            for jnk=1:options_.nk
+            for jnk=1:nk
                 aaa(jnk,static_var_list,k+jnk) = C(~ilagged,:)*dynare_squeeze(aK(jnk,:,k+jnk));
             end
         end
         if any(ilagged)
             for k=1:gend
                 aaa(1,static_var_list0,k+1) = Tstar(ilagged,:)*ahat(:,k);
-                for jnk=2:options_.nk
+                for jnk=2:nk
                     aaa(jnk,static_var_list0,k+jnk) = Tstar(ilagged,:)*dynare_squeeze(aK(jnk-1,:,k+jnk-1));
                 end
             end
@@ -621,12 +624,12 @@ else
         
         % reconstruct PK
         if ~isempty(PK)
-            PP = zeros(options_.nk,M_.endo_nbr,M_.endo_nbr,gend+options_.nk);
+            PP = zeros(nk,M_.endo_nbr,M_.endo_nbr,gend+nk);
             PP(:,oo_.dr.restrict_var_list,oo_.dr.restrict_var_list,:) = PK;
             if ~options_.heteroskedastic_filter
                 DQD=D(~ilagged,:)*Q*transpose(D(~ilagged,:))+C(~ilagged,:)*R*Q*transpose(D(~ilagged,:))+D(~ilagged,:)*Q*transpose(C(~ilagged,:)*R);
                 DQR=D(~ilagged,:)*Q*transpose(R);
-                for f=1:options_.nk
+                for f=1:nk
                     for k=1:gend
                         PP(f,static_var_list,static_var_list,k+f)=C(~ilagged,:)*squeeze(PK(f,:,:,k+f))*C(~ilagged,:)'+DQD;
                         PP(f,static_var_list,oo_.dr.restrict_var_list,k+f)=C(~ilagged,:)*squeeze(PK(f,:,:,k+f))+DQR;
