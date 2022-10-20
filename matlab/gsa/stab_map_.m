@@ -163,7 +163,7 @@ if fload==0
         %         lpmat = prep_ide(Nsam,np,5);
         %         Nsam=size(lpmat,1);
     else
-        if np<52 && ilptau>0
+        if np<1112 && ilptau>0
             [lpmat] = qmc_sequence(np, int64(1), 0, Nsam)';
             if np>30 || ilptau==2 % scrambled lptau
                 for j=1:np
