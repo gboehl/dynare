@@ -44,13 +44,13 @@ if option==1
   
   
 elseif option==2
-   nperiods = 100;
+   nperiods = 90;
    randn('seed',1);
    shockssequence = 1*randn(nperiods,1)*0.02 ; 
    
    shocks(surprise,overwrite);
    var erra;
-   periods 1:100;
+   periods 1:90;
    values (shockssequence);
    end;
 
@@ -60,7 +60,7 @@ end
 
 occbin_setup(smoother_debug);
 occbin_solver(simul_debug,simul_periodic_solution,simul_periods=200,simul_maxit=300,simul_curb_retrench,simul_check_ahead_periods=300);
-occbin_write_regimes(filename='test',periods=[1:100]);
+occbin_write_regimes(filename='test',periods=[1:90]);
 
 %% Modify to plot IRFs 
 titlelist = char('c','lambdak','k','i','a');
