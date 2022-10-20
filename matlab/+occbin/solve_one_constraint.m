@@ -314,7 +314,7 @@ for shock_period = 1:n_shocks_periods
                 end
             else
                 if is_periodic_loop
-                    disp_verbose('Did not converge -- infinite loop of regimes.',opts_simul_.debug)
+                    disp_verbose('Did not converge -- infinite loop of guess regimes.',opts_simul_.debug)
                     error_flag = 313;
                 else
                 disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
