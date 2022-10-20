@@ -189,7 +189,7 @@ switch info(1)
     case 312
         message = 'Occbin: Constraint(s) are binding at the end of the sample.';        
     case 313
-        message = 'Occbin: Simulation did not converge -- infinite loop of regimes';        
+        message = 'Occbin: Simulation did not converge -- infinite loop of guess regimes';        
     case 320
         message = 'Piecewise linear Kalman filter: There was a problem in obtaining the likelihood.';
     case 401
