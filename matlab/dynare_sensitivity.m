@@ -89,6 +89,8 @@ if options_.order~=1
     options_.order = 1;
 end
 
+original_prior_trunc = options_.prior_trunc;
+
 if ~isempty(options_gsa.datafile) || isempty(bayestopt_) || options_gsa.rmse
     if isempty(options_gsa.datafile) && options_gsa.rmse
         disp('The data file and all relevant estimation options ')
@@ -133,6 +135,9 @@ if ~isempty(options_gsa.datafile) || isempty(bayestopt_) || options_gsa.rmse
 else
     if isempty(options_.qz_criterium)
         options_.qz_criterium = 1+1e-6;
+    end
+    if options_.prior_trunc==0
+        options_.prior_trunc=1.e-10;
     end
 end
 
@@ -430,6 +435,7 @@ if options_gsa.rmse
     filt_mc_(OutputDirectoryName,options_gsa,dataset_,dataset_info);
 end
 options_.opt_gsa = options_gsa;
+options_.prior_trunc=original_prior_trunc;
 
 
 if options_gsa.glue
