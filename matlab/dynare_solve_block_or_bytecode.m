@@ -47,7 +47,7 @@ if options.block && ~options.bytecode
                 end
             end
         end
-        % Compute endogenous if the block is of type evaluate forward/backward
+        % Compute endogenous if the block is of type evaluate forward/backward or if there are recursive variables in a solve block.
         % Also update the temporary terms vector (needed for the dynare_solve case)
         [~, x, T, g1] = feval([M.fname '.static'], b, ss, exo, params, T);
     end
@@ -75,7 +75,7 @@ elseif options.bytecode
                 end
                 x(M.block_structure_stat.block(b).variable) = y;
             end
-            % Compute endogenous if the block is of type evaluate forward/backward
+            % Compute endogenous if the block is of type evaluate forward/backward or if there are recursive variables in a solve block.
             % Also update the temporary terms vector (needed for the dynare_solve case)
             try
                 [~, ~, x, T] = bytecode(x, exo, params, x, 1, x, T, 'evaluate', 'static', ...
