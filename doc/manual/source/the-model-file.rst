@@ -2789,13 +2789,12 @@ Finding the steady state with Dynare nonlinear solver
 
            ``1``
 
-                Use Dynare’s own nonlinear equation solver (a
-                Newton-like algorithm with line-search).
+                Use a Newton-like algorithm with line-search.
 
            ``2``
 
                 Splits the model into recursive blocks and solves each
-                block in turn using the same solver as value 1.
+                block in turn using the same solver as value ``1``.
 
            ``3``
 
@@ -2833,7 +2832,8 @@ Finding the steady state with Dynare nonlinear solver
 
            ``9``
 
-                Trust-region algorithm on the entire model.
+                Trust-region algorithm with autoscaling (same as value ``4``,
+                but applied to the entire model, without splitting).
 
            ``10``
 
