@@ -43,23 +43,23 @@ if isfield(M_,block_structre_str)
     fprintf(strcat('                                          ===================',char(ones(1,length(M_.fname))*'='),'\n\n'));
     nb_blocks=length(block_structure.block);
     fprintf('The model has %d equations and is decomposed in %d blocks as follow:\n',M_.endo_nbr,nb_blocks);
-    fprintf('===============================================================================================================\n');
-    fprintf('| %10s | %10s | %30s | %14s | %31s |\n','Block no','Size','Block Type','   Equation','Dependent variable');
-    fprintf('|============|============|================================|================|=================================|\n');
+    fprintf('================================================================================================================================\n');
+    fprintf('| %10s | %10s | %30s | %31s | %31s |\n','Block no','Size','Block Type','Equation','Dependent variable');
+    fprintf('|============|============|================================|=================================|=================================|\n');
     for i=1:nb_blocks
         size_block=length(block_structure.block(i).equation);
         if(i>1)
-            fprintf('|------------|------------|--------------------------------|----------------|---------------------------------|\n');
+            fprintf('|------------|------------|--------------------------------|---------------------------------|---------------------------------|\n');
         end
         for j=1:size_block
             if(j==1)
-                fprintf('| %10d | %10d | %30s | %14d | %-6d %24s |\n',i,size_block,Sym_type(block_structure.block(i).Simulation_Type),block_structure.block(i).equation(j),block_structure.block(i).variable(j),M_.endo_names{block_structure.block(i).variable(j)});
+                fprintf('| %10d | %10d | %30s | %-6d %24s | %-6d %24s |\n',i,size_block,Sym_type(block_structure.block(i).Simulation_Type),block_structure.block(i).equation(j),get_equation_name_by_number(block_structure.block(i).equation(j), M_),block_structure.block(i).variable(j),M_.endo_names{block_structure.block(i).variable(j)});
             else
-                fprintf('| %10s | %10s | %30s | %14d | %-6d %24s |\n','','','',block_structure.block(i).equation(j),block_structure.block(i).variable(j),M_.endo_names{block_structure.block(i).variable(j)});
+                fprintf('| %10s | %10s | %30s | %-6d %24s | %-6d %24s |\n','','','',block_structure.block(i).equation(j),get_equation_name_by_number(block_structure.block(i).equation(j), M_),block_structure.block(i).variable(j),M_.endo_names{block_structure.block(i).variable(j)});
             end
         end
     end
-    fprintf('===============================================================================================================\n');
+    fprintf('================================================================================================================================\n');
     fprintf('\n');
     if static_
         fprintf('%-30s %s','the variable','is used in the following equations contemporaneously');
