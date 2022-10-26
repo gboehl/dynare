@@ -18,11 +18,13 @@ function eqname = get_equation_name_by_number(eqnumber, M_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-idx_for_this_eq = find(cell2mat(M_.equations_tags(:,1)) == eqnumber);
-eqname = cell2mat(M_.equations_tags(idx_for_this_eq(strmatch('name', M_.equations_tags(idx_for_this_eq, 2), 'exact')), 3));
+idx = find((cell2mat(M_.equations_tags(:,1)) == eqnumber) & ...
+           strcmp(M_.equations_tags(:,2), 'name'));
 
-if isempty(eqname)
+if isempty(idx)
     eqname = '';
+else
+    eqname = M_.equations_tags{idx, 3};
 end
 
 end
