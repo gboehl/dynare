@@ -57,6 +57,7 @@ opts_simul.maxit = options_.occbin.likelihood.maxit;
 opts_simul.waitbar = false;
 opts_simul.periods = options_.occbin.likelihood.periods;
 opts_simul.check_ahead_periods = options_.occbin.likelihood.check_ahead_periods;
+opts_simul.max_check_ahead_periods = options_.occbin.likelihood.max_check_ahead_periods;
 opts_simul.periodic_solution = options_.occbin.likelihood.periodic_solution;
 opts_simul.restrict_state_space = options_.occbin.likelihood.restrict_state_space;
 opts_simul.piecewise_only = 1;

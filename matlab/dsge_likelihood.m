@@ -976,6 +976,7 @@ occbin_options.opts_simul.curb_retrench = DynareOptions.occbin.likelihood.curb_r
 occbin_options.opts_simul.maxit = DynareOptions.occbin.likelihood.maxit;
 occbin_options.opts_simul.periods = DynareOptions.occbin.likelihood.periods;
 occbin_options.opts_simul.check_ahead_periods = DynareOptions.occbin.likelihood.check_ahead_periods;
+occbin_options.opts_simul.max_check_ahead_periods = DynareOptions.occbin.likelihood.max_check_ahead_periods;
 occbin_options.opts_simul.periodic_solution = DynareOptions.occbin.likelihood.periodic_solution;
 occbin_options.opts_simul.restrict_state_space = DynareOptions.occbin.likelihood.restrict_state_space;
 

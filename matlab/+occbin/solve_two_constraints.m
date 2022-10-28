@@ -147,17 +147,21 @@ for shock_period = 1:n_shocks_periods
     
     while (regime_change_this_iteration && iter<max_iter && ~is_periodic && ~is_periodic_loop)
         iter = iter +1;
-        if any(binding_indicator(end,:)) && nperiods_0<opts_simul_.max_periods
+        if any(binding_indicator(end,:)) && nperiods_0<opts_simul_.max_check_ahead_periods
             binding_indicator = [binding_indicator; false(1,2)];
             nperiods_0 = nperiods_0 + 1;
             nperiods_endogenously_increased = true;
             disp_verbose(['nperiods has been endogenously increased up to ' int2str(nperiods_0) '.'],opts_simul_.debug)
-        elseif nperiods_0>=opts_simul_.max_periods
-            % enforce endogenously increased nperiods to not violate max_periods
-            binding_indicator = binding_indicator(1:opts_simul_.max_periods+1,:);
+        elseif nperiods_0>=opts_simul_.max_check_ahead_periods
+            % enforce endogenously increased nperiods to not violate max_check_ahead_periods
+            binding_indicator = binding_indicator(1:opts_simul_.max_check_ahead_periods+1,:);
             binding_indicator(end,:)=false(1,2);
         end
         if size(binding_indicator,1)<(nperiods_0 + 1)
+            % to ensure the simulation is run for the required nperiods
+            % even beyond max_check_ahead_periods: the latter controls check ahead periods 
+            % and NOT how many periods we simulate after we are back to
+            % unconstrained regime (nperiods_0)
             binding_indicator=[binding_indicator; false(nperiods_0 + 1-size(binding_indicator,1),2)];
         end
         binding_indicator_history{iter}=binding_indicator;
@@ -210,13 +214,13 @@ for shock_period = 1:n_shocks_periods
             
             [binding, relax, err]=feval([M_.fname,'.occbin_difference'],zdatalinear_+repmat(dr.ys',size(zdatalinear_,1),1),M_.params,dr.ys);
 
-            if ~isinf(opts_simul_.max_periods) && opts_simul_.max_periods<length(binding_indicator)
-                end_periods = opts_simul_.max_periods;
+            if ~isinf(opts_simul_.max_check_ahead_periods) && opts_simul_.max_check_ahead_periods<length(binding_indicator)
+                end_periods = opts_simul_.max_check_ahead_periods;
             else
                 end_periods = length(binding_indicator);
             end
-            binding_constraint_new=[binding.constraint_1(1:end_periods);binding.constraint_2(1:end_periods)];
-            relaxed_constraint_new = [relax.constraint_1(1:end_periods);relax.constraint_2(1:end_periods)];
+            binding_constraint_new=[binding.constraint_1(1:end_periods); binding.constraint_2(1:end_periods)];
+            relaxed_constraint_new = [relax.constraint_1(1:end_periods); relax.constraint_2(1:end_periods)];
             my_binding_indicator = binding_indicator(1:end_periods,:);
             
             err_binding_constraint_new = [err.binding_constraint_1(1:end_periods); err.binding_constraint_2(1:end_periods)];
@@ -248,7 +252,7 @@ for shock_period = 1:n_shocks_periods
                 end
                 binding_indicator = (binding_indicator(:) | binding_constraint_new) & ~ retrench;
             else
-                binding_indicator= (binding_indicator(:) | binding_constraint_new) & ~(binding_indicator(:) & relaxed_constraint_new);
+                binding_indicator = (binding_indicator(:) | binding_constraint_new) & ~(binding_indicator(:) & relaxed_constraint_new);
             end
             binding_indicator = reshape(binding_indicator,nperiods_0+1,2);
             
@@ -346,8 +350,8 @@ for shock_period = 1:n_shocks_periods
                     disp_verbose('Did not converge -- infinite loop of guess regimes.',opts_simul_.debug)
                     error_flag = 313;
                 else
-                disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
-                error_flag = 311;
+                    disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
+                    error_flag = 311;
                 end
                 if opts_simul_.waitbar; dyn_waitbar_close(hh); end
                 return;

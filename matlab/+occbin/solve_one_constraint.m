@@ -139,14 +139,14 @@ for shock_period = 1:n_shocks_periods
     
     while (regime_change_this_iteration && iter<max_iter && ~is_periodic && ~is_periodic_loop)
         iter = iter +1;
-        if binding_indicator(end) && nperiods_0<opts_simul_.max_periods
+        if binding_indicator(end) && nperiods_0<opts_simul_.max_check_ahead_periods
             binding_indicator = [binding_indicator; false ];
             nperiods_0 = nperiods_0 + 1;
             nperiods_endogenously_increased = true;
             disp_verbose(['nperiods has been endogenously increased up to ' int2str(nperiods_0) '.'],opts_simul_.debug)
-        elseif nperiods_0>=opts_simul_.max_periods
-            % enforce endogenously increased nperiods to not violate max_periods
-            binding_indicator = binding_indicator(1:opts_simul_.max_periods+1);
+        elseif nperiods_0>=opts_simul_.max_check_ahead_periods
+            % enforce endogenously increased nperiods to not violate max_check_ahead_periods
+            binding_indicator = binding_indicator(1:opts_simul_.max_check_ahead_periods+1);
             binding_indicator(end)=false;
         end
         if length(binding_indicator)<(nperiods_0 + 1)
@@ -192,8 +192,8 @@ for shock_period = 1:n_shocks_periods
             
             [binding, relax, err]=feval([M_.fname,'.occbin_difference'],zdatalinear_+repmat(dr_base.ys',size(zdatalinear_,1),1),M_.params,dr_base.ys);
 
-            if ~isinf(opts_simul_.max_periods) && opts_simul_.max_periods<length(binding_indicator)
-                end_periods = opts_simul_.max_periods;
+            if ~isinf(opts_simul_.max_check_ahead_periods) && opts_simul_.max_check_ahead_periods<length(binding_indicator)
+                end_periods = opts_simul_.max_check_ahead_periods;
             else
                 end_periods = length(binding_indicator);
             end
