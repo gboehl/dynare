@@ -216,8 +216,10 @@ for shock_period = 1:n_shocks_periods
 
             if ~isinf(opts_simul_.max_check_ahead_periods) && opts_simul_.max_check_ahead_periods<length(binding_indicator)
                 end_periods = opts_simul_.max_check_ahead_periods;
+                last_indicator = false(length(binding_indicator)-end_periods,1);
             else
                 end_periods = length(binding_indicator);
+                last_indicator = false(0);
             end
             binding_constraint_new=[binding.constraint_1(1:end_periods); binding.constraint_2(1:end_periods)];
             relaxed_constraint_new = [relax.constraint_1(1:end_periods); relax.constraint_2(1:end_periods)];
@@ -237,17 +239,19 @@ for shock_period = 1:n_shocks_periods
                 max_err(iter) = 0;
             end
             
+            binding_constraint_new=[binding.constraint_1(1:end_periods);last_indicator; binding.constraint_2(1:end_periods);last_indicator];
+            relaxed_constraint_new = [relax.constraint_1(1:end_periods);not(last_indicator); relax.constraint_2(1:end_periods);not(last_indicator)];
             if curb_retrench   % apply Gauss-Seidel idea of slowing down the change in the guess
                 % for the constraint -- only relax one
                 % period at a time starting from the last
                 % one when each of the constraints is true.
                 retrench = false(numel(binding_indicator),1);
-                max_relax_constraint_1=find(relax.constraint_1 & binding_indicator(:,1),1,'last');
-                if ~isempty(max_relax_constraint_1) && find(relax.constraint_1,1,'last')>=find(binding_indicator(:,1),1,'last')
+                max_relax_constraint_1=find(relax.constraint_1(1:end_periods) & binding_indicator(1:end_periods,1),1,'last');
+                if ~isempty(max_relax_constraint_1) && find(relax.constraint_1(1:end_periods),1,'last')>=find(binding_indicator(1:end_periods,1),1,'last')
                     retrench(max_relax_constraint_1) = true;
                 end
-                max_relax_constraint_2=find(relax.constraint_2 & binding_indicator(:,2),1,'last');
-                if ~isempty(max_relax_constraint_2) && find(relax.constraint_2,1,'last')>=find(binding_indicator(:,2),1,'last')
+                max_relax_constraint_2=find(relax.constraint_2(1:end_periods) & binding_indicator(1:end_periods,2),1,'last');
+                if ~isempty(max_relax_constraint_2) && find(relax.constraint_2(1:end_periods),1,'last')>=find(binding_indicator(1:end_periods,2),1,'last')
                     retrench(max_relax_constraint_2+nperiods_0+1) = true;
                 end
                 binding_indicator = (binding_indicator(:) | binding_constraint_new) & ~ retrench;
