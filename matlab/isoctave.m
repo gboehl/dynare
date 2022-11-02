@@ -1,6 +1,6 @@
 function A = isoctave()
 
-% Copyright © 2013-2016 Dynare Team
+% Copyright © 2013-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,4 +17,6 @@ function A = isoctave()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-A = exist('OCTAVE_VERSION');
+% NB: restricting the search to builtins is important for speed (otherwise it
+% will lookup files, which is slow)
+A = exist('OCTAVE_VERSION', 'builtin');
