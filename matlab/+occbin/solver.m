@@ -68,6 +68,12 @@ else
     oo_.dr=sto_dr;
 end
 
+if options_.occbin.simul.check_ahead_periods>options_.occbin.simul.max_check_ahead_periods
+    options_.occbin.simul.check_ahead_periods=options_.occbin.simul.max_check_ahead_periods;
+    disp(['occbin::options::' simul '_check_ahead_periods cannot exceed ' simul '_max_check_ahead_periods'])
+    disp(['occbin::options::' simul '_check_ahead_periods is re-set to be equal to ' simul '_max_check_ahead_periods'])
+end
+
 if M_.occbin.constraint_nbr==1
     [out, ss, error_flag  ] = occbin.solve_one_constraint(M_,oo_.dr,options_.occbin.simul,solve_dr);
 elseif M_.occbin.constraint_nbr==2
