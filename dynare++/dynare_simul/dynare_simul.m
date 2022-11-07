@@ -42,6 +42,11 @@
 % All examples suppose that the prefix is 'dyn' and that your_model.mat
 % has been loaded into Matlab.
 %
+% You could e.g. use
+%       load('example1.mat');
+%       shocks=randn(size(dyn_shocks,1),1000)'*chol(dyn_vcov_exo);
+%       dynare_simul('example1',shocks')
+%
 % 1. response to permanent negative shock to the third exo var EPS3 for
 %    100 periods
 %
@@ -168,9 +173,5 @@ end
 seed = ceil(10000*rand(1,1));
 
 % call dynare_simul_
-[err,r]=dynare_simul_(order-1,nstat,npred,nboth,nforw,...
+r=dynare_simul_(order-1,nstat,npred,nboth,nforw,...
     nexog,ystart,shocks,vcov_exo,seed,ss,dr);
-
-if err
-    error('Simulation failed')
-end
