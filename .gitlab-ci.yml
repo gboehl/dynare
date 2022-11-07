@@ -3,7 +3,7 @@ variables:
   TERM: linux
   MATLAB_VERSION: R2022b
   OLD_MATLAB_VERSION: R2014a
-  OCTAVE_VERSION: 7.2.0
+  OCTAVE_VERSION: 7.3.0
 
 # The next stanza creates the version number used for the source tarball and the
 # binary packages. Here are the following possible cases:
