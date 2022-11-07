@@ -5451,6 +5451,19 @@ All of these elements are discussed in the following.
        This number should be chosen large enough, because Occbin requires the simulation
        to return to the baseline regime at the end of time. Default: 200.
 
+    .. option:: simul_reset_check_ahead_periods
+
+       Allows to reset ``simul_check_ahead_periods`` to its specified value at the beginning
+       of each simulation period. Otherwise, the original value may permanently increase endogenously 
+       at some point due to regimes that last very long in expectations. This may considerably slow 
+       down convergence in subsequent periods. Default: not enabled.
+
+    .. option:: simul_max_check_ahead_periods = INTEGER
+
+       If set to a finite number, it enforces the OccBin algorithm to check ahead only for the maximum number of periods 
+       (i.e. when we want agents to be myopic beyond some future period) instead of potentially endogenously increasing
+       ``simul_check_ahead_periods`` ever further. Default: Inf.
+
     .. option:: simul_curb_retrench
 
        Instead of basing the initial regime guess for the current iteration on the last iteration, update
@@ -5483,6 +5496,12 @@ All of these elements are discussed in the following.
        Number of periods for which to check ahead for return to the baseline regime during the
        simulation when called by the smoother (equivalent of ``simul_check_ahead_periods``). Default: 200.
 
+    .. option:: smoother_max_check_ahead_periods = INTEGER
+
+       If set to a finite number, it enforces the OccBin algorithm to check ahead only for the maximum number of periods 
+       (i.e. when we want agents to be myopic beyond some future period) instead of potentially endogenously increasing
+       ``smoother_check_ahead_periods`` ever further. Equivalent of ``simul_max_check_ahead_periods``. Default: Inf.
+
     .. option:: smoother_curb_retrench
 
        Have the smoother invoke the ``simul_curb_retrench``-option during simulations.
@@ -5507,6 +5526,12 @@ All of these elements are discussed in the following.
 
        Number of periods for which to check ahead for return to the baseline regime during the
        simulation when computing the likelihood  (equivalent of ``simul_check_ahead_periods``). Default: 200.
+
+    .. option:: smoother_max_check_ahead_periods = INTEGER
+
+       If set to a finite number, it enforces the OccBin algorithm to check ahead only for the maximum number of periods 
+       (i.e. when we want agents to be myopic beyond some future period) instead of potentially endogenously increasing
+       ``likelihood_check_ahead_periods`` ever further. Equivalent of ``simul_max_check_ahead_periods``. Default: Inf.
 
     .. option:: likelihood_curb_retrench
 
