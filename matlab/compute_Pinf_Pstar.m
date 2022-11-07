@@ -1,5 +1,5 @@
 function [Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,qz_criterium, restrict_columns)
-% function [Z,ST,QT,R1,Pstar,Pinf] = schur_statespace_transformation(mf,T,R,Q,qz_criterium, restrict_columns)
+% function [Z,ST,QT,R1,Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,qz_criterium, restrict_columns)
 % Kitagawa transformation of state space system with a quasi-triangular
 % transition matrix with unit roots at the top, but excluding zero columns of the transition matrix.
 % Computation of Pstar and Pinf for Durbin and Koopman Diffuse filter
@@ -30,7 +30,7 @@ function [Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,qz_criterium, restrict_colum
 % SPECIAL REQUIREMENTS
 %   None
 
-% Copyright © 2006-2018 Dynare Team
+% Copyright © 2006-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
