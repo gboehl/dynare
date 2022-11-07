@@ -480,10 +480,14 @@ if M.static_and_dynamic_models_differ
 end
 
 if ~isreal(ys)
-    info(1) = 21;
-    info(2) = sum(imag(ys).^2);
-    ys = real(ys);
+    if sum(imag(ys).^2) < 1e-7
+        ys=real(ys);
+    else
+        info(1) = 21;
+        info(2) = sum(imag(ys).^2);
+        ys = real(ys);
     return
+    end
 end
 
 if ~isempty(find(isnan(ys)))
