@@ -1227,8 +1227,8 @@ M_TRS_FILES += 	run_block_byte_tests_matlab.m.trs \
 		run_kronecker_tests.m.trs \
 		nonlinearsolvers.m.trs \
 		cyclereduction.m.trs \
-		logarithmicreduction.m.trs
-
+		logarithmicreduction.m.trs \
+		riccatiupdate.m.trs
 
 M_XFAIL_TRS_FILES = $(patsubst %.mod, %.m.trs, $(XFAIL_MODFILES))
 
@@ -1242,8 +1242,8 @@ O_TRS_FILES += 	run_block_byte_tests_octave.o.trs \
 		run_kronecker_tests.o.trs \
 		nonlinearsolvers.o.trs \
 		cyclereduction.o.trs \
-		logarithmicreduction.o.trs
-
+		logarithmicreduction.o.trs \
+		riccatiupdate.o.trs
 
 O_XFAIL_TRS_FILES = $(patsubst %.mod, %.o.trs, $(XFAIL_MODFILES))
 

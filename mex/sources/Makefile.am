@@ -27,7 +27,8 @@ EXTRA_DIST = \
 	block_trust_region \
 	disclyap_fast \
 	cycle_reduction \
-	logarithmic_reduction
+	logarithmic_reduction \
+	riccati_update
 
 clean-local:
 	rm -rf `find mex/sources -name *.o`
