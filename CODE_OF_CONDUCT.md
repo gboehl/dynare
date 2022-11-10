@@ -1,5 +1,4 @@
-
-# Contributor Covenant Code of Conduct
+# Dynare Code of Conduct
 
 ## Our Pledge
 
