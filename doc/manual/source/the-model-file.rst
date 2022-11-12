@@ -5619,7 +5619,7 @@ All of these elements are discussed in the following.
 .. matvar:: oo_.occbin.simul.piecewise
 
     |br| Matrix storing the simulations based on the piecewise-linear solution.
-    The variables are arranged column by column, in order of declaration (as in
+    The variables are arranged by column, in order of declaration (as in
     ``M_.endo_names``), while the the rows correspond to the ``simul_periods``.
 
 .. matvar:: oo_.occbin.simul.linear
