@@ -255,7 +255,7 @@ while is_changed && maxiter>iter && ~is_periodic
         err_TT(iter-1) = max(max(max(abs(TT-sto_TT))));
     end
 
-    if occbin_smoother_debug
+    if occbin_smoother_debug || is_periodic
         regime_ = cell(0);
         regime_new = regime_;
         start_ = regime_;
@@ -333,18 +333,26 @@ regime_history0(max(iter+1,1),:) = regime_history;
 oo_.occbin.smoother.regime_history=regime_history0(end,:);
 oo_.occbin.smoother.regime_history_iter=regime_history0;
 if occbin_smoother_debug
-save('info1','regime_history0')
+    save('info1','regime_history0')
 end
 
 if (maxiter==iter && is_changed) || is_periodic
-    disp(['Occbin smoother did not converge.'])
+    disp('occbin.DSGE_smoother: smoother did not converge.')
+    fprintf('occbin.DSGE_smoother: The algorithm did not reach a fixed point for the smoothed regimes.\n')
     if is_periodic
-        disp(['Occbin smoother algo loops between two solutions.'])
+        oo_.occbin.smoother.error_flag=0;
+        fprintf('occbin.DSGE_smoother: For the periods indicated above, regimes loops between the "regime_" and the "regime_new_" pattern displayed above.\n')
+        fprintf('occbin.DSGE_smoother: We provide smoothed shocks consistent with "regime_" in oo_.\n')
+    else
+        fprintf('occbin.DSGE_smoother: The respective fields in oo_ will be left empty.\n')
+        oo_.occbin.smoother=[];
+        oo_.occbin.smoother.error_flag=1;
     end
 else
-    disp(['Occbin smoother converged.'])
+    disp('occbin.DSGE_smoother: smoother converged.')
+    oo_.occbin.smoother.error_flag=0;
     if occbin_smoother_fast && is_changed_start
-        disp('WARNING: fast algo is used, regime(s) duration(s) was not forced to converge')
+        disp('occbin.DSGE_smoother: WARNING: fast algo is used, regime duration was not forced to converge')
     end
 end
 if (~is_changed || occbin_smoother_debug) && nargin==12
