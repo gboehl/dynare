@@ -234,6 +234,7 @@ for shock_period = 1:n_shocks_periods
                 err_relax = err_relaxed_constraint_new(relaxed_constraint_new & my_binding_indicator(:));
                 max_err(iter) = max(abs([err_violation;err_relax]));
                 regime_change_this_iteration = true;
+                regime_violates_constraint_in_expectation(iter) = any(binding_constraint_new & ~binding_indicator(:));
             else
                 regime_change_this_iteration = false;
                 max_err(iter) = 0;
