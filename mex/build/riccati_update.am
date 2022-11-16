@@ -1,0 +1,18 @@
+mex_PROGRAMS = riccati_update 
+
+nodist_riccati_update_SOURCES = \
+	matlab_mex.F08 \
+	blas_lapack.F08 \
+	mexFunction.f08
+
+BUILT_SOURCES = $(nodist_riccati_update_SOURCES)
+CLEANFILES = $(nodist_riccati_update_SOURCES)
+
+mexFunction.o: matlab_mex.mod blas.mod lapack.mod
+
+mexFunction.mod: mexFunction.o
+
+%.f08: $(top_srcdir)/../../sources/riccati_update/%.f08
+	$(LN_S) -f $< $@
+%.F08: $(top_srcdir)/../../sources/riccati_update/%.F08
+	$(LN_S) -f $< $@

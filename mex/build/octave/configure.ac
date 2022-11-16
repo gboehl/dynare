@@ -174,6 +174,7 @@ AC_CONFIG_FILES([Makefile
                  block_trust_region/Makefile
                  disclyap_fast/Makefile
                  cycle_reduction/Makefile
-                 logarithmic_reduction/Makefile])
+                 logarithmic_reduction/Makefile
+                 riccati_update/Makefile])
 
 AC_OUTPUT
