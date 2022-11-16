@@ -470,13 +470,14 @@ switch type
                     q2a.aux.yss=steady_state_aux;
                 end
                 i_var0 = i_var;
+                steady_state_0 = steady_state;
                 [za, endo_names, endo_names_tex, steady_state, i_var, oo_] = ...
                     annualized_shock_decomposition(z,M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
                 if options_.plot_shock_decomp.interactive && ~isempty(options_.plot_shock_decomp.use_shock_groups)
                     mygroup = options_.plot_shock_decomp.use_shock_groups;
                     options_.plot_shock_decomp.use_shock_groups='';
                     zafull = ...
-                        annualized_shock_decomposition(zfull(i_var0,:,:),M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state,q2a);
+                        annualized_shock_decomposition(zfull(i_var0,:,:),M_, options_, i_var, t0, options_.nobs, realtime_, vintage_, steady_state_0(i_var0),q2a);
                     options_.plot_shock_decomp.use_shock_groups = mygroup;
                 end
             end
