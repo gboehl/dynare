@@ -2,12 +2,12 @@ function [M_, options_] = setup(M_,options_, options_occbin_)
 % function [M_, options_] = setup(M_, options_, options_occbin_)
 % Sets up run of Occbin: creates shock matrix, sets options
 %
-% INPUT: 
+% INPUT:
 % - M_                  [structure]     Matlab's structure describing the model
 % - options_            [structure]     Matlab's structure containing the options
 % - options_occbin_     [structure]     Matlab's structure containing Occbin options
 %
-% OUTPUT: 
+% OUTPUT:
 % - M_                  [structure]     Matlab's structure describing the model
 % - options_occbin_     [structure]     Matlab's structure containing Occbin options
 
@@ -55,7 +55,7 @@ if isfield(M_,'surprise_shocks') && ~isempty(M_.surprise_shocks)
     for ii = 1:length(M_.surprise_shocks)
         ivar = M_.surprise_shocks(ii).exo_id;
         temp(M_.surprise_shocks(ii).periods,ivar) = M_.surprise_shocks(ii).value;
-    end    
+    end
     shock_index=~all(temp==0,1);
     options_.occbin.simul.SHOCKS=temp(:,shock_index);
     options_.occbin.simul.exo_pos=find(shock_index);

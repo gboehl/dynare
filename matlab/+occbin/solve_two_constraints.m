@@ -133,23 +133,35 @@ for shock_period = 1:n_shocks_periods
         dyn_waitbar(shock_period/n_shocks_periods, hh, sprintf('Period %u of %u', shock_period,n_shocks_periods));
     end
     regime_change_this_iteration=true;
+    nperiods_endogenously_increased = false;
     iter = 0;
     guess_history_it = false;
     if guess_history && (shock_period<=length(regime_history_guess)) %beyond guess regime history
         guess_history_it = true;
     end
     is_periodic=false;
+    is_periodic_loop=false;
     binding_indicator_history={};
     max_err = NaN(max_iter,1);
+    regime_violates_constraint_in_expectation = false(max_iter,1);
     
-    while (regime_change_this_iteration && iter<max_iter && ~is_periodic)
+    while (regime_change_this_iteration && iter<max_iter && ~is_periodic && ~is_periodic_loop)
         iter = iter +1;
-        if any(binding_indicator(end,:)) && nperiods_0<opts_simul_.max_periods
+        if any(binding_indicator(end,:)) && nperiods_0<opts_simul_.max_check_ahead_periods
             binding_indicator = [binding_indicator; false(1,2)];
             nperiods_0 = nperiods_0 + 1;
+            nperiods_endogenously_increased = true;
             disp_verbose(['nperiods has been endogenously increased up to ' int2str(nperiods_0) '.'],opts_simul_.debug)
+        elseif nperiods_0>=opts_simul_.max_check_ahead_periods
+            % enforce endogenously increased nperiods to not violate max_check_ahead_periods
+            binding_indicator = binding_indicator(1:opts_simul_.max_check_ahead_periods+1,:);
+            binding_indicator(end,:)=false(1,2);
         end
         if size(binding_indicator,1)<(nperiods_0 + 1)
+            % to ensure the simulation is run for the required nperiods
+            % even beyond max_check_ahead_periods: the latter controls check ahead periods 
+            % and NOT how many periods we simulate after we are back to
+            % unconstrained regime (nperiods_0)
             binding_indicator=[binding_indicator; false(nperiods_0 + 1-size(binding_indicator,1),2)];
         end
         binding_indicator_history{iter}=binding_indicator;
@@ -178,7 +190,13 @@ for shock_period = 1:n_shocks_periods
         regime_history(shock_period).regimestart2 = regime_start_2;
         if shock_period==1 || shock_period>1 && any(data.shocks_sequence(shock_period,:)) % first period or shock happening
             if iter==1 && opts_simul_.reset_regime_in_new_period
-                binding_indicator=false(size(binding_indicator));
+                if opts_simul_.reset_check_ahead_periods_in_new_period
+                    % I re-set check ahead periods to initial value, when in previous period it was endogenously increased
+                    nperiods_0 = max(opts_simul_.check_ahead_periods,n_periods-n_shocks_periods);
+                    binding_indicator = false(nperiods_0+1,2);
+                else
+                    binding_indicator=false(size(binding_indicator));
+                end
                 binding_indicator_history{iter}=binding_indicator;
                 % analyse violvec and isolate contiguous periods in the other regime.
                 [regime_1, regime_start_1, error_code_period(1)]=occbin.map_regime(binding_indicator(:,1),opts_simul_.debug);
@@ -195,53 +213,91 @@ for shock_period = 1:n_shocks_periods
                 data.exo_pos,data.shocks_sequence(shock_period,:),endo_init, update_flag);
             
             [binding, relax, err]=feval([M_.fname,'.occbin_difference'],zdatalinear_+repmat(dr.ys',size(zdatalinear_,1),1),M_.params,dr.ys);
-            binding_constraint_new=[binding.constraint_1;binding.constraint_2];
-            relaxed_constraint_new = [relax.constraint_1;relax.constraint_2];
+
+            if ~isinf(opts_simul_.max_check_ahead_periods) && opts_simul_.max_check_ahead_periods<length(binding_indicator)
+                end_periods = opts_simul_.max_check_ahead_periods;
+                last_indicator = false(length(binding_indicator)-end_periods,1);
+            else
+                end_periods = length(binding_indicator);
+                last_indicator = false(0);
+            end
+            binding_constraint_new=[binding.constraint_1(1:end_periods); binding.constraint_2(1:end_periods)];
+            relaxed_constraint_new = [relax.constraint_1(1:end_periods); relax.constraint_2(1:end_periods)];
+            my_binding_indicator = binding_indicator(1:end_periods,:);
             
-            err_binding_constraint_new = [err.binding_constraint_1; err.binding_constraint_2];
-            err_relaxed_constraint_new = [err.relax_constraint_1; err.relax_constraint_2];
+            err_binding_constraint_new = [err.binding_constraint_1(1:end_periods); err.binding_constraint_2(1:end_periods)];
+            err_relaxed_constraint_new = [err.relax_constraint_1(1:end_periods); err.relax_constraint_2(1:end_periods)];
             
             % check if changes_
-            if any(binding_constraint_new & ~binding_indicator(:)) || any(relaxed_constraint_new & binding_indicator(:))
-                err_violation = err_binding_constraint_new(binding_constraint_new & ~binding_indicator(:));
-                err_relax = err_relaxed_constraint_new(relaxed_constraint_new & binding_indicator(:));
+            if any(binding_constraint_new & ~my_binding_indicator(:)) || any(relaxed_constraint_new & my_binding_indicator(:))
+                err_violation = err_binding_constraint_new(binding_constraint_new & ~my_binding_indicator(:));
+                err_relax = err_relaxed_constraint_new(relaxed_constraint_new & my_binding_indicator(:));
                 max_err(iter) = max(abs([err_violation;err_relax]));
                 regime_change_this_iteration = true;
+                regime_violates_constraint_in_expectation(iter) = any(binding_constraint_new & ~binding_indicator(:));
             else
                 regime_change_this_iteration = false;
                 max_err(iter) = 0;
             end
             
+            binding_constraint_new=[binding.constraint_1(1:end_periods);last_indicator; binding.constraint_2(1:end_periods);last_indicator];
+            relaxed_constraint_new = [relax.constraint_1(1:end_periods);not(last_indicator); relax.constraint_2(1:end_periods);not(last_indicator)];
             if curb_retrench   % apply Gauss-Seidel idea of slowing down the change in the guess
                 % for the constraint -- only relax one
                 % period at a time starting from the last
                 % one when each of the constraints is true.
                 retrench = false(numel(binding_indicator),1);
-                max_relax_constraint_1=find(relax.constraint_1 & binding_indicator(:,1),1,'last');
-                if ~isempty(max_relax_constraint_1) && find(relax.constraint_1,1,'last')>=find(binding_indicator(:,1),1,'last')
+                max_relax_constraint_1=find(relax.constraint_1(1:end_periods) & binding_indicator(1:end_periods,1),1,'last');
+                if ~isempty(max_relax_constraint_1) && find(relax.constraint_1(1:end_periods),1,'last')>=find(binding_indicator(1:end_periods,1),1,'last')
                     retrench(max_relax_constraint_1) = true;
                 end
-                max_relax_constraint_2=find(relax.constraint_2 & binding_indicator(:,2),1,'last');
-                if ~isempty(max_relax_constraint_2) && find(relax.constraint_2,1,'last')>=find(binding_indicator(:,2),1,'last')
+                max_relax_constraint_2=find(relax.constraint_2(1:end_periods) & binding_indicator(1:end_periods,2),1,'last');
+                if ~isempty(max_relax_constraint_2) && find(relax.constraint_2(1:end_periods),1,'last')>=find(binding_indicator(1:end_periods,2),1,'last')
                     retrench(max_relax_constraint_2+nperiods_0+1) = true;
                 end
                 binding_indicator = (binding_indicator(:) | binding_constraint_new) & ~ retrench;
             else
-                binding_indicator= (binding_indicator(:) | binding_constraint_new) & ~(binding_indicator(:) & relaxed_constraint_new);
+                binding_indicator = (binding_indicator(:) | binding_constraint_new) & ~(binding_indicator(:) & relaxed_constraint_new);
             end
             binding_indicator = reshape(binding_indicator,nperiods_0+1,2);
             
-            if iter>1 && regime_change_this_iteration
-                is_periodic=false(1,iter-1);
+            if iter>1 && regime_change_this_iteration && ~nperiods_endogenously_increased
+                % check for periodic solution only if nperiods is not
+                % increased endogenously
+                % first check for infinite loop
+                is_periodic_loop = false(iter-1,1);
                 for kiter=1:iter-1
-                    vvv = [binding_indicator_history{kiter}; false(size(binding_indicator,1)- size(binding_indicator_history{kiter},1), 2)];
-                    is_periodic(kiter) = isequal(vvv, binding_indicator);
+                    if size(binding_indicator,1)== size(binding_indicator_history{kiter},1)
+                        %                     vvv = [binding_indicator_history{kiter}; false(size(binding_indicator,1)- size(binding_indicator_history{kiter},1), 1)];
+                        %                     is_periodic(kiter) = isequal(vvv, binding_indicator);
+                        is_periodic_loop(kiter) = isequal(binding_indicator_history{kiter}, binding_indicator);
+                    else
+                        is_periodic_loop(kiter) = false;
+                    end
+                end
+%                 is_periodic_loop_all =is_periodic_loop;
+                is_periodic_loop =  any(is_periodic_loop);
+                % only accept periodicity where regimes differ by one
+                % period!
+                is_periodic=false(1,iter-1);
+                for kiter=iter-1
+                    if size(binding_indicator,1)== size(binding_indicator_history{kiter},1)
+                        %                     vvv = [binding_indicator_history{kiter}; false(size(binding_indicator,1)- size(binding_indicator_history{kiter},1), 1)];
+                        %                     is_periodic(kiter) = isequal(vvv, binding_indicator);
+                        is_periodic(kiter) = isequal(binding_indicator_history{kiter}, binding_indicator) && length(find(binding_indicator_history{iter}(:,1)-binding_indicator(:,1)))<=1  && length(find(binding_indicator_history{iter}(:,2)-binding_indicator(:,2)))<=1;
+                    else
+                        is_periodic(kiter)=false;
+                    end
                 end
                 is_periodic_all = is_periodic;
                 is_periodic =  any(is_periodic);
                 if is_periodic && periodic_solution
-                    [min_err,index_min_err]=min(max_err(find(is_periodic_all,1):end));
                     inx = find(is_periodic_all,1):iter;
+                    inx1 = inx(find(~regime_violates_constraint_in_expectation(inx)));
+                    if not(isempty(inx1))
+                        inx=inx1;
+                    end
+                    [min_err,index_min_err]=min(max_err(inx));
                     inx = inx(index_min_err);
                     binding_indicator=binding_indicator_history{inx}; %select regime history with same result, but smallest error
                     if inx<iter %update if needed
@@ -295,8 +351,13 @@ for shock_period = 1:n_shocks_periods
                     return;
                 end
             else
-                disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
-                error_flag = 311;
+                if is_periodic_loop
+                    disp_verbose('Did not converge -- infinite loop of guess regimes.',opts_simul_.debug)
+                    error_flag = 313;
+                else
+                    disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
+                    error_flag = 311;
+                end
                 if opts_simul_.waitbar; dyn_waitbar_close(hh); end
                 return;
             end

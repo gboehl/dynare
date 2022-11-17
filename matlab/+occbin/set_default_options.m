@@ -76,6 +76,7 @@ if ismember(flag,{'likelihood','all'})
     options_occbin_.likelihood.IVF_shock_observable_mapping = [];
     options_occbin_.likelihood.maxit = 30; % this is for occbin solver algo
     options_occbin_.likelihood.max_number_of_iterations = 10; % this is for occbin_kalman_update loop
+    options_occbin_.likelihood.max_check_ahead_periods=inf;
     options_occbin_.likelihood.periods = 100;
     options_occbin_.likelihood.check_ahead_periods=200;
     options_occbin_.likelihood.periodic_solution=false;
@@ -170,11 +171,12 @@ if ismember(flag,{'simul','all'})
     options_occbin_.simul.init_binding_indicator=false(0);
     options_occbin_.simul.exo_pos=1:M_.exo_nbr;
     options_occbin_.simul.maxit=30;
-    options_occbin_.simul.max_periods=inf;
+    options_occbin_.simul.max_check_ahead_periods=inf;
     options_occbin_.simul.periods=100;
     options_occbin_.simul.check_ahead_periods=200;
     options_occbin_.simul.periodic_solution=false;
     options_occbin_.simul.piecewise_only = false;
+    options_occbin_.simul.reset_check_ahead_periods_in_new_period = false;
     options_occbin_.simul.reset_regime_in_new_period = false;
     options_occbin_.simul.restrict_state_space=false;
     options_occbin_.simul.SHOCKS=zeros(1,M_.exo_nbr);
@@ -193,6 +195,7 @@ if ismember(flag,{'smoother','all'})
     options_occbin_.smoother.inversion_filter = false;
     options_occbin_.smoother.linear_smoother = true;
     options_occbin_.smoother.maxit = 30; % this is for occbin solver algo
+    options_occbin_.smoother.max_check_ahead_periods=inf;
     options_occbin_.smoother.max_number_of_iterations = 10; % this is for smoother loop
     options_occbin_.smoother.periods = 100;
     options_occbin_.smoother.check_ahead_periods=200;

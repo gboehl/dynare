@@ -30,7 +30,7 @@ steady;
 % Option=2: random simulation
 
 @#for option_val in [1, 2]
-    
+
 option=@{option_val};
 
 %%%%%%%%%%%%%%%% Inputs stop here %%%%%%%%%%%%%%%%%%%%%
@@ -41,28 +41,28 @@ if option==1
    periods 1:9, 10, 50, 90, 130, 131:169;
    values -0.0001, -0.01,-0.02, 0.01, 0.02, 0;
    end;
-  
-  
+
+
 elseif option==2
-   nperiods = 100;
+   nperiods = 40;
    randn('seed',1);
-   shockssequence = 1*randn(nperiods,1)*0.02 ; 
-   
+   shockssequence = 1*randn(nperiods,1)*0.02 ;
+
    shocks(surprise,overwrite);
    var erra;
-   periods 1:100;
+   periods 1:40;
    values (shockssequence);
    end;
 
 end
 
-% set inputs      
+% set inputs
 
 occbin_setup(smoother_debug);
 occbin_solver(simul_debug,simul_periodic_solution,simul_periods=200,simul_maxit=300,simul_curb_retrench,simul_check_ahead_periods=300);
-occbin_write_regimes(filename='test',periods=[1:100]);
+occbin_write_regimes(filename='test',periods=[1:40]);
 
-%% Modify to plot IRFs 
+%% Modify to plot IRFs
 titlelist = char('c','lambdak','k','i','a');
 percent = 'Percent';
 value = 'value';
@@ -85,7 +85,7 @@ occbin_graph(noconstant) c erra lambdak k i a k;
     end;
     save('datasim.mat','c');
     varobs c;
-    
+
     occbin_solver(simul_periods=200,simul_maxit=200,simul_curb_retrench,simul_check_ahead_periods=200);
     occbin_setup(smoother_periods=200,smoother_maxit=200,smoother_curb_retrench,smoother_check_ahead_periods=200);
     calib_smoother(datafile=datasim);
