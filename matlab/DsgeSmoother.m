@@ -391,8 +391,9 @@ else
             opts_simul = options_.occbin.simul;
         end
         % reconstruct smoothed variables
-        aaa=zeros(M_.endo_nbr,gend);
-        aaa(oo_.dr.restrict_var_list,:)=alphahat;
+        aaa=zeros(M_.endo_nbr,gend+1);
+        aaa(oo_.dr.restrict_var_list,1)=alphahat0;
+        aaa(oo_.dr.restrict_var_list,2:end)=alphahat;
         iTx = zeros(size(TTx));
         for k=1:gend
             if isoccbin
@@ -416,13 +417,19 @@ else
             static_var_list0 = static_var_list;
             static_var_list0(static_var_list) = ilagged;
             static_var_list(static_var_list) = ~ilagged;
-            aaa(static_var_list,k) = AS(~ilagged,:)*alphahat(:,k)+BS(~ilagged,:)*etahat(:,k)+CS(~ilagged);
-            if any(ilagged) && k>1
-                aaa(static_var_list0,k) = Tstar(ilagged,:)*alphahat(:,k-1)+Rstar(ilagged,:)*etahat(:,k)+Cstar(ilagged);
+            aaa(static_var_list,k+1) = AS(~ilagged,:)*alphahat(:,k)+BS(~ilagged,:)*etahat(:,k)+CS(~ilagged);
+            if any(ilagged) 
+                if k>1
+                    aaa(static_var_list0,k+1) = Tstar(ilagged,:)*alphahat(:,k-1)+Rstar(ilagged,:)*etahat(:,k)+Cstar(ilagged);
+                else
+                    aaa(static_var_list0,2) = Tstar(ilagged,:)*alphahat0+Rstar(ilagged,:)*etahat(:,1)+Cstar(ilagged);
+                end
+
             end
             
         end
-        alphahat=aaa;
+        alphahat0=aaa(:,1);
+        alphahat=aaa(:,2:end);
 
         % reconstruct updated variables
         bbb=zeros(M_.endo_nbr,gend);
@@ -486,6 +493,13 @@ else
             sstate_uncertainty=zeros(M_.endo_nbr,M_.endo_nbr,gend);
             sstate_uncertainty(oo_.dr.restrict_var_list,oo_.dr.restrict_var_list,:)=state_uncertainty(1:mm,1:mm,:);
             state_uncertainty=sstate_uncertainty;
+            clear sstate_uncertainty
+        end
+        if ~isempty(state_uncertainty0)
+            mm=size(T,1);
+            sstate_uncertainty=zeros(M_.endo_nbr,M_.endo_nbr);
+            sstate_uncertainty(oo_.dr.restrict_var_list,oo_.dr.restrict_var_list)=state_uncertainty0(1:mm,1:mm);
+            state_uncertainty0=sstate_uncertainty;
             clear sstate_uncertainty
         end
         
