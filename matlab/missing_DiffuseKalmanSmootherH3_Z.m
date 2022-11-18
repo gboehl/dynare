@@ -387,7 +387,7 @@ while notsteady && t<smpl
             return
         end
 
-        if smoother_redux
+        if smoother_redux && t>1
             aalphahat(:,t-1) = aha(:,1);
             eetahat(:,t) = etaha(:,2);
         end
