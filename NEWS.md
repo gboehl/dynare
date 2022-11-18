@@ -1,3 +1,55 @@
+Announcement for Dynare 5.2 (on 2022-11-21)
+===========================================
+
+We are pleased to announce the release of Dynare 5.3.
+
+This maintenance release fixes various bugs.
+
+The Windows, macOS and source packages are already available for download at
+[the Dynare website](https://www.dynare.org/download/).
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 8.3 (R2014a) to
+9.13 (R2022b), and with GNU Octave version 7.3.0 (under Windows).
+
+Note for macOS users with an Apple Silicon processor, and who are also MATLAB
+users: the official MATLAB version for use on those processors is still the
+Intel version (running through Rosetta 2), so the official Dynare package for
+download on our website is built for Intel only. However, since Mathworks has
+released a beta version of MATLAB for Apple Silicon, we created a beta package
+of Dynare that you can try with it. See this forum thread for more details:
+https://forum.dynare.org/t/testers-wanted-release-of-dynare-5-x-beta-for-apple-silicon-m1-m2-chips/20499
+
+Here is a list of the problems identified in version 5.2 and that have been
+fixed in version 5.3:
+
+* The `notmpterms` option of the `dynare` command would trigger a crash if the `block` option of the `model` block was used
+* When the `use_dll` option was passed to the `model` block, the operator `abs` in the `model` block incorrectly returned only the integer part of the absolute value
+* Problems with OccBin (`estimation` and `occbin_solver`):
+  + the piecewise linear Kalman filter (PKF) could crash if the model solution could not be computed for a parameter draw
+  + the piecewise linear Kalman filter (PKF) could crash mode finding if an error was encountered
+  + the piecewise linear Kalman filter (PKF) would crash in the one-constraint case if the fixed point algorithm did not converge
+  + the smoother could crash due to the initial states being empty and when encountering errors
+  + the smoother fields of `oo_` contained wrong results if the piecewise linear Kalman smoother did not converge
+  + in pathological cases, seemingly periodic solutions were incorrectly accepted as true solutions
+* Problems related to Bayesian or ML estimation:
+  + `mh_recover` and `load_mh_file` would not find the saved proposal density and had to rely on the `_mode`-file
+  + `load_results_after_load_mh` would not find the location of the `_results`-file
+  + When requesting `bayesian_irf` together with `loglinear`, the resulting IRFs would be incorrect
+  + the diffuse Kalman smoother initialization (`lik_init=3`) was wrong when the state transition matrix contained a column of zeros
+  + the diffuse Kalman smoother initialization (`lik_init=3`) was wrong when the shock covariance matrix was not diagonal
+* Problems with perfect foresight simulations (`perfect_foresight_solver`-command):
+  + when solving purely forward or backward models with the PATH solver (`solve_algo=10`), specified `mcp`-tags were ignored
+  + the `linear_approximation`-option would ignore the `nocheck`-option for not checking the correctness of the steady state
+  + in the presence of a steady state file or a `steady_state_model`-block, the contents of the last `initval` or `endval`-block would be ignored and replaced by a steady state
+* The `identification` and `dynare_sensitivity`-commands would not pass a `graph_format`-option to other subsequent commands
+* Problems with sensitivity analysis (`dynare_sensitivity` command)
+  + stability mapping incorrectly imposed a parameter limit of 52 
+  + prior sampling did not work with when a user specified `prior_trunc=0`
+* `dynare++`: the `dynare_simul.m` would not run
+* The `model_diagnostics`-command would not work with `block_trust_region`-algorithms (`solve_algo=13,14`)
+
 Announcement for Dynare 5.2 (on 2022-07-27)
 ===========================================
 
