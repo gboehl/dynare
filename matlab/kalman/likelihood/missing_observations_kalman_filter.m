@@ -105,7 +105,11 @@ if occbin_.status
     occbin_options=occbin_.info{4};
     opts_regime.regime_history = occbin_options.opts_simul.init_regime;
     opts_regime.binding_indicator = occbin_options.opts_simul.init_binding_indicator;
-    first_period_occbin_update = max(t+1,options_.occbin.likelihood.first_period_occbin_update);
+    if t>1
+        first_period_occbin_update = max(t+1,options_.occbin.likelihood.first_period_occbin_update);
+    else
+        first_period_occbin_update = options_.occbin.likelihood.first_period_occbin_update;
+    end
     if isempty(opts_regime.binding_indicator) && isempty(opts_regime.regime_history)
         opts_regime.binding_indicator=zeros(last+2,M_.occbin.constraint_nbr);
     end
@@ -123,8 +127,8 @@ if occbin_.status
             TT=repmat(T,1,1,last+1);
             RR=repmat(R,1,1,last+1);
             CC=repmat(zeros(mm,1),1,last+1);
-        end    
-    
+        end
+
     end
 else
     first_period_occbin_update = inf;
@@ -141,6 +145,10 @@ while notsteady && t<=last
         if ~(isqvec)
             QQ = R*Q*transpose(R);   % Variance of R times the vector of structural innovations.
         end
+    end
+    if t==1
+        Pinit = P1(:,:,1);
+        ainit = a1(:,1);
     end
     s  = t-start+1;
     d_index = data_index{t};
@@ -178,61 +186,81 @@ while notsteady && t<=last
                 %                 badly_conditioned_F = true;
             end
         end
-        if  ~occbin_.status || (occbin_.status && (options_.occbin.likelihood.use_updated_regime==0 || t<first_period_occbin_update))
-            if badly_conditioned_F && (~occbin_.status || (occbin_.status && t<first_period_occbin_update))
-                if ~all(abs(F(:))<kalman_tol)
-                    % Use univariate filter.
-                    return
-                else
-                    % Pathological case, discard draw
-                    return
-                end
+        if badly_conditioned_F && (~occbin_.status || (occbin_.status && t<first_period_occbin_update))
+            if ~all(abs(F(:))<kalman_tol)
+                % Use univariate filter.
+                return
             else
-                F_singular = false;
-                if rescale_prediction_error_covariance
-                    log_dF = log(det(F./(sig*sig')))+2*sum(log(sig));
-                    iF = inv(F./(sig*sig'))./(sig*sig');
-                    rescale_prediction_error_covariance=rescale_prediction_error_covariance0;
-                else
-                    log_dF = log(det(F));
-                    iF = inv(F);
-                end
-                lik(s) = log_dF + transpose(v)*iF*v + length(d_index)*log(2*pi);
-                if t<first_period_occbin_update
-                    if Zflag
-                        K = P*z'*iF;
-                        if occbin_.status
-                            P0(:,:,t) = (P-K*z*P);
-                        end
-                        
-                        P = T*(P-K*z*P)*transpose(T)+QQ;
-                    else
-                        K = P(:,z)*iF;
-                        if occbin_.status
-                            P0(:,:,t) = (P-K*P(z,:));
-                        end
-                        P = T*(P-K*P(z,:))*transpose(T)+QQ;
-                    end
+                % Pathological case, discard draw
+                return
+            end
+        else
+            F_singular = false;
+        end
+        if  ~occbin_.status || (occbin_.status && (options_.occbin.likelihood.use_updated_regime==0 || t<first_period_occbin_update))
+            if rescale_prediction_error_covariance
+                log_dF = log(det(F./(sig*sig')))+2*sum(log(sig));
+                iF = inv(F./(sig*sig'))./(sig*sig');
+                rescale_prediction_error_covariance=rescale_prediction_error_covariance0;
+            else
+                log_dF = log(det(F));
+                iF = inv(F);
+            end
+            lik(s) = log_dF + transpose(v)*iF*v + length(d_index)*log(2*pi);
+            if t<first_period_occbin_update
+                if Zflag
+                    K = P*z'*iF;
                     if occbin_.status
-                        a0(:,t) = (a+K*v);
-                        vv(d_index,t) = v;
+                        P0(:,:,t) = (P-K*z*P);
                     end
-                    a = T*(a+K*v)+C;
-                    if t>=no_more_missing_observations && ~isqvec && ~occbin_.status
-                        notsteady = max(abs(K(:)-oldK))>riccati_tol;
-                        oldK = K(:);
+
+                    P = T*(P-K*z*P)*transpose(T)+QQ;
+                else
+                    K = P(:,z)*iF;
+                    if occbin_.status
+                        P0(:,:,t) = (P-K*P(z,:));
                     end
+                    P = T*(P-K*P(z,:))*transpose(T)+QQ;
+                end
+                if occbin_.status
+                    a0(:,t) = (a+K*v);
+                    vv(d_index,t) = v;
+                end
+                a = T*(a+K*v)+C;
+                if t>=no_more_missing_observations && ~isqvec && ~occbin_.status
+                    notsteady = max(abs(K(:)-oldK))>riccati_tol;
+                    oldK = K(:);
                 end
             end
         end
     end
     if occbin_.status && t>=first_period_occbin_update
-        
-        if isqvec
-            Qt = Qvec(:,:,t-1:t+1);
-        end
+
         occbin_options.opts_simul.waitbar=0;
-        [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regimes_(t:t+2), info, M_, likx] = occbin.kalman_update_algo_1(a0(:,t-1),a1(:,t-1:t),P0(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,vv(:,t-1:t),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,oo_,options_,occbin_options);
+        if t==1
+            if isqvec
+                Qt = cat(3,Q,Qvec(:,:,t:t+1));
+            end
+            a00 = ainit;
+            a10 = [a00 a(:,1)];
+            P00 = Pinit;
+            P10 = P1(:,:,[1 1]);
+            data_index0{1}=[];
+            data_index0(2)=data_index(1);
+            v0(:,2)=vv(:,1);
+            Y0(:,2)=Y(:,1);
+            Y0(:,1)=nan;
+            TT01 = cat(3,T,TT(:,:,1));
+            RR01 = cat(3,R,RR(:,:,1));
+            CC01 = zeros(size(CC,1),2);
+            CC01(:,2) = CC(:,1);
+            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regimes_(t:t+2), info, M_, likx] = occbin.kalman_update_algo_1(a00, a10, P00, P10, data_index0, Z, v0, Y0, H, Qt, T0, R0, TT01, RR01, CC01, regimes_(t:t+1), M_, oo_, options_, occbin_options);
+        else
+            if isqvec
+                Qt = Qvec(:,:,t-1:t+1);
+            end
+            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regimes_(t:t+2), info, M_, likx] = occbin.kalman_update_algo_1(a0(:,t-1),a1(:,t-1:t),P0(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,vv(:,t-1:t),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,oo_,options_,occbin_options);
+        end
         if info
             if options_.debug
                 fprintf('\nmissing_observations_kalman_filter:PKF failed with: %s\n', get_error_message(info,options_));
@@ -252,7 +280,7 @@ while notsteady && t<=last
         P0(:,:,t) = Px(:,:,1);
         P1(:,:,t) = P1x(:,:,2);
         P = Px(:,:,2);
-        
+
     end
     t = t+1;
 end
