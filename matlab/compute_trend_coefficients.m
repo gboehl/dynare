@@ -1,5 +1,5 @@
 function [trend_addition, trend_coeff]=compute_trend_coefficients(M_,DynareOptions,nvarobs,ntobs)
-% [trend_addition, trend_coeff]=compute_trend_coefficients(DynareOptions,nvarobs,ntobs)
+% [trend_addition, trend_coeff]=compute_trend_coefficients(M_,DynareOptions,nvarobs,ntobs)
 % Computes the trend coefficiencts and the trend, accounting for
 % prefiltering
 %
