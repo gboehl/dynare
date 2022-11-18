@@ -67,7 +67,7 @@ end
 
 if ismember(flag,{'likelihood','all'})
     options_occbin_.likelihood.curb_retrench = false;
-    options_occbin_.likelihood.first_period_occbin_update = true;
+    options_occbin_.likelihood.first_period_occbin_update = 1;
     options_occbin_.likelihood.full_output = false;
     options_occbin_.likelihood.IF_likelihood = false;
     options_occbin_.likelihood.init_regime_history = [];
@@ -187,7 +187,7 @@ if ismember(flag,{'smoother','all'})
     options_occbin_.smoother.curb_retrench = false;
     options_occbin_.smoother.debug = false;
     options_occbin_.smoother.fast = false;
-    options_occbin_.smoother.first_period_occbin_update = true;
+    options_occbin_.smoother.first_period_occbin_update = 1;
     options_occbin_.smoother.full_output = false;
 %     options.occbin.smoother.init_mode = 1; % 0 = standard;  1 = unconditional frcsts zero shocks+smoothed states in each period
     options_occbin_.smoother.init_regime_history = [];
