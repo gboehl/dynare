@@ -54,6 +54,9 @@ if solve_dr
     if isempty(options_.qz_criterium)
         options_.qz_criterium = 1+1e-6;
     end
+    if options_.order>1
+        options_.order = 1;
+    end
 
     [dr,error_flag,M_,oo_] = resol(0,M_,options_,oo_);
     out.error_flag=error_flag;
