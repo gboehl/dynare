@@ -150,7 +150,7 @@ if rank(Pinf(:,:,1),diffuse_kalman_tol)
     Pinf_init = Pinf(:,:,1);
     Pstar_init = Pstar(:,:,1);
     a_init = a(:,1);
-    a(:,t)        = T*a(:,t);
+    a(:,1)        = T*a(:,1);
     % only non-stationary part is affected by following line, 
     % hence Pstar on EXIT from diffuse step will NOT change.
     Pstar(:,:,1)  = T*Pstar(:,:,1)*T' + QQ;
