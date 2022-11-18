@@ -1,4 +1,4 @@
-function [alphahat,epsilonhat,etahat,atilde,P,aK,PK,decomp,V,aalphahat,eetahat,d] = missing_DiffuseKalmanSmootherH1_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag,filter_covariance_flag,smoother_redux)
+function [alphahat,epsilonhat,etahat,atilde,P,aK,PK,decomp,V,aalphahat,eetahat,d,alphahat0,V0] = missing_DiffuseKalmanSmootherH1_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag,filter_covariance_flag,smoother_redux)
 
 % function [alphahat,epsilonhat,etahat,atilde,P,aK,PK,decomp,V,aalphahat,eetahat,d] = missing_DiffuseKalmanSmootherH1_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag,filter_covariance_flag,smoother_redux)
 % Computes the diffuse kalman smoother without measurement error, in the case of a non-singular var-cov matrix.
@@ -140,8 +140,21 @@ if state_uncertainty_flag
 else
     V=[];
 end
+alphahat0=[];
+V0=[];
 
 t = 0;
+if rank(Pinf(:,:,1),diffuse_kalman_tol)
+    % this is needed to get smoothed states in period 0 with diffuse steps
+    % i.e. period 0 is a filter step without observables
+    Pinf_init = Pinf(:,:,1);
+    Pstar_init = Pstar(:,:,1);
+    a_init = a(:,1);
+    a(:,t)        = T*a(:,t);
+    % only non-stationary part is affected by following line, 
+    % hence Pstar on EXIT from diffuse step will NOT change.
+    Pstar(:,:,1)  = T*Pstar(:,:,1)*T' + QQ;
+end
 while rank(Pinf(:,:,t+1),diffuse_kalman_tol) && t<smpl
     t = t+1;
     di = data_index{t};
@@ -162,7 +175,7 @@ while rank(Pinf(:,:,t+1),diffuse_kalman_tol) && t<smpl
         Finf = ZZ*Pinf(:,:,t)*ZZ';                                          % (5.7) in DK (2012)
         if rcond(Finf) < diffuse_kalman_tol                                 %F_{\infty,t} = 0
             if ~all(abs(Finf(:)) < diffuse_kalman_tol)                      %rank-deficient but not rank 0
-                                                                            % The univariate diffuse kalman filter should be used.
+                % The univariate diffuse kalman filter should be used.
                 alphahat = Inf;
                 return
             else                                                            %rank of F_{\infty,t} is 0
@@ -339,8 +352,25 @@ while t>d+1
     end
 end
 
-if d %diffuse periods
-     % initialize r_d^(0) and r_d^(1) as below DK (2012), eq. 5.23
+if d==0 % get smoother in period t=0
+    a0 = a(:,1);
+    P0 = P(:,:,1);
+    L0=T;
+    r0 = L0'*r(:,1); %compute r_{t-1}, DK (2012), eq. 4.38 with Z=0
+    alphahat0       = a0 + P0*r0;                         %DK (2012), eq. 4.35
+    if state_uncertainty_flag
+        N0=L0'*N(:,:,1)*L0; %compute N_{t-1}, DK (2012), eq. 4.42 with Z=0
+        if smoother_redux
+            ptmp = [P0 R*Q; (R*Q)' Q];
+            ntmp = [N0 zeros(mm,rr); zeros(rr,mm+rr)];
+            V0    = ptmp - ptmp*ntmp*ptmp;
+        else
+            V0    = P0-P0*N0*P0;                      %DK (2012), eq. 4.43
+        end
+    end
+
+else %diffuse periods
+    % initialize r_d^(0) and r_d^(1) as below DK (2012), eq. 5.23
     r0 = zeros(mm,d+1);
     r0(:,d+1) = r(:,d+1);   %set r0_{d}, i.e. shifted by one period
     r1 = zeros(mm,d+1);     %set r1_{d}, i.e. shifted by one period
@@ -357,7 +387,7 @@ if d %diffuse periods
             if ~Finf_singular(1,t)
                 r0(:,t) = Linf(:,:,t)'*r0(:,t+1);                                   % DK (2012), eq. 5.21 where L^(0) is named Linf
                 r1(:,t) = Z(di,:)'*(iFinf(di,di,t)*v(di,t)-Kstar(:,di,t)'*T'*r0(:,t+1)) ...
-                          + Linf(:,:,t)'*r1(:,t+1);                                       % DK (2012), eq. 5.21, noting that i) F^(1)=(F^Inf)^(-1)(see 5.10), ii) where L^(0) is named Linf, and iii) Kstar=T^{-1}*K^(1)
+                    + Linf(:,:,t)'*r1(:,t+1);                                       % DK (2012), eq. 5.21, noting that i) F^(1)=(F^Inf)^(-1)(see 5.10), ii) where L^(0) is named Linf, and iii) Kstar=T^{-1}*K^(1)
                 if state_uncertainty_flag
                     L_1=(-T*Kstar(:,di,t)*Z(di,:));                                     % noting that Kstar=T^{-1}*K^(1)
                     N(:,:,t)=Linf(:,:,t)'*N(:,:,t+1)*Linf(:,:,t);                       % DK (2012), eq. 5.19, noting that L^(0) is named Linf
@@ -374,7 +404,7 @@ if d %diffuse periods
                 r1(:,t) = T'*r1(:,t+1);                                             % DK (2003), eq. (14)
                 if state_uncertainty_flag
                     N(:,:,t)=Z(di,:)'*iFstar(di,di,t)*Z(di,:)...
-                             +Lstar(:,:,t)'*N(:,:,t+1)*Lstar(:,:,t);                     % DK (2003), eq. (14)
+                        +Lstar(:,:,t)'*N(:,:,t+1)*Lstar(:,:,t);                     % DK (2003), eq. (14)
                     N_1(:,:,t)=T'*N_1(:,:,t+1)*Lstar(:,:,t);                            % DK (2003), eq. (14)
                     N_2(:,:,t)=T'*N_2(:,:,t+1)*T';                                      % DK (2003), eq. (14)
                 end
@@ -395,8 +425,8 @@ if d %diffuse periods
                 V(:,:,t)    = pstmp - pstmp*ntmp*pstmp...
                     -(pitmp*ntmp1*pstmp)'...
                     - pitmp*ntmp1*pstmp...
-                    - pitmp*ntmp2*Pinf(:,:,t);                                   % DK (2012), eq. 5.30
-                    
+                    - pitmp*ntmp2*pitmp;                                   % DK (2012), eq. 5.30
+
             else
                 V(:,:,t)=Pstar(:,:,t)-Pstar(:,:,t)*N(:,:,t)*Pstar(:,:,t)...
                     -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
@@ -405,6 +435,33 @@ if d %diffuse periods
             end
         end
     end
+    % compute states and covarinace in period t=0
+    r10 = T'*r1(:,1);
+    r00 = T'*r0(:,1);
+    alphahat0   = a_init + Pstar_init*r00 + Pinf_init*r10;      % DK (2012), eq. 5.23
+    if state_uncertainty_flag
+        N0=T'*N(:,:,1)*T;                       % DK (2012), eq. 5.19, noting that L^(0) is named Linf
+        N_10=T'*N_1(:,:,1)*T;                       % DK (2012), eq. 5.19, noting that L^(0) is named Linf
+        N_20=T'*N_2(:,:,1)*T;                       % DK (2012), eq. 5.19, noting that L^(0) is named Linf
+        if smoother_redux
+            pstmp = [Pstar_init R*Q; (R*Q)' Q];
+            pitmp = [Pinf_init zeros(mm,rr); zeros(rr,mm+rr)];
+            ntmp = [N0 zeros(mm,rr); zeros(rr,mm+rr)];
+            ntmp1 = [N_10 zeros(mm,rr); zeros(rr,mm+rr)];
+            ntmp2 = [N_20 zeros(mm,rr); zeros(rr,mm+rr)];
+            V0 = pstmp - pstmp*ntmp*pstmp...
+                -(pitmp*ntmp1*pstmp)'...
+                - pitmp*ntmp1*pstmp...
+                - pitmp*ntmp2*pitmp;                                   % DK (2012), eq. 5.30
+
+        else
+            V0 = Pstar_init-Pstar_init*N0*Pstar_init...
+                -(Pinf_init*N_10*Pstar_init)'...
+                - Pinf_init*N_10*Pstar_init...
+                - Pinf_init*N_20*Pinf_init;                                   % DK (2012), eq. 5.30
+        end
+    end
+
 end
 
 if decomp_flag

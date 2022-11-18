@@ -1,4 +1,4 @@
-function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,decomp,trend_addition,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,varargin)
+function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,decomp,trend_addition,state_uncertainty,M_,oo_,bayestopt_,alphahat0,state_uncertainty0,d] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,varargin)
 % Estimation of the smoothed variables and innovations.
 %
 % INPUTS
@@ -265,7 +265,7 @@ if kalman_algo == 1 || kalman_algo == 3
     a_initial     = zeros(np,1);
     a_initial=set_Kalman_smoother_starting_values(a_initial,M_,oo_,options_);
     a_initial=T*a_initial; %set state prediction for first Kalman step;
-    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d] = missing_DiffuseKalmanSmootherH1_Z(a_initial,ST, ...
+    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d, alphahat0, state_uncertainty0] = missing_DiffuseKalmanSmootherH1_Z(a_initial,ST, ...
         Z,R1,Q,H,Pinf,Pstar, ...
         data1,vobs,np,smpl,data_index, ...
         options_.nk,kalman_tol,diffuse_kalman_tol,options_.filter_decomposition,options_.smoothed_state_uncertainty,options_.filter_covariance,options_.smoother_redux);
@@ -321,7 +321,7 @@ if kalman_algo == 2 || kalman_algo == 4
     a_initial     = zeros(np,1);
     a_initial=set_Kalman_smoother_starting_values(a_initial,M_,oo_,options_);
     a_initial=ST*a_initial; %set state prediction for first Kalman step;
-    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d, regimes_,TT,RR,CC,TTx,RRx,CCx] = missing_DiffuseKalmanSmootherH3_Z(a_initial,ST, ...
+    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d, alphahat0, state_uncertainty0, regimes_,TT,RR,CC,TTx,RRx,CCx] = missing_DiffuseKalmanSmootherH3_Z(a_initial,ST, ...
         Z,R1,Q,diag(H), ...
         Pinf,Pstar,data1,vobs,np,smpl,data_index, ...
         options_.nk,kalman_tol,diffuse_kalman_tol, ...
@@ -538,17 +538,20 @@ else
         static_var_list0(static_var_list) = ilagged;
         static_var_list(static_var_list) = ~ilagged;
         % reconstruct smoothed variables
-        aaa=zeros(M_.endo_nbr,gend);
-        aaa(oo_.dr.restrict_var_list,:)=alphahat;
+        aaa=zeros(M_.endo_nbr,gend+1);
+        aaa(oo_.dr.restrict_var_list,1)=alphahat0;
+        aaa(oo_.dr.restrict_var_list,2:end)=alphahat;
         for k=1:gend
-            aaa(static_var_list,k) = C(~ilagged,:)*alphahat(:,k)+D(~ilagged,:)*etahat(:,k);
+            aaa(static_var_list,k+1) = C(~ilagged,:)*alphahat(:,k)+D(~ilagged,:)*etahat(:,k);
         end
         if any(ilagged)
             for k=2:gend
-                aaa(static_var_list0,k) = Tstar(ilagged,:)*alphahat(:,k-1)+Rstar(ilagged,:)*etahat(:,k);
+                aaa(static_var_list0,k+1) = Tstar(ilagged,:)*alphahat(:,k-1)+Rstar(ilagged,:)*etahat(:,k);
             end
+            aaa(static_var_list0,2) = Tstar(ilagged,:)*alphahat0+Rstar(ilagged,:)*etahat(:,1);
         end
-        alphahat=aaa;
+        alphahat0=aaa(:,1);
+        alphahat=aaa(:,2:end);
         
         % reconstruct updated variables
         aaa=zeros(M_.endo_nbr,gend);
@@ -617,6 +620,18 @@ else
                 sstate_uncertainty(oo_.dr.restrict_var_list,static_var_list,k)=transpose(sstate_uncertainty(static_var_list,oo_.dr.restrict_var_list,k));
             end
             state_uncertainty=sstate_uncertainty;
+            clear sstate_uncertainty
+        end
+        if ~isempty(state_uncertainty0)
+            mm=size(T,1);
+            ss=length(find(static_var_list));
+            sstate_uncertainty=zeros(M_.endo_nbr,M_.endo_nbr);
+            sstate_uncertainty(oo_.dr.restrict_var_list,oo_.dr.restrict_var_list)=state_uncertainty0(1:mm,1:mm);
+                sstate_uncertainty(static_var_list,static_var_list)=[C(~ilagged,:) D(~ilagged,:)]*state_uncertainty0*[C(~ilagged,:) D(~ilagged,:)]';
+                tmp = [C(~ilagged,:) D(~ilagged,:)]*state_uncertainty0;
+                sstate_uncertainty(static_var_list,oo_.dr.restrict_var_list)=tmp(1:ss,1:mm);
+                sstate_uncertainty(oo_.dr.restrict_var_list,static_var_list)=transpose(sstate_uncertainty(static_var_list,oo_.dr.restrict_var_list));
+            state_uncertainty0=sstate_uncertainty;
             clear sstate_uncertainty
         end
         

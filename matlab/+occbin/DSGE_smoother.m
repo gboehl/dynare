@@ -1,4 +1,4 @@
-function [alphahat,etahat,epsilonhat,ahat0,SteadyState,trend_coeff,aKK,T0,R0,P,PKK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DSGE_smoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_, dataset_info)
+function [alphahat,etahat,epsilonhat,ahat0,SteadyState,trend_coeff,aKK,T0,R0,P,PKK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_,alphahat0,state_uncertainty0] = DSGE_smoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_, dataset_info)
 %function [alphahat,etahat,epsilonhat,ahat0,SteadyState,trend_coeff,aKK,T0,R0,P,PKK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DSGE_smoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_, dataset_info)
 % Runs a DSGE smoother with occasionally binding constraints
 %
@@ -39,6 +39,8 @@ function [alphahat,etahat,epsilonhat,ahat0,SteadyState,trend_coeff,aKK,T0,R0,P,P
 % - oo_           [structure] storing the results
 % - options_      [structure] describing the options
 % - bayestopt_    [structure] describing the priors
+% - alphahat0     [double]  (m*1) array, smoothed endogenous variables in period 0 (a_{0|T})  (decision-rule order)
+% - state_uncertainty0 [double] (K,K,1) array, storing the uncertainty in period 0
 
 % Copyright © 2021 Dynare Team
 %
@@ -118,7 +120,7 @@ occbin_options.first_period_occbin_update = options_.occbin.smoother.first_perio
 occbin_options.opts_regime = opts_simul; % this builds the opts_simul options field needed by occbin.solver
 occbin_options.opts_regime.binding_indicator = options_.occbin.likelihood.init_binding_indicator;
 occbin_options.opts_regime.regime_history=options_.occbin.likelihood.init_regime_history;
-[alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options);%     T1=TT;
+[alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_,alphahat0,state_uncertainty0, diffuse_steps] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options);%     T1=TT;
 
 oo_.occbin.smoother.realtime_regime_history = oo_.occbin.smoother.regime_history;
 regime_history = oo_.occbin.smoother.regime_history;
@@ -135,9 +137,9 @@ opts_regime.binding_indicator=[];
 regime_history0 = regime_history;
 
 fprintf('Occbin smoother iteration 1.\n')
-opts_simul.SHOCKS = [etahat(:,2:end)'; zeros(1,M_.exo_nbr)];
+opts_simul.SHOCKS = [etahat(:,1:end)'; zeros(1,M_.exo_nbr)];
 opts_simul.exo_pos = 1:M_.exo_nbr;
-opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
+opts_simul.endo_init = alphahat0(oo_.dr.inv_order_var,1);
 opts_simul.init_regime=regime_history; % use realtime regime for guess, to avoid multiple solution issues!
 options_.occbin.simul=opts_simul;
 options_.noprint = true;
@@ -145,15 +147,18 @@ options_.noprint = true;
 regime_history = out.regime_history;
 if options_.smoother_redux
     occbin_options.opts_simul.restrict_state_space =1;  
-    oo_.occbin.linear_smoother.T0=ss.T(oo_.dr.order_var,oo_.dr.order_var,1);
-    oo_.occbin.linear_smoother.R0=ss.R(oo_.dr.order_var,:,1);
+    [T0,R0] = dynare_resolve(M_,options_,oo_);
+    oo_.occbin.linear_smoother.T0=T0;
+    oo_.occbin.linear_smoother.R0=R0;
+    %    oo_.occbin.linear_smoother.T0=ss.T(oo_.dr.order_var,oo_.dr.order_var,1);
+    %    oo_.occbin.linear_smoother.R0=ss.R(oo_.dr.order_var,:,1);
 end
 TT = ss.T(oo_.dr.order_var,oo_.dr.order_var,:);
 RR = ss.R(oo_.dr.order_var,:,:);
 CC = ss.C(oo_.dr.order_var,:);
-TT = cat(3,TT(:,:,1),TT);
-RR = cat(3,RR(:,:,1),RR);
-CC = cat(2,CC(:,1),CC);
+% TT = cat(3,TT(:,:,1),TT);
+% RR = cat(3,RR(:,:,1),RR);
+% CC = cat(2,CC(:,1),CC);
 
 opts_regime.regime_history = regime_history;
 opts_regime.binding_indicator = [];
@@ -184,7 +189,7 @@ while is_changed && maxiter>iter && ~is_periodic
     iter=iter+1;
     fprintf('Occbin smoother iteration %u.\n', iter)
     occbin_options.opts_regime.regime_history=regime_history;
-    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options,TT,RR,CC);%     T1=TT;
+    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_,alphahat0,state_uncertainty0, diffuse_steps] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options,TT,RR,CC);%     T1=TT;
     sto_etahat(iter)={etahat};
     regime_history0(iter,:) = regime_history;
     if occbin_smoother_debug
@@ -195,17 +200,17 @@ while is_changed && maxiter>iter && ~is_periodic
     sto_RR = RR;
     sto_TT = TT;
     
-    opts_simul.SHOCKS = [etahat(:,2:end)'; zeros(1,M_.exo_nbr)];
-    opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
+    opts_simul.SHOCKS = [etahat(:,1:end)'; zeros(1,M_.exo_nbr)];
+    opts_simul.endo_init = alphahat0(oo_.dr.inv_order_var,1);
     options_.occbin.simul=opts_simul;
     [~, out, ss] = occbin.solver(M_,oo_,options_);
     regime_history = out.regime_history;
     TT = ss.T(oo_.dr.order_var,oo_.dr.order_var,:);
     RR = ss.R(oo_.dr.order_var,:,:);
     CC = ss.C(oo_.dr.order_var,:);
-    TT = cat(3,TT(:,:,1),TT);
-    RR = cat(3,RR(:,:,1),RR);
-    CC = cat(2,CC(:,1),CC);
+%     TT = cat(3,TT(:,:,1),TT);
+%     RR = cat(3,RR(:,:,1),RR);
+%     CC = cat(2,CC(:,1),CC);
 
     opts_regime.regime_history = regime_history;
     [TT, RR, CC, regime_history] = occbin.check_regimes(TT, RR, CC, opts_regime, M_, oo_, options_);
