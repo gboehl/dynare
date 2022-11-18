@@ -169,6 +169,7 @@ if np0
     QTinf(1:np0,np0+1:np0+nk) = STinf0;
     QTinf([indx0(:); indx(:)],:) = QTinf;
     STinf1 = [zeros(np0+np,np0) [STinf0; eye(nk); zeros(np-nk,nk)] zeros(np0+np,np-nk)];
+    mf = ismember([indx0(:); indx(:)],mf);
     for k = 1:nk
         if norm(QTinf(mf,:)*ST([indx0(:); indx(:)],k+np0)) < 1e-8
             Pinf(k+np0,k+np0) = 0;

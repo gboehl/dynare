@@ -189,6 +189,7 @@ elseif options_.lik_init == 2           % Old Diffuse Kalman filter
     Pstar = options_.Harvey_scale_factor*eye(np);
     Pinf        = [];
 elseif options_.lik_init == 3           % Diffuse Kalman filter
+    my_mf = mf;
     if kalman_algo ~= 4
         kalman_algo = 3;
     else
@@ -201,9 +202,10 @@ elseif options_.lik_init == 3           % Diffuse Kalman filter
             R  = blkdiag(R,eye(vobs));
             H   = zeros(vobs,vobs);
             Z   = [Z, eye(vobs)];
+            my_mf = find(any(Z))';
         end
     end
-    [Pstar,Pinf] = compute_Pinf_Pstar(mf,T,R,Q,options_.qz_criterium);
+    [Pstar,Pinf] = compute_Pinf_Pstar(my_mf,T,R,Q,options_.qz_criterium);
 elseif options_.lik_init == 4           % Start from the solution of the Riccati equation.
     Pstar = kalman_steady_state(transpose(T),R*Q*transpose(R),transpose(build_selection_matrix(mf,np,vobs)),H);
     Pinf  = [];
