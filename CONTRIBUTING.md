@@ -90,7 +90,7 @@ The Dynare testsuite runs every time a commit is pushed, either in the official 
 
 The output from the latest run of the test suite can be found in the `test_matlab` job associated to the [latest pipeline](https://git.dynare.org/Dynare/dynare/pipelines). This is also a good place to start fixing bugs. If you see a `.mod` file that doesn't run in the test suite and think you can fix it, create an issue and once you have the go ahead, go for it!
 
-### Test `.mod` File
+### Integration tests
 
 It's useful to contribute `.mod` files that test some aspect of Dynare that is not currently tested. A `.mod` file that runs into a bug is perfect. As the test suite currently takes several hours to run, we prefer you modify a current test to also create the bug you've found. If you can't do that, please add a new test that runs as quickly as possible. It will contain only those commands necessary to create the bug, nothing more. To contribute a test, after having made an issue and cloned and forked the repository as described above, do the following:
 
@@ -99,13 +99,13 @@ It's useful to contribute `.mod` files that test some aspect of Dynare that is n
 1. Add and commit your test file and `tests/Makefile.am` as described above
 1. Push and create a pull request as described above
 
-### Unitary Tests
+### Unit tests
 
-So-called unitary tests allow the test suite to check the correct functioning of the Matlab functions contained in Dynare. To add a unitary test you need to 
-1. add the keyword ` % --*-- Unitary tests --*--` at the end of the `function` header to tell the testsuite that the file contains unitary tests. 
+So-called unit tests allow the test suite to check the correct functioning of the MATLAB/Octave functions contained in Dynare. To add a unit test you need to 
+1. add the keyword ` % --*-- Unitary tests --*--` at the end of the `function` header to tell the testsuite that the file contains unit tests. 
 1. Add the particular tests at the end of the file after a `return` by
    1. Starting a test with `%@test:INTEGER` 
-   2. Adding a Matlab test code that provides a pass/fail indicator `T` that takes on `true` if the test passed.
+   2. Adding a MATLAB/Octave test code that provides a pass/fail indicator `T` that takes on `true` if the test passed.
    3. Closing the test with `%@eof:INTEGER`
    where `INTEGER` denotes the number of the test.
 
