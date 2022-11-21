@@ -60,7 +60,8 @@ Now, if you want to go the extra mile, you'll volunteer to contribute code to fi
    * `git remote add personal git@git.dynare.org:<<GitLab username>>/dynare.git`
 1. Create a branch to work on
    * `git checkout -b <<descriptive branch name>>`
-1. Do your work, all the while respecting the [Dynare Coding Standards](https://archives.dynare.org/DynareWiki/CodingStandards)
+1. Do your work, all the while respecting the [Dynare Coding Guidelines](https://git.dynare.org/Dynare/dynare/-/wikis/CodingGuidelines)
+1. You may also want to have a look at the [coding resources](https://git.dynare.org/Dynare/dynare/-/wikis/CodingResources)
 
 As you work, your forked repository will likely fall out of sync with the main Dynare repository as we'll be working in parallel. No matter. Follow these steps to ensure your changes will be merge-able when they're done:
 
