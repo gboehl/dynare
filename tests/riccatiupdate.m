@@ -122,12 +122,12 @@ else
 end
 if testFailed
     fprintf(fid,':test-result: FAIL\n');
+    fprintf(fid,':list-of-failed-tests: riccatiupdate.m\n');
 else
     fprintf(fid,':test-result: PASS\n');
 end
 fprintf(fid,':number-tests: %i\n', NumberOfTests);
 fprintf(fid,':number-failed-tests: %i\n', testFailed);
-fprintf(fid,':list-of-passed-tests: riccatiupdate.m\n');
 fprintf(fid,':elapsed-time: %f\n', etime(t1, t0));
 fclose(fid);
 
