@@ -1,4 +1,4 @@
-Announcement for Dynare 5.2 (on 2022-11-21)
+Announcement for Dynare 5.3 (on 2022-11-21)
 ===========================================
 
 We are pleased to announce the release of Dynare 5.3.
