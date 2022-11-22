@@ -42,12 +42,17 @@ tol = 1e-15;
 % Set the input arguments
 % P, Q: use the fact that for any real matrix A, A'*A is positive semidefinite
 P = rand(n,r);
-P = P'*P; 
+P = P'*P;
 Q = rand(n,r);
 Q = Q'*Q;
 K = rand(r,n);
 Z = rand(n,r);
 T = rand(r,r);
+% Computing an upperbound for the norm the updated variance-covariance matrix
+ub = norm(T,1)^2*norm(P,1)*(1+norm(K*Z,1))+norm(Q,1);
+% Weighting the P and Q matrices to keep the norm of the variance-covariance matrix below 1
+P = 0.5*P/ub;
+Q = 0.5*Q/ub;
 
 % 1. Update the state vairance-covariance matrix with Matlab
 tElapsed1 = 0.;
@@ -100,12 +105,10 @@ end
 N = 50;
 disp(['After 1 update using the Riccati formula, the norm-1 discrepancy is ' num2str(norm(Ptmp_fortran-Ptmp_matlab,1)) '.']);
 for i=2:N
-   Ptmp_matlab_ini = Ptmp_matlab;
-   Ptmp_fortran_ini = Ptmp_fortran;
-   Ptmp_matlab = T*(Ptmp_matlab_ini-K*Z*Ptmp_matlab_ini)*transpose(T)+Q;
-   Ptmp_fortran = riccati_update(Ptmp_fortran_ini, T, K, Z, Q);
+   Ptmp_matlab = T*(Ptmp_matlab-K*Z*Ptmp_matlab)*transpose(T)+Q;
+   Ptmp_fortran = riccati_update(Ptmp_fortran, T, K, Z, Q);
+   disp(['After ' int2str(i) ' updates using the Riccati formula, the norm-1 discrepancy is ' num2str(norm(Ptmp_fortran-Ptmp_matlab,1)) '.'])
 end
-disp(['After ' int2str(N) ' updates using the Riccati formula, the norm-1 discrepancy is ' num2str(norm(Ptmp_fortran-Ptmp_matlab,1)) '.'])
 
 t1 = clock;
 
