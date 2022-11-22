@@ -107,9 +107,24 @@ P_obs (log(mst)-gam);
 Y_obs (gam);
 end;
 
+fsdat_simul;
+P_obs_data=log(P_obs(1:192));
+Y_obs_data=log(Y_obs(1:192));
+
 estimation(order=1, datafile=fsdat_simul, mode_compute=0,nobs=192, loglinear,diffuse_filter, smoother,smoothed_state_uncertainty) m P c e W R k d n l gy_obs gp_obs y dA;
+if max(abs(oo_.SmoothedVariables.Y_obs-Y_obs_data))>1e-10 || max(abs(oo_.SmoothedVariables.P_obs-P_obs_data))>1e-10
+    error('Smoothed observables do not match')
+end
 estimation(order=1, datafile=fsdat_simul, mode_compute=0,nobs=192, loglinear,diffuse_filter, smoother,kalman_algo=3,smoothed_state_uncertainty) m P c e W R k d n l gy_obs gp_obs y dA;
+if max(abs(oo_.SmoothedVariables.Y_obs-Y_obs_data))>1e-10 || max(abs(oo_.SmoothedVariables.P_obs-P_obs_data))>1e-10
+    error('Smoothed observables do not match')
+end
 estimation(order=1, datafile=fsdat_simul, mode_compute=0,nobs=192, loglinear,diffuse_filter, smoother,kalman_algo=4,smoothed_state_uncertainty) m P c e W R k d n l gy_obs gp_obs y dA;
+if max(abs(oo_.SmoothedVariables.Y_obs-Y_obs_data))>1e-10 || max(abs(oo_.SmoothedVariables.P_obs-P_obs_data))>1e-10
+    error('Smoothed observables do not match')
+end
+
+
 
 /*
  * The following lines were used to generate the data file. If you want to
