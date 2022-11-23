@@ -1,5 +1,5 @@
 function [filtered_errs, resids, Emat, stateval, error_code] = IVF_core(M_,oo_,options_,err_index,filtered_errs_init,my_obs_list,obs,init_val)
-% function [filtered_errs, resids, Emat, stateval] = IVF_core(M_,oo_,options_,err_index,filtered_errs_init,my_obs_list,obs,init_val)
+% function [filtered_errs, resids, Emat, stateval, error_code] = IVF_core(M_,oo_,options_,err_index,filtered_errs_init,my_obs_list,obs,init_val)
 % Computes thre 
 %
 % Outputs:
