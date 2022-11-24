@@ -10215,6 +10215,15 @@ Dynare can also run the smoother on a calibrated model:
 
         See :opt:`xls_range <xls_range = RANGE>`.
 
+    .. option:: heteroskedastic_filter
+
+        See :opt:`heteroskedastic_filter`.
+
+    .. option:: nobs = INTEGER
+                nobs = [INTEGER1:INTEGER2]
+
+        See :opt:`nobs <nobs = INTEGER>`.
+
 .. _fore:
 
 Forecasting
