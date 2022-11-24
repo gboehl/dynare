@@ -120,21 +120,32 @@ end
 % Build PAC expectation matrix expression.
 dataForPACExpectation = dseries();
 listofvariables = {};
+isconstant = false;
 for i=1:length(M_.pac.(pacmodl).h_param_indices)
     match = regexp(rhs, sprintf('(?<var>((\\w*)|\\w*\\(-1\\)))\\*%s', M_.param_names{M_.pac.(pacmodl).h_param_indices(i)}), 'names');
     if isempty(match)
         match = regexp(rhs, sprintf('%s\\*(?<var>((\\w*\\(-1\\))|(\\w*)))', M_.param_names{M_.pac.(pacmodl).h_param_indices(i)}), 'names');
     end
-    if isempty(strfind(match.var, '(-1)'))
-        listofvariables{i} = match.var;
-        dataForPACExpectation = [dataForPACExpectation, data{listofvariables{i}}];
+    if ~isempty(match)
+        if isempty(strfind(match.var, '(-1)'))
+            listofvariables{end+1} = match.var;
+            dataForPACExpectation = [dataForPACExpectation, data{listofvariables{i}}];
+        else
+            listofvariables{end+1} = match.var(1:end-4);
+            dataForPACExpectation = [dataForPACExpectation, data{match.var(1:end-4)}.lag(1)];
+        end
     else
-        listofvariables{i} = match.var(1:end-4);
-        dataForPACExpectation = [dataForPACExpectation, data{match.var(1:end-4)}.lag(1)];
+        if strcmp(M_.param_names{M_.pac.(pacmodl).h_param_indices(i)}, sprintf('h_%s_constant', pacmodl))
+            isconstant = true;
+        end
     end
 end
+
 dataPAC = dataForPACExpectation{listofvariables{:}}(range).data;
 
+if isconstant
+    dataPAC = [ones(rows(dataPAC),1), dataPAC];
+end
 
 % Build data for non optimizing behaviour
 if is_non_optimizing_agents
