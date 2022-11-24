@@ -22,7 +22,7 @@ function iterative_ols(eqname, params, data, range)
 %     equation must have NaN values in the object.
 % [4] It is assumed that the residual is additive.
 
-% Copyright (C) 2018-2021 Dynare Team
+% Copyright (C) 2018-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -121,42 +121,64 @@ end
 % Build PAC expectation matrix expression.
 dataForPACExpectation0 = dseries();
 listofvariables0 = {};
+isconstant = false;
 if ~isempty(M_.pac.(pacmodl).equations.(eqtag).h0_param_indices)
     for i=1:length(M_.pac.(pacmodl).equations.(eqtag).h0_param_indices)
         match = regexp(rhs, sprintf('(?<var>((\\w*)|\\w*\\(-1\\)))\\*%s', M_.param_names{M_.pac.(pacmodl).equations.(eqtag).h0_param_indices(i)}), 'names');
         if isempty(match)
             match = regexp(rhs, sprintf('%s\\*(?<var>((\\w*\\(-1\\))|(\\w*)))', M_.param_names{M_.pac.(pacmodl).equations.(eqtag).h0_param_indices(i)}), 'names');
         end
-        if isempty(strfind(match.var, '(-1)'))
-            listofvariables0{i} = match.var;
-            dataForPACExpectation0 = [dataForPACExpectation0, data{listofvariables0{i}}];
+        if ~isempty(match)
+            if isempty(strfind(match.var, '(-1)'))
+                listofvariables0{end+1} = match.var;
+                dataForPACExpectation0 = [dataForPACExpectation0, data{listofvariables0{i}}];
+            else
+                listofvariables0{end+1} = match.var(1:end-4);
+                dataForPACExpectation0 = [dataForPACExpectation0, data{match.var(1:end-4)}.lag(1)];
+            end
         else
-            listofvariables0{i} = match.var(1:end-4);
-            dataForPACExpectation0 = [dataForPACExpectation0, data{match.var(1:end-4)}.lag(1)];
+            if strcmp(M_.param_names{M_.pac.(pacmodl).equations.(eqtag).h0_param_indices(i)}, sprintf('h0_%s_eq0_constant', pacmodl))
+                isconstant = true;
+            end
         end
     end
     dataPAC0 = dataForPACExpectation0{listofvariables0{:}}(range).data;
+    if isconstant
+        dataPAC0 = [ones(rows(dataPAC0),1), dataPAC0];
+    end
 else
     dataPAC0 = [];
 end
 
 dataForPACExpectation1 = dseries();
 listofvariables1 = {};
+isconstant = false;
 if ~isempty(M_.pac.(pacmodl).equations.(eqtag).h1_param_indices)
     for i=1:length(M_.pac.(pacmodl).equations.(eqtag).h1_param_indices)
         match = regexp(rhs, sprintf('(?<var>((\\w*)|(\\w*\\(-1\\))))\\*%s', M_.param_names{M_.pac.(pacmodl).equations.(eqtag).h1_param_indices(i)}), 'names');
         if isempty(match)
             match = regexp(rhs, sprintf('%s\\*(?<var>((\\w*\\(-1\\))|(\\w*)))', M_.param_names{M_.pac.(pacmodl).equations.(eqtag).h1_param_indices(i)}), 'names');
         end
-        if isempty(strfind(match.var, '(-1)'))
-            listofvariables1{i} = match.var;
-            dataForPACExpectation1 = [dataForPACExpectation1, data{listofvariables1{i}}];
+        match
+        if ~isempty(match)
+            if isempty(strfind(match.var, '(-1)'))
+                listofvariables1{end+1} = match.var;
+                dataForPACExpectation1 = [dataForPACExpectation1, data{listofvariables1{i}}];
+            else
+                listofvariables1{end+1} = match.var(1:end-4);
+                dataForPACExpectation1 = [dataForPACExpectation1, data{match.var(1:end-4)}.lag(1)];
+            end
         else
-            listofvariables1{i} = match.var(1:end-4);
-            dataForPACExpectation1 = [dataForPACExpectation1, data{match.var(1:end-4)}.lag(1)];
+            if strcmp(M_.param_names{M_.pac.(pacmodl).equations.(eqtag).h1_param_indices(i)}, sprintf('h1_%s_eq0_constant', pacmodl))
+                isconstant = true;
+            end
         end
     end
+    listofvariables1
     dataPAC1 = dataForPACExpectation1{listofvariables1{:}}(range).data;
+    if isconstant
+        dataPAC1 = [ones(rows(dataPAC1),1), dataPAC1];
+    end
 else
     dataPAC1 = [];
 end
