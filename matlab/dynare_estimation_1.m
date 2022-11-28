@@ -175,13 +175,20 @@ if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && ~options_.
     if options_.order==1 && ~options_.particle.status
         if options_.smoother
             if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
-                [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, oo_, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
-                updated_variables = atT*nan;
-                measurement_error=[];
-                ys = oo_.dr.ys;
-                trend_coeff = zeros(length(options_.varobs_id),1);
-                bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
-                [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff);
+                [~, info, ~, ~, ~, ~, ~, ~, ~, ~, oo_, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
+                if ismember(info(1),[303,304,306])
+                    fprintf('\nIVF: smoother did not succeed. No results will be written to oo_.\n')
+                else
+                    updated_variables = atT*nan;
+                    measurement_error=[];
+                    ys = oo_.dr.ys;
+                    trend_coeff = zeros(length(options_.varobs_id),1);
+                    bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
+                    options_nk=options_.nk;
+                    options_.nk=[]; %unset options_.nk and reset it later
+                    [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff);
+                    options_.nk=options_nk;
+                end
             else
                 if options_.occbin.smoother.status
                     [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = occbin.DSGE_smoother(xparam1,gend,transpose(data),data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_,dataset_info);
@@ -593,13 +600,20 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
     || ~options_.smoother ) && ~options_.partial_information  % to be fixed
     %% ML estimation, or posterior mode without Metropolis-Hastings or Metropolis without Bayesian smoothed variables
     if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
-        [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, oo_, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
-        updated_variables = atT*nan;
-        measurement_error=[];
-        ys = oo_.dr.ys;
-        trend_coeff = zeros(length(options_.varobs_id),1);
-        bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
-        [oo_, yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff);
+        [~, info, ~, ~, ~, ~, ~, ~, ~, ~, oo_, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
+        if ismember(info(1),[303,304,306])
+            fprintf('\nIVF: smoother did not succeed. No results will be written to oo_.\n')
+        else
+            updated_variables = atT*nan;
+            measurement_error=[];
+            ys = oo_.dr.ys;
+            trend_coeff = zeros(length(options_.varobs_id),1);
+            bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
+            options_nk=options_.nk;
+            options_.nk=[]; %unset options_.nk and reset it later
+            [oo_, yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff);
+            options_.nk=options_nk;
+        end        
     else
         if options_.occbin.smoother.status
             [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = occbin.DSGE_smoother(xparam1,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_,dataset_,dataset_info);

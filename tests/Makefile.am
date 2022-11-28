@@ -5,6 +5,7 @@ MODFILES = \
 	occbin/model_borrcon/borrcon.mod \
 	occbin/model_borrcon/borrcon_0_std_shocks.mod \
 	occbin/filter/NKM.mod \
+	occbin/filter/NKM_calib_smoother.mod \
 	occbin/filter/NKM_0_std_shocks.mod \
 	optimizers/fs2000_6.mod \
 	moments/example1_hp_test.mod \

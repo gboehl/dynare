@@ -11,10 +11,6 @@
    @#define small_model = 0
 @#endif
 
-// if ~exist('run_ivf','var')
-run_ivf=0;
-// end        
-
 // ----------------- Defintions -----------------------------------------//
 var        
     c          //1  Consumption 
@@ -278,8 +274,6 @@ check;
         
 varobs yg inom pi;
     estimated_params;
-        // PARAM NAME, INITVAL, LB, UB, PRIOR_SHAPE, PRIOR_P1, PRIOR_P2, PRIOR_P3, PRIOR_P4, JSCALE
-        // PRIOR_SHAPE: BETA_PDF, GAMMA_PDF, NORMAL_PDF, INV_GAMMA_PDF
         varphip,,0,inf,NORMAL_PDF,100,25;
         phipi,,,,NORMAL_PDF,2,0.25;
         phiy,,0,inf,NORMAL_PDF,0.5,0.25;
@@ -291,8 +285,6 @@ varobs yg inom pi;
         sigi,,,,INV_GAMMA_PDF,0.002,0.002;
     end;    
     
- 
-//     dataloading_jme_beta(1,'sims.txt',30);
     load('dataobsfile','inom')
     // check if inom is at lb and remove data + associated shock
     verbatim;
@@ -344,5 +336,13 @@ varobs yg inom pi;
     plot([oo0.SmoothedShocks.epsi oo_.SmoothedShocks.epsi]), title('epsi')
     subplot(223)
     plot([oo0.SmoothedShocks.epss oo_.SmoothedShocks.epss]), title('epss')
+    legend('PKF','IF')
+    figure,
+    subplot(221)
+    plot([oo0.SmoothedVariables.inom oo_.SmoothedVariables.inom]), title('inom')
+    subplot(222)
+    plot([oo0.SmoothedVariables.yg oo_.SmoothedVariables.yg]), title('yg')
+    subplot(223)
+    plot([oo0.SmoothedVariables.pi oo_.SmoothedVariables.pi]), title('pi')
     legend('PKF','IF')
     occbin_write_regimes(smoother);
