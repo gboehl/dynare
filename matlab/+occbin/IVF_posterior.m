@@ -106,7 +106,13 @@ filtered_errs_init = zeros(sample_length,sum(err_index));
 if info(1)
     fval = Inf;
     exit_flag = 0;
+    atT=NaN(size(stateval(:,DynareResults.dr.order_var)'));
+    innov=NaN(Model.exo_nbr,sample_length);
     return
+else
+    atT = stateval(:,DynareResults.dr.order_var)';
+    innov = zeros(Model.exo_nbr,sample_length);
+    innov(diag(Model.Sigma_e)~=0,:)=filtered_errs';
 end
 nobs=size(filtered_errs,1);
 
@@ -185,14 +191,3 @@ end
 % remember that the likelihood has already been multiplied by -1
 % hence, posterior is -1 times the log of the prior
 fval = like+prior;
-atT = stateval(:,DynareResults.dr.order_var)';
-innov = zeros(Model.exo_nbr,sample_length);
-innov(diag(Model.Sigma_e)~=0,:)=filtered_errs';
-updated_variables = atT*nan;
-BayesInfo.mf = BayesInfo.smoother_var_list(BayesInfo.smoother_mf);
-
-
-initDynareOptions=DynareOptions;
-DynareOptions.nk=[]; %unset options_.nk and reset it later
-[DynareResults]=store_smoother_results(Model,DynareResults,DynareOptions,BayesInfo,dataset_,obs_info,atT,innov,[],updated_variables,DynareResults.dr.ys,zeros(length(DynareOptions.varobs_id),1));
-DynareOptions=initDynareOptions;
