@@ -68,8 +68,9 @@ for iter = 1:options.simul.maxit
     % A is the stacked Jacobian with period x equations alongs the rows and
     % periods times variables (in declaration order) along the columns
     if options.debug && iter==1
-        row=find(all(A==0,2));
-        column=find(all(A==0,1));
+        [row,col]=find(A);
+        row=setdiff(1:periods*ny,row);
+        column=setdiff(1:periods*ny,col);
         if ~isempty(row) || ~isempty(column)
             fprintf('The stacked Jacobian is singular. The problem derives from:\n')
             if ~isempty(row)
