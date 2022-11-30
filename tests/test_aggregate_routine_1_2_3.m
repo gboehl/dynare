@@ -29,7 +29,6 @@ else
   fprintf(fid,':test-result: PASS\n');
   fprintf(fid,':number-tests: 1\n');
   fprintf(fid,':number-failed-tests: 0\n');
-  fprintf(fid,':list-of-passed-tests: test_aggregate_routine_1_2_3.m\n');
 end
 fprintf(fid,':elapsed-time: %f\n',0.0);
 fclose(fid);

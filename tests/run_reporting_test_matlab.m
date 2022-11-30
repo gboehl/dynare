@@ -1,4 +1,4 @@
-% Copyright © 2013-2017 Dynare Team
+% Copyright © 2013-2022 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,7 +51,6 @@ else
   fprintf(fid,':test-result: PASS\n');
   fprintf(fid,':number-tests: 1\n');
   fprintf(fid,':number-failed-tests: 0\n');
-  fprintf(fid,':list-of-passed-tests: run_reporting_test_matlab.m\n');
 end
 fprintf(fid,':elapsed-time: %f\n',0.0);
 fclose(fid);
