@@ -134,10 +134,20 @@ contains
 
     ! Handle Jacobian
     if (present(fjac)) then
-       if (.not. mxIsDouble(call_lhs(2)) .or. mxIsSparse(call_lhs(2)) &
+       if (.not. mxIsDouble(call_lhs(2)) &
             .or. mxGetM(call_lhs(2)) /= n_all .or. mxGetN(call_lhs(2)) /= n_all) &
-            call mexErrMsgTxt("Second output argument of the function must be a dense double float&
+            call mexErrMsgTxt("Second output argument of the function must be a double float&
             & square matrix whose dimension matches the length of the first input argument")
+
+       ! If Jacobian is sparse, convert it to a dense matrix
+       if (mxIsSparse(call_lhs(2))) then
+          block
+            type(c_ptr) :: dense_jacobian
+            if (mexCallMATLAB(1_c_int, dense_jacobian, 1_c_int, call_lhs(2), "full") /= 0) &
+                 call mexErrMsgTxt("Error converting Jacobian from sparse to dense representation")
+            call_lhs(2) = dense_jacobian
+          end block
+       end if
 
        if (.not. mxIsComplex(call_lhs(2))) then ! Real case
           block
