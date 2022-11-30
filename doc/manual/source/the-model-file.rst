@@ -3016,7 +3016,7 @@ Finding the steady state with Dynare nonlinear solver
                 nonlinear system. This is similar to ``2``, but is typically
                 more efficient. The block decomposition is done at the
                 preprocessor level, which brings two benefits: it identifies
-                blocks that can be evaluated rather than solved; and evulations
+                blocks that can be evaluated rather than solved; and evaluations
                 of the residual and Jacobian of the model are more efficient
                 because only the relevant elements are recomputed at every
                 iteration.
@@ -3029,7 +3029,7 @@ Finding the steady state with Dynare nonlinear solver
                 typically more efficient. The block decomposition is done at
                 the preprocessor level, which brings two benefits: it
                 identifies blocks that can be evaluated rather than solved; and
-                evulations of the residual and Jacobian of the model are more
+                evaluations of the residual and Jacobian of the model are more
                 efficient because only the relevant elements are recomputed at
                 every iteration.
 
