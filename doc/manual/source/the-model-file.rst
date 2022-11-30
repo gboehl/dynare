@@ -2920,7 +2920,7 @@ Finding the steady state with Dynare nonlinear solver
        value. Iteration will cease when the residuals are smaller than
        ``tolf``. Default: ``eps^(1/3)``
 
-    .. _steady_tolx
+    .. _steady_tolx:
 
     .. option:: tolx = DOUBLE
 
