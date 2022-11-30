@@ -498,7 +498,19 @@ MODFILES = \
 	log_transform/example1.mod \
 	log_transform/ramst.mod \
 	log_transform/fs2000_nonstationary.mod \
-	log_transform/nk_ramsey.mod
+	log_transform/nk_ramsey.mod \
+	solve_algo_12_14/simul_backward_reference.mod \
+	solve_algo_12_14/simul_backward_12.mod \
+	solve_algo_12_14/simul_backward_14.mod \
+	solve_algo_12_14/purely_backward_reference.mod \
+	solve_algo_12_14/purely_backward_12.mod \
+	solve_algo_12_14/purely_backward_14.mod \
+	solve_algo_12_14/purely_static_reference.mod \
+	solve_algo_12_14/purely_static_12.mod \
+	solve_algo_12_14/purely_static_14.mod \
+	solve_algo_12_14/purely_forward_reference.mod \
+	solve_algo_12_14/purely_forward_12.mod \
+	solve_algo_12_14/purely_forward_14.mod
 
 ECB_MODFILES = \
 	var-expectations/1/example1.mod \
@@ -994,6 +1006,27 @@ model-inversion/nk-2/z_check_inversion.o.trs: model-inversion/nk-2/invert.o.trs
 ep/rbcii_MCP.m.trs: ep/rbcii.m.trs
 ep/rbcii_MCP.o.trs: ep/rbcii.o.trs
 
+solve_algo_12_14/simul_backward_12.m.trs: solve_algo_12_14/simul_backward_reference.m.trs
+solve_algo_12_14/simul_backward_12.o.trs: solve_algo_12_14/simul_backward_reference.o.trs
+solve_algo_12_14/simul_backward_14.m.trs: solve_algo_12_14/simul_backward_reference.m.trs
+solve_algo_12_14/simul_backward_14.o.trs: solve_algo_12_14/simul_backward_reference.o.trs
+
+solve_algo_12_14/purely_backward_12.m.trs: solve_algo_12_14/purely_backward_reference.m.trs
+solve_algo_12_14/purely_backward_12.o.trs: solve_algo_12_14/purely_backward_reference.o.trs
+solve_algo_12_14/purely_backward_14.m.trs: solve_algo_12_14/purely_backward_reference.m.trs
+solve_algo_12_14/purely_backward_14.o.trs: solve_algo_12_14/purely_backward_reference.o.trs
+
+solve_algo_12_14/purely_static_12.m.trs: solve_algo_12_14/purely_static_reference.m.trs
+solve_algo_12_14/purely_static_12.o.trs: solve_algo_12_14/purely_static_reference.o.trs
+solve_algo_12_14/purely_static_14.m.trs: solve_algo_12_14/purely_static_reference.m.trs
+solve_algo_12_14/purely_static_14.o.trs: solve_algo_12_14/purely_static_reference.o.trs
+
+solve_algo_12_14/purely_forward_12.m.trs: solve_algo_12_14/purely_forward_reference.m.trs
+solve_algo_12_14/purely_forward_12.o.trs: solve_algo_12_14/purely_forward_reference.o.trs
+solve_algo_12_14/purely_forward_14.m.trs: solve_algo_12_14/purely_forward_reference.m.trs
+solve_algo_12_14/purely_forward_14.o.trs: solve_algo_12_14/purely_forward_reference.o.trs
+
+
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
 o/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.o.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
@@ -1209,6 +1242,11 @@ o/estimation/univariate: $(patsubst %.mod, %.o.trs, $(filter estimation/univaria
 model-inversion: m/model-inversion o/model-inversion
 m/model-inversion: $(patsubst %.mod, %.m.trs, $(filter model-inversion/%.mod, $(MODFILES)))
 o/model-inversion: $(patsubst %.mod, %.o.trs, $(filter model-inversion/%.mod, $(MODFILES)))
+
+solve_algo_12_14: m/solve_algo_12_14 o/solve_algo_12_14
+m/solve_algo_12_14: $(patsubst %.mod, %.m.trs, $(filter solve_algo_12_14/%.mod, $(MODFILES)))
+o/solve_algo_12_14: $(patsubst %.mod, %.o.trs, $(filter solve_algo_12_14/%.mod, $(MODFILES)))
+
 
 # ECB files
 M_ECB_TRS_FILES = $(patsubst %.mod, %.m.trs, $(ECB_MODFILES))
@@ -1448,7 +1486,12 @@ EXTRA_DIST = \
 	solver-test-functions/variablydimensioned.m \
 	solver-test-functions/watson.m \
 	solver-test-functions/wood.m \
-	ramst_normcdf_and_friends.inc
+	ramst_normcdf_and_friends.inc \
+	solve_algo_12_14/backward_model.inc \
+	solve_algo_12_14/simul_backward_common.inc \
+	solve_algo_12_14/purely_backward_common.inc \
+	solve_algo_12_14/purely_static_common.inc \
+	solve_algo_12_14/purely_forward_common.inc
 
 if ENABLE_MATLAB
 check-local: check-matlab
@@ -1638,6 +1681,8 @@ clean-local:
 	rm -f optimal_policy/Ramsey/oo_ramsey_policy_initval.mat
 
 	rm -rf tests/pac/var-12/toto
+
+	rm -f solve_algo_12_14/simul_backward_ref.mat
 
 	find . -name "*.tex" -type f -delete
 	find . -name "*.aux" -type f -delete

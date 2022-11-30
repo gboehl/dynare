@@ -3011,27 +3011,27 @@ Finding the steady state with Dynare nonlinear solver
 
            ``12``
 
-                Specialized version of ``2`` for models where all the equations
-                have one endogenous variable on the left hand side and where
-                each equation determines a different endogenous variable. Only
-                expressions allowed on the left hand side are the natural
-                logarithm of an endogenous variable, the first difference of an
-                endogenous variable (with the ``diff`` operator), or the first
-                difference of the logarithm of an endogenous variable.
-                Univariate blocks are solved by evaluating the expression on the
-                right hand side.
+                Computes a block decomposition and then applies a Newton-type
+                solver on those smaller blocks rather than on the full
+                nonlinear system. This is similar to ``2``, but is typically
+                more efficient. The block decomposition is done at the
+                preprocessor level, which brings two benefits: it identifies
+                blocks that can be evaluated rather than solved; and evulations
+                of the residual and Jacobian of the model are more efficient
+                because only the relevant elements are recomputed at every
+                iteration.
 
            ``14``
 
-                Specialized version of ``4`` for models where all the equations
-                have one endogenous variable on the left hand side and where
-                each equation determines a different endogenous variable. Only
-                expressions allowed on the left hand side are the natural
-                logarithm of an endogenous variable, the first difference of an
-                endogenous variable (with the ``diff`` operator), or the first
-                difference of the logarithm of an endogenous variable..
-                Univariate blocks are solved by evaluating the expression on the
-                right hand side.
+                Computes a block decomposition and then applies a trust region
+                solver with autoscaling on those smaller blocks rather than on
+                the full nonlinear system. This is similar to ``4``, but is
+                typically more efficient. The block decomposition is done at
+                the preprocessor level, which brings two benefits: it
+                identifies blocks that can be evaluated rather than solved; and
+                evulations of the residual and Jacobian of the model are more
+                efficient because only the relevant elements are recomputed at
+                every iteration.
 
        |br| Default value is ``4``.
 

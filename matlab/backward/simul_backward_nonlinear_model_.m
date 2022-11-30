@@ -40,10 +40,20 @@ function [ysim, xsim] = simul_backward_nonlinear_model_(initialconditions, sampl
 
 debug = false;
 
-model_dynamic_s = str2func('dynamic_backward_model_for_simulation');
-
 if ~isempty(innovations)
     DynareOutput.exo_simul(initialconditions.nobs+(1:samplesize),:) = innovations;
+end
+
+if ismember(DynareOptions.solve_algo, [12,14])
+    [funcs, feedback_vars_idxs] = setup_time_recursive_block_simul(DynareModel);
+end
+
+function [r, J] = block_wrapper(z, feedback_vars_idx, func, y_dynamic, x, sparse_rowval, sparse_colval, sparse_colptr, T)
+    % NB: do as few computations as possible inside this function, since it is
+    % called a very large number of times
+    y_dynamic(feedback_vars_idx) = z;
+    [~, ~, r, J] = feval(func, y_dynamic, x, DynareModel.params, DynareOutput.steady_state, ...
+                         sparse_rowval, sparse_colval, sparse_colptr, T);
 end
 
 % Simulations (call a Newton-like algorithm for each period).
@@ -52,24 +62,42 @@ for it = initialconditions.nobs+(1:samplesize)
         dprintf('Period t = %s.', num2str(it-initialconditions.nobs));
     end
     y_ = DynareOutput.endo_simul(:,it-1);
-    ylag = y_(iy1);                    % Set lagged variables.
     y = y_;                            % A good guess for the initial conditions is the previous values for the endogenous variables.
     try
         if ismember(DynareOptions.solve_algo, [12,14])
-            [DynareOutput.endo_simul(:,it), errorflag, ~, ~, errorcode] = dynare_solve(model_dynamic_s, y, ...
-                                                                                       DynareOptions.simul.maxit, DynareOptions.dynatol.f, DynareOptions.dynatol.x, ...
-                                                                                       DynareOptions,  ...
-                                                                                       DynareModel.isloggedlhs, DynareModel.isauxdiffloggedrhs, DynareModel.endo_names, DynareModel.lhs, ...
-                                                                                       model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+            x = DynareOutput.exo_simul(it,:);
+            T = NaN(DynareModel.block_structure.dyn_tmp_nbr);
+            y_dynamic = [y_; y; NaN(DynareModel.endo_nbr, 1)];
+            for blk = 1:length(DynareModel.block_structure.block)
+                sparse_rowval = DynareModel.block_structure.block(blk).g1_sparse_rowval;
+                sparse_colval = DynareModel.block_structure.block(blk).g1_sparse_colval;
+                sparse_colptr = DynareModel.block_structure.block(blk).g1_sparse_colptr;
+                if DynareModel.block_structure.block(blk).Simulation_Type ~= 1 % Not an evaluate forward block
+                    [z, errorflag, ~, ~, errorcode] = dynare_solve(@block_wrapper, y_dynamic(feedback_vars_idxs{blk}), ...
+                                                                   DynareOptions.simul.maxit, DynareOptions.dynatol.f, ...
+                                                                   DynareOptions.dynatol.x, DynareOptions, ...
+                                                                   feedback_vars_idxs{blk}, funcs{blk}, y_dynamic, x, sparse_rowval, sparse_colval, sparse_colptr, T);
+                    if errorflag
+                        error('Nonlinear solver routine failed with errorcode=%i in block %i and period %i.', errorcode, blk, it)
+                    end
+                    y_dynamic(feedback_vars_idxs{blk}) = z;
+                end
+                %% Compute endogenous if the block is of type evaluate or if there are recursive variables in a solve block.
+                %% Also update the temporary terms vector.
+                [y_dynamic, T] = feval(funcs{blk}, y_dynamic, x, DynareModel.params, ...
+                                       DynareOutput.steady_state, sparse_rowval, sparse_colval, ...
+                                       sparse_colptr, T);
+            end
+            DynareOutput.endo_simul(:,it) = y_dynamic(DynareModel.endo_nbr+(1:DynareModel.endo_nbr));
         else
             [DynareOutput.endo_simul(:,it), errorflag, ~, ~, errorcode] = ...
-                dynare_solve(model_dynamic_s, y, ...
+                dynare_solve(@dynamic_backward_model_for_simulation, y, ...
                              DynareOptions.simul.maxit, DynareOptions.dynatol.f, DynareOptions.dynatol.x, ...
                              DynareOptions, ...
-                             model_dynamic, ylag, DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
-        end
-        if errorflag
-            error('Nonlinear solver routine failed with errorcode=%i in period %i.', errorcode, it)
+                             model_dynamic, y_(iy1), DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+            if errorflag
+                error('Nonlinear solver routine failed with errorcode=%i in period %i.', errorcode, it)
+            end
         end
     catch
         DynareOutput.endo_simul = DynareOutput.endo_simul(:, 1:it-1);
@@ -111,7 +139,7 @@ for it = initialconditions.nobs+(1:samplesize)
         %
         % Evaluate and check the residuals
         %
-        [r, J] = feval(model_dynamic_s, ytm, model_dynamic, ytm(iy1), DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+        [r, J] = feval(@dynamic_backward_model_for_simulation, ytm, model_dynamic, ytm(iy1), DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
         residuals_evaluating_to_nan = isnan(r);
         residuals_evaluating_to_inf = isinf(r);
         residuals_evaluating_to_complex = ~isreal(r);
@@ -142,6 +170,8 @@ end
 ysim = DynareOutput.endo_simul(1:DynareModel.orig_endo_nbr,:);
 xsim = DynareOutput.exo_simul;
 
+end
+
 function display_names_of_problematic_equations(DynareModel, eqtags, TruthTable)
 for i=1:DynareModel.orig_endo_nbr
     if TruthTable(i)
@@ -152,4 +182,5 @@ for i=DynareModel.orig_endo_nbr+1:DynareModel.endo_nbr
     if TruthTable(i)
         dprintf(' - Auxiliary equation for %s', DynareModel.endo_names{i})
     end
+end
 end

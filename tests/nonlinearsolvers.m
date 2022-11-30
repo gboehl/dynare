@@ -31,8 +31,6 @@ tolx = 1e-6;
 maxit = 50;
 factor = 10;
 
-auxstruct = struct();
-
 % List of function handles
 objfun = { @rosenbrock,
            @powell1,
@@ -73,7 +71,7 @@ for i=1:length(objfun)
         x = objfun{i}();
     end
     try
-        [x, errorflag, exitflag] = block_trust_region(objfun{i}, x, tolf, tolx, maxit, factor, false, auxstruct);
+        [x, errorflag, exitflag] = block_trust_region(objfun{i}, x, tolf, tolx, maxit, factor, true, false);
         if isequal(func2str(objfun{i}), 'powell2')
             if ~errorflag
                 testFailed = testFailed+1;

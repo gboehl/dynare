@@ -50,6 +50,9 @@ if options_.linear && (isequal(options_.stack_solve_algo, 0) || isequal(options_
 end
 
 if options_.block
+    if M_.block_structure.time_recursive
+        error('Internal error: can''t perform stacked perfect foresight simulation with time-recursive block decomposition')
+    end
     if options_.bytecode
         try
             oo_.endo_simul = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);

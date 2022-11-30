@@ -20,38 +20,71 @@ function [endogenousvariables, info] = sim1_purely_backward(endogenousvariables,
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 ny0 = nnz(M.lead_lag_incidence(2,:));    % Number of variables at current period
-iyb = M.lead_lag_incidence(1,:)>0;       % Logical vector (for lagged variables)
 
 if ny0 ~= M.endo_nbr
     error('All endogenous variables must appear at the current period!')
 end
 
-if ismember(options.solve_algo, [12,14]) && ~M.possible_to_use_solve_algo_12_14
-    error(M.message_solve_algo_12_14)
+if ismember(options.solve_algo, [12,14])
+    [funcs, feedback_vars_idxs] = setup_time_recursive_block_simul(M);
+else
+    iyb = M.lead_lag_incidence(1,:)>0;       % Logical vector (for lagged variables)
+    dynamicmodel = str2func(sprintf('%s.%s', M.fname, 'dynamic'));
+    dynamicmodel_s = str2func('dynamic_backward_model_for_simulation');
 end
 
-dynamicmodel = str2func(sprintf('%s.%s', M.fname, 'dynamic'));
-dynamicmodel_s = str2func('dynamic_backward_model_for_simulation');
+function [r, J] = block_wrapper(z, feedback_vars_idx, func, y_dynamic, x, sparse_rowval, sparse_colval, sparse_colptr, T)
+    % NB: do as few computations as possible inside this function, since it is
+    % called a very large number of times
+    y_dynamic(feedback_vars_idx) = z;
+    [~, ~, r, J] = feval(func, y_dynamic, x, M.params, steadystate, ...
+                         sparse_rowval, sparse_colval, sparse_colptr, T);
+end
 
 info.status = true;
 
 for it = M.maximum_lag + (1:options.periods)
     y = endogenousvariables(:,it-1);        % Values at previous period, also used as guess value for current period
-    ylag = y(iyb);
     if ismember(options.solve_algo, [12,14])
-        [tmp, check, ~, ~, errorcode] = dynare_solve(dynamicmodel_s, y, ...
-                                                     options.simul.maxit, options.dynatol.f, options.dynatol.x, ...
-                                                     options, M.isloggedlhs, M.isauxdiffloggedrhs, M.endo_names, M.lhs, ...
-                                                     dynamicmodel, ylag, exogenousvariables, M.params, steadystate, it);
+        x = exogenousvariables(it,:);
+        T = NaN(M.block_structure.dyn_tmp_nbr);
+        y_dynamic = [y; y; NaN(M.endo_nbr, 1)];
+        for blk = 1:length(M.block_structure.block)
+            sparse_rowval = M.block_structure.block(blk).g1_sparse_rowval;
+            sparse_colval = M.block_structure.block(blk).g1_sparse_colval;
+            sparse_colptr = M.block_structure.block(blk).g1_sparse_colptr;
+            if M.block_structure.block(blk).Simulation_Type ~= 1 % Not an evaluate forward block
+                [z, check, ~, ~, errorcode] = dynare_solve(@block_wrapper, y_dynamic(feedback_vars_idxs{blk}), ...
+                                                           options.simul.maxit, options.dynatol.f, ...
+                                                           options.dynatol.x, options, ...
+                                                           feedback_vars_idxs{blk}, funcs{blk}, y_dynamic, x, sparse_rowval, sparse_colval, sparse_colptr, T);
+                if check
+                    info.status = false;
+                    if options.debug
+                        dprintf('sim1_purely_backward: Nonlinear solver routine failed with errorcode=%i in block %i and period %i.', errorcode, blk, it)
+                    end
+                end
+                y_dynamic(feedback_vars_idxs{blk}) = z;
+            end
+            %% Compute endogenous if the block is of type evaluate or if there are recursive variables in a solve block.
+            %% Also update the temporary terms vector.
+            [y_dynamic, T] = feval(funcs{blk}, y_dynamic, x, M.params, ...
+                                   steadystate, sparse_rowval, sparse_colval, ...
+                                   sparse_colptr, T);
+        end
+        endogenousvariables(:,it) = y_dynamic(M.endo_nbr+(1:M.endo_nbr));
     else
+        ylag = y(iyb);
         [tmp, check, ~, ~, errorcode] = dynare_solve(dynamicmodel_s, y, ...
                                                      options.simul.maxit, options.dynatol.f, options.dynatol.x, ...
                                                      options, dynamicmodel, ylag, exogenousvariables, M.params, steadystate, it);
+        if check
+            info.status = false;
+            dprintf('sim1_purely_backward: Nonlinear solver routine failed with errorcode=%i in period %i', errorcode, it)
+            break
+        end
+        endogenousvariables(:,it) = tmp;
     end
-    if check
-        info.status = false;
-        dprintf('sim1_purely_backward: Nonlinear solver routine failed with errorcode=%i in period %i', errorcode, it)
-        break
-    end
-    endogenousvariables(:,it) = tmp;
+end
+
 end
