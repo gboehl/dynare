@@ -105,7 +105,7 @@ end
 SS_out.T = NaN(DM.n_vars,DM.n_vars,n_shocks_periods);
 SS_out.R = NaN(DM.n_vars,DM.n_exo,n_shocks_periods);
 SS_out.C = nan(DM.n_vars,n_shocks_periods);
-if ~exist('regime_history_','var') || isempty(regime_history_guess)
+if isempty(regime_history_guess)
     regime_history = struct();
     guess_history = false;
 else
