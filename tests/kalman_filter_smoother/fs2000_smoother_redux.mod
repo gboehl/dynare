@@ -112,12 +112,7 @@ for k=1:length(vlist1)
     merr1F(k)=max(abs(oo0.FilteredVariables.(vlist1{k})-oo1.FilteredVariables.(vlist1{k})));
 end
 if max(merr1)>1.e-12
-    for k=1:length(vlist1)
-        merr2(k)=max(abs(oo0.SmoothedVariables.(vlist1{k})(2:end)-oo1.SmoothedVariables.(vlist1{k})(2:end)));
-    end
-    if max(merr2)>1.e-12
-        error('smoother_redux with kalman_algo=1 does not replicate original smoothed static variables!')
-    end
+    error('smoother_redux with kalman_algo=1 does not replicate original smoothed static variables!')
 end
 if max(merr1U)>1.e-12
     for k=1:length(vlist1)
@@ -128,12 +123,7 @@ if max(merr1U)>1.e-12
     end
 end
 if max(merr1F)>1.e-12
-    for k=1:length(vlist1)
-        merr2F(k)=max(abs(oo0.FilteredVariables.(vlist1{k})(2:end)-oo1.FilteredVariables.(vlist1{k})(2:end)));
-    end
-    if max(merr2F)>1.e-12
-        error('smoother_redux with kalman_algo=1 does not replicate original filtered static variables!')
-    end
+    error('smoother_redux with kalman_algo=1 does not replicate original filtered static variables!')
 end
 merrK = max(max(max(abs(oo0.FilteredVariablesKStepAhead-oo1.FilteredVariablesKStepAhead))));
 if max(merrK)>1.e-12
@@ -184,12 +174,7 @@ for k=1:length(vlist1)
     merr1F(k)=max(abs(oo0.FilteredVariables.(vlist1{k})-oo2.FilteredVariables.(vlist1{k})));
 end
 if max(merr1)>1.e-12
-    for k=1:length(vlist1)
-        merr2(k)=max(abs(oo0.SmoothedVariables.(vlist1{k})(2:end)-oo2.SmoothedVariables.(vlist1{k})(2:end)));
-    end
-    if max(merr2)>1.e-12
-        error('smoother_redux with kalman_algo=2 does not replicate original smoothed static variables!')
-    end
+    error('smoother_redux with kalman_algo=2 does not replicate original smoothed static variables!')
 end
 if max(merr1U)>1.e-12
     for k=1:length(vlist1)
@@ -200,12 +185,7 @@ if max(merr1U)>1.e-12
     end
 end
 if max(merr1F)>1.e-12
-    for k=1:length(vlist1)
-        merr2F(k)=max(abs(oo0.FilteredVariables.(vlist1{k})(2:end)-oo2.FilteredVariables.(vlist1{k})(2:end)));
-    end
-    if max(merr2F)>1.e-12
-        error('smoother_redux with kalman_algo=2 does not replicate original filtered static variables!')
-    end
+    error('smoother_redux with kalman_algo=2 does not replicate original filtered static variables!')
 end
 merrK = max(max(max(abs(oo0.FilteredVariablesKStepAhead-oo2.FilteredVariablesKStepAhead))));
 if max(merrK)>1.e-12
