@@ -47,24 +47,24 @@ end
 
 if ischar(parameters)
     switch parameters
-      case 'posterior mode'
-        parameters = get_posterior_parameters('mode',M_,estim_params_,oo_,options_);
-      case 'posterior mean'
-        parameters = get_posterior_parameters('mean',M_,estim_params_,oo_,options_);
-      case 'posterior median'
-        parameters = get_posterior_parameters('median',M_,estim_params_,oo_,options_);
-      case 'prior mode'
-        parameters = bayestopt_.p5(:);
-      case 'prior mean'
-        parameters = bayestopt_.p1;
-      otherwise
-        disp('eval_likelihood:: If the input argument is a string, then it has to be equal to:')
-        disp('                   ''posterior mode'', ')
-        disp('                   ''posterior mean'', ')
-        disp('                   ''posterior median'', ')
-        disp('                   ''prior mode'' or')
-        disp('                   ''prior mean''.')
-        error
+        case 'posterior mode'
+            parameters = get_posterior_parameters('mode',M_,estim_params_,oo_,options_);
+        case 'posterior mean'
+            parameters = get_posterior_parameters('mean',M_,estim_params_,oo_,options_);
+        case 'posterior median'
+            parameters = get_posterior_parameters('median',M_,estim_params_,oo_,options_);
+        case 'prior mode'
+            parameters = bayestopt_.p5(:);
+        case 'prior mean'
+            parameters = bayestopt_.p1;
+        otherwise
+            disp('eval_likelihood:: If the input argument is a string, then it has to be equal to:')
+            disp('                   ''posterior mode'', ')
+            disp('                   ''posterior mean'', ')
+            disp('                   ''posterior median'', ')
+            disp('                   ''prior mode'' or')
+            disp('                   ''prior mean''.')
+            error
     end
 end
 
@@ -73,10 +73,23 @@ if isempty(dataset)
 end
 options_=select_qz_criterium_value(options_);
 
+[~,~,~,lb,ub] = set_prior(estim_params_,M_,options_);
+if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
+    % Plot prior densities.
+    % Set prior bounds
+    bounds = prior_bounds(bayestopt_, options_.prior_trunc);
+else  % estimated parameters but no declared priors
+    % No priors are declared so Dynare will estimate the model by
+    % maximum likelihood with inequality constraints for the parameters.
+    bounds.lb = lb;
+    bounds.ub = ub;
+end
+
+
 if options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter
-    llik = -occbin.IVF_posterior(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
-else    
-    llik = -dsge_likelihood(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
+    llik = -occbin.IVF_posterior(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+else
+    llik = -dsge_likelihood(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
 end
 ldens = evaluate_prior(parameters,M_,estim_params_,oo_,options_,bayestopt_);
 llik = llik - ldens;
