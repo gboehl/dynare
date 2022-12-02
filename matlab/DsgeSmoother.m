@@ -265,7 +265,7 @@ if kalman_algo == 1 || kalman_algo == 3
     a_initial     = zeros(np,1);
     a_initial=set_Kalman_smoother_starting_values(a_initial,M_,oo_,options_);
     a_initial=T*a_initial; %set state prediction for first Kalman step;
-    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d, alphahat0, state_uncertainty0] = missing_DiffuseKalmanSmootherH1_Z(a_initial,ST, ...
+    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d, alphahat0, aalphahat0, state_uncertainty0] = missing_DiffuseKalmanSmootherH1_Z(a_initial,ST, ...
         Z,R1,Q,H,Pinf,Pstar, ...
         data1,vobs,np,smpl,data_index, ...
         options_.nk,kalman_tol,diffuse_kalman_tol,options_.filter_decomposition,options_.smoothed_state_uncertainty,options_.filter_covariance,options_.smoother_redux);
@@ -321,7 +321,7 @@ if kalman_algo == 2 || kalman_algo == 4
     a_initial     = zeros(np,1);
     a_initial=set_Kalman_smoother_starting_values(a_initial,M_,oo_,options_);
     a_initial=ST*a_initial; %set state prediction for first Kalman step;
-    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d, alphahat0, state_uncertainty0, regimes_,TT,RR,CC,TTx,RRx,CCx] = missing_DiffuseKalmanSmootherH3_Z(a_initial,ST, ...
+    [alphahat,epsilonhat,etahat,ahat,P,aK,PK,decomp,state_uncertainty, aahat, eehat, d, alphahat0, aalphahat0, state_uncertainty0, regimes_,TT,RR,CC,TTx,RRx,CCx] = missing_DiffuseKalmanSmootherH3_Z(a_initial,ST, ...
         Z,R1,Q,diag(H), ...
         Pinf,Pstar,data1,vobs,np,smpl,data_index, ...
         options_.nk,kalman_tol,diffuse_kalman_tol, ...
@@ -553,7 +553,9 @@ else
         static_var_list(static_var_list) = ~ilagged;
         % reconstruct smoothed variables
         aaa=zeros(M_.endo_nbr,gend+1);
+        if ~isempty(alphahat0)
         aaa(oo_.dr.restrict_var_list,1)=alphahat0;
+        end
         aaa(oo_.dr.restrict_var_list,2:end)=alphahat;
         for k=1:gend
             aaa(static_var_list,k+1) = C(~ilagged,:)*alphahat(:,k)+D(~ilagged,:)*etahat(:,k);
@@ -576,6 +578,9 @@ else
         if any(ilagged)
             %         bbb=zeros(M_.endo_nbr,gend);
             %         bbb(oo_.dr.restrict_var_list,:)=aahat;
+            if ~isempty(aalphahat0)
+                aaa(static_var_list0,d+1) = Tstar(ilagged,:)*aalphahat0+Rstar(ilagged,:)*eehat(:,d+1);
+            end
             for k=d+2:gend
                 aaa(static_var_list0,k) = Tstar(ilagged,:)*aahat(:,k-1)+Rstar(ilagged,:)*eehat(:,k);
             end

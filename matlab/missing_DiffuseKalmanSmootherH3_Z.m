@@ -1,4 +1,4 @@
-function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d,alphahat0,V0,varargout] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux, occbin_)
+function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d,alphahat0,aalphahat0,V0,varargout] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux, occbin_)
 % function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux, occbin_)
 % Computes the diffuse kalman smoother in the case of a singular var-cov matrix.
 % Univariate treatment of multivariate time series.
@@ -150,6 +150,7 @@ else
     V=[];
 end
 alphahat0=[];
+aalphahat0=[];
 V0=[];
 
 if ~occbin_.status
@@ -389,8 +390,8 @@ while notsteady && t<smpl
 
         if smoother_redux && t>1
             aalphahat(:,t-1) = aha(:,1);
-            eetahat(:,t) = etaha(:,2);
         end
+        eetahat(:,t) = etaha(:,2);
         a(:,t) = ax(:,1);
         a1(:,t) = a1x(:,2);
         a1(:,t+1) = ax(:,2);
@@ -468,6 +469,9 @@ while notsteady && t<smpl
                     eetahat(:,st) = QRt*ri;
                 end
                 ri = T'*ri;                                                             % KD (2003), eq. (23), equation for r_{t-1,p_{t-1}}
+            end
+            if t==1
+                aalphahat0 = P1(:,:,st)*ri;
             end
         end
         if isoccbin

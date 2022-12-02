@@ -1,4 +1,4 @@
-function [alphahat,epsilonhat,etahat,atilde,P,aK,PK,decomp,V,aalphahat,eetahat,d,alphahat0,V0] = missing_DiffuseKalmanSmootherH1_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag,filter_covariance_flag,smoother_redux)
+function [alphahat,epsilonhat,etahat,atilde,P,aK,PK,decomp,V,aalphahat,eetahat,d,alphahat0,aalphahat0,V0] = missing_DiffuseKalmanSmootherH1_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag,filter_covariance_flag,smoother_redux)
 
 % function [alphahat,epsilonhat,etahat,atilde,P,aK,PK,decomp,V,aalphahat,eetahat,d] = missing_DiffuseKalmanSmootherH1_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag,filter_covariance_flag,smoother_redux)
 % Computes the diffuse kalman smoother without measurement error, in the case of a non-singular var-cov matrix.
@@ -141,6 +141,7 @@ else
     V=[];
 end
 alphahat0=[];
+aalphahat0=[];
 V0=[];
 
 t = 0;
@@ -275,6 +276,10 @@ while notsteady && t<smpl
                 % get shocks in t|t
                 eetahat(:,st) = QRt*ri;                                               %DK (2012), eq. 4.63
             end
+        end
+        if t==1
+            ri = T'*ri;                                        %compute r_{t-1}, DK (2012), eq. 4.38 with Z=0
+            aalphahat0       = P(:,:,1)*ri;                         %DK (2012), eq. 4.35
         end
     end
     a(:,t+1)    = T*atilde(:,t);
