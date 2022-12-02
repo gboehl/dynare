@@ -145,10 +145,10 @@ while notsteady && t<=last
         if ~(isqvec)
             QQ = R*Q*transpose(R);   % Variance of R times the vector of structural innovations.
         end
-    end
-    if t==1
-        Pinit = P1(:,:,1);
-        ainit = a1(:,1);
+        if t==1
+            Pinit = P1(:,:,1);
+            ainit = a1(:,1);
+        end
     end
     s  = t-start+1;
     d_index = data_index{t};
