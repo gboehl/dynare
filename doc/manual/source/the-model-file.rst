@@ -6381,9 +6381,8 @@ block decomposition of the model (see :opt:`block`).
 
     .. option:: mh_jscale = DOUBLE
 
-       The scale parameter of the jumping distribution’s covariance
-       matrix (Metropolis-Hastings or TaRB-algorithm). The default
-       value is rarely satisfactory. This option must be tuned to
+       The scale parameter of the jumping distribution's covariance
+       matrix (Metropolis-Hastings or TaRB-algorithm). This option must be tuned to
        obtain, ideally, an acceptance ratio of 25%-33%. Basically, the
        idea is to increase the variance of the jumping distribution if
        the acceptance ratio is too high, and decrease the same
@@ -6401,7 +6400,7 @@ block decomposition of the model (see :opt:`block`).
        subsequent runs via the ``posterior_sampler_options`` option
        :ref:`scale_file <scale-file>`. Both ``mode_compute=6`` and
        ``scale_file`` will overwrite any value specified in
-       ``estimated_params`` with the tuned value. Default: ``0.2``.
+       ``estimated_params`` with the tuned value. Default: ``2.38/sqrt(n)``.
 
        Note also that for the Random Walk Metropolis Hastings
        algorithm, it is possible to use option :opt:`mh_tune_jscale
@@ -6409,7 +6408,7 @@ block decomposition of the model (see :opt:`block`).
        of ``mh_jscale``. In this case, the ``mh_jscale`` option must
        not be used.
 
-    .. option:: mh_init_scale = DOUBLE
+    .. option:: mh_init_scale = DOUBLE (deprecated)
 
        The scale to be used for drawing the initial value of the
        Metropolis-Hastings chain. Generally, the starting points
@@ -6421,8 +6420,8 @@ block decomposition of the model (see :opt:`block`).
        at the beginning of Dynare execution, i.e. the default will not
        take into account potential changes in ``mh_jscale`` introduced
        by either ``mode_compute=6`` or the
-       ``posterior_sampler_options`` option :ref:`scale_file
-       <scale-file>`. If ``mh_init_scale`` is too wide during
+       ``posterior_sampler_options`` option :ref:`scale_file<scale-file>`. 
+       If ``mh_init_scale`` is too wide during
        initalization of the posterior sampler so that 100 tested draws
        are inadmissible (e.g. Blanchard-Kahn conditions are always
        violated), Dynare will request user input of a new
@@ -6430,6 +6429,26 @@ block decomposition of the model (see :opt:`block`).
        drawn and tested. If the :opt:`nointeractive` option has been
        invoked, the program will instead automatically decrease
        ``mh_init_scale`` by 10 percent after 100 futile draws and try
+       another 100 draws. This iterative procedure will take place at
+       most 10 times, at which point Dynare will abort with an error
+       message.
+
+    .. option:: mh_init_scale_factor = DOUBLE
+
+       The multiple of ``mh_jscale`` used for drawing the initial value of the
+       Metropolis-Hastings chain. Generally, the starting points
+       should be overdispersed for the *Brooks and Gelman (1998)*
+       convergence diagnostics to be meaningful. Default:
+       ``2``
+
+       If ``mh_init_scale_factor`` is too wide during
+       initalization of the posterior sampler so that 100 tested draws
+       are inadmissible (e.g. Blanchard-Kahn conditions are always
+       violated), Dynare will request user input of a new
+       ``mh_init_scale_factor`` value with which the next 100 draws will be
+       drawn and tested. If the :opt:`nointeractive` option has been
+       invoked, the program will instead automatically decrease
+       ``mh_init_scale_factor`` by 10 percent after 100 futile draws and try
        another 100 draws. This iterative procedure will take place at
        most 10 times, at which point Dynare will abort with an error
        message.
@@ -6450,7 +6469,7 @@ block decomposition of the model (see :opt:`block`).
     .. option:: mh_tune_guess = DOUBLE
 
        Specifies the initial value for the :opt:`mh_tune_jscale
-       <mh_tune_jscale [= DOUBLE]>` option. Default: ``0.2``. Must not
+       <mh_tune_jscale [= DOUBLE]>` option. Default: ``2.39/sqrt(n)``. Must not
        be set if :opt:`mh_tune_jscale <mh_tune_jscale [= DOUBLE]>` is
        not used.
 

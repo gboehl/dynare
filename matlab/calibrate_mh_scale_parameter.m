@@ -55,6 +55,9 @@ n = length(Parameters);
 correction = 1.0;
 
 % Set the initial value of the scale parameter
+if isempty(options.guess)
+    options.guess=2.38/sqrt(length(Parameters));
+end
 Scale = options.guess;
 
 % Transposition of some arrays.
