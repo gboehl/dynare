@@ -372,7 +372,9 @@ by the ``dynare`` command.
         :ref:`macro-proc-lang`). See the :ref:`note on quotes<quote-note>` for
         info on passing a ``MACRO_EXPRESSION`` argument containing spaces. Note
         that an expression passed on the command line can reference variables
-        defined before it.
+        Strings assigned to a macro variable need to be enclosed in double
+        quoted strings. This also allows for passing single quotes within the
+        strings.
 
         *Example*
 
@@ -380,7 +382,7 @@ by the ``dynare`` command.
 
             .. code-block:: matlab
 
-               >> dynare <<modfile.mod>> -DA=true '-DB="A string with space"' -DC=[1,2,3] '-DD=[ i in C when i > 1 ]'
+               >> dynare <<modfile.mod>> -DA=true '-DB="A string with space"' -DC=[1,2,3] '-DD=[ i in C when i > 1 ]' -Ddatafile_name="'my_data_file.mat'"
 
     .. option:: -I<<path>>
 
