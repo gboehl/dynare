@@ -82,6 +82,15 @@ Section "Dynare core (preprocessor and M-files)"
  WriteRegStr SHELL_CONTEXT "${REGLOC}" "UninstallString" "$INSTDIR\uninstall.exe"
  WriteRegDWORD SHELL_CONTEXT "${REGLOC}" "NoModify" 1
  WriteRegDWORD SHELL_CONTEXT "${REGLOC}" "NoRepair" 1
+
+ # Remove "Modify" permission to "Authenticated Users".
+ # This permission is inherited by default, since we're writing to "c:\dynare\";
+ # it implies that anybody on the system can modify Dynare installation files,
+ # which is a security issue.
+ # Intigriti reference: DYNARE-7TULYVR8
+ # On icacls, see e.g.: https://4sysops.com/archives/icacls-list-set-grant-remove-and-deny-permissions/#inheriting-permissions
+ nsExec::Exec 'icacls "$INSTDIR" /inheritance:d'
+ nsExec::Exec 'icacls "$INSTDIR" /remove:g "NT AUTHORITY\Authenticated Users"'
 SectionEnd
 
 
