@@ -693,7 +693,7 @@ if options_.heteroskedastic_filter
     end
 end
 
-if options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter
+if (options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter) || (options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter)
     if isempty(options_.occbin.likelihood.IVF_shock_observable_mapping)
         options_.occbin.likelihood.IVF_shock_observable_mapping=find(diag(M.Sigma_e)~=0);
     else
