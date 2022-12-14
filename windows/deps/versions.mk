@@ -63,3 +63,6 @@ MINGW64_WINPTHREADS_VERSION = 10.0.0.r72.g1dd2a4993-1
 
 # pacman -Ss mingw-w64-x86_64-zstd
 MINGW64_ZSTD_VERSION = 1.5.2-2
+
+# pacman -Ss mingw-w64-x86_64-isl
+MINGW64_ISL_VERSION = 0.25-1
