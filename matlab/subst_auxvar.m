@@ -50,7 +50,7 @@ if ~isempty(aux_index)
             orig_name = M_.exo_names{M_.aux_vars(aux_index).orig_index};
         case 4
             % Expectation operator
-            str = sprintf('EXPECTATION(%d)(...)', aux_lead_lag);
+            str = sprintf('%s', M_.aux_vars(aux_index).orig_expr);
             return
         case 6
             % Ramsey's multipliers
