@@ -79,7 +79,7 @@ value_format_zero  = sprintf('%%%dd',header_label_length);
 if ~isempty(M_.aux_vars)
     aux_vars_type = [M_.aux_vars.type];
     if any(aux_vars_type==4)
-        aux_var_additional_characters=14;
+        aux_var_additional_characters=17;
     else
         aux_var_additional_characters=3;
     end
