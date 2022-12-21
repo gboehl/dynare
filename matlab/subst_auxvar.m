@@ -44,10 +44,17 @@ if ~isempty(aux_index)
             orig_name = M_.endo_names{M_.aux_vars(aux_index).orig_index};
         case 2
             % exo leads >= 1
-            orig_name = M_.exo_names{M_.aux_vars(aux_index).orig_index};
+            str = sprintf('%s(+1)', M_.aux_vars(aux_index).orig_expr);
+            return
         case 3
             % exo lags >= 1
             orig_name = M_.exo_names{M_.aux_vars(aux_index).orig_index};
+            if M_.aux_vars(aux_index).orig_lead_lag==0
+                str = sprintf('%s(%d)', orig_name, M_.aux_vars(aux_index).orig_lead_lag+aux_lead_lag-1);%orig_lead_lag is actually -1 due to being a lagged exogenous
+            else
+                str = sprintf('%s(%d)', orig_name, M_.aux_vars(aux_index).orig_lead_lag+aux_lead_lag);
+            end
+            return;
         case 4
             % Expectation operator
             str = sprintf('%s', M_.aux_vars(aux_index).orig_expr);
