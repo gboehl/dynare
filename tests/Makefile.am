@@ -86,6 +86,8 @@ MODFILES = \
 	estimation/univariate/nls/staticmodel.mod \
 	estimation/univariate/nls/dynamicmodel1.mod \
 	estimation/univariate/nls/dynamicmodel2.mod \
+	model_info/NKM_3_back.mod \
+	model_info/NKM_3_forward.mod \
 	moments/example1_var_decomp.mod \
 	moments/example1_bp_test.mod \
 	moments/test_AR1_spectral_density.mod \
