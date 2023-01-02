@@ -1,4 +1,4 @@
-function C = compare_vectors(f, A, B)  % --*-- Unitary tests --*--
+function C = compare_vectors(f, A, B)
 
 % Performs lexicographical comparison of vectors.
 %
@@ -13,7 +13,7 @@ function C = compare_vectors(f, A, B)  % --*-- Unitary tests --*--
 % REMARKS
 %  o It is assumed that vectors A and B have the same number of elements.
 
-% Copyright © 2013-2017 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -76,19 +76,21 @@ else
     end
 end
 
+return % --*-- Unit tests --*--
+
 %@test:1
-%$ t(1) = dassert(compare_vectors(@lt, [1990 3], [1991 3]), 1);
-%$ t(2) = dassert(compare_vectors(@lt, [1990 3], [1990 3]), 0);
-%$ t(3) = dassert(compare_vectors(@le, [1990 3], [1990 3]), 1);
-%$ t(4) = dassert(compare_vectors(@lt, [1990 3], [1990 4]), 1);
-%$ t(5) = dassert(compare_vectors(@le, [1990 3], [1990 4]), 1);
-%$ t(6) = dassert(compare_vectors(@gt, [1990 3], [1991 3]), 0);
-%$ t(7) = dassert(compare_vectors(@gt, [1990 3], [1990 3]), 0);
-%$ t(8) = dassert(compare_vectors(@ge, [1990 3], [1990 3]), 1);
-%$ t(9) = dassert(compare_vectors(@gt, [1990 3], [1990 4]), 0);
-%$ t(10) = dassert(compare_vectors(@ge, [1990 3], [1990 4]), 0);
-%$ t(11) = dassert(compare_vectors(@le, [1991 3], [1990 4]), 0);
-%$ t(12) = dassert(compare_vectors(@le, [1991 3], [1990 2]), 0);
-%$ t(13) = dassert(compare_vectors(@le, [1945 2], [1950, 1]),1);
-%$ T = all(t);
+t(1) = dassert(compare_vectors(@lt, [1990 3], [1991 3]), 1);
+t(2) = dassert(compare_vectors(@lt, [1990 3], [1990 3]), 0);
+t(3) = dassert(compare_vectors(@le, [1990 3], [1990 3]), 1);
+t(4) = dassert(compare_vectors(@lt, [1990 3], [1990 4]), 1);
+t(5) = dassert(compare_vectors(@le, [1990 3], [1990 4]), 1);
+t(6) = dassert(compare_vectors(@gt, [1990 3], [1991 3]), 0);
+t(7) = dassert(compare_vectors(@gt, [1990 3], [1990 3]), 0);
+t(8) = dassert(compare_vectors(@ge, [1990 3], [1990 3]), 1);
+t(9) = dassert(compare_vectors(@gt, [1990 3], [1990 4]), 0);
+t(10) = dassert(compare_vectors(@ge, [1990 3], [1990 4]), 0);
+t(11) = dassert(compare_vectors(@le, [1991 3], [1990 4]), 0);
+t(12) = dassert(compare_vectors(@le, [1991 3], [1990 2]), 0);
+t(13) = dassert(compare_vectors(@le, [1945 2], [1950, 1]),1);
+T = all(t);
 %@eof:1

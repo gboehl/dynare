@@ -1,4 +1,4 @@
-% Copyright © 2013-2022 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,7 +52,7 @@ counter = 0;
 
 for i = 1:length(mlist)
     f = [top_test_dir filesep mlist{i} ];
-    if is_unitary_test_available(f)
+    if is_unit_test_available(f)
         [check, info] = mtest(f);
         for j = 1:size(info, 1)
             counter = counter + 1;
@@ -65,9 +65,9 @@ end
 
 cd(getenv('TOP_TEST_DIR'));
 if isoctave
-    fid = fopen('run_all_unitary_tests.o.trs', 'w+');
+    fid = fopen('run_all_unit_tests.o.trs', 'w+');
 else
-    fid = fopen('run_all_unitary_tests.m.trs', 'w+');
+    fid = fopen('run_all_unit_tests.m.trs', 'w+');
 end
 if length(failedtests) > 0
   fprintf(fid,':test-result: FAIL\n');

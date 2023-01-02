@@ -1,4 +1,4 @@
-function [X, info] = cycle_reduction(A0, A1, A2, cvg_tol, ch) % --*-- Unitary tests --*--
+function [X, info] = cycle_reduction(A0, A1, A2, cvg_tol, ch)
 
 %@info:
 %! @deftypefn {Function File} {[@var{X}, @var{info}] =} cycle_reduction (@var{A0},@var{A1},@var{A2},@var{cvg_tol},@var{ch})
@@ -43,7 +43,7 @@ function [X, info] = cycle_reduction(A0, A1, A2, cvg_tol, ch) % --*-- Unitary te
 %! @end deftypefn
 %@eod:
 
-% Copyright © 2013-2017 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -112,40 +112,42 @@ if (nargin == 5 && ~isempty(ch) )
     end
 end
 
+return % --*-- Unit tests --*--
+
 %@test:1
-%$
-%$ t = zeros(3,1);
-%$
-%$ % Set the dimension of the problem to be solved.
-%$ n = 500;
-%$
-%$ % Set the equation to be solved
-%$ A = eye(n);
-%$ B = diag(30*ones(n,1)); B(1,1) = 20; B(end,end) = 20; B = B - diag(10*ones(n-1,1),-1); B = B - diag(10*ones(n-1,1),1);
-%$ C = diag(15*ones(n,1)); C = C - diag(5*ones(n-1,1),-1); C = C - diag(5*ones(n-1,1),1);
-%$
-%$ % Solve the equation with the cycle reduction algorithm
-%$ try
-%$     tic; X1 = cycle_reduction(C,B,A,1e-7); elapsedtime = toc;
-%$     disp(['Elapsed time for cycle reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
-%$     t(1) = 1;
-%$ catch
-%$     % nothing to do here.
-%$ end
-%$
-%$ % Solve the equation with the logarithmic reduction algorithm
-%$ try
-%$     tic; X2 = logarithmic_reduction(A,B,C,1e-16,100); elapsedtime = toc;
-%$     disp(['Elapsed time for logarithmic reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
-%$     t(2) = 1;
-%$ catch
-%$     % nothing to do here.
-%$ end
-%$
-%$ % Check the results.
-%$ if t(1) && t(2)
-%$     t(3) = dassert(X1,X2,1e-12);
-%$ end
-%$
-%$ T = all(t);
+
+t = zeros(3,1);
+
+% Set the dimension of the problem to be solved.
+n = 500;
+
+% Set the equation to be solved
+A = eye(n);
+B = diag(30*ones(n,1)); B(1,1) = 20; B(end,end) = 20; B = B - diag(10*ones(n-1,1),-1); B = B - diag(10*ones(n-1,1),1);
+C = diag(15*ones(n,1)); C = C - diag(5*ones(n-1,1),-1); C = C - diag(5*ones(n-1,1),1);
+
+% Solve the equation with the cycle reduction algorithm
+try
+    tic; X1 = cycle_reduction(C,B,A,1e-7); elapsedtime = toc;
+    disp(['Elapsed time for cycle reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
+    t(1) = 1;
+catch
+    % nothing to do here.
+end
+
+% Solve the equation with the logarithmic reduction algorithm
+try
+    tic; X2 = logarithmic_reduction(A,B,C,1e-16,100); elapsedtime = toc;
+    disp(['Elapsed time for logarithmic reduction algorithm is: ' num2str(elapsedtime) ' (n=' int2str(n) ').'])
+    t(2) = 1;
+catch
+    % nothing to do here.
+end
+
+% Check the results.
+if t(1) && t(2)
+    t(3) = dassert(X1,X2,1e-12);
+end
+
+T = all(t);
 %@eof:1

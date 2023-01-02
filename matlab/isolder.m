@@ -1,4 +1,4 @@
-function b = isolder(f, F) % --*-- Unitary tests --*--
+function b = isolder(f, F)
 
 % Returns true if f is older than any file in folder (and subfolders) F.
 %
@@ -9,7 +9,7 @@ function b = isolder(f, F) % --*-- Unitary tests --*--
 % OUTPUT
 % - b   [logical]
 
-% Copyright © 2015-2017 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,38 +56,40 @@ for i=1:length(files)
     end
 end
 
+return % --*-- Unit tests --*--
+
 %@test:1
-%$ t = false(3,1);
-%$ mkdir toto;
-%$ cd toto
-%$ mkdir titi;
-%$ mkdir tata;
-%$ cd tata
-%$ mkdir tutu;
-%$ cd tutu
-%$ system('touch a.m');
-%$ cd ..
-%$ system('touch b.m');
-%$ system('touch c.m');
-%$ cd ../titi
-%$ system('touch d.m');
-%$ cd ..
-%$ pause(1)
-%$ system('touch e.m');
-%$ t(1) = isequal(isolder('e.m'), false);
-%$ pause(1)
-%$ system('touch tata/tutu/a.m');
-%$ system('touch tata/b.m');
-%$ system('touch tata/c.m');
-%$ system('touch titi/d.m');
-%$ t(2) = isequal(isolder('e.m'), true);
-%$ pause(1)
-%$ system('touch e.m');
-%$ t(3) = isequal(isolder('e.m'), false);
-%$ cd ..
-%$ if isoctave()
-%$   confirm_recursive_rmdir(false, 'local');
-%$ end
-%$ rmdir('toto','s');
-%$ T = all(t);
+t = false(3,1);
+mkdir toto;
+cd toto
+mkdir titi;
+mkdir tata;
+cd tata
+mkdir tutu;
+cd tutu
+system('touch a.m');
+cd ..
+system('touch b.m');
+system('touch c.m');
+cd ../titi
+system('touch d.m');
+cd ..
+pause(1)
+system('touch e.m');
+t(1) = isequal(isolder('e.m'), false);
+pause(1)
+system('touch tata/tutu/a.m');
+system('touch tata/b.m');
+system('touch tata/c.m');
+system('touch titi/d.m');
+t(2) = isequal(isolder('e.m'), true);
+pause(1)
+system('touch e.m');
+t(3) = isequal(isolder('e.m'), false);
+cd ..
+if isoctave()
+    confirm_recursive_rmdir(false, 'local');
+end
+rmdir('toto','s');
+T = all(t);
 %@eof:1

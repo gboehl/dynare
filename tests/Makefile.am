@@ -1259,7 +1259,7 @@ M_TRS_FILES = $(patsubst %.mod, %.m.trs, $(MODFILES))
 M_TRS_FILES += $(patsubst %.mod, %.m.trs, $(PARTICLEFILES))
 M_TRS_FILES += 	run_block_byte_tests_matlab.m.trs \
 		run_reporting_test_matlab.m.trs \
-		run_all_unitary_tests.m.trs \
+		run_all_unit_tests.m.trs \
 		histval_initval_file_unit_tests.m.trs \
 		test_aggregate_routine_1_2.m.trs \
 		test_aggregate_routine_1_2_3.m.trs \
@@ -1276,7 +1276,7 @@ O_TRS_FILES = $(patsubst %.mod, %.o.trs, $(MODFILES))
 O_TRS_FILES += $(patsubst %.mod, %.o.trs, $(PARTICLEFILES))
 O_TRS_FILES += 	run_block_byte_tests_octave.o.trs \
 		run_reporting_test_octave.o.trs \
-		run_all_unitary_tests.o.trs \
+		run_all_unit_tests.o.trs \
 		histval_initval_file_unit_tests.o.trs \
 		run_kronecker_tests.o.trs \
 		nonlinearsolvers.o.trs \
@@ -1306,7 +1306,7 @@ EXTRA_DIST = \
 	run_block_byte_tests_octave.m \
 	run_reporting_test_matlab.m \
 	run_reporting_test_octave.m \
-	run_all_unitary_tests.m \
+	run_all_unit_tests.m \
 	+matlab/+namespace/y_k.m \
 	reporting/AnnualTable.m \
 	reporting/CommResidTablePage.m \

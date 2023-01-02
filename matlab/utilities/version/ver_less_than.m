@@ -1,4 +1,4 @@
-function tf = ver_less_than(ver1, ver2) % --*-- Unitary tests --*--
+function tf = ver_less_than(ver1, ver2)
 %function tf = ver_less_than(ver1, ver2)
 % ver1 < ver2 ? 1 : 0;
 %
@@ -54,7 +54,7 @@ elseif (maj_ver1 == maj_ver2) && (min_ver1 > min_ver2)
 end
 
 %deal with revision in Dynare 4 and unstable versions involved
-if min(maj_ver1,maj_ver2)<5 %old versioning scheme with three digits 
+if min(maj_ver1,maj_ver2)<5 %old versioning scheme with three digits
     if (length(ver1) == length(ver2) && length(ver1) == 3)
         %check if master branch (unstable) or stable
         ismaster1 = isnan(str2double(ver1{3}));
@@ -63,7 +63,7 @@ if min(maj_ver1,maj_ver2)<5 %old versioning scheme with three digits
             %ver2 is the unstable
             return
         end
-        
+
         if ~ismaster1 && ~ismaster2 %both are stable versions
             rev_ver1 = str2double(ver1{3});
             rev_ver2 = str2double(ver2{3});
@@ -76,7 +76,7 @@ if min(maj_ver1,maj_ver2)<5 %old versioning scheme with three digits
         %ver1 is an unstable version
         error('Case is undefined, please contact the developers')
     end
-elseif min(maj_ver1,maj_ver2)>=5 %new versioning scheme with three digits 
+elseif min(maj_ver1,maj_ver2)>=5 %new versioning scheme with three digits
     if strcmp(ver1{2},'x') || strcmp(ver1{2},'unstable')
         date_number_1=datenum([ver1{3} ver1{4} ver1{5}],'YYYYMMDD');
         stable_version_indicator_1=0;
@@ -102,7 +102,7 @@ elseif min(maj_ver1,maj_ver2)>=5 %new versioning scheme with three digits
 end
 tf = false;
 
-return
+return % --*-- Unit tests --*--
 
 %@test:1
 ver1='4.4';
@@ -110,26 +110,24 @@ ver2='4.5.2';
 t(1)=dassert(ver_less_than(ver1,ver2),true);
 T = all(t);
 %@eof:1
+
 %@test:2
 ver1='4.4';
 ver2='6-unstable-2021-12-15-1737-21a8a579';
 t(1)=dassert(ver_less_than(ver1,ver2),true);
 T = all(t);
 %@eof:2
+
 %@test:3
 ver1='5.0';
 ver2='5.1';
 t(1)=dassert(ver_less_than(ver1,ver2),true);
 T = all(t);
 %@eof:3
+
 %@test:4
 ver1='6-unstable-2021-12-18-1227-c43777f6';
 ver2='6-unstable-2021-12-19-1953-d841fc7c';
 t(1)=dassert(ver_less_than(ver1,ver2),true);
 T = all(t);
 %@eof:4
-% %@test:5
-% ver1='5.0';
-% ver2='5.x-2021-12-14-1101-25c1e0c0';
-% t(5)=dassert(ver_less_than(ver1,ver2),true)
-

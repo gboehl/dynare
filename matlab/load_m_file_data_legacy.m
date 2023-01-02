@@ -1,6 +1,6 @@
-function o2WysrOISH  = load_m_file_data_legacy(datafile, U7ORsJ0vy3) % --*-- Unitary tests --*--
+function o2WysrOISH  = load_m_file_data_legacy(datafile, U7ORsJ0vy3)
 
-% Copyright © 2014-2017 Dynare Team
+% Copyright © 2014-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -78,7 +78,7 @@ JSmvfqTSXT = repmat(' vec(%s) ', 1, length(U7ORsJ0vy3));
 VbO4y7zOlh = sprintf('[%s]', JSmvfqTSXT);
 o2WysrOISH = dseries(eval(sprintf(VbO4y7zOlh, U7ORsJ0vy3{:})), [], U7ORsJ0vy3);
 
-return
+return % --*-- Unit tests --*--
 
 %@test:1
 % Write a data file

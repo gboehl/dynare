@@ -1,4 +1,4 @@
-function [ldens,Dldens,D2ldens] = lpdfgweibull(x,a,b,c)  % --*-- Unitary tests --*--
+function [ldens,Dldens,D2ldens] = lpdfgweibull(x,a,b,c)
 
 % Evaluates the logged Weibull PDF at x.
 %
@@ -16,7 +16,7 @@ function [ldens,Dldens,D2ldens] = lpdfgweibull(x,a,b,c)  % --*-- Unitary tests -
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2015-2020 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -96,344 +96,346 @@ if nargout>1
     end
 end
 
+return % --*-- Unit tests --*--
+
 %@test:1
-%$ try
-%$    lpdfgweibull(1.0);
-%$    t(1) = false;
-%$ catch
-%$    t(1) = true;
-%$ end
-%$
-%$ T = all(t);
+try
+    lpdfgweibull(1.0);
+    t(1) = false;
+catch
+    t(1) = true;
+end
+
+T = all(t);
 %@eof:1
 
 %@test:2
-%$ try
-%$    lpdfgweibull(1.0, .5);
-%$    t(1) = false;
-%$ catch
-%$    t(1) = true;
-%$ end
-%$
-%$ T = all(t);
+try
+    lpdfgweibull(1.0, .5);
+    t(1) = false;
+catch
+    t(1) = true;
+end
+
+T = all(t);
 %@eof:2
 
 %@test:3
-%$ try
-%$    lpdfgweibull(ones(2,2), .5*ones(2,1), .1*ones(3,1));
-%$    t(1) = false;
-%$ catch
-%$    t(1) = true;
-%$ end
-%$
-%$ T = all(t);
+try
+    lpdfgweibull(ones(2,2), .5*ones(2,1), .1*ones(3,1));
+    t(1) = false;
+catch
+    t(1) = true;
+end
+
+T = all(t);
 %@eof:3
 
 %@test:4
-%$ try
-%$    a = lpdfgweibull(-1, .5, .1);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = isinf(a);
-%$ end
-%$
-%$ T = all(t);
+try
+   a = lpdfgweibull(-1, .5, .1);
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = isinf(a);
+end
+
+T = all(t);
 %@eof:4
 
 %@test:5
-%$ try
-%$    a = lpdfgweibull(0, 1, 1);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(a-1.0)<1e-10;
-%$ end
-%$
-%$ T = all(t);
+try
+   a = lpdfgweibull(0, 1, 1);
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(a-1.0)<1e-10;
+end
+
+T = all(t);
 %@eof:5
 
 %@test:6
-%$ try
-%$    a = lpdfgweibull([0, -1], [1 1], [1 1]);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(a(1)-1.0)<1e-10;
-%$    t(3) = isinf(a(2));
-%$ end
-%$
-%$ T = all(t);
+try
+   a = lpdfgweibull([0, -1], [1 1], [1 1]);
+   t(1) = true;
+catch
+   t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(a(1)-1.0)<1e-10;
+    t(3) = isinf(a(2));
+end
+
+T = all(t);
 %@eof:6
 
 %@test:7
-%$ scale = 1;
-%$ shape = 2;
-%$ mode  = scale*((shape-1)/shape)^(1/shape);
-%$
-%$ try
-%$    [a, b, c] = lpdfgweibull(mode, shape, scale);
-%$    p = rand(1000,1)*4;
-%$    am = lpdfgweibull(p, shape*ones(size(p)), scale*ones(size(p)));
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$
-%$    t(2) = abs(b)<1e-8;
-%$    t(3) = c<0;
-%$    t(4) = all(am<a);
-%$ end
-%$
-%$ T = all(t);
+scale = 1;
+shape = 2;
+mode  = scale*((shape-1)/shape)^(1/shape);
+
+try
+   [a, b, c] = lpdfgweibull(mode, shape, scale);
+   p = rand(1000,1)*4;
+   am = lpdfgweibull(p, shape*ones(size(p)), scale*ones(size(p)));
+   t(1) = true;
+catch
+   t(1) = false;
+end
+
+if t(1)
+
+    t(2) = abs(b)<1e-8;
+    t(3) = c<0;
+    t(4) = all(am<a);
+end
+
+T = all(t);
 %@eof:7
 
 %@test:8
-%$ scale = 1;
-%$ shape = 2;
-%$ density  = @(x) exp(lpdfgweibull(x,shape,scale));
-%$
-%$ try
-%$    if isoctave
-%$        s = quadl(density, .0000000001, 100000, 1e-10);
-%$    else
-%$        s = integral(density, 0, 100000);
-%$    end
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(s-1)<1e-6;
-%$ end
-%$
-%$ T = all(t);
+scale = 1;
+shape = 2;
+density  = @(x) exp(lpdfgweibull(x,shape,scale));
+
+try
+   if isoctave
+       s = quadl(density, .0000000001, 100000, 1e-10);
+   else
+       s = integral(density, 0, 100000);
+   end
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(s-1)<1e-6;
+end
+
+T = all(t);
 %@eof:8
 
 %@test:9
-%$ scale = 1;
-%$ shape = 1;
-%$ density  = @(x) exp(lpdfgweibull(x,shape,scale));
-%$
-%$ try
-%$    if isoctave
-%$        s = quadl(density, .0000000001, 100000, 1e-10);
-%$    else
-%$        s = integral(density, 0, 100000);
-%$    end
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(s-1)<1e-6;
-%$ end
-%$
-%$ T = all(t);
+scale = 1;
+shape = 1;
+density  = @(x) exp(lpdfgweibull(x,shape,scale));
+
+try
+   if isoctave
+       s = quadl(density, .0000000001, 100000, 1e-10);
+   else
+       s = integral(density, 0, 100000);
+   end
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(s-1)<1e-6;
+end
+
+T = all(t);
 %@eof:9
 
 %@test:10
-%$ scale = 1;
-%$ shape = .5;
-%$ density  = @(x) exp(lpdfgweibull(x,shape,scale));
-%$
-%$ try
-%$    if isoctave
-%$        s = quadl(density, .0000000001, 100000, 1e-10);
-%$    else
-%$        s = integral(density, 0, 100000);
-%$    end
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$        if isoctave
-%$            t(2) = abs(s-1)<5e-5;
-%$        else
-%$            t(2) = abs(s-1)<1e-6;
-%$        end
-%$ end
-%$
-%$ T = all(t);
+scale = 1;
+shape = .5;
+density  = @(x) exp(lpdfgweibull(x,shape,scale));
+
+try
+   if isoctave
+       s = quadl(density, .0000000001, 100000, 1e-10);
+   else
+       s = integral(density, 0, 100000);
+   end
+   t(1) = true;
+catch
+   t(1) = false;
+end
+
+if t(1)
+    if isoctave
+        t(2) = abs(s-1)<5e-5;
+    else
+        t(2) = abs(s-1)<1e-6;
+    end
+end
+
+T = all(t);
 %@eof:10
 
 %@test:11
-%$ scale = 1;
-%$ shape = 2;
-%$ xdens = @(x) x.*exp(lpdfgweibull(x,shape,scale));
-%$
-%$ try
-%$    if isoctave
-%$        s = quadgk(xdens, .0000000001, 100000, 1e-10);
-%$    else
-%$        s = integral(xdens, 0, 100000);
-%$    end
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(s-scale*gamma(1+1/shape))<1e-6;
-%$ end
-%$
-%$ T = all(t);
+scale = 1;
+shape = 2;
+xdens = @(x) x.*exp(lpdfgweibull(x,shape,scale));
+
+try
+   if isoctave
+       s = quadgk(xdens, .0000000001, 100000, 1e-10);
+   else
+       s = integral(xdens, 0, 100000);
+   end
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(s-scale*gamma(1+1/shape))<1e-6;
+end
+
+T = all(t);
 %@eof:11
 
 %@test:12
-%$ scale = 1;
-%$ shape = 1;
-%$ xdens = @(x) x.*exp(lpdfgweibull(x,shape,scale));
-%$
-%$ try
-%$    if isoctave
-%$        s = quadl(xdens, .0000000001, 100000, 1e-10);
-%$    else
-%$        s = integral(xdens, 0, 100000);
-%$    end
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(s-scale*gamma(1+1/shape))<1e-6;
-%$ end
-%$
-%$ T = all(t);
+scale = 1;
+shape = 1;
+xdens = @(x) x.*exp(lpdfgweibull(x,shape,scale));
+
+try
+   if isoctave
+       s = quadl(xdens, .0000000001, 100000, 1e-10);
+   else
+       s = integral(xdens, 0, 100000);
+   end
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(s-scale*gamma(1+1/shape))<1e-6;
+end
+
+T = all(t);
 %@eof:12
 
 %@test:13
-%$ scale = 1;
-%$ shape = .5;
-%$ xdens = @(x) x.*exp(lpdfgweibull(x,shape,scale));
-%$
-%$ try
-%$    if isoctave
-%$        s = quadl(xdens, .0000000001, 100000, 1e-10);
-%$    else
-%$        s = integral(xdens, 0, 100000);
-%$    end
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(s-scale*gamma(1+1/shape))<1e-6;
-%$ end
-%$
-%$ T = all(t);
+scale = 1;
+shape = .5;
+xdens = @(x) x.*exp(lpdfgweibull(x,shape,scale));
+
+try
+   if isoctave
+       s = quadl(xdens, .0000000001, 100000, 1e-10);
+   else
+       s = integral(xdens, 0, 100000);
+   end
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(s-scale*gamma(1+1/shape))<1e-6;
+end
+
+T = all(t);
 %@eof:13
 
 %@test:14
-%$ scale = 1;
-%$ shape = 2;
-%$ density = @(x) exp(lpdfgweibull(x,shape,scale));
-%$ n = 200;
-%$
-%$ try
-%$    s = NaN(n, 1);
-%$    for i=1:n
-%$        if isoctave
-%$             s(i) = quadl(density, .0000000001, .1*i, 1e-10);
-%$        else
-%$            s(i) = integral(density, 0, .1*i);
-%$        end
-%$    end
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    for i=1:n
-%$        x = .1*i;
-%$        q = 1-exp(-(x/scale)^shape);
-%$        t(i+1) = abs(s(i)-q)<1e-6;
-%$    end
-%$ end
-%$
-%$ T = all(t);
+scale = 1;
+shape = 2;
+density = @(x) exp(lpdfgweibull(x,shape,scale));
+n = 200;
+
+try
+   s = NaN(n, 1);
+   for i=1:n
+       if isoctave
+            s(i) = quadl(density, .0000000001, .1*i, 1e-10);
+       else
+           s(i) = integral(density, 0, .1*i);
+       end
+   end
+   t(1) = true;
+catch
+   t(1) = false;
+end
+
+if t(1)
+    for i=1:n
+        x = .1*i;
+        q = 1-exp(-(x/scale)^shape);
+        t(i+1) = abs(s(i)-q)<1e-6;
+    end
+end
+
+T = all(t);
 %@eof:14
 
 %@test:15
-%$ scale = 1;
-%$ shape = 1;
-%$ density = @(x) exp(lpdfgweibull(x,shape,scale));
-%$ n = 200;
-%$
-%$ try
-%$    s = NaN(n, 1);
-%$    for i=1:n
-%$        if isoctave
-%$            s(i) = quadl(density, .0000000001, .1*i, 1e-10);
-%$        else
-%$            s(i) = integral(density, 0, .1*i);
-%$        end
-%$    end
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    for i=1:n
-%$        x = .1*i;
-%$        q = 1-exp(-(x/scale)^shape);
-%$        t(i+1) = abs(s(i)-q)<1e-6;
-%$    end
-%$ end
-%$
-%$ T = all(t);
+scale = 1;
+shape = 1;
+density = @(x) exp(lpdfgweibull(x,shape,scale));
+n = 200;
+
+try
+   s = NaN(n, 1);
+   for i=1:n
+       if isoctave
+           s(i) = quadl(density, .0000000001, .1*i, 1e-10);
+       else
+           s(i) = integral(density, 0, .1*i);
+       end
+   end
+   t(1) = true;
+catch
+   t(1) = false;
+end
+
+if t(1)
+    for i=1:n
+        x = .1*i;
+        q = 1-exp(-(x/scale)^shape);
+        t(i+1) = abs(s(i)-q)<1e-6;
+    end
+end
+
+T = all(t);
 %@eof:15
 
 %@test:16
-%$ scale = 1;
-%$ shape = .5;
-%$ density = @(x) exp(lpdfgweibull(x,shape,scale));
-%$ n = 200;
-%$
-%$ try
-%$    s = NaN(n, 1);
-%$    for i=1:n
-%$        if isoctave
-%$            s(i) = quadl(density, .0000000001, .1*i, 1e-10);
-%$        else
-%$            s(i) = integral(density, 0, .1*i);
-%$        end
-%$    end
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    for i=1:n
-%$        x = .1*i;
-%$        q = 1-exp(-(x/scale)^shape);
-%$        if isoctave
-%$            t(i+1) = abs(s(i)-q)<5e-5;
-%$        else
-%$            t(i+1) = abs(s(i)-q)<1e-6;
-%$        end
-%$    end
-%$ end
-%$
-%$ T = all(t);
+scale = 1;
+shape = .5;
+density = @(x) exp(lpdfgweibull(x,shape,scale));
+n = 200;
+
+try
+   s = NaN(n, 1);
+   for i=1:n
+       if isoctave
+           s(i) = quadl(density, .0000000001, .1*i, 1e-10);
+       else
+           s(i) = integral(density, 0, .1*i);
+       end
+   end
+   t(1) = true;
+catch
+   t(1) = false;
+end
+
+if t(1)
+   for i=1:n
+       x = .1*i;
+       q = 1-exp(-(x/scale)^shape);
+       if isoctave
+           t(i+1) = abs(s(i)-q)<5e-5;
+       else
+           t(i+1) = abs(s(i)-q)<1e-6;
+       end
+   end
+end
+
+T = all(t);
 %@eof:16

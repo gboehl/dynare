@@ -1,4 +1,4 @@
-function [a, b] = gamma_specification(mu, sigma2, lb, name)   % --*-- Unitary tests --*--
+function [a, b] = gamma_specification(mu, sigma2, lb, name)
 
 % Returns the hyperparameters of the gamma distribution given the expectation and variance.
 %
@@ -12,7 +12,7 @@ function [a, b] = gamma_specification(mu, sigma2, lb, name)   % --*-- Unitary te
 % - a      [double]   First hyperparameter of the Gamma density (shape).
 % - b      [double]   Second hyperparameter of the Gamma density (scale).
 
-% Copyright © 2015-2017 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,54 +53,56 @@ mu = mu-lb;
 b  = sigma2/mu;
 a  = mu/b;
 
+return % --*-- Unit tests --*--
+
 %@test:1
-%$ try
-%$    [a, b] = gamma_specification(.5, 1);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(0.5-a*b)<1e-12;
-%$    t(3) = abs(1.0-a*b*b)<1e-12;
-%$ end
-%$ T = all(t);
+try
+   [a, b] = gamma_specification(.5, 1);
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(0.5-a*b)<1e-12;
+    t(3) = abs(1.0-a*b*b)<1e-12;
+end
+T = all(t);
 %@eof:1
 
 %@test:2
-%$ try
-%$    [a, b] = gamma_specification(2, 1);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(2.0-a*b)<1e-12;
-%$    t(3) = abs(1.0-a*b*b)<1e-12;
-%$ end
-%$ T = all(t);
+try
+   [a, b] = gamma_specification(2, 1);
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(2.0-a*b)<1e-12;
+    t(3) = abs(1.0-a*b*b)<1e-12;
+end
+T = all(t);
 %@eof:2
 
 %@test:3
-%$ try
-%$    [a, b] = gamma_specification(2, 1, 3);
-%$    t(1) = false;
-%$ catch
-%$    t(1) = true;
-%$ end
-%$
-%$ T = all(t);
+try
+    [a, b] = gamma_specification(2, 1, 3);
+    t(1) = false;
+catch
+    t(1) = true;
+end
+
+T = all(t);
 %@eof:3
 
 %@test:4
-%$ try
-%$    [a, b] = gamma_specification(2, Inf, 3);
-%$    t(1) = false;
-%$ catch
-%$    t(1) = true;
-%$ end
-%$
-%$ T = all(t);
+try
+    [a, b] = gamma_specification(2, Inf, 3);
+    t(1) = false;
+catch
+    t(1) = true;
+end
+
+T = all(t);
 %@eof:4

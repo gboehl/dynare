@@ -1,4 +1,4 @@
-function m = compute_prior_mode(hyperparameters,shape) % --*-- Unitary tests --*--
+function m = compute_prior_mode(hyperparameters,shape)
 % This function computes the mode of the prior distribution given the (two, three or four) hyperparameters
 % of the prior distribution.
 %
@@ -23,7 +23,7 @@ function m = compute_prior_mode(hyperparameters,shape) % --*-- Unitary tests --*
 % [3] The uniform distribution has an infinity of modes. In this case the function returns the prior mean.
 % [4] For the beta distribution we can have 1, 2 or an infinity of modes.
 
-% Copyright © 2009-2017 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -102,140 +102,142 @@ switch shape
     error('Unknown prior shape!')
 end
 
+return % --*-- Unit tests --*--
+
 %@test:1
-%$ % Beta density
-%$ try
-%$     m1 = compute_prior_mode([2 1],1);
-%$     m2 = compute_prior_mode([2 5 1 4],1); % Wolfram Alpha: BetaDistribution[2,5]
-%$     t(1) = true;
-%$ catch
-%$     t(1) = false;
-%$ end
-%$
-%$ % Check the results
-%$ if t(1)
-%$     t(2) = dassert(m1,1,1e-6);
-%$     t(3) = dassert(m2,1/5*3+1,1e-6);
-%$ end
-%$ T = all(t);
+% Beta density
+try
+    m1 = compute_prior_mode([2 1],1);
+    m2 = compute_prior_mode([2 5 1 4],1); % Wolfram Alpha: BetaDistribution[2,5]
+    t(1) = true;
+catch
+    t(1) = false;
+end
+
+% Check the results
+if t(1)
+    t(2) = dassert(m1,1,1e-6);
+    t(3) = dassert(m2,1/5*3+1,1e-6);
+end
+T = all(t);
 %@eof:1
 
 %@test:2
-%$ % Gamma density
-%$ try
-%$     m1 = compute_prior_mode([1 2],2);
-%$     m2 = compute_prior_mode([9 0.5 1],2);  % Wolfram Alpha: GammaDistribution[9,0.5]
-%$     t(1) = true;
-%$ catch
-%$     t(1) = false;
-%$ end
-%$
-%$ % Check the results
-%$ if t(1)
-%$     t(2) = dassert(m1,0,1e-6);
-%$     t(3) = dassert(m2,4+1,1e-6);
-%$ end
-%$ T = all(t);
+% Gamma density
+try
+    m1 = compute_prior_mode([1 2],2);
+    m2 = compute_prior_mode([9 0.5 1],2);  % Wolfram Alpha: GammaDistribution[9,0.5]
+    t(1) = true;
+catch
+    t(1) = false;
+end
+
+% Check the results
+if t(1)
+    t(2) = dassert(m1,0,1e-6);
+    t(3) = dassert(m2,4+1,1e-6);
+end
+T = all(t);
 %@eof:2
 
 %@test:3
-%$ % Normal density
-%$ try
-%$     m1 = compute_prior_mode([1 1],3);
-%$     m2 = compute_prior_mode([2 5],3);
-%$     t(1) = true;
-%$ catch
-%$     t(1) = false;
-%$ end
-%$
-%$ % Check the results
-%$ if t(1)
-%$     t(2) = dassert(m1,1,1e-6);
-%$     t(3) = dassert(m2,2,1e-6);
-%$ end
-%$ T = all(t);
+% Normal density
+try
+    m1 = compute_prior_mode([1 1],3);
+    m2 = compute_prior_mode([2 5],3);
+    t(1) = true;
+catch
+    t(1) = false;
+end
+
+% Check the results
+if t(1)
+    t(2) = dassert(m1,1,1e-6);
+    t(3) = dassert(m2,2,1e-6);
+end
+T = all(t);
 %@eof:3
 
 %@test:4
-%$ % Inverse Gamma I density
-%$ try
-%$     m1 = compute_prior_mode([8 2],4);
-%$     m2 = compute_prior_mode([8 2 1],4);
-%$     t(1) = true;
-%$ catch
-%$     t(1) = false;
-%$ end
-%$
-%$ % Check the results
-%$ if t(1)
-%$     t(2) = dassert(m1,1.632993161855452,1e-6);
-%$     t(3) = dassert(m2,1.632993161855452+1,1e-6);
-%$ end
-%$ T = all(t);
+% Inverse Gamma I density
+try
+    m1 = compute_prior_mode([8 2],4);
+    m2 = compute_prior_mode([8 2 1],4);
+    t(1) = true;
+catch
+    t(1) = false;
+end
+
+% Check the results
+if t(1)
+    t(2) = dassert(m1,1.632993161855452,1e-6);
+    t(3) = dassert(m2,1.632993161855452+1,1e-6);
+end
+T = all(t);
 %@eof:4
 
 %@test:5
-%$ % Uniform density
-%$ try
-%$     m1 = compute_prior_mode([0.5 1/sqrt(12)],5);
-%$     m2 = compute_prior_mode([2 5 1 2],5);
-%$     t(1) = true;
-%$ catch
-%$     t(1) = false;
-%$ end
-%$
-%$ % Check the results
-%$ if t(1)
-%$     t(2) = dassert(m1,0.5,1e-6);
-%$     t(3) = dassert(m2,2,1e-6);
-%$ end
-%$ T = all(t);
+% Uniform density
+try
+    m1 = compute_prior_mode([0.5 1/sqrt(12)],5);
+    m2 = compute_prior_mode([2 5 1 2],5);
+    t(1) = true;
+catch
+    t(1) = false;
+end
+
+% Check the results
+if t(1)
+    t(2) = dassert(m1,0.5,1e-6);
+    t(3) = dassert(m2,2,1e-6);
+end
+T = all(t);
 %@eof:5
 
 %@test:6
-%$ % Inverse Gamma II density, parameterized with s and nu where  s=2*beta and nu=2*alpha
-%$ try
-%$     m1 = compute_prior_mode([8 2],6);  % Wolfram Alpha, parameterized with alpha beta: InversegammaDistribution[1,4]
-%$     m2 = compute_prior_mode([8 4 1],6); % Wolfram Alpha, parameterized with alpha beta: InversegammaDistribution[2,4]
-%$     t(1) = true;
-%$ catch
-%$     t(1) = false;
-%$ end
-%$
-%$ % Check the results
-%$ if t(1)
-%$     t(2) = dassert(m1,2,1e-6);
-%$     t(3) = dassert(m2,1+4/3,1e-6);
-%$ end
-%$ T = all(t);
+% Inverse Gamma II density, parameterized with s and nu where  s=2*beta and nu=2*alpha
+try
+    m1 = compute_prior_mode([8 2],6);  % Wolfram Alpha, parameterized with alpha beta: InversegammaDistribution[1,4]
+    m2 = compute_prior_mode([8 4 1],6); % Wolfram Alpha, parameterized with alpha beta: InversegammaDistribution[2,4]
+    t(1) = true;
+catch
+    t(1) = false;
+end
+
+% Check the results
+if t(1)
+    t(2) = dassert(m1,2,1e-6);
+    t(3) = dassert(m2,1+4/3,1e-6);
+end
+T = all(t);
 %@eof:6
 
 %@test:7
-%$ % Weibull density
-%$ try
-%$     m1 = compute_prior_mode([1 1],8);
-%$     m2 = compute_prior_mode([2 1 1],8); % Wolfram Alpha: WeibullDistribution[2,1]
-%$     t(1) = true;
-%$ catch
-%$     t(1) = false;
-%$ end
-%$
-%$ % Check the results
-%$ if t(1)
-%$     t(2) = dassert(m1,0,1e-6);
-%$     t(3) = dassert(m2,1+1/sqrt(2),1e-6);
-%$ end
-%$ T = all(t);
+% Weibull density
+try
+    m1 = compute_prior_mode([1 1],8);
+    m2 = compute_prior_mode([2 1 1],8); % Wolfram Alpha: WeibullDistribution[2,1]
+    t(1) = true;
+catch
+    t(1) = false;
+end
+
+% Check the results
+if t(1)
+    t(2) = dassert(m1,0,1e-6);
+    t(3) = dassert(m2,1+1/sqrt(2),1e-6);
+end
+T = all(t);
 %@eof:7
 
 %@test:8
-%$ % Unknown density
-%$ try
-%$     m1 = compute_prior_mode([1 1],7);
-%$     t(1) = false;
-%$ catch
-%$     t(1) = true;
-%$ end
-%$
-%$ T = all(t);
+% Unknown density
+try
+    m1 = compute_prior_mode([1 1],7);
+    t(1) = false;
+catch
+    t(1) = true;
+end
+
+T = all(t);
 %@eof:8

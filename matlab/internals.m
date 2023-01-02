@@ -4,13 +4,13 @@ function internals(flag, varargin)
 %! @deftypefn {Function File} internals (@var{flag},@var{a},@var{b}, ...)
 %! @anchor{internals}
 %! @sp 1
-%! This command provides internal documentation and unitary tests for the matlab routines.
+%! This command provides internal documentation and unit tests for the matlab routines.
 %! @sp 2
 %! @strong{Inputs}
 %! @sp 1
 %! @table @ @var
 %! @item flag
-%! Mandatory argument: --doc (for displaying internal documentation) or --test (for performing unitary tests).
+%! Mandatory argument: --doc (for displaying internal documentation) or --test (for performing unit tests).
 %! @item b
 %! Name of the routine to be tested or for which internal documentation is needed.
 %! @item c
@@ -36,13 +36,13 @@ function internals(flag, varargin)
 %! @example
 %! internals --test particle/local_state_iteration
 %! @end example
-%! will execute the unitary tests associated the routine local_state_iteration.
+%! will execute the unit tests associated the routine local_state_iteration.
 %! @sp 2
 %! @strong{Remarks}
 %! @sp 1
 %! [1] It is not possible to display the internal documentation of more than one routine.
 %! @sp 1
-%! [2] It is possible to perform unitary tests on a list of routines.
+%! [2] It is possible to perform unit tests on a list of routines.
 %! @sp 1
 %! [3] For displaying the internal documentation, matlab calls texinfo which has to be installed.
 %! @sp 2
@@ -56,7 +56,7 @@ function internals(flag, varargin)
 %! @end deftypefn
 %@eod:
 
-% Copyright © 2011-2014 Dynare Team
+% Copyright © 2011-2023 Dynare Team
 %
 % This file is part of Dynare.
 %

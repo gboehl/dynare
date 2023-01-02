@@ -1,4 +1,4 @@
-function rnd = gamrnd(a, b, method) % --*-- Unitary tests --*--
+function rnd = gamrnd(a, b, method)
 
 % This function produces independent random variates from the Gamma distribution.
 %
@@ -126,7 +126,7 @@ if ~isempty(ddx)
     end
 end
 
-return
+return % --*-- Unit tests --*--
 
 %@test:1
 if ~isoctave && ~user_has_matlab_license('statistics_toolbox')

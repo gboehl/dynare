@@ -1,4 +1,4 @@
-function t = wblinv(proba, scale, shape)   % --*-- Unitary tests --*--
+function t = wblinv(proba, scale, shape)
 
 % Inverse cumulative distribution function.
 %
@@ -10,7 +10,7 @@ function t = wblinv(proba, scale, shape)   % --*-- Unitary tests --*--
 % OUTPUTS
 % - t     [double] scalar such that P(X<=t)=proba
 
-% Copyright © 2015-2020 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -58,110 +58,112 @@ end
 
 t = exp(log(scale)+log(-log(1-proba))/shape);
 
+return % --*-- Unit tests --*--
+
 %@test:1
-%$ try
-%$    x = wblinv(0, 1, 2);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = isequal(x, 0);
-%$ end
-%$ T = all(t);
+try
+   x = wblinv(0, 1, 2);
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = isequal(x, 0);
+end
+T = all(t);
 %@eof:1
 
 %@test:2
-%$ try
-%$    x = wblinv(1, 1, 2);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = isinf(x);
-%$ end
-%$ T = all(t);
+try
+   x = wblinv(1, 1, 2);
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = isinf(x);
+end
+T = all(t);
 %@eof:2
 
 %@test:3
-%$ scales = [.5, 1, 5];
-%$ shapes = [.1, 1, 2];
-%$ x = NaN(9,1);
-%$
-%$ try
-%$    k = 0;
-%$    for i=1:3
-%$       for j=1:3
-%$           k = k+1;
-%$           x(k) = wblinv(.5, scales(i), shapes(j));
-%$       end
-%$    end
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    k = 1;
-%$    for i=1:3
-%$       for j=1:3
-%$           k = k+1;
-%$           t(k) = abs(x(k-1)-scales(i)*log(2)^(1/shapes(j)))<1e-12;
-%$       end
-%$    end
-%$ end
-%$ T = all(t);
+scales = [.5, 1, 5];
+shapes = [.1, 1, 2];
+x = NaN(9,1);
+
+try
+   k = 0;
+   for i=1:3
+      for j=1:3
+          k = k+1;
+          x(k) = wblinv(.5, scales(i), shapes(j));
+      end
+   end
+   t(1) = true;
+catch
+   t(1) = false;
+end
+
+if t(1)
+    k = 1;
+    for i=1:3
+        for j=1:3
+            k = k+1;
+            t(k) = abs(x(k-1)-scales(i)*log(2)^(1/shapes(j)))<1e-12;
+        end
+    end
+end
+T = all(t);
 %@eof:3
 
 %@test:4
-%$ debug = false;
-%$ scales = [ .5, 1, 5];
-%$ shapes = [ 1, 2, 3];
-%$ x = NaN(9,1);
-%$ p = 1e-1;
-%$
-%$ try
-%$    k = 0;
-%$    for i=1:3
-%$       for j=1:3
-%$           k = k+1;
-%$           x(k) = wblinv(p, scales(i), shapes(j));
-%$       end
-%$    end
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    k = 1;
-%$    for i=1:3
-%$       for j=1:3
-%$           k = k+1;
-%$           shape = shapes(j);
-%$           scale = scales(i);
-%$           density = @(z) exp(lpdfgweibull(z,shape,scale));
-%$           if debug
-%$               [shape, scale, x(k-1)]
-%$           end
-%$           if isoctave
-%$               s = quadv(density, 0, x(k-1),1e-10);
-%$           else
-%$               s = integral(density, 0, x(k-1));
-%$           end
-%$           if debug
-%$               [s, abs(p-s)]
-%$           end
-%$         if isoctave
-%$           t(k) = abs(p-s)<1e-9;
-%$         else
-%$           t(k) = abs(p-s)<1e-12;
-%$         end
-%$       end
-%$    end
-%$ end
-%$ T = all(t);
+debug = false;
+scales = [ .5, 1, 5];
+shapes = [ 1, 2, 3];
+x = NaN(9,1);
+p = 1e-1;
+
+try
+   k = 0;
+   for i=1:3
+      for j=1:3
+          k = k+1;
+          x(k) = wblinv(p, scales(i), shapes(j));
+      end
+   end
+   t(1) = true;
+catch
+   t(1) = false;
+end
+
+if t(1)
+   k = 1;
+   for i=1:3
+      for j=1:3
+          k = k+1;
+          shape = shapes(j);
+          scale = scales(i);
+          density = @(z) exp(lpdfgweibull(z,shape,scale));
+          if debug
+              [shape, scale, x(k-1)]
+          end
+          if isoctave
+              s = quadv(density, 0, x(k-1),1e-10);
+          else
+              s = integral(density, 0, x(k-1));
+          end
+          if debug
+              [s, abs(p-s)]
+          end
+          if isoctave
+              t(k) = abs(p-s)<1e-9;
+          else
+              t(k) = abs(p-s)<1e-12;
+          end
+      end
+   end
+end
+T = all(t);
 %@eof:4

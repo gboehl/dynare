@@ -1,4 +1,4 @@
-function [nodes, weights] = cubature_with_gaussian_weight(d,n,method)  % --*-- Unitary tests --*--
+function [nodes, weights] = cubature_with_gaussian_weight(d, n, method)
 
 % Computes nodes and weights for a n-order cubature with gaussian weight.
 %
@@ -17,7 +17,7 @@ function [nodes, weights] = cubature_with_gaussian_weight(d,n,method)  % --*-- U
 %     ∫   f(x) × e        dx
 %      -∞
 
-% Copyright © 2012-2019 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -108,7 +108,7 @@ m(:,2) =  e(n,i)-e(n,j);
 m(:,3) = -m(:,2);
 m(:,4) = -m(:,1);
 
-return
+return % --*-- Unit tests --*--
 
 %@test:1
 d = 4;

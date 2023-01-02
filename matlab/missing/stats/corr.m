@@ -1,4 +1,4 @@
-function retval = corr(x, y) % --*-- Unitary tests --*--
+function retval = corr(x, y)
 %@info:
 %! @deftypefn  {Function File} {} corr (@var{x})
 %! @deftypefnx {Function File} {} corr (@var{x}, @var{y})
@@ -39,7 +39,7 @@ function retval = corr(x, y) % --*-- Unitary tests --*--
 % Copyright © 1993-1996 Kurt Hornik
 % Copyright © 1996-2015 John W. Eaton
 % Copyright © 2013-2015 Julien Bect
-% Copyright © 2016-2017 Dynare Team
+% Copyright © 2016-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -110,79 +110,77 @@ c = x'*y;
 s = sx'*sy;
 retval = c./(n * s);
 
-
-end
-
+return % --*-- Unit tests --*--
 
 %@test:1
-%$ x = rand (10);
-%$ cc1 = corr(x);
-%$ cc2 = corr(x, x);
-%$ t(1) = dassert(size(cc1),[10, 10]);
-%$ t(2) = dassert(size (cc2),[10, 10]);
-%$ t(3) = dassert(cc1, cc2, sqrt (eps));
-%$ T = all(t);
+x = rand (10);
+cc1 = corr(x);
+cc2 = corr(x, x);
+t(1) = dassert(size(cc1),[10, 10]);
+t(2) = dassert(size (cc2),[10, 10]);
+t(3) = dassert(cc1, cc2, sqrt (eps));
+T = all(t);
 %@eof:1
 
 %@test:2
-%$ x = [1:3]';
-%$ y = [3:-1:1]';
-%$ t = zeros(3,1);
-%$ t(1) = dassert(corr(x, y), -1, 5*eps);
-%$ t(2) = dassert(corr(x, flipud (y)), 1, 5*eps);
-%$ t(3) = dassert(corr([x, y]), [1 -1; -1 1], 5*eps);
-%$ T = all(t);
+x = [1:3]';
+y = [3:-1:1]';
+t = zeros(3,1);
+t(1) = dassert(corr(x, y), -1, 5*eps);
+t(2) = dassert(corr(x, flipud (y)), 1, 5*eps);
+t(3) = dassert(corr([x, y]), [1 -1; -1 1], 5*eps);
+T = all(t);
 %@eof:2
 
 %@test:3
-%$ if ~isoctave()
-%$   t = zeros(3,1);
-%$   t(1) = dassert(corr(5), NaN);
-%$   t(2) = dassert(corr([1 2 3],5),NaN(3,1));
-%$   t(3) = dassert(corr(5,[1 2 3]),NaN(1,3));
-%$ else
-%$   t = 1;
-%$ end
-%$ T = all(t);
+if ~isoctave()
+    t = zeros(3,1);
+    t(1) = dassert(corr(5), NaN);
+    t(2) = dassert(corr([1 2 3],5),NaN(3,1));
+    t(3) = dassert(corr(5,[1 2 3]),NaN(1,3));
+else
+    t = 1;
+end
+T = all(t);
 %@eof:3
 
 %@test:4
-%$ t = zeros(6,1);
-%$ try
-%$     corr()
-%$     t(1) = false;
-%$ catch
-%$     t(1) = true;
-%$ end
-%$ try
-%$     corr(1, 2, 3)
-%$     t(2) = false;
-%$ catch
-%$     t(2) = true;
-%$ end
-%$ try
-%$     corr([1; 2], ['A', 'B'])
-%$     t(3) = false;
-%$ catch
-%$     t(3) = true;
-%$ end
-%$ try
-%$     corr([1; 2], ['A', 'B'])
-%$     t(4) = false;
-%$ catch
-%$     t(4) = true;
-%$ end
-%$ try
-%$     corr(ones (2,2,2))
-%$     t(5) = false;
-%$ catch
-%$     t(5) = true;
-%$ end
-%$ try
-%$     corr(ones (2,2), ones (2,2,2))
-%$     t(6) = false;
-%$ catch
-%$     t(6) = true;
-%$ end
-%$ T = all(t);
+t = zeros(6,1);
+try
+    corr()
+    t(1) = false;
+catch
+    t(1) = true;
+end
+try
+    corr(1, 2, 3)
+    t(2) = false;
+catch
+    t(2) = true;
+end
+try
+    corr([1; 2], ['A', 'B'])
+    t(3) = false;
+catch
+    t(3) = true;
+end
+try
+    corr([1; 2], ['A', 'B'])
+    t(4) = false;
+catch
+    t(4) = true;
+end
+try
+    corr(ones (2,2,2))
+    t(5) = false;
+catch
+    t(5) = true;
+end
+try
+    corr(ones (2,2), ones (2,2,2))
+    t(6) = false;
+catch
+    t(6) = true;
+end
+T = all(t);
 %@eof:4

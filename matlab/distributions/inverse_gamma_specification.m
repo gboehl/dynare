@@ -1,4 +1,4 @@
-function [s,nu] = inverse_gamma_specification(mu, sigma2, lb, type, use_fzero_flag, name) % --*-- Unitary tests --*--
+function [s,nu] = inverse_gamma_specification(mu, sigma2, lb, type, use_fzero_flag, name)
 
 % Computes the inverse Gamma hyperparameters from the prior mean and variance.
 %
@@ -21,7 +21,7 @@ function [s,nu] = inverse_gamma_specification(mu, sigma2, lb, type, use_fzero_fl
 % more often in finding an interval for nu containing a signe change because it expands the interval on both sides and eventually
 % violates  the condition nu>2.
 
-% Copyright © 2003-2017 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -147,62 +147,64 @@ else
     error('inverse_gamma_specification: unkown type')
 end
 
+return % --*-- Unit tests --*--
+
 %@test:1
-%$ try
-%$    [s, nu] = inverse_gamma_specification(.5, .05, 0, 1);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(0.5-sqrt(.5*s)*gamma(.5*(nu-1))/gamma(.5*nu))<1e-12;
-%$    t(3) = abs(0.05-s/(nu-2)+.5^2)<1e-12;
-%$ end
-%$ T = all(t);
+try
+   [s, nu] = inverse_gamma_specification(.5, .05, 0, 1);
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(0.5-sqrt(.5*s)*gamma(.5*(nu-1))/gamma(.5*nu))<1e-12;
+    t(3) = abs(0.05-s/(nu-2)+.5^2)<1e-12;
+end
+T = all(t);
 %@eof:1
 
 %@test:2
-%$ try
-%$    [s, nu] = inverse_gamma_specification(.5, .05, 0, 2);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(0.5-s/(nu-2))<1e-12;
-%$    t(3) = abs(0.05-2*.5^2/(nu-4))<1e-12;
-%$ end
-%$ T = all(t);
+try
+   [s, nu] = inverse_gamma_specification(.5, .05, 0, 2);
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(0.5-s/(nu-2))<1e-12;
+    t(3) = abs(0.05-2*.5^2/(nu-4))<1e-12;
+end
+T = all(t);
 %@eof:2
 
 %@test:3
-%$ try
-%$    [s, nu] = inverse_gamma_specification(.5, Inf, 0, 1);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(0.5-sqrt(.5*s)*gamma(.5*(nu-1))/gamma(.5*nu))<1e-12;
-%$    t(3) = isequal(nu, 2); %abs(0.05-2*.5^2/(nu-4))<1e-12;
-%$ end
-%$ T = all(t);
+try
+   [s, nu] = inverse_gamma_specification(.5, Inf, 0, 1);
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(0.5-sqrt(.5*s)*gamma(.5*(nu-1))/gamma(.5*nu))<1e-12;
+    t(3) = isequal(nu, 2); %abs(0.05-2*.5^2/(nu-4))<1e-12;
+end
+T = all(t);
 %@eof:3
 
 %@test:4
-%$ try
-%$    [s, nu] = inverse_gamma_specification(.5, Inf, 0, 2);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(0.5-s/(nu-2))<1e-12;
-%$    t(3) = isequal(nu, 4);
-%$ end
-%$ T = all(t);
+try
+   [s, nu] = inverse_gamma_specification(.5, Inf, 0, 2);
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(0.5-s/(nu-2))<1e-12;
+    t(3) = isequal(nu, 4);
+end
+T = all(t);
 %@eof:4

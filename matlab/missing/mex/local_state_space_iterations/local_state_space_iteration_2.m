@@ -1,4 +1,4 @@
-function [y, y_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, a, b, c) % --*-- Unitary tests --*--
+function [y, y_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, a, b, c)
 
 % Given the demeaned states (yhat) and structural innovations (epsilon), this routine computes the level of selected endogenous variables when the
 % model is approximated by an order two taylor expansion around the deterministic steady state. Depending on the number of input/output
@@ -26,7 +26,7 @@ function [y, y_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, consta
 % 1. If the function has more than nine input arguments (pruning) then it must have two output arguments (otherwise only one input).
 % 2. Ninth input argument is not used, it is here only to have a common interface with the mex version.
 
-% Copyright © 2011-2022 Dynare Team
+% Copyright © 2011-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,7 +77,7 @@ else
     end
 end
 
-return
+return % --*-- Unit tests --*--
 
 %@test:1
 n = 2;

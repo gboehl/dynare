@@ -1,4 +1,4 @@
-function pdraw = prior_draw(BayesInfo, prior_trunc, uniform) % --*-- Unitary tests --*--
+function pdraw = prior_draw(BayesInfo, prior_trunc, uniform)
 
 % This function generate one draw from the joint prior distribution and
 % allows sampling uniformly from the prior support (uniform==1 when called with init==1)
@@ -26,7 +26,7 @@ function pdraw = prior_draw(BayesInfo, prior_trunc, uniform) % --*-- Unitary tes
 % NOTE 3. This code relies on bayestopt_ as created in the base workspace
 %           by the preprocessor (or as updated in subsequent pieces of code and handed to the base workspace)
 %
-% Copyright © 2006-2017 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -174,101 +174,103 @@ if weibull_draws
     end
 end
 
+return % --*-- Unit tests --*--
+
 %@test:1
-%$ % Fill global structures with required fields...
-%$ prior_trunc = 1e-10;
-%$ p0 = repmat([1; 2; 3; 4; 5; 6; 8], 2, 1);    % Prior shape
-%$ p1 = .4*ones(14,1);                          % Prior mean
-%$ p2 = .2*ones(14,1);                          % Prior std.
-%$ p3 = NaN(14,1);
-%$ p4 = NaN(14,1);
-%$ p5 = NaN(14,1);
-%$ p6 = NaN(14,1);
-%$ p7 = NaN(14,1);
-%$
-%$ for i=1:14
-%$     switch p0(i)
-%$       case 1
-%$         % Beta distribution
-%$         p3(i) = 0;
-%$         p4(i) = 1;
-%$         [p6(i), p7(i)] = beta_specification(p1(i), p2(i)^2, p3(i), p4(i));
-%$         p5(i) = compute_prior_mode([p6(i) p7(i)], 1);
-%$       case 2
-%$         % Gamma distribution
-%$         p3(i) = 0;
-%$         p4(i) = Inf;
-%$         [p6(i), p7(i)] = gamma_specification(p1(i), p2(i)^2, p3(i), p4(i));
-%$         p5(i) = compute_prior_mode([p6(i) p7(i)], 2);
-%$       case 3
-%$         % Normal distribution
-%$         p3(i) = -Inf;
-%$         p4(i) = Inf;
-%$         p6(i) = p1(i);
-%$         p7(i) = p2(i);
-%$         p5(i) = p1(i);
-%$       case 4
-%$         % Inverse Gamma (type I) distribution
-%$         p3(i) = 0;
-%$         p4(i) = Inf;
-%$         [p6(i), p7(i)] = inverse_gamma_specification(p1(i), p2(i)^2, p3(i), 1, false);
-%$         p5(i) = compute_prior_mode([p6(i) p7(i)], 4);
-%$       case 5
-%$         % Uniform distribution
-%$         [p1(i), p2(i), p6(i), p7(i)] = uniform_specification(p1(i), p2(i), p3(i), p4(i));
-%$         p3(i) = p6(i);
-%$         p4(i) = p7(i);
-%$         p5(i) = compute_prior_mode([p6(i) p7(i)], 5);
-%$       case 6
-%$         % Inverse Gamma (type II) distribution
-%$         p3(i) = 0;
-%$         p4(i) = Inf;
-%$         [p6(i), p7(i)] = inverse_gamma_specification(p1(i), p2(i)^2, p3(i), 2, false);
-%$         p5(i) = compute_prior_mode([p6(i) p7(i)], 6);
-%$       case 8
-%$         % Weibull distribution
-%$         p3(i) = 0;
-%$         p4(i) = Inf;
-%$         [p6(i), p7(i)] = weibull_specification(p1(i), p2(i)^2, p3(i));
-%$         p5(i) = compute_prior_mode([p6(i) p7(i)], 8);
-%$       otherwise
-%$         error('This density is not implemented!')
-%$     end
-%$ end
-%$
-%$ BayesInfo.pshape = p0;
-%$ BayesInfo.p1 = p1;
-%$ BayesInfo.p2 = p2;
-%$ BayesInfo.p3 = p3;
-%$ BayesInfo.p4 = p4;
-%$ BayesInfo.p5 = p5;
-%$ BayesInfo.p6 = p6;
-%$ BayesInfo.p7 = p7;
-%$
-%$ ndraws = 1e5;
-%$ m0 = BayesInfo.p1; %zeros(14,1);
-%$ v0 = diag(BayesInfo.p2.^2); %zeros(14);
-%$
-%$ % Call the tested routine
-%$ try
-%$     % Initialization of prior_draws.
-%$     prior_draw(BayesInfo, prior_trunc, false);
-%$     % Do simulations in a loop and estimate recursively the mean and teh variance.
-%$     for i = 1:ndraws
-%$          draw = transpose(prior_draw());
-%$          m1 = m0 + (draw-m0)/i;
-%$          m2 = m1*m1';
-%$          v0 = v0 + ((draw*draw'-m2-v0) + (i-1)*(m0*m0'-m2'))/i;
-%$          m0 = m1;
-%$     end
-%$     t(1) = true;
-%$ catch
-%$     t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$     t(2) = all(abs(m0-BayesInfo.p1)<3e-3);
-%$     t(3) = all(all(abs(v0-diag(BayesInfo.p2.^2))<5e-3));
-%$ end
-%$ T = all(t);
+% Fill global structures with required fields...
+prior_trunc = 1e-10;
+p0 = repmat([1; 2; 3; 4; 5; 6; 8], 2, 1);    % Prior shape
+p1 = .4*ones(14,1);                          % Prior mean
+p2 = .2*ones(14,1);                          % Prior std.
+p3 = NaN(14,1);
+p4 = NaN(14,1);
+p5 = NaN(14,1);
+p6 = NaN(14,1);
+p7 = NaN(14,1);
+
+for i=1:14
+    switch p0(i)
+      case 1
+        % Beta distribution
+        p3(i) = 0;
+        p4(i) = 1;
+        [p6(i), p7(i)] = beta_specification(p1(i), p2(i)^2, p3(i), p4(i));
+        p5(i) = compute_prior_mode([p6(i) p7(i)], 1);
+      case 2
+        % Gamma distribution
+        p3(i) = 0;
+        p4(i) = Inf;
+        [p6(i), p7(i)] = gamma_specification(p1(i), p2(i)^2, p3(i), p4(i));
+        p5(i) = compute_prior_mode([p6(i) p7(i)], 2);
+      case 3
+        % Normal distribution
+        p3(i) = -Inf;
+        p4(i) = Inf;
+        p6(i) = p1(i);
+        p7(i) = p2(i);
+        p5(i) = p1(i);
+      case 4
+        % Inverse Gamma (type I) distribution
+        p3(i) = 0;
+        p4(i) = Inf;
+        [p6(i), p7(i)] = inverse_gamma_specification(p1(i), p2(i)^2, p3(i), 1, false);
+        p5(i) = compute_prior_mode([p6(i) p7(i)], 4);
+      case 5
+        % Uniform distribution
+        [p1(i), p2(i), p6(i), p7(i)] = uniform_specification(p1(i), p2(i), p3(i), p4(i));
+        p3(i) = p6(i);
+        p4(i) = p7(i);
+        p5(i) = compute_prior_mode([p6(i) p7(i)], 5);
+      case 6
+        % Inverse Gamma (type II) distribution
+        p3(i) = 0;
+        p4(i) = Inf;
+        [p6(i), p7(i)] = inverse_gamma_specification(p1(i), p2(i)^2, p3(i), 2, false);
+        p5(i) = compute_prior_mode([p6(i) p7(i)], 6);
+      case 8
+        % Weibull distribution
+        p3(i) = 0;
+        p4(i) = Inf;
+        [p6(i), p7(i)] = weibull_specification(p1(i), p2(i)^2, p3(i));
+        p5(i) = compute_prior_mode([p6(i) p7(i)], 8);
+      otherwise
+        error('This density is not implemented!')
+    end
+end
+
+BayesInfo.pshape = p0;
+BayesInfo.p1 = p1;
+BayesInfo.p2 = p2;
+BayesInfo.p3 = p3;
+BayesInfo.p4 = p4;
+BayesInfo.p5 = p5;
+BayesInfo.p6 = p6;
+BayesInfo.p7 = p7;
+
+ndraws = 1e5;
+m0 = BayesInfo.p1; %zeros(14,1);
+v0 = diag(BayesInfo.p2.^2); %zeros(14);
+
+% Call the tested routine
+try
+    % Initialization of prior_draws.
+    prior_draw(BayesInfo, prior_trunc, false);
+    % Do simulations in a loop and estimate recursively the mean and teh variance.
+    for i = 1:ndraws
+         draw = transpose(prior_draw());
+         m1 = m0 + (draw-m0)/i;
+         m2 = m1*m1';
+         v0 = v0 + ((draw*draw'-m2-v0) + (i-1)*(m0*m0'-m2'))/i;
+         m0 = m1;
+    end
+    t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = all(abs(m0-BayesInfo.p1)<3e-3);
+    t(3) = all(all(abs(v0-diag(BayesInfo.p2.^2))<5e-3));
+end
+T = all(t);
 %@eof:1

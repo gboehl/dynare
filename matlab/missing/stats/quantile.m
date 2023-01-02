@@ -1,4 +1,4 @@
-function [q,N] = quantile(X, p, dim, method, weights) % --*-- Unitary tests --*--
+function [q,N] = quantile(X, p, dim, method, weights)
 
 % Quantiles of a sample via various methods.
 %
@@ -49,7 +49,7 @@ function [q,N] = quantile(X, p, dim, method, weights) % --*-- Unitary tests --*-
 % http://fr.mathworks.com/matlabcentral/fileexchange/46555-quantile-calculation
 %
 % Copyright © 2014-2016 University of Surrey (Christopher Hummersone)
-% Copyright © 2016-2017 Dynare Team
+% Copyright © 2016-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -234,24 +234,25 @@ function y = irearrange(x,order,shape)
 y = reshape(x,shape);
 y = ipermute(y,order);
 
+return % --*-- Unit tests --*--
 
 %@test:1
-%$ X = randn(10000000, 1);
-%$
-%$ try
-%$   q = quantile(X, [.25, .5, .75, .95 ]);
-%$   t(1) = true;
-%$ catch
-%$   t(1) = false;
-%$ end
-%$
-%$ e = [-0.674489750196082, 0, 0.674489750196082, 1.644853626951472];
-%$
-%$ if t(1)
-%$    for i=1:4
-%$        t(i+1) = abs(q(i)-e(i))<2e-3;
-%$    end
-%$ end
-%$
-%$ T = all(t);
+X = randn(10000000, 1);
+
+try
+  q = quantile(X, [.25, .5, .75, .95 ]);
+  t(1) = true;
+catch
+  t(1) = false;
+end
+
+e = [-0.674489750196082, 0, 0.674489750196082, 1.644853626951472];
+
+if t(1)
+    for i=1:4
+        t(i+1) = abs(q(i)-e(i))<2e-3;
+    end
+end
+
+T = all(t);
 %@eof:1

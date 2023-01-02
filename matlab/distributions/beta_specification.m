@@ -1,4 +1,4 @@
-function [a, b] = beta_specification(mu, sigma2, lb, ub, name)   % --*-- Unitary tests --*--
+function [a, b] = beta_specification(mu, sigma2, lb, ub, name)
 
 % Returns the hyperparameters of the beta distribution given the expectation and variance.
 %
@@ -12,7 +12,7 @@ function [a, b] = beta_specification(mu, sigma2, lb, ub, name)   % --*-- Unitary
 % - a      [double]   First hyperparameter of the Beta density.
 % - b      [double]   Second hyperparameter of the Beta density.
 
-% Copyright © 2015-2017 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,67 +66,69 @@ end
 a = (1-mu)*mu*mu/sigma2-mu;
 b = a*(1/mu-1);
 
+return % --*-- Unit tests --*--
+
 %@test:1
-%$ try
-%$    [a, b] = beta_specification(.5, .05);
-%$    t(1) = true;
-%$ catch
-%$    t(1) = false;
-%$ end
-%$
-%$ if t(1)
-%$    t(2) = abs(0.5-a/(a+b))<1e-12;
-%$    t(3) = abs(0.05-a*b/((a+b)^2*(a+b+1)))<1e-12;
-%$ end
-%$ T = all(t);
+try
+   [a, b] = beta_specification(.5, .05);
+   t(1) = true;
+catch
+    t(1) = false;
+end
+
+if t(1)
+    t(2) = abs(0.5-a/(a+b))<1e-12;
+    t(3) = abs(0.05-a*b/((a+b)^2*(a+b+1)))<1e-12;
+end
+T = all(t);
 %@eof:1
 
 %@test:2
-%$ try
-%$    [a, b] = beta_specification(0.5, .05, 1, 2);
-%$    t(1) = false;
-%$ catch
-%$    t(1) = true;
-%$ end
-%$
-%$ T = all(t);
+try
+    [a, b] = beta_specification(0.5, .05, 1, 2);
+    t(1) = false;
+catch
+    t(1) = true;
+end
+
+T = all(t);
 %@eof:2
 
 %@test:3
-%$ try
-%$    [a, b] = beta_specification(2.5, .05, 1, 2);
-%$    t(1) = false;
-%$ catch
-%$    t(1) = true;
-%$ end
-%$
-%$ T = all(t);
+try
+    [a, b] = beta_specification(2.5, .05, 1, 2);
+    t(1) = false;
+catch
+    t(1) = true;
+end
+
+T = all(t);
 %@eof:3
 
 %@test:4
-%$ try
-%$    [a, b] = beta_specification(.4, .6*.4+1e-4);
-%$    t(1) = false;
-%$ catch
-%$    t(1) = true;
-%$ end
-%$
-%$ T = all(t);
+try
+    [a, b] = beta_specification(.4, .6*.4+1e-4);
+    t(1) = false;
+catch
+    t(1) = true;
+end
+
+T = all(t);
 %@eof:4
 
 %@test:5
-%$ try
-%$    [a, b] = beta_specification(.4, .6*.4+1e-6);
-%$    t(1) = false;
-%$ catch
-%$    t(1) = true;
-%$ end
-%$ try
-%$    [a, b] = beta_specification(.4, .6*.4-1e-6);
-%$    t(2) = true;
-%$ catch
-%$    t(2) = false;
-%$ end
-%$
-%$ T = all(t);
+try
+   [a, b] = beta_specification(.4, .6*.4+1e-6);
+   t(1) = false;
+catch
+   t(1) = true;
+end
+try
+    [a, b] = beta_specification(.4, .6*.4-1e-6);
+    t(2) = true;
+catch
+    t(2) = false;
+end
+
+T = all(t);
 %@eof:5

@@ -101,10 +101,10 @@ It's useful to contribute `.mod` files that test some aspect of Dynare that is n
 
 ### Unit tests
 
-So-called unit tests allow the test suite to check the correct functioning of the MATLAB/Octave functions contained in Dynare. To add a unit test you need to 
-1. add the keyword ` % --*-- Unitary tests --*--` at the end of the `function` header to tell the testsuite that the file contains unit tests. 
-1. Add the particular tests at the end of the file after a `return` by
-   1. Starting a test with `%@test:INTEGER` 
+So-called unit tests allow the test suite to check the correct functioning of the MATLAB/Octave functions contained in Dynare. To add a unit test you need to
+1. add the `return % --*-- Unit tests --*--` at the end of the `function` to tell the testsuite that the file contains unit tests.
+1. Add the particular tests at the end of the file after the `return` statement by
+   1. Starting a test with `%@test:INTEGER`
    2. Adding a MATLAB/Octave test code that provides a pass/fail indicator `T` that takes on `true` if the test passed.
    3. Closing the test with `%@eof:INTEGER`
    where `INTEGER` denotes the number of the test.
@@ -112,9 +112,9 @@ So-called unit tests allow the test suite to check the correct functioning of th
 An example testing the correct functionality of mode-computations for a normal distribution is
 
 ```
-function m = compute_prior_mode(hyperparameters,shape) % --*-- Unitary tests --*--
+function m = compute_prior_mode(hyperparameters,shape)
 
-return
+return  % --*-- Unit tests --*--
 
 %@test:1
 % Normal density

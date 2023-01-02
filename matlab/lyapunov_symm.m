@@ -1,4 +1,4 @@
-function [x,u] = lyapunov_symm(a,b,lyapunov_fixed_point_tol,qz_criterium,lyapunov_complex_threshold,method,debug)  % --*-- Unitary tests --*--
+function [x,u] = lyapunov_symm(a,b,lyapunov_fixed_point_tol,qz_criterium,lyapunov_complex_threshold,method,debug)
 % Solves the Lyapunov equation x-a*x*a' = b, for b and x symmetric matrices.
 % If a has some unit roots, the function computes only the solution of the stable subsystem.
 %
@@ -25,7 +25,7 @@ function [x,u] = lyapunov_symm(a,b,lyapunov_fixed_point_tol,qz_criterium,lyapuno
 % SPECIAL REQUIREMENTS
 %   None
 
-% Copyright © 2006-2017 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
