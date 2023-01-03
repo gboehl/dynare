@@ -71,10 +71,6 @@ Section "Dynare core (preprocessor and M-files)"
 
  WriteUninstaller $INSTDIR\uninstall.exe
 
- # Create start menu entries
- CreateDirectory "${SMLOC}"
- CreateShortcut "${SMLOC}\Uninstall.lnk" "$INSTDIR\uninstall.exe"
-
  # Create entry in "Add/Remove programs"
  WriteRegStr SHELL_CONTEXT "${REGLOC}" "DisplayName" "Dynare ${VERSION}"
  WriteRegStr SHELL_CONTEXT "${REGLOC}" "DisplayVersion" "${VERSION}"
@@ -121,11 +117,12 @@ Section "Documentation and examples"
  SetOutPath $INSTDIR\doc\dynare-manual.html
  File /r ..\doc\manual\build\html\*
 
- CreateShortcut "${SMLOC}\Documentation.lnk" "$INSTDIR\doc"
-
  SetOutPath $INSTDIR\examples
  File ..\examples\*.mod ..\examples\*.m
 
+ # Create start menu entries
+ CreateDirectory "${SMLOC}"
+ CreateShortcut "${SMLOC}\Documentation.lnk" "$INSTDIR\doc"
  CreateShortcut "${SMLOC}\Examples.lnk" "$INSTDIR\examples"
 SectionEnd
 
