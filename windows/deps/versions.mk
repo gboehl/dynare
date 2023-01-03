@@ -18,7 +18,7 @@ MATLAB64_VERSION = 20200930
 ## Build dependencies
 
 # pacman -Ss mingw-w64-x86_64-boost
-MINGW64_BOOST_VERSION = 1.80.0-1
+MINGW64_BOOST_VERSION = 1.81.0-1
 
 # pacman -Ss mingw-w64-x86_64-gsl
 MINGW64_GSL_VERSION = 2.7.1-1
@@ -28,11 +28,11 @@ MINGW64_MATIO_VERSION = 1.5.23-1
 
 # Dependency of matio (and of the MinGW compiler)
 # pacman -Ss mingw-w64-x86_64-zlib
-MINGW64_ZLIB_VERSION = 1.2.12-1
+MINGW64_ZLIB_VERSION = 1.2.13-2
 
 # Dependency of matio
 # pacman -Ss mingw-w64-x86_64-hdf5
-MINGW64_HDF5_VERSION = 1.12.2-1
+MINGW64_HDF5_VERSION = 1.12.2-2
 
 # Dependency of HDF5 (provides szip library)
 # pacman -Ss mingw-w64-x86_64-libaec
@@ -41,22 +41,22 @@ MINGW64_LIBAEC_VERSION = 1.0.6-2
 ## MinGW packages for the embedded compiler
 
 # pacman -Ss mingw-w64-x86_64-gcc$
-MINGW64_GCC_VERSION = 12.2.0-1
+MINGW64_GCC_VERSION = 12.2.0-7
 
 # pacman -Ss mingw-w64-x86_64-gmp
-MINGW64_GMP_VERSION = 6.2.1-3
+MINGW64_GMP_VERSION = 6.2.1-4
 
 # pacman -Ss mingw-w64-x86_64-binutils
 MINGW64_BINUTILS_VERSION = 2.39-2
 
 # pacman -Ss mingw-w64-x86_64-headers-git
-MINGW64_HEADERS_VERSION = 10.0.0.r72.g1dd2a4993-1
+MINGW64_HEADERS_VERSION = 10.0.0.r186.gfc55e181b-1
 
 # pacman -Ss mingw-w64-x86_64-crt-git
-MINGW64_CRT_VERSION = 10.0.0.r72.g1dd2a4993-1
+MINGW64_CRT_VERSION = 10.0.0.r186.gfc55e181b-1
 
 # pacman -Ss mingw-w64-x86_64-winpthreads-git
-MINGW64_WINPTHREADS_VERSION = 10.0.0.r72.g1dd2a4993-1
+MINGW64_WINPTHREADS_VERSION = 10.0.0.r186.gfc55e181b-1
 
 # pacman -Ss mingw-w64-x86_64-zstd
 MINGW64_ZSTD_VERSION = 1.5.2-2

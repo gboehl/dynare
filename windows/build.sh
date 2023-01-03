@@ -54,6 +54,15 @@ BASENAME=dynare-$VERSION
 LIB64="$ROOT_DIRECTORY"/deps/lib64
 LIB64_MSYS2="$ROOT_DIRECTORY"/deps/lib64-msys2
 
+# MSYS2 libraries are now built with -fstack-protector-strong, see:
+# https://www.msys2.org/news/#2022-10-23-mingw-packages-now-built-with-d_fortify_source2-and-fstack-protector-strong
+# As of 2023-01-03, when linking against HDF5 (and possibly other libraries),
+# it is necessary to compile our own code with -fstack-protector to avoid undefined symbols
+# at link time.
+# Note that adding this flag is not necessary when building from MSYS2 shell.
+# Maybe revisit this once our runners are upgraded to Debian “Bookworm” 12.
+export CXXFLAGS="-O2 -fstack-protector"
+
 # Go to source root directory
 cd ..
 
