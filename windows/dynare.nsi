@@ -130,19 +130,6 @@ Section "Documentation and examples"
 SectionEnd
 
 
-Section /o "Dynare++ (standalone executable)"
-
- SetOutPath $INSTDIR\dynare++
- File ..\dynare++\src\dynare++.exe ..\dynare++\dynare_simul\dynare_simul.m
-
- SetOutPath $INSTDIR\doc\dynare++
- File ..\dynare++\doc\*.pdf
-
- SetOutPath $INSTDIR\examples\dynare++
- File ..\examples\dynare++\example1.mod ..\examples\dynare++\README.txt
-SectionEnd
-
-
 Section "Uninstall"
 !insertmacro DETERMINE_CONTEXT
 
@@ -156,7 +143,6 @@ Section "Uninstall"
  Rmdir /r $INSTDIR\preprocessor
  Rmdir /r $INSTDIR\contrib
  Rmdir /r $INSTDIR\mex
- Rmdir /r $INSTDIR\dynare++
  Rmdir /r $INSTDIR\doc
  Rmdir /r $INSTDIR\examples
  Rmdir /r $INSTDIR\scripts

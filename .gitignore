@@ -105,34 +105,6 @@ doc/internals/ltxpng
 /mex/sources/block_trust_region/test/trust_region_test
 !/mex/sources/block_trust_region/test/Makefile
 
-# Dynare++
-/dynare++/integ/src/quadrature-points.dSYM/
-/dynare++/src/dynare++.dSYM/
-/dynare++/integ/src/quadrature-points
-/dynare++/integ/src/quadrature-points.exe
-/dynare++/integ/testing/tests
-/dynare++/integ/testing/tests.exe
-/dynare++/kord/tests
-/dynare++/kord/tests.exe
-/dynare++/kord/out.txt
-/dynare++/sylv/testing/tests
-/dynare++/sylv/testing/tests.exe
-/dynare++/parser/cc/*_ll.cc
-/dynare++/parser/cc/*_tab.cc
-/dynare++/parser/cc/*_tab.hh
-/dynare++/src/dynare++
-/dynare++/src/dynare++.exe
-/dynare++/src/dynglob_ll.cc
-/dynare++/src/dynglob_tab.cc
-/dynare++/src/dynglob_tab.hh
-/dynare++/tl/testing/tests
-/dynare++/tl/testing/tests.exe
-/dynare++/tests/*.jnl
-/dynare++/tests/*.m
-/dynare++/tests/*.mat
-/dynare++/tests/*.dump
-!/dynare++/extern/R/Makefile
-
 # Windows
 !/windows/Makefile
 !/windows/deps/Makefile
@@ -152,8 +124,6 @@ windows/deps/tarballs/
 windows/exe/
 windows/7z/
 windows/zip/
-dynare++/32-bit/
-dynare++/64-bit/
 
 # MacOS stuff
 .DS_Store

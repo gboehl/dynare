@@ -204,7 +204,6 @@ MODFILES = \
 	k_order_perturbation/fs2000k_1_m.mod \
 	k_order_perturbation/fs2000k3_m.mod \
 	k_order_perturbation/fs2000k3_p.mod \
-	k_order_perturbation/fs2000k4.mod \
 	k_order_perturbation/burnside_k_order.mod \
 	k_order_perturbation/fs2000_k_order_simul.mod \
 	partial_information/PItest3aHc0PCLsimModPiYrVarobsAll.mod \
@@ -729,15 +728,10 @@ estimation/MH_recover/fs2000_recover_tarb.o.trs: estimation/MH_recover/fs2000_re
 k_order_perturbation/fs2000k_1_m.m.trs: k_order_perturbation/fs2000k2_m.m.trs
 k_order_perturbation/fs2000k2_m.m.trs k_order_perturbation/fs2000k3_m.m.trs k_order_perturbation/fs2000k2_use_dll.m.trs k_order_perturbation/fs2000k3_use_dll.m.trs: k_order_perturbation/fs2000k2a.m.trs
 k_order_perturbation/fs2000k_1_use_dll.m.trs: k_order_perturbation/fs2000k2_use_dll.m.trs
-k_order_perturbation/fs2000k4.m.trs: k_order_perturbation/fs2000k++.mat
 
 k_order_perturbation/fs2000k_1_m.o.trs: k_order_perturbation/fs2000k2_m.o.trs
 k_order_perturbation/fs2000k2_m.o.trs k_order_perturbation/fs2000k3_m.o.trs k_order_perturbation/fs2000k2_use_dll.o.trs k_order_perturbation/fs2000k3_use_dll.o.trs: k_order_perturbation/fs2000k2a.o.trs
 k_order_perturbation/fs2000k_1_use_dll.o.trs: k_order_perturbation/fs2000k2_use_dll.o.trs
-k_order_perturbation/fs2000k4.o.trs: k_order_perturbation/fs2000k++.mat
-
-k_order_perturbation/fs2000k++.mat: k_order_perturbation/fs2000k++.mod ../dynare++/src/dynare++$(EXEEXT)
-	cd k_order_perturbation && ../../dynare++/src/dynare++ --order 3 --no-centralize fs2000k++.mod
 
 kalman_filter_smoother/algo1.m.trs kalman_filter_smoother/algo3.m.trs kalman_filter_smoother/algo4a.m.trs kalman_filter_smoother/algo4b.m.trs kalman_filter_smoother/algoH1.m.trs kalman_filter_smoother/algoH3.m.trs kalman_filter_smoother/fs2000.m.trs kalman_filter_smoother/fs2000_1.m.trs kalman_filter_smoother/fs2000_2.m.trs kalman_filter_smoother/fs2000a.m.trs: kalman_filter_smoother/gen_data.m.trs
 kalman_filter_smoother/algo1.o.trs kalman_filter_smoother/algo3.o.trs kalman_filter_smoother/algo4a.o.trs kalman_filter_smoother/algo4b.o.trs kalman_filter_smoother/algoH1.o.trs kalman_filter_smoother/algoH3.o.trs kalman_filter_smoother/fs2000.o.trs kalman_filter_smoother/fs2000_1.o.trs kalman_filter_smoother/fs2000_2.o.trs kalman_filter_smoother/fs2000a.o.trs: kalman_filter_smoother/gen_data.o.trs
@@ -1428,7 +1422,6 @@ EXTRA_DIST = \
 	optimizers/fs2000.common.inc \
 	estimation/MH_recover/fs2000.common.inc \
 	prior_posterior_function/posterior_function_demo.m \
-	k_order_perturbation/fs2000k++.mod \
 	lmmcp/sw-common-header.inc \
 	lmmcp/sw-common-footer.inc \
 	estimation/tune_mh_jscale/fs2000.inc \
@@ -1658,10 +1651,6 @@ clean-local:
 	rm -f histval_initval_file/ramst_initval_file_data_col_vec_mat.mat histval_initval_file/ramst_initval_file_data_row_vec_mat.mat histval_initval_file/ramst_initval_file_excel.xls
 
 	rm -f loglinear/results_exp_histval.mat loglinear/results_exp.mat
-
-	rm -f k_order_perturbation/fs2000k++.mat k_order_perturbation/fs2000k++.dump \
-		k_order_perturbation/fs2000k++.jnl k_order_perturbation/fs2000k++_f.m \
-		k_order_perturbation/fs2000k++_ff.m
 
 	rm -rf ecb/cherrypick/simulation-files1 ecb/cherrypick/simulation-files2 toto.mod
 

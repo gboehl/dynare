@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2019-2022 Dynare Team
+# Copyright © 2019-2023 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -76,7 +76,7 @@ QUADMATH_DIR=$(mktemp -d)
 ln -s /usr/local/opt/gcc/lib/gcc/$GCC_VERSION/libquadmath.a $QUADMATH_DIR
 
 ##
-## Compile Dynare doc, dynare++, preprocessor, mex for MATLAB < 2018a
+## Compile Dynare doc, preprocessor, mex for MATLAB < 2018a
 ##
 ## NB: In Homebrew, -static-libgfortran is implied by -static-libgcc (see “gfortran -dumpspecs”)
 ## NB2: We use the hack for libquadmath in LDFLAGS
@@ -113,8 +113,7 @@ mkdir -p \
       "$PKGFILES"/preprocessor \
       "$PKGFILES"/mex/matlab/maci64-8.3-9.3 \
       "$PKGFILES"/mex/matlab/maci64-9.4-9.13 \
-      "$PKGFILES"/doc/dynare++ \
-      "$PKGFILES"/dynare++ \
+      "$PKGFILES"/doc \
       "$PKGFILES"/scripts \
       "$PKGFILES"/contrib/ms-sbvar/TZcode
 
@@ -149,11 +148,6 @@ cp     "$ROOTDIR"/preprocessor/doc/preprocessor/preprocessor.pdf     "$PKGFILES"
 cp     "$ROOTDIR"/preprocessor/doc/macroprocessor/macroprocessor.pdf "$PKGFILES"/doc
 cp     "$ROOTDIR"/doc/manual/build/latex/dynare-manual.pdf           "$PKGFILES"/doc
 cp -r  "$ROOTDIR"/doc/manual/build/html                              "$PKGFILES"/doc/dynare-manual.html
-
-cp     "$ROOTDIR"/dynare++/doc/*.pdf                                 "$PKGFILES"/doc/dynare++
-
-cp     "$ROOTDIR"/dynare++/src/dynare++                              "$PKGFILES"/dynare++
-cp     "$ROOTDIR"/dynare++/dynare_simul/dynare_simul.m               "$PKGFILES"/dynare++
 
 mkdir -p                                                             "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
 cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64

@@ -5,7 +5,7 @@
 # The binaries are cross compiled for Windows (64-bit), Octave and MATLAB
 # (all supported versions).
 
-# Copyright © 2017-2022 Dynare Team
+# Copyright © 2017-2023 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -60,12 +60,9 @@ cd ..
 # Autoreconf if needed
 [[ -f configure ]] || autoreconf -si
 
-## Compile preprocessor (64-bit), Dynare++ (64-bit) and documentation
+## Compile preprocessor (64-bit) and documentation
 ./configure --host=x86_64-w64-mingw32 \
 	    --with-boost="$LIB64_MSYS2" \
-	    --with-blas="$LIB64_MSYS2"/lib/libopenblas.a \
-	    --with-lapack="$LIB64_MSYS2"/lib/libopenblas.a \
-	    --with-matio="$LIB64_MSYS2" \
 	    --disable-octave \
 	    --disable-matlab \
 	    PACKAGE_VERSION="$VERSION" \
@@ -78,7 +75,6 @@ fi
 make -j"$NTHREADS"
 x86_64-w64-mingw32-strip preprocessor/src/dynare-preprocessor.exe
 x86_64-w64-mingw32-strip matlab/preprocessor64/dynare_m.exe
-x86_64-w64-mingw32-strip dynare++/src/dynare++.exe
 
 ## Define functions for building MEX files
 
@@ -204,9 +200,6 @@ cp -p windows/deps/lib64/x13as/x13as.exe "$ZIPDIR"/matlab/modules/dseries/extern
 cp -pr examples "$ZIPDIR"
 mkdir -p "$ZIPDIR"/scripts
 cp -p scripts/dynare.el "$ZIPDIR"/scripts
-mkdir "$ZIPDIR"/dynare++
-cp -pr dynare++/src/dynare++.exe dynare++/dynare_simul/dynare_simul.m "$ZIPDIR"/dynare++
-mkdir -p "$ZIPDIR"/doc/dynare++
 mkdir -p "$ZIPDIR"/doc/dynare-manual.html
 cp -pr doc/manual/build/html/* "$ZIPDIR"/doc/dynare-manual.html
 cp -p doc/*.pdf "$ZIPDIR"/doc
@@ -215,7 +208,6 @@ cp -p preprocessor/doc/macroprocessor/macroprocessor.pdf "$ZIPDIR"/doc
 cp -p doc/parallel/parallel.pdf "$ZIPDIR"/doc
 cp -p preprocessor/doc/preprocessor/preprocessor.pdf "$ZIPDIR"/doc
 cp -p doc/gsa/gsa.pdf "$ZIPDIR"/doc
-cp -p dynare++/doc/*.pdf "$ZIPDIR"/doc/dynare++
 
 cd "$TMP_DIRECTORY"
 

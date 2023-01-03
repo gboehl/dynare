@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright © 2009-2022 Dynare Team
+dnl Copyright © 2009-2023 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -29,11 +29,6 @@ AC_PROG_CXX
 
 AC_CANONICAL_HOST
 case ${host_os} in
-  *mingw32*)
-    # On Windows, we want Dynare++ to be statically linked
-    AM_LDFLAGS="-static"
-    AC_SUBST([AM_LDFLAGS])
-    ;;
   *cygwin*)
     AC_MSG_WARN([You are compiling for the Cygwin target. This means that the preprocessor will])
     AC_MSG_WARN([not run from MATLAB unless you add the Cygwin DLL to the path.])
@@ -62,22 +57,9 @@ AX_PROG_LN_S
 
 AC_PROG_MKDIR_P
 
-AX_CXX11_THREAD
-
-AM_PROG_LEX
-
-AC_CHECK_PROG([YACC], [bison], [bison])
-if test -z "$YACC"; then
-  unset YACC # AM_MISSING_PROG needs an unset variable: an empty variable won't do
-  AM_MISSING_PROG([YACC], [bison])
-fi
-
 # Define optional components and their corresponding flags and Automake conditionals
 AC_ARG_ENABLE([doc], AS_HELP_STRING([--disable-doc], [disable compilation of documentation]), [], [enable_doc=yes])
 AM_CONDITIONAL([ENABLE_DOC], [test "$enable_doc" = yes])
-
-AC_ARG_ENABLE([dynare++], AS_HELP_STRING([--disable-dynare++], [disable compilation of Dynare++]), [], [enable_dynareplusplus=yes])
-AM_CONDITIONAL([ENABLE_DYNAREPLUSPLUS], [test "$enable_dynareplusplus" = yes])
 
 AC_ARG_ENABLE([matlab], AS_HELP_STRING([--disable-matlab], [disable compilation of MEX files for MATLAB]), [], [enable_matlab=yes])
 AM_CONDITIONAL([ENABLE_MATLAB], [test "$enable_matlab" = yes])
@@ -99,25 +81,6 @@ if test "$enable_doc" = yes; then
   AX_LATEX_CLASS([beamer], [ax_latex_have_beamer], [], [AC_MSG_ERROR([beamer cannot be found. If you want to skip the compilation of the documentation, pass the --disable-doc flag.])])
 fi
 
-# Check for BLAS, LAPACK and MATIO, needed by Dynare++
-if test "$enable_dynareplusplus" = yes; then
-  AC_PROG_F77
-  AC_F77_LIBRARY_LDFLAGS
-  case ${host_os} in
-    *darwin*)
-      # * OS X doesn't need to link against the Fortran libraries because
-      #   everything is contained within the vecLib framework.
-      FLIBS=''
-      ;;
-  esac
-  AX_BLAS
-  AX_LAPACK
-  AX_MATIO
-  if test "$ax_blas_ok" != yes -o "$ax_lapack_ok" != yes -o "$has_matio" != yes; then
-    AC_MSG_ERROR([Some dependencies of Dynare++ cannot be found. If you want to skip the compilation of Dynare++, pass the --disable-dynare++ flag.])
-  fi
-fi
-
 # Check for MATLAB
 if test "$enable_matlab" = yes; then
   AC_CONFIG_SUBDIRS([mex/build/matlab])
@@ -134,14 +97,6 @@ if test "$enable_octave" = yes; then
 fi
 
 # Construct final output message
-if test "$enable_dynareplusplus" = yes; then
-  BUILD_DYNAREPLUSPLUS="yes"
-  TESTSUITE_DYNAREPLUSPLUS="yes"
-else
-  BUILD_DYNAREPLUSPLUS="no"
-  TESTSUITE_DYNAREPLUSPLUS="no"
-fi
-
 if test "$enable_doc" = yes; then
   BUILD_DOC="yes"
 else
@@ -170,9 +125,6 @@ AC_MSG_NOTICE([
 
 Dynare is now configured for building the following components...
 
-Binaries (with "make"):
- Dynare++:                              $BUILD_DYNAREPLUSPLUS
-
 Documentation (with "make html pdf"):
  Manual and other documents             $BUILD_DOC
  Dynare internal doc:                   $BUILD_INTERNAL_DOC
@@ -180,7 +132,6 @@ Documentation (with "make html pdf"):
 Testsuites (run with "make check"):
  Dynare for MATLAB:                     $TESTSUITE_MATLAB
  Dynare for Octave:                     $TESTSUITE_OCTAVE
- Dynare++:                              $TESTSUITE_DYNAREPLUSPLUS
 ])
 
 AC_CONFIG_FILES([Makefile
@@ -194,23 +145,6 @@ AC_CONFIG_FILES([Makefile
                  doc/dseries-and-reporting/Makefile
                  tests/Makefile
                  matlab/dynare_version.m
-                 dynare++/Makefile
-                 dynare++/parser/cc/Makefile
-                 dynare++/sylv/Makefile
-                 dynare++/sylv/cc/Makefile
-                 dynare++/sylv/testing/Makefile
-                 dynare++/tl/Makefile
-                 dynare++/tl/cc/Makefile
-                 dynare++/tl/testing/Makefile
-                 dynare++/doc/Makefile
-                 dynare++/utils/cc/Makefile
-                 dynare++/integ/Makefile
-                 dynare++/integ/cc/Makefile
-                 dynare++/integ/src/Makefile
-                 dynare++/integ/testing/Makefile
-                 dynare++/kord/Makefile
-                 dynare++/src/Makefile
-                 dynare++/tests/Makefile
                  mex/sources/Makefile
 ])
 

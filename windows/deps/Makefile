@@ -1,4 +1,4 @@
-# Copyright © 2017-2020 Dynare Team
+# Copyright © 2017-2023 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -170,7 +170,7 @@ msys2: lib64-msys2 mingw64
 
 MSYS2_EXCLUDES := --exclude .MTREE --exclude .BUILDINFO --exclude .PKGINFO
 
-lib64-msys2: tarballs/mingw-w64-x86_64-boost-$(MINGW64_BOOST_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gsl-$(MINGW64_GSL_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-openblas-$(MINGW64_OPENBLAS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-matio-$(MINGW64_MATIO_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-hdf5-$(MINGW64_HDF5_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libaec-$(MINGW64_LIBAEC_VERSION)-any.pkg.tar.zst
+lib64-msys2: tarballs/mingw-w64-x86_64-boost-$(MINGW64_BOOST_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gsl-$(MINGW64_GSL_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-matio-$(MINGW64_MATIO_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-hdf5-$(MINGW64_HDF5_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libaec-$(MINGW64_LIBAEC_VERSION)-any.pkg.tar.zst
 	rm -rf $@
 	mkdir $@
 	for f in $^; do tar xf $$f --directory $@ --strip-components 1 $(MSYS2_EXCLUDES); done

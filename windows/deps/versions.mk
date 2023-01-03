@@ -23,9 +23,6 @@ MINGW64_BOOST_VERSION = 1.80.0-1
 # pacman -Ss mingw-w64-x86_64-gsl
 MINGW64_GSL_VERSION = 2.7.1-1
 
-# pacman -Ss mingw-w64-x86_64-openblas
-MINGW64_OPENBLAS_VERSION = 0.3.21-3
-
 # pacman -Ss mingw-w64-x86_64-matio
 MINGW64_MATIO_VERSION = 1.5.23-1
 

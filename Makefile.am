@@ -1,9 +1,5 @@
 SUBDIRS = preprocessor doc tests mex/sources
 
-if ENABLE_DYNAREPLUSPLUS
-SUBDIRS += dynare++
-endif
-
 if ENABLE_MATLAB
 SUBDIRS += mex/build/matlab
 endif
@@ -15,6 +11,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = \
 	matlab \
+	dynare++ \
 	contrib \
 	NEWS.md \
 	license.txt \
@@ -65,8 +62,6 @@ install-exec-local:
 	$(MKDIR_P) $(DESTDIR)$(docdir)
 	-cp doc/*.pdf doc/gsa/gsa.pdf doc/parallel/parallel.pdf doc/dseries-and-reporting/dseriesReporting.pdf preprocessor/doc/preprocessor/preprocessor.pdf preprocessor/doc/macroprocessor/macroprocessor.pdf doc/manual/build/latex/dynare-manual.pdf $(DESTDIR)$(docdir)
 	-cp -r doc/manual/build/html $(DESTDIR)$(docdir)/dynare-manual.html
-	$(MKDIR_P) $(DESTDIR)$(docdir)/dynare++
-	-cp dynare++/doc/*.pdf $(DESTDIR)$(docdir)/dynare++
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(pkglibdir)

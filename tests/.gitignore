@@ -84,7 +84,6 @@ wsOct
 !/identification/as2007/G_QT.mat
 !/identification/kim/kim2_steadystate.m
 !/internals/tests.m
-!/k_order_perturbation/run_fs2000kplusplus.m
 !/kalman/likelihood/compare_kalman_routines.m
 !/kalman/likelihood/simul_state_space_model.m
 !/kalman/likelihood/test1.m
