@@ -221,7 +221,11 @@ if info(1)
                 info(1) == 411 || info(1) == 412 || info(1) == 413 % logarithmic reduction
         %meaningful second entry of output that can be used
         fval = Inf;
-        info(4) = info(2);
+        if isnan(info(2))
+            info(4) = 0.1;           
+        else
+            info(4) = info(2);
+        end
         exit_flag = 0;
         if analytic_derivation
             DLIK=ones(length(xparam1),1);

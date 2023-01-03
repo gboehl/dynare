@@ -85,7 +85,7 @@ end
 
 if updated_params_flag && ~isreal(params1)
     info(1) = 23;
-    info(2) = sum(imag(params).^2);
+    info(2) = sum(imag(params).^2,'omitnan');
     if M.set_auxiliary_variables
         ys = h_set_auxiliary_variables(ys,exo_ss,params);
     end
