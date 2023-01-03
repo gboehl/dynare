@@ -26,7 +26,6 @@ Dynare distribution for specifics).
 
 Here, we explain how to build from source:
 - Dynare, including preprocessor and MEX files for MATLAB and Octave
-- Dynare++
 - all the associated documentation (PDF and HTML)
 
 This source can be retrieved in three forms:
@@ -79,8 +78,7 @@ A number of tools and libraries are needed in order to recompile everything. You
 - [Flex](https://github.com/westes/flex), version 2.5.4 or later (only if you get the source through Git)
 - [Autoconf](https://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git)
 - [Automake](https://www.gnu.org/software/automake/), version 1.11.2 or later (only if you get the source through Git)
-- An implementation of BLAS and LAPACK: either [ATLAS](http://math-atlas.sourceforge.net/), [OpenBLAS](https://www.openblas.net/), Netlib ([BLAS](https://www.netlib.org/blas/), [LAPACK](https://www.netlib.org/lapack/)) or [MKL](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html) (only if you want to build Dynare++)
-- [MAT File I/O library](https://sourceforge.net/projects/matio/), version 1.5 or later (if you want to compile Markov-Switching code, the estimation DLL, k-order DLL and Dynare++)
+- [MAT File I/O library](https://sourceforge.net/projects/matio/), version 1.5 or later (if you want to compile Markov-Switching code, the estimation DLL, and the k-order DLL)
 - [SLICOT](http://www.slicot.org) (if you want to compile the Kalman steady state DLL)
 - [GSL library](https://www.gnu.org/software/gsl/) (if you want to compile Markov-Switching code)
 - A decent LaTeX distribution (if you want to compile PDF documentation),
@@ -243,8 +241,6 @@ Almost all prerequisites are packaged:
 
 - `gcc`, `gcc-c++`, `make`
 - `gcc-gfortran`
-- `lapack` and `lapack-devel`
-- `openblas` and `openblas-devel`
 - `boost-devel`
 - `gsl-devel`
 - `matio-devel`
@@ -264,7 +260,7 @@ Almost all prerequisites are packaged:
 You can install them all at once with:
 ```sh
 # Minimal packages (use --disable-doc and --disable-octave flags)
-dnf install -y gcc gcc-c++ make gcc-gfortran lapack lapack-devel openblas openblas-devel boost-devel gsl-devel matio-devel suitesparse-devel flex bison autoconf automake redhat-rpm-config
+dnf install -y gcc gcc-c++ make gcc-gfortran boost-devel gsl-devel matio-devel suitesparse-devel flex bison autoconf automake redhat-rpm-config
 # Octave packages (use --disable-doc flag)
 dnf install octave octave-devel octave-statistics octave-io octave-optim octave-control
 # Documentation packages
@@ -352,7 +348,7 @@ pacman -Syu
   window to complete the upgrade.
 - Install all needed dependencies:
 ```sh
-pacman -S git autoconf automake-wrapper bison flex make tar texinfo mingw-w64-x86_64-gcc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-boost mingw-w64-x86_64-gsl mingw-w64-x86_64-matio mingw-w64-x86_64-openblas
+pacman -S git autoconf automake-wrapper bison flex make tar texinfo mingw-w64-x86_64-gcc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-boost mingw-w64-x86_64-gsl mingw-w64-x86_64-matio
 ```
 - Compile and install SLICOT, needed for the `kalman_steady_state` MEX file
 ```sh
@@ -502,7 +498,7 @@ You can also choose a specific version of Dynare by checking out the correspondi
 ```sh
 arch -x86_64 ./configure CC=gcc-12 CXX=g++-12 CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib LEX=/usr/local/opt/flex/bin/flex YACC=/usr/local/opt/bison/bin/bison --with-matlab=/Applications/MATLAB_R2021b.app
 ```
-where you need to adapt the path to MATLAB. If you don’t have MATLAB, simply replace `--with-matlab=<…>` by `--disable-matlab`. Check the output of the command whether Dynare is configured for building everything except the internal docs of Dynare, Dynare++ and M2HTML.
+where you need to adapt the path to MATLAB. If you don’t have MATLAB, simply replace `--with-matlab=<…>` by `--disable-matlab`. Check the output of the command whether Dynare is configured for building everything except the internal docs of Dynare and M2HTML.
 
 - Compile:
 ```sh
