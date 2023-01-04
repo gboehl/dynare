@@ -20,29 +20,42 @@ function model_info(options_model_info_)
 
 global M_;
 
-static_ = isfield(options_model_info_, 'static') && options_model_info_.static;
+dynamic_ = isfield(options_model_info_, 'block_dynamic') && options_model_info_.block_dynamic;
+static_ = isfield(options_model_info_, 'block_static') && options_model_info_.block_static;
 incidence = isfield(options_model_info_, 'incidence') && options_model_info_.incidence;
 
 if static_
-    fprintf('                                          Information about %s (static model)\n',M_.fname);
-    block_structre_str = 'block_structure_stat';
-    nb_leadlag = 1;
+    temp_string=sprintf('\nInformation about %s (static model)\n',M_.fname);
+    fprintf(temp_string);
+    block_structure_str = 'block_structure_stat';
+    if ~isfield(M_,'block_structure_stat')
+        fprintf('\nmodel_info: block information not present; skipping display.\n')
+        return;
+    else
+        nb_leadlag = 1;
+    end
 else
-    fprintf('                                          Information about %s (dynamic model)\n',M_.fname);
-    block_structre_str = 'block_structure';
-    nb_leadlag = 3;
+    temp_string=sprintf('\nInformation about %s (dynamic model)\n',M_.fname);
+    fprintf(temp_string);
+    block_structure_str = 'block_structure';
+    if dynamic_ && isfield(M_,'block_structure')
+        fprintf('\nmodel_info: block information not present; skipping display.\n')        
+        return;
+    elseif dynamic_
+        nb_leadlag = length([M_.(block_structure_str).incidence.lead_lag]);
+    end
 end
 
 
-if isfield(M_,block_structre_str)
+if dynamic_ || static_ || incidence %block information requested
     if static_
         block_structure = M_.block_structure_stat;
     else
         block_structure = M_.block_structure;
     end
-    fprintf(strcat('                                          ===================',char(ones(1,length(M_.fname))*'='),'\n\n'));
+    fprintf([char(ones(1,length(temp_string))*'='),'\n']);
     nb_blocks=length(block_structure.block);
-    fprintf('The model has %d equations and is decomposed in %d blocks as follow:\n',M_.endo_nbr,nb_blocks);
+    fprintf('The model has %d equations and is decomposed into %d blocks as follows:\n',M_.endo_nbr,nb_blocks);
     fprintf('================================================================================================================================\n');
     fprintf('| %10s | %10s | %30s | %31s | %31s |\n','Block no','Size','Block Type','Equation','Dependent variable');
     fprintf('|============|============|================================|=================================|=================================|\n');
@@ -62,7 +75,7 @@ if isfield(M_,block_structre_str)
     fprintf('================================================================================================================================\n');
     fprintf('\n');
     if static_
-        fprintf('%-30s %s','the variable','is used in the following equations contemporaneously');
+        fprintf('%-30s %s','The variable','is used contemporaneously in the following equations:');
         if(size(block_structure.incidence.sparse_IM,1)>0)
             IM=sortrows(block_structure.incidence.sparse_IM,2);
         else
@@ -78,14 +91,14 @@ if isfield(M_,block_structre_str)
             last=IM(i,2);
         end
         fprintf('\n\n');
-    else
+    else %dynamic model
         for k=1:M_.maximum_endo_lag+M_.maximum_endo_lead+1
             if(k==M_.maximum_endo_lag+1)
-                fprintf('%-30s %s','the variable','is used in the following equations Contemporaneously');
+                fprintf('%-30s %s','The variable','is used in the following equations contemporaneously');
             elseif(k<M_.maximum_endo_lag+1)
-                fprintf('%-30s %s %d','the variable','is used in the following equations with lag ',M_.maximum_endo_lag+1-k);
+                fprintf('%-30s %s %d','The variable','is used in the following equations with lag ',M_.maximum_endo_lag+1-k);
             else
-                fprintf('%-30s %s %d','the variable','is used in equations with lead ',k-(M_.maximum_endo_lag+1));
+                fprintf('%-30s %s %d','The variable','is used in equations with lead ',k-(M_.maximum_endo_lag+1));
             end
             if(size(block_structure.incidence(k).sparse_IM,1)>0)
                 IM=sortrows(block_structure.incidence(k).sparse_IM,2);
@@ -104,34 +117,36 @@ if isfield(M_,block_structre_str)
             fprintf('\n\n');
         end
     end
-    
-    %printing the gross incidence matrix
-    IM_star = char([kron(ones(M_.endo_nbr, M_.endo_nbr-1), double(blanks(3))) double(blanks(M_.endo_nbr)')]);
-    for i = 1:nb_leadlag
-        n = size(block_structure.incidence(i).sparse_IM,1);
-        for j = 1:n
-            if ismember(block_structure.incidence(i).sparse_IM(j,2), M_.state_var)
-                IM_star(block_structure.incidence(i).sparse_IM(j,1), 3 * (block_structure.incidence(i).sparse_IM(j,2) - 1) + 1) = 'X';
-            else
-                IM_star(block_structure.incidence(i).sparse_IM(j,1), 3 * (block_structure.incidence(i).sparse_IM(j,2) - 1) + 1) = '1';
+    if incidence
+
+        %printing the gross incidence matrix
+        IM_star = char([kron(ones(M_.endo_nbr, M_.endo_nbr-1), double(blanks(3))) double(blanks(M_.endo_nbr)')]);
+        for i = 1:nb_leadlag
+            n = size(block_structure.incidence(i).sparse_IM,1);
+            for j = 1:n
+                if ismember(block_structure.incidence(i).sparse_IM(j,2), M_.state_var)
+                    IM_star(block_structure.incidence(i).sparse_IM(j,1), 3 * (block_structure.incidence(i).sparse_IM(j,2) - 1) + 1) = 'X';
+                else
+                    IM_star(block_structure.incidence(i).sparse_IM(j,1), 3 * (block_structure.incidence(i).sparse_IM(j,2) - 1) + 1) = '1';
+                end
             end
         end
-    end
-    seq = 1: M_.endo_nbr;
-    blank = [ blanks(cellofchararraymaxlength(M_.endo_names)); blanks(cellofchararraymaxlength(M_.endo_names))];
-    for i = 1:M_.endo_nbr
-        if i == 1
-            var_names = char(blank, M_.endo_names{i});
-        else
-            var_names = char(var_names, blank, M_.endo_names{i});
+        seq = 1: M_.endo_nbr;
+        blank = [ blanks(cellofchararraymaxlength(M_.endo_names)); blanks(cellofchararraymaxlength(M_.endo_names))];
+        for i = 1:M_.endo_nbr
+            if i == 1
+                var_names = char(blank, M_.endo_names{i});
+            else
+                var_names = char(var_names, blank, M_.endo_names{i});
+            end
         end
-    end
-    if incidence
         topp = [char(kron(double(blanks(ceil(log10(M_.endo_nbr)))),ones(cellofchararraymaxlength(M_.endo_names),1))) var_names' ];
         bott = [int2str(seq') blanks(M_.endo_nbr)' blanks(M_.endo_nbr)' IM_star];
-        fprintf('\n                                          Gross incidence matrix\n');
-        fprintf('                                          =======================\n');
-        disp([topp; bott]);
+        fprintf('\nGross incidence matrix\n');
+        fprintf('=======================\n');
+        disp(topp);
+        skipline;
+        disp(bott);
         
         %printing the reordered incidence matrix
         IM_star_reordered = char([kron(ones(M_.endo_nbr, M_.endo_nbr-1), double(blanks(3))) double(blanks(M_.endo_nbr)')]);
@@ -145,12 +160,12 @@ if isfield(M_,block_structre_str)
                 cur_block = cur_block + 1;
             end
             if i == 1
-                var_names = [blank; M_.endo_names{block_structure.variable_reordered(i)}];
+                var_names = char(blank, M_.endo_names{block_structure.variable_reordered(i)});
             else
                 if past_block ~= cur_block
-                    var_names = [var_names; barre_blank; M_.endo_names{block_structure.variable_reordered(i)}];
+                    var_names = char(var_names, barre_blank, M_.endo_names{block_structure.variable_reordered(i)});
                 else
-                    var_names = [var_names; blank; M_.endo_names{block_structure.variable_reordered(i)}];
+                    var_names = char(var_names, blank, M_.endo_names{block_structure.variable_reordered(i)});
                 end
             end
         end
@@ -174,7 +189,7 @@ if isfield(M_,block_structre_str)
                 end
             end
         end
-        fprintf('1: non nul element, X: non nul element related to a state variable\n');
+        fprintf('\n1: non-null element, X: non-null element related to a state variable\n');
         
         cur_block = 1;
         i_last = 0;
@@ -203,12 +218,14 @@ if isfield(M_,block_structre_str)
         end
         
         bott = [int2str(block_structure.equation_reordered') blanks(M_.endo_nbr)' blanks(M_.endo_nbr)' IM_star_reordered];
-        fprintf('\n                                          Reordered incidence matrix\n');
-        fprintf('                                          ==========================\n');
-        disp([topp; bott]);
-        fprintf('1: non nul element, X: non nul element related to a state variable\n');
+        fprintf('\nReordered incidence matrix\n');
+        fprintf('==========================\n');
+        disp(topp);
+        skipline;
+        disp(bott);
+        fprintf('\n1: non-null element, X: non-null element related to a state variable\n');
     end
-else
+else %non-block information
     % print states
     if M_.maximum_endo_lag~=0
         lag_index=find(M_.lead_lag_incidence(1,:));
@@ -263,7 +280,7 @@ function print_line(names,var_index,lead_lag,M_)
     else
         aux_index=find([M_.aux_vars(:).endo_index]==var_index);
         aux_type=M_.aux_vars(aux_index).type;
-        if isempty(M_.aux_vars(aux_index).orig_lead_lag)
+        if ~isfield(M_.aux_vars(aux_index),'orig_lead_lag') || isempty(M_.aux_vars(aux_index).orig_lead_lag)
             if ismember(aux_type,[1,3])
                 str = subst_auxvar(var_index, -1, M_);
             elseif ismember(aux_type,[0,2])

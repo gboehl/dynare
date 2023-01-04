@@ -3428,20 +3428,18 @@ Getting information about the model
 .. command:: model_info ;
              model_info (OPTIONS...);
 
-    |br| This command provides information about the model. 
-
-    When used outside the context of the ``block`` option of the ``model`` block,
+    |br| This command provides information about the model. By default, 
     it will provide a list of predetermined state variables, forward-looking variables,
     and purely static variables.
 
-    When used in conjunction with the ``block`` option of the ``model`` block,
-    it displays:
+    The command also allows to display information on the dynamic and static 
+    versions of the block decomposition of the model:
 
     * The normalization of the model: an endogenous variable is
-      attributed to each equation of the model;
+      attributed to each equation of the model (the dependent variable);
     * The block structure of the model: for each block ``model_info``
-      indicates its type, the equations number and endogenous
-      variables belonging to this block.
+      indicates its type, size as well as the equation number(s) or name tags and 
+      endogenous variables belonging to this block.
 
 
     There are five different types of blocks depending on the
@@ -3450,37 +3448,37 @@ Getting information about the model
     * ``EVALUATE FORWARD``
 
       In this case the block contains only equations where the
-      endogenous variable attributed to the equation appears
-      at current period on the left hand side and where no forward looking
+      dependent variable :math:`j` attributed to the equation appears
+      contemporaneously on the left hand side and where no forward looking
       endogenous variables appear. The block has the form:
       :math:`y_{j,t} = f_j(y_t, y_{t-1}, \ldots, y_{t-k})`.
 
     * ``EVALUATE BACKWARD``
 
-      The block contains only equations where the endogenous variable
-      attributed to the equation appears at current period on the left hand
-      side and where no backward looking endogenous variables
+      The block contains only equations where the dependent variable :math:`j` 
+      attributed to the equation appears contemporaneously on the left hand side 
+      and where no backward looking endogenous variables
       appear. The block has the form: :math:`y_{j,t} = f_j(y_t,
       y_{t+1}, \ldots, y_{t+k})`.
 
     * ``SOLVE BACKWARD x``
 
-      The block contains only equations where the endogenous variable
-      attributed to the equation does not appear at current period on the
+      The block contains only equations where the dependent variable :math:`j` 
+      attributed to the equation does not appear contemporaneously on the
       left hand side and where no forward looking endogenous
       variables appear. The block has the form: :math:`g_j(y_{j,t},
-      y_t, y_{t-1}, \ldots, y_{t-k})=0`. ``x`` is equal to ``SIMPLE``
-      if the block has only one equation. If several equations
+      y_t, y_{t-1}, \ldots, y_{t-k})=0`. Here, ``x`` denotes the subtype of the block.
+      ``x`` is equal to ``SIMPLE`` if the block has only one equation. If several equations
       appear in the block, ``x`` is equal to ``COMPLETE``.
 
     * ``SOLVE FORWARD x``
 
-      The block contains only equations where the endogenous variable
-      attributed to the equation does not appear at current period on the
+      The block contains only equations where the dependent variable :math:`j` 
+      attributed to the equation does not appear contemporaneously on the
       left hand side and where no backward looking endogenous
       variables appear. The block has the form: :math:`g_j(y_{j,t},
-      y_t, y_{t+1}, \ldots, y_{t+k})=0`. ``x`` is equal to ``SIMPLE``
-      if the block has only one equation. If several equations
+      y_t, y_{t+1}, \ldots, y_{t+k})=0`. Here, ``x`` denotes the subtype of the block.
+      ``x`` is equal to ``SIMPLE`` if the block has only one equation. If several equations
       appear in the block, ``x`` is equal to ``COMPLETE``.
 
     * ``SOLVE TWO BOUNDARIES x``
@@ -3488,22 +3486,24 @@ Getting information about the model
       The block contains equations depending on both forward and
       backward variables. The block looks like: :math:`g_j(y_{j,t},
       y_t, y_{t-1}, \ldots, y_{t-k} ,y_t, y_{t+1}, \ldots,
-      y_{t+k})=0`. ``x`` is equal to ``SIMPLE`` if the block has only
-      one equation. If several equations appear in the block, ``x`` is
-      equal to ``COMPLETE``.
+      y_{t+k})=0`. Here, ``x`` denotes the subtype of the block.
+      ``x`` is equal to ``SIMPLE`` if the block has only one equation. If several equations
+      appear in the block, ``x`` is equal to ``COMPLETE``.
 
     *Options*
 
-    .. option:: static
+    .. option:: block_static
 
-       Prints out the block decomposition of the static
-       model. Without the ``static`` option, ``model_info`` displays the block
-       decomposition of the dynamic model.
+       Prints out the block decomposition of the static model. 
+
+    .. option:: block_dynamic
+
+       Prints out the block decomposition of the dynamic model. 
 
     .. option:: incidence
 
        Displays the gross incidence matrix and the reordered incidence
-       matrix of the block decomposed model.
+       matrix of the block decomposed model for the ``block_dynamic`` or ``block_static`` options.
 
 
 .. command:: print_bytecode_dynamic_model ;
