@@ -11,7 +11,7 @@
 ! be set in order to give the input values for the indices that are not passed
 ! to matlab_fcn.
 
-! Copyright © 2019-2022 Dynare Team
+! Copyright © 2019-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -51,7 +51,7 @@ contains
 
     type(c_ptr), dimension(2) :: call_lhs
     type(c_ptr), dimension(size(extra_args)+2) :: call_rhs
-    real(real64), dimension(:), pointer :: x_mat ! Needed to avoid gfortran ICE…
+    real(real64), dimension(:), pointer :: x_mat
     integer(c_int) :: nlhs
     integer(mwSize) :: n_all
 
