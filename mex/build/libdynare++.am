@@ -4,8 +4,8 @@ TOPDIR = $(top_srcdir)/../../../dynare++
 
 libdynare___a_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR)/src -I$(TOPDIR)/kord -I$(TOPDIR)/tl/cc -I$(TOPDIR)/utils/cc -I$(TOPDIR)/sylv/cc -I$(TOPDIR)/integ/cc $(CPPFLAGS_MATIO)
 
-# TODO: Remove -Wno-unused-parameter once the same has been done for Dynare++
-libdynare___a_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS) -Wno-unused-parameter
+# TODO: fix the codebase so that the following line is no longer needed
+libdynare___a_CXXFLAGS = $(AM_CXXFLAGS) -Wno-unused-parameter
 
 KORD_SRCS = \
 	approximation.cc \

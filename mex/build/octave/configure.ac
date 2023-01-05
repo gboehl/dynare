@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright © 2009-2022 Dynare Team
+dnl Copyright © 2009-2023 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -50,8 +50,6 @@ AC_PROG_RANLIB
 AX_PROG_LN_S
 AC_PROG_MKDIR_P
 AM_PROG_AR
-
-AX_CXX11_THREAD
 
 # Get the size of a pthread_t instance, needed by pthread.F08
 AC_CHECK_SIZEOF([pthread_t], [], [#include <pthread.h>])

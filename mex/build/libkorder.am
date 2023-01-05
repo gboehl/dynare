@@ -4,8 +4,6 @@ TOPDIR = $(top_srcdir)/../../sources/k_order_perturbation
 
 libkorder_a_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR) -I$(top_srcdir)/../../../dynare++/tl/cc -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/src -I$(top_srcdir)/../../../dynare++/kord -I$(top_srcdir)/../../../dynare++/utils/cc $(CPPFLAGS_MATIO) 
 
-libkorder_a_CXXFLAGS = $(AM_CXXFLAGS) $(THREAD_CXXFLAGS)
-
 nodist_libkorder_a_SOURCES = \
 	k_ord_dynare.cc \
 	dynamic_dll.cc \
