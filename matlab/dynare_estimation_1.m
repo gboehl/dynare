@@ -98,6 +98,8 @@ if ~options_.dsge_var
     else
         if options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter
             objective_function = str2func('occbin.IVF_posterior');
+        elseif options_.conditional_likelihood.status && options_.conditional_likelihood.order==1
+            objective_function = str2func('dsge_conditional_likelihood_1');
         else
             objective_function = str2func('dsge_likelihood');
         end

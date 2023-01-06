@@ -81,6 +81,8 @@ MODFILES = \
 	estimation/method_of_moments/AFVRR/AFVRR_M0.mod \
 	estimation/method_of_moments/AFVRR/AFVRR_MFB.mod \
 	estimation/method_of_moments/AFVRR/AFVRR_MFB_RRA.mod \
+	estimation/conditional-likelihood/1/fs2000_estimation_exact.mod \
+	estimation/conditional-likelihood/1/fs2000_estimation_conditional.mod \
 	estimation/system_prior_restriction/Gali_2015.mod \
 	estimation/no_init_estimation_check_first_obs/fs2000_init_check.mod \
 	estimation/univariate/nls/staticmodel.mod \
@@ -1022,6 +1024,8 @@ solve_algo_12_14/purely_forward_12.o.trs: solve_algo_12_14/purely_forward_refere
 solve_algo_12_14/purely_forward_14.m.trs: solve_algo_12_14/purely_forward_reference.m.trs
 solve_algo_12_14/purely_forward_14.o.trs: solve_algo_12_14/purely_forward_reference.o.trs
 
+estimation/conditional-likelihood/1/fs2000_estimation_conditional.m.trs: estimation/conditional-likelihood/1/fs2000_estimation_exact.m.trs
+estimation/conditional-likelihood/1/fs2000_estimation_conditional.o.trs: estimation/conditional-likelihood/1/fs2000_estimation_exact.o.trs
 
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
