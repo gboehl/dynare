@@ -6326,6 +6326,28 @@ block decomposition of the model (see :opt:`block`).
 
        |br| Default value is 1. For advanced use only.
 
+    .. option:: conditional_likelihood
+
+       Do not use the kalman filter to evaluate the likelihood, but instead
+       evaluate the conditional likelihood, based on the first order reduced
+       form of the model, by assuming that the initial state vector is 0 for all
+       the endogenous variables. This approach requires that:
+
+       1. The number of structural innovations be equal to the number of observed variables.
+
+       2. The absence of measurement errors (as introduced by the Dynare
+          interface, see documentation about the :bck:`estimated_params` block).
+
+       3. The absence of missing observations.
+
+       The evaluation of the conditional likelihood is faster and more stable
+       than the evaluation of the likelihood with the Kalman filter. Also this
+       approach does not require special treatment for models with unit roots.
+       Note however that the conditional likelihood is sensitive to the choice
+       for the initial condition, which can be an issue if the data are
+       initially far from the steady state. This option is not compatible with
+       ``analytical_derivation``.
+
     .. option:: lik_algo = INTEGER
 
         For internal use and testing only.
