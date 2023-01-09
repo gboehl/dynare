@@ -16,7 +16,7 @@ function model_diagnostics(M,options,oo)
 %   none.
 %
 
-% Copyright © 1996-2020 Dynare Team
+% Copyright © 1996-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -153,7 +153,7 @@ for b=1:nb
                                     'evaluate', 'static');
         else
             [res, jacob] = bytecode(dr.ys, exo, M.params, dr.ys, 1, exo, ...
-                                    'evaluate', 'static',['block=' ...
+                                    'evaluate', 'static', 'block_decomposed', ['block=' ...
                                 int2str(b)]);
         end
     else

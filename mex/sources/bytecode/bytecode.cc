@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2022 Dynare Team
+ * Copyright © 2007-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -58,7 +58,8 @@ Get_Arguments_and_global_variables(int nrhs,
                                    double *steady_yd[], size_t &steady_row_y, size_t &steady_col_y,
                                    unsigned int &periods,
                                    mxArray *block_structur[],
-                                   bool &steady_state, bool &evaluate, int &block,
+                                   bool &steady_state, bool &block_decomposed,
+                                   bool &evaluate, int &block,
                                    mxArray *M_[], mxArray *oo_[], mxArray *options_[], bool &global_temporary_terms,
                                    bool &print,
                                    bool &print_error,
@@ -116,6 +117,8 @@ Get_Arguments_and_global_variables(int nrhs,
           steady_state = true;
         else if (Get_Argument(prhs[i]) == "dynamic")
           steady_state = false;
+        else if (Get_Argument(prhs[i]) == "block_decomposed")
+          block_decomposed = true;
         else if (Get_Argument(prhs[i]) == "evaluate")
           evaluate = true;
         else if (Get_Argument(prhs[i]) == "global_temporary_terms")
@@ -204,6 +207,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   unsigned int periods = 1;
   double *direction;
   bool steady_state = false;
+  bool block_decomposed {false};
   bool evaluate = false;
   int block = -1;
   double *params = nullptr;
@@ -237,7 +241,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                          &steady_yd, steady_row_y, steady_col_y,
                                          periods,
                                          &block_structur,
-                                         steady_state, evaluate, block,
+                                         steady_state, block_decomposed, evaluate, block,
                                          &M_, &oo_, &options_, global_temporary_terms,
                                          print, print_error, &GlobalTemporaryTerms,
                                          &plan, &pfplan, &extended_path, &extended_path_struct);
@@ -715,7 +719,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                           periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, y_decal,
                           markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
                           solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms,
-                          steady_state, print_it, col_x, col_y, symbol_table};
+                          steady_state, block_decomposed, print_it, col_x, col_y, symbol_table};
   string f(fname);
   mxFree(fname);
   int nb_blocks = 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2022 Dynare Team
+ * Copyright © 2007-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -20,6 +20,7 @@
 #include <sstream>
 #include <algorithm>
 #include <cstring>
+#include <filesystem>
 
 #include "Interpreter.hh"
 
@@ -31,8 +32,8 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
                          int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, int y_decal_arg, double markowitz_c_arg,
                          string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
                          bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
-                         bool steady_state_arg, bool print_it_arg, int col_x_arg, int col_y_arg, BasicSymbolTable &symbol_table_arg)
-: dynSparseMatrix {y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg}
+                         bool steady_state_arg, bool block_decomposed_arg, bool print_it_arg, int col_x_arg, int col_y_arg, BasicSymbolTable &symbol_table_arg)
+: dynSparseMatrix {y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, block_decomposed_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg}
 {
   params = params_arg;
   y = y_arg;
@@ -551,18 +552,16 @@ Interpreter::print_a_block()
 }
 
 void
-Interpreter::ReadCodeFile(string file_name, CodeLoad &code)
+Interpreter::ReadCodeFile(const string &file_name, CodeLoad &code)
 {
-  if (steady_state)
-    file_name += "/model/bytecode/static";
-  else
-    file_name += "/model/bytecode/dynamic";
+  filesystem::path codfile {file_name + "/model/bytecode/" + (block_decomposed ? "block/" : "")
+    + (steady_state ? "static" : "dynamic") + ".cod"};
 
   //First read and store in memory the code
-  code_liste = code.get_op_code(file_name);
+  code_liste = code.get_op_code(codfile);
   EQN_block_number = code.get_block_number();
   if (!code_liste.size())
-    throw FatalException{"In compute_blocks, " + file_name + ".cod cannot be opened"};
+    throw FatalException{"In compute_blocks, " + codfile.string() + " cannot be opened"};
   if (block >= code.get_block_number())
     throw FatalException{"In compute_blocks, input argument block = " + to_string(block+1)
                          + " is greater than the number of blocks in the model ("

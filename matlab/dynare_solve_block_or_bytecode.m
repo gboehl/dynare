@@ -1,6 +1,6 @@
 function [x,info] = dynare_solve_block_or_bytecode(y, exo, params, options, M)
 
-% Copyright © 2010-2022 Dynare Team
+% Copyright © 2010-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,7 +54,11 @@ if options.block && ~options.bytecode
 elseif options.bytecode
     if options.solve_algo >= 5 && options.solve_algo <= 8
         try
-            x = bytecode('static', x, exo, params);
+            if options.block
+                x = bytecode('static', 'block_decomposed', x, exo, params);
+            else
+                x = bytecode('static', x, exo, params);
+            end
         catch ME
             disp(ME.message);
             info = 1;
@@ -79,7 +83,7 @@ elseif options.bytecode
             % Also update the temporary terms vector (needed for the dynare_solve case)
             try
                 [~, ~, x, T] = bytecode(x, exo, params, x, 1, x, T, 'evaluate', 'static', ...
-                                        ['block = ' int2str(b)]);
+                                        'block_decomposed', ['block = ' int2str(b)]);
             catch ME
                 disp(ME.message);
                 info = 1;

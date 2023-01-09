@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2022 Dynare Team
+ * Copyright © 2007-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -19,12 +19,14 @@
 
 #include <sstream>
 #include <algorithm>
+#include <filesystem>
 
 #include "SparseMatrix.hh"
 
-dynSparseMatrix::dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg,
+dynSparseMatrix::dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, bool block_decomposed_arg, int periods_arg,
                                  int minimal_solving_periods_arg, BasicSymbolTable &symbol_table_arg) :
-  Evaluate {y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg}
+  Evaluate {y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg},
+  block_decomposed {block_decomposed_arg}
 {
   pivotva = nullptr;
   g_save_op = nullptr;
@@ -288,19 +290,11 @@ dynSparseMatrix::Read_SparseMatrix(const string &file_name, int Size, int period
   mem_mngr.fixe_file_name(file_name);
   if (!SaveCode.is_open())
     {
-      if (steady_state)
-        SaveCode.open(file_name + "/model/bytecode/static.bin", ios::in | ios::binary);
-      else
-        SaveCode.open(file_name + "/model/bytecode/dynamic.bin", ios::in | ios::binary);
+      filesystem::path binfile {file_name + "/model/bytecode/" + (block_decomposed ? "block/" : "")
+        + (steady_state ? "static" : "dynamic") + ".bin"};
+      SaveCode.open(binfile, ios::in | ios::binary);
       if (!SaveCode.is_open())
-        {
-          ostringstream tmp;
-          if (steady_state)
-            tmp << "In Read_SparseMatrix, " << file_name << "/model/bytecode/static.bin cannot be opened";
-          else
-            tmp << "In Read_SparseMatrix, " << file_name << "/model/bytecode/dynamic.bin cannot be opened";
-          throw FatalException{tmp.str()};
-        }
+        throw FatalException{"In Read_SparseMatrix, " + binfile.string() + " cannot be opened"};
     }
   IM_i.clear();
   if (two_boundaries)

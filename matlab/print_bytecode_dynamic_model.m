@@ -11,7 +11,7 @@ function print_bytecode_dynamic_model()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2001-2017 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,7 +29,11 @@ function print_bytecode_dynamic_model()
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 global options_
 if options_.bytecode
-    bytecode('print','dynamic');
+    if options_.block
+        bytecode('print','dynamic','block_decomposed');
+    else
+        bytecode('print','dynamic');
+    end
 else
     disp('You have to use bytecode option in model command to use print_bytecode_dynamic_model');
 end

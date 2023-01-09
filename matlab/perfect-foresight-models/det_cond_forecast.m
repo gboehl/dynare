@@ -12,7 +12,7 @@ function data_set = det_cond_forecast(varargin)
 %  dataset                [dseries]     Returns a dseries containing the forecasted endgenous variables and shocks
 %
 
-% Copyright © 2013-2020 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -161,7 +161,11 @@ else
             if options_.bytecode
                 save_options_dynatol_f = options_.dynatol.f;
                 options_.dynatol.f = 1e-7;
-                [endo, exo] = bytecode('extended_path', plan, oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
+                if options_.block
+                    [endo, exo] = bytecode('extended_path', 'block_decomposed', plan, oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
+                else
+                    [endo, exo] = bytecode('extended_path', plan, oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
+                end
                 options_.dynatol.f = save_options_dynatol_f;
 
                 oo_.endo_simul = endo;
@@ -466,16 +470,13 @@ if pf && ~surprise
         indx_x = [];
         for k = 1 : per
             if k == 1
-                if (isfield(M_,'block_structure'))
-                    data1 = M_.block_structure.block;
-                    Size = length(M_.block_structure.block);
-                else
-                    data1 = M_;
-                    Size = 1;
-                end
                 data1 = M_;
                 if (options_.bytecode)
-                    [zz, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                    if options_.block
+                        [zz, data1]= bytecode('dynamic','block_decomposed','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                    else
+                        [zz, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                    end
                 else
                     [zz, g1b] = feval([M_.fname '.dynamic'], z', zx, M_.params, oo_.steady_state, k);
                     data1.g1_x = g1b(:,end - M_.exo_nbr + 1:end);
@@ -736,16 +737,13 @@ else
             indx_x = [];
             for k = 1 : per
                 if k == 1
-                    if (isfield(M_,'block_structure'))
-                        data1 = M_.block_structure.block;
-                        Size = length(M_.block_structure.block);
-                    else
-                        data1 = M_;
-                        Size = 1;
-                    end
                     data1 = M_;
                     if (options_.bytecode)
-                        [zz, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                        if options_.block
+                            [zz, data1]= bytecode('dynamic','block_decomposed','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                        else
+                            [zz, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                        end
                     else
                         [zz, g1b] = feval([M_.fname '.dynamic'], z', zx, M_.params, oo_.steady_state, k);
                         data1.g1_x = g1b(:,end - M_.exo_nbr + 1:end);

@@ -11,7 +11,7 @@ function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
 % - oo_                 [struct] contains results
 % - maxerror            [double] contains the maximum absolute error
 
-% Copyright © 2015-2022 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -55,7 +55,7 @@ if options_.block
     end
     if options_.bytecode
         try
-            oo_.endo_simul = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);
+            oo_.endo_simul = bytecode('dynamic', 'block_decomposed', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);
             oo_.deterministic_simulation.status = true;
         catch ME
             disp(ME.message)

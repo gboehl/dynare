@@ -36,7 +36,7 @@ function [dr,info,M_,oo_] = dr_block(dr,task,M_,options_,oo_,varargin)
 %   none.
 %
 
-% Copyright © 2010-2022 Dynare Team
+% Copyright © 2010-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -79,7 +79,7 @@ end
 data = M_.block_structure.block;
 
 if options_.bytecode
-    [~, data]= bytecode('dynamic','evaluate', z, zx, M_.params, dr.ys, 1, data);
+    [~, data]= bytecode('dynamic', 'evaluate', 'block_decomposed', z, zx, M_.params, dr.ys, 1, data);
 else
     T=NaN(M_.block_structure.dyn_tmp_nbr, 1);
     it_=M_.maximum_lag+1;
