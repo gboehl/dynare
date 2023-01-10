@@ -1,11 +1,10 @@
-function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_state, T, ...
+function [y, T, oo_, info] = solve_one_boundary(fh, y, x, params, steady_state, T, ...
                                                 y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options, oo_)
-% Computes the deterministic simulation of a block of equation containing
-% lead or lag variables
+% Computes the deterministic simulation or the steady state for a block of equations containing
+% only lags or only leads (but not both).
 %
 % INPUTS
-%   fname               [string]        name of the file containing the block
-%                                       to simulate
+%   fh                  [handle]        function handle to the static/dynamic file for the block
 %   y                   [matrix]        All the endogenous variables of the model
 %   x                   [matrix]        All the exogenous variables of the model
 %   params              [vector]        All the parameters of the model
@@ -26,11 +25,10 @@ function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_stat
 %   stack_solve_algo    [integer]       linear solver method used in the Newton algorithm
 %   is_forward          [logical]       Whether the block has to be solved forward
 %                                       If false, the block is solved backward
-%   is_dynamic          [logical]       If true, the block belongs to the dynamic file
-%                                           file and the oo_.deterministic_simulation field has to be uptated
-%                                       If false, the block belongs to the static
-%                                           file and the oo_.detereministic_simulation
-%                                           field remains unchanged
+%   is_dynamic          [logical]       If true, this is a deterministic simulation
+%                                       and the oo_.deterministic_simulation field is updated.
+%                                       If false, this is a steady state computation
+%                                       (oo_.detereministic_simulation remains unchanged).
 %   verbose             [logical]       Whether iterations are to be printed
 %
 % OUTPUTS
@@ -41,12 +39,8 @@ function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_stat
 %
 % ALGORITHM
 %   Newton with LU or GMRES or BicGstab for dynamic block
-%
-% SPECIAL REQUIREMENTS
-%   none.
-%
 
-% Copyright © 1996-2022 Dynare Team
+% Copyright © 1996-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -62,7 +56,6 @@ function [y, T, oo_, info] = solve_one_boundary(fname, y, x, params, steady_stat
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
 
 Blck_size=size(y_index_eq,2);
 correcting_factor=0.01;
@@ -87,10 +80,15 @@ for it_=start:incr:finish
     g1=spalloc( Blck_size, Blck_size, nze);
     while ~(cvg || iter>maxit_)
         if is_dynamic
-            [r, yy, T(:, it_), g1] = feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
-            y(:, it_) = yy(M.lead_lag_incidence(M.maximum_endo_lag+1,:));
+            [yy, T(:, it_), r, g1] = fh(dynendo(y, it_, M), x(it_, :), params, steady_state, ...
+                                        M.block_structure.block(Block_Num).g1_sparse_rowval, ...
+                                        M.block_structure.block(Block_Num).g1_sparse_colval, ...
+                                        M.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
+            y(:, it_) = yy(M.endo_nbr+(1:M.endo_nbr));
         else
-            [r, y, T, g1] = feval(fname, Block_Num, y, x, params, T);
+            [y, T, r, g1] = fh(y, x, params, M.block_structure_stat.block(Block_Num).g1_sparse_rowval, ...
+                               M.block_structure_stat.block(Block_Num).g1_sparse_colval, ...
+                               M.block_structure_stat.block(Block_Num).g1_sparse_colptr, T);
         end
         if ~isreal(r)
             max_res=(-(max(max(abs(r))))^2)^0.5;
@@ -201,12 +199,15 @@ for it_=start:incr:finish
                 f = 0.5*r'*r;
                 p = -g1\r ;
                 [ya,f,r,check]=lnsrch1(ya,f,g,p,stpmax, ...
-                                       'lnsrch1_wrapper_one_boundary',nn, ...
-                                       nn, options.solve_tolx, y_index_eq, fname, Block_Num, y, x, params, steady_state, T(:, it_), it_, M);
+                                       @lnsrch1_wrapper_one_boundary,nn, ...
+                                       nn, options.solve_tolx, y_index_eq, fh, Block_Num, y, x, params, steady_state, T(:, it_), it_, M);
                 dx = ya - y(y_index_eq, it_);
                 y(y_index_eq, it_) = ya;
                 %% Recompute temporary terms, since they are not given as output of lnsrch1
-                [~, ~, T(:, it_)] = feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
+                [~, T(:, it_)] = fh(dynendo(y, it_, M), x(it_, :), params, steady_state, ...
+                                    M.block_structure.block(Block_Num).g1_sparse_rowval, ...
+                                    M.block_structure.block(Block_Num).g1_sparse_colval, ...
+                                    M.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
             elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0 || stack_solve_algo==6)) || (~is_dynamic && options.solve_algo==6)
                 if verbose && ~is_dynamic
                     disp('steady: Sparse LU ')
@@ -319,3 +320,21 @@ if is_dynamic
 else
     info = 0;
 end
+
+function y3n = dynendo(y, it_, M)
+    if it_ > 1 && it_ < size(y, 2)
+        y3n = reshape(y(:, it_+(-1:1)), 3*M.endo_nbr, 1);
+    elseif it_ > 1 % Purely backward model (in last period)
+        y3n = [ reshape(y(:, it_+(-1:0)), 2*M.endo_nbr, 1); NaN(M_.endo_nbr, 1) ];
+    elseif it_ < size(y, 2) % Purely forward model (in first period)
+        y3n = [ NaN(M_.endo_nbr, 1); reshape(y(:, it_+(0:1)), 2*M.endo_nbr, 1) ];
+    else % Static model
+        y3n = [ NaN(M_.endo_nbr, 1); y(:, it_); NaN(M_.endo_nbr, 1) ]
+    end
+
+function r = lnsrch1_wrapper_one_boundary(ya, y_index, fh, Block_Num, y, x, params, steady_state, T, it_, M)
+    y(y_index, it_) = ya;
+    [~, ~, r] = fh(dynendo(y, it_, M), x(it_, :), params, steady_state, ...
+                   M.block_structure.block(Block_Num).g1_sparse_rowval, ...
+                   M.block_structure.block(Block_Num).g1_sparse_colval, ...
+                   M.block_structure.block(Block_Num).g1_sparse_colptr, T);

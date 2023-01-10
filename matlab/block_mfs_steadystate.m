@@ -1,8 +1,8 @@
-function [r, g1] = block_mfs_steadystate(y, b, y_all, exo, params, T, M)
-% Wrapper around the *_static.m file, for use with dynare_solve,
-% when block_mfs option is given to steady.
+function [r, g1] = block_mfs_steadystate(y, fh_static, b, y_all, exo, params, T, M)
+% Wrapper around the static files, for use with dynare_solve,
+% when block option is given to steady.
 
-% Copyright © 2009-2020 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -21,5 +21,6 @@ function [r, g1] = block_mfs_steadystate(y, b, y_all, exo, params, T, M)
 
 y_all(M.block_structure_stat.block(b).variable) = y;
 
-eval(['[r,~,~,g1] = ' M.fname '.static(b, y_all, exo, params, T);']);
-g1 = full(g1);
+[~,~,r,g1] = fh_static(y_all, exo, params, M.block_structure_stat.block(b).g1_sparse_rowval, ...
+                       M.block_structure_stat.block(b).g1_sparse_colval, ...
+                       M.block_structure_stat.block(b).g1_sparse_colptr, T);

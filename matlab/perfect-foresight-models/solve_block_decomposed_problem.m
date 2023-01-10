@@ -1,7 +1,7 @@
 function oo_ = solve_block_decomposed_problem(options_, M_, oo_)
 % Computes deterministic simulation with block option without bytecode
 
-% Copyright © 2020-2022 Dynare Team
+% Copyright © 2020-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,6 +48,7 @@ funcname = [ M_.fname '.dynamic'];
 for blk = 1:length(M_.block_structure.block)
     recursive_size = M_.block_structure.block(blk).endo_nbr - M_.block_structure.block(blk).mfs;
     y_index = M_.block_structure.block(blk).variable((recursive_size+1):end);
+    fh_dynamic = str2func(sprintf('%s.sparse.block.dynamic_%d', M_.fname, blk));
 
     if M_.block_structure.block(blk).Simulation_Type == 1 || ... % evaluateForward
        M_.block_structure.block(blk).Simulation_Type == 2        % evaluateBackward
@@ -63,19 +64,30 @@ for blk = 1:length(M_.block_structure.block)
             range = M_.maximum_lag+options_.periods:-1:M_.maximum_lag+1;
         end
         for it_ = range
-            y2 = dynvars_from_endo_simul(y, it_, M_);
-            [~, y2, T(:, it_)] = feval(funcname, blk, y2, oo_.exo_simul, M_.params, oo_.steady_state, T(:, it_), it_, false);
-            y(find(M_.lead_lag_incidence(M_.maximum_endo_lag+1, :)), it_) = y2(nonzeros(M_.lead_lag_incidence(M_.maximum_endo_lag+1, :)));
+            if it_ > 1 && it_ < size(y, 2)
+                y3n = reshape(y(:, it_+(-1:1)), 3*M_.endo_nbr, 1);
+            elseif it_ > 1 % Purely backward model (in last period)
+                y3n = [ reshape(y(:, it_+(-1:0)), 2*M_.endo_nbr, 1); NaN(M_.endo_nbr, 1) ];
+            elseif it_ < size(y, 2) % Purely forward model (in first period)
+                y3n = [ NaN(M_.endo_nbr, 1); reshape(y(:, it_+(0:1)), 2*M_.endo_nbr, 1) ];
+            else % Static model
+                y3n = [ NaN(M_.endo_nbr, 1); y(:, it_); NaN(M_.endo_nbr, 1) ]
+            end
+            [y3n, T(:, it_)] = fh_dynamic(y3n, oo_.exo_simul(it_, :), M_.params, oo_.steady_state, ...
+                                          M_.block_structure.block(blk).g1_sparse_rowval, ...
+                                          M_.block_structure.block(blk).g1_sparse_colval, ...
+                                          M_.block_structure.block(blk).g1_sparse_colptr, T(:, it_));
+            y(:, it_) = y3n(M_.endo_nbr+(1:M_.endo_nbr));
         end
     elseif M_.block_structure.block(blk).Simulation_Type == 3 || ... % solveForwardSimple
            M_.block_structure.block(blk).Simulation_Type == 4 || ... % solveBackwardSimple
            M_.block_structure.block(blk).Simulation_Type == 6 || ... % solveForwardComplete
            M_.block_structure.block(blk).Simulation_Type == 7        % solveBackwardComplete
         is_forward = M_.block_structure.block(blk).Simulation_Type == 3 || M_.block_structure.block(blk).Simulation_Type == 6;
-        [y, T, oo_] = solve_one_boundary(funcname, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, is_forward, true, false, M_, options_, oo_);
+        [y, T, oo_] = solve_one_boundary(fh_dynamic, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, is_forward, true, false, M_, options_, oo_);
     elseif M_.block_structure.block(blk).Simulation_Type == 5 || ... % solveTwoBoundariesSimple
            M_.block_structure.block(blk).Simulation_Type == 8        % solveTwoBoundariesComplete
-        [y, T, oo_] = solve_two_boundaries(funcname, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).maximum_lag, M_.block_structure.block(blk).maximum_lead, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, options_, M_, oo_);
+        [y, T, oo_] = solve_two_boundaries(fh_dynamic, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).maximum_lag, M_.block_structure.block(blk).maximum_lead, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, options_, M_, oo_);
     end
 
     tmp = y(M_.block_structure.block(blk).variable, :);

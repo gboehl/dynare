@@ -1,10 +1,9 @@
-function [y, T, oo]= solve_two_boundaries(fname, y, x, params, steady_state, T, y_index, nze, periods, y_kmin_l, y_kmax_l, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo,options,M, oo)
+function [y, T, oo]= solve_two_boundaries(fh, y, x, params, steady_state, T, y_index, nze, periods, y_kmin_l, y_kmax_l, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo,options,M, oo)
 % Computes the deterministic simulation of a block of equation containing
 % both lead and lag variables using relaxation methods
 %
 % INPUTS
-%   fname               [string]        name of the file containing the block
-%                                       to simulate
+%   fh                  [handle]        function handle to the dynamic file for the block
 %   y                   [matrix]        All the endogenous variables of the model
 %   x                   [matrix]        All the exogenous variables of the model
 %   params              [vector]        All the parameters of the model
@@ -40,12 +39,8 @@ function [y, T, oo]= solve_two_boundaries(fname, y, x, params, steady_state, T, 
 %
 % ALGORITHM
 %   Newton with LU or GMRES or BicGstab
-%
-% SPECIAL REQUIREMENTS
-%   none.
-%
 
-% Copyright © 1996-2022 Dynare Team
+% Copyright © 1996-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -82,8 +77,11 @@ while ~(cvg || iter>maxit_)
     r = NaN(Blck_size, periods);
     g1a = spalloc(Blck_size*periods, Blck_size*periods, nze*periods);
     for it_ = y_kmin+(1:periods)
-        [r(:, it_-y_kmin), yy, T(:, it_), g1]=feval(fname, Block_Num, dynvars_from_endo_simul(y, it_, M), x, params, steady_state, T(:, it_), it_, false);
-        y(:, it_) = yy(M.lead_lag_incidence(M.maximum_endo_lag+1,:));
+        [yy, T(:, it_), r(:, it_-y_kmin), g1]=fh(dynendo(y, it_, M), x(it_, :), params, steady_state, ...
+                                                 M.block_structure.block(Block_Num).g1_sparse_rowval, ...
+                                                 M.block_structure.block(Block_Num).g1_sparse_colval, ...
+                                                 M.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
+        y(:, it_) = yy(M.endo_nbr+(1:M.endo_nbr));
         if periods == 1
             g1a = g1(:, Blck_size+(1:Blck_size));
         elseif it_ == y_kmin+1
@@ -321,7 +319,7 @@ while ~(cvg || iter>maxit_)
             g = (ra'*g1a)';
             f = 0.5*ra'*ra;
             p = -g1a\ra;
-            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,'lnsrch1_wrapper_two_boundaries',nn,nn, options.solve_tolx, fname, Block_Num, y, y_index,x, params, steady_state, T, periods, Blck_size, M);
+            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,@lnsrch1_wrapper_two_boundaries,nn,nn, options.solve_tolx, fh, Block_Num, y, y_index,x, params, steady_state, T, periods, Blck_size, M);
             dx = ya - yn;
             y(y_index, y_kmin+(1:periods))=reshape(yn',length(y_index),periods);
         end
@@ -352,3 +350,15 @@ oo.deterministic_simulation.iterations = iter;
 oo.deterministic_simulation.block(Block_Num).status = true;% Convergency obtained.
 oo.deterministic_simulation.block(Block_Num).error = max_res;
 oo.deterministic_simulation.block(Block_Num).iterations = iter;
+
+function y3n = dynendo(y, it_, M)
+    y3n = reshape(y(:, it_+(-1:1)), 3*M.endo_nbr, 1);
+
+function ra = lnsrch1_wrapper_two_boundaries(ya, fh, Block_Num, y, y_index, x, ...
+                                             params, steady_state, T, periods, ...
+                                             y_size, M)
+    y(y_index, M.maximum_lag+(1:periods)) = reshape(ya',length(y_index),periods);
+    ra = NaN(periods*y_size, 1);
+    for it_ = M.maximum_lag+(1:periods)
+        [~, ~, ra((it_-M.maximum_lag-1)*y_size+(1:y_size)), g1] = fh(dynendo(y, it_, M), x(it_, :), params, steady_state, M.block_structure.block(Block_Num).g1_sparse_rowval, M.block_structure.block(Block_Num).g1_sparse_colval, M.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
+    end

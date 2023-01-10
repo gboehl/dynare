@@ -22,6 +22,7 @@ x = y;
 if options.block && ~options.bytecode
     T = NaN(M.block_structure_stat.tmp_nbr, 1);
     for b = 1:length(M.block_structure_stat.block)
+        fh_static = str2func(sprintf('%s.sparse.block.static_%d', M.fname, b));
         ss = x;
         if M.block_structure_stat.block(b).Simulation_Type ~= 1 && ...
                 M.block_structure_stat.block(b).Simulation_Type ~= 2
@@ -29,7 +30,7 @@ if options.block && ~options.bytecode
                 [y, errorflag] = dynare_solve('block_mfs_steadystate', ...
                                               ss(M.block_structure_stat.block(b).variable), ...
                                               options.simul.maxit, options.solve_tolf, options.solve_tolx, ...
-                                              options, b, ss, exo, params, T, M);
+                                              options, fh_static, b, ss, exo, params, T, M);
                 if errorflag
                     info = 1;
                     return
@@ -37,7 +38,7 @@ if options.block && ~options.bytecode
                 ss(M.block_structure_stat.block(b).variable) = y;
             else
                 n = length(M.block_structure_stat.block(b).variable);
-                [ss, T, ~, check] = solve_one_boundary([M.fname '.static' ], ss, exo, ...
+                [ss, T, ~, check] = solve_one_boundary(fh_static, ss, exo, ...
                                                        params, [], T, M.block_structure_stat.block(b).variable, n, 1, false, b, 0, options.simul.maxit, ...
                                                        options.solve_tolf, ...
                                                        0, options.solve_algo, true, false, false, M, options, []);
@@ -49,7 +50,9 @@ if options.block && ~options.bytecode
         end
         % Compute endogenous if the block is of type evaluate forward/backward or if there are recursive variables in a solve block.
         % Also update the temporary terms vector (needed for the dynare_solve case)
-        [~, x, T, g1] = feval([M.fname '.static'], b, ss, exo, params, T);
+        [x, T] = fh_static(ss, exo, params, M.block_structure_stat.block(b).g1_sparse_rowval, ...
+                           M.block_structure_stat.block(b).g1_sparse_colval, ...
+                           M.block_structure_stat.block(b).g1_sparse_colptr, T);
     end
 elseif options.bytecode
     if options.solve_algo >= 5 && options.solve_algo <= 8
