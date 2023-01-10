@@ -20,7 +20,7 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,27 +48,8 @@ if options.bytecode
         jacob = junk.g1;
     end      
 else
-    fh_static = str2func([M.fname '.static']);
-    if options.block
-        residuals = zeros(M.endo_nbr,1);
-        T = NaN(M.block_structure_stat.tmp_nbr, 1);
-        for b = 1:length(M.block_structure_stat.block)
-            [r, yy, T] = feval(fh_static,b,ys,exo_ss,params,T);
-            if M.block_structure_stat.block(b).Simulation_Type == 1 || ... % evaluateForward
-               M.block_structure_stat.block(b).Simulation_Type == 2        % evaluateBackward
-                vidx = M.block_structure_stat.block(b).variable;
-                r = yy(vidx) - ys(vidx);
-            end
-            residuals(M.block_structure_stat.block(b).equation) = r;
-        end
-        if nargout==3
-            jacob=NaN(length(ys));
-        end
-    else
-        if nargout<3
-            residuals = feval(fh_static,ys,exo_ss,params);
-        else
-            [residuals, jacob] = feval(fh_static,ys,exo_ss,params);
-        end
+    [residuals, T_order, T] = feval([M.fname '.sparse.static_resid'], ys, exo_ss, params);
+    if nargout >= 3
+        jacob = feval([M.fname '.sparse.static_g1'], ys, exo_ss, params, M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr, T_order, T);
     end
 end

@@ -17,7 +17,7 @@ function [steady_state, params, check] = dyn_ramsey_static(ys_init, M, options_,
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2003-2022 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,6 +40,7 @@ check = 0;
 options_.steadystate.nocheck = 1; %locally disable checking because Lagrange multipliers are not accounted for in evaluate_steady_state_file
                                   % dyn_ramsey_static_1 is a subfunction
 nl_func = @(x) dyn_ramsey_static_1(x,M,options_,oo);
+exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
 
 % check_static_model is a subfunction
 if ~options_.steadystate_flag && check_static_model(ys_init,M,options_,oo)
@@ -72,7 +73,6 @@ elseif options_.steadystate_flag
         end
     end
     ys_init(k_inst) = inst_val;
-    exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
     [xx,params] = evaluate_steady_state_file(ys_init,exo_ss,M,options_,~options_.steadystate.nocheck); %run steady state file again to update parameters
     [~,~,steady_state] = nl_func(inst_val); %compute and return steady state
 else
@@ -107,6 +107,7 @@ inst_nbr = orig_endo_aux_nbr - orig_eq_nbr;
 % indices of Lagrange multipliers
 fname = M.fname;
 
+exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
 
 if options_.steadystate_flag
     k_inst = [];
@@ -117,8 +118,7 @@ if options_.steadystate_flag
     ys_init=zeros(size(oo.steady_state)); %create starting vector for steady state computation as only instrument value is handed over
     ys_init(k_inst) = x; %set instrument, the only value required for steady state computation, to current value
     [x,params,check] = evaluate_steady_state_file(ys_init,... %returned x now has size endo_nbr as opposed to input size of n_instruments
-                                                  [oo.exo_steady_state; ...
-                        oo.exo_det_steady_state], ...
+                                                  exo_ss, ...
                                                   M,options_,~options_.steadystate.nocheck);
     if any(imag(x(1:M.orig_endo_nbr))) %return with penalty
         resids=ones(inst_nbr,1)+sum(abs(imag(x(1:M.orig_endo_nbr)))); %return with penalty
@@ -141,10 +141,7 @@ if any([M.aux_vars.type] ~= 6) %auxiliary variables other than multipliers
     needs_set_auxiliary_variables = 1;
     if M.set_auxiliary_variables
         fh = str2func([M.fname '.set_auxiliary_variables']);
-        s_a_v_func = @(z) fh(z,...
-            [oo.exo_steady_state,...
-            oo.exo_det_steady_state],...
-            params);
+        s_a_v_func = @(z) fh(z, exo_ss, params);
     else
         s_a_v_func = z;
     end
@@ -156,12 +153,11 @@ end
 % set multipliers and auxiliary variables that
 % depends on multipliers to 0 to compute residuals
 if (options_.bytecode)
-    [res, junk] = bytecode('static',xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
-                           params, 'evaluate');
+    [res, junk] = bytecode('static', xx, exo_ss, params, 'evaluate');
     fJ = junk.g1;
 else
-    [res,fJ] = feval([fname '.static'],xx,[oo.exo_steady_state oo.exo_det_steady_state], ...
-                     params);
+    [res, T_order, T] = feval([fname '.sparse.static_resid'], xx, exo_ss, params);
+    fJ = feval([fname '.sparse.static_g1'], xx, exo_ss, params, M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr, T_order, T);
 end
 % index of multipliers and corresponding equations
 % the auxiliary variables before the Lagrange multipliers are treated
@@ -192,12 +188,11 @@ end
 
 function result = check_static_model(ys,M,options_,oo)
 result = false;
+exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
 if (options_.bytecode)
-    [res, ~] = bytecode('static',ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
-                        M.params, 'evaluate');
+    [res, ~] = bytecode('static', ys, exo_ss, M.params, 'evaluate');
 else
-    res = feval([M.fname '.static'],ys,[oo.exo_steady_state oo.exo_det_steady_state], ...
-                M.params);
+    res = feval([M.fname '.sparse.static_resid'], ys, exo_ss, M.params);
 end
 if norm(res) < options_.solve_tolf
     result = true;

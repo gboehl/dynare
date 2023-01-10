@@ -157,7 +157,8 @@ for b=1:nb
                                 int2str(b)]);
         end
     else
-        [res,jacob]=feval([M.fname '.static'],dr.ys,exo,M.params);
+        [res, T_order, T] = feval([M.fname '.sparse.static_resid'], dr.ys, exo, M.params);
+        jacob = feval([M.fname '.sparse.static_g1'], dr.ys, exo, M.params, M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr, T_order, T);
     end
     if any(any(isinf(jacob) | isnan(jacob)))
         problem_dummy=1;

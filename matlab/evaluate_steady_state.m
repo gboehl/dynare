@@ -22,7 +22,7 @@ function [ys,params,info] = evaluate_steady_state(ys_init,M,options,oo,steadysta
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2001-2022 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -279,8 +279,9 @@ elseif steadystate_flag
         return
     end
 elseif ~options.bytecode && ~options.block
+    static_resid = str2func(sprintf('%s.sparse.static_resid', M.fname));
+    static_g1 = str2func(sprintf('%s.sparse.static_g1', M.fname));
     if ~options.linear
-        static_model = str2func(sprintf('%s.static', M.fname));
         % non linear model
         if  ismember(options.solve_algo,[10,11])
             [lb,ub,eq_index] = get_complementarity_conditions(M,options.ramsey_policy);
@@ -295,16 +296,18 @@ elseif ~options.bytecode && ~options.block
                 ys_init,...
                 options.steady.maxit, options.solve_tolf, options.solve_tolx, ...
                 options, exo_ss, params,...
-                M.endo_nbr,static_model,eq_index);
+                M.endo_nbr, static_resid, static_g1, ...
+                M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr, eq_index);
         else
             [ys, check] = dynare_solve(@static_problem, ys_init, ...
                 options.steady.maxit, options.solve_tolf, options.solve_tolx, ...
-                options, exo_ss, params, M.endo_nbr, static_model);
+                options, exo_ss, params, M.endo_nbr, static_resid, static_g1, ...
+                M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr);
         end
         if check && options.debug
             [ys, check, fvec, fjac, errorcode] = dynare_solve(@static_problem, ys_init, ...
                                                               options.steady.maxit, options.solve_tolf, options.solve_tolx, ...
-                                                              options, exo_ss, params, M.endo_nbr, static_model);
+                                                              options, exo_ss, params, M.endo_nbr, static_resid, static_g1, M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr);
             dprintf('Nonlinear solver routine returned errorcode=%i.', errorcode)
             skipline()
             [infrow,infcol]=find(isinf(fjac) | isnan(fjac));
@@ -323,9 +326,8 @@ elseif ~options.bytecode && ~options.block
         end
     else
         % linear model
-        fh_static = str2func([M.fname '.static']);
-        [fvec,jacob] = fh_static(ys_init,exo_ss, ...
-                                 params);
+        [fvec, T_order, T] = static_resid(ys_init, exo_ss, params);
+        jacob = static_g1(ys_init, exo_ss, params, M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr, T_order, T);
 
         ii = find(~isfinite(fvec));
         if ~isempty(ii)
@@ -382,27 +384,12 @@ end
 if M.static_and_dynamic_models_differ
     % Evaluate residual of *dynamic* model using the steady state
     % computed on the *static* one
-    z = repmat(ys,1,M.maximum_lead + M.maximum_lag + 1);
-    zx = repmat([exo_ss'], M.maximum_lead + M.maximum_lag + 1, 1);
     if options.bytecode
+        z = repmat(ys,1,M.maximum_lead + M.maximum_lag + 1);
+        zx = repmat([exo_ss'], M.maximum_lead + M.maximum_lag + 1, 1);
         [r, ~]= bytecode('dynamic','evaluate', z, zx, params, ys, 1);
-    elseif options.block
-        T=NaN(M.block_structure.dyn_tmp_nbr, 1);
-        for i = 1:length(M.block_structure.block)
-            [rr, yy, T, g] = feval([M.fname '.dynamic'], i, ...
-                                   dynvars_from_endo_simul(z, M.maximum_lag+1, M), ...
-                                   zx, params, ys, T, M.maximum_lag+1, false);
-            if M.block_structure.block(i).Simulation_Type == 1 || ... % evaluateForward
-               M.block_structure.block(i).Simulation_Type == 2        % evaluateBackward
-                vidx = M.block_structure.block(i).variable;
-                rr = yy(M.lead_lag_incidence(M.maximum_endo_lag+1, vidx)) - oo.steady_state(vidx);
-            end
-            idx = M.block_structure.block(i).equation;
-            r(idx) = rr;
-        end
     else
-        r = feval([M.fname '.dynamic'], dynvars_from_endo_simul(z, M.maximum_lag+1, M), ...
-                  zx, params, ys, M.maximum_lag + 1);
+        r = feval([M.fname '.sparse.dynamic_resid'], repmat(ys, 3, 1), exo_ss, params, ys);
     end
     % Fail if residual greater than tolerance
     if max(abs(r)) > options.solve_tolf
@@ -424,13 +411,14 @@ if ~isempty(find(isnan(ys)))
     return
 end
 
-function [resids,jac] = static_problem(y,x,params,nvar,fh_static_model)
-[r,j] = fh_static_model(y,x,params);
+function [resids,jac] = static_problem(y, x, params, nvar, fh_static_resid, fh_static_g1, sparse_rowval, sparse_colval, sparse_colptr)
+[r, T_order, T] = fh_static_resid(y, x, params);
+j = fh_static_g1(y, x, params, sparse_rowval, sparse_colval, sparse_colptr, T_order, T);
 resids = r(1:nvar);
 jac = j(1:nvar,1:nvar);
 
-
-function [resids,jac] = static_mcp_problem(y,x,params,nvar,fh_static_model,eq_index)
-[r,j] = fh_static_model(y,x,params);
+function [resids,jac] = static_mcp_problem(y, x, params, nvar, fh_static_resid, fh_static_g1, sparse_rowval, sparse_colval, sparse_colptr, eq_index)
+[r, T_order, T] = fh_static_resid(y, x, params);
+j = fh_static_g1(y, x, params, sparse_rowval, sparse_colval, sparse_colptr, T_order, T);
 resids = r(eq_index);
 jac = j(eq_index,1:nvar);
