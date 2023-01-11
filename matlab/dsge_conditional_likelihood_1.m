@@ -98,9 +98,7 @@ end
 BayesInfo.mf = BayesInfo.mf1;
 
 % Define the constant vector of the measurement equation.
-if DynareOptions.noconstant
-    constant = zeros(DynareDataset.vobs, 1);
-else
+if ~DynareOptions.noconstant
     if DynareOptions.loglinear
         constant = log(SteadyState(BayesInfo.mfys));
     else
@@ -111,10 +109,14 @@ end
 % Define the deterministic linear trend of the measurement equation.
 if BayesInfo.with_trend
     [trend_addition, trend_coeff] = compute_trend_coefficients(Model, DynareOptions, DynareDataset.vobs, DynareDataset.nobs);
-    trend = repmat(constant, 1, DynareDataset.nobs)+trend_addition;
+    Y = bsxfun(@minus, transpose(DynareDataset.data), constant)-trend_addition;
 else
-   trend_coeff = zeros(DynareDataset.vobs, 1);
-   trend = repmat(constant, 1, DynareDataset.nobs);
+    trend_coeff = zeros(DynareDataset.vobs, 1);
+    if ~DynareOptions.noconstant
+        Y = bsxfun(@minus, transpose(DynareDataset.data), constant);
+    else
+        Y = transpose(DynareDataset.data);
+    end
 end
 
 % Return an error if some observations are missing.
@@ -139,9 +141,6 @@ if ~isequal(pp, rr)
     error('With conditional_likelihood the number of innovations must be equal to the number of observed varilables!')
 end
 
-% Remove the trend.
-Y = transpose(DynareDataset.data)-trend;
-
 % Set state vector (deviation to steady state)
 S = zeros(mm, 1);
 
@@ -149,24 +148,29 @@ S = zeros(mm, 1);
 % 3. Evaluate the conditional likelihood
 %------------------------------------------------------------------------------
 
-Rtild = inv(R(Z,:));
-const = -.5*rr*log(2*pi);
-const = const + log(abs(det(Rtild))) + sum(log(diag(iQ_upper_chol)));
+[L, U] = lu(R(Z,:)); % note that det(L)={-1,1} depending on the number of permutations so we can forget it when we take the absolute value of the determinant of R(Z,:) below (in the constant).
 
-llik = zeros(size(Y, 2));
+const = -.5*rr*log(2*pi) - log(abs(prod(diag(U)))) + sum(log(diag(iQ_upper_chol)));
 
-Ytild = Rtild*Y;
-Ttild = Rtild*T(Z,:);
+llik = zeros(size(Y, 2), 1);
 
-for t=1:size(Y, 2)
+Ytild = U\(L\Y);
+Ttild = U\(L\T(Z,:));
+
+for t = 1:DynareOptions.presample
+    epsilon = Ytild(:,t) - Ttild*S;
+    S = T*S + R*epsilon;
+end
+
+for t=(DynareOptions.presample+1):size(Y, 2)
     epsilon = Ytild(:,t) - Ttild*S;
     upsilon = iQ_upper_chol*epsilon;
     S = T*S + R*epsilon;
-    llik(t) = const - .5*(upsilon'*upsilon);
+    llik(t) = const - .5*dot(upsilon, upsilon);
 end
 
 % Computes minus log-likelihood.
-likelihood = -sum(llik(DynareOptions.presample+1:size(Y, 2)));
+likelihood = -sum(llik);
 
 
 % ------------------------------------------------------------------------------
