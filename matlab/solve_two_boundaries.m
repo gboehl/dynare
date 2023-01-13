@@ -1,4 +1,4 @@
-function [y, T, oo]= solve_two_boundaries(fh, y, x, params, steady_state, T, y_index, nze, periods, y_kmin_l, y_kmax_l, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo,options,M, oo)
+function [y, T, oo]= solve_two_boundaries(fh, y, x, params, steady_state, T, y_index, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo,options,M, oo)
 % Computes the deterministic simulation of a block of equation containing
 % both lead and lag variables using relaxation methods
 %
@@ -14,8 +14,6 @@ function [y, T, oo]= solve_two_boundaries(fh, y, x, params, steady_state, T, y_i
 %   nze                 [integer]       number of non-zero elements in the
 %                                       jacobian matrix
 %   periods             [integer]       number of simulation periods
-%   y_kmin_l            [integer]       maximum number of lag in the block
-%   y_kmax_l            [integer]       maximum number of lead in the block
 %   is_linear           [logical]       Whether the block is linear
 %   Block_Num           [integer]       block number
 %   y_kmin              [integer]       maximum number of lag in the model

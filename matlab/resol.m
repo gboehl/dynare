@@ -32,7 +32,7 @@ function [dr, info, M, oo] = resol(check_flag, M, options, oo)
 %   info(1)=24    ->    M_.params has been updated in the steadystate routine and has some NaNs.
 %   info(1)=30    ->    Ergodic variance can't be computed.
 
-% Copyright © 2001-2018 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -111,11 +111,5 @@ if options.loglinear
     end
 end
 
-if options.block
-    [dr,info,M,oo] = dr_block(dr,check_flag,M,options,oo);
-    dr.edim = nnz(abs(dr.eigval) > options.qz_criterium);
-    dr.sdim = dr.nd-dr.edim;
-else
-    [dr,info] = stochastic_solvers(dr,check_flag,M,options,oo);
-end
+[dr, info] = stochastic_solvers(dr, check_flag, M, options, oo);
 oo.dr = dr;

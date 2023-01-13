@@ -42,7 +42,7 @@ function [Gamma_y,stationary_vars] = th_autocovariances(dr,ivar,M_,options_,node
 %   E(x_t) = (I - {g_x}\right)^{- 1} 0.5\left( g_{\sigma\sigma} \sigma^2 + g_{xx} Var(\hat x_t) + g_{uu} Var(u_t) \right)
 %   \]
 %
-% Copyright © 2001-2020 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -92,42 +92,32 @@ nspred = M_.nspred;
 nstatic = M_.nstatic;
 
 nx = size(ghx,2);
-if ~options_.block
-    %order_var = dr.order_var;
-    inv_order_var = dr.inv_order_var;
-    kstate = dr.kstate;
-    ikx = [nstatic+1:nstatic+nspred];
-    k0 = kstate(find(kstate(:,2) <= M_.maximum_lag+1),:);
-    i0 = find(k0(:,2) == M_.maximum_lag+1);
-    i00 = i0;
-    n0 = length(i0);
-    AS = ghx(:,i0);
-    ghu1 = zeros(nx,M_.exo_nbr);
-    ghu1(i0,:) = ghu(ikx,:);
-    for i=M_.maximum_lag:-1:2
-        i1 = find(k0(:,2) == i);
-        n1 = size(i1,1);
-        j1 = zeros(n1,1);
-        for k1 = 1:n1
-            j1(k1) = find(k0(i00,1)==k0(i1(k1),1));
-        end
-        AS(:,j1) = AS(:,j1)+ghx(:,i1);
-        i0 = i1;
+
+inv_order_var = dr.inv_order_var;
+kstate = dr.kstate;
+ikx = [nstatic+1:nstatic+nspred];
+k0 = kstate(find(kstate(:,2) <= M_.maximum_lag+1),:);
+i0 = find(k0(:,2) == M_.maximum_lag+1);
+i00 = i0;
+n0 = length(i0);
+AS = ghx(:,i0);
+ghu1 = zeros(nx,M_.exo_nbr);
+ghu1(i0,:) = ghu(ikx,:);
+for i=M_.maximum_lag:-1:2
+    i1 = find(k0(:,2) == i);
+    n1 = size(i1,1);
+    j1 = zeros(n1,1);
+    for k1 = 1:n1
+        j1(k1) = find(k0(i00,1)==k0(i1(k1),1));
     end
-else
-    ghu1 = zeros(nx,M_.exo_nbr);
-    trend = 1:M_.endo_nbr;
-    inv_order_var = trend(M_.block_structure.variable_reordered);
-    ghu1(1:length(dr.state_var),:) = ghu(dr.state_var,:);
+    AS(:,j1) = AS(:,j1)+ghx(:,i1);
+    i0 = i1;
 end
 b = ghu1*M_.Sigma_e*ghu1';
 
 
-if ~options_.block
-    ipred = nstatic+(1:nspred)';
-else
-    ipred = dr.state_var;
-end
+ipred = nstatic+(1:nspred)';
+
 % state space representation for state variables only
 [A,B] = kalman_transition_matrix(dr,ipred,1:nx,M_.exo_nbr);
 % Compute stationary variables (before HP filtering),
@@ -135,11 +125,7 @@ end
 % HP filtering, this mean correction is computed *before* filtering)
 if local_order == 2 || options_.hp_filter == 0
     [vx, u] =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,[],options_.debug);
-    if ~options_.block
-        iky = inv_order_var(ivar);
-    else
-        iky = ivar;
-    end
+    iky = inv_order_var(ivar);
     stationary_vars = (1:length(ivar))';
     if ~isempty(u)
         x = abs(ghx*u);

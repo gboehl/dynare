@@ -17,7 +17,7 @@ function y_=simult_(M_,options_,y0,dr,ex_,iorder)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -63,19 +63,9 @@ if options_.k_order_solver && ~options_.pruning % Call dynare++ routines.
     y_(dr.order_var,:) = y_;
     y_=[y_start y_];
 else
-    if options_.block
-        if M_.maximum_lag > 0
-            k2 = dr.state_var;
-        else
-            k2 = [];
-        end
-        order_var = 1:endo_nbr;
-        dr.order_var = order_var;
-    else
-        k2 = dr.kstate(find(dr.kstate(:,2) <= M_.maximum_lag+1),[1 2]);
-        k2 = k2(:,1)+(M_.maximum_lag+1-k2(:,2))*endo_nbr;
-        order_var = dr.order_var;
-    end
+    k2 = dr.kstate(find(dr.kstate(:,2) <= M_.maximum_lag+1),[1 2]);
+    k2 = k2(:,1)+(M_.maximum_lag+1-k2(:,2))*endo_nbr;
+    order_var = dr.order_var;
 
     switch iorder
       case 1

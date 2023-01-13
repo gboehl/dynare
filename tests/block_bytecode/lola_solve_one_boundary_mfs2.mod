@@ -1,6 +1,5 @@
 // Tests option mfs=2 with block
 
-@#define deterministic = true
 @#define block = true
 @#define mfs = 2
 @#include "lola_common.inc"

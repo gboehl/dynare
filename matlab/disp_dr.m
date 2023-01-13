@@ -10,7 +10,7 @@ function disp_dr(dr,order,var_list)
 % OUTPUTS
 % none
 
-% Copyright © 2001-2019 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,14 +36,9 @@ end
 
 nx =size(dr.ghx,2);
 nu =size(dr.ghu,2);
-if options_.block
-    k = M_.nspred;
-    k1 = 1:M_.endo_nbr;
-else
-    k = find(dr.kstate(:,2) <= M_.maximum_lag+1);
-    klag = dr.kstate(k,[1 2]);
-    k1 = dr.order_var;
-end
+k = find(dr.kstate(:,2) <= M_.maximum_lag+1);
+klag = dr.kstate(k,[1 2]);
+k1 = dr.order_var;
 
 if isempty(var_list)
     var_list = M_.endo_names(1:M_.orig_endo_nbr);

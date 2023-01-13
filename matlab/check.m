@@ -12,7 +12,7 @@ function [eigenvalues_,result,info] = check(M, options, oo)
 % - result        [integer]       scalar, equal to 1 if Blanchard and Kahn conditions are satisfied, zero otherwise.
 % - info          [integer]       scalar or vector, error code as returned by resol routine.
 
-% Copyright © 2001-2019 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,18 +51,8 @@ end
 eigenvalues_ = dr.eigval;
 [m_lambda,i]=sort(abs(eigenvalues_));
 
-% Count number of forward looking variables
-if ~options.block
-    nyf = M.nsfwrd;
-else
-    nyf = 0;
-    for j = 1:length(M.block_structure.block)
-        nyf = nyf + M.block_structure.block(j).n_forward + M.block_structure.block(j).n_mixed;
-    end
-end
-
 result = 0;
-if (nyf == dr.edim) && (dr.full_rank)
+if (M.nsfwrd == dr.edim) && (dr.full_rank)
     result = 1;
 end
 
@@ -73,7 +63,7 @@ if ~options.noprint
     z=[m_lambda real(eigenvalues_(i)) imag(eigenvalues_(i))]';
     disp(sprintf('%16.4g %16.4g %16.4g\n',z))
     disp(sprintf('\nThere are %d eigenvalue(s) larger than 1 in modulus ', dr.edim));
-    disp(sprintf('for %d forward-looking variable(s)',nyf));
+    disp(sprintf('for %d forward-looking variable(s)', M.nsfwrd));
     skipline()
     if result
         disp('The rank condition is verified.')

@@ -69,11 +69,6 @@ if length(M.aux_vars) > 0 && ~steadystate_flag && M.set_auxiliary_variables
 end
 
 if options.ramsey_policy
-    if options.block
-        % The current implementation needs the Jacobian of the full model, which is not
-        % provided by the block-decomposed routines.
-        error('The ''block'' option is not compatible with ''ramsey_model''/''ramsey_policy''');
-    end
     if ~isfinite(M.params(strmatch('optimal_policy_discount_factor',M.param_names,'exact')))
         fprintf('\nevaluate_steady_state: the planner_discount is NaN/Inf. That will cause problems.\n')
     end

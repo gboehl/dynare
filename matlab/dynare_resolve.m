@@ -16,7 +16,7 @@ function [A,B,ys,info,M_,oo_] = dynare_resolve(M_,options_,oo_,mode)
 % - M_                  [structure]     Matlab's structure describing the model
 % - oo_                 [structure]     Matlab's structure containing the results
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,11 +52,7 @@ switch nargin
     nstatic = M_.nstatic;
     nspred = M_.nspred;
     iv = (1:endo_nbr)';
-    if ~options_.block
-        ic = [ nstatic+(1:nspred) endo_nbr+(1:size(oo_.dr.ghx,2)-nspred) ]';
-    else
-        ic = oo_.dr.restrict_columns;
-    end
+    ic = [ nstatic+(1:nspred) endo_nbr+(1:size(oo_.dr.ghx,2)-nspred) ]';
   case 4
     iv = oo_.dr.restrict_var_list;
     ic = oo_.dr.restrict_columns;

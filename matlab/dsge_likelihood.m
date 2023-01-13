@@ -115,7 +115,7 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOpti
 %! @end deftypefn
 %@eod:
 
-% Copyright © 2004-2021 Dynare Team
+% Copyright © 2004-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -680,9 +680,7 @@ singularity_has_been_detected = false;
 % First test multivariate filter if specified; potentially abort and use univariate filter instead
 if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
     if no_missing_data_flag && ~DynareOptions.occbin.likelihood.status
-        if DynareOptions.block
-            [LIK,lik] = block_kalman_filter(T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
-        elseif DynareOptions.fast_kalman_filter
+        if DynareOptions.fast_kalman_filter
             if diffuse_periods
                 %kalman_algo==3 requires no diffuse periods (stationary
                 %observables) as otherwise FE matrix will not be positive
@@ -709,23 +707,18 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
                                       analytic_deriv_info{:});
         end
     else
-        if 0 %DynareOptions.block
-            [LIK,lik] = block_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,...
-                                            T,R,Q,H,Pstar,Y,start,Z,kalman_tol,riccati_tol, Model.nz_state_var, Model.n_diag, Model.nobs_non_statevar);
-        else
-            [LIK,lik] = missing_observations_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,Y,diffuse_periods+1,size(Y,2), ...
-                                                           a_0_given_tm1, Pstar, ...
-                                                           kalman_tol, DynareOptions.riccati_tol, ...
-                                                           DynareOptions.rescale_prediction_error_covariance, ...
-                                                           DynareOptions.presample, ...
-                                                           T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods, occbin_);
-            if occbin_.status && isinf(LIK)
-                fval = Inf;
-                info(1) = 320;
-                info(4) = 0.1;
-                exit_flag = 0;
-                return
-            end
+        [LIK,lik] = missing_observations_kalman_filter(DatasetInfo.missing.aindex,DatasetInfo.missing.number_of_observations,DatasetInfo.missing.no_more_missing_observations,Y,diffuse_periods+1,size(Y,2), ...
+                                                       a_0_given_tm1, Pstar, ...
+                                                       kalman_tol, DynareOptions.riccati_tol, ...
+                                                       DynareOptions.rescale_prediction_error_covariance, ...
+                                                       DynareOptions.presample, ...
+                                                       T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods, occbin_);
+        if occbin_.status && isinf(LIK)
+            fval = Inf;
+            info(1) = 320;
+            info(4) = 0.1;
+            exit_flag = 0;
+            return
         end
     end
     if analytic_derivation

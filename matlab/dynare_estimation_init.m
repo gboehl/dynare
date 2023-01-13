@@ -32,7 +32,7 @@ function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2003-2021 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -120,14 +120,9 @@ if options_.analytic_derivation && options_.fast_kalman_filter
 end
 
 % fast kalman filter is only available with kalman_algo == 0,1,3
-if options_.fast_kalman_filter
-    if ~ismember(options_.kalman_algo, [0,1,3])
-        error(['estimation option conflict: fast_kalman_filter is only available ' ...
+if options_.fast_kalman_filter && ~ismember(options_.kalman_algo, [0,1,3])
+    error(['estimation option conflict: fast_kalman_filter is only available ' ...
                'with kalman_algo = 0, 1 or 3'])
-    elseif options_.block
-        error(['estimation option conflict: fast_kalman_filter is not available ' ...
-               'with block'])
-    end
 end
 
 % Set options_.lik_init equal to 3 if diffuse filter is used or kalman_algo refers to a diffuse filter algorithm.
@@ -456,45 +451,23 @@ else
 end
 
 % Define union of observed and state variables
-if options_.block
-    k1 = k1';
-    [k2, i_posA, i_posB] = union(k1', M_.state_var', 'rows');
-    % Set restrict_state to postion of observed + state variables in expanded state vector.
-    oo_.dr.restrict_var_list  = [k1(i_posA) M_.state_var(sort(i_posB))];
-    % set mf0 to positions of state variables in restricted state vector for likelihood computation.
-    [~,bayestopt_.mf0] = ismember(M_.state_var',oo_.dr.restrict_var_list);
-    % Set mf1 to positions of observed variables in restricted state vector for likelihood computation.
-    [~,bayestopt_.mf1] = ismember(k1,oo_.dr.restrict_var_list);
-    % Set mf2 to positions of observed variables in expanded state vector for filtering and smoothing.
-    bayestopt_.mf2  = var_obs_index_dr;
-    bayestopt_.mfys = k1;
-    oo_.dr.restrict_columns = [size(i_posA,1)+(1:size(M_.state_var,2))];
-    [k2, i_posA, i_posB] = union(k3p, M_.state_var', 'rows');
-    bayestopt_.smoother_var_list = [k3p(i_posA); M_.state_var(sort(i_posB))'];
-    [~,~,bayestopt_.smoother_saved_var_list] = intersect(k3p,bayestopt_.smoother_var_list(:));
-    [~,ic] = intersect(bayestopt_.smoother_var_list,M_.state_var);
-    bayestopt_.smoother_restrict_columns = ic;
-    [~,bayestopt_.smoother_mf] = ismember(k1, bayestopt_.smoother_var_list);
-else
-    % Define union of observed and state variables
-    k2 = union(var_obs_index_dr,[M_.nstatic+1:M_.nstatic+M_.nspred]', 'rows');
-    % Set restrict_state to postion of observed + state variables in expanded state vector.
-    oo_.dr.restrict_var_list = k2;
-    % set mf0 to positions of state variables in restricted state vector for likelihood computation.
-    [~,bayestopt_.mf0] = ismember([M_.nstatic+1:M_.nstatic+M_.nspred]',k2);
-    % Set mf1 to positions of observed variables in restricted state vector for likelihood computation.
-    [~,bayestopt_.mf1] = ismember(var_obs_index_dr,k2);
-    % Set mf2 to positions of observed variables in expanded state vector for filtering and smoothing.
-    bayestopt_.mf2  = var_obs_index_dr;
-    bayestopt_.mfys = k1;
-    [~,ic] = intersect(k2,nstatic+(1:npred)');
-    oo_.dr.restrict_columns = [ic; length(k2)+(1:nspred-npred)'];
-    bayestopt_.smoother_var_list = union(k2,k3);
-    [~,~,bayestopt_.smoother_saved_var_list] = intersect(k3,bayestopt_.smoother_var_list(:));
-    [~,ic] = intersect(bayestopt_.smoother_var_list,nstatic+(1:npred)');
-    bayestopt_.smoother_restrict_columns = ic;
-    [~,bayestopt_.smoother_mf] = ismember(var_obs_index_dr, bayestopt_.smoother_var_list);
-end
+k2 = union(var_obs_index_dr,[M_.nstatic+1:M_.nstatic+M_.nspred]', 'rows');
+% Set restrict_state to postion of observed + state variables in expanded state vector.
+oo_.dr.restrict_var_list = k2;
+% set mf0 to positions of state variables in restricted state vector for likelihood computation.
+[~,bayestopt_.mf0] = ismember([M_.nstatic+1:M_.nstatic+M_.nspred]',k2);
+% Set mf1 to positions of observed variables in restricted state vector for likelihood computation.
+[~,bayestopt_.mf1] = ismember(var_obs_index_dr,k2);
+% Set mf2 to positions of observed variables in expanded state vector for filtering and smoothing.
+bayestopt_.mf2  = var_obs_index_dr;
+bayestopt_.mfys = k1;
+[~,ic] = intersect(k2,nstatic+(1:npred)');
+oo_.dr.restrict_columns = [ic; length(k2)+(1:nspred-npred)'];
+bayestopt_.smoother_var_list = union(k2,k3);
+[~,~,bayestopt_.smoother_saved_var_list] = intersect(k3,bayestopt_.smoother_var_list(:));
+[~,ic] = intersect(bayestopt_.smoother_var_list,nstatic+(1:npred)');
+bayestopt_.smoother_restrict_columns = ic;
+[~,bayestopt_.smoother_mf] = ismember(var_obs_index_dr, bayestopt_.smoother_var_list);
 
 if options_.analytic_derivation
     if options_.lik_init == 3
@@ -660,9 +633,6 @@ end
 if options_.heteroskedastic_filter
     if options_.fast_kalman_filter
         error('estimation option conflict: "heteroskedastic_filter" incompatible with "fast_kalman_filter"')
-    end
-    if options_.block
-        error('estimation option conflict: "heteroskedastic_filter" incompatible with block kalman filter')
     end
     if options_.analytic_derivation
         error(['estimation option conflict: analytic_derivation isn''t available ' ...

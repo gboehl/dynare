@@ -57,7 +57,7 @@ function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,de
 % SPECIAL REQUIREMENTS
 %   None
 
-% Copyright © 2006-2020 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -359,11 +359,7 @@ if ~options_.smoother_redux
     oo_.dr.restrict_var_list = oldoo.restrict_var_list;
     oo_.dr.restrict_columns = oldoo.restrict_columns;
 else
-    if options_.block == 0
-        ic = [ M_.nstatic+(1:M_.nspred) M_.endo_nbr+(1:size(oo_.dr.ghx,2)-M_.nspred) ]';
-    else
-        ic = oo_.dr.restrict_columns;
-    end
+    ic = [ M_.nstatic+(1:M_.nspred) M_.endo_nbr+(1:size(oo_.dr.ghx,2)-M_.nspred) ]';
     
     if isempty(options_.nk)
         nk=1;

@@ -6,7 +6,6 @@
    Macro-variables that can be defined to tune the computations:
    - block
    - mfs
-   - deterministic
 */
 
 load lola_data.mat
@@ -723,8 +722,6 @@ end;
 resid;
 steady(solve_algo=3);
 
-@#if deterministic
-
 endval;
 @#for i in wg
 n@{i}=n@{i}_fss;
@@ -983,7 +980,3 @@ perfect_foresight_solver(maxit=100);
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')
 end
-
-@#else // stochastic case, used by files under tests/block_bytecode/lola_*
-stoch_simul(order=1);
-@#endif

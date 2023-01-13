@@ -14,7 +14,6 @@ EXTRA_DIST = \
 	k_order_welfare \
 	kalman_steady_state \
 	ms-sbvar \
-	block_kalman_filter \
 	sobol \
 	local_state_space_iterations \
 	libkordersim \

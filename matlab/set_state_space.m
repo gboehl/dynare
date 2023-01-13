@@ -34,7 +34,7 @@ function dr=set_state_space(dr,DynareModel,DynareOptions)
 %! @end deftypefn
 %@eod:
 
-% Copyright © 1996-2017 Dynare Team
+% Copyright © 1996-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -69,11 +69,7 @@ else
     both_var = [];
     stat_var = setdiff([1:endo_nbr]',fwrd_var);
 end
-if DynareOptions.block
-    order_var = DynareModel.block_structure.variable_reordered;
-else
-    order_var = [ stat_var(:); pred_var(:); both_var(:); fwrd_var(:)];
-end
+order_var = [ stat_var(:); pred_var(:); both_var(:); fwrd_var(:)];
 inv_order_var(order_var) = (1:endo_nbr);
 
 % building kmask for z state vector in t+1
