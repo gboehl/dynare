@@ -33,7 +33,6 @@ function model_diagnostics(M,options,oo)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-endo_nbr = M.endo_nbr;
 endo_names = M.endo_names;
 lead_lag_incidence = M.lead_lag_incidence;
 maximum_endo_lag = M.maximum_endo_lag;
@@ -139,7 +138,7 @@ end
 % singular Jacobian of static model
 %
 singularity_problem = 0;
-if ~isfield(M,'block_structure_stat')
+if ~options.block
     nb = 1;
 else
     nb = length(M.block_structure_stat.block);
@@ -157,8 +156,19 @@ for b=1:nb
                                 int2str(b)]);
         end
     else
-        [res, T_order, T] = feval([M.fname '.sparse.static_resid'], dr.ys, exo, M.params);
-        jacob = feval([M.fname '.sparse.static_g1'], dr.ys, exo, M.params, M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr, T_order, T);
+        if options.block
+            T = NaN(M.block_structure_stat.tmp_nbr, 1);
+            fh_static = str2func(sprintf('%s.sparse.block.static_%d', M.fname, b));
+            [~, ~,~, jacob] = fh_static(dr.ys, exo, M.params, M.block_structure_stat.block(b).g1_sparse_rowval, ...
+                M.block_structure_stat.block(b).g1_sparse_colval, ...
+                M.block_structure_stat.block(b).g1_sparse_colptr, T);
+            n_vars_jacob=size(jacob,2);
+        else
+            [res, T_order, T] = feval([M.fname '.sparse.static_resid'], dr.ys, exo, M.params);
+            jacob = feval([M.fname '.sparse.static_g1'], dr.ys, exo, M.params, M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr, T_order, T);
+            n_vars_jacob=M.endo_nbr;
+        end
+        jacob=full(jacob);
     end
     if any(any(isinf(jacob) | isnan(jacob)))
         problem_dummy=1;
@@ -186,8 +196,8 @@ for b=1:nb
         singularity_problem = 1;
         disp(['MODEL_DIAGNOSTICS:  The Jacobian of the static model is ' ...
               'singular'])
-        disp(['MODEL_DIAGNOSTICS:  there is ' num2str(endo_nbr-rank_jacob) ...
-              ' colinear relationships between the variables and the equations'])
+        disp(['MODEL_DIAGNOSTICS:  there is ' num2str(n_vars_jacob-rank_jacob) ...
+              ' collinear relationships between the variables and the equations'])
         if isoctave || matlab_ver_less_than('9.12') || isempty(options.jacobian_tolerance)
             ncol = null(jacob);
         else
@@ -205,7 +215,11 @@ for b=1:nb
                     break
                 end
             end
-            fprintf('%s\n',endo_names{k})
+            if options.block && ~options.bytecode
+                fprintf('%s\n',endo_names{M.block_structure_stat.block(b).variable(k)})
+            else
+                fprintf('%s\n',endo_names{k})
+            end
         end
         if isoctave || matlab_ver_less_than('9.12') || isempty(options.jacobian_tolerance)
             neq = null(jacob'); %can sometimes fail
@@ -224,7 +238,11 @@ for b=1:nb
                     break
                 end
             end
-            disp(k')
+            if options.block && ~options.bytecode
+                disp(M.block_structure_stat.block(b).equation(k))
+            else
+                disp(k')
+            end
         end
     end
 end
