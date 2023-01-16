@@ -152,9 +152,7 @@ NSIMS = 1;
 
 options_.noprint = 1;
 calibrated_values = M_.params;
-verbatim;
 Sigma_e = M_.Sigma_e;
-end;
 options_.bnlms.set_dynare_seed_to_default = false;
 
 nparampool = length(M_.params);

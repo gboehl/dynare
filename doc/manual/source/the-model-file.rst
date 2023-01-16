@@ -110,7 +110,7 @@ While Dynare allows the user to choose their own variable names, there
 are some restrictions to be kept in mind. First, variables and
 parameters must not have the same name as Dynare commands or built-in
 functions. In this respect, Dynare is not case-sensitive. For example,
-do not use ``Ln`` or ``Sigma_e`` to name your variable. Not conforming
+do not use ``Ln`` or ``shocks`` to name your variable. Not conforming
 to this rule might yield hard-to-debug error messages or
 crashes. Second, when employing user-defined steady state files it is 
 recommended to avoid using the name of MATLAB functions as this may cause 
@@ -2536,8 +2536,7 @@ in each period. In Dynare, these random values follow a normal
 distribution with zero mean, but it belongs to the user to specify the
 variability of these shocks. The non-zero elements of the matrix of
 variance-covariance of the shocks can be entered with the ``shocks``
-command. Or, the entire matrix can be directly entered with
-``Sigma_e`` (this use is however deprecated).
+command.
 
 If the variance of an exogenous variable is set to zero, this variable
 will appear in the report on policy and transition functions, but
@@ -2798,34 +2797,6 @@ blocks.
         values 0.04 0.01;
 
         end;
-
-.. specvar:: Sigma_e
-
-    |br| This special variable specifies directly the covariance
-    matrix of the stochastic shocks, as an upper (or lower) triangular
-    matrix. Dynare builds the corresponding symmetric matrix. Each row
-    of the triangular matrix, except the last one, must be terminated
-    by a semi-colon ;. For a given element, an arbitrary *EXPRESSION*
-    is allowed (instead of a simple constant), but in that case you
-    need to enclose the expression in parentheses. The order of the
-    covariances in the matrix is the same as the one used in the
-    ``varexo`` declaration.
-
-    *Example*
-
-    ::
-
-        varexo u, e;
-
-        Sigma_e = [ 0.81 (phi*0.9*0.009);
-                    0.000081];
-
-    This sets the variance of ``u`` to 0.81, the variance of ``e`` to
-    0.000081, and the correlation between ``e`` and ``u`` to ``phi``.
-
-    .. warning:: **The use of this special variable is deprecated and
-                 is strongly discouraged**. You should use a
-                 ``shocks`` block instead.
 
 .. matcomm:: get_shock_stderr_by_name ('EXOGENOUS_NAME');
 
