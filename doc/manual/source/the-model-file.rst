@@ -2846,24 +2846,6 @@ Other general declarations
 
     |br| Reduces the number of periods considered in subsequent output commands.
 
-.. command:: periods INTEGER
-
-    |br| This command is now deprecated (but will still work for older
-    model files). It is not necessary when no simulation is performed
-    and is replaced by an option ``periods`` in
-    ``perfect_foresight_setup``, ``simul`` and ``stoch_simul``.
-
-    This command sets the number of periods in the simulation. The
-    periods are numbered from 1 to INTEGER. In perfect foresight
-    simulations, it is assumed that all future events are perfectly
-    known at the beginning of period 1.
-
-    *Example*
-
-    ::
-
-       periods 100;
-
 
 .. _st-st:
 
