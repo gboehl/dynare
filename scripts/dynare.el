@@ -215,7 +215,7 @@
                (setq cur-indent (current-indentation)))
               ((looking-at (concat "^[ \t]*" (eval-when-compile (regexp-opt
                                                                  dynare-blocks))
-                                   "[ \t]*;"))
+                                   "\\([ \t]*(.*)\\)?[ \t]*;")) ; NB: match block options if any
                ;; A block opening keyword was found: we need to indent an extra level
                (setq cur-indent (+ (current-indentation) dynare-block-offset))) ; Do the actual indenting
               ((bobp)

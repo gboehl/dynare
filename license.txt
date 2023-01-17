@@ -322,7 +322,7 @@ License: GPL-2+ with Autoconf exception
 
 Files: scripts/dynare.el
 Copyright: 2010 Yannick Kalantzis
-           2019-2021 Dynare Team
+           2019-2023 Dynare Team
 License: GPL-3+
 
 Files: mex/sources/dynare_simul_/dynare_simul_.cc
