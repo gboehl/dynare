@@ -1,7 +1,7 @@
 ;;; dynare.el --- major mode for editing Dynare mod files
 
 ;; Copyright © 2010 Yannick Kalantzis
-;; Copyright © 2019-2022 Dynare Team
+;; Copyright © 2019-2023 Dynare Team
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@
 ;; Also include "end" in this list
 (defvar dynare-statements
   '("var" "varexo" "varexo_det" "trend_var" "log_trend_var"
-    "predetermined_variables" "parameters" "model_local_variable" "periods"
+    "predetermined_variables" "parameters" "model_local_variable"
     "model_info" "estimation" "set_time" "data" "varobs"
     "varexobs" "unit_root_vars" "rplot" "osr_params" "osr" "dynatype"
     "dynasave" "model_comparison" "change_type" "load_params_and_steady_state"
@@ -63,7 +63,7 @@
     "write_latex_static_model" "write_latex_original_model"
     "write_latex_steady_state_model" "steady" "check" "simul" "stoch_simul"
     "var_model" "trend_component_model" "var_expectation_model" "pac_model"
-    "dsample" "Sigma_e" "planner_objective" "ramsey_model" "ramsey_policy"
+    "dsample" "planner_objective" "ramsey_model" "ramsey_policy"
     "evaluate_planner_objective" "occbin_setup" "occbin_solver"
     "occbin_write_regimes" "occbin_graph"
     "discretionary_policy" "identification" "bvar_density" "bvar_forecast"
@@ -86,7 +86,7 @@
 ;; Keywords that may appear in blocks, and that begin a statement which will be
 ;; closed by a semicolon
 (defvar dynare-statements-like
-  '("stderr" "values" "scales" "restriction" "exclusion" "upper_cholesky" "lower_cholesky"
+  '("stderr" "values" "periods" "scales" "restriction" "exclusion" "upper_cholesky" "lower_cholesky"
     "bind" "relax" "error_bind" "error_relax" "add" "multiply")
   "Dynare statements-like keywords.")
 
