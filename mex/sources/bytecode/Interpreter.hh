@@ -73,11 +73,6 @@ public:
   {
     return jacobian_det_exo_block[block_num];
   }
-  inline mxArray *
-  get_jacob_other_endo(int block_num) const
-  {
-    return jacobian_other_endo_block[block_num];
-  }
   inline vector<double>
   get_residual() const
   {

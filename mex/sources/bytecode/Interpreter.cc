@@ -652,9 +652,8 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
                     mexPrintf("(0) Allocating Jacobian\n");
 #endif
 
-                    jacobian_exo_block.push_back(mxCreateDoubleMatrix(fb->get_size(), fb->get_nb_col_exo_jacob(), mxREAL));
-                    jacobian_det_exo_block.push_back(mxCreateDoubleMatrix(fb->get_size(), fb->get_nb_col_det_exo_jacob(), mxREAL));
-                    jacobian_other_endo_block.push_back(mxCreateDoubleMatrix(fb->get_size(), fb->get_nb_col_other_endo_jacob(), mxREAL));
+                    jacobian_exo_block.push_back(mxCreateDoubleMatrix(fb->get_size(), fb->get_exo_size(), mxREAL));
+                    jacobian_det_exo_block.push_back(mxCreateDoubleMatrix(fb->get_size(), fb->get_det_exo_size(), mxREAL));
                   }
                 if (block >= 0)
                   {
@@ -677,9 +676,8 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
                     //mexPrintf("(1) Allocating Jacobian fb->get_size()=%d fb->get_nb_col_jacob()=%d\n", fb->get_size(), fb->get_nb_col_jacob());
                     jacobian_block.push_back(mxCreateDoubleMatrix(fb->get_size(), fb->get_nb_col_jacob(), mxREAL));
                     //mexPrintf("mxGetPr(jacobian_block[block_num])=%x\n",mxGetPr(jacobian_block[0]));
-                    jacobian_exo_block.push_back(mxCreateDoubleMatrix(fb->get_size(), fb->get_nb_col_exo_jacob(), mxREAL));
-                    jacobian_det_exo_block.push_back(mxCreateDoubleMatrix(fb->get_size(), fb->get_nb_col_det_exo_jacob(), mxREAL));
-                    jacobian_other_endo_block.push_back(mxCreateDoubleMatrix(fb->get_size(), fb->get_nb_col_other_endo_jacob(), mxREAL));
+                    jacobian_exo_block.push_back(mxCreateDoubleMatrix(fb->get_size(), fb->get_exo_size(), mxREAL));
+                    jacobian_det_exo_block.push_back(mxCreateDoubleMatrix(fb->get_size(), fb->get_det_exo_size(), mxREAL));
                     residual = vector<double>(fb->get_size()*(periods+y_kmin));
                     result = simulate_a_block(vector_table_conditional_local);
 
@@ -689,8 +687,6 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
                     jacobian_exo_block.pop_back();
                     mxDestroyArray(jacobian_det_exo_block.back());
                     jacobian_det_exo_block.pop_back();
-                    mxDestroyArray(jacobian_other_endo_block.back());
-                    jacobian_other_endo_block.pop_back();
                   }
                 else
                   result = simulate_a_block(vector_table_conditional_local);

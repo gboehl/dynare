@@ -799,16 +799,15 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           if (evaluate)
             {
               int jacob_field_number = 0, jacob_exo_field_number = 0,
-                jacob_exo_det_field_number = 0, jacob_other_endo_field_number = 0;
+                jacob_exo_det_field_number = 0;
               if (!block_structur)
                 {
-                  const char *field_names[] = {"g1", "g1_x", "g1_xd", "g1_o"};
+                  const char *field_names[] = {"g1", "g1_x", "g1_xd"};
                   jacob_field_number = 0;
                   jacob_exo_field_number = 1;
                   jacob_exo_det_field_number = 2;
-                  jacob_other_endo_field_number = 3;
                   mwSize dims[1] = { static_cast<mwSize>(nb_blocks) };
-                  plhs[1] = mxCreateStructArray(1, dims, 4, field_names);
+                  plhs[1] = mxCreateStructArray(1, dims, 3, field_names);
                 }
               else if (!mxIsStruct(block_structur))
                 {
@@ -827,9 +826,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                   jacob_exo_det_field_number = mxAddField(plhs[1], "g1_xd");
                   if (jacob_exo_det_field_number == -1)
                     mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_exo_det to the structArray");
-                  jacob_other_endo_field_number = mxAddField(plhs[1], "g1_o");
-                  if (jacob_other_endo_field_number == -1)
-                    mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_other_endo to the structArray");
                 }
               if (!dont_store_a_structure)
                 for (int i = 0; i < nb_blocks; i++)
@@ -839,7 +835,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                       {
                         mxSetFieldByNumber(plhs[1], i, jacob_exo_field_number, interprete.get_jacob_exo(i));
                         mxSetFieldByNumber(plhs[1], i, jacob_exo_det_field_number, interprete.get_jacob_exo_det(i));
-                        mxSetFieldByNumber(plhs[1], i, jacob_other_endo_field_number, interprete.get_jacob_other_endo(i));
                       }
                   }
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2022 Dynare Team
+ * Copyright © 2007-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -56,7 +56,7 @@ protected:
   double *u;
   double *steady_y, *steady_x;
   double *g1, *r, *res;
-  vector<mxArray *> jacobian_block, jacobian_other_endo_block, jacobian_exo_block, jacobian_det_exo_block;
+  vector<mxArray *> jacobian_block, jacobian_exo_block, jacobian_det_exo_block;
   mxArray *GlobalTemporaryTerms;
   it_code_type start_code, end_code;
   double pow1(double a, double b);

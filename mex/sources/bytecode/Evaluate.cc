@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2022 Dynare Team
+ * Copyright © 2013-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -54,7 +54,6 @@ Evaluate::error_location(it_code_type expr_begin, it_code_type faulty_op, bool s
       Error_loc << "equation";
       break;
     case ExpressionType::FirstEndoDerivative:
-    case ExpressionType::FirstOtherEndoDerivative:
     case ExpressionType::FirstExoDerivative:
     case ExpressionType::FirstExodetDerivative:
       Error_loc << "first order derivative of equation";
@@ -70,9 +69,6 @@ Evaluate::error_location(it_code_type expr_begin, it_code_type faulty_op, bool s
       break;
     case ExpressionType::FirstEndoDerivative:
       Error_loc << " with respect to endogenous variable " << symbol_table.getName(SymbolType::endogenous, EQN_dvar1);
-      break;
-    case ExpressionType::FirstOtherEndoDerivative:
-      Error_loc << " with respect to other endogenous variable " << symbol_table.getName(SymbolType::endogenous, EQN_dvar1);
       break;
     case ExpressionType::FirstExoDerivative:
       Error_loc << " with respect to exogenous variable " << symbol_table.getName(SymbolType::exogenous, EQN_dvar1);
@@ -179,9 +175,6 @@ Evaluate::print_expression(const it_code_type &expr_begin, const optional<it_cod
               break;
             case ExpressionType::FirstEndoDerivative:
               equation_type = ExpressionType::FirstEndoDerivative;
-              break;
-            case ExpressionType::FirstOtherEndoDerivative:
-              equation_type = ExpressionType::FirstOtherEndoDerivative;
               break;
             case ExpressionType::FirstExoDerivative:
               equation_type = ExpressionType::FirstExoDerivative;
@@ -345,8 +338,6 @@ Evaluate::print_expression(const it_code_type &expr_begin, const optional<it_cod
                 {
                 case ExpressionType::FirstEndoDerivative:
                   return "jacob";
-                case ExpressionType::FirstOtherEndoDerivative:
-                  return "jacob_other_endo";
                 case ExpressionType::FirstExoDerivative:
                   return "jacob_exo";
                 case ExpressionType::FirstExodetDerivative:
@@ -805,7 +796,7 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
   bool go_on = true;
   double ll;
   double rr;
-  double *jacob = nullptr, *jacob_other_endo = nullptr, *jacob_exo = nullptr, *jacob_exo_det = nullptr;
+  double *jacob = nullptr, *jacob_exo = nullptr, *jacob_exo_det = nullptr;
   EQN_block = block_num;
   stack<double> Stack;
   ExternalFunctionCallType call_type{ExternalFunctionCallType::levelWithoutDerivative};
@@ -819,7 +810,6 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
       jacob = mxGetPr(jacobian_block[block_num]);
       if (!steady_state)
         {
-          jacob_other_endo = mxGetPr(jacobian_other_endo_block[block_num]);
           jacob_exo = mxGetPr(jacobian_exo_block[block_num]);
           jacob_exo_det = mxGetPr(jacobian_det_exo_block[block_num]);
         }
@@ -862,15 +852,6 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               mexPrintf("FirstEndoDerivative\n");
 #endif
               EQN_type = ExpressionType::FirstEndoDerivative;
-              EQN_equation = static_cast<FNUMEXPR_ *>(*it_code)->get_equation();
-              EQN_dvar1 = static_cast<FNUMEXPR_ *>(*it_code)->get_dvariable1();
-              EQN_lag1 = static_cast<FNUMEXPR_ *>(*it_code)->get_lag1();
-              break;
-            case ExpressionType::FirstOtherEndoDerivative:
-#ifdef DEBUG
-              mexPrintf("FirstOtherEndoDerivative\n");
-#endif
-              EQN_type = ExpressionType::FirstOtherEndoDerivative;
               EQN_equation = static_cast<FNUMEXPR_ *>(*it_code)->get_equation();
               EQN_dvar1 = static_cast<FNUMEXPR_ *>(*it_code)->get_dvariable1();
               EQN_lag1 = static_cast<FNUMEXPR_ *>(*it_code)->get_lag1();
@@ -1308,18 +1289,6 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
               mexPrintf("jacob=%x\n", jacob);
 #endif
               jacob[eq + size*pos_col] = rr;
-              break;
-            case ExpressionType::FirstOtherEndoDerivative:
-              //eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
-              eq = EQN_equation;
-              var = static_cast<FSTPG3_ *>(*it_code)->get_col();
-              lag = static_cast<FSTPG3_ *>(*it_code)->get_lag();
-              pos_col = static_cast<FSTPG3_ *>(*it_code)->get_col_pos();
-#ifdef DEBUG
-              mexPrintf("other_endo eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);
-              mexEvalString("drawnow;");
-#endif
-              jacob_other_endo[eq + size*pos_col] = rr;
               break;
             case ExpressionType::FirstExoDerivative:
               //eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
