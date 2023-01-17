@@ -90,7 +90,7 @@ protected:
   bool print_it, forward;
   int minimal_solving_periods;
   BlockSimulationType type;
-  int block_num, symbol_table_endo_nbr, Block_List_Max_Lag, Block_List_Max_Lead, u_count_int, block;
+  int block_num, symbol_table_endo_nbr, u_count_int, block;
   string file_name, bin_base_name;
   bool Gaussian_Elimination, is_linear;
 
@@ -105,7 +105,7 @@ public:
   bool steady_state;
   Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg, int minimal_solving_periods_arg, BasicSymbolTable &symbol_table_arg);
   void set_block(int size_arg, BlockSimulationType type_arg, string file_name_arg, string bin_base_name_arg, int block_num_arg,
-                 bool is_linear_arg, int symbol_table_endo_nbr_arg, int Block_List_Max_Lag_arg, int Block_List_Max_Lead_arg, int u_count_int_arg, int block_arg);
+                 bool is_linear_arg, int symbol_table_endo_nbr_arg, int u_count_int_arg, int block_arg);
   void evaluate_complete(bool no_derivatives);
   bool compute_complete(bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
   void compute_complete_2b(bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx);

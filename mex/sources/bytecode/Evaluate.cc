@@ -30,8 +30,6 @@ Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it
   print_it(print_it_arg), minimal_solving_periods(minimal_solving_periods_arg)
 {
   symbol_table_endo_nbr = 0;
-  Block_List_Max_Lag = 0;
-  Block_List_Max_Lead = 0;
   u_count_int = 0;
   block = -1;
   y_size = y_size_arg;
@@ -2103,7 +2101,7 @@ Evaluate::solve_simple_over_periods(bool forward)
 
 void
 Evaluate::set_block(int size_arg, BlockSimulationType type_arg, string file_name_arg, string bin_base_name_arg, int block_num_arg,
-                    bool is_linear_arg, int symbol_table_endo_nbr_arg, int Block_List_Max_Lag_arg, int Block_List_Max_Lead_arg, int u_count_int_arg, int block_arg)
+                    bool is_linear_arg, int symbol_table_endo_nbr_arg, int u_count_int_arg, int block_arg)
 {
   size = size_arg;
   type = type_arg;
@@ -2112,8 +2110,6 @@ Evaluate::set_block(int size_arg, BlockSimulationType type_arg, string file_name
   block_num = block_num_arg;
   is_linear = is_linear_arg;
   symbol_table_endo_nbr = symbol_table_endo_nbr_arg;
-  Block_List_Max_Lag = Block_List_Max_Lag_arg;
-  Block_List_Max_Lead = Block_List_Max_Lead_arg;
   u_count_int = u_count_int_arg;
   block = block_arg;
 }

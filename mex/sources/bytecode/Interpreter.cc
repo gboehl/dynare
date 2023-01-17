@@ -636,7 +636,7 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
             it_code++;
             if (constrained)
               check_for_controlled_exo_validity(fb, sconstrained_extended_path);
-            set_block(fb->get_size(), fb->get_type(), file_name, bin_basename, Block_Count, fb->get_is_linear(), fb->get_endo_nbr(), fb->get_Max_Lag(), fb->get_Max_Lead(), fb->get_u_count_int(), block);
+            set_block(fb->get_size(), fb->get_type(), file_name, bin_basename, Block_Count, fb->get_is_linear(), fb->get_endo_nbr(), fb->get_u_count_int(), block);
             if (print)
               print_a_block();
             else if (evaluate)
