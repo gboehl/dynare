@@ -361,20 +361,19 @@ elseif ~options.bytecode && options.block
         fh_static = str2func(sprintf('%s.sparse.block.static_%d', M.fname, b));
         if M.block_structure_stat.block(b).Simulation_Type ~= 1 && ...
                 M.block_structure_stat.block(b).Simulation_Type ~= 2
+            mfs_idx = M.block_structure_stat.block(b).variable(end-M.block_structure_stat.block(b).mfs+1:end);
             if options.solve_algo <= 4 || options.solve_algo >= 9
-                [z, errorflag] = dynare_solve(@block_mfs_steadystate, ...
-                                              ys(M.block_structure_stat.block(b).variable), ...
-                                              options.simul.maxit, options.solve_tolf, options.solve_tolx, ...
-                                              options, fh_static, b, ys, exo_ss, params, T, M);
+                [ys(mfs_idx), errorflag] = dynare_solve(@block_mfs_steadystate, ys(mfs_idx), ...
+                                                        options.simul.maxit, options.solve_tolf, options.solve_tolx, ...
+                                                        options, fh_static, b, ys, exo_ss, params, T, M);
                 if errorflag
                     check = 1;
                     break
                 end
-                ys(M.block_structure_stat.block(b).variable) = z;
             else
-                n = length(M.block_structure_stat.block(b).variable);
+                nze = length(M.block_structure_stat.block(b).g1_sparse_rowval);
                 [ys, T, ~, info2] = solve_one_boundary(fh_static, ys, exo_ss, ...
-                                                       params, [], T, M.block_structure_stat.block(b).variable, n, 1, false, b, 0, options.simul.maxit, ...
+                                                       params, [], T, mfs_idx, nze, 1, false, b, 0, options.simul.maxit, ...
                                                        options.solve_tolf, ...
                                                        0, options.solve_algo, true, false, false, M, options, []);
                 if info2
@@ -407,15 +406,15 @@ elseif options.bytecode
         for b = 1:length(M.block_structure_stat.block)
             if M.block_structure_stat.block(b).Simulation_Type ~= 1 && ...
                     M.block_structure_stat.block(b).Simulation_Type ~= 2
-                [z, errorflag] = dynare_solve(@block_bytecode_mfs_steadystate, ...
-                                              ys(M.block_structure_stat.block(b).variable), ...
-                                              options.simul.maxit, options.solve_tolf, options.solve_tolx, ...
-                                              options, b, ys, exo_ss, params, T, M);
+                mfs_idx = M.block_structure_stat.block(b).variable(end-M.block_structure_stat.block(b).mfs+1:end);
+                [ys(mfs_idx), errorflag] = dynare_solve(@block_bytecode_mfs_steadystate, ...
+                                                        ys(mfs_idx), options.simul.maxit, ...
+                                                        options.solve_tolf, options.solve_tolx, ...
+                                                        options, b, ys, exo_ss, params, T, M);
                 if errorflag
                     check = 1;
                     break
                 end
-                ys(M.block_structure_stat.block(b).variable) = z;
             end
             % Compute endogenous if the block is of type evaluate forward/backward or if there are recursive variables in a solve block.
             % Also update the temporary terms vector (needed for the dynare_solve case)
@@ -496,13 +495,14 @@ jac = j(eq_index,1:nvar);
 
 function [r, g1] = block_mfs_steadystate(y, fh_static, b, y_all, exo, params, T, M)
 % Wrapper around the static files, for block without bytecode
-y_all(M.block_structure_stat.block(b).variable) = y;
+mfs_idx = M.block_structure_stat.block(b).variable(end-M.block_structure_stat.block(b).mfs+1:end);
+y_all(mfs_idx) = y;
 [~,~,r,g1] = fh_static(y_all, exo, params, M.block_structure_stat.block(b).g1_sparse_rowval, ...
                        M.block_structure_stat.block(b).g1_sparse_colval, ...
                        M.block_structure_stat.block(b).g1_sparse_colptr, T);
 
 function [r, g1] = block_bytecode_mfs_steadystate(y, b, y_all, exo, params, T, M)
 % Wrapper around the static files, for block without bytecode
-indx = M.block_structure_stat.block(b).variable;
-y_all(indx) = y;
+mfs_idx = M.block_structure_stat.block(b).variable(end-M.block_structure_stat.block(b).mfs+1:end);
+y_all(mfs_idx) = y;
 [r, g1] = bytecode(y_all, exo, params, y_all, 1, y_all, T, 'evaluate', 'static', 'block_decomposed', ['block = ' int2str(b) ]);
