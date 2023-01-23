@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019-2022 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -59,23 +59,12 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mexErrMsgTxt("M_.maximum_lag should be a numeric scalar");
   mwIndex maximum_lag = static_cast<mwIndex>(mxGetScalar(maximum_lag_mx));
 
-  const mxArray *maximum_endo_lag_mx = mxGetField(M_mx, 0, "maximum_endo_lag");
-  if (!(maximum_endo_lag_mx && mxIsScalar(maximum_endo_lag_mx) && mxIsNumeric(maximum_endo_lag_mx)))
-    mexErrMsgTxt("M_.maximum_endo_lag should be a numeric scalar");
-  mwIndex maximum_endo_lag = static_cast<mwIndex>(mxGetScalar(maximum_endo_lag_mx));
-
   const mxArray *dynamic_tmp_nbr_mx = mxGetField(M_mx, 0, "dynamic_tmp_nbr");
   if (!(dynamic_tmp_nbr_mx && mxIsDouble(dynamic_tmp_nbr_mx) && mxGetNumberOfElements(dynamic_tmp_nbr_mx) >= 2)
       || mxIsComplex(dynamic_tmp_nbr_mx) || mxIsSparse(dynamic_tmp_nbr_mx))
     mexErrMsgTxt("M_.dynamic_tmp_nbr should be a real dense array of at least 2 elements");
-  size_t ntt = mxGetPr(dynamic_tmp_nbr_mx)[0] + mxGetPr(dynamic_tmp_nbr_mx)[1];
-
-  const mxArray *lead_lag_incidence_mx = mxGetField(M_mx, 0, "lead_lag_incidence");
-  if (!(lead_lag_incidence_mx && mxIsDouble(lead_lag_incidence_mx) && mxGetM(lead_lag_incidence_mx) == static_cast<size_t>(2+maximum_endo_lag)
-        && mxGetN(lead_lag_incidence_mx) == static_cast<size_t>(ny))
-      || mxIsComplex(lead_lag_incidence_mx) || mxIsSparse(lead_lag_incidence_mx))
-    mexErrMsgTxt("M_.lead_lag_incidence should be a real dense matrix with 2+M_.maximum_endo_lag rows and M_.endo_nbr columns");
-  const double *lead_lag_incidence = mxGetPr(lead_lag_incidence_mx);
+  size_t ntt {static_cast<size_t>(mxGetPr(dynamic_tmp_nbr_mx)[0]) +
+    (compute_jacobian ? static_cast<size_t>(mxGetPr(dynamic_tmp_nbr_mx)[1]) : 0)};
 
   const mxArray *has_external_function_mx = mxGetField(M_mx, 0, "has_external_function");
   if (!(has_external_function_mx && mxIsLogicalScalar(has_external_function_mx)))
@@ -101,41 +90,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mexErrMsgTxt("options_.threads.perfect_foresight_problem should be a numeric scalar");
   int num_threads = static_cast<int>(mxGetScalar(num_threads_mx));
 
-  // Call <model>.dynamic_g1_nz
-  mxArray *g1_nz_plhs[3];
-  if (mexCallMATLAB(3, g1_nz_plhs, 0, nullptr, (basename + ".dynamic_g1_nz").c_str()) != 0)
-    mexErrMsgTxt(("Could not call " + basename + ".dynamic_g1_nz").c_str());
-  const mxArray *nzij_pred_mx = g1_nz_plhs[0];
-  const mxArray *nzij_current_mx = g1_nz_plhs[1];
-  const mxArray *nzij_fwrd_mx = g1_nz_plhs[2];
-
-  if (!(mxIsInt32(nzij_pred_mx) && mxGetN(nzij_pred_mx) == 2))
-    mexErrMsgTxt("nzij_pred should be an int32 matrix with 2 columns");
-  size_t nnz_pred = mxGetM(nzij_pred_mx);
-#if MX_HAS_INTERLEAVED_COMPLEX
-  const int32_T *nzij_pred = mxGetInt32s(nzij_pred_mx);
-#else
-  const int32_T *nzij_pred = static_cast<const int32_T *>(mxGetData(nzij_pred_mx));
-#endif
-
-  if (!(mxIsInt32(nzij_current_mx) && mxGetN(nzij_current_mx) == 2))
-    mexErrMsgTxt("nzij_current should be an int32 matrix with 2 columns");
-  size_t nnz_current = mxGetM(nzij_current_mx);
-#if MX_HAS_INTERLEAVED_COMPLEX
-  const int32_T *nzij_current = mxGetInt32s(nzij_current_mx);
-#else
-  const int32_T *nzij_current = static_cast<const int32_T *>(mxGetData(nzij_current_mx));
-#endif
-
-  if (!(mxIsInt32(nzij_fwrd_mx) && mxGetN(nzij_fwrd_mx) == 2))
-    mexErrMsgTxt("nzij_fwrd should be an int32 matrix with 2 columns");
-  size_t nnz_fwrd = mxGetM(nzij_fwrd_mx);
-#if MX_HAS_INTERLEAVED_COMPLEX
-  const int32_T *nzij_fwrd = mxGetInt32s(nzij_fwrd_mx);
-#else
-  const int32_T *nzij_fwrd = static_cast<const int32_T *>(mxGetData(nzij_fwrd_mx));
-#endif
-
   // Check other input and map it to local variables
   if (!(mxIsScalar(periods_mx) && mxIsNumeric(periods_mx)))
     mexErrMsgTxt("periods should be a numeric scalar");
@@ -159,6 +113,32 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   size_t nb_row_x = mxGetM(exo_path_mx);
   const double *exo_path = mxGetPr(exo_path_mx);
 
+  const mxArray *g1_sparse_rowval_mx {mxGetField(M_mx, 0, "dynamic_g1_sparse_rowval")};
+  if (!(mxIsInt32(g1_sparse_rowval_mx)))
+    mexErrMsgTxt("M_.dynamic_g1_sparse_rowval should be an int32 vector");
+#if MX_HAS_INTERLEAVED_COMPLEX
+  const int32_T *g1_sparse_rowval {mxGetInt32s(g1_sparse_rowval_mx)};
+#else
+  const int32_T *g1_sparse_rowval {static_cast<const int32_T *>(mxGetData(g1_sparse_rowval_mx))};
+#endif
+
+  const mxArray *g1_sparse_colval_mx {mxGetField(M_mx, 0, "dynamic_g1_sparse_colval")};
+  if (!(mxIsInt32(g1_sparse_colval_mx)))
+    mexErrMsgTxt("M_.dynamic_g1_sparse_colval should be an int32 vector");
+  if (mxGetNumberOfElements(g1_sparse_colval_mx) != mxGetNumberOfElements(g1_sparse_rowval_mx))
+    mexErrMsgTxt("M_.dynamic_g1_sparse_colval should have the same length as M_.dynamic_g1_sparse_rowval");
+
+  const mxArray *g1_sparse_colptr_mx {mxGetField(M_mx, 0, "dynamic_g1_sparse_colptr")};
+  if (!(mxIsInt32(g1_sparse_colptr_mx) && mxGetNumberOfElements(g1_sparse_colptr_mx) != 3*static_cast<size_t>(ny)+1))
+    mexErrMsgTxt(("M_.dynamic_g1_sparse_colptr should be an int32 vector with " + std::to_string(3*ny+1) + " elements").c_str());
+#if MX_HAS_INTERLEAVED_COMPLEX
+  const int32_T *g1_sparse_colptr {mxGetInt32s(g1_sparse_colptr_mx)};
+#else
+  const int32_T *g1_sparse_colptr {static_cast<const int32_T *>(mxGetData(g1_sparse_colptr_mx))};
+#endif
+  if (static_cast<size_t>(g1_sparse_colptr[3*ny+nx])-1 != mxGetNumberOfElements(g1_sparse_rowval_mx))
+    mexErrMsgTxt("The size of M_.dynamic_g1_sparse_rowval is not consistent with the last element of M_.dynamic_g1_sparse_colptr");
+
   if (!(mxIsDouble(params_mx) && mxGetN(params_mx) == 1))
     mexErrMsgTxt("params should be a double precision column-vector");
   const double *params = mxGetPr(params_mx);
@@ -171,7 +151,10 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   plhs[0] = mxCreateDoubleMatrix(periods*ny, 1, mxREAL);
   double *stacked_residual = mxGetPr(plhs[0]);
 
-  mwIndex nzmax = periods*nnz_current+(periods-1)*(nnz_pred+nnz_fwrd);
+  /* Number of non-zero values in the stacked Jacobian.
+     Contemporaneous derivatives appear at all periods, while lag or lead
+     derivatives appear at all periods except one. */
+  mwSize nzmax {static_cast<mwSize>((g1_sparse_colptr[3*ny]-1)*(periods-1) + (g1_sparse_colptr[2*ny]-g1_sparse_colptr[ny]))};
 
   double *stacked_jacobian = nullptr;
   mwIndex *ir = nullptr, *jc = nullptr;
@@ -188,24 +171,19 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       mwIndex k = 0;
       jc[0] = 0;
       for (mwIndex T = 0; T < periods; T++)
-        {
-          size_t row_pred = 0, row_current = 0, row_fwrd = 0;
-          for (int32_T j = 0; j < static_cast<int32_T>(ny); j++)
-            {
-              if (T != 0)
-                while (row_fwrd < nnz_fwrd && nzij_fwrd[row_fwrd+nnz_fwrd]-1 == j)
-                  ir[k++] = (T-1)*ny + nzij_fwrd[row_fwrd++]-1;
-              while (row_current < nnz_current && nzij_current[row_current+nnz_current]-1 == j)
-                ir[k++] = T*ny + nzij_current[row_current++]-1;
-              if (T != periods-1)
-                while (row_pred < nnz_pred && nzij_pred[row_pred+nnz_pred]-1 == j)
-                  ir[k++] = (T+1)*ny + nzij_pred[row_pred++]-1;
-              jc[T*ny+j+1] = k;
-            }
-        }
+        for (mwIndex j {0}; j < ny; j++) // Column within the period (i.e. variable)
+          {
+            if (T > 0)
+              for (int32_T idx {g1_sparse_colptr[2*ny+j]-1}; idx < g1_sparse_colptr[2*ny+j+1]-1; idx++)
+                ir[k++] = (T-1)*ny + g1_sparse_rowval[idx]-1; // Derivatives w.r.t. y_{t+1} in T-1
+            for (int32_T idx {g1_sparse_colptr[ny+j]-1}; idx < g1_sparse_colptr[ny+j+1]-1; idx++)
+              ir[k++] = T*ny + g1_sparse_rowval[idx]-1; // Derivatives w.r.t. y_t in T
+            if (T < periods-1)
+              for (int32_T idx {g1_sparse_colptr[j]-1}; idx < g1_sparse_colptr[j+1]-1; idx++)
+                ir[k++] = (T+1)*ny + g1_sparse_rowval[idx]-1; // Derivatives w.r.t. y_{t-1} in T+1
+            jc[T*ny+j+1] = k;
+          }
     }
-
-  size_t ndynvars = static_cast<size_t>(*std::max_element(lead_lag_incidence, lead_lag_incidence+(maximum_endo_lag+2)*ny));
 
   if (use_dll)
     DynamicModelDllCaller::load_dll(basename);
@@ -219,55 +197,61 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // Allocate (thread-private) model evaluator (which allocates space for temporaries)
     std::unique_ptr<DynamicModelCaller> m;
     if (use_dll)
-      m = std::make_unique<DynamicModelDllCaller>(ntt, nx, ny, ndynvars, exo_path, nb_row_x, params, steady_state, linear, compute_jacobian);
+      m = std::make_unique<DynamicModelDllCaller>(ntt, ny, nx, params, steady_state, g1_sparse_colptr, linear, compute_jacobian);
     else
-      m = std::make_unique<DynamicModelMatlabCaller>(basename, ntt, ndynvars, exo_path_mx, params_mx, steady_state_mx, linear, compute_jacobian);
+      m = std::make_unique<DynamicModelMatlabCaller>(basename, ny, nx, params_mx, steady_state_mx, g1_sparse_rowval_mx, g1_sparse_colval_mx, g1_sparse_colptr_mx, linear, compute_jacobian);
 
     // Main computing loop
 #pragma omp for
     for (mwIndex T = 0; T < periods; T++)
       {
         // Fill vector of dynamic variables
-        for (mwIndex j = 0; j < maximum_endo_lag+2; j++)
-          for (mwIndex i = 0; i < ny; i++)
-            {
-              int idx = static_cast<int>(lead_lag_incidence[j+i*(2+maximum_endo_lag)])-1;
-              if (idx != -1)
-                {
-                  if (T+j == maximum_endo_lag-1)
-                    m->y(idx) = y0[i];
-                  else if (T+j == maximum_endo_lag+periods)
-                    m->y(idx) = yT[i];
-                  else
-                    m->y(idx) = y[i+(T+j-maximum_endo_lag)*ny];
-                }
-            }
+        if (T > 0 && T < periods-1)
+          std::copy_n(y+(T-1)*ny, 3*ny, m->y());
+        else if (T > 0) // Last simulation period
+          {
+            std::copy_n(y+(T-1)*ny, 2*ny, m->y());
+            std::copy_n(yT, ny, m->y() + 2*ny);
+          }
+        else if (T < periods-1) // First simulation period
+          {
+            std::copy_n(y0, ny, m->y());
+            std::copy_n(y+T*ny, 2*ny, m->y() + ny);
+          }
+        else // Special case: periods=1 (and so T=0)
+          {
+            std::copy_n(y0, ny, m->y());
+            std::copy_n(y, ny, m->y() + ny);
+            std::copy_n(yT, ny, m->y() + 2*ny);
+          }
+
+        // Fill exogenous
+        for (mwIndex j {0}; j < nx; j++)
+          m->x()[j] = exo_path[T+maximum_lag + nb_row_x*j];
 
         // Compute the residual and Jacobian, and fill the stacked residual
-        m->eval(T+maximum_lag, stacked_residual+T*ny);
+        m->eval(stacked_residual+T*ny);
 
         if (compute_jacobian)
           {
             // Fill the stacked jacobian
-            for (mwIndex col = T > maximum_endo_lag ? (T-maximum_endo_lag)*ny : 0; // We can't use std::max() here, because mwIndex is unsigned under MATLAB
+            for (mwIndex col { T > 1 ? (T-1)*ny : 0 }; // We can't use std::max() here, because mwIndex is unsigned under MATLAB
                  col < std::min(periods*ny, (T+2)*ny); col++)
               {
                 mwIndex k = jc[col];
                 while (k < jc[col+1])
                   {
-                    if (ir[k] < T*ny)
-                      {
-                        k++;
-                        continue;
-                      }
                     if (ir[k] >= (T+1)*ny)
-                      break;
-
-                    mwIndex eq = ir[k]-T*ny;
-                    mwIndex lli_row = col/ny-(T-maximum_endo_lag); // 0, 1 or 2
-                    mwIndex lli_col = col%ny;
-                    mwIndex dynvar = static_cast<mwIndex>(lead_lag_incidence[lli_row+lli_col*(2+maximum_endo_lag)])-1;
-                    stacked_jacobian[k] = m->jacobian(eq+dynvar*ny);
+                      break; // Nothing to copy for this column
+                    if (ir[k] >= T*ny)
+                      {
+                        /* Within the current column, this is the first line of
+                           the stacked Jacobian that contains elements from the
+                           (small) Jacobian just computed, so copy the whole
+                           column of the latter to the former. */
+                        m->copy_jacobian_column(col - (T-1)*ny, stacked_jacobian + k);
+                        break;
+                      }
                     k++;
                   }
               }
