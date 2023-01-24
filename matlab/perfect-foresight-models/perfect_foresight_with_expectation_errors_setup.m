@@ -1,6 +1,6 @@
 function perfect_foresight_with_expectation_errors_setup
 
-% Copyright © 2021-2022 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -69,7 +69,7 @@ else
 
     %% Initialize information set at period 1 using “bare” shocks and endval blocks (or initval if there is no endval)
     oo_.pfwee.terminal_info(:, 1) = oo_.exo_steady_state;
-    oo_.pfwee.shocks_info(:, :, 1) = oo_.exo_steady_state;
+    oo_.pfwee.shocks_info(:, :, 1) = repmat(oo_.exo_steady_state, 1, periods);
     for i = 1:length(M_.det_shocks)
         prds = M_.det_shocks(i).periods;
         exo_id = M_.det_shocks(i).exo_id;

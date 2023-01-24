@@ -398,6 +398,7 @@ MODFILES = \
 	deterministic_simulations/pfwee.mod \
 	deterministic_simulations/pfwee_constant_sim_length.mod \
 	deterministic_simulations/pfwee_learnt_in.mod \
+	deterministic_simulations/pfwee_multiple_shocks.mod \
 	lmmcp/rbc.mod \
 	lmmcp/sw_lmmcp.mod \
 	lmmcp/sw_newton.mod \

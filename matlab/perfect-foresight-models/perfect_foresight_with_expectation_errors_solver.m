@@ -1,6 +1,6 @@
 function perfect_foresight_with_expectation_errors_solver
 
-% Copyright © 2021-2022 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -68,7 +68,7 @@ while info_period <= periods
     oo_.endo_simul(:, end-M_.maximum_lead+1:end) = repmat(oo_.steady_state, 1, M_.maximum_lead);
     oo_.exo_simul = exo_simul(info_period:end, :);
     oo_.exo_simul(M_.maximum_lag+(1:periods-info_period+1), :) = oo_.pfwee.shocks_info(:, info_period:end, info_period)';
-    oo_.exo_simul(M_.maximum_lag+periods-info_period+2:end) = repmat(oo_.exo_steady_state, sim_length+M_.maximum_lead-(periods-info_period+1), 1);
+    oo_.exo_simul(M_.maximum_lag+periods-info_period+2:end, :) = repmat(oo_.exo_steady_state', sim_length+M_.maximum_lead-(periods-info_period+1), 1);
 
     options_.periods = sim_length;
 
