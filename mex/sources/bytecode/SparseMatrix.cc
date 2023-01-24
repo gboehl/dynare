@@ -20,6 +20,7 @@
 #include <sstream>
 #include <algorithm>
 #include <filesystem>
+#include <type_traits>
 
 #include "SparseMatrix.hh"
 
@@ -2229,8 +2230,8 @@ dynSparseMatrix::Solve_Matlab_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, d
 {
   size_t n = mxGetM(A_m);
   mxArray *z;
-  mxArray *rhs[2] = { A_m, b_m };
-  mexCallMATLAB(1, &z, 2, rhs, "mldivide");
+  mxArray *rhs[] = { A_m, b_m };
+  mexCallMATLAB(1, &z, std::extent_v<decltype(rhs)>, rhs, "mldivide");
   double *res = mxGetPr(z);
   if (is_two_boundaries)
     for (int i = 0; i < static_cast<int>(n); i++)
@@ -2468,20 +2469,20 @@ dynSparseMatrix::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double
   size_t n = mxGetM(A_m);
   const char *field_names[] = {"droptol", "type"};
   mwSize dims[1] = { 1 };
-  mxArray *Setup = mxCreateStructArray(1, dims, 2, field_names);
+  mxArray *Setup = mxCreateStructArray(1, dims, std::extent_v<decltype(field_names)>, field_names);
   mxSetFieldByNumber(Setup, 0, 0, mxCreateDoubleScalar(lu_inc_tol));
   mxSetFieldByNumber(Setup, 0, 1, mxCreateString("ilutp"));
   mxArray *lhs0[2];
-  mxArray *rhs0[2] = { A_m, Setup };
-  if (mexCallMATLAB(2, lhs0, 2, rhs0, "ilu"))
+  mxArray *rhs0[] = { A_m, Setup };
+  if (mexCallMATLAB(std::extent_v<decltype(lhs0)>, lhs0, std::extent_v<decltype(rhs0)>, rhs0, "ilu"))
     throw FatalException("In GMRES, the incomplete LU decomposition (ilu) has failed");
   mxArray *L1 = lhs0[0];
   mxArray *U1 = lhs0[1];
   /*[za,flag1] = gmres(g1a,b,Blck_size,1e-6,Blck_size*periods,L1,U1);*/
-  mxArray *rhs[8] = { A_m, b_m, mxCreateDoubleScalar(Size), mxCreateDoubleScalar(1e-6),
-                      mxCreateDoubleScalar(static_cast<double>(n)), L1, U1, x0_m };
+  mxArray *rhs[] = { A_m, b_m, mxCreateDoubleScalar(Size), mxCreateDoubleScalar(1e-6),
+    mxCreateDoubleScalar(static_cast<double>(n)), L1, U1, x0_m };
   mxArray *lhs[2];
-  mexCallMATLAB(2, lhs, 8, rhs, "gmres");
+  mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs, "gmres");
   mxArray *z = lhs[0];
   mxArray *flag = lhs[1];
   double *flag1 = mxGetPr(flag);
@@ -2541,8 +2542,8 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
   if (preconditioner == 0)
     {
       mxArray *lhs0[1];
-      mxArray *rhs0[2] = { A_m, mxCreateDoubleScalar(0) };
-      mexCallMATLAB(1, lhs0, 2, rhs0, "spdiags");
+      mxArray *rhs0[] = { A_m, mxCreateDoubleScalar(0) };
+      mexCallMATLAB(std::extent_v<decltype(lhs0)>, lhs0, std::extent_v<decltype(rhs0)>, rhs0, "spdiags");
       mxArray *tmp = lhs0[0];
       double *tmp_val = mxGetPr(tmp);
       Diag = mxCreateSparse(n, n, n, mxREAL);
@@ -2563,15 +2564,15 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
       const char *field_names[] = {"type", "droptol", "milu", "udiag", "thresh"};
       const int type = 0, droptol = 1, milu = 2, udiag = 3, thresh = 4;
       mwSize dims[1] = { static_cast<mwSize>(1) };
-      mxArray *Setup = mxCreateStructArray(1, dims, 5, field_names);
+      mxArray *Setup = mxCreateStructArray(1, dims, std::extent_v<decltype(field_names)>, field_names);
       mxSetFieldByNumber(Setup, 0, type, mxCreateString("ilutp"));
       mxSetFieldByNumber(Setup, 0, droptol, mxCreateDoubleScalar(lu_inc_tol));
       mxSetFieldByNumber(Setup, 0, milu, mxCreateString("off"));
       mxSetFieldByNumber(Setup, 0, udiag, mxCreateDoubleScalar(0));
       mxSetFieldByNumber(Setup, 0, thresh, mxCreateDoubleScalar(1));
       mxArray *lhs0[2];
-      mxArray *rhs0[2] = { A_m, Setup };
-      if (mexCallMATLAB(2, lhs0, 2, rhs0, "ilu"))
+      mxArray *rhs0[] = { A_m, Setup };
+      if (mexCallMATLAB(std::extent_v<decltype(lhs0)>, lhs0, std::extent_v<decltype(rhs0)>, rhs0, "ilu"))
         throw FatalException{"In BiCGStab, the incomplete LU decomposition (ilu) has failed"};
       L1 = lhs0[0];
       U1 = lhs0[1];
@@ -2587,10 +2588,10 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
       for (int i = 0; i < static_cast<int>(n); i++)
         resid[i] = b[i] - resid[i];
       mxArray *lhs[1];
-      mxArray *rhs[2] = { L1, res };
-      mexCallMATLAB(1, lhs, 2, rhs, "mldivide");
-      mxArray *rhs2[2] = { U1, lhs[0] };
-      mexCallMATLAB(1, lhs, 2, rhs2, "mldivide");
+      mxArray *rhs[] = { L1, res };
+      mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs, "mldivide");
+      mxArray *rhs2[] = { U1, lhs[0] };
+      mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs2)>, rhs2, "mldivide");
       z = lhs[0];
       double *phat = mxGetPr(z);
       double *x0 = mxGetPr(x0_m);
@@ -2618,10 +2619,10 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
       if (preconditioner == 0)
         {
           /*[za,flag1] = bicgstab(g1a,b,1e-6,Blck_size*periods,L1,U1);*/
-          mxArray *rhs[5] = { A_m, b_m, mxCreateDoubleScalar(1e-6),
-                              mxCreateDoubleScalar(static_cast<double>(n)), Diag };
+          mxArray *rhs[] = { A_m, b_m, mxCreateDoubleScalar(1e-6),
+            mxCreateDoubleScalar(static_cast<double>(n)), Diag };
           mxArray *lhs[2];
-          mexCallMATLAB(2, lhs, 5, rhs, "bicgstab");
+          mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs, "bicgstab");
           z = lhs[0];
           mxArray *flag = lhs[1];
           double *flag1 = mxGetPr(flag);
@@ -2634,10 +2635,10 @@ dynSparseMatrix::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, dou
       else if (preconditioner == 1)
         {
           /*[za,flag1] = bicgstab(g1a,b,1e-6,Blck_size*periods,L1,U1);*/
-          mxArray *rhs[7] = { A_m, b_m, mxCreateDoubleScalar(1e-6),
-                              mxCreateDoubleScalar(static_cast<double>(n)), L1, U1, x0_m };
+          mxArray *rhs[] = { A_m, b_m, mxCreateDoubleScalar(1e-6),
+            mxCreateDoubleScalar(static_cast<double>(n)), L1, U1, x0_m };
           mxArray *lhs[2];
-          mexCallMATLAB(2, lhs, 7, rhs, "bicgstab");
+          mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs, "bicgstab");
           z = lhs[0];
           mxArray *flag = lhs[1];
           double *flag1 = mxGetPr(flag);
@@ -2693,7 +2694,7 @@ dynSparseMatrix::Singular_display(int block, int Size)
 {
   bool zero_solution;
   Simple_Init(Size, IM_i, zero_solution);
-  mxArray *rhs[1] = { mxCreateDoubleMatrix(Size, Size, mxREAL) };
+  mxArray *rhs[] = { mxCreateDoubleMatrix(Size, Size, mxREAL) };
   double *pind = mxGetPr(rhs[0]);
   for (int j = 0; j < Size * Size; j++)
     pind[j] = 0.0;
@@ -2710,7 +2711,7 @@ dynSparseMatrix::Singular_display(int block, int Size)
         }
     }
   mxArray *lhs[3];
-  mexCallMATLAB(3, lhs, 1, rhs, "svd");
+  mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs, "svd");
   mxArray *SVD_u = lhs[0];
   mxArray *SVD_s = lhs[1];
   double *SVD_ps = mxGetPr(SVD_s);

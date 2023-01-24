@@ -189,7 +189,7 @@ DynamicModelMatlabCaller::eval(double *resid)
     std::string funcname {basename + ".sparse.dynamic_resid"};
     mxArray *plhs[3], *prhs[] = { y_mx, x_mx, params_mx, steady_state_mx };
 
-    mxArray *exception { mexCallMATLABWithTrap(3, plhs, 4, prhs, funcname.c_str()) };
+    mxArray *exception { mexCallMATLABWithTrap(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>, prhs, funcname.c_str()) };
     if (exception)
       {
         error_msg = "An error occurred when calling " + funcname;
@@ -218,7 +218,7 @@ DynamicModelMatlabCaller::eval(double *resid)
       std::string funcname {basename + ".sparse.dynamic_g1"};
       mxArray *plhs[1], *prhs[] = { y_mx, x_mx, params_mx, steady_state_mx, g1_sparse_rowval_mx, g1_sparse_colval_mx, g1_sparse_colptr_mx, T_order_mx, T_mx };
 
-      mxArray *exception { mexCallMATLABWithTrap(1, plhs, 9, prhs, funcname.c_str()) };
+      mxArray *exception { mexCallMATLABWithTrap(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>, prhs, funcname.c_str()) };
       if (exception)
         {
           error_msg = "An error occurred when calling " + funcname;

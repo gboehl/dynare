@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Dynare Team
+ * Copyright © 2021-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <type_traits>
 
 #include "dynare_exception.hh"
 
@@ -92,7 +93,7 @@ ObjectiveMFile::eval(const Vector &y, const Vector &x, const Vector &modParams,
     std::string funcname = ObjectiveMFilename + "_g" + std::to_string(md.size()) + "_tt";
     mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m };
 
-    int retVal = mexCallMATLAB(1, plhs, 4, prhs, funcname.c_str());
+    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>, prhs, funcname.c_str());
     if (retVal != 0)
       throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
@@ -105,7 +106,7 @@ ObjectiveMFile::eval(const Vector &y, const Vector &x, const Vector &modParams,
     std::string funcname = ObjectiveMFilename + "_resid";
     mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m, T_flag_m };
 
-    int retVal = mexCallMATLAB(1, plhs, 5, prhs, funcname.c_str());
+    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>, prhs, funcname.c_str());
     if (retVal != 0)
       throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
@@ -119,7 +120,7 @@ ObjectiveMFile::eval(const Vector &y, const Vector &x, const Vector &modParams,
       std::string funcname = ObjectiveMFilename + "_g" + std::to_string(i);
       mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m, T_flag_m };
 
-      int retVal = mexCallMATLAB(1, plhs, 5, prhs, funcname.c_str());
+      int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>, prhs, funcname.c_str());
       if (retVal != 0)
         throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 

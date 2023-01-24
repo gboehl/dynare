@@ -20,6 +20,7 @@
 #include <ctime>
 #include <cmath>
 #include <cstring>
+#include <type_traits>
 
 #include "Interpreter.hh"
 #include "ErrorHandling.hh"
@@ -807,7 +808,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                   jacob_exo_field_number = 1;
                   jacob_exo_det_field_number = 2;
                   mwSize dims[1] = { static_cast<mwSize>(nb_blocks) };
-                  plhs[1] = mxCreateStructArray(1, dims, 3, field_names);
+                  plhs[1] = mxCreateStructArray(1, dims, std::extent_v<decltype(field_names)>, field_names);
                 }
               else if (!mxIsStruct(block_structur))
                 {
