@@ -1054,7 +1054,7 @@ The model is declared inside a ``model`` block:
         ``0``
 
             All the endogenous variables are considered as feedback
-            variables (Default).
+            variables.
 
         ``1``
 
@@ -1062,7 +1062,7 @@ The model is declared inside a ``model`` block:
             normalized (i.e. of the form :math:`x=f(Y)` where
             :math:`x` does not appear in :math:`Y`) are potentially
             recursive variables. All the other variables are forced to
-            belong to the set of feedback variables.
+            belong to the set of feedback variables. (Default)
 
         ``2``
 
