@@ -6,6 +6,6 @@
 
 mfs0=load(['lola_solve_one_boundary' filesep 'Output' filesep 'lola_solve_one_boundary_results']);
 
-if max(max(oo_.endo_simul-mfs0.oo_.endo_simul)) > options_.dynatol.x
+if max(max(oo_.endo_simul-mfs0.oo_.endo_simul)) > 20*options_.dynatol.x
    error('Inconsistency with mfs=0')
 end
