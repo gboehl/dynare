@@ -73,7 +73,6 @@ if isempty(dataset)
 end
 options_=select_qz_criterium_value(options_);
 
-[~,~,~,lb,ub] = set_prior(estim_params_,M_,options_);
 if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
     % Plot prior densities.
     % Set prior bounds
@@ -81,6 +80,7 @@ if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
 else  % estimated parameters but no declared priors
     % No priors are declared so Dynare will estimate the model by
     % maximum likelihood with inequality constraints for the parameters.
+    [~,~,~,lb,ub] = set_prior(estim_params_,M_,options_);
     bounds.lb = lb;
     bounds.ub = ub;
 end
