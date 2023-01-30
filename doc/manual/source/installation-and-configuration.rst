@@ -80,8 +80,12 @@ On Arch Linux, the Dynare package is not in the official repositories, but is
 available in the `Arch User Repository`_. The needed sources can be
 downloaded from the `package status in Arch Linux`_.
 
-Dynare will be installed under ``/usr/lib/dynare``. Documentation will
-be under ``/usr/share/doc/dynare`` (only on Debian, Ubuntu and Linux Mint).
+There is also a Dynare package for openSUSE, see the `package status in
+openSUSE`_.
+
+Dynare will be installed under ``/usr/lib/dynare`` (or ``/usr/lib64/dynare`` on
+openSUSE). Documentation will be under ``/usr/share/doc/dynare`` (only on
+Debian, Ubuntu and Linux Mint).
 
 
 On macOS
@@ -303,6 +307,7 @@ Dynare unusable.
 .. _Package status in Ubuntu: https://launchpad.net/ubuntu/+source/dynare
 .. _Package status in Linux Mint: https://community.linuxmint.com/software/view/dynare
 .. _Package status in Arch Linux: https://aur.archlinux.org/packages/dynare/
+.. _Package status in openSUSE: https://software.opensuse.org/package/dynare
 .. _Arch User Repository: https://wiki.archlinux.org/index.php/Arch_User_Repository
 .. _Dynare website: https://www.dynare.org/
 .. _Dynare wiki: https://git.dynare.org/Dynare/dynare/wikis
