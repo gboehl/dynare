@@ -144,6 +144,11 @@ opts_simul.init_regime=regime_history; % use realtime regime for guess, to avoid
 options_.occbin.simul=opts_simul;
 options_.noprint = true;
 [~, out, ss] = occbin.solver(M_,oo_,options_);
+if out.error_flag
+    fprintf('Occbin smoother:: simulation within smoother did not converge.\n')
+    print_info(error_flag, false, options_)
+    return;
+end
 regime_history = out.regime_history;
 if options_.smoother_redux
     occbin_options.opts_simul.restrict_state_space =1;  
@@ -204,6 +209,11 @@ while is_changed && maxiter>iter && ~is_periodic
     opts_simul.endo_init = alphahat0(oo_.dr.inv_order_var,1);
     options_.occbin.simul=opts_simul;
     [~, out, ss] = occbin.solver(M_,oo_,options_);
+    if out.error_flag
+        fprintf('Occbin smoother:: simulation within smoother did not converge.\n')
+        print_info(error_flag, false, options_)
+        return;
+    end
     regime_history = out.regime_history;
     TT = ss.T(oo_.dr.order_var,oo_.dr.order_var,:);
     RR = ss.R(oo_.dr.order_var,:,:);
