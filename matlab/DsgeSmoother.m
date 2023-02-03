@@ -554,7 +554,7 @@ else
         % reconstruct smoothed variables
         aaa=zeros(M_.endo_nbr,gend+1);
         if ~isempty(alphahat0)
-        aaa(oo_.dr.restrict_var_list,1)=alphahat0;
+            aaa(oo_.dr.restrict_var_list,1)=alphahat0;
         end
         aaa(oo_.dr.restrict_var_list,2:end)=alphahat;
         for k=1:gend
