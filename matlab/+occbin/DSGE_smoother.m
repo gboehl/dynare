@@ -147,7 +147,7 @@ options_.noprint = true;
 if out.error_flag
     fprintf('Occbin smoother:: simulation within smoother did not converge.\n')
     print_info(out.error_flag, options_.noprint, options_)
-    oo_.occbin.smoother.error_flag=1;
+    oo_.occbin.smoother.error_flag=321;
     return;
 end
 regime_history = out.regime_history;
@@ -213,7 +213,7 @@ while is_changed && maxiter>iter && ~is_periodic
     if out.error_flag
         fprintf('Occbin smoother:: simulation within smoother did not converge.\n')
         print_info(out.error_flag, false, options_)
-        oo_.occbin.smoother.error_flag=1;
+        oo_.occbin.smoother.error_flag=321;
         return;
     end
     regime_history = out.regime_history;
@@ -363,7 +363,7 @@ if (maxiter==iter && is_changed) || is_periodic
     else
         fprintf('occbin.DSGE_smoother: The respective fields in oo_ will be left empty.\n')
         oo_.occbin.smoother=[];
-        oo_.occbin.smoother.error_flag=1;
+        oo_.occbin.smoother.error_flag=322;
     end
 else
     disp('occbin.DSGE_smoother: smoother converged.')

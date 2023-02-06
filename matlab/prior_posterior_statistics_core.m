@@ -226,8 +226,13 @@ for b=fpar:B
         if options_.occbin.smoother.status
             opts_local.occbin.simul.waitbar=0;
             opts_local.occbin.smoother.waitbar = 0;
+            opts_local.occbin.smoother.linear_smoother=false; % speed-up
             [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,bayestopt_] = ...
                 occbin.DSGE_smoother(deep,gend,Y,data_index,missing_value,M_,oo_,opts_local,bayestopt_,estim_params_);
+            if oo_.occbin.smoother.error_flag(1)
+                message=get_error_message(oo_.occbin.smoother.error_flag,opts_local);
+                fprintf('\nprior_posterior_statistics: One of the draws failed with the error:\n%s\n',message)
+            end
         else
             [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,bayestopt_] = ...
                 DsgeSmoother(deep,gend,Y,data_index,missing_value,M_,oo_,opts_local,bayestopt_,estim_params_);

@@ -192,6 +192,10 @@ switch info(1)
         message = 'Occbin: Simulation did not converge -- infinite loop of guess regimes';        
     case 320
         message = 'Piecewise linear Kalman filter: There was a problem in obtaining the likelihood.';
+    case 321
+        message = 'Occbin: there was a problem in running the smoother. Simulation within smoother failed.';
+    case 322
+        message = 'Occbin: smoother did not converge.';
     case 401
         message = 'Cycle reduction reached the iteration limit. Try increasing maxit.';
     case 402
