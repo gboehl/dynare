@@ -146,7 +146,8 @@ options_.noprint = true;
 [~, out, ss] = occbin.solver(M_,oo_,options_);
 if out.error_flag
     fprintf('Occbin smoother:: simulation within smoother did not converge.\n')
-    print_info(error_flag, false, options_)
+    print_info(out.error_flag, options_.noprint, options_)
+    oo_.occbin.smoother.error_flag=1;
     return;
 end
 regime_history = out.regime_history;
@@ -211,7 +212,8 @@ while is_changed && maxiter>iter && ~is_periodic
     [~, out, ss] = occbin.solver(M_,oo_,options_);
     if out.error_flag
         fprintf('Occbin smoother:: simulation within smoother did not converge.\n')
-        print_info(error_flag, false, options_)
+        print_info(out.error_flag, false, options_)
+        oo_.occbin.smoother.error_flag=1;
         return;
     end
     regime_history = out.regime_history;
