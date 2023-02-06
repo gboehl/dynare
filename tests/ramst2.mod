@@ -34,7 +34,8 @@ periods 1;
 values 1.2;
 end;
 
-simul(periods=200);
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver;
 
 dynasave('myfile') c x k;
 dynatype('myfile1.txt') c x k;

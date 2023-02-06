@@ -104,8 +104,8 @@ var epsilonA1; periods 1; values 2;
 
 end;
 
-options_.simul.robust_lin_solve=1;
-simul( periods = 400 );
+perfect_foresight_setup(periods=400);
+perfect_foresight_solver(robust_lin_solve);
 
 if ~oo_.deterministic_simulation.status
     error('Model did not solve')

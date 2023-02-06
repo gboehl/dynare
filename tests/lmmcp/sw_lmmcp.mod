@@ -68,4 +68,5 @@ end;
 
 @#include "sw-common-footer.inc"
 
-simul(periods=1000, lmmcp);
+perfect_foresight_setup(periods=1000);
+perfect_foresight_solver(lmmcp);

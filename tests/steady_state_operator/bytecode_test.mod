@@ -33,7 +33,8 @@ periods 1;
 values 1.2;
 end;
 
-simul(periods=20, stack_solve_algo=5);
+perfect_foresight_setup(periods=20);
+perfect_foresight_solver(stack_solve_algo=5);
 
 if(abs(oo_.steady_state(2) - oo_.steady_state(3)) > 1e-10)
    error('Test failed in static M-file for steady_state')

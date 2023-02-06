@@ -69,7 +69,8 @@ periods 4, 5, 6, 7, 8;
 values 0.04, 0.05, 0.06, 0.07, 0.08;
 end;
 
-simul(periods=300);
+perfect_foresight_setup(periods=300);
+perfect_foresight_solver;
 
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')

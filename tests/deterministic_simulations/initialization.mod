@@ -17,7 +17,8 @@ end;
 check;
 
 %% DETERMINISTIC SIMULATION
-simul(periods = 40, stack_solve_algo=0, maxit=100);
+perfect_foresight_setup(periods = 40);
+perfect_foresight_solver(stack_solve_algo=0, maxit=100);
 
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')

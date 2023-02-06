@@ -69,7 +69,8 @@ histval;
 Capital(0) = CapitalSS/2;
 end;
 
-simul(periods=20);
+perfect_foresight_setup(periods=20);
+perfect_foresight_solver;
 
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')

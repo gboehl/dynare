@@ -72,6 +72,8 @@ end;
 
 model_info;
 
-simul(periods=2000, stack_solve_algo = 0,maxit=10);
+perfect_foresight_setup(periods=2000);
+perfect_foresight_solver(stack_solve_algo = 0, maxit=10);
+
 rplot y;
 rplot k;

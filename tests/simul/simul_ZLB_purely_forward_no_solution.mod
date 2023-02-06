@@ -87,7 +87,8 @@ periods 1:10;
 values 1.05;
 end;
 
-simul(periods=40,maxit=1000);
+perfect_foresight_setup(periods=40);
+perfect_foresight_solver(maxit=1000);
 
 if oo_.deterministic_simulation.status==1
     error('This model has no solution');

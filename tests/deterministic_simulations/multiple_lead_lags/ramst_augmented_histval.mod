@@ -52,7 +52,8 @@ values 1.2;
 end;
 
 // Deterministic simulation of the model for 200 periods
-simul(periods=200);
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver;
 
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')

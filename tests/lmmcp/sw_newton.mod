@@ -67,7 +67,8 @@ end;
 
 @#include "sw-common-footer.inc"
 
-simul(periods=1000);
+perfect_foresight_setup(periods=1000);
+perfect_foresight_solver;
 
 newton_solution_is_wrong = abs(evaluate_max_dynamic_residual(str2func('sw_newton.dynamic'), oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1000, size(oo_.endo_simul, 1), 1, M_.lead_lag_incidence))>options_.dynatol.f;
 

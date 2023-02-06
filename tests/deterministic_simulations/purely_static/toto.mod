@@ -22,4 +22,5 @@ shocks;
     values 1 .5 .25 .125;
 end;
 
-simul(periods=4);
+perfect_foresight_setup(periods=4);
+perfect_foresight_solver;

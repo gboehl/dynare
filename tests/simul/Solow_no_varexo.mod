@@ -61,5 +61,7 @@ end;
 resid;
 steady;
 
-simul(periods=200, solve_algo=4);
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver(solve_algo=4);
+
 rplot k;

@@ -40,4 +40,5 @@ x=0;
 z=0;
 end;
 steady;
-simul(periods=1000,stack_solve_algo=0);
+perfect_foresight_setup(periods=1000);
+perfect_foresight_solver(stack_solve_algo=0);

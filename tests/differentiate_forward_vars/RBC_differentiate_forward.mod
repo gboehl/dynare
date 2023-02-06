@@ -89,4 +89,5 @@ end;
 steady;
 check;
 
-simul(periods=500);
+perfect_foresight_setup(periods=500);
+perfect_foresight_solver;

@@ -25,7 +25,8 @@ shocks;
     values 1;
 end;
 
-simul(periods=10);
+perfect_foresight_setup(periods=10);
+perfect_foresight_solver;
 
 if ~oo_.deterministic_simulation.status
    error('Perfect foresight simulation failed')

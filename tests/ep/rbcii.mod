@@ -70,7 +70,8 @@ end;
 
     options_.simul.maxit = 100;
 
-    simul(periods=4000);
+    perfect_foresight_setup(periods=4000);
+    perfect_foresight_solver;
 
     n = 100;
 

@@ -67,7 +67,8 @@ periods 1;
 values 1.2;
 end;
 
-simul(periods=20);
+perfect_foresight_setup(periods=20);
+perfect_foresight_solver;
 
 if(abs(oo_.steady_state(5) - erf(1)) > 1e-10)
    error('Test failed in static @{mode_name} for erf')

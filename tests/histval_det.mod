@@ -35,4 +35,5 @@ x(0) = 0.9;
 z(-1) = 0.1;
 end;
 
-simul(periods=200);
+perfect_foresight_setup(periods=200);
+perfect_foresight_solver;
