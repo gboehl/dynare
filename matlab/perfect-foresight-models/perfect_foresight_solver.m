@@ -12,7 +12,7 @@ function perfect_foresight_solver()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 1996-2022 Dynare Team
+% Copyright © 1996-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -66,7 +66,7 @@ oo_ = perfect_foresight_solver_core(M_,options_,oo_);
 if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
 
     if ~options_.noprint
-        fprintf('\nSimulation of the perfect foresight model failed!')
+        fprintf('\nSimulation of the perfect foresight model failed!\n')
         fprintf('Switching to a homotopy method...\n')
     end
 
