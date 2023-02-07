@@ -194,8 +194,10 @@ if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && ~options_.
             else
                 if options_.occbin.smoother.status
                     [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = occbin.DSGE_smoother(xparam1,gend,transpose(data),data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_,dataset_info);
-                    if oo_.occbin.smoother.error_flag==0
+                    if oo_.occbin.smoother.error_flag(1)==0
                         [oo_]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
+                    else
+                        fprintf('\nOccbin: smoother did not succeed. No results will be written to oo_.\n')
                     end
                 else
                     [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,transpose(data),data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
@@ -619,8 +621,10 @@ if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.psha
     else
         if options_.occbin.smoother.status
             [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = occbin.DSGE_smoother(xparam1,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_,dataset_,dataset_info);
-            if oo_.occbin.smoother.error_flag==0
+            if oo_.occbin.smoother.error_flag(1)==0
                 [oo_,yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
+            else 
+                fprintf('\nOccbin: smoother did not succeed. No results will be written to oo_.\n')
             end
         else
             [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_);

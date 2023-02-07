@@ -1,4 +1,4 @@
-function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d,varargout] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux, occbin_)
+function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d,alphahat0,aalphahat0,V0,varargout] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux, occbin_)
 % function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d] = missing_DiffuseKalmanSmootherH3_Z(a_initial,T,Z,R,Q,H,Pinf1,Pstar1,Y,pp,mm,smpl,data_index,nk,kalman_tol,diffuse_kalman_tol,decomp_flag,state_uncertainty_flag, filter_covariance_flag, smoother_redux, occbin_)
 % Computes the diffuse kalman smoother in the case of a singular var-cov matrix.
 % Univariate treatment of multivariate time series.
@@ -149,6 +149,9 @@ if state_uncertainty_flag
 else
     V=[];
 end
+alphahat0=[];
+aalphahat0=[];
+V0=[];
 
 if ~occbin_.status
     isoccbin = 0;
@@ -180,7 +183,7 @@ else
             T0=occbin_.info{5};
             R0=occbin_.info{6};
         else
-            
+
             TT=occbin_.info{5};
             RR=occbin_.info{6};
             CC=occbin_.info{7};
@@ -201,7 +204,7 @@ else
                 CC=repmat(zeros(mm,1),1,smpl+1);
             end
         end
-        
+
     else
         TT=repmat(T,1,1,smpl+1);
         RR=repmat(R,1,1,smpl+1);
@@ -210,7 +213,7 @@ else
     if ~smoother_redux
         T0=T;
         R0=R;
-        
+
     end
     if ~isinf(occbin_options.first_period_occbin_update)
         % initialize state matrices (otherwise they are set to 0 for
@@ -219,7 +222,7 @@ else
         RRR=repmat(R0,1,1,smpl+1);
         CCC=repmat(zeros(length(T0),1),1,smpl+1);
     end
-    
+
 end
 
 t = 0;
@@ -229,6 +232,14 @@ if ~isempty(Pinf(:,:,1))
 else
     newRank = rank(Pinf(:,:,1),diffuse_kalman_tol);
 end
+if newRank
+    % add this to get smoothed states in period 0
+    Pinf_init = Pinf(:,:,1);
+    Pstar_init = Pstar(:,:,1);
+    Pstar(:,:,1)  = T*Pstar(:,:,1)*T' + QQ;
+    ainit = a1(:,1);
+end
+
 while newRank && t < smpl
     t = t+1;
     a(:,t) = a1(:,t);
@@ -270,7 +281,7 @@ while newRank && t < smpl
     else
         oldRank = 0;
     end
-    if isoccbin,
+    if isoccbin
         TT(:,:,t+1)=  T;
         RR(:,:,t+1)=  R;
     end
@@ -298,7 +309,11 @@ while newRank && t < smpl
 end
 
 if isoccbin
-    first_period_occbin_update = max(t+2,occbin_options.first_period_occbin_update);
+    first_period_occbin_update = occbin_options.first_period_occbin_update;
+    if d>0
+        first_period_occbin_update = max(t+2,occbin_options.first_period_occbin_update);
+        % kalman update is not yet robust to accommodate diffuse steps
+    end
     if occbin_options.opts_regime.waitbar
         hh = dyn_waitbar(0,'Occbin: Piecewise Kalman Filter');
         set(hh,'Name','Occbin: Piecewise Kalman Filter.');
@@ -322,6 +337,10 @@ Pinf1  = Pinf1(:,:,1:d);
 notsteady = 1;
 while notsteady && t<smpl
     t = t+1;
+    if t==1
+        Pinit = P(:,:,1);
+        ainit = a1(:,1);
+    end
     a(:,t) = a1(:,t);
     P1(:,:,t) = P(:,:,t);
     di = data_index{t}';
@@ -329,11 +348,33 @@ while notsteady && t<smpl
         if waitbar_indicator
             dyn_waitbar(t/smpl, hh, sprintf('Period %u of %u', t,smpl));
         end
-        if isqvec
-            Qt = Qvec(:,:,t-1:t+1);
-        end
         occbin_options.opts_regime.waitbar=0;
-        [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a(:,t-1),a1(:,t-1:t),P(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,v(:,t-1:t),Fi(:,t-1),Ki(:,:,t-1),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,oo_,options_,occbin_options,kalman_tol,nk);
+        if t==1
+            if isqvec
+                Qt = cat(3,Q,Qvec(:,:,t:t+1));
+            end
+            a0 = a(:,1);
+            a10 = [a0 a(:,1)];
+            P0 = P(:,:,1);
+            P10 = P1(:,:,[1 1]);
+            data_index0{1}=[];
+            data_index0(2)=data_index(1);
+            v0(:,2)=v(:,1);
+            Y0(:,2)=Y(:,1);
+            Y0(:,1)=nan;
+            Fi0 = Fi(:,1);
+            Ki0 = Ki(:,:,1);
+            TT01 = cat(3,T,TT(:,:,1));
+            RR01 = cat(3,R,RR(:,:,1));
+            CC01 = zeros(size(CC,1),2);
+            CC01(:,2) = CC(:,1);
+            [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a0,a10,P0,P10,data_index0,Z,v0,Fi0,Ki0,Y0,H,Qt,T0,R0,TT01,RR01,CC01,regimes_(t:t+1),M_,oo_,options_,occbin_options,kalman_tol,nk);
+        else
+            if isqvec
+                Qt = Qvec(:,:,t-1:t+1);
+            end
+            [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a(:,t-1),a1(:,t-1:t),P(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,v(:,t-1:t),Fi(:,t-1),Ki(:,:,t-1),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,oo_,options_,occbin_options,kalman_tol,nk);
+        end
         if ~error_flag
             regimes_(t:t+2)=tmp;
         else
@@ -347,10 +388,10 @@ while notsteady && t<smpl
             return
         end
 
-        if smoother_redux
+        if smoother_redux && t>1
             aalphahat(:,t-1) = aha(:,1);
-            eetahat(:,t) = etaha(:,2);
         end
+        eetahat(:,t) = etaha(:,2);
         a(:,t) = ax(:,1);
         a1(:,t) = a1x(:,2);
         a1(:,t+1) = ax(:,2);
@@ -372,6 +413,18 @@ while notsteady && t<smpl
             aK(jnk,:,t+jnk) = ax(:,1+jnk);
         end
     else
+        if isoccbin && t==1
+            if isqvec
+                QQ = RR(:,:,t)*Qvec(:,:,t)*transpose(RR(:,:,t));
+            else
+                QQ = RR(:,:,t)*Q*transpose(RR(:,:,t));
+            end
+            T = TT(:,:,t);
+            C = CC(:,t);
+            a1(:,t) = T*a(:,t)+C;                                                 %transition according to (6.14) in DK (2012)
+            P(:,:,t) = T*P(:,:,t)*T' + QQ;                                        %transition according to (6.14) in DK (2012)
+            P1(:,:,t) = P(:,:,t);
+        end
         for i=di
             Zi = Z(i,:);
             v(i,t)  = Y(i,t) - Zi*a(:,t);                                       % nu_{t,i} in 6.13 in DK (2012)
@@ -416,6 +469,9 @@ while notsteady && t<smpl
                     eetahat(:,st) = QRt*ri;
                 end
                 ri = T'*ri;                                                             % KD (2003), eq. (23), equation for r_{t-1,p_{t-1}}
+            end
+            if t==1
+                aalphahat0 = P1(:,:,st)*ri;
             end
         end
         if isoccbin
@@ -474,13 +530,13 @@ while notsteady && t<smpl
     end
 end
 if waitbar_indicator
-    dyn_waitbar_close(hh); 
+    dyn_waitbar_close(hh);
 end
 
 P1(:,:,t+1) = P(:,:,t+1);
 
 if ~isinf(first_period_occbin_update) && isoccbin
-    regimes_ = regimes_(2:smpl+1);
+    regimes_ = regimes_(1:smpl+1);
 else
     regimes_ = struct();
     TTT=TT;
@@ -574,7 +630,28 @@ while t > d+1
         Ni = T'*Ni*T;                                                           % KD (2000), eq. (23), equation for N_{t-1,p_{t-1}}
     end
 end
-if d
+
+if d==0 % recover states in period t=0
+    a0 = ainit;
+    r0 = ri;
+    P0 = Pinit;
+    % if OCCBIN, P1 in t=1 must be consistent with the regime in 1
+    alphahat0 = a0 + P0*r0;
+
+    % we do NOT need eps(0)!
+    % alphahat is smoothed state in t=0, so that S(1)=T*s(0)+R*eps(1);
+    if state_uncertainty_flag
+        N0 = Ni;                                                          % DK (2012), below 6.15, N_{t-1}=N_{t,0}
+        if smoother_redux
+            ptmp = [P0 R*Q; (R*Q)' Q];
+            ntmp = [N0 zeros(mm,rr); zeros(rr,mm+rr)];
+            V0    = ptmp - ptmp*ntmp*ptmp;
+        else
+            V0 = P0-P0*N0*P0;                      % KD (2000), eq. (7) with N_{t-1} stored in N(:,:,t)
+        end
+    end
+
+else % diffuse filter
     r0 = zeros(mm,d);
     r0(:,d) = ri;
     r1 = zeros(mm,d);
@@ -641,8 +718,8 @@ if d
                 V(:,:,t)    = pstmp - pstmp*ntmp0*pstmp...
                     -(pitmp*ntmp1*pstmp)'...
                     - pitmp*ntmp1*pstmp...
-                    - pitmp*ntmp2*Pinf(:,:,t);                                   % DK (2012), eq. 5.30
-                
+                    - pitmp*ntmp2*pitmp;                                   % DK (2012), eq. 5.30
+
             else
                 V(:,:,t)=Pstar(:,:,t)-Pstar(:,:,t)*N_0(:,:,t)*Pstar(:,:,t)...
                     -(Pinf(:,:,t)*N_1(:,:,t)*Pstar(:,:,t))'...
@@ -654,14 +731,41 @@ if d
             r0(:,t-1) = T'*r0(:,t);                                         % KD (2000), below eq. (25) r_{t-1,p_{t-1}}=T'*r_{t,0}
             r1(:,t-1) = T'*r1(:,t);                                         % KD (2000), below eq. (25) r_{t-1,p_{t-1}}=T'*r_{t,0}
             if state_uncertainty_flag
-                N_0(:,:,t-1)= T'*N_0(:,t)*T;                                % KD (2000), below eq. (25) N_{t-1,p_{t-1}}=T'*N_{t,0}*T
-                N_1(:,:,t-1)= T'*N_1(:,t)*T;                                % KD (2000), below eq. (25) N^1_{t-1,p_{t-1}}=T'*N^1_{t,0}*T
-                N_2(:,:,t-1)= T'*N_2(:,t)*T;                                % KD (2000), below eq. (25) N^2_{t-1,p_{t-1}}=T'*N^2_{t,0}*T
+                N_0(:,:,t-1)= T'*N_0(:,:,t)*T;                                % KD (2000), below eq. (25) N_{t-1,p_{t-1}}=T'*N_{t,0}*T
+                N_1(:,:,t-1)= T'*N_1(:,:,t)*T;                                % KD (2000), below eq. (25) N^1_{t-1,p_{t-1}}=T'*N^1_{t,0}*T
+                N_2(:,:,t-1)= T'*N_2(:,:,t)*T;                                % KD (2000), below eq. (25) N^2_{t-1,p_{t-1}}=T'*N^2_{t,0}*T
+            end
+        else
+            r00 = T'*r0(:,t);                                         % KD (2000), below eq. (25) r_{t-1,p_{t-1}}=T'*r_{t,0}
+            r10 = T'*r1(:,t);                                         % KD (2000), below eq. (25) r_{t-1,p_{t-1}}=T'*r_{t,0}
+            if state_uncertainty_flag
+                N_00= T'*N_0(:,:,t)*T;                                % KD (2000), below eq. (25) N_{t-1,p_{t-1}}=T'*N_{t,0}*T
+                N_10= T'*N_1(:,:,t)*T;                                % KD (2000), below eq. (25) N^1_{t-1,p_{t-1}}=T'*N^1_{t,0}*T
+                N_20= T'*N_2(:,:,t)*T;                                % KD (2000), below eq. (25) N^2_{t-1,p_{t-1}}=T'*N^2_{t,0}*T
             end
         end
     end
-else
-    alphahat0 = 0*a1(:,1) + P1(:,:,1)*ri;
+    % get smoothed states in t=0
+    alphahat0 = ainit + Pstar_init*r00 + Pinf_init*r10; % KD (2000), eq. (26)
+    if state_uncertainty_flag
+        if smoother_redux
+            pstmp = [Pstar_init R*Q; (R*Q)' Q];
+            pitmp = [Pinf_init zeros(mm,rr); zeros(rr,mm+rr)];
+            ntmp0 = [N_00 zeros(mm,rr); zeros(rr,mm+rr)];
+            ntmp1 = [N_10 zeros(mm,rr); zeros(rr,mm+rr)];
+            ntmp2 = [N_20 zeros(mm,rr); zeros(rr,mm+rr)];
+            V0    = pstmp - pstmp*ntmp0*pstmp...
+                -(pitmp*ntmp1*pstmp)'...
+                - pitmp*ntmp1*pstmp...
+                - pitmp*ntmp2*pitmp;                                   % DK (2012), eq. 5.30
+
+        else
+            V0=Pstar_init-Pstar_init*N_00*Pstar_init...
+                -(Pinf_init*N_10*Pstar_init)'...
+                - Pinf_init*N_10*Pstar_init...
+                - Pinf_init*N_20*Pinf_init;                       % DK (2012), eq. 5.30
+        end
+    end
 end
 
 if decomp_flag
@@ -675,7 +779,7 @@ if decomp_flag
                 ri_d = Z(i,:)'/Fi(i,t)*v(i,t)+ri_d-Ki(:,i,t)'*ri_d/Fi(i,t)*Z(i,:)';
             end
         end
-        
+
         % calculate eta_tm1t
         if isoccbin
             if isqvec

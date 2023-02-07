@@ -133,6 +133,10 @@ end
 options_.occbin.simul=opts_simul;
 [~, out, ss] = occbin.solver(M_,oo_,options_);
 if out.error_flag
+    options_.occbin.simul.init_regime=regimes0;
+    [~, out, ss] = occbin.solver(M_,oo_,options_);
+end
+if out.error_flag
     error_flag = out.error_flag;
     etahat=etahat(:,2);
     return;

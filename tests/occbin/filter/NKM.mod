@@ -319,6 +319,16 @@ varobs yg inom pi;
             mh_replic=0, plot_priors=0, smoother, smoother_redux,
             nodisplay,consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
 
+    // check consistency of smoother_redux
+    for k=1:M_.endo_nbr, 
+        mer(k)=max(abs(oo_.SmoothedVariables.(M_.endo_names{k})-oo0.SmoothedVariables.(M_.endo_names{k}))); 
+    end
+    if max(mer)>1.e-10
+        error('smoother redux does not recover full smoother results!')
+    else
+        disp('smoother redux successfully recovers full smoother results!')
+    end
+
     // use inversion filter (note that IF provides smoother together with likelihood)
     occbin_setup(likelihood_inversion_filter,smoother_inversion_filter);
             

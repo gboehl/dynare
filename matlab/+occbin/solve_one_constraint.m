@@ -105,7 +105,7 @@ end
 SS_out.T = NaN(DM.n_vars,DM.n_vars,n_shocks_periods);
 SS_out.R = NaN(DM.n_vars,DM.n_exo,n_shocks_periods);
 SS_out.C = nan(DM.n_vars,n_shocks_periods);
-if ~exist('regime_history_','var') || isempty(regime_history_guess)
+if isempty(regime_history_guess)
     regime_history = struct();
     guess_history = false;
 else
@@ -152,9 +152,7 @@ for shock_period = 1:n_shocks_periods
         if length(binding_indicator)<(nperiods_0 + 1)
             binding_indicator=[binding_indicator; false(nperiods_0 + 1-length(binding_indicator),1)];
         end
-        
-        binding_indicator_history{iter}=binding_indicator;
-        
+               
         if iter==1 && guess_history_it
             regime = regime_history_guess(shock_period).regime;
             regime_start = regime_history_guess(shock_period).regimestart;
@@ -164,6 +162,7 @@ for shock_period = 1:n_shocks_periods
             end
             nperiods_0 = size(binding_indicator,1)-1; %if history is present, update may be required
         end
+        binding_indicator_history{iter}=binding_indicator;
         % analyze when each regime starts based on current guess
         [regime, regime_start, error_code_period]=occbin.map_regime(binding_indicator,opts_simul_.debug);
         regime_history(shock_period).regime = regime;
