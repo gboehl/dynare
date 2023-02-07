@@ -115,7 +115,7 @@ end
 SS_out.T = NaN(DM.n_vars,DM.n_vars,n_shocks_periods);
 SS_out.R = NaN(DM.n_vars,DM.n_exo,n_shocks_periods);
 SS_out.C = NaN(DM.n_vars,n_shocks_periods);
-if ~exist('regime_history_','var') || isempty(regime_history_guess)
+if isempty(regime_history_guess)
     regime_history = struct();
     guess_history = false;
 else
@@ -164,7 +164,6 @@ for shock_period = 1:n_shocks_periods
             % unconstrained regime (nperiods_0)
             binding_indicator=[binding_indicator; false(nperiods_0 + 1-size(binding_indicator,1),2)];
         end
-        binding_indicator_history{iter}=binding_indicator;
         
         if iter==1 && guess_history_it
             regime_1 = regime_history_guess(shock_period).regime1;
@@ -181,6 +180,8 @@ for shock_period = 1:n_shocks_periods
             end
             nperiods_0 = size(binding_indicator,1)-1; %if history is present, update may be required
         end
+        binding_indicator_history{iter}=binding_indicator;
+        
         % analyse violvec and isolate contiguous periods in the other regime.
         [regime_1, regime_start_1, error_code_period(1)]=occbin.map_regime(binding_indicator(:,1),opts_simul_.debug);
         regime_history(shock_period).regime1 = regime_1;
