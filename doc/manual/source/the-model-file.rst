@@ -3655,7 +3655,7 @@ speed-up on large models.
 
            ``4``
 
-               Use a Newton algorithm with a optimal path length at
+               Use a Newton algorithm with an optimal path length at
                each iteration (requires ``bytecode`` and/or ``block``
                option, see :ref:`model-decl`).
 
