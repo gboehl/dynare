@@ -45,7 +45,6 @@ fixed in version 5.3:
 * Problems related to Bayesian or ML estimation:
   + `mh_recover` and `load_mh_file` would not find the saved proposal density
     and had to rely on the `_mode` file
-  + `load_results_after_load_mh` would not find the location of the `_results` file
   + When requesting `bayesian_irf` together with `loglinear`, the resulting
     IRFs would be incorrect
   + the diffuse Kalman smoother initialization (`lik_init=3`) was wrong when
