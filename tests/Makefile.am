@@ -375,6 +375,7 @@ MODFILES = \
 	deterministic_simulations/rbc_det5.mod \
 	deterministic_simulations/rbc_det6.mod \
 	deterministic_simulations/homotopy.mod \
+	deterministic_simulations/homotopy_alt_starting_point.mod \
 	deterministic_simulations/homotopy_histval.mod \
 	deterministic_simulations/rbc_det_exo_lag_2a.mod \
 	deterministic_simulations/rbc_det_exo_lag_2b.mod \

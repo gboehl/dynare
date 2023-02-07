@@ -29,7 +29,7 @@ function perfect_foresight_solver()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ options_ oo_
+global M_ options_ oo_ ys0_ ex0_
 
 check_input_arguments(options_, M_, oo_);
 
@@ -102,8 +102,16 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
     options_.verbosity = 0;
 
     % Set initial paths for the endogenous and exogenous variables.
-    endoinit = repmat(oo_.steady_state, 1,M_.maximum_lag+periods+M_.maximum_lead);
-    exoinit = repmat(oo_.exo_steady_state',M_.maximum_lag+periods+M_.maximum_lead,1);
+    if ~options_.homotopy_alt_starting_point
+        endoinit = repmat(oo_.steady_state, 1,M_.maximum_lag+periods+M_.maximum_lead);
+        exoinit = repmat(oo_.exo_steady_state',M_.maximum_lag+periods+M_.maximum_lead,1);
+    else
+        if isempty(ys0_) || isempty(ex0_)
+            error('The homotopy_alt_starting_point option cannot be used without an endval block');
+        end
+        endoinit = repmat(ys0_, 1, M_.maximum_lag+periods+M_.maximum_lead);
+        exoinit = repmat(ex0_', M_.maximum_lag+periods+M_.maximum_lead, 1);
+    end
 
     % Copy the current paths for the exogenous and endogenous variables.
     exosim = oo_.exo_simul;

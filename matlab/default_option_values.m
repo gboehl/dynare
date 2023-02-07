@@ -12,7 +12,7 @@ function options_ = default_option_values(M_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2018-2022 Dynare Team
+% Copyright © 2018-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -328,6 +328,7 @@ options_.markowitz = 0.5;
 options_.minimal_solving_periods = 1;
 options_.endogenous_terminal_period = false;
 options_.no_homotopy = false;
+options_.homotopy_alt_starting_point = false;
 
 % Perfect foresight with expectation errors
 options_.pfwee.terminal_steady_state_as_guess_value = false;

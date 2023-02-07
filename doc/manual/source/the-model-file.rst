@@ -3581,6 +3581,14 @@ speed-up on large models.
     Note that ``perfect_foresight_setup`` must be called before this
     command, in order to setup the environment for the simulation.
 
+    If the perfect foresight solver cannot directly find the solution of the
+    problem, it subsequently tries a homotopy technique (unless the
+    ``no_homotopy`` option is given). Concretely, this technique consists in
+    dividing the problem into smaller steps by diminishing the size of shocks
+    and increasing them progressively until the problem converges. Note that
+    the homotopy technique is not implemented for purely forward or backward
+    models.
+
     *Options*
 
     .. option:: maxit = INTEGER
@@ -3690,13 +3698,24 @@ speed-up on large models.
 
     .. option:: no_homotopy
 
-       By default, the perfect foresight solver uses a homotopy
-       technique if it cannot solve the problem. Concretely, it
-       divides the problem into smaller steps by diminishing the size
-       of shocks and increasing them progressively until the problem
-       converges. This option tells Dynare to disable that
-       behavior. Note that the homotopy is not implemented for purely
-       forward or backward models.
+       This option tells Dynare to not try a homotopy technique (as described
+       above) if the problem cannot be solved directly.
+
+    .. option:: homotopy_alt_starting_point
+
+       When the homotopy technique is tried (as described above), Dynare first
+       tries to reduce the size of the shock in order to get a successful
+       simulation on which to build upon for simulating a shock of the true
+       size. However, if an ``endval`` block is present (*i.e.* if the terminal
+       state differs from the initial state), there are two ways of reducing
+       the size of the shock. By default, Dynare will perform this reduction by
+       computing a simulation whose initial state is closer to the target
+       terminal state; in other words, it will implicitly modify the contents
+       of the ``initval`` and ``shocks`` blocks to make them closer to the the
+       contents of the ``endval`` block. If this option is set, Dynare will do
+       the opposite: it will implicitly modify the contents of the ``endval``
+       and ``shocks`` blocks to make them closer to the contents of the
+       ``initval`` block.
 
     .. option:: markowitz = DOUBLE
 
