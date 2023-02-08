@@ -16,7 +16,7 @@ function dynare(fname, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright (C) 2001-2021 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -89,9 +89,6 @@ else
         skipline()
     end
 end
-
-% disable output paging (it is on by default on Octave)
-more off
 
 % sets default format for save() command
 if isoctave
