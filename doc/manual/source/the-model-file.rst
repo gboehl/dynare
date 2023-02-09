@@ -185,8 +185,8 @@ for declaring variables and parameters are described below.
 
       ::
 
-        var c gnp cva (country=`US', state=`VA')
-                  cca (country=`US', state=`CA', long_name=`Consumption CA');
+        var c gnp cva (country='US', state='VA')
+                  cca (country='US', state='CA', long_name='Consumption CA');
         var(deflator=A) i b;
         var c $C$ (long_name=`Consumption');
 
@@ -4038,7 +4038,7 @@ Computing the stochastic solution
        :mvar:`oo_.conditional_variance_decomposition_ME`).  The
        variance decomposition is only conducted, if theoretical
        moments are requested, *i.e.* using the ``periods=0``-option.
-       Only available at ``order<3`` and without ``pruning''. In case of ``order=2``,
+       Only available at ``order<3`` and without ``pruning``. In case of ``order=2``,
        Dynare provides a second-order accurate
        approximation to the true second moments based on the linear
        terms of the second-order solution (see *Kim, Kim,
