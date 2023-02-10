@@ -4008,7 +4008,8 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
     .. option:: datafile = FILENAME
 
        Used to specify the information about future shocks and their
-       anticipation, as an alternative to ``shocks`` and ``endval`` blocks.
+       anticipation through a CSV file, as an alternative to ``shocks`` and
+       ``endval`` blocks.
 
        The file has the following format:
 
