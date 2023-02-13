@@ -457,11 +457,11 @@ On-the-fly Model Variable Declaration
 
 Endogenous variables, exogenous variables, and parameters can also be declared
 inside the model block. You can do this in two different ways: either via the
-equation tag or directly in an equation.
+equation tag (only for endogenous variables) or directly in an equation (for
+endogenous, exogenous or parameters).
 
-To declare a variable on-the-fly in an equation tag, simply state the type of
-variable to be declared (``endogenous``, ``exogenous``, or
-``parameter`` followed by an equal sign and the variable name in single
+To declare an endogenous variable on-the-fly in an equation tag, simply write
+``endogenous`` followed by an equal sign and the variable name in single
 quotes. Hence, to declare a variable ``c`` as endogenous in an equation tag,
 you can type ``[endogenous='c']``.
 
