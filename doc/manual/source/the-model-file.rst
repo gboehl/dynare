@@ -13082,9 +13082,9 @@ More generally, it is possible to consider finite discounted sums.
 
     Name of the associated auxiliary model, defined with ``var_model`` or ``trend_component_model``.
 
-    .. option:: expression = STRING | QUOTED_STRING
+    .. option:: expression = VARIABLE_NAME | EXPRESSION
 
-    Name of the variable or expression (linear combination of variables) to be expected. The quotes are mandatory if an expression is expected.
+    Name of the variable or expression (linear combination of variables) to be expected.
 
     .. option:: discount = PARAMETER_NAME | DOUBLE
 
