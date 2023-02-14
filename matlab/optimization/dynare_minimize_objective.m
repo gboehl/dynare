@@ -289,6 +289,8 @@ switch minimizer_algorithm
     end
     nit=options_.newrat.maxiter;
     robust = options_.newrat.robust;
+    gstep_crit = options_.newrat.tolerance.gstep;
+    gstep_crit_rel = options_.newrat.tolerance.gstep_rel;
     Verbose = options_.newrat.verbosity;
     Save_files = options_.newrat.Save_files;
     if ~isempty(options_.optim_opt)
@@ -308,6 +310,10 @@ switch minimizer_algorithm
                 robust = options_list{i,2};
               case 'TolFun'
                 crit = options_list{i,2};
+              case 'TolGstep'
+                gstep_crit = options_list{i,2};
+              case 'TolGstepRel'
+                gstep_crit_rel = options_list{i,2};
               case 'verbosity'
                 Verbose = options_list{i,2};
               case 'SaveFiles'
@@ -321,8 +327,12 @@ switch minimizer_algorithm
         Save_files = 0;
         Verbose = 0;
     end
+    if isnan(gstep_crit)
+        gstep_crit = crit;
+    end
     hess_info.gstep=options_.gstep;
-    hess_info.htol = 1.e-4;
+    hess_info.htol = gstep_crit;
+    hess_info.htol_rel = gstep_crit_rel;
     hess_info.h1=options_.gradient_epsilon*ones(n_params,1);
     hess_info.robust=robust;
     % here we force 7th input argument (flagg) to be 0, since outer product

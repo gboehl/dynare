@@ -69,7 +69,7 @@ icount=0;
 nx=length(x);
 xparam1=x;
 %ftol0=1.e-6;
-htol_base = max(1.e-7, ftol0);
+htol_base = max(1.e-7, hess_info.htol);
 flagit=0;  % mode of computation of hessian in each iteration; hard-coded outer-product of gradients as it performed best in tests
 ftol=ftol0;
 gtol=1.e-3;
@@ -232,7 +232,7 @@ while norm(gg)>gtol && check==0 && jit<nit
             if flagit==2
                 hh=hh0;
             elseif flagg>0
-                [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,bounds,prior_std,Save_files,varargin{:});
+                [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,htol_base,hess_info,bounds,prior_std,Save_files,varargin{:});
                 if flagg==2
                     hh = reshape(dum,nx,nx);
                     ee=eig(hh);

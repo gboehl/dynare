@@ -562,6 +562,8 @@ options_.csminwel=csminwel;
 %newrat optimization routine
 newrat.hess=1; % dynare numerical hessian
 newrat.robust=false;
+newrat.tolerance.gstep = NaN;
+newrat.tolerance.gstep_rel = NaN;
 newrat.tolerance.f=1e-5;
 newrat.tolerance.f_analytic=1e-7;
 newrat.maxiter=1000;

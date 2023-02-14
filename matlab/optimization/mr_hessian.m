@@ -83,6 +83,11 @@ hess_info.h1 = min(hess_info.h1,0.9.*hmax);
 if htol0<hess_info.htol
     hess_info.htol=htol0;
 end
+if not(isnan(hess_info.htol_rel))
+    htol1=hess_info.htol;
+    hess_info.htol=abs(hess_info.htol_rel*f0);
+end
+
 xh1=x;
 f1=zeros(size(f0,1),n);
 f_1=f1;
@@ -298,4 +303,6 @@ else
     hh1 = [];
 end
 
-htol1=hhtol;
+if isnan(hess_info.htol_rel)
+    htol1=hhtol;
+end
