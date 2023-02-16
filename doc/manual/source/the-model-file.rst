@@ -3703,8 +3703,10 @@ speed-up on large models.
     periods option or by ``extended_path``). The variables are
     arranged row by row, in order of declaration (as in
     ``M_.endo_names``). Note that this variable also contains initial
-    and terminal conditions, so it has more columns than the value of
-    ``periods`` option.
+    and terminal conditions, so it has more columns than the value of the
+    ``periods`` option: the first simulation period is in
+    column ``1+M_.maximum_lag``, and the total number of columns is
+    ``M_.maximum_lag+periods+M_.maximum_lead``.
 
 .. matvar:: oo_.exo_simul
 
@@ -3714,7 +3716,25 @@ speed-up on large models.
     in columns, in order of declaration (as in
     ``M_.exo_names``). Periods are in rows. Note that this convention
     regarding columns and rows is the opposite of the convention for
-    ``oo_.endo_simul``!
+    ``oo_.endo_simul``! Also note that this variable also contains initial
+    and terminal conditions, so it has more rows than the value of the
+    ``periods`` option: the first simulation period is in row
+    ``1+M_.maximum_lag``, and the total number of rows is
+    ``M_.maximum_lag+periods+M_.maximum_lead``.
+
+.. matvar:: M_.maximum_lag
+
+    |br| The maximum number of lags in the model. Note that this value is
+    computed on the model *after* the transformations related to auxiliary
+    variables, so in practice it is either 1 or 0 (the latter value corresponds
+    to a purely forward or static model).
+
+.. matvar:: M_.maximum_lead
+
+    |br| The maximum number of leads in the model. Note that this value is
+    computed on the model *after* the transformations related to auxiliary
+    variables, so in practice it is either 1 or 0 (the latter value corresponds
+    to a purely backward or static model).
 
 
 .. _stoch-sol:
