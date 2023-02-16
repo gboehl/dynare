@@ -115,7 +115,7 @@ to this rule might yield hard-to-debug error messages or
 crashes. Second, when employing user-defined steady state files it is 
 recommended to avoid using the name of MATLAB functions as this may cause 
 conflicts. In particular, when working with user-defined steady state files, do not
-use correctly-spelled greek names like `alpha`, because there are
+use correctly-spelled greek names like ``alpha``, because there are
 MATLAB functions of the same name. Rather go for ``alppha`` or
 ``alph``. Lastly, please do not name a variable or parameter
 ``i``. This may interfere with the imaginary number i and the index in
@@ -1777,7 +1777,7 @@ in this case ``initval`` is used to specify the terminal conditions.
         * In :comm:`conditional_forecast` for a calibrated model as
           the initial point at which the conditional forecasts are
           computed. When using the :ref:`loglinear <logl>` option, the
-          histval-block nevertheless takes the unlogged starting
+          ``histval`` block nevertheless takes the unlogged starting
           values.
         * In :comm:`Ramsey policy <ramsey_model>`, where it also
           specifies the values of the endogenous states (including 
@@ -4057,7 +4057,7 @@ Computing the stochastic solution
        ``oo_.conditional_variance_decomposition_ME`` (see
        :mvar:`oo_.conditional_variance_decomposition_ME`).  The
        variance decomposition is only conducted, if theoretical
-       moments are requested, *i.e.* using the ``periods=0``-option.
+       moments are requested, *i.e.* using the ``periods=0`` option.
        Only available at ``order<3`` and without ``pruning``. In case of ``order=2``,
        Dynare provides a second-order accurate
        approximation to the true second moments based on the linear
@@ -4758,9 +4758,9 @@ It also allows estimating such models employing either the inversion filter of
 *Giovannini, Pfeiffer, and Ratto (2021)*. To trigger computations involving
 occasionally-binding constraints requires
 
-#. defining and naming the occasionally-binding constraints using an ``occbin_constraints``-block
-#. specifying the model equations for the respective regimes in the ``model``-block using appropriate equation tags.
-#. potentially specifying a sequence of surprise shocks using a ``shocks(surprise)``-block
+#. defining and naming the occasionally-binding constraints using an ``occbin_constraints`` block
+#. specifying the model equations for the respective regimes in the ``model`` block using appropriate equation tags.
+#. potentially specifying a sequence of surprise shocks using a ``shocks(surprise)`` block
 #. setting up Occbin simulations or estimation with ``occbin_setup``
 #. triggering a simulation with ``occbin_solver`` or running ``estimation`` or ``calib_smoother``.
 
@@ -4769,7 +4769,7 @@ All of these elements are discussed in the following.
 
 .. block:: occbin_constraints ;
 
-    |br| The ``occbin_constraints``-block specifies the occasionally-binding constraints. It contains
+    |br| The ``occbin_constraints`` block specifies the occasionally-binding constraints. It contains
     one or two of the following lines:
 
       name 'STRING'; bind EXPRESSION; [relax EXPRESSION;] [error_bind EXPRESSION;] [error_relax EXPRESSION;]
@@ -4818,7 +4818,7 @@ All of these elements are discussed in the following.
         name 'ELB'; bind inom <= iss-1e8; relax inom > iss+1e-8;
         end;
 
-    The ``error_bind`` and ``error_relax``-options are optional and allow specifying
+    The ``error_bind`` and ``error_relax`` options are optional and allow specifying
     numerical criteria for the size of the respective constraint violations employed
     in numerical routines. By default, Dynare will simply use the absolute value of
     the ``bind`` and ``relax`` inequalities. But occasionnally, user-specified
@@ -4838,7 +4838,7 @@ All of these elements are discussed in the following.
         the associated Lagrange multiplier ``Lambda`` in the binding regime becomes negative. Note that the
         constraint here takes on a linear form to be consistent with a piecewise linear model solution
 
-    The specification of the model equations belonging to the respective regimes is done in the ``model``-block,
+    The specification of the model equations belonging to the respective regimes is done in the ``model`` block,
     with equation tags indicating to which regime a particular equation belongs. All equations that differ across
     regimes must have a ``name``-tag attached to them that allows uniquely identifying different versions of the
     same equation. The name of the constraints specified is then used in conjunction with a ``bind`` or ``relax``
@@ -4871,7 +4871,7 @@ All of these elements are discussed in the following.
 .. block:: shocks(surprise) ;
            shocks(surprise,overwrite);
 
-    |br| The ``shocks(surprise)``-block allows specifying a sequence of temporary changes in
+    |br| The ``shocks(surprise)`` block allows specifying a sequence of temporary changes in
     the value of exogenous variables that in each period come as a surprise to agents, i.e.
     are not anticipated. Note that to actually use the specified shocks in subsequent commands
     like ``occbin_solver``, the block needs to be followed by a call to ``occbin_setup``.
@@ -4899,7 +4899,7 @@ All of these elements are discussed in the following.
              occbin_setup (OPTIONS...);
 
     |br| Prepares a simulation with occasionally binding constraints. This command
-    will also translate the contents of a ``shocks(surprise)``-block for use
+    will also translate the contents of a ``shocks(surprise)`` block for use
     in subsequent commands.
 
     In order to conduct ``estimation`` with occasionally binding constraints, it needs to be
@@ -4911,9 +4911,9 @@ All of these elements are discussed in the following.
     of stochastic singularity if there are then more observables than shocks. To
     avoid this issue, the data points for the zero interest rate should be set
     to NaN and the standard deviation of the associated shock set to 0 for the
-    corresponding periods using the ``heteroskedastic_shocks``-block.
+    corresponding periods using the ``heteroskedastic_shocks`` block.
 
-    Note that models with unit roots will require the user to specify the ``diffuse_filter``-option as 
+    Note that models with unit roots will require the user to specify the ``diffuse_filter`` option as 
     otherwise Blanchard-Kahn errors will be triggered. For the piecewise Kalman filter, the 
     initialization steps in the diffuse filter will always rely on the model solved for the baseline 
     regime, without checking whether this is the actual regime in the first period(s).
@@ -4927,7 +4927,7 @@ All of these elements are discussed in the following.
 
     The above piece of code sets up an estimation employing the inversion filter for both the likelihood
     evaluation and the smoother, while also accounting for ``heteroskedastic_shocks`` using the
-    ``heteroskedastic_filter``-option.
+    ``heteroskedastic_filter`` option.
 
     Be aware that Occbin has largely command-specific options, i.e. there are separate
     options to control the behavior of Occbin when called by the smoother or when
@@ -4985,7 +4985,7 @@ All of these elements are discussed in the following.
 
     .. option:: smoother_curb_retrench
 
-       Have the smoother invoke the ``simul_curb_retrench``-option during simulations.
+       Have the smoother invoke the ``simul_curb_retrench`` option during simulations.
        Default: not enabled.
 
     .. option:: smoother_periodic_solution
@@ -5010,7 +5010,7 @@ All of these elements are discussed in the following.
 
     .. option:: likelihood_curb_retrench
 
-       Have the likelihood computation invoke the ``simul_curb_retrench``-option during simulations.
+       Have the likelihood computation invoke the ``simul_curb_retrench`` option during simulations.
        Default: not enabled.
 
     .. option:: likelihood_periodic_solution
@@ -5063,7 +5063,7 @@ All of these elements are discussed in the following.
     a piecewise-linear solution.
 
     Note that ``occbin_setup`` must be called before this command in order for
-    the simulation to take into account previous ``shocks(surprise)``-commands.
+    the simulation to take into account previous ``shocks(surprise)`` blocks.
 
     *Options*
 
@@ -5283,7 +5283,7 @@ block decomposition of the model (see :opt:`block`).
       associated with endogenous observed variables
       VARIABLE_NAME1 and VARIABLE_NAME2, is to be
       estimated. Note that correlations set by previous
-      shocks-blocks or estimation-commands are kept at their
+      ``shocks`` blocks or estimation commands are kept at their
       value set prior to estimation if they are not estimated
       again subsequently. Thus, the treatment is the same as in
       the case of deep parameters set during model calibration
@@ -5545,7 +5545,7 @@ block decomposition of the model (see :opt:`block`).
     and Bayesian highest posterior density intervals (HPDI) as well as between
     posterior density and  likelilhood, Dynare sometimes uses the Bayesian
     terms as a stand-in in its display of maximum likelihood results. An
-    example is the storage of the output of the ``forecast``-option of
+    example is the storage of the output of the ``forecast`` option of
     ``estimation`` with ML, which will use ``HPDinf/HPDsup`` to denote
     the confidence interval.
 
@@ -10345,12 +10345,12 @@ with ``discretionary_policy`` or for optimal simple rules with ``osr``
     predetermined states inherited from period 0 (specified via ``histval`` for both 
     endogenous and lagged exogenous states) as well as the period 1 values of
     the exogenous shocks. The latter are specified using the perfect foresight syntax 
-    of the shocks-block. 
+    of the ``shocks`` block. 
 
     At the current stage, the stochastic context does not support the ``pruning`` option.
     At ``order>3``, only the computation of conditional welfare with steady state Lagrange 
-    multipliers is supported. Note that at `order=2`, the output is based on the second-order
-    accurate approximation of the variance stored in `oo_.var`.
+    multipliers is supported. Note that at ``order=2``, the output is based on the second-order
+    accurate approximation of the variance stored in ``oo_.var``.
     
     *Example (stochastic context)*
 
@@ -10416,7 +10416,7 @@ Optimal policy under commitment (Ramsey)
 Dynare allows to automatically compute optimal policy choices of a Ramsey planner
 who takes the specified private sector equilibrium conditions into account and commits
 to future policy choices. Doing so requires specifying the private sector equilibrium
-conditions in the ``model``-block and a ``planner_objective`` as well as potentially some
+conditions in the ``model`` block and a ``planner_objective`` as well as potentially some
 ``instruments`` to facilitate computations.
 
 
@@ -10515,8 +10515,8 @@ conditions in the ``model``-block and a ``planner_objective`` as well as potenti
     problem and declared with the option ``instruments``. The initial value
     of the instrument for steady state finding in this case is set with
     ``initval``. Note that computing and displaying steady state values
-    using the ``steady``-command or calls to ``resid`` must come after
-    the ``ramsey_model`` statement and the ``initval``-block.
+    using the ``steady`` command or calls to ``resid`` must come after
+    the ``ramsey_model`` statement and the ``initval`` block.
 
     Note that choosing the instruments is partly a matter of interpretation and
     you can choose instruments that are handy from a mathematical
@@ -10564,7 +10564,7 @@ conditions in the ``model``-block and a ``planner_objective`` as well as potenti
     Lagrange multipliers.
 
     Note that the variables in the list after the ``ramsey_policy``
-    or ``stoch_simul``-command can also contain multiplier names, but 
+    or ``stoch_simul`` command can also contain multiplier names, but 
     in a case-sensititve way (e.g. ``MULT_1``). In that case, Dynare
     will for example display the IRFs of the respective multipliers
     when ``irf>0``.
@@ -14380,7 +14380,7 @@ Misc commands
     ``<<M_.fname>>_latex_parameters.tex.`` The command writes the
     values of the parameters currently stored. Thus, if parameters are
     set or changed in the steady state computation, the command should
-    be called after a steady-command to make sure the parameters were
+    be called after a ``steady`` command to make sure the parameters were
     correctly updated. The long names can be used to add parameter
     descriptions. Requires the following LaTeX packages:
     ``longtable, booktabs``.
