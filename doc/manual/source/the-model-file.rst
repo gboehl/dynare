@@ -3686,8 +3686,7 @@ speed-up on large models.
 .. command:: simul ;
              simul (OPTIONS...);
 
-    |br| Short-form command for triggering the computation of a
-    deterministic simulation of the model. It is strictly equivalent
+    |br| This command is deprecated. It is strictly equivalent
     to a call to ``perfect_foresight_setup`` followed by a call to
     ``perfect_foresight_solver``.
 
