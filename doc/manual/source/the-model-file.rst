@@ -5108,7 +5108,7 @@ All of these elements are discussed in the following.
 
     |br| Matrix storing the shock sequence employed during the simulation. The shocks are arranged
     column by column, with their order in ``M_.exo_names`` stored in ``oo_.occbin.exo_pos``. The
-    the rows correspond to the number of shock periods specified in a `surprise(shocks)`-block, which
+    the rows correspond to the number of shock periods specified in a ``shocks(surprise)`` block, which
     may be smaller than ``simul_periods``.
 
 .. matvar:: oo_.occbin.simul.regime_history
