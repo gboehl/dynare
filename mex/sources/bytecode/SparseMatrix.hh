@@ -174,7 +174,6 @@ protected:
   double res1a;
   long int nop_all, nop1, nop2;
   map<tuple<int, int, int>, int> IM_i;
-protected:
   vector<double> residual;
   int u_count_alloc, u_count_alloc_save;
   vector<double *> jac;
@@ -192,6 +191,10 @@ protected:
   SuiteSparse_long *Ap_save, *Ai_save;
   double *Ax_save, *b_save;
   mxArray *A_m_save, *b_m_save;
+
+  int stack_solve_algo, solve_algo;
+  int minimal_solving_periods;
+  bool print_it;
 };
 
 #endif // _SPARSEMATRIX_HH

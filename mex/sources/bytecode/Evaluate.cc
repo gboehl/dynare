@@ -25,9 +25,8 @@
 #include "Evaluate.hh"
 #include "CommonEnums.hh"
 
-Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, int periods_arg, int minimal_solving_periods_arg, BasicSymbolTable &symbol_table_arg) :
-  symbol_table {symbol_table_arg},
-  print_it(print_it_arg), minimal_solving_periods(minimal_solving_periods_arg)
+Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_state_arg, int periods_arg, BasicSymbolTable &symbol_table_arg) :
+  symbol_table {symbol_table_arg}
 {
   symbol_table_endo_nbr = 0;
   u_count_int = 0;

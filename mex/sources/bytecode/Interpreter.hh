@@ -39,13 +39,18 @@ class Interpreter : public dynSparseMatrix
 {
 private:
   vector<int> previous_block_exogenous;
+  int size_of_direction;
+  bool global_temporary_terms;
+  bool print;
+  int col_x, col_y;
+  int Block_Count;
 protected:
   void evaluate_a_block(bool initialization);
   int simulate_a_block(const vector_table_conditional_local_type &vector_table_conditional_local);
   void print_a_block();
   string elastic(string str, unsigned int len, bool left);
 public:
-  Interpreter(double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg, double *steady_x_arg,
+  Interpreter(double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
               double *direction_arg, size_t y_size_arg,
               size_t nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
               int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, int y_decal_arg, double markowitz_c_arg,

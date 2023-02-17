@@ -26,8 +26,10 @@
 
 dynSparseMatrix::dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, bool block_decomposed_arg, int periods_arg,
                                  int minimal_solving_periods_arg, BasicSymbolTable &symbol_table_arg) :
-  Evaluate {y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg},
-  block_decomposed {block_decomposed_arg}
+  Evaluate {y_size_arg, y_kmin_arg, y_kmax_arg, steady_state_arg, periods_arg, symbol_table_arg},
+  block_decomposed {block_decomposed_arg},
+  minimal_solving_periods {minimal_solving_periods_arg},
+  print_it {print_it_arg}
 {
   pivotva = nullptr;
   g_save_op = nullptr;

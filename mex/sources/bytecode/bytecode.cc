@@ -216,7 +216,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   int count_array_argument = 0;
   bool global_temporary_terms = false;
   bool print = false, print_error = true, print_it = false;
-  double *steady_yd = nullptr, *steady_xd = nullptr;
+  double *steady_yd = nullptr;
   string plan, pfplan;
   bool extended_path;
   mxArray *extended_path_struct;
@@ -584,7 +584,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           steady_row_y = mxGetM(steady_state_arr);
           steady_col_y = mxGetN(steady_state_arr);
         }
-      steady_xd = mxGetPr(mxGetFieldByNumber(oo_, 0, field_exo_steady_state));
     }
   else
     {
@@ -716,7 +715,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   size_t nb_row_x = row_x;
 
   clock_t t0 = clock();
-  Interpreter interprete {params, y, ya, x, steady_yd, steady_xd, direction, y_size, nb_row_x,
+  Interpreter interprete {params, y, ya, x, steady_yd, direction, y_size, nb_row_x,
                           periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, y_decal,
                           markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
                           solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms,
