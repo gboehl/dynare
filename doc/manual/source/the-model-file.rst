@@ -14234,7 +14234,7 @@ Pass everything contained within the verbatim block to the
 
     In order to force this behavior you can use the ``verbatim``
     block. This is useful when the code you want passed to the
-    ``<mod_file>.m`` file contains tokens recognized by the Dynare
+    driver file contains tokens recognized by the Dynare
     preprocessor.
 
     *Example*
@@ -14243,7 +14243,7 @@ Pass everything contained within the verbatim block to the
 
             verbatim;
             % Anything contained in this block will be passed
-            % directly to the <modfile>.m file, including comments
+            % directly to the driver file, including comments
             var = 1;
             end;
 
