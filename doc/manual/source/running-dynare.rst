@@ -555,9 +555,9 @@ by the ``dynare`` command.
     called ``FILENAME_results.mat`` located in the ``MODFILENAME/Output`` folder.
     If they exist, ``estim_params_``,
     ``bayestopt_``, ``dataset_``, ``oo_recursive_`` and
-    ``estimation_info`` are saved in the same file. Note that Matlab 
-    by default only allows ``.mat``-files up to 2GB. You can lift this 
-    restriction by enabling the ``save -v7.3``-option in 
+    ``estimation_info`` are saved in the same file. Note that MATLAB 
+    by default only allows ``.mat`` files up to 2GB. You can lift this 
+    restriction by enabling the ``save -v7.3`` option in 
     ``Preferences -> General -> MAT-Files``.
 
     .. matvar:: M_
@@ -672,7 +672,7 @@ parser would continue processing.
 
 It is also helpful to keep in mind that any piece of code that does not violate
 Dynare syntax, but at the same time is not recognized by the parser, is interpreted
-as native MATLAB code. This code will be directly passed to the ``driver`` script.
-Investigating ``driver.m`` file then helps with debugging. Such problems most often
+as native MATLAB code. This code will be directly passed to the driver script.
+Investigating the ``driver.m`` file then helps with debugging. Such problems most often
 occur when defined variable or parameter names have been misspelled so that Dynare's
 parser is unable to recognize them.
