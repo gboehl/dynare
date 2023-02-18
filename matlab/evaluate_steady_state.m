@@ -428,7 +428,7 @@ elseif options.bytecode
             end
         end
     else
-        [ys, check] = dynare_solve('bytecode_steadystate', ys_init, ...
+        [ys, check] = dynare_solve(@bytecode_steadystate, ys_init, ...
                                    options.simul.maxit, options.solve_tolf, options.solve_tolx, ...
                                    options, exo_ss, params);
     end
@@ -500,6 +500,10 @@ y_all(mfs_idx) = y;
 [~,~,r,g1] = fh_static(y_all, exo, params, M.block_structure_stat.block(b).g1_sparse_rowval, ...
                        M.block_structure_stat.block(b).g1_sparse_colval, ...
                        M.block_structure_stat.block(b).g1_sparse_colptr, T);
+
+function [r, g1] = bytecode_steadystate(y, exo, params)
+% Wrapper around the static file, for bytecode (without block)
+[r, g1] = bytecode(y, exo, params, y, 1, exo, 'evaluate', 'static');
 
 function [r, g1] = block_bytecode_mfs_steadystate(y, b, y_all, exo, params, T, M)
 % Wrapper around the static files, for block without bytecode
