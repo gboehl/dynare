@@ -76,9 +76,6 @@ end
 
 simulated_moments = zeros(size(sample_moments));
 
-% Just to be sure that things don't mess up with persistent variables...
-clear perfect_foresight_simulation;
-
 if nargin<5
     for s = 1:options.number_of_simulated_sample
         time_series = extended_path([],options.simulated_sample_size,1);
