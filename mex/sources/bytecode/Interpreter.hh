@@ -28,8 +28,6 @@
 
 #include "ErrorHandling.hh"
 #include "SparseMatrix.hh"
-#define BYTECODE_MEX
-#include "Bytecode.hh"
 
 using namespace std;
 
