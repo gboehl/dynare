@@ -24,6 +24,7 @@
 #include <string>
 #include <map>
 #include <optional>
+#include <memory>
 
 #include "Bytecode.hh"
 #include "ErrorHandling.hh"
@@ -40,6 +41,8 @@ private:
   char *code;
   int nb_blocks;
   vector<size_t> begin_block;
+  // Owns read instructions that have their specialized deserializing constructors
+  vector<unique_ptr<BytecodeInstruction>> deserialized_special_instrs;
 public:
   int
   get_block_number() const
@@ -284,9 +287,9 @@ public:
             mexPrintf("FBEGINBLOCK\n");
 # endif
             {
-              auto *fbegin_block = new FBEGINBLOCK_{code};
+              deserialized_special_instrs.push_back(make_unique<FBEGINBLOCK_>(code));
               begin_block.push_back(tags_liste.size());
-              tags_liste.push_back(fbegin_block);
+              tags_liste.push_back(deserialized_special_instrs.back().get());
               nb_blocks++;
             }
             break;
@@ -309,8 +312,8 @@ public:
 # ifdef DEBUGL
               mexPrintf("FCALL\n");
 # endif
-              auto *fcall = new FCALL_{code};
-              tags_liste.push_back(fcall);
+              deserialized_special_instrs.push_back(make_unique<FCALL_>(code));
+              tags_liste.push_back(deserialized_special_instrs.back().get());
 # ifdef DEBUGL
               mexPrintf("FCALL finish\n"); mexEvalString("drawnow;");
               mexPrintf("-- *code=%d\n", *code); mexEvalString("drawnow;");

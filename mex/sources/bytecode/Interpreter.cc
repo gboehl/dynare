@@ -599,7 +599,7 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, const vector<s_
 }
 
 bool
-Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool evaluate, int block, bool last_call, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local)
+Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local)
 {
   int var;
   Block_Count = -1;
@@ -698,8 +698,6 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
                 if (result == ERROR_ON_EXIT)
                   return ERROR_ON_EXIT;
               }
-            if (last_call)
-              delete fb;
           }
           if (block >= 0)
             go_on = false;
@@ -871,10 +869,7 @@ Interpreter::extended_path(const string &file_name, bool evaluate, int block, in
       vector_table_conditional_local.clear();
       if (auto it = table_conditional_global.find(t); it != table_conditional_global.end())
         vector_table_conditional_local = it->second;
-      if (t < nb_periods)
-        MainLoop(file_name, code, evaluate, block, false, true, sconstrained_extended_path, vector_table_conditional_local);
-      else
-        MainLoop(file_name, code, evaluate, block, true, true, sconstrained_extended_path, vector_table_conditional_local);
+      MainLoop(file_name, code, evaluate, block, true, sconstrained_extended_path, vector_table_conditional_local);
       for (int j = 0; j < y_size; j++)
         {
           y_save[j + (t + y_kmin) * y_size] = y[j + y_kmin * y_size];
@@ -926,7 +921,7 @@ Interpreter::compute_blocks(const string &file_name, bool evaluate, int block, i
   vector<s_plan> s_plan_junk;
   vector_table_conditional_local_type vector_table_conditional_local_junk;
 
-  MainLoop(file_name, code, evaluate, block, true, false, s_plan_junk, vector_table_conditional_local_junk);
+  MainLoop(file_name, code, evaluate, block, false, s_plan_junk, vector_table_conditional_local_junk);
 
   mxFree(*Init_Code);
   nb_blocks = Block_Count+1;
