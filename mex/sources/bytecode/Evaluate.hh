@@ -52,11 +52,6 @@ public:
   {
     return begin_block[block];
   }
-  void *
-  get_current_code() const
-  {
-    return code;
-  }
   instructions_list_t
   get_op_code(const filesystem::path &codfile)
   {

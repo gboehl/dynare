@@ -808,7 +808,7 @@ Interpreter::elastic(string str, unsigned int len, bool left)
 }
 
 bool
-Interpreter::extended_path(const string &file_name, const string &bin_basename, bool evaluate, int block, int &nb_blocks, int nb_periods, const vector<s_plan> &sextended_path, const vector<s_plan> &sconstrained_extended_path, const vector<string> &dates, const table_conditional_global_type &table_conditional_global)
+Interpreter::extended_path(const string &file_name, bool evaluate, int block, int &nb_blocks, int nb_periods, const vector<s_plan> &sextended_path, const vector<s_plan> &sconstrained_extended_path, const vector<string> &dates, const table_conditional_global_type &table_conditional_global)
 {
   CodeLoad code;
 
@@ -872,9 +872,9 @@ Interpreter::extended_path(const string &file_name, const string &bin_basename, 
       if (auto it = table_conditional_global.find(t); it != table_conditional_global.end())
         vector_table_conditional_local = it->second;
       if (t < nb_periods)
-        MainLoop(bin_basename, code, evaluate, block, false, true, sconstrained_extended_path, vector_table_conditional_local);
+        MainLoop(file_name, code, evaluate, block, false, true, sconstrained_extended_path, vector_table_conditional_local);
       else
-        MainLoop(bin_basename, code, evaluate, block, true, true, sconstrained_extended_path, vector_table_conditional_local);
+        MainLoop(file_name, code, evaluate, block, true, true, sconstrained_extended_path, vector_table_conditional_local);
       for (int j = 0; j < y_size; j++)
         {
           y_save[j + (t + y_kmin) * y_size] = y[j + y_kmin * y_size];
@@ -915,7 +915,7 @@ Interpreter::extended_path(const string &file_name, const string &bin_basename, 
 }
 
 bool
-Interpreter::compute_blocks(const string &file_name, const string &bin_basename, bool evaluate, int block, int &nb_blocks)
+Interpreter::compute_blocks(const string &file_name, bool evaluate, int block, int &nb_blocks)
 {
   CodeLoad code;
   ReadCodeFile(file_name, code);
@@ -926,7 +926,7 @@ Interpreter::compute_blocks(const string &file_name, const string &bin_basename,
   vector<s_plan> s_plan_junk;
   vector_table_conditional_local_type vector_table_conditional_local_junk;
 
-  MainLoop(bin_basename, code, evaluate, block, true, false, s_plan_junk, vector_table_conditional_local_junk);
+  MainLoop(file_name, code, evaluate, block, true, false, s_plan_junk, vector_table_conditional_local_junk);
 
   mxFree(*Init_Code);
   nb_blocks = Block_Count+1;

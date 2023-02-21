@@ -687,6 +687,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (status != 0)
     mexWarnMsgTxt("Not enough space. Filename is truncated.");
   string file_name = fname;
+  mxFree(fname);
 
   if (stack_solve_algo == 7 && !steady_state)
     mexErrMsgTxt("Bytecode: Can't use option stack_solve_algo=7");
@@ -720,8 +721,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                           markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
                           solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms,
                           steady_state, block_decomposed, print_it, col_x, col_y, symbol_table};
-  string f(fname);
-  mxFree(fname);
   int nb_blocks = 0;
   double *pind;
 
@@ -729,7 +728,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       try
         {
-          interprete.extended_path(f, f, evaluate, block, nb_blocks, max_periods, sextended_path, sconditional_extended_path, dates, table_conditional_global);
+          interprete.extended_path(file_name, evaluate, block, nb_blocks, max_periods, sextended_path, sconditional_extended_path, dates, table_conditional_global);
         }
       catch (GeneralException &feh)
         {
@@ -742,7 +741,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       try
         {
-          interprete.compute_blocks(f, f, evaluate, block, nb_blocks);
+          interprete.compute_blocks(file_name, evaluate, block, nb_blocks);
         }
       catch (GeneralException &feh)
         {
