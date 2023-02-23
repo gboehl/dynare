@@ -25,356 +25,43 @@
 #include <map>
 #include <optional>
 #include <memory>
+#include <filesystem>
 
 #include "Bytecode.hh"
-#include "ErrorHandling.hh"
 #include "BasicSymbolTable.hh"
-
-#include <dynmex.h>
-
-using instructions_list_t = vector<BytecodeInstruction *>;
-using it_code_type = instructions_list_t::const_iterator;
-
-class CodeLoad
-{
-private:
-  char *code;
-  int nb_blocks;
-  vector<size_t> begin_block;
-  // Owns read instructions that have their specialized deserializing constructors
-  vector<unique_ptr<BytecodeInstruction>> deserialized_special_instrs;
-public:
-  int
-  get_block_number() const
-  {
-    return nb_blocks;
-  }
-
-  size_t
-  get_begin_block(int block) const
-  {
-    return begin_block[block];
-  }
-  instructions_list_t
-  get_op_code(const filesystem::path &codfile)
-  {
-    instructions_list_t tags_liste;
-    ifstream CompiledCode;
-    streamoff Code_Size;
-    CompiledCode.open(codfile, ios::in | ios::binary| ios::ate);
-    if (!CompiledCode.is_open())
-      return tags_liste;
-    Code_Size = CompiledCode.tellg();
-    CompiledCode.seekg(ios::beg);
-    code = static_cast<char *>(mxMalloc(Code_Size));
-    CompiledCode.seekg(0);
-    CompiledCode.read(reinterpret_cast<char *>(code), Code_Size);
-    CompiledCode.close();
-    nb_blocks = 0;
-    bool done = false;
-    int instruction = 0;
-    while (!done)
-      {
-        BytecodeInstruction *instr {reinterpret_cast<BytecodeInstruction *>(code)};
-        switch (*reinterpret_cast<Tags *>(code))
-          {
-          case Tags::FLDZ:
-# ifdef DEBUGL
-            mexPrintf("FLDZ = %d size = %d\n", Tags::FLDZ, sizeof(FLDZ_));
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDZ_);
-            break;
-          case Tags::FEND:
-# ifdef DEBUGL
-            mexPrintf("FEND\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FEND_);
-            done = true;
-            break;
-          case Tags::FENDBLOCK:
-# ifdef DEBUGL
-            mexPrintf("FENDBLOCK\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FENDBLOCK_);
-            break;
-          case Tags::FENDEQU:
-# ifdef DEBUGL
-            mexPrintf("FENDEQU\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FENDEQU_);
-            break;
-          case Tags::FDIMT:
-# ifdef DEBUGL
-            mexPrintf("FDIMT = %d size = %d\n", Tags::FDIMT, sizeof(FDIMT_));
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FDIMT_);
-            break;
-          case Tags::FDIMST:
-# ifdef DEBUGL
-            mexPrintf("FDIMST\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FDIMST_);
-            break;
-          case Tags::FNUMEXPR:
-# ifdef DEBUGL
-            mexPrintf("FNUMEXPR\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FNUMEXPR_);
-            break;
-          case Tags::FLDC:
-# ifdef DEBUGL
-            mexPrintf("FLDC\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDC_);
-            break;
-          case Tags::FLDU:
-# ifdef DEBUGL
-            mexPrintf("FLDU\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDU_);
-            break;
-          case Tags::FLDSU:
-# ifdef DEBUGL
-            mexPrintf("FLDSU\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDSU_);
-            break;
-          case Tags::FLDR:
-# ifdef DEBUGL
-            mexPrintf("FLDR\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDR_);
-            break;
-          case Tags::FLDT:
-# ifdef DEBUGL
-            mexPrintf("FLDT\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDT_);
-            break;
-          case Tags::FLDST:
-# ifdef DEBUGL
-            mexPrintf("FLDST\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDST_);
-            break;
-          case Tags::FSTPT:
-# ifdef DEBUGL
-            mexPrintf("FSTPT = %d size = %d\n", Tags::FSTPT, sizeof(FSTPT_));
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPT_);
-            break;
-          case Tags::FSTPST:
-# ifdef DEBUGL
-            mexPrintf("FSTPST\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPST_);
-            break;
-          case Tags::FSTPR:
-# ifdef DEBUGL
-            mexPrintf("FSTPR\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPR_);
-            break;
-          case Tags::FSTPU:
-# ifdef DEBUGL
-            mexPrintf("FSTPU\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPU_);
-            break;
-          case Tags::FSTPSU:
-# ifdef DEBUGL
-            mexPrintf("FSTPSU\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPSU_);
-            break;
-          case Tags::FSTPG:
-# ifdef DEBUGL
-            mexPrintf("FSTPG\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPG_);
-            break;
-          case Tags::FSTPG2:
-# ifdef DEBUGL
-            mexPrintf("FSTPG2\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPG2_);
-            break;
-          case Tags::FSTPG3:
-# ifdef DEBUGL
-            mexPrintf("FSTPG3\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPG3_);
-            break;
-          case Tags::FUNARY:
-# ifdef DEBUGL
-            mexPrintf("FUNARY\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FUNARY_);
-            break;
-          case Tags::FBINARY:
-# ifdef DEBUGL
-            mexPrintf("FBINARY\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FBINARY_);
-            break;
-          case Tags::FTRINARY:
-# ifdef DEBUGL
-            mexPrintf("FTRINARY\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FTRINARY_);
-            break;
-          case Tags::FLDVS:
-# ifdef DEBUGL
-            mexPrintf("FLDVS\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDVS_);
-            break;
-          case Tags::FLDSV:
-# ifdef DEBUGL
-            mexPrintf("FLDSV\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDSV_);
-            break;
-          case Tags::FSTPSV:
-# ifdef DEBUGL
-            mexPrintf("FSTPSV\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPSV_);
-            break;
-          case Tags::FLDV:
-# ifdef DEBUGL
-            mexPrintf("FLDV\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDV_);
-            break;
-          case Tags::FSTPV:
-# ifdef DEBUGL
-            mexPrintf("FSTPV\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPV_);
-            break;
-          case Tags::FBEGINBLOCK:
-# ifdef DEBUGL
-            mexPrintf("FBEGINBLOCK\n");
-# endif
-            {
-              deserialized_special_instrs.push_back(make_unique<FBEGINBLOCK_>(code));
-              begin_block.push_back(tags_liste.size());
-              tags_liste.push_back(deserialized_special_instrs.back().get());
-              nb_blocks++;
-            }
-            break;
-          case Tags::FJMPIFEVAL:
-# ifdef DEBUGL
-            mexPrintf("FJMPIFEVAL\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FJMPIFEVAL_);
-            break;
-          case Tags::FJMP:
-# ifdef DEBUGL
-            mexPrintf("FJMP\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FJMP_);
-            break;
-          case Tags::FCALL:
-            {
-# ifdef DEBUGL
-              mexPrintf("FCALL\n");
-# endif
-              deserialized_special_instrs.push_back(make_unique<FCALL_>(code));
-              tags_liste.push_back(deserialized_special_instrs.back().get());
-# ifdef DEBUGL
-              mexPrintf("FCALL finish\n"); mexEvalString("drawnow;");
-              mexPrintf("-- *code=%d\n", *code); mexEvalString("drawnow;");
-# endif
-            }
-            break;
-          case Tags::FLDTEF:
-# ifdef DEBUGL
-            mexPrintf("FLDTEF\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDTEF_);
-            break;
-          case Tags::FSTPTEF:
-# ifdef DEBUGL
-            mexPrintf("FSTPTEF\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPTEF_);
-            break;
-          case Tags::FLDTEFD:
-# ifdef DEBUGL
-            mexPrintf("FLDTEFD\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDTEFD_);
-            break;
-          case Tags::FSTPTEFD:
-# ifdef DEBUGL
-            mexPrintf("FSTPTEFD\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPTEFD_);
-            break;
-          case Tags::FLDTEFDD:
-# ifdef DEBUGL
-            mexPrintf("FLDTEFDD\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FLDTEFDD_);
-            break;
-          case Tags::FSTPTEFDD:
-# ifdef DEBUGL
-            mexPrintf("FSTPTEFDD\n");
-# endif
-            tags_liste.push_back(instr);
-            code += sizeof(FSTPTEFDD_);
-            break;
-          default:
-            mexPrintf("Unknown Tag value=%d code=%x\n", *code, code);
-            done = true;
-          }
-        instruction++;
-      }
-    return tags_liste;
-  }
-};
 
 class Evaluate
 {
 private:
+  using instructions_list_t = vector<BytecodeInstruction *>;
+protected: // TODO: REMOVE
+  using it_code_type = instructions_list_t::const_iterator;
+private: // TODO: REMOVE
+
+  // Memory copy of the contents of the .cod file
+  unique_ptr<char[]> raw_bytecode;
+
+  /* Owns read instructions that have their specialized deserializing
+     constructors (and are thus not part of the “code” memory block) */
+  vector<unique_ptr<BytecodeInstruction>> deserialized_special_instrs;
+
+protected: // TODO: REMOVE
+  /* List of deserialized instructions
+     Those are either pointers inside “raw_bytecode” or “deserialized_special_instrs” */
+  instructions_list_t instructions_list;
+
+   // Number of blocks in the model
+  int nb_blocks {0};
+
+  // Index of beginnings of blocks within instructions_list
+  vector<size_t> begin_block;
+
+  // Iterator to current bytecode instruction within “instructions_list”
+  it_code_type it_code;
+
+  it_code_type start_code, end_code;
+private: // TODO: REMOVE
+
   ExpressionType EQN_type;
   int EQN_equation, EQN_block, EQN_dvar1;
   int EQN_lag1, EQN_lag2, EQN_lag3;
@@ -398,7 +85,6 @@ protected:
   double *g1, *r, *res;
   vector<mxArray *> jacobian_block, jacobian_exo_block, jacobian_det_exo_block;
   mxArray *GlobalTemporaryTerms;
-  it_code_type start_code, end_code;
   double pow1(double a, double b);
   double divide(double a, double b);
   double log1(double a);
@@ -407,8 +93,6 @@ protected:
   void solve_simple_one_periods();
   void solve_simple_over_periods(bool forward);
   void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
-  instructions_list_t code_liste;
-  it_code_type it_code;
   int Per_u_, Per_y_;
   int it_;
   int maxit_;
@@ -430,7 +114,7 @@ protected:
   bool steady_state;
 
   /* Prints a bytecode expression in human readable form.
-     If faulty_op is not default constructed, it should point to a tag withing
+     If faulty_op is not default constructed, it should point to a tag within
      the expression that created a floating point exception, in which case the
      corresponding mathematical operator will be printed within braces.
      The second output argument points to the tag past the expression. */
@@ -438,6 +122,8 @@ protected:
 
 public:
   Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_state_arg, int periods_arg, BasicSymbolTable &symbol_table_arg);
+  // TODO: integrate into the constructor
+  void loadCodeFile(const filesystem::path &codfile);
   void set_block(int size_arg, BlockSimulationType type_arg, string file_name_arg, string bin_base_name_arg, int block_num_arg,
                  bool is_linear_arg, int symbol_table_endo_nbr_arg, int u_count_int_arg, int block_arg);
   void evaluate_complete(bool no_derivatives);
@@ -445,6 +131,12 @@ public:
   void compute_complete_2b(bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx);
 
   bool compute_complete(double lambda, double *crit);
+
+  int
+  get_block_number() const
+  {
+    return nb_blocks;
+  }
 };
 
 #endif // _EVALUATE_HH

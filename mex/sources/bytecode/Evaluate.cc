@@ -22,8 +22,11 @@
 #include <limits>
 #include <stack>
 
+#include <dynmex.h>
+
 #include "Evaluate.hh"
 #include "CommonEnums.hh"
+#include "ErrorHandling.hh"
 
 Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_state_arg, int periods_arg, BasicSymbolTable &symbol_table_arg) :
   symbol_table {symbol_table_arg}
@@ -36,6 +39,271 @@ Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_s
   y_kmax = y_kmax_arg;
   periods = periods_arg;
   steady_state = steady_state_arg;
+}
+
+void
+Evaluate::loadCodeFile(const filesystem::path &codfile)
+{
+  ifstream CompiledCode {codfile, ios::in | ios::binary | ios::ate};
+  if (!CompiledCode.is_open())
+    throw FatalException {codfile.string() + " cannot be opened"};
+  auto Code_Size {CompiledCode.tellg()};
+  raw_bytecode = make_unique<char[]>(Code_Size);
+  auto code {raw_bytecode.get()};
+  CompiledCode.seekg(0);
+  CompiledCode.read(code, Code_Size);
+  CompiledCode.close();
+
+  bool done {false};
+  while (!done)
+    {
+      BytecodeInstruction *instr {reinterpret_cast<BytecodeInstruction *>(code)};
+      switch (*reinterpret_cast<Tags *>(code))
+        {
+        case Tags::FLDZ:
+# ifdef DEBUGL
+          mexPrintf("FLDZ\n");
+# endif
+          code += sizeof(FLDZ_);
+          break;
+        case Tags::FEND:
+# ifdef DEBUGL
+          mexPrintf("FEND\n");
+# endif
+          code += sizeof(FEND_);
+          done = true;
+          break;
+        case Tags::FENDBLOCK:
+# ifdef DEBUGL
+          mexPrintf("FENDBLOCK\n");
+# endif
+          code += sizeof(FENDBLOCK_);
+          break;
+        case Tags::FENDEQU:
+# ifdef DEBUGL
+          mexPrintf("FENDEQU\n");
+# endif
+          code += sizeof(FENDEQU_);
+          break;
+        case Tags::FDIMT:
+# ifdef DEBUGL
+          mexPrintf("FDIMT\n");
+# endif
+          code += sizeof(FDIMT_);
+          break;
+        case Tags::FDIMST:
+# ifdef DEBUGL
+          mexPrintf("FDIMST\n");
+# endif
+          code += sizeof(FDIMST_);
+          break;
+        case Tags::FNUMEXPR:
+# ifdef DEBUGL
+          mexPrintf("FNUMEXPR\n");
+# endif
+          code += sizeof(FNUMEXPR_);
+          break;
+        case Tags::FLDC:
+# ifdef DEBUGL
+          mexPrintf("FLDC\n");
+# endif
+          code += sizeof(FLDC_);
+          break;
+        case Tags::FLDU:
+# ifdef DEBUGL
+          mexPrintf("FLDU\n");
+# endif
+          code += sizeof(FLDU_);
+          break;
+        case Tags::FLDSU:
+# ifdef DEBUGL
+          mexPrintf("FLDSU\n");
+# endif
+          code += sizeof(FLDSU_);
+          break;
+        case Tags::FLDR:
+# ifdef DEBUGL
+          mexPrintf("FLDR\n");
+# endif
+          code += sizeof(FLDR_);
+          break;
+        case Tags::FLDT:
+# ifdef DEBUGL
+          mexPrintf("FLDT\n");
+# endif
+          code += sizeof(FLDT_);
+          break;
+        case Tags::FLDST:
+# ifdef DEBUGL
+          mexPrintf("FLDST\n");
+# endif
+          code += sizeof(FLDST_);
+          break;
+        case Tags::FSTPT:
+# ifdef DEBUGL
+          mexPrintf("FSTPT\n");
+# endif
+          code += sizeof(FSTPT_);
+          break;
+        case Tags::FSTPST:
+# ifdef DEBUGL
+          mexPrintf("FSTPST\n");
+# endif
+          code += sizeof(FSTPST_);
+          break;
+        case Tags::FSTPR:
+# ifdef DEBUGL
+          mexPrintf("FSTPR\n");
+# endif
+          code += sizeof(FSTPR_);
+          break;
+        case Tags::FSTPU:
+# ifdef DEBUGL
+          mexPrintf("FSTPU\n");
+# endif
+          code += sizeof(FSTPU_);
+          break;
+        case Tags::FSTPSU:
+# ifdef DEBUGL
+          mexPrintf("FSTPSU\n");
+# endif
+          code += sizeof(FSTPSU_);
+          break;
+        case Tags::FSTPG:
+# ifdef DEBUGL
+          mexPrintf("FSTPG\n");
+# endif
+          code += sizeof(FSTPG_);
+          break;
+        case Tags::FSTPG2:
+# ifdef DEBUGL
+          mexPrintf("FSTPG2\n");
+# endif
+          code += sizeof(FSTPG2_);
+          break;
+        case Tags::FSTPG3:
+# ifdef DEBUGL
+          mexPrintf("FSTPG3\n");
+# endif
+          code += sizeof(FSTPG3_);
+          break;
+        case Tags::FUNARY:
+# ifdef DEBUGL
+          mexPrintf("FUNARY\n");
+# endif
+          code += sizeof(FUNARY_);
+          break;
+        case Tags::FBINARY:
+# ifdef DEBUGL
+          mexPrintf("FBINARY\n");
+# endif
+          code += sizeof(FBINARY_);
+          break;
+        case Tags::FTRINARY:
+# ifdef DEBUGL
+          mexPrintf("FTRINARY\n");
+# endif
+          code += sizeof(FTRINARY_);
+          break;
+        case Tags::FLDVS:
+# ifdef DEBUGL
+          mexPrintf("FLDVS\n");
+# endif
+          code += sizeof(FLDVS_);
+          break;
+        case Tags::FLDSV:
+# ifdef DEBUGL
+          mexPrintf("FLDSV\n");
+# endif
+          code += sizeof(FLDSV_);
+          break;
+        case Tags::FSTPSV:
+# ifdef DEBUGL
+          mexPrintf("FSTPSV\n");
+# endif
+          code += sizeof(FSTPSV_);
+          break;
+        case Tags::FLDV:
+# ifdef DEBUGL
+          mexPrintf("FLDV\n");
+# endif
+          code += sizeof(FLDV_);
+          break;
+        case Tags::FSTPV:
+# ifdef DEBUGL
+          mexPrintf("FSTPV\n");
+# endif
+          code += sizeof(FSTPV_);
+          break;
+        case Tags::FBEGINBLOCK:
+# ifdef DEBUGL
+          mexPrintf("FBEGINBLOCK\n");
+# endif
+          deserialized_special_instrs.push_back(make_unique<FBEGINBLOCK_>(code));
+          begin_block.push_back(instructions_list.size());
+          nb_blocks++;
+          instr = deserialized_special_instrs.back().get();
+          break;
+        case Tags::FJMPIFEVAL:
+# ifdef DEBUGL
+          mexPrintf("FJMPIFEVAL\n");
+# endif
+          code += sizeof(FJMPIFEVAL_);
+          break;
+        case Tags::FJMP:
+# ifdef DEBUGL
+          mexPrintf("FJMP\n");
+# endif
+          code += sizeof(FJMP_);
+          break;
+        case Tags::FCALL:
+# ifdef DEBUGL
+          mexPrintf("FCALL\n");
+# endif
+          deserialized_special_instrs.push_back(make_unique<FCALL_>(code));
+          instr = deserialized_special_instrs.back().get();
+          break;
+        case Tags::FLDTEF:
+# ifdef DEBUGL
+          mexPrintf("FLDTEF\n");
+# endif
+          code += sizeof(FLDTEF_);
+          break;
+        case Tags::FSTPTEF:
+# ifdef DEBUGL
+          mexPrintf("FSTPTEF\n");
+# endif
+          code += sizeof(FSTPTEF_);
+          break;
+        case Tags::FLDTEFD:
+# ifdef DEBUGL
+          mexPrintf("FLDTEFD\n");
+# endif
+          code += sizeof(FLDTEFD_);
+          break;
+        case Tags::FSTPTEFD:
+# ifdef DEBUGL
+          mexPrintf("FSTPTEFD\n");
+# endif
+          code += sizeof(FSTPTEFD_);
+          break;
+        case Tags::FLDTEFDD:
+# ifdef DEBUGL
+          mexPrintf("FLDTEFDD\n");
+# endif
+          code += sizeof(FLDTEFDD_);
+          break;
+        case Tags::FSTPTEFDD:
+# ifdef DEBUGL
+          mexPrintf("FSTPTEFDD\n");
+# endif
+          code += sizeof(FSTPTEFDD_);
+          break;
+        default:
+          throw FatalException {"Unknown tag value=" + to_string(static_cast<int>(*reinterpret_cast<Tags *>(code)))};
+        }
+      instructions_list.push_back(instr);
+    }
 }
 
 string
@@ -112,8 +380,8 @@ Evaluate::error_location(it_code_type expr_begin, it_code_type faulty_op, bool s
   return Error_loc.str();
 }
 
-pair<string, it_code_type>
-Evaluate::print_expression(const it_code_type &expr_begin, const optional<it_code_type> &faulty_op) const
+pair<string, Evaluate::it_code_type>
+Evaluate::print_expression(const Evaluate::it_code_type &expr_begin, const optional<it_code_type> &faulty_op) const
 {
   /* First element is output string, 2nd element is precedence of last
      operator, 3rd element is opcode if the last operator was a binary

@@ -58,8 +58,8 @@ public:
   bool extended_path(const string &file_name, bool evaluate, int block, int &nb_blocks, int nb_periods, const vector<s_plan> &sextended_path, const vector<s_plan> &sconstrained_extended_path, const vector<string> &dates, const table_conditional_global_type &table_conditional_global);
   bool compute_blocks(const string &file_name, bool evaluate, int block, int &nb_blocks);
   void check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, const vector<s_plan> &sconstrained_extended_path);
-  bool MainLoop(const string &bin_basename, const CodeLoad &code, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local);
-  void ReadCodeFile(const string &file_name, CodeLoad &code);
+  bool MainLoop(const string &bin_basename, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local);
+  void ReadCodeFile(const string &file_name);
 
   inline mxArray *
   get_jacob(int block_num) const

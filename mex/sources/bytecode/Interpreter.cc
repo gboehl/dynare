@@ -551,20 +551,17 @@ Interpreter::print_a_block()
 }
 
 void
-Interpreter::ReadCodeFile(const string &file_name, CodeLoad &code)
+Interpreter::ReadCodeFile(const string &file_name)
 {
   filesystem::path codfile {file_name + "/model/bytecode/" + (block_decomposed ? "block/" : "")
     + (steady_state ? "static" : "dynamic") + ".cod"};
 
-  //First read and store in memory the code
-  code_liste = code.get_op_code(codfile);
-  EQN_block_number = code.get_block_number();
-  if (!code_liste.size())
-    throw FatalException{"In compute_blocks, " + codfile.string() + " cannot be opened"};
-  if (block >= code.get_block_number())
+  loadCodeFile(codfile);
+  EQN_block_number = get_block_number();
+  if (block >= get_block_number())
     throw FatalException{"In compute_blocks, input argument block = " + to_string(block+1)
-                         + " is greater than the number of blocks in the model ("
-                         + to_string(code.get_block_number()) + " see M_.block_structure_stat.block)"};
+        + " is greater than the number of blocks in the model ("
+        + to_string(get_block_number()) + " see M_.block_structure" + (steady_state ? "_stat" : "") + ".block)"};
 }
 
 void
@@ -599,7 +596,7 @@ Interpreter::check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, const vector<s_
 }
 
 bool
-Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local)
+Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local)
 {
   int var;
   Block_Count = -1;
@@ -720,7 +717,7 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
           T = static_cast<double *>(mxMalloc(var*(periods+y_kmin+y_kmax)*sizeof(double)));
           test_mxMalloc(T, __LINE__, __FILE__, __func__, var*(periods+y_kmin+y_kmax)*sizeof(double));
           if (block >= 0)
-            it_code = code_liste.begin() + code.get_begin_block(block);
+            it_code = instructions_list.begin() + begin_block[block];
           else
             it_code++;
           break;
@@ -749,7 +746,7 @@ Interpreter::MainLoop(const string &bin_basename, const CodeLoad &code, bool eva
             }
 
           if (block >= 0)
-            it_code = code_liste.begin() + code.get_begin_block(block);
+            it_code = instructions_list.begin() + begin_block[block];
           else
             it_code++;
           break;
@@ -808,11 +805,9 @@ Interpreter::elastic(string str, unsigned int len, bool left)
 bool
 Interpreter::extended_path(const string &file_name, bool evaluate, int block, int &nb_blocks, int nb_periods, const vector<s_plan> &sextended_path, const vector<s_plan> &sconstrained_extended_path, const vector<string> &dates, const table_conditional_global_type &table_conditional_global)
 {
-  CodeLoad code;
-
-  ReadCodeFile(file_name, code);
-  it_code = code_liste.begin();
-  it_code_type Init_Code = code_liste.begin();
+  ReadCodeFile(file_name);
+  it_code = instructions_list.begin();
+  it_code_type Init_Code = instructions_list.begin();
   size_t size_of_direction = y_size*col_y*sizeof(double);
   auto *y_save = static_cast<double *>(mxMalloc(size_of_direction));
   test_mxMalloc(y_save, __LINE__, __FILE__, __func__, size_of_direction);
@@ -869,7 +864,7 @@ Interpreter::extended_path(const string &file_name, bool evaluate, int block, in
       vector_table_conditional_local.clear();
       if (auto it = table_conditional_global.find(t); it != table_conditional_global.end())
         vector_table_conditional_local = it->second;
-      MainLoop(file_name, code, evaluate, block, true, sconstrained_extended_path, vector_table_conditional_local);
+      MainLoop(file_name, evaluate, block, true, sconstrained_extended_path, vector_table_conditional_local);
       for (int j = 0; j < y_size; j++)
         {
           y_save[j + (t + y_kmin) * y_size] = y[j + y_kmin * y_size];
@@ -912,16 +907,15 @@ Interpreter::extended_path(const string &file_name, bool evaluate, int block, in
 bool
 Interpreter::compute_blocks(const string &file_name, bool evaluate, int block, int &nb_blocks)
 {
-  CodeLoad code;
-  ReadCodeFile(file_name, code);
+  ReadCodeFile(file_name);
 
   //The big loop on intructions
-  it_code = code_liste.begin();
+  it_code = instructions_list.begin();
   auto Init_Code = it_code;
   vector<s_plan> s_plan_junk;
   vector_table_conditional_local_type vector_table_conditional_local_junk;
 
-  MainLoop(file_name, code, evaluate, block, false, s_plan_junk, vector_table_conditional_local_junk);
+  MainLoop(file_name, evaluate, block, false, s_plan_junk, vector_table_conditional_local_junk);
 
   mxFree(*Init_Code);
   nb_blocks = Block_Count+1;
