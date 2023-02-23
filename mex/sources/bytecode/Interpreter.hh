@@ -41,11 +41,9 @@ private:
   bool global_temporary_terms;
   bool print;
   int col_x, col_y;
-  int Block_Count;
 protected:
-  void evaluate_a_block(bool initialization);
-  int simulate_a_block(const vector_table_conditional_local_type &vector_table_conditional_local);
-  void print_a_block();
+  void evaluate_a_block(bool initialization, bool single_block, const string &bin_base_name);
+  int simulate_a_block(const vector_table_conditional_local_type &vector_table_conditional_local, bool single_block, const string &bin_base_name);
   string elastic(string str, unsigned int len, bool left);
 public:
   Interpreter(double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
@@ -55,10 +53,10 @@ public:
               string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
               bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
               bool steady_state_arg, bool block_decomposed_arg, bool print_it_arg, int col_x_arg, int col_y_arg, BasicSymbolTable &symbol_table_arg);
-  bool extended_path(const string &file_name, bool evaluate, int block, int &nb_blocks, int nb_periods, const vector<s_plan> &sextended_path, const vector<s_plan> &sconstrained_extended_path, const vector<string> &dates, const table_conditional_global_type &table_conditional_global);
-  bool compute_blocks(const string &file_name, bool evaluate, int block, int &nb_blocks);
-  void check_for_controlled_exo_validity(FBEGINBLOCK_ *fb, const vector<s_plan> &sconstrained_extended_path);
-  bool MainLoop(const string &bin_basename, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local);
+  pair<bool, vector<int>> extended_path(const string &file_name, bool evaluate, int block, int nb_periods, const vector<s_plan> &sextended_path, const vector<s_plan> &sconstrained_extended_path, const vector<string> &dates, const table_conditional_global_type &table_conditional_global);
+  pair<bool, vector<int>> compute_blocks(const string &file_name, bool evaluate, int block);
+  void check_for_controlled_exo_validity(int current_block, const vector<s_plan> &sconstrained_extended_path);
+  pair<bool, vector<int>> MainLoop(const string &bin_basename, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local);
   void ReadCodeFile(const string &file_name);
 
   inline mxArray *

@@ -34,9 +34,7 @@ class Evaluate
 {
 private:
   using instructions_list_t = vector<BytecodeInstruction *>;
-protected: // TODO: REMOVE
   using it_code_type = instructions_list_t::const_iterator;
-private: // TODO: REMOVE
 
   // Memory copy of the contents of the .cod file
   unique_ptr<char[]> raw_bytecode;
@@ -45,7 +43,6 @@ private: // TODO: REMOVE
      constructors (and are thus not part of the “code” memory block) */
   vector<unique_ptr<BytecodeInstruction>> deserialized_special_instrs;
 
-protected: // TODO: REMOVE
   /* List of deserialized instructions
      Those are either pointers inside “raw_bytecode” or “deserialized_special_instrs” */
   instructions_list_t instructions_list;
@@ -59,9 +56,6 @@ protected: // TODO: REMOVE
   // Iterator to current bytecode instruction within “instructions_list”
   it_code_type it_code;
 
-  it_code_type start_code, end_code;
-private: // TODO: REMOVE
-
   ExpressionType EQN_type;
   int EQN_equation, EQN_block, EQN_dvar1;
   int EQN_lag1, EQN_lag2, EQN_lag3;
@@ -70,6 +64,12 @@ private: // TODO: REMOVE
   map<tuple<int, int, int>, double> TEFDD;
 
   string error_location(it_code_type expr_begin, it_code_type faulty_op, bool steady_state, int it_) const;
+
+  FBEGINBLOCK_ *
+  currentBlockTag() const
+  {
+    return reinterpret_cast<FBEGINBLOCK_ *>(instructions_list[begin_block[block_num]]);
+  }
 
 protected:
   BasicSymbolTable &symbol_table;
@@ -101,15 +101,15 @@ protected:
   bool print_error;
   double res1, res2, max_res;
   int max_res_idx;
-  vector<Block_contain_type> Block_Contain;
 
-  int size;
   int *index_vara;
 
+  int block_num; // Index of the current block
+  int size; // Size of the current block
   BlockSimulationType type;
-  int block_num, symbol_table_endo_nbr, u_count_int, block;
-  string file_name, bin_base_name;
   bool is_linear;
+  int symbol_table_endo_nbr, u_count_int;
+  vector<Block_contain_type> Block_Contain;
 
   bool steady_state;
 
@@ -120,12 +120,50 @@ protected:
      The second output argument points to the tag past the expression. */
   pair<string, it_code_type> print_expression(const it_code_type &expr_begin, const optional<it_code_type> &faulty_op = nullopt) const;
 
+  // Move pointer to the beginning of the current block (past the FBEGINBLOCK tag)
+  void
+  rewindCurrentBlock()
+  {
+    it_code = instructions_list.begin() + begin_block[block_num] + 1;
+  }
+
+  // Prints current block
+  void printCurrentBlock();
+
+  void gotoBlock(int block);
+
+  void initializeTemporaryTerms(bool global_temporary_terms);
+
+  auto
+  getCurrentBlockExogenous() const
+  {
+    return currentBlockTag()->get_exogenous();
+  }
+  auto
+  getCurrentBlockEndogenous() const
+  {
+    return currentBlockTag()->get_endogenous();
+  }
+  auto
+  getCurrentBlockNbColJacob() const
+  {
+    return currentBlockTag()->get_nb_col_jacob();
+  }
+  auto
+  getCurrentBlockExoSize() const
+  {
+    return currentBlockTag()->get_exo_size();
+  }
+  auto
+  getCurrentBlockExoDetSize() const
+  {
+    return currentBlockTag()->get_det_exo_size();
+  }
+
 public:
   Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_state_arg, int periods_arg, BasicSymbolTable &symbol_table_arg);
   // TODO: integrate into the constructor
   void loadCodeFile(const filesystem::path &codfile);
-  void set_block(int size_arg, BlockSimulationType type_arg, string file_name_arg, string bin_base_name_arg, int block_num_arg,
-                 bool is_linear_arg, int symbol_table_endo_nbr_arg, int u_count_int_arg, int block_arg);
   void evaluate_complete(bool no_derivatives);
   bool compute_complete(bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
   void compute_complete_2b(bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx);

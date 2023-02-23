@@ -721,14 +721,15 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                           markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
                           solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms,
                           steady_state, block_decomposed, print_it, col_x, col_y, symbol_table};
-  int nb_blocks = 0;
   double *pind;
+  bool r;
+  vector<int> blocks;
 
   if (extended_path)
     {
       try
         {
-          interprete.extended_path(file_name, evaluate, block, nb_blocks, max_periods, sextended_path, sconditional_extended_path, dates, table_conditional_global);
+          tie(r, blocks) = interprete.extended_path(file_name, evaluate, block, max_periods, sextended_path, sconditional_extended_path, dates, table_conditional_global);
         }
       catch (GeneralException &feh)
         {
@@ -741,7 +742,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
       try
         {
-          interprete.compute_blocks(file_name, evaluate, block, nb_blocks);
+          tie(r, blocks) = interprete.compute_blocks(file_name, evaluate, block);
         }
       catch (GeneralException &feh)
         {
@@ -805,12 +806,12 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                   jacob_field_number = 0;
                   jacob_exo_field_number = 1;
                   jacob_exo_det_field_number = 2;
-                  mwSize dims[1] = { static_cast<mwSize>(nb_blocks) };
+                  mwSize dims[1] = { static_cast<mwSize>(blocks.size()) };
                   plhs[1] = mxCreateStructArray(1, dims, std::extent_v<decltype(field_names)>, field_names);
                 }
               else if (!mxIsStruct(block_structur))
                 {
-                  plhs[1] = interprete.get_jacob(0);
+                  plhs[1] = interprete.get_jacob(blocks[0]);
                   dont_store_a_structure = true;
                 }
               else
@@ -827,13 +828,13 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                     mexErrMsgTxt("Fatal error in bytecode: in main, cannot add extra field jacob_exo_det to the structArray");
                 }
               if (!dont_store_a_structure)
-                for (int i = 0; i < nb_blocks; i++)
+                for (size_t i {0}; i < blocks.size(); i++)
                   {
-                    mxSetFieldByNumber(plhs[1], i, jacob_field_number, interprete.get_jacob(i));
+                    mxSetFieldByNumber(plhs[1], i, jacob_field_number, interprete.get_jacob(blocks[i]));
                     if (!steady_state)
                       {
-                        mxSetFieldByNumber(plhs[1], i, jacob_exo_field_number, interprete.get_jacob_exo(i));
-                        mxSetFieldByNumber(plhs[1], i, jacob_exo_det_field_number, interprete.get_jacob_exo_det(i));
+                        mxSetFieldByNumber(plhs[1], i, jacob_exo_field_number, interprete.get_jacob_exo(blocks[i]));
+                        mxSetFieldByNumber(plhs[1], i, jacob_exo_det_field_number, interprete.get_jacob_exo_det(blocks[i]));
                       }
                   }
             }

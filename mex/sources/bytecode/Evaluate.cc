@@ -33,7 +33,6 @@ Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_s
 {
   symbol_table_endo_nbr = 0;
   u_count_int = 0;
-  block = -1;
   y_size = y_size_arg;
   y_kmin = y_kmin_arg;
   y_kmax = y_kmax_arg;
@@ -2294,16 +2293,16 @@ Evaluate::solve_simple_one_periods()
   res1 = 0;
   while (!(cvg || iter > maxit_))
     {
-      it_code = start_code;
       Per_y_ = it_*y_size;
       ya = y[Block_Contain[0].Variable + Per_y_];
+      rewindCurrentBlock();
       compute_block_time(0, false, false);
       if (!isfinite(res1))
         {
           res1 = std::numeric_limits<double>::quiet_NaN();
           while ((isinf(res1) || isnan(res1)) && (slowc > 1e-9))
             {
-              it_code = start_code;
+              rewindCurrentBlock();
               compute_block_time(0, false, false);
               if (!isfinite(res1))
                 {
@@ -2341,7 +2340,6 @@ Evaluate::solve_simple_over_periods(bool forward)
   test_mxMalloc(g1, __LINE__, __FILE__, __func__, sizeof(double));
   r = static_cast<double *>(mxMalloc(sizeof(double)));
   test_mxMalloc(r, __LINE__, __FILE__, __func__, sizeof(double));
-  start_code = it_code;
   if (steady_state)
     {
       it_ = 0;
@@ -2367,24 +2365,30 @@ Evaluate::solve_simple_over_periods(bool forward)
 }
 
 void
-Evaluate::set_block(int size_arg, BlockSimulationType type_arg, string file_name_arg, string bin_base_name_arg, int block_num_arg,
-                    bool is_linear_arg, int symbol_table_endo_nbr_arg, int u_count_int_arg, int block_arg)
+Evaluate::gotoBlock(int block)
 {
-  size = size_arg;
-  type = type_arg;
-  file_name = move(file_name_arg);
-  bin_base_name = move(bin_base_name_arg);
-  block_num = block_num_arg;
-  is_linear = is_linear_arg;
-  symbol_table_endo_nbr = symbol_table_endo_nbr_arg;
-  u_count_int = u_count_int_arg;
-  block = block_arg;
+  it_code = instructions_list.begin() + begin_block[block];
+
+  auto *fb {static_cast<FBEGINBLOCK_ *>(*it_code)};
+  if (fb->op_code != Tags::FBEGINBLOCK)
+    throw FatalException {"Evaluate::gotoBlock: internal inconsistency"};
+
+  Block_Contain = fb->get_Block_Contain();
+  size = fb->get_size();
+  type = fb->get_type();
+  is_linear = fb->get_is_linear();
+  symbol_table_endo_nbr = fb->get_endo_nbr();
+  u_count_int = fb->get_u_count_int();
+
+  it_code++;
+
+  block_num = block;
 }
 
 void
 Evaluate::evaluate_complete(bool no_derivatives)
 {
-  it_code = start_code;
+  rewindCurrentBlock();
   compute_block_time(0, false, no_derivatives);
 }
 
@@ -2399,8 +2403,8 @@ Evaluate::compute_complete_2b(bool no_derivatives, double *_res1, double *_res2,
     {
       Per_u_ = (it_-y_kmin)*u_count_int;
       Per_y_ = it_*y_size;
-      it_code = start_code;
       int shift = (it_-y_kmin) * size;
+      rewindCurrentBlock();
       compute_block_time(Per_u_, false, no_derivatives);
       if (!(isnan(res1) || isinf(res1)))
         for (int i = 0; i < size; i++)
@@ -2428,7 +2432,7 @@ Evaluate::compute_complete(bool no_derivatives, double &_res1, double &_res2, do
 {
   bool result;
   res1 = 0;
-  it_code = start_code;
+  rewindCurrentBlock();
   compute_block_time(0, false, no_derivatives);
   if (!(isnan(res1) || isinf(res1)))
     {
@@ -2504,4 +2508,79 @@ Evaluate::compute_complete(double lambda, double *crit)
   mexPrintf("  lambda=%e, res2=%e\n", lambda, res2_);
   *crit = res2_/2;
   return true;
+}
+
+void
+Evaluate::printCurrentBlock()
+{
+  mexPrintf("\nBlock %d\n", block_num+1);
+  mexPrintf("----------\n");
+  bool go_on {true};
+  bool space {false};
+  while (go_on)
+    {
+      if ((*it_code)->op_code == Tags::FENDBLOCK)
+        go_on = false;
+      else
+        {
+          string s;
+          tie(s, it_code) = print_expression(it_code);
+          if (s == "if (evaluate)" || s == "else")
+            space = false;
+          if (s.length() > 0)
+            {
+              if (space)
+                mexPrintf("  %s\n", s.c_str());
+              else
+                mexPrintf("%s\n", s.c_str());
+              mexEvalString("drawnow;");
+            }
+          if (s == "if (evaluate)" || s == "else")
+            space = true;
+        }
+    }
+}
+
+void
+Evaluate::initializeTemporaryTerms(bool global_temporary_terms)
+{
+  BytecodeInstruction *instr {instructions_list.front()};
+  if (instr->op_code == Tags::FDIMT)
+    {
+      int ntt {reinterpret_cast<FDIMT_ *>(instr)->get_size()};
+#ifdef DEBUG
+      mexPrintf("FDIMT size=%d\n", ntt);
+#endif
+      if (T)
+        mxFree(T);
+      T = static_cast<double *>(mxMalloc(ntt*(periods+y_kmin+y_kmax)*sizeof(double)));
+      test_mxMalloc(T, __LINE__, __FILE__, __func__, ntt*(periods+y_kmin+y_kmax)*sizeof(double));
+    }
+  else if (instr->op_code == Tags::FDIMST)
+    {
+      int ntt {reinterpret_cast<FDIMST_ *>(instr)->get_size()};
+#ifdef DEBUG
+      mexPrintf("FDIMST size=%d\n", ntt);
+#endif
+      if (T)
+        mxFree(T);
+      if (global_temporary_terms)
+        {
+          if (!GlobalTemporaryTerms)
+            {
+              mexPrintf("GlobalTemporaryTerms is nullptr\n");
+              mexEvalString("drawnow;");
+            }
+          if (ntt != static_cast<int>(mxGetNumberOfElements(GlobalTemporaryTerms)))
+            GlobalTemporaryTerms = mxCreateDoubleMatrix(ntt, 1, mxREAL);
+          T = mxGetPr(GlobalTemporaryTerms);
+        }
+      else
+        {
+          T = static_cast<double *>(mxMalloc(ntt*sizeof(double)));
+          test_mxMalloc(T, __LINE__, __FILE__, __func__, ntt*sizeof(double));
+        }
+    }
+  else
+    throw FatalException {"Evaluate::initializeTemporaryTerms: .cod file does not begin with FDIMT or FDIMST!"};
 }
