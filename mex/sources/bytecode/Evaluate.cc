@@ -31,8 +31,6 @@
 Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_state_arg, int periods_arg, BasicSymbolTable &symbol_table_arg) :
   symbol_table {symbol_table_arg}
 {
-  symbol_table_endo_nbr = 0;
-  u_count_int = 0;
   y_size = y_size_arg;
   y_kmin = y_kmin_arg;
   y_kmax = y_kmax_arg;
