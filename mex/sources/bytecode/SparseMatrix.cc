@@ -1825,6 +1825,88 @@ dynSparseMatrix::Sparse_transpose(const mxArray *A_m)
 }
 
 bool
+dynSparseMatrix::compute_complete(bool no_derivatives, double &_res1, double &_res2, double &_max_res, int &_max_res_idx)
+{
+  bool result;
+  res1 = 0;
+  compute_block_time(0, false, no_derivatives);
+  if (!(isnan(res1) || isinf(res1)))
+    {
+      _res1 = 0;
+      _res2 = 0;
+      _max_res = 0;
+      for (int i = 0; i < size; i++)
+        {
+          double rr;
+          rr = r[i];
+          if (max_res < fabs(rr))
+            {
+              _max_res = fabs(rr);
+              _max_res_idx = i;
+            }
+          _res2 += rr*rr;
+          _res1 += fabs(rr);
+        }
+      result = true;
+    }
+  else
+    result = false;
+  return result;
+}
+
+bool
+dynSparseMatrix::compute_complete(double lambda, double *crit)
+{
+  double res1_ = 0, res2_ = 0, max_res_ = 0;
+  int max_res_idx_ = 0;
+  if (steady_state)
+    {
+      it_ = 0;
+      for (int i = 0; i < size; i++)
+        {
+          int eq = index_vara[i];
+          y[eq] = ya[eq] + lambda * direction[eq];
+        }
+      Per_u_ = 0;
+      Per_y_ = 0;
+      if (compute_complete(true, res1, res2, max_res, max_res_idx))
+        res2_ = res2;
+      else
+        return false;
+    }
+  else
+    {
+      for (int it = y_kmin; it < periods+y_kmin; it++)
+        for (int i = 0; i < size; i++)
+          {
+            int eq = index_vara[i];
+            y[eq+it*y_size] = ya[eq+it*y_size] + lambda * direction[eq+it*y_size];
+          }
+      for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
+        {
+          Per_u_ = (it_-y_kmin)*u_count_int;
+          Per_y_ = it_*y_size;
+          if (compute_complete(true, res1, res2, max_res, max_res_idx))
+            {
+              res2_ += res2;
+              res1_ += res1;
+              if (max_res > max_res_)
+                {
+                  max_res = max_res_;
+                  max_res_idx = max_res_idx_;
+                }
+            }
+          else
+            return false;
+        }
+      it_ = periods+y_kmin-1; // Do not leave it_ in inconsistent state
+    }
+  mexPrintf("  lambda=%e, res2=%e\n", lambda, res2_);
+  *crit = res2_/2;
+  return true;
+}
+
+bool
 dynSparseMatrix::mnbrak(double *ax, double *bx, double *cx, double *fa, double *fb, double *fc)
 {
   constexpr double GOLD = 1.618034;

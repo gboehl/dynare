@@ -66,6 +66,141 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
 }
 
 void
+Interpreter::evaluate_over_periods(bool forward)
+{
+  if (steady_state)
+    compute_block_time(0, false, false);
+  else
+    {
+      if (forward)
+        {
+          for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
+            compute_block_time(0, false, false);
+          it_ = periods+y_kmin-1; // Do not leave it_ in inconsistent state
+        }
+      else
+        {
+          for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
+            compute_block_time(0, false, false);
+          it_ = y_kmin; // Do not leave it_ in inconsistent state (see #1727)
+        }
+    }
+}
+
+void
+Interpreter::solve_simple_one_periods()
+{
+  bool cvg = false;
+  int iter = 0;
+  double ya;
+  double slowc = 1;
+  res1 = 0;
+  while (!(cvg || iter > maxit_))
+    {
+      Per_y_ = it_*y_size;
+      ya = y[Block_Contain[0].Variable + Per_y_];
+      compute_block_time(0, false, false);
+      if (!isfinite(res1))
+        {
+          res1 = std::numeric_limits<double>::quiet_NaN();
+          while ((isinf(res1) || isnan(res1)) && (slowc > 1e-9))
+            {
+              compute_block_time(0, false, false);
+              if (!isfinite(res1))
+                {
+                  slowc /= 1.5;
+                  mexPrintf("Reducing the path length in Newton step slowc=%f\n", slowc);
+                  y[Block_Contain[0].Variable + Per_y_] = ya - slowc * divide(r[0], g1[0]);
+                }
+            }
+        }
+      double rr;
+      rr = r[0];
+      cvg = (fabs(rr) < solve_tolf);
+      if (cvg)
+        continue;
+      try
+        {
+          y[Block_Contain[0].Variable + Per_y_] += -slowc *divide(rr, g1[0]);
+        }
+      catch (FloatingPointException &fpeh)
+        {
+          mexPrintf("%s\n      \n", fpeh.message.c_str());
+          mexPrintf("      Singularity in block %d", block_num+1);
+        }
+      iter++;
+    }
+  if (!cvg)
+    throw FatalException{"In Solve Forward simple, convergence not achieved in block "
+                         + to_string(block_num+1) + ", after " + to_string(iter) + " iterations"};
+}
+
+void
+Interpreter::solve_simple_over_periods(bool forward)
+{
+  g1 = static_cast<double *>(mxMalloc(sizeof(double)));
+  test_mxMalloc(g1, __LINE__, __FILE__, __func__, sizeof(double));
+  r = static_cast<double *>(mxMalloc(sizeof(double)));
+  test_mxMalloc(r, __LINE__, __FILE__, __func__, sizeof(double));
+  if (steady_state)
+    {
+      it_ = 0;
+      solve_simple_one_periods();
+    }
+  else
+    {
+      if (forward)
+        {
+          for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
+            solve_simple_one_periods();
+          it_= periods+y_kmin-1; // Do not leave it_ in inconsistent state
+        }
+      else
+        {
+          for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
+            solve_simple_one_periods();
+          it_ = y_kmin; // Do not leave it_ in inconsistent state (see #1727)
+        }
+    }
+  mxFree(g1);
+  mxFree(r);
+}
+
+void
+Interpreter::compute_complete_2b(bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx)
+{
+  res1 = 0;
+  *_res1 = 0;
+  *_res2 = 0;
+  *_max_res = 0;
+  for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
+    {
+      Per_u_ = (it_-y_kmin)*u_count_int;
+      Per_y_ = it_*y_size;
+      int shift = (it_-y_kmin) * size;
+      compute_block_time(Per_u_, false, no_derivatives);
+      if (!(isnan(res1) || isinf(res1)))
+        for (int i = 0; i < size; i++)
+          {
+            double rr;
+            rr = r[i];
+            res[i+shift] = rr;
+            if (max_res < fabs(rr))
+              {
+                *_max_res = fabs(rr);
+                *_max_res_idx = i;
+              }
+            *_res2 += rr*rr;
+            *_res1 += fabs(rr);
+          }
+      else
+        return;
+    }
+  it_ = periods+y_kmin-1; // Do not leave it_ in inconsistent state
+  return;
+}
+
+void
 Interpreter::evaluate_a_block(bool initialization, bool single_block, const string &bin_base_name)
 {
   switch (type)

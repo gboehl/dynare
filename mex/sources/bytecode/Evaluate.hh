@@ -93,20 +93,10 @@ protected:
   double divide(double a, double b);
   double log1(double a);
   double log10_1(double a);
-  void evaluate_over_periods(bool forward);
-  void solve_simple_one_periods();
-  void solve_simple_over_periods(bool forward);
   void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
-  int Per_u_, Per_y_;
   int it_;
-  int maxit_;
-  double *direction;
-  double solve_tolf;
   bool print_error;
-  double res1, res2, max_res;
-  int max_res_idx;
-
-  int *index_vara;
+  double res1;
 
   int block_num; // Index of the current block
   int size; // Size of the current block
@@ -161,10 +151,6 @@ public:
   Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_state_arg, int periods_arg, BasicSymbolTable &symbol_table_arg);
   // TODO: integrate into the constructor
   void loadCodeFile(const filesystem::path &codfile);
-  bool compute_complete(bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
-  void compute_complete_2b(bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx);
-
-  bool compute_complete(double lambda, double *crit);
 
   int
   get_block_number() const

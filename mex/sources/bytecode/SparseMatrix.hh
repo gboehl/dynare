@@ -195,6 +195,17 @@ protected:
   int stack_solve_algo, solve_algo;
   int minimal_solving_periods;
   bool print_it;
+  int Per_u_, Per_y_;
+  int maxit_;
+  double *direction;
+  double solve_tolf;
+  double res2, max_res;
+  int max_res_idx;
+  int *index_vara;
+
+  bool compute_complete(bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
+
+  bool compute_complete(double lambda, double *crit);
 };
 
 #endif // _SPARSEMATRIX_HH
