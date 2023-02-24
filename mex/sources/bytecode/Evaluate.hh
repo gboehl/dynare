@@ -53,9 +53,6 @@ private:
   // Index of beginnings of blocks within instructions_list
   vector<size_t> begin_block;
 
-  // Iterator to current bytecode instruction within “instructions_list”
-  it_code_type it_code;
-
   ExpressionType EQN_type;
   int EQN_equation, EQN_block, EQN_dvar1;
   int EQN_lag1, EQN_lag2, EQN_lag3;
@@ -69,6 +66,13 @@ private:
   currentBlockTag() const
   {
     return reinterpret_cast<FBEGINBLOCK_ *>(instructions_list[begin_block[block_num]]);
+  }
+
+  // Returns iterator to first instruction in the current block (after FBEGINBLOCK)
+  it_code_type
+  currentBlockBeginning()
+  {
+    return instructions_list.begin() + begin_block[block_num] + 1;
   }
 
 protected:
@@ -119,13 +123,6 @@ protected:
      corresponding mathematical operator will be printed within braces.
      The second output argument points to the tag past the expression. */
   pair<string, it_code_type> print_expression(const it_code_type &expr_begin, const optional<it_code_type> &faulty_op = nullopt) const;
-
-  // Move pointer to the beginning of the current block (past the FBEGINBLOCK tag)
-  void
-  rewindCurrentBlock()
-  {
-    it_code = instructions_list.begin() + begin_block[block_num] + 1;
-  }
 
   // Prints current block
   void printCurrentBlock();

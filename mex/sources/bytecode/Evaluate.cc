@@ -1048,6 +1048,7 @@ Evaluate::log10_1(double a)
 void
 Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 {
+  auto it_code { currentBlockBeginning() };
   int var{0}, lag{0};
   UnaryOpcode op1;
   BinaryOpcode op2;
@@ -2261,23 +2262,16 @@ Evaluate::evaluate_over_periods(bool forward)
     compute_block_time(0, false, false);
   else
     {
-      auto begining = it_code;
       if (forward)
         {
           for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
-            {
-              it_code = begining;
-              compute_block_time(0, false, false);
-            }
+            compute_block_time(0, false, false);
           it_ = periods+y_kmin-1; // Do not leave it_ in inconsistent state
         }
       else
         {
           for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
-            {
-              it_code = begining;
-              compute_block_time(0, false, false);
-            }
+            compute_block_time(0, false, false);
           it_ = y_kmin; // Do not leave it_ in inconsistent state (see #1727)
         }
     }
@@ -2295,14 +2289,12 @@ Evaluate::solve_simple_one_periods()
     {
       Per_y_ = it_*y_size;
       ya = y[Block_Contain[0].Variable + Per_y_];
-      rewindCurrentBlock();
       compute_block_time(0, false, false);
       if (!isfinite(res1))
         {
           res1 = std::numeric_limits<double>::quiet_NaN();
           while ((isinf(res1) || isnan(res1)) && (slowc > 1e-9))
             {
-              rewindCurrentBlock();
               compute_block_time(0, false, false);
               if (!isfinite(res1))
                 {
@@ -2367,9 +2359,9 @@ Evaluate::solve_simple_over_periods(bool forward)
 void
 Evaluate::gotoBlock(int block)
 {
-  it_code = instructions_list.begin() + begin_block[block];
+  block_num = block;
 
-  auto *fb {static_cast<FBEGINBLOCK_ *>(*it_code)};
+  auto *fb {currentBlockTag()};
   if (fb->op_code != Tags::FBEGINBLOCK)
     throw FatalException {"Evaluate::gotoBlock: internal inconsistency"};
 
@@ -2379,16 +2371,11 @@ Evaluate::gotoBlock(int block)
   is_linear = fb->get_is_linear();
   symbol_table_endo_nbr = fb->get_endo_nbr();
   u_count_int = fb->get_u_count_int();
-
-  it_code++;
-
-  block_num = block;
 }
 
 void
 Evaluate::evaluate_complete(bool no_derivatives)
 {
-  rewindCurrentBlock();
   compute_block_time(0, false, no_derivatives);
 }
 
@@ -2404,7 +2391,6 @@ Evaluate::compute_complete_2b(bool no_derivatives, double *_res1, double *_res2,
       Per_u_ = (it_-y_kmin)*u_count_int;
       Per_y_ = it_*y_size;
       int shift = (it_-y_kmin) * size;
-      rewindCurrentBlock();
       compute_block_time(Per_u_, false, no_derivatives);
       if (!(isnan(res1) || isinf(res1)))
         for (int i = 0; i < size; i++)
@@ -2432,7 +2418,6 @@ Evaluate::compute_complete(bool no_derivatives, double &_res1, double &_res2, do
 {
   bool result;
   res1 = 0;
-  rewindCurrentBlock();
   compute_block_time(0, false, no_derivatives);
   if (!(isnan(res1) || isinf(res1)))
     {
@@ -2513,6 +2498,7 @@ Evaluate::compute_complete(double lambda, double *crit)
 void
 Evaluate::printCurrentBlock()
 {
+  auto it_code { currentBlockBeginning() };
   mexPrintf("\nBlock %d\n", block_num+1);
   mexPrintf("----------\n");
   bool go_on {true};

@@ -86,7 +86,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
             {
               Per_y_ = it_*y_size;
-              rewindCurrentBlock();
               compute_block_time(0, true, false);
               if (single_block)
                 for (int j = 0; j < size; j++)
@@ -117,7 +116,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
             {
               Per_y_ = it_*y_size;
-              rewindCurrentBlock();
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
@@ -156,7 +154,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
             {
               Per_y_ = it_*y_size;
-              rewindCurrentBlock();
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
@@ -184,7 +181,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
             {
               Per_y_ = it_*y_size;
-              rewindCurrentBlock();
               compute_block_time(0, true, false);
               if (single_block)
                 for (int j = 0; j < size; j++)
@@ -215,7 +211,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
             {
               Per_y_ = it_*y_size;
-              rewindCurrentBlock();
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
@@ -251,7 +246,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
             {
               Per_y_ = it_*y_size;
-              rewindCurrentBlock();
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
@@ -277,7 +271,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
         {
           Per_u_ = (it_-y_kmin)*u_count_int;
           Per_y_ = it_*y_size;
-          rewindCurrentBlock();
           compute_block_time(Per_u_, true, false);
           if (!single_block)
             for (int j = 0; j < size; j++)
@@ -340,10 +333,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
       mexEvalString("drawnow;");
 #endif
       if (vector_table_conditional_local.size())
-        {
-          evaluate_a_block(true, single_block, bin_base_name);
-          rewindCurrentBlock();
-        }
+        evaluate_a_block(true, single_block, bin_base_name);
       else
         {
           fixe_u(&u, u_count_int, u_count_int);
@@ -365,10 +355,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
       mexEvalString("drawnow;");
 #endif
       if (vector_table_conditional_local.size())
-        {
-          evaluate_a_block(true, single_block, bin_base_name);
-          rewindCurrentBlock();
-        }
+        evaluate_a_block(true, single_block, bin_base_name);
       else
         {
           fixe_u(&u, u_count_int, u_count_int);
@@ -396,10 +383,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
           return ERROR_ON_EXIT;
         }
       if (vector_table_conditional_local.size())
-        {
-          evaluate_a_block(true, single_block, bin_base_name);
-          rewindCurrentBlock();
-        }
+        evaluate_a_block(true, single_block, bin_base_name);
       else
         {
           fixe_u(&u, u_count_int, u_count_int);
