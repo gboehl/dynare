@@ -2374,12 +2374,6 @@ Evaluate::gotoBlock(int block)
 }
 
 void
-Evaluate::evaluate_complete(bool no_derivatives)
-{
-  compute_block_time(0, false, no_derivatives);
-}
-
-void
 Evaluate::compute_complete_2b(bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx)
 {
   res1 = 0;
