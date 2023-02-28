@@ -294,8 +294,8 @@ cp slicot.a /home/$USER/dynare/slicot/lib/libslicot_pic.a #for octave
 # compile x13as from source and put it into /usr/bin/
 mkdir -p /home/$USER/dynare/x13as
 cd /home/$USER/dynare/x13as
-wget https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/program-archives/x13as_asciisrc-v1-1-b58.tar.gz
-tar xf x13as_asciisrc-v1-1-b58.tar.gz
+wget https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/program-archives/x13as_asciisrc-v1-1-b59.tar.gz
+tar xf x13as_asciisrc-v1-1-b59.tar.gz
 sed -i "s|-static| |" makefile.gf # this removes '-static' in the makefile.gf
 make -f makefile.gf FFLAGS="-O2 -std=legacy" PROGRAM=x13as
 sudo cp x13as /usr/bin/
@@ -470,8 +470,8 @@ cd $HOME/dynare
 ```sh
 mkdir -p $HOME/dynare/x13as
 cd $HOME/dynare/x13as
-wget https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/program-archives/x13as_asciisrc-v1-1-b58.tar.gz
-tar xf x13as_asciisrc-v1-1-b58.tar.gz
+wget https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/program-archives/x13as_asciisrc-v1-1-b59.tar.gz
+tar xf x13as_asciisrc-v1-1-b59.tar.gz
 sed -i '' 's/-static//g' makefile.gf
 make -j$(sysctl -n hw.physicalcpu) -f makefile.gf FC=gfortran LINKER=gfortran FFLAGS="-O2 -std=legacy" PROGRAM=x13as
 cp x13as /usr/local/bin/x13as
