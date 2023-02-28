@@ -398,8 +398,8 @@ currently not supported.
 
 ## macOS
 Dynare supports both Intel and Apple Silicon chips and is compiled from source
-using a [Homebrew](https://brew.sh/) toolchain. However, if you have a *M1*, *M1 PRO*
-or *M1 MAX* processor, you need to make sure that you are not using the ARM
+using a [Homebrew](https://brew.sh/) toolchain. However, if you have a *M1*,
+*M1 PRO*, *M1 MAX*, *M2* or *M2 PRO* processor, you need to make sure that you are not using the ARM
 Homebrew packages. This is due to the fact that although MATLAB runs natively on
 Intel, it is not yet available in an ARM version and therefore must be run with the
 Intel compatibility layer called Rosetta 2. Accordingly, if you are on Apple Silicon
