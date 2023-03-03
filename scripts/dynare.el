@@ -234,6 +234,8 @@
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.mod$" . dynare-mode))
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.dyn$" . dynare-mode))
 
 (provide 'dynare)
 
