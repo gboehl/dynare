@@ -9,7 +9,7 @@ function str = print_equations(variable_name, withexpansion)
 % OUTPUTS
 % None
 
-% Copyright © 2019-2021 Dynare Team
+% Copyright © 2019-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -49,7 +49,7 @@ end
 if ~ischar(variable_name)
     error('First input argument must be a string.');
 end
-    
+
 % Check that the variable is actually a variable in the model.
 if ~ismember(variable_name, [M_.exo_names; M_.endo_names])
     error('There is no variable named %s!', variable_name);
@@ -65,7 +65,7 @@ for it = 1:length(M_.mapping.(variable_name).eqidx)
         % Equations appended by the preprocessor for auxiliary variables are not displayed, except if it is an aux variable
         % for the PAC expectation.
         % TODO Probably should do the same for VAR expectation.
-        if isfield(M_, 'lhs') && isequal(M_.lhs{M_.mapping.(variable_name).eqidx(it)}(1:16), 'pac_expectation_')
+        if isfield(M_, 'lhs') && length(M_.lhs{M_.mapping.(variable_name).eqidx(it)})>15 && isequal(M_.lhs{M_.mapping.(variable_name).eqidx(it)}(1:16), 'pac_expectation_')
             id = M_.mapping.(M_.lhs{M_.mapping.(variable_name).eqidx(it)}).eqidx(1);
         else
             continue
