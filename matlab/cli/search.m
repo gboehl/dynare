@@ -86,7 +86,6 @@ for it = 1:length(M_.mapping.(variablename).eqidx)
             expression = TransformExpandedExpr(expression);
             rhs = strrep(rhs, ['+var_expectation(model_name = ' models{idx} ')'], expression);
         elseif ~isfield(M_, 'pac') && ~isfield(M_, 'var_expectation')
-            warning('No VAR or PAC expectations found, continuing without expansion');
             withexpansion = false;
         end
     end
