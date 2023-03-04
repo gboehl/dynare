@@ -1,9 +1,10 @@
-function search(variablename)
+function search(variablename, option)
 
 % Prints equations where the variable appears in.
 %
 % INPUTS
 % - variablename       [string]    Name of the variable to be traced.
+% - option             [string]    if equal to 'withparamvalues' reports the values of the parameters, otherwise throws an error.
 %
 % OUTPUTS
 % None
@@ -50,6 +51,24 @@ if ~ismember(variablename, [M_.exo_names; M_.endo_names])
     error('There is no variable named %s!', variablename);
 end
 
+withparamvalues = false; % By default the values of the parameters are not printed
+
+if nargin==2
+    if ischar(option)
+        if strcmp(option, 'withparamvalues')
+            withparamvalues = true;
+        else
+            error('Unknown option %s.', option)
+        end
+    else
+        error('Second input argument must be a row character array.')
+    end
+end
+
+if nargin>2
+    error('Too many input arguments.')
+end
+
 % Load the JSON file.
 jsonfile = loadjson_(jname);
 model = jsonfile.model;
@@ -90,13 +109,28 @@ for it = 1:length(M_.mapping.(variablename).eqidx)
             withexpansion = false;
         end
     end
+    lhs = model{id}.lhs;
+    if withparamvalues
+        pnames = get_variables_and_parameters_in_equation(lhs, rhs, M_);
+        if ~isempty(pnames)
+            for ip = 1:length(pnames)
+                iP = find(strcmp(M_.param_names, pnames{ip}));
+                if isnan(M_.params(iP))
+                    continue
+                end
+                value = M_.params(iP);
+                rhs = regexprep(rhs, sprintf('\\<%s\\>', pnames{ip}), num2str(value, 6));
+                lhs = regexprep(lhs, sprintf('\\<%s\\>', pnames{ip}), num2str(value, 6));
+            end
+        end
+    end
     skipline()
-    fprintf('%s = %s;\n', model{id}.lhs, rhs);
+    fprintf('%s = %s;\n', lhs, rhs);
 end
 
 skipline()
 
 function [transformed_expression] = TransformExpandedExpr(expression)
-    transformed_expression = splitlines(expression);
-    transformed_expression{1} = sprintf(' + %s', transformed_expression{1});
-    transformed_expression = sprintf('\n\t%s', transformed_expression{:});
+transformed_expression = splitlines(expression);
+transformed_expression{1} = sprintf(' + %s', transformed_expression{1});
+transformed_expression = sprintf('\n\t%s', transformed_expression{:});
