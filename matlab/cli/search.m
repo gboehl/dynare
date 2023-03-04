@@ -1,4 +1,4 @@
-function str = search(variablename)
+function search(variablename)
 
 % Prints equations where the variable appears in.
 %
@@ -89,9 +89,6 @@ for it = 1:length(M_.mapping.(variablename).eqidx)
         elseif ~isfield(M_, 'pac') && ~isfield(M_, 'var_expectation')
             withexpansion = false;
         end
-    end
-    if nargout
-        str = sprintf('%s = %s;\n', model{M_.mapping.(variablename).eqidx(it)}.lhs, rhs);
     end
     skipline()
     fprintf('%s = %s;\n', model{id}.lhs, rhs);
