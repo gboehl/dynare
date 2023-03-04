@@ -1,10 +1,9 @@
-function str = print_equations(variable_name, withexpansion)
+function str = search(variablename)
 
 % Prints equations where the variable appears in.
 %
 % INPUTS
-% - variable_name       [string]    Name of the variable to be traced.
-% - withexpansion       [logical]   Prints expanded equation of the VAR_EXPECTATION or PAC_EXPECTATION term if true.
+% - variablename       [string]    Name of the variable to be traced.
 %
 % OUTPUTS
 % None
@@ -28,15 +27,10 @@ function str = print_equations(variable_name, withexpansion)
 
 global M_
 
-if nargin == 0
-    error('Provide variable name as input argument.');
-elseif nargin == 1
-    % Assign default value for VAR_EXPECTATION/PAC_EXPECTATION expression expansion.
-    withexpansion = false;
-elseif nargin == 2
-    if ~islogical(withexpansion)
-        error('Second input argument must be Boolean.');
-    end
+withexpansion = true;
+
+if ~nargin
+    error('Provide endogenous variable name as first input argument.');
 end
 
 % Check if corresponding JSON file exists.
@@ -46,13 +40,13 @@ if exist(fname, 'file') ~= 2
 end
 
 % Check that the first input is a character array.
-if ~ischar(variable_name)
+if ~ischar(variablename)
     error('First input argument must be a string.');
 end
 
 % Check that the variable is actually a variable in the model.
-if ~ismember(variable_name, [M_.exo_names; M_.endo_names])
-    error('There is no variable named %s!', variable_name);
+if ~ismember(variablename, [M_.exo_names; M_.endo_names])
+    error('There is no variable named %s!', variablename);
 end
 
 % Load the JSON file.
@@ -60,18 +54,18 @@ jsonfile = loadjson_(fname);
 model = jsonfile.model;
 
 % Print the equations the variable appears in.
-for it = 1:length(M_.mapping.(variable_name).eqidx)
-    if M_.mapping.(variable_name).eqidx(it)>length(model)
+for it = 1:length(M_.mapping.(variablename).eqidx)
+    if M_.mapping.(variablename).eqidx(it)>length(model)
         % Equations appended by the preprocessor for auxiliary variables are not displayed, except if it is an aux variable
         % for the PAC expectation.
         % TODO Probably should do the same for VAR expectation.
-        if isfield(M_, 'lhs') && length(M_.lhs{M_.mapping.(variable_name).eqidx(it)})>15 && isequal(M_.lhs{M_.mapping.(variable_name).eqidx(it)}(1:16), 'pac_expectation_')
-            id = M_.mapping.(M_.lhs{M_.mapping.(variable_name).eqidx(it)}).eqidx(1);
+        if isfield(M_, 'lhs') && length(M_.lhs{M_.mapping.(variablename).eqidx(it)})>15 && isequal(M_.lhs{M_.mapping.(variablename).eqidx(it)}(1:16), 'pac_expectation_')
+            id = M_.mapping.(M_.lhs{M_.mapping.(variablename).eqidx(it)}).eqidx(1);
         else
             continue
         end
     else
-        id = M_.mapping.(variable_name).eqidx(it);
+        id = M_.mapping.(variablename).eqidx(it);
     end
     rhs = model{id}.rhs;
     if withexpansion
@@ -97,7 +91,7 @@ for it = 1:length(M_.mapping.(variable_name).eqidx)
         end
     end
     if nargout
-        str = sprintf('%s = %s;\n', model{M_.mapping.(variable_name).eqidx(it)}.lhs, rhs);
+        str = sprintf('%s = %s;\n', model{M_.mapping.(variablename).eqidx(it)}.lhs, rhs);
     end
     fprintf('%s = %s;\n', model{id}.lhs, rhs);
 end
