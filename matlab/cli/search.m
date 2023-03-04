@@ -33,10 +33,11 @@ if ~nargin
     error('Provide endogenous variable name as first input argument.');
 end
 
+jname = sprintf('%s%smodel%sjson%smodfile-original.json', M_.fname, filesep, filesep, filesep);
+
 % Check if corresponding JSON file exists.
-fname = [M_.fname filesep 'model' filesep 'json' filesep 'modfile-original.json'];
-if exist(fname, 'file') ~= 2
-    error('Could not find %s! Please use the json option (See the Dynare invocation section in the reference manual).', fname);
+if exist(jname, 'file') ~= 2
+    error('Please use the json option (See the Dynare invocation section in the reference manual).');
 end
 
 % Check that the first input is a character array.
@@ -50,7 +51,7 @@ if ~ismember(variablename, [M_.exo_names; M_.endo_names])
 end
 
 % Load the JSON file.
-jsonfile = loadjson_(fname);
+jsonfile = loadjson_(jname);
 model = jsonfile.model;
 
 % Print the equations the variable appears in.
@@ -92,8 +93,11 @@ for it = 1:length(M_.mapping.(variablename).eqidx)
     if nargout
         str = sprintf('%s = %s;\n', model{M_.mapping.(variablename).eqidx(it)}.lhs, rhs);
     end
+    skipline()
     fprintf('%s = %s;\n', model{id}.lhs, rhs);
 end
+
+skipline()
 
 function [transformed_expression] = TransformExpandedExpr(expression)
     transformed_expression = splitlines(expression);
