@@ -12,7 +12,7 @@ Dynare misc commands
 
     Executes a user-defined function on parameter draws from the prior
     distribution. Dynare returns the results of the computations for
-    all draws in an $ndraws$ by $n$ cell array named
+    all draws in an `ndraws` by :math:`n` cell array named
     ``oo_.prior_function_results``.
 
     *Options*
