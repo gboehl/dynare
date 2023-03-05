@@ -79,27 +79,6 @@ Dynare misc commands
 
             >> internals --test ../matlab/fr/ROUTINENAME
 
-    ``--info``
-
-        Prints on screen the internal documentation of ROUTINENAME (if
-        this routine exists and if this routine has a texinfo internal
-        documentation header). The path to ``ROUTINENAME`` has to be
-        provided, if the routine is not in the current directory.
-
-        *Example*
-
-            ::
-
-                >> internals --doc ../matlab/fr/ROUTINENAME
-
-            At this time, will work properly for only a small number
-            of routines. At the top of the (available) MATLAB/Octave
-            routines a commented block for the internal documentation
-            is written in the GNU texinfo documentation format. This
-            block is processed by calling texinfo from
-            MATLAB. Consequently, texinfo has to be installed on your
-            machine.
-
     ``--display-mh-history``
 
         Displays information about the previously saved MCMC draws
