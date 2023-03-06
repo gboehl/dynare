@@ -58,13 +58,8 @@ var_expectation.initialize('varexp')
 var_expectation.update('varexp');
 
 // Print equations where the variable appears in
-fprintf('x is in: \n')
-print_equations('x')
-fprintf('\n')
-
-fprintf('y is in: \n')
-print_equations('y', true)
-fprintf('\n')
+search('x')
+search('y', 'withparamvalues')
 
 /*
 ** REMARK The VAR model is such that x depends on past values of x

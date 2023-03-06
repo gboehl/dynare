@@ -109,13 +109,8 @@ pac.estimate.iterative_ols('zpac', eparams, edata, 2005Q1:2000Q1+200);
 pac.print('pacman','zpac');
 
 // Print equations where the variable appears in
-fprintf('x1bar is in: \n')
-print_equations('x1bar')
-fprintf('\n')
-
-fprintf('x2bar is in: \n')
-print_equations('x2bar', true);
-fprintf('\n')
+search('x1bar')
+search('x2bar', 'withparamvalues')
 
 e_c_m_iterative_ols = M_.params(strmatch('e_c_m', M_.param_names, 'exact'));
 c_z_1_iterative_ols = M_.params(strmatch('c_z_1', M_.param_names, 'exact'));

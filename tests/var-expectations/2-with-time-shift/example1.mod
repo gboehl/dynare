@@ -60,29 +60,9 @@ var_expectation.initialize('varexp')
 var_expectation.update('varexp');
 
 // Print equations where the variable appears in
-fprintf('x is in: \n')
-print_equations('x')
-fprintf('\n')
-
-fprintf('y is in: \n')
-str = print_equations('y', true);
-fprintf('\n')
-
+search('x')
+search('y', 'withparamvalues')
 
 if ~isfield(M_.var_expectation.varexp, 'time_shift') || ~isequal(M_.var_expectation.varexp.time_shift, -2)
     error('Preprocessor does not honour time_shift option as expected.')
-end
-
-str = strrep(str, 'foo = .5*foo(-1)', '');
-str = strrep(str, '+ var_expectation_model_varexp_constant', '');
-str = strrep(str, '+ var_expectation_model_varexp_x_0*x(-2)', '');
-str = strrep(str, '+ var_expectation_model_varexp_y_0*y(-2)', '');
-str = strrep(str, '+ var_expectation_model_varexp_z_0*z(-2)', '');
-str = strrep(str, '+ var_expectation_model_varexp_x_1*x(-3)', '');
-str = strrep(str, '+ var_expectation_model_varexp_y_1*y(-3)', '');
-str = strrep(str, '+ var_expectation_model_varexp_z_1*z(-3)', '');
-str = strrep(str, ';', '');
-
-if ~isempty(strtrim(str))
-    error('Printed equation is wrong.')
 end
