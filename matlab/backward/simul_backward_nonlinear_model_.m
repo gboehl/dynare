@@ -99,7 +99,7 @@ for it = initialconditions.nobs+(1:samplesize)
                 error('Nonlinear solver routine failed with errorcode=%i in period %i.', errorcode, it)
             end
         end
-    catch
+    catch Error
         DynareOutput.endo_simul = DynareOutput.endo_simul(:, 1:it-1);
         dprintf('Newton failed on iteration i = %s.', num2str(it-initialconditions.nobs));
         ytm = DynareOutput.endo_simul(:,end);
@@ -161,6 +161,10 @@ for it = initialconditions.nobs+(1:samplesize)
             display_names_of_problematic_equations(DynareModel, eqtags, residuals_evaluating_to_complex);
             skipline()
         end
+        dprintf('Newton failed in period %s with the following error message:', char(initialconditions.lastdate+(it-initialconditions.nobs)));
+        skipline()
+        dprintf('\t %s', Error.message);
+        skipline()
         break
         % TODO Implement same checks with the jacobian matrix.
         % TODO Modify other solvers to return an exitflag.
