@@ -99,7 +99,7 @@ pkg_macOS:
   stage: pkg
   script:
     - ln -s ~/tarballs macOS/deps/
-    - make -C macOS
+    - arch -x86_64 make -C macOS
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:

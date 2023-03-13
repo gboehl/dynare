@@ -29,7 +29,7 @@ CC=gcc-$GCC_VERSION
 CXX=g++-$GCC_VERSION
 
 # Set the number of threads
-NTHREADS=$(nproc)
+NTHREADS=$(sysctl -n hw.ncpu)
 
 # Set dependency directory
 LIB64="$ROOTDIR"/macOS/deps/lib64
@@ -174,7 +174,7 @@ make clean
   --with-gsl="$LIB64"/gsl \
   --with-matio="$LIB64"/matio \
   --with-slicot="$LIB64"/Slicot/with-underscore \
-  --with-matlab=/Applications/MATLAB_R2019b.app
+  --with-matlab=/Applications/MATLAB_R2022b.app
 make -j"$NTHREADS"
 cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.13
 
