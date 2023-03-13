@@ -458,10 +458,10 @@ cd $HOME/dynare/slicot
 wget https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
 tar xf slicot_5.0+20101122.orig.tar.gz
 cd slicot-5.0+20101122
-make -j$(sysctl -n hw.physicalcpu) FORTRAN=gfortran OPTS="-O2" LOADER=gfortran lib
+make -j$(sysctl -n hw.ncpu) FORTRAN=gfortran OPTS="-O2" LOADER=gfortran lib
 cp slicot.a /usr/local/lib/libslicot_pic.a
 make clean
-make -j$(sysctl -n hw.physicalcpu) FORTRAN=gfortran OPTS="-O2 -fdefault-integer-8" LOADER=gfortran lib
+make -j$(sysctl -n hw.ncpu) FORTRAN=gfortran OPTS="-O2 -fdefault-integer-8" LOADER=gfortran lib
 cp slicot.a /usr/local/lib/libslicot64_pic.a
 cd $HOME/dynare
 ```
@@ -473,7 +473,7 @@ cd $HOME/dynare/x13as
 wget https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/program-archives/x13as_asciisrc-v1-1-b59.tar.gz
 tar xf x13as_asciisrc-v1-1-b59.tar.gz
 sed -i '' 's/-static//g' makefile.gf
-make -j$(sysctl -n hw.physicalcpu) -f makefile.gf FC=gfortran LINKER=gfortran FFLAGS="-O2 -std=legacy" PROGRAM=x13as
+make -j$(sysctl -n hw.ncpu) -f makefile.gf FC=gfortran LINKER=gfortran FFLAGS="-O2 -std=legacy" PROGRAM=x13as
 cp x13as /usr/local/bin/x13as
 cd ;
 x13as
@@ -502,7 +502,7 @@ where you need to adapt the path to MATLAB. If you don’t have MATLAB, simply r
 
 - Compile:
 ```sh
-arch -x86_64 make -j$(sysctl -n hw.physicalcpu)
+arch -x86_64 make -j$(sysctl -n hw.ncpu)
 ```
 
 ### Optional: pass the full PATH to MATLAB to run system commands
