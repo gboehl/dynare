@@ -45,13 +45,13 @@ if options.ramsey_policy
         orig_endo_aux_nbr = M.orig_endo_nbr + min(find([M.aux_vars.type] == 6)) - 1;
         implied_inst_nbr = orig_endo_aux_nbr - M.orig_eq_nbr;
         if inst_nbr>implied_inst_nbr
-            error('You have specified more instruments than there are omitted equations')
+            warning('You have specified more steady state instruments than there are omitted equations. While there are use cases for this setup, it is rather unusual. Check whether this is desired.')
         elseif inst_nbr<implied_inst_nbr
-            error('You have specified fewer instruments than there are omitted equations')
+            warning('You have specified fewer steady state instruments than there are omitted equations. While there are use cases for this setup, it is rather unusual. Check whether this is desired.')
         end
     else
         if options.steadystate_flag
-            error('You have specified a steady state file, but not provided an instrument. Either delete the steady state file or provide an instrument')
+            warning('You have specified a steady state file, but not provided steady state instruments. In this case, you typically need to make sure to provide all steady state values, including the ones for the planner''s instrument(s).')
         end
     end
 end
