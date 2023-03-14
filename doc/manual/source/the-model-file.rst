@@ -7259,6 +7259,17 @@ observed variables.
                Ratto, and Rossi (2015)*. Note that ``'slice'`` is
                incompatible with ``prior_trunc=0``.
 
+               Whereas one Metropolis-Hastings iteration requires one 
+               evaluation of the posterior, one slice iteration requires :math:`neval` 
+               evaluations, where as a rule of thumb :math:`neval=7\times npar` with
+               :math:`npar` denoting the number of estimated parameters. Spending 
+               the same computational budget of :math:`N` posterior evaluations in the 
+               slice sampler then implies setting ``mh_replic=N/neval``. 
+               
+               Note that the slice sampler will typically return less autocorrelated Monte Carlo Markov
+               Chain draws than the MH-algorithm. Its relative (in)efficiency can be investigated via 
+               the reported inefficiency factors.
+
     .. option:: posterior_sampler_options = (NAME, VALUE, ...)
 
        A list of NAME and VALUE pairs. Can be used to set options for
