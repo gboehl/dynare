@@ -1,4 +1,4 @@
-# Copyright © 2019 Dynare Team
+# Copyright © 2019-2023 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -17,7 +17,7 @@
 
 .PHONY: all deps clean-deps clean clean-all build
 
-NTHREADS=$(shell nproc)
+NTHREADS=$(shell sysctl -n hw.ncpu)
 
 all: build
 
