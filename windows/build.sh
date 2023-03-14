@@ -59,7 +59,10 @@ LIB64_MSYS2="$ROOT_DIRECTORY"/deps/lib64-msys2
 # As of 2023-01-03, when linking against HDF5 (and possibly other libraries),
 # it is necessary to compile our own code with -fstack-protector to avoid undefined symbols
 # at link time.
-# Note that adding this flag is not necessary when building from MSYS2 shell.
+# Note that specifying -fstack-protector-strong or -fstack-protector-all will lead
+# to a dependency on libssp-0.dll (at least when using the MinGW compilers from Debian),
+# and there seems to be no easy way of linking it statically.
+# Also note that adding this flag is not necessary when building from MSYS2 shell.
 # Maybe revisit this once our runners are upgraded to Debian “Bookworm” 12.
 export CXXFLAGS="-O2 -fstack-protector"
 
