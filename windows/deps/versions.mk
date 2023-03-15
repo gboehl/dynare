@@ -41,25 +41,37 @@ MINGW64_LIBAEC_VERSION = 1.0.6-2
 ## MinGW packages for the embedded compiler
 
 # pacman -Ss mingw-w64-x86_64-gcc$
-MINGW64_GCC_VERSION = 12.2.0-7
+MINGW64_GCC_VERSION = 12.2.0-10
 
 # pacman -Ss mingw-w64-x86_64-gmp
-MINGW64_GMP_VERSION = 6.2.1-4
+MINGW64_GMP_VERSION = 6.2.1-5
 
 # pacman -Ss mingw-w64-x86_64-binutils
-MINGW64_BINUTILS_VERSION = 2.39-2
+MINGW64_BINUTILS_VERSION = 2.40-2
 
 # pacman -Ss mingw-w64-x86_64-headers-git
-MINGW64_HEADERS_VERSION = 10.0.0.r186.gfc55e181b-1
+MINGW64_HEADERS_VERSION = 10.0.0.r234.g283e5b23a-1
 
 # pacman -Ss mingw-w64-x86_64-crt-git
-MINGW64_CRT_VERSION = 10.0.0.r186.gfc55e181b-1
+MINGW64_CRT_VERSION = 10.0.0.r234.g283e5b23a-1
 
 # pacman -Ss mingw-w64-x86_64-winpthreads-git
-MINGW64_WINPTHREADS_VERSION = 10.0.0.r186.gfc55e181b-1
+MINGW64_WINPTHREADS_VERSION = 10.0.0.r234.g283e5b23a-1
 
 # pacman -Ss mingw-w64-x86_64-zstd
-MINGW64_ZSTD_VERSION = 1.5.2-2
+MINGW64_ZSTD_VERSION = 1.5.4-1
 
 # pacman -Ss mingw-w64-x86_64-isl
 MINGW64_ISL_VERSION = 0.25-1
+
+# pacman -Ss mingw-w64-x86_64-mpc
+MINGW64_MPC_VERSION = 1.3.1-1
+
+# pacman -Ss mingw-w64-x86_64-mpfr
+MINGW64_MPFR_VERSION = 4.2.0-1
+
+# pacman -Ss mingw-w64-x86_64-libiconv
+MINGW64_LIBICONV_VERSION = 1.17-3
+
+# pacman -Ss mingw-w64-x86_64-windows-default-manifest
+MINGW64_WINDOWS_DEFAULT_MANIFEST_VERSION = 6.4-4
