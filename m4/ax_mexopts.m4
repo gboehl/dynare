@@ -51,7 +51,15 @@ case ${MATLAB_ARCH} in
     # using threads, since we are using the POSIX threads version of MinGW)
     MATLAB_LDFLAGS_NOMAP="-static-libgcc -static-libstdc++ -static-libgfortran -Wl,-Bstatic,--whole-archive -lquadmath -Wl,-Bdynamic,--no-whole-archive -shared -L$MATLAB/bin/win64 -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,-Bdynamic,--no-whole-archive"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP \$(abs_top_srcdir)/mex.def"
-    MATLAB_LIBS="-lmex -lmx -lmat -lmwlapack -lmwblas"
+    # Hack for libssp, which is pulled in by -fstack-protector
+    # (curiously only on some MEX files), see windows/build.sh.
+    # Note that the link against libssp should not happen with compilers
+    # from MSYS2, see:
+    # https://www.msys2.org/news/#2022-10-10-libssp-is-no-longer-required
+    # But it happens with Debian’s cross compilers (as of Debian “bookworm” 12).
+    # Also note that the -lssp must come by the end of the link command
+    # (otherwise it will have to be enclosed within --whole-archive).
+    MATLAB_LIBS="-lmex -lmx -lmat -lmwlapack -lmwblas -Wl,-Bstatic -lssp -Wl,-Bdynamic"
     # Hack for static linking of libgomp, needed for OpenMP
     OPENMP_LDFLAGS="-Wl,-Bstatic,--whole-archive -lgomp -Wl,-Bdynamic,--no-whole-archive"
     ax_mexopts_ok="yes"
