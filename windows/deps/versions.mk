@@ -18,17 +18,17 @@ MATLAB64_VERSION = 20200930
 ## Build dependencies
 
 # pacman -Ss mingw-w64-x86_64-boost
-MINGW64_BOOST_VERSION = 1.81.0-1
+MINGW64_BOOST_VERSION = 1.81.0-6
 
 # pacman -Ss mingw-w64-x86_64-gsl
 MINGW64_GSL_VERSION = 2.7.1-1
 
 # pacman -Ss mingw-w64-x86_64-matio
-MINGW64_MATIO_VERSION = 1.5.23-1
+MINGW64_MATIO_VERSION = 1.5.23-4
 
 # Dependency of matio (and of the MinGW compiler)
 # pacman -Ss mingw-w64-x86_64-zlib
-MINGW64_ZLIB_VERSION = 1.2.13-2
+MINGW64_ZLIB_VERSION = 1.2.13-3
 
 # Dependency of matio
 # pacman -Ss mingw-w64-x86_64-hdf5
