@@ -5,7 +5,7 @@ nodist_local_state_space_iteration_3_SOURCES = local_state_space_iteration_3.f08
 nodist_local_state_space_iteration_k_SOURCES = local_state_space_iteration_k.f08
 
 local_state_space_iteration_2_CXXFLAGS = $(AM_CXXFLAGS) -fopenmp
-local_state_space_iteration_2_LDFLAGS = $(AM_LDFLAGS) $(OPENMP_LDFLAGS)
+local_state_space_iteration_2_LDADD = $(OPENMP_LIBS)
 
 local_state_space_iteration_3_FCFLAGS = $(AM_FCFLAGS) -I../libkordersim -pthread
 local_state_space_iteration_3_LDADD = ../libkordersim/libkordersim.a 

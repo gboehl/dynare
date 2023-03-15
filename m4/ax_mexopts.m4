@@ -60,8 +60,10 @@ case ${MATLAB_ARCH} in
     # Also note that the -lssp must come by the end of the link command
     # (otherwise it will have to be enclosed within --whole-archive).
     MATLAB_LIBS="-lmex -lmx -lmat -lmwlapack -lmwblas -Wl,-Bstatic -lssp -Wl,-Bdynamic"
-    # Hack for static linking of libgomp, needed for OpenMP
-    OPENMP_LDFLAGS="-Wl,-Bstatic,--whole-archive -lgomp -Wl,-Bdynamic,--no-whole-archive"
+    # Hack for static linking of libgomp, needed for OpenMP.
+    # Should come by the end of the link command
+    # (otherwise it will have to be enclosed within --whole-archive).
+    OPENMP_LIBS="-Wl,-Bstatic -lgomp -Wl,-Bdynamic"
     ax_mexopts_ok="yes"
     ;;
   maci64)
@@ -129,5 +131,5 @@ AC_SUBST([MATLAB_CXXFLAGS])
 AC_SUBST([MATLAB_FCFLAGS])
 AC_SUBST([MATLAB_LDFLAGS])
 AC_SUBST([MATLAB_LIBS])
-AC_SUBST([OPENMP_LDFLAGS])
+AC_SUBST([OPENMP_LIBS])
 ])
