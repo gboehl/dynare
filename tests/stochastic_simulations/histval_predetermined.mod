@@ -57,4 +57,3 @@ end;
 stoch_simul(nograph, periods = 200);
 
 forecast;
-

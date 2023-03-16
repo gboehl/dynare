@@ -45,7 +45,7 @@ if max(abs(oo_.endo_simul(idx_log_c, :) - log(oo_.endo_simul(idx_c, :)))) > 1e-7
   error('Transformation not correctly performed')
 end
 
-S = load('../ramst/Output/ramst_results.mat');
+S = load('../simul/ramst/Output/ramst_results.mat');
 if max(abs(oo_.endo_simul(idx_c, :) - S.oo_.endo_simul(idx_c, :))) > 1e-7
   error('Result differs from non-transformed model')
 end

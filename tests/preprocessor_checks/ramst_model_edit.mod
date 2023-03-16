@@ -56,7 +56,7 @@ end;
 perfect_foresight_setup(periods=200);
 perfect_foresight_solver;
 
-S = load('ramst/Output/ramst_results.mat');
+S = load('../simul/ramst/Output/ramst_results.mat');
 if any(size(oo_.endo_simul) ~= size(S.oo_.endo_simul)) || any(any(abs(oo_.endo_simul - S.oo_.endo_simul) > 1e-10))
   error('Model editing failure')
 end

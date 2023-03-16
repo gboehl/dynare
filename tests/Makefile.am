@@ -1,5 +1,5 @@
 MODFILES = \
-	walsh.mod \
+	first_order/walsh.mod \
 	occbin/model_irrcap_twoconstraints/dynrbc.mod \
 	occbin/model_irrcap_twoconstraints/dynrbc_0_std_shocks.mod \
 	occbin/model_borrcon/borrcon.mod \
@@ -97,29 +97,26 @@ MODFILES = \
 	gsa/ls2003.mod \
 	gsa/cod_ML_morris/cod_ML_morris.mod \
 	gsa/morris/nk_est.mod \
-	ramst.mod \
-	ramst_a.mod \
-	ramst_static_tag.mod \
-	ramst_static_tag_block.mod \
-	ramst_mshocks.mod \
-	ramst_model_edit.mod \
+	simul/ramst.mod \
+	simul/ramst_a.mod \
+	simul/ramst_mshocks.mod \
+	simul/ramst_mshocks_vec.mod \
 	on-the-fly/ex1.mod \
 	on-the-fly/ex2.mod \
 	on-the-fly/ex3.mod \
 	on-the-fly/ex4.mod \
 	on-the-fly/ex5.mod \
 	on-the-fly/ex6.mod \
-	example1.mod \
-	example2.mod \
-	example1_use_dll.mod \
-	example1_with_tags.mod \
-	example1_irf_shocks.mod \
-	example1_abs_sign.mod \
-	example1_mlv.mod \
-	example1long.mod \
-	example2long.mod \
-	example2long_use_dll.mod \
-	t_sgu_ex1.mod \
+	equation_tags/example1_with_tags.mod \
+	equation_tags/ramst_static_tag.mod \
+	equation_tags/ramst_static_tag_block.mod \
+	stochastic_simulations/example1_irf_shocks.mod \
+	stochastic_simulations/example1long.mod \
+	stochastic_simulations/example2long.mod \
+	stochastic_simulations/example2long_use_dll.mod \
+	stochastic_simulations/example2_simul_replic.mod \
+	stochastic_simulations/histval_sto.mod \
+	stochastic_simulations/histval_predetermined.mod \
 	macro_processor/test_ifndef.mod \
 	macro_processor/example1_macro.mod \
 	irfs/example1_unit_std.mod \
@@ -163,18 +160,15 @@ MODFILES = \
 	histval_initval_file/ramst_datafile.mod \
 	histval_initval_file/sim_exo_lead_lag.mod \
 	histval_initval_file/sim_exo_lead_lag_initvalf.mod \
-	ramst_normcdf_and_friends_mfile.mod \
-	ramst_normcdf_and_friends_use_dll.mod \
-	ramst_normcdf_and_friends_bytecode.mod \
-	ramst_vec.mod \
-	ramst_mshocks_vec.mod \
-	example1_varexo_det.mod \
-	predetermined_variables.mod \
-	fs2000_ssfile.mod \
-	comments.mod \
-	histval_sto.mod \
-	histval_det.mod \
-	histval_predetermined.mod \
+	stat_functions/ramst_normcdf_and_friends_mfile.mod \
+	stat_functions/ramst_normcdf_and_friends_use_dll.mod \
+	stat_functions/ramst_normcdf_and_friends_bytecode.mod \
+	stat_functions/example1_abs_sign.mod \
+	simul/predetermined_variables.mod \
+	simul/histval_det.mod \
+	preprocessor_checks/comments.mod \
+	preprocessor_checks/example1_mlv.mod \
+	preprocessor_checks/ramst_model_edit.mod \
 	auxiliary_variables/test1.mod \
 	expectations/expectation.mod \
 	expectations/expectation_ss.mod \
@@ -189,6 +183,7 @@ MODFILES = \
 	steady_state/example1_block_trust_region.mod \
 	steady_state/Gali_2015_chapter_6_4.mod \
 	steady_state/ramst_solve_algo_0.mod \
+	steady_state/fs2000_ssfile.mod \
 	steady_state_operator/standard.mod \
 	steady_state_operator/use_dll.mod \
 	steady_state_operator/block.mod \
@@ -256,7 +251,6 @@ MODFILES = \
 	external_function/no_deriv_given.mod \
 	external_function/no_deriv_given_dll.mod \
 	external_function/extfun_in_mlv.mod \
-	seeds.mod \
 	minimal_state_space_system/as2007_minimal.mod \
 	minimal_state_space_system/sw_minimal.mod \
 	identification/kim/kim2.mod \
@@ -275,6 +269,7 @@ MODFILES = \
 	identification/forward_looking/forward_looking_empty_ghx.mod \
 	identification/forward_looking/forward_looking_varobs_x.mod \
 	simul/example1.mod \
+	simul/ramst_vec.mod \
 	simul/Solow_no_varexo.mod \
 	simul/simul_ZLB_purely_forward.mod \
 	simul/simul_ZLB_purely_forward_no_solution.mod \
@@ -361,6 +356,7 @@ MODFILES = \
 	ep/rbc_bytecode.mod \
 	ep/rbcii_MCP.mod \
 	stochastic_simulations/example1_noprint.mod \
+	stochastic_simulations/example_seeds.mod \
 	stochastic-backward-models/solow_cd.mod \
 	stochastic-backward-models/solow_ces.mod \
 	stochastic-backward-models/solow_cd_with_steadystate.mod \
@@ -407,6 +403,7 @@ MODFILES = \
 	trend_var/fs2000_log_nonstationary.mod \
 	decision_rules/third_order/FV2011.mod \
 	decision_rules/example1.mod \
+	decision_rules/example1_use_dll.mod \
 	decision_rules/ar_qz_test.mod \
 	shock_decomposition/example1_calib_shock_decomp.mod \
 	shock_decomposition/fs2000_est.mod \
@@ -416,6 +413,7 @@ MODFILES = \
 	shock_decomposition/shock_decomp_backward.mod \
 	stochastic_purely_forward/stochastic_purely_forward.mod \
 	stochastic_purely_forward/stochastic_purely_forward_with_static.mod \
+	forecast/example1_varexo_det.mod \
 	forecast/Hansen_exo_det_forecast.mod \
 	forecast/linear_exo_det_forecast.mod \
 	forecast/ls2003_rolling_window_forecast.mod \
@@ -675,8 +673,9 @@ PARTICLEFILES = \
 	particle/local_state_space_iteration_3_test.mod
 
 
-XFAIL_MODFILES = ramst_xfail.mod \
-	estim_param_in_shock_value_xfail.mod \
+XFAIL_MODFILES = preprocessor_checks/ramst_all_values_required_xfail.mod \
+	preprocessor_checks/example1_undeclared_vars_xfail.mod \
+	estimation/estim_param_in_shock_value_xfail.mod \
 	optimal_policy/Ramsey/ramsey_ex_wrong_ss_file_xfail.mod \
 	estimation/fs2000_mixed_ML_xfail.mod \
 	estimation/fs2000_stochastic_singularity_xfail.mod \
@@ -690,7 +689,7 @@ XFAIL_MODFILES = ramst_xfail.mod \
 	particle/first_spec_xfail_0.mod \
 	particle/first_spec_xfail_1.mod \
 	kalman_initial_state/fs2000_kalman_initial_xfail.mod \
-	example1_extra_exo_xfail.mod \
+	preprocessor_checks/example1_extra_exo_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_1_xfail.mod \
 	estimation/tune_mh_jscale/fs2000_2_xfail.mod \
 	estimation/no_init_estimation_check_first_obs/fs2000_init_check_XFAIL.mod \
@@ -717,14 +716,14 @@ occbin/model_irrcap_twoconstraints/dynrbc_0_std_shocks.o.trs: occbin/model_irrca
 occbin/model_borrcon/borrcon_0_std_shocks.m.trs: occbin/model_borrcon/borrcon.m.trs
 occbin/model_borrcon/borrcon_0_std_shocks.o.trs: occbin/model_borrcon/borrcon.o.trs
 
-example1_use_dll.m.trs: example1.m.trs
-example1_use_dll.o.trs: example1.o.trs
+decision_rules/example1_use_dll.m.trs: decision_rules/example1.m.trs
+decision_rules/example1_use_dll.o.trs: decision_rules/example1.o.trs
 
-example2long_use_dll.m.trs: example1long.m.trs
-example2long_use_dll.o.trs: example1long.o.trs
+stochastic_simulations/example2long_use_dll.m.trs: stochastic_simulations/example1long.m.trs
+stochastic_simulations/example2long_use_dll.o.trs: stochastic_simulations/example1long.o.trs
 
-example2long.m.trs: example1long.m.trs
-example2long.o.trs: example1long.o.trs
+stochastic_simulations/example2long.m.trs: stochastic_simulations/example1long.m.trs
+stochastic_simulations/example2long.o.trs: stochastic_simulations/example1long.o.trs
 
 estimation/MH_recover/fs2000_recover_tarb.m.trs: estimation/MH_recover/fs2000_recover.m.trs
 estimation/MH_recover/fs2000_recover_tarb.o.trs: estimation/MH_recover/fs2000_recover.o.trs
@@ -869,8 +868,8 @@ deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.o.trs: determ
 deterministic_simulations/multiple_lead_lags/sim_lead_lag.m.trs: deterministic_simulations/multiple_lead_lags/sim_base.m.trs deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.m.trs
 deterministic_simulations/multiple_lead_lags/sim_lead_lag.o.trs: deterministic_simulations/multiple_lead_lags/sim_base.o.trs deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.o.trs
 
-deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.m.trs: ramst.m.trs
-deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.o.trs: ramst.o.trs
+deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.m.trs: simul/ramst.m.trs
+deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.o.trs: simul/ramst.o.trs
 
 loglinear/example4_loglinear.m.trs: loglinear/example4_exp.m.trs
 loglinear/example4_loglinear.o.trs: loglinear/example4_exp.o.trs
@@ -984,11 +983,11 @@ particle/local_it_k_test_parallel.o.trs: particle/first_spec.o.trs
 pruning/AS_pruned_state_space_red_shock.m.trs: pruning/AnSchorfheide_pruned_state_space.m.trs
 pruning/AS_pruned_state_space_red_shock.o.trs: pruning/AnSchorfheide_pruned_state_space.o.trs
 
-ramst_model_edit.m.trs: ramst.m.trs
-ramst_model_edit.o.trs: ramst.o.trs
+preprocessor_checks/ramst_model_edit.m.trs: simul/ramst.m.trs
+preprocessor_checks/ramst_model_edit.o.trs: simul/ramst.o.trs
 
-log_transform/ramst.m.trs: ramst.m.trs
-log_transform/ramst.o.trs: ramst.o.trs
+log_transform/ramst.m.trs: simul/ramst.m.trs
+log_transform/ramst.o.trs: simul/ramst.o.trs
 
 model-inversion/nk-1/invert.m.trs: model-inversion/nk-1/simulate.m.trs
 model-inversion/nk-1/invert.o.trs: model-inversion/nk-1/simulate.o.trs
@@ -1305,7 +1304,7 @@ EXTRA_DIST = \
 	run_reporting_test_matlab.m \
 	run_reporting_test_octave.m \
 	run_all_unit_tests.m \
-	+matlab/+namespace/y_k.m \
+	first_order/+matlab/+namespace/y_k.m \
 	reporting/AnnualTable.m \
 	reporting/CommResidTablePage.m \
 	reporting/CountryGraphPage.m \
@@ -1318,7 +1317,7 @@ EXTRA_DIST = \
 	reporting/runDynareReport.m \
 	homotopy/common.mod \
 	block_bytecode/ls2003.mod \
-	fs2000_ssfile_aux.m \
+	steady_state/fs2000_ssfile_aux.m \
 	utils/printMakeCheckMatlabErrMsg.m \
 	utils/printMakeCheckOctaveErrMsg.m \
 	utils/fataltest.m \
@@ -1352,7 +1351,6 @@ EXTRA_DIST = \
 	measurement_errors/data_ca1.m \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fsdat_simul.m \
 	missing/simulate_data_with_missing_observations.m \
-	objectives/sgu_ex1.mat \
 	conditional_forecasts/2/fsdat_simul.m \
 	ms-sbvar/msdata.m \
 	ms-sbvar/archive-files/ftd_2s_caseall_upperchol3v.m \
@@ -1483,7 +1481,7 @@ EXTRA_DIST = \
 	solver-test-functions/variablydimensioned.m \
 	solver-test-functions/watson.m \
 	solver-test-functions/wood.m \
-	ramst_normcdf_and_friends.inc \
+	stat_functions/ramst_normcdf_and_friends.inc \
 	solve_algo_12_14/backward_model.inc \
 	solve_algo_12_14/simul_backward_common.inc \
 	solve_algo_12_14/purely_backward_common.inc \
