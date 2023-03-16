@@ -3,7 +3,6 @@ variables:
   TERM: linux
   MATLAB_VERSION: R2022b
   OLD_MATLAB_VERSION: R2014a
-  OCTAVE_VERSION: 7.3.0
 
 # The next stanza creates the version number used for the source tarball and the
 # binary packages. Here are the following possible cases:
@@ -27,7 +26,7 @@ build_binaries:
   stage: build
   script:
     - autoreconf -si
-    - ./configure --with-matlab=/usr/local/MATLAB/$MATLAB_VERSION --with-octave=/usr/local/octave/$OCTAVE_VERSION PACKAGE_VERSION=$VERSION PACKAGE_STRING="dynare $VERSION"
+    - ./configure --with-matlab=/usr/local/MATLAB/$MATLAB_VERSION PACKAGE_VERSION=$VERSION PACKAGE_STRING="dynare $VERSION"
     - make -j $(nproc) LN_S="cp -p"
   artifacts:
     paths:
@@ -66,7 +65,7 @@ pkg_source:
     - rm doc/manual/source/_static/mathjax && sed -i "/^mathjax_path *=/d" doc/manual/source/conf.py
     - 'for f in configure.ac preprocessor/configure.ac mex/build/matlab/configure.ac mex/build/octave/configure.ac; do sed -i "s/^AC_INIT(\[\(.*\)\],\s*\[\(.*\)\])/AC_INIT([\1], [$VERSION])/" $f; done'
     - autoreconf -si
-    - ./configure --with-matlab=/usr/local/MATLAB/$MATLAB_VERSION --with-octave=/usr/local/octave/$OCTAVE_VERSION
+    - ./configure --with-matlab=/usr/local/MATLAB/$MATLAB_VERSION
     - make dist
   artifacts:
     paths:
@@ -146,7 +145,7 @@ test_octave:
     OPENBLAS_NUM_THREADS: 1
   script:
     - autoreconf -si
-    - ./configure --disable-matlab --with-octave=/usr/local/octave/$OCTAVE_VERSION
+    - ./configure --disable-matlab
     - make -j $(nproc) -C tests check-octave
   artifacts:
     paths:
