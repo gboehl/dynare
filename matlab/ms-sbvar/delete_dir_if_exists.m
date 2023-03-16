@@ -11,7 +11,7 @@ function delete_dir_if_exists(dirname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2011-2016 Dynare Team
+% Copyright © 2011-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,7 +29,7 @@ function delete_dir_if_exists(dirname)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if isoctave
-    confirm_recursive_rmdir(false)
+    confirm_recursive_rmdir(false, 'local')
 end
 
 if exist(dirname, 'dir')
