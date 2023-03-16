@@ -129,7 +129,7 @@ octave64: tarballs/octave-${OCTAVE_VERSION}${OCTAVE_W64_BUILD}-w64.7z
 	mv octave-${OCTAVE_VERSION}-w64 $@
 	# Clean up MinGW stuff that interferes with our cross-compiler
 	cd $@/mingw64/lib && rm -f libadvapi32.a libkernel32.a libmingw32.a libmingwex.a libmoldname.a libmsvcrt.a libpthread.dll.a libshell32.a libuser32.a
-	cd $@/mingw64/include && rm -f $$(grep -l "This file is part of the mingw-w64 runtime package" *.h)
+	cd $@/mingw64/include && rm -f $$(grep -l "This file is part of the mingw-w64 runtime package" *.h) omp.h
 	touch $@
 
 octave: octave64
