@@ -14,7 +14,7 @@ function [x,f,abscissa,dens,binf,bsup] = draw_prior_density(indx,bayestopt_)
 %    bsup:         [double]     Scalar, last element of x
 
 
-% Copyright © 2004-2017 Dynare Team
+% Copyright © 2004-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -49,17 +49,8 @@ switch pshape(indx)
     dens = density(abscissa,p6(indx),p7(indx),p3(indx),p4(indx));
   case 2% Generalized Gamma prior
     density = @(x,a,b,c) gampdf(x-c,a,b);
-    try
-        infbound = gaminv(truncprior,p6(indx),p7(indx))+p3(indx);
-        supbound = gaminv(1-truncprior,p6(indx),p7(indx))+p3(indx);
-    catch
-        % Workaround for ticket #161, see http://savannah.gnu.org/bugs/?52569
-        if isoctave
-            error(['Due to a computational limitation in Octave, the prior cannot be plotted. You must either use plot_priors=0 or choose other values for mean and/or variance of your prior on ' bayestopt_.name{indx} ', or use another shape'])
-        else
-            rethrow(lasterror)
-        end
-    end
+    infbound = gaminv(truncprior,p6(indx),p7(indx))+p3(indx);
+    supbound = gaminv(1-truncprior,p6(indx),p7(indx))+p3(indx);
     abscissa = linspace(infbound,supbound,steps);
     dens = density(abscissa,p6(indx),p7(indx),p3(indx));
   case 3% Gaussian prior
@@ -68,17 +59,8 @@ switch pshape(indx)
     abscissa = linspace(infbound,supbound,steps);
     dens = normpdf(abscissa,p6(indx),p7(indx));
   case 4% Inverse-gamma of type 1 prior
-    try
-        infbound = 1/sqrt(gaminv(1-10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
-        supbound = 1/sqrt(gaminv(10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
-    catch
-        % Workaround for ticket #161, see http://savannah.gnu.org/bugs/?52569
-        if isoctave
-            error(['Due to a computational limitation in Octave, the prior cannot be plotted. You must either use plot_priors=0 or choose other values for mean and/or variance of your prior on ' bayestopt_.name{indx} ', or use another shape'])
-        else
-            rethrow(lasterror)
-        end
-    end
+    infbound = 1/sqrt(gaminv(1-10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
+    supbound = 1/sqrt(gaminv(10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
     abscissa = linspace(infbound,supbound,steps);
     dens = exp(lpdfig1(abscissa-p3(indx),p6(indx),p7(indx)));
   case 5% Uniform prior
@@ -87,17 +69,8 @@ switch pshape(indx)
     abscissa = linspace(infbound,supbound,steps);
     dens = ones(1, steps) / (supbound-infbound);
   case 6% Inverse-gamma of type 2 prior
-    try
-        infbound = 1/(gaminv(1-10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
-        supbound = 1/(gaminv(10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
-    catch
-        % Workaround for ticket #161, see http://savannah.gnu.org/bugs/?52569
-        if isoctave
-            error(['Due to a computational limitation in Octave, the prior cannot be plotted. You must either use plot_priors=0 or choose other values for mean and/or variance of your prior on ' bayestopt_.name{indx} ', or use another shape'])
-        else
-            rethrow(lasterror)
-        end
-    end
+    infbound = 1/(gaminv(1-10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
+    supbound = 1/(gaminv(10*truncprior, p7(indx)/2, 2/p6(indx)))+p3(indx);
     abscissa = linspace(infbound,supbound,steps);
     dens = exp(lpdfig2(abscissa-p3(indx),p6(indx),p7(indx)));
   case 8
