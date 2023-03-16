@@ -158,7 +158,7 @@ function [xmin, ...      % minimum search point of last iteration
                             %
 
 % Copyright © 2001-2012 Nikolaus Hansen,
-% Copyright © 2012-2017 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -1939,16 +1939,6 @@ else % evaluation string s
     end
 end
 
-
-% ---------------------------------------------------------------
-% ---------------------------------------------------------------
-function res = isoctave
-% any hack to find out whether we are running octave
-s = version;
-res = 0;
-if exist('fflush', 'builtin') && eval(s(1)) < 7
-    res = 1;
-end
 
 % ---------------------------------------------------------------
 % ---------------------------------------------------------------
