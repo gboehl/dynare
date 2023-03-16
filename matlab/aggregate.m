@@ -2,7 +2,7 @@ function aggregate(ofile, dynopt, rootfolder, varargin)
 
 % Agregates cherry-picked models.
 
-% Copyright © 2019-2021 Dynare Team
+% Copyright © 2019-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -263,6 +263,7 @@ end
 if ~isempty(firstline)
     fprintf(fid, '%s\n\n', firstline);
 end
+% Print list of endogenous variables.
 fprintf(fid, 'var\n');
 for i=1:rows(elist)
     if size(elist,2)==1 || isempty(elist{i,2})
@@ -272,15 +273,18 @@ for i=1:rows(elist)
     end
 end
 if ~isempty(plist)
+    % Print list of parameters.
     fprintf(fid, ';\n\n');
     fprintf(fid, 'parameters\n');
     for i=1:length(plist)
         fprintf(fid, '\t%s\n', plist{i});
     end
     fprintf(fid, ';\n\n');
+    % Print calibration.
     fprintf(fid, calibration);
 end
 if ~isempty(xlist)
+    % Print list of exogenous variables.
     fprintf(fid, '\n\n');
     fprintf(fid, 'varexo\n');
     for i=1:rows(xlist)
@@ -291,7 +295,17 @@ if ~isempty(xlist)
         end
     end
 end
-fprintf(fid, ';\n\n');
+fprintf(fid, ';\n');
+skipline(1, fid)
+% Provide an interface to flip endogenous and exogenous variables. Active if only macrovariable
+% InvertModel is set to True. The calls to the change_type command must be provided in the file
+% model-inversion-setup.inc (in the current folder).
+fprintf(fid, '@#ifdef InvertModel\n');
+fprintf(fid, '    @#if InvertModel\n');
+fprintf(fid, '        @#include "model-inversion-setup.inc"\n');
+fprintf(fid, '    @#endif\n');
+fprintf(fid, '@#endif\n');
+skipline(1, fid)
 fprintf(fid, 'model;\n\n');
 for i=1:rows(eqlist)
     if isempty(eqlist{i,4})
