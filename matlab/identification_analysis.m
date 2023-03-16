@@ -335,14 +335,7 @@ if info(1) == 0 %no errors in solution
                 cmm = simulated_moment_uncertainty(ind_dMOMENTS, periods, replic,options_,M_,oo_); %covariance matrix of moments
                 sd = sqrt(diag(cmm));
                 cc = cmm./(sd*sd');
-                if isoctave
-                    [VV,DD] = eig(cc);
-                    %fix for older Matlab versions that do not support computing left eigenvalues, see http://mathworks.com/help/releases/R2012b/matlab/ref/eig.html
-                    [WW,~] = eig(cc.');
-                    WW = conj(WW);
-                else
-                    [VV,DD,WW] = eig(cc);
-                end
+                [VV,DD,WW] = eig(cc);
                 id = find(diag(DD)>tol_deriv);
                 siTMP = si_dMOMENTS./repmat(sd,[1 totparam_nbr]);
                 MIM = (siTMP'*VV(:,id))*(DD(id,id)\(WW(:,id)'*siTMP));
