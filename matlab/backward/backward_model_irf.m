@@ -19,7 +19,7 @@ function [deviations, baseline, irfs] = backward_model_irf(initialcondition, inn
 %   argument.
 % - If second argument is not empty, periods must not be greater than innovationbaseline.nobs.
 
-% Copyright © 2017-2020 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -163,9 +163,13 @@ irfs = struct();
 % Baseline paths (get transition paths induced by the initial condition and
 % baseline innovations).
 if options_.linear
-    ysim__0 = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, Innovations, nx, ny1, iy1, jdx, model_dynamic);
+    [ysim__0, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, Innovations, nx, ny1, iy1, jdx, model_dynamic);
 else
-    ysim__0 = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, Innovations, iy1, model_dynamic);
+    [ysim__0, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, Innovations, iy1, model_dynamic);
+end
+
+if errorflag
+    error('Simulation failed. Cannot simulate baseline.')
 end
 
 % Transform the endogenous variables.
@@ -198,9 +202,13 @@ for i=1:length(listofshocks)
         innovations(1,:) = innovations(1,:) + transpose(C(:,j));
     end
     if options_.linear
-        ysim__1 = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
+        [ysim__1, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
     else
-        ysim__1 = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
+        [ysim__1, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
+    end
+    if errorflag
+        warning('Simulation failed. Cannot compute IRF for %s.', listofshocks{i})
+        continue
     end
     % Transform the endogenous variables
     if notransform

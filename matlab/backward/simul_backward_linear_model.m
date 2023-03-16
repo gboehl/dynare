@@ -1,4 +1,4 @@
-function simulations = simul_backward_linear_model(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations)
+function [simulations, errorflag] = simul_backward_linear_model(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations)
 
 % Simulates a stochastic linear backward looking model.
 %
@@ -12,6 +12,7 @@ function simulations = simul_backward_linear_model(initialconditions, samplesize
 %
 % OUTPUTS
 % - DynareOutput        [struct]      Dynare's oo_ global structure.
+% - errorflag           [logical]     scalar, equal to false iff the simulation did not fail.
 %
 % REMARKS
 % [1] The innovations used for the simulation are saved in DynareOutput.exo_simul, and the resulting paths for the endogenous
@@ -21,7 +22,7 @@ function simulations = simul_backward_linear_model(initialconditions, samplesize
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided thrtough the histval block.
 
-% Copyright © 2012-2022 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,6 +54,6 @@ end
 [initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic] = ...
     simul_backward_model_init(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations);
 
-[ysim, xsim] = simul_backward_linear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
+[ysim, xsim, errorflag] = simul_backward_linear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
 
 simulations = [dseries(ysim', initialconditions.init, endonames(1:DynareModel.orig_endo_nbr)), dseries(xsim, initialconditions.init, exonames)];

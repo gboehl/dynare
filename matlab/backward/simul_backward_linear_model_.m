@@ -1,4 +1,4 @@
-function [ysim, xsim] = simul_backward_linear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic)
+function [ysim, xsim, errorflag] = simul_backward_linear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic)
 
 % Simulates a stochastic linear backward looking model.
 %
@@ -12,6 +12,7 @@ function [ysim, xsim] = simul_backward_linear_model_(initialconditions, samplesi
 %
 % OUTPUTS
 % - DynareOutput        [struct]      Dynare's oo_ global structure.
+% - errorflag           [logical]     scalar, equal to false iff the simulation did not fail.
 %
 % REMARKS
 % [1] The innovations used for the simulation are saved in DynareOutput.exo_simul, and the resulting paths for the endogenous
@@ -21,7 +22,7 @@ function [ysim, xsim] = simul_backward_linear_model_(initialconditions, samplesi
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided thrtough the histval block.
 
-% Copyright © 2017-2022 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,6 +39,8 @@ function [ysim, xsim] = simul_backward_linear_model_(initialconditions, samplesi
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+errorflag = false;
+
 if ~isempty(innovations)
     DynareOutput.exo_simul(initialconditions.nobs+(1:samplesize),:) = innovations;
 end
@@ -48,7 +51,15 @@ end
                              DynareModel.params, ...
                              DynareOutput.steady_state, DynareModel.orig_maximum_lag+1);
 
-A0inv = inv(jacob(:,jdx));
+try
+    A0inv = inv(jacob(:,jdx));
+catch
+    errorflag = true;
+    ysim = [];
+    xsim = [];
+    return
+end
+
 A1 = jacob(:,nonzeros(DynareModel.lead_lag_incidence(1,:)));
 B = jacob(:,end-nx+1:end);
 

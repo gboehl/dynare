@@ -1,4 +1,4 @@
-function simulation = simul_backward_model(initialconditions, samplesize, innovations)
+function [simulation, errorflag] = simul_backward_model(initialconditions, samplesize, innovations)
 % function simulation = simul_backward_model(initialconditions, samplesize, innovations)
 % Simulates a stochastic backward looking model (with arbitrary precision).
 %
@@ -9,6 +9,7 @@ function simulation = simul_backward_model(initialconditions, samplesize, innova
 %
 % OUTPUTS
 % - simulation          [dseries]     Simulated endogenous and exogenous variables.
+% - errorflag           [logical]     scalar, equal to false iff the simulation did not fail.
 %
 % REMARKS
 % [1] The innovations used for the simulation are saved in DynareOutput.exo_simul, and the resulting paths for the endogenous
@@ -18,7 +19,7 @@ function simulation = simul_backward_model(initialconditions, samplesize, innova
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided through the histval block.
 
-% Copyright © 2012-2022 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -93,7 +94,7 @@ else
 end
 
 if options_.linear
-    simulation = simul_backward_linear_model(initialconditions, samplesize, options_, M_, oo_, Innovations);
+    [simulation, errorflag] = simul_backward_linear_model(initialconditions, samplesize, options_, M_, oo_, Innovations);
 else
-    simulation = simul_backward_nonlinear_model(initialconditions, samplesize, options_, M_, oo_, Innovations);
+    [simulation, errorflag] = simul_backward_nonlinear_model(initialconditions, samplesize, options_, M_, oo_, Innovations);
 end

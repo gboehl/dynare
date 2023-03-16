@@ -10,7 +10,7 @@ function forecasts = backward_model_forecast(initialcondition, listofvariables, 
 % OUTPUTS
 % - forecast            [dseries]
 
-% Copyright © 2017-2018 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -91,10 +91,15 @@ end
 
 % Compute forecast without shock
 if options_.linear
-    ysim__0 = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
+    [ysim__0, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
 else
-    ysim__0 = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
+    [ysim__0, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
 end
+
+if errorflag
+    error('Simulation failed.')
+end
+
 forecasts.pointforecast = dseries(transpose(ysim__0(idy,:)), initialcondition.init, listofvariables);
 
 % Set first period of forecast
@@ -106,9 +111,12 @@ if withuncertainty
     for i=1:B
         innovations = transpose(sigma*randn(M_.exo_nbr, periods));
         if options_.linear
-            [ysim__, xsim__] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
+            [ysim__, xsim__, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
         else
-            [ysim__, xsim__] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
+            [ysim__, xsim__, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
+        end
+        if errorflag
+            error('Simulation failed.')
         end
         ArrayOfForecasts(:,:,i) = ysim__(idy,:);
     end

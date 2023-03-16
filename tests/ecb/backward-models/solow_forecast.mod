@@ -51,7 +51,7 @@ histval;
     PhysicalCapitalStock(0) = 1;
 end;
 
-simulation__ = simul_backward_nonlinear_model([], 10, options_, M_, oo_);
+[simulation__, errorflag] = simul_backward_nonlinear_model([], 10, options_, M_, oo_);
 
 initialcondition = dseries(simulation__.data(10,1:M_.endo_nbr), 2017Q1, M_.endo_names);
 
@@ -73,11 +73,11 @@ listofvariables = {'Efficiency', 'Output'};
 forecasts = backward_model_forecast(initialcondition, listofvariables, 16, true);
 
 /* REMARKS
-** 
+**
 ** - The third argument is the number of periods for the forecast. Default is 8.
 ** - The last argument is for computing (or not) the confidence bands. If false (default), only point forecast is produced.
 ** - forecasts is a structure, each field is a dseries object for the point forecast (ie forecasts without innovations in the future),
-** the mean forecast, the median forecast, the standard deviation of the predictive distribution and the lower/upper bounds of the 
+** the mean forecast, the median forecast, the standard deviation of the predictive distribution and the lower/upper bounds of the
 ** interval containing 95% of the predictive distribution.
 */
 
@@ -89,7 +89,7 @@ plot(forecasts.ub.Output,'-r')
 hold off
 
 /* REMARKS
-** 
-** In this model there is no steady state (only a stable balanced growth paths), this explains the 
+**
+** In this model there is no steady state (only a stable balanced growth paths), this explains the
 ** shape of the forecast for Output.
 */

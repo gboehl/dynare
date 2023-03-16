@@ -1,4 +1,4 @@
-function [ysim, xsim] = simul_backward_nonlinear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic)
+function [ysim, xsim, errorflag] = simul_backward_nonlinear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic)
 
 % Simulates a stochastic non linear backward looking model with arbitrary precision (a deterministic solver is used).
 %
@@ -12,6 +12,7 @@ function [ysim, xsim] = simul_backward_nonlinear_model_(initialconditions, sampl
 %
 % OUTPUTS
 % - DynareOutput        [struct]      Dynare's oo_ global structure.
+% - errorflag           [logical]     scalar, equal to false iff the simulation did not fail.
 %
 % REMARKS
 % [1] The innovations used for the simulation are saved in DynareOutput.exo_simul, and the resulting paths for the endogenous
@@ -21,7 +22,7 @@ function [ysim, xsim] = simul_backward_nonlinear_model_(initialconditions, sampl
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations
 %     provided thrtough the histval block.
 
-% Copyright © 2017-2022 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -100,6 +101,7 @@ for it = initialconditions.nobs+(1:samplesize)
             end
         end
     catch Error
+        errorflag = true;
         DynareOutput.endo_simul = DynareOutput.endo_simul(:, 1:it-1);
         dprintf('Newton failed on iteration i = %s.', num2str(it-initialconditions.nobs));
         ytm = DynareOutput.endo_simul(:,end);
