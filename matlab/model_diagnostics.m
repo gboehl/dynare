@@ -183,7 +183,7 @@ for b=1:nb
         display_problematic_vars_Jacobian(imagrow,imagcol,M,dr.ys,'static','MODEL_DIAGNOSTICS: ')
     end
     try
-        if isoctave || matlab_ver_less_than('9.12') || isempty(options.jacobian_tolerance)
+        if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options.jacobian_tolerance)
             rank_jacob = rank(jacob); %can sometimes fail
         else
             rank_jacob = rank(jacob,options.jacobian_tolerance); %can sometimes fail
@@ -198,7 +198,7 @@ for b=1:nb
               'singular'])
         disp(['MODEL_DIAGNOSTICS:  there is ' num2str(n_vars_jacob-rank_jacob) ...
               ' collinear relationships between the variables and the equations'])
-        if isoctave || matlab_ver_less_than('9.12') || isempty(options.jacobian_tolerance)
+        if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options.jacobian_tolerance)
             ncol = null(jacob);
         else
             ncol = null(jacob,options.jacobian_tolerance); %can sometimes fail
@@ -221,7 +221,7 @@ for b=1:nb
                 fprintf('%s\n',endo_names{k})
             end
         end
-        if isoctave || matlab_ver_less_than('9.12') || isempty(options.jacobian_tolerance)
+        if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options.jacobian_tolerance)
             neq = null(jacob'); %can sometimes fail
         else
             neq = null(jacob',options.jacobian_tolerance); %can sometimes fail
