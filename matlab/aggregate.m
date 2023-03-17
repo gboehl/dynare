@@ -21,7 +21,7 @@ function aggregate(ofile, dynopt, rootfolder, varargin)
 
 MAX_NUMBER_OF_ELEMENTS = 10000;
 
-if ~isoctave && matlab_less_ver_than('9.14') % Warning removed in R2023a
+if ~isoctave && matlab_ver_less_than('9.14') % Warning removed in R2023a
     warning off MATLAB:subscripting:noSubscriptsSpecified
 end
 
@@ -320,7 +320,7 @@ end
 fprintf(fid, 'end;');
 fclose(fid);
 
-if ~isoctave && matlab_less_ver_than('9.14')
+if ~isoctave && matlab_ver_less_than('9.14')
     warning on MATLAB:subscripting:noSubscriptsSpecified
 end
 
