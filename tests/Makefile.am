@@ -1609,7 +1609,6 @@ clean-local:
 	rm -f $(shell find -name H.dat)
 
 	rm -f arima/data1.m arima/data2.m \
-		k_order_perturbation/*.jnl \
 		k_order_perturbation/*.mat \
 		kalman_filter_smoother/data_algo.mat \
 		kalman_filter_smoother/data_Pinf_Pstar.mat
