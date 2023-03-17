@@ -268,6 +268,7 @@ MODFILES = \
 	identification/correlated_errors/fs2000_corr.mod \
 	identification/forward_looking/forward_looking_empty_ghx.mod \
 	identification/forward_looking/forward_looking_varobs_x.mod \
+	model_diagnostics/example2_block_model_diag.mod	\
 	simul/example1.mod \
 	simul/ramst_vec.mod \
 	simul/Solow_no_varexo.mod \
