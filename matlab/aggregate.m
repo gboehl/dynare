@@ -21,7 +21,9 @@ function aggregate(ofile, dynopt, rootfolder, varargin)
 
 MAX_NUMBER_OF_ELEMENTS = 10000;
 
-warning off MATLAB:subscripting:noSubscriptsSpecified
+if ~isoctave && matlab_less_ver_than('9.14') % Warning removed in R2023a
+    warning off MATLAB:subscripting:noSubscriptsSpecified
+end
 
 if ~isempty(dynopt)
     % Should be a list of options for the preprocessor in a cell
@@ -318,8 +320,9 @@ end
 fprintf(fid, 'end;');
 fclose(fid);
 
-warning on MATLAB:subscripting:noSubscriptsSpecified
-
+if ~isoctave && matlab_less_ver_than('9.14')
+    warning on MATLAB:subscripting:noSubscriptsSpecified
+end
 
 function b = isequationtag(str)
     b = true;
