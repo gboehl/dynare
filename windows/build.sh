@@ -121,8 +121,8 @@ build_windows_matlab_mex_64_b ()
 		     PACKAGE_STRING="dynare $VERSION"
     make -j"$NTHREADS" all
     x86_64-w64-mingw32-strip -- **/*.mexw64
-    mkdir -p "$ROOT_DIRECTORY"/../mex/matlab/win64-9.4-9.13
-    mv -- **/*.mexw64 "$ROOT_DIRECTORY"/../mex/matlab/win64-9.4-9.13
+    mkdir -p "$ROOT_DIRECTORY"/../mex/matlab/win64-9.4-9.14
+    mv -- **/*.mexw64 "$ROOT_DIRECTORY"/../mex/matlab/win64-9.4-9.14
 }
 
 # Create Windows DLL binaries for Octave/MinGW (64bit)

@@ -1,6 +1,6 @@
 function mexpath = add_path_to_mex_files(dynareroot, modifypath)
 
-% Copyright (C) 2015-2022 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -60,7 +60,7 @@ else
                 end
             end
         else
-            tmp = [dynareroot '../mex/matlab/win64-9.4-9.13/'];
+            tmp = [dynareroot '../mex/matlab/win64-9.4-9.14/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
                 if modifypath
@@ -80,7 +80,7 @@ else
                 end
             end
         else
-            tmp = [dynareroot '../mex/matlab/maci64-9.4-9.13'];
+            tmp = [dynareroot '../mex/matlab/maci64-9.4-9.14/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
                 if modifypath
