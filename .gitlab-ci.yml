@@ -1,7 +1,7 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   TERM: linux
-  MATLAB_VERSION: R2022b
+  MATLAB_VERSION: R2023a
   OLD_MATLAB_VERSION: R2014a
 
 # The next stanza creates the version number used for the source tarball and the
