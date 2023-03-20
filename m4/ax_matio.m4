@@ -1,6 +1,6 @@
 dnl Detect the MATIO Library.
 dnl
-dnl Copyright © 2012-2021 Dynare Team
+dnl Copyright © 2012-2023 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -22,6 +22,8 @@ AC_DEFUN([AX_MATIO],
 AC_ARG_WITH(matio, AS_HELP_STRING([--with-matio=DIR], [prefix to MATIO installation]),
             matio_prefix="$withval", matio_prefix="")
 
+  AC_REQUIRE([AC_CANONICAL_HOST])
+
   has_matio=yes
 
   if test -n "$matio_prefix"; then
@@ -40,15 +42,19 @@ AC_ARG_WITH(matio, AS_HELP_STRING([--with-matio=DIR], [prefix to MATIO installat
   CPPFLAGS="$CPPFLAGS_MATIO $CPPFLAGS"
   LDFLAGS="$LDFLAGS_MATIO $LDFLAGS"
 
-  dnl Workaround for the matio from RHEL 6 + EPEL 6
-  dnl If detected, libz and libhdf5 are added to LIBS, used for matio test
-  LIBS=""
-  AC_CHECK_LIB([z], [compress])
-  dnl szip is needed under MSYS2
-  AC_CHECK_LIB([szip], [SZ_Compress])
-  dnl szip is needed for static linking on macOS (it's called libsz on macOS)
-  AC_CHECK_LIB([sz], [SZ_Compress])
-  AC_CHECK_LIB([hdf5], [H5Fcreate])
+  dnl Under Windows and macOS, add hdf5 and its dependencies since we are linking statically
+  case ${host_os} in
+    *mingw32*)
+          dnl Partly inspired by /mingw64/lib/pkgconfig/{hdf5,libcurl}.pc (in particular for the system libraries)
+          LIBS="-lhdf5 -lcurl -lnghttp2 -lidn2 -lssh2 -lpsl -lunistring -liconv -lbcrypt -ladvapi32 -lcrypt32 -lbcrypt -lgdi32 -lwldap32 -lzstd -lbrotlidec -lbrotlicommon -lssl -lcrypto -lws2_32 -lz -lsz"
+          ;;
+    *darwin*)
+          LIBS="-lhdf5 -lz -lsz"
+          ;;
+    *)
+          LIBS=""
+          ;;
+  esac
 
   AC_CHECK_HEADER([matio.h], [], [has_matio=no])
   AC_CHECK_LIB([matio], [Mat_Open], [LIBADD_MATIO="-lmatio $LIBS"], [has_matio=no])
