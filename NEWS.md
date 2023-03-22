@@ -1,3 +1,60 @@
+Announcement for Dynare 5.4 (on 2023-03-22)
+===========================================
+
+We are pleased to announce the release of Dynare 5.4.
+
+This maintenance release fixes various bugs.
+
+The Windows, macOS and source packages are already available for download at
+[the Dynare website](https://www.dynare.org/download/).
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 8.3 (R2014a) to
+9.14 (R2023a), and with GNU Octave version 8.1.0 (under Windows).
+
+Note for macOS users with an Apple Silicon processor, and who are also MATLAB
+users: the official MATLAB version for use on those processors is still the
+Intel version (running through Rosetta 2), so the official Dynare package for
+download on our website is built for Intel only. However, since Mathworks has
+released a beta version of MATLAB for Apple Silicon, we created a beta package
+of Dynare that you can try with it. See this forum thread for more details:
+https://forum.dynare.org/t/testers-wanted-release-of-dynare-5-x-beta-for-apple-silicon-m1-m2-chips/20499
+
+Here is a list of the problems identified in version 5.3 and that have been
+fixed in version 5.4:
+
+* Files installed through the Windows installer had too weak permissions and
+  could be modified by unpriviledged local users, if the default installation
+  location (`c:\dynare\`) had been chosen
+* Estimation:
+  + the `load_results_after_load_mh` option would not find the location of the
+    results file
+  + the computation of prior/posterior statistics would crash if the value of
+    the `filter step_ahead` option was greater than 1 without requesting a
+    `forecast` or the `smoother`
+  + NaN or complex parameters returned by steady state files were not correctly
+    handled
+  + `analytical_derivation` could be triggered with `endogenous_prior` but
+    would not take the endogenous prior into account for the Jacobian and
+    Hessian
+* OccBin:
+  + running the `calib_smoother` command with `smoother_inversion_filter` would
+    crash unless `likelihood_inversion_filter` was also specified
+  + running the piecewise Kalman smoother would crash if an error was
+    encountered during computation of the decision rules
+* PAC equation estimation through iterative OLS would crash if the auxiliary
+  model contained a constant
+* The variable label was incorrect for leads and lags of exogenous variables in
+  the display of decision rules and in the `model_info` command
+* Declaring a `trend_var` variable while not having a `var(deflator=...)`
+  statement would cause the preprocessor to crash
+* Macro processor: error messages following a `@#define`, `@#include` or
+  `@#includepath` directive could in some cases point to a line number off by 1
+* Perfect foresight simulations: the `debug` option would not preserve
+  sparsity, causing out of memory errors
+
+
 Announcement for Dynare 5.3 (on 2022-11-21)
 ===========================================
 
