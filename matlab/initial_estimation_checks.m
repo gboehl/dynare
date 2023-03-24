@@ -20,7 +20,7 @@ function DynareResults = initial_estimation_checks(objective_function,xparam1,Dy
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2003-2022 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -224,20 +224,6 @@ if isfield(Model,'filter_initial_state') && ~isempty(Model.filter_initial_state)
             catch
                 fprintf('Unable to evaluate the expression\n %s \nfor the filter_initial_state of variable %s\n',Model.filter_initial_state{state_indices(ii),2},Model.endo_names(state_indices(ii),:))
             end
-        end
-    end
-end
-
-if DynareOptions.ramsey_policy
-    %test whether specification matches
-    inst_nbr = size(DynareOptions.instruments,1);
-    if inst_nbr~=0
-        orig_endo_aux_nbr = Model.orig_endo_nbr + min(find([Model.aux_vars.type] == 6)) - 1;
-        implied_inst_nbr = orig_endo_aux_nbr - Model.orig_eq_nbr;
-        if inst_nbr>implied_inst_nbr
-            error('You have specified more instruments than there are omitted equations')
-        elseif inst_nbr<implied_inst_nbr
-            error('You have specified fewer instruments than there are omitted equations')
         end
     end
 end
