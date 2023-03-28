@@ -2,6 +2,14 @@ function [steady_state, params, check] = dyn_ramsey_static(ys_init, M, options_,
 
 % Computes the steady state for optimal policy
 %
+% When there is no steady state file, relies on the fact that Lagrange
+% multipliers appear linearly in the system to be solved. Instead of directly
+% solving for the Lagrange multipliers along with the other variables, the
+% algorithms reduces the size of the problem by always computing the value of
+% the multipliers that minimizes the residuals, given the other variables
+% (using a minimum norm solution, easy to compute because of the linearity
+% property).
+
 % INPUTS
 %    ys_init:       vector of endogenous variables or instruments
 %    M:             Dynare model structure
@@ -38,11 +46,9 @@ function [steady_state, params, check] = dyn_ramsey_static(ys_init, M, options_,
 params = M.params;
 check = 0;
 options_.steadystate.nocheck = 1; %locally disable checking because Lagrange multipliers are not accounted for in evaluate_steady_state_file
-                                  % dyn_ramsey_static_1 is a subfunction
 nl_func = @(x) dyn_ramsey_static_1(x,M,options_,oo);
 exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
 
-% check_static_model is a subfunction
 if ~options_.steadystate_flag && check_static_model(ys_init,M,options_,oo)
     steady_state = ys_init;
     return
@@ -63,7 +69,7 @@ elseif options_.steadystate_flag
         end
     else
         %solve for instrument, using multivariate solver, starting at
-        %initial value for instrument
+        %initial value for instruments
         o_jacobian_flag = options_.jacobian_flag;
         options_.jacobian_flag = false;
         [inst_val, errorflag] = dynare_solve(nl_func, ys_init(k_inst), options_.ramsey.maxit, options_.solve_tolf, options_.solve_tolx, options_);
@@ -76,8 +82,7 @@ elseif options_.steadystate_flag
     [xx,params] = evaluate_steady_state_file(ys_init,exo_ss,M,options_,~options_.steadystate.nocheck); %run steady state file again to update parameters
     [~,~,steady_state] = nl_func(inst_val); %compute and return steady state
 else
-    n_var = M.orig_endo_nbr;
-    xx = oo.steady_state(1:n_var);
+    xx = oo.steady_state(1:M.orig_endo_nbr);
     o_jacobian_flag = options_.jacobian_flag;
     options_.jacobian_flag = false;
     [xx, errorflag] = dynare_solve(nl_func, xx, options_.ramsey.maxit, options_.solve_tolf, options_.solve_tolx, options_);
@@ -89,78 +94,59 @@ else
 end
 
 
-
 function [resids,rJ,steady_state] = dyn_ramsey_static_1(x,M,options_,oo)
 resids = [];
 rJ = [];
 mult = [];
 
-% recovering usefull fields
-params = M.params;
-endo_nbr = M.endo_nbr;
-endo_names = M.endo_names;
-orig_endo_nbr = M.orig_endo_nbr;
-ramsey_orig_endo_nbr = M.ramsey_orig_endo_nbr;
-ramsey_orig_eq_nbr = M.ramsey_orig_eq_nbr;
-inst_nbr = ramsey_orig_endo_nbr - ramsey_orig_eq_nbr;
-% indices of Lagrange multipliers
-fname = M.fname;
+inst_nbr = M.ramsey_orig_endo_nbr - M.ramsey_orig_eq_nbr;
 
 exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
 
 if options_.steadystate_flag
     k_inst = [];
-    instruments = options_.instruments;
-    for i = 1:size(instruments,1)
-        k_inst = [k_inst; strmatch(instruments{i}, endo_names, 'exact')];
+    for i = 1:size(options_.instruments,1)
+        k_inst = [k_inst; strmatch(options_.instruments{i}, M.endo_names, 'exact')];
     end
     ys_init=zeros(size(oo.steady_state)); %create starting vector for steady state computation as only instrument value is handed over
     ys_init(k_inst) = x; %set instrument, the only value required for steady state computation, to current value
-    [x,params,check] = evaluate_steady_state_file(ys_init,... %returned x now has size endo_nbr as opposed to input size of n_instruments
-                                                  exo_ss, ...
-                                                  M,options_,~options_.steadystate.nocheck);
+    [x,M.params,check] = evaluate_steady_state_file(ys_init,... %returned x now has size endo_nbr as opposed to input size of n_instruments
+                                                    exo_ss, ...
+                                                    M,options_,~options_.steadystate.nocheck);
     if any(imag(x(1:M.orig_endo_nbr))) %return with penalty
         resids=ones(inst_nbr,1)+sum(abs(imag(x(1:M.orig_endo_nbr)))); %return with penalty
-        steady_state=NaN(endo_nbr,1);
+        steady_state=NaN(M.endo_nbr,1);
         return
     end
     if check(1) %return 
         resids=ones(inst_nbr,1)+sum(abs(x(1:M.orig_endo_nbr))); %return with penalty
-        steady_state=NaN(endo_nbr,1);
+        steady_state=NaN(M.endo_nbr,1);
         return        
     end
-
 end
 
-xx = zeros(endo_nbr,1); %initialize steady state vector
+xx = zeros(M.endo_nbr,1); %initialize steady state vector
 xx(1:M.orig_endo_nbr) = x(1:M.orig_endo_nbr); %set values of original endogenous variables based on steady state file or initial value
 
-% setting steady state of auxiliary variables that depends on original endogenous variables
+% Determine whether other auxiliary variables will need to be updated
 if any([M.aux_vars.type] ~= 6) %auxiliary variables other than multipliers
-    needs_set_auxiliary_variables = 1;
-    if M.set_auxiliary_variables
-        fh = str2func([M.fname '.set_auxiliary_variables']);
-        s_a_v_func = @(z) fh(z, exo_ss, params);
-    else
-        s_a_v_func = z;
-    end
+    needs_set_auxiliary_variables = true;
+    fh = str2func([M.fname '.set_auxiliary_variables']);
+    s_a_v_func = @(z) fh(z, exo_ss, M.params);
     xx = s_a_v_func(xx);
 else
-    needs_set_auxiliary_variables = 0;
+    needs_set_auxiliary_variables = false;
 end
 
-% set multipliers and auxiliary variables that
-% depends on multipliers to 0 to compute residuals
-if (options_.bytecode)
-    res = bytecode('static', xx, exo_ss, params, 'evaluate');
+% Compute the value of the Lagrange multipliers that minimizes the norm of the
+% residuals, given the other endogenous
+if options_.bytecode
+    res = bytecode('static', xx, exo_ss, M.params, 'evaluate');
 else
-    res = feval([fname '.sparse.static_resid'], xx, exo_ss, params);
+    res = feval([M.fname '.sparse.static_resid'], xx, exo_ss, M.params);
 end
-% index of multipliers and corresponding equations
-% the auxiliary variables before the Lagrange multipliers are treated
-% as ordinary endogenous variables
-A = feval([fname '.ramsey_multipliers_static_g1'], xx, exo_ss, params, M.ramsey_multipliers_static_g1_sparse_rowval, M.ramsey_multipliers_static_g1_sparse_colval, M.ramsey_multipliers_static_g1_sparse_colptr);
-y = res(1:ramsey_orig_endo_nbr);
+A = feval([M.fname '.ramsey_multipliers_static_g1'], xx, exo_ss, M.params, M.ramsey_multipliers_static_g1_sparse_rowval, M.ramsey_multipliers_static_g1_sparse_colval, M.ramsey_multipliers_static_g1_sparse_colptr);
+y = res(1:M.ramsey_orig_endo_nbr);
 mult = -A\y;
 
 resids1 = y+A*mult;
@@ -174,13 +160,12 @@ end
 if options_.steadystate_flag
     resids = r1;
 else
-    resids = [res(ramsey_orig_endo_nbr+(1:orig_endo_nbr-inst_nbr)); r1];
+    resids = [res(M.ramsey_orig_endo_nbr+(1:M.orig_endo_nbr-inst_nbr)); r1];
 end
-rJ = [];
 if needs_set_auxiliary_variables
-    steady_state = s_a_v_func([xx(1:ramsey_orig_endo_nbr); mult]);
+    steady_state = s_a_v_func([xx(1:M.ramsey_orig_endo_nbr); mult]);
 else
-    steady_state = [xx(1:ramsey_orig_endo_nbr); mult];
+    steady_state = [xx(1:M.ramsey_orig_endo_nbr); mult];
 end
 
 function result = check_static_model(ys,M,options_,oo)
