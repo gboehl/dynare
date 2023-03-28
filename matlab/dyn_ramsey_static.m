@@ -187,7 +187,7 @@ end
 if options_.steadystate_flag
     resids = r1;
 else
-    resids = [res(orig_endo_nbr+(1:orig_endo_nbr-inst_nbr)); r1];
+    resids = [res(orig_endo_aux_nbr+(1:orig_endo_nbr-inst_nbr)); r1];
 end
 rJ = [];
 if needs_set_auxiliary_variables
