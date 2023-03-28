@@ -19,7 +19,6 @@ function info = ramsey_policy(var_list)
 
 global options_ oo_ M_
 
-options_.ramsey_policy = 1;
 oldoptions = options_;
 
 [info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list);

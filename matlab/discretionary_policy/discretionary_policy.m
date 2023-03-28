@@ -12,7 +12,7 @@ function [info, oo_, options_, M_] = discretionary_policy(M_, options_, oo_, var
 % - options_      [structure]     Matlab's structure describing the current options (options_).
 % - M_            [structure]     Matlab's structure describing the model (M_).
 
-% Copyright © 2007-2020 Dynare Team
+% Copyright © 2007-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,7 +32,6 @@ function [info, oo_, options_, M_] = discretionary_policy(M_, options_, oo_, var
 M_=discretionary_policy_initialization(M_,options_);
 
 origorder = options_.order;
-options_.discretionary_policy = 1;
 options_.order = 1;
 [info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list);
 

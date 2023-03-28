@@ -686,7 +686,7 @@ options_.dr_logarithmic_reduction_maxiter = 100;
 options_.initial_date = dates();
 
 % discretionary policy
-options_.discretionary_policy = 0;
+options_.discretionary_policy = false;
 options_.discretionary_tol = 1e-7;
 
 % Shock decomposition
