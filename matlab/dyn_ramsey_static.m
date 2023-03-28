@@ -153,16 +153,14 @@ end
 % set multipliers and auxiliary variables that
 % depends on multipliers to 0 to compute residuals
 if (options_.bytecode)
-    [res, junk] = bytecode('static', xx, exo_ss, params, 'evaluate');
-    fJ = junk.g1;
+    res = bytecode('static', xx, exo_ss, params, 'evaluate');
 else
-    [res, T_order, T] = feval([fname '.sparse.static_resid'], xx, exo_ss, params);
-    fJ = feval([fname '.sparse.static_g1'], xx, exo_ss, params, M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr, T_order, T);
+    res = feval([fname '.sparse.static_resid'], xx, exo_ss, params);
 end
 % index of multipliers and corresponding equations
 % the auxiliary variables before the Lagrange multipliers are treated
 % as ordinary endogenous variables
-A = fJ(1:orig_endo_aux_nbr,orig_endo_nbr+find(aux_vars_type==6));
+A = feval([fname '.ramsey_multipliers_static_g1'], xx, exo_ss, params, M.ramsey_multipliers_static_g1_sparse_rowval, M.ramsey_multipliers_static_g1_sparse_colval, M.ramsey_multipliers_static_g1_sparse_colptr);
 y = res(1:orig_endo_aux_nbr);
 mult = -A\y;
 
