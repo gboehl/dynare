@@ -16,7 +16,7 @@ function []=display_problematic_vars_Jacobian(problemrow,problemcol,M_,x,type,ca
 %   none.
 %
 
-% Copyright © 2014-2021 Dynare Team
+% Copyright © 2014-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,7 +37,7 @@ skipline();
 if nargin<6
     caller_string='';
 end
-initial_aux_eq_nbr=M_.ramsey_eq_nbr;
+initial_aux_eq_nbr=M_.ramsey_orig_endo_nbr;
 if strcmp(type,'dynamic')
     for ii=1:length(problemrow)
         if problemcol(ii)>max(M_.lead_lag_incidence)

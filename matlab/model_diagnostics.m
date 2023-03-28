@@ -41,8 +41,7 @@ if options.ramsey_policy
     %test whether specification matches
     inst_nbr = size(options.instruments,1);
     if inst_nbr~=0
-        orig_endo_aux_nbr = M.orig_endo_nbr + min(find([M.aux_vars.type] == 6)) - 1;
-        implied_inst_nbr = orig_endo_aux_nbr - M.orig_eq_nbr;
+        implied_inst_nbr = M.ramsey_orig_endo_nbr - M.ramsey_orig_eq_nbr;
         if inst_nbr>implied_inst_nbr
             warning('You have specified more steady state instruments than there are omitted equations. While there are use cases for this setup, it is rather unusual. Check whether this is desired.')
         elseif inst_nbr<implied_inst_nbr

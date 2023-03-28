@@ -82,8 +82,7 @@ if options.ramsey_policy
         else
             [resids, ~ , jacob]= evaluate_static_model(ys,exo_ss,params,M,options);
         end
-        n_ramsey_equations=M.ramsey_eq_nbr;
-        nan_indices=find(isnan(resids(n_ramsey_equations+1:n_ramsey_equations+M.orig_eq_nbr))); % 
+        nan_indices=find(isnan(resids(M.ramsey_orig_endo_nbr+(1:M.ramsey_orig_eq_nbr))));
 
         if ~isempty(nan_indices)
             if options.debug
@@ -106,7 +105,7 @@ if options.ramsey_policy
             return
         end
 
-        if any(imag(ys(n_ramsey_equations+1:n_ramsey_equations+M.orig_eq_nbr)))
+        if any(imag(ys(M.ramsey_orig_endo_nbr+(1:M.ramsey_orig_eq_nbr))))
             if options.debug
                 fprintf('\nevaluate_steady_state: The steady state file computation for the Ramsey problem resulted in complex numbers.\n')
                 fprintf('evaluate_steady_state: The steady state was computed conditional on the following initial instrument values: \n')
@@ -121,7 +120,7 @@ if options.ramsey_policy
             return
         end
 
-        if max(abs(resids(n_ramsey_equations+1:n_ramsey_equations+M.orig_eq_nbr))) > options.solve_tolf %does it solve for all variables except for the Lagrange multipliers
+        if max(abs(resids(M.ramsey_orig_endo_nbr+(1:M.ramsey_orig_eq_nbr)))) > options.solve_tolf %does it solve for all variables except for the Lagrange multipliers
             if options.debug
                 fprintf('\nevaluate_steady_state: The steady state file does not solve the steady state for the Ramsey problem.\n')
                 fprintf('evaluate_steady_state: Conditional on the following instrument values: \n')
@@ -129,9 +128,9 @@ if options.ramsey_policy
                     fprintf('\t %s \t %f \n',options.instruments{ii},ys_init(strmatch(options.instruments{ii},M.endo_names,'exact')))
                 end
                 fprintf('evaluate_steady_state: the following equations have non-zero residuals: \n')
-                for ii=n_ramsey_equations+1:M.endo_nbr
+                for ii=M.ramsey_orig_endo_nbr+1:M.endo_nbr
                     if abs(resids(ii)) > options.solve_tolf
-                        fprintf('\t Equation number %d: %f\n',ii-n_ramsey_equations, resids(ii))
+                        fprintf('\t Equation number %d: %f\n',ii-M.ramsey_orig_endo_nbr, resids(ii))
                     end
                 end
                 skipline(2)
@@ -165,7 +164,7 @@ if options.ramsey_policy
             end
         end
         if steadystate_flag
-            nan_indices_mult=find(isnan(resids(1:n_ramsey_equations)));
+            nan_indices_mult=find(isnan(resids(1:M.ramsey_orig_endo_nbr)));
             if any(nan_indices_mult)
                 fprintf('evaluate_steady_state: The steady state results NaN for auxiliary equation %u.\n',nan_indices_mult);
                 fprintf('evaluate_steady_state: This is often a sign of problems.\n');
@@ -200,9 +199,8 @@ if options.ramsey_policy
     %check whether steady state really solves the model
     resids = evaluate_static_model(ys,exo_ss,params,M,options);
 
-    n_ramsey_equations=M.ramsey_eq_nbr;
-    nan_indices_multiplier=find(isnan(resids(1:n_ramsey_equations)));
-    nan_indices=find(isnan(resids(n_ramsey_equations+1:end)));
+    nan_indices_multiplier=find(isnan(resids(1:M.ramsey_orig_endo_nbr)));
+    nan_indices=find(isnan(resids(M.ramsey_orig_endo_nbr+1:end)));
 
     if ~isempty(nan_indices)
         if options.debug
@@ -248,14 +246,14 @@ if options.ramsey_policy
                 fprintf('\t %s \t %f \n',options.instruments{i},ys(strmatch(options.instruments{i},M.endo_names,'exact')))
             end
             fprintf('evaluate_steady_state: The following equations have non-zero residuals: \n')
-            for ii=1:n_ramsey_equations
+            for ii=1:M.ramsey_orig_endo_nbr
                 if abs(resids(ii)) > options.solve_tolf/100
                     fprintf('\t Auxiliary Ramsey equation number %d: %f\n',ii, resids(ii))
                 end
             end
-            for ii=n_ramsey_equations+1:M.endo_nbr
+            for ii=M.ramsey_orig_endo_nbr+1:M.endo_nbr
                 if abs(resids(ii)) > options.solve_tolf/100
-                    fprintf('\t Equation number %d: %f\n',ii-n_ramsey_equations, resids(ii))
+                    fprintf('\t Equation number %d: %f\n',ii-M.ramsey_orig_endo_nbr, resids(ii))
                 end
             end
             skipline(2)

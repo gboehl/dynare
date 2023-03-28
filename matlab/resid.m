@@ -12,7 +12,7 @@ function z = resid(options_resid_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2001-2022 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -93,15 +93,25 @@ if nargout == 0
     fprintf('Residuals of the static equations%s:',disp_string)
     skipline()
     any_non_zero_residual = false;
-    for i=1:M_.orig_eq_nbr
-        if abs(z(i+M_.ramsey_eq_nbr)) < options_.solve_tolf/100
+    if options_.ramsey_policy
+        first_eq = M_.ramsey_orig_endo_nbr+1;
+        last_eq = M_.ramsey_orig_endo_nbr+M_.ramsey_orig_eq_nbr;
+    elseif options_.discretionary_policy
+        first_eq = 1;
+        last_eq = M_.discretionary_orig_eq_nbr;
+    else
+        first_eq = 1;
+        last_eq = M_.orig_endo_nbr;
+    end
+    for i=first_eq:last_eq
+        if abs(z(i)) < options_.solve_tolf/100
             tmp = 0;
         else
-            tmp = z(i+M_.ramsey_eq_nbr);
+            tmp = z(i);
             any_non_zero_residual = true;
         end
         if istag
-            tg = tags(cell2mat(tags(:,1)) == i+M_.ramsey_eq_nbr,2:3); % all tags for equation i
+            tg = tags(cell2mat(tags(:,1)) == i,2:3); % all tags for equation i
             ind = strmatch('name', cellstr( tg(:,1) ) );
         end
         if ~(non_zero && tmp == 0)

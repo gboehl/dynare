@@ -100,10 +100,9 @@ params = M.params;
 endo_nbr = M.endo_nbr;
 endo_names = M.endo_names;
 orig_endo_nbr = M.orig_endo_nbr;
-aux_vars_type = [M.aux_vars.type];
-orig_endo_aux_nbr = orig_endo_nbr + min(find(aux_vars_type == 6)) - 1;
-orig_eq_nbr = M.orig_eq_nbr;
-inst_nbr = orig_endo_aux_nbr - orig_eq_nbr;
+ramsey_orig_endo_nbr = M.ramsey_orig_endo_nbr;
+ramsey_orig_eq_nbr = M.ramsey_orig_eq_nbr;
+inst_nbr = ramsey_orig_endo_nbr - ramsey_orig_eq_nbr;
 % indices of Lagrange multipliers
 fname = M.fname;
 
@@ -161,7 +160,7 @@ end
 % the auxiliary variables before the Lagrange multipliers are treated
 % as ordinary endogenous variables
 A = feval([fname '.ramsey_multipliers_static_g1'], xx, exo_ss, params, M.ramsey_multipliers_static_g1_sparse_rowval, M.ramsey_multipliers_static_g1_sparse_colval, M.ramsey_multipliers_static_g1_sparse_colptr);
-y = res(1:orig_endo_aux_nbr);
+y = res(1:ramsey_orig_endo_nbr);
 mult = -A\y;
 
 resids1 = y+A*mult;
@@ -175,13 +174,13 @@ end
 if options_.steadystate_flag
     resids = r1;
 else
-    resids = [res(orig_endo_aux_nbr+(1:orig_endo_nbr-inst_nbr)); r1];
+    resids = [res(ramsey_orig_endo_nbr+(1:orig_endo_nbr-inst_nbr)); r1];
 end
 rJ = [];
 if needs_set_auxiliary_variables
-    steady_state = s_a_v_func([xx(1:orig_endo_aux_nbr); mult]);
+    steady_state = s_a_v_func([xx(1:ramsey_orig_endo_nbr); mult]);
 else
-    steady_state = [xx(1:orig_endo_aux_nbr); mult];
+    steady_state = [xx(1:ramsey_orig_endo_nbr); mult];
 end
 
 function result = check_static_model(ys,M,options_,oo)
