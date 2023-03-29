@@ -513,7 +513,8 @@ MODFILES = \
 	solve_algo_12_14/purely_forward_reference.mod \
 	solve_algo_12_14/purely_forward_12.mod \
 	solve_algo_12_14/purely_forward_14.mod \
-	deprecated/ramsey_ex.mod
+	deprecated/ramsey_ex.mod \
+	deprecated/ramst.mod
 
 ECB_MODFILES = \
 	var-expectations/1/example1.mod \
@@ -1028,6 +1029,10 @@ solve_algo_12_14/purely_forward_14.o.trs: solve_algo_12_14/purely_forward_refere
 
 estimation/conditional-likelihood/1/fs2000_estimation_conditional.m.trs: estimation/conditional-likelihood/1/fs2000_estimation_exact.m.trs
 estimation/conditional-likelihood/1/fs2000_estimation_conditional.o.trs: estimation/conditional-likelihood/1/fs2000_estimation_exact.o.trs
+
+deprecated/ramst.m.trs: simul/ramst.m.trs
+deprecated/ramst.o.trs: simul/ramst.o.trs
+
 
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
 m/observation_trends_and_prefiltering/MCMC: $(patsubst %.mod, %.m.trs, $(filter observation_trends_and_prefiltering/MCMC/%.mod, $(MODFILES)))
