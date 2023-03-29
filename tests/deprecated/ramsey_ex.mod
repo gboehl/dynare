@@ -1,5 +1,4 @@
-/* Tests the correctness of the Ramsey command when used together with a steady state file by
- * checking whether the results coincide with the ones when used with an initval block
+/* Tests the deprecated ramsey_policy command.
  *
  * The example is taken from Juillard, Michel (2011): User manual for optimal policy package, 
  * MONFISPOL FP7 project SSH-225149, Deliverable 1.1.2
@@ -27,11 +26,11 @@ initval;
 r=1;
 end;
 
-steady_state_model;
+initval;
 a = 0;
-pai = beta*r;
-c = find_c(0.96,pai,beta,epsilon,phi,gamma,omega);
-n = c+(omega/2)*(pai-1)^2;
+pai = beta;
+c = 0.9665;
+n = 0.9673;
 end;
 
 shocks;
@@ -39,14 +38,11 @@ var u; stderr 0.008;
 end;
 
 planner_objective(ln(c)-phi*((n^(1+gamma))/(1+gamma)));
-ramsey_model(planner_discount=0.99,instruments=(r));
-steady;
-stoch_simul(order=1, nograph);
-evaluate_planner_objective;
+ramsey_policy(planner_discount=0.99,instruments=(r),order=1,nograph);
 
-benchmark=load('ramsey_ex_initval/Output/ramsey_ex_initval_results.mat');
+benchmark = load('../optimal_policy/Ramsey/ramsey_ex_initval/Output/ramsey_ex_initval_results.mat');
 
-if any( [ max(abs((benchmark.oo_.steady_state-oo_.steady_state)))>1e-5, ...
+if any( [ max(abs(benchmark.oo_.steady_state-oo_.steady_state))>1e-5, ...
     max(abs(benchmark.oo_.dr.ys-oo_.dr.ys))>1e-5, ...
     max(max(abs(benchmark.oo_.dr.ghx-oo_.dr.ghx)))>1e-5, ...
     max(max(abs(benchmark.oo_.dr.ghu-oo_.dr.ghu)))>1e-5, ...
@@ -54,5 +50,5 @@ if any( [ max(abs((benchmark.oo_.steady_state-oo_.steady_state)))>1e-5, ...
     abs(benchmark.oo_.planner_objective_value.unconditional-oo_.planner_objective_value.unconditional)>1e-5, ...
     abs(benchmark.oo_.planner_objective_value.conditional.zero_initial_multiplier-oo_.planner_objective_value.conditional.zero_initial_multiplier)>1e-5, ...
     abs(benchmark.oo_.planner_objective_value.conditional.steady_initial_multiplier-oo_.planner_objective_value.conditional.steady_initial_multiplier)>1e-5] ) 
-    error('Initval and steady state file yield different results')
+    error('ramsey_policy gives results inconsistent with ramsey_model+stoch_simul+evaluate_planner_objective')
 end

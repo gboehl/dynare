@@ -1,4 +1,8 @@
-/* Mod file tests the correctness of the Ramsey command when Auxiliary variables for AR2 are used
+/* Test the correctness of the Ramsey command when a Lagrange multiplier
+ * appears with a lead ⩾2, and thus ends up in the definition of an auxiliary variable.
+ *
+ * This is related to issues #633, #1119 and #1133
+ *
  * The example is adapted from Juillard, Michel (2011): User manual for optimal policy package, 
  * MONFISPOL FP7 project SSH-225149, Deliverable 1.1.2
 */
@@ -37,16 +41,7 @@ var u; stderr 0.008;
 end;
 
 planner_objective(ln(c)-phi*((n^(1+gamma))/(1+gamma)));
-ramsey_policy(planner_discount=0.99,order=1,instruments=(r));
-oo_ramsey_policy_initval_AR2=oo_;
-stoch_simul(periods=0, order=1, irf=25, nograph);
-if max(abs((oo_ramsey_policy_initval_AR2.steady_state-oo_.steady_state)))>1e-5 ...
-    || max(abs(oo_ramsey_policy_initval_AR2.dr.ys-oo_.dr.ys))>1e-5 ...
-    || max(max(abs(oo_ramsey_policy_initval_AR2.dr.ghx-oo_.dr.ghx)))>1e-5 ...
-    || max(max(abs(oo_ramsey_policy_initval_AR2.dr.ghu-oo_.dr.ghu)))>1e-5 ...
-    || max(max(abs(oo_ramsey_policy_initval_AR2.dr.Gy-oo_.dr.Gy)))>1e-5 ...
-    || abs(oo_ramsey_policy_initval_AR2.planner_objective_value.unconditional-oo_.planner_objective_value.unconditional)>1e-5 ...
-    || abs(oo_ramsey_policy_initval_AR2.planner_objective_value.conditional.zero_initial_multiplier-oo_.planner_objective_value.conditional.zero_initial_multiplier)>1e-5 ...
-    || abs(oo_ramsey_policy_initval_AR2.planner_objective_value.conditional.steady_initial_multiplier-oo_.planner_objective_value.conditional.steady_initial_multiplier)>1e-5
-    error('Running stoch_simul after ramsey_policy leads to inconsistent results')
-end
+ramsey_model(planner_discount=0.99,instruments=(r));
+steady;
+stoch_simul(order=1, nograph);
+evaluate_planner_objective;

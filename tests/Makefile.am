@@ -512,7 +512,8 @@ MODFILES = \
 	solve_algo_12_14/purely_static_14.mod \
 	solve_algo_12_14/purely_forward_reference.mod \
 	solve_algo_12_14/purely_forward_12.mod \
-	solve_algo_12_14/purely_forward_14.mod
+	solve_algo_12_14/purely_forward_14.mod \
+	deprecated/ramsey_ex.mod
 
 ECB_MODFILES = \
 	var-expectations/1/example1.mod \
@@ -757,6 +758,9 @@ optimal_policy/Ramsey/ramsey_ex.o.trs: optimal_policy/Ramsey/ramsey_ex_initval.o
 
 optimal_policy/nk_ramsey_expectation_a.m.trs: optimal_policy/nk_ramsey_expectation.m.trs
 optimal_policy/nk_ramsey_expectation_a.o.trs: optimal_policy/nk_ramsey_expectation.o.trs
+
+deprecated/ramsey_ex.m.trs: optimal_policy/Ramsey/ramsey_ex_initval.m.trs
+deprecated/ramsey_ex.o.trs: optimal_policy/Ramsey/ramsey_ex_initval.o.trs
 
 second_order/ds2.m.trs: second_order/ds1.m.trs
 second_order/ds2.o.trs: second_order/ds1.o.trs
@@ -1668,8 +1672,6 @@ clean-local:
 		kalman/likelihood_from_dynare/fs_ns_dat_simul_uncorr_ME_missing.m
 
 	rm -f occbin/filter/dataobsfile2.mat
-
-	rm -f optimal_policy/Ramsey/oo_ramsey_policy_initval.mat
 
 	rm -rf tests/pac/var-12/toto
 

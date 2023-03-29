@@ -123,7 +123,6 @@ wsOct
 !/occbin/filter/dataobsfile.mat
 !/occbin/filter/NKM_mh_mode_saved.mat
 !/optimal_policy/Ramsey/find_c.m
-!/optimal_policy/Ramsey/oo_ramsey_policy_initval.mat
 !/optimizers/optimizer_function_wrapper.m
 !/parallel/data_ca1.m
 !/parallel/init.m

@@ -1,5 +1,4 @@
-/* Mod file tests the functioning of the Ramsey command when used together with an initval-block
- * - Tests whether subsequent calls to ramsey_policy and stoch_simul are possible
+/* Tests the functioning of the Ramsey command when used together with an initval-block
  * The example is taken from Juillard, Michel (2011): User manual for optimal policy package, 
  * MONFISPOL FP7 project SSH-225149, Deliverable 1.1.2
 */
@@ -38,17 +37,7 @@ var u; stderr 0.008;
 end;
 
 planner_objective(ln(c)-phi*((n^(1+gamma))/(1+gamma)));
-ramsey_policy(planner_discount=0.99,order=1,instruments=(r));
-oo_ramsey_policy_initval=oo_;
-save oo_ramsey_policy_initval.mat oo_ramsey_policy_initval;
-stoch_simul(periods=0, order=1, irf=25, nograph);
-if max(abs((oo_ramsey_policy_initval.steady_state-oo_.steady_state)))>1e-5 ...
-    || max(abs(oo_ramsey_policy_initval.dr.ys-oo_.dr.ys))>1e-5 ...
-    || max(max(abs(oo_ramsey_policy_initval.dr.ghx-oo_.dr.ghx)))>1e-5 ...
-    || max(max(abs(oo_ramsey_policy_initval.dr.ghu-oo_.dr.ghu)))>1e-5 ...
-    || max(max(abs(oo_ramsey_policy_initval.dr.Gy-oo_.dr.Gy)))>1e-5 ...
-    || abs(oo_ramsey_policy_initval.planner_objective_value.unconditional-oo_.planner_objective_value.unconditional)>1e-5 ...
-    || abs(oo_ramsey_policy_initval.planner_objective_value.conditional.zero_initial_multiplier-oo_.planner_objective_value.conditional.zero_initial_multiplier)>1e-5 ...
-    || abs(oo_ramsey_policy_initval.planner_objective_value.conditional.steady_initial_multiplier-oo_.planner_objective_value.conditional.steady_initial_multiplier)>1e-5
-    error('Running stoch_simul after ramsey_policy leads to inconsistent results')
-end
+ramsey_model(planner_discount=0.99,instruments=(r));
+steady;
+stoch_simul(order=1, nograph);
+evaluate_planner_objective;
