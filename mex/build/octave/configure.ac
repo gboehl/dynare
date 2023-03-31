@@ -32,6 +32,7 @@ CC=$($MKOCTFILE -p CC)
 CXX=$($MKOCTFILE -p CXX)
 AR=$($MKOCTFILE -p AR)
 RANLIB=$($MKOCTFILE -p RANLIB)
+CPPFLAGS="$($MKOCTFILE -p CPPFLAGS) $($MKOCTFILE -p INCFLAGS)"
 CFLAGS=$($MKOCTFILE -p CFLAGS)
 CXXFLAGS=$($MKOCTFILE -p CXXFLAGS)
 # The --link-stand-alone is needed since Octave 7 to avoid inserting -shared, which
@@ -87,6 +88,10 @@ if test "$enable_mex_kalman_steady_state" = yes; then
 fi
 
 # Check for UMFPACK, needed by bytecode
+AC_CHECK_HEADERS([suitesparse/umfpack.h umfpack.h], [have_umfpack_h=yes])
+if test "$have_umfpack_h" != yes; then
+  AC_MSG_ERROR([Can't find umfpack.h])
+fi
 AC_CHECK_LIB([umfpack], [umfpack_dl_defaults], [LIBADD_UMFPACK="-lumfpack"], [AC_MSG_ERROR([Can't find UMFPACK])])
 AC_SUBST([LIBADD_UMFPACK])
 

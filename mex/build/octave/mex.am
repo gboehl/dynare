@@ -1,6 +1,4 @@
-AM_CPPFLAGS = $(shell $(MKOCTFILE) -p CPPFLAGS)
-AM_CPPFLAGS += $(shell $(MKOCTFILE) -p INCFLAGS)
-AM_CPPFLAGS += -I$(top_srcdir)/../../sources
+AM_CPPFLAGS = -I$(top_srcdir)/../../sources
 
 DEFS += -DOCTAVE_MEX_FILE
 DEFS += -DMEXEXT=\".mex\"

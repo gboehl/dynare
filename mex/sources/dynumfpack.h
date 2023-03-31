@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright © 2013-2017 Dynare Team
+ * Copyright © 2013-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -24,9 +24,21 @@
 #ifndef _DYNUMFPACK_H
 #define _DYNUMFPACK_H
 
-#ifdef __cplusplus
+#ifdef OCTAVE_MEX_FILE
+# ifdef HAVE_SUITESPARSE_UMFPACK_H
+#  include <suitesparse/umfpack.h>
+# endif
+# ifdef HAVE_UMFPACK_H
+#  include <umfpack.h>
+# endif
+#else
+
+/* Under MATLAB, we have to provide our own header file for functions in
+   libmwumfpack, since there is no associated header */
+
+# ifdef __cplusplus
 extern "C" {
-#endif
+# endif
 
   /* -------------------------------------------------------------------------- */
   /* size of Info and Control arrays */
@@ -35,19 +47,19 @@ extern "C" {
   /* These might be larger in future versions, since there are only 3 unused
    * entries in Info, and no unused entries in Control. */
 
-#define UMFPACK_INFO 90
-#define UMFPACK_CONTROL 20
+# define UMFPACK_INFO 90
+# define UMFPACK_CONTROL 20
   /* used in all UMFPACK_report_* routines: */
-#define UMFPACK_PRL 0                   /* print level */
+# define UMFPACK_PRL 0                   /* print level */
   /* returned by all routines that use Info: */
-#define UMFPACK_OK (0)
-#define UMFPACK_STATUS 0        /* UMFPACK_OK, or other result */
+# define UMFPACK_OK (0)
+# define UMFPACK_STATUS 0        /* UMFPACK_OK, or other result */
 
-#ifdef _WIN64
+# ifdef _WIN64
   typedef long long int SuiteSparse_long;
-#else
+# else
   typedef long SuiteSparse_long;
-#endif
+# endif
 
   void umfpack_dl_defaults(double Control[UMFPACK_CONTROL]);
 
@@ -83,8 +95,9 @@ extern "C" {
 
   SuiteSparse_long umfpack_dl_save_numeric(void *Numeric, char *filename);
 
-#ifdef __cplusplus
+# ifdef __cplusplus
 } /* extern "C" */
-#endif
+# endif
 
+#endif // OCTAVE_MEX_FILE
 #endif /* DYNUMFPACK */
