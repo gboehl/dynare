@@ -2313,9 +2313,15 @@ void
 dynSparseMatrix::End_Matlab_LU_UMFPack()
 {
   if (Symbolic)
-    umfpack_dl_free_symbolic(&Symbolic);
+    {
+      umfpack_dl_free_symbolic(&Symbolic);
+      Symbolic = nullptr;
+    }
   if (Numeric)
-    umfpack_dl_free_numeric(&Numeric);
+    {
+      umfpack_dl_free_numeric(&Numeric);
+      Numeric = nullptr;
+    }
 }
 
 void
@@ -2364,6 +2370,8 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
   SuiteSparse_long status = 0;
   if (iter == 0)
     {
+      if (Symbolic)
+        umfpack_dl_free_symbolic(&Symbolic);
       status = umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info);
       if (status < 0)
         {
@@ -2372,7 +2380,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
           throw FatalException{"umfpack_dl_symbolic failed"};
         }
     }
-  if (iter > 0)
+  if (Numeric)
     umfpack_dl_free_numeric(&Numeric);
   status = umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info);
   if (status < 0)
@@ -2471,6 +2479,8 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
   SuiteSparse_long status = 0;
   if (iter == 0)
     {
+      if (Symbolic)
+        umfpack_dl_free_symbolic(&Symbolic);
       status = umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info);
       if (status < 0)
         {
@@ -2479,7 +2489,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
           throw FatalException{"umfpack_dl_symbolic failed"};
         }
     }
-  if (iter > 0)
+  if (Numeric)
     umfpack_dl_free_numeric(&Numeric);
   status = umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info);
   if (status < 0)
