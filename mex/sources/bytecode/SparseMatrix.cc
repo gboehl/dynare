@@ -2310,35 +2310,6 @@ dynSparseMatrix::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned in
 }
 
 void
-dynSparseMatrix::Solve_Matlab_LU_UMFPack(mxArray *A_m, mxArray *b_m, int Size, double slowc_l, bool is_two_boundaries, int it_)
-{
-  size_t n = mxGetM(A_m);
-  mxArray *z;
-  mxArray *rhs[] = { A_m, b_m };
-  mexCallMATLAB(1, &z, std::extent_v<decltype(rhs)>, rhs, "mldivide");
-  double *res = mxGetPr(z);
-  if (is_two_boundaries)
-    for (int i = 0; i < static_cast<int>(n); i++)
-      {
-        int eq = index_vara[i+Size*y_kmin];
-        double yy = -(res[i] + y[eq]);
-        direction[eq] = yy;
-        y[eq] += slowc_l * yy;
-      }
-  else
-    for (int i = 0; i < static_cast<int>(n); i++)
-      {
-        int eq = index_vara[i];
-        double yy = -(res[i] + y[eq+it_*y_size]);
-        direction[eq] = yy;
-        y[eq+it_*y_size] += slowc_l * yy;
-      }
-  mxDestroyArray(A_m);
-  mxDestroyArray(b_m);
-  mxDestroyArray(z);
-}
-
-void
 dynSparseMatrix::End_Matlab_LU_UMFPack()
 {
   if (Symbolic)
