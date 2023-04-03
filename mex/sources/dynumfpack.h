@@ -56,7 +56,12 @@ extern "C" {
 # define UMFPACK_STATUS 0        /* UMFPACK_OK, or other result */
 
 # ifdef _WIN64
-  typedef long long int SuiteSparse_long;
+#  ifdef __cplusplus
+#   include <cstdint>
+#  else
+#   include <stdint.h>
+#  endif
+  typedef int64_t SuiteSparse_long;
 # else
   typedef long SuiteSparse_long;
 # endif
