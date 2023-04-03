@@ -2360,14 +2360,13 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
   double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
 
   umfpack_dl_defaults(Control);
-  Control[UMFPACK_PRL] = 5;
   SuiteSparse_long status = 0;
   if (iter == 0)
     {
       if (Symbolic)
         umfpack_dl_free_symbolic(&Symbolic);
       status = umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info);
-      if (status < 0)
+      if (status != UMFPACK_OK)
         {
           umfpack_dl_report_info(Control, Info);
           umfpack_dl_report_status(Control, status);
@@ -2377,7 +2376,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
   if (Numeric)
     umfpack_dl_free_numeric(&Numeric);
   status = umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info);
-  if (status < 0)
+  if (status != UMFPACK_OK)
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
@@ -2469,14 +2468,13 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
   double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
 
   umfpack_dl_defaults(Control);
-  Control[UMFPACK_PRL] = 5;
   SuiteSparse_long status = 0;
   if (iter == 0)
     {
       if (Symbolic)
         umfpack_dl_free_symbolic(&Symbolic);
       status = umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info);
-      if (status < 0)
+      if (status != UMFPACK_OK)
         {
           umfpack_dl_report_info(Control, Info);
           umfpack_dl_report_status(Control, status);
@@ -2486,7 +2484,7 @@ dynSparseMatrix::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, do
   if (Numeric)
     umfpack_dl_free_numeric(&Numeric);
   status = umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info);
-  if (status < 0)
+  if (status != UMFPACK_OK)
     {
       umfpack_dl_report_info(Control, Info);
       umfpack_dl_report_status(Control, status);
