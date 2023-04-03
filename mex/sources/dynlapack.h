@@ -8,7 +8,7 @@
  * and MATLAB_VERSION (for version 7.4, define it to 0x0704).
  *
  *
- * Copyright © 2009-2020 Dynare Team
+ * Copyright © 2009-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -29,13 +29,13 @@
 #ifndef _DYNLAPACK_H
 #define _DYNLAPACK_H
 
-#if defined(MATLAB_MEX_FILE)
+#if defined(MATLAB_MEX_FILE) && __SIZEOF_POINTER__ == 8
 # ifdef __cplusplus
-#  include <cstddef>
+#  include <cstdint>
 # else
-#  include <stddef.h>
+#  include <stdint.h>
 # endif
-typedef ptrdiff_t lapack_int;
+typedef int64_t lapack_int;
 #else
 typedef int lapack_int;
 #endif
