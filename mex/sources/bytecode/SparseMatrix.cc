@@ -675,9 +675,6 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
     throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve Ax matrix"};
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
-#ifdef DEBUG
-  unsigned int max_nze = prior_nz; //mxGetNzmax(A_m);
-#endif
   unsigned int NZE = 0;
   int last_var = 0;
   for (int i = 0; i < periods*Size; i++)
@@ -787,8 +784,8 @@ dynSparseMatrix::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Si
               if (lag <= ti_new_y_kmax && lag >= ti_new_y_kmin) /*Build the index for sparse matrix containing the jacobian : u*/
                 {
 #ifdef DEBUG
-                  if (NZE >= max_nze)
-                    throw FatalException{"In Init_UMFPACK_Sparse, exceeds the capacity of A_m sparse matrix"};
+                  if (NZE >= prior_nz)
+                    throw FatalException{"In Init_UMFPACK_Sparse, exceeds the capacity of allocated sparse matrix"};
 #endif
                   if (!fliped)
                     {
@@ -923,9 +920,6 @@ dynSparseMatrix::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Siz
 
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
-#ifdef DEBUG
-  unsigned int max_nze = mxGetNzmax(A_m);
-#endif
   unsigned int NZE = 0;
   int last_var = 0;
   for (int i = 0; i < periods*Size; i++)
@@ -962,8 +956,8 @@ dynSparseMatrix::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Siz
                                          + ") out of range for u vector max = "
                                          + to_string(Size+Size*Size) + " allocated = "
                                          + to_string(u_count_alloc)};
-                  if (NZE >= max_nze)
-                    throw FatalException{"In Init_Matlab_Sparse, exceeds the capacity of A_m sparse matrix"};
+                  if (NZE >= prior_nz)
+                    throw FatalException{"In Init_Matlab_Sparse, exceeds the capacity of allocated sparse matrix"};
 #endif
                   A[NZE] = u[index];
                   Ai[NZE] = eq - lag * Size;
