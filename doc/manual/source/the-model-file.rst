@@ -3492,8 +3492,9 @@ speed-up on large models.
 
            ``0``
 
-               Newton method to solve simultaneously all the equations for
-               every period, using sparse matrices (Default).
+               Use a Newton algorithm with a direct sparse LU solver at each
+               iteration, applied on the stacked system of all the equations at
+               every period (Default).
 
            ``1``
 
