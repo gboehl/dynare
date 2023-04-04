@@ -18,7 +18,7 @@ function [ss, tt, zz, sdim, eigval, info] = mjdgges(e, d, qz_criterium, zhreshol
 % SPECIAL REQUIREMENTS
 %   none.
 
-% Copyright (C) 1996-2020 Dynare Team
+% Copyright (C) 1996-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,8 +39,8 @@ if nargin > 5 || nargin < 2 || nargout > 7 || nargout == 0
     error('MJDGGES: takes 2, 3 or 4 input arguments and between 1 and 7 output arguments.')
 end
 
-if isoctave
-    error('Octave unsupported, since it does not have real qz, ordqz and ordeig')
+if isoctave && octave_ver_less_than('7')
+    error('Octave version 7 or higher is required (Octave 6 lacks the ordqz function)')
 end
 
 [me, ne] = size(e);
@@ -56,7 +56,11 @@ end
 info = 0;
 
 try
-    [ss, tt, qq, zz] = qz(e, d, 'real');
+    if isoctave
+        [ss, tt, qq, zz] = qz(e, d);
+    else
+        [ss, tt, qq, zz] = qz(e, d, 'real');
+    end
     eigval = ordeig(ss, tt);
     select = abs(eigval) < qz_criterium;
     sdim = sum(select);
