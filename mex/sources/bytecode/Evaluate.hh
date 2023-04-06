@@ -89,14 +89,8 @@ protected:
   double *g1, *r, *res;
   vector<mxArray *> jacobian_block, jacobian_exo_block, jacobian_det_exo_block;
   mxArray *GlobalTemporaryTerms;
-  double pow1(double a, double b);
-  double divide(double a, double b);
-  double log1(double a);
-  double log10_1(double a);
-  void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
+  void evaluateBlock(int Per_u_, bool evaluate, bool no_derivatives);
   int it_;
-  bool print_error;
-  double res1;
 
   int block_num; // Index of the current block
   int size; // Size of the current block

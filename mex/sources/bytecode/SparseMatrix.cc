@@ -25,11 +25,13 @@
 #include "SparseMatrix.hh"
 
 dynSparseMatrix::dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, bool block_decomposed_arg, int periods_arg,
-                                 int minimal_solving_periods_arg, BasicSymbolTable &symbol_table_arg) :
+                                 int minimal_solving_periods_arg, BasicSymbolTable &symbol_table_arg,
+                                 bool print_error_arg) :
   Evaluate {y_size_arg, y_kmin_arg, y_kmax_arg, steady_state_arg, periods_arg, symbol_table_arg},
   block_decomposed {block_decomposed_arg},
   minimal_solving_periods {minimal_solving_periods_arg},
-  print_it {print_it_arg}
+  print_it {print_it_arg},
+  print_error {print_error_arg}
 {
   pivotva = nullptr;
   g_save_op = nullptr;
@@ -1816,6 +1818,21 @@ dynSparseMatrix::Sparse_transpose(const mxArray *A_m)
       C_i[nze_C++] = key.second;
     }
   return C_m;
+}
+
+void
+dynSparseMatrix::compute_block_time(int Per_u_, bool evaluate, bool no_derivatives)
+{
+  try
+    {
+      evaluateBlock(Per_u_, evaluate, no_derivatives);
+    }
+  catch (FloatingPointException &e)
+    {
+      res1 = numeric_limits<double>::quiet_NaN();
+      if (print_error)
+        mexPrintf("%s\n      %s\n", e.message.c_str(), e.location.c_str());
+    }
 }
 
 bool

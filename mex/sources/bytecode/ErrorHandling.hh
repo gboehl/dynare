@@ -33,57 +33,59 @@ struct GeneralException
 
 struct FloatingPointException : public GeneralException
 {
-  FloatingPointException(const string &details) :
-    GeneralException {"Floating point error: " + details}
+  const string location;
+  FloatingPointException(const string &details, string location_arg) :
+    GeneralException {"Floating point error: " + details},
+    location {move(location_arg)}
   {
   }
 };
 
 struct LogException : public FloatingPointException
 {
-  LogException(double value) :
+  LogException(double value, string location_arg) :
     FloatingPointException { [=]
     {
       // We don’t use std::to_string(), because it uses fixed formatting
       ostringstream s;
       s << "log(X) with X=" << defaultfloat << value;
       return s.str();
-    }() }
+    }(), move(location_arg) }
   {
   }
 };
 
 struct Log10Exception : public FloatingPointException
 {
-  Log10Exception(double value) :
+  Log10Exception(double value, string location_arg) :
     FloatingPointException { [=]
     {
       // We don’t use std::to_string(), because it uses fixed formatting
       ostringstream s;
       s << "log10(X) with X=" << defaultfloat << value;
       return s.str();
-    }() }
+    }(), move(location_arg) }
   {
   }
 };
 
 struct DivideException : public FloatingPointException
 {
-  DivideException(double divisor) :
+  DivideException(double v1, double v2, string location_arg) :
     FloatingPointException { [=]
     {
       // We don’t use std::to_string(), because it uses fixed formatting
       ostringstream s;
-      s << "a/X with X=" << defaultfloat << divisor;
+      s << "a/X with a=" << defaultfloat << v1 << " and X= " << v2;
       return s.str();
-    }() }
+    }(), move(location_arg) }
   {
   }
 };
 
 struct PowException : public FloatingPointException
 {
-  PowException(double base, double exponent) :
+  PowException(double base, double exponent, string location_arg) :
     FloatingPointException { [=]
     {
       // We don’t use std::to_string(), because it uses fixed formatting
@@ -92,7 +94,7 @@ struct PowException : public FloatingPointException
       if (fabs(base) <= 1e-10)
         s << " and a=" << exponent;
       return s.str();
-    }() }
+    }(), move(location_arg) }
   {
   }
 };

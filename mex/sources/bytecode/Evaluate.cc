@@ -21,6 +21,7 @@
 #include <cmath>
 #include <limits>
 #include <stack>
+#include <cfenv>
 
 #include <dynmex.h>
 
@@ -987,64 +988,8 @@ Evaluate::print_expression(const Evaluate::it_code_type &expr_begin, const optio
   return { get<0>(Stack.top()), it_code };
 }
 
-double
-Evaluate::pow1(double a, double b)
-{
-  double r = pow(a, b);
-  if (isnan(r) || isinf(r))
-    {
-      res1 = std::numeric_limits<double>::quiet_NaN();
-      r = 0.0000000000000000000000001;
-      if (print_error)
-        throw PowException{a, b};
-    }
-  return r;
-}
-
-double
-Evaluate::divide(double a, double b)
-{
-  double r = a / b;
-  if (isnan(r) || isinf(r))
-    {
-      res1 = std::numeric_limits<double>::quiet_NaN();
-      r = 1e70;
-      if (print_error)
-        throw DivideException{b};
-    }
-  return r;
-}
-
-double
-Evaluate::log1(double a)
-{
-  double r = log(a);
-  if (isnan(r) || isinf(r))
-    {
-      res1 = std::numeric_limits<double>::quiet_NaN();
-      r = -1e70;
-      if (print_error)
-        throw LogException{a};
-    }
-  return r;
-}
-
-double
-Evaluate::log10_1(double a)
-{
-  double r = log(a);
-  if (isnan(r) || isinf(r))
-    {
-      res1 = std::numeric_limits<double>::quiet_NaN();
-      r = -1e70;
-      if (print_error)
-        throw Log10Exception{a};
-    }
-  return r;
-}
-
 void
-Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
+Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
 {
   auto it_code { currentBlockBeginning() };
   int var{0}, lag{0};
@@ -1619,20 +1564,13 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 #endif
               break;
             case BinaryOpcode::divide:
-              double tmp;
-#ifdef DEBUG
-              mexPrintf("v1=%f / v2=%f\n", v1, v2);
-#endif
-              try
-                {
-                  tmp = divide(v1, v2);
-                }
-              catch (FloatingPointException &fpeh)
-                {
-                  mexPrintf("%s\n      %s\n", fpeh.message.c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
-                  go_on = false;
-                }
-              Stack.push(tmp);
+              {
+                feclearexcept(FE_ALL_EXCEPT);
+                double tmp {v1 / v2};
+                if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
+                  throw DivideException{v1, v2, error_location(it_code_expr, it_code, steady_state, it_)};
+                Stack.push(tmp);
+              }
 #ifdef DEBUG
               tmp_out << " |" << v1 << "/" << v2 << "|";
 #endif
@@ -1674,20 +1612,13 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 #endif
               break;
             case BinaryOpcode::power:
-#ifdef DEBUG
-              mexPrintf("pow\n");
-#endif
-              try
-                {
-                  tmp = pow1(v1, v2);
-                }
-              catch (FloatingPointException &fpeh)
-                {
-                  mexPrintf("%s\n      %s\n", fpeh.message.c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
-                  go_on = false;
-                }
-              Stack.push(tmp);
-
+              {
+                feclearexcept(FE_ALL_EXCEPT);
+                double tmp {pow(v1, v2)};
+                if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
+                  throw PowException{v1, v2, error_location(it_code_expr, it_code, steady_state, it_)};
+                Stack.push(tmp);
+              }
 #ifdef DEBUG
               tmp_out << " |" << v1 << "^" << v2 << "|";
 #endif
@@ -1704,7 +1635,10 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
                       Stack.push(0.0);
                     else
                       {
-                        double dxp = pow1(v1, v2-derivOrder);
+                        feclearexcept(FE_ALL_EXCEPT);
+                        double dxp {pow(v1, v2-derivOrder)};
+                        if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
+                          throw PowException{v1, v2-derivOrder, error_location(it_code_expr, it_code, steady_state, it_)};
                         for (int i = 0; i < derivOrder; i++)
                           dxp *= v2--;
                         Stack.push(dxp);
@@ -1767,33 +1701,25 @@ Evaluate::compute_block_time(int Per_u_, bool evaluate, bool no_derivative)
 #endif
               break;
             case UnaryOpcode::log:
-              double tmp;
-              try
-                {
-                  tmp = log1(v1);
-                }
-              catch (FloatingPointException &fpeh)
-                {
-                  mexPrintf("%s\n      %s\n", fpeh.message.c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
-                  go_on = false;
-                }
-              Stack.push(tmp);
-
+              {
+                feclearexcept(FE_ALL_EXCEPT);
+                double tmp {log(v1)};
+                if (fetestexcept(FE_DIVBYZERO | FE_INVALID))
+                  throw LogException{v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                Stack.push(tmp);
+              }
 #ifdef DEBUG
               tmp_out << " |log(" << v1 << ")|";
 #endif
               break;
             case UnaryOpcode::log10:
-              try
-                {
-                  tmp = log10_1(v1);
-                }
-              catch (FloatingPointException &fpeh)
-                {
-                  mexPrintf("%s\n      %s\n", fpeh.message.c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
-                  go_on = false;
-                }
-              Stack.push(tmp);
+              {
+                feclearexcept(FE_ALL_EXCEPT);
+                double tmp {log10(v1)};
+                if (fetestexcept(FE_DIVBYZERO | FE_INVALID))
+                  throw Log10Exception{v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                Stack.push(tmp);
+              }
 #ifdef DEBUG
               tmp_out << " |log10(" << v1 << ")|";
 #endif

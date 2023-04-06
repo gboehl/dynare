@@ -22,6 +22,7 @@
 #include <cstring>
 #include <filesystem>
 #include <numeric>
+#include <cfenv>
 
 #include "Interpreter.hh"
 
@@ -34,7 +35,7 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
                          string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
                          bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
                          bool steady_state_arg, bool block_decomposed_arg, bool print_it_arg, int col_x_arg, int col_y_arg, BasicSymbolTable &symbol_table_arg)
-: dynSparseMatrix {y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, block_decomposed_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg}
+: dynSparseMatrix {y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, block_decomposed_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg, print_error_arg}
 {
   params = params_arg;
   y = y_arg;
@@ -61,7 +62,6 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
   col_x = col_x_arg;
   col_y = col_y_arg;
   GlobalTemporaryTerms = GlobalTemporaryTerms_arg;
-  print_error = print_error_arg;
   print_it = print_it_arg;
 }
 
@@ -110,7 +110,14 @@ Interpreter::solve_simple_one_periods()
                 {
                   slowc /= 1.5;
                   mexPrintf("Reducing the path length in Newton step slowc=%f\n", slowc);
-                  y[Block_Contain[0].Variable + Per_y_] = ya - slowc * divide(r[0], g1[0]);
+                  feclearexcept(FE_ALL_EXCEPT);
+                  y[Block_Contain[0].Variable + Per_y_] = ya - slowc * (r[0] / g1[0]);
+                  if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
+                    {
+                      res1 = numeric_limits<double>::quiet_NaN();
+                      if (print_error)
+                        mexPrintf("      Singularity in block %d", block_num+1);
+                    }
                 }
             }
         }
@@ -119,14 +126,13 @@ Interpreter::solve_simple_one_periods()
       cvg = (fabs(rr) < solve_tolf);
       if (cvg)
         continue;
-      try
+      feclearexcept(FE_ALL_EXCEPT);
+      y[Block_Contain[0].Variable + Per_y_] += -slowc * (rr / g1[0]);
+      if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
         {
-          y[Block_Contain[0].Variable + Per_y_] += -slowc *divide(rr, g1[0]);
-        }
-      catch (FloatingPointException &fpeh)
-        {
-          mexPrintf("%s\n      \n", fpeh.message.c_str());
-          mexPrintf("      Singularity in block %d", block_num+1);
+          res1 = numeric_limits<double>::quiet_NaN();
+          if (print_error)
+            mexPrintf("      Singularity in block %d", block_num+1);
         }
       iter++;
     }
