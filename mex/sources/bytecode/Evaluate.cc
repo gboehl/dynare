@@ -29,13 +29,13 @@
 #include "ErrorHandling.hh"
 
 Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_state_arg, int periods_arg, BasicSymbolTable &symbol_table_arg) :
-  symbol_table {symbol_table_arg}
+  symbol_table {symbol_table_arg},
+  y_size {y_size_arg},
+  y_kmin {y_kmin_arg},
+  y_kmax {y_kmax_arg},
+  periods {periods_arg},
+  steady_state {steady_state_arg}
 {
-  y_size = y_size_arg;
-  y_kmin = y_kmin_arg;
-  y_kmax = y_kmax_arg;
-  periods = periods_arg;
-  steady_state = steady_state_arg;
 }
 
 void
