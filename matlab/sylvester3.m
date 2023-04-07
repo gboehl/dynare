@@ -1,7 +1,7 @@
 function x=sylvester3(a,b,c,d)
 % solves a*x+b*x*c=d where d is [n x m x p]
 
-% Copyright © 2005-2017 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,13 +35,13 @@ if m == 1
     return
 end
 [u,t]=schur(c);
-if isoctave
+if isoctave && octave_ver_less_than('9')
     [aa,bb,qq,zz]=qz(full(a),full(b));
     for j=1:p
         d(:,:,j)=qq*d(:,:,j)*u;
     end
 else
-    [aa,bb,qq,zz]=qz(full(a),full(b),'real'); % available in Matlab version 6.0
+    [aa,bb,qq,zz]=qz(full(a),full(b),'real');
     for j=1:p
         d(:,:,j)=qq*d(:,:,j)*u;
     end

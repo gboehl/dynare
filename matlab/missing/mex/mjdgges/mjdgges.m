@@ -56,7 +56,7 @@ end
 info = 0;
 
 try
-    if isoctave
+    if isoctave && octave_ver_less_than('9')
         [ss, tt, qq, zz] = qz(e, d);
     else
         [ss, tt, qq, zz] = qz(e, d, 'real');
