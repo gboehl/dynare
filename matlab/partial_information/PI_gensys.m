@@ -15,8 +15,8 @@ function [G1pi,C,impact,nmat,TT1,TT2,gev,eu, DD, E2, E5, GAMMA, FL_RANK ]=PI_gen
 % Christopher A. Sims
 % Corrected 10/28/96 by CAS
 
-% Copyright (C) 1996-2009 Christopher Sims
-% Copyright (C) 2010-2017 Dynare Team
+% Copyright © 1996-2009 Christopher Sims
+% Copyright © 2010-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -176,8 +176,8 @@ end
 
 G0pi=eye(n+FL_RANK+NX);
 try
-    if isoctave
-        % Need to force QZ complex on Octave (otherwise it returns the real one)
+    if isoctave && octave_ver_less_than('9')
+        % Need to force QZ complex on Octave ⩽ 8 (otherwise it returns the real one)
         [a b q z]=qz(complex(G0pi),complex(G1pi));
     else
         [a b q z]=qz(G0pi,G1pi);
