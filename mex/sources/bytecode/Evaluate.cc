@@ -1670,12 +1670,6 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
             case BinaryOpcode::equal:
               // Nothing to do
               break;
-            default:
-              {
-                mexPrintf("Error\n");
-                throw FatalException{"In compute_block_time, unknown binary operator "
-                                     + to_string(static_cast<int>(op2))};
-              }
             }
           break;
         case Tags::FUNARY:
@@ -1833,11 +1827,18 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
               tmp_out << " |sign(" << v1 << ")|";
 #endif
               break;
-            default:
-              {
-                mexPrintf("Error\n");
-                throw FatalException{"In compute_block_time, unknown unary operator " + to_string(static_cast<int>(op1))};
-              }
+            case UnaryOpcode::steadyState:
+              throw FatalException {"Internal error: operator steady_state should not appear"};
+            case UnaryOpcode::steadyStateParamDeriv:
+              throw FatalException {"Internal error: 1st derivative w.r.t. parameters of operator steady_state should not appear"};
+            case UnaryOpcode::steadyStateParam2ndDeriv:
+              throw FatalException {"Internal error: 2nd derivative w.r.t. parameters of operator steady_state should not appear"};
+            case UnaryOpcode::expectation:
+              throw FatalException {"Internal error: operator expectation should not appear"};
+            case UnaryOpcode::diff:
+              throw FatalException {"Internal error: operator diff should not appear"};
+            case UnaryOpcode::adl:
+              throw FatalException {"Internal error: operator adl should not appear"};
             }
           break;
         case Tags::FTRINARY:
@@ -1862,11 +1863,6 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
               tmp_out << " |normpdf(" << v1 << ", " << v2 << ", " << v3 << ")|";
 #endif
               break;
-            default:
-              {
-                mexPrintf("Error\n");
-                throw FatalException{"In compute_block_time, unknown trinary operator " + to_string(static_cast<int>(op3))};
-              }
             }
           break;
 
