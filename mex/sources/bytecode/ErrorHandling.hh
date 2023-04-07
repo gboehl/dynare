@@ -41,28 +41,14 @@ struct FloatingPointException : public GeneralException
   }
 };
 
-struct LogException : public FloatingPointException
+struct UnaryOpException : public FloatingPointException
 {
-  LogException(double value, string location_arg) :
+  UnaryOpException(const string &op, double value, string location_arg) :
     FloatingPointException { [=]
     {
       // We don’t use std::to_string(), because it uses fixed formatting
       ostringstream s;
-      s << "log(X) with X=" << defaultfloat << value;
-      return s.str();
-    }(), move(location_arg) }
-  {
-  }
-};
-
-struct Log10Exception : public FloatingPointException
-{
-  Log10Exception(double value, string location_arg) :
-    FloatingPointException { [=]
-    {
-      // We don’t use std::to_string(), because it uses fixed formatting
-      ostringstream s;
-      s << "log10(X) with X=" << defaultfloat << value;
+      s << op << "(X) with X=" << defaultfloat << value;
       return s.str();
     }(), move(location_arg) }
   {
