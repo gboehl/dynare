@@ -1813,7 +1813,24 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
               Stack.push(erfc(v1));
 #ifdef DEBUG
               tmp_out << " |erfc(" << v1 << ")|";
-
+#endif
+              break;
+            case UnaryOpcode::cbrt:
+              Stack.push(cbrt(v1));
+#ifdef DEBUG
+              tmp_out << " |cbrt(" << v1 << ")|";
+#endif
+              break;
+            case UnaryOpcode::abs:
+              Stack.push(abs(v1));
+#ifdef DEBUG
+              tmp_out << " |abs(" << v1 << ")|";
+#endif
+              break;
+            case UnaryOpcode::sign:
+              Stack.push((v1 > 0) ? 1 : ((v1 < 0) ? -1 : 0));
+#ifdef DEBUG
+              tmp_out << " |sign(" << v1 << ")|";
 #endif
               break;
             default:
