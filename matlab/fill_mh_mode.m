@@ -1,22 +1,22 @@
-function oo_=fill_mh_mode(xparam1,stdh,M_,options_,estim_params_,bayestopt_,oo_, field_name)
-%function oo_=fill_mh_mode(xparam1,stdh,M_,options_,estim_params_,bayestopt_,oo_, field_name)
+function oo_ = fill_mh_mode(xparam1, stdh, M_, options_, estim_params_, oo_, field_name)
+
+% Fill oo_.<field_name>.mode and oo_.<field_name>.std_at_mode
 %
 % INPUTS
-%   o xparam1       [double]   (p*1) vector of estimate parameters.
-%   o stdh          [double]   (p*1) vector of estimate parameters.
-%   o M_                        Matlab's structure describing the Model (initialized by dynare, see @ref{M_}).
-%   o estim_params_             Matlab's structure describing the estimated_parameters (initialized by dynare, see @ref{estim_params_}).
-%   o options_                  Matlab's structure describing the options (initialized by dynare, see @ref{options_}).
-%   o bayestopt_                Matlab's structure describing the priors (initialized by dynare, see @ref{bayesopt_}).
-%   o oo_                       Matlab's structure gathering the results (initialized by dynare, see @ref{oo_}).
+% - xparam1         [double]  p×1 vector, estimated posterior mode.
+% - stdh            [double]  p×1 vector, estimated posterior standard deviation.
+% - M_              [struct]  Description of the model.
+% - estim_params_   [struct]  Description of the estimated parameters.
+% - options_        [struct]  Dynare's options.
+% - oo_             [struct]  Estimation and simulation results.
 %
 % OUTPUTS
-%   o oo_                       Matlab's structure gathering the results
+% - oo_                       Matlab's structure gathering the results
 %
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright © 2005-2021 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,7 +42,8 @@ np  = estim_params_.np ;  % Number of deep parameters.
 if np
     ip = nvx+nvn+ncx+ncn+1;
     for i=1:np
-        name = bayestopt_.name{ip};
+        k = estim_params_.param_vals(i,1);
+        name = M_.param_names{k};
         oo_.([field_name '_mode']).parameters.(name) = xparam1(ip);
         oo_.([field_name '_std_at_mode']).parameters.(name) = stdh(ip);
         ip = ip+1;

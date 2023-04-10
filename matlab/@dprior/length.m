@@ -1,7 +1,17 @@
-function indx = smc_resampling(weights,noise,number)
-% function indx = smc_resampling(weights,noise,number)
+function n = length(o)
 
-% Copyright © 2022 Dynare Team
+% Return the dimension of the random vector.
+%
+% INPUTS
+% - o      [dprior]   Distribution specification for a n×1 vector of independent continuous random variables
+%
+% OUTPUTS
+% - n      [integer]  scalar.
+%
+% REMARKS
+% None.
+
+% Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,13 +28,4 @@ function indx = smc_resampling(weights,noise,number)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-    indx = zeros(number,1);
-    cumweights = cumsum(weights);
-    randvec = (transpose(1:number)-1+noise(:))/number;
-    j = 1;
-    for i=1:number
-        while (randvec(i)>cumweights(j))
-            j = j+1;
-        end
-        indx(i) = j;
-    end
+n = length(o.lb);

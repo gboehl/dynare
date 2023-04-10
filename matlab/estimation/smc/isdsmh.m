@@ -1,6 +1,6 @@
-function dprintf(str, varargin)
+function bool = isdsmh(options_)
 
-% Copyright © 2019 Dynare Team
+% Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,4 +17,9 @@ function dprintf(str, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-disp(sprintf(str, varargin{:}));
+bool = false;
+if isfield(options_, 'posterior_sampler_options')
+    if strcmp(options_.posterior_sampler_options.posterior_sampling_method, 'dsmh')
+        bool = true;
+    end
+end

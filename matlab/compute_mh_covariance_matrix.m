@@ -1,23 +1,19 @@
-function [posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix(bayestopt_,fname,dname,outputFolderName)
-% function [posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix(bayestopt_,fname,dname,outputFolderName)
+function [mean, covariance, mode, kernel_at_the_mode] = compute_mh_covariance_matrix(names, fname, dname, outputFolderName)
+
 % Estimation of the posterior covariance matrix, posterior mean, posterior mode and evaluation of the posterior kernel at the
-% estimated mode, using the draws from a metropolis-hastings. The estimated posterior mode and covariance matrix are saved in
-% a file <fname>_mh_mode.mat.
+% estimated mode, using posterior draws from a metropolis-hastings.
 %
 % INPUTS
-%   o  bayestopt_                    [struct]  characterizing priors
-%   o  fname                         [string]  name of model
-%   o  dname                         [string]  name of directory with metropolis folder
-%   o  outputFolderName              [string]  name of directory to store results
+% - names                    [cell]     n×1 cell array of row char arrays, names of the estimated parameters.
+% - fname                    [char]     name of the model
+% - dname                    [char]     name of subfolder with output files
+% - outputFolderName         [char]     name of directory to store results
 %
 % OUTPUTS
-%   o  posterior_mean                [double]  (n*1) vector, posterior expectation of the parameters.
-%   o  posterior_covariance          [double]  (n*n) matrix, posterior covariance of the parameters (computed from previous metropolis hastings).
-%   o  posterior_mode                [double]  (n*1) vector, posterior mode of the parameters.
-%   o  posterior_kernel_at_the_mode  [double]  scalar.
-%
-% SPECIAL REQUIREMENTS
-%   None.
+% - mean                     [double]   n×1 vector, posterior expectation of the parameters.
+% - covariance               [double]   n×n matrix, posterior covariance of the parameters.
+% - mode                     [double]   n×1 vector, posterior mode of the parameters.
+% - kernel_at_the_mode       [double]   scalar, value of the posterior kernel at the mode.
 
 % Copyright © 2006-2023 Dynare Team
 %
@@ -35,9 +31,7 @@ function [posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-if nargin < 4
-    outputFolderName = 'Output';
-end
+
 MetropolisFolder = CheckPath('metropolis',dname);
 BaseName = [MetropolisFolder filesep fname];
 
@@ -49,29 +43,24 @@ TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
 
 [nblck, n] = size(record.LastParameters);
 
-posterior_kernel_at_the_mode = -Inf;
-posterior_mean = zeros(n,1);
-posterior_mode = NaN(n,1);
-posterior_covariance = zeros(n,n);
+kernel_at_the_mode = -Inf;
+mean = zeros(n,1);
+mode = NaN(n,1);
+covariance = zeros(n,n);
 offset = 0;
 
 for b=1:nblck
     first_line = FirstLine;
     for n = FirstMhFile:TotalNumberOfMhFiles
         load([ BaseName '_mh' int2str(n) '_blck' int2str(b) '.mat'],'x2','logpo2');
-        [tmp,idx] = max(logpo2);
-        if tmp>posterior_kernel_at_the_mode
-            posterior_kernel_at_the_mode = tmp;
-            posterior_mode = x2(idx,:);
+        [tmp, idx] = max(logpo2);
+        if tmp>kernel_at_the_mode
+            kernel_at_the_mode = tmp;
+            mode = x2(idx,:);
         end
-        [posterior_mean,posterior_covariance,offset] = recursive_moments(posterior_mean,posterior_covariance,x2(first_line:end,:),offset);
+        [mean, covariance, offset] = recursive_moments(mean, covariance, x2(first_line:end,:), offset);
         first_line = 1;
     end
 end
 
-xparam1 = posterior_mode';
-hh = inv(posterior_covariance);
-fval = posterior_kernel_at_the_mode;
-parameter_names = bayestopt_.name;
-
-save([dname filesep outputFolderName filesep fname '_mh_mode.mat'],'xparam1','hh','fval','parameter_names');
+mode = transpose(mode);

@@ -23,9 +23,9 @@ switch S(1).type
   case '.'
     if ismember(S(1).subs, {'p1','p2','p3','p4','p5','p6','p7','lb','ub'})
         p = builtin('subsref', o, S(1));
-    elseif ismember(S(1).subs, {'draw'})
+    elseif ismember(S(1).subs, {'draw','length'})
         p = feval(S(1).subs, o);
-    elseif ismember(S(1).subs, {'draws', 'density', 'densities', 'moments'})
+    elseif ismember(S(1).subs, {'draws', 'density', 'densities', 'moments', 'admissible'})
         p = feval(S(1).subs, o , S(2).subs{:});
     elseif ismember(S(1).subs, {'mean', 'median', 'variance', 'mode'})
         if (length(S)==2 && isempty(S(2).subs)) || length(S)==1

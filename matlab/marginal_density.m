@@ -60,7 +60,7 @@ xparam1 = posterior_mean;
 hh = inv(SIGMA);
 fprintf(' Done!\n');
 if ~isfield(oo_,'posterior_mode') || (options_.mh_replic && isequal(options_.posterior_sampler_options.posterior_sampling_method,'slice'))
-    oo_=fill_mh_mode(posterior_mode',NaN(npar,1),M_,options_,estim_params_,bayestopt_,oo_,'posterior');
+    oo_=fill_mh_mode(posterior_mode',NaN(npar,1),M_,options_,estim_params_,oo_,'posterior');
 end
 
 % save the posterior mean and the inverse of the covariance matrix

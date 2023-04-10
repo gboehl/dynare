@@ -1,6 +1,15 @@
-function dprintf(str, varargin)
+function indices = kitagawa(weights, noise)
 
-% Copyright © 2019 Dynare Team
+% Return indices for resampling.
+%
+% INPUTS
+% - weights   [double]    n×1 vector of partcles' weights.
+% - noise     [double]    scalar, uniform random deviates in [0,1]
+%
+% OUTPUTS
+% - indices   [integer]   n×1 vector of indices in [1:n]
+
+% Copyright © 2022-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,4 +26,20 @@ function dprintf(str, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-disp(sprintf(str, varargin{:}));
+n= length(weights);
+
+if nargin<2, noise = rand; end
+
+indices = NaN(n, 1);
+
+cweights = cumsum(weights);
+
+wweights = (transpose(0:n-1)+noise)*(1.0/n);
+
+j = 1;
+for i=1:n
+    while wweights(i)>cweights(j)
+        j = j+1;
+    end
+    indices(i) = j;
+end

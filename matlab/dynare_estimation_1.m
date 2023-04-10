@@ -31,6 +31,14 @@ function dynare_estimation_1(var_list_,dname)
 
 global M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info
 
+if issmc(options_)
+    options_.mode_compute = 0;
+    options_.mh_replic = 0;
+    options_.mh_recover = false;
+    options_.load_mh_file = false;
+    options_.load_results_after_load_mh = false;
+end
+
 dispString = 'Estimation::mcmc';
 
 if ~exist([M_.dname filesep 'Output'],'dir')
@@ -88,7 +96,9 @@ if options_.order > 1
     end
 end
 
-%% set objective function
+%
+% set objective function
+%
 if ~options_.dsge_var
     if options_.particle.status
         objective_function = str2func('non_linear_dsge_likelihood');
@@ -147,7 +157,10 @@ if ~isempty(estim_params_)
     M_ = set_all_parameters(xparam1,estim_params_,M_);
 end
 
-%% perform initial estimation checks;
+%
+% perform initial estimation checks;
+%
+
 try
     oo_ = initial_estimation_checks(objective_function,xparam1,dataset_,dataset_info,M_,estim_params_,options_,bayestopt_,bounds,oo_);
 catch % if check fails, provide info on using calibration if present
@@ -164,8 +177,11 @@ catch % if check fails, provide info on using calibration if present
     rethrow(e);
 end
 
-%% Run smoother if no estimation or mode-finding are requested
-if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && ~options_.mh_posterior_mode_estimation
+%
+% Run smoother if no estimation or mode-finding are requested
+%
+
+if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && ~options_.mh_posterior_mode_estimation && ~issmc(options_)
     if options_.order==1 && ~options_.particle.status
         if options_.smoother
             if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
@@ -210,11 +226,11 @@ if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && ~options_.
     end
 end
 
-%% Estimation of the posterior mode or likelihood mode
+%
+% Estimation of the posterior mode or likelihood mode
+%
 
-
-
-if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
+if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation && ~issmc(options_)
     optimizer_vec = [options_.mode_compute;num2cell(options_.additional_optimizer_steps)];
     for optim_iter = 1:length(optimizer_vec)
         current_optimizer = optimizer_vec{optim_iter};
@@ -238,7 +254,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
                     ana_deriv_old = options_.analytic_derivation;
                     options_.analytic_derivation = 2;
                     [~,~,~,~,hh] = feval(objective_function,xparam1, ...
-                        dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+                                         dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
                     options_.analytic_derivation = ana_deriv_old;
                 elseif ~isnumeric(current_optimizer) || ~(isequal(current_optimizer,5) && newratflag~=1 && strcmp(func2str(objective_function),'dsge_likelihood'))
                     % enter here if i) not mode_compute_5, ii) if mode_compute_5 and newratflag==1;
@@ -292,16 +308,19 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
     end
 end
 
-if ~options_.mh_posterior_mode_estimation && options_.cova_compute
+if ~options_.mh_posterior_mode_estimation && options_.cova_compute && ~issmc(options_)
     check_hessian_at_the_mode(hh, xparam1, M_, estim_params_, options_, bounds);
 end
 
-%% create mode_check_plots
-if options_.mode_check.status && ~options_.mh_posterior_mode_estimation
+%
+% create mode_check_plots
+%
+
+if options_.mode_check.status && ~options_.mh_posterior_mode_estimation && ~issmc(options_)
     ana_deriv_old = options_.analytic_derivation;
     options_.analytic_derivation = 0;
     mode_check(objective_function,xparam1,hh,options_,M_,estim_params_,bayestopt_,bounds,false,...
-        dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+               dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     options_.analytic_derivation = ana_deriv_old;
 end
 
@@ -309,43 +328,38 @@ oo_.posterior.optimization.mode = [];
 oo_.posterior.optimization.Variance = [];
 oo_.posterior.optimization.log_density=[];
 
-invhess=[];
-if ~options_.mh_posterior_mode_estimation
-    oo_.posterior.optimization.mode = xparam1;
-    if exist('fval','var')
-        oo_.posterior.optimization.log_density=-fval;
+invhess = [];
+
+if ~issmc(options_)
+    if ~options_.mh_posterior_mode_estimation
+        oo_.posterior.optimization.mode = xparam1;
+        if exist('fval','var')
+            oo_.posterior.optimization.log_density=-fval;
+        end
+        if options_.cova_compute
+            hsd = sqrt(diag(hh));
+            invhess = inv(hh./(hsd*hsd'))./(hsd*hsd');
+            stdh = sqrt(diag(invhess));
+            oo_.posterior.optimization.Variance = invhess;
+        end
+    else
+        variances = bayestopt_.p2.*bayestopt_.p2;
+        idInf = isinf(variances);
+        variances(idInf) = 1;
+        invhess = options_.mh_posterior_mode_estimation*diag(variances);
+        xparam1 = bayestopt_.p5;
+        idNaN = isnan(xparam1);
+        xparam1(idNaN) = bayestopt_.p1(idNaN);
+        outside_bound_pars=find(xparam1 < bounds.lb | xparam1 > bounds.ub);
+        xparam1(outside_bound_pars) = bayestopt_.p1(outside_bound_pars);
     end
-    if options_.cova_compute
-        hsd = sqrt(diag(hh));
-        invhess = inv(hh./(hsd*hsd'))./(hsd*hsd');
-        stdh = sqrt(diag(invhess));
-        oo_.posterior.optimization.Variance = invhess;
-    end
-else
-    variances = bayestopt_.p2.*bayestopt_.p2;
-    idInf = isinf(variances);
-    variances(idInf) = 1;
-    invhess = options_.mh_posterior_mode_estimation*diag(variances);
-    xparam1 = bayestopt_.p5;
-    idNaN = isnan(xparam1);
-    xparam1(idNaN) = bayestopt_.p1(idNaN);
-    outside_bound_pars=find(xparam1 < bounds.lb | xparam1 > bounds.ub);
-    xparam1(outside_bound_pars) = bayestopt_.p1(outside_bound_pars);
 end
 
 if ~options_.cova_compute
     stdh = NaN(length(xparam1),1);
 end
 
-if options_.particle.status && isfield(options_.particle,'posterior_sampler')
-    if strcmpi(options_.particle.posterior_sampler,'Herbst_Schorfheide')
-        Herbst_Schorfheide_sampler(objective_function,xparam1,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state)
-    elseif strcmpi(options_.particle.posterior_sampler,'DSMH')
-        DSMH_sampler(objective_function,xparam1,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state)
-    end
-end
-
-if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
+if ~issmc(options_) && any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     % display results table and store parameter estimates and standard errors in results
     oo_ = display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, prior_dist_names, 'Posterior', 'posterior');
     % Laplace approximation to the marginal log density:
@@ -366,56 +380,75 @@ if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
         [~,~,~,~,~,~,~,oo_.dsge_var.posterior_mode.PHI_tilde,oo_.dsge_var.posterior_mode.SIGMA_u_tilde,oo_.dsge_var.posterior_mode.iXX,oo_.dsge_var.posterior_mode.prior] =...
             feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     end
-
-elseif ~any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
+elseif ~issmc(options_) && ~any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     oo_=display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, prior_dist_names, 'Maximum Likelihood', 'mle');
 end
 
-invhess = set_mcmc_jumping_covariance(invhess, nx, options_.MCMC_jumping_covariance, bayestopt_, 'dynare_estimation_1');
+if ~issmc(options_)
+    invhess = set_mcmc_jumping_covariance(invhess, nx, options_.MCMC_jumping_covariance, bayestopt_, 'dynare_estimation_1');
+end
 
-if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
-        (any(bayestopt_.pshape >0 ) && options_.load_mh_file)  %% not ML estimation
-    %reset bounds as lb and ub must only be operational during mode-finding
-    bounds = set_mcmc_prior_bounds(xparam1, bayestopt_, options_, 'dynare_estimation_1');
-    % Tunes the jumping distribution's scale parameter
-    if options_.mh_tune_jscale.status
-        if strcmp(options_.posterior_sampler_options.posterior_sampling_method, 'random_walk_metropolis_hastings')
-            options_.mh_jscale = tune_mcmc_mh_jscale_wrapper(invhess, options_, M_, objective_function, xparam1, bounds,...
-                dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
-            bayestopt_.jscale(:) = options_.mh_jscale;
-            fprintf('mh_jscale has been set equal to %s\n', num2str(options_.mh_jscale));
-        else
-            warning('mh_tune_jscale is only available with Random Walk Metropolis Hastings!')
+%
+% Run SMC sampler.
+%
+
+if ishssmc(options_)
+    [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options([], M_.fname, M_.dname, options_, bounds, bayestopt_);
+    options_.posterior_sampler_options.current_options = posterior_sampler_options;
+    oo_.MarginalDensity.hssmc = hssmc(objective_function, bounds, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, oo_);
+elseif isdsmh(options_)
+    dsmh(objective_function, xparam1, bounds, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, oo_)
+end
+
+%
+% Run MCMC and compute posterior statistics.
+%
+
+if issmc(options_) || (any(bayestopt_.pshape>0) && options_.mh_replic) ||  (any(bayestopt_.pshape>0) && options_.load_mh_file) % not ML estimation
+    if ~issmc(options_)
+        % Reset bounds as lb and ub must only be operational during mode-finding
+        bounds = set_mcmc_prior_bounds(xparam1, bayestopt_, options_, 'dynare_estimation_1');
+        % Tune the jumping distribution's scale parameter
+        if options_.mh_tune_jscale.status
+            if strcmp(options_.posterior_sampler_options.posterior_sampling_method, 'random_walk_metropolis_hastings')
+                options_.mh_jscale = tune_mcmc_mh_jscale_wrapper(invhess, options_, M_, objective_function, xparam1, bounds,...
+                                                                 dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+                bayestopt_.jscale(:) = options_.mh_jscale;
+                fprintf('mh_jscale has been set equal to %s\n', num2str(options_.mh_jscale));
+            else
+                warning('mh_tune_jscale is only available with Random Walk Metropolis Hastings!')
+            end
         end
-    end
-    % runs MCMC
-    if options_.mh_replic || options_.load_mh_file
-        posterior_sampler_options = options_.posterior_sampler_options.current_options;
-        posterior_sampler_options.invhess = invhess;
-        [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, M_.fname, M_.dname, options_, bounds, bayestopt_);
-        % store current options in global
-        options_.posterior_sampler_options.current_options = posterior_sampler_options;
-        if options_.mh_replic
-            ana_deriv_old = options_.analytic_derivation;
-            options_.analytic_derivation = 0;
-            posterior_sampler(objective_function,posterior_sampler_options.proposal_distribution,xparam1,posterior_sampler_options,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_,dispString);
-            options_.analytic_derivation = ana_deriv_old;
+        % Run MCMC
+        if options_.mh_replic || options_.load_mh_file
+            posterior_sampler_options = options_.posterior_sampler_options.current_options;
+            posterior_sampler_options.invhess = invhess;
+            [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, M_.fname, M_.dname, options_, bounds, bayestopt_);
+            % store current options in global
+            options_.posterior_sampler_options.current_options = posterior_sampler_options;
+            if options_.mh_replic
+                ana_deriv_old = options_.analytic_derivation;
+                options_.analytic_derivation = 0;
+                posterior_sampler(objective_function,posterior_sampler_options.proposal_distribution,xparam1,posterior_sampler_options,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_,dispString);
+                options_.analytic_derivation = ana_deriv_old;
+            end
         end
+        % Discard first mh_drop percent of the draws:
+        CutSample(M_, options_, dispString);
     end
-    %% Here I discard first mh_drop percent of the draws:
-    CutSample(M_, options_, dispString);
-    if options_.mh_posterior_mode_estimation
-        [~,~,posterior_mode,~] = compute_mh_covariance_matrix(bayestopt_,M_.fname,M_.dname);
-        oo_=fill_mh_mode(posterior_mode',NaN(length(posterior_mode),1),M_,options_,estim_params_,bayestopt_,oo_,'posterior');
+    if options_.mh_posterior_mode_estimation || (issmc(options_) && options_.smc_posterior_mode_estimation)
+        [~, covariance, posterior_mode, ~] = compute_posterior_covariance_matrix(bayestopt_.name, M_.fname, M_.dname, options_);
+        oo_ = fill_mh_mode(posterior_mode, sqrt(diag(covariance)), M_, options_, estim_params_, oo_, 'posterior');
         %reset qz_criterium
-        options_.qz_criterium=qz_criterium_old;
+        options_.qz_criterium = qz_criterium_old;
         return
     else
-        %get stored results if required
-        if options_.load_mh_file && options_.load_results_after_load_mh
-            oo_load_mh=load([M_.dname filesep 'Output' filesep M_.fname '_results'],'oo_');
+        % Get stored results if required
+        if ~issmc(options_) && options_.load_mh_file && options_.load_results_after_load_mh
+            oo_load_mh = load(sprintf('%s/%s/%s_results', M_.dname, 'Output', M_.fname), 'oo_');
         end
-        if ~options_.nodiagnostic
+        % Compute MCMC convergence diagnostics
+        if ~issmc(options_) && ~options_.nodiagnostic
             if (options_.mh_replic>0 || (options_.load_mh_file && ~options_.load_results_after_load_mh))
                 oo_= mcmc_diagnostics(options_, estim_params_, M_,oo_);
             elseif options_.load_mh_file && options_.load_results_after_load_mh
@@ -424,9 +457,11 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                 end
             end
         end
-        %% Estimation of the marginal density from the Mh draws:
-        if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            [~,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_);
+        % Estimation of the marginal density from the Mh draws:
+        if ishssmc(options_) || options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
+            if ~issmc(options_)
+                [~, oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_);
+            end
             % Store posterior statistics by parameter name
             oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, prior_dist_names);
             if ~options_.nograph
@@ -435,13 +470,13 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
             % Store posterior mean in a vector and posterior variance in
             % a matrix
             [oo_.posterior.metropolis.mean,oo_.posterior.metropolis.Variance] ...
-                = GetPosteriorMeanVariance(M_,options_.mh_drop);
+                = GetPosteriorMeanVariance(options_, M_);
         elseif options_.load_mh_file && options_.load_results_after_load_mh
-            %% load fields from previous MCMC run stored in results-file
+            % load fields from previous MCMC run stored in results-file
             field_names={'posterior_mode','posterior_std_at_mode',...% fields set by marginal_density
-                'posterior_mean','posterior_hpdinf','posterior_hpdsup','posterior_median','posterior_variance','posterior_std','posterior_deciles','posterior_density',...% fields set by GetPosteriorParametersStatistics
-                'prior_density',...%fields set by PlotPosteriorDistributions
-                };
+                         'posterior_mean','posterior_hpdinf','posterior_hpdsup','posterior_median','posterior_variance','posterior_std','posterior_deciles','posterior_density',...% fields set by GetPosteriorParametersStatistics
+                         'prior_density',...%fields set by PlotPosteriorDistributions
+                        };
             for field_iter=1:size(field_names,2)
                 if isfield(oo_load_mh.oo_,field_names{1,field_iter})
                     oo_.(field_names{1,field_iter})=oo_load_mh.oo_.(field_names{1,field_iter});
@@ -456,7 +491,9 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                 oo_.posterior.metropolis=oo_load_mh.oo_.posterior.metropolis;
             end
         end
-        [error_flag,~,options_]= metropolis_draw(1,options_,estim_params_,M_);
+        if ~issmc(options_)
+            [error_flag, ~, options_]= metropolis_draw(1, options_, estim_params_, M_);
+        end
         if ~(~isempty(options_.sub_draws) && options_.sub_draws==0)
             if options_.bayesian_irf
                 if error_flag
@@ -499,9 +536,9 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                     error('%s: Particle Smoothers are not yet implemented.',dispString)
                 end
             end
-        else
-            fprintf('%s: sub_draws was set to 0. Skipping posterior computations.',dispString);
-        end
+            else
+                fprintf('%s: sub_draws was set to 0. Skipping posterior computations.',dispString);
+            end
         xparam1 = get_posterior_parameters('mean',M_,estim_params_,oo_,options_);
         M_ = set_all_parameters(xparam1,estim_params_,M_);
     end
@@ -517,7 +554,7 @@ end
 
 %Run and store classical smoother if needed
 if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.pshape> 0) && options_.load_mh_file)) ...
-        || ~options_.smoother ) && ~options_.partial_information  % to be fixed
+    || ~options_.smoother ) && ~options_.partial_information  % to be fixed
     %% ML estimation, or posterior mode without Metropolis-Hastings or Metropolis without Bayesian smoothed variables
     oo_=save_display_classical_smoother_results(xparam1,M_,oo_,options_,bayestopt_,dataset_,dataset_info,estim_params_);
 end

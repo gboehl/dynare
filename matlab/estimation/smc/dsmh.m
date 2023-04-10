@@ -1,5 +1,5 @@
-function DSMH_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
-% function DSMH_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
+function dsmh(TargetFun, xparam1, mh_bounds, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, oo_)
+
 % Dynamic Striated Metropolis-Hastings algorithm.
 %
 % INPUTS
@@ -33,7 +33,7 @@ function DSMH_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_
 % Then the comments write here can be used for all the other pairs of
 % parallel functions and also for management functions.
 
-% Copyright © 2006-2023 Dynare Team
+% Copyright © 2022-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,14 +50,15 @@ function DSMH_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset_info,options_
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+opts = options_.posterior_sampler_options.dsmh;
 
 lambda = exp(bsxfun(@minus,options_.posterior_sampler_options.dsmh.H,1:1:options_.posterior_sampler_options.dsmh.H)/(options_.posterior_sampler_options.dsmh.H-1)*log(options_.posterior_sampler_options.dsmh.lambda1));
 c = 0.055 ;
 MM = int64(options_.posterior_sampler_options.dsmh.N*options_.posterior_sampler_options.dsmh.G/10) ;
 
 % Step 0: Initialization of the sampler
-[ param, tlogpost_iminus1, loglik, bayestopt_] = ...
-    SMC_samplers_initialization(TargetFun, xparam1, mh_bounds, dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_,options_.posterior_sampler_options.dsmh.nparticles);
+[param, tlogpost_iminus1, loglik, bayestopt_] = ...
+    smc_samplers_initialization(TargetFun, 'dsmh', opts.particles, mh_bounds, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, oo_);
 
 ESS = zeros(options_.posterior_sampler_options.dsmh.H,1) ;
 zhat = 1 ;
@@ -78,20 +79,17 @@ end
 
 weights = exp(loglik*(lambda(end)-lambda(end-1)));
 weights = weights/sum(weights);
-indx_resmpl = smc_resampling(weights,rand(1,1),options_.posterior_sampler_options.dsmh.nparticles);
+indx_resmpl = smc_resampling(weights,rand(1,1),options_.posterior_sampler_options.dsmh.particles);
 distrib_param = param(:,indx_resmpl);
 
 mean_xparam = mean(distrib_param,2);
 npar  = length(xparam1);
-%mat_var_cov = bsxfun(@minus,distrib_param,mean_xparam) ;
-%mat_var_cov = (mat_var_cov*mat_var_cov')/(options_.HSsmc.nparticles-1) ;
-%std_xparam = sqrt(diag(mat_var_cov)) ;
 lb95_xparam = zeros(npar,1) ;
 ub95_xparam = zeros(npar,1) ;
 for i=1:npar
     temp = sortrows(distrib_param(i,:)') ;
-    lb95_xparam(i) = temp(0.025*options_.posterior_sampler_options.dsmh.nparticles) ;
-    ub95_xparam(i) = temp(0.975*options_.posterior_sampler_options.dsmh.nparticles) ;
+    lb95_xparam(i) = temp(0.025*options_.posterior_sampler_options.dsmh.particles) ;
+    ub95_xparam(i) = temp(0.975*options_.posterior_sampler_options.dsmh.particles) ;
 end
 
 TeX = options_.TeX;
@@ -130,9 +128,9 @@ for k=1:npar %min(nstar,npar-(plt-1)*nstar)
     subplot(ceil(sqrt(npar)),floor(sqrt(npar)),k)
     %kk = (plt-1)*nstar+k;
     [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_.varobs);
-    optimal_bandwidth = mh_optimal_bandwidth(distrib_param(k,:)',options_.posterior_sampler_options.dsmh.nparticles,bandwidth,kernel_function);
+    optimal_bandwidth = mh_optimal_bandwidth(distrib_param(k,:)',options_.posterior_sampler_options.dsmh.particles,bandwidth,kernel_function);
     [density(:,1),density(:,2)] = kernel_density_estimate(distrib_param(k,:)',number_of_grid_points,...
-        options_.posterior_sampler_options.dsmh.nparticles,optimal_bandwidth,kernel_function);
+        options_.posterior_sampler_options.dsmh.particles,optimal_bandwidth,kernel_function);
     plot(density(:,1),density(:,2));
     hold on
     if TeX

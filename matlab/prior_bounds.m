@@ -1,6 +1,5 @@
-function bounds = prior_bounds(bayestopt, priortrunc)
+function bounds = prior_bounds(bayestopt_, priortrunc)
 
-% function bounds = prior_bounds(bayestopt)
 % computes bounds for prior density.
 %
 % INPUTS
@@ -31,11 +30,11 @@ if nargin<2, priortrunc = 0.0; end
 
 assert(priortrunc>=0 && priortrunc<=1, 'Second input argument must be non negative and not larger than one.')
 
-pshape = bayestopt.pshape;
-p3 = bayestopt.p3;
-p4 = bayestopt.p4;
-p6 = bayestopt.p6;
-p7 = bayestopt.p7;
+pshape = bayestopt_.pshape;
+p3 = bayestopt_.p3;
+p4 = bayestopt_.p4;
+p6 = bayestopt_.p6;
+p7 = bayestopt_.p7;
 
 bounds.lb = zeros(size(p6));
 bounds.ub = zeros(size(p6));
@@ -59,12 +58,12 @@ for i=1:length(p6)
             bounds.ub(i) = gaminv(1.0-priortrunc, p6(i), p7(i))+p3(i);
         end
       case 3
-        if prior_trunc == 0
+        if priortrunc == 0
             bounds.lb(i) = max(-Inf, p3(i));
             bounds.ub(i) = min(Inf, p4(i));
         else
-            bounds.lb(i) = max(norminv(prior_trunc, p6(i), p7(i)), p3(i));
-            bounds.ub(i) = min(norminv(1-prior_trunc, p6(i), p7(i)), p4(i));
+            bounds.lb(i) = max(norminv(priortrunc, p6(i), p7(i)), p3(i));
+            bounds.ub(i) = min(norminv(1-priortrunc, p6(i), p7(i)), p4(i));
         end
       case 4
         if priortrunc==0
@@ -99,6 +98,6 @@ for i=1:length(p6)
             bounds.ub(i) = p3(i)+wblinv(1.0-priortrunc, p6(i), p7(i));
         end
       otherwise
-        error(sprintf('prior_bounds: unknown distribution shape (index %d, type %d)', i, pshape(i)));
+        error('prior_bounds: unknown distribution shape (index %d, type %d)', i, pshape(i));
     end
 end

@@ -1,8 +1,7 @@
 function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npar, NumberOfBlocks, nruns, NewFile, MAX_nruns, d, bayestopt_] = ...
-    posterior_sampler_initialization(TargetFun, xparam1, vv, mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_, dispString)
-% function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npar, NumberOfBlocks, nruns, NewFile, MAX_nruns, d, bayestopt_] = ...
-%     metropolis_hastings_initialization(TargetFun, xparam1, vv, mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_, dispString)
-% Metropolis-Hastings initialization.
+    posterior_sampler_initialization(TargetFun, xparam1, vv, mh_bounds, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, oo_, dispString)
+
+% Posterior sampler initialization.
 %
 % INPUTS
 %   o TargetFun  [char]     string specifying the name of the objective
@@ -257,7 +256,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
         if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
             ix2 = candidate;
             ilogpo2 = - feval(TargetFun,ix2',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
-            fprintf('%s: Initialization at the posterior mode.\n\n',dispString);            
+            fprintf('%s: Initialization at the posterior mode.\n\n',dispString);
             fprintf(fidlog,['    Blck ' int2str(1) 'params:\n']);
             for i=1:length(ix2(1,:))
                 fprintf(fidlog,['      ' int2str(i)  ':' num2str(ix2(1,i)) '\n']);

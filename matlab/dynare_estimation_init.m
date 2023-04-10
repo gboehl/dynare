@@ -1,8 +1,6 @@
 function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_, bounds] = dynare_estimation_init(var_list_, dname, gsa_flag, M_, options_, oo_, estim_params_, bayestopt_)
 
-% function [dataset_, dataset_info, xparam1, hh, M_, options_, oo_, estim_params_,bayestopt_, bounds] = dynare_estimation_init(var_list_, dname, gsa_flag, M_, options_, oo_, estim_params_, bayestopt_)
-% performs initialization tasks before estimation or
-% global sensitivity analysis
+% Performs initialization tasks before estimation or global sensitivity analysis
 %
 % INPUTS
 %   var_list_:      selected endogenous variables vector
@@ -390,7 +388,7 @@ end
 %set options for old interface from the ones for new interface
 if ~isempty(dataset_)
     options_.nobs = dataset_.nobs;
-    if options_.endogenous_prior 
+    if options_.endogenous_prior
         if ~isnan(dataset_info.missing.number_of_observations) && ~(dataset_info.missing.number_of_observations==0) %missing observations present
             if dataset_info.missing.no_more_missing_observations<dataset_.nobs-10
                 fprintf('\ndynare_estimation_init: There are missing observations in the data.\n')
@@ -537,15 +535,15 @@ end
 
 if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
     if ~isempty(options_.nk)
-        fprintf('dynare_estimation_init: the inversion filter does not support filter_step_ahead. Disabling the option.\n')        
+        fprintf('dynare_estimation_init: the inversion filter does not support filter_step_ahead. Disabling the option.\n')
         options_.nk=[];
     end
     if options_.filter_covariance
-        fprintf('dynare_estimation_init: the inversion filter does not support filter_covariance. Disabling the option.\n')        
+        fprintf('dynare_estimation_init: the inversion filter does not support filter_covariance. Disabling the option.\n')
         options_.filter_covariance=false;
     end
     if options_.smoothed_state_uncertainty
-        fprintf('dynare_estimation_init: the inversion filter does not support smoothed_state_uncertainty. Disabling the option.\n')        
+        fprintf('dynare_estimation_init: the inversion filter does not support smoothed_state_uncertainty. Disabling the option.\n')
         options_.smoothed_state_uncertainty=false;
     end
 end

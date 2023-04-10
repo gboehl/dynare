@@ -31,6 +31,7 @@ function oo_ = PlotPosteriorDistributions(estim_params_, M_, options_, bayestopt
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
+
 latexDirectoryName = CheckPath('latex',M_.dname);
 graphDirectoryName = CheckPath('graphs',M_.dname);
 
@@ -72,7 +73,7 @@ for i=1:npar
         f1 = oo_.posterior_density.shocks_std.(name)(:,2);
         oo_.prior_density.shocks_std.(name)(:,1) = x2;
         oo_.prior_density.shocks_std.(name)(:,2) = f2;
-        if ~options_.mh_posterior_mode_estimation
+        if ~issmc(options_) && ~options_.mh_posterior_mode_estimation
             pmod = oo_.posterior_mode.shocks_std.(name);
         end
     elseif i <= nvx+nvn
@@ -81,7 +82,7 @@ for i=1:npar
         f1 = oo_.posterior_density.measurement_errors_std.(name)(:,2);
         oo_.prior_density.measurement_errors_std.(name)(:,1) = x2;
         oo_.prior_density.measurement_errors_std.(name)(:,2) = f2;
-        if ~options_.mh_posterior_mode_estimation
+        if ~issmc(options_) && ~options_.mh_posterior_mode_estimation
             pmod = oo_.posterior_mode.measurement_errors_std.(name);
         end
     elseif i <= nvx+nvn+ncx
@@ -93,7 +94,7 @@ for i=1:npar
         f1 = oo_.posterior_density.shocks_corr.(name)(:,2);
         oo_.prior_density.shocks_corr.(name)(:,1) = x2;
         oo_.prior_density.shocks_corr.(name)(:,2) = f2;
-        if ~options_.mh_posterior_mode_estimation
+        if ~issmc(options_) && ~options_.mh_posterior_mode_estimation
             pmod = oo_.posterior_mode.shocks_corr.(name);
         end
     elseif i <= nvx+nvn+ncx+ncn
@@ -105,7 +106,7 @@ for i=1:npar
         f1 = oo_.posterior_density.measurement_errors_corr.(name)(:,2);
         oo_.prior_density.measurement_errors_corr.(name)(:,1) = x2;
         oo_.prior_density.measurement_errors_corr.(name)(:,2) = f2;
-        if ~options_.mh_posterior_mode_estimation
+        if ~issmc(options_) && ~options_.mh_posterior_mode_estimation
             pmod = oo_.posterior_mode.measurement_errors_corr.(name);
         end
     else
@@ -115,7 +116,7 @@ for i=1:npar
         f1 = oo_.posterior_density.parameters.(name)(:,2);
         oo_.prior_density.parameters.(name)(:,1) = x2;
         oo_.prior_density.parameters.(name)(:,2) = f2;
-        if ~options_.mh_posterior_mode_estimation
+        if ~issmc(options_) && ~options_.mh_posterior_mode_estimation
             pmod = oo_.posterior_mode.parameters.(name);
         end
     end
@@ -130,7 +131,7 @@ for i=1:npar
     set(hh_plt, 'color', [0.7 0.7 0.7]);
     hold on;
     plot(x1, f1, '-k', 'linewidth', 2);
-    if ~options_.mh_posterior_mode_estimation
+    if ~issmc(options_) && ~options_.mh_posterior_mode_estimation
         plot([pmod pmod], [0.0 1.1*top0], '--g', 'linewidth', 2);
     end
     box on

@@ -1,20 +1,17 @@
-function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, fname, dname, options_, bounds, bayestopt_,outputFolderName)
-% function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, fname, dname, options_, bounds, bayestopt_,outputFolderName)
-% initialization of posterior samplers
+function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, fname, dname, options_, bounds, bayestopt_, outputFolderName)
+
+% Initialization of posterior samplers
 %
 % INPUTS
-%   posterior_sampler_options:       posterior sampler options
-%   fname:          name of the mod-file
-%   dname:          name of directory with metropolis folder
-%   options_:       structure storing the options
-%   bounds:         structure containing prior bounds
-%   bayestopt_:     structure storing information about priors
-
+% - posterior_sampler_options   [struct]       posterior sampler options
+% - options_                    [struct]       options
+% - bounds                      [struct]       prior bounds
+% - bayestopt_                  [struct]       information about priors
+%
 % OUTPUTS
-%   posterior_sampler_options:       checked posterior sampler options
-%   options_:       structure storing the options
-%   bayestopt_:     structure storing information about priors
-%   outputFolderName: string of folder to store mat files
+% - posterior_sampler_options   [struct]       checked posterior sampler options (updated)
+% - options_                    [struct]       options (updated)
+% - bayestopt_                  [struct]       information about priors (updated)
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -40,15 +37,17 @@ if nargin < 7
     outputFolderName = 'Output';
 end
 
-init=0;
+init = false;
 if isempty(posterior_sampler_options)
-    init=1;
+    init = true;
 end
 
 if init
     % set default options and user defined options
     posterior_sampler_options.posterior_sampling_method = options_.posterior_sampler_options.posterior_sampling_method;
-    posterior_sampler_options.bounds = bounds;
+    if ~issmc(options_)
+        posterior_sampler_options.bounds = bounds;
+    end
 
     switch posterior_sampler_options.posterior_sampling_method
 
@@ -227,7 +226,6 @@ if init
             end
         end
 
-
       case 'slice'
         posterior_sampler_options.parallel_bar_refresh_rate=1;
         posterior_sampler_options.serial_bar_refresh_rate=1;
@@ -342,50 +340,120 @@ if init
         end
 
         % moreover slice must be associated to:
-        %     options_.mh_posterior_mode_estimation = false;
-        % this is done below, but perhaps preprocessing should do this?
+            %     options_.mh_posterior_mode_estimation = false;
+            % this is done below, but perhaps preprocessing should do this?
 
-        if ~isempty(posterior_sampler_options.mode)
-            % multimodal case
-            posterior_sampler_options.rotated = 1;
-            posterior_sampler_options.WR=[];
-        end
-        %     posterior_sampler_options = set_default_option(posterior_sampler_options,'mode_files',[]);
+            if ~isempty(posterior_sampler_options.mode)
+                % multimodal case
+                posterior_sampler_options.rotated = 1;
+                posterior_sampler_options.WR=[];
+            end
+            %     posterior_sampler_options = set_default_option(posterior_sampler_options,'mode_files',[]);
 
 
-        posterior_sampler_options.W1=posterior_sampler_options.initial_step_size*(bounds.ub-bounds.lb);
-        if options_.load_mh_file
-            posterior_sampler_options.slice_initialize_with_mode = 0;
-        else
-            if ~posterior_sampler_options.slice_initialize_with_mode
-                posterior_sampler_options.invhess=[];
+            posterior_sampler_options.W1=posterior_sampler_options.initial_step_size*(bounds.ub-bounds.lb);
+            if options_.load_mh_file
+                posterior_sampler_options.slice_initialize_with_mode = 0;
+            else
+                if ~posterior_sampler_options.slice_initialize_with_mode
+                    posterior_sampler_options.invhess=[];
+                end
+            end
+
+            if ~isempty(posterior_sampler_options.mode_files) % multimodal case
+                modes = posterior_sampler_options.mode_files; % these can be also mean files from previous parallel slice chains
+                load(modes, 'xparams')
+                if size(xparams,2)<2
+                    error(['check_posterior_sampler_options:: Variable xparams loaded in file <' modes '> has size [' int2str(size(xparams,1)) 'x' int2str(size(xparams,2)) ']: it must contain at least two columns, to allow multi-modal sampling.'])
+                end
+                for j=1:size(xparams,2)
+                    mode(j).m=xparams(:,j);
+                end
+                posterior_sampler_options.mode = mode;
+                posterior_sampler_options.rotated = 1;
+                posterior_sampler_options.WR=[];
+            end
+
+          case 'hssmc'
+
+            % default options
+            posterior_sampler_options = add_fields_(posterior_sampler_options, options_.posterior_sampler_options.hssmc);
+
+            % user defined options
+            if ~isempty(options_.posterior_sampler_options.sampling_opt)
+                options_list = read_key_value_string(options_.posterior_sampler_options.sampling_opt);
+                for i=1:rows(options_list)
+                    switch options_list{i,1}
+                      case 'target'
+                        posterior_sampler_options.target = options_list{i,2};
+                      case 'steps'
+                        posterior_sampler_options.steps = options_list{i,2};
+                      case 'scale'
+                        posterior_sampler_options.scale = options_list{i,2};
+                      case 'particles'
+                        posterior_sampler_options.particles = options_list{i,2};
+                      case 'lambda'
+                        posterior_sampler_options.lambda = options_list{i,2};
+                      otherwise
+                        warning(['hssmc: Unknown option (' options_list{i,1} ')!'])
+                    end
+                end
+            end
+
+            options_.mode_compute = 0;
+            options_.cova_compute = 0;
+            options_.mh_replic = 0;
+            options_.mh_posterior_mode_estimation = false;
+
+      case 'dsmh'
+
+        % default options
+        posterior_sampler_options = add_fields_(posterior_sampler_options, options_.posterior_sampler_options.dsmh);
+
+        % user defined options
+        if ~isempty(options_.posterior_sampler_options.sampling_opt)
+            options_list = read_key_value_string(options_.posterior_sampler_options.sampling_opt);
+            for i=1:rows(options_list)
+                switch options_list{i,1}
+                  case 'proposal_distribution'
+                    if ~(strcmpi(options_list{i,2}, 'rand_multivariate_student') || ...
+                         strcmpi(options_list{i,2}, 'rand_multivariate_normal'))
+                        error(['initial_estimation_checks:: the proposal_distribution option to estimation takes either ' ...
+                               'rand_multivariate_student or rand_multivariate_normal as options']);
+                    else
+                        posterior_sampler_options.proposal_distribution=options_list{i,2};
+                    end
+                  case 'student_degrees_of_freedom'
+                    if options_list{i,2} <= 0
+                        error('initial_estimation_checks:: the student_degrees_of_freedom takes a positive integer argument');
+                    else
+                        posterior_sampler_options.student_degrees_of_freedom=options_list{i,2};
+                    end
+                  case 'save_tmp_file'
+                    posterior_sampler_options.save_tmp_file = options_list{i,2};
+                  case 'number_of_particles'
+                    posterior_sampler_options.particles = options_list{i,2};
+                  otherwise
+                    warning(['rwmh_sampler: Unknown option (' options_list{i,1} ')!'])
+                end
             end
         end
 
-        if ~isempty(posterior_sampler_options.mode_files) % multimodal case
-            modes = posterior_sampler_options.mode_files; % these can be also mean files from previous parallel slice chains
-            load(modes, 'xparams')
-            if size(xparams,2)<2
-                error(['check_posterior_sampler_options:: Variable xparams loaded in file <' modes '> has size [' int2str(size(xparams,1)) 'x' int2str(size(xparams,2)) ']: it must contain at least two columns, to allow multi-modal sampling.'])
-            end
-            for j=1:size(xparams,2)
-                mode(j).m=xparams(:,j);
-            end
-            posterior_sampler_options.mode = mode;
-            posterior_sampler_options.rotated = 1;
-            posterior_sampler_options.WR=[];
+        options_.mode_compute = 0;
+        options_.cova_compute = 0;
+        options_.mh_replic = 0;
+        options_.mh_posterior_mode_estimation = true;
+
+          otherwise
+            error('check_posterior_sampler_options:: Unknown posterior_sampling_method option %s ',posterior_sampler_options.posterior_sampling_method);
         end
 
-      otherwise
-        error('check_posterior_sampler_options:: Unknown posterior_sampling_method option %s ',posterior_sampler_options.posterior_sampling_method);
-    end
-
-    return
+        return
 end
 
 % here are all samplers requiring a proposal distribution
 if ~strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
-    if ~options_.cova_compute && ~(options_.load_mh_file && posterior_sampler_options.use_mh_covariance_matrix) 
+    if ~options_.cova_compute && ~(options_.load_mh_file && posterior_sampler_options.use_mh_covariance_matrix)
         if strcmp('hessian',options_.MCMC_jumping_covariance)
         skipline()
         disp('check_posterior_sampler_options:: I cannot start the MCMC because the Hessian of the posterior kernel at the mode was not computed')

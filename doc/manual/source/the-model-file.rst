@@ -7454,6 +7454,18 @@ observed variables.
                Chain draws than the MH-algorithm. Its relative (in)efficiency can be investigated via 
                the reported inefficiency factors.
 
+           ``'hssmc'``
+
+               Instructs Dynare to use the *Herbst and Schorfheide (2014)*
+               version of the Sequential Monte-Carlo sampler instead of the
+               standard Random-Walk Metropolis-Hastings.
+
+           ``'dsmh'``
+
+               Instructs Dynare to use the Dynamic Striated Metropolis Hastings
+               sampler proposed by *Waggoner, Wu and Zha (2016)* instead of the
+               standard Random-Walk Metropolis-Hastings.
+
     .. option:: posterior_sampler_options = (NAME, VALUE, ...)
 
        A list of NAME and VALUE pairs. Can be used to set options for
@@ -7466,141 +7478,173 @@ observed variables.
 
                Available options are:
 
-           .. _prop_distrib:
+                  .. _prop_distrib:
 
-           ``'proposal_distribution'``
+                  ``'proposal_distribution'``
 
-               Specifies the statistical distribution used for the
-               proposal density.
+                  Specifies the statistical distribution used for the
+                  proposal density.
 
-           ``'rand_multivariate_normal'``
+                  ``'rand_multivariate_normal'``
 
-               Use a multivariate normal distribution. This is the default.
+                  Use a multivariate normal distribution. This is the default.
 
-           ``'rand_multivariate_student'``
+                  ``'rand_multivariate_student'``
 
-               Use a multivariate student distribution.
+                  Use a multivariate student distribution.
 
-           ``'student_degrees_of_freedom'``
+                  ``'student_degrees_of_freedom'``
 
-               Specifies the degrees of freedom to be used with the
-               multivariate student distribution. Default: ``3``.
+                  Specifies the degrees of freedom to be used with the
+                  multivariate student distribution. Default: ``3``.
 
-           .. _usemhcov:
+                  .. _usemhcov:
 
-           ``'use_mh_covariance_matrix'``
+                  ``'use_mh_covariance_matrix'``
 
-               Indicates to use the covariance matrix of the draws
-               from a previous MCMC run to define the covariance of
-               the proposal distribution. Requires the
-               :opt:`load_mh_file` option to be specified. Default:
-               ``0``.
+                  Indicates to use the covariance matrix of the draws
+                  from a previous MCMC run to define the covariance of
+                  the proposal distribution. Requires the
+                  :opt:`load_mh_file` option to be specified. Default: ``0``.
 
-           .. _scale-file:
+                  .. _scale-file:
 
-           ``'scale_file'``
+                  ``'scale_file'``
 
-               Provides the name of a ``_mh_scale.mat`` file storing
-               the tuned scale factor from a previous run of
-               ``mode_compute=6``.
+                  Provides the name of a ``_mh_scale.mat`` file storing
+                  the tuned scale factor from a previous run of
+                  ``mode_compute=6``.
 
-           .. _savetmp:
+                  .. _savetmp:
 
-           ``'save_tmp_file'``
+                  ``'save_tmp_file'``
 
-               Save the MCMC draws into a ``_mh_tmp_blck`` file at the
-               refresh rate of the status bar instead of just saving
-               the draws when the current ``_mh*_blck`` file is
-               full. Default: ``0``
+                  Save the MCMC draws into a ``_mh_tmp_blck`` file at the
+                  refresh rate of the status bar instead of just saving
+                  the draws when the current ``_mh*_blck`` file is
+                  full. Default: ``0``
 
            ``'independent_metropolis_hastings'``
 
-               Takes the same options as in the case of
-               ``random_walk_metropolis_hastings``.
+               Takes the same options as in the case of ``random_walk_metropolis_hastings``.
 
            ``'slice'``
 
-           ``'rotated'``
+               Available options are:
 
-               Triggers rotated slice iterations using a covariance
-               matrix from initial burn-in iterations. Requires either
-               ``use_mh_covariance_matrix`` or
-               ``slice_initialize_with_mode``. Default: ``0``.
+                  ``'rotated'``
 
-           ``'mode_files'``
+                  Triggers rotated slice iterations using a covariance
+                  matrix from initial burn-in iterations. Requires either
+                  ``use_mh_covariance_matrix`` or
+                  ``slice_initialize_with_mode``. Default: ``0``.
 
-               For multimodal posteriors, provide the name of a file
-               containing a ``nparam`` by ``nmodes`` variable called
-               ``xparams`` storing the different modes. This array
-               must have one column vector per mode and the estimated
-               parameters along the row dimension. With this info, the
-               code will automatically trigger the ``rotated`` and
-               ``mode`` options. Default: ``[]``.
+                  ``'mode_files'``
 
-           ``'slice_initialize_with_mode'``
+                  For multimodal posteriors, provide the name of a file
+                  containing a ``nparam`` by ``nmodes`` variable called
+                  ``xparams`` storing the different modes. This array
+                  must have one column vector per mode and the estimated
+                  parameters along the row dimension. With this info, the
+                  code will automatically trigger the ``rotated`` and
+                  ``mode`` options. Default: ``[]``.
 
-               The default for slice is to set ``mode_compute=0`` and
-               start the chain(s) from a random location in the prior
-               space. This option first runs the mode-finder and then
-               starts the chain from the mode. Together with
-               ``rotated``, it will use the inverse Hessian from the
-               mode to perform rotated slice iterations. Default:
-               ``0``.
+                  ``'slice_initialize_with_mode'``
 
-           ``'initial_step_size'``
+                  The default for slice is to set ``mode_compute=0`` and
+                  start the chain(s) from a random location in the prior
+                  space. This option first runs the mode-finder and then
+                  starts the chain from the mode. Together with
+                  ``rotated``, it will use the inverse Hessian from the
+                  mode to perform rotated slice iterations. Default:
+                  ``0``.
 
-               Sets the initial size of the interval in the
-               stepping-out procedure as fraction of the prior
-               support, i.e. the size will be ``initial_step_size *
-               (UB-LB)``. ``initial_step_size`` must be a real number
-               in the interval ``[0,1]``. Default: ``0.8``.
+                  ``'initial_step_size'``
 
-           ``'use_mh_covariance_matrix'``
+                  Sets the initial size of the interval in the
+                  stepping-out procedure as fraction of the prior
+                  support, i.e. the size will be ``initial_step_size *
+                  (UB-LB)``. ``initial_step_size`` must be a real number
+                  in the interval ``[0,1]``. Default: ``0.8``.
 
-               See :ref:`use_mh_covariance_matrix <usemhcov>`. Must be
-               used with ``'rotated'``. Default: ``0``.
+                  ``'use_mh_covariance_matrix'``
 
-           ``'save_tmp_file'``
+                  See :ref:`use_mh_covariance_matrix <usemhcov>`. Must be
+                  used with ``'rotated'``. Default: ``0``.
 
-               See :ref:`save_tmp_file <savetmp>`. Default: ``1``.
+                  ``'save_tmp_file'``
+
+                  See :ref:`save_tmp_file <savetmp>`. Default: ``1``.
 
            ``'tailored_random_block_metropolis_hastings'``
 
-           ``'proposal_distribution'``
+               Available options are:           
+           
+                  ``'proposal_distribution'``
 
-               Specifies the statistical distribution used for the
-               proposal density. See :ref:`proposal_distribution <prop_distrib>`.
+                  Specifies the statistical distribution used for the
+                  proposal density. See :ref:`proposal_distribution <prop_distrib>`.
 
-           ``new_block_probability = DOUBLE``
+                  ``new_block_probability = DOUBLE``
 
-               Specifies the probability of the next parameter
-               belonging to a new block when the random blocking in
-               the TaRB Metropolis-Hastings algorithm is
-               conducted. The higher this number, the smaller is the
-               average block size and the more random blocks are
-               formed during each parameter sweep. Default: ``0.25``.
+                  Specifies the probability of the next parameter
+                  belonging to a new block when the random blocking in
+                  the TaRB Metropolis-Hastings algorithm is
+                  conducted. The higher this number, the smaller is the
+                  average block size and the more random blocks are
+                  formed during each parameter sweep. Default: ``0.25``.
 
-           ``mode_compute = INTEGER``
+                  ``mode_compute = INTEGER``
 
-               Specifies the mode-finder run in every iteration for
-               every block of the TaRB Metropolis-Hastings
-               algorithm. See :opt:`mode_compute <mode_compute =
-               INTEGER | FUNCTION_NAME>`. Default: ``4``.
+                  Specifies the mode-finder run in every iteration for
+                  every block of the TaRB Metropolis-Hastings
+                  algorithm. See :opt:`mode_compute <mode_compute =
+                  INTEGER | FUNCTION_NAME>`. Default: ``4``.
 
-           ``optim = (NAME, VALUE,...)``
+                  ``optim = (NAME, VALUE,...)``
 
-               Specifies the options for the mode-finder used in the
-               TaRB Metropolis-Hastings algorithm. See :opt:`optim
-               <optim = (NAME, VALUE, ...)>`.
+                  Specifies the options for the mode-finder used in the
+                  TaRB Metropolis-Hastings algorithm. See :opt:`optim
+                  <optim = (NAME, VALUE, ...)>`.
 
-           ``'scale_file'``
+                  ``'scale_file'``
 
-               See :ref:`scale_file <scale-file>`..
+                  See :ref:`scale_file <scale-file>`..
 
-           ``'save_tmp_file'``
+                  ``'save_tmp_file'``
 
-               See :ref:`save_tmp_file <savetmp>`. Default: ``1``.
+                  See :ref:`save_tmp_file <savetmp>`. Default: ``1``.
 
+           ``'hssmc'``
+
+               Available options are:           
+           
+                  ``'particles'``
+
+                  Number of particles. Default value is: 20000.
+
+                  ``'steps'``
+
+                  Number of weights :math:`\phi_i\in[0,1]` on the likelihood function used to define a sequence of tempered likelihoods. This parameter is denoted :math:`N_{\phi}` in *Herbst and Schorfheide (2014)*, and we have :math:`\phi_1=0` and :math:`\phi_{N_\phi}=1`. Default value is: 25.
+
+                  ``'lambda'``
+
+                  Positive parameter controling the sequence of weights :math:`\phi_i`, Default value is: 2. Weights are defined by:
+
+                  .. math::
+
+                   \phi_i = \left(\frac{i-1}{N_{\phi}-1}\right)^{\lambda}
+
+                  for :math:`i=1,\ldots,N_{\phi}`. Usually we set :math:`\lambda>1`, so that :math:`\Delta \phi_i = \phi_i-\phi_{i-1}` is increasing with :math:`i`.
+
+                  ``'target'``
+
+                  Acceptance rate target. Default value is: .25.
+
+                  ``'scale'``
+
+                  Scale parameter in the mutation step (on the proposal covariance matrix of the MH iteration). Default value is: .5.                  
+                  
     .. option:: moments_varendo
 
        Triggers the computation of the posterior distribution of the

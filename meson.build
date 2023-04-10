@@ -805,6 +805,8 @@ mod_and_m_tests = [
                 'estimation/fsdat_simul.m' ] },
   { 'test' : [ 'estimation/fs2000.mod' ],
     'extra' : [ 'estimation/fsdat_simul.m' ] },
+  { 'test' : [ 'estimation/hssmc/fs2000.mod' ],
+    'extra' : [ 'estimation/fsdat_simul.m' ] },
   { 'test' : [ 'gsa/ls2003a.mod',
                'gsa/ls2003.mod',
                'gsa/ls2003scr.mod',

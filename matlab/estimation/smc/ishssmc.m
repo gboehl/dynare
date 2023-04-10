@@ -1,7 +1,6 @@
-function [tlogpostkern,loglik] = tempered_likelihood(TargetFun,xparam1,lambda,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_)
-% function [tlogpostkern,loglik] = tempered_likelihood(TargetFun,xparam1,lambda,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_)
+function bool = ishssmc(options_)
 
-% Copyright © 2022 Dynare Team
+% Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,7 +17,9 @@ function [tlogpostkern,loglik] = tempered_likelihood(TargetFun,xparam1,lambda,da
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-    logpostkern = -feval(TargetFun,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
-    logprior = priordens(xparam1,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
-    loglik = logpostkern-logprior ;
-    tlogpostkern = lambda*loglik + logprior;
+bool = false;
+if isfield(options_, 'posterior_sampler_options')
+    if strcmp(options_.posterior_sampler_options.posterior_sampling_method, 'hssmc')
+        bool = true;
+    end
+end

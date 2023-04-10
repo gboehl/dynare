@@ -1,6 +1,6 @@
-function dprintf(str, varargin)
+function bool = issmc(options_)
 
-% Copyright © 2019 Dynare Team
+% Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,4 +17,4 @@ function dprintf(str, varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-disp(sprintf(str, varargin{:}));
+bool = ishssmc(options_) || isdsmh(options_);

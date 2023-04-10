@@ -451,6 +451,7 @@ options_.nk = 1;
 options_.noconstant = false;
 options_.nodiagnostic = false;
 options_.mh_posterior_mode_estimation = false;
+options_.smc_posterior_mode_estimation = false;
 options_.prefilter = 0;
 options_.presample = 0;
 options_.prior_trunc = 1e-10;
@@ -463,7 +464,7 @@ options_.use_mh_covariance_matrix = false;
 options_.gradient_method = 2; %used by csminwel and newrat
 options_.gradient_epsilon = 1e-6; %used by csminwel and newrat
 options_.posterior_sampler_options.sampling_opt = []; %extended set of options for individual posterior samplers
-                                                      % Random Walk Metropolis-Hastings
+% Random Walk Metropolis-Hastings
 options_.posterior_sampler_options.posterior_sampling_method = 'random_walk_metropolis_hastings';
 options_.posterior_sampler_options.rwmh.proposal_distribution = 'rand_multivariate_normal';
 options_.posterior_sampler_options.rwmh.student_degrees_of_freedom = 3;
@@ -491,23 +492,19 @@ options_.posterior_sampler_options.imh.proposal_distribution = 'rand_multivariat
 options_.posterior_sampler_options.imh.use_mh_covariance_matrix=0;
 options_.posterior_sampler_options.imh.save_tmp_file=0;
 % Herbst and Schorfeide SMC Sampler
-%options_.posterior_sampler = 'Herbst_Schorfheide' ;
-options_.posterior_sampler_options.HSsmc.nphi= 25 ;
-options_.posterior_sampler_options.HSsmc.lambda = 2 ;
-options_.posterior_sampler_options.HSsmc.nparticles = 20000 ;
-options_.posterior_sampler_options.HSsmc.c = 0.5 ;
-options_.posterior_sampler_options.HSsmc.acpt = 0.25 ;
-options_.posterior_sampler_options.HSsmc.trgt = 0.25 ;
-options_.posterior_sampler_options.HSsmc.option_mutation = 1 ;
-options_.posterior_sampler_options.HSsmc.alp = .9 ;
+options_.posterior_sampler_options.hssmc.steps= 25;
+options_.posterior_sampler_options.hssmc.lambda = 2;
+options_.posterior_sampler_options.hssmc.particles = 20000;
+options_.posterior_sampler_options.hssmc.scale = 0.5;
+options_.posterior_sampler_options.hssmc.acpt = 1.00;
+options_.posterior_sampler_options.hssmc.target = 0.25;
 % DSMH: Dynamic Striated Metropolis-Hastings algorithm
-%options_.posterior_sampler = 'DSMH' ;
 options_.posterior_sampler_options.dsmh.H = 25 ;
 options_.posterior_sampler_options.dsmh.N = 20 ;
 options_.posterior_sampler_options.dsmh.G = 10 ;
 options_.posterior_sampler_options.dsmh.K = 50 ;
 options_.posterior_sampler_options.dsmh.lambda1 = 0.1 ;
-options_.posterior_sampler_options.dsmh.nparticles = 20000 ;
+options_.posterior_sampler_options.dsmh.particles = 20000 ;
 options_.posterior_sampler_options.dsmh.alpha0 = 0.2 ;
 options_.posterior_sampler_options.dsmh.alpha1 = 0.3 ;
 options_.posterior_sampler_options.dsmh.tau = 10 ;

@@ -67,7 +67,7 @@ n_nblocks_to_plot=length(blck);
 
 if n_nblocks_to_plot==1
 % Get all the posterior draws:
-PosteriorDraws = GetAllPosteriorDraws(M_.dname,M_.fname,column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, TotalNumberOfMhDraws, mh_nblck, blck);
+    PosteriorDraws = GetAllPosteriorDraws(options_, M_.dname,M_.fname,column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, TotalNumberOfMhDraws, mh_nblck, blck);
 else
     PosteriorDraws=NaN(TotalNumberOfMhDraws,n_nblocks_to_plot);
     save_string='';
@@ -75,7 +75,7 @@ else
         title_string_tex='';
     end
     for block_iter=1:n_nblocks_to_plot
-        PosteriorDraws(:,block_iter) = GetAllPosteriorDraws(M_.dname, M_.fname, column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, TotalNumberOfMhDraws, mh_nblck, blck(block_iter));
+        PosteriorDraws(:,block_iter) = GetAllPosteriorDraws(options_, M_.dname, M_.fname, column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, TotalNumberOfMhDraws, mh_nblck, blck(block_iter));
         save_string=[save_string,'_',num2str(blck(block_iter))];
         if options_.TeX
             title_string_tex=[title_string_tex, ', ' num2str(blck(block_iter))];

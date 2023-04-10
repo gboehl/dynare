@@ -79,7 +79,7 @@ for jj = 1:npar
         par_name_temp = get_the_name(jj, options_.TeX, M_, estim_params_, options_.varobs);
         param_name = vertcat(param_name, par_name_temp);
     end
-    Draws = GetAllPosteriorDraws(M_.dname, M_.fname, jj, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck);
+    Draws = GetAllPosteriorDraws(options_, M_.dname, M_.fname, jj, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck);
     Draws = reshape(Draws, [NumberOfDraws nblck]);
     Nc = min(1000, NumberOfDraws/2);
     for ll = 1:nblck
