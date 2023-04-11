@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019-2022 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -285,19 +285,23 @@ typename GXContainer<_Ttype>::itype
 GXContainer<_Ttype>::getType(int i, const Symmetry &s) const
 {
   if (i == 0)
-    if (s[2] > 0)
-      return itype::zero;
-    else
-      return itype::matrix;
+    {
+      if (s[2] > 0)
+        return itype::zero;
+      else
+        return itype::matrix;
+    }
   if (i == 1)
     return itype::zero;
   if (i == 2)
     return itype::zero;
   if (i == 3)
-    if (s == Symmetry{0, 0, 0, 1})
-      return itype::unit;
-    else
-      return itype::zero;
+    {
+      if (s == Symmetry{0, 0, 0, 1})
+        return itype::unit;
+      else
+        return itype::zero;
+    }
 
   KORD_RAISE("Wrong stack index in GXContainer::getType");
 }
@@ -331,25 +335,33 @@ typename ZXContainer<_Ttype>::itype
 ZXContainer<_Ttype>::getType(int i, const Symmetry &s) const
 {
   if (i == 0)
-    if (s[2] > 0)
-      return itype::zero;
-    else
-      return itype::matrix;
+    {
+      if (s[2] > 0)
+        return itype::zero;
+      else
+        return itype::matrix;
+    }
   if (i == 1)
-    if (s[2] > 0)
-      return itype::zero;
-    else
-      return itype::matrix;
+    {
+      if (s[2] > 0)
+        return itype::zero;
+      else
+        return itype::matrix;
+    }
   if (i == 2)
-    if (s == Symmetry{1, 0, 0, 0})
-      return itype::unit;
-    else
-      return itype::zero;
+    {
+      if (s == Symmetry{1, 0, 0, 0})
+        return itype::unit;
+      else
+        return itype::zero;
+    }
   if (i == 3)
-    if (s == Symmetry{0, 1, 0, 0})
-      return itype::unit;
-    else
-      return itype::zero;
+    {
+      if (s == Symmetry{0, 1, 0, 0})
+        return itype::unit;
+      else
+        return itype::zero;
+    }
 
   KORD_RAISE("Wrong stack index in ZXContainer::getType");
 }

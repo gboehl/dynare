@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019-2021 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -40,10 +40,12 @@ ZAuxContainer::itype
 ZAuxContainer::getType(int i, const Symmetry &s) const
 {
   if (i == 0)
-    if (s[2] > 0)
-      return itype::zero;
-    else
-      return itype::matrix;
+    {
+      if (s[2] > 0)
+        return itype::zero;
+      else
+        return itype::matrix;
+    }
   return itype::zero;
 }
 

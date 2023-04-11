@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -365,10 +365,12 @@ public:
   getType(int i, const Symmetry &s) const override
   {
     if (i==0)
-      if (s[2] > 0)
-        return itype::zero;
-      else
-        return itype::matrix;
+      {
+        if (s[2] > 0)
+          return itype::zero;
+        else
+          return itype::matrix;
+      }
 
     TL_RAISE("Wrong stack index in XContainer::getType");
   }
@@ -433,20 +435,26 @@ public:
     if (i == 0)
       return itype::matrix;
     if (i == 1)
-      if (s[2] > 0)
-        return itype::zero;
-      else
-        return itype::matrix;
+      {
+        if (s[2] > 0)
+          return itype::zero;
+        else
+          return itype::matrix;
+      }
     if (i == 2)
-      if (s == Symmetry{1, 0, 0, 0})
-        return itype::unit;
-      else
-        return itype::zero;
+      {
+        if (s == Symmetry{1, 0, 0, 0})
+          return itype::unit;
+        else
+          return itype::zero;
+      }
     if (i == 3)
-      if (s == Symmetry{0, 1, 0, 0})
-        return itype::unit;
-      else
-        return itype::zero;
+      {
+        if (s == Symmetry{0, 1, 0, 0})
+          return itype::unit;
+        else
+          return itype::zero;
+      }
 
     TL_RAISE("Wrong stack index in ZContainer::getType");
   }
@@ -512,22 +520,28 @@ public:
   getType(int i, const Symmetry &s) const override
   {
     if (i == 0)
-      if (s[2] > 0 || s == Symmetry{0, 0, 0, 1})
-        return itype::zero;
-      else
-        return itype::matrix;
+      {
+        if (s[2] > 0 || s == Symmetry{0, 0, 0, 1})
+          return itype::zero;
+        else
+          return itype::matrix;
+      }
     if (i == 1)
-      if (s == Symmetry{0, 0, 1, 0})
-        return itype::unit;
-      else
-        return itype::zero;
+      {
+        if (s == Symmetry{0, 0, 1, 0})
+          return itype::unit;
+        else
+          return itype::zero;
+      }
     if (i == 2)
       return itype::zero;
     if (i == 3)
-      if (s == Symmetry{0, 0, 0, 1})
-        return itype::unit;
-      else
-        return itype::zero;
+      {
+        if (s == Symmetry{0, 0, 0, 1})
+          return itype::unit;
+        else
+          return itype::zero;
+      }
 
     TL_RAISE("Wrong stack index in GContainer::getType");
   }
