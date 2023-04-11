@@ -24,34 +24,8 @@ AM_INIT_AUTOMAKE([1.11 -Wall -Wno-portability foreign no-dist-gzip dist-xz tar-p
 
 AC_CONFIG_SUBDIRS([preprocessor])
 
+# For setting EXEEXT, needed by top-level Makefile.am
 AC_PROG_CC
-AC_PROG_CXX
-
-AC_CANONICAL_HOST
-case ${host_os} in
-  *cygwin*)
-    AC_MSG_WARN([You are compiling for the Cygwin target. This means that the preprocessor will])
-    AC_MSG_WARN([not run from MATLAB unless you add the Cygwin DLL to the path.])
-    AC_MSG_WARN([This is probably not what you want. Consider using a MinGW cross-compiler.])
-    if test -z "$F77"; then
-      # On Cygwin 1.7, g77 comes has version 3, and is not compatible with default gcc/g++ which has version 4
-      # And by default, the AC_PROG_F77 will pick up g77 if it is present (even if gfortran is also here)
-      F77=gfortran
-    fi
-    ;;
-esac
-
-# Use C++ for testing headers
-AC_LANG([C++])
-
-AM_CXXFLAGS="-std=gnu++20 -Wall -Wno-dangling-else -Wextra -Wno-unused-parameter -Wold-style-cast"
-AC_SUBST([AM_CXXFLAGS])
-
-# If default 'ar' is not available, try to find one with a host prefix (see ticket #145)
-AC_CHECK_PROGS([AR], [ar ${host_alias}-ar])
-
-AC_PROG_RANLIB
-AM_PROG_AR
 
 AX_PROG_LN_S
 
