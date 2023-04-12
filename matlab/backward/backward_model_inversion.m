@@ -98,7 +98,6 @@ X = exogenousvariables{exo_names{:}}.data;
 % Inversion of the model, solvers for the free endogenous and exogenous variables (call a Newton-like algorithm in each period).
 ity = 2;
 itx = find(exogenousvariables.dates==constraints.dates(1));
-DynareOptions.solve_algo=4;
 for t = 1:nobs(constraints)
     % Set the lagged values of the endogenous variables.
     ylag = Y(iy1,ity-1);
