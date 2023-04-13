@@ -2,7 +2,7 @@ function [endogenousvariables, info] = sim1_purely_backward(endogenousvariables,
 
 % Performs deterministic simulation of a purely backward model
 
-% Copyright © 2012-2022 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -19,18 +19,11 @@ function [endogenousvariables, info] = sim1_purely_backward(endogenousvariables,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-ny0 = nnz(M.lead_lag_incidence(2,:));    % Number of variables at current period
-
-if ny0 ~= M.endo_nbr
-    error('All endogenous variables must appear at the current period!')
-end
-
 if ismember(options.solve_algo, [12,14])
     [funcs, feedback_vars_idxs] = setup_time_recursive_block_simul(M);
 else
-    iyb = M.lead_lag_incidence(1,:)>0;       % Logical vector (for lagged variables)
-    dynamicmodel = str2func(sprintf('%s.%s', M.fname, 'dynamic'));
-    dynamicmodel_s = str2func('dynamic_backward_model_for_simulation');
+    dynamic_resid = str2func([M.fname '.sparse.dynamic_resid']);
+    dynamic_g1 = str2func([M.fname '.sparse.dynamic_g1']);
 end
 
 function [r, J] = block_wrapper(z, feedback_vars_idx, func, y_dynamic, x, sparse_rowval, sparse_colval, sparse_colptr, T)
@@ -45,8 +38,8 @@ info.status = true;
 
 for it = M.maximum_lag + (1:options.periods)
     y = endogenousvariables(:,it-1);        % Values at previous period, also used as guess value for current period
+    x = exogenousvariables(it,:);
     if ismember(options.solve_algo, [12,14])
-        x = exogenousvariables(it,:);
         T = NaN(M.block_structure.dyn_tmp_nbr);
         y_dynamic = [y; y; NaN(M.endo_nbr, 1)];
         for blk = 1:length(M.block_structure.block)
@@ -74,10 +67,9 @@ for it = M.maximum_lag + (1:options.periods)
         end
         endogenousvariables(:,it) = y_dynamic(M.endo_nbr+(1:M.endo_nbr));
     else
-        ylag = y(iyb);
-        [tmp, check, ~, ~, errorcode] = dynare_solve(dynamicmodel_s, y, ...
+        [tmp, check, ~, ~, errorcode] = dynare_solve(@dynamic_backward_model_for_simulation, y, ...
                                                      options.simul.maxit, options.dynatol.f, options.dynatol.x, ...
-                                                     options, dynamicmodel, ylag, exogenousvariables, M.params, steadystate, it);
+                                                     options, dynamic_resid, dynamic_g1, y, x, M.params, steadystate, M.dynamic_g1_sparse_rowval, M.dynamic_g1_sparse_colval, M.dynamic_g1_sparse_colptr);
         if check
             info.status = false;
             dprintf('sim1_purely_backward: Nonlinear solver routine failed with errorcode=%i in period %i', errorcode, it)

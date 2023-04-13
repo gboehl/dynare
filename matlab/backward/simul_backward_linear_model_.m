@@ -1,4 +1,4 @@
-function [ysim, xsim, errorflag] = simul_backward_linear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic)
+function [ysim, xsim, errorflag] = simul_backward_linear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, dynamic_resid, dynamic_g1)
 
 % Simulates a stochastic linear backward looking model.
 %
@@ -46,13 +46,13 @@ if ~isempty(innovations)
 end
 
 % Get coefficients
-[cst, jacob] = model_dynamic(zeros(DynareModel.endo_nbr+ny1,1), ...
-                             zeros(DynareModel.orig_maximum_lag+1,DynareModel.exo_nbr), ...
-                             DynareModel.params, ...
-                             DynareOutput.steady_state, DynareModel.orig_maximum_lag+1);
+y = [zeros(2*DynareModel.endo_nbr,1); NaN(DynareModel.endo_nbr,1)];
+x = zeros(DynareModel.exo_nbr, 1);
+[cst, T_order, T] = dynamic_resid(y, x, DynareModel.params, DynareOutput.steady_state);
+jacob = dynamic_g1(y, x, DynareModel.params, DynareOutput.steady_state, DynareModel.dynamic_g1_sparse_rowval, DynareModel.dynamic_g1_sparse_colval, DynareModel.dynamic_g1_sparse_colptr, T_order, T);
 
 try
-    A0inv = inv(jacob(:,jdx));
+    A0inv = inv(jacob(:,DynareModel.endo_nbr+(1:DynareModel.endo_nbr)));
 catch
     errorflag = true;
     ysim = [];
@@ -60,12 +60,12 @@ catch
     return
 end
 
-A1 = jacob(:,nonzeros(DynareModel.lead_lag_incidence(1,:)));
-B = jacob(:,end-nx+1:end);
+A1 = jacob(:,1:DynareModel.endo_nbr);
+B = jacob(:,3*DynareModel.endo_nbr+1:end);
 
 % Simulations
 for it = initialconditions.nobs+(1:samplesize)
-    DynareOutput.endo_simul(:,it) = -A0inv*(cst + A1*DynareOutput.endo_simul(iy1,it-1) + B*DynareOutput.exo_simul(it,:)');
+    DynareOutput.endo_simul(:,it) = -A0inv*(cst + A1*DynareOutput.endo_simul(:,it-1) + B*DynareOutput.exo_simul(it,:)');
 end
 
 ysim = DynareOutput.endo_simul(1:DynareModel.orig_endo_nbr,:);

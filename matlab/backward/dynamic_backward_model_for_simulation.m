@@ -1,8 +1,8 @@
-function [r, J] = dynamic_backward_model_for_simulation(z, dynamicmodel, ylag, x, params, steady_state, it_)
+function [r, J] = dynamic_backward_model_for_simulation(z, dynamic_resid, dynamic_g1, ylag, x, params, steady_state, sparse_rowval, sparse_colval, sparse_colptr)
 
-% Dynamic routine's wrapper used by dynare_solve.
+% Dynamic routine's wrapper used by dynare_solve for simulating backward models
 
-% Copyright © 2017-2022 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -19,24 +19,15 @@ function [r, J] = dynamic_backward_model_for_simulation(z, dynamicmodel, ylag, x
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-% Get indices of the variables appearing at time t.
-% NOTE: It is assumed that all variables appear at time t in the model.
-idy = length(ylag)+(1:length(z));
+endo_nbr = length(z);
 
 % Build y vector to be passed to the dynamic model.
-y = zeros(length(ylag)+length(z), 1);
-y(1:length(ylag)) = ylag;
-y(idy) = z;
+y = [ ylag; z; NaN(endo_nbr, 1) ];
+
+[r, T_order, T] = dynamic_resid(y, x, params, steady_state);
 
 if nargout>1
-    % Compute residuals and jacobian of the full dynamic model.
-    [r, Jacobian] = feval(dynamicmodel, y, x, params, steady_state, it_);
-else
-    % Compute residuals and return.
-    r = feval(dynamicmodel, y, x, params, steady_state, it_);
-    return
+    Jacobian = dynamic_g1(y, x, params, steady_state, sparse_rowval, ...
+                          sparse_colval, sparse_colptr, T_order, T);
+    J = Jacobian(:, endo_nbr+(1:endo_nbr));
 end
-
-% If the jacobian is computed, remove the columns related to the innovations
-% and the variables appearing at time t-1.
-J = Jacobian(:,idy);

@@ -1,4 +1,4 @@
-function [ysim, xsim, errorflag] = simul_backward_nonlinear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic)
+function [ysim, xsim, errorflag] = simul_backward_nonlinear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, dynamic_resid, dynamic_g1)
 
 % Simulates a stochastic non linear backward looking model with arbitrary precision (a deterministic solver is used).
 %
@@ -64,9 +64,9 @@ for it = initialconditions.nobs+(1:samplesize)
     end
     y_ = DynareOutput.endo_simul(:,it-1);
     y = y_;                            % A good guess for the initial conditions is the previous values for the endogenous variables.
+    x = DynareOutput.exo_simul(it,:);
     try
         if ismember(DynareOptions.solve_algo, [12,14])
-            x = DynareOutput.exo_simul(it,:);
             T = NaN(DynareModel.block_structure.dyn_tmp_nbr);
             y_dynamic = [y_; y; NaN(DynareModel.endo_nbr, 1)];
             for blk = 1:length(DynareModel.block_structure.block)
@@ -94,8 +94,7 @@ for it = initialconditions.nobs+(1:samplesize)
             [DynareOutput.endo_simul(:,it), errorflag, ~, ~, errorcode] = ...
                 dynare_solve(@dynamic_backward_model_for_simulation, y, ...
                              DynareOptions.simul.maxit, DynareOptions.dynatol.f, DynareOptions.dynatol.x, ...
-                             DynareOptions, ...
-                             model_dynamic, y_(iy1), DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+                             DynareOptions, dynamic_resid, dynamic_g1, y_, x, DynareModel.params, DynareOutput.steady_state, DynareModel.dynamic_g1_sparse_rowval, DynareModel.dynamic_g1_sparse_colval, DynareModel.dynamic_g1_sparse_colptr);
             if errorflag
                 error('Nonlinear solver routine failed with errorcode=%i in period %i.', errorcode, it)
             end
@@ -141,7 +140,7 @@ for it = initialconditions.nobs+(1:samplesize)
         %
         % Evaluate and check the residuals
         %
-        [r, J] = feval(@dynamic_backward_model_for_simulation, ytm, model_dynamic, ytm(iy1), DynareOutput.exo_simul, DynareModel.params, DynareOutput.steady_state, it);
+        [r, J] = dynamic_backward_model_for_simulation(ytm, dynamic_resid, dynamic_g1, ytm, x, DynareModel.params, DynareOutput.steady_state, DynareModel.dynamic_g1_sparse_rowval, DynareModel.dynamic_g1_sparse_colval, DynareModel.dynamic_g1_sparse_colptr);
         residuals_evaluating_to_nan = isnan(r);
         residuals_evaluating_to_inf = isinf(r);
         residuals_evaluating_to_complex = ~isreal(r);

@@ -139,7 +139,7 @@ if ~isempty(innovationbaseline)
 end
 
 % Set up initial conditions
-[initialcondition, periods, Innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic, y] = ...
+[initialcondition, periods, Innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, dynamic_resid, dynamic_g1, y] = ...
     simul_backward_model_init(initialcondition, periods, options_, M_, oo_, Innovations);
 
 % Get the covariance matrix of the shocks.
@@ -163,9 +163,9 @@ irfs = struct();
 % Baseline paths (get transition paths induced by the initial condition and
 % baseline innovations).
 if options_.linear
-    [ysim__0, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, Innovations, nx, ny1, iy1, jdx, model_dynamic);
+    [ysim__0, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, Innovations, dynamic_resid, dynamic_g1);
 else
-    [ysim__0, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, Innovations, iy1, model_dynamic);
+    [ysim__0, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, Innovations, dynamic_resid, dynamic_g1);
 end
 
 if errorflag
@@ -202,9 +202,9 @@ for i=1:length(listofshocks)
         innovations(1,:) = innovations(1,:) + transpose(C(:,j));
     end
     if options_.linear
-        [ysim__1, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
+        [ysim__1, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, dynamic_resid, dynamic_g1);
     else
-        [ysim__1, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, iy1, model_dynamic);
+        [ysim__1, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, dynamic_resid, dynamic_g1);
     end
     if errorflag
         warning('Simulation failed. Cannot compute IRF for %s.', listofshocks{i})

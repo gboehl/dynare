@@ -1,9 +1,9 @@
-function [initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic, y] = ...
+function [initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, dynamic_resid, dynamic_g1, y] = ...
     simul_backward_model_init(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations)
 
 % Initialization of the routines simulating backward models.
 
-% Copyright © 2017-2019 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -190,14 +190,9 @@ end
 
 
 if nargout>8
-    nx = size(DynareOutput.exo_simul,2);
-    ny0 = nnz(DynareModel.lead_lag_incidence(2,:));
-    ny1 = nnz(DynareModel.lead_lag_incidence(1,:));
-    iy1 = find(DynareModel.lead_lag_incidence(1,:)>0);
-    idx = 1:DynareModel.endo_nbr;
-    jdx = idx+ny1;
-    % Get the name of the dynamic model routine.
-    model_dynamic = str2func([DynareModel.fname,'.dynamic']);
+    % Get function handles to the dynamic model routines.
+    dynamic_resid = str2func([DynareModel.fname,'.sparse.dynamic_resid']);
+    dynamic_g1 = str2func([DynareModel.fname,'.sparse.dynamic_g1']);
     % initialization of vector y.
-    y = NaN(length(idx)+ny1,1);
+    y = NaN(3*DynareModel.endo_nbr,1);
 end

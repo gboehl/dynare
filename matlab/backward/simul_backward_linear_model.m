@@ -51,9 +51,9 @@ if nargin<6
     innovations = [];
 end
 
-[initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, nx, ny1, iy1, jdx, model_dynamic] = ...
+[initialconditions, samplesize, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, dynamic_resid, dynamic_g1] = ...
     simul_backward_model_init(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations);
 
-[ysim, xsim, errorflag] = simul_backward_linear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, nx, ny1, iy1, jdx, model_dynamic);
+[ysim, xsim, errorflag] = simul_backward_linear_model_(initialconditions, samplesize, DynareOptions, DynareModel, DynareOutput, innovations, dynamic_resid, dynamic_g1);
 
 simulations = [dseries(ysim', initialconditions.init, endonames(1:DynareModel.orig_endo_nbr)), dseries(xsim, initialconditions.init, exonames)];
