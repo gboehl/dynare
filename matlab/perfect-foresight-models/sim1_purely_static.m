@@ -2,7 +2,7 @@ function [endogenousvariables, info] = sim1_purely_static(endogenousvariables, e
 
 % Performs deterministic simulation of a purely static model
 
-% Copyright © 2021-2022 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,7 +27,6 @@ if ismember(options.solve_algo, [12,14])
     [funcs, feedback_vars_idxs] = setup_time_recursive_block_simul(M);
 else
     dynamicmodel = str2func(sprintf('%s.%s', M.fname, 'dynamic'));
-    dynamicmodel_s = str2func('dynamic_static_model_for_simulation');
 end
 
 function [r, J] = block_wrapper(z, feedback_vars_idx, func, y_dynamic, x, sparse_rowval, sparse_colval, sparse_colptr, T)
@@ -72,7 +71,7 @@ for it = 1:options.periods
         end
         endogenousvariables(:,it) = y_dynamic(M.endo_nbr+(1:M.endo_nbr));
     else
-        [tmp, check, ~, ~, errorcode] = dynare_solve(dynamicmodel_s, y, ...
+        [tmp, check, ~, ~, errorcode] = dynare_solve(@dynamic_static_model_for_simulation, y, ...
                                                      options.simul.maxit, options.dynatol.f, options.dynatol.x, ...
                                                      options, dynamicmodel, exogenousvariables, M.params, steadystate, it);
         if check
@@ -84,6 +83,21 @@ for it = 1:options.periods
         endogenousvariables(:,it) = tmp;
     end
     y = endogenousvariables(:,it);
+end
+
+end
+
+function [r, J] = dynamic_static_model_for_simulation(z, dynamicmodel, x, params, steady_state, it_)
+
+% NOTE: It is assumed that all variables appear at time t in the model.
+
+if nargout>1
+    % Compute residuals and jacobian of the full dynamic model.
+    [r, J] = feval(dynamicmodel, z, x, params, steady_state, it_);
+    J = J(:,1:rows(J)); % Remove derivatives with respect to shocks.
+else
+    % Compute residuals.
+    r = feval(dynamicmodel, z, x, params, steady_state, it_);
 end
 
 end
