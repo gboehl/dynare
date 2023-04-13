@@ -13,7 +13,7 @@ function [endogenousvariables, exogenousvariables] = static_model_inversion(cons
 %
 % REMARKS
 
-% Copyright © 2019-2022 Dynare Team
+% Copyright © 2019-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -78,7 +78,6 @@ ModelInversion.J_id = [ModelInversion.y_free_id ; sum(DynareModel.lead_lag_incid
 
 % Get the name of the dynamic model routines.
 model_dynamic = str2func([DynareModel.fname,'.dynamic']);
-model_stransf = str2func('static_model_for_inversion');
 
 % Initialization of the returned simulations (endogenous variables).
 Y = NaN(DynareModel.endo_nbr, nobs(constraints));
@@ -103,7 +102,7 @@ for t = 1:nobs(constraints)
     % values) and the free exogenous variables (initialized with 0).
     z = [Y(freeendogenousvariables_id,ity); zeros(nxfree, 1)];
     % Solves for z.
-    [z, errorflag, ~, ~, errorcode] = dynare_solve(model_stransf, z, DynareOptions.simul.maxit, DynareOptions.dynatol.f, DynareOptions.dynatol.x, ...
+    [z, errorflag, ~, ~, errorcode] = dynare_solve(@static_model_for_inversion, z, DynareOptions.simul.maxit, DynareOptions.dynatol.f, DynareOptions.dynatol.x, ...
                                                    DynareOptions, model_dynamic, ycur, X(itx, :), DynareModel.params, ModelInversion);
     if errorflag
         error('Enable to solve the system of equations (with error code %i).', errorcode)
@@ -121,3 +120,26 @@ end
 
 endogenousvariables = dseries(Y', constraints.dates(1), endo_names);
 exogenousvariables = dseries(X(find(exogenousvariables.dates==constraints.dates(1))+(0:(nobs(constraints)-1)),:), constraints.dates(1), exo_names);
+
+
+function [r, J] = static_model_for_inversion(z, dynamicmodel, ycur, x, params, ModelInversion)
+
+% Set up y
+y = zeros(ModelInversion.nyfree+ModelInversion.nyctrl, 1);
+
+y(ModelInversion.y_constrained_id) = ycur;
+if ModelInversion.nyfree
+    y(ModelInversion.y_free_id) = z(1:ModelInversion.nyfree);
+end
+
+% Update x
+x(ModelInversion.x_free_id) = z(ModelInversion.nyfree+(1:ModelInversion.nxfree));
+
+if nargout>1
+    [r, Jacobian] = feval(dynamicmodel, y, x, params, [], 1);
+else
+    r = feval(dynamicmodel, y, x, params, [], 1);
+    return
+end
+
+J = Jacobian(:,ModelInversion.J_id);
