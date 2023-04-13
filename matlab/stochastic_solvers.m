@@ -24,7 +24,7 @@ function [dr, info] = stochastic_solvers(dr, task, M_, options_, oo_)
 %                                 info=6 -> The jacobian matrix evaluated at the steady state is complex.
 %                                 info=9 -> k_order_pert was unable to compute the solution
 
-% Copyright (C) 1996-2021 Dynare Team
+% Copyright © 1996-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -115,9 +115,7 @@ if local_order == 1
     end
 elseif local_order == 2
     if (options_.bytecode)
-        [~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                               M_.params, dr.ys, 1);
-        jacobia_ = [loc_dr.g1 loc_dr.g1_x];
+        error('Option "bytecode" is incompatible with order = 2')
     else
         [~,jacobia_,hessian1] = feval([M_.fname '.dynamic'],z(iyr0),...
                                       exo_simul, ...
