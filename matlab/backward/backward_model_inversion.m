@@ -31,20 +31,17 @@ function [endogenousvariables, exogenousvariables] = backward_model_inversion(co
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-% Get indices for the calibrated and free innovations.
+% Get indices for the free innovations.
 freeinnovations_id = zeros(length(freeinnovations), 1);
 if length(freeinnovations)<DynareModel.exo_nbr
     for i=1:length(freeinnovations)
         freeinnovations_id(i) = find(strcmp(freeinnovations{i}, exo_names));
     end
-    calibratedinnovations_id = setdiff(transpose(1:length(exo_names)), freeinnovations_id);
 else
     freeinnovations_id = transpose(1:length(exo_names));
-    calibratedinnovations_id = [];
 end
 
 nxfree = length(freeinnovations_id);
-nxcalb = length(calibratedinnovations_id);
 
 % Get indices for the the controlled and free endogenous variables.
 controlledendogenousvariables_id = zeros(length(freeinnovations), 1);
@@ -61,28 +58,18 @@ end
 nyfree = length(freeendogenousvariables_id);
 nyctrl = length(controlledendogenousvariables_id);
 
-% Get indices of variables appearing at time t-1.
-iy1 = find(DynareModel.lead_lag_incidence(1,:)>0);
-
-% Get indices of variables appearing at time t.
-iy0 = find(DynareModel.lead_lag_incidence(2,:)>0);
-
-% Set indices for trust_region algorithm.
-idx = 1:DynareModel.endo_nbr;
-jdx = 1:(nyfree+nxfree);
-
 % Build structure to be passed to the objective function.
 ModelInversion.nyfree = nyfree;
 ModelInversion.nyctrl = nyctrl;
 ModelInversion.nxfree = nxfree;
-ModelInversion.nxcalb = nxcalb;
-ModelInversion.y_constrained_id = vec(DynareModel.lead_lag_incidence(2,controlledendogenousvariables_id));
-ModelInversion.y_free_id = vec(DynareModel.lead_lag_incidence(2,freeendogenousvariables_id));
+ModelInversion.y_constrained_id = controlledendogenousvariables_id;
+ModelInversion.y_free_id = freeendogenousvariables_id;
 ModelInversion.x_free_id = freeinnovations_id;
-ModelInversion.J_id = [ModelInversion.y_free_id ; sum(DynareModel.lead_lag_incidence(:)>0)+ModelInversion.x_free_id];
+ModelInversion.J_id = [DynareModel.endo_nbr+ModelInversion.y_free_id ; 3*DynareModel.endo_nbr+ModelInversion.x_free_id];
 
-% Get the name of the dynamic model routines.
-model_dynamic = str2func([DynareModel.fname,'.dynamic']);
+% Get function handles to the dynamic model routines.
+dynamic_resid = str2func([DynareModel.fname '.sparse.dynamic_resid']);
+dynamic_g1 = str2func([DynareModel.fname '.sparse.dynamic_g1']);
 
 % Initialization of the returned simulations (endogenous variables).
 Y = NaN(DynareModel.endo_nbr, nobs(constraints));
@@ -99,7 +86,7 @@ ity = 2;
 itx = find(exogenousvariables.dates==constraints.dates(1));
 for t = 1:nobs(constraints)
     % Set the lagged values of the endogenous variables.
-    ylag = Y(iy1,ity-1);
+    ylag = Y(:,ity-1);
     % Set the current values of the constrained endogenous variables.
     ycur = Y(controlledendogenousvariables_id,ity);
     % Vector z gather the free endogenous variables (initialized with lagged
@@ -108,7 +95,7 @@ for t = 1:nobs(constraints)
     % Solves for z.
     [z, failed, ~, ~, errorcode] = dynare_solve(@dynamic_backward_model_for_inversion, z, ...
                                                 DynareOptions.simul.maxit, DynareOptions.dynatol.f, DynareOptions.dynatol.x, ...
-                                                DynareOptions, model_dynamic, ylag, ycur, X, DynareModel.params, DynareOutput.steady_state, itx, ModelInversion);
+                                                DynareOptions, dynamic_resid, dynamic_g1, ylag, ycur, X(itx,:), DynareModel.params, DynareOutput.steady_state, DynareModel.dynamic_g1_sparse_rowval, DynareModel.dynamic_g1_sparse_colval, DynareModel.dynamic_g1_sparse_colptr, ModelInversion);
     if failed
         error('Nonlinear solver failed with errorcode=%i', errorcode)
     end
@@ -127,25 +114,25 @@ endogenousvariables = dseries(Y(:,2:end)', constraints.dates(1), endo_names);
 exogenousvariables = dseries(X(find(exogenousvariables.dates==constraints.dates(1))+(0:(nobs(constraints)-1)),:), constraints.dates(1), exo_names);
 
 
-function [r, J] = dynamic_backward_model_for_inversion(z, dynamicmodel, ylag, ycur, x, params, steady_state, it_, ModelInversion)
+function [r, J] = dynamic_backward_model_for_inversion(z, dynamic_resid, dynamic_g1, ylag, ycur, x, params, steady_state, sparse_rowval, sparse_colval, sparse_colptr, ModelInversion)
+
+endo_nbr = ModelInversion.nyfree+ModelInversion.nyctrl;
 
 % Set up y
-y = zeros(length(ylag)+ModelInversion.nyfree+ModelInversion.nyctrl,1);
-y(1:length(ylag)) = ylag;
+y = [ylag; zeros(2*endo_nbr, 1)];
 
-y(ModelInversion.y_constrained_id) = ycur;
+y(endo_nbr+ModelInversion.y_constrained_id) = ycur;
 if ModelInversion.nyfree
-    y(ModelInversion.y_free_id) = z(1:ModelInversion.nyfree);
+    y(endo_nbr+ModelInversion.y_free_id) = z(1:ModelInversion.nyfree);
 end
 
 % Update x
-x(it_, ModelInversion.x_free_id) = transpose(z(ModelInversion.nyfree+(1:ModelInversion.nxfree)));
+x(ModelInversion.x_free_id) = z(ModelInversion.nyfree+(1:ModelInversion.nxfree));
+
+[r, T_order, T] = dynamic_resid(y, x, params, steady_state);
 
 if nargout>1
-    [r, Jacobian] = feval(dynamicmodel, y, x, params, steady_state, it_);
-else
-    r = feval(dynamicmodel, y, x, params, steady_state, it_);
-    return
+    Jacobian = dynamic_g1(y, x, params, steady_state, sparse_rowval, ...
+                          sparse_colval, sparse_colptr, T_order, T);
+    J = Jacobian(:, ModelInversion.J_id);
 end
-
-J = Jacobian(:,ModelInversion.J_id);
