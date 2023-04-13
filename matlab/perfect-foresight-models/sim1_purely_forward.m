@@ -1,7 +1,7 @@
 function [endogenousvariables, info] = sim1_purely_forward(endogenousvariables, exogenousvariables, steadystate, M, options)
 % Performs deterministic simulation of a purely forward model
 
-% Copyright © 2012-2022 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -29,7 +29,6 @@ if ismember(options.solve_algo, [12,14])
 else
     iyf = find(M.lead_lag_incidence(2,:)>0); % Indices of variables at next period
     dynamicmodel = str2func(sprintf('%s.%s', M.fname, 'dynamic'));
-    dynamicmodel_s = str2func('dynamic_forward_model_for_simulation');
 end
 
 function [r, J] = block_wrapper(z, feedback_vars_idx, func, y_dynamic, x, sparse_rowval, sparse_colval, sparse_colptr, T)
@@ -73,7 +72,7 @@ for it = options.periods:-1:1
         end
         endogenousvariables(:,it) = y_dynamic(M.endo_nbr+(1:M.endo_nbr));
     else
-        [tmp, check, ~, ~, errorcode] = dynare_solve(dynamicmodel_s, yf, ...
+        [tmp, check, ~, ~, errorcode] = dynare_solve(@dynamic_forward_model_for_simulation, yf, ...
                                                      options.simul.maxit, options.dynatol.f, options.dynatol.x, ...
                                                      options, ...
                                                      dynamicmodel, yf(iyf), exogenousvariables, M.params, steadystate, it);
@@ -84,6 +83,19 @@ for it = options.periods:-1:1
         end
         endogenousvariables(:,it) = tmp(1:M.endo_nbr);
     end
+end
+
+end
+
+function [r, J] = dynamic_forward_model_for_simulation(z, dynamicmodel, ylead, x, params, steady_state, it_)
+
+if nargout>1
+        % Compute residuals and jacobian of the full dynamic model.
+    [r, J] = feval(dynamicmodel, [z; ylead], x, params, steady_state, it_);
+    J = J(:,1:length(z)); % Remove derivatives with respect to shocks.
+else
+    % Compute residuals.
+    r = feval(dynamicmodel, [z; ylead], x, params, steady_state, it_);
 end
 
 end
