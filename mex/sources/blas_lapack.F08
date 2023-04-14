@@ -30,6 +30,7 @@ module blas
   interface
      subroutine dgemm(transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
        import :: blint, real64
+       implicit none
        character, intent(in) :: transa, transb
        integer(blint), intent(in) :: m, n, k, lda, ldb, ldc
        real(real64), dimension(*), intent(in) :: a, b
@@ -41,6 +42,7 @@ module blas
   interface
      subroutine dgemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
        import :: blint, real64
+       implicit none
        character, intent(in) :: trans
        integer(blint), intent(in) :: m, n, lda, incx, incy
        real(real64), dimension(*), intent(in) :: a, x
@@ -108,6 +110,7 @@ module lapack
   interface
      subroutine dgesv(n, nrhs, a, lda, ipiv, b, ldb, info)
        import :: blint, real64
+       implicit none
        integer(blint), intent(in) :: n, nrhs, lda, ldb
        real(real64), dimension(*), intent(inout) :: a, b
        integer(blint), dimension(*), intent(out) :: ipiv
@@ -120,6 +123,7 @@ module lapack
           alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, work, lwork, bwork, &
           info)
        import :: blint, bllog, real64
+       implicit none
        character, intent(in) :: jobvsl, jobvsr, sort
        interface
           logical(bllog) function selctg(alphar, alphai, beta)
@@ -138,6 +142,7 @@ module lapack
   interface
      subroutine dpotrf(uplo, n, a, lda, info)
        import :: blint, real64
+       implicit none
        character, intent(in) :: uplo
        integer(blint), intent(in) :: n, lda
        real(real64), dimension(*), intent(inout) :: a
@@ -148,6 +153,7 @@ module lapack
   interface
      function dlange(norm, m, n, a, lda, work)
        import :: blint, real64
+       implicit none
        character, intent(in) :: norm
        integer(blint), intent(in) :: m, n, lda
        real(real64), dimension(*), intent(in) :: a
