@@ -1,7 +1,7 @@
 ! This MEX file computes A·(B⊗C) or A·(B⊗B) without explicitly building B⊗C or
 ! B⊗B, so that one can consider large matrices B and/or C.
 
-! Copyright © 2007-2022 Dynare Team
+! Copyright © 2007-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -23,7 +23,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   use iso_c_binding
   use matlab_mex
   use blas
-  implicit none
+  implicit none (type, external)
 
   type(c_ptr), dimension(*), intent(in), target :: prhs
   type(c_ptr), dimension(*), intent(out) :: plhs

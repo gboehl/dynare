@@ -1,7 +1,7 @@
 program trust_region_test
   use trust_region
   use iso_fortran_env
-  implicit none
+  implicit none (type, external)
 
   real(real64), dimension(2), parameter :: rosenbrock_guess = [ -10**4, 1 ]
   real(real64), dimension(2), parameter :: rosenbrock_solution = [ 1, 1 ]

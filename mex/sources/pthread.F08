@@ -1,4 +1,4 @@
-! Copyright © 2022 Dynare Team
+! Copyright © 2022-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -18,7 +18,7 @@
 ! Wrapper around pthread_create and pthread_join C routines for POSIX multithreading
 module pthread
    use iso_c_binding
-   implicit none
+   implicit none (type, external)
    private
 
    public :: c_pthread_create

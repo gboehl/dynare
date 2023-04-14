@@ -1,7 +1,7 @@
 ! Provides a subroutine to sort integer arrays in ascending order
 ! As the addressed arrays are small, I use the insertion sort algorithm
-!
-! Copyright © 2021 Dynare Team
+
+! Copyright © 2021-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -19,7 +19,7 @@
 ! along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 module sort
-   implicit none
+   implicit none (type, external)
 
 contains
    subroutine sort_int(l)

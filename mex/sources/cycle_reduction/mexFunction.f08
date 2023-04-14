@@ -1,4 +1,4 @@
-! Copyright © 2022 Dynare Team
+! Copyright © 2022-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -22,7 +22,7 @@ module c_reduction
    use lapack
    use blas
    use matlab_mex
-   implicit none
+   implicit none (type, external)
 
 contains
 
@@ -111,7 +111,7 @@ end module c_reduction
 
 subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    use c_reduction
-   implicit none   
+   implicit none (type, external)
 
    type(c_ptr), dimension(*), intent(in), target :: prhs
    type(c_ptr), dimension(*), intent(out) :: plhs

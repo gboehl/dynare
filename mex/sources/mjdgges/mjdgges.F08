@@ -18,7 +18,7 @@
 !   eigval       [complex] (n×1) vector of generalized eigenvalues
 !   info         [integer] scalar, error code of dgges (or 30 if eigenvalue close to 0÷0)
 
-! Copyright © 2006-2022 Dynare Team
+! Copyright © 2006-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -39,7 +39,7 @@
 
 module select_fct_mod
   use iso_fortran_env
-  implicit none
+  implicit none (type, external)
 
   real(real64) :: criterium
 contains
@@ -58,7 +58,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
   use select_fct_mod
   use matlab_mex
   use lapack
-  implicit none
+  implicit none (type, external)
 
   type(c_ptr), dimension(*), intent(in), target :: prhs
   type(c_ptr), dimension(*), intent(out) :: plhs

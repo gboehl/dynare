@@ -1,7 +1,7 @@
 program dmperm_test
   use iso_fortran_env
   use dulmage_mendelsohn
-  implicit none
+  implicit none (type, external)
 
   real(real64), dimension(12, 11) :: M
   integer, dimension(size(M, 1)) :: row_order

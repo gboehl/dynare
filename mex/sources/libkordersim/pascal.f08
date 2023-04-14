@@ -1,6 +1,6 @@
 ! Provides a subroutine to build Pascal's triangle
-!
-! Copyright © 2021 Dynare Team
+
+! Copyright © 2021-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -18,7 +18,7 @@
 ! along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 module pascal
-   implicit none
+   implicit none (type, external)
 
    type line
       integer, dimension(:), allocatable :: coeffs 

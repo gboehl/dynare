@@ -1,4 +1,4 @@
-! Fortran 2008 interface for a subset of MEX functions
+! Fortran 2018 interface for a subset of MEX functions
 !
 ! For some functions, exposing the C interface directly is not convenient (e.g.
 ! when they use C strings, since those need to be null-terminated, or when they
@@ -28,7 +28,7 @@
 !     Fortran compiler better optimize the code (in some cases, this will avoid
 !     array copies)
 
-! Copyright © 2019-2022 Dynare Team
+! Copyright © 2019-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -66,7 +66,7 @@
 module matlab_mat
   use iso_fortran_env
   use iso_c_binding
-  implicit none
+  implicit none (type, external)
 
   !! C Data Types
   integer, parameter :: mwSize = c_size_t
@@ -411,7 +411,7 @@ end module matlab_mat
 !!! Listed in same order as https://fr.mathworks.com/help/matlab/call-mex-files-1.html
 module matlab_mex
   use matlab_mat
-  implicit none
+  implicit none (type, external)
 
   interface
      integer(c_int) function mexCallMATLAB_internal(nlhs, plhs, nrhs, prhs, functionName) bind(c, name="mexCallMATLAB"//API_VER)

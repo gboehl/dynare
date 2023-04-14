@@ -2,7 +2,7 @@
 !
 ! Implementation heavily inspired from the hybrj function from MINPACK
 
-! Copyright © 2019-2021 Dynare Team
+! Copyright © 2019-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -22,7 +22,7 @@
 module trust_region
   use iso_fortran_env
   use lapack
-  implicit none
+  implicit none (type, external)
 
   private
   public :: trust_region_solve

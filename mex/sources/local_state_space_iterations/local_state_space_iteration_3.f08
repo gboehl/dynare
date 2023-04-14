@@ -1,4 +1,4 @@
-! Copyright © 2022 Dynare Team
+! Copyright © 2022-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -20,7 +20,7 @@ module pparticle_3
    use matlab_mex
    use partitions
 
-   implicit none
+   implicit none (type, external)
 
    type tdata_3
       integer :: n, m, s, q, numthreads, xx_size, uu_size, xxx_size, uuu_size
@@ -340,7 +340,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    use partitions
    use pthread
    use pparticle_3
-   implicit none
+   implicit none (type, external)
 
    type(c_ptr), dimension(*), intent(in), target :: prhs
    type(c_ptr), dimension(*), intent(out) :: plhs

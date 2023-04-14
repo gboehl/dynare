@@ -1,8 +1,8 @@
 ! Provides subroutines to manipulate indexes representing elements of
 ! a partition for a given integer
 ! i.e. elements p = (α₁,…,αₘ) where each αᵢ ∈ { 0, ..., n-1 }
-!
-! Copyright © 2021 Dynare Team
+
+! Copyright © 2021-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -23,7 +23,7 @@ module partitions
    use pascal
    use sort
    use iso_fortran_env
-   implicit none
+   implicit none (type, external)
 
    ! index represents the aforementioned (α₁,…,αₘ) objects
    type index
@@ -354,7 +354,7 @@ end module partitions
 ! program test
 !    use partitions
 !    use pascal
-!    implicit none
+!    implicit none (type, external)
 !    type(index) :: uidx, fidx, i1, i2
 !    integer, dimension(:), allocatable :: folded
 !    integer :: i, uj, n, d, j, nb_folded_idcs

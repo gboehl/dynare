@@ -1,4 +1,4 @@
-! Copyright © 2021 Dynare Team
+! Copyright © 2021-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -22,7 +22,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    use simulation
    use matlab_mex
    use partitions
-   implicit none
+   implicit none (type, external)
 
    type(c_ptr), dimension(*), intent(in), target :: prhs
    type(c_ptr), dimension(*), intent(out) :: plhs

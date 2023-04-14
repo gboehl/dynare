@@ -1,4 +1,4 @@
-! Copyright © 2019-2021 Dynare Team
+! Copyright © 2019-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -17,7 +17,7 @@
 
 module blas
   use iso_fortran_env
-  implicit none
+  implicit none (type, external)
 
 #if defined(MATLAB_MEX_FILE) && __SIZEOF_POINTER__ == 8
   integer, parameter :: blint = int64
@@ -103,7 +103,7 @@ end module blas
 
 module lapack
   use blas
-  implicit none
+  implicit none (type, external)
 
   interface
      subroutine dgesv(n, nrhs, a, lda, ipiv, b, ldb, info)

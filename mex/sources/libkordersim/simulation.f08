@@ -1,7 +1,8 @@
 ! Necessary routines and functions to carry out simulations
 !
 ! A first step is to get the associated 
-! Copyright © 2021 Dynare Team
+
+! Copyright © 2021-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -22,7 +23,7 @@ module simulation
    use iso_fortran_env
    use partitions
    use lapack
-   implicit none
+   implicit none (type, external)
 
    ! Used to store the folded decision rule tensors
    type :: pol

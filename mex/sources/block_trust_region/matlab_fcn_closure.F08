@@ -34,7 +34,7 @@ module matlab_fcn_closure
   use iso_c_binding
   use ieee_arithmetic
   use matlab_mex
-  implicit none
+  implicit none (type, external)
 
   private
   public :: func, extra_args, f_indices, x_indices, x_all, matlab_fcn

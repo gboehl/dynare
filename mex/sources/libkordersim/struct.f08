@@ -1,4 +1,4 @@
-! Copyright © 2021 Dynare Team
+! Copyright © 2021-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -14,11 +14,12 @@
 !
 ! You should have received a copy of the GNU General Public License
 ! along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
+
 module struct
    use iso_fortran_env
    use iso_c_binding
    use matlab_mex
-   implicit none
+   implicit none (type, external)
 
    contains
 

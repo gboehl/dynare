@@ -1,7 +1,7 @@
 ! Wrapper around MATLAB’s dmperm to compute the Dulmage-Mendelsohn
 ! decomposition
 
-! Copyright © 2020 Dynare Team
+! Copyright © 2020-2023 Dynare Team
 !
 ! This file is part of Dynare.
 !
@@ -21,7 +21,7 @@
 module dulmage_mendelsohn
   use iso_fortran_env
   use matlab_mex
-  implicit none
+  implicit none (type, external)
 
   ! Represents a block in the fine DM decomposition
   type :: dm_block
