@@ -42,7 +42,6 @@ options_.gstep = ones(2,1);
 options_.gstep(1) = 1e-2;
 options_.gstep(2) = 1.0;
 options_.jacobian_tolerance = []; %tolerance for rank of Jacobian in model_diagnostics
-options_.scalv = 1;
 options_.debug = false;
 options_.initval_file = false;
 options_.schur_vec_tol = 1e-11; % used to find nonstationary variables in Schur decomposition of the

@@ -33,13 +33,7 @@ global M_ options_ oo_ ys0_ ex0_
 
 check_input_arguments(options_, M_, oo_);
 
-if isempty(options_.scalv) || options_.scalv == 0
-    options_.scalv = oo_.steady_state;
-end
-
 periods = options_.periods;
-
-options_.scalv= 1;
 
 if options_.debug
     model_static = str2func([M_.fname,'.static']);

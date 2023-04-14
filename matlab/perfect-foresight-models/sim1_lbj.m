@@ -83,7 +83,7 @@ for iter = 1:options.simul.maxit
     c = bksup1(c, ny, nrc, iyf, options.periods);
     c = reshape(c, ny, options.periods);
     endogenousvariables(:,it_init+(0:options.periods-1)) = endogenousvariables(:,it_init+(0:options.periods-1))+c;
-    err = max(max(abs(c./options.scalv')));
+    err = max(max(abs(c)));
     if verbose
         str = sprintf('Iter: %s,\t err. = %s, \t time = %s', num2str(iter), num2str(err), num2str(etime(clock, h2)));
         disp(str);
