@@ -33,7 +33,6 @@ options_.datafile = '';
 options_.dirname = M_.fname;
 options_.dataset = [];
 options_.verbosity = 1;
-options_.terminal_condition = 0;
 options_.rplottype = 0;
 options_.smpl = 0;
 options_.dynatol.f = 1e-5;

@@ -63,11 +63,7 @@ h1 = clock;
 
 for iter = 1:options.simul.maxit
     h2 = clock;
-    if ~options.terminal_condition
-        c = zeros(ny*options.periods, nrc);
-    else
-        c = zeros(ny*(options.periods+1), nrc);
-    end
+    c = zeros(ny*options.periods, nrc);
     it_ = it_init;
     z = [endogenousvariables(iyp,it_-1) ; endogenousvariables(:,it_) ; endogenousvariables(iyf,it_+1)];
     [d1, jacobian] = feval(dynamicmodel, z, exogenousvariables, M.params, steadystate, it_);
@@ -84,19 +80,9 @@ for iter = 1:options.simul.maxit
         icp = icp + ny;
         c (ic,:) = jacobian(:,is)\jacobian(:,isf1);
     end
-    if options.terminal_condition == 1
-        s = eye(ny);
-        s(:,isf) = s(:,isf)+c(ic,1:nyf);
-        ic = ic + ny;
-        c(ic,nrc) = s\c(ic,nrc);
-        c = bksup1(c, ny, nrc, iyf, options.periods);
-        c = reshape(c, ny, options.periods+1);
-        endogenousvariables(:,it_init+(0:options.periods)) = endogenousvariables(:,it_init+(0:options.periods))+c;
-    else
-        c = bksup1(c, ny, nrc, iyf, options.periods);
-        c = reshape(c, ny, options.periods);
-        endogenousvariables(:,it_init+(0:options.periods-1)) = endogenousvariables(:,it_init+(0:options.periods-1))+c;
-    end
+    c = bksup1(c, ny, nrc, iyf, options.periods);
+    c = reshape(c, ny, options.periods);
+    endogenousvariables(:,it_init+(0:options.periods-1)) = endogenousvariables(:,it_init+(0:options.periods-1))+c;
     err = max(max(abs(c./options.scalv')));
     if verbose
         str = sprintf('Iter: %s,\t err. = %s, \t time = %s', num2str(iter), num2str(err), num2str(etime(clock, h2)));
