@@ -1,4 +1,4 @@
-dnl Copyright © 2009-2021 Dynare Team
+dnl Copyright © 2009-2023 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -37,6 +37,7 @@ case ${MATLAB_ARCH} in
     MATLAB_LDFLAGS_NOMAP="-shared -Wl,--no-undefined -Wl,-rpath-link,$MATLAB/bin/glnxa64 -L$MATLAB/bin/glnxa64"
     MATLAB_LDFLAGS="$MATLAB_LDFLAGS_NOMAP -Wl,--version-script,$MATLAB/extern/lib/glnxa64/mexFunction.map"
     MATLAB_LIBS="-lmx -lmex -lmat -lm -lmwlapack -lmwblas"
+    FORTRAN_LIBS_FOR_CXXLINK="-lgfortran -lquadmath"
     ax_mexopts_ok="yes"
     ;;
   win64)
@@ -64,6 +65,7 @@ case ${MATLAB_ARCH} in
     # Should come by the end of the link command
     # (otherwise it will have to be enclosed within --whole-archive).
     OPENMP_LIBS="-Wl,-Bstatic -lgomp -Wl,-Bdynamic"
+    FORTRAN_LIBS_FOR_CXXLINK="-Wl,-Bstatic -lgfortran -Wl,-Bdynamic" # libquadmath is already in MATLAB_LDFLAGS_NOMAP
     ax_mexopts_ok="yes"
     ;;
   maci64)
@@ -77,6 +79,7 @@ case ${MATLAB_ARCH} in
     # to avoid linking against the HDF5 shipped by MATLAB (which would
     # otherwise override the HDF5 from Homebrew)
     MATLAB_LIBS="-L$MATLAB/bin/maci64 -lmx -lmex -lmat -lmwlapack -lmwblas"
+    FORTRAN_LIBS_FOR_CXXLINK="-lgfortran -lquadmath"
     ax_mexopts_ok="yes"
     ;;
   *)
@@ -132,4 +135,5 @@ AC_SUBST([MATLAB_FCFLAGS])
 AC_SUBST([MATLAB_LDFLAGS])
 AC_SUBST([MATLAB_LIBS])
 AC_SUBST([OPENMP_LIBS])
+AC_SUBST([FORTRAN_LIBS_FOR_CXXLINK])
 ])

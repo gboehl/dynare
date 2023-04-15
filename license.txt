@@ -307,10 +307,9 @@ Copyright: 2005-2011 Ondra Kamenik
            2019-2020 Dynare Team
 License: GPL-3+
 
-Files: mex/sources/sobol/sobol.hh mex/sources/sobol/initialize_v_array.hh
- mex/sources/sobol/initialize_v_array.inc
-Copyright: 2009 John Burkardt
-           2010-2017 Dynare Team
+Files: mex/sources/sobol/sobol.f08
+Copyright: 2004-2009 John Burkardt
+           2023 Dynare Team
 License: LGPL-3+
 
 Files: macOS/brewfiles/*

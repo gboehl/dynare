@@ -39,6 +39,9 @@ CXXFLAGS=$($MKOCTFILE -p CXXFLAGS)
 # is undesirable for generic LDFLAGS.
 LDFLAGS=$($MKOCTFILE --link-stand-alone -p LDFLAGS)
 
+FORTRAN_LIBS_FOR_CXXLINK="-lgfortran -lquadmath"
+AC_SUBST([FORTRAN_LIBS_FOR_CXXLINK])
+
 AC_CANONICAL_HOST
 
 OCTAVE_VERSION=$($MKOCTFILE -v 2>&1 | sed 's/mkoctfile, version //')
