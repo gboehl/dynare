@@ -1,7 +1,7 @@
 /*
 ** Computes Quasi Monte-Carlo sequence.
 **
-** Copyright © 2010-2022 Dynare Team
+** Copyright © 2010-2023 Dynare Team
 **
 ** This file is part of Dynare (can be used outside Dynare).
 **
@@ -73,7 +73,12 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (!(mxIsNumeric(prhs[1]) && mxIsClass(prhs[1], "int64")))
     mexErrMsgTxt("qmc_sequence:: Second input (seed) has to be an integer [int64]!");
 
-  int64_T seed = static_cast<int64_T>(mxGetScalar(prhs[1]));
+#if MX_HAS_INTERLEAVED_COMPLEX
+  int64_T seed = *mxGetInt64s(prhs[1]);
+#else
+  int64_T seed = *static_cast<int64_T *>(mxGetData(prhs[1]));
+#endif
+
   /*
   ** Test the third input argument and assign it to type (kind of QMC sequence).
   */
