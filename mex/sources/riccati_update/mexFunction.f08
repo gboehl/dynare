@@ -36,7 +36,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
 
    real(real64), dimension(:,:), pointer, contiguous :: P, T, K, Z, Q, Pnew
    real(real64), dimension(:,:), allocatable :: tmp1, tmp2
-   integer :: i, j, n, r
+   integer :: i, n, r
    character(kind=c_char, len=2) :: num2str 
 
    ! 0. Checking the consistency and validity of input arguments
