@@ -37,9 +37,7 @@ module blas
        real(real64), intent(in) :: alpha, beta
        real(real64), dimension(*), intent(inout) :: c
      end subroutine dgemm
-  end interface
 
-  interface
      subroutine dgemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
        import :: blint, real64
        implicit none
@@ -116,9 +114,7 @@ module lapack
        integer(blint), dimension(*), intent(out) :: ipiv
        integer(blint), intent(out) :: info
      end subroutine dgesv
-  end interface
 
-  interface
      subroutine dgges(jobvsl, jobvsr, sort, selctg, n, a, lda, b, ldb, sdim, &
           alphar, alphai, beta, vsl, ldvsl, vsr, ldvsr, work, lwork, bwork, &
           info)
@@ -137,9 +133,7 @@ module lapack
        logical(bllog), dimension(*), intent(out) :: bwork
        integer(blint), intent(out) :: sdim, info
      end subroutine dgges
-  end interface
 
-  interface
      subroutine dpotrf(uplo, n, a, lda, info)
        import :: blint, real64
        implicit none
@@ -148,9 +142,7 @@ module lapack
        real(real64), dimension(*), intent(inout) :: a
        integer(blint), intent(out) :: info
      end subroutine dpotrf
-  end interface
 
-  interface
      function dlange(norm, m, n, a, lda, work)
        import :: blint, real64
        implicit none
