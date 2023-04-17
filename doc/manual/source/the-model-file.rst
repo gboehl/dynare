@@ -4103,7 +4103,7 @@ Computing the stochastic solution
                 Uses the default solver for Sylvester equations
                 (``gensylv``) based on Ondra Kamenik’s algorithm (see
                 `here
-                <https://www.dynare.org/assets/dynare++/sylvester.pdf>`__
+                <https://www.dynare.org/assets/team-presentations/sylvester.pdf>`__
                 for more information).
 
            ``fixed_point``
