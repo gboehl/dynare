@@ -278,9 +278,8 @@ Copyright: 2007-2017 Sébastien Villemot
            2016-2017 Johannes Pfeifer
 License: GFDL-NIV-1.3+
 
-Files: dynare++/*
+Files: doc/sylvester.tex doc/tl.tex
 Copyright: 2004-2011 Ondra Kamenik
-           2019-2023 Dynare Team
 License: GPL-3+
 
 Files: m4/ax_compare_version.m4
@@ -303,8 +302,11 @@ Copyright: 2010 Yannick Kalantzis
 License: GPL-3+
 
 Files: mex/sources/gensylv/gensylv.cc
-Copyright: 2005-2011 Ondra Kamenik
-           2019-2020 Dynare Team
+       mex/sources/libkorder/kord/* mex/sources/libkorder/integ/*
+       mex/sources/libkorder/sylv/* mex/sources/libkorder/tl/*
+       mex/sources/libkorder/utils/*
+Copyright: 2004-2011 Ondra Kamenik
+           2019-2023 Dynare Team
 License: GPL-3+
 
 Files: mex/sources/sobol/sobol.f08

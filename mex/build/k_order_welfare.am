@@ -1,11 +1,12 @@
 mex_PROGRAMS = k_order_welfare
 
 TOPDIR = $(top_srcdir)/../../sources/k_order_welfare
+LIBKORDER_DIR = $(top_srcdir)/../../sources/libkorder
 
-k_order_welfare_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR) -I$(TOPDIR)/../k_order_perturbation -I$(top_srcdir)/../../../dynare++/tl/cc -I$(top_srcdir)/../../../dynare++/kord -I$(top_srcdir)/../../../dynare++/src -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/utils/cc $(CPPFLAGS_MATIO)
+k_order_welfare_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR) -I$(LIBKORDER_DIR) -I$(LIBKORDER_DIR)/tl -I$(LIBKORDER_DIR)/kord -I$(LIBKORDER_DIR)/sylv -I$(LIBKORDER_DIR)/utils $(CPPFLAGS_MATIO)
 
 k_order_welfare_LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_MATIO)
-k_order_welfare_LDADD = ../libdynare++/libdynare++.a  ../libkorder/libkorder.a $(LIBADD_DLOPEN) $(LIBADD_MATIO)
+k_order_welfare_LDADD = ../libkorder/libkorder.a $(LIBADD_DLOPEN) $(LIBADD_MATIO)
 
 nodist_k_order_welfare_SOURCES = \
 	k_order_welfare.cc \

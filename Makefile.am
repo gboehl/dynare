@@ -11,7 +11,6 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = \
 	matlab \
-	dynare++ \
 	contrib \
 	NEWS.md \
 	license.txt \

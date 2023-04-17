@@ -1,8 +1,10 @@
 mex_PROGRAMS = gensylv
 
-gensylv_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/utils/cc
+LIBKORDER_DIR = $(top_srcdir)/../../sources/libkorder
 
-gensylv_LDADD = ../libdynare++/libdynare++.a
+gensylv_CPPFLAGS = $(AM_CPPFLAGS) -I$(LIBKORDER_DIR)/sylv -I$(LIBKORDER_DIR)/utils
+
+gensylv_LDADD = ../libkorder/libkorder.a
 
 nodist_gensylv_SOURCES = gensylv.cc
 

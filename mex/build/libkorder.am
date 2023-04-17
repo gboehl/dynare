@@ -1,16 +1,104 @@
 noinst_LIBRARIES = libkorder.a
 
-TOPDIR = $(top_srcdir)/../../sources/k_order_perturbation
+TOPDIR = $(top_srcdir)/../../sources/libkorder
 
-libkorder_a_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR) -I$(top_srcdir)/../../../dynare++/tl/cc -I$(top_srcdir)/../../../dynare++/sylv/cc -I$(top_srcdir)/../../../dynare++/src -I$(top_srcdir)/../../../dynare++/kord -I$(top_srcdir)/../../../dynare++/utils/cc $(CPPFLAGS_MATIO) 
+libkorder_a_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR) -I$(TOPDIR)/tl -I$(TOPDIR)/sylv -I$(TOPDIR)/integ -I$(TOPDIR)/kord -I$(TOPDIR)/utils $(CPPFLAGS_MATIO)
 
-nodist_libkorder_a_SOURCES = \
+# TODO: fix the codebase so that the following line is no longer needed
+libkorder_a_CXXFLAGS = $(AM_CXXFLAGS) -Wno-unused-parameter
+
+KORD_SRCS = \
+	approximation.cc \
+	decision_rule.cc \
+	dynamic_model.cc \
+	faa_di_bruno.cc \
+	first_order.cc \
+	global_check.cc \
+	korder.cc \
+	korder_stoch.cc \
+	journal.cc \
+	normal_conjugate.cc \
+	seed_generator.cc
+
+SYLV_SRCS = \
+	BlockDiagonal.cc \
+	GeneralMatrix.cc \
+	GeneralSylvester.cc \
+	IterativeSylvester.cc \
+	KronUtils.cc \
+	KronVector.cc \
+	QuasiTriangular.cc \
+	QuasiTriangularZero.cc \
+	SchurDecomp.cc \
+	SchurDecompEig.cc \
+	SimilarityDecomp.cc \
+	SylvException.cc \
+	SylvMatrix.cc \
+	SylvParams.cc \
+	SymSchurDecomp.cc \
+	TriangularSylvester.cc \
+	Vector.cc
+
+TL_SRCS = \
+	equivalence.cc \
+	fine_container.cc \
+	fs_tensor.cc \
+	gs_tensor.cc \
+	int_sequence.cc \
+	kron_prod.cc \
+	normal_moments.cc \
+	permutation.cc \
+	ps_tensor.cc \
+	pyramid_prod.cc \
+	pyramid_prod2.cc \
+	rfs_tensor.cc \
+	sparse_tensor.cc \
+	stack_container.cc \
+	symmetry.cc \
+	t_container.cc \
+	t_polynomial.cc \
+	tensor.cc \
+	tl_static.cc \
+	twod_matrix.cc
+
+INTEG_SRCS = \
+	quadrature.cc \
+	quasi_mcarlo.cc \
+	product.cc \
+	smolyak.cc \
+	vector_function.cc
+
+UTILS_SRCS = \
+	pascal_triangle.cc \
+	int_power.cc \
+	sthread.cc \
+	nlsolve.cc
+
+TOPDIR_SRCS = \
 	k_ord_dynare.cc \
 	dynamic_dll.cc \
 	dynamic_m.cc
 
+nodist_libkorder_a_SOURCES = \
+	$(KORD_SRCS) \
+	$(TL_SRCS) \
+	$(SYLV_SRCS) \
+	$(INTEG_SRCS) \
+	$(UTILS_SRCS) \
+	$(TOPDIR_SRCS)
+
 BUILT_SOURCES = $(nodist_libkorder_a_SOURCES)
 CLEANFILES = $(nodist_libkorder_a_SOURCES)
 
-%.cc: $(TOPDIR)/%.cc
+$(TOPDIR_SRCS): %.cc: $(TOPDIR)/%.cc
+	$(LN_S) -f $< $@
+$(KORD_SRCS): %.cc: $(TOPDIR)/kord/%.cc
+	$(LN_S) -f $< $@
+$(TL_SRCS): %.cc: $(TOPDIR)/tl/%.cc
+	$(LN_S) -f $< $@
+$(SYLV_SRCS): %.cc: $(TOPDIR)/sylv/%.cc
+	$(LN_S) -f $< $@
+$(INTEG_SRCS): %.cc: $(TOPDIR)/integ/%.cc
+	$(LN_S) -f $< $@
+$(UTILS_SRCS): %.cc: $(TOPDIR)/utils/%.cc
 	$(LN_S) -f $< $@
