@@ -2,7 +2,7 @@ noinst_LIBRARIES = libkorder.a
 
 TOPDIR = $(top_srcdir)/../../sources/libkorder
 
-libkorder_a_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR) -I$(TOPDIR)/tl -I$(TOPDIR)/sylv -I$(TOPDIR)/integ -I$(TOPDIR)/kord -I$(TOPDIR)/utils $(CPPFLAGS_MATIO)
+libkorder_a_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR) -I$(TOPDIR)/tl -I$(TOPDIR)/sylv -I$(TOPDIR)/kord -I$(TOPDIR)/utils $(CPPFLAGS_MATIO)
 
 # TODO: fix the codebase so that the following line is no longer needed
 libkorder_a_CXXFLAGS = $(AM_CXXFLAGS) -Wno-unused-parameter
@@ -13,12 +13,9 @@ KORD_SRCS = \
 	dynamic_model.cc \
 	faa_di_bruno.cc \
 	first_order.cc \
-	global_check.cc \
 	korder.cc \
 	korder_stoch.cc \
-	journal.cc \
-	normal_conjugate.cc \
-	seed_generator.cc
+	journal.cc
 
 SYLV_SRCS = \
 	BlockDiagonal.cc \
@@ -61,18 +58,10 @@ TL_SRCS = \
 	tl_static.cc \
 	twod_matrix.cc
 
-INTEG_SRCS = \
-	quadrature.cc \
-	quasi_mcarlo.cc \
-	product.cc \
-	smolyak.cc \
-	vector_function.cc
-
 UTILS_SRCS = \
 	pascal_triangle.cc \
 	int_power.cc \
-	sthread.cc \
-	nlsolve.cc
+	sthread.cc
 
 TOPDIR_SRCS = \
 	k_ord_dynare.cc \
@@ -83,7 +72,6 @@ nodist_libkorder_a_SOURCES = \
 	$(KORD_SRCS) \
 	$(TL_SRCS) \
 	$(SYLV_SRCS) \
-	$(INTEG_SRCS) \
 	$(UTILS_SRCS) \
 	$(TOPDIR_SRCS)
 
@@ -97,8 +85,6 @@ $(KORD_SRCS): %.cc: $(TOPDIR)/kord/%.cc
 $(TL_SRCS): %.cc: $(TOPDIR)/tl/%.cc
 	$(LN_S) -f $< $@
 $(SYLV_SRCS): %.cc: $(TOPDIR)/sylv/%.cc
-	$(LN_S) -f $< $@
-$(INTEG_SRCS): %.cc: $(TOPDIR)/integ/%.cc
 	$(LN_S) -f $< $@
 $(UTILS_SRCS): %.cc: $(TOPDIR)/utils/%.cc
 	$(LN_S) -f $< $@

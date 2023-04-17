@@ -75,8 +75,6 @@
 #include <memory>
 #include <utility>
 
-#include <matio.h>
-
 // ltsym predicate
 /* We need a predicate on strict weak ordering of
    symmetries. */
@@ -222,21 +220,6 @@ public:
         std::cout << "Symmetry: ";
         it.first.print();
         it.second->print();
-      }
-  }
-
-  /* Output to the MAT file. */
-  void
-  writeMat(mat_t *fd, const std::string &prefix) const
-  {
-    for (auto &it : *this)
-      {
-        std::string lname = prefix + "_g";
-        const Symmetry &sym = it.first;
-        for (int i = 0; i < sym.num(); i++)
-          lname += '_' + std::to_string(sym[i]);
-        ConstTwoDMatrix m(*(it.second));
-        m.writeMat(fd, lname);
       }
   }
 

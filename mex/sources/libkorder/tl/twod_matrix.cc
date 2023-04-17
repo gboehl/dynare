@@ -51,25 +51,6 @@ ConstTwoDMatrix::ConstTwoDMatrix(int first_row, int num, const ConstTwoDMatrix &
 {
 }
 
-void
-ConstTwoDMatrix::writeMat(mat_t *fd, const std::string &vname) const
-{
-  size_t dims[2];
-  dims[0] = nrows();
-  dims[1] = ncols();
-  auto data = std::make_unique<double[]>(nrows()*ncols());
-
-  for (int j = 0; j < ncols(); j++)
-    for (int i = 0; i < nrows(); i++)
-      data[j*nrows()+i] = get(i, j);
-
-  matvar_t *v = Mat_VarCreate(vname.c_str(), MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, data.get(), 0);
-
-  Mat_VarWrite(fd, v, MAT_COMPRESSION_NONE);
-
-  Mat_VarFree(v);
-}
-
 TwoDMatrix &
 TwoDMatrix::operator=(const ConstTwoDMatrix &m)
 {

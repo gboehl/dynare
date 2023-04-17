@@ -66,9 +66,6 @@ AC_SUBST([LIBADD_DLOPEN])
 AC_ARG_ENABLE([mex-ms-sbvar], AS_HELP_STRING([--disable-mex-ms-sbvar], [disable compilation of the MS-SBVAR MEX]), [], [enable_mex_ms_sbvar=yes])
 AM_CONDITIONAL([ENABLE_MEX_MS_SBVAR], [test "$enable_mex_ms_sbvar" = yes])
 
-AC_ARG_ENABLE([mex-gensylv-korder], AS_HELP_STRING([--disable-mex-gensylv-korder], [disable compilation of gensylv and k-order MEX]), [], [enable_mex_gensylv_korder=yes])
-AM_CONDITIONAL([ENABLE_MEX_GENSYLV_KORDER], [test "$enable_mex_gensylv_korder" = yes])
-
 AC_ARG_ENABLE([mex-kalman-steady-state], AS_HELP_STRING([--disable-mex-kalman-steady-state], [disable compilation of the kalman_steady_state MEX]), [], [enable_mex_kalman_steady_state=yes])
 AM_CONDITIONAL([ENABLE_MEX_KALMAN_STEADY_STATE], [test "$enable_mex_kalman_steady_state" = yes])
 
@@ -78,10 +75,10 @@ if test "$enable_mex_ms_sbvar" = yes; then
   test "$has_gsl" != yes && AC_MSG_ERROR([GSL cannot be found. If you want to skip the compilation of the MS-SBVAR MEX, pass the --disable-mex-ms-sbvar flag.])
 fi
 
-# Check for libmatio, needed by MEX files using Dynare++ code, and by ms-sbvar (the latter only under Octave, as an alternative to MATLAB's libmat)
-if test "$enable_mex_gensylv_korder" = yes -o "$enable_mex_ms_sbvar" = yes; then
+# Check for libmatio, needed by ms-sbvar (the latter only under Octave, as an alternative to MATLAB's libmat)
+if test "$enable_mex_ms_sbvar" = yes; then
   AX_MATIO
-  test "$has_matio" != yes && AC_MSG_ERROR([libmatio cannot be found. If you want to skip the compilation of MS-SBVAR, gensylv and k-order MEX, pass the --disable-mex-gensylv-korder and --disable-mex-ms-sbvar flags.])
+  test "$has_matio" != yes && AC_MSG_ERROR([libmatio cannot be found. If you want to skip the compilation of MS-SBVAR, pass the --disable-mex-ms-sbvar flags.])
 fi
 
 # Check for libslicot, needed by kalman_steady_state
@@ -127,12 +124,6 @@ esac
 AM_CONDITIONAL([LINK_OCTAVE_LIBS], [test ${link_octave_libs} = yes])
 
 # Construct final output message
-if test "$enable_mex_gensylv_korder" = yes; then
-   BUILD_GENSYLV_KORDER_MEX_OCTAVE="yes"
-else
-   BUILD_GENSYLV_KORDER_MEX_OCTAVE="no"
-fi
-
 if test "$enable_mex_kalman_steady_state" = yes; then
    BUILD_KALMAN_STEADY_STATE_OCTAVE="yes"
 else
@@ -151,7 +142,6 @@ Dynare is now configured for building the following components...
 
 Binaries (with "make"):
  MEX files for Octave (except those listed below):                   yes
- Gensylv and k-order MEX for Octave:                                 $BUILD_GENSYLV_KORDER_MEX_OCTAVE
  MS-SBVAR MEX files for Octave:                                      $BUILD_MS_SBVAR_MEX_OCTAVE
  Kalman Steady State MEX file for Octave:                            $BUILD_KALMAN_STEADY_STATE_OCTAVE
 

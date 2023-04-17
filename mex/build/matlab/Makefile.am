@@ -1,11 +1,6 @@
 ACLOCAL_AMFLAGS = -I ../../../m4
 
-SUBDIRS = mjdgges kronecker bytecode sobol perfect_foresight_problem num_procs block_trust_region disclyap_fast libkordersim local_state_space_iterations folded_to_unfolded_dr k_order_simul k_order_mean cycle_reduction logarithmic_reduction riccati_update
-
-# libkorder must come first
-if ENABLE_MEX_GENSYLV_KORDER
-SUBDIRS += libkorder gensylv k_order_perturbation k_order_welfare
-endif
+SUBDIRS = mjdgges kronecker bytecode sobol perfect_foresight_problem num_procs block_trust_region disclyap_fast libkordersim local_state_space_iterations folded_to_unfolded_dr k_order_simul k_order_mean cycle_reduction logarithmic_reduction riccati_update libkorder gensylv k_order_perturbation k_order_welfare
 
 if ENABLE_MEX_MS_SBVAR
 SUBDIRS += ms_sbvar

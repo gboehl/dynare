@@ -48,8 +48,6 @@ public:
   virtual int getNum() const = 0;
   virtual const std::string &getName(int i) const = 0;
   void print() const;
-  void writeMat(mat_t *fd, const std::string &vname) const;
-  void writeMatIndices(mat_t *fd, const std::string &prefix) const;
 };
 
 /* This is the interface to an information on a generic DSGE model. It is

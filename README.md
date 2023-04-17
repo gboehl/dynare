@@ -78,9 +78,9 @@ A number of tools and libraries are needed in order to recompile everything. You
 - [Flex](https://github.com/westes/flex), version 2.5.4 or later (only if you get the source through Git)
 - [Autoconf](https://www.gnu.org/software/autoconf/), version 2.62 or later (only if you get the source through Git)
 - [Automake](https://www.gnu.org/software/automake/), version 1.11.2 or later (only if you get the source through Git)
-- [MAT File I/O library](https://sourceforge.net/projects/matio/), version 1.5 or later (if you want to compile Markov-Switching code, the estimation DLL, and the k-order DLL)
+- [MAT File I/O library](https://sourceforge.net/projects/matio/), version 1.5 or later (if you want to compile Markov-Switching SBVAR code)
 - [SLICOT](http://www.slicot.org) (if you want to compile the Kalman steady state DLL)
-- [GSL library](https://www.gnu.org/software/gsl/) (if you want to compile Markov-Switching code)
+- [GSL library](https://www.gnu.org/software/gsl/) (if you want to compile Markov-Switching SBVAR code)
 - A decent LaTeX distribution (if you want to compile PDF documentation),
   ideally with Beamer
 - For building the reference manual:

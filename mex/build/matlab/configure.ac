@@ -64,9 +64,6 @@ AC_SUBST([LIBADD_DLOPEN])
 AC_ARG_ENABLE([mex-ms-sbvar], AS_HELP_STRING([--disable-mex-ms-sbvar], [disable compilation of the MS-SBVAR MEX]), [], [enable_mex_ms_sbvar=yes])
 AM_CONDITIONAL([ENABLE_MEX_MS_SBVAR], [test "$enable_mex_ms_sbvar" = yes])
 
-AC_ARG_ENABLE([mex-gensylv-korder], AS_HELP_STRING([--disable-mex-gensylv-korder], [disable compilation of gensylv and k-order MEX]), [], [enable_mex_gensylv_korder=yes])
-AM_CONDITIONAL([ENABLE_MEX_GENSYLV_KORDER], [test "$enable_mex_gensylv_korder" = yes])
-
 AC_ARG_ENABLE([mex-kalman-steady-state], AS_HELP_STRING([--disable-mex-kalman-steady-state], [disable compilation of the kalman_steady_state MEX]), [], [enable_mex_kalman_steady_state=yes])
 AM_CONDITIONAL([ENABLE_MEX_KALMAN_STEADY_STATE], [test "$enable_mex_kalman_steady_state" = yes])
 
@@ -74,12 +71,6 @@ AM_CONDITIONAL([ENABLE_MEX_KALMAN_STEADY_STATE], [test "$enable_mex_kalman_stead
 if test "$enable_mex_ms_sbvar" = yes; then
   AX_GSL
   test "$has_gsl" != yes && AC_MSG_ERROR([GSL cannot be found. If you want to skip the compilation of the MS-SBVAR MEX, pass the --disable-mex-ms-sbvar flag.])
-fi
-
-# Check for libmatio, needed by MEX files using Dynare++ code
-if test "$enable_mex_gensylv_korder" = yes; then
-  AX_MATIO
-  test "$has_matio" != yes && AC_MSG_ERROR([libmatio cannot be found. If you want to skip the compilation of gensylv and k-order MEX, pass the --disable-mex-gensylv-korder flag.])
 fi
 
 # Check for libslicot, needed by kalman_steady_state
@@ -98,7 +89,6 @@ fi
 case ${host_os} in
   *mingw32*)
     GSL_LIBS="-Wl,-Bstatic $GSL_LIBS -Wl,-Bdynamic"
-    LIBADD_MATIO="-Wl,-Bstatic $LIBADD_MATIO -Wl,-Bdynamic"
     LIBADD_SLICOT="-Wl,-Bstatic $LIBADD_SLICOT -Wl,-Bdynamic"
     ;;
 esac
@@ -115,12 +105,6 @@ AC_SUBST([M2HTML])
 AM_CONDITIONAL([HAVE_M2HTML], [test "x$M2HTML" != "x"])
 
 # Construct final output message
-if test "$enable_mex_gensylv_korder" = yes; then
-   BUILD_GENSYLV_KORDER_MEX_MATLAB="yes"
-else
-   BUILD_GENSYLV_KORDER_MEX_MATLAB="no"
-fi
-
 if test "$enable_mex_kalman_steady_state" = yes; then
    BUILD_KALMAN_STEADY_STATE_MATLAB="yes"
 else
@@ -139,7 +123,6 @@ Dynare is now configured for building the following components...
 
 Binaries (with "make"):
  MEX files for MATLAB (except those listed below):                   yes
- Gensylv and k-order MEX files for MATLAB:                           $BUILD_GENSYLV_KORDER_MEX_MATLAB
  MS-SBVAR MEX files for MATLAB:                                      $BUILD_MS_SBVAR_MEX_MATLAB
  Kalman Steady State MEX file for MATLAB:                            $BUILD_KALMAN_STEADY_STATE_MATLAB
  M2HTML documentation:                                               $BUILD_M2HTML

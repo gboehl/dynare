@@ -34,8 +34,6 @@
 
 #include "GeneralMatrix.hh"
 
-#include <matio.h>
-
 #include <string>
 #include <utility>
 
@@ -75,8 +73,6 @@ public:
 
   ConstTwoDMatrix &operator=(const ConstTwoDMatrix &v) = delete;
   ConstTwoDMatrix &operator=(ConstTwoDMatrix &&v) = delete;
-
-  void writeMat(mat_t *fd, const std::string &vname) const;
 };
 
 class TwoDMatrix : public GeneralMatrix
@@ -200,12 +196,6 @@ public:
 
   // Saves the matrix to a text file
   void save(const std::string &fname) const;
-
-  void
-  writeMat(mat_t *fd, const std::string &vname) const
-  {
-    ConstTwoDMatrix(*this).writeMat(fd, vname);
-  }
 };
 
 #endif

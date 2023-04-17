@@ -302,9 +302,8 @@ Copyright: 2010 Yannick Kalantzis
 License: GPL-3+
 
 Files: mex/sources/gensylv/gensylv.cc
-       mex/sources/libkorder/kord/* mex/sources/libkorder/integ/*
-       mex/sources/libkorder/sylv/* mex/sources/libkorder/tl/*
-       mex/sources/libkorder/utils/*
+       mex/sources/libkorder/kord/* mex/sources/libkorder/sylv/*
+       mex/sources/libkorder/tl/* mex/sources/libkorder/utils/*
 Copyright: 2004-2011 Ondra Kamenik
            2019-2023 Dynare Team
 License: GPL-3+

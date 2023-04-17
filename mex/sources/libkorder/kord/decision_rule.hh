@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019-2021 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -35,26 +35,12 @@
 #ifndef DECISION_RULE_H
 #define DECISION_RULE_H
 
-#include <matio.h>
-
 #include "kord_exception.hh"
 #include "korder.hh"
-#include "normal_conjugate.hh"
 
 #include <memory>
 #include <random>
 #include <string>
-
-/* This is a general interface to a shock realizations. The interface has only
-   one method returning the shock realizations at the given time. This method
-   is not constant, since it may change a state of the object. */
-class ShockRealization
-{
-public:
-  virtual ~ShockRealization() = default;
-  virtual void get(int n, Vector &out) = 0;
-  virtual int numShocks() const = 0;
-};
 
 /* This class is an abstract interface to decision rule. Its main purpose is to
    define a common interface for simulation of a decision rule. We need only a
@@ -65,10 +51,6 @@ public:
   enum class emethod { horner, trad };
   virtual ~DecisionRule() = default;
 
-  // simulates the rule for a given realization of the shocks
-  virtual TwoDMatrix simulate(emethod em, int np, const ConstVector &ystart,
-                              ShockRealization &sr) const = 0;
-
   /* primitive evaluation (it takes a vector of state variables (predetermined,
      both and shocks) and returns the next period variables. Both input and
      output are in deviations from the rule's steady. */
@@ -78,9 +60,6 @@ public:
      deviations) */
   virtual void evaluate(emethod em, Vector &out, const ConstVector &ys,
                         const ConstVector &u) const = 0;
-
-  // writes the decision rule to the MAT file
-  virtual void writeMat(mat_t *fd, const std::string &prefix) const = 0;
 
   /* returns a new copy of the decision rule, which is centralized about
      provided fix-point */
@@ -167,12 +146,9 @@ public:
   {
     return ysteady;
   }
-  TwoDMatrix simulate(emethod em, int np, const ConstVector &ystart,
-                      ShockRealization &sr) const override;
   void evaluate(emethod em, Vector &out, const ConstVector &ys,
                 const ConstVector &u) const override;
   std::unique_ptr<DecisionRule> centralizedClone(const Vector &fixpoint) const override;
-  void writeMat(mat_t *fd, const std::string &prefix) const override;
 
   int
   nexog() const override
@@ -352,79 +328,6 @@ DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
     }
 }
 
-/* Here we evaluate repeatedly the polynomial storing results in the created
-   matrix. For exogenous shocks, we use ShockRealization class, for
-   predetermined variables, we use ‘ystart’ as the first state. The ‘ystart’
-   vector is required to be all state variables ypart.ny(), although only the
-   predetermined part of ‘ystart’ is used.
-
-   We simulate in terms of Δy, this is, at the beginning the ‘ysteady’ is
-   canceled from ‘ystart’, we simulate, and at the end ‘ysteady’ is added to
-   all columns of the result. */
-
-template<Storage t>
-TwoDMatrix
-DecisionRuleImpl<t>::simulate(emethod em, int np, const ConstVector &ystart,
-                              ShockRealization &sr) const
-{
-  KORD_RAISE_IF(ysteady.length() != ystart.length(),
-                "Start and steady lengths differ in DecisionRuleImpl::simulate");
-  TwoDMatrix res(ypart.ny(), np);
-
-  // initialize vectors and subvectors for simulation
-  /* Here allocate the stack vector (Δy*,u), define the subvectors ‘dy’, and
-     ‘u’, then we pickup predetermined parts of ‘ystart’ and ‘ysteady’. */
-  Vector dyu(ypart.nys()+nu);
-  ConstVector ystart_pred(ystart, ypart.nstat, ypart.nys());
-  ConstVector ysteady_pred(ysteady, ypart.nstat, ypart.nys());
-  Vector dy(dyu, 0, ypart.nys());
-  Vector u(dyu, ypart.nys(), nu);
-
-  // perform the first step of simulation
-  /* We cancel ‘ysteady’ from ‘ystart’, get realization to ‘u’, and evaluate
-     the polynomial. */
-  dy = ystart_pred;
-  dy.add(-1.0, ysteady_pred);
-  sr.get(0, u);
-  Vector out{res.getCol(0)};
-  eval(em, out, dyu);
-
-  // perform all other steps of simulations
-  /* Also clear. If the result at some period is not finite, we pad the rest of
-     the matrix with zeros. */
-  int i = 1;
-  while (i < np)
-    {
-      ConstVector ym{res.getCol(i-1)};
-      ConstVector dym(ym, ypart.nstat, ypart.nys());
-      dy = dym;
-      sr.get(i, u);
-      Vector out{res.getCol(i)};
-      eval(em, out, dyu);
-      if (!out.isFinite())
-        {
-          if (i+1 < np)
-            {
-              TwoDMatrix rest(res, i+1, np-i-1);
-              rest.zeros();
-            }
-          break;
-        }
-      i++;
-    }
-
-  // add the steady state to columns of ‘res’
-  /* Even clearer. We add the steady state to the numbers computed above and
-     leave the padded columns to zero. */
-  for (int j = 0; j < i; j++)
-    {
-      Vector col{res.getCol(j)};
-      col.add(1.0, ysteady);
-    }
-
-  return res;
-}
-
 /* This is one period evaluation of the decision rule. The simulation is a
    sequence of repeated one period evaluations with a difference, that the
    steady state (fix point) is cancelled and added once. Hence we have two
@@ -471,18 +374,6 @@ DecisionRuleImpl<t>::eval(emethod em, Vector &out, const ConstVector &v) const
     _Tpol::evalHorner(out, v);
   else
     _Tpol::evalTrad(out, v);
-}
-
-/* Write the decision rule and steady state to the MAT file. */
-
-template<Storage t>
-void
-DecisionRuleImpl<t>::writeMat(mat_t *fd, const std::string &prefix) const
-{
-  ctraits<t>::Tpol::writeMat(fd, prefix);
-  TwoDMatrix dum(ysteady.length(), 1);
-  dum.getData() = ysteady;
-  ConstTwoDMatrix(dum).writeMat(fd, prefix + "_ss");
 }
 
 /* This is exactly the same as DecisionRuleImpl<Storage::fold>. The only
@@ -785,355 +676,5 @@ DRFixPoint<t>::calcFixPoint(emethod em, Vector &out)
 
   return converged;
 }
-
-/* This is a basically a number of matrices of the same dimensions, which can
-   be obtained as simulation results from a given decision rule and shock
-   realizations. We also store the realizations of shocks and the starting
-   point of each simulation. */
-
-class ExplicitShockRealization;
-class SimResults
-{
-protected:
-  int num_y;
-  int num_per;
-  int num_burn;
-  std::vector<TwoDMatrix> data;
-  std::vector<ExplicitShockRealization> shocks;
-  std::vector<ConstVector> start;
-public:
-  SimResults(int ny, int nper, int nburn = 0)
-    : num_y(ny), num_per(nper), num_burn(nburn)
-  {
-  }
-  void simulate(int num_sim, const DecisionRule &dr, const Vector &start,
-                const TwoDMatrix &vcov, Journal &journal);
-  void simulate(int num_sim, const DecisionRule &dr, const Vector &start,
-                const TwoDMatrix &vcov);
-  int
-  getNumPer() const
-  {
-    return num_per;
-  }
-  int
-  getNumBurn() const
-  {
-    return num_burn;
-  }
-  int
-  getNumSets() const
-  {
-    return static_cast<int>(data.size());
-  }
-  const TwoDMatrix &
-  getData(int i) const
-  {
-    return data[i];
-  }
-  const ExplicitShockRealization &
-  getShocks(int i) const
-  {
-    return shocks[i];
-  }
-  const ConstVector &
-  getStart(int i) const
-  {
-    return start[i];
-  }
-
-  bool addDataSet(const TwoDMatrix &d, const ExplicitShockRealization &sr, const ConstVector &st);
-  void writeMat(const std::string &base, const std::string &lname) const;
-  void writeMat(mat_t *fd, const std::string &lname) const;
-};
-
-/* This does the same as SimResults plus it calculates means and covariances of
-   the simulated data. */
-
-class SimResultsStats : public SimResults
-{
-protected:
-  Vector mean;
-  TwoDMatrix vcov;
-public:
-  SimResultsStats(int ny, int nper, int nburn = 0)
-    : SimResults(ny, nper, nburn), mean(ny), vcov(ny, ny)
-  {
-  }
-  void simulate(int num_sim, const DecisionRule &dr, const Vector &start,
-                const TwoDMatrix &vcov, Journal &journal);
-  void writeMat(mat_t *fd, const std::string &lname) const;
-protected:
-  void calcMean();
-  void calcVcov();
-};
-
-/* This does the similar thing as SimResultsStats but the statistics are not
-   calculated over all periods but only within each period. Then we do not
-   calculate covariances with periods but only variances. */
-
-class SimResultsDynamicStats : public SimResults
-{
-protected:
-  TwoDMatrix mean;
-  TwoDMatrix variance;
-public:
-  SimResultsDynamicStats(int ny, int nper, int nburn = 0)
-    : SimResults(ny, nper, nburn), mean(ny, nper), variance(ny, nper)
-  {
-  }
-  void simulate(int num_sim, const DecisionRule &dr, const Vector &start,
-                const TwoDMatrix &vcov, Journal &journal);
-  void writeMat(mat_t *fd, const std::string &lname) const;
-protected:
-  void calcMean();
-  void calcVariance();
-};
-
-/* This goes through control simulation results, and for each control it adds a
-   given impulse to a given shock and runs a simulation. The control simulation
-   is then cancelled and the result is stored. After that these results are
-   averaged with variances calculated.
-
-   The means and the variances are then written to the MAT file. */
-
-class SimulationIRFWorker;
-class SimResultsIRF : public SimResults
-{
-  friend class SimulationIRFWorker;
-protected:
-  const SimResults &control;
-  int ishock;
-  double imp;
-  TwoDMatrix means;
-  TwoDMatrix variances;
-public:
-  SimResultsIRF(const SimResults &cntl, int ny, int nper, int i, double impulse)
-    : SimResults(ny, nper, 0), control(cntl),
-      ishock(i), imp(impulse),
-      means(ny, nper), variances(ny, nper)
-  {
-  }
-  void simulate(const DecisionRule &dr, Journal &journal);
-  void simulate(const DecisionRule &dr);
-  void writeMat(mat_t *fd, const std::string &lname) const;
-protected:
-  void calcMeans();
-  void calcVariances();
-};
-
-/* This simulates and gathers all statistics from the real time simulations. In
-   the simulate() method, it runs RTSimulationWorker’s which accummulate
-   information from their own estimates. The estimation is done by means of
-   NormalConj class, which is a conjugate family of densities for normal
-   distibutions. */
-
-class RTSimulationWorker;
-class RTSimResultsStats
-{
-  friend class RTSimulationWorker;
-protected:
-  Vector mean;
-  TwoDMatrix vcov;
-  int num_per;
-  int num_burn;
-  NormalConj nc;
-  int incomplete_simulations;
-  int thrown_periods;
-public:
-  RTSimResultsStats(int ny, int nper, int nburn = 0)
-    : mean(ny), vcov(ny, ny),
-      num_per(nper), num_burn(nburn), nc(ny),
-      incomplete_simulations(0), thrown_periods(0)
-  {
-  }
-  void simulate(int num_sim, const DecisionRule &dr, const Vector &start,
-                const TwoDMatrix &vcov, Journal &journal);
-  void simulate(int num_sim, const DecisionRule &dr, const Vector &start,
-                const TwoDMatrix &vcov);
-  void writeMat(mat_t *fd, const std::string &lname);
-};
-
-/* For each shock, this simulates plus and minus impulse. The class maintains a
-   vector of simulation results, each gets a particular shock and sign
-   (positive/negative). The results of type SimResultsIRF are stored in a
-   vector so that even ones are positive, odd ones are negative.
-
-   The constructor takes a reference to the control simulations, which must be
-   finished before the constructor is called. The control simulations are
-   passed to all SimResultsIRF’s.
-
-   The constructor also takes the vector of indices of exogenous variables
-   (‘ili’) for which the IRFs are generated. The list is kept (as
-   ‘irf_list_ind’) for other methods. */
-
-class DynamicModel;
-class IRFResults
-{
-  std::vector<SimResultsIRF> irf_res;
-  const DynamicModel &model;
-  std::vector<int> irf_list_ind;
-public:
-  IRFResults(const DynamicModel &mod, const DecisionRule &dr,
-             const SimResults &control, std::vector<int> ili,
-             Journal &journal);
-  void writeMat(mat_t *fd, const std::string &prefix) const;
-};
-
-/* This worker simulates the given decision rule and inserts the result to
-   SimResults. */
-
-class SimulationWorker : public sthread::detach_thread
-{
-protected:
-  SimResults &res;
-  const DecisionRule &dr;
-  DecisionRule::emethod em;
-  int np;
-  const Vector &st;
-  ShockRealization &sr;
-public:
-  SimulationWorker(SimResults &sim_res,
-                   const DecisionRule &dec_rule,
-                   DecisionRule::emethod emet, int num_per,
-                   const Vector &start, ShockRealization &shock_r)
-    : res(sim_res), dr(dec_rule), em(emet), np(num_per), st(start), sr(shock_r)
-  {
-  }
-  void operator()(std::mutex &mut) override;
-};
-
-/* This worker simulates a given impulse ‘imp’ to a given shock ‘ishock’ based
-   on a given control simulation with index ‘idata’. The control simulations
-   are contained in SimResultsIRF which is passed to the constructor. */
-
-class SimulationIRFWorker : public sthread::detach_thread
-{
-  SimResultsIRF &res;
-  const DecisionRule &dr;
-  DecisionRule::emethod em;
-  int np;
-  int idata;
-  int ishock;
-  double imp;
-public:
-  SimulationIRFWorker(SimResultsIRF &sim_res,
-                      const DecisionRule &dec_rule,
-                      DecisionRule::emethod emet, int num_per,
-                      int id, int ishck, double impulse)
-    : res(sim_res), dr(dec_rule), em(emet), np(num_per),
-      idata(id), ishock(ishck), imp(impulse)
-  {
-  }
-  void operator()(std::mutex &mut) override;
-};
-
-/* This class does the real time simulation job for RTSimResultsStats. It
-   simulates the model period by period. It accummulates the information in
-   ‘RTSimResultsStats::nc’. If NaN or Inf is observed, it ends the simulation
-   and adds to the ‘thrown_periods’ of RTSimResultsStats. */
-
-class RTSimulationWorker : public sthread::detach_thread
-{
-protected:
-  RTSimResultsStats &res;
-  const DecisionRule &dr;
-  DecisionRule::emethod em;
-  int np;
-  const Vector &ystart;
-  ShockRealization &sr;
-public:
-  RTSimulationWorker(RTSimResultsStats &sim_res,
-                     const DecisionRule &dec_rule,
-                     DecisionRule::emethod emet, int num_per,
-                     const Vector &start, ShockRealization &shock_r)
-    : res(sim_res), dr(dec_rule), em(emet), np(num_per), ystart(start), sr(shock_r)
-  {
-  }
-  void operator()(std::mutex &mut) override;
-};
-
-/* This class generates draws from Gaussian distribution with zero mean and the
-   given variance-covariance matrix. It stores the factor of vcov V matrix,
-   yielding FFᵀ = V. */
-
-class RandomShockRealization : virtual public ShockRealization
-{
-protected:
-  std::mt19937 mtwister;
-  std::normal_distribution<> dis;
-  TwoDMatrix factor;
-public:
-  RandomShockRealization(const ConstTwoDMatrix &v, decltype(mtwister)::result_type iseed)
-    : mtwister(iseed), factor(v.nrows(), v.nrows())
-  {
-    schurFactor(v);
-  }
-  void get(int n, Vector &out) override;
-  int
-  numShocks() const override
-  {
-    return factor.nrows();
-  }
-protected:
-  void choleskyFactor(const ConstTwoDMatrix &v);
-  void schurFactor(const ConstTwoDMatrix &v);
-};
-
-/* This is just a matrix of finite numbers. It can be constructed from any
-   ShockRealization with a given number of periods. */
-
-class ExplicitShockRealization : virtual public ShockRealization
-{
-  TwoDMatrix shocks;
-public:
-  explicit ExplicitShockRealization(const ConstTwoDMatrix &sh)
-    : shocks(sh)
-  {
-  }
-  ExplicitShockRealization(ShockRealization &sr, int num_per);
-  void get(int n, Vector &out) override;
-  int
-  numShocks() const override
-  {
-    return shocks.nrows();
-  }
-  const TwoDMatrix &
-  getShocks() const
-  {
-    return shocks;
-  }
-  void addToShock(int ishock, int iper, double val);
-  void
-  print() const
-  {
-    shocks.print();
-  }
-};
-
-/* This represents a user given shock realization. The first matrix of the
-   constructor is a covariance matrix of shocks, the second matrix is a
-   rectangular matrix, where columns correspond to periods, rows to shocks. If
-   an element of the matrix is NaN or ±∞, then the random shock is taken
-   instead of that element.
-
-   In this way it is a generalization of both RandomShockRealization and
-   ExplicitShockRealization. */
-
-class GenShockRealization : public RandomShockRealization, public ExplicitShockRealization
-{
-public:
-  GenShockRealization(const ConstTwoDMatrix &v, const ConstTwoDMatrix &sh, int seed)
-    : RandomShockRealization(v, seed), ExplicitShockRealization(sh)
-  {
-    KORD_RAISE_IF(sh.nrows() != v.nrows() || v.nrows() != v.ncols(),
-                  "Wrong dimension of input matrix in GenShockRealization constructor");
-  }
-  void get(int n, Vector &out) override;
-  int
-  numShocks() const override
-  {
-    return RandomShockRealization::numShocks();
-  }
-};
 
 #endif
