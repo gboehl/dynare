@@ -305,7 +305,7 @@ Evaluate::loadCodeFile(const filesystem::path &codfile)
 }
 
 string
-Evaluate::error_location(it_code_type expr_begin, it_code_type faulty_op, bool steady_state, int it_) const
+Evaluate::error_location(it_code_type expr_begin, it_code_type faulty_op, int it_) const
 {
   ostringstream Error_loc;
   switch (EQN_type)
@@ -1568,7 +1568,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {v1 / v2};
                 if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
-                  throw DivideException{v1, v2, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw DivideException{v1, v2, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG
@@ -1616,7 +1616,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {pow(v1, v2)};
                 if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
-                  throw PowException{v1, v2, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw PowException{v1, v2, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG
@@ -1638,7 +1638,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                         feclearexcept(FE_ALL_EXCEPT);
                         double dxp {pow(v1, v2-derivOrder)};
                         if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
-                          throw PowException{v1, v2-derivOrder, error_location(it_code_expr, it_code, steady_state, it_)};
+                          throw PowException{v1, v2-derivOrder, error_location(it_code_expr, it_code, it_)};
                         for (int i = 0; i < derivOrder; i++)
                           dxp *= v2--;
                         Stack.push(dxp);
@@ -1646,7 +1646,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                   }
                 catch (FloatingPointException &fpeh)
                   {
-                    mexPrintf("%s\n      %s\n", fpeh.message.c_str(), error_location(it_code_expr, it_code, steady_state, it_).c_str());
+                    mexPrintf("%s\n      %s\n", fpeh.message.c_str(), error_location(it_code_expr, it_code, it_).c_str());
                     go_on = false;
                   }
               }
@@ -1699,7 +1699,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {log(v1)};
                 if (fetestexcept(FE_DIVBYZERO | FE_INVALID))
-                  throw UnaryOpException{"log", v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw UnaryOpException{"log", v1, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG
@@ -1711,7 +1711,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {log10(v1)};
                 if (fetestexcept(FE_DIVBYZERO | FE_INVALID))
-                  throw UnaryOpException{"log10", v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw UnaryOpException{"log10", v1, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG
@@ -1735,7 +1735,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {tan(v1)};
                 if (fetestexcept(FE_OVERFLOW))
-                  throw UnaryOpException{"tan", v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw UnaryOpException{"tan", v1, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG
@@ -1747,7 +1747,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {acos(v1)};
                 if (fetestexcept(FE_INVALID))
-                  throw UnaryOpException{"acos", v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw UnaryOpException{"acos", v1, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG
@@ -1759,7 +1759,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {asin(v1)};
                 if (fetestexcept(FE_INVALID))
-                  throw UnaryOpException{"asin", v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw UnaryOpException{"asin", v1, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG
@@ -1777,7 +1777,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {cosh(v1)};
                 if (fetestexcept(FE_OVERFLOW))
-                  throw UnaryOpException{"cosh", v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw UnaryOpException{"cosh", v1, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG
@@ -1789,7 +1789,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {sinh(v1)};
                 if (fetestexcept(FE_OVERFLOW))
-                  throw UnaryOpException{"sinh", v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw UnaryOpException{"sinh", v1, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG
@@ -1807,7 +1807,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {acosh(v1)};
                 if (fetestexcept(FE_INVALID))
-                  throw UnaryOpException{"acosh", v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw UnaryOpException{"acosh", v1, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG
@@ -1825,7 +1825,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {atanh(v1)};
                 if (fetestexcept(FE_INVALID | FE_DIVBYZERO))
-                  throw UnaryOpException{"atanh", v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw UnaryOpException{"atanh", v1, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG
@@ -1837,7 +1837,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
                 feclearexcept(FE_ALL_EXCEPT);
                 double tmp {sqrt(v1)};
                 if (fetestexcept(FE_INVALID))
-                  throw UnaryOpException{"sqrt", v1, error_location(it_code_expr, it_code, steady_state, it_)};
+                  throw UnaryOpException{"sqrt", v1, error_location(it_code_expr, it_code, it_)};
                 Stack.push(tmp);
               }
 #ifdef DEBUG

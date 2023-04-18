@@ -60,7 +60,7 @@ private:
   map<pair<int, int>, double> TEFD;
   map<tuple<int, int, int>, double> TEFDD;
 
-  string error_location(it_code_type expr_begin, it_code_type faulty_op, bool steady_state, int it_) const;
+  string error_location(it_code_type expr_begin, it_code_type faulty_op, int it_) const;
 
   FBEGINBLOCK_ *
   currentBlockTag() const
