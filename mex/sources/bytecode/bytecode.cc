@@ -19,8 +19,8 @@
 
 #include <ctime>
 #include <cmath>
-#include <cstring>
 #include <type_traits>
+#include <algorithm>
 
 #include "Interpreter.hh"
 #include "ErrorHandling.hh"
@@ -702,18 +702,13 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   test_mxMalloc(ya, __LINE__, __FILE__, __func__, size_of_direction);
   direction = static_cast<double *>(mxMalloc(size_of_direction));
   test_mxMalloc(direction, __LINE__, __FILE__, __func__, size_of_direction);
-  memset(direction, 0, size_of_direction);
   auto *x = static_cast<double *>(mxMalloc(col_x*row_x*sizeof(double)));
   test_mxMalloc(x, __LINE__, __FILE__, __func__, col_x*row_x*sizeof(double));
-  for (i = 0; i < row_x*col_x; i++)
-    x[i] = static_cast<double>(xd[i]);
-  for (i = 0; i < row_y*col_y; i++)
-    {
-      y[i] = static_cast<double>(yd[i]);
-      ya[i] = static_cast<double>(yd[i]);
-    }
-  size_t y_size = row_y;
-  size_t nb_row_x = row_x;
+
+  fill_n(direction, row_y*col_y, 0);
+  copy_n(xd, row_x*col_x, x);
+  copy_n(yd, row_y*col_y, y);
+  copy_n(yd, row_y*col_y, ya);
 
   clock_t t0 = clock();
 
@@ -721,8 +716,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     + (steady_state ? "static" : "dynamic") + ".cod"};
   Evaluate evaluator {codfile, steady_state, symbol_table};
 
-  Interpreter interprete {evaluator, params, y, ya, x, steady_yd, direction, y_size, nb_row_x,
-                          periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, y_decal,
+  Interpreter interprete {evaluator, params, y, ya, x, steady_yd, direction, row_y, row_x,
+                          periods, y_kmin, y_kmax, maxit_, solve_tolf, y_decal,
                           markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
                           solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms,
                           steady_state, block_decomposed, print_it, col_x, col_y, symbol_table};
@@ -730,31 +725,18 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   bool r;
   vector<int> blocks;
 
-  if (extended_path)
+  try
     {
-      try
-        {
-          tie(r, blocks) = interprete.extended_path(file_name, evaluate, block, max_periods, sextended_path, sconditional_extended_path, dates, table_conditional_global);
-        }
-      catch (GeneralException &feh)
-        {
-          // Release the lock on dynamic.bin for MATLAB+Windows, see #1815
-          interprete.Close_SaveCode();
-          mexErrMsgTxt(feh.message.c_str());
-        }
+      if (extended_path)
+        tie(r, blocks) = interprete.extended_path(file_name, evaluate, block, max_periods, sextended_path, sconditional_extended_path, dates, table_conditional_global);
+      else
+        tie(r, blocks) = interprete.compute_blocks(file_name, evaluate, block);
     }
-  else
+  catch (GeneralException &feh)
     {
-      try
-        {
-          tie(r, blocks) = interprete.compute_blocks(file_name, evaluate, block);
-        }
-      catch (GeneralException &feh)
-        {
-          // Release the lock on dynamic.bin for MATLAB+Windows, see #1815
-          interprete.Close_SaveCode();
-          mexErrMsgTxt(feh.message.c_str());
-        }
+      // Release the lock on dynamic.bin for MATLAB+Windows, see #1815
+      interprete.Close_SaveCode();
+      mexErrMsgTxt(feh.message.c_str());
     }
 
   clock_t t1 = clock();

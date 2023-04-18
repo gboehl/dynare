@@ -37,7 +37,6 @@ class Interpreter : public dynSparseMatrix
 {
 private:
   vector<int> previous_block_exogenous;
-  int size_of_direction;
   bool global_temporary_terms;
   bool print;
   int col_x, col_y;
@@ -54,7 +53,7 @@ public:
   Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
               double *direction_arg, size_t y_size_arg,
               size_t nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
-              int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, int y_decal_arg, double markowitz_c_arg,
+              int maxit_arg_, double solve_tolf_arg, int y_decal_arg, double markowitz_c_arg,
               string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
               bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
               bool steady_state_arg, bool block_decomposed_arg, bool print_it_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg);

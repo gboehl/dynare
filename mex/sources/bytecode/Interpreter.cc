@@ -19,7 +19,6 @@
 
 #include <sstream>
 #include <algorithm>
-#include <cstring>
 #include <filesystem>
 #include <numeric>
 #include <cfenv>
@@ -31,7 +30,7 @@ constexpr double BIG = 1.0e+8, SMALL = 1.0e-5;
 Interpreter::Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
                          double *direction_arg, size_t y_size_arg,
                          size_t nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
-                         int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, int y_decal_arg, double markowitz_c_arg,
+                         int maxit_arg_, double solve_tolf_arg, int y_decal_arg, double markowitz_c_arg,
                          string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
                          bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
                          bool steady_state_arg, bool block_decomposed_arg, bool print_it_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg)
@@ -47,7 +46,6 @@ Interpreter::Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_
   periods = periods_arg;
   maxit_ = maxit_arg_;
   solve_tolf = solve_tolf_arg;
-  size_of_direction = size_of_direction_arg;
   slowc = 1;
   slowc_save = 1;
   y_decal = y_decal_arg;
@@ -487,7 +485,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
       mxFree(u);
       mxFree(index_equa);
       mxFree(index_vara);
-      memset(direction, 0, size_of_direction);
+      fill_n(direction, y_size*col_y, 0);
       End_Solver();
       break;
     case BlockSimulationType::solveBackwardComplete:
@@ -508,7 +506,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
 
       mxFree(index_equa);
       mxFree(index_vara);
-      memset(direction, 0, size_of_direction);
+      fill_n(direction, y_size*col_y, 0);
       mxFree(u);
       End_Solver();
       break;
@@ -605,7 +603,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
         mxFree(index_equa);
       if (res)
         mxFree(res);
-      memset(direction, 0, size_of_direction);
+      fill_n(direction, y_size*col_y, 0);
       End_Solver();
       break;
     default:
