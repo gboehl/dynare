@@ -914,3 +914,38 @@ Interpreter::compute_blocks(const string &file_name, bool evaluate, int block)
     mxFree(T);
   return {true, blocks};
 }
+
+void
+Interpreter::initializeTemporaryTerms(bool global_temporary_terms)
+{
+  int ntt { getNumberOfTemporaryTerms() };
+
+  if (steady_state)
+    {
+      if (T)
+        mxFree(T);
+      if (global_temporary_terms)
+        {
+          if (!GlobalTemporaryTerms)
+            {
+              mexPrintf("GlobalTemporaryTerms is nullptr\n");
+              mexEvalString("drawnow;");
+            }
+          if (ntt != static_cast<int>(mxGetNumberOfElements(GlobalTemporaryTerms)))
+            GlobalTemporaryTerms = mxCreateDoubleMatrix(ntt, 1, mxREAL);
+          T = mxGetPr(GlobalTemporaryTerms);
+        }
+      else
+        {
+          T = static_cast<double *>(mxMalloc(ntt*sizeof(double)));
+          test_mxMalloc(T, __LINE__, __FILE__, __func__, ntt*sizeof(double));
+        }
+    }
+  else
+    {
+      if (T)
+        mxFree(T);
+      T = static_cast<double *>(mxMalloc(ntt*(periods+y_kmin+y_kmax)*sizeof(double)));
+      test_mxMalloc(T, __LINE__, __FILE__, __func__, ntt*(periods+y_kmin+y_kmax)*sizeof(double));
+    }
+}

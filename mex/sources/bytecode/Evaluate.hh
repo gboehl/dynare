@@ -56,9 +56,6 @@ private:
   ExpressionType EQN_type;
   int EQN_equation, EQN_block, EQN_dvar1;
   int EQN_lag1, EQN_lag2, EQN_lag3;
-  map<int, double> TEF;
-  map<pair<int, int>, double> TEFD;
-  map<tuple<int, int, int>, double> TEFDD;
 
   string error_location(it_code_type expr_begin, it_code_type faulty_op, int it_) const;
 
@@ -78,19 +75,7 @@ private:
 protected:
   BasicSymbolTable &symbol_table;
   int EQN_block_number;
-  double *y, *ya;
-  int y_size;
-  double *T;
-  int nb_row_x;
-  int y_kmin, y_kmax, periods;
-  double *x, *params;
-  double *u;
-  double *steady_y;
-  double *g1, *r, *res;
-  vector<mxArray *> jacobian_block, jacobian_exo_block, jacobian_det_exo_block;
-  mxArray *GlobalTemporaryTerms;
-  void evaluateBlock(int Per_u_, bool evaluate, bool no_derivatives);
-  int it_;
+  void evaluateBlock(int it_, double *y, const double *ya, int y_size, double *x, int nb_row_x, double *params, const double *steady_y, double *u, int Per_u_, double *T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *r, double *g1, double *jacob, double *jacob_exo, double *jacob_exo_det, bool evaluate, bool no_derivatives);
 
   int block_num; // Index of the current block
   int size; // Size of the current block
@@ -113,7 +98,7 @@ protected:
 
   void gotoBlock(int block);
 
-  void initializeTemporaryTerms(bool global_temporary_terms);
+  int getNumberOfTemporaryTerms() const;
 
   auto
   getCurrentBlockExogenous() const
@@ -142,7 +127,7 @@ protected:
   }
 
 public:
-  Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_state_arg, int periods_arg, BasicSymbolTable &symbol_table_arg);
+  Evaluate(bool steady_state_arg, BasicSymbolTable &symbol_table_arg);
   // TODO: integrate into the constructor
   void loadCodeFile(const filesystem::path &codfile);
 

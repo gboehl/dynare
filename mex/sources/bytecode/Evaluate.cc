@@ -29,12 +29,8 @@
 #include "CommonEnums.hh"
 #include "ErrorHandling.hh"
 
-Evaluate::Evaluate(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_state_arg, int periods_arg, BasicSymbolTable &symbol_table_arg) :
+Evaluate::Evaluate(bool steady_state_arg, BasicSymbolTable &symbol_table_arg) :
   symbol_table {symbol_table_arg},
-  y_size {y_size_arg},
-  y_kmin {y_kmin_arg},
-  y_kmax {y_kmax_arg},
-  periods {periods_arg},
   steady_state {steady_state_arg}
 {
 }
@@ -989,7 +985,7 @@ Evaluate::print_expression(const Evaluate::it_code_type &expr_begin, const optio
 }
 
 void
-Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
+Evaluate::evaluateBlock(int it_, double *y, const double *ya, int y_size, double *x, int nb_row_x, double *params, const double *steady_y, double *u, int Per_u_, double *T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *r, double *g1, double *jacob, double *jacob_exo, double *jacob_exo_det, bool evaluate, bool no_derivatives)
 {
   auto it_code { currentBlockBeginning() };
   int var{0}, lag{0};
@@ -1004,24 +1000,11 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
   bool go_on = true;
   double ll;
   double rr;
-  double *jacob = nullptr, *jacob_exo = nullptr, *jacob_exo_det = nullptr;
   EQN_block = block_num;
   stack<double> Stack;
   ExternalFunctionCallType call_type{ExternalFunctionCallType::levelWithoutDerivative};
   it_code_type it_code_expr;
 
-#ifdef DEBUG
-  mexPrintf("compute_block_time\n");
-#endif
-  if (evaluate)
-    {
-      jacob = mxGetPr(jacobian_block[block_num]);
-      if (!steady_state)
-        {
-          jacob_exo = mxGetPr(jacobian_exo_block[block_num]);
-          jacob_exo_det = mxGetPr(jacobian_det_exo_block[block_num]);
-        }
-    }
 #ifdef MATLAB_MEX_FILE
   if (utIsInterruptPending())
     throw UserException{};
@@ -1221,10 +1204,10 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
           //load a temporary variable in the processor
           var = static_cast<FLDT_ *>(*it_code)->get_pos();
 #ifdef DEBUG
-          mexPrintf("FLDT T[it_=%d var=%d, y_kmin=%d, y_kmax=%d == %d]=>%f\n", it_, var, y_kmin, y_kmax, var*(periods+y_kmin+y_kmax)+it_, T[var*(periods+y_kmin+y_kmax)+it_]);
-          tmp_out << " T[" << it_ << ", " << var << "](" << T[var*(periods+y_kmin+y_kmax)+it_] << ")";
+          mexPrintf("FLDT T[it_=%d var=%d, y_kmin=%d, y_kmax=%d == %d]=>%f\n", it_, var, y_kmin, y_kmax, var*T_nrows+it_, T[var*T_nrows+it_]);
+          tmp_out << " T[" << it_ << ", " << var << "](" << T[var*T_nrows+it_] << ")";
 #endif
-          Stack.push(T[var*(periods+y_kmin+y_kmax)+it_]);
+          Stack.push(T[var*T_nrows+it_]);
           break;
         case Tags::FLDST:
           //load a temporary variable in the processor
@@ -1369,10 +1352,10 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
           mexPrintf("FSTPT\n");
 #endif
           var = static_cast<FSTPT_ *>(*it_code)->get_pos();
-          T[var*(periods+y_kmin+y_kmax)+it_] = Stack.top();
+          T[var*T_nrows+it_] = Stack.top();
 #ifdef DEBUG
           tmp_out << "=>";
-          mexPrintf(" T[%d, %d](%f)=%s\n", it_, var, T[var*(periods+y_kmin+y_kmax)+it_], tmp_out.str().c_str());
+          mexPrintf(" T[%d, %d](%f)=%s\n", it_, var, T[var*T_nrows+it_], tmp_out.str().c_str());
           tmp_out.str("");
 #endif
 
@@ -2209,7 +2192,7 @@ Evaluate::evaluateBlock(int Per_u_, bool evaluate, bool no_derivative)
           mexPrintf("Impossible case in Bytecode\n");
           break;
         case Tags::FENDEQU:
-          if (no_derivative)
+          if (no_derivatives)
             go_on = false;
           break;
         case Tags::FJMPIFEVAL:
@@ -2289,46 +2272,22 @@ Evaluate::printCurrentBlock()
     }
 }
 
-void
-Evaluate::initializeTemporaryTerms(bool global_temporary_terms)
+int
+Evaluate::getNumberOfTemporaryTerms() const
 {
   BytecodeInstruction *instr {instructions_list.front()};
-  if (instr->op_code == Tags::FDIMT)
+  if (steady_state)
     {
-      int ntt {reinterpret_cast<FDIMT_ *>(instr)->get_size()};
-#ifdef DEBUG
-      mexPrintf("FDIMT size=%d\n", ntt);
-#endif
-      if (T)
-        mxFree(T);
-      T = static_cast<double *>(mxMalloc(ntt*(periods+y_kmin+y_kmax)*sizeof(double)));
-      test_mxMalloc(T, __LINE__, __FILE__, __func__, ntt*(periods+y_kmin+y_kmax)*sizeof(double));
-    }
-  else if (instr->op_code == Tags::FDIMST)
-    {
-      int ntt {reinterpret_cast<FDIMST_ *>(instr)->get_size()};
-#ifdef DEBUG
-      mexPrintf("FDIMST size=%d\n", ntt);
-#endif
-      if (T)
-        mxFree(T);
-      if (global_temporary_terms)
-        {
-          if (!GlobalTemporaryTerms)
-            {
-              mexPrintf("GlobalTemporaryTerms is nullptr\n");
-              mexEvalString("drawnow;");
-            }
-          if (ntt != static_cast<int>(mxGetNumberOfElements(GlobalTemporaryTerms)))
-            GlobalTemporaryTerms = mxCreateDoubleMatrix(ntt, 1, mxREAL);
-          T = mxGetPr(GlobalTemporaryTerms);
-        }
+      if (instr->op_code == Tags::FDIMST)
+        return reinterpret_cast<FDIMST_ *>(instr)->get_size();
       else
-        {
-          T = static_cast<double *>(mxMalloc(ntt*sizeof(double)));
-          test_mxMalloc(T, __LINE__, __FILE__, __func__, ntt*sizeof(double));
-        }
+        throw FatalException {"Evaluate::getNumberOfTemporaryTerms: static .cod file does not begin with FDIMST!"};
     }
   else
-    throw FatalException {"Evaluate::initializeTemporaryTerms: .cod file does not begin with FDIMT or FDIMST!"};
+    {
+      if (instr->op_code == Tags::FDIMT)
+        return reinterpret_cast<FDIMT_ *>(instr)->get_size();
+      else
+        throw FatalException {"Evaluate::getNumberOfTemporaryTerms: dynamic .cod file does not begin with FDIMT!"};
+    }
 }

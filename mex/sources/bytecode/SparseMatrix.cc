@@ -27,10 +27,14 @@
 dynSparseMatrix::dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, bool block_decomposed_arg, int periods_arg,
                                  int minimal_solving_periods_arg, BasicSymbolTable &symbol_table_arg,
                                  bool print_error_arg) :
-  Evaluate {y_size_arg, y_kmin_arg, y_kmax_arg, steady_state_arg, periods_arg, symbol_table_arg},
+  Evaluate {steady_state_arg, symbol_table_arg},
   block_decomposed {block_decomposed_arg},
   minimal_solving_periods {minimal_solving_periods_arg},
   print_it {print_it_arg},
+  y_size {y_size_arg},
+  y_kmin {y_kmin_arg},
+  y_kmax {y_kmax_arg},
+  periods {periods_arg},
   print_error {print_error_arg}
 {
   pivotva = nullptr;
@@ -1823,9 +1827,23 @@ dynSparseMatrix::Sparse_transpose(const mxArray *A_m)
 void
 dynSparseMatrix::compute_block_time(int Per_u_, bool evaluate, bool no_derivatives)
 {
+#ifdef DEBUG
+  mexPrintf("compute_block_time\n");
+#endif
+  double *jacob {nullptr}, *jacob_exo {nullptr}, *jacob_exo_det {nullptr};
+  if (evaluate)
+    {
+      jacob = mxGetPr(jacobian_block[block_num]);
+      if (!steady_state)
+        {
+          jacob_exo = mxGetPr(jacobian_exo_block[block_num]);
+          jacob_exo_det = mxGetPr(jacobian_det_exo_block[block_num]);
+        }
+    }
+
   try
     {
-      evaluateBlock(Per_u_, evaluate, no_derivatives);
+      evaluateBlock(it_, y, ya, y_size, x, nb_row_x, params, steady_y, u, Per_u_, T, periods+y_kmin+y_kmax, TEF, TEFD, TEFDD, r, g1, jacob, jacob_exo, jacob_exo_det, evaluate, no_derivatives);
     }
   catch (FloatingPointException &e)
     {

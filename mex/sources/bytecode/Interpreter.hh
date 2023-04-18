@@ -45,6 +45,7 @@ private:
   void solve_simple_one_periods();
   void solve_simple_over_periods(bool forward);
   void compute_complete_2b(bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx);
+  void initializeTemporaryTerms(bool global_temporary_terms);
 protected:
   void evaluate_a_block(bool initialization, bool single_block, const string &bin_base_name);
   int simulate_a_block(const vector_table_conditional_local_type &vector_table_conditional_local, bool single_block, const string &bin_base_name);

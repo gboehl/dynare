@@ -202,6 +202,22 @@ protected:
   int max_res_idx;
   int *index_vara;
 
+  double *y, *ya;
+  int y_size;
+  double *T;
+  int nb_row_x;
+  int y_kmin, y_kmax, periods;
+  double *x, *params;
+  double *u;
+  double *steady_y;
+  double *g1, *r, *res;
+  vector<mxArray *> jacobian_block, jacobian_exo_block, jacobian_det_exo_block;
+  mxArray *GlobalTemporaryTerms;
+  int it_;
+  map<int, double> TEF;
+  map<pair<int, int>, double> TEFD;
+  map<tuple<int, int, int>, double> TEFDD;
+
   void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
   bool compute_complete(bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
 
