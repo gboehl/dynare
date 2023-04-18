@@ -319,8 +319,8 @@ Evaluate::error_location(it_code_type expr_begin, it_code_type faulty_op, int it
       break;
     }
   Error_loc << " " << EQN_equation+1;
-  if (EQN_block_number > 1)
-    Error_loc << " in block " << EQN_block+1;
+  if (nb_blocks > 1)
+    Error_loc << " in block " << block_num+1;
   switch (EQN_type)
     {
     case ExpressionType::TemporaryTerm:
@@ -1000,7 +1000,6 @@ Evaluate::evaluateBlock(int it_, double *y, const double *ya, int y_size, double
   bool go_on = true;
   double ll;
   double rr;
-  EQN_block = block_num;
   stack<double> Stack;
   ExternalFunctionCallType call_type{ExternalFunctionCallType::levelWithoutDerivative};
   it_code_type it_code_expr;

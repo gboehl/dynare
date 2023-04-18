@@ -622,7 +622,6 @@ Interpreter::ReadCodeFile(const string &file_name)
     + (steady_state ? "static" : "dynamic") + ".cod"};
 
   loadCodeFile(codfile);
-  EQN_block_number = get_block_number();
 }
 
 void
