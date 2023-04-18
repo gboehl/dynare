@@ -36,6 +36,9 @@ private:
   using instructions_list_t = vector<BytecodeInstruction *>;
   using it_code_type = instructions_list_t::const_iterator;
 
+  const BasicSymbolTable &symbol_table;
+  const bool steady_state; // Whether this is a static or dynamic .cod file
+
   // Memory copy of the contents of the .cod file
   unique_ptr<char[]> raw_bytecode;
 
@@ -76,10 +79,7 @@ private:
   }
 
 protected:
-  BasicSymbolTable &symbol_table;
   void evaluateBlock(int it_, double *__restrict__ y, const double *__restrict__ ya, int y_size, double *__restrict__ x, int nb_row_x, double *__restrict__ params, const double *__restrict__ steady_y, double *__restrict__ u, int Per_u_, double *__restrict__ T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *__restrict__ r, double *__restrict__ g1, double *__restrict__ jacob, double *__restrict__ jacob_exo, double *__restrict__ jacob_exo_det, bool evaluate, bool no_derivatives);
-
-  bool steady_state;
 
   /* Prints a bytecode expression in human readable form.
      If faulty_op is not default constructed, it should point to a tag within
@@ -147,7 +147,7 @@ protected:
   }
 
 public:
-  Evaluate(bool steady_state_arg, BasicSymbolTable &symbol_table_arg);
+  Evaluate(bool steady_state_arg, const BasicSymbolTable &symbol_table_arg);
   // TODO: integrate into the constructor
   void loadCodeFile(const filesystem::path &codfile);
 

@@ -29,7 +29,7 @@
 #include "CommonEnums.hh"
 #include "ErrorHandling.hh"
 
-Evaluate::Evaluate(bool steady_state_arg, BasicSymbolTable &symbol_table_arg) :
+Evaluate::Evaluate(bool steady_state_arg, const BasicSymbolTable &symbol_table_arg) :
   symbol_table {symbol_table_arg},
   steady_state {steady_state_arg}
 {

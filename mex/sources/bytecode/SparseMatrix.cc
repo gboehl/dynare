@@ -25,9 +25,11 @@
 #include "SparseMatrix.hh"
 
 dynSparseMatrix::dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, bool block_decomposed_arg, int periods_arg,
-                                 int minimal_solving_periods_arg, BasicSymbolTable &symbol_table_arg,
+                                 int minimal_solving_periods_arg, const BasicSymbolTable &symbol_table_arg,
                                  bool print_error_arg) :
   Evaluate {steady_state_arg, symbol_table_arg},
+  symbol_table {symbol_table_arg},
+  steady_state {steady_state_arg},
   block_decomposed {block_decomposed_arg},
   minimal_solving_periods {minimal_solving_periods_arg},
   print_it {print_it_arg},

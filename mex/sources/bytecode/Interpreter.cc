@@ -34,7 +34,7 @@ Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, doub
                          int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, int y_decal_arg, double markowitz_c_arg,
                          string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
                          bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
-                         bool steady_state_arg, bool block_decomposed_arg, bool print_it_arg, int col_x_arg, int col_y_arg, BasicSymbolTable &symbol_table_arg)
+                         bool steady_state_arg, bool block_decomposed_arg, bool print_it_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg)
 : dynSparseMatrix {y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, block_decomposed_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg, print_error_arg}
 {
   params = params_arg;
