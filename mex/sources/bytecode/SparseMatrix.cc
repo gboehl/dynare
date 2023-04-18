@@ -24,13 +24,13 @@
 
 #include "SparseMatrix.hh"
 
-dynSparseMatrix::dynSparseMatrix(int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, bool block_decomposed_arg, int periods_arg,
+dynSparseMatrix::dynSparseMatrix(Evaluate &evaluator_arg, int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, bool block_decomposed_arg, int periods_arg,
                                  int minimal_solving_periods_arg, const BasicSymbolTable &symbol_table_arg,
                                  bool print_error_arg) :
-  Evaluate {steady_state_arg, symbol_table_arg},
   symbol_table {symbol_table_arg},
   steady_state {steady_state_arg},
   block_decomposed {block_decomposed_arg},
+  evaluator {evaluator_arg},
   minimal_solving_periods {minimal_solving_periods_arg},
   print_it {print_it_arg},
   y_size {y_size_arg},
@@ -1845,7 +1845,7 @@ dynSparseMatrix::compute_block_time(int Per_u_, bool evaluate, bool no_derivativ
 
   try
     {
-      evaluateBlock(it_, y, ya, y_size, x, nb_row_x, params, steady_y, u, Per_u_, T, periods+y_kmin+y_kmax, TEF, TEFD, TEFDD, r, g1, jacob, jacob_exo, jacob_exo_det, evaluate, no_derivatives);
+      evaluator.evaluateBlock(it_, y, ya, y_size, x, nb_row_x, params, steady_y, u, Per_u_, T, periods+y_kmin+y_kmax, TEF, TEFD, TEFDD, r, g1, jacob, jacob_exo, jacob_exo_det, evaluate, no_derivatives);
     }
   catch (FloatingPointException &e)
     {

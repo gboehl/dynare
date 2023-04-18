@@ -51,7 +51,7 @@ protected:
   int simulate_a_block(const vector_table_conditional_local_type &vector_table_conditional_local, bool single_block, const string &bin_base_name);
   string elastic(string str, unsigned int len, bool left);
 public:
-  Interpreter(double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
+  Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
               double *direction_arg, size_t y_size_arg,
               size_t nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
               int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, int y_decal_arg, double markowitz_c_arg,
@@ -62,7 +62,6 @@ public:
   pair<bool, vector<int>> compute_blocks(const string &file_name, bool evaluate, int block);
   void check_for_controlled_exo_validity(int current_block, const vector<s_plan> &sconstrained_extended_path);
   pair<bool, vector<int>> MainLoop(const string &bin_basename, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local);
-  void ReadCodeFile(const string &file_name);
 
   inline mxArray *
   get_jacob(int block_num) const

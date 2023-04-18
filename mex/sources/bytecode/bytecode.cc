@@ -716,7 +716,12 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   size_t nb_row_x = row_x;
 
   clock_t t0 = clock();
-  Interpreter interprete {params, y, ya, x, steady_yd, direction, y_size, nb_row_x,
+
+  const filesystem::path codfile {file_name + "/model/bytecode/" + (block_decomposed ? "block/" : "")
+    + (steady_state ? "static" : "dynamic") + ".cod"};
+  Evaluate evaluator {codfile, steady_state, symbol_table};
+
+  Interpreter interprete {evaluator, params, y, ya, x, steady_yd, direction, y_size, nb_row_x,
                           periods, y_kmin, y_kmax, maxit_, solve_tolf, size_of_direction, y_decal,
                           markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
                           solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms,

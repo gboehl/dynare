@@ -65,6 +65,13 @@ private:
 
   string error_location(it_code_type expr_begin, it_code_type faulty_op, int it_) const;
 
+  /* Prints a bytecode expression in human readable form.
+     If faulty_op is not default constructed, it should point to a tag within
+     the expression that created a floating point exception, in which case the
+     corresponding mathematical operator will be printed within braces.
+     The second output argument points to the tag past the expression. */
+  pair<string, it_code_type> print_expression(const it_code_type &expr_begin, const optional<it_code_type> &faulty_op = nullopt) const;
+
   FBEGINBLOCK_ *
   currentBlockTag() const
   {
@@ -78,15 +85,10 @@ private:
     return instructions_list.begin() + begin_block[block_num] + 1;
   }
 
-protected:
-  void evaluateBlock(int it_, double *__restrict__ y, const double *__restrict__ ya, int y_size, double *__restrict__ x, int nb_row_x, double *__restrict__ params, const double *__restrict__ steady_y, double *__restrict__ u, int Per_u_, double *__restrict__ T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *__restrict__ r, double *__restrict__ g1, double *__restrict__ jacob, double *__restrict__ jacob_exo, double *__restrict__ jacob_exo_det, bool evaluate, bool no_derivatives);
+public:
+  Evaluate(const filesystem::path &codfile, bool steady_state_arg, const BasicSymbolTable &symbol_table_arg);
 
-  /* Prints a bytecode expression in human readable form.
-     If faulty_op is not default constructed, it should point to a tag within
-     the expression that created a floating point exception, in which case the
-     corresponding mathematical operator will be printed within braces.
-     The second output argument points to the tag past the expression. */
-  pair<string, it_code_type> print_expression(const it_code_type &expr_begin, const optional<it_code_type> &faulty_op = nullopt) const;
+  void evaluateBlock(int it_, double *__restrict__ y, const double *__restrict__ ya, int y_size, double *__restrict__ x, int nb_row_x, double *__restrict__ params, const double *__restrict__ steady_y, double *__restrict__ u, int Per_u_, double *__restrict__ T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *__restrict__ r, double *__restrict__ g1, double *__restrict__ jacob, double *__restrict__ jacob_exo, double *__restrict__ jacob_exo_det, bool evaluate, bool no_derivatives);
 
   // Prints current block
   void printCurrentBlock();
@@ -145,11 +147,6 @@ protected:
   {
     return currentBlockTag()->get_det_exo_size();
   }
-
-public:
-  Evaluate(bool steady_state_arg, const BasicSymbolTable &symbol_table_arg);
-  // TODO: integrate into the constructor
-  void loadCodeFile(const filesystem::path &codfile);
 
   int
   get_block_number() const

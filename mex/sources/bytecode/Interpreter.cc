@@ -28,14 +28,14 @@
 
 constexpr double BIG = 1.0e+8, SMALL = 1.0e-5;
 
-Interpreter::Interpreter(double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
+Interpreter::Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
                          double *direction_arg, size_t y_size_arg,
                          size_t nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
                          int maxit_arg_, double solve_tolf_arg, size_t size_of_direction_arg, int y_decal_arg, double markowitz_c_arg,
                          string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
                          bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
                          bool steady_state_arg, bool block_decomposed_arg, bool print_it_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg)
-: dynSparseMatrix {y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, block_decomposed_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg, print_error_arg}
+: dynSparseMatrix {evaluator_arg, y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, block_decomposed_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg, print_error_arg}
 {
   params = params_arg;
   y = y_arg;
@@ -616,19 +616,10 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
 }
 
 void
-Interpreter::ReadCodeFile(const string &file_name)
-{
-  filesystem::path codfile {file_name + "/model/bytecode/" + (block_decomposed ? "block/" : "")
-    + (steady_state ? "static" : "dynamic") + ".cod"};
-
-  loadCodeFile(codfile);
-}
-
-void
 Interpreter::check_for_controlled_exo_validity(int current_block, const vector<s_plan> &sconstrained_extended_path)
 {
-  vector<int> exogenous {getCurrentBlockExogenous()};
-  vector<int> endogenous {getCurrentBlockEndogenous()};
+  vector<int> exogenous {evaluator.getCurrentBlockExogenous()};
+  vector<int> endogenous {evaluator.getCurrentBlockEndogenous()};
   for (auto & it : sconstrained_extended_path)
     {
       if (find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()
@@ -660,23 +651,25 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
 {
   initializeTemporaryTerms(global_temporary_terms);
 
-  if (block >= get_block_number())
+  int nb_blocks {evaluator.get_block_number()};
+
+  if (block >= nb_blocks)
     throw FatalException {"Interpreter::MainLoop: Input argument block = " + to_string(block+1)
         + " is greater than the number of blocks in the model ("
-        + to_string(get_block_number()) + " see M_.block_structure" + (steady_state ? "_stat" : "") + ".block)"};
+        + to_string(nb_blocks) + " see M_.block_structure" + (steady_state ? "_stat" : "") + ".block)"};
 
   vector<int> blocks;
   if (block < 0)
     {
-      blocks.resize(get_block_number());
+      blocks.resize(nb_blocks);
       iota(blocks.begin(), blocks.end(), 0);
     }
   else
     blocks.push_back(block);
 
-  jacobian_block.resize(get_block_number());
-  jacobian_exo_block.resize(get_block_number());
-  jacobian_det_exo_block.resize(get_block_number());
+  jacobian_block.resize(nb_blocks);
+  jacobian_exo_block.resize(nb_blocks);
+  jacobian_det_exo_block.resize(nb_blocks);
 
   double max_res_local = 0;
   int max_res_idx_local = 0;
@@ -691,13 +684,13 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
 
   for (int current_block : blocks)
     {
-      gotoBlock(current_block);
+      evaluator.gotoBlock(current_block);
       block_num = current_block;
-      size = getCurrentBlockSize();
-      type = getCurrentBlockType();
-      is_linear = isCurrentBlockLinear();
-      Block_Contain = getCurrentBlockEquationsAndVariables();
-      u_count_int = getCurrentBlockUCount();
+      size = evaluator.getCurrentBlockSize();
+      type = evaluator.getCurrentBlockType();
+      is_linear = evaluator.isCurrentBlockLinear();
+      Block_Contain = evaluator.getCurrentBlockEquationsAndVariables();
+      u_count_int = evaluator.getCurrentBlockUCount();
 
       if (constrained)
         check_for_controlled_exo_validity(current_block, sconstrained_extended_path);
@@ -707,23 +700,23 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
             residual = vector<double>(size);
           else
             residual = vector<double>(size*(periods+y_kmin));
-          printCurrentBlock();
+          evaluator.printCurrentBlock();
         }
       else if (evaluate)
         {
 #ifdef DEBUG
           mexPrintf("jacobian_block=mxCreateDoubleMatrix(%d, %d, mxREAL)\n", size, getCurrentBlockNbColJacob());
 #endif
-          jacobian_block[current_block] = mxCreateDoubleMatrix(size, getCurrentBlockNbColJacob(), mxREAL);
+          jacobian_block[current_block] = mxCreateDoubleMatrix(size, evaluator.getCurrentBlockNbColJacob(), mxREAL);
           if (!steady_state)
             {
 #ifdef DEBUG
-              mexPrintf("allocates jacobian_exo_block( %d, %d, mxREAL)\n", size, getCurrentBlockExoSize());
+              mexPrintf("allocates jacobian_exo_block( %d, %d, mxREAL)\n", size, evaluator.getCurrentBlockExoSize());
               mexPrintf("(0) Allocating Jacobian\n");
 #endif
 
-              jacobian_exo_block[current_block] = mxCreateDoubleMatrix(size, getCurrentBlockExoSize(), mxREAL);
-              jacobian_det_exo_block[current_block] = mxCreateDoubleMatrix(size, getCurrentBlockExoDetSize(), mxREAL);
+              jacobian_exo_block[current_block] = mxCreateDoubleMatrix(size, evaluator.getCurrentBlockExoSize(), mxREAL);
+              jacobian_det_exo_block[current_block] = mxCreateDoubleMatrix(size, evaluator.getCurrentBlockExoDetSize(), mxREAL);
             }
           if (block >= 0)
             {
@@ -743,9 +736,9 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
           bool result;
           if (sconstrained_extended_path.size())
             {
-              jacobian_block[current_block] = mxCreateDoubleMatrix(size, getCurrentBlockNbColJacob(), mxREAL);
-              jacobian_exo_block[current_block] = mxCreateDoubleMatrix(size, getCurrentBlockExoSize(), mxREAL);
-              jacobian_det_exo_block[current_block] = mxCreateDoubleMatrix(size, getCurrentBlockExoDetSize(), mxREAL);
+              jacobian_block[current_block] = mxCreateDoubleMatrix(size, evaluator.getCurrentBlockNbColJacob(), mxREAL);
+              jacobian_exo_block[current_block] = mxCreateDoubleMatrix(size, evaluator.getCurrentBlockExoSize(), mxREAL);
+              jacobian_det_exo_block[current_block] = mxCreateDoubleMatrix(size, evaluator.getCurrentBlockExoDetSize(), mxREAL);
               residual = vector<double>(size*(periods+y_kmin));
               result = simulate_a_block(vector_table_conditional_local, block >= 0, bin_basename);
             }
@@ -810,7 +803,6 @@ Interpreter::elastic(string str, unsigned int len, bool left)
 pair<bool, vector<int>>
 Interpreter::extended_path(const string &file_name, bool evaluate, int block, int nb_periods, const vector<s_plan> &sextended_path, const vector<s_plan> &sconstrained_extended_path, const vector<string> &dates, const table_conditional_global_type &table_conditional_global)
 {
-  ReadCodeFile(file_name);
   size_t size_of_direction = y_size*col_y*sizeof(double);
   auto *y_save = static_cast<double *>(mxMalloc(size_of_direction));
   test_mxMalloc(y_save, __LINE__, __FILE__, __func__, size_of_direction);
@@ -907,8 +899,6 @@ Interpreter::extended_path(const string &file_name, bool evaluate, int block, in
 pair<bool, vector<int>>
 Interpreter::compute_blocks(const string &file_name, bool evaluate, int block)
 {
-  ReadCodeFile(file_name);
-
   //The big loop on intructions
   vector<s_plan> s_plan_junk;
   vector_table_conditional_local_type vector_table_conditional_local_junk;
@@ -923,7 +913,7 @@ Interpreter::compute_blocks(const string &file_name, bool evaluate, int block)
 void
 Interpreter::initializeTemporaryTerms(bool global_temporary_terms)
 {
-  int ntt { getNumberOfTemporaryTerms() };
+  int ntt { evaluator.getNumberOfTemporaryTerms() };
 
   if (steady_state)
     {
