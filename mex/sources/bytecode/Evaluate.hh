@@ -53,6 +53,9 @@ private:
   // Index of beginnings of blocks within instructions_list
   vector<size_t> begin_block;
 
+  int block_num; // Index of the current block
+  int size; // Size of the current block
+
   ExpressionType EQN_type;
   int EQN_equation, EQN_dvar1;
   int EQN_lag1, EQN_lag2, EQN_lag3;
@@ -76,13 +79,6 @@ protected:
   BasicSymbolTable &symbol_table;
   void evaluateBlock(int it_, double *y, const double *ya, int y_size, double *x, int nb_row_x, double *params, const double *steady_y, double *u, int Per_u_, double *T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *r, double *g1, double *jacob, double *jacob_exo, double *jacob_exo_det, bool evaluate, bool no_derivatives);
 
-  int block_num; // Index of the current block
-  int size; // Size of the current block
-  BlockSimulationType type;
-  bool is_linear;
-  int symbol_table_endo_nbr, u_count_int;
-  vector<Block_contain_type> Block_Contain;
-
   bool steady_state;
 
   /* Prints a bytecode expression in human readable form.
@@ -99,6 +95,31 @@ protected:
 
   int getNumberOfTemporaryTerms() const;
 
+  auto
+  getCurrentBlockSize() const
+  {
+    return currentBlockTag()->get_size();
+  }
+  auto
+  getCurrentBlockType() const
+  {
+    return currentBlockTag()->get_type();
+  }
+  auto
+  isCurrentBlockLinear() const
+  {
+    return currentBlockTag()->get_is_linear();
+  }
+  auto
+  getCurrentBlockEquationsAndVariables() const
+  {
+    return currentBlockTag()->get_Block_Contain();
+  }
+  auto
+  getCurrentBlockUCount() const
+  {
+    return currentBlockTag()->get_u_count_int();
+  }
   auto
   getCurrentBlockExogenous() const
   {

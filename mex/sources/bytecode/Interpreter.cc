@@ -565,7 +565,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
                 copy_n(y_save, y_size*(periods+y_kmax+y_kmin), y);
               u_count = u_count_saved;
               int prev_iter = iter;
-              Simulate_Newton_Two_Boundaries(block_num, symbol_table_endo_nbr, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, vector_table_conditional_local);
+              Simulate_Newton_Two_Boundaries(block_num, y_size, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, vector_table_conditional_local);
               iter++;
               if (iter > prev_iter)
                 {
@@ -589,7 +589,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
           compute_complete_2b(false, &res1, &res2, &max_res, &max_res_idx);
 
           cvg = false;
-          Simulate_Newton_Two_Boundaries(block_num, symbol_table_endo_nbr, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, vector_table_conditional_local);
+          Simulate_Newton_Two_Boundaries(block_num, y_size, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, vector_table_conditional_local);
           max_res = 0; max_res_idx = 0;
         }
       slowc = 1; // slowc is modified when stack_solve_algo=4, so restore it
@@ -692,6 +692,12 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
   for (int current_block : blocks)
     {
       gotoBlock(current_block);
+      block_num = current_block;
+      size = getCurrentBlockSize();
+      type = getCurrentBlockType();
+      is_linear = isCurrentBlockLinear();
+      Block_Contain = getCurrentBlockEquationsAndVariables();
+      u_count_int = getCurrentBlockUCount();
 
       if (constrained)
         check_for_controlled_exo_validity(current_block, sconstrained_extended_path);

@@ -2231,12 +2231,7 @@ Evaluate::gotoBlock(int block)
   if (fb->op_code != Tags::FBEGINBLOCK)
     throw FatalException {"Evaluate::gotoBlock: internal inconsistency"};
 
-  Block_Contain = fb->get_Block_Contain();
   size = fb->get_size();
-  type = fb->get_type();
-  is_linear = fb->get_is_linear();
-  symbol_table_endo_nbr = fb->get_endo_nbr();
-  u_count_int = fb->get_u_count_int();
 }
 
 void

@@ -218,6 +218,14 @@ protected:
   map<pair<int, int>, double> TEFD;
   map<tuple<int, int, int>, double> TEFDD;
 
+  // Information about the current block
+  int block_num; // Index of the current block
+  int size; // Size of the current block
+  BlockSimulationType type;
+  bool is_linear;
+  int u_count_int;
+  vector<Block_contain_type> Block_Contain;
+
   void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
   bool compute_complete(bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
 
