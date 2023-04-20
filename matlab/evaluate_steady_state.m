@@ -508,3 +508,4 @@ function [r, g1] = block_bytecode_mfs_steadystate(y, b, y_all, exo, params, T, M
 mfs_idx = M.block_structure_stat.block(b).variable(end-M.block_structure_stat.block(b).mfs+1:end);
 y_all(mfs_idx) = y;
 [r, g1] = bytecode(y_all, exo, params, y_all, 1, y_all, T, 'evaluate', 'static', 'block_decomposed', ['block = ' int2str(b) ]);
+g1 = g1(:,end-M.block_structure_stat.block(b).mfs+1:end); % Make Jacobian square if mfs>0
