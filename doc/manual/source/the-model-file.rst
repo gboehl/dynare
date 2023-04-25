@@ -3675,7 +3675,10 @@ speed-up on large models.
     .. option:: linear_approximation
 
        Solves the linearized version of the perfect foresight
-       model. The model must be stationary. Only available with option
+       model. The model must be stationary and a steady state 
+       needs to be provided. Linearization is conducted about the 
+       last defined steady state, which can derive from ``initval``,
+       ``endval`` or a subsequent ``steady``. Only available with option
        ``stack_solve_algo==0`` or ``stack_solve_algo==7``.
 
     *Output*
