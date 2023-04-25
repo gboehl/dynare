@@ -363,7 +363,8 @@ by the ``dynare`` command.
         For local execution under Windows operating system,
         set ``parallel_use_psexec=false`` to use ``start``
         instead of ``psexec``, to properly allocate affinity when there are
-        more than 32 cores in the local machine. [default=true]
+        more than 32 cores in the local machine. This option is also helpful if
+        ``psexec`` cannot be executed due to missing admininstrator privileges. [default=true]
 
     .. option:: -DMACRO_VARIABLE[=MACRO_EXPRESSION]
 
