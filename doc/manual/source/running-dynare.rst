@@ -315,7 +315,7 @@ by the ``dynare`` command.
         Prevent Dynare from printing the output of the steps leading up to the
         preprocessor as well as the preprocessor output itself.
 
-    .. option:: mexext=mex|mexw32|mexw64|mexmaci64|mexa64
+    .. option:: mexext=mex|mexw32|mexw64|mexmaci64|mexmaca64|mexa64
 
         The mex extension associated with your platform to be used
         when compiling output associated with :opt:`use_dll`.

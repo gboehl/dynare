@@ -45,8 +45,8 @@ determine the type of your MATLAB/Octave installation, type:
 ```matlab
 >> computer
 ```
-at the MATLAB/Octave prompt. Under MATLAB, if it returns `PCWIN64`, `GLNX64` or
-`MACI64`, then it is a 64-bit MATLAB; if it returns `PCWIN`, `MACI` or `GLNX`,
+at the MATLAB/Octave prompt. Under MATLAB, if it returns `PCWIN64`, `GLNX64`,
+`MACI64` or `MACA64` then it is a 64-bit MATLAB; if it returns `PCWIN`, `MACI` or `GLNX`,
 then it is a 32-bit MATLAB. Under Octave, if it returns a string that begins
 with `x86_64`, it is a 64-bit Octave; if the strings begins with `i686`, it is
 a 32-bit Octave.
