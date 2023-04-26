@@ -81,11 +81,11 @@ b_square = 1-small_a*small_a;
 
 % Initialization of parameter particles
 xparam = zeros(number_of_parameters,number_of_particles);
-prior_draw(BayesInfo,DynareOptions.prior_trunc);
+Prior = dprior(BayesInfo, DynareOptions.prior_trunc);
 for i=1:number_of_particles
     info = 12042009;
     while info
-        candidate = prior_draw()';
+        candidate = Prior.draw();
         [info, Model, DynareOptions, DynareResults] = solve_model_for_online_filter(false, xparam1, DynareDataset, DynareOptions, Model, EstimatedParameters, BayesInfo, bounds, DynareResults);
         if ~info
             xparam(:,i) = candidate(:);
