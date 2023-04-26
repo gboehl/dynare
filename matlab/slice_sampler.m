@@ -24,7 +24,7 @@ function [theta, fxsim, neval] = slice_sampler(objective_function,theta,thetapri
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2015-2017 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -58,6 +58,8 @@ neval = zeros(npar,1);
 % % % fname0=fname;
 fname = [ int2str(sampler_options.curr_block)];
 
+Prior = dprior(varargin{6},varargin{3}.prior_trunc);
+
 it=0;
 while it<npar
     it=it+1;
@@ -80,8 +82,8 @@ while it<npar
         icount=0;
         while ~isfinite(fxold) && icount<1000
             icount=icount+1;
-            theta = prior_draw();
-            if all(theta(:) >= thetaprior(:,1)) && all(theta(:) <= thetaprior(:,2))
+            theta = Prior.draw();
+            if all(theta >= thetaprior(:,1)) && all(theta <= thetaprior(:,2))
                 fxold = -feval(objective_function,theta,varargin{:});
             end
         end

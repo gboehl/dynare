@@ -36,7 +36,7 @@ function myoutput = posterior_sampler_core(myinputs,fblck,nblck,whoiam, ThisMatl
 % See the comments in the posterior_sampler.m funtion.
 
 
-% Copyright © 2006-2017 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -86,8 +86,6 @@ oo_ = myinputs.oo_;
 if whoiam
     % initialize persistent variables in priordens()
     priordens(xparam1,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7, bayestopt_.p3,bayestopt_.p4,1);
-    % initialize persistent variables in prior_draw()
-    prior_draw(bayestopt_,options_.prior_trunc);
 end
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);

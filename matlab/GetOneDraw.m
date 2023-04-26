@@ -1,5 +1,5 @@
-function [xparams, logpost] = GetOneDraw(type,M_,estim_params_,oo_,options_,bayestopt_)
-% function [xparams, logpost] = GetOneDraw(type,M_,estim_params_,oo_,options_,bayestopt_)
+function [xparams, logpost] = GetOneDraw(distribution, M_, estim_params_, oo_, options_, bayestopt_)
+
 % draws one parameter vector and its posterior from MCMC or the prior
 %
 % INPUTS
@@ -18,7 +18,7 @@ function [xparams, logpost] = GetOneDraw(type,M_,estim_params_,oo_,options_,baye
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2005-2017 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,12 +35,13 @@ function [xparams, logpost] = GetOneDraw(type,M_,estim_params_,oo_,options_,baye
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-switch type
-  case 'posterior'
-    [xparams, logpost] = metropolis_draw(0);
-  case 'prior'
-    xparams = prior_draw();
+if isprior(distribution)
+    xparams = distribution.draw();
     if nargout>1
-        logpost = evaluate_posterior_kernel(xparams',M_,estim_params_,oo_,options_,bayestopt_);
+        logpost = evaluate_posterior_kernel(xparams, M_, estim_params_, oo_, options_, bayestopt_);
     end
+elseif ischar(distribution) && strcmpi(distribution, 'posterior')
+    [xparams, logpost] = metropolis_draw(0);
+else
+    error('GetOneDraw:: Wrong inputs.')
 end

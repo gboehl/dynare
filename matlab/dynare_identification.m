@@ -40,13 +40,14 @@ function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, ST
 %    * identification_analysis
 %    * isoctave
 %    * plot_identification
-%    * prior_draw
+%    * dprior.draw
 %    * set_default_option
 %    * set_prior
 %    * skipline
 %    * vnorm
 % =========================================================================
-% Copyright © 2010-2022 Dynare Team
+
+% Copyright © 2010-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -328,18 +329,18 @@ if options_.discretionary_policy || options_.ramsey_policy
         options_ident.analytic_derivation_mode=-1;
     end
 end
-    
+
 options_.analytic_derivation_mode = options_ident.analytic_derivation_mode; %overwrite setting in options_
 
-% initialize persistent variables in prior_draw
+% Instantiate dprior object (Prior)
 if prior_exist
     if any(bayestopt_.pshape > 0)
         if options_ident.prior_range
             %sample uniformly from prior ranges (overwrite prior specification)
-            prior_draw(bayestopt_, options_.prior_trunc, true);
+            Prior = dprior(bayestopt_, options_.prior_trunc, true);
         else
             %sample from prior distributions
-            prior_draw(bayestopt_, options_.prior_trunc, false);
+            Prior = dprior(bayestopt_, options_.prior_trunc, false);
         end
     else
         options_ident.prior_mc = 1; %only one single point
@@ -495,7 +496,7 @@ if iload <=0
             kk=0;
             while kk<50 && info(1)
                 kk=kk+1;
-                params = prior_draw();
+                params = Prior.draw();
                 options_ident.tittxt = 'Random_prior_params'; %title text for graphs and figures
                 % perform identification analysis
                 [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info, error_indicator_point] = ...
@@ -548,7 +549,7 @@ if iload <=0
         if external_sample
             params = pdraws0(iteration+1,:); % loaded draws
         else
-            params = prior_draw(); % new random draw from prior
+            params = Prior.draw(); % new random draw from prior
         end
         options_ident.tittxt = []; % clear title text for graphs and figures
         % run identification analysis
@@ -692,7 +693,7 @@ if iload <=0
             end
 
             % store results for minimal system
-            if ~options_MC.no_identification_minimal 
+            if ~options_MC.no_identification_minimal
                 if ~error_indicator.identification_minimal
                     STO_dMINIMAL(:,:,run_index)                  = ide_minimal.dMINIMAL;
                     IDE_MINIMAL.cond(iteration,1)                = ide_minimal.cond;
@@ -901,7 +902,7 @@ if SampleSize > 1
                 store_nodisplay = options_.nodisplay;
                 options_.nodisplay = 1;
                 % HIGHEST CONDITION NUMBER
-                [~, jmax] = max(IDE_MOMENTS.cond);                
+                [~, jmax] = max(IDE_MOMENTS.cond);
                 tittxt = 'Draw with HIGHEST condition number';
                 fprintf('\nTesting %s.\n',tittxt);
                 if ~iload

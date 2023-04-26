@@ -38,7 +38,7 @@ function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npa
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright © 2006-2017 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -113,7 +113,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
     fprintf(fidlog,['  Number of simulations per block: ' int2str(nruns(1)) '\n']);
     fprintf(fidlog,' \n');
     if isempty(d)
-        prior_draw(bayestopt_,options_.prior_trunc);
+        Prior = dprior(bayestopt_, options_.prior_trunc);
     end
     if options_.mh_initialize_from_previous_mcmc.status
         PreviousFolder0 = options_.mh_initialize_from_previous_mcmc.directory;
@@ -132,7 +132,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
             MetropolisFolder0 = fileparts(RecordFile0);
             PreviousFolder0=fileparts(MetropolisFolder0);
             [~, ModelName0]=fileparts(PreviousFolder0);
-        else            
+        else
             %% check for proper filesep char in user defined paths
             PreviousFolder0=strrep(PreviousFolder0,'\',filesep);
             MetropolisFolder0 = [PreviousFolder0 filesep 'metropolis'];
@@ -195,7 +195,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
             trial = 1;
             while validate == 0 && trial <= 10
                 if isempty(d)
-                    candidate = prior_draw();
+                    candidate = Prior.draw();
                 else
                     if isfield(options_,'mh_init_scale')
                         if trial==1
@@ -228,7 +228,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
                     if options_.nointeractive
                         disp(['Estimation::mcmc: I reduce mh_init_scale_factor by 10 percent:'])
                         if isfield(options_,'mh_init_scale')
-                           options_.mh_init_scale = .9*options_.mh_init_scale; 
+                           options_.mh_init_scale = .9*options_.mh_init_scale;
                            fprintf('Estimation::mcmc: Parameter mh_init_scale is now equal to %f.\n',options_.mh_init_scale)
                         else
                             options_.mh_init_scale_factor = .9*options_.mh_init_scale_factor;
@@ -301,7 +301,6 @@ if ~options_.load_mh_file && ~options_.mh_recover
     if options_.mh_initialize_from_previous_mcmc.status
         record.InitialSeeds = record0.LastSeeds;
     else
-        
         for j=1:NumberOfBlocks
             % we set a different seed for the random generator for each block then we record the corresponding random generator state (vector)
             set_dynare_seed(options_.DynareRandomStreams.seed+j);
@@ -502,7 +501,7 @@ elseif options_.mh_recover
     % How many mh-files are saved in this block?
     ExistingDrawsInLastMCFile=zeros(NumberOfBlocks,1); %initialize: no MCMC draws of current MCMC are in file from last run
     % Check whether last present file is a file included in the last MCMC run
-    
+
     update_record=0;
     for k=1:NumberOfBlocks
         FirstBlock = k;

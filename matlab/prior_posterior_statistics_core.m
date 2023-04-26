@@ -30,7 +30,7 @@ function myoutput=prior_posterior_statistics_core(myinputs,fpar,B,whoiam, ThisMa
 % SPECIAL REQUIREMENTS.
 %   None.
 
-% Copyright © 2005-2020 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -109,8 +109,8 @@ if ~strcmpi(type,'prior')
         logpost=myinputs.logpost;
     end
 else
-    x=(prior_draw(bayestopt_,options_.prior_trunc))';
-    options_=select_qz_criterium_value(options_);
+    Prior = dprior(bayestopt_,options_.prior_trunc);
+    options_ = select_qz_criterium_value(options_);
 end
 if whoiam
     Parallel=myinputs.Parallel;
@@ -180,9 +180,9 @@ end
 if naK
     stock_filter_step_ahead =NaN(length(options_.filter_step_ahead),endo_nbr,gend+max(options_.filter_step_ahead),MAX_naK);
 end
-stock_param = NaN(MAX_nruns,size(x,2));
-stock_logpo = NaN(MAX_nruns,1);
-stock_ys = NaN(MAX_nruns,endo_nbr);
+stock_param = NaN(MAX_nruns, length(bayestopt_.p6));
+stock_logpo = NaN(MAX_nruns, 1);
+stock_ys = NaN(MAX_nruns, endo_nbr);
 if filter_covariance
     stock_filter_covariance = zeros(endo_nbr,endo_nbr,gend+1,MAX_filter_covariance);
 end
@@ -196,7 +196,8 @@ for b=fpar:B
         iter=1;
         logpo=[];
         while (isempty(logpo) || isinf(logpo)) && iter<1000
-            [deep, logpo] = GetOneDraw(type,M_,estim_params_,oo_,options_,bayestopt_);
+            deep = Prior.draw();
+            logpo = evaluate_posterior_kernel(deep, M_, estim_params_, oo_, options_, bayestopt_)
             iter=iter+1;
         end
         if iter==1000
@@ -214,7 +215,7 @@ for b=fpar:B
 
     if run_smoother
         [dr,info,M_,oo_] =compute_decision_rules(M_,opts_local,oo_);
-        if ismember(info(1),[3,4]) 
+        if ismember(info(1),[3,4])
             opts_local.qz_criterium = 1 + (opts_local.qz_criterium-1)*10; %loosen tolerance, useful for big models where BK conditions were tested on restricted state space
             [dr,info,M_,oo_] =compute_decision_rules(M_,opts_local,oo_);
         end

@@ -23,7 +23,7 @@ function myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 %
-% Copyright © 2006-2019 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -134,12 +134,17 @@ end
 % Parallel 'while' very good!!!
 stock_param=zeros(MAX_nruns,npar);
 stock_irf_dsge=zeros(options_.irf,nvar,M_.exo_nbr,MAX_nirfs_dsge);
+
+if strcmp(type, 'prior')
+    Prior = dprior(bayestopt_, options_.prior_trunc);
+end
+
 while fpar<B
     fpar = fpar + 1;
     irun = irun+1;
     irun2 = irun2+1;
     if strcmpi(type,'prior')
-        deep = GetOneDraw(type,M_,estim_params_,oo_,options_,bayestopt_);
+        deep = Prior.draw();
     else
         deep = x(fpar,:);
     end
@@ -294,7 +299,7 @@ end
 % directory on call machine that contain the model).
 
 myoutput.OutputFileName = [OutputFileName_dsge;
-                    OutputFileName_param;
-                    OutputFileName_bvardsge];
+                           OutputFileName_param;
+                           OutputFileName_bvardsge];
 
 myoutput.nosaddle = nosaddle;

@@ -13,7 +13,7 @@ function results = prior_sampler(drsave,M_,bayestopt_,options_,oo_,estim_params_
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2009-2018 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,7 +31,7 @@ function results = prior_sampler(drsave,M_,bayestopt_,options_,oo_,estim_params_
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Initialization.
-prior_draw(bayestopt_, options_.prior_trunc);
+Prior = dprior(bayestopt_, options_.prior_trunc);
 PriorDirectoryName = CheckPath('prior/draws',M_.dname);
 work = ~drsave;
 iteration = 0;
@@ -94,10 +94,10 @@ while iteration < NumberOfSimulations
         dyn_waitbar(iteration/NumberOfSimulations,hh,'Please wait. Prior sampler...');
     end
     loop_indx = loop_indx+1;
-    params = prior_draw();
-    M_ = set_all_parameters(params,estim_params_,M_);
-    [T,R,~,INFO,M_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
-    dr=oo_.dr;
+    params = Prior.draw();
+    M_ = set_all_parameters(params, estim_params_, M_);
+    [T, R, ~, INFO, M_, oo_] = dynare_resolve(M_, options_, oo_, 'restrict');
+    dr = oo_.dr;
     if ~INFO(1)
         INFO=endogenous_prior_restrictions(T,R,M_,options_,oo_);
     end

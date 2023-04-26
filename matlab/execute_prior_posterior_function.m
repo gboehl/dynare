@@ -17,7 +17,7 @@ function oo_=execute_prior_posterior_function(posterior_function_name,M_,options
 % OUTPUTS
 %   oo_          [structure]     Matlab/Octave structure gathering the results (initialized by dynare, see @ref{oo_}).
 
-% Copyright © 2013-2015 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -47,21 +47,21 @@ end
 %Create function handle
 functionhandle=str2func(posterior_function_name);
 
-prior = true;
 n_draws=options_.sampling_draws;
-% Get informations about the _posterior_draws files.
+
 if strcmpi(type,'posterior')
-    %% discard first mh_drop percent of the draws:
+    % Get informations about the _posterior_draws files.
+    % discard first mh_drop percent of the draws:
     CutSample(M_, options_, estim_params_);
-    %% initialize metropolis draws
-    options_.sub_draws=n_draws; %set draws for sampling; changed value is not returned to base workspace
-    [error_flag,~,options_]= metropolis_draw(1,options_,estim_params_,M_);
+    % initialize metropolis draws
+    options_.sub_draws = n_draws; % set draws for sampling; changed value is not returned to base workspace
+    [error_flag, ~, options_] = metropolis_draw(1, options_, estim_params_, M_);
     if error_flag
         error('EXECUTE_POSTERIOR_FUNCTION: The draws could not be initialized')
     end
-    n_draws=options_.sub_draws;
-    prior = false;
+    n_draws = options_.sub_draws;
 elseif strcmpi(type,'prior')
+    % Get informations about the prior distribution.
     if isempty(bayestopt_)
         if ~isempty(estim_params_) && ~(isfield(estim_params_,'nvx') && (size(estim_params_.var_exo,1)+size(estim_params_.var_endo,1)+size(estim_params_.corrx,1)+size(estim_params_.corrn,1)+size(estim_params_.param_vals,1))==0)
             [xparam1,estim_params_,bayestopt_,lb,ub,M_] = set_prior(estim_params_,M_,options_);
@@ -72,38 +72,36 @@ elseif strcmpi(type,'prior')
     if exist([M_.fname '_prior_restrictions.m'])
         warning('prior_function currently does not support endogenous prior restrictions. They will be ignored. Consider using a prior_function with nobs=1.')
     end
-    prior_draw(bayestopt_, options_.prior_trunc);
+    Prior = dprior(bayestopt_, options_.prior_trunc);
 else
     error('EXECUTE_POSTERIOR_FUNCTION: Unknown type!')
 end
 
-%get draws for later use
-first_draw=GetOneDraw(type,M_,estim_params_,oo_,options_,bayestopt_);
-parameter_mat=NaN(n_draws,length(first_draw));
-parameter_mat(1,:)=first_draw;
-for draw_iter=2:n_draws
-    parameter_mat(draw_iter,:) = GetOneDraw(type,M_,estim_params_,oo_,options_,bayestopt_);
+if strcmpi(type, 'prior')
+    parameter_mat = Prior.draws(n_draws);
+else
+    parameter_mat = NaN(length(bayestopt_.p6), n_draws);
+    for i = 1:n_draws
+        parameter_mat(:,i) = GetOneDraw(type, M_, estim_params_, oo_, options_, bayestopt_);
+    end
 end
 
-% get output size
+% Get output size
 try
-    junk=functionhandle(parameter_mat(1,:),M_,options_,oo_,estim_params_,bayestopt_,dataset_,dataset_info);
+    junk = functionhandle(parameter_mat(:,1), M_, options_, oo_, estim_params_, bayestopt_, dataset_, dataset_info);
 catch err
     fprintf('\nEXECUTE_POSTERIOR_FUNCTION: Execution of prior/posterior function led to an error. Execution cancelled.\n')
     rethrow(err)
 end
 
-%initialize cell with number of columns
-results_cell=cell(n_draws,size(junk,2));
+% Initialize cell with number of columns
+results_cell = cell(n_draws, columns(junk));
 
-%% compute function on draws
-for draw_iter = 1:n_draws
-    M_ = set_all_parameters(parameter_mat(draw_iter,:),estim_params_,M_);
-    [results_cell(draw_iter,:)]=functionhandle(parameter_mat(draw_iter,:),M_,options_,oo_,estim_params_,bayestopt_,dataset_,dataset_info);
+% Evaluate function on each draw
+for i = 1:n_draws
+    M_ = set_all_parameters(parameter_mat(:,i), estim_params_, M_);
+    [results_cell(i,:)] = functionhandle(parameter_mat(:,i), M_, options_, oo_, estim_params_, bayestopt_, dataset_, dataset_info);
 end
 
-if prior
-    oo_.prior_function_results = results_cell;
-else
-    oo_.posterior_function_results = results_cell;
-end
+% Save results under oo_
+oo_.(sprintf('%s_function_results', type)) = results_cell;
