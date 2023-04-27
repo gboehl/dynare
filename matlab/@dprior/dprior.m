@@ -7,20 +7,20 @@ classdef dprior
         p4 = [];                         % Upper bound of the prior support.
         lb = [];                         % Truncated prior lower bound.
         ub = [];                         % Truncated prior upper bound.
-        uniform_index = [];              % Index for the uniform priors.
-        gaussian_index = [];             % Index for the gaussian priors.
-        gamma_index = [];                % Index for the gamma priors.
-        beta_index = [];                 % Index for the beta priors.
-        inverse_gamma_1_index = [];      % Index for the inverse gamma type 1 priors.
-        inverse_gamma_2_index = [];      % Index for the inverse gamma type 2 priors.
-        weibull_index = [];              % Index for the weibull priors.
-        uniform_draws = false;
-        gaussian_draws = false;
-        gamma_draws = false;
-        beta_draws = false;
-        inverse_gamma_1_draws = false;
-        inverse_gamma_2_draws = false;
-        weibull_draws = false;
+        iduniform = [];                  % Index for the uniform priors.
+        idgaussian = [];                 % Index for the gaussian priors.
+        idgamma = [];                    % Index for the gamma priors.
+        idbeta = [];                     % Index for the beta priors.
+        idinvgamma1 = [];                % Index for the inverse gamma type 1 priors.
+        idinvgamma2 = [];                % Index for the inverse gamma type 2 priors.
+        idweibull = [];                  % Index for the weibull priors.
+        isuniform = false;
+        isgaussian = false;
+        isgamma = false;
+        isbeta = false;
+        isinvgamma1 = false;
+        isinvgamma2 = false;
+        isweibull = false;
     end
 
     methods
@@ -50,33 +50,33 @@ classdef dprior
             else
                 prior_shape = bayestopt_.pshape;
             end
-            o.beta_index = find(prior_shape==1);
-            if ~isempty(o.beta_index)
-                o.beta_draws = true;
+            o.idbeta = find(prior_shape==1);
+            if ~isempty(o.idbeta)
+                o.isbeta = true;
             end
-            o.gamma_index = find(prior_shape==2);
-            if ~isempty(o.gamma_index)
-                o.gamma_draws = true;
+            o.idgamma = find(prior_shape==2);
+            if ~isempty(o.idgamma)
+                o.isgamma = true;
             end
-            o.gaussian_index = find(prior_shape==3);
-            if ~isempty(o.gaussian_index)
-                o.gaussian_draws = true;
+            o.idgaussian = find(prior_shape==3);
+            if ~isempty(o.idgaussian)
+                o.isgaussian = true;
             end
-            o.inverse_gamma_1_index = find(prior_shape==4);
-            if ~isempty(o.inverse_gamma_1_index)
-                o.inverse_gamma_1_draws = true;
+            o.idinvgamma1 = find(prior_shape==4);
+            if ~isempty(o.idinvgamma1)
+                o.isinvgamma1 = true;
             end
-            o.uniform_index = find(prior_shape==5);
-            if ~isempty(o.uniform_index)
-                o.uniform_draws = true;
+            o.iduniform = find(prior_shape==5);
+            if ~isempty(o.iduniform)
+                o.isuniform = true;
             end
-            o.inverse_gamma_2_index = find(prior_shape==6);
-            if ~isempty(o.inverse_gamma_2_index)
-                o.inverse_gamma_2_draws = true;
+            o.idinvgamma2 = find(prior_shape==6);
+            if ~isempty(o.idinvgamma2)
+                o.isinvgamma2 = true;
             end
-            o.weibull_index = find(prior_shape==8);
-            if ~isempty(o.weibull_index)
-                o.weibull_draws = true;
+            o.idweibull = find(prior_shape==8);
+            if ~isempty(o.idweibull)
+                o.isweibull = true;
             end
         end
 
@@ -97,64 +97,64 @@ classdef dprior
         % >> Prior = dprior(bayestopt_, options_.prior_trunc);
         % >> d = Prior.draw()
             p = NaN(rows(o.lb), 1);
-            if o.uniform_draws
-                p(o.uniform_index) = rand(length(o.uniform_index),1).*(o.p4(o.uniform_index)-o.p3(o.uniform_index)) + o.p3(o.uniform_index);
-                out_of_bound = find( (p(o.uniform_index)>o.ub(o.uniform_index)) | (p(o.uniform_index)<o.lb(o.uniform_index)));
-                while ~isempty(out_of_bound)
-                    p(o.uniform_index) = rand(length(o.uniform_index), 1).*(o.p4(o.uniform_index)-o.p3(o.uniform_index)) + o.p3(o.uniform_index);
-                    out_of_bound = find( (p(o.uniform_index)>o.ub(o.uniform_index)) | (p(o.uniform_index)<o.lb(o.uniform_index)));
+            if o.isuniform
+                p(o.iduniform) = rand(length(o.iduniform),1).*(o.p4(o.iduniform)-o.p3(o.iduniform)) + o.p3(o.iduniform);
+                oob = find( (p(o.iduniform)>o.ub(o.iduniform)) | (p(o.iduniform)<o.lb(o.iduniform)));
+                while ~isempty(oob)
+                    p(o.iduniform) = rand(length(o.iduniform), 1).*(o.p4(o.iduniform)-o.p3(o.iduniform)) + o.p3(o.iduniform);
+                    oob = find( (p(o.iduniform)>o.ub(o.iduniform)) | (p(o.iduniform)<o.lb(o.iduniform)));
                 end
             end
-            if o.gaussian_draws
-                p(o.gaussian_index) = randn(length(o.gaussian_index), 1).*o.p7(o.gaussian_index) + o.p6(o.gaussian_index);
-                out_of_bound = find( (p(o.gaussian_index)>o.ub(o.gaussian_index)) | (p(o.gaussian_index)<o.lb(o.gaussian_index)));
-                while ~isempty(out_of_bound)
-                    p(o.gaussian_index(out_of_bound)) = randn(length(o.gaussian_index(out_of_bound)), 1).*o.p7(o.gaussian_index(out_of_bound)) + o.p6(o.gaussian_index(out_of_bound));
-                    out_of_bound = find( (p(o.gaussian_index)>o.ub(o.gaussian_index)) | (p(o.gaussian_index)<o.lb(o.gaussian_index)));
+            if o.isgaussian
+                p(o.idgaussian) = randn(length(o.idgaussian), 1).*o.p7(o.idgaussian) + o.p6(o.idgaussian);
+                oob = find( (p(o.idgaussian)>o.ub(o.idgaussian)) | (p(o.idgaussian)<o.lb(o.idgaussian)));
+                while ~isempty(oob)
+                    p(o.idgaussian(oob)) = randn(length(o.idgaussian(oob)), 1).*o.p7(o.idgaussian(oob)) + o.p6(o.idgaussian(oob));
+                    oob = find( (p(o.idgaussian)>o.ub(o.idgaussian)) | (p(o.idgaussian)<o.lb(o.idgaussian)));
                 end
             end
-            if o.gamma_draws
-                p(o.gamma_index) = gamrnd(o.p6(o.gamma_index), o.p7(o.gamma_index))+o.p3(o.gamma_index);
-                out_of_bound = find( (p(o.gamma_index)>o.ub(o.gamma_index)) | (p(o.gamma_index)<o.lb(o.gamma_index)));
-                while ~isempty(out_of_bound)
-                    p(o.gamma_index(out_of_bound)) = gamrnd(o.p6(o.gamma_index(out_of_bound)), o.p7(o.gamma_index(out_of_bound)))+o.p3(o.gamma_index(out_of_bound));
-                    out_of_bound = find( (p(o.gamma_index)>o.ub(o.gamma_index)) | (p(o.gamma_index)<o.lb(o.gamma_index)));
+            if o.isgamma
+                p(o.idgamma) = gamrnd(o.p6(o.idgamma), o.p7(o.idgamma))+o.p3(o.idgamma);
+                oob = find( (p(o.idgamma)>o.ub(o.idgamma)) | (p(o.idgamma)<o.lb(o.idgamma)));
+                while ~isempty(oob)
+                    p(o.idgamma(oob)) = gamrnd(o.p6(o.idgamma(oob)), o.p7(o.idgamma(oob)))+o.p3(o.idgamma(oob));
+                    oob = find( (p(o.idgamma)>o.ub(o.idgamma)) | (p(o.idgamma)<o.lb(o.idgamma)));
                 end
             end
-            if o.beta_draws
-                p(o.beta_index) = (o.p4(o.beta_index)-o.p3(o.beta_index)).*betarnd(o.p6(o.beta_index), o.p7(o.beta_index))+o.p3(o.beta_index);
-                out_of_bound = find( (p(o.beta_index)>o.ub(o.beta_index)) | (p(o.beta_index)<o.lb(o.beta_index)));
-                while ~isempty(out_of_bound)
-                    p(o.beta_index(out_of_bound)) = (o.p4(o.beta_index(out_of_bound))-o.p3(o.beta_index(out_of_bound))).*betarnd(o.p6(o.beta_index(out_of_bound)), o.p7(o.beta_index(out_of_bound)))+o.p3(o.beta_index(out_of_bound));
-                    out_of_bound = find( (p(o.beta_index)>o.ub(o.beta_index)) | (p(o.beta_index)<o.lb(o.beta_index)));
+            if o.isbeta
+                p(o.idbeta) = (o.p4(o.idbeta)-o.p3(o.idbeta)).*betarnd(o.p6(o.idbeta), o.p7(o.idbeta))+o.p3(o.idbeta);
+                oob = find( (p(o.idbeta)>o.ub(o.idbeta)) | (p(o.idbeta)<o.lb(o.idbeta)));
+                while ~isempty(oob)
+                    p(o.idbeta(oob)) = (o.p4(o.idbeta(oob))-o.p3(o.idbeta(oob))).*betarnd(o.p6(o.idbeta(oob)), o.p7(o.idbeta(oob)))+o.p3(o.idbeta(oob));
+                    oob = find( (p(o.idbeta)>o.ub(o.idbeta)) | (p(o.idbeta)<o.lb(o.idbeta)));
                 end
             end
-            if o.inverse_gamma_1_draws
-                p(o.inverse_gamma_1_index) = ...
-                    sqrt(1./gamrnd(o.p7(o.inverse_gamma_1_index)/2, 2./o.p6(o.inverse_gamma_1_index)))+o.p3(o.inverse_gamma_1_index);
-                out_of_bound = find( (p(o.inverse_gamma_1_index)>o.ub(o.inverse_gamma_1_index)) | (p(o.inverse_gamma_1_index)<o.lb(o.inverse_gamma_1_index)));
-                while ~isempty(out_of_bound)
-                    p(o.inverse_gamma_1_index(out_of_bound)) = ...
-                        sqrt(1./gamrnd(o.p7(o.inverse_gamma_1_index(out_of_bound))/2, 2./o.p6(o.inverse_gamma_1_index(out_of_bound))))+o.p3(o.inverse_gamma_1_index(out_of_bound));
-                    out_of_bound = find( (p(o.inverse_gamma_1_index)>o.ub(o.inverse_gamma_1_index)) | (p(o.inverse_gamma_1_index)<o.lb(o.inverse_gamma_1_index)));
+            if o.isinvgamma1
+                p(o.idinvgamma1) = ...
+                    sqrt(1./gamrnd(o.p7(o.idinvgamma1)/2, 2./o.p6(o.idinvgamma1)))+o.p3(o.idinvgamma1);
+                oob = find( (p(o.idinvgamma1)>o.ub(o.idinvgamma1)) | (p(o.idinvgamma1)<o.lb(o.idinvgamma1)));
+                while ~isempty(oob)
+                    p(o.idinvgamma1(oob)) = ...
+                        sqrt(1./gamrnd(o.p7(o.idinvgamma1(oob))/2, 2./o.p6(o.idinvgamma1(oob))))+o.p3(o.idinvgamma1(oob));
+                    oob = find( (p(o.idinvgamma1)>o.ub(idinvgamma1)) | (p(o.idinvgamma1)<o.lb(o.idinvgamma1)));
                 end
             end
-            if o.inverse_gamma_2_draws
-                p(o.inverse_gamma_2_index) = ...
-                    1./gamrnd(o.p7(o.inverse_gamma_2_index)/2, 2./o.p6(o.inverse_gamma_2_index))+o.p3(o.inverse_gamma_2_index);
-                out_of_bound = find( (p(o.inverse_gamma_2_index)>o.ub(o.inverse_gamma_2_index)) | (p(o.inverse_gamma_2_index)<o.lb(o.inverse_gamma_2_index)));
-                while ~isempty(out_of_bound)
-                    p(o.inverse_gamma_2_index(out_of_bound)) = ...
-                        1./gamrnd(o.p7(o.inverse_gamma_2_index(out_of_bound))/2, 2./o.p6(o.inverse_gamma_2_index(out_of_bound)))+o.p3(o.inverse_gamma_2_index(out_of_bound));
-                    out_of_bound = find( (p(o.inverse_gamma_2_index)>o.ub(o.inverse_gamma_2_index)) | (p(o.inverse_gamma_2_index)<o.lb(o.inverse_gamma_2_index)));
+            if o.isinvgamma2
+                p(o.idinvgamma2) = ...
+                    1./gamrnd(o.p7(o.idinvgamma2)/2, 2./o.p6(o.idinvgamma2))+o.p3(o.idinvgamma2);
+                oob = find( (p(o.idinvgamma2)>o.ub(o.idinvgamma2)) | (p(o.idinvgamma2)<o.lb(o.idinvgamma2)));
+                while ~isempty(oob)
+                    p(o.idinvgamma2(oob)) = ...
+                        1./gamrnd(o.p7(o.idinvgamma2(oob))/2, 2./o.p6(o.idinvgamma2(oob)))+o.p3(o.idinvgamma2(oob));
+                    oob = find( (p(o.idinvgamma2)>o.ub(o.idinvgamma2)) | (p(o.idinvgamma2)<o.lb(o.idinvgamma2)));
                 end
             end
-            if o.weibull_draws
-                p(o.weibull_index) = wblrnd(o.p7(o.weibull_index), o.p6(o.weibull_index)) + o.p3(o.weibull_index);
-                out_of_bound = find( (p(o.weibull_index)>o.ub(o.weibull_index)) | (p(o.weibull_index)<o.lb(o.weibull_index)));
-                while ~isempty(out_of_bound)
-                    p(o.weibull_index(out_of_bound)) = wblrnd(o.p7(o.weibull_index(out_of_bound)), o.p6(o.weibull_index(out_of_bound)))+o.p3(o.weibull_index(out_of_bound));
-                    out_of_bound = find( (p(o.weibull_index)>o.ub(o.weibull_index)) | (p(o.weibull_index)<o.lb(o.weibull_index)));
+            if o.isweibull
+                p(o.idweibull) = wblrnd(o.p7(o.idweibull), o.p6(o.idweibull)) + o.p3(o.idweibull);
+                oob = find( (p(o.idweibull)>o.ub(o.idweibull)) | (p(o.idweibull)<o.lb(o.idweibull)));
+                while ~isempty(oob)
+                    p(o.idweibull(oob)) = wblrnd(o.p7(o.idweibull(oob)), o.p6(o.idweibull(oob)))+o.p3(o.idweibull(oob));
+                    oob = find( (p(o.idweibull)>o.ub(o.idweibull)) | (p(o.idweibull)<o.lb(o.idweibull)));
                 end
             end
         end
