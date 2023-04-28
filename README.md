@@ -196,9 +196,11 @@ in the `tests` folder to delete files that were created by the run of the testsu
 
 All the prerequisites are packaged:
 
-- `build-essential` (for gcc, g++ and make)
+- `gcc`
+- `g++`
 - `gfortran`
-- `liboctave-dev`
+- `make`
+- `octave-dev` (or `liboctave-dev` on older Debian/Ubuntu releases)
 - `libboost-graph-dev`
 - `libgsl-dev`
 - `libmatio-dev`
@@ -212,7 +214,6 @@ All the prerequisites are packaged:
 - `texlive-publishers` (for Econometrica bibliographic style)
 - `texlive-latex-extra` (for fullpage.sty)
 - `texlive-fonts-extra` (for ccicons)
-- `texlive-latex-recommended`
 - `texlive-science` (for amstex)
 - `texlive-plain-generic`
 - `lmodern` (for macroprocessor PDF)
@@ -225,7 +226,7 @@ All the prerequisites are packaged:
 
 You can install them all at once with:
 ```sh
-apt install build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex libfl-dev bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as
+apt install gcc g++ gfortran make octave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex libfl-dev bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as
 ```
 If you use MATLAB, we strongly advise to also `apt install matlab-support` and confirm to rename the GCC libraries shipped with MATLAB to avoid possible conflicts with GCC libraries shipped by your distribution.
 
