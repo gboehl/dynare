@@ -1,51 +1,14 @@
-function bounds = prior_bounds(bayestopt, prior_trunc)
-
-%@info:
-%! @deftypefn {Function File} {@var{bounds} =} prior_bounds (@var{bayesopt},@var{option})
-%! @anchor{prior_bounds}
-%! @sp 1
-%! Returns bounds for the prior densities. For each estimated parameter the lower and upper bounds
-%! are such that the defined intervals contains a probability mass equal to 1-2*@var{option}.prior_trunc. The
-%! default value for @var{option}.prior_trunc is 1e-10 (set in @ref{global_initialization}).
-%! @sp 2
-%! @strong{Inputs}
-%! @sp 1
-%! @table @ @var
-%! @item bayestopt
-%! Matlab's structure describing the prior distribution (initialized by @code{dynare}).
-%! @item option
-%! Matlab's structure describing the options (initialized by @code{dynare}).
-%! @end table
-%! @sp 2
-%! @strong{Outputs}
-%! @sp 1
-%! @table @ @var
-%! @item bounds
-%! A structure with two fields lb and up (p*1 vectors of doubles, where p is the number of estimated parameters) for the lower and upper bounds.
-%! @end table
-%! @sp 2
-%! @strong{This function is called by:}
-%! @sp 1
-%! @ref{get_prior_info}, @ref{dynare_estimation_1}, @ref{dynare_estimation_init}
-%! @sp 2
-%! @strong{This function calls:}
-%! @sp 1
-%! None.
-%! @end deftypefn
-%@eod:
-
+function bounds = prior_bounds(bayestopt, priortrunc)
 
 % function bounds = prior_bounds(bayestopt)
 % computes bounds for prior density.
 %
 % INPUTS
-%    bayestopt  [structure]  characterizing priors (shape, mean, p1..p4)
+% - bayestopt   [struct]  characterizing priors (shape, mean, p1..p4)
+% - priortrunc  [double]  scalar, probability mass in the tails to be removed
 %
 % OUTPUTS
-%    bounds     [double]      structure specifying prior bounds (lb and ub fields)
-%
-% SPECIAL REQUIREMENTS
-%    none
+% - bounds     [struct]  prior bounds (lb, lower bounds, and ub, upper bounds, fields are n×1 vectors)
 
 % Copyright © 2003-2023 Dynare Team
 %
@@ -64,72 +27,76 @@ function bounds = prior_bounds(bayestopt, prior_trunc)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+if nargin<2, priortrunc = 0.0; end
+
+assert(priortrunc>=0 && priortrunc<=1, 'Second input argument must be non negative and not larger than one.')
+
 pshape = bayestopt.pshape;
 p3 = bayestopt.p3;
 p4 = bayestopt.p4;
 p6 = bayestopt.p6;
 p7 = bayestopt.p7;
 
-bounds.lb = zeros(length(p6),1);
-bounds.ub = zeros(length(p6),1);
+bounds.lb = zeros(size(p6));
+bounds.ub = zeros(size(p6));
 
 for i=1:length(p6)
     switch pshape(i)
       case 1
-        if prior_trunc == 0
+        if priortrunc==0
             bounds.lb(i) = p3(i);
             bounds.ub(i) = p4(i);
         else
-            bounds.lb(i) = betainv(prior_trunc,p6(i),p7(i))*(p4(i)-p3(i))+p3(i);
-            bounds.ub(i) = betainv(1-prior_trunc,p6(i),p7(i))*(p4(i)-p3(i))+p3(i);
+            bounds.lb(i) = betainv(priortrunc, p6(i), p7(i))*(p4(i)-p3(i))+p3(i);
+            bounds.ub(i) = betainv(1.0-priortrunc, p6(i), p7(i))*(p4(i)-p3(i))+p3(i);
         end
       case 2
-        if prior_trunc == 0
+        if priortrunc==0
             bounds.lb(i) = p3(i);
             bounds.ub(i) = Inf;
         else
-            bounds.lb(i) = gaminv(prior_trunc,p6(i),p7(i))+p3(i);
-            bounds.ub(i) = gaminv(1-prior_trunc,p6(i),p7(i))+p3(i);
+            bounds.lb(i) = gaminv(priortrunc, p6(i), p7(i))+p3(i);
+            bounds.ub(i) = gaminv(1.0-priortrunc, p6(i), p7(i))+p3(i);
         end
       case 3
         if prior_trunc == 0
-            bounds.lb(i) = max(-Inf,p3(i));
-            bounds.ub(i) = min(Inf,p4(i));
+            bounds.lb(i) = max(-Inf, p3(i));
+            bounds.ub(i) = min(Inf, p4(i));
         else
-            bounds.lb(i) = max(norminv(prior_trunc,p6(i),p7(i)),p3(i));
-            bounds.ub(i) = min(norminv(1-prior_trunc,p6(i),p7(i)),p4(i));
+            bounds.lb(i) = max(norminv(prior_trunc, p6(i), p7(i)), p3(i));
+            bounds.ub(i) = min(norminv(1-prior_trunc, p6(i), p7(i)), p4(i));
         end
       case 4
-        if prior_trunc == 0
+        if priortrunc==0
             bounds.lb(i) = p3(i);
             bounds.ub(i) = Inf;
         else
-            bounds.lb(i) = 1/sqrt(gaminv(1-prior_trunc, p7(i)/2, 2/p6(i)))+p3(i);
-            bounds.ub(i) = 1/sqrt(gaminv(prior_trunc, p7(i)/2, 2/p6(i)))+p3(i);
+            bounds.lb(i) = 1.0/sqrt(gaminv(1.0-priortrunc, p7(i)/2.0, 2.0/p6(i)))+p3(i);
+            bounds.ub(i) = 1.0/sqrt(gaminv(priortrunc, p7(i)/2.0, 2.0/p6(i)))+p3(i);
         end
       case 5
-        if prior_trunc == 0
+        if priortrunc == 0
             bounds.lb(i) = p6(i);
             bounds.ub(i) = p7(i);
         else
-            bounds.lb(i) = p6(i)+(p7(i)-p6(i))*prior_trunc;
-            bounds.ub(i) = p7(i)-(p7(i)-p6(i))*prior_trunc;
+            bounds.lb(i) = p6(i)+(p7(i)-p6(i))*priortrunc;
+            bounds.ub(i) = p7(i)-(p7(i)-p6(i))*priortrunc;
         end
       case 6
-        if prior_trunc == 0
+        if priortrunc == 0
             bounds.lb(i) = p3(i);
             bounds.ub(i) = Inf;
         else
-            bounds.lb(i) = 1/gaminv(1-prior_trunc, p7(i)/2, 2/p6(i))+p3(i);
-            bounds.ub(i) = 1/gaminv(prior_trunc, p7(i)/2, 2/p6(i))+ p3(i);
+            bounds.lb(i) = 1.0/gaminv(1.0-priortrunc, p7(i)/2.0, 2.0/p6(i))+p3(i);
+            bounds.ub(i) = 1.0/gaminv(priortrunc, p7(i)/2.0, 2.0/p6(i))+ p3(i);
         end
       case 8
-        if prior_trunc == 0
+        if priortrunc == 0
             bounds.lb(i) = p3(i);
             bounds.ub(i) = Inf;
         else
-            bounds.lb(i) = p3(i)+wblinv(prior_trunc,p6(i),p7(i));
-            bounds.ub(i) = p3(i)+wblinv(1-prior_trunc,p6(i),p7(i));
+            bounds.lb(i) = p3(i)+wblinv(priortrunc, p6(i), p7(i));
+            bounds.ub(i) = p3(i)+wblinv(1.0-priortrunc, p6(i), p7(i));
         end
       otherwise
         error(sprintf('prior_bounds: unknown distribution shape (index %d, type %d)', i, pshape(i)));
