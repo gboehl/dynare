@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -256,6 +256,11 @@ public:
   UTensor &operator=(const UTensor &) = delete;
   UTensor &operator=(UTensor &&) = delete;
 
+  // Ensure that the methods of the parent class are not overloaded
+  using Tensor::increment;
+  using Tensor::decrement;
+  using Tensor::getOffset;
+
   static void increment(IntSequence &v, int nv);
   static void decrement(IntSequence &v, int nv);
   static void increment(IntSequence &v, const IntSequence &nvmx);
@@ -291,6 +296,10 @@ public:
 
   FTensor &operator=(const FTensor &) = delete;
   FTensor &operator=(FTensor &&) = delete;
+
+  // Ensure that the methods of the parent class are not overloaded
+  using Tensor::decrement;
+  using Tensor::getOffset;
 
   static void decrement(IntSequence &v, int nv);
   static int
