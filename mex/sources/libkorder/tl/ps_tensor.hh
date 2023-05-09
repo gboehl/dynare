@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -116,7 +116,7 @@ public:
     per.apply(nvmax);
   }
   bool
-  operator==(const PerTensorDimens &td)
+  operator==(const PerTensorDimens &td) const
   {
     return TensorDimens::operator==(td) && per == td.per;
   }
