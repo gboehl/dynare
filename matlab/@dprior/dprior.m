@@ -1,10 +1,13 @@
 classdef dprior
 
     properties
-        p6 = [];                         % Prior first hyperparameter.
-        p7 = [];                         % Prior second hyperparameter.
+        p1 = [];                         % Prior mean.
+        p2 = [];                         % Prior stddev.
         p3 = [];                         % Lower bound of the prior support.
         p4 = [];                         % Upper bound of the prior support.
+        p5 = [];                         % Prior mode.
+        p6 = [];                         % Prior first hyperparameter.
+        p7 = [];                         % Prior second hyperparameter.
         lb = [];                         % Truncated prior lower bound.
         ub = [];                         % Truncated prior upper bound.
         iduniform = [];                  % Index for the uniform priors.
@@ -38,10 +41,13 @@ classdef dprior
         %
         % REQUIREMENTS
         % None.
-            o.p6 = bayestopt_.p6;
-            o.p7 = bayestopt_.p7;
-            o.p3 = bayestopt_.p3;
-            o.p4 = bayestopt_.p4;
+            if isfield(bayestopt_, 'p1'), o.p1 = bayestopt_.p1; end
+            if isfield(bayestopt_, 'p2'), o.p2 = bayestopt_.p2; end
+            if isfield(bayestopt_, 'p3'), o.p3 = bayestopt_.p3; end
+            if isfield(bayestopt_, 'p4'), o.p4 = bayestopt_.p4; end
+            if isfield(bayestopt_, 'p5'), o.p5 = bayestopt_.p5; end
+            if isfield(bayestopt_, 'p6'), o.p6 = bayestopt_.p6; end
+            if isfield(bayestopt_, 'p7'), o.p7 = bayestopt_.p7; end
             bounds = prior_bounds(bayestopt_, PriorTrunc);
             o.lb = bounds.lb;
             o.ub = bounds.ub;
@@ -79,6 +85,19 @@ classdef dprior
                 o.isweibull = true;
             end
         end % dprior (constructor)
+
+        function p = subsref(o, S)
+            switch S(1).type
+              case '.'
+                if ismember(S(1).subs, {'p1','p2','p3','p4','p5','p6','p7','lb','ub'})
+                    r = builtin('subsref', o, S(1));
+                else
+                    error('dprior::subsref: unknown method.')
+                end
+              otherwise
+                error('dprior::subsref: case not implemented.')
+            end
+         end
 
         function p = draw(o)
         % Return a random draw from the prior distribution.
@@ -196,7 +215,7 @@ classdef dprior
         % REMARKS
         % Second order derivatives holder, d2lpd, has the same rank and shape than dlpd because the priors are
         % independent (we would have to use a matrix if non orthogonal priors were allowed in Dynare).
-         %
+        %
         % EXAMPLE
         %
         % >> Prior = dprior(bayestopt_, options_.prior_trunc);
@@ -288,21 +307,21 @@ classdef dprior
                   case 1
                     lpd = lpd + sum(lpdfig1(x(o.idinvgamma1)-o.p3(o.idinvgamma1), o.p6(o.idinvgamma1), o.p7(o.idinvgamma1)));
                     if isinf(lpd), return, end
-                   case 2
-                     [tmp, dlpd(o.idinvgamma1)] = lpdfig1(x(o.idinvgamma1)-o.p3(o.idinvgamma1), o.p6(o.idinvgamma1), o.p7(o.idinvgamma1));
-                      lpd = lpd + sum(tmp);
-                      if isinf(lpd), return, end
+                  case 2
+                    [tmp, dlpd(o.idinvgamma1)] = lpdfig1(x(o.idinvgamma1)-o.p3(o.idinvgamma1), o.p6(o.idinvgamma1), o.p7(o.idinvgamma1));
+                    lpd = lpd + sum(tmp);
+                    if isinf(lpd), return, end
                   case 3
                     [tmp, dlpd(o.idinvgamma1), d2lpd(o.idinvgamma1)] = lpdfig1(x(o.idinvgamma1)-o.p3(o.idinvgamma1), o.p6(o.idinvgamma1), o.p7(o.idinvgamma1));
-                     lpd = lpd + sum(tmp);
-                     if isinf(lpd), return, end
+                    lpd = lpd + sum(tmp);
+                    if isinf(lpd), return, end
                   case 4
                     [tmp, dlpd(o.idinvgamma1), d2lpd(o.idinvgamma1)] = lpdfig1(x(o.idinvgamma1)-o.p3(o.idinvgamma1), o.p6(o.idinvgamma1), o.p7(o.idinvgamma1));
-                     lpd = lpd + sum(tmp);
-                     if isinf(lpd)
-                         info = o.idinvgamma1(isinf(tmp));
-                          return
-                     end
+                    lpd = lpd + sum(tmp);
+                    if isinf(lpd)
+                        info = o.idinvgamma1(isinf(tmp));
+                        return
+                    end
                 end
             end
             if o.isinvgamma2
@@ -316,14 +335,14 @@ classdef dprior
                     if isinf(lpd), return, end
                   case 3
                     [tmp, dlpd(o.idinvgamma2), d2lpd(o.idinvgamma2)] = lpdfig2(x(o.idinvgamma2)-o.p3(o.idinvgamma2), o.p6(o.idinvgamma2), o.p7(o.idinvgamma2));
-                     lpd = lpd + sum(tmp);
-                     if isinf(lpd), return, end
+                    lpd = lpd + sum(tmp);
+                    if isinf(lpd), return, end
                   case 4
                     [tmp, dlpd(o.idinvgamma2), d2lpd(o.idinvgamma2)] = lpdfig2(x(o.idinvgamma2)-o.p3(o.idinvgamma2), o.p6(o.idinvgamma2), o.p7(o.idinvgamma2));
                     lpd = lpd + sum(tmp);
                     if isinf(lpd)
                         info = o.idinvgamma2(isinf(tmp));
-                         return
+                        return
                     end
                 end
             end
@@ -345,7 +364,7 @@ classdef dprior
                     lpd = lpd + sum(tmp);
                     if isinf(lpd)
                         info = o.idweibull(isinf(tmp));
-                         return
+                        return
                     end
                 end
             end
@@ -623,18 +642,18 @@ end % classdef --*-- Unit tests --*--
 %$     end
 %$ end
 %$
-%$ BayesInfo.pshape = p0;
-%$ BayesInfo.p1 = p1;
-%$ BayesInfo.p2 = p2;
-%$ BayesInfo.p3 = p3;
-%$ BayesInfo.p4 = p4;
-%$ BayesInfo.p5 = p5;
-%$ BayesInfo.p6 = p6;
-%$ BayesInfo.p7 = p7;
+%$ bayestopt_.pshape = p0;
+%$ bayestopt_.p1 = p1;
+%$ bayestopt_.p2 = p2;
+%$ bayestopt_.p3 = p3;
+%$ bayestopt_.p4 = p4;
+%$ bayestopt_.p5 = p5;
+%$ bayestopt_.p6 = p6;
+%$ bayestopt_.p7 = p7;
 %$
 %$ % Call the tested routine
 %$ try
-%$     Prior = dprior(BayesInfo, prior_trunc, false);
+%$     Prior = dprior(bayestopt_, prior_trunc, false);
 %$
 %$     % Compute density at the prior mode
 %$     lpdstar = Prior.density(p5);
@@ -718,18 +737,18 @@ end % classdef --*-- Unit tests --*--
 %$     end
 %$ end
 %$
-%$ BayesInfo.pshape = p0;
-%$ BayesInfo.p1 = p1;
-%$ BayesInfo.p2 = p2;
-%$ BayesInfo.p3 = p3;
-%$ BayesInfo.p4 = p4;
-%$ BayesInfo.p5 = p5;
-%$ BayesInfo.p6 = p6;
-%$ BayesInfo.p7 = p7;
+%$ bayestopt_.pshape = p0;
+%$ bayestopt_.p1 = p1;
+%$ bayestopt_.p2 = p2;
+%$ bayestopt_.p3 = p3;
+%$ bayestopt_.p4 = p4;
+%$ bayestopt_.p5 = p5;
+%$ bayestopt_.p6 = p6;
+%$ bayestopt_.p7 = p7;
 %$
 %$ % Call the tested routine
 %$ try
-%$     Prior = dprior(BayesInfo, prior_trunc, false);
+%$     Prior = dprior(bayestopt_, prior_trunc, false);
 %$     mu = NaN(14,1);
 %$
 %$     for i=1:14

@@ -1,5 +1,5 @@
-function optimize_prior(options_, M_, oo_, bayestopt_, estim_params_)
-% optimize_prior(options_, M_, oo_, bayestopt_, estim_params_)
+function optimize_prior(options_, M_, oo_, Prior, estim_params_, pnames)
+
 % This routine computes the mode of the prior density using an optimization algorithm.
 %
 % INPUTS
@@ -26,24 +26,25 @@ function optimize_prior(options_, M_, oo_, bayestopt_, estim_params_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+oo_.dr = set_state_space(oo_.dr, M_, options_);
+
 % Initialize to the prior mean
-oo_.dr = set_state_space(oo_.dr,M_);
-xparam1 = bayestopt_.p1;
+xparam1 = Prior.p1;
 
 % Pertubation of the initial condition.
-look_for_admissible_initial_condition = 1; scale = 1.0; iter  = 0;
+look_for_admissible_initial_condition = true; scale = 1.0; iter  = 0;
 while look_for_admissible_initial_condition
     xinit = xparam1+scale*randn(size(xparam1));
-    if all(xinit(:)>bayestopt_.p3) && all(xinit(:)<bayestopt_.p4)
-        M_ = set_all_parameters(xinit,estim_params_,M_);
-        [oo_.dr,INFO,M_.params] = resol(0,M_,options_,oo_.dr,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+    if all(xinit>Prior.p3) && all(xinit<Prior.p4)
+        M_ = set_all_parameters(xinit, estim_params_, M_);
+        [dr, INFO, M_, oo_] = resol(0, M_, options_, oo_);
         if ~INFO(1)
-            look_for_admissible_initial_condition = 0;
+            look_for_admissible_initial_condition = false;
         end
     else
-        if iter == 2000
+        if iter==2000
             scale = scale/1.1;
-            iter  = 0;
+            iter = 0;
         else
             iter = iter+1;
         end
@@ -52,23 +53,19 @@ end
 
 % Maximization of the prior density
 [xparams, lpd, hessian_mat] = ...
-    maximize_prior_density(xinit, bayestopt_.pshape, ...
-                           bayestopt_.p6, ...
-                           bayestopt_.p7, ...
-                           bayestopt_.p3, ...
-                           bayestopt_.p4,options_,M_,bayestopt_,estim_params_,oo_);
+    maximize_prior_density(xinit, pnames, options_, M_, Prior, estim_params_, oo_);
 
-% Display the results.
+% Display results.
 skipline(2)
 disp('------------------')
 disp('PRIOR OPTIMIZATION')
 disp('------------------')
 skipline()
 for i = 1:length(xparams)
-    disp(['deep parameter ' int2str(i) ': ' get_the_name(i,0,M_,estim_params_,options_.varobs) '.'])
-    disp(['  Initial condition ....... ' num2str(xinit(i)) '.'])
-    disp(['  Prior mode .............. ' num2str(bayestopt_.p5(i)) '.'])
-    disp(['  Optimized prior mode .... ' num2str(xparams(i)) '.'])
+    dprintf('deep parameter %u: %s.', i, get_the_name(i, 0, M_, estim_params_, options_.varobs))
+    dprintf('  Initial condition ........ %s.', num2str(xinit(i)))
+    dprintf('  Prior mode ............... %s.', num2str(Prior.p5(i)))
+    dprintf('  Optimized prior mode ..... %s.', num2str(xparams(i)))
     skipline()
 end
 skipline()
