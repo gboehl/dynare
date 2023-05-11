@@ -40,6 +40,7 @@ function [ysim, xsim, errorflag] = simul_backward_nonlinear_model_(initialcondit
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 debug = false;
+errorflag = false;
 
 if ~isempty(innovations)
     DynareOutput.exo_simul(initialconditions.nobs+(1:samplesize),:) = innovations;
