@@ -717,7 +717,7 @@ The dates class
 
         |br| Overloads the MATLAB/Octave ``mtimes`` operator
         (``*``). ``A`` and ``B`` are respectively expected to be a
-        ``dseries`` object and a scalar integer. Returns ``dates``
+        ``dates`` object and a scalar integer. Returns ``dates``
         object ``A`` replicated ``B`` times.
 
         *Example*
