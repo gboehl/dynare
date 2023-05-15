@@ -76,16 +76,21 @@ pkg_source:
 pkg_windows:
   stage: pkg
   script:
-    - ln -s ~/tarballs windows/deps/
+    - mkdir -p windows/deps/tarballs && cp ~/tarballs/matlab64-* windows/deps/tarballs/
     - make -C windows
+    - rm windows/deps/tarballs/matlab64-* # No need to cache these files
   cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - windows/deps/sources64/
-      - windows/deps/lib64/
-      # We do not cache lib64-msys2, mingw64, octave64 and
-      # matlab64, because those are simply extracted from a tarball. It
-      # would be a waste of space and of (re-compression) time.
+    - key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+      paths:
+        - windows/deps/sources64/
+        - windows/deps/lib64/
+        # We do not cache lib64-msys2, mingw64, octave64 and
+        # matlab64, because those are simply extracted from a tarball. It
+        # would be a waste of space and of (re-compression) time.
+    - key: $CI_JOB_NAME
+      # This cache is shared between all branches, to save space
+      paths:
+        - windows/deps/tarballs/
   artifacts:
     paths:
       - windows/exe/*
