@@ -90,6 +90,7 @@ if options_.order~=1
 end
 
 original_prior_trunc = options_.prior_trunc;
+original_qz_criterium = options_.qz_criterium;
 
 if ~isempty(options_gsa.datafile) || isempty(bayestopt_) || options_gsa.rmse
     if isempty(options_gsa.datafile) && options_gsa.rmse
@@ -265,7 +266,7 @@ end
 
 if (options_gsa.load_stab || options_gsa.load_rmse || options_gsa.load_redform) && options_gsa.pprior
     filetoload=[OutputDirectoryName '/' fname_ '_prior.mat'];
-    if ~exist(filetoload)
+    if ~exist(filetoload,'file')
         disp([filetoload,' not found!'])
         disp(['You asked to load a non existent analysis'])
         %options_gsa.load_stab=0;
@@ -436,6 +437,7 @@ if options_gsa.rmse
 end
 options_.opt_gsa = options_gsa;
 options_.prior_trunc=original_prior_trunc;
+options_.qz_criterium=original_qz_criterium ;
 
 
 if options_gsa.glue
@@ -450,7 +452,7 @@ if options_gsa.glue
             load([OutputDirectoryName,'/',fname_,'_mc']);
         end
     end
-    if ~exist('x')
+    if ~exist('x','var')
         disp(['No RMSE analysis is available for current options'])
         disp(['No GLUE file prepared'])
         return,
