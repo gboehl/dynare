@@ -362,7 +362,7 @@ if parallel_recover ==0
                             itmp = bitset(itmp,cpus(icpu));
                         end
                         hex_affinity = dec2hex(itmp);
-                        token1 = ['start /B /D "',DyMo, '" /affinity ',hex_affinity,' /LOW  '];
+                        token1 = ['start "" /B /D "',DyMo, '" /affinity ',hex_affinity,' /LOW  '];
                     end
                     if  regexpi([Parallel(indPC).MatlabOctavePath], 'octave')
                         command1=[token1,Parallel(indPC).MatlabOctavePath,' -f --eval "default_save_options(''-v7''); addpath(''',Parallel(indPC).DynarePath,'''), dynareroot = dynare_config(); fParallel(',int2str(offset+1),',',int2str(sum(nBlockPerCPU(1:j))),',',int2str(j),',',int2str(indPC),',''',fname,''')"'];
@@ -378,7 +378,7 @@ if parallel_recover ==0
 
                 if (~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)) % Hybrid computing Windows <-> Unix!
                     if ispc
-                        token='start /B ';
+                        token='start "" /B ';
                     else
                         token = '';
                     end
@@ -444,7 +444,7 @@ if parallel_recover ==0
                             itmp = bitset(itmp,cpus(icpu));
                         end
                         hex_affinity = dec2hex(itmp);
-                        token1 = ['start /B /D "',DyMo, '" /affinity ',hex_affinity,' /LOW  '];
+                        token1 = ['start "" /B /D "',DyMo, '" /affinity ',hex_affinity,' /LOW  '];
                     end
                     if  regexpi([Parallel(indPC).MatlabOctavePath], 'octave')
                         command1=[token1,Parallel(indPC).MatlabOctavePath,' -f --eval "default_save_options(''-v7'');addpath(''',Parallel(indPC).DynarePath,'''), dynareroot = dynare_config(); slaveParallel(',int2str(j),',',int2str(indPC),')"'];
@@ -464,7 +464,7 @@ if parallel_recover ==0
                     dynareParallelSendFiles(['slaveParallel_input',int2str(j),'.mat'],PRCDir,Parallel(indPC))
                     if (~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem)) % Hybrid computing Windows <-> Unix!
                         if ispc
-                            token='start /B ';
+                            token='start "" /B ';
                         else
                             token = '';
                         end

@@ -270,7 +270,9 @@ lines starting with a hashtag (#).
     .. option:: MatlabOctavePath = PATH_AND_FILE
 
         The path to the MATLAB or Octave executable. The default value
-        is ``matlab``.
+        is ``matlab`` as MATLAB's executable is typically in the %PATH% environment 
+        variable. When using full paths on Windows, you may need to enclose the path
+        in quoted strings, e.g. ``MatlabOctavePath="C:\Program Files\MATLAB\R2023a\bin\matlab.exe"``
 
     .. option:: NumberOfThreadsPerJob = INTEGER
 
@@ -323,7 +325,9 @@ Windows Step-by-Step Guide
 ==========================
 
 This section outlines the steps necessary on most Windows systems to
-set up Dynare for parallel execution.
+set up Dynare for parallel execution. Note that the steps 3 to 6 are 
+required unless parallel execution is confined to a local pool 
+with the ``parallel_use_psexec=false`` option. 
 
     1. Write a configuration file containing the options you want. A
        mimimum working example setting up a cluster consisting of two
