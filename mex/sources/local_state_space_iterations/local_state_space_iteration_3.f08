@@ -71,15 +71,15 @@ contains
             ! + first n folded indices for (1/6)ghxxx·ŷ⊗ŷ⊗ŷ
             do j=1,td3%n
                td3%y3(im,is) = td3%y3(im,is)+&
-              &(0.5*td3%ghxss(j,im)+td3%ghx(j,im))*td3%yhat3(j,is)+&
-              &(0.5*td3%ghxx(j,im)+(1./6.)*td3%ghxxx(j,im)*td3%yhat3(1, is))*&
+              &(0.5_real64*td3%ghxss(j,im)+td3%ghx(j,im))*td3%yhat3(j,is)+&
+              &(0.5_real64*td3%ghxx(j,im)+(1._real64/6._real64)*td3%ghxxx(j,im)*td3%yhat3(1, is))*&
               &td3%yhat3(1, is)*td3%yhat3(j,is) 
                ! y3 += ghxu·ŷ⊗ε 
                ! + first n*q folded indices of (3/6)·ghxxu·ŷ⊗ŷ⊗ε
                do k=1,td3%q
                   td3%y3(im,is) = td3%y3(im,is) + &
                  &(td3%ghxu(td3%q*(j-1)+k,im)+&
-                 &0.5*td3%ghxxu(td3%q*(j-1)+k,im)*td3%yhat3(1, is))*&
+                 &0.5_real64*td3%ghxxu(td3%q*(j-1)+k,im)*td3%yhat3(1, is))*&
                  &td3%yhat3(j, is)*td3%e(k, is)
                end do
             end do
@@ -88,12 +88,12 @@ contains
             ! + first n*q folded indices of (3/6)·ghxuu·ŷ⊗ε⊗ε
             do j=1,td3%q
                td3%y3(im,is) = td3%y3(im,is) + &
-              &(0.5*td3%ghuss(j,im)+td3%ghu(j,im))*td3%e(j,is) + &
-              &(0.5*td3%ghuu(j,im)+(1./6.)*td3%ghuuu(j,im)*&
+              &(0.5_real64*td3%ghuss(j,im)+td3%ghu(j,im))*td3%e(j,is) + &
+              &(0.5_real64*td3%ghuu(j,im)+(1._real64/6._real64)*td3%ghuuu(j,im)*&
               &td3%e(1, is))*td3%e(1, is)*td3%e(j, is)
                do k=1,td3%n
                   td3%y3(im,is) = td3%y3(im,is) + &
-                 &0.5*td3%ghxuu(td3%uu_size*(k-1)+j,im)*&
+                 &0.5_real64*td3%ghxuu(td3%uu_size*(k-1)+j,im)*&
                  &td3%yhat3(k, is)*td3%e(1, is)*td3%e(j, is)
                end do
             end do
@@ -103,12 +103,12 @@ contains
             ! + remaining terms of (3/6)·ghxxu·ŷ⊗ŷ⊗ε
             do j=td3%n+1,td3%xx_size
                td3%y3(im,is) = td3%y3(im,is) + &
-              &(0.5*td3%ghxx(j,im)+(1./6.)*td3%ghxxx(j,im)*td3%yhat3(1, is))*&
+              &(0.5_real64*td3%ghxx(j,im)+(1._real64/6._real64)*td3%ghxxx(j,im)*td3%yhat3(1, is))*&
               &td3%yhat3(td3%xx_idcs(j)%coor(1), is)*&
               &td3%yhat3(td3%xx_idcs(j)%coor(2), is)
                do k=1,td3%q
                   td3%y3(im,is) = td3%y3(im,is)+&
-                 &0.5*td3%ghxxu(td3%q*(j-1)+k,im)*&
+                 &0.5_real64*td3%ghxxu(td3%q*(j-1)+k,im)*&
                  &td3%yhat3(td3%xx_idcs(j)%coor(1), is)*&
                  &td3%yhat3(td3%xx_idcs(j)%coor(2), is)*&
                  &td3%e(k, is)
@@ -120,12 +120,12 @@ contains
             ! + remaining terms of (3/6)·ghxuu·ŷ⊗ε⊗ε
             do j=td3%q+1,td3%uu_size
                td3%y3(im,is) = td3%y3(im,is) + &
-              &(0.5*td3%ghuu(j,im)+(1./6.)*td3%ghuuu(j,im)*td3%e(1, is))*&
+              &(0.5_real64*td3%ghuu(j,im)+(1._real64/6._real64)*td3%ghuuu(j,im)*td3%e(1, is))*&
               &td3%e(td3%uu_idcs(j)%coor(1), is)*&
               &td3%e(td3%uu_idcs(j)%coor(2), is)
                do k=1,td3%n
                   td3%y3(im,is) = td3%y3(im,is) + &
-                 &0.5*td3%ghxuu(td3%uu_size*(k-1)+j,im)*&
+                 &0.5_real64*td3%ghxuu(td3%uu_size*(k-1)+j,im)*&
                  &td3%yhat3(k, is)*&
                  &td3%e(td3%uu_idcs(j)%coor(1), is)*&
                  &td3%e(td3%uu_idcs(j)%coor(2), is)
@@ -134,7 +134,7 @@ contains
             ! y3 += remaining (1/6)·ghxxx·ŷ⊗ŷ⊗ŷ terms
             do j=td3%xx_size+1,td3%xxx_size
                td3%y3(im,is) = td3%y3(im,is)+&
-              &(1./6.)*td3%ghxxx(j,im)*&
+              &(1._real64/6._real64)*td3%ghxxx(j,im)*&
               &td3%yhat3(td3%xxx_idcs(j)%coor(1), is)*&
               &td3%yhat3(td3%xxx_idcs(j)%coor(2), is)*&
               &td3%yhat3(td3%xxx_idcs(j)%coor(3), is)
@@ -142,7 +142,7 @@ contains
             ! y3 += remaining (1/6)ghuuu·ε⊗ε⊗ε terms
             do j=td3%uu_size+1,td3%uuu_size
                td3%y3(im,is) = td3%y3(im,is) + &
-              &(1./6.)*td3%ghuuu(j,im)*&
+              &(1._real64/6._real64)*td3%ghuuu(j,im)*&
               &td3%e(td3%uuu_idcs(j)%coor(1), is)*&
               &td3%e(td3%uuu_idcs(j)%coor(2), is)*&
               &td3%e(td3%uuu_idcs(j)%coor(3), is)
@@ -198,11 +198,11 @@ contains
             do j=1,td3%n
                td3%y1(im,is) = td3%y1(im,is) + td3%ghx(j,im)*td3%yhat1(j,is)
                td3%y2(im,is) = td3%y2(im,is) + td3%ghx(j,im)*td3%yhat2(j,is) +&
-              &0.5*td3%ghxx(j,im)*td3%yhat1(1, is)*td3%yhat1(j, is)
+              &0.5_real64*td3%ghxx(j,im)*td3%yhat1(1, is)*td3%yhat1(j, is)
                td3%y3(im,is) = td3%y3(im,is) + td3%ghx(j,im)*td3%yhat3(j,is) +&
-              &0.5*td3%ghxss(j,im)*td3%yhat1(j,is) +&
+              &0.5_real64*td3%ghxss(j,im)*td3%yhat1(j,is) +&
               &td3%ghxx(j,im)*td3%yhat1(1, is)*td3%yhat2(j, is)+&
-              &(1./6.)*td3%ghxxx(j,im)*td3%yhat1(1, is)*&
+              &(1._real64/6._real64)*td3%ghxxx(j,im)*td3%yhat1(1, is)*&
               &td3%yhat1(1, is)*td3%yhat1(j,is) 
                ! y2 += + ghxu·ŷ1⊗ε
                ! y3 += + ghxu·ŷ1⊗ε + ghxu·ŷ2⊗ε
@@ -214,7 +214,7 @@ contains
                   td3%y3(im,is) = td3%y3(im,is)+&
                  &td3%ghxu(td3%q*(j-1)+k,im)*&
                  &(td3%yhat1(j, is)+td3%yhat2(j, is))*td3%e(k, is)+&
-                 &0.5*td3%ghxxu(td3%q*(j-1)+k,im)*td3%yhat1(1, is)*&
+                 &0.5_real64*td3%ghxxu(td3%q*(j-1)+k,im)*td3%yhat1(1, is)*&
                  &td3%yhat1(j, is)*td3%e(k, is)
                end do
             end do
@@ -227,14 +227,14 @@ contains
                x = td3%ghu(j,im)*td3%e(j,is) 
                y = td3%ghuu(j,im)*td3%e(1, is)*td3%e(j, is)
                td3%y1(im,is) = td3%y1(im,is) + x
-               td3%y2(im,is) = td3%y2(im,is) + x + 0.5*y
+               td3%y2(im,is) = td3%y2(im,is) + x + 0.5_real64*y
                td3%y3(im,is) = td3%y3(im,is) + x + y +&
               &td3%ghuss(j,im)*td3%e(j,is)+&
-              &(1./6.)*td3%ghuuu(j,im)*td3%e(1, is)*td3%e(1, is)*&
+              &(1._real64/6._real64)*td3%ghuuu(j,im)*td3%e(1, is)*td3%e(1, is)*&
               &td3%e(j, is)
                do k=1,td3%n
                   td3%y3(im,is) = td3%y3(im,is) + &
-                 &0.5*td3%ghxuu(td3%uu_size*(k-1)+j,im)*&
+                 &0.5_real64*td3%ghxuu(td3%uu_size*(k-1)+j,im)*&
                  &td3%yhat1(k, is)*td3%e(1, is)*td3%e(j, is)
                end do
             end do
@@ -245,19 +245,19 @@ contains
             !      + remaining terms of (3/6)·ghxxu·ŷ1⊗ŷ1⊗ε
             do j=td3%n+1,td3%xx_size
                td3%y2(im,is) = td3%y2(im,is) + &
-              &0.5*td3%ghxx(j,im)*&
+              &0.5_real64*td3%ghxx(j,im)*&
               &td3%yhat1(td3%xx_idcs(j)%coor(1), is)*&
               &td3%yhat1(td3%xx_idcs(j)%coor(2), is)
                td3%y3(im,is) = td3%y3(im,is) + &
               &td3%ghxx(j,im)*&
               &td3%yhat1(td3%xx_idcs(j)%coor(1), is)*&
               &td3%yhat2(td3%xx_idcs(j)%coor(2), is)+&
-              &(1./6.)*td3%ghxxx(j,im)*td3%yhat1(1, is)*&
+              &(1._real64/6._real64)*td3%ghxxx(j,im)*td3%yhat1(1, is)*&
               &td3%yhat1(td3%xx_idcs(j)%coor(1), is)*&
               &td3%yhat1(td3%xx_idcs(j)%coor(2), is)
                do k=1,td3%n
                   td3%y3(im,is) = td3%y3(im,is) + &
-                 &0.5*td3%ghxxu(td3%q*(j-1)+k,im)*&
+                 &0.5_real64*td3%ghxxu(td3%q*(j-1)+k,im)*&
                  &td3%yhat1(td3%xx_idcs(j)%coor(1), is)*&
                  &td3%yhat1(td3%xx_idcs(j)%coor(2), is)*&
                  &td3%e(k, is)
@@ -272,14 +272,14 @@ contains
                x = td3%ghuu(j,im)*&
               &td3%e(td3%uu_idcs(j)%coor(1), is)*&
               &td3%e(td3%uu_idcs(j)%coor(2), is)
-               td3%y2(im,is) = td3%y2(im,is)+0.5*x
+               td3%y2(im,is) = td3%y2(im,is)+0.5_real64*x
                td3%y3(im,is) = td3%y3(im,is)+x+&
-              &(1./6.)*td3%ghuuu(j,im)*td3%e(1, is)*&
+              &(1._real64/6._real64)*td3%ghuuu(j,im)*td3%e(1, is)*&
               &td3%e(td3%uu_idcs(j)%coor(1), is)*&
               &td3%e(td3%uu_idcs(j)%coor(2), is)
                do k=1,td3%n
                   td3%y3(im,is) = td3%y3(im,is) + &
-                 &0.5*td3%ghxuu(td3%uu_size*(k-1)+j,im)*&
+                 &0.5_real64*td3%ghxuu(td3%uu_size*(k-1)+j,im)*&
                  &td3%yhat1(k, is)*&
                  &td3%e(td3%uu_idcs(j)%coor(1), is)*&
                  &td3%e(td3%uu_idcs(j)%coor(2), is)
@@ -288,7 +288,7 @@ contains
             ! y3 += remaining (1/6)·ghxxx·ŷ⊗ŷ⊗ŷ terms
             do j=td3%xx_size+1,td3%xxx_size
                td3%y3(im,is) = td3%y3(im,is)+&
-              &(1./6.)*td3%ghxxx(j,im)*&
+              &(1._real64/6._real64)*td3%ghxxx(j,im)*&
               &td3%yhat1(td3%xxx_idcs(j)%coor(1), is)*&
               &td3%yhat1(td3%xxx_idcs(j)%coor(2), is)*&
               &td3%yhat1(td3%xxx_idcs(j)%coor(3), is)
@@ -296,7 +296,7 @@ contains
             ! y3 += remaining (1/6)ghuuu·ε⊗ε⊗ε terms
             do j=td3%uu_size+1,td3%uuu_size
                td3%y3(im,is) = td3%y3(im,is) + &
-              &(1./6.)*td3%ghuuu(j,im)*&
+              &(1._real64/6._real64)*td3%ghuuu(j,im)*&
               &td3%e(td3%uuu_idcs(j)%coor(1), is)*&
               &td3%e(td3%uuu_idcs(j)%coor(2), is)*&
               &td3%e(td3%uuu_idcs(j)%coor(3), is)
