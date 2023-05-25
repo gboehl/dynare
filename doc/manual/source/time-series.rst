@@ -15,7 +15,7 @@ class and methods for dates. Below, you will first find the class and
 methods used for creating and dealing with dates and then the class
 used for using time series. Dynare also provides an interface to the
 X-13 ARIMA-SEATS seasonal adjustment program produced, distributed, and
-maintained by the US Census Bureau (2017).
+maintained by the U.S. Census Bureau (2020).
 
 
 Dates
@@ -2946,8 +2946,8 @@ X-13 ARIMA-SEATS interface
 
     |br| The x13 class provides a method for each X-13 command as
     documented in the X-13 ARIMA-SEATS reference manual (`x11`,
-    `automdl`, `estimate`, ...), options can then be passed by
-    key/value pairs. The ``x13`` class has 22 members:
+    `automdl`, `estimate`, ...). The respective options (see Chapter 7 of U.S. Census Bureau (2020))
+    can then be passed by key/value pairs. The ``x13`` class has 22 members:
 
     :arg y: ``dseries`` object with a single variable.
     :arg x: ``dseries`` object with an arbitrary number of variables (to be used in the REGRESSION block).
@@ -2991,7 +2991,7 @@ X-13 ARIMA-SEATS interface
         same time span.
 
 
-    The Following methods allow to set sequence of X-13 commands, write an `.spc` file and run the X-13 binary:
+    The following methods allow to set sequence of X-13 commands, write an `.spc` file, and run the X-13 binary:
 
 
     .. x13method:: A = arima (A, key, value[, key, value[, [...]]])
@@ -3026,7 +3026,10 @@ X-13 ARIMA-SEATS interface
 
         Interface to the ``transform`` command, see the X-13
         ARIMA-SEATS reference manual. All the options must be passed
-        by key/value pairs.
+        by key/value pairs. For example, the key/value pair ``function,log`` 
+        instructs the use of a multiplicative instead of an additive seasonal pattern,
+        while ``function,auto`` triggers an automatic selection between the two based 
+        on their fit.
 
 
     .. x13method:: A = outlier (A, key, value[, key, value[, [...]]])
@@ -3134,6 +3137,11 @@ X-13 ARIMA-SEATS interface
         ``A.results``. When it makes sense these results are saved in
         ``dseries`` objects (*e.g.* for forecasts or filtered variables).
 
+    .. x13method:: clean (A)
+    
+        Removes the temporary files created by an x13 run that store the intermediate
+        results. This method allows keeping the main folder clean but will also
+        delete potentially important debugging information.
 
     *Example*
 
@@ -3150,7 +3158,56 @@ X-13 ARIMA-SEATS interface
                 >> o.forecast('maxlead',18,'probability',0.95,'save','(fct fvr)');
 
                 >> o.run();
+        
+        The above example shows a run of X13 with various commands an options specified.
 
+
+    *Example*
+
+            ::
+
+                %   1949 1950 1951 1952 1953 1954 1955 1956 1957 1958 1959 1960
+                y = [112  115  145  171  196  204  242  284  315  340  360  417 ...   % Jan
+                     118  126  150  180  196  188  233  277  301  318  342  391 ...   % Feb
+                     132  141  178  193  236  235  267  317  356  362  406  419 ...   % Mar
+                     129  135  163  181  235  227  269  313  348  348  396  461 ...   % Apr
+                     121  125  172  183  229  234  270  318  355  363  420  472 ...   % May
+                     135  149  178  218  243  264  315  374  422  435  472  535 ...   % Jun
+                     148  170  199  230  264  302  364  413  465  491  548  622 ...   % Jul
+                     148  170  199  242  272  293  347  405  467  505  559  606 ...   % Aug
+                     136  158  184  209  237  259  312  355  404  404  463  508 ...   % Sep
+                     119  133  162  191  211  229  274  306  347  359  407  461 ...   % Oct
+                     104  114  146  172  180  203  237  271  305  310  362  390 ...   % Nov
+                     118  140  166  194  201  229  278  306  336  337  405  432 ]'; % Dec
+                
+                ts = dseries(y,'1949M1');
+                o = x13(ts);
+                o.transform('function','auto');
+                o.automdl('savelog','all');
+                o.x11('save','(d11 d10)');
+                o.run();
+                o.clean();
+                
+                y_SA=o.results.d11;
+                y_seasonal_pattern=o.results.d10;
+                
+                figure('Name','Comparison raw data and SAed data');
+                plot(ts.dates,log(o.y.data),ts.dates,log(y_SA.data),ts.dates,log(y_seasonal_pattern.data))
+
+
+        The above example shows how to remove a seasonal pattern from a time series. 
+        ``o.transform('function','auto')`` instructs the subsequent ``o.automdl()`` command
+        to check whether an additional or a multiplicative pattern fits the data better (the latter is 
+        the case in the current example). The ``o.automdl('savelog','all')`` automatically selects a fitting 
+        ARIMA model and saves all relevant output to the .log-file. The ``o.x11('save','(d11, d10)')`` instructs
+        ``x11`` to save both the final seasonally adjusted series ``d11`` and the final seasonal factor ``d10`` 
+        into ``dseries`` with the respective names in the output structure ``o.results``.  ``o.clean()`` removes the 
+        temporary files created by ``o.run()``. Among these are the ``.log``-file storing 
+        summary information, the ``.err``-file storing information on problems encountered, 
+        the ``.out``-file storing the raw output, and the `.spc`-file storing the specification for the `x11` run. 
+        There may be further files depending on the output requested. The last part of the example reads out the    
+        results and plots a comparison of the logged raw data and its log-additive decomposition into a 
+        seasonal pattern and the seasonally adjusted series.
 
 Miscellaneous
 =============
