@@ -22,6 +22,7 @@
 #include <limits>
 #include <stack>
 #include <cfenv>
+#include <numbers>
 
 #include <dynmex.h>
 
@@ -1877,13 +1878,13 @@ Evaluate::evaluateBlock(int it_, double *__restrict__ y, const double *__restric
           switch (op3)
             {
             case TrinaryOpcode::normcdf:
-              Stack.push(0.5*(1+erf((v1-v2)/v3/M_SQRT2)));
+              Stack.push(0.5*(1+erf((v1-v2)/v3/numbers::sqrt2)));
 #ifdef DEBUG
               tmp_out << " |normcdf(" << v1 << ", " << v2 << ", " << v3 << ")|";
 #endif
               break;
             case TrinaryOpcode::normpdf:
-              Stack.push(1/(v3*sqrt(2*M_PI)*exp(pow((v1-v2)/v3, 2)/2)));
+              Stack.push(1/(v3*sqrt(2*numbers::pi)*exp(pow((v1-v2)/v3, 2)/2)));
 #ifdef DEBUG
               tmp_out << " |normpdf(" << v1 << ", " << v2 << ", " << v3 << ")|";
 #endif

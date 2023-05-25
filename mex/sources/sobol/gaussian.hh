@@ -2,7 +2,7 @@
 **
 ** Pseudo code of the algorithm is given at http://home.online.no/~pjacklam/notes/invnorm
 **
-** Copyright © 2010-2019 Dynare Team
+** Copyright © 2010-2023 Dynare Team
 **
 ** This file is part of Dynare.
 **
@@ -25,6 +25,7 @@
 #include <cmath>
 #include <limits>
 #include <algorithm>
+#include <numbers>
 
 #include <omp.h>
 
@@ -106,7 +107,7 @@ icdf(const T uniform)
     {
       T tmp, tmp_;
       tmp = .5*erfc(-gaussian/sqrt(2.0))-uniform;
-      tmp_ = tmp*sqrt(2*M_PI)*exp(.5*gaussian*gaussian);
+      tmp_ = tmp*sqrt(2*numbers::pi)*exp(.5*gaussian*gaussian);
       gaussian = gaussian - tmp_/(1+.5*gaussian*tmp_);
     }
   if (uniform == 0)
