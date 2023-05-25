@@ -82,5 +82,5 @@ Bibliography
 * Smets, Frank and Rafael Wouters (2003): “An Estimated Dynamic Stochastic General Equilibrium Model of the Euro Area,” *Journal of the European Economic Association*, 1(5), 1123–1175.
 * Stock, James H. and Mark W. Watson (1999). “Forecasting Inflation,”, *Journal of Monetary Economics*, 44(2), 293–335.
 * Uhlig, Harald (2001): “A Toolkit for Analysing Nonlinear Dynamic Stochastic Models Easily,” in *Computational Methods for the Study of Dynamic Economies*, Eds. Ramon Marimon and Andrew Scott, Oxford University Press, 30–61.
-* U.S. Census Bureau (2017): “X-13 ARIMA-SEATS Reference Manual”.
+* U.S. Census Bureau (2020): “X-13 ARIMA-SEATS Reference Manual, Version 1.1”, Center for Statistical Research and Methodology, U.S. Census Bureau, https://www.census.gov/data/software/x13as.html
 * Villemot, Sébastien (2011): “Solving rational expectations models at first order: what Dynare does,” *Dynare Working Papers*, 2, CEPREMAP.
