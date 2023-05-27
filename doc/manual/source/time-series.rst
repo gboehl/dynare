@@ -1025,7 +1025,7 @@ The dseries class
         ``.xls/.xlsx`` (Octave only supports ``.xlsx`` files and the
         `io <https://octave.sourceforge.io/io/>`__ package from
         Octave-Forge must be installed). The extension of the file
-        should be explicitly provided. 
+        should be explicitly provided.
 
         A typical ``.m`` file will have the following form::
 
@@ -1052,10 +1052,10 @@ The dseries class
         typically usefull if ``INIT__`` is not provided in the data
         file.
 
-        If an ``.xlsx`` file is used, the first row should be a header 
-        containing the variable names. The first column may contain date 
-        information that must correspond to a valid date format recognized 
-        by Dynare. If such date information is specified in the first column, 
+        If an ``.xlsx`` file is used, the first row should be a header
+        containing the variable names. The first column may contain date
+        information that must correspond to a valid date format recognized
+        by Dynare. If such date information is specified in the first column,
         its header name must be left empty.
 
     .. construct:: dseries (DATA_MATRIX[,INITIAL_DATE[,LIST_OF_NAMES[,TEX_NAMES]]])
@@ -3026,9 +3026,9 @@ X-13 ARIMA-SEATS interface
 
         Interface to the ``transform`` command, see the X-13
         ARIMA-SEATS reference manual. All the options must be passed
-        by key/value pairs. For example, the key/value pair ``function,log`` 
+        by key/value pairs. For example, the key/value pair ``function,log``
         instructs the use of a multiplicative instead of an additive seasonal pattern,
-        while ``function,auto`` triggers an automatic selection between the two based 
+        while ``function,auto`` triggers an automatic selection between the two based
         on their fit.
 
 
@@ -3138,7 +3138,7 @@ X-13 ARIMA-SEATS interface
         ``dseries`` objects (*e.g.* for forecasts or filtered variables).
 
     .. x13method:: clean (A)
-    
+
         Removes the temporary files created by an x13 run that store the intermediate
         results. This method allows keeping the main folder clean but will also
         delete potentially important debugging information.
@@ -3158,7 +3158,7 @@ X-13 ARIMA-SEATS interface
                 >> o.forecast('maxlead',18,'probability',0.95,'save','(fct fvr)');
 
                 >> o.run();
-        
+
         The above example shows a run of X13 with various commands an options specified.
 
 
@@ -3179,7 +3179,7 @@ X-13 ARIMA-SEATS interface
                      119  133  162  191  211  229  274  306  347  359  407  461 ...   % Oct
                      104  114  146  172  180  203  237  271  305  310  362  390 ...   % Nov
                      118  140  166  194  201  229  278  306  336  337  405  432 ]'; % Dec
-                
+
                 ts = dseries(y,'1949M1');
                 o = x13(ts);
                 o.transform('function','auto');
@@ -3187,26 +3187,26 @@ X-13 ARIMA-SEATS interface
                 o.x11('save','(d11 d10)');
                 o.run();
                 o.clean();
-                
+
                 y_SA=o.results.d11;
                 y_seasonal_pattern=o.results.d10;
-                
+
                 figure('Name','Comparison raw data and SAed data');
                 plot(ts.dates,log(o.y.data),ts.dates,log(y_SA.data),ts.dates,log(y_seasonal_pattern.data))
 
 
-        The above example shows how to remove a seasonal pattern from a time series. 
+        The above example shows how to remove a seasonal pattern from a time series.
         ``o.transform('function','auto')`` instructs the subsequent ``o.automdl()`` command
-        to check whether an additional or a multiplicative pattern fits the data better (the latter is 
-        the case in the current example). The ``o.automdl('savelog','all')`` automatically selects a fitting 
+        to check whether an additional or a multiplicative pattern fits the data better (the latter is
+        the case in the current example). The ``o.automdl('savelog','all')`` automatically selects a fitting
         ARIMA model and saves all relevant output to the .log-file. The ``o.x11('save','(d11, d10)')`` instructs
-        ``x11`` to save both the final seasonally adjusted series ``d11`` and the final seasonal factor ``d10`` 
-        into ``dseries`` with the respective names in the output structure ``o.results``.  ``o.clean()`` removes the 
-        temporary files created by ``o.run()``. Among these are the ``.log``-file storing 
-        summary information, the ``.err``-file storing information on problems encountered, 
-        the ``.out``-file storing the raw output, and the `.spc`-file storing the specification for the `x11` run. 
-        There may be further files depending on the output requested. The last part of the example reads out the    
-        results and plots a comparison of the logged raw data and its log-additive decomposition into a 
+        ``x11`` to save both the final seasonally adjusted series ``d11`` and the final seasonal factor ``d10``
+        into ``dseries`` with the respective names in the output structure ``o.results``.  ``o.clean()`` removes the
+        temporary files created by ``o.run()``. Among these are the ``.log``-file storing
+        summary information, the ``.err``-file storing information on problems encountered,
+        the ``.out``-file storing the raw output, and the `.spc`-file storing the specification for the `x11` run.
+        There may be further files depending on the output requested. The last part of the example reads out the
+        results and plots a comparison of the logged raw data and its log-additive decomposition into a
         seasonal pattern and the seasonally adjusted series.
 
 Miscellaneous
