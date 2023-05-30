@@ -1,5 +1,5 @@
 # For checking that no file has been unduly ignored, run:
-# $ git ls-files -i --exclude-per-directory=.gitignore
+# $ git ls-files -i -c --exclude-per-directory=.gitignore
 # Any file that is displayed should be removed from the ignore list
 # (possibly by an exclusion rule beginning with an exclamation mark)
 
@@ -32,20 +32,18 @@ wsOct
 /partial_information/PItest3aHc0PCLsimModPiYrVarobsCNR_PCL*
 
 !/AIM/data_ca1.m
-!/AIM/fs2000_b1L1L_AIM_steadystate.m
-!/AIM/fs2000_b1L1L_steadystate.m
 !/AIM/fsdat.m
 !/analytic_derivatives/fsdat_simul.m
 !/analytic_derivatives/nBrockMirmanSYM.mat
+!/block_bytecode/lola_data.mat
 !/block_bytecode/run_ls2003.m
 !/bvar_a_la_sims/bvar_sample.m
 !/conditional_forecasts/2/fsdat_simul.m
+!/cyclereduction.m
 !/dates/fsdat_simul.m
 !/decision_rules/example1_results_dyn_432.mat
 !/decision_rules/third_order/FV_2011_policyfunctions.mat
 !/decision_rules/third_order/comparison_policy_functions_dynare_mathematica.m
-!/deterministic_simulations/lola_data.mat
-!/ep/ar_steadystate.m
 !/ep/exact_solution.m
 !/ep/mean_preserving_spread.m
 !/ep/rbcii_steadystate.m
@@ -55,35 +53,30 @@ wsOct
 !/estimation/method_of_moments/RBC/RBC_Andreasen_Data_2.mat
 !/estimation/method_of_moments/AFVRR/AFVRR_data.mat
 !/estimation/method_of_moments/AFVRR/AFVRR_steady_helper.m
-!estimation/no_init_estimation_check_first_obs/fsdat_mat.m
-!estimation/no_init_estimation_check_first_obs/fsdat_mat_XFAIL.m
-!estimation/no_init_estimation_check_first_obs/fsdat_simul.m
+!/estimation/no_init_estimation_check_first_obs/fsdat_mat.m
+!/estimation/no_init_estimation_check_first_obs/fsdat_mat_XFAIL.m
+!/estimation/no_init_estimation_check_first_obs/fsdat_simul.m
+!/estimation/system_prior_restriction/Gali_2015_PC_slope.m
+!/estimation/system_prior_restriction/Gali_2015_prior_restrictions.m
 !/expectations/expectation_ss_old_steadystate.m
+!/external_function/+matlab/+namespace/extFunNoDerivsNamespace.m
+!/external_function/+matlab/+namespace/extFunWithFirstAndSecondDerivsNamespace.m
 !/external_function/extFunDeriv.m
 !/external_function/extFunNoDerivs.m
 !/external_function/extFunWithFirstAndSecondDerivs.m
-!/utils/fataltest.m
 !/filter_step_ahead/trend_cycle_decomposition_data.m
-!/fs2000/fs2000a_steadystate.m
+!/first_order/+matlab/+namespace/y_k.m
 !/fs2000/fsdat_simul.m
 !/fs2000/fsdat_simul_dseries.m
 !/fs2000/fsdat_simul_missing_obs.m
-!/fs2000_ssfile_aux.m
 !/gsa/data_ca1.m
 !/gsa/data_ca1.mat
-!/gsa/ls2003_mean.mat
-!/gsa/ls2003_mode.mat
-!/gsa/ls2003_results.mat
-!/gsa/ls2003scr_mean.mat
-!/gsa/ls2003scr_mode.mat
-!/gsa/ls2003scr_results.mat
 !/gsa/morris/nk_est_data.m
-!/histval_initval_file/histval_initval_file_unit_tests.m
 !/histval_initval_file/ramst_initval_file_data.m
-!/identification/as2007/as2007_steadystate.m
+!/histval_initval_file/my_assert.m
+!/histval_initval_file_unit_tests.m
 !/identification/as2007/G_QT.mat
-!/identification/kim/kim2_steadystate.m
-!/internals/tests.m
+!/initval_file/ramst_initval_file_data.m
 !/kalman/likelihood/compare_kalman_routines.m
 !/kalman/likelihood/simul_state_space_model.m
 !/kalman/likelihood/test1.m
@@ -91,6 +84,7 @@ wsOct
 !/kalman/likelihood/test3.m
 !/kalman_filter_smoother/compare_results_simulation/fsdat_simul_logged.m
 !/kalman_filter_smoother/fsdat_simul.m
+!/kalman_filter_smoother/SOE_data_file.m
 !/kalman_filter_smoother/test.mat
 !/kalman_filter_smoother/testsmoother.m
 !/kalman_steady_state/test1.m
@@ -98,6 +92,7 @@ wsOct
 !/kronecker/test_kron.m
 !/load_octave_packages.m
 !/ls2003/data_ca1.m
+!/logarithmicreduction.m
 !/measurement_errors/data_ca1.m
 !/measurement_errors/fs2000_corr_me_ml_mcmc/fsdat_simul.m
 !/missing/simulate_data_with_missing_observations.m
@@ -117,8 +112,8 @@ wsOct
 !/ms-sbvar/archive-files/ftd_upperchol7v.m
 !/ms-sbvar/archive-files/specification_2v.dat
 !/ms-sbvar/archive-files/specification_2v2c.dat
-!/ms-sbvar/data.m
-!/objectives/sgu_ex1.mat
+!/ms-sbvar/msdata.m
+!/nonlinearsolvers.m
 !/observation_trends_and_prefiltering/generate_trend_stationary_AR1.m
 !/occbin/filter/dataobsfile.mat
 !/occbin/filter/NKM_mh_mode_saved.mat
@@ -128,20 +123,15 @@ wsOct
 !/parallel/init.m
 !/particle/benchmark.m
 !/particle/data_risky_perturb2.m
-!/particle/dsge_base2_steadystate.m
+!/particle/dsgebase2data.mat
 !/particle/extreme.m
 !/particle/risky.m
 !/pi2004/idata.m
 !/pi2004/ych.dat
-!/practicing/cagan_data.mat
-!/practicing/dataHST.mat
-!/practicing/data_consRicardoypg.mat
-!/practicing/datasaver.m
 !/pruning/Andreasen_et_al_2018_Dynare44Pruning_v2.mat
 !/utils/printMakeCheckMatlabErrMsg.m
 !/utils/printMakeCheckOctaveErrMsg.m
 !/prior_posterior_function/posterior_function_demo.m
-!/ramst_initval_file_data.m
 !/recursive/data_ca1.m
 !/reporting/AnnualTable.m
 !/reporting/CommResidTablePage.m
@@ -149,7 +139,8 @@ wsOct
 !/reporting/CountryTablePage.m
 !/reporting/ResidTablePage.m
 !/reporting/runDynareReport.m
-!/run_all_unitary_tests.m
+!/riccatiupdate.m
+!/run_all_unit_tests.m
 !/run_block_byte_tests_matlab.m
 !/run_block_byte_tests_octave.m
 !/run_kronecker_tests.m
@@ -157,14 +148,30 @@ wsOct
 !/run_o_script.m
 !/run_reporting_test_matlab.m
 !/run_reporting_test_octave.m
-!/run_test.m
 !/run_test_matlab.m
 !/run_test_octave.m
-!/run_unitary_tests.m
 !/shock_decomposition/example1_calib_shock_decomp_data.mat
 !/shock_decomposition/fsdat_simul.m
 !/smoother2histval/fsdat_simul.m
+!/solver-test-functions/brown.m
+!/solver-test-functions/broydenbanded.m
+!/solver-test-functions/broydentridiagonal.m
+!/solver-test-functions/chebyquad.m
+!/solver-test-functions/discreteboundaryvalue.m
+!/solver-test-functions/discreteintegralequation.m
+!/solver-test-functions/helicalvalley.m
+!/solver-test-functions/powell1.m
+!/solver-test-functions/powell2.m
+!/solver-test-functions/rosenbrock.m
+!/solver-test-functions/trigonometric.m
+!/solver-test-functions/variablydimensioned.m
+!/solver-test-functions/watson.m
+!/solver-test-functions/wood.m
 !/steady_state/walsh1_old_ss_steadystate.m
+!/steady_state/fs2000_ssfile_aux.m
+!/test_aggregate_routine_1_2.m
+!/test_aggregate_routine_1_2_3.m
+!/utils/fataltest.m
 
 /pac/var-6/example1/model/pac-expectations/*
 /pac/var-5/example1/model/pac-expectations/*

@@ -1659,7 +1659,7 @@ clean-local:
 
 	rm -f estimation/test_matrix.mat
 
-	rm -f histval_initval_file/ramst_initval_file_data_col_vec_mat.mat histval_initval_file/ramst_initval_file_data_row_vec_mat.mat histval_initval_file/ramst_initval_file_excel.xls
+	rm -f histval_initval_file/ramst_initval_file_data_col_vec_mat.mat histval_initval_file/ramst_initval_file_data_row_vec_mat.mat histval_initval_file/ramst_initval_file_excel.xls histval_initval_file/ramst_data.csv
 
 	rm -f loglinear/results_exp_histval.mat loglinear/results_exp.mat
 
