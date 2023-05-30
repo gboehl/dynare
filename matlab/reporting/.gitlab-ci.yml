@@ -8,7 +8,7 @@ before_script:
 test_matlab:
   stage: test
   script:
-    - make check-matlab MATLAB=/usr/local/MATLAB/$MATLAB_VERSION/bin/matlab
+    - make check-matlab MATLAB=/opt/MATLAB/$MATLAB_VERSION/bin/matlab
   artifacts:
     paths:
       - test/my/report/dir/report.pdf
@@ -16,7 +16,7 @@ test_matlab:
 test_old_matlab:
   stage: test
   script:
-    - make check-matlab MATLAB=/usr/local/MATLAB/$OLD_MATLAB_VERSION/bin/matlab
+    - make check-matlab MATLAB=/opt/MATLAB/$OLD_MATLAB_VERSION/bin/matlab
   artifacts:
     paths:
       - test/my/report/dir/report.pdf
