@@ -688,3 +688,12 @@ if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
         options_.smoothed_state_uncertainty=false;
     end
 end
+
+if options_.occbin.smoother.status || options_.occbin.likelihood.status
+    if isfield(M_,'surprise_shocks') && ~isempty(M_.surprise_shocks)
+        fprintf('dynare_estimation_init: OccBin smoother/filter: previous shocks(surprise) block detected. Deleting its content.\n')
+        options_.occbin.simul.SHOCKS=zeros(1,M_.exo_nbr);
+        options_.occbin.simul.exo_pos=1:M_.exo_nbr;
+        M_.surprise_shocks=[];
+    end
+end
