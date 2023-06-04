@@ -136,7 +136,7 @@ classdef dprior
                 while ~isempty(out_of_bound)
                     p(o.inverse_gamma_1_index(out_of_bound)) = ...
                         sqrt(1./gamrnd(o.p7(o.inverse_gamma_1_index(out_of_bound))/2, 2./o.p6(o.inverse_gamma_1_index(out_of_bound))))+o.p3(o.inverse_gamma_1_index(out_of_bound));
-                    out_of_bound = find( (p(o.inverse_gamma_1_index)>o.ub(inverse_gamma_1_index)) | (p(o.inverse_gamma_1_index)<o.lb(o.inverse_gamma_1_index)));
+                    out_of_bound = find( (p(o.inverse_gamma_1_index)>o.ub(o.inverse_gamma_1_index)) | (p(o.inverse_gamma_1_index)<o.lb(o.inverse_gamma_1_index)));
                 end
             end
             if o.inverse_gamma_2_draws
