@@ -1963,6 +1963,13 @@ The dseries class
        |br| Returns the last period where all the variables in ``dseries`` object ``A`` are observed (non NaN).
 
 
+    .. dseriesmethod:: f = lastobservedperiods (A)
+
+       |br| Returns for each variable the last period without missing
+       observations in ``dseries`` object ``A``. Output argument ``f`` is a
+       structure, each field name is the name of a variable in ``A``, each field
+       content is a singleton ``date`` object.
+
     .. dseriesmethod:: B = lead (A[, p])
                        lead_ (A[, p])
 
