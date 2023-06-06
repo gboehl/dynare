@@ -129,8 +129,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mexErrMsgTxt("M_.dynamic_g1_sparse_colval should have the same length as M_.dynamic_g1_sparse_rowval");
 
   const mxArray *g1_sparse_colptr_mx {mxGetField(M_mx, 0, "dynamic_g1_sparse_colptr")};
-  if (!(mxIsInt32(g1_sparse_colptr_mx) && mxGetNumberOfElements(g1_sparse_colptr_mx) != 3*static_cast<size_t>(ny)+1))
-    mexErrMsgTxt(("M_.dynamic_g1_sparse_colptr should be an int32 vector with " + std::to_string(3*ny+1) + " elements").c_str());
+  if (!(mxIsInt32(g1_sparse_colptr_mx) && mxGetNumberOfElements(g1_sparse_colptr_mx) == static_cast<size_t>(3*ny+nx+1)))
+    mexErrMsgTxt(("M_.dynamic_g1_sparse_colptr should be an int32 vector with " + std::to_string(3*ny+nx+1) + " elements").c_str());
 #if MX_HAS_INTERLEAVED_COMPLEX
   const int32_T *g1_sparse_colptr {mxGetInt32s(g1_sparse_colptr_mx)};
 #else
