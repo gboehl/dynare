@@ -1,4 +1,4 @@
-function [endogenousvariables, info] = sim1_purely_backward(endogenousvariables, exogenousvariables, steadystate, M, options)
+function [endogenousvariables, success] = sim1_purely_backward(endogenousvariables, exogenousvariables, steadystate, M, options)
 
 % Performs deterministic simulation of a purely backward model
 
@@ -34,7 +34,7 @@ function [r, J] = block_wrapper(z, feedback_vars_idx, func, y_dynamic, x, sparse
                          sparse_rowval, sparse_colval, sparse_colptr, T);
 end
 
-info.status = true;
+success = true;
 
 for it = M.maximum_lag + (1:options.periods)
     y = endogenousvariables(:,it-1);        % Values at previous period, also used as guess value for current period
@@ -52,7 +52,7 @@ for it = M.maximum_lag + (1:options.periods)
                                                            options.dynatol.x, options, ...
                                                            feedback_vars_idxs{blk}, funcs{blk}, y_dynamic, x, sparse_rowval, sparse_colval, sparse_colptr, T);
                 if check
-                    info.status = false;
+                    success = false;
                     if options.debug
                         dprintf('sim1_purely_backward: Nonlinear solver routine failed with errorcode=%i in block %i and period %i.', errorcode, blk, it)
                     end
@@ -71,7 +71,7 @@ for it = M.maximum_lag + (1:options.periods)
                                                      options.simul.maxit, options.dynatol.f, options.dynatol.x, ...
                                                      options, dynamic_resid, dynamic_g1, y, x, M.params, steadystate, M.dynamic_g1_sparse_rowval, M.dynamic_g1_sparse_colval, M.dynamic_g1_sparse_colptr);
         if check
-            info.status = false;
+            success = false;
             dprintf('sim1_purely_backward: Nonlinear solver routine failed with errorcode=%i in period %i', errorcode, it)
             break
         end

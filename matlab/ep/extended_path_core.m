@@ -4,7 +4,7 @@ function [y, info_convergence, endogenousvariablespaths] = extended_path_core(pe
                                                   debug,order,M,pfm,algo,solve_algo,stack_solve_algo,...
                                                   olmmcp,options,oo,initialguess)
 
-% Copyright © 2016-2020 Dynare Team
+% Copyright © 2016-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,32 +56,25 @@ if order == 0
     options.lmmcp = olmmcp;
     options.solve_algo = solve_algo;
     options.stack_solve_algo = stack_solve_algo;
-    tmp = perfect_foresight_solver_core(M, options, oo);
-    if ~tmp.deterministic_simulation.status
-        info_convergence = false;
-    else
-        info_convergence = true;
-    end
+    [endogenousvariablespaths, info_convergence] = perfect_foresight_solver_core(M, options, oo);
 else
     switch(algo)
         case 0
-            [flag, tmp.endo_simul] = ...
+            [flag, endogenousvariablespaths] = ...
             solve_stochastic_perfect_foresight_model(endo_simul, exo_simul, pfm, ep.stochastic.quadrature.nodes, ep.stochastic.order);
         case 1
-            [flag, tmp.endo_simul] = ...
+            [flag, endogenousvariablespaths] = ...
             solve_stochastic_perfect_foresight_model_1(endo_simul, exo_simul, options, pfm, ep.stochastic.order);
     end
     info_convergence = ~flag;
 end
 
 if ~info_convergence && ~options.no_homotopy
-    [info_convergence, tmp.endo_simul] = extended_path_homotopy(endo_simul, exo_simul, M, options, oo, pfm, ep, order, algo, 2, debug);
+    [info_convergence, endogenousvariablespaths] = extended_path_homotopy(endo_simul, exo_simul, M, options, oo, pfm, ep, order, algo, 2, debug);
 end
 
 if info_convergence
-    y = tmp.endo_simul(:,2);
+    y = endogenousvariablespaths(:,2);
 else
     y = NaN(size(endo_nbr,1));
 end
-
-endogenousvariablespaths = tmp.endo_simul;

@@ -1,4 +1,4 @@
-function oo_ = solve_block_decomposed_problem(options_, M_, oo_)
+function [y, success, maxerror, per_block_status] = solve_block_decomposed_problem(options_, M_, oo_)
 % Computes deterministic simulation with block option without bytecode
 
 % Copyright © 2020-2023 Dynare Team
@@ -41,23 +41,20 @@ end
 
 y=oo_.endo_simul;
 T=NaN(M_.block_structure.dyn_tmp_nbr, options_.periods+M_.maximum_lag+M_.maximum_lead);
-oo_.deterministic_simulation.status = false;
+
+maxerror = 0;
+nblocks = length(M_.block_structure.block);
+per_block_status = struct('success', cell(1, nblocks), 'error', cell(1, nblocks), 'iterations', cell(1, nblocks));
 
 funcname = [ M_.fname '.dynamic'];
 
-for blk = 1:length(M_.block_structure.block)
+for blk = 1:nblocks
     recursive_size = M_.block_structure.block(blk).endo_nbr - M_.block_structure.block(blk).mfs;
     y_index = M_.block_structure.block(blk).variable((recursive_size+1):end);
     fh_dynamic = str2func(sprintf('%s.sparse.block.dynamic_%d', M_.fname, blk));
 
     if M_.block_structure.block(blk).Simulation_Type == 1 || ... % evaluateForward
        M_.block_structure.block(blk).Simulation_Type == 2        % evaluateBackward
-        oo_.deterministic_simulation.status = true;
-        oo_.deterministic_simulation.error = 0;
-        oo_.deterministic_simulation.iterations = 0;
-        oo_.deterministic_simulation.block(blk).status = true;
-        oo_.deterministic_simulation.block(blk).error = 0;
-        oo_.deterministic_simulation.block(blk).iterations = 0;
         if M_.block_structure.block(blk).Simulation_Type == 1
             range = M_.maximum_lag+1:M_.maximum_lag+options_.periods;
         else
@@ -79,28 +76,33 @@ for blk = 1:length(M_.block_structure.block)
                                           M_.block_structure.block(blk).g1_sparse_colptr, T(:, it_));
             y(:, it_) = y3n(M_.endo_nbr+(1:M_.endo_nbr));
         end
+        success = true;
+        maxblkerror = 0;
+        iter = [];
     elseif M_.block_structure.block(blk).Simulation_Type == 3 || ... % solveForwardSimple
            M_.block_structure.block(blk).Simulation_Type == 4 || ... % solveBackwardSimple
            M_.block_structure.block(blk).Simulation_Type == 6 || ... % solveForwardComplete
            M_.block_structure.block(blk).Simulation_Type == 7        % solveBackwardComplete
         is_forward = M_.block_structure.block(blk).Simulation_Type == 3 || M_.block_structure.block(blk).Simulation_Type == 6;
-        [y, T, oo_] = solve_one_boundary(fh_dynamic, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, is_forward, true, false, M_, options_, oo_);
+        [y, T, success, maxblkerror, iter] = solve_one_boundary(fh_dynamic, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, is_forward, true, false, M_, options_);
     elseif M_.block_structure.block(blk).Simulation_Type == 5 || ... % solveTwoBoundariesSimple
            M_.block_structure.block(blk).Simulation_Type == 8        % solveTwoBoundariesComplete
-        [y, T, oo_] = solve_two_boundaries(fh_dynamic, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, options_, M_, oo_);
+        [y, T, success, maxblkerror, iter] = solve_two_boundaries(fh_dynamic, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, options_, M_);
     end
 
     tmp = y(M_.block_structure.block(blk).variable, :);
     if any(isnan(tmp) | isinf(tmp))
         disp(['Inf or Nan value during the resolution of block ' num2str(blk)]);
-        oo_.deterministic_simulation.status = false;
-        oo_.deterministic_simulation.error = 100;
-        oo_.deterministic_simulation.block(blk).status = false;
-        oo_.deterministic_simulation.block(blk).error = 100;
+        success = false;
     end
-    if ~oo_.deterministic_simulation.status
+
+    per_block_status(blk).success = success;
+    per_block_status(blk).error = maxblkerror;
+    per_block_status(blk).iter = iter;
+
+    maxerror = max(maxblkerror, maxerror);
+
+    if ~success
         return
     end
 end
-
-oo_.endo_simul = y;

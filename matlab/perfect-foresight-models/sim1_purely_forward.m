@@ -1,4 +1,4 @@
-function [endogenousvariables, info] = sim1_purely_forward(endogenousvariables, exogenousvariables, steadystate, M, options)
+function [endogenousvariables, success] = sim1_purely_forward(endogenousvariables, exogenousvariables, steadystate, M, options)
 % Performs deterministic simulation of a purely forward model
 
 % Copyright © 2012-2023 Dynare Team
@@ -33,7 +33,7 @@ function [r, J] = block_wrapper(z, feedback_vars_idx, func, y_dynamic, x, sparse
                          sparse_rowval, sparse_colval, sparse_colptr, T);
 end
 
-info.status = true;
+success = true;
 
 for it = options.periods:-1:1
     yf = endogenousvariables(:,it+1); % Values at next period, also used as guess value for current period
@@ -51,7 +51,7 @@ for it = options.periods:-1:1
                                                            options.dynatol.x, options, ...
                                                            feedback_vars_idxs{blk}, funcs{blk}, y_dynamic, x, sparse_rowval, sparse_colval, sparse_colptr, T);
                 if check
-                    info.status = false;
+                    success = false;
                     if options.debug
                         dprintf('sim1_purely_forward: Nonlinear solver routine failed with errorcode=%i in block %i and period %i.', errorcode, blk, it)
                     end
@@ -70,7 +70,7 @@ for it = options.periods:-1:1
                                                      options.simul.maxit, options.dynatol.f, options.dynatol.x, ...
                                                      options, dynamic_resid, dynamic_g1, yf, x, M.params, steadystate, M.dynamic_g1_sparse_rowval, M.dynamic_g1_sparse_colval, M.dynamic_g1_sparse_colptr);
         if check
-            info.status = false;
+            success = false;
             dprintf('sim1_purely_forward: Nonlinear solver routine failed with errorcode=%i in period %i.', errorcode, it)
             break
         end

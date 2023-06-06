@@ -1,4 +1,4 @@
-function [endogenousvariables, info, residuals] = solve_stacked_problem(endogenousvariables, exogenousvariables, steadystate, M, options)
+function [endogenousvariables, success, maxerror] = solve_stacked_problem(endogenousvariables, exogenousvariables, steadystate, M, options)
 
 % Solves the perfect foresight model using dynare_solve
 %
@@ -11,10 +11,10 @@ function [endogenousvariables, info, residuals] = solve_stacked_problem(endogeno
 %
 % OUTPUTS
 % - endogenousvariables [double] N*T array, paths for the endogenous variables (solution of the perfect foresight model).
-% - info                [struct] contains informations about the results.
-% - residuals           [double] N*T array, residuals of the equations (with 0 for initial condition)
+% - success             [logical] Whether a solution was found
+% - maxerror            [double] 1-norm of the residual
 
-% Copyright © 2015-2022 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -77,12 +77,9 @@ residuals(:, M.maximum_lag+(1:options.periods)) = reshape(res, M.endo_nbr, optio
 if (options.solve_algo == 10 || options.solve_algo == 11)% mixed complementarity problem
     residuals(eq_to_ignore,bsxfun(@le, endogenousvariables(eq_to_ignore,:), lb(eq_to_ignore)+eps) | bsxfun(@ge,endogenousvariables(eq_to_ignore,:),ub(eq_to_ignore)-eps))=0;
 end
+maxerror = max(max(abs(residuals)));
+success = ~check;
 
-if check
-    info.status = false;
-    if options.debug
-        dprintf('solve_stacked_problem: Nonlinear solver routine failed with errorcode=%i.', errorcode)
-    end
-else
-    info.status = true;
+if ~success && options.debug
+    dprintf('solve_stacked_problem: Nonlinear solver routine failed with errorcode=%i.', errorcode)
 end

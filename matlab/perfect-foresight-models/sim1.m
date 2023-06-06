@@ -1,4 +1,4 @@
-function [endogenousvariables, info] = sim1(endogenousvariables, exogenousvariables, steadystate, M, options)
+function [endogenousvariables, success, err, iter] = sim1(endogenousvariables, exogenousvariables, steadystate, M, options)
 % Performs deterministic simulations with lead or lag of one period, using
 % a basic Newton solver on sparse matrices.
 % Uses perfect_foresight_problem DLL to construct the stacked problem.
@@ -11,9 +11,11 @@ function [endogenousvariables, info] = sim1(endogenousvariables, exogenousvariab
 %   - options             [struct] contains various options.
 % OUTPUTS
 %   - endogenousvariables [double] N*(T+M.maximum_lag+M.maximum_lead) array, paths for the endogenous variables (solution of the perfect foresight model).
-%   - info                [struct] contains informations about the results.
+%   - success             [logical] Whether a solution was found
+%   - err                 [double] ∞-norm of the residual
+%   - iter                [integer] Number of iterations
 
-% Copyright © 1996-2021 Dynare Team
+% Copyright © 1996-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -145,10 +147,7 @@ if stop
     % initial or terminal observations may contain
     % harmless NaN or Inf. We test only values computed above
     if any(any(isnan(y))) || any(any(isinf(y)))
-        info.status = false;% NaN or Inf occurred
-        info.error = err;
-        info.iterations = iter;
-        info.periods = vperiods(1:iter);
+        success = false; % NaN or Inf occurred
         if verbose
             skipline()
             fprintf('Total time of simulation: %g.\n', etime(clock,h1))
@@ -163,10 +162,7 @@ if stop
             fprintf('Total time of simulation: %g.\n', etime(clock,h1))
             printline(56)
         end
-        info.status = true;% Convergency obtained.
-        info.error = err;
-        info.iterations = iter;
-        info.periods = vperiods(1:iter);
+        success = true; % Convergency obtained.
     end
 elseif ~stop
     if verbose
@@ -175,10 +171,7 @@ elseif ~stop
         disp('Maximum number of iterations is reached (modify option maxit).')
         printline(62)
     end
-    info.status = false;% more iterations are needed.
-    info.error = err;
-    info.periods = vperiods(1:iter);
-    info.iterations = options.simul.maxit;
+    success = false; % more iterations are needed.
 end
 
 if verbose

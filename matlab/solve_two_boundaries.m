@@ -1,4 +1,4 @@
-function [y, T, oo]= solve_two_boundaries(fh, y, x, params, steady_state, T, y_index, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo,options,M, oo)
+function [y, T, success, max_res, iter] = solve_two_boundaries(fh, y, x, params, steady_state, T, y_index, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo,options,M)
 % Computes the deterministic simulation of a block of equation containing
 % both lead and lag variables using relaxation methods
 %
@@ -28,12 +28,13 @@ function [y, T, oo]= solve_two_boundaries(fh, y, x, params, steady_state, T, y_i
 %                                            - 3 BicGStab
 %                                            - 4 Optimal path length
 %   M                   [structure]     Model description
-%   oo                  [structure]     Results
 %
 % OUTPUTS
 %   y                   [matrix]        All endogenous variables of the model
 %   T                   [matrix]        Temporary terms
-%   oo                  [structure]     Results
+%   success             [logical]       Whether a solution was found
+%   max_res             [double]        ∞-norm of the residual
+%   iter                [integer]       Number of iterations
 %
 % ALGORITHM
 %   Newton with LU or GMRES or BicGstab
@@ -131,12 +132,7 @@ while ~(cvg || iter>maxit_)
                             continue
                         else
                             disp('The singularity of the jacobian matrix could not be corrected');
-                            oo.deterministic_simulation.status = false;
-                            oo.deterministic_simulation.error = max_res;
-                            oo.deterministic_simulation.iterations = iter;
-                            oo.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
-                            oo.deterministic_simulation.block(Block_Num).error = max_res;
-                            oo.deterministic_simulation.block(Block_Num).iterations = iter;
+                            success = false;
                             return
                         end
                     end
@@ -156,12 +152,7 @@ while ~(cvg || iter>maxit_)
                             fprintf('Error in simul: Convergence not achieved in block %d, after %d iterations.\n Increase "options_.simul.maxit" or set "cutoff=0" in model options.\n',Block_Num, iter);
                         end
                     end
-                    oo.deterministic_simulation.status = false;
-                    oo.deterministic_simulation.error = max_res;
-                    oo.deterministic_simulation.iterations = iter;
-                    oo.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
-                    oo.deterministic_simulation.block(Block_Num).error = max_res;
-                    oo.deterministic_simulation.block(Block_Num).iterations = iter;
+                    success = false;
                     return
                 end
             else
@@ -333,21 +324,12 @@ if (iter>maxit_)
         printline(41)
         %disp(['No convergence after ' num2str(iter,'%4d') ' iterations in Block ' num2str(Block_Num,'%d')])
     end
-    oo.deterministic_simulation.status = false;
-    oo.deterministic_simulation.error = max_res;
-    oo.deterministic_simulation.iterations = iter;
-    oo.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
-    oo.deterministic_simulation.block(Block_Num).error = max_res;
-    oo.deterministic_simulation.block(Block_Num).iterations = iter;
+    success = false;
     return
 end
 
-oo.deterministic_simulation.status = true;
-oo.deterministic_simulation.error = max_res;
-oo.deterministic_simulation.iterations = iter;
-oo.deterministic_simulation.block(Block_Num).status = true;% Convergency obtained.
-oo.deterministic_simulation.block(Block_Num).error = max_res;
-oo.deterministic_simulation.block(Block_Num).iterations = iter;
+success = true;
+
 
 function y3n = dynendo(y, it_, M)
     y3n = reshape(y(:, it_+(-1:1)), 3*M.endo_nbr, 1);

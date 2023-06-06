@@ -54,10 +54,10 @@ end
 initperiods = 1:M_.maximum_lag;
 lastperiods = (M_.maximum_lag+periods+1):(M_.maximum_lag+periods+M_.maximum_lead);
 
-oo_ = perfect_foresight_solver_core(M_,options_,oo_);
+[oo_.endo_simul, success, maxerror, solver_iter, per_block_status] = perfect_foresight_solver_core(M_,options_,oo_);
 
 % If simulation failed try homotopy.
-if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
+if ~success && ~options_.no_homotopy
 
     if ~options_.noprint
         fprintf('\nSimulation of the perfect foresight model failed!\n')
@@ -131,13 +131,13 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
         saved_endo_simul = oo_.endo_simul;
 
         % Solve for the paths of the endogenous variables.
-        [oo_,me] = perfect_foresight_solver_core(M_,options_,oo_);
+        [oo_.endo_simul, success, maxerror, solver_iter, per_block_status] = perfect_foresight_solver_core(M_,options_,oo_);
 
-        if oo_.deterministic_simulation.status
+        if success
             current_weight = new_weight;
             if current_weight >= 1
                 if ~options_.noprint
-                    fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'succeeded', me)
+                    fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'succeeded', maxerror)
                 end
                 break
             end
@@ -147,7 +147,7 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
                 step = step * 2;
             end
             if ~options_.noprint
-                fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'succeeded', me)
+                fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'succeeded', maxerror)
             end
         else
             % If solver failed, then go back.
@@ -155,8 +155,8 @@ if ~oo_.deterministic_simulation.status && ~options_.no_homotopy
             success_counter = 0;
             step = step / 2;
             if ~options_.noprint
-                if isreal(me)
-                    fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'failed', me)
+                if isreal(maxerror)
+                    fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'failed', maxerror)
                 else
                     fprintf('%i \t | %1.5f \t | %s \t | %s\n', iteration, new_weight, 'failed', 'Complex')
                 end
@@ -186,21 +186,32 @@ if ~isreal(oo_.endo_simul(:)) % cannot happen with bytecode or the perfect_fores
     yy = real(oo_.endo_simul(:,M_.maximum_lag+(1:periods)));
     residuals = perfect_foresight_problem(yy(:), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_, options_);
 
-    if max(abs(residuals))< options_.dynatol.f
-        oo_.deterministic_simulation.status = true;
+    maxerror = max(max(abs(residuals)))
+    if maxerror < options_.dynatol.f
+        success = true;
         oo_.endo_simul=real(oo_.endo_simul);
     else
-        oo_.deterministic_simulation.status = false;
+        success = false;
         disp('Simulation terminated with imaginary parts in the residuals or endogenous variables.')
     end
 end
 
-if oo_.deterministic_simulation.status
+if success
     if ~options_.noprint
         fprintf('Perfect foresight solution found.\n\n')
     end
 else
     fprintf('Failed to solve perfect foresight model\n\n')
+end
+
+% Put solver status information in oo_
+oo_.deterministic_simulation.status = success;
+oo_.deterministic_simulation.error = maxerror;
+if ~isempty(solver_iter)
+    oo_.deterministic_simulation.iterations = solver_iter;
+end
+if ~isempty(per_block_status)
+    oo_.deterministic_simulation.block = per_block_status;
 end
 
 dyn2vec(M_, oo_, options_);
@@ -222,6 +233,6 @@ end
 
 assignin('base', 'Simulated_time_series', ts);
 
-if oo_.deterministic_simulation.status
+if success
     oo_.gui.ran_perfect_foresight = true;
 end

@@ -1,5 +1,5 @@
-function [y, T, oo_, info] = solve_one_boundary(fh, y, x, params, steady_state, T, ...
-                                                y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options, oo_)
+function [y, T, success, max_res, iter] = solve_one_boundary(fh, y, x, params, steady_state, T, ...
+                                                             y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options)
 % Computes the deterministic simulation or the steady state for a block of equations containing
 % only lags or only leads (but not both).
 %
@@ -25,17 +25,15 @@ function [y, T, oo_, info] = solve_one_boundary(fh, y, x, params, steady_state, 
 %   stack_solve_algo    [integer]       linear solver method used in the Newton algorithm
 %   is_forward          [logical]       Whether the block has to be solved forward
 %                                       If false, the block is solved backward
-%   is_dynamic          [logical]       If true, this is a deterministic simulation
-%                                       and the oo_.deterministic_simulation field is updated.
-%                                       If false, this is a steady state computation
-%                                       (oo_.detereministic_simulation remains unchanged).
+%   is_dynamic          [logical]       Whether this is a deterministic simulation
 %   verbose             [logical]       Whether iterations are to be printed
 %
 % OUTPUTS
-%   y                  [matrix]         All endogenous variables of the model
-%   T                  [matrix]        Temporary terms
-%   info               [integer]        >=0 no error
-%                                       <0 error
+%   y                   [matrix]        All endogenous variables of the model
+%   T                   [matrix]        Temporary terms
+%   success             [logical]       Whether a solution was found
+%   max_res             [double]        ∞-norm of the residual
+%   iter                [integer]       Number of iterations
 %
 % ALGORITHM
 %   Newton with LU or GMRES or BicGstab for dynamic block
@@ -135,15 +133,7 @@ for it_=start:incr:finish
                                 if verbose
                                     disp('The singularity of the jacobian matrix could not be corrected')
                                 end
-                                if is_dynamic
-                                    oo_.deterministic_simulation.status = false;
-                                    oo_.deterministic_simulation.error = max_res;
-                                    oo_.deterministic_simulation.iterations = iter;
-                                    oo_.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
-                                    oo_.deterministic_simulation.block(Block_Num).error = max_res;
-                                    oo_.deterministic_simulation.block(Block_Num).iterations = iter;
-                                end
-                                info = -Block_Num*10;
+                                success = false;
                                 return
                             end
                         end
@@ -167,15 +157,7 @@ for it_=start:incr:finish
                                 fprintf('Error in simul: Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "options_.simul.maxit" or set "cutoff=0" in model options.\n',Block_Num, it_, iter);
                             end
                         end
-                        if is_dynamic
-                            oo_.deterministic_simulation.status = false;
-                            oo_.deterministic_simulation.error = max_res;
-                            oo_.deterministic_simulation.iterations = iter;
-                            oo_.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
-                            oo_.deterministic_simulation.block(Block_Num).error = max_res;
-                            oo_.deterministic_simulation.block(Block_Num).iterations = iter;
-                        end
-                        info = -Block_Num*10;
+                        success = false;
                         return
                     end
                 else
@@ -296,30 +278,13 @@ for it_=start:incr:finish
                 fprintf('Error in simul: Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "options_.simul.maxit" or set "cutoff=0" in model options.\n',Block_Num, it_,iter);
             end
         end
-        if is_dynamic
-            oo_.deterministic_simulation.status = false;
-            oo_.deterministic_simulation.error = max_res;
-            oo_.deterministic_simulation.iterations = iter;
-            oo_.deterministic_simulation.block(Block_Num).status = false;% Convergency failed.
-            oo_.deterministic_simulation.block(Block_Num).error = max_res;
-            oo_.deterministic_simulation.block(Block_Num).iterations = iter;
-        end
-        info = -Block_Num*10;
+        success = false;
         return
     end
 end
 
-if is_dynamic
-    info = 1;
-    oo_.deterministic_simulation.status = true;
-    oo_.deterministic_simulation.error = max_res;
-    oo_.deterministic_simulation.iterations = iter;
-    oo_.deterministic_simulation.block(Block_Num).status = true;
-    oo_.deterministic_simulation.block(Block_Num).error = max_res;
-    oo_.deterministic_simulation.block(Block_Num).iterations = iter;
-else
-    info = 0;
-end
+success = true;
+
 
 function y3n = dynendo(y, it_, M)
     if it_ > 1 && it_ < size(y, 2)

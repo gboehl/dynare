@@ -1,4 +1,4 @@
-function [endogenousvariables, info] = sim1_purely_static(endogenousvariables, exogenousvariables, steadystate, M, options)
+function [endogenousvariables, success] = sim1_purely_static(endogenousvariables, exogenousvariables, steadystate, M, options)
 
 % Performs deterministic simulation of a purely static model
 
@@ -34,7 +34,7 @@ function [r, J] = block_wrapper(z, feedback_vars_idx, func, y_dynamic, x, sparse
                          sparse_rowval, sparse_colval, sparse_colptr, T);
 end
 
-info.status = true;
+success = true;
 
 y = endogenousvariables(:,1);
 
@@ -53,7 +53,7 @@ for it = 1:options.periods
                                                            options.dynatol.x, options, ...
                                                            feedback_vars_idxs{blk}, funcs{blk}, y_dynamic, x, sparse_rowval, sparse_colval, sparse_colptr, T);
                 if check
-                    info.status = false;
+                    success = false;
                     if options.debug
                         dprintf('sim1_purely_static: Nonlinear solver routine failed with errorcode=%i in block %i and period %i.', errorcode, blk, it)
                     end
@@ -72,7 +72,7 @@ for it = 1:options.periods
                                                      options.simul.maxit, options.dynatol.f, options.dynatol.x, ...
                                                      options, dynamic_resid, dynamic_g1, x, M.params, steadystate, M.dynamic_g1_sparse_rowval, M.dynamic_g1_sparse_colval, M.dynamic_g1_sparse_colptr);
         if check
-            info.status = false;
+            success = false;
             if options.debug
                 dprintf('sim1_purely_static: Nonlinear solver routine failed with errorcode=%i in period %i.', errorcode, it)
             end

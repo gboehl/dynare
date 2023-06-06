@@ -1,6 +1,6 @@
-function [endogenousvariables, info] = solve_stacked_linear_problem(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M, options)
+function [endogenousvariables, success] = solve_stacked_linear_problem(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M, options)
 
-% Copyright © 2015-2022 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -60,11 +60,8 @@ end
 
 endogenousvariables = [y0 bsxfun(@plus,reshape(y,M.endo_nbr,options.periods), steadystate_y) yT];
 
-if check
-    info.status = false;
-    if options.debug
-        dprintf('solve_stacked_linear_problem: Nonlinear solver routine failed with errorcode=%i.', errorcode)
-    end
-else
-    info.status = true;
+success = ~check;
+
+if ~success && options.debug
+    dprintf('solve_stacked_linear_problem: Nonlinear solver routine failed with errorcode=%i.', errorcode)
 end

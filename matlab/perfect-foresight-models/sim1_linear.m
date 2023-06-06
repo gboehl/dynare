@@ -1,4 +1,4 @@
-function [endogenousvariables, info] = sim1_linear(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M, options)
+function [endogenousvariables, success, ERR] = sim1_linear(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M, options)
 
 % Solves a linear approximation of a perfect foresight model using sparse matrix.
 %
@@ -12,7 +12,8 @@ function [endogenousvariables, info] = sim1_linear(endogenousvariables, exogenou
 %
 % OUTPUTS
 % - endogenousvariables [double] N*T array, paths for the endogenous variables (solution of the perfect foresight model).
-% - info                [struct] contains informations about the results.
+% - success             [logical] Whether a solution was found
+% - ERR                 [double] ∞-norm of the residual
 %
 % NOTATIONS
 % - N is the number of endogenous variables.
@@ -38,7 +39,7 @@ function [endogenousvariables, info] = sim1_linear(endogenousvariables, exogenou
 % to center the variables around the deterministic steady state to solve the
 % perfect foresight model.
 
-% Copyright © 2015-2020 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -209,9 +210,8 @@ try
 catch
     % Normally, because the model is linear, the solution of the perfect foresight model should
     % be obtained in one Newton step. This is not the case if the model is singular.
-    info.status = false;
-    info.error = NaN;
-    info.iterations = 1;
+    success = false;
+    ERR = [];
     if verbose
         skipline()
         disp('Singularity problem! The jacobian matrix of the stacked model cannot be inverted.')
@@ -238,9 +238,7 @@ if verbose
 end
 
 if any(isnan(res)) || any(isinf(res)) || any(isnan(Y)) || any(isinf(Y)) || ~isreal(res) || ~isreal(Y)
-    info.status = false;% NaN or Inf occurred
-    info.error = ERR;
-    info.iterations = 1;
+    success = false; % NaN or Inf occurred
     endogenousvariables = reshape(Y, ny, periods+maximum_lag+M.maximum_lead);
     if verbose
         skipline()
@@ -252,9 +250,7 @@ if any(isnan(res)) || any(isinf(res)) || any(isnan(Y)) || any(isinf(Y)) || ~isre
         disp('There is most likely something wrong with your model. Try model_diagnostics or another simulation method.')
     end
 else
-    info.status = true;% Convergency obtained.
-    info.error = ERR;
-    info.iterations = 1;
+    success = true; % Convergency obtained.
     endogenousvariables = bsxfun(@plus, reshape(Y, ny, periods+maximum_lag+M.maximum_lead), steadystate_y);
 end
 

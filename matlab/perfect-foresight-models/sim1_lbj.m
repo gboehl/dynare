@@ -1,4 +1,4 @@
-function [endogenousvariables, info] = sim1_lbj(endogenousvariables, exogenousvariables, steadystate, M, options)
+function [endogenousvariables, success, err, iter] = sim1_lbj(endogenousvariables, exogenousvariables, steadystate, M, options)
 
 % Performs deterministic simulations with lead or lag on one period using the historical LBJ algorithm
 %
@@ -94,9 +94,7 @@ for iter = 1:options.simul.maxit
             skipline()
             disp(sprintf('Total time of simulation: %s', num2str(etime(clock,h1))))
         end
-        info.status = 1;% Convergency obtained.
-        info.error = err;
-        info.iterations = iter;
+        success = true; % Convergency obtained.
         break
     end
 end
@@ -106,10 +104,7 @@ if ~stop
         disp(sprintf('Total time of simulation: %s.', num2str(etime(clock,h1))))
         disp('Maximum number of iterations is reached (modify option maxit).')
     end
-    info.status = 0;% more iterations are needed.
-    info.error = err;
-    info.errors = c/abs(err);
-    info.iterations = options.simul.maxit;
+    success = false; % More iterations are needed.
 end
 
 if verbose

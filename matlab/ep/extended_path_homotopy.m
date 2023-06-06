@@ -35,20 +35,20 @@ if ismember(method, [1, 2])
         oo.endo_simul(:,1) = oo.steady_state + weight*(endo_simul0(:,1) - oo.steady_state);
         oo.exo_simul = bsxfun(@plus, weight*exo_simul, (1-weight)*transpose(oo.exo_steady_state));
         if order==0
-            tmp = perfect_foresight_solver_core(M, options, oo);
+            [endo_simul_new, success] = perfect_foresight_solver_core(M, options, oo);
         else
             switch(algo)
               case 0
-                [flag, tmp.endo_simul] = ...
+                [flag, endo_simul_new] = ...
                     solve_stochastic_perfect_foresight_model(endo_simul, exo_simul, pfm, ep.stochastic.quadrature.nodes, ep.stochastic.order);
               case 1
-                [flag, tmp.endo_simul] = ...
+                [flag, endo_simul_new] = ...
                     solve_stochastic_perfect_foresight_model_1(endo_simul, exo_simul, options, pfm, ep.stochastic.order);
             end
         end
         if isequal(order, 0)
             % Logical variable flag is false iff the solver fails.
-            flag = tmp.deterministic_simulation.status;
+            flag = success;
         else
             % Fix convention issue on the value of flag.
             flag = ~flag;
@@ -70,7 +70,7 @@ if ismember(method, [1, 2])
             oldweight = weight;
             weight = min(weight*increase_factor, 1);
             increase_flag = true;
-            endo_simul = tmp.endo_simul;
+            endo_simul = endo_simul_new;
         else
             if increase_flag
                 weight = oldweight + (weight-oldweight)/100;
@@ -102,20 +102,20 @@ if isequal(method, 3) || (isequal(method, 2) && noconvergence)
         oo.endo_simul = endo_simul;
         oo.exo_simul = bsxfun(@plus, weight*exo_simul, (1-weight)*transpose(oo.exo_steady_state));
         if order==0
-            tmp = perfect_foresight_solver_core(M, options, oo);
+            [endo_simul_new, success] = perfect_foresight_solver_core(M, options, oo);
         else
             switch(algo)
               case 0
-                [flag, tmp.endo_simul] = ...
+                [flag, endo_simul_new] = ...
                     solve_stochastic_perfect_foresight_model(endo_simul, exo_simul, pfm, ep.stochastic.quadrature.nodes, ep.stochastic.order);
               case 1
-                [flag, tmp.endo_simul] = ...
+                [flag, endo_simul_new] = ...
                     solve_stochastic_perfect_foresight_model_1(endo_simul, exo_simul, options, pfm, ep.stochastic.order);
             end
         end
         if isequal(order, 0)
             % Logical variable flag is false iff the solver fails.
-            flag = tmp.deterministic_simulation.status;
+            flag = success;
         else
             % Fix convention issue on the value of flag.
             flag = ~flag;
@@ -130,7 +130,7 @@ if isequal(method, 3) || (isequal(method, 2) && noconvergence)
                 continue
             end
             index = index+1;
-            endo_simul = tmp.endo_simul;
+            endo_simul = endo_simul_new;
         else
             break
         end

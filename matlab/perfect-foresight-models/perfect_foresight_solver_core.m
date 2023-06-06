@@ -1,4 +1,4 @@
-function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
+function [y, success, maxerror, iter, per_block_status] = perfect_foresight_solver_core(M_, options_, oo_)
 
 % Core function calling solvers for perfect foresight model
 %
@@ -8,8 +8,11 @@ function [oo_, maxerror] = perfect_foresight_solver_core(M_, options_, oo_)
 % - oo_                 [struct] contains results
 %
 % OUTPUTS
-% - oo_                 [struct] contains results
+% - y                   [double array] path for the endogenous variables (solution)
+% - success             [logical] Whether a solution was found
 % - maxerror            [double] contains the maximum absolute error
+% - iter                [integer] Number of iterations of the underlying nonlinear solver (empty for non-iterative methods)
+% - per_block_status    [struct] In the case of block decomposition, provides per-block solver status information (empty if no block decomposition)
 
 % Copyright © 2015-2023 Dynare Team
 %
@@ -49,62 +52,60 @@ if options_.linear && (isequal(options_.stack_solve_algo, 0) || isequal(options_
     options_.linear_approximation = true;
 end
 
+maxerror = [];
+iter = [];
+per_block_status = [];
+
 if options_.block
     if M_.block_structure.time_recursive
         error('Internal error: can''t perform stacked perfect foresight simulation with time-recursive block decomposition')
     end
     if options_.bytecode
         try
-            oo_.endo_simul = bytecode('dynamic', 'block_decomposed', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);
-            oo_.deterministic_simulation.status = true;
+            y = bytecode('dynamic', 'block_decomposed', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);
+            success = true;
         catch ME
             disp(ME.message)
             if options_.no_homotopy
                 error('Error in bytecode')
             end
-            oo_.deterministic_simulation.status = false;
+            success = false;
         end
     else
-        oo_ = solve_block_decomposed_problem(options_, M_, oo_);
+        [y, success, maxerror, per_block_status] = solve_block_decomposed_problem(options_, M_, oo_);
     end
 else
     if options_.bytecode
         try
-            oo_.endo_simul = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state, 1, periods+2), periods);
-            oo_.deterministic_simulation.status = true;
+            y = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state, 1, periods+2), periods);
+            success = true;
         catch ME
             disp(ME.message)
             if options_.no_homotopy
                 error('Error in bytecode')
             end
-            oo_.deterministic_simulation.status = false;
+            success = false;
         end
     else
         if M_.maximum_endo_lead == 0 && M_.maximum_endo_lag>0 && ~options_.lmmcp.status % Purely backward model
-            [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                sim1_purely_backward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+            [y, success] = sim1_purely_backward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
         elseif M_.maximum_endo_lag == 0 && M_.maximum_endo_lead>0 && ~options_.lmmcp.status % Purely forward model
-            [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                sim1_purely_forward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+            [y, success] = sim1_purely_forward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
         elseif M_.maximum_endo_lag == 0 && M_.maximum_endo_lead == 0 && ~options_.lmmcp.status % Purely static model
-            [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                sim1_purely_static(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+            [y, success] = sim1_purely_static(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
         else % General case
             switch options_.stack_solve_algo
               case 0
                 if options_.linear_approximation
-                    [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                        sim1_linear(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
+                    [y, success, maxerror] = sim1_linear(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
                 else
-                    [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                        sim1(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+                    [y, success, maxerror, iter] = sim1(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
                 end
               case {1 6}
                 if options_.linear_approximation
                     error('Invalid value of stack_solve_algo option!')
                 end
-                [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                    sim1_lbj(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+                [y, success, maxerror, iter] = sim1_lbj(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
               case 7
                 if options_.linear_approximation
                     if isequal(options_.solve_algo, 10) 
@@ -116,11 +117,9 @@ else
                             warning('It would be more efficient to set option solve_algo equal to 0!')
                         end
                     end
-                    [oo_.endo_simul, oo_.deterministic_simulation] = ...
-                        solve_stacked_linear_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
+                    [y, success] = solve_stacked_linear_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
                 else
-                    [oo_.endo_simul, oo_.deterministic_simulation, residuals] = ...
-                        solve_stacked_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+                    [y, success, maxerror] = solve_stacked_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
                 end
               otherwise
                 error('Invalid value of stack_solve_algo option!')
@@ -129,29 +128,21 @@ else
     end
 end
 
-if nargout>1
-    if options_.lmmcp.status
-        maxerror = max(max(abs(residuals)));
-    elseif options_.block && ~options_.bytecode
-        maxerror = oo_.deterministic_simulation.error;
+% Some solvers do not compute the maximum error, so do it here if needed
+if nargout > 2 && isempty(maxerror)
+    ny = size(oo_.endo_simul, 1);
+    if M_.maximum_lag > 0
+        y0 = y(:, M_.maximum_lag);
     else
-        if options_.bytecode
-            residuals = bytecode('dynamic','evaluate', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1);
-        else
-            if M_.maximum_lag > 0
-                y0 = oo_.endo_simul(:, M_.maximum_lag);
-            else
-                y0 = NaN(ny, 1);
-            end
-            if M_.maximum_lead > 0
-                yT = oo_.endo_simul(:, M_.maximum_lag+periods+1);
-            else
-                yT = NaN(ny, 1);
-            end
-            yy = oo_.endo_simul(:,M_.maximum_lag+(1:periods));
-
-            residuals = perfect_foresight_problem(yy(:), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_, options_);
-        end
-        maxerror = max(max(abs(residuals)));
+        y0 = NaN(ny, 1);
     end
+    if M_.maximum_lead > 0
+        yT = y(:, M_.maximum_lag+periods+1);
+    else
+        yT = NaN(ny, 1);
+    end
+    yy = y(:,M_.maximum_lag+(1:periods));
+
+    residuals = perfect_foresight_problem(yy(:), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_, options_);
+    maxerror = max(max(abs(residuals)));
 end
