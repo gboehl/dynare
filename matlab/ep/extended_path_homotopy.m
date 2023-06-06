@@ -1,6 +1,6 @@
 function [info_convergence, endo_simul] = extended_path_homotopy(endo_simul, exo_simul, M, options, oo, pfm, ep, order, algo, method, debug)
 
-% Copyright (C) 2016-2017 Dynare Team
+% Copyright © 2016-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,7 +48,7 @@ if ismember(method, [1, 2])
         end
         if isequal(order, 0)
             % Logical variable flag is false iff the solver fails.
-            flag = ~tmp.deterministic_simulation.status;
+            flag = tmp.deterministic_simulation.status;
         else
             % Fix convention issue on the value of flag.
             flag = ~flag;
@@ -115,7 +115,7 @@ if isequal(method, 3) || (isequal(method, 2) && noconvergence)
         end
         if isequal(order, 0)
             % Logical variable flag is false iff the solver fails.
-            flag = ~tmp.deterministic_simulation.status;
+            flag = tmp.deterministic_simulation.status;
         else
             % Fix convention issue on the value of flag.
             flag = ~flag;
