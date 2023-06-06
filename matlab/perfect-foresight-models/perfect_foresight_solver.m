@@ -207,20 +207,8 @@ if ~isreal(oo_.endo_simul(:)) % cannot happen with bytecode or the perfect_fores
     else
         yT = NaN(ny, 1);
     end
-    if M_.maximum_lag~=0 && M_.maximum_lead~=0
-        yy = real(oo_.endo_simul(:,M_.maximum_lag+(1:periods)));
-        residuals = perfect_foresight_problem(yy(:), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_, options_);
-    else
-        %The perfect_foresight_problem MEX only works on models with lags and leads
-        i_cols = find(M_.lead_lag_incidence');
-        residuals=NaN(ny,periods);
-        yy=real(oo_.endo_simul);
-        for it = (M_.maximum_lag+1):(M_.maximum_lag+periods)
-            residuals(:,it) = feval([M_.fname '.dynamic'],yy(i_cols), oo_.exo_simul, M_.params, oo_.steady_state, it);
-            i_cols = i_cols + ny;
-        end
-        residuals=residuals(:);
-    end
+    yy = real(oo_.endo_simul(:,M_.maximum_lag+(1:periods)));
+    residuals = perfect_foresight_problem(yy(:), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_, options_);
 
     if max(abs(residuals))< options_.dynatol.f
         oo_.deterministic_simulation.status = true;
