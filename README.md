@@ -500,7 +500,7 @@ You can also choose a specific version of Dynare by checking out the correspondi
 
 - Configure Dynare from the source directory:
 ```sh
-arch -x86_64 ./configure CC=gcc-12 CXX=g++-12 CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib LEX=/usr/local/opt/flex/bin/flex YACC=/usr/local/opt/bison/bin/bison --with-matlab=/Applications/MATLAB_R2021b.app
+arch -x86_64 ./configure CC=gcc-13 CXX=g++-13 CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib LEX=/usr/local/opt/flex/bin/flex YACC=/usr/local/opt/bison/bin/bison --with-matlab=/Applications/MATLAB_R2021b.app
 ```
 where you need to adapt the path to MATLAB. If you don’t have MATLAB, simply replace `--with-matlab=<…>` by `--disable-matlab`. Check the output of the command whether Dynare is configured for building everything except the internal docs of Dynare, Dynare++ and M2HTML.
 
