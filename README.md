@@ -408,7 +408,7 @@ If you have an Intel chip you can only compile for `x86_64`.
 You can check the platform of your current Homebrew installation by e.g. running
 `which brew` which should point to `/opt/homebrew/bin/brew` for `arm64` and to
 `/usr/local/bin/brew` for `x86_64` systems. In the steps below, we
-create a temporary environmental variable `BREWDIR` to ensure that the correct packages are used.
+create a temporary environment variable `BREWDIR` to ensure that the correct packages are used.
 
 The following commands install all requirements and Dynare from source.
 They should be entered at the command prompt in Terminal.app.
@@ -426,7 +426,7 @@ softwareupdate --install-rosetta --agree-to-license
 ```
 
 - Install [Homebrew](https://brew.sh/):
-Create environmental variables for which platform you want to compile for, i.e. either `arm64` or `x86_64`:
+Create environment variables for which platform you want to compile for, i.e. either `arm64` or `x86_64`:
 
 For `arm64` run the following commands:
 ```sh
@@ -440,7 +440,7 @@ export ARCH=x86_64
 export BREWDIR=/usr/local
 ```
 
-Install Homebrew using the environmental variables:
+Install Homebrew using the environment variables:
 ```sh
 arch -$ARCH /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
