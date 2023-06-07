@@ -1,4 +1,4 @@
-# Copyright © 2019-2022 Dynare Team
+# Copyright © 2019-2023 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -17,7 +17,7 @@
 
 include versions.mk
 
-GCC_VERSION = 12
+GCC_VERSION = 13
 ROOT_PATH = $(realpath .)
 
 WGET_OPTIONS := --no-verbose --no-use-server-timestamps --retry-connrefused --retry-on-host-error

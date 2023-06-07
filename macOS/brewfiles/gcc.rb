@@ -5,15 +5,15 @@ class Gcc < Formula
   head "https://gcc.gnu.org/git/gcc.git", branch: "master"
 
   stable do
-    url "https://ftp.gnu.org/gnu/gcc/gcc-12.2.0/gcc-12.2.0.tar.xz"
-    mirror "https://ftpmirror.gnu.org/gcc/gcc-12.2.0/gcc-12.2.0.tar.xz"
-    sha256 "e549cf9cf3594a00e27b6589d4322d70e0720cdd213f39beb4181e06926230ff"
+    url "https://ftp.gnu.org/gnu/gcc/gcc-13.1.0/gcc-13.1.0.tar.xz"
+    mirror "https://ftpmirror.gnu.org/gcc/gcc-13.1.0/gcc-13.1.0.tar.xz"
+    sha256 "61d684f0aa5e76ac6585ad8898a2427aade8979ed5e7f85492286c4dfc13ee86"
 
     # Branch from the Darwin maintainer of GCC, with a few generic fixes and
-    # Apple Silicon support, located at https://github.com/iains/gcc-12-branch
+    # Apple Silicon support, located at https://github.com/iains/gcc-13-branch
     patch do
-      url "https://raw.githubusercontent.com/Homebrew/formula-patches/1d184289/gcc/gcc-12.2.0-arm.diff"
-      sha256 "a7843b5c6bf1401e40c20c72af69c8f6fc9754ae980bb4a5f0540220b3dcb62d"
+      url "https://raw.githubusercontent.com/Homebrew/formula-patches/5c206c47/gcc/gcc-13.1.0.diff"
+      sha256 "cb4e8a89387f748a744da0273025d0dc2e3c76780cc390b18ada704676afea11"
     end
   end
 
@@ -23,13 +23,13 @@ class Gcc < Formula
   end
 
   bottle do
-    rebuild 1
-    sha256 cellar: :any, arm64_monterey: "f37b8d3764f63e11a6e11dc23774eba527453de89fedb4e3b13aa3996059d386"
-    sha256 cellar: :any, arm64_big_sur:  "5d98731c711f17707fe13276090a6a3669a9d68e766e56ead8c842465ff164bb"
-    sha256 cellar: :any, monterey:       "453199069048503be8f072463aaa3cd60fc2764875528f234374872354528564"
-    sha256 cellar: :any, big_sur:        "1f2aca239e706f455125dcb2c08df7744b8905b5b62d7aed4cdeae6cf5d5fcee"
-    sha256 cellar: :any, catalina:       "98f37e3468e2a15343e02f613a2f8d7761d30eead960d04b2317f8292122e9ac"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:   "c7f773f9af560766b2d971d815a8d224c267088c05ed1f2b864bd1d9ebc26e1a"
+    sha256 cellar: :any, arm64_ventura:  "d2b21a257c73e9b8f9c6bc03e6330ea8ba9fb3e7cdb9eb945d7ff7d96ba9708c"
+    sha256 cellar: :any, arm64_monterey: "5405f3b1ecdabb68e161308f35d72af907af21694a0e2b67f10edb25b2dd8f90"
+    sha256 cellar: :any, arm64_big_sur:  "cc92fced3516bc72b69e31b0495fe416f206b540be02f1c817db96afbcc38f28"
+    sha256 cellar: :any, ventura:        "3abd8c2c88a8e74b5df5c44f9c151ff7e760cf705307ecf3c95762492e777f1e"
+    sha256 cellar: :any, monterey:       "f9cbc7eb14781df9228518a2d02590941206947e7dc419c0b232d523f39b1475"
+    sha256 cellar: :any, big_sur:        "2eb458ed309ea4fa9451ab547fa3d797bd523ba4f50f01d5c997212109b74e5e"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:   "cca77a5d6625d3bb711ce40551751974d4cb5c74306329fc2fc8cdcade2ef564"
   end
 
   # The bottles are built on systems with the CLT installed, and do not work
@@ -103,6 +103,9 @@ class Gcc < Formula
 
       # Fix Linux error: gnu/stubs-32.h: No such file or directory.
       args << "--disable-multilib"
+
+      # Enable to PIE by default to match what the host GCC uses
+      args << "--enable-default-pie"
 
       # Change the default directory name for 64-bit libraries to `lib`
       # https://stackoverflow.com/a/54038769
@@ -204,8 +207,8 @@ class Gcc < Formula
       #   * `-idirafter <dir>` instructs gcc to search system header
       #     files after gcc internal header files.
       # For libraries:
-      #   * `-nostdlib -L#{libgcc}` instructs gcc to use brewed glibc
-      #     if applied.
+      #   * `-nostdlib -L#{libgcc} -L#{glibc.opt_lib}` instructs gcc to use
+      #     brewed glibc if applied.
       #   * `-L#{libdir}` instructs gcc to find the corresponding gcc
       #     libraries. It is essential if there are multiple brewed gcc
       #     with different versions installed.
@@ -219,7 +222,7 @@ class Gcc < Formula
         + -isysroot #{HOMEBREW_PREFIX}/nonexistent #{system_header_dirs.map { |p| "-idirafter #{p}" }.join(" ")}
 
         *link_libgcc:
-        #{glibc_installed ? "-nostdlib -L#{libgcc}" : "+"} -L#{libdir} -L#{HOMEBREW_PREFIX}/lib
+        #{glibc_installed ? "-nostdlib -L#{libgcc} -L#{glibc.opt_lib}" : "+"} -L#{libdir} -L#{HOMEBREW_PREFIX}/lib
 
         *link:
         + --dynamic-linker #{HOMEBREW_PREFIX}/lib/ld.so -rpath #{libdir}

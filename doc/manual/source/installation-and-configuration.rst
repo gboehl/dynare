@@ -200,7 +200,7 @@ With Octave
 
 The compiler can be installed via Homebrew_. In a terminal, run::
 
-  brew install gcc-12
+  brew install gcc
 
 Configuration
 =============

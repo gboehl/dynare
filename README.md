@@ -505,7 +505,7 @@ cd $DYNAREDIR/x13as
 curl -O https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/program-archives/x13as_asciisrc-v1-1-b59.tar.gz
 tar xf x13as_asciisrc-v1-1-b59.tar.gz
 sed -i '' 's/-static//g' makefile.gf
-make -j$(sysctl -n hw.ncpu) -f makefile.gf FC=$BREWDIR/bin/gfortran LINKER=$BREWDIR/bin/gcc-12 FFLAGS="-O2 -std=legacy" LDFLAGS=-static-libgcc LIBS="$BREWDIR/lib/gcc/current/libgfortran.a /$BREWDIR/lib/gcc/current/libquadmath.a" PROGRAM=x13as
+make -j$(sysctl -n hw.ncpu) -f makefile.gf FC=$BREWDIR/bin/gfortran LINKER=$BREWDIR/bin/gcc-13 FFLAGS="-O2 -std=legacy" LDFLAGS=-static-libgcc LIBS="$BREWDIR/lib/gcc/current/libgfortran.a /$BREWDIR/lib/gcc/current/libquadmath.a" PROGRAM=x13as
 mkdir -p $HOME/.local/bin
 cp x13as $HOME/.local/bin/x13as
 cd ;
@@ -528,7 +528,7 @@ You can also choose a specific version of Dynare by checking out the correspondi
 
 - Configure Dynare from the source directory:
 ```sh
-arch -$ARCH ./configure --prefix=$BREWDIR CC=gcc-12 CXX=g++-12 CPPFLAGS=-I$BREWDIR/include LDFLAGS=-L$BREWDIR/lib LEX=$BREWDIR/opt/flex/bin/flex YACC=$BREWDIR/opt/bison/bin/bison --with-slicot=$DYNAREDIR/slicot --with-matlab=/Applications/MATLAB_R2022b_Beta.app
+arch -$ARCH ./configure --prefix=$BREWDIR CC=gcc-13 CXX=g++-13 CPPFLAGS=-I$BREWDIR/include LDFLAGS=-L$BREWDIR/lib LEX=$BREWDIR/opt/flex/bin/flex YACC=$BREWDIR/opt/bison/bin/bison --with-slicot=$DYNAREDIR/slicot --with-matlab=/Applications/MATLAB_R2022b_Beta.app
 ```
 where you need to adapt the path to MATLAB. If you don’t have MATLAB, simply replace `--with-matlab=<…>` by `--disable-matlab`.
 Similarly, if you don't want to compile for Octave add a `--disable-octave` flag.
