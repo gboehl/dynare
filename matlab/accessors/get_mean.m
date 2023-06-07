@@ -13,7 +13,7 @@ function y0 = get_mean(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2019 Dynare Team
+% Copyright © 2019-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,7 +39,7 @@ else
 end
 if order==1
     ys_ = oo_.steady_state;
-    ys_ = evaluate_steady_state(ys_,M_,options_,oo_,1);
+    ys_ = evaluate_steady_state(ys_,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,true);
 elseif order==2
     ys_ = oo_.dr.ys;
     ys_(oo_.dr.order_var)=ys_(oo_.dr.order_var)+oo_.dr.ghs2./2;

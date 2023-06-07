@@ -488,7 +488,7 @@ if options_.analytic_derivation
         else
             steadystate_check_flag = 1;
         end
-        [tmp1, params] = evaluate_steady_state(oo_.steady_state,M,options_,oo_,steadystate_check_flag);
+        [tmp1, params] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M,options_,steadystate_check_flag);
         change_flag=any(find(params-M.params));
         if change_flag
             skipline()
@@ -561,7 +561,7 @@ ncn = estim_params_.ncn;
 if estim_params_.np
     M.params(estim_params_.param_vals(:,1)) = xparam1(nvx+ncx+nvn+ncn+1:end);
 end
-[oo_.steady_state, params,info] = evaluate_steady_state(oo_.steady_state,M,options_,oo_,steadystate_check_flag);
+[oo_.steady_state, params,info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M,options_,steadystate_check_flag);
 
 if info(1)
     fprintf('\ndynare_estimation_init:: The steady state at the initial parameters cannot be computed.\n')

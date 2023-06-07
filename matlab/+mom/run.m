@@ -62,8 +62,8 @@ function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_,
 %  o set_state_space.m
 %  o set_all_parameters.m
 %  o test_for_deep_parameters_calibration.m
-% =========================================================================
-% Copyright © 2020-2022 Dynare Team
+
+% Copyright © 2020-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -688,7 +688,7 @@ end
 
 old_steady_params=M_.params; %save initial parameters for check if steady state changes param values
 % Check steady state at initial model parameter values
-[oo_.steady_state, new_steady_params, info] = evaluate_steady_state(oo_.steady_state,M_,options_mom_,oo_,steadystate_check_flag);
+[oo_.steady_state, new_steady_params, info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_mom_,steadystate_check_flag);
 if info(1)
     fprintf('\nmethod_of_moments: The steady state at the initial parameters cannot be computed.\n')
     print_info(info, 0, options_mom_);
@@ -699,7 +699,7 @@ if isfield(estim_params_,'param_vals') && ~isempty(estim_params_.param_vals)
     Model_par_varied=M_; %store M_ structure
     
     Model_par_varied.params(estim_params_.param_vals(:,1))=Model_par_varied.params(estim_params_.param_vals(:,1))*1.01; %vary parameters
-    [~, new_steady_params_2] = evaluate_steady_state(oo_.steady_state,Model_par_varied,options_mom_,oo_,1);
+    [~, new_steady_params_2] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],Model_par_varied,options_mom_,true);
     
     changed_par_indices=find((old_steady_params(estim_params_.param_vals(:,1))-new_steady_params(estim_params_.param_vals(:,1))) ...
         | (Model_par_varied.params(estim_params_.param_vals(:,1))-new_steady_params_2(estim_params_.param_vals(:,1))));

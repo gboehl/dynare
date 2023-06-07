@@ -1,13 +1,13 @@
-function [ys,params,info] = evaluate_steady_state(ys_init,M,options,oo,steadystate_check_flag)
-% function [ys,params,info] = evaluate_steady_state(ys_init,M,options,oo,steadystate_check_flag)
+function [ys,params,info] = evaluate_steady_state(ys_init,exo_ss,M,options,steadystate_check_flag)
+% function [ys,params,info] = evaluate_steady_state(ys_init,exo_ss,M,options,steadystate_check_flag)
 % Computes the steady state
 %
 % INPUTS
 %   ys_init                   vector           initial values used to compute the steady
 %                                                 state
+%   exo_ss                    vector           exogenous steady state (incl. deterministic exogenous)
 %   M                         struct           model structure
 %   options                   struct           options
-%   oo                        struct           output results
 %   steadystate_check_flag    boolean          if true, check that the
 %                                              steadystate verifies the
 %                                              static model
@@ -61,7 +61,6 @@ check = 0;
 
 steadystate_flag = options.steadystate_flag;
 params = M.params;
-exo_ss = [oo.exo_steady_state; oo.exo_det_steady_state];
 
 if length(M.aux_vars) > 0 && ~steadystate_flag && M.set_auxiliary_variables
     h_set_auxiliary_variables = str2func([M.fname '.set_auxiliary_variables']);
@@ -192,7 +191,7 @@ if options.ramsey_policy
 
     end
     %either if no steady state file or steady state file without problems
-    [ys,params,info] = dyn_ramsey_static(ys_init,M,options,oo);
+    [ys,params,info] = dyn_ramsey_static(ys_init,exo_ss,M,options);
     if info
         return
     end

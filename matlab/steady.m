@@ -77,7 +77,7 @@ if info(1)
     end
 end
 
-[oo_.steady_state,M_.params,info] = evaluate_steady_state(oo_.steady_state,M_,options_,oo_,~options_.steadystate.nocheck);
+[oo_.steady_state,M_.params,info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
 
 if info(1) == 0
     if ~options_.noprint
@@ -170,7 +170,7 @@ for i=1:step_nbr+1
     oo.exo_steady_state(values(ix,2)) = points(ix,i);
     oo.exo_det_steady_state(values(ixd,2)) = points(ixd,i);
 
-    [steady_state,M.params,info] = evaluate_steady_state(oo.steady_state,M,options,oo,~options.steadystate.nocheck);
+    [steady_state,M.params,info] = evaluate_steady_state(oo.steady_state,[oo.exo_steady_state; oo.exo_det_steady_state],M,options,~options.steadystate.nocheck);
     if info(1) == 0
         % if homotopy step is not successful, current values of steady
         % state are not modified
@@ -261,7 +261,7 @@ for i = 1:nv
 
         disp([ 'HOMOTOPY mode 2: lauching solver with ' varname ' = ' num2str(v) ' ...'])
 
-        oo_.steady_state = evaluate_steady_state(oo_.steady_state,M_,options_,oo_,~options_.steadystate.nocheck);
+        oo_.steady_state = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
     end
 end
 
@@ -344,7 +344,7 @@ while iter <= step_nbr
 
     old_ss = oo.steady_state;
 
-    [steady_state,params,info] = evaluate_steady_state(old_ss,M,options,oo,~options.steadystate.nocheck);
+    [steady_state,params,info] = evaluate_steady_state(old_ss,[oo.exo_steady_state; oo.exo_det_steady_state],M,options,~options.steadystate.nocheck);
     if info(1) == 0
         oo.steady_state = steady_state;
         M.params = params;

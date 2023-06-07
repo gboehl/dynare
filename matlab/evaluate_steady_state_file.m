@@ -5,7 +5,7 @@ function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,
 % INPUTS
 %   ys_init                   vector           initial values used to compute the steady
 %                                                 state
-%   exo_ss                    vector           exogenous steady state
+%   exo_ss                    vector           exogenous steady state (incl. deterministic exogenous)
 %   M                         struct           model parameters
 %   options                   struct           options
 %   steady_state_checkflag    boolean          indicator whether to check steady state returned

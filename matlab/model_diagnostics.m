@@ -111,7 +111,7 @@ if options.logged_steady_state %if steady state was previously logged, undo this
     oo.steady_state=exp(oo.steady_state);
     options.logged_steady_state=0;
 end
-[dr.ys,M.params,check1]=evaluate_steady_state(oo.steady_state,M,options,oo,options.steadystate.nocheck);
+[dr.ys,M.params,check1]=evaluate_steady_state(oo.steady_state,[oo.exo_steady_state; oo.exo_det_steady_state],M,options,options.steadystate.nocheck);
 
 % testing for problem
 if check1(1)

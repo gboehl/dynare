@@ -14,7 +14,7 @@ function [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info)
 % marco.ratto@ec.europa.eu
 
 % Copyright © 2012-2016 European Commission
-% Copyright © 2012-2022 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -126,11 +126,11 @@ end
 if ~loadSA
     if exist('xparam1','var')
         M_ = set_all_parameters(xparam1,estim_params_,M_);
-        ys_mode=evaluate_steady_state(oo_.steady_state,M_,options_,oo_,~options_.steadystate.nocheck);
+        ys_mode=evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
     end
     if exist('xparam1_mean','var')
         M_ = set_all_parameters(xparam1_mean,estim_params_,M_);
-        ys_mean=evaluate_steady_state(oo_.steady_state,M_,options_,oo_,~options_.steadystate.nocheck);
+        ys_mean=evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
     end
     Y = transpose(dataset_.data);
     gend = dataset_.nobs;

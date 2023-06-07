@@ -24,7 +24,7 @@ function output_cell =posterior_function_demo(xparam1,M_,options_,oo_,estim_para
 %   output_cell  [1 by n cell]   1 by n Matlab cell allowing to store any
 %                                desired computation or result (strings, matrices, structures, etc.)
 
-% Copyright © 2015 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -49,7 +49,7 @@ output_cell{1,1}=mean(xparam1);
 % set the parameters draws to the model structure
 M_ = set_all_parameters(xparam1,estim_params_,M_);
 % compute the steady state for the parameter draw written to M_
-[ys,params,info] = evaluate_steady_state(oo_.steady_state,M_,options_,oo_,0);
+[ys,params,info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,false);
 
 %set second part of output cell
 output_cell{1,2}=ys';

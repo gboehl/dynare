@@ -62,7 +62,7 @@ end
 
 if options_.steadystate_flag
     [oo_.steady_state,M_.params,info] = ...
-        evaluate_steady_state(oo_.steady_state,M_,options_,oo_,0);
+        evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,false);
 end
 
 % Compute the residuals

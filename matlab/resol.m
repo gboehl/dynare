@@ -74,7 +74,7 @@ if M.exo_nbr == 0
     oo.exo_steady_state = [] ;
 end
 
-[dr.ys,M.params,info] = evaluate_steady_state(oo.steady_state,M,options,oo,~options.steadystate.nocheck);
+[dr.ys,M.params,info] = evaluate_steady_state(oo.steady_state,[oo.exo_steady_state; oo.exo_det_steady_state],M,options,~options.steadystate.nocheck);
 
 if info(1)
     oo.dr = dr;

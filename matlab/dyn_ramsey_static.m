@@ -1,4 +1,4 @@
-function [steady_state, params, check] = dyn_ramsey_static(ys_init, M, options_, oo)
+function [steady_state, params, check] = dyn_ramsey_static(ys_init, exo_ss, M, options_)
 
 % Computes the steady state for optimal policy
 %
@@ -12,9 +12,9 @@ function [steady_state, params, check] = dyn_ramsey_static(ys_init, M, options_,
 
 % INPUTS
 %    ys_init:       vector of endogenous variables or instruments
+%    exo_ss         vector of exogenous steady state (incl. deterministic exogenous)
 %    M:             Dynare model structure
 %    options:       Dynare options structure
-%    oo:            Dynare results structure
 %
 % OUTPUTS
 %    steady_state:  steady state value
@@ -46,10 +46,9 @@ function [steady_state, params, check] = dyn_ramsey_static(ys_init, M, options_,
 params = M.params;
 check = 0;
 options_.steadystate.nocheck = 1; %locally disable checking because Lagrange multipliers are not accounted for in evaluate_steady_state_file
-nl_func = @(x) dyn_ramsey_static_1(x,M,options_,oo);
-exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
+nl_func = @(x) dyn_ramsey_static_1(x,exo_ss,ys_init,M,options_);
 
-if ~options_.steadystate_flag && check_static_model(ys_init,M,options_,oo)
+if ~options_.steadystate_flag && check_static_model(ys_init,exo_ss,M,options_)
     steady_state = ys_init;
     return
 elseif options_.steadystate_flag
@@ -82,7 +81,7 @@ elseif options_.steadystate_flag
     [xx,params] = evaluate_steady_state_file(ys_init,exo_ss,M,options_,~options_.steadystate.nocheck); %run steady state file again to update parameters
     [~,~,steady_state] = nl_func(inst_val); %compute and return steady state
 else
-    xx = oo.steady_state(1:M.orig_endo_nbr);
+    xx = ys_init(1:M.orig_endo_nbr);
     o_jacobian_flag = options_.jacobian_flag;
     options_.jacobian_flag = false;
     [xx, errorflag] = dynare_solve(nl_func, xx, options_.ramsey.maxit, options_.solve_tolf, options_.solve_tolx, options_);
@@ -94,21 +93,18 @@ else
 end
 
 
-function [resids,rJ,steady_state] = dyn_ramsey_static_1(x,M,options_,oo)
+function [resids,rJ,steady_state] = dyn_ramsey_static_1(x,exo_ss,ys_init,M,options_)
 resids = [];
 rJ = [];
 mult = [];
 
 inst_nbr = M.ramsey_orig_endo_nbr - M.ramsey_orig_eq_nbr;
 
-exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
-
 if options_.steadystate_flag
     k_inst = [];
     for i = 1:size(options_.instruments,1)
         k_inst = [k_inst; strmatch(options_.instruments{i}, M.endo_names, 'exact')];
     end
-    ys_init=zeros(size(oo.steady_state)); %create starting vector for steady state computation as only instrument value is handed over
     ys_init(k_inst) = x; %set instrument, the only value required for steady state computation, to current value
     [x,M.params,check] = evaluate_steady_state_file(ys_init,... %returned x now has size endo_nbr as opposed to input size of n_instruments
                                                     exo_ss, ...
@@ -168,9 +164,8 @@ else
     steady_state = [xx(1:M.ramsey_orig_endo_nbr); mult];
 end
 
-function result = check_static_model(ys,M,options_,oo)
+function result = check_static_model(ys,exo_ss,M,options_)
 result = false;
-exo_ss = [oo.exo_steady_state oo.exo_det_steady_state];
 if (options_.bytecode)
     [res, ~] = bytecode('static', ys, exo_ss, M.params, 'evaluate');
 else
