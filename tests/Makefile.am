@@ -222,9 +222,9 @@ MODFILES = \
 	fs2000/fs2000_sd.mod \
 	fs2000/fs2000_dseries_a.mod \
 	fs2000/fs2000_dseries_b.mod \
-	homotopy/homotopy1_test.mod \
-	homotopy/homotopy2_test.mod \
-	homotopy/homotopy3_test.mod \
+	steady_state/homotopy/homotopy1_test.mod \
+	steady_state/homotopy/homotopy2_test.mod \
+	steady_state/homotopy/homotopy3_test.mod \
 	bvar_a_la_sims/bvar_standalone.mod \
 	bvar_a_la_sims/bvar_and_dsge.mod \
 	AIM/fs2000x10L9_L.mod \
@@ -1058,10 +1058,6 @@ arima: m/arima o/arima
 m/arima: $(patsubst %.mod, %.m.trs, $(filter arima/%.mod, $(MODFILES)))
 o/arima: $(patsubst %.mod, %.o.trs, $(filter arima/%.mod, $(MODFILES)))
 
-homotopy: m/homotopy o/homotopy
-m/homotopy: $(patsubst %.mod, %.m.trs, $(filter homotopy/%.mod, $(MODFILES)))
-o/homotopy: $(patsubst %.mod, %.o.trs, $(filter homotopy/%.mod, $(MODFILES)))
-
 expectations: m/expectations o/expectations
 m/expectations: $(patsubst %.mod, %.m.trs, $(filter expectations/%.mod, $(MODFILES)))
 o/expectations: $(patsubst %.mod, %.o.trs, $(filter expectations/%.mod, $(MODFILES)))
@@ -1325,7 +1321,7 @@ EXTRA_DIST = \
 	reporting/dc_a.csv \
 	reporting/dc_q.csv \
 	reporting/runDynareReport.m \
-	homotopy/common.mod \
+	steady_state/homotopy/common.mod \
 	block_bytecode/ls2003.mod \
 	steady_state/fs2000_ssfile_aux.m \
 	utils/printMakeCheckMatlabErrMsg.m \
