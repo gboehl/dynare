@@ -97,10 +97,6 @@ MODFILES = \
 	gsa/ls2003.mod \
 	gsa/cod_ML_morris/cod_ML_morris.mod \
 	gsa/morris/nk_est.mod \
-	simul/ramst.mod \
-	simul/ramst_a.mod \
-	simul/ramst_mshocks.mod \
-	simul/ramst_mshocks_vec.mod \
 	on-the-fly/ex1.mod \
 	on-the-fly/ex2.mod \
 	on-the-fly/ex3.mod \
@@ -110,6 +106,7 @@ MODFILES = \
 	equation_tags/example1_with_tags.mod \
 	equation_tags/ramst_static_tag.mod \
 	equation_tags/ramst_static_tag_block.mod \
+	stochastic_simulations/example1.mod \
 	stochastic_simulations/example1_irf_shocks.mod \
 	stochastic_simulations/example1long.mod \
 	stochastic_simulations/example2long.mod \
@@ -164,8 +161,6 @@ MODFILES = \
 	stat_functions/ramst_normcdf_and_friends_use_dll.mod \
 	stat_functions/ramst_normcdf_and_friends_bytecode.mod \
 	stat_functions/example1_abs_sign.mod \
-	simul/predetermined_variables.mod \
-	simul/histval_det.mod \
 	preprocessor_checks/comments.mod \
 	preprocessor_checks/example1_mlv.mod \
 	preprocessor_checks/ramst_model_edit.mod \
@@ -269,13 +264,6 @@ MODFILES = \
 	identification/forward_looking/forward_looking_empty_ghx.mod \
 	identification/forward_looking/forward_looking_varobs_x.mod \
 	model_diagnostics/example2_block_model_diag.mod	\
-	simul/example1.mod \
-	simul/ramst_vec.mod \
-	simul/Solow_no_varexo.mod \
-	simul/simul_ZLB_purely_forward.mod \
-	simul/simul_ZLB_purely_forward_no_solution.mod \
-	simul/Irreversible_investment.mod \
-	simul/linear_state_space_arma.mod \
 	perfect_foresight/initval_endval_blocks/initval_endval_test.mod \
 	perfect_foresight/initval_endval_blocks/histval_initval_test.mod \
 	conditional_forecasts/1/fs2000_cal.mod \
@@ -361,6 +349,18 @@ MODFILES = \
 	stochastic-backward-models/solow_cd.mod \
 	stochastic-backward-models/solow_ces.mod \
 	stochastic-backward-models/solow_cd_with_steadystate.mod \
+	deterministic_simulations/ramst.mod \
+	deterministic_simulations/ramst_a.mod \
+	deterministic_simulations/ramst_mshocks.mod \
+	deterministic_simulations/ramst_mshocks_vec.mod \
+	deterministic_simulations/predetermined_variables.mod \
+	deterministic_simulations/histval_det.mod \
+	deterministic_simulations/ramst_vec.mod \
+	deterministic_simulations/Solow_no_varexo.mod \
+	deterministic_simulations/simul_ZLB_purely_forward.mod \
+	deterministic_simulations/simul_ZLB_purely_forward_no_solution.mod \
+	deterministic_simulations/Irreversible_investment.mod \
+	deterministic_simulations/linear_state_space_arma.mod \
 	deterministic_simulations/purely_forward/ar1.mod \
 	deterministic_simulations/purely_forward/nk.mod \
 	deterministic_simulations/purely_backward/ar1.mod \
@@ -874,8 +874,8 @@ deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.o.trs: determ
 deterministic_simulations/multiple_lead_lags/sim_lead_lag.m.trs: deterministic_simulations/multiple_lead_lags/sim_base.m.trs deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.m.trs
 deterministic_simulations/multiple_lead_lags/sim_lead_lag.o.trs: deterministic_simulations/multiple_lead_lags/sim_base.o.trs deterministic_simulations/multiple_lead_lags/sim_lead_lag_aux_vars.o.trs
 
-deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.m.trs: simul/ramst.m.trs
-deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.o.trs: simul/ramst.o.trs
+deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.m.trs: deterministic_simulations/ramst.m.trs
+deterministic_simulations/multiple_lead_lags/ramst_augmented_histval.o.trs: deterministic_simulations/ramst.o.trs
 
 loglinear/example4_loglinear.m.trs: loglinear/example4_exp.m.trs
 loglinear/example4_loglinear.o.trs: loglinear/example4_exp.o.trs
@@ -989,11 +989,11 @@ particle/local_it_k_test_parallel.o.trs: particle/first_spec.o.trs
 pruning/AS_pruned_state_space_red_shock.m.trs: pruning/AnSchorfheide_pruned_state_space.m.trs
 pruning/AS_pruned_state_space_red_shock.o.trs: pruning/AnSchorfheide_pruned_state_space.o.trs
 
-preprocessor_checks/ramst_model_edit.m.trs: simul/ramst.m.trs
-preprocessor_checks/ramst_model_edit.o.trs: simul/ramst.o.trs
+preprocessor_checks/ramst_model_edit.m.trs: deterministic_simulations/ramst.m.trs
+preprocessor_checks/ramst_model_edit.o.trs: deterministic_simulations/ramst.o.trs
 
-log_transform/ramst.m.trs: simul/ramst.m.trs
-log_transform/ramst.o.trs: simul/ramst.o.trs
+log_transform/ramst.m.trs: deterministic_simulations/ramst.m.trs
+log_transform/ramst.o.trs: deterministic_simulations/ramst.o.trs
 
 model-inversion/nk-1/invert.m.trs: model-inversion/nk-1/simulate.m.trs
 model-inversion/nk-1/invert.o.trs: model-inversion/nk-1/simulate.o.trs
@@ -1030,8 +1030,8 @@ solve_algo_12_14/purely_forward_14.o.trs: solve_algo_12_14/purely_forward_refere
 estimation/conditional-likelihood/1/fs2000_estimation_conditional.m.trs: estimation/conditional-likelihood/1/fs2000_estimation_exact.m.trs
 estimation/conditional-likelihood/1/fs2000_estimation_conditional.o.trs: estimation/conditional-likelihood/1/fs2000_estimation_exact.o.trs
 
-deprecated/ramst.m.trs: simul/ramst.m.trs
-deprecated/ramst.o.trs: simul/ramst.o.trs
+deprecated/ramst.m.trs: deterministic_simulations/ramst.m.trs
+deprecated/ramst.o.trs: deterministic_simulations/ramst.o.trs
 
 
 observation_trends_and_prefiltering/MCMC: m/observation_trends_and_prefiltering/MCMC o/observation_trends_and_prefiltering/MCMC
@@ -1125,10 +1125,6 @@ o/deterministic_simulations/multiple_lead_lags: $(patsubst %.mod, %.o.trs, $(fil
 deterministic_simulations: m/deterministic_simulations o/deterministic_simulations
 m/deterministic_simulations: $(patsubst %.mod, %.m.trs, $(filter deterministic_simulations/%.mod, $(MODFILES)))
 o/deterministic_simulations: $(patsubst %.mod, %.o.trs, $(filter deterministic_simulations/%.mod, $(MODFILES)))
-
-simul: m/simul o/simul
-m/simul: $(patsubst %.mod, %.m.trs, $(filter simul/%.mod, $(MODFILES)))
-o/simul: $(patsubst %.mod, %.o.trs, $(filter simul/%.mod, $(MODFILES)))
 
 ep: m/ep o/ep
 m/ep: $(patsubst %.mod, %.m.trs, $(filter ep/%.mod, $(MODFILES)))

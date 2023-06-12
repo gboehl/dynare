@@ -34,7 +34,7 @@ end;
 
 simul(periods=200);
 
-benchmark = load('../simul/ramst/Output/ramst_results.mat');
+benchmark = load('../deterministic_simulations/ramst/Output/ramst_results.mat');
 
 if max(abs(benchmark.oo_.endo_simul-oo_.endo_simul)) > 1e5
     error('The results of simul are inconsistent with perfect_foresight_setup+perfect_foresight_solver');
