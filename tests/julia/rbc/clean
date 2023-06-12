@@ -1,8 +1,0 @@
-#/bin/sh
-rm -f *~
-rm -f rbc1.jl rbc2.jl
-rm -f rbc1Dynamic.jl rbc2Dynamic.jl
-rm -f rbc1Static.jl rbc2Static.jl
-rm -f rbc1SteadyState2.jl
-rm -f rbc1_set_auxiliary_variables.jl rbc2_set_auxiliary_variables.jl
-rm -rf rbc1 rbc2
