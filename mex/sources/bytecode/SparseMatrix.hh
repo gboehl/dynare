@@ -203,6 +203,7 @@ protected:
   int maxit_;
   double *direction;
   double solve_tolf;
+  // 1-norm error, square of 2-norm error, ∞-norm error
   double res1, res2, max_res;
   int max_res_idx;
   int *index_vara;

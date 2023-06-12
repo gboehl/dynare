@@ -3802,12 +3802,12 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int size)
             }
         }
 
-      mexPrintf("-----------------------------------\n");
-      mexPrintf("      Simulate iteration no %d     \n", iter+1);
-      mexPrintf("      max. error=%.10e       \n", static_cast<double>(max_res));
-      mexPrintf("      sqr. error=%.10e       \n", static_cast<double>(res2));
-      mexPrintf("      abs. error=%.10e       \n", static_cast<double>(res1));
-      mexPrintf("-----------------------------------\n");
+      mexPrintf("------------------------------------\n");
+      mexPrintf("      Simulate iteration no %d\n", iter+1);
+      mexPrintf("      Inf-norm error = %.3e\n", static_cast<double>(max_res));
+      mexPrintf("      2-norm error   = %.3e\n", static_cast<double>(sqrt(res2)));
+      mexPrintf("      1-norm error   = %.3e\n", static_cast<double>(res1));
+      mexPrintf("------------------------------------\n");
     }
   bool zero_solution;
 
@@ -4172,12 +4172,12 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
               break;
             }
         }
-      mexPrintf("-----------------------------------\n");
-      mexPrintf("      Simulate iteration no %d     \n", iter+1);
-      mexPrintf("      max. error=%.10e       \n", static_cast<double>(max_res));
-      mexPrintf("      sqr. error=%.10e       \n", static_cast<double>(res2));
-      mexPrintf("      abs. error=%.10e       \n", static_cast<double>(res1));
-      mexPrintf("-----------------------------------\n");
+      mexPrintf("------------------------------------\n");
+      mexPrintf("      Simulate iteration no %d\n", iter+1);
+      mexPrintf("      Inf-norm error = %.3e\n", static_cast<double>(max_res));
+      mexPrintf("      2-norm error   = %.3e\n", static_cast<double>(sqrt(res2)));
+      mexPrintf("      1-norm error   = %.3e\n", static_cast<double>(res1));
+      mexPrintf("------------------------------------\n");
       mexEvalString("drawnow;");
     }
   if (cvg)
