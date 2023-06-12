@@ -746,40 +746,18 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   bool dont_store_a_structure = false;
   if (nlhs > 0)
     {
-      if (block >= 0)
+      if (evaluate)
         {
-          if (evaluate)
-            {
-              vector<double> residual = interprete.get_residual();
-              plhs[0] = mxCreateDoubleMatrix(static_cast<int>(residual.size()/static_cast<double>(col_y)),
-                                             static_cast<int>(col_y), mxREAL);
-              pind = mxGetPr(plhs[0]);
-              for (i = 0; i < residual.size(); i++)
-                pind[i] = residual[i];
-            }
-          else
-            {
-              int out_periods = extended_path ? max_periods + y_kmin : row_y;
-              plhs[0] = mxCreateDoubleMatrix(out_periods, static_cast<int>(col_y), mxREAL);
-              pind = mxGetPr(plhs[0]);
-              for (i = 0; i < out_periods*col_y; i++)
-                pind[i] = y[i];
-            }
+          vector<double> residual = interprete.get_residual();
+          plhs[0] = mxCreateDoubleMatrix(static_cast<int>(residual.size()/periods),
+                                         static_cast<int>(periods), mxREAL);
+          std::copy(residual.begin(), residual.end(), mxGetPr(plhs[0]));
         }
       else
         {
           int out_periods = extended_path ? max_periods + y_kmin : col_y;
           plhs[0] = mxCreateDoubleMatrix(static_cast<int>(row_y), out_periods, mxREAL);
-          pind = mxGetPr(plhs[0]);
-          if (evaluate)
-            {
-              vector<double> residual = interprete.get_residual();
-              for (i = 0; i < residual.size(); i++)
-                pind[i] = residual[i];
-            }
-          else
-            for (i = 0; i < row_y*out_periods; i++)
-              pind[i] = y[i];
+          std::copy_n(y, row_y*out_periods, mxGetPr(plhs[0]));
         }
       if (nlhs > 1)
         {

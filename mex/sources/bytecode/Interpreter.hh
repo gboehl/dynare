@@ -40,6 +40,7 @@ private:
   bool global_temporary_terms;
   bool print;
   int col_x, col_y;
+  vector<double> residual;
   void evaluate_over_periods(bool forward);
   void solve_simple_one_periods();
   void solve_simple_over_periods(bool forward);

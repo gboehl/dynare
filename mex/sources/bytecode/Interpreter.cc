@@ -228,10 +228,10 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               compute_block_time(0, true, false);
               if (single_block)
                 for (int j = 0; j < size; j++)
-                  residual[it_*size+j] = y[it_*y_size+Block_Contain[j].Variable] - ya[it_*y_size+Block_Contain[j].Variable];
+                  residual[(it_-y_kmin)*size+j] = y[it_*y_size+Block_Contain[j].Variable] - ya[it_*y_size+Block_Contain[j].Variable];
               else
                 for (int j = 0; j < size; j++)
-                  residual[it_*size+Block_Contain[j].Equation] = y[it_*y_size+Block_Contain[j].Variable] - ya[it_*y_size+Block_Contain[j].Variable];
+                  residual[(it_-y_kmin)*y_size+Block_Contain[j].Equation] = y[it_*y_size+Block_Contain[j].Variable] - ya[it_*y_size+Block_Contain[j].Variable];
             }
         }
       break;
@@ -258,10 +258,10 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
-                  residual[Per_y_+Block_Contain[j].Equation] = r[j];
+                  residual[(it_-y_kmin)*y_size+Block_Contain[j].Equation] = r[j];
               else
                 for (int j = 0; j < size; j++)
-                  residual[it_*size+j] = r[j];
+                  residual[(it_-y_kmin)*size+j] = r[j];
             }
         }
       mxFree(g1);
@@ -296,10 +296,10 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
-                  residual[it_*y_size+Block_Contain[j].Equation] = r[j];
+                  residual[(it_-y_kmin)*y_size+Block_Contain[j].Equation] = r[j];
               else
                 for (int j = 0; j < size; j++)
-                  residual[it_*size+j] = r[j];
+                  residual[(it_-y_kmin)*size+j] = r[j];
             }
         }
       mxFree(r);
@@ -323,10 +323,10 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               compute_block_time(0, true, false);
               if (single_block)
                 for (int j = 0; j < size; j++)
-                  residual[it_*size+j] = y[it_*y_size+Block_Contain[j].Variable] - ya[it_*y_size+Block_Contain[j].Variable];
+                  residual[(it_-y_kmin)*size+j] = y[it_*y_size+Block_Contain[j].Variable] - ya[it_*y_size+Block_Contain[j].Variable];
               else
                 for (int j = 0; j < size; j++)
-                  residual[it_*size+Block_Contain[j].Equation] = y[it_*y_size+Block_Contain[j].Variable] - ya[it_*y_size+Block_Contain[j].Variable];
+                  residual[(it_-y_kmin)*y_size+Block_Contain[j].Equation] = y[it_*y_size+Block_Contain[j].Variable] - ya[it_*y_size+Block_Contain[j].Variable];
             }
         }
       break;
@@ -353,10 +353,10 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
-                  residual[Per_y_+Block_Contain[j].Equation] = r[j];
+                  residual[(it_-y_kmin)*y_size+Block_Contain[j].Equation] = r[j];
               else
                 for (int j = 0; j < size; j++)
-                  residual[it_*size+j] = r[j];
+                  residual[(it_-y_kmin)*size+j] = r[j];
             }
         }
       mxFree(g1);
@@ -388,10 +388,10 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
-                  residual[Per_y_+Block_Contain[j].Equation] = r[j];
+                  residual[(it_-y_kmin)*y_size+Block_Contain[j].Equation] = r[j];
               else
                 for (int j = 0; j < size; j++)
-                  residual[it_*size+j] = r[j];
+                  residual[(it_-y_kmin)*size+j] = r[j];
             }
         }
       mxFree(r);
@@ -413,10 +413,10 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           compute_block_time(Per_u_, true, false);
           if (!single_block)
             for (int j = 0; j < size; j++)
-              residual[it_*y_size+Block_Contain[j].Equation] = r[j];
+              residual[(it_-y_kmin)*y_size+Block_Contain[j].Equation] = r[j];
           else
             for (int j = 0; j < size; j++)
-              residual[it_*size+j] = r[j];
+              residual[(it_-y_kmin)*size+j] = r[j];
         }
       mxFree(r);
       break;
@@ -677,7 +677,7 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
       if (steady_state)
         residual = vector<double>(y_size);
       else
-        residual = vector<double>(y_size*(periods+y_kmin));
+        residual = vector<double>(y_size*periods);
     }
 
   for (int current_block : blocks)
@@ -697,7 +697,7 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
           if (steady_state)
             residual = vector<double>(size);
           else
-            residual = vector<double>(size*(periods+y_kmin));
+            residual = vector<double>(size*periods);
           evaluator.printCurrentBlock();
         }
       else if (evaluate)
@@ -721,7 +721,7 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
               if (steady_state)
                 residual = vector<double>(size);
               else
-                residual = vector<double>(size*(periods+y_kmin));
+                residual = vector<double>(size*periods);
             }
           evaluate_a_block(true, block >= 0, bin_basename);
         }
@@ -737,7 +737,7 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
               jacobian_block[current_block] = mxCreateDoubleMatrix(size, evaluator.getCurrentBlockNbColJacob(), mxREAL);
               jacobian_exo_block[current_block] = mxCreateDoubleMatrix(size, evaluator.getCurrentBlockExoSize(), mxREAL);
               jacobian_det_exo_block[current_block] = mxCreateDoubleMatrix(size, evaluator.getCurrentBlockExoDetSize(), mxREAL);
-              residual = vector<double>(size*(periods+y_kmin));
+              residual = vector<double>(size*periods);
               result = simulate_a_block(vector_table_conditional_local, block >= 0, bin_basename);
             }
           else

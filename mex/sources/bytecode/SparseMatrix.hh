@@ -178,7 +178,6 @@ protected:
   double res1a;
   long int nop_all, nop1, nop2;
   map<tuple<int, int, int>, int> IM_i;
-  vector<double> residual;
   int u_count_alloc, u_count_alloc_save;
   vector<double *> jac;
   double *jcb;
