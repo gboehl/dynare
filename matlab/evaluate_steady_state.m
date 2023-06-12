@@ -454,7 +454,7 @@ if M.static_and_dynamic_models_differ
     if options.bytecode
         z = repmat(ys,1,M.maximum_lead + M.maximum_lag + 1);
         zx = repmat([exo_ss'], M.maximum_lead + M.maximum_lag + 1, 1);
-        [r, ~]= bytecode('dynamic','evaluate', z, zx, params, ys, 1);
+        r = bytecode('dynamic','evaluate', z, zx, params, ys, 1);
     else
         r = feval([M.fname '.sparse.dynamic_resid'], repmat(ys, 3, 1), exo_ss, params, ys);
     end
