@@ -178,7 +178,7 @@ Get_Arguments_and_global_variables(int nrhs,
       if (count_array_argument == 3 && steady_state)
         periods = 1;
       else
-        throw FatalException{"In main, missing arguments. All the following arguments have to be indicated y, x, params, it_, ys"};
+        throw FatalException{"In main, missing arguments. All the following arguments have to be indicated y, x, params, ys, periods"};
     }
   *M_ = mexGetVariable("global", "M_");
   if (!*M_)
