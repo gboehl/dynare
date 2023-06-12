@@ -130,19 +130,23 @@ end
 
 % Some solvers do not compute the maximum error, so do it here if needed
 if nargout > 2 && isempty(maxerror)
-    ny = size(oo_.endo_simul, 1);
-    if M_.maximum_lag > 0
-        y0 = y(:, M_.maximum_lag);
+    if options_.bytecode
+        residuals = bytecode('dynamic', 'evaluate', y, oo_.exo_simul, M_.params, oo_.steady_state, periods);
     else
-        y0 = NaN(ny, 1);
-    end
-    if M_.maximum_lead > 0
-        yT = y(:, M_.maximum_lag+periods+1);
-    else
-        yT = NaN(ny, 1);
-    end
-    yy = y(:,M_.maximum_lag+(1:periods));
+        ny = size(y, 1);
+        if M_.maximum_lag > 0
+            y0 = y(:, M_.maximum_lag);
+        else
+            y0 = NaN(ny, 1);
+        end
+        if M_.maximum_lead > 0
+            yT = y(:, M_.maximum_lag+periods+1);
+        else
+            yT = NaN(ny, 1);
+        end
+        yy = y(:,M_.maximum_lag+(1:periods));
 
-    residuals = perfect_foresight_problem(yy(:), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_, options_);
+        residuals = perfect_foresight_problem(yy(:), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_, options_);
+    end
     maxerror = max(max(abs(residuals)));
 end
