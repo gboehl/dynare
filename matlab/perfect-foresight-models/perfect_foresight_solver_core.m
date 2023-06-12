@@ -69,6 +69,7 @@ if options_.block
             if options_.no_homotopy
                 error('Error in bytecode')
             end
+            y = oo_.endo_simul; % Set something for y, need for computing maxerror
             success = false;
         end
     else
@@ -84,6 +85,7 @@ else
             if options_.no_homotopy
                 error('Error in bytecode')
             end
+            y = oo_.endo_simul; % Set something for y, need for computing maxerror
             success = false;
         end
     else
