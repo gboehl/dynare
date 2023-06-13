@@ -24,20 +24,18 @@
 
 #include "SparseMatrix.hh"
 
-dynSparseMatrix::dynSparseMatrix(Evaluate &evaluator_arg, int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, bool block_decomposed_arg, int periods_arg,
-                                 int minimal_solving_periods_arg, const BasicSymbolTable &symbol_table_arg,
-                                 bool print_error_arg) :
+dynSparseMatrix::dynSparseMatrix(Evaluate &evaluator_arg, int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_state_arg, bool block_decomposed_arg, int periods_arg,
+                                 int minimal_solving_periods_arg, const BasicSymbolTable &symbol_table_arg, int verbosity_arg) :
   symbol_table {symbol_table_arg},
   steady_state {steady_state_arg},
   block_decomposed {block_decomposed_arg},
   evaluator {evaluator_arg},
   minimal_solving_periods {minimal_solving_periods_arg},
-  print_it {print_it_arg},
   y_size {y_size_arg},
   y_kmin {y_kmin_arg},
   y_kmax {y_kmax_arg},
   periods {periods_arg},
-  print_error {print_error_arg}
+  verbosity {verbosity_arg}
 {
   pivotva = nullptr;
   g_save_op = nullptr;
@@ -1812,7 +1810,7 @@ dynSparseMatrix::compute_block_time(int Per_u_, bool evaluate, bool no_derivativ
   catch (FloatingPointException &e)
     {
       res1 = numeric_limits<double>::quiet_NaN();
-      if (print_error)
+      if (verbosity >= 2)
         mexPrintf("%s\n      %s\n", e.message.c_str(), e.location.c_str());
     }
 }
@@ -1894,7 +1892,8 @@ dynSparseMatrix::compute_complete(double lambda, double *crit)
         }
       it_ = periods+y_kmin-1; // Do not leave it_ in inconsistent state
     }
-  mexPrintf("  lambda=%e, res2=%e\n", lambda, res2_);
+  if (verbosity >= 2)
+    mexPrintf("  lambda=%e, res2=%e\n", lambda, res2_);
   *crit = res2_/2;
   return true;
 }
@@ -1908,7 +1907,8 @@ dynSparseMatrix::mnbrak(double *ax, double *bx, double *cx, double *fa, double *
 
   auto sign = [](double a, double b) { return b >= 0.0 ? fabs(a) : -fabs(a); };
 
-  mexPrintf("bracketing *ax=%f, *bx=%f\n", *ax, *bx);
+  if (verbosity >= 2)
+    mexPrintf("bracketing *ax=%f, *bx=%f\n", *ax, *bx);
   if (!compute_complete(*ax, fa))
     return false;
   if (!compute_complete(*bx, fb))
@@ -1993,7 +1993,8 @@ dynSparseMatrix::golden(double ax, double bx, double cx, double tol, double solv
 {
   const double R = 0.61803399;
   const double C = (1.0-R);
-  mexPrintf("golden\n");
+  if (verbosity >= 2)
+    mexPrintf("golden\n");
   int iter = 0, max_iter = 100;
   double f1, f2, x1, x2;
   double x0 = ax;
@@ -2890,10 +2891,13 @@ dynSparseMatrix::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, i
           mxFree(bc);
           if (steady_state)
             {
-              if (blck > 1)
-                mexPrintf("Error: singular system in Simulate_NG in block %d\n", blck+1);
-              else
-                mexPrintf("Error: singular system in Simulate_NG");
+              if (verbosity >= 1)
+                {
+                  if (blck > 1)
+                    mexPrintf("Error: singular system in Simulate_NG in block %d\n", blck+1);
+                  else
+                    mexPrintf("Error: singular system in Simulate_NG");
+                }
               return true;
             }
           else
@@ -3217,9 +3221,9 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                         NR_max = NR[j];
                       }
                   }
-              if (fabs(piv) < eps)
+              if (fabs(piv) < eps && verbosity >= 1)
                 mexPrintf("==> Error NR_max=%d, N_max=%d and piv=%f, piv_abs=%f, markovitz_max=%f\n", NR_max, N_max, piv, piv_abs, markovitz_max);
-              if (NR_max == 0)
+              if (NR_max == 0 && verbosity >= 1)
                 mexPrintf("==> Error NR_max=0 and piv=%f, markovitz_max=%f\n", piv, markovitz_max);
               pivot[i] = pivj;
               pivot_save[i] = pivj;
@@ -3676,7 +3680,8 @@ dynSparseMatrix::Check_and_Correct_Previous_Iteration(int y_size, int size)
             }
           compute_complete(true, res1, res2, max_res, max_res_idx);
         }
-      mexPrintf("Error: Simulation diverging, trying to correct it using slowc=%f\n", slowc_save);
+      if (verbosity >= 2)
+        mexPrintf("Error: Simulation diverging, trying to correct it using slowc=%f\n", slowc_save);
       for (int i = 0; i < size; i++)
         {
           int eq = index_vara[i];
@@ -3726,11 +3731,14 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int size)
 #endif
       if (steady_state)
         {
-          if (iter == 0)
-            mexPrintf(" the initial values of endogenous variables are too far from the solution.\nChange them!\n");
-          else
-            mexPrintf(" dynare cannot improve the simulation in block %d at time %d (variable %d)\n", block_num+1, it_+1, index_vara[max_res_idx]+1);
-          mexEvalString("drawnow;");
+          if (verbosity >= 1)
+            {
+              if (iter == 0)
+                mexPrintf(" the initial values of endogenous variables are too far from the solution.\nChange them!\n");
+              else
+                mexPrintf(" dynare cannot improve the simulation in block %d at time %d (variable %d)\n", block_num+1, it_+1, index_vara[max_res_idx]+1);
+              mexEvalString("drawnow;");
+            }
         }
       else
         {
@@ -3743,7 +3751,7 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int size)
         }
     }
 
-  if (print_it)
+  if (verbosity >= 1)
     {
       if (steady_state)
         {
@@ -3848,7 +3856,7 @@ dynSparseMatrix::solve_linear(int block_num, int y_size, int size, int iter)
       if (iter)
         Check_and_Correct_Previous_Iteration(y_size, size);
       bool singular_system = Simulate_One_Boundary(block_num, y_size, size);
-      if (singular_system)
+      if (singular_system && verbosity >= 1)
         Singular_display(block_num, size);
     }
   return cvg;
@@ -3984,20 +3992,12 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
   double *Ax = nullptr, *b;
   SuiteSparse_long *Ap = nullptr, *Ai = nullptr;
 
-  if (iter > 0)
-    {
-      if (print_it)
-        {
-          mexPrintf("Sim : %f ms\n", (1000.0*(static_cast<double>(clock())-static_cast<double>(time00)))/static_cast<double>(CLOCKS_PER_SEC));
-          mexEvalString("drawnow;");
-        }
-      time00 = clock();
-    }
   if (isnan(res1) || isinf(res1) || (res2 > 12*g0 && iter > 0))
     {
       if (iter == 0 || fabs(slowc_save) < 1e-8)
         {
-          mexPrintf("res1 = %f, res2 = %f g0 = %f iter = %d\n", res1, res2, g0, iter);
+          if (verbosity >= 2)
+            mexPrintf("res1 = %f, res2 = %f g0 = %f iter = %d\n", res1, res2, g0, iter);
           for (int j = 0; j < y_size; j++)
             {
               bool select = false;
@@ -4007,10 +4007,13 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
                     select = true;
                     break;
                   }
-              if (select)
-                mexPrintf("-> variable %s (%d) at time %d = %f direction = %f\n", symbol_table.getName(SymbolType::endogenous, j).c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
-              else
-                mexPrintf("   variable %s (%d) at time %d = %f direction = %f\n", symbol_table.getName(SymbolType::endogenous, j).c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
+              if (verbosity >= 2)
+                {
+                  if (select)
+                    mexPrintf("-> variable %s (%d) at time %d = %f direction = %f\n", symbol_table.getName(SymbolType::endogenous, j).c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
+                  else
+                    mexPrintf("   variable %s (%d) at time %d = %f direction = %f\n", symbol_table.getName(SymbolType::endogenous, j).c_str(), j+1, it_, y[j+it_*y_size], direction[j+it_*y_size]);
+                }
             }
           if (iter == 0)
             throw FatalException{"In Simulate_Newton_Two_Boundaries, the initial values of endogenous variables are too far from the solution. Change them!"};
@@ -4060,7 +4063,7 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
           prev_slowc_save = slowc_save;
           slowc_save /= 1.05;
         }
-      if (print_it)
+      if (verbosity >= 2)
         {
           if (isnan(res1) || isinf(res1))
             mexPrintf("The model cannot be evaluated, trying to correct it using slowc=%f\n", slowc_save);
@@ -4077,7 +4080,8 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
     {
       if (alt_symbolic && alt_symbolic_count < alt_symbolic_count_max)
         {
-          mexPrintf("Pivoting method will be applied only to the first periods.\n");
+          if (verbosity >= 2)
+            mexPrintf("Pivoting method will be applied only to the first periods.\n");
           alt_symbolic = false;
           symbolic = true;
           markowitz_c = markowitz_c_s;
@@ -4087,7 +4091,8 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
         {
           if (restart > 2)
             {
-              mexPrintf("Divergence or slowdown occurred during simulation.\nIn the next iteration, pivoting method will be applied to all periods.\n");
+              if (verbosity >= 2)
+                mexPrintf("Divergence or slowdown occurred during simulation.\nIn the next iteration, pivoting method will be applied to all periods.\n");
               symbolic = false;
               alt_symbolic = true;
               markowitz_c_s = markowitz_c;
@@ -4095,7 +4100,8 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
             }
           else
             {
-              mexPrintf("Divergence or slowdown occurred during simulation.\nIn the next iteration, pivoting method will be applied for a longer period.\n");
+              if (verbosity >= 2)
+                mexPrintf("Divergence or slowdown occurred during simulation.\nIn the next iteration, pivoting method will be applied for a longer period.\n");
               start_compare = min(tbreak_g, periods);
               restart++;
             }
@@ -4107,7 +4113,7 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
         }
     }
   res1a = res1;
-  if (print_it)
+  if (verbosity >= 1)
     {
       if (iter == 0)
         {
@@ -4186,7 +4192,7 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
       else if (stack_solve_algo == 5)
         Solve_ByteCode_Symbolic_Sparse_GaussianElimination(Size, symbolic, blck);
     }
-  if (print_it)
+  if (verbosity >= 1)
     {
       clock_t t2 = clock();
       mexPrintf("(** %f milliseconds **)\n", 1000.0*(static_cast<double>(t2) - static_cast<double>(t1))/static_cast<double>(CLOCKS_PER_SEC));
@@ -4202,11 +4208,13 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
       if (!golden(ax, bx, cx, 1e-1, solve_tolf, &xmin))
         return;
       slowc = xmin;
-      clock_t t3 = clock();
-      mexPrintf("(** %f milliseconds **)\n", 1000.0*(static_cast<double>(t3) - static_cast<double>(t2))/static_cast<double>(CLOCKS_PER_SEC));
-      mexEvalString("drawnow;");
+      if (verbosity >= 1)
+        {
+          clock_t t3 = clock();
+          mexPrintf("(** %f milliseconds **)\n", 1000.0*(static_cast<double>(t3) - static_cast<double>(t2))/static_cast<double>(CLOCKS_PER_SEC));
+          mexEvalString("drawnow;");
+        }
     }
-  time00 = clock();
   if (tbreak_g == 0)
     tbreak_g = periods;
 }

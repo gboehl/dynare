@@ -17,7 +17,6 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <ctime>
 #include <cmath>
 #include <type_traits>
 #include <algorithm>
@@ -63,7 +62,6 @@ Get_Arguments_and_global_variables(int nrhs,
                                    bool &evaluate, int &block,
                                    mxArray *M_[], mxArray *oo_[], mxArray *options_[], bool &global_temporary_terms,
                                    bool &print,
-                                   bool &print_error,
                                    mxArray *GlobalTemporaryTerms[],
                                    string *plan_struct_name, string *pfplan_struct_name, bool *extended_path, mxArray *ep_struct[])
 {
@@ -126,8 +124,6 @@ Get_Arguments_and_global_variables(int nrhs,
           global_temporary_terms = true;
         else if (Get_Argument(prhs[i]) == "print")
           print = true;
-        else if (Get_Argument(prhs[i]) == "no_print_error")
-          print_error = false;
         else
           {
             pos = 0;
@@ -215,7 +211,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   double *yd = nullptr, *xd = nullptr;
   int count_array_argument = 0;
   bool global_temporary_terms = false;
-  bool print = false, print_error = true, print_it = false;
+  bool print = false; // Whether the “print” command is requested
+  int verbosity {1}; // Corresponds to options_.verbosity
   double *steady_yd = nullptr;
   string plan, pfplan;
   bool extended_path;
@@ -244,7 +241,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                          &block_structur,
                                          steady_state, block_decomposed, evaluate, block,
                                          &M_, &oo_, &options_, global_temporary_terms,
-                                         print, print_error, &GlobalTemporaryTerms,
+                                         print, &GlobalTemporaryTerms,
                                          &plan, &pfplan, &extended_path, &extended_path_struct);
     }
   catch (GeneralException &feh)
@@ -449,19 +446,20 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 splan[i].per_value[j] = { ceil(per_value[j]), per_value[j + num_shocks] };
             }
         }
-      int i = 0;
-      for (auto & it : splan)
-        {
-          mexPrintf("----------------------------------------------------------------------------------------------------\n");
-          mexPrintf("surprise #%d\n", i+1);
-          if (it.exo.length())
-            mexPrintf(" plan fliping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num, it.exo.c_str(), it.exo_num);
-          else
-            mexPrintf(" plan shocks on var=%s for the following periods and with the following values:\n", it.var.c_str());
-          for (auto &[period, value]: it.per_value)
-            mexPrintf("  %3d %10.5f\n", period, value);
-          i++;
-        }
+      if (verbosity >= 1)
+        for (int i {0};
+             auto & it : splan)
+          {
+            mexPrintf("----------------------------------------------------------------------------------------------------\n");
+            mexPrintf("surprise #%d\n", i+1);
+            if (it.exo.length())
+              mexPrintf(" plan fliping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num, it.exo.c_str(), it.exo_num);
+            else
+              mexPrintf(" plan shocks on var=%s for the following periods and with the following values:\n", it.var.c_str());
+            for (auto &[period, value]: it.per_value)
+              mexPrintf("  %3d %10.5f\n", period, value);
+            i++;
+          }
     }
 
   if (pfplan.length() > 0)
@@ -509,19 +507,20 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 spfplan[i].per_value[j] = { ceil(per_value[j]), per_value[j+ num_shocks] };
             }
         }
-      int i = 0;
-      for (auto & it : spfplan)
-        {
-          mexPrintf("----------------------------------------------------------------------------------------------------\n");
-          mexPrintf("perfect foresight #%d\n", i+1);
-          if (it.exo.length())
-            mexPrintf(" plan flipping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num, it.exo.c_str(), it.exo_num);
-          else
-            mexPrintf(" plan shocks on var=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num);
-          for (auto &[period, value] : it.per_value)
-            mexPrintf("  %3d %10.5f\n", period, value);
-          i++;
-        }
+      if (verbosity >= 1)
+        for (int i {0};
+             auto & it : spfplan)
+          {
+            mexPrintf("----------------------------------------------------------------------------------------------------\n");
+            mexPrintf("perfect foresight #%d\n", i+1);
+            if (it.exo.length())
+              mexPrintf(" plan flipping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num, it.exo.c_str(), it.exo_num);
+            else
+              mexPrintf(" plan shocks on var=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num);
+            for (auto &[period, value] : it.per_value)
+              mexPrintf("  %3d %10.5f\n", period, value);
+            i++;
+          }
     }
 
   int field_steady_state = mxGetFieldNumber(oo_, "steady_state");
@@ -601,13 +600,11 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
     }
   int field = mxGetFieldNumber(options_, "verbosity");
-  int verbose = 0;
   if (field >= 0)
-    verbose = static_cast<int>(*mxGetPr((mxGetFieldByNumber(options_, 0, field))));
+    verbosity = static_cast<int>(mxGetScalar(mxGetFieldByNumber(options_, 0, field)));
   else
     mexErrMsgTxt("verbosity is not a field of options_");
-  if (verbose)
-    print_it = true;
+
   if (!steady_state)
     field = mxGetFieldNumber(options_, "simul");
   else
@@ -710,8 +707,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   copy_n(yd, row_y*col_y, y);
   copy_n(yd, row_y*col_y, ya);
 
-  clock_t t0 = clock();
-
   const filesystem::path codfile {file_name + "/model/bytecode/" + (block_decomposed ? "block/" : "")
     + (steady_state ? "static" : "dynamic") + ".cod"};
   Evaluate evaluator {codfile, steady_state, symbol_table};
@@ -719,8 +714,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   Interpreter interprete {evaluator, params, y, ya, x, steady_yd, direction, row_y, row_x,
                           periods, y_kmin, y_kmax, maxit_, solve_tolf, y_decal,
                           markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
-                          solve_algo, global_temporary_terms, print, print_error, GlobalTemporaryTerms,
-                          steady_state, block_decomposed, print_it, col_x, col_y, symbol_table};
+                          solve_algo, global_temporary_terms, print, GlobalTemporaryTerms,
+                          steady_state, block_decomposed, col_x, col_y, symbol_table, verbosity};
   double *pind;
   bool r;
   vector<int> blocks;
@@ -739,10 +734,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       mexErrMsgTxt(feh.message.c_str());
     }
 
-  clock_t t1 = clock();
-  if (!steady_state && !evaluate && print)
-    mexPrintf("Simulation Time=%f milliseconds\n",
-              1000.0*(static_cast<double>(t1)-static_cast<double>(t0))/static_cast<double>(CLOCKS_PER_SEC));
   bool dont_store_a_structure = false;
   if (nlhs > 0)
     {

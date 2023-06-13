@@ -32,9 +32,9 @@ Interpreter::Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_
                          size_t nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
                          int maxit_arg_, double solve_tolf_arg, int y_decal_arg, double markowitz_c_arg,
                          string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
-                         bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
-                         bool steady_state_arg, bool block_decomposed_arg, bool print_it_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg)
-: dynSparseMatrix {evaluator_arg, y_size_arg, y_kmin_arg, y_kmax_arg, print_it_arg, steady_state_arg, block_decomposed_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg, print_error_arg}
+                         bool global_temporary_terms_arg, bool print_arg, mxArray *GlobalTemporaryTerms_arg,
+                         bool steady_state_arg, bool block_decomposed_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg, int verbosity_arg)
+: dynSparseMatrix {evaluator_arg, y_size_arg, y_kmin_arg, y_kmax_arg, steady_state_arg, block_decomposed_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg, verbosity_arg}
 {
   params = params_arg;
   y = y_arg;
@@ -60,7 +60,6 @@ Interpreter::Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_
   col_x = col_x_arg;
   col_y = col_y_arg;
   GlobalTemporaryTerms = GlobalTemporaryTerms_arg;
-  print_it = print_it_arg;
 }
 
 void
@@ -107,13 +106,14 @@ Interpreter::solve_simple_one_periods()
               if (!isfinite(res1))
                 {
                   slowc /= 1.5;
-                  mexPrintf("Reducing the path length in Newton step slowc=%f\n", slowc);
+                  if (verbosity >= 2)
+                    mexPrintf("Reducing the path length in Newton step slowc=%f\n", slowc);
                   feclearexcept(FE_ALL_EXCEPT);
                   y[Block_Contain[0].Variable + Per_y_] = ya - slowc * (r[0] / g1[0]);
                   if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
                     {
                       res1 = numeric_limits<double>::quiet_NaN();
-                      if (print_error)
+                      if (verbosity >= 1)
                         mexPrintf("      Singularity in block %d", block_num+1);
                     }
                 }
@@ -129,7 +129,7 @@ Interpreter::solve_simple_one_periods()
       if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
         {
           res1 = numeric_limits<double>::quiet_NaN();
-          if (print_error)
+          if (verbosity >= 1)
             mexPrintf("      Singularity in block %d", block_num+1);
         }
       iter++;
@@ -518,7 +518,8 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
 #endif
       if (steady_state)
         {
-          mexPrintf("SOLVE TWO BOUNDARIES in a steady state model: impossible case\n");
+          if (verbosity >= 1)
+            mexPrintf("SOLVE TWO BOUNDARIES in a steady state model: impossible case\n");
           return ERROR_ON_EXIT;
         }
       if (vector_table_conditional_local.size())
@@ -728,8 +729,8 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
       else
         {
 #ifdef DEBUG
-          mexPrintf("endo in block %d, size=%d, type=%d, steady_state=%d, print_it=%d, is_linear=%d, endo_nbr=%d, u_count_int=%d\n",
-                    current_block+1, size, type, steady_state, print_it, is_linear, symbol_table_endo_nbr, u_count_int);
+          mexPrintf("endo in block %d, size=%d, type=%d, steady_state=%d, is_linear=%d, endo_nbr=%d, u_count_int=%d\n",
+                    current_block+1, size, type, steady_state, is_linear, symbol_table_endo_nbr, u_count_int);
 #endif
           bool result;
           if (sconstrained_extended_path.size())
@@ -822,8 +823,8 @@ Interpreter::extended_path(const string &file_name, bool evaluate, int block, in
     y_save[i] = y[i];
   if (endo_name_length_l < 8)
     endo_name_length_l = 8;
-  bool old_print_it = print_it;
-  print_it = false;
+  int old_verbosity {verbosity};
+  verbosity = 0;
   ostringstream res1;
   res1 << std::scientific << 2.54656875434865131;
   int real_max_length = res1.str().length();
@@ -832,7 +833,7 @@ Interpreter::extended_path(const string &file_name, bool evaluate, int block, in
   string line;
   line.insert(line.begin(), table_length, '-');
   line.insert(line.length(), "\n");
-  if (old_print_it)
+  if (old_verbosity >= 1)
     {
       mexPrintf("\nExtended Path simulation:\n");
       mexPrintf("-------------------------\n");
@@ -846,7 +847,7 @@ Interpreter::extended_path(const string &file_name, bool evaluate, int block, in
   for (int t = 0; t < nb_periods; t++)
     {
       previous_block_exogenous.clear();
-      if (old_print_it)
+      if (old_verbosity >= 1)
         {
           mexPrintf("|%s|", elastic(dates[t], date_length+2, false).c_str());
           mexEvalString("drawnow;");
@@ -871,7 +872,7 @@ Interpreter::extended_path(const string &file_name, bool evaluate, int block, in
             x[y_kmin + j * nb_row_x] = x_save[t + 1 + y_kmin + j * nb_row_x];
         }
 
-      if (old_print_it)
+      if (old_verbosity >= 1)
         {
           ostringstream res1;
           res1 << std::scientific << max_res;
@@ -880,7 +881,7 @@ Interpreter::extended_path(const string &file_name, bool evaluate, int block, in
           mexEvalString("drawnow;");
         }
     }
-  print_it = old_print_it;
+  verbosity = old_verbosity;
   for (int i = 0; i < y_size * col_y; i++)
     y[i] = y_save[i];
   for (int j = 0; j < col_x * nb_row_x; j++)

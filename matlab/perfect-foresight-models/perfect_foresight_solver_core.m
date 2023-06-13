@@ -65,7 +65,9 @@ if options_.block
             y = bytecode('dynamic', 'block_decomposed', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);
             success = true;
         catch ME
-            disp(ME.message)
+            if options_.verbosity >= 1
+                disp(ME.message)
+            end
             if options_.no_homotopy
                 error('Error in bytecode')
             end
@@ -81,7 +83,9 @@ else
             y = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state, 1, periods+2), periods);
             success = true;
         catch ME
-            disp(ME.message)
+            if options_.verbosity >= 1
+                disp(ME.message)
+            end
             if options_.no_homotopy
                 error('Error in bytecode')
             end

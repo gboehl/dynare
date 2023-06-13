@@ -68,7 +68,7 @@ constexpr double mem_increasing_factor = 1.1;
 class dynSparseMatrix
 {
 public:
-  dynSparseMatrix(Evaluate &evaluator_arg, int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool print_it_arg, bool steady_state_arg, bool block_decomposed_arg, int periods_arg, int minimal_solving_periods_arg, const BasicSymbolTable &symbol_table_arg, bool print_error_arg);
+  dynSparseMatrix(Evaluate &evaluator_arg, int y_size_arg, int y_kmin_arg, int y_kmax_arg, bool steady_state_arg, bool block_decomposed_arg, int periods_arg, int minimal_solving_periods_arg, const BasicSymbolTable &symbol_table_arg, int verbosity_arg);
   void Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax, int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, const vector_table_conditional_local_type &vector_table_conditional_local);
   void Simulate_Newton_One_Boundary(bool forward);
   void fixe_u(double **u, int u_count_int, int max_lag_plus_max_lead_plus_1);
@@ -155,7 +155,6 @@ protected:
   fstream SaveCode;
   string filename;
   int max_u, min_u;
-  clock_t time00;
 
   Mem_Mngr mem_mngr;
   vector<int> u_liste;
@@ -196,7 +195,6 @@ protected:
 
   int stack_solve_algo, solve_algo;
   int minimal_solving_periods;
-  bool print_it;
   int Per_u_, Per_y_;
   int maxit_;
   double *direction;
@@ -230,12 +228,12 @@ protected:
   int u_count_int;
   vector<Block_contain_type> Block_Contain;
 
+  int verbosity; // Corresponds to options_.verbosity
+
   void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
   bool compute_complete(bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
 
   bool compute_complete(double lambda, double *crit);
-
-  bool print_error; // Whether to stop processing on floating point exceptions
 };
 
 #endif // _SPARSEMATRIX_HH

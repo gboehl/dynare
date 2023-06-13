@@ -38,7 +38,7 @@ class Interpreter : public dynSparseMatrix
 private:
   vector<int> previous_block_exogenous;
   bool global_temporary_terms;
-  bool print;
+  bool print; // Whether the “print” command is requested
   int col_x, col_y;
   vector<double> residual;
   void evaluate_over_periods(bool forward);
@@ -56,8 +56,8 @@ public:
               size_t nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
               int maxit_arg_, double solve_tolf_arg, int y_decal_arg, double markowitz_c_arg,
               string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
-              bool global_temporary_terms_arg, bool print_arg, bool print_error_arg, mxArray *GlobalTemporaryTerms_arg,
-              bool steady_state_arg, bool block_decomposed_arg, bool print_it_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg);
+              bool global_temporary_terms_arg, bool print_arg, mxArray *GlobalTemporaryTerms_arg,
+              bool steady_state_arg, bool block_decomposed_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg, int verbosity_arg);
   pair<bool, vector<int>> extended_path(const string &file_name, bool evaluate, int block, int nb_periods, const vector<s_plan> &sextended_path, const vector<s_plan> &sconstrained_extended_path, const vector<string> &dates, const table_conditional_global_type &table_conditional_global);
   pair<bool, vector<int>> compute_blocks(const string &file_name, bool evaluate, int block);
   void check_for_controlled_exo_validity(int current_block, const vector<s_plan> &sconstrained_extended_path);
