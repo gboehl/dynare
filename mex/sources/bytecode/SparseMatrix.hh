@@ -124,7 +124,6 @@ private:
   void Clear_u();
   void Print_u() const;
   void *Symbolic {nullptr}, *Numeric {nullptr};
-  void Check_the_Solution(int periods, int y_kmin, int y_kmax, int Size, double *u, int *pivot, int *b);
   int complete(int beg_t, int Size, int periods, int *b);
   void bksub(int tbreak, int last_period, int Size, double slowc_l);
   void simple_bksub(int it_, int Size, double slowc_l);

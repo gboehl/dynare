@@ -1532,44 +1532,6 @@ dynSparseMatrix::simple_bksub(int it_, int Size, double slowc_l)
     }
 }
 
-void
-dynSparseMatrix::Check_the_Solution(int periods, int y_kmin, int y_kmax, int Size, double *u, int *pivot, int *b)
-{
-  constexpr double epsilon = 1e-10;
-  Init_GE(periods, y_kmin, y_kmax, Size, IM_i);
-  int cal_y = y_kmin*Size;
-  mexPrintf("     ");
-  for (int i = 0; i < Size; i++)
-    mexPrintf(" %8d", i);
-  mexPrintf("\n");
-  for (int t = y_kmin; t < periods+y_kmin; t++)
-    {
-      mexPrintf("t=%5d", t);
-      for (int i = 0; i < Size; i++)
-        mexPrintf(" %d %1.6f", t*y_size+index_vara[i], y[t*y_size+index_vara[i]]);
-      mexPrintf("\n");
-    }
-  for (int i = 0; i < Size*periods; i++)
-    {
-      double res = 0;
-      int pos = pivot[i];
-      mexPrintf("pos[%d]=%d", i, pos);
-      NonZeroElem *first;
-      int nb_var = At_Row(pos, &first);
-      mexPrintf(" nb_var=%d\n", nb_var);
-      for (int j = 0; j < nb_var; j++)
-        {
-          mexPrintf("(y[%d]=%f)*(u[%d]=%f)(r=%d, c=%d)\n", index_vara[first->c_index]+cal_y, y[index_vara[first->c_index]+cal_y], first->u_index, u[first->u_index], first->r_index, first->c_index);
-          res += y[index_vara[first->c_index]+cal_y]*u[first->u_index];
-          first = first->NZE_R_N;
-        }
-      double tmp_ = res;
-      res += u[b[pos]];
-      if (abs(res) > epsilon)
-        mexPrintf("Error for equation %d => res=%f y[%d]=%f u[b[%d]]=%f somme(y*u)=%f\n", pos, res, pos, y[index_vara[pos]], pos, u[b[pos]], tmp_);
-    }
-}
-
 mxArray *
 dynSparseMatrix::subtract_A_B(const mxArray *A_m, const mxArray *B_m)
 {
