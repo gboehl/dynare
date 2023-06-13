@@ -3774,7 +3774,7 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int size)
         }
 
       mexPrintf("------------------------------------\n");
-      mexPrintf("      Simulate iteration no %d\n", iter+1);
+      mexPrintf("      Iteration no. %d\n", iter+1);
       mexPrintf("      Inf-norm error = %.3e\n", static_cast<double>(max_res));
       mexPrintf("      2-norm error   = %.3e\n", static_cast<double>(sqrt(res2)));
       mexPrintf("      1-norm error   = %.3e\n", static_cast<double>(res1));
@@ -4137,12 +4137,12 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
               mexPrintf("MODEL SIMULATION: (method=Sparse LU & optimal path length)\n");
               break;
             case 5:
-              mexPrintf("MODEL SIMULATION: (method=ByteCode own solver)\n");
+              mexPrintf("MODEL SIMULATION: (method=Sparse Gaussian Elimination)\n");
               break;
             }
         }
       mexPrintf("------------------------------------\n");
-      mexPrintf("      Simulate iteration no %d\n", iter+1);
+      mexPrintf("      Iteration no. %d\n", iter+1);
       mexPrintf("      Inf-norm error = %.3e\n", static_cast<double>(max_res));
       mexPrintf("      2-norm error   = %.3e\n", static_cast<double>(sqrt(res2)));
       mexPrintf("      1-norm error   = %.3e\n", static_cast<double>(res1));
