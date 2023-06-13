@@ -92,7 +92,7 @@ Interpreter::solve_simple_one_periods()
   double ya;
   double slowc = 1;
   res1 = 0;
-  while (!(cvg || iter > maxit_))
+  while (!(cvg || iter >= maxit_))
     {
       Per_y_ = it_*y_size;
       ya = y[Block_Contain[0].Variable + Per_y_];
@@ -546,7 +546,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
           glambda2 = g0 = very_big;
           try_at_iteration = 0;
           int u_count_saved = u_count;
-          while (!(cvg || (iter > maxit_)))
+          while (!(cvg || (iter >= maxit_)))
             {
               res2 = 0;
               res1 = 0;
