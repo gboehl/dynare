@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <type_traits>
+#include <chrono>
 
 #include "SparseMatrix.hh"
 
@@ -3986,7 +3987,7 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
   if (start_compare == 0)
     start_compare = y_kmin;
   u_count_alloc_save = u_count_alloc;
-  clock_t t1 = clock();
+  auto t1 { chrono::high_resolution_clock::now() };
   nop1 = 0;
   mxArray *b_m = nullptr, *A_m = nullptr, *x0_m = nullptr;
   double *Ax = nullptr, *b;
@@ -4192,15 +4193,15 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
       else if (stack_solve_algo == 5)
         Solve_ByteCode_Symbolic_Sparse_GaussianElimination(Size, symbolic, blck);
     }
+  using FloatSeconds = chrono::duration<double, chrono::seconds::period>;
+  auto t2 { chrono::high_resolution_clock::now() };
   if (verbosity >= 1)
     {
-      clock_t t2 = clock();
-      mexPrintf("(** %f milliseconds **)\n", 1000.0*(static_cast<double>(t2) - static_cast<double>(t1))/static_cast<double>(CLOCKS_PER_SEC));
+      mexPrintf("(** %.2f seconds **)\n", FloatSeconds{t2 - t1}.count());
       mexEvalString("drawnow;");
     }
   if (!steady_state && stack_solve_algo == 4)
     {
-      clock_t t2 = clock();
       double ax = -0.1, bx = 1.1, cx = 0.5, fa, fb, fc, xmin;
 
       if (!mnbrak(&ax, &bx, &cx, &fa, &fb, &fc))
@@ -4210,8 +4211,8 @@ dynSparseMatrix::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin
       slowc = xmin;
       if (verbosity >= 1)
         {
-          clock_t t3 = clock();
-          mexPrintf("(** %f milliseconds **)\n", 1000.0*(static_cast<double>(t3) - static_cast<double>(t2))/static_cast<double>(CLOCKS_PER_SEC));
+          auto t3 { chrono::high_resolution_clock::now() };
+          mexPrintf("(** %.2f seconds **)\n", FloatSeconds{t3 - t2}.count());
           mexEvalString("drawnow;");
         }
     }

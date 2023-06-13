@@ -27,7 +27,6 @@
 #include <stack>
 #include <fstream>
 #include <string>
-#include <ctime>
 
 #include "dynumfpack.h"
 #include "dynmex.h"
