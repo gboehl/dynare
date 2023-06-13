@@ -139,6 +139,7 @@ if nargout>1
     else
         if options_.bytecode
             residuals = bytecode('dynamic','evaluate', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1);
+            residuals = residuals(:, M_.maximum_lag+(1:periods));
         else
             if M_.maximum_lag > 0
                 y0 = oo_.endo_simul(:, M_.maximum_lag);

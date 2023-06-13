@@ -352,6 +352,7 @@ if M.static_and_dynamic_models_differ
     zx = repmat([exo_ss'], M.maximum_lead + M.maximum_lag + 1, 1);
     if options.bytecode
         [r, ~]= bytecode('dynamic','evaluate', z, zx, params, ys, 1);
+        r = r(:, M_.maximum_lag+1);
     elseif options.block
         T=NaN(M.block_structure.dyn_tmp_nbr, 1);
         for i = 1:length(M.block_structure.block)
