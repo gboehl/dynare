@@ -3759,10 +3759,10 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int size)
           switch (solve_algo)
             {
             case 5:
-              mexPrintf("MODEL STEADY STATE: (method=ByteCode own solver)\n");
+              mexPrintf("MODEL STEADY STATE: (method=Sparse Gaussian Elimination)\n");
               break;
             case 6:
-              mexPrintf("MODEL STEADY STATE: Sparse LU\n");
+              mexPrintf("MODEL STEADY STATE: (method=Sparse LU)\n");
               break;
             case 7:
               mexPrintf(preconditioner_print_out("MODEL STEADY STATE: (method=GMRES)\n", preconditioner, true).c_str());
