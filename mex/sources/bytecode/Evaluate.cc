@@ -1515,7 +1515,7 @@ Evaluate::solve_simple_one_periods()
   double ya;
   double slowc_save = slowc;
   res1 = 0;
-  while (!(cvg || iter > maxit_))
+  while (!(cvg || iter >= maxit_))
     {
       it_code = start_code;
       Per_y_ = it_*y_size;

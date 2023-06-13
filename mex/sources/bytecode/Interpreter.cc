@@ -440,7 +440,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
           glambda2 = g0 = very_big;
           try_at_iteration = 0;
           int u_count_saved = u_count;
-          while (!(cvg || (iter > maxit_)))
+          while (!(cvg || (iter >= maxit_)))
             {
               res2 = 0;
               res1 = 0;
