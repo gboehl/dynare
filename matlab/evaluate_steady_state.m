@@ -395,6 +395,7 @@ elseif options.bytecode
             end
         catch ME
             disp(ME.message);
+            ys = ys_init;
             check = 1;
         end
     elseif options.block
