@@ -142,12 +142,12 @@ end
 
 % Build initial paths for endos and exos (only initial conditions are set, the rest is NaN)
 if isempty(ys0_)
-    oo_.endo_simul = [repmat(oo_.steady_state, 1, M_.maximum_lag) NaN(M_.endo_nbr, periods+M_.maximum_lead)];
+    oo_.endo_simul = repmat(oo_.steady_state, 1, M_.maximum_lag+periods+M_.maximum_lead);
 else
-    oo_.endo_simul = [repmat(ys0_, 1, M_.maximum_lag) NaN(M_.endo_nbr, periods+M_.maximum_lead)];
+    oo_.endo_simul = [repmat(ys0_, 1, M_.maximum_lag) repmat(oo_.steady_state, 1, periods+M_.maximum_lead)];
 end
 if isempty(ex0_)
-    oo_.exo_simul = [repmat(oo_.exo_steady_state',M_.maximum_lag,1); NaN(periods+M_.maximum_lead,M_.exo_nbr)];
+    oo_.exo_simul = repmat(oo_.exo_steady_state', M_.maximum_lag+periods+M_.maximum_lead, 1);
 else
-    oo_.exo_simul = [repmat(ex0_',M_.maximum_lag,1); NaN(periods+M_.maximum_lead,M_.exo_nbr)];
+    oo_.exo_simul = [repmat(ex0_', M_.maximum_lag, 1); repmat(oo_.exo_steady_state', periods+M_.maximum_lead, 1)];
 end

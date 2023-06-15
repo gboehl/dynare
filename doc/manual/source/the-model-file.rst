@@ -4174,16 +4174,7 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
     *Options*
 
     This command accepts all the options of :comm:`perfect_foresight_solver`,
-    with the same semantics, plus the following ones:
-
-    .. option:: terminal_steady_state_as_guess_value
-
-        By default, the initial guess for the computation of the path of
-        endogenous is the initial steady state (when using the information set
-        from period 1) or the previously simulated path (when using an
-        information set that is different from that of period 1). When this
-        option is given, the initial guess is instead the terminal steady
-        state.
+    with the same semantics, plus the following one:
 
     .. option:: constant_simulation_length
 

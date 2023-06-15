@@ -55,15 +55,9 @@ while info_period <= periods
     else
         sim_length = periods - info_period + 1;
     end
-    if options_.pfwee.terminal_steady_state_as_guess_value
-        % Overwrite guess value with terminal steady state
-        oo_.endo_simul(:, M_.maximum_lag+(1:sim_length)) = repmat(oo_.steady_state, 1, sim_length);
-    elseif info_period == 1
-        % Use initial steady state as guess value for first simulation if not using terminal steady state
-        oo_.endo_simul(:, M_.maximum_lag+(1:periods)) = repmat(initial_steady_state, 1, periods);
-    elseif options_.pfwee.constant_simulation_length && increment > M_.maximum_lead
-        % Use initial steady state as guess value for simulation periods that don’t yet have an initial guess (i.e. are NaNs)
-        oo_.endo_simul(:, M_.maximum_lag+periods-(0:increment-M_.maximum_lead-1)) = repmat(initial_steady_state, 1, increment-M_.maximum_lead);
+    if options_.pfwee.constant_simulation_length && increment > M_.maximum_lead
+        % Use terminal steady state as guess value for simulation periods that don’t yet have an initial guess (i.e. are NaNs at this point)
+        oo_.endo_simul(:, M_.maximum_lag+periods-(0:increment-M_.maximum_lead-1)) = repmat(oo_.steady_state, 1, increment-M_.maximum_lead);
     end
     oo_.endo_simul(:, end-M_.maximum_lead+1:end) = repmat(oo_.steady_state, 1, M_.maximum_lead);
     oo_.exo_simul = exo_simul(info_period:end, :);

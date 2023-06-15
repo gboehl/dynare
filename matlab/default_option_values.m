@@ -329,7 +329,6 @@ options_.no_homotopy = false;
 options_.homotopy_alt_starting_point = false;
 
 % Perfect foresight with expectation errors
-options_.pfwee.terminal_steady_state_as_guess_value = false;
 options_.pfwee.constant_simulation_length = false;
 
 % Solution

@@ -29,12 +29,7 @@ check;
 // First simulation with default options
 perfect_foresight_with_expectation_errors_setup(periods = 7, datafile = 'pfwee.csv');
 perfect_foresight_with_expectation_errors_solver(constant_simulation_length);
-pfwee1 = oo_.endo_simul;
-
-// Second simulation with alternative guess values
-perfect_foresight_with_expectation_errors_setup(periods = 7, datafile = 'pfwee.csv');
-perfect_foresight_with_expectation_errors_solver(terminal_steady_state_as_guess_value, constant_simulation_length);
-pfwee2 = oo_.endo_simul;
+pfwee_simul = oo_.endo_simul;
 
 // Now compute the solution by hand to verify the results
 
@@ -80,8 +75,7 @@ oo_.exo_simul(8,1) = 1.1;
 oo_.exo_steady_state = 1.1;
 oo_.exo_simul(9:14, 1) = repmat(oo_.exo_steady_state', 6, 1);
 oo_.steady_state = evaluate_steady_state(oo_.steady_state, oo_.exo_steady_state, M_, options_, true);
-oo_.endo_simul(:, 12:13) = repmat(initial_steady_state, 1, 2);
-oo_.endo_simul(:, 14) = oo_.steady_state;
+oo_.endo_simul(:, 12:14) = repmat(oo_.steady_state, 1, 3);
 saved_endo = oo_.endo_simul(:, 1:5);
 saved_exo = oo_.exo_simul(1:5, :);
 oo_.endo_simul = oo_.endo_simul(:, 6:end);
@@ -92,12 +86,6 @@ oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 
 % We should have strict equality with first pfwee simulation, because algorithm
 % and guess values are exactly the same.
-if any(any(pfwee1-oo_.endo_simul ~= 0))
+if any(any(pfwee_simul-oo_.endo_simul ~= 0))
     error('Error in perfect_foresight_with_expectation_errors')
-end
-
-% For the 2nd simulation, since the guess values are different, there are some
-% numerical differences
-if max(max(abs(pfwee2-oo_.endo_simul))) > 40*options_.dynatol.f
-    error('Error in perfect_foresight_with_expectation_errors + terminal_steady_state_as_guess_value')
 end
