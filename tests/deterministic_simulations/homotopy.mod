@@ -1,4 +1,5 @@
 // Example that triggers homotopy in perfect foresight simulation.
+// Simulation with a permanent shock.
 
 var Consumption, Capital, LoggedProductivity;
 
@@ -34,12 +35,12 @@ set_time(1Q1);
 
 initval;
   LoggedProductivityInnovation = 0;
-  LoggedProductivity = 10;
-  Capital = 1;
 end;
 
+steady;
+
 endval;
-  LoggedProductivityInnovation = 0;
+  LoggedProductivityInnovation = 1;
 end;
 
 steady;

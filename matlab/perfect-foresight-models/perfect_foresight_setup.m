@@ -12,7 +12,7 @@ function perfect_foresight_setup()
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 1996-2021 Dynare Team
+% Copyright © 1996-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -62,6 +62,10 @@ if ~isempty(M_.det_shocks) && options_.periods<max([M_.det_shocks.periods])
     disp(mess)
     skipline()
     error('PERFECT_FORESIGHT_SETUP: Please check the declaration of the shocks or increase the value of the periods option.')
+end
+
+if options_.simul.endval_steady && M_.maximum_lead == 0
+    error('PERFECT_FORESIGHT_SETUP: Option endval_steady cannot be used on a purely backward or static model.')
 end
 
 oo_ = make_ex_(M_,options_,oo_);

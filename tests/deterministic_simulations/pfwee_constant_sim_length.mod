@@ -26,16 +26,20 @@ steady;
 
 check;
 
-// First simulation with default options
+// Save initial steady state (it will be modified by pfwee)
+orig_steady_state = oo_.steady_state;
+orig_exo_steady_state = oo_.exo_steady_state;
+
 perfect_foresight_with_expectation_errors_setup(periods = 7, datafile = 'pfwee.csv');
+
 perfect_foresight_with_expectation_errors_solver(constant_simulation_length);
 pfwee_simul = oo_.endo_simul;
 
 // Now compute the solution by hand to verify the results
+oo_.steady_state = orig_steady_state;
+oo_.exo_steady_state = orig_exo_steady_state;
 
 perfect_foresight_setup;
-
-initial_steady_state = oo_.steady_state;
 
 // Information arriving in period 1 (temp shock now)
 oo_.exo_simul(2,1) = 1.2;
@@ -74,8 +78,9 @@ oo_.exo_simul(7,1) = 1.1;
 oo_.exo_simul(8,1) = 1.1;
 oo_.exo_steady_state = 1.1;
 oo_.exo_simul(9:14, 1) = repmat(oo_.exo_steady_state', 6, 1);
+oo_.endo_simul(:, 12:13) = repmat(oo_.steady_state, 1, 2);
 oo_.steady_state = evaluate_steady_state(oo_.steady_state, oo_.exo_steady_state, M_, options_, true);
-oo_.endo_simul(:, 12:14) = repmat(oo_.steady_state, 1, 3);
+oo_.endo_simul(:, 14) = oo_.steady_state;
 saved_endo = oo_.endo_simul(:, 1:5);
 saved_exo = oo_.exo_simul(1:5, :);
 oo_.endo_simul = oo_.endo_simul(:, 6:end);

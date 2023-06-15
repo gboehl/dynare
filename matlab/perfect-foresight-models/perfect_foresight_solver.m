@@ -51,167 +51,329 @@ if options_.debug
     end
 end
 
+% Various sanity checks
+
+if options_.no_homotopy && (options_.simul.homotopy_initial_step_size ~= 1 ...
+                            || options_.simul.homotopy_max_completion_share ~= 1 ...
+                            || options_.simul.homotopy_linearization_fallback ...
+                            || options_.simul.homotopy_marginal_linearization_fallback ~= 0)
+    error('perfect_foresight_solver: the no_homotopy option is incompatible with homotopy_initial_step_size, homotopy_max_completion_share, homotopy_linearization_fallback and homotopy_marginal_linearization_fallback options')
+end
+
+if options_.simul.homotopy_initial_step_size > 1 || options_.simul.homotopy_initial_step_size < 0
+    error('perfect_foresight_solver: The value given to homotopy_initial_step_size option must be in the [0,1] interval')
+end
+
+if options_.simul.homotopy_min_step_size > 1 || options_.simul.homotopy_min_step_size < 0
+    error('perfect_foresight_solver: The value given to homotopy_min_step_size option must be in the [0,1] interval')
+end
+
+if options_.simul.homotopy_max_completion_share > 1 || options_.simul.homotopy_max_completion_share < 0
+    error('perfect_foresight_solver: The value given to homotopy_max_completion_share option must be in the [0,1] interval')
+end
+
+if options_.simul.homotopy_marginal_linearization_fallback > 1 || options_.simul.homotopy_marginal_linearization_fallback < 0
+    error('perfect_foresight_solver: The value given to homotopy_marginal_linearization_fallback option must be in the [0,1] interval')
+end
+
+if options_.simul.homotopy_initial_step_size < options_.simul.homotopy_min_step_size
+    error('perfect_foresight_solver: The value given to homotopy_initial_step_size option must be greater or equal to that given to homotopy_min_step_size option')
+end
+
+if options_.simul.homotopy_linearization_fallback && options_.simul.homotopy_marginal_linearization_fallback > 0
+    error('perfect_foresight_solver: Options homotopy_linearization_fallback and homotopy_marginal_linearization_fallback cannot be used together')
+end
+
+if options_.simul.homotopy_max_completion_share < 1 && ~options_.simul.homotopy_linearization_fallback && options_.simul.homotopy_marginal_linearization_fallback == 0
+    error('perfect_foresight_solver: Option homotopy_max_completion_share has a value less than 1, so you must also specify either homotopy_linearization_fallback or homotopy_marginal_linearization_fallback')
+end
+
 initperiods = 1:M_.maximum_lag;
-lastperiods = (M_.maximum_lag+periods+1):(M_.maximum_lag+periods+M_.maximum_lead);
+simperiods = M_.maximum_lag+(1:periods);
+lastperiods = M_.maximum_lag+periods+(1:M_.maximum_lead);
 
-[oo_.endo_simul, success, maxerror, solver_iter, per_block_status] = perfect_foresight_solver_core(M_,options_,oo_);
+% Create base scenario for homotopy, which corresponds to the initial steady
+% state (i.e. a known solution to the perfect foresight problem, assuming that
+% oo_.steady_state/ys0_ effectively contains a steady state)
+if isempty(ys0_)
+    endobase = repmat(oo_.steady_state, 1,M_.maximum_lag+periods+M_.maximum_lead);
+    exobase = repmat(oo_.exo_steady_state',M_.maximum_lag+periods+M_.maximum_lead,1);
+else
+    endobase = repmat(ys0_, 1, M_.maximum_lag+periods+M_.maximum_lead);
+    exobase = repmat(ex0_', M_.maximum_lag+periods+M_.maximum_lead, 1);
+end
 
-% If simulation failed try homotopy.
-if ~success && ~options_.no_homotopy
-
-    if ~options_.noprint
-        fprintf('\nSimulation of the perfect foresight model failed!\n')
-        fprintf('Switching to a homotopy method...\n')
+% Determine whether the terminal condition is not a steady state (typically
+% because steady was not called after endval)
+if ~options_.simul.endval_steady && ~isempty(ys0_)
+    terminal_condition_is_a_steady_state = true;
+    for j = lastperiods
+        endval_resid = evaluate_static_model(oo_.endo_simul(:,j), oo_.exo_simul(j,:), M_.params, M_, options_);
+        if norm(endval_resid, 'Inf') > options_.simul.steady_tolf
+            terminal_condition_is_a_steady_state = false;
+            break
+        end
     end
+end
 
-    % Disable warnings if homotopy
-    warning_old_state = warning;
-    warning off all
-    % Do not print anything
-    oldverbositylevel = options_.verbosity;
-    options_.verbosity = 0;
+% Copy the paths for the exogenous and endogenous variables, as given by perfect_foresight_setup
+exoorig = oo_.exo_simul;
+endoorig = oo_.endo_simul;
 
-    % Set initial paths for the endogenous and exogenous variables.
-    if ~options_.homotopy_alt_starting_point
-        endoinit = repmat(oo_.steady_state, 1,M_.maximum_lag+periods+M_.maximum_lead);
-        exoinit = repmat(oo_.exo_steady_state',M_.maximum_lag+periods+M_.maximum_lead,1);
+current_share = 0;  % Share of shock successfully completed so far
+step = min(options_.simul.homotopy_initial_step_size, options_.simul.homotopy_max_completion_share);
+success_counter = 0;
+iteration = 0;
+
+function local_success = create_scenario(share)
+    % For a given share, updates the exogenous path and also the initial and
+    % terminal conditions for the endogenous path (but do not modify the initial
+    % guess for endogenous)
+
+    % Compute convex combination for the path of exogenous
+    oo_.exo_simul = exoorig*share + exobase*(1-share);
+
+    % Compute convex combination for the initial condition
+    % In most cases, the initial condition is a steady state and this does nothing
+    % This is for cases when the initial condition is out of equilibrium
+    oo_.endo_simul(:, initperiods) = share*endoorig(:, initperiods)+(1-share)*endobase(:, initperiods);
+
+    % If there is a permanent shock, ensure that the rescaled terminal condition is
+    % a steady state (if the user asked for this recomputation, or if the original
+    % terminal condition is a steady state)
+    local_success = true;
+    if options_.simul.endval_steady || (~isempty(ys0_) && terminal_condition_is_a_steady_state)
+
+        % Set “local” options for steady state computation (after saving the global values)
+        saved_steady_solve_algo = options_.solve_algo;
+        options_.solve_algo = options_.simul.steady_solve_algo;
+        saved_steady_maxit = options_.steady.maxit;
+        options_.steady.maxit = options_.simul.steady_maxit;
+        saved_steady_tolf = options_.solve_tolf;
+        options_.solve_tolf = options_.simul.steady_tolf;
+        saved_steady_tolx = options_.solve_tolx;
+        options_.solve_tolx = options_.simul.steady_tolx;
+        saved_steady_markowitz = options_.markowitz;
+        options_.markowitz = options_.simul.steady_markowitz;
+
+        saved_ss = oo_.endo_simul(:, lastperiods);
+        % Effectively compute the terminal steady state
+        for j = lastperiods
+            % First use the terminal steady of the previous homotopy iteration as guess value (or the contents of the endval block if this is the first iteration)
+            [oo_.endo_simul(:, j), ~, info] = evaluate_steady_state(oo_.endo_simul(:, j), oo_.exo_simul(j, :), M_, options_, true);
+            if info(1)
+                % If this fails, then try again using the initial steady state as guess value
+                if isempty(ys0_)
+                    guess_value = oo_.steady_state;
+                else
+                    guess_value = ys0_;
+                end
+                [oo_.endo_simul(:, j), ~, info] = evaluate_steady_state(guess_value, oo_.exo_simul(j, :), M_, options_, true);
+                if info(1)
+                    % If this fails again, give up and restore last periods in oo_.endo_simul
+                    oo_.endo_simul(:, lastperiods) = saved_ss;
+                    local_success = false;
+                    break;
+                end
+            end
+        end
+
+        % The following is needed for the STEADY_STATE() operator to work properly
+        oo_.steady_state = oo_.endo_simul(:, end);
+
+        options_.solve_algo = saved_steady_solve_algo;
+        options_.steady.maxit = saved_steady_maxit;
+        options_.solve_tolf = saved_steady_tolf;
+        options_.solve_tolx = saved_steady_tolx;
+        options_.markowitz = saved_steady_markowitz;
     else
-        if isempty(ys0_) || isempty(ex0_)
-            error('The homotopy_alt_starting_point option cannot be used without an endval block');
-        end
-        endoinit = repmat(ys0_, 1, M_.maximum_lag+periods+M_.maximum_lead);
-        exoinit = repmat(ex0_', M_.maximum_lag+periods+M_.maximum_lead, 1);
+        % The terminal condition is not a steady state, compute a convex combination
+        oo_.endo_simul(:, lastperiods) = share*endoorig(:, lastperiods)+(1-share)*endobase(:, lastperiods);
+    end
+end
+
+while step > options_.simul.homotopy_min_step_size
+
+    iteration = iteration+1;
+
+    saved_endo_simul = oo_.endo_simul;
+
+    new_share = current_share + step; % Try this share, and see if it succeeds
+
+    if new_share > options_.simul.homotopy_max_completion_share
+        new_share = options_.simul.homotopy_max_completion_share; % Don't go beyond target point
+        step = new_share - current_share;
     end
 
-    % Copy the current paths for the exogenous and endogenous variables.
-    exosim = oo_.exo_simul;
-    endosim = oo_.endo_simul;
+    steady_success = create_scenario(new_share);
 
-    current_weight = 0;    % Current weight of target point in convex combination.
-    step = .5;             % Set default step size.
-    success_counter = 0;
-    iteration = 0;
-
-    if ~options_.noprint
-        fprintf('Iter. \t | Lambda \t | status \t | Max. residual\n')
-        fprintf('++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
-    end
-    while (step > options_.dynatol.x)
-
-        if ~isequal(step,1)
-            options_.verbosity = 0;
+    if steady_success
+        % At the first iteration, use the initial guess given by
+        % perfect_foresight_setup or the user (but only if new_share=1, otherwise it
+        % does not make much sense). Afterwards, until a converging iteration has been obtained,
+        % use the rescaled terminal condition (or, if there is no lead, the base
+        % scenario / initial steady state).
+        if current_share == 0
+            if iteration == 1 && new_share == 1
+                oo_.endo_simul(:, simperiods) = endoorig(:, simperiods);
+            elseif M_.maximum_lead > 0
+                oo_.endo_simul(:, simperiods) = repmat(oo_.endo_simul(:, lastperiods(1)), 1, options_.periods);
+            else
+                oo_.endo_simul(:, simperiods) = endobase(:, simperiods);
+            end
         end
-
-        iteration = iteration+1;
-        new_weight = current_weight + step; % Try this weight, and see if it succeeds
-
-        if new_weight >= 1
-            new_weight = 1; % Don't go beyond target point
-            step = new_weight - current_weight;
-        end
-
-        % Compute convex combination for exo path and initial/terminal endo conditions
-        % But take care of not overwriting the computed part of oo_.endo_simul
-        oo_.exo_simul = exosim*new_weight + exoinit*(1-new_weight);
-        oo_.endo_simul(:,[initperiods, lastperiods]) = new_weight*endosim(:,[initperiods, lastperiods])+(1-new_weight)*endoinit(:,[initperiods, lastperiods]);
-
-        % Detect Nans or complex numbers in the solution.
-        path_with_nans = any(any(isnan(oo_.endo_simul)));
-        path_with_cplx = any(any(~isreal(oo_.endo_simul)));
-
-        if isequal(iteration, 1)
-            % First iteration, same initial guess as in the first call to perfect_foresight_solver_core routine.
-            oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead) = endoinit(:,1:periods);
-        elseif path_with_nans || path_with_cplx
-            % If solver failed with NaNs or complex number, use previous solution as an initial guess.
-            oo_.endo_simul(:,M_.maximum_lag+1:end-M_.maximum_lead) = saved_endo_simul(:,1+M_.maximum_lag:end-M_.maximum_lead);
-        end
-
-        % Make a copy of the paths.
-        saved_endo_simul = oo_.endo_simul;
 
         % Solve for the paths of the endogenous variables.
-        [oo_.endo_simul, success, maxerror, solver_iter, per_block_status] = perfect_foresight_solver_core(M_,options_,oo_);
+        [oo_.endo_simul, success, maxerror, solver_iter, per_block_status] = perfect_foresight_solver_core(M_, options_, oo_);
+    else
+        success = false;
+        maxerror = NaN;
+        solver_iter = [];
+        per_block_status = [];
+    end
 
+    if options_.no_homotopy || (iteration == 1 && success && new_share == 1)
+        % Skip homotopy
         if success
-            current_weight = new_weight;
-            if current_weight >= 1
-                if ~options_.noprint
-                    fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'succeeded', maxerror)
-                end
-                break
-            end
-            success_counter = success_counter + 1;
-            if success_counter >= 3
-                success_counter = 0;
-                step = step * 2;
-            end
-            if ~options_.noprint
-                fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'succeeded', maxerror)
-            end
-        else
-            % If solver failed, then go back.
-            oo_.endo_simul = saved_endo_simul;
+            current_share = new_share;
+        end
+        did_homotopy = false;
+        break
+    end
+
+    if iteration == 1
+        % First iteration failed, so we enter homotopy
+        did_homotopy = true;
+
+        if ~options_.noprint
+            fprintf('\nEntering the homotopy method iterations...\n')
+            fprintf('\nIter. \t | Share \t | Status \t | Max. residual\n')
+            fprintf('++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
+        end
+
+        % Disable warnings if homotopy
+        warning_old_state = warning;
+        warning off all
+        % Do not print anything
+        oldverbositylevel = options_.verbosity;
+        options_.verbosity = 0;
+    end
+
+    if success
+        % Successful step
+        if ~options_.noprint
+            fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_share, 'succeeded', maxerror)
+        end
+        current_share = new_share;
+        if current_share >= options_.simul.homotopy_max_completion_share
+            break
+        end
+        success_counter = success_counter + 1;
+        if options_.simul.homotopy_step_size_increase_success_count > 0 ...
+           && success_counter >= options_.simul.homotopy_step_size_increase_success_count
             success_counter = 0;
-            step = step / 2;
-            if ~options_.noprint
-                if isreal(maxerror)
-                    fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_weight, 'failed', maxerror)
-                else
-                    fprintf('%i \t | %1.5f \t | %s \t | %s\n', iteration, new_weight, 'failed', 'Complex')
-                end
+            step = step * 2;
+        end
+    else
+        oo_.endo_simul = saved_endo_simul;
+        success_counter = 0;
+        step = step / 2;
+        if ~options_.noprint
+            if ~steady_success
+                fprintf('%i \t | %1.5f \t | %s\n', iteration, new_share, 'failed (in endval steady)')
+            elseif isreal(maxerror)
+                fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_share, 'failed', maxerror)
+            else
+                fprintf('%i \t | %1.5f \t | %s \t | %s\n', iteration, new_share, 'failed', 'Complex')
             end
         end
     end
-    if ~options_.noprint
-        fprintf('++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
-    end
-    options_.verbosity = oldverbositylevel;
-    warning(warning_old_state);
+end
+
+if did_homotopy && ~options_.noprint
+    fprintf('++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
 end
 
 %If simulated paths are complex, take real part and recompute the residuals to check whether this is actually a solution
 if ~isreal(oo_.endo_simul(:)) % cannot happen with bytecode or the perfect_foresight_problem DLL
-    ny = size(oo_.endo_simul, 1);
-    if M_.maximum_lag > 0
-        y0 = real(oo_.endo_simul(:, M_.maximum_lag));
+    real_simul = real(oo_.endo_simul);
+    real_maxerror = recompute_maxerror(real_simul, oo_, M_, options_);
+    if real_maxerror <= options_.dynatol.f
+        oo_.endo_simul = real_simul;
+        maxerror = real_maxerror;
     else
-        y0 = NaN(ny, 1);
-    end
-    if M_.maximum_lead > 0
-        yT = real(oo_.endo_simul(:, M_.maximum_lag+periods+1));
-    else
-        yT = NaN(ny, 1);
-    end
-    yy = real(oo_.endo_simul(:,M_.maximum_lag+(1:periods)));
-    residuals = perfect_foresight_problem(yy(:), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_, options_);
-
-    maxerror = max(max(abs(residuals)))
-    if maxerror < options_.dynatol.f
-        success = true;
-        oo_.endo_simul=real(oo_.endo_simul);
-    else
-        success = false;
+        current_share = 0;
         disp('Simulation terminated with imaginary parts in the residuals or endogenous variables.')
     end
 end
 
-if success
+% Put solver status information in oo_, and do linearization if needed and requested
+if current_share == 1
     if ~options_.noprint
         fprintf('Perfect foresight solution found.\n\n')
     end
+    oo_.deterministic_simulation.status = true;
+elseif options_.simul.homotopy_linearization_fallback && current_share > 0
+    oo_.endo_simul = endobase + (oo_.endo_simul - endobase)/current_share;
+    oo_.exo_simul = exoorig;
+    if options_.simul.endval_steady
+        % The following is needed for the STEADY_STATE() operator to work properly,
+        % and thus must come before computing the maximum error.
+        % This is not a true steady state, but it is the closest we can get to
+        oo_.steady_state = oo_.endo_simul(:, end);
+    end
+    maxerror = recompute_maxerror(oo_.endo_simul, oo_, M_, options_);
+
+    if ~options_.noprint
+        fprintf('Perfect foresight solution found for %.1f%% of the shock, then extrapolation was performed using linearization\n\n', current_share*100)
+    end
+    oo_.deterministic_simulation.status = true;
+    oo_.deterministic_simulation.homotopy_linearization = true;
+elseif options_.simul.homotopy_marginal_linearization_fallback > 0 && current_share > options_.simul.homotopy_marginal_linearization_fallback
+    saved_endo_simul = oo_.endo_simul;
+    new_share = current_share - options_.simul.homotopy_marginal_linearization_fallback;
+    new_success = create_scenario(new_share);
+    if new_success
+        [oo_.endo_simul, new_success] = perfect_foresight_solver_core(M_, options_, oo_);
+    end
+    if new_success
+        oo_.endo_simul = saved_endo_simul + (saved_endo_simul - oo_.endo_simul)*(1-current_share)/options_.simul.homotopy_marginal_linearization_fallback;
+        oo_.exo_simul = exoorig;
+        if options_.simul.endval_steady
+            % The following is needed for the STEADY_STATE() operator to work properly,
+            % and thus must come before computing the maximum error.
+            % This is not a true steady state, but it is the closest we can get to
+            oo_.steady_state = oo_.endo_simul(:, end);
+        end
+        maxerror = recompute_maxerror(oo_.endo_simul, oo_, M_, options_);
+
+        if ~options_.noprint
+            fprintf('Perfect foresight solution found for %.1f%% of the shock, then extrapolation was performed using marginal linearization\n\n', current_share*100)
+        end
+        oo_.deterministic_simulation.homotopy_marginal_linearization = true;
+    else
+        fprintf('perfect_foresight_solver: marginal linearization failed, unable to find solution for %.1f%% of the shock. Try to modify the value of homotopy_marginal_linearization_fallback option\n\n', new_share*100)
+    end
+    oo_.deterministic_simulation.status = new_success;
 else
     fprintf('Failed to solve perfect foresight model\n\n')
+    oo_.deterministic_simulation.status = false;
 end
 
-% Put solver status information in oo_
-oo_.deterministic_simulation.status = success;
 oo_.deterministic_simulation.error = maxerror;
+oo_.deterministic_simulation.homotopy_completion_share = current_share;
+oo_.deterministic_simulation.homotopy_iterations = iteration;
 if ~isempty(solver_iter)
     oo_.deterministic_simulation.iterations = solver_iter;
 end
 if ~isempty(per_block_status)
     oo_.deterministic_simulation.block = per_block_status;
+end
+
+% Must come after marginal linearization
+if did_homotopy
+    options_.verbosity = oldverbositylevel;
+    warning(warning_old_state);
 end
 
 dyn2vec(M_, oo_, options_);
@@ -235,4 +397,30 @@ assignin('base', 'Simulated_time_series', ts);
 
 if success
     oo_.gui.ran_perfect_foresight = true;
+end
+
+end
+
+function maxerror = recompute_maxerror(endo_simul, oo_, M_, options_)
+    % Computes ∞-norm of residuals for a given path of endogenous,
+    % given the exogenous path and parameters in oo_ and M_
+    if options_.bytecode
+        residuals = bytecode('dynamic', 'evaluate', endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1);
+    else
+        ny = size(endo_simul, 1);
+        periods = size(endo_simul, 2) - M_.maximum_lag - M_.maximum_lead;
+        if M_.maximum_lag > 0
+            y0 = endo_simul(:, M_.maximum_lag);
+        else
+            y0 = NaN(ny, 1);
+        end
+        if M_.maximum_lead > 0
+            yT = endo_simul(:, M_.maximum_lag+periods+1);
+        else
+            yT = NaN(ny, 1);
+        end
+        yy = endo_simul(:,M_.maximum_lag+(1:periods));
+        residuals = perfect_foresight_problem(yy(:), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_, options_);
+    end
+    maxerror = norm(vec(residuals), 'Inf');
 end

@@ -394,7 +394,9 @@ elseif options.bytecode
                 ys = bytecode('static', ys_init, exo_ss, params);
             end
         catch ME
-            disp(ME.message);
+            if options.verbosity >= 1
+                disp(ME.message);
+            end
             ys = ys_init;
             check = 1;
         end
@@ -420,7 +422,9 @@ elseif options.bytecode
                 [~, ~, ys, T] = bytecode(ys, exo_ss, params, ys, 1, ys, T, 'evaluate', 'static', ...
                                          'block_decomposed', ['block = ' int2str(b)]);
             catch ME
-                disp(ME.message);
+                if options.verbosity >= 1
+                    disp(ME.message);
+                end
                 check = 1;
                 break
             end

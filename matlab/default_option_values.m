@@ -49,6 +49,7 @@ options_.schur_vec_tol = 1e-11; % used to find nonstationary variables in Schur 
 options_.qz_criterium = [];
 options_.qz_zero_threshold = 1e-6;
 options_.lyapunov_complex_threshold = 1e-15;
+options_.solve_algo = 4;
 options_.solve_tolf = eps^(1/3);
 options_.solve_tolx = eps^(2/3);
 options_.trust_region_initial_step_bound_factor = 1;
@@ -326,7 +327,22 @@ options_.markowitz = 0.5;
 options_.minimal_solving_periods = 1;
 options_.endogenous_terminal_period = false;
 options_.no_homotopy = false;
-options_.homotopy_alt_starting_point = false;
+options_.simul.endval_steady = false;
+
+options_.simul.homotopy_max_completion_share = 1;
+options_.simul.homotopy_min_step_size = 1e-3;
+options_.simul.homotopy_step_size_increase_success_count = 3;
+options_.simul.homotopy_initial_step_size = 1;
+options_.simul.homotopy_linearization_fallback = false;
+options_.simul.homotopy_marginal_linearization_fallback = 0; % Size of the step used for the marginal linearization; 0 means disabled
+
+% Options used by perfect_foresight_* commands when they compute the steady
+% state corresponding to a terminal condition
+options_.simul.steady_solve_algo = options_.solve_algo;
+options_.simul.steady_maxit = options_.steady.maxit;
+options_.simul.steady_tolf = options_.solve_tolf;
+options_.simul.steady_tolx = options_.solve_tolx;
+options_.simul.steady_markowitz = options_.markowitz;
 
 % Perfect foresight with expectation errors
 options_.pfwee.constant_simulation_length = false;
@@ -334,7 +350,6 @@ options_.pfwee.constant_simulation_length = false;
 % Solution
 options_.order = 2;
 options_.pruning = false;
-options_.solve_algo = 4;
 options_.replic = 50;
 options_.simul_replic = 1;
 options_.drop = 100;

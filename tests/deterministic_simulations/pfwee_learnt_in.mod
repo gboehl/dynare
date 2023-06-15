@@ -70,13 +70,18 @@ endval(learnt_in = 6);
   x *= 0.75;
 end;
 
+// Save initial steady state (it will be modified by pfwee)
+orig_steady_state = oo_.steady_state;
+orig_exo_steady_state = oo_.exo_steady_state;
+
 perfect_foresight_with_expectation_errors_setup(periods = 7);
 
-// First simulation with default options
 perfect_foresight_with_expectation_errors_solver;
 pfwee_simul = oo_.endo_simul;
 
 // Now compute the solution by hand to verify the results
+oo_.steady_state = orig_steady_state;
+oo_.exo_steady_state = orig_exo_steady_state;
 
 perfect_foresight_setup;
 

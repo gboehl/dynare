@@ -68,9 +68,6 @@ if options_.block
             if options_.verbosity >= 1
                 disp(ME.message)
             end
-            if options_.no_homotopy
-                error('Error in bytecode')
-            end
             y = oo_.endo_simul; % Set something for y, need for computing maxerror
             success = false;
         end
@@ -85,9 +82,6 @@ else
         catch ME
             if options_.verbosity >= 1
                 disp(ME.message)
-            end
-            if options_.no_homotopy
-                error('Error in bytecode')
             end
             y = oo_.endo_simul; % Set something for y, need for computing maxerror
             success = false;

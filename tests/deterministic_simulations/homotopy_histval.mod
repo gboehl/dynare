@@ -1,4 +1,5 @@
 // Example that triggers homotopy in perfect foresight simulation.
+// Simulation starts out of steady state and returns to it.
 
 var Consumption, Capital, LoggedProductivity;
 
@@ -24,11 +25,11 @@ LoggedProductivity = rho*LoggedProductivity(-1)+LoggedProductivityInnovation;
 
 end;
 
-% steady_state_model;
-%   LoggedProductivity = LoggedProductivityInnovation/(1-rho);
-%   Capital = (exp(LoggedProductivity)*alpha/(1/beta-1+delta))^(1/(1-alpha));
-%   Consumption = exp(LoggedProductivity)*Capital^alpha-delta*Capital;
-% end;
+steady_state_model;
+  LoggedProductivity = LoggedProductivityInnovation/(1-rho);
+  Capital = (exp(LoggedProductivity)*alpha/(1/beta-1+delta))^(1/(1-alpha));
+  Consumption = exp(LoggedProductivity)*Capital^alpha-delta*Capital;
+end;
 
 set_time(1Q1);
 
@@ -44,12 +45,6 @@ histval;
  Capital(0)=17.9836;
  LoggedProductivity(0)=10;
 end;
-
-// endval;
-//   LoggedProductivityInnovation = 0;
-// end;
-
-// steady;
 
 perfect_foresight_setup(periods=200);
 perfect_foresight_solver;

@@ -3701,21 +3701,69 @@ speed-up on large models.
        This option tells Dynare to not try a homotopy technique (as described
        above) if the problem cannot be solved directly.
 
-    .. option:: homotopy_alt_starting_point
+    .. option:: homotopy_initial_step_size = DOUBLE
 
-       When the homotopy technique is tried (as described above), Dynare first
-       tries to reduce the size of the shock in order to get a successful
-       simulation on which to build upon for simulating a shock of the true
-       size. However, if an ``endval`` block is present (*i.e.* if the terminal
-       state differs from the initial state), there are two ways of reducing
-       the size of the shock. By default, Dynare will perform this reduction by
-       computing a simulation whose initial state is closer to the target
-       terminal state; in other words, it will implicitly modify the contents
-       of the ``initval`` and ``shocks`` blocks to make them closer to the the
-       contents of the ``endval`` block. If this option is set, Dynare will do
-       the opposite: it will implicitly modify the contents of the ``endval``
-       and ``shocks`` blocks to make them closer to the contents of the
-       ``initval`` block.
+       Specifies which share of the shock should be applied in the first
+       iteration of the homotopy procedure. This option is useful when it is
+       known that immediately trying 100% of the shock will fail, so as to save
+       computing time. Must be between ``0`` and ``1``. Default: ``1``.
+
+    .. option:: homotopy_min_step_size = DOUBLE
+
+       The homotopy procedure halves the size of the step whenever there is
+       a failure. This option specifies the minimum step size under which the
+       homotopy procedure is considered to have failed. Default: ``0.001``.
+
+    .. option:: homotopy_step_size_increase_success_count = INTEGER
+
+       Specifies after how many consecutive successful iterations the homotopy
+       procedure should double the size of the step. A zero value means that
+       the step size should never be increased. Default: ``3``.
+
+    .. option:: homotopy_linearization_fallback
+
+       Whenever the homotopy procedure is not able to find a solution for 100%
+       of the shock, but is able to find one for a smaller share, instructs
+       Dynare to compute an approximate solution by rescaling the solution
+       obtained for a fraction of the shock, as if the reaction of the model to
+       the shock was a linear function of the size of that shock. More
+       formally, if :math:`s` is the share of the shock applied (between
+       :math:`0` and :math:`1`), :math:`y(s)` is the value of a given
+       endogenous variable at a given period as a function of :math:`s` (in
+       particular, :math:`y(1)` corresponds to the exact solution of the
+       problem), and :math:`s^*` is the greatest share of the shock for which
+       the homotopy procedure has been able to find a solution, then the approximate
+       solution returned is :math:`\frac{y(s^*)-y(0)}{s^*}`.
+
+    .. option:: homotopy_marginal_linearization_fallback [= DOUBLE]
+
+       Whenever the homotopy procedure is not able to find a solution for 100%
+       of the shock, but is able to find one for a smaller share, instructs
+       Dynare to compute an approximate solution obtained by rescaling the
+       solution obtained for a fraction of the shock, obtained as if the
+       reaction of the model to the shock was, at the margin, a linear function
+       of the size of that shock. More formally, if :math:`s` is the share of
+       the shock applied (between :math:`0` and :math:`1`), :math:`y(s)` is the
+       value of a given endogenous variable at a given period as a function of
+       :math:`s` (in particular, :math:`y(1)` corresponds to the exact solution
+       of the problem), :math:`s^*` is the greatest share of the shock for
+       which the homotopy procedure has been able to find a solution, and
+       :math:`\epsilon` is a small step size, then the approximate solution
+       returned is
+       :math:`y(s^*)+(1-s^*)\frac{y(s^*)-y(s^*-\epsilon)}{\epsilon}`. The value
+       of :math:`\epsilon` is ``0.01`` by default, but can be modified by
+       passing some other value to the option.
+
+    .. option:: homotopy_max_completion_share = DOUBLE
+
+       Instructs Dynare, within the homotopy procedure, to not try to compute
+       the solution for a greater share than the one given as the option value.
+       This option only makes sense when used in conjunction with either the
+       ``homotopy_linearization_fallback`` or the
+       ``homotopy_marginal_linearization_fallback`` option. It is typically
+       used in situations where it is known that homotopy will fail to go
+       beyond a certain point, so as to save computing time, while at the same
+       time getting an approximate solution.
 
     .. option:: markowitz = DOUBLE
 
@@ -3826,6 +3874,50 @@ speed-up on large models.
        last defined steady state, which can derive from ``initval``,
        ``endval`` or a subsequent ``steady``. Only available with option
        ``stack_solve_algo==0`` or ``stack_solve_algo==7``.
+
+    .. option:: endval_steady
+
+       In scenarios with a permanent shock, specifies that the terminal
+       condition is a steady state, even if the ``steady`` command has not been
+       called after the ``endval`` block. As a consequence, the
+       ``perfect_foresight_solver`` command will compute the terminal steady
+       state itself (given the value of the exogenous variables given in the
+       ``endval`` block). In practice, this option is useful when the permanent
+       shock is very large, in which case the homotopy procedure inside
+       ``perfect_foresight_solver`` will find both the terminal steady state
+       and the transitional dynamics within the same loop (which is less costly
+       than first computing the terminal steady state by homotopy, then
+       computing the transitional dynamics by homotopy).
+
+    .. option:: steady_solve_algo = INTEGER
+
+       See :ref:`solve_algo <solvalg>`. Used when computing the terminal steady
+       state when option ``endval_steady`` has been specified to the
+       ``perfect_foresight_setup`` command.
+
+    .. option:: steady_tolf = DOUBLE
+
+       See :ref:`tolf <steady_tolf>`. Used when computing the terminal steady
+       state when option ``endval_steady`` has been specified to the
+       ``perfect_foresight_setup`` command.
+
+    .. option:: steady_tolx = DOUBLE
+
+       See :ref:`tolx <steady_tolx>`. Used when computing the terminal steady
+       state when option ``endval_steady`` has been specified to the
+       ``perfect_foresight_setup`` command.
+
+    .. option:: steady_maxit = INTEGER
+
+       See :ref:`maxit <steady_maxit>`. Used when computing the terminal steady
+       state when option ``endval_steady`` has been specified to the
+       ``perfect_foresight_setup`` command.
+
+    .. option:: steady_markowitz = DOUBLE
+
+       See :ref:`markowitz <steady_markowitz>`. Used when computing the
+       terminal steady state when option ``endval_steady`` has been specified
+       to the ``perfect_foresight_setup`` command.
 
     *Output*
 
@@ -4019,7 +4111,9 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
     always a steady state. Hence, it will recompute the terminal steady state
     as many times as the anticipation about the terminal condition changes. In
     particular, the information about endogenous variables that may be given in
-    the ``endval`` block is ignored.
+    the ``endval`` block is ignored. Said otherwise, the equivalent of option
+    ``endval_steady`` of the ``perfect_foresight_setup`` command is always
+    implicitly enabled.
 
     *Options*
 
@@ -4057,33 +4151,12 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
        the name of the variable on the first line and ``s`` on the second
        line. Of course, values in cells corresponding to ``t<s`` are ignored.
 
-    .. option:: solve_algo = INTEGER
-
-       See :ref:`solve_algo <solvalg>`. Used when computing the terminal steady state.
-
-    .. option:: tolf = DOUBLE
-
-       See :ref:`tolf <steady_tolf>`. Used when computing the terminal steady state.
-
-    .. option:: tolx = DOUBLE
-
-       See :ref:`tolx <steady_tolx>`. Used when computing the terminal steady state.
-
-    .. option:: maxit = INTEGER
-
-       See :ref:`maxit <steady_maxit>`. Used when computing the terminal steady state.
-
-    .. option:: markowitz = DOUBLE
-
-       See :ref:`markowitz <steady_markowitz>`.  Used when computing the terminal steady state.
-
     *Output*
 
     ``oo_.exo_simul`` and ``oo_.endo_simul`` are initialized before the
     simulation. Temporary shocks are stored in ``oo_.pfwee.shocks_info``,
     terminal conditions for exogenous variables are stored in
-    ``oo_.pfwee.terminal_info``, and terminal steady states are stored in
-    ``oo_.pfwee.terminal_steady_state``.
+    ``oo_.pfwee.terminal_info``.
 
     *Example*
 
@@ -4189,7 +4262,9 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
     *Output*
 
     The simulated paths of endogenous variables are available in
-    ``oo_.endo_simul``.
+    ``oo_.endo_simul``. The terminal steady state values corresponding to the
+    last period of the information set are available in ``oo_.steady_state``
+    and ``oo_.exo_steady_state``.
 
 .. matvar:: oo_.pfwee.shocks_info
 
@@ -4211,17 +4286,6 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
     order), and whose columns correspond to informational time. In other words,
     the terminal condition for exogenous indexed ``k``, as anticipated from
     period ``s``, is stored in ``oo_.pfwee.terminal_info(k,s)``.
-
-.. matvar:: oo_.pfwee.terminal_steady_state
-
-    |br| This variable stores the terminal steady states for endogenous
-    variables used during perfect foresight simulations with expectation
-    errors, after :comm:`perfect_foresight_with_expectation_errors_setup` has
-    been run. It is a matrix, whose lines correspond to endogenous variables
-    (in declaration order), and whose columns correspond to informational time.
-    In other words, the terminal steady state for endogenous indexed ``k``, as
-    anticipated from period ``s``, is stored in
-    ``oo_.pfwee.terminal_steady_state(k,s)``.
 
 .. _stoch-sol:
 

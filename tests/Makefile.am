@@ -372,8 +372,9 @@ MODFILES = \
 	deterministic_simulations/rbc_det5.mod \
 	deterministic_simulations/rbc_det6.mod \
 	deterministic_simulations/homotopy.mod \
-	deterministic_simulations/homotopy_alt_starting_point.mod \
 	deterministic_simulations/homotopy_histval.mod \
+	deterministic_simulations/homotopy_endval_steady_linearization.mod \
+	deterministic_simulations/homotopy_marginal_linearization.mod \
 	deterministic_simulations/rbc_det_exo_lag_2a.mod \
 	deterministic_simulations/rbc_det_exo_lag_2b.mod \
 	deterministic_simulations/rbc_det_exo_lag_2c.mod \
@@ -397,6 +398,7 @@ MODFILES = \
 	deterministic_simulations/pfwee_constant_sim_length.mod \
 	deterministic_simulations/pfwee_learnt_in.mod \
 	deterministic_simulations/pfwee_multiple_shocks.mod \
+	deterministic_simulations/pfwee_homotopy.mod \
 	lmmcp/rbc.mod \
 	lmmcp/sw_lmmcp.mod \
 	lmmcp/sw_newton.mod \
