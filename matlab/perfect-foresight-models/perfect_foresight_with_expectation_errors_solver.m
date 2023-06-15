@@ -40,6 +40,10 @@ else
     initial_steady_state = ys0_;
 end
 while info_period <= periods
+    if ~options_.noprint
+        fprintf('perfect_foresight_with_expectations_errors_solver: computing solution for information available at period %d\n', info_period)
+    end
+
     % Compute terminal steady state as anticipated
     oo_.exo_steady_state = oo_.pfwee.terminal_info(:, info_period);
     oo_.steady_state = oo_.pfwee.terminal_steady_state(:, info_period);
@@ -67,6 +71,10 @@ while info_period <= periods
     options_.periods = sim_length;
 
     perfect_foresight_solver;
+
+    if ~oo_.deterministic_simulation.status
+        error('perfect_foresight_with_expectation_errors_solver: failed to compute solution for information available at period %d\n', info_period)
+    end
 
     endo_simul(:, info_period:end) = oo_.endo_simul;
     exo_simul(info_period:end, :) = oo_.exo_simul;
