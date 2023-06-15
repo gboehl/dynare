@@ -34,11 +34,6 @@ exo_simul = oo_.exo_simul;
 % Start main loop around informational periods
 info_period = 1;
 increment = 0;
-if isempty(ys0_)
-    initial_steady_state = oo_.steady_state;
-else
-    initial_steady_state = ys0_;
-end
 while info_period <= periods
     if ~options_.noprint
         fprintf('perfect_foresight_with_expectations_errors_solver: computing solution for information available at period %d\n', info_period)
