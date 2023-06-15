@@ -170,9 +170,9 @@ for it_=start:incr:finish
                     else
                         if verbose
                             if cutoff==0
-                                fprintf('Error in simul: Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "options_.simul.maxit".\n',Block_Num, it_, iter);
+                                fprintf('Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "maxit".\n',Block_Num, it_, iter);
                             else
-                                fprintf('Error in simul: Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "options_.simul.maxit" or set "cutoff=0" in model options.\n',Block_Num, it_, iter);
+                                fprintf('Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "maxit" or set "cutoff=0" in model options.\n',Block_Num, it_, iter);
                             end
                         end
                         if is_dynamic
@@ -296,9 +296,9 @@ for it_=start:incr:finish
     if cvg==0
         if verbose
             if cutoff == 0
-                fprintf('Error in simul: Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "options_.simul.maxit\".\n',Block_Num, it_,iter);
+                fprintf('Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "maxit".\n',Block_Num, it_,iter);
             else
-                fprintf('Error in simul: Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "options_.simul.maxit" or set "cutoff=0" in model options.\n',Block_Num, it_,iter);
+                fprintf('Convergence not achieved in block %d, at time %d, after %d iterations.\n Increase "maxit" or set "cutoff=0" in model options.\n',Block_Num, it_,iter);
             end
         end
         if is_dynamic

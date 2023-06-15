@@ -156,9 +156,9 @@ while ~(cvg==1 || iter>maxit_)
                 else
                     if verbose
                         if cutoff==0
-                            fprintf('Error in simul: Convergence not achieved in block %d, after %d iterations.\n Increase "options_.simul.maxit".\n',Block_Num, iter);
+                            fprintf('Convergence not achieved in block %d, after %d iterations.\n Increase "maxit".\n',Block_Num, iter);
                         else
-                            fprintf('Error in simul: Convergence not achieved in block %d, after %d iterations.\n Increase "options_.simul.maxit" or set "cutoff=0" in model options.\n',Block_Num, iter);
+                            fprintf('Convergence not achieved in block %d, after %d iterations.\n Increase "maxit" or set "cutoff=0" in model options.\n',Block_Num, iter);
                         end
                     end
                     oo.deterministic_simulation.status = false;
