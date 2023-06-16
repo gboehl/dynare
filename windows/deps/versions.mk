@@ -24,7 +24,7 @@ MINGW64_BOOST_VERSION = 1.77.0-3
 MINGW64_GSL_VERSION = 2.7-1
 
 # pacman -Ss mingw-w64-x86_64-openblas
-MINGW64_OPENBLAS_VERSION = 0.3.13-2
+MINGW64_OPENBLAS_VERSION = 0.3.20-4
 
 # pacman -Ss mingw-w64-x86_64-matio
 MINGW64_MATIO_VERSION = 1.5.21-1
@@ -35,7 +35,7 @@ MINGW64_ZLIB_VERSION = 1.2.11-9
 
 # Dependency of matio
 # pacman -Ss mingw-w64-x86_64-hdf5
-MINGW64_HDF5_VERSION = 1.12.0-4
+MINGW64_HDF5_VERSION = 1.12.2-1
 
 # Dependency of HDF5 (provides szip library)
 # pacman -Ss mingw-w64-x86_64-libaec
