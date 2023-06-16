@@ -54,6 +54,11 @@ BASENAME=dynare-$VERSION
 LIB64="$ROOT_DIRECTORY"/deps/lib64
 LIB64_MSYS2="$ROOT_DIRECTORY"/deps/lib64-msys2
 
+# Set compilation flags
+# For the architectural baseline, we follow MSYS2:
+# https://www.msys2.org/news/#2022-10-18-new-minimum-hardware-requirements-cpus-from-20067
+arch_flags="-march=nocona -msahf -mtune=generic"
+export CFLAGS="-O3 $arch_flags"
 # MSYS2 libraries are now built with -fstack-protector-strong, see:
 # https://www.msys2.org/news/#2022-10-23-mingw-packages-now-built-with-d_fortify_source2-and-fstack-protector-strong
 # As of 2023-01-03, when linking against HDF5 (and possibly other libraries),
@@ -64,7 +69,8 @@ LIB64_MSYS2="$ROOT_DIRECTORY"/deps/lib64-msys2
 # and there seems to be no easy way of linking it statically.
 # Also note that adding this flag is not necessary when building from MSYS2 shell.
 # Maybe revisit this once our runners are upgraded to Debian “Bookworm” 12.
-export CXXFLAGS="-O2 -fstack-protector"
+export CXXFLAGS="-O3 $arch_flags -fstack-protector"
+export FCFLAGS="-O3 $arch_flags"
 
 # Go to source root directory
 cd ..
