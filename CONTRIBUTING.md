@@ -26,7 +26,7 @@ Before making changes to the codebase, it’d be helpful if you communicated you
 
 All the development of Dynare happens in [GitLab](https://about.gitlab.com/), which is an integrated environment for storing code under git, keeping track of issues and milestones, and perform testing. The Dynare Team has its own instance of GitLab.
 
-In order to work with us, you need to create your account on our GitLab instance on the [register page](https://git.dynare.org/users/sign_in).
+In order to work with us, you need to create your account on our GitLab instance on the [register page](https://git.dynare.org/users/sign_in). Note that account requests are manually validated, so be prepared to wait for a couple of hours or days before your account is created; if your account request is rejected, do not hesitate to contact us directly.
 
 You will also need to register your SSH key in your GitLab profile if you want to contribute code.
 
