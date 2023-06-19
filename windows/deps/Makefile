@@ -28,9 +28,9 @@ WGET_OPTIONS := --no-verbose --no-use-server-timestamps --retry-connrefused --re
 	clean-tar clean-slicot-tar clean-x13as-tar \
 	clean-all clean-lib clean-src clean-tar
 
-all: build octave matlab msys2
+all: build octave matlab msys2 x13as
 
-build: build-slicot build-x13as
+build: build-slicot
 
 clean-lib: clean-libslicot clean-matlab clean-octave clean-msys2 clean-x13as-bin
 
@@ -193,30 +193,19 @@ clean-msys2:
 # X13AS
 #
 
-tarballs/x13assrc_V$(X13AS_VERSION).tar.gz:
+tarballs/x13as-v$(X13AS_VERSION).zip:
 	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ https://ftp.debian.org/debian/pool/non-free/x/x13as/x13as_$(subst _,-,$(X13AS_VERSION)).orig.tar.gz
+	wget $(WGET_OPTIONS) -O $@ https://www2.census.gov/software/x-13arima-seats/x13as/windows/previous-version/$(notdir $@)
 
-sources64/x13as-$(X13AS_VERSION): tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
-	rm -rf sources64/x13as-*
-	mkdir -p $@
-	tar xf $< --directory $@
+lib64/x13as/x13as.exe: tarballs/x13as-v$(X13AS_VERSION).zip
+	unzip -d lib64 $<
 
-lib64/x13as/x13as.exe: sources64/x13as-$(X13AS_VERSION)
-	make -C $< -f makefile.gf FC=x86_64-w64-mingw32-gfortran LINKER=x86_64-w64-mingw32-gfortran FFLAGS="-O2 -std=legacy" PROGRAM=x13as.exe
-	x86_64-w64-mingw32-strip $</x13as.exe
-	mkdir -p $(dir $@)
-	cp $</x13as.exe $@
-
-build-x13as: lib64/x13as/x13as.exe
+x13as: lib64/x13as/x13as.exe
 
 clean-x13as-tar:
-	rm -f tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
-
-clean-x13as-src:
-	rm -rf sources64/x13as-$(X13AS_VERSION)
+	rm -f tarballs/x13as-v$(X13AS_VERSION).zip
 
 clean-x13as-bin:
 	rm -rf lib64/x13as
 
-clean-x13as-all: clean-x13as-tar clean-x13as-src clean-x13as-bin
+clean-x13as-all: clean-x13as-tar clean-x13as-bin
