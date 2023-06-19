@@ -3586,9 +3586,7 @@ speed-up on large models.
     problem, it subsequently tries a homotopy technique (unless the
     ``no_homotopy`` option is given). Concretely, this technique consists in
     dividing the problem into smaller steps by diminishing the size of shocks
-    and increasing them progressively until the problem converges. Note that
-    the homotopy technique is not implemented for purely forward or backward
-    models.
+    and increasing them progressively until the problem converges.
 
     *Options*
 
