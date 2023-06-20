@@ -22,7 +22,7 @@ function [x, errorflag, fvec, fjac, errorcode] = dynare_solve(f, x, maxit, tolf,
 %        -10  -> System of equation ill-behaved at the initial guess (Inf, Nans or complex numbers).
 %        -11  -> Initial guess is a solution of the system of equations.
 
-% Copyright © 2001-2022 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -64,8 +64,9 @@ if jacobian_flag
     [fvec, fjac] = feval(f, x, varargin{:});
     wrong_initial_guess_flag = false;
     if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) || any(~isreal(fvec)) || any(~isreal(fjac(:)))
-        if ~ismember(options.solve_algo,[10,11]) && max(abs(fvec))< tolf
+        if ~ismember(options.solve_algo,[10,11]) && ~any(isnan(fvec)) && max(abs(fvec))< tolf
             % return if initial value solves the problem except if a mixed complementarity problem is to be solved (complementarity conditions may not be satisfied)
+            % max([NaN, 0])=0, so explicitly exclude the case where fvec contains a NaN
             errorcode = -11;
             return;
         end
@@ -100,8 +101,9 @@ if jacobian_flag
 else
     fvec = feval(f, x, varargin{:});
     fjac = zeros(nn, nn);
-    if ~ismember(options.solve_algo,[10,11]) && max(abs(fvec)) < tolf
+    if ~ismember(options.solve_algo,[10,11]) && ~any(isnan(fvec)) && max(abs(fvec)) < tolf
         % return if initial value solves the problem except if a mixed complementarity problem is to be solved (complementarity conditions may not be satisfied)
+        % max([NaN, 0])=0, so explicitly exclude the case where fvec contains a NaN
         errorcode = -11;
         return;
     end
