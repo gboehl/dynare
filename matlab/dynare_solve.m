@@ -15,7 +15,7 @@ function [x, errorflag, fvec, fjac] = dynare_solve(f, x, options, varargin)
 % - fvec         [double]           n×1 vector, function value at x (f(x), used for debugging when errorflag is true).
 % - fjac         [double]           n×n matrix, Jacobian value at x (J(x), used for debugging when errorflag is true).
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -91,7 +91,8 @@ if jacobian_flag
     wrong_initial_guess_flag = false;
     if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) ...
             || any(~isreal(fvec)) || any(~isreal(fjac(:)))
-        if max(abs(fvec)) < tolf %return if initial value solves problem
+        if ~any(isnan(fvec)) && max(abs(fvec)) < tolf %return if initial value solves problem
+            % max([NaN, 0])=0, so explicitly exclude the case where fvec contains a NaN
             info = 0;
             return;
         end
@@ -166,7 +167,8 @@ end
 
 % this test doesn't check complementarity conditions and is not used for
 % mixed complementarity problems
-if (~ismember(options.solve_algo,[10,11])) && (max(abs(fvec)) < tolf)
+if (~ismember(options.solve_algo,[10,11])) && ~any(isnan(fvec)) && (max(abs(fvec)) < tolf)
+    % max([NaN, 0])=0, so explicitly exclude the case where fvec contains a NaN
     return ;
 end
 
