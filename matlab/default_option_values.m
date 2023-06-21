@@ -556,7 +556,7 @@ options_.hessian = hessian;
 csminwel.tolerance.f=1e-7;
 csminwel.maxiter=1000;
 csminwel.verbosity=1;
-csminwel.Save_files=1;
+csminwel.Save_files=false;
 
 options_.csminwel=csminwel;
 
@@ -581,7 +581,7 @@ simplex.delta_factor=0.05;
 options_.simplex = simplex;
 
 % CMAES optimization routine.
-cmaes.SaveVariables='on';
+cmaes.SaveVariables='off';
 cmaes.DispFinal='on';
 cmaes.WarnOnEqualFunctionValues='no';
 cmaes.DispModulo='10';
