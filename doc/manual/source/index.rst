@@ -11,7 +11,7 @@ Currently the development team of Dynare is composed of:
 * Junior Maih (Norges Bank)
 * Ferhat Mihoubi (Université Paris-Est Créteil, Érudite)
 * Willi Mutschler (University of Tübingen)
-* Johannes Pfeifer (Universität der Bundeswehr München)
+* Johannes Pfeifer (University of the Bundeswehr Munich)
 * Marco Ratto (European Commission, Joint Research Centre - JRC)
 * Normann Rion (CY Cergy Paris Université and CEPREMAP)
 * Sébastien Villemot (CEPREMAP)
