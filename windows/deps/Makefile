@@ -198,7 +198,7 @@ tarballs/x13as_ascii-v$(X13AS_VERSION).zip:
 	wget $(WGET_OPTIONS) -O $@ https://www2.census.gov/software/x-13arima-seats/x13as/windows/program-archives/$(notdir $@)
 
 lib64/x13as/x13as.exe: tarballs/x13as_ascii-v$(X13AS_VERSION).zip
-	unzip -d lib64 $<
+	unzip -o -d lib64 $<
 	mv lib64/x13as/x13as_ascii.exe $@
 
 x13as: lib64/x13as/x13as.exe
