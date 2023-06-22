@@ -86,7 +86,7 @@ if info(1) == 0
 else
     if ~options_.noprint
         if ~isempty(oo_.steady_state)
-            resid;
+            display_static_residuals;
         else
             skipline()
             disp('Residuals of the static equations cannot be computed because the steady state routine returned an empty vector.')

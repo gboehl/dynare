@@ -1,5 +1,5 @@
-function z = resid(options_resid_)
-% function z = resid(options_resid_)
+function z = display_static_residuals(options_resid_)
+% function z = display_static_residuals(options_resid_)
 %
 % Computes static residuals associated with the guess values.
 %
