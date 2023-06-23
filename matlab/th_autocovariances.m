@@ -73,7 +73,6 @@ if local_order~=1 && M_.hessian_eq_zero
 end
 
 endo_nbr = M_.endo_nbr;
-exo_names_orig_ord  = M_.exo_names_orig_ord;
 if isoctave
     warning('off', 'Octave:divide-by-zero')
 else
@@ -173,11 +172,11 @@ if options_.hp_filter == 0 && ~options_.bandpass.indicator
             Gamma_y{nar+2} = ones(nvar,1);
         else
             Gamma_y{nar+2} = NaN(nvar,M_.exo_nbr);
-            SS(exo_names_orig_ord,exo_names_orig_ord)=M_.Sigma_e+1e-14*eye(M_.exo_nbr);
+            SS=M_.Sigma_e+1e-14*eye(M_.exo_nbr);
             cs = chol(SS)';
-            b1(:,exo_names_orig_ord) = ghu1;
+            b1 = ghu1;
             b1 = b1*cs;
-            b2(:,exo_names_orig_ord) = ghu(iky,:);
+            b2 = ghu(iky,:);
             b2 = b2*cs;
             vx  = lyapunov_symm(A,b1*b1',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,1,options_.debug);
             vv = diag(aa*vx*aa'+b2*b2');
@@ -251,11 +250,11 @@ else% ==> Theoretical filters.
             Gamma_y{nar+2} = ones(nvar,1);
         else
             Gamma_y{nar+2} = zeros(nvar,M_.exo_nbr);
-            SS(exo_names_orig_ord,exo_names_orig_ord) = M_.Sigma_e+1e-14*eye(M_.exo_nbr); %make sure Covariance matrix is positive definite
+            SS = M_.Sigma_e+1e-14*eye(M_.exo_nbr); %make sure Covariance matrix is positive definite
             cs = chol(SS)';
             SS = cs*cs';
-            b1(:,exo_names_orig_ord) = ghu1;
-            b2(:,exo_names_orig_ord) = ghu(iky,:);
+            b1 = ghu1;
+            b2 = ghu(iky,:);
             mathp_col = NaN(ngrid,length(ivar)^2);
             IA = eye(size(A,1));
             IE = eye(M_.exo_nbr);

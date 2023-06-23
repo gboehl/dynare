@@ -129,7 +129,7 @@ rr=DD*QQ*DD'+RR;
 ZSIG0=disc_riccati_fast(ff,DD,rr,hh);
 PP=ZSIG0 +QQ;
 
-exo_names = M_.exo_names(M_.exo_names_orig_ord);
+exo_names = M_.exo_names;
 
 DPDR=DD*PP*DD'+RR;
 I_DPDR=inv(DPDR);

@@ -96,7 +96,6 @@ if size(stationary_vars, 1) > 0
             end
             title = add_filter_subtitle(title, options_);
             headers = M_.exo_names;
-            headers(M_.exo_names_orig_ord) = headers;
             headers = vertcat(' ', headers);
             labels=get_labels_transformed_vars(M_.endo_names,ivar(stationary_vars),options_,false);
             lh = cellofchararraymaxlength(labels)+2;

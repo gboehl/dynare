@@ -177,15 +177,15 @@ while fpar<B
             error(['PosteriorIRF :: Dynare is unable to solve the model (' errordef ') with sample ' type])
         end
     end
-    SS(M_.exo_names_orig_ord,M_.exo_names_orig_ord) = M_.Sigma_e+1e-14*eye(M_.exo_nbr);
+    SS = M_.Sigma_e+1e-14*eye(M_.exo_nbr);
     SS = transpose(chol(SS));
     irf_shocks_indx = getIrfShocksIndx(M_, options_);
     for i=irf_shocks_indx
         if SS(i,i) > 1e-13
             if options_.order>1 && options_.relative_irf % normalize shock to 0.01 before IRF generation for GIRFs; multiply with 100 later
-                y=irf(M_,options_,dr,SS(M_.exo_names_orig_ord,i)./SS(i,i)/100, options_.irf, options_.drop,options_.replic,options_.order);
+                y=irf(M_,options_,dr,SS(:,i)./SS(i,i)/100, options_.irf, options_.drop,options_.replic,options_.order);
             else
-                y=irf(M_,options_,dr,SS(M_.exo_names_orig_ord,i), options_.irf, options_.drop,options_.replic,options_.order);
+                y=irf(M_,options_,dr,SS(:,i), options_.irf, options_.drop,options_.replic,options_.order);
             end
             if options_.relative_irf && options_.order==1 %multiply with 100 for backward compatibility
                 y = 100*y/SS(i,i);
@@ -219,7 +219,7 @@ while fpar<B
         mu = zeros(1,dataset_.vobs);
         % Get rotation
         if dsge_prior_weight > 0
-            Atheta(oo_.dr.order_var,M_.exo_names_orig_ord) = oo_.dr.ghu*sqrt(M_.Sigma_e);
+            Atheta(oo_.dr.order_var,:) = oo_.dr.ghu*sqrt(M_.Sigma_e);
             A0 = Atheta(bayestopt_.mfys,:);
             OMEGAstar = qr2(A0');
         end

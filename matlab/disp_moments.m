@@ -196,7 +196,6 @@ if ~options_.nodecomposition
             title='VARIANCE DECOMPOSITION SIMULATING ONE SHOCK AT A TIME (in percent)';
             title=add_filter_subtitle(title,options_);
             headers = M_.exo_names;
-            headers(M_.exo_names_orig_ord) = headers;
             headers = vertcat(' ', headers);
             lh = cellofchararraymaxlength(M_.endo_names(ivar))+2;
             dyntable(options_, title, vertcat(headers, 'Tot. lin. contr.'), ...
