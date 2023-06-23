@@ -3189,7 +3189,7 @@ X-13 ARIMA-SEATS interface
 
                 ts = dseries(y,'1949M1');
                 o = x13(ts);
-                o.transform('function','auto');
+                o.transform('function','auto','savelog','atr');
                 o.automdl('savelog','all');
                 o.x11('save','(d11 d10)');
                 o.run();
@@ -3203,9 +3203,11 @@ X-13 ARIMA-SEATS interface
 
 
         The above example shows how to remove a seasonal pattern from a time series.
-        ``o.transform('function','auto')`` instructs the subsequent ``o.automdl()`` command
-        to check whether an additional or a multiplicative pattern fits the data better (the latter is
-        the case in the current example). The ``o.automdl('savelog','all')`` automatically selects a fitting
+        ``o.transform('function','auto','savelog','atr')`` instructs the subsequent 
+        ``o.automdl()`` command to check whether an additional or a multiplicative 
+        pattern fits the data better and to save the result. The result is saved in 
+        `o.results.autotransform`, which in the present example indicates that a 
+        log transformation, i.e. a multiplicative model was preferred. The ``o.automdl('savelog','all')`` automatically selects a fitting
         ARIMA model and saves all relevant output to the .log-file. The ``o.x11('save','(d11, d10)')`` instructs
         ``x11`` to save both the final seasonally adjusted series ``d11`` and the final seasonal factor ``d10``
         into ``dseries`` with the respective names in the output structure ``o.results``.  ``o.clean()`` removes the
