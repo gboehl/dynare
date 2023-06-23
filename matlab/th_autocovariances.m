@@ -172,8 +172,7 @@ if options_.hp_filter == 0 && ~options_.bandpass.indicator
             Gamma_y{nar+2} = ones(nvar,1);
         else
             Gamma_y{nar+2} = NaN(nvar,M_.exo_nbr);
-            SS=M_.Sigma_e+1e-14*eye(M_.exo_nbr);
-            cs = chol(SS)';
+            cs = get_lower_cholesky_covariance(M_.Sigma_e,options_.add_tiny_number_to_cholesky);
             b1 = ghu1;
             b1 = b1*cs;
             b2 = ghu(iky,:);
@@ -250,8 +249,7 @@ else% ==> Theoretical filters.
             Gamma_y{nar+2} = ones(nvar,1);
         else
             Gamma_y{nar+2} = zeros(nvar,M_.exo_nbr);
-            SS = M_.Sigma_e+1e-14*eye(M_.exo_nbr); %make sure Covariance matrix is positive definite
-            cs = chol(SS)';
+            cs = get_lower_cholesky_covariance(M_.Sigma_e); %make sure Covariance matrix is positive definite
             SS = cs*cs';
             b1 = ghu1;
             b2 = ghu(iky,:);

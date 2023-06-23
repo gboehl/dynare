@@ -85,8 +85,7 @@ end
 
 % Get the covariance matrix of the shocks.
 if withuncertainty
-    Sigma = M_.Sigma_e + 1e-14*eye(M_.exo_nbr);
-    sigma = transpose(chol(Sigma));
+    sigma = get_lower_cholesky_covariance(M_.Sigma_e,options_.add_tiny_number_to_cholesky);
 end
 
 % Compute forecast without shock

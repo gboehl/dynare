@@ -231,15 +231,14 @@ if options_.irf
         fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
         fprintf(fidTeX,' \n');
     end
-    SS=M_.Sigma_e+1e-14*eye(M_.exo_nbr);
-    cs = transpose(chol(SS));
+    cs=get_lower_cholesky_covariance(M_.Sigma_e,options_.add_tiny_number_to_cholesky);
     tit = M_.exo_names;
     if TeX
         titTeX = M_.exo_names_tex;
     end
     irf_shocks_indx = getIrfShocksIndx(M_, options_);
     for i=irf_shocks_indx
-        if SS(i,i) > 1e-13
+        if cs(i,i) > 5e-7            
             if PI_PCL_solver
                 y=PCL_Part_info_irf (0, PCL_varobs, i_var, M_, oo_.dr, options_.irf, i);
             else

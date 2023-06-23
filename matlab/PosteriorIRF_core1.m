@@ -177,11 +177,10 @@ while fpar<B
             error(['PosteriorIRF :: Dynare is unable to solve the model (' errordef ') with sample ' type])
         end
     end
-    SS = M_.Sigma_e+1e-14*eye(M_.exo_nbr);
-    SS = transpose(chol(SS));
+    SS = get_lower_cholesky_covariance(M_.Sigma_e,options_.add_tiny_number_to_cholesky);
     irf_shocks_indx = getIrfShocksIndx(M_, options_);
     for i=irf_shocks_indx
-        if SS(i,i) > 1e-13
+        if SS(i,i) > 5e-7
             if options_.order>1 && options_.relative_irf % normalize shock to 0.01 before IRF generation for GIRFs; multiply with 100 later
                 y=irf(M_,options_,dr,SS(:,i)./SS(i,i)/100, options_.irf, options_.drop,options_.replic,options_.order);
             else
