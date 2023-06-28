@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -28,6 +28,7 @@
 #include <cmath>
 #include <iostream>
 #include <sstream>
+#include <limits>
 
 double
 DiagonalBlock::getDeterminant() const
@@ -267,16 +268,14 @@ Diagonal::diag_iter
 Diagonal::findClosestBlock(diag_iter start, diag_iter end, double a)
 {
   diag_iter closest = start;
-  double minim = 1.0e100;
+  double minim {std::numeric_limits<double>::infinity()};
   for (diag_iter run = start; run != end; ++run)
-    {
-      double dist = std::abs(a - run->getSize());
-      if (dist < minim)
-        {
-          minim = dist;
-          closest = run;
-        }
-    }
+    if (double dist = std::abs(a - run->getSize());
+        dist < minim)
+      {
+        minim = dist;
+        closest = run;
+      }
   return closest;
 }
 
@@ -284,16 +283,14 @@ Diagonal::diag_iter
 Diagonal::findNextLargerBlock(diag_iter start, diag_iter end, double a)
 {
   diag_iter closest = start;
-  double minim = 1.0e100;
+  double minim {std::numeric_limits<double>::infinity()};
   for (diag_iter run = start; run != end; ++run)
-    {
-      double dist = run->getSize() - a;
-      if ((0 <= dist) && (dist < minim))
-        {
-          minim = dist;
-          closest = run;
-        }
-    }
+    if (double dist = run->getSize() - a;
+        0 <= dist && dist < minim)
+      {
+        minim = dist;
+        closest = run;
+      }
   return closest;
 }
 
