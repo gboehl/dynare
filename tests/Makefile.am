@@ -35,6 +35,7 @@ MODFILES = \
 	analytic_derivatives/burnside_3_order_PertParamsDerivs.mod \
 	pruning/AnSchorfheide_pruned_state_space.mod \
 	pruning/AS_pruned_state_space_red_shock.mod \
+	pruning/fs2000_pruning.mod \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fs2000_corr_ME.mod \
 	TeX/fs2000_corr_ME.mod \
 	estimation/MH_recover/fs2000_recover_tarb.mod \

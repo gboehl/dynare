@@ -16,7 +16,7 @@ stoch_simul(order=3,periods=200, irf=0);
 save('my_data_MCMC.mat','ca','b');
 
 options_.pruning=1;
-options_.particle.pruning=1;
+options_.particle.pruning=true;
 options_.particle.number_of_particles=500;
 
 estimation(datafile='my_data_MCMC.mat',order=2,mh_replic=100,filter_algorithm=sis,nonlinear_filter_initialization=2
