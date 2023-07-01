@@ -54,6 +54,7 @@ else
     ghxx = ReducedForm.ghxx;
     ghuu = ReducedForm.ghuu;
     ghxu = ReducedForm.ghxu;
+    ghs2 = ReducedForm.ghs2;
     if order == 3
         % Set local state space model (third order approximation).
         ghxxx = ReducedForm.ghxxx;
@@ -66,6 +67,7 @@ else
 end
 
 constant = ReducedForm.constant;
+steadystate = ReducedForm.steadystate;
 state_variables_steady_state = ReducedForm.state_variables_steady_state;
 
 mf0 = ReducedForm.mf0;
@@ -96,7 +98,7 @@ else
     if order == 2
         tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);
     elseif order == 3
-        tmp = local_state_space_iteration_3(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, ThreadsOptions.local_state_space_iteration_3);
+        tmp = local_state_space_iteration_3(yhat, epsilon, ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, ThreadsOptions.local_state_space_iteration_3, false);
     else
         error('Order > 3: use_k_order_solver should be set to true');
     end

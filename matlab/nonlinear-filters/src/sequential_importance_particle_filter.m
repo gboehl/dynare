@@ -63,6 +63,7 @@ else
     ghxx = ReducedForm.ghxx;
     ghuu = ReducedForm.ghuu;
     ghxu = ReducedForm.ghxu;
+    ghs2 = ReducedForm.ghs2;
     if order == 3
         % Set local state space model (third order approximation).
         ghxxx = ReducedForm.ghxxx;
@@ -111,11 +112,13 @@ if pruning
         state_variables_steady_state_ = state_variables_steady_state;
         mf0_ = mf0;
     elseif order == 3
-        StateVectors_ = repmat(StateVectors,2,1);
-        state_variables_steady_state_ = repmat(state_variables_steady_state,2,1);
-        mf0_ = repmat(mf0,1,2); 
-        mask = number_of_state_variables+1:2*number_of_state_variables;
-        mf0_(mask) = mf0_(mask)+size(ghx,1);
+        StateVectors_ = repmat(StateVectors,3,1);
+        state_variables_steady_state_ = repmat(state_variables_steady_state,3,1);
+        mf0_ = repmat(mf0,1,3); 
+        mask2 = number_of_state_variables+1:2*number_of_state_variables;
+        mask3 = 2*number_of_state_variables+1:3*number_of_state_variables;
+        mf0_(mask2) = mf0_(mask2)+size(ghx,1);
+        mf0_(mask3) = mf0_(mask3)+2*size(ghx,1);
     else
         error('Pruning is not available for orders > 3');
     end
@@ -130,7 +133,7 @@ for t=1:sample_size
         if order == 2
             [tmp, tmp_] = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_2);
         elseif order == 3
-            [tmp, tmp_] = local_state_space_iteration_3(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,ghxxx,ghuuu,ghxxu,ghxuu,ghxss,ghuss,yhat_,steadystate,ThreadsOptions.local_state_space_iteration_3);
+            [tmp, tmp_] = local_state_space_iteration_3(yhat_, epsilon, ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, ThreadsOptions.local_state_space_iteration_3, pruning);
         else
             error('Pruning is not available for orders > 3');
         end
@@ -141,7 +144,7 @@ for t=1:sample_size
             if order == 2
                 tmp = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
             elseif order == 3
-                tmp = local_state_space_iteration_3(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,ghxxx,ghuuu,ghxxu,ghxuu,ghxss,ghuss,ThreadsOptions.local_state_space_iteration_3);
+                tmp = local_state_space_iteration_3(yhat, epsilon, ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, ThreadsOptions.local_state_space_iteration_3, pruning);
             else
                 error('Order > 3: use_k_order_solver should be set to true');
             end
@@ -166,7 +169,7 @@ for t=1:sample_size
         if pruning
             temp = resample([tmp(mf0,:)' tmp_(mf0_,:)'],weights',ParticleOptions);
             StateVectors = temp(:,1:number_of_state_variables)';
-            StateVectors_ = temp(:,number_of_state_variables+1:2*number_of_state_variables)';
+            StateVectors_ = temp(:,number_of_state_variables+1:end)';
         else
             StateVectors = resample(tmp(mf0,:)',weights',ParticleOptions)';
         end

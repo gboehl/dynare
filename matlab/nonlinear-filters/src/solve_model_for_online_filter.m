@@ -161,6 +161,7 @@ if nargout>4
         ReducedForm.ghuu = dr.ghuu(restrict_variables_idx,:);
         ReducedForm.ghxu = dr.ghxu(restrict_variables_idx,:);
         ReducedForm.constant = ReducedForm.steadystate + .5*dr.ghs2(restrict_variables_idx);
+        ReducedForm.ghs2 = dr.ghs2(restrict_variables_idx,:);
     elseif DynareOptions.order>=3
         ReducedForm.use_k_order_solver = true;
         ReducedForm.dr = dr;
