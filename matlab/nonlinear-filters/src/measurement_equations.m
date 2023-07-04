@@ -28,6 +28,7 @@ else
     ghxx = ReducedForm.ghxx(mf1,:);
     ghuu = ReducedForm.ghuu(mf1,:);
     ghxu = ReducedForm.ghxu(mf1,:);
+    ghs2 = ReducedForm.ghs2(mf1,:);
     if order == 3
         ghxxx = ReducedForm.ghxxx(mf1,:);
         ghuuu = ReducedForm.ghuuu(mf1,:);
@@ -37,6 +38,7 @@ else
         ghuss = ReducedForm.ghuss(mf1,:);
     end
 end
+steadystate = ReducedForm.steadystate(mf1,:);
 constant = ReducedForm.constant(mf1,:);
 state_variables_steady_state = ReducedForm.state_variables_steady_state;
 number_of_structural_innovations = length(ReducedForm.Q);
@@ -48,7 +50,7 @@ else
     if order == 2
         measure = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, size(yhat,2)), ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);
     elseif order == 3
-        measure = local_state_space_iteration_3(yhat, zeros(number_of_structural_innovations, size(yhat,2)), ghx, ghu, constant, ghxx, ghuu, ghxu, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, ThreadsOptions.local_state_space_iteration_3);
+        measure = local_state_space_iteration_3(yhat, zeros(number_of_structural_innovations, size(yhat,2)), ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, ThreadsOptions.local_state_space_iteration_3, false);
     else
         error('Order > 3: use_k_order_solver should be set to true');
     end

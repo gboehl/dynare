@@ -33,6 +33,7 @@ end
 % Get steady state and mean.
 %steadystate = ReducedForm.steadystate;
 constant = ReducedForm.constant;
+ss = ReducedForm.ys;
 state_variables_steady_state = ReducedForm.state_variables_steady_state;
 
 % Set persistent variables.
@@ -54,6 +55,7 @@ ghu  = ReducedForm.ghu;
 ghxx = ReducedForm.ghxx;
 ghuu = ReducedForm.ghuu;
 ghxu = ReducedForm.ghxu;
+ghs2 = ReducedForm.ghs2;
 if (order == 3)
    ghxxx = ReducedForm.ghxxx;
    ghuuu = ReducedForm.ghuuu;
@@ -100,7 +102,7 @@ yhat = bsxfun(@minus,StateVectors,state_variables_steady_state);
 if (order == 2)
    tmp = local_state_space_iteration_2(yhat,zeros(number_of_structural_innovations,number_of_particles),ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
 elseif (order == 3)
-   tmp = local_state_space_iteration_3(yhat,zeros(number_of_structural_innovations,number_of_particles),ghx,ghu,constant,ghxx,ghuu,ghxu,ghxxx,ghuuu,ghxxu,ghxuu,ghxss,ghuss,ThreadsOptions.local_state_space_iteration_3);
+   tmp = local_state_space_iteration_3(yhat, zeros(number_of_structural_innovations,number_of_particles), ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, ss, options_.threads.local_state_space_iteration_3, false);
 else
    error('Orders > 3 not allowed');
 end
