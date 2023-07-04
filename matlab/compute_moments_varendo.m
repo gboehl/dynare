@@ -153,7 +153,6 @@ if options_.order==1
             end
             title=add_filter_subtitle(title, options_);
             headers = M_.exo_names;
-            headers(M_.exo_names_orig_ord) = headers;
             headers = vertcat(' ', headers);
             lh = cellofchararraymaxlength(var_list_)+2;
             dyntable(options_, title, headers, var_list_, 100*temp, lh, 8, 2);
@@ -197,7 +196,6 @@ if options_.order==1
                 end
                 title=add_filter_subtitle(title, options_);
                 headers = M_.exo_names;
-                headers(M_.exo_names_orig_ord) = headers;
                 headers = vertcat(' ', headers, 'ME');
                 lh = cellofchararraymaxlength(var_list_)+2;
                 dyntable(options_, title, headers, observable_name_requested_vars,100*temp,lh,8,2);
@@ -236,7 +234,6 @@ if options_.order==1
             for step_iter=1:length(Steps)
                 title_print=[title, ' Period ' int2str(Steps(step_iter))];
                 headers = M_.exo_names;
-                headers(M_.exo_names_orig_ord) = headers;
                 headers = vertcat(' ', headers);
                 lh = cellofchararraymaxlength(var_list_)+2;
                 dyntable(options_,title_print,headers, var_list_,100* ...
@@ -280,7 +277,6 @@ if options_.order==1
                     for step_iter=1:length(Steps)
                         title_print = [title, ' Period ' int2str(Steps(step_iter))];
                         headers = M_.exo_names;
-                        headers(M_.exo_names_orig_ord) = headers;
                         headers = vertcat(' ', headers, 'ME');
                         lh = cellofchararraymaxlength(var_list_)+2;
                         dyntable(options_, title_print, headers, observable_name_requested_vars, 100*temp(:,:,step_iter), lh, 8, 2);

@@ -67,6 +67,7 @@ options_.mode_check.number_of_points = 20;
 options_.mode_check.nolik = false;
 
 options_.huge_number = 1e7;
+options_.add_tiny_number_to_cholesky=1e-14;
 
 % Default number of threads for parallelized mex files.
 options_.threads.kronecker.sparse_hessian_times_B_kronecker_C = num_procs;

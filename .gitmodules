@@ -25,4 +25,4 @@
 	url = https://github.com/fangq/jsonlab.git
 [submodule "preprocessor"]
 	path = preprocessor
-	url = ../../Dynare/preprocessor.git
+	url = ../../JohannesPfeifer/preprocessor.git

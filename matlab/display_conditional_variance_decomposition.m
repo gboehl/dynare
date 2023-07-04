@@ -33,7 +33,6 @@ function display_conditional_variance_decomposition(conditional_decomposition_ar
 if size(conditional_decomposition_array,3)==M_.exo_nbr %no ME input
     shock_number=M_.exo_nbr;
     headers = M_.exo_names;
-    headers(M_.exo_names_orig_ord) = headers;
     if options_.TeX
         headers_TeX = vertcat(' ', M_.exo_names_tex);
     end
@@ -41,7 +40,6 @@ if size(conditional_decomposition_array,3)==M_.exo_nbr %no ME input
 elseif size(conditional_decomposition_array,3)==M_.exo_nbr+1 %ME input
     shock_number=M_.exo_nbr+1;
     headers = M_.exo_names;
-    headers(M_.exo_names_orig_ord) = headers;
     headers = vertcat(headers, 'ME');
     if options_.TeX
         headers_TeX = vertcat(M_.exo_names_tex, 'ME');

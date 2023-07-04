@@ -27,7 +27,7 @@ function irf_shocks_indx=getIrfShocksIndx(M_, options_)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if (isfield(options_,'irf_shocks')==0)
-    irf_shocks_indx = M_.exo_names_orig_ord;
+    irf_shocks_indx = 1:M_.exo_nbr;
 else
     irf_shocks_indx = zeros(1,size(options_.irf_shocks,1));
     for i=1:size(options_.irf_shocks,1)

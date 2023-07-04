@@ -146,10 +146,8 @@ end
 if ~deterministicshockflag
     if nnz(M_.Sigma_e)
         % Add ϵ>0 on the diagonal, so that the Cholesky won't fail
-        % if a shock has zero variance
-        Sigma = M_.Sigma_e + 1e-14*eye(M_.exo_nbr);
-        % Factorize Sigma (C is such that C*C' == Sigma)
-        C = chol(Sigma, 'lower');
+        % if a shock has zero variance and factorize Sigma (C is such that C*C' == Sigma)
+        C = get_lower_cholesky_covariance(M_.Sigma_e,options_.add_tiny_number_to_cholesky);
     else
         error('You did not specify the size of the shocks!')
     end

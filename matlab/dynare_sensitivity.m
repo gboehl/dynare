@@ -534,7 +534,7 @@ if options_gsa.glue
             Out1(jsmoo).ini  = 'yes';
         end
     end
-    tit(M_.exo_names_orig_ord) = M_.exo_names;
+    tit = M_.exo_names;
     for j=1:M_.exo_nbr
         Exo(j).name = tit{j};
     end
