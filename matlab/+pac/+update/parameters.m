@@ -31,7 +31,7 @@ function DynareModel = parameters(pacname, DynareModel, DynareOutput, verbose)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if nargin<4
-    verbose = true;
+    verbose = false;
 end
 
 % Check that the first input is a row character array.
