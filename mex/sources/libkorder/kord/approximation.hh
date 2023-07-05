@@ -125,18 +125,22 @@ class Approximation
   std::unique_ptr<FGSContainer> rule_ders_s;
   std::unique_ptr<FGSContainer> rule_ders_ss;
   std::unique_ptr<FoldDecisionRule> fdr;
+  std::unique_ptr<FoldDecisionRule> fdr_pruning;
   std::unique_ptr<UnfoldDecisionRule> udr;
+  std::unique_ptr<UnfoldDecisionRule> udr_pruning;
   const PartitionY ypart;
   const FNormalMoments mom;
   IntSequence nvs;
   int steps;
   bool dr_centralize;
+  bool pruning;
   double qz_criterium;
   TwoDMatrix ss;
 public:
-  Approximation(DynamicModel &m, Journal &j, int ns, bool dr_centr, double qz_crit);
+  Approximation(DynamicModel &m, Journal &j, int ns, bool dr_centr, bool pruning, double qz_crit);
 
   const FoldDecisionRule &getFoldDecisionRule() const;
+  const UnfoldDecisionRule &getUnfoldDecisionRulePruning() const;
   const UnfoldDecisionRule &getUnfoldDecisionRule() const;
   const TwoDMatrix &
   getSS() const

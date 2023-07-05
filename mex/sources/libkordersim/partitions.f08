@@ -1,7 +1,3 @@
-! Provides subroutines to manipulate indexes representing elements of
-! a partition for a given integer
-! i.e. elements p = (α₁,…,αₘ) where each αᵢ ∈ { 0, ..., n-1 }
-
 ! Copyright © 2021-2023 Dynare Team
 !
 ! This file is part of Dynare.
@@ -54,6 +50,14 @@ module partitions
    type uf_matching
       type(integer), dimension(:), allocatable :: folded
    end type
+   
+
+   ! A type to contain the integer partitions up to integer n
+   ! with up to n parts
+   type partition_triangle
+      type(index), dimension(:), allocatable :: partition ! integer partitions
+      integer, dimension(:), allocatable :: count ! numbers of equivalent permuted partitions
+   end type partition_triangle
 
 contains
 
@@ -184,8 +188,12 @@ contains
          find = 0
       else
          i = 1
-         do while (i <= l .and. a(i) /= v)
-            i = i+1
+         do while (i <= l)
+            if (a(i) /= v) then
+               i = i+1
+            else
+               exit
+            end if
          end do
          if (i == l+1) then
             find = 0
@@ -295,7 +303,7 @@ contains
    ! The algorithm to count the number of equivalent unfolded indices
    ! works as follows. A folded index can be written as α = (x₁, ..., x₁, ..., xₚ, ..., xₚ)
    ! such that x₁ < x₂ < ... < xₚ. Denote kᵢ the number of coordinates equal to xᵢ.
-   ! The number of unfolded indices equivalent to α is c(α) = ⎛         d       ⎞
+   ! The number of unfolded indices equivalent to α is c(α) = ⎛         m       ⎞
    !                                                          ⎝ k₁, k₂, ..., kₚ ⎠
    ! Suppose j is the latest incremented coordinate.
    ! If αⱼ < n, then αⱼ' = αⱼ + 1, k(αⱼ) := k(αⱼ)-1, k(αⱼ') := k(αⱼ')+1.
@@ -347,6 +355,84 @@ contains
       end do
    end subroutine folded_offset_loop 
 
+   ! The following routine computes the partitions of all integers up to integer
+   ! n with number of parts up to n, where n is the size of the input
+   ! partition_triangle leading partitions. The partitions are stored in the
+   ! lexicographic order. Suppose we want to partition the
+   ! integer n using k parts, i.e. solve the problem 𝓟(k,n). Two cases arise:
+   ! (i) the partition begins with a one, i.e. is of the form (1, α₁, ...,
+   ! αₖ₋₁). In this case, (α₁, ..., αₖ₋₁) is a partition of n-1 with k-1 parts,
+   ! i.e. solves the problem 𝓟(k-1,n-1). (ii) Otherwise, if (α₁, ..., αₖ) is a
+   ! partition of integer n using k parts, then (α₁-1, ..., αₖ-1) is a partition
+   ! of integer n-k using k parts, i.e. solves the problem 𝓟(k,n-k). In other
+   ! words, solutions to the problem 𝓟(k,n) are (a) solutions to the problem
+   ! 𝓟(k-1,n-1) with a 1 appended up front, and (b) solutions to the problem
+   ! 𝓟(k,n-k) with a 1 added to all its indices. Denoting p(k,n) the cardinal
+   ! of 𝓟(k,n), it thus verifies p(k,n)=p(k-1,n-1)+p(k,n-k).
+   ! A partition of n with k parts can be written as 
+   ! α = (α₁, ..., α₁, ..., αₚ, ..., αₚ) such that α₁ < α₂ < ... < αₚ. 
+   ! Denote kᵢ the number of coordinates equal to αᵢ. The
+   ! number of partitions that are permuted version of α 
+   ! is c(α;k) = ⎛       k         ⎞.
+   !             ⎝ k₁, k₂, ..., kₚ ⎠
+   ! The partitions generated through (b) represent the same number of permuted
+   ! partitions. If α solves 𝓟(k,n-k), α'= α.+1 is such that c(α';k)=c(α;k).
+   ! As for (a), two cases arise. If α that solves 𝓟(k-1,n-1) is such that
+   ! α₁=1, then α'=[1 α] that solves 𝓟(k,n), then
+   ! c(α';k) = ⎛       k       ⎞ = ⎛       k-1+1       ⎞ = k*c(α;k-1)/(k₁+1)
+   !           ⎝ k₁', ..., kₚ' ⎠   ⎝ k₁+1, k₂, ..., kₚ ⎠
+   ! Otherwise, c(α';k)=k*c(α;k-1)
+   subroutine fill_partition_triangle(parts)
+      type(partition_triangle), dimension(:,:), intent(inout) :: parts 
+      integer :: n, k, p_km1_nm1, p_k_nmk, p_k_n, l
+      ! Initialization with n=1 
+      parts(1,1)%partition = [index(1,1)]
+      parts(1,1)%count = [1]
+      do n=2,size(parts,1)
+         ! print *, 'n:', n
+         ! 𝓟(n,n) unique solution is (1,...,1)
+         !                            n times
+         parts(n,n)%partition = [index(n,1)] 
+         parts(n,n)%count = [1]
+         ! 𝓟(1,n) unique solution is (n)
+         parts(1,n)%partition = [index(1,n)]
+         parts(1,n)%count = [1]
+         do k=2,n-1
+            ! print *, 'k:', k
+            p_km1_nm1 = size(parts(k-1,n-1)%partition)
+            if (2*k>n) then
+               p_k_nmk = 0
+            else   
+               p_k_nmk = size(parts(k,n-k)%partition)
+            end if
+            p_k_n = p_km1_nm1+p_k_nmk
+            ! print *, 'p_km1_nm1:', p_km1_nm1
+            ! print *, 'p_k_nmk:', p_k_nmk
+            ! print *, 'p_k_n:', p_k_n
+            allocate(parts(k,n)%partition(p_k_n))
+            allocate(parts(k,n)%count(p_k_n))
+            ! 1 appended up front to 𝓟(k-1,n-1) solutions 
+            do l=1,p_km1_nm1
+               ! print *, 'l:', l
+               allocate(parts(k,n)%partition(l)%coor(k))
+               parts(k,n)%partition(l)%coor(1) = 1
+               parts(k,n)%partition(l)%coor(2:k) = parts(k-1,n-1)%partition(l)%coor
+               if (parts(k-1,n-1)%partition(l)%coor(1) == 1) then
+                  parts(k,n)%count(l) = parts(k-1,n-1)%count(l)*k/(get_prefix_length(parts(k-1,n-1)%partition(l), k-1)+1)
+               else
+                  parts(k,n)%count(l) = parts(k-1,n-1)%count(l)*k
+               end if
+            end do
+            ! 1 added to all components of 𝓟(k,n-k) solutions
+            do l=1,p_k_nmk
+               ! print *, 'l:', l
+               parts(k,n)%partition(l+p_km1_nm1)%coor = parts(k,n-k)%partition(l)%coor+1
+               parts(k,n)%count(l+p_km1_nm1) = parts(k,n-k)%count(l)
+            end do
+         end do
+      end do
+   end subroutine fill_partition_triangle
+
 end module partitions
 
 ! gfortran -o partitions partitions.f08 pascal.f08 sort.f08
@@ -357,10 +443,11 @@ end module partitions
 !    implicit none (type, external)
 !    type(index) :: uidx, fidx, i1, i2
 !    integer, dimension(:), allocatable :: folded
-!    integer :: i, uj, n, d, j, nb_folded_idcs
+!    integer :: i, uj, n, d, j, nb_folded_idcs, k, l, m
 !    type(pascal_triangle) :: p
 !    type(index), dimension(:), allocatable :: list_folded_idcs
 !    integer, dimension(:), allocatable :: nbeq, off
+!    type(partition_triangle), allocatable, dimension(:,:) :: t
 
 !    ! Unfolded indices and offsets
 !    ! 0,0,0  1    1,0,0  10   2,0,0  19
@@ -424,5 +511,19 @@ end module partitions
 !    print '(3i2)', ((list_folded_idcs(i)%coor(j), j=1,d), i=1,nb_folded_idcs)
 !    print '(i3)', (nbeq(i), i=1,nb_folded_idcs)
 !    print '(i4)', (off(i), i=1,nb_folded_idcs)
+
+!    ! Triangle of integer partitions
+!    d = 7
+!    allocate(t(d,d))
+!    call fill_partition_triangle(t)
+!    do n=1,d
+!       do k=1,n
+!          print *, '(k,n):', k, n
+!          do l=1, size(t(k,n)%partition)
+!             print '(10i2)', (t(k,n)%partition(l)%coor(m), m=1,k)
+!             print '(i2)', t(k,n)%count(l)
+!          end do
+!       end do
+!    end do
 
 ! end program test

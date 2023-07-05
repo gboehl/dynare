@@ -27,8 +27,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    type(c_ptr), dimension(*), intent(in), target :: prhs
    type(c_ptr), dimension(*), intent(out) :: plhs
    integer(c_int), intent(in), value :: nlhs, nrhs
-   type(c_ptr) :: M_mx, options_mx, dr_mx, tmp, g
-   type(pol), dimension(:), allocatable, target :: fdr
+   type(c_ptr) :: M_mx, options_mx, dr_mx, pruning_mx, tmp, g
+   type(tensor), dimension(:), allocatable, target :: fdr
    integer :: order, npred, nboth, nstatic, nfwrd, endo_nbr, exo_nbr, nys, nvar 
    type(pascal_triangle) :: p
    type(uf_matching), dimension(:), allocatable :: matching 
@@ -72,16 +72,16 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
       end if
       m = int(mxGetM(tmp))
       n = int(mxGetN(tmp))
-      allocate(fdr(d)%g(m,n))
-      fdr(d)%g = reshape(mxGetPr(tmp), [m,n])
+      allocate(fdr(d)%m(m,n))
+      fdr(d)%m = reshape(mxGetPr(tmp), [m,n])
    end do
 
    plhs(1) = mxCreateStructMatrix(1_mwSize, 1_mwSize, fieldnames)
    g = mxCreateDoubleMatrix(int(endo_nbr, mwSize), 1_mwSize, mxREAL)
-   mxGetPr(g) = reshape(fdr(0)%g, [size(fdr(0)%g)])
+   mxGetPr(g) = reshape(fdr(0)%m, [size(fdr(0)%m)])
    call mxSetField(plhs(1), 1_mwIndex, "g_0", g)
    g = mxCreateDoubleMatrix(int(endo_nbr, mwSize), int(nvar, mwSize), mxREAL)
-   mxGetPr(g) = reshape(fdr(1)%g, [size(fdr(1)%g)])
+   mxGetPr(g) = reshape(fdr(1)%m, [size(fdr(1)%m)])
    call mxSetField(plhs(1), 1_mwIndex, "g_1", g)
 
    if (order > 1) then
@@ -93,7 +93,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
          allocate(matching(d)%folded(nvar**d))
          call fill_folded_indices(matching(d)%folded, nvar, d, p) 
          g = mxCreateDoubleMatrix(int(endo_nbr, mwSize), int(nvar**d, mwSize), mxREAL)
-         mxGetPr(g) = reshape(fdr(d)%g(:,matching(d)%folded), [size(fdr(d)%g(:,matching(d)%folded))])
+         mxGetPr(g) = reshape(fdr(d)%m(:,matching(d)%folded), [size(fdr(d)%m(:,matching(d)%folded))])
          call mxSetField(plhs(1), 1_mwIndex, trim(fieldnames(d)), g)
       end do
    end if

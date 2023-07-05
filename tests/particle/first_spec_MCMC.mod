@@ -15,7 +15,7 @@ stoch_simul(order=3,periods=200, irf=0);
 
 save('my_data_MCMC.mat','ca','b');
 
-options_.pruning=1;
+options_.pruning=true;
 options_.particle.pruning=true;
 options_.particle.number_of_particles=500;
 

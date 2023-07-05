@@ -49,13 +49,14 @@ ZAuxContainer::getType(int i, const Symmetry &s) const
   return itype::zero;
 }
 
-Approximation::Approximation(DynamicModel &m, Journal &j, int ns, bool dr_centr, double qz_crit)
+Approximation::Approximation(DynamicModel &m, Journal &j, int ns, bool dr_centr, bool pruned_dr, double qz_crit)
   : model(m), journal(j),
     ypart(model.nstat(), model.npred(), model.nboth(), model.nforw()),
     mom(UNormalMoments(model.order(), model.getVcov())),
     nvs{ypart.nys(), model.nexog(), model.nexog(), 1},
     steps(ns),
-    dr_centralize(dr_centr), qz_criterium(qz_crit), ss(ypart.ny(), steps+1)
+    dr_centralize(dr_centr), pruning(pruned_dr),
+    qz_criterium(qz_crit), ss(ypart.ny(), steps+1)
 {
   ss.nans();
 }
@@ -68,6 +69,16 @@ Approximation::getFoldDecisionRule() const
                 "Folded decision rule has not been created in Approximation::getFoldDecisionRule");
   return *fdr;
 }
+
+/* This just returns ‘fdr_pruning’ with a check that it is created. */
+const UnfoldDecisionRule &
+Approximation::getUnfoldDecisionRulePruning() const
+{
+  KORD_RAISE_IF(!udr_pruning,
+                "Unfolded decision rule has not been created in Approximation::getUnfoldDecisionRule");
+  return *udr_pruning;
+}
+
 
 /* This just returns ‘udr’ with a check that it is created. */
 const UnfoldDecisionRule &
@@ -209,6 +220,15 @@ Approximation::walkStochSteady()
   udr.reset();
   fdr = std::make_unique<FoldDecisionRule>(*rule_ders, ypart, model.nexog(),
                                            model.getSteady(), 1.0-sigma_so_far);
+  if (pruning)
+    {
+      fdr_pruning = std::make_unique<FoldDecisionRule>(*rule_ders, ypart, 
+                                                     model.nexog(), 
+                                                     model.getSteady(), 
+                                                     1.0-sigma_so_far,
+                                                     pruning);
+      udr_pruning = std::make_unique<UnfoldDecisionRule>(*fdr_pruning);
+    } 
   if (steps == 0 && dr_centralize)
     {
       // centralize decision rule for zero steps

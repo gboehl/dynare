@@ -26,31 +26,26 @@
 !       shocks   matrix of shocks (nexog x number of period)
 !       ysteady  full vector of decision rule's steady
 !       dr       structure containing matrices of derivatives (g_0, g_1,…)
+!       pruning  boolean stating whether the simulation should be pruned
 !  output:
 !       res      simulated results
 
 subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
-   use iso_fortran_env
    use iso_c_binding
    use struct
-   use matlab_mex
-   use partitions
    use simulation
    implicit none (type, external)
 
    type(c_ptr), dimension(*), intent(in), target :: prhs
    type(c_ptr), dimension(*), intent(out) :: plhs
    integer(c_int), intent(in), value :: nlhs, nrhs
-   type(c_ptr) :: order_mx, nstatic_mx, npred_mx, nboth_mx, nfwrd_mx, nexog_mx, ystart_mx, shocks_mx, ysteady_mx, dr_mx, tmp
-   type(pol), dimension(:), allocatable, target :: fdr, udr
+   type(c_ptr) :: order_mx, nstatic_mx, npred_mx, nboth_mx, nfwrd_mx, &
+                 &nexog_mx, ystart_mx, shocks_mx, ysteady_mx, dr_mx, &
+                 &pruning_mx 
    integer :: order, nstatic, npred, nboth, nfwrd, exo_nbr, endo_nbr, nys, nvar, nper
-   real(real64), dimension(:,:), allocatable :: shocks, sim
-   real(real64), dimension(:), allocatable :: ysteady_pred, ystart_pred, dyu
-   real(real64), dimension(:), pointer, contiguous :: ysteady, ystart
-   type(pascal_triangle) :: p
-   type(horner), dimension(:), allocatable :: h
-   integer :: i, t, d, m, n
-   character(kind=c_char, len=10) :: fieldname
+   real(real64), dimension(:), allocatable :: dy
+   real(real64), pointer, contiguous :: ysteady(:), ystart(:), sim(:,:), shocks(:,:)
+   logical :: pruning
 
    order_mx = prhs(1)
    nstatic_mx = prhs(2)
@@ -62,10 +57,11 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    shocks_mx = prhs(8)
    ysteady_mx = prhs(9)
    dr_mx = prhs(10)
+   pruning_mx = prhs(11)
 
    ! Checking the consistence and validity of input arguments
-   if (nrhs /= 10 .or. nlhs /= 1) then
-      call mexErrMsgTxt("Must have exactly 10 inputs and 1 output")
+   if (nrhs /= 11 .or. nlhs /= 1) then
+      call mexErrMsgTxt("Must have exactly 11 inputs and 1 output")
    end if
    if (.not. (mxIsScalar(order_mx)) .and. mxIsNumeric(order_mx)) then
       call mexErrMsgTxt("1st argument (order) should be a numeric scalar")
@@ -99,6 +95,9 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    if (.not. mxIsStruct(dr_mx)) then
       call mexErrMsgTxt("10th argument (dr) should be a struct")
    end if
+   if (.not. (mxIsLogicalScalar(pruning_mx))) then
+      call mexErrMsgTxt("11th argument (pruning) should be a logical scalar")
+   end if
 
    ! Converting inputs in Fortran format
    order = int(mxGetScalar(order_mx))
@@ -109,6 +108,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    exo_nbr = int(mxGetScalar(nexog_mx))
    endo_nbr = nstatic+npred+nboth+nfwrd
    nys = npred+nboth
+   pruning = mxGetScalar(pruning_mx) == 1._c_double
    nvar = nys+exo_nbr
 
    if (endo_nbr /= int(mxGetM(ystart_mx))) then
@@ -120,63 +120,32 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
       call mexErrMsgTxt("shocks should have nexog rows")
    end if
    nper = int(mxGetN(shocks_mx))
-   allocate(shocks(exo_nbr,nper))
-   shocks = reshape(mxGetPr(shocks_mx),[exo_nbr,nper])
+   shocks(1:exo_nbr,1:nper) => mxGetPr(shocks_mx)
 
    if (.not. (int(mxGetM(ysteady_mx)) == endo_nbr)) then
       call mexErrMsgTxt("ysteady should have nstat+npred+nboth+nforw rows")
    end if
    ysteady => mxGetPr(ysteady_mx)
+   ! Initial value for between the states' starting value and the states' 
+   ! steady-state value
+   dy = ystart(nstatic+1:nstatic+nys)-ysteady(nstatic+1:nstatic+nys)
 
-   allocate(h(0:order), fdr(0:order), udr(0:order)) 
-   do i = 0, order
-      write (fieldname, '(a2, i1)') "g_", i
-      tmp = mxGetField(dr_mx, 1_mwIndex, trim(fieldname))
-      if (.not. (c_associated(tmp) .and. mxIsDouble(tmp) .and. .not. mxIsComplex(tmp) .and. .not. mxIsSparse(tmp))) then
-         call mexErrMsgTxt(trim(fieldname)//" is not allocated in dr")
+   if (pruning) then
+      dr_mx = mxGetField(dr_mx, 1_mwIndex, "pruning")
+      if (.not. mxIsStruct(dr_mx)) then
+         call mexErrMsgTxt("dr.pruning should be a struct")
       end if
-      m = int(mxGetM(tmp))
-      n = int(mxGetN(tmp))
-      allocate(fdr(i)%g(m,n), udr(i)%g(endo_nbr, nvar**i), h(i)%c(endo_nbr, nvar**i))
-      fdr(i)%g(1:m,1:n) = reshape(mxGetPr(tmp), [m,n])
-   end do
-
-   udr(0)%g = fdr(0)%g
-   udr(1)%g = fdr(1)%g
-   if (order > 1) then
-      ! Compute the useful binomial coefficients from Pascal's triangle
-      p = pascal_triangle(nvar+order-1)
-      block
-        type(uf_matching), dimension(2:order) :: matching
-        ! Pinpointing the corresponding offsets between folded and unfolded tensors
-        do d=2,order
-           allocate(matching(d)%folded(nvar**d))
-           call fill_folded_indices(matching(d)%folded, nvar, d, p)
-           udr(d)%g = fdr(d)%g(:,matching(d)%folded)
-        end do
-      end block
    end if
 
-   allocate(dyu(nvar), ystart_pred(nys), ysteady_pred(nys), sim(endo_nbr,nper))
-   ! Getting the predetermined part of the endogenous variable vector 
-   ystart_pred = ystart(nstatic+1:nstatic+nys)
-   ysteady_pred = ysteady(nstatic+1:nstatic+nys) 
-   dyu(1:nys) = ystart_pred - ysteady_pred 
-   dyu(nys+1:) = shocks(:,1) 
-   ! Using the Horner algorithm to evaluate the decision rule at the chosen dyu
-   call eval(h, dyu, udr, endo_nbr, nvar, order)
-   sim(:,1) = h(0)%c(:,1) + ysteady
-
-   ! Carrying out the simulation
-   do t=2,nper
-      dyu(1:nys) = h(0)%c(nstatic+1:nstatic+nys,1) 
-      dyu(nys+1:) = shocks(:,t)
-      call eval(h, dyu, udr, endo_nbr, nvar, order)
-      sim(:,t) = h(0)%c(:,1) + ysteady
-   end do
-  
    ! Generating output
-   plhs(1) = mxCreateDoubleMatrix(int(endo_nbr, mwSize), int(nper, mwSize), mxREAL)
-   mxGetPr(plhs(1)) = reshape(sim, (/size(sim)/))
+   plhs(1) = mxCreateDoubleMatrix(int(endo_nbr, mwSize), int(nper+1, mwSize), mxREAL)
+   sim(1:endo_nbr,1:(nper+1)) => mxGetPr(plhs(1))
+   sim(:,1) = ystart
+
+   if (pruning) then
+      call simulate_pruning(sim, dr_mx, ysteady, dy, shocks, order, nstatic, nvar)
+   else
+      call simulate(sim, dr_mx, ysteady, dy, shocks, order, nstatic, nvar)
+   end if
 
 end subroutine mexFunction

@@ -139,6 +139,11 @@ extern "C" {
       mexErrMsgTxt("options_.debug should be a logical scalar");
     bool debug = static_cast<bool>(mxGetScalar(debug_mx));
 
+    const mxArray *pruning_mx = mxGetField(options_mx, 0, "pruning");
+    if (!(pruning_mx && mxIsLogicalScalar(pruning_mx)))
+      mexErrMsgTxt("options_.pruning should be a logical scalar");
+    bool pruning = static_cast<bool>(mxGetScalar(pruning_mx));
+
     // Extract various fields from M_
     const mxArray *fname_mx = mxGetField(M_mx, 0, "fname");
     if (!(fname_mx && mxIsChar(fname_mx) && mxGetM(fname_mx) == 1))
@@ -262,7 +267,7 @@ extern "C" {
 
 
     // construct main K-order approximation class
-    Approximation app(dynare, journal, nSteps, false, qz_criterium);
+    Approximation app(dynare, journal, nSteps, false, pruning, qz_criterium);
     // run stochastic steady
     app.walkStochSteady();
 

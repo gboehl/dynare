@@ -129,6 +129,16 @@ public:
   {
     fillTensors(g, sigma);
   }
+  DecisionRuleImpl(const _Tg &g, const PartitionY &yp, int nuu,
+                   const ConstVector &ys, double sigma, bool pruning)
+    : ctraits<t>::Tpol(yp.ny(), yp.nys()+nuu), ysteady(ys), ypart(yp), nu(nuu)
+  {
+    if (pruning)
+      fillTensorsPruning(g);
+    else
+      fillTensors(g, sigma);
+  }
+
   DecisionRuleImpl(const _TW &W, int nys, int nuu,
                    const ConstVector &ys)
     : ctraits<t>::Tpol(1, nys+nuu), ysteady(ys), nu(nuu)
@@ -162,6 +172,7 @@ public:
   }
 protected:
   void fillTensors(const _Tg &g, double sigma);
+  void fillTensorsPruning(const _Tg &g);
   void fillTensors(const _TW &W, int nys);
   void centralize(const DecisionRuleImpl &dr);
 public:
@@ -244,6 +255,43 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
         }
 
       this->insert(std::move(g_yud));
+    }
+}
+
+template<Storage t>
+void
+DecisionRuleImpl<t>::fillTensorsPruning(const _Tg &g)
+{
+  IntSequence tns{ypart.nys(), nu, 1};
+  int dfact = 1;
+  for (int d = 0; d <= g.getMaxDim(); d++, dfact *= d)
+    {
+      auto g_yusd = std::make_unique<_Ttensym>(ypart.ny(), ypart.nys()+nu+1, d);
+      g_yusd->zeros();
+      // fill tensor of ‘g_yusd’ of dimension ‘d’
+      /* 
+        Here we have to fill the tensor [g_(yuσ)ᵈ]. So we go through all pairs
+        (i,j,k) such that i+j+k=d. We weight it with 1/(i+j+k)! The factorial
+        is denoted dfact.
+      */
+      for (int i = 0; i <= d; i++)
+        {
+          for (int j = 0; j <= d-i; j++)
+            {
+              int k = d-i-j;
+              _Ttensor tmp(ypart.ny(),
+                           TensorDimens(Symmetry{i, j, k}, tns));
+              tmp.zeros();
+              if (Symmetry sym{i, j, 0, k}; g.check(sym))
+                {
+                  double mult = 1.0/dfact;
+                  // mexPrintf("Symmetry found: %d %d %d %.2f %d\n", i, j, k, mult, kfact);
+                  tmp.add(mult, g.get(sym));
+                }
+              g_yusd->addSubTensor(tmp);
+            }
+        }
+      this->insert(std::move(g_yusd));
     }
 }
 
@@ -394,6 +442,11 @@ public:
   FoldDecisionRule(const ctraits<Storage::fold>::Tg &g, const PartitionY &yp, int nuu,
                    const ConstVector &ys, double sigma)
     : DecisionRuleImpl<Storage::fold>(g, yp, nuu, ys, sigma)
+  {
+  }
+  FoldDecisionRule(const ctraits<Storage::fold>::Tg &g, const PartitionY &yp, int nuu,
+                   const ConstVector &ys, double sigma, bool pruning)
+    : DecisionRuleImpl<Storage::fold>(g, yp, nuu, ys, sigma, pruning)
   {
   }
   FoldDecisionRule(const ctraits<Storage::fold>::TW &W, int nys, int nuu,

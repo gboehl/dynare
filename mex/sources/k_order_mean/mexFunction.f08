@@ -46,13 +46,13 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    integer(c_int), intent(in), value :: nlhs, nrhs
    type(c_ptr) :: order_mx, nstatic_mx, npred_mx, nboth_mx, nfwrd_mx, nexog_mx, order_moment_mx, nburn_mx, &
    yhat_start_mx, shocks_mx, ysteady_mx, dr_mx, tmp
-   type(pol), dimension(:), allocatable, target :: fdr, udr
+   type(tensor), dimension(:), allocatable, target :: fdr, udr
    integer :: order, nstatic, npred, nboth, nfwrd, exo_nbr, endo_nbr, nys, nvar, nper, nburn, order_moment
    real(real64), dimension(:,:), allocatable :: shocks, sim
    real(real64), dimension(:), allocatable :: dyu, mean
    real(real64), dimension(:), pointer, contiguous :: ysteady, yhat_start
    type(pascal_triangle) :: p
-   type(horner), dimension(:), allocatable :: h
+   type(tensor), dimension(:), allocatable :: h
    integer :: i, t, d, m, n
    character(kind=c_char, len=10) :: fieldname
 
@@ -155,12 +155,12 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
       end if
       m = int(mxGetM(tmp))
       n = int(mxGetN(tmp))
-      allocate(fdr(i)%g(m,n), udr(i)%g(endo_nbr, nvar**i), h(i)%c(endo_nbr, nvar**i))
-      fdr(i)%g(1:m,1:n) = reshape(mxGetPr(tmp), [m,n])
+      allocate(fdr(i)%m(m,n), udr(i)%m(endo_nbr, nvar**i), h(i)%m(endo_nbr, nvar**i))
+      fdr(i)%m(1:m,1:n) = reshape(mxGetPr(tmp), [m,n])
    end do
 
-   udr(0)%g = fdr(0)%g
-   udr(1)%g = fdr(1)%g
+   udr(0)%m = fdr(0)%m
+   udr(1)%m = fdr(1)%m
    if (order > 1) then
       ! Compute the useful binomial coefficients from Pascal's triangle
       p = pascal_triangle(nvar+order-1)
@@ -170,7 +170,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
         do d=2,order
            allocate(matching(d)%folded(nvar**d))
            call fill_folded_indices(matching(d)%folded, nvar, d, p)
-           udr(d)%g = fdr(d)%g(:,matching(d)%folded)
+           udr(d)%m = fdr(d)%m(:,matching(d)%folded)
         end do
       end block
    end if
@@ -181,15 +181,15 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    dyu(nys+1:) = shocks(:,1) 
    ! Using the Horner algorithm to evaluate the decision rule at the chosen dyu
    call eval(h, dyu, udr, endo_nbr, nvar, order)
-   sim(:,1) = h(0)%c(:,1) + ysteady
+   sim(:,1) = h(0)%m(:,1) + ysteady
    mean = 0.
 
    ! Carrying out the simulation
    do t=2,nper
-      dyu(1:nys) = h(0)%c(nstatic+1:nstatic+nys,1) 
+      dyu(1:nys) = h(0)%m(nstatic+1:nstatic+nys,1) 
       dyu(nys+1:) = shocks(:,t)
       call eval(h, dyu, udr, endo_nbr, nvar, order)
-      sim(:,t) = h(0)%c(:,1) + ysteady
+      sim(:,t) = h(0)%m(:,1) + ysteady
       if (t > nburn) then
          mean = mean + sim(:,t)**order_moment
       end if

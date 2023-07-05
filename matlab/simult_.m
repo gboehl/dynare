@@ -52,16 +52,15 @@ if ~options_.k_order_solver || (options_.k_order_solver && options_.pruning) %if
     end
 end
 
-if options_.k_order_solver && ~options_.pruning % Call dynare++ routines.
+if options_.k_order_solver
     if options_.order~=iorder
         error(['The k_order_solver requires the specified approximation order to be '...
                 'consistent with the one used for computing the decision rules'])
     end
-    y_start=y_(:,1); %store first period required for output
     y_ = k_order_simul(iorder,M_.nstatic,M_.npred,M_.nboth,M_.nfwrd,exo_nbr, ...
-                       y_start(dr.order_var,:),ex_',dr.ys(dr.order_var),dr);
+                       y0(dr.order_var,:),ex_',dr.ys(dr.order_var),dr, ...
+                       options_.pruning);
     y_(dr.order_var,:) = y_;
-    y_=[y_start y_];
 else
     k2 = dr.kstate(find(dr.kstate(:,2) <= M_.maximum_lag+1),[1 2]);
     k2 = k2(:,1)+(M_.maximum_lag+1-k2(:,2))*endo_nbr;
@@ -166,6 +165,6 @@ else
             yhat3 = yhat3(ipred);
         end
       otherwise
-          error(['pruning not available for order = ' int2str(iorder)])
+          error(['k_order_solver required for pruning at order = ' int2str(iorder)])
     end
 end
