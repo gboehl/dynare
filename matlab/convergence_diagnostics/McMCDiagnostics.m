@@ -48,6 +48,7 @@ MAX_nruns = ceil(options_.MaxNumberOfBytes/(npar+2)/8);
 
 load_last_mh_history_file(MetropolisFolder, ModelName);
 NumberOfMcFilesPerBlock = record.LastFileNumber;
+npardisp = options_.convergence.brooksgelman.plotrows;
 
 % Check that the declared number of blocks is consistent with informations saved in mh-history files.
 if ~isequal(nblck,record.Nblck)
@@ -284,12 +285,13 @@ end
 UDIAG(:,[2 4 6],:) = UDIAG(:,[2 4 6],:)/nblck;
 skipline()
 clear pmet temp moyenne CSUP CINF csup cinf n linea iter tmp;
-pages = floor(npar/3);
+
+pages = floor(npar/npardisp); % changed from 3 to npardisp
 k = 0;
 for i = 1:pages
     h=dyn_figure(options_.nodisplay,'Name','MCMC univariate convergence diagnostic (Brooks and Gelman,1998)');
     boxplot = 1;
-    for j = 1:3 % Loop over parameters
+    for j = 1:npardisp % Loop over parameters  %npardisp instead of 3
         k = k+1;
         [nam,namtex] = get_the_name(k,TeX,M_,estim_params_,options_);
         for crit = 1:3% Loop over criteria
@@ -306,7 +308,7 @@ for i = 1:pages
                 plt2 = UDIAG(:,6,k);
                 namnam  = [nam , ' (m3)'];
             end
-            subplot(3,3,boxplot);
+            subplot(npardisp,3,boxplot);  %Added more rows to display more variables
             plot(xx,plt1,'-b');     % Pooled
             hold on;
             plot(xx,plt2,'-r');     % Within (mean)
@@ -339,8 +341,8 @@ if reste
     if reste == 1
         nr = 3;
         nc = 1;
-    elseif reste == 2
-        nr = 2;
+    else % Conditional for additional rows (variables) when not towards the end of the loop
+        nr = npardisp;
         nc = 3;
     end
     h = dyn_figure(options_.nodisplay,'Name','MCMC univariate convergence diagnostic (Brooks and Gelman, 1998)');
