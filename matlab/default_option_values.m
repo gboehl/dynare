@@ -766,6 +766,8 @@ options_.convergence.geweke.geweke_interval=[0.2 0.5];
 %Raftery/Lewis convergence diagnostics;
 options_.convergence.rafterylewis.indicator=false;
 options_.convergence.rafterylewis.qrs=[0.025 0.005 0.95];
+%Brooks Gelman convergence plots
+options_.convergence.brooksgelman.plotrows=3;
 
 %tolerance for Modified Harmonic Mean estimator
 options_.marginal_data_density.harmonic_mean.tolerance = 0.01;
