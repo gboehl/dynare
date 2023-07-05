@@ -40,11 +40,14 @@ dr = oo_.dr;
 // “rf” stands for “Reduced Form”
 rf_ghx = dr.ghx(dr.restrict_var_list, :);
 rf_ghu = dr.ghu(dr.restrict_var_list, :);
+rf_ss = dr.ys(dr.order_var);
+rf_ss = rf_ss(dr.restrict_var_list, :);
 rf_constant = dr.ys(dr.order_var)+0.5*dr.ghs2;
 rf_constant = rf_constant(dr.restrict_var_list, :);
 rf_ghxx = dr.ghxx(dr.restrict_var_list, :);
 rf_ghuu = dr.ghuu(dr.restrict_var_list, :);
 rf_ghxu = dr.ghxu(dr.restrict_var_list, :);
+rf_ghs2 = dr.ghs2(dr.restrict_var_list, :);
 rf_ghxxx = dr.ghxxx(dr.restrict_var_list, :);
 rf_ghuuu = dr.ghuuu(dr.restrict_var_list, :);
 rf_ghxxu = dr.ghxxu(dr.restrict_var_list, :);
@@ -53,7 +56,7 @@ rf_ghxss = dr.ghxss(dr.restrict_var_list, :);
 rf_ghuss = dr.ghuss(dr.restrict_var_list, :);
 
 % Without pruning
-tStart1 = tic; for i=1:nsims, ynext1 = local_state_space_iteration_3(yhat, epsilon, rf_ghx, rf_ghu, rf_constant, rf_ghxx, rf_ghuu, rf_ghxu, rf_ghxxx, rf_ghuuu, rf_ghxxu, rf_ghxuu, rf_ghxss, rf_ghuss, options_.threads.local_state_space_iteration_3); end, tElapsed1 = toc(tStart1);
+tStart1 = tic; for i=1:nsims, ynext1 = local_state_space_iteration_3(yhat, epsilon, rf_ghx, rf_ghu,  rf_ghxx, rf_ghuu, rf_ghxu, rf_ghs2, rf_ghxxx, rf_ghuuu, rf_ghxxu, rf_ghxuu, rf_ghxss, rf_ghuss, rf_ss, options_.threads.local_state_space_iteration_3, false); end, tElapsed1 = toc(tStart1);
 tStart2 = tic; [udr] = folded_to_unfolded_dr(dr, M_, options_); for i=1:nsims, ynext2 = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_, udr); end, tElapsed2 = toc(tStart2);
 
 if max(max(abs(ynext1-ynext2))) > 1e-10
@@ -71,19 +74,20 @@ else
 end
 
 % With pruning
-rf_ss = dr.ys(dr.order_var);
-rf_ss = rf_ss(dr.restrict_var_list, :);
-yhat_ = chol(oo_.var(state_idx,state_idx))*randn(nstates, nparticles);
-yhat__ = zeros(2*nstates,nparticles);
-yhat__(1:nstates,:) = yhat_;
-yhat__(nstates+1:2*nstates,:) = chol(oo_.var(state_idx,state_idx))*randn(nstates, nparticles);
+yhat1_KKSS = chol(oo_.var(state_idx,state_idx))*randn(nstates, nparticles);
+yhat2_KKSS = chol(oo_.var(state_idx,state_idx))*randn(nstates, nparticles);
+yhat1_AVR = yhat1_KKSS;
+yhat2_AVR = yhat2_KKSS-yhat1_AVR; 
+yhat3_AVR = chol(oo_.var(state_idx,state_idx))*randn(nstates, nparticles);
+yhat_AVR = [yhat1_AVR;yhat2_AVR;yhat3_AVR];
 nstatesandobs = size(rf_ghx,1);
 
-[ynext1,ynext1_lat] = local_state_space_iteration_3(yhat, epsilon, rf_ghx, rf_ghu, rf_constant, rf_ghxx, rf_ghuu, rf_ghxu, rf_ghxxx, rf_ghuuu, rf_ghxxu, rf_ghxuu, rf_ghxss, rf_ghuss, yhat__, rf_ss, options_.threads.local_state_space_iteration_3);
-[ynext2,ynext2_lat] = local_state_space_iteration_2(yhat__(nstates+1:2*nstates,:), epsilon, rf_ghx, rf_ghu, rf_constant, rf_ghxx, rf_ghuu, rf_ghxu, yhat_, rf_ss, options_.threads.local_state_space_iteration_2);
-if max(max(abs(ynext1_lat(nstatesandobs+1:2*nstatesandobs,:)-ynext2))) > 1e-14
-    error('With pruning: inconsistency between local_state_space_iteration_2 and local_state_space_iteration_3 on the 2nd-order pruned variable')
-end
-if max(max(abs(ynext1_lat(1:nstatesandobs,:)-ynext2_lat))) > 1e-14
+[ynext3,ynext3_lat] = local_state_space_iteration_3(yhat_AVR, epsilon, rf_ghx, rf_ghu,  rf_ghxx, rf_ghuu, rf_ghxu, rf_ghs2, rf_ghxxx, rf_ghuuu, rf_ghxxu, rf_ghxuu, rf_ghxss, rf_ghuss, rf_ss, options_.threads.local_state_space_iteration_3, true);
+[ynext2,ynext2_lat] = local_state_space_iteration_2(yhat2_KKSS, epsilon, rf_ghx, rf_ghu, rf_constant, rf_ghxx, rf_ghuu, rf_ghxu, yhat1_KKSS, rf_ss, options_.threads.local_state_space_iteration_2);
+if max(max(abs(ynext3_lat(1:nstatesandobs,:)-ynext2_lat))) > 1e-14
     error('With pruning: inconsistency between local_state_space_iteration_2 and local_state_space_iteration_3 on the 1st-order pruned variable')
+end
+ynext3_2nd = ynext3_lat(1:nstatesandobs,:)+ynext3_lat(nstatesandobs+1:2*nstatesandobs,:)-rf_ss;
+if max(abs(ynext3_2nd(:)-ynext2(:))) > 1e-14
+    error('With pruning: inconsistency between local_state_space_iteration_2 and local_state_space_iteration_3 on the 2nd-order pruned variable')
 end

@@ -138,6 +138,7 @@ else
     ReducedForm.ghxx = dr.ghxx(restrict_variables_idx,:);
     ReducedForm.ghuu = dr.ghuu(restrict_variables_idx,:);
     ReducedForm.ghxu = dr.ghxu(restrict_variables_idx,:);
+    ReducedForm.ghs2 = dr.ghs2(restrict_variables_idx,:);
     if DynareOptions.order==3
         ReducedForm.ghxxx = dr.ghxxx(restrict_variables_idx,:);
         ReducedForm.ghuuu = dr.ghuuu(restrict_variables_idx,:);

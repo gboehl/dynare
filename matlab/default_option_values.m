@@ -256,7 +256,7 @@ particle.number_of_particles = 5000;
 % Set the default approximation order (Smolyak)
 particle.smolyak_accuracy = 3;
 % By default we don't use pruning
-particle.pruning = 0;
+particle.pruning = false;
 % Set the Gaussian approximation method for particles distributions
 particle.approximation_method = 'unscented';
 % Set unscented parameters alpha, beta and kappa for gaussian approximation

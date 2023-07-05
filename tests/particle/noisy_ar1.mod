@@ -39,7 +39,7 @@ particle = 1;
 if particle;
 options_.particle.status = 1;
 options_.particle.initialization = 1;
-options_.particle.pruning = 0;
+options_.particle.pruning = false;
 options_.particle.number_of_particles = 20000;
 options_.particle.resampling.status = 'systematic';
 options_.particle.resampling.neff_threshold = .1;
