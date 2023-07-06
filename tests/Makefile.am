@@ -1269,7 +1269,8 @@ M_TRS_FILES += 	run_block_byte_tests_matlab.m.trs \
 		nonlinearsolvers.m.trs \
 		cyclereduction.m.trs \
 		logarithmicreduction.m.trs \
-		riccatiupdate.m.trs
+		riccatiupdate.m.trs \
+		contribs.m.trs
 
 M_XFAIL_TRS_FILES = $(patsubst %.mod, %.m.trs, $(XFAIL_MODFILES))
 
@@ -1284,7 +1285,8 @@ O_TRS_FILES += 	run_block_byte_tests_octave.o.trs \
 		nonlinearsolvers.o.trs \
 		cyclereduction.o.trs \
 		logarithmicreduction.o.trs \
-		riccatiupdate.o.trs
+		riccatiupdate.o.trs \
+		contribs.o.trs
 
 O_XFAIL_TRS_FILES = $(patsubst %.mod, %.o.trs, $(XFAIL_MODFILES))
 
@@ -1491,7 +1493,10 @@ EXTRA_DIST = \
 	solve_algo_12_14/simul_backward_common.inc \
 	solve_algo_12_14/purely_backward_common.inc \
 	solve_algo_12_14/purely_static_common.inc \
-	solve_algo_12_14/purely_forward_common.inc
+	solve_algo_12_14/purely_forward_common.inc \
+	sandbox.mod \
+	simulateddata.m
+
 
 if ENABLE_MATLAB
 check-local: check-matlab
