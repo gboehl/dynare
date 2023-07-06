@@ -7914,6 +7914,11 @@ observed variables.
        used to take the serial correlation of the posterior draws into
        account. Default: ``[4 8 15]``.
 
+    .. option:: brooks_gelman_plotrows = INTEGER
+
+       Number of parameters to depict along the rows of the figures depicting
+       the *Brooks and Gelman (1998)* convergence diagnostics. Default: 3.
+
     .. option:: geweke_interval = [DOUBLE DOUBLE]
 
        Percentage of MCMC draws at the beginning and end of the MCMC
