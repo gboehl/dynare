@@ -554,13 +554,5 @@ So if you want to use system commands like `pdflatex` or `x13as` you should eith
 or append the PATH in MATLAB by running `setenv('PATH', [getenv('PATH') ':/usr/local/bin:$HOME/.local/bin:/Library/TeX/texbin']);`.
 Alternatively, you can create a `startup.m` file or change the system default PATH in the `/etc/paths` file.
 
-### Optional: pass the full PATH to MATLAB to run system commands
-If you start MATLAB from a terminal, you will get the PATH inherited from the shell.
-However, when you click on the application icon in macOS, you are not running at the terminal level:
-the program is run by launcher, which does not go through a shell login session.
-In other words, you get the system default PATH which includes `/usr/bin:/bin:/usr/sbin:/sbin`, but not `/usr/local/bin` or `$HOME/.local/bin`.
-So if you want to use system commands like `pdflatex` or `x13as` you should either call them by their full path (e.g `/Library/TeX/texbin/pdflatex`) or append the PATH in MATLAB by running `setenv('PATH', [getenv('PATH') ':/usr/local/bin:$HOME/.local/bin:/Library/TeX/texbin']);`.
-Alternatively, you can create a `startup.m` file or change the system default PATH in the `/etc/paths` file.
-
 Last tested on:
 - macOS Ventura 13.3.1 (MacBook Air M1, MacBook Pro M2 MAX, M2 Virtual Machine using Parallels, Intel Virtual Machine using Quickemu)
