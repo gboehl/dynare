@@ -58,6 +58,7 @@ a 32-bit Octave.
 1. [**Fedora, CentOS or RHEL**](#fedora-centos-or-rhel)
 1. [**Windows**](#windows)
 1. [**macOS**](#macos)
+1. [**Docker**](#docker)
 
 ## General Instructions
 
@@ -556,3 +557,8 @@ Alternatively, you can create a `startup.m` file or change the system default PA
 
 Last tested on:
 - macOS Ventura 13.3.1 (MacBook Air M1, MacBook Pro M2 MAX, M2 Virtual Machine using Parallels, Intel Virtual Machine using Quickemu)
+
+## Docker
+We offer a variety of pre-configured Docker containers for Dynare, pre-configured with Octave and MATLAB including all recommended toolboxes.
+These are readily available for your convenience on [Docker Hub](https://hub.docker.com/r/dynare/dynare).
+The docker folder contains [information and instructions](docker/README.md) to interact, built and customize the containers.
