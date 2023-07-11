@@ -28,6 +28,7 @@ classdef dprior < handle
         p11 = [];                        % Prior median
         lb = [];                         % Truncated prior lower bound.
         ub = [];                         % Truncated prior upper bound.
+        name = {};                       % Name of the parameter
         iduniform = [];                  % Index for the uniform priors.
         idgaussian = [];                 % Index for the gaussian priors.
         idgamma = [];                    % Index for the gamma priors.
