@@ -58,6 +58,7 @@ a 32-bit Octave.
 1. [**Fedora, CentOS or RHEL**](#fedora-centos-or-rhel)
 1. [**Windows**](#windows)
 1. [**macOS**](#macos)
+1. [**Docker**](#docker)
 
 ## General Instructions
 
@@ -554,13 +555,10 @@ So if you want to use system commands like `pdflatex` or `x13as` you should eith
 or append the PATH in MATLAB by running `setenv('PATH', [getenv('PATH') ':/usr/local/bin:$HOME/.local/bin:/Library/TeX/texbin']);`.
 Alternatively, you can create a `startup.m` file or change the system default PATH in the `/etc/paths` file.
 
-### Optional: pass the full PATH to MATLAB to run system commands
-If you start MATLAB from a terminal, you will get the PATH inherited from the shell.
-However, when you click on the application icon in macOS, you are not running at the terminal level:
-the program is run by launcher, which does not go through a shell login session.
-In other words, you get the system default PATH which includes `/usr/bin:/bin:/usr/sbin:/sbin`, but not `/usr/local/bin` or `$HOME/.local/bin`.
-So if you want to use system commands like `pdflatex` or `x13as` you should either call them by their full path (e.g `/Library/TeX/texbin/pdflatex`) or append the PATH in MATLAB by running `setenv('PATH', [getenv('PATH') ':/usr/local/bin:$HOME/.local/bin:/Library/TeX/texbin']);`.
-Alternatively, you can create a `startup.m` file or change the system default PATH in the `/etc/paths` file.
-
 Last tested on:
 - macOS Ventura 13.3.1 (MacBook Air M1, MacBook Pro M2 MAX, M2 Virtual Machine using Parallels, Intel Virtual Machine using Quickemu)
+
+## Docker
+We offer a variety of pre-configured Docker containers for Dynare, pre-configured with Octave and MATLAB including all recommended toolboxes.
+These are readily available for your convenience on [Docker Hub](https://hub.docker.com/r/dynare/dynare).
+The docker folder contains [information and instructions](docker/README.md) to interact, built and customize the containers.

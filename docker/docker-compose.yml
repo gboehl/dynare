@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+    dynare:
+        image: dynare/dynare:latest
+        mac_address: A6-7E-1A-F4-9A-92 # randomly generated, used as host id in license file
+        environment:
+            PASSWORD: dynare
+            #MLM_LICENSE_FILE: 27000@matlab-campus.uni-tuebingen.de # use network license
+            MLM_LICENSE_FILE: /licenses/license.lic # use license file
+        volumes:
+            - $HOME/matlab-license.lic:/licenses/license.lic:ro # path to license file
+            - $HOME/scratch:/home/matlab/scratch # path to some shared folder from host system
+        ports:
+            - "5901:5901" # VNC server
+            - "6080:6080" # browser using NoVNC
+        shm_size: 512M # recommended as docker's default ist only 64M
+        command: -vnc # start Ubuntu desktop with VNC support
