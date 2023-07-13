@@ -1,6 +1,5 @@
 function prior_posterior_statistics(type,dataset,dataset_info)
-
-% function prior_posterior_statistics(type,dataset)
+% function prior_posterior_statistics(type,dataset,dataset_info)
 % Computes Monte Carlo filter smoother and forecasts
 %
 % INPUTS
@@ -8,6 +7,7 @@ function prior_posterior_statistics(type,dataset,dataset_info)
 %                  prior
 %                  gsa
 %    dataset:      data structure
+%    dataset_info: dataset structure
 %
 % OUTPUTS
 %    none
@@ -208,13 +208,11 @@ localVars.ifil=ifil;
 localVars.DirectoryName = DirectoryName;
 
 if strcmpi(type,'posterior')
-    BaseName = [DirectoryName filesep M_.fname];
     record=load_last_mh_history_file(DirectoryName, M_.fname);
     [nblck, npar] = size(record.LastParameters);
     FirstMhFile = record.KeepedDraws.FirstMhFile;
     FirstLine = record.KeepedDraws.FirstLine;
     TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
-    LastMhFile = TotalNumberOfMhFiles;
     TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
     NumberOfDraws = TotalNumberOfMhDraws-floor(options_.mh_drop*TotalNumberOfMhDraws);
     mh_nblck = options_.mh_nblck;
@@ -318,9 +316,9 @@ if strcmpi(type,'gsa')
     return
 end
 
-if ~isnumeric(options_.parallel),
+if ~isnumeric(options_.parallel)
     leaveSlaveOpen = options_.parallel_info.leaveSlaveOpen;
-    if options_.parallel_info.leaveSlaveOpen == 0,
+    if options_.parallel_info.leaveSlaveOpen == 0
         % Commenting for testing!!!
         options_.parallel_info.leaveSlaveOpen = 1; % Force locally to leave open remote matlab sessions (repeated pm3 calls)
     end

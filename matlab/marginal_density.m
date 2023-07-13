@@ -1,16 +1,16 @@
 function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_)
-% function marginal = marginal_density()
+% function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_)
 % Computes the marginal density
 %
 % INPUTS
-%   options_         [structure]
-%   estim_params_    [structure]
-%   M_               [structure]
-%   oo_              [structure]
+%   options_         [structure]    Dynare options structure
+%   estim_params_    [structure]    Dynare estimation parameter structure
+%   M_               [structure]    Dynare model structure
+%   oo_              [structure]    Dynare results structure
 %
 % OUTPUTS
-%   marginal:        [double]     marginal density (modified harmonic mean)
-%   oo_              [structure]
+%   marginal:        [double]       marginal density (modified harmonic mean)
+%   oo_              [structure]    Dynare results structure
 %
 % SPECIAL REQUIREMENTS
 %    none
@@ -42,10 +42,9 @@ record=load_last_mh_history_file(MetropolisFolder, ModelName);
 [nblck, npar] = size(record.LastParameters);
 
 FirstMhFile = record.KeepedDraws.FirstMhFile;
-FirstLine = record.KeepedDraws.FirstLine; ifil = FirstLine;
+FirstLine = record.KeepedDraws.FirstLine;
 TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
 TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
-MAX_nruns = ceil(options_.MaxNumberOfBytes/(npar+2)/8);
 TODROP = floor(options_.mh_drop*TotalNumberOfMhDraws);
 
 fprintf('Estimation::marginal density: I''m computing the posterior mean and covariance... ');

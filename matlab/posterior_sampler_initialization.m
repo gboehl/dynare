@@ -58,16 +58,9 @@ function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npa
 %Initialize outputs
 ix2 = [];
 ilogpo2 = [];
-ModelName = [];
-MetropolisFolder = [];
 FirstBlock = [];
 FirstLine = [];
-npar = [];
-NumberOfBlocks = [];
-nruns = [];
 NewFile = [];
-MAX_nruns = [];
-d = [];
 
 ModelName = M_.fname;
 if ~isempty(M_.bvar)
@@ -171,7 +164,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
         else
             bayestopt0 = load([PreviousFolder0 filesep 'prior' filesep 'definition.mat']);
         end
-        [common_parameters,IA,IB] = intersect(bayestopt_.name,bayestopt0.bayestopt_.name);
+        [~,IA,IB] = intersect(bayestopt_.name,bayestopt0.bayestopt_.name);
         new_estimated_parameters = ~ismember(bayestopt_.name,bayestopt0.bayestopt_.name);
         ix2 = zeros(NumberOfBlocks,npar);
         ilogpo2 = zeros(NumberOfBlocks,1);

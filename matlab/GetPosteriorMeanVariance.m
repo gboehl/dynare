@@ -1,6 +1,20 @@
-function [mean,variance] = GetPosteriorMeanVariance(M,drop)
+function [mean,variance] = GetPosteriorMeanVariance(M_,drop)
+%function [mean,variance] = GetPosteriorMeanVariance(M,drop)
+% Computes the posterior mean and variance
+% (+updates of oo_ & TeX output).
+%
+% INPUTS
+%   M_               [structure]    Dynare model structure
+%   drop             [double]       share of draws to drop
+%
+% OUTPUTS
+%   mean             [double]       mean parameter vector
+%   variance         [double]       variance 
+%
+% SPECIAL REQUIREMENTS
+%   None.
 
-% Copyright © 2012-2017 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,8 +31,8 @@ function [mean,variance] = GetPosteriorMeanVariance(M,drop)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-MetropolisFolder = CheckPath('metropolis',M.dname);
-FileName = M.fname;
+MetropolisFolder = CheckPath('metropolis',M_.dname);
+FileName = M_.fname;
 BaseName = [MetropolisFolder filesep FileName];
 record=load_last_mh_history_file(MetropolisFolder, FileName);
 NbrDraws = sum(record.MhDraws(:,1));

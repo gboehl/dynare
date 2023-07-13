@@ -1,17 +1,18 @@
 function oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, pnames)
+% function oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, pnames)
 % This function prints and saves posterior estimates after the mcmc
 % (+updates of oo_ & TeX output).
 %
 % INPUTS
-%   estim_params_    [structure]
-%   M_               [structure]
-%   options_         [structure]
-%   bayestopt_       [structure]
-%   oo_              [structure]
-%   pnames           [cell]        cell of strings, names of the prior shapes available
+%   estim_params_    [structure]    Dynare estimation parameter structure
+%   M_               [structure]    Dynare model structure
+%   options_         [structure]    Dynare options structure
+%   bayestopt_       [structure]    Dynare structure describing priors
+%   oo_              [structure]    Dynare results structure
+%   pnames           [cell]         cell of strings, names of the prior shapes available
 %
 % OUTPUTS
-%   oo_              [structure]
+%   oo_              [structure]    Dynare results structure
 %
 % SPECIAL REQUIREMENTS
 %   None.
@@ -50,7 +51,6 @@ FileName = M_.fname;
 
 record=load_last_mh_history_file(MetropolisFolder,FileName);
 
-FirstMhFile = record.KeepedDraws.FirstMhFile;
 FirstLine = record.KeepedDraws.FirstLine;
 TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
 TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
@@ -68,12 +68,10 @@ skipline(2)
 disp('ESTIMATION RESULTS')
 skipline()
 
-try
-    disp(sprintf('Log data density is %f.', oo_.MarginalDensity.ModifiedHarmonicMean))
-catch
-    [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_);
-    disp(sprintf('Log data density is %f.', oo_.MarginalDensity.ModifiedHarmonicMean))
+if ~isfield(oo_,'MarginalDensity') || ~isfield(oo_.MarginalDensity,'ModifiedHarmonicMean')
+    [~,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_);
 end
+fprintf('\nLog data density is %f.\n', oo_.MarginalDensity.ModifiedHarmonicMean);
 
 num_draws=NumberOfDraws*mh_nblck;
 hpd_draws = round((1-options_.mh_conf_sig)*num_draws);

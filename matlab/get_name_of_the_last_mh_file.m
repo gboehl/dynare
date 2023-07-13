@@ -1,4 +1,5 @@
 function [mhname,info] = get_name_of_the_last_mh_file(M_)
+% function [mhname,info] = get_name_of_the_last_mh_file(M_)
 % This function returns the name of the last mh file and test if the metropolis was completed.
 %
 % INPUTS
@@ -28,7 +29,6 @@ function [mhname,info] = get_name_of_the_last_mh_file(M_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-mhname = [];
 info = 1;
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
