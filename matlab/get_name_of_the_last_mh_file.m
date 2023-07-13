@@ -11,7 +11,7 @@ function [mhname,info] = get_name_of_the_last_mh_file(M_)
 %                          file. Otherwise info is equal to zero (a likely reason for this is
 %                          that the mcmc simulations were not completed).
 
-% Copyright © 2008-2017 Dynare Team
+% Copyright © 2008-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,7 +35,7 @@ MetropolisFolder = CheckPath('metropolis',M_.dname);
 ModelName = M_.fname;
 BaseName = [MetropolisFolder filesep ModelName];
 
-load_last_mh_history_file(MetropolisFolder, ModelName);
+record=load_last_mh_history_file(MetropolisFolder, ModelName);
 
 mh_number = record.LastFileNumber ;
 bk_number = record.Nblck ;

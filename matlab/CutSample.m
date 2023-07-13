@@ -16,7 +16,7 @@ function CutSample(M_, options_, estim_params_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2005-2017 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,8 +33,6 @@ function CutSample(M_, options_, estim_params_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-npar = estim_params_.np+estim_params_.nvn+estim_params_.ncx+estim_params_.ncn+estim_params_.nvx;
-
 % Get the path to the metropolis files.
 MetropolisFolder = CheckPath('metropolis',M_.dname);
 
@@ -42,7 +40,8 @@ MetropolisFolder = CheckPath('metropolis',M_.dname);
 ModelName = M_.fname;
 
 % Load the last mh-history file.
-load_last_mh_history_file(MetropolisFolder, M_.fname);
+record=load_last_mh_history_file(MetropolisFolder, M_.fname);
+npar=size(record.LastParameters,2);
 
 % Get the list of files where the mcmc draw are saved.
 mh_files = dir([ MetropolisFolder ,filesep, M_.fname '_mh*.mat' ]);

@@ -15,7 +15,7 @@ function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bay
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2005-2018 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,14 +33,13 @@ function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bay
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
-npar = estim_params_.np+estim_params_.nvn+estim_params_.ncx+estim_params_.ncn+estim_params_.nvx;
-nblck = options_.mh_nblck;
-
 MetropolisFolder = CheckPath('metropolis',M_.dname);
 ModelName = M_.fname;
 BaseName = [MetropolisFolder filesep ModelName];
 
-load_last_mh_history_file(MetropolisFolder, ModelName);
+record=load_last_mh_history_file(MetropolisFolder, ModelName);
+
+[nblck, npar] = size(record.LastParameters);
 
 FirstMhFile = record.KeepedDraws.FirstMhFile;
 FirstLine = record.KeepedDraws.FirstLine; ifil = FirstLine;

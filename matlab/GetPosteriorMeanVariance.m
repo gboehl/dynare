@@ -20,7 +20,7 @@ function [mean,variance] = GetPosteriorMeanVariance(M,drop)
 MetropolisFolder = CheckPath('metropolis',M.dname);
 FileName = M.fname;
 BaseName = [MetropolisFolder filesep FileName];
-load_last_mh_history_file(MetropolisFolder, FileName);
+record=load_last_mh_history_file(MetropolisFolder, FileName);
 NbrDraws = sum(record.MhDraws(:,1));
 NbrFiles = sum(record.MhDraws(:,2));
 NbrBlocks = record.Nblck;

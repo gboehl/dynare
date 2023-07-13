@@ -37,7 +37,7 @@ function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_boun
 % Then the comments write here can be used for all the other pairs of
 % parallel functions and also for management functions.
 
-% Copyright © 2006-2017 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -62,7 +62,7 @@ vv = sampler_options.invhess;
 InitSizeArray = min([repmat(MAX_nruns,nblck,1) fline+nruns-1],[],2);
 
 % Load last mh history file
-load_last_mh_history_file(MetropolisFolder, ModelName);
+record=load_last_mh_history_file(MetropolisFolder, ModelName);
 
 % Only for test parallel results!!!
 

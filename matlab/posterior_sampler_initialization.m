@@ -340,7 +340,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
 elseif options_.load_mh_file && ~options_.mh_recover
     % Here we consider previous mh files (previous mh did not crash).
     disp('Estimation::mcmc: I am loading past Metropolis-Hastings simulations...')
-    load_last_mh_history_file(MetropolisFolder, ModelName);
+    record=load_last_mh_history_file(MetropolisFolder, ModelName);
     if ~isnan(record.MCMCConcludedSuccessfully) && ~record.MCMCConcludedSuccessfully
         error('Estimation::mcmc: You are trying to load an MCMC that did not finish successfully. Please use mh_recover.')
     end
@@ -400,7 +400,7 @@ elseif options_.load_mh_file && ~options_.mh_recover
 elseif options_.mh_recover
     % The previous metropolis-hastings crashed before the end! I try to recover the saved draws...
     disp('Estimation::mcmc: Recover mode!')
-    load_last_mh_history_file(MetropolisFolder, ModelName);
+    record=load_last_mh_history_file(MetropolisFolder, ModelName);
     NumberOfBlocks = record.Nblck;% Number of "parallel" mcmc chains.
     options_.mh_nblck = NumberOfBlocks;
 

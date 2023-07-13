@@ -53,16 +53,17 @@ end
 
 % Get informations about the posterior draws:
 MetropolisFolder = CheckPath('metropolis',M_.dname);
-load_last_mh_history_file(MetropolisFolder, M_.fname);
+record=load_last_mh_history_file(MetropolisFolder, M_.fname);
 
 FirstMhFile = 1;
 FirstLine = 1;
 TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
 TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
+[mh_nblck] = size(record.LastParameters,2);
 clear record;
 
 % Get all the posterior draws:
-PosteriorDraws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, TotalNumberOfMhDraws, blck);
+PosteriorDraws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, TotalNumberOfMhDraws, mh_nblck, blck);
 
 
 % Plot the posterior draws:

@@ -19,7 +19,7 @@ function prior_posterior_statistics(type,dataset,dataset_info)
 % See the comments in the posterior_sampler.m funtion.
 
 
-% Copyright © 2005-2020 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -209,7 +209,8 @@ localVars.DirectoryName = DirectoryName;
 
 if strcmpi(type,'posterior')
     BaseName = [DirectoryName filesep M_.fname];
-    load_last_mh_history_file(DirectoryName, M_.fname);
+    record=load_last_mh_history_file(DirectoryName, M_.fname);
+    [nblck, npar] = size(record.LastParameters);
     FirstMhFile = record.KeepedDraws.FirstMhFile;
     FirstLine = record.KeepedDraws.FirstLine;
     TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
@@ -219,9 +220,9 @@ if strcmpi(type,'posterior')
     mh_nblck = options_.mh_nblck;
     if B==NumberOfDraws*mh_nblck
         % we load all retained MH runs !
-        logpost=GetAllPosteriorDraws(0, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+        logpost=GetAllPosteriorDraws(0, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck);
         for column=1:npar
-            x(:,column) = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+            x(:,column) = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck);
         end
     else
         logpost=NaN(B,1);

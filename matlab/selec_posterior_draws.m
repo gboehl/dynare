@@ -67,7 +67,7 @@ ModelName = M_.fname;
 BaseName = [MetropolisFolder filesep ModelName];
 
 % Get informations about the mcmc:
-load_last_mh_history_file(MetropolisFolder, ModelName);
+record=load_last_mh_history_file(MetropolisFolder, ModelName);
 FirstMhFile = record.KeepedDraws.FirstMhFile;
 FirstLine = record.KeepedDraws.FirstLine;
 TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
