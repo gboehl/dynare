@@ -22,6 +22,7 @@ stages:
   - build
   - test
   - pkg
+  - sign
   - deploy
 
 build_binaries:
@@ -154,9 +155,26 @@ test_octave:
   needs: [ "build_binaries" ]
   when: manual
 
-# For the deploy jobs, we don’t use the “needs” keyword, since we don’t want
-# those jobs to start before the “test” and “pkg” stages have succeeded. Hence
-# we stick to the “dependencies” keyword.
+# For the sign and deploy jobs, we don’t use the “needs” keyword, since we
+# don’t want those jobs to start before the “test” and “pkg” stages have
+# succeeded. Hence we stick to the “dependencies” keyword.
+
+sign_windows:
+  stage: sign
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_REF_NAME == "master"'
+      when: on_success
+    - when: never
+  tags:
+    - sign
+  dependencies:
+    - pkg_windows
+  script:
+    - f=(windows/exe/*) && mkdir -p windows/exe-signed/ && osslsigncode sign -pkcs11module /usr/lib/x86_64-linux-gnu/libykcs11.so.2 -key "pkcs11:id=%01;type=private;pin-value=$YUBIKEY_PIN" -certs ~/cepremap-code-signing-comodo-sectigo.pem -n Dynare -i https://www.dynare.org -t http://timestamp.comodoca.com -in ${f[0]} -out windows/exe-signed/${f[0]##*/}
+  artifacts:
+    paths:
+      - windows/exe-signed/*
+    expire_in: 3 days
 
 deploy_manual_unstable:
   stage: deploy
@@ -165,7 +183,7 @@ deploy_manual_unstable:
       when: on_success
     - when: never
   tags:
-    - restricted
+    - deploy
   dependencies:
     - build_doc
   script:
@@ -180,15 +198,15 @@ deploy_snapshot_unstable:
       when: on_success
     - when: never
   tags:
-    - restricted
+    - deploy
   dependencies:
     - pkg_source
     - pkg_windows
+    - sign_windows
     - pkg_macOS
   script:
-    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/cepremap-comodo-sectigo-code-signing.p12 -n Dynare -i https://www.dynare.org -t http://timestamp.comodoca.com -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
     - cp *.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
-    - f=(windows/exe/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe
+    - f=(windows/exe-signed/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe
     - f=(windows/7z/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-7z/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-7z/dynare-latest-win.7z
     - f=(windows/zip/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip
     - f=(macOS/pkg/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/macos/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/macos/dynare-latest-macos.pkg
