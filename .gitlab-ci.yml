@@ -20,6 +20,7 @@ stages:
   - build
   - test
   - pkg
+  - sign
   - deploy
 
 build_binaries:
@@ -180,9 +181,26 @@ test_dynare++:
       - dynare++/tests/*.mat
       - dynare++/tests/*.dump
 
-# For the deploy jobs, we don’t use the “needs” keyword, since we don’t want
-# those jobs to start before the “test” and “pkg” stages have succeeded. Hence
-# we stick to the “dependencies” keyword.
+# For the sign and deploy jobs, we don’t use the “needs” keyword, since we
+# don’t want those jobs to start before the “test” and “pkg” stages have
+# succeeded. Hence we stick to the “dependencies” keyword.
+
+sign_windows:
+  stage: sign
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^5\.[0-9]+$/'
+      when: on_success
+    - when: never
+  tags:
+    - sign
+  dependencies:
+    - pkg_windows
+  script:
+    - f=(windows/exe/*) && mkdir -p windows/exe-signed/ && osslsigncode sign -pkcs11module /usr/lib/x86_64-linux-gnu/libykcs11.so.2 -key "pkcs11:id=%01;type=private;pin-value=$YUBIKEY_PIN" -certs ~/cepremap-code-signing-comodo-sectigo.pem -n Dynare -i https://www.dynare.org -t http://timestamp.comodoca.com -in ${f[0]} -out windows/exe-signed/${f[0]##*/}
+  artifacts:
+    paths:
+      - windows/exe-signed/*
+    expire_in: 3 days
 
 deploy_manual_stable:
   stage: deploy
@@ -191,7 +209,7 @@ deploy_manual_stable:
       when: on_success
     - when: never
   tags:
-    - restricted
+    - deploy
   dependencies:
     - build_doc
   script:
@@ -207,15 +225,15 @@ deploy_release_stable:
       when: on_success
     - when: never
   tags:
-    - restricted
+    - deploy
   dependencies:
     - pkg_source
     - pkg_windows
+    - sign_windows
     - pkg_macOS
   script:
-    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/cepremap-comodo-sectigo-code-signing.p12 -n Dynare -i https://www.dynare.org -t http://timestamp.comodoca.com -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
     - cp *.tar.xz /srv/www.dynare.org/release/source/
-    - cp windows/exe/* /srv/www.dynare.org/release/windows/
+    - cp windows/exe-signed/* /srv/www.dynare.org/release/windows/
     - cp windows/7z/* /srv/www.dynare.org/release/windows-7z/
     - cp windows/zip/* /srv/www.dynare.org/release/windows-zip/
     - cp macOS/pkg/* /srv/www.dynare.org/release/macos/
