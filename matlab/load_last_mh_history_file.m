@@ -1,11 +1,11 @@
-function info = load_last_mh_history_file(MetropolisFolder, ModelName)
+function record = load_last_mh_history_file(MetropolisFolder, ModelName)
 % function info = load_last_mh_history_file(MetropolisFolder, ModelName)
 % Loads the last mh_history_file
 % Inputs:
 %   MetropolisFolder    [char]      Name of the metropolis subfolder
 %   ModelName           [char]      Name of the mod-file
 % Outputs:
-%   info                [struct]    structure storing the MH history
+%   record              [struct]    structure storing the MH history
 %
 % Notes: The record structure is written to the caller workspace via an
 % assignin statement.
@@ -68,10 +68,4 @@ else
     if ~isfield(record,'MAX_nruns')
         record.MAX_nruns=NaN(size(record.MhDraws,1),1); % This information is forever lost...
     end
-end
-
-if isequal(nargout,0)
-    assignin('caller', 'record', record);
-else
-    info = record;
 end
