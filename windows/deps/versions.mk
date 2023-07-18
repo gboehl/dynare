@@ -44,7 +44,7 @@ MINGW64_LIBAEC_VERSION = 1.0.5-2
 ## MinGW packages for the embedded compiler
 
 # pacman -Ss mingw-w64-x86_64-gcc$
-MINGW64_GCC_VERSION = 10.3.0-5
+MINGW64_GCC_VERSION = 10.3.0-8
 
 # pacman -Ss mingw-w64-x86_64-gmp
 MINGW64_GMP_VERSION = 6.2.1-2
@@ -53,13 +53,13 @@ MINGW64_GMP_VERSION = 6.2.1-2
 MINGW64_BINUTILS_VERSION = 2.37-4
 
 # pacman -Ss mingw-w64-x86_64-headers-git
-MINGW64_HEADERS_VERSION = 9.0.0.6306.586baa17b-1
+MINGW64_HEADERS_VERSION = 9.0.0.6357.eac8c38c1-1
 
 # pacman -Ss mingw-w64-x86_64-crt-git
-MINGW64_CRT_VERSION = 9.0.0.6306.586baa17b-1
+MINGW64_CRT_VERSION = 9.0.0.6357.eac8c38c1-3
 
 # pacman -Ss mingw-w64-x86_64-winpthreads-git
-MINGW64_WINPTHREADS_VERSION = 9.0.0.6306.586baa17b-1
+MINGW64_WINPTHREADS_VERSION = 9.0.0.6357.eac8c38c1-1
 
 # pacman -Ss mingw-w64-x86_64-zstd
 MINGW64_ZSTD_VERSION = 1.5.0-1
