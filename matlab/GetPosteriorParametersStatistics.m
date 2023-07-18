@@ -1,22 +1,23 @@
 function oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, pnames)
+% function oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, pnames)
 % This function prints and saves posterior estimates after the mcmc
 % (+updates of oo_ & TeX output).
 %
 % INPUTS
-%   estim_params_    [structure]
-%   M_               [structure]
-%   options_         [structure]
-%   bayestopt_       [structure]
-%   oo_              [structure]
-%   pnames           [cell]        cell of strings, names of the prior shapes available
+%   estim_params_    [structure]    Dynare estimation parameter structure
+%   M_               [structure]    Dynare model structure
+%   options_         [structure]    Dynare options structure
+%   bayestopt_       [structure]    Dynare structure describing priors
+%   oo_              [structure]    Dynare results structure
+%   pnames           [cell]         cell of strings, names of the prior shapes available
 %
 % OUTPUTS
-%   oo_              [structure]
+%   oo_              [structure]    Dynare results structure
 %
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright © 2006-2018 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,26 +39,24 @@ function oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bay
 %end
 
 TeX     = options_.TeX;
-nblck   = options_.mh_nblck;
 nvx     = estim_params_.nvx;
 nvn     = estim_params_.nvn;
 ncx     = estim_params_.ncx;
 ncn     = estim_params_.ncn;
 np      = estim_params_.np ;
-nx      = nvx+nvn+ncx+ncn+np;
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
 OutputFolder = CheckPath('Output',M_.dname);
 FileName = M_.fname;
 
-load_last_mh_history_file(MetropolisFolder,FileName);
+record=load_last_mh_history_file(MetropolisFolder,FileName);
 
-FirstMhFile = record.KeepedDraws.FirstMhFile;
 FirstLine = record.KeepedDraws.FirstLine;
 TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
 TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
 FirstMhFile = record.KeepedDraws.FirstMhFile;
 NumberOfDraws = TotalNumberOfMhDraws-floor(options_.mh_drop*TotalNumberOfMhDraws);
+mh_nblck = size(record.LastParameters,1);
 clear record;
 
 header_width = row_header_width(M_, estim_params_, bayestopt_);
@@ -69,14 +68,12 @@ skipline(2)
 disp('ESTIMATION RESULTS')
 skipline()
 
-try
-    disp(sprintf('Log data density is %f.', oo_.MarginalDensity.ModifiedHarmonicMean))
-catch
-    [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_);
-    disp(sprintf('Log data density is %f.', oo_.MarginalDensity.ModifiedHarmonicMean))
+if ~isfield(oo_,'MarginalDensity') || ~isfield(oo_.MarginalDensity,'ModifiedHarmonicMean')
+    [~,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_);
 end
+fprintf('\nLog data density is %f.\n', oo_.MarginalDensity.ModifiedHarmonicMean);
 
-num_draws=NumberOfDraws*options_.mh_nblck;
+num_draws=NumberOfDraws*mh_nblck;
 hpd_draws = round((1-options_.mh_conf_sig)*num_draws);
 
 if hpd_draws<2
@@ -97,7 +94,7 @@ if np
     ip = nvx+nvn+ncx+ncn+1;
     for i=1:np
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             name = bayestopt_.name{ip};
             oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
@@ -106,7 +103,7 @@ if np
                 name = bayestopt_.name{ip};
                 [post_mean, hpd_interval, post_var] = Extractoo(oo_, name, type);
             catch
-                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
                 name = bayestopt_.name{ip};
                 oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
@@ -140,7 +137,7 @@ if nvx
     disp(tit2)
     for i=1:nvx
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             k = estim_params_.var_exo(i,1);
             name = M_.exo_names{k};
@@ -152,7 +149,7 @@ if nvx
                 name = M_.exo_names{k};
                 [post_mean, hpd_interval, post_var] = Extractoo(oo_, name, type);
             catch
-                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = ...
                     posterior_moments(Draws, 1, options_.mh_conf_sig);
                 k = estim_params_.var_exo(i,1);
@@ -184,7 +181,7 @@ if nvn
     ip = nvx+1;
     for i=1:nvn
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
             oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
@@ -193,7 +190,7 @@ if nvn
                 name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
                 [post_mean,hpd_interval,post_var] = Extractoo(oo_,name,type);
             catch
-                Draws = GetAllPosteriorDraws(ip,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws);
+                Draws = GetAllPosteriorDraws(ip,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws, mh_nblck);
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws,1,options_.mh_conf_sig);
                 name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
                 oo_ = Filloo(oo_,name,type,post_mean,hpd_interval,post_median,post_var,post_deciles,density);
@@ -223,7 +220,7 @@ if ncx
     ip = nvx+nvn+1;
     for i=1:ncx
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws,1,options_.mh_conf_sig);
             k1 = estim_params_.corrx(i,1);
             k2 = estim_params_.corrx(i,2);
@@ -240,7 +237,7 @@ if ncx
                 NAME = sprintf('%s_%s', M_.exo_names{k1}, M_.exo_names{k2});
                 [post_mean,hpd_interval,post_var] = Extractoo(oo_, NAME, type);
             catch
-                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
                 k1 = estim_params_.corrx(i,1);
                 k2 = estim_params_.corrx(i,2);
@@ -273,7 +270,7 @@ if ncn
     ip = nvx+nvn+ncx+1;
     for i=1:ncn
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            Draws = GetAllPosteriorDraws(ip,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws);
+            Draws = GetAllPosteriorDraws(ip,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws, mh_nblck);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             k1 = estim_params_.corrn(i,1);
             k2 = estim_params_.corrn(i,2);
@@ -288,7 +285,7 @@ if ncn
                 NAME = sprintf('%s_%s', M_.endo_names{k1}, M_.endo_names{k2});
                 [post_mean,hpd_interval,post_var] = Extractoo(oo_, NAME, type);
             catch
-                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
                 k1 = estim_params_.corrn(i,1);
                 k2 = estim_params_.corrn(i,2);

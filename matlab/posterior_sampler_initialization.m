@@ -58,16 +58,9 @@ function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npa
 %Initialize outputs
 ix2 = [];
 ilogpo2 = [];
-ModelName = [];
-MetropolisFolder = [];
 FirstBlock = [];
 FirstLine = [];
-npar = [];
-NumberOfBlocks = [];
-nruns = [];
 NewFile = [];
-MAX_nruns = [];
-d = [];
 
 ModelName = M_.fname;
 if ~isempty(M_.bvar)
@@ -171,7 +164,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
         else
             bayestopt0 = load([PreviousFolder0 filesep 'prior' filesep 'definition.mat']);
         end
-        [common_parameters,IA,IB] = intersect(bayestopt_.name,bayestopt0.bayestopt_.name);
+        [~,IA,IB] = intersect(bayestopt_.name,bayestopt0.bayestopt_.name);
         new_estimated_parameters = ~ismember(bayestopt_.name,bayestopt0.bayestopt_.name);
         ix2 = zeros(NumberOfBlocks,npar);
         ilogpo2 = zeros(NumberOfBlocks,1);
@@ -340,7 +333,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
 elseif options_.load_mh_file && ~options_.mh_recover
     % Here we consider previous mh files (previous mh did not crash).
     disp('Estimation::mcmc: I am loading past Metropolis-Hastings simulations...')
-    load_last_mh_history_file(MetropolisFolder, ModelName);
+    record=load_last_mh_history_file(MetropolisFolder, ModelName);
     if ~isnan(record.MCMCConcludedSuccessfully) && ~record.MCMCConcludedSuccessfully
         error('Estimation::mcmc: You are trying to load an MCMC that did not finish successfully. Please use mh_recover.')
     end
@@ -400,7 +393,7 @@ elseif options_.load_mh_file && ~options_.mh_recover
 elseif options_.mh_recover
     % The previous metropolis-hastings crashed before the end! I try to recover the saved draws...
     disp('Estimation::mcmc: Recover mode!')
-    load_last_mh_history_file(MetropolisFolder, ModelName);
+    record=load_last_mh_history_file(MetropolisFolder, ModelName);
     NumberOfBlocks = record.Nblck;% Number of "parallel" mcmc chains.
     options_.mh_nblck = NumberOfBlocks;
 

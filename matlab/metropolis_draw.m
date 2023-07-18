@@ -1,5 +1,5 @@
 function [xparams, logpost, options_]=metropolis_draw(init,options_,estim_params_,M_)
-% function [xparams, logpost]=metropolis_draw(init)
+% function [xparams, logpost, options_]=metropolis_draw(init,options_,estim_params_,M_)
 % Builds draws from metropolis
 %
 % INPUTS:
@@ -24,7 +24,7 @@ function [xparams, logpost, options_]=metropolis_draw(init,options_,estim_params
 %
 %   Requires CutSample to be run before in order to set up mh_history-file
 
-% Copyright © 2003-2017 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -59,11 +59,9 @@ if init
     FileName = M_.fname;
     BaseName = [MetropolisFolder filesep FileName];
     %load mh_history-file with info on what to load
-    load_last_mh_history_file(MetropolisFolder, FileName);
+    record=load_last_mh_history_file(MetropolisFolder, FileName);
     FirstMhFile = record.KeepedDraws.FirstMhFile;
     FirstLine = record.KeepedDraws.FirstLine;
-    TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
-    LastMhFile = TotalNumberOfMhFiles;
     TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
     NumberOfDraws = TotalNumberOfMhDraws-floor(options_.mh_drop*TotalNumberOfMhDraws);
     MAX_nruns = ceil(options_.MaxNumberOfBytes/(npar+2)/8); %number of parameters plus posterior plus ?

@@ -11,7 +11,7 @@ function generate_trace_plots(chain_number)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2016-2018 Dynare Team
+% Copyright © 2016-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,7 +33,7 @@ global M_ options_ estim_params_
 
 % Get informations about the posterior draws:
 MetropolisFolder = CheckPath('metropolis', M_.dname);
-load_last_mh_history_file(MetropolisFolder, M_.fname);
+record=load_last_mh_history_file(MetropolisFolder, M_.fname);
 if chain_number>record.Nblck
     error('generate_trace_plots:: chain number is bigger than existing number of chains')
 end

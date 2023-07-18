@@ -1,4 +1,5 @@
 function [mhname,info] = get_name_of_the_last_mh_file(M_)
+% function [mhname,info] = get_name_of_the_last_mh_file(M_)
 % This function returns the name of the last mh file and test if the metropolis was completed.
 %
 % INPUTS
@@ -11,7 +12,7 @@ function [mhname,info] = get_name_of_the_last_mh_file(M_)
 %                          file. Otherwise info is equal to zero (a likely reason for this is
 %                          that the mcmc simulations were not completed).
 
-% Copyright © 2008-2017 Dynare Team
+% Copyright © 2008-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,14 +29,13 @@ function [mhname,info] = get_name_of_the_last_mh_file(M_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-mhname = [];
 info = 1;
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
 ModelName = M_.fname;
 BaseName = [MetropolisFolder filesep ModelName];
 
-load_last_mh_history_file(MetropolisFolder, ModelName);
+record=load_last_mh_history_file(MetropolisFolder, ModelName);
 
 mh_number = record.LastFileNumber ;
 bk_number = record.Nblck ;

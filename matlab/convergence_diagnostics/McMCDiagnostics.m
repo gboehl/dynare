@@ -1,11 +1,12 @@
 function oo_ = McMCDiagnostics(options_, estim_params_, M_, oo_)
-% function McMCDiagnostics
+% function oo_ = McMCDiagnostics(options_, estim_params_, M_, oo_)
 % Computes convergence tests
 %
 % INPUTS
-%   options_         [structure]
-%   estim_params_    [structure]
-%   M_               [structure]
+%   options_         [structure]    Dynare options structure
+%   estim_params_    [structure]    Dynare estimation parameter structure
+%   M_               [structure]    Dynare model structure
+%   oo_              [structure]    Dynare results structure
 %
 % OUTPUTS
 %   oo_              [structure]
@@ -16,7 +17,7 @@ function oo_ = McMCDiagnostics(options_, estim_params_, M_, oo_)
 % PARALLEL CONTEXT
 % See the comment in posterior_sampler.m funtion.
 
-% Copyright © 2005-2018 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,24 +39,11 @@ MetropolisFolder = CheckPath('metropolis',M_.dname);
 ModelName = M_.fname;
 
 TeX = options_.TeX;
-nblck = options_.mh_nblck;
-npar = estim_params_.nvx;
-npar = npar + estim_params_.nvn;
-npar = npar + estim_params_.ncx;
-npar = npar + estim_params_.ncn;
-npar = npar + estim_params_.np ;
-MAX_nruns = ceil(options_.MaxNumberOfBytes/(npar+2)/8);
 
-load_last_mh_history_file(MetropolisFolder, ModelName);
+record=load_last_mh_history_file(MetropolisFolder, ModelName);
 NumberOfMcFilesPerBlock = record.LastFileNumber;
+[nblck, npar] = size(record.LastParameters);
 npardisp = options_.convergence.brooksgelman.plotrows;
-
-% Check that the declared number of blocks is consistent with informations saved in mh-history files.
-if ~isequal(nblck,record.Nblck)
-    disp(['Estimation::mcmc::diagnostics: The number of MCMC chains you declared (' num2str(nblck) ') is inconsistent with the information available in the mh-history files (' num2str(record.Nblck) ' chains)!'])
-    disp(['                               I reset the number of MCMC chains to ' num2str(record.Nblck) '.'])
-    nblck = record.Nblck;
-end
 
 % check if all the mh files are available.
 issue_an_error_message = 0;
@@ -71,7 +59,6 @@ if issue_an_error_message
 end
 
 % compute inefficiency factor
-FirstMhFile = record.KeepedDraws.FirstMhFile;
 FirstLine = record.KeepedDraws.FirstLine;
 TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
 TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
@@ -81,6 +68,7 @@ NumberOfDraws = TotalNumberOfMhDraws-floor(options_.mh_drop*TotalNumberOfMhDraws
 param_name = {};
 param_name_tex = {};
 
+Ifac=NaN(nblck,npar);
 for jj = 1:npar
     if options_.TeX
         [par_name_temp, par_name_tex_temp] = get_the_name(jj, options_.TeX, M_,estim_params_, options_);
@@ -91,7 +79,7 @@ for jj = 1:npar
         par_name_temp = get_the_name(jj, options_.TeX, M_, estim_params_, options_);
         param_name = vertcat(param_name, par_name_temp);
     end
-    Draws = GetAllPosteriorDraws(jj, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws);
+    Draws = GetAllPosteriorDraws(jj, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck);
     Draws = reshape(Draws, [NumberOfDraws nblck]);
     Nc = min(1000, NumberOfDraws/2);
     for ll = 1:nblck
@@ -120,8 +108,6 @@ update_last_mh_history_file(MetropolisFolder, ModelName, record);
 
 
 PastDraws = sum(record.MhDraws,1);
-LastFileNumber = PastDraws(2);
-LastLineNumber = record.MhDraws(end,3);
 NumberOfDraws  = PastDraws(1);
 
 if NumberOfDraws<=2000
@@ -230,8 +216,6 @@ ALPHA = 0.2;                                % increase too much with the number 
 time = 1:NumberOfDraws;
 xx = Origin:StepSize:NumberOfDraws;
 NumberOfLines = length(xx);
-tmp = zeros(NumberOfDraws*nblck,3);
-UDIAG = zeros(NumberOfLines,6,npar);
 
 if NumberOfDraws < Origin
     disp('Estimation::mcmc::diagnostics: The number of simulations is too small to compute the MCMC convergence diagnostics.')
@@ -269,7 +253,6 @@ if isnumeric(options_.parallel)
     clear fout
     % Parallel execution!
 else
-    ModelName = ModelName;
     if ~isempty(M_.bvar)
         ModelName = [ModelName '_bvar'];
     end
@@ -404,7 +387,7 @@ if reste
         fprintf(fidTeX,'\\label{Fig:UnivariateDiagnostics:%s}\n',int2str(pages+1));
         fprintf(fidTeX,'\\end{figure}\n');
         fprintf(fidTeX,'\n');
-        fprintf(fidTeX,'% End Of TeX file.');
+        fprintf(fidTeX,'%% End Of TeX file.');
         fclose(fidTeX);
     end
 end % if reste > 0

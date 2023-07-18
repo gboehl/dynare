@@ -3,21 +3,20 @@ function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_boun
 % Random Walk Metropolis-Hastings algorithm.
 %
 % INPUTS
-%   o TargetFun  [char]     string specifying the name of the objective
-%                           function (posterior kernel).
-%   o ProposalFun  [char]   string specifying the name of the proposal
-%                           density
-%   o xparam1    [double]   (p*1) vector of parameters to be estimated (initial values).
-%   o sampler_options       structure
-%            .invhess       [double]   (p*p) matrix, posterior covariance matrix (at the mode).
-%   o mh_bounds  [double]   (p*2) matrix defining lower and upper bounds for the parameters.
-%   o dataset_              data structure
-%   o dataset_info          dataset info structure
-%   o options_              options structure
-%   o M_                    model structure
-%   o estim_params_         estimated parameters structure
-%   o bayestopt_            estimation options structure
-%   o oo_                   outputs structure
+%   o TargetFun         [char]      string specifying the name of the objective
+%                                   function (posterior kernel).
+%   o ProposalFun       [char]      string specifying the name of the proposal
+%                                   density
+%   o xparam1           [double]    (p*1) vector of parameters to be estimated (initial values).
+%   o sampler_options               structure
+%   o mh_bounds         [double]    (p*2) matrix defining lower and upper bounds for the parameters.
+%   o dataset_          [structure] data structure
+%   o dataset_info      [structure] dataset info structure
+%   o options_          [structure] options structure
+%   o M_                [structure] model structure
+%   o estim_params_     [structure] estimated parameters structure
+%   o bayestopt_        [structure] prior specification structure
+%   o oo_               [structure] output structure
 %
 % SPECIAL REQUIREMENTS
 %   None.
@@ -37,7 +36,7 @@ function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_boun
 % Then the comments write here can be used for all the other pairs of
 % parallel functions and also for management functions.
 
-% Copyright © 2006-2017 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -62,7 +61,7 @@ vv = sampler_options.invhess;
 InitSizeArray = min([repmat(MAX_nruns,nblck,1) fline+nruns-1],[],2);
 
 % Load last mh history file
-load_last_mh_history_file(MetropolisFolder, ModelName);
+record=load_last_mh_history_file(MetropolisFolder, ModelName);
 
 % Only for test parallel results!!!
 

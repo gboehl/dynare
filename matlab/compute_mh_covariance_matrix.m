@@ -15,7 +15,7 @@ function [posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright © 2006-2017 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,26 +32,19 @@ function [posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ options_ estim_params_ bayestopt_
-
-
-n = estim_params_.np + ...
-    estim_params_.nvn+ ...
-    estim_params_.ncx+ ...
-    estim_params_.ncn+ ...
-    estim_params_.nvx;
-
-nblck = options_.mh_nblck;
+global M_ bayestopt_
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
 ModelName = M_.fname;
 BaseName = [MetropolisFolder filesep ModelName];
 
-load_last_mh_history_file(MetropolisFolder, ModelName);
+record=load_last_mh_history_file(MetropolisFolder, ModelName);
 
 FirstMhFile = record.KeepedDraws.FirstMhFile;
 FirstLine   = record.KeepedDraws.FirstLine;
 TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
+
+[nblck, n] = size(record.LastParameters);
 
 posterior_kernel_at_the_mode = -Inf;
 posterior_mean = zeros(n,1);

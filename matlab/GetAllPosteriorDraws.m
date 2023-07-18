@@ -1,22 +1,23 @@
-function Draws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFile, NumberOfDraws, blck)
-
-% function Draws = GetAllPosteriorDraws(column,FirstMhFile,FirstLine,TotalNumberOfMhFile,NumberOfDraws)
+function Draws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFile, NumberOfDraws, nblcks, blck)
+% function Draws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFile, NumberOfDraws, nblcks, blck)
 % Gets all posterior draws
 %
 % INPUTS
-%    column:               column
+%    column:               column of desired parameter in draw matrix
 %    FirstMhFile:          first mh file
 %    FirstLine:            first line
 %    TotalNumberOfMhFile:  total number of mh file
 %    NumberOfDraws:        number of draws
-
+%    nblcks:               total number of blocks 
+%    blck:                 desired block to read
+%
 % OUTPUTS
 %    Draws:                draws from posterior distribution
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2005-2017 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,19 +34,17 @@ function Draws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumbe
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ options_
-
-nblck = options_.mh_nblck;
+global M_ 
 
 iline = FirstLine;
 linee = 1;
 DirectoryName = CheckPath('metropolis',M_.dname);
 
-if nblck>1 && nargin<6
-    Draws = zeros(NumberOfDraws*nblck,1);
+if nblcks>1 && nargin<7
+    Draws = zeros(NumberOfDraws*nblcks,1);
     iline0=iline;
     if column>0
-        for blck = 1:nblck
+        for blck = 1:nblcks
             iline=iline0;
             for file = FirstMhFile:TotalNumberOfMhFile
                 load([DirectoryName '/'  M_.fname '_mh' int2str(file) '_blck' int2str(blck)],'x2')
@@ -56,7 +55,7 @@ if nblck>1 && nargin<6
             end
         end
     else
-        for blck = 1:nblck
+        for blck = 1:nblcks
             iline=iline0;
             for file = FirstMhFile:TotalNumberOfMhFile
                 load([DirectoryName '/'  M_.fname '_mh' int2str(file) '_blck' int2str(blck)],'logpo2')
@@ -68,7 +67,7 @@ if nblck>1 && nargin<6
         end
     end
 else
-    if nblck==1
+    if nblcks==1
         blck=1;
     end
     if column>0

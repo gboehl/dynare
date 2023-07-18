@@ -18,7 +18,7 @@ function mh_autocorrelation_function(options_,M_,estim_params_,type,blck,name1,n
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright © 2003-2017 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,17 +48,19 @@ end
 
 % Get informations about the posterior draws:
 MetropolisFolder = CheckPath('metropolis',M_.dname);
-load_last_mh_history_file(MetropolisFolder, M_.fname);
+record=load_last_mh_history_file(MetropolisFolder, M_.fname);
 
 FirstMhFile = record.KeepedDraws.FirstMhFile;
 FirstLine = record.KeepedDraws.FirstLine; ifil = FirstLine;
 TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
 TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
 NumberOfDraws = TotalNumberOfMhDraws-floor(options_.mh_drop*TotalNumberOfMhDraws);
+nblck = size(record.LastParameters,1);
+
 clear record;
 
 % Get all the posterior draws:
-PosteriorDraws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, blck);
+PosteriorDraws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck, blck);
 
 % Compute the autocorrelation function:
 [autocov,autocor] = sample_autocovariance(PosteriorDraws,options_.mh_autocorrelation_function_size);
