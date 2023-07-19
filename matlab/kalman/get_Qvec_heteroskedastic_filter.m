@@ -27,7 +27,7 @@ function Qvec=get_Qvec_heteroskedastic_filter(Q,smpl,M_)
 
 isqdiag = all(all(abs(Q-diag(diag(Q)))<1e-14)); % ie, the covariance matrix is diagonal...
 Qvec=repmat(Q,[1 1 smpl+1]);
-for k=1:smpl
+for k=1:smpl+1
     inx = ~isnan(M_.heteroskedastic_shocks.Qvalue(:,k));
     if any(inx)
         if isqdiag
