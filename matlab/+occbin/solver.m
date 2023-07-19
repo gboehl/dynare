@@ -50,6 +50,7 @@ else
     end
 end
 
+ss=struct();
 if solve_dr
     if isempty(options_.qz_criterium)
         options_.qz_criterium = 1+1e-6;
