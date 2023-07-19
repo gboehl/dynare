@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019-2022 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -139,9 +139,9 @@ FaaDiBruno::estimRefinement(const TensorDimens &tdims, int nr, int l)
     *static_cast<long>(lambda*per_size1+(1-lambda)*per_size2);
   long mem = SystemResources::availableMemory();
   int max = 0;
-  double num_cols = static_cast<double>(mem-magic_mult*nthreads*per_size)
-    /nthreads/sizeof(double)/nr;
-  if (num_cols > 0)
+  if (double num_cols {static_cast<double>(mem-magic_mult*nthreads*per_size)
+                       /nthreads/sizeof(double)/nr};
+      num_cols > 0)
     {
       double maxd = std::pow(num_cols, 1.0/l);
       max = static_cast<int>(std::floor(maxd));

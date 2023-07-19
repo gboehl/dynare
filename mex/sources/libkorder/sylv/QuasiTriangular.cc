@@ -172,8 +172,8 @@ Diagonal::changeBase(double *p)
 void
 Diagonal::getEigenValues(Vector &eig) const
 {
-  int d_size = getSize();
-  if (eig.length() != 2*d_size)
+  if (int d_size {getSize()};
+      eig.length() != 2*d_size)
     {
       std::ostringstream mes;
       mes << "Wrong length of vector for eigenvalues len=" << eig.length()

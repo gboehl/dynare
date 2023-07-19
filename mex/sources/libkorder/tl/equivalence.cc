@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -364,14 +364,12 @@ EquivalenceSet::addParents(const Equivalence &e,
 
   for (int i1 = 0; i1 < e.numClasses(); i1++)
     for (int i2 = i1+1; i2 < e.numClasses(); i2++)
-      {
-        Equivalence ns(e, i1, i2);
-        if (!has(ns))
-          {
-            added.push_back(ns);
-            equis.push_back(std::move(ns));
-          }
-      }
+      if (Equivalence ns(e, i1, i2);
+          !has(ns))
+        {
+          added.push_back(ns);
+          equis.push_back(std::move(ns));
+        }
 }
 
 /* Debug print. */

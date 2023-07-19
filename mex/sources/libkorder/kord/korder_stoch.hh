@@ -209,11 +209,9 @@ StochForwardDerivs<t>::StochForwardDerivs(const PartitionY &ypart, int nu,
       auto ten = std::make_unique<typename ctraits<t>::Ttensym>(r, ypart.nys()+1, d);
       ten->zeros();
       for (int i = 0; i <= d; i++)
-        {
-          int k = d-i;
-          if (g_int.check(Symmetry{i, 0, 0, k}))
-            ten->addSubTensor(g_int.get(Symmetry{i, 0, 0, k}));
-        }
+        if (int k {d-i};
+            g_int.check(Symmetry{i, 0, 0, k}))
+          ten->addSubTensor(g_int.get(Symmetry{i, 0, 0, k}));
       g_int_sym.insert(std::move(ten));
     }
 

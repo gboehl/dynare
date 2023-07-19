@@ -234,14 +234,12 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
                        TensorDimens(Symmetry{i, j}, tns));
           tmp.zeros();
           for (int k = 0; k+d <= g.getMaxDim(); k++, kfact *= k)
-            {
-              Symmetry sym{i, j, 0, k};
-              if (g.check(sym))
-                {
-                  double mult = pow(sigma, k)/dfact/kfact;
-                  tmp.add(mult, g.get(sym));
-                }
-            }
+            if (Symmetry sym{i, j, 0, k};
+                g.check(sym))
+              {
+                double mult = pow(sigma, k)/dfact/kfact;
+                tmp.add(mult, g.get(sym));
+              }
           g_yud->addSubTensor(tmp);
         }
 
@@ -278,14 +276,12 @@ DecisionRuleImpl<t>::fillTensors(const _TW &W, int nys)
           _Ttensor tmp(1, TensorDimens(Symmetry{i, j}, tns));
           tmp.zeros();
           for (int k = 0; k+d <= W.getMaxDim(); k++, kfact *= k)
-            {
-              Symmetry sym{i, j, 0, k};
-              if (W.check(sym))
-                {
-                  double mult = 1.0/dfact/kfact;
-                  tmp.add(mult, W.get(sym));
-                }
-            }
+            if (Symmetry sym{i, j, 0, k};
+                W.check(sym))
+              {
+                double mult = 1.0/dfact/kfact;
+                tmp.add(mult, W.get(sym));
+              }
           W_yud->addSubTensor(tmp);
         }
 

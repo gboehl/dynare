@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -318,8 +318,8 @@ public:
       last = std::make_unique<_Ttype>(_Tparent::get(Symmetry{maxdim}), v);
     for (int d = maxdim-1; d >= 1; d--)
       {
-        Symmetry cs{d};
-        if (_Tparent::check(cs))
+        if (Symmetry cs{d};
+            _Tparent::check(cs))
           {
             const _Ttype &nt = _Tparent::get(cs);
             last->add(1.0, ConstTwoDMatrix(nt));

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -106,17 +106,15 @@ TensorDimens::calcFoldOffset(const IntSequence &v) const
   int pow = 1;
   int blstart = v.size();
   for (int ibl = getSym().num()-1; ibl >= 0; ibl--)
-    {
-      int bldim = getSym()[ibl];
-      if (bldim > 0)
-        {
-          blstart -= bldim;
-          int blnvar = getNVX(blstart);
-          IntSequence subv(v, blstart, blstart+bldim);
-          res += FTensor::getOffset(subv, blnvar)*pow;
-          pow *= FFSTensor::calcMaxOffset(blnvar, bldim);
-        }
-    }
+    if (int bldim { getSym()[ibl] };
+        bldim > 0)
+      {
+        blstart -= bldim;
+        int blnvar = getNVX(blstart);
+        IntSequence subv(v, blstart, blstart+bldim);
+        res += FTensor::getOffset(subv, blnvar)*pow;
+        pow *= FFSTensor::calcMaxOffset(blnvar, bldim);
+      }
   TL_RAISE_IF(blstart != 0,
               "Error in tracing symmetry in TensorDimens::getFoldOffset");
   return res;

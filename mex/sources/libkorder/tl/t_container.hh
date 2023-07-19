@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -202,11 +202,9 @@ public:
   {
     int res = -1;
     for (const auto &run : m)
-      {
-        int dim = run.first.dimen();
-        if (dim > res)
-          res = dim;
-      }
+      if (int dim { run.first.dimen() };
+          dim > res)
+        res = dim;
     return res;
   }
 
