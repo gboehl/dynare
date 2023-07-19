@@ -171,6 +171,12 @@ if ~options_.load_mh_file && ~options_.mh_recover
         ilogpo2 = zeros(NumberOfBlocks,1);
         ilogpo2(:,1) = record0.LastLogPost;
         ix2(:,IA) = record0.LastParameters(:,IB);
+        for j=1:NumberOfBlocks
+            if not(all(ix2(j,:)' >= mh_bounds.lb) && all(ix2(j,:)' <= mh_bounds.ub))
+                new_estimated_parameters = logical(new_estimated_parameters + (ix2(j,:)' < mh_bounds.lb));
+                new_estimated_parameters = logical(new_estimated_parameters + (ix2(j,:)' > mh_bounds.ub));
+            end
+        end
     else
         new_estimated_parameters = true(1,npar);
     end
