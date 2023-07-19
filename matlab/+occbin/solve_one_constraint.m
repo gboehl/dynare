@@ -136,6 +136,8 @@ for shock_period = 1:n_shocks_periods
     binding_indicator_history={};
     max_err = NaN(max_iter,1);
     regime_violates_constraint_in_expectation = false(max_iter,1);
+    number_of_periods_with_violations = zeros(max_iter,1);
+    regime_exit_period = ones(max_iter,1);
     
     while (regime_change_this_iteration && iter<max_iter && ~is_periodic && ~is_periodic_loop)
         iter = iter +1;
@@ -194,9 +196,11 @@ for shock_period = 1:n_shocks_periods
             if ~isinf(opts_simul_.max_check_ahead_periods) && opts_simul_.max_check_ahead_periods<length(binding_indicator)
                 end_periods = opts_simul_.max_check_ahead_periods;
                 last_indicator = false(length(binding_indicator)-end_periods,1);
+                regime_violates_constraint_in_last_period(iter) = any(binding.constraint_1(end_periods+1:end));
             else
                 end_periods = length(binding_indicator);
                 last_indicator = false(0);
+                regime_violates_constraint_in_last_period(iter) = binding.constraint_1(end_periods);
             end
             % check if changes to the hypothesis of the duration for each
             % regime
@@ -215,6 +219,9 @@ for shock_period = 1:n_shocks_periods
             % if max_check_ahead_periods<inf, enforce unconstrained regime for period larger than max_check_ahead_periods 
             binding_constraint_new=[binding.constraint_1(1:end_periods);last_indicator];
             relaxed_constraint_new = [relax.constraint_1(1:end_periods);not(last_indicator)];
+            number_of_periods_with_violations(iter) = sum(binding_indicator -((binding_indicator | binding_constraint_new) & ~(binding_indicator & relaxed_constraint_new)));
+            regime_exit_period(iter) = max(regime_history(shock_period).regimestart);
+
             if curb_retrench   % apply Gauss-Seidel idea of slowing down the change in the guess
                 % for the constraint -- only relax one
                 % period at a time starting from the last
@@ -252,20 +259,35 @@ for shock_period = 1:n_shocks_periods
                     if size(binding_indicator,1)== size(binding_indicator_history{kiter},1)
                         %                     vvv = [binding_indicator_history{kiter}; false(size(binding_indicator,1)- size(binding_indicator_history{kiter},1), 1)];
                         %                     is_periodic(kiter) = isequal(vvv, binding_indicator);
-                        is_periodic(kiter) = isequal(binding_indicator_history{kiter}, binding_indicator) && length(find(binding_indicator_history{iter}-binding_indicator))==1;
+                        is_periodic(kiter) = isequal(binding_indicator_history{kiter}, binding_indicator) && sum(binding_indicator_history{iter}-binding_indicator)<=opts_simul_.periodic_solution_threshold;
                     else
                         is_periodic(kiter)=false;
                     end
                 end
                 is_periodic_all =is_periodic;
                 is_periodic =  any(is_periodic);
+                is_periodic_strict = is_periodic;
+                
+                if is_periodic_loop && ~is_periodic
+                    if ~opts_simul_.periodic_solution_strict && any(number_of_periods_with_violations(~regime_violates_constraint_in_expectation(1:iter))<=opts_simul_.periodic_solution_threshold)
+                        is_periodic=true;
+                        is_periodic_all=false(size(is_periodic_loop_all));
+                        is_periodic_all(1) = true; % here we consider all guesses and pick the best one according to the criteria below
+                    else
+                        do_nothing=true;
+                    end
+                end
                 if is_periodic && periodic_solution
                     inx = find(is_periodic_all,1):iter;
                     inx1 = inx(find(~regime_violates_constraint_in_expectation(inx)));
                     if not(isempty(inx1))
                         inx=inx1;
                     end
-                    [merr,imerr]=min(max_err(inx));
+                    if is_periodic_strict || isempty(inx1)
+                        [merr,imerr]=min(max_err(inx));
+                    else
+                        [merr,imerr]=min(number_of_periods_with_violations(inx));
+                    end
                     inx = inx(imerr);
                     binding_indicator=binding_indicator_history{inx};
                     if inx<iter
