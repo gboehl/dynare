@@ -2598,8 +2598,10 @@ The dseries class
     .. dseriesmethod:: C = remove (A, B)
                        remove_ (A, B)
 
-        |br| Alias for the ``pop`` method with two arguments. Removes
-        variable ``B`` from ``dseries`` object ``A``.
+        |br| If ``B`` is a row char array, the name of a variable, these methods
+        are aliases for ``pop`` and ``pop_`` methods with two arguments. They
+        remove variable ``B`` from ``dseries`` object ``A``. To remove more than
+        one variable, one can pass a cell of row char arrays for ``B``.
 
         *Example*
 
