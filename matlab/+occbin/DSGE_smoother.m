@@ -392,6 +392,10 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
     oo_.occbin.smoother.T0=TT;
     oo_.occbin.smoother.R0=RR;
     oo_.occbin.smoother.C0=CC;
+    oo_.occbin.smoother.simul.piecewise = out.piecewise(1:end-1,:);
+    if ~options_.occbin.simul.piecewise_only
+        oo_.occbin.smoother.simul.linear = out.linear(1:end-1,:);
+    end        
     if options_.occbin.smoother.plot
         GraphDirectoryName = CheckPath('graphs',M_.fname);
         latexFolder = CheckPath('latex',M_.dname);
