@@ -409,7 +409,7 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
         j1=0;
         ifig=0;
         for j=1:M_.exo_nbr
-            if M_.Sigma_e(j,j)
+            if max(abs(oo_.occbin.smoother.etahat(j,:)))>1.e-8
                 j1=j1+1;
                 if mod(j1,9)==1
                     hh_fig = dyn_figure(options_.nodisplay,'name','Occbin smoothed shocks');
