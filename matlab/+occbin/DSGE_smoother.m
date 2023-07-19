@@ -139,6 +139,7 @@ opts_simul.SHOCKS = [etahat(:,1:end)'; zeros(1,M_.exo_nbr)];
 opts_simul.exo_pos = 1:M_.exo_nbr;
 opts_simul.endo_init = alphahat0(oo_.dr.inv_order_var,1);
 opts_simul.init_regime=regime_history; % use realtime regime for guess, to avoid multiple solution issues!
+opts_simul.periods = size(opts_simul.SHOCKS,1);
 options_.occbin.simul=opts_simul;
 options_.noprint = true;
 [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
