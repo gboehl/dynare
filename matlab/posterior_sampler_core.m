@@ -172,18 +172,6 @@ for curr_block = fblck:nblck
             logpo2 = zeros(InitSizeArray(curr_block),1);
         end
     end
-    %Prepare waiting bars
-    if whoiam
-        refresh_rate = sampler_options.parallel_bar_refresh_rate;
-        bar_title = sampler_options.parallel_bar_title;
-        prc0=(curr_block-fblck)/(nblck-fblck+1)*(isoctave || options_.console_mode);
-        hh_fig = dyn_waitbar({prc0,whoiam,options_.parallel(ThisMatlab)},[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
-    else
-        refresh_rate = sampler_options.serial_bar_refresh_rate;
-        bar_title = sampler_options.serial_bar_title;
-        hh_fig = dyn_waitbar(0,[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
-        set(hh_fig,'Name',bar_title);
-    end
     if mh_recover_flag==0
         accepted_draws_this_chain = 0;
         accepted_draws_this_file = 0;
@@ -191,6 +179,18 @@ for curr_block = fblck:nblck
         feval_this_file = 0;
         draw_iter = 1;
         draw_index_current_file = fline(curr_block); %get location of first draw in current block
+    end
+    %Prepare waiting bars
+    if whoiam
+        refresh_rate = sampler_options.parallel_bar_refresh_rate;
+        bar_title = sampler_options.parallel_bar_title;
+        prc0=(curr_block-fblck)/(nblck-fblck+1)*(isoctave || options_.console_mode)+(draw_iter-1)/nruns(curr_block);
+        hh_fig = dyn_waitbar({prc0,whoiam,options_.parallel(ThisMatlab)},[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
+    else
+        refresh_rate = sampler_options.serial_bar_refresh_rate;
+        bar_title = sampler_options.serial_bar_title;
+        hh_fig = dyn_waitbar(0,[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
+        set(hh_fig,'Name',bar_title);
     end
     sampler_options.curr_block = curr_block;
     while draw_iter <= nruns(curr_block)
