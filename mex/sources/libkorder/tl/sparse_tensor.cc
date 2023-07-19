@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -230,15 +230,12 @@ GSSparseTensor::GSSparseTensor(const FSSparseTensor &t, const IntSequence &ss,
   auto lbi = t.getMap().lower_bound(lb);
   auto ubi = t.getMap().upper_bound(ub);
   for (auto run = lbi; run != ubi; ++run)
-    {
-      if (lb.lessEq(run->first) && run->first.lessEq(ub))
-        {
-          IntSequence c(run->first);
-          c.add(-1, lb);
-          insert(c, run->second.first, run->second.second);
-        }
-    }
-
+    if (lb.lessEq(run->first) && run->first.lessEq(ub))
+      {
+        IntSequence c(run->first);
+        c.add(-1, lb);
+        insert(c, run->second.first, run->second.second);
+      }
 }
 
 void

@@ -256,17 +256,15 @@ FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
   Tensor::index ubi(t, ub);
   ++ubi;
   for (Tensor::index run = lbi; run != ubi; ++run)
-    {
-      if (lb.lessEq(run.getCoor()) && run.getCoor().lessEq(ub))
-        {
-          IntSequence c(run.getCoor());
-          c.add(-1, lb);
-          Tensor::index ind(*this, c);
-          TL_RAISE_IF(*ind < 0 || *ind >= ncols(),
-                      "Internal error in slicing constructor of FGSTensor");
-          copyColumn(t, *run, *ind);
-        }
-    }
+    if (lb.lessEq(run.getCoor()) && run.getCoor().lessEq(ub))
+      {
+        IntSequence c(run.getCoor());
+        c.add(-1, lb);
+        Tensor::index ind(*this, c);
+        TL_RAISE_IF(*ind < 0 || *ind >= ncols(),
+                    "Internal error in slicing constructor of FGSTensor");
+        copyColumn(t, *run, *ind);
+      }
 }
 
 // FGSTensor conversion from GSSparseTensor

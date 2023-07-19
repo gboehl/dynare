@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -120,26 +120,24 @@ WorkerFoldMAASparse1::operator()(std::mutex &mut)
       IntSequence percoor(coor.size());
       per.apply(coor, percoor);
       for (const auto &it : eset)
-        {
-          if (it.numClasses() == t.dimen())
-            {
-              StackProduct<FGSTensor> sp(cont, it, out.getSym());
-              if (!sp.isZero(percoor))
-                {
-                  KronProdStack<FGSTensor> kp(sp, percoor);
-                  kp.optimizeOrder();
-                  const Permutation &oper = kp.getPer();
-                  if (Permutation(oper, per) == iden)
+        if (it.numClasses() == t.dimen())
+          {
+            StackProduct<FGSTensor> sp(cont, it, out.getSym());
+            if (!sp.isZero(percoor))
+              {
+                KronProdStack<FGSTensor> kp(sp, percoor);
+                kp.optimizeOrder();
+                const Permutation &oper = kp.getPer();
+                if (Permutation(oper, per) == iden)
+                  {
+                    FPSTensor fps(out.getDims(), it, slice, kp);
                     {
-                      FPSTensor fps(out.getDims(), it, slice, kp);
-                      {
-                        std::unique_lock<std::mutex> lk{mut};
-                        fps.addTo(out);
-                      }
+                      std::unique_lock<std::mutex> lk{mut};
+                      fps.addTo(out);
                     }
-                }
-            }
-        }
+                  }
+              }
+          }
     }
 }
 

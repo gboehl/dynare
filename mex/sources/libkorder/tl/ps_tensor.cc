@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -237,23 +237,21 @@ UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
   auto lbi = t.getMap().lower_bound(lb_srt);
   auto ubi = t.getMap().upper_bound(ub_srt);
   for (auto run = lbi; run != ubi; ++run)
-    {
-      if (lb_srt.lessEq(run->first) && run->first.lessEq(ub_srt))
-        {
-          IntSequence c(run->first);
-          c.add(-1, lb_srt);
-          unsort.apply(c);
-          for (auto &i : pp)
-            {
-              IntSequence cp(coor.size());
-              i.apply(c, cp);
-              Tensor::index ind(*this, cp);
-              TL_RAISE_IF(*ind < 0 || *ind >= ncols(),
-                          "Internal error in slicing constructor of UPSTensor");
-              get(run->second.first, *ind) = run->second.second;
-            }
-        }
-    }
+    if (lb_srt.lessEq(run->first) && run->first.lessEq(ub_srt))
+      {
+        IntSequence c(run->first);
+        c.add(-1, lb_srt);
+        unsort.apply(c);
+        for (auto &i : pp)
+          {
+            IntSequence cp(coor.size());
+            i.apply(c, cp);
+            Tensor::index ind(*this, cp);
+            TL_RAISE_IF(*ind < 0 || *ind >= ncols(),
+                        "Internal error in slicing constructor of UPSTensor");
+            get(run->second.first, *ind) = run->second.second;
+          }
+      }
 }
 
 /* Here we calculate the maximum offsets in each folded dimension

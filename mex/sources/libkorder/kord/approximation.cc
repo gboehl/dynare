@@ -280,28 +280,26 @@ Approximation::calcStochShift(Vector &out, double at_sigma) const
 
   int dfac = 1;
   for (int d = 1; d <= rule_ders->getMaxDim(); d++, dfac *= d)
-    {
-      if (KOrder::is_even(d))
-        {
-          Symmetry sym{0, d, 0, 0};
+    if (KOrder::is_even(d))
+      {
+        Symmetry sym{0, d, 0, 0};
 
-          // calculate F_u′ᵈ via ZAuxContainer
-          auto ten = std::make_unique<FGSTensor>(ypart.ny(), TensorDimens(sym, nvs));
-          ten->zeros();
-          for (int l = 1; l <= d; l++)
-            {
-              const FSSparseTensor &f = model.getModelDerivatives().get(Symmetry{l});
-              zaux.multAndAdd(f, *ten);
-            }
+        // calculate F_u′ᵈ via ZAuxContainer
+        auto ten = std::make_unique<FGSTensor>(ypart.ny(), TensorDimens(sym, nvs));
+        ten->zeros();
+        for (int l = 1; l <= d; l++)
+          {
+            const FSSparseTensor &f = model.getModelDerivatives().get(Symmetry{l});
+            zaux.multAndAdd(f, *ten);
+          }
 
-          // multiply with shocks and add to result
-          auto tmp = std::make_unique<FGSTensor>(ypart.ny(), TensorDimens(Symmetry{0, 0, 0, 0}, nvs));
-          tmp->zeros();
-          ten->contractAndAdd(1, *tmp, mom.get(Symmetry{d}));
+        // multiply with shocks and add to result
+        auto tmp = std::make_unique<FGSTensor>(ypart.ny(), TensorDimens(Symmetry{0, 0, 0, 0}, nvs));
+        tmp->zeros();
+        ten->contractAndAdd(1, *tmp, mom.get(Symmetry{d}));
 
-          out.add(pow(at_sigma, d)/dfac, tmp->getData());
-        }
-    }
+        out.add(pow(at_sigma, d)/dfac, tmp->getData());
+      }
 }
 
 /* This method calculates and reports

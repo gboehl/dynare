@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -44,20 +44,18 @@ USubTensor::USubTensor(const TensorDimens &bdims,
   const EquivalenceSet &eset = TLStatic::getEquiv(bdims.dimen());
   zeros();
   for (const auto &it : eset)
-    {
-      if (it.numClasses() == hdims.dimen())
-        {
-          Permutation per(it);
-          std::vector<const FGSTensor *> ts
-            = cont.fetchTensors(bdims.getSym(), it);
-          for (int i = 0; i < static_cast<int>(lst.size()); i++)
-            {
-              IntSequence perindex(lst[i].size());
-              per.apply(lst[i], perindex);
-              addKronColumn(i, ts, perindex);
-            }
-        }
-    }
+    if (it.numClasses() == hdims.dimen())
+      {
+        Permutation per(it);
+        std::vector<const FGSTensor *> ts
+          = cont.fetchTensors(bdims.getSym(), it);
+        for (int i = 0; i < static_cast<int>(lst.size()); i++)
+          {
+            IntSequence perindex(lst[i].size());
+            per.apply(lst[i], perindex);
+            addKronColumn(i, ts, perindex);
+          }
+      }
 }
 
 /* This makes a Kronecker product of appropriate columns from tensors in ‘fs’

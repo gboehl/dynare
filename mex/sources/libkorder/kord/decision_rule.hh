@@ -532,14 +532,12 @@ DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
       g_yd->zeros();
       int kfact = 1;
       for (int k = 0; d+k <= g.getMaxDim(); k++, kfact *= k)
-        {
-          if (g.check(Symmetry{d, 0, 0, k}))
-            {
-              const _Ttensor &ten = g.get(Symmetry{d, 0, 0, k});
-              double mult = pow(sigma, k)/dfact/kfact;
-              g_yd->add(mult, ten);
-            }
-        }
+        if (g.check(Symmetry{d, 0, 0, k}))
+          {
+            const _Ttensor &ten = g.get(Symmetry{d, 0, 0, k});
+            double mult = pow(sigma, k)/dfact/kfact;
+            g_yd->add(mult, ten);
+          }
       this->insert(std::move(g_yd));
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -388,28 +388,26 @@ KronProdAllOptim::optimizeOrder()
     {
       int swaps = 0;
       for (int j = 0; j < dimen()-1; j++)
-        {
-          if (static_cast<double>(kpd.rows[j])/kpd.cols[j]
-              < static_cast<double>(kpd.rows[j+1])/kpd.cols[j+1])
-            {
-              // swap dimensions and matrices at j and j+1
-              int s = kpd.rows[j+1];
-              kpd.rows[j+1] = kpd.rows[j];
-              kpd.rows[j] = s;
-              s = kpd.cols[j+1];
-              kpd.cols[j+1] = kpd.cols[j];
-              kpd.cols[j] = s;
-              const TwoDMatrix *m = matlist[j+1];
-              matlist[j+1] = matlist[j];
-              matlist[j] = m;
+        if (static_cast<double>(kpd.rows[j])/kpd.cols[j]
+            < static_cast<double>(kpd.rows[j+1])/kpd.cols[j+1])
+          {
+            // swap dimensions and matrices at j and j+1
+            int s = kpd.rows[j+1];
+            kpd.rows[j+1] = kpd.rows[j];
+            kpd.rows[j] = s;
+            s = kpd.cols[j+1];
+            kpd.cols[j+1] = kpd.cols[j];
+            kpd.cols[j] = s;
+            const TwoDMatrix *m = matlist[j+1];
+            matlist[j+1] = matlist[j];
+            matlist[j] = m;
 
-              // project the swap to the permutation ‘oper’
-              s = oper.getMap()[j+1];
-              oper.getMap()[j+1] = oper.getMap()[j];
-              oper.getMap()[j] = s;
-              swaps++;
-            }
-        }
+            // project the swap to the permutation ‘oper’
+            s = oper.getMap()[j+1];
+            oper.getMap()[j+1] = oper.getMap()[j];
+            oper.getMap()[j] = s;
+            swaps++;
+          }
       if (swaps == 0)
         return;
     }
