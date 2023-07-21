@@ -4619,9 +4619,9 @@ Computing the stochastic solution
        Discard higher order terms when iteratively computing
        simulations of the solution. At second order, Dynare uses the
        algorithm of *Kim, Kim, Schaumburg and Sims (2008)*, while at
-       third order its generalization by *Andreasen,
+       third order and higher its generalization by *Andreasen,
        Fernández-Villaverde and Rubio-Ramírez (2018)* is used.
-       Not available above third order. When specified, theoretical moments
+       When specified, theoretical moments
        are based on the pruned state space, i.e. the computation of second moments
        uses all terms as in *Andreasen, Fernández-Villaverde and Rubio-Ramírez (2018), page 10*
        as opposed to simply providing a second-order accurate result based on the
