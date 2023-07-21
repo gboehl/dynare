@@ -45,4 +45,4 @@ objects(cellfun(@(x) all(isempty(x)), objects)) = [];
 
 
 function o = splitexpr(expr)
-o = strsplit(expr, {'+','-','*','/','^', '(', ')', '\n', '\t', ' '});
+o = strsplit(expr, {'+','-','*','/','^', '(', ')', ',', '\n', '\t', ' '});
