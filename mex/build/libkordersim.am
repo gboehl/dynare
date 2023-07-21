@@ -6,6 +6,7 @@ nodist_libkordersim_a_SOURCES = \
 	pascal.f08 \
 	sort.f08 \
 	partitions.f08 \
+	tensors.f08 \
 	simulation.f08 \
 	struct.f08 \
 	pthread.F08
@@ -24,7 +25,10 @@ sort.mod: sort.o
 partitions.o: sort.mod pascal.mod
 partitions.mod: partitions.o
 
-simulation.o: partitions.mod lapack.mod
+tensors.o: partitions.mod
+tensors.mod: tensors.o
+
+simulation.o: tensors.mod lapack.mod matlab_mex.mod
 simulation.mod: simulation.o
 
 %.f08: $(top_srcdir)/../../sources/libkordersim/%.f08

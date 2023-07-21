@@ -26,7 +26,7 @@ module pparticle
    type tdata
       integer :: nm, nys, endo_nbr, nvar, order, nrestricted, nparticles 
       real(real64), allocatable :: yhat(:,:), e(:,:), ynext(:,:), ys_reordered(:), restrict_var_list(:)
-      type(pol), dimension(:), allocatable :: udr
+      type(tensor), dimension(:), allocatable :: udr
    end type tdata
 
    type(tdata) :: thread_data
@@ -37,7 +37,7 @@ contains
       type(c_ptr), intent(in), value :: arg
       integer, pointer :: im
       integer :: i, j, start, end, q, r, ind
-      type(horner), dimension(:), allocatable :: h
+      type(tensor), dimension(:), allocatable :: h
       real(real64), dimension(:), allocatable :: dyu
 
       ! Checking that the thread number got passed as argument
@@ -49,7 +49,7 @@ contains
       ! Allocating local arrays
       allocate(h(0:thread_data%order), dyu(thread_data%nvar)) 
       do i=0, thread_data%order
-         allocate(h(i)%c(thread_data%endo_nbr, thread_data%nvar**i))
+         allocate(h(i)%m(thread_data%endo_nbr, thread_data%nvar**i))
       end do
 
       ! Specifying bounds for the curent thread
@@ -69,7 +69,7 @@ contains
          call eval(h, dyu, thread_data%udr, thread_data%endo_nbr, thread_data%nvar, thread_data%order)
          do i=1,thread_data%nrestricted
             ind = int(thread_data%restrict_var_list(i))
-            thread_data%ynext(i,j) = h(0)%c(ind,1) + thread_data%ys_reordered(ind)
+            thread_data%ynext(i,j) = h(0)%m(ind,1) + thread_data%ys_reordered(ind)
          end do
       end do
 
@@ -100,7 +100,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    type(c_ptr), dimension(*), intent(out) :: plhs
    integer(c_int), intent(in), value :: nlhs, nrhs
    type(c_ptr) :: M_mx, options_mx, dr_mx, yhat_mx, epsilon_mx, udr_mx, tmp
-   type(pol), dimension(:), allocatable :: udr
+   type(tensor), dimension(:), allocatable :: udr
    integer :: order, nstatic, npred, nboth, nfwrd, exo_nbr, endo_nbr, nparticles, nys, nvar, nrestricted, nm
    real(real64), dimension(:), pointer, contiguous :: order_var, ys, restrict_var_list
    real(real64), allocatable :: yhat(:,:), e(:,:), ynext(:,:), ys_reordered(:)
@@ -212,8 +212,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
       end if
       m = int(mxGetM(tmp))
       n = int(mxGetN(tmp))
-      allocate(udr(i)%g(m,n))
-      udr(i)%g(1:m,1:n) = reshape(mxGetPr(tmp), [m,n])
+      allocate(udr(i)%m(m,n))
+      udr(i)%m(1:m,1:n) = reshape(mxGetPr(tmp), [m,n])
    end do
 
    ! Initializing the global structure containing

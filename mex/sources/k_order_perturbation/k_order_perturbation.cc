@@ -126,6 +126,11 @@ extern "C" {
       mexErrMsgTxt("options_.debug should be a logical scalar");
     bool debug = static_cast<bool>(mxGetScalar(debug_mx));
 
+    const mxArray *pruning_mx = mxGetField(options_mx, 0, "pruning");
+    if (!(pruning_mx && mxIsLogicalScalar(pruning_mx)))
+      mexErrMsgTxt("options_.pruning should be a logical scalar");
+    bool pruning = static_cast<bool>(mxGetScalar(pruning_mx));
+
     // Extract various fields from M_
     const mxArray *fname_mx = mxGetField(M_mx, 0, "fname");
     if (!(fname_mx && mxIsChar(fname_mx) && mxGetM(fname_mx) == 1))
@@ -233,7 +238,7 @@ extern "C" {
                            dr_order, llincidence);
 
         // construct main K-order approximation class
-        Approximation app(dynare, journal, nSteps, false, qz_criterium);
+        Approximation app(dynare, journal, nSteps, false, pruning, qz_criterium);
         // run stochastic steady
         app.walkStochSteady();
 
@@ -246,7 +251,18 @@ extern "C" {
         const char *g_fieldnames_c[kOrder+1];
         for (int i = 0; i <= kOrder; i++)
           g_fieldnames_c[i] = g_fieldnames[i].c_str();
-        plhs[0] = mxCreateStructMatrix(1, 1, kOrder+1, g_fieldnames_c);
+        
+        if (pruning)
+          {
+            std::vector<std::string> g_fieldnames_pruning(g_fieldnames);   
+            g_fieldnames_pruning.emplace_back("pruning");
+            const char *g_fieldnames_pruning_c[kOrder+2];
+            std::copy_n(g_fieldnames_c, kOrder+1, g_fieldnames_pruning_c);
+            g_fieldnames_pruning_c[kOrder+1] = g_fieldnames_pruning.back().c_str();
+            plhs[0] = mxCreateStructMatrix(1, 1, kOrder+2, g_fieldnames_pruning_c);
+          }
+        else
+            plhs[0] = mxCreateStructMatrix(1, 1, kOrder+1, g_fieldnames_c);
 
         // Fill that structure
         for (int i = 0; i <= kOrder; i++)
@@ -256,7 +272,27 @@ extern "C" {
             const ConstVector &vec = t.getData();
             assert(vec.skip() == 1);
             std::copy_n(vec.base(), vec.length(), mxGetPr(tmp));
-            mxSetField(plhs[0], 0, ("g_" + std::to_string(i)).c_str(), tmp);
+            mxSetField(plhs[0], 0, g_fieldnames_c[i], tmp);
+          }
+
+        // Filling the output elements for pruning 
+        if (pruning)
+          {
+            const UnfoldDecisionRule &udr_pruning = app.getUnfoldDecisionRulePruning();
+
+            mxArray *dr_pruning = mxCreateStructMatrix(1, 1, kOrder+1, g_fieldnames_c);
+            mxSetField(plhs[0], 0, "pruning", dr_pruning);
+
+            // Fill that structure
+            for (int i = 0; i <= kOrder; i++)
+              {
+                const UFSTensor &t = udr_pruning.get(Symmetry{i});
+                mxArray *tmp = mxCreateDoubleMatrix(t.nrows(), t.ncols(), mxREAL);
+                const ConstVector &vec = t.getData();
+                assert(vec.skip() == 1);
+                std::copy_n(vec.base(), vec.length(), mxGetPr(tmp));
+                mxSetField(dr_pruning, 0, g_fieldnames_c[i], tmp);
+              }
           }
 
         if (nlhs > 1)

@@ -67,22 +67,28 @@ steady;
 
 stoch_simul(order=2,nograph);
 
-ex=randn(10,M_.exo_nbr);
+ex=randn(5,M_.exo_nbr);
 
 Y2_matlab = simult_(M_,options_,oo_.dr.ys,oo_.dr,ex,options_.order);
 stoch_simul(order=2,k_order_solver);
-options_.k_order_solver=true;
 Y2_mex = simult_(M_,options_,oo_.dr.ys,oo_.dr,ex,options_.order); 
 
-if max(max(abs(Y2_matlab-Y2_mex)))>1e-8;
-   error('Matlab and mex simulation routines do not return same results')
+if max(abs(Y2_matlab(:)-Y2_mex(:)))>1e-8;
+   error('2nd order: Matlab and mex simulation routines do not return similar results')
 end
 
+Y2_mexiter = NaN(M_.endo_nbr,size(ex,1)+1);
+Y2_mexiter(:,1) = oo_.dr.ys;
+for it = 1:size(ex,1)
+    Y2_temp = simult_(M_,options_,Y2_mexiter(:,it),oo_.dr,ex(it,:),options_.order);
+    Y2_mexiter(:,it+1) = Y2_temp(:,2);    
+end
 
-stoch_simul(order=3,k_order_solver);
+if max((abs(Y2_mex(:) - Y2_mexiter(:))))>1e-8;
+   error('2nd order: sequential call does not return similar results')
+end
 
-ex=randn(5,M_.exo_nbr);
-
+stoch_simul(order=3, k_order_solver, nograph, irf=0);
 Y3_mex = simult_(M_,options_,oo_.dr.ys,oo_.dr,ex,options_.order); 
 
 Y3_mexiter = NaN(M_.endo_nbr,size(ex,1)+1);
@@ -92,6 +98,29 @@ for it = 1:size(ex,1)
     Y3_mexiter(:,it+1) = Y3_temp(:,2);    
 end
 
-if max(max(abs(Y3_mex - Y3_mexiter)))>1e-8;
-   error('mex simulation: sequential call does not return same results')
+if max((abs(Y3_mex(:) - Y3_mexiter(:))))>1e-8;
+   error('3rd order: sequential call does not return similar results')
 end
+
+stoch_simul(order=2, k_order_solver, pruning, nograph, irf=0);
+
+options_.k_order_solver=false;
+Y2_matlab = simult_(M_,options_,oo_.dr.ys,oo_.dr,ex,options_.order); 
+options_.k_order_solver=true;
+Y2_mex = simult_(M_,options_,oo_.dr.ys,oo_.dr,ex,options_.order); 
+
+if max(abs(Y2_matlab(:)-Y2_mex(:)))>1e-8;
+   error('2nd order with pruning: Matlab and mex simulation routines do not return similar results')
+end
+
+stoch_simul(order=3, k_order_solver, pruning, nograph, irf=0);
+
+options_.k_order_solver=false;
+Y3_matlab = simult_(M_,options_,oo_.dr.ys,oo_.dr,ex,options_.order); 
+options_.k_order_solver=true;
+Y3_mex = simult_(M_,options_,oo_.dr.ys,oo_.dr,ex,options_.order); 
+
+if max(abs(Y3_matlab(:)-Y3_mex(:)))>1e-8;
+   error('3rd order with pruning: Matlab and mex simulation routines do not return similar results')
+end
+

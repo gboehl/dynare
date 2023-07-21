@@ -43,6 +43,10 @@ for i = 0:order
     gname = [ 'g_' num2str(i) ];
     dr.(gname) = dynpp_derivs.(gname);
 end
+if options.pruning
+   dr.pruning = dynpp_derivs.pruning;
+end
+
 
 % Fill equivalent Dynare matrices (up to 3rd order)
 
