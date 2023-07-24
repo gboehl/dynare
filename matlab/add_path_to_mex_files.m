@@ -21,7 +21,14 @@ if nargin<2
     modifypath = true;
 end
 
-if isoctave
+build_dir = get_build_dir(dynareroot);
+if ~isempty(build_dir)
+    % If a Meson build directory is found, use it preferably
+    mexpath = { build_dir };
+    if modifypath
+        addpath(build_dir)
+    end
+elseif isoctave
     % Add specific paths for Dynare Windows package
     if ispc
         if strcmpi(computer(), 'i686-w64-mingw32')

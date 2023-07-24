@@ -1,0 +1,193 @@
+#!/bin/bash
+
+# Returns the MATLAB version under the form x.y (not Rnnnn)
+# Takes as argument the path to the MATLAB installation
+#
+# Alternatively, if the first argument is “--hex”, returns the MATLAB version
+# as a pseudo-hexadecimal constant (0xMMmm) where MM is the major revision
+# number (in decimal) and mm is the minor revision number (in decimal).
+# E.g. version 9.14 is returned as 0x0914
+
+# Copyright © 2009-2023 Dynare Team
+#
+# This file is part of Dynare.
+#
+# Dynare is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Dynare is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
+
+if [[ ($# == 0) || ($# == 1 && $1 == --hex) ]]; then
+    echo "Usage: $0 [--hex] /path/to/matlab" 2>&1
+    exit 1
+fi
+
+if [[ $1 == --hex ]]; then
+    hex=true
+    MATLAB=$2
+else
+    hex=false
+    MATLAB=$1
+fi
+
+if [[ -f ${MATLAB}/VersionInfo.xml ]]; then
+    # The VersionInfo.xml file is present on all versions since R2017a, on all platforms.
+    # Extract the version number as x.y, since it is our preferred form, and is
+    # more robust to future versions.
+    MATLAB_VERSION=$(sed -En '/<version>/s/.*>([0-9]+\.[0-9]+).*/\1/p' "${MATLAB}/VersionInfo.xml")
+elif [[ -f ${MATLAB}/bin/util/mex/version.txt ]]; then
+    # The bin/util/mex/version.txt file is present on Windows and macOS, at least
+    # since R2009b. It contains the release number (Rnnnnx).
+    MATLAB_VERSION=$(< "${MATLAB}/bin/util/mex/version.txt")
+elif [[ -f ${MATLAB}/bin/mex || -f ${MATLAB}/bin/mexsh ]]; then
+    # Works on Linux and macOS until R2018a included. Returns the release number (Rnnnnx).
+    # Older MATLABs have the version in bin/mex, more recent in bin/mexsh
+    MATLAB_VERSION=$(sed -En "/^.*full_ver=/s/^.*full_ver='(R[^']+)'.*/\1/p" "${MATLAB}"/bin/mex*)
+else
+    echo "Can’t determine the MATLAB version" 2>&1
+    exit 1
+fi
+
+# If needed, convert a release number (Rnnnnx) into a version number (x.y)
+case ${MATLAB_VERSION} in
+    *2023[aA])
+        MATLAB_VERSION="9.14"
+        ;;
+    *2022[bB])
+        MATLAB_VERSION="9.13"
+        ;;
+    *2022[aA])
+        MATLAB_VERSION="9.12"
+        ;;
+    *2021[bB])
+        MATLAB_VERSION="9.11"
+        ;;
+    *2021[aA])
+        MATLAB_VERSION="9.10"
+        ;;
+    *2020[bB])
+        MATLAB_VERSION="9.9"
+        ;;
+    *2020[aA])
+        MATLAB_VERSION="9.8"
+        ;;
+    *2019[bB])
+        MATLAB_VERSION="9.7"
+        ;;
+    *2019[aA])
+        MATLAB_VERSION="9.6"
+        ;;
+    *2018[bB])
+        MATLAB_VERSION="9.5"
+        ;;
+    *2018[aA])
+        MATLAB_VERSION="9.4"
+        ;;
+    *2017[bB])
+        MATLAB_VERSION="9.3"
+        ;;
+    *2017[aA])
+        MATLAB_VERSION="9.2"
+        ;;
+    *2016[bB])
+        MATLAB_VERSION="9.1"
+        ;;
+    *2016[aA])
+        MATLAB_VERSION="9.0"
+        ;;
+    *2015[bB])
+        MATLAB_VERSION="8.6"
+        ;;
+    *2015[aA])
+        MATLAB_VERSION="8.5"
+        ;;
+    *2014[bB])
+        MATLAB_VERSION="8.4"
+        ;;
+    *2014[aA])
+        MATLAB_VERSION="8.3"
+        ;;
+    *2013[bB])
+        MATLAB_VERSION="8.2"
+        ;;
+    *2013[aA])
+        MATLAB_VERSION="8.1"
+        ;;
+    *2012[bB])
+        MATLAB_VERSION="8.0"
+        ;;
+    *2012[aA])
+        MATLAB_VERSION="7.14"
+        ;;
+    *2011[bB])
+        MATLAB_VERSION="7.13"
+        ;;
+    *2011[aA])
+        MATLAB_VERSION="7.12"
+        ;;
+    *2010[bB])
+        MATLAB_VERSION="7.11"
+        ;;
+    *2010[aA])
+        MATLAB_VERSION="7.10"
+        ;;
+    *2009[bB])
+        MATLAB_VERSION="7.9"
+        ;;
+    *2009[aA])
+        MATLAB_VERSION="7.8"
+        ;;
+    *2008[bB])
+        MATLAB_VERSION="7.7"
+        ;;
+    *2008[aA])
+        MATLAB_VERSION="7.6"
+        ;;
+    *2007[bB])
+        MATLAB_VERSION="7.5"
+        ;;
+    *2007[aA])
+        MATLAB_VERSION="7.4"
+        ;;
+    *2006[bB])
+        MATLAB_VERSION="7.3"
+        ;;
+    *2006[aA])
+        MATLAB_VERSION="7.2"
+        ;;
+    *14[sS][pP]3)
+        MATLAB_VERSION="7.1"
+        ;;
+    *14[sS][pP]2)
+        MATLAB_VERSION="7.0.4"
+        ;;
+    *14[sS][pP]1)
+        MATLAB_VERSION="7.0.1"
+        ;;
+    [rR]14)
+        MATLAB_VERSION="7.0.0"
+        ;;
+esac
+
+# Check that we have an x.y version number
+if ! grep -qE '^[0-9.]+$' <<< "${MATLAB_VERSION}"; then
+    echo "Unknown MATLAB version: ${MATLAB_VERSION}" 2>&1
+    exit 1
+fi
+
+if [[ $hex == true ]]; then
+    echo -n "0x"
+    sed -e 's/\([0-9]*\)\.\([0-9]*\).*/Z\1ZZ\2Z/' \
+        -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
+        -e 's/[^0-9]//g' <<< "${MATLAB_VERSION}"
+else
+    echo "${MATLAB_VERSION}"
+fi

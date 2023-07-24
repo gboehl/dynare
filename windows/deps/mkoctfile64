@@ -142,7 +142,7 @@ fi
 if [ $# -eq 1 ]; then
   case "$1" in
     -v | -version | --version)
-      echo $version_msg 1>&2
+      echo $version_msg
       exit 0
     ;;
   esac

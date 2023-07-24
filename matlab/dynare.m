@@ -201,7 +201,15 @@ if preprocessoroutput
     end
 end
 
-command = ['"' dynareroot '..' filesep 'preprocessor' filesep 'dynare-preprocessor" ' fname] ;
+build_dir = get_build_dir(dynareroot);
+if isempty(build_dir)
+    preprocessor_dir = [ dynareroot '..' filesep 'preprocessor' ];
+else
+    disp(['Using build directory: ' build_dir ])
+    preprocessor_dir = [ build_dir filesep 'preprocessor' filesep 'src' ];
+end
+
+command = ['"' preprocessor_dir filesep 'dynare-preprocessor" ' fname];
 command = [ command ' mexext=' mexext ' "matlabroot=' matlabroot '"'];
 % Properly quote arguments before passing them to the shell
 if ~isempty(varargin)
