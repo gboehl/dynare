@@ -3,10 +3,9 @@ mex_PROGRAMS = k_order_perturbation
 TOPDIR = $(top_srcdir)/../../sources/k_order_perturbation
 LIBKORDER_DIR = $(top_srcdir)/../../sources/libkorder
 
-k_order_perturbation_CPPFLAGS = $(AM_CPPFLAGS) -I$(LIBKORDER_DIR) -I$(LIBKORDER_DIR)/kord -I$(LIBKORDER_DIR)/tl -I$(LIBKORDER_DIR)/utils -I$(LIBKORDER_DIR)/sylv -I$(LIBKORDER_DIR)/integ -I$(TOPDIR) $(CPPFLAGS_MATIO)
+k_order_perturbation_CPPFLAGS = $(AM_CPPFLAGS) -I$(LIBKORDER_DIR) -I$(LIBKORDER_DIR)/kord -I$(LIBKORDER_DIR)/tl -I$(LIBKORDER_DIR)/utils -I$(LIBKORDER_DIR)/sylv -I$(LIBKORDER_DIR)/integ -I$(TOPDIR)
 
-k_order_perturbation_LDFLAGS = $(AM_LDFLAGS) $(LDFLAGS_MATIO)
-k_order_perturbation_LDADD = ../libkorder/libkorder.a $(LIBADD_DLOPEN) $(LIBADD_MATIO)
+k_order_perturbation_LDADD = ../libkorder/libkorder.a $(LIBADD_DLOPEN)
 
 nodist_k_order_perturbation_SOURCES = k_order_perturbation.cc
 

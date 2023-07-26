@@ -2,7 +2,7 @@ noinst_LIBRARIES = libkorder.a
 
 TOPDIR = $(top_srcdir)/../../sources/libkorder
 
-libkorder_a_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR) -I$(TOPDIR)/tl -I$(TOPDIR)/sylv -I$(TOPDIR)/kord -I$(TOPDIR)/utils $(CPPFLAGS_MATIO)
+libkorder_a_CPPFLAGS = $(AM_CPPFLAGS) -I$(TOPDIR) -I$(TOPDIR)/tl -I$(TOPDIR)/sylv -I$(TOPDIR)/kord -I$(TOPDIR)/utils
 
 # TODO: fix the codebase so that the following line is no longer needed
 libkorder_a_CXXFLAGS = $(AM_CXXFLAGS) -Wno-unused-parameter
