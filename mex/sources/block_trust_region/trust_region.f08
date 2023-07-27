@@ -56,7 +56,6 @@ contains
     integer :: maxiter_actual
     real(real64) :: factor_actual
     integer, parameter :: maxslowiter = 15 ! Maximum number of consecutive iterations with slow progress
-    real(real64), parameter :: macheps = epsilon(x)
     real(real64) :: delta ! Radius of the trust region
     real(real64), dimension(size(x)) :: fvec ! Current function value
     real(real64) :: fn ! Norm of the current function value
