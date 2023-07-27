@@ -27,7 +27,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name='mexFunction')
    type(c_ptr), dimension(*), intent(in), target :: prhs
    type(c_ptr), dimension(*), intent(out) :: plhs
    integer(c_int), intent(in), value :: nlhs, nrhs
-   type(c_ptr) :: M_mx, options_mx, dr_mx, pruning_mx, tmp, g
+   type(c_ptr) :: M_mx, options_mx, dr_mx, tmp, g
    type(tensor), dimension(:), allocatable, target :: fdr
    integer :: order, npred, nboth, nstatic, nfwrd, endo_nbr, exo_nbr, nys, nvar 
    type(pascal_triangle) :: p
