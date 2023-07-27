@@ -22,7 +22,7 @@
 module simulation
    use iso_fortran_env
    use tensors
-   use lapack
+   use blas
    use matlab_mex
    implicit none (type, external)
 
