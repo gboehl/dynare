@@ -89,18 +89,18 @@ else
     if length(varargin) >= 2
         dset = varargin{2};
         if ~isa(dset,'dseries')
-            error('the second argmuent should be a dseries');
+            error('det_cond_forecast: The second argument should be a dseries');
         end
         if length(varargin) >= 3
             range = varargin{3};
             if ~isa(range,'dates')
-                error('the third argmuent should be a dates');
+                error('det_cond_forecast: The third argument should be a dates object');
             end
             %if (range(range.ndat) > dset.time(dset.nobs) )
             if (range(range.ndat) > dset.dates(dset.nobs)+1 )
                 s1 = strings(dset.dates(dset.nobs));
                 s2 = strings(range(range.ndat));
-                error(['the dseries ' inputname(2) ' finish at time ' s1{1} ' before the last period of forecast ' s2{1}]);
+                error(['det_cond_forecast: The dseries ' inputname(2) ' finishes at time ' s1{1} ' before the last period of forecast ' s2{1}]);
             end
 
             sym_dset = dset(dates(-range(1)):dates(range(range.ndat)));
@@ -137,7 +137,7 @@ else
                         oo_.endo_simul(M_.aux_vars(i).endo_index, 1:sym_dset.nobs) = dset(dates(range(1) + (M_.aux_vars(i).orig_lead_lag - 1))).data(:,iy);
                         initial_conditions(M_.aux_vars(i).endo_index) = dset(dates(range(1) + (M_.aux_vars(i).orig_lead_lag - 1))).data(:,iy);
                     else
-                        warning(['The variable auxiliary ' M_.endo_names{M_.aux_vars(i).endo_index} ' associated to the variable ' M_.endo_names{M_.aux_vars(i).orig_index} ' do not appear in the dataset']);
+                        warning(['det_cond_forecast: The variable auxiliary ' M_.endo_names{M_.aux_vars(i).endo_index} ' associated with the variable ' M_.endo_names{M_.aux_vars(i).orig_index} ' does not appear in the dataset']);
                     end
                 else
                     oo_.endo_simul(M_.aux_vars(i).endo_index, 1:sym_dset.nobs) = repmat(oo_.steady_state(M_.aux_vars(i).endo_index), 1, range.ndat + 1);
@@ -212,7 +212,7 @@ else
                 return
             end
         else
-            error('impossible case');
+            error('det_cond_forecast: unaccounted case, please contact the developers');
         end
 
     else
@@ -347,7 +347,7 @@ if isfield(options_cond_fcst,'controlled_varexo')
         error(['det_cond_forecast: the number of exogenous controlled variables (' int2str(n_control_exo) ') has to be equal to the number of constrained endogenous variabes (' int2str(n_endo_constrained) ')'])
     end
 else
-    error('det_cond_forecast: to run a deterministic conditional forecast you have to specified the exogenous variables controlled using the option controlled_varexo in forecast command');
+    error('det_cond_forecast: to run a deterministic conditional forecast you have to specify the controlled exogenous variables using the option controlled_varexo in forecast command');
 end
 
 % if n_endo_constrained == 0
@@ -450,7 +450,7 @@ if pf && ~surprise
                     oo_.exo_simul(time_index_constraint,j) = (old_exo(:,j) + alpha * D_exo(col_count: (col_count + constrained_periods - 1)));
                     col_count = col_count + constrained_periods;
                 end
-                disp(['Divergence in  Newton: reducing the path length alpha=' num2str(alpha)]);
+                disp(['Divergence in Newton algorithm: reducing the path length alpha=' num2str(alpha)]);
                 oo_.endo_simul = repmat(oo_.steady_state, 1, options_cond_fcst.periods + 2);
             else
                 not_achieved = 0;
@@ -696,7 +696,7 @@ else
                             col_count = col_count + 1;
                         end
                     end
-                    disp(['Divergence in  Newton: reducing the path length alpha=' num2str(alpha) ' result=' num2str(result) ' sum(sum)=' num2str(sum(sum(isfinite(oo_.endo_simul(:,time_index_constraint))))) ' ny * length(time_index_constraint)=' num2str(ny * length(time_index_constraint)) ' oo_.deterministic_simulation.status=' num2str(oo_.deterministic_simulation.status)]);
+                    disp(['Divergence in Newton algorithm: reducing the path length alpha=' num2str(alpha) ' result=' num2str(result) ' sum(sum)=' num2str(sum(sum(isfinite(oo_.endo_simul(:,time_index_constraint))))) ' ny * length(time_index_constraint)=' num2str(ny * length(time_index_constraint)) ' oo_.deterministic_simulation.status=' num2str(oo_.deterministic_simulation.status)]);
                     oo_.endo_simul = [initial_conditions repmat(oo_.steady_state, 1, options_cond_fcst.periods + 1)];
                 else
                     not_achieved = 0;
