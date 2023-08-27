@@ -70,7 +70,11 @@ if jacobian_flag
             errorcode = -11;
             return;
         end
-        disp_verbose('Randomize initial guess...', options.verbosity)
+        if any(~isreal(fvec)) || any(~isreal(fjac(:)))
+            disp_verbose('dynare_solve: starting value results in complex values. Randomize initial guess...', options.verbosity)
+        else
+            disp_verbose('dynare_solve: starting value results in nonfinite/NaN value. Randomize initial guess...', options.verbosity)
+        end
         % Let's try random numbers for the variables initialized with the default value.
         wrong_initial_guess_flag = true;
         % First try with positive numbers.
