@@ -91,6 +91,7 @@ if nargout == 0
         first_eq = 1;
         last_eq = M_.orig_endo_nbr;
     end
+    disp_format_tags=sprintf('Equation number %%%uu: %%-%us: %%14.6f\n',length(num2str(M_.eq_nbr)),size(strvcat(tags(:,3)),2)+1);
     for i=first_eq:last_eq
         if abs(z(i)) < options_.solve_tolf/100
             tmp = 0;
@@ -106,9 +107,7 @@ if nargout == 0
             if ~istag || length(ind) == 0
                 disp(['Equation number ' int2str(i) ' : ' num2str(tmp)])
             else
-                t1 = tg( ind , 2 );
-                s = cell2mat(t1);
-                disp( ['Equation number ', int2str(i) ,' : ', num2str(tmp) ,' : ' s])
+                fprintf(disp_format_tags, i, tg{ind , 2}, tmp)
             end
         end
     end
