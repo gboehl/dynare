@@ -51,7 +51,7 @@ if any(imag(oo_.steady_state))
 end
 
 if options_.steadystate_flag
-    [oo_.steady_state,M_.params,info] = ...
+    [oo_.steady_state,M_.params] = ...
         evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,false);
 end
 
@@ -91,7 +91,8 @@ if nargout == 0
         first_eq = 1;
         last_eq = M_.orig_endo_nbr;
     end
-    disp_format_tags=sprintf('Equation number %%%uu: %%-%us: %%14.6f\n',length(num2str(M_.eq_nbr)),size(strvcat(tags(:,3)),2)+1);
+    disp_format_tags_real=sprintf('Equation number %%%uu: %%-%us: %%14.6f\n',length(num2str(M_.eq_nbr)),size(strvcat(tags(:,3)),2)+1);
+    disp_format_tags_complex=sprintf('Equation number %%%uu: %%-%us: real: %%14.6f, imaginary: %%g\n',length(num2str(M_.eq_nbr)),size(strvcat(tags(:,3)),2)+1);
     for i=first_eq:last_eq
         if abs(z(i)) < options_.solve_tolf/100
             tmp = 0;
@@ -105,9 +106,17 @@ if nargout == 0
         end
         if ~(non_zero && tmp == 0)
             if ~istag || length(ind) == 0
-                disp(['Equation number ' int2str(i) ' : ' num2str(tmp)])
+                if ~isreal(z)
+                    fprintf('Equation number %u: %g (imaginary part: %g)\n', i, real(tmp), imag(tmp));
+                else
+                    fprintf('Equation number %u: %g\n', i, tmp);
+                end
             else
-                fprintf(disp_format_tags, i, tg{ind , 2}, tmp)
+                if ~isreal(z)
+                    fprintf(disp_format_tags_complex, i, tg{ind , 2}, real(tmp), imag(tmp) );
+                else
+                    fprintf(disp_format_tags_real, i, tg{ind , 2}, tmp);
+                end
             end
         end
     end
