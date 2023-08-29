@@ -23,7 +23,7 @@ function [oo_,M_] = shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2009-2020 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -84,11 +84,11 @@ end
 
 options_.selected_variables_only = 0; %make sure all variables are stored
 options_.plot_priors=0;
-[oo_, M_, ~, ~, Smoothed_Variables_deviation_from_mean, initial_date] = evaluate_smoother(parameter_set, varlist, M_, oo_, options_, bayestopt_, estim_params_);
+[oo_temp, ~, ~, ~, Smoothed_Variables_deviation_from_mean, initial_date] = evaluate_smoother(parameter_set, varlist, M_, oo_, options_, bayestopt_, estim_params_);
 
 options_.initial_date=initial_date;
 % reduced form
-dr = oo_.dr;
+dr = oo_temp.dr;
 
 % data reordering
 order_var = dr.order_var;
@@ -100,10 +100,10 @@ A = dr.ghx;
 B = dr.ghu;
 
 % initialization
-gend = size(oo_.SmoothedShocks.(M_.exo_names{1}),1);
+gend = size(oo_temp.SmoothedShocks.(M_.exo_names{1}),1);
 epsilon=NaN(nshocks,gend);
 for i=1:nshocks
-    epsilon(i,:) = oo_.SmoothedShocks.(M_.exo_names{i});
+    epsilon(i,:) = oo_temp.SmoothedShocks.(M_.exo_names{i});
 end
 
 z = zeros(endo_nbr,nshocks+2,gend);
@@ -134,7 +134,7 @@ for i=1:gend
 end
 
 if with_epilogue
-    [z, oo_.shock_decomposition_info.epilogue_steady_state] = epilogue_shock_decomposition(z, M_, oo_);
+    [z, oo_.shock_decomposition_info.epilogue_steady_state] = epilogue_shock_decomposition(z, M_, oo_temp);
 end
 
 oo_.shock_decomposition = z;
