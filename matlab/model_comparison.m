@@ -80,7 +80,7 @@ for i=1:NumberOfModels
     if i==iname
         mstruct.oo_ = oo;
     else
-        if strcmpi(ModelNames{i}(end-3:end),'.mod') || strcmpi(ModelNames{i}(end-3:end),'.dyn')
+        if length(ModelNames{i})>3 && (strcmpi(ModelNames{i}(end-3:end),'.mod') || strcmpi(ModelNames{i}(end-3:end),'.dyn'))
             mstruct = load([ModelNames{i}(1:end-4) filesep 'Output' ModelNames{i}(1:end-4) '_results.mat' ],'oo_');
         else
             mstruct = load([ModelNames{i} filesep 'Output' filesep ModelNames{i} '_results.mat' ],'oo_');
