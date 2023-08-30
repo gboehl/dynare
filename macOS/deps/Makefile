@@ -133,11 +133,11 @@ clean-slicot-all: clean-slicot-src clean-slicot-tar clean-libslicot
 #
 # X13AS
 #
-tarballs/x13assrc_V$(X13AS_VERSION).tar.gz:
+tarballs/x13as_asciisrc-v$(X13AS_VERSION).tar.gz:
 	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ https://ftp.debian.org/debian/pool/non-free/x/x13as/x13as_$(subst _,-,$(X13AS_VERSION)).orig.tar.gz
+	wget $(WGET_OPTIONS) -O $@ https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/program-archives/x13as_asciisrc-v$(X13AS_VERSION).tar.gz
 
-sources64/x13as-$(X13AS_VERSION): tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
+sources64/x13as-$(X13AS_VERSION): tarballs/x13as_asciisrc-v$(X13AS_VERSION).tar.gz
 	rm -rf sources64/x13as-*
 	mkdir -p $@
 	tar xf $< --directory $@
@@ -161,7 +161,7 @@ lib64/x13as/x13as: sources64/x13as-$(X13AS_VERSION)
 build-x13as: lib64/x13as/x13as
 
 clean-x13as-tar:
-	rm -f tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
+	rm -f tarballs/x13as_asciisrc-v$(X13AS_VERSION).tar.gz
 
 clean-x13as-src:
 	rm -rf sources64/x13as-$(X13AS_VERSION)

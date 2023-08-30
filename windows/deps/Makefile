@@ -193,17 +193,18 @@ clean-msys2:
 # X13AS
 #
 
-tarballs/x13as-v$(X13AS_VERSION).zip:
+tarballs/x13as_ascii-v$(X13AS_VERSION).zip:
 	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ https://www2.census.gov/software/x-13arima-seats/x13as/windows/previous-version/$(notdir $@)
+	wget $(WGET_OPTIONS) -O $@ https://www2.census.gov/software/x-13arima-seats/x13as/windows/program-archives/$(notdir $@)
 
-lib64/x13as/x13as.exe: tarballs/x13as-v$(X13AS_VERSION).zip
-	unzip -d lib64 $<
+lib64/x13as/x13as.exe: tarballs/x13as_ascii-v$(X13AS_VERSION).zip
+	unzip -o -d lib64 $<
+	mv lib64/x13as/x13as_ascii.exe $@
 
 x13as: lib64/x13as/x13as.exe
 
 clean-x13as-tar:
-	rm -f tarballs/x13as-v$(X13AS_VERSION).zip
+	rm -f tarballs/x13as_ascii-v$(X13AS_VERSION).zip
 
 clean-x13as-bin:
 	rm -rf lib64/x13as
