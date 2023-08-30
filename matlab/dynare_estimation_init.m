@@ -532,15 +532,17 @@ end
 if ~isempty(dataset_)
     options_.nobs = dataset_.nobs;
     if options_.endogenous_prior 
-        if dataset_info.missing.no_more_missing_observations<dataset_.nobs-10
-            fprintf('\ndynare_estimation_init: There are missing observations in the data.\n')
-            fprintf('dynare_estimation_init: I am computing the moments for the endogenous prior only\n')
-            fprintf('dynare_estimation_init: on the observations after the last missing one, i.e. %u.\n',dataset_info.missing.no_more_missing_observations)
-        else
-            fprintf('\ndynare_estimation_init: There are too many missing observations in the data.\n')        
-            fprintf('dynare_estimation_init: The endogenous_prior-option needs a consistent sample of \n')
-            fprintf('dynare_estimation_init: at least 10 full observations at the end.\n')
-            error('The endogenous_prior-option does not support your missing data.')
+        if ~isnan(dataset_info.missing.number_of_observations) && ~(dataset_info.missing.number_of_observations==0) %missing observations present
+            if dataset_info.missing.no_more_missing_observations<dataset_.nobs-10
+                fprintf('\ndynare_estimation_init: There are missing observations in the data.\n')
+                fprintf('dynare_estimation_init: I am computing the moments for the endogenous prior only\n')
+                fprintf('dynare_estimation_init: on the observations after the last missing one, i.e. %u.\n',dataset_info.missing.no_more_missing_observations)
+            else
+                fprintf('\ndynare_estimation_init: There are too many missing observations in the data.\n')
+                fprintf('dynare_estimation_init: The endogenous_prior-option needs a consistent sample of \n')
+                fprintf('dynare_estimation_init: at least 10 full observations at the end.\n')
+                error('The endogenous_prior-option does not support your missing data.')
+            end
         end
     end
 end
