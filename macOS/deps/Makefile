@@ -161,7 +161,7 @@ lib64/x13as/x13as: sources64/x13as-$(X13AS_VERSION)
 build-x13as: lib64/x13as/x13as
 
 clean-x13as-tar:
-	rm -f tarballs/x13assrc_V$(X13AS_VERSION).tar.gz
+	rm -f tarballs/x13as_asciisrc-v$(X13AS_VERSION).tar.gz
 
 clean-x13as-src:
 	rm -rf sources64/x13as-$(X13AS_VERSION)
