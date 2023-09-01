@@ -376,38 +376,7 @@ if np > 0
     save([M_.dname filesep 'Output' filesep M_.fname '_params.mat'],'pindx');
 end
 
-switch options_.MCMC_jumping_covariance
-  case 'hessian' %Baseline
-                 %do nothing and use hessian from mode_compute
-  case 'prior_variance' %Use prior variance
-    if any(isinf(bayestopt_.p2))
-        error('Infinite prior variances detected. You cannot use the prior variances as the proposal density, if some variances are Inf.')
-    else
-        hh = diag(1./(bayestopt_.p2.^2));
-    end
-    hsd = sqrt(diag(hh));
-    invhess = inv(hh./(hsd*hsd'))./(hsd*hsd');
-  case 'identity_matrix' %Use identity
-    invhess = eye(nx);
-  otherwise %user specified matrix in file
-    try
-        load(options_.MCMC_jumping_covariance,'jumping_covariance')
-        hh=jumping_covariance;
-    catch
-        error(['No matrix named ''jumping_covariance'' could be found in ',options_.MCMC_jumping_covariance,'.mat'])
-    end
-    [nrow, ncol]=size(hh);
-    if ~isequal(nrow,ncol) && ~isequal(nrow,nx) %check if square and right size
-        error(['jumping_covariance matrix must be square and have ',num2str(nx),' rows and columns'])
-    end
-    try %check for positive definiteness
-        chol(hh);
-        hsd = sqrt(diag(hh));
-        invhess = inv(hh./(hsd*hsd'))./(hsd*hsd');
-    catch
-        error(['Specified jumping_covariance is not positive definite'])
-    end
-end
+invhess = set_mcmc_jumping_covariance(invhess, nx, options_.MCMC_jumping_covariance, bayestopt_, 'dynare_estimation_1');
 
 if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         (any(bayestopt_.pshape >0 ) && options_.load_mh_file)  %% not ML estimation
