@@ -5,7 +5,7 @@ Currently the development team of Dynare is composed of:
 
 * Stéphane Adjemian (Le Mans Université, Gains)
 * Michel Juillard (Banque de France)
-* Sumudu Kankanamge (Toulouse School of Economics and CEPREMAP)
+* Sumudu Kankanamge (Le Mans Université and CEPREMAP)
 * Frédéric Karamé (Le Mans Université, Gains and CEPREMAP)
 * Junior Maih (Norges Bank)
 * Willi Mutschler (University of Tübingen)
