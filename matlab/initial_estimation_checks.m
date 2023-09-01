@@ -184,26 +184,9 @@ if isfield(EstimatedParameters,'param_vals') && ~isempty(EstimatedParameters.par
     end
 end
 
-if any(BayesInfo.pshape) % if Bayesian estimation
-    nvx=EstimatedParameters.nvx;
-    if nvx && any(BayesInfo.p3(1:nvx)<0)
-        warning('Your prior allows for negative standard deviations for structural shocks. Due to working with variances, Dynare will be able to continue, but it is recommended to change your prior.')
-    end
-    offset=nvx;
-    nvn=EstimatedParameters.nvn;
-    if nvn && any(BayesInfo.p3(1+offset:offset+nvn)<0)
-        warning('Your prior allows for negative standard deviations for measurement error. Due to working with variances, Dynare will be able to continue, but it is recommended to change your prior.')
-    end
-    offset = nvx+nvn;
-    ncx=EstimatedParameters.ncx;
-    if ncx && (any(BayesInfo.p3(1+offset:offset+ncx)<-1) || any(BayesInfo.p4(1+offset:offset+ncx)>1))
-        warning('Your prior allows for correlations between structural shocks larger than +-1 and will not integrate to 1 due to truncation. Please change your prior')
-    end
-    offset = nvx+nvn+ncx;
-    ncn=EstimatedParameters.ncn;
-    if ncn && (any(BayesInfo.p3(1+offset:offset+ncn)<-1) || any(BayesInfo.p4(1+offset:offset+ncn)>1))
-        warning('Your prior allows for correlations between measurement errors larger than +-1 and will not integrate to 1 due to truncation. Please change your prior')
-    end
+% check and display warning if negative values of stderr or corr params are outside unit circle for Bayesian estimation
+if any(BayesInfo.pshape)
+    check_prior_stderr_corr(EstimatedParameters,BayesInfo);
 end
 
 % display warning if some parameters are still NaN
