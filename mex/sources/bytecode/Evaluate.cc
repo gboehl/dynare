@@ -229,10 +229,10 @@ Evaluate::Evaluate(const filesystem::path &codfile, bool steady_state_arg, const
 # ifdef DEBUGL
           mexPrintf("FBEGINBLOCK\n");
 # endif
-          deserialized_special_instrs.push_back(make_unique<FBEGINBLOCK_>(code));
+          deserialized_fbeginblock.emplace_back(code);
           begin_block.push_back(instructions_list.size());
           nb_blocks++;
-          instr = deserialized_special_instrs.back().get();
+          instr = &deserialized_fbeginblock.back();
           break;
         case Tags::FJMPIFEVAL:
 # ifdef DEBUGL
@@ -250,8 +250,8 @@ Evaluate::Evaluate(const filesystem::path &codfile, bool steady_state_arg, const
 # ifdef DEBUGL
           mexPrintf("FCALL\n");
 # endif
-          deserialized_special_instrs.push_back(make_unique<FCALL_>(code));
-          instr = deserialized_special_instrs.back().get();
+          deserialized_fcall.emplace_back(code);
+          instr = &deserialized_fcall.back();
           break;
         case Tags::FLDTEF:
 # ifdef DEBUGL

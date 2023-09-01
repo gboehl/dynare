@@ -26,6 +26,7 @@
 #include <optional>
 #include <memory>
 #include <filesystem>
+#include <deque>
 
 #include "Bytecode.hh"
 #include "BasicSymbolTable.hh"
@@ -43,11 +44,15 @@ private:
   unique_ptr<char[]> raw_bytecode;
 
   /* Owns read instructions that have their specialized deserializing
-     constructors (and are thus not part of the “code” memory block) */
-  vector<unique_ptr<BytecodeInstruction>> deserialized_special_instrs;
+     constructors (and are thus not part of the “code” memory block). We use
+     std::deque for storing them, because that class guarantees the stability
+     of iterators, and thus of pointers to elements; we store such pointers in
+     the “instructions_list” data member. */
+  deque<FBEGINBLOCK_> deserialized_fbeginblock;
+  deque<FCALL_> deserialized_fcall;
 
   /* List of deserialized instructions
-     Those are either pointers inside “raw_bytecode” or “deserialized_special_instrs” */
+     Those are either pointers inside “raw_bytecode” or “deserialized_{fbeginblock,fcall}” */
   instructions_list_t instructions_list;
 
    // Number of blocks in the model
