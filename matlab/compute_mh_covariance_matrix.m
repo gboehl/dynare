@@ -1,10 +1,13 @@
-function [posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix()
+function [posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix(bayestopt_,fname,dname)
+% function [posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix(bayestopt_,fname,dname)
 % Estimation of the posterior covariance matrix, posterior mean, posterior mode and evaluation of the posterior kernel at the
 % estimated mode, using the draws from a metropolis-hastings. The estimated posterior mode and covariance matrix are saved in
-% a file <M_.fname>_mh_mode.mat.
+% a file <fname>_mh_mode.mat.
 %
 % INPUTS
-%   None.
+%   o  bayestopt_                    [struct]  characterizing priors
+%   o  fname                         [string]  name of model
+%   o  dname                         [string]  name of directory with metropolis folder
 %
 % OUTPUTS
 %   o  posterior_mean                [double]  (n*1) vector, posterior expectation of the parameters.
@@ -31,14 +34,10 @@ function [posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
+MetropolisFolder = CheckPath('metropolis',dname);
+BaseName = [MetropolisFolder filesep fname];
 
-global M_ bayestopt_
-
-MetropolisFolder = CheckPath('metropolis',M_.dname);
-ModelName = M_.fname;
-BaseName = [MetropolisFolder filesep ModelName];
-
-record=load_last_mh_history_file(MetropolisFolder, ModelName);
+record=load_last_mh_history_file(MetropolisFolder, fname);
 
 FirstMhFile = record.KeepedDraws.FirstMhFile;
 FirstLine   = record.KeepedDraws.FirstLine;
@@ -71,4 +70,4 @@ hh = inv(posterior_covariance);
 fval = posterior_kernel_at_the_mode;
 parameter_names = bayestopt_.name;
 
-save([M_.dname filesep 'Output' filesep M_.fname '_mh_mode.mat'],'xparam1','hh','fval','parameter_names');
+save([dname filesep 'Output' filesep fname '_mh_mode.mat'],'xparam1','hh','fval','parameter_names');

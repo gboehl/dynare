@@ -1,10 +1,11 @@
-function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, options_, bounds, bayestopt_)
-
-% function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, options_, bounds, bayestopt_)
+function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, fname, dname, options_, bounds, bayestopt_)
+% function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, fname, dname, options_, bounds, bayestopt_)
 % initialization of posterior samplers
 %
 % INPUTS
 %   posterior_sampler_options:       posterior sampler options
+%   fname:          name of the mod-file
+%   dname:          name of directory with metropolis folder
 %   options_:       structure storing the options
 %   bounds:         structure containing prior bounds
 %   bayestopt_:     structure storing information about priors
@@ -17,7 +18,7 @@ function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sam
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2015-2022 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -391,7 +392,7 @@ if ~strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
 end
 
 if options_.load_mh_file && posterior_sampler_options.use_mh_covariance_matrix
-    [~, invhess] = compute_mh_covariance_matrix;
+    [~, invhess] = compute_mh_covariance_matrix(bayestopt_,fname,dname);
     posterior_sampler_options.invhess = invhess;
 end
 
@@ -413,7 +414,7 @@ if strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
                 error('check_posterior_sampler_options:: This error should not occur, please contact developers.')
             end
             % % %             if options_.load_mh_file && options_.use_mh_covariance_matrix,
-            % % %                 [~, invhess] = compute_mh_covariance_matrix;
+            % % %                 [~, invhess] = compute_mh_covariance_matrix(bayestopt_,M_.fname,M_.dname));
             % % %                 posterior_sampler_options.invhess = invhess;
             % % %             end
             [V1, D]=eig(invhess);

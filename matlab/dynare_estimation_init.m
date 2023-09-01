@@ -627,7 +627,7 @@ if options_.load_results_after_load_mh
 end
 
 if options_.mh_replic || options_.load_mh_file
-    [current_options, options_, bayestopt_] = check_posterior_sampler_options([], options_, bounds, bayestopt_);
+    [current_options, options_, bayestopt_] = check_posterior_sampler_options([], M_.fname, M_.dname, options_, bounds, bayestopt_);
     options_.posterior_sampler_options.current_options = current_options;
 end
 

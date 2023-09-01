@@ -463,7 +463,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
             %get invhess in case of use_mh_covariance_matrix
             posterior_sampler_options_temp = options_.posterior_sampler_options.current_options;
             posterior_sampler_options_temp.invhess = invhess;
-            posterior_sampler_options_temp = check_posterior_sampler_options(posterior_sampler_options_temp, options_);
+            posterior_sampler_options_temp = check_posterior_sampler_options(posterior_sampler_options_temp, M_.fname, M_.dname, options_);
 
             options = options_.mh_tune_jscale;
             options.rwmh = options_.posterior_sampler_options.rwmh;
@@ -481,7 +481,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
     if options_.mh_replic || options_.load_mh_file
         posterior_sampler_options = options_.posterior_sampler_options.current_options;
         posterior_sampler_options.invhess = invhess;
-        [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, options_, bounds, bayestopt_);
+        [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, M_.fname, M_.dname, options_, bounds, bayestopt_);
         % store current options in global
         options_.posterior_sampler_options.current_options = posterior_sampler_options;
         if options_.mh_replic
@@ -494,7 +494,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
     %% Here I discard first mh_drop percent of the draws:
     CutSample(M_, options_, estim_params_);
     if options_.mh_posterior_mode_estimation
-        [~,~,posterior_mode,~] = compute_mh_covariance_matrix();
+        [~,~,posterior_mode,~] = compute_mh_covariance_matrix(bayestopt_,M_.fname,M_.dname);
         oo_=fill_mh_mode(posterior_mode',NaN(length(posterior_mode),1),M_,options_,estim_params_,bayestopt_,oo_,'posterior');
         %reset qz_criterium
         options_.qz_criterium=qz_criterium_old;

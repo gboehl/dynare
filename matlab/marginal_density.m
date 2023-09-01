@@ -48,7 +48,7 @@ TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
 TODROP = floor(options_.mh_drop*TotalNumberOfMhDraws);
 
 fprintf('Estimation::marginal density: I''m computing the posterior mean and covariance... ');
-[posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix();
+[posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix(bayestopt_,M_.fname,M_.dname);
 
 MU = transpose(posterior_mean);
 SIGMA = posterior_covariance;
