@@ -80,25 +80,10 @@ if ~isfield(options_,'varobs')
     error('VAROBS statement is missing!')
 end
 
+% Checks on VAROBS
+check_varobs_are_endo_and_declared_once(options_.varobs,M_.endo_names);
 % Set the number of observed variables.
 options_.number_of_observed_variables = length(options_.varobs);
-
-% Check that each declared observed variable is also an endogenous variable.
-for i = 1:options_.number_of_observed_variables
-    id = strmatch(options_.varobs{i}, M_.endo_names, 'exact');
-    if isempty(id)
-        error(['Unknown variable (' options_.varobs{i} ')!'])
-    end
-end
-
-% Check that a variable is not declared as observed more than once.
-if length(unique(options_.varobs))<length(options_.varobs)
-    for i = 1:options_.number_of_observed_variables
-        if length(strmatch(options_.varobs{i},options_.varobs,'exact'))>1
-            error(['A variable cannot be declared as observed more than once (' options_.varobs{i} ')!'])
-        end
-    end
-end
 
 if options_.discretionary_policy
     if options_.order>1
