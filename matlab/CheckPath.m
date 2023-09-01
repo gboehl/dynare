@@ -12,7 +12,7 @@ function [DirectoryName, info] = CheckPath(type,dname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2005-2017 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,7 +31,7 @@ function [DirectoryName, info] = CheckPath(type,dname)
 
 info = 0;
 
-DirectoryName = [ dname '/' type ];
+DirectoryName = [ dname filesep type ];
 
 if ~isdir(dname)
     % Make sure there isn't a file with the same name, see trac ticket #47
