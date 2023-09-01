@@ -411,22 +411,8 @@ end
 
 if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         (any(bayestopt_.pshape >0 ) && options_.load_mh_file)  %% not ML estimation
-    bounds = prior_bounds(bayestopt_, options_.prior_trunc); %reset bounds as lb and ub must only be operational during mode-finding
-    outside_bound_pars=find(xparam1 < bounds.lb | xparam1 > bounds.ub);
-    if ~isempty(outside_bound_pars)
-        for ii=1:length(outside_bound_pars)
-            outside_bound_par_names{ii,1}=get_the_name(ii,0,M_,estim_params_,options_);
-        end
-        disp_string=[outside_bound_par_names{1,:}];
-        for ii=2:size(outside_bound_par_names,1)
-            disp_string=[disp_string,', ',outside_bound_par_names{ii,:}];
-        end
-        if options_.prior_trunc>0
-            error(['Estimation:: Mode value(s) of ', disp_string ,' are outside parameter bounds. Potentially, you should set prior_trunc=0.'])
-        else
-            error(['Estimation:: Mode value(s) of ', disp_string ,' are outside parameter bounds.'])
-        end
-    end
+    %reset bounds as lb and ub must only be operational during mode-finding
+    bounds = set_mcmc_prior_bounds(xparam1, bayestopt_, options_, 'dynare_estimation_1');
     % Tunes the jumping distribution's scale parameter
     if options_.mh_tune_jscale.status
         if strcmp(options_.posterior_sampler_options.posterior_sampling_method, 'random_walk_metropolis_hastings')
