@@ -33,6 +33,8 @@ function CutSample(M_, options_, estim_params_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+dispString = 'Estimation::mcmc';
+
 % Get the path to the metropolis files.
 MetropolisFolder = CheckPath('metropolis',M_.dname);
 
@@ -47,7 +49,7 @@ npar=size(record.LastParameters,2);
 mh_files = dir([ MetropolisFolder ,filesep, M_.fname '_mh*.mat' ]);
 
 if ~length(mh_files)
-    error('Estimation::mcmc: I can''t find MH file to load here!')
+    error('%s: I can''t find MH file to load here!',dispString)
 end
 
 TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
@@ -71,9 +73,9 @@ end
 % Save updated mh-history file.
 update_last_mh_history_file(MetropolisFolder, ModelName, record);
 
-fprintf('Estimation::mcmc: Total number of MH draws per chain: %d.\n',TotalNumberOfMhDraws);
-fprintf('Estimation::mcmc: Total number of generated MH files: %d.\n',TotalNumberOfMhFiles);
-fprintf('Estimation::mcmc: I''ll use mh-files %d to %d.\n',FirstMhFile,TotalNumberOfMhFiles);
-fprintf('Estimation::mcmc: In MH-file number %d I''ll start at line %d.\n',FirstMhFile,FirstLine);
-fprintf('Estimation::mcmc: Finally I keep %d draws per chain.\n',TotalNumberOfMhDraws-FirstDraw+1);
+fprintf('%s: Total number of MH draws per chain: %d.\n',dispString,TotalNumberOfMhDraws);
+fprintf('%s: Total number of generated MH files: %d.\n',dispString,TotalNumberOfMhFiles);
+fprintf('%s: I''ll use mh-files %d to %d.\n',dispString,FirstMhFile,TotalNumberOfMhFiles);
+fprintf('%s: In MH-file number %d I''ll start at line %d.\n',dispString,FirstMhFile,FirstLine);
+fprintf('%s: Finally I keep %d draws per chain.\n',dispString,TotalNumberOfMhDraws-FirstDraw+1);
 skipline()

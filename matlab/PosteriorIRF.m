@@ -16,7 +16,7 @@ function PosteriorIRF(type)
 % functions associated with it(the _core1 and _core2).
 % See also the comments posterior_sampler.m funtion.
 
-% Copyright © 2006-2018 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,6 +35,8 @@ function PosteriorIRF(type)
 
 
 global options_ estim_params_ oo_ M_ bayestopt_ dataset_ dataset_info
+
+dispString = 'Estimation::mcmc';
 
 % Set the number of periods
 if isempty(options_.irf) || ~options_.irf
@@ -287,7 +289,7 @@ if options_.TeX
     end
 end
 
-fprintf('Estimation::mcmc: Posterior (dsge) IRFs...\n');
+fprintf('%s: Posterior (dsge) IRFs...\n',dispString);
 tit = M_.exo_names;
 kdx = 0;
 
@@ -327,7 +329,7 @@ if MAX_nirfs_dsgevar
     VarIRFdsgevar = zeros(options_.irf,nvar,M_.exo_nbr);
     DistribIRFdsgevar = zeros(options_.irf,9,nvar,M_.exo_nbr);
     HPDIRFdsgevar = zeros(options_.irf,2,nvar,M_.exo_nbr);
-    fprintf('Estimation::mcmc: Posterior (bvar-dsge) IRFs...\n');
+    fprintf('%s: Posterior (bvar-dsge) IRFs...\n',dispString);
     tit = M_.exo_names;
     kdx = 0;
     for file = 1:NumberOfIRFfiles_dsgevar
@@ -457,4 +459,4 @@ if ~options_.nograph && ~options_.no_graph.posterior
 
 end
 
-fprintf('Estimation::mcmc: Posterior IRFs, done!\n');
+fprintf('%s: Posterior IRFs, done!\n',dispString);

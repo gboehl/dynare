@@ -53,6 +53,8 @@ function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_boun
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+dispString = 'Estimation::mcmc';
+
 vv = sampler_options.invhess;
 % Initialization of the sampler
 [ ix2, ilogpo2, ModelName, MetropolisFolder, fblck, fline, npar, nblck, nruns, NewFile, MAX_nruns, d, bayestopt_] = ...
@@ -173,10 +175,10 @@ update_last_mh_history_file(MetropolisFolder, ModelName, record);
 
 % Provide diagnostic output
 skipline()
-disp(['Estimation::mcmc: Number of mh files: ' int2str(NewFile(1)) ' per block.'])
-disp(['Estimation::mcmc: Total number of generated files: ' int2str(NewFile(1)*nblck) '.'])
-disp(['Estimation::mcmc: Total number of iterations: ' int2str((NewFile(1)-1)*MAX_nruns+irun-1) '.'])
-disp(['Estimation::mcmc: Current acceptance ratio per chain: '])
+fprintf('%s: Number of mh files: %u per block.\n',    dispString, NewFile(1));
+fprintf('%s: Total number of generated files: %u.\n', dispString, NewFile(1)*nblck);
+fprintf('%s: Total number of iterations: %u.\n',      dispString, (NewFile(1)-1)*MAX_nruns+irun-1);
+fprintf('%s: Current acceptance ratio per chain:\n', dispString);
 for i=1:nblck
     if i<10
         disp(['                                                       Chain  ' num2str(i) ': ' num2str(100*record.AcceptanceRatio(i)) '%'])
@@ -185,7 +187,7 @@ for i=1:nblck
     end
 end
 if max(record.FunctionEvalPerIteration)>1
-    disp(['Estimation::mcmc: Current function evaluations per iteration: '])
+    fprintf('%s: Current function evaluations per iteration:\n', dispString);
     for i=1:nblck
         if i<10
             disp(['                                                       Chain  ' num2str(i) ': ' num2str(record.FunctionEvalPerIteration(i))])

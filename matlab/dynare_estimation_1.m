@@ -12,7 +12,7 @@ function dynare_estimation_1(var_list_,dname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2003-2022 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,6 +30,8 @@ function dynare_estimation_1(var_list_,dname)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 global M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info
+
+dispString = 'Estimation::mcmc';
 
 if ~exist([M_.dname filesep 'Output'],'dir')
     if isoctave && octave_ver_less_than('7') && ~exist(M_.dname)
@@ -547,13 +549,13 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         if ~(~isempty(options_.sub_draws) && options_.sub_draws==0)
             if options_.bayesian_irf
                 if error_flag
-                    error('Estimation::mcmc: I cannot compute the posterior IRFs!')
+                    error('%s: I cannot compute the posterior IRFs!',dispString)
                 end
                 PosteriorIRF('posterior');
             end
             if options_.moments_varendo
                 if error_flag
-                    error('Estimation::mcmc: I cannot compute the posterior moments for the endogenous variables!')
+                    error('%s: I cannot compute the posterior moments for the endogenous variables!',dispString)
                 end
                 if options_.load_mh_file && options_.mh_replic==0 %user wants to recompute results
                    [MetropolisFolder, info] = CheckPath('metropolis',M_.dname);
@@ -578,16 +580,16 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
             end
             if options_.smoother || ~isempty(options_.filter_step_ahead) || options_.forecast
                 if error_flag
-                    error('Estimation::mcmc: I cannot compute the posterior statistics!')
+                    error('%s: I cannot compute the posterior statistics!',dispString)
                 end
                 if options_.order==1 && ~options_.particle.status
                     prior_posterior_statistics('posterior',dataset_,dataset_info); %get smoothed and filtered objects and forecasts
                 else
-                    error('Estimation::mcmc: Particle Smoothers are not yet implemented.')
+                    error('%s: Particle Smoothers are not yet implemented.',dispString)
                 end
             end
         else
-            fprintf('Estimation:mcmc: sub_draws was set to 0. Skipping posterior computations.')
+            fprintf('%s: sub_draws was set to 0. Skipping posterior computations.',dispString);
         end
         xparam1 = get_posterior_parameters('mean',M_,estim_params_,oo_,options_);
         M_ = set_all_parameters(xparam1,estim_params_,M_);

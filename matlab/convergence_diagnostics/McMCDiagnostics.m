@@ -51,11 +51,11 @@ for b = 1:nblck
     nfiles = length(dir([MetropolisFolder ,filesep, ModelName '_mh*_blck' num2str(b) '.mat']));
     if ~isequal(NumberOfMcFilesPerBlock,nfiles)
         issue_an_error_message = 1;
-        disp(['Estimation::mcmc::diagnostics: The number of MCMC files in chain ' num2str(b) ' is ' num2str(nfiles) ' while the mh-history files indicate that we should have ' num2str(NumberOfMcFilesPerBlock) ' MCMC files per chain!'])
+        fprintf('The number of MCMC files in chain %u is %u while the mh-history files indicate that we should have %u MCMC files per chain!\n',b, nfiles, NumberOfMcFilesPerBlock);
     end
 end
 if issue_an_error_message
-    error('Estimation::mcmc::diagnostics: I cannot proceed because some MCMC files are missing. Check your MCMC files...')
+    error('I cannot proceed because some MCMC files are missing. Check your MCMC files...!');
 end
 
 % compute inefficiency factor
@@ -111,7 +111,7 @@ PastDraws = sum(record.MhDraws,1);
 NumberOfDraws  = PastDraws(1);
 
 if NumberOfDraws<=2000
-    warning(['estimation:: MCMC convergence diagnostics are not computed because the total number of iterations is not bigger than 2000!'])
+    warning('MCMC convergence diagnostics are not computed because the total number of iterations is not bigger than 2000!');
     return
 end
 
@@ -185,7 +185,7 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
     if options_.convergence.rafterylewis.indicator
         if any(options_.convergence.rafterylewis.qrs<0) || any(options_.convergence.rafterylewis.qrs>1) || length(options_.convergence.rafterylewis.qrs)~=3 ...
                 || (options_.convergence.rafterylewis.qrs(1)-options_.convergence.rafterylewis.qrs(2)<=0)
-            fprintf('\nCONVERGENCE DIAGNOSTICS: Invalid option for raftery_lewis_qrs. Using the default of [0.025 0.005 0.95].\n')
+            fprintf('\nInvalid option for raftery_lewis_qrs. Using the default of [0.025 0.005 0.95].\n');
             options_.convergence.rafterylewis.qrs=[0.025 0.005 0.95];
         end
         Raftery_Lewis_q=options_.convergence.rafterylewis.qrs(1);
@@ -218,7 +218,7 @@ xx = Origin:StepSize:NumberOfDraws;
 NumberOfLines = length(xx);
 
 if NumberOfDraws < Origin
-    disp('Estimation::mcmc::diagnostics: The number of simulations is too small to compute the MCMC convergence diagnostics.')
+    fprintf('The number of simulations is too small to compute the MCMC convergence diagnostics.\n');
     return
 end
 
@@ -229,7 +229,7 @@ if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fprintf(fidTeX,' \n');
 end
 
-disp('Estimation::mcmc::diagnostics: Univariate convergence diagnostic, Brooks and Gelman (1998):')
+fprintf('Univariate convergence diagnostic, Brooks and Gelman (1998):\n');
 
 % The mandatory variables for local/remote parallel
 % computing are stored in localVars struct.
