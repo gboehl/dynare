@@ -56,6 +56,15 @@ if isoctave && options.solve_algo == 11
     error(['STEADY: you can''t use solve_algo = %u under Octave'],options.solve_algo)
 end
 
+% To ensure that the z and zx matrices constructed by repmat and passed to bytecode
+% are of the right size.
+if size(ys_init, 2) > 1
+    error('ys_init must be a column-vector')
+end
+if size(exo_ss, 2) > 1
+    error('exo_ss must be a column-vector')
+end
+
 info = 0;
 check = 0;
 
@@ -458,7 +467,7 @@ if M.static_and_dynamic_models_differ
     % computed on the *static* one
     if options.bytecode
         z = repmat(ys,1,M.maximum_lead + M.maximum_lag + 1);
-        zx = repmat([exo_ss'], M.maximum_lead + M.maximum_lag + 1, 1);
+        zx = repmat(exo_ss', M.maximum_lead + M.maximum_lag + 1, 1);
         r = bytecode('dynamic','evaluate', z, zx, params, ys, 1);
     else
         r = feval([M.fname '.sparse.dynamic_resid'], repmat(ys, 3, 1), exo_ss, params, ys);

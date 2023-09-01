@@ -108,7 +108,7 @@ end
 if ~options_.simul.endval_steady && ~isempty(ys0_)
     terminal_condition_is_a_steady_state = true;
     for j = lastperiods
-        endval_resid = evaluate_static_model(oo_.endo_simul(:,j), oo_.exo_simul(j,:), M_.params, M_, options_);
+        endval_resid = evaluate_static_model(oo_.endo_simul(:,j), oo_.exo_simul(j,:)', M_.params, M_, options_);
         if norm(endval_resid, 'Inf') > options_.simul.steady_tolf
             terminal_condition_is_a_steady_state = false;
             break
@@ -160,7 +160,7 @@ function local_success = create_scenario(share)
         % Effectively compute the terminal steady state
         for j = lastperiods
             % First use the terminal steady of the previous homotopy iteration as guess value (or the contents of the endval block if this is the first iteration)
-            [oo_.endo_simul(:, j), ~, info] = evaluate_steady_state(oo_.endo_simul(:, j), oo_.exo_simul(j, :), M_, options_, true);
+            [oo_.endo_simul(:, j), ~, info] = evaluate_steady_state(oo_.endo_simul(:, j), oo_.exo_simul(j, :)', M_, options_, true);
             if info(1)
                 % If this fails, then try again using the initial steady state as guess value
                 if isempty(ys0_)
@@ -168,7 +168,7 @@ function local_success = create_scenario(share)
                 else
                     guess_value = ys0_;
                 end
-                [oo_.endo_simul(:, j), ~, info] = evaluate_steady_state(guess_value, oo_.exo_simul(j, :), M_, options_, true);
+                [oo_.endo_simul(:, j), ~, info] = evaluate_steady_state(guess_value, oo_.exo_simul(j, :)', M_, options_, true);
                 if info(1)
                     % If this fails again, give up and restore last periods in oo_.endo_simul
                     oo_.endo_simul(:, lastperiods) = saved_ss;
