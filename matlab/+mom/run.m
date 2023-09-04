@@ -539,89 +539,12 @@ catch last_error % if check fails, provide info on using calibration if present
     rethrow(last_error);
 end
 
-% -------------------------------------------------------------------------
-% Step 7a: Method of moments estimation: print some info
-% -------------------------------------------------------------------------
-fprintf('\n---------------------------------------------------\n')
-if strcmp(options_mom_.mom.mom_method,'SMM')
-    fprintf('Simulated method of moments with');
-elseif strcmp(options_mom_.mom.mom_method,'GMM')
-    fprintf('General method of moments with');
-end
-if options_mom_.prefilter
-    fprintf('\n  - centered moments (prefilter=1)');
-else
-    fprintf('\n  - uncentered moments (prefilter=0)');
-end
-if options_mom_.mom.penalized_estimator
-    fprintf('\n  - penalized estimation using deviation from prior mean and weighted with prior precision');
-end
 
-for i = 1:length(options_mom_.optimizer_vec)
-    if i == 1
-        str = '- optimizer (mode_compute';
-    else
-        str = '            (additional_optimizer_steps';
-    end
-    switch options_mom_.optimizer_vec{i}
-        case 0
-            fprintf('\n  %s=0): no minimization',str);
-        case 1
-            fprintf('\n  %s=1): fmincon',str);
-        case 2
-            fprintf('\n  %s=2): continuous simulated annealing',str);
-        case 3
-            fprintf('\n  %s=3): fminunc',str);
-        case 4
-            fprintf('\n  %s=4): csminwel',str);
-        case 5
-            fprintf('\n  %s=5): newrat',str);
-        case 6
-            fprintf('\n  %s=6): gmhmaxlik',str);
-        case 7
-            fprintf('\n  %s=7): fminsearch',str);
-        case 8
-            fprintf('\n  %s=8): Dynare Nelder-Mead simplex',str);
-        case 9
-            fprintf('\n  %s=9): CMA-ES',str);
-        case 10
-            fprintf('\n  %s=10): simpsa',str);
-        case 11
-            error('\nmethod_of_moments: online_auxiliary_filter (mode_compute=11) is only supported with likelihood-based estimation techniques');
-        case 12
-            fprintf('\n  %s=12): particleswarm',str);
-        case 101
-            fprintf('\n  %s=101): SolveOpt',str);
-        case 102
-            fprintf('\n  %s=102): simulannealbnd',str);
-        case 13
-            fprintf('\n  %s=13): lsqnonlin',str);
-        otherwise
-            if ischar(options_mom_.optimizer_vec{i})
-                fprintf('\n  %s=%s): user-defined',str,options_mom_.optimizer_vec{i});
-            else
-                error('method_of_moments: Unknown optimizer, please contact the developers ')
-            end
-    end
-    if options_mom_.silent_optimizer
-        fprintf(' (silent)');
-    end
-    if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_jacobian && ismember(options_mom_.optimizer_vec{i},options_mom_.mom.analytic_jacobian_optimizers)
-        fprintf(' (using analytical Jacobian)');
-    end
-end
-fprintf('\n  - perturbation order:        %d', options_mom_.order)
-if options_mom_.order > 1 && options_mom_.pruning
-    fprintf(' (with pruning)')
-end
-if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
-    fprintf('\n  - standard errors:           analytic derivatives');
-else
-    fprintf('\n  - standard errors:           numerical derivatives');
-end
-fprintf('\n  - number of matched moments: %d', options_mom_.mom.mom_nbr);
-fprintf('\n  - number of parameters:      %d', length(xparam0));
-fprintf('\n\n');
+% -------------------------------------------------------------------------
+% print some info to console
+% -------------------------------------------------------------------------
+mom.print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters);
+
 
 % -------------------------------------------------------------------------
 % Step 7b: Iterated method of moments estimation
