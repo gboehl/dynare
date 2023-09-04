@@ -284,6 +284,7 @@ end
 % -------------------------------------------------------------------------
 % Set priors and bounds over the estimated parameters
 [xparam0, estim_params_, bayestopt_, lb, ub, M_] = set_prior(estim_params_, M_, options_mom_);
+number_of_estimated_parameters = length(xparam0);
 
 % Check if enough moments for estimation
 if options_mom_.mom.mom_nbr < length(xparam0)
@@ -356,17 +357,9 @@ else
         options_mom_.mom.penalized_estimator = 0;
     end    
 end
-% Set correct bounds for standard deviations and corrrelations
-param_of_interest=(1:length(xparam0))'<=estim_params_.nvx+estim_params_.nvn;
-LB_below_0=(Bounds.lb<0 & param_of_interest);
-Bounds.lb(LB_below_0)=0;
-param_of_interest=(1:length(xparam0))'> estim_params_.nvx+estim_params_.nvn & (1:length(xparam0))'<estim_params_.nvx+estim_params_.nvn +estim_params_.ncx + estim_params_.ncn;
-LB_below_minus_1=(Bounds.lb<-1 & param_of_interest);
-UB_above_1=(Bounds.ub>1 & param_of_interest);
-Bounds.lb(LB_below_minus_1)=-1; 
-Bounds.ub(UB_above_1)=1; 
 
-clear('LB_below_0','LB_below_minus_1','UB_above_1','param_of_interest');%make sure stale structure cannot be used
+% set correct bounds for standard deviations and correlations
+Bounds = mom.set_correct_bounds_for_stderr_corr(estim_params_,Bounds);
 
 % Test if initial values of the estimated parameters are all between the prior lower and upper bounds
 if options_mom_.use_calibration_initialization
