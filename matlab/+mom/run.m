@@ -500,30 +500,33 @@ test_for_deep_parameters_calibration(M_);
 
 
 % -------------------------------------------------------------------------
-% Step 6: checks for objective function at initial parameters
+% checks for objective function at initial parameters
 % -------------------------------------------------------------------------
 objective_function = str2func('mom.objective_function');
-
 try
-    % Check for NaN or complex values of moment-distance-funtion evaluated
-    % at initial parameters and identity weighting matrix    
-    oo_.mom.Sw = eye(options_mom_.mom.mom_nbr);
-    tic_id = tic;    
-    [fval, info, ~, ~, ~, oo_, M_] = feval(objective_function, xparam0, Bounds, oo_, estim_params_, M_, options_mom_);
-    elapsed_time = toc(tic_id);    
+    % Check for NaN or complex values of moment-distance-funtion evaluated at initial parameters
+    if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_method,'GMM')
+        oo_.mom.Sw = eye(options_mom_.mom.mom_nbr); % initialize with identity weighting matrix
+    end
+    tic_id = tic;
+    [fval, info, ~, ~, ~, oo_, M_] = feval(objective_function, xparam0, Bounds, oo_, estim_params_, M_, options_mom_, bayestopt_);
+    elapsed_time = toc(tic_id);
     if isnan(fval)
-        error('method_of_moments: The initial value of the objective function is NaN')
+        error('method_of_moments: The initial value of the objective function with identity weighting matrix is NaN!')
     elseif imag(fval)
-        error('method_of_moments: The initial value of the objective function is complex')
+        error('method_of_moments: The initial value of the objective function with identity weighting matrix is complex!')
     end
     if info(1) > 0
         disp('method_of_moments: Error in computing the objective function for initial parameter values')
         print_info(info, options_mom_.noprint, options_mom_)
     end
-    fprintf('Initial value of the moment objective function with %4.1f times identity weighting matrix: %6.4f \n\n', options_mom_.mom.weighting_matrix_scaling_factor, fval);
+    fprintf('Initial value of the moment objective function');
+    if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_method,'GMM')
+        fprintf(' with %4.1f times identity weighting matrix', options_mom_.mom.weighting_matrix_scaling_factor);
+    end
+    fprintf(': %6.4f \n\n', fval);
     fprintf('Time required to compute objective function once: %5.4f seconds \n', elapsed_time);
-    
-catch last_error% if check fails, provide info on using calibration if present
+catch last_error % if check fails, provide info on using calibration if present
     if estim_params_.full_calibration_detected %calibrated model present and no explicit starting values
         skipline(1);
         fprintf('There was an error in computing the moments for initial parameter values.\n')
