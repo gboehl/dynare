@@ -1,68 +1,84 @@
 function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_, M_, options_mom_)
-%function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_, M_, options_mom_)
+% function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_, M_, options_mom_)
 % -------------------------------------------------------------------------
 % This function performs a method of moments estimation with the following steps:
-%   Step 0: Check if required structures and options exist
-%   Step 1: - Prepare options_mom_ structure
-%           - Carry over options from the preprocessor
-%           - Initialize other options
-%           - Get variable orderings and state space representation
-%   Step 2: Checks and transformations for matched moments structure
-%   Step 3: Checks and transformations for estimated parameters, priors, and bounds
-%   Step 4: Checks and transformations for data
-%   Step 5: Checks for steady state at initial parameters
-%   Step 6: Checks for objective function at initial parameters
-%   Step 7: Iterated method of moments estimation
-%   Step 8: J-Test
-%   Step 9: Clean up
+%  o Checking if required structures and options exist
+%  o Preparing local options_mom_ structure
+%  o Checking the options and the compatibility of the settings
+%  o Initializations of variables, orderings and state space representation
+%  o Checks and transformations for matched moments structure
+%  o Checks and transformations for estimated parameters, priors, and bounds
+%  o Checks and transformations for data
+%  o Checks for objective function at initial parameters
+%  o GMM/SMM: iterated method of moments estimation
+%  o GMM/SMM: J-Test and fit of moments% 
+%  o Display of results
+%  o Clean up
 % -------------------------------------------------------------------------
 % This function is inspired by replication codes accompanied to the following papers:
+% GMM/SMM:
 %  o Andreasen, Fernández-Villaverde, Rubio-Ramírez (2018): "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications", Review of Economic Studies, 85(1):1-49.
 %  o Born, Pfeifer (2014): "Risk Matters: Comment", American Economic Review, 104(12):4231-4239.
 %  o Mutschler (2018): "Higher-order statistics for DSGE models", Econometrics and Statistics, 6:44-56.
 % =========================================================================
 % INPUTS
-%  o bayestopt_:             [structure] information about priors
-%  o options_:               [structure] information about global options
-%  o oo_:                    [structure] storage for results
-%  o estim_params_:          [structure] information about estimated parameters
-%  o M_:                     [structure] information about model with
-%                               o matched_moments:       [cell] information about selected moments to match in estimation
-%                                                               vars: matched_moments{:,1});
-%                                                               lead/lags: matched_moments{:,2}; 
-%                                                               powers: matched_moments{:,3};
-%  o options_mom_:           [structure] information about settings specified by the user
+%  o bayestopt_:     [structure] information about priors
+%  o options_:       [structure] information about global options
+%  o oo_:            [structure] storage for results
+%  o estim_params_:  [structure] information about estimated parameters
+%  o M_:             [structure] information about model with
+%                     o matched_moments:  [cell] information about selected moments to match in GMM/SMM estimation
+%                                                vars: matched_moments{:,1});
+%                                                lead/lags: matched_moments{:,2};
+%                                                powers: matched_moments{:,3};
+%  o options_mom_:   [structure] information about settings specified by the user
 % -------------------------------------------------------------------------
 % OUTPUTS
-%  o oo_:                    [structure] storage for results (oo_)
-%  o options_mom_:           [structure] information about all (user-specified and updated) settings used in estimation (options_mom_)
+%  o oo_:            [structure] storage for results (oo_)
+%  o options_mom_:   [structure] information about all (user-specified and updated) settings used in estimation (options_mom_)
+%  o M_:             [structure] updated information about model
 % -------------------------------------------------------------------------
 % This function is called by
 %  o driver.m
 % -------------------------------------------------------------------------
 % This function calls
-%  o check_for_calibrated_covariances.m
-%  o check_prior_bounds.m
-%  o do_parameter_initialization.m
-%  o dynare_minimize_objective.m
-%  o evaluate_steady_state
-%  o get_all_parameters.m
-%  o get_matrix_entries_for_psd_check.m
-%  o makedataset.m
-%  o mom.check_plot.m
-%  o mom.data_moments.m
-%  o mom.objective_function.m
+%  o cellofchararraymaxlength
+%  o check_for_calibrated_covariances
+%  o check_prior_bounds
+%  o check_prior_stderr_corr
+%  o check_steady_state_changes_parameters
+%  o check_varobs_are_endo_and_declared_once
+%  o display_estimation_results_table
+%  o do_parameter_initialization
+%  o dyn_latex_table
+%  o dynare_minimize_objective
+%  o dyntable
+%  o get_all_parameters
+%  o get_dynare_random_generator_state
+%  o get_matrix_entries_for_psd_check
+%  o M_.fname '_prior_restrictions'
+%  o makedataset
+%  o mom.check_plot
+%  o mom.default_option_mom_values
+%  o mom.get_data_moments
+%  o mom.matched_moments_block
+%  o mom.objective_function
 %  o mom.optimal_weighting_matrix
-%  o mom-standard_errors
-%  o plot_priors.m
-%  o print_info.m
-%  o prior_bounds.m
-%  o set_default_option.m
-%  o set_prior.m
-%  o set_state_space.m
-%  o set_all_parameters.m
-%  o test_for_deep_parameters_calibration.m
-
+%  o mom.print_info_on_estimation_settings
+%  o mom.set_correct_bounds_for_stderr_corr
+%  o mom.standard_errors
+%  o plot_priors
+%  o prior_bounds
+%  o priordens
+%  o print_info
+%  o set_all_parameters
+%  o set_dynare_random_generator_state
+%  o set_prior
+%  o set_state_space
+%  o skipline
+%  o test_for_deep_parameters_calibration
+%  o warning_config
+% =========================================================================
 % Copyright © 2020-2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -80,19 +96,31 @@ function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % -------------------------------------------------------------------------
-% Author(s): 
+% Maintaining Author(s):
 % o Willi Mutschler (willi@mutschler.eu)
-% o Johannes Pfeifer (jpfeifer@uni-koeln.de)
+% o Johannes Pfeifer (johannes.pfeifer@unibw.de)
 % =========================================================================
 
-%% TO DO LIST
-% - [ ] add IRF matching
-% - [ ] speed up pruned_state_space_system (by using doubling with old initial values, hardcoding zeros, other "tricks" used in e.g. nlma)
-% - [ ] add option to use autocorrelations (we have useautocorr in identification toolbox already)
-% - [ ] SMM with extended path
-% - [ ] deal with measurement errors (once @wmutschl has implemented this in identification toolbox)
-% - [ ] dirname option to save output to different directory not yet implemented
-% - [ ] display scaled moments
+% -------------------------------------------------------------------------
+% TO DO LISTS
+% -------------------------------------------------------------------------
+% GENERAL
+% - document all options in manual
+% - document analytic_jacobian better
+% - make endogenous_prior_restrictions work
+% - dirname option to save output to different directory not yet implemented
+% - create test for prior restrictions file
+% - add mode_file option
+% - implement penalty objective
+% - test optimizers
+% GMM/SMM
+% - speed up pruned_state_space_system (by using doubling with old initial values, hardcoding zeros, other "tricks" used in e.g. nlma)
+% - add option to use autocorrelations (we have useautocorr in identification toolbox already)
+% - SMM with extended path
+% - deal with measurement errors (once @wmutschl has implemented this in identification toolbox)
+% - display scaled moments
+% - enable first moments despite prefilter
+% - do "true" Bayesian GMM and SMM not only penalized
 
 % The TeX option crashes MATLAB R2014a run with "-nodisplay" option
 % (as is done from the testsuite).
@@ -823,8 +851,8 @@ for i = 1:length(optimizer_vec)
         case 13
             fprintf('\n  %s=13): lsqnonlin',str);
         otherwise
-            if ischar(optimizer_vec{i})
-                fprintf('\n  %s=%s): user-defined',str,optimizer_vec{i});
+            if ischar(options_mom_.optimizer_vec{i})
+                fprintf('\n  %s=%s): user-defined',str,options_mom_.optimizer_vec{i});
             else
                 error('method_of_moments: Unknown optimizer, please contact the developers ')
             end
@@ -832,7 +860,7 @@ for i = 1:length(optimizer_vec)
     if options_mom_.silent_optimizer
         fprintf(' (silent)');
     end
-    if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_jacobian && ismember(optimizer_vec{i},analytic_jacobian_optimizers)
+    if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_jacobian && ismember(options_mom_.optimizer_vec{i},options_mom_.mom.analytic_jacobian_optimizers)
         fprintf(' (using analytical Jacobian)');
     end
 end
@@ -900,26 +928,26 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
         error('method_of_moments: Specified weighting_matrix is not positive definite. Check whether your model implies stochastic singularity.')
     end
 
-    for optim_iter= 1:length(optimizer_vec)
-        options_mom_.current_optimizer = optimizer_vec{optim_iter};
-        if optimizer_vec{optim_iter}==0
+    for optim_iter= 1:length(options_mom_.optimizer_vec)
+        options_mom_.current_optimizer = options_mom_.optimizer_vec{optim_iter};
+        if options_mom_.optimizer_vec{optim_iter}==0
             xparam1=xparam0; %no minimization, evaluate objective at current values
             fval = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_);
         else
-            if optimizer_vec{optim_iter}==13
-                options_mom_.vector_output = true;                
+            if options_mom_.optimizer_vec{optim_iter}==13
+                options_mom_.mom.vector_output = true;                
             else
-                options_mom_.vector_output = false;                
+                options_mom_.mom.vector_output = false;                
             end
-            if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_jacobian && ismember(optimizer_vec{optim_iter},analytic_jacobian_optimizers) %do this only for gradient-based optimizers
+            if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_jacobian && ismember(options_mom_.optimizer_vec{optim_iter},options_mom_.mom.analytic_jacobian_optimizers) %do this only for gradient-based optimizers
                 options_mom_.mom.compute_derivs = true;
             else
                 options_mom_.mom.compute_derivs = false;
             end
             
-            [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_laplace.name, bayestopt_laplace, [],...
+            [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, options_mom_.optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_laplace.name, bayestopt_laplace, [],...
                                                                   Bounds, oo_, estim_params_, M_, options_mom_);
-            if options_mom_.vector_output
+            if options_mom_.mom.vector_output
                 fval = fval'*fval;
             end
         end
@@ -929,7 +957,7 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
         end
         xparam0=xparam1;
     end
-    options_mom_.vector_output = false;    
+    options_mom_.mom.vector_output = false;    
     % Update M_ and DynareResults (in particular to get oo_.mom.model_moments)    
     M_ = set_all_parameters(xparam1,estim_params_,M_);
     if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
