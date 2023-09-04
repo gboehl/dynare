@@ -475,46 +475,24 @@ end
 
 
 % -------------------------------------------------------------------------
-% Step 5: checks for steady state at initial parameters
+% checks for steady state at initial parameters
 % -------------------------------------------------------------------------
 
-% setting steadystate_check_flag option
+% check if steady state solves static model and if steady-state changes estimated parameters
 if options_mom_.steadystate.nocheck
-    steadystate_check_flag = 0;
+    steadystate_check_flag_vec = [0 1];
 else
-    steadystate_check_flag = 1;
+    steadystate_check_flag_vec = [1 1];
 end
-
-old_steady_params=M_.params; %save initial parameters for check if steady state changes param values
-% Check steady state at initial model parameter values
-[oo_.steady_state, new_steady_params, info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_mom_,steadystate_check_flag);
+[oo_.steady_state, info, steady_state_changes_parameters] = check_steady_state_changes_parameters(M_, estim_params_, oo_, options_mom_, steadystate_check_flag_vec);
 if info(1)
-    fprintf('\nmethod_of_moments: The steady state at the initial parameters cannot be computed.\n')
+    fprintf('\nThe steady state at the initial parameters cannot be computed.\n')
     print_info(info, 0, options_mom_);
 end
-
-% check whether steady state file changes estimated parameters
-if isfield(estim_params_,'param_vals') && ~isempty(estim_params_.param_vals)
-    Model_par_varied=M_; %store M_ structure
-    
-    Model_par_varied.params(estim_params_.param_vals(:,1))=Model_par_varied.params(estim_params_.param_vals(:,1))*1.01; %vary parameters
-    [~, new_steady_params_2] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],Model_par_varied,options_mom_,true);
-    
-    changed_par_indices=find((old_steady_params(estim_params_.param_vals(:,1))-new_steady_params(estim_params_.param_vals(:,1))) ...
-        | (Model_par_varied.params(estim_params_.param_vals(:,1))-new_steady_params_2(estim_params_.param_vals(:,1))));
-    
-    if ~isempty(changed_par_indices)
-        fprintf('\nThe steady state file internally changed the values of the following estimated parameters:\n')
-        disp(char(M_.param_names(estim_params_.param_vals(changed_par_indices,1))))
-        fprintf('This will override parameter values and may lead to wrong results.\n')
-        fprintf('Check whether this is really intended.\n')
-        warning('The steady state file internally changes the values of the estimated parameters.')
-        if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
-            fprintf('For analytical standard errors, the parameter-Jacobians of the dynamic model and of the steady-state will be computed numerically\n'),
-            fprintf('(re-set options_mom_.analytic_derivation_mode= -2)'),
-            options_mom_.analytic_derivation_mode= -2;
-        end
-    end
+if steady_state_changes_parameters && strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
+    fprintf('For analytical standard errors, the parameter-Jacobians of the dynamic model and of the steady-state will be computed numerically,\n');
+    fprintf('because the steady-state changes estimated parameters. Option ''analytic_derivation_mode'' reset to -2.');
+    options_mom_.analytic_derivation_mode = -2;
 end
 
 % display warning if some parameters are still NaN
