@@ -282,18 +282,21 @@ end
 % -------------------------------------------------------------------------
 % estimated parameters: checks and transformations on values, priors, bounds
 % -------------------------------------------------------------------------
-% Set priors and bounds over the estimated parameters
+% set priors and bounds over the estimated parameters
 [xparam0, estim_params_, bayestopt_, lb, ub, M_] = set_prior(estim_params_, M_, options_mom_);
 number_of_estimated_parameters = length(xparam0);
+hessian_xparam0 = []; % initialize hessian
 
-% Check if enough moments for estimation
-if options_mom_.mom.mom_nbr < length(xparam0)
-    fprintf('\n');
-    error('method_of_moments: We must have at least as many moments as parameters for a method of moments estimation.')
+% check if enough moments for estimation
+if strcmp(options_mom_.mom.mom_method, 'GMM') || strcmp(options_mom_.mom.mom_method, 'SMM')
+    if options_mom_.mom.mom_nbr < length(xparam0)
+        skipline;
+        error('method_of_moments: There must be at least as many moments as parameters for a %s estimation!',options_mom_.mom.mom_method);
+    end
+    skipline(2);
 end
-fprintf('\n\n')
 
-% Check if a _prior_restrictions.m file exists
+% check if a _prior_restrictions.m file exists
 if exist([M_.fname '_prior_restrictions.m'],'file')
     options_mom_.prior_restrictions.status = 1;
     options_mom_.prior_restrictions.routine = str2func([M_.fname '_prior_restrictions']);
@@ -312,36 +315,38 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     end
 end
 
-% Check for calibrated covariances before updating parameters
+% check for calibrated covariances before updating parameters
 estim_params_ = check_for_calibrated_covariances(xparam0,estim_params_,M_);
 
-% Checks on parameter calibration and initialization
-xparam1_calib = get_all_parameters(estim_params_,M_); %get calibrated parameters
-if ~any(isnan(xparam1_calib)) %all estimated parameters are calibrated
-    estim_params_.full_calibration_detected=1;
+% checks on parameter calibration and initialization
+xparam_calib = get_all_parameters(estim_params_,M_); % get calibrated parameters
+if ~any(isnan(xparam_calib)) % all estimated parameters are calibrated
+    estim_params_.full_calibration_detected = true;
 else
-    estim_params_.full_calibration_detected=0;
+    estim_params_.full_calibration_detected = false;
 end
-if options_mom_.use_calibration_initialization %set calibration as starting values
-    if ~isempty(bayestopt_) && ~doBayesianEstimation && any(all(isnan([xparam1_calib xparam0]),2))
+if options_mom_.use_calibration_initialization % set calibration as starting values
+    if ~isempty(bayestopt_) && ~doBayesianEstimation && any(all(isnan([xparam_calib xparam0]),2))
         error('method_of_moments: When using the use_calibration option with %s without prior, the parameters must be explicitly initialized!',options_mom_.mom.mom_method);
     else
-        [xparam0,estim_params_]=do_parameter_initialization(estim_params_,xparam1_calib,xparam0); %get explicitly initialized parameters that have precedence over calibrated values
+        [xparam0,estim_params_] = do_parameter_initialization(estim_params_,xparam_calib,xparam0); % get explicitly initialized parameters that have precedence over calibrated values
     end
 end
 
-% Check initialization
+% check initialization
 if ~isempty(bayestopt_) && ~doBayesianEstimation && any(isnan(xparam0))
     error('method_of_moments: Frequentist %s requires all estimated parameters to be initialized, either in an estimated_params or estimated_params_init-block!',options_mom_.mom.mom_method);
 end
 
-% Set and check parameter bounds
+% set and check parameter bounds
 if ~isempty(bayestopt_) && doBayesianEstimation
     % plot prior densities
     if ~options_mom_.nograph && options_mom_.plot_priors
-        plot_priors(bayestopt_orig,M_,estim_params_,options_mom_,'Original priors'); % only for visual inspection (not saved to disk, because overwritten in next call to plot_priors)
-        plot_priors(bayestopt_,M_,estim_params_,options_mom_,'Laplace approximated priors');
-        clear('bayestopt_orig'); % make sure stale structure cannot be used
+        if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
+            plot_priors(bayestopt_orig,M_,estim_params_,options_mom_,'Original priors'); % only for visual inspection (not saved to disk, because overwritten in next call to plot_priors)
+            plot_priors(bayestopt_,M_,estim_params_,options_mom_,'Laplace approximated priors');
+            clear('bayestopt_orig'); % make sure stale structure cannot be used
+        end
     end
     % set prior bounds
     Bounds = prior_bounds(bayestopt_, options_mom_.prior_trunc);
@@ -355,40 +360,44 @@ else
     if options_mom_.mom.penalized_estimator
         fprintf('Penalized estimation turned off as you did not declare priors\n')
         options_mom_.mom.penalized_estimator = 0;
-    end    
+    end
 end
 
 % set correct bounds for standard deviations and correlations
 Bounds = mom.set_correct_bounds_for_stderr_corr(estim_params_,Bounds);
 
-% Test if initial values of the estimated parameters are all between the prior lower and upper bounds
+% test if initial values of the estimated parameters are all between the prior lower and upper bounds
 if options_mom_.use_calibration_initialization
     try
-        check_prior_bounds(xparam0,Bounds,M_,estim_params_,options_mom_,bayestopt_)
+        check_prior_bounds(xparam0,Bounds,M_,estim_params_,options_mom_,bayestopt_);
     catch last_error
         fprintf('Cannot use parameter values from calibration as they violate the prior bounds.')
         rethrow(last_error);
     end
 else
-    check_prior_bounds(xparam0,Bounds,M_,estim_params_,options_mom_,bayestopt_)
+    check_prior_bounds(xparam0,Bounds,M_,estim_params_,options_mom_,bayestopt_);
 end
 
-estim_params_= get_matrix_entries_for_psd_check(M_,estim_params_);
+% check for positive definiteness
+estim_params_ = get_matrix_entries_for_psd_check(M_,estim_params_);
 
-% Set sigma_e_is_diagonal flag (needed if the shocks block is not declared in the mod file).
+% set sigma_e_is_diagonal flag (needed if the shocks block is not declared in the mod file)
 M_.sigma_e_is_diagonal = true;
 if estim_params_.ncx || any(nnz(tril(M_.Correlation_matrix,-1))) || isfield(estim_params_,'calibrated_covariances')
     M_.sigma_e_is_diagonal = false;
 end
 
-% storing prior parameters in MoM info structure for penalized minimization
-oo_.prior.mean = bayestopt_.p1;
-oo_.prior.variance = diag(bayestopt_.p2.^2);
+% storing prior parameters in results
+oo_.mom.prior.mean = bayestopt_.p1;
+oo_.mom.prior.mode = bayestopt_.p5;
+oo_.mom.prior.variance = diag(bayestopt_.p2.^2);
+oo_.mom.prior.hyperparameters.first = bayestopt_.p6;
+oo_.mom.prior.hyperparameters.second = bayestopt_.p7;
 
-% Set all parameters
+% set all parameters
 M_ = set_all_parameters(xparam0,estim_params_,M_);
 
-%provide warning if there is NaN in parameters
+% provide warning if there is NaN in parameters
 test_for_deep_parameters_calibration(M_);
 
 % -------------------------------------------------------------------------
