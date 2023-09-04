@@ -263,12 +263,12 @@ oo_.mom.Q = residuals'*residuals;
 if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
     fval = residuals;
     if options_mom_.mom.penalized_estimator
-        fval=[fval;(xparam1-oo_.prior.mean)./sqrt(diag(oo_.prior.variance))];
+        fval=[fval;(xparam1-oo_.mom.prior.mean)./sqrt(diag(oo_.mom.prior.variance))];
     end
 else    
     fval = oo_.mom.Q;
     if options_mom_.mom.penalized_estimator
-        fval=fval+(xparam1-oo_.prior.mean)'/oo_.prior.variance*(xparam1-oo_.prior.mean);
+        fval=fval+(xparam1-oo_.mom.prior.mean)'/oo_.mom.prior.variance*(xparam1-oo_.mom.prior.mean);
     end
 end
 
@@ -283,14 +283,14 @@ if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_jacobian
         
         if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output            
             if options_mom_.mom.penalized_estimator                
-                df(:,jp)=[dresiduals;dxparam1(:,jp)./sqrt(diag(oo_.prior.variance))];
+                df(:,jp)=[dresiduals;dxparam1(:,jp)./sqrt(diag(oo_.mom.prior.variance))];
             else
                 df(:,jp) = dresiduals;
             end
         else
             df(:,jp) = dresiduals'*residuals + residuals'*dresiduals;
             if options_mom_.mom.penalized_estimator
-                df(:,jp)=df(:,jp)+(dxparam1(:,jp))'/oo_.prior.variance*(xparam1-oo_.prior.mean)+(xparam1-oo_.prior.mean)'/oo_.prior.variance*(dxparam1(:,jp));
+                df(:,jp)=df(:,jp)+(dxparam1(:,jp))'/oo_.mom.prior.variance*(xparam1-oo_.mom.prior.mean)+(xparam1-oo_.mom.prior.mean)'/oo_.mom.prior.variance*(dxparam1(:,jp));
             end
         end
     end

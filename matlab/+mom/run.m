@@ -400,6 +400,19 @@ M_ = set_all_parameters(xparam0,estim_params_,M_);
 % provide warning if there is NaN in parameters
 test_for_deep_parameters_calibration(M_);
 
+if doBayesianEstimation
+    % warning if prior allows that stderr parameters are negative or corr parameters are outside the unit circle
+    check_prior_stderr_corr(estim_params_,bayestopt_);
+
+    % check value of prior density
+    [~,~,~,info]= priordens(xparam0,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
+    if any(info)
+        fprintf('The prior density evaluated at the initial values is Inf for the following parameters: %s\n',bayestopt_.name{info,1})
+        error('The initial value of the prior is -Inf!')
+    end
+end
+
+
 % -------------------------------------------------------------------------
 % Step 4: Checks and transformations for data
 % -------------------------------------------------------------------------
