@@ -1,5 +1,5 @@
-function [dataMoments, m_data] = data_moments(data, oo_, matched_moments_, options_mom_)
-% [dataMoments, m_data] = data_moments(data, oo_, matched_moments_, options_mom_)
+function [dataMoments, m_data] = get_data_moments(data, oo_, matched_moments_, options_mom_)
+% [dataMoments, m_data] = get_data_moments(data, oo_, matched_moments_, options_mom_)
 % This function computes the user-selected empirical moments from data
 % =========================================================================
 % INPUTS
@@ -13,10 +13,10 @@ function [dataMoments, m_data] = data_moments(data, oo_, matched_moments_, optio
 %  o m_data                  [T x numMom]       selected empirical moments at each point in time
 % -------------------------------------------------------------------------
 % This function is called by
-%  o mom.run.m
-%  o mom.objective_function.m
+%  o mom.run
+%  o mom.objective_function
 % =========================================================================
-% Copyright © 2020-2021 Dynare Team
+% Copyright © 2020-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -67,6 +67,3 @@ for jm = 1:options_mom_.mom.mom_nbr
     m_data_tmp(isnan(m_data_tmp)) = dataMoments(jm,1);
     m_data(:,jm) = m_data_tmp;
 end
-
-
-end %function end

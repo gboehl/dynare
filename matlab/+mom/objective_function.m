@@ -247,7 +247,7 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
     if options_mom_.prefilter
         y_sim = bsxfun(@minus, y_sim, mean(y_sim,1));
     end
-    oo_.mom.model_moments = mom.data_moments(y_sim, oo_, M_.matched_moments, options_mom_);
+    oo_.mom.model_moments = mom.get_data_moments(y_sim, oo_, M_.matched_moments, options_mom_);
 end
 
 

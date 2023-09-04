@@ -414,33 +414,33 @@ end
 
 
 % -------------------------------------------------------------------------
-% Step 4: Checks and transformations for data
+% datafile: checks and transformations
 % -------------------------------------------------------------------------
-
-% Check if datafile has same name as mod file
-[~,name,~] = fileparts(options_mom_.datafile);
-if strcmp(name,M_.fname)
-    error('method_of_moments: Data-file and mod-file are not allowed to have the same name. Please change the name of the data file.')
-end
-
 % Build dataset
-dataset_ = makedataset(options_mom_);
-
-% set options for old interface from the ones for new interface
-if ~isempty(dataset_)
-    options_mom_.nobs = dataset_.nobs;
+if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
+    % Check if datafile has same name as mod file
+    [~,name,~] = fileparts(options_mom_.datafile);
+    if strcmp(name,M_.fname)
+        error('method_of_moments: ''datafile'' and mod file are not allowed to have the same name; change the name of the ''datafile''!')
+    end
+    dataset_ = makedataset(options_mom_);
+    % set options for old interface from the ones for new interface
+    if ~isempty(dataset_)
+        options_mom_.nobs = dataset_.nobs;
+    end
+    % Check length of data for estimation of second moments
+    if options_mom_.ar > options_mom_.nobs+1
+        error('method_of_moments: Dataset is too short to compute higher than first moments!');
+    end
+    % Provide info on data moments handling
+    fprintf('Computing data moments. Note that NaN values in the moments (due to leads and lags or missing data) are replaced by the mean of the corresponding moment.\n');
+    % Get data moments for the method of moments
+    [oo_.mom.data_moments, oo_.mom.m_data] = mom.get_data_moments(dataset_.data, oo_, M_.matched_moments, options_mom_);
+    if ~isreal(dataset_.data)
+        error('method_of_moments: The data moments contain complex values!')
+    end
 end
 
-% Check length of data for estimation of second moments
-if options_mom_.ar > options_mom_.nobs+1
-    error('method_of_moments: Data set is too short to compute second moments');
-end
-
-% Provide info on data moments handling
-fprintf('Computing data moments. Note that NaN values in the moments (due to leads and lags or missing data) are replaced by the mean of the corresponding moment\n');
-
-% Get data moments for the method of moments
-[oo_.mom.data_moments, oo_.mom.m_data] = mom.data_moments(dataset_.data, oo_, M_.matched_moments, options_mom_);
 
 % Get shock series for SMM and set variance correction factor
 if strcmp(options_mom_.mom.mom_method,'SMM')
