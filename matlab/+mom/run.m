@@ -547,99 +547,27 @@ mom.print_info_on_estimation_settings(options_mom_, number_of_estimated_paramete
 
 
 % -------------------------------------------------------------------------
-% Step 7b: Iterated method of moments estimation
+% GMM/SMM: iterated estimation
 % -------------------------------------------------------------------------
-if size(options_mom_.mom.weighting_matrix,1)>1 && ~(any(strcmpi('diagonal',options_mom_.mom.weighting_matrix)) || any(strcmpi('optimal',options_mom_.mom.weighting_matrix)))
-    fprintf('\nYou did not specify the use of an optimal or diagonal weighting matrix. There is no point in running an iterated method of moments.\n')
-end
-
-for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
-    fprintf('Estimation stage %u\n',stage_iter);
-    Woptflag = false;
-    switch lower(options_mom_.mom.weighting_matrix{stage_iter})
-        case 'identity_matrix'
-            fprintf('  - identity weighting matrix\n');
-            weighting_matrix = eye(options_mom_.mom.mom_nbr);            
-        case 'diagonal'
-            fprintf('  - diagonal of optimal weighting matrix (Bartlett kernel with %d lags)\n', options_mom_.mom.bartlett_kernel_lag);
-            if stage_iter == 1
-                fprintf('    and using data-moments as initial estimate of model-moments\n');
-                weighting_matrix = diag(diag(  mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.data_moments, options_mom_.mom.bartlett_kernel_lag)  ));
-            else
-                fprintf('    and using previous stage estimate of model-moments\n');
-                weighting_matrix = diag(diag(  mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag)  ));
-            end            
-        case 'optimal'
-            fprintf('  - optimal weighting matrix (Bartlett kernel with %d lags)\n', options_mom_.mom.bartlett_kernel_lag);
-            if stage_iter == 1
-                fprintf('    and using data-moments as initial estimate of model-moments\n');
-                weighting_matrix = mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.data_moments, options_mom_.mom.bartlett_kernel_lag);
-            else
-                fprintf('    and using previous stage estimate of model-moments\n');
-                weighting_matrix = mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
-                Woptflag = true;
-            end            
-        otherwise %user specified matrix in file
-            fprintf('  - user-specified weighting matrix\n');
-            try
-                load(options_mom_.mom.weighting_matrix{stage_iter},'weighting_matrix')
-            catch
-                error(['method_of_moments: No matrix named ''weighting_matrix'' could be found in ',options_mom_.mom.weighting_matrix{stage_iter},'.mat'])
-            end
-            [nrow, ncol] = size(weighting_matrix);
-            if ~isequal(nrow,ncol) || ~isequal(nrow,length(oo_.mom.data_moments)) %check if square and right size
-                error(['method_of_moments: weighting_matrix must be square and have ',num2str(length(oo_.mom.data_moments)),' rows and columns'])
-            end            
-    end
-    try %check for positive definiteness of weighting_matrix
-        oo_.mom.Sw = chol(weighting_matrix);
-    catch
-        error('method_of_moments: Specified weighting_matrix is not positive definite. Check whether your model implies stochastic singularity.')
-    end
-
-    for optim_iter= 1:length(options_mom_.optimizer_vec)
-        options_mom_.current_optimizer = options_mom_.optimizer_vec{optim_iter};
-        if options_mom_.optimizer_vec{optim_iter}==0
-            xparam1=xparam0; %no minimization, evaluate objective at current values
-            fval = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_);
-        else
-            if options_mom_.optimizer_vec{optim_iter}==13
-                options_mom_.mom.vector_output = true;                
-            else
-                options_mom_.mom.vector_output = false;                
-            end
-            if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_jacobian && ismember(options_mom_.optimizer_vec{optim_iter},options_mom_.mom.analytic_jacobian_optimizers) %do this only for gradient-based optimizers
-                options_mom_.mom.compute_derivs = true;
-            else
-                options_mom_.mom.compute_derivs = false;
-            end
-            
-            [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, options_mom_.optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_.name, bayestopt_, [],...
-                                                                  Bounds, oo_, estim_params_, M_, options_mom_);
-            if options_mom_.mom.vector_output
-                fval = fval'*fval;
-            end
-        end
-        fprintf('\nStage %d Iteration %d: value of minimized moment distance objective function: %12.10f.\n',stage_iter,optim_iter,fval)
-        if options_mom_.mom.verbose
-            oo_.mom=display_estimation_results_table(xparam1,NaN(size(xparam1)),M_,options_mom_,estim_params_,bayestopt_,oo_.mom,prior_dist_names,sprintf('%s (STAGE %d ITERATION %d) VERBOSE',options_mom_.mom.mom_method,stage_iter,optim_iter),sprintf('verbose_%s_stage_%d_iter_%d',lower(options_mom_.mom.mom_method),stage_iter,optim_iter));
-        end
-        xparam0=xparam1;
-    end
-    options_mom_.mom.vector_output = false;    
-    % Update M_ and DynareResults (in particular to get oo_.mom.model_moments)    
-    M_ = set_all_parameters(xparam1,estim_params_,M_);
+if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
+    % compute mode
+    [xparam1, oo_, Woptflag] = mom.mode_compute_gmm_smm(xparam0, objective_function, oo_, M_, options_mom_, estim_params_, bayestopt_, Bounds);
+    % compute standard errors at mode
+    options_mom_.mom.vector_output = false; % make sure flag is reset
+    M_ = set_all_parameters(xparam1,estim_params_,M_); % update M_ and DynareResults (in particular to get oo_.mom.model_moments)
     if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
-        options_mom_.mom.compute_derivs = true; % for GMM we compute derivatives analytically in the objective function with this flag        
+        options_mom_.mom.compute_derivs = true; % for GMM we compute derivatives analytically in the objective function with this flag
     end
-    [fval, ~, ~,~,~, oo_] = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_);
+    [~, ~, ~,~,~, oo_] = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_); % compute model moments and oo_.mom.model_moments_params_derivs
     options_mom_.mom.compute_derivs = false; % reset to not compute derivatives in objective function during optimization
-    
     SE = mom.standard_errors(xparam1, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Woptflag);
-    
-    % Store results in output structure
-    oo_.mom = display_estimation_results_table(xparam1,SE,M_,options_mom_,estim_params_,bayestopt_,oo_.mom,prior_dist_names,sprintf('%s (STAGE %u)',options_mom_.mom.mom_method,stage_iter),sprintf('%s_stage_%u',lower(options_mom_.mom.mom_method),stage_iter));
+    % mode check plots
+    if options_mom_.mode_check.status
+        mom.check_plot(objective_function,xparam1,SE,options_mom_,M_,estim_params_,Bounds,bayestopt_,...
+            Bounds, oo_, estim_params_, M_, options_mom_);
+    end
 end
+
 
 % -------------------------------------------------------------------------
 % Step 8: J test
@@ -666,9 +594,14 @@ if options_mom_.mom.mom_nbr > length(xparam1)
     fprintf('p-value of J-test statistic: %f\n',oo_.mom.J_test.p_val)
 end
 
+
 % -------------------------------------------------------------------------
-% Step 9: Display estimation results
+% display final estimation results
 % -------------------------------------------------------------------------
+if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_method,'GMM')
+    % Store results in output structure
+    oo_.mom = display_estimation_results_table(xparam1,SE,M_,options_mom_,estim_params_,bayestopt_,oo_.mom,prior_dist_names,options_mom_.mom.mom_method,lower(options_mom_.mom.mom_method));
+
 title = ['Comparison of data moments and model moments (',options_mom_.mom.mom_method,')'];
 headers = {'Moment','Data','Model'};
 for jm = 1:size(M_.matched_moments,1)
@@ -703,10 +636,6 @@ dyntable(options_mom_, title, headers, labels, data_mat, cellofchararraymaxlengt
 if options_mom_.TeX
     dyn_latex_table(M_, options_mom_, title, ['comparison_moments_', options_mom_.mom.mom_method], headers, labels_TeX, data_mat, cellofchararraymaxlength(labels)+2, 10, 7);
 end
-
-if options_mom_.mode_check.status
-    mom.check_plot(objective_function,xparam1,SE,options_mom_,M_,estim_params_,Bounds,bayestopt_,...
-        Bounds, oo_, estim_params_, M_, options_mom_)
 end
 
 fprintf('\n==== Method of Moments Estimation (%s) Completed ====\n\n',options_mom_.mom.mom_method)
