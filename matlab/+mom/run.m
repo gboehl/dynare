@@ -570,38 +570,13 @@ end
 
 
 % -------------------------------------------------------------------------
-% Step 8: J test
-% -------------------------------------------------------------------------
-if options_mom_.mom.mom_nbr > length(xparam1)
-    %get optimal weighting matrix for J test, if necessary
-    if ~Woptflag
-        W_opt = mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
-        oo_j=oo_;
-        oo_j.mom.Sw = chol(W_opt);
-        [fval] = feval(objective_function, xparam1, Bounds, oo_j, estim_params_, M_, options_mom_);
-    end
-
-    % Compute J statistic
-    if strcmp(options_mom_.mom.mom_method,'SMM')    
-        Variance_correction_factor = options_mom_.mom.variance_correction_factor;
-    elseif strcmp(options_mom_.mom.mom_method,'GMM')
-        Variance_correction_factor=1;
-    end
-    oo_.mom.J_test.j_stat          = dataset_.nobs*Variance_correction_factor*fval/options_mom_.mom.weighting_matrix_scaling_factor;
-    oo_.mom.J_test.degrees_freedom = length(oo_.mom.model_moments)-length(xparam1);
-    oo_.mom.J_test.p_val           = 1-chi2cdf(oo_.mom.J_test.j_stat, oo_.mom.J_test.degrees_freedom);
-    fprintf('\nvalue of J-test statistic: %f\n',oo_.mom.J_test.j_stat)
-    fprintf('p-value of J-test statistic: %f\n',oo_.mom.J_test.p_val)
-end
-
-
-% -------------------------------------------------------------------------
 % display final estimation results
 % -------------------------------------------------------------------------
 if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_method,'GMM')
     % Store results in output structure
     oo_.mom = display_estimation_results_table(xparam1,SE,M_,options_mom_,estim_params_,bayestopt_,oo_.mom,prior_dist_names,options_mom_.mom.mom_method,lower(options_mom_.mom.mom_method));
-
+    % J test
+    oo_ = mom.Jtest(xparam1, objective_function, Woptflag, oo_, options_mom_, bayestopt_, Bounds, estim_params_, M_, dataset_.nobs);
 title = ['Comparison of data moments and model moments (',options_mom_.mom.mom_method,')'];
 headers = {'Moment','Data','Model'};
 for jm = 1:size(M_.matched_moments,1)
