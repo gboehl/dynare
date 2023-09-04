@@ -122,6 +122,56 @@ function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_,
 % - enable first moments despite prefilter
 % - do "true" Bayesian GMM and SMM not only penalized
 
+fprintf('\n==== Method of Moments Estimation (%s) ====\n\n',options_mom_.mom.mom_method)
+
+
+% -------------------------------------------------------------------------
+% checks if required structures exist
+% -------------------------------------------------------------------------
+if isempty(estim_params_) % structure storing the info about estimated parameters in the estimated_params block
+    if ~(isfield(estim_params_,'nvx') && (size(estim_params_.var_exo,1)+size(estim_params_.var_endo,1)+size(estim_params_.corrx,1)+size(estim_params_.corrn,1)+size(estim_params_.param_vals,1))==0)
+        error('method_of_moments: You need to provide an ''estimated_params'' block!')
+    else
+        error('method_of_moments: The ''estimated_params'' block must not be empty!')
+    end
+end
+if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
+    if ~isfield(M_,'matched_moments') || isempty(M_.matched_moments) % structure storing the moments used for GMM and SMM estimation
+        error('method_of_moments: You need to provide a ''matched_moments'' block for ''mom_method=%s''!',options_mom_.mom.mom_method)
+    end
+end
+if (~isempty(estim_params_.var_endo) || ~isempty(estim_params_.corrn)) && strcmp(options_mom_.mom.mom_method, 'GMM')
+    error('method_of_moments: GMM estimation does not support measurement error(s) yet. Please specifiy them as a structural shock!')
+end
+doBayesianEstimation = [estim_params_.var_exo(:,5); estim_params_.var_endo(:,5); estim_params_.corrx(:,6); estim_params_.corrn(:,6); estim_params_.param_vals(:,5)];
+if all(doBayesianEstimation~=0)
+    doBayesianEstimation = true;
+elseif all(doBayesianEstimation==0)
+    doBayesianEstimation = false;
+else
+    error('method_of_moments: Estimation must be either fully Frequentist or fully Bayesian. Maybe you forgot to specify a prior distribution!')
+end
+if ~isfield(options_,'varobs')
+    error('method_of_moments: VAROBS statement is missing!')
+end
+check_varobs_are_endo_and_declared_once(options_.varobs,M_.endo_names);
+
+
+% -------------------------------------------------------------------------
+% options_mom_ structure
+% -------------------------------------------------------------------------
+% options_mom_ is local and contains default and user-specified values for
+% all settings needed for the method of moments estimation. Some options,
+% though, are set by the preprocessor into options_ and we copy these over.
+% The idea is to be independent of options_ and have full control of the
+% estimation instead of possibly having to deal with options chosen somewhere
+% else in the mod file.
+options_mom_ = mom.default_option_mom_values(options_mom_, options_, M_.dname, doBayesianEstimation);
+
+
+% -------------------------------------------------------------------------
+% workarounds
+% -------------------------------------------------------------------------
 % The TeX option crashes MATLAB R2014a run with "-nodisplay" option
 % (as is done from the testsuite).
 % Since we can’t directly test whether "-nodisplay" has been passed,
@@ -138,291 +188,71 @@ if isfield(options_mom_, 'TeX') && options_mom_.TeX && ~isoctave && matlab_ver_l
     warning('Disabling TeX option due to a bug in MATLAB R2014a with -nodisplay')
     options_mom_.TeX = false;
 end
-
-% -------------------------------------------------------------------------
-% Step 0: Check if required structures and options exist
-% -------------------------------------------------------------------------
-if isempty(estim_params_) % structure storing the info about estimated parameters in the estimated_params block
-    if ~(isfield(estim_params_,'nvx') && (size(estim_params_.var_exo,1)+size(estim_params_.var_endo,1)+size(estim_params_.corrx,1)+size(estim_params_.corrn,1)+size(estim_params_.param_vals,1))==0)
-        error('method_of_moments: You need to provide an ''estimated_params'' block')
-    else
-        error('method_of_moments: The ''estimated_params'' block must not be empty')
-    end
-end
-if ~isfield(M_,'matched_moments') || isempty(M_.matched_moments) % structure storing the moments used for the method of moments estimation
-    error('method_of_moments: You need to provide a ''matched_moments'' block')
-end
-if ~isempty(bayestopt_) && any(bayestopt_.pshape==0) && any(bayestopt_.pshape~=0)
-    error('method_of_moments: Estimation must be either fully classical or fully Bayesian. Maybe you forgot to specify a prior distribution.')
-end
-
-if options_.logged_steady_state || options_.loglinear
-    error('method_of_moments: The loglinear option is not supported. Please append the required logged variables as auxiliary equations.\n')
-else
-    options_mom_.logged_steady_state = 0;
-    options_mom_.loglinear = false;
-end
-
-fprintf('\n==== Method of Moments Estimation (%s) ====\n\n',options_mom_.mom.mom_method)
-
-% -------------------------------------------------------------------------
-% Step 1a: Prepare options_mom_ structure
-% -------------------------------------------------------------------------
-% options_mom_ is local and contains default and user-specified values for 
-% all settings needed for the method of moments estimation. Some options,
-% though, are set by the preprocessor into options_ and we copy these over.
-% The idea is to be independent of options_ and have full control of the
-% estimation instead of possibly having to deal with options chosen somewhere
-% else in the mod file.
-
-% Method of Moments estimation options that can be set by the user in the mod file, otherwise default values are provided
 if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
-    options_mom_.mom = set_default_option(options_mom_.mom,'bartlett_kernel_lag',20);               % bandwith in optimal weighting matrix
-    options_mom_.mom = set_default_option(options_mom_.mom,'penalized_estimator',false);            % include deviation from prior mean as additional moment restriction and use prior precision as weight
-    options_mom_.mom = set_default_option(options_mom_.mom,'verbose',false);                        % display and store intermediate estimation results
-    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix',{'DIAGONAL'; 'OPTIMAL'});   % weighting matrix in moments distance objective function at each iteration of estimation;
-                                                                                                           % possible values are 'OPTIMAL', 'IDENTITY_MATRIX' ,'DIAGONAL' or a filename. Size of cell determines stages in iterated estimation.
-    options_mom_.mom = set_default_option(options_mom_.mom,'weighting_matrix_scaling_factor',1);    % scaling of weighting matrix in objective function
-    options_mom_.mom = set_default_option(options_mom_.mom,'se_tolx',1e-5);                         % step size for numerical computation of standard errors
-    options_mom_ = set_default_option(options_mom_,'order',1);                                      % order of Taylor approximation in perturbation
-    options_mom_ = set_default_option(options_mom_,'pruning',false);                                % use pruned state space system at higher-order
-    % Checks for perturbation order
-    if options_mom_.order < 1
-        error('method_of_moments: The order of the Taylor approximation cannot be 0!')
+% temporary workaround for https://git.dynare.org/Dynare/dseries/-/issues/51
+    if options_mom_.xls_sheet~=1
+        evalin('base','options_.xls_sheet=options_mom_.xls_sheet');
     end
+    if ~isempty(options_mom_.xls_range)
+        evalin('base','options_.xls_range=options_mom_.xls_range');
+    end
+end
+
+
+% -------------------------------------------------------------------------
+% checks on settings
+% -------------------------------------------------------------------------
+if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
+    if numel(options_mom_.nobs) > 1
+        error('method_of_moments: Recursive estimation and forecast for samples is not supported. Please set an integer as ''nobs''!');
+    end
+    if numel(options_mom_.first_obs) > 1
+        error('method_of_moments: Recursive estimation and forecast for samples is not supported. Please set an integer as ''first_obs''!');
+    end
+end
+if options_mom_.order < 1
+    error('method_of_moments: The order of the Taylor approximation cannot be 0!')
+end
+if options_mom_.order > 2
+    fprintf('Dynare will use ''k_order_solver'' as the order>2\n');
+    options_mom_.k_order_solver = true;
 end
 if strcmp(options_mom_.mom.mom_method,'SMM')
-    options_mom_.mom = set_default_option(options_mom_.mom,'burnin',500);                           % number of periods dropped at beginning of simulation
-    options_mom_.mom = set_default_option(options_mom_.mom,'bounded_shock_support',false);          % trim shocks in simulation to +- 2 stdev
-    options_mom_.mom = set_default_option(options_mom_.mom,'seed',24051986);                        % seed used in simulations
-    options_mom_.mom = set_default_option(options_mom_.mom,'simulation_multiple',7);                % multiple of the data length used for simulation
     if options_mom_.mom.simulation_multiple < 1
-        fprintf('The simulation horizon is shorter than the data. Dynare resets the simulation_multiple to 5.\n')
+        fprintf('The simulation horizon is shorter than the data. Dynare resets the simulation_multiple to 7.\n')
         options_mom_.mom.simulation_multiple = 7;
     end
 end
 if strcmp(options_mom_.mom.mom_method,'GMM')
-    % Check for pruning with GMM at higher order
+    % require pruning with GMM at higher order
     if options_mom_.order > 1 && ~options_mom_.pruning
         fprintf('GMM at higher order only works with pruning, so we set pruning option to 1.\n');
         options_mom_.pruning = true;
     end
     if options_mom_.order > 3
-        error('method_of_moments: perturbation orders higher than 3 are not implemented for GMM estimation, try using SMM.\n');
+        error('method_of_moments: Perturbation orders higher than 3 are not implemented for GMM estimation, try using SMM!');
     end
 end
-options_mom_.mom = set_default_option(options_mom_.mom,'analytic_standard_errors',false);       % compute standard errors numerically (0) or analytically (1). Analytical derivatives are only available for GMM.
-options_mom_.mom = set_default_option(options_mom_.mom,'analytic_jacobian',false);              % use analytic Jacobian in optimization, only available for GMM and gradient-based optimizers
-% initialize flag to compute derivs in objective function (needed for GMM with either analytic_standard_errors or analytic_jacobian )
-options_mom_.mom.compute_derivs = false;
-    
-% General options that can be set by the user in the mod file, otherwise default values are provided
-options_mom_ = set_default_option(options_mom_,'dirname',M_.dname);    % specify directory in which to store estimation output [not yet working]
-options_mom_ = set_default_option(options_mom_,'graph_format','eps');  % specify the file format(s) for graphs saved to disk
-options_mom_ = set_default_option(options_mom_,'nodisplay',false);     % do not display the graphs, but still save them to disk
-options_mom_ = set_default_option(options_mom_,'nograph',false);       % do not create graphs (which implies that they are not saved to the disk nor displayed)
-options_mom_ = set_default_option(options_mom_,'noprint',false);       % do not print output to console
-options_mom_ = set_default_option(options_mom_,'plot_priors',true);    % control plotting of priors
-options_mom_ = set_default_option(options_mom_,'prior_trunc',1e-10);   % probability of extreme values of the prior density that is ignored when computing bounds for the parameters
-options_mom_ = set_default_option(options_mom_,'TeX',false);           % print TeX tables and graphics
-options_mom_ = set_default_option(options_mom_,'verbosity',false);           % print TeX tables and graphics
-
-% Data and model options that can be set by the user in the mod file, otherwise default values are provided
-options_mom_ = set_default_option(options_mom_,'first_obs',1);     % number of first observation
-options_mom_ = set_default_option(options_mom_,'logdata',false);   % if data is already in logs
-options_mom_ = set_default_option(options_mom_,'nobs',NaN);        % number of observations
-options_mom_ = set_default_option(options_mom_,'prefilter',false); % demean each data series by its empirical mean and use centered moments
-options_mom_ = set_default_option(options_mom_,'xls_sheet',1);     % name of sheet with data in Excel
-options_mom_ = set_default_option(options_mom_,'xls_range','');    % range of data in Excel sheet
-% temporary workaround for https://git.dynare.org/Dynare/dseries/-/issues/51
-if options_mom_.xls_sheet~=1
-    evalin('base','options_.xls_sheet=options_mom_.xls_sheet');
-end
-if ~isempty(options_mom_.xls_range)
-    evalin('base','options_.xls_range=options_mom_.xls_range');
+if options_mom_.mom.analytic_jacobian && ~strcmp(options_mom_.mom.mom_method,'GMM')
+    options_mom_.mom.analytic_jacobian = false;
+    fprintf('\n''analytic_jacobian'' option will be dismissed as it only works with GMM.\n');
 end
 
-% Recursive estimation and forecast are not supported
-if numel(options_mom_.nobs)>1
-    error('method_of_moments: Recursive estimation and forecast for samples is not supported. Please set an integer as ''nobs''.');
-end
-if numel(options_mom_.first_obs)>1
-    error('method_of_moments: Recursive estimation and forecast for samples is not supported. Please set an integer as ''first_obs''.');
-end
-
-% Optimization options that can be set by the user in the mod file, otherwise default values are provided
-options_mom_ = set_default_option(options_mom_,'huge_number',1e7);               % value for replacing the infinite bounds on parameters by finite numbers. Used by some optimizers for numerical reasons
-if (isoctave && user_has_octave_forge_package('optim')) || (~isoctave && user_has_matlab_license('optimization_toolbox'))
-    options_mom_ = set_default_option(options_mom_,'mode_compute',13);               % specifies lsqnonlin as default optimizer for minimization of moments distance
-else
-    options_mom_ = set_default_option(options_mom_,'mode_compute',4);               % specifies csminwel as fallback default option for minimization of moments distance
-end
-options_mom_ = set_default_option(options_mom_,'additional_optimizer_steps',[]); % vector of additional mode-finders run after mode_compute
-options_mom_ = set_default_option(options_mom_,'optim_opt',[]);                  % a list of NAME and VALUE pairs to set options for the optimization routines. Available options depend on mode_compute
-options_mom_ = set_default_option(options_mom_,'silent_optimizer',false);        % run minimization of moments distance silently without displaying results or saving files in between
-% Check plot options that can be set by the user in the mod file, otherwise default values are provided
-options_mom_.mode_check.nolik = false;                                                          % we don't do likelihood (also this initializes mode_check substructure)
-options_mom_.mode_check = set_default_option(options_mom_.mode_check,'status',false);           % plot the target function for values around the computed minimum for each estimated parameter in turn. This is helpful to diagnose problems with the optimizer.
-options_mom_.mode_check = set_default_option(options_mom_.mode_check,'neighbourhood_size',.5);  % width of the window around the computed minimum to be displayed on the diagnostic plots. This width is expressed in percentage deviation. The Inf value is allowed, and will trigger a plot over the entire domain
-options_mom_.mode_check = set_default_option(options_mom_.mode_check,'symmetric_plots',true);   % ensure that the check plots are symmetric around the minimum. A value of 0 allows to have asymmetric plots, which can be useful if the minimum is close to a domain boundary, or in conjunction with neighbourhood_size = Inf when the domain is not the entire real line
-options_mom_.mode_check = set_default_option(options_mom_.mode_check,'number_of_points',20);    % number of points around the minimum where the target function is evaluated (for each parameter)
-
-% Numerical algorithms options that can be set by the user in the mod file, otherwise default values are provided
-options_mom_ = set_default_option(options_mom_,'aim_solver',false);                     % use AIM algorithm to compute perturbation approximation instead of mjdgges
-options_mom_ = set_default_option(options_mom_,'k_order_solver',false);                 % use k_order_perturbation instead of mjdgges
-options_mom_ = set_default_option(options_mom_,'dr_cycle_reduction',false);             % use cycle reduction algorithm to solve the polynomial equation for retrieving the coefficients associated to the endogenous variables in the decision rule
-options_mom_ = set_default_option(options_mom_,'dr_cycle_reduction_tol',1e-7);          % convergence criterion used in the cycle reduction algorithm
-options_mom_ = set_default_option(options_mom_,'dr_logarithmic_reduction',false);       % use logarithmic reduction algorithm to solve the polynomial equation for retrieving the coefficients associated to the endogenous variables in the decision rule
-options_mom_ = set_default_option(options_mom_,'dr_logarithmic_reduction_maxiter',100); % maximum number of iterations used in the logarithmic reduction algorithm
-options_mom_ = set_default_option(options_mom_,'dr_logarithmic_reduction_tol',1e-12);   % convergence criterion used in the cycle reduction algorithm
-options_mom_ = set_default_option(options_mom_,'lyapunov_db',false);                    % doubling algorithm (disclyap_fast) to solve Lyapunov equation to compute variance-covariance matrix of state variables
-options_mom_ = set_default_option(options_mom_,'lyapunov_fp',false);                    % fixed-point algorithm to solve Lyapunov equation to compute variance-covariance matrix of state variables
-options_mom_ = set_default_option(options_mom_,'lyapunov_srs',false);                   % square-root-solver (dlyapchol) algorithm to solve Lyapunov equation to compute variance-covariance matrix of state variables
-options_mom_ = set_default_option(options_mom_,'lyapunov_complex_threshold',1e-15);     % complex block threshold for the upper triangular matrix in symmetric Lyapunov equation solver
-options_mom_ = set_default_option(options_mom_,'lyapunov_fixed_point_tol',1e-10);       % convergence criterion used in the fixed point Lyapunov solver
-options_mom_ = set_default_option(options_mom_,'lyapunov_doubling_tol',1e-16);          % convergence criterion used in the doubling algorithm
-options_mom_ = set_default_option(options_mom_,'sylvester_fp',false);                   % determines whether to use fixed point algorihtm to solve Sylvester equation (gensylv_fp), faster for large scale models
-options_mom_ = set_default_option(options_mom_,'sylvester_fixed_point_tol',1e-12);      % convergence criterion used in the fixed point Sylvester solver
-options_mom_ = set_default_option(options_mom_,'qz_criterium',1-1e-6);                  % value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving first order problems
-                                                                                        % if there are no unit roots one can use 1.0 (or slightly below) which we set as default; if they are possible, you may have have multiple unit roots and the accuracy decreases when computing the eigenvalues in lyapunov_symm
-                                                                                        % Note that unit roots are only possible at first-order, at higher order we set it to 1 in pruned_state_space_system and focus only on stationary observables.
-options_mom_ = set_default_option(options_mom_,'qz_zero_threshold',1e-6);               % value used to test if a generalized eigenvalue is 0/0 in the generalized Schur decomposition
-options_mom_ = set_default_option(options_mom_,'schur_vec_tol',1e-11);                  % tolerance level used to find nonstationary variables in Schur decomposition of the transition matrix.
-options_mom_ = set_default_option(options_mom_,'trust_region_initial_step_bound_factor',1); % used in dynare_solve for trust_region
-if options_mom_.order > 2
-    fprintf('Dynare will use ''k_order_solver'' as the order>2\n');
-    options_mom_.k_order_solver = true;
-end
 
 % -------------------------------------------------------------------------
-% Step 1b: Options that are set by the preprocessor and need to be carried over
+% initializations
 % -------------------------------------------------------------------------
-
-% options related to VAROBS
-if ~isfield(options_,'varobs')
-    error('method_of_moments: VAROBS statement is missing!')
-else
-    options_mom_.varobs  = options_.varobs;             % observable variables in declaration order
-    options_mom_.obs_nbr = length(options_mom_.varobs); % number of observed variables
-    % Check that each declared observed variable is also an endogenous variable
-    for i = 1:options_mom_.obs_nbr
-        if ~any(strcmp(options_mom_.varobs{i},M_.endo_names))
-            error(['method_of_moments: Unknown variable (' options_mom_.varobs{i} ')!'])
-        end
-    end
-
-    % Check that a variable is not declared as observed more than once
-    if length(unique(options_mom_.varobs))<length(options_mom_.varobs)
-        for i = 1:options_mom_.obs_nbr
-            if sum(strcmp(options_mom_.varobs{i},options_mom_.varobs))>1
-                error(['method_of_moments: A variable cannot be declared as observed more than once (' options_mom_.varobs{i} ')!'])
-            end
-        end
-    end
-end
-
-% options related to variable declarations
-if isfield(options_,'trend_coeffs')
-    error('method_of_moments: %s does not allow for trend in data',options_mom_.mom.mom_method)
-end
-
-% options related to estimated_params and estimated_params_init
-options_mom_.use_calibration_initialization = options_.use_calibration_initialization;
-
-% options related to model block
-options_mom_.linear   = options_.linear;
-options_mom_.use_dll  = options_.use_dll;
-options_mom_.block    = options_.block;
-options_mom_.bytecode = options_.bytecode;
-
-% options related to steady command
-options_mom_.homotopy_force_continue = options_.homotopy_force_continue;
-options_mom_.homotopy_mode           = options_.homotopy_mode;
-options_mom_.homotopy_steps          = options_.homotopy_steps;
-options_mom_.markowitz               = options_.markowitz;
-options_mom_.solve_algo              = options_.solve_algo;
-options_mom_.solve_tolf              = options_.solve_tolf;
-options_mom_.solve_tolx              = options_.solve_tolx;
-options_mom_.steady                  = options_.steady;
-options_mom_.steadystate             = options_.steadystate;
-options_mom_.steadystate_flag        = options_.steadystate_flag;
-
-% options related to dataset
-options_mom_.dataset        = options_.dataset;
-options_mom_.initial_period = options_.initial_period;
-
-% options related to endogenous prior restrictions are not supported
-options_mom_.endogenous_prior_restrictions.irf    = {};
-options_mom_.endogenous_prior_restrictions.moment = {};
-if ~isempty(options_.endogenous_prior_restrictions.irf) && ~isempty(options_.endogenous_prior_restrictions.moment)
-    fprintf('Endogenous prior restrictions are not supported yet and will be skipped.\n')
-end
-
-% -------------------------------------------------------------------------
-% Step 1c: Options related to optimizers
-% -------------------------------------------------------------------------
-% mode_compute = 1, 3, 7, 11, 102, 11, 13
-% nothing to be done
-% mode_compute = 2
-options_mom_.saopt            = options_.saopt;
-% mode_compute = 4
-options_mom_.csminwel         = options_.csminwel;
-% mode_compute = 5
-options_mom_.newrat           = options_.newrat;
-options_mom_.gstep            = options_.gstep;
-% mode_compute = 6
-options_mom_.gmhmaxlik        = options_.gmhmaxlik;
-options_mom_.mh_jscale        = options_.mh_jscale;
-% mode_compute = 8
-options_mom_.simplex          = options_.simplex;
-% mode_compute = 9
-options_mom_.cmaes            = options_.cmaes;
-% mode_compute = 10
-options_mom_.simpsa           = options_.simpsa;
-% mode_compute = 12
-options_mom_.particleswarm    = options_.particleswarm;
-% mode_compute = 101
-options_mom_.solveopt         = options_.solveopt;
-
-options_mom_.gradient_method  = options_.gradient_method;
-options_mom_.gradient_epsilon = options_.gradient_epsilon;
-options_mom_.analytic_derivation = 0;
-options_mom_.analytic_derivation_mode = 0; % needed by get_perturbation_params_derivs.m, ie use efficient sylvester equation method to compute analytical derivatives as in Ratto & Iskrev (2012)
-
-options_mom_.vector_output= false;           % specifies whether the objective function returns a vector
-
-optimizer_vec=[options_mom_.mode_compute;num2cell(options_mom_.additional_optimizer_steps)]; % at each stage one can possibly use different optimizers sequentially
-
-analytic_jacobian_optimizers = [1, 3, 4, 13, 101]; %these are currently supported, see to-do list
-
-% -------------------------------------------------------------------------
-% Step 1d: Other options that need to be initialized
-% -------------------------------------------------------------------------
-options_mom_.initialize_estimated_parameters_with_the_prior_mode = 0; % needed by set_prior.m
-options_mom_.figures.textwidth = 0.8; %needed by plot_priors.m
-options_mom_.ramsey_policy = 0; % needed by evaluate_steady_state
-options_mom_ = set_default_option(options_mom_,'debug',false); %neeeded by e.g. check_plot
-options_mom_.risky_steadystate = false; %needed by resol
-options_mom_.threads = options_.threads; %needed by resol
-options_mom_.jacobian_flag = true;
-options_mom_.gstep = options_.gstep;
-
-% options_mom.dsge_var          = false; %needed by check_list_of_variables
-% options_mom.bayesian_irf      = false; %needed by check_list_of_variables
-% options_mom.moments_varendo   = false; %needed by check_list_of_variables
-% options_mom.smoother          = false; %needed by check_list_of_variables
-% options_mom.filter_step_ahead = [];  %needed by check_list_of_variables
-% options_mom.forecast = 0;
-%options_mom_ = set_default_option(options_mom_,'endo_vars_for_moment_computations_in_estimation',[]);
-
-% -------------------------------------------------------------------------
-% Step 1e: Get variable orderings and state space representation
-% -------------------------------------------------------------------------
-oo_.dr = set_state_space(oo_.dr,M_,options_mom_);
-% Get index of observed variables in DR order
-oo_.dr.obs_var = [];
-for i=1:options_mom_.obs_nbr
-    oo_.dr.obs_var = [oo_.dr.obs_var; find(strcmp(options_mom_.varobs{i}, M_.endo_names(oo_.dr.order_var)))];
+% create output directories to store results
+CheckPath('method_of_moments',M_.dname);
+CheckPath('graphs',options_mom_.dirname);
+% initialize options that might change
+options_mom_.mom.compute_derivs = false; % flag to compute derivs in objective function (might change for GMM with either analytic_standard_errors or analytic_jacobian (dependent on optimizer))
+options_mom_.mom.vector_output = false;  % specifies whether the objective function returns a vector
+% decision rule
+oo_.dr = set_state_space(oo_.dr,M_,options_mom_); % get state-space representation
+oo_.mom.obs_var = []; % create index of observed variables in DR order
+for i = 1:options_mom_.obs_nbr
+    oo_.mom.obs_var = [oo_.mom.obs_var; find(strcmp(options_mom_.varobs{i}, M_.endo_names(oo_.dr.order_var)))];
 end
 
 % -------------------------------------------------------------------------
@@ -493,22 +323,17 @@ options_mom_.mom.mom_nbr = size(M_.matched_moments,1);
 options_mom_.ar = max(cellfun(@max,M_.matched_moments(:,2))) - min(cellfun(@min,M_.matched_moments(:,2)));
 
 %check that only observed variables are involved in moments
-not_observed_variables=setdiff(oo_.dr.inv_order_var([M_.matched_moments{:,1}]),oo_.dr.obs_var);
+not_observed_variables=setdiff(oo_.dr.inv_order_var([M_.matched_moments{:,1}]),oo_.mom.obs_var);
 if ~isempty(not_observed_variables)
     error('\nmethod_of_moments: You specified moments involving %s, but it is not a varobs.',M_.endo_names{oo_.dr.order_var(not_observed_variables)})
 end
 
-% -------------------------------------------------------------------------
-% Step 3: Checks and transformations for estimated parameters, priors, and bounds
-% -------------------------------------------------------------------------
 
+% -------------------------------------------------------------------------
+% estimated parameters: checks and transformations on values, priors, bounds
+% -------------------------------------------------------------------------
 % Set priors and bounds over the estimated parameters
 [xparam0, estim_params_, bayestopt_, lb, ub, M_] = set_prior(estim_params_, M_, options_mom_);
-
-% Check measurement errors
-if (estim_params_.nvn || estim_params_.ncn) && strcmp(options_mom_.mom.mom_method, 'GMM')
-    error('method_of_moments: GMM estimation does not support measurement error(s) yet. Please specifiy them as a structural shock.')
-end
 
 % Check if enough moments for estimation
 if options_mom_.mom.mom_nbr < length(xparam0)
@@ -750,7 +575,7 @@ end
 test_for_deep_parameters_calibration(M_);
 
 % If steady state of observed variables is non zero, set noconstant equal 0
-if all(abs(oo_.steady_state(oo_.dr.order_var(oo_.dr.obs_var)))<1e-9)
+if all(abs(oo_.steady_state(oo_.dr.order_var(oo_.mom.obs_var)))<1e-9)
     options_mom_.noconstant = 0; %identifying the constant based on just the initial parameter value is not feasible
 else
     options_mom_.noconstant = 0;
@@ -811,13 +636,13 @@ if options_mom_.mom.penalized_estimator
     fprintf('\n  - penalized estimation using deviation from prior mean and weighted with prior precision');
 end
 
-for i = 1:length(optimizer_vec)
+for i = 1:length(options_mom_.optimizer_vec)
     if i == 1
         str = '- optimizer (mode_compute';
     else
         str = '            (additional_optimizer_steps';
     end
-    switch optimizer_vec{i}
+    switch options_mom_.optimizer_vec{i}
         case 0
             fprintf('\n  %s=0): no minimization',str);
         case 1

@@ -49,7 +49,7 @@ for jm = 1:options_mom_.mom.mom_nbr
     leadlags = matched_moments_{jm,2}; % lags are negative numbers and leads are positive numbers
     powers   = matched_moments_{jm,3};
     for jv = 1:length(vars)
-        jvar = (oo_.dr.obs_var == vars(jv));
+        jvar = (oo_.mom.obs_var == vars(jv));
         y = NaN(T,1); %Take care of T_eff instead of T for lags and NaN via mean with 'omitnan' option below
         y( (1-min(leadlags(jv),0)) : (T-max(leadlags(jv),0)), 1) = data( (1+max(leadlags(jv),0)) : (T+min(leadlags(jv),0)), jvar).^powers(jv);
         if jv==1

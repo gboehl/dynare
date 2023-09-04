@@ -62,7 +62,7 @@ function [fval, info, exit_flag, df, junk1, oo_, M_, options_mom_] = objective_f
 % 0. Initialization of the returned variables and others...
 %------------------------------------------------------------------------------
 if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_jacobian
-    if options_mom_.vector_output == 1
+    if options_mom_.mom.vector_output == 1
         if options_mom_.mom.penalized_estimator
             df           = nan(size(oo_.mom.data_moments,1)+length(xparam1),length(xparam1));
         else
@@ -88,7 +88,7 @@ M_ = set_all_parameters(xparam1, estim_params_, M_);
 
 [fval,info,exit_flag]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, Bounds);
 if info(1)
-    if options_mom_.vector_output == 1 % lsqnonlin requires vector output
+    if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
        fval = ones(size(oo_.mom.data_moments,1),1)*options_mom_.huge_number;
     end
     return
@@ -110,7 +110,7 @@ if info(1)
         fval = Inf;
         info(4) = info(2);
         exit_flag = 0;
-        if options_mom_.vector_output == 1 % lsqnonlin requires vector output
+        if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
             fval = ones(size(oo_.mom.data_moments,1),1)*options_mom_.huge_number;
         end
         return
@@ -118,7 +118,7 @@ if info(1)
         fval = Inf;
         info(4) = 0.1;
         exit_flag = 0;
-        if options_mom_.vector_output == 1 % lsqnonlin requires vector output
+        if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
             fval = ones(size(oo_.mom.data_moments,1),1)*options_mom_.huge_number;
         end
         return
@@ -151,16 +151,16 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         totparam_nbr = stderrparam_nbr+corrparam_nbr+modparam_nbr;
         dr.derivs = get_perturbation_params_derivs(M_, options_mom_, estim_params_, oo_, indpmodel, indpstderr, indpcorr, 0); %analytic derivatives of perturbation matrices
         oo_.mom.model_moments_params_derivs = NaN(options_mom_.mom.mom_nbr,totparam_nbr);
-        pruned_state_space = pruned_state_space_system(M_, options_mom_, dr, oo_.dr.obs_var, options_mom_.ar, 0, 1);
+        pruned_state_space = pruned_state_space_system(M_, options_mom_, dr, oo_.mom.obs_var, options_mom_.ar, 0, 1);
     else
-        pruned_state_space = pruned_state_space_system(M_, options_mom_, dr, oo_.dr.obs_var, options_mom_.ar, 0, 0);
+        pruned_state_space = pruned_state_space_system(M_, options_mom_, dr, oo_.mom.obs_var, options_mom_.ar, 0, 0);
     end
     
     oo_.mom.model_moments = NaN(options_mom_.mom.mom_nbr,1);
     for jm = 1:size(M_.matched_moments,1)
         % First moments
         if ~options_mom_.prefilter && (sum(M_.matched_moments{jm,3}) == 1)
-            idx1 = (oo_.dr.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}) );
+            idx1 = (oo_.mom.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}) );
             oo_.mom.model_moments(jm,1) = pruned_state_space.E_y(idx1);
             if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
                 oo_.mom.model_moments_params_derivs(jm,:) = pruned_state_space.dE_y(idx1,:);
@@ -168,8 +168,8 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         end
         % Second moments
         if (sum(M_.matched_moments{jm,3}) == 2)
-            idx1 = (oo_.dr.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}(1)) );
-            idx2 = (oo_.dr.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}(2)) );
+            idx1 = (oo_.mom.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}(1)) );
+            idx2 = (oo_.mom.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}(2)) );
             if nnz(M_.matched_moments{jm,2}) == 0
                 % Covariance
                 if options_mom_.prefilter
@@ -221,7 +221,7 @@ elseif strcmp(options_mom_.mom.mom_method,'SMM')
     y_sim = simult_(M_, options_mom_, dr.ys, dr, scaled_shock_series, options_mom_.order);
     % provide meaningful penalty if data is nan or inf
     if any(any(isnan(y_sim))) || any(any(isinf(y_sim)))
-        if options_mom_.vector_output == 1 % lsqnonlin requires vector output
+        if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
             fval = Inf(size(oo_.mom.Sw,1),1);
         else
             fval = Inf;
@@ -229,14 +229,14 @@ elseif strcmp(options_mom_.mom.mom_method,'SMM')
         info(1)=180;
         info(4) = 0.1;
         exit_flag = 0;
-        if options_mom_.vector_output == 1 % lsqnonlin requires vector output
+        if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
             fval = ones(size(oo_.mom.data_moments,1),1)*options_mom_.huge_number;
         end
         return
     end
     
     % Remove burn-in and focus on observables (note that y_sim is in declaration order)
-    y_sim = y_sim(oo_.dr.order_var(oo_.dr.obs_var) , end-options_mom_.mom.long+1:end)';
+    y_sim = y_sim(oo_.dr.order_var(oo_.mom.obs_var) , end-options_mom_.mom.long+1:end)';
     
     if ~all(diag(M_.H)==0)
         i_ME = setdiff([1:size(M_.H,1)],find(diag(M_.H) == 0)); % find ME with 0 variance
@@ -260,7 +260,7 @@ end
 moments_difference = oo_.mom.data_moments - oo_.mom.model_moments;
 residuals = sqrt(options_mom_.mom.weighting_matrix_scaling_factor)*oo_.mom.Sw*moments_difference;
 oo_.mom.Q = residuals'*residuals;
-if options_mom_.vector_output == 1 % lsqnonlin requires vector output
+if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
     fval = residuals;
     if options_mom_.mom.penalized_estimator
         fval=[fval;(xparam1-oo_.prior.mean)./sqrt(diag(oo_.prior.variance))];
@@ -281,7 +281,7 @@ if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_jacobian
         dmoments_difference = - oo_.mom.model_moments_params_derivs(:,jp);
         dresiduals = sqrt(options_mom_.mom.weighting_matrix_scaling_factor)*oo_.mom.Sw*dmoments_difference;
         
-        if options_mom_.vector_output == 1 % lsqnonlin requires vector output            
+        if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output            
             if options_mom_.mom.penalized_estimator                
                 df(:,jp)=[dresiduals;dxparam1(:,jp)./sqrt(diag(oo_.prior.variance))];
             else
