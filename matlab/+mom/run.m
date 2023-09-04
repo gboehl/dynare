@@ -255,6 +255,7 @@ for i = 1:options_mom_.obs_nbr
     oo_.mom.obs_var = [oo_.mom.obs_var; find(strcmp(options_mom_.varobs{i}, M_.endo_names(oo_.dr.order_var)))];
 end
 
+
 % -------------------------------------------------------------------------
 % matched_moments: checks and transformations
 % -------------------------------------------------------------------------
@@ -297,39 +298,16 @@ if exist([M_.fname '_prior_restrictions.m'],'file')
     options_mom_.prior_restrictions.routine = str2func([M_.fname '_prior_restrictions']);
 end
 
-bayestopt_laplace=bayestopt_;
-
-% Check on specified priors and penalized estimation
-if any(bayestopt_laplace.pshape > 0) % prior specified
-    if ~options_mom_.mom.penalized_estimator
-        fprintf('\nPriors were specified, but the penalized_estimator-option was not set.\n')
-        fprintf('Dynare sets penalized_estimator to 1. Conducting %s with penalty.\n',options_mom_.mom.mom_method)
-        options_mom_.mom.penalized_estimator=1;
-    end
-    if any(setdiff([0;bayestopt_laplace.pshape],[0,3]))
-        fprintf('\nNon-normal priors specified. %s with penalty uses a Laplace type of approximation.\n',options_mom_.mom.mom_method)
-        fprintf('Only the prior mean and standard deviation are relevant, all other shape information, except for the parameter bounds, is ignored.\n\n')
-        non_normal_priors=bayestopt_laplace.pshape~=3;
-        bayestopt_laplace.pshape(non_normal_priors) = 3;
-        bayestopt_laplace.p3(non_normal_priors) = -Inf*ones(sum(non_normal_priors),1);
-        bayestopt_laplace.p4(non_normal_priors) = Inf*ones(sum(non_normal_priors),1);
-        bayestopt_laplace.p6(non_normal_priors) = bayestopt_laplace.p1(non_normal_priors);
-        bayestopt_laplace.p7(non_normal_priors) = bayestopt_laplace.p2(non_normal_priors);
-        bayestopt_laplace.p5(non_normal_priors) = bayestopt_laplace.p1(non_normal_priors);
-    end
-    if any(isinf(bayestopt_laplace.p2)) %find infinite variance priors
-        inf_var_pars=bayestopt_laplace.name(isinf(bayestopt_laplace.p2));
-        disp_string=[inf_var_pars{1,:}];
-        for ii=2:size(inf_var_pars,1)
-            disp_string=[disp_string,', ',inf_var_pars{ii,:}];
+% check on specified priors and penalized estimation (which uses Laplace approximated priors)
+if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
+    bayestopt_orig = bayestopt_;
+    if any(bayestopt_.pshape > 0) % prior specified
+        if ~options_mom_.mom.penalized_estimator
+            fprintf('\nPriors were specified, but the penalized_estimator-option was not set.');
+            fprintf('\nDynare sets penalized_estimator to 1. Conducting %s with penalty.\n',options_mom_.mom.mom_method);
+            options_mom_.mom.penalized_estimator = 1;
         end
-        fprintf('The parameter(s) %s have infinite prior variance. This implies a flat prior\n',disp_string)
-        fprintf('Dynare disables the matrix singularity warning\n')
-        if isoctave
-            warning('off','Octave:singular-matrix');
-        else
-            warning('off','MATLAB:singularMatrix');
-        end
+        bayestopt_ = mom.transform_prior_to_laplace_prior(bayestopt_);
     end
 end
 
@@ -344,32 +322,33 @@ else
     estim_params_.full_calibration_detected=0;
 end
 if options_mom_.use_calibration_initialization %set calibration as starting values
-    if ~isempty(bayestopt_laplace) && all(bayestopt_laplace.pshape==0) && any(all(isnan([xparam1_calib xparam0]),2))
-        error('method_of_moments: When using the use_calibration option with %s without prior, the parameters must be explicitly initialized.',options_mom_.mom.mom_method)
+    if ~isempty(bayestopt_) && ~doBayesianEstimation && any(all(isnan([xparam1_calib xparam0]),2))
+        error('method_of_moments: When using the use_calibration option with %s without prior, the parameters must be explicitly initialized!',options_mom_.mom.mom_method);
     else
         [xparam0,estim_params_]=do_parameter_initialization(estim_params_,xparam1_calib,xparam0); %get explicitly initialized parameters that have precedence over calibrated values
     end
 end
 
 % Check initialization
-if ~isempty(bayestopt_laplace) && all(bayestopt_laplace.pshape==0) && any(isnan(xparam0))
-    error('method_of_moments: %s without penalty requires all estimated parameters to be initialized, either in an estimated_params or estimated_params_init-block ',options_mom_.mom.mom_method)
+if ~isempty(bayestopt_) && ~doBayesianEstimation && any(isnan(xparam0))
+    error('method_of_moments: Frequentist %s requires all estimated parameters to be initialized, either in an estimated_params or estimated_params_init-block!',options_mom_.mom.mom_method);
 end
 
 % Set and check parameter bounds
-if ~isempty(bayestopt_laplace) && any(bayestopt_laplace.pshape > 0)
-    % Plot prior densities
+if ~isempty(bayestopt_) && doBayesianEstimation
+    % plot prior densities
     if ~options_mom_.nograph && options_mom_.plot_priors
-        plot_priors(bayestopt_,M_,estim_params_,options_mom_)
-        plot_priors(bayestopt_laplace,M_,estim_params_,options_mom_,'Laplace approximated priors')
+        plot_priors(bayestopt_orig,M_,estim_params_,options_mom_,'Original priors'); % only for visual inspection (not saved to disk, because overwritten in next call to plot_priors)
+        plot_priors(bayestopt_,M_,estim_params_,options_mom_,'Laplace approximated priors');
+        clear('bayestopt_orig'); % make sure stale structure cannot be used
     end
-    % Set prior bounds
-    Bounds = prior_bounds(bayestopt_laplace, options_mom_.prior_trunc);
+    % set prior bounds
+    Bounds = prior_bounds(bayestopt_, options_mom_.prior_trunc);
     Bounds.lb = max(Bounds.lb,lb);
     Bounds.ub = min(Bounds.ub,ub);
-else  % estimated parameters but no declared priors
-    % No priors are declared so Dynare will estimate the parameters
-    % with inequality constraints for the parameters.
+else
+    % no priors are declared so Dynare will estimate the parameters with
+    % Frequentist methods using inequality constraints for the parameters
     Bounds.lb = lb;
     Bounds.ub = ub;
     if options_mom_.mom.penalized_estimator
@@ -387,18 +366,18 @@ UB_above_1=(Bounds.ub>1 & param_of_interest);
 Bounds.lb(LB_below_minus_1)=-1; 
 Bounds.ub(UB_above_1)=1; 
 
-clear('bayestopt_','LB_below_0','LB_below_minus_1','UB_above_1','param_of_interest');%make sure stale structure cannot be used
+clear('LB_below_0','LB_below_minus_1','UB_above_1','param_of_interest');%make sure stale structure cannot be used
 
 % Test if initial values of the estimated parameters are all between the prior lower and upper bounds
 if options_mom_.use_calibration_initialization
     try
-        check_prior_bounds(xparam0,Bounds,M_,estim_params_,options_mom_,bayestopt_laplace)
+        check_prior_bounds(xparam0,Bounds,M_,estim_params_,options_mom_,bayestopt_)
     catch last_error
         fprintf('Cannot use parameter values from calibration as they violate the prior bounds.')
         rethrow(last_error);
     end
 else
-    check_prior_bounds(xparam0,Bounds,M_,estim_params_,options_mom_,bayestopt_laplace)
+    check_prior_bounds(xparam0,Bounds,M_,estim_params_,options_mom_,bayestopt_)
 end
 
 estim_params_= get_matrix_entries_for_psd_check(M_,estim_params_);
@@ -410,8 +389,8 @@ if estim_params_.ncx || any(nnz(tril(M_.Correlation_matrix,-1))) || isfield(esti
 end
 
 % storing prior parameters in MoM info structure for penalized minimization
-oo_.prior.mean = bayestopt_laplace.p1;
-oo_.prior.variance = diag(bayestopt_laplace.p2.^2);
+oo_.prior.mean = bayestopt_.p1;
+oo_.prior.variance = diag(bayestopt_.p2.^2);
 
 % Set all parameters
 M_ = set_all_parameters(xparam0,estim_params_,M_);
@@ -719,7 +698,7 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
                 options_mom_.mom.compute_derivs = false;
             end
             
-            [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, options_mom_.optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_laplace.name, bayestopt_laplace, [],...
+            [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, options_mom_.optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_.name, bayestopt_, [],...
                                                                   Bounds, oo_, estim_params_, M_, options_mom_);
             if options_mom_.mom.vector_output
                 fval = fval'*fval;
@@ -727,7 +706,7 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
         end
         fprintf('\nStage %d Iteration %d: value of minimized moment distance objective function: %12.10f.\n',stage_iter,optim_iter,fval)
         if options_mom_.mom.verbose
-            oo_.mom=display_estimation_results_table(xparam1,NaN(size(xparam1)),M_,options_mom_,estim_params_,bayestopt_laplace,oo_.mom,prior_dist_names,sprintf('%s (STAGE %d ITERATION %d) VERBOSE',options_mom_.mom.mom_method,stage_iter,optim_iter),sprintf('verbose_%s_stage_%d_iter_%d',lower(options_mom_.mom.mom_method),stage_iter,optim_iter));
+            oo_.mom=display_estimation_results_table(xparam1,NaN(size(xparam1)),M_,options_mom_,estim_params_,bayestopt_,oo_.mom,prior_dist_names,sprintf('%s (STAGE %d ITERATION %d) VERBOSE',options_mom_.mom.mom_method,stage_iter,optim_iter),sprintf('verbose_%s_stage_%d_iter_%d',lower(options_mom_.mom.mom_method),stage_iter,optim_iter));
         end
         xparam0=xparam1;
     end
@@ -743,7 +722,7 @@ for stage_iter=1:size(options_mom_.mom.weighting_matrix,1)
     SE = mom.standard_errors(xparam1, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Woptflag);
     
     % Store results in output structure
-    oo_.mom = display_estimation_results_table(xparam1,SE,M_,options_mom_,estim_params_,bayestopt_laplace,oo_.mom,prior_dist_names,sprintf('%s (STAGE %u)',options_mom_.mom.mom_method,stage_iter),sprintf('%s_stage_%u',lower(options_mom_.mom.mom_method),stage_iter));
+    oo_.mom = display_estimation_results_table(xparam1,SE,M_,options_mom_,estim_params_,bayestopt_,oo_.mom,prior_dist_names,sprintf('%s (STAGE %u)',options_mom_.mom.mom_method,stage_iter),sprintf('%s_stage_%u',lower(options_mom_.mom.mom_method),stage_iter));
 end
 
 % -------------------------------------------------------------------------
@@ -810,7 +789,7 @@ if options_mom_.TeX
 end
 
 if options_mom_.mode_check.status
-    mom.check_plot(objective_function,xparam1,SE,options_mom_,M_,estim_params_,Bounds,bayestopt_laplace,...
+    mom.check_plot(objective_function,xparam1,SE,options_mom_,M_,estim_params_,Bounds,bayestopt_,...
         Bounds, oo_, estim_params_, M_, options_mom_)
 end
 
