@@ -256,76 +256,25 @@ for i = 1:options_mom_.obs_nbr
 end
 
 % -------------------------------------------------------------------------
-% Step 2: Checks and transformations for matched_moments structure
+% matched_moments: checks and transformations
 % -------------------------------------------------------------------------
-M_.matched_moments_orig = M_.matched_moments; %save original structure
-
-% higher-order product moments not supported yet for GMM
-if strcmp(options_mom_.mom.mom_method, 'GMM') && any(cellfun(@sum,M_.matched_moments(:,3))> 2)
-    error('method_of_moments: GMM does not yet support product moments higher than 2. Change row %d in ''matched_moments'' block.',jm);
-end
-
-% check for duplicate moment conditions
-for jm=1:size(M_.matched_moments,1)
-    % expand powers to vector of ones
-    if any(M_.matched_moments{jm,3}>1)
-        tmp1=[]; tmp2=[]; tmp3=[];
-        for jjm=1:length(M_.matched_moments{jm,3})
-            tmp1 = [tmp1 repmat(M_.matched_moments{jm,1}(jjm),[1 M_.matched_moments{jm,3}(jjm)]) ];
-            tmp2 = [tmp2 repmat(M_.matched_moments{jm,2}(jjm),[1 M_.matched_moments{jm,3}(jjm)]) ];
-            tmp3 = [tmp3 repmat(1,[1 M_.matched_moments{jm,3}(jjm)]) ];
-        end
-        M_.matched_moments{jm,1} = tmp1;
-        M_.matched_moments{jm,2} = tmp2;
-        M_.matched_moments{jm,3} = tmp3;
+if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
+    M_.matched_moments = mom.matched_moments_block(M_.matched_moments, options_mom_.mom.mom_method);    
+    % Check if both prefilter and first moments were specified
+    first_moment_indicator = find(cellfun(@(x) sum(abs(x))==1,M_.matched_moments(:,3)))';
+    if options_mom_.prefilter && ~isempty(first_moment_indicator)
+        fprintf('Centered moments requested (prefilter option is set); therefore, ignore declared first moments in ''matched_moments'' block.\n');
+        M_.matched_moments(first_moment_indicator,:)=[]; %remove first moments entries
     end
-    % shift time structure to focus only on lags
-    M_.matched_moments{jm,2} = M_.matched_moments{jm,2} - max(M_.matched_moments{jm,2});
-    % sort such that t=0 variable comes first
-    [M_.matched_moments{jm,2},idx_sort] = sort(M_.matched_moments{jm,2},'descend');
-    M_.matched_moments{jm,1} = M_.matched_moments{jm,1}(idx_sort);
-    M_.matched_moments{jm,3} = M_.matched_moments{jm,3}(idx_sort);
-end
-
-% find duplicate rows in cell array by making groups according to powers as we can then use cell2mat for the unique function
-powers = cellfun(@sum,M_.matched_moments(:,3))';
-UniqueMomIdx = [];
-for jpow = unique(powers)
-    idx1 = find(powers==jpow);
-    [~,idx2] = unique(cell2mat(M_.matched_moments(idx1,:)),'rows');
-    UniqueMomIdx = [UniqueMomIdx idx1(idx2)];
-end
-
-% remove duplicate elements
-DuplicateMoms = setdiff(1:size(M_.matched_moments_orig,1),UniqueMomIdx);
-if ~isempty(DuplicateMoms)
-    fprintf('Found and removed duplicate declared moments in ''matched_moments'' block in rows:\n %s.\n',num2str(DuplicateMoms))
-    fprintf('Dynare will continue with remaining moment conditions\n');
-end
-
-if strcmp(options_mom_.mom.mom_method, 'SMM')
-    % for SMM we can keep the original structure but get rid of duplicate moments
-    M_.matched_moments = M_.matched_moments_orig(sort(UniqueMomIdx),:);
-elseif strcmp(options_mom_.mom.mom_method, 'GMM')
-    % for GMM we use the transformed matched_moments structure
-    M_.matched_moments = M_.matched_moments(sort(UniqueMomIdx),:);
-end
-
-% Check if both prefilter and first moments were specified
-first_moment_indicator = find(cellfun(@(x) sum(abs(x))==1,M_.matched_moments(:,3)))';
-if options_mom_.prefilter && ~isempty(first_moment_indicator)
-    fprintf('Centered moments requested (prefilter option is set); therefore, ignore declared first moments in ''matched_moments'' block.\n');
-    M_.matched_moments(first_moment_indicator,:)=[]; %remove first moments entries
-end
-options_mom_.mom.mom_nbr = size(M_.matched_moments,1);
-
-% Get maximum lag number for autocovariances/autocorrelations
-options_mom_.ar = max(cellfun(@max,M_.matched_moments(:,2))) - min(cellfun(@min,M_.matched_moments(:,2)));
-
-%check that only observed variables are involved in moments
-not_observed_variables=setdiff(oo_.dr.inv_order_var([M_.matched_moments{:,1}]),oo_.mom.obs_var);
-if ~isempty(not_observed_variables)
-    error('\nmethod_of_moments: You specified moments involving %s, but it is not a varobs.',M_.endo_names{oo_.dr.order_var(not_observed_variables)})
+    options_mom_.mom.mom_nbr = size(M_.matched_moments,1);
+    % Get maximum lag number for autocovariances/autocorrelations
+    options_mom_.ar = max(cellfun(@max,M_.matched_moments(:,2))) - min(cellfun(@min,M_.matched_moments(:,2)));
+    % Check that only observed variables are involved in moments
+    not_observed_variables=setdiff(oo_.dr.inv_order_var([M_.matched_moments{:,1}]),oo_.mom.obs_var);
+    if ~isempty(not_observed_variables)
+        skipline;
+        error('method_of_moments: You specified moments involving %s, but it is not a varobs!',M_.endo_names{oo_.dr.order_var(not_observed_variables)})
+    end
 end
 
 

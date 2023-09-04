@@ -193,6 +193,7 @@ INT(0)^2*INFL(1)^4; %redundant
 @#endif
 end;
 
+M_.matched_moments_orig = M_.matched_moments;
 
 method_of_moments(
 % Necessery options
