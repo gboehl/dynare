@@ -577,40 +577,8 @@ if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_meth
     oo_.mom = display_estimation_results_table(xparam1,SE,M_,options_mom_,estim_params_,bayestopt_,oo_.mom,prior_dist_names,options_mom_.mom.mom_method,lower(options_mom_.mom.mom_method));
     % J test
     oo_ = mom.Jtest(xparam1, objective_function, Woptflag, oo_, options_mom_, bayestopt_, Bounds, estim_params_, M_, dataset_.nobs);
-title = ['Comparison of data moments and model moments (',options_mom_.mom.mom_method,')'];
-headers = {'Moment','Data','Model'};
-for jm = 1:size(M_.matched_moments,1)
-    lables_tmp = 'E[';
-    lables_tmp_tex = 'E \left[ ';
-    for jvar = 1:length(M_.matched_moments{jm,1})
-        lables_tmp = [lables_tmp M_.endo_names{M_.matched_moments{jm,1}(jvar)}];
-        lables_tmp_tex = [lables_tmp_tex, '{', M_.endo_names_tex{M_.matched_moments{jm,1}(jvar)}, '}'];
-        if M_.matched_moments{jm,2}(jvar) ~= 0
-            lables_tmp = [lables_tmp, '(', num2str(M_.matched_moments{jm,2}(jvar)), ')'];
-            lables_tmp_tex = [lables_tmp_tex, '_{t', num2str(M_.matched_moments{jm,2}(jvar)), '}'];
-        else
-            lables_tmp_tex = [lables_tmp_tex, '_{t}'];
-        end
-        if M_.matched_moments{jm,3}(jvar) > 1
-            lables_tmp = [lables_tmp, '^', num2str(M_.matched_moments{jm,3}(jvar))];
-            lables_tmp_tex = [lables_tmp_tex, '^{', num2str(M_.matched_moments{jm,3}(jvar)) '}'];
-        end
-        if jvar == length(M_.matched_moments{jm,1})
-            lables_tmp = [lables_tmp, ']'];
-            lables_tmp_tex = [lables_tmp_tex, ' \right]'];
-        else
-            lables_tmp = [lables_tmp, '*'];
-            lables_tmp_tex = [lables_tmp_tex, ' \times '];
-        end
-    end
-    labels{jm,1} = lables_tmp;
-    labels_TeX{jm,1} = lables_tmp_tex;
-end
-data_mat=[oo_.mom.data_moments oo_.mom.model_moments ];
-dyntable(options_mom_, title, headers, labels, data_mat, cellofchararraymaxlength(labels)+2, 10, 7);
-if options_mom_.TeX
-    dyn_latex_table(M_, options_mom_, title, ['comparison_moments_', options_mom_.mom.mom_method], headers, labels_TeX, data_mat, cellofchararraymaxlength(labels)+2, 10, 7);
-end
+    % display comparison of model moments and data moments
+    mom.display_comparison_moments(M_, options_mom_, oo_.mom.data_moments, oo_.mom.model_moments);
 end
 
 fprintf('\n==== Method of Moments Estimation (%s) Completed ====\n\n',options_mom_.mom.mom_method)
