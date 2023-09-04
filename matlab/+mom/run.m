@@ -581,17 +581,18 @@ if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_meth
     mom.display_comparison_moments(M_, options_mom_, oo_.mom.data_moments, oo_.mom.model_moments);
 end
 
-fprintf('\n==== Method of Moments Estimation (%s) Completed ====\n\n',options_mom_.mom.mom_method)
 
 % -------------------------------------------------------------------------
-% Step 9: Clean up
+% clean up
 % -------------------------------------------------------------------------
+fprintf('\n==== Method of Moments Estimation (%s) Completed ====\n\n',options_mom_.mom.mom_method)
+
 %reset warning state
 warning_config;
 
 if isoctave && isfield(options_, 'prior_restrictions') && ...
-   isfield(options_.prior_restrictions, 'routine')
+   isfield(options_mom_.prior_restrictions, 'routine')
     % Octave crashes if it tries to save function handles (to the _results.mat file)
     % See https://savannah.gnu.org/bugs/?43215
-    options_.prior_restrictions.routine = [];
+    options_mom_.prior_restrictions.routine = [];
 end
