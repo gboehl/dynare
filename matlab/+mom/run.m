@@ -442,7 +442,9 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
 end
 
 
-% Get shock series for SMM and set variance correction factor
+% -------------------------------------------------------------------------
+% SMM: Get shock series fand set variance correction factor
+% -------------------------------------------------------------------------
 if strcmp(options_mom_.mom.mom_method,'SMM')
     options_mom_.mom.long = round(options_mom_.mom.simulation_multiple*options_mom_.nobs);
     options_mom_.mom.variance_correction_factor = (1+1/options_mom_.mom.simulation_multiple);
@@ -455,7 +457,7 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
         [state_u,state_n] = get_dynare_random_generator_state; %get state for later resetting
         set_dynare_random_generator_state(options_mom_.mom.seed,options_mom_.mom.seed);
         temp_shocks = randn(options_mom_.mom.long+options_mom_.mom.burnin,M_.exo_nbr);
-        temp_shocks_ME = randn(options_mom_.mom.long,length(M_.H));  
+        temp_shocks_ME = randn(options_mom_.mom.long,length(M_.H));
         set_dynare_random_generator_state(state_u,state_n); %reset state for later resetting
     end
     if options_mom_.mom.bounded_shock_support == 1
@@ -470,6 +472,7 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
         options_mom_.DynareRandomStreams.seed = options_mom_.mom.seed;
     end
 end
+
 
 % -------------------------------------------------------------------------
 % Step 5: checks for steady state at initial parameters
