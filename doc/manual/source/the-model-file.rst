@@ -6699,7 +6699,7 @@ observed variables.
                 takes the return value of that function as the
                 posterior mode.
 
-       |br| Default value is ``4``.
+       |br| Default value is ``5``.
 
     .. option:: additional_optimizer_steps = [INTEGER]
                 additional_optimizer_steps = [INTEGER1:INTEGER2]
