@@ -72,7 +72,7 @@ alp, beta_pdf, 0.356, 0.02;
 bet, normal_pdf, 2, 1;
 gam, normal_pdf, 0.0085, 0.003;
 mst, normal_pdf, 1.0002, 0.007;
-rho, normal_pdf, 0.129, 0.223;
+rho, normal_pdf, 0.129, 0.005;
 psi, beta_pdf, 0.65, 0.05;
 del, beta_pdf, 0.01, 0.005;
 stderr e_a, inv_gamma_pdf, 0.035449, inf;
