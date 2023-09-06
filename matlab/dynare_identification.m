@@ -99,7 +99,6 @@ else
     warning('off','MATLAB:plot:IgnoreImaginaryXYPart');
     warning('off','MATLAB:specgraph:private:specgraph:UsingOnlyRealComponentOfComplexData');
     warning('off','MATLAB:handle_graphics:exceptions:SceneNode');
-    warning('off','MATLAB:divideByZero');
     warning('off','MATLAB:log:logOfZero');
 end
 

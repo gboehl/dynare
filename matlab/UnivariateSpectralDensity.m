@@ -46,8 +46,6 @@ end
 
 if isoctave
     warning('off', 'Octave:divide-by-zero')
-else
-    warning off MATLAB:dividebyzero
 end
 if nargin<2
     var_list = {};
@@ -146,8 +144,6 @@ oo_.SpectralDensity.density=f;
 
 if isoctave
     warning('on', 'Octave:divide-by-zero')
-else
-    warning on MATLAB:dividebyzero
 end
 
 if ~options_.nograph

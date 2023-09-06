@@ -75,8 +75,6 @@ end
 endo_nbr = M_.endo_nbr;
 if isoctave
     warning('off', 'Octave:divide-by-zero')
-else
-    warning off MATLAB:dividebyzero
 end
 nar = options_.ar;
 Gamma_y = cell(nar+2,1);
@@ -291,6 +289,4 @@ else% ==> Theoretical filters.
 end
 if isoctave
     warning('on', 'Octave:divide-by-zero')
-else
-    warning on MATLAB:dividebyzero
 end
