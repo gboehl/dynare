@@ -5912,13 +5912,14 @@ observed variables.
     .. option:: PRIOR_3RD_PARAMETER
 
        A third parameter of the prior used for generalized beta
-       distribution, generalized gamma, generalized Weibull and for
-       the uniform distribution. Default: ``0``.
+       distribution, generalized gamma, generalized Weibull, the truncated normal, and for
+       the uniform distribution. Default: ``-Inf`` for normal distribution, ``0`` otherwise.
 
     .. option:: PRIOR_4TH_PARAMETER
 
         A fourth parameter of the prior used for generalized beta
-        distribution and for the uniform distribution. Default: ``1``.
+        distribution, the truncated normal, and for the uniform distribution. 
+        Default: ``Inf`` for normal distribution, ``1`` otherwise.
 
     .. option:: SCALE_PARAMETER
 
