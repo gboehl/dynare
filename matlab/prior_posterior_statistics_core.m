@@ -197,7 +197,7 @@ for b=fpar:B
         logpo=[];
         while (isempty(logpo) || isinf(logpo)) && iter<1000
             deep = Prior.draw();
-            logpo = evaluate_posterior_kernel(deep, M_, estim_params_, oo_, options_, bayestopt_)
+            logpo = evaluate_posterior_kernel(deep, M_, estim_params_, oo_, options_, bayestopt_);
             iter=iter+1;
         end
         if iter==1000
