@@ -72,6 +72,10 @@ if local_order~=1 && M_.hessian_eq_zero
     local_order = 1;
 end
 
+if local_order>1 && (options_.hp_filter || options_.bandpass.indicator)
+    error('Theoretical filtered moments not implemented above 1st order')
+end
+
 endo_nbr = M_.endo_nbr;
 if isoctave
     warning('off', 'Octave:divide-by-zero')
@@ -79,80 +83,61 @@ end
 nar = options_.ar;
 Gamma_y = cell(nar+2,1);
 if isempty(ivar)
-    ivar = [1:endo_nbr]';
+    ivar = (1:endo_nbr)';
 end
 nvar = size(ivar,1);
 
 ghx = dr.ghx;
 ghu = dr.ghu;
-nspred = M_.nspred;
-nstatic = M_.nstatic;
-
-nx = size(ghx,2);
 
 inv_order_var = dr.inv_order_var;
-kstate = dr.kstate;
-ikx = [nstatic+1:nstatic+nspred];
-k0 = kstate(find(kstate(:,2) <= M_.maximum_lag+1),:);
-i0 = find(k0(:,2) == M_.maximum_lag+1);
-i00 = i0;
-n0 = length(i0);
-AS = ghx(:,i0);
-ghu1 = zeros(nx,M_.exo_nbr);
-ghu1(i0,:) = ghu(ikx,:);
-for i=M_.maximum_lag:-1:2
-    i1 = find(k0(:,2) == i);
-    n1 = size(i1,1);
-    j1 = zeros(n1,1);
-    for k1 = 1:n1
-        j1(k1) = find(k0(i00,1)==k0(i1(k1),1));
-    end
-    AS(:,j1) = AS(:,j1)+ghx(:,i1);
-    i0 = i1;
-end
-b = ghu1*M_.Sigma_e*ghu1';
-
-
-ipred = nstatic+(1:nspred)';
+index_states = M_.nstatic+(1:M_.nspred)';
+ghu_states_only = zeros(M_.nspred,M_.exo_nbr);
+ghu_states_only(1:M_.nspred,:) = ghu(index_states,:); %get shock impact on states only
 
 % state space representation for state variables only
-[A,B] = kalman_transition_matrix(dr,ipred,1:nx,M_.exo_nbr);
-% Compute stationary variables (before HP filtering),
-% and compute 2nd order mean correction on stationary variables (in case of
-% HP filtering, this mean correction is computed *before* filtering)
-if local_order == 2 || options_.hp_filter == 0
-    [vx, u] =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,[],options_.debug);
+[A,B] = kalman_transition_matrix(dr,index_states,1:M_.nspred,M_.exo_nbr);
+% Compute stationary variables for unfiltered moments (filtering will remove unit roots)
+if options_.hp_filter ~= 0 || options_.bandpass.indicator
+    % By construction, all variables are stationary when filtered
     iky = inv_order_var(ivar);
     stationary_vars = (1:length(ivar))';
-    if ~isempty(u)
-        x = abs(ghx*u);
-        iky = iky(find(all(x(iky,:) < options_.schur_vec_tol,2)));
-        stationary_vars = find(all(x(inv_order_var(ivar(stationary_vars)),:) < options_.schur_vec_tol,2));
-    end
-    aa = ghx(iky,:);
-    bb = ghu(iky,:);
-    if local_order == 2         % mean correction for 2nd order
-        if ~isempty(ikx)
-            Ex = (dr.ghs2(ikx)+dr.ghxx(ikx,:)*vx(:)+dr.ghuu(ikx,:)*M_.Sigma_e(:))/2;
-            Ex = (eye(n0)-AS(ikx,:))\Ex;
-            Gamma_y{nar+3} = NaN*ones(nvar, 1);
-            Gamma_y{nar+3}(stationary_vars) = AS(iky,:)*Ex+(dr.ghs2(iky)+dr.ghxx(iky,:)*vx(:)+...
-                                                            dr.ghuu(iky,:)*M_.Sigma_e(:))/2;
-        else %no static and no predetermined
-            Gamma_y{nar+3} = NaN*ones(nvar, 1);
-            Gamma_y{nar+3}(stationary_vars) = (dr.ghs2(iky)+ dr.ghuu(iky,:)*M_.Sigma_e(:))/2;
-        end
+else
+    [variance_states, unit_root_Schur_vector] =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,[],options_.debug);
+    iky = inv_order_var(ivar);
+    stationary_vars = (1:length(ivar))';
+    if ~isempty(unit_root_Schur_vector)
+        x = abs(ghx*unit_root_Schur_vector);
+        iky = iky(all(x(iky,:) < options_.schur_vec_tol,2));
+        stationary_vars = find(all(x(inv_order_var(ivar),:) < options_.schur_vec_tol,2));
     end
 end
+
+%compute 2nd order mean correction on stationary variables 
+if local_order == 2         % mean correction for 2nd order with no filters; other cases are error out above
+    if ~isempty(index_states)
+        Ex = (dr.ghs2(index_states)+dr.ghxx(index_states,:)*variance_states(:)+dr.ghuu(index_states,:)*M_.Sigma_e(:))/2;
+        Ex = (eye(length(M_.nspred))-ghx(index_states,:))\Ex;
+        Gamma_y{nar+3} = NaN*ones(nvar, 1);
+        Gamma_y{nar+3}(stationary_vars) = ghx(iky,:)*Ex+(dr.ghs2(iky)+dr.ghxx(iky,:)*variance_states(:)+...
+            dr.ghuu(iky,:)*M_.Sigma_e(:))/2;
+    else %no static and no predetermined
+        Gamma_y{nar+3} = NaN*ones(nvar, 1);
+        Gamma_y{nar+3}(stationary_vars) = (dr.ghs2(iky)+ dr.ghuu(iky,:)*M_.Sigma_e(:))/2;
+    end
+end
+
 if options_.hp_filter == 0 && ~options_.bandpass.indicator
+    aa = ghx(iky,:);
+    bb = ghu(iky,:);
+    % unconditional variance
     v = NaN*ones(nvar,nvar);
-    v(stationary_vars,stationary_vars) = aa*vx*aa'+ bb*M_.Sigma_e*bb';
-    k = find(abs(v) < 1e-12);
-    v(k) = 0;
+    v(stationary_vars,stationary_vars) = aa*variance_states*aa'+ bb*M_.Sigma_e*bb';
+    v(abs(v) < 1e-12) = 0;
     Gamma_y{1} = v;
     % autocorrelations
     if nar > 0
-        vxy = (A*vx*aa'+ghu1*M_.Sigma_e*bb');
+        vxy = (A*variance_states*aa'+ghu_states_only*M_.Sigma_e*bb');
         sy = sqrt(diag(Gamma_y{1}));
         sy = sy(stationary_vars);
         sy = sy *sy';
@@ -171,37 +156,31 @@ if options_.hp_filter == 0 && ~options_.bandpass.indicator
         else
             Gamma_y{nar+2} = NaN(nvar,M_.exo_nbr);
             cs = get_lower_cholesky_covariance(M_.Sigma_e,options_.add_tiny_number_to_cholesky);
-            b1 = ghu1;
-            b1 = b1*cs;
-            b2 = ghu(iky,:);
-            b2 = b2*cs;
-            vx  = lyapunov_symm(A,b1*b1',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,1,options_.debug);
-            vv = diag(aa*vx*aa'+b2*b2');
-            vv2 = 0;
+            b1 = ghu_states_only*cs;
+            b2 = ghu(iky,:)*cs;
+            variance_states  = lyapunov_symm(A,b1*b1',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,1,options_.debug);
+            vv = diag(aa*variance_states*aa'+b2*b2');
+            variance_sum_loop = 0;
             for i=1:M_.exo_nbr
-                vx1 = lyapunov_symm(A,b1(:,i)*b1(:,i)',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,2,options_.debug);
-                vx2 = abs(diag(aa*vx1*aa'+b2(:,i)*b2(:,i)'));
+                variance_states = lyapunov_symm(A,b1(:,i)*b1(:,i)',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,2,options_.debug);
+                vx2 = diag(aa*variance_states*aa'+b2(:,i)*b2(:,i)');
                 Gamma_y{nar+2}(stationary_vars,i) = vx2;
-                vv2 = vv2 +vx2;
+                variance_sum_loop = variance_sum_loop +vx2; %track overall variance over shocks
             end
-            if max(abs(vv2-vv)./vv) > 1e-4
+            if max(abs(variance_sum_loop-vv)./vv) > 1e-4
                 warning(['Aggregate variance and sum of variances by shocks ' ...
                          'differ by more than 0.01 %'])
             end
             for i=1:M_.exo_nbr
                 Gamma_y{nar+2}(stationary_vars,i) = Gamma_y{nar+ ...
-                                    2}(stationary_vars,i)./vv2;
+                                    2}(stationary_vars,i)./variance_sum_loop;
             end
         end
     end
 else% ==> Theoretical filters.
-    % By construction, all variables are stationary when HP filtered
-    iky = inv_order_var(ivar);
-    stationary_vars = (1:length(ivar))';
     aa = ghx(iky,:); %R in Uhlig (2001)
     bb = ghu(iky,:); %S in Uhlig (2001)
 
-    lambda = options_.hp_filter;
     ngrid = options_.filtered_theoretical_moments_grid;
     freqs = 0 : ((2*pi)/ngrid) : (2*pi*(1 - .5/ngrid)); %[0,2*pi)
     tpos  = exp( sqrt(-1)*freqs); %positive frequencies
@@ -214,6 +193,7 @@ else% ==> Theoretical filters.
         filter_gain(freqs>=2*pi/lowest_periodicity & freqs<=2*pi/highest_periodicity)=1;
         filter_gain(freqs<=-2*pi/lowest_periodicity+2*pi & freqs>=-2*pi/highest_periodicity+2*pi)=1;
     else
+        lambda = options_.hp_filter;
         filter_gain = 4*lambda*(1 - cos(freqs)).^2 ./ (1 + 4*lambda*(1 - cos(freqs)).^2);   %HP transfer function
     end
     mathp_col = NaN(ngrid,length(ivar)^2);
@@ -223,8 +203,8 @@ else% ==> Theoretical filters.
         if filter_gain(ig)==0
             f_hp = zeros(length(ivar),length(ivar));
         else
-            f_omega  =(1/(2*pi))*([(IA-A*tneg(ig))\ghu1;IE]...
-                                  *M_.Sigma_e*[ghu1'/(IA-A'*tpos(ig)) IE]); % spectral density of state variables; top formula Uhlig (2001), p. 20 with N=0
+            f_omega  =(1/(2*pi))*([(IA-A*tneg(ig))\ghu_states_only;IE]...
+                                  *M_.Sigma_e*[ghu_states_only'/(IA-A'*tpos(ig)) IE]); % spectral density of state variables; top formula Uhlig (2001), p. 20 with N=0
             g_omega = [aa*tneg(ig) bb]*f_omega*[aa'*tpos(ig); bb']; % spectral density of selected variables; middle formula Uhlig (2001), p. 20; only middle block, i.e. y_t'
             f_hp = filter_gain(ig)^2*g_omega; % spectral density of selected filtered series; top formula Uhlig (2001), p. 21;
         end
@@ -249,7 +229,7 @@ else% ==> Theoretical filters.
             Gamma_y{nar+2} = zeros(nvar,M_.exo_nbr);
             cs = get_lower_cholesky_covariance(M_.Sigma_e); %make sure Covariance matrix is positive definite
             SS = cs*cs';
-            b1 = ghu1;
+            b1 = ghu_states_only;
             b2 = ghu(iky,:);
             mathp_col = NaN(ngrid,length(ivar)^2);
             IA = eye(size(A,1));
