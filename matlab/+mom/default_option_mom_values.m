@@ -12,9 +12,10 @@ function options_mom_ = default_option_mom_values(options_mom_, options_, dname,
 
 % =========================================================================
 % INPUTS
-%  o M_:                     [structure] information about model with
 %  o options_mom_:           [structure] information about all (user-specified and updated) settings used in estimation (options_mom_)
-%  o options_mom_:           [structure] information about all (user-specified and updated) settings used in estimation (options_mom_)
+%  o options_:               [structure] information on global options
+%  o dname:                  [string]    name of directory to store results
+%  o doBayesianEstimation    [boolean]   indicator whether we do Bayesian estimation
 % -------------------------------------------------------------------------
 % OUTPUTS
 %  o oo_:                    [structure] storage for results (oo_)

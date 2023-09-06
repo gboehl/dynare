@@ -2,7 +2,7 @@ function mh_jscale = tune_mcmc_mh_jscale_wrapper(invhess, options_, M_, objectiv
 % function mh_jscale = tune_mcmc_mh_jscale_wrapper(invhess, options_, M_, objective_function, xparam1, bounds, varargin)
 % -------------------------------------------------------------------------
 % Wrapper to call the algorithm to tune the jumping scale parameter for the
-% Metropolis-Hastings algorithm; currently only support RW-MH algorithm.
+% Metropolis-Hastings algorithm; currently only supports RW-MH algorithm.
 % =========================================================================
 % INPUTS
 %  o invhess:                 [matrix] jumping covariance matrix

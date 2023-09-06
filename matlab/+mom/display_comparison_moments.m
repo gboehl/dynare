@@ -1,5 +1,5 @@
 function display_comparison_moments(M_, options_mom_, data_moments, model_moments)
-% function display_comparison_moments(M_, options_mom_, oo_)
+% function display_comparison_moments(M_, options_mom_, data_moments, model_moments)
 % -------------------------------------------------------------------------
 % Displays and saves to disk the comparison of the data moments and the model moments
 % =========================================================================

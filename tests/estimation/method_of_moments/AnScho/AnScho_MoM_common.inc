@@ -196,7 +196,7 @@ end;
 M_.matched_moments_orig = M_.matched_moments;
 
 method_of_moments(
-% Necessery options
+% Necessary options
       mom_method = @{MoM_Method}           % method of moments method; possible values: GMM|SMM
     , datafile   = 'AnScho_MoM_data_2.mat' % name of filename with data
 

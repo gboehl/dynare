@@ -152,7 +152,7 @@ end
 
 
 method_of_moments(
-    % Necessery options
+    % Necessary options
           mom_method = GMM                   % method of moments method; possible values: GMM|SMM
         , datafile   = 'RBC_Andreasen_Data_2.mat' % name of filename with data
 

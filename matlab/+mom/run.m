@@ -141,7 +141,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     end
 end
 if (~isempty(estim_params_.var_endo) || ~isempty(estim_params_.corrn)) && strcmp(options_mom_.mom.mom_method, 'GMM')
-    error('method_of_moments: GMM estimation does not support measurement error(s) yet. Please specifiy them as a structural shock!')
+    error('method_of_moments: GMM estimation does not support measurement error(s) yet. Please specify them as a structural shock!')
 end
 doBayesianEstimation = [estim_params_.var_exo(:,5); estim_params_.var_endo(:,5); estim_params_.corrx(:,6); estim_params_.corrn(:,6); estim_params_.param_vals(:,5)];
 if all(doBayesianEstimation~=0)

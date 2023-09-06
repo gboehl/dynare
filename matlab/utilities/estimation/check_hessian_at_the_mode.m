@@ -4,7 +4,7 @@ function check_hessian_at_the_mode(hessian_xparam1, xparam1, M_, estim_params_, 
 % This function checks whether the hessian matrix at the mode is positive definite.
 % =========================================================================
 % INPUTS
-%  o hesseian_xparam1:       [matrix] hessian matrix at the mode
+%  o hessian_xparam1:        [matrix] hessian matrix at the mode
 %  o xparam1:                [vector] vector of parameter values at the mode
 %  o M_:                     [structure] information about model
 %  o estim_params_:          [structure] information about estimated parameters
