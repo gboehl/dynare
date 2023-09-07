@@ -117,7 +117,7 @@ end
 if local_order == 2         % mean correction for 2nd order with no filters; other cases are error out above
     if ~isempty(index_states)
         Ex = (dr.ghs2(index_states)+dr.ghxx(index_states,:)*variance_states(:)+dr.ghuu(index_states,:)*M_.Sigma_e(:))/2;
-        Ex = (eye(length(M_.nspred))-ghx(index_states,:))\Ex;
+        Ex = (eye(M_.nspred)-ghx(index_states,:))\Ex;
         Gamma_y{nar+3} = NaN*ones(nvar, 1);
         Gamma_y{nar+3}(stationary_vars) = ghx(index_stationary_vars,:)*Ex+(dr.ghs2(index_stationary_vars)+dr.ghxx(index_stationary_vars,:)*variance_states(:)+...
             dr.ghuu(index_stationary_vars,:)*M_.Sigma_e(:))/2;
