@@ -100,16 +100,16 @@ ghu_states_only(1:M_.nspred,:) = ghu(index_states,:); %get shock impact on state
 % Compute stationary variables for unfiltered moments (filtering will remove unit roots)
 if options_.hp_filter ~= 0 || options_.bandpass.indicator
     % By construction, all variables are stationary when filtered
-    iky = inv_order_var(ivar);
+    index_stationary_vars = inv_order_var(ivar);
     stationary_vars = (1:length(ivar))';
 else
     [variance_states, unit_root_Schur_vector] =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,[],options_.debug);
-    iky = inv_order_var(ivar);
+    index_stationary_vars = inv_order_var(ivar);
     stationary_vars = (1:length(ivar))';
     if ~isempty(unit_root_Schur_vector)
         x = abs(ghx*unit_root_Schur_vector);
-        iky = iky(all(x(iky,:) < options_.schur_vec_tol,2));
         stationary_vars = find(all(x(inv_order_var(ivar),:) < options_.schur_vec_tol,2));
+        index_stationary_vars = inv_order_var(ivar(stationary_vars));
     end
 end
 
@@ -119,17 +119,17 @@ if local_order == 2         % mean correction for 2nd order with no filters; oth
         Ex = (dr.ghs2(index_states)+dr.ghxx(index_states,:)*variance_states(:)+dr.ghuu(index_states,:)*M_.Sigma_e(:))/2;
         Ex = (eye(length(M_.nspred))-ghx(index_states,:))\Ex;
         Gamma_y{nar+3} = NaN*ones(nvar, 1);
-        Gamma_y{nar+3}(stationary_vars) = ghx(iky,:)*Ex+(dr.ghs2(iky)+dr.ghxx(iky,:)*variance_states(:)+...
-            dr.ghuu(iky,:)*M_.Sigma_e(:))/2;
+        Gamma_y{nar+3}(stationary_vars) = ghx(index_stationary_vars,:)*Ex+(dr.ghs2(index_stationary_vars)+dr.ghxx(index_stationary_vars,:)*variance_states(:)+...
+            dr.ghuu(index_stationary_vars,:)*M_.Sigma_e(:))/2;
     else %no static and no predetermined
         Gamma_y{nar+3} = NaN*ones(nvar, 1);
-        Gamma_y{nar+3}(stationary_vars) = (dr.ghs2(iky)+ dr.ghuu(iky,:)*M_.Sigma_e(:))/2;
+        Gamma_y{nar+3}(stationary_vars) = (dr.ghs2(index_stationary_vars)+ dr.ghuu(index_stationary_vars,:)*M_.Sigma_e(:))/2;
     end
 end
 
 if options_.hp_filter == 0 && ~options_.bandpass.indicator
-    aa = ghx(iky,:);
-    bb = ghu(iky,:);
+    aa = ghx(index_stationary_vars,:);
+    bb = ghu(index_stationary_vars,:);
     % unconditional variance
     v = NaN*ones(nvar,nvar);
     v(stationary_vars,stationary_vars) = aa*variance_states*aa'+ bb*M_.Sigma_e*bb';
@@ -151,35 +151,11 @@ if options_.hp_filter == 0 && ~options_.bandpass.indicator
     end
     % variance decomposition
     if ~nodecomposition && M_.exo_nbr > 0 && size(stationary_vars, 1) > 0
-        if M_.exo_nbr == 1
-            Gamma_y{nar+2} = ones(nvar,1);
-        else
-            Gamma_y{nar+2} = NaN(nvar,M_.exo_nbr);
-            cs = get_lower_cholesky_covariance(M_.Sigma_e,options_.add_tiny_number_to_cholesky);
-            b1 = ghu_states_only*cs;
-            b2 = ghu(iky,:)*cs;
-            variance_states  = lyapunov_symm(A,b1*b1',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,1,options_.debug);
-            vv = diag(aa*variance_states*aa'+b2*b2');
-            variance_sum_loop = 0;
-            for i=1:M_.exo_nbr
-                variance_states = lyapunov_symm(A,b1(:,i)*b1(:,i)',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,2,options_.debug);
-                vx2 = diag(aa*variance_states*aa'+b2(:,i)*b2(:,i)');
-                Gamma_y{nar+2}(stationary_vars,i) = vx2;
-                variance_sum_loop = variance_sum_loop +vx2; %track overall variance over shocks
-            end
-            if max(abs(variance_sum_loop-vv)./vv) > 1e-4
-                warning(['Aggregate variance and sum of variances by shocks ' ...
-                         'differ by more than 0.01 %'])
-            end
-            for i=1:M_.exo_nbr
-                Gamma_y{nar+2}(stationary_vars,i) = Gamma_y{nar+ ...
-                                    2}(stationary_vars,i)./variance_sum_loop;
-            end
-        end
+        Gamma_y{nar+2}=compute_variance_decomposition(M_,options_,diag(v(stationary_vars,stationary_vars)),A,aa,ghu,ghu_states_only,stationary_vars,index_stationary_vars,nvar);
     end
 else% ==> Theoretical filters.
-    aa = ghx(iky,:); %R in Uhlig (2001)
-    bb = ghu(iky,:); %S in Uhlig (2001)
+    aa = ghx(index_stationary_vars,:); %R in Uhlig (2001)
+    bb = ghu(index_stationary_vars,:); %S in Uhlig (2001)
 
     ngrid = options_.filtered_theoretical_moments_grid;
     freqs = 0 : ((2*pi)/ngrid) : (2*pi*(1 - .5/ngrid)); %[0,2*pi)
@@ -230,7 +206,7 @@ else% ==> Theoretical filters.
             cs = get_lower_cholesky_covariance(M_.Sigma_e); %make sure Covariance matrix is positive definite
             SS = cs*cs';
             b1 = ghu_states_only;
-            b2 = ghu(iky,:);
+            b2 = ghu(index_stationary_vars,:);
             mathp_col = NaN(ngrid,length(ivar)^2);
             IA = eye(size(A,1));
             IE = eye(M_.exo_nbr);

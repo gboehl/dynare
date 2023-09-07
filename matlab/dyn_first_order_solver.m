@@ -65,7 +65,6 @@ if isempty(reorder_jacobian_columns)
     nstatic  = DynareModel.nstatic;
     ndynamic = DynareModel.ndynamic;
     nsfwrd   = DynareModel.nsfwrd;
-    n        = DynareModel.endo_nbr;
 
     k1 = 1:(npred+nboth);
     k2 = 1:(nfwrd+nboth);
@@ -76,16 +75,10 @@ if isempty(reorder_jacobian_columns)
     nz = nnz(lead_lag_incidence);
 
     lead_id = find(lead_lag_incidence(maximum_lag+2,:));
-    lead_idx = lead_lag_incidence(maximum_lag+2,lead_id);
     if maximum_lag
         lag_id = find(lead_lag_incidence(1,:));
-        lag_idx = lead_lag_incidence(1,lag_id);
-        static_id = find((lead_lag_incidence(1,:) == 0) & ...
-                         (lead_lag_incidence(3,:) == 0));
     else
         lag_id = [];
-        lag_idx = [];
-        static_id = find(lead_lag_incidence(2,:)==0);
     end
 
     both_id = intersect(lead_id,lag_id);
@@ -277,7 +270,6 @@ if nstatic > 0
         end
     end
     ghx = [temp; ghx];
-    temp = [];
 end
 
 A_ = real([B_static C*gx+B_pred B_fyd]); % The state_variable of the block are located at [B_pred B_both]

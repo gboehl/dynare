@@ -1,8 +1,29 @@
 function oo_ = disp_th_moments(dr, var_list, M_, options_, oo_)
-
+%oo_ = disp_th_moments(dr, var_list, M_, options_, oo_)
 % Display theoretical moments of variables
+% INPUTS:
+% dr :          [struct]    Dynare decision rules structure
+% var_list      [cell]      list of variables considered
+% M_            [struct]    structure describing the Model
+% options_      [struct]    structure describing the options
+% oo_           [struct]    structure describing the Model
+%
+% OUTPUTS: 
+% oo_           [struct]    structure describing the Model, containing       
+%           gamma_y                                 [cell]      Matlab cell of nar+1 arrays, where nar is the order of the autocorrelation function.
+%           gamma_y{1}                              [double]    Covariance matrix.
+%           gamma_y{i+1}                            [double]    Autocorrelation function (for i=1,...,options_.ar).
+%           mean                                    [vector]    Unconditional mean
+%           var                                     [matrix]    Unconditional covariance matrix
+%           autocorr                                [cell]      Cell storing the theoretical autocorrelation
+%           contemporaneous_correlation             [matrix]    matrix of contemporaneous correlations
+%           autocorr                                [cell]      Cell storing the theoretical autocorrelation
+%           variance_decomposition                  [matrix]    Unconditional variance decomposition matrix
+%           variance_decomposition_ME               [matrix]    Unconditional variance decomposition matrix with measurement error
+%           conditional_variance_decomposition      [array]     Conditional variance decomposition array
+%           conditional_variance_decomposition_ME   [array]     Conditional variance decomposition array with measurement error
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,24 +74,9 @@ z = [ m sd s2 ];
 oo_.mean = m;
 oo_.var = oo_.gamma_y{1};
 
-ME_present=0;
-if ~all(diag(M_.H)==0)
-    [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
-    if ~isempty(observable_pos_requested_vars)
-        ME_present=1;
-    end
-end
 
 if size(stationary_vars, 1) > 0
-    if ~nodecomposition
-        oo_.variance_decomposition=100*oo_.gamma_y{options_.ar+2};
-        if ME_present
-            ME_Variance=diag(M_.H);
-            oo_.variance_decomposition_ME=oo_.variance_decomposition(index_subset,:).*repmat(diag(oo_.var(index_subset,index_subset))./(diag(oo_.var(index_subset,index_subset))+ME_Variance(index_observables)),1,M_.exo_nbr);
-            oo_.variance_decomposition_ME(:,end+1)=100-sum(oo_.variance_decomposition_ME,2);
-        end
-    end
-    if ~options_.noprint %options_.nomoments == 0
+    if ~options_.noprint
         if options_.order == 2
             title = 'APPROXIMATED THEORETICAL MOMENTS';
         else
@@ -86,61 +92,34 @@ if size(stationary_vars, 1) > 0
             lh = cellofchararraymaxlength(labels)+2;
             dyn_latex_table(M_, options_, title, 'th_moments', headers, labels, z, lh, 11, 4);
         end
+    end
 
-        if M_.exo_nbr > 1 && ~nodecomposition
-            skipline()
-            if options_.order == 2
-                title = 'APPROXIMATED VARIANCE DECOMPOSITION (in percent)';
-            else
-                title = 'VARIANCE DECOMPOSITION (in percent)';
-            end
-            title = add_filter_subtitle(title, options_);
-            headers = M_.exo_names;
-            headers = vertcat(' ', headers);
-            labels=get_labels_transformed_vars(M_.endo_names,ivar(stationary_vars),options_,false);
-            lh = cellofchararraymaxlength(labels)+2;
-            dyntable(options_, title, headers, labels, 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
-            if ME_present
-                [stationary_observables, pos_index_subset] = intersect(index_subset, stationary_vars, 'stable');
-                headers_ME = vertcat(headers, 'ME');
-                labels=get_labels_transformed_vars(M_.endo_names,ivar(stationary_observables),options_,false);
-                dyntable(options_, [title,' WITH MEASUREMENT ERROR'], headers_ME, labels, ...
-                         oo_.variance_decomposition_ME(pos_index_subset,:), lh, 8, 2);
-            end
-            if options_.TeX
-                headers = M_.exo_names_tex;
-                headers = vertcat(' ', headers);
-                labels=get_labels_transformed_vars(M_.endo_names_tex,ivar(stationary_vars),options_,true);
-                lh = cellofchararraymaxlength(labels)+2;
-                dyn_latex_table(M_, options_, title, 'th_var_decomp_uncond', headers, labels, 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
-                if ME_present
-                    headers_ME = vertcat(headers, 'ME');
-                    labels=get_labels_transformed_vars(M_.endo_names_tex,ivar(stationary_observables),options_,true);
-                    dyn_latex_table(M_, options_, [title,' WITH MEASUREMENT ERROR'], ...
-                                    'th_var_decomp_uncond_ME', headers_ME, labels, oo_.variance_decomposition_ME(pos_index_subset,:), lh, 8, 2);
-                end
-            end
+    [ME_present,observable_pos_requested_vars,index_subset,index_observables]=check_measurement_error_requested_vars(M_,options_,ivar);
+    %store unconditional variance decomposition
+    if ~nodecomposition
+        oo_.variance_decomposition=100*oo_.gamma_y{options_.ar+2};
+        if ME_present
+            ME_Variance=diag(M_.H);
+            oo_.variance_decomposition_ME=oo_.variance_decomposition(index_subset,:).*repmat(diag(oo_.var(index_subset,index_subset))./(diag(oo_.var(index_subset,index_subset))+ME_Variance(index_observables)),1,M_.exo_nbr);
+            oo_.variance_decomposition_ME(:,end+1)=100-sum(oo_.variance_decomposition_ME,2);
         end
     end
-    conditional_variance_steps = options_.conditional_variance_decomposition;
-    if ~isempty(conditional_variance_steps)
-        StateSpaceModel.number_of_state_equations = M_.endo_nbr;
-        StateSpaceModel.number_of_state_innovations = M_.exo_nbr;
-        StateSpaceModel.sigma_e_is_diagonal = M_.sigma_e_is_diagonal;
-        [StateSpaceModel.transition_matrix, StateSpaceModel.impulse_matrix] = ...
-            kalman_transition_matrix(dr,(1:M_.endo_nbr)',M_.nstatic+(1:M_.nspred)',M_.exo_nbr);
-        StateSpaceModel.state_innovations_covariance_matrix = M_.Sigma_e;
-        StateSpaceModel.order_var = dr.order_var;
-        StateSpaceModel.measurement_error = M_.H;
-        StateSpaceModel.observable_pos = options_.varobs_id;
-        [oo_.conditional_variance_decomposition, oo_.conditional_variance_decomposition_ME] = ...
-            conditional_variance_decomposition(StateSpaceModel, conditional_variance_steps, ivar);
-        if ~options_.noprint
-            display_conditional_variance_decomposition(oo_.conditional_variance_decomposition, conditional_variance_steps, ivar, M_, options_);
-            if ME_present
-                display_conditional_variance_decomposition(oo_.conditional_variance_decomposition_ME, conditional_variance_steps, ...
-                                                           observable_pos_requested_vars, M_, options_);
-            end
+    if ~options_.noprint %options_.nomoments == 0
+        if M_.exo_nbr > 1 && ~nodecomposition
+            display_unconditional_variance_decomposition(M_,options_,oo_,ivar,stationary_vars,index_subset,ME_present)
+        end
+    end
+end
+%% Conditional variance decomposition
+conditional_variance_steps = options_.conditional_variance_decomposition;
+if ~isempty(conditional_variance_steps)
+    [oo_.conditional_variance_decomposition, oo_.conditional_variance_decomposition_ME] = ...
+        conditional_variance_decomposition(M_,options_,dr, conditional_variance_steps, ivar);
+    if ~options_.noprint
+        display_conditional_variance_decomposition(oo_.conditional_variance_decomposition, conditional_variance_steps, ivar, M_, options_);
+        if ME_present
+            display_conditional_variance_decomposition(oo_.conditional_variance_decomposition_ME, conditional_variance_steps, ...
+                observable_pos_requested_vars, M_, options_);
         end
     end
 end
@@ -195,13 +174,13 @@ if options_.ar > 0 && size(stationary_vars, 1) > 0
             title = 'COEFFICIENTS OF AUTOCORRELATION';
         end
         title = add_filter_subtitle(title, options_);
-            labels=get_labels_transformed_vars(M_.endo_names,ivar(i1),options_,false);
-        headers = vertcat('Order ', cellstr(int2str([1:options_.ar]')));
+        labels=get_labels_transformed_vars(M_.endo_names,ivar(i1),options_,false);
+        headers = vertcat('Order ', cellstr(int2str((1:options_.ar)')));
         lh = cellofchararraymaxlength(labels)+2;
         dyntable(options_, title, headers, labels, z, lh, 8, 4);
         if options_.TeX
             labels=get_labels_transformed_vars(M_.endo_names_tex,ivar(i1),options_,true);
-            headers = vertcat('Order ', cellstr(int2str([1:options_.ar]')));
+            headers = vertcat('Order ', cellstr(int2str((1:options_.ar)')));
             lh = cellofchararraymaxlength(labels)+2;
             dyn_latex_table(M_, options_, title, 'th_autocorr_matrix', headers, labels, z, lh, 8, 4);
         end
