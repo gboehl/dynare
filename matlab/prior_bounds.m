@@ -93,11 +93,11 @@ for i=1:length(p6)
         end
       case 3
         if prior_trunc == 0
-            bounds.lb(i) = -Inf;
-            bounds.ub(i) = Inf;
+            bounds.lb(i) = max(-Inf,p3(i));
+            bounds.ub(i) = min(Inf,p4(i));
         else
-            bounds.lb(i) = norminv(prior_trunc,p6(i),p7(i));
-            bounds.ub(i) = norminv(1-prior_trunc,p6(i),p7(i));
+            bounds.lb(i) = max(norminv(prior_trunc,p6(i),p7(i)),p3(i));
+            bounds.ub(i) = min(norminv(1-prior_trunc,p6(i),p7(i)),p4(i));
         end
       case 4
         if prior_trunc == 0

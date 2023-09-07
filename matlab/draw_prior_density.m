@@ -54,8 +54,8 @@ switch pshape(indx)
     abscissa = linspace(infbound,supbound,steps);
     dens = density(abscissa,p6(indx),p7(indx),p3(indx));
   case 3% Gaussian prior
-    infbound = norminv(truncprior,p6(indx),p7(indx));
-    supbound = norminv(1-truncprior,p6(indx),p7(indx));
+    infbound = max(p3(indx),norminv(truncprior,p6(indx),p7(indx)));
+    supbound = min(p4(indx),norminv(1-truncprior,p6(indx),p7(indx)));
     abscissa = linspace(infbound,supbound,steps);
     dens = normpdf(abscissa,p6(indx),p7(indx));
   case 4% Inverse-gamma of type 1 prior
