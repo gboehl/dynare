@@ -370,6 +370,9 @@ lyapunov_symm_method = 1; %method=1 to initialize persistent variables
 %find stationary vars
 stationary_vars = (1:y_nbr)';
 if ~isempty(Schur_u)
+    if order>1
+        error('pruned_state_space_system: the pruned state space currently does not support unit roots at higher order.')
+    end
     %base this only on first order, because if first-order is stable so are the higher-order pruned systems
     x = abs(gx*Schur_u);
     stationary_vars = find(all(x < options.schur_vec_tol,2));
