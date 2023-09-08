@@ -1,5 +1,5 @@
-function bvar_forecast(nlags)
-% function bvar_forecast(nlags)
+function forecast(nlags)
+% function forecast(nlags)
 % builds forecats for a bvar model
 %
 % INPUTS
@@ -11,7 +11,7 @@ function bvar_forecast(nlags)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2007-2017 Dynare Team
+% Copyright © 2007-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,9 +31,9 @@ function bvar_forecast(nlags)
 global options_ oo_ M_
 
 if options_.forecast == 0
-    error('bvar_forecast: you must specify "forecast" option')
+    error('bvar.forecast: you must specify "forecast" option')
 end
-[ny, nx, posterior, prior, forecast_data] = bvar_toolbox(nlags);
+[ny, nx, posterior, prior, forecast_data] = bvar.toolbox(nlags);
 
 sims_no_shock = NaN(options_.forecast, ny, options_.bvar_replic);
 sims_with_shocks = NaN(options_.forecast, ny, options_.bvar_replic);
@@ -116,7 +116,7 @@ sims_with_shocks_up_conf = sims_with_shocks_sort(:, :, sort_idx(2));
 
 OutputDirectoryName = CheckPath('graphs',M_.dname);
 
-dyn_graph=dynare_graph_init(sprintf('BVAR forecasts (nlags = %d)', nlags), ny, {'b-' 'g-' 'g-' 'r-' 'r-'});
+dyn_graph=bvar.graph_init(sprintf('BVAR forecasts (nlags = %d)', nlags), ny, {'b-' 'g-' 'g-' 'r-' 'r-'});
 
 for i = 1:ny
     dyn_graph=dynare_graph(dyn_graph,[ sims_no_shock_median(:, i) ...
@@ -166,20 +166,20 @@ for i = 1:length(options_.varobs)
     name = options_.varobs{i};
 
     sims = squeeze(sims_with_shocks(:,i,:));
-    eval(['oo_.bvar.forecast.with_shocks.Mean.' name ' = mean(sims, 2);']);
-    eval(['oo_.bvar.forecast.with_shocks.Median.' name ' = median(sims, 2);']);
-    eval(['oo_.bvar.forecast.with_shocks.Var.' name ' = var(sims, 0, 2);']);
-    eval(['oo_.bvar.forecast.with_shocks.HPDsup.' name ' = sims_with_shocks_up_conf(:,i);']);
-    eval(['oo_.bvar.forecast.with_shocks.HPDinf.' name ' = sims_with_shocks_down_conf(:,i);']);
+    oo_.bvar.forecast.with_shocks.Mean.(name) = mean(sims, 2);
+    oo_.bvar.forecast.with_shocks.Median.(name) = median(sims, 2);
+    oo_.bvar.forecast.with_shocks.Var.(name) = var(sims, 0, 2);
+    oo_.bvar.forecast.with_shocks.HPDsup.(name) = sims_with_shocks_up_conf(:,i);
+    oo_.bvar.forecast.with_shocks.HPDinf.(name) = sims_with_shocks_down_conf(:,i);
 
     sims = squeeze(sims_no_shock(:,i,:));
-    eval(['oo_.bvar.forecast.no_shock.Mean.' name ' = sims_no_shock_mean(:,i);']);
-    eval(['oo_.bvar.forecast.no_shock.Median.' name ' = sims_no_shock_median(:,i);']);
-    eval(['oo_.bvar.forecast.no_shock.Var.' name ' = var(sims, 0, 2);']);
-    eval(['oo_.bvar.forecast.no_shock.HPDsup.' name ' = sims_no_shock_up_conf(:,i);']);
-    eval(['oo_.bvar.forecast.no_shock.HPDinf.' name ' = sims_no_shock_down_conf(:,i);']);
+    oo_.bvar.forecast.no_shock.Mean.(name) = sims_no_shock_mean(:,i);
+    oo_.bvar.forecast.no_shock.Median.(name) = sims_no_shock_median(:,i);
+    oo_.bvar.forecast.no_shock.Var.(name) = var(sims, 0, 2);
+    oo_.bvar.forecast.no_shock.HPDsup.(name) = sims_no_shock_up_conf(:,i);
+    oo_.bvar.forecast.no_shock.HPDinf.(name) = sims_no_shock_down_conf(:,i);
 
-    if exist('rmse')
-        eval(['oo_.bvar.forecast.rmse.' name ' = rmse(i);']);
+    if exist('rmse','var')
+        oo_.bvar.forecast.rmse.(name) = rmse(i);
     end
 end

@@ -8886,6 +8886,15 @@ Dynare also has the ability to estimate Bayesian VARs:
     See ``bvar-a-la-sims.pdf``, which comes with Dynare distribution,
     for more information on this command.
 
+.. command:: bvar_irf ;
+
+    |br| Computes the impulse responses of an estimated BVAR model, using
+    Minnesota priors.
+
+    See ``bvar-a-la-sims.pdf``, which comes with Dynare distribution,
+    for more information on this command.
+
+
 Estimation based on moments
 ===========================
 
