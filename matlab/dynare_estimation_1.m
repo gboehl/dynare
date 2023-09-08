@@ -12,7 +12,7 @@ function dynare_estimation_1(var_list_,dname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2003-2022 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,6 +30,8 @@ function dynare_estimation_1(var_list_,dname)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 global M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info
+
+dispString = 'Estimation::mcmc';
 
 if ~exist([M_.dname filesep 'Output'],'dir')
     if isoctave && octave_ver_less_than('7') && ~exist(M_.dname)
@@ -293,37 +295,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
 end
 
 if ~options_.mh_posterior_mode_estimation && options_.cova_compute
-    try
-        chol(hh);
-    catch
-        skipline()
-        disp('POSTERIOR KERNEL OPTIMIZATION PROBLEM!')
-        disp(' (minus) the hessian matrix at the "mode" is not positive definite!')
-        disp('=> posterior variance of the estimated parameters are not positive.')
-        disp('You should try to change the initial values of the parameters using')
-        disp('the estimated_params_init block, or use another optimization routine.')
-        params_at_bound=find(abs(xparam1-bounds.ub)<1.e-10 | abs(xparam1-bounds.lb)<1.e-10);
-        if ~isempty(params_at_bound)
-            for ii=1:length(params_at_bound)
-                params_at_bound_name{ii,1}=get_the_name(params_at_bound(ii),0,M_,estim_params_,options_);
-            end
-            disp_string=[params_at_bound_name{1,:}];
-            for ii=2:size(params_at_bound_name,1)
-                disp_string=[disp_string,', ',params_at_bound_name{ii,:}];
-            end
-            fprintf('\nThe following parameters are at the prior bound: %s\n', disp_string)
-            fprintf('Some potential solutions are:\n')
-            fprintf('   - Check your model for mistakes.\n')
-            fprintf('   - Check whether model and data are consistent (correct observation equation).\n')
-            fprintf('   - Shut off prior_trunc.\n')
-            fprintf('   - Change the optimization bounds.\n')
-            fprintf('   - Use a different mode_compute like 6 or 9.\n')
-            fprintf('   - Check whether the parameters estimated are identified.\n')
-            fprintf('   - Check prior shape (e.g. Inf density at bound(s)).\n')
-            fprintf('   - Increase the informativeness of the prior.\n')
-        end
-        warning('The results below are most likely wrong!');
-    end
+    check_hessian_at_the_mode(hh, xparam1, M_, estim_params_, options_, bounds);
 end
 
 if options_.mode_check.status && ~options_.mh_posterior_mode_estimation
@@ -404,73 +376,19 @@ if np > 0
     save([M_.dname filesep 'Output' filesep M_.fname '_params.mat'],'pindx');
 end
 
-switch options_.MCMC_jumping_covariance
-  case 'hessian' %Baseline
-                 %do nothing and use hessian from mode_compute
-  case 'prior_variance' %Use prior variance
-    if any(isinf(bayestopt_.p2))
-        error('Infinite prior variances detected. You cannot use the prior variances as the proposal density, if some variances are Inf.')
-    else
-        hh = diag(1./(bayestopt_.p2.^2));
-    end
-    hsd = sqrt(diag(hh));
-    invhess = inv(hh./(hsd*hsd'))./(hsd*hsd');
-  case 'identity_matrix' %Use identity
-    invhess = eye(nx);
-  otherwise %user specified matrix in file
-    try
-        load(options_.MCMC_jumping_covariance,'jumping_covariance')
-        hh=jumping_covariance;
-    catch
-        error(['No matrix named ''jumping_covariance'' could be found in ',options_.MCMC_jumping_covariance,'.mat'])
-    end
-    [nrow, ncol]=size(hh);
-    if ~isequal(nrow,ncol) && ~isequal(nrow,nx) %check if square and right size
-        error(['jumping_covariance matrix must be square and have ',num2str(nx),' rows and columns'])
-    end
-    try %check for positive definiteness
-        chol(hh);
-        hsd = sqrt(diag(hh));
-        invhess = inv(hh./(hsd*hsd'))./(hsd*hsd');
-    catch
-        error(['Specified jumping_covariance is not positive definite'])
-    end
-end
+invhess = set_mcmc_jumping_covariance(invhess, nx, options_.MCMC_jumping_covariance, bayestopt_, 'dynare_estimation_1');
 
 if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         (any(bayestopt_.pshape >0 ) && options_.load_mh_file)  %% not ML estimation
-    bounds = prior_bounds(bayestopt_, options_.prior_trunc); %reset bounds as lb and ub must only be operational during mode-finding
-    outside_bound_pars=find(xparam1 < bounds.lb | xparam1 > bounds.ub);
-    if ~isempty(outside_bound_pars)
-        for ii=1:length(outside_bound_pars)
-            outside_bound_par_names{ii,1}=get_the_name(ii,0,M_,estim_params_,options_);
-        end
-        disp_string=[outside_bound_par_names{1,:}];
-        for ii=2:size(outside_bound_par_names,1)
-            disp_string=[disp_string,', ',outside_bound_par_names{ii,:}];
-        end
-        if options_.prior_trunc>0
-            error(['Estimation:: Mode value(s) of ', disp_string ,' are outside parameter bounds. Potentially, you should set prior_trunc=0.'])
-        else
-            error(['Estimation:: Mode value(s) of ', disp_string ,' are outside parameter bounds.'])
-        end
-    end
+    %reset bounds as lb and ub must only be operational during mode-finding
+    bounds = set_mcmc_prior_bounds(xparam1, bayestopt_, options_, 'dynare_estimation_1');
     % Tunes the jumping distribution's scale parameter
     if options_.mh_tune_jscale.status
         if strcmp(options_.posterior_sampler_options.posterior_sampling_method, 'random_walk_metropolis_hastings')
-            %get invhess in case of use_mh_covariance_matrix
-            posterior_sampler_options_temp = options_.posterior_sampler_options.current_options;
-            posterior_sampler_options_temp.invhess = invhess;
-            posterior_sampler_options_temp = check_posterior_sampler_options(posterior_sampler_options_temp, options_);
-
-            options = options_.mh_tune_jscale;
-            options.rwmh = options_.posterior_sampler_options.rwmh;
-            options_.mh_jscale = calibrate_mh_scale_parameter(objective_function, ...
-                                                              posterior_sampler_options_temp.invhess, xparam1, [bounds.lb,bounds.ub], ...
-                                                              options, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_);
-            clear('posterior_sampler_options_temp','options')
+            options_.mh_jscale = tune_mcmc_mh_jscale_wrapper(invhess, options_, M_, objective_function, xparam1, bounds,...
+                                                             dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_);
             bayestopt_.jscale(:) = options_.mh_jscale;
-            fprintf('mh_jscale has been set equal to %s\n', num2str(options_.mh_jscale))
+            fprintf('mh_jscale has been set equal to %s\n', num2str(options_.mh_jscale));
         else
             warning('mh_tune_jscale is only available with Random Walk Metropolis Hastings!')
         end
@@ -479,7 +397,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
     if options_.mh_replic || options_.load_mh_file
         posterior_sampler_options = options_.posterior_sampler_options.current_options;
         posterior_sampler_options.invhess = invhess;
-        [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, options_, bounds, bayestopt_);
+        [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, M_.fname, M_.dname, options_, bounds, bayestopt_);
         % store current options in global
         options_.posterior_sampler_options.current_options = posterior_sampler_options;
         if options_.mh_replic
@@ -492,7 +410,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
     %% Here I discard first mh_drop percent of the draws:
     CutSample(M_, options_, estim_params_);
     if options_.mh_posterior_mode_estimation
-        [~,~,posterior_mode,~] = compute_mh_covariance_matrix();
+        [~,~,posterior_mode,~] = compute_mh_covariance_matrix(bayestopt_,M_.fname,M_.dname);
         oo_=fill_mh_mode(posterior_mode',NaN(length(posterior_mode),1),M_,options_,estim_params_,bayestopt_,oo_,'posterior');
         %reset qz_criterium
         options_.qz_criterium=qz_criterium_old;
@@ -504,7 +422,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         end
         if ~options_.nodiagnostic
             if (options_.mh_replic>0 || (options_.load_mh_file && ~options_.load_results_after_load_mh))
-                oo_= McMCDiagnostics(options_, estim_params_, M_,oo_);
+                oo_= mcmc_diagnostics(options_, estim_params_, M_,oo_);
             elseif options_.load_mh_file && options_.load_results_after_load_mh
                 if isfield(oo_load_mh.oo_,'convergence')
                     oo_.convergence=oo_load_mh.oo_.convergence;
@@ -547,13 +465,13 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         if ~(~isempty(options_.sub_draws) && options_.sub_draws==0)
             if options_.bayesian_irf
                 if error_flag
-                    error('Estimation::mcmc: I cannot compute the posterior IRFs!')
+                    error('%s: I cannot compute the posterior IRFs!',dispString)
                 end
                 PosteriorIRF('posterior');
             end
             if options_.moments_varendo
                 if error_flag
-                    error('Estimation::mcmc: I cannot compute the posterior moments for the endogenous variables!')
+                    error('%s: I cannot compute the posterior moments for the endogenous variables!',dispString)
                 end
                 if options_.load_mh_file && options_.mh_replic==0 %user wants to recompute results
                    [MetropolisFolder, info] = CheckPath('metropolis',M_.dname);
@@ -578,16 +496,16 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
             end
             if options_.smoother || ~isempty(options_.filter_step_ahead) || options_.forecast
                 if error_flag
-                    error('Estimation::mcmc: I cannot compute the posterior statistics!')
+                    error('%s: I cannot compute the posterior statistics!',dispString)
                 end
                 if options_.order==1 && ~options_.particle.status
                     prior_posterior_statistics('posterior',dataset_,dataset_info); %get smoothed and filtered objects and forecasts
                 else
-                    error('Estimation::mcmc: Particle Smoothers are not yet implemented.')
+                    error('%s: Particle Smoothers are not yet implemented.',dispString)
                 end
             end
         else
-            fprintf('Estimation:mcmc: sub_draws was set to 0. Skipping posterior computations.')
+            fprintf('%s: sub_draws was set to 0. Skipping posterior computations.',dispString);
         end
         xparam1 = get_posterior_parameters('mean',M_,estim_params_,oo_,options_);
         M_ = set_all_parameters(xparam1,estim_params_,M_);

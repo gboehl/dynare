@@ -32,7 +32,7 @@ function [nam, texnam] = get_the_name(k, TeX, M_, estim_params_, options_)
 %! @sp 2
 %! @strong{This function is called by:}
 %! @sp 1
-%! @ref{get_prior_info}, @ref{McMCDiagnostics}, @ref{mode_check}, @ref{PlotPosteriorDistributions}, @ref{plot_priors}
+%! @ref{get_prior_info}, @ref{mcmc_diagnostics}, @ref{mode_check}, @ref{PlotPosteriorDistributions}, @ref{plot_priors}
 %! @sp 2
 %! @strong{This function calls:}
 %! @sp 1

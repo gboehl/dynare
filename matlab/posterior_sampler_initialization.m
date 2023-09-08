@@ -55,6 +55,8 @@ function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npa
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+dispString = 'Estimation::mcmc';
+
 %Initialize outputs
 ix2 = [];
 ilogpo2 = [];
@@ -79,22 +81,22 @@ d = chol(vv);
 if ~options_.load_mh_file && ~options_.mh_recover
     % Here we start a new Metropolis-Hastings, previous draws are discarded.
     if NumberOfBlocks > 1
-        disp('Estimation::mcmc: Multiple chains mode.')
+        fprintf('%s: Multiple chains mode.\n',dispString);
     else
-        disp('Estimation::mcmc: One Chain mode.')
+        fprintf('%s: One Chain mode.\n',dispString);
     end
     % Delete old mh files if any...
     files = dir([BaseName '_mh*_blck*.mat']);
     if length(files)
         delete([BaseName '_mh*_blck*.mat']);
-        disp('Estimation::mcmc: Old mh-files successfully erased!')
+        fprintf('%s: Old mh-files successfully erased!\n',dispString);
     end
     % Delete old Metropolis log file.
     file = dir([ MetropolisFolder '/metropolis.log']);
     if length(file)
         delete([ MetropolisFolder '/metropolis.log']);
-        disp('Estimation::mcmc: Old metropolis.log file successfully erased!')
-        disp('Estimation::mcmc: Creation of a new metropolis.log file.')
+        fprintf('%s: Old metropolis.log file successfully erased!\n',dispString)
+        fprintf('%s: Creation of a new metropolis.log file.\n',dispString)
     end
     fidlog = fopen([MetropolisFolder '/metropolis.log'],'w');
     fprintf(fidlog,'%% MH log file (Dynare).\n');
@@ -116,8 +118,8 @@ if ~options_.load_mh_file && ~options_.mh_recover
             %% check for proper filesep char in user defined paths
             RecordFile0=strrep(RecordFile0,'\',filesep);
             if isempty(dir(RecordFile0))
-                disp('Estimation::mcmc: wrong value for mh_initialize_from_previous_mcmc_record option')
-                error('Estimation::mcmc: path to record file is not found')
+                fprintf('%s: Wrong value for mh_initialize_from_previous_mcmc_record option.\n',dispString);
+                error('%s: Path to record file is not found!',dispString)
             else
                 record0=load(RecordFile0);
             end
@@ -133,31 +135,31 @@ if ~options_.load_mh_file && ~options_.mh_recover
             record0=load_last_mh_history_file(MetropolisFolder0, ModelName0);
         end
         if ~isnan(record0.MCMCConcludedSuccessfully) && ~record0.MCMCConcludedSuccessfully
-            error('Estimation::mcmc: You are trying to load an MCMC that did not finish successfully. Please use mh_recover.')
+            error('%s: You are trying to load an MCMC that did not finish successfully. Please use ''mh_recover''!',dispString);
         end
 %         mh_files = dir([ MetropolisFolder0 filesep ModelName0 '_mh*.mat']);
 %         if ~length(mh_files)
-%             error('Estimation::mcmc: I cannot find any MH file to load here!')
+%             error('%s: I cannot find any MH file to load here!',dispString)
 %         end
-        disp('Estimation::mcmc: Initializing from past Metropolis-Hastings simulations...')
-        disp(['Estimation::mcmc: Past MH path ' MetropolisFolder0 ])
-        disp(['Estimation::mcmc: Past model name ' ModelName0 ])
+        fprintf('%s: Initializing from past Metropolis-Hastings simulations...\n',dispString);
+        fprintf('%s: Past MH path %s\n',dispString,MetropolisFolder0);
+        fprintf('%s: Past model name %s\n', dispString, ModelName0);
         fprintf(fidlog,'  Loading initial values from previous MH\n');
         fprintf(fidlog,'  Past MH path: %s\n', MetropolisFolder0 );
         fprintf(fidlog,'  Past model name: %s\n', ModelName0);
         fprintf(fidlog,' \n');
         past_number_of_blocks = record0.Nblck;
         if past_number_of_blocks ~= NumberOfBlocks
-            disp('Estimation::mcmc: The specified number of blocks doesn''t match with the previous number of blocks!')
-            disp(['Estimation::mcmc: You declared ' int2str(NumberOfBlocks) ' blocks, but the previous number of blocks was ' int2str(past_number_of_blocks) '.'])
-            disp(['Estimation::mcmc: I will run the Metropolis-Hastings with ' int2str(past_number_of_blocks) ' blocks.' ])
+            fprintf('%s: The specified number of blocks doesn''t match with the previous number of blocks!\n', dispString);
+            fprintf('%s: You declared %u blocks, but the previous number of blocks was %u.\n', dispString, NumberOfBlocks, past_number_of_blocks);
+            fprintf('%s: I will run the Metropolis-Hastings with %u block.\n', dispString, past_number_of_blocks);
             NumberOfBlocks = past_number_of_blocks;
             options_.mh_nblck = NumberOfBlocks;
         end
         if ~isempty(PriorFile0)
             if isempty(dir(PriorFile0))
-                disp('Estimation::mcmc: wrong value for mh_initialize_from_previous_mcmc_prior option')
-                error('Estimation::mcmc: path to prior file is not found')
+                fprintf('%s: Wrong value for mh_initialize_from_previous_mcmc_prior option.', dispString);
+                error('%s: Path to prior file is not found!',dispString);
             else
                 bayestopt0 = load(PriorFile0);
             end
@@ -177,7 +179,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
     if NumberOfBlocks > 1 || options_.mh_initialize_from_previous_mcmc.status% Case 1: multiple chains
         set_dynare_seed('default');
         fprintf(fidlog,['  Initial values of the parameters:\n']);
-        disp('Estimation::mcmc: Searching for initial values...')
+        fprintf('%s: Searching for initial values...\n', dispString);
         if ~options_.mh_initialize_from_previous_mcmc.status
             ix2 = zeros(NumberOfBlocks,npar);
             ilogpo2 = zeros(NumberOfBlocks,1);
@@ -217,56 +219,54 @@ if ~options_.load_mh_file && ~options_.mh_recover
                 end
                 init_iter = init_iter + 1;
                 if init_iter > 100 && validate == 0
-                    disp(['Estimation::mcmc: I couldn''t get a valid initial value in 100 trials.'])
+                    fprintf('%s: I couldn''t get a valid initial value in 100 trials.\n', dispString);
                     if options_.nointeractive
-                        disp(['Estimation::mcmc: I reduce mh_init_scale_factor by 10 percent:'])
+                        fprintf('%s: I reduce ''mh_init_scale_factor'' by 10 percent:\n', dispString);
                         if isfield(options_,'mh_init_scale')
                            options_.mh_init_scale = .9*options_.mh_init_scale;
-                           fprintf('Estimation::mcmc: Parameter mh_init_scale is now equal to %f.\n',options_.mh_init_scale)
+                           fprintf('%s: Parameter ''mh_init_scale'' is now equal to %f.\n',dispString,options_.mh_init_scale);
                         else
                             options_.mh_init_scale_factor = .9*options_.mh_init_scale_factor;
-                            fprintf('Estimation::mcmc: Parameter mh_init_scale_factor is now equal to %f.\n',options_.mh_init_scale_factor)
+                            fprintf('%s: Parameter ''mh_init_scale_factor'' is now equal to %f.\n', dispString,options_.mh_init_scale_factor);
                         end
-                        fprintf('Estimation::mcmc: Parameter mh_init_scale_factor is now equal to %f.\n',options_.mh_init_scale_factor)
+                        fprintf('%s: Parameter ''mh_init_scale_factor'' is now equal to %f.\n', dispString,options_.mh_init_scale_factor);
                     else
                         if isfield(options_,'mh_init_scale')
-                            disp(['Estimation::mcmc: You should reduce mh_init_scale...'])
-                            fprintf('Estimation::mcmc: Parameter mh_init_scale is equal to %f.\n',options_.mh_init_scale)
-                            options_.mh_init_scale_factor = input('Estimation::mcmc: Enter a new value...  ');
+                            fprintf('%s: You should reduce mh_init_scale...\n',dispString);
+                            fprintf('%s: Parameter ''mh_init_scale'' is equal to %f.\n',dispString,options_.mh_init_scale);
+                            options_.mh_init_scale_factor = input(sprintf('%s: Enter a new value...  ',dispString));
                         else
-                            disp(['Estimation::mcmc: You should reduce mh_init_scale_factor...'])
-                            fprintf('Estimation::mcmc: Parameter mh_init_scale_factor is equal to %f.\n',options_.mh_init_scale_factor)
-                            options_.mh_init_scale_factor = input('Estimation::mcmc: Enter a new value...  ');
+                            fprintf('%s: You should reduce ''mh_init_scale_factor''...\n',dispString);
+                            fprintf('%s: Parameter ''mh_init_scale_factor'' is equal to %f.\n',dispString,options_.mh_init_scale_factor);
+                            options_.mh_init_scale_factor = input(sprintf('%s: Enter a new value...  ',dispString));
                         end
                     end
                     trial = trial+1;
                 end
             end
             if trial > 10 && ~validate
-                disp(['Estimation::mcmc: I''m unable to find a starting value for block ' int2str(j)])
+                fprintf('%s: I''m unable to find a starting value for block %u.', dispString,j);
                 fclose(fidlog);
                 return
             end
         end
         fprintf(fidlog,' \n');
-        disp('Estimation::mcmc: Initial values found!')
-        skipline()
+        fprintf('%s: Initial values found!\n\n',dispString);
     else% Case 2: one chain (we start from the posterior mode)
         fprintf(fidlog,['  Initial values of the parameters:\n']);
         candidate = transpose(xparam1(:));%
         if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
             ix2 = candidate;
             ilogpo2 = - feval(TargetFun,ix2',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
-            disp('Estimation::mcmc: Initialization at the posterior mode.')
-            skipline()
+            fprintf('%s: Initialization at the posterior mode.\n\n',dispString);            
             fprintf(fidlog,['    Blck ' int2str(1) 'params:\n']);
             for i=1:length(ix2(1,:))
                 fprintf(fidlog,['      ' int2str(i)  ':' num2str(ix2(1,i)) '\n']);
             end
             fprintf(fidlog,['    Blck ' int2str(1) 'logpo2:' num2str(ilogpo2) '\n']);
         else
-            disp('Estimation::mcmc: Initialization failed...')
-            disp('Estimation::mcmc: The posterior mode lies outside the prior bounds.')
+            fprintf('%s: Initialization failed...\n',dispString);
+            fprintf('%s: The posterior mode lies outside the prior bounds.\n',dispString);
             fclose(fidlog);
             return
         end
@@ -279,7 +279,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
     % Delete the mh-history files
     delete_mh_history_files(MetropolisFolder, ModelName);
     %  Create a new record structure
-    fprintf(['Estimation::mcmc: Write details about the MCMC... ']);
+    fprintf('%s: Write details about the MCMC... ', dispString);
     AnticipatedNumberOfFiles = ceil(nruns(1)/MAX_nruns);
     AnticipatedNumberOfLinesInTheLastFile = nruns(1) - (AnticipatedNumberOfFiles-1)*MAX_nruns;
     record.Sampler = options_.posterior_sampler_options.posterior_sampling_method;
@@ -312,8 +312,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
     record.ProposalCovariance=d;
     fprintf('Ok!\n');
     id = write_mh_history_file(MetropolisFolder, ModelName, record);
-    disp(['Estimation::mcmc: Details about the MCMC are available in ' BaseName '_mh_history_' num2str(id) '.mat'])
-    skipline()
+    fprintf('%s: Details about the MCMC are available in %s_mh_history_%u.mat\n\n', dispString,BaseName,id);
     fprintf(fidlog,['  CREATION OF THE MH HISTORY FILE!\n\n']);
     fprintf(fidlog,['    Expected number of files per block.......: ' int2str(AnticipatedNumberOfFiles) '.\n']);
     fprintf(fidlog,['    Expected number of lines in the last file: ' int2str(AnticipatedNumberOfLinesInTheLastFile) '.\n']);
@@ -332,15 +331,15 @@ if ~options_.load_mh_file && ~options_.mh_recover
     fclose(fidlog);
 elseif options_.load_mh_file && ~options_.mh_recover
     % Here we consider previous mh files (previous mh did not crash).
-    disp('Estimation::mcmc: I am loading past Metropolis-Hastings simulations...')
+    fprintf('%s: I am loading past Metropolis-Hastings simulations...\n',dispString);
     record=load_last_mh_history_file(MetropolisFolder, ModelName);
     if ~isnan(record.MCMCConcludedSuccessfully) && ~record.MCMCConcludedSuccessfully
-        error('Estimation::mcmc: You are trying to load an MCMC that did not finish successfully. Please use mh_recover.')
+        error('%s: You are trying to load an MCMC that did not finish successfully. Please use mh_recover.',dispString);
     end
     record.MCMCConcludedSuccessfully=0; %reset indicator for this run
     mh_files = dir([ MetropolisFolder filesep ModelName '_mh*.mat']);
     if ~length(mh_files)
-        error('Estimation::mcmc: I cannot find any MH file to load here!')
+        error('%s: I cannot find any MH file to load here!',dispString);
     end
     fidlog = fopen([MetropolisFolder '/metropolis.log'],'a');
     fprintf(fidlog,'\n');
@@ -351,9 +350,9 @@ elseif options_.load_mh_file && ~options_.mh_recover
     fprintf(fidlog,' \n');
     past_number_of_blocks = record.Nblck;
     if past_number_of_blocks ~= NumberOfBlocks
-        disp('Estimation::mcmc: The specified number of blocks doesn''t match with the previous number of blocks!')
-        disp(['Estimation::mcmc: You declared ' int2str(NumberOfBlocks) ' blocks, but the previous number of blocks was ' int2str(past_number_of_blocks) '.'])
-        disp(['Estimation::mcmc: I will run the Metropolis-Hastings with ' int2str(past_number_of_blocks) ' blocks.' ])
+        fprintf('%s: The specified number of blocks doesn''t match with the previous number of blocks!\n',dispString);
+        fprintf('%s: You declared %u blocks, but the previous number of blocks was %u.\n', dispString,NumberOfBlocks,past_number_of_blocks);
+        fprintf('%s: I will run the Metropolis-Hastings with %u blocks.\n', dispString,past_number_of_blocks);
         NumberOfBlocks = past_number_of_blocks;
         options_.mh_nblck = NumberOfBlocks;
     end
@@ -369,10 +368,10 @@ elseif options_.load_mh_file && ~options_.mh_recover
     end
     ilogpo2 = record.LastLogPost;
     ix2 = record.LastParameters;
-    [d,bayestopt_,record]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d);
+    [d,bayestopt_,record]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d,dispString);
     FirstBlock = 1;
     NumberOfPreviousSimulations = sum(record.MhDraws(:,1),1);
-    fprintf('Estimation::mcmc: I am writing a new mh-history file... ');
+    fprintf('%s: I am writing a new mh-history file... ',dispString);
     record.MhDraws = [record.MhDraws;zeros(1,3)];
     NumberOfDrawsWrittenInThePastLastFile = MAX_nruns - LastLineNumber;
     NumberOfDrawsToBeSaved = nruns(1) - NumberOfDrawsWrittenInThePastLastFile;
@@ -387,28 +386,27 @@ elseif options_.load_mh_file && ~options_.mh_recover
     record.InitialSeeds = record.LastSeeds;
     write_mh_history_file(MetropolisFolder, ModelName, record);
     fprintf('Done.\n')
-    disp(['Estimation::mcmc: Ok. I have loaded ' int2str(NumberOfPreviousSimulations) ' simulations.'])
-    skipline()
+    fprintf('%s: Ok. I have loaded %u simulations.\n\n', dispString,NumberOfPreviousSimulations);
     fclose(fidlog);
 elseif options_.mh_recover
     % The previous metropolis-hastings crashed before the end! I try to recover the saved draws...
-    disp('Estimation::mcmc: Recover mode!')
+    fprintf('%s: Recover mode!\n',dispString);
     record=load_last_mh_history_file(MetropolisFolder, ModelName);
     NumberOfBlocks = record.Nblck;% Number of "parallel" mcmc chains.
     options_.mh_nblck = NumberOfBlocks;
 
     %% check consistency of options
     if record.MhDraws(end,1)~=options_.mh_replic
-        fprintf('\nEstimation::mcmc: You cannot specify a different mh_replic than in the chain you are trying to recover\n')
-        fprintf('Estimation::mcmc: I am resetting mh_replic to %u\n',record.MhDraws(end,1))
-        options_.mh_replic=record.MhDraws(end,1);
+        fprintf('\n%s: You cannot specify a different mh_replic than in the chain you are trying to recover\n',dispString);
+        fprintf('%s: I am resetting mh_replic to %u\n',dispString,record.MhDraws(end,1));
+        options_.mh_replic = record.MhDraws(end,1);
         nruns = ones(NumberOfBlocks,1)*options_.mh_replic;
     end
 
     if ~isnan(record.MAX_nruns(end,1)) %field exists
         if record.MAX_nruns(end,1)~=MAX_nruns
-            fprintf('\nEstimation::mcmc: You cannot specify a different MaxNumberOfBytes than in the chain you are trying to recover\n')
-            fprintf('Estimation::mcmc: I am resetting MAX_nruns to %u\n',record.MAX_nruns(end,1))
+            fprintf('\n%s: You cannot specify a different MaxNumberOfBytes than in the chain you are trying to recover\n',dispString);
+            fprintf('%s: I am resetting MAX_nruns to %u\n',dispString,record.MAX_nruns(end,1));
             MAX_nruns=record.MAX_nruns(end,1);
         end
     end
@@ -451,7 +449,7 @@ elseif options_.mh_recover
         LastFileFullIndicator=1;
     end
     if ~isequal(options_.posterior_sampler_options.posterior_sampling_method,'slice')
-        [d,bayestopt_,record]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d);
+        [d,bayestopt_,record]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d,dispString);
     end
     %% Now find out what exactly needs to be redone
     % 1. Check if really something needs to be done
@@ -464,10 +462,10 @@ elseif options_.mh_recover
     % Quit if no crashed mcmc chain can be found as there are as many files as expected
     if (TotalNumberOfMhFiles==ExpectedNumberOfMhFiles)
         if isnumeric(options_.parallel)
-            disp('Estimation::mcmc: It appears that you don''t need to use the mh_recover option!')
-            disp('                  You have to edit the mod file and remove the mh_recover option')
-            disp('                  in the estimation command')
-            error('Estimation::mcmc: mh_recover option not required!')
+            fprintf('%s: It appears that you don''t need to use the mh_recover option!\n',dispString);
+            fprintf('                  You have to edit the mod file and remove the mh_recover option\n');
+            fprintf('                  in the estimation command.\n');
+            error('%s: mh_recover option not required!',dispString)
         end
     end
     % 2. Something needs to be done; find out what
@@ -482,10 +480,10 @@ elseif options_.mh_recover
     FBlock = zeros(NumberOfBlocks,1);
     while FirstBlock <= NumberOfBlocks
         if  NumberOfMhFilesPerBlock(FirstBlock) < ExpectedNumberOfMhFilesPerBlock
-            disp(['Estimation::mcmc: Chain ' int2str(FirstBlock) ' is not complete!'])
+            fprintf('%s: Chain %u is not complete!\n', dispString,FirstBlock);
             FBlock(FirstBlock)=1;
         else
-            disp(['Estimation::mcmc: Chain ' int2str(FirstBlock) ' is complete!'])
+            fprintf('%s: Chain %u is complete!\n', dispString,FirstBlock);
         end
         FirstBlock = FirstBlock+1;
     end
@@ -537,8 +535,8 @@ elseif options_.mh_recover
                     record.InitialSeeds(FirstBlock).Unifor=loaded_results.LastSeeds.(['file' int2str(NumberOfSavedMhFilesInTheCrashedBlck)]).Unifor;
                     record.InitialSeeds(FirstBlock).Normal=loaded_results.LastSeeds.(['file' int2str(NumberOfSavedMhFilesInTheCrashedBlck)]).Normal;
                 else
-                    fprintf('Estimation::mcmc: You are trying to recover a chain generated with an older Dynare version.\n')
-                    fprintf('Estimation::mcmc: I am using the default seeds to continue the chain.\n')
+                    fprintf('%s: You are trying to recover a chain generated with an older Dynare version.\n',dispString);
+                    fprintf('%s: I am using the default seeds to continue the chain.\n',dispString);
                 end
                 if update_record
                     update_last_mh_history_file(MetropolisFolder, ModelName, record);
@@ -557,8 +555,8 @@ elseif options_.mh_recover
                 record.LastSeeds(FirstBlock).Unifor=loaded_results.LastSeeds.(['file' int2str(ExpectedNumberOfMhFilesPerBlock)]).Unifor;
                 record.LastSeeds(FirstBlock).Normal=loaded_results.LastSeeds.(['file' int2str(ExpectedNumberOfMhFilesPerBlock)]).Normal;
             else
-                fprintf('Estimation::mcmc: You are trying to recover a chain generated with an older Dynare version.\n')
-                fprintf('Estimation::mcmc: I am using the default seeds to continue the chain.\n')
+                fprintf('%s: You are trying to recover a chain generated with an older Dynare version.\n',dispString);
+                fprintf('%s: I am using the default seeds to continue the chain.\n',dispString);
             end
             if isfield(loaded_results,'accepted_draws_this_chain')
                 record.AcceptanceRatio(FirstBlock)=loaded_results.accepted_draws_this_chain/record.MhDraws(end,1);
@@ -572,32 +570,32 @@ elseif options_.mh_recover
     FirstBlock = find(FBlock==1,1);
 end
 
-function [d,bayestopt_,record]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d)
+function [d,bayestopt_,record]=set_proposal_density_to_previous_value(record,options_,bayestopt_,d,dispString)
 if ~options_.use_mh_covariance_matrix
     if isfield(record,'ProposalCovariance') && isfield(record,'ProposalScaleVec')
-        fprintf('Estimation::mcmc: Recovering the previous proposal density.\n')
+        fprintf('%s: Recovering the previous proposal density.\n',dispString);
         d=record.ProposalCovariance;
         bayestopt_.jscale=record.ProposalScaleVec;
     else
         if ~isequal(options_.posterior_sampler_options.posterior_sampling_method,'slice')
             % pass through input d unaltered
             if options_.mode_compute~=0
-                fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by mode_compute\n.');
+                fprintf('%s: No stored previous proposal density found, continuing with the one implied by mode_compute.\n',dispString);
             elseif ~isempty(options_.mode_file)
-                fprintf('Estimation::mcmc: No stored previous proposal density found, continuing with the one implied by the mode_file\n.');
+                fprintf('%s: No stored previous proposal density found, continuing with the one implied by the mode_file.\n',dispString);
             else
-                error('Estimation::mcmc: No stored previous proposal density found, no mode-finding conducted, and no mode-file provided. I don''t know how to continue')
+                error('%s: No stored previous proposal density found, no mode-finding conducted, and no mode-file provided. I don''t know how to continue!',dispString);
             end
         end
     end
 else
     % pass through input d unaltered
-    fprintf('Estimation::mcmc: use_mh_covariance_matrix specified, continuing with proposal density implied by the previous MCMC run.\n.');
+    fprintf('%s: ''use_mh_covariance_matrix'' specified, continuing with proposal density implied by the previous MCMC run.\n',dispString);
 end
 
 if isfield(record,'Sampler')
     if ~strcmp(record.Sampler,options_.posterior_sampler_options.posterior_sampling_method)
-        warning('Estimation::mcmc: The posterior_sampling_method %s selected differs from the %s of the original chain. This may create problems with the convergence diagnostics.',options_.posterior_sampler_options.posterior_sampling_method,record.Sampler)
+        warning('%s: The posterior_sampling_method %s selected differs from the %s of the original chain. This may create problems with the convergence diagnostics.',dispString,options_.posterior_sampler_options.posterior_sampling_method,record.Sampler)
         record.Sampler=options_.posterior_sampler_options.posterior_sampling_method; %update sampler used
     end
 end

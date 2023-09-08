@@ -5,7 +5,7 @@ function [xparam1, estim_params_, bayestopt_, lb, ub, M_]=set_prior(estim_params
 % INPUTS
 %    o estim_params_    [structure] characterizing parameters to be estimated.
 %    o M_               [structure] characterizing the model.
-%    o options_         [structure]
+%    o options_         [structure] characterizing the options.
 %
 % OUTPUTS
 %    o xparam1          [double]    vector of parameters to be estimated (initial values)
@@ -18,7 +18,7 @@ function [xparam1, estim_params_, bayestopt_, lb, ub, M_]=set_prior(estim_params
 % SPECIAL REQUIREMENTS
 %    None
 
-% Copyright © 2003-2018 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %

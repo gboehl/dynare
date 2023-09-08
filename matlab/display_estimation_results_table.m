@@ -174,7 +174,7 @@ if ncn
 end
 
 if any(xparam1(1:nvx+nvn)<0)
-    warning('Some estimated standard deviations are negative. Dynare internally works with variances so that the sign does not matter. Nevertheless, it is recommended to impose either prior restrictions (Bayesian Estimation) or a lower bound (ML) to assure positive values.')
+    warning(sprintf('Some estimated standard deviations are negative.\n         Dynare internally works with variances so that the sign does not matter.\n         Nevertheless, it is recommended to impose either prior restrictions (Bayesian Estimation)\n         or a lower bound (ML) to assure positive values.'))
 end
 
 OutputDirectoryName = CheckPath('Output',M_.dname);

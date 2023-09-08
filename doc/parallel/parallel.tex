@@ -189,7 +189,7 @@ We have considered the following DYNARE components suitable to be parallelized u
 \item the Random Walk- (and the analogous Independent-)-Metropolis-Hastings algorithm with multiple chains: the different chains are completely independent and do not require any communication between them, so it can be executed on different cores/CPUs/Computer Network easily;
 \item a number of procedures performed after the completion of Metropolis, that use the posterior MC sample:
 \begin{enumerate}
-\item the diagnostic tests for the convergence of the Markov Chain \\(\texttt{McMCDiagnostics.m});
+\item the diagnostic tests for the convergence of the Markov Chain \\(\texttt{mcmc\_diagnostics.m});
 \item the function that computes posterior IRF's (\texttt{posteriorIRF.m}).
 \item the function that computes posterior statistics for filtered and smoothed variables, forecasts, smoothed shocks, etc.. \\ (\verb"prior_posterior_statistics.m").
 \item the utility function that loads matrices of results and produces plots for posterior statistics (\texttt{pm3.m}).
@@ -725,8 +725,8 @@ So far, we have parallelized the following functions, by selecting the most comp
 \verb"independent_metropolis_hastings.m", \\
 \verb"independent_metropolis_hastings_core.m";
 \item the cycle looping over estimated parameters computing univariate diagnostics:\\
-\verb"McMCDiagnostics.m", \\
-\verb"McMCDiagnostics_core.m";
+\verb"mcmc_diagnostics.m", \\
+\verb"mcmc_diagnostics_core.m";
 \item the Monte Carlo cycle looping over posterior parameter subdraws performing the IRF simulations (\verb"<*>_core1") and the cycle looping over exogenous shocks plotting IRF's charts (\verb"<*>_core2"):\\
 \verb"posteriorIRF.m", \\\verb"posteriorIRF_core1.m", \verb"posteriorIRF_core2.m";
 \item the Monte Carlo cycle looping over posterior parameter subdraws, that computes filtered, smoothed, forecasted variables and shocks:\\

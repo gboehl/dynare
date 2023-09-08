@@ -24,7 +24,7 @@ function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryNa
 % See also the comment in posterior_sampler.m funtion.
 
 
-% Copyright © 2007-2018 Dynare Team
+% Copyright © 2007-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -42,6 +42,8 @@ function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryNa
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 global options_ M_ oo_
+
+dispString = 'Estimation::mcmc';
 
 nn = 3;
 MaxNumberOfPlotsPerFigure = nn^2; % must be square
@@ -76,7 +78,7 @@ HPD = zeros(2,n2,nvar);
 if options_.estimation.moments_posterior_density.indicator
     Density = zeros(options_.estimation.moments_posterior_density.gridpoints,2,n2,nvar);
 end
-fprintf(['Estimation::mcmc: ' tit1 '\n']);
+fprintf(['%s: ' tit1 '\n'],dispString);
 k = 0;
 filter_step_ahead_indicator=0;
 filter_covar_indicator=0;
@@ -161,7 +163,7 @@ elseif filter_covar_indicator
     oo_.FilterCovariance.post_deciles=post_deciles;
     oo_.FilterCovariance.HPDinf=squeeze(hpd_interval(:,:,:,1));
     oo_.FilterCovariance.HPDsup=squeeze(hpd_interval(:,:,:,2));
-    fprintf(['Estimation::mcmc: ' tit1 ', done!\n']);
+    fprintf(['%s: ' tit1 ', done!\n'],dispString);
     return
 elseif state_uncert_indicator
     draw_dimension=4;
@@ -183,7 +185,7 @@ elseif state_uncert_indicator
     oo_.Smoother.State_uncertainty.post_deciles=post_deciles;
     oo_.Smoother.State_uncertainty.HPDinf=squeeze(hpd_interval(:,:,:,1));
     oo_.Smoother.State_uncertainty.HPDsup=squeeze(hpd_interval(:,:,:,2));
-    fprintf(['Estimation::mcmc: ' tit1 ', done!\n']);
+    fprintf(['%s: ' tit1 ', done!\n'],dispString);
     return
 end
 
@@ -280,7 +282,7 @@ else
 end
 
 if strcmp(var_type,'_trend_coeff') || max(max(abs(Mean(:,:))))<=10^(-6) || all(all(isnan(Mean)))
-    fprintf(['Estimation::mcmc: ' tit1 ', done!\n']);
+    fprintf(['%s: ' tit1 ', done!\n'],dispString);
     return %not do plots
 end
 %%
@@ -378,4 +380,4 @@ if ~options_.nograph && ~options_.no_graph.posterior
     end
 end
 
-fprintf(['Estimation::mcmc: ' tit1 ', done!\n']);
+fprintf(['%s: ' tit1 ', done!\n'],dispString);

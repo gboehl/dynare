@@ -110,7 +110,7 @@ save('test_matrix.mat','weighting_matrix')
 
 @#for mommethod in ["GMM", "SMM"]
     method_of_moments(
-    % Necessery options
+    % Necessary options
           mom_method = @{mommethod}           % method of moments method; possible values: GMM|SMM
         , datafile   = 'RBC_MoM_data_@{orderApp}.mat' % name of filename with data
 

@@ -161,49 +161,12 @@ if (any(BayesInfo.pshape  >0 ) && DynareOptions.mh_replic) && DynareOptions.mh_n
     error(['initial_estimation_checks:: Bayesian estimation cannot be conducted with mh_nblocks=0.'])
 end
 
-old_steady_params=Model.params; %save initial parameters for check if steady state changes param values
+% check and display warnings if steady-state solves static model (except if diffuse_filter == 1) and if steady-state changes estimated parameters
+[DynareResults.steady_state] = check_steady_state_changes_parameters(Model,EstimatedParameters,DynareResults,DynareOptions, [DynareOptions.diffuse_filter==0 DynareOptions.diffuse_filter==0] );
 
-% % check if steady state solves static model (except if diffuse_filter == 1)
-[DynareResults.steady_state, new_steady_params] = evaluate_steady_state(DynareResults.steady_state,[DynareResults.exo_steady_state; DynareResults.exo_det_steady_state],Model,DynareOptions,DynareOptions.diffuse_filter==0);
-
-if isfield(EstimatedParameters,'param_vals') && ~isempty(EstimatedParameters.param_vals)
-    %check whether steady state file changes estimated parameters
-    Model_par_varied=Model; %store Model structure
-    Model_par_varied.params(EstimatedParameters.param_vals(:,1))=Model_par_varied.params(EstimatedParameters.param_vals(:,1))*1.01; %vary parameters
-    [~, new_steady_params_2] = evaluate_steady_state(DynareResults.steady_state,[DynareResults.exo_steady_state; DynareResults.exo_det_steady_state],Model_par_varied,DynareOptions,DynareOptions.diffuse_filter==0);
-
-    changed_par_indices=find((old_steady_params(EstimatedParameters.param_vals(:,1))-new_steady_params(EstimatedParameters.param_vals(:,1))) ...
-                             | (Model_par_varied.params(EstimatedParameters.param_vals(:,1))-new_steady_params_2(EstimatedParameters.param_vals(:,1))));
-
-    if ~isempty(changed_par_indices)
-        fprintf('\nThe steady state file internally changed the values of the following estimated parameters:\n')
-        disp(char(Model.param_names(EstimatedParameters.param_vals(changed_par_indices,1))))
-        fprintf('This will override the parameter values drawn from the proposal density and may lead to wrong results.\n')
-        fprintf('Check whether this is really intended.\n')
-        warning('The steady state file internally changes the values of the estimated parameters.')
-    end
-end
-
-if any(BayesInfo.pshape) % if Bayesian estimation
-    nvx=EstimatedParameters.nvx;
-    if nvx && any(BayesInfo.p3(1:nvx)<0)
-        warning('Your prior allows for negative standard deviations for structural shocks. Due to working with variances, Dynare will be able to continue, but it is recommended to change your prior.')
-    end
-    offset=nvx;
-    nvn=EstimatedParameters.nvn;
-    if nvn && any(BayesInfo.p3(1+offset:offset+nvn)<0)
-        warning('Your prior allows for negative standard deviations for measurement error. Due to working with variances, Dynare will be able to continue, but it is recommended to change your prior.')
-    end
-    offset = nvx+nvn;
-    ncx=EstimatedParameters.ncx;
-    if ncx && (any(BayesInfo.p3(1+offset:offset+ncx)<-1) || any(BayesInfo.p4(1+offset:offset+ncx)>1))
-        warning('Your prior allows for correlations between structural shocks larger than +-1 and will not integrate to 1 due to truncation. Please change your prior')
-    end
-    offset = nvx+nvn+ncx;
-    ncn=EstimatedParameters.ncn;
-    if ncn && (any(BayesInfo.p3(1+offset:offset+ncn)<-1) || any(BayesInfo.p4(1+offset:offset+ncn)>1))
-        warning('Your prior allows for correlations between measurement errors larger than +-1 and will not integrate to 1 due to truncation. Please change your prior')
-    end
+% check and display warning if negative values of stderr or corr params are outside unit circle for Bayesian estimation
+if any(BayesInfo.pshape)
+    check_prior_stderr_corr(EstimatedParameters,BayesInfo);
 end
 
 % display warning if some parameters are still NaN
