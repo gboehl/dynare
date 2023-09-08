@@ -56,7 +56,8 @@ if posterior
     delete_stale_file([M_.dname '/metropolis/' M_.fname '_PosteriorVarianceDecompME*']);
 else
     delete_stale_file([M_.dname '/prior/moments/' M_.fname '_PriorVarianceDecomposition*']);
-    delete_stale_file([M_.dname '/prior/moments/' M_.fname '_PriorVarianceDecompME*']);end
+    delete_stale_file([M_.dname '/prior/moments/' M_.fname '_PriorVarianceDecompME*']);
+end
 
 % Set varlist (vartan)
 if ~posterior
@@ -78,22 +79,17 @@ nvar = length(ivar);
 nar = options_.ar;
 options_.ar = 0;
 
-
-
 nexo = M_.exo_nbr;
 
 NumberOfSavedElementsPerSimulation = nvar*(nexo+1);
 MaXNumberOfDecompLines = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPerSimulation/8);
 
-ME_present=0;
-if ~all(diag(M_.H)==0)
-    [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
-    if ~isempty(observable_pos_requested_vars)
-        ME_present=1;
-        nobs_ME=length(observable_pos_requested_vars);
-        NumberOfSavedElementsPerSimulation_ME = nobs_ME*(nexo+1);
-        MaXNumberOfDecompLines_ME = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPerSimulation_ME/8);
-    end
+[ME_present,observable_pos_requested_vars,index_subset,index_observables]=check_measurement_error_requested_vars(M_,options_,ivar);
+
+if ME_present && ~isempty(observable_pos_requested_vars)
+    nobs_ME=length(observable_pos_requested_vars);
+    NumberOfSavedElementsPerSimulation_ME = nobs_ME*(nexo+1);
+    MaXNumberOfDecompLines_ME = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPerSimulation_ME/8);
 end
 
 if SampleSize<=MaXNumberOfDecompLines

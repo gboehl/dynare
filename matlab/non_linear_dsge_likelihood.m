@@ -153,7 +153,7 @@ end
 switch DynareOptions.particle.initialization
   case 1% Initial state vector covariance is the ergodic variance associated to the first order Taylor-approximation of the model.
     StateVectorMean = ReducedForm.constant(mf0);
-    [A,B] = kalman_transition_matrix(dr,dr.restrict_var_list,dr.restrict_columns,Model.exo_nbr);
+    [A,B] = kalman_transition_matrix(dr,dr.restrict_var_list,dr.restrict_columns);
     StateVectorVariance = lyapunov_symm(A, B*Q*B', DynareOptions.lyapunov_fixed_point_tol, ...
                                         DynareOptions.qz_criterium, DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
     StateVectorVariance = StateVectorVariance(mf0,mf0);

@@ -61,9 +61,9 @@ switch nargin
 end
 
 if nargout==1
-    A = kalman_transition_matrix(oo_.dr,iv,ic,M_.exo_nbr);
+    A = kalman_transition_matrix(oo_.dr,iv,ic);
     return
 end
 
-[A,B] = kalman_transition_matrix(oo_.dr,iv,ic,M_.exo_nbr);
+[A,B] = kalman_transition_matrix(oo_.dr,iv,ic);
 ys = oo_.dr.ys;

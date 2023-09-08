@@ -19,7 +19,7 @@ function [nvar,vartan,NumberOfConditionalDecompFiles] = ...
 %   vartan                           [char]     array of characters (with nvar rows).
 %   NumberOfConditionalDecompFiles   [integer]  scalar, number of prior or posterior data files (for covariance).
 
-% Copyright © 2009-2021 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -46,8 +46,7 @@ elseif strcmpi(type,'prior')
     CheckPath('prior/moments',M_.dname);
     posterior = 0;
 else
-    disp('dsge_simulated_theoretical_conditional_variance_decomposition:: Unknown type!')
-    error()
+    error('dsge_simulated_theoretical_conditional_variance_decomposition:: Unknown type requested!')
 end
 
 %delete old stale files before creating new ones
@@ -82,15 +81,12 @@ options_.ar = 0;
 NumberOfSavedElementsPerSimulation = nvar*M_.exo_nbr*length(Steps);
 MaXNumberOfConditionalDecompLines = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPerSimulation/8);
 
-ME_present=0;
-if ~all(diag(M_.H)==0)
-    [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
-    if ~isempty(observable_pos_requested_vars)
-        ME_present=1;
-        nobs_ME=length(observable_pos_requested_vars);
-        NumberOfSavedElementsPerSimulation_ME = nobs_ME*(M_.exo_nbr+1)*length(Steps);
-        MaXNumberOfConditionalDecompLines_ME = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPerSimulation_ME/8);
-    end
+[ME_present,observable_pos_requested_vars,index_subset,index_observables]=check_measurement_error_requested_vars(M_,options_,ivar);
+
+if ME_present && ~isempty(observable_pos_requested_vars)
+    nobs_ME=length(observable_pos_requested_vars);
+    NumberOfSavedElementsPerSimulation_ME = nobs_ME*(M_.exo_nbr+1)*length(Steps);
+    MaXNumberOfConditionalDecompLines_ME = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPerSimulation_ME/8);
 end
 
 if SampleSize<=MaXNumberOfConditionalDecompLines
@@ -118,12 +114,6 @@ end
 NumberOfConditionalDecompLines = size(Conditional_decomposition_array,4);
 ConditionalDecompFileNumber = 0;
 
-
-StateSpaceModel.number_of_state_equations = M_.endo_nbr;
-StateSpaceModel.number_of_state_innovations = M_.exo_nbr;
-
-first_call = 1;
-
 linea = 0;
 linea_ME = 0;
 for file = 1:NumberOfDrawsFiles
@@ -142,28 +132,12 @@ for file = 1:NumberOfDrawsFiles
             dr = temp.pdraws{linee,2};
         else
             M_=set_parameters_locally(M_,temp.pdraws{linee,1});
-			[dr,info,M_,oo_] = compute_decision_rules(M_,options_,oo_)
+			[dr,info,M_,oo_] = compute_decision_rules(M_,options_,oo_);
         end
-        if first_call
-            endo_nbr = M_.endo_nbr;
-            nstatic = M_.nstatic;
-            nspred = M_.nspred;
-            iv = (1:endo_nbr)';
-            ic = [ nstatic+(1:nspred) endo_nbr+(1:size(dr.ghx,2)-nspred) ]';
-            StateSpaceModel.number_of_state_equations = M_.endo_nbr;
-            StateSpaceModel.number_of_state_innovations = M_.exo_nbr;
-            StateSpaceModel.sigma_e_is_diagonal = M_.sigma_e_is_diagonal;
-            StateSpaceModel.order_var = dr.order_var;
-            StateSpaceModel.observable_pos=options_.varobs_id;
-            first_call = 0;
-            clear('endo_nbr','nstatic','nspred','k');
-        end
-        [StateSpaceModel.transition_matrix,StateSpaceModel.impulse_matrix] = kalman_transition_matrix(dr,iv,ic,M_.exo_nbr);
-        StateSpaceModel.state_innovations_covariance_matrix = M_.Sigma_e;
+
         M_ = set_measurement_errors(temp.pdraws{linee,1},temp.estim_params_,M_);
-        StateSpaceModel.measurement_error=M_.H;
-        clear('dr');
-        [ConditionalVarianceDecomposition, ConditionalVarianceDecomposition_ME]=conditional_variance_decomposition(StateSpaceModel, Steps, ivar);
+        [ConditionalVarianceDecomposition, ConditionalVarianceDecomposition_ME] = ...
+        conditional_variance_decomposition(M_,options_,dr, Steps, ivar);
         Conditional_decomposition_array(:,:,:,linea) =ConditionalVarianceDecomposition;
         if ME_present
             Conditional_decomposition_array_ME(:,:,:,linea) =ConditionalVarianceDecomposition_ME;

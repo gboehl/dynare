@@ -46,8 +46,6 @@ end
 
 if isoctave
     warning('off', 'Octave:divide-by-zero')
-else
-    warning off MATLAB:dividebyzero
 end
 if nargin<2
     var_list = {};
@@ -94,7 +92,7 @@ for i=M_.maximum_lag:-1:2
     i0 = i1;
 end
 
-[A,B] = kalman_transition_matrix(oo_.dr,ikx',1:nx,M_.exo_nbr);
+[A,B] = kalman_transition_matrix(oo_.dr,ikx',1:nx);
 [vx, u] =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,[],options_.debug);
 iky = iv(ivar);
 if ~isempty(u)
@@ -146,8 +144,6 @@ oo_.SpectralDensity.density=f;
 
 if isoctave
     warning('on', 'Octave:divide-by-zero')
-else
-    warning on MATLAB:dividebyzero
 end
 
 if ~options_.nograph

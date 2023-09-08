@@ -234,6 +234,7 @@ MODFILES = \
 	AIM/ls2003_2L2L.mod \
 	AIM/ls2003_2L2L_AIM.mod \
 	conditional_variance_decomposition/example1.mod \
+	conditional_variance_decomposition/example3.mod \
 	dsge-var/simul_hybrid.mod \
 	dsge-var/dsgevar_forward_calibrated_lambda.mod \
 	dsge-var/dsgevar_forward_estimated_lambda.mod \
@@ -1359,6 +1360,7 @@ EXTRA_DIST = \
 	measurement_errors/fs2000_corr_me_ml_mcmc/fsdat_simul.m \
 	missing/simulate_data_with_missing_observations.m \
 	conditional_forecasts/2/fsdat_simul.m \
+	conditional_variance_decomposition/example3_steady_state_helper.m \
 	ms-sbvar/msdata.m \
 	ms-sbvar/archive-files/ftd_2s_caseall_upperchol3v.m \
 	ms-sbvar/archive-files/ftd_2s_caseall_upperchol4v.m \

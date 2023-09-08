@@ -48,7 +48,7 @@ else
         return
     else
         if options_.one_sided_hp_filter || options_.hp_filter || options_.bandpass.indicator
-            fprintf(['Estimation::compute_moments_varendo: theoretical pruned moments incompatible with filtering. Skipping computations\n'])
+            fprintf('Estimation::compute_moments_varendo: theoretical pruned moments incompatible with filtering. Skipping computations\n')
         end        
     end
 end
@@ -163,9 +163,13 @@ if options_.order==1
                 lh = size(labels,2)+2;
                 dyn_latex_table(M_, options_, title, save_name_string, headers, labels, 100*temp, lh, 8, 2);
             end
+            if ~options_.noprint
+                skipline();
+            end
+        end
+        if ~options_.noprint
             skipline();
         end
-        skipline();
         if ~all(diag(M_.H)==0)
             [observable_name_requested_vars, varlist_pos] = intersect(var_list_, options_.varobs, 'stable');
             if ~isempty(observable_name_requested_vars)

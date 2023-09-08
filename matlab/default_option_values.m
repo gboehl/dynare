@@ -758,9 +758,6 @@ options_.endogenous_prior_restrictions.moment={};
 % OSR Optimal Simple Rules
 options_.osr.opt_algo=4;
 
-% use GPU
-options_.gpu = false;
-
 %Geweke convergence diagnostics
 options_.convergence.geweke.taper_steps=[4 8 15];
 options_.convergence.geweke.geweke_interval=[0.2 0.5];

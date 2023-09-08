@@ -223,7 +223,7 @@ if M_.maximum_endo_lead == 0
         if M_.exo_nbr
             dr.ghu =  -b\jacobia_(:,nz+1:end);
         end
-        dr.eigval = eig(kalman_transition_matrix(dr,nstatic+(1:nspred),1:nspred,M_.exo_nbr));
+        dr.eigval = eig(kalman_transition_matrix(dr,nstatic+(1:nspred),1:nspred));
         dr.full_rank = 1;
         dr.edim = nnz(abs(dr.eigval) > options_.qz_criterium);
         dr.sdim = nd-dr.edim;
