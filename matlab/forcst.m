@@ -39,12 +39,10 @@ function [yf,int_width,int_width_ME]=forcst(dr,y0,horizon,var_list,M_,oo_,option
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-oo_=make_ex_(M_,options_,oo_);
 yf = simult_(M_,options_,y0,dr,zeros(horizon,M_.exo_nbr),1);
 nstatic = M_.nstatic;
 nspred = M_.nspred;
 nc = size(dr.ghx,2);
-endo_nbr = M_.endo_nbr;
 inv_order_var = dr.inv_order_var;
 [A,B] = kalman_transition_matrix(dr,nstatic+(1:nspred),1:nc);
 
