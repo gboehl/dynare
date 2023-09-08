@@ -88,3 +88,7 @@ estimation(order=1,datafile='../fsdat_simul',nobs=192,loglinear,mh_replic=100,mh
 posterior_sampling_method='slice',
 posterior_sampler_options=('rotated',1,'use_mh_covariance_matrix',1)
 );
+
+options_.TeX=1;
+generate_trace_plots(1:2);
+options_.TeX=1;

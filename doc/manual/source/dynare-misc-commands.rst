@@ -53,8 +53,9 @@ Dynare misc commands
 .. command:: generate_trace_plots(CHAIN_NUMBER);
 
     Generates trace plots of the MCMC draws for all estimated
-    parameters and the posterior density in the specified Markov Chain
-    ``CHAIN_NUMBER``.
+    parameters and the posterior density for the specified Markov Chain(s)
+    ``CHAIN_NUMBER``. If ``CHAIN_NUMBER`` is a vector of integers, the trace plots
+    will plot contains separate lines for each chain.
 
     |br|
 

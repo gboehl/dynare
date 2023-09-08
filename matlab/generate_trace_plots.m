@@ -34,7 +34,7 @@ global M_ options_ estim_params_
 % Get informations about the posterior draws:
 MetropolisFolder = CheckPath('metropolis', M_.dname);
 record=load_last_mh_history_file(MetropolisFolder, M_.fname);
-if chain_number>record.Nblck
+if max(chain_number)>record.Nblck
     error('generate_trace_plots:: chain number is bigger than existing number of chains')
 end
 
