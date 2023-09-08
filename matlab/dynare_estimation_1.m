@@ -422,7 +422,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         end
         if ~options_.nodiagnostic
             if (options_.mh_replic>0 || (options_.load_mh_file && ~options_.load_results_after_load_mh))
-                oo_= McMCDiagnostics(options_, estim_params_, M_,oo_);
+                oo_= mcmc_diagnostics(options_, estim_params_, M_,oo_);
             elseif options_.load_mh_file && options_.load_results_after_load_mh
                 if isfield(oo_load_mh.oo_,'convergence')
                     oo_.convergence=oo_load_mh.oo_.convergence;

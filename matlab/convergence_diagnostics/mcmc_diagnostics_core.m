@@ -1,5 +1,5 @@
-function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
-% function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
+function myoutput = mcmc_diagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
+% function myoutput = mcmc_diagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 % Computes the Brooks/Gelman (1998) convergence diagnostics, both the
 % parameteric and the non-parameteric versions
 %
@@ -20,11 +20,10 @@ function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 %                               4nd column: sum of within sequence variances; used to compute mean within sequence variances
 %                               5nd column: within sequence kurtosis
 %                               6nd column: sum of within sequence kurtoses; used to compute mean within sequence kurtoses
-%               Averaging to compute mean moments is done in
-%               McMCDiagnostics
+%               Averaging to compute mean moments is done in mcmc_diagnostics
 %
 % ALGORITHM
-%   Computes part of the convergence diagnostics, the rest is computed in McMCDiagnostics.m .
+%   Computes part of the convergence diagnostics, the rest is computed in mcmc_diagnostics.m.
 %   The methodology and terminology is based on: Brooks/Gelman (1998): General
 %   Methods for Monitoring Convergence of Iterative Simulations, Journal of Computational
 %   and Graphical Statistics, Volume 7, Number 4, Pages 434-455
@@ -33,7 +32,7 @@ function myoutput = McMCDiagnostics_core(myinputs,fpar,npar,whoiam, ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 
-% Copyright © 2006-2017 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -80,7 +79,7 @@ tmp = zeros(NumberOfDraws*nblck,3);
 UDIAG = zeros(NumberOfLines,6,npar-fpar+1);
 
 if whoiam
-    waitbarString = ['Please wait... McMCDiagnostics (' int2str(fpar) 'of' int2str(npar) ')...'];
+    waitbarString = ['Please wait... MCMC diagnostics (' int2str(fpar) 'of' int2str(npar) ')...'];
     if Parallel(ThisMatlab).Local
         waitbarTitle=['Local '];
     else
