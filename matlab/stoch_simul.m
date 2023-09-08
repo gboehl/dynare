@@ -1,6 +1,20 @@
 function [info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list)
+%[info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list)
+% Computes the stochastic simulations
+%
+% INPUTS
+% - M_            [structure]       Matlab's structure describing the model
+% - options_      [structure]       Matlab's structure describing the current options
+% - oo_           [structure]       Matlab's structure containing the results
+% - var_list     [character array]  list of endogenous variables specified
+%
+% OUTPUTS
+% - info          [integer]       scalar or vector, error code.
+% - oo            [structure]     Matlab's structure containing the results (oo_).
+% - options_      [structure]       Matlab's structure describing the current options
+% - M             [structure]     Matlab's structure describing the model (M_).
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
