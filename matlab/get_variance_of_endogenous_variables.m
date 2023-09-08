@@ -43,7 +43,7 @@ ghu = dr.ghu(i_var,:);
 nc = size(ghx,2);
 n = length(i_var);
 
-[A,B] = kalman_transition_matrix(dr,nstatic+(1:nspred),1:nc,M_.exo_nbr);
+[A,B] = kalman_transition_matrix(dr,nstatic+(1:nspred),1:nc);
 
 [vx,u] = lyapunov_symm(A,B*Sigma_e*B',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold, [], options_.debug);
 

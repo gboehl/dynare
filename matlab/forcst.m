@@ -46,7 +46,7 @@ nspred = M_.nspred;
 nc = size(dr.ghx,2);
 endo_nbr = M_.endo_nbr;
 inv_order_var = dr.inv_order_var;
-[A,B] = kalman_transition_matrix(dr,nstatic+(1:nspred),1:nc,M_.exo_nbr);
+[A,B] = kalman_transition_matrix(dr,nstatic+(1:nspred),1:nc);
 
 if isempty(var_list)
     var_list = M_.endo_names(1:M_.orig_endo_nbr);

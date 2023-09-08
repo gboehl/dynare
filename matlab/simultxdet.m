@@ -121,7 +121,7 @@ elseif iorder == 2
     end
 end
 
-[A,B] = kalman_transition_matrix(dr,nstatic+(1:nspred),1:nc,M_.exo_nbr);
+[A,B] = kalman_transition_matrix(dr,nstatic+(1:nspred),1:nc);
 
 inv_order_var = dr.inv_order_var;
 ghx1 = dr.ghx(inv_order_var(ivar),:);

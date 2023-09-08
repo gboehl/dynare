@@ -41,7 +41,7 @@ if any(Steps <= 0)
            'positive'])
 end
 
-[transition_matrix, impulse_matrix] = kalman_transition_matrix(dr,(1:M_.endo_nbr)',M_.nstatic+(1:M_.nspred)',M_.exo_nbr);
+[transition_matrix, impulse_matrix] = kalman_transition_matrix(dr,(1:M_.endo_nbr)',M_.nstatic+(1:M_.nspred)');
 
 number_of_state_innovations = M_.exo_nbr;
 number_of_state_equations = M_.endo_nbr;

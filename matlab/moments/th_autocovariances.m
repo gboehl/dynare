@@ -96,7 +96,7 @@ ghu_states_only = zeros(M_.nspred,M_.exo_nbr);
 ghu_states_only(1:M_.nspred,:) = ghu(index_states,:); %get shock impact on states only
 
 % state space representation for state variables only
-[A,B] = kalman_transition_matrix(dr,index_states,1:M_.nspred,M_.exo_nbr);
+[A,B] = kalman_transition_matrix(dr,index_states,1:M_.nspred);
 % Compute stationary variables for unfiltered moments (filtering will remove unit roots)
 if options_.hp_filter ~= 0 || options_.bandpass.indicator
     % By construction, all variables are stationary when filtered

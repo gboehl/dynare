@@ -129,7 +129,7 @@ if opt_gsa.load_ident_files==0
 
     dr.ghx = T(:, [1:(nc1-M_.exo_nbr)],1);
     dr.ghu = T(:, [(nc1-M_.exo_nbr+1):end], 1);
-    [Aa,Bb] = kalman_transition_matrix(dr,iv,ic,M_.exo_nbr);
+    [Aa,Bb] = kalman_transition_matrix(dr,iv,ic);
     %     bayestopt_.restrict_var_list, ...
     %     bayestopt_.restrict_columns, ...
     %     bayestopt_.restrict_aux, M_.exo_nbr);
@@ -142,7 +142,7 @@ if opt_gsa.load_ident_files==0
     for j=2:length(istable)
         dr.ghx = T(:, [1:(nc1-M_.exo_nbr)],j);
         dr.ghu = T(:, [(nc1-M_.exo_nbr+1):end], j);
-        [Aa,Bb] = kalman_transition_matrix(dr, iv, ic, M_.exo_nbr);
+        [Aa,Bb] = kalman_transition_matrix(dr, iv, ic);
         %       bayestopt_.restrict_var_list, ...
         %       bayestopt_.restrict_columns, ...
         %       bayestopt_.restrict_aux, M_.exo_nbr);

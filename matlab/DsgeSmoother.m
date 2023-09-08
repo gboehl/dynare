@@ -386,7 +386,7 @@ else
             end
         end
         if isoccbin==0
-            [A,B] = kalman_transition_matrix(oo_.dr,(1:M_.endo_nbr)',ic,M_.exo_nbr);
+            [A,B] = kalman_transition_matrix(oo_.dr,(1:M_.endo_nbr)',ic);
         else
             opts_simul = options_.occbin.simul;
         end
@@ -540,7 +540,7 @@ else
         end
     else
         % reconstruct smoother
-        [A,B] = kalman_transition_matrix(oo_.dr,(1:M_.endo_nbr)',ic,M_.exo_nbr);
+        [A,B] = kalman_transition_matrix(oo_.dr,(1:M_.endo_nbr)',ic);
         iT = pinv(T);
         Tstar = A(~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list),oo_.dr.restrict_var_list);
         Rstar = B(~ismember(1:M_.endo_nbr,oo_.dr.restrict_var_list),:);

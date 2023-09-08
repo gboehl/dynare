@@ -77,8 +77,7 @@ if aimcode ~=1
     info(2) = 1.0e+8;
     return
 end
-A = kalman_transition_matrix(dr,M.nstatic+(1:M.nspred), 1:M.nspred,...
-                             M.exo_nbr);
+A = kalman_transition_matrix(dr,M.nstatic+(1:M.nspred), 1:M.nspred);
 dr.eigval = eig(A);
 disp(dr.eigval)
 nd = size(dr.kstate,1);
