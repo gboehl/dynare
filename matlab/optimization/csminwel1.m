@@ -109,33 +109,19 @@ else
     g=arg1;
     badg=0;
 end
-retcode3=101;
 x=x0;
 f=f0;
 H=H0;
-cliff=0;
 while ~done
     % penalty for dsge_likelihood and dsge_var_likelihood
     penalty = f;
 
     g1=[]; g2=[]; g3=[];
-    %addition fj. 7/6/94 for control
     disp_verbose('-----------------',Verbose)
     disp_verbose(sprintf('f at the beginning of new iteration, %20.10f',f),Verbose)
-    %-----------Comment out this line if the x vector is long----------------
-    %   disp_verbose([sprintf('x = ') sprintf('%15.8g %15.8g %15.8g %15.8g\n',x)]);
-    %-------------------------
     itct=itct+1;
     [f1, x1, fc, retcode1] = csminit1(fcn,x,penalty,f,g,badg,H,Verbose,varargin{:});
     fcount = fcount+fc;
-    % erased on 8/4/94
-    % if (retcode == 1) || (abs(f1-f) < crit)
-    %    done=1;
-    % end
-    % if itct > nit
-    %    done = 1;
-    %    retcode = -retcode;
-    % end
     if retcode1 ~= 1
         if retcode1==2 || retcode1==4
             wall1=1; badg1=1;
@@ -154,15 +140,11 @@ while ~done
                 save('g1.mat','g1','x1','f1','varargin');
             end
         end
-        if wall1 % && (~done) by Jinill
-                 % Bad gradient or back and forth on step length.  Possibly at
-                 % cliff edge.  Try perturbing search direction.
-                 %
-                 %fcliff=fh;xcliff=xh;
+        if wall1 
             Hcliff=H+diag(diag(H).*rand(nx,1));
             disp_verbose('Cliff.  Perturbing search direction.',Verbose)
             [f2, x2, fc, retcode2] = csminit1(fcn,x,penalty,f,g,badg,Hcliff,Verbose,varargin{:});
-            fcount = fcount+fc; % put by Jinill
+            fcount = fcount+fc;
             if  f2 < f
                 if retcode2==2 || retcode2==4
                     wall2=1; badg2=1;
@@ -178,7 +160,7 @@ while ~done
                     wall2=badg2;
                     % g2
                     if Verbose
-                        badg2
+                        disp_verbose(sprintf('Value of bad gradient 2: %u\n',badg2),Verbose)
                     end
                     if Save_files
                         save('g2.mat','g2','x2','f2','varargin');
@@ -196,7 +178,6 @@ while ~done
                         [f3, x3, fc, retcode3] = csminit1(fcn,x,penalty,f,gcliff,0,eye(nx),Verbose,varargin{:});
                         fcount = fcount+fc; % put by Jinill
                         if retcode3==2 || retcode3==4
-                            wall3=1;
                             badg3=1;
                         else
                             if NumGrad
@@ -207,7 +188,6 @@ while ~done
                                 [~,cost_flag,g3] = penalty_objective_function(x1,fcn,penalty,varargin{:});
                                 badg3 = ~cost_flag;
                             end
-                            wall3=badg3;
                             % g3
                             if Save_files
                                 save('g3.mat','g3','x3','f3','varargin');
@@ -229,13 +209,10 @@ while ~done
     end
     %how to pick gh and xh
     if f3 < f - crit && badg3==0 && f3 < f2 && f3 < f1  %f3 has improved function, gradient is good and it is smaller than the other two
-        ih=3;
         fh=f3;xh=x3;gh=g3;badgh=badg3;retcodeh=retcode3;
     elseif f2 < f - crit && badg2==0 && f2 < f1         %f2 has improved function, gradient is good and it is smaller than f2
-        ih=2;
         fh=f2;xh=x2;gh=g2;badgh=badg2;retcodeh=retcode2;
     elseif f1 < f - crit && badg1==0                    %f1 has improved function, gradient is good
-        ih=1;
         fh=f1;xh=x1;gh=g1;badgh=badg1;retcodeh=retcode1;
     else                                                % stuck or bad gradient
         [fh,ih] = min([f1,f2,f3]);
@@ -249,8 +226,6 @@ while ~done
           case 3
             xh=x3;
         end %case
-            %eval(['gh=g' num2str(ih) ';'])
-            %eval(['retcodeh=retcode' num2str(ih) ';'])
         retcodei=[retcode1,retcode2,retcode3];
         retcodeh=retcodei(ih);
         
@@ -299,7 +274,7 @@ while ~done
         elseif rc == 7
             disp_verbose('warning: possible inaccuracy in H matrix',Verbose)
         else
-            error('Unaccounted Case, please contact the developers',Verbose)
+            error('Unaccounted Case, please contact the developers')
         end
     end
 
