@@ -112,9 +112,9 @@ for j=fpar:npar
         window_iter = window_iter+1;
         linea = ceil(mh_drop*iter);         %compute first non-discarded draw; drops fraction of sample at each iteration for computational efficiency, see Brooks/Gelman (1998), p.438
         n     = iter-linea+1;               %number of draws from each block in current batch
-        cinf  = round(n*ALPHA/2);           %lower bound for alpha percentile of within series
+        cinf  = max(1,round(n*ALPHA/2));           %lower bound for alpha percentile of within series
         csup  = round(n*(1-ALPHA/2));       %upper bound for alpha percentile of within series
-        CINF  = round(nblck*n*ALPHA/2);     %lower bound for alpha percentile of pooled series
+        CINF  = max(1,round(nblck*n*ALPHA/2));     %lower bound for alpha percentile of pooled series
         CSUP  = round(nblck*n*(1-ALPHA/2)); %upper bound for alpha percentile of pooled series
         temp  = tmp(find((tmp(:,3)>=linea) & (tmp(:,3)<=iter)),1:2);    %extract pooled draws in current batch
         UDIAG(window_iter,1,j-fpar+1) = temp(CSUP,1)-temp(CINF,1);      %length of total sequence interval
