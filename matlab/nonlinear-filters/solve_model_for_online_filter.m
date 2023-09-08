@@ -20,7 +20,7 @@ function [info, Model, DynareOptions, DynareResults, ReducedForm] = ...
 % - DynareResults            [struct]     Dynare results (oo_).
 % - ReducedForm              [struct]     Reduced form model.
 
-% Copyright © 2013-2022 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -188,7 +188,6 @@ if setinitialcondition
       case 1% Initial state vector covariance is the ergodic variance associated to the first order Taylor-approximation of the model.
         StateVectorMean = ReducedForm.state_variables_steady_state;%.constant(mf0);
         [A,B] = kalman_transition_matrix(dr,dr.restrict_var_list,dr.restrict_columns);
-        StateVectorVariance2 = lyapunov_symm(ReducedForm.ghx(mf0,:),ReducedForm.ghu(mf0,:)*ReducedForm.Q*ReducedForm.ghu(mf0,:)',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold);
         StateVectorVariance = lyapunov_symm(A, B*ReducedForm.Q*B', DynareOptions.lyapunov_fixed_point_tol, ...
                                         DynareOptions.qz_criterium, DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
         StateVectorVariance = StateVectorVariance(mf0,mf0);
