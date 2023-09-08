@@ -421,8 +421,8 @@ if order > 1
     %Compute unique fourth order product moments of u, i.e. unique(E[kron(kron(kron(u,u),u),u)],'stable')
     u_nbr4    = u_nbr*(u_nbr+1)/2*(u_nbr+2)/3*(u_nbr+3)/4;
     if isempty(QPu)
-        QPu       = quadruplication(u_nbr);
-        COMBOS4   = flipud(allVL1(u_nbr, 4)); %all possible (unique) combinations of powers that sum up to four
+        QPu       = pruned_SS.quadruplication(u_nbr);
+        COMBOS4   = flipud(pruned_SS.allVL1(u_nbr, 4)); %all possible (unique) combinations of powers that sum up to four
     end
     E_u_u_u_u = zeros(u_nbr4,1); %only unique entries
     if compute_derivs && (stderrparam_nbr+corrparam_nbr>0)
@@ -430,9 +430,9 @@ if order > 1
     end
     for j4 = 1:size(COMBOS4,1)
         if compute_derivs && (stderrparam_nbr+corrparam_nbr>0)
-            [E_u_u_u_u(j4), dE_u_u_u_u(j4,:)] = prodmom_deriv(E_uu, 1:u_nbr, COMBOS4(j4,:), dE_uu(:,:,1:(stderrparam_nbr+corrparam_nbr)), dr.derivs.dCorrelation_matrix(:,:,1:(stderrparam_nbr+corrparam_nbr)));
+            [E_u_u_u_u(j4), dE_u_u_u_u(j4,:)] = pruned_SS.prodmom_deriv(E_uu, 1:u_nbr, COMBOS4(j4,:), dE_uu(:,:,1:(stderrparam_nbr+corrparam_nbr)), dr.derivs.dCorrelation_matrix(:,:,1:(stderrparam_nbr+corrparam_nbr)));
         else
-            E_u_u_u_u(j4) = prodmom(E_uu, 1:u_nbr, COMBOS4(j4,:));
+            E_u_u_u_u(j4) = pruned_SS.prodmom(E_uu, 1:u_nbr, COMBOS4(j4,:));
         end
     end
     E_xfxf_uu = kron(E_xfxf,E_uu');
@@ -667,8 +667,8 @@ if order > 1
         % Compute unique sixth-order product moments of u, i.e. unique(E[kron(kron(kron(kron(kron(u,u),u),u),u),u)],'stable')
         u_nbr6        = u_nbr*(u_nbr+1)/2*(u_nbr+2)/3*(u_nbr+3)/4*(u_nbr+4)/5*(u_nbr+5)/6;       
         if isempty(Q6Pu)
-            Q6Pu          = Q6_plication(u_nbr);
-            COMBOS6       = flipud(allVL1(u_nbr, 6)); %all possible (unique) combinations of powers that sum up to six
+            Q6Pu          = pruned_SS.Q6_plication(u_nbr);
+            COMBOS6       = flipud(pruned_SS.allVL1(u_nbr, 6)); %all possible (unique) combinations of powers that sum up to six
         end
         E_u_u_u_u_u_u = zeros(u_nbr6,1); %only unique entries
         if compute_derivs && (stderrparam_nbr+corrparam_nbr>0)
@@ -676,9 +676,9 @@ if order > 1
         end
         for j6 = 1:size(COMBOS6,1)
             if compute_derivs && (stderrparam_nbr+corrparam_nbr>0)
-                [E_u_u_u_u_u_u(j6), dE_u_u_u_u_u_u(j6,:)] = prodmom_deriv(E_uu, 1:u_nbr, COMBOS6(j6,:), dE_uu(:,:,1:(stderrparam_nbr+corrparam_nbr)), dr.derivs.dCorrelation_matrix(:,:,1:(stderrparam_nbr+corrparam_nbr)));
+                [E_u_u_u_u_u_u(j6), dE_u_u_u_u_u_u(j6,:)] = pruned_SS.prodmom_deriv(E_uu, 1:u_nbr, COMBOS6(j6,:), dE_uu(:,:,1:(stderrparam_nbr+corrparam_nbr)), dr.derivs.dCorrelation_matrix(:,:,1:(stderrparam_nbr+corrparam_nbr)));
             else
-                E_u_u_u_u_u_u(j6) = prodmom(E_uu, 1:u_nbr, COMBOS6(j6,:));
+                E_u_u_u_u_u_u(j6) = pruned_SS.prodmom(E_uu, 1:u_nbr, COMBOS6(j6,:));
             end
         end
 
