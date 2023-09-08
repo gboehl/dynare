@@ -182,7 +182,7 @@ mingw64: tarballs/mingw-w64-x86_64-gcc-$(MINGW64_GCC_VERSION)-any.pkg.tar.zst ta
 	touch $@
 
 tarballs/mingw-w64-x86_64-%-any.pkg.tar.zst:
-	wget $(WGET_OPTIONS) -O $@ https://www.dynare.org/msys2/5.x/$(notdir $@)
+	wget $(WGET_OPTIONS) -O $@ https://www.dynare.org/windows-pkg-build/msys2/5.x/$(notdir $@)
 
 clean-msys2:
 	rm -rf lib64-msys2
