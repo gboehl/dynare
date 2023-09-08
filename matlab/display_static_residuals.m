@@ -1,10 +1,13 @@
-function z = display_static_residuals(options_resid_)
-% function z = display_static_residuals(options_resid_)
+function z = display_static_residuals(M_, options_, oo_,options_resid_)
+% function z = display_static_residuals(M_, options_, oo_,options_resid_)
 %
 % Computes static residuals associated with the guess values.
 %
 % INPUTS
-%    options_resid_:   options to resid
+%   M:              [structure] storing the model information
+%   options:        [structure] storing the options
+%   oo:             [structure] storing the results
+%   options_resid_:             options to resid
 %
 % OUTPUTS
 %    z:      residuals
@@ -29,11 +32,7 @@ function z = display_static_residuals(options_resid_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ options_ oo_
-
-% Properly handle the case where no input argument is given, e.g. when
-% writing “z = resid;” in a .mod file (hence not using the preprocessor syntax).
-non_zero = nargin > 0 && isfield(options_resid_, 'non_zero') && options_resid_.non_zero;
+non_zero = (isfield(options_resid_, 'non_zero') && options_resid_.non_zero);
 
 tags  = M_.equations_tags;
 istag = 0;
@@ -41,15 +40,6 @@ if ~isempty(tags)
     istag = 1;
 end
 
-steady_state_old = oo_.steady_state;
-
-% Keep of a copy of M_.Sigma_e
-Sigma_e = M_.Sigma_e;
-
-% Set M_.Sigma_e=0 (we evaluate the *deterministic* static model)
-M_.Sigma_e = zeros(size(Sigma_e));
-
-info = 0;
 if any(imag(oo_.steady_state))
     imagrow=find(imag(oo_.steady_state));
     if ~isempty(imagrow)
@@ -83,8 +73,6 @@ else
         disp_string='';
     end
 end
-M_.Sigma_e = Sigma_e;
-
 
 % Display the non-zero residuals if no return value
 if nargout == 0
@@ -129,5 +117,3 @@ if nargout == 0
     end
     skipline(2)
 end
-
-oo_.steady_state = steady_state_old;
