@@ -103,13 +103,13 @@ if m==2
     rho = V(1,2)/sqrt(V(1,1)*V(2,2));
     if nargout > 1
         drho = dC(ii(1),ii(2),:);
-        [tmp,dtmp] = bivmom(nu,rho);
+        [tmp,dtmp] = pruned_SS.bivmom(nu,rho);
         dy = (nu(1)/2)*V(1,1)^(nu(1)/2-1)*dV(1,1,:) * V(2,2)^(nu(2)/2) * tmp...
            + V(1,1)^(nu(1)/2) * (nu(2)/2)*V(2,2)^(nu(2)/2-1)*dV(2,2,:) * tmp...
            + V(1,1)^(nu(1)/2) * V(2,2)^(nu(2)/2) * dtmp * drho;
         dy = reshape(dy,1,size(dV,3));
     else
-        tmp = bivmom(nu,rho);
+        tmp = pruned_SS.bivmom(nu,rho);
     end
     y = V(1,1)^(nu(1)/2)*V(2,2)^(nu(2)/2)*tmp;
     return  

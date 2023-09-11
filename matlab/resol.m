@@ -1,18 +1,18 @@
-function [dr, info, M, oo] = resol(check_flag, M, options, oo)
-
+function [dr, info, M_, oo_] = resol(check_flag, M_, options_, oo_)
+%[dr, info, M_, oo_] = resol(check_flag, M_, options_, oo_)
 % Computes the perturbation based decision rules of the DSGE model (orders 1 to 3)
 %
 % INPUTS
 % - check_flag    [integer]       scalar, equal to 0 if all the approximation is required, equal to 1 if only the eigenvalues are to be computed.
-% - M             [structure]     Matlab's structure describing the model (M_).
-% - options       [structure]     Matlab's structure describing the current options (options_).
-% - oo            [structure]     Matlab's structure containing the results (oo_).
+% - M_            [structure]     Matlab's structure describing the model
+% - options_      [structure]     Matlab's structure describing the current options
+% - oo_           [structure]     Matlab's structure containing the results
 %
 % OUTPUTS
 % - dr            [structure]     Reduced form model.
 % - info          [integer]       scalar or vector, error code.
-% - M             [structure]     Matlab's structure describing the model (M_).
-% - oo            [structure]     Matlab's structure containing the results (oo_).
+% - M_            [structure]     Matlab's structure describing the model
+% - oo_           [structure]     Matlab's structure containing the results
 %
 % REMARKS
 % Possible values for the error codes are:
@@ -49,46 +49,46 @@ function [dr, info, M, oo] = resol(check_flag, M, options, oo)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if isfield(oo,'dr')
-    if isfield(oo.dr,'kstate')
-        dr.kstate = oo.dr.kstate;
+if isfield(oo_,'dr')
+    if isfield(oo_.dr,'kstate')
+        dr.kstate = oo_.dr.kstate;
     end
-    if isfield(oo.dr,'inv_order_var')
-        dr.inv_order_var = oo.dr.inv_order_var;
+    if isfield(oo_.dr,'inv_order_var')
+        dr.inv_order_var = oo_.dr.inv_order_var;
     end
-    if isfield(oo.dr,'order_var')
-        dr.order_var = oo.dr.order_var;
+    if isfield(oo_.dr,'order_var')
+        dr.order_var = oo_.dr.order_var;
     end
-    if isfield(oo.dr,'restrict_var_list')
-        dr.restrict_var_list = oo.dr.restrict_var_list;
+    if isfield(oo_.dr,'restrict_var_list')
+        dr.restrict_var_list = oo_.dr.restrict_var_list;
     end
-    if isfield(oo.dr,'restrict_columns')
-        dr.restrict_columns = oo.dr.restrict_columns;
+    if isfield(oo_.dr,'restrict_columns')
+        dr.restrict_columns = oo_.dr.restrict_columns;
     end
-    if isfield(oo.dr,'obs_var')
-        dr.obs_var = oo.dr.obs_var;
+    if isfield(oo_.dr,'obs_var')
+        dr.obs_var = oo_.dr.obs_var;
     end
 end
 
-if M.exo_nbr == 0
-    oo.exo_steady_state = [] ;
+if M_.exo_nbr == 0
+    oo_.exo_steady_state = [] ;
 end
 
-[dr.ys,M.params,info] = evaluate_steady_state(oo.steady_state,[oo.exo_steady_state; oo.exo_det_steady_state],M,options,~options.steadystate.nocheck);
+[dr.ys,M_.params,info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
 
 if info(1)
-    oo.dr = dr;
+    oo_.dr = dr;
     return
 end
 
-if options.loglinear
+if options_.loglinear
     threshold = 1e-16;
     % Find variables with non positive steady state. Skip auxiliary
     % variables for lagges/leaded exogenous variables
-    idx = find(dr.ys(get_all_variables_but_lagged_leaded_exogenous(M))<threshold);
+    idx = find(dr.ys(get_all_variables_but_lagged_leaded_exogenous(M_))<threshold);
     if ~isempty(idx)
-        if options.debug
-            variables_with_non_positive_steady_state = M.endo_names{idx};
+        if options_.debug
+            variables_with_non_positive_steady_state = M_.endo_names{idx};
             skipline()
             fprintf('You are attempting to simulate/estimate a loglinear approximation of a model, but\n')
             fprintf('the steady state level of the following variables is not strictly positive:\n')
@@ -111,5 +111,5 @@ if options.loglinear
     end
 end
 
-[dr, info] = stochastic_solvers(dr, check_flag, M, options, oo);
-oo.dr = dr;
+[dr, info] = stochastic_solvers(dr, check_flag, M_, options_, oo_);
+oo_.dr = dr;

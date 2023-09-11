@@ -73,7 +73,7 @@ if m==2
         return
     end
    rho = V(1,2)/sqrt(V(1,1)*V(2,2));
-   y = V(1,1)^(nu(1)/2)*V(2,2)^(nu(2)/2)*bivmom(nu,rho);
+   y = V(1,1)^(nu(1)/2)*V(2,2)^(nu(2)/2)*pruned_SS.bivmom(nu,rho);
    return  
 end
 %
