@@ -204,7 +204,7 @@ by the ``dynare`` command.
     .. option:: params_derivs_order=0|1|2
 
         When :comm:`identification`, :comm:`dynare_sensitivity` (with
-        identification), or :ref:`estimation_cmd <estim-comm>` are
+        identification), or :ref:`estimation <estim-comm>` are
         present, this option is used to limit the order of the
         derivatives with respect to the parameters that are calculated
         by the preprocessor. 0 means no derivatives, 1 means first
