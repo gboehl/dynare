@@ -161,7 +161,6 @@ while it<npar
             %keyboard;
         end
     end
-    neval2 = neval(it);
     % ------------------------------------------------------
     % 3. SAMPLING FROM THE SET A = (I INTERSECT S) = (LA,RA)
     % ------------------------------------------------------
@@ -179,13 +178,13 @@ while it<npar
             L = xsim;
         end
         if (R-L)<1.e-6 %neval(it)>(30+neval2)
-            disp(sprintf('The sampling for variable [%s] is taking too long as the sampling set is too tight. Check the prior.', varargin{6}.name{it}))
+            fprintf('The sampling for parameter [%s] is taking too long as the sampling set is too tight. Check the prior.\n', varargin{6}.name{it})
             mytxt{it,3} = sprintf('Sampling [%s] is taking too long.', varargin{6}.name{it});
-            save(['slice_iter_info_' fname],'mytxt','neval','it')
+            save([varargin{4}.dname filesep 'metropolis/slice_iter_info_' fname],'mytxt','neval','it')
             break
         end
     end
-    save(['slice_iter_info_' fname],'mytxt','neval','it','theta','fxsim')
+    save([varargin{4}.dname filesep 'metropolis/slice_iter_info_' fname],'mytxt','neval','it','theta','fxsim')
 
     if isinf(fxsim) || isnan(fxsim)
         theta(it) = xold;

@@ -110,7 +110,7 @@ update_last_mh_history_file(MetropolisFolder, ModelName, record);
 PastDraws = sum(record.MhDraws,1);
 NumberOfDraws  = PastDraws(1);
 
-if NumberOfDraws<=2000
+if ~strcmp(options_.posterior_sampler_options.posterior_sampling_method,'slice') && NumberOfDraws<=2000
     warning('MCMC convergence diagnostics are not computed because the total number of iterations is not bigger than 2000!');
     return
 end
@@ -210,8 +210,13 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
     return
 end
 
-Origin = 1000;
-StepSize = ceil((NumberOfDraws-Origin)/100);% So that the computational time does not
+if strcmp(options_.posterior_sampler_options.posterior_sampling_method,'slice') && NumberOfDraws<2000
+    Origin = 1;
+    StepSize = 1;
+else
+    Origin = 1000;
+    StepSize = ceil((NumberOfDraws-Origin)/100);% So that the computational time does not
+end
 ALPHA = 0.2;                                % increase too much with the number of simulations.
 time = 1:NumberOfDraws;
 xx = Origin:StepSize:NumberOfDraws;
@@ -421,9 +426,9 @@ for iter  = Origin:StepSize:NumberOfDraws
     ligne = ligne+1;
     linea = ceil(options_.mh_drop*iter);
     n     = iter-linea+1;
-    cinf  = round(n*ALPHA/2);
+    cinf  = max(1,round(n*ALPHA/2));
     csup  = round(n*(1-ALPHA/2));
-    CINF  = round(nblck*n*ALPHA/2);
+    CINF  = max(1,round(nblck*n*ALPHA/2));
     CSUP  = round(nblck*n*(1-ALPHA/2));
     temp  = tmp(find((tmp(:,3)>=linea) & (tmp(:,3)<=iter)),1:2);
     MDIAG(ligne,1) = temp(CSUP,1)-temp(CINF,1);
