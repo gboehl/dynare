@@ -1,8 +1,10 @@
-function disp_dr(dr,order,var_list)
-
+function disp_dr(M_,options_,dr,order,var_list)
+%disp_dr(M_,options_,dr,order,var_list)
 % Display the decision rules
 %
 % INPUTS
+%  - M         [structure]   storing the model information
+%  - options   [structure]   storing the options
 % - dr         [struct]      decision rules.
 % - order      [integer]     order of approximation.
 % - var_list   [cell]        list of endogenous variables for which the decision rules should be printed.
@@ -26,8 +28,6 @@ function disp_dr(dr,order,var_list)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-global M_ options_
 
 if order~=1 && M_.hessian_eq_zero
     order = 1;
