@@ -133,7 +133,7 @@ Copyright: 1997 Tom Minka <minka@microsoft.com>
            2019-2020 Dynare Team
 License: GPL-3+
 
-Files: matlab/allVL1.m
+Files: matlab/+pruned_SS/allVL1.m
 Copyright: 2007-2010 Bruno Luong <brunoluong@yahoo.com> 
            2020 Dynare Team
 License: GPL-3+
