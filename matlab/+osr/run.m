@@ -1,22 +1,32 @@
-function osr_res = osr1(i_params,i_var,weights)
-% Compute the Optimal Simple Rules
+function [info, oo_, options_, M_] = run(M_, options_, oo_, var_list, params, i_var,W)
+% [info, oo_, options_, M_] = osr(M_, options_, oo_, var_list, params, i_var,W)
+% Function computing the solution to the optimal simple rule-problem
+%
 % INPUTS
-%   i_params                  vector           index of optimizing parameters in M_.params
-%   i_var                     vector           variables indices in declaration order
-%   weights                   vector           weights in the OSRs
+%   M_          [structure]                 Dynare's model structure
+%   oo_         [structure]                 Dynare's results structure
+%   options_    [structure]                 Dynare's options structure
+%   var_list    [character array]           list of endogenous variables specified
+%   params      [character array]           list of parameter to be chosen in
+%                                           optimal simple rule
+%   i_var       [n_osr_vars by 1 double]    indices of osr-variable in
+%                                           specified in optim_weights in declaration order
+%   W           [M_.endo_nbr by M_.endo_nbr sparse matrix] Weighting matrix for variance of endogenous variables
 %
 % OUTPUTS
-%   osr_res:    [structure] results structure containing:
-%    - objective_function [scalar double]   value of the objective
-%                                               function at the optimum
-%    - optim_params       [structure]       parameter values at the optimum
+%   info        [integer]           scalar or vector, error code.
+%   oo_         [structure]         Dynare's results structure, containing subfield   
+%       osr_res:    results structure containing:
+%                   - objective_function [scalar double]   value of the objective
+%                                                           function at the optimum
+%                   - optim_params       [structure]       parameter values at the optimum
+%   options_    [structure]         Dynare's options structure
+%   M_          [structure]         Dynare's model structure
 %
-% Algorithm:
-%
-%   Uses Newton-type optimizer csminwel to directly solve quadratic
-%   osr-problem
-%
-% Copyright © 2005-2019 Dynare Team
+% SPECIAL REQUIREMENTS
+%   none.
+
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,9 +43,24 @@ function osr_res = osr1(i_params,i_var,weights)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ oo_ options_ it_
+options_.order = 1;
 
-it_ = M_.maximum_lag + 1 ;
+if isempty(options_.qz_criterium)
+    options_.qz_criterium = 1+1e-6;
+end
+
+oo_=make_ex_(M_,options_,oo_);
+
+np = size(params,1);
+i_params = zeros(np,1);
+for i=1:np
+    str = deblank(params(i,:));
+    i_params(i) = strmatch(str{:}, M_.param_names, 'exact');
+end
+
+if ~options_.noprint
+    fprintf('\nOPTIMAL SIMPLE RULE\n')
+end
 
 osr_res.error_indicator = 1; %initialize indicator
 
@@ -43,7 +68,7 @@ if M_.exo_nbr == 0
     oo_.exo_steady_state = [] ;
 end
 
-if ~ M_.lead_lag_incidence(M_.maximum_lag+1,:) > 0
+if ~M_.lead_lag_incidence(M_.maximum_lag+1,:) > 0
     error ('OSR: Error in model specification: some variables don''t appear as current') ;
 end
 
@@ -51,7 +76,7 @@ if M_.maximum_lead == 0
     error ('OSR: Backward or static model: no point in using OSR') ;
 end
 
-if any(any(isinf(weights)))
+if any(any(isinf(W)))
     error ('OSR: At least one of the optim_weights is infinite.') ;
 end
 
@@ -81,19 +106,13 @@ if isfield(options_.osr,'maxit') || isfield(options_.osr,'tolf')
 end
 
 oo_.dr = set_state_space(oo_.dr,M_,options_);
-
-
-np = size(i_params,1);
-t0 = M_.params(i_params);
-
-
+par_0 = M_.params(i_params);
 inv_order_var = oo_.dr.inv_order_var;
-
 
 %extract unique entries of covariance
 i_var=unique(i_var);
 %% do initial checks
-[loss,info]=osr_obj(t0,i_params,inv_order_var(i_var),weights(i_var,i_var));
+[loss,info]=osr.objective(par_0,M_,oo_,options_,i_params,inv_order_var(i_var),W(i_var,i_var));
 if info~=0
     print_info(info, options_.noprint, options_);
 else
@@ -108,7 +127,6 @@ if ~options_.noprint && isinf(loss)
     error('OSR: Initial likelihood is infinite')
 end
 
-
 if isequal(options_.osr.opt_algo,5)
     error('OSR: OSR does not support opt_algo=5.')
 elseif isequal(options_.osr.opt_algo,6)
@@ -118,13 +136,12 @@ elseif isequal(options_.osr.opt_algo,10)
 elseif isequal(options_.osr.opt_algo,11)
     error('OSR: OSR does not support opt_algo=11.')
 else
-
     if ~isempty(M_.osr.param_bounds) && ~(ismember(options_.osr.opt_algo,[1,2,5,9]) || ischar(options_.osr.opt_algo))
         error('OSR: OSR with bounds on parameters requires a constrained optimizer, i.e. opt_algo= 1,2 or 9.')
     end
     %%do actual optimization
-    [p, f] = dynare_minimize_objective(str2func('osr_obj'),t0,options_.osr.opt_algo,options_,M_.osr.param_bounds,M_.param_names(i_params),[],[], i_params,...
-                                       inv_order_var(i_var),weights(i_var,i_var));
+    [p, f] = dynare_minimize_objective(str2func('osr.objective'),par_0,options_.osr.opt_algo,options_,M_.osr.param_bounds,M_.param_names(i_params),[],[], M_,oo_,options_,i_params,...
+                                       inv_order_var(i_var),W(i_var,i_var));
 end
 
 osr_res.objective_function = f;
@@ -134,16 +151,22 @@ for i=1:length(i_params)
 end
 
 if ~options_.noprint
-    skipline()
-    disp('OPTIMAL VALUE OF THE PARAMETERS:')
-    skipline()
-    for i=1:np
-        fprintf('%16s %16.6g\n\n', M_.param_names{i_params(i)}, p(i));
+    my_title='OPTIMAL VALUE OF THE PARAMETERS';
+    labels = M_.param_names(i_params);
+    headers = {'Variables'; 'Value'};
+    lh = cellofchararraymaxlength(labels)+2;
+    dyntable(options_, my_title, headers, labels, p, lh, 10, 6);
+    if options_.TeX
+        labels = M_.param_names_tex(i_params);       
+        lh = cellofchararraymaxlength(labels)+2;
+        dyn_latex_table(M_, options_, my_title, 'osr', headers, labels, p, lh, 10, 6);
     end
-    fprintf('Objective function : %16.6g\n\n',f);
-    skipline()
+    fprintf('\nObjective function : %16.6g\n\n',f);
 end
-[oo_.dr,info,M_,oo_] = resol(0,M_,options_,oo_);
-if ~info
+
+[info, oo_, options_, M_] = stoch_simul(M_, options_, oo_, var_list);
+
+if ~info(1)
     osr_res.error_indicator=0;
 end
+oo_.osr = osr_res;

@@ -1,8 +1,11 @@
-function [loss,info,exit_flag,vx,junk]=osr_obj(x,i_params,i_var,weights)
+function [loss,info,exit_flag,vx,junk]=objective(x,M_, oo_, options_,i_params,i_var,weights)
 % objective function for optimal simple rules (OSR)
 % INPUTS
 %   x                         vector           values of the parameters
 %                                              over which to optimize
+%   M_                        [structure]      Dynare's model structure
+%   oo_                       [structure]      Dynare's results structure
+%   options_                  [structure]      Dynare's options structure
 %   i_params                  vector           index of optimizing parameters in M_.params
 %   i_var                     vector           variables indices
 %   weights                   vector           weights in the OSRs
@@ -17,7 +20,7 @@ function [loss,info,exit_flag,vx,junk]=osr_obj(x,i_params,i_var,weights)
 %
 % SPECIAL REQUIREMENTS
 %   none
-% Copyright © 2005-2017 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,20 +37,14 @@ function [loss,info,exit_flag,vx,junk]=osr_obj(x,i_params,i_var,weights)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ oo_ options_ optimal_Q_ it_
-%  global ys_ Sigma_e_ endo_nbr exo_nbr optimal_Q_ it_ ykmin_ options_
-
 junk = [];
 exit_flag = 1;
 vx = [];
-info=zeros(4,1);
-loss=[];
 % set parameters of the policiy rule
 M_.params(i_params) = x;
 
 % don't change below until the part where the loss function is computed
-it_ = M_.maximum_lag+1;
-[dr,info,M_,oo_] = resol(0,M_,options_,oo_);
+[dr,info] = resol(0,M_,options_,oo_);
 
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ||...
@@ -63,5 +60,5 @@ if info(1)
     end
 end
 
-vx = get_variance_of_endogenous_variables(dr,i_var);
+vx = osr.get_variance_of_endogenous_variables(M_,options_,dr,i_var);
 loss = full(weights(:)'*vx(:));
