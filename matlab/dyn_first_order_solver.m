@@ -58,7 +58,6 @@ exo_nbr = DynareModel.exo_nbr;
 if isempty(reorder_jacobian_columns)
 
     maximum_lag = DynareModel.maximum_endo_lag;
-    kstate   = dr.kstate;
     nfwrd    = DynareModel.nfwrd;
     nboth    = DynareModel.nboth;
     npred    = DynareModel.npred;
@@ -70,7 +69,7 @@ if isempty(reorder_jacobian_columns)
     k2 = 1:(nfwrd+nboth);
 
     order_var = dr.order_var;
-    nd = size(kstate,1);
+    nd = npred+nfwrd+2*nboth;
     lead_lag_incidence = DynareModel.lead_lag_incidence;
     nz = nnz(lead_lag_incidence);
 
