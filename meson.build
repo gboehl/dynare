@@ -106,7 +106,7 @@ if get_option('build_for') == 'matlab'
     error('Unsupported platform')
   endif
 
-  matlab_defs = [ '-DMATLAB_MEX_FILE', '-DMATLAB_VERSION=' + matlab_version_hex, '-DMEXEXT="' + mexext + '"' ]
+  matlab_defs = [ '-DMATLAB_MEX_FILE', '-DMATLAB_VERSION=' + matlab_version_hex, '-DMEXEXT=".' + mexext + '"' ]
   matlab_incdir = include_directories(matlab_path / 'extern/include')
 
   mex_kwargs = { 'name_prefix' : '',
