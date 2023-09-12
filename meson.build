@@ -250,7 +250,7 @@ shared_module('num_procs', 'mex/sources/num_procs/num_procs.cc', kwargs : mex_kw
 
 perfect_foresight_problem_src = [ 'mex/sources/perfect_foresight_problem/perfect_foresight_problem.cc',
                                   'mex/sources/perfect_foresight_problem/DynamicModelCaller.cc' ]
-shared_module('perfect_foresight_problem', perfect_foresight_problem_src, kwargs : mex_kwargs, dependencies : openmp_dep)
+shared_module('perfect_foresight_problem', perfect_foresight_problem_src, kwargs : mex_kwargs, dependencies : [ openmp_dep, dl_dep ])
 
 block_trust_region_src = [ 'mex/sources/block_trust_region/dulmage_mendelsohn.f08',
                            'mex/sources/block_trust_region/matlab_fcn_closure.F08',
