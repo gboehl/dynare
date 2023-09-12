@@ -47,7 +47,7 @@ function [SE_values, Asympt_Var] = standard_errors(xparam, objective_function, B
 % -------------------------------------------------------------------------
 % Author(s): 
 % o Willi Mutschler (willi@mutschler.eu)
-% o Johannes Pfeifer (jpfeifer@uni-koeln.de)
+% o Johannes Pfeifer (johannes.pfeifer@unibw.de)
 % =========================================================================
 
 % Some dimensions

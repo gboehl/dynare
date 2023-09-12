@@ -35,7 +35,7 @@ function [dataMoments, m_data] = get_data_moments(data, oo_, matched_moments_, o
 % -------------------------------------------------------------------------
 % Author(s): 
 % o Willi Mutschler (willi@mutschler.eu)
-% o Johannes Pfeifer (jpfeifer@uni-koeln.de)
+% o Johannes Pfeifer (johannes.pfeifer@unibw.de)
 % =========================================================================
 
 % Initialization
