@@ -4,9 +4,9 @@ function [fh,xh,gh,H,itct,fcount,retcodeh] = csminwel1(fcn,x0,H0,grad,crit,nit,m
 %   fcn:    [string]        string naming the objective function to be minimized
 %   x0:     [npar by 1]     initial value of the parameter vector
 %   H0:     [npar by npar]  initial value for the inverse Hessian.  Must be positive definite.
-%   grad:   [string or empty matrix] Either a string naming a function that calculates the gradient, or the null matrix.
-%                           If it's null, the program calculates a numerical gradient.  In this case fcn must
-%                           be written so that it can take a matrix argument and produce a row vector of values.
+%   grad:   [string or boolean] Either a string naming a function that calculates the gradient, or a boolean
+%                           indicating whether the function returns a gradient (column) vector. If false, the program 
+%                           calculates a numerical gradient.  
 %   crit:   [scalar]        Convergence criterion.  Iteration will cease when it proves impossible to improve the
 %                           function value by more than crit.
 %   nit:    [scalar]        Maximum number of iterations.
@@ -42,7 +42,7 @@ function [fh,xh,gh,H,itct,fcount,retcodeh] = csminwel1(fcn,x0,H0,grad,crit,nit,m
 % http://sims.princeton.edu/yftp/optimize/mfiles/csminwel.m
 %
 % Copyright © 1993-2007 Christopher Sims
-% Copyright © 2006-2021 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
