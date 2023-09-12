@@ -69,7 +69,7 @@ if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_jacobian
             df           = nan(size(oo_.mom.data_moments,1),length(xparam1));
         end
     else
-        df           = nan(1,length(xparam1));
+            df = nan(length(xparam1),1);
     end
 else
     df=[]; %required to be empty by e.g. newrat
@@ -288,9 +288,9 @@ if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_jacobian
                 df(:,jp) = dresiduals;
             end
         else
-            df(:,jp) = dresiduals'*residuals + residuals'*dresiduals;
+            df(jp,1) = dresiduals'*residuals + residuals'*dresiduals;
             if options_mom_.mom.penalized_estimator
-                df(:,jp)=df(:,jp)+(dxparam1(:,jp))'/oo_.prior.variance*(xparam1-oo_.prior.mean)+(xparam1-oo_.prior.mean)'/oo_.prior.variance*(dxparam1(:,jp));
+                df(jp,1)=df(jp,1)+(dxparam1(:,jp))'/oo_.prior.variance*(xparam1-oo_.prior.mean)+(xparam1-oo_.prior.mean)'/oo_.prior.variance*(dxparam1(:,jp));
             end
         end
     end

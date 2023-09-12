@@ -263,7 +263,7 @@ switch minimizer_algorithm
         Verbose = 0;
     end
     % Set flag for analytical gradient.
-    if options_.analytic_derivation
+    if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1)
         analytic_grad=1;
     else
         analytic_grad=[];
@@ -276,7 +276,7 @@ switch minimizer_algorithm
     if isempty(prior_information) %mr_hessian requires it, but can be NaN
         prior_information.p2=NaN(n_params,1);
     end
-    if options_.analytic_derivation 
+    if options_.analytic_derivation
         old_analytic_derivation = options_.analytic_derivation;
         options_.analytic_derivation=-1; %force analytic outer product gradient hessian for each iteration
         analytic_grad=1;
