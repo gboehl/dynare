@@ -1302,7 +1302,7 @@ EXTRA_DIST = \
 	run_test_matlab.m \
 	run_test_octave.m \
 	run_m_script.m \
-	load_octave_packages.m \
+	utils/load_octave_packages.m \
 	$(MODFILES) \
 	$(PARTICLEFILES) \
 	$(XFAIL_MODFILES) \

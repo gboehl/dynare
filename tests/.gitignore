@@ -90,7 +90,7 @@ wsOct
 !/kalman_steady_state/test1.m
 !/kronecker/nash_matrices.mat
 !/kronecker/test_kron.m
-!/load_octave_packages.m
+!/utils/load_octave_packages.m
 !/ls2003/data_ca1.m
 !/logarithmicreduction.m
 !/measurement_errors/data_ca1.m

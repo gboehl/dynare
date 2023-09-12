@@ -1,4 +1,4 @@
-## Copyright © 2015-2019 Dynare Team
+## Copyright © 2015-2023 Dynare Team
 ##
 ## This file is part of Dynare.
 ##
@@ -15,10 +15,10 @@
 ## You should have received a copy of the GNU General Public License
 ## along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-load_octave_packages
-
 top_test_dir = getenv('TOP_TEST_DIR');
 addpath([top_test_dir filesep 'utils']);
+
+load_octave_packages
 
 [mfile, name] = strtok(getenv('FILESTEM'));
 
