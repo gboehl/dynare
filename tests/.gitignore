@@ -148,6 +148,7 @@ wsOct
 !/run_o_script.m
 !/run_reporting_test_matlab.m
 !/run_reporting_test_octave.m
+!/run_mod_file.m
 !/run_test_matlab.m
 !/run_test_octave.m
 !/shock_decomposition/example1_calib_shock_decomp_data.mat
