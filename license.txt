@@ -92,7 +92,7 @@ Files: matlab/optimization/bfgsi1.m matlab/csolve.m matlab/optimization/csminit1
  matlab/bvar_toolbox.m matlab/partial_information/PI_gensys.m matlab/partial_information/qzswitch.m
  matlab/partial_information/qzdiv.m
 Copyright: 1993-2009 Christopher Sims
-           2006-2017 Dynare Team
+           2006-2023 Dynare Team
 License: GPL-3+
 
 Files: matlab/optimization/cmaes.m
