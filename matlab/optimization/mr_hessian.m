@@ -67,7 +67,7 @@ function [hessian_mat, gg, htol1, ihh, hh_mat0, hh1, hess_info] = mr_hessian(x,f
 
 n=size(x,1);
 
-[f0,exit_flag, ff0]=penalty_objective_function(x,func,penalty,varargin{:});
+[f0,~, ff0]=penalty_objective_function(x,func,penalty,varargin{:});
 h2=bounds(:,2)-bounds(:,1);
 hmax=bounds(:,2)-x;
 hmax=min(hmax,x-bounds(:,1));
@@ -100,7 +100,7 @@ while i<n
     h10=hess_info.h1(i);
     hcheck=0;
     xh1(i)=x(i)+hess_info.h1(i);
-    [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
+    [fx,~,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
     it=1;
     dx=(fx-f0);
     ic=0;
@@ -117,18 +117,18 @@ while i<n
             hess_info.h1(i) = min(hess_info.h1(i),0.5*hmax(i));
             hess_info.h1(i) = max(hess_info.h1(i),1.e-10);
             xh1(i)=x(i)+hess_info.h1(i);
-            [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
+            [fx,~,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
         end
         if abs(dx(it))>(3*hess_info.htol)
             hess_info.h1(i)= hess_info.htol/abs(dx(it))*hess_info.h1(i);
             hess_info.h1(i) = max(hess_info.h1(i),1e-10);
             xh1(i)=x(i)+hess_info.h1(i);
-            [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
+            [fx,~,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
             iter=0;
             while (fx-f0)==0 && iter<50
                 hess_info.h1(i)= hess_info.h1(i)*2;
                 xh1(i)=x(i)+hess_info.h1(i);
-                [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
+                [fx,~,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
                 ic=1;
                 iter=iter+1;
             end
@@ -150,7 +150,7 @@ while i<n
         end
     end
     xh1(i)=x(i)-hess_info.h1(i);
-    [fx,exit_flag,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
+    [fx,~,ffx]=penalty_objective_function(xh1,func,penalty,varargin{:});
     f_1(:,i)=fx;
     if outer_product_gradient
         if any(isnan(ffx)) || isempty(ffx)

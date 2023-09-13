@@ -74,7 +74,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
                 df = nan(size(oo_.mom.data_moments,1),length(xparam));
             end
         else
-            df = nan(1,length(xparam));
+            df = nan(length(xparam),1);
         end
     end
 end
@@ -284,9 +284,9 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
                     df(:,jp) = dresiduals;
                 end
             else
-                df(:,jp) = dresiduals'*residuals + residuals'*dresiduals;
+                df(jp,1) = dresiduals'*residuals + residuals'*dresiduals;
                 if options_mom_.mom.penalized_estimator
-                    df(:,jp)=df(:,jp)+(dxparam1(:,jp))'/oo_.mom.prior.variance*(xparam-oo_.mom.prior.mean)+(xparam-oo_.mom.prior.mean)'/oo_.mom.prior.variance*(dxparam1(:,jp));
+                    df(jp,1)=df(jp,1)+(dxparam1(:,jp))'/oo_.mom.prior.variance*(xparam-oo_.mom.prior.mean)+(xparam-oo_.mom.prior.mean)'/oo_.mom.prior.variance*(dxparam1(:,jp));
                 end
             end
         end

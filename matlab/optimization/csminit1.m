@@ -38,7 +38,7 @@ function [fhat,xhat,fcount,retcode] = csminit1(fcn,x0,penalty,f0,g0,badg,H0,Verb
 % http://sims.princeton.edu/yftp/optimize/mfiles/csminit.m
 %
 % Copyright © 1993-2007 Christopher Sims
-% Copyright © 2008-2017 Dynare Team
+% Copyright © 2008-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -55,24 +55,14 @@ function [fhat,xhat,fcount,retcode] = csminit1(fcn,x0,penalty,f0,g0,badg,H0,Verb
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-%tailstr = ')';
-%for i=nargin-6:-1:1
-%   tailstr=[ ',P' num2str(i)  tailstr];
-%end
-%ANGLE = .03;
 ANGLE = .005;
-%THETA = .03;
 THETA = .3; %(0<THETA<.5) THETA near .5 makes long line searches, possibly fewer iterations.
 FCHANGE = 1000;
 MINLAMB = 1e-9;
-% fixed 7/15/94
-% MINDX = .0001;
-% MINDX = 1e-6;
 MINDFAC = .01;
 fcount=0;
 lambda=1;
 xhat=x0;
-f=f0;
 fhat=f0;
 g = g0;
 gnorm = norm(g);
@@ -84,34 +74,13 @@ if (gnorm < 1.e-12) && ~badg % put ~badg 8/4/94
 else
     % with badg true, we don't try to match rate of improvement to directional
     % derivative.  We're satisfied just to get some improvement in f.
-    %
-    %if(badg)
-    %   dx = -g*FCHANGE/(gnorm*gnorm);
-    %  dxnorm = norm(dx);
-    %  if dxnorm > 1e12
-    %     disp('Bad, small gradient problem.')
-    %     dx = dx*FCHANGE/dxnorm;
-    %   end
-    %else
-    % Gauss-Newton step;
-    %---------- Start of 7/19/93 mod ---------------
-    %[v d] = eig(H0);
-    %toc
-    %d=max(1e-10,abs(diag(d)));
-    %d=abs(diag(d));
-    %dx = -(v.*(ones(size(v,1),1)*d'))*(v'*g);
-    %      toc
     dx = -H0*g;
-    %      toc
     dxnorm = norm(dx);
     if dxnorm > 1e12
         disp_verbose('Near-singular H problem.',Verbose)
         dx = dx*FCHANGE/dxnorm;
     end
     dfhat = dx'*g0;
-    %end
-    %
-    %
     if ~badg
         % test for alignment of dx with gradient and fix if necessary
         a = -dfhat/(gnorm*dxnorm);
@@ -123,7 +92,6 @@ else
         end
     end
     disp_verbose(sprintf('Predicted improvement: %18.9f',-dfhat/2),Verbose)
-    %
     % Have OK dx, now adjust length of step (lambda) until min and
     % max improvement rate criteria are met.
     done=0;
@@ -132,7 +100,6 @@ else
     lambdaMax=inf;
     lambdaPeak=0;
     fPeak=f0;
-    lambdahat=0;
     while ~done
         if size(x0,2)>1
             dxtest=x0+dx'*lambda;
@@ -141,16 +108,10 @@ else
         end
         % home
         f = penalty_objective_function(dxtest,fcn,penalty,varargin{:});
-        %ARGLIST
-        %f = feval(fcn,dxtest,P1,P2,P3,P4,P5,P6,P7,P8,P9,P10,P11,P12,P13);
-        % f = feval(fcn,x0+dx*lambda,P1,P2,P3,P4,P5,P6,P7,P8);
         disp_verbose(sprintf('lambda = %10.5g; f = %20.7f',lambda,f ),Verbose)
-        %debug
-        %disp(sprintf('Improvement too great? f0-f: %g, criterion: %g',f0-f,-(1-THETA)*dfhat*lambda))
         if f<fhat
             fhat=f;
             xhat=dxtest;
-            lambdahat = lambda;
         end
         fcount=fcount+1;
         shrinkSignal = (~badg & (f0-f < max([-THETA*dfhat*lambda 0]))) | (badg & (f0-f) < 0) ;
@@ -162,7 +123,6 @@ else
                 while lambda/factor <= lambdaPeak
                     factor=factor^.6;
                 end
-                %if (abs(lambda)*(factor-1)*dxnorm < MINDX) || (abs(lambda)*(factor-1) < MINLAMB)
                 if abs(factor-1)<MINDFAC
                     if abs(lambda)<4
                         retcode=2;
@@ -197,7 +157,6 @@ else
             if shrink
                 shrink=0;
                 factor = factor^.6;
-                %if ( abs(lambda)*(factor-1)*dxnorm< MINDX ) || ( abs(lambda)*(factor-1)< MINLAMB)
                 if abs(factor-1)<MINDFAC
                     if abs(lambda)<4
                         retcode=4;

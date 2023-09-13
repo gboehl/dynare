@@ -81,8 +81,6 @@ if ischar(func0)
     func0 = str2func(func0);
 end
 
-% func0 = str2func([func2str(func0),'_hh']);
-% func0 = func0;
 [fval0,exit_flag,gg,hh]=penalty_objective_function(x,func0,penalty,varargin{:});
 if ~exit_flag
     disp_verbose('Bad initial parameter.',Verbose)
@@ -137,7 +135,6 @@ if Save_files
 end
 
 igrad=1;
-igibbs=1;
 inx=eye(nx);
 jit=0;
 if Save_files
@@ -152,9 +149,9 @@ while norm(gg)>gtol && check==0 && jit<nit
     penalty = fval0(icount);
     disp_verbose([' '],Verbose)
     disp_verbose(['Iteration ',num2str(icount)],Verbose)
-    [fval,x0,fc,retcode] = csminit1(func0,xparam1,penalty,fval0(icount),gg,0,H,Verbose,varargin{:});
+    [fval,x0] = csminit1(func0,xparam1,penalty,fval0(icount),gg,0,H,Verbose,varargin{:});
     if igrad
-        [fval1,x01,fc,retcode1] = csminit1(func0,x0,penalty,fval,gg,0,inx,Verbose,varargin{:});
+        [fval1,x01] = csminit1(func0,x0,penalty,fval,gg,0,inx,Verbose,varargin{:});
         if (fval-fval1)>1
             disp_verbose('Gradient step!!',Verbose)
         else
@@ -174,7 +171,7 @@ while norm(gg)>gtol && check==0 && jit<nit
         end
         iggx=eye(length(gg));
         iggx(ig_pos,ig_pos) = inv( hhx(ig_pos,ig_pos) );
-        [fvala,x0,fc,retcode] = csminit1(func0,x0,penalty,fval,ggx,0,iggx,Verbose,varargin{:});
+        [~,x0] = csminit1(func0,x0,penalty,fval,ggx,0,iggx,Verbose,varargin{:});
     end
     x0 = check_bounds(x0,bounds);
     [fvala, x0, ig] = mr_gstep(h1,x0,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon, parameter_names,varargin{:});
@@ -187,7 +184,7 @@ while norm(gg)>gtol && check==0 && jit<nit
     if (fval0(icount)-fval)<ftol && flagit==0
         disp_verbose('Try diagonal Hessian',Verbose)
         ihh=diag(1./(diag(hhg)));
-        [fval2,x0,fc,retcode2] = csminit1(func0,x0,penalty,fval,gg,0,ihh,Verbose,varargin{:});
+        [fval2,x0] = csminit1(func0,x0,penalty,fval,gg,0,ihh,Verbose,varargin{:});
         x0 = check_bounds(x0,bounds);
         if (fval-fval2)>=ftol
             disp_verbose('Diagonal Hessian successful',Verbose)
@@ -197,7 +194,7 @@ while norm(gg)>gtol && check==0 && jit<nit
     if (fval0(icount)-fval)<ftol && flagit==0
         disp_verbose('Try gradient direction',Verbose)
         ihh0=inx.*1.e-4;
-        [fval3,x0,fc,retcode3] = csminit1(func0,x0,penalty,fval,gg,0,ihh0,Verbose,varargin{:});
+        [fval3,x0] = csminit1(func0,x0,penalty,fval,gg,0,ihh0,Verbose,varargin{:});
         x0 = check_bounds(x0,bounds);
         if (fval-fval3)>=ftol
             disp_verbose('Gradient direction successful',Verbose)
@@ -211,7 +208,7 @@ while norm(gg)>gtol && check==0 && jit<nit
         disp_verbose('No further improvement is possible!',Verbose)
         check=1;
         if analytic_derivation
-            [fvalx,exit_flag,gg,hh]=penalty_objective_function(xparam1,func0,penalty,varargin{:});
+            [~,~,gg,hh]=penalty_objective_function(xparam1,func0,penalty,varargin{:});
             hhg=hh;
             H = inv(hh);
         else
@@ -285,7 +282,7 @@ while norm(gg)>gtol && check==0 && jit<nit
                 H = igg;
             end
         elseif analytic_derivation
-            [fvalx,exit_flag,gg,hh]=penalty_objective_function(xparam1,func0,penalty,varargin{:});
+            [~,~,gg,hh]=penalty_objective_function(xparam1,func0,penalty,varargin{:});
             hhg=hh;
             H = inv(hh);
         end
