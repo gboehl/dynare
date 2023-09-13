@@ -1,7 +1,7 @@
 function [dr,info] = k_order_pert(dr,M,options)
 % Compute decision rules using the k-order DLL from Dynare++
 
-% Copyright © 2009-2020 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -32,7 +32,8 @@ end
 
 try
     [dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,M,options);
-catch
+catch ME
+    disp(ME.message)
     info(1)=9;
     return
 end
