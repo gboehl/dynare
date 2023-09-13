@@ -1,5 +1,5 @@
-function CutSample(M_, options_, estim_params_)
-% function CutSample(M_, options_, estim_params_)
+function CutSample(M_, options_, dispString)
+% function CutSample(M_, options_, dispString)
 % Takes a subset from metropolis draws by storing the required information
 % like the first MH-file to be loaded and the first line in that file to be
 % loaded into the record structure saved on harddisk into the
@@ -8,7 +8,7 @@ function CutSample(M_, options_, estim_params_)
 % INPUTS
 %   M_               [structure]    Dynare model structure
 %   options_         [structure]    Dynare options structure
-%   estim_params_    [structure]    Parameter structure
+%   dispString       [string]       String to be displayed in the command window
 %
 % OUTPUTS
 %    none
@@ -32,8 +32,6 @@ function CutSample(M_, options_, estim_params_)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-dispString = 'Estimation::mcmc';
 
 % Get the path to the metropolis files.
 MetropolisFolder = CheckPath('metropolis',M_.dname);

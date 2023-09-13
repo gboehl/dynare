@@ -69,14 +69,14 @@ end
 parameter_names = bayestopt_.name;
 save([M_.dname filesep outputFolderName filesep M_.fname '_mean.mat'],'xparam1','hh','parameter_names','SIGMA');
 
-fprintf('Estimation::marginal density: I''m computing the posterior log marginal density (modified harmonic mean)... ');
+fprintf('marginal density: I''m computing the posterior log marginal density (modified harmonic mean)... ');
 try 
     % use this robust option to avoid inf/nan
     logdetSIGMA = 2*sum(log(diag(chol(SIGMA)))); 
 catch
     % in case SIGMA is not positive definite
     logdetSIGMA = nan;
-    fprintf('Estimation::marginal density: the covariance of MCMC draws is not positive definite. You may have too few MCMC draws.');
+    fprintf('marginal density: the covariance of MCMC draws is not positive definite. You may have too few MCMC draws.');
 end
 invSIGMA = hh;
 marginal = zeros(9,2);
@@ -111,18 +111,18 @@ while check_coverage
     if abs((marginal(9,2)-marginal(1,2))/marginal(9,2)) > options_.marginal_data_density.harmonic_mean.tolerance || isinf(marginal(1,2))
         fprintf('\n')
         if increase == 1
-            disp('Estimation::marginal density: The support of the weighting density function is not large enough...')
-            disp('Estimation::marginal density: I increase the variance of this distribution.')
+            disp('marginal density: The support of the weighting density function is not large enough...')
+            disp('marginal density: I increase the variance of this distribution.')
             increase = 1.2*increase;
             linee    = 0;
         else
-            disp('Estimation::marginal density: Let me try again.')
+            disp('marginal density: Let me try again.')
             increase = 1.2*increase;
             linee    = 0;
             if increase > 20
                 check_coverage = 0;
                 clear invSIGMA detSIGMA increase;
-                disp('Estimation::marginal density: There''s probably a problem with the modified harmonic mean estimator.')
+                disp('marginal density: There''s probably a problem with the modified harmonic mean estimator.')
             end
         end
     else

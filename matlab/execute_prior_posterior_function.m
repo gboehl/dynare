@@ -52,7 +52,7 @@ n_draws=options_.sampling_draws;
 if strcmpi(type,'posterior')
     % Get informations about the _posterior_draws files.
     % discard first mh_drop percent of the draws:
-    CutSample(M_, options_, estim_params_);
+    CutSample(M_, options_, 'prior_posterior_function');
     % initialize metropolis draws
     options_.sub_draws = n_draws; % set draws for sampling; changed value is not returned to base workspace
     [error_flag, ~, options_] = metropolis_draw(1, options_, estim_params_, M_);

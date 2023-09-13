@@ -410,9 +410,9 @@ if options_gsa.rmse
                 end
 
             end
-            prior_posterior_statistics('gsa',dataset_, dataset_info);
+            prior_posterior_statistics('gsa',dataset_, dataset_info,'gsa::mcmc');
             if options_.bayesian_irf
-                PosteriorIRF('gsa');
+                PosteriorIRF('gsa','gsa::mcmc');
             end
             options_gsa.load_rmse=0;
             %   else

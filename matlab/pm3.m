@@ -1,4 +1,4 @@
-function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryName,var_type)
+function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryName,var_type,dispString)
 
 % Computes, stores and plots the posterior moment statistics.
 %
@@ -19,6 +19,7 @@ function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryNa
 %                       where to read
 %  var_type     [string] suffix of the filename from which to load moment
 %                   matrix
+%  dispString   [string] string to be displayes in the command window
 
 % PARALLEL CONTEXT
 % See also the comment in posterior_sampler.m funtion.
@@ -42,8 +43,6 @@ function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryNa
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 global options_ M_ oo_
-
-dispString = 'Estimation::mcmc';
 
 nn = 3;
 MaxNumberOfPlotsPerFigure = nn^2; % must be square
