@@ -245,6 +245,11 @@ Copyright: 2005-2010 Pascal Getreuer
            2017 Dynare Team
 License: BSD-2-clause
 
+Files: examples/fs2000_data.m
+Copyright: 2000-2022 Frank Schorfheide
+Copyright: 2023 Dynare Team
+License: CC-BY-SA-4.0
+
 Files: doc/*.rst doc/*.tex doc/*.svg doc/*.pdf doc/*.bib
 Copyright: 1996-2022 Dynare Team
 License: GFDL-NIV-1.3+
