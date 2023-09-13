@@ -5754,7 +5754,7 @@ observed variables.
 
     |br| This command lists the name of observed endogenous variables
     for the estimation procedure. These variables must be available in
-    the data file (see :ref:`estimation_cmd <estim-comm>`).
+    the data file (see :ref:`estimation <estim-comm>`).
 
     Alternatively, this command is also used in conjunction with the
     ``partial_information`` option of ``stoch_simul``, for declaring
