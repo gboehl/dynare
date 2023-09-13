@@ -385,7 +385,7 @@ korder_lib = static_library('korder', korder_src,
 
 korder_mex_kwargs = mex_kwargs + { 'include_directories' : mex_kwargs.get('include_directories') + korder_incdir}
 shared_module('gensylv', 'mex/sources/gensylv/gensylv.cc', kwargs : korder_mex_kwargs, link_with : korder_lib)
-shared_module('k_order_perturbation', 'mex/sources/gensylv/gensylv.cc', kwargs : korder_mex_kwargs, link_with : korder_lib)
+shared_module('k_order_perturbation', 'mex/sources/k_order_perturbation/k_order_perturbation.cc', kwargs : korder_mex_kwargs, link_with : korder_lib)
 k_order_welfare_src = [ 'mex/sources/k_order_welfare/k_order_welfare.cc',
                         'mex/sources/k_order_welfare/approximation_welfare.cc',
                         'mex/sources/k_order_welfare/k_ord_objective.cc',
