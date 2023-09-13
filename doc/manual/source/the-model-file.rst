@@ -11399,6 +11399,14 @@ Optimal Simple Rules (OSR)
         future release of Dynare. Use ``optim`` instead to set
         optimizer-specific values. Default: ``1e-7``.
 
+    .. option:: analytic_derivation
+
+       Triggers estimation with analytic gradient of the objective function.
+
+    .. option:: analytic_derivation_mode = INTEGER
+
+        See :opt:analytic_derivation_mode.
+
     .. option:: silent_optimizer
 
         See :opt:`silent_optimizer`.

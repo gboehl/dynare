@@ -10,6 +10,12 @@ kappa =  0.18;
 alpha =  0.48;
 sigma = -0.06;
 
+gammarr = 0;
+gammax0 = 0.2;
+gammac0 = 1.5;
+gamma_y_ = 8;
+gamma_inf_ = 3;
+
 
 model(linear);
 y  = delta * y(-1)  + (1-delta)*y(+1)+sigma *(r - inflation(+1)) + y_; 
@@ -28,14 +34,11 @@ end;
 optim_weights;
 inflation 1;
 y 1;
+y,inflation 0.1;
 end;
 
 osr_params gammax0 gammac0 gamma_y_ gamma_inf_;
 
-gammarr = 0;
-gammax0 = 0.2;
-gammac0 = 1.5;
-gamma_y_ = 8;
-gamma_inf_ = 3;
-
 osr;
+osr(analytic_derivation,opt_algo=4);
+osr(analytic_derivation,opt_algo=1,optim=('DerivativeCheck','on','FiniteDifferenceType','central'));
