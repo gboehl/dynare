@@ -590,7 +590,7 @@ fprintf('\n==== Method of Moments Estimation (%s) Completed ====\n\n',options_mo
 %reset warning state
 warning_config;
 
-if isoctave && isfield(options_, 'prior_restrictions') && ...
+if isoctave && isfield(options_mom_, 'prior_restrictions') && ...
    isfield(options_mom_.prior_restrictions, 'routine')
     % Octave crashes if it tries to save function handles (to the _results.mat file)
     % See https://savannah.gnu.org/bugs/?43215

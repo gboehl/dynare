@@ -38,7 +38,7 @@ function W_opt = optimal_weighting_matrix(m_data, moments, q_lag)
 % -------------------------------------------------------------------------
 % Author(s): 
 % o Willi Mutschler (willi@mutschler.eu)
-% o Johannes Pfeifer (jpfeifer@uni-koeln.de)
+% o Johannes Pfeifer (johannes.pfeifer@unibw.de)
 % =========================================================================
 
 % Initialize
