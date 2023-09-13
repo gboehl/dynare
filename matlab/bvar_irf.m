@@ -81,8 +81,8 @@ for draw=1:options_.bvar_replic
 
     % Build the IRFs...
     lags_data = zeros(ny,ny*nlags) ;
-    sampled_irfs(:,:,1,draw) = Sigma_lower_chol ;
-    lags_data(:,1:ny) = Sigma_lower_chol ;
+    sampled_irfs(:,:,1,draw) = StructuralMat ;
+    lags_data(:,1:ny) = StructuralMat ;
     for t=2:options_.irf
         sampled_irfs(:,:,t,draw) = lags_data(:,:)*Phi(1:ny*nlags,:) ;
         lags_data(:,ny+1:end) = lags_data(:,1:end-ny) ;
