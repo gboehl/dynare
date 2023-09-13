@@ -20,7 +20,7 @@ function oo_=display_estimation_results_table(xparam1,stdh,M_,options_,estim_par
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright © 2014-2018 Dynare Team
+% Copyright © 2014-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -177,11 +177,11 @@ if any(xparam1(1:nvx+nvn)<0)
     warning(sprintf('Some estimated standard deviations are negative.\n         Dynare internally works with variances so that the sign does not matter.\n         Nevertheless, it is recommended to impose either prior restrictions (Bayesian Estimation)\n         or a lower bound (ML) to assure positive values.'))
 end
 
-OutputDirectoryName = CheckPath('Output',M_.dname);
+latexDirectoryName = CheckPath('latex',M_.dname);
 
 if any(bayestopt_.pshape > 0) && options_.TeX %% Bayesian estimation (posterior mode) Latex output
     if np
-        filename = [OutputDirectoryName '/' M_.fname '_Posterior_Mode_1.tex'];
+        filename = [latexDirectoryName '/' M_.fname '_Posterior_Mode_1.tex'];
         fidTeX = fopen(filename,'w');
         TeXBegin_Bayesian(fidTeX,1,'parameters')
         ip = nvx+nvn+ncx+ncn+1;
@@ -198,7 +198,7 @@ if any(bayestopt_.pshape > 0) && options_.TeX %% Bayesian estimation (posterior 
         TeXEnd(fidTeX)
     end
     if nvx
-        TeXfile = [OutputDirectoryName '/' M_.fname '_Posterior_Mode_2.tex'];
+        TeXfile = [latexDirectoryName '/' M_.fname '_Posterior_Mode_2.tex'];
         fidTeX = fopen(TeXfile,'w');
         TeXBegin_Bayesian(fidTeX,2,'standard deviation of structural shocks')
         ip = 1;
@@ -216,7 +216,7 @@ if any(bayestopt_.pshape > 0) && options_.TeX %% Bayesian estimation (posterior 
         TeXEnd(fidTeX)
     end
     if nvn
-        TeXfile = [OutputDirectoryName '/' M_.fname '_Posterior_Mode_3.tex'];
+        TeXfile = [latexDirectoryName '/' M_.fname '_Posterior_Mode_3.tex'];
         fidTeX  = fopen(TeXfile,'w');
         TeXBegin_Bayesian(fidTeX,3,'standard deviation of measurement errors')
         ip = nvx+1;
@@ -234,7 +234,7 @@ if any(bayestopt_.pshape > 0) && options_.TeX %% Bayesian estimation (posterior 
         TeXEnd(fidTeX)
     end
     if ncx
-        TeXfile = [OutputDirectoryName '/' M_.fname '_Posterior_Mode_4.tex'];
+        TeXfile = [latexDirectoryName '/' M_.fname '_Posterior_Mode_4.tex'];
         fidTeX = fopen(TeXfile,'w');
         TeXBegin_Bayesian(fidTeX,4,'correlation of structural shocks')
         ip = nvx+nvn+1;
@@ -253,7 +253,7 @@ if any(bayestopt_.pshape > 0) && options_.TeX %% Bayesian estimation (posterior 
         TeXEnd(fidTeX)
     end
     if ncn
-        TeXfile = [OutputDirectoryName '/' M_.fname '_Posterior_Mode_5.tex'];
+        TeXfile = [latexDirectoryName '/' M_.fname '_Posterior_Mode_5.tex'];
         fidTeX = fopen(TeXfile,'w');
         TeXBegin_Bayesian(fidTeX,5,'correlation of measurement errors')
         ip = nvx+nvn+ncx+1;
@@ -273,7 +273,7 @@ if any(bayestopt_.pshape > 0) && options_.TeX %% Bayesian estimation (posterior 
     end
 elseif all(bayestopt_.pshape == 0) && options_.TeX %% MLE and GMM Latex output
     if np
-        filename = [OutputDirectoryName '/' M_.fname '_' LaTeXtitle '_Mode_1.tex'];
+        filename = [latexDirectoryName '/' M_.fname '_' LaTeXtitle '_Mode_1.tex'];
         fidTeX = fopen(filename, 'w');
         TeXBegin_ML(fidTeX, 1, 'parameters', table_title, LaTeXtitle)
         ip = nvx+nvn+ncx+ncn+1;
@@ -288,7 +288,7 @@ elseif all(bayestopt_.pshape == 0) && options_.TeX %% MLE and GMM Latex output
         TeXEnd(fidTeX)
     end
     if nvx
-        filename = [OutputDirectoryName '/' M_.fname '_' LaTeXtitle '_Mode_2.tex'];
+        filename = [latexDirectoryName '/' M_.fname '_' LaTeXtitle '_Mode_2.tex'];
         fidTeX = fopen(filename, 'w');
         TeXBegin_ML(fidTeX, 2, 'standard deviation of structural shocks', table_title, LaTeXtitle)
         ip = 1;
@@ -304,7 +304,7 @@ elseif all(bayestopt_.pshape == 0) && options_.TeX %% MLE and GMM Latex output
         TeXEnd(fidTeX)
     end
     if nvn
-        filename = [OutputDirectoryName '/' M_.fname '_' LaTeXtitle '_Mode_3.tex'];
+        filename = [latexDirectoryName '/' M_.fname '_' LaTeXtitle '_Mode_3.tex'];
         fidTeX = fopen(filename, 'w');
         TeXBegin_ML(fidTeX, 3, 'standard deviation of measurement errors', table_title, LaTeXtitle)
         ip = nvx+1;
@@ -320,7 +320,7 @@ elseif all(bayestopt_.pshape == 0) && options_.TeX %% MLE and GMM Latex output
         TeXEnd(fidTeX)
     end
     if ncx
-        filename = [OutputDirectoryName '/' M_.fname '_' LaTeXtitle '_Mode_4.tex'];
+        filename = [latexDirectoryName '/' M_.fname '_' LaTeXtitle '_Mode_4.tex'];
         fidTeX = fopen(filename, 'w');
         TeXBegin_ML(fidTeX, 4, 'correlation of structural shocks', table_title,LaTeXtitle)
         ip = nvx+nvn+1;
@@ -337,7 +337,7 @@ elseif all(bayestopt_.pshape == 0) && options_.TeX %% MLE and GMM Latex output
         TeXEnd(fidTeX)
     end
     if ncn
-        filename = [OutputDirectoryName '/' M_.fname '_' LaTeXtitle '_Mode_5.tex'];
+        filename = [latexDirectoryName '/' M_.fname '_' LaTeXtitle '_Mode_5.tex'];
         fidTeX = fopen(filename, 'w');
         TeXBegin_ML(fidTeX, 5, 'correlation of measurement errors', table_title, LaTeXtitle)
         ip = nvx+nvn+ncx+1;

@@ -1,5 +1,5 @@
-function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_)
-% function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_)
+function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_, outputFolderName)
+% function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_, outputFolderName)
 % Computes the marginal density
 %
 % INPUTS
@@ -7,6 +7,7 @@ function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bay
 %   estim_params_    [structure]    Dynare estimation parameter structure
 %   M_               [structure]    Dynare model structure
 %   oo_              [structure]    Dynare results structure
+%   outputFolderName [string]       name of folder with results
 %
 % OUTPUTS
 %   marginal:        [double]       marginal density (modified harmonic mean)
@@ -31,7 +32,9 @@ function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bay
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
+if nargin < 6
+    outputFolderName = 'Output';
+end
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
 ModelName = M_.fname;
@@ -47,8 +50,8 @@ TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
 TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
 TODROP = floor(options_.mh_drop*TotalNumberOfMhDraws);
 
-fprintf('Estimation::marginal density: I''m computing the posterior mean and covariance... ');
-[posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix(bayestopt_,M_.fname,M_.dname);
+fprintf('marginal density: I''m computing the posterior mean and covariance... ');
+[posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix(bayestopt_,M_.fname,M_.dname,outputFolderName);
 
 MU = transpose(posterior_mean);
 SIGMA = posterior_covariance;
@@ -64,7 +67,7 @@ end
 % (usefull if the user wants to perform some computations using
 % the posterior mean instead of the posterior mode ==> ).
 parameter_names = bayestopt_.name;
-save([M_.dname filesep 'Output' filesep M_.fname '_mean.mat'],'xparam1','hh','parameter_names','SIGMA');
+save([M_.dname filesep outputFolderName filesep M_.fname '_mean.mat'],'xparam1','hh','parameter_names','SIGMA');
 
 fprintf('Estimation::marginal density: I''m computing the posterior log marginal density (modified harmonic mean)... ');
 try 

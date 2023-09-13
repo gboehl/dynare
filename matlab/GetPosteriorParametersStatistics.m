@@ -46,7 +46,7 @@ ncn     = estim_params_.ncn;
 np      = estim_params_.np ;
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
-OutputFolder = CheckPath('Output',M_.dname);
+latexFolder = CheckPath('latex',M_.dname);
 FileName = M_.fname;
 
 record=load_last_mh_history_file(MetropolisFolder,FileName);
@@ -86,7 +86,7 @@ end
 if np
     type = 'parameters';
     if TeX
-        fid = TeXBegin(OutputFolder, M_.fname, 1, type);
+        fid = TeXBegin(latexFolder, M_.fname, 1, type);
     end
     skipline()
     disp(type)
@@ -129,7 +129,7 @@ end
 if nvx
     type = 'shocks_std';
     if TeX
-        fid = TeXBegin(OutputFolder, FileName,2, 'standard deviation of structural shocks');
+        fid = TeXBegin(latexFolder, FileName,2, 'standard deviation of structural shocks');
     end
     ip = 1;
     skipline()
@@ -173,7 +173,7 @@ end
 if nvn
     type = 'measurement_errors_std';
     if TeX
-        fid = TeXBegin(OutputFolder, FileName, 3, 'standard deviation of measurement errors');
+        fid = TeXBegin(latexFolder, FileName, 3, 'standard deviation of measurement errors');
     end
     skipline()
     disp('standard deviation of measurement errors')
@@ -212,7 +212,7 @@ end
 if ncx
     type = 'shocks_corr';
     if TeX
-        fid = TeXBegin(OutputFolder,FileName,4,'correlation of structural shocks');
+        fid = TeXBegin(latexFolder,FileName,4,'correlation of structural shocks');
     end
     skipline()
     disp('correlation of shocks')
@@ -262,7 +262,7 @@ end
 if ncn
     type = 'measurement_errors_corr';
     if TeX
-        fid = TeXBegin(OutputFolder, FileName, 5, 'correlation of measurement errors');
+        fid = TeXBegin(latexFolder, FileName, 5, 'correlation of measurement errors');
     end
     skipline()
     disp('correlation of measurement errors')
