@@ -60,7 +60,7 @@ nblck = size(record.LastParameters,1);
 clear record;
 
 % Get all the posterior draws:
-PosteriorDraws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck, blck);
+PosteriorDraws = GetAllPosteriorDraws(M_.dname, M_.fname, column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck, blck);
 
 % Compute the autocorrelation function:
 [autocov,autocor] = sample_autocovariance(PosteriorDraws,options_.mh_autocorrelation_function_size);

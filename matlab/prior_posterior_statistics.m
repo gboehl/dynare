@@ -218,9 +218,9 @@ if strcmpi(type,'posterior')
     mh_nblck = options_.mh_nblck;
     if B==NumberOfDraws*mh_nblck
         % we load all retained MH runs !
-        logpost=GetAllPosteriorDraws(0, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck);
+        logpost=GetAllPosteriorDraws(M_.dname, M_.fname, 0, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck);
         for column=1:npar
-            x(:,column) = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck);
+            x(:,column) = GetAllPosteriorDraws(M_.dname, M_.fname, column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck);
         end
     else
         logpost=NaN(B,1);
