@@ -1,5 +1,5 @@
-function bvar_density(maxnlags)
-% function bvar_density(maxnlags)
+function density(maxnlags)
+% function density(maxnlags)
 % computes the density of a bayesian var
 %
 % INPUTS
@@ -12,7 +12,7 @@ function bvar_density(maxnlags)
 %    none
 
 % Copyright © 2003-2007 Christopher Sims
-% Copyright © 2007-2017 Dynare Team
+% Copyright © 2007-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,7 @@ global oo_
 oo_.bvar.log_marginal_data_density=NaN(maxnlags,1);
 
 for nlags = 1:maxnlags
-    [ny, nx, posterior, prior] = bvar_toolbox(nlags);
+    [ny, nx, posterior, prior] = bvar.toolbox(nlags);
     oo_.bvar.posterior{nlags}=posterior;
     oo_.bvar.prior{nlags}=prior;
 

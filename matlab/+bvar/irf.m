@@ -1,5 +1,6 @@
-function bvar_irf(nlags,identification)
-% builds IRFs for a bvar model
+function irf(nlags,identification)
+% function irf(nlags,identification)
+% builds IRFs for a BVAR model
 %
 % INPUTS
 %    nlags            [integer]     number of lags for the bvar
@@ -11,7 +12,7 @@ function bvar_irf(nlags,identification)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2007-2017 Dynare Team
+% Copyright © 2007-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +35,7 @@ if nargin==1
     identification = 'Cholesky';
 end
 
-[ny, nx, posterior, prior] = bvar_toolbox(nlags);
+[ny, nx, posterior, prior] = bvar.toolbox(nlags);
 
 S_inv_upper_chol = chol(inv(posterior.S));
 
@@ -77,12 +78,14 @@ for draw=1:options_.bvar_replic
         StructuralMat = Sigma_lower_chol;
     elseif strcmpi(identification,'SquareRoot')
         StructuralMat = sqrtm(Sigma);
+    else
+        error('Unknown identification option. Valid choices are ''Cholesky'' and ''SquareRoot''.')
     end
 
     % Build the IRFs...
     lags_data = zeros(ny,ny*nlags) ;
-    sampled_irfs(:,:,1,draw) = Sigma_lower_chol ;
-    lags_data(:,1:ny) = Sigma_lower_chol ;
+    sampled_irfs(:,:,1,draw) = StructuralMat ;
+    lags_data(:,1:ny) = StructuralMat ;
     for t=2:options_.irf
         sampled_irfs(:,:,t,draw) = lags_data(:,:)*Phi(1:ny*nlags,:) ;
         lags_data(:,ny+1:end) = lags_data(:,1:end-ny) ;
@@ -137,10 +140,10 @@ for i=1:ny
     shock_name = options_.varobs{i};
     for j=1:ny
         variable_name = options_.varobs{j};
-        eval(['oo_.bvar.irf.Mean.' variable_name '.' shock_name ' = posterior_mean_irfs(' int2str(j) ',' int2str(i) ',:);'])
-        eval(['oo_.bvar.irf.Median.' variable_name '.' shock_name ' = posterior_median_irfs(' int2str(j) ',' int2str(i) ',:);'])
-        eval(['oo_.bvar.irf.Var.' variable_name '.' shock_name ' = posterior_variance_irfs(' int2str(j) ',' int2str(i) ',:);'])
-        eval(['oo_.bvar.irf.Upper_bound.' variable_name '.' shock_name ' = posterior_up_conf_irfs(' int2str(j) ',' int2str(i) ',:);'])
-        eval(['oo_.bvar.irf.Lower_bound.' variable_name '.' shock_name ' = posterior_down_conf_irfs(' int2str(j) ',' int2str(i) ',:);'])
+        oo_.bvar.irf.Mean.(variable_name).(shock_name) = posterior_mean_irfs(j,i,:);
+        oo_.bvar.irf.Median.(variable_name).(shock_name) = posterior_median_irfs(j,i,:);
+        oo_.bvar.irf.Var.(variable_name).(shock_name) = posterior_variance_irfs(j,i,:);
+        oo_.bvar.irf.Upper_bound.(variable_name).(shock_name) = posterior_up_conf_irfs(j,i,:);
+        oo_.bvar.irf.Lower_bound.(variable_name).(shock_name) = posterior_down_conf_irfs(j,i,:);
     end
 end
