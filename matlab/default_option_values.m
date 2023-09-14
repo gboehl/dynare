@@ -444,6 +444,7 @@ options_.prior_restrictions.status = 0;
 options_.prior_restrictions.routine = [];
 
 options_.mode_compute = 4;
+options_.additional_optimizer_steps= [];
 options_.mode_file = '';
 options_.moments_varendo = false;
 options_.nk = 1;

@@ -6701,6 +6701,13 @@ observed variables.
 
        |br| Default value is ``4``.
 
+    .. option:: additional_optimizer_steps = [INTEGER]
+                additional_optimizer_steps = [INTEGER1:INTEGER2]
+                additional_optimizer_steps = [INTEGER1 INTEGER2 ...]
+
+        Vector of additional minimization algorithms run after
+        ``mode_compute``. Default: no additional optimization iterations.
+
     .. option:: silent_optimizer
 
        Instructs Dynare to run mode computing/optimization silently
