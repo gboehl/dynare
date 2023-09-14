@@ -32,7 +32,7 @@ function z = display_static_residuals(M_, options_, oo_,options_resid_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-non_zero = (isfield(options_resid_, 'non_zero') && options_resid_.non_zero);
+non_zero = (nargin > 3 && isfield(options_resid_, 'non_zero') && options_resid_.non_zero);
 
 tags  = M_.equations_tags;
 istag = 0;
