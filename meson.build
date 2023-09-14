@@ -435,7 +435,6 @@ ms_sbvar_src = [ 'contrib/ms-sbvar/utilities_dw/arrays/dw_array.c',
                  'contrib/ms-sbvar/switch_dw/switching/dw_metropolis_theta.c',
                  'contrib/ms-sbvar/switch_dw/state_space/sbvar/VARbase.c',
                  'contrib/ms-sbvar/switch_dw/state_space/sbvar/VARio.c',
-                 'mex/sources/ms-sbvar/mex_top_level.cc',
                  'mex/sources/ms-sbvar/modify_for_mex.cc' ]
 ms_sbvar_defs = [ '-DSTRUCTURED_COLUMN_MAJOR' ]
 ms_sbvar_incdir = include_directories('contrib/ms-sbvar/utilities_dw/include', 'contrib/ms-sbvar/switch_dw/switching', 'mex/sources/ms-sbvar')
@@ -445,12 +444,16 @@ ms_sbvar_lib = static_library('ms_sbvar', ms_sbvar_src,
                                                                  'include_directories' : static_library_kwargs.get('include_directories') + ms_sbvar_incdir },
                               dependencies : [ blas_dep, lapack_dep, gsl_dep, matio_dep, ut_dep ])
 
+# NB: in the following, mex_top_level.cc is put as extra source and not in ms_sbvar_lib,
+# to ensure that mexFunction() is present in the MEX
 mex_ms_sbvar_kwargs = mex_kwargs + { 'c_args' : mex_kwargs.get('c_args') + ms_sbvar_defs,
                                      'cpp_args' : mex_kwargs.get('cpp_args') + ms_sbvar_defs,
-                                     'include_directories' : mex_kwargs.get('include_directories') + ms_sbvar_incdir }
+                                     'include_directories' : mex_kwargs.get('include_directories') + ms_sbvar_incdir,
+                                     'link_with' : ms_sbvar_lib,
+                                     'sources' : 'mex/sources/ms-sbvar/mex_top_level.cc' }
 ms_sbvar_create_init_file_src = [ 'contrib/ms-sbvar/switch_dw/state_space/sbvar/create_init_file.c',
                                   'contrib/ms-sbvar/switch_dw/state_space/sbvar/VARio_matlab.c' ]
-shared_module('ms_sbvar_create_init_file', ms_sbvar_create_init_file_src, kwargs : mex_ms_sbvar_kwargs, link_with : ms_sbvar_lib, dependencies : matio_dep)
+shared_module('ms_sbvar_create_init_file', ms_sbvar_create_init_file_src, kwargs : mex_ms_sbvar_kwargs, dependencies : matio_dep)
 ms_sbvar_command_line_src = [ 'contrib/ms-sbvar/switch_dw/switching/dw_switch_opt.c',
                               'contrib/ms-sbvar/switch_dw/switching/dw_mdd_switch.c',
                               'contrib/ms-sbvar/switch_dw/state_space/sbvar/dw_sbvar_command_line.c',
@@ -462,7 +465,7 @@ ms_sbvar_command_line_src = [ 'contrib/ms-sbvar/switch_dw/switching/dw_switch_op
                               'contrib/ms-sbvar/switch_dw/state_space/sbvar/sbvar_variance_decomposition.c',
                               'contrib/ms-sbvar/switch_dw/state_space/sbvar/sbvar_impulse_responses.c',
                               'contrib/ms-sbvar/switch_dw/state_space/sbvar/dw_csminwel.c' ]
-shared_module('ms_sbvar_command_line', ms_sbvar_command_line_src, kwargs : mex_ms_sbvar_kwargs, link_with : ms_sbvar_lib, dependencies : [ gsl_dep, matio_dep ])
+shared_module('ms_sbvar_command_line', ms_sbvar_command_line_src, kwargs : mex_ms_sbvar_kwargs, dependencies : [ gsl_dep, matio_dep ])
 
 
 ### Integration tests
