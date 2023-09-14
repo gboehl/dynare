@@ -47,14 +47,17 @@ function myoutput=prior_posterior_statistics_core(myinputs,fpar,B,whoiam, ThisMa
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global options_ oo_ M_ bayestopt_ estim_params_
-
 if nargin<4
     whoiam=0;
 end
 
 % Reshape 'myinputs' for local computation.
 % In order to avoid confusion in the name space, the instruction struct2local(myinputs) is replaced by:
+M_=myinputs.M_;
+oo_=myinputs.oo_;
+options_=myinputs.options_;
+estim_params_=myinputs.estim_params_;
+bayestopt_=myinputs.bayestopt_;
 
 type=myinputs.type;
 run_smoother=myinputs.run_smoother;

@@ -1,4 +1,5 @@
 function myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
+%myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
 %   Generates and stores Posterior IRFs
 %   PARALLEL CONTEXT
 %   This function perfoms in parallel execution a portion of the PosteriorIRF.m code.
@@ -40,15 +41,20 @@ function myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-
-global options_ estim_params_ oo_ M_ bayestopt_ dataset_ dataset_info
-
 if nargin<4
     whoiam=0;
 end
 
 % Reshape 'myinputs' for local computation.
 % In order to avoid confusion in the name space, the instruction struct2local(myinputs) is replaced by:
+
+options_= myinputs.options_;
+estim_params_= myinputs.estim_params_;
+M_= myinputs.M_;
+oo_= myinputs.oo_;
+bayestopt_= myinputs.bayestopt_;
+dataset_= myinputs.dataset_;
+dataset_info= myinputs.dataset_info;
 
 IRUN = myinputs.IRUN;
 irun =myinputs.irun;
@@ -78,13 +84,10 @@ if options_.dsge_var
     bounds = prior_bounds(bayestopt_,options_.prior_trunc);
 end
 
-
 if whoiam
     Parallel=myinputs.Parallel;
 end
 
-
-% MhDirectoryName = myinputs.MhDirectoryName;
 if strcmpi(type,'posterior')
     MhDirectoryName = CheckPath('metropolis',M_.dname);
 elseif strcmpi(type,'gsa')
@@ -115,11 +118,9 @@ else
     h = dyn_waitbar(prct0,'Bayesian (prior) IRFs...');
 end
 
-
 OutputFileName_bvardsge = {};
 OutputFileName_dsge = {};
 OutputFileName_param = {};
-
 
 fpar = fpar-1;
 fpar0=fpar;

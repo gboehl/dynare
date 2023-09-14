@@ -1,17 +1,19 @@
-function prior_posterior_statistics(type,dataset,dataset_info,dispString)
-% function prior_posterior_statistics(type,dataset,dataset_info,dispString)
+function oo_=prior_posterior_statistics(type,dataset_,dataset_info,M_,oo_,options_,estim_params_,bayestopt_,dispString)
+% oo_=prior_posterior_statistics(type,dataset_,dataset_info,M_,oo_,options_,estim_params_,bayestopt_,dispString))
 % Computes Monte Carlo filter smoother and forecasts
 %
 % INPUTS
-%    type:         posterior
-%                  prior
-%                  gsa
-%    dataset:      data structure
-%    dataset_info: dataset structure
-%    dispString:   string to display in the command window
-%
+%    type           [string]        posterior, prior, or gsa
+%   o dataset_      [structure]     storing the dataset
+%   o dataset_info  [structure]     Various information about the dataset
+%   o M_            [structure]     storing the model information
+%   o oo_           [structure]     storing the results
+%   o options_      [structure]     storing the options
+%   o estim_params_ [structure]     storing information about estimated parameters
+%   o bayestopt_    [structure]     storing information about priors
+%    dispString:   	[string] 		display info in the command window
 % OUTPUTS
-%    none
+%    oo_:           [structure]     storing the results
 %
 % SPECIAL REQUIREMENTS
 %    none
@@ -37,36 +39,23 @@ function prior_posterior_statistics(type,dataset,dataset_info,dispString)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if nargin < 4
+if nargin < 9
     dispString = 'prior_posterior_statistics';
 end
-
-global options_ estim_params_ oo_ M_ bayestopt_
-
 localVars=[];
 
-Y = transpose(dataset.data);
-gend = dataset.nobs;
-data_index = dataset_info.missing.aindex;
-missing_value = dataset_info.missing.state;
-mean_varobs = dataset_info.descriptive.mean;
+Y = transpose(dataset_.data);
+gend = dataset_.nobs;
 
-
-nvx  = estim_params_.nvx;
 nvn  = estim_params_.nvn;
-ncx  = estim_params_.ncx;
-ncn  = estim_params_.ncn;
-np   = estim_params_.np ;
-npar = nvx+nvn+ncx+ncn+np;
+npar = estim_params_.nvx+nvn+estim_params_.ncx+estim_params_.ncn+estim_params_.np;
 naK = length(options_.filter_step_ahead);
 
 MaxNumberOfBytes=options_.MaxNumberOfBytes;
 endo_nbr=M_.endo_nbr;
 exo_nbr=M_.exo_nbr;
 meas_err_nbr=length(M_.Correlation_matrix_ME);
-iendo = 1:endo_nbr;
 horizon = options_.forecast;
-IdObs    = bayestopt_.mfys;
 if horizon
     i_last_obs = gend+(1-M_.maximum_endo_lag:0);
 end
@@ -130,13 +119,6 @@ varlist = options_.varlist;
 if isempty(varlist)
     varlist = sort(M_.endo_names(1:M_.orig_endo_nbr));
 end
-nvar = length(varlist);
-SelecVariables = [];
-for i=1:nvar
-    if ~isempty(strmatch(varlist{i}, M_.endo_names, 'exact'))
-        SelecVariables = [SelecVariables; strmatch(varlist{i}, M_.endo_names, 'exact')];
-    end
-end
 
 n_variables_to_fill=13;
 
@@ -171,17 +153,17 @@ localVars.filter_covariance=filter_covariance;
 localVars.smoothed_state_uncertainty=smoothed_state_uncertainty;
 localVars.gend=gend;
 localVars.Y=Y;
-localVars.data_index=data_index;
-localVars.missing_value=missing_value;
+localVars.data_index=dataset_info.missing.aindex;
+localVars.missing_value=dataset_info.missing.state;
 localVars.varobs=options_.varobs;
-localVars.mean_varobs=mean_varobs;
+localVars.mean_varobs=dataset_info.descriptive.mean;
 localVars.irun=irun;
 localVars.endo_nbr=endo_nbr;
 localVars.nvn=nvn;
 localVars.naK=naK;
 localVars.horizon=horizon;
-localVars.iendo=iendo;
-localVars.IdObs=IdObs;
+localVars.iendo=1:endo_nbr;
+localVars.IdObs=bayestopt_.mfys;
 if horizon
     localVars.i_last_obs=i_last_obs;
     localVars.MAX_nforc1=MAX_nforc1;
@@ -211,6 +193,13 @@ localVars.MAX_nruns=MAX_nruns;
 localVars.MAX_momentsno = MAX_momentsno;
 localVars.ifil=ifil;
 localVars.DirectoryName = DirectoryName;
+
+localVars.M_=M_;
+localVars.oo_=oo_;
+localVars.options_=options_;
+localVars.estim_params_=estim_params_;
+localVars.bayestopt_=bayestopt_;
+
 
 if strcmpi(type,'posterior')
     record=load_last_mh_history_file(DirectoryName, M_.fname);
@@ -290,11 +279,7 @@ else
         end
     end
     localVars.ifil = ifil;
-    globalVars = struct('M_',M_, ...
-                        'options_', options_, ...
-                        'bayestopt_', bayestopt_, ...
-                        'estim_params_', estim_params_, ...
-                        'oo_', oo_);
+    globalVars = [];
     % which files have to be copied to run remotely
     NamFileInput(1,:) = {'',[M_.fname '.static.m']};
     NamFileInput(2,:) = {'',[M_.fname '.dynamic.m']};
@@ -330,28 +315,28 @@ if ~isnumeric(options_.parallel)
 end
 
 if options_.smoother
-    pm3(endo_nbr,gend,ifil(1),B,'Smoothed variables',...
-        '',varlist, M_.endo_names_tex,M_.endo_names,...
+    oo_=pm3(M_,options_,oo_,endo_nbr,gend,ifil(1),B,'Smoothed variables',...
+        varlist, M_.endo_names_tex,M_.endo_names,...
         varlist,'SmoothedVariables',DirectoryName,'_smooth',dispString);
-    pm3(exo_nbr,gend,ifil(2),B,'Smoothed shocks',...
-        '',M_.exo_names,M_.exo_names_tex,M_.exo_names,...
+    oo_=pm3(M_,options_,oo_,exo_nbr,gend,ifil(2),B,'Smoothed shocks',...
+        M_.exo_names,M_.exo_names_tex,M_.exo_names,...
         M_.exo_names,'SmoothedShocks',DirectoryName,'_inno',dispString);
-    pm3(endo_nbr,1,ifil(9),B,'Trend_coefficients',...
-        '',varlist,M_.endo_names_tex,M_.endo_names,...
+    oo_=pm3(M_,options_,oo_,endo_nbr,1,ifil(9),B,'Trend_coefficients',...
+        varlist,M_.endo_names_tex,M_.endo_names,...
         varlist,'TrendCoeff',DirectoryName,'_trend_coeff',dispString);
-    pm3(endo_nbr,gend,ifil(10),B,'Smoothed constant',...
-        '',varlist,M_.endo_names_tex,M_.endo_names,...
+    oo_=pm3(M_,options_,oo_,endo_nbr,gend,ifil(10),B,'Smoothed constant',...
+        varlist,M_.endo_names_tex,M_.endo_names,...
         varlist,'Constant',DirectoryName,'_smoothed_constant',dispString);
-    pm3(endo_nbr,gend,ifil(11),B,'Smoothed trend',...
-        '',varlist,M_.endo_names_tex,M_.endo_names,...
+    oo_=pm3(M_,options_,oo_,endo_nbr,gend,ifil(11),B,'Smoothed trend',...
+        varlist,M_.endo_names_tex,M_.endo_names,...
         varlist,'Trend',DirectoryName,'_smoothed_trend',dispString);
-    pm3(endo_nbr,gend,ifil(1),B,'Updated Variables',...
-        '',varlist,M_.endo_names_tex,M_.endo_names,...
+    oo_=pm3(M_,options_,oo_,endo_nbr,gend,ifil(1),B,'Updated Variables',...
+        varlist,M_.endo_names_tex,M_.endo_names,...
         varlist,'UpdatedVariables',DirectoryName, ...
         '_update',dispString);
     if smoothed_state_uncertainty
-        pm3(endo_nbr,endo_nbr,ifil(13),B,'State Uncertainty',...
-            '',varlist,M_.endo_names_tex,M_.endo_names,...
+        oo_=pm3(M_,options_,oo_,endo_nbr,endo_nbr,ifil(13),B,'State Uncertainty',...
+            varlist,M_.endo_names_tex,M_.endo_names,...
             varlist,'StateUncertainty',DirectoryName,'_state_uncert',dispString);
     end
 
@@ -360,24 +345,24 @@ if options_.smoother
             meas_error_names{obs_iter,1}=['SE_EOBS_' M_.endo_names{strmatch(options_.varobs{obs_iter},M_.endo_names,'exact')}];
             texnames{obs_iter,1}=['\sigma^{ME}_' M_.endo_names_tex{strmatch(options_.varobs{obs_iter},M_.endo_names,'exact')}];
         end
-        pm3(meas_err_nbr,gend,ifil(3),B,'Smoothed measurement errors',...
-            '',meas_error_names,texnames,meas_error_names,...
-            meas_error_names,'SmoothedMeasurementErrors',DirectoryName,'_error',dispString)
+        oo_=pm3(M_,options_,oo_,meas_err_nbr,gend,ifil(3),B,'Smoothed measurement errors',...
+            meas_error_names,texnames,meas_error_names,...
+            meas_error_names,'SmoothedMeasurementErrors',DirectoryName,'_error',dispString);
     end
 end
 
 if options_.filtered_vars
-    pm3(endo_nbr,gend,ifil(4),B,'One step ahead forecast (filtered variables)',...
-        '',varlist,M_.endo_names_tex,M_.endo_names,...
+    oo_=pm3(M_,options_,oo_,endo_nbr,gend,ifil(4),B,'One step ahead forecast (filtered variables)',...
+        varlist,M_.endo_names_tex,M_.endo_names,...
         varlist,'FilteredVariables',DirectoryName,'_filter_step_ahead',dispString);
 end
 
 if options_.forecast
-    pm3(endo_nbr,horizon,ifil(6),B,'Forecasted variables (mean)',...
-        '',varlist,M_.endo_names_tex,M_.endo_names,...
+    oo_=pm3(M_,options_,oo_,endo_nbr,horizon,ifil(6),B,'Forecasted variables (mean)',...
+        varlist,M_.endo_names_tex,M_.endo_names,...
         varlist,'MeanForecast',DirectoryName,'_forc_mean',dispString);
-    pm3(endo_nbr,horizon,ifil(7),B,'Forecasted variables (point)',...
-        '',varlist,M_.endo_names_tex,M_.endo_names,...
+    oo_=pm3(M_,options_,oo_,endo_nbr,horizon,ifil(7),B,'Forecasted variables (point)',...
+        varlist,M_.endo_names_tex,M_.endo_names,...
         varlist,'PointForecast',DirectoryName,'_forc_point',dispString);
     if ~isequal(M_.H,0) && ~isempty(intersect(options_.varobs,varlist))
         texnames = cell(length(options_.varobs), 1);
@@ -387,15 +372,15 @@ if options_.forecast
             texnames{obs_iter}=M_.endo_names_tex{strmatch(options_.varobs{obs_iter},M_.endo_names,'exact')};
         end
         varlist_forecast_ME=intersect(options_.varobs,varlist);
-        pm3(meas_err_nbr,horizon,ifil(12),B,'Forecasted variables (point) with ME',...
-            '',varlist_forecast_ME,texnames,obs_names,...
-            varlist_forecast_ME,'PointForecastME',DirectoryName,'_forc_point_ME',dispString)
+        oo_=pm3(M_,options_,oo_,meas_err_nbr,horizon,ifil(12),B,'Forecasted variables (point) with ME',...
+            varlist_forecast_ME,texnames,obs_names,...
+            varlist_forecast_ME,'PointForecastME',DirectoryName,'_forc_point_ME',dispString);
     end
 end
 
 if options_.filter_covariance
-    pm3(endo_nbr,endo_nbr,ifil(8),B,'Filtered covariances',...
-        '',varlist,M_.endo_names_tex,M_.endo_names,...
+    oo_=pm3(M_,options_,oo_,endo_nbr,endo_nbr,ifil(8),B,'Filtered covariances',...
+        varlist,M_.endo_names_tex,M_.endo_names,...
         varlist,'FilterCovariance',DirectoryName,'_filter_covar',dispString);
 end
 

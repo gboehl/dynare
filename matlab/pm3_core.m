@@ -1,13 +1,23 @@
 function myoutput=pm3_core(myinputs,fpar,nvar,whoiam, ThisMatlab)
-
+% myoutput=pm3_core(myinputs,fpar,nvar,whoiam, ThisMatlab)
 % PARALLEL CONTEXT
 % Core functionality for pm3.m function, which can be parallelized.
 
 % INPUTS
-% See the comment in posterior_sampler_core.m funtion.
-
+%   o myimput            [struc]     The mandatory variables for local/remote
+%                                    parallel computing obtained from prior_posterior_statistics.m
+%                                    function.
+%   o fpar and nvar      [integer]   first variable and number of variables
+%   o whoiam             [integer]   In concurrent programming a modality to refer to the different threads running in parallel is needed.
+%                                    The integer whoaim is the integer that
+%                                    allows us to distinguish between them. Then it is the index number of this CPU among all CPUs in the
+%                                    cluster.
+%   o ThisMatlab         [integer]   Allows us to distinguish between the
+%                                    'main' Matlab, the slave Matlab worker, local Matlab, remote Matlab,
+%                                     ... Then it is the index number of this slave machine in the cluster.
+%
 % OUTPUTS
-% o myoutput  [struc]
+% o myoutput              [struct]  Contains file names
 %
 %
 % SPECIAL REQUIREMENTS.
@@ -45,15 +55,17 @@ varlist=myinputs.varlist;
 
 MaxNumberOfPlotsPerFigure=myinputs.MaxNumberOfPlotsPerFigure;
 name3=myinputs.name3;
-tit3=myinputs.tit3;
+tit2=myinputs.tit2;
 Mean=myinputs.Mean;
+options_.TeX=myinputs.TeX;
+options_.nodisplay=myinputs.nodisplay;
+options_.graph_format=myinputs.graph_format;
+fname=myinputs.fname;
+dname=myinputs.dname;
 
 if whoiam
     Parallel=myinputs.Parallel;
 end
-
-
-global options_ M_ oo_
 
 if options_.TeX
     varlist_TeX=myinputs.varlist_TeX;
@@ -63,8 +75,6 @@ if whoiam
     prct0={0,whoiam,Parallel(ThisMatlab)};
     h = dyn_waitbar(prct0,'Parallel plots pm3 ...');
 end
-
-
 
 figunumber = 0;
 subplotnum = 0;
@@ -110,14 +120,14 @@ for i=fpar:nvar
 
     if whoiam
         if Parallel(ThisMatlab).Local==0
-            DirectoryName = CheckPath('Output',M_.dname);
+            DirectoryName = CheckPath('Output',dname);
         end
     end
 
     if subplotnum == MaxNumberOfPlotsPerFigure || i == nvar
-        dyn_saveas(hh_fig,[M_.dname '/Output/'  M_.fname '_' name3 '_' tit3{i}],options_.nodisplay,options_.graph_format);
+        dyn_saveas(hh_fig,[dname '/Output/'  fname '_' name3 '_' tit2{i}],options_.nodisplay,options_.graph_format);
         if RemoteFlag==1
-            OutputFileName = [OutputFileName; {[M_.dname, filesep, 'Output',filesep], [M_.fname '_' name3 '_' deblank(tit3(i,:)) '.*']}];
+            OutputFileName = [OutputFileName; {[dname, filesep, 'Output',filesep], [fname '_' name3 '_' deblank(tit2(i,:)) '.*']}];
         end
         subplotnum = 0;
         figunumber = figunumber+1;
@@ -127,12 +137,8 @@ for i=fpar:nvar
     end
 
     if whoiam
-        %         waitbarString = [ 'Variable ' int2str(i) '/' int2str(nvar) ' done.'];
-        %         fMessageStatus((i-fpar+1)/(nvar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
         dyn_waitbar((i-fpar+1)/(nvar-fpar+1),h);
     end
-
-
 end
 
 if whoiam
