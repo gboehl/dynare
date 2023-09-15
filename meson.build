@@ -10,7 +10,6 @@
 # - add the possibility to customize the integration test names (with a new optional 'name' keyword in the dictionaries)
 # - Add an option to skip the removal of the temporary test directories, for debugging purposes
 # - See what to do with xvfb-run (see #1892). Maybe try to detect it from meson.build, and pass it optionally to the test driver script
-# - Include the k-order unit tests in some suite(s)
 # - See whether the tests can be automatically disabled if the MATLAB/Octave executable is not found (using the disabler option of find_program?)
 # - Add priorities to have some tests run before the others (e.g. obs_trend_and_prefilter stuff)
 # - Decide whether we want to keep MALLOC_PERTURB_ for the testsuite; it can have a significant performance impact; see the doc of test() for how to do so
@@ -402,24 +401,24 @@ shared_module('k_order_welfare', k_order_welfare_src, kwargs : korder_mex_kwargs
 
 # Unit tests
 
-korder_test_kwargs = { 'include_directories' : [ mex_incdir, korder_incdir ],
-                       'link_args' : exe_link_args,
-                       'build_rpath' : exe_rpath,
-                       'link_with' : korder_lib }
+k_order_test_kwargs = { 'include_directories' : [ mex_incdir, korder_incdir ],
+                        'link_args' : exe_link_args,
+                        'build_rpath' : exe_rpath,
+                        'link_with' : korder_lib }
 
-korder_sylv_test_exe = executable('korder_sylv_test', [ 'mex/sources/libkorder/sylv/tests/MMMatrix.cc',
-                                                        'mex/sources/libkorder/sylv/tests/tests.cc'],
-                                  kwargs : korder_test_kwargs)
-test('korder_sylv', korder_sylv_test_exe, workdir : meson.current_source_dir() / 'mex/sources/libkorder/sylv/tests', timeout : 0)
+k_order_sylv_test_exe = executable('k_order_sylv_test', [ 'mex/sources/libkorder/sylv/tests/MMMatrix.cc',
+                                                          'mex/sources/libkorder/sylv/tests/tests.cc'],
+                                   kwargs : k_order_test_kwargs)
+test('k_order_sylv', k_order_sylv_test_exe, workdir : meson.current_source_dir() / 'mex/sources/libkorder/sylv/tests', timeout : 0, suite : 'k_order')
 
-korder_tl_test_exe = executable('korder_tl_test', [ 'mex/sources/libkorder/tl/tests/factory.cc',
-                                                    'mex/sources/libkorder/tl/tests/monoms.cc',
-                                                    'mex/sources/libkorder/tl/tests/tests.cc'],
-                                kwargs : korder_test_kwargs)
-test('korder_tl', korder_tl_test_exe, timeout : 0)
+k_order_tl_test_exe = executable('k_order_tl_test', [ 'mex/sources/libkorder/tl/tests/factory.cc',
+                                                      'mex/sources/libkorder/tl/tests/monoms.cc',
+                                                      'mex/sources/libkorder/tl/tests/tests.cc'],
+                                 kwargs : k_order_test_kwargs)
+test('k_order_tl', k_order_tl_test_exe, timeout : 0, suite : 'k_order')
 
-korder_kord_test_exe = executable('korder_kord_test', 'mex/sources/libkorder/kord/tests/tests.cc', kwargs : korder_test_kwargs)
-test('korder_kord', korder_kord_test_exe, timeout : 0)
+k_order_kord_test_exe = executable('k_order_kord_test', 'mex/sources/libkorder/kord/tests/tests.cc', kwargs : k_order_test_kwargs)
+test('k_order_kord', k_order_kord_test_exe, timeout : 0, suite : 'k_order')
 
 
 ## MS-SBVAR stuff
@@ -1554,6 +1553,32 @@ foreach t : mod_and_m_tests
     test_driver_args += [ '--' ] + t['extra']
   endif
   test_name = t['test'][-1] # Use the last test file as the test name
-  should_fail = t.get('should_fail', false)
-  test(test_name, test_driver_exe, args : test_driver_args, should_fail : should_fail, timeout : 0)
+
+  # Construct the suite name(s) using the path to the test file
+  # If test file is a/b/c/test.mod, then the suites will be:
+  # [ 'a', 'a/b', 'a/b/c' ]
+  test_suite = []
+  foreach it : t['test']
+    it_path_components = it.split('/')
+    suite_name = ''
+    foreach i : range(it_path_components.length()-1)
+      if suite_name != ''
+        suite_name += '/'
+      endif
+      suite_name += it_path_components[i]
+      if not test_suite.contains(suite_name)
+        test_suite += suite_name
+      endif
+
+      # Workaround for https://github.com/mesonbuild/meson/issues/11359
+      # Do not add the subsuites of that specific suite, to avoid requiring too
+      # much horizontal width of the terminal screen
+      if suite_name == 'observation_trends_and_prefiltering'
+        break
+      endif
+    endforeach
+  endforeach
+
+  test(test_name, test_driver_exe, args : test_driver_args, suite : test_suite,
+       should_fail : t.get('should_fail', false), timeout : 0)
 endforeach
