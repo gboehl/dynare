@@ -382,7 +382,7 @@ else
             if size(TT,3)<(smpl+1)
                 TT=repmat(T,1,1,smpl+1);
                 RR=repmat(R,1,1,smpl+1);
-                CC=repmat(zeros(mm,1),1,smpl+1);
+                CC=repmat(zeros(size(T,1),1),1,smpl+1);
             end
         end
         if isoccbin==0
