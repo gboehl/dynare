@@ -82,10 +82,10 @@ contains
 
    ! Horner evaluation of the polynomial with coefficients stored in udr at the point dyu
    subroutine eval(h, dyu, udr, ny, nvar, order)
+      integer, intent(in) :: ny, nvar, order
       type(tensor), dimension(0:order), intent(inout) :: h
       real(real64), dimension(nvar), intent(in) :: dyu
       type(tensor), intent(in) :: udr(0:order)
-      integer, intent(in) :: ny, nvar, order
       integer :: d
       if (order == 1) then
          h(1)%m = udr(1)%m
