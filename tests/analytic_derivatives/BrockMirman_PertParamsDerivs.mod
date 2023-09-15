@@ -433,7 +433,7 @@ for jj = 1:2
         xparam1_calib = [xparam1_calib; calib_params(indpmodel)];
         M_ = set_all_parameters(xparam1_calib,estim_params_,M_);
     end
-    [~,info,M_,oo_] = resol(0,M_, options_, oo_);
+    [oo_.dr,info,M_.params] = resol(0,M_, options_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     %For convenience we save the objects to compare into oo_.dr.
     oo_.dr.Yss  = oo_.dr.ys(oo_.dr.order_var);
     oo_.dr.Sigma_e = M_.Sigma_e;

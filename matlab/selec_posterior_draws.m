@@ -115,7 +115,7 @@ if info
             pdraws(i,1) = {x2(SampleAddress(i,4),:)};
             if info==2
                 set_parameters(pdraws{i,1});
-                [dr,~,M_,oo_] =compute_decision_rules(M_,options_,oo_);
+                [dr,~,M_.params] =compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
                 pdraws(i,2) = { dr };
             end
             old_mhfile = mhfile;
@@ -142,7 +142,7 @@ if info
             pdraws(linee,1) = {x2(SampleAddress(i,4),:)};
             if info==2
                 set_parameters(pdraws{linee,1});
-                [dr,~,M_,oo_] = compute_decision_rules(M_,options_,oo_);
+                [dr,~,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
                 pdraws(linee,2) = { dr };
             end
             old_mhfile = mhfile;

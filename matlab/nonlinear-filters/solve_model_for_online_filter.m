@@ -125,8 +125,8 @@ Model.H = H;
 %------------------------------------------------------------------------------
 
 warning('off', 'MATLAB:nearlySingularMatrix')
-[~, ~, ~, info, Model, DynareResults] = ...
-    dynare_resolve(Model, DynareOptions, DynareResults, 'restrict');
+[~, ~, ~, info, DynareResults.dr, Model.params] = ...
+    dynare_resolve(Model, DynareOptions, DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state, 'restrict');
 warning('on', 'MATLAB:nearlySingularMatrix')
 
 if info(1)~=0

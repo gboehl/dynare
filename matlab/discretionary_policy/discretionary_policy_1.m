@@ -1,16 +1,17 @@
-function [dr, info, M_, oo_]=discretionary_policy_1(Instruments, M_, options_, oo_)
+function [dr, info, params]=discretionary_policy_1(M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % Higher-level function for solving discretionary optimal policy
 % INPUTS
-% - Instruments   [cell]          array containing instrument names
 % - M_            [structure]     Matlab's structure describing the model (M_).
 % - options_      [structure]     Matlab's structure describing the current options (options_).
-% - oo_           [structure]     Matlab's structure containing the results (oo_).
+% - dr            [struct]        Decision rules for stochastic simulations.
+% - endo_steady_state       [vector]     steady state value for endogenous variables                                    
+% - exo_steady_state        [vector]     steady state value for exogenous variables
+% - exo_det_steady_state    [vector]     steady state value for exogenous deterministic variables                                    
 %
 % OUTPUTS
 % - dr            [structure]     Reduced form model.
 % - info          [integer]       scalar or vector, error code.
-% - M_            [structure]     Matlab's structure describing the model (M_).
-% - oo_           [structure]     Matlab's structure containing the results (oo_).
+% - params        [double]        vector of potentially updated parameters
 
 % Copyright © 2007-2020 Dynare Team
 %
@@ -33,14 +34,12 @@ persistent Hold
 
 info = 0;
 
-dr=oo_.dr; %initialize output argument
-
 beta = get_optimal_policy_discount_factor(M_.params, M_.param_names);
 
 %call steady_state_file if present to update parameters
 if options_.steadystate_flag
     % explicit steady state file
-    [ys,M_.params,info] = evaluate_steady_state_file(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_, ...
+    [ys,M_.params,info] = evaluate_steady_state_file(endo_steady_state,[exo_steady_state; exo_det_steady_state],M_, ...
                                                     options_,false);
     if info(1)
         return;
@@ -48,6 +47,8 @@ if options_.steadystate_flag
 else
     ys=zeros(M_.endo_nbr,1);
 end
+params=M_.params;
+
 [U,Uy,W] = feval([M_.fname,'.objective.static'],zeros(M_.endo_nbr,1),[], M_.params);
 if any(any(isnan(Uy)))
     info = 64 ; %the derivatives of the objective function contain NaN
@@ -80,12 +81,7 @@ iyr0 = find(iyv(:)) ;
 z = z(iyr0);
 it_ = M_.maximum_lag + 1 ;
 
-if M_.exo_nbr == 0
-    oo_.exo_steady_state = [] ;
-end
-
-[junk,jacobia_] = feval([M_.fname '.dynamic'],z, [zeros(size(oo_.exo_simul)) ...
-                    oo_.exo_det_simul], M_.params, ys, it_);
+[junk,jacobia_] = feval([M_.fname '.dynamic'],z,zeros(M_.exo_nbr+M_.exo_det_nbr,klen), M_.params, ys, it_);
 if max(abs(junk))>options_.solve_tolf
      info = 65; %the model must be written in deviation form and not have constant terms or have a steady state provided
      return;
@@ -127,4 +123,3 @@ if M_.maximum_endo_lag
     Selection=M_.lead_lag_incidence(1,dr.order_var)>0;%select state variables
 end
 dr.ghx=T(:,Selection);
-oo_.dr = dr;

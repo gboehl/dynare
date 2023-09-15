@@ -121,7 +121,7 @@ end
 % 2. Check BK and steady state
 %-----------------------------
 
-[~,info] = resol(0,DynareModel,DynareOptions,DynareResults);
+[~,info] = resol(0,DynareModel,DynareOptions,DynareResults.dr,DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)

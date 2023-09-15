@@ -131,10 +131,10 @@ else
     my_order_var = oo_.dr.order_var;
 end
 options_.occbin.simul=opts_simul;
-[~, out, ss] = occbin.solver(M_,oo_,options_);
+[~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 if out.error_flag
     options_.occbin.simul.init_regime=regimes0;
-    [~, out, ss] = occbin.solver(M_,oo_,options_);
+    [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 end
 if out.error_flag
     error_flag = out.error_flag;
@@ -223,7 +223,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         end
         opts_simul.periods = max(opts_simul.periods,max(myregimestart));
         options_.occbin.simul=opts_simul;
-        [~, out, ss] = occbin.solver(M_,oo_,options_);
+        [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
         if out.error_flag
             error_flag = out.error_flag;
             etahat=etahat(:,2);
@@ -273,7 +273,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                     opts_simul.periods = max(opts_simul.periods,max(myregimestart));
                     opts_simul.maxit=1;
                     options_.occbin.simul=opts_simul;
-                    [~, out, ss] = occbin.solver(M_,oo_,options_);
+                    [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
                     if out.error_flag
                         error_flag = out.error_flag;
                         etahat=etahat(:,2);
@@ -331,7 +331,7 @@ if ~error_flag && niter>options_.occbin.likelihood.max_number_of_iterations && ~
             end
             opts_simul.periods = max(opts_simul.periods,max(myregimestart));
             options_.occbin.simul=opts_simul;
-            [~, out, ss] = occbin.solver(M_,oo_,options_);
+            [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
             if out.error_flag
                 error_flag = out.error_flag;
                 etahat=etahat(:,2);

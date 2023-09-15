@@ -76,7 +76,7 @@ err_index=DynareOptions.occbin.likelihood.IVF_shock_observable_mapping; % err_in
 COVMAT1 = Model.Sigma_e(err_index,err_index);
 
 % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
-[T,R,SteadyState,info,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
+[T,R,SteadyState,info,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state,'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)

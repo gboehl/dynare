@@ -79,8 +79,8 @@ end
 % 2. call model setup & reduction program
 %------------------------------------------------------------------------------
 
-% Linearize the model around the deterministic sdteadystate and extract the matrices of the state equation (T and R).
-[dr, info, M_, oo_] = resol(0, M_, options_, oo_);
+% Linearize the model around the deterministic steadystate and extract the matrices of the state equation (T and R).
+[dr, info, M_.params] = resol(0, M_, options_, oo_.dr , oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 || ...

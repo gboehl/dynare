@@ -1,5 +1,5 @@
-function [dr, info] = stochastic_solvers(dr, task, M_, options_, oo_)
-
+function [dr, info] = stochastic_solvers(dr, task, M_, options_, exo_steady_state, exo_det_steady_state)
+%[dr, info] = stochastic_solvers(dr, task, M_, options_, exo_steady_state, exo_det_steady_state)
 % Computes the reduced form solution of a rational expectations model (first, second or third
 % order approximation of the stochastic model around the deterministic steady state).
 %
@@ -8,7 +8,8 @@ function [dr, info] = stochastic_solvers(dr, task, M_, options_, oo_)
 % - task       [integer]    scalar, if task = 0 then decision rules are computed and if task = 1 then only eigenvales are computed.
 % - M_         [struct]     Definition of the model.
 % - options_   [struct]     Options.
-% - oo_        [struct]     Results
+% - exo_steady_state        [vector]     steady state value for exogenous variables
+% - exo_det_steady_state    [vector]     steady state value for exogenous deterministic variables                                    
 %
 % OUTPUTS
 % - dr         [struct]     Decision rules for stochastic simulations.
@@ -93,14 +94,10 @@ if options_.k_order_solver
 end
 
 klen = M_.maximum_lag + M_.maximum_lead + 1;
-exo_simul = [repmat(oo_.exo_steady_state',klen,1) repmat(oo_.exo_det_steady_state',klen,1)];
+exo_simul = [repmat(exo_steady_state',klen,1) repmat(exo_det_steady_state',klen,1)];
 iyv = M_.lead_lag_incidence';
 iyv = iyv(:);
 iyr0 = find(iyv) ;
-
-if M_.exo_nbr == 0
-    oo_.exo_steady_state = [] ;
-end
 
 it_ = M_.maximum_lag + 1;
 z = repmat(dr.ys,1,klen);

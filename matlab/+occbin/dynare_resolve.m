@@ -1,4 +1,4 @@
-function [A,B,ys,info,M_,oo_,TT, RR, CC, A0, B0] ...
+function [A,B,ys,info,dr,params,TT, RR, CC, A0, B0] ...
     = dynare_resolve(M_,options_,oo_,regime_history, reduced_state_space, A, B)
 % function [A,B,ys,info,M_,options_,oo_,TT, RR, CC, A0, B0] ...
 %     = dynare_resolve(M_,options_,oo_,regime_history, reduced_state_space, A, B)
@@ -12,14 +12,14 @@ function [A,B,ys,info,M_,oo_,TT, RR, CC, A0, B0] ...
 % - reduced_state_space [string]
 % - A                   [double]        State transition matrix
 % - B                   [double]        shock impact matrix
+%
 % Outputs:
 % - A                   [double]        State transition matrix (potentially for restricted state space)
 % - B                   [double]        shock impact matrix (potentially for restricted state space)
 % - ys                  [double]        vector of steady state values
 % - info                [double]        4 by 1 vector with exit flag and information
-% - M_                  [structure]     Matlab's structure describing the model
-% - options_            [structure]     Matlab's structure containing the options
-% - oo_                 [structure]     Matlab's structure containing the results
+% - dr                  [structure]     Reduced form model.
+% - params              [double]        vector of potentially updated parameters
 % - TT                  [N by N]            transition matrix of state space for each period
 % - RR                  [N by N_exo by T]   shock impact matrix of state space for each period
 % - CC                  [N by N_exo by T]   constant of state space for each period
@@ -44,16 +44,18 @@ function [A,B,ys,info,M_,oo_,TT, RR, CC, A0, B0] ...
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if nargin<6
-    [A,B,ys,info,M_,oo_] = dynare_resolve(M_,options_,oo_);
+    [A,B,ys,info,dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 else
     ys = oo_.dr.ys;
+    dr = oo_.dr;
     info = 0;
 end
+params=M_.params;
 if  ~info(1) && nargin>4 && ~isempty(regime_history)
     opts_regime.regime_history=regime_history;
     opts_regime.binding_indicator=[];
     [TT, RR, CC] = ...
-        occbin.check_regimes(A, B, [], opts_regime, M_,oo_,options_);
+        occbin.check_regimes(A, B, [], opts_regime, M_, options_, dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 else
     TT=A;
     RR=B;
@@ -63,7 +65,7 @@ end
 A0=A;
 B0=B;
 if  ~info(1) && nargin>4 && ischar(reduced_state_space) && ~isempty(reduced_state_space)
-    iv = oo_.dr.restrict_var_list;
+    iv = dr.restrict_var_list;
     A=A(iv,iv);
     B=B(iv,:);
     TT=TT(iv,iv,:);

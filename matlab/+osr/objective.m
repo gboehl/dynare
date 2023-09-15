@@ -43,7 +43,7 @@ df=NaN(length(i_params),1);
 % set parameters of the policy rule
 M_.params(i_params) = x;
 
-[oo_.dr,info] = resol(0,M_,options_,oo_);
+[oo_.dr,info,M_.params] = resol(0,M_,options_,oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ||...

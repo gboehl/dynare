@@ -1,5 +1,5 @@
-function [TT, RR, CC, regime_history] = check_regimes(TT, RR, CC, opts_regime, M_, oo_, options_)
-%-function function [TT, RR, CC, regime_history] = check_regimes(TT, RR, CC, opts_regime, M_, oo_, options_)
+function [TT, RR, CC, regime_history] = check_regimes(TT, RR, CC, opts_regime, M_, options_, dr ,steady_state, exo_steady_state, exo_det_steady_state)
+%function [TT, RR, CC, regime_history] = check_regimes(TT, RR, CC, opts_regime, M_, options_ dr ,steady_state, exo_steady_state, exo_det_steady_state)
 %
 % INPUTS
 % - TT            [N by N]          transition matrix of state space
@@ -7,8 +7,11 @@ function [TT, RR, CC, regime_history] = check_regimes(TT, RR, CC, opts_regime, M
 % - CC            [N by 1]          constant of state space
 % - opts_regime_  [structure]       structure describing the regime
 % - M_            [structure]       Matlab's structure describing the model
-% - oo_           [structure]       Matlab's structure containing the results
 % - options_      [structure]       Matlab's structure describing the current options
+% - dr                  [structure]     Reduced form model.
+% - endo_steady_state   [vector]        steady state value for endogenous variables
+% - exo_steady_state    [vector]        steady state value for exogenous variables
+% - exo_det_steady_state    [vector]    steady state value for exogenous deterministic variables                                    
 %
 % OUTPUTS
 % - TT              [N by N]            transition matrix of state space for each period
@@ -135,10 +138,10 @@ for tp=1:gend-1
             opts_simul.maxit=1;
             opts_simul.periods=nperi;
             options_.occbin.simul=opts_simul;
-            [~, ~, ss] = occbin.solver(M_,oo_,options_);
-            TT(:,:,tp+1) = ss.T(oo_.dr.order_var,oo_.dr.order_var);
-            RR(:,:,tp+1) = ss.R(oo_.dr.order_var,:);
-            CC(:,tp+1) = ss.C(oo_.dr.order_var);
+            [~, ~, ss] = occbin.solver(M_,options_,dr,steady_state,exo_steady_state,exo_det_steady_state);
+            TT(:,:,tp+1) = ss.T(dr.order_var,dr.order_var);
+            RR(:,:,tp+1) = ss.R(dr.order_var,:);
+            CC(:,tp+1) = ss.C(dr.order_var);
         end
         
     end

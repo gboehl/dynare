@@ -126,7 +126,7 @@ if estimated_model
     qz_criterium_old=options_.qz_criterium;
     options_=select_qz_criterium_value(options_);
     options_smoothed_state_uncertainty_old = options_.smoothed_state_uncertainty;
-    [atT, ~, ~, ~,ys, ~, ~, ~, ~, ~, ~, ~, ~, ~,M_,oo_,bayestopt_] = ...
+    [atT, ~, ~, ~,ys, ~, ~, ~, ~, ~, ~, ~, ~, ~,oo_,bayestopt_] = ...
         DsgeSmoother(xparam, gend, data, data_index, missing_value, M_, oo_, options_, bayestopt_, estim_params_);
     options_.smoothed_state_uncertainty = options_smoothed_state_uncertainty_old;
     %get constant part
@@ -171,7 +171,7 @@ if options_.logged_steady_state %if steady state was previously logged, undo thi
     options_.logged_steady_state=0;
 end
 
-[T, R, ys, ~, M_, oo_] = dynare_resolve(M_, options_, oo_);
+[T, R, ys, ~, oo_.dr,M_.params] = dynare_resolve(M_, options_, oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 
 if options_.loglinear && isfield(oo_.dr,'ys') && options_.logged_steady_state==0 %log steady state
     oo_.dr.ys=log_variable(1:M_.endo_nbr,oo_.dr.ys,M_);

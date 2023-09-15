@@ -129,7 +129,7 @@ else
 end
 
 options_.occbin.simul=opts_simul;
-[~, out, ss] = occbin.solver(M_,oo_,options_);
+[~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 if out.error_flag
     error_flag = out.error_flag;
     return;
@@ -222,7 +222,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         end
         opts_simul.periods = max(opts_simul.periods,max(myregimestart));
         options_.occbin.simul=opts_simul;
-        [~, out, ss] = occbin.solver(M_,oo_,options_);
+        [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
         if out.error_flag
             error_flag = out.error_flag;
             return;
@@ -271,7 +271,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                     opts_simul.periods = max(opts_simul.periods,max(myregimestart));
                     opts_simul.maxit=1;
                     options_.occbin.simul=opts_simul;
-                    [~, out, ss] = occbin.solver(M_,oo_,options_);
+                    [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
                 end
             end
         end

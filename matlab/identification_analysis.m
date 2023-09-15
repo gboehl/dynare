@@ -134,7 +134,7 @@ error_indicator.identification_minimal=0;
 error_indicator.identification_spectrum=0;
 
 %Compute linear approximation and fill dr structure
-[oo_.dr,info,M_,oo_] = compute_decision_rules(M_,options_,oo_);
+[oo_.dr,info,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 
 if info(1) == 0 %no errors in solution
     % Compute parameter Jacobians for identification analysis

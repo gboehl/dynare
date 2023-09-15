@@ -96,8 +96,7 @@ while iteration < NumberOfSimulations
     loop_indx = loop_indx+1;
     params = Prior.draw();
     M_ = set_all_parameters(params, estim_params_, M_);
-    [T, R, ~, INFO, M_, oo_] = dynare_resolve(M_, options_, oo_, 'restrict');
-    dr = oo_.dr;
+    [T, R, ~, INFO, oo_.dr,M_.params] = dynare_resolve(M_, options_, oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state, 'restrict');
     if ~INFO(1)
         INFO=endogenous_prior_restrictions(T,R,M_,options_,oo_);
     end
@@ -113,7 +112,7 @@ while iteration < NumberOfSimulations
     switch INFO(1)
       case 0
         if drsave
-            pdraws(file_line_number,3) = {dr};
+            pdraws(file_line_number,3) = {oo_.dr};
         end
         [sampled_prior_expectation,sampled_prior_covariance] = ...
             recursive_prior_moments(sampled_prior_expectation,sampled_prior_covariance,params,iteration);

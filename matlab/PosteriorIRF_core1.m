@@ -151,8 +151,7 @@ while fpar<B
     end
     stock_param(irun2,:) = deep;
     M_ = set_parameters_locally(M_, deep);
-    [dr,info,M_,oo_] =compute_decision_rules(M_,options_,oo_);
-    oo_.dr = dr;
+    [oo_.dr,info,M_.params] =compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     if info(1)
         nosaddle = nosaddle + 1;
         fpar = fpar - 1;
@@ -183,9 +182,9 @@ while fpar<B
     for i=irf_shocks_indx
         if SS(i,i) > 5e-7
             if options_.order>1 && options_.relative_irf % normalize shock to 0.01 before IRF generation for GIRFs; multiply with 100 later
-                y=irf(M_,options_,dr,SS(:,i)./SS(i,i)/100, options_.irf, options_.drop,options_.replic,options_.order);
+                y=irf(M_,options_,oo_.dr,SS(:,i)./SS(i,i)/100, options_.irf, options_.drop,options_.replic,options_.order);
             else
-                y=irf(M_,options_,dr,SS(:,i), options_.irf, options_.drop,options_.replic,options_.order);
+                y=irf(M_,options_,oo_.dr,SS(:,i), options_.irf, options_.drop,options_.replic,options_.order);
             end
             if options_.relative_irf && options_.order==1 %multiply with 100 for backward compatibility
                 y = 100*y/SS(i,i);

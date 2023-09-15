@@ -101,7 +101,7 @@ end
 %--------------------------------------------------------------------------
 
 % Compute linear approximation around the deterministic steady state
-[dr, info, M_, oo_] = resol(0, M_, options_mom_, oo_);
+[oo_.dr, info, M_.params] = resol(0, M_, options_mom_, oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 % Return, with endogenous penalty when possible, if resol issues an error code
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ||...
@@ -151,11 +151,11 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         stderrparam_nbr = estim_params_.nvx;    % number of stderr parameters
         corrparam_nbr = estim_params_.ncx;      % number of corr parameters
         totparam_nbr = stderrparam_nbr+corrparam_nbr+modparam_nbr;
-        dr.derivs = get_perturbation_params_derivs(M_, options_mom_, estim_params_, oo_, indpmodel, indpstderr, indpcorr, 0); %analytic derivatives of perturbation matrices
+        oo_.dr.derivs = get_perturbation_params_derivs(M_, options_mom_, estim_params_, oo_, indpmodel, indpstderr, indpcorr, 0); %analytic derivatives of perturbation matrices
         oo_.mom.model_moments_params_derivs = NaN(options_mom_.mom.mom_nbr,totparam_nbr);
-        pruned_state_space = pruned_state_space_system(M_, options_mom_, dr, oo_.mom.obs_var, options_mom_.ar, 0, 1);
+        pruned_state_space = pruned_state_space_system(M_, options_mom_, oo_.dr, oo_.mom.obs_var, options_mom_.ar, 0, 1);
     else
-        pruned_state_space = pruned_state_space_system(M_, options_mom_, dr, oo_.mom.obs_var, options_mom_.ar, 0, 0);
+        pruned_state_space = pruned_state_space_system(M_, options_mom_, oo_.dr, oo_.mom.obs_var, options_mom_.ar, 0, 0);
     end
     oo_.mom.model_moments = NaN(options_mom_.mom.mom_nbr,1);
     for jm = 1:size(M_.matched_moments,1)
@@ -218,7 +218,7 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
     scaled_shock_series = zeros(size(options_mom_.mom.shock_series)); % initialize
     scaled_shock_series(:,i_exo_var) = options_mom_.mom.shock_series(:,i_exo_var)*chol_S; % set non-zero entries
     % simulate series
-    y_sim = simult_(M_, options_mom_, dr.ys, dr, scaled_shock_series, options_mom_.order);
+    y_sim = simult_(M_, options_mom_, oo_.dr.ys, oo_.dr, scaled_shock_series, options_mom_.order);
     % provide meaningful penalty if data is nan or inf
     if any(any(isnan(y_sim))) || any(any(isinf(y_sim)))
         if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output

@@ -1,4 +1,4 @@
-function [alphahat,etahat,epsilonhat,ahat0,SteadyState,trend_coeff,aKK,T0,R0,P,PKK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_,alphahat0,state_uncertainty0] = DSGE_smoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_, dataset_info)
+function [alphahat,etahat,epsilonhat,ahat0,SteadyState,trend_coeff,aKK,T0,R0,P,PKK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0] = DSGE_smoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_, dataset_info)
 %function [alphahat,etahat,epsilonhat,ahat0,SteadyState,trend_coeff,aKK,T0,R0,P,PKK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DSGE_smoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_, dataset_info)
 % Runs a DSGE smoother with occasionally binding constraints
 %
@@ -65,7 +65,7 @@ regime_history=[];
 if  options_.occbin.smoother.linear_smoother && nargin==12
     %% linear smoother
     options_.occbin.smoother.status=false;
-    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
+    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
     tmp_smoother=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
     for jf=1:length(smoother_field_list)
         oo_.occbin.linear_smoother.(smoother_field_list{jf}) = tmp_smoother.(smoother_field_list{jf});
@@ -120,7 +120,7 @@ occbin_options.first_period_occbin_update = options_.occbin.smoother.first_perio
 occbin_options.opts_regime = opts_simul; % this builds the opts_simul options field needed by occbin.solver
 occbin_options.opts_regime.binding_indicator = options_.occbin.likelihood.init_binding_indicator;
 occbin_options.opts_regime.regime_history=options_.occbin.likelihood.init_regime_history;
-[alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_,alphahat0,state_uncertainty0, diffuse_steps] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options);%     T1=TT;
+[alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0, diffuse_steps] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options);%     T1=TT;
 
 oo_.occbin.smoother.realtime_regime_history = oo_.occbin.smoother.regime_history;
 regime_history = oo_.occbin.smoother.regime_history;
@@ -143,7 +143,7 @@ opts_simul.endo_init = alphahat0(oo_.dr.inv_order_var,1);
 opts_simul.init_regime=regime_history; % use realtime regime for guess, to avoid multiple solution issues!
 options_.occbin.simul=opts_simul;
 options_.noprint = true;
-[~, out, ss] = occbin.solver(M_,oo_,options_);
+[~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 if out.error_flag
     fprintf('Occbin smoother:: simulation within smoother did not converge.\n')
     print_info(out.error_flag, options_.noprint, options_)
@@ -153,7 +153,7 @@ end
 regime_history = out.regime_history;
 if options_.smoother_redux
     occbin_options.opts_simul.restrict_state_space =1;  
-    [T0,R0] = dynare_resolve(M_,options_,oo_);
+    [T0,R0] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     oo_.occbin.linear_smoother.T0=T0;
     oo_.occbin.linear_smoother.R0=R0;
     %    oo_.occbin.linear_smoother.T0=ss.T(oo_.dr.order_var,oo_.dr.order_var,1);
@@ -168,7 +168,7 @@ CC = ss.C(oo_.dr.order_var,:);
 
 opts_regime.regime_history = regime_history;
 opts_regime.binding_indicator = [];
-[TT, RR, CC, regime_history] = occbin.check_regimes(TT, RR, CC, opts_regime, M_, oo_, options_);
+[TT, RR, CC, regime_history] = occbin.check_regimes(TT, RR, CC, opts_regime, M_, options_ , oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 is_changed = ~isequal(regime_history0,regime_history);
 if isempty(regime_history0)
     regime_history0 = regime_history;
@@ -195,7 +195,7 @@ while is_changed && maxiter>iter && ~is_periodic
     iter=iter+1;
     fprintf('Occbin smoother iteration %u.\n', iter)
     occbin_options.opts_regime.regime_history=regime_history;
-    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_,alphahat0,state_uncertainty0, diffuse_steps] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options,TT,RR,CC);%     T1=TT;
+    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0, diffuse_steps] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options,TT,RR,CC);%     T1=TT;
     sto_etahat(iter)={etahat};
     regime_history0(iter,:) = regime_history;
     if occbin_smoother_debug
@@ -209,7 +209,7 @@ while is_changed && maxiter>iter && ~is_periodic
     opts_simul.SHOCKS = [etahat(:,1:end)'; zeros(1,M_.exo_nbr)];
     opts_simul.endo_init = alphahat0(oo_.dr.inv_order_var,1);
     options_.occbin.simul=opts_simul;
-    [~, out, ss] = occbin.solver(M_,oo_,options_);
+    [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     if out.error_flag
         fprintf('Occbin smoother:: simulation within smoother did not converge.\n')
         print_info(out.error_flag, false, options_)
@@ -225,7 +225,7 @@ while is_changed && maxiter>iter && ~is_periodic
 %     CC = cat(2,CC(:,1),CC);
 
     opts_regime.regime_history = regime_history;
-    [TT, RR, CC, regime_history] = occbin.check_regimes(TT, RR, CC, opts_regime, M_, oo_, options_);
+    [TT, RR, CC, regime_history] = occbin.check_regimes(TT, RR, CC, opts_regime, M_, options_ , oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     is_changed = ~isequal(regime_history0(iter,:),regime_history);
     if M_.occbin.constraint_nbr==2
         for k=1:size(regime_history0,2)

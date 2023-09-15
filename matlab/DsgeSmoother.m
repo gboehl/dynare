@@ -1,4 +1,4 @@
-function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,decomp,trend_addition,state_uncertainty,M_,oo_,bayestopt_,alphahat0,state_uncertainty0,d] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,varargin)
+function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,decomp,trend_addition,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0,d] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,varargin)
 % Estimation of the smoothed variables and innovations.
 %
 % INPUTS
@@ -32,7 +32,6 @@ function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,de
 %   o trend_addition [double] (n*T) pure trend component; stored in options_.varobs order
 %   o state_uncertainty [double] (K,K,T) array, storing the uncertainty
 %                                   about the smoothed state (decision-rule order)
-%   o M_            [structure] decribing the model
 %   o oo_           [structure] storing the results
 %   o bayestopt_    [structure] describing the priors
 %
@@ -105,7 +104,7 @@ if ~options_.smoother_redux
     oo_.dr.restrict_var_list = bayestopt_.smoother_var_list;
     oo_.dr.restrict_columns = bayestopt_.smoother_restrict_columns;
     
-    [T,R,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_);
+    [T,R,SteadyState,info,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     
     %get location of observed variables and requested smoothed variables in
     %decision rules
@@ -113,9 +112,9 @@ if ~options_.smoother_redux
     
 else
     if ~options_.occbin.smoother.status
-        [T,R,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
+        [T,R,SteadyState,info,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state,'restrict');
     else
-        [T,R,SteadyState,info,M_,oo_,~,~,~, T0, R0] = ...
+        [T,R,SteadyState,info,oo_.dr, M_.params,~,~,~, T0, R0] = ...
             occbin.dynare_resolve(M_,options_,oo_,[],'restrict');
         varargin{length_varargin+1}=T0;
         varargin{length_varargin+2}=R0;
@@ -471,7 +470,7 @@ else
                 opts_simul.init_regime = []; %regimes_(k);
                 opts_simul.waitbar=0;
                 options_.occbin.simul=opts_simul;
-                [~, out] = occbin.solver(M_,oo_,options_);
+                [~, out] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
                 % regime in out should be identical to regimes_(k-2) moved one
                 % period ahead (so if regimestart was [1 5] it should be [1 4]
                 % in out
@@ -521,7 +520,7 @@ else
             opts_simul.init_regime = []; %regimes_(k);
             opts_simul.waitbar=0;
             options_.occbin.simul=opts_simul;
-            [~, out] = occbin.solver(M_,oo_,options_);
+            [~, out] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
             % regime in out should be identical to regimes_(k-2) moved one
             % period ahead (so if regimestart was [1 5] it should be [1 4]
             % in out

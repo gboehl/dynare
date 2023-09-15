@@ -192,7 +192,7 @@ is_restrict_state_space = true;
 if DynareOptions.occbin.likelihood.status
     occbin_options = set_occbin_options(DynareOptions, Model);
     if occbin_options.opts_simul.restrict_state_space
-        [T,R,SteadyState,info,Model,DynareResults,TTx,RRx,CCx, T0, R0] = ...
+        [T,R,SteadyState,info,DynareResults.dr, Model.params,TTx,RRx,CCx, T0, R0] = ...
             occbin.dynare_resolve(Model,DynareOptions,DynareResults,[],'restrict');
     else
         is_restrict_state_space = false;
@@ -202,7 +202,7 @@ if DynareOptions.occbin.likelihood.status
         DynareResults.dr.restrict_columns = BayesInfo.smoother_restrict_columns;
     
         % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
-        [T,R,SteadyState,info,Model,DynareOptions,DynareResults,TTx,RRx,CCx, T0, R0] = ...
+        [T,R,SteadyState,info,Model,DynareResults.dr, Model.params,TTx,RRx,CCx, T0, R0] = ...
             occbin.dynare_resolve(Model,DynareOptions,DynareResults);
 
         DynareResults.dr.restrict_var_list = oldoo.restrict_var_list;
@@ -213,7 +213,7 @@ if DynareOptions.occbin.likelihood.status
     occbin_.info= {DynareOptions, DynareResults, Model, occbin_options, TTx, RRx, CCx,T0,R0};
 else
     % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
-    [T,R,SteadyState,info,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
+    [T,R,SteadyState,info,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state,'restrict');
     occbin_.status = false;
 end
 
@@ -542,7 +542,7 @@ if analytic_derivation
     AHess = [];
     iv = DynareResults.dr.restrict_var_list;
     if nargin<10 || isempty(derivatives_info)
-        [A,B,nou,nou,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
+        [A,B,nou,nou,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
         if ~isempty(EstimatedParameters.var_exo)
             indexo=EstimatedParameters.var_exo(:,1);
         else

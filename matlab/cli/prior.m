@@ -137,7 +137,7 @@ if ismember('moments', varargin) % Prior simulations (2nd order moments).
     oo__ = oo_;
     oo__.dr = set_state_space(oo__.dr, Model, options_);
     % Solve model
-    [T,R,~,info,Model , oo__] = dynare_resolve(Model , options_ ,oo__,'restrict');
+    [T,R,~,info,oo__.dr, Model.params] = dynare_resolve(Model , options_ , oo__.dr, oo__.steady_state, oo__.exo_steady_state, oo__.exo_det_steady_state,'restrict');
     if ~info(1)
         info=endogenous_prior_restrictions(T,R,Model , options__ , oo__);
     end

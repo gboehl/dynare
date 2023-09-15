@@ -102,9 +102,9 @@ if init
     for j=1:Nsam
         Model = set_all_parameters(lpmat(j,:)',EstimatedParameters,Model);
         if nbr_moment_restrictions
-            [Tt,Rr,SteadyState,info,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
+            [Tt,Rr,SteadyState,info,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
         else
-            [Tt,Rr,SteadyState,info,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults,'restrict');
+            [Tt,Rr,SteadyState,info,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state,'restrict');
         end
         if info(1)==0
             [info, info_irf, info_moment, data_irf, data_moment]=endogenous_prior_restrictions(Tt,Rr,Model,DynareOptions,DynareResults);

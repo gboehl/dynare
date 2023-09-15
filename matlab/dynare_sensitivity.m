@@ -146,7 +146,7 @@ if M_.exo_nbr==0
     error('dynare_sensitivity does not support having no varexo in the model. As a workaround you could define a dummy exogenous variable.')
 end
 
-[make,my,day,punk,M_,oo_] = dynare_resolve(M_,options_,oo_);
+[make,my,day,punk,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 
 options_gsa = set_default_option(options_gsa,'identification',0);
 if options_gsa.identification

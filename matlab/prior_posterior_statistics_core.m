@@ -217,10 +217,10 @@ for b=fpar:B
     M_ = set_all_parameters(deep,estim_params_,M_);
 
     if run_smoother
-        [dr,info,M_,oo_] =compute_decision_rules(M_,opts_local,oo_);
+        [dr,info,M_.params] =compute_decision_rules(M_,opts_local,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
         if ismember(info(1),[3,4])
             opts_local.qz_criterium = 1 + (opts_local.qz_criterium-1)*10; %loosen tolerance, useful for big models where BK conditions were tested on restricted state space
-            [dr,info,M_,oo_] =compute_decision_rules(M_,opts_local,oo_);
+            [dr,info,M_.params] =compute_decision_rules(M_,opts_local,oo_);
         end
         if info(1)
             message=get_error_message(info,opts_local);
@@ -231,14 +231,14 @@ for b=fpar:B
             opts_local.occbin.simul.waitbar=0;
             opts_local.occbin.smoother.waitbar = 0;
             opts_local.occbin.smoother.linear_smoother=false; % speed-up
-            [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,bayestopt_] = ...
+            [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,oo_,bayestopt_] = ...
                 occbin.DSGE_smoother(deep,gend,Y,data_index,missing_value,M_,oo_,opts_local,bayestopt_,estim_params_);
             if oo_.occbin.smoother.error_flag(1)
                 message=get_error_message(oo_.occbin.smoother.error_flag,opts_local);
                 fprintf('\nprior_posterior_statistics: One of the draws failed with the error:\n%s\n',message)
             end
         else
-            [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,bayestopt_] = ...
+            [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,oo_,bayestopt_] = ...
                 DsgeSmoother(deep,gend,Y,data_index,missing_value,M_,oo_,opts_local,bayestopt_,estim_params_);
         end
 
@@ -370,7 +370,7 @@ for b=fpar:B
             stock_smoothed_uncert(dr.order_var,dr.order_var,:,irun(13)) = state_uncertainty;
         end
     else
-        [T,R,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_);
+        [~,~,SteadyState,info] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     end
     stock_param(irun(5),:) = deep;
     stock_logpo(irun(5),1) = logpo;

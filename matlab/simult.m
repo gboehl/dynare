@@ -1,8 +1,8 @@
-function [y_out,exo_simul] =simult(y0, dr,DynareModel,DynareOptions)
+function [y_out,exo_simul] =simult(y0, dr,M_,options_)
 % Simulate a DSGE model (perturbation approach).
 
 %@info:
-%! @deftypefn {Function File} {[@var{y_}, @var{exo_simul}] =} simult (@var{y0},@var{dr},@var{DynareModel},@var{DynareOptions})
+%! @deftypefn {Function File} {[@var{y_}, @var{exo_simul}] =} simult (@var{y0},@var{dr},@var{M_},@var{options_})
 %! @anchor{simult}
 %! @sp 1
 %! Simulate a DSGE model (perturbation approach).
@@ -14,9 +14,9 @@ function [y_out,exo_simul] =simult(y0, dr,DynareModel,DynareOptions)
 %! Vector of doubles, initial conditions.
 %! @item dr
 %! Matlab's structure describing decision and transition rules.
-%! @item DynareModel
+%! @item M_
 %! Matlab's structure describing the model (initialized by dynare, see @ref{M_})
-%! @item DynareOptions
+%! @item options_
 %! Matlab's structure describing the current options (initialized by dynare, see @ref{options_}).
 %! @end table
 %! @sp 2
@@ -60,30 +60,30 @@ function [y_out,exo_simul] =simult(y0, dr,DynareModel,DynareOptions)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-order = DynareOptions.order;
-replic = DynareOptions.simul_replic;
+order = options_.order;
+replic = options_.simul_replic;
 
 if replic > 1
-    if ~exist([DynareModel.dname '/Output'],'dir')
-        mkdir(DynareModel.dname,'Output');
+    if ~exist([M_.dname '/Output'],'dir')
+        mkdir(M_.dname,'Output');
     end
-    fname = [DynareModel.dname filesep 'Output' filesep DynareModel.fname,'_simul'];
+    fname = [M_.dname filesep 'Output' filesep M_.fname,'_simul'];
     fh = fopen(fname,'w+');
 end
 
 % eliminate shocks with 0 variance
-i_exo_var = setdiff([1:DynareModel.exo_nbr],find(diag(DynareModel.Sigma_e) == 0));
+i_exo_var = setdiff([1:M_.exo_nbr],find(diag(M_.Sigma_e) == 0));
 nxs = length(i_exo_var);
-exo_simul = zeros(DynareOptions.periods,DynareModel.exo_nbr);
-chol_S = chol(DynareModel.Sigma_e(i_exo_var,i_exo_var));
+exo_simul = zeros(options_.periods,M_.exo_nbr);
+chol_S = chol(M_.Sigma_e(i_exo_var,i_exo_var));
 
 for i=1:replic
-    if ~isempty(DynareModel.Sigma_e)
+    if ~isempty(M_.Sigma_e)
         % we fill the shocks row wise to have the same values
         % independently of the length of the simulation
-        exo_simul(:,i_exo_var) = randn(nxs,DynareOptions.periods)'*chol_S;
+        exo_simul(:,i_exo_var) = randn(nxs,options_.periods)'*chol_S;
     end
-    y_ = simult_(DynareModel,DynareOptions,y0,dr,exo_simul,order);
+    y_ = simult_(M_,options_,y0,dr,exo_simul,order);
     % elimninating initial value
     y_ = y_(:,2:end);
     if replic > 1

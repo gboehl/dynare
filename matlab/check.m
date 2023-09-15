@@ -42,7 +42,7 @@ end
 
 oo.dr=set_state_space(oo.dr,M,options);
 
-[dr,info,M,~] = resol(1,M,options,oo);
+[dr,info] = resol(1,M,options,oo.dr ,oo.steady_state, oo.exo_steady_state, oo.exo_det_steady_state);
 
 if info(1) ~= 0 && info(1) ~= 3 && info(1) ~= 4
     print_info(info, 0, options);
