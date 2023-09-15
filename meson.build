@@ -2,7 +2,6 @@
 # - Add tests that are individually listed in {M,O}_TRS_FILES of tests/Makefile.am
 # - Build documentation
 # - Install files in right location
-# - move to fortran_std=f2018; this requires changes in libkordersim, and also replacing isnan() by ieee_is_nan() in various MEX (or use -fall-intrinsics)
 # - with -Dprefer_static=true, under Octave/Windows, we are now linking the compiler libs (libgcc, libstdc++, libgfortran, libquadmath, libssp, libgomp) statically (contrary to what we were doing with autotools). In theory this is better, because the compiler used for creating the Octave binary may be different from the one used for creating our MEX. Check that this is ok
 # - configuration option to disable documentation
 # - configuration option to disable preprocessor build
@@ -19,7 +18,7 @@
 project('dynare',
         'cpp', 'fortran', 'c',
         version : '6-unstable',
-        default_options : [ 'cpp_std=gnu++20', 'fortran_std=none', 'c_std=gnu17', 'warning_level=2' ])
+        default_options : [ 'cpp_std=gnu++20', 'fortran_std=f2018', 'c_std=gnu17', 'warning_level=2' ])
 
 add_global_arguments('-Wimplicit-interface', '-Wno-compare-reals', language : 'fortran')
 add_global_arguments('-DPACKAGE_VERSION="' + meson.project_version() + '"', language : 'cpp')
