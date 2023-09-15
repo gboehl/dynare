@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -e
+
+if (($# < 4 )); then
+    echo "Usage: $0 sphinx_build_exe source_dir pdf_output private_dir [extra_sphinx_options]" 2>&1
+    exit 1
+fi
+
+sphinx_build_exe=$1
+source_dir=$2
+pdf_output=$3
+private_dir=$4
+shift 4
+
+# NB: Ideally we would have called “sphinx-build -M latexpdf” (to combine the
+# LaTeX creation and the PDF creation into a single step) but this breaks when
+# -D options are passed, presumably due to a bug in sphinx-build.
+# See: https://bugs.debian.org/933347
+
+"$sphinx_build_exe" -b latex "$@" "$source_dir" "$private_dir"
+
+make -C "$private_dir" all-pdf
+
+pdf_basename=${pdf_output##*/}
+
+mv "$private_dir"/"$pdf_basename" "$pdf_output"
