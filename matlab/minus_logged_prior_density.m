@@ -13,7 +13,7 @@ function [fval,info,exit_flag,fake_1,fake_2] = minus_logged_prior_density(xparam
 %   f          [double]  value of minus the logged prior density.
 %   info       [double]  vector: second entry stores penalty, first entry the error code.
 %
-% Copyright © 2009-2017 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -121,12 +121,11 @@ end
 % 2. Check BK and steady state
 %-----------------------------
 
-M_ = set_all_parameters(xparams,EstimatedParams,DynareModel);
-[dr,info,DynareModel,DynareResults] = resol(0,DynareModel,DynareOptions,DynareResults);
+[~,info] = resol(0,DynareModel,DynareOptions,DynareResults);
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
-    if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ...
+    if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ||...
                 info(1) == 20 || info(1) == 21 || info(1) == 23 || info(1) == 26 || ...
                 info(1) == 81 || info(1) == 84 ||  info(1) == 85
         %meaningful second entry of output that can be used
@@ -141,7 +140,5 @@ if info(1)
         return
     end
 end
-
-
 
 fval = - priordens(xparams,pshape,p6,p7,p3,p4);
