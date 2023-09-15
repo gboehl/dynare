@@ -301,7 +301,8 @@ end
 if options_.mode_check.status && ~options_.mh_posterior_mode_estimation
     ana_deriv_old = options_.analytic_derivation;
     options_.analytic_derivation = 0;
-    mode_check(objective_function,xparam1,hh,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+    mode_check(objective_function,xparam1,hh,options_,M_,estim_params_,bayestopt_,bounds,false,...
+               dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_);
     options_.analytic_derivation = ana_deriv_old;
 end
 
