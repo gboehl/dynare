@@ -22,6 +22,7 @@ module l_reduction
    use lapack
    use blas
    use matlab_mex
+   use ieee_arithmetic
    implicit none (type, external)
 
 contains
@@ -89,7 +90,7 @@ loop: do
             info(1) = 411._c_double
             info(2) = real(log(crit), c_double)
             exit loop
-         elseif (isnan(crit) .or. (info_inv /= 0_blint)) then
+         elseif (ieee_is_nan(crit) .or. (info_inv /= 0_blint)) then
             info(1) = 412._c_double
             info(2) = 1._c_double
             exit loop

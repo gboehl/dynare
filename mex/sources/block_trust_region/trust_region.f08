@@ -22,6 +22,7 @@
 module trust_region
   use iso_fortran_env
   use lapack
+  use ieee_arithmetic
   implicit none (type, external)
 
   private
@@ -98,8 +99,8 @@ contains
     call f_and_update_norms
 
     ! Test if the nonlinear system of equations is well behaved at the initial guess.
-    if (any(isnan(fvec))) return
-    if (any(isnan(fjac))) return
+    if (any(ieee_is_nan(fvec))) return
+    if (any(ieee_is_nan(fjac))) return
 
     ! Do not iterate if the initial guess is a solution of the nonlinear system of equations.
     if (norm2(fvec)<tolf_actual) then
@@ -214,7 +215,7 @@ contains
             x0 = x
             x = x2
             call f_and_update_norms
-            if (any(isnan(fvec)) .or. any(isnan(fjac))) then
+            if (any(ieee_is_nan(fvec)) .or. any(ieee_is_nan(fjac))) then
                x = x0
                call f_and_update_norms
                delta = delta / 2
