@@ -112,7 +112,6 @@ AC_CONFIG_FILES([Makefile
                  VERSION
                  doc/Makefile
                  doc/manual/Makefile
-                 doc/manual/utils/version.py
                  doc/parallel/Makefile
                  doc/internals/Makefile
                  doc/gsa/Makefile
