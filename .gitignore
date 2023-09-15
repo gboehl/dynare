@@ -59,7 +59,6 @@ checksum
 /doc/manual/build
 /doc/manual/utils/version.py
 /doc/manual/utils/__pycache__/*
-!/doc/guide.bbl
 !/doc/parallel/AvenueParadigm.pdf
 !/doc/parallel/iVaNo_*.pdf
 !/doc/parallel/netbook_*.pdf
