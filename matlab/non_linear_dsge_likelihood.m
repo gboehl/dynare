@@ -1,17 +1,17 @@
-function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,Model,DynareOptions,BayesInfo,DynareResults] = non_linear_dsge_likelihood(xparam1,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
+function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,oo_] = non_linear_dsge_likelihood(xparam1,DynareDataset,DatasetInfo,options_,M_,EstimatedParameters,bayestopt_,BoundsInfo,oo_)
 
 % Evaluates the posterior kernel of a dsge model using a non linear filter.
 %
 % INPUTS
 % - xparam1                 [double]              n×1 vector, estimated parameters.
-% - DynareDataset           [struct]              Matlab's structure containing the dataset (initialized by dynare, aka dataset_).
-% - DatasetInfo             [struct]              Matlab's structure describing the dataset (initialized by dynare, aka dataset_info).
-% - DynareOptions           [struct]              Matlab's structure describing the options (initialized by dynare, aka options_).
-% - Model                   [struct]              Matlab's structure describing the Model (initialized by dynare, aka M_).
-% - EstimatedParameters     [struct]              Matlab's structure describing the estimated_parameters (initialized by dynare, aka estim_params_).
-% - BayesInfo               [struct]              Matlab's structure describing the priors (initialized by dynare,aka bayesopt_).
-% - BoundsInfo              [struct]              Matlab's structure specifying the bounds on the paramater values (initialized by dynare,aka bayesopt_).
-% - DynareResults           [struct]              Matlab's structure gathering the results (initialized by dynare,aka oo_).
+% - DynareDataset           [struct]              Matlab's structure containing the dataset
+% - DatasetInfo             [struct]              Matlab's structure describing the dataset
+% - options_                [struct]              Matlab's structure describing the options
+% - M_                      [struct]              Matlab's structure describing the M_
+% - EstimatedParameters     [struct]              Matlab's structure describing the estimated_parameters
+% - bayestopt_              [struct]              Matlab's structure describing the priors
+% - BoundsInfo              [struct]              Matlab's structure specifying the bounds on the paramater values
+% - oo_                     [struct]              Matlab's structure gathering the results
 %
 % OUTPUTS
 % - fval                    [double]              scalar, value of the likelihood or posterior kernel.
@@ -21,12 +21,12 @@ function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,Model,DynareOptions,Bayes
 % - Hess                    [double]              Empty array.
 % - ys                      [double]              Empty array.
 % - trend_coeff             [double]              Empty array.
-% - Model                   [struct]              Updated Model structure described in INPUTS section.
-% - DynareOptions           [struct]              Updated DynareOptions structure described in INPUTS section.
-% - BayesInfo               [struct]              See INPUTS section.
-% - DynareResults           [struct]              Updated DynareResults structure described in INPUTS section.
+% - M_                      [struct]              Updated M_ structure described in INPUTS section.
+% - options_                [struct]              Updated options_ structure described in INPUTS section.
+% - bayestopt_               [struct]              See INPUTS section.
+% - oo_                     [struct]              Updated oo_ structure described in INPUTS section.
 
-% Copyright © 2010-2022 Dynare Team
+% Copyright © 2010-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -60,7 +60,7 @@ if ~isempty(xparam1)
 end
 
 % Issue an error if loglinear option is used.
-if DynareOptions.loglinear
+if options_.loglinear
     error('non_linear_dsge_likelihood: It is not possible to use a non linear filter with the option loglinear!')
 end
 
@@ -68,9 +68,9 @@ end
 % 1. Get the structural parameters & define penalties
 %------------------------------------------------------------------------------
 
-Model = set_all_parameters(xparam1,EstimatedParameters,Model);
+M_ = set_all_parameters(xparam1,EstimatedParameters,M_);
 
-[fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, Model, EstimatedParameters, BoundsInfo);
+[fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, M_, EstimatedParameters, BoundsInfo);
 if info(1)
     return
 end
@@ -80,7 +80,7 @@ end
 %------------------------------------------------------------------------------
 
 % Linearize the model around the deterministic sdteadystate and extract the matrices of the state equation (T and R).
-[dr, info, Model, DynareResults] = resol(0, Model, DynareOptions, DynareResults);
+[dr, info, M_, oo_] = resol(0, M_, options_, oo_);
 
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 || ...
@@ -100,18 +100,18 @@ if info(1)
 end
 
 % Define a vector of indices for the observed variables. Is this really usefull?...
-BayesInfo.mf = BayesInfo.mf1;
+bayestopt_.mf = bayestopt_.mf1;
 
 % Get needed informations for kalman filter routines.
-start = DynareOptions.presample+1;
+start = options_.presample+1;
 Y = transpose(DynareDataset.data);
 
 %------------------------------------------------------------------------------
 % 3. Initial condition of the Kalman filter
 %------------------------------------------------------------------------------
 
-mf0 = BayesInfo.mf0;
-mf1 = BayesInfo.mf1;
+mf0 = bayestopt_.mf0;
+mf1 = bayestopt_.mf1;
 restrict_variables_idx = dr.restrict_var_list;
 state_variables_idx = restrict_variables_idx(mf0);
 number_of_state_variables = length(mf0);
@@ -124,10 +124,10 @@ ReducedForm.H = H;
 ReducedForm.mf0 = mf0;
 ReducedForm.mf1 = mf1;
 
-if DynareOptions.order>3
+if options_.order>3
     ReducedForm.use_k_order_solver = true;
     ReducedForm.dr = dr;
-    ReducedForm.udr = folded_to_unfolded_dr(dr, Model, DynareOptions);
+    ReducedForm.udr = folded_to_unfolded_dr(dr, M_, options_);
     if pruning
         error('Pruning is not available for orders > 3');
     end
@@ -139,7 +139,7 @@ else
     ReducedForm.ghuu = dr.ghuu(restrict_variables_idx,:);
     ReducedForm.ghxu = dr.ghxu(restrict_variables_idx,:);
     ReducedForm.ghs2 = dr.ghs2(restrict_variables_idx,:);
-    if DynareOptions.order==3
+    if options_.order==3
         ReducedForm.ghxxx = dr.ghxxx(restrict_variables_idx,:);
         ReducedForm.ghuuu = dr.ghuuu(restrict_variables_idx,:);
         ReducedForm.ghxxu = dr.ghxxu(restrict_variables_idx,:);
@@ -150,22 +150,22 @@ else
 end
 
 % Set initial condition.
-switch DynareOptions.particle.initialization
+switch options_.particle.initialization
   case 1% Initial state vector covariance is the ergodic variance associated to the first order Taylor-approximation of the model.
     StateVectorMean = ReducedForm.constant(mf0);
     [A,B] = kalman_transition_matrix(dr,dr.restrict_var_list,dr.restrict_columns);
-    StateVectorVariance = lyapunov_symm(A, B*Q*B', DynareOptions.lyapunov_fixed_point_tol, ...
-                                        DynareOptions.qz_criterium, DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
+    StateVectorVariance = lyapunov_symm(A, B*Q*B', options_.lyapunov_fixed_point_tol, ...
+                                        options_.qz_criterium, options_.lyapunov_complex_threshold, [], options_.debug);
     StateVectorVariance = StateVectorVariance(mf0,mf0);
   case 2% Initial state vector covariance is a monte-carlo based estimate of the ergodic variance (consistent with a k-order Taylor-approximation of the model).
     StateVectorMean = ReducedForm.constant(mf0);
-    old_DynareOptionsperiods = DynareOptions.periods;
-    DynareOptions.periods = 5000;
-    old_DynareOptionspruning =  DynareOptions.pruning;
-    DynareOptions.pruning = DynareOptions.particle.pruning;
-    y_ = simult(DynareResults.steady_state, dr,Model,DynareOptions,DynareResults);
+    old_DynareOptionsperiods = options_.periods;
+    options_.periods = 5000;
+    old_DynareOptionspruning =  options_.pruning;
+    options_.pruning = options_.particle.pruning;
+    y_ = simult(oo_.steady_state, dr,M_,options_,oo_);
     y_ = y_(dr.order_var(state_variables_idx),2001:5000); %state_variables_idx is in dr-order while simult_ is in declaration order
-    if any(any(isnan(y_))) ||  any(any(isinf(y_))) && ~ DynareOptions.pruning
+    if any(any(isnan(y_))) ||  any(any(isinf(y_))) && ~ options_.pruning
         fval = Inf;
         info(1) = 202;
         info(4) = 0.1;
@@ -173,13 +173,13 @@ switch DynareOptions.particle.initialization
         return;        
     end
     StateVectorVariance = cov(y_');       
-    DynareOptions.periods = old_DynareOptionsperiods;
-    DynareOptions.pruning = old_DynareOptionspruning;
+    options_.periods = old_DynareOptionsperiods;
+    options_.pruning = old_DynareOptionspruning;
     clear('old_DynareOptionsperiods','y_');
   case 3% Initial state vector covariance is a diagonal matrix (to be used
         % if model has stochastic trends).
     StateVectorMean = ReducedForm.constant(mf0);
-    StateVectorVariance = DynareOptions.particle.initial_state_prior_std*eye(number_of_state_variables);
+    StateVectorVariance = options_.particle.initial_state_prior_std*eye(number_of_state_variables);
   otherwise
     error('Unknown initialization option!')
 end
@@ -197,9 +197,9 @@ end
 %------------------------------------------------------------------------------
 % 4. Likelihood evaluation
 %------------------------------------------------------------------------------
-DynareOptions.warning_for_steadystate = 0;
+options_.warning_for_steadystate = 0;
 [s1,s2] = get_dynare_random_generator_state();
-LIK = feval(DynareOptions.particle.algorithm, ReducedForm, Y, start, DynareOptions.particle, DynareOptions.threads, DynareOptions, Model);
+LIK = feval(options_.particle.algorithm, ReducedForm, Y, start, options_.particle, options_.threads, options_, M_);
 set_dynare_random_generator_state(s1,s2);
 if imag(LIK)
     fval = Inf;
@@ -216,11 +216,11 @@ elseif isnan(LIK)
 else
     likelihood = LIK;
 end
-DynareOptions.warning_for_steadystate = 1;
+options_.warning_for_steadystate = 1;
 % ------------------------------------------------------------------------------
 % Adds prior if necessary
 % ------------------------------------------------------------------------------
-lnprior = priordens(xparam1(:),BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
+lnprior = priordens(xparam1(:),bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
 fval = (likelihood-lnprior);
 
 if isnan(fval)
