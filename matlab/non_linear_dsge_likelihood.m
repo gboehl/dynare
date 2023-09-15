@@ -163,7 +163,7 @@ switch options_.particle.initialization
     options_.periods = 5000;
     old_DynareOptionspruning =  options_.pruning;
     options_.pruning = options_.particle.pruning;
-    y_ = simult(oo_.steady_state, dr,M_,options_,oo_);
+    y_ = simult(oo_.steady_state, dr,M_,options_);
     y_ = y_(dr.order_var(state_variables_idx),2001:5000); %state_variables_idx is in dr-order while simult_ is in declaration order
     if any(any(isnan(y_))) ||  any(any(isinf(y_))) && ~ options_.pruning
         fval = Inf;

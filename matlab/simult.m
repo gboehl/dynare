@@ -1,8 +1,8 @@
-function [y_out,DynareResults] =simult(y0, dr,DynareModel,DynareOptions,DynareResults)
+function [y_out,exo_simul] =simult(y0, dr,DynareModel,DynareOptions)
 % Simulate a DSGE model (perturbation approach).
 
 %@info:
-%! @deftypefn {Function File} {[@var{y_}, @var{DynareResults}] =} simult (@var{y0},@var{dr},@var{DynareModel},@var{DynareOptions},@var{DynareResults})
+%! @deftypefn {Function File} {[@var{y_}, @var{exo_simul}] =} simult (@var{y0},@var{dr},@var{DynareModel},@var{DynareOptions})
 %! @anchor{simult}
 %! @sp 1
 %! Simulate a DSGE model (perturbation approach).
@@ -18,8 +18,6 @@ function [y_out,DynareResults] =simult(y0, dr,DynareModel,DynareOptions,DynareRe
 %! Matlab's structure describing the model (initialized by dynare, see @ref{M_})
 %! @item DynareOptions
 %! Matlab's structure describing the current options (initialized by dynare, see @ref{options_}).
-%! @item DynareResults
-%! Matlab's structure gathering the results (see @ref{oo_}).
 %! @end table
 %! @sp 2
 %! @strong{Outputs}
@@ -27,8 +25,8 @@ function [y_out,DynareResults] =simult(y0, dr,DynareModel,DynareOptions,DynareRe
 %! @table @ @var
 %! @item y_out
 %! Matrix of doubles, simulated time series for all the endogenous variables (one per row).
-%! @item DynareResults
-%! Matlab's structure gathering the results (see @ref{oo_}).
+%! @item exo_simul
+%! Matrix of doubles, random exogenous shocks
 %! @end table
 %! @sp 2
 %! @strong{This function is called by:}
@@ -45,7 +43,7 @@ function [y_out,DynareResults] =simult(y0, dr,DynareModel,DynareOptions,DynareRe
 %! @end deftypefn
 %@eod:
 
-% Copyright © 2001-2019 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -76,16 +74,16 @@ end
 % eliminate shocks with 0 variance
 i_exo_var = setdiff([1:DynareModel.exo_nbr],find(diag(DynareModel.Sigma_e) == 0));
 nxs = length(i_exo_var);
-DynareResults.exo_simul = zeros(DynareOptions.periods,DynareModel.exo_nbr);
+exo_simul = zeros(DynareOptions.periods,DynareModel.exo_nbr);
 chol_S = chol(DynareModel.Sigma_e(i_exo_var,i_exo_var));
 
 for i=1:replic
     if ~isempty(DynareModel.Sigma_e)
         % we fill the shocks row wise to have the same values
         % independently of the length of the simulation
-        DynareResults.exo_simul(:,i_exo_var) = randn(nxs,DynareOptions.periods)'*chol_S;
+        exo_simul(:,i_exo_var) = randn(nxs,DynareOptions.periods)'*chol_S;
     end
-    y_ = simult_(DynareModel,DynareOptions,y0,dr,DynareResults.exo_simul,order);
+    y_ = simult_(DynareModel,DynareOptions,y0,dr,exo_simul,order);
     % elimninating initial value
     y_ = y_(:,2:end);
     if replic > 1

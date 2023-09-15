@@ -95,7 +95,7 @@ end
 
 
 for j=1:replic
-    [ys, oo_] = simult(y0,oo_.dr,M_,options_,oo_);%do simulation
+    [ys, oo_.exo_simul] = simult(y0,oo_.dr,M_,options_);%do simulation
     oo_=disp_moments(ys, options_.varobs,M_,options_,oo_); %get moments
     dum=[oo_.mean; dyn_vech(oo_.var)];
     sd = sqrt(diag(oo_.var));

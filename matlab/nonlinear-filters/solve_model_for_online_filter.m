@@ -197,7 +197,7 @@ if setinitialcondition
         DynareOptions.periods = 5000;
         old_DynareOptionspruning =  DynareOptions.pruning;
         DynareOptions.pruning = DynareOptions.particle.pruning;
-        y_ = simult(dr.ys, dr, Model, DynareOptions, DynareResults);
+        y_ = simult(dr.ys, dr, Model, DynareOptions);
         y_ = y_(dr.order_var(state_variables_idx),2001:DynareOptions.periods);
         StateVectorVariance = cov(y_');
         DynareOptions.periods = old_DynareOptionsperiods;
