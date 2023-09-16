@@ -75,7 +75,6 @@ function [PostMod,PostVar,Scale,PostMean] = gmhmaxlik_core(ObjFun,xparam1,mh_bou
 
 global bayestopt_ estim_params_ options_
 
-options_.lik_algo = 1;
 npar = length(xparam1);
 
 NumberOfIterations = options.number;

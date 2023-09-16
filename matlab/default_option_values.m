@@ -400,7 +400,6 @@ options_.kalman.keep_kalman_algo_if_singularity_is_detected = false;
 options_.diffuse_kalman_tol = 1e-6;
 options_.use_univariate_filters_if_singularity_is_detected = 1;
 options_.riccati_tol = 1e-6;
-options_.lik_algo = 1;
 options_.lik_init = 1;
 options_.load_mh_file = false;
 options_.load_results_after_load_mh = false;
