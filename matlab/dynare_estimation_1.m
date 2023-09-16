@@ -497,7 +497,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                        end
                    end
                 end
-                oo_ = compute_moments_varendo('posterior',options_,M_,oo_,var_list_);
+                oo_ = compute_moments_varendo('posterior',options_,M_,oo_,estim_params_,var_list_);
             end
             if options_.smoother || ~isempty(options_.filter_step_ahead) || options_.forecast
                 if error_flag

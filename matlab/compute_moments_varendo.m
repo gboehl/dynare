@@ -1,4 +1,4 @@
-function oo_ = compute_moments_varendo(type, options_, M_, oo_, var_list_)
+function oo_ = compute_moments_varendo(type, options_, M_, oo_, estim_params_, var_list_)
 
 % Computes the second order moments (autocorrelation function, covariance
 % matrix and variance decomposition) distributions for all the endogenous variables selected in
@@ -55,7 +55,7 @@ end
 
 if strcmpi(type,'posterior')
     posterior = 1;
-    if nargin==4
+    if nargin==5
         var_list_ = options_.varobs;
     end
     if isfield(oo_,'PosteriorTheoreticalMoments')
@@ -63,7 +63,7 @@ if strcmpi(type,'posterior')
     end
 elseif strcmpi(type,'prior')
     posterior = 0;
-    if nargin==4
+    if nargin==5
         var_list_ = options_.prior_analysis_endo_var_list;
         if isempty(var_list_)
             options_.prior_analysis_var_list = options_.varobs;
@@ -97,13 +97,13 @@ end
 if posterior
     for i=1:NumberOfEndogenousVariables
         for j=i:NumberOfEndogenousVariables
-            oo_ = posterior_analysis('variance', var_list_{i}, var_list_{j}, NumberOfLags, options_, M_, oo_);
+            oo_ = posterior_analysis('variance', var_list_{i}, var_list_{j}, NumberOfLags, options_, M_, oo_, estim_params_);
         end
     end
 else
     for i=1:NumberOfEndogenousVariables
         for j=i:NumberOfEndogenousVariables
-            oo_ = prior_analysis('variance', var_list_{i}, var_list_{j}, [], options_, M_, oo_);
+            oo_ = prior_analysis('variance', var_list_{i}, var_list_{j}, [], options_, M_, oo_, estim_params_);
         end
     end
 end
@@ -113,7 +113,7 @@ if posterior
     for h=NumberOfLags:-1:1
         for i=1:NumberOfEndogenousVariables
             for j=1:NumberOfEndogenousVariables
-                oo_ = posterior_analysis('correlation', var_list_{i}, var_list_{j}, h, options_, M_, oo_);
+                oo_ = posterior_analysis('correlation', var_list_{i}, var_list_{j}, h, options_, M_, oo_, estim_params_);
             end
         end
     end
@@ -121,7 +121,7 @@ else
     for h=NumberOfLags:-1:1
         for i=1:NumberOfEndogenousVariables
             for j=1:NumberOfEndogenousVariables
-                oo_ = prior_analysis('correlation', var_list_{i}, var_list_{j}, h, options_, M_, oo_);
+                oo_ = prior_analysis('correlation', var_list_{i}, var_list_{j}, h, options_, M_, oo_, estim_params_);
             end
         end
     end
@@ -135,7 +135,7 @@ if options_.order==1
             if posterior
                 for i=1:NumberOfEndogenousVariables
                     for j=1:NumberOfExogenousVariables
-                        oo_ = posterior_analysis('decomposition', var_list_{i}, M_.exo_names{j}, [], options_, M_, oo_);
+                        oo_ = posterior_analysis('decomposition', var_list_{i}, M_.exo_names{j}, [], options_, M_, oo_, estim_params_);
                         temp(i,j) = oo_.PosteriorTheoreticalMoments.dsge.VarianceDecomposition.Mean.(var_list_{i}).(M_.exo_names{j});
                     end
                 end
@@ -144,7 +144,7 @@ if options_.order==1
             else
                 for i=1:NumberOfEndogenousVariables
                     for j=1:NumberOfExogenousVariables
-                        oo_ = prior_analysis('decomposition', var_list_{i}, M_.exo_names{j}, [], options_, M_, oo_);
+                        oo_ = prior_analysis('decomposition', var_list_{i}, M_.exo_names{j}, [], options_, M_, oo_, estim_params_);
                         temp(i,j)=oo_.PriorTheoreticalMoments.dsge.VarianceDecomposition.Mean.(var_list_{i}).(M_.exo_names{j});
                     end
                 end
@@ -181,7 +181,7 @@ if options_.order==1
                             temp(i,j,:) = oo_.PosteriorTheoreticalMoments.dsge.VarianceDecompositionME.Mean.(observable_name_requested_vars{i}).(M_.exo_names{j});
                         end
                         endo_index_varlist = strmatch(observable_name_requested_vars{i}, var_list_, 'exact');
-                        oo_ = posterior_analysis('decomposition', var_list_{endo_index_varlist}, 'ME', [], options_, M_, oo_);
+                        oo_ = posterior_analysis('decomposition', var_list_{endo_index_varlist}, 'ME', [], options_, M_, oo_, estim_params_);
                         temp(i,j+1,:) = oo_.PosteriorTheoreticalMoments.dsge.VarianceDecompositionME.Mean.(observable_name_requested_vars{i}).('ME');
                     end
                     title='Posterior mean variance decomposition (in percent) with measurement error';
@@ -219,7 +219,7 @@ if options_.order==1
             if posterior
                 for i=1:NumberOfEndogenousVariables
                     for j=1:NumberOfExogenousVariables
-                        oo_ = posterior_analysis('conditional decomposition', var_list_{i}, M_.exo_names{j}, Steps, options_, M_, oo_);
+                        oo_ = posterior_analysis('conditional decomposition', var_list_{i}, M_.exo_names{j}, Steps, options_, M_, oo_, estim_params_);
                         temp(i,j,:) = oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition.Mean.(var_list_{i}).(M_.exo_names{j});
                     end
                 end
@@ -261,7 +261,7 @@ if options_.order==1
                                 temp(i,j,:) = oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecompositionME.Mean.(observable_name_requested_vars{i}).(M_.exo_names{j});
                             end
                             endo_index_varlist = strmatch(observable_name_requested_vars{i}, var_list_, 'exact');
-                            oo_ = posterior_analysis('conditional decomposition', var_list_{endo_index_varlist}, 'ME', Steps, options_, M_, oo_);
+                            oo_ = posterior_analysis('conditional decomposition', var_list_{endo_index_varlist}, 'ME', Steps, options_, M_, oo_, estim_params_);
                             temp(i,j+1,:) = oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecompositionME.Mean.(observable_name_requested_vars{i}).('ME');
                         end
                         title = 'Posterior mean conditional variance decomposition (in percent) with measurement error';
