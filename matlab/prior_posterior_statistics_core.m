@@ -314,7 +314,7 @@ for b=fpar:B
         end
         if horizon
             yyyy = alphahat(iendo,i_last_obs);
-            yf = forcst2a(yyyy,dr,zeros(horizon,exo_nbr));
+            yf = simulate_posterior_forecasts(yyyy,dr,horizon,false,M_.Sigma_e,1);
             if options_.prefilter
                 % add mean
                 yf(:,IdObs) = yf(:,IdObs)+repmat(mean_varobs, ...
@@ -331,7 +331,7 @@ for b=fpar:B
             else
                 yf = yf+repmat(SteadyState',horizon+maxlag,1);
             end
-            yf1 = forcst2(yyyy,horizon,dr,1);
+            yf1 = simulate_posterior_forecasts(yyyy,dr,horizon,false,M_.Sigma_e,1);
             if options_.prefilter == 1
                 % add mean
                 yf1(:,IdObs,:) = yf1(:,IdObs,:)+ ...
@@ -543,3 +543,56 @@ if RemoteFlag==1
 end
 
 dyn_waitbar_close(h);
+
+
+function yf=simulate_posterior_forecasts(y0,dr,horizon,stochastic_indicator,Sigma_e,n)
+% function yf=forcst2(y0,horizon,dr,n)
+%
+% computes forecasts based on first order model solution, given shocks
+% drawn from the shock distribution, but not including measurement error
+% Inputs:
+%   - y0                    [endo_nbr by maximum_endo_lag]      matrix of starting values
+%   - dr                    [structure]                         structure with Dynare decision rules
+%   - horizon               [scalar]                            number of forecast periods
+%   - stochastic_indicator  [boolean]                           indicator whether to consider stochastic shocks
+%   - Sigma_e               [integer]                           covariance matrix of shocks
+%   - n                     [scalar]                            number of repetitions
+%
+% Outputs:
+%   - yf        [horizon+ykmin_ by endo_nbr by n]   array of forecasts
+
+if nargin< 4
+    stochastic_indicator=false;
+    n=1;
+end
+%select states
+k2 = dr.inv_order_var(dr.state_var);
+
+if stochastic_indicator
+    % eliminate shocks with 0 variance
+    i_exo_var = setdiff(1:length(Sigma_e),find(diag(Sigma_e) == 0));
+    nxs = length(i_exo_var);
+
+    chol_S = chol(Sigma_e(i_exo_var,i_exo_var));
+
+    if ~isempty(Sigma_e)
+        e = randn(nxs,n,horizon);
+    end
+
+    B1 = dr.ghu(:,i_exo_var)*chol_S';
+end
+endo_nbr=length(y0);
+
+yf = zeros(endo_nbr,1+horizon,n);
+yf(:,1,:,:) = repmat(y0,[1,1,n]);
+
+for iter=1:horizon    
+    if stochastic_indicator
+        yf(:,iter+1,:) = dr.ghx*squeeze(yf(k2,iter,:))+B1*squeeze(e(:,:,iter));
+    else
+        yf(:,iter+1,:) = dr.ghx*squeeze(yf(k2,iter,:));
+    end
+end
+
+yf(dr.order_var,:,:) = yf;
+yf=permute(yf,[2 1 3]);
