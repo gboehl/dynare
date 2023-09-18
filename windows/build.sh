@@ -85,11 +85,6 @@ cd ..
 	    --disable-matlab \
 	    PACKAGE_VERSION="$VERSION" \
 	    PACKAGE_STRING="dynare $VERSION"
-if [[ -z $CI ]]; then
-    # If not in Gitlab CI, clean the source and build the doc
-    make clean
-    make -j"$NTHREADS" pdf html
-fi
 make -j"$NTHREADS"
 x86_64-w64-mingw32-strip preprocessor/src/dynare-preprocessor.exe
 x86_64-w64-mingw32-strip matlab/preprocessor64/dynare_m.exe
@@ -185,6 +180,11 @@ done < "$ROOT_DIRECTORY"/deps/versions.mk
 # shellcheck disable=SC1117
 echo -e "function v = supported_octave_version\nv=\"${OCTAVE_VERSION}\";\nend" > ../matlab/supported_octave_version.m
 
+if [[ -z $CI ]]; then
+    echo "Building out of GitLab CI is not supported, documentation support needs to be fixed" 2>&1
+    exit 1
+fi
+
 ## Create Windows installer
 makensis -DVERSION="$VERSION" dynare.nsi
 mkdir -p exe
@@ -218,14 +218,10 @@ cp -p windows/deps/lib64/x13as/x13as.exe "$ZIPDIR"/matlab/modules/dseries/extern
 cp -pr examples "$ZIPDIR"
 mkdir -p "$ZIPDIR"/scripts
 cp -p scripts/dynare.el "$ZIPDIR"/scripts
-mkdir -p "$ZIPDIR"/doc/dynare-manual.html
-cp -pr doc/manual/build/html/* "$ZIPDIR"/doc/dynare-manual.html
-cp -p doc/*.pdf "$ZIPDIR"/doc
-cp -p doc/manual/build/latex/dynare-manual.pdf "$ZIPDIR"/doc
-cp -p preprocessor/doc/macroprocessor/macroprocessor.pdf "$ZIPDIR"/doc
-cp -p doc/parallel/parallel.pdf "$ZIPDIR"/doc
-cp -p preprocessor/doc/preprocessor/preprocessor.pdf "$ZIPDIR"/doc
-cp -p doc/gsa/gsa.pdf "$ZIPDIR"/doc
+mkdir -p "$ZIPDIR"/doc
+cp -p build-doc/*.pdf "$ZIPDIR"/doc
+cp -p build-doc/preprocessor/doc/*.pdf "$ZIPDIR"/doc
+cp -pr build-doc/dynare-manual.html "$ZIPDIR"/doc
 
 cd "$TMP_DIRECTORY"
 

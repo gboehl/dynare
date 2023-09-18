@@ -112,10 +112,10 @@ SectionEnd
 
 Section "Documentation and examples"
  SetOutPath $INSTDIR\doc
- File ..\doc\manual\build\latex\dynare-manual.pdf ..\doc\guide.pdf ..\doc\bvar-a-la-sims.pdf ..\doc\dr.pdf ..\doc\sylvester.pdf ..\doc\tl.pdf ..\preprocessor\doc\macroprocessor\macroprocessor.pdf ..\preprocessor\doc\preprocessor\preprocessor.pdf ..\doc\parallel\parallel.pdf ..\doc\gsa\gsa.pdf ..\doc\dseries-and-reporting\dseriesReporting.pdf
+ File ..\build-doc\dynare-manual.pdf ..\build-doc\guide.pdf ..\build-doc\bvar-a-la-sims.pdf ..\build-doc\dr.pdf ..\build-doc\sylvester.pdf ..\build-doc\tl.pdf ..\build-doc\preprocessor\doc\macroprocessor.pdf ..\build-doc\preprocessor\doc\preprocessor.pdf ..\build-doc\parallel.pdf ..\build-doc\gsa.pdf ..\build-doc\dseriesReporting.pdf
 
  SetOutPath $INSTDIR\doc\dynare-manual.html
- File /r ..\doc\manual\build\html\*
+ File /r ..\build-doc\dynare-manual.html\*
 
  SetOutPath $INSTDIR\examples
  File ..\examples\*.mod ..\examples\*.m

@@ -76,7 +76,7 @@ QUADMATH_DIR=$(mktemp -d)
 ln -s /usr/local/opt/gcc/lib/gcc/$GCC_VERSION/libquadmath.a $QUADMATH_DIR
 
 ##
-## Compile Dynare doc, preprocessor, mex for MATLAB < 2018a
+## Compile Dynare preprocessor, mex for MATLAB < 2018a
 ##
 ## NB: In Homebrew, -static-libgfortran is implied by -static-libgcc (see “gfortran -dumpspecs”)
 ## NB2: We use the hack for libquadmath in LDFLAGS
@@ -96,13 +96,12 @@ cd "$ROOTDIR"
   --with-slicot="$LIB64"/Slicot/with-underscore \
   --disable-octave \
   --with-matlab=/Applications/MATLAB_R2016b.app
-if [[ -z $CI ]]; then
-    # If not in Gitlab CI, clean the source and build the doc
-    make clean
-    make -j"$NTHREADS" pdf html
-fi
 make -j"$NTHREADS"
 
+if [[ -z $CI ]]; then
+    echo "Building out of GitLab CI is not supported, documentation support needs to be fixed" 2>&1
+    exit 1
+fi
 
 ##
 ## Create package
@@ -140,14 +139,9 @@ cp -p  "$ROOTDIR"/scripts/dynare.el                                  "$PKGFILES"
 cp -pr "$ROOTDIR"/contrib/ms-sbvar/TZcode/MatlabFiles                "$PKGFILES"/contrib/ms-sbvar/TZcode
 cp -pr "$ROOTDIR"/contrib/jsonlab                                    "$PKGFILES"/contrib
 
-cp     "$ROOTDIR"/doc/*.pdf                                          "$PKGFILES"/doc
-cp     "$ROOTDIR"/doc/gsa/gsa.pdf                                    "$PKGFILES"/doc
-cp     "$ROOTDIR"/doc/parallel/parallel.pdf                          "$PKGFILES"/doc
-cp     "$ROOTDIR"/doc/dseries-and-reporting/dseriesReporting.pdf     "$PKGFILES"/doc
-cp     "$ROOTDIR"/preprocessor/doc/preprocessor/preprocessor.pdf     "$PKGFILES"/doc
-cp     "$ROOTDIR"/preprocessor/doc/macroprocessor/macroprocessor.pdf "$PKGFILES"/doc
-cp     "$ROOTDIR"/doc/manual/build/latex/dynare-manual.pdf           "$PKGFILES"/doc
-cp -r  "$ROOTDIR"/doc/manual/build/html                              "$PKGFILES"/doc/dynare-manual.html
+cp     "$ROOTDIR"/build-doc/*.pdf                                    "$PKGFILES"/doc
+cp     "$ROOTDIR"/build-doc/preprocessor/doc/*.pdf                   "$PKGFILES"/doc
+cp -r  "$ROOTDIR"/build-doc/dynare-manual.html                       "$PKGFILES"/doc
 
 mkdir -p                                                             "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
 cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
