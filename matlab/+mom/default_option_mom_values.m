@@ -205,7 +205,6 @@ options_mom_.solve_tolx              = options_.solve_tolx;
 options_mom_.steady                  = options_.steady;
 options_mom_.steadystate             = options_.steadystate;
 options_mom_.steadystate_flag        = options_.steadystate_flag;
-%options_mom_.steadystate_partial
 options_mom_.threads = options_.threads; % needed by resol
 options_mom_.debug = options_.debug; % debug option needed by some functions, e.g. check_plot
 

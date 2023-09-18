@@ -89,7 +89,6 @@ elseif exist([M_.fname '_steadystate.m'],'file')
 else
     options_.steadystate_flag = 0;
 end
-options_.steadystate_partial = [];
 options_.steadystate.nocheck = false;
 
 % subset of the estimated deep parameters

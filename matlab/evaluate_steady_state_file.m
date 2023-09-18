@@ -114,21 +114,4 @@ if steady_state_checkflag
         info(1) = 22;
         return
     end
-elseif ~isempty(options.steadystate_partial)
-    ssvar = options.steadystate_partial.ssvar;
-    nov   = length(ssvar);
-    indv  = zeros(nov,1);
-    for i = 1:nov
-        indv(i) = strmatch(ssvar(i), M.endo_names, 'exact');
-    end
-    ys = dynare_solve(@restricted_steadystate, ys(indv), options.steady.maxit, options.dynatol.f, options.dynatol.x, options, exo_ss, indv);
 end
-
-function [sR,sG] = restricted_steadystate(y,x,indx)
-global options_ M_ oo_
-inde = options_.steadystate_partial.sseqn;
-ss = oo_.steady_state;
-ss(indx) = y;
-[R,G] = feval([M_.fname '.static'], ss, x, M_.params);
-sR = R(inde);
-sG = G(inde,indx);
