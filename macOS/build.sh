@@ -21,36 +21,58 @@ set -ex
 
 ROOTDIR=$(pwd)/..
 
-# Set the GCC version
-GCC_VERSION=13
-
-# Set the compilers
-CC=gcc-$GCC_VERSION
-CXX=g++-$GCC_VERSION
-
-# Set the number of threads
-NTHREADS=$(sysctl -n hw.ncpu)
-
 # Set dependency directory
 LIB64="$ROOTDIR"/macOS/deps/lib64
 
+## Hack for statically linking libquadmath, similar to the one used in
+## deps/Makefile for several libraries (there is no -static-libquadmath flag,
+## see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=46539).
+##
+## NB: The hack done for Windows does not work for two reasons:
+## - the macOS linker is different from GNU ld and does not have the equivalent of -Bstatic/-Bdynamic
+## - libgfortran.spec does not include --as-needed on macOS, hence it will link the library anyways
+## Also, it does not seem possible to override libgfortran.spec with the --specs option.
+GCC_VERSION=$(sed -En "/^c[[:space:]]*=/s/c[[:space:]]*=[[:space:]]*'gcc-([0-9]+)'/\1/p" "$ROOTDIR"/scripts/homebrew-native.ini)
+QUADMATH_DIR=$(mktemp -d)
+ln -s /usr/local/opt/gcc/lib/gcc/$GCC_VERSION/libquadmath.a $QUADMATH_DIR
 
 ##
-## Find Dynare Version
+## Compile Dynare
 ##
+cd "$ROOTDIR"
+
+common_meson_opts=(-Dbuild_for=matlab -Dbuildtype=release -Dprefer_static=true -Dfortran_args="[ '-B', '$LIB64/Slicot/' ]" \
+                   -Dc_link_args="[ '-L$QUADMATH_DIR' ]" -Dcpp_link_args="[ '-L$QUADMATH_DIR' ]" -Dfortran_link_args="[ '-L$QUADMATH_DIR' ]" \
+                   --native-file scripts/homebrew-native.ini)
+
+# Build for MATLAB ⩾ R2018a
+meson setup "${common_meson_opts[@]}" -Dmatlab_path=/Applications/MATLAB_R2022b.app build-matlab
+meson compile -v -C build-matlab
+
+# Build for MATLAB < R2018a
+meson setup "${common_meson_opts[@]}" -Dmatlab_path=/Applications/MATLAB_R2016b.app build-old-matlab
+meson compile -v -C build-old-matlab
+
+# If not in CI, build the docs
+if [[ -z $CI ]]; then
+    meson compile -v -C build-matlab doc
+    ln -s build-matlab build-doc
+fi
+
+##
+## Create package
+##
+
+# Determine Dynare version if not passed by an environment variable as in the CI
+if [[ -z $VERSION ]]; then
+    cd build-matlab
+    VERSION=$(meson introspect --projectinfo | sed -En 's/^.*"version": "([^"]*)".*$/\1/p')
+    cd ..
+fi
+
+# Other useful variables
 DATE=$(date +%Y-%m-%d-%H%M)
 DATELONG=$(date '+%d %B %Y')
-if [[ -d ../.git/ ]]; then
-    SHA=$(git rev-parse HEAD)
-    SHASHORT=$(git rev-parse --short HEAD)
-fi
-
-if [[ -z $VERSION ]]; then
-    VERSION=$(grep '^AC_INIT(' ../configure.ac | sed 's/AC_INIT(\[dynare\], \[\(.*\)\])/\1/')
-    if [[ -d ../.git/ ]]; then
-        VERSION="$VERSION"-"$SHASHORT"
-    fi
-fi
 
 # Install location must not be too long for gcc.
 # Otherwise, the headers of the compiled libraries cannot be modified
@@ -64,48 +86,6 @@ else
     LOCATION=$(echo "$VERSION" | cut -f1 -d"-" | cut -c 1-5)-"$DATE"
 fi
 
-## Hack for statically linking libquadmath, similar to the one used in
-## deps/Makefile for several libraries (there is no -static-libquadmath flag,
-## see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=46539).
-##
-## NB: The hack done for Windows (see m4/ax_mexopts.m4) does not work for two reasons:
-## - the macOS linker is different from GNU ld and does not have the equivalent of -Bstatic/-Bdynamic
-## - libgfortran.spec does not include --as-needed on macOS, hence it will link the library anyways
-## Also, it does not seem possible to override libgfortran.spec with the --specs option.
-QUADMATH_DIR=$(mktemp -d)
-ln -s /usr/local/opt/gcc/lib/gcc/$GCC_VERSION/libquadmath.a $QUADMATH_DIR
-
-##
-## Compile Dynare preprocessor, mex for MATLAB < 2018a
-##
-## NB: In Homebrew, -static-libgfortran is implied by -static-libgcc (see “gfortran -dumpspecs”)
-## NB2: We use the hack for libquadmath in LDFLAGS
-cd "$ROOTDIR"
-[[ -f configure ]] || autoreconf -si
-./configure \
-  PACKAGE_VERSION="$VERSION" \
-  PACKAGE_STRING="dynare $VERSION" \
-  CC=$CC \
-  CXX=$CXX \
-  CPPFLAGS=-I/usr/local/include \
-  LDFLAGS="-static-libgcc -L$QUADMATH_DIR" \
-  LEX=/usr/local/opt/flex/bin/flex \
-  YACC=/usr/local/opt/bison/bin/bison \
-  --with-gsl="$LIB64"/gsl \
-  --with-matio="$LIB64"/matio \
-  --with-slicot="$LIB64"/Slicot/with-underscore \
-  --disable-octave \
-  --with-matlab=/Applications/MATLAB_R2016b.app
-make -j"$NTHREADS"
-
-if [[ -z $CI ]]; then
-    echo "Building out of GitLab CI is not supported, documentation support needs to be fixed" 2>&1
-    exit 1
-fi
-
-##
-## Create package
-##
 NAME=dynare-"$VERSION"
 PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p \
@@ -116,24 +96,21 @@ mkdir -p \
       "$PKGFILES"/scripts \
       "$PKGFILES"/contrib/ms-sbvar/TZcode
 
-if [[ $VERSION == *-unstable* ]]; then
-    echo "$SHA"                                                    > "$PKGFILES"/sha.txt
-fi
 cp -p  "$ROOTDIR"/NEWS.md                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/COPYING                                            "$PKGFILES"
-cp -p  "$ROOTDIR"/VERSION                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/license.txt                                        "$PKGFILES"
 
 cp -pr "$ROOTDIR"/matlab                                             "$PKGFILES"
 cp -pr "$ROOTDIR"/examples                                           "$PKGFILES"
 
-cp -p  "$ROOTDIR"/preprocessor/src/dynare-preprocessor               "$PKGFILES"/preprocessor
+cp -p  "$ROOTDIR"/build-matlab/preprocessor/src/dynare-preprocessor  "$PKGFILES"/preprocessor
 
-# Recreate backward-compatibility symlink
-rm -f "$ROOTDIR"/matlab/preprocessor64/dynare_m
+# Create backward-compatibility symlink
+mkdir -p                                                             "$PKGFILES"/matlab/preprocessor64
 ln -sf ../../preprocessor/dynare-preprocessor                        "$PKGFILES"/matlab/preprocessor64/dynare_m
 
-cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-8.3-9.3
+cp -L  "$ROOTDIR"/build-matlab/*.mexmaci64                           "$PKGFILES"/mex/matlab/maci64-9.4-9.14
+cp -L  "$ROOTDIR"/build-old-matlab/*.mexmaci64                       "$PKGFILES"/mex/matlab/maci64-8.3-9.3
 
 cp -p  "$ROOTDIR"/scripts/dynare.el                                  "$PKGFILES"/scripts
 cp -pr "$ROOTDIR"/contrib/ms-sbvar/TZcode/MatlabFiles                "$PKGFILES"/contrib/ms-sbvar/TZcode
@@ -147,29 +124,6 @@ mkdir -p                                                             "$PKGFILES"
 cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
 
 
-##
-## Create mex for MATLAB ≥ 2018a
-##
-cd "$ROOTDIR"/mex/build/matlab
-make clean
-./configure \
-  PACKAGE_VERSION="$VERSION" \
-  PACKAGE_STRING="dynare $VERSION" \
-  CC=$CC \
-  CXX=$CXX \
-  CPPFLAGS=-I/usr/local/include \
-  LDFLAGS="-static-libgcc -L$QUADMATH_DIR" \
-  --with-gsl="$LIB64"/gsl \
-  --with-matio="$LIB64"/matio \
-  --with-slicot="$LIB64"/Slicot/with-underscore \
-  --with-matlab=/Applications/MATLAB_R2022b.app
-make -j"$NTHREADS"
-cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.14
-
-
-##
-## Make package
-##
 cd "$ROOTDIR"/macOS/pkg
 
 # Dynare option

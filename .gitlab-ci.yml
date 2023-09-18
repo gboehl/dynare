@@ -92,6 +92,7 @@ pkg_windows:
 pkg_macOS:
   stage: pkg
   script:
+    - meson rewrite kwargs set project / version "$VERSION"
     - ln -s ~/tarballs macOS/deps/
     - arch -x86_64 make -C macOS
   cache:
