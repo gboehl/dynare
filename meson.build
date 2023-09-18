@@ -2,7 +2,6 @@
 # - Add tests that are individually listed in {M,O}_TRS_FILES of tests/Makefile.am
 # - Install files in right location
 # - with -Dprefer_static=true, under Octave/Windows, we are now linking the compiler libs (libgcc, libstdc++, libgfortran, libquadmath, libssp, libgomp) statically (contrary to what we were doing with autotools). In theory this is better, because the compiler used for creating the Octave binary may be different from the one used for creating our MEX. Check that this is ok
-# - configuration option to disable documentation
 # - configuration option to disable preprocessor build
 # - add -Wold-style-cast C++ flag except when building flex-generated files
 # - determine minimal meson version required, and declare it in the project() function (here and the preprocessor); if possible at low cost, diminish the requirement. NB: Ubuntu “jammy” 22.04 has 0.61, Debian “bullseye” 11 has 0.56 (but bullseye-backports has 1.0), Ubuntu ”focal” 20.04 has 0.53
@@ -475,9 +474,13 @@ shared_module('ms_sbvar_command_line', ms_sbvar_command_line_src, kwargs : mex_m
 
 ### Documentation
 
+# Documentation is not built by default. A special-purpose target named “doc” triggers it.
+# Executables that are needed for building documentation are not marked as required, to
+# facilitate compilation of binaries in environments that cannot build the documentation.
+
 ## Reference manual
 
-sphinx_build_exe = find_program('sphinx-build')
+sphinx_build_exe = find_program('sphinx-build', required : false)
 
 sphinx_src = [ 'doc/manual/source/conf.py',
                'doc/manual/source/time-series.rst',
@@ -502,85 +505,118 @@ sphinx_src = [ 'doc/manual/source/conf.py',
 sphinx_defines = [ '-D', 'release=' + meson.project_version(),
                    '-D', 'version=' + meson.project_version() ]
 
-custom_target('dynare-manual.html', output : 'dynare-manual.html', input : sphinx_src,
-              command : [ sphinx_build_exe, '-b', 'html', sphinx_defines, '-d', '@PRIVATE_DIR@',
-                          meson.current_source_dir() / 'doc/manual/source', '@OUTPUT@' ],
-              install : true, install_dir : 'share/doc/dynare')
+dynare_manual_html = custom_target('dynare-manual.html',
+                                   output : 'dynare-manual.html', input : sphinx_src,
+                                   command : [ sphinx_build_exe, '-b', 'html', sphinx_defines,
+                                               '-d', '@PRIVATE_DIR@',
+                                               meson.current_source_dir() / 'doc/manual/source',
+                                               '@OUTPUT@' ],
+                                   build_by_default : false,
+                                   install : true, install_dir : 'share/doc/dynare')
 
 # For the PDF, we are forced to use a wrapper around sphinx-build, because
 # the PDF is created in a subdirectory, and meson does not provide an easy way to
 # do this. See https://github.com/mesonbuild/meson/discussions/10488
-custom_target('dynare-manual.pdf', output : 'dynare-manual.pdf', input : sphinx_src,
-              command : [ 'scripts/sphinx-build-pdf-wrapper', sphinx_build_exe.full_path(),
-                          meson.current_source_dir() / 'doc/manual/source',
-                          '@OUTPUT@', '@PRIVATE_DIR@', sphinx_defines ],
-              install : true, install_dir : 'share/doc/dynare')
+dynare_manual_pdf = custom_target('dynare-manual.pdf',
+                                  output : 'dynare-manual.pdf', input : sphinx_src,
+                                  command : [ 'scripts/sphinx-build-pdf-wrapper',
+                                              sphinx_build_exe.full_path(),
+                                              meson.current_source_dir() / 'doc/manual/source',
+                                              '@OUTPUT@', '@PRIVATE_DIR@', sphinx_defines ],
+                                  build_by_default : false,
+                                  install : true, install_dir : 'share/doc/dynare')
 
 ## Various PDFs
 
-# The following defines the latexmk_exe and latexmk_command variables
+# The following defines the latexmk_command, macroprocessor_pdf and preprocessor_pdf variables
 subdir('preprocessor/doc')
 
-custom_target('guide.pdf', output : 'guide.pdf', input : 'doc/guide.tex',
-              command : latexmk_command,
-              install : true, install_dir : 'share/doc/dynare')
+guide_pdf = custom_target('guide.pdf', output : 'guide.pdf', input : 'doc/guide.tex',
+                          command : latexmk_command,
+                          build_by_default : false,
+                          install : true, install_dir : 'share/doc/dynare')
 
-custom_target('bvar-a-la-sims.pdf', output : 'bvar-a-la-sims.pdf', input : 'doc/bvar-a-la-sims.tex',
-              command : latexmk_command,
-              install : true, install_dir : 'share/doc/dynare')
+bvar_a_la_sims_pdf = custom_target('bvar-a-la-sims.pdf',
+                                   output : 'bvar-a-la-sims.pdf', input : 'doc/bvar-a-la-sims.tex',
+                                   command : latexmk_command,
+                                   build_by_default : false,
+                                   install : true, install_dir : 'share/doc/dynare')
 
-custom_target('dr.pdf', output : 'dr.pdf', input : 'doc/dr.tex',
-              command : latexmk_command,
-              env : { 'BIBINPUTS': meson.current_source_dir() / 'doc' },
-              depend_files : 'doc/dr.bib',
-              install : true, install_dir : 'share/doc/dynare')
+dr_pdf = custom_target('dr.pdf', output : 'dr.pdf', input : 'doc/dr.tex',
+                       command : latexmk_command,
+                       env : { 'BIBINPUTS': meson.current_source_dir() / 'doc' },
+                       depend_files : 'doc/dr.bib',
+                       build_by_default : false,
+                       install : true, install_dir : 'share/doc/dynare')
 
-custom_target('sylvester.pdf', output : 'sylvester.pdf', input : 'doc/sylvester.tex',
-              command : latexmk_command,
-              install : true, install_dir : 'share/doc/dynare')
+sylvester_pdf = custom_target('sylvester.pdf', output : 'sylvester.pdf', input : 'doc/sylvester.tex',
+                              command : latexmk_command,
+                              build_by_default : false,
+                              install : true, install_dir : 'share/doc/dynare')
 
-custom_target('tl.pdf', output : 'tl.pdf', input : 'doc/tl.tex',
-              command : latexmk_command,
-              install : true, install_dir : 'share/doc/dynare')
+tl_pdf = custom_target('tl.pdf', output : 'tl.pdf', input : 'doc/tl.tex',
+                       command : latexmk_command,
+                       build_by_default : false,
+                       install : true, install_dir : 'share/doc/dynare')
 
-custom_target('parallel.pdf', output : 'parallel.pdf', input : 'doc/parallel/parallel.tex',
-              command : latexmk_command,
-              env : { 'TEXINPUTS': meson.current_source_dir() + '/doc/parallel:',
-                      'BIBINPUTS': meson.current_source_dir() / 'doc/parallel' },
-              depend_files : [ 'doc/parallel/marco.bib',
-                               'doc/parallel/AvenueParadigm.pdf',
-                               'doc/parallel/iVaNo_gain.pdf',
-                               'doc/parallel/iVaNo_time_comp.pdf',
-	                       'doc/parallel/netbook_complete_comp.pdf',
-                               'doc/parallel/netbook_complete_openclose.pdf',
-	                       'doc/parallel/netbook_partial_comp.pdf',
-                               'doc/parallel/netbook_partial_openclose.pdf',
-                               'doc/parallel/quest_complete_comp.pdf',
-                               'doc/parallel/quest_complete_openclose.pdf',
-                               'doc/parallel/quest_partial_comp.pdf',
-                               'doc/parallel/quest_partial_openclose.pdf',
-                               'doc/parallel/RWMH_quest1_PriorsAndPosteriors1Comp.pdf',
-	                       'doc/parallel/RWMH_quest1_PriorsAndPosteriors2Comp.pdf',
-	                       'doc/parallel/RWMH_quest1_PriorsAndPosteriors3Comp.pdf',
-	                       'doc/parallel/RWMH_quest1_PriorsAndPosteriors4Comp.pdf',
-	                       'doc/parallel/RWMH_quest1_PriorsAndPosteriors5Comp.pdf',
-	                       'doc/parallel/RWMH_quest1_PriorsAndPosteriors6Comp.pdf',
-	                       'doc/parallel/RWMH_quest1_PriorsAndPosteriors7Comp.pdf',
-                               'doc/parallel/waitbars1.pdf',
-                               'doc/parallel/waitbars2.pdf',
-	                       'doc/parallel/waitbarsP.pdf' ],
-              install : true, install_dir : 'share/doc/dynare')
+parallel_pdf = custom_target('parallel.pdf',
+                             output : 'parallel.pdf', input : 'doc/parallel/parallel.tex',
+                             command : latexmk_command,
+                             env : { 'TEXINPUTS': meson.current_source_dir() + '/doc/parallel:',
+                                     'BIBINPUTS': meson.current_source_dir() / 'doc/parallel' },
+                             depend_files : [ 'doc/parallel/marco.bib',
+                                              'doc/parallel/AvenueParadigm.pdf',
+                                              'doc/parallel/iVaNo_gain.pdf',
+                                              'doc/parallel/iVaNo_time_comp.pdf',
+	                                      'doc/parallel/netbook_complete_comp.pdf',
+                                              'doc/parallel/netbook_complete_openclose.pdf',
+	                                      'doc/parallel/netbook_partial_comp.pdf',
+                                              'doc/parallel/netbook_partial_openclose.pdf',
+                                              'doc/parallel/quest_complete_comp.pdf',
+                                              'doc/parallel/quest_complete_openclose.pdf',
+                                              'doc/parallel/quest_partial_comp.pdf',
+                                              'doc/parallel/quest_partial_openclose.pdf',
+                                              'doc/parallel/RWMH_quest1_PriorsAndPosteriors1Comp.pdf',
+	                                      'doc/parallel/RWMH_quest1_PriorsAndPosteriors2Comp.pdf',
+	                                      'doc/parallel/RWMH_quest1_PriorsAndPosteriors3Comp.pdf',
+	                                      'doc/parallel/RWMH_quest1_PriorsAndPosteriors4Comp.pdf',
+	                                      'doc/parallel/RWMH_quest1_PriorsAndPosteriors5Comp.pdf',
+	                                      'doc/parallel/RWMH_quest1_PriorsAndPosteriors6Comp.pdf',
+	                                      'doc/parallel/RWMH_quest1_PriorsAndPosteriors7Comp.pdf',
+                                              'doc/parallel/waitbars1.pdf',
+                                              'doc/parallel/waitbars2.pdf',
+	                                      'doc/parallel/waitbarsP.pdf' ],
+                             build_by_default : false,
+                             install : true, install_dir : 'share/doc/dynare')
 
-custom_target('gsa.pdf', output : 'gsa.pdf', input : 'doc/gsa/gsa.tex',
-              command : latexmk_command,
-              env : { 'BIBINPUTS': meson.current_source_dir() / 'doc/gsa' },
-              depend_files : 'doc/gsa/marco.bib',
-              install : true, install_dir : 'share/doc/dynare')
+gsa_pdf = custom_target('gsa.pdf', output : 'gsa.pdf', input : 'doc/gsa/gsa.tex',
+                        command : latexmk_command,
+                        env : { 'BIBINPUTS': meson.current_source_dir() / 'doc/gsa' },
+                        depend_files : 'doc/gsa/marco.bib',
+                        build_by_default : false,
+                        install : true, install_dir : 'share/doc/dynare')
 
-custom_target('dseriesReporting.pdf', output : 'dseriesReporting.pdf',
-              input : 'doc/dseries-and-reporting/dseriesReporting.tex',
-              command : latexmk_command,
-              install : true, install_dir : 'share/doc/dynare')
+dseries_reporting_pdf = custom_target('dseriesReporting.pdf', output : 'dseriesReporting.pdf',
+                                      input : 'doc/dseries-and-reporting/dseriesReporting.tex',
+                                      command : latexmk_command,
+                                      build_by_default : false,
+                                      install : true, install_dir : 'share/doc/dynare')
+
+## Special-purpose target for building documentation
+
+alias_target('doc',
+             dynare_manual_html,
+             dynare_manual_pdf,
+             macroprocessor_pdf,
+             preprocessor_pdf,
+             guide_pdf,
+             bvar_a_la_sims_pdf,
+             dr_pdf,
+             sylvester_pdf,
+             tl_pdf,
+             parallel_pdf,
+             gsa_pdf,
+             dseries_reporting_pdf)
 
 
 ### Tests implemented as .mod or .m (both integration and unit tests)
