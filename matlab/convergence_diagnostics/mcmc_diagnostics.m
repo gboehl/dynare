@@ -191,11 +191,11 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
         Raftery_Lewis_q=options_.convergence.rafterylewis.qrs(1);
         Raftery_Lewis_r=options_.convergence.rafterylewis.qrs(2);
         Raftery_Lewis_s=options_.convergence.rafterylewis.qrs(3);
-        oo_.Raftery_Lewis = raftery_lewis(x2,Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s);
-        oo_.Raftery_Lewis.parameter_names=param_name;
+        oo_.convergence.raftery_lewis = raftery_lewis(x2,Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s);
+        oo_.convergence.raftery_lewis.parameter_names=param_name;
         my_title=sprintf('Raftery/Lewis (1992) Convergence Diagnostics, based on quantile q=%4.3f with precision r=%4.3f with probability s=%4.3f.',Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s);
         headers = {'Variables'; 'M (burn-in)'; 'N (req. draws)'; 'N+M (total draws)'; 'k (thinning)'};
-        raftery_data_mat=[oo_.Raftery_Lewis.M_burn,oo_.Raftery_Lewis.N_prec,oo_.Raftery_Lewis.N_total,oo_.Raftery_Lewis.k_thin];
+        raftery_data_mat=[oo_.convergence.raftery_lewis.M_burn,oo_.convergence.raftery_lewis.N_prec,oo_.convergence.raftery_lewis.N_total,oo_.convergence.raftery_lewis.k_thin];
         raftery_data_mat=[raftery_data_mat;max(raftery_data_mat)];
         labels_Raftery_Lewis = vertcat(param_name, 'Maximum');
         lh = cellofchararraymaxlength(labels_Raftery_Lewis)+2;

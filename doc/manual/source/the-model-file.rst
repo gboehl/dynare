@@ -8868,6 +8868,13 @@ observed variables.
             autocorrelation in draws. In this case, the estimates using a
             higher tapering are usually more reliable.
 
+    .. matvar:: oo_.convergence.raftery_lewis
+
+        Variable set by the convergence diagnostics of the ``estimation``
+        command when used with ``raftery_lewis_diagnostics`` option (see
+        :opt:`raftery_lewis_diagnostics`). Contains the results of the test in individual fields.
+
+
 .. command:: unit_root_vars VARIABLE_NAME...;
 
     |br| This command is deprecated. Use ``estimation`` option
