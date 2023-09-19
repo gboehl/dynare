@@ -4,7 +4,7 @@ function check_varobs_are_endo_and_declared_once(varobs,endo_names)
 % Check that each declared observed variable:
 % - is also an endogenous variable
 % - is declared only once
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
 %  o varobs:                 [cell] list of observed variables
 %  o endo_names:             [cell] list of endogenous variables
@@ -15,6 +15,7 @@ function check_varobs_are_endo_and_declared_once(varobs,endo_names)
 % This function is called by
 %  o dynare_estimation_init.m
 % -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -31,7 +32,6 @@ function check_varobs_are_endo_and_declared_once(varobs,endo_names)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
 
 number_of_observed_variables = length(varobs);
 for i = 1:number_of_observed_variables    

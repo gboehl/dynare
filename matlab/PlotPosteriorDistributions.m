@@ -4,14 +4,14 @@ function oo_ = PlotPosteriorDistributions(estim_params_, M_, options_, bayestopt
 % plots posterior distributions
 %
 % INPUTS
-%    estim_params_   [structure]
-%    M_              [structure]
-%    options_        [structure]
-%    bayestopt_      [structure]
-%    oo_             [structure]
+%    estim_params_    [structure]  information on estimated paramters
+%    M_               [structure]  information on model
+%    options_         [structure]  information on options
+%    bayestopt_       [structure]  information on priors
+%    oo_              [structure]  results
 %
 % OUTPUTS
-%    oo_             [structure]
+%    oo_             [structure]   updated results
 %
 % SPECIAL REQUIREMENTS
 %    none

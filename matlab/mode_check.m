@@ -4,7 +4,7 @@ function mcheck = mode_check(fun,xparam,hessian_mat,options_,M_,estim_params_,ba
 % Checks the estimated ML or Posterior mode/minimum by plotting sections of
 % the likelihood/posterior kernel. Each plot shows the variation of the
 % function implied by the variations of a single parameter ( ceteris paribus)
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
 % - fun:            [func_handle]  objective function
 % - xparam:         [vector]       estimated mode/minimum
@@ -25,6 +25,7 @@ function mcheck = mode_check(fun,xparam,hessian_mat,options_,M_,estim_params_,ba
 % - dynare_estimation_1
 % - mom.run
 % -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -41,7 +42,6 @@ function mcheck = mode_check(fun,xparam,hessian_mat,options_,M_,estim_params_,ba
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
 
 tolBounds = 1e-8;
 

@@ -2,7 +2,7 @@ function [xparam1, hh] = check_mode_file(xparam1, hh, options_, bayestopt_)
 % function [xparam1, hh] = check_mode_file(xparam1, hh, options_, bayestopt_)
 % -------------------------------------------------------------------------
 % Check that the provided mode_file is compatible with the current estimation settings.
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
 %  o xparam1:                [vector] current vector of parameter values at the mode
 %  o hh:                     [matrix] current hessian matrix at the mode
@@ -16,6 +16,7 @@ function [xparam1, hh] = check_mode_file(xparam1, hh, options_, bayestopt_)
 % This function is called by
 %  o dynare_estimation_init.m
 % -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -32,7 +33,6 @@ function [xparam1, hh] = check_mode_file(xparam1, hh, options_, bayestopt_)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
 
 number_of_estimated_parameters = length(xparam1);
 mode_file = load(options_.mode_file);
