@@ -8833,11 +8833,11 @@ observed variables.
             Relative numerical efficiency (RNE) under the assumption
             of iid draws.
 
-        ``nse_x``
+        ``nse_taper_x``
 
             Numerical standard error (NSE) when using an x% taper.
 
-        ``rne_x``
+        ``rne_taper_x``
 
             Relative numerical efficiency (RNE) when using an x% taper.
 
