@@ -52,14 +52,14 @@ build_doc:
 pkg_source:
   stage: pkg
   script:
+    - meson rewrite kwargs set project / version "$VERSION"
     - rm doc/manual/source/_static/mathjax && sed -i "/^mathjax_path *=/d" doc/manual/source/conf.py
-    - 'for f in configure.ac preprocessor/configure.ac mex/build/matlab/configure.ac mex/build/octave/configure.ac; do sed -i "s/^AC_INIT(\[\(.*\)\],\s*\[\(.*\)\])/AC_INIT([\1], [$VERSION])/" $f; done'
-    - autoreconf -si
-    - ./configure --with-matlab=/opt/MATLAB/$MATLAB_VERSION
-    - make dist
+    - git commit -a -m "Source for $VERSION"
+    - meson setup -Dbuild_for=octave build-src
+    - meson dist -C build-src --no-tests
   artifacts:
     paths:
-      - dynare-*.tar.xz
+      - build-src/meson-dist/dynare-*.tar.xz
     expire_in: 3 days
   needs: []
 
@@ -205,7 +205,7 @@ deploy_snapshot_unstable:
     - sign_windows
     - pkg_macOS
   script:
-    - cp *.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
+    - cp build-src/meson-dist/*.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
     - f=(windows/exe-signed/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe
     - f=(windows/7z/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-7z/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-7z/dynare-latest-win.7z
     - f=(windows/zip/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip
