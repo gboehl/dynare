@@ -14,7 +14,7 @@ function rplot(s1)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -75,7 +75,7 @@ if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
 end
 
 if options_.rplottype == 0 %all in one plot
-    hh=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
+    hh_fig=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
     plot(ix(i),y(:,i)) ;
     if options_.TeX
         title (['Plot of $' strjoin(s1_TeX', '~') '$'],'Interpreter','latex') ;
@@ -94,13 +94,13 @@ if options_.rplottype == 0 %all in one plot
             legend(s1,'interpreter','none');
         end
     end
-    dyn_saveas(hh,[M_.dname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' s1{1}],options_.nodisplay,options_.graph_format)
+    dyn_saveas(hh_fig,[M_.dname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' s1{1}],options_.nodisplay,options_.graph_format)
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         create_TeX_loader(fidTeX,[M_.dname, '/graphs/', 'SimulatedTrajectory_' s1{1}],'Simulated trajectories','SimulatedTrajectory_',s1{1},1)
     end
 elseif options_.rplottype == 1 %separate figures each
     for j = 1:size(y,1)
-        hh=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
+        hh_fig=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
         plot(ix(i),y(j,i)) ;
         xlim([min(ix(i)) max(ix(i))])
         if options_.TeX
@@ -109,13 +109,13 @@ elseif options_.rplottype == 1 %separate figures each
             title(['Plot of ' s1{j}],'Interpreter','none') ;
         end
         xlabel('Periods') ;
-        dyn_saveas(hh,[M_.dname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' s1{j}],options_.nodisplay,options_.graph_format)
+        dyn_saveas(hh_fig,[M_.dname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' s1{j}],options_.nodisplay,options_.graph_format)
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             create_TeX_loader(fidTeX,[M_.dname, '/graphs/', 'SimulatedTrajectory_' s1{j}],'Simulated trajectories','SimulatedTrajectory_',s1{j},1);
         end
     end
 elseif options_.rplottype == 2 %different subplots
-    hh=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
+    hh_fig=dyn_figure(options_.nodisplay,'Name', 'Simulated Trajectory');
     nl = max(1,fix(size(y,1)/4)) ;
     nc = ceil(size(y,1)/nl) ;
     for j = 1:size(y,1)
@@ -137,7 +137,7 @@ elseif options_.rplottype == 2 %different subplots
         end
         axis tight;
     end
-    dyn_saveas(hh,[M_.dname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' s1{1}],options_.nodisplay,options_.graph_format)
+    dyn_saveas(hh_fig,[M_.dname, filesep, 'graphs', filesep, 'SimulatedTrajectory_' s1{1}],options_.nodisplay,options_.graph_format)
     if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         create_TeX_loader(fidTeX,[M_.dname, '/graphs/', 'SimulatedTrajectory_' s1{1}],'Simulated trajectories','SimulatedTrajectory_', s1{1},min(j/nc,1));
     end

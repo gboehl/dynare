@@ -118,7 +118,7 @@ if n_nblocks_to_plot==1
     if options_.mh_nblck>1
         FigureName = [ FigureName , ' (block number ' int2str(blck)  ').'];
     end
-    hh=dyn_figure(options_.nodisplay,'Name',FigureName);
+    hh_fig=dyn_figure(options_.nodisplay,'Name',FigureName);
     plot(1:TotalNumberOfMhDraws,PosteriorDraws,'Color',[.7 .7 .7]);
 
     % Compute the moving average of the posterior draws:
@@ -137,7 +137,7 @@ if n_nblocks_to_plot==1
     axis tight
     legend({'MCMC draw';[num2str(N) ' period moving average']},'Location','NorthEast')
 else
-    hh=dyn_figure(options_.nodisplay,'Name',FigureName);
+    hh_fig=dyn_figure(options_.nodisplay,'Name',FigureName);
     pp=plot(1:TotalNumberOfMhDraws,PosteriorDraws);
     legend(pp,strcat(repmat({'Chain '},n_nblocks_to_plot,1),num2str(blck(:))));
 end
@@ -160,7 +160,7 @@ if n_nblocks_to_plot==1
 else
     plot_name=[plot_name,'_blck_',save_string];
 end
-dyn_saveas(hh,[M_.dname, filesep, 'graphs', filesep, 'TracePlot_' plot_name],options_.nodisplay,options_.graph_format)
+dyn_saveas(hh_fig,[M_.dname, filesep, 'graphs', filesep, 'TracePlot_' plot_name],options_.nodisplay,options_.graph_format)
 
 if options_.TeX
     fid=fopen([M_.dname,'/graphs/',M_.fname,'_TracePlot_' plot_name,'.tex'],'w+');

@@ -56,7 +56,7 @@ function [PostMod,PostVar,Scale,PostMean] = gmhmaxlik_core(ObjFun,xparam1,mh_bou
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright © 2006-2017 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -87,8 +87,8 @@ CovJump = VarCov;
 ModePar = xparam1;
 
 %% [1] I tune the scale parameter.
-hh = dyn_waitbar(0,'Tuning of the scale parameter...');
-set(hh,'Name','Tuning of the scale parameter.');
+hh_fig = dyn_waitbar(0,'Tuning of the scale parameter...');
+set(hh_fig,'Name','Tuning of the scale parameter.');
 j = 1; jj  = 1;
 isux = 0; jsux = 0; test = 0;
 ix2 = ModePar;% initial condition!
@@ -119,7 +119,7 @@ while j<=MaxNumberOfTuningSimulations
     end % ... otherwise I don't move.
     prtfrc = j/MaxNumberOfTuningSimulations;
     if mod(j, 10)==0
-        dyn_waitbar(prtfrc,hh,sprintf('Acceptance ratio [during last 500]: %f [%f]',isux/j,jsux/jj));
+        dyn_waitbar(prtfrc,hh_fig,sprintf('Acceptance ratio [during last 500]: %f [%f]',isux/j,jsux/jj));
     end
     if  j/500 == round(j/500)
         test1 = jsux/jj;
@@ -141,10 +141,10 @@ while j<=MaxNumberOfTuningSimulations
     jj = jj + 1;
 end
 
-dyn_waitbar_close(hh);
+dyn_waitbar_close(hh_fig);
 %% [2] One block metropolis, I update the covariance matrix of the jumping distribution
-hh = dyn_waitbar(0,'Metropolis-Hastings...');
-set(hh,'Name','Estimation of the posterior covariance...'),
+hh_fig = dyn_waitbar(0,'Metropolis-Hastings...');
+set(hh_fig,'Name','Estimation of the posterior covariance...'),
 j = 1;
 isux = 0;
 ilogpo2 = - feval(ObjFun,ix2,varargin{:});
@@ -169,7 +169,7 @@ while j<= NumberOfIterations
     end % ... otherwise I don't move.
     prtfrc = j/NumberOfIterations;
     if mod(j, 10)==0
-        dyn_waitbar(prtfrc,hh,sprintf('Acceptance ratio: %f',isux/j));
+        dyn_waitbar(prtfrc,hh_fig,sprintf('Acceptance ratio: %f',isux/j));
     end
     % I update the covariance matrix and the mean:
     oldMeanPar = MeanPar;
@@ -177,7 +177,7 @@ while j<= NumberOfIterations
     CovJump = CovJump + oldMeanPar*oldMeanPar' - MeanPar*MeanPar' + ...
               (1/j)*(ix2*ix2' - CovJump - oldMeanPar*oldMeanPar');
 end
-dyn_waitbar_close(hh);
+dyn_waitbar_close(hh_fig);
 PostVar = CovJump;
 PostMean = MeanPar;
 %% [3 & 4] I tune the scale parameter (with the new covariance matrix) if
@@ -185,8 +185,8 @@ PostMean = MeanPar;
 %% updating the covariance matrix)...
 if strcmpi(info,'LastCall')
 
-    hh = dyn_waitbar(0,'Tuning of the scale parameter...');
-    set(hh,'Name','Tuning of the scale parameter.'),
+    hh_fig = dyn_waitbar(0,'Tuning of the scale parameter...');
+    set(hh_fig,'Name','Tuning of the scale parameter.'),
     j = 1; jj  = 1;
     isux = 0; jsux = 0;
     test = 0;
@@ -212,7 +212,7 @@ if strcmpi(info,'LastCall')
         end % ... otherwise I don't move.
         prtfrc = j/MaxNumberOfTuningSimulations;
         if mod(j, 10)==0
-            dyn_waitbar(prtfrc,hh,sprintf('Acceptance ratio [during last 1000]: %f [%f]',isux/j,jsux/jj));
+            dyn_waitbar(prtfrc,hh_fig,sprintf('Acceptance ratio [during last 1000]: %f [%f]',isux/j,jsux/jj));
         end
         if j/1000 == round(j/1000)
             test1 = jsux/jj;
@@ -229,14 +229,14 @@ if strcmpi(info,'LastCall')
         j = j+1;
         jj = jj + 1;
     end
-    dyn_waitbar_close(hh);
+    dyn_waitbar_close(hh_fig);
     Scale = iScale;
     %%
     %% Now I climb the hill
     %%
     if options.nclimb
-        hh = dyn_waitbar(0,' ');
-        set(hh,'Name','Now I am climbing the hill...'),
+        hh_fig = dyn_waitbar(0,' ');
+        set(hh_fig,'Name','Now I am climbing the hill...'),
         j = 1; jj  = 1;
         jsux = 0;
         test = 0;
@@ -254,7 +254,7 @@ if strcmpi(info,'LastCall')
             end % otherwise I don't move...
             prtfrc = j/MaxNumberOfClimbingSimulations;
             if mod(j, 10)==0
-                dyn_waitbar(prtfrc,hh,sprintf('%f Jumps / MaxStepSize %f',jsux,sqrt(max(diag(iScale*CovJump)))));
+                dyn_waitbar(prtfrc,hh_fig,sprintf('%f Jumps / MaxStepSize %f',jsux,sqrt(max(diag(iScale*CovJump)))));
             end
             if  j/200 == round(j/200)
                 if jsux<=1
@@ -275,7 +275,7 @@ if strcmpi(info,'LastCall')
             j = j+1;
             jj = jj + 1;
         end
-        dyn_waitbar_close(hh);
+        dyn_waitbar_close(hh_fig);
     end %climb
 else
     Scale = iScale;

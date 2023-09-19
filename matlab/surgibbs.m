@@ -27,7 +27,7 @@ function ds = surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eq
 %   Combination of Direct Monte Carlo and Importance Sampling Techniques.
 %   Bayesian Analysis Volume 5, Number 1, pp. 65-96.
 
-% Copyright © 2017-2021 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -106,12 +106,12 @@ if ~options_.noprint
     disp('surgibbs: estimating, please wait...')
 end
 
-hh = dyn_waitbar(0,'Please wait. Gibbs sampler...');
-set(hh,'Name','Surgibbs estimation.');
+hh_fig = dyn_waitbar(0,'Please wait. Gibbs sampler...');
+set(hh_fig,'Name','Surgibbs estimation.');
 residdraws = zeros(floor((ndraws-discarddraws)/thin), nobs, m);
 for i = 1:ndraws
     if ~mod(i,10)
-        dyn_waitbar(i/ndraws,hh,'Please wait. Gibbs sampler...');
+        dyn_waitbar(i/ndraws,hh_fig,'Please wait. Gibbs sampler...');
     end
     % Draw Omega, given X, Y, Beta
     resid = reshape(Y - X*beta, nobs, m);
@@ -135,7 +135,7 @@ for i = 1:ndraws
         end
     end
 end
-dyn_waitbar_close(hh);
+dyn_waitbar_close(hh_fig);
 
 %
 % Save results.

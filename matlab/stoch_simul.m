@@ -310,10 +310,10 @@ if options_.irf
                 if nbplt == 0
                 elseif nbplt == 1
                     if options_.relative_irf
-                        hh = dyn_figure(options_.nodisplay,'Name',['Relative response to' ...
+                        hh_fig = dyn_figure(options_.nodisplay,'Name',['Relative response to' ...
                                             ' orthogonalized shock to ' tit{i}]);
                     else
-                        hh = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to' ...
+                        hh_fig = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to' ...
                                             ' ' tit{i}]);
                     end
                     for j = 1:number_of_plots_to_draw
@@ -330,7 +330,7 @@ if options_.irf
                             title(deblank(mylist(j,:)),'Interpreter','none');
                         end
                     end
-                    dyn_saveas(hh,[M_.dname, '/graphs/' M_.fname '_IRF_' tit{i}],options_.nodisplay,options_.graph_format);
+                    dyn_saveas(hh_fig,[M_.dname, '/graphs/' M_.fname '_IRF_' tit{i}],options_.nodisplay,options_.graph_format);
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                         fprintf(fidTeX,'\\centering \n');
@@ -343,10 +343,10 @@ if options_.irf
                 else
                     for fig = 1:nbplt-1
                         if options_.relative_irf
-                            hh = dyn_figure(options_.nodisplay,'Name',['Relative response to orthogonalized shock' ...
+                            hh_fig = dyn_figure(options_.nodisplay,'Name',['Relative response to orthogonalized shock' ...
                                                 ' to ' tit{i} ' figure ' int2str(fig)]);
                         else
-                            hh = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit{i} ...
+                            hh_fig = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit{i} ...
                                                 ' figure ' int2str(fig)]);
                         end
                         for plt = 1:nstar
@@ -363,7 +363,7 @@ if options_.irf
                                 title(deblank(mylist((fig-1)*nstar+plt,:)),'Interpreter','none');
                             end
                         end
-                        dyn_saveas(hh,[M_.dname, '/graphs/'  M_.fname '_IRF_' tit{i} int2str(fig)],options_.nodisplay,options_.graph_format);
+                        dyn_saveas(hh_fig,[M_.dname, '/graphs/'  M_.fname '_IRF_' tit{i} int2str(fig)],options_.nodisplay,options_.graph_format);
                         if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                             fprintf(fidTeX,'\\begin{figure}[H]\n');
                             fprintf(fidTeX,'\\centering \n');
@@ -378,7 +378,7 @@ if options_.irf
                             fprintf(fidTeX,' \n');
                         end
                     end
-                    hh = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit{i} ' figure ' int2str(nbplt) '.']);
+                    hh_fig = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit{i} ' figure ' int2str(nbplt) '.']);
                     m = 0;
                     for plt = 1:number_of_plots_to_draw-(nbplt-1)*nstar
                         m = m+1;
@@ -395,7 +395,7 @@ if options_.irf
                                 title(deblank(mylist((nbplt-1)*nstar+plt,:)),'Interpreter','none');
                             end
                     end
-                    dyn_saveas(hh,[M_.dname, '/graphs/' M_.fname '_IRF_' tit{i} int2str(nbplt) ],options_.nodisplay,options_.graph_format);
+                    dyn_saveas(hh_fig,[M_.dname, '/graphs/' M_.fname '_IRF_' tit{i} int2str(nbplt) ],options_.nodisplay,options_.graph_format);
                     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                         fprintf(fidTeX,'\\centering \n');

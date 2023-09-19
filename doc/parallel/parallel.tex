@@ -907,7 +907,7 @@ waitbarString = [ '(' int2str(b) '/' int2str(mh_nblck) ') ...
 
     if mod(j, 3)==0 & ~whoiam
         % serial computation
-        waitbar(prtfrc,hh,waitbarString);
+        waitbar(prtfrc,hh_fig,waitbarString);
 
     elseif mod(j,50)==0 & whoiam,
         % parallel computation

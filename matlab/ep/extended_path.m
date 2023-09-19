@@ -19,7 +19,7 @@ function [ts, DynareResults] = extended_path(initialconditions, samplesize, exog
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright © 2009-2020 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -46,8 +46,8 @@ endogenous_variables_paths = NaN(DynareModel.endo_nbr,samplesize+1);
 endogenous_variables_paths(:,1) = initialconditions;
 
 % Set waitbar (graphic or text  mode)
-hh = dyn_waitbar(0,'Please wait. Extended Path simulations...');
-set(hh,'Name','EP simulations.');
+hh_fig = dyn_waitbar(0,'Please wait. Extended Path simulations...');
+set(hh_fig,'Name','EP simulations.');
 
 % Initialize while-loop index.
 t = 1;
@@ -55,7 +55,7 @@ t = 1;
 % Main loop.
 while (t <= samplesize)
     if ~mod(t,10)
-        dyn_waitbar(t/samplesize,hh,'Please wait. Extended Path simulations...');
+        dyn_waitbar(t/samplesize,hh_fig,'Please wait. Extended Path simulations...');
     end
     % Set period index.
     t = t+1;
@@ -83,7 +83,7 @@ while (t <= samplesize)
 end % (while) loop over t
 
 % Close waitbar.
-dyn_waitbar_close(hh);
+dyn_waitbar_close(hh_fig);
 
 % Set the initial period.
 if isdates(DynareOptions.initial_period)

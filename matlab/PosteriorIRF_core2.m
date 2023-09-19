@@ -30,7 +30,7 @@ function myoutput=PosteriorIRF_core2(myinputs,fpar,npar,whoiam,ThisMatlab)
 % SPECIAL REQUIREMENTS.
 %   None.
 %
-% Copyright © 2006-2018 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -103,12 +103,12 @@ for i=fpar:npar
         if max(abs(MeanIRF(:,j,i))) >= options_.impulse_responses.plot_threshold
             subplotnum = subplotnum+1;
             if subplotnum == 1 && options_.relative_irf
-                hh = dyn_figure(options_.nodisplay,'Name',['Relative response to orthogonalized shock to ' tit{i}]);
+                hh_fig = dyn_figure(options_.nodisplay,'Name',['Relative response to orthogonalized shock to ' tit{i}]);
             elseif subplotnum == 1 && ~options_.relative_irf
-                hh = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit{i}]);
+                hh_fig = dyn_figure(options_.nodisplay,'Name',['Orthogonalized shock to ' tit{i}]);
             end
 
-            set(0,'CurrentFigure',hh)
+            set(0,'CurrentFigure',hh_fig)
             subplot(nn,nn,subplotnum);
             if ~MAX_nirfs_dsgevar
                 if ~isnan(min(HPDIRF(:,1,j,i)))
@@ -155,7 +155,7 @@ for i=fpar:npar
 
         if subplotnum == MaxNumberOfPlotPerFigure || (j == nvar  && subplotnum> 0)
             figunumber = figunumber+1;
-            dyn_saveas(hh,[DirectoryName '/'  M_.fname '_Bayesian_IRF_' tit{i} '_' int2str(figunumber)],options_.nodisplay,options_.graph_format);
+            dyn_saveas(hh_fig,[DirectoryName '/'  M_.fname '_Bayesian_IRF_' tit{i} '_' int2str(figunumber)],options_.nodisplay,options_.graph_format);
             if RemoteFlag==1
                 OutputFileName = [OutputFileName; {[DirectoryName,filesep], [M_.fname '_Bayesian_IRF_' deblank(tit(i,:)) '_' int2str(figunumber) '.*']}];
             end

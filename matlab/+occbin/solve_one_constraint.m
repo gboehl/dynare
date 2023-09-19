@@ -114,13 +114,13 @@ else
 end
 
 if opts_simul_.waitbar
-    hh = dyn_waitbar(0,'Occbin: Solving the model');
-    set(hh,'Name','Occbin: Solving the model.');
+    hh_fig = dyn_waitbar(0,'Occbin: Solving the model');
+    set(hh_fig,'Name','Occbin: Solving the model.');
 end
 
 for shock_period = 1:n_shocks_periods
     if opts_simul_.waitbar
-        dyn_waitbar(shock_period/n_shocks_periods, hh, sprintf('Period %u of %u', shock_period,n_shocks_periods));
+        dyn_waitbar(shock_period/n_shocks_periods, hh_fig, sprintf('Period %u of %u', shock_period,n_shocks_periods));
     end
     
     regime_change_this_iteration=true;
@@ -312,7 +312,7 @@ for shock_period = 1:n_shocks_periods
                 if periodic_solution
                     disp_verbose(['Max error:' num2str(merr) '.'],opts_simul_.debug)
                 else
-                    if opts_simul_.waitbar; dyn_waitbar_close(hh); end
+                    if opts_simul_.waitbar; dyn_waitbar_close(hh_fig); end
                     error_flag = 310;
                     return
                 end
@@ -324,7 +324,7 @@ for shock_period = 1:n_shocks_periods
                 disp_verbose('Did not converge -- increase maxit.',opts_simul_.debug)
                     error_flag = 311;
                 end
-                if opts_simul_.waitbar; dyn_waitbar_close(hh); end
+                if opts_simul_.waitbar; dyn_waitbar_close(hh_fig); end
                 return
             end
         else
@@ -333,7 +333,7 @@ for shock_period = 1:n_shocks_periods
     end
     if any(error_code_period)
         disp_verbose('Increase nperiods.',opts_simul_.debug)
-        if opts_simul_.waitbar; dyn_waitbar_close(hh); end
+        if opts_simul_.waitbar; dyn_waitbar_close(hh_fig); end
         error_flag = 312;
         return
     end
@@ -363,5 +363,5 @@ if ~opts_simul_.piecewise_only
 end
 
 if opts_simul_.waitbar
-    dyn_waitbar_close(hh); 
+    dyn_waitbar_close(hh_fig); 
 end

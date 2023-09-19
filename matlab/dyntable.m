@@ -15,7 +15,7 @@ function dyntable(options_, title, headers, labels, values, label_width, val_wid
 % OUTPUTS
 % none
 
-% Copyright © 2002-2022 Dynare Team
+% Copyright © 2002-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -73,11 +73,11 @@ if nargin==9
 end
 
 if length(headers) > 0
-    hh = sprintf(label_format_leftbound , headers{1});
+    hh_tbl = sprintf(label_format_leftbound , headers{1});
     for i=2:length(headers)
-        hh  = [hh sprintf(header_string_format, headers{i})];
+        hh_tbl  = [hh_tbl sprintf(header_string_format, headers{i})];
     end
-    disp(hh)
+    disp(hh_tbl)
 end
 
 for i=1:size(values,1)

@@ -42,7 +42,7 @@ function [alphahat,etahat,epsilonhat,ahat0,SteadyState,trend_coeff,aKK,T0,R0,P,P
 % - alphahat0     [double]  (m*1) array, smoothed endogenous variables in period 0 (a_{0|T})  (decision-rule order)
 % - state_uncertainty0 [double] (K,K,1) array, storing the uncertainty in period 0
 
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -401,7 +401,7 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
             if M_.Sigma_e(j,j)
                 j1=j1+1;
                 if mod(j1,9)==1
-                    hfig = dyn_figure(options_.nodisplay,'name','Occbin smoothed shocks');
+                    hh_fig = dyn_figure(options_.nodisplay,'name','Occbin smoothed shocks');
                     ifig=ifig+1;
                     isub=0;
                 end
@@ -427,7 +427,7 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
             if mod(j1,9)~=0 && j==M_.exo_nbr
                 annotation('textbox', [0.1,0,0.35,0.05],'String', 'Linear','Color','Blue','horizontalalignment','center','interpreter','none');
                 annotation('textbox', [0.55,0,0.35,0.05],'String', 'Piecewise','Color','Red','horizontalalignment','center','interpreter','none');
-                dyn_saveas(hfig,[GraphDirectoryName filesep M_.fname,'_smoothedshocks_occbin',int2str(ifig)],options_.nodisplay,options_.graph_format);
+                dyn_saveas(hh_fig,[GraphDirectoryName filesep M_.fname,'_smoothedshocks_occbin',int2str(ifig)],options_.nodisplay,options_.graph_format);
             end
         end
     end

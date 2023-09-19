@@ -1,6 +1,6 @@
 function MakeAllFigures(NumberOfPlots,Caption,FigureProperties,Info)
 
-% Copyright © 2005-2017 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -97,45 +97,45 @@ for plt = 1:NumberOfPlots
     subplot(nr,nc,plt)
     hold on
     for curve = 1:NumberOfCurves
-        hh = plot(x{curve},y{curve});
+        hh_fig = plot(x{curve},y{curve});
         if strcmpi(PltType{curve},'PriorDensity')
-            set(hh,'Color',[0.7 0.7 0.7],'LineStyle','-','LineWidth',2)
+            set(hh_fig,'Color',[0.7 0.7 0.7],'LineStyle','-','LineWidth',2)
             %
             %
         elseif strcmpi(PltType{curve},'DensityEstimate')
-            set(hh,'Color','k','LineStyle','-','LineWidth',2)
+            set(hh_fig,'Color','k','LineStyle','-','LineWidth',2)
             %
             %
         elseif strcmpi(PltType{curve},'ModeEstimate')
-            set(hh,'Color','g','LineStyle','--','LineWidth',2)
+            set(hh_fig,'Color','g','LineStyle','--','LineWidth',2)
             %
             %
         elseif strcmpi(PltType{curve},'SmoothVariable')
-            set(hh,'Color','k','LineStyle','-','LineWidth',2)
+            set(hh_fig,'Color','k','LineStyle','-','LineWidth',2)
             %
             %
         elseif strcmpi(PltType{curve},'Deciles')
-            set(hh,'Color','g','LineStyle','-','LineWidth',1)
+            set(hh_fig,'Color','g','LineStyle','-','LineWidth',1)
             %
             %
         elseif strcmpi(PltType{curve},'Forecasts')
-            set(hh,'Color','','LineStyle','-','LineWidth',2)
+            set(hh_fig,'Color','','LineStyle','-','LineWidth',2)
             %
             %
         elseif strcmpi(PltType{curve},'ForecastsHPD')
-            set(hh,'Color','k','LineStyle','-','LineWidth',1)
+            set(hh_fig,'Color','k','LineStyle','-','LineWidth',1)
             %
             %
         elseif strcmpi(PltType{curve},'ForecastsDeciles')
-            set(hh,'Color','g','LineStyle','-','LineWidth',1)
+            set(hh_fig,'Color','g','LineStyle','-','LineWidth',1)
             %
             %
         elseif strcmpi(PltType{curve},'DiagnosticWithin')
-            set(hh,'Color','b','LineStyle','-','LineWidth',2)
+            set(hh_fig,'Color','b','LineStyle','-','LineWidth',2)
             %
             %
         elseif strcmpi(PltType{curve},'DiagnosticPooled')
-            set(hh,'Color','r','LineStyle','-','LineWidth',2)
+            set(hh_fig,'Color','r','LineStyle','-','LineWidth',2)
             %
             %
         end

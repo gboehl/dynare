@@ -128,8 +128,8 @@ for i=1:npar
     borneinf = min(binf1, binf2);
     bornesup = max(bsup1, bsup2);
     subplot(nn, nn, subplotnum)
-    hh_fig = plot(x2, f2, '-k', 'linewidth', 2);
-    set(hh_fig, 'color', [0.7 0.7 0.7]);
+    hh_plt = plot(x2, f2, '-k', 'linewidth', 2);
+    set(hh_plt, 'color', [0.7 0.7 0.7]);
     hold on;
     plot(x1, f1, '-k', 'linewidth', 2);
     if ~options_.mh_posterior_mode_estimation

@@ -64,7 +64,7 @@ function [alphahat,epsilonhat,etahat,a,P1,aK,PK,decomp,V, aalphahat,eetahat,d,al
 %   Models", S.J. Koopman and J. Durbin (2003), in Journal of Time Series
 %   Analysis, vol. 24(1), pp. 85-98.
 
-% Copyright © 2004-2021 Dynare Team
+% Copyright © 2004-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -315,8 +315,8 @@ if isoccbin
         % kalman update is not yet robust to accommodate diffuse steps
     end
     if occbin_options.opts_regime.waitbar
-        hh = dyn_waitbar(0,'Occbin: Piecewise Kalman Filter');
-        set(hh,'Name','Occbin: Piecewise Kalman Filter.');
+        hh_fig = dyn_waitbar(0,'Occbin: Piecewise Kalman Filter');
+        set(hh_fig,'Name','Occbin: Piecewise Kalman Filter.');
         waitbar_indicator=1;
     else
         waitbar_indicator=0;
@@ -346,7 +346,7 @@ while notsteady && t<smpl
     di = data_index{t}';
     if t>=first_period_occbin_update
         if waitbar_indicator
-            dyn_waitbar(t/smpl, hh, sprintf('Period %u of %u', t,smpl));
+            dyn_waitbar(t/smpl, hh_fig, sprintf('Period %u of %u', t,smpl));
         end
         occbin_options.opts_regime.waitbar=0;
         if t==1
@@ -530,7 +530,7 @@ while notsteady && t<smpl
     end
 end
 if waitbar_indicator
-    dyn_waitbar_close(hh);
+    dyn_waitbar_close(hh_fig);
 end
 
 P1(:,:,t+1) = P(:,:,t+1);

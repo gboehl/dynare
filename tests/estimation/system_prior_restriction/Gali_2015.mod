@@ -147,13 +147,13 @@ end;
 varobs yhat;
 
 % Run prior function to get prior slope of the PC based on independent priors
-hh=figure('Name','Slope of the Phillips Curve');
+hh_fig=figure('Name','Slope of the Phillips Curve');
 prior_function(function='Gali_2015_PC_slope');
 PC_slope_vec=cell2mat(oo_.prior_function_results(:,1));
 
 optimal_bandwidth = mh_optimal_bandwidth(PC_slope_vec,length(PC_slope_vec),0,'gaussian');
 [density(:,1),density(:,2)] = kernel_density_estimate(PC_slope_vec,512,length(PC_slope_vec),optimal_bandwidth,'gaussian');
-figure(hh)
+figure(hh_fig)
 subplot(3,1,1)
 plot(density(:,1),density(:,2));
 title('Prior')
@@ -165,7 +165,7 @@ posterior_function(function='Gali_2015_PC_slope');
 PC_slope_vec=cell2mat(oo_.posterior_function_results(:,1));
 optimal_bandwidth = mh_optimal_bandwidth(PC_slope_vec,length(PC_slope_vec),0,'gaussian');
 [density(:,1),density(:,2)] = kernel_density_estimate(PC_slope_vec,512,length(PC_slope_vec),optimal_bandwidth,'gaussian');
-figure(hh)
+figure(hh_fig)
 subplot(3,1,2)
 plot(density(:,1),density(:,2));
 title('Updated Prior')
@@ -178,7 +178,7 @@ posterior_function(function='Gali_2015_PC_slope');
 PC_slope_vec=cell2mat(oo_.posterior_function_results(:,1));
 optimal_bandwidth = mh_optimal_bandwidth(PC_slope_vec,length(PC_slope_vec),0,'gaussian');
 [density(:,1),density(:,2)] = kernel_density_estimate(PC_slope_vec,512,length(PC_slope_vec),optimal_bandwidth,'gaussian');
-figure(hh)
+figure(hh_fig)
 subplot(3,1,3)
 plot(density(:,1),density(:,2));
 title('Posterior')
