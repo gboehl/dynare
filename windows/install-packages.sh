@@ -22,9 +22,9 @@
 
 [[ $(id -u) == 0 ]] || { echo "You must be root" >&2; exit 1; }
 
-PACKAGES=(make p7zip zip zstd wget autoconf automake
+PACKAGES=(make p7zip zip zstd wget meson mingw-w64-tools
           gcc-mingw-w64-x86-64-posix g++-mingw-w64-x86-64-posix
-          gfortran-mingw-w64-x86-64-posix parallel flex libfl-dev bison texlive
+          gfortran-mingw-w64-x86-64-posix flex libfl-dev bison texlive
           texlive-publishers texlive-latex-extra texlive-science
           texlive-fonts-extra lmodern python3-sphinx latexmk nsis)
 

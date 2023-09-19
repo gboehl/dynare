@@ -8,7 +8,6 @@
 # - add the possibility to customize the integration test names (with a new optional 'name' keyword in the dictionaries)
 # - Add an option to skip the removal of the temporary test directories, for debugging purposes
 # - See what to do with xvfb-run (see #1892). Maybe try to detect it from meson.build, and pass it optionally to the test driver script
-# - See whether the tests can be automatically disabled if the MATLAB/Octave executable is not found (using the disabler option of find_program?)
 # - Add priorities to have some tests run before the others (e.g. obs_trend_and_prefilter stuff)
 # - Decide whether we want to keep MALLOC_PERTURB_ for the testsuite; it can have a significant performance impact; see the doc of test() for how to do so
 
@@ -79,7 +78,7 @@ if get_option('build_for') == 'matlab'
   endif
 
   matlab_version_hex = run_command('scripts/get-matlab-version', '--hex', matlab_path, check : true).stdout().strip()
-  matlab_exe = find_program(matlab_path / 'bin' / 'matlab', required : not meson.is_cross_build())
+  matlab_exe = find_program(matlab_path / 'bin' / 'matlab', required : not meson.is_cross_build(), disabler : true)
 
   if host_machine.system() == 'linux' and host_machine.cpu_family() == 'x86_64'
     mexext = 'mexa64'
@@ -134,7 +133,7 @@ if get_option('build_for') == 'matlab'
 
   slicot_dep = declare_dependency(dependencies : [ fortran_compiler.find_library('slicot64_pic'), blas_dep, lapack_dep ])
 else # Octave build
-  octave_exe = find_program('octave', required : not meson.is_cross_build())
+  octave_exe = find_program('octave', required : not meson.is_cross_build(), disabler : true)
   mkoctfile_exe = find_program('mkoctfile')
   octave_minimal_version = '6.2.0'
   octave_version = run_command(mkoctfile_exe, '-v', check : true).stdout().replace('mkoctfile, version ', '')

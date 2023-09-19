@@ -66,6 +66,7 @@ pkg_source:
 pkg_windows:
   stage: pkg
   script:
+    - meson rewrite kwargs set project / version "$VERSION"
     - mkdir -p windows/deps/tarballs && cp /usr/lib/dynare-runner/matlab64-* windows/deps/tarballs/
     - make -C windows
     - rm windows/deps/tarballs/matlab64-* # No need to cache these files

@@ -49,13 +49,13 @@ Section "Dynare core (preprocessor and M-files)"
  SectionIn RO
 !insertmacro DETERMINE_CONTEXT
  SetOutPath $INSTDIR
- File README.txt ..\NEWS.md ..\license.txt ..\VERSION
+ File README.txt ..\NEWS.md ..\license.txt
 
  SetOutPath $INSTDIR\matlab
  File /r ..\matlab\*.m
 
  SetOutPath $INSTDIR\preprocessor
- File ..\preprocessor\src\dynare-preprocessor.exe
+ File ..\build-win-matlab\preprocessor\src\dynare-preprocessor.exe
 
  SetOutPath $INSTDIR\matlab\preprocessor64
  File ..\matlab\preprocessor64\dynare_m.exe
@@ -92,12 +92,12 @@ SectionEnd
 
 Section "MEX files for MATLAB 64-bit, version 8.3 to 9.3 (R2014a to R2017b)"
  SetOutPath $INSTDIR\mex\matlab\win64-8.3-9.3
- File ..\mex\matlab\win64-8.3-9.3\*.mexw64
+ File ..\build-win-old-matlab\*.mexw64
 SectionEnd
 
 Section "MEX files for MATLAB 64-bit, version 9.4 to 9.14 (R2018a to R2023a)"
  SetOutPath $INSTDIR\mex\matlab\win64-9.4-9.14
- File ..\mex\matlab\win64-9.4-9.14\*.mexw64
+ File ..\build-win-matlab\*.mexw64
 SectionEnd
 
 Section "MinGW compiler for MATLAB 64-bit"
@@ -107,7 +107,7 @@ SectionEnd
 
 Section "MEX files for Octave 8.3.0 (64-bit)"
  SetOutPath $INSTDIR\mex\octave\win64
- File ..\mex\octave\win64\*
+ File ..\build-win-octave\*.mex
 SectionEnd
 
 Section "Documentation and examples"

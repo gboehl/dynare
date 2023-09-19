@@ -24,6 +24,7 @@ MINGW64_BOOST_VERSION = 1.81.0-7
 MINGW64_GSL_VERSION = 2.7.1-1
 
 # pacman -Ss mingw-w64-x86_64-matio
+# NB: matio.pc.patch may need to be updated when upgrading
 MINGW64_MATIO_VERSION = 1.5.23-4
 
 # Dependency of matio (and of the MinGW compiler)
@@ -32,6 +33,7 @@ MINGW64_ZLIB_VERSION = 1.2.13-3
 
 # Dependency of matio
 # pacman -Ss mingw-w64-x86_64-hdf5
+# NB: hdf5.pc.patch may need to be updated when upgrading
 MINGW64_HDF5_VERSION = 1.14.1.2-2
 
 # Dependency of HDF5 (provides szip library)

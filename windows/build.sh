@@ -28,145 +28,71 @@ set -ex
 # Set root directory
 ROOT_DIRECTORY=$(dirname "$(readlink -f "$0")")
 
+# Check that build directories do not already exist
+[[ -d /tmp/windeps ]] && { echo "Please remove the /tmp/windeps directory" 2>&1; exit 1; }
+[[ -d "$ROOT_DIRECTORY"/../build-win-matlab ]] && { echo "Please remove the build-win-matlab directory" 2>&1; exit 1; }
+[[ -d "$ROOT_DIRECTORY"/../build-win-old-matlab ]] && { echo "Please remove the build-win-old-matlab directory" 2>&1; exit 1; }
+[[ -d "$ROOT_DIRECTORY"/../build-win-octave ]] && { echo "Please remove the build-win-octave directory" 2>&1; exit 1; }
+
 # Create TMP folder and make sure it is deleted upon exit
 TMP_DIRECTORY=$(mktemp -d)
-
 cleanup()
 {
     [[ -z $TMP_DIRECTORY ]] || rm -rf -- "$TMP_DIRECTORY"
 }
 trap cleanup EXIT
 
-# Set the number of threads
-NTHREADS=$(nproc)
-
-# Set Dynare version, if not already set by Gitlab CI
-if [[ -z $VERSION ]]; then
-    VERSION=$(grep '^AC_INIT(' ../configure.ac | sed 's/AC_INIT(\[dynare\], \[\(.*\)\])/\1/')
-    if [[ -d ../.git/ ]]; then
-        VERSION=$VERSION-$(git rev-parse --short HEAD)
-    fi
-fi
-
-BASENAME=dynare-$VERSION
-
-# Set directories for dependencies
-LIB64="$ROOT_DIRECTORY"/deps/lib64
-LIB64_MSYS2="$ROOT_DIRECTORY"/deps/lib64-msys2
-
-# Set compilation flags
-# For the architectural baseline, we follow MSYS2:
-# https://www.msys2.org/news/#2022-10-18-new-minimum-hardware-requirements-cpus-from-20067
-arch_flags="-march=nocona -msahf -mtune=generic"
-export CFLAGS="-O3 $arch_flags"
-# MSYS2 libraries are now built with -fstack-protector-strong, see:
-# https://www.msys2.org/news/#2022-10-23-mingw-packages-now-built-with-d_fortify_source2-and-fstack-protector-strong
-# As of 2023-01-03, when linking against HDF5 (and possibly other libraries),
-# it is necessary to compile our own code with -fstack-protector to avoid undefined symbols
-# at link time.
-# Note that specifying -fstack-protector-strong or -fstack-protector-all will lead
-# to a dependency on libssp-0.dll (at least when using the MinGW compilers from Debian),
-# and there seems to be no easy way of linking it statically.
-# Also note that adding this flag is not necessary when building from MSYS2 shell.
-# Maybe revisit this once our runners are upgraded to Debian “Bookworm” 12.
-export CXXFLAGS="-O3 $arch_flags -fstack-protector"
-export FCFLAGS="-O3 $arch_flags"
+# Create a directory for dependencies under /tmp.
+# Meson does not like when dependencies are under the source tree.
+# We use a fixed name to avoid having to regenerate the cross files.
+mkdir /tmp/windeps
+ln -s "$ROOT_DIRECTORY"/deps/lib64 /tmp/windeps/
+ln -s "$ROOT_DIRECTORY"/deps/lib64-msys2 /tmp/windeps/
+ln -s "$ROOT_DIRECTORY"/deps/matlab64 /tmp/windeps/
+ln -s "$ROOT_DIRECTORY"/deps/mkoctfile64 /tmp/windeps/
 
 # Go to source root directory
 cd ..
 
-# Autoreconf if needed
-[[ -f configure ]] || autoreconf -si
-
-## Compile preprocessor (64-bit) and documentation
-./configure --host=x86_64-w64-mingw32 \
-	    --with-boost="$LIB64_MSYS2" \
-	    --disable-octave \
-	    --disable-matlab \
-	    PACKAGE_VERSION="$VERSION" \
-	    PACKAGE_STRING="dynare $VERSION"
-make -j"$NTHREADS"
-x86_64-w64-mingw32-strip preprocessor/src/dynare-preprocessor.exe
-x86_64-w64-mingw32-strip matlab/preprocessor64/dynare_m.exe
-
-## Define functions for building MEX files
-
-## Note that we do out-of-tree compilation, since we want to do these in
-## parallel
-
-# Create Windows 64-bit DLL binaries for MATLAB ≥ R2014a and ≤ R2017b
-build_windows_matlab_mex_64_a ()
-{
-    mkdir -p "$TMP_DIRECTORY"/matlab-win64-a/
-    cd "$TMP_DIRECTORY"/matlab-win64-a/
-    "$ROOT_DIRECTORY"/../mex/build/matlab/configure \
-                     --host=x86_64-w64-mingw32 \
-		     --with-gsl="$LIB64_MSYS2" \
-		     --with-matio="$LIB64_MSYS2" \
-		     --with-slicot="$LIB64"/Slicot/without-underscore \
-		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab64/R2014a \
-		     MEXEXT=mexw64 \
-		     PACKAGE_VERSION="$VERSION" \
-		     PACKAGE_STRING="dynare $VERSION"
-    make -j"$NTHREADS" all
-    x86_64-w64-mingw32-strip -- **/*.mexw64
-    mkdir -p "$ROOT_DIRECTORY"/../mex/matlab/win64-8.3-9.3
-    mv -- **/*.mexw64 "$ROOT_DIRECTORY"/../mex/matlab/win64-8.3-9.3
-}
+common_meson_opts=(-Dbuildtype=release --cross-file scripts/windows-cross.ini)
 
 # Create Windows 64-bit DLL binaries for MATLAB ≥ R2018a
-build_windows_matlab_mex_64_b ()
-{
-    mkdir -p "$TMP_DIRECTORY"/matlab-win64-b/
-    cd "$TMP_DIRECTORY"/matlab-win64-b/
-    "$ROOT_DIRECTORY"/../mex/build/matlab/configure \
-                     --host=x86_64-w64-mingw32 \
-		     --with-gsl="$LIB64_MSYS2" \
-		     --with-matio="$LIB64_MSYS2" \
-		     --with-slicot="$LIB64"/Slicot/without-underscore \
-		     --with-matlab="$ROOT_DIRECTORY"/deps/matlab64/R2018a \
-		     MEXEXT=mexw64 \
-		     PACKAGE_VERSION="$VERSION" \
-		     PACKAGE_STRING="dynare $VERSION"
-    make -j"$NTHREADS" all
-    x86_64-w64-mingw32-strip -- **/*.mexw64
-    mkdir -p "$ROOT_DIRECTORY"/../mex/matlab/win64-9.4-9.14
-    mv -- **/*.mexw64 "$ROOT_DIRECTORY"/../mex/matlab/win64-9.4-9.14
-}
+meson setup --cross-file scripts/windows-cross-matlab.ini -Dmatlab_path=/tmp/windeps/matlab64/R2018a \
+      "${common_meson_opts[@]}" build-win-matlab
+meson compile -v -C build-win-matlab
+
+# Create Windows 64-bit DLL binaries for MATLAB ≥ R2014a and ≤ R2017b
+meson setup --cross-file scripts/windows-cross-matlab.ini -Dmatlab_path=/tmp/windeps/matlab64/R2014a \
+      "${common_meson_opts[@]}" build-win-old-matlab
+meson compile -v -C build-win-old-matlab
 
 # Create Windows DLL binaries for Octave/MinGW (64bit)
-build_windows_octave_mex_64 ()
-{
-    mkdir -p "$TMP_DIRECTORY"/octave-64/
-    cd "$TMP_DIRECTORY"/octave-64/
-    "$ROOT_DIRECTORY"/../mex/build/octave/configure \
-                     --host=x86_64-w64-mingw32 \
-                     --with-gsl="$LIB64_MSYS2" \
-                     --with-matio="$LIB64_MSYS2" \
-                     --with-slicot="$LIB64"/Slicot/with-underscore \
-                     MKOCTFILE="$ROOT_DIRECTORY"/deps/mkoctfile64 \
-                     OCTAVE=/bin/true \
-                     PACKAGE_VERSION="$VERSION" \
-                     PACKAGE_STRING="dynare $VERSION"
-    make -j"$NTHREADS" all
-    x86_64-w64-mingw32-strip -- **/*.mex
-    mkdir -p "$ROOT_DIRECTORY"/../mex/octave/win64
-    mv -- **/*.mex "$ROOT_DIRECTORY"/../mex/octave/win64
-}
+meson setup --cross-file scripts/windows-cross-octave.ini \
+      "${common_meson_opts[@]}" build-win-octave
+meson compile -v -C build-win-octave
 
-## Actually build the MEX files
+# If not in CI, build the docs
+if [[ -z $CI ]]; then
+    meson compile -v -C build-win-matlab doc
+    ln -sf build-win-matlab build-doc
+fi
 
-TASKS=(build_windows_matlab_mex_64_a build_windows_matlab_mex_64_b build_windows_octave_mex_64)
-# Reset the number of threads. The mex files for MATLAB/Octave will be built
-# in parallel, so we need to account for the number of tasks and lower the value of NTHREADS.
-NTHREADS=$((NTHREADS/${#TASKS[@]}))
-[[ $NTHREADS -ge 1 ]] || NTHREADS=1 # Ensure that there is at least 1 thread
-# Build all the mex files (parallel).
-# Some variables and functions need to be available in subshells.
-cd "$ROOT_DIRECTORY"
-export TMP_DIRECTORY ROOT_DIRECTORY LIB64 LIB64_MSYS2 VERSION NTHREADS
-export -f "${TASKS[@]}"
-parallel "set -ex;shopt -s globstar;" ::: "${TASKS[@]}"
+# Determine Dynare version if not passed by an environment variable as in the CI
+if [[ -z $VERSION ]]; then
+    cd build-win-matlab
+    VERSION=$(meson introspect --projectinfo | sed -En 's/^.*"version": "([^"]*)".*$/\1/p')
+    cd ..
+fi
+
+# Strip binaries
+x86_64-w64-mingw32-strip build-win-matlab/preprocessor/src/dynare-preprocessor.exe
+x86_64-w64-mingw32-strip -- build-win-matlab/*.mexw64
+x86_64-w64-mingw32-strip -- build-win-old-matlab/*.mexw64
+x86_64-w64-mingw32-strip -- build-win-octave/*.mex
+
+# Add a preprocessor copy for backward compatibility
+mkdir -p matlab/preprocessor64/
+cp build-win-matlab/preprocessor/src/dynare-preprocessor.exe matlab/preprocessor64/dynare_m.exe
 
 # Add supported_octave_version.m (see matlab/dynare.m)
 while read -r line
@@ -178,28 +104,23 @@ do
 done < "$ROOT_DIRECTORY"/deps/versions.mk
 [[ -n $OCTAVE_VERSION ]] || { echo "Can't find OCTAVE_VERSION in versions.mk" >&2; exit 1; }
 # shellcheck disable=SC1117
-echo -e "function v = supported_octave_version\nv=\"${OCTAVE_VERSION}\";\nend" > ../matlab/supported_octave_version.m
-
-if [[ -z $CI ]]; then
-    echo "Building out of GitLab CI is not supported, documentation support needs to be fixed" 2>&1
-    exit 1
-fi
+echo -e "function v = supported_octave_version\nv=\"${OCTAVE_VERSION}\";\nend" > matlab/supported_octave_version.m
 
 ## Create Windows installer
+cd windows
 makensis -DVERSION="$VERSION" dynare.nsi
 mkdir -p exe
+BASENAME=dynare-$VERSION
 mv dynare-"$VERSION"-win.exe "$ROOT_DIRECTORY"/exe/"$BASENAME"-win.exe
 
 ## Create 7z and zip archives (for people not allowed to download/execute the installer)
 
 # Set name of the root directory in the 7z and zip archives
-ZIPNAME=dynare-$VERSION
-ZIPDIR="$TMP_DIRECTORY"/"$ZIPNAME"
+ZIPDIR="$TMP_DIRECTORY"/"$BASENAME"
 mkdir -p "$ZIPDIR"
 
 cd ..
 cp -p NEWS.md "$ZIPDIR"
-cp -p VERSION "$ZIPDIR"
 cp -p license.txt "$ZIPDIR"
 cp -p windows/README.txt "$ZIPDIR"
 cp -pr windows/deps/mingw64 "$ZIPDIR"
@@ -207,11 +128,14 @@ mkdir -p "$ZIPDIR"/contrib/ms-sbvar/TZcode
 cp -pr contrib/ms-sbvar/TZcode/MatlabFiles "$ZIPDIR"/contrib/ms-sbvar/TZcode
 mkdir -p "$ZIPDIR"/contrib/jsonlab
 cp -pr contrib/jsonlab/* "$ZIPDIR"/contrib/jsonlab
-mkdir "$ZIPDIR"/mex
-cp -pr mex/octave/ "$ZIPDIR"/mex
-cp -pr mex/matlab/ "$ZIPDIR"/mex
+mkdir -p "$ZIPDIR"/mex/matlab/win64-8.3-9.3
+cp -p build-win-old-matlab/*.mexw64 "$ZIPDIR"/mex/matlab/win64-8.3-9.3
+mkdir -p "$ZIPDIR"/mex/matlab/win64-9.4-9.14
+cp -p build-win-matlab/*.mexw64 "$ZIPDIR"/mex/matlab/win64-9.4-9.14
+mkdir -p "$ZIPDIR"/mex/octave/win64
+cp -p build-win-octave/*.mex "$ZIPDIR"/mex/octave/win64
 mkdir "$ZIPDIR"/preprocessor
-cp -p preprocessor/src/dynare-preprocessor.exe "$ZIPDIR"/preprocessor
+cp -p build-win-matlab/preprocessor/src/dynare-preprocessor.exe "$ZIPDIR"/preprocessor
 cp -pr matlab "$ZIPDIR"
 mkdir -p "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
 cp -p windows/deps/lib64/x13as/x13as.exe "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
@@ -226,7 +150,7 @@ cp -pr build-doc/dynare-manual.html "$ZIPDIR"/doc
 cd "$TMP_DIRECTORY"
 
 mkdir -p "$ROOT_DIRECTORY"/zip
-zip -9 --quiet --recurse-paths "$ROOT_DIRECTORY"/zip/"$BASENAME"-win.zip "$ZIPNAME"
+zip -9 --quiet --recurse-paths "$ROOT_DIRECTORY"/zip/"$BASENAME"-win.zip "$BASENAME"
 
 mkdir -p "$ROOT_DIRECTORY"/7z
-7zr a -mx=9 "$ROOT_DIRECTORY"/7z/"$BASENAME"-win.7z "$ZIPNAME"
+7zr a -mx=9 "$ROOT_DIRECTORY"/7z/"$BASENAME"-win.7z "$BASENAME"

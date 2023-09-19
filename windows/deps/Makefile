@@ -21,6 +21,9 @@ ROOT_PATH = $(realpath .)
 
 WGET_OPTIONS := --no-verbose --no-use-server-timestamps --retry-connrefused --retry-on-host-error
 
+# See comments in scripts/windows-cross.ini
+FFLAGS := -O3 -march=nocona -msahf -mtune=generic
+
 .PHONY: all build octave matlab msys2 \
 	build build-slicot build-x13as \
 	clean-lib clean-libslicot clean-matlab clean-octave clean-msys2 clean-x13as-bin \
@@ -48,12 +51,6 @@ tarballs/slicot-$(SLICOT_VERSION).tar.gz:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://deb.debian.org/debian/pool/main/s/slicot/slicot_$(SLICOT_VERSION).orig.tar.gz
 
-sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz
-	rm -rf sources64/slicot-*-with-32bit-integer
-	mkdir -p $@
-	tar xf $< --directory $@ --strip-components=1
-	touch $@
-
 sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources64/slicot-*-with-64bit-integer
 	mkdir -p $@
@@ -66,49 +63,27 @@ sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore: tarballs/s
 	tar xf $< --directory $@ --strip-components=1
 	touch $@
 
-sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
-	rm -rf sources64/slicot-*-with-64bit-integer-and-underscore
-	mkdir -p $@
-	tar xf $< --directory $@ --strip-components=1
-	touch $@
-
-lib64/Slicot/without-underscore/lib/libslicot_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer
-	make -C $< lib SLICOTLIB=../libslicot_pic.a OPTS="-O2 -g -fno-underscoring" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
-	x86_64-w64-mingw32-strip --strip-debug $</libslicot_pic.a
-	mkdir -p $(dir $@)
-	cp $</libslicot_pic.a $@
-
-lib64/Slicot/without-underscore/lib/libslicot64_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer
-	make -C $< lib SLICOTLIB=../libslicot64_pic.a OPTS="-O2 -g -fno-underscoring -fdefault-integer-8" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
+lib64/Slicot/without-underscore/libslicot64_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer
+	make -C $< lib SLICOTLIB=../libslicot64_pic.a OPTS="$(FFLAGS) -fno-underscoring -fdefault-integer-8" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
 	x86_64-w64-mingw32-strip --strip-debug $</libslicot64_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot64_pic.a $@
 
-lib64/Slicot/with-underscore/lib/libslicot_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore
-	make -C $< lib SLICOTLIB=../libslicot_pic.a OPTS="-O2 -g" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
+lib64/Slicot/with-underscore/libslicot_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore
+	make -C $< lib SLICOTLIB=../libslicot_pic.a OPTS="$(FFLAGS)" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
 	x86_64-w64-mingw32-strip --strip-debug $</libslicot_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot_pic.a $@
 
-lib64/Slicot/with-underscore/lib/libslicot64_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer-and-underscore
-	make -C $< lib SLICOTLIB=../libslicot64_pic.a OPTS="-O2 -g -fdefault-integer-8" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
-	x86_64-w64-mingw32-strip --strip-debug $</libslicot64_pic.a
-	mkdir -p $(dir $@)
-	cp $</libslicot64_pic.a $@
-
-build-slicot: lib64/Slicot/without-underscore/lib/libslicot_pic.a \
-	lib64/Slicot/without-underscore/lib/libslicot64_pic.a \
-	lib64/Slicot/with-underscore/lib/libslicot_pic.a \
-	lib64/Slicot/with-underscore/lib/libslicot64_pic.a
+build-slicot: lib64/Slicot/without-underscore/libslicot64_pic.a \
+	lib64/Slicot/with-underscore/libslicot_pic.a
 
 clean-slicot-tar:
 	rm -f tarballs/slicot-$(SLICOT_VERSION).tar.gz
 
 clean-slicot-src:
-	rm -rf sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer
 	rm -rf sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer
 	rm -rf sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore
-	rm -rf sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer-and-underscore
 
 clean-libslicot:
 	rm -rf lib64/Slicot
@@ -157,7 +132,7 @@ matlab64: tarballs/matlab64-$(MATLAB64_VERSION).tar.xz
 matlab: matlab64
 
 clean-matlab:
-	rm -f tarballs/matlab64.tar.xz
+	rm -f tarballs/matlab64*.tar.xz
 	rm -rf matlab64
 
 #
@@ -173,7 +148,11 @@ MSYS2_EXCLUDES := --exclude .MTREE --exclude .BUILDINFO --exclude .PKGINFO
 lib64-msys2: tarballs/mingw-w64-x86_64-boost-$(MINGW64_BOOST_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gsl-$(MINGW64_GSL_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-matio-$(MINGW64_MATIO_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-hdf5-$(MINGW64_HDF5_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libaec-$(MINGW64_LIBAEC_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-openssl-$(MINGW64_OPENSSL_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-curl-$(MINGW64_CURL_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-zstd-$(MINGW64_ZSTD_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-brotli-$(MINGW64_BROTLI_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libidn2-$(MINGW64_LIBIDN2_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libpsl-$(MINGW64_LIBPSL_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libssh2-$(MINGW64_LIBSSH2_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-nghttp2-$(MINGW64_NGHTTP2_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libiconv-$(MINGW64_LIBICONV_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libunistring-$(MINGW64_LIBUNISTRING_VERSION)-any.pkg.tar.zst
 	rm -rf $@
 	mkdir $@
-	for f in $^; do tar xf $$f --directory $@ --strip-components 1 $(MSYS2_EXCLUDES); done
+	for f in $^; do tar xf $$f --directory $@ $(MSYS2_EXCLUDES); done
+	# Workaround for https://sourceforge.net/p/matio/bugs/42/
+	patch -d lib64-msys2/mingw64/lib/pkgconfig/ < matio.pc.patch
+	# Workaround for https://github.com/msys2/MINGW-packages/issues/18554
+	patch -d lib64-msys2/mingw64/lib/pkgconfig/ < hdf5.pc.patch
 	touch $@
 
 mingw64: tarballs/mingw-w64-x86_64-gcc-$(MINGW64_GCC_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gcc-libs-$(MINGW64_GCC_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gmp-$(MINGW64_GMP_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-binutils-$(MINGW64_BINUTILS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-headers-git-$(MINGW64_HEADERS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-crt-git-$(MINGW64_CRT_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-winpthreads-git-$(MINGW64_WINPTHREADS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libwinpthread-git-$(MINGW64_WINPTHREADS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-zstd-$(MINGW64_ZSTD_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-isl-$(MINGW64_ISL_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-mpc-$(MINGW64_MPC_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-mpfr-$(MINGW64_MPFR_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libiconv-$(MINGW64_LIBICONV_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-windows-default-manifest-$(MINGW64_WINDOWS_DEFAULT_MANIFEST_VERSION)-any.pkg.tar.zst

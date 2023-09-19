@@ -1,0 +1,9 @@
+--- hdf5.pc.orig	2023-07-27 14:48:13.395698365 +0200
++++ hdf5.pc	2023-09-19 15:36:49.497960385 +0200
+@@ -10,5 +10,4 @@
+ Cflags: -I${includedir}
+ Libs: -L${libdir}  -lhdf5
+ Requires: 
+-Libs.private:  -lhdf5  -lshlwapi -lm -lws2_32 -lwsock32 -l/mingw64/lib/libcurl.dll.a -l/mingw64/lib/libssl.dll.a -l/mingw64/lib/libcrypto.dll.a -l/mingw64/lib/libz.dll.a
+-Requires.private: 
++Requires.private: libcurl zlib
