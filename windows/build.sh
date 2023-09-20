@@ -137,6 +137,7 @@ cp -p build-win-octave/*.mex "$ZIPDIR"/mex/octave/win64
 mkdir "$ZIPDIR"/preprocessor
 cp -p build-win-matlab/preprocessor/src/dynare-preprocessor.exe "$ZIPDIR"/preprocessor
 cp -pr matlab "$ZIPDIR"
+cp -p build-win-matlab/dynare_version.m "$ZIPDIR"/matlab
 mkdir -p "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
 cp -p windows/deps/lib64/x13as/x13as.exe "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
 cp -pr examples "$ZIPDIR"

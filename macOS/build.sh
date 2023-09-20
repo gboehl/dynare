@@ -101,6 +101,8 @@ cp -p  "$ROOTDIR"/COPYING                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/license.txt                                        "$PKGFILES"
 
 cp -pr "$ROOTDIR"/matlab                                             "$PKGFILES"
+cp -p  "$ROOTDIR"/build-matlab/dynare_version.m                      "$PKGFILES"/matlab
+
 cp -pr "$ROOTDIR"/examples                                           "$PKGFILES"
 
 cp -p  "$ROOTDIR"/build-matlab/preprocessor/src/dynare-preprocessor  "$PKGFILES"/preprocessor
