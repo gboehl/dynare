@@ -222,72 +222,80 @@ end
 
 %% Estimation of the posterior mode or likelihood mode
 
+
+
 if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
+    optimizer_vec = [options_.mode_compute;num2cell(options_.additional_optimizer_steps)];
+    for optim_iter = 1:length(optimizer_vec)
+        current_optimizer = optimizer_vec{optim_iter};
 
-    [xparam1, fval, exitflag, hh, options_, Scale, new_rat_hess_info] = dynare_minimize_objective(objective_function,xparam1,options_.mode_compute,options_,[bounds.lb bounds.ub],bayestopt_.name,bayestopt_,hh,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
-    fprintf('\nFinal value of minus the log posterior (or likelihood):%f \n', fval);
+        [xparam1, fval, exitflag, hh, options_, Scale, new_rat_hess_info] = dynare_minimize_objective(objective_function,xparam1,current_optimizer,options_,[bounds.lb bounds.ub],bayestopt_.name,bayestopt_,hh,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+        fprintf('\nFinal value of minus the log posterior (or likelihood):%f \n', fval);
 
-    if isnumeric(options_.mode_compute) && options_.mode_compute==5
-        newratflag = new_rat_hess_info.newratflag;
-        new_rat_hess_info = new_rat_hess_info.new_rat_hess_info;
-    elseif isnumeric(options_.mode_compute) && options_.mode_compute==6 %save scaling factor
-        save([M_.dname filesep 'Output' filesep M_.fname '_optimal_mh_scale_parameter.mat'],'Scale');
-        options_.mh_jscale = Scale;
-        bayestopt_.jscale(:) = options_.mh_jscale;
-    end
-    if ~isnumeric(options_.mode_compute) || ~isequal(options_.mode_compute,6) %always already computes covariance matrix
-        if options_.cova_compute == 1 %user did not request covariance not to be computed
-            if options_.analytic_derivation && strcmp(func2str(objective_function),'dsge_likelihood')
-                ana_deriv_old = options_.analytic_derivation;
-                options_.analytic_derivation = 2;
-                [~,~,~,~,hh] = feval(objective_function,xparam1, ...
-                                     dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
-                options_.analytic_derivation = ana_deriv_old;
-            elseif ~isnumeric(options_.mode_compute) || ~(isequal(options_.mode_compute,5) && newratflag~=1 && strcmp(func2str(objective_function),'dsge_likelihood'))
-                % enter here if i) not mode_compute_5, ii) if mode_compute_5 and newratflag==1; 
-                % with flag==0 or 2 and dsge_likelihood, we force to use
-                % the hessian from outer product gradient of optimizer 5 below
-                if options_.hessian.use_penalized_objective
-                    penalized_objective_function = str2func('penalty_objective_function');
-                    hh = hessian(penalized_objective_function, xparam1, options_.gstep, objective_function, fval, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_);
-                else
-                    hh = hessian(objective_function, xparam1, options_.gstep, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_);
-                end
-                hh = reshape(hh, nx, nx);
-            elseif isnumeric(options_.mode_compute) && isequal(options_.mode_compute,5)
-                % other numerical hessian options available with optimizer
-                % 5 and dsge_likelihood
-                %
-                % if newratflag == 0
-                % compute outer product gradient of optimizer 5
-                %
-                % if newratflag == 2
-                % compute 'mixed' outer product gradient of optimizer 5
-                % with diagonal elements computed with numerical second order derivatives
-                %
-                % uses univariate filters, so to get max # of available
-                % densities for outer product gradient
-                kalman_algo0 = options_.kalman_algo;
-                compute_hessian = 1;
-                if ~((options_.kalman_algo == 2) || (options_.kalman_algo == 4))
-                    options_.kalman_algo=2;
-                    if options_.lik_init == 3
-                        options_.kalman_algo=4;
-                    end
-                elseif newratflag==0 % hh already contains outer product gradient with univariate filter
-                    compute_hessian = 0;
-                end
-                if compute_hessian
-                    crit = options_.newrat.tolerance.f;
-                    newratflag = newratflag>0;
-                    hh = reshape(mr_hessian(xparam1,objective_function,fval,newratflag,crit,new_rat_hess_info,[bounds.lb bounds.ub],bayestopt_.p2,0,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_), nx, nx);
-                end
-                options_.kalman_algo = kalman_algo0;
+        if isnumeric(current_optimizer)
+            if current_optimizer==5
+                newratflag = new_rat_hess_info.newratflag;
+                new_rat_hess_info = new_rat_hess_info.new_rat_hess_info;
+            elseif current_optimizer==6 %save scaling factor
+                save([M_.dname filesep 'Output' filesep M_.fname '_optimal_mh_scale_parameter.mat'],'Scale');
+                options_.mh_jscale = Scale;
+                bayestopt_.jscale(:) = options_.mh_jscale;
             end
         end
+        if ~isnumeric(current_optimizer) || ~isequal(current_optimizer,6) %always already computes covariance matrix
+            if options_.cova_compute == 1 %user did not request covariance not to be computed
+                if options_.analytic_derivation && strcmp(func2str(objective_function),'dsge_likelihood')
+                    ana_deriv_old = options_.analytic_derivation;
+                    options_.analytic_derivation = 2;
+                    [~,~,~,~,hh] = feval(objective_function,xparam1, ...
+                        dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+                    options_.analytic_derivation = ana_deriv_old;
+                elseif ~isnumeric(current_optimizer) || ~(isequal(current_optimizer,5) && newratflag~=1 && strcmp(func2str(objective_function),'dsge_likelihood'))
+                    % enter here if i) not mode_compute_5, ii) if mode_compute_5 and newratflag==1;
+                    % with flag==0 or 2 and dsge_likelihood, we force to use
+                    % the hessian from outer product gradient of optimizer 5 below
+                    if options_.hessian.use_penalized_objective
+                        penalized_objective_function = str2func('penalty_objective_function');
+                        hh = hessian(penalized_objective_function, xparam1, options_.gstep, objective_function, fval, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_);
+                    else
+                        hh = hessian(objective_function, xparam1, options_.gstep, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_);
+                    end
+                    hh = reshape(hh, nx, nx);
+                elseif isnumeric(current_optimizer) && isequal(current_optimizer,5)
+                    % other numerical hessian options available with optimizer
+                    % 5 and dsge_likelihood
+                    %
+                    % if newratflag == 0
+                    % compute outer product gradient of optimizer 5
+                    %
+                    % if newratflag == 2
+                    % compute 'mixed' outer product gradient of optimizer 5
+                    % with diagonal elements computed with numerical second order derivatives
+                    %
+                    % uses univariate filters, so to get max # of available
+                    % densities for outer product gradient
+                    kalman_algo0 = options_.kalman_algo;
+                    compute_hessian = 1;
+                    if ~((options_.kalman_algo == 2) || (options_.kalman_algo == 4))
+                        options_.kalman_algo=2;
+                        if options_.lik_init == 3
+                            options_.kalman_algo=4;
+                        end
+                    elseif newratflag==0 % hh already contains outer product gradient with univariate filter
+                        compute_hessian = 0;
+                    end
+                    if compute_hessian
+                        crit = options_.newrat.tolerance.f;
+                        newratflag = newratflag>0;
+                        hh = reshape(mr_hessian(xparam1,objective_function,fval,newratflag,crit,new_rat_hess_info,[bounds.lb bounds.ub],bayestopt_.p2,0,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_), nx, nx);
+                    end
+                    options_.kalman_algo = kalman_algo0;
+                end
+            end
+        end
+        parameter_names = bayestopt_.name;
     end
-    parameter_names = bayestopt_.name;
-    if options_.cova_compute || options_.mode_compute==5 || options_.mode_compute==6
+    if options_.cova_compute || current_optimizer==5 || current_optimizer==6
         save([M_.dname filesep 'Output' filesep M_.fname '_mode.mat'],'xparam1','hh','parameter_names','fval');
     else
         save([M_.dname filesep 'Output' filesep M_.fname '_mode.mat'],'xparam1','parameter_names','fval');
