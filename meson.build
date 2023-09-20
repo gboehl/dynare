@@ -1,10 +1,8 @@
 # TODO:
 # - Add tests that are individually listed in {M,O}_TRS_FILES of tests/Makefile.am
 # - Install files in right location
-# - with -Dprefer_static=true, under Octave/Windows, we are now linking the compiler libs (libgcc, libstdc++, libgfortran, libquadmath, libssp, libgomp) statically (contrary to what we were doing with autotools). In theory this is better, because the compiler used for creating the Octave binary may be different from the one used for creating our MEX. Check that this is ok
-# - configuration option to disable preprocessor build
+# - configuration option to disable preprocessor build, and use it in {windows,macOS}/build.sh
 # - add -Wold-style-cast C++ flag except when building flex-generated files
-# - determine minimal meson version required, and declare it in the project() function (here and the preprocessor); if possible at low cost, diminish the requirement. NB: Ubuntu “jammy” 22.04 has 0.61, Debian “bullseye” 11 has 0.56 (but bullseye-backports has 1.0), Ubuntu ”focal” 20.04 has 0.53
 # - add the possibility to customize the integration test names (with a new optional 'name' keyword in the dictionaries)
 # - Add an option to skip the removal of the temporary test directories, for debugging purposes
 # - See what to do with xvfb-run (see #1892). Maybe try to detect it from meson.build, and pass it optionally to the test driver script
@@ -14,7 +12,9 @@
 project('dynare',
         'cpp', 'fortran', 'c',
         version : '6-unstable',
-        default_options : [ 'cpp_std=gnu++20', 'fortran_std=f2018', 'c_std=gnu17', 'warning_level=2' ])
+        default_options : [ 'cpp_std=gnu++20', 'fortran_std=f2018',
+                            'c_std=gnu17', 'warning_level=2' ],
+        meson_version : '>=0.64.0')
 
 add_global_arguments('-Wimplicit-interface', '-Wno-compare-reals', language : 'fortran')
 add_global_arguments('-DPACKAGE_VERSION="' + meson.project_version() + '"', language : 'cpp')
