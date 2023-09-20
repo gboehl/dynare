@@ -93,7 +93,7 @@ for t=2:T+1
 end
 
 if (max(abs(Y2_local(:) - Y2_simult(:)))>1e-12)
-   error("2nd-order output of simult_ and local_state_space_iteration_2 output are inconsistent.")
+   error('2nd-order output of simult_ and local_state_space_iteration_2 output are inconsistent.')
 end
 
 % pruned_state_space_system.m: implements Andreasen et al.
@@ -119,7 +119,7 @@ for t=2:T+1
 end
 
 if (max(abs(Y2_an(:) - Y2_local(:)))>1e-12)
-   error("2nd-order output of pruned_state_space_system and local_state_space_iteration_2 output are inconsistent.")
+   error('2nd-order output of pruned_state_space_system and local_state_space_iteration_2 output are inconsistent.')
 end
 
 % 3rd order
@@ -161,7 +161,7 @@ for t=2:T+1
 end
 
 if (max(abs(Y3_an(:) - Y3_simult(:)))>1e-12)
-   error("3rd-order outputs of pruned_state_space_system and simult_ are inconsistent.")
+   error('3rd-order outputs of pruned_state_space_system and simult_ are inconsistent.')
 end
 
 % local_state_space_iteration_3 mex
@@ -186,13 +186,13 @@ Y3_local_1 = Ylat_local(1:M_.endo_nbr,:);
 Y3_local_2 = Y3_local_1 + Ylat_local(M_.endo_nbr+1:2*M_.endo_nbr,:) - oo_.dr.ys;
 
 if (max(abs(Y3_local_1(:) - Y1_local(:)))>1e-12)
-   error("1st-order outputs of local_state_space_iteration_3 and local_state_space_iteration_2 are inconsistent.")
+   error('1st-order outputs of local_state_space_iteration_3 and local_state_space_iteration_2 are inconsistent.')
 end
 
 if (max(abs(Y3_local_2(:) - Y2_local(:)))>4e-12)
-   error("2nd-order outputs of local_state_space_iteration_3 and local_state_space_iteration_2 are inconsistent.")
+   error('2nd-order outputs of local_state_space_iteration_3 and local_state_space_iteration_2 are inconsistent.')
 end
 
 if (max(abs(Y3_local(:) - Y3_simult(:)))>1e-12)
-   error("3rd-order output of simult_ and local_state_space_iteration_3 output are inconsistent.")
+   error('3rd-order output of simult_ and local_state_space_iteration_3 output are inconsistent.')
 end
