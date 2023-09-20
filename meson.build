@@ -162,7 +162,7 @@ else # Octave build
   exe_rpath = octlibdir
   exe_link_args = [ '-L' + octlibdir ] + octave_libs
 
-  octave_defs = [ '-DOCTAVE_MEX_FILE', '-DMEXEXT="mex"' ]
+  octave_defs = [ '-DOCTAVE_MEX_FILE', '-DMEXEXT=".mex"' ]
 
   mex_kwargs = { 'name_prefix' : '',
                  'name_suffix' : 'mex',
