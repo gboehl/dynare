@@ -72,7 +72,7 @@ DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, 
   /* Under MATLAB, the following check always holds at equality; under Octave,
      there may be an inequality, because Octave diminishes nzmax if one gives
      zeros in the values vector when calling sparse(). */
-  assert(tdm.nrows() >= mxGetNzmax(sparseMat));
+  assert(tdm.nrows() >= static_cast<int>(mxGetNzmax(sparseMat)));
 
   int rind = 0;
   int output_row = 0;
