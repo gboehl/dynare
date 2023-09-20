@@ -67,9 +67,9 @@ switch info(1)
         message = 'The steadystate file did not compute the steady state';
     case 20
         if DynareOptions.linear
-            message = sprintf('Impossible to find the steady state (the sum of square residuals of the static equations is %5.4f). Either the model doesn''t have a steady state or there are an infinity of steady states Check whether your model is truly linear or whether there is a mistake in linearization.', info(2));
+            message = sprintf('Impossible to find the steady state (the sum of squared residuals of the static equations is %5.4f). Either the model doesn''t have a steady state or there are an infinity of steady states. Check whether your model is truly linear or whether there is a mistake in linearization.', info(2));
         else
-            message = sprintf('Impossible to find the steady state (the sum of square residuals of the static equations is %5.4f). Either the model doesn''t have a steady state, there are an infinity of steady states, or the guess values are too far from the solution', info(2));
+            message = sprintf('Impossible to find the steady state (the sum of squared residuals of the static equations is %5.4f). Either the model doesn''t have a steady state, there are an infinity of steady states, or the guess values are too far from the solution', info(2));
         end
     case 21
         message = sprintf('The steady state is complex (the sum of square residuals of imaginary parts of the steady state is %5.4f)', info(2));

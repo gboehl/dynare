@@ -293,22 +293,19 @@ elseif ~options.bytecode && ~options.block
                 options.mcppath.lb = lb;
                 options.mcppath.ub = ub;
             end
-            [ys,check,fvec] = dynare_solve(@static_mcp_problem,...
+            [ys,check,fvec, fjac, errorcode] = dynare_solve(@static_mcp_problem,...
                 ys_init,...
                 options.steady.maxit, options.solve_tolf, options.solve_tolx, ...
                 options, exo_ss, params,...
                 M.endo_nbr, static_resid, static_g1, ...
                 M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr, eq_index);
         else
-            [ys, check] = dynare_solve(@static_problem, ys_init, ...
+            [ys, check, fvec, fjac, errorcode] = dynare_solve(@static_problem, ys_init, ...
                 options.steady.maxit, options.solve_tolf, options.solve_tolx, ...
                 options, exo_ss, params, M.endo_nbr, static_resid, static_g1, ...
                 M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr);
         end
         if check && options.debug
-            [ys, check, fvec, fjac, errorcode] = dynare_solve(@static_problem, ys_init, ...
-                                                              options.steady.maxit, options.solve_tolf, options.solve_tolx, ...
-                                                              options, exo_ss, params, M.endo_nbr, static_resid, static_g1, M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr);
             dprintf('Nonlinear solver routine returned errorcode=%i.', errorcode)
             skipline()
             [infrow,infcol]=find(isinf(fjac) | isnan(fjac));
@@ -480,10 +477,14 @@ if M.static_and_dynamic_models_differ
 end
 
 if ~isreal(ys)
-    info(1) = 21;
-    info(2) = sum(imag(ys).^2);
-    ys = real(ys);
+    if sum(imag(ys).^2) < 1e-7
+        ys=real(ys);
+    else
+        info(1) = 21;
+        info(2) = sum(imag(ys).^2);
+        ys = real(ys);
     return
+    end
 end
 
 if ~isempty(find(isnan(ys)))

@@ -94,9 +94,18 @@ else
         end
     end
     if options_.debug
-        fprintf('\nThe steady state computation failed. It terminated with the following values:\n')
+        fprintf('\nsteady: The steady state computation failed. It terminated with the following values:\n')
+        if ~isreal(oo_.steady_state)
+            format_string=sprintf('%%-%us= %%g%%+gi\n',size(strvcat(M_.endo_names),2)+1);
+        else
+            format_string=sprintf('%%-%us= %%14.6f\n',size(strvcat(M_.endo_names),2)+1);
+        end
         for i=1:M_.orig_endo_nbr
-            fprintf('%s \t\t %g\n', M_.endo_names{i}, oo_.steady_state(i));
+            if ~isreal(oo_.steady_state)
+                fprintf(format_string, M_.endo_names{i}, real(oo_.steady_state(i)),imag(oo_.steady_state(i)));
+            else
+                fprintf(format_string, M_.endo_names{i}, oo_.steady_state(i));
+            end
         end
     end
     print_info(info,options_.noprint, options_);
