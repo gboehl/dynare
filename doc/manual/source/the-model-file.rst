@@ -9255,7 +9255,9 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         Default: ``13``, i.e. ``lsqnonlin`` if the MATLAB Optimization Toolbox or
         the Octave optim-package are present, ``4``, i.e. ``csminwel`` otherwise.
 
-    .. option:: additional_optimizer_steps = [INTEGER|FUNCTION_NAME,INTEGER|FUNCTION_NAME,...]
+    .. option:: additional_optimizer_steps = [INTEGER]
+                additional_optimizer_steps = [INTEGER1:INTEGER2]
+                additional_optimizer_steps = [INTEGER1 INTEGER2]
 
         Vector of additional minimization algorithms run after
         ``mode_compute``. If :opt:`verbose` option is set, then the additional estimation
@@ -9445,7 +9447,7 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         - ``shocks_std``: estimated standard deviation of structural shocks.
 
         If the :opt:`verbose` option is set, additional fields prefixed with
-        ``verbose_`` are saved for all :opt:`additional_optimizer_steps<additional_optimizer_steps = [INTEGER|FUNCTION_NAME,INTEGER|FUNCTION_NAME,...]>`.
+        ``verbose_`` are saved for all :opt:`additional_optimizer_steps<additional_optimizer_steps = [INTEGER]>`.
 
     .. matvar:: oo_.mom.gmm_stage_*_std_at_mode
     .. matvar:: oo_.mom.smm_stage_*_std_at_mode
@@ -9463,7 +9465,7 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         - ``shocks_std``: standard error of estimated standard deviation of structural shocks.
 
         If the :opt:`verbose` option is set, additional fields prefixed with
-        ``verbose_`` are saved for all :opt:`additional_optimizer_steps<additional_optimizer_steps = [INTEGER|FUNCTION_NAME,INTEGER|FUNCTION_NAME,...]>`.
+        ``verbose_`` are saved for all :opt:`additional_optimizer_steps<additional_optimizer_steps = [INTEGER]>`.
 
 
     .. matvar:: oo_.mom.J_test
