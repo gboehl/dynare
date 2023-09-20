@@ -92,9 +92,9 @@ The output from the latest run of the test suite can be found in the `test_matla
 
 It’s useful to contribute `.mod` files that test some aspect of Dynare that is not currently tested. A `.mod` file that runs into a bug is perfect. As the test suite currently takes several hours to run, we prefer you modify a current test to also create the bug you’ve found. If you can’t do that, please add a new test that runs as quickly as possible. It will contain only those commands necessary to create the bug, nothing more. To contribute a test, after having made an issue and cloned and forked the repository as described above, do the following:
 
-1. Modify the `MODFILES` variable in `tests/Makefile.am` with a line containing your test file name
-1. If any ancillary files are needed to run your test, please include them in the `EXTRA_DIST` variable in `tests/Makefile.am`
-1. Add and commit your test file and `tests/Makefile.am` as described above
+1. Modify the `mod_and_m_tests` variable in `meson.build` with a entry containing your test file name
+1. If any ancillary files are needed to run your test, please include them in the `'extra'` field
+1. Add and commit your test file and `meson.build` as described above
 1. Push and create a pull request as described above
 
 ### Unit tests
