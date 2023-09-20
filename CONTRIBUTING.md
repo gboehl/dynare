@@ -12,10 +12,8 @@ Please note that the repositories under the purview of this page are:
 
 * [Dynare](https://git.dynare.org/Dynare/dynare)
 * [Preprocessor](https://git.dynare.org/Dynare/preprocessor)
-* [Particles](https://git.dynare.org/Dynare/particles)
 * [Dseries](https://git.dynare.org/Dynare/dseries)
 * [Reporting](https://git.dynare.org/Dynare/reporting)
-* [Testsuite](https://git.dynare.org/Dynare/testsuite)
 * [M-unit-tests](https://git.dynare.org/Dynare/m-unit-tests)
 
 ## Making your Intentions Known
