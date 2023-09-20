@@ -478,7 +478,7 @@ shared_module('ms_sbvar_command_line', ms_sbvar_command_line_src, kwargs : mex_m
 
 ## Reference manual
 
-sphinx_build_exe = find_program('sphinx-build', required : false)
+sphinx_build_exe = find_program('sphinx-build', required : false, disabler : true)
 
 sphinx_src = [ 'doc/manual/source/conf.py',
                'doc/manual/source/time-series.rst',
