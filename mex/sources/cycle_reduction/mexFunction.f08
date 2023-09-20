@@ -43,13 +43,13 @@ contains
       real(real64) :: residual, crit
       character(kind=c_char, len=10) :: cvg_tol_str, residual_str
 
-      Ahat = A1
-      A1i = A1
       n = size(A0,1)
       dn = 2*n
       allocate(A02(n,dn), ipiv(n), invA1_A02(n,dn), Q0(n,dn), Q2(n,dn))
       A02(:,1:n) = A0
       A02(:,n+1:dn) = A2
+      Ahat = A1
+      A1i = A1
       it = 0
       max_it = 300
 loop: do
