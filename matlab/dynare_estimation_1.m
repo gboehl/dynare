@@ -93,6 +93,7 @@ if options_.order > 1
     end
 end
 
+%% set objective function 
 if ~options_.dsge_var
     if options_.particle.status
         objective_function = str2func('non_linear_dsge_likelihood');
@@ -133,15 +134,11 @@ if estim_params_.ncx || any(nnz(tril(M_.Correlation_matrix,-1))) || isfield(esti
 end
 
 data = dataset_.data;
-rawdata = dataset_info.rawdata;
 data_index = dataset_info.missing.aindex;
 missing_value = dataset_info.missing.state;
 
 % Set number of observations
 gend = dataset_.nobs;
-
-% Set the number of observed variables.
-n_varobs = length(options_.varobs);
 
 % Get the number of parameters to be estimated.
 nvx = estim_params_.nvx;  % Variance of the structural innovations (number of parameters).
@@ -151,12 +148,9 @@ ncn = estim_params_.ncn;  % Covariance of the measurement innovations (number of
 np  = estim_params_.np ;  % Number of deep parameters.
 nx  = nvx+nvn+ncx+ncn+np; % Total number of parameters to be estimated.
 
-dr = oo_.dr;
-
 if ~isempty(estim_params_)
     M_ = set_all_parameters(xparam1,estim_params_,M_);
 end
-
 
 %% perform initial estimation checks;
 try
@@ -175,6 +169,7 @@ catch % if check fails, provide info on using calibration if present
     rethrow(e);
 end
 
+%% Run smoother if no estimation or mode-finding are requested 
 if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && ~options_.mh_posterior_mode_estimation
     if options_.order==1 && ~options_.particle.status
         if options_.smoother
@@ -229,7 +224,7 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
     for optim_iter = 1:length(optimizer_vec)
         current_optimizer = optimizer_vec{optim_iter};
 
-        [xparam1, fval, exitflag, hh, options_, Scale, new_rat_hess_info] = dynare_minimize_objective(objective_function,xparam1,current_optimizer,options_,[bounds.lb bounds.ub],bayestopt_.name,bayestopt_,hh,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+        [xparam1, fval, ~, hh, options_, Scale, new_rat_hess_info] = dynare_minimize_objective(objective_function,xparam1,current_optimizer,options_,[bounds.lb bounds.ub],bayestopt_.name,bayestopt_,hh,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
         fprintf('\nFinal value of minus the log posterior (or likelihood):%f \n', fval);
 
         if isnumeric(current_optimizer)
@@ -306,6 +301,7 @@ if ~options_.mh_posterior_mode_estimation && options_.cova_compute
     check_hessian_at_the_mode(hh, xparam1, M_, estim_params_, options_, bounds);
 end
 
+%% create mode_check_plots
 if options_.mode_check.status && ~options_.mh_posterior_mode_estimation
     ana_deriv_old = options_.analytic_derivation;
     options_.analytic_derivation = 0;
@@ -440,7 +436,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         end
         %% Estimation of the marginal density from the Mh draws:
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_);
+            [~,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_);
             % Store posterior statistics by parameter name
             oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, prior_dist_names);
             if ~options_.nograph
@@ -519,6 +515,8 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         xparam1 = get_posterior_parameters('mean',M_,estim_params_,oo_,options_);
         M_ = set_all_parameters(xparam1,estim_params_,M_);
     end
+else
+    M_ = set_all_parameters(xparam1,estim_params_,M_); %set to posterior mode
 end
 
 if options_.particle.status
@@ -527,236 +525,14 @@ if options_.particle.status
     return
 end
 
+%Run and store classical smoother if needed
 if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.pshape> 0) && options_.load_mh_file)) ...
     || ~options_.smoother ) && ~options_.partial_information  % to be fixed
     %% ML estimation, or posterior mode without Metropolis-Hastings or Metropolis without Bayesian smoothed variables
-    if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
-        [~, info, ~, ~, ~, ~, ~, ~, ~, ~, oo_, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
-        if ismember(info(1),[303,304,306])
-            fprintf('\nIVF: smoother did not succeed. No results will be written to oo_.\n')
-        else
-            updated_variables = atT*nan;
-            measurement_error=[];
-            ys = oo_.dr.ys;
-            trend_coeff = zeros(length(options_.varobs_id),1);
-            bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
-            options_nk=options_.nk;
-            options_.nk=[]; %unset options_.nk and reset it later
-            [oo_, yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff);
-            options_.nk=options_nk;
-        end        
-    else
-        if options_.occbin.smoother.status
-            [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = occbin.DSGE_smoother(xparam1,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_,dataset_,dataset_info);
-            if oo_.occbin.smoother.error_flag(1)==0
-                [oo_,yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
-            else 
-                fprintf('\nOccbin: smoother did not succeed. No results will be written to oo_.\n')
-            end
-        else
-            [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DsgeSmoother(xparam1,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_);
-            [oo_,yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
-        end
-        [oo_,yf]=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
-    end
-    if ~options_.nograph
-        [nbplt,nr,nc,lr,lc,nstar] = pltorg(M_.exo_nbr);
-        if ~exist([M_.dname '/graphs'],'dir')
-            mkdir(M_.dname,'graphs');
-        end
-        if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-            fidTeX = fopen([M_.dname, '/graphs/' M_.fname '_SmoothedShocks.tex'],'w');
-            fprintf(fidTeX,'%% TeX eps-loader file generated by dynare_estimation_1.m (Dynare).\n');
-            fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
-            fprintf(fidTeX,' \n');
-        end
-        for plt = 1:nbplt
-            fh = dyn_figure(options_.nodisplay,'Name','Smoothed shocks');
-            NAMES = [];
-            if options_.TeX, TeXNAMES = []; end
-            nstar0=min(nstar,M_.exo_nbr-(plt-1)*nstar);
-            if gend==1
-                marker_string{1,1}='-ro';
-                marker_string{2,1}='-ko';
-            else
-                marker_string{1,1}='-r';
-                marker_string{2,1}='-k';
-            end
-            for i=1:nstar0
-                k = (plt-1)*nstar+i;
-                subplot(nr,nc,i);
-                plot([1 gend],[0 0],marker_string{1,1},'linewidth',.5)
-                hold on
-                plot(1:gend,innov(k,:),marker_string{2,1},'linewidth',1)
-                hold off
-                name = M_.exo_names{k};
-                if ~isempty(options_.XTick)
-                    set(gca,'XTick',options_.XTick)
-                    set(gca,'XTickLabel',options_.XTickLabel)
-                end
-                if gend>1
-                    xlim([1 gend])
-                end
-                if options_.TeX
-                    title(['$' M_.exo_names_tex{k} '$'],'Interpreter','latex')
-                else
-                    title(name,'Interpreter','none')
-                end
-            end
-            dyn_saveas(fh,[M_.dname, '/graphs/' M_.fname '_SmoothedShocks' int2str(plt)],options_.nodisplay,options_.graph_format);
-            if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-                fprintf(fidTeX,'\\begin{figure}[H]\n');
-                fprintf(fidTeX,'\\centering \n');
-                fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_SmoothedShocks%s}\n',options_.figures.textwidth*min(i/nc,1),[M_.dname, '/graphs/' M_.fname],int2str(plt));
-                fprintf(fidTeX,'\\caption{Smoothed shocks.}');
-                fprintf(fidTeX,'\\label{Fig:SmoothedShocks:%s}\n',int2str(plt));
-                fprintf(fidTeX,'\\end{figure}\n');
-                fprintf(fidTeX,'\n');
-            end
-        end
-        if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-            fprintf(fidTeX,'\n');
-            fprintf(fidTeX,'%% End of TeX file.\n');
-            fclose(fidTeX);
-        end
-    end
-    if nvn
-        number_of_plots_to_draw = 0;
-        index = [];
-        for obs_iter=1:n_varobs
-            if max(abs(measurement_error(obs_iter,:))) > options_.ME_plot_tol;
-                number_of_plots_to_draw = number_of_plots_to_draw + 1;
-                index = cat(1,index,obs_iter);
-            end
-        end
-        if ~options_.nograph
-            [nbplt,nr,nc,lr,lc,nstar] = pltorg(number_of_plots_to_draw);
-            if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-                fidTeX = fopen([M_.dname, '/graphs/' M_.fname '_SmoothedObservationErrors.tex'],'w');
-                fprintf(fidTeX,'%% TeX eps-loader file generated by dynare_estimation_1.m (Dynare).\n');
-                fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
-                fprintf(fidTeX,' \n');
-            end
-            for plt = 1:nbplt
-                fh = dyn_figure(options_.nodisplay,'Name','Smoothed observation errors');
-                nstar0=min(nstar,number_of_plots_to_draw-(plt-1)*nstar);
-                if gend==1
-                    marker_string{1,1}='-ro';
-                    marker_string{2,1}='-ko';
-                else
-                    marker_string{1,1}='-r';
-                    marker_string{2,1}='-k';
-                end
-                for i=1:nstar0
-                    k = (plt-1)*nstar+i;
-                    subplot(nr,nc,i);
-                    plot([1 gend],[0 0],marker_string{1,1},'linewidth',.5)
-                    hold on
-                    plot(1:gend,measurement_error(index(k),:),marker_string{2,1},'linewidth',1)
-                    hold off
-                    name = options_.varobs{index(k)};
-                    if gend>1
-                        xlim([1 gend])
-                    end
-                    if ~isempty(options_.XTick)
-                        set(gca,'XTick',options_.XTick)
-                        set(gca,'XTickLabel',options_.XTickLabel)
-                    end
-                    if options_.TeX
-                        idx = strmatch(options_.varobs{index(k)}, M_.endo_names, 'exact');
-                        title(['$' M_.endo_names_tex{idx} '$'],'Interpreter','latex')
-                    else
-                        title(name,'Interpreter','none')
-                    end
-                end
-                dyn_saveas(fh,[M_.dname, '/graphs/' M_.fname '_SmoothedObservationErrors' int2str(plt)],options_.nodisplay,options_.graph_format);
-                if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-                    fprintf(fidTeX,'\\begin{figure}[H]\n');
-                    fprintf(fidTeX,'\\centering \n');
-                    fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_SmoothedObservationErrors%s}\n',options_.figures.textwidth*min(i/nc,1),[M_.dname, '/graphs/' M_.fname],int2str(plt));
-                    fprintf(fidTeX,'\\caption{Smoothed observation errors.}');
-                    fprintf(fidTeX,'\\label{Fig:SmoothedObservationErrors:%s}\n',int2str(plt));
-                    fprintf(fidTeX,'\\end{figure}\n');
-                    fprintf(fidTeX,'\n');
-                end
-            end
-            if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-                fprintf(fidTeX,'\n');
-                fprintf(fidTeX,'%% End of TeX file.\n');
-                fclose(fidTeX);
-            end
-        end
-    end
-    %%
-    %%  Historical and smoothed variabes
-    %%
-    if ~options_.nograph
-        [nbplt,nr,nc,lr,lc,nstar] = pltorg(n_varobs);
-        if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-            fidTeX = fopen([M_.dname, '/graphs/' M_.fname '_HistoricalAndSmoothedVariables.tex'],'w');
-            fprintf(fidTeX,'%% TeX eps-loader file generated by dynare_estimation_1.m (Dynare).\n');
-            fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
-            fprintf(fidTeX,' \n');
-        end
-        for plt = 1:nbplt
-            fh = dyn_figure(options_.nodisplay,'Name','Historical and smoothed variables');
-            NAMES = [];
-            nstar0=min(nstar,n_varobs-(plt-1)*nstar);
-            if gend==1
-                marker_string{1,1}='-ro';
-                marker_string{2,1}='--ko';
-            else
-                marker_string{1,1}='-r';
-                marker_string{2,1}='--k';
-            end
-            for i=1:nstar0
-                k = (plt-1)*nstar+i;
-                subplot(nr,nc,i);
-                plot(1:gend,yf(k,:),marker_string{1,1},'linewidth',1)
-                hold on
-                plot(1:gend,rawdata(:,k),marker_string{2,1},'linewidth',1)
-                hold off
-                name = options_.varobs{k};
-                if ~isempty(options_.XTick)
-                    set(gca,'XTick',options_.XTick)
-                    set(gca,'XTickLabel',options_.XTickLabel)
-                end
-                if gend>1
-                    xlim([1 gend])
-                end
-                if options_.TeX
-                    idx = strmatch(options_.varobs{k}, M_.endo_names,'exact');
-                    title(['$' M_.endo_names_tex{idx} '$'],'Interpreter','latex')
-                else
-                    title(name,'Interpreter','none')
-                end
-            end
-            dyn_saveas(fh,[M_.dname, '/graphs/' M_.fname '_HistoricalAndSmoothedVariables' int2str(plt)],options_.nodisplay,options_.graph_format);
-            if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-                fprintf(fidTeX,'\\begin{figure}[H]\n');
-                fprintf(fidTeX,'\\centering \n');
-                fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_HistoricalAndSmoothedVariables%s}\n',options_.figures.textwidth*min(i/nc,1),[M_.dname, '/graphs/' M_.fname],int2str(plt));
-                fprintf(fidTeX,'\\caption{Historical and smoothed variables.}');
-                fprintf(fidTeX,'\\label{Fig:HistoricalAndSmoothedVariables:%s}\n',int2str(plt));
-                fprintf(fidTeX,'\\end{figure}\n');
-                fprintf(fidTeX,'\n');
-            end
-        end
-        if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
-            fprintf(fidTeX,'\n');
-            fprintf(fidTeX,'%% End of TeX file.\n');
-            fclose(fidTeX);
-        end
-    end
+    oo_=save_display_classical_smoother_results(xparam1,M_,oo_,options_,bayestopt_,dataset_,dataset_info,estim_params_);
 end
-
 if options_.forecast > 0 && options_.mh_replic == 0 && ~options_.load_mh_file
     oo_.forecast = dyn_forecast(var_list_,M_,options_,oo_,'smoother',dataset_info);
-end
-
-if np > 0
-    pindx = estim_params_.param_vals(:,1);
-    save([M_.dname filesep 'Output' filesep M_.fname '_pindx.mat'] ,'pindx');
 end
 
 %reset qz_criterium
