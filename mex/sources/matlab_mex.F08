@@ -27,6 +27,9 @@
 !     “contiguous” (which is always the case for C arrays). This will help the
 !     Fortran compiler better optimize the code (in some cases, this will avoid
 !     array copies)
+! – If the function has no side-effect, mark it as “pure”, to avoid gfortran
+!   warnings when the function may not be evaluated depending on the branch
+!   (-Wfunction-elimination)
 
 ! Copyright © 2019-2023 Dynare Team
 !
@@ -80,32 +83,32 @@ module matlab_mat
 
   interface
      !! mxArray attributes
-     logical(c_bool) function mxIsNumeric(pm) bind(c, name="mxIsNumeric"//API_VER)
+     pure logical(c_bool) function mxIsNumeric(pm) bind(c, name="mxIsNumeric"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxIsNumeric
 
-     logical(c_bool) function mxIsComplex(pm) bind(c, name="mxIsComplex"//API_VER)
+     pure logical(c_bool) function mxIsComplex(pm) bind(c, name="mxIsComplex"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxIsComplex
 
-     integer(c_size_t) function mxGetNumberOfElements(pm) bind(c, name="mxGetNumberOfElements"//API_VER)
+     pure integer(c_size_t) function mxGetNumberOfElements(pm) bind(c, name="mxGetNumberOfElements"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetNumberOfElements
 
-     integer(c_size_t) function mxGetM(pm) bind(c, name="mxGetM"//API_VER)
+     pure integer(c_size_t) function mxGetM(pm) bind(c, name="mxGetM"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetM
 
-     integer(c_size_t) function mxGetN(pm) bind(c, name="mxGetN"//API_VER)
+     pure integer(c_size_t) function mxGetN(pm) bind(c, name="mxGetN"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetN
 
-     logical(c_bool) function mxIsEmpty(pm) bind(c, name="mxIsEmpty"//API_VER)
+     pure logical(c_bool) function mxIsEmpty(pm) bind(c, name="mxIsEmpty"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxIsEmpty
@@ -126,36 +129,36 @@ module matlab_mat
      end function mxCreateDoubleScalar
 
      ! Noncomplex Float
-     logical(c_bool) function mxIsScalar(array_ptr) bind(c, name="mxIsScalar"//API_VER)
+     pure logical(c_bool) function mxIsScalar(array_ptr) bind(c, name="mxIsScalar"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: array_ptr
      end function mxIsScalar
 
-     real(c_double) function mxGetScalar(pm) bind(c, name="mxGetScalar"//API_VER)
+     pure real(c_double) function mxGetScalar(pm) bind(c, name="mxGetScalar"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetScalar
 
-     logical(c_bool) function mxIsDouble(pm) bind(c, name="mxIsDouble"//API_VER)
+     pure logical(c_bool) function mxIsDouble(pm) bind(c, name="mxIsDouble"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxIsDouble
 
 #if MX_HAS_INTERLEAVED_COMPLEX
-     type(c_ptr) function mxGetDoubles_internal(pm) bind(c, name="mxGetDoubles"//API_VER)
+     pure type(c_ptr) function mxGetDoubles_internal(pm) bind(c, name="mxGetDoubles"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetDoubles_internal
 #endif
 
-     type(c_ptr) function mxGetPr_internal(pm) bind(c, name="mxGetPr"//API_VER)
+     pure type(c_ptr) function mxGetPr_internal(pm) bind(c, name="mxGetPr"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetPr_internal
 
      ! Noncomplex integer
 #if MX_HAS_INTERLEAVED_COMPLEX
-     type(c_ptr) function mxGetInt32s_internal(pa) bind(c, name="mxGetInt32s"//API_VER)
+     pure type(c_ptr) function mxGetInt32s_internal(pa) bind(c, name="mxGetInt32s"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pa
      end function mxGetInt32s_internal
@@ -163,12 +166,12 @@ module matlab_mat
 
      ! Complex Float
 #if MX_HAS_INTERLEAVED_COMPLEX
-     type(c_ptr) function mxGetComplexDoubles_internal(pa) bind(c, name="mxGetComplexDoubles"//API_VER)
+     pure type(c_ptr) function mxGetComplexDoubles_internal(pa) bind(c, name="mxGetComplexDoubles"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pa
      end function mxGetComplexDoubles_internal
 #else
-     type(c_ptr) function mxGetPi_internal(pm) bind(c, name="mxGetPi"//API_VER)
+     pure type(c_ptr) function mxGetPi_internal(pm) bind(c, name="mxGetPi"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetPi_internal
@@ -182,40 +185,40 @@ module matlab_mat
        integer(mxComplexity), intent(in), value :: ComplexFlag
      end function mxCreateSparse
 
-     logical(c_bool) function mxIsSparse(pm) bind(c, name="mxIsSparse"//API_VER)
+     pure logical(c_bool) function mxIsSparse(pm) bind(c, name="mxIsSparse"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxIsSparse
 
-     type(c_ptr) function mxGetIr(pm) bind(c, name="mxGetIr"//API_VER2)
+     pure type(c_ptr) function mxGetIr(pm) bind(c, name="mxGetIr"//API_VER2)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetIr
 
-     type(c_ptr) function mxGetJc(pm) bind(c, name="mxGetJc"//API_VER2)
+     pure type(c_ptr) function mxGetJc(pm) bind(c, name="mxGetJc"//API_VER2)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetJc
 
      ! Nonnumeric types
-     type(c_ptr) function mxGetData(pm) bind(c, name="mxGetData"//API_VER)
+     pure type(c_ptr) function mxGetData(pm) bind(c, name="mxGetData"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetData
 
      ! Character
-     logical(c_bool) function mxIsChar(pm) bind(c, name="mxIsChar"//API_VER)
+     pure logical(c_bool) function mxIsChar(pm) bind(c, name="mxIsChar"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxIsChar
 
      ! Logical
-     logical(c_bool) function mxIsLogical(pm) bind(c, name="mxIsLogical"//API_VER)
+     pure logical(c_bool) function mxIsLogical(pm) bind(c, name="mxIsLogical"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxIsLogical
 
-     logical(c_bool) function mxIsLogicalScalar(array_ptr) bind(c, name="mxIsLogicalScalar"//API_VER)
+     pure logical(c_bool) function mxIsLogicalScalar(array_ptr) bind(c, name="mxIsLogicalScalar"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: array_ptr
      end function mxIsLogicalScalar
@@ -226,13 +229,13 @@ module matlab_mat
        logical(mxLogical), intent(in), value :: value
      end function mxCreateLogicalScalar
 
-     type(c_ptr) function mxGetLogicals_internal(array_ptr) bind(c, name="mxGetLogicals"//API_VER)
+     pure type(c_ptr) function mxGetLogicals_internal(array_ptr) bind(c, name="mxGetLogicals"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: array_ptr
      end function mxGetLogicals_internal
 
      ! Object
-     logical(c_bool) function mxIsClass_internal(pm, classname) bind(c, name="mxIsClass"//API_VER)
+     pure logical(c_bool) function mxIsClass_internal(pm, classname) bind(c, name="mxIsClass"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
        character(c_char), dimension(*), intent(in) :: classname
@@ -247,12 +250,12 @@ module matlab_mat
        type(c_ptr), dimension(*), intent(in) :: fieldnames
      end function mxCreateStructMatrix_internal
 
-     logical(c_bool) function mxIsStruct(pm) bind(c, name="mxIsStruct"//API_VER)
+     pure logical(c_bool) function mxIsStruct(pm) bind(c, name="mxIsStruct"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxIsStruct
 
-     type(c_ptr) function mxGetField_internal(pm, index, fieldname) bind(c, name="mxGetField"//API_VER2)
+     pure type(c_ptr) function mxGetField_internal(pm, index, fieldname) bind(c, name="mxGetField"//API_VER2)
        use iso_c_binding
        import :: mwIndex
        type(c_ptr), intent(in), value :: pm
@@ -269,18 +272,18 @@ module matlab_mat
        character(c_char), dimension(*), intent(in) :: fieldname
      end subroutine mxSetField_internal
 
-     integer(c_int) function mxGetNumberOfFields(pm) bind(c, name="mxGetNumberOfFields"//API_VER)
+     pure integer(c_int) function mxGetNumberOfFields(pm) bind(c, name="mxGetNumberOfFields"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetNumberOfFields
 
      ! Cell
-     logical(c_bool) function mxIsCell(pm) bind(c, name="mxIsCell"//API_VER)
+     pure logical(c_bool) function mxIsCell(pm) bind(c, name="mxIsCell"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxIsCell
 
-     type(c_ptr) function mxGetCell_internal(pm, index) bind(c, name="mxGetCell"//API_VER2)
+     pure type(c_ptr) function mxGetCell_internal(pm, index) bind(c, name="mxGetCell"//API_VER2)
        use iso_c_binding
        import :: mwIndex
        type(c_ptr), intent(in), value :: pm
@@ -351,7 +354,7 @@ contains
     call c_f_pointer(mxGetLogicals_internal(array_ptr), mxGetLogicals, [ mxGetNumberOfElements(array_ptr) ])
   end function mxGetLogicals
 
-  logical(c_bool) function mxIsClass(pm, classname)
+  pure logical(c_bool) function mxIsClass(pm, classname)
     type(c_ptr), intent(in) :: pm
     character(kind=c_char, len=*), intent(in) :: classname
     mxIsclass = mxIsclass_internal(pm, classname // c_null_char)
@@ -371,7 +374,7 @@ contains
     mxCreateStructMatrix = mxCreateStructMatrix_internal(m, n, size(fieldnames), fieldnames_ptr)
   end function mxCreateStructMatrix
 
-  type(c_ptr) function mxGetField(pm, index, fieldname)
+  pure type(c_ptr) function mxGetField(pm, index, fieldname)
     type(c_ptr), intent(in) :: pm
     integer(mwIndex), intent(in) :: index
     character(kind=c_char, len=*), intent(in) :: fieldname
@@ -386,7 +389,7 @@ contains
        call mxSetField_internal(pm, index-1, fieldname // c_null_char, pvalue)
   end subroutine mxSetField
 
-  type(c_ptr) function mxGetCell(pm, index)
+  pure type(c_ptr) function mxGetCell(pm, index)
     type(c_ptr), intent(in) :: pm
     integer(mwIndex), intent(in) :: index
     mxGetCell = mxGetCell_internal(pm, index-1)
