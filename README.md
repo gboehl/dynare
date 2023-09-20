@@ -302,7 +302,7 @@ pacman -Syu
   window to complete the upgrade.
 - Install all needed dependencies:
 ```sh
-pacman -S git bison flex make tar mingw-w64-x86_64-meson mingw-w64-x86_64-gcc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-boost mingw-w64-x86_64-gsl mingw-w64-x86_64-matio
+pacman -S git bison flex make tar mingw-w64-x86_64-meson mingw-w64-x86_64-gcc mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-boost mingw-w64-x86_64-gsl mingw-w64-x86_64-matio mingw-w64-x86_64-pkg-config
 ```
 - Compile and install SLICOT
 ```sh
