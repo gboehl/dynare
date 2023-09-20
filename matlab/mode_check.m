@@ -1,46 +1,32 @@
-function mode_check(fun,x,hessian_mat,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
-% Checks the estimated ML mode or Posterior mode.
+function mcheck = mode_check(fun,xparam,hessian_mat,options_,M_,estim_params_,bayestopt_,bounds,isMinimum, varargin)
+% function mcheck = mode_check(fun,xparam,hessian_mat,options_,M_,estim_params_,bayestopt_,bounds,isMinimum, varargin)
+% -------------------------------------------------------------------------
+% Checks the estimated ML or Posterior mode/minimum by plotting sections of
+% the likelihood/posterior kernel. Each plot shows the variation of the
+% function implied by the variations of a single parameter ( ceteris paribus)
+% -------------------------------------------------------------------------
+% INPUTS
+% - fun:            [func_handle]  objective function
+% - xparam:         [vector]       estimated mode/minimum
+% - hessian_mat:    [matrix]       hessian of the objective function at the estimated mode/minimum
+% - options_:       [structure]    Dynare options structure
+% - M_:             [structure]    Dynare model structure
+% - estim_params_:  [structure]    Dynare estimated parameters structure
+% - bayestopt_:     [structure]    information on the priors
+% - bounds:         [structure]    information on the bounds
+% - isMinimum:      [boolean]      true if xparam is a minimum, false if it is a mode
+% - varargin:       [cell]         additional arguments to be passed to fun
+% -------------------------------------------------------------------------
+% OUTPUTS
+% - mcheck: [structure]     structure containing the data for the check plots
+% - Saves the plots in the graphs folder and the data in a mat file
+% -------------------------------------------------------------------------
+% This function is called by
+% - dynare_estimation_1
+% - mom.run
+% -------------------------------------------------------------------------
 
-%@info:
-%! @deftypefn {Function File} mode_check (@var{fun}, @var{x}, @var{hessian_mat}, @var{DynareDataset}, @var{DynareOptions}, @var{Model}, @var{EstimatedParameters}, @var{BayesInfo}, @var{DynareResults})
-%! @anchor{mode_check}
-%! @sp 1
-%! Checks the estimated ML mode or Posterior mode by plotting sections of the likelihood/posterior kernel.
-%! Each plot shows the variation of the likelihood implied by the variations of a single parameter, ceteris paribus)
-%! @sp 2
-%! @strong{Inputs}
-%! @sp 1
-%! @table @ @var
-%! @item fun
-%! Objective function.
-%! @item x
-%! Estimated mode.
-%! @item start
-%! Hessian of the objective function at the estimated mode @var{x}.
-%! @item DynareDataset
-%! Structure specifying the dataset used for estimation (dataset_).
-%! @item DynareOptions
-%! Structure defining dynare's options (options_).
-%! @item Model
-%! Structure specifying the (estimated) model (M_).
-%! @item EstimatedParameters
-%! Structure specifying the estimated parameters (estimated_params_).
-%! @item BayesInfo
-%! Structure containing information about the priors used for estimation (bayestopt_).
-%! @item DynareResults
-%! Structure gathering the results (oo_).
-%! @end table
-%! @sp 2
-%! @strong{Outputs}
-%! @sp 2
-%! @strong{This function is called by:}
-%! @sp 2
-%! @strong{This function calls:}
-%! The objective function (@var{func}).
-%! @end deftypefn
-%@eod:
-
-% Copyright © 2003-2017 Dynare Team
+% Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -57,165 +43,188 @@ function mode_check(fun,x,hessian_mat,DynareDataset,DatasetInfo,DynareOptions,Mo
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-TeX = DynareOptions.TeX;
+tolBounds = 1e-8;
+
+fval = feval(fun,xparam,varargin{:});
+
 if ~isempty(hessian_mat)
     [ s_min, k ] = min(diag(hessian_mat));
-end
-
-fval = feval(fun,x,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults);
-
-if ~isempty(hessian_mat)
-    skipline()
-    disp('MODE CHECK')
-    skipline()
-    fprintf('Fval obtained by the minimization routine (minus the posterior/likelihood)): %f', fval);
-    skipline()
+    if isMinimum
+        fprintf('\nMINIMUM CHECK\n\nFval obtained by the optimization routine: %f\n', fval)
+    else
+        fprintf('\nMODE CHECK\n\nFval obtained by the optimization routine: %f\n', fval)        
+    end
     if s_min<eps
-        disp(sprintf('Most negative variance %f for parameter %d (%s = %f)', s_min, k , BayesInfo.name{k}, x(k)))
+        fprintf('Most negative variance %f for parameter %d (%s = %f)\n', s_min, k , bayestopt_.name{k}, xparam(k));
     end
 end
 
-[nbplt,nr,nc,lr,lc,nstar] = pltorg(length(x));
+[nbplt,nr,nc,~,~,nstar] = pltorg(length(xparam));
 
-if ~exist([Model.dname filesep 'graphs'],'dir')
-    mkdir(Model.dname,'graphs');
-end
-if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
-    fidTeX = fopen([Model.dname, '/graphs/', Model.fname '_CheckPlots.tex'],'w');
+graphsFolder = CheckPath('graphs',M_.dname);
+latexFolder = CheckPath('latex',M_.dname);
+
+if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
+    fidTeX = fopen([latexFolder filesep M_.fname '_CheckPlots.tex'],'w');
     fprintf(fidTeX,'%% TeX eps-loader file generated by mode_check.m (Dynare).\n');
     fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
     fprintf(fidTeX,' \n');
 end
 
-ll = DynareOptions.mode_check.neighbourhood_size;
+ll = options_.mode_check.neighbourhood_size;
 if isinf(ll)
-    DynareOptions.mode_check.symmetric_plots = false;
+    options_.mode_check.symmetric_plots = false;
 end
 
-mcheck = struct('cross',struct(),'emode',struct());
+if isMinimum
+    mcheck = struct('cross',struct(),'emin',struct());
+else
+    mcheck = struct('cross',struct(),'emode',struct());
+end
 
 for plt = 1:nbplt
-    if TeX
+    if options_.TeX
         NAMES = [];
         TeXNAMES = [];
     end
-    hh = dyn_figure(DynareOptions.nodisplay,'Name','Mode check plots');
-    for k=1:min(nstar,length(x)-(plt-1)*nstar)
+    if isMinimum
+        hh_fig = dyn_figure(options_.nodisplay,'Name','Minimum check plots');
+    else
+        hh_fig = dyn_figure(options_.nodisplay,'Name','Mode check plots');
+    end
+    for k = 1:min(nstar,length(xparam)-(plt-1)*nstar)
         subplot(nr,nc,k)
         kk = (plt-1)*nstar+k;
-        [name,texname] = get_the_name(kk,TeX,Model,EstimatedParameters,DynareOptions);
-        xx = x;
-        if x(kk)~=0 && ~isinf(BoundsInfo.lb(kk)) && ~isinf(BoundsInfo.ub(kk))
-            l1 = max(BoundsInfo.lb(kk),(1-sign(x(kk))*ll)*x(kk)); m1 = 0; %lower bound
-            l2 = min(BoundsInfo.ub(kk),(1+sign(x(kk))*ll)*x(kk)); %upper bound
+        [name,texname] = get_the_name(kk,options_.TeX,M_,estim_params_,options_);
+        xx = xparam;
+        if xparam(kk)~=0 && ~isinf(bounds.lb(kk)) && ~isinf(bounds.ub(kk))
+            l1 = max(bounds.lb(kk),(1-sign(xparam(kk))*ll)*xparam(kk)); m1 = 0; % lower bound
+            l2 = min(bounds.ub(kk),(1+sign(xparam(kk))*ll)*xparam(kk));         % upper bound
         else
-            %size info for 0 parameter is missing, use prior standard
-            %deviation
-            upper_bound=BoundsInfo.lb(kk);
+            % size info for 0 parameter is missing, use prior standard deviation
+            upper_bound = bounds.lb(kk);
             if isinf(upper_bound)
-                upper_bound=-1e-6*DynareOptions.huge_number;
+                upper_bound = -1e-6*options_.huge_number;
             end
-            lower_bound=BoundsInfo.ub(kk);
+            lower_bound = bounds.ub(kk);
             if isinf(lower_bound)
-                lower_bound=-1e-6*DynareOptions.huge_number;
+                lower_bound = -1e-6*options_.huge_number;
             end
-            l1 = max(lower_bound,-BayesInfo.p2(kk)); m1 = 0; %lower bound
-            l2 = min(upper_bound,BayesInfo.p2(kk)); %upper bound
+            l1 = max(lower_bound,-bayestopt_.p2(kk)); m1 = 0; % lower bound
+            l2 = min(upper_bound,bayestopt_.p2(kk));          % upper bound
         end
-        binding_lower_bound=0;
-        binding_upper_bound=0;
-        if abs(x(kk)-BoundsInfo.lb(kk))<1e-8
-            binding_lower_bound=1;
-            bound_value=BoundsInfo.lb(kk);
-        elseif abs(x(kk)-BoundsInfo.ub(kk))<1e-8
-            binding_upper_bound=1;
-            bound_value=BoundsInfo.ub(kk);
+        binding_lower_bound = 0;
+        binding_upper_bound = 0;
+        if abs(xparam(kk)-bounds.lb(kk))<tolBounds
+            binding_lower_bound = 1;
+            bound_value = bounds.lb(kk);
+        elseif abs(xparam(kk)-bounds.ub(kk))<tolBounds
+            binding_upper_bound = 1;
+            bound_value = bounds.ub(kk);
         end
-        if DynareOptions.mode_check.symmetric_plots && ~binding_lower_bound && ~binding_upper_bound
-            if l2<(1+ll)*x(kk) %test whether upper bound is too small due to prior binding
-                l1 = x(kk) - (l2-x(kk)); %adjust lower bound to become closer
+        if options_.mode_check.symmetric_plots && ~binding_lower_bound && ~binding_upper_bound
+            if l2<(1+ll)*xparam(kk) % test whether upper bound is too small due to prior binding
+                l1 = xparam(kk) - (l2-xparam(kk)); % adjust lower bound to become closer
                 m1 = 1;
             end
-            if ~m1 && (l1>(1-ll)*x(kk)) && (x(kk)+(x(kk)-l1)<BoundsInfo.ub(kk)) % if lower bound was truncated and using difference from lower bound does not violate upper bound
-                l2 = x(kk) + (x(kk)-l1); %set upper bound to same distance as lower bound
+            if ~m1 && (l1>(1-ll)*xparam(kk)) && (xparam(kk)+(xparam(kk)-l1)<bounds.ub(kk)) % if lower bound was truncated and using difference from lower bound does not violate upper bound
+                l2 = xparam(kk) + (xparam(kk)-l1); % set upper bound to same distance as lower bound
             end
         end
-        z1 = l1:((x(kk)-l1)/(DynareOptions.mode_check.number_of_points/2)):x(kk);
-        z2 = x(kk):((l2-x(kk))/(DynareOptions.mode_check.number_of_points/2)):l2;
+        z1 = l1:((xparam(kk)-l1)/(options_.mode_check.number_of_points/2)):xparam(kk);
+        z2 = xparam(kk):((l2-xparam(kk))/(options_.mode_check.number_of_points/2)):l2;
         z  = union(z1,z2);
-        if ~DynareOptions.mode_check.nolik
+        if ~options_.mode_check.nolik
             y = zeros(length(z),2);
-            dy = priordens(xx,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
+            if isfield(options_,'mom') && ( (strcmp(options_.mom.mom_method,'GMM') || strcmp(options_.mom.mom_method,'SMM')) && options_.mom.penalized_estimator )
+                dy = (xx-bayestopt_.p1)'/diag(bayestopt_.p2.^2)*(xx-bayestopt_.p1);
+            else
+                dy = priordens(xx,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
+            end
         end
-        for i=1:length(z)
+        for i = 1:length(z)
             xx(kk) = z(i);
-            [fval, info, exit_flag] = feval(fun,xx,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults);
+            [fval, info, exit_flag] = feval(fun,xx, varargin{:});                
             if exit_flag
                 y(i,1) = fval;
             else
                 y(i,1) = NaN;
-                if DynareOptions.debug
-                    fprintf('mode_check:: could not solve model for parameter %s at value %4.3f, error code: %u (%s)\n',name,z(i),info(1),get_error_message(info, DynareOptions))
+                if options_.debug
+                    fprintf('mode_check:: could not solve model for parameter %s at value %4.3f, error code: %u (%s)\n',name,z(i),info(1),get_error_message(info, options_));
                 end
             end
-            if ~DynareOptions.mode_check.nolik
-                lnprior = priordens(xx,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
+            if ~options_.mode_check.nolik
+                if isfield(options_,'mom') && ( (strcmp(options_.mom.mom_method,'GMM') || strcmp(options_.mom.mom_method,'SMM')) && options_.mom.penalized_estimator )
+                    lnprior = (xx-bayestopt_.p1)'/diag(bayestopt_.p2.^2)*(xx-bayestopt_.p1);
+                else
+                    lnprior = priordens(xx,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
+                end
                 y(i,2)  = (y(i,1)+lnprior-dy);
             end
         end
-        mcheck.cross = setfield(mcheck.cross, name, [transpose(z), -y]);
-        mcheck.emode = setfield(mcheck.emode, name, x(kk));
-        fighandle=plot(z,-y);
+        if isMinimum
+            mcheck.cross = setfield(mcheck.cross, name, [transpose(z), y]); % keep y
+            mcheck.emin = setfield(mcheck.emin, name, xparam(kk));          % store as min
+            fighandle = plot(z,y);
+        else
+            mcheck.cross = setfield(mcheck.cross, name, [transpose(z), -y]); % multiply y by -1
+            mcheck.emode = setfield(mcheck.emode, name, xparam(kk));         % store as mode
+            fighandle = plot(z,-y);
+        end        
         hold on
-        yl=get(gca,'ylim');
-        plot( [x(kk) x(kk)], yl, 'c', 'LineWidth', 1)
+        yl = get(gca,'ylim');
+        plot( [xparam(kk) xparam(kk)], yl, 'c', 'LineWidth', 1);
         NaN_index = find(isnan(y(:,1)));
         zNaN = z(NaN_index);
         yNaN = yl(1)*ones(size(NaN_index));
         plot(zNaN,yNaN,'o','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6);
-        if TeX
+        if options_.TeX
             title(texname,'interpreter','latex')
         else
             title(name,'interpreter','none')
         end
-
         axis tight
         if binding_lower_bound || binding_upper_bound
-            xl=get(gca,'xlim');
-            plot( [bound_value bound_value], yl, 'r--', 'LineWidth', 1)
-            xlim([xl(1)-0.5*binding_lower_bound*(xl(2)-xl(1)) xl(2)+0.5*binding_upper_bound*(xl(2)-xl(1))])
+            xl = get(gca,'xlim');
+            plot( [bound_value bound_value], yl, 'r--', 'LineWidth', 1);
+            xlim([xl(1)-0.5*binding_lower_bound*(xl(2)-xl(1)) xl(2)+0.5*binding_upper_bound*(xl(2)-xl(1))]);
         end
         hold off
         drawnow
     end
-    if ~DynareOptions.mode_check.nolik
+    if ~options_.mode_check.nolik
         if isoctave
-            axes('outerposition',[0.3 0.93 0.42 0.07],'box','on'),
+            axes('outerposition',[0.3 0.93 0.42 0.07],'box','on');
         else
-            axes('position',[0.3 0.01 0.42 0.05],'box','on'),
+            axes('position',[0.3 0.01 0.42 0.05],'box','on');
         end
         line_color=get(fighandle,'color');
-        plot([0.48 0.68],[0.5 0.5],'color',line_color{2})
-        hold on, plot([0.04 0.24],[0.5 0.5],'color',line_color{1})
-        set(gca,'xlim',[0 1],'ylim',[0 1],'xtick',[],'ytick',[])
-        text(0.25,0.5,'log-post')
-        text(0.69,0.5,'log-lik kernel')
+        plot([0.48 0.68],[0.5 0.5],'color',line_color{2});
+        hold on;
+        plot([0.04 0.24],[0.5 0.5],'color',line_color{1});
+        set(gca,'xlim',[0 1],'ylim',[0 1],'xtick',[],'ytick',[]);
+        if isMinimum
+            text(0.25,0.5,'log-post');
+            text(0.69,0.5,'log-dist kernel');
+        else
+            text(0.25,0.5,'log-post');
+            text(0.69,0.5,'log-lik kernel');
+        end
     end
-    dyn_saveas(hh,[Model.dname, '/graphs/', Model.fname '_CheckPlots' int2str(plt) ],DynareOptions.nodisplay,DynareOptions.graph_format);
-    if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
+    dyn_saveas(hh_fig,[graphsFolder filesep M_.fname '_CheckPlots' int2str(plt) ],options_.nodisplay,options_.graph_format);
+    if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         % TeX eps loader file
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering \n');
-        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_CheckPlots%s}\n',DynareOptions.figures.textwidth*min(k/nc,1),[Model.dname, '/graphs/',Model.fname],int2str(plt));
+        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_CheckPlots%s}\n',options_.figures.textwidth*min(k/nc,1),[graphsFolder filesep M_.fname],int2str(plt));
         fprintf(fidTeX,'\\caption{Check plots.}');
         fprintf(fidTeX,'\\label{Fig:CheckPlots:%s}\n',int2str(plt));
         fprintf(fidTeX,'\\end{figure}\n');
         fprintf(fidTeX,' \n');
     end
 end
-if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
+if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fclose(fidTeX);
 end
 
-OutputDirectoryName = CheckPath('modecheck',Model.dname);
-save([OutputDirectoryName '/check_plot_data.mat'],'mcheck');
+save([graphsFolder filesep M_.fname '_check_plot_data.mat'],'mcheck');

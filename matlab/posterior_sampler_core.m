@@ -174,12 +174,12 @@ for curr_block = fblck:nblck
         refresh_rate = sampler_options.parallel_bar_refresh_rate;
         bar_title = sampler_options.parallel_bar_title;
         prc0=(curr_block-fblck)/(nblck-fblck+1)*(isoctave || options_.console_mode);
-        hh = dyn_waitbar({prc0,whoiam,options_.parallel(ThisMatlab)},[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
+        hh_fig = dyn_waitbar({prc0,whoiam,options_.parallel(ThisMatlab)},[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
     else
         refresh_rate = sampler_options.serial_bar_refresh_rate;
         bar_title = sampler_options.serial_bar_title;
-        hh = dyn_waitbar(0,[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
-        set(hh,'Name',bar_title);
+        hh_fig = dyn_waitbar(0,[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
+        set(hh_fig,'Name',bar_title);
     end
     if mh_recover_flag==0
         accepted_draws_this_chain = 0;
@@ -207,9 +207,9 @@ for curr_block = fblck:nblck
         prtfrc = draw_iter/nruns(curr_block);
         if mod(draw_iter, refresh_rate)==0
             if accepted_draws_this_chain/draw_iter==1 && sum(neval)>1
-                dyn_waitbar(prtfrc,hh,[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ') ' sprintf('Function eval per draw %4.3f', feval_this_chain/draw_iter)]);
+                dyn_waitbar(prtfrc,hh_fig,[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ') ' sprintf('Function eval per draw %4.3f', feval_this_chain/draw_iter)]);
             else
-                dyn_waitbar(prtfrc,hh,[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ') ' sprintf('Current acceptance ratio %4.3f', accepted_draws_this_chain/draw_iter)]);
+                dyn_waitbar(prtfrc,hh_fig,[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ') ' sprintf('Current acceptance ratio %4.3f', accepted_draws_this_chain/draw_iter)]);
             end
             if save_tmp_file
                 [LastSeeds.(['file' int2str(NewFile(curr_block))]).Unifor, LastSeeds.(['file' int2str(NewFile(curr_block))]).Normal] = get_dynare_random_generator_state();
@@ -265,7 +265,7 @@ for curr_block = fblck:nblck
         draw_iter=draw_iter+1;
         draw_index_current_file = draw_index_current_file + 1;
     end % End of the simulations for one mh-block.
-    dyn_waitbar_close(hh);
+    dyn_waitbar_close(hh_fig);
     if nruns(curr_block)
         record.AcceptanceRatio(curr_block) = accepted_draws_this_chain/(draw_iter-1);
         record.FunctionEvalPerIteration(curr_block) = feval_this_chain/(draw_iter-1);

@@ -309,7 +309,8 @@ end
 if options_.mode_check.status && ~options_.mh_posterior_mode_estimation
     ana_deriv_old = options_.analytic_derivation;
     options_.analytic_derivation = 0;
-    mode_check(objective_function,xparam1,hh,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+    mode_check(objective_function,xparam1,hh,options_,M_,estim_params_,bayestopt_,bounds,false,...
+               dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_);
     options_.analytic_derivation = ana_deriv_old;
 end
 
@@ -411,12 +412,12 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         if options_.mh_replic
             ana_deriv_old = options_.analytic_derivation;
             options_.analytic_derivation = 0;
-            posterior_sampler(objective_function,posterior_sampler_options.proposal_distribution,xparam1,posterior_sampler_options,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+            posterior_sampler(objective_function,posterior_sampler_options.proposal_distribution,xparam1,posterior_sampler_options,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_,dispString);
             options_.analytic_derivation = ana_deriv_old;
         end
     end
     %% Here I discard first mh_drop percent of the draws:
-    CutSample(M_, options_, estim_params_);
+    CutSample(M_, options_, dispString);
     if options_.mh_posterior_mode_estimation
         [~,~,posterior_mode,~] = compute_mh_covariance_matrix(bayestopt_,M_.fname,M_.dname);
         oo_=fill_mh_mode(posterior_mode',NaN(length(posterior_mode),1),M_,options_,estim_params_,bayestopt_,oo_,'posterior');
@@ -475,7 +476,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                 if error_flag
                     error('%s: I cannot compute the posterior IRFs!',dispString)
                 end
-                PosteriorIRF('posterior');
+                PosteriorIRF('posterior',dispString);
             end
             if options_.moments_varendo
                 if error_flag
@@ -507,7 +508,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                     error('%s: I cannot compute the posterior statistics!',dispString)
                 end
                 if options_.order==1 && ~options_.particle.status
-                    prior_posterior_statistics('posterior',dataset_,dataset_info); %get smoothed and filtered objects and forecasts
+                    prior_posterior_statistics('posterior',dataset_,dataset_info,dispString); %get smoothed and filtered objects and forecasts
                 else
                     error('%s: Particle Smoothers are not yet implemented.',dispString)
                 end

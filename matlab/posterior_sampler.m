@@ -1,5 +1,5 @@
-function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
-% function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
+function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_,dispString)
+% function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_,dispString)
 % Random Walk Metropolis-Hastings algorithm.
 %
 % INPUTS
@@ -17,6 +17,7 @@ function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_boun
 %   o estim_params_     [structure] estimated parameters structure
 %   o bayestopt_        [structure] prior specification structure
 %   o oo_               [structure] output structure
+%   o dispString        [string]    string prependening the messages printed to the command window
 %
 % SPECIAL REQUIREMENTS
 %   None.
@@ -53,12 +54,10 @@ function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_boun
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-dispString = 'Estimation::mcmc';
-
 vv = sampler_options.invhess;
 % Initialization of the sampler
 [ ix2, ilogpo2, ModelName, MetropolisFolder, fblck, fline, npar, nblck, nruns, NewFile, MAX_nruns, d, bayestopt_] = ...
-    posterior_sampler_initialization(TargetFun, xparam1, vv, mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_);
+    posterior_sampler_initialization(TargetFun, xparam1, vv, mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_, dispString);
 
 InitSizeArray = min([repmat(MAX_nruns,nblck,1) fline+nruns-1],[],2);
 

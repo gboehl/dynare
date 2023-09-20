@@ -16,7 +16,7 @@ function redform_map(dirname,options_gsa_)
 % marco.ratto@ec.europa.eu
 
 % Copyright © 2012-2016 European Commission
-% Copyright © 2012-2018 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -165,7 +165,7 @@ for j = 1:length(anamendo)
             if (max(y0)-min(y0))>1.e-10
                 if mod(iplo,9)==0 && isempty(threshold) && ~options_.nograph
                     ifig=ifig+1;
-                    hfig = dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping: ', namendo,' vs shocks ',int2str(ifig)]);
+                    hh_fig = dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping: ', namendo,' vs shocks ',int2str(ifig)]);
                     iplo=0;
                 end
                 iplo=iplo+1;
@@ -273,7 +273,7 @@ for j = 1:length(anamendo)
                 end
 
                 if isempty(threshold) && ~options_.nograph
-                    figure(hfig)
+                    figure(hh_fig)
                     subplot(3,3,iplo),
                     if ilog
                         [saso, iso] = sort(-silog(:,js));
@@ -292,7 +292,7 @@ for j = 1:length(anamendo)
                     end
                     title([logflag,' ',namendo,' vs ',namexo],'interpreter','none')
                     if iplo==9
-                        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
+                        dyn_saveas(hh_fig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
                         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namexo,'_','\_')],['redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],1)
                     end
                 end
@@ -303,7 +303,7 @@ for j = 1:length(anamendo)
         end
     end
     if iplo<9 && iplo>0 && ifig && ~options_.nograph
-        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
+        dyn_saveas(hh_fig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namexo,'_','\_')],['redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.figures.textwidth*min(iplo/3,1))
     end
     ifig=0;
@@ -320,7 +320,7 @@ for j = 1:length(anamendo)
             if (max(y0)-min(y0))>1.e-10
                 if mod(iplo,9)==0 && isempty(threshold) && ~options_.nograph
                     ifig=ifig+1;
-                    hfig = dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping: ' namendo,' vs lags ',int2str(ifig)]);
+                    hh_fig = dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping: ' namendo,' vs lags ',int2str(ifig)]);
                     iplo=0;
                 end
                 iplo=iplo+1;
@@ -429,7 +429,7 @@ for j = 1:length(anamendo)
                 end
 
                 if isempty(threshold) && ~options_.nograph
-                    figure(hfig),
+                    figure(hh_fig),
                     subplot(3,3,iplo),
                     if ilog
                         [saso, iso] = sort(-silog(:,js));
@@ -448,7 +448,7 @@ for j = 1:length(anamendo)
                     end
                     title([logflag,' ',namendo,' vs ',namlagendo,'(-1)'],'interpreter','none')
                     if iplo==9
-                        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
+                        dyn_saveas(hh_fig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
                         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namlagendo,'_','\_'),'(-1)'],['redform_', namendo,'_vs_lags_',logflag,':',num2str(ifig)],1)
                     end
                 end
@@ -459,14 +459,14 @@ for j = 1:length(anamendo)
         end
     end
     if iplo<9 && iplo>0 && ifig && ~options_.nograph
-        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
+        dyn_saveas(hh_fig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namlagendo,'_','\_'),'(-1)'],['redform_', namendo,'_vs_lags_',logflag,':',num2str(ifig)],options_.figures.textwidth*min(iplo/3,1));
     end
 end
 
 if isempty(threshold) && ~options_.nograph
     if ilog==0
-        hfig=dyn_figure(options_.nodisplay,'name','Reduced Form GSA'); %bar(si)
+        hh_fig=dyn_figure(options_.nodisplay,'name','Reduced Form GSA'); %bar(si)
                                                                        % boxplot(si','whis',10,'symbol','r.')
         myboxplot(si',[],'.',[],10)
         xlabel(' ')
@@ -478,11 +478,11 @@ if isempty(threshold) && ~options_.nograph
             text(ip,-0.02,deblank(pnames(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
         end
         title('Reduced form GSA')
-        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_gsa'],options_.nodisplay,options_.graph_format);
+        dyn_saveas(hh_fig,[dirname,filesep,M_.fname,'_redform_gsa'],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_gsa'],'Reduced Form GSA','redform_gsa')
 
     else
-        hfig=dyn_figure(options_.nodisplay,'name','Reduced Form GSA'); %bar(silog)
+        hh_fig=dyn_figure(options_.nodisplay,'name','Reduced Form GSA'); %bar(silog)
                                                                        % boxplot(silog','whis',10,'symbol','r.')
         myboxplot(silog',[],'.',[],10)
         set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:np])
@@ -494,7 +494,7 @@ if isempty(threshold) && ~options_.nograph
             text(ip,-0.02,deblank(pnames(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
         end
         title('Reduced form GSA - Log-transformed elements')
-        dyn_saveas(hfig,[dirname,filesep,M_.fname,'_redform_gsa_log'],options_.nodisplay,options_.graph_format);
+        dyn_saveas(hh_fig,[dirname,filesep,M_.fname,'_redform_gsa_log'],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_gsa_log'],'Reduced form GSA - Log-transformed elements','redform_gsa_log')
 
     end
@@ -560,7 +560,7 @@ if iload==0
         y1 = log(y0*isig+lam);
     end
     if ~options_.nograph
-        hfig=dyn_figure(options_.nodisplay,'name',options_map.figtitle);
+        hh_fig=dyn_figure(options_.nodisplay,'name',options_map.figtitle);
         subplot(221)
         if ilog
             hist(y1,30)
@@ -647,7 +647,7 @@ if iload==0
     gsa_.x0=x0(ifit,:);
     %   copyfile([fname,'_est.mat'],[fname,'.mat'])
     if ~options_.nograph
-        figure(hfig);
+        figure(hh_fig);
         subplot(223),
         plot(y0(ifit),[gsa_.fit y0(ifit)],'.'),
         r2 = gsa_.r2;
@@ -672,7 +672,7 @@ if iload==0
             plot(yn,[yf yn],'.'),
             title(['Out-of-sample prediction - R2=' num2str(r2,2)],'interpreter','none')
         end
-        dyn_saveas(hfig,fname,options_.nodisplay,options_.graph_format);
+        dyn_saveas(hh_fig,fname,options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,fname,['Out-of-sample prediction - R2=' num2str(r2,2)],'redform_gsa_log')
 
         if options_.nodisplay
@@ -685,10 +685,10 @@ else
     load([fname,'_map.mat'],'gsa_')
     if ~options_.nograph
         yf = ss_anova_fcast(x0, gsa_);
-        hfig=dyn_figure(options_.nodisplay,'name',options_map.title);
+        hh_fig=dyn_figure(options_.nodisplay,'name',options_map.title);
         plot(y0,[yf y0],'.'),
         title([namy,' vs ', namx,' pred'],'interpreter','none')
-        dyn_saveas(hfig,[fname '_pred'],options_.nodisplay,options_.graph_format);
+        dyn_saveas(hh_fig,[fname '_pred'],options_.nodisplay,options_.graph_format);
         create_TeX_loader(options_,[fname '_pred'],options_map.title,[namy,' vs ', namx,' pred'])
 
     end
@@ -762,7 +762,7 @@ return
 
 function indmcf = redform_mcf(y0, x0, options_mcf, options_)
 
-hfig=dyn_figure(options_.nodisplay,'name',options_mcf.amcf_title);
+hh_fig=dyn_figure(options_.nodisplay,'name',options_mcf.amcf_title);
 
 [post_mean, post_median, post_var, hpd_interval, post_deciles, ...
  density] = posterior_moments(y0,1,0.9);
@@ -813,7 +813,7 @@ if ~isoctave
                'horizontalalignment','center');
 end
 
-dyn_saveas(hfig,[options_mcf.OutputDirectoryName filesep options_mcf.fname_,'_',options_mcf.amcf_name],options_.nodisplay,options_.graph_format);
+dyn_saveas(hh_fig,[options_mcf.OutputDirectoryName filesep options_mcf.fname_,'_',options_mcf.amcf_name],options_.nodisplay,options_.graph_format);
 create_TeX_loader(options_,[options_mcf.OutputDirectoryName filesep options_mcf.fname_,'_',options_mcf.amcf_name],strrep(options_mcf.amcf_title,'_','\_'),[options_mcf.fname_,'_',options_mcf.amcf_name])
 
 return

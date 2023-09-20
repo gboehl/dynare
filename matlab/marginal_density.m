@@ -1,5 +1,5 @@
-function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_)
-% function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_)
+function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_, outputFolderName)
+% function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_, outputFolderName)
 % Computes the marginal density
 %
 % INPUTS
@@ -7,6 +7,7 @@ function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bay
 %   estim_params_    [structure]    Dynare estimation parameter structure
 %   M_               [structure]    Dynare model structure
 %   oo_              [structure]    Dynare results structure
+%   outputFolderName [string]       name of folder with results
 %
 % OUTPUTS
 %   marginal:        [double]       marginal density (modified harmonic mean)
@@ -31,7 +32,9 @@ function [marginal,oo_] = marginal_density(M_, options_, estim_params_, oo_, bay
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
+if nargin < 6
+    outputFolderName = 'Output';
+end
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
 ModelName = M_.fname;
@@ -47,8 +50,8 @@ TotalNumberOfMhFiles = sum(record.MhDraws(:,2));
 TotalNumberOfMhDraws = sum(record.MhDraws(:,1));
 TODROP = floor(options_.mh_drop*TotalNumberOfMhDraws);
 
-fprintf('Estimation::marginal density: I''m computing the posterior mean and covariance... ');
-[posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix(bayestopt_,M_.fname,M_.dname);
+fprintf('marginal density: I''m computing the posterior mean and covariance... ');
+[posterior_mean,posterior_covariance,posterior_mode,posterior_kernel_at_the_mode] = compute_mh_covariance_matrix(bayestopt_,M_.fname,M_.dname,outputFolderName);
 
 MU = transpose(posterior_mean);
 SIGMA = posterior_covariance;
@@ -64,16 +67,16 @@ end
 % (usefull if the user wants to perform some computations using
 % the posterior mean instead of the posterior mode ==> ).
 parameter_names = bayestopt_.name;
-save([M_.dname filesep 'Output' filesep M_.fname '_mean.mat'],'xparam1','hh','parameter_names','SIGMA');
+save([M_.dname filesep outputFolderName filesep M_.fname '_mean.mat'],'xparam1','hh','parameter_names','SIGMA');
 
-fprintf('Estimation::marginal density: I''m computing the posterior log marginal density (modified harmonic mean)... ');
+fprintf('marginal density: I''m computing the posterior log marginal density (modified harmonic mean)... ');
 try 
     % use this robust option to avoid inf/nan
     logdetSIGMA = 2*sum(log(diag(chol(SIGMA)))); 
 catch
     % in case SIGMA is not positive definite
     logdetSIGMA = nan;
-    fprintf('Estimation::marginal density: the covariance of MCMC draws is not positive definite. You may have too few MCMC draws.');
+    fprintf('marginal density: the covariance of MCMC draws is not positive definite. You may have too few MCMC draws.');
 end
 invSIGMA = hh;
 marginal = zeros(9,2);
@@ -108,18 +111,18 @@ while check_coverage
     if abs((marginal(9,2)-marginal(1,2))/marginal(9,2)) > options_.marginal_data_density.harmonic_mean.tolerance || isinf(marginal(1,2))
         fprintf('\n')
         if increase == 1
-            disp('Estimation::marginal density: The support of the weighting density function is not large enough...')
-            disp('Estimation::marginal density: I increase the variance of this distribution.')
+            disp('marginal density: The support of the weighting density function is not large enough...')
+            disp('marginal density: I increase the variance of this distribution.')
             increase = 1.2*increase;
             linee    = 0;
         else
-            disp('Estimation::marginal density: Let me try again.')
+            disp('marginal density: Let me try again.')
             increase = 1.2*increase;
             linee    = 0;
             if increase > 20
                 check_coverage = 0;
                 clear invSIGMA detSIGMA increase;
-                disp('Estimation::marginal density: There''s probably a problem with the modified harmonic mean estimator.')
+                disp('marginal density: There''s probably a problem with the modified harmonic mean estimator.')
             end
         end
     else

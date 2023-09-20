@@ -2,7 +2,7 @@ function invhess = set_mcmc_jumping_covariance(invhess, xparam_nbr, MCMC_jumping
 % function invhess = set_mcmc_jumping_covariance(invhess, xparam_nbr, MCMC_jumping_covariance, bayestopt_, stringForErrors)
 % -------------------------------------------------------------------------
 % sets the jumping covariance matrix for the MCMC algorithm
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
 %  o invhess:                 [matrix] already computed inverse of the hessian matrix
 %  o xparam_nbr:              [integer] number of estimated parameters
@@ -16,6 +16,7 @@ function invhess = set_mcmc_jumping_covariance(invhess, xparam_nbr, MCMC_jumping
 % This function is called by
 %  o dynare_estimation_1.m
 % -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -32,7 +33,6 @@ function invhess = set_mcmc_jumping_covariance(invhess, xparam_nbr, MCMC_jumping
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
 
 switch MCMC_jumping_covariance
     case 'hessian' % do nothing and use hessian from previous mode optimization

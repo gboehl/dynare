@@ -626,10 +626,10 @@ MatlabOctavePath = matlab
 
 In this section we describe what happens when the user omits a mandatory entry or provides bad values for them and how DYNARE reacts in these cases. In the parallel package there is a utility (\verb"AnalyseComputationalEnvironment.m") devoted to this task (this is triggered by the command line option \verb"parallel_test"). When necessary during the discussion, we use the \verb"parallel" entries used in the previous examples.
 
-%Le parti in rosa sono una possibile reazione ad un errore che può accadere … vanno concordate e quindi magari riviste.
+%Le parti in rosa sono una possibile reazione ad un errore che puÃ² accadere vanno concordate e quindi magari riviste.
 
 \begin{description}
-%\item[Local:] if no value is given for this variable the execution is stopped when DYNARE starts. More serious if we give a bad value (i.e. for example -1, 3), DYNARE will be stopped after some time with no error message! In these cases the Dynare …
+%\item[Local:] if no value is given for this variable the execution is stopped when DYNARE starts. More serious if we give a bad value (i.e. for example -1, 3), DYNARE will be stopped after some time with no error message!
 \item[ComputerName:] If \verb"Local=0", DYNARE checks if the computer \verb"vonNeumann" exists and if it is possible communicate with it. If this is not the case, an error message is generated and the computation is stopped.
 \item[CPUnbr:] a value for this variable must be in the form \verb"[s:d]" with \verb"d>=s". If the user types  values \verb"s>d", their order is flipped and a warning message is sent. When the user provides a correct value for this field, DYNARE checks if \verb"d" CPUs (or cores) are available on the computer. Suppose that this check returns an integer \verb"nC". We can have three possibilities:
     \begin{enumerate}
@@ -644,7 +644,8 @@ In this section we describe what happens when the user omits a mandatory entry o
 
 
 \subsection{The Developers perspective}
-%L'esposizione nel seguito (e anche in alcuni punti su) dipende molto da come il pacchetto parallelo viene rilasciato in Dynare, e quindi se PsTools viene installato durante l'installazione di Dynare oppure no, se le directory necessarie alla computazione vengono create durante l'installazione di Dynare oppure no. E cose così ...
+%L'esposizione nel seguito (e anche in alcuni punti su) dipende molto da come il pacchetto parallelo viene rilasciato in Dynare, e quindi se PsTools viene installato durante l'installazione di Dynare oppure no, se le directory necessarie alla computazione vengono create durante l'installazione di Dynare oppure no. E cose cosÃ¬ ...
+
 
 In this section we describe with some accuracy the DYNARE parallel routines.
 \begin{description}
@@ -906,7 +907,7 @@ waitbarString = [ '(' int2str(b) '/' int2str(mh_nblck) ') ...
 
     if mod(j, 3)==0 & ~whoiam
         % serial computation
-        waitbar(prtfrc,hh,waitbarString);
+        waitbar(prtfrc,hh_fig,waitbarString);
 
     elseif mod(j,50)==0 & whoiam,
         % parallel computation
@@ -971,12 +972,12 @@ On the other hand, under the parallel implementation, a parallel monitoring plot
 %[...]
 %\end{verbatim}
 
-%Non so se può andare bene impostata in questo modo … se va bene la concludo.
+%Non so se puÃ² andare bene impostata in questo modo se va bene la concludo.
 %
 %2.
 %Prendiamo il tutto il lavoro fatto per arrivare a parallellizzare la PosteriorIRF,
-%Traacianti, anlisi computazionale … commentiamo bene tutte le funzioni coinvolte e le usiamo qui …
-	
+%Traacianti, anlisi computazionale commentiamo bene tutte le funzioni coinvolte e le usiamo qui
+
 
 \section{Parallel DYNARE: testing}
 We checked the new parallel platform for DYNARE performing a number of tests, using different models and computer architectures. We present here all tests performed with Windows XP/MATLAB. However, similar tests were performed successfully under Linux/Ubuntu environment.

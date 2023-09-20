@@ -13,7 +13,7 @@ function plot_icforecast(Variables,periods,options_,oo_)
 % SPECIAL REQUIREMENTS
 %  This routine has to be called after imcforecast.m.
 
-% Copyright © 2006-2019 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -59,7 +59,7 @@ for i=1:length(Variables)
 end
 
 function build_figure(name,cci1,cci2,mm1,mm2,options_,graphoptions)
-hh = dyn_figure(options_.nodisplay,'Name',['Conditional forecast (' graphoptions.title ,'): ' name '.']);
+hh_fig = dyn_figure(options_.nodisplay,'Name',['Conditional forecast (' graphoptions.title ,'): ' name '.']);
 H = length(mm1);
 h1 = area(1:H,cci1(2,1:H),'BaseValue',min([min(cci1(1,:)),min(cci2(1,:))]),'FaceColor',[.9 .9 .9]);
 hold on
@@ -70,4 +70,4 @@ plot(1:H,cci2(1,:),'--k','linewidth',1)
 plot(1:H,cci2(2,:),'--k','linewidth',1)
 axis tight
 hold off
-dyn_saveas(hh,[graphoptions.OutputDirectoryName '/Conditional_forecast_',strrep(deblank(graphoptions.title),' ','_'),'_',name],options_.nodisplay,options_.graph_format)
+dyn_saveas(hh_fig,[graphoptions.OutputDirectoryName '/Conditional_forecast_',strrep(deblank(graphoptions.title),' ','_'),'_',name],options_.nodisplay,options_.graph_format)

@@ -2,7 +2,7 @@ function check_hessian_at_the_mode(hessian_xparam1, xparam1, M_, estim_params_, 
 % check_hessian_at_the_mode(hessian_xparam1, xparam1, M_, estim_params_, options_, bounds)
 % -------------------------------------------------------------------------
 % This function checks whether the hessian matrix at the mode is positive definite.
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
 %  o hessian_xparam1:        [matrix] hessian matrix at the mode
 %  o xparam1:                [vector] vector of parameter values at the mode
@@ -17,6 +17,7 @@ function check_hessian_at_the_mode(hessian_xparam1, xparam1, M_, estim_params_, 
 % This function is called by
 %  o dynare_estimation_1.m
 % -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -33,7 +34,6 @@ function check_hessian_at_the_mode(hessian_xparam1, xparam1, M_, estim_params_, 
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
 
 try
     chol(hessian_xparam1);

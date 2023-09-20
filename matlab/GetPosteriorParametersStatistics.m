@@ -46,7 +46,7 @@ ncn     = estim_params_.ncn;
 np      = estim_params_.np ;
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);
-OutputFolder = CheckPath('Output',M_.dname);
+latexFolder = CheckPath('latex',M_.dname);
 FileName = M_.fname;
 
 record=load_last_mh_history_file(MetropolisFolder,FileName);
@@ -86,7 +86,7 @@ end
 if np
     type = 'parameters';
     if TeX
-        fid = TeXBegin(OutputFolder, M_.fname, 1, type);
+        fid = TeXBegin(latexFolder, M_.fname, 1, type);
     end
     skipline()
     disp(type)
@@ -94,7 +94,7 @@ if np
     ip = nvx+nvn+ncx+ncn+1;
     for i=1:np
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
+            Draws = GetAllPosteriorDraws(M_.dname, M_.fname, ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             name = bayestopt_.name{ip};
             oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
@@ -103,7 +103,7 @@ if np
                 name = bayestopt_.name{ip};
                 [post_mean, hpd_interval, post_var] = Extractoo(oo_, name, type);
             catch
-                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
+                Draws = GetAllPosteriorDraws(M_.dname, M_.fname, ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
                 name = bayestopt_.name{ip};
                 oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
@@ -129,7 +129,7 @@ end
 if nvx
     type = 'shocks_std';
     if TeX
-        fid = TeXBegin(OutputFolder, FileName,2, 'standard deviation of structural shocks');
+        fid = TeXBegin(latexFolder, FileName,2, 'standard deviation of structural shocks');
     end
     ip = 1;
     skipline()
@@ -137,7 +137,7 @@ if nvx
     disp(tit2)
     for i=1:nvx
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
+            Draws = GetAllPosteriorDraws(M_.dname, M_.fname, ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             k = estim_params_.var_exo(i,1);
             name = M_.exo_names{k};
@@ -149,7 +149,7 @@ if nvx
                 name = M_.exo_names{k};
                 [post_mean, hpd_interval, post_var] = Extractoo(oo_, name, type);
             catch
-                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
+                Draws = GetAllPosteriorDraws(M_.dname, M_.fname, ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = ...
                     posterior_moments(Draws, 1, options_.mh_conf_sig);
                 k = estim_params_.var_exo(i,1);
@@ -173,7 +173,7 @@ end
 if nvn
     type = 'measurement_errors_std';
     if TeX
-        fid = TeXBegin(OutputFolder, FileName, 3, 'standard deviation of measurement errors');
+        fid = TeXBegin(latexFolder, FileName, 3, 'standard deviation of measurement errors');
     end
     skipline()
     disp('standard deviation of measurement errors')
@@ -181,7 +181,7 @@ if nvn
     ip = nvx+1;
     for i=1:nvn
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
+            Draws = GetAllPosteriorDraws(M_.dname, M_.fname, ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
             oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
@@ -190,7 +190,7 @@ if nvn
                 name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
                 [post_mean,hpd_interval,post_var] = Extractoo(oo_,name,type);
             catch
-                Draws = GetAllPosteriorDraws(ip,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws, mh_nblck);
+                Draws = GetAllPosteriorDraws(M_.dname, M_.fname, ip,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws, mh_nblck);
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws,1,options_.mh_conf_sig);
                 name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
                 oo_ = Filloo(oo_,name,type,post_mean,hpd_interval,post_median,post_var,post_deciles,density);
@@ -212,7 +212,7 @@ end
 if ncx
     type = 'shocks_corr';
     if TeX
-        fid = TeXBegin(OutputFolder,FileName,4,'correlation of structural shocks');
+        fid = TeXBegin(latexFolder,FileName,4,'correlation of structural shocks');
     end
     skipline()
     disp('correlation of shocks')
@@ -220,7 +220,7 @@ if ncx
     ip = nvx+nvn+1;
     for i=1:ncx
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
+            Draws = GetAllPosteriorDraws(M_.dname, M_.fname, ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws,1,options_.mh_conf_sig);
             k1 = estim_params_.corrx(i,1);
             k2 = estim_params_.corrx(i,2);
@@ -237,7 +237,7 @@ if ncx
                 NAME = sprintf('%s_%s', M_.exo_names{k1}, M_.exo_names{k2});
                 [post_mean,hpd_interval,post_var] = Extractoo(oo_, NAME, type);
             catch
-                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
+                Draws = GetAllPosteriorDraws(M_.dname, M_.fname, ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
                 k1 = estim_params_.corrx(i,1);
                 k2 = estim_params_.corrx(i,2);
@@ -262,7 +262,7 @@ end
 if ncn
     type = 'measurement_errors_corr';
     if TeX
-        fid = TeXBegin(OutputFolder, FileName, 5, 'correlation of measurement errors');
+        fid = TeXBegin(latexFolder, FileName, 5, 'correlation of measurement errors');
     end
     skipline()
     disp('correlation of measurement errors')
@@ -270,7 +270,7 @@ if ncn
     ip = nvx+nvn+ncx+1;
     for i=1:ncn
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
-            Draws = GetAllPosteriorDraws(ip,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws, mh_nblck);
+            Draws = GetAllPosteriorDraws(M_.dname, M_.fname, ip,FirstMhFile,FirstLine,TotalNumberOfMhFiles,NumberOfDraws, mh_nblck);
             [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
             k1 = estim_params_.corrn(i,1);
             k2 = estim_params_.corrn(i,2);
@@ -285,7 +285,7 @@ if ncn
                 NAME = sprintf('%s_%s', M_.endo_names{k1}, M_.endo_names{k2});
                 [post_mean,hpd_interval,post_var] = Extractoo(oo_, NAME, type);
             catch
-                Draws = GetAllPosteriorDraws(ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
+                Draws = GetAllPosteriorDraws(M_.dname, M_.fname, ip, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
                 [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(Draws, 1, options_.mh_conf_sig);
                 k1 = estim_params_.corrn(i,1);
                 k2 = estim_params_.corrn(i,2);

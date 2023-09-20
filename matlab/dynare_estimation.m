@@ -12,7 +12,7 @@ function oo_recursive_=dynare_estimation(var_list,dname)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2003-2021 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -164,7 +164,7 @@ if nnobs > 1 && horizon > 0
     for i = 1:length(var_list)
         if mod(i,nstar) == 1
             plot_index=plot_index+1;
-            hfig = dyn_figure(options_.nodisplay,'Name',['Out of sample forecasts (',num2str(plot_index),')']);
+            hh_fig = dyn_figure(options_.nodisplay,'Name',['Out of sample forecasts (',num2str(plot_index),')']);
             m = 1;
         end
         subplot(nr,nc,m)
@@ -221,7 +221,7 @@ if nnobs > 1 && horizon > 0
         xlim([nobs(1)-offsetx nobs(end)+horizon])
         m = m + 1;
         if mod(i+1,nstar) == 1 || i==length(var_list)
-            dyn_saveas(hfig,[M_.dname,filesep,'graphs',filesep M_.fname '_RecursiveForecasts_' int2str(plot_index)],options_.nodisplay,options_.graph_format);
+            dyn_saveas(hh_fig,[M_.dname,filesep,'graphs',filesep M_.fname '_RecursiveForecasts_' int2str(plot_index)],options_.nodisplay,options_.graph_format);
         end
     end
 end

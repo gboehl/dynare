@@ -2,7 +2,7 @@ function [steady_state, info, steady_state_changes_parameters] = check_steady_st
 % function [steady_state, info, steady_state_changes_parameters] = check_steady_state_changes_parameters(M_,estim_params_,oo_,options_,steadystate_check_flag_vec)
 % -------------------------------------------------------------------------
 % Check if steady-state solves static model and if it changes estimated parameters
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
 %  o M_:                         [struct] information on the model
 %  o estim_params_:              [struct] information on estimated parameters
@@ -18,6 +18,7 @@ function [steady_state, info, steady_state_changes_parameters] = check_steady_st
 % This function is called by
 %  o initial_estimation_checks.m
 % -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -34,7 +35,6 @@ function [steady_state, info, steady_state_changes_parameters] = check_steady_st
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
 
 value_parameter_change = 1.01; % value with which parameters are slightly changed.
 steady_state_changes_parameters = false; % initialize

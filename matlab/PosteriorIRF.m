@@ -1,9 +1,10 @@
-function PosteriorIRF(type)
+function PosteriorIRF(type,dispString)
 % Builds posterior IRFs after the MH algorithm.
 %
 % INPUTS
 %   o type       [char]     string specifying the joint density of the
 %                           deep parameters ('prior','posterior').
+%   o dispString [char]     string to display in the console.
 %
 % OUTPUTS
 %   None                    (oo_ and plots).
@@ -35,8 +36,6 @@ function PosteriorIRF(type)
 
 
 global options_ estim_params_ oo_ M_ bayestopt_ dataset_ dataset_info
-
-dispString = 'Estimation::mcmc';
 
 % Set the number of periods
 if isempty(options_.irf) || ~options_.irf

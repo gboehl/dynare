@@ -29,6 +29,7 @@ function options_mom_ = default_option_mom_values(options_mom_, options_, dname,
 % o user_has_matlab_license
 % o user_has_octave_forge_package
 % -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.

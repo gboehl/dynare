@@ -85,13 +85,13 @@ file_indx_number = 0;
 
 oo_.dr=set_state_space(oo_.dr,M_,options_);
 
-hh = dyn_waitbar(0,'Please wait. Prior sampler...');
-set(hh,'Name','Prior sampler.');
+hh_fig = dyn_waitbar(0,'Please wait. Prior sampler...');
+set(hh_fig,'Name','Prior sampler.');
 
 % Simulations.
 while iteration < NumberOfSimulations
     if ~mod(iteration,10)
-        dyn_waitbar(iteration/NumberOfSimulations,hh,'Please wait. Prior sampler...');
+        dyn_waitbar(iteration/NumberOfSimulations,hh_fig,'Please wait. Prior sampler...');
     end
     loop_indx = loop_indx+1;
     params = Prior.draw();
@@ -162,7 +162,7 @@ while iteration < NumberOfSimulations
     end
 end
 
-dyn_waitbar_close(hh);
+dyn_waitbar_close(hh_fig);
 
 % Get informations about BK conditions and other things...
 results.bk.indeterminacy_share = count_bk_indeterminacy/loop_indx;

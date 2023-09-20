@@ -33,7 +33,7 @@ function Herbst_Schorfheide_sampler(TargetFun,xparam1,mh_bounds,dataset_,dataset
 % Then the comments write here can be used for all the other pairs of
 % parallel functions and also for management functions.
 
-% Copyright © 2006-2022 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -152,7 +152,7 @@ if TeX
     NAMES = [];
     TeXNAMES = [];
 end
-hh = dyn_figure(options_.nodisplay,'Name','Parameters Densities');
+hh_fig = dyn_figure(options_.nodisplay,'Name','Parameters Densities');
 for k=1:npar %min(nstar,npar-(plt-1)*nstar)
     subplot(ceil(sqrt(npar)),floor(sqrt(npar)),k)
     %kk = (plt-1)*nstar+k;
@@ -171,7 +171,7 @@ for k=1:npar %min(nstar,npar-(plt-1)*nstar)
     axis tight
     drawnow
 end
-dyn_saveas(hh,[ M_.fname '_param_density' int2str(plt) ],options_.nodisplay,options_.graph_format);
+dyn_saveas(hh_fig,[ M_.fname '_param_density' int2str(plt) ],options_.nodisplay,options_.graph_format);
 if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     % TeX eps loader file
     fprintf(fidTeX,'\\begin{figure}[H]\n');

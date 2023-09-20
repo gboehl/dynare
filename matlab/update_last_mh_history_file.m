@@ -7,7 +7,7 @@ function update_last_mh_history_file(MetropolisFolder, ModelName, record)
 %   record              [structure] structure storing the MH history
 % Outputs:  none
 
-% Copyright © 2013-2017 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,7 +31,7 @@ mh_history_files = dir([BaseName '_mh_history_*.mat']);
 
 % Check the existence of mh-files (assuming version 2, ie dynare version greater than 4.3.x).
 if isequal(length(mh_history_files),0)
-    error(['Estimation::update_mh_file: I cannot find any mh-history file in ' MetropolisFolder '!'])
+    error(['update_last_mh_history_file: I cannot find any mh-history file in ' MetropolisFolder '!'])
 end
 
 BaseName = [BaseName '_mh_history_'];

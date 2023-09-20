@@ -15,6 +15,7 @@ function bounds = set_mcmc_prior_bounds(xparam, bayestopt_, options_, stringForE
 % This function is called by
 %  o dynare_estimation_1.m
 % -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -31,7 +32,6 @@ function bounds = set_mcmc_prior_bounds(xparam, bayestopt_, options_, stringForE
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
 
 bounds = prior_bounds(bayestopt_, options_.prior_trunc);
 outside_bound_pars = find(xparam < bounds.lb | xparam > bounds.ub);

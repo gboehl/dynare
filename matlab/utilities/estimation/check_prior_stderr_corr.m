@@ -3,7 +3,7 @@ function check_prior_stderr_corr(estim_params_,bayestopt_)
 % -------------------------------------------------------------------------
 % Check if the prior allows for negative standard deviations and
 % correlations larger than +-1. If so, issue a warning.
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
 %  o estim_params_:           [struct] information on estimated parameters
 %  o bayestopt_:              [struct] information on priors
@@ -14,6 +14,7 @@ function check_prior_stderr_corr(estim_params_,bayestopt_)
 % This function is called by
 %  o initial_estimation_checks.m
 % -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -30,7 +31,6 @@ function check_prior_stderr_corr(estim_params_,bayestopt_)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
 
 nvx = estim_params_.nvx; % number of stderr parameters for structural shocks
 if nvx && any(bayestopt_.p3(1:nvx)<0)

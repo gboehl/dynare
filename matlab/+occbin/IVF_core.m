@@ -65,13 +65,13 @@ opts_simul.piecewise_only = 1;
 filtered_errs=zeros(sample_length,n_obs);
 
 if options_.occbin.likelihood.waitbar
-    hh = dyn_waitbar(0,'IVF_core: Filtering the shocks');
-    set(hh,'Name','IVF_core: Filtering the shocks.');
+    hh_fig = dyn_waitbar(0,'IVF_core: Filtering the shocks');
+    set(hh_fig,'Name','IVF_core: Filtering the shocks.');
 end
 
 for this_period=1:sample_length
     if options_.occbin.likelihood.waitbar
-        dyn_waitbar(this_period/sample_length, hh, sprintf('Period %u of %u', this_period,sample_length));
+        dyn_waitbar(this_period/sample_length, hh_fig, sprintf('Period %u of %u', this_period,sample_length));
     end
     current_obs = obs(this_period,:);
     init_val_old = init_val;
@@ -89,7 +89,7 @@ for this_period=1:sample_length
         filtered_errs=NaN;
         error_code(1) = 304;
         error_code(4) = 1000;
-        if options_.occbin.likelihood.waitbar; dyn_waitbar_close(hh); end
+        if options_.occbin.likelihood.waitbar; dyn_waitbar_close(hh_fig); end
         return
     end
     filtered_errs(this_period,inan)=err_vals_out';
@@ -103,7 +103,7 @@ for this_period=1:sample_length
         error_code(1) = 306;
         error_code(4) = max(abs(err_vals_out))/1000;
         filtered_errs=NaN;
-        if options_.occbin.likelihood.waitbar; dyn_waitbar_close(hh); end
+        if options_.occbin.likelihood.waitbar; dyn_waitbar_close(hh_fig); end
         return
     end
     if max(abs(resids(this_period,:)))>0.001
@@ -112,12 +112,12 @@ for this_period=1:sample_length
         filtered_errs=NaN;
         error_code(1) = 303;
         error_code(4) = max(abs(resids(this_period,:)))*100;
-        if options_.occbin.likelihood.waitbar; dyn_waitbar_close(hh); end
+        if options_.occbin.likelihood.waitbar; dyn_waitbar_close(hh_fig); end
         return
     end
 end
 if options_.occbin.likelihood.waitbar
-    dyn_waitbar_close(hh);
+    dyn_waitbar_close(hh_fig);
 end
 
 end

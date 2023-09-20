@@ -1,5 +1,5 @@
-function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, fname, dname, options_, bounds, bayestopt_)
-% function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, fname, dname, options_, bounds, bayestopt_)
+function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, fname, dname, options_, bounds, bayestopt_,outputFolderName)
+% function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sampler_options(posterior_sampler_options, fname, dname, options_, bounds, bayestopt_,outputFolderName)
 % initialization of posterior samplers
 %
 % INPUTS
@@ -14,6 +14,7 @@ function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sam
 %   posterior_sampler_options:       checked posterior sampler options
 %   options_:       structure storing the options
 %   bayestopt_:     structure storing information about priors
+%   outputFolderName: string of folder to store mat files
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -35,6 +36,9 @@ function [posterior_sampler_options, options_, bayestopt_] = check_posterior_sam
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+if nargin < 7
+    outputFolderName = 'Output';
+end
 
 init=0;
 if isempty(posterior_sampler_options)
@@ -392,7 +396,7 @@ if ~strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
 end
 
 if options_.load_mh_file && posterior_sampler_options.use_mh_covariance_matrix
-    [~, invhess] = compute_mh_covariance_matrix(bayestopt_,fname,dname);
+    [~, invhess] = compute_mh_covariance_matrix(bayestopt_,fname,dname,outputFolderName);
     posterior_sampler_options.invhess = invhess;
 end
 

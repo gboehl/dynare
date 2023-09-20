@@ -1,7 +1,7 @@
 function pick
 %
 % Copyright © 2001-2017 European Commission
-% Copyright © 2017 DynareTeam
+% Copyright © 2017-2023 DynareTeam
 
 % This file is part of GLUEWIN
 % GLUEWIN is a MATLAB code designed for analysing the output
@@ -68,9 +68,9 @@ KK=K;
 
 set(button1,'Label',['Save ',num2str(K)],'Callback',['scatter_callback(',num2str(KK),',''save'')']);
 set(button2,'Label',['Eval ',num2str(K)],'Callback',['scatter_callback(',num2str(KK),',''eval'')']);
-hh=findobj(gcf,'type','axes','Tag','scatter');
-for k=1:length(hh)
-    axes(hh(k));
+hh_obj=findobj(gcf,'type','axes','Tag','scatter');
+for k=1:length(hh_obj)
+    axes(hh_obj(k));
     dum=get(gca,'children');
     dumx=get(dum(end),'xdata');
     dumy=get(dum(end),'ydata');

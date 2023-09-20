@@ -20,7 +20,7 @@ function Scale = calibrate_mh_scale_parameter(ObjectiveFunction, CovarianceMatri
 
 
 
-% Copyright © 2020-2021 Dynare Team
+% Copyright © 2020-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,8 +38,8 @@ function Scale = calibrate_mh_scale_parameter(ObjectiveFunction, CovarianceMatri
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Fire up the wait bar
-hh = dyn_waitbar(0,'Tuning of the scale parameter...');
-set(hh,'Name','Tuning of the scale parameter.');
+hh_fig = dyn_waitbar(0,'Tuning of the scale parameter...');
+set(hh_fig,'Name','Tuning of the scale parameter.');
 
 % Intilialize various counters.
 j = 1; jj  = 1; isux = 0; jsux = 0; i = 0;
@@ -100,7 +100,7 @@ while j<=options.maxiter
     prtfrc = j/options.maxiter;
     % Update the waitbar
     if ~mod(j, 10)
-        dyn_waitbar(prtfrc, hh, sprintf('Acceptance ratio [during last %u]: %f [%f]', options.stepsize, isux/j, jsux/jj));
+        dyn_waitbar(prtfrc, hh_fig, sprintf('Acceptance ratio [during last %u]: %f [%f]', options.stepsize, isux/j, jsux/jj));
     end
     % Adjust the value of the scale parameter.
     if ~mod(j, options.stepsize)
@@ -135,4 +135,4 @@ while j<=options.maxiter
     jj = jj + 1;
 end
 
-dyn_waitbar_close(hh);
+dyn_waitbar_close(hh_fig);

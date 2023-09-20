@@ -8840,11 +8840,11 @@ observed variables.
             Relative numerical efficiency (RNE) under the assumption
             of iid draws.
 
-        ``nse_x``
+        ``nse_taper_x``
 
             Numerical standard error (NSE) when using an x% taper.
 
-        ``rne_x``
+        ``rne_taper_x``
 
             Relative numerical efficiency (RNE) when using an x% taper.
 
@@ -8874,6 +8874,13 @@ observed variables.
             ``taper_steps`` signal the presence of significant
             autocorrelation in draws. In this case, the estimates using a
             higher tapering are usually more reliable.
+
+    .. matvar:: oo_.convergence.raftery_lewis
+
+        Variable set by the convergence diagnostics of the ``estimation``
+        command when used with ``raftery_lewis_diagnostics`` option (see
+        :opt:`raftery_lewis_diagnostics`). Contains the results of the test in individual fields.
+
 
 .. command:: unit_root_vars VARIABLE_NAME...;
 

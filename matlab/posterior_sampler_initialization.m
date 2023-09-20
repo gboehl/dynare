@@ -1,7 +1,7 @@
 function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npar, NumberOfBlocks, nruns, NewFile, MAX_nruns, d, bayestopt_] = ...
-    posterior_sampler_initialization(TargetFun, xparam1, vv, mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
+    posterior_sampler_initialization(TargetFun, xparam1, vv, mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_, dispString)
 % function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npar, NumberOfBlocks, nruns, NewFile, MAX_nruns, d, bayestopt_] = ...
-%     metropolis_hastings_initialization(TargetFun, xparam1, vv, mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
+%     metropolis_hastings_initialization(TargetFun, xparam1, vv, mh_bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_, dispString)
 % Metropolis-Hastings initialization.
 %
 % INPUTS
@@ -17,6 +17,7 @@ function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npa
 %   o estim_params_         estimated parameters structure
 %   o bayestopt_            estimation options structure
 %   o oo_                   outputs structure
+%   o dispString            string to be displayed in the command window
 %
 % OUTPUTS
 %   o ix2                   [double]   (NumberOfBlocks*npar) vector of starting points for different chains
@@ -54,8 +55,6 @@ function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npa
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-dispString = 'Estimation::mcmc';
 
 %Initialize outputs
 ix2 = [];

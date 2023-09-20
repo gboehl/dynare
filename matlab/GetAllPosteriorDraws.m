@@ -1,8 +1,10 @@
-function Draws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFile, NumberOfDraws, nblcks, blck)
-% function Draws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumberOfMhFile, NumberOfDraws, nblcks, blck)
+function Draws = GetAllPosteriorDraws(dname, fname, column, FirstMhFile, FirstLine, TotalNumberOfMhFile, NumberOfDraws, nblcks, blck)
+% function Draws = GetAllPosteriorDraws(dname, fname, column, FirstMhFile, FirstLine, TotalNumberOfMhFile, NumberOfDraws, nblcks, blck)
 % Gets all posterior draws
 %
 % INPUTS
+%    dname:                name of directory with results
+%    fname:                name of mod file
 %    column:               column of desired parameter in draw matrix
 %    FirstMhFile:          first mh file
 %    FirstLine:            first line
@@ -34,20 +36,18 @@ function Draws = GetAllPosteriorDraws(column, FirstMhFile, FirstLine, TotalNumbe
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ 
-
 iline = FirstLine;
 linee = 1;
-DirectoryName = CheckPath('metropolis',M_.dname);
+DirectoryName = CheckPath('metropolis',dname);
 
-if nblcks>1 && nargin<7
+if nblcks>1 && nargin<9
     Draws = zeros(NumberOfDraws*nblcks,1);
     iline0=iline;
     if column>0
         for blck = 1:nblcks
             iline=iline0;
             for file = FirstMhFile:TotalNumberOfMhFile
-                load([DirectoryName '/'  M_.fname '_mh' int2str(file) '_blck' int2str(blck)],'x2')
+                load([DirectoryName '/'  fname '_mh' int2str(file) '_blck' int2str(blck)],'x2')
                 NumberOfLines = size(x2(iline:end,:),1);
                 Draws(linee:linee+NumberOfLines-1) = x2(iline:end,column);
                 linee = linee+NumberOfLines;
@@ -58,7 +58,7 @@ if nblcks>1 && nargin<7
         for blck = 1:nblcks
             iline=iline0;
             for file = FirstMhFile:TotalNumberOfMhFile
-                load([DirectoryName '/'  M_.fname '_mh' int2str(file) '_blck' int2str(blck)],'logpo2')
+                load([DirectoryName '/'  fname '_mh' int2str(file) '_blck' int2str(blck)],'logpo2')
                 NumberOfLines = size(logpo2(iline:end),1);
                 Draws(linee:linee+NumberOfLines-1) = logpo2(iline:end);
                 linee = linee+NumberOfLines;
@@ -72,7 +72,7 @@ else
     end
     if column>0
         for file = FirstMhFile:TotalNumberOfMhFile
-            load([DirectoryName '/'  M_.fname '_mh' int2str(file) '_blck' int2str(blck)],'x2')
+            load([DirectoryName '/'  fname '_mh' int2str(file) '_blck' int2str(blck)],'x2')
             NumberOfLines = size(x2(iline:end,:),1);
             Draws(linee:linee+NumberOfLines-1) = x2(iline:end,column);
             linee = linee+NumberOfLines;
@@ -80,7 +80,7 @@ else
         end
     else
         for file = FirstMhFile:TotalNumberOfMhFile
-            load([DirectoryName '/'  M_.fname '_mh' int2str(file) '_blck' int2str(blck)],'logpo2')
+            load([DirectoryName '/'  fname '_mh' int2str(file) '_blck' int2str(blck)],'logpo2')
             NumberOfLines = size(logpo2(iline:end,:),1);
             Draws(linee:linee+NumberOfLines-1) = logpo2(iline:end);
             linee = linee+NumberOfLines;

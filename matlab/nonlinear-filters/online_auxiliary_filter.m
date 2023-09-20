@@ -21,7 +21,7 @@ function [pmean, pmode, pmedian, pstdev, p025, p975, covariance] = online_auxili
 % - p975                     [double]    n×1 vector, 97.5 percent of the particles are below p975(i) for i=1,…,n.
 % - covariance               [double]    n×n matrix, covariance of the particles at the end of the sample.
 
-% Copyright © 2013-2022 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -386,7 +386,7 @@ if TeX
 end
 
 for plt = 1:nbplt
-    hh = dyn_figure(DynareOptions.nodisplay,'Name','Parameters Trajectories');
+    hh_fig = dyn_figure(DynareOptions.nodisplay,'Name','Parameters Trajectories');
     for k=1:length(pmean)
         subplot(nr,nc,k)
         [name,texname] = get_the_name(k,TeX,Model,EstimatedParameters,DynareOptions);
@@ -405,7 +405,7 @@ for plt = 1:nbplt
         axis tight
         drawnow
     end
-    dyn_saveas(hh, [Model.fname '_param_traj' int2str(plt)], DynareOptions.nodisplay, DynareOptions.graph_format);
+    dyn_saveas(hh_fig, [Model.fname '_param_traj' int2str(plt)], DynareOptions.nodisplay, DynareOptions.graph_format);
     if TeX
         % TeX eps loader file
         fprintf(fidTeX,'\\begin{figure}[H]\n');
@@ -423,7 +423,7 @@ number_of_grid_points = 2^9;      % 2^9 = 512 !... Must be a power of two.
 bandwidth = 0;                    % Rule of thumb optimal bandwidth parameter.
 kernel_function = 'gaussian';     % Gaussian kernel for Fast Fourier Transform approximation.
 for plt = 1:nbplt
-    hh = dyn_figure(DynareOptions.nodisplay,'Name','Parameters Densities');
+    hh_fig = dyn_figure(DynareOptions.nodisplay,'Name','Parameters Densities');
     for k=1:length(pmean)
         subplot(nr,nc,k)
         [name,texname] = get_the_name(k,TeX,Model,EstimatedParameters,DynareOptions);
@@ -441,7 +441,7 @@ for plt = 1:nbplt
         axis tight
         drawnow
     end
-    dyn_saveas(hh,[ Model.fname '_param_density' int2str(plt) ],DynareOptions.nodisplay,DynareOptions.graph_format);
+    dyn_saveas(hh_fig,[ Model.fname '_param_density' int2str(plt) ],DynareOptions.nodisplay,DynareOptions.graph_format);
     if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
         % TeX eps loader file
         fprintf(fidTeX, '\\begin{figure}[H]\n');

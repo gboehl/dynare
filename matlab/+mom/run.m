@@ -560,12 +560,16 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     end
     [~, ~, ~,~,~, oo_] = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_); % compute model moments and oo_.mom.model_moments_params_derivs
     options_mom_.mom.compute_derivs = false; % reset to not compute derivatives in objective function during optimization
-    SE = mom.standard_errors(xparam1, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Woptflag);
-    % mode check plots
-    if options_mom_.mode_check.status
-        mom.check_plot(objective_function,xparam1,SE,options_mom_,M_,estim_params_,Bounds,bayestopt_,...
-            Bounds, oo_, estim_params_, M_, options_mom_);
-    end
+    [stdh,hessian_xparam1] = mom.standard_errors(xparam1, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Woptflag);
+end
+
+
+% -------------------------------------------------------------------------
+% checks for mode and hessian at the mode
+% -------------------------------------------------------------------------
+if options_mom_.mode_check.status
+    mode_check(objective_function, xparam1, hessian_xparam1, options_mom_, M_, estim_params_, bayestopt_, Bounds, true,...               
+               Bounds, oo_, estim_params_, M_, options_mom_, bayestopt_);
 end
 
 
@@ -574,7 +578,7 @@ end
 % -------------------------------------------------------------------------
 if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_method,'GMM')
     % Store results in output structure
-    oo_.mom = display_estimation_results_table(xparam1,SE,M_,options_mom_,estim_params_,bayestopt_,oo_.mom,prior_dist_names,options_mom_.mom.mom_method,lower(options_mom_.mom.mom_method));
+    oo_.mom = display_estimation_results_table(xparam1,stdh,M_,options_mom_,estim_params_,bayestopt_,oo_.mom,prior_dist_names,options_mom_.mom.mom_method,lower(options_mom_.mom.mom_method));
     % J test
     oo_ = mom.Jtest(xparam1, objective_function, Woptflag, oo_, options_mom_, bayestopt_, Bounds, estim_params_, M_, dataset_.nobs);
     % display comparison of model moments and data moments

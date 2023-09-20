@@ -3,7 +3,7 @@ function mh_jscale = tune_mcmc_mh_jscale_wrapper(invhess, options_, M_, objectiv
 % -------------------------------------------------------------------------
 % Wrapper to call the algorithm to tune the jumping scale parameter for the
 % Metropolis-Hastings algorithm; currently only supports RW-MH algorithm.
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
 %  o invhess:                 [matrix] jumping covariance matrix
 %  o options_:                [struct] Dynare options
@@ -17,8 +17,9 @@ function mh_jscale = tune_mcmc_mh_jscale_wrapper(invhess, options_, M_, objectiv
 %  o mh_jscale:               [double] tuned jumping scale parameter
 % -------------------------------------------------------------------------
 % This function is called by
-%  o dynare_estimation_1.m
+%  o dynare_estimation_1
 % -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -35,9 +36,7 @@ function mh_jscale = tune_mcmc_mh_jscale_wrapper(invhess, options_, M_, objectiv
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
 
-% get invhess in case of use_mh_covariance_matrix
 posterior_sampler_options_temp = options_.posterior_sampler_options.current_options;
 posterior_sampler_options_temp.invhess = invhess;
 posterior_sampler_options_temp = check_posterior_sampler_options(posterior_sampler_options_temp, M_.fname, M_.dname, options_);
