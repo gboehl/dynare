@@ -523,7 +523,7 @@ public:
   DRFixPoint(const _Tg &g, const PartitionY &yp,
              const Vector &ys, double sigma);
 
-  bool calcFixPoint(emethod em, Vector &out);
+  bool calcFixPoint(Vector &out);
 
   int
   getNumIter() const
@@ -685,7 +685,7 @@ DRFixPoint<t>::solveNewton(Vector &y)
 
 template<Storage t>
 bool
-DRFixPoint<t>::calcFixPoint(emethod em, Vector &out)
+DRFixPoint<t>::calcFixPoint(Vector &out)
 {
   KORD_RAISE_IF(out.length() != ypart.ny(),
                 "Wrong length of out in DRFixPoint::calcFixPoint");

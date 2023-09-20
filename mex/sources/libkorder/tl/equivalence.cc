@@ -130,7 +130,7 @@ Equivalence::Equivalence(int num)
     }
 }
 
-Equivalence::Equivalence(int num, const std::string &dummy)
+Equivalence::Equivalence(int num, [[maybe_unused]] const std::string &dummy)
   : n(num)
 {
   OrdSequence s;

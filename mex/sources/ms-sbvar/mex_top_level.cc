@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2020 Dynare Team
+ * Copyright © 2010-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -27,7 +27,7 @@
 int main(int nargs, char **args);
 
 void
-mexFunction(int nlhs, mxArray *plhs[],
+mexFunction(int nlhs, [[maybe_unused]] mxArray *plhs[],
             int nrhs, const mxArray *prhs[])
 {
   int nargs = 0;

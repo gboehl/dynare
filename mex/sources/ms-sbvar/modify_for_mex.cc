@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2013 Dynare Team
+ * Copyright © 2010-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -29,7 +29,7 @@ extern "C"
   int constant_seed;
 
   void
-  msExit(int status)
+  msExit([[maybe_unused]] int status)
   {
     throw "Error in MS-SBVAR MEX file.\n";
   }

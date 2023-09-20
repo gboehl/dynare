@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -141,12 +141,12 @@ public:
     header.increment(v);
   }
   void
-  decrement(IntSequence &v) const override
+  decrement([[maybe_unused]] IntSequence &v) const override
   {
     TL_RAISE("Not implemented error in IrregTensor::decrement");
   }
   int
-  getOffset(const IntSequence &v) const override
+  getOffset([[maybe_unused]] const IntSequence &v) const override
   {
     TL_RAISE("Not implemented error in IrregTensor::getOffset");
   }

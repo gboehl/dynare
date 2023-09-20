@@ -421,7 +421,7 @@ QuasiTriangular::QuasiTriangular(const ConstVector &d, int d_size)
 {
 }
 
-QuasiTriangular::QuasiTriangular(const std::string &dummy, const QuasiTriangular &t)
+QuasiTriangular::QuasiTriangular([[maybe_unused]] const std::string &dummy, const QuasiTriangular &t)
   : SqSylvMatrix(t.nrows()), diagonal(getData().base(), t.diagonal)
 {
   Vector aux(t.getData());

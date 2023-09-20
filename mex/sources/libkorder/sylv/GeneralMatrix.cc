@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019-2022 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -113,21 +113,22 @@ GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, const ConstGeneralMatrix 
 
 void
 GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, const ConstGeneralMatrix &b,
-                          const std::string &dum, double mult)
+                          [[maybe_unused]] const std::string &dum, double mult)
 {
   gemm("N", a, "T", b, mult, 1.0);
 }
 
 void
-GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, const std::string &dum,
+GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, [[maybe_unused]] const std::string &dum,
                           const ConstGeneralMatrix &b, double mult)
 {
   gemm("T", a, "N", b, mult, 1.0);
 }
 
 void
-GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, const std::string &dum1,
-                          const ConstGeneralMatrix &b, const std::string &dum2, double mult)
+GeneralMatrix::multAndAdd(const ConstGeneralMatrix &a, [[maybe_unused]] const std::string &dum1,
+                          const ConstGeneralMatrix &b, [[maybe_unused]] const std::string &dum2,
+                          double mult)
 {
   gemm("T", a, "T", b, mult, 1.0);
 }
@@ -242,7 +243,7 @@ GeneralMatrix::add(double a, const ConstGeneralMatrix &m)
 }
 
 void
-GeneralMatrix::add(double a, const ConstGeneralMatrix &m, const std::string &dum)
+GeneralMatrix::add(double a, const ConstGeneralMatrix &m, [[maybe_unused]] const std::string &dum)
 {
   if (m.nrows() != cols || m.ncols() != rows)
     throw SYLV_MES_EXCEPTION("Matrix has different size in GeneralMatrix::add.");

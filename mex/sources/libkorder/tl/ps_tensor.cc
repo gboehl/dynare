@@ -327,7 +327,7 @@ FPSTensor::increment(IntSequence &v) const
 }
 
 void
-FPSTensor::decrement(IntSequence &v) const
+FPSTensor::decrement([[maybe_unused]] IntSequence &v) const
 {
   TL_RAISE("FPSTensor::decrement not implemented");
 }

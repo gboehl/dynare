@@ -174,7 +174,7 @@ Approximation::walkStochSteady()
          we save the steady state to ‘ss’. The new steady is also put to
          model.getSteady(). */
       DRFixPoint<Storage::fold> fp(*rule_ders, ypart, model.getSteady(), dsigma);
-      bool converged = fp.calcFixPoint(DecisionRule::emethod::horner, model.getSteady());
+      bool converged = fp.calcFixPoint(model.getSteady());
       JournalRecord rec(journal);
       rec << "Fix point calcs: iter=" << fp.getNumIter() << ", newton_iter="
           << fp.getNewtonTotalIter() << ", last_newton_iter=" << fp.getNewtonLastIter() << ".";
@@ -233,7 +233,7 @@ Approximation::walkStochSteady()
     {
       // centralize decision rule for zero steps
       DRFixPoint<Storage::fold> fp(*rule_ders, ypart, model.getSteady(), 1.0);
-      bool converged = fp.calcFixPoint(DecisionRule::emethod::horner, model.getSteady());
+      bool converged = fp.calcFixPoint(model.getSteady());
       JournalRecord rec(journal);
       rec << "Fix point calcs: iter=" << fp.getNumIter() << ", newton_iter="
           << fp.getNewtonTotalIter() << ", last_newton_iter=" << fp.getNewtonLastIter() << ".";

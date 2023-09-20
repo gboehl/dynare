@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -157,13 +157,13 @@ QuasiTriangularZero::print() const
 }
 
 void
-QuasiTriangularZero::multKron(KronVector &x) const
+QuasiTriangularZero::multKron([[maybe_unused]] KronVector &x) const
 {
   throw SYLV_MES_EXCEPTION("Attempt to run QuasiTriangularZero::multKron.");
 }
 
 void
-QuasiTriangularZero::multKronTrans(KronVector &x) const
+QuasiTriangularZero::multKronTrans([[maybe_unused]] KronVector &x) const
 {
   throw SYLV_MES_EXCEPTION("Attempt to run QuasiTriangularZero::multKronTrans.");
 }
