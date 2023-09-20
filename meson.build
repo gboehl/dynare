@@ -2,6 +2,7 @@
 # - Install files in right location
 # - configuration option to disable preprocessor build, and use it in {windows,macOS}/build.sh
 # - add -Wold-style-cast C++ flag except when building flex-generated files
+#   (only when warning_level ⩾ 2)
 # - add the possibility to customize the integration test names (with a new optional 'name' keyword in the dictionaries)
 # - Add an option to skip the removal of the temporary test directories, for debugging purposes
 # - See what to do with xvfb-run (see #1892). Maybe try to detect it from meson.build, and pass it optionally to the test driver script
@@ -15,8 +16,11 @@ project('dynare',
                             'c_std=gnu17', 'warning_level=2' ],
         meson_version : '>=0.64.0')
 
-add_global_arguments('-Wimplicit-interface', '-Wno-compare-reals', language : 'fortran')
 add_global_arguments('-DPACKAGE_VERSION="' + meson.project_version() + '"', language : 'cpp')
+
+if get_option('warning_level').to_int() >= 2
+  add_global_arguments('-Wimplicit-interface', '-Wno-compare-reals', language : 'fortran')
+endif
 
 cpp_compiler = meson.get_compiler('cpp')
 fortran_compiler = meson.get_compiler('fortran')
