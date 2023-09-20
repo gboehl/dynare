@@ -1,9 +1,0 @@
-mex_PROGRAMS = num_procs
-
-nodist_num_procs_SOURCES = num_procs.cc
-
-BUILT_SOURCES = $(nodist_num_procs_SOURCES)
-CLEANFILES = $(nodist_num_procs_SOURCES)
-
-%.cc: $(top_srcdir)/../../sources/num_procs/%.cc
-	$(LN_S) -f $< $@

@@ -87,7 +87,7 @@ if get_option('build_for') == 'matlab'
   elif host_machine.system() == 'windows' and host_machine.cpu_family() == 'x86_64'
     mexext = 'mexw64'
     matlab_arch = 'win64'
-    export_file = meson.current_source_dir() / 'mex/build/matlab/mex.def'
+    export_file = meson.current_source_dir() / 'windows/mex.def'
     export_link_arg = export_file
     if get_option('build_for') == 'matlab'
       arch_fortran_args = [ '-fno-underscoring' ]
@@ -102,7 +102,7 @@ if get_option('build_for') == 'matlab'
     else
       error('Unsupported platform')
     endif
-    export_file = meson.current_source_dir() / 'mex/build/matlab/mexFunction-MacOSX.map'
+    export_file = meson.current_source_dir() / 'macOS/mexFunction-MacOSX.map'
     export_link_arg = '-Wl,-exported_symbols_list,' + export_file
   else
     error('Unsupported platform')

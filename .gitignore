@@ -3,107 +3,12 @@
 # Any file that is displayed should be removed from the ignore list
 # (possibly by an exclusion rule beginning with an exclamation mark)
 
-# Generic ignore rules
 *~
-*.o
-*.a
-*.fig
-\#*\#
-TAGS
-*.mat
 
-# Build system rules
-.deps
-Makefile
-Makefile.in
-confdefs.h
-configure
-config.log
-config.status
-aclocal.m4
-autom4te.cache
-config.guess
-config.sub
-depcomp
-install-sh
-/missing
-/mex/build/matlab/missing
-/mex/build/octave/missing
-/compile
-/mex/build/matlab/compile
-/mex/build/octave/compile
-ylwrap
-ar-lib
-
-# checksum associated with fast option
-checksum
-
-# Make Check Rules
-*.trs
-*.tls
-
-# Doc rules
-*.pdf
-*.aux
-*.log
-*.out
-*.toc
-*.idx
-*.scn
-*.nav
-*.snm
-*.vrb
-*.bbl
-*.blg
-*.lof
-/doc/manual/build
-/doc/manual/utils/version.py
+# Created when building the reference manual
 /doc/manual/utils/__pycache__/*
-!/doc/parallel/AvenueParadigm.pdf
-!/doc/parallel/iVaNo_*.pdf
-!/doc/parallel/netbook_*.pdf
-!/doc/parallel/quest_*.pdf
-!/doc/parallel/RWMH_quest1_*.pdf
-!/doc/parallel/waitbars*.pdf
-doc/internals/*.html
-doc/internals/ltxpng
 
-# MATLAB dir
-/matlab/preprocessor64/
-/matlab/dynare_version.m
-
-# DLL rules
-*.mex
-*.mexa64
-*.mexw64
-*.mexmaci64
-*.mexmaca64
-/mex/matlab/
-/mex/octave/
-
-# Symbolic links created for building MEX files
-/mex/build/matlab/*/*.c
-/mex/build/matlab/*/*.cc
-/mex/build/matlab/*/*.f08
-/mex/build/matlab/*/*.F08
-/mex/build/octave/*/*.c
-/mex/build/octave/*/*.cc
-/mex/build/octave/*/*.f08
-/mex/build/octave/*/*.F08
-
-# Fortran modules
-/mex/build/matlab/*/*.mod
-/mex/build/octave/*/*.mod
-
-# Extra rules for trust_region MEX testfiles
-/mex/sources/block_trust_region/test/*.mod
-/mex/sources/block_trust_region/test/dulmage_mendelsohn_test
-/mex/sources/block_trust_region/test/trust_region_test
-!/mex/sources/block_trust_region/test/Makefile
-
-# Windows
-!/windows/Makefile
-!/windows/deps/Makefile
+# Created by the Windows package build script
 /windows/deps/lib64/
 /windows/deps/lib64-msys2/
 /windows/deps/matlab64/
@@ -114,35 +19,14 @@ doc/internals/ltxpng
 /windows/exe/
 /windows/7z/
 /windows/zip/
+/matlab/preprocessor64/
+/matlab/supported_octave_version.m
 
-# MacOS stuff
-.DS_Store
-/macOS/pkg/
+# Created by the macOS package build script
 /macOS/deps/sources64/
 /macOS/deps/tarballs/
 /macOS/deps/lib64/
-!/macOS/Makefile
-!/macOS/deps/Makefile
 
 # Emacs stuff
 scripts/dynare.elc
 
-# MS-Sbvar
-/contrib/ms-sbvar/*.prn
-/contrib/ms-sbvar/*.dat
-/contrib/ms-sbvar/sbvar_commandline
-/contrib/ms-sbvar/sbvar_init_file
-!/contrib/ms-sbvar/Makefile
-/tests/ms-sbvar/*.tmp
-
-# Reporting
-*synctex.gz
-tests/reporting/tmpRepDir
-
-# Octave variables saved when Octave crashes
-octave-workspace
-
-# VERSION generated file
-VERSION
-
-matlab/supported_octave_version.m
