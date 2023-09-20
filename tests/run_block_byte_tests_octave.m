@@ -1,4 +1,4 @@
-## Copyright © 2009-2022 Dynare Team
+## Copyright © 2009-2023 Dynare Team
 ##
 ## This file is part of Dynare.
 ##
@@ -24,20 +24,14 @@
 ## otherwise the newly created oo_ will be scratched upon loading,
 ## thus making the path comparison bogus.
 
-top_test_dir = getenv('TOP_TEST_DIR');
-addpath([top_test_dir filesep 'utils']);
-addpath([top_test_dir filesep '..' filesep 'matlab']);
-
-## Test Dynare Version
-if !strcmp(dynare_version(), getenv("DYNARE_VERSION"))
-    error("Incorrect version of Dynare is being tested")
-endif
+source_dir = getenv('source_root');
+addpath([source_dir filesep 'tests' filesep 'utils']);
+addpath([source_dir filesep 'matlab']);
 
 ## Test block_bytecode/ls2003.mod with various combinations of
 ## block/bytecode/solve_algo/stack_solve_algo
 failedBlock = {};
-num_block_tests = 0;
-cd([top_test_dir filesep 'block_bytecode']);
+cd block_bytecode
 tic;
 for blockFlag = 0:1
     for storageFlag = 0:2 % 0=M-file, 1=use_dll, 2=bytecode
@@ -62,7 +56,6 @@ for blockFlag = 0:1
         endif
 
         for i = 1:length(solve_algos)
-            num_block_tests = num_block_tests + 1;
             if !blockFlag && storageFlag == 0 && (i == 1)
                 ## This is the reference simulation path against which all
                 ## other simulations will be tested
@@ -105,7 +98,6 @@ for blockFlag = 0:1
             endif
         endfor
         for i = 1:length(stack_solve_algos)
-            num_block_tests = num_block_tests + 1;
             try
                 old_path = path;
                 clear oo_ # Ensure that oo_.endo_simul won’t be overwritten when loading wsOct
@@ -130,22 +122,17 @@ for blockFlag = 0:1
         endfor
     endfor
 endfor
-ecput = toc;
+
 delete('wsOct');
-cd(top_test_dir);
-fid = fopen('run_block_byte_tests_octave.o.trs', 'w+');
+
 if size(failedBlock,2) > 0
-  fprintf(fid,':test-result: FAIL\n');
-  fprintf(fid,':number-tests: %d\n', num_block_tests);
-  fprintf(fid,':number-failed-tests: %d\n', size(failedBlock,2));
-  fprintf(fid,':list-of-failed-tests: %s\n', failedBlock{:});
-else
-  fprintf(fid,':test-result: PASS\n');
-  fprintf(fid,':number-tests: %d\n', num_block_tests);
-  fprintf(fid,':number-failed-tests: 0\n');
+    fprintf('\n*** Failed tests: %s\n', failedBlock{:})
 end
-fprintf(fid,':elapsed-time: %f\n', ecput);
-fclose(fid);
+
+fprintf('\n*** Elapsed time (in seconds): %.1f\n\n', toc);
+
+quit(size(failedBlock,2) > 0)
+
 ## Local variables:
 ## mode: Octave
 ## End:

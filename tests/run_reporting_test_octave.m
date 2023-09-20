@@ -15,23 +15,18 @@
 ## You should have received a copy of the GNU General Public License
 ## along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-top_test_dir = getenv('TOP_TEST_DIR');
-addpath([top_test_dir filesep 'utils']);
-addpath([top_test_dir filesep '..' filesep 'matlab']);
+source_dir = getenv('source_root');
+addpath([source_dir filesep 'tests' filesep 'utils']);
+addpath([source_dir filesep 'matlab']);
 
 load_octave_packages
-
-## Test Dynare Version
-if !strcmp(dynare_version(), getenv("DYNARE_VERSION"))
-    error("Incorrect version of Dynare is being tested")
-endif
 
 ## To add default directories, empty dseries objects
 dynare_config();
 
 printf("\n***  TESTING:  run_reporting_test_octave.m ***\n");
 try
-    cd([top_test_dir filesep 'reporting']);
+    cd reporting
     db_a = dseries('db_a.csv');
     db_q = dseries('db_q.csv');
     dc_a = dseries('dc_a.csv');
@@ -42,21 +37,7 @@ catch
     testFailed = true;
 end
 
-cd(getenv('TOP_TEST_DIR'));
-fid = fopen('run_reporting_test_octave.o.trs', 'w+');
-if testFailed
-  fprintf(fid,':test-result: FAIL\n');
-  fprintf(fid,':number-tests: 1\n');
-  fprintf(fid,':number-failed-tests: 1\n');
-  fprintf(fid,':list-of-failed-tests: run_reporting_test_octave.m\n');
-else
-  fprintf(fid,':test-result: PASS\n');
-  fprintf(fid,':number-tests: 1\n');
-  fprintf(fid,':number-failed-tests: 0\n');
-  fprintf(fid,':list-of-passed-tests: run_reporting_test_octave.m\n');
-end
-fprintf(fid,':elapsed-time: %f\n',0.0);
-fclose(fid);
+quit(testFailed)
 
 ## Local variables:
 ## mode: Octave

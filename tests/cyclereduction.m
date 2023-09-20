@@ -1,23 +1,10 @@
 debug = false;
 
-if debug
-    [top_test_dir, ~, ~] = fileparts(mfilename('fullpath'));
-else
-    top_test_dir = getenv('TOP_TEST_DIR');
-end
-
-addpath([top_test_dir filesep '..' filesep 'matlab']);
-
-if ~debug
-    % Test Dynare Version
-    if ~strcmp(dynare_version(), getenv('DYNARE_VERSION'))
-        error('Incorrect version of Dynare is being tested')
-    end
-end
+source_dir = getenv('source_root');
+addpath([source_dir filesep 'matlab']);
 
 dynare_config;
 
-NumberOfTests = 0;
 testFailed = 0;
 
 if ~debug
@@ -25,16 +12,10 @@ if ~debug
     disp('***  TESTING: cyclereduction.m ***');
 end
 
-matlab_cr_path = [top_test_dir filesep '..' filesep 'matlab' filesep 'missing' filesep 'mex' filesep 'cycle_reduction'];
+matlab_cr_path = [source_dir filesep 'matlab' filesep 'missing' filesep 'mex' filesep 'cycle_reduction'];
 addpath(matlab_cr_path);
 cycle_reduction_matlab = @cycle_reduction;
 rmpath(matlab_cr_path);
-
-if isoctave
-   addpath([top_test_dir filesep '..' filesep 'mex' filesep 'octave']);
-else
-   addpath([top_test_dir filesep '..' filesep 'mex' filesep 'matlab']);
-end
 
 t0 = clock;
 
@@ -49,7 +30,6 @@ X1 = zeros(n,n);
 X2 = zeros(n,n);
 
 % 1. Solve the equation with the Matlab cycle reduction algorithm
-NumberOfTests = NumberOfTests+1;
 tElapsed1 = 0.;
 try
    tic; [X1,info] = cycle_reduction_matlab(C,B,A,cvg_tol,[0.]); tElapsed1 = toc;
@@ -69,7 +49,6 @@ catch
 end
 
 % 2. Solve the equation with the Fortran cycle reduction algorithm
-NumberOfTests = NumberOfTests+1;
 tElapsed2 = 0.;
 try
    tic; [X2,info] = cycle_reduction(C,B,A,cvg_tol,[0.]); tElapsed2 = toc;
@@ -89,7 +68,6 @@ catch
 end
 
 % 3. Compare solutions of the Fortran and Matlab routines
-NumberOfTests = NumberOfTests+1;
 if (norm(X1 - X2, 1) > cvg_tol)
    testFailed = testFailed+1;
    if debug
@@ -112,29 +90,6 @@ end
 
 t1 = clock;
 
-if ~debug
-    cd(getenv('TOP_TEST_DIR'));
-else
-    dprintf('FAILED tests: %i', testFailed)
-end
+fprintf('\n*** Elapsed time (in seconds): %.1f\n\n', etime(t1, t0));
 
-if  isoctave
-    fid = fopen('cyclereduction.o.trs', 'w+');
-else
-    fid = fopen('cyclereduction.m.trs', 'w+');
-end
-if testFailed
-    fprintf(fid,':test-result: FAIL\n');
-    fprintf(fid,':list-of-failed-tests: cyclereduction.m\n');
-else
-    fprintf(fid,':test-result: PASS\n');
-end
-fprintf(fid,':number-tests: %i\n', NumberOfTests);
-fprintf(fid,':number-failed-tests: %i\n', testFailed);
-fprintf(fid,':elapsed-time: %f\n', etime(t1, t0));
-fclose(fid);
-
-if ~debug
-    exit;
-end
-
+quit(testFailed > 0)

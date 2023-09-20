@@ -1,34 +1,15 @@
 debug = true;
 
-if debug
-    [top_test_dir, ~, ~] = fileparts(mfilename('fullpath'));
-else
-    top_test_dir = getenv('TOP_TEST_DIR');
-end
-
-addpath([top_test_dir filesep '..' filesep 'matlab']);
-
-if ~debug
-    % Test Dynare Version
-    if ~strcmp(dynare_version(), getenv('DYNARE_VERSION'))
-        error('Incorrect version of Dynare is being tested')
-    end
-end
+source_dir = getenv('source_root');
+addpath([source_dir filesep 'matlab']);
 
 dynare_config;
 
-NumberOfTests = 0;
 testFailed = 0;
 
 if ~debug
     skipline()
     disp('***  TESTING: riccatiupdate.m ***');
-end
-
-if isoctave
-   addpath([top_test_dir filesep '..' filesep 'mex' filesep 'octave']);
-else
-   addpath([top_test_dir filesep '..' filesep 'mex' filesep 'matlab']);
 end
 
 t0 = clock;
@@ -64,7 +45,6 @@ tElapsed1 = toc;
 disp(['Elapsed time for the Matlab Riccati update is: ' num2str(tElapsed1) ' (N=' int2str(N) ').'])
 
 % 2. Update the state varance-covariance matrix with the mex routine
-NumberOfTests = NumberOfTests+1;
 tElapsed2 = 0.;
 Ptmp_fortran = P;
 try
@@ -112,29 +92,6 @@ end
 
 t1 = clock;
 
-if ~debug
-    cd(getenv('TOP_TEST_DIR'));
-else
-    dprintf('FAILED tests: %i', testFailed)
-end
+fprintf('\n*** Elapsed time (in seconds): %.1f\n\n', etime(t1, t0));
 
-if  isoctave
-    fid = fopen('riccatiupdate.o.trs', 'w+');
-else
-    fid = fopen('riccatiupdate.m.trs', 'w+');
-end
-if testFailed
-    fprintf(fid,':test-result: FAIL\n');
-    fprintf(fid,':list-of-failed-tests: riccatiupdate.m\n');
-else
-    fprintf(fid,':test-result: PASS\n');
-end
-fprintf(fid,':number-tests: %i\n', NumberOfTests);
-fprintf(fid,':number-failed-tests: %i\n', testFailed);
-fprintf(fid,':elapsed-time: %f\n', etime(t1, t0));
-fclose(fid);
-
-if ~debug
-    exit;
-end
-
+quit(testFailed > 0)

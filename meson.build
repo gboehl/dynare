@@ -1,5 +1,4 @@
 # TODO:
-# - Add tests that are individually listed in {M,O}_TRS_FILES of tests/Makefile.am
 # - Install files in right location
 # - configuration option to disable preprocessor build, and use it in {windows,macOS}/build.sh
 # - add -Wold-style-cast C++ flag except when building flex-generated files
@@ -1677,8 +1676,70 @@ mod_and_m_tests = [
   { 'test' : [ 'var-expectations/1-with-time-shift-b/example1.mod' ],
     'should_fail' : true },
   { 'test' : [ 'estimation/univariate/nls/staticmodelx.mod' ],
-    'should_fail' : true }
+    'should_fail' : true },
+
+  # Misc tests with .m files
+  { 'test' : [ 'run_all_unit_tests.m' ] },
+  { 'test' : [ 'histval_initval_file_unit_tests.m' ],
+    'extra' : [ 'histval_initval_file/my_assert.m' ] },
+  { 'test' : [ 'run_kronecker_tests.m' ],
+    'extra' : [ 'kronecker/test_kron.m',
+                'kronecker/nash_matrices.mat' ] },
+  { 'test' : [ 'nonlinearsolvers.m' ],
+    'extra' : [ 'solver-test-functions/brown.m',
+                'solver-test-functions/broydenbanded.m',
+                'solver-test-functions/broydentridiagonal.m',
+                'solver-test-functions/chebyquad.m',
+                'solver-test-functions/discreteboundaryvalue.m',
+                'solver-test-functions/discreteintegralequation.m',
+                'solver-test-functions/helicalvalley.m',
+                'solver-test-functions/powell1.m',
+                'solver-test-functions/powell2.m',
+                'solver-test-functions/rosenbrock.m',
+                'solver-test-functions/trigonometric.m',
+                'solver-test-functions/variablydimensioned.m',
+                'solver-test-functions/watson.m',
+                'solver-test-functions/wood.m',] },
+  { 'test' : [ 'cyclereduction.m' ] },
+  { 'test' : [ 'logarithmicreduction.m' ] },
+  { 'test' : [ 'riccatiupdate.m' ] },
+  { 'test' : [ 'contribs.m' ],
+    'extra' : [ 'sandbox.mod',
+                'simulateddata.m' ] }
 ]
+
+if get_option('build_for') == 'matlab'
+  mod_and_m_tests += [ { 'test' : [ 'run_block_byte_tests_matlab.m' ],
+                         'extra' : [ 'block_bytecode/run_ls2003.m',
+                                     'block_bytecode/ls2003.mod' ] },
+                       { 'test' : [ 'run_reporting_test_matlab.m' ],
+                         'extra' : [ 'reporting/AnnualTable.m',
+                                     'reporting/CommResidTablePage.m',
+                                     'reporting/CountryGraphPage.m',
+                                     'reporting/CountryTablePage.m',
+                                     'reporting/db_a.csv',
+                                     'reporting/db_q.csv',
+                                     'reporting/dc_a.csv',
+                                     'reporting/dc_q.csv',
+                                     'reporting/ResidTablePage.m',
+                                     'reporting/runDynareReport.m' ] } ]
+else
+  mod_and_m_tests += [ { 'test' : [ 'run_block_byte_tests_octave.m' ],
+                         'extra' : [ 'block_bytecode/run_ls2003.m',
+                                     'block_bytecode/ls2003.mod' ] },
+                       { 'test' : [ 'run_reporting_test_octave.m' ],
+                         'extra' : [ 'reporting/AnnualTable.m',
+                                     'reporting/CommResidTablePage.m',
+                                     'reporting/CountryGraphPage.m',
+                                     'reporting/CountryTablePage.m',
+                                     'reporting/db_a.csv',
+                                     'reporting/db_q.csv',
+                                     'reporting/dc_a.csv',
+                                     'reporting/dc_q.csv',
+                                     'reporting/ResidTablePage.m',
+                                     'reporting/runDynareReport.m' ] } ]
+endif
+
 
 base_test_driver_args = [ get_option('build_for') ]
 if get_option('build_for') == 'matlab'

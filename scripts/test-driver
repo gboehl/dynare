@@ -3,6 +3,7 @@
 # Executes one or several .mod or .m files in a separate directory, for the testsuite
 
 set -e
+shopt -s extglob
 
 if (($# < 7 )); then
     echo "Usage: $0 build_for matlab_octave_exe matlab_octave_version matlab_arch source_root build_root test_file(s) [-- extra_file(s)]" 2>&1
@@ -40,7 +41,11 @@ cleanup ()
 trap cleanup EXIT
 
 for f in "${test_files[@]}" "${extra_files[@]}"; do
-    subdir=${f%/*}
+    # NB: for computing the subdir, we do not use ${f%/*}, because the latter does not
+    # work with files which are not in a subdir (i.e. no slash in the filename).
+    # We rather use pattern substitution (and we use an extended pattern of the
+    # form *(pattern-list), hence the extglob option above).
+    subdir=${f/%*([^\/])/}
     mkdir -p "${tmpdir}/${subdir}"
     cp "${source_root}/tests/${f}" "${tmpdir}/${f}"
 done
@@ -69,7 +74,8 @@ export source_root
 
 for test_file in "${test_files[@]}"; do
     test_basename=${test_file##*/}
-    test_subdir=${test_file%/*}
+    # See the remark above for computing the subdir
+    test_subdir=${test_file/%*([^\/])/}
     if [[ $test_file =~ \.mod$ ]]; then
         export mod_file=$test_basename
         if [[ $build_for == matlab ]]; then

@@ -1,4 +1,4 @@
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -15,8 +15,9 @@
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-top_test_dir = getenv('TOP_TEST_DIR');
-addpath([top_test_dir filesep '..' filesep 'matlab']);
+source_dir = getenv('source_root');
+addpath([source_dir filesep 'matlab']);
+
 dynare_config
 
 cd kronecker
@@ -32,25 +33,12 @@ disp('')
 disp('**** Testing A_times_B_kronecker_C MEX...')
 info(3) = test_kron(3, num_procs);
 
-cd ..
-
-if isoctave
-    ext = '.o.trs';
-else
-    ext = '.m.trs';
-end
-fid = fopen([ 'run_kronecker_tests' ext ], 'w+');
 num_failed_tests = sum(~info);
 tests = { 'sparse1', 'sparse2', 'dense' };
 failed_tests = tests(find(~info));
+
 if num_failed_tests > 0
-  fprintf(fid,':test-result: FAIL\n');
-  fprintf(fid,':number-tests: 3\n');
-  fprintf(fid,':number-failed-tests: %d\n', num_failed_tests);
-  fprintf(fid,':list-of-failed-tests: %s\n', failed_tests{:});
-else
-  fprintf(fid,':test-result: PASS\n');
-  fprintf(fid,':number-tests: 3\n');
-  fprintf(fid,':number-failed-tests: 0\n');
+    fprintf('\n*** Failed tests: %s\n', failed_tests{:})
 end
-fclose(fid);
+
+quit(num_failed_tests > 0)

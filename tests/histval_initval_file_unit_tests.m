@@ -1,9 +1,9 @@
-top_test_dir = getenv('TOP_TEST_DIR');
-addpath([top_test_dir filesep '..' filesep 'matlab/']);
+source_dir = getenv('source_root');
+addpath([source_dir filesep 'matlab']);
+
 dynare_config;
 
-cd('histval_initval_file');
-num_tests = 0;
+cd histval_initval_file
 failed_tests = {};
 
 ds = dseries(randn(10,4));
@@ -26,7 +26,6 @@ options.series = 'ds';
 ds1 = histvalf_initvalf(caller, M, options);
 
 failed_tests = my_assert(failed_tests, all(all(ds1 == ds)), 'basic test');
-num_tests = num_tests + 1;
 
 options = struct();
 options.series = 'ds1';
@@ -34,7 +33,6 @@ options.first_obs = 2;
 ds1 = histvalf_initvalf(caller, M, options);
 failed_tests = my_assert(failed_tests, ds1.init == dates('2Y'), ...
                          'init test 1');
-num_tests = num_tests + 1;
 
 options = struct();
 options.series = 'ds';
@@ -45,7 +43,6 @@ failed_tests = my_assert(failed_tests, ds1.init == dates('2Y'), ...
                          'first_obs last_obs test 1');
 failed_tests = my_assert(failed_tests, ds1.last == dates('9Y'), ...
                          'first_obs last_obs test 2');
-num_tests = num_tests + 2;
 
 options = struct();
 options.series = 'ds';
@@ -55,7 +52,6 @@ failed_tests = my_assert(failed_tests, ds1.init == dates('1Y'), ...
                          'last_obs test 1');
 failed_tests = my_assert(failed_tests, ds1.last == dates('9Y'), ...
                          'last_obs test 2');
-num_tests = num_tests + 2;
 
 options = struct();
 options.series = 'ds';
@@ -67,7 +63,6 @@ failed_tests = my_assert(failed_tests, ds1.init == dates('2Y'), ...
                          'first_obs, last_obs, nobs test 1');
 failed_tests = my_assert(failed_tests, ds1.last == dates('9Y'), ...
                          'first_obs, last_obs, nobs test 2');
-num_tests = num_tests + 2;
 
 options = struct();
 options.series = 'ds';
@@ -78,7 +73,6 @@ failed_tests = my_assert(failed_tests, ds1.init == dates('2Y'), ...
                          'last_obs, nobs test 1');
 failed_tests = my_assert(failed_tests, ds1.last == dates('9Y'), ...
                          'last_obs, nobs test 2');
-num_tests = num_tests + 2;
 
 options = struct();
 options.series = 'ds';
@@ -96,7 +90,6 @@ catch me
         failed_tests = cat(1, failed_tests, 'Wrong nobs error message' );
     end
 end
-num_tests = num_tests + 1;
 
 options = struct();
 options.series = 'ds';
@@ -111,7 +104,6 @@ catch me
                            'Wrong first period error message');
     end
 end
-num_tests = num_tests + 1;
 
 options = struct();
 options.series = 'ds';
@@ -127,7 +119,6 @@ catch me
                            'Wrong last period error message');
     end
 end
-num_tests = num_tests + 1;
 
 fh = fopen('data.m', 'w');
 init__ = 'INIT__ = ''1Y'';';
@@ -195,7 +186,6 @@ if ~isoctave && ((ispc && ~matlab_ver_less_than('8.2')) || (~ispc && ~matlab_ver
                              '*.xlsx file first_obs test');
     failed_tests = my_assert(failed_tests, series.nobs == 10, ...
                              '*.xlsx file nobs test');
-    num_tests = num_tests + 2;
 end
 
 % The table() function is not implemented in Octave
@@ -209,26 +199,10 @@ if ~isoctave && (ispc && ~matlab_ver_less_than('8.2'))
                              '*.xls file first_obs test');
     failed_tests = my_assert(failed_tests, series.nobs == 10, ...
                              '*.xls file nobs test');
-    num_tests = num_tests + 2;
 end
 
-cd(getenv('TOP_TEST_DIR'));
-if isoctave
-    ext = '.o.trs';
-else
-    ext = '.m.trs';
+if length(failed_tests) > 0
+    fprintf('\n*** Failed tests: %s\n', failed_tests{:})
 end
-fid = fopen([ 'histval_initval_file_unit_tests' ext ], 'w+');
-num_failed_tests = length(failed_tests);
-if num_failed_tests > 0
-  fprintf(fid,':test-result: FAIL\n');
-  fprintf(fid,':number-tests: %d\n', num_tests);
-  fprintf(fid,':number-failed-tests: %d\n', num_failed_tests);
-  fprintf(fid,':list-of-failed-tests: %s\n', failed_tests{:});
-else
-  fprintf(fid,':test-result: PASS\n');
-  fprintf(fid,':number-tests: %d\n', num_tests);
-  fprintf(fid,':number-failed-tests: 0\n');
-end
-fclose(fid);
-exit;
+
+quit(length(failed_tests) > 0)

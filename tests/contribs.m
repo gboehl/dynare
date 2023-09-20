@@ -1,28 +1,15 @@
 debug = false;
 
-if debug
-    [top_test_dir, ~, ~] = fileparts(mfilename('fullpath'));
-else
-    top_test_dir = getenv('TOP_TEST_DIR');
-end
-
-addpath(sprintf('%s/matlab', top_test_dir(1:end-6)))
-
-if ~debug
-    % Test Dynare Version
-    if ~strcmp(dynare_version(), getenv('DYNARE_VERSION'))
-        error('Incorrect version of Dynare is being tested')
-    end
-end
+source_dir = getenv('source_root');
+addpath([source_dir filesep 'matlab']);
 
 dynare_config;
 
-NumberOfTests = 0;
 testFailed = 0;
 
 if ~debug
     skipline()
-    disp('***  TESTING: nonlinearsolvers.m ***');
+    disp('***  TESTING: contribs.m ***');
 end
 
 %
@@ -30,8 +17,6 @@ end
 %
 
 t0 = clock;
-
-NumberOfTests = NumberOfTests+1;
 
 try
     dataset = dseries('simulateddata.m');
@@ -51,32 +36,9 @@ end
 
 t1 = clock;
 
+fprintf('\n*** Elapsed time (in seconds): %.1f\n\n', etime(t1, t0));
 
-if ~debug
-    cd(getenv('TOP_TEST_DIR'));
-else
-    dprintf('FAILED tests: %i', testFailed)
-end
-
-if  isoctave
-    fid = fopen('contribs.o.trs', 'w+');
-else
-    fid = fopen('contribs.m.trs', 'w+');
-end
-if testFailed
-    fprintf(fid,':test-result: FAIL\n');
-    fprintf(fid,':list-of-failed-tests: nonlinearsolvers.m\n');
-else
-    fprintf(fid,':test-result: PASS\n');
-end
-fprintf(fid,':number-tests: %i\n', NumberOfTests);
-fprintf(fid,':number-failed-tests: %i\n', testFailed);
-fprintf(fid,':elapsed-time: %f\n', etime(t1, t0));
-fclose(fid);
-
-if ~debug
-    exit;
-end
+quit(testFailed > 0)
 %
 % END OF TEST
 %

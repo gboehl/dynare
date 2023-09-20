@@ -1,24 +1,12 @@
 debug = false;
 
-if debug
-    [top_test_dir, ~, ~] = fileparts(mfilename('fullpath'));
-else
-    top_test_dir = getenv('TOP_TEST_DIR');
-end
-
-addpath(sprintf('%s/matlab', top_test_dir(1:end-6)))
-addpath(sprintf('%s/tests/solver-test-functions', top_test_dir(1:end-6)))
-
-if ~debug
-    % Test Dynare Version
-    if ~strcmp(dynare_version(), getenv('DYNARE_VERSION'))
-        error('Incorrect version of Dynare is being tested')
-    end
-end
+source_dir = getenv('source_root');
+addpath([source_dir filesep 'matlab']);
 
 dynare_config;
 
-NumberOfTests = 0;
+cd solver-test-functions
+
 testFailed = 0;
 
 if ~debug
@@ -56,7 +44,6 @@ objfun = { @rosenbrock,
 t0 = clock;
 
 for i=1:length(objfun)
-    NumberOfTests = NumberOfTests+1;
     switch func2str(objfun{i})
          case 'helicalvalley'
            % FIXME block_trust_region is diverging if x(1)<0.
@@ -110,7 +97,6 @@ t1 = clock; etime(t1, t0)
 %
 
 for i=1:length(objfun)
-    NumberOfTests = NumberOfTests+1;
     switch func2str(objfun{i})
       case 'chebyquad'
         % Fails with a system of 10 equations. 
@@ -151,31 +137,8 @@ for i=1:length(objfun)
     end
 end
 
-t2 = clock; etime(t2, t1)
+t2 = clock;
 
-if ~debug
-    cd(getenv('TOP_TEST_DIR'));
-else
-    dprintf('FAILED tests: %i', testFailed)
-end
+fprintf('\n*** Elapsed time (in seconds): %.1f\n\n', etime(t2, t0));
 
-if  isoctave
-    fid = fopen('nonlinearsolvers.o.trs', 'w+');
-else
-    fid = fopen('nonlinearsolvers.m.trs', 'w+');
-end
-if testFailed
-    fprintf(fid,':test-result: FAIL\n');
-    fprintf(fid,':list-of-failed-tests: nonlinearsolvers.m\n');
-else
-    fprintf(fid,':test-result: PASS\n');
-end
-fprintf(fid,':number-tests: %i\n', NumberOfTests);
-fprintf(fid,':number-failed-tests: %i\n', testFailed);
-fprintf(fid,':elapsed-time: %f\n', etime(t2, t0));
-fclose(fid);
-
-if ~debug
-    exit;
-end
-
+quit(testFailed > 0)

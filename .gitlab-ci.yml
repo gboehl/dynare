@@ -25,17 +25,24 @@ stages:
   - sign
   - deploy
 
-build_binaries:
+build_matlab:
   stage: build
   script:
-    - autoreconf -si
-    - ./configure --with-matlab=/opt/MATLAB/$MATLAB_VERSION PACKAGE_VERSION=$VERSION PACKAGE_STRING="dynare $VERSION"
-    - make -j $(nproc) LN_S="cp -p"
+    - meson setup -Dbuild_for=matlab -Dmatlab_path=/opt/MATLAB/$MATLAB_VERSION -Dbuildtype=release build-matlab
+    - meson compile -v -C build-matlab
   artifacts:
     paths:
-      - preprocessor/dynare-preprocessor
-      - mex/octave/
-      - mex/matlab/
+      - build-matlab/
+    expire_in: 3 days
+
+build_octave:
+  stage: build
+  script:
+    - meson setup -Dbuild_for=octave -Dbuildtype=release build-octave
+    - meson compile -v -C build-octave
+  artifacts:
+    paths:
+      - build-octave/
     expire_in: 3 days
 
 build_doc:
@@ -109,32 +116,26 @@ pkg_macOS:
     expire_in: 3 days
   needs: [ "build_doc" ]
 
-.test_matlab_template:
+test_matlab:
   stage: test
+  script:
+    - meson test -C build-matlab --no-rebuild --num-processes $(($(nproc) * 3 / 4))
   artifacts:
     paths:
-      - tests/**/*.m.log
-      - tests/**/*.m.trs
-      - tests/**/*.jnl
-      - tests/run_test_matlab_output.txt
+      - build-matlab/meson-logs/testlog.txt
     when: always
-  needs: [ "build_binaries" ]
-
-test_matlab:
-  extends: .test_matlab_template
-  script:
-    - autoreconf -si
-    - ./configure --disable-octave --with-matlab=/opt/MATLAB/$MATLAB_VERSION
-    - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
+  needs: [ "build_matlab" ]
 
 test_old_matlab:
-  extends: .test_matlab_template
+  stage: test
   script:
-    - autoreconf -si
-    - ./configure --disable-octave --with-matlab=/opt/MATLAB/$OLD_MATLAB_VERSION
-    - make -C mex/build/matlab clean
-    - make -j $(nproc) -C mex/build/matlab
-    - make -j $(($(nproc) * 3 / 4)) -C tests check-matlab
+    - meson setup -Dbuild_for=matlab -Dmatlab_path=/opt/MATLAB/$OLD_MATLAB_VERSION -Dbuildtype=release build-old-matlab
+    - meson compile -v -C build-old-matlab
+    - meson test -C build-old-matlab --num-processes $(($(nproc) * 3 / 4))
+  artifacts:
+    paths:
+      - build-old-matlab/meson-logs/testlog.txt
+    when: always
   when: manual
 
 test_octave:
@@ -142,17 +143,12 @@ test_octave:
   variables:
     OPENBLAS_NUM_THREADS: 1
   script:
-    - autoreconf -si
-    - ./configure --disable-matlab
-    - make -j $(nproc) -C tests check-octave
+    - meson test -C build-octave --no-rebuild
   artifacts:
     paths:
-      - tests/**/*.o.log
-      - tests/**/*.o.trs
-      - tests/**/*.jnl
-      - tests/run_test_octave_output.txt
+      - build-octave/meson-logs/testlog.txt
     when: always
-  needs: [ "build_binaries" ]
+  needs: [ "build_octave" ]
   when: manual
 
 # For the sign and deploy jobs, we don’t use the “needs” keyword, since we
