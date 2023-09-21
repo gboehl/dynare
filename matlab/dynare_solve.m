@@ -105,7 +105,7 @@ if jacobian_flag
             tentative_number = tentative_number+1;
             x(idx) = rand(in0, 1)*10;
             [fvec, fjac] = feval(f, x, args{:});
-            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
+            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) || any(~isreal(fvec)) || any(~isreal(fjac(:)));
         end
         % If all previous attempts failed, try with real numbers.
         tentative_number = 0;
@@ -113,7 +113,7 @@ if jacobian_flag
             tentative_number = tentative_number+1;
             x(idx) = randn(in0, 1)*10;
             [fvec, fjac] = feval(f, x, args{:});
-            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
+            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) || any(~isreal(fvec)) || any(~isreal(fjac(:)));
         end
         % Last tentative, ff all previous attempts failed, try with negative numbers.
         tentative_number = 0;
@@ -121,7 +121,7 @@ if jacobian_flag
             tentative_number = tentative_number+1;
             x(idx) = -rand(in0, 1)*10;
             [fvec, fjac] = feval(f, x, args{:});
-            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:))));
+            wrong_initial_guess_flag = ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) || any(~isreal(fvec)) || any(~isreal(fjac(:)));
         end
     end
 else
