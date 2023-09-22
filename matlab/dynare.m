@@ -1,4 +1,4 @@
-function dynare(fname, varargin)
+function DynareInfo = dynare(fname, varargin)
 %       This command runs dynare with specified model file in argument
 %       Filename.
 %       The name of model file begins with an alphabetic character,
@@ -32,6 +32,11 @@ function dynare(fname, varargin)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
+
+if nargout
+    DynareInfo.time.preprocessor = 0;
+    DynareInfo.time.compute = 0;
+end
 
 if ~nargin || strcmpi(fname,'help')
     skipline()
@@ -249,9 +254,15 @@ else
     clear(['+' fname(1:end-4) '/sparse/dynamic_resid'], ['+' fname(1:end-4) '/sparse/dynamic_g1'], ['+' fname(1:end-4) '/sparse/dynamic_g2'], ['+' fname(1:end-4) '/sparse/dynamic_g3'])
 end
 
+pTic = tic;
 [status, result] = system(command);
 if status ~= 0 || preprocessoroutput
     disp(result)
+    pToc = toc(pTic);
+    dprintf('Preprocessing time: %s.', dynsec2hms(pToc))
+    if nargout
+        DynareInfo.time.preprocessor = pToc;
+    end
 end
 if onlymacro
     if preprocessoroutput
@@ -287,7 +298,12 @@ end
 clear(['+' fname '/driver'])
 
 try
+    cTic = tic;
     evalin('base',[fname '.driver']);
+    cToc = toc(cTic);
+    if nargout
+        DynareInfo.time.compute = cToc;
+    end
 catch ME
     W = evalin('caller','whos');
     diary off
