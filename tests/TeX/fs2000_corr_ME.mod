@@ -154,7 +154,7 @@ stderr gy_obs, 1;
 corr gp_obs, gy_obs,0;
 end;
 
-estimation(order=1,datafile='../fs2000/fsdat_simul',brooks_gelman_plotrows=4, mode_check,smoother,filter_covariance,filter_decomposition,forecast = 8,filtered_vars,filter_step_ahead=[1,3],irf=20,contemporaneous_correlation) m P c e W R k d y gy_obs;
+estimation(order=1,mode_compute=4,datafile='../fs2000/fsdat_simul',brooks_gelman_plotrows=4, mode_check,smoother,filter_covariance,filter_decomposition,forecast = 8,filtered_vars,filter_step_ahead=[1,3],irf=20,contemporaneous_correlation) m P c e W R k d y gy_obs;
 
 
 

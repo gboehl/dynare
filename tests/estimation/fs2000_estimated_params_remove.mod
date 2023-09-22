@@ -83,7 +83,7 @@ corr e_a, e_m;
 end;
 
 estimated_params;
-rho, beta_pdf, 0.129, 0.223;
+rho, beta_pdf, 0.129, 0.05;
 psi, beta_pdf, 0.65, 0.05;
 del, beta_pdf, 0.01, 0.005;
 stderr e_a, inv_gamma_pdf, 0.035449, inf;
