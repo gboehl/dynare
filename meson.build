@@ -6,8 +6,6 @@
 #   probably not in our current setup); the pkgconfig_define option of
 #   dep.get_variable() is unfortunately not helpful
 #   Close to https://github.com/mesonbuild/meson/issues/3606
-# - add -Wold-style-cast C++ flag except when building flex-generated files
-#   (only when warning_level ⩾ 2)
 # - add the possibility to customize the integration test names (with a new optional 'name' keyword in the dictionaries)
 # - Add an option to skip the removal of the temporary test directories, for debugging purposes
 # - See what to do with xvfb-run (see #1892). Maybe try to detect it from meson.build, and pass it optionally to the test driver script
@@ -24,6 +22,7 @@ project('dynare',
 add_global_arguments('-DPACKAGE_VERSION="' + meson.project_version() + '"', language : 'cpp')
 
 if get_option('warning_level').to_int() >= 2
+  add_global_arguments('-Wold-style-cast', language : 'cpp')
   add_global_arguments('-Wimplicit-interface', '-Wno-compare-reals', language : 'fortran')
 endif
 
