@@ -54,7 +54,7 @@ conventions such as ``USER_NAME`` have been excluded for concision):
 ``PATH_AND_FILE``
 
     Indicates a valid path to a file in the underlying operating
-    system (e.g. ``/usr/local/MATLAB/R2010b/bin/matlab``).
+    system (e.g. ``/usr/local/MATLAB/R2023b/bin/matlab``).
 
 ``BOOLEAN``
 
@@ -270,20 +270,27 @@ lines starting with a hashtag (#).
     .. option:: MatlabOctavePath = PATH_AND_FILE
 
         The path to the MATLAB or Octave executable. The default value
-        is ``matlab`` as MATLAB's executable is typically in the %PATH% environment 
+        is ``matlab`` as MATLAB’s executable is typically in the %PATH% environment 
         variable. When using full paths on Windows, you may need to enclose the path
-        in quoted strings, e.g. ``MatlabOctavePath="C:\Program Files\MATLAB\R2023a\bin\matlab.exe"``
+        in quoted strings, e.g. ``MatlabOctavePath="C:\Program Files\MATLAB\R2023b\bin\matlab.exe"``
 
     .. option:: NumberOfThreadsPerJob = INTEGER
 
-        For Windows nodes, sets the number of threads assigned to each
-        remote MATLAB/Octave run. The default value is 1.
-
+        Sets the number of threads assigned to each remote MATLAB/Octave run.
+        Needs to be an exact divisor of the number :opt:`CPUnbr <CPUnbr = INTEGER | [INTEGER:INTEGER]>` of cores.
+        Particularly, for very large models setting the number of threads per job to 2 might be the faster choice,
+        but this depends on your hardware, model and estimation task, so you should experiment with different values.        
+        The default value is ``1``, see also related option :opt:`SingleCompThread <SingleCompThread = BOOLEAN>`.
+        
     .. option:: SingleCompThread = BOOLEAN
 
-        Whether or not to disable MATLAB’s native multithreading. The
-        default value is ``false``. Option meaningless under Octave.
-
+        Whether or not to disable MATLAB’s native multithreading.
+        The default value is ``false``. Option meaningless under Octave.
+        Note: By default, MATLAB tries to speed up calculations by spreading them out over your computer’s threads.
+        However, tests have shown that for certain tasks, like MCMC estimations, MATLAB’s attempt to multitask
+        can actually slow things down when parallel computing is turned on. Setting this option to ``true`` 
+        starts the additional instances of MATLAB in a single thread mode using MATLAB’s ``-singleCompThread`` startup option.     
+        
     .. option:: OperatingSystem = OPERATING_SYSTEM
 
         The operating system associated with a node. Only necessary
