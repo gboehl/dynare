@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2020 Dynare Team
+ * Copyright © 2010-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -39,7 +39,15 @@ extern bool utIsInterruptPending();
 #  include <octave/quit.h>
 # endif
 
+// NB: C23 has the [[noreturn]] attribute, so this #ifdef can be removed when
+// we upgrade
+#ifdef __cplusplus
+[[noreturn]]
+#else
+_Noreturn
+#endif
 void msExit(int status);
+
 extern int constant_seed;
 
 #endif

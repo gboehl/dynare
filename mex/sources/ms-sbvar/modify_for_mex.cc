@@ -28,6 +28,7 @@ extern "C"
 
   int constant_seed;
 
+  [[noreturn]]
   void
   msExit([[maybe_unused]] int status)
   {
