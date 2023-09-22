@@ -63,10 +63,13 @@ DynamicModelDllCaller::load_dll(const std::string &basename)
   g1_tt_fct = reinterpret_cast<dynamic_tt_fct>(dlsym(g1_mex, "dynamic_g1_tt"));
   g1_fct = reinterpret_cast<dynamic_fct>(dlsym(g1_mex, "dynamic_g1"));
 #else
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wcast-function-type"
   residual_tt_fct = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(resid_mex, "dynamic_resid_tt"));
   residual_fct = reinterpret_cast<dynamic_fct>(GetProcAddress(resid_mex, "dynamic_resid"));
   g1_tt_fct = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(g1_mex, "dynamic_g1_tt"));
   g1_fct = reinterpret_cast<dynamic_fct>(GetProcAddress(g1_mex, "dynamic_g1"));
+# pragma GCC diagnostic pop
 #endif
   if (!residual_tt_fct || !residual_fct || !g1_tt_fct || !g1_fct)
     mexErrMsgTxt("Can't load functions in dynamic MEX file");

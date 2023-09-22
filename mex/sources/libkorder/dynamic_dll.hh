@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2020 Dynare Team
+ * Copyright © 2008-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -65,8 +65,11 @@ private:
     dynamic_tt_fct tt;
     T deriv;
 #if defined(__CYGWIN32__) || defined(_WIN32)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wcast-function-type"
     deriv = reinterpret_cast<T>(GetProcAddress(dynamicHinstance, funcname.c_str()));
     tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, (funcname + "_tt").c_str()));
+# pragma GCC diagnostic pop
 #else
       deriv = reinterpret_cast<T>(dlsym(dynamicHinstance, funcname.c_str()));
       tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, (funcname + "_tt").c_str()));
