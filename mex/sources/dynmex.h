@@ -36,6 +36,8 @@
 # define int64_T long long
 # define uint64_T unsigned long long
 #endif
+/* NB: the following #ifdef can be removed when we upgrade to C23, since the
+   latter has static_assert as a keyword */
 #ifdef __cplusplus
 static_assert(sizeof(int64_T) == 8, "The int64_T type is buggy");
 static_assert(sizeof(uint64_T) == 8, "The uint64_T type is buggy");
