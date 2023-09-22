@@ -1,6 +1,11 @@
 # TODO:
 # - Install files in right location
-# - configuration option to disable preprocessor build, and use it in {windows,macOS}/build.sh
+# - alias_target for MEX files; use it in {windows,macOS}/build.sh
+# - find a way to set GSL_BLAS_LIB to an empty value when querying pkg-config
+#   for gsl; otherwise there is a risk of overriding OpenBLAS/MKL (though
+#   probably not in our current setup); the pkgconfig_define option of
+#   dep.get_variable() is unfortunately not helpful
+#   Close to https://github.com/mesonbuild/meson/issues/3606
 # - add -Wold-style-cast C++ flag except when building flex-generated files
 #   (only when warning_level ⩾ 2)
 # - add the possibility to customize the integration test names (with a new optional 'name' keyword in the dictionaries)
