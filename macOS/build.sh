@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2019-2022 Dynare Team
+# Copyright © 2019-2023 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -112,7 +112,7 @@ PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p \
       "$PKGFILES"/preprocessor \
       "$PKGFILES"/mex/matlab/maci64-8.3-9.3 \
-      "$PKGFILES"/mex/matlab/maci64-9.4-9.14 \
+      "$PKGFILES"/mex/matlab/maci64-9.4-23.2 \
       "$PKGFILES"/doc/dynare++ \
       "$PKGFILES"/dynare++ \
       "$PKGFILES"/scripts \
@@ -174,9 +174,9 @@ make clean
   --with-gsl="$LIB64"/gsl \
   --with-matio="$LIB64"/matio \
   --with-slicot="$LIB64"/Slicot/with-underscore \
-  --with-matlab=/Applications/MATLAB_R2022b.app
+  --with-matlab=/Applications/x86_64/MATLAB_R2023b.app
 make -j"$NTHREADS"
-cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-9.14
+cp -L  "$ROOTDIR"/mex/matlab/*                                       "$PKGFILES"/mex/matlab/maci64-9.4-23.2
 
 
 ##
