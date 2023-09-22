@@ -46,7 +46,7 @@ common_meson_opts=(-Dbuild_for=matlab -Dbuildtype=release -Dprefer_static=true -
                    --native-file scripts/homebrew-native.ini)
 
 # Build for MATLAB ⩾ R2018a
-meson setup "${common_meson_opts[@]}" -Dmatlab_path=/Applications/MATLAB_R2022b.app build-matlab
+meson setup "${common_meson_opts[@]}" -Dmatlab_path=/Applications/x86_64/MATLAB_R2023b.app build-matlab
 meson compile -v -C build-matlab
 
 # Build for MATLAB < R2018a
@@ -91,7 +91,7 @@ PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p \
       "$PKGFILES"/preprocessor \
       "$PKGFILES"/mex/matlab/maci64-8.3-9.3 \
-      "$PKGFILES"/mex/matlab/maci64-9.4-9.14 \
+      "$PKGFILES"/mex/matlab/maci64-9.4-23.2 \
       "$PKGFILES"/doc \
       "$PKGFILES"/scripts \
       "$PKGFILES"/contrib/ms-sbvar/TZcode
@@ -111,7 +111,7 @@ cp -p  "$ROOTDIR"/build-matlab/preprocessor/src/dynare-preprocessor  "$PKGFILES"
 mkdir -p                                                             "$PKGFILES"/matlab/preprocessor64
 ln -sf ../../preprocessor/dynare-preprocessor                        "$PKGFILES"/matlab/preprocessor64/dynare_m
 
-cp -L  "$ROOTDIR"/build-matlab/*.mexmaci64                           "$PKGFILES"/mex/matlab/maci64-9.4-9.14
+cp -L  "$ROOTDIR"/build-matlab/*.mexmaci64                           "$PKGFILES"/mex/matlab/maci64-9.4-23.2
 cp -L  "$ROOTDIR"/build-old-matlab/*.mexmaci64                       "$PKGFILES"/mex/matlab/maci64-8.3-9.3
 
 cp -p  "$ROOTDIR"/scripts/dynare.el                                  "$PKGFILES"/scripts

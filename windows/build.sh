@@ -130,8 +130,8 @@ mkdir -p "$ZIPDIR"/contrib/jsonlab
 cp -pr contrib/jsonlab/* "$ZIPDIR"/contrib/jsonlab
 mkdir -p "$ZIPDIR"/mex/matlab/win64-8.3-9.3
 cp -p build-win-old-matlab/*.mexw64 "$ZIPDIR"/mex/matlab/win64-8.3-9.3
-mkdir -p "$ZIPDIR"/mex/matlab/win64-9.4-9.14
-cp -p build-win-matlab/*.mexw64 "$ZIPDIR"/mex/matlab/win64-9.4-9.14
+mkdir -p "$ZIPDIR"/mex/matlab/win64-9.4-23.2
+cp -p build-win-matlab/*.mexw64 "$ZIPDIR"/mex/matlab/win64-9.4-23.2
 mkdir -p "$ZIPDIR"/mex/octave/win64
 cp -p build-win-octave/*.mex "$ZIPDIR"/mex/octave/win64
 mkdir "$ZIPDIR"/preprocessor
