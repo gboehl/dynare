@@ -1,5 +1,5 @@
 variables:
-  MATLAB_VERSION: R2023a
+  MATLAB_VERSION: R2023b
   OLD_MATLAB_VERSION: R2014a
 
 before_script:
