@@ -17,25 +17,12 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
+#include <dynmex.h>
 
-# include <dynmex.h>
-
-# ifdef __cplusplus
 extern "C"
+[[noreturn]]
+void
+msExit([[maybe_unused]] int status)
 {
-# endif
-
-  int constant_seed;
-
-  [[noreturn]]
-  void
-  msExit([[maybe_unused]] int status)
-  {
-    throw "Error in MS-SBVAR MEX file.\n";
-  }
-
-# ifdef __cplusplus
+  throw "Error in MS-SBVAR MEX file.\n";
 }
-# endif
-#endif
