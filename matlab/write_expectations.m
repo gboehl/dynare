@@ -11,7 +11,7 @@ function [expression, growthneutralitycorrection] = write_expectations(expectati
 % - expression                  [string]    Unrolled expectation expression.
 % - growthneutralitycorrection  [string]
 
-% Copyright © 2019-2021 Dynare Team
+% Copyright © 2019-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,6 +41,14 @@ else
 end
 
 expectationmodel = M_.(expectationmodelfield).(expectationmodelname);
+
+if isfield(expectationmodel, 'model_consistent_expectations') && expectationmodel.model_consistent_expectations
+    expression = '';
+    if nargout>1
+        growthneutralitycorrection = 0;
+    end
+    return
+end
 
 if nargout>1 && isequal(expectationmodelkind, 'var')
     error('Cannot return more than one argument if the expectation model is a VAR.')
