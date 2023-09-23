@@ -94,7 +94,6 @@ if smoothed_state_uncertainty
     MAX_n_smoothed_state_uncertainty=myinputs.MAX_n_smoothed_state_uncertainty;
 end
 
-exo_nbr=myinputs.exo_nbr;
 maxlag=myinputs.maxlag;
 MAX_nsmoo=myinputs.MAX_nsmoo;
 MAX_ninno=myinputs.MAX_ninno;
@@ -103,7 +102,6 @@ MAX_n_smoothed_trend=myinputs.MAX_n_smoothed_trend;
 MAX_n_trend_coeff=myinputs.MAX_n_trend_coeff;
 MAX_nerro = myinputs.MAX_nerro;
 MAX_nruns=myinputs.MAX_nruns;
-MAX_momentsno = myinputs.MAX_momentsno;
 ifil=myinputs.ifil;
 
 if ~strcmpi(type,'prior')
