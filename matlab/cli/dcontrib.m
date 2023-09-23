@@ -22,6 +22,7 @@ function dcontrib(varargin)
 % REMARKS
 % [1] --baseline and --range are not compatible.
 % [2] --variables is followed by a space separated list of names, it is assumed that each variable is associated with an equation tag.
+% [3] In the context of an error correction or PAC equation, if one is willing to decompose the endogenous variable and the target then the equation tag for the target must also be provided.
 
 % Copyright © 2023 Dynare Team
 %
