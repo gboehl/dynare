@@ -162,7 +162,7 @@ if nargin<6 || isempty(innovations)
       case 'gaussian'
         DynareOutput.bnlms.shocks = randn(samplesize,effective_number_of_shocks)*covariance_matrix_upper_cholesky;
       otherwise
-        error(['simul_backward_nonlinear_model:: ' DynareOption.bnlms.innovation_distribution ' distribution for the structural innovations is not (yet) implemented!'])
+        error(['simul_backward_nonlinear_model:: ' DynareOptions.bnlms.innovation_distribution ' distribution for the structural innovations is not (yet) implemented!'])
     end
     % Put the simulated innovations in DynareOutput.exo_simul.
     DynareOutput.exo_simul = zeros(samplesize,number_of_shocks);
