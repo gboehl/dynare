@@ -460,7 +460,7 @@ for jj = 1:2
         for id_kronflag = 1:length(KRONFLAG)
             fprintf('***** %s: d2flag=%d and kronflag=%d *****\n',strparamset, d2flag,KRONFLAG(id_kronflag))
             options_.analytic_derivation_mode = KRONFLAG(id_kronflag);        
-            DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, oo_, indpmodel, indpstderr, indpcorr, d2flag);
+            DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, indpmodel, indpstderr, indpcorr, d2flag);
             for id_var = 1:size(lst_dvars,2)
                 dx = norm( vec(nSYM.(sprintf('%s',lst_dvars{id_var}))) - vec(DERIVS.(sprintf('%s',lst_dvars{id_var}))), Inf);
                 fprintf('Max absolute deviation for %s: %e\n', lst_dvars{id_var}, dx);

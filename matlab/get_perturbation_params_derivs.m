@@ -1,5 +1,5 @@
-function DERIVS = get_perturbation_params_derivs(M, options, estim_params, oo, indpmodel, indpstderr, indpcorr, d2flag)
-% DERIVS = get_perturbation_params_derivs(M, options, estim_params, oo, indpmodel, indpstderr, indpcorr, d2flag)
+function DERIVS = get_perturbation_params_derivs(M, options, estim_params, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indpmodel, indpstderr, indpcorr, d2flag)
+% DERIVS = get_perturbation_params_derivs(M, options, estim_params, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indpmodel, indpstderr, indpcorr, d2flag)
 % previously getH.m in dynare 4.5
 % -------------------------------------------------------------------------
 % Computes derivatives (with respect to parameters) of
@@ -16,17 +16,24 @@ function DERIVS = get_perturbation_params_derivs(M, options, estim_params, oo, i
 %
 % =========================================================================
 % INPUTS
-%   M:            [structure] storing the model information
-%   options:      [structure] storing the options
-%   estim_params: [structure] storing the estimation information
-%   oo:           [structure] storing the solution results
-%   indpmodel:    [modparam_nbr by 1] index of selected (estimated) parameters in M.params;
-%                   corresponds to model parameters (no stderr and no corr) in estimated_params block
-%   indpstderr:   [stderrparam_nbr by 1] index of selected (estimated) standard errors,
-%                   i.e. for all exogenous variables where 'stderr' is given in the estimated_params block
-%   indpcorr:     [corrparam_nbr by 2] matrix of selected (estimated) correlations,
-%                   i.e. for all exogenous variables where 'corr' is given in the estimated_params block
-%   d2flag:       [boolean] flag to compute second-order parameter derivatives of steady state and first-order Kalman transition matrices
+%   M:                      [structure]             storing the model information
+%   options:                [structure]             storing the options
+%   estim_params:           [structure]             storing the estimation information
+%   dr                      [structure]             Reduced form model.
+%   endo_steady_state       [vector]                steady state value for endogenous variables
+%   exo_steady_state        [vector]                steady state value for exogenous variables
+%   exo_det_steady_state    [vector]                steady state value for exogenous deterministic variables                                    
+%   indpmodel:              [modparam_nbr by 1]     index of selected (estimated) parameters in M.params;
+%                                                   corresponds to model parameters (no stderr and no corr) 
+%                                                   in estimated_params block
+%   indpstderr:             [stderrparam_nbr by 1]  index of selected (estimated) standard errors,
+%                                                   i.e. for all exogenous variables where 'stderr' is given 
+%                                                   in the estimated_params block
+%   indpcorr:               [corrparam_nbr by 2]    matrix of selected (estimated) correlations,
+%                                                   i.e. for all exogenous variables where 'corr' is given in 
+%                                                   the estimated_params block
+%   d2flag:                 [boolean]               flag to compute second-order parameter derivatives of steady state 
+%                                                   and first-order Kalman transition matrices
 % -------------------------------------------------------------------------
 % OUTPUTS
 % DERIVS: Structure with the following fields:
@@ -154,26 +161,25 @@ end
 qz_criterium = options.qz_criterium;
 threads_BC   = options.threads.kronecker.sparse_hessian_times_B_kronecker_C;
 
-% Get fields from oo
-exo_steady_state = oo.exo_steady_state;
-ghx = oo.dr.ghx;
-ghu = oo.dr.ghu;
+% Get fields from dr
+ghx = dr.ghx;
+ghu = dr.ghu;
 if order > 1
-    ghxx = oo.dr.ghxx;
-    ghxu = oo.dr.ghxu;
-    ghuu = oo.dr.ghuu;
-    ghs2 = oo.dr.ghs2;
+    ghxx = dr.ghxx;
+    ghxu = dr.ghxu;
+    ghuu = dr.ghuu;
+    ghs2 = dr.ghs2;
 end
 if order > 2
-    ghxxx = oo.dr.ghxxx;
-    ghxxu = oo.dr.ghxxu;
-    ghxuu = oo.dr.ghxuu;
-    ghuuu = oo.dr.ghuuu;
-    ghxss = oo.dr.ghxss;
-    ghuss = oo.dr.ghuss;
+    ghxxx = dr.ghxxx;
+    ghxxu = dr.ghxxu;
+    ghxuu = dr.ghxuu;
+    ghuuu = dr.ghuuu;
+    ghxss = dr.ghxss;
+    ghuss = dr.ghuss;
 end
-order_var = oo.dr.order_var;
-ys        = oo.dr.ys;
+order_var = dr.order_var;
+ys        = dr.ys;
 
 % Some checks
 if exo_det_nbr > 0
@@ -289,7 +295,7 @@ if analytic_derivation_mode == -1
 % - perturbation solution matrices: dghx, dghu, dghxx, dghxu, dghuu, dghs2, dghxxx, dghxxu, dghxuu, dghuuu, dghxss, dghuss
 
     %Parameter Jacobian of covariance matrix and solution matrices (wrt selected stderr, corr and model paramters)
-    dSig_gh         = fjaco(numerical_objective_fname, xparam1, 'perturbation_solution', estim_params, M, oo, options);
+    dSig_gh         = fjaco(numerical_objective_fname, xparam1, 'perturbation_solution', estim_params, M, options, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
     ind_Sigma_e     = (1:exo_nbr^2);
     ind_ghx         = ind_Sigma_e(end) + (1:endo_nbr*nspred);
     ind_ghu         = ind_ghx(end) + (1:endo_nbr*exo_nbr);
@@ -342,7 +348,7 @@ if analytic_derivation_mode == -1
     end
 
     %Parameter Jacobian of dynamic model derivatives (wrt selected model parameters only)
-    dYss_g = fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M, oo, options);
+    dYss_g = fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M, options, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
     ind_Yss = 1:endo_nbr;
     if options.discretionary_policy || options.ramsey_policy
         ind_g1 = ind_Yss(end) + (1:M.eq_nbr*yy0ex0_nbr);
@@ -368,7 +374,7 @@ if analytic_derivation_mode == -1
         % Hessian (wrt paramters) of steady state and first-order solution matrices ghx and Om
         % note that hessian_sparse.m (contrary to hessian.m) does not take symmetry into account, but focuses already on unique values
         options.order = 1; %make sure only first order
-        d2Yss_KalmanA_Om = hessian_sparse(numerical_objective_fname, xparam1, gstep, 'Kalman_Transition', estim_params, M, oo, options);
+        d2Yss_KalmanA_Om = hessian_sparse(numerical_objective_fname, xparam1, gstep, 'Kalman_Transition', estim_params, M, options, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
         options.order = order; %make sure to set back
         ind_KalmanA = ind_Yss(end) + (1:endo_nbr^2);
         DERIVS.d2KalmanA = d2Yss_KalmanA_Om(ind_KalmanA, indp2tottot2);               %only unique elements
@@ -399,7 +405,7 @@ if analytic_derivation_mode == -2
         % computation of d2Yss and d2g1
         % note that hessian_sparse does not take symmetry into account, i.e. compare hessian_sparse.m to hessian.m, but focuses already on unique values, which are duplicated below
         options.order = 1; %d2flag requires only first order
-        d2Yss_g1 = hessian_sparse(numerical_objective_fname, modparam1, gstep, 'dynamic_model', estim_params_model, M, oo, options);  % d2flag requires only first-order
+        d2Yss_g1 = hessian_sparse(numerical_objective_fname, modparam1, gstep, 'dynamic_model', estim_params_model, M, options, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);  % d2flag requires only first-order
         options.order = order; %make sure to set back the order
         d2Yss = reshape(full(d2Yss_g1(1:endo_nbr,:)), [endo_nbr modparam_nbr modparam_nbr]); %put into tensor notation
         for j=1:endo_nbr
@@ -425,7 +431,7 @@ if analytic_derivation_mode == -2
     end
 
     %Parameter Jacobian of dynamic model derivatives (wrt selected model parameters only)
-    dYss_g  = fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M, oo, options);
+    dYss_g  = fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M, options, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
     ind_Yss = 1:endo_nbr;
     ind_g1  = ind_Yss(end) + (1:endo_nbr*yy0ex0_nbr);
     dYss    = dYss_g(ind_Yss,:); %in tensor notation, wrt selected model parameters only
@@ -592,7 +598,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
         [II, JJ] = ind2sub([yy0ex0_nbr yy0ex0_nbr], find(g2(j,:))); %g2 is [endo_nbr by yy0ex0_nbr^2]
         for i = 1:yy0ex0_nbr
             is = find(II==i);
-            is = is(find(JJ(is)<=yy0_nbr)); %focus only on oo.dr.ys(I) derivatives as exogenous variables are 0 in a stochastic context
+            is = is(find(JJ(is)<=yy0_nbr)); %focus only on dr.ys(I) derivatives as exogenous variables are 0 in a stochastic context
             if ~isempty(is)
                 tmp_g2 = full(g2(j,find(g2(j,:))));
                 dg1(j,i,:) = tmp_g2(is)*dyy0(JJ(is),:); %put into tensor notation

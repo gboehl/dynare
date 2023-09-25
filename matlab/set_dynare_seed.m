@@ -1,9 +1,8 @@
 function set_dynare_seed(varargin)
-% Set seeds depending on matlab (octave) version. This routine is called is
+% set_dynare_seed(varargin)
+% Set seeds depending on Matlab (Octave) version. This routine is
 % a wrapper for set_dynare_seed_local_options
-% dynare_config and can be called by the
-% user in the mod file.
-%
+
 % Copyright © 2010-2023 Dynare Team
 %
 % This file is part of Dynare.

@@ -1,12 +1,11 @@
-function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M, oo, options, options_ident, indpmodel, indpstderr, indpcorr, indvobs)
-% function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M, oo, options, options_ident, indpmodel, indpstderr, indpcorr, indvobs)
+function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M, options, options_ident, indpmodel, indpstderr, indpcorr, indvobs, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+% [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M, options, options_ident, indpmodel, indpstderr, indpcorr, indvobs, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % previously getJJ.m in Dynare 4.5
 % Sets up the Jacobians needed for identification analysis
 % =========================================================================
 % INPUTS
 %   estim_params:   [structure] storing the estimation information
 %   M:              [structure] storing the model information
-%   oo:             [structure] storing the reduced-form solution results
 %   options:        [structure] storing the options
 %   options_ident:  [structure] storing the options for identification
 %   indpmodel:      [modparam_nbr by 1] index of estimated parameters in M_.params;
@@ -22,6 +21,10 @@ function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dM
 %                     in the estimated_params block; if estimated_params block
 %                     is not available, then no corr parameters are selected
 %   indvobs:        [obs_nbr by 1] index of observed (VAROBS) variables
+%   dr                      [structure]  Reduced form model.
+%   endo_steady_state       [vector]     steady state value for endogenous variables
+%   exo_steady_state        [vector]     steady state value for exogenous variables
+%   exo_det_steady_state    [vector]     steady state value for exogenous deterministic variables
 % -------------------------------------------------------------------------
 % OUTPUTS
 %
@@ -150,94 +153,94 @@ obs_nbr         = length(indvobs);
 d2flag          = 0; % do not compute second parameter derivatives
 
 % Get Jacobians (wrt selected params) of steady state, dynamic model derivatives and perturbation solution matrices for all endogenous variables
-oo.dr.derivs = get_perturbation_params_derivs(M, options, estim_params, oo, indpmodel, indpstderr, indpcorr, d2flag);
+dr.derivs = get_perturbation_params_derivs(M, options, estim_params, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indpmodel, indpstderr, indpcorr, d2flag);
 
 [I,~] = find(lead_lag_incidence'); %I is used to select nonzero columns of the Jacobian of endogenous variables in dynamic model files
-yy0 = oo.dr.ys(I);           %steady state of dynamic (endogenous and auxiliary variables) in lead_lag_incidence order
-Yss = oo.dr.ys(oo.dr.order_var); % steady state in DR order
+yy0 = dr.ys(I);           %steady state of dynamic (endogenous and auxiliary variables) in lead_lag_incidence order
+Yss = dr.ys(dr.order_var); % steady state in DR order
 if order == 1
-    [~, g1 ] = feval([fname,'.dynamic'], yy0, oo.exo_steady_state', params, oo.dr.ys, 1);
+    [~, g1 ] = feval([fname,'.dynamic'], yy0, exo_steady_state', params, dr.ys, 1);
     %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     DYNAMIC = [Yss;
                vec(g1)]; %add steady state and put rows of g1 in DR order
-    dDYNAMIC = [oo.dr.derivs.dYss;
-                reshape(oo.dr.derivs.dg1,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2),size(oo.dr.derivs.dg1,3)) ]; %reshape dg1 in DR order and add steady state
+    dDYNAMIC = [dr.derivs.dYss;
+                reshape(dr.derivs.dg1,size(dr.derivs.dg1,1)*size(dr.derivs.dg1,2),size(dr.derivs.dg1,3)) ]; %reshape dg1 in DR order and add steady state
     REDUCEDFORM = [Yss;
-                   vec(oo.dr.ghx);
-                   dyn_vech(oo.dr.ghu*Sigma_e*transpose(oo.dr.ghu))]; %in DR order
+                   vec(dr.ghx);
+                   dyn_vech(dr.ghu*Sigma_e*transpose(dr.ghu))]; %in DR order
     dREDUCEDFORM = zeros(endo_nbr*nspred+endo_nbr*(endo_nbr+1)/2, totparam_nbr);
     for j=1:totparam_nbr
-        dREDUCEDFORM(:,j) = [vec(oo.dr.derivs.dghx(:,:,j));
-                            dyn_vech(oo.dr.derivs.dOm(:,:,j))];
+        dREDUCEDFORM(:,j) = [vec(dr.derivs.dghx(:,:,j));
+                            dyn_vech(dr.derivs.dOm(:,:,j))];
     end
-    dREDUCEDFORM = [ [zeros(endo_nbr, stderrparam_nbr+corrparam_nbr) oo.dr.derivs.dYss]; dREDUCEDFORM ]; % add steady state
+    dREDUCEDFORM = [ [zeros(endo_nbr, stderrparam_nbr+corrparam_nbr) dr.derivs.dYss]; dREDUCEDFORM ]; % add steady state
 
 elseif order == 2
-    [~, g1, g2 ] = feval([fname,'.dynamic'], yy0, oo.exo_steady_state', params, oo.dr.ys, 1);
+    [~, g1, g2 ] = feval([fname,'.dynamic'], yy0, exo_steady_state', params, dr.ys, 1);
     %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     DYNAMIC = [Yss;
                vec(g1);
                vec(g2)]; %add steady state and put rows of g1 and g2 in DR order
-    dDYNAMIC = [oo.dr.derivs.dYss;
-                reshape(oo.dr.derivs.dg1,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2),size(oo.dr.derivs.dg1,3));  %reshape dg1 in DR order
-                reshape(oo.dr.derivs.dg2,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2)^2,size(oo.dr.derivs.dg1,3))]; %reshape dg2 in DR order
+    dDYNAMIC = [dr.derivs.dYss;
+                reshape(dr.derivs.dg1,size(dr.derivs.dg1,1)*size(dr.derivs.dg1,2),size(dr.derivs.dg1,3));  %reshape dg1 in DR order
+                reshape(dr.derivs.dg2,size(dr.derivs.dg1,1)*size(dr.derivs.dg1,2)^2,size(dr.derivs.dg1,3))]; %reshape dg2 in DR order
     REDUCEDFORM = [Yss;
-                   vec(oo.dr.ghx);
-                   dyn_vech(oo.dr.ghu*Sigma_e*transpose(oo.dr.ghu));
-                   vec(oo.dr.ghxx);
-                   vec(oo.dr.ghxu);
-                   vec(oo.dr.ghuu);
-                   vec(oo.dr.ghs2)]; %in DR order
+                   vec(dr.ghx);
+                   dyn_vech(dr.ghu*Sigma_e*transpose(dr.ghu));
+                   vec(dr.ghxx);
+                   vec(dr.ghxu);
+                   vec(dr.ghuu);
+                   vec(dr.ghs2)]; %in DR order
     dREDUCEDFORM = zeros(endo_nbr*nspred+endo_nbr*(endo_nbr+1)/2+endo_nbr*nspred^2+endo_nbr*nspred*exo_nbr+endo_nbr*exo_nbr^2+endo_nbr, totparam_nbr);
     for j=1:totparam_nbr
-        dREDUCEDFORM(:,j) = [vec(oo.dr.derivs.dghx(:,:,j));
-                            dyn_vech(oo.dr.derivs.dOm(:,:,j));
-                            vec(oo.dr.derivs.dghxx(:,:,j));
-                            vec(oo.dr.derivs.dghxu(:,:,j));
-                            vec(oo.dr.derivs.dghuu(:,:,j));
-                            vec(oo.dr.derivs.dghs2(:,j))];
+        dREDUCEDFORM(:,j) = [vec(dr.derivs.dghx(:,:,j));
+                            dyn_vech(dr.derivs.dOm(:,:,j));
+                            vec(dr.derivs.dghxx(:,:,j));
+                            vec(dr.derivs.dghxu(:,:,j));
+                            vec(dr.derivs.dghuu(:,:,j));
+                            vec(dr.derivs.dghs2(:,j))];
     end
-    dREDUCEDFORM = [ [zeros(endo_nbr, stderrparam_nbr+corrparam_nbr) oo.dr.derivs.dYss]; dREDUCEDFORM ]; % add steady state
+    dREDUCEDFORM = [ [zeros(endo_nbr, stderrparam_nbr+corrparam_nbr) dr.derivs.dYss]; dREDUCEDFORM ]; % add steady state
 elseif order == 3
-    [~, g1, g2, g3 ] = feval([fname,'.dynamic'], yy0, oo.exo_steady_state', params, oo.dr.ys, 1);
+    [~, g1, g2, g3 ] = feval([fname,'.dynamic'], yy0, exo_steady_state', params, dr.ys, 1);
     %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
     DYNAMIC = [Yss;
                vec(g1);
                vec(g2);
                vec(g3)]; %add steady state and put rows of g1 and g2 in DR order
-    dDYNAMIC = [oo.dr.derivs.dYss;
-                reshape(oo.dr.derivs.dg1,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2),size(oo.dr.derivs.dg1,3));  %reshape dg1 in DR order
-                reshape(oo.dr.derivs.dg2,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2)^2,size(oo.dr.derivs.dg1,3));
-                reshape(oo.dr.derivs.dg2,size(oo.dr.derivs.dg1,1)*size(oo.dr.derivs.dg1,2)^2,size(oo.dr.derivs.dg1,3))]; %reshape dg3 in DR order
+    dDYNAMIC = [dr.derivs.dYss;
+                reshape(dr.derivs.dg1,size(dr.derivs.dg1,1)*size(dr.derivs.dg1,2),size(dr.derivs.dg1,3));  %reshape dg1 in DR order
+                reshape(dr.derivs.dg2,size(dr.derivs.dg1,1)*size(dr.derivs.dg1,2)^2,size(dr.derivs.dg1,3));
+                reshape(dr.derivs.dg2,size(dr.derivs.dg1,1)*size(dr.derivs.dg1,2)^2,size(dr.derivs.dg1,3))]; %reshape dg3 in DR order
     REDUCEDFORM = [Yss;
-                   vec(oo.dr.ghx);
-                   dyn_vech(oo.dr.ghu*Sigma_e*transpose(oo.dr.ghu));
-                   vec(oo.dr.ghxx); vec(oo.dr.ghxu); vec(oo.dr.ghuu); vec(oo.dr.ghs2);
-                   vec(oo.dr.ghxxx); vec(oo.dr.ghxxu); vec(oo.dr.ghxuu); vec(oo.dr.ghuuu); vec(oo.dr.ghxss); vec(oo.dr.ghuss)]; %in DR order
+                   vec(dr.ghx);
+                   dyn_vech(dr.ghu*Sigma_e*transpose(dr.ghu));
+                   vec(dr.ghxx); vec(dr.ghxu); vec(dr.ghuu); vec(dr.ghs2);
+                   vec(dr.ghxxx); vec(dr.ghxxu); vec(dr.ghxuu); vec(dr.ghuuu); vec(dr.ghxss); vec(dr.ghuss)]; %in DR order
     dREDUCEDFORM = zeros(size(REDUCEDFORM,1)-endo_nbr, totparam_nbr);
     for j=1:totparam_nbr
-        dREDUCEDFORM(:,j) = [vec(oo.dr.derivs.dghx(:,:,j));
-                             dyn_vech(oo.dr.derivs.dOm(:,:,j));
-                             vec(oo.dr.derivs.dghxx(:,:,j)); vec(oo.dr.derivs.dghxu(:,:,j)); vec(oo.dr.derivs.dghuu(:,:,j)); vec(oo.dr.derivs.dghs2(:,j))
-                             vec(oo.dr.derivs.dghxxx(:,:,j)); vec(oo.dr.derivs.dghxxu(:,:,j)); vec(oo.dr.derivs.dghxuu(:,:,j)); vec(oo.dr.derivs.dghuuu(:,:,j)); vec(oo.dr.derivs.dghxss(:,:,j)); vec(oo.dr.derivs.dghuss(:,:,j))];
+        dREDUCEDFORM(:,j) = [vec(dr.derivs.dghx(:,:,j));
+                             dyn_vech(dr.derivs.dOm(:,:,j));
+                             vec(dr.derivs.dghxx(:,:,j)); vec(dr.derivs.dghxu(:,:,j)); vec(dr.derivs.dghuu(:,:,j)); vec(dr.derivs.dghs2(:,j))
+                             vec(dr.derivs.dghxxx(:,:,j)); vec(dr.derivs.dghxxu(:,:,j)); vec(dr.derivs.dghxuu(:,:,j)); vec(dr.derivs.dghuuu(:,:,j)); vec(dr.derivs.dghxss(:,:,j)); vec(dr.derivs.dghuss(:,:,j))];
     end
-    dREDUCEDFORM = [ [zeros(endo_nbr, stderrparam_nbr+corrparam_nbr) oo.dr.derivs.dYss]; dREDUCEDFORM ]; % add steady state
+    dREDUCEDFORM = [ [zeros(endo_nbr, stderrparam_nbr+corrparam_nbr) dr.derivs.dYss]; dREDUCEDFORM ]; % add steady state
 end
 
 % Get (pruned) state space representation:
-pruned = pruned_state_space_system(M, options, oo.dr, indvobs, nlags, useautocorr, 1);
+pruned = pruned_state_space_system(M, options, dr, indvobs, nlags, useautocorr, 1);
 MEAN  = pruned.E_y;
 dMEAN = pruned.dE_y;
 %storage for Jacobians used in dsge_likelihood.m for analytical Gradient and Hession of likelihood (only at order=1)
 derivatives_info = struct();
 if order == 1
     dT = zeros(endo_nbr,endo_nbr,totparam_nbr);
-    dT(:,(nstatic+1):(nstatic+nspred),:) = oo.dr.derivs.dghx;
+    dT(:,(nstatic+1):(nstatic+nspred),:) = dr.derivs.dghx;
     derivatives_info.DT   = dT;
-    derivatives_info.DOm  = oo.dr.derivs.dOm;
-    derivatives_info.DYss = oo.dr.derivs.dYss;
+    derivatives_info.DOm  = dr.derivs.dOm;
+    derivatives_info.DYss = dr.derivs.dYss;
 end
 
 %% Compute dMOMENTS
@@ -255,7 +258,7 @@ if ~no_identification_moments
     
     if kronflag == -1
         %numerical derivative of autocovariogram
-        dMOMENTS = fjaco(str2func('identification_numerical_objective'), xparam1, 1, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=1]
+        dMOMENTS = fjaco(str2func('identification_numerical_objective'), xparam1, 1, estim_params, M, options, indpmodel, indpstderr, indvobs, useautocorr, nlags, grid_nbr, dr, endo_steady_state, exo_steady_state, exo_det_steady_state); %[outputflag=1]
         dMOMENTS = [dMEAN; dMOMENTS]; %add Jacobian of steady state of VAROBS variables
     else
         dMOMENTS = zeros(obs_nbr + obs_nbr*(obs_nbr+1)/2 + nlags*obs_nbr^2 , totparam_nbr);
@@ -312,7 +315,7 @@ if ~no_identification_spectrum
     IA = eye(size(pruned.A,1));
     if kronflag == -1
         %numerical derivative of spectral density
-        dOmega_tmp = fjaco(str2func('identification_numerical_objective'), xparam1, 2, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvobs, useautocorr, nlags, grid_nbr); %[outputflag=2]
+        dOmega_tmp = fjaco(str2func('identification_numerical_objective'), xparam1, 2, estim_params, M, options, indpmodel, indpstderr, indvobs, useautocorr, nlags, grid_nbr, dr, endo_steady_state, exo_steady_state, exo_det_steady_state); %[outputflag=2]
         kk = 0;
         for ig = 1:length(freqs)
             kk = kk+1;
@@ -389,14 +392,14 @@ if ~no_identification_minimal
         dMINIMAL = [];        
     else
         % Derive and check minimal state vector of first-order
-        SYS.A  = oo.dr.ghx(pruned.indx,:);
-        SYS.dA = oo.dr.derivs.dghx(pruned.indx,:,:);
-        SYS.B  = oo.dr.ghu(pruned.indx,:);
-        SYS.dB = oo.dr.derivs.dghu(pruned.indx,:,:);
-        SYS.C  = oo.dr.ghx(pruned.indy,:);
-        SYS.dC = oo.dr.derivs.dghx(pruned.indy,:,:);
-        SYS.D  = oo.dr.ghu(pruned.indy,:);
-        SYS.dD = oo.dr.derivs.dghu(pruned.indy,:,:);
+        SYS.A  = dr.ghx(pruned.indx,:);
+        SYS.dA = dr.derivs.dghx(pruned.indx,:,:);
+        SYS.B  = dr.ghu(pruned.indx,:);
+        SYS.dB = dr.derivs.dghu(pruned.indx,:,:);
+        SYS.C  = dr.ghx(pruned.indy,:);
+        SYS.dC = dr.derivs.dghx(pruned.indy,:,:);
+        SYS.D  = dr.ghu(pruned.indy,:);
+        SYS.dD = dr.derivs.dghu(pruned.indy,:,:);
         [CheckCO,minnx,SYS] = get_minimal_state_representation(SYS,1);
         
         if CheckCO == 0
@@ -415,7 +418,7 @@ if ~no_identification_minimal
             dminB = reshape(dminB,size(dminB,1)*size(dminB,2),size(dminB,3));
             dminC = reshape(dminC,size(dminC,1)*size(dminC,2),size(dminC,3));
             dminD = reshape(dminD,size(dminD,1)*size(dminD,2),size(dminD,3));
-            dvechSig = reshape(oo.dr.derivs.dSigma_e,exo_nbr*exo_nbr,totparam_nbr);
+            dvechSig = reshape(dr.derivs.dSigma_e,exo_nbr*exo_nbr,totparam_nbr);
             indvechSig= find(tril(ones(exo_nbr,exo_nbr)));
             dvechSig = dvechSig(indvechSig,:);
             Inx = eye(minnx);

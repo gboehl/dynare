@@ -560,14 +560,14 @@ if analytic_derivation
         old_analytic_derivation_mode = DynareOptions.analytic_derivation_mode;
         DynareOptions.analytic_derivation_mode = kron_flag;
         if full_Hess
-            DERIVS = get_perturbation_params_derivs(Model, DynareOptions, EstimatedParameters, DynareResults, indparam, indexo, [], true);
+            DERIVS = get_perturbation_params_derivs(Model, DynareOptions, EstimatedParameters, DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state, indparam, indexo, [], true);
             indD2T = reshape(1:Model.endo_nbr^2, Model.endo_nbr, Model.endo_nbr);
             indD2Om = dyn_unvech(1:Model.endo_nbr*(Model.endo_nbr+1)/2);
             D2T = DERIVS.d2KalmanA(indD2T(iv,iv),:);
             D2Om = DERIVS.d2Om(dyn_vech(indD2Om(iv,iv)),:);
             D2Yss = DERIVS.d2Yss(iv,:,:);
         else
-            DERIVS = get_perturbation_params_derivs(Model, DynareOptions, EstimatedParameters, DynareResults, indparam, indexo, [], false);
+            DERIVS = get_perturbation_params_derivs(Model, DynareOptions, EstimatedParameters, DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state, indparam, indexo, [], false);
         end
         DT = zeros(Model.endo_nbr, Model.endo_nbr, size(DERIVS.dghx,3));
         DT(:,Model.nstatic+(1:Model.nspred),:) = DERIVS.dghx;

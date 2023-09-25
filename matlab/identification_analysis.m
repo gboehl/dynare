@@ -138,7 +138,7 @@ error_indicator.identification_spectrum=0;
 
 if info(1) == 0 %no errors in solution
     % Compute parameter Jacobians for identification analysis
-    [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params_, M_, oo_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs);
+    [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params_, M_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     if isempty(dMINIMAL)
         % Komunjer and Ng is not computed if (1) minimality conditions are not fullfilled or (2) there are more shocks and measurement errors than observables, so we need to reset options
         error_indicator.identification_minimal = 1;
@@ -202,7 +202,7 @@ if info(1) == 0 %no errors in solution
                 options_ident_local.no_identification_spectrum = 1; %do not recompute dSPECTRUM
                 options_ident_local.ar = nlags;     %store new lag number
                 options_.ar      = nlags;           %store new lag number
-                [~, ~, ~, ~, ~, ~, MOMENTS, dMOMENTS, ~, ~, ~, ~] = get_identification_jacobians(estim_params_, M_, oo_, options_, options_ident_local, indpmodel, indpstderr, indpcorr, indvobs);
+                [~, ~, ~, ~, ~, ~, MOMENTS, dMOMENTS, ~, ~, ~, ~] = get_identification_jacobians(estim_params_, M_, options_, options_ident_local, indpmodel, indpstderr, indpcorr, indvobs, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 
                 ind_dMOMENTS = (find(max(abs(dMOMENTS'),[],1) > tol_deriv)); %new index with non-zero rows
             end
