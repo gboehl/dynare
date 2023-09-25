@@ -6387,10 +6387,6 @@ observed variables.
        initially far from the steady state. This option is not compatible with
        ``analytical_derivation``.
 
-    .. option:: lik_algo = INTEGER
-
-        For internal use and testing only.
-
     .. option:: conf_sig = DOUBLE
 
        Level of significance of the confidence interval used for classical forecasting after

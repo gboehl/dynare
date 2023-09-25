@@ -89,7 +89,6 @@ elseif exist([M_.fname '_steadystate.m'],'file')
 else
     options_.steadystate_flag = 0;
 end
-options_.steadystate_partial = [];
 options_.steadystate.nocheck = false;
 
 % subset of the estimated deep parameters
@@ -400,7 +399,6 @@ options_.kalman.keep_kalman_algo_if_singularity_is_detected = false;
 options_.diffuse_kalman_tol = 1e-6;
 options_.use_univariate_filters_if_singularity_is_detected = 1;
 options_.riccati_tol = 1e-6;
-options_.lik_algo = 1;
 options_.lik_init = 1;
 options_.load_mh_file = false;
 options_.load_results_after_load_mh = false;

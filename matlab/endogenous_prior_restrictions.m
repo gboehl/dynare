@@ -49,7 +49,7 @@ if ~isempty(endo_prior_restrictions.irf)
     end
     varlist = Model.endo_names(DynareResults.dr.order_var);
     if isempty(T)
-        [T,R,SteadyState,infox,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
+        [T,R,SteadyState,infox,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
     else % check if T and R are given in the restricted form!!!
         if size(T,1)<length(varlist)
             varlist = varlist(DynareResults.dr.restrict_var_list);
@@ -63,7 +63,7 @@ if ~isempty(endo_prior_restrictions.irf)
         end
         if ~varlistok
             varlist = Model.endo_names(DynareResults.dr.order_var);
-            [T,R,SteadyState,infox,Model,DynareResults] = dynare_resolve(Model,DynareOptions,DynareResults);
+            [T,R,SteadyState,infox,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
         end
     end
     NT=1;

@@ -71,8 +71,7 @@ else
     logged_steady_state_indicator=0;
 end
 
-[dr,info,M_,oo_] = compute_decision_rules(M_,options_,oo_);
-oo_.dr=dr;
+[oo_.dr,info,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 if info(1)
     fprintf('\nsimulated_moment_uncertainty: model could not be solved')
     print_info(info,0,options_);
@@ -95,7 +94,7 @@ end
 
 
 for j=1:replic
-    [ys, oo_] = simult(y0,oo_.dr,M_,options_,oo_);%do simulation
+    [ys, oo_.exo_simul] = simult(y0,oo_.dr,M_,options_);%do simulation
     oo_=disp_moments(ys, options_.varobs,M_,options_,oo_); %get moments
     dum=[oo_.mean; dyn_vech(oo_.var)];
     sd = sqrt(diag(oo_.var));

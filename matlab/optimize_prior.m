@@ -29,7 +29,7 @@ while look_for_admissible_initial_condition
     xinit = xparam1+scale*randn(size(xparam1));
     if all(xinit(:)>BayesInfo.p3) && all(xinit(:)<BayesInfo.p4)
         ModelInfo = set_all_parameters(xinit,EstimationInfo,ModelInfo);
-        [dr,INFO,ModelInfo,DynareResults] = resol(0,ModelInfo,DynareOptions,DynareResults);
+        [DynareResults.dr,INFO,ModelInfo.params] = resol(0,ModelInfo,DynareOptions,DynareResults.dr,DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
         if ~INFO(1)
             look_for_admissible_initial_condition = 0;
         end

@@ -1,4 +1,5 @@
 function myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
+%myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
 %   Generates and stores Posterior IRFs
 %   PARALLEL CONTEXT
 %   This function perfoms in parallel execution a portion of the PosteriorIRF.m code.
@@ -40,15 +41,20 @@ function myoutput=PosteriorIRF_core1(myinputs,fpar,B,whoiam, ThisMatlab)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-
-global options_ estim_params_ oo_ M_ bayestopt_ dataset_ dataset_info
-
 if nargin<4
     whoiam=0;
 end
 
 % Reshape 'myinputs' for local computation.
 % In order to avoid confusion in the name space, the instruction struct2local(myinputs) is replaced by:
+
+options_= myinputs.options_;
+estim_params_= myinputs.estim_params_;
+M_= myinputs.M_;
+oo_= myinputs.oo_;
+bayestopt_= myinputs.bayestopt_;
+dataset_= myinputs.dataset_;
+dataset_info= myinputs.dataset_info;
 
 IRUN = myinputs.IRUN;
 irun =myinputs.irun;
@@ -78,13 +84,10 @@ if options_.dsge_var
     bounds = prior_bounds(bayestopt_,options_.prior_trunc);
 end
 
-
 if whoiam
     Parallel=myinputs.Parallel;
 end
 
-
-% MhDirectoryName = myinputs.MhDirectoryName;
 if strcmpi(type,'posterior')
     MhDirectoryName = CheckPath('metropolis',M_.dname);
 elseif strcmpi(type,'gsa')
@@ -115,11 +118,9 @@ else
     h = dyn_waitbar(prct0,'Bayesian (prior) IRFs...');
 end
 
-
 OutputFileName_bvardsge = {};
 OutputFileName_dsge = {};
 OutputFileName_param = {};
-
 
 fpar = fpar-1;
 fpar0=fpar;
@@ -150,8 +151,7 @@ while fpar<B
     end
     stock_param(irun2,:) = deep;
     M_ = set_parameters_locally(M_, deep);
-    [dr,info,M_,oo_] =compute_decision_rules(M_,options_,oo_);
-    oo_.dr = dr;
+    [oo_.dr,info,M_.params] =compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     if info(1)
         nosaddle = nosaddle + 1;
         fpar = fpar - 1;
@@ -182,9 +182,9 @@ while fpar<B
     for i=irf_shocks_indx
         if SS(i,i) > 5e-7
             if options_.order>1 && options_.relative_irf % normalize shock to 0.01 before IRF generation for GIRFs; multiply with 100 later
-                y=irf(M_,options_,dr,SS(:,i)./SS(i,i)/100, options_.irf, options_.drop,options_.replic,options_.order);
+                y=irf(M_,options_,oo_.dr,SS(:,i)./SS(i,i)/100, options_.irf, options_.drop,options_.replic,options_.order);
             else
-                y=irf(M_,options_,dr,SS(:,i), options_.irf, options_.drop,options_.replic,options_.order);
+                y=irf(M_,options_,oo_.dr,SS(:,i), options_.irf, options_.drop,options_.replic,options_.order);
             end
             if options_.relative_irf && options_.order==1 %multiply with 100 for backward compatibility
                 y = 100*y/SS(i,i);

@@ -125,8 +125,8 @@ Model.H = H;
 %------------------------------------------------------------------------------
 
 warning('off', 'MATLAB:nearlySingularMatrix')
-[~, ~, ~, info, Model, DynareResults] = ...
-    dynare_resolve(Model, DynareOptions, DynareResults, 'restrict');
+[~, ~, ~, info, DynareResults.dr, Model.params] = ...
+    dynare_resolve(Model, DynareOptions, DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state, 'restrict');
 warning('on', 'MATLAB:nearlySingularMatrix')
 
 if info(1)~=0
@@ -197,7 +197,7 @@ if setinitialcondition
         DynareOptions.periods = 5000;
         old_DynareOptionspruning =  DynareOptions.pruning;
         DynareOptions.pruning = DynareOptions.particle.pruning;
-        y_ = simult(dr.ys, dr, Model, DynareOptions, DynareResults);
+        y_ = simult(dr.ys, dr, Model, DynareOptions);
         y_ = y_(dr.order_var(state_variables_idx),2001:DynareOptions.periods);
         StateVectorVariance = cov(y_');
         DynareOptions.periods = old_DynareOptionsperiods;

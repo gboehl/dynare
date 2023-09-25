@@ -36,7 +36,7 @@ opts_simul.SHOCKS = err_0';
 options_.occbin.simul=opts_simul;
 options_.occbin.simul.full_output=1;
 options_.noprint = 1;
-[~, out, ss] = occbin.solver(M_,oo_,options_);
+[~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 
 nobs = size(obs_list,1);
 resids = zeros(nobs,1);

@@ -1,4 +1,4 @@
-function SampleAddress = selec_posterior_draws(SampleSize,drsize)
+function SampleAddress = selec_posterior_draws(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,estim_params_,SampleSize,drsize)
 % Selects a sample of draws from the posterior distribution and if nargin>1
 % saves the draws in _pdraws mat files (metropolis folder). If drsize>0
 % the dr structure, associated to the parameters, is also saved in _pdraws.
@@ -6,8 +6,14 @@ function SampleAddress = selec_posterior_draws(SampleSize,drsize)
 % _mh file cannot be opened twice.
 %
 % INPUTS
-%   o SampleSize     [integer]  Size of the sample to build.
-%   o drsize         [double]   structure dr is drsize megaoctets.
+%   o M_                    [structure]     Matlab's structure describing the model
+%   o options_              [structure]     Matlab's structure describing the current options
+%   o dr                    [structure]     Reduced form model.
+%   o endo_steady_state     [vector]        steady state value for endogenous variables
+%   o exo_steady_state      [vector]        steady state value for exogenous variables
+%   o exo_det_steady_state  [vector]        steady state value for exogenous deterministic variables                                    
+%   o SampleSize            [integer]       Size of the sample to build.
+%   o drsize                [double]        structure dr is drsize megaoctets.
 %
 % OUTPUTS
 %   o SampleAddress  [integer]  A (SampleSize*4) array, each line specifies the
@@ -37,8 +43,6 @@ function SampleAddress = selec_posterior_draws(SampleSize,drsize)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ options_ estim_params_ oo_
-
 % Number of parameters:
 npar = estim_params_.nvx;
 npar = npar + estim_params_.nvn;
@@ -48,9 +52,9 @@ npar = npar + estim_params_.np;
 
 % Select one task:
 switch nargin
-  case 1
+  case 8
     info = 0;
-  case 2
+  case 9
     MAX_mega_bytes = 10;% Should be an option...
     if drsize>0
         info=2;
@@ -114,8 +118,8 @@ if info
             end
             pdraws(i,1) = {x2(SampleAddress(i,4),:)};
             if info==2
-                set_parameters(pdraws{i,1});
-                [dr,~,M_,oo_] =compute_decision_rules(M_,options_,oo_);
+                M_ = set_parameters_locally(M_,pdraws{i,1});
+                [dr,~,M_.params] =compute_decision_rules(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
                 pdraws(i,2) = { dr };
             end
             old_mhfile = mhfile;
@@ -141,8 +145,8 @@ if info
             end
             pdraws(linee,1) = {x2(SampleAddress(i,4),:)};
             if info==2
-                set_parameters(pdraws{linee,1});
-                [dr,~,M_,oo_] = compute_decision_rules(M_,options_,oo_);
+                M_ = set_parameters_locally(M_,pdraws{i,1});
+                [dr,~,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
                 pdraws(linee,2) = { dr };
             end
             old_mhfile = mhfile;

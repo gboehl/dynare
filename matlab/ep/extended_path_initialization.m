@@ -78,7 +78,7 @@ dr = struct();
 if ep.init
     DynareOptions.order = 1;
     DynareResults.dr=set_state_space(dr,DynareModel,DynareOptions);
-    [dr,Info,DynareResults] = resol(0,DynareModel,DynareOptions,DynareResults);
+    [DynareResults.dr,Info,DynareModel.params] = resol(0,DynareModel,DynareOptions,DynareResults.dr,DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
 end
 
 % Do not use a minimal number of perdiods for the perfect foresight solver (with bytecode and blocks)
@@ -106,7 +106,7 @@ if pfm.hybrid_order
     DynareResults.dr = set_state_space(DynareResults.dr, DynareModel, DynareOptions);
     options = DynareOptions;
     options.order = pfm.hybrid_order;
-    pfm.dr = resol(0, DynareModel, options, DynareResults);
+    [pfm.dr, DynareModel.params] = resol(0, DynareModel, options, DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
 else
     pfm.dr = [];
 end

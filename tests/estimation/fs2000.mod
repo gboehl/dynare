@@ -132,4 +132,4 @@ oo_.MarginalDensity.LaplaceApproximation = Laplace; %reset correct Laplace
 %test prior sampling
 options_.prior_draws=100;
 options_.no_graph.posterior=0;
-prior_posterior_statistics('prior',dataset_,dataset_info); %get smoothed and filtered objects and forecasts
+oo_=prior_posterior_statistics('prior',dataset_,dataset_info,M_,oo_,options_,estim_params_,bayestopt_); %get smoothed and filtered objects and forecasts

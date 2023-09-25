@@ -116,7 +116,7 @@ nobs = options_.nobs;
 if forecast_ && any(forecast_params)
     M1=M_;
     M1.params = forecast_params;
-    [~,~,~,~,~,oo1] = dynare_resolve(M1,options_,oo_);
+    [~,~,~,~,~,dr1] = dynare_resolve(M1,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 end
 
 gend0=0;
@@ -183,8 +183,8 @@ for j=presample+1:nobs
 
     if forecast_
         if any(forecast_params)
-            Af = oo1.dr.ghx;
-            Bf = oo1.dr.ghu;
+            Af = dr1.ghx;
+            Bf = dr1.ghu;
         else
             Af = A;
             Bf = B;

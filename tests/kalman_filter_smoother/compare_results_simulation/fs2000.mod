@@ -129,7 +129,7 @@ y0 = [y0; oo_.SmoothedVariables.Mean.(M_.endo_names{endo_iter})(1)];
 end;
 
 %make sure decision rules were updated
-[oo_.dr,info,M_] = resol(0,M_,options_,oo_);
+[oo_.dr,info,M_.params] = resol(0,M_, options_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 
 dr = oo_.dr;
 iorder=1;

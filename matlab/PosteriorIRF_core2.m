@@ -1,5 +1,5 @@
 function myoutput=PosteriorIRF_core2(myinputs,fpar,npar,whoiam,ThisMatlab)
-% function myoutput=PosteriorIRF_core2(myinputs,fpar,npar,whoiam, ThisMatlab)
+% myoutput=PosteriorIRF_core2(myinputs,fpar,npar,whoiam, ThisMatlab)
 % Generates the Posterior IRFs plot from the IRFs generated in
 % PosteriorIRF_core1
 %
@@ -47,8 +47,6 @@ function myoutput=PosteriorIRF_core2(myinputs,fpar,npar,whoiam,ThisMatlab)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global options_  M_
-
 if nargin<4
     whoiam=0;
 end
@@ -56,6 +54,7 @@ end
 % Reshape 'myinputs' for local computation.
 % In order to avoid confusion in the name space, the instruction struct2local(myinputs) is replaced by:
 
+options_=myinputs.options_;
 Check=options_.TeX;
 if (Check)
     varlist_TeX=myinputs.varlist_TeX;
@@ -67,6 +66,9 @@ tit=myinputs.tit;
 nn=myinputs.nn;
 MAX_nirfs_dsgevar=myinputs.MAX_nirfs_dsgevar;
 HPDIRF=myinputs.HPDIRF;
+dname=myinputs.dname;
+fname=myinputs.fname;
+
 if options_.dsge_var
     HPDIRFdsgevar=myinputs.HPDIRFdsgevar;
     MeanIRFdsgevar=myinputs.MeanIRFdsgevar;
@@ -82,7 +84,7 @@ end
 
 % To save the figures where the function is computed!
 
-DirectoryName = CheckPath('Output',M_.dname);
+DirectoryName = CheckPath('Output',dname);
 
 RemoteFlag = 0;
 if whoiam
@@ -117,7 +119,6 @@ for i=fpar:npar
                     h2 = area(1:options_.irf,HPDIRF(:,1,j,i),'FaceColor',[1 1 1],'BaseValue',min(HPDIRF(:,1,j,i))); %white below HPDIinf and minimum of HPDIinf
                 end
                 plot(1:options_.irf,MeanIRF(:,j,i),'-k','linewidth',3)
-                % plot([1 options_.irf],[0 0],'-r','linewidth',0.5);
                 box on
                 axis tight
                 xlim([1 options_.irf]);
@@ -135,7 +136,6 @@ for i=fpar:npar
                     plot(1:options_.irf,HPDIRFdsgevar(:,1,j,i),'--k','linewidth',1)
                     plot(1:options_.irf,HPDIRFdsgevar(:,2,j,i),'--k','linewidth',1)
                 end
-                % plot([1 options_.irf],[0 0],'-r','linewidth',0.5);
                 box on
                 axis tight
                 xlim([1 options_.irf]);
@@ -155,9 +155,9 @@ for i=fpar:npar
 
         if subplotnum == MaxNumberOfPlotPerFigure || (j == nvar  && subplotnum> 0)
             figunumber = figunumber+1;
-            dyn_saveas(hh_fig,[DirectoryName '/'  M_.fname '_Bayesian_IRF_' tit{i} '_' int2str(figunumber)],options_.nodisplay,options_.graph_format);
+            dyn_saveas(hh_fig,[DirectoryName '/'  fname '_Bayesian_IRF_' tit{i} '_' int2str(figunumber)],options_.nodisplay,options_.graph_format);
             if RemoteFlag==1
-                OutputFileName = [OutputFileName; {[DirectoryName,filesep], [M_.fname '_Bayesian_IRF_' deblank(tit(i,:)) '_' int2str(figunumber) '.*']}];
+                OutputFileName = [OutputFileName; {[DirectoryName,filesep], [fname '_Bayesian_IRF_' deblank(tit(i,:)) '_' int2str(figunumber) '.*']}];
             end
             subplotnum = 0;
         end
@@ -165,7 +165,6 @@ for i=fpar:npar
     if whoiam
         fprintf('Done! \n');
         waitbarString = [ 'Exog. shocks ' int2str(i) '/' int2str(npar) ' done.'];
-        %         fMessageStatus((i-fpar+1)/(npar-fpar+1),whoiam,waitbarString, waitbarTitle, Parallel(ThisMatlab));
         dyn_waitbar((i-fpar+1)/(npar-fpar+1),[],waitbarString);
     end
 end % loop over exo_var

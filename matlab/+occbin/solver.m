@@ -1,5 +1,5 @@
-function [oo_, out, ss] = solver(M_,oo_,options_)
-% function [oo_, out, ss] = solver(M_,oo_,options_)
+function [dr, out, ss] = solver(M_, options_, dr ,steady_state, exo_steady_state, exo_det_steady_state)
+% function [oo_, out, ss] = solver(M_,oo_,options_, dr ,steady_state, exo_steady_state, exo_det_steady_state
 % Solves the model with an OBC and produces simulations/IRFs
 %
 % INPUT: 
@@ -58,17 +58,16 @@ if solve_dr
         options_.order = 1;
     end
 
-    [dr,error_flag,M_,oo_] = resol(0,M_,options_,oo_);
+    [dr,error_flag,M_.params] = resol(0,M_,options_,dr,steady_state,exo_steady_state,exo_det_steady_state);
     out.error_flag=error_flag;
     if error_flag
         print_info(error_flag, options_.noprint, options_)
         return;
     end
-    oo_.dr = dr;
     sto_dr=dr;
     sto_M=M_;
 else
-    oo_.dr=sto_dr;
+    dr=sto_dr;
 end
 
 if options_.occbin.simul.check_ahead_periods>options_.occbin.simul.max_check_ahead_periods
@@ -78,9 +77,9 @@ if options_.occbin.simul.check_ahead_periods>options_.occbin.simul.max_check_ahe
 end
 
 if M_.occbin.constraint_nbr==1
-    [out, ss, error_flag  ] = occbin.solve_one_constraint(M_,oo_.dr,options_.occbin.simul,solve_dr);
+    [out, ss, error_flag  ] = occbin.solve_one_constraint(M_,dr,options_.occbin.simul,solve_dr);
 elseif M_.occbin.constraint_nbr==2
-    [out, ss, error_flag  ] = occbin.solve_two_constraints(M_,oo_.dr,options_.occbin.simul,solve_dr);
+    [out, ss, error_flag  ] = occbin.solve_two_constraints(M_,dr,options_.occbin.simul,solve_dr);
 end
 
 out.error_flag=error_flag;
@@ -103,5 +102,3 @@ else
     out.piecewise = out.piecewise + out.ys';
 end
 out.exo_pos = options_.occbin.simul.exo_pos;
-
-oo_.occbin.simul=out;

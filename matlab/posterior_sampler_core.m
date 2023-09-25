@@ -93,7 +93,6 @@ ModelName = M_.fname;
 BaseName = [MetropolisFolder filesep ModelName];
 save_tmp_file = sampler_options.save_tmp_file;
 
-options_.lik_algo = 1;
 OpenOldFile = ones(nblck,1);
 if strcmpi(ProposalFun,'rand_multivariate_normal')
     sampler_options.n = npar;

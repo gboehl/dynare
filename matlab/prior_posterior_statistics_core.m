@@ -47,14 +47,17 @@ function myoutput=prior_posterior_statistics_core(myinputs,fpar,B,whoiam, ThisMa
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global options_ oo_ M_ bayestopt_ estim_params_
-
 if nargin<4
     whoiam=0;
 end
 
 % Reshape 'myinputs' for local computation.
 % In order to avoid confusion in the name space, the instruction struct2local(myinputs) is replaced by:
+M_=myinputs.M_;
+oo_=myinputs.oo_;
+options_=myinputs.options_;
+estim_params_=myinputs.estim_params_;
+bayestopt_=myinputs.bayestopt_;
 
 type=myinputs.type;
 run_smoother=myinputs.run_smoother;
@@ -91,7 +94,6 @@ if smoothed_state_uncertainty
     MAX_n_smoothed_state_uncertainty=myinputs.MAX_n_smoothed_state_uncertainty;
 end
 
-exo_nbr=myinputs.exo_nbr;
 maxlag=myinputs.maxlag;
 MAX_nsmoo=myinputs.MAX_nsmoo;
 MAX_ninno=myinputs.MAX_ninno;
@@ -100,7 +102,6 @@ MAX_n_smoothed_trend=myinputs.MAX_n_smoothed_trend;
 MAX_n_trend_coeff=myinputs.MAX_n_trend_coeff;
 MAX_nerro = myinputs.MAX_nerro;
 MAX_nruns=myinputs.MAX_nruns;
-MAX_momentsno = myinputs.MAX_momentsno;
 ifil=myinputs.ifil;
 
 if ~strcmpi(type,'prior')
@@ -214,10 +215,10 @@ for b=fpar:B
     M_ = set_all_parameters(deep,estim_params_,M_);
 
     if run_smoother
-        [dr,info,M_,oo_] =compute_decision_rules(M_,opts_local,oo_);
+        [dr,info,M_.params] =compute_decision_rules(M_,opts_local,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
         if ismember(info(1),[3,4])
             opts_local.qz_criterium = 1 + (opts_local.qz_criterium-1)*10; %loosen tolerance, useful for big models where BK conditions were tested on restricted state space
-            [dr,info,M_,oo_] =compute_decision_rules(M_,opts_local,oo_);
+            [dr,info,M_.params] =compute_decision_rules(M_,opts_local,oo_);
         end
         if info(1)
             message=get_error_message(info,opts_local);
@@ -228,14 +229,14 @@ for b=fpar:B
             opts_local.occbin.simul.waitbar=0;
             opts_local.occbin.smoother.waitbar = 0;
             opts_local.occbin.smoother.linear_smoother=false; % speed-up
-            [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,bayestopt_] = ...
+            [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,oo_,bayestopt_] = ...
                 occbin.DSGE_smoother(deep,gend,Y,data_index,missing_value,M_,oo_,opts_local,bayestopt_,estim_params_);
             if oo_.occbin.smoother.error_flag(1)
                 message=get_error_message(oo_.occbin.smoother.error_flag,opts_local);
                 fprintf('\nprior_posterior_statistics: One of the draws failed with the error:\n%s\n',message)
             end
         else
-            [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,M_,oo_,bayestopt_] = ...
+            [alphahat,etahat,epsilonhat,alphatilde,SteadyState,trend_coeff,aK,~,~,P,~,~,trend_addition,state_uncertainty,oo_,bayestopt_] = ...
                 DsgeSmoother(deep,gend,Y,data_index,missing_value,M_,oo_,opts_local,bayestopt_,estim_params_);
         end
 
@@ -311,7 +312,7 @@ for b=fpar:B
         end
         if horizon
             yyyy = alphahat(iendo,i_last_obs);
-            yf = forcst2a(yyyy,dr,zeros(horizon,exo_nbr));
+            yf = simulate_posterior_forecasts(yyyy,dr,horizon,false,M_.Sigma_e,1);
             if options_.prefilter
                 % add mean
                 yf(:,IdObs) = yf(:,IdObs)+repmat(mean_varobs, ...
@@ -328,7 +329,7 @@ for b=fpar:B
             else
                 yf = yf+repmat(SteadyState',horizon+maxlag,1);
             end
-            yf1 = forcst2(yyyy,horizon,dr,1);
+            yf1 = simulate_posterior_forecasts(yyyy,dr,horizon,false,M_.Sigma_e,1);
             if options_.prefilter == 1
                 % add mean
                 yf1(:,IdObs,:) = yf1(:,IdObs,:)+ ...
@@ -367,7 +368,7 @@ for b=fpar:B
             stock_smoothed_uncert(dr.order_var,dr.order_var,:,irun(13)) = state_uncertainty;
         end
     else
-        [T,R,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_);
+        [~,~,SteadyState,info] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     end
     stock_param(irun(5),:) = deep;
     stock_logpo(irun(5),1) = logpo;
@@ -540,3 +541,56 @@ if RemoteFlag==1
 end
 
 dyn_waitbar_close(h);
+
+
+function yf=simulate_posterior_forecasts(y0,dr,horizon,stochastic_indicator,Sigma_e,n)
+% function yf=forcst2(y0,horizon,dr,n)
+%
+% computes forecasts based on first order model solution, given shocks
+% drawn from the shock distribution, but not including measurement error
+% Inputs:
+%   - y0                    [endo_nbr by maximum_endo_lag]      matrix of starting values
+%   - dr                    [structure]                         structure with Dynare decision rules
+%   - horizon               [scalar]                            number of forecast periods
+%   - stochastic_indicator  [boolean]                           indicator whether to consider stochastic shocks
+%   - Sigma_e               [integer]                           covariance matrix of shocks
+%   - n                     [scalar]                            number of repetitions
+%
+% Outputs:
+%   - yf        [horizon+ykmin_ by endo_nbr by n]   array of forecasts
+
+if nargin< 4
+    stochastic_indicator=false;
+    n=1;
+end
+%select states
+k2 = dr.inv_order_var(dr.state_var);
+
+if stochastic_indicator
+    % eliminate shocks with 0 variance
+    i_exo_var = setdiff(1:length(Sigma_e),find(diag(Sigma_e) == 0));
+    nxs = length(i_exo_var);
+
+    chol_S = chol(Sigma_e(i_exo_var,i_exo_var));
+
+    if ~isempty(Sigma_e)
+        e = randn(nxs,n,horizon);
+    end
+
+    B1 = dr.ghu(:,i_exo_var)*chol_S';
+end
+endo_nbr=length(y0);
+
+yf = zeros(endo_nbr,1+horizon,n);
+yf(:,1,:,:) = repmat(y0,[1,1,n]);
+
+for iter=1:horizon    
+    if stochastic_indicator
+        yf(:,iter+1,:) = dr.ghx*squeeze(yf(k2,iter,:))+B1*squeeze(e(:,:,iter));
+    else
+        yf(:,iter+1,:) = dr.ghx*squeeze(yf(k2,iter,:));
+    end
+end
+
+yf(dr.order_var,:,:) = yf;
+yf=permute(yf,[2 1 3]);

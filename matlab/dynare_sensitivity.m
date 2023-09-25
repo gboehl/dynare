@@ -146,7 +146,7 @@ if M_.exo_nbr==0
     error('dynare_sensitivity does not support having no varexo in the model. As a workaround you could define a dummy exogenous variable.')
 end
 
-[make,my,day,punk,M_,oo_] = dynare_resolve(M_,options_,oo_);
+[make,my,day,punk,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 
 options_gsa = set_default_option(options_gsa,'identification',0);
 if options_gsa.identification
@@ -410,9 +410,9 @@ if options_gsa.rmse
                 end
 
             end
-            prior_posterior_statistics('gsa',dataset_, dataset_info,'gsa::mcmc');
+            oo_=prior_posterior_statistics('gsa',dataset_, dataset_info,M_,oo_,options_,estim_params_,bayestopt_,'gsa::mcmc');
             if options_.bayesian_irf
-                PosteriorIRF('gsa','gsa::mcmc');
+                oo_=PosteriorIRF('gsa',options_,estim_params_,oo_,M_,bayestopt_,dataset_,dataset_info,'gsa::mcmc');
             end
             options_gsa.load_rmse=0;
             %   else

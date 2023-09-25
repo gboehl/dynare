@@ -24,7 +24,7 @@ function [theta, fxsim, neval] = rotated_slice_sampler(objective_function,theta,
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2015-2017 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,10 +51,11 @@ end
 if ~isempty(sampler_options.mode)
     mm = sampler_options.mode;
     n = length(mm);
+    distance=NaN(n,1);
     for j=1:n
         distance(j)=sqrt(sum((theta-mm(j).m).^2));
     end
-    [m, im] = min(distance);
+    [~, im] = min(distance);
 
     r=im;
     V1 = mm(r).m;
@@ -69,34 +70,6 @@ if ~isempty(sampler_options.mode)
     end
     resul=randperm(n-1,n-1);
     V1 = V1(:,resul);
-
-    %V1 = V1(:, randperm(n-1));
-    %     %d = chol(mm(r).invhess);
-    %     %V1 = transpose(feval(sampler_options.proposal_distribution, transpose(mm(r).m), d, npar));
-    %
-    %     V1=eye(npar);
-    %     V1=V1(:,randperm(npar));
-    %     for j=1:2,
-    %         V1(:,j)=mm(r(j)).m-theta;
-    %         V1(:,j)=V1(:,j)/norm(V1(:,j));
-    %     end
-    %     % Gram-Schmidt
-    %     for j=2:npar,
-    %         for k=1:j-1,
-    %             V1(:,j)=V1(:,j)-V1(:,k)'*V1(:,j)*V1(:,k);
-    %         end
-    %         V1(:,j)=V1(:,j)/norm(V1(:,j));
-    %     end
-    %     for j=1:n,
-    %         distance(j)=sqrt(sum((theta-mm(j).m).^2));
-    %     end
-    %     [m, im] = min(distance);
-    %     if im==r,
-    %         fxsim=[];
-    %         return,
-    %     else
-    %         theta1=theta;
-    %     end
 else
     V1 = sampler_options.V1;
 end
@@ -106,8 +79,6 @@ for it=1:npar
     theta0 = theta;
     neval(it) = 0;
     xold  = 0;
-    % XLB   = thetaprior(3);
-    % XUB   = thetaprior(4);
     tb=sort([(thetaprior(:,1)-theta)./V1(:,it) (thetaprior(:,2)-theta)./V1(:,it)],2);
     XLB=max(tb(:,1));
     XUB=min(tb(:,2));
@@ -172,12 +143,4 @@ for it=1:npar
         end
     end
 end
-
-% if ~isempty(sampler_options.mode),
-%     dist1=sqrt(sum((theta-mm(r).m).^2));
-%     if dist1>distance(r),
-%         theta=theta1;
-%         fxsim=[];
-%     end
-% end
 end

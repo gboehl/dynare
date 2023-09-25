@@ -1,10 +1,18 @@
-function PosteriorIRF(type,dispString)
+function oo_=PosteriorIRF(type,options_,estim_params_,oo_,M_,bayestopt_,dataset_,dataset_info,dispString)
+% PosteriorIRF(type,options_,estim_params_,oo_,M_,bayestopt_,dataset_,dataset_info,dispString)
 % Builds posterior IRFs after the MH algorithm.
 %
 % INPUTS
-%   o type       [char]     string specifying the joint density of the
-%                           deep parameters ('prior','posterior').
-%   o dispString [char]     string to display in the console.
+%   o type          [char]          string specifying the joint density of the
+%                                   deep parameters ('prior','posterior').
+%   o options_      [structure]     storing the options
+%   o estim_params_ [structure]     storing information about estimated parameters
+%   o oo_           [structure]     storing the results
+%   o M_            [structure]     storing the model information
+%   o bayestopt_    [structure]     storing information about priors
+%   o dataset_      [structure]     storing the dataset
+%   o dataset_info  [structure]     Various information about the dataset
+%   o dispString 	[char]     string to display in the console.
 %
 % OUTPUTS
 %   None                    (oo_ and plots).
@@ -34,9 +42,6 @@ function PosteriorIRF(type,dispString)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-
-global options_ estim_params_ oo_ M_ bayestopt_ dataset_ dataset_info
-
 % Set the number of periods
 if isempty(options_.irf) || ~options_.irf
     options_.irf = 40;
@@ -62,13 +67,7 @@ end
 irf_shocks_indx = getIrfShocksIndx(M_, options_);
 
 % Set various parameters & Check or create directories
-nvx  = estim_params_.nvx;
-nvn  = estim_params_.nvn;
-ncx  = estim_params_.ncx;
-ncn  = estim_params_.ncn;
-np   = estim_params_.np ;
-npar = nvx+nvn+ncx+ncn+np;
-offset = npar-np; clear('nvx','nvn','ncx','ncn','np');
+npar = estim_params_.nvx+estim_params_.nvn+estim_params_.ncx+estim_params_.ncn+estim_params_.np ;
 
 nvobs = dataset_.vobs;
 gend = dataset_.nobs;
@@ -118,7 +117,8 @@ elseif strcmpi(type,'gsa')
     end
     x=[lpmat0(istable,:) lpmat(istable,:)];
     clear lpmat istable
-    B=size(x,1); options_.B = B;
+    B=size(x,1); 
+    options_.B = B;
 else% type = 'prior'
     B = options_.prior_draws;
     options_.B = B;
@@ -130,23 +130,7 @@ irun2 = 0;
 NumberOfIRFfiles_dsge = 1;
 NumberOfIRFfiles_dsgevar = 1;
 ifil2 = 1;
-% Create arrays
-if B <= MAX_nruns
-    stock_param = zeros(B, npar);
-else
-    stock_param = zeros(MAX_nruns, npar);
-end
-if B >= MAX_nirfs_dsge
-    stock_irf_dsge = zeros(options_.irf,nvar,M_.exo_nbr,MAX_nirfs_dsge);
-else
-    stock_irf_dsge = zeros(options_.irf,nvar,M_.exo_nbr,B);
-end
 if MAX_nirfs_dsgevar
-    if B >= MAX_nirfs_dsgevar
-        stock_irf_bvardsge = zeros(options_.irf,nvobs,M_.exo_nbr,MAX_nirfs_dsgevar);
-    else
-        stock_irf_bvardsge = zeros(options_.irf,nvobs,M_.exo_nbr,B);
-    end
     NumberOfLags = options_.dsge_varlag;
     NumberOfLagsTimesNvobs = NumberOfLags*nvobs;
     if options_.noconstant
@@ -154,10 +138,9 @@ if MAX_nirfs_dsgevar
     else
         NumberOfParametersPerEquation = NumberOfLagsTimesNvobs+1;
     end
-    Companion_matrix = diag(ones(nvobs*(NumberOfLags-1),1),-nvobs);
 end
 
-% First block of code executed in parallel. The function devoted to do it is  PosteriorIRF_core1.m
+% First block of code executed in parallel. The function devoted to do it is PosteriorIRF_core1.m
 % function.
 
 b = 0;
@@ -183,7 +166,6 @@ if ~strcmpi(type,'prior')
     localVars.x=x;
 end
 
-b=0;
 if options_.dsge_var
     localVars.gend = gend;
     localVars.nvobs = nvobs;
@@ -201,6 +183,16 @@ localVars.NumberOfIRFfiles_dsge=NumberOfIRFfiles_dsge;
 localVars.NumberOfIRFfiles_dsgevar=NumberOfIRFfiles_dsgevar;
 localVars.ifil2=ifil2;
 localVars.MhDirectoryName=MhDirectoryName;
+
+%store main structures
+localVars.options_=options_;
+localVars.estim_params_= estim_params_;
+localVars.M_= M_;
+localVars.oo_= oo_;
+localVars.bayestopt_= bayestopt_;
+localVars.dataset_= dataset_;
+localVars.dataset_info= dataset_info;
+
 
 % Like sequential execution!
 if isnumeric(options_.parallel)
@@ -225,14 +217,6 @@ else
     localVars.NumberOfIRFfiles_dsgevar=NumberOfIRFfiles_dsgevar;
     localVars.ifil2=ifil2;
 
-    globalVars = struct('M_',M_, ...
-                        'options_', options_, ...
-                        'bayestopt_', bayestopt_, ...
-                        'estim_params_', estim_params_, ...
-                        'oo_', oo_, ...
-                        'dataset_',dataset_, ...
-                        'dataset_info',dataset_info);
-
     % which files have to be copied to run remotely
     NamFileInput(1,:) = {'',[M_.fname '.static.m']};
     NamFileInput(2,:) = {'',[M_.fname '.dynamic.m']};
@@ -246,7 +230,7 @@ else
             NamFileInput(length(NamFileInput)+1,:)={'',[M_.fname '.steadystate.m']};
         end
     end
-    [fout] = masterParallel(options_.parallel, 1, B,NamFileInput,'PosteriorIRF_core1', localVars, globalVars, options_.parallel_info);
+    [fout] = masterParallel(options_.parallel, 1, B,NamFileInput,'PosteriorIRF_core1', localVars, [], options_.parallel_info);
     nosaddle=0;
     for j=1:length(fout)
         nosaddle = nosaddle + fout(j).nosaddle;
@@ -260,9 +244,9 @@ if nosaddle
     disp(['PosteriorIRF :: Percentage of discarded posterior draws = ' num2str(nosaddle/(B+nosaddle))])
 end
 
-ReshapeMatFiles('irf_dsge',type)
+ReshapeMatFiles(M_.fname,M_.dname,M_.exo_nbr,M_.endo_nbr,options_,'irf_dsge',type)
 if MAX_nirfs_dsgevar
-    ReshapeMatFiles('irf_bvardsge')
+    ReshapeMatFiles(M_.fname,M_.dname,M_.exo_nbr,M_.endo_nbr,options_,'irf_bvardsge')
 end
 
 if strcmpi(type,'gsa')
@@ -293,21 +277,21 @@ tit = M_.exo_names;
 kdx = 0;
 
 for file = 1:NumberOfIRFfiles_dsge
-    load([MhDirectoryName filesep M_.fname '_IRF_DSGEs' int2str(file) '.mat']);
+    temp=load([MhDirectoryName filesep M_.fname '_IRF_DSGEs' int2str(file) '.mat']);
     for i = irf_shocks_indx
         for j = 1:nvar
-            for k = 1:size(STOCK_IRF_DSGE,1)
+            for k = 1:size(temp.STOCK_IRF_DSGE,1)
                 kk = k+kdx;
                 [MeanIRF(kk,j,i),MedianIRF(kk,j,i),VarIRF(kk,j,i),HPDIRF(kk,:,j,i),...
-                 DistribIRF(kk,:,j,i)] = posterior_moments(squeeze(STOCK_IRF_DSGE(k,j,i,:)),0,options_.mh_conf_sig);
+                 DistribIRF(kk,:,j,i)] = posterior_moments(squeeze(temp.STOCK_IRF_DSGE(k,j,i,:)),0,options_.mh_conf_sig);
             end
         end
     end
-    kdx = kdx + size(STOCK_IRF_DSGE,1);
+    kdx = kdx + size(temp.STOCK_IRF_DSGE,1);
 
 end
 
-clear STOCK_IRF_DSGE;
+clear temp;
 
 for i = irf_shocks_indx
     for j = 1:nvar
@@ -332,20 +316,20 @@ if MAX_nirfs_dsgevar
     tit = M_.exo_names;
     kdx = 0;
     for file = 1:NumberOfIRFfiles_dsgevar
-        load([MhDirectoryName filesep M_.fname '_IRF_BVARDSGEs' int2str(file) '.mat']);
+        temp=load([MhDirectoryName filesep M_.fname '_IRF_BVARDSGEs' int2str(file) '.mat']);
         for i = irf_shocks_indx
             for j = 1:nvar
-                for k = 1:size(STOCK_IRF_BVARDSGE,1)
+                for k = 1:size(temp.STOCK_IRF_BVARDSGE,1)
                     kk = k+kdx;
                     [MeanIRFdsgevar(kk,j,i),MedianIRFdsgevar(kk,j,i),VarIRFdsgevar(kk,j,i),...
                      HPDIRFdsgevar(kk,:,j,i),DistribIRFdsgevar(kk,:,j,i)] = ...
-                        posterior_moments(squeeze(STOCK_IRF_BVARDSGE(k,j,i,:)),0,options_.mh_conf_sig);
+                        posterior_moments(squeeze(temp.STOCK_IRF_BVARDSGE(k,j,i,:)),0,options_.mh_conf_sig);
                 end
             end
         end
-        kdx = kdx + size(STOCK_IRF_BVARDSGE,1);
+        kdx = kdx + size(temp.STOCK_IRF_BVARDSGE,1);
     end
-    clear STOCK_IRF_BVARDSGE;
+    clear temp;
     for i = irf_shocks_indx
         for j = 1:nvar
             name = sprintf('%s_%s', M_.endo_names{IndxVariables(j)}, tit{i});
@@ -358,24 +342,23 @@ if MAX_nirfs_dsgevar
         end
     end
 end
-%
-%      Finally I build the plots.
-%
 
+%%  Finally I build the plots.
 
 % Second block of code executed in parallel, with the exception of file
-% .tex generation always run in sequentially. This portion of code is execute in parallel by
+% .tex generation always run in sequentially. This portion of code is executed in parallel by
 % PosteriorIRF_core2.m function.
 
 if ~options_.nograph && ~options_.no_graph.posterior
     % Save the local variables.
     localVars=[];
-
+    localVars.dname=M_.dname;
+    localVars.fname=M_.fname;
+    localVars.options_=options_;
     Check=options_.TeX;
     if (Check)
         localVars.varlist_TeX=varlist_TeX;
     end
-
 
     localVars.nvar=nvar;
     localVars.MeanIRF=MeanIRF;
@@ -445,9 +428,7 @@ if ~options_.nograph && ~options_.no_graph.posterior
             if isRemoteOctave
                 [fout] = PosteriorIRF_core2(localVars,1,M_.exo_nbr,0);
             else
-                globalVars = struct('M_',M_, ...
-                                    'options_', options_);
-
+                globalVars = [];
                 [fout] = masterParallel(options_.parallel, 1, M_.exo_nbr,NamFileInput,'PosteriorIRF_core2', localVars, globalVars, options_.parallel_info);
             end
         end
@@ -455,7 +436,6 @@ if ~options_.nograph && ~options_.no_graph.posterior
         [fout] = PosteriorIRF_core2(localVars,1,M_.exo_nbr,0);
     end
     % END parallel code!
-
 end
 
 fprintf('%s: Posterior IRFs, done!\n',dispString);

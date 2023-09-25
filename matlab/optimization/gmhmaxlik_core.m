@@ -73,9 +73,6 @@ function [PostMod,PostVar,Scale,PostMean] = gmhmaxlik_core(ObjFun,xparam1,mh_bou
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global bayestopt_ estim_params_ options_
-
-options_.lik_algo = 1;
 npar = length(xparam1);
 
 NumberOfIterations = options.number;

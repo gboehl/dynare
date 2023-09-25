@@ -59,8 +59,6 @@ end
 
 test_for_deep_parameters_calibration(M_);
 
-dr = oo_.dr;
-
 options_old = options_;
 if options_.linear
     options_.order = 1;
@@ -105,7 +103,7 @@ end
 
 check_model(M_);
 
-oo_.dr=set_state_space(dr,M_,options_);
+oo_.dr=set_state_space(oo_.dr,M_,options_);
 
 if PI_PCL_solver
     [oo_.dr, info] = PCL_resol(oo_.steady_state,0);
@@ -113,14 +111,14 @@ elseif options_.discretionary_policy
     if ~options_.order==1
         error('discretionary_policy: only linear-quadratic problems can be solved');
     end
-    [~,info,M_,oo_] = discretionary_policy_1(options_.instruments,M_,options_,oo_);
+    [oo_.dr,info,M_.params] = discretionary_policy_1(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 else
     if options_.logged_steady_state %if steady state was previously logged, undo this
         oo_.dr.ys=exp(oo_.dr.ys);
         oo_.steady_state=exp(oo_.steady_state);
         options_.logged_steady_state=0;
     end
-    [~,info,M_,oo_] = resol(0,M_,options_,oo_);
+    [oo_.dr,info,M_.params] = resol(0,M_,options_,oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 end
 
 if options_.loglinear && isfield(oo_.dr,'ys') && options_.logged_steady_state==0 %log steady state for correct display of decision rule
@@ -209,8 +207,7 @@ if options_.periods > 0 && ~PI_PCL_solver
             y0 = M_.endo_histval;
         end
     end
-    [ys, oo_] = simult(y0,oo_.dr,M_,options_,oo_);
-    oo_.endo_simul = ys;
+    [oo_.endo_simul, oo_.exo_simul] = simult(y0,oo_.dr,M_,options_);
     if ~options_.minimal_workspace
         dyn2vec(M_, oo_, options_);
     end

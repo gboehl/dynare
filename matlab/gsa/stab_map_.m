@@ -242,9 +242,9 @@ if fload==0
         %try stoch_simul([]);
         try
             if ~ isempty(options_.endogenous_prior_restrictions.moment)
-                [Tt,Rr,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_);
+                [Tt,Rr,SteadyState,info,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
             else
-                [Tt,Rr,SteadyState,info,M_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
+                [Tt,Rr,SteadyState,info,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state,'restrict');
             end
             infox(j,1)=info(1);
             if infox(j,1)==0 && ~exist('T','var')
@@ -395,7 +395,7 @@ else
         for j=1:ntrans
             M_.params(estim_params_.param_vals(:,1)) = lpmat(istable(j),:)';
             %stoch_simul([]);
-            [Tt,Rr,SteadyState,info,M_,options_,oo_] = dynare_resolve(M_,options_,oo_,'restrict');
+            [Tt,Rr,SteadyState,info,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state,'restrict');
             if ~exist('T','var')
                 T=zeros(size(dr_.ghx,1),size(dr_.ghx,2)+size(dr_.ghu,2),ntrans);
             end
@@ -570,7 +570,7 @@ if length(iunstable)>0 || length(iwrong)>0
         end
 
         M_ = set_all_parameters(x0,estim_params_,M_);
-        [oo_.dr,info,M_,oo_] = resol(0,M_,options_,oo_);
+        [oo_.dr,info,M_.params] = resol(0,M_,options_,oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     else
         disp('All parameter values in the specified ranges are not acceptable!')
         x0=[];

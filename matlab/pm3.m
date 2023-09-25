@@ -1,4 +1,4 @@
-function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryName,var_type,dispString)
+function oo_=pm3(M_,options_,oo_,n1,n2,ifil,B,tit1,tit2,tit_tex,names1,names2,name3,DirectoryName,var_type,dispString)
 
 % Computes, stores and plots the posterior moment statistics.
 %
@@ -8,8 +8,7 @@ function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryNa
 %  ifil         [scalar] number of moment files to load
 %  B            [scalar] number of subdraws
 %  tit1         [string] Figure title
-%  tit2         [string] not used
-%  tit3         [string] Save name for figure
+%  tit2         [string] Save name for figure
 %  tit_tex      [cell array] TeX-Names for Variables
 %  names1       [cell array] Names of all variables in the moment matrix from
 %                       which names2 is selected
@@ -20,6 +19,10 @@ function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryNa
 %  var_type     [string] suffix of the filename from which to load moment
 %                   matrix
 %  dispString   [string] string to be displayes in the command window
+%
+% OUTPUTS
+%  oo_          [structure]     storing the results
+
 
 % PARALLEL CONTEXT
 % See also the comment in posterior_sampler.m funtion.
@@ -41,8 +44,6 @@ function pm3(n1,n2,ifil,B,tit1,tit2,tit3,tit_tex,names1,names2,name3,DirectoryNa
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-global options_ M_ oo_
 
 nn = 3;
 MaxNumberOfPlotsPerFigure = nn^2; % must be square
@@ -284,9 +285,7 @@ if strcmp(var_type,'_trend_coeff') || max(max(abs(Mean(:,:))))<=10^(-6) || all(a
     fprintf(['%s: ' tit1 ', done!\n'],dispString);
     return %not do plots
 end
-%%
 %%      Finally I build the plots.
-%%
 
 if ~options_.nograph && ~options_.no_graph.posterior
     % Block of code executed in parallel, with the exception of file
@@ -296,8 +295,6 @@ if ~options_.nograph && ~options_.no_graph.posterior
     % %%%%%%%%%   PARALLEL BLOCK % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
     % %%% The file .TeX! are not saved in parallel.
-
-
 
     % Store the variable mandatory for local/remote parallel computing.
 
@@ -313,8 +310,14 @@ if ~options_.nograph && ~options_.no_graph.posterior
     end
     localVars.MaxNumberOfPlotsPerFigure=MaxNumberOfPlotsPerFigure;
     localVars.name3=name3;
-    localVars.tit3=tit3;
+    localVars.tit2=tit2;
     localVars.Mean=Mean;
+    localVars.TeX=options_.TeX;
+    localVars.nodisplay=options_.nodisplay;
+    localVars.graph_format=options_.graph_format;
+    localVars.dname=M_.dname;
+    localVars.fname=M_.fname;
+
     % Like sequential execution!
     nvar0=nvar;
 
@@ -332,16 +335,13 @@ if ~options_.nograph && ~options_.no_graph.posterior
             if isRemoteOctave
                 fout = pm3_core(localVars,1,nvar,0);
             else
-                globalVars = struct('M_',M_, ...
-                                    'options_', options_, ...
-                                    'oo_', oo_);
+                globalVars = [];
                 [fout, nvar0, totCPU] = masterParallel(options_.parallel, 1, nvar, [],'pm3_core', localVars,globalVars, options_.parallel_info);
             end
         end
     else
         % For the time being in Octave enviroment the pm3.m is executed only in
         % serial modality, to avoid problem with the plots.
-
         fout = pm3_core(localVars,1,nvar,0);
     end
 
@@ -365,8 +365,8 @@ if ~options_.nograph && ~options_.no_graph.posterior
                 if subplotnum == MaxNumberOfPlotsPerFigure || i == nvar
                     fprintf(fidTeX,'\\begin{figure}[H]\n');
                     fprintf(fidTeX,'\\centering \n');
-                    fprintf(fidTeX,['\\includegraphics[width=%2.2f\\textwidth]{%s/Output/%s_' name3 '_%s}\n'],options_.figures.textwidth*min(subplotnum/nn,1),M_.dname,M_.fname, tit3{i});
-                    fprintf(fidTeX,'\\label{Fig:%s:%s}\n',name3,tit3{i});
+                    fprintf(fidTeX,['\\includegraphics[width=%2.2f\\textwidth]{%s/Output/%s_' name3 '_%s}\n'],options_.figures.textwidth*min(subplotnum/nn,1),M_.dname,M_.fname, tit2{i});
+                    fprintf(fidTeX,'\\label{Fig:%s:%s}\n',name3,tit2{i});
                     fprintf(fidTeX,'\\caption{%s}\n',tit1);
                     fprintf(fidTeX,'\\end{figure}\n');
                     fprintf(fidTeX,' \n');

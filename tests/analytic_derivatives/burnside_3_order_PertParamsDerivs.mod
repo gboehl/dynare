@@ -115,7 +115,7 @@ identification(order=@{ORDER},nograph,no_identification_strength);
 %make sure everything is computed at prior mean
 xparam_prior = set_prior(estim_params_,M_,options_);
 M_ = set_all_parameters(xparam_prior,estim_params_,M_);
-[~,info,M_,oo_] = resol(0,M_, options_, oo_);
+[oo_.dr,info,M_.params] = resol(0,M_, options_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 
 indpmodel = estim_params_.param_vals(:,1);
 indpstderr = estim_params_.var_exo(:,1);

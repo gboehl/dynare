@@ -113,7 +113,7 @@ if occbin_.status
     if isempty(opts_regime.binding_indicator) && isempty(opts_regime.regime_history)
         opts_regime.binding_indicator=zeros(last+2,M_.occbin.constraint_nbr);
     end
-    [~, ~, ~, regimes_] = occbin.check_regimes([], [], [], opts_regime, M_, oo_, options_);
+    [~, ~, ~, regimes_] = occbin.check_regimes([], [], [], opts_regime, M_, options_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     if length(occbin_.info)>4
         TT=occbin_.info{5};
         RR=occbin_.info{6};

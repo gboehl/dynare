@@ -174,7 +174,7 @@ else
         opts_regime.binding_indicator=zeros(smpl+2,M_.occbin.constraint_nbr);
     end
     occbin_options.opts_regime = opts_regime;
-    [~, ~, ~, regimes_] = occbin.check_regimes([], [], [], opts_regime, M_, oo_, options_);
+    [~, ~, ~, regimes_] = occbin.check_regimes([], [], [], opts_regime, M_, options_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     if length(occbin_.info)>4
         if length(occbin_.info)==6 && options_.smoother_redux
             TT=repmat(T,1,1,smpl+1);
@@ -506,7 +506,7 @@ while notsteady && t<smpl
             opts_simul.init_regime = []; %regimes_(t);
             opts_simul.waitbar=0;
             options_.occbin.simul=opts_simul;
-            [~, out, ss] = occbin.solver(M_,oo_,options_);
+            [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
         end
         for jnk=1:nk
             if filter_covariance_flag

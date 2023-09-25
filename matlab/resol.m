@@ -1,18 +1,20 @@
-function [dr, info, M_, oo_] = resol(check_flag, M_, options_, oo_)
-%[dr, info, M_, oo_] = resol(check_flag, M_, options_, oo_)
+function [dr, info, params] = resol(check_flag, M_, options_, dr_in, endo_steady_state, exo_steady_state, exo_det_steady_state)
+%[dr, info, params] = resol(check_flag, M_, options_, dr_in, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % Computes the perturbation based decision rules of the DSGE model (orders 1 to 3)
 %
 % INPUTS
 % - check_flag    [integer]       scalar, equal to 0 if all the approximation is required, equal to 1 if only the eigenvalues are to be computed.
 % - M_            [structure]     Matlab's structure describing the model
 % - options_      [structure]     Matlab's structure describing the current options
-% - oo_           [structure]     Matlab's structure containing the results
+% - dr_in         [structure]     model information structure
+% - endo_steady_state       [vector]     steady state value for endogenous variables
+% - exo_steady_state        [vector]     steady state value for exogenous variables
+% - exo_det_steady_state    [vector]     steady state value for exogenous deterministic variables                                    
 %
 % OUTPUTS
 % - dr            [structure]     Reduced form model.
 % - info          [integer]       scalar or vector, error code.
-% - M_            [structure]     Matlab's structure describing the model
-% - oo_           [structure]     Matlab's structure containing the results
+% - params        [double]        vector of potentially updated parameters
 %
 % REMARKS
 % Possible values for the error codes are:
@@ -32,7 +34,7 @@ function [dr, info, M_, oo_] = resol(check_flag, M_, options_, oo_)
 %   info(1)=24    ->    M_.params has been updated in the steadystate routine and has some NaNs.
 %   info(1)=30    ->    Ergodic variance can't be computed.
 
-% Copyright © 2001-2023 Dynare Team
+% Copyright © 20012023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -49,35 +51,34 @@ function [dr, info, M_, oo_] = resol(check_flag, M_, options_, oo_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if isfield(oo_,'dr')
-    if isfield(oo_.dr,'kstate')
-        dr.kstate = oo_.dr.kstate;
-    end
-    if isfield(oo_.dr,'inv_order_var')
-        dr.inv_order_var = oo_.dr.inv_order_var;
-    end
-    if isfield(oo_.dr,'order_var')
-        dr.order_var = oo_.dr.order_var;
-    end
-    if isfield(oo_.dr,'restrict_var_list')
-        dr.restrict_var_list = oo_.dr.restrict_var_list;
-    end
-    if isfield(oo_.dr,'restrict_columns')
-        dr.restrict_columns = oo_.dr.restrict_columns;
-    end
-    if isfield(oo_.dr,'obs_var')
-        dr.obs_var = oo_.dr.obs_var;
-    end
+%preserve only the following fields:
+if isfield(dr_in,'kstate')
+    dr.kstate = dr_in.kstate;
+end
+if isfield(dr_in,'inv_order_var')
+    dr.inv_order_var = dr_in.inv_order_var;
+end
+if isfield(dr_in,'order_var')
+    dr.order_var = dr_in.order_var;
+end
+if isfield(dr_in,'restrict_var_list')
+    dr.restrict_var_list = dr_in.restrict_var_list;
+end
+if isfield(dr_in,'restrict_columns')
+    dr.restrict_columns = dr_in.restrict_columns;
+end
+if isfield(dr_in,'obs_var')
+    dr.obs_var = dr_in.obs_var;
 end
 
 if M_.exo_nbr == 0
-    oo_.exo_steady_state = [] ;
+    exo_steady_state = [] ;
 end
 
-[dr.ys,M_.params,info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
+[dr.ys,M_.params,info] = evaluate_steady_state(endo_steady_state,[exo_steady_state; exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
+params=M_.params;
 
 if info(1)
-    oo_.dr = dr;
     return
 end
 
@@ -111,5 +112,4 @@ if options_.loglinear
     end
 end
 
-[dr, info] = stochastic_solvers(dr, check_flag, M_, options_, oo_);
-oo_.dr = dr;
+[dr, info] = stochastic_solvers(dr, check_flag, M_, options_, exo_steady_state, exo_det_steady_state);
