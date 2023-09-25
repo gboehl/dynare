@@ -1,5 +1,4 @@
 # TODO:
-# - Install files in right location
 # - alias_target for MEX files; use it in {windows,macOS}/build.sh
 # - find a way to set GSL_BLAS_LIB to an empty value when querying pkg-config
 #   for gsl; otherwise there is a risk of overriding OpenBLAS/MKL (though
@@ -34,13 +33,37 @@ c_compiler = meson.get_compiler('c')
 
 subdir('preprocessor/src')
 
-### Generated M-file
+# Compatibility symlink
+# NB: the following my be improved if this wishlist item is done:
+#  https://github.com/mesonbuild/meson/issues/11519
+install_symlink('dynare_m' + (host_machine.system() == 'windows' ? '.exe' : ''),
+                install_dir : 'lib/dynare/matlab/preprocessor64',
+                pointing_to : '../../../../bin/dynare-preprocessor'
+                              + (host_machine.system() == 'windows' ? '.exe' : ''))
+
+### M files
+
+install_subdir('matlab', install_dir : 'lib/dynare',
+               exclude_files : [ 'utilities/tests/.git' ,
+                                 'utilities/tests/.gitignore',
+                                 'modules/reporting/.git',
+                                 'modules/reporting/.gitignore',
+                                 'modules/reporting/.gitlab-ci.yml',
+                                 'modules/dseries/.git',
+                                 'modules/dseries/.gitignore',
+                                 'modules/dseries/src/modules/matlab-fame-io/.git',
+                                 'modules/dseries/src/modules/matlab-fame-io/.gitignore',
+                                 'modules/dseries/src/modules/matlab-fame-io/doc/.gitignore',
+                                 'modules/dseries/src/modules/matlab-fame-io/tests/FameDatabases/.gitignore',
+                                 'modules/dseries/.gitmodules',
+                                 'modules/dseries/.gitlab-ci.yml' ])
 
 sed_exe = find_program('sed')
 custom_target(output : 'dynare_version.m', input : 'matlab/dynare_version.m.in',
               command : [ sed_exe, 's/@PACKAGE_VERSION@/' + meson.project_version() + '/', '@INPUT@' ],
               capture : true,
-              build_by_default : true) # FIXME: This option can be removed when “install” is set to true
+              install : true,
+              install_dir : 'lib/dynare/matlab')
 
 ### MEX files
 
@@ -126,7 +149,9 @@ if get_option('build_for') == 'matlab'
                  'fortran_args' : matlab_defs + [ '-fexceptions' ] + get_variable('arch_fortran_args', []),
                  'c_args' : matlab_defs + [ '-fexceptions' ],
                  'link_args' : [ export_link_arg, '-L' + (matlab_path / 'bin' / matlab_arch), '-lmx', '-lmex', '-lmat' ],
-                 'link_depends' : export_file }
+                 'link_depends' : export_file,
+                 'install' : true,
+                 'install_dir' : 'lib/dynare/mex/matlab' }
 
   # For unit tests
   exe_rpath = matlab_path / 'bin' / matlab_arch
@@ -177,7 +202,9 @@ else # Octave build
                  'cpp_args' : octave_incflags + octave_defs,
                  'fortran_args' : octave_incflags + octave_defs,
                  'c_args' : octave_incflags + octave_defs,
-                 'link_args' : octave_link_args}
+                 'link_args' : octave_link_args,
+                 'install' : true,
+                 'install_dir' : 'lib/dynare/mex/octave' }
 
   # The -L argument is useful when cross-compiling.
   blas_dep = declare_dependency(link_args : [ '-L' + (octlibdir / '../..') ] + run_command(mkoctfile_exe, '-p', 'BLAS_LIBS', check : true).stdout().split())
@@ -246,7 +273,7 @@ if get_option('prefer_static')
 endif
 
 # For use when creating intermediate static libraries to be incorporated in MEX files
-static_library_kwargs = mex_kwargs + { 'name_prefix' : [], 'name_suffix' : [], 'link_args' : [], 'pic' : true }
+static_library_kwargs = mex_kwargs + { 'name_prefix' : [], 'name_suffix' : [], 'link_args' : [], 'pic' : true, 'install' : false }
 
 mex_blas_fortran_iface = [ 'mex/sources/matlab_mex.F08', 'mex/sources/blas_lapack.F08' ]
 pthread_fortran_iface = [ 'mex/sources/pthread.F08' ]
