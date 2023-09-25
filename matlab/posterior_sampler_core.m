@@ -126,15 +126,15 @@ for curr_block = fblck:nblck
         %
         % Set the random number generator type (the seed is useless but needed by the function)
         if ~isoctave
-            set_dynare_seed(options_.DynareRandomStreams.algo, options_.DynareRandomStreams.seed);
+            options_=set_dynare_seed_local_options(options_,options_.DynareRandomStreams.algo, options_.DynareRandomStreams.seed);
         else
-            set_dynare_seed(options_.DynareRandomStreams.seed+curr_block);
+            options_=set_dynare_seed_local_options(options_,options_.DynareRandomStreams.seed+curr_block);
         end
         % Set the state of the RNG
         set_dynare_random_generator_state(record.InitialSeeds(curr_block).Unifor, record.InitialSeeds(curr_block).Normal);
     catch
         % If the state set by master is incompatible with the slave, we only reseed
-        set_dynare_seed(options_.DynareRandomStreams.seed+curr_block);
+        options_=set_dynare_seed_local_options(options_,options_.DynareRandomStreams.seed+curr_block);
     end
     mh_recover_flag=0;
     if (options_.load_mh_file~=0) && (fline(curr_block)>1) && OpenOldFile(curr_block) %load previous draws and likelihood

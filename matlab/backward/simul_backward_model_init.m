@@ -155,7 +155,7 @@ if nargin<6 || isempty(innovations)
     covariance_matrix_upper_cholesky = chol(covariance_matrix);
     % Set seed to its default state.
     if DynareOptions.bnlms.set_dynare_seed_to_default
-        set_dynare_seed('default');
+        DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
     end
     % Simulate structural innovations.
     switch DynareOptions.bnlms.innovation_distribution
