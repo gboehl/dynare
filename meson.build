@@ -1740,41 +1740,22 @@ mod_and_m_tests = [
   { 'test' : [ 'riccatiupdate.m' ] },
   { 'test' : [ 'contribs.m' ],
     'extra' : [ 'sandbox.mod',
-                'simulateddata.m' ] }
+                'simulateddata.m' ] },
+  { 'test' : [ 'run_block_bytecode_tests.m' ],
+    'extra' : [ 'block_bytecode/run_ls2003.m',
+                'block_bytecode/ls2003.mod' ] },
+  { 'test' : [ 'run_reporting_tests.m' ],
+    'extra' : [ 'reporting/AnnualTable.m',
+                'reporting/CommResidTablePage.m',
+                'reporting/CountryGraphPage.m',
+                'reporting/CountryTablePage.m',
+                'reporting/db_a.csv',
+                'reporting/db_q.csv',
+                'reporting/dc_a.csv',
+                'reporting/dc_q.csv',
+                'reporting/ResidTablePage.m',
+                'reporting/runDynareReport.m' ] }
 ]
-
-if get_option('build_for') == 'matlab'
-  mod_and_m_tests += [ { 'test' : [ 'run_block_byte_tests_matlab.m' ],
-                         'extra' : [ 'block_bytecode/run_ls2003.m',
-                                     'block_bytecode/ls2003.mod' ] },
-                       { 'test' : [ 'run_reporting_test_matlab.m' ],
-                         'extra' : [ 'reporting/AnnualTable.m',
-                                     'reporting/CommResidTablePage.m',
-                                     'reporting/CountryGraphPage.m',
-                                     'reporting/CountryTablePage.m',
-                                     'reporting/db_a.csv',
-                                     'reporting/db_q.csv',
-                                     'reporting/dc_a.csv',
-                                     'reporting/dc_q.csv',
-                                     'reporting/ResidTablePage.m',
-                                     'reporting/runDynareReport.m' ] } ]
-else
-  mod_and_m_tests += [ { 'test' : [ 'run_block_byte_tests_octave.m' ],
-                         'extra' : [ 'block_bytecode/run_ls2003.m',
-                                     'block_bytecode/ls2003.mod' ] },
-                       { 'test' : [ 'run_reporting_test_octave.m' ],
-                         'extra' : [ 'reporting/AnnualTable.m',
-                                     'reporting/CommResidTablePage.m',
-                                     'reporting/CountryGraphPage.m',
-                                     'reporting/CountryTablePage.m',
-                                     'reporting/db_a.csv',
-                                     'reporting/db_q.csv',
-                                     'reporting/dc_a.csv',
-                                     'reporting/dc_q.csv',
-                                     'reporting/ResidTablePage.m',
-                                     'reporting/runDynareReport.m' ] } ]
-endif
-
 
 base_test_driver_args = [ get_option('build_for') ]
 if get_option('build_for') == 'matlab'

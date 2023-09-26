@@ -17,12 +17,16 @@
 
 source_dir = getenv('source_root');
 addpath([source_dir filesep 'matlab']);
+if isoctave
+    addpath([source_dir filesep 'tests' filesep 'utils']);
+    load_octave_packages
+end
 
 % To add default directories, empty dseries objects
 dynare_config;
 
 disp('');
-disp(['***  TESTING: run_reporting_test_matlab.m ***']);
+disp(['***  TESTING: run_reporting_tests.m ***']);
 try
     cd reporting
     db_a = dseries('db_a.csv');

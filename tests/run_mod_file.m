@@ -32,12 +32,8 @@ try
     dynare(getenv('mod_file'), 'console')
     testFailed = false;
 catch exception
-    if isoctave
-        printMakeCheckOctaveErrMsg(getenv('mod_file'), exception);
-    else
-        printMakeCheckMatlabErrMsg(getenv('mod_file'), exception);
-    end
-  testFailed = true;
+    printTestError(getenv('mod_file'), exception);
+    testFailed = true;
 end
 
 
