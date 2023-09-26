@@ -248,8 +248,29 @@ contains
          gn = b
          r_plu = r
          call dgesv(n, 1_blint, r_plu, n, ipiv, gn, n, info)
-         ! TODO: use same trick as NLSolve.jl in case of singularity
-         if (info /= 0) error stop "LAPACK dgesv error"
+         ! If r is singular, then compute a minimum-norm solution to the least squares problem
+         if (info /= 0) then
+            block
+              real(real64), dimension(size(x)) :: s
+              integer(blint) :: rank
+              real(real64), dimension(:), allocatable :: work
+              integer(blint), dimension(:), allocatable :: iwork
+              integer(blint) :: lwork, liwork
+              r_plu = r
+              gn = b
+              ! Query workspace sizes
+              allocate(work(1), iwork(1))
+              lwork = -1_blint
+              call dgelsd(n, n, 1_blint, r_plu, n, gn, n, s, -1._real64, rank, work, lwork, iwork, info)
+              ! Do the actual computation
+              lwork = int(work(1), blint)
+              liwork = iwork(1)
+              deallocate(work, iwork)
+              allocate(work(lwork), iwork(liwork))
+              call dgelsd(n, n, 1_blint, r_plu, n, gn, n, s, -1._real64, rank, work, lwork, iwork, info)
+              if (info /= 0) error stop "Failed to compute the Gauss-Newton direction"
+            end block
+         end if
        end block
     end if
 

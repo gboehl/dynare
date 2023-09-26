@@ -55,6 +55,17 @@ module lapack
   implicit none
 
   interface
+     subroutine dgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, rank, work, lwork, iwork, info)
+       import :: blint, real64
+       implicit none
+       integer(blint), intent(in) :: m, n, nrhs, lda, ldb, lwork
+       real(real64), dimension(*), intent(inout) :: a, b
+       real(real64), dimension(*), intent(out) :: s, work
+       real(real64), intent(in) :: rcond
+       integer(blint), dimension(*), intent(out) :: iwork
+       integer(blint), intent(out) :: rank, info
+     end subroutine dgelsd
+
      subroutine dgesv(n, nrhs, a, lda, ipiv, b, ldb, info)
        import :: blint, real64
        integer(blint), intent(in) :: n, nrhs, lda, ldb
