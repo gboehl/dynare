@@ -130,10 +130,11 @@ cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"
 cd "$ROOTDIR"/macOS/pkg
 
 # Dynare option
-pkgbuild --root "$PKGFILES" --identifier org.dynare --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
+pkgbuild --root "$PKGFILES" --identifier org.dynare."$VERSION" --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
 
 # Create distribution.xml by replacing variables in distribution_template.xml
 sed -e "s/VERSION_NO_SPACE/$VERSION/g" \
+    -e "s/LOCATION/$LOCATION/g" \
     "$ROOTDIR"/macOS/distribution_template.xml > distribution.xml
 
 # Create welcome.html by replacing variables in welcome_template.html
@@ -147,13 +148,13 @@ sed -e "s/GCC_VERSION/$GCC_VERSION/g" \
     "$ROOTDIR"/macOS/conclusion_template.html > "$ROOTDIR"/macOS/conclusion.html
 
 # Create installer
-productbuild --distribution distribution.xml --resources "$ROOTDIR"/macOS --package-path ./"$NAME".pkg "$NAME"-new.pkg
+productbuild --distribution distribution.xml --resources "$ROOTDIR"/macOS --package-path ./"$NAME".pkg "$NAME"-productbuild.pkg
 
-# cleanup
+# Cleanup
 rm -f ./distribution.xml
 rm -rf "$PKGFILES"
 rm -f "$ROOTDIR"/macOS/welcome.html
 rm -f "$ROOTDIR"/macOS/conclusion.html
 
 # Final pkg
-mv "$NAME"-new.pkg "$NAME".pkg
+mv "$NAME"-productbuild.pkg "$NAME".pkg
