@@ -1,5 +1,5 @@
-function [fval, info, exit_flag, df, junkHessian, oo_, M_] = objective_function(xparam, Bounds, oo_, estim_params_, M_, options_mom_, bayestopt_)
-% [fval, info, exit_flag, df, junk1, oo_, M_] = objective_function(xparam, Bounds, oo_, estim_params_, M_, options_mom_, bayestopt_)
+function [fval, info, exit_flag, df, junkHessian, oo_, M_] = objective_function(xparam, Bounds, oo_, estim_params_, M_, options_mom_)
+% [fval, info, exit_flag, df, junk1, oo_, M_] = objective_function(xparam, Bounds, oo_, estim_params_, M_, options_mom_)
 % -------------------------------------------------------------------------
 % This function evaluates the objective function for method of moments estimation
 % =========================================================================
@@ -10,7 +10,6 @@ function [fval, info, exit_flag, df, junkHessian, oo_, M_] = objective_function(
 %  o estim_params_:  [structure] describing the estimated_parameters
 %  o M_              [structure] describing the model
 %  o options_mom_:   [structure] information about all settings (specified by the user, preprocessor, and taken from global options_)
-%  o bayestopt_:     [structure] information about the prior
 % -------------------------------------------------------------------------
 % OUTPUTS
 %  o fval:         [double] value of the quadratic form of the moment difference (except for lsqnonlin, where this is done implicitly)
