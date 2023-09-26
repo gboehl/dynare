@@ -180,8 +180,15 @@ Dynare now ships a compilation environment that can be used with the
 :opt:`use_dll` option. To install this environment correctly, the Dynare
 installer ensures that the Xcode Command Line Tools (an Apple product) have
 been installed on a system folder. To install the Xcode Command Line Tools
-yourself, simply type ``xcode-select --install`` into the Terminal
+yourself, simply type ``xcode-select --install`` into the terminal
 (``/Applications/Utilities/Terminal.app``) prompt.
+Additionally, to make MATLAB aware that you agree to the terms of Xcode, run the following two commands in the Terminal prompt::
+
+  CLT_VERSION=$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep versions | awk '{print $2}' | cut -d'.' -f1-2)
+  defaults write com.apple.dt.Xcode IDEXcodeVersionForAgreedToGMLicense "${CLT_VERSION}"
+  defaults read com.apple.dt.Xcode IDEXcodeVersionForAgreedToGMLicense
+
+Otherwise you will see a warning that Xcode is installed, but its license has not been accepted.
 
 We recommend making use of optimized compilation flags when using :opt:`use_dll` and for this you need to install gcc via Homebrew_::
   brew install gcc
