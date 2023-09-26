@@ -194,7 +194,7 @@ if options_.occbin.likelihood.status
     occbin_options = set_occbin_options(options_, M_);
     if occbin_options.opts_simul.restrict_state_space
         [T,R,SteadyState,info,oo_.dr, M_.params,TTx,RRx,CCx, T0, R0] = ...
-            occbin.dynare_resolve(M_,options_,oo_,[],'restrict');
+            occbin.dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state,[],'restrict');
     else
         is_restrict_state_space = false;
         oldoo.restrict_var_list = oo_.dr.restrict_var_list;
@@ -204,7 +204,7 @@ if options_.occbin.likelihood.status
     
         % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
         [T,R,SteadyState,info,M_,oo_.dr, M_.params,TTx,RRx,CCx, T0, R0] = ...
-            occbin.dynare_resolve(M_,options_,oo_);
+            occbin.dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 
         oo_.dr.restrict_var_list = oldoo.restrict_var_list;
         oo_.dr.restrict_columns = oldoo.restrict_columns;

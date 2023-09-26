@@ -104,7 +104,7 @@ if ~options_.occbin.filter.use_relaxation
     [a, a1, P, P1, v, Fi, Ki, alphahat, etahat] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
 else
     [~,~,~,~,~,~, TTx, RRx, CCx] ...
-        = occbin.dynare_resolve(M_,options_,oo_, base_regime,myrestrict,T0,R0);
+        = occbin.dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state, base_regime,myrestrict,T0,R0);
     TT(:,:,2) = TTx(:,:,end);
     RR(:,:,2) = RRx(:,:,end);
     CC(:,2) = CCx(:,end);
@@ -183,7 +183,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
             % % %             regimestart = regimes_(1).regimestart(end-1)+round(0.5*(newstart+oldstart))-1;
             regimes_(1).regimestart(end)=regimestart;
             [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                = occbin.dynare_resolve(M_,options_,oo_, [base_regime regimes_(1)],myrestrict,T0,R0);
+                = occbin.dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state, [base_regime regimes_(1)],myrestrict,T0,R0);
             TT(:,:,2) = TTx(:,:,end);
             RR(:,:,2) = RRx(:,:,end);
             CC(:,2) = CCx(:,end);
@@ -252,7 +252,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                         regimes_(1).regimestart=[1 2];
                     end
                     [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                        = occbin.dynare_resolve(M_,options_,oo_, [base_regime regimes_(1)],myrestrict,T0,R0);
+                        = occbin.dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state, [base_regime regimes_(1)],myrestrict,T0,R0);
                     TT(:,:,2) = TTx(:,:,end);
                     RR(:,:,2) = RRx(:,:,end);
                     CC(:,2) = CCx(:,end);
@@ -301,7 +301,7 @@ if error_flag==0 && niter>options_.occbin.likelihood.max_number_of_iterations &&
         regimes_(1).regimestart(end)=k;
         
         [~,~,~,~,~,~, TTx, RRx, CCx] ...
-            = occbin.dynare_resolve(M_,options_,oo_, [base_regime regimes_(1)],myrestrict,T0,R0);
+            = occbin.dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state, [base_regime regimes_(1)],myrestrict,T0,R0);
         TT(:,:,2) = TTx(:,:,end);
         RR(:,:,2) = RRx(:,:,end);
         CC(:,2) = CCx(:,end);

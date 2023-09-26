@@ -115,7 +115,7 @@ else
         [T,R,SteadyState,info,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state,'restrict');
     else
         [T,R,SteadyState,info,oo_.dr, M_.params,~,~,~, T0, R0] = ...
-            occbin.dynare_resolve(M_,options_,oo_,[],'restrict');
+            occbin.dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state,[],'restrict');
         varargin{length_varargin+1}=T0;
         varargin{length_varargin+2}=R0;
     end

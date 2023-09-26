@@ -1,14 +1,17 @@
 function [A,B,ys,info,dr,params,TT, RR, CC, A0, B0] ...
-    = dynare_resolve(M_,options_,oo_,regime_history, reduced_state_space, A, B)
-% function [A,B,ys,info,M_,options_,oo_,TT, RR, CC, A0, B0] ...
-%     = dynare_resolve(M_,options_,oo_,regime_history, reduced_state_space, A, B)
+    = dynare_resolve(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,regime_history, reduced_state_space, A, B)
+% [A,B,ys,info,M_,options_,oo_,TT, RR, CC, A0, B0] ...
+%     = dynare_resolve(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,regime_history, reduced_state_space, A, B)
 % Computes the linear approximation and the matrices A and B of the
 % transition equation. Mirrors dynare_resolve
 %
 % Inputs:
 % - M_                  [structure]     Matlab's structure describing the model
 % - options_            [structure]     Matlab's structure containing the options
-% - oo_                 [structure]     Matlab's structure containing the results
+% - dr                  [structure]     Reduced form model.
+% - endo_steady_state   [vector]        steady state value for endogenous variables
+% - exo_steady_state    [vector]        steady state value for exogenous variables
+% - exo_det_steady_state [vector]       steady state value for exogenous deterministic variables
 % - reduced_state_space [string]
 % - A                   [double]        State transition matrix
 % - B                   [double]        shock impact matrix
@@ -26,7 +29,7 @@ function [A,B,ys,info,dr,params,TT, RR, CC, A0, B0] ...
 % - A0                  [double]        State transition matrix (unrestricted state space)
 % - B0                  [double]        shock impact matrix (unrestricted state space)
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,19 +46,18 @@ function [A,B,ys,info,dr,params,TT, RR, CC, A0, B0] ...
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if nargin<6
-    [A,B,ys,info,dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+if nargin<9
+    [A,B,ys,info,dr,M_.params] = dynare_resolve(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
 else
-    ys = oo_.dr.ys;
-    dr = oo_.dr;
+    ys = dr.ys;
     info = 0;
 end
 params=M_.params;
-if  ~info(1) && nargin>4 && ~isempty(regime_history)
+if  ~info(1) && nargin>7 && ~isempty(regime_history)
     opts_regime.regime_history=regime_history;
     opts_regime.binding_indicator=[];
     [TT, RR, CC] = ...
-        occbin.check_regimes(A, B, [], opts_regime, M_, options_, dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+        occbin.check_regimes(A, B, [], opts_regime, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
 else
     TT=A;
     RR=B;
@@ -64,7 +66,7 @@ end
 
 A0=A;
 B0=B;
-if  ~info(1) && nargin>4 && ischar(reduced_state_space) && ~isempty(reduced_state_space)
+if  ~info(1) && nargin>7 && ischar(reduced_state_space) && ~isempty(reduced_state_space)
     iv = dr.restrict_var_list;
     A=A(iv,iv);
     B=B(iv,:);

@@ -104,7 +104,7 @@ if ~options_.occbin.filter.use_relaxation
     [a, a1, P, P1, v, alphahat, etahat, lik, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood);
 else
     [~,~,~,~,~,~, TTx, RRx, CCx] ...
-        = occbin.dynare_resolve(M_,options_,oo_, base_regime,'reduced_state_space',T0,R0);
+        = occbin.dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, base_regime,'reduced_state_space',T0,R0);
     regimes0(1)=base_regime;
     TT(:,:,2) = TTx(:,:,end);
     RR(:,:,2) = RRx(:,:,end);
@@ -188,7 +188,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
             end
             regimes_(1).regimestart(end)=regimestart;
             [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                = occbin.dynare_resolve(M_,options_,oo_, [base_regime regimes_(1)],'reduced_state_space', T0, R0);
+                = occbin.dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, [base_regime regimes_(1)],'reduced_state_space', T0, R0);
             TT(:,:,2) = TTx(:,:,end);
             RR(:,:,2) = RRx(:,:,end);
             CC(:,2) = CCx(:,end);
@@ -254,7 +254,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                         regimes_(1).regimestart=[1 2];
                     end
                     [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                        = occbin.dynare_resolve(M_,options_,oo_, [base_regime regimes_(1)],'reduced_state_space',T0,R0);
+                        = occbin.dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, [base_regime regimes_(1)],'reduced_state_space',T0,R0);
                     TT(:,:,2) = TTx(:,:,end);
                     RR(:,:,2) = RRx(:,:,end);
                     CC(:,2) = CCx(:,end);
@@ -307,7 +307,7 @@ if ~error_flag && niter>options_.occbin.likelihood.max_number_of_iterations && ~
             regimes_(1).regimestart(end)=k;
             
             [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                = occbin.dynare_resolve(M_,options_,oo_, [base_regime regimes_(1)],'reduced_state_space',T0,R0);
+                = occbin.dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, [base_regime regimes_(1)],'reduced_state_space',T0,R0);
             TT(:,:,2) = TTx(:,:,end);
             RR(:,:,2) = RRx(:,:,end);
             CC(:,2) = CCx(:,end);
