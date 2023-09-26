@@ -64,7 +64,7 @@ if [[ $build_for == matlab ]]; then
         if [[ $matlab_arch == win64 ]]; then
             matlab_batch_flags=(-nosplash -automation -wait -sd "$source_root"/tests -r)
         else
-            matlab_batch_flags=(-nodisplay -nodisplay -r)
+            matlab_batch_flags=(-nosplash -nodisplay -r)
         fi
     fi
 fi
