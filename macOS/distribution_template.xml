@@ -12,7 +12,7 @@
   <choices-outline>
     <line choice="default" />
   </choices-outline>
-  <choice id="default" title="Dynare" description="Dynare Required Files" start_enabled="false" enabled="false" customLocation="/Applications/Dynare/dynare-LOCATION">
+  <choice id="default" title="Dynare" description="Dynare Required Files" start_enabled="false" enabled="false" customLocation="/Applications/Dynare/LOCATION">
     <pkg-ref id="org.dynare.VERSION_NO_SPACE" />
   </choice>  
   <pkg-ref id="org.dynare.VERSION_NO_SPACE" version="VERSION_NO_SPACE">dynare-VERSION_NO_SPACE.pkg</pkg-ref>

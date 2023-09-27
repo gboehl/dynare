@@ -18,6 +18,7 @@
 # along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 set -ex
+#exec > >(tee build-logfile.log) 2>&1 # uncomment for debugging
 
 ROOTDIR=$(pwd)/..
 ##
@@ -37,9 +38,9 @@ else
     path_remove PATH /opt/homebrew/bin
     MATLAB_ARCH=maci64
     # On x86_64 we need to differentiate between older and newer MATLAB versions
-    MATLAB_PATH_OLD=/Applications/MATLAB_R2016b.app
+    OLD_MATLAB_PATH=/Applications/MATLAB_R2016b.app
 fi
-MATLAB_PATH_NEW=/Applications/"$PKG_ARCH"/MATLAB_R2023b.app
+MATLAB_PATH=/Applications/"$PKG_ARCH"/MATLAB_R2023b.app
 
 # Append texbin to PATH to access latexmk and friends
 path_prepend PATH /Library/TeX/texbin
@@ -71,12 +72,12 @@ common_meson_opts=(-Dbuild_for=matlab -Dbuildtype=release -Dprefer_static=true -
                    --native-file scripts/homebrew-native-$PKG_ARCH.ini)
 
 # Build for MATLAB ⩾ R2018a (x86_64) and MATLAB ⩾ R2023b (arm64)
-arch -$PKG_ARCH meson setup "${common_meson_opts[@]}" -Dmatlab_path="$MATLAB_PATH_NEW" build-matlab --wipe
+arch -"$PKG_ARCH" meson setup "${common_meson_opts[@]}" -Dmatlab_path="$MATLAB_PATH" build-matlab --wipe
 arch -$PKG_ARCH meson compile -v -C build-matlab
 
 if [[ $PKG_ARCH == x86_64 ]]; then
     # Build for MATLAB < R2018a
-    arch -$PKG_ARCH meson setup "${common_meson_opts[@]}" -Dmatlab_path="$MATLAB_PATH_OLD" build-old-matlab --wipe
+    arch -"$PKG_ARCH" meson setup "${common_meson_opts[@]}" -Dmatlab_path="$OLD_MATLAB_PATH" build-old-matlab --wipe
     arch -$PKG_ARCH meson compile -v -C build-old-matlab
 fi
 
