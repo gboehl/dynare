@@ -6,7 +6,7 @@
   <welcome file="welcome.html" mime-type="text/html" />
   <conclusion file="conclusion.html" mime-type="text/html" />
   <license file="gpl-3.0-standalone.html" mime-type="text/html" />
-  <domains enable_anywhere="true" enable_currentUserHome="true"/>
+  <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="false"/> <!-- on enable_currentUserHome="true" does not require admin rights! enable_localSystem="true" or enable_anywhere="true" requires admin rights by default, even though this can be changed in the installer though under Change Installation. -->
   <pkg-ref id="default" />
   <options customize="allow" require-scripts="false" hostArchitectures="x86_64,arm64" />
   <choices-outline>
