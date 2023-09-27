@@ -10,6 +10,13 @@
       .bold-text {
         font-weight: bold;
       }
+      code {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
     </style>
   </head>
 
@@ -21,8 +28,15 @@
     </header>
 
     <main>
-      <p>If you need to change the path of the installation, click <strong>Customize</strong> after agreeing to the license and on the folder below <strong>Location</strong>.</p>
-      <p>Please read the <strong>Postinstallation Recommendations</strong> at the end of the installation process on how to (optionally) install Xcode Command Line Tools and gcc-GCC_VERSION via Homebrew.</p>
+      <p>If you wish to modify the installation path, click <strong>Customize</strong> after accepting the license. Then, under <strong>Location</strong>, select your desired folder.</p>
+      <p>Upon completing the installation, please review the <strong>Recommendations</strong> section for guidance on the optional installation of Xcode Command Line Tools and GCC via Homebrew.</p>
+      <p class="bold-text">Troubleshooting installing in /Applications/Dynare</p>
+      <p>In versions prior to 5.5, the macOS pkg installer required administrative rights to install Dynare, this is no longer the case. However, if you aim to install Dynare in /Applications/Dynare, you will need to modify the ownership of this folder. To do this, execute the following command in Terminal.app:</p>
+      <code>
+      sudo chown -R $USER:staff /Applications/Dynare
+      </code>
+      <p>Alternatively, install Dynare in a different folder or simply delete (or move) /Applications/Dynare before installing Dynare.</p>
     </main>
+
   </body>
 </html>

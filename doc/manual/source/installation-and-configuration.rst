@@ -195,7 +195,12 @@ We recommend making use of optimized compilation flags when using :opt:`use_dll`
 
 If you already have installed GCC, Dynare will automatically prefer it for :opt:`use_dll` if the binaries are in /usr/local/bin.
 Otherwise, it will fall back to Clang in /usr/bin/clang.
-    
+
+In versions prior to 5.5, the macOS pkg installer required administrative rights to install Dynare, this is no longer the case.
+However, if you aim to install Dynare in ``/Applications/Dynare``, you will need to modify the ownership of this folder.
+To do this, execute the following command::
+  sudo chown -R $USER:staff /Applications/Dynare
+
 With Octave
 ^^^^^^^^^^^
 
