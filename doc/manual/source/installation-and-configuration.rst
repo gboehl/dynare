@@ -184,7 +184,7 @@ yourself, simply type ``xcode-select --install`` into the terminal
 (``/Applications/Utilities/Terminal.app``) prompt.
 Additionally, to make MATLAB aware that you agree to the terms of Xcode, run the following two commands in the Terminal prompt::
 
-  CLT_VERSION=$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep versions | awk '{print $2}' | cut -d'.' -f1-2)
+  CLT_VERSION=$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version | awk '{print $2}' | cut -d'.' -f1-2)
   defaults write com.apple.dt.Xcode IDEXcodeVersionForAgreedToGMLicense "${CLT_VERSION}"
   defaults read com.apple.dt.Xcode IDEXcodeVersionForAgreedToGMLicense
 
