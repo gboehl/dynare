@@ -176,18 +176,31 @@ else # Octave build
 
   octave_incflags = run_command(mkoctfile_exe, '-p', 'INCFLAGS', check : true).stdout().split()
   octlibdir = run_command(mkoctfile_exe, '-p', 'OCTLIBDIR', check : true).stdout().strip()
+  octave_libs = run_command(mkoctfile_exe, '-p', 'OCTAVE_LIBS', check : true).stdout().split()
+
+  octave_link_args = []
+
+  # Under Linux, ensure that MEX files use the symbols defined within them,
+  # preferably to symbols exported by Octave or by other MEX.
+  # This matters for the two MS-SBVAR MEX: they both define a main() symbol, and
+  # without the following linker option, the first of these two MEX that is loaded
+  # will override the main() symbol of the other one.
+  # With MATLAB, the same effect is achieved by restricting the exported symbols.
+  # This is not needed under Windows and macOS, which apparently have the correct
+  # behaviour by default.
+  # See also https://savannah.gnu.org/bugs/?55363 which is related
+  if host_machine.system() == 'linux'
+    octave_link_args += '-Wl,-Bsymbolic'
+  endif
 
   # Determine whether to link MEX files against the Octave libraries. mkoctfile
   # no longer does this by default but in practice it is needed for Windows and
   # macOS.
-  octave_libs = run_command(mkoctfile_exe, '-p', 'OCTAVE_LIBS', check : true).stdout().split()
   if host_machine.system() == 'windows' or host_machine.system() == 'darwin'
     # Under Windows, --enable-link-all-dependencies is hardcoded in src/mkoctfile.cc.in.
     # Under macOS, the Homebrew formula passes --enable-link-all-dependencies
     # to the configure script.
-    octave_link_args = [ '-L' + octlibdir ] + octave_libs
-  else
-    octave_link_args = []
+    octave_link_args += [ '-L' + octlibdir ] + octave_libs
   endif
 
   # For unit tests
