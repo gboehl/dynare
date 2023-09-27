@@ -24,10 +24,10 @@ ROOTDIR=$(pwd)/..
 ##
 ## Set settings based on architecture
 ##
-path_remove ()  { export $1="`echo -n ${!1} | awk -v RS=: -v ORS=: '$1 != "'$2'"' | sed 's/:$//'`"; }
-path_prepend () { path_remove $1 $2; export $1="$2:${!1}"; }
-PKG_ARCH=$1
-if [[ $PKG_ARCH == arm64 ]]; then
+path_remove ()  { export "$1"="$(echo -n "${!1}" | awk -v RS=: -v ORS=: '$1 != "'"$2"'"' | sed 's/:$//')"; }
+path_prepend () { path_remove "$1" "$2"; export "$1"="$2:${!1}"; }
+PKG_ARCH=${1:-x86_64} # default to x86_64
+if [[ "$PKG_ARCH" == arm64 ]]; then
     BREWDIR=/opt/homebrew
     # Make sure /opt/homebrew/bin is set first in PATH (as it might come last)
     path_prepend PATH /opt/homebrew/bin
@@ -59,7 +59,7 @@ LIB64="$ROOTDIR"/macOS/deps/"$PKG_ARCH"/lib64
 GCC_VERSION=$(sed -En "/^c[[:space:]]*=/s/c[[:space:]]*=[[:space:]]*'.*gcc-([0-9]+)'/\1/p" "$ROOTDIR"/scripts/homebrew-native-"$PKG_ARCH".ini)
 
 QUADMATH_DIR=$(mktemp -d)
-ln -s $BREWDIR/opt/gcc/lib/gcc/$GCC_VERSION/libquadmath.a $QUADMATH_DIR
+ln -s "$BREWDIR"/opt/gcc/lib/gcc/"$GCC_VERSION"/libquadmath.a "$QUADMATH_DIR"
 
 ##
 ## Compile Dynare
@@ -73,17 +73,17 @@ common_meson_opts=(-Dbuild_for=matlab -Dbuildtype=release -Dprefer_static=true -
 
 # Build for MATLAB ⩾ R2018a (x86_64) and MATLAB ⩾ R2023b (arm64)
 arch -"$PKG_ARCH" meson setup "${common_meson_opts[@]}" -Dmatlab_path="$MATLAB_PATH" build-matlab --wipe
-arch -$PKG_ARCH meson compile -v -C build-matlab
+arch -"$PKG_ARCH" meson compile -v -C build-matlab
 
-if [[ $PKG_ARCH == x86_64 ]]; then
+if [[ "$PKG_ARCH" == x86_64 ]]; then
     # Build for MATLAB < R2018a
     arch -"$PKG_ARCH" meson setup "${common_meson_opts[@]}" -Dmatlab_path="$OLD_MATLAB_PATH" build-old-matlab --wipe
-    arch -$PKG_ARCH meson compile -v -C build-old-matlab
+    arch -"$PKG_ARCH" meson compile -v -C build-old-matlab
 fi
 
 # If not in CI, build the docs
 if [[ -z $CI ]]; then
-    arch -$PKG_ARCH meson compile -v -C build-matlab doc
+    arch -"$PKG_ARCH" meson compile -v -C build-matlab doc
     ln -s build-matlab build-doc
 fi
 
@@ -124,7 +124,7 @@ mkdir -p \
       "$PKGFILES"/doc \
       "$PKGFILES"/scripts \
       "$PKGFILES"/contrib/ms-sbvar/TZcode
-if [[ $PKG_ARCH == x86_64 ]]; then
+if [[ "$PKG_ARCH" == x86_64 ]]; then
     mkdir -p "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-8.3-9.3 \
              "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-9.4-23.2
 else
@@ -146,7 +146,7 @@ cp -p  "$ROOTDIR"/build-matlab/preprocessor/src/dynare-preprocessor  "$PKGFILES"
 mkdir -p                                                             "$PKGFILES"/matlab/preprocessor64
 ln -sf ../../preprocessor/dynare-preprocessor                        "$PKGFILES"/matlab/preprocessor64/dynare_m
 
-if [[ $PKG_ARCH == x86_64 ]]; then
+if [[ "$PKG_ARCH" == x86_64 ]]; then
     cp -L  "$ROOTDIR"/build-matlab/*.mex"$MATLAB_ARCH"               "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-9.4-23.2
     cp -L  "$ROOTDIR"/build-old-matlab/*.mex"$MATLAB_ARCH"           "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-8.3-9.3
 else
@@ -162,13 +162,13 @@ cp     "$ROOTDIR"/build-doc/preprocessor/doc/*.pdf                   "$PKGFILES"
 cp -r  "$ROOTDIR"/build-doc/dynare-manual.html                       "$PKGFILES"/doc
 
 mkdir -p                                                             "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
-cp -p  "$ROOTDIR"/macOS/deps/$PKG_ARCH/lib64/x13as/x13as             "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
+cp -p  "$ROOTDIR"/macOS/deps/"$PKG_ARCH"/lib64/x13as/x13as           "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
 
 
 cd "$ROOTDIR"/macOS/pkg
 
 # Dynare option
-arch -$PKG_ARCH pkgbuild --root "$PKGFILES" --identifier org.dynare."$VERSION" --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
+arch -"$PKG_ARCH" pkgbuild --root "$PKGFILES" --identifier org.dynare."$VERSION" --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
 
 # Create distribution.xml by replacing variables in distribution_template.xml
 sed -e "s/VERSION_NO_SPACE/$VERSION/g" \
@@ -178,7 +178,6 @@ sed -e "s/VERSION_NO_SPACE/$VERSION/g" \
 # Create welcome.html by replacing variables in welcome_template.html
 sed -e "s/VERSION_NO_SPACE/$VERSION/g" \
     -e "s/DATE/$DATELONG/g" \
-    -e "s/GCC_VERSION/$GCC_VERSION/g" \
     "$ROOTDIR"/macOS/welcome_template.html > "$ROOTDIR"/macOS/welcome.html
 
 # Create conclusion.html by replacing variables in conclusion_template.html
@@ -186,7 +185,7 @@ sed -e "s/GCC_VERSION/$GCC_VERSION/g" \
     "$ROOTDIR"/macOS/conclusion_template.html > "$ROOTDIR"/macOS/conclusion.html
 
 # Create installer
-arch -$PKG_ARCH productbuild --distribution distribution.xml --resources "$ROOTDIR"/macOS --package-path ./"$NAME".pkg "$NAME"-productbuild.pkg
+arch -"$PKG_ARCH" productbuild --distribution distribution.xml --resources "$ROOTDIR"/macOS --package-path ./"$NAME".pkg "$NAME"-productbuild.pkg
 
 # Cleanup
 rm -f ./distribution.xml
