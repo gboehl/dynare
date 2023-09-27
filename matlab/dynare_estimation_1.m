@@ -93,7 +93,7 @@ if options_.order > 1
     end
 end
 
-%% set objective function 
+%% set objective function
 if ~options_.dsge_var
     if options_.particle.status
         objective_function = str2func('non_linear_dsge_likelihood');
@@ -169,12 +169,12 @@ catch % if check fails, provide info on using calibration if present
     rethrow(e);
 end
 
-%% Run smoother if no estimation or mode-finding are requested 
+%% Run smoother if no estimation or mode-finding are requested
 if isequal(options_.mode_compute,0) && isempty(options_.mode_file) && ~options_.mh_posterior_mode_estimation
     if options_.order==1 && ~options_.particle.status
         if options_.smoother
             if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
-                [~, info, ~, ~, ~, ~, ~, ~, ~, ~, oo_, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
+                [~, info, ~, ~, ~, ~, ~, ~, ~, ~, oo_.dr, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
                 if ismember(info(1),[303,304,306])
                     fprintf('\nIVF: smoother did not succeed. No results will be written to oo_.\n')
                 else
@@ -224,71 +224,71 @@ if ~isequal(options_.mode_compute,0) && ~options_.mh_posterior_mode_estimation
     for optim_iter = 1:length(optimizer_vec)
         current_optimizer = optimizer_vec{optim_iter};
 
-        [xparam1, fval, ~, hh, options_, Scale, new_rat_hess_info] = dynare_minimize_objective(objective_function,xparam1,current_optimizer,options_,[bounds.lb bounds.ub],bayestopt_.name,bayestopt_,hh,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
-    fprintf('\nFinal value of minus the log posterior (or likelihood):%f \n', fval);
+        [xparam1, fval, ~, hh, options_, Scale, new_rat_hess_info] = dynare_minimize_objective(objective_function,xparam1,current_optimizer,options_,[bounds.lb bounds.ub],bayestopt_.name,bayestopt_,hh,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+        fprintf('\nFinal value of minus the log posterior (or likelihood):%f \n', fval);
 
         if isnumeric(current_optimizer)
             if current_optimizer==5
-        newratflag = new_rat_hess_info.newratflag;
-        new_rat_hess_info = new_rat_hess_info.new_rat_hess_info;
+                newratflag = new_rat_hess_info.newratflag;
+                new_rat_hess_info = new_rat_hess_info.new_rat_hess_info;
             elseif current_optimizer==6 %save scaling factor
-        save([M_.dname filesep 'Output' filesep M_.fname '_optimal_mh_scale_parameter.mat'],'Scale');
-        options_.mh_jscale = Scale;
-        bayestopt_.jscale(:) = options_.mh_jscale;
-    end
-        end
-        if ~isnumeric(current_optimizer) || ~isequal(current_optimizer,6) %always already computes covariance matrix
-        if options_.cova_compute == 1 %user did not request covariance not to be computed
-            if options_.analytic_derivation && strcmp(func2str(objective_function),'dsge_likelihood')
-                ana_deriv_old = options_.analytic_derivation;
-                options_.analytic_derivation = 2;
-                [~,~,~,~,hh] = feval(objective_function,xparam1, ...
-                                     dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
-                options_.analytic_derivation = ana_deriv_old;
-                elseif ~isnumeric(current_optimizer) || ~(isequal(current_optimizer,5) && newratflag~=1 && strcmp(func2str(objective_function),'dsge_likelihood'))
-                % enter here if i) not mode_compute_5, ii) if mode_compute_5 and newratflag==1; 
-                % with flag==0 or 2 and dsge_likelihood, we force to use
-                % the hessian from outer product gradient of optimizer 5 below
-                if options_.hessian.use_penalized_objective
-                    penalized_objective_function = str2func('penalty_objective_function');
-                    hh = hessian(penalized_objective_function, xparam1, options_.gstep, objective_function, fval, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_);
-                else
-                    hh = hessian(objective_function, xparam1, options_.gstep, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_);
-                end
-                hh = reshape(hh, nx, nx);
-                elseif isnumeric(current_optimizer) && isequal(current_optimizer,5)
-                % other numerical hessian options available with optimizer
-                % 5 and dsge_likelihood
-                %
-                % if newratflag == 0
-                % compute outer product gradient of optimizer 5
-                %
-                % if newratflag == 2
-                % compute 'mixed' outer product gradient of optimizer 5
-                % with diagonal elements computed with numerical second order derivatives
-                %
-                % uses univariate filters, so to get max # of available
-                % densities for outer product gradient
-                kalman_algo0 = options_.kalman_algo;
-                compute_hessian = 1;
-                if ~((options_.kalman_algo == 2) || (options_.kalman_algo == 4))
-                    options_.kalman_algo=2;
-                    if options_.lik_init == 3
-                        options_.kalman_algo=4;
-                    end
-                elseif newratflag==0 % hh already contains outer product gradient with univariate filter
-                    compute_hessian = 0;
-                end
-                if compute_hessian
-                    crit = options_.newrat.tolerance.f;
-                    newratflag = newratflag>0;
-                    hh = reshape(mr_hessian(xparam1,objective_function,fval,newratflag,crit,new_rat_hess_info,[bounds.lb bounds.ub],bayestopt_.p2,0,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_), nx, nx);
-                end
-                options_.kalman_algo = kalman_algo0;
+                save([M_.dname filesep 'Output' filesep M_.fname '_optimal_mh_scale_parameter.mat'],'Scale');
+                options_.mh_jscale = Scale;
+                bayestopt_.jscale(:) = options_.mh_jscale;
             end
         end
-    end
-    parameter_names = bayestopt_.name;
+        if ~isnumeric(current_optimizer) || ~isequal(current_optimizer,6) %always already computes covariance matrix
+            if options_.cova_compute == 1 %user did not request covariance not to be computed
+                if options_.analytic_derivation && strcmp(func2str(objective_function),'dsge_likelihood')
+                    ana_deriv_old = options_.analytic_derivation;
+                    options_.analytic_derivation = 2;
+                    [~,~,~,~,hh] = feval(objective_function,xparam1, ...
+                        dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+                    options_.analytic_derivation = ana_deriv_old;
+                elseif ~isnumeric(current_optimizer) || ~(isequal(current_optimizer,5) && newratflag~=1 && strcmp(func2str(objective_function),'dsge_likelihood'))
+                    % enter here if i) not mode_compute_5, ii) if mode_compute_5 and newratflag==1;
+                    % with flag==0 or 2 and dsge_likelihood, we force to use
+                    % the hessian from outer product gradient of optimizer 5 below
+                    if options_.hessian.use_penalized_objective
+                        penalized_objective_function = str2func('penalty_objective_function');
+                        hh = hessian(penalized_objective_function, xparam1, options_.gstep, objective_function, fval, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+                    else
+                        hh = hessian(objective_function, xparam1, options_.gstep, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+                    end
+                    hh = reshape(hh, nx, nx);
+                elseif isnumeric(current_optimizer) && isequal(current_optimizer,5)
+                    % other numerical hessian options available with optimizer
+                    % 5 and dsge_likelihood
+                    %
+                    % if newratflag == 0
+                    % compute outer product gradient of optimizer 5
+                    %
+                    % if newratflag == 2
+                    % compute 'mixed' outer product gradient of optimizer 5
+                    % with diagonal elements computed with numerical second order derivatives
+                    %
+                    % uses univariate filters, so to get max # of available
+                    % densities for outer product gradient
+                    kalman_algo0 = options_.kalman_algo;
+                    compute_hessian = 1;
+                    if ~((options_.kalman_algo == 2) || (options_.kalman_algo == 4))
+                        options_.kalman_algo=2;
+                        if options_.lik_init == 3
+                            options_.kalman_algo=4;
+                        end
+                    elseif newratflag==0 % hh already contains outer product gradient with univariate filter
+                        compute_hessian = 0;
+                    end
+                    if compute_hessian
+                        crit = options_.newrat.tolerance.f;
+                        newratflag = newratflag>0;
+                        hh = reshape(mr_hessian(xparam1,objective_function,fval,newratflag,crit,new_rat_hess_info,[bounds.lb bounds.ub],bayestopt_.p2,0,dataset_, dataset_info, options_,M_,estim_params_,bayestopt_,bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state), nx, nx);
+                    end
+                    options_.kalman_algo = kalman_algo0;
+                end
+            end
+        end
+        parameter_names = bayestopt_.name;
     end
     if options_.cova_compute || current_optimizer==5 || current_optimizer==6
         save([M_.dname filesep 'Output' filesep M_.fname '_mode.mat'],'xparam1','hh','parameter_names','fval');
@@ -306,7 +306,7 @@ if options_.mode_check.status && ~options_.mh_posterior_mode_estimation
     ana_deriv_old = options_.analytic_derivation;
     options_.analytic_derivation = 0;
     mode_check(objective_function,xparam1,hh,options_,M_,estim_params_,bayestopt_,bounds,false,...
-               dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_);
+        dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     options_.analytic_derivation = ana_deriv_old;
 end
 
@@ -344,12 +344,12 @@ end
 
 if options_.particle.status && isfield(options_.particle,'posterior_sampler')
     if strcmpi(options_.particle.posterior_sampler,'Herbst_Schorfheide')
-        Herbst_Schorfheide_sampler(objective_function,xparam1,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
+        Herbst_Schorfheide_sampler(objective_function,xparam1,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state)
     elseif strcmpi(options_.particle.posterior_sampler,'DSMH')
-        DSMH_sampler(objective_function,xparam1,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_)
+        DSMH_sampler(objective_function,xparam1,bounds,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state)
     end
 end
-        
+
 if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     % display results table and store parameter estimates and standard errors in results
     oo_ = display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, prior_dist_names, 'Posterior', 'posterior');
@@ -358,7 +358,7 @@ if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
         estim_params_nbr = size(xparam1,1);
         if ispd(invhess)
             log_det_invhess = log(det(invhess./(stdh*stdh')))+2*sum(log(stdh));
-            likelihood = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+            likelihood = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
             oo_.MarginalDensity.LaplaceApproximation = .5*estim_params_nbr*log(2*pi) + .5*log_det_invhess - likelihood;
         else
             oo_.MarginalDensity.LaplaceApproximation = NaN;
@@ -369,7 +369,7 @@ if any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     end
     if options_.dsge_var
         [~,~,~,~,~,~,~,oo_.dsge_var.posterior_mode.PHI_tilde,oo_.dsge_var.posterior_mode.SIGMA_u_tilde,oo_.dsge_var.posterior_mode.iXX,oo_.dsge_var.posterior_mode.prior] =...
-            feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+            feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     end
 
 elseif ~any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
@@ -391,7 +391,7 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
     if options_.mh_tune_jscale.status
         if strcmp(options_.posterior_sampler_options.posterior_sampling_method, 'random_walk_metropolis_hastings')
             options_.mh_jscale = tune_mcmc_mh_jscale_wrapper(invhess, options_, M_, objective_function, xparam1, bounds,...
-                                                             dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_);
+                dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
             bayestopt_.jscale(:) = options_.mh_jscale;
             fprintf('mh_jscale has been set equal to %s\n', num2str(options_.mh_jscale));
         else
@@ -449,9 +449,9 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
         elseif options_.load_mh_file && options_.load_results_after_load_mh
             %% load fields from previous MCMC run stored in results-file
             field_names={'posterior_mode','posterior_std_at_mode',...% fields set by marginal_density
-                         'posterior_mean','posterior_hpdinf','posterior_hpdsup','posterior_median','posterior_variance','posterior_std','posterior_deciles','posterior_density',...% fields set by GetPosteriorParametersStatistics
-                         'prior_density',...%fields set by PlotPosteriorDistributions
-                        };
+                'posterior_mean','posterior_hpdinf','posterior_hpdsup','posterior_median','posterior_variance','posterior_std','posterior_deciles','posterior_density',...% fields set by GetPosteriorParametersStatistics
+                'prior_density',...%fields set by PlotPosteriorDistributions
+                };
             for field_iter=1:size(field_names,2)
                 if isfield(oo_load_mh.oo_,field_names{1,field_iter})
                     oo_.(field_names{1,field_iter})=oo_load_mh.oo_.(field_names{1,field_iter});
@@ -479,23 +479,23 @@ if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
                     error('%s: I cannot compute the posterior moments for the endogenous variables!',dispString)
                 end
                 if options_.load_mh_file && options_.mh_replic==0 %user wants to recompute results
-                   [MetropolisFolder, info] = CheckPath('metropolis',M_.dname);
-                   if ~info
-                       generic_post_data_file_name={'Posterior2ndOrderMoments','decomposition','PosteriorVarianceDecomposition','correlation','PosteriorCorrelations','conditional decomposition','PosteriorConditionalVarianceDecomposition'};
-                       for ii=1:length(generic_post_data_file_name)
-                           delete_stale_file([MetropolisFolder filesep M_.fname '_' generic_post_data_file_name{1,ii} '*']);
-                       end
-                       % restore compatibility for loading pre-4.6.2 runs where estim_params_ was not saved; see 6e06acc7 and !1944
-                       NumberOfDrawsFiles = length(dir([M_.dname '/metropolis/' M_.fname '_posterior_draws*' ]));
-                       if NumberOfDrawsFiles>0
-                           temp=load([M_.dname '/metropolis/' M_.fname '_posterior_draws1']);
-                           if ~isfield(temp,'estim_params_')
-                               for file_iter=1:NumberOfDrawsFiles
-                                   save([M_.dname '/metropolis/' M_.fname '_posterior_draws' num2str(file_iter)],'estim_params_','-append') 
-                               end
-                           end
-                       end
-                   end
+                    [MetropolisFolder, info] = CheckPath('metropolis',M_.dname);
+                    if ~info
+                        generic_post_data_file_name={'Posterior2ndOrderMoments','decomposition','PosteriorVarianceDecomposition','correlation','PosteriorCorrelations','conditional decomposition','PosteriorConditionalVarianceDecomposition'};
+                        for ii=1:length(generic_post_data_file_name)
+                            delete_stale_file([MetropolisFolder filesep M_.fname '_' generic_post_data_file_name{1,ii} '*']);
+                        end
+                        % restore compatibility for loading pre-4.6.2 runs where estim_params_ was not saved; see 6e06acc7 and !1944
+                        NumberOfDrawsFiles = length(dir([M_.dname '/metropolis/' M_.fname '_posterior_draws*' ]));
+                        if NumberOfDrawsFiles>0
+                            temp=load([M_.dname '/metropolis/' M_.fname '_posterior_draws1']);
+                            if ~isfield(temp,'estim_params_')
+                                for file_iter=1:NumberOfDrawsFiles
+                                    save([M_.dname '/metropolis/' M_.fname '_posterior_draws' num2str(file_iter)],'estim_params_','-append')
+                                end
+                            end
+                        end
+                    end
                 end
                 oo_ = compute_moments_varendo('posterior',options_,M_,oo_,estim_params_,var_list_);
             end
@@ -527,7 +527,7 @@ end
 
 %Run and store classical smoother if needed
 if (~((any(bayestopt_.pshape > 0) && options_.mh_replic) || (any(bayestopt_.pshape> 0) && options_.load_mh_file)) ...
-    || ~options_.smoother ) && ~options_.partial_information  % to be fixed
+        || ~options_.smoother ) && ~options_.partial_information  % to be fixed
     %% ML estimation, or posterior mode without Metropolis-Hastings or Metropolis without Bayesian smoothed variables
     oo_=save_display_classical_smoother_results(xparam1,M_,oo_,options_,bayestopt_,dataset_,dataset_info,estim_params_);
 end

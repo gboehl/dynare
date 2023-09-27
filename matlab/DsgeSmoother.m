@@ -1,4 +1,5 @@
 function [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,decomp,trend_addition,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0,d] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,varargin)
+% [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T,R,P,PK,decomp,trend_addition,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0,d] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,varargin)
 % Estimation of the smoothed variables and innovations.
 %
 % INPUTS
@@ -123,7 +124,7 @@ else
 end
 if options_.occbin.smoother.status
     occbin_info.status = true;
-    occbin_info.info= [{options_,oo_,M_} varargin];
+    occbin_info.info= [{options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state,M_} varargin];
 else
     occbin_info.status = false;    
 end

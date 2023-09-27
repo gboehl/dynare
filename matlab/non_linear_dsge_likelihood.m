@@ -1,4 +1,4 @@
-function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,oo_] = non_linear_dsge_likelihood(xparam1,DynareDataset,DatasetInfo,options_,M_,EstimatedParameters,bayestopt_,BoundsInfo,oo_)
+function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,dr] = non_linear_dsge_likelihood(xparam1,DynareDataset,DatasetInfo,options_,M_,EstimatedParameters,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 
 % Evaluates the posterior kernel of a dsge model using a non linear filter.
 %
@@ -11,7 +11,10 @@ function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,oo
 % - EstimatedParameters     [struct]              Matlab's structure describing the estimated_parameters
 % - bayestopt_              [struct]              Matlab's structure describing the priors
 % - BoundsInfo              [struct]              Matlab's structure specifying the bounds on the paramater values
-% - oo_                     [struct]              Matlab's structure gathering the results
+% - dr                      [structure]           Reduced form model.
+% - endo_steady_state       [vector]              steady state value for endogenous variables
+% - exo_steady_state        [vector]              steady state value for exogenous variables
+% - exo_det_steady_state    [vector]              steady state value for exogenous deterministic variables
 %
 % OUTPUTS
 % - fval                    [double]              scalar, value of the likelihood or posterior kernel.
@@ -24,7 +27,7 @@ function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,oo
 % - M_                      [struct]              Updated M_ structure described in INPUTS section.
 % - options_                [struct]              Updated options_ structure described in INPUTS section.
 % - bayestopt_               [struct]              See INPUTS section.
-% - oo_                     [struct]              Updated oo_ structure described in INPUTS section.
+% - dr                      [struct]              decision rule structure described in INPUTS section.
 
 % Copyright © 2010-2023 Dynare Team
 %
@@ -80,7 +83,7 @@ end
 %------------------------------------------------------------------------------
 
 % Linearize the model around the deterministic steadystate and extract the matrices of the state equation (T and R).
-[dr, info, M_.params] = resol(0, M_, options_, oo_.dr , oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+[dr, info, M_.params] = resol(0, M_, options_, dr , endo_steady_state, exo_steady_state, exo_det_steady_state);
 
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 || ...
@@ -163,7 +166,7 @@ switch options_.particle.initialization
     options_.periods = 5000;
     old_DynareOptionspruning =  options_.pruning;
     options_.pruning = options_.particle.pruning;
-    y_ = simult(oo_.steady_state, dr,M_,options_);
+    y_ = simult(endo_steady_state, dr,M_,options_);
     y_ = y_(dr.order_var(state_variables_idx),2001:5000); %state_variables_idx is in dr-order while simult_ is in declaration order
     if any(any(isnan(y_))) ||  any(any(isinf(y_))) && ~ options_.pruning
         fval = Inf;

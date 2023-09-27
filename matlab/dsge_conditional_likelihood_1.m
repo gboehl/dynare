@@ -1,5 +1,7 @@
-function [fval, info, exitflag, DLIK, Hess, SteadyState, trend_coeff, Model, DynareOptions, BayesInfo, DynareResults] = ...
-    dsge_conditional_likelihood_1(xparam1, DynareDataset, DatasetInfo, DynareOptions, Model, EstimatedParameters, BayesInfo, BoundsInfo, DynareResults, derivatives_info)
+function [fval, info, exitflag, DLIK, Hess, SteadyState, trend_coeff, Model, DynareOptions, BayesInfo, dr] = ...
+    dsge_conditional_likelihood_1(xparam1, DynareDataset, DatasetInfo, DynareOptions, Model, EstimatedParameters, BayesInfo, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, derivatives_info)
+% [fval, info, exitflag, DLIK, Hess, SteadyState, trend_coeff, Model, DynareOptions, BayesInfo, dr] = ...
+%    dsge_conditional_likelihood_1(xparam1, DynareDataset, DatasetInfo, DynareOptions, Model, EstimatedParameters, BayesInfo, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, derivatives_info)
 
 % Copyright (C) 2017-2023 Dynare Team
 %
@@ -62,8 +64,8 @@ end
 %------------------------------------------------------------------------------
 
 % Linearize the model around the deterministic steadystate and extract the matrices of the state equation (T and R).
-[T, R, SteadyState, info,DynareResults.dr, Model.params] = ...
-    dynare_resolve(Model, DynareOptions, DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state, 'restrict');
+[T, R, SteadyState, info,dr, Model.params] = ...
+    dynare_resolve(Model, DynareOptions, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, 'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
@@ -86,7 +88,7 @@ if info(1)
 end
 
 % check endogenous prior restrictions
-info = endogenous_prior_restrictions(T, R, Model, DynareOptions, DynareResults);
+info = endogenous_prior_restrictions(T, R, Model, DynareOptions, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
 if info(1)
     fval = Inf;
     info(4)=info(2);
@@ -187,7 +189,7 @@ else
 end
 
 if DynareOptions.prior_restrictions.status
-    tmp = feval(DynareOptions.prior_restrictions.routine, Model, DynareResults, DynareOptions, DynareDataset, DatasetInfo);
+    tmp = feval(DynareOptions.prior_restrictions.routine, Model, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, DynareOptions, DynareDataset, DatasetInfo);
     fval = fval - tmp;
 end
 

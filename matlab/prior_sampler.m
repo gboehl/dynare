@@ -98,7 +98,7 @@ while iteration < NumberOfSimulations
     M_ = set_all_parameters(params, estim_params_, M_);
     [T, R, ~, INFO, oo_.dr,M_.params] = dynare_resolve(M_, options_, oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state, 'restrict');
     if ~INFO(1)
-        INFO=endogenous_prior_restrictions(T,R,M_,options_,oo_);
+        INFO=endogenous_prior_restrictions(T,R,M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     end
     file_line_number = file_line_number + 1;
     iteration = iteration + 1;

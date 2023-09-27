@@ -202,7 +202,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
                 end
                 if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
                     ix2(j,new_estimated_parameters) = candidate(new_estimated_parameters);
-                    ilogpo2(j) = - feval(TargetFun,ix2(j,:)',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
+                    ilogpo2(j) = - feval(TargetFun,ix2(j,:)',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
                     if ~isfinite(ilogpo2(j)) % if returned log-density is
                                              % Inf or Nan (penalized value)
                         validate = 0;
@@ -256,7 +256,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
         candidate = transpose(xparam1(:));%
         if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
             ix2 = candidate;
-            ilogpo2 = - feval(TargetFun,ix2',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
+            ilogpo2 = - feval(TargetFun,ix2',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
             fprintf('%s: Initialization at the posterior mode.\n\n',dispString);            
             fprintf(fidlog,['    Blck ' int2str(1) 'params:\n']);
             for i=1:length(ix2(1,:))

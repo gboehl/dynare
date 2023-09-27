@@ -1,4 +1,5 @@
 function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviation_form,initial_date]=evaluate_smoother(parameters,var_list,M_,oo_,options_,bayestopt_,estim_params_)
+% [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviation_form,initial_date]=evaluate_smoother(parameters,var_list,M_,oo_,options_,bayestopt_,estim_params_)
 % Evaluate the smoother at parameters.
 %
 % INPUTS
@@ -38,7 +39,7 @@ function [oo_,M_,options_,bayestopt_,Smoothed_variables_declaration_order_deviat
 % [1] This function use persistent variables for the dataset and the description of the missing observations. Consequently, if this function
 %     is called more than once (by changing the value of parameters) the sample *must not* change.
 
-% Copyright © 2010-2020 Dynare Team
+% Copyright © 2010-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -105,7 +106,7 @@ end
 
 if options_.occbin.smoother.status
     if options_.occbin.smoother.inversion_filter
-        [~, info, ~, ~, ~, ~, ~, ~, ~, ~, oo_, atT, innov] = occbin.IVF_posterior(parameters,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
+        [~, info, ~, ~, ~, ~, ~, ~, ~, ~, oo_.dr, atT, innov] = occbin.IVF_posterior(parameters,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
         if ismember(info(1),[303,304,306])
             oo_.occbin.smoother.error_flag=1;
         else

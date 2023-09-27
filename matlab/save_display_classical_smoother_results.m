@@ -36,7 +36,7 @@ gend= dataset_.nobs;
 n_varobs = length(options_.varobs);
 
 if options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter
-    [~, info, ~, ~, ~, ~, ~, ~, ~, ~, oo_, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_);
+    [~, info, ~, ~, ~, ~, ~, ~, ~, ~, oo_.dr, atT, innov] = occbin.IVF_posterior(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,prior_bounds(bayestopt_,options_.prior_trunc),oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     if ismember(info(1),[303,304,306])
         fprintf('\nIVF: smoother did not succeed. No results will be written to oo_.\n')
     else

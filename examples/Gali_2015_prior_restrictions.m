@@ -1,12 +1,12 @@
-function log_prior_val=Gali_2015_prior_restrictions(M_, oo_, options_, dataset_, dataset_info);
-% function prior_val=Gali_2015_prior_restrictions(M_, oo_, options_, dataset_, dataset_info);
+function log_prior_val=Gali_2015_prior_restrictions(M_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, options_, dataset_, dataset_info);
+% function prior_val=Gali_2015_prior_restrictions(M_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, options_, dataset_, dataset_info);
 % Example of a _prior_restrictions-file automatically called during
 % estimation
 % It imposes a prior of the slope of the New Keynesian Phillips Curve of
 % 0.03. As the slope is a composite of other parameters with independent
 % priors, a separate function is required to do this.
 
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %

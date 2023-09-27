@@ -1,18 +1,23 @@
-function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOptions,BayesInfo,DynareResults, atT, innov] = IVF_posterior(xparam1,...
-    dataset_,obs_info,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
-% function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOptions,BayesInfo,DynareResults, atT, innov] = IVF_posterior(xparam1,...
-%     dataset_,obs_info,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
+function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOptions,BayesInfo,dr, atT, innov] = IVF_posterior(xparam1,...
+    dataset_,dataset_info,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+% [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOptions,BayesInfo,dr, atT, innov] = IVF_posterior(xparam1,...
+%     dataset_,dataset_info,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % Computes Likelihood with inversion filter
 %
 % INPUTS
 % - xparam1             [double]        current values for the estimated parameters.
 % - dataset_            [structure]     dataset after transformations
+% - dataset_info        [structure]     storing informations about the
+%                                       sample; not used but required for interface
 % - DynareOptions       [structure]     Matlab's structure describing the current options (options_).
 % - Model               [structure]     Matlab's structure describing the model (M_).
 % - EstimatedParameters [structure]     characterizing parameters to be estimated
 % - BayesInfo           [structure]     describing the priors
 % - BoundsInfo          [structure]     containing prior bounds
-% - DynareResults       [structure]     Matlab's structure containing the results (oo_).
+% - dr                  [structure]     Reduced form model.
+% - endo_steady_state   [vector]        steady state value for endogenous variables
+% - exo_steady_state    [vector]        steady state value for exogenous variables
+% - exo_det_steady_state [vector]       steady state value for exogenous deterministic variables
 %
 % OUTPUTS
 % - fval                    [double]        scalar, value of the likelihood or posterior kernel.
@@ -25,7 +30,7 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOpti
 % - Model                   [struct]        Updated Model structure described in INPUTS section.
 % - DynareOptions           [struct]        Updated DynareOptions structure described in INPUTS section.
 % - BayesInfo               [struct]        See INPUTS section.
-% - DynareResults           [struct]        Updated DynareResults structure described in INPUTS section.
+% - dr                      [structure]     Reduced form model.
 % - atT                     [double]        (m*T) matrix, smoothed endogenous variables (a_{t|T})  (decision-rule order)
 % - innov                   [double]        (r*T) matrix, smoothed structural shocks (r>n is the umber of shocks).
 
@@ -76,7 +81,7 @@ err_index=DynareOptions.occbin.likelihood.IVF_shock_observable_mapping; % err_in
 COVMAT1 = Model.Sigma_e(err_index,err_index);
 
 % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
-[T,R,SteadyState,info,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state,'restrict');
+[T,R,SteadyState,info,dr, Model.params] = dynare_resolve(Model,DynareOptions,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
@@ -102,15 +107,15 @@ end
 sample_length = size(obs,1);
 filtered_errs_init = zeros(sample_length,sum(err_index));
 
-[filtered_errs, resids, Emat, stateval, info] = occbin.IVF_core(Model,DynareResults,DynareOptions,err_index,filtered_errs_init,obs_list,obs);
+[filtered_errs, resids, Emat, stateval, info] = occbin.IVF_core(Model,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,DynareOptions,err_index,filtered_errs_init,obs_list,obs);
 if info(1)
     fval = Inf;
     exit_flag = 0;
-    atT=NaN(size(stateval(:,DynareResults.dr.order_var)'));
+    atT=NaN(size(stateval(:,dr.order_var)'));
     innov=NaN(Model.exo_nbr,sample_length);
     return
 else
-    atT = stateval(:,DynareResults.dr.order_var)';
+    atT = stateval(:,dr.order_var)';
     innov = zeros(Model.exo_nbr,sample_length);
     innov(diag(Model.Sigma_e)~=0,:)=filtered_errs';
 end

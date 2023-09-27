@@ -1,11 +1,11 @@
-function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,M_,options_,bayestopt_,oo_] = dsge_likelihood(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,oo_,derivatives_info)
+function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,M_,options_,bayestopt_,dr] = dsge_likelihood(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,derivatives_info)
 % [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,M_,options_,bayestopt_,oo_] = dsge_likelihood(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,oo_,derivatives_info)
 % Evaluates the posterior kernel of a DSGE model using the specified
 % kalman_algo; the resulting posterior includes the 2*pi constant of the
 % likelihood function
 
 %@info:
-%! @deftypefn {Function File} {[@var{fval},@var{exit_flag},@var{ys},@var{trend_coeff},@var{info},@var{M_},@var{options_},@var{bayestopt_},@var{oo_},@var{DLIK},@var{AHess}] =} dsge_likelihood (@var{xparam1},@var{dataset_},@var{options_},@var{M_},@var{estim_params_},@var{bayestopt_},@var{oo_},@var{derivatives_flag})
+%! @deftypefn {Function File} {[@var{fval},@var{exit_flag},@var{ys},@var{trend_coeff},@var{info},@var{M_},@var{options_},@var{bayestopt_},@var{dr},@var{DLIK},@var{AHess}] =} dsge_likelihood (@var{xparam1},@var{dataset_},@var{options_},@var{M_},@var{estim_params_},@var{bayestopt_},@var{oo_},@var{derivatives_flag})
 %! @anchor{dsge_likelihood}
 %! @sp 1
 %! Evaluates the posterior kernel of a dsge model.
@@ -191,30 +191,30 @@ end
 %------------------------------------------------------------------------------
 is_restrict_state_space = true;
 if options_.occbin.likelihood.status
-    occbin_options = set_occbin_options(options_, M_);
+    occbin_options = set_occbin_options(options_);
     if occbin_options.opts_simul.restrict_state_space
-        [T,R,SteadyState,info,oo_.dr, M_.params,TTx,RRx,CCx, T0, R0] = ...
-            occbin.dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state,[],'restrict');
+        [T,R,SteadyState,info,dr, M_.params,TTx,RRx,CCx, T0, R0] = ...
+            occbin.dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,[],'restrict');
     else
         is_restrict_state_space = false;
-        oldoo.restrict_var_list = oo_.dr.restrict_var_list;
-        oldoo.restrict_columns = oo_.dr.restrict_columns;
-        oo_.dr.restrict_var_list = bayestopt_.smoother_var_list;
-        oo_.dr.restrict_columns = bayestopt_.smoother_restrict_columns;
+        oldoo.restrict_var_list = dr.restrict_var_list;
+        oldoo.restrict_columns = dr.restrict_columns;
+        dr.restrict_var_list = bayestopt_.smoother_var_list;
+        dr.restrict_columns = bayestopt_.smoother_restrict_columns;
     
         % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
-        [T,R,SteadyState,info,M_,oo_.dr, M_.params,TTx,RRx,CCx, T0, R0] = ...
-            occbin.dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+        [T,R,SteadyState,info,M_,dr, M_.params,TTx,RRx,CCx, T0, R0] = ...
+            occbin.dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
 
-        oo_.dr.restrict_var_list = oldoo.restrict_var_list;
-        oo_.dr.restrict_columns = oldoo.restrict_columns;
+        dr.restrict_var_list = oldoo.restrict_var_list;
+        dr.restrict_columns = oldoo.restrict_columns;
 
     end
     occbin_.status = true;
-    occbin_.info= {options_, oo_, M_, occbin_options, TTx, RRx, CCx,T0,R0};
+    occbin_.info= {options_, dr,endo_steady_state,exo_steady_state,exo_det_steady_state, M_, occbin_options, TTx, RRx, CCx,T0,R0};
 else
     % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
-    [T,R,SteadyState,info,oo_.dr, M_.params] = dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state,'restrict');
+    [T,R,SteadyState,info,dr, M_.params] = dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,'restrict');
     occbin_.status = false;
 end
 
@@ -249,7 +249,7 @@ if info(1)
 end
 
 % check endogenous prior restrictions
-info=endogenous_prior_restrictions(T,R,M_,options_,oo_);
+info=endogenous_prior_restrictions(T,R,M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
 if info(1)
     fval = Inf;
     info(4)=info(2);
@@ -324,7 +324,7 @@ switch options_.lik_init
     Pstar=lyapunov_solver(T,R,Q,options_);
     Pinf  = [];
     a     = zeros(mm,1);
-    a=set_Kalman_starting_values(a,M_,oo_,options_,bayestopt_);
+    a=set_Kalman_starting_values(a,M_,dr,options_,bayestopt_);
     a_0_given_tm1=T*a; %set state prediction for first Kalman step;
 
     if options_.occbin.likelihood.status
@@ -344,7 +344,7 @@ switch options_.lik_init
     Pstar = options_.Harvey_scale_factor*eye(mm);
     Pinf  = [];
     a     = zeros(mm,1);
-    a = set_Kalman_starting_values(a,M_,oo_,options_,bayestopt_);
+    a = set_Kalman_starting_values(a,M_,dr,options_,bayestopt_);
     a_0_given_tm1 = T*a; %set state prediction for first Kalman step;
     if options_.occbin.likelihood.status
         Z =zeros(length(bayestopt_.mf),size(T,1));
@@ -378,7 +378,7 @@ switch options_.lik_init
     if (kalman_algo==3)
         % Multivariate Diffuse Kalman Filter
         a = zeros(mm,1);
-        a = set_Kalman_starting_values(a,M_,oo_,options_,bayestopt_);
+        a = set_Kalman_starting_values(a,M_,dr,options_,bayestopt_);
         a_0_given_tm1 = T*a; %set state prediction for first Kalman step;
         Pstar0 = Pstar; % store Pstar
         if no_missing_data_flag
@@ -442,7 +442,7 @@ switch options_.lik_init
         end
 
         a = zeros(mmm,1);
-        a = set_Kalman_starting_values(a,M_,oo_,options_,bayestopt_);
+        a = set_Kalman_starting_values(a,M_,dr,options_,bayestopt_);
         a_0_given_tm1 = T*a;
         [dLIK,dlik,a_0_given_tm1,Pstar] = univariate_kalman_filter_d(dataset_info.missing.aindex,...
                                                          dataset_info.missing.number_of_observations,...
@@ -479,7 +479,7 @@ switch options_.lik_init
     end
     Pinf  = [];
     a     = zeros(mm,1);
-    a = set_Kalman_starting_values(a,M_,oo_,options_,bayestopt_);
+    a = set_Kalman_starting_values(a,M_,dr,options_,bayestopt_);
     a_0_given_tm1 = T*a;    
     if options_.occbin.likelihood.status
         Z =zeros(length(bayestopt_.mf),size(T,1));
@@ -509,7 +509,7 @@ switch options_.lik_init
     Pstar(stable, stable) = Pstar_tmp;
     Pinf  = [];
     a = zeros(mm,1);
-    a = set_Kalman_starting_values(a,M_,oo_,options_,bayestopt_);
+    a = set_Kalman_starting_values(a,M_,dr,options_,bayestopt_);
     a_0_given_tm1 = T*a;
     if options_.occbin.likelihood.status
         Z =zeros(length(bayestopt_.mf),size(T,1));
@@ -541,9 +541,9 @@ if analytic_derivation
     end
     DLIK = [];
     AHess = [];
-    iv = oo_.dr.restrict_var_list;
-    if nargin<10 || isempty(derivatives_info)
-        [A,B,nou,nou,oo_.dr, M_.params] = dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+    iv = dr.restrict_var_list;
+    if nargin<13 || isempty(derivatives_info)
+        [A,B,nou,nou,dr, M_.params] = dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
         if ~isempty(estim_params_.var_exo)
             indexo=estim_params_.var_exo(:,1);
         else
@@ -561,14 +561,14 @@ if analytic_derivation
         old_analytic_derivation_mode = options_.analytic_derivation_mode;
         options_.analytic_derivation_mode = kron_flag;
         if full_Hess
-            DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, indparam, indexo, [], true);
+            DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indparam, indexo, [], true);
             indD2T = reshape(1:M_.endo_nbr^2, M_.endo_nbr, M_.endo_nbr);
             indD2Om = dyn_unvech(1:M_.endo_nbr*(M_.endo_nbr+1)/2);
             D2T = DERIVS.d2KalmanA(indD2T(iv,iv),:);
             D2Om = DERIVS.d2Om(dyn_vech(indD2Om(iv,iv)),:);
             D2Yss = DERIVS.d2Yss(iv,:,:);
         else
-            DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, indparam, indexo, [], false);
+            DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indparam, indexo, [], false);
         end
         DT = zeros(M_.endo_nbr, M_.endo_nbr, size(DERIVS.dghx,3));
         DT(:,M_.nstatic+(1:M_.nspred),:) = DERIVS.dghx;
@@ -912,7 +912,7 @@ else
 end
 
 if options_.prior_restrictions.status
-    tmp = feval(options_.prior_restrictions.routine, M_, oo_, options_, dataset_, dataset_info);
+    tmp = feval(options_.prior_restrictions.routine, M_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, options_, dataset_, dataset_info);
     fval = fval - tmp;
 end
 
@@ -942,14 +942,14 @@ if analytic_derivation==0 && nargout>3
     DLIK=[-lnprior; lik(:)];
 end
 
-function a=set_Kalman_starting_values(a,M_,oo_,options_,bayestopt_)
-% function a=set_Kalman_starting_values(a,M_,oo_,options_,bayestopt_)
+function a=set_Kalman_starting_values(a,M_,dr,options_,bayestopt_)
+% function a=set_Kalman_starting_values(a,M_,dr,options_,bayestopt_)
 % Sets initial states guess for Kalman filter/smoother based on M_.filter_initial_state 
 % 
 % INPUTS 
 %   o a             [double]   (p*1) vector of states
 %   o M_            [structure] decribing the model
-%   o oo_           [structure] storing the results
+%   o dr            [structure] storing the decision rules
 %   o options_      [structure] describing the options
 %   o bayestopt_    [structure] describing the priors
 %  
@@ -957,13 +957,13 @@ function a=set_Kalman_starting_values(a,M_,oo_,options_,bayestopt_)
 %   o a             [double]    (p*1) vector of set initial states
 
 if isfield(M_,'filter_initial_state') && ~isempty(M_.filter_initial_state)
-    state_indices=oo_.dr.order_var(oo_.dr.restrict_var_list(bayestopt_.mf0));
+    state_indices=dr.order_var(dr.restrict_var_list(bayestopt_.mf0));
     for ii=1:size(state_indices,1)
         if ~isempty(M_.filter_initial_state{state_indices(ii),1})
             if options_.loglinear && ~options_.logged_steady_state
-                a(bayestopt_.mf0(ii)) = log(eval(M_.filter_initial_state{state_indices(ii),2})) - log(oo_.dr.ys(state_indices(ii)));
+                a(bayestopt_.mf0(ii)) = log(eval(M_.filter_initial_state{state_indices(ii),2})) - log(dr.ys(state_indices(ii)));
             elseif ~options_.loglinear && ~options_.logged_steady_state
-                a(bayestopt_.mf0(ii)) = eval(M_.filter_initial_state{state_indices(ii),2}) - oo_.dr.ys(state_indices(ii));
+                a(bayestopt_.mf0(ii)) = eval(M_.filter_initial_state{state_indices(ii),2}) - dr.ys(state_indices(ii));
             else
                 error(['The steady state is logged. This should not happen. Please contact the developers'])
             end
@@ -971,7 +971,7 @@ if isfield(M_,'filter_initial_state') && ~isempty(M_.filter_initial_state)
     end
 end
 
-function occbin_options = set_occbin_options(options_, M_)
+function occbin_options = set_occbin_options(options_)
 
 % this builds the opts_simul options field needed by occbin.solver
 occbin_options.opts_simul = options_.occbin.simul;

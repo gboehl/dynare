@@ -1,4 +1,5 @@
-function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_u_tilde,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DataSetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
+function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_u_tilde,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DataSetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+% [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_u_tilde,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DataSetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % Evaluates the posterior kernel of the BVAR-DSGE model.
 %
 % INPUTS
@@ -11,7 +12,10 @@ function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_
 %   o EstimatedParameters   [structure] characterizing parameters to be estimated
 %   o BayesInfo             [structure] describing the priors
 %   o BoundsInfo            [structure] containing prior bounds
-%   o DynareResults         [structure] storing the results
+%   o dr                    [structure] Reduced form model.
+%   o endo_steady_state     [vector]    steady state value for endogenous variables
+%   o exo_steady_state      [vector]    steady state value for exogenous variables
+%   o exo_det_steady_state  [vector]    steady state value for exogenous deterministic variables
 %
 % OUTPUTS
 %   o fval          [double]     Value of the posterior kernel at xparam1.
@@ -45,7 +49,7 @@ function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright © 2006-2021 Dynare Team
+% Copyright © 2006-2023Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -136,7 +140,7 @@ end
 
 % Solve the Dsge model and get the matrices of the reduced form solution. T and R are the matrices of the
 % state equation
-[T,R,SteadyState,info] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state,'restrict');
+[T,R,SteadyState,info] = dynare_resolve(Model,DynareOptions, dr, endo_steady_state, exo_steady_state, exo_det_steady_state,'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
