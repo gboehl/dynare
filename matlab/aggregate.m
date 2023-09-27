@@ -178,7 +178,7 @@ for i=1:length(varargin)
     end
     cline = fgetl(fid);
     while ischar(cline)
-        tmp = textscan(cline, '%s = %f', 'Delimiter', {';','=',' '});
+        tmp = textscan(cline, '%s = %f', 'Delimiter', ';= ');
         pArray(end+1,1) = tmp{1};
         pArray{end,2} = tmp{2};
         pArray{end,3} = varargin{i};
