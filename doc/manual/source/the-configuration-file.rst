@@ -276,20 +276,35 @@ lines starting with a hashtag (#).
 
     .. option:: NumberOfThreadsPerJob = INTEGER
 
-        Sets the number of threads assigned to each remote MATLAB/Octave run.
-        Needs to be an exact divisor of the number :opt:`CPUnbr <CPUnbr = INTEGER | [INTEGER:INTEGER]>` of cores.
-        Particularly, for very large models setting the number of threads per job to 2 might be the faster choice,
-        but this depends on your hardware, model and estimation task, so you should experiment with different values.        
-        The default value is ``1``, see also related option :opt:`SingleCompThread <SingleCompThread = BOOLEAN>`.
+        This option controls the distribution of jobs (e.g. MCMC chains) across additional MATLAB instances that are run in parallel.
+        Needs to be an exact divisor of the number of cores.
+        The formula :opt:`CPUnbr <CPUnbr = INTEGER | [INTEGER:INTEGER]>` divided by :opt:`NumberOfThreadsPerJob <NumberOfThreadsPerJob = INTEGER>`
+        calculates the number of MATLAB/Octave instances that will be launched in parallel,
+        where each instance will then execute a certain number of jobs sequentially.
+        For example, if you run a MCMC estimation with 24 chains on a 12 core machine, setting ``CPUnbr = 12`` and ``NumberOfThreadsPerJob = 4``
+        will launch 3 MATLAB instances in parallel, each of which will compute 8 chains sequentially.
+        Note that this option does not dictate the number of maximum threads utilized by each MATLAB/Octave instance,
+        see related option :opt:`SingleCompThread <SingleCompThread = BOOLEAN>` for this.
+        Particularly for very large models, setting this option to 2 might distribute the workload in a 
+        more efficient manner, depending on your hardware and task specifics.
+        It’s advisable to experiment with different values to achieve optimal performance.
+        The default value is ``1``.        
         
+
     .. option:: SingleCompThread = BOOLEAN
 
-        Whether or not to disable MATLAB’s native multithreading.
-        The default value is ``false``. Option meaningless under Octave.
-        Note: By default, MATLAB tries to speed up calculations by spreading them out over your computer’s threads.
-        However, tests have shown that for certain tasks, like MCMC estimations, MATLAB’s attempt to multitask
-        can actually slow things down when parallel computing is turned on. Setting this option to ``true`` 
-        starts the additional instances of MATLAB in a single thread mode using MATLAB’s ``-singleCompThread`` startup option.     
+        This option allows you to enable or disable MATLAB’s native multithreading capability. When set to ``true``, 
+        the additional MATLAB instances are initiated in single thread mode utilizing the ``-singleCompThread`` startup option, 
+        thereby disabling MATLAB’s native multithreading. When set to ``false``, MATLAB’s native multithreading 
+        is enabled, e.g. the actual number of threads utilized by each MATLAB instance is usually determined by the number of CPU cores
+        (you can check this by running ``maxNumCompThreads`` in MATLAB’s command window).
+        Note: While MATLAB aims to accelerate calculations by distributing them across your computer’s threads, 
+        certain tasks, like MCMC estimations, may exhibit slowdowns with MATLAB’s multitasking especially when Dynare’s parallel computing is turned on
+        as we do not use MATLAB’s parallel toolbox.
+        So in many cases it is advisable to set this setting to ``true``.
+        If you want to have more control, you can manually add the MATLAB command `maxNumCompThreads(N)` at the beginning of `fParallel.m`.
+        The default value is ``false``. This option is ineffective under Octave.
+
         
     .. option:: OperatingSystem = OPERATING_SYSTEM
 

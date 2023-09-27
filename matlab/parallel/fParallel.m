@@ -45,6 +45,9 @@ diary off;
 delete( [fname,'_',int2str(whoiam),'.log']);
 diary( [fname,'_',int2str(whoiam),'.log']);
 
+% MATLAB only: uncomment to set the maximum number of threads (don't forget to set SingleCompThread to false in your configuration file)
+% maxNumCompThreads(2);
+
 % Configure dynare environment.
 dynareroot = dynare_config();
 
