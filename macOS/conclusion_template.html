@@ -30,15 +30,19 @@
       <p>Dynare highly benefits from installing Xcode Command Line Tools (an Apple product). To install the Xcode Command Line Tools type the following into Terminal.app:</p>
       <code>
       xcode-select --install
-      </code>
-      <p>If you get a warning in MATLAB, that Xcode is installed, but its license has not been accepted, please refer to the <a href="https://www.dynare.org/manual/installation-and-configuration.html#prerequisites-on-macos" target="_blank" rel="noopener noreferrer">manual</a> for a workaround.</p>
-
+      </code>      
+      
       <p class="bold-text">Compilation Environment for use_dll option</p>
-      <p>Dynare ships a compilation environment that can be used with the use_dll option. To install this environment correctly, the Xcode Command Line Tools are sufficient.</p>
+      <p>Dynare ships a compilation environment that can be used with the use_dll option. To install this environment correctly, the Xcode Command Line Tools are sufficient. Check this by running:</p>
+      <code>
+        mex -setup
+      </code> 
+      <p>If you get a warning in MATLAB, that Xcode is installed, but its license has not been accepted, please refer to the <a href="https://www.dynare.org/manual/installation-and-configuration.html#prerequisites-on-macos" target="_blank" rel="noopener noreferrer">manual</a> for a workaround.</p>
       <p>However, we recommend making use of optimized compilation flags and for this you need to install GCC via Homebrew.
       For this, follow <a href="https://brew.sh" target="_blank" rel="noopener noreferrer">https://brew.sh</a> to install Homebrew and then type the following into Terminal.app:</p>
-      <code>brew install gcc@GCC_VERSION</code>
-      
+      <code>
+        brew install gcc@GCC_VERSION
+      </code>      
       <p>If you already have installed GCC, Dynare will automatically prefer it for use_dll if the binaries are either in /opt/homebrew/bin/gcc-GCC_VERSION (arm64) or in /usr/local/bin/gcc-GCC_VERSION (x86_64). Otherwise, it will fall back to Clang in /usr/bin/clang (for both arm64 and x86_64).</p>
     </main>
   </body>
