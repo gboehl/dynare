@@ -1,4 +1,6 @@
-function mexpath = add_path_to_mex_files(dynareroot, modifypath)
+function mexpath = get_path_to_mex_files(dynareroot)
+% Returns a cell array containing one or several directory paths
+% which should contain the MEX files.
 
 % Copyright © 2015-2023 Dynare Team
 %
@@ -17,17 +19,10 @@ function mexpath = add_path_to_mex_files(dynareroot, modifypath)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if nargin<2
-    modifypath = true;
-end
-
 build_dir = get_build_dir(dynareroot);
 if ~isempty(build_dir)
     % If a Meson build directory is found, use it preferably
     mexpath = { build_dir };
-    if modifypath
-        addpath(build_dir)
-    end
 elseif isoctave
     % Add specific paths for Dynare Windows package
     if ispc
@@ -37,20 +32,14 @@ elseif isoctave
             tmp = [dynareroot '../mex/octave/win64/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
-                if modifypath
-                    addpath(mexpath);
-                end
             end
         end
     end
-    % Add generic MATLAB path (with higher priority than the previous ones)
+    % Add generic Octave path (with higher priority than the previous ones)
     if exist('mexpath')
         mexpath = { mexpath; [dynareroot '../mex/octave/'] };
     else
         mexpath = { [dynareroot '../mex/octave/'] };
-    end
-    if modifypath
-        addpath([dynareroot '../mex/octave/']);
     end
 else
     if strcmp(computer, 'PCWIN')
@@ -62,17 +51,11 @@ else
             tmp = [dynareroot '../mex/matlab/win64-8.3-9.3/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
-                if modifypath
-                    addpath(mexpath);
-                end
             end
         else
             tmp = [dynareroot '../mex/matlab/win64-9.4-23.2/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
-                if modifypath
-                    addpath(mexpath);
-                end
             end
         end
     end
@@ -82,17 +65,11 @@ else
             tmp = [dynareroot '../mex/matlab/maci64-8.3-9.3/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
-                if modifypath
-                    addpath(mexpath);
-                end
             end
         else
             tmp = [dynareroot '../mex/matlab/maci64-9.4-23.2/'];
             if exist(tmp, 'dir')
                 mexpath = tmp;
-                if modifypath
-                    addpath(mexpath);
-                end
             end
         end
     end
@@ -100,9 +77,6 @@ else
         tmp = [dynareroot '../mex/matlab/maca64-23.2/'];
         if exist(tmp, 'dir')
             mexpath = tmp;
-            if modifypath
-                addpath(mexpath);
-            end
         end
     end
     % Add generic MATLAB path (with higher priority than the previous ones)
@@ -110,8 +84,5 @@ else
         mexpath = { mexpath; [dynareroot '../mex/matlab/'] };
     else
         mexpath = { [dynareroot '../mex/matlab/'] };
-    end
-    if modifypath
-        addpath([dynareroot '../mex/matlab/']);
     end
 end

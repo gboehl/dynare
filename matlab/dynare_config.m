@@ -16,7 +16,7 @@ function dynareroot = dynare_config(path_to_dynare)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -125,7 +125,7 @@ end
 P = cellfun(@(c)[dynareroot(1:end-1) c], p, 'uni',false);
 
 % Get mex files folder(s)
-mexpaths = add_path_to_mex_files(dynareroot, false);
+mexpaths = get_path_to_mex_files(dynareroot);
 
 % Add mex files folder(s)
 P(end+1:end+length(mexpaths)) = mexpaths;

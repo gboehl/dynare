@@ -1,6 +1,6 @@
 function check_matlab_path(change_path_flag)
 
-% Copyright © 2015-2017 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -92,7 +92,7 @@ else
         % => If DYNARE_PATH/qz is in the path while mjdgges dll is available
         % it most likely means that user wrongly put all subfolders in the
         % matlab's path!
-        mexpath = add_path_to_mex_files([DYNARE_PATH filesep], false);
+        mexpath = get_path_to_mex_files([DYNARE_PATH filesep]);
         MATLAB_PATH = path2cell(MATLAB_PATH);
         for i=1:length(mexpath)
             if exist([mexpath{i} filesep 'mjdgges.' mexext],'file') && ismember([DYNARE_PATH filesep 'qz'],MATLAB_PATH)
