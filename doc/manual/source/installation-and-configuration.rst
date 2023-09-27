@@ -105,7 +105,7 @@ Note that several versions of Dynare can coexist (by default in
 settings (see :ref:`words-warning`).
 
 It is recommended to install the Xcode Command Line Tools (this is an Apple product)
-and gcc via Homebrew_ (see :ref:`prerequisites-macos`).
+and GCC via Homebrew_ (see :ref:`prerequisites-macos`).
 
 With Octave
 ^^^^^^^^^^^
@@ -190,11 +190,11 @@ Additionally, to make MATLAB aware that you agree to the terms of Xcode, run the
 
 Otherwise you will see a warning that Xcode is installed, but its license has not been accepted.
 
-We recommend making use of optimized compilation flags when using :opt:`use_dll` and for this you need to install gcc via Homebrew_::
+We recommend making use of optimized compilation flags when using :opt:`use_dll` and for this you need to install GCC via Homebrew_::
   brew install gcc
 
-If you already have installed gcc, Dynare will automatically prefer it for :opt:`use_dll` if the binaries are in /usr/local/bin.
-Otherwise, it will fall back to Clang in /usr/bin/gcc.
+If you already have installed GCC, Dynare will automatically prefer it for :opt:`use_dll` if the binaries are in /usr/local/bin.
+Otherwise, it will fall back to Clang in /usr/bin/clang.
     
 With Octave
 ^^^^^^^^^^^
