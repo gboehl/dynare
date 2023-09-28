@@ -15,9 +15,9 @@
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-source_dir = getenv('source_root');
-addpath([source_dir filesep 'tests' filesep 'utils']);
-addpath([source_dir filesep 'matlab']);
+source_root = getenv('source_root');
+addpath([source_root filesep 'tests' filesep 'utils']);
+addpath([source_root filesep 'matlab']);
 
 if isoctave
     load_octave_packages
