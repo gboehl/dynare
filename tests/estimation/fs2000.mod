@@ -82,7 +82,7 @@ varobs gp_obs gy_obs;
 
 options_.solve_tolf = 1e-12;
 
-estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=3000,mh_nblocks=1,mh_jscale=0.8,moments_varendo,selected_variables_only,contemporaneous_correlation,smoother,forecast=8,
+estimation(order=1,silent_optimizer,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=3000,mh_nblocks=1,mh_jscale=0.8,moments_varendo,selected_variables_only,contemporaneous_correlation,smoother,forecast=8,
         geweke_interval = [0.19 0.49],
         taper_steps = [4 7 15],
         raftery_lewis_diagnostics,

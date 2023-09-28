@@ -57,4 +57,4 @@ d, 0.7912;
 g, 0.2448;
 end;
 
-estimation(datafile=mydata,order=2,first_obs=5001,nobs=100,mh_replic=0,mode_compute=8,filter_algorithm=sis);
+estimation(datafile=mydata,order=2,first_obs=5001,nobs=100,mh_replic=0,mode_compute=8,silent_optimizer,filter_algorithm=sis);

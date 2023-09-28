@@ -84,4 +84,4 @@ P(0)=2.5258;
 m(-1) = mst;
 end;
 
-estimation(order=1,datafile='../fs2000/fsdat_simul',nobs=192,loglinear,mh_replic=2001,mh_nblocks=1,mh_jscale=0.8,moments_varendo,consider_only_observed,smoother);
+estimation(order=1,datafile='../fs2000/fsdat_simul',silent_optimizer,nobs=192,loglinear,mh_replic=2001,mh_nblocks=1,mh_jscale=0.8,moments_varendo,consider_only_observed,smoother);

@@ -19,7 +19,7 @@
 
 @#include "fs2000.inc"
 
-estimation(order=1, datafile='../fsdat_simul', nobs=192, loglinear, mh_replic=10000, mh_nblocks=1, mh_tune_jscale=0.33,mh_tune_guess=0.7,plot_priors=0);
+estimation(order=1, datafile='../fsdat_simul', nobs=192,silent_optimizer, loglinear, mh_replic=10000, mh_nblocks=1, mh_tune_jscale=0.33,mh_tune_guess=0.7,plot_priors=0);
 
 mhdata = load('fs2000/metropolis/fs2000_mh_history_0.mat');
 

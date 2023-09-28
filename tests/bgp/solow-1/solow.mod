@@ -66,11 +66,13 @@ verbatim;
             GK(i) = y(12);
             EG(i) = y(2);
         end        
-        % Display the progress
-        percentDone = 100 * i / MC;
-        msg = sprintf('Percent done: %3.1f', percentDone);
-        fprintf([reverseStr, msg]);
-        reverseStr = repmat(sprintf('\b'), 1, length(msg));
+        if mod(i,100)==0
+            % Display the progress
+            percentDone = 100 * i / MC;
+            msg = sprintf('Percent done: %3.1f', percentDone);
+            fprintf([reverseStr, msg]);
+            reverseStr = repmat(sprintf('\b'), 1, length(msg));
+        end
     end
     fprintf('\n');
     % Compute the physical capital stock over output ratio along the BGP as

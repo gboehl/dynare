@@ -115,7 +115,7 @@ end;
 
 varobs gp_obs gy_obs;
 
-estimation(order=1,datafile='../fsdat_simul', nobs=192, loglinear, mh_replic=2000, mh_nblocks=1, mh_jscale=0.8,forecast=8,smoother,filtered_vars,filter_step_ahead=[1:2],filter_decomposition)  m P c e W R k d y gy_obs;
+estimation(order=1,datafile='../fsdat_simul', silent_optimizer,nobs=192, loglinear, mh_replic=2000, mh_nblocks=1, mh_jscale=0.8,forecast=8,smoother,filtered_vars,filter_step_ahead=[1:2],filter_decomposition)  m P c e W R k d y gy_obs;
 
 if size(oo_.PointForecast.deciles.gy_obs,1)~=9
     error('Number of deciles must be 9')

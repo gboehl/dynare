@@ -422,8 +422,8 @@ Sigmay_full = SS.C*Sigmax_full*SS.C' + SS.D*M_.Sigma_e*SS.D';
 Sigmax_min = lyapunov_symm(minSS.A, minSS.B*M_.Sigma_e*minSS.B', options_.lyapunov_fixed_point_tol, options_.qz_criterium, options_.lyapunov_complex_threshold, 1, options_.debug);
 Sigmay_min = minSS.C*Sigmax_min*minSS.C' + minSS.D*M_.Sigma_e*minSS.D';
 
-([Sigmay_full(:) - Sigmay_min(:)]')
-sqrt(([diag(Sigmay_full), diag(Sigmay_min)]'))
+([Sigmay_full(:) - Sigmay_min(:)]');
+sqrt(([diag(Sigmay_full), diag(Sigmay_min)]'));
 dx = norm( Sigmay_full - Sigmay_min, Inf);
 if dx > 3e-8
     error(sprintf('something wrong with minimal state space computations, as numerical error is %d',dx))

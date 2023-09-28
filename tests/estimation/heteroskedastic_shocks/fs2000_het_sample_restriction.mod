@@ -27,7 +27,7 @@ heteroskedastic_shocks;
   scales 0;
 end;
 
-estimation(order=1,datafile='../fsdat_simul',first_obs=10,nobs=182,mode_compute=5,loglinear,mh_replic=0,smoother,filtered_vars,forecast=8,filter_step_ahead=[1:8],consider_all_endogenous,heteroskedastic_filter);
+estimation(order=1,datafile='../fsdat_simul',first_obs=10,nobs=182,silent_optimizer,mode_compute=5,loglinear,mh_replic=0,smoother,filtered_vars,forecast=8,filter_step_ahead=[1:8],consider_all_endogenous,heteroskedastic_filter);
 
 if M_.heteroskedastic_shocks.Qscale(strmatch('e_a',M_.exo_names,'exact'),91)~=0 && M_.heteroskedastic_shocks.Qscale(strmatch('e_b',M_.exo_names,'exact'),91)~=0.01
     error('first_obs is incorrectly handled.')

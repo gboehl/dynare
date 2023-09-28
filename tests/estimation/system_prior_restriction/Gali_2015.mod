@@ -160,7 +160,7 @@ title('Prior')
 
 % Run estimation with 1 observation to show effect of _prior_restriction .m
 % on independent prior
-estimation(datafile='sim_data',mode_compute=5,mh_replic=2001,mh_nblocks=1,diffuse_filter,nobs=1,mh_jscale=0.8);
+estimation(datafile='sim_data',silent_optimizer,mode_compute=5,mh_replic=2001,mh_nblocks=1,diffuse_filter,nobs=1,mh_jscale=0.8);
 posterior_function(function='Gali_2015_PC_slope');
 PC_slope_vec=cell2mat(oo_.posterior_function_results(:,1));
 optimal_bandwidth = mh_optimal_bandwidth(PC_slope_vec,length(PC_slope_vec),0,'gaussian');
@@ -172,7 +172,7 @@ title('Updated Prior')
 
 
 % Run estimation with full observations
-estimation(datafile='sim_data',mode_compute=5,mh_replic=2001,mh_nblocks=1,diffuse_filter,nobs=100,mh_jscale=0.8);
+estimation(datafile='sim_data',silent_optimizer,mode_compute=5,mh_replic=2001,mh_nblocks=1,diffuse_filter,nobs=100,mh_jscale=0.8);
 
 posterior_function(function='Gali_2015_PC_slope');
 PC_slope_vec=cell2mat(oo_.posterior_function_results(:,1));

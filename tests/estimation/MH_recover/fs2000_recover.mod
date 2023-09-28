@@ -3,7 +3,7 @@
 @#include "fs2000.common.inc"
 
 options_.MaxNumberOfBytes=1000*11*8/2;
-estimation(order=1, datafile='../fsdat_simul',nobs=192, loglinear, mh_replic=1000, mh_nblocks=2, mh_jscale=0.8);
+estimation(order=1, datafile='../fsdat_simul',nobs=192, silent_optimizer,loglinear, mh_replic=1000, mh_nblocks=2, mh_jscale=0.8);
 copyfile([M_.dname filesep 'metropolis' filesep M_.dname '_mh1_blck1.mat'],[M_.dname '_mh1_blck1.mat'])
 copyfile([M_.dname filesep 'metropolis' filesep M_.dname '_mh2_blck2.mat'],[M_.dname '_mh2_blck2.mat'])
 delete([M_.dname filesep 'metropolis' filesep M_.dname '_mh2_blck2.mat'])

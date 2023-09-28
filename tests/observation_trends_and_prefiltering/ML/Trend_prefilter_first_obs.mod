@@ -4,7 +4,7 @@ addpath('..');
 generate_trend_stationary_AR1(M_.fname);
 
 estimation(order=1,datafile='Trend_prefilter_first_obs_AR1_trend_data_with_constant',
-    mh_replic=0,mode_compute=4,
+    mh_replic=0,mode_compute=4,silent_optimizer,
     filtered_vars, filter_step_ahead = [1,2,4],        
     first_obs=1000,diffuse_filter,smoother,forecast=100,prefilter=1) P_obs Y_obs junk2;
 

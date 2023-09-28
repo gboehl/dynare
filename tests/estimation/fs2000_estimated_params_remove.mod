@@ -94,7 +94,7 @@ varobs gp_obs gy_obs;
 
 options_.solve_tolf = 1e-12;
 
-estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=0) y m;
+estimation(order=1,datafile=fsdat_simul,nobs=192,silent_optimizer,loglinear,mh_replic=0) y m;
 
 if size(estim_params_.var_exo, 1) ~= 2 || size(estim_params_.param_vals, 1) ~= 7 ...
    || size(estim_params_.var_endo, 1) ~= 0 || size(estim_params_.corrn, 1) ~= 0 ...

@@ -107,7 +107,7 @@ varobs gp_obs gy_obs;
 options_.solve_tolf = 1e-12;
 
 // Metropolis replications are too few, this is only for testing purpose
-estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=2000,mh_nblocks=1,mh_jscale=0.8);
+estimation(order=1,datafile=fsdat_simul,silent_optimizer,nobs=192,loglinear,mh_replic=2000,mh_nblocks=1,mh_jscale=0.8);
 
 conditional_forecast_paths;
 var gy_obs;

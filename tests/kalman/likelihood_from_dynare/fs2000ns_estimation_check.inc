@@ -1,5 +1,5 @@
 %%get mode
-estimation(diffuse_filter,kalman_algo=3,mode_compute=4,order=1,datafile=@{data_file_name},smoother,filter_decomposition,forecast = 8,filtered_vars,filter_step_ahead=[1,3],irf=20) m P c e W R k d y gy_obs;
+estimation(diffuse_filter,kalman_algo=3,silent_optimizer,mode_compute=4,order=1,datafile=@{data_file_name},smoother,filter_decomposition,forecast = 8,filtered_vars,filter_step_ahead=[1,3],irf=20) m P c e W R k d y gy_obs;
 fval_algo_0=oo_.likelihood_at_initial_parameters;
 
 %%Diffuse Multivariate Kalman Filter

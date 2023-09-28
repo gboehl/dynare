@@ -81,6 +81,6 @@ varobs gp_obs gy_obs;
 
 options_.solve_tolf = 1e-12;
 
-estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=0);
+estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=0,silent_optimizer);
 
 shock_decomposition(parameter_set=posterior_mode) gp_obs, gy_obs;

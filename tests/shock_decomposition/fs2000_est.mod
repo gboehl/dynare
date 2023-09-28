@@ -79,6 +79,6 @@ end;
 varobs gp_obs gy_obs;
 
 // Metropolis replications are too few, this is only for testing purpose
-estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=0);
+estimation(order=1,datafile=fsdat_simul,silent_optimizer,nobs=192,loglinear,mh_replic=0);
 
 shock_decomposition;

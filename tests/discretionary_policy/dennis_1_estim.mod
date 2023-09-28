@@ -36,7 +36,7 @@ estimated_params;
 end;
 
 options_.plot_priors=0;
-estimation(order = 1, datafile = dennis_simul, mh_replic = 2000, mh_nblocks=1,smoother,bayesian_irf,moments_varendo, conditional_variance_decomposition=[1,2]) y i pi pi_c q;
+estimation(order = 1, datafile = dennis_simul, mh_replic = 2000, silent_optimizer,mh_nblocks=1,smoother,bayesian_irf,moments_varendo, conditional_variance_decomposition=[1,2]) y i pi pi_c q;
 
 if max(abs(oo_.posterior.optimization.mode - [1; 0.3433])) > 0.025
   error('Posterior mode too far from true parameter values');

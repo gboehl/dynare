@@ -87,4 +87,4 @@ fsdataset = fsdataset(1950Q3:1950Q3+191);
 
 data(series=fsdataset);
 
-estimation(order=1,loglinear,mh_replic=2000,mh_nblocks=2,mh_jscale=0.8);
+estimation(order=1,silent_optimizer,loglinear,mh_replic=2000,mh_nblocks=2,mh_jscale=0.8);

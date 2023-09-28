@@ -80,7 +80,7 @@ end;
 
 varobs gp_obs gy_obs;
 
-estimation(order=1, datafile=fsdat_simul_missing_obs, nobs=192, loglinear, mh_replic=2000, mh_nblocks=2, mh_jscale=0.8);
+estimation(order=1, datafile=fsdat_simul_missing_obs,silent_optimizer, nobs=192, loglinear, mh_replic=2000, mh_nblocks=2, mh_jscale=0.8);
 
 
 /*

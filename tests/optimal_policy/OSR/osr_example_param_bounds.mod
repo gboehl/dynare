@@ -42,4 +42,4 @@ osr_params_bounds;
 gamma_inf_, 0, 2.5;
 end;
 
-osr(opt_algo=9);
+osr(opt_algo=9,silent_optimizer);

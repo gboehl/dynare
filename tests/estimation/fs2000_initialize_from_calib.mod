@@ -100,4 +100,4 @@ del, 0.020000;
 end;
 
 options_.plot_priors=0;
-estimation(order=1, datafile=fsdat_simul, nobs=192, loglinear, mh_replic=2000, mh_nblocks=1, mh_jscale=0.8,prior_trunc=0);
+estimation(order=1, datafile=fsdat_simul, silent_optimizer, nobs=192, loglinear, mh_replic=2000, mh_nblocks=1, mh_jscale=0.8,prior_trunc=0);

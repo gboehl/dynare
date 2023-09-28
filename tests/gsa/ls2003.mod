@@ -146,7 +146,7 @@ disp('Press ENTER to continue'); pause(5);
 
 // run this to generate posterior mode and Metropolis files if not yet done
 estimation(datafile='data_ca1.m',first_obs=8,nobs=79,mh_nblocks=1,
-   prefilter=1,mh_jscale=0.5,mh_replic=5000, mode_compute=4, mh_drop=0.6, nodisplay,
+   prefilter=1,mh_jscale=0.5,mh_replic=5000,silent_optimizer, mode_compute=4, mh_drop=0.6, nodisplay,
    bayesian_irf, filtered_vars, smoother) y_obs R_obs pie_obs dq de;
 
 

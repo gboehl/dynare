@@ -583,7 +583,7 @@ ruleT_B_debt
 
 ;
 
-osr(irf=5,maxit=10000, nograph);
+osr(irf=5,maxit=10000, nograph, silent_optimizer,nofunctions);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

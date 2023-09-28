@@ -80,4 +80,4 @@ varobs pie r rw y;
 ** The Dashed lines are the first, fifth (ie the median) and ninth posterior deciles of the DSGE-VAR's IRFs, the bold dark curve is the
 ** posterior median of the DSGE's IRfs and the shaded surface covers the space between the first and ninth posterior deciles of the DSGE's IRFs.
 */
-estimation(datafile=datarabanal_hybrid,first_obs=50,mh_nblocks = 1,nobs=90,dsge_var=.8,optim=('NumgradAlgorithm',3),mode_compute=4,mh_replic=2000,bayesian_irf);
+estimation(datafile=datarabanal_hybrid,silent_optimizer,first_obs=50,mh_nblocks = 1,nobs=90,dsge_var=.8,optim=('NumgradAlgorithm',3),mode_compute=4,mh_replic=2000,bayesian_irf);

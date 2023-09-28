@@ -89,6 +89,6 @@ P_obs (log(mst)-gam);
 Y_obs (gam);
 end;
 
-estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=0,
+estimation(order=1,datafile=fsdat_simul,nobs=192,silent_optimizer,loglinear,mh_replic=0,
            mode_compute=4,mh_nblocks=2,mh_drop=0.45,mh_jscale=0.65,diffuse_filter,smoother,forecast=10) P_obs gp_obs gy_obs;
 

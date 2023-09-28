@@ -142,7 +142,7 @@ options_.solveopt.TolXConstraint=1e-3;
                   ,'MaxFunEvals' , 1D3        % maximum number of function evaluations allowed, a positive integer
                   )
         @#endif
-        %, silent_optimizer                  % run minimization of moments distance silently without displaying results or saving files in between
+        , silent_optimizer                  % run minimization of moments distance silently without displaying results or saving files in between
     );
     
         @#if estimParams == 2 && optimizer == 13

@@ -83,4 +83,4 @@ options_.solve_tolf = 1e-12;
 
 /* Not computing the mode because it is very expensive, just running a small MH */
 
-estimation(order=2,mode_compute=7,datafile=fsdat_simul,nobs=192);
+estimation(order=2,mode_compute=7,silent_optimizer,datafile=fsdat_simul,nobs=192);

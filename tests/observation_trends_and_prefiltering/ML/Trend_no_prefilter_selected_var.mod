@@ -83,7 +83,7 @@ oo_.SmoothedShocks  = [];
 
 set_dynare_seed('default');
 estimation(order=1,datafile='Trend_no_prefilter_selected_var_AR1_trend_data_with_constant',mh_replic=0,
-        mode_compute=4,first_obs=1,nobs=1000,
+        mode_compute=4,first_obs=1,nobs=1000,silent_optimizer,
         filtered_vars, filter_step_ahead = [1,2,4],        
         diffuse_filter,smoother,forecast=0,filter_covariance,prefilter=0,filter_decomposition,selected_variables_only) P_obs Y_obs junk2;
 

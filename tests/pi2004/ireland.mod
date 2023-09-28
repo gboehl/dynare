@@ -87,4 +87,4 @@ oy (log(eta));
 oc (log(eta));
 end;
 
-estimation(datafile=idata,mode_compute=1,nograph,dirname='MYDIR/mysubdir');
+estimation(datafile=idata,mode_compute=1,silent_optimizer,nograph,dirname='MYDIR/mysubdir');

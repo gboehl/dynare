@@ -71,4 +71,4 @@ end;
 varobs gp_obs gy_obs k;
 
 options_.solve_tolf = 1e-12;
-estimation(order=1,datafile=fsdat_mat,nobs=192,loglinear,mh_replic=0,use_univariate_filters_if_singularity_is_detected=0, smoother, consider_all_endogenous, no_init_estimation_check_first_obs);
+estimation(order=1,datafile=fsdat_mat,nobs=192,silent_optimizer,loglinear,mh_replic=0,use_univariate_filters_if_singularity_is_detected=0, smoother, consider_all_endogenous, no_init_estimation_check_first_obs);
