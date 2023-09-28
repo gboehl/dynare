@@ -274,7 +274,7 @@ for i=1:rows(elist)
         fprintf(fid, '\t%s %s\n', elist{i,1}, elist{i,2});
     end
 end
-if ~isempty(plist)
+if exist('plist', 'var') && ~isempty(plist)
     % Print list of parameters.
     fprintf(fid, ';\n\n');
     fprintf(fid, 'parameters\n');
@@ -285,7 +285,7 @@ if ~isempty(plist)
     % Print calibration.
     fprintf(fid, calibration);
 end
-if ~isempty(xlist)
+if exist('xlist', 'var') && ~isempty(xlist)
     % Print list of exogenous variables.
     fprintf(fid, '\n\n');
     fprintf(fid, 'varexo\n');
