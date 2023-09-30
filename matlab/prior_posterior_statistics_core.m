@@ -518,8 +518,9 @@ for b=fpar:B
         end
         irun(irun_index) = 1;
     end
-
-    dyn_waitbar((b-fpar+1)/(B-fpar+1),h);
+    if mod(b-fpar+1, 5)==0
+        dyn_waitbar((b-fpar+1)/(B-fpar+1),h);
+    end
 end
 
 myoutput.ifil=ifil;
