@@ -153,63 +153,63 @@ options_.threads.local_state_space_iteration_2 = 4;
 
 
 @#if LINEAR_KALMAN
-  estimation(nograph,order=1,mode_compute=8,mh_replic=0,mode_check);
+  estimation(nograph,order=1,mode_compute=8,silent_optimizer,mh_replic=0,mode_check);
 @#endif
 
 @#if NON_LINEAR_KALMAN
-  estimation(nograph,order=2,filter_algorithm=nlkf,mode_compute=8,mh_replic=0);
+  estimation(nograph,order=2,filter_algorithm=nlkf,mode_compute=8,silent_optimizer,mh_replic=0);
 @#endif
 
 @#if ALGO_SIR
-  estimation(order=2,nograph,number_of_particles=1000,mh_replic=0,mode_compute=8);
+  estimation(order=2,nograph,number_of_particles=1000,mh_replic=0,silent_optimizer,mode_compute=8);
 @#endif
 
 @#if ALGO_SISmoothR
-  estimation(order=2,nograph,number_of_particles=1000,resampling_method=smooth,mode_compute=8,mh_replic=0);
-  estimation(order=2,nograph,number_of_particles=1000,resampling_method=smooth,mode_compute=8,mode_file=dsge_base2_mode,mh_replic=0);
-  estimation(order=2,nograph,number_of_particles=1000,resampling_method=smooth,mode_compute=4,mode_file=dsge_base2_mode,mh_replic=0,mode_check);
+  estimation(order=2,nograph,number_of_particles=1000,resampling_method=smooth,mode_compute=8,silent_optimizer,mh_replic=0);
+  estimation(order=2,nograph,number_of_particles=1000,resampling_method=smooth,mode_compute=8,silent_optimizer,mode_file=dsge_base2_mode,mh_replic=0);
+  estimation(order=2,nograph,number_of_particles=1000,resampling_method=smooth,mode_compute=4,silent_optimizer,mode_file=dsge_base2_mode,mh_replic=0,mode_check);
 @#endif
 
 @#if ALGO_APF
-  estimation(order=2,nograph,filter_algorithm=apf,number_of_particles=10000,resampling=none,mh_replic=0,mode_compute=8,mode_check);
+  estimation(order=2,nograph,filter_algorithm=apf,number_of_particles=10000,resampling=none,mh_replic=0,mode_compute=8,silent_optimizer,mode_check);
 @#endif
 
 @#if ALGO_CPF
-  estimation(order=2,nograph,filter_algorithm=cpf,number_of_particles=10000,resampling=none,mh_replic=0,mode_compute=8,mode_check);
+  estimation(order=2,nograph,filter_algorithm=cpf,number_of_particles=10000,resampling=none,mh_replic=0,mode_compute=8,silent_optimizer,mode_check);
 @#endif
 
 @#if ALGO_GPF
-  estimation(order=2,nograph,filter_algorithm=gf,distribution_approximation=montecarlo,number_of_particles=1000,mh_replic=0,mode_compute=8);
-  estimation(order=2,nograph,filter_algorithm=gf,distribution_approximation=montecarlo,number_of_particles=1000,mode_file=dsge_base2_mode,mh_replic=0,mode_compute=4,mode_check);
+  estimation(order=2,nograph,filter_algorithm=gf,distribution_approximation=montecarlo,number_of_particles=1000,mh_replic=0,mode_compute=8,silent_optimizer);
+  estimation(order=2,nograph,filter_algorithm=gf,distribution_approximation=montecarlo,number_of_particles=1000,mode_file=dsge_base2_mode,mh_replic=0,mode_compute=4,silent_optimizer,mode_check);
 @#endif
 
 @#if ALGO_GCF
-  estimation(order=2,nograph,filter_algorithm=gf,mh_replic=0,mode_compute=8);
-  estimation(order=2,nograph,filter_algorithm=gf,mh_replic=0,mode_compute=4,mode_file=dsge_base2_mode,mode_check);
+  estimation(order=2,nograph,filter_algorithm=gf,mh_replic=0,mode_compute=8,silent_optimizer);
+  estimation(order=2,nograph,filter_algorithm=gf,mh_replic=0,mode_compute=4,silent_optimizer,mode_file=dsge_base2_mode,mode_check);
 @#endif
 
 @#if ALGO_GUF
-  estimation(order=2,nograph,filter_algorithm=gf,proposal_approximation=unscented,distribution_approximation=unscented,mh_replic=0,mode_compute=8);
-  estimation(order=2,nograph,filter_algorithm=gf,proposal_approximation=unscented,distribution_approximation=unscented,mh_replic=0,mode_compute=8,mode_check);
+  estimation(order=2,nograph,filter_algorithm=gf,proposal_approximation=unscented,distribution_approximation=unscented,mh_replic=0,silent_optimizer,mode_compute=8);
+  estimation(order=2,nograph,filter_algorithm=gf,proposal_approximation=unscented,distribution_approximation=unscented,mh_replic=0,mode_compute=8,silent_optimizer,mode_check);
 @#endif
 
 @#if ALGO_GMPF
-  estimation(nograph,order=2,filter_algorithm=gmf,distribution_approximation=montecarlo,number_of_particles=1000,mh_replic=0,mode_compute=8);
+  estimation(nograph,order=2,filter_algorithm=gmf,distribution_approximation=montecarlo,number_of_particles=1000,mh_replic=0,mode_compute=8,silent_optimizer);
   estimation(nograph,order=2,filter_algorithm=gmf,distribution_approximation=montecarlo,number_of_particles=1000,mh_replic=0,mode_file=dsge_base2_mode,mode_compute=8);
   estimation(nograph,order=2,filter_algorithm=gmf,distribution_approximation=montecarlo,number_of_particles=1000,mh_replic=0,mode_file=dsge_base2_mode,mode_compute=4,mode_check);
 @#endif
 
 @#if ALGO_GMCF
-  estimation(nograph,order=2,filter_algorithm=gmf,mh_replic=0,mode_compute=8);
-  estimation(nograph,order=2,filter_algorithm=gmf,mh_replic=0,mode_compute=4,mode_file=dsge_base2_mode,mode_check);
+  estimation(nograph,order=2,filter_algorithm=gmf,mh_replic=0,mode_compute=8,silent_optimizer);
+  estimation(nograph,order=2,filter_algorithm=gmf,mh_replic=0,mode_compute=4,silent_optimizer,mode_file=dsge_base2_mode,mode_check);
 @#endif
 
 @#if ALGO_ONLINE_2
-  estimation(order=2,number_of_particles=1000,mode_compute=11,mh_replic=0,particle_filter_options=('liu_west_delta',0.9));
+  estimation(order=2,number_of_particles=1000,mode_compute=11,silent_optimizer,mh_replic=0,particle_filter_options=('liu_west_delta',0.9));
 @#endif
 
 @#if ALGO_ONLINE_1
-  estimation(order=1,number_of_particles=1000,mode_compute=11,mh_replic=0,particle_filter_options=('liu_west_delta',0.9));
+  estimation(order=1,number_of_particles=1000,mode_compute=11,silent_optimizer,mh_replic=0,particle_filter_options=('liu_west_delta',0.9));
 @#endif
 
 @#if MCMC

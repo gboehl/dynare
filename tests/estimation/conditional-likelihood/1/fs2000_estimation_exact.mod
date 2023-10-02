@@ -81,5 +81,5 @@ varobs gp_obs gy_obs;
 options_.solve_tolf = 1e-12;
 
 tic
-estimation(order=1,datafile='../../fsdat_simul',nobs=192,mode_compute=4,loglinear,mh_replic=5000,mh_nblocks=2,mh_jscale=0.8);
+estimation(order=1,datafile='../../fsdat_simul',nobs=192,silent_optimizer,mode_compute=4,loglinear,mh_replic=5000,mh_nblocks=2,mh_jscale=0.8);
 toc

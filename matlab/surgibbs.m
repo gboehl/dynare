@@ -1,6 +1,6 @@
 function ds = surgibbs(ds, param_names, beta0, A, ndraws, discarddraws, thin, eqtags, model_name)
 
-% Implements Gibbs Samipling for SUR
+% Implements Gibbs Sampling for SUR
 %
 % INPUTS
 %   ds           [dseries]    data
@@ -110,7 +110,7 @@ hh_fig = dyn_waitbar(0,'Please wait. Gibbs sampler...');
 set(hh_fig,'Name','Surgibbs estimation.');
 residdraws = zeros(floor((ndraws-discarddraws)/thin), nobs, m);
 for i = 1:ndraws
-    if ~mod(i,10)
+    if ~mod(i,100)
         dyn_waitbar(i/ndraws,hh_fig,'Please wait. Gibbs sampler...');
     end
     % Draw Omega, given X, Y, Beta

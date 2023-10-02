@@ -85,4 +85,4 @@ varobs pie r rw y;
 ** posterior median of the DSGE's IRfs and the shaded surface covers the space between the first and ninth posterior deciles of the DSGE's IRFs.
 */
 
-estimation(datafile=datarabanal_hybrid,first_obs=50,mh_nblocks = 1,nobs=90,dsge_var,mode_compute=4,optim=('NumgradAlgorithm',3),mh_replic=2000,bayesian_irf);
+estimation(datafile=datarabanal_hybrid,silent_optimizer,first_obs=50,mh_nblocks = 1,nobs=90,dsge_var,mode_compute=4,optim=('NumgradAlgorithm',3),mh_replic=2000,bayesian_irf);

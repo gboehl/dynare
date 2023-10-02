@@ -114,7 +114,7 @@ end;
 
 varobs gp_obs gy_obs;
 
-estimation(order=1,datafile=fsdat_simul_logged,consider_all_endogenous,nobs=192,mh_replic=2000, mh_nblocks=1,smoother, mh_jscale=0.8);
+estimation(order=1,datafile=fsdat_simul_logged, silent_optimizer,consider_all_endogenous,nobs=192,mh_replic=2000, mh_nblocks=1,smoother, mh_jscale=0.8);
 
 ex_=[];
 for shock_iter=1:M_.exo_nbr

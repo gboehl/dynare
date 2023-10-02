@@ -41,9 +41,9 @@ varobs log_nn;
 
 %reading Excel sheet from column A on creates quarterly dseries starting in
 %1950
-estimation(first_obs=2,datafile='data_uav.xlsx', xls_sheet=Tabelle1, xls_range=a1:b54, mh_replic=2, mh_nblocks=1, mh_jscale=1.1, mh_drop=0.8, plot_priors=0, smoother) log_nn nn hh ;
+estimation(first_obs=2,datafile='data_uav.xlsx', xls_sheet=Tabelle1, xls_range=a1:b54, silent_optimizer,mh_replic=2, mh_nblocks=1, mh_jscale=1.1, mh_drop=0.8, plot_priors=0, smoother) log_nn nn hh ;
 shock_decomposition( parameter_set=posterior_median ) nn hh;
 
 %reading Excel sheet from column B on creates annual dseries starting with 1
-estimation(first_obs=2,datafile='data_uav.xlsx', xls_sheet=Tabelle1, xls_range=b1:b54, mh_replic=2, mh_nblocks=1, mh_jscale=1.1, mh_drop=0.8, plot_priors=0, smoother) log_nn nn hh ;
+estimation(first_obs=2,datafile='data_uav.xlsx', xls_sheet=Tabelle1, xls_range=b1:b54, silent_optimizer, mh_replic=2, mh_nblocks=1, mh_jscale=1.1, mh_drop=0.8, plot_priors=0, smoother) log_nn nn hh ;
 shock_decomposition( parameter_set=posterior_median ) nn hh;

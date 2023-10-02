@@ -131,7 +131,7 @@ end;
 
 varobs gp_obs gy_obs;
 
-estimation(order=1, datafile='../fsdat_simul', nobs=192, loglinear, mh_replic=2000, mh_nblocks=1,smoother, mh_jscale=0.8,consider_all_endogenous);
+estimation(order=1, datafile='../fsdat_simul', nobs=192, silent_optimizer, loglinear, mh_replic=2000, mh_nblocks=1,smoother, mh_jscale=0.8,consider_all_endogenous);
 
 ex_=[];
 for shock_iter=1:M_.exo_nbr

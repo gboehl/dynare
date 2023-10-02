@@ -104,9 +104,9 @@ prior simulate;
 prior moments(distribution);
 
 if isoctave()
-  dynare_sensitivity(prior_range=0, nodisplay, graph_format=(eps),Nsam=1024);
+  dynare_sensitivity(prior_range=0, nodisplay, graph_format=(eps),Nsam=512);
 else
-  dynare_sensitivity(prior_range=0, nodisplay, graph_format=(fig),Nsam=1024);
+  dynare_sensitivity(prior_range=0, nodisplay, graph_format=(fig),Nsam=512);
 end
 
 /*

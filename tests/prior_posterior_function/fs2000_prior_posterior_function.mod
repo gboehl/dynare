@@ -114,7 +114,7 @@ end;
 
 varobs gp_obs gy_obs;
 
-estimation(order=1,datafile='../fs2000/fsdat_simul', nobs=192, loglinear, mh_replic=2000, mh_nblocks=2, mh_jscale=0.8);
+estimation(order=1,datafile='../fs2000/fsdat_simul',silent_optimizer, nobs=192, loglinear, mh_replic=2000, mh_nblocks=2, mh_jscale=0.8);
 
 posterior_function(function='posterior_function_demo', sampling_draws=500);
 

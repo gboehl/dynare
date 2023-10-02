@@ -82,7 +82,7 @@ varobs gp_obs gy_obs;
 
 options_.solve_tolf = 1e-12;
 
-estimation(order=1,loglinear,datafile=fsdat_simul,nobs=192,mh_replic=2,mh_nblocks=1,mh_jscale=0.8,smoother,consider_all_endogenous_and_auxiliary);
+estimation(order=1,loglinear,silent_optimizer,datafile=fsdat_simul,nobs=192,mh_replic=2,mh_nblocks=1,mh_jscale=0.8,smoother,consider_all_endogenous_and_auxiliary);
 steady;
 smoother2histval(period = 5);
 

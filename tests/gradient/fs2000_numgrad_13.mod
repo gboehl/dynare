@@ -79,4 +79,4 @@ varobs gp_obs gy_obs;
 
 options_.solve_tolf = 1e-12;
 
-estimation(order=1,datafile='../fs2000/fsdat_simul',nobs=192,loglinear,mh_replic=0,optim=('NumgradAlgorithm',13));
+estimation(order=1,datafile='../fs2000/fsdat_simul',silent_optimizer,nobs=192,loglinear,mh_replic=0,optim=('NumgradAlgorithm',13));

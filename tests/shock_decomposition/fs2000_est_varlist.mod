@@ -78,6 +78,6 @@ end;
 
 varobs gp_obs gy_obs;
 
-estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=0) y W R;
+estimation(order=1,datafile=fsdat_simul,silent_optimizer,nobs=192,loglinear,mh_replic=0) y W R;
 
 shock_decomposition y W R;

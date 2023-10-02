@@ -81,5 +81,5 @@ y_obs,pie_obs(@{ilag}), -; //[ccf]
 @#endfor
 end;
 
-estimation(datafile='../gsa/data_ca1.m',mode_check,first_obs=8,nobs=79,mh_nblocks=1,
+estimation(datafile='../gsa/data_ca1.m',silent_optimizer,mode_check,first_obs=8,nobs=79,mh_nblocks=1,
   prefilter=1,mh_jscale=0.0005,mh_replic=5000, mode_compute=4, mh_drop=0.6, bayesian_irf,mcmc_jumping_covariance='identity_matrix') R_obs y;

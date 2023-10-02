@@ -122,7 +122,7 @@ end;
 
 varobs gp_obs gy_obs;
 
-estimation(order=1,mode_compute=5, datafile='../fs2000/fsdat_simul.m', nobs=192, loglinear, mh_replic=20, mh_nblocks=1, mh_jscale=0.8,moments_varendo,
+estimation(order=1,mode_compute=5,silent_optimizer, datafile='../fs2000/fsdat_simul.m', nobs=192, loglinear, mh_replic=20, mh_nblocks=1, mh_jscale=0.8,moments_varendo,
 conditional_variance_decomposition=[2,2000],consider_all_endogenous,sub_draws=2);
 
 stoch_simul(order=1,conditional_variance_decomposition=[2,2000],noprint,nograph);
@@ -194,7 +194,7 @@ stderr e_m, inv_gamma_pdf, 0.008862, inf;
 stderr gp_obs, inv_gamma_pdf, 0.003, inf;
 end;
 
-estimation(order=1,mode_compute=5, datafile='../fs2000/fsdat_simul.m', nobs=192, loglinear, mh_replic=20, mh_nblocks=1, mh_jscale=0.8,moments_varendo,
+estimation(order=1,mode_compute=5,silent_optimizer, datafile='../fs2000/fsdat_simul.m', nobs=192, loglinear, mh_replic=20, mh_nblocks=1, mh_jscale=0.8,moments_varendo,
 conditional_variance_decomposition=[2,2000],consider_all_endogenous,sub_draws=2);
 
 stoch_simul(order=1,conditional_variance_decomposition=[2,2000],noprint,nograph);

@@ -256,7 +256,7 @@ method_of_moments(
     %           ,'UseParallel' , 1        % when true (and supported by optimizer) solver estimates gradients in parallel (using Matlab/Octave's parallel toolbox)
     %           ,'Jacobian'    , 'off'    % when 'off' gradient-based solvers approximate Jacobian using finite differences; for GMM we can also pass the analytical Jacobian to gradient-based solvers by setting this 'on'
               )
-    %, silent_optimizer                    % run minimization of moments distance silently without displaying results or saving files in between
+    , silent_optimizer                    % run minimization of moments distance silently without displaying results or saving files in between
 
 % Numerical algorithms options
     % , aim_solver                             % Use AIM algorithm to compute perturbation approximation

@@ -36,4 +36,4 @@ end;
 
 varobs dx dy;
 
-estimation(datafile=data2,nobs=100,mh_replic=0,diffuse_filter);
+estimation(datafile=data2,silent_optimizer,nobs=100,mh_replic=0,diffuse_filter);

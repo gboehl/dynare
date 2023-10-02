@@ -86,4 +86,4 @@ set_time(1970Q3); // Interpreted as the first date available in the sample loade
 
 data(file='fsdat_simul.m',first_obs=1971Q1, nobs=40);
 
-estimation(order=1,nobs=192,loglinear,mh_replic=2000,mh_nblocks=2,mh_jscale=0.8);
+estimation(order=1,silent_optimizer,nobs=192,loglinear,mh_replic=2000,mh_nblocks=2,mh_jscale=0.8);

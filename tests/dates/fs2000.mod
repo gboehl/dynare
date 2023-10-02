@@ -88,5 +88,5 @@ data(series=ts, first_obs=1950Q3, last_obs=2000Q3);
 disp('First date is $1950Q3')  // disp('First date is 1950Q3'), without the $ symbol,  would trigger an error because of the substitution of 1950Q3 by dates('1950Q3')
 
 // Run the estimation. Note that we do not have a datafile option, because of the data command used above.
-estimation(order=1, loglinear, mh_replic=0);
+estimation(order=1, loglinear, mh_replic=0, silent_optimizer);
 

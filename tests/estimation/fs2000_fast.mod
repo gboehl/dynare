@@ -85,4 +85,4 @@ options_.solve_tolf = 1e-12;
 estimation(order=1,datafile=fsdat_simul,nobs=192,loglinear,mh_replic=3000,
            fast_kalman_filter,mh_nblocks=2,mh_jscale=0.8,moments_varendo,
            selected_variables_only,contemporaneous_correlation,
-           smoother,forecast=8) y m;
+           smoother,forecast=8,silent_optimizer) y m;

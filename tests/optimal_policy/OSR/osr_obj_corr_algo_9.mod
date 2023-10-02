@@ -41,7 +41,7 @@ gammac0 = 1.5;
 gamma_y_ = 8;
 gamma_inf_ = 3;
 
-osr(opt_algo=9);
+osr(opt_algo=9,silent_optimizer);
 %compute objective function manually
 objective=oo_.var(strmatch('y',M_.endo_names,'exact'),strmatch('y',M_.endo_names,'exact'))+oo_.var(strmatch('inflation',M_.endo_names,'exact'),strmatch('inflation',M_.endo_names,'exact'))+oo_.var(strmatch('dummy_var',M_.endo_names,'exact'),strmatch('dummy_var',M_.endo_names,'exact'));
         
@@ -57,7 +57,7 @@ dummy_var 1;
 y,inflation 0.5;
 end;
 
-osr;
+osr(silent_optimizer);
 %compute objective function manually
 objective=oo_.var(strmatch('y',M_.endo_names,'exact'),strmatch('y',M_.endo_names,'exact'))+oo_.var(strmatch('inflation',M_.endo_names,'exact'),strmatch('inflation',M_.endo_names,'exact'))+oo_.var(strmatch('dummy_var',M_.endo_names,'exact'),strmatch('dummy_var',M_.endo_names,'exact'))+0.5*oo_.var(strmatch('y',M_.endo_names,'exact'),strmatch('inflation',M_.endo_names,'exact'));
 if abs(oo_.osr.objective_function-objective)>1e-8
@@ -77,7 +77,7 @@ dummy_var 1;
 y,inflation 1;
 end;
 
-osr;
+osr(silent_optimizer);
 %compute objective function manually
 objective=oo_.var(strmatch('y',M_.endo_names,'exact'),strmatch('y',M_.endo_names,'exact'))+oo_.var(strmatch('inflation',M_.endo_names,'exact'),strmatch('inflation',M_.endo_names,'exact'))+oo_.var(strmatch('dummy_var',M_.endo_names,'exact'),strmatch('dummy_var',M_.endo_names,'exact'))+1*oo_.var(strmatch('y',M_.endo_names,'exact'),strmatch('inflation',M_.endo_names,'exact'));
 if abs(oo_.osr.objective_function-objective)>1e-8
@@ -95,7 +95,7 @@ y,inflation 0.5;
 inflation,y 0.5;
 end;
 
-osr;
+osr(silent_optimizer);
 %compute objective function manually
 objective=oo_.var(strmatch('y',M_.endo_names,'exact'),strmatch('y',M_.endo_names,'exact'))+oo_.var(strmatch('inflation',M_.endo_names,'exact'),strmatch('inflation',M_.endo_names,'exact'))+oo_.var(strmatch('dummy_var',M_.endo_names,'exact'),strmatch('dummy_var',M_.endo_names,'exact'))+0.5*oo_.var(strmatch('y',M_.endo_names,'exact'),strmatch('inflation',M_.endo_names,'exact'))+0.5*oo_.var(strmatch('inflation',M_.endo_names,'exact'),strmatch('y',M_.endo_names,'exact'));
 if abs(oo_.osr.objective_function-objective)>1e-8

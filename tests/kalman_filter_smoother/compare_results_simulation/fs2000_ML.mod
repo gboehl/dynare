@@ -114,7 +114,7 @@ stderr e_a, 0.035449;
 stderr e_m, 0.008862;
 end;
 
-estimation(order=1,datafile='fsdat_simul_logged', nobs=192, forecast=8,smoother,filtered_vars,filter_step_ahead=[1,2,4],filter_decomposition,selected_variables_only)  m P c e W R k d y gy_obs;
+estimation(order=1,datafile='fsdat_simul_logged', nobs=192, forecast=8, silent_optimizer, smoother,filtered_vars,filter_step_ahead=[1,2,4],filter_decomposition,selected_variables_only)  m P c e W R k d y gy_obs;
 
 % write shock matrix
 ex_=[];

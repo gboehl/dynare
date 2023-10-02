@@ -111,8 +111,9 @@ stderr gp_obs, 1;
 stderr gy_obs, 1;
 corr gp_obs, gy_obs,0;
 end;
+warning('off','MATLAB:nearlySingularMatrix')
 
-estimation(order=1,datafile=fsdat_simul,mode_check,smoother,filter_decomposition,forecast = 8,filtered_vars,filter_step_ahead=[1,3],irf=20,tex) m P c e W R k d y gy_obs;
+estimation(order=1,datafile=fsdat_simul,silent_optimizer,prior_trunc=0,mode_check,smoother,filter_decomposition,forecast = 8,filtered_vars,filter_step_ahead=[1,3],irf=20,tex) m P c e W R k d y gy_obs;
 
 
 
@@ -128,6 +129,6 @@ stderr gp_obs, inv_gamma_pdf, 0.001, inf;
 //corr gp_obs, gy_obs,normal_pdf, 0, 0.2;
 end;
 
-estimation(mode_compute=5,order=1,datafile=fsdat_simul,mode_check,smoother,filter_decomposition,mh_replic=2000, mh_nblocks=1, mh_jscale=0.8,forecast = 8,bayesian_irf,filtered_vars,filter_step_ahead=[1,3],irf=20) m P c e W R k d y;
+estimation(mode_compute=5,silent_optimizer,order=1,datafile=fsdat_simul,mode_check,smoother,filter_decomposition,mh_replic=2000, mh_nblocks=1, mh_jscale=0.8,forecast = 8,bayesian_irf,filtered_vars,filter_step_ahead=[1,3],irf=20) m P c e W R k d y;
 shock_decomposition y W R;
 //identification(advanced=1,max_dim_cova_group=3,prior_mc=250);

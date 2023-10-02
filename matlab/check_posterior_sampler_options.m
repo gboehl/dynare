@@ -54,7 +54,7 @@ if init
 
       case 'random_walk_metropolis_hastings'
         posterior_sampler_options.parallel_bar_refresh_rate=50;
-        posterior_sampler_options.serial_bar_refresh_rate=3;
+        posterior_sampler_options.serial_bar_refresh_rate=20;
         posterior_sampler_options.parallel_bar_title='RWMH';
         posterior_sampler_options.serial_bar_title='RW Metropolis-Hastings';
 
@@ -111,8 +111,8 @@ if init
         end
 
       case 'tailored_random_block_metropolis_hastings'
-        posterior_sampler_options.parallel_bar_refresh_rate=5;
-        posterior_sampler_options.serial_bar_refresh_rate=1;
+        posterior_sampler_options.parallel_bar_refresh_rate=50;
+        posterior_sampler_options.serial_bar_refresh_rate=20;
         posterior_sampler_options.parallel_bar_title='TaRB-MH';
         posterior_sampler_options.serial_bar_title='TaRB Metropolis-Hastings';
 
@@ -181,7 +181,7 @@ if init
 
       case 'independent_metropolis_hastings'
         posterior_sampler_options.parallel_bar_refresh_rate=50;
-        posterior_sampler_options.serial_bar_refresh_rate=3;
+        posterior_sampler_options.serial_bar_refresh_rate=10;
         posterior_sampler_options.parallel_bar_title='IMH';
         posterior_sampler_options.serial_bar_title='Ind. Metropolis-Hastings';
 

@@ -82,5 +82,5 @@ varobs gp_obs gy_obs;
 
 options_.solve_tolf = 1e-12;
 
-estimation(order=1,datafile='../fsdat_simul',nobs=192,loglinear,mh_replic=3000,
+estimation(order=1,datafile='../fsdat_simul',silent_optimizer,nobs=192,loglinear,mh_replic=3000,
         mh_nblocks=1,posterior_sampling_method='independent_metropolis_hastings',mh_jscale=0.8) y m;

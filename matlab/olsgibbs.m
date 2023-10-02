@@ -186,7 +186,7 @@ end
 hh_fig = dyn_waitbar(0,'Please wait. Gibbs sampler...');
 set(hh_fig,'Name','Olsgibbs estimation.');
 for i = discarddraws+1:ndraws
-    if ~mod(i,10)
+    if ~mod(i,100)
         dyn_waitbar((i-discarddraws)/(ndraws-discarddraws),hh_fig,'Please wait. Gibbs sampler...');
     end
     % Set conditional distribution of β

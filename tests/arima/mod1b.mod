@@ -28,4 +28,4 @@ stderr e_y,INV_GAMMA_PDF,0.01,inf;
 end;
 
 varobs x y;
-estimation(datafile=data1,nobs=1000,mh_replic=0,mh_jscale=0.8,diffuse_filter);
+estimation(datafile=data1,silent_optimizer,nobs=1000,mh_replic=0,mh_jscale=0.8,diffuse_filter);

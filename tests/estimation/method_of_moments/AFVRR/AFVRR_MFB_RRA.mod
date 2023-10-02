@@ -295,7 +295,7 @@ method_of_moments(
                    ,'UseParallel' , 1
                    %,'Jacobian' , 'on'
                   )    % a list of NAME and VALUE pairs to set options for the optimization routines. Available options depend on mode_compute
-        %, silent_optimizer                  % run minimization of moments distance silently without displaying results or saving files in between
+        , silent_optimizer                  % run minimization of moments distance silently without displaying results or saving files in between
         %, analytic_standard_errors
         , se_tolx=1e-10
 );

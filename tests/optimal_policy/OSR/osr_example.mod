@@ -39,6 +39,6 @@ end;
 
 osr_params gammax0 gammac0 gamma_y_ gamma_inf_;
 
-osr;
-osr(analytic_derivation,opt_algo=4);
-osr(analytic_derivation,opt_algo=1,optim=('DerivativeCheck','on','FiniteDifferenceType','central'));
+osr(silent_optimizer);
+osr(analytic_derivation,opt_algo=4,silent_optimizer);
+osr(analytic_derivation,silent_optimizer,opt_algo=1,optim=('DerivativeCheck','on','FiniteDifferenceType','central'));
