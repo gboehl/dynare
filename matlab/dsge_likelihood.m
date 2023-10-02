@@ -3,118 +3,39 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,M_,options_,baye
 % Evaluates the posterior kernel of a DSGE model using the specified
 % kalman_algo; the resulting posterior includes the 2*pi constant of the
 % likelihood function
-
-%@info:
-%! @deftypefn {Function File} {[@var{fval},@var{exit_flag},@var{ys},@var{trend_coeff},@var{info},@var{M_},@var{options_},@var{bayestopt_},@var{dr},@var{DLIK},@var{AHess}] =} dsge_likelihood (@var{xparam1},@var{dataset_},@var{options_},@var{M_},@var{estim_params_},@var{bayestopt_},@var{oo_},@var{derivatives_flag})
-%! @anchor{dsge_likelihood}
-%! @sp 1
-%! Evaluates the posterior kernel of a dsge model.
-%! @sp 2
-%! @strong{Inputs}
-%! @sp 1
-%! @table @ @var
-%! @item xparam1
-%! Vector of doubles, current values for the estimated parameters.
-%! @item dataset_
-%! Matlab's structure describing the dataset (initialized by dynare, see @ref{dataset_}).
-%! @item options_
-%! Matlab's structure describing the options (initialized by dynare, see @ref{options_}).
-%! @item M_
-%! Matlab's structure describing the Model (initialized by dynare, see @ref{M_}).
-%! @item EstimatedParamemeters
-%! Matlab's structure describing the estimated_parameters (initialized by dynare, see @ref{estim_params_}).
-%! @item bayestopt_
-%! Matlab's structure describing the priors (initialized by dynare, see @ref{bayesopt_}).
-%! @item oo_
-%! Matlab's structure gathering the results (initialized by dynare, see @ref{oo_}).
-%! @item derivates_flag
-%! Integer scalar, flag for analytical derivatives of the likelihood.
-%! @end table
-%! @sp 2
-%! @strong{Outputs}
-%! @sp 1
-%! @table @ @var
-%! @item fval
-%! Double scalar, value of (minus) the likelihood.
-%! @item info
-%! Double vector, second entry stores penalty, first entry the error code.
-%! @table @ @code
-%! @item info==0
-%! No error.
-%! @item info==1
-%! The model doesn't determine the current variables uniquely.
-%! @item info==2
-%! MJDGGES returned an error code.
-%! @item info==3
-%! Blanchard & Kahn conditions are not satisfied: no stable equilibrium.
-%! @item info==4
-%! Blanchard & Kahn conditions are not satisfied: indeterminacy.
-%! @item info==5
-%! Blanchard & Kahn conditions are not satisfied: indeterminacy due to rank failure.
-%! @item info==6
-%! The jacobian evaluated at the deterministic steady state is complex.
-%! @item info==19
-%! The steadystate routine has thrown an exception (inconsistent deep parameters).
-%! @item info==20
-%! Cannot find the steady state, info(4) contains the sum of square residuals (of the static equations).
-%! @item info==21
-%! The steady state is complex, info(4) contains the sum of square of imaginary parts of the steady state.
-%! @item info==22
-%! The steady has NaNs.
-%! @item info==23
-%! M_.params has been updated in the steadystate routine and has complex valued scalars.
-%! @item info==24
-%! M_.params has been updated in the steadystate routine and has some NaNs.
-%! @item info==26
-%! M_.params has been updated in the steadystate routine and has negative/0 values in loglinear model.
-%! @item info==30
-%! Ergodic variance can't be computed.
-%! @item info==41
-%! At least one parameter is violating a lower bound condition.
-%! @item info==42
-%! At least one parameter is violating an upper bound condition.
-%! @item info==43
-%! The covariance matrix of the structural innovations is not positive definite.
-%! @item info==44
-%! The covariance matrix of the measurement errors is not positive definite.
-%! @item info==45
-%! Likelihood is not a number (NaN).
-%! @item info==46
-%! Likelihood is a complex valued number.
-%! @item info==47
-%! Posterior kernel is not a number (logged prior density is NaN)
-%! @item info==48
-%! Posterior kernel is a complex valued number (logged prior density is complex).
-%! @end table
-%! @item exit_flag
-%! Integer scalar, equal to zero if the routine return with a penalty (one otherwise).
-%! @item DLIK
-%! Vector of doubles, score of the likelihood.
-%! @item AHess
-%! Matrix of doubles, asymptotic hessian matrix.
-%! @item SteadyState
-%! Vector of doubles, steady state level for the endogenous variables.
-%! @item trend_coeff
-%! Matrix of doubles, coefficients of the deterministic trend in the measurement equation.
-%! @item M_
-%! Matlab's structure describing the model (initialized by dynare, see @ref{M_}).
-%! @item options_
-%! Matlab's structure describing the options (initialized by dynare, see @ref{options_}).
-%! @item bayestopt_
-%! Matlab's structure describing the priors (initialized by dynare, see @ref{bayesopt_}).
-%! @item oo_
-%! Matlab's structure gathering the results (initialized by dynare, see @ref{oo_}).
-%! @end table
-%! @sp 2
-%! @strong{This function is called by:}
-%! @sp 1
-%! @ref{dynare_estimation_1}, @ref{mode_check}
-%! @sp 2
-%! @strong{This function calls:}
-%! @sp 1
-%! @ref{dynare_resolve}, @ref{lyapunov_symm}, @ref{lyapunov_solver}, @ref{compute_Pinf_Pstar}, @ref{kalman_filter_d}, @ref{missing_observations_kalman_filter_d}, @ref{univariate_kalman_filter_d}, @ref{kalman_steady_state}, @ref{get_perturbation_params_deriv}, @ref{kalman_filter}, @ref{score}, @ref{AHessian}, @ref{missing_observations_kalman_filter}, @ref{univariate_kalman_filter}, @ref{priordens}
-%! @end deftypefn
-%@eod:
+%
+% INPUTS
+% - xparam1             [double]        current values for the estimated parameters.
+% - dataset_            [structure]     dataset after transformations
+% - dataset_info        [structure]     storing informations about the
+%                                       sample; not used but required for interface
+% - options_            [structure]     Matlab's structure describing the current options
+% - M_                  [structure]     Matlab's structure describing the model
+% - estim_params_       [structure]     characterizing parameters to be estimated
+% - bayestopt_          [structure]     describing the priors
+% - BoundsInfo          [structure]     containing prior bounds
+% - dr                  [structure]     Reduced form model.
+% - endo_steady_state   [vector]        steady state value for endogenous variables
+% - exo_steady_state    [vector]        steady state value for exogenous variables
+% - exo_det_steady_state [vector]       steady state value for exogenous deterministic variables
+% - derivatives_info    [structure]     derivative info for identification
+%
+% OUTPUTS
+% - fval                    [double]        scalar, value of the likelihood or posterior kernel.
+% - info                    [integer]       4×1 vector, informations resolution of the model and evaluation of the likelihood.
+% - exit_flag               [integer]       scalar, equal to 1 (no issues when evaluating the likelihood) or 0 (not able to evaluate the likelihood).
+% - DLIK                    [double]        Vector with score of the likelihood
+% - Hess                    [double]        asymptotic hessian matrix.
+% - SteadyState             [double]        steady state level for the endogenous variables
+% - trend_coeff             [double]        Matrix of doubles, coefficients of the deterministic trend in the measurement equation.
+% - M_                      [struct]        Updated M_ structure described in INPUTS section.
+% - options_                [struct]        Updated options_ structure described in INPUTS section.
+% - bayestopt_              [struct]        See INPUTS section.
+% - dr                      [structure]     Reduced form model.
+%
+% This function is called by: dynare_estimation_1, mode_check
+% This function calls: dynare_resolve, lyapunov_symm, lyapunov_solver, compute_Pinf_Pstar, kalman_filter_d, missing_observations_kalman_filter_d,
+% univariate_kalman_filter_d, kalman_steady_state, get_perturbation_params_deriv, kalman_filter, missing_observations_kalman_filter, univariate_kalman_filter, priordens
 
 % Copyright © 2004-2023 Dynare Team
 %
@@ -836,19 +757,12 @@ end
 if analytic_derivation
     if no_DLIK==0
         DLIK = LIK1{2};
-        %                 [DLIK] = score(T,R,Q,H,Pstar,Y,DT,DYss,DOm,DH,DP,start,Z,kalman_tol,riccati_tol);
     end
     if full_Hess
         Hess = -LIK1{3};
-        %                     [Hess, DLL] = get_Hessian(T,R,Q,H,Pstar,Y,DT,DYss,DOm,DH,DP,D2T,D2Yss,D2Om,D2H,D2P,start,Z,kalman_tol,riccati_tol);
-        %                     Hess0 = getHessian(Y,T,DT,D2T, R*Q*transpose(R),DOm,D2Om,Z,DYss,D2Yss);
     end
     if asy_Hess
-        %         if ~((kalman_algo==2) || (kalman_algo==4)),
-        %             [Hess] = AHessian(T,R,Q,H,Pstar,Y,DT,DYss,DOm,DH,DP,start,Z,kalman_tol,riccati_tol);
-        %         else
         Hess = LIK1{3};
-        %         end
     end
 end
 

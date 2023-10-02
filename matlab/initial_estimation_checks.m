@@ -1,21 +1,21 @@
-function DynareResults = initial_estimation_checks(objective_function,xparam1,DynareDataset,DatasetInfo,Model,EstimatedParameters,DynareOptions,BayesInfo,BoundsInfo,DynareResults)
-% function DynareResults = initial_estimation_checks(objective_function,xparam1,DynareDataset,DatasetInfo,Model,EstimatedParameters,DynareOptions,BayesInfo,BoundsInfo,DynareResults)
+function oo_ = initial_estimation_checks(objective_function,xparam1,dataset_,dataset_info,M_,estim_params_,options_,bayestopt_,BoundsInfo,oo_)
+% function oo_ = initial_estimation_checks(objective_function,xparam1,dataset_,dataset_info,M_,estim_params_,options_,bayestopt_,BoundsInfo,oo_)
 % Checks data (complex values, ML evaluation, initial values, BK conditions,..)
 %
 % INPUTS
 %   objective_function  [function handle] of the objective function
-%   xparam1:            [vector] of parameters to be estimated
-%   DynareDataset:      [dseries] object storing the dataset
-%   DataSetInfo:        [structure] storing informations about the sample.
-%   Model:              [structure] decribing the model
-%   EstimatedParameters [structure] characterizing parameters to be estimated
-%   DynareOptions       [structure] describing the options
-%   BayesInfo           [structure] describing the priors
+%   xparam1             [vector] of parameters to be estimated
+%   dataset_            [dseries] object storing the dataset
+%   dataset_info        [structure] storing informations about the sample.
+%   M_                  [structure] decribing the model
+%   estim_params_       [structure] characterizing parameters to be estimated
+%   options_            [structure] describing the options
+%   bayestopt_          [structure] describing the priors
 %   BoundsInfo          [structure] containing prior bounds
-%   DynareResults       [structure] storing the results
+%   oo_                 [structure] storing the results
 %
 % OUTPUTS
-%    DynareResults     structure of temporary results
+%   oo_                 [structure] storing the results
 %
 % SPECIAL REQUIREMENTS
 %    none
@@ -39,81 +39,81 @@ function DynareResults = initial_estimation_checks(objective_function,xparam1,Dy
 
 %get maximum number of simultaneously observed variables for stochastic
 %singularity check
-maximum_number_non_missing_observations=max(sum(~isnan(DynareDataset.data(2:end,:)),2));
-init_number_non_missing_observations=sum(~isnan(DynareDataset.data(1,:)),2);
+maximum_number_non_missing_observations=max(sum(~isnan(dataset_.data(2:end,:)),2));
+init_number_non_missing_observations=sum(~isnan(dataset_.data(1,:)),2);
 
-if DynareOptions.heteroskedastic_filter
-    if DynareOptions.order>1 
+if options_.heteroskedastic_filter
+    if options_.order>1 
         error('initial_estimation_checks:: heteroskedastic shocks are only supported with the Kalman filter/smoother')
     end
-    observations_by_period=sum(~isnan(DynareDataset.data),2);
-    base_shocks = find(diag(Model.Sigma_e));
-    zero_shocks = ~ismember(1:Model.exo_nbr,base_shocks);
+    observations_by_period=sum(~isnan(dataset_.data),2);
+    base_shocks = find(diag(M_.Sigma_e));
+    zero_shocks = ~ismember(1:M_.exo_nbr,base_shocks);
     non_zero_shocks_by_period=repmat(length(base_shocks),size(observations_by_period));
     % check periods for which base shocks are scaled to zero
-    non_zero_shocks_by_period = non_zero_shocks_by_period-sum(Model.heteroskedastic_shocks.Qscale(base_shocks,1:DynareOptions.nobs)==0,1)';
+    non_zero_shocks_by_period = non_zero_shocks_by_period-sum(M_.heteroskedastic_shocks.Qscale(base_shocks,1:options_.nobs)==0,1)';
     % check periods for which base shocks are set to zero
-    non_zero_shocks_by_period = non_zero_shocks_by_period-sum(Model.heteroskedastic_shocks.Qvalue(base_shocks,1:DynareOptions.nobs)==0,1)';
+    non_zero_shocks_by_period = non_zero_shocks_by_period-sum(M_.heteroskedastic_shocks.Qvalue(base_shocks,1:options_.nobs)==0,1)';
     % check periods for which other shocks are set to a positive number
-    non_zero_shocks_by_period = non_zero_shocks_by_period+sum(Model.heteroskedastic_shocks.Qvalue(zero_shocks,1:DynareOptions.nobs)>0,1)';
+    non_zero_shocks_by_period = non_zero_shocks_by_period+sum(M_.heteroskedastic_shocks.Qvalue(zero_shocks,1:options_.nobs)>0,1)';
 end
 
-if DynareOptions.order>1
-    if any(any(isnan(DynareDataset.data)))
+if options_.order>1
+    if any(any(isnan(dataset_.data)))
         error('initial_estimation_checks:: particle filtering does not support missing observations')
     end
-    if DynareOptions.prefilter==1
+    if options_.prefilter==1
         error('initial_estimation_checks:: particle filtering does not support the prefilter option')
     end
-    if BayesInfo.with_trend
+    if bayestopt_.with_trend
         error('initial_estimation_checks:: particle filtering does not support trends')
     end
-    if DynareOptions.order>3 && DynareOptions.particle.pruning==1
+    if options_.order>3 && options_.particle.pruning==1
         error('initial_estimation_checks:: the particle filter with order>3 does not support pruning')
     end
-    if DynareOptions.particle.pruning~=DynareOptions.pruning
+    if options_.particle.pruning~=options_.pruning
         warning('initial_estimation_checks:: the pruning settings differ between the particle filter and the one used for IRFs/simulations. Make sure this is intended.')
     end
 end
 
-if DynareOptions.occbin.likelihood.status || DynareOptions.occbin.smoother.status
-    if DynareOptions.prefilter
+if options_.occbin.likelihood.status || options_.occbin.smoother.status
+    if options_.prefilter
         error('initial_estimation_checks:: Occbin is incompatible with the prefilter option due to the sample mean generally not corresponding to the steady state with an occasionally binding constraint.')
     end
-    if ~DynareOptions.occbin.likelihood.inversion_filter && (DynareOptions.kalman_algo==2 || DynareOptions.kalman_algo==4)
+    if ~options_.occbin.likelihood.inversion_filter && (options_.kalman_algo==2 || options_.kalman_algo==4)
         error('initial_estimation_checks:: Occbin is incompatible with the selected univariate Kalman filter.')        
     end
-    if DynareOptions.fast_kalman_filter
+    if options_.fast_kalman_filter
         error('initial_estimation_checks:: Occbin is incompatible with the fast Kalman filter.')        
     end
 end
 
-if (DynareOptions.occbin.likelihood.status && DynareOptions.occbin.likelihood.inversion_filter) || (DynareOptions.occbin.smoother.status && DynareOptions.occbin.smoother.inversion_filter)
-    err_index= find(diag(Model.Sigma_e)~=0);
-    if length(err_index)~=length(DynareOptions.varobs)
+if (options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter) || (options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter)
+    err_index= find(diag(M_.Sigma_e)~=0);
+    if length(err_index)~=length(options_.varobs)
         fprintf('initial_estimation_checks:: The IVF requires exactly as many shocks as observables.')
     end
-    var_index=find(any(isnan(DynareDataset.data)));
+    var_index=find(any(isnan(dataset_.data)));
     if ~isempty(var_index)
         fprintf('initial_estimation_checks:: The IVF requires exactly as many shocks as observables.\n')
         fprintf('initial_estimation_checks:: The data series %s contains NaN, I am therefore dropping shock %s for these time points.\n',...
-            DynareOptions.varobs{var_index},Model.exo_names{DynareOptions.occbin.likelihood.IVF_shock_observable_mapping(var_index)})
+            options_.varobs{var_index},M_.exo_names{options_.occbin.likelihood.IVF_shock_observable_mapping(var_index)})
     end
 end
 
-if DynareOptions.order>1 || (DynareOptions.order==1 && ~ischar(DynareOptions.mode_compute) && DynareOptions.mode_compute==11)
-    if DynareOptions.order==1 && DynareOptions.mode_compute==11
+if options_.order>1 || (options_.order==1 && ~ischar(options_.mode_compute) && options_.mode_compute==11)
+    if options_.order==1 && options_.mode_compute==11
         disp_string='mode_compute=11';
     else
         disp_string='particle filtering';
     end
-    if Model.H==0
+    if M_.H==0
         error('initial_estimation_checks:: %s requires measurement error on the observables',disp_string)
     else
-        if sum(diag(Model.H)>0)<length(DynareOptions.varobs)
+        if sum(diag(M_.H)>0)<length(options_.varobs)
             error('initial_estimation_checks:: %s requires as many measurement errors as observed variables',disp_string)
         else
-            [~,flag]=chol(Model.H);
+            [~,flag]=chol(M_.H);
             if flag
                 error('initial_estimation_checks:: the measurement error matrix must be positive definite')
             end
@@ -121,31 +121,31 @@ if DynareOptions.order>1 || (DynareOptions.order==1 && ~ischar(DynareOptions.mod
     end
 end
 
-non_zero_ME=length(EstimatedParameters.H_entries_to_check_for_positive_definiteness);
+non_zero_ME=length(estim_params_.H_entries_to_check_for_positive_definiteness);
 
 print_init_check_warning=false;
-if maximum_number_non_missing_observations>Model.exo_nbr+non_zero_ME
+if maximum_number_non_missing_observations>M_.exo_nbr+non_zero_ME
     error(['initial_estimation_checks:: Estimation can''t take place because there are less declared shocks than observed variables!'])
 end
-if init_number_non_missing_observations>Model.exo_nbr+non_zero_ME
-    if DynareOptions.no_init_estimation_check_first_obs
+if init_number_non_missing_observations>M_.exo_nbr+non_zero_ME
+    if options_.no_init_estimation_check_first_obs
         print_init_check_warning=true;
     else
         error(['initial_estimation_checks:: Estimation can''t take place because there are less declared shocks than observed variables in first period!'])
     end
 end
 
-if DynareOptions.heteroskedastic_filter
+if options_.heteroskedastic_filter
     if any(observations_by_period>(non_zero_shocks_by_period+non_zero_ME))
         error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance: Check heteroskedastic block and shocks calibration!'])
     end
 else
-    if maximum_number_non_missing_observations>length(find(diag(Model.Sigma_e)))+non_zero_ME
+    if maximum_number_non_missing_observations>length(find(diag(M_.Sigma_e)))+non_zero_ME
         error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance!'])
     end
 end
-if init_number_non_missing_observations>length(find(diag(Model.Sigma_e)))+non_zero_ME
-    if DynareOptions.no_init_estimation_check_first_obs
+if init_number_non_missing_observations>length(find(diag(M_.Sigma_e)))+non_zero_ME
+    if options_.no_init_estimation_check_first_obs
         print_init_check_warning=true;
     else
         error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance in first period!'])
@@ -157,54 +157,54 @@ if print_init_check_warning
     fprintf('ESTIMATION_CHECKS: it may lead to a crash or provide undesired/wrong results later on!\n');
 end
 
-if (any(BayesInfo.pshape  >0 ) && DynareOptions.mh_replic) && DynareOptions.mh_nblck<1
+if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) && options_.mh_nblck<1
     error(['initial_estimation_checks:: Bayesian estimation cannot be conducted with mh_nblocks=0.'])
 end
 
 % check and display warnings if steady-state solves static model (except if diffuse_filter == 1) and if steady-state changes estimated parameters
-[DynareResults.steady_state] = check_steady_state_changes_parameters(Model,EstimatedParameters,DynareResults,DynareOptions, [DynareOptions.diffuse_filter==0 DynareOptions.diffuse_filter==0] );
+[oo_.steady_state] = check_steady_state_changes_parameters(M_,estim_params_,oo_,options_, [options_.diffuse_filter==0 options_.diffuse_filter==0] );
 
 % check and display warning if negative values of stderr or corr params are outside unit circle for Bayesian estimation
-if any(BayesInfo.pshape)
-    check_prior_stderr_corr(EstimatedParameters,BayesInfo);
+if any(bayestopt_.pshape)
+    check_prior_stderr_corr(estim_params_,bayestopt_);
 end
 
 % display warning if some parameters are still NaN
-test_for_deep_parameters_calibration(Model);
+test_for_deep_parameters_calibration(M_);
 
-[lnprior,~,~,info]= priordens(xparam1,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
+[lnprior,~,~,info]= priordens(xparam1,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
 if any(info)
-    fprintf('The prior density evaluated at the initial values is Inf for the following parameters: %s\n',BayesInfo.name{info,1})
+    fprintf('The prior density evaluated at the initial values is Inf for the following parameters: %s\n',bayestopt_.name{info,1})
     error('The initial value of the prior is -Inf')
 end
 
-if isfield(Model,'filter_initial_state') && ~isempty(Model.filter_initial_state)
-    state_indices=DynareResults.dr.order_var(DynareResults.dr.restrict_var_list(BayesInfo.mf0));
+if isfield(M_,'filter_initial_state') && ~isempty(M_.filter_initial_state)
+    state_indices=oo_.dr.order_var(oo_.dr.restrict_var_list(bayestopt_.mf0));
     for ii=1:size(state_indices,1)
-        if ~isempty(Model.filter_initial_state{state_indices(ii),1})
+        if ~isempty(M_.filter_initial_state{state_indices(ii),1})
             try
-                evaluate_expression(Model.filter_initial_state{state_indices(ii),2},Model,DynareResults)
+                evaluate_expression(M_.filter_initial_state{state_indices(ii),2},M_,oo_)
             catch
-                fprintf('Unable to evaluate the expression\n %s \nfor the filter_initial_state of variable %s\n',Model.filter_initial_state{state_indices(ii),2},Model.endo_names(state_indices(ii),:))
+                fprintf('Unable to evaluate the expression\n %s \nfor the filter_initial_state of variable %s\n',M_.filter_initial_state{state_indices(ii),2},M_.endo_names(state_indices(ii),:))
             end
         end
     end
 end
 
-if ~isreal(DynareDataset.data)
+if ~isreal(dataset_.data)
     error('initial_estimation_checks: the data contains complex values.')
 end
 
 % Evaluate the likelihood.
-ana_deriv = DynareOptions.analytic_derivation;
-DynareOptions.analytic_derivation=0;
-if ~isequal(DynareOptions.mode_compute,11) || ...
-        (isequal(DynareOptions.mode_compute,11) && isequal(DynareOptions.order,1))
+ana_deriv = options_.analytic_derivation;
+options_.analytic_derivation=0;
+if ~isequal(options_.mode_compute,11) || ...
+        (isequal(options_.mode_compute,11) && isequal(options_.order,1))
     %shut off potentially automatic switch to diffuse filter for the
     %purpose of checking stochastic singularity
-    use_univariate_filters_if_singularity_is_detected_old=DynareOptions.use_univariate_filters_if_singularity_is_detected;
-    DynareOptions.use_univariate_filters_if_singularity_is_detected=0;
-    [fval,info] = feval(objective_function,xparam1,DynareDataset,DatasetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults.dr,DynareResults.steady_state,DynareResults.exo_steady_state,DynareResults.exo_det_steady_state);
+    use_univariate_filters_if_singularity_is_detected_old=options_.use_univariate_filters_if_singularity_is_detected;
+    options_.use_univariate_filters_if_singularity_is_detected=0;
+    [fval,info] = feval(objective_function,xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     if info(1)==50
         fprintf('\ninitial_estimation_checks:: The forecast error variance in the multivariate Kalman filter became singular.\n')
         fprintf('initial_estimation_checks:: This is often a sign of stochastic singularity, but can also sometimes happen by chance\n')
@@ -213,30 +213,24 @@ if ~isequal(DynareOptions.mode_compute,11) || ...
         error('initial_estimation_checks:: The forecast error variance in the multivariate Kalman filter became singular.')
     end
     if info(1)==201 || info(1)==202
-        message=get_error_message(info,DynareOptions);
+        message=get_error_message(info,options_);
         error('initial_estimation_checks:: %s.',message)
     end
     %reset options
-    DynareOptions.use_univariate_filters_if_singularity_is_detected=use_univariate_filters_if_singularity_is_detected_old;
+    options_.use_univariate_filters_if_singularity_is_detected=use_univariate_filters_if_singularity_is_detected_old;
 else
     info=0;
     fval = 0;
 end
-if DynareOptions.debug
-    DynareResults.likelihood_at_initial_parameters=fval;
+if options_.debug
+    oo_.likelihood_at_initial_parameters=fval;
 end
-DynareOptions.analytic_derivation=ana_deriv;
+options_.analytic_derivation=ana_deriv;
 
-if DynareOptions.mode_compute==13
+if options_.mode_compute==13
     error('Options mode_compute=13 is only compatible with quadratic objective functions')
 end
 
-
-% if DynareOptions.mode_compute==5
-%     if ~strcmp(func2str(objective_function),'dsge_likelihood')
-%         error('Options mode_compute=5 is not compatible with non linear filters or Dsge-VAR models!')
-%     end
-% end
 if isnan(fval)
     error('The initial value of the likelihood is NaN')
 elseif imag(fval)
@@ -244,34 +238,34 @@ elseif imag(fval)
 end
 
 if info(1) > 0
-    if DynareOptions.order>1
-        [eigenvalues_] = check(Model,DynareOptions, DynareResults);
-        if any(abs(1-abs(eigenvalues_))<abs(DynareOptions.qz_criterium-1))
+    if options_.order>1
+        [eigenvalues_] = check(M_,options_, oo_);
+        if any(abs(1-abs(eigenvalues_))<abs(options_.qz_criterium-1))
             error('Your model has at least one unit root and you are using a nonlinear filter. Please set nonlinear_filter_initialization=3.')
         end
     else
         disp('Error in computing likelihood for initial parameter values')
-        print_info(info, DynareOptions.noprint, DynareOptions)
+        print_info(info, options_.noprint, options_)
     end
 end
 
-if DynareOptions.prefilter==1
-    if (~DynareOptions.loglinear && any(abs(DynareResults.steady_state(BayesInfo.mfys))>1e-9)) || (DynareOptions.loglinear && any(abs(log(DynareResults.steady_state(BayesInfo.mfys)))>1e-9))
+if options_.prefilter==1
+    if (~options_.loglinear && any(abs(oo_.steady_state(bayestopt_.mfys))>1e-9)) || (options_.loglinear && any(abs(log(oo_.steady_state(bayestopt_.mfys)))>1e-9))
         disp(['You are trying to estimate a model with a non zero steady state for the observed endogenous'])
         disp(['variables using demeaned data!'])
         error('You should change something in your mod file...')
     end
 end
 
-if ~isequal(DynareOptions.mode_compute,11)
+if ~isequal(options_.mode_compute,11)
     disp(['Initial value of the log posterior (or likelihood): ' num2str(-fval)]);
 end
 
-if DynareOptions.mh_tune_jscale.status && (DynareOptions.mh_tune_jscale.maxiter<DynareOptions.mh_tune_jscale.stepsize)
+if options_.mh_tune_jscale.status && (options_.mh_tune_jscale.maxiter<options_.mh_tune_jscale.stepsize)
     warning('You specified mh_tune_jscale, but the maximum number of iterations is smaller than the step size. No update will take place.')
 end
 
-if ~isempty(DynareOptions.conditional_variance_decomposition) && ~DynareOptions.moments_varendo
+if ~isempty(options_.conditional_variance_decomposition) && ~options_.moments_varendo
     disp('The conditional_variance_decomposition-option will be ignored. You need to set moments_varendo');
 end
 

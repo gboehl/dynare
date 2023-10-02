@@ -1,11 +1,11 @@
-function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,dr] = non_linear_dsge_likelihood(xparam1,DynareDataset,DatasetInfo,options_,M_,EstimatedParameters,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
-
+function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,dr] = non_linear_dsge_likelihood(xparam1,dataset_,dataset_info,options_,M_,EstimatedParameters,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+% [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,dr] = non_linear_dsge_likelihood(xparam1,dataset_,dataset_info,options_,M_,EstimatedParameters,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % Evaluates the posterior kernel of a dsge model using a non linear filter.
 %
 % INPUTS
 % - xparam1                 [double]              n×1 vector, estimated parameters.
-% - DynareDataset           [struct]              Matlab's structure containing the dataset
-% - DatasetInfo             [struct]              Matlab's structure describing the dataset
+% - dataset_                [struct]              Matlab's structure containing the dataset
+% - dataset_info            [struct]              Matlab's structure describing the dataset
 % - options_                [struct]              Matlab's structure describing the options
 % - M_                      [struct]              Matlab's structure describing the M_
 % - EstimatedParameters     [struct]              Matlab's structure describing the estimated_parameters
@@ -26,7 +26,7 @@ function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,dr
 % - trend_coeff             [double]              Empty array.
 % - M_                      [struct]              Updated M_ structure described in INPUTS section.
 % - options_                [struct]              Updated options_ structure described in INPUTS section.
-% - bayestopt_               [struct]              See INPUTS section.
+% - bayestopt_              [struct]              See INPUTS section.
 % - dr                      [struct]              decision rule structure described in INPUTS section.
 
 % Copyright © 2010-2023 Dynare Team
@@ -107,7 +107,7 @@ bayestopt_.mf = bayestopt_.mf1;
 
 % Get needed informations for kalman filter routines.
 start = options_.presample+1;
-Y = transpose(DynareDataset.data);
+Y = transpose(dataset_.data);
 
 %------------------------------------------------------------------------------
 % 3. Initial condition of the Kalman filter
