@@ -1,21 +1,23 @@
-function out = identification_numerical_objective(params, outputflag, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvar, useautocorr, nlags, grid_nbr)
-%function out = identification_numerical_objective(params, outputflag, estim_params, M, oo, options, indpmodel, indpstderr, indpcorr, indvar, useautocorr, nlags, grid_nbr)
+function out = identification_numerical_objective(params, outputflag, estim_params, M, options, indpmodel, indpstderr, indvar, useautocorr, nlags, grid_nbr, dr, steady_state, exo_steady_state, exo_det_steady_state)
+%function out = identification_numerical_objective(params, outputflag, %estim_params, M, options, indpmodel, indpstderr, indvar, useautocorr, nlags, grid_nbr, dr, steady_state, exo_steady_state, exo_det_steady_state)
 % -------------------------------------------------------------------------
 % Objective function to compute numerically the Jacobians used for identification analysis
 % Previously this function was called thet2tau.m
 % =========================================================================
 % INPUTS
-%   params:         [vector] parameter values at which to evaluate objective function
-%                   stderr parameters come first, corr parameters second, model parameters third
-%   outputflag:     [integer] flag which objective to compute (see below)
-%   estim_params:   [structure] storing the estimation information
-%   M:              [structure] storing the model information
-%   oo:             [structure] storing the reduced form solution results
-%   options:        [structure] storing the options
-%   indpmodel:      [vector] Index of model parameters
-%   indpstderr:     [vector] Index of stderr parameters
-%   indpcorr:       [matrix] Index of corr parameters
-%   indvar:         [vector] Index of selected or observed variables
+%   params:                 [vector]        parameter values at which to evaluate objective function
+%                                           stderr parameters come first, corr parameters second, model parameters third
+%   outputflag:             [integer]       flag which objective to compute (see below)
+%   estim_params:           [structure]     storing the estimation information
+%   M:                      [structure]     storing the model information
+%   options:                [structure]     storing the options
+%   indpmodel:              [vector]        Index of model parameters
+%   indpstderr:             [vector]        Index of stderr parameters
+%   indvar:                 [vector]        Index of selected or observed variables
+%   dr                      [structure]     Reduced form model.
+%   endo_steady_state       [vector]        steady state value for endogenous variables
+%   exo_steady_state        [vector]        steady state value for exogenous variables
+%   exo_det_steady_state    [vector]        steady state value for exogenous deterministic variables                                    
 % -------------------------------------------------------------------------
 % OUTPUTS
 %   out:    dependent on outputflag
@@ -76,9 +78,9 @@ else
 end
 
 %% compute Kalman transition matrices and steady state with updated parameters
-[oo.dr,info,M.params] = compute_decision_rules(M,options,oo.dr, oo.steady_state, oo.exo_steady_state, oo.exo_det_steady_state);
+[dr,info,M.params] = compute_decision_rules(M,options,dr, steady_state, exo_steady_state, exo_det_steady_state);
 options = rmfield(options,'options_ident');
-pruned = pruned_state_space_system(M, options, oo.dr, indvar, nlags, useautocorr, 0);
+pruned = pruned_state_space_system(M, options, dr, indvar, nlags, useautocorr, 0);
 
 %% out = [vech(cov(Y_t,Y_t)); vec(cov(Y_t,Y_{t-1}); ...; vec(cov(Y_t,Y_{t-nlags})] of indvar variables, in DR order. This is Iskrev (2010)'s J matrix.
 if outputflag == 1    

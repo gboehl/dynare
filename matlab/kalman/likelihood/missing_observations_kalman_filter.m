@@ -1,4 +1,5 @@
 function  [LIK, lik, a, P] = missing_observations_kalman_filter(data_index,number_of_observations,no_more_missing_observations,Y,start,last,a,P,kalman_tol,riccati_tol,rescale_prediction_error_covariance,presample,T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods,occbin_)
+% [LIK, lik, a, P] = missing_observations_kalman_filter(data_index,number_of_observations,no_more_missing_observations,Y,start,last,a,P,kalman_tol,riccati_tol,rescale_prediction_error_covariance,presample,T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods,occbin_)
 % Computes the likelihood of a state space model in the case with missing observations.
 %
 % INPUTS
@@ -32,7 +33,7 @@ function  [LIK, lik, a, P] = missing_observations_kalman_filter(data_index,numbe
 % NOTES
 %   The vector "lik" is used to evaluate the jacobian of the likelihood.
 
-% Copyright © 2004-2021 Dynare Team
+% Copyright © 2004-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -100,9 +101,12 @@ if occbin_.status
     vv = zeros(pp,last);
 
     options_=occbin_.info{1};
-    oo_=occbin_.info{2};
-    M_=occbin_.info{3};
-    occbin_options=occbin_.info{4};
+    dr=occbin_.info{2};
+    endo_steady_state=occbin_.info{3};
+    exo_steady_state=occbin_.info{4};
+    exo_det_steady_state=occbin_.info{5};
+    M_=occbin_.info{6};
+    occbin_options=occbin_.info{7};
     opts_regime.regime_history = occbin_options.opts_simul.init_regime;
     opts_regime.binding_indicator = occbin_options.opts_simul.init_binding_indicator;
     if t>1
@@ -113,13 +117,13 @@ if occbin_.status
     if isempty(opts_regime.binding_indicator) && isempty(opts_regime.regime_history)
         opts_regime.binding_indicator=zeros(last+2,M_.occbin.constraint_nbr);
     end
-    [~, ~, ~, regimes_] = occbin.check_regimes([], [], [], opts_regime, M_, options_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
-    if length(occbin_.info)>4
-        TT=occbin_.info{5};
-        RR=occbin_.info{6};
-        CC=occbin_.info{7};
-        T0=occbin_.info{8};
-        R0=occbin_.info{9};
+    [~, ~, ~, regimes_] = occbin.check_regimes([], [], [], opts_regime, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+    if length(occbin_.info)>7
+        TT=occbin_.info{8};
+        RR=occbin_.info{9};
+        CC=occbin_.info{10};
+        T0=occbin_.info{11};
+        R0=occbin_.info{12};
         TT = cat(3,TT,T);
         RR = cat(3,RR,R);
         CC = cat(2,CC,zeros(mm,1));
@@ -254,12 +258,12 @@ while notsteady && t<=last
             RR01 = cat(3,R,RR(:,:,1));
             CC01 = zeros(size(CC,1),2);
             CC01(:,2) = CC(:,1);
-            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regimes_(t:t+2), info, M_, likx] = occbin.kalman_update_algo_1(a00, a10, P00, P10, data_index0, Z, v0, Y0, H, Qt, T0, R0, TT01, RR01, CC01, regimes_(t:t+1), M_, oo_, options_, occbin_options);
+            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regimes_(t:t+2), info, M_, likx] = occbin.kalman_update_algo_1(a00, a10, P00, P10, data_index0, Z, v0, Y0, H, Qt, T0, R0, TT01, RR01, CC01, regimes_(t:t+1), M_, dr, endo_steady_state,exo_steady_state,exo_det_steady_state, options_, occbin_options);
         else
             if isqvec
                 Qt = Qvec(:,:,t-1:t+1);
             end
-            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regimes_(t:t+2), info, M_, likx] = occbin.kalman_update_algo_1(a0(:,t-1),a1(:,t-1:t),P0(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,vv(:,t-1:t),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,oo_,options_,occbin_options);
+            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regimes_(t:t+2), info, M_, likx] = occbin.kalman_update_algo_1(a0(:,t-1),a1(:,t-1:t),P0(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,vv(:,t-1:t),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,options_,occbin_options);
         end
         if info
             if options_.debug

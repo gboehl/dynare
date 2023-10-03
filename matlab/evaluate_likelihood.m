@@ -1,4 +1,5 @@
 function [llik,parameters] = evaluate_likelihood(parameters,M_,estim_params_,oo_,options_,bayestopt_)
+% [llik,parameters] = evaluate_likelihood(parameters,M_,estim_params_,oo_,options_,bayestopt_)
 % Evaluate the logged likelihood at parameters.
 %
 % INPUTS
@@ -22,7 +23,7 @@ function [llik,parameters] = evaluate_likelihood(parameters,M_,estim_params_,oo_
 % [2] This function use persistent variables for the dataset and the description of the missing observations. Consequently, if this function
 %     is called more than once (by changing the value of parameters) the sample *must not* change.
 
-% Copyright © 2009-2017 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -87,9 +88,9 @@ end
 
 
 if options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter
-    llik = -occbin.IVF_posterior(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+    llik = -occbin.IVF_posterior(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 else
-    llik = -dsge_likelihood(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_);
+    llik = -dsge_likelihood(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 end
 ldens = evaluate_prior(parameters,M_,estim_params_,oo_,options_,bayestopt_);
 llik = llik - ldens;

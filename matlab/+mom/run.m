@@ -435,7 +435,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     % Provide info on data moments handling
     fprintf('Computing data moments. Note that NaN values in the moments (due to leads and lags or missing data) are replaced by the mean of the corresponding moment.\n');
     % Get data moments for the method of moments
-    [oo_.mom.data_moments, oo_.mom.m_data] = mom.get_data_moments(dataset_.data, oo_, M_.matched_moments, options_mom_);
+    [oo_.mom.data_moments, oo_.mom.m_data] = mom.get_data_moments(dataset_.data, oo_.mom.obs_var, oo_.dr.inv_order_var, M_.matched_moments, options_mom_);
     if ~isreal(dataset_.data)
         error('method_of_moments: The data moments contain complex values!')
     end
@@ -509,7 +509,7 @@ try
         oo_.mom.Sw = eye(options_mom_.mom.mom_nbr); % initialize with identity weighting matrix
     end
     tic_id = tic;
-    [fval, info, ~, ~, ~, oo_, M_] = feval(objective_function, xparam0, Bounds, oo_, estim_params_, M_, options_mom_, bayestopt_);
+    [fval, info, ~, ~, ~, oo_, M_] = feval(objective_function, xparam0, Bounds, oo_, estim_params_, M_, options_mom_);
     elapsed_time = toc(tic_id);
     if isnan(fval)
         error('method_of_moments: The initial value of the objective function with identity weighting matrix is NaN!')
@@ -569,7 +569,7 @@ end
 % -------------------------------------------------------------------------
 if options_mom_.mode_check.status
     mode_check(objective_function, xparam1, hessian_xparam1, options_mom_, M_, estim_params_, bayestopt_, Bounds, true,...               
-               Bounds, oo_, estim_params_, M_, options_mom_, bayestopt_);
+               Bounds, oo_, estim_params_, M_, options_mom_);
 end
 
 

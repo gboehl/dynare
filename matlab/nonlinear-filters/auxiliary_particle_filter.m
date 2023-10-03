@@ -77,7 +77,7 @@ state_variance_rank = size(StateVectorVarianceSquareRoot,2);
 Q_lower_triangular_cholesky = chol(Q)';
 
 % Set seed for randn().
-set_dynare_seed('default');
+DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
 
 % Initialization of the likelihood.
 const_lik = log(2*pi)*number_of_observed_variables+log(det(H));

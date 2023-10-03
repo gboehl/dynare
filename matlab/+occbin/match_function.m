@@ -1,7 +1,7 @@
 function [resids, grad, state_out, E, M_, out] = match_function(err_0, obs_list,current_obs, opts_simul,...
-                                                                            M_, oo_, options_)
+                                                                            M_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, options_)
 % function [resids, grad, stateout, E, M_, out] = match_function(err_0, obs_list,current_obs, opts_simul,...
-%                                                                             M_, oo_, options_)
+%                                                                             M_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, options_)
 % Outputs:
 %  - resids         [double]        [n_exo by 1] vector of residuals
 %  - grad           [double]        [n by n_exo] gradient (response of observables to shocks)
@@ -16,7 +16,10 @@ function [resids, grad, state_out, E, M_, out] = match_function(err_0, obs_list,
 % - current_obs     [double]        [1 by n_obs] current value of observables
 % - opts_simul      [structure]     Structure with simulation options
 % - M_              [structure]     Matlab's structure describing the model (M_).
-% - oo_             [structure]     Matlab's structure containing the results (oo_).
+% - dr              [structure]     Reduced form model.
+% - endo_steady_state    [vector]   steady state value for endogenous variables
+% - exo_steady_state     [vector]   steady state value for exogenous variables
+% - exo_det_steady_state [vector]   steady state value for exogenous deterministic variables
 % - options_        [structure]     Matlab's structure describing the current options (options_).
 
 % Original authors: Pablo Cuba-Borda, Luca Guerrieri, Matteo Iacoviello, and Molin Zhong
@@ -36,7 +39,7 @@ opts_simul.SHOCKS = err_0';
 options_.occbin.simul=opts_simul;
 options_.occbin.simul.full_output=1;
 options_.noprint = 1;
-[~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+[~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
 
 nobs = size(obs_list,1);
 resids = zeros(nobs,1);

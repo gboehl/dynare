@@ -163,9 +163,12 @@ else
     isoccbin = 1;
     Qt = repmat(Q,[1 1 3]);
     options_=occbin_.info{1};
-    oo_=occbin_.info{2};
-    M_=occbin_.info{3};
-    occbin_options=occbin_.info{4};
+    dr=occbin_.info{2};
+    endo_steady_state=occbin_.info{3};
+    exo_steady_state=occbin_.info{4};
+    exo_det_steady_state=occbin_.info{5};
+    M_=occbin_.info{6};
+    occbin_options=occbin_.info{7};
     opts_regime = occbin_options.opts_regime;
     %     first_period_occbin_update = inf;
     if isfield(opts_regime,'regime_history') && ~isempty(opts_regime.regime_history)
@@ -174,29 +177,29 @@ else
         opts_regime.binding_indicator=zeros(smpl+2,M_.occbin.constraint_nbr);
     end
     occbin_options.opts_regime = opts_regime;
-    [~, ~, ~, regimes_] = occbin.check_regimes([], [], [], opts_regime, M_, options_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
-    if length(occbin_.info)>4
-        if length(occbin_.info)==6 && options_.smoother_redux
+    [~, ~, ~, regimes_] = occbin.check_regimes([], [], [], opts_regime, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+    if length(occbin_.info)>7
+        if length(occbin_.info)==9 && options_.smoother_redux
             TT=repmat(T,1,1,smpl+1);
             RR=repmat(R,1,1,smpl+1);
             CC=repmat(zeros(mm,1),1,smpl+1);
-            T0=occbin_.info{5};
-            R0=occbin_.info{6};
+            T0=occbin_.info{8};
+            R0=occbin_.info{9};
         else
 
-            TT=occbin_.info{5};
-            RR=occbin_.info{6};
-            CC=occbin_.info{7};
+            TT=occbin_.info{8};
+            RR=occbin_.info{9};
+            CC=occbin_.info{10};
             %         TT = cat(3,TT,T);
             %         RR = cat(3,RR,R);
             %         CC = cat(2,CC,zeros(mm,1));
             if options_.smoother_redux
-                my_order_var = oo_.dr.restrict_var_list;
+                my_order_var = dr.restrict_var_list;
                 CC = CC(my_order_var,:);
                 RR = RR(my_order_var,:,:);
                 TT = TT(my_order_var,my_order_var,:);
-                T0=occbin_.info{8};
-                R0=occbin_.info{9};
+                T0=occbin_.info{11};
+                R0=occbin_.info{12};
             end
             if size(TT,3)<(smpl+1)
                 TT=repmat(T,1,1,smpl+1);
@@ -368,12 +371,12 @@ while notsteady && t<smpl
             RR01 = cat(3,R,RR(:,:,1));
             CC01 = zeros(size(CC,1),2);
             CC01(:,2) = CC(:,1);
-            [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a0,a10,P0,P10,data_index0,Z,v0,Fi0,Ki0,Y0,H,Qt,T0,R0,TT01,RR01,CC01,regimes_(t:t+1),M_,oo_,options_,occbin_options,kalman_tol,nk);
+            [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a0,a10,P0,P10,data_index0,Z,v0,Fi0,Ki0,Y0,H,Qt,T0,R0,TT01,RR01,CC01,regimes_(t:t+1),M_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,options_,occbin_options,kalman_tol,nk);
         else
             if isqvec
                 Qt = Qvec(:,:,t-1:t+1);
             end
-            [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a(:,t-1),a1(:,t-1:t),P(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,v(:,t-1:t),Fi(:,t-1),Ki(:,:,t-1),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,oo_,options_,occbin_options,kalman_tol,nk);
+            [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a(:,t-1),a1(:,t-1:t),P(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,v(:,t-1:t),Fi(:,t-1),Ki(:,:,t-1),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,options_,occbin_options,kalman_tol,nk);
         end
         if ~error_flag
             regimes_(t:t+2)=tmp;
@@ -498,15 +501,15 @@ while notsteady && t<smpl
             opts_simul.SHOCKS = zeros(nk,M_.exo_nbr);
             if smoother_redux
                 tmp=zeros(M_.endo_nbr,1);
-                tmp(oo_.dr.restrict_var_list)=a(:,t);
-                opts_simul.endo_init = tmp(oo_.dr.inv_order_var);
+                tmp(dr.restrict_var_list)=a(:,t);
+                opts_simul.endo_init = tmp(dr.inv_order_var);
             else
-                opts_simul.endo_init = a(oo_.dr.inv_order_var,t);
+                opts_simul.endo_init = a(dr.inv_order_var,t);
             end
             opts_simul.init_regime = []; %regimes_(t);
             opts_simul.waitbar=0;
             options_.occbin.simul=opts_simul;
-            [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+            [~, out, ss] = occbin.solver(M_,options_,dr,steady_state,exo_steady_state,exo_det_steady_state);
         end
         for jnk=1:nk
             if filter_covariance_flag
@@ -518,9 +521,9 @@ while notsteady && t<smpl
             if jnk>1
                 if isoccbin && (t>=first_period_occbin_update || isinf(first_period_occbin_update))
                     if smoother_redux
-                        aK(jnk,:,t+jnk) = out.piecewise(jnk,oo_.dr.order_var(oo_.dr.restrict_var_list)) - out.ys(oo_.dr.order_var(oo_.dr.restrict_var_list))';
+                        aK(jnk,:,t+jnk) = out.piecewise(jnk,dr.order_var(dr.restrict_var_list)) - out.ys(dr.order_var(dr.restrict_var_list))';
                     else
-                        aK(jnk,oo_.dr.inv_order_var,t+jnk) = out.piecewise(jnk,:) - out.ys';
+                        aK(jnk,dr.inv_order_var,t+jnk) = out.piecewise(jnk,:) - out.ys';
                     end
                 else
                     aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));

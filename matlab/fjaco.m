@@ -10,7 +10,7 @@ function fjac = fjaco(f,x,varargin)
 % OUTPUT
 %   fjac      : finite difference Jacobian
 %
-% Copyright © 2010-2017,2019-2020 Dynare Team
+% Copyright © 2010-2017,2019-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,7 +31,7 @@ ff=feval(f,x,varargin{:});
 
 tol = eps.^(1/3); %some default value
 if strcmp(func2str(f),'get_perturbation_params_derivs_numerical_objective') || strcmp(func2str(f),'identification_numerical_objective')
-    tol= varargin{5}.dynatol.x;
+    tol= varargin{4}.dynatol.x;
 end
 h = tol.*max(abs(x),1);
 xh1=x+h; xh0=x-h;
@@ -57,9 +57,9 @@ feval(f,x,varargin{:});
 %Auxiliary functions
 function disp_info_error_identification_perturbation(info,j)
     % there are errors in the solution algorithm
-    probl_par = get_the_name(j,varargin{5}.TeX,varargin{3},varargin{2},varargin{5});
+    probl_par = get_the_name(j,varargin{4}.TeX,varargin{3},varargin{2},varargin{4});
     skipline()
-    message = get_error_message(info,varargin{5});
+    message = get_error_message(info,varargin{4});
     fprintf('Parameter error in numerical two-sided difference method:\n')
     fprintf('Cannot solve the model for %s (info = %d, %s)\n', probl_par, info(1), message);
     fprintf('Possible solutions:\n')

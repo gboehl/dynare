@@ -49,7 +49,7 @@ if options_mom_.mom.mom_nbr > length(xparam)
         W_opt = mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
         oo_J = oo_;
         oo_J.mom.Sw = chol(W_opt);
-        fval = feval(objective_function, xparam, Bounds, oo_J, estim_params_, M_, options_mom_, bayestopt_);
+        fval = feval(objective_function, xparam, Bounds, oo_J, estim_params_, M_, options_mom_);
     else
         fval = oo_.mom.Q;
     end

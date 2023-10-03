@@ -1,5 +1,36 @@
-function [fval, info, exitflag, DLIK, Hess, SteadyState, trend_coeff, Model, DynareOptions, BayesInfo, DynareResults] = ...
-    dsge_conditional_likelihood_1(xparam1, DynareDataset, DatasetInfo, DynareOptions, Model, EstimatedParameters, BayesInfo, BoundsInfo, DynareResults, derivatives_info)
+function [fval, info, exitflag, DLIK, Hess, SteadyState, trend_coeff, M_, options_, bayestopt_, dr] = ...
+    dsge_conditional_likelihood_1(xparam1, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, derivatives_info)
+% [fval, info, exitflag, DLIK, Hess, SteadyState, trend_coeff, M_, options_, bayestopt_, dr] = ...
+%    dsge_conditional_likelihood_1(xparam1, dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, derivatives_info)
+%
+% INPUTS
+% - xparam1             [double]        current values for the estimated parameters.
+% - dataset_            [structure]     dataset after transformations
+% - dataset_info        [structure]     storing informations about the
+%                                       sample; not used but required for interface
+% - options_            [structure]     Matlab's structure describing the current options
+% - M_                  [structure]     Matlab's structure describing the model
+% - estim_params_       [structure]     characterizing parameters to be estimated
+% - bayestopt_          [structure]     describing the priors
+% - BoundsInfo          [structure]     containing prior bounds
+% - dr                  [structure]     Reduced form model.
+% - endo_steady_state   [vector]        steady state value for endogenous variables
+% - exo_steady_state    [vector]        steady state value for exogenous variables
+% - exo_det_steady_state [vector]       steady state value for exogenous deterministic variables
+% - derivatives_info    [structure]     derivative info for identification
+%
+% OUTPUTS
+% - fval                    [double]        scalar, value of the likelihood or posterior kernel.
+% - info                    [integer]       4×1 vector, informations resolution of the model and evaluation of the likelihood.
+% - exit_flag               [integer]       scalar, equal to 1 (no issues when evaluating the likelihood) or 0 (not able to evaluate the likelihood).
+% - DLIK                    [double]        Vector with score of the likelihood
+% - Hess                    [double]        asymptotic hessian matrix.
+% - SteadyState             [double]        steady state level for the endogenous variables
+% - trend_coeff             [double]        Matrix of doubles, coefficients of the deterministic trend in the measurement equation.
+% - M_                      [struct]        Updated M_ structure described in INPUTS section.
+% - options_                [struct]        Updated options_ structure described in INPUTS section.
+% - bayestopt_              [struct]        See INPUTS section.
+% - dr                      [structure]     Reduced form model.
 
 % Copyright (C) 2017-2023 Dynare Team
 %
@@ -28,7 +59,7 @@ DLIK        = [];
 Hess        = [];
 
 % Exit with error if analytical_derivation option is used.
-if DynareOptions.analytic_derivation
+if options_.analytic_derivation
     error('The analytic_derivation and conditional_likelihood are not compatible!')
 end
 
@@ -43,9 +74,9 @@ end
 %------------------------------------------------------------------------------
 % 1. Get the structural parameters & define penalties
 %------------------------------------------------------------------------------
-Model = set_all_parameters(xparam1,EstimatedParameters,Model);
+M_ = set_all_parameters(xparam1,estim_params_,M_);
 
-[fval, info, exitflag, Q, H] = check_bounds_and_definiteness_estimation(xparam1, Model, EstimatedParameters, BoundsInfo);
+[fval, info, exitflag, Q, H] = check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, BoundsInfo);
 if info(1)
     return
 end
@@ -53,7 +84,7 @@ end
 iQ_upper_chol = chol(inv(Q));
 
 % Return an error if the interface for measurement errors is used.
-if ~isequal(H, zeros(size(H))) || EstimatedParameters.ncn || EstimatedParameters.ncx
+if ~isequal(H, zeros(size(H))) || estim_params_.ncn || estim_params_.ncx
     error('Option conditional_likelihood does not support declaration of measurement errors. You can specify the measurement errors in the model block directly by adding measurement equations.')
 end
 
@@ -62,8 +93,8 @@ end
 %------------------------------------------------------------------------------
 
 % Linearize the model around the deterministic steadystate and extract the matrices of the state equation (T and R).
-[T, R, SteadyState, info,DynareResults.dr, Model.params] = ...
-    dynare_resolve(Model, DynareOptions, DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state, 'restrict');
+[T, R, SteadyState, info,dr, M_.params] = ...
+    dynare_resolve(M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, 'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
@@ -86,7 +117,7 @@ if info(1)
 end
 
 % check endogenous prior restrictions
-info = endogenous_prior_restrictions(T, R, Model, DynareOptions, DynareResults);
+info = endogenous_prior_restrictions(T, R, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
 if info(1)
     fval = Inf;
     info(4)=info(2);
@@ -95,40 +126,40 @@ if info(1)
 end
 
 % Define a vector of indices for the observed variables. Is this really usefull?...
-BayesInfo.mf = BayesInfo.mf1;
+bayestopt_.mf = bayestopt_.mf1;
 
 % Define the constant vector of the measurement equation.
-if ~DynareOptions.noconstant
-    if DynareOptions.loglinear
-        constant = log(SteadyState(BayesInfo.mfys));
+if ~options_.noconstant
+    if options_.loglinear
+        constant = log(SteadyState(bayestopt_.mfys));
     else
-        constant = SteadyState(BayesInfo.mfys);
+        constant = SteadyState(bayestopt_.mfys);
     end
 end
 
 % Define the deterministic linear trend of the measurement equation.
-if BayesInfo.with_trend
-    [trend_addition, trend_coeff] = compute_trend_coefficients(Model, DynareOptions, DynareDataset.vobs, DynareDataset.nobs);
-    Y = bsxfun(@minus, transpose(DynareDataset.data), constant)-trend_addition;
+if bayestopt_.with_trend
+    [trend_addition, trend_coeff] = compute_trend_coefficients(M_, options_, dataset_.vobs, dataset_.nobs);
+    Y = bsxfun(@minus, transpose(dataset_.data), constant)-trend_addition;
 else
-    trend_coeff = zeros(DynareDataset.vobs, 1);
-    if ~DynareOptions.noconstant
-        Y = bsxfun(@minus, transpose(DynareDataset.data), constant);
+    trend_coeff = zeros(dataset_.vobs, 1);
+    if ~options_.noconstant
+        Y = bsxfun(@minus, transpose(dataset_.data), constant);
     else
-        Y = transpose(DynareDataset.data);
+        Y = transpose(dataset_.data);
     end
 end
 
 % Return an error if some observations are missing.
-if DatasetInfo.missing.state
+if dataset_info.missing.state
     error('Option conditional_likelihood is not compatible with missing observations.')
 end
 
 % Get the selection matrix (vector of row indices for T and R)
-Z = BayesInfo.mf;
+Z = bayestopt_.mf;
 
 % Get the number of observed variables.
-pp = DynareDataset.vobs;
+pp = dataset_.vobs;
 
 % Get the number of variables in the state equations (state variables plus observed variables).
 mm = size(T, 1);
@@ -157,12 +188,12 @@ llik = zeros(size(Y, 2), 1);
 Ytild = U\(L\Y);
 Ttild = U\(L\T(Z,:));
 
-for t = 1:DynareOptions.presample
+for t = 1:options_.presample
     epsilon = Ytild(:,t) - Ttild*S;
     S = T*S + R*epsilon;
 end
 
-for t=(DynareOptions.presample+1):size(Y, 2)
+for t=(options_.presample+1):size(Y, 2)
     epsilon = Ytild(:,t) - Ttild*S;
     upsilon = iQ_upper_chol*epsilon;
     S = T*S + R*epsilon;
@@ -177,17 +208,17 @@ likelihood = -sum(llik);
 % 5. Adds prior if necessary
 % ------------------------------------------------------------------------------
 
-lnprior = priordens(xparam1, BayesInfo.pshape, BayesInfo.p6, BayesInfo.p7, BayesInfo.p3, BayesInfo.p4);
+lnprior = priordens(xparam1, bayestopt_.pshape, bayestopt_.p6, bayestopt_.p7, bayestopt_.p3, bayestopt_.p4);
 
-if DynareOptions.endogenous_prior==1
-    [lnpriormom]  = endogenous_prior(Y, Pstar, BayesInfo, H);
+if options_.endogenous_prior==1
+    [lnpriormom]  = endogenous_prior(Y, Pstar, bayestopt_, H);
     fval = (likelihood-lnprior-lnpriormom);
 else
     fval = (likelihood-lnprior);
 end
 
-if DynareOptions.prior_restrictions.status
-    tmp = feval(DynareOptions.prior_restrictions.routine, Model, DynareResults, DynareOptions, DynareDataset, DatasetInfo);
+if options_.prior_restrictions.status
+    tmp = feval(options_.prior_restrictions.routine, M_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, options_, dataset_, dataset_info);
     fval = fval - tmp;
 end
 

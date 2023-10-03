@@ -1,13 +1,16 @@
-function [info, info_irf, info_moment, data_irf, data_moment] = endogenous_prior_restrictions(T,R,Model,DynareOptions,DynareResults)
+function [info, info_irf, info_moment, data_irf, data_moment] = endogenous_prior_restrictions(T,R,Model,DynareOptions,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+%[info, info_irf, info_moment, data_irf, data_moment] = endogenous_prior_restrictions(T,R,Model,DynareOptions,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % Check for prior (sign) restrictions on irf's and theoretical moments
-%
 % INPUTS
-%    T          [double]     n*n state space matrix
-%    R          [double]     n*k matrix of shocks
-%    Model      [structure]
-%    DynareOptions [structure]
-%    DynareResults [structure]
-
+%    T                      [double]        n*n state space matrix
+%    R                      [double]        n*k matrix of shocks
+%    Model                  [structure]
+%    DynareOptions          [structure]
+%    dr                     [structure]     Reduced form model.
+%    endo_steady_state      [vector]        steady state value for endogenous variables
+%    exo_steady_state       [vector]        steady state value for exogenous variables
+%    exo_det_steady_state   [vector]        steady state value for exogenous deterministic variables
+%
 % OUTPUTS
 %    info     [double]  check if prior restrictions are matched by the
 %                       model and related info
@@ -15,7 +18,7 @@ function [info, info_irf, info_moment, data_irf, data_moment] = endogenous_prior
 %    info_moment [double] array of test checks for all individual moment restrictions
 %
 
-% Copyright © 2013-2018 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -45,14 +48,13 @@ if ~isempty(endo_prior_restrictions.irf)
     data_irf=cell(size(endo_prior_restrictions.irf,1),1);
     if DynareOptions.order>1
         error('The algorithm for prior (sign) restrictions on irf''s is currently restricted to first-order decision rules')
-        return
     end
-    varlist = Model.endo_names(DynareResults.dr.order_var);
+    varlist = Model.endo_names(dr.order_var);
     if isempty(T)
-        [T,R,SteadyState,infox,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
+        [T,R,SteadyState,infox,dr, Model.params] = dynare_resolve(Model,DynareOptions,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
     else % check if T and R are given in the restricted form!!!
         if size(T,1)<length(varlist)
-            varlist = varlist(DynareResults.dr.restrict_var_list);
+            varlist = varlist(dr.restrict_var_list);
         end
         % check if endo_prior_restrictions.irf{:,1} variables are in varlist
         varlistok=1;
@@ -62,8 +64,8 @@ if ~isempty(endo_prior_restrictions.irf)
             end
         end
         if ~varlistok
-            varlist = Model.endo_names(DynareResults.dr.order_var);
-            [T,R,SteadyState,infox,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
+            varlist = Model.endo_names(dr.order_var);
+            [T,R,SteadyState,infox,dr, Model.params] = dynare_resolve(Model,DynareOptions,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
         end
     end
     NT=1;
@@ -105,7 +107,6 @@ end
 if ~isempty(endo_prior_restrictions.moment)
     if DynareOptions.order>1
         error('The algorithm for prior (sign) restrictions on moments is currently restricted to first-order decision rules')
-        return
     end
     data_moment=cell(size(endo_prior_restrictions.moment,1),1);
     var_list_ = endo_prior_restrictions.moment{1,1};
@@ -137,7 +138,7 @@ if ~isempty(endo_prior_restrictions.moment)
         end
     end
     DynareOptions.ar = max(abs(NTmin),NTmax);
-    [gamma_y,stationary_vars] = th_autocovariances(DynareResults.dr, ivar, Model, DynareOptions,1);
+    [gamma_y,stationary_vars] = th_autocovariances(dr, ivar, Model, DynareOptions,1);
     for t=NTmin:NTmax
         RR = gamma_y{abs(t)+1};
         if t==0

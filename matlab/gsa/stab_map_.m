@@ -1,7 +1,5 @@
 function x0 = stab_map_(OutputDirectoryName,opt_gsa)
-%
-% function x0 = stab_map_(OutputDirectoryName)
-%
+% x0 = stab_map_(OutputDirectoryName,opt_gsa)
 % Mapping of stability regions in the prior ranges applying
 % Monte Carlo filtering techniques.
 %
@@ -35,7 +33,7 @@ function x0 = stab_map_(OutputDirectoryName,opt_gsa)
 % marco.ratto@ec.europa.eu
 
 % Copyright © 2012-2016 European Commission
-% Copyright © 2012-2018 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -296,7 +294,7 @@ if fload==0
                 nboth = dr_.nboth;
                 nfwrd = dr_.nfwrd;
             end
-            info=endogenous_prior_restrictions(Tt,Rr,M_,options_,oo_);
+            info=endogenous_prior_restrictions(Tt,Rr,M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
             infox(j,1)=info(1);
             if info(1)
                 inorestriction(j)=j;

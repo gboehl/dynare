@@ -1,6 +1,6 @@
-function [filtered_errs, resids, Emat, stateval, error_code] = IVF_core(M_,oo_,options_,err_index,filtered_errs_init,my_obs_list,obs,init_val)
-% function [filtered_errs, resids, Emat, stateval, error_code] = IVF_core(M_,oo_,options_,err_index,filtered_errs_init,my_obs_list,obs,init_val)
-% Computes thre
+function [filtered_errs, resids, Emat, stateval, error_code] = IVF_core(M_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,options_,err_index,filtered_errs_init,my_obs_list,obs,init_val)
+% [filtered_errs, resids, Emat, stateval, error_code] = IVF_core(M_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,options_,err_index,filtered_errs_init,my_obs_list,obs,init_val)
+% Calls the solver to get the shocks explaining the data for the inversion filter
 %
 % Outputs:
 %  - filtered_errs          [T by N_obs]        filtered shocks
@@ -11,7 +11,10 @@ function [filtered_errs, resids, Emat, stateval, error_code] = IVF_core(M_,oo_,o
 %
 % Inputs
 % - M_                      [structure]     Matlab's structure describing the model (M_).
-% - oo_                     [structure]     Matlab's structure containing the results (oo_).
+% - dr                      [structure]     Reduced form model.
+% - endo_steady_state       [vector]        steady state value for endogenous variables
+% - exo_steady_state        [vector]        steady state value for exogenous variables
+% - exo_det_steady_state    [vector]        steady state value for exogenous deterministic variables
 % - options_                [structure]     Matlab's structure describing the current options (options_).
 % - err_index               [double]        index of shocks with strictly positive variance in M_.exo_names
 % - filtered_errs_init      [T by N_obs]    initial values for the shocks
@@ -39,7 +42,7 @@ function [filtered_errs, resids, Emat, stateval, error_code] = IVF_core(M_,oo_,o
 
 [sample_length, n_obs]= size(obs);
 nerrs = size(err_index,1);
-if nargin<8
+if nargin<11
     init_val = zeros(M_.endo_nbr,1);
 end
 
@@ -83,7 +86,7 @@ for this_period=1:sample_length
     opts_simul.exo_pos=err_index(inan); %err_index is predefined mapping from observables to shocks
     opts_simul.endo_init = init_val_old;
     opts_simul.SHOCKS = filtered_errs_init(this_period,inan);
-    [err_vals_out, exitflag] = dynare_solve(@occbin.match_function, filtered_errs_init(this_period,inan)', options_.occbin.solver.maxit, options_.occbin.solver.solve_tolf, options_.occbin.solver.solve_tolx, options_, obs_list, current_obs, opts_simul, M_, oo_, options_);
+    [err_vals_out, exitflag] = dynare_solve(@occbin.match_function, filtered_errs_init(this_period,inan)', options_.occbin.solver.maxit, options_.occbin.solver.solve_tolf, options_.occbin.solver.solve_tolx, options_, obs_list, current_obs, opts_simul, M_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, options_);
 
     if exitflag
         filtered_errs=NaN;
@@ -97,7 +100,7 @@ for this_period=1:sample_length
     opts_simul.SHOCKS = err_vals_out;
 
     [ resids(this_period,inan), ~, stateval(this_period,:), Emat(:,inan,this_period), M_] = occbin.match_function(...
-        err_vals_out,obs_list,current_obs,opts_simul, M_,oo_,options_);
+        err_vals_out,obs_list,current_obs,opts_simul, M_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,options_);
     init_val = stateval(this_period,:); %update
     if max(abs(err_vals_out))>1e8
         error_code(1) = 306;

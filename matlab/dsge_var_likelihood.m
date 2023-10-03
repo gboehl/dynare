@@ -1,17 +1,21 @@
-function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_u_tilde,iXX,prior] = dsge_var_likelihood(xparam1,DynareDataset,DataSetInfo,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
+function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_u_tilde,iXX,prior] = dsge_var_likelihood(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+% [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_u_tilde,iXX,prior] = dsge_var_likelihood(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % Evaluates the posterior kernel of the BVAR-DSGE model.
 %
 % INPUTS
 %   o xparam1               [double]    Vector of model's parameters.
 %   o gend                  [integer]   Number of observations (without conditionning observations for the lags).
-%   o DynareDataset         [dseries]   object storing the dataset     
-%   o DataSetInfo           [structure] storing informations about the sample.
-%   o DynareOptions         [structure] describing the options
-%   o Model                 [structure] decribing the model
-%   o EstimatedParameters   [structure] characterizing parameters to be estimated
-%   o BayesInfo             [structure] describing the priors
+%   o dataset_              [dseries]   object storing the dataset     
+%   o dataset_info          [structure] storing informations about the sample.
+%   o options_              [structure] describing the options
+%   o M_                    [structure] decribing the model
+%   o estim_params_         [structure] characterizing parameters to be estimated
+%   o bayestopt_            [structure] describing the priors
 %   o BoundsInfo            [structure] containing prior bounds
-%   o DynareResults         [structure] storing the results
+%   o dr                    [structure] Reduced form model.
+%   o endo_steady_state     [vector]    steady state value for endogenous variables
+%   o exo_steady_state      [vector]    steady state value for exogenous variables
+%   o exo_det_steady_state  [vector]    steady state value for exogenous deterministic variables
 %
 % OUTPUTS
 %   o fval          [double]     Value of the posterior kernel at xparam1.
@@ -45,7 +49,7 @@ function [fval,info,exit_flag,grad,hess,SteadyState,trend_coeff,PHI_tilde,SIGMA_
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright © 2006-2021 Dynare Team
+% Copyright © 2006-2023Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -82,42 +86,42 @@ if ~isempty(xparam1)
     xparam1 = xparam1(:);
 end
 
-% Initialization of of the index for parameter dsge_prior_weight in Model.params.
-dsge_prior_weight_idx = strmatch('dsge_prior_weight', Model.param_names);
+% Initialization of of the index for parameter dsge_prior_weight in M_.params.
+dsge_prior_weight_idx = strmatch('dsge_prior_weight', M_.param_names);
 
 % Get the number of estimated (dsge) parameters.
-nx = EstimatedParameters.nvx + EstimatedParameters.np;
+nx = estim_params_.nvx + estim_params_.np;
 
 % Get the number of observed variables in the VAR model.
-NumberOfObservedVariables = DynareDataset.vobs;
+NumberOfObservedVariables = dataset_.vobs;
 
 % Get the number of observations.
-NumberOfObservations = DynareDataset.nobs;
+NumberOfObservations = dataset_.nobs;
 
 
 % Get the number of lags in the VAR model.
-NumberOfLags = DynareOptions.dsge_varlag;
+NumberOfLags = options_.dsge_varlag;
 
 % Get the number of parameters in the VAR model.
 NumberOfParameters = NumberOfObservedVariables*NumberOfLags ;
-if ~DynareOptions.noconstant
+if ~options_.noconstant
     NumberOfParameters = NumberOfParameters + 1;
 end
 
 % Get empirical second order moments for the observed variables.
-mYY= DataSetInfo.mYY;
-mYX= DataSetInfo.mYX;
-mXX= DataSetInfo.mXX;
+mYY= dataset_info.mYY;
+mYX= dataset_info.mYX;
+mXX= dataset_info.mXX;
 
-Model = set_all_parameters(xparam1,EstimatedParameters,Model);
+M_ = set_all_parameters(xparam1,estim_params_,M_);
 
-[fval,info,exit_flag,Q]=check_bounds_and_definiteness_estimation(xparam1, Model, EstimatedParameters, BoundsInfo);
+[fval,info,exit_flag,Q]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, BoundsInfo);
 if info(1)
     return
 end
 
 % Get the weight of the dsge prior.
-dsge_prior_weight = Model.params(dsge_prior_weight_idx);
+dsge_prior_weight = M_.params(dsge_prior_weight_idx);
 
 % Is the dsge prior proper?
 if dsge_prior_weight<(NumberOfParameters+NumberOfObservedVariables)/NumberOfObservations
@@ -125,7 +129,7 @@ if dsge_prior_weight<(NumberOfParameters+NumberOfObservedVariables)/NumberOfObse
     exit_flag = 0;
     info(1) = 51;
     info(2)=dsge_prior_weight;
-    info(3)=(NumberOfParameters+NumberOfObservedVariables)/DynareDataset.nobs;
+    info(3)=(NumberOfParameters+NumberOfObservedVariables)/dataset_.nobs;
     info(4)=abs(NumberOfObservations*dsge_prior_weight-(NumberOfParameters+NumberOfObservedVariables));
     return
 end
@@ -136,7 +140,7 @@ end
 
 % Solve the Dsge model and get the matrices of the reduced form solution. T and R are the matrices of the
 % state equation
-[T,R,SteadyState,info] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state,'restrict');
+[T,R,SteadyState,info] = dynare_resolve(M_,options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state,'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
@@ -157,11 +161,11 @@ if info(1)
 end
 
 % Define the mean/steady state vector.
-if ~DynareOptions.noconstant
-    if DynareOptions.loglinear
-        constant = transpose(log(SteadyState(BayesInfo.mfys)));
+if ~options_.noconstant
+    if options_.loglinear
+        constant = transpose(log(SteadyState(bayestopt_.mfys)));
     else
-        constant = transpose(SteadyState(BayesInfo.mfys));
+        constant = transpose(SteadyState(bayestopt_.mfys));
     end
 else
     constant = zeros(1,NumberOfObservedVariables);
@@ -173,8 +177,8 @@ end
 %------------------------------------------------------------------------------
 
 % Compute the theoretical second order moments
-tmp0 = lyapunov_symm(T,R*Q*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
-mf  = BayesInfo.mf1;
+tmp0 = lyapunov_symm(T,R*Q*R',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold, [], options_.debug);
+mf  = bayestopt_.mf1;
 
 % Get the non centered second order moments
 TheoreticalAutoCovarianceOfTheObservedVariables = zeros(NumberOfObservedVariables,NumberOfObservedVariables,NumberOfLags+1);
@@ -189,7 +193,7 @@ GYX = zeros(NumberOfObservedVariables,NumberOfParameters);
 for i=1:NumberOfLags
     GYX(:,(i-1)*NumberOfObservedVariables+1:i*NumberOfObservedVariables) = TheoreticalAutoCovarianceOfTheObservedVariables(:,:,i+1);
 end
-if ~DynareOptions.noconstant
+if ~options_.noconstant
     GYX(:,end) = constant';
 end
 
@@ -202,7 +206,7 @@ for i = 1:NumberOfLags-1
     GXX = GXX + kron(tmp2,TheoreticalAutoCovarianceOfTheObservedVariables(:,:,i+1)');
 end
 
-if ~DynareOptions.noconstant
+if ~options_.noconstant
     % Add one row and one column to GXX
     GXX = [GXX , kron(ones(NumberOfLags,1),constant') ; [  kron(ones(1,NumberOfLags),constant) , 1] ];
 end
@@ -280,7 +284,7 @@ if imag(lik)~=0
 end
 
 % Add the (logged) prior density for the dsge-parameters.
-lnprior = priordens(xparam1,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
+lnprior = priordens(xparam1,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
 fval = (lik-lnprior);
 
 if isnan(fval)

@@ -39,7 +39,7 @@ function [pmean, pmode, pmedian, pstdev, p025, p975, covariance] = online_auxili
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Set seed for randn().
-set_dynare_seed('default');
+DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
 pruning = DynareOptions.particle.pruning;
 second_resample = DynareOptions.particle.resampling.status.systematic;
 variance_update = true;

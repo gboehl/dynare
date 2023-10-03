@@ -1,5 +1,5 @@
 function varargout = prior(varargin)
-
+% varargout = prior(varargin)
 % Computes various prior statistics and display them in the command window.
 %
 % INPUTS
@@ -11,7 +11,7 @@ function varargout = prior(varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2015-2019 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -139,7 +139,7 @@ if ismember('moments', varargin) % Prior simulations (2nd order moments).
     % Solve model
     [T,R,~,info,oo__.dr, Model.params] = dynare_resolve(Model , options_ , oo__.dr, oo__.steady_state, oo__.exo_steady_state, oo__.exo_det_steady_state,'restrict');
     if ~info(1)
-        info=endogenous_prior_restrictions(T,R,Model , options__ , oo__);
+        info=endogenous_prior_restrictions(T,R,Model , options__ , oo__.dr,oo__.steady_state,oo__.exo_steady_state,oo__.exo_det_steady_state);
     end
     if info
         skipline()

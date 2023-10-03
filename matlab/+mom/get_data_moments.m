@@ -1,10 +1,11 @@
-function [dataMoments, m_data] = get_data_moments(data, oo_, matched_moments_, options_mom_)
-% [dataMoments, m_data] = get_data_moments(data, oo_, matched_moments_, options_mom_)
+function [dataMoments, m_data] = get_data_moments(data, obs_var, inv_order_var, matched_moments_, options_mom_)
+% [dataMoments, m_data] = get_data_moments(data, obs_var, inv_order_var, matched_moments_, options_mom_)
 % This function computes the user-selected empirical moments from data
 % =========================================================================
 % INPUTS
 %  o data                    [T x varobs_nbr]  data set
-%  o oo_:                    [structure]       storage for results
+%  o obs_var:                [integer]         index of observables
+%  o inv_order_var:          [integer]         inverse decision rule order
 %  o matched_moments_:       [structure]       information about selected moments to match in estimation
 %  o options_mom_:           [structure]       information about all settings (specified by the user, preprocessor, and taken from global options_)
 % -------------------------------------------------------------------------
@@ -45,11 +46,11 @@ m_data = NaN(T,options_mom_.mom.mom_nbr);
 % Product moment for each time period, i.e. each row t contains y_t1(l1)^p1*y_t2(l2)^p2*...
 % note that here we already are able to treat leads and lags and any power product moments
 for jm = 1:options_mom_.mom.mom_nbr
-    vars     = oo_.dr.inv_order_var(matched_moments_{jm,1})';
+    vars     = inv_order_var(matched_moments_{jm,1})';
     leadlags = matched_moments_{jm,2}; % lags are negative numbers and leads are positive numbers
     powers   = matched_moments_{jm,3};
     for jv = 1:length(vars)
-        jvar = (oo_.mom.obs_var == vars(jv));
+        jvar = (obs_var == vars(jv));
         y = NaN(T,1); %Take care of T_eff instead of T for lags and NaN via mean with 'omitnan' option below
         y( (1-min(leadlags(jv),0)) : (T-max(leadlags(jv),0)), 1) = data( (1+max(leadlags(jv),0)) : (T+min(leadlags(jv),0)), jvar).^powers(jv);
         if jv==1

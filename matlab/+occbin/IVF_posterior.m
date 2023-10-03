@@ -1,18 +1,23 @@
-function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOptions,BayesInfo,DynareResults, atT, innov] = IVF_posterior(xparam1,...
-    dataset_,obs_info,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
-% function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOptions,BayesInfo,DynareResults, atT, innov] = IVF_posterior(xparam1,...
-%     dataset_,obs_info,DynareOptions,Model,EstimatedParameters,BayesInfo,BoundsInfo,DynareResults)
+function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,M_,options_,bayestopt_,dr, atT, innov] = IVF_posterior(xparam1,...
+    dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+% [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,M_,options_,bayestopt_,dr, atT, innov] = IVF_posterior(xparam1,...
+%     dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % Computes Likelihood with inversion filter
 %
 % INPUTS
 % - xparam1             [double]        current values for the estimated parameters.
 % - dataset_            [structure]     dataset after transformations
-% - DynareOptions       [structure]     Matlab's structure describing the current options (options_).
-% - Model               [structure]     Matlab's structure describing the model (M_).
-% - EstimatedParameters [structure]     characterizing parameters to be estimated
-% - BayesInfo           [structure]     describing the priors
+% - dataset_info        [structure]     storing informations about the
+%                                       sample; not used but required for interface
+% - options_            [structure]     Matlab's structure describing the current options
+% - M_                  [structure]     Matlab's structure describing the model
+% - estim_params_       [structure]     characterizing parameters to be estimated
+% - bayestopt_          [structure]     describing the priors
 % - BoundsInfo          [structure]     containing prior bounds
-% - DynareResults       [structure]     Matlab's structure containing the results (oo_).
+% - dr                  [structure]     Reduced form model.
+% - endo_steady_state   [vector]        steady state value for endogenous variables
+% - exo_steady_state    [vector]        steady state value for exogenous variables
+% - exo_det_steady_state [vector]       steady state value for exogenous deterministic variables
 %
 % OUTPUTS
 % - fval                    [double]        scalar, value of the likelihood or posterior kernel.
@@ -22,14 +27,14 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,Model,DynareOpti
 % - Hess                    [double]        Empty array.
 % - SteadyState             [double]        Empty array.
 % - trend                   [double]        Empty array.
-% - Model                   [struct]        Updated Model structure described in INPUTS section.
-% - DynareOptions           [struct]        Updated DynareOptions structure described in INPUTS section.
-% - BayesInfo               [struct]        See INPUTS section.
-% - DynareResults           [struct]        Updated DynareResults structure described in INPUTS section.
+% - M_                      [struct]        Updated M_ structure described in INPUTS section.
+% - options_                [struct]        Updated options_ structure described in INPUTS section.
+% - bayestopt_              [struct]        See INPUTS section.
+% - dr                      [structure]     Reduced form model.
 % - atT                     [double]        (m*T) matrix, smoothed endogenous variables (a_{t|T})  (decision-rule order)
 % - innov                   [double]        (r*T) matrix, smoothed structural shocks (r>n is the umber of shocks).
 
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,7 +56,7 @@ DLIK=[];
 Hess=[];
 trend_coeff = [];
 obs = dataset_.data;
-obs_list = DynareOptions.varobs(:);
+obs_list = options_.varobs(:);
 exit_flag   = 1;
 
 
@@ -65,18 +70,18 @@ end
 %------------------------------------------------------------------------------
 
 if ~isempty(xparam1)
-    Model = set_all_parameters(xparam1,EstimatedParameters,Model);
-    [fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, Model, EstimatedParameters, BoundsInfo);
+    M_ = set_all_parameters(xparam1,estim_params_,M_);
+    [fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, BoundsInfo);
     if info(1)
         return
     end
 end
 
-err_index=DynareOptions.occbin.likelihood.IVF_shock_observable_mapping; % err_index= find(diag(Model.Sigma_e)~=0);
-COVMAT1 = Model.Sigma_e(err_index,err_index);
+err_index=options_.occbin.likelihood.IVF_shock_observable_mapping; % err_index= find(diag(M_.Sigma_e)~=0);
+COVMAT1 = M_.Sigma_e(err_index,err_index);
 
 % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
-[T,R,SteadyState,info,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state,'restrict');
+[T,R,SteadyState,info,dr, M_.params] = dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)
@@ -102,17 +107,17 @@ end
 sample_length = size(obs,1);
 filtered_errs_init = zeros(sample_length,sum(err_index));
 
-[filtered_errs, resids, Emat, stateval, info] = occbin.IVF_core(Model,DynareResults,DynareOptions,err_index,filtered_errs_init,obs_list,obs);
+[filtered_errs, resids, Emat, stateval, info] = occbin.IVF_core(M_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,options_,err_index,filtered_errs_init,obs_list,obs);
 if info(1)
     fval = Inf;
     exit_flag = 0;
-    atT=NaN(size(stateval(:,DynareResults.dr.order_var)'));
-    innov=NaN(Model.exo_nbr,sample_length);
+    atT=NaN(size(stateval(:,dr.order_var)'));
+    innov=NaN(M_.exo_nbr,sample_length);
     return
 else
-    atT = stateval(:,DynareResults.dr.order_var)';
-    innov = zeros(Model.exo_nbr,sample_length);
-    innov(diag(Model.Sigma_e)~=0,:)=filtered_errs';
+    atT = stateval(:,dr.order_var)';
+    innov = zeros(M_.exo_nbr,sample_length);
+    innov(diag(M_.Sigma_e)~=0,:)=filtered_errs';
 end
 nobs=size(filtered_errs,1);
 
@@ -121,7 +126,7 @@ nobs=size(filtered_errs,1);
 % Calculate the selection matrix
 %-------------------------------------
 
-iobs=DynareOptions.varobs_id';
+iobs=options_.varobs_id';
 
 likei=NaN(nobs,1);
 if ~any(any(isnan(obs)))
@@ -145,7 +150,7 @@ else
     end    
 end
 
-like = 0.5*sum(likei(DynareOptions.presample+1:end));
+like = 0.5*sum(likei(options_.presample+1:end));
 
 if isinf(like) 
     fval = Inf;
@@ -172,7 +177,7 @@ if maxresid>1e-3
 end
 
 if ~isempty(xparam1)
-    prior = -priordens(xparam1,BayesInfo.pshape,BayesInfo.p6,BayesInfo.p7,BayesInfo.p3,BayesInfo.p4);
+    prior = -priordens(xparam1,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
 else
     prior = 0;
 end

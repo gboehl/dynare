@@ -142,7 +142,7 @@ priordens([],[],[],[],[],[],1);
 dyn_first_order_solver();
 
 % Set dynare random generator and seed.
-set_dynare_seed('default');
+options_=set_dynare_seed_local_options(options_,'default');
 
 % Load user configuration file.
 if isfield(options_, 'global_init_file')

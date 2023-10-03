@@ -105,7 +105,7 @@ else
 end
 
 if ParticleOptions.distribution_approximation.montecarlo
-    set_dynare_seed('default');
+    DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
 end
 
 % Get covariance matrices

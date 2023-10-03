@@ -1,5 +1,5 @@
-function [out,info] = get_perturbation_params_derivs_numerical_objective(params, outputflag, estim_params, M, oo, options)
-%function [out,info] = get_perturbation_params_derivs_numerical_objective(params, outputflag, estim_params, M, oo, options)
+function [out,info] = get_perturbation_params_derivs_numerical_objective(params, outputflag, estim_params, M, options, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+%function [out,info] = get_perturbation_params_derivs_numerical_objective(params, outputflag, estim_params, M, options, dr, steady_state, exo_steady_state, exo_det_steady_state)
 % -------------------------------------------------------------------------
 % Objective function to compute numerically the Jacobians used for get_perturbation_params_derivs
 % =========================================================================
@@ -9,8 +9,11 @@ function [out,info] = get_perturbation_params_derivs_numerical_objective(params,
 %   outputflag:     [string] flag which objective to compute (see below)
 %   estim_params:   [structure] storing the estimation information
 %   M:              [structure] storing the model information
-%   oo:             [structure] storing the solution results
 %   options:        [structure] storing the options
+%   dr              [structure]     Reduced form model.
+%   endo_steady_state       [vector]     steady state value for endogenous variables
+%   exo_steady_state        [vector]     steady state value for exogenous variables
+%   exo_det_steady_state    [vector]     steady state value for exogenous deterministic variables                                    
 % -------------------------------------------------------------------------
 %
 % OUTPUT 
@@ -51,7 +54,7 @@ function [out,info] = get_perturbation_params_derivs_numerical_objective(params,
 
 %% Update stderr, corr and model parameters and compute perturbation approximation and steady state with updated parameters
 M = set_all_parameters(params,estim_params,M);
-[oo.dr,info,M.params] = compute_decision_rules(M,options,oo.dr, oo.steady_state, oo.exo_steady_state, oo.exo_det_steady_state);
+[dr,info,M.params] = compute_decision_rules(M,options,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
 Sigma_e = M.Sigma_e;
 
 if info(1) > 0
@@ -59,16 +62,16 @@ if info(1) > 0
     out = [];
     return
 else
-    ys = oo.dr.ys; %steady state of model variables in declaration order
-    ghx = oo.dr.ghx; ghu = oo.dr.ghu;
+    ys = dr.ys; %steady state of model variables in declaration order
+    ghx = dr.ghx; ghu = dr.ghu;
     if options.order > 1
-        ghxx = oo.dr.ghxx; ghxu = oo.dr.ghxu; ghuu = oo.dr.ghuu; ghs2 = oo.dr.ghs2;
+        ghxx = dr.ghxx; ghxu = dr.ghxu; ghuu = dr.ghuu; ghs2 = dr.ghs2;
     end
     if options.order > 2
-        ghxxx = oo.dr.ghxxx; ghxxu = oo.dr.ghxxu; ghxuu = oo.dr.ghxuu; ghxss = oo.dr.ghxss; ghuuu = oo.dr.ghuuu; ghuss = oo.dr.ghuss;
+        ghxxx = dr.ghxxx; ghxxu = dr.ghxxu; ghxuu = dr.ghxuu; ghxss = dr.ghxss; ghuuu = dr.ghuuu; ghuss = dr.ghuss;
     end
 end
-Yss = ys(oo.dr.order_var); %steady state of model variables in DR order
+Yss = ys(dr.order_var); %steady state of model variables in DR order
 
 %% out = [vec(Sigma_e);vec(ghx);vec(ghu);vec(ghxx);vec(ghxu);vec(ghuu);vec(ghs2);vec(ghxxx);vec(ghxxu);vec(ghxuu);vec(ghuuu);vec(ghxss);vec(ghuss)]
 if strcmp(outputflag,'perturbation_solution')
@@ -85,13 +88,13 @@ end
 if strcmp(outputflag,'dynamic_model')
     [I,~] = find(M.lead_lag_incidence'); %I is used to evaluate dynamic model files
     if options.order == 1
-        [~, g1] = feval([M.fname,'.dynamic'], ys(I), oo.exo_steady_state', M.params, ys, 1);
+        [~, g1] = feval([M.fname,'.dynamic'], ys(I), exo_steady_state', M.params, ys, 1);
         out = [Yss; g1(:)];
     elseif options.order == 2
-        [~, g1, g2] = feval([M.fname,'.dynamic'], ys(I), oo.exo_steady_state', M.params, ys, 1);
+        [~, g1, g2] = feval([M.fname,'.dynamic'], ys(I), exo_steady_state', M.params, ys, 1);
         out = [Yss; g1(:); g2(:)];
     elseif options.order == 3
-        [~, g1, g2, g3] = feval([M.fname,'.dynamic'], ys(I), oo.exo_steady_state', M.params, ys, 1);
+        [~, g1, g2, g3] = feval([M.fname,'.dynamic'], ys(I), exo_steady_state', M.params, ys, 1);
         g3 = unfold_g3(g3, length(ys(I))+M.exo_nbr);
         out = [Yss; g1(:); g2(:); g3(:)];
     end

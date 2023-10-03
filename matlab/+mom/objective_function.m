@@ -1,5 +1,5 @@
-function [fval, info, exit_flag, df, junkHessian, oo_, M_] = objective_function(xparam, Bounds, oo_, estim_params_, M_, options_mom_, bayestopt_)
-% [fval, info, exit_flag, df, junk1, oo_, M_] = objective_function(xparam, Bounds, oo_, estim_params_, M_, options_mom_, bayestopt_)
+function [fval, info, exit_flag, df, junkHessian, oo_, M_] = objective_function(xparam, Bounds, oo_, estim_params_, M_, options_mom_)
+% [fval, info, exit_flag, df, junk1, oo_, M_] = objective_function(xparam, Bounds, oo_, estim_params_, M_, options_mom_)
 % -------------------------------------------------------------------------
 % This function evaluates the objective function for method of moments estimation
 % =========================================================================
@@ -10,7 +10,6 @@ function [fval, info, exit_flag, df, junkHessian, oo_, M_] = objective_function(
 %  o estim_params_:  [structure] describing the estimated_parameters
 %  o M_              [structure] describing the model
 %  o options_mom_:   [structure] information about all settings (specified by the user, preprocessor, and taken from global options_)
-%  o bayestopt_:     [structure] information about the prior
 % -------------------------------------------------------------------------
 % OUTPUTS
 %  o fval:         [double] value of the quadratic form of the moment difference (except for lsqnonlin, where this is done implicitly)
@@ -151,7 +150,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         stderrparam_nbr = estim_params_.nvx;    % number of stderr parameters
         corrparam_nbr = estim_params_.ncx;      % number of corr parameters
         totparam_nbr = stderrparam_nbr+corrparam_nbr+modparam_nbr;
-        oo_.dr.derivs = get_perturbation_params_derivs(M_, options_mom_, estim_params_, oo_, indpmodel, indpstderr, indpcorr, 0); %analytic derivatives of perturbation matrices
+        oo_.dr.derivs = get_perturbation_params_derivs(M_, options_mom_, estim_params_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, indpmodel, indpstderr, indpcorr, 0); %analytic derivatives of perturbation matrices
         oo_.mom.model_moments_params_derivs = NaN(options_mom_.mom.mom_nbr,totparam_nbr);
         pruned_state_space = pruned_state_space_system(M_, options_mom_, oo_.dr, oo_.mom.obs_var, options_mom_.ar, 0, 1);
     else
@@ -247,7 +246,7 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
     if options_mom_.prefilter
         y_sim = bsxfun(@minus, y_sim, mean(y_sim,1));
     end
-    oo_.mom.model_moments = mom.get_data_moments(y_sim, oo_, M_.matched_moments, options_mom_);
+    oo_.mom.model_moments = mom.get_data_moments(y_sim, oo_.mom.obs_var, oo_.dr.inv_order_var, M_.matched_moments, options_mom_);
 end
 
 

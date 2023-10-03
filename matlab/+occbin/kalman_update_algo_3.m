@@ -1,5 +1,5 @@
-function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, alphahat, etahat, TT, RR, CC] = kalman_update_algo_3(a,a1,P,P1,data_index,Z,v,Fi,Ki,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,oo_,options_,occbin_options,kalman_tol,nk)
-% function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, alphahat, etahat, TT, RR, CC] = kalman_update_algo_3(a,a1,P,P1,data_index,Z,v,Fi,Ki,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,oo_,options_,occbin_options,kalman_tol,nk)
+function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, alphahat, etahat, TT, RR, CC] = kalman_update_algo_3(a,a1,P,P1,data_index,Z,v,Fi,Ki,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,options_,occbin_options,kalman_tol,nk)
+% function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, alphahat, etahat, TT, RR, CC] = kalman_update_algo_3(a,a1,P,P1,data_index,Z,v,Fi,Ki,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,options_,occbin_options,kalman_tol,nk)
 %
 % INPUTS
 % - a               [N by 1]                t-1's state estimate
@@ -22,7 +22,10 @@ function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, alphahat, 
 % - regimes0        [structure]             regime info at t-1:t
 % - M_              [structure]             Matlab's structure describing the model (M_).
 % - options_        [structure]             Matlab's structure describing the current options (options_).
-% - oo_             [structure]             Matlab's structure containing the results (oo_).
+% - dr                   [structure]        Reduced form model.
+% - endo_steady_state    [vector]           steady state value for endogenous variables
+% - exo_steady_state     [vector]           steady state value for exogenous variables
+% - exo_det_steady_state [vector]           steady state value for exogenous deterministic variables
 % - occbin_options_ [structure]             Matlab's structure describing the Occbin options.
 % - kalman_tol      [double]                tolerance for reciprocal condition number
 % - nk              [double]                number of forecasting periods
@@ -52,7 +55,7 @@ function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, alphahat, 
 % constraints, Working Papers 2021-03, Joint Research Centre, European Commission 
 
 
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -104,7 +107,7 @@ if ~options_.occbin.filter.use_relaxation
     [a, a1, P, P1, v, Fi, Ki, alphahat, etahat] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
 else
     [~,~,~,~,~,~, TTx, RRx, CCx] ...
-        = occbin.dynare_resolve(M_,options_,oo_, base_regime,myrestrict,T0,R0);
+        = occbin.dynare_resolve(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state, base_regime,myrestrict,T0,R0);
     TT(:,:,2) = TTx(:,:,end);
     RR(:,:,2) = RRx(:,:,end);
     CC(:,2) = CCx(:,end);
@@ -120,16 +123,16 @@ opts_simul.exo_pos=1:M_.exo_nbr;
 
 if opts_simul.restrict_state_space
     tmp=zeros(M_.endo_nbr,1);
-    tmp(oo_.dr.restrict_var_list,1)=alphahat(:,1);
-    opts_simul.endo_init = tmp(oo_.dr.inv_order_var,1);
-    my_order_var = oo_.dr.order_var(oo_.dr.restrict_var_list);
+    tmp(dr.restrict_var_list,1)=alphahat(:,1);
+    opts_simul.endo_init = tmp(dr.inv_order_var,1);
+    my_order_var = dr.order_var(dr.restrict_var_list);
 else
-    opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
-    my_order_var = oo_.dr.order_var;
+    opts_simul.endo_init = alphahat(dr.inv_order_var,1);
+    my_order_var = dr.order_var;
 end
 
 options_.occbin.simul=opts_simul;
-[~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+[~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
 if out.error_flag
     error_flag = out.error_flag;
     return;
@@ -183,7 +186,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
             % % %             regimestart = regimes_(1).regimestart(end-1)+round(0.5*(newstart+oldstart))-1;
             regimes_(1).regimestart(end)=regimestart;
             [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                = occbin.dynare_resolve(M_,options_,oo_, [base_regime regimes_(1)],myrestrict,T0,R0);
+                = occbin.dynare_resolve(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state, [base_regime regimes_(1)],myrestrict,T0,R0);
             TT(:,:,2) = TTx(:,:,end);
             RR(:,:,2) = RRx(:,:,end);
             CC(:,2) = CCx(:,end);
@@ -201,15 +204,15 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         opts_simul.SHOCKS(1,:) = etahat(:,2)';
         %         if opts_simul.restrict_state_space
         %             tmp=zeros(M_.endo_nbr,1);
-        %             tmp(oo_.dr.restrict_var_list,1)=alphahat(:,1);
-        %             opts_simul.endo_init = tmp(oo_.dr.inv_order_var,1);
+        %             tmp(dr.restrict_var_list,1)=alphahat(:,1);
+        %             opts_simul.endo_init = tmp(dr.inv_order_var,1);
         %         else
         if opts_simul.restrict_state_space
             tmp=zeros(M_.endo_nbr,1);
-            tmp(oo_.dr.restrict_var_list,1)=alphahat(:,1);
-            opts_simul.endo_init = tmp(oo_.dr.inv_order_var,1);
+            tmp(dr.restrict_var_list,1)=alphahat(:,1);
+            opts_simul.endo_init = tmp(dr.inv_order_var,1);
         else
-            opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
+            opts_simul.endo_init = alphahat(dr.inv_order_var,1);
         end
         %         end
         if not(options_.occbin.filter.use_relaxation)
@@ -222,7 +225,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         end
         opts_simul.periods = max(opts_simul.periods,max(myregimestart));
         options_.occbin.simul=opts_simul;
-        [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+        [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
         if out.error_flag
             error_flag = out.error_flag;
             return;
@@ -252,7 +255,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                         regimes_(1).regimestart=[1 2];
                     end
                     [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                        = occbin.dynare_resolve(M_,options_,oo_, [base_regime regimes_(1)],myrestrict,T0,R0);
+                        = occbin.dynare_resolve(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state, [base_regime regimes_(1)],myrestrict,T0,R0);
                     TT(:,:,2) = TTx(:,:,end);
                     RR(:,:,2) = RRx(:,:,end);
                     CC(:,2) = CCx(:,end);
@@ -271,7 +274,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                     opts_simul.periods = max(opts_simul.periods,max(myregimestart));
                     opts_simul.maxit=1;
                     options_.occbin.simul=opts_simul;
-                    [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+                    [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
                 end
             end
         end
@@ -301,7 +304,7 @@ if error_flag==0 && niter>options_.occbin.likelihood.max_number_of_iterations &&
         regimes_(1).regimestart(end)=k;
         
         [~,~,~,~,~,~, TTx, RRx, CCx] ...
-            = occbin.dynare_resolve(M_,options_,oo_, [base_regime regimes_(1)],myrestrict,T0,R0);
+            = occbin.dynare_resolve(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state, [base_regime regimes_(1)],myrestrict,T0,R0);
         TT(:,:,2) = TTx(:,:,end);
         RR(:,:,2) = RRx(:,:,end);
         CC(:,2) = CCx(:,end);
@@ -309,10 +312,10 @@ if error_flag==0 && niter>options_.occbin.likelihood.max_number_of_iterations &&
         opts_simul.SHOCKS(1,:) = etahat(:,2)';
         if opts_simul.restrict_state_space
             tmp=zeros(M_.endo_nbr,1);
-            tmp(oo_.dr.restrict_var_list,1)=alphahat(:,1);
-            opts_simul.endo_init = tmp(oo_.dr.inv_order_var,1);
+            tmp(dr.restrict_var_list,1)=alphahat(:,1);
+            opts_simul.endo_init = tmp(dr.inv_order_var,1);
         else
-            opts_simul.endo_init = alphahat(oo_.dr.inv_order_var,1);
+            opts_simul.endo_init = alphahat(dr.inv_order_var,1);
         end
         if M_.occbin.constraint_nbr==1
             myregimestart = [regimes_.regimestart];
@@ -321,7 +324,7 @@ if error_flag==0 && niter>options_.occbin.likelihood.max_number_of_iterations &&
         end
         opts_simul.periods = max(opts_simul.periods,max(myregimestart));
         options_.occbin.simul=opts_simul;
-        [~, out, ss] = occbin.solver(M_,oo_,options_);
+        [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
         if isequal(out.regime_history(1),regimes_(1))
             error_flag=0;
             break
@@ -336,9 +339,9 @@ a = out.piecewise(1:nk+1,my_order_var)' - repmat(out.ys(my_order_var),1,nk+1);
 T = ss.T(my_order_var,my_order_var,:);
 R = ss.R(my_order_var,:,:);
 C = ss.C(my_order_var,:);
-TT = ss.T(oo_.dr.order_var,oo_.dr.order_var,1);
-RR = ss.R(oo_.dr.order_var,:,1);
-CC = ss.C(oo_.dr.order_var,1);
+TT = ss.T(dr.order_var,dr.order_var,1);
+RR = ss.R(dr.order_var,:,1);
+CC = ss.C(dr.order_var,1);
 QQ = R(:,:,2)*QQQ(:,:,3)*transpose(R(:,:,2));
 P(:,:,1) = P(:,:,2);
 for j=1:nk

@@ -85,7 +85,7 @@ fprintf(fidlog,'%% Session 1.\n');
 fprintf(fidlog,' \n');
 prior_draw(bayestopt_,options_.prior_trunc);
 % Find initial values for the NumberOfParticles chains...
-set_dynare_seed('default');
+options_=set_dynare_seed_local_options(options_,'default');
 fprintf(fidlog,['  Initial values of the parameters:\n']);
 disp('Estimation::dsmh: Searching for initial values...');
 ix2 = zeros(npar,NumberOfParticles);

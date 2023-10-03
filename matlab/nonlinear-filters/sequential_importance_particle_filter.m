@@ -101,7 +101,7 @@ state_variance_rank = size(StateVectorVarianceSquareRoot,2);
 Q_lower_triangular_cholesky = chol(Q)';
 
 % Set seed for randn().
-set_dynare_seed('default');
+DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
 
 % Initialization of the weights across particles.
 weights = ones(1,number_of_particles)/number_of_particles ;

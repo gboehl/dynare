@@ -1,11 +1,12 @@
 function map_calibration(OutputDirectoryName, Model, DynareOptions, DynareResults, EstimatedParameters, BayesInfo)
+% map_calibration(OutputDirectoryName, Model, DynareOptions, DynareResults, EstimatedParameters, BayesInfo)
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 
 % Copyright © 2014-2016 European Commission
-% Copyright © 2014-2018 Dynare Team
+% Copyright © 2014-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -107,7 +108,7 @@ if init
             [Tt,Rr,SteadyState,info,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state,'restrict');
         end
         if info(1)==0
-            [info, info_irf, info_moment, data_irf, data_moment]=endogenous_prior_restrictions(Tt,Rr,Model,DynareOptions,DynareResults);
+            [info, info_irf, info_moment, data_irf, data_moment]=endogenous_prior_restrictions(Tt,Rr,Model,DynareOptions,DynareResults.dr,DynareResults.steady_state,DynareResults.exo_steady_state,DynareResults.exo_det_steady_state);
             if ~isempty(info_irf)
                 for ij=1:nbr_irf_restrictions
                     mat_irf{ij}(j,:)=data_irf{ij}(:,2)';

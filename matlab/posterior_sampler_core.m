@@ -81,7 +81,11 @@ bayestopt_ = myinputs.bayestopt_;
 estim_params_ = myinputs.estim_params_;
 options_ = myinputs.options_;
 M_ = myinputs.M_;
-oo_ = myinputs.oo_;
+dr = myinputs.dr;
+endo_steady_state = myinputs.endo_steady_state;
+exo_steady_state=myinputs.exo_steady_state;
+exo_det_steady_state=myinputs.exo_det_steady_state;
+
 % Necessary only for remote computing!
 if whoiam
     % initialize persistent variables in priordens()
@@ -126,15 +130,15 @@ for curr_block = fblck:nblck
         %
         % Set the random number generator type (the seed is useless but needed by the function)
         if ~isoctave
-            set_dynare_seed(options_.DynareRandomStreams.algo, options_.DynareRandomStreams.seed);
+            options_=set_dynare_seed_local_options(options_,options_.DynareRandomStreams.algo, options_.DynareRandomStreams.seed);
         else
-            set_dynare_seed(options_.DynareRandomStreams.seed+curr_block);
+            options_=set_dynare_seed_local_options(options_,options_.DynareRandomStreams.seed+curr_block);
         end
         % Set the state of the RNG
         set_dynare_random_generator_state(record.InitialSeeds(curr_block).Unifor, record.InitialSeeds(curr_block).Normal);
     catch
         % If the state set by master is incompatible with the slave, we only reseed
-        set_dynare_seed(options_.DynareRandomStreams.seed+curr_block);
+        options_=set_dynare_seed_local_options(options_,options_.DynareRandomStreams.seed+curr_block);
     end
     mh_recover_flag=0;
     if (options_.load_mh_file~=0) && (fline(curr_block)>1) && OpenOldFile(curr_block) %load previous draws and likelihood
@@ -191,7 +195,7 @@ for curr_block = fblck:nblck
     sampler_options.curr_block = curr_block;
     while draw_iter <= nruns(curr_block)
 
-        [par, logpost, accepted, neval] = posterior_sampler_iteration(TargetFun, last_draw(curr_block,:), last_posterior(curr_block), sampler_options,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_);
+        [par, logpost, accepted, neval] = posterior_sampler_iteration(TargetFun, last_draw(curr_block,:), last_posterior(curr_block), sampler_options,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
 
         x2(draw_index_current_file,:) = par;
         last_draw(curr_block,:) = par;
