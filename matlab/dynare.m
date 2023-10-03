@@ -81,14 +81,13 @@ if isoctave
                  'of precompiled mex files and some\nfeatures, like solution ' ...
                  'of models approximated at third order, will not be available.'], supported_octave_version())
         skipline()
-    elseif octave_ver_less_than('6.2.0') % Should match the test in mex/build/octave/configure.ac, and also the one in matlab/modules/dseries/src/initialize_dseries_class.m
+    elseif octave_ver_less_than('6.2.0') % Should match the test in meson.build, and also the one in matlab/modules/dseries/src/initialize_dseries_class.m
         skipline()
         warning(['This version of Dynare has only been tested on Octave 6.2.0 and above. Dynare may fail to run or give unexpected result. Consider upgrading your version of Octave.'])
         skipline()
     end
 else
-    if matlab_ver_less_than('8.3') % Should match the test in mex/build/matlab/configure.ac
-                                   % and in m4/ax_mexopts.m4
+    if matlab_ver_less_than('8.3') % Should match the test in meson.build
         skipline()
         warning('This version of Dynare has only been tested on MATLAB 8.3 (R2014a) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
         skipline()
