@@ -4499,8 +4499,8 @@ Computing the stochastic solution
                 graph_format = ( FORMAT, FORMAT... )
 
        Specify the file format(s) for graphs saved to disk. Possible
-       values are ``eps`` (the default), ``pdf``, ``fig`` and ``none``
-       (under Octave, ``fig`` is unavailable). If the
+       values are ``eps`` (the default), ``pdf``, ``fig`` and ``none``.
+       Under Octave, ``fig`` will use Octave’s ``ofig`` format. If the
        file format is set equal to ``none``, the graphs are displayed
        but not saved to the disk.
 
