@@ -39,6 +39,10 @@ Sigma_e = M_.Sigma_e;
 M_.Sigma_e(:,:) = 0;
 
 if options_.homotopy_mode ~= 0
+    if ~isfield(options_, 'homotopy_values')
+        error('STEADY: a homotopy_setup block must be present when the homotopy_mode option is specified')
+    end
+
     if options_.steadystate_flag
         error('STEADY: Can''t use homotopy when providing a steady state external file');
     end
