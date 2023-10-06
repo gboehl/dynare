@@ -1062,6 +1062,8 @@ mod_and_m_tests = [
     'extra' : [ 'steady_state/homotopy/common.mod' ] },
   { 'test' : [ 'steady_state/homotopy/homotopy3_test.mod' ],
     'extra' : [ 'steady_state/homotopy/common.mod' ] },
+  { 'test' : [ 'steady_state/homotopy/homotopy_from_initval_to_endval.mod' ],
+    'extra' : [ 'steady_state/homotopy/common.mod' ] },
   { 'test' : [ 'bvar_a_la_sims/bvar_standalone.mod' ],
     'extra' : [ 'bvar_a_la_sims/bvar_sample.m' ] },
   { 'test' : [ 'bvar_a_la_sims/bvar_and_dsge.mod' ],

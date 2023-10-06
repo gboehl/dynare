@@ -28,7 +28,7 @@ function steady()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ oo_ options_
+global M_ oo_ options_ ex0_
 
 test_for_deep_parameters_calibration(M_);
 
@@ -60,6 +60,18 @@ if options_.homotopy_mode ~= 0
     if any(hv(:,1)~=1 & hv(:,1)~=2 & hv(:,1)~=4)
         % Already checked by the preprocessor, but let’s stay on the safe side
         error('HOMOTOPY_SETUP: incorrect variable types specified')
+    end
+
+    % If the “from_initval_to_endval” option was passed to the “homotopy_setup” block, add the relevant homotopy information
+    if options_.homotopy_from_initval_to_endval
+        if isempty(ex0_)
+            error('HOMOTOPY_SETUP: the from_initval_to_endval option cannot be used without an endval block')
+        end
+        for i = 1:M_.exo_nbr
+            if ~any(hv(:,1)==1 & hv(:,2)==i) % Do not overwrite information manually specified by the user
+                hv = vertcat(hv, [ 1 i ex0_(i) oo_.exo_steady_state(i)]);
+            end
+        end
     end
 
     homotopy_func = str2func(['homotopy' num2str(options_.homotopy_mode)]);

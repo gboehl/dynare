@@ -19,10 +19,25 @@ k = ((delt+bet)/(aa*x*alph))^(1/(alph-1));
 c = aa*x*k^alph-delt*k;
 end;
 
+@#ifdef homotopy_from_initval_to_endval
+
+steady;
+
+endval;
+x = 2;
+end;
+
+homotopy_setup(from_initval_to_endval);
+end;
+
+@#else
+
 homotopy_setup;
 bet, 0.05, 0.1;
 x, 2;
 end;
+
+@#endif
 
 steady(homotopy_mode = @{homotopy_mode}, homotopy_steps = 50);
 
