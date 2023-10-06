@@ -211,7 +211,7 @@ function [M_, oo_, errorcode] = homotopy2(values, step_nbr, M_, options_, oo_)
 % Variables are processed in the order in which they appear in "values".
 % The problem is solved var_nbr*step_nbr times.
 %
-% See homoptopy1 for the description of inputs and outputs.
+% See homotopy1 for the description of inputs and outputs.
 
 nv = size(values, 1);
 
@@ -298,7 +298,7 @@ function [M_,oo_,errorcode] = homotopy3(values, step_nbr, M_, options_, oo_)
 % state, the previous interval is divided by two. When one succeed to find
 % a steady state, the previous interval is multiplied by two.
 %
-% See homoptopy1 for the description of inputs and outputs.
+% See homotopy1 for the description of inputs and outputs.
 
 info = [];
 tol = 1e-8;
