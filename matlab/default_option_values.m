@@ -542,7 +542,7 @@ options_.estimation.moments_posterior_density.kernel_function = 'gaussian'; % Ga
 
 % homotopy for steady state
 options_.homotopy_mode = 0;
-options_.homotopy_steps = 1;
+options_.homotopy_steps = 10;
 options_.homotopy_force_continue = false;
 
 % numerical hessian

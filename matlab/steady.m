@@ -389,7 +389,7 @@ while iter <= step_nbr
 
     iter = iter + 1;
 end
-disp('HOMOTOPY mode 3: failed, maximum iterations reached')
+disp('HOMOTOPY mode 3: failed, maximum iterations reached; you may want to increase the homotopy_steps option')
 M_.params = last_successful_params;
 oo_.exo_steady_state = last_successful_exo_steady_state;
 oo_.exo_det_steady_state = last_successful_exo_det_steady_state;

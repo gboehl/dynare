@@ -3026,7 +3026,7 @@ Finding the steady state with Dynare nonlinear solver
     .. option:: homotopy_steps = INTEGER
 
        Defines the number of steps when performing a homotopy. See
-       ``homotopy_mode`` option for more details.
+       ``homotopy_mode`` option for more details. Default is ``10``.
 
     .. option:: homotopy_force_continue = INTEGER
 
