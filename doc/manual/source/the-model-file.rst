@@ -2996,6 +2996,10 @@ Finding the steady state with Dynare nonlinear solver
        ``homotopy_setup`` block. This option can take three possible
        values:
 
+           ``0``
+
+                Do not use homotopy.
+
            ``1``
 
                 In this mode, all the parameters are changed
@@ -3022,6 +3026,8 @@ Finding the steady state with Dynare nonlinear solver
                 state, the previous interval is multiplied by two. In
                 that last case ``homotopy_steps`` contains the maximum
                 number of computations attempted before giving up.
+
+       |br| Default value is ``0``.
 
     .. option:: homotopy_steps = INTEGER
 
