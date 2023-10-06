@@ -32,48 +32,56 @@ global M_ oo_ options_
 
 test_for_deep_parameters_calibration(M_);
 
-if options_.steadystate_flag && options_.homotopy_mode
-    error('STEADY: Can''t use homotopy when providing a steady state external file');
-end
-
 % Keep of a copy of M_.Sigma_e
 Sigma_e = M_.Sigma_e;
 
 % Set M_.Sigma_e=0 (we compute the *deterministic* steady state)
 M_.Sigma_e(:,:) = 0;
 
-info = 0;
-switch options_.homotopy_mode
-  case 1
-    [M_,oo_,info,ip,ix,ixd] = homotopy1(options_.homotopy_values,options_.homotopy_steps,M_,options_,oo_);
-  case 2
-    homotopy2(options_.homotopy_values, options_.homotopy_steps);
-  case 3
-    [M_,oo_,info,ip,ix,ixd] = homotopy3(options_.homotopy_values,options_.homotopy_steps,M_,options_,oo_);
-end
+if options_.homotopy_mode ~= 0
+    if options_.steadystate_flag
+        error('STEADY: Can''t use homotopy when providing a steady state external file');
+    end
 
-if info(1)
     hv = options_.homotopy_values;
-    skipline()
-    disp('WARNING: homotopy step was not completed')
-    disp('The last values for which a solution was found are:')
-    for i=1:length(ip)
-        fprintf('%12s %12.6f\n',char(M_.param_names(hv(ip(i),2))), ...
-                M_.params(hv(ip(i),2)))
-    end
-    for i=1:length(ix)
-        fprintf('%12s %12.6f\n',char(M_.exo_names(hv(ix(i),2))), ...
-                oo_.exo_steady_state(hv(ix(i),2)))
-    end
-    for i=1:length(ixd)
-        fprintf('%12s %12.6f\n',char(M_.exo_det_names(hv(ixd(i),2))), ...
-                oo_.exo_det_steady_state(hv(ixd(i),2)))
+
+    if any(hv(:,1)~=1 & hv(:,1)~=2 & hv(:,1)~=4)
+        % Already checked by the preprocessor, but let’s stay on the safe side
+        error('HOMOTOPY_SETUP: incorrect variable types specified')
     end
 
-    if options_.homotopy_force_continue
-        disp('Option homotopy_continue is set, so I continue ...')
-    else
-        error('Homotopy step failed')
+    homotopy_func = str2func(['homotopy' num2str(options_.homotopy_mode)]);
+    [M_,oo_,errorcode] = homotopy_func(hv, options_.homotopy_steps, M_, options_, oo_);
+
+    if errorcode
+        if errorcode == 2
+            disp('WARNING: homotopy failed at the first iteration (for the starting values)')
+        else % errorcode == 1: print last successful point
+            ip = find(hv(:,1) == 4); % Parameters
+            ix = find(hv(:,1) == 1); % Exogenous
+            ixd = find(hv(:,1) == 2); % Exogenous deterministic
+            skipline()
+            disp('WARNING: homotopy step was not completed')
+            disp('The last values for which a solution was found are:')
+            for i=1:length(ip)
+                fprintf('%12s %12.6f\n',char(M_.param_names(hv(ip(i),2))), ...
+                        M_.params(hv(ip(i),2)))
+            end
+            for i=1:length(ix)
+                fprintf('%12s %12.6f\n',char(M_.exo_names(hv(ix(i),2))), ...
+                        oo_.exo_steady_state(hv(ix(i),2)))
+            end
+            for i=1:length(ixd)
+                fprintf('%12s %12.6f\n',char(M_.exo_det_names(hv(ixd(i),2))), ...
+                        oo_.exo_det_steady_state(hv(ixd(i),2)))
+            end
+        end
+
+        if options_.homotopy_force_continue
+            disp('Option homotopy_continue is set, so I continue ...')
+        else
+            error('Homotopy step failed')
+        end
     end
 end
 
@@ -114,7 +122,7 @@ end
 M_.Sigma_e = Sigma_e;
 
 
-function [M,oo,info,ip,ix,ixd] = homotopy1(values, step_nbr, M, options, oo)
+function [M,oo,errorcode] = homotopy1(values, step_nbr, M, options, oo)
 % Implements homotopy (mode 1) for steady-state computation.
 % The multi-dimensional vector going from the set of initial values
 % to the set of final values is divided in as many sub-vectors as
@@ -137,19 +145,19 @@ function [M,oo,info,ip,ix,ixd] = homotopy1(values, step_nbr, M, options, oo)
 % OUTPUTS
 %    M              struct of model parameters
 %    oo             struct of outputs
-%    ip             index of parameters
-%    ix             index of exogenous variables
-%    ixp            index of exogenous deterministic variables
+%    errorcode      0 in case of success
+%                   1 if some homotopy steps were successful but it was not
+%                     possible to go up to 100%; in that case, parameters in
+%                     M.params and exogenous in oo are left to the last
+%                     successful point
+%                   2 if it wasn’t possible to compute a solution for the
+%                     starting values
 
 nv = size(values, 1);
 
 ip = find(values(:,1) == 4); % Parameters
 ix = find(values(:,1) == 1); % Exogenous
 ixd = find(values(:,1) == 2); % Exogenous deterministic
-
-if length([ip; ix; ixd]) ~= nv
-    error('HOMOTOPY mode 1: incorrect variable types specified')
-end
 
 % Construct vector of starting values, using previously initialized values
 % when initial value has not been given in homotopy_setup block
@@ -172,28 +180,30 @@ end
 
 for i=1:step_nbr+1
     disp([ 'HOMOTOPY mode 1: computing step ' int2str(i-1) '/' int2str(step_nbr) '...' ])
-    old_params = M.params;
-    old_exo = oo.exo_steady_state;
-    old_exo_det = oo.exo_det_steady_state;
     M.params(values(ip,2)) = points(ip,i);
     oo.exo_steady_state(values(ix,2)) = points(ix,i);
     oo.exo_det_steady_state(values(ixd,2)) = points(ixd,i);
-
-    [steady_state,M.params,info] = evaluate_steady_state(oo.steady_state,[oo.exo_steady_state; oo.exo_det_steady_state],M,options,~options.steadystate.nocheck);
-    if info(1) == 0
-        % if homotopy step is not successful, current values of steady
-        % state are not modified
-        oo.steady_state = steady_state;
-    else
-        M.params = old_params;
-        oo.exo_steady_state = old_exo;
-        oo.exo_det_steady_state = old_exo_det;
-        break
+    [oo.steady_state,M.params,info] = evaluate_steady_state(oo.steady_state,[oo.exo_steady_state; oo.exo_det_steady_state],M,options,~options.steadystate.nocheck);
+    if info(1)
+        if i == 1
+            errorcode = 2;
+        else
+            M.params = old_params;
+            oo.exo_steady_state = old_exo;
+            oo.exo_det_steady_state = old_exo_det;
+            errorcode = 1;
+        end
+        return
     end
+    old_params = M.params;
+    old_exo = oo.exo_steady_state;
+    old_exo_det = oo.exo_det_steady_state;
 end
 
+errorcode = 0;
 
-function homotopy2(values, step_nbr)
+
+function [M_, oo_, errorcode] = homotopy2(values, step_nbr, M_, options_, oo_)
 % Implements homotopy (mode 2) for steady-state computation.
 % Only one parameter/exogenous is changed at a time.
 % Computation jumps to next variable only when current variable has been
@@ -201,18 +211,7 @@ function homotopy2(values, step_nbr)
 % Variables are processed in the order in which they appear in "values".
 % The problem is solved var_nbr*step_nbr times.
 %
-% INPUTS
-%    values:        a matrix with 4 columns, representing the content of
-%                   homotopy_setup block, with one variable per line.
-%                   Column 1 is variable type (1 for exogenous, 2 for
-%                   exogenous deterministic, 4 for parameters)
-%                   Column 2 is symbol integer identifier.
-%                   Column 3 is initial value, and column 4 is final value.
-%                   Column 3 can contain NaNs, in which case previous
-%                   initialization of variable will be used as initial value.
-%    step_nbr:      number of steps for homotopy
-
-global M_ oo_ options_
+% See homoptopy1 for the description of inputs and outputs.
 
 nv = size(values, 1);
 
@@ -270,12 +269,28 @@ for i = 1:nv
 
         disp([ 'HOMOTOPY mode 2: lauching solver with ' varname ' = ' num2str(v) ' ...'])
 
-        oo_.steady_state = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
+        [oo_.steady_state, M_.params, info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
+        if info(1)
+            if i == 1 && v == oldvalues(1)
+                errorcode = 2;
+            else
+                M_.params = last_successful_params;
+                oo_.exo_steady_state = last_successful_exo;
+                oo_.exo_det_steady_state = last_successful_exo_det;
+                errorcode = 1;
+            end
+            return
+        end
+        last_successful_params = M_.params;
+        last_successful_exo = oo_.exo_steady_state;
+        last_successful_exo_det = oo_.exo_det_steady_state;
     end
 end
 
+errorcode = 0;
 
-function [M,oo,info,ip,ix,ixd] = homotopy3(values, step_nbr, M, options, oo)
+
+function [M,oo,errorcode] = homotopy3(values, step_nbr, M, options, oo)
 % Implements homotopy (mode 3) for steady-state computation.
 % Tries first the most extreme values. If it fails to compute the steady
 % state, the interval between initial and desired values is divided by two
@@ -283,27 +298,7 @@ function [M,oo,info,ip,ix,ixd] = homotopy3(values, step_nbr, M, options, oo)
 % state, the previous interval is divided by two. When one succeed to find
 % a steady state, the previous interval is multiplied by two.
 %
-% INPUTS
-%    values:        a matrix with 4 columns, representing the content of
-%                   homotopy_setup block, with one variable per line.
-%                   Column 1 is variable type (1 for exogenous, 2 for
-%                   exogenous deterministic, 4 for parameters)
-%                   Column 2 is symbol integer identifier.
-%                   Column 3 is initial value, and column 4 is final value.
-%                   Column 3 can contain NaNs, in which case previous
-%                   initialization of variable will be used as initial value.
-%    step_nbr:      maximum number of steps to try before aborting
-%    M              struct of model parameters
-%    options        struct of options
-%    oo             struct of outputs
-%
-% OUTPUTS
-%    M              struct of model parameters
-%    oo             struct of outputs
-%    info           return status 0: OK, 1: failed
-%    ip             index of parameters
-%    ix             index of exogenous variables
-%    ixp            index of exogenous deterministic variables
+% See homoptopy1 for the description of inputs and outputs.
 
 info = [];
 tol = 1e-8;
@@ -313,10 +308,6 @@ nv = size(values,1);
 ip = find(values(:,1) == 4); % Parameters
 ix = find(values(:,1) == 1); % Exogenous
 ixd = find(values(:,1) == 2); % Exogenous deterministic
-
-if length([ip; ix; ixd]) ~= nv
-    error('HOMOTOPY mode 3: incorrect variable types specified')
-end
 
 % Construct vector of starting values, using previously initialized values
 % when initial value has not been given in homotopy_setup block
@@ -330,9 +321,6 @@ last_values(ixdn) = oo.exo_det_steady_state(values(ixdn, 2));
 
 targetvalues = values(:,4);
 
-%if min(abs(targetvalues - last_values)) < tol
-%    error('HOMOTOPY mode 3: distance between initial and final values should be at least %e for all variables', tol)
-%end
 iplus = find(targetvalues > last_values);
 iminus = find(targetvalues < last_values);
 
@@ -358,6 +346,7 @@ while iter <= step_nbr
         oo.steady_state = steady_state;
         M.params = params;
         if length([kplus; kminus]) == nv
+            errorcode = 0;
             return
         end
         if iter == 1
@@ -371,7 +360,8 @@ while iter <= step_nbr
         old_exo_det_steady_state = oo.exo_det_steady_state;
         inc = 2*inc;
     elseif iter == 1
-        error('HOMOTOPY mode 3: can''t solve the model at 1st iteration')
+        errorcode = 2;
+        return
     else
         disp('HOMOTOPY mode 3: failed step, now dividing increment by 2...')
         inc = inc/2;
@@ -389,6 +379,7 @@ while iter <= step_nbr
         M.params = old_params;
         oo.exo_steady_state = old_exo_steady_state;
         oo.exo_det_steady_state = old_exo_det_steady_state;
+        errorcode = 1;
         return
     end
 
@@ -398,3 +389,4 @@ disp('HOMOTOPY mode 3: failed, maximum iterations reached')
 M.params = old_params;
 oo.exo_steady_state = old_exo_steady_state;
 oo.exo_det_steady_state = old_exo_det_steady_state;
+errorcode = 1;
