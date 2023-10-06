@@ -38,6 +38,10 @@ Sigma_e = M_.Sigma_e;
 % Set M_.Sigma_e=0 (we compute the *deterministic* steady state)
 M_.Sigma_e(:,:) = 0;
 
+if ~ismember(options_.homotopy_mode, [0 1 2 3])
+    error('STEADY: invalid value for homotopy_mode option')
+end
+
 if isfield(options_, 'homotopy_values') && options_.homotopy_mode == 0
     warning('STEADY: a homotopy_setup block is present but homotopy will not be performed because homotopy_mode option is equal to 0')
 end
