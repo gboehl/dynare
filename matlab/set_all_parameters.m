@@ -55,8 +55,10 @@ ncx = estim_params.ncx;
 nvn = estim_params.nvn;
 ncn = estim_params.ncn;
 np = estim_params.np;
-Sigma_e = M.Sigma_e;
-Correlation_matrix = M.Correlation_matrix;
+if nvx || ncx
+    Sigma_e = M.Sigma_e;
+    Correlation_matrix = M.Correlation_matrix;
+end
 H = M.H;
 Correlation_matrix_ME = M.Correlation_matrix_ME;
 % setting shocks variance on the diagonal of Covariance matrix; used later
@@ -93,13 +95,6 @@ if ncx
         Correlation_matrix(k2,k1) = Correlation_matrix(k1,k2);
     end
 end
-%build covariance matrix from correlation matrix and variances already on
-%diagonal
-Sigma_e = diag(sqrt(diag(Sigma_e)))*Correlation_matrix*diag(sqrt(diag(Sigma_e)));
-%if calibrated covariances, set them now to their stored value
-if isfield(estim_params,'calibrated_covariances')
-    Sigma_e(estim_params.calibrated_covariances.position)=estim_params.calibrated_covariances.cov_value;
-end
 % update offset
 offset = nvx+nvn+ncx;
 
@@ -113,13 +108,6 @@ if ncn
         Correlation_matrix_ME(k2,k1) = Correlation_matrix_ME(k1,k2);
     end
 end
-%build covariance matrix from correlation matrix and variances already on
-%diagonal
-H = diag(sqrt(diag(H)))*Correlation_matrix_ME*diag(sqrt(diag(H)));
-%if calibrated covariances, set them now to their stored value
-if isfield(estim_params,'calibrated_covariances_ME')
-    H(estim_params.calibrated_covariances_ME.position)=estim_params.calibrated_covariances_ME.cov_value;
-end
 
 % update offset
 offset = nvx+ncx+nvn+ncn;
@@ -131,10 +119,24 @@ end
 
 % updating matrices in M
 if nvx || ncx
+    %build covariance matrix from correlation matrix and variances already on
+    %diagonal
+    Sigma_e = diag(sqrt(diag(Sigma_e)))*Correlation_matrix*diag(sqrt(diag(Sigma_e)));
+    %if calibrated covariances, set them now to their stored value
+    if isfield(estim_params,'calibrated_covariances')
+        Sigma_e(estim_params.calibrated_covariances.position)=estim_params.calibrated_covariances.cov_value;
+    end
     M.Sigma_e = Sigma_e;
     M.Correlation_matrix=Correlation_matrix;
 end
 if nvn || ncn
+    %build covariance matrix from correlation matrix and variances already on
+    %diagonal
+    H = diag(sqrt(diag(H)))*Correlation_matrix_ME*diag(sqrt(diag(H)));
+    %if calibrated covariances, set them now to their stored value
+    if isfield(estim_params,'calibrated_covariances_ME')
+        H(estim_params.calibrated_covariances_ME.position)=estim_params.calibrated_covariances_ME.cov_value;
+    end
     M.H = H;
     M.Correlation_matrix_ME=Correlation_matrix_ME;
 end
