@@ -94,26 +94,32 @@ varobs gp_obs gy_obs;
 shocks;
 var e_a; stderr 0.014;
 var e_m; stderr 0.005;
-corr gy_obs,gp_obs = 0.5;
+corr gy_obs,gp_obs = 0.25;
 end;
 
-steady;
+stoch_simul(order=1,irf=0,nomoments,nofunctions,periods=1000);
 
-
+verbatim;
+temp=oo_.endo_simul([strmatch('gy_obs',M_.endo_names,'exact'),strmatch('gp_obs',M_.endo_names,'exact')],:);
+exo_simul = randn(2,options_.periods)'*chol([0.005 0.25*sqrt(0.005*0.01); 0.25*sqrt(0.005*0.01) 0.01]);
+temp=temp'+exo_simul;
+gy_obs=temp(:,1);
+gp_obs=temp(:,2);
+save('fsdat_simul_corr.mat','gy_obs','gp_obs')
+end;
 estimated_params;
-alp, 0.356;
-gam,  0.0085;
-del, 0.01;
-stderr e_a, 0.035449;
-stderr e_m, 0.008862;
-corr e_m, e_a, 0;
-stderr gp_obs, 1;
-stderr gy_obs, 1;
-corr gp_obs, gy_obs,0;
+alp, 0.33, 0.2, 0.4;
+gam,  0.0085, 0 , 0.1;
+del, 0.01, 0, 0.1;
+stderr e_a, 0.014, 0, Inf;
+stderr e_m, 0.005, 0, Inf;
+corr e_m, e_a, 0, 0, 1;
+stderr gp_obs, 1, 0, Inf;
+stderr gy_obs, 1, 0, Inf;
+corr gp_obs, gy_obs,0, 0 , 1;
 end;
 warning('off','MATLAB:nearlySingularMatrix')
-
-estimation(order=1,datafile=fsdat_simul,silent_optimizer,prior_trunc=0,mode_check,smoother,filter_decomposition,forecast = 8,filtered_vars,filter_step_ahead=[1,3],irf=20,tex) m P c e W R k d y gy_obs;
+estimation(order=1,datafile=fsdat_simul_corr,silent_optimizer,prior_trunc=0,mode_check,smoother,filter_decomposition,forecast = 8,filtered_vars,filter_step_ahead=[1,3],irf=20,tex) m P c e W R k d y gy_obs;
 
 
 
@@ -121,14 +127,14 @@ estimated_params(overwrite);
 //alp, beta_pdf, 0.356, 0.02;
 gam, normal_pdf, 0.0085, 0.003;
 //del, beta_pdf, 0.01, 0.005;
-stderr e_a, inv_gamma_pdf, 0.035449, inf;
+stderr e_a, inv_gamma_pdf, 0.05449, inf;
 stderr e_m, inv_gamma_pdf, 0.008862, inf;
-corr e_m, e_a, normal_pdf, 0, 0.2;
-stderr gp_obs, inv_gamma_pdf, 0.001, inf;
+corr e_m, e_a, , -1, 1, normal_pdf, 0, 0.2;
+stderr gp_obs, 0.1, inv_gamma_pdf, 0.001, inf;
 //stderr gy_obs, inv_gamma_pdf, 0.001, inf;
 //corr gp_obs, gy_obs,normal_pdf, 0, 0.2;
 end;
 
-estimation(mode_compute=5,silent_optimizer,order=1,datafile=fsdat_simul,mode_check,smoother,filter_decomposition,mh_replic=2000, mh_nblocks=1, mh_jscale=0.8,forecast = 8,bayesian_irf,filtered_vars,filter_step_ahead=[1,3],irf=20) m P c e W R k d y;
+estimation(mode_compute=5,silent_optimizer,order=1,datafile=fsdat_simul_corr,mode_check,smoother,filter_decomposition,mh_replic=2000, mh_nblocks=1, mh_jscale=0.8,forecast = 8,bayesian_irf,filtered_vars,filter_step_ahead=[1,3],irf=20) m P c e W R k d y;
 shock_decomposition y W R;
 //identification(advanced=1,max_dim_cova_group=3,prior_mc=250);
