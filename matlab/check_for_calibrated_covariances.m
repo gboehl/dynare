@@ -1,10 +1,9 @@
-function estim_params=check_for_calibrated_covariances(xparam1,estim_params,M)
-% function check_for_calibrated_covariances(xparam1,estim_params,M)
+function estim_params=check_for_calibrated_covariances(estim_params,M_)
+% function check_for_calibrated_covariances(estim_params,M)
 % find calibrated covariances to consider during estimation
 % Inputs
-%   -xparam1        [vector] parameters to be estimated
 %   -estim_params   [structure] describing parameters to be estimated
-%   -M              [structure] describing the model
+%   -M_             [structure] describing the model
 %
 % Outputs
 %   -estim_params   [structure] describing parameters to be estimated
@@ -12,7 +11,7 @@ function estim_params=check_for_calibrated_covariances(xparam1,estim_params,M)
 % Notes: M is local to this function and not updated when calling
 % set_all_parameters
 
-% Copyright (C) 2013-2017 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,27 +27,108 @@ function estim_params=check_for_calibrated_covariances(xparam1,estim_params,M)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-Sigma_e_calibrated=M.Sigma_e;
-H_calibrated=M.H;
-%check covariance for structural errors
-covariance_pos=find(tril(Sigma_e_calibrated,-1)); %off-diagonal elements set by covariances before updating correlation matrix to reflect estimated covariances
-covariance_pos_ME=find(tril(H_calibrated,-1)); %off-diagonal elements set by covariances before updating correlation matrix to reflect estimated covariances
 
-%locally updated M
-M = set_all_parameters(xparam1,estim_params,M);
-
-correlation_pos=find(tril(M.Correlation_matrix,-1)); %off-diagonal elements set by correlations after accounting for estimation
-calibrated_covariance_pos=covariance_pos(~ismember(covariance_pos,correlation_pos));
-if any(calibrated_covariance_pos)
-    [rows, columns]=ind2sub(size(M.Sigma_e),calibrated_covariance_pos); %find linear indices of lower triangular covariance entries
-    estim_params.calibrated_covariances.position=[calibrated_covariance_pos;sub2ind(size(M.Sigma_e),columns,rows)]; %get linear entries of upper triangular parts
-    estim_params.calibrated_covariances.cov_value=Sigma_e_calibrated(estim_params.calibrated_covariances.position);
+if isfield(estim_params,'calibrated_covariances')
+    estim_params = rmfield(estim_params,'calibrated_covariances'); %remove if already present
+end
+if isfield(estim_params,'calibrated_covariances_ME')
+    estim_params = rmfield(estim_params,'calibrated_covariances_ME'); %remove if already present
 end
 
-correlation_pos_ME=find(tril(M.Correlation_matrix_ME,-1)); %off-diagonal elements set by correlations after accounting for estimation
-calibrated_covariance_pos_ME=covariance_pos_ME(~ismember(covariance_pos_ME,correlation_pos_ME));
-if any(calibrated_covariance_pos_ME)
-    [rows, columns]=ind2sub(size(M.H),calibrated_covariance_pos_ME); %find linear indices of lower triangular covariance entries
-    estim_params.calibrated_covariances_ME.position=[calibrated_covariance_pos_ME;sub2ind(size(M.H),columns,rows)]; %get linear entries of upper triangular parts
-    estim_params.calibrated_covariances_ME.cov_value=H_calibrated(estim_params.calibrated_covariances_ME.position);
+[rows_calibrated, columns_calibrated]=ind2sub(size(M_.Sigma_e),find(tril(M_.Sigma_e,-1))); %find linear indices of preset lower triangular covariance entries
+
+if estim_params.ncx %delete preset entries actually estimated
+    for i=1:estim_params.ncx
+        shock_1 = estim_params.corrx(i,1);
+        shock_2 = estim_params.corrx(i,2);
+        estimated_corr_pos=find(rows_calibrated==shock_1 & columns_calibrated==shock_2);
+        if ~isempty(estimated_corr_pos)
+            rows_calibrated(estimated_corr_pos)=[];
+            columns_calibrated(estimated_corr_pos)=[];
 end
+        estimated_corr_pos=find(rows_calibrated==shock_2 & columns_calibrated==shock_1);
+        if ~isempty(estimated_corr_pos)
+            rows_calibrated(estimated_corr_pos)=[];
+            columns_calibrated(estimated_corr_pos)=[];
+        end
+    end
+    if any(rows_calibrated)
+        estim_params.calibrated_covariances.position=[sub2ind(size(M_.Sigma_e),rows_calibrated,columns_calibrated);sub2ind(size(M_.Sigma_e),columns_calibrated,rows_calibrated)]; %get linear entries of upper triangular parts
+        estim_params.calibrated_covariances.cov_value=M_.Sigma_e(estim_params.calibrated_covariances.position);
+    end
+end
+
+[rows_calibrated, columns_calibrated]=ind2sub(size(M_.H),find(tril(M_.H,-1))); %find linear indices of preset lower triangular covariance entries
+
+if estim_params.ncn %delete preset entries actually estimated
+    for i=1:estim_params.ncn
+        shock_1 = estim_params.corrn(i,1);
+        shock_2 = estim_params.corrn(i,2);
+        estimated_corr_pos=find(rows_calibrated==shock_1 & columns_calibrated==shock_2);
+        if ~isempty(estimated_corr_pos)
+            rows_calibrated(estimated_corr_pos)=[];
+            columns_calibrated(estimated_corr_pos)=[];
+end
+        estimated_corr_pos=find(rows_calibrated==shock_2 & columns_calibrated==shock_1);
+        if ~isempty(estimated_corr_pos)
+            rows_calibrated(estimated_corr_pos)=[];
+            columns_calibrated(estimated_corr_pos)=[];
+        end
+    end
+end
+if any(rows_calibrated)
+    estim_params.calibrated_covariances_ME.position=[sub2ind(size(M_.H),rows_calibrated,columns_calibrated);sub2ind(size(M_.H),columns_calibrated,rows_calibrated)]; %get linear entries of upper triangular parts
+    estim_params.calibrated_covariances_ME.cov_value=M_.H(estim_params.calibrated_covariances_ME.position);
+end
+
+return % --*-- Unit tests --*--
+
+%@test:1
+
+M_.Sigma_e=[1 0; 0 1];
+M_.H=[1 0; 0 1];
+M_.Correlation_matrix= [1 -0.5; -0.5 1];
+M_.Correlation_matrix_ME=[1 -0.5; -0.5 1];
+estim_params.ncx=1;
+estim_params.ncn=1;
+
+estim_params.corrx=[2 1 NaN -1 1 3 0 0.2000 NaN NaN NaN];
+estim_params.corrn=[2 1 NaN -1 1 3 0 0.2000 NaN NaN NaN];
+
+estim_params=check_for_calibrated_covariances(estim_params,M_);
+if isfield(estim_params,'calibrated_covariances_ME') || isfield(estim_params,'calibrated_covariances')
+    t(1)=false;
+else
+    t(1)=true;
+end
+
+M_.Sigma_e=[1 -0.1; -0.1 1];
+M_.H=[1 -0.1; -0.1 1];
+M_.Correlation_matrix= [1 -0.5; -0.5 1];
+M_.Correlation_matrix_ME=[1 0; 0 1];
+estim_params.ncx=1;
+estim_params.ncn=0;
+
+estim_params.corrx=[2 1 NaN -1 1 3 0 0.2000 NaN NaN NaN];
+estim_params.corrn=[];
+estim_params=check_for_calibrated_covariances(estim_params,M_);
+t(2)=isequal(estim_params.calibrated_covariances_ME.position,[2;3]);
+t(3)=isequal(estim_params.calibrated_covariances_ME.cov_value,[-0.1;-0.1]);
+
+M_.Sigma_e=[1 -0.1; -0.1 1];
+M_.H=[1 -0.1; -0.1 1];
+M_.Correlation_matrix= [1 -0.5; -0.5 1];
+M_.Correlation_matrix_ME=[1 0; 0 1];
+estim_params.ncx=1;
+estim_params.ncn=1;
+
+estim_params.corrx=[2 1 NaN -1 1 3 0 0.2000 NaN NaN NaN];
+estim_params.corrn=[2 1 NaN -1 1 3 0 0.2000 NaN NaN NaN];
+estim_params=check_for_calibrated_covariances(estim_params,M_);
+if isfield(estim_params,'calibrated_covariances_ME') || isfield(estim_params,'calibrated_covariances')
+    t(4)=false;
+else
+    t(4)=true;
+end
+T = all(t);
+%@eof:1
