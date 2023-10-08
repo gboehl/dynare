@@ -30,8 +30,8 @@ function [fval,info,exit_flag,fake_1,fake_2] = minus_logged_prior_density(xparam
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-fake_1 = 1;
-fake_2 = 1;
+fake_1 = [];
+fake_2 = [];
 
 exit_flag = 1;
 info = zeros(4,1);
