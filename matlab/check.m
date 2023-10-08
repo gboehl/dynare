@@ -1,11 +1,11 @@
-function [eigenvalues_,result,info] = check(M, options, oo)
-
+function [eigenvalues_,result,info] = check(M_, options_, oo_)
+%[eigenvalues_,result,info] = check(M_, options_, oo_)
 % Checks determinacy conditions by computing the generalized eigenvalues.
 %
 % INPUTS
-% - M             [structure]     Matlab's structure describing the model (M_).
-% - options       [structure]     Matlab's structure describing the current options (options_).
-% - oo            [structure]     Matlab's structure containing the results (oo_).
+% - M_            [structure]     Matlab's structure describing the model
+% - options_      [structure]     Matlab's structure describing the current options
+% - oo_           [structure]     Matlab's structure containing the results
 %
 % OUTPUTS
 % - eigenvalues_  [double]        vector, eigenvalues.
@@ -30,40 +30,40 @@ function [eigenvalues_,result,info] = check(M, options, oo)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
-if ~options.initval_file && M.exo_nbr > 1
-    oo.exo_simul = ones(M.maximum_lead+M.maximum_lag+1,1)*oo.exo_steady_state';
+if ~options_.initval_file && M_.exo_nbr > 1
+    oo_.exo_simul = ones(M_.maximum_lead+M_.maximum_lag+1,1)*oo_.exo_steady_state';
 end
 
-options.order = 1;
+options_.order = 1;
 
-if isempty(options.qz_criterium)
-    options.qz_criterium = 1+1e-6;
+if isempty(options_.qz_criterium)
+    options_.qz_criterium = 1+1e-6;
 end
 
-oo.dr=set_state_space(oo.dr,M,options);
+oo_.dr=set_state_space(oo_.dr,M_,options_);
 
-[dr,info] = resol(1,M,options,oo.dr ,oo.steady_state, oo.exo_steady_state, oo.exo_det_steady_state);
+[dr,info] = resol(1,M_,options_,oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 
 if info(1) ~= 0 && info(1) ~= 3 && info(1) ~= 4
-    print_info(info, 0, options);
+    print_info(info, 0, options_);
 end
 
 eigenvalues_ = dr.eigval;
 [m_lambda,i]=sort(abs(eigenvalues_));
 
 result = 0;
-if (M.nsfwrd == dr.edim) && (dr.full_rank)
+if (M_.nsfwrd == dr.edim) && (dr.full_rank)
     result = 1;
 end
 
-if ~options.noprint
+if ~options_.noprint
     skipline()
     disp('EIGENVALUES:')
-    disp(sprintf('%16s %16s %16s\n','Modulus','Real','Imaginary'))
+    fprintf('%16s %16s %16s\n','Modulus','Real','Imaginary');
     z=[m_lambda real(eigenvalues_(i)) imag(eigenvalues_(i))]';
-    disp(sprintf('%16.4g %16.4g %16.4g\n',z))
-    disp(sprintf('\nThere are %d eigenvalue(s) larger than 1 in modulus ', dr.edim));
-    disp(sprintf('for %d forward-looking variable(s)', M.nsfwrd));
+    fprintf('%16.4g %16.4g %16.4g\n',z);
+    fprintf('\nThere are %d eigenvalue(s) larger than 1 in modulus ', dr.edim);
+    fprintf('for %d forward-looking variable(s)', M_.nsfwrd);
     skipline()
     if result
         disp('The rank condition is verified.')
