@@ -164,6 +164,7 @@ options_.one_sided_hp_filter = 0;
 options_.filtered_theoretical_moments_grid = 512;
 options_.nodecomposition = false;
 options_.nomoments = false;
+options_.nomodelsummary = false;
 options_.nocorr = false;
 options_.periods = 0;
 options_.noprint = false;

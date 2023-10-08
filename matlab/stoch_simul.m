@@ -134,36 +134,38 @@ if info(1)
 end
 
 if ~options_.noprint
-    skipline()
-    disp('MODEL SUMMARY')
-    skipline()
-    disp(['  Number of variables:         ' int2str(M_.endo_nbr)])
-    disp(['  Number of stochastic shocks: ' int2str(M_.exo_nbr)])
-    disp(['  Number of state variables:   ' int2str(M_.nspred)])
-    disp(['  Number of jumpers:           ' int2str(M_.nsfwrd)])
-    disp(['  Number of static variables:  ' int2str(M_.nstatic)])
-    my_title='MATRIX OF COVARIANCE OF EXOGENOUS SHOCKS';
-    labels = M_.exo_names;
-    headers = vertcat('Variables', labels);
-    lh = cellofchararraymaxlength(labels)+2;
-    dyntable(options_, my_title, headers, labels, M_.Sigma_e, lh, 10, 6);
-    if options_.TeX
-        labels = M_.exo_names_tex;
+    if ~options_.nomodelsummary
+        skipline()
+        disp('MODEL SUMMARY')
+        skipline()
+        disp(['  Number of variables:         ' int2str(M_.endo_nbr)])
+        disp(['  Number of stochastic shocks: ' int2str(M_.exo_nbr)])
+        disp(['  Number of state variables:   ' int2str(M_.nspred)])
+        disp(['  Number of jumpers:           ' int2str(M_.nsfwrd)])
+        disp(['  Number of static variables:  ' int2str(M_.nstatic)])
+        my_title='MATRIX OF COVARIANCE OF EXOGENOUS SHOCKS';
+        labels = M_.exo_names;
         headers = vertcat('Variables', labels);
         lh = cellofchararraymaxlength(labels)+2;
-        dyn_latex_table(M_, options_, my_title, 'covar_ex_shocks', headers, labels, M_.Sigma_e, lh, 10, 6);
-    end
-    if ~all(diag(M_.H)==0)
-        my_title='MATRIX OF COVARIANCE OF MEASUREMENT ERRORS';
-        labels = cellfun(@(x) horzcat('SE_', x), options_.varobs, 'UniformOutput', false);
-        headers = vertcat('Variables', labels);
-        lh = cellofchararraymaxlength(labels)+2;
-        dyntable(options_, my_title, headers, labels, M_.H, lh, 10, 6);
+        dyntable(options_, my_title, headers, labels, M_.Sigma_e, lh, 10, 6);
         if options_.TeX
             labels = M_.exo_names_tex;
             headers = vertcat('Variables', labels);
             lh = cellofchararraymaxlength(labels)+2;
-            dyn_latex_table(M_, options_, my_title, 'covar_ME', headers, labels, M_.H, lh, 10, 6);
+            dyn_latex_table(M_, options_, my_title, 'covar_ex_shocks', headers, labels, M_.Sigma_e, lh, 10, 6);
+        end
+        if ~all(diag(M_.H)==0)
+            my_title='MATRIX OF COVARIANCE OF MEASUREMENT ERRORS';
+            labels = cellfun(@(x) horzcat('SE_', x), options_.varobs, 'UniformOutput', false);
+            headers = vertcat('Variables', labels);
+            lh = cellofchararraymaxlength(labels)+2;
+            dyntable(options_, my_title, headers, labels, M_.H, lh, 10, 6);
+            if options_.TeX
+                labels = M_.exo_names_tex;
+                headers = vertcat('Variables', labels);
+                lh = cellofchararraymaxlength(labels)+2;
+                dyn_latex_table(M_, options_, my_title, 'covar_ME', headers, labels, M_.H, lh, 10, 6);
+            end
         end
     end
     if options_.partial_information
