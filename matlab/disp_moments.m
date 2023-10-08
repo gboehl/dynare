@@ -11,7 +11,7 @@ function oo_=disp_moments(y,var_list,M_,options_,oo_)
 % OUTPUTS
 %   oo_                 [structure]    Dynare's results structure,
 
-% Copyright © 2001-2021 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,7 +50,11 @@ y = y(ivar,options_.drop+1:end)';
 
 ME_present=0;
 if ~all(M_.H==0)
-    [observable_pos_requested_vars, index_subset, index_observables] = intersect(ivar, options_.varobs_id, 'stable');
+    if isoctave && octave_ver_less_than('8.4') %Octave bug #60347
+        [observable_pos_requested_vars, index_subset, index_observables] = intersect_stable(ivar, options_.varobs_id);
+    else
+        [observable_pos_requested_vars, index_subset, index_observables] = intersect(ivar, options_.varobs_id, 'stable');
+    end
     if ~isempty(observable_pos_requested_vars)
         ME_present=1;
         i_ME = setdiff([1:size(M_.H,1)],find(diag(M_.H) == 0)); % find ME with 0 variance

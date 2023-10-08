@@ -122,6 +122,11 @@ if isoctave || matlab_ver_less_than('8.4')
     p{end+1} = '/missing/datetime';
 end
 
+% intersect with 'stable' flag is broken before Octave 8.4, bug #60347
+if isoctave && octave_ver_less_than('8.4')
+    p{end+1} = '/missing/intersect_stable';
+end
+
 P = cellfun(@(c)[dynareroot(1:end-1) c], p, 'uni',false);
 
 % Get mex files folder(s)

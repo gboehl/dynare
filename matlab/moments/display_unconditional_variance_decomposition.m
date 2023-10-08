@@ -45,7 +45,11 @@ if M_.exo_nbr > 1
     lh = cellofchararraymaxlength(labels)+2;
     dyntable(options_, title, headers, labels, 100*oo_.gamma_y{options_.ar+2}(stationary_vars,:), lh, 8, 2);
     if ME_present
-        [stationary_observables, pos_index_subset] = intersect(index_subset, stationary_vars, 'stable');
+        if isoctave && octave_ver_less_than('8.4') %Octave bug #60347
+            [stationary_observables, pos_index_subset] = intersect_stable(index_subset, stationary_vars);
+        else
+            [stationary_observables, pos_index_subset] = intersect(index_subset, stationary_vars, 'stable');
+        end
         headers_ME = vertcat(headers, 'ME');
         labels=get_labels_transformed_vars(M_.endo_names,ivar(stationary_observables),options_,false);
         dyntable(options_, [title,' WITH MEASUREMENT ERROR'], headers_ME, labels, ...

@@ -1,5 +1,6 @@
 function oo_ = ...
     conditional_variance_decomposition_ME_mc_analysis(NumberOfSimulations, type, dname, fname, Steps, exonames, exo, var_list, endo, mh_conf_sig, oo_,options_)
+%oo_ = conditional_variance_decomposition_ME_mc_analysis(NumberOfSimulations, type, dname, fname, Steps, exonames, exo, var_list, endo, mh_conf_sig, oo_,options_)
 % This function analyses the (posterior or prior) distribution of the
 % endogenous variables' conditional variance decomposition with measurement error.
 %
@@ -22,7 +23,7 @@ function oo_ = ...
 % OUTPUTS
 %   oo_          [structure]        Dynare structure where the results are saved.
 
-% Copyright © 2017-2020 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -63,7 +64,12 @@ if isempty(exogenous_variable_index)
     end
 end
 
-[observable_pos_requested_vars,index_subset,index_observables]=intersect(var_list,options_.varobs,'stable');
+if isoctave && octave_ver_less_than('8.4') %Octave bug #60347
+    [~,index_subset]=intersect_stable(var_list,options_.varobs);
+else
+    [~,index_subset]=intersect(var_list,options_.varobs,'stable');
+end
+
 matrix_pos=strmatch(endo, var_list(index_subset),'exact');
 name_1 = endo;
 name_2 = exo;

@@ -38,7 +38,11 @@ observable_pos_requested_vars=[];
 
 ME_present=false;
 if ~all(diag(M_.H)==0)
-    [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
+    if isoctave && octave_ver_less_than('8.4') %Octave bug #60347
+        [observable_pos_requested_vars,index_subset,index_observables]=intersect_stable(ivar,options_.varobs_id);
+    else
+        [observable_pos_requested_vars,index_subset,index_observables]=intersect(ivar,options_.varobs_id,'stable');
+    end
     if ~isempty(observable_pos_requested_vars)
         ME_present=true;
     end
