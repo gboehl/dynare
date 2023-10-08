@@ -155,7 +155,7 @@ Dynare misc commands
 
    |br|
 
-.. matcomm:: prior [OPTIONS[, ...]];
+.. matcomm:: prior [OPTIONS[ ...]];
 
    Prints information about the prior distribution given the provided
    options. If no options are provided, the command returns the list of
