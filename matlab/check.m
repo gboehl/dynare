@@ -40,7 +40,7 @@ if isempty(options_.qz_criterium)
     options_.qz_criterium = 1+1e-6;
 end
 
-oo_.dr=set_state_space(oo_.dr,M_,options_);
+oo_.dr=set_state_space(oo_.dr,M_);
 
 [dr,info] = resol(1,M_,options_,oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 

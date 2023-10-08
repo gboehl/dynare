@@ -83,7 +83,7 @@ sampled_prior_covariance  = zeros(NumberOfParameters,NumberOfParameters);
 file_line_number = 0;
 file_indx_number = 0;
 
-oo_.dr=set_state_space(oo_.dr,M_,options_);
+oo_.dr=set_state_space(oo_.dr,M_);
 
 hh_fig = dyn_waitbar(0,'Please wait. Prior sampler...');
 set(hh_fig,'Name','Prior sampler.');

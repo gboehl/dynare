@@ -103,7 +103,7 @@ end
 
 check_model(M_);
 
-oo_.dr=set_state_space(oo_.dr,M_,options_);
+oo_.dr=set_state_space(oo_.dr,M_);
 
 if PI_PCL_solver
     [oo_.dr, info] = PCL_resol(oo_.steady_state,0);

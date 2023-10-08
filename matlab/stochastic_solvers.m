@@ -87,7 +87,7 @@ end
 if options_.k_order_solver
     orig_order = options_.order;
     options_.order = local_order;
-    dr = set_state_space(dr,M_,options_);
+    dr = set_state_space(dr,M_);
     [dr,info] = k_order_pert(dr,M_,options_);
     options_.order = orig_order;
     return

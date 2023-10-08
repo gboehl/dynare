@@ -268,7 +268,7 @@ else% Yes!
 end
 
 % Get informations about the variables of the model.
-dr = set_state_space(oo_.dr,M_,options_);
+dr = set_state_space(oo_.dr,M_);
 oo_.dr = dr;
 nstatic = M_.nstatic;          % Number of static variables.
 npred = M_.nspred;             % Number of predetermined variables.

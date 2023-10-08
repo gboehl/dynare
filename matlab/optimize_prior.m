@@ -20,7 +20,7 @@ function optimize_prior(DynareOptions, ModelInfo, DynareResults, BayesInfo, Esti
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Initialize to the prior mean
-DynareResults.dr = set_state_space(DynareResults.dr,ModelInfo,DynareOptions);
+DynareResults.dr = set_state_space(DynareResults.dr,ModelInfo);
 xparam1 = BayesInfo.p1;
 
 % Pertubation of the initial condition.

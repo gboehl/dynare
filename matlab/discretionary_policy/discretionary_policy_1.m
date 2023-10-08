@@ -116,7 +116,7 @@ end
 
 %write back solution to dr
 dr.ys =ys;
-dr=set_state_space(dr,M_,options_);
+dr=set_state_space(dr,M_);
 T=H(dr.order_var,dr.order_var);
 dr.ghu=G(dr.order_var,:);
 if M_.maximum_endo_lag

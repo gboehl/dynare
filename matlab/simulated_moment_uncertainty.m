@@ -58,7 +58,7 @@ if M_.exo_nbr > 0
     oo_.exo_simul= ones(max(options_.periods,1) + M_.maximum_lag + M_.maximum_lead,1) * oo_.exo_steady_state';
 end
 
-oo_.dr=set_state_space(oo_.dr,M_,options_);
+oo_.dr=set_state_space(oo_.dr,M_);
 
 
 if options_.logged_steady_state %if steady state was previously logged, undo this

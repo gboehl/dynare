@@ -157,7 +157,7 @@ if options_.debug
     save([M_.dname filesep 'Output' filesep M_.fname '_debug.mat'],'jacobia_')
 end
 
-dr=set_state_space(dr,M_,options_);
+dr=set_state_space(dr,M_);
 kstate = dr.kstate;
 nstatic = M_.nstatic;
 nfwrd = M_.nfwrd;

@@ -1,8 +1,9 @@
-function dr=set_state_space(dr,DynareModel,DynareOptions)
+function dr=set_state_space(dr,M_)
+% dr=set_state_space(dr,M_)
 % Write the state space representation of the reduced form solution.
 
 %@info:
-%! @deftypefn {Function File} {[@var{dr} =} set_state_space (@var{dr},@var{DynareModel},@var{DynareOptions})
+%! @deftypefn {Function File} {[@var{dr} =} set_state_space (@var{dr},@var{M_})
 %! @anchor{set_state_space}
 %! @sp 1
 %! Write the state space representation of the reduced form solution.
@@ -12,10 +13,8 @@ function dr=set_state_space(dr,DynareModel,DynareOptions)
 %! @table @ @var
 %! @item dr
 %! Matlab's structure describing decision and transition rules.
-%! @item DynareModel
+%! @item M_
 %! Matlab's structure describing the model (initialized by dynare, see @ref{M_})
-%! @item DynareOptions
-%! Matlab's structure describing the current options (initialized by dynare, see @ref{options_}).
 %! @end table
 %! @sp 2
 %! @strong{Outputs}
@@ -51,10 +50,10 @@ function dr=set_state_space(dr,DynareModel,DynareOptions)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-max_lead = DynareModel.maximum_endo_lead;
-max_lag = DynareModel.maximum_endo_lag;
-endo_nbr = DynareModel.endo_nbr;
-lead_lag_incidence = DynareModel.lead_lag_incidence;
+max_lead = M_.maximum_endo_lead;
+max_lag = M_.maximum_endo_lag;
+endo_nbr = M_.endo_nbr;
+lead_lag_incidence = M_.lead_lag_incidence;
 klen = max_lag + max_lead + 1;
 
 fwrd_var = find(lead_lag_incidence(max_lag+2:end,:))';
