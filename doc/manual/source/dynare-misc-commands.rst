@@ -167,7 +167,7 @@ Dynare misc commands
 
             A ``1*Nblck`` array of doubles. Current acceptance ratios.
 
-.. matcomm:: prior [OPTIONS[, ...]];
+.. matcomm:: prior [OPTIONS[ ...]];
 
     Prints information about the prior distribution given the provided
     options. If no options are provided, the command returns the list of
