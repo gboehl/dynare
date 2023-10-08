@@ -1,6 +1,8 @@
-function check_model(DynareModel)
+function check_model(M_)
+% check_model(M_)
+% Performs various consistency checks on the model
 
-% Copyright (C) 2005-2013 Dynare Team
+% Copyright (C) 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,15 +19,21 @@ function check_model(DynareModel)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if ~all(DynareModel.lead_lag_incidence(DynareModel.maximum_lag+1,:) > 0)
+if ~all(M_.lead_lag_incidence(M_.maximum_lag+1,:) > 0)
     warning('Problem in the model specification: some variables don''t appear as current. Check whether this is desired.');
 end
 
-if ~check_consistency_covariances(DynareModel.Sigma_e)
+if any(diag(M_.Sigma_e)<0)
+    error('You have specified negative shock variances. That is not allowed.')
+end
+if ~check_consistency_covariances(M_.Sigma_e)
     error('The specified covariances for the structural errors are not consistent with the variances as they imply a correlation larger than +-1')
 end
-if ~isequal(DynareModel.H,0)
-    if ~check_consistency_covariances(DynareModel.H)
+if any(diag(M_.H)<0)
+    error('You have specified negative measurement error variances. That is not allowed.')
+end
+if ~isequal(M_.H,0)
+    if ~check_consistency_covariances(M_.H)
         error('The specified covariances for the measurement errors are not consistent with the variances as they imply a correlation larger than +-1')
     end
 end
