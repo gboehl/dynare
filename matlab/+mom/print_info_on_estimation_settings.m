@@ -1,11 +1,12 @@
-function print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters)
-% print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters)
+function print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters, doBayesianEstimation)
+% print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters, doBayesianEstimation)
 % -------------------------------------------------------------------------
 % Print information on the method of moments estimation settings to the console
 % -------------------------------------------------------------------------
 % INPUTS
 % options_mom_                    [struct]   options for the method of moments estimation
 % number_of_estimated_parameters  [integer]  number of estimated parameters
+% doBayesianEstimation            [boolean]  true if the estimation is Bayesian
 % -------------------------------------------------------------------------
 % OUTPUT
 % No output, just displays the chosen settings
@@ -35,7 +36,7 @@ function print_info_on_estimation_settings(options_mom_, number_of_estimated_par
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
-fprintf('\n---------------------------------------------------\n');
+fprintf('\n---------------------------------------------------\n')
 if strcmp(options_mom_.mom.mom_method,'SMM')
     fprintf('Simulated method of moments with');
 elseif strcmp(options_mom_.mom.mom_method,'GMM')
@@ -51,7 +52,16 @@ if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_meth
         fprintf('\n  - penalized estimation using deviation from prior mean and weighted with prior precision');
     end
 end
-
+if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
+    if doBayesianEstimation
+        fprintf('Bayesian Impulse Response Function Matching with');
+    else
+        fprintf('Frequentist Impulse Response Function Matching with');
+    end
+    if ~isempty(options_mom_.mom.irf_matching_file.name)
+        fprintf('\n  - irf_matching_file: %s',[options_mom_.mom.irf_matching_file.path filesep options_mom_.mom.irf_matching_file.name '.m']);
+    end    
+end
 for i = 1:length(options_mom_.optimizer_vec)
     if i == 1
         str = '- optimizer (mode_compute';
@@ -108,10 +118,10 @@ for i = 1:length(options_mom_.optimizer_vec)
     end
 end
 if options_mom_.order > 0
-    fprintf('\n  - stochastic simulations with perturbation order: %d', options_mom_.order);
+    fprintf('\n  - stochastic simulations with perturbation order: %d', options_mom_.order)
 end
 if options_mom_.order > 1 && options_mom_.pruning
-    fprintf(' (with pruning)');
+    fprintf(' (with pruning)')
 end
 if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
     if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
@@ -120,6 +130,8 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
         fprintf('\n  - standard errors: numerical derivatives');
     end
     fprintf('\n  - number of matched moments: %d', options_mom_.mom.mom_nbr);
+elseif strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
+    fprintf('\n  - number of matched irfs: %d', options_mom_.mom.mom_nbr);
 end
 fprintf('\n  - number of parameters: %d', number_of_estimated_parameters);
 fprintf('\n\n');
