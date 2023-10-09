@@ -1,8 +1,8 @@
 function matched_moments = matched_moments_block(matched_moments, mom_method)
-% function matched_moments = matched_moments_block(matched_moments, mom_method)
+% matched_moments = matched_moments_block(matched_moments, mom_method)
 % -------------------------------------------------------------------------
-% Checks and transforms matched_moments bock for further use in the estimation
-% =========================================================================
+% Checks and transforms matched_moments block for further use in the estimation
+% -------------------------------------------------------------------------
 % INPUTS
 % matched_moments: [cell array] original matched_moments block
 % mom_method:      [string]     method of moments method (GMM or SMM)
@@ -12,7 +12,8 @@ function matched_moments = matched_moments_block(matched_moments, mom_method)
 % -------------------------------------------------------------------------
 % This function is called by
 %  o mom.run
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -29,7 +30,7 @@ function matched_moments = matched_moments_block(matched_moments, mom_method)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
+
 
 matched_moments_orig = matched_moments;
 % higher-order product moments not supported yet for GMM
