@@ -184,54 +184,21 @@ end
 
 
 % -------------------------------------------------------------------------
-% checks on settings
-% -------------------------------------------------------------------------
-if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
-    if numel(options_mom_.nobs) > 1
-        error('method_of_moments: Recursive estimation and forecast for samples is not supported. Please set an integer as ''nobs''!');
-    end
-    if numel(options_mom_.first_obs) > 1
-        error('method_of_moments: Recursive estimation and forecast for samples is not supported. Please set an integer as ''first_obs''!');
-    end
-end
-if options_mom_.order < 1
-    error('method_of_moments: The order of the Taylor approximation cannot be 0!')
-end
-if options_mom_.order > 2
-    fprintf('Dynare will use ''k_order_solver'' as the order>2\n');
-    options_mom_.k_order_solver = true;
-end
-if strcmp(options_mom_.mom.mom_method,'SMM')
-    if options_mom_.mom.simulation_multiple < 1
-        fprintf('The simulation horizon is shorter than the data. Dynare resets the simulation_multiple to 7.\n')
-        options_mom_.mom.simulation_multiple = 7;
-    end
-end
-if strcmp(options_mom_.mom.mom_method,'GMM')
-    % require pruning with GMM at higher order
-    if options_mom_.order > 1 && ~options_mom_.pruning
-        fprintf('GMM at higher order only works with pruning, so we set pruning option to 1.\n');
-        options_mom_.pruning = true;
-    end
-    if options_mom_.order > 3
-        error('method_of_moments: Perturbation orders higher than 3 are not implemented for GMM estimation, try using SMM!');
-    end
-end
-if options_mom_.mom.analytic_jacobian && ~strcmp(options_mom_.mom.mom_method,'GMM')
-    options_mom_.mom.analytic_jacobian = false;
-    fprintf('\n''analytic_jacobian'' option will be dismissed as it only works with GMM.\n');
-end
-
-
-% -------------------------------------------------------------------------
 % initializations
 % -------------------------------------------------------------------------
 % create output directories to store results
+M_.dname = options_mom_.dirname;
+CheckPath(M_.dname,'.');
 CheckPath('method_of_moments',M_.dname);
-CheckPath('graphs',options_mom_.dirname);
-% initialize options that might change
-options_mom_.mom.compute_derivs = false; % flag to compute derivs in objective function (might change for GMM with either analytic_standard_errors or analytic_jacobian (dependent on optimizer))
-options_mom_.mom.vector_output = false;  % specifies whether the objective function returns a vector
+CheckPath('graphs',M_.dname);
+
+if doBayesianEstimation
+    oo_.mom.posterior.optimization.mode = [];
+    oo_.mom.posterior.optimization.Variance = [];
+    oo_.mom.posterior.optimization.log_density=[];
+end
+doBayesianEstimationMCMC = doBayesianEstimation && ( (options_mom_.mh_replic>0) || options_mom_.load_mh_file );
+invhess = [];
 % decision rule
 oo_.dr = set_state_space(oo_.dr,M_); % get state-space representation
 options_mom_.mom.obs_var = []; % create index of observed variables in DR order
