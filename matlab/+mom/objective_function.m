@@ -1,7 +1,8 @@
-function [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moments_params_derivs] = objective_function(xparam, data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
-% [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moments_params_derivs] = objective_function(xparam, data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+function [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moments_params_derivs, irf_model_varobs] = objective_function(xparam, data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+% [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moments_params_derivs, irf_model_varobs] = objective_function(xparam, data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % -------------------------------------------------------------------------
-% This function evaluates the objective function for a method of moments estimation
+% This function evaluates the objective function for method of moments estimation,
+% i.e. distance between model and data moments/irfs, possibly augmented with priors.
 % -------------------------------------------------------------------------
 % INPUTS (same ones as in dsge_likelihood.m and dsge_var_likelihood.m)
 %  - xparam:               [vector]     current value of estimated parameters as returned by set_prior()
@@ -26,6 +27,7 @@ function [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moment
 %  - Q:                            [double]  value of the quadratic form of the moment difference
 %  - model_moments:                [vector]  model moments
 %  - model_moments_params_derivs:  [matrix]  analytical jacobian of the model moments wrt estimated parameters (currently for GMM only)
+%  - irf_model_varobs:             [matrix]  model irfs for observable variables (used for plotting matched irfs in mom.run)
 % -------------------------------------------------------------------------
 % This function is called by
 %  o mom.run
@@ -33,8 +35,12 @@ function [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moment
 % -------------------------------------------------------------------------
 % This function calls
 % o check_bounds_and_definiteness_estimation
+% o get_lower_cholesky_covariance
 % o get_perturbation_params_derivs
+% o getIrfShocksIndx
+% o irf
 % o mom.get_data_moments
+% o priordens
 % o pruned_state_space_system
 % o resol
 % o set_all_parameters
@@ -62,6 +68,7 @@ function [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moment
 %------------------------------------------------------------------------------
 % Initialization of the returned variables and others...
 %------------------------------------------------------------------------------
+irf_model_varobs = [];
 model_moments_params_derivs = [];
 model_moments = [];
 Q = [];
@@ -247,12 +254,84 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
 end
 
 
+%------------------------------------------------------------------------------
+% IRF_MATCHING using STOCH_SIMUL: Compute irfs given model solution and Cholesky
+% decomposition on shock covariance matrix; this resembles the core codes in
+% stoch_simul
+%------------------------------------------------------------------------------
+if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING') && strcmp(options_mom_.mom.simulation_method,'STOCH_SIMUL')
+    cs = get_lower_cholesky_covariance(M_.Sigma_e,options_mom_.add_tiny_number_to_cholesky);
+    irf_shocks_indx = getIrfShocksIndx(M_, options_mom_);
+    modelIrf = nan(options_mom_.irf,M_.endo_nbr,M_.exo_nbr);
+    for i = irf_shocks_indx
+        if options_mom_.order>1 && options_mom_.relative_irf % normalize shock to 0.01 before IRF generation for GIRFs; multiply with 100 later
+            y_irf = irf(M_, options_mom_, dr, cs(:,i)./cs(i,i)/100, options_mom_.irf, options_mom_.drop, options_mom_.replic, options_mom_.order);
+        else % for linear model, rescaling is done later
+            y_irf = irf(M_, options_mom_, dr, cs(:,i), options_mom_.irf, options_mom_.drop, options_mom_.replic, options_mom_.order);
+        end
+        if any(any(isnan(y_irf))) && ~options_mom_.pruning && ~(options_mom_.order==1)
+            fprintf('\nirf_matching: The simulations conducted for generating IRFs to %s were explosive: Either reduce the shock size, use pruning, or set the approximation order to 1.\n', M_.exo_names{i})
+            fval = Inf;
+            info(1) = 180;
+            info(4) = 0.1;
+            exit_flag = 0;
+            if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
+                fval = ones(options_mom_.mom.mom_nbr,1)*options_mom_.huge_number;
+            end
+            return
+        end
+        if options_mom_.relative_irf
+            if options_mom_.order==1 % multiply with 100 for backward compatibility
+                y_irf = 100*y_irf/cs(i,i);
+            end
+        end
+        modelIrf(:,:,i) = transpose(y_irf);
+    end
+    % do transformations on model irfs if irf_matching_file is provided
+    if ~isempty(options_mom_.mom.irf_matching_file.name)
+        [modelIrf,check] = feval(str2func(options_mom_.mom.irf_matching_file.name),modelIrf, M_, options_mom_);
+        if check
+            fval = Inf;
+            info(1) = 180;
+            info(4) = 0.1;
+            exit_flag = 0;
+            if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
+                fval = ones(options_mom_.mom.mom_nbr,1)*options_mom_.huge_number;
+            end
+            return
+        end
+    end
+    irf_model_varobs = modelIrf(:,options_mom_.varobs_id,:); % focus only on observables (this will be used later for plotting)
+    model_moments = irf_model_varobs(options_mom_.mom.irfIndex); % focus only on selected irf periods
+end
+
+
 %--------------------------------------------------------------------------
 % Compute quadratic target function
 %--------------------------------------------------------------------------
 moments_difference = data_moments - model_moments;
 
-if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
+if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
+    Q = transpose(moments_difference)*weighting_info.W*moments_difference;
+    % log-likelihood
+    lnlik = options_mom_.mom.mom_nbr/2*log(1/2/pi) - 1/2*weighting_info.Winv_logdet - 1/2*Q;
+    if isinf(lnlik)
+        fval = Inf; info(1) = 50; info(4) = 0.1; exit_flag = 0;
+        return
+    end
+    if isnan(lnlik)
+        fval = Inf; info(1) = 45; info(4) = 0.1; exit_flag = 0;
+        return
+    end
+    if imag(lnlik)~=0
+        fval = Inf; info(1) = 46; info(4) = 0.1; exit_flag = 0;
+        return
+    end
+    % add log prior if necessary
+    lnprior = priordens(xparam,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
+    fval = - (lnlik + lnprior);
+
+elseif strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
     residuals = sqrt(options_mom_.mom.weighting_matrix_scaling_factor)*weighting_info.Sw*moments_difference;
     Q = residuals'*residuals;
     if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
