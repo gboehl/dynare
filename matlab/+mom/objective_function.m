@@ -221,14 +221,10 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
     y_sim = simult_(M_, options_mom_, dr.ys, dr, scaled_shock_series, options_mom_.order);
     % provide meaningful penalty if data is nan or inf
     if any(any(isnan(y_sim))) || any(any(isinf(y_sim)))
-        if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
-            fval = Inf(size(weighting_info.Sw,1),1);
-        else
-            fval = Inf;
-        end
         info(1)=180;
         info(4) = 0.1;
         exit_flag = 0;
+        fval = Inf;
         if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
             fval = ones(options_mom_.mom.mom_nbr,1)*options_mom_.huge_number;
         end
@@ -272,21 +268,21 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     end
     if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_jacobian
         if options_mom_.mom.penalized_estimator
-            dxparam1 = eye(length(xparam));
+            dxparam = eye(length(xparam));
         end
         for jp=1:length(xparam)
             dmoments_difference = - model_moments_params_derivs(:,jp);
             dresiduals = sqrt(options_mom_.mom.weighting_matrix_scaling_factor)*weighting_info.Sw*dmoments_difference;
             if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
                 if options_mom_.mom.penalized_estimator
-                    df(:,jp)=[dresiduals;dxparam1(:,jp)./sqrt(diag(diag(bayestopt_.p2.^2)))];
+                    df(:,jp)=[dresiduals;dxparam(:,jp)./sqrt(diag(diag(bayestopt_.p2.^2)))];
                 else
                     df(:,jp) = dresiduals;
                 end
             else
                 df(jp,1) = dresiduals'*residuals + residuals'*dresiduals;
                 if options_mom_.mom.penalized_estimator
-                    df(jp,1)=df(jp,1)+(dxparam1(:,jp))'/(diag(bayestopt_.p2.^2))*(xparam-bayestopt_.p1)+(xparam-bayestopt_.p1)'/(diag(bayestopt_.p2.^2))*(dxparam1(:,jp));
+                    df(jp,1)=df(jp,1)+(dxparam(:,jp))'/(diag(bayestopt_.p2.^2))*(xparam-bayestopt_.p1)+(xparam-bayestopt_.p1)'/(diag(bayestopt_.p2.^2))*(dxparam(:,jp));
                 end
             end
         end

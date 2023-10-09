@@ -10,8 +10,8 @@ function posterior_sampler(TargetFun,ProposalFun,xparam1,sampler_options,mh_boun
 %   o xparam1           [double]    (p*1) vector of parameters to be estimated (initial values).
 %   o sampler_options               structure
 %   o mh_bounds         [double]    (p*2) matrix defining lower and upper bounds for the parameters.
-%   o dataset_          [structure] data structure
-%   o dataset_info      [structure] dataset info structure
+%   o dataset_          [structure] data structure (likelihood-based) or data moments (method of moments)
+%   o dataset_info      [structure] dataset info structure (likelihood-based) or info on weighting matrix (method of moments)
 %   o options_          [structure] options structure
 %   o M_                [structure] model structure
 %   o estim_params_     [structure] estimated parameters structure

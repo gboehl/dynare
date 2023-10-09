@@ -8,7 +8,7 @@ function BoundsInfo = set_correct_bounds_for_stderr_corr(estim_params_,BoundsInf
 % o BoundsInfo    [struct] information on bounds
 % -------------------------------------------------------------------------
 % OUTPUT
-% o BoundsInfo    [struct] updated information on bounds
+% o BoundsInfo    [struct] updated bounds
 % -------------------------------------------------------------------------
 % This function is called by
 %  o mom.run

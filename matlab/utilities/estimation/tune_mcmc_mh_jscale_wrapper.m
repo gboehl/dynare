@@ -18,6 +18,7 @@ function mh_jscale = tune_mcmc_mh_jscale_wrapper(invhess, options_, M_, objectiv
 % -------------------------------------------------------------------------
 % This function is called by
 %  o dynare_estimation_1
+%  o mom.run
 % -------------------------------------------------------------------------
 
 % Copyright © 2023 Dynare Team
