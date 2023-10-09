@@ -1,5 +1,5 @@
-function [SE_values, Asympt_Var] = standard_errors(xparam, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Wopt_flag)
-% [SE_values, Asympt_Var] = standard_errors(xparam, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Wopt_flag)
+function [SE_values, Asympt_Var] = standard_errors(xparam, objective_function, BoundsInfo, oo_, estim_params_, M_, options_mom_, Wopt_flag)
+% [SE_values, Asympt_Var] = standard_errors(xparam, objective_function, BoundsInfo, oo_, estim_params_, M_, options_mom_, Wopt_flag)
 % -------------------------------------------------------------------------
 % This function computes standard errors to the method of moments estimates
 % Adapted from replication codes of
@@ -8,7 +8,7 @@ function [SE_values, Asympt_Var] = standard_errors(xparam, objective_function, B
 % INPUTS
 %   o xparam:                   value of estimated parameters as returned by set_prior()
 %   o objective_function        string of objective function
-%   o Bounds:                   structure containing parameter bounds
+%   o BoundsInfo:               structure containing parameter bounds
 %   o oo_:                      structure for results
 %   o estim_params_:            structure describing the estimated_parameters
 %   o M_                        structure describing the model
@@ -75,12 +75,12 @@ else
         %Positive step
         xparam_eps_p      = xparam;
         xparam_eps_p(i,1) = xparam_eps_p(i) + eps_value;
-        [~, info_p, ~, ~,~, oo__p] = feval(objective_function, xparam_eps_p, Bounds, oo_, estim_params_, M_, options_mom_);
+        [~, info_p, ~, ~,~, oo__p] = feval(objective_function, xparam_eps_p, BoundsInfo, oo_, estim_params_, M_, options_mom_);
 
         % Negative step
         xparam_eps_m      = xparam;
         xparam_eps_m(i,1) = xparam_eps_m(i) - eps_value;
-        [~, info_m,  ~, ~,~, oo__m] = feval(objective_function, xparam_eps_m, Bounds, oo_, estim_params_, M_, options_mom_);
+        [~, info_m,  ~, ~,~, oo__m] = feval(objective_function, xparam_eps_m, BoundsInfo, oo_, estim_params_, M_, options_mom_);
 
         % The Jacobian:
         if nnz(info_p)==0 && nnz(info_m)==0

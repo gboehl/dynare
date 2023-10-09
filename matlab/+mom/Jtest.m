@@ -1,5 +1,5 @@
-function oo_ = Jtest(xparam, objective_function, Woptflag, oo_, options_mom_, bayestopt_, Bounds, estim_params_, M_, nobs)
-% function oo_ = Jtest(xparam, objective_function, Woptflag, oo_, options_mom_, bayestopt_, Bounds, estim_params_, M_, nobs)
+function oo_ = Jtest(xparam, objective_function, Woptflag, oo_, options_mom_, bayestopt_, BoundsInfo, estim_params_, M_, nobs)
+% function oo_ = Jtest(xparam, objective_function, Woptflag, oo_, options_mom_, bayestopt_, BoundsInfo, estim_params_, M_, nobs)
 % -------------------------------------------------------------------------
 % Computes the J-test statistic and p-value for a GMM/SMM estimation
 % =========================================================================
@@ -10,7 +10,7 @@ function oo_ = Jtest(xparam, objective_function, Woptflag, oo_, options_mom_, ba
 %  oo_:                 [struct]           results
 %  options_mom_:        [struct]           options
 %  bayestopt_:          [struct]           information on priors
-%  Bounds:              [struct]           bounds on parameters
+%  BoundsInfo:          [struct]           bounds on parameters
 %  estim_params_:       [struct]           information on estimated parameters
 %  M_:                  [struct]           information on the model
 %  nobs:                [scalar]           number of observations
@@ -49,7 +49,7 @@ if options_mom_.mom.mom_nbr > length(xparam)
         W_opt = mom.optimal_weighting_matrix(oo_.mom.m_data, oo_.mom.model_moments, options_mom_.mom.bartlett_kernel_lag);
         oo_J = oo_;
         oo_J.mom.Sw = chol(W_opt);
-        fval = feval(objective_function, xparam, Bounds, oo_J, estim_params_, M_, options_mom_);
+        fval = feval(objective_function, xparam, BoundsInfo, oo_J, estim_params_, M_, options_mom_);
     else
         fval = oo_.mom.Q;
     end

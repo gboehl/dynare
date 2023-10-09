@@ -1,5 +1,5 @@
-function [xparam1, oo_, Woptflag] = mode_compute_gmm_smm(xparam0, objective_function, oo_, M_, options_mom_, estim_params_, bayestopt_, Bounds)
-% function [xparam1, oo_, Woptflag] = mode_compute_gmm_smm(xparam0, objective_function, oo_, M_, options_mom_, estim_params_, bayestopt_, Bounds)
+function [xparam1, oo_, Woptflag] = mode_compute_gmm_smm(xparam0, objective_function, oo_, M_, options_mom_, estim_params_, bayestopt_, BoundsInfo)
+% function [xparam1, oo_, Woptflag] = mode_compute_gmm_smm(xparam0, objective_function, oo_, M_, options_mom_, estim_params_, bayestopt_, BoundsInfo)
 % -------------------------------------------------------------------------
 % Iterated method of moments for GMM and SMM, computes the minimum of the
 % objective function (distance between data moments and model moments)
@@ -14,7 +14,7 @@ function [xparam1, oo_, Woptflag] = mode_compute_gmm_smm(xparam0, objective_func
 % options_mom_:        [structure]    options
 % estim_params_:       [structure]    information on estimated parameters
 % bayestopt_:          [structure]    information on priors
-% Bounds:              [structure]    bounds for optimization
+% BoundsInfo:          [structure]    bounds for optimization
 % -------------------------------------------------------------------------
 % OUTPUT
 % xparam1:             [vector]       mode of objective function
@@ -100,7 +100,7 @@ for stage_iter = 1:size(options_mom_.mom.weighting_matrix,1)
         options_mom_.current_optimizer = options_mom_.optimizer_vec{optim_iter};
         if options_mom_.optimizer_vec{optim_iter} == 0
             xparam1 = xparam0; % no minimization, evaluate objective at current values
-            fval = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_);
+            fval = feval(objective_function, xparam1, BoundsInfo, oo_, estim_params_, M_, options_mom_);
         else
             if options_mom_.optimizer_vec{optim_iter} == 13
                 options_mom_.mom.vector_output = true;
@@ -112,8 +112,8 @@ for stage_iter = 1:size(options_mom_.mom.weighting_matrix,1)
             else
                 options_mom_.mom.compute_derivs = false;
             end
-            [xparam1, fval] = dynare_minimize_objective(objective_function, xparam0, options_mom_.optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_.name, bayestopt_, [],...
-                                                        Bounds, oo_, estim_params_, M_, options_mom_);
+            [xparam1, fval] = dynare_minimize_objective(objective_function, xparam0, options_mom_.optimizer_vec{optim_iter}, options_mom_, [BoundsInfo.lb BoundsInfo.ub], bayestopt_.name, bayestopt_, [],...
+                                                                  BoundsInfo, oo_, estim_params_, M_, options_mom_);
             if options_mom_.mom.vector_output
                 fval = fval'*fval;
             end
@@ -125,5 +125,5 @@ for stage_iter = 1:size(options_mom_.mom.weighting_matrix,1)
         xparam0 = xparam1;
     end
     options_mom_.vector_output = false;
-    [~, ~, ~,~,~, oo_] = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_); % get oo_.mom.model_moments for iterated GMM/SMM to compute optimal weighting matrix
+    [~, ~, ~,~,~, oo_] = feval(objective_function, xparam1, BoundsInfo, oo_, estim_params_, M_, options_mom_); % get oo_.mom.model_moments for iterated GMM/SMM to compute optimal weighting matrix
 end

@@ -333,14 +333,14 @@ if ~isempty(bayestopt_) && doBayesianEstimation
         end
     end
     % set prior bounds
-    Bounds = prior_bounds(bayestopt_, options_mom_.prior_trunc);
-    Bounds.lb = max(Bounds.lb,lb);
-    Bounds.ub = min(Bounds.ub,ub);
+    BoundsInfo = prior_bounds(bayestopt_, options_mom_.prior_trunc);
+    BoundsInfo.lb = max(BoundsInfo.lb,lb);
+    BoundsInfo.ub = min(BoundsInfo.ub,ub);
 else
     % no priors are declared so Dynare will estimate the parameters with
     % Frequentist methods using inequality constraints for the parameters
-    Bounds.lb = lb;
-    Bounds.ub = ub;
+    BoundsInfo.lb = lb;
+    BoundsInfo.ub = ub;
     if options_mom_.mom.penalized_estimator
         fprintf('Penalized estimation turned off as you did not declare priors\n')
         options_mom_.mom.penalized_estimator = 0;
@@ -348,18 +348,18 @@ else
 end
 
 % set correct bounds for standard deviations and correlations
-Bounds = mom.set_correct_bounds_for_stderr_corr(estim_params_,Bounds);
+BoundsInfo = mom.set_correct_bounds_for_stderr_corr(estim_params_,BoundsInfo);
 
 % test if initial values of the estimated parameters are all between the prior lower and upper bounds
 if options_mom_.use_calibration_initialization
     try
-        check_prior_bounds(xparam0,Bounds,M_,estim_params_,options_mom_,bayestopt_);
+        check_prior_bounds(xparam0,BoundsInfo,M_,estim_params_,options_mom_,bayestopt_);
     catch last_error
         fprintf('Cannot use parameter values from calibration as they violate the prior bounds.')
         rethrow(last_error);
     end
 else
-    check_prior_bounds(xparam0,Bounds,M_,estim_params_,options_mom_,bayestopt_);
+    check_prior_bounds(xparam0,BoundsInfo,M_,estim_params_,options_mom_,bayestopt_);
 end
 
 % check for positive definiteness
@@ -493,7 +493,7 @@ try
         oo_.mom.Sw = eye(options_mom_.mom.mom_nbr); % initialize with identity weighting matrix
     end
     tic_id = tic;
-    [fval, info, ~, ~, ~, oo_, M_] = feval(objective_function, xparam0, Bounds, oo_, estim_params_, M_, options_mom_);
+    [fval, info, ~, ~, ~, oo_, M_] = feval(objective_function, xparam0, BoundsInfo, oo_, estim_params_, M_, options_mom_);
     elapsed_time = toc(tic_id);
     if isnan(fval)
         error('method_of_moments: The initial value of the objective function with identity weighting matrix is NaN!')
@@ -535,16 +535,16 @@ mom.print_info_on_estimation_settings(options_mom_, number_of_estimated_paramete
 % -------------------------------------------------------------------------
 if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
     % compute mode
-    [xparam1, oo_, Woptflag] = mom.mode_compute_gmm_smm(xparam0, objective_function, oo_, M_, options_mom_, estim_params_, bayestopt_, Bounds);
+    [xparam1, oo_, Woptflag] = mom.mode_compute_gmm_smm(xparam0, objective_function, oo_, M_, options_mom_, estim_params_, bayestopt_, BoundsInfo);
     % compute standard errors at mode
     options_mom_.mom.vector_output = false; % make sure flag is reset
     M_ = set_all_parameters(xparam1,estim_params_,M_); % update M_ and oo_ (in particular to get oo_.mom.model_moments)
     if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
         options_mom_.mom.compute_derivs = true; % for GMM we compute derivatives analytically in the objective function with this flag
     end
-    [~, ~, ~,~,~, oo_] = feval(objective_function, xparam1, Bounds, oo_, estim_params_, M_, options_mom_); % compute model moments and oo_.mom.model_moments_params_derivs
+    [~, ~, ~,~,~, oo_] = feval(objective_function, xparam1, BoundsInfo, oo_, estim_params_, M_, options_mom_); % compute model moments and oo_.mom.model_moments_params_derivs
     options_mom_.mom.compute_derivs = false; % reset to not compute derivatives in objective function during optimization
-    [stdh,hessian_xparam1] = mom.standard_errors(xparam1, objective_function, Bounds, oo_, estim_params_, M_, options_mom_, Woptflag);
+    [stdh,hessian_xparam1] = mom.standard_errors(xparam1, objective_function, BoundsInfo, oo_, estim_params_, M_, options_mom_, Woptflag);
 end
 
 
@@ -552,8 +552,8 @@ end
 % checks for mode and hessian at the mode
 % -------------------------------------------------------------------------
 if options_mom_.mode_check.status
-    mode_check(objective_function, xparam1, hessian_xparam1, options_mom_, M_, estim_params_, bayestopt_, Bounds, true,...               
-               Bounds, oo_, estim_params_, M_, options_mom_);
+    mode_check(objective_function, xparam1, hessian_xparam1, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, true,...               
+        BoundsInfo, oo_, estim_params_, M_, options_mom_);
 end
 
 
@@ -564,7 +564,7 @@ if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_meth
     % Store results in output structure
     oo_.mom = display_estimation_results_table(xparam1,stdh,M_,options_mom_,estim_params_,bayestopt_,oo_.mom,prior_dist_names,options_mom_.mom.mom_method,lower(options_mom_.mom.mom_method));
     % J test
-    oo_ = mom.Jtest(xparam1, objective_function, Woptflag, oo_, options_mom_, bayestopt_, Bounds, estim_params_, M_, dataset_.nobs);
+    oo_ = mom.Jtest(xparam1, objective_function, Woptflag, oo_, options_mom_, bayestopt_, BoundsInfo, estim_params_, M_, dataset_.nobs);
     % display comparison of model moments and data moments
     mom.display_comparison_moments(M_, options_mom_, oo_.mom.data_moments, oo_.mom.model_moments);
 end

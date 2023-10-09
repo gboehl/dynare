@@ -1,14 +1,14 @@
-function Bounds = set_correct_bounds_for_stderr_corr(estim_params_,Bounds)
-% function Bounds = set_correct_bounds_for_stderr_corr(estim_params_,Bounds)
+function BoundsInfo = set_correct_bounds_for_stderr_corr(estim_params_,BoundsInfo)
+% function BoundsInfo = set_correct_bounds_for_stderr_corr(estim_params_,BoundsInfo)
 % -------------------------------------------------------------------------
 % Set correct bounds for standard deviation and corrrelation parameters
 % =========================================================================
 % INPUTS
 % o estim_params_ [struct] information on estimated parameters
-% o Bounds        [struct] information on bounds
+% o BoundsInfo    [struct] information on bounds
 % -------------------------------------------------------------------------
 % OUTPUT
-% o Bounds        [struct] updated bounds
+% o BoundsInfo    [struct] updated bounds
 % -------------------------------------------------------------------------
 % This function is called by
 %  o mom.run
@@ -34,10 +34,10 @@ function Bounds = set_correct_bounds_for_stderr_corr(estim_params_,Bounds)
 number_of_estimated_parameters = estim_params_.nvx+estim_params_.nvn+estim_params_.ncx+estim_params_.ncn+estim_params_.np;
 % set correct bounds for standard deviations and corrrelations
 param_of_interest = (1:number_of_estimated_parameters)'<=estim_params_.nvx+estim_params_.nvn;
-LB_below_0 = (Bounds.lb<0 & param_of_interest);
-Bounds.lb(LB_below_0) = 0;
+LB_below_0 = (BoundsInfo.lb<0 & param_of_interest);
+BoundsInfo.lb(LB_below_0) = 0;
 param_of_interest = (1:number_of_estimated_parameters)'> estim_params_.nvx+estim_params_.nvn & (1:number_of_estimated_parameters)'<estim_params_.nvx+estim_params_.nvn +estim_params_.ncx + estim_params_.ncn;
-LB_below_minus_1 = (Bounds.lb<-1 & param_of_interest);
-UB_above_1 = (Bounds.ub>1 & param_of_interest);
-Bounds.lb(LB_below_minus_1) = -1;
-Bounds.ub(UB_above_1) = 1;
+LB_below_minus_1 = (BoundsInfo.lb<-1 & param_of_interest);
+UB_above_1 = (BoundsInfo.ub>1 & param_of_interest);
+BoundsInfo.lb(LB_below_minus_1) = -1;
+BoundsInfo.ub(UB_above_1) = 1;

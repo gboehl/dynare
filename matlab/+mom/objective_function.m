@@ -1,11 +1,11 @@
-function [fval, info, exit_flag, df, junkHessian, oo_, M_] = objective_function(xparam, Bounds, oo_, estim_params_, M_, options_mom_)
-% [fval, info, exit_flag, df, junk1, oo_, M_] = objective_function(xparam, Bounds, oo_, estim_params_, M_, options_mom_)
+function [fval, info, exit_flag, df, junkHessian, oo_, M_] = objective_function(xparam, BoundsInfo, oo_, estim_params_, M_, options_mom_)
+% [fval, info, exit_flag, df, junk1, oo_, M_] = objective_function(xparam, BoundsInfo, oo_, estim_params_, M_, options_mom_)
 % -------------------------------------------------------------------------
 % This function evaluates the objective function for method of moments estimation
 % =========================================================================
 % INPUTS
 %  o xparam:         [vector]    current value of estimated parameters as returned by set_prior()
-%  o Bounds:         [structure] containing parameter bounds
+%  o BoundsInfo:     [structure] containing parameter bounds
 %  o oo_:            [structure] for results
 %  o estim_params_:  [structure] describing the estimated_parameters
 %  o M_              [structure] describing the model
@@ -86,7 +86,7 @@ end
 % Ensure that xparam1 is a column vector; particleswarm.m requires this.
 xparam = xparam(:);
 M_ = set_all_parameters(xparam, estim_params_, M_);
-[fval,info,exit_flag] = check_bounds_and_definiteness_estimation(xparam, M_, estim_params_, Bounds);
+[fval,info,exit_flag] = check_bounds_and_definiteness_estimation(xparam, M_, estim_params_, BoundsInfo);
 if info(1)
     if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
        fval = ones(size(oo_.mom.data_moments,1),1)*options_mom_.huge_number;
