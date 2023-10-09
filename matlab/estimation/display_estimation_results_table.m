@@ -50,7 +50,7 @@ LaTeXtitle=strrep(table_title,' ','_');
 tstath = abs(xparam1)./stdh;
 
 header_width = row_header_width(M_, estim_params_, bayestopt_);
-if strcmp(field_name,'posterior')
+if contains(field_name,'posterior')
     tit1 = sprintf('%-*s %10s %8s %7s %6s %6s\n', header_width, ' ', 'prior mean', ...
                    'mode', 's.d.', 'prior', 'pstdev');
 else
@@ -62,7 +62,7 @@ if np
     disp(tit1)
     for i=1:np
         name = bayestopt_.name{ip};
-        if strcmp(field_name,'posterior')
+        if contains(field_name,'posterior')
             fprintf('%-*s %10.4f %8.4f %7.4f %6s %6.4f \n', ...
                     header_width,name, ...
                     bayestopt_.p1(ip),xparam1(ip),stdh(ip), ...
@@ -85,7 +85,7 @@ if nvx
     for i=1:nvx
         k = estim_params_.var_exo(i,1);
         name = M_.exo_names{k};
-        if strcmp(field_name,'posterior')
+        if contains(field_name,'posterior')
             fprintf('%-*s %10.4f %8.4f %7.4f %6s %6.4f \n', ...
                     header_width, name, bayestopt_.p1(ip), xparam1(ip), ...
                     stdh(ip), pnames{bayestopt_.pshape(ip)+1}, ...
@@ -106,7 +106,7 @@ if nvn
     ip = nvx+1;
     for i=1:nvn
         name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
-        if strcmp(field_name,'posterior')
+        if contains(field_name,'posterior')
             fprintf('%-*s %10.4f %8.4f %7.4f %6s %6.4f \n', ...
                     header_width, name, bayestopt_.p1(ip), ...
                     xparam1(ip), stdh(ip), ...
@@ -132,7 +132,7 @@ if ncx
         k2 = estim_params_.corrx(i,2);
         name = sprintf('%s,%s', M_.exo_names{k1}, M_.exo_names{k2});
         NAME = sprintf('%s_%s', M_.exo_names{k1}, M_.exo_names{k2});
-        if strcmp(field_name, 'posterior')
+        if contains(field_name,'posterior')
             fprintf('%-*s %10.4f %8.4f %7.4f %6s %6.4f \n', ...
                     header_width, name, bayestopt_.p1(ip), xparam1(ip), stdh(ip),  ...
                     pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p2(ip));
@@ -158,7 +158,7 @@ if ncn
         k2 = estim_params_.corrn(i,2);
         name = sprintf('%s,%s', M_.endo_names{k1}, M_.endo_names{k2});
         NAME = sprintf('%s_%s', M_.endo_names{k1}, M_.endo_names{k2});
-        if strcmp(field_name,'posterior')
+        if contains(field_name,'posterior')
             fprintf('%-*s %10.4f %8.4f %7.4f %6s %6.4f \n', ...
                     header_width, name, bayestopt_.p1(ip), xparam1(ip), stdh(ip), ...
                     pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p2(ip));
