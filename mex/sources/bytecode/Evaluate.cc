@@ -968,9 +968,9 @@ Evaluate::print_expression(const Evaluate::it_code_type &expr_begin, const optio
           go_on = false;
           break;
         case Tags::FENDBLOCK:
+          throw FatalException{"Can't print FENDBLOCK"};
         case Tags::FENDEQU:
-          go_on = false;
-          break;
+          throw FatalException{"Can't print FENDEQU"};
         default:
           throw FatalException{"In print_expression, unknown opcode "
                                + to_string(static_cast<int>((*it_code)->op_code))};
@@ -2242,6 +2242,8 @@ Evaluate::printCurrentBlock()
     {
       if ((*it_code)->op_code == Tags::FENDBLOCK)
         go_on = false;
+      else if ((*it_code)->op_code == Tags::FENDEQU)
+        it_code++;
       else
         {
           string s;
