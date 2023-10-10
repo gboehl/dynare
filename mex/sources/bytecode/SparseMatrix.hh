@@ -117,11 +117,9 @@ private:
   int NRow(int r) const;
   int NCol(int c) const;
   int Union_Row(int row1, int row2) const;
-  void Print(int Size, const int *b) const;
   int Get_u();
   void Delete_u(int pos);
   void Clear_u();
-  void Print_u() const;
   void *Symbolic {nullptr}, *Numeric {nullptr};
   int complete(int beg_t, int Size, int periods, int *b);
   void bksub(int tbreak, int last_period, int Size, double slowc_l);

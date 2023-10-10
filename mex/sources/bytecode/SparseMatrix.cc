@@ -186,53 +186,6 @@ dynSparseMatrix::Delete(int r, int c)
 }
 
 void
-dynSparseMatrix::Print(int Size, const int *b) const
-{
-  mexPrintf("   ");
-  for (int k = 0; k < Size*periods; k++)
-    mexPrintf("%-2d ", k);
-  mexPrintf("    |    ");
-  for (int k = 0; k < Size*periods; k++)
-    mexPrintf("%8d", k);
-  mexPrintf("\n");
-  for (int i = 0; i < Size*periods; i++)
-    {
-      NonZeroElem *first = FNZE_R[i];
-      int j = NbNZRow[i];
-      mexPrintf("%-2d ", i);
-      int a = 0;
-      for (int k = 0; k < j; k++)
-        {
-          for (int l = 0; l < (first->c_index-a); l++)
-            mexPrintf("   ");
-          mexPrintf("%-2d ", first->u_index);
-          a = first->c_index+1;
-          first = first->NZE_R_N;
-        }
-      for (int k = a; k < Size*periods; k++)
-        mexPrintf("   ");
-      mexPrintf("%-2d ", b[i]);
-
-      first = FNZE_R[i];
-      j = NbNZRow[i];
-      mexPrintf(" | %-2d ", i);
-      a = 0;
-      for (int k = 0; k < j; k++)
-        {
-          for (int l = 0; l < (first->c_index-a); l++)
-            mexPrintf("        ");
-          mexPrintf("%8.4f", static_cast<double>(u[first->u_index]));
-          a = first->c_index+1;
-          first = first->NZE_R_N;
-        }
-      for (int k = a; k < Size*periods; k++)
-        mexPrintf("        ");
-      mexPrintf("%8.4f", static_cast<double>(u[b[i]]));
-      mexPrintf("\n");
-    }
-}
-
-void
 dynSparseMatrix::Insert(int r, int c, int u_index, int lag_index)
 {
   NonZeroElem *firstn, *first, *firsta, *a;
@@ -1161,13 +1114,6 @@ void
 dynSparseMatrix::Clear_u()
 {
   u_liste.clear();
-}
-
-void
-dynSparseMatrix::Print_u() const
-{
-  for (int i : u_liste)
-    mexPrintf("%d ", i);
 }
 
 void
