@@ -2248,7 +2248,7 @@ Evaluate::printCurrentBlock()
         {
           string s;
           tie(s, it_code) = print_expression(it_code);
-          if (s == "if (evaluate)" || s == "else")
+          if (s == "if (~evaluate)" || s == "else")
             space = false;
           if (s.length() > 0)
             {
@@ -2258,7 +2258,7 @@ Evaluate::printCurrentBlock()
                 mexPrintf("%s\n", s.c_str());
               mexEvalString("drawnow;");
             }
-          if (s == "if (evaluate)" || s == "else")
+          if (s == "if (~evaluate)" || s == "else")
             space = true;
         }
     }
