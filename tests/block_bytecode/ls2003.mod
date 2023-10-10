@@ -144,6 +144,11 @@ steady(solve_algo = @{solve_algo});
 model_info;
 @#endif
 
+@#if bytecode
+print_bytecode_static_model;
+print_bytecode_dynamic_model;
+@#endif
+
 check;
 
 shocks;
