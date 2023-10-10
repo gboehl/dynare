@@ -63,7 +63,7 @@ Get_Arguments_and_global_variables(int nrhs,
                                    mxArray *M_[], mxArray *oo_[], mxArray *options_[], bool &global_temporary_terms,
                                    bool &print,
                                    mxArray *GlobalTemporaryTerms[],
-                                   string *plan_struct_name, string *pfplan_struct_name, bool *extended_path, mxArray *ep_struct[])
+                                   bool *extended_path, mxArray *ep_struct[])
 {
   size_t pos;
   *extended_path = false;
@@ -147,24 +147,6 @@ Get_Arguments_and_global_variables(int nrhs,
                     i++;
                   }
               }
-            else if (Get_Argument(prhs[i]).substr(0, 6) == "pfplan")
-              {
-                size_t pos1 = Get_Argument(prhs[i]).find("=", pos + 6);
-                if (pos1 != string::npos)
-                  pos = pos1 + 1;
-                else
-                  pos += 6;
-                *pfplan_struct_name = deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
-              }
-            else if (Get_Argument(prhs[i]).substr(0, 4) == "plan")
-              {
-                size_t pos1 = Get_Argument(prhs[i]).find("=", pos + 4);
-                if (pos1 != string::npos)
-                  pos = pos1 + 1;
-                else
-                  pos += 4;
-                *plan_struct_name = deblank(Get_Argument(prhs[i]).substr(pos, string::npos));
-              }
             else
               throw FatalException{"In main, unknown argument : " + Get_Argument(prhs[i])};
           }
@@ -197,7 +179,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   mxArray *M_, *oo_, *options_;
   mxArray *GlobalTemporaryTerms;
   mxArray *block_structur = nullptr;
-  mxArray *pfplan_struct = nullptr;
   size_t i, row_y = 0, col_y = 0, row_x = 0, col_x = 0;
   size_t steady_row_y, steady_col_y;
   int y_kmin = 0, y_kmax = 0, y_decal = 0;
@@ -214,12 +195,11 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   bool print = false; // Whether the “print” command is requested
   int verbosity {1}; // Corresponds to options_.verbosity
   double *steady_yd = nullptr;
-  string plan, pfplan;
   bool extended_path;
   mxArray *extended_path_struct;
 
   table_conditional_local_type conditional_local;
-  vector<s_plan> splan, spfplan, sextended_path, sconditional_extended_path;
+  vector<s_plan> sextended_path, sconditional_extended_path;
   vector_table_conditional_local_type vector_conditional_local;
   table_conditional_global_type table_conditional_global;
 
@@ -242,7 +222,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                          steady_state, block_decomposed, evaluate, block,
                                          &M_, &oo_, &options_, global_temporary_terms,
                                          print, &GlobalTemporaryTerms,
-                                         &plan, &pfplan, &extended_path, &extended_path_struct);
+                                         &extended_path, &extended_path_struct);
     }
   catch (GeneralException &feh)
     {
@@ -400,127 +380,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           dates.emplace_back(buf); //string(Dates[i]);
           mxFree(buf);
         }
-    }
-  if (plan.length() > 0)
-    {
-      mxArray *plan_struct = mexGetVariable("base", plan.c_str());
-      if (!plan_struct)
-        mexErrMsgTxt(("Can't find the plan: " + plan).c_str());
-      size_t n_plan = mxGetN(plan_struct);
-      splan.resize(n_plan);
-      for (int i = 0; i < static_cast<int>(n_plan); i++)
-        {
-          splan[i].var = "";
-          splan[i].exo = "";
-          mxArray *tmp = mxGetField(plan_struct, i, "exo");
-          if (tmp)
-            {
-              char name[100];
-              mxGetString(tmp, name, 100);
-              splan[i].var = name;
-              auto [variable_type, exo_num] = symbol_table.getIDAndType(name);
-              if (variable_type == SymbolType::exogenous)
-                splan[i].var_num = exo_num;
-              else
-                mexErrMsgTxt(("The variable '"s + name + "'  defined as var in plan is not an exogenous").c_str());
-            }
-          tmp = mxGetField(plan_struct, i, "var");
-          if (tmp)
-            {
-              char name[100];
-              mxGetString(tmp, name, 100);
-              splan[i].exo = name;
-              auto [variable_type, exo_num] = symbol_table.getIDAndType(name);
-              if (variable_type == SymbolType::endogenous)
-                splan[i].exo_num = exo_num;
-              else
-                mexErrMsgTxt(("The variable '"s + name + "'  defined as exo in plan is not an endogenous variable").c_str());
-            }
-          tmp = mxGetField(plan_struct, i, "per_value");
-          if (tmp)
-            {
-              size_t num_shocks = mxGetM(tmp);
-              splan[i].per_value.resize(num_shocks);
-              double *per_value = mxGetPr(tmp);
-              for (int j = 0; j < static_cast<int>(num_shocks); j++)
-                splan[i].per_value[j] = { ceil(per_value[j]), per_value[j + num_shocks] };
-            }
-        }
-      if (verbosity >= 1)
-        for (int i {0};
-             auto & it : splan)
-          {
-            mexPrintf("----------------------------------------------------------------------------------------------------\n");
-            mexPrintf("surprise #%d\n", i+1);
-            if (it.exo.length())
-              mexPrintf(" plan fliping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num, it.exo.c_str(), it.exo_num);
-            else
-              mexPrintf(" plan shocks on var=%s for the following periods and with the following values:\n", it.var.c_str());
-            for (auto &[period, value]: it.per_value)
-              mexPrintf("  %3d %10.5f\n", period, value);
-            i++;
-          }
-    }
-
-  if (pfplan.length() > 0)
-    {
-      pfplan_struct = mexGetVariable("base", pfplan.c_str());
-      if (!pfplan_struct)
-        mexErrMsgTxt(("Can't find the pfplan: " + pfplan).c_str());
-      size_t n_plan = mxGetN(pfplan_struct);
-      spfplan.resize(n_plan);
-      for (int i = 0; i < static_cast<int>(n_plan); i++)
-        {
-          spfplan[i].var = "";
-          spfplan[i].exo = "";
-          mxArray *tmp = mxGetField(pfplan_struct, i, "var");
-          if (tmp)
-            {
-              char name[100];
-              mxGetString(tmp, name, 100);
-              spfplan[i].var = name;
-              auto [variable_type, exo_num] = symbol_table.getIDAndType(name);
-              if (variable_type == SymbolType::exogenous)
-                splan[i].var_num = exo_num;
-              else
-                mexErrMsgTxt(("The variable '"s + name + "' defined as var in pfplan is not an exogenous").c_str());
-            }
-          tmp = mxGetField(pfplan_struct, i, "exo");
-          if (tmp)
-            {
-              char name[100];
-              mxGetString(tmp, name, 100);
-              spfplan[i].exo = name;
-              auto [variable_type, exo_num] = symbol_table.getIDAndType(name);
-              if (variable_type == SymbolType::endogenous)
-                spfplan[i].exo_num = exo_num;
-              else
-                mexErrMsgTxt(("The variable '"s + name + "' defined as exo in pfplan  is not an endogenous variable").c_str());
-            }
-          tmp = mxGetField(pfplan_struct, i, "per_value");
-          if (tmp)
-            {
-              size_t num_shocks = mxGetM(tmp);
-              double *per_value = mxGetPr(tmp);
-              spfplan[i].per_value.resize(num_shocks);
-              for (int j = 0; j < static_cast<int>(num_shocks); j++)
-                spfplan[i].per_value[j] = { ceil(per_value[j]), per_value[j+ num_shocks] };
-            }
-        }
-      if (verbosity >= 1)
-        for (int i {0};
-             auto & it : spfplan)
-          {
-            mexPrintf("----------------------------------------------------------------------------------------------------\n");
-            mexPrintf("perfect foresight #%d\n", i+1);
-            if (it.exo.length())
-              mexPrintf(" plan flipping var=%s (%d) exo=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num, it.exo.c_str(), it.exo_num);
-            else
-              mexPrintf(" plan shocks on var=%s (%d) for the following periods and with the following values:\n", it.var.c_str(), it.var_num);
-            for (auto &[period, value] : it.per_value)
-              mexPrintf("  %3d %10.5f\n", period, value);
-            i++;
-          }
     }
 
   int field_steady_state = mxGetFieldNumber(oo_, "steady_state");
