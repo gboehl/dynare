@@ -10847,12 +10847,12 @@ The forecast scenario can contain some simple shocks on the exogenous
 variables. This shocks are described using the function
 ``basic_plan``:
 
-.. matcomm:: HANDLE = basic_plan (HANDLE, `VAR_NAME', `SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | EXPR] ] );
+.. matcomm:: HANDLE = basic_plan (HANDLE, 'VAR_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE);
 
     Adds to the forecast scenario a shock on the exogenous variable
     indicated between quotes in the second argument. The shock type
     has to be specified in the third argument between quotes:
-    ’surprise’ in case of an unexpected shock or ’perfect_foresight’
+    ``'surprise'`` in case of an unexpected shock or ``'perfect_foresight'``
     for a perfectly anticipated shock. The fourth argument indicates
     the period of the shock using a dates class (see :ref:`dates class
     members <dates-members>`). The last argument is the shock path
@@ -10865,7 +10865,7 @@ compatible with the constrained path are in this case computed. In
 other words, a conditional forecast is performed. This kind of shock
 is described with the function ``flip_plan``:
 
-.. matcomm:: HANDLE = flip_plan (HANDLE, `VAR_NAME', `VAR_NAME', `SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE | [DOUBLE | EXPR [DOUBLE | EXPR] ] );
+.. matcomm:: HANDLE = flip_plan (HANDLE, 'VAR_NAME', 'VAR_NAME', 'SHOCK_TYPE', DATES, MATLAB VECTOR OF DOUBLE);
 
     Adds to the forecast scenario a constrained path on the endogenous
     variable specified between quotes in the second argument. The
@@ -10874,8 +10874,8 @@ is described with the function ``flip_plan``:
     values compatible with the constrained path on the endogenous
     variable will be computed. The nature of the expectation on the
     constrained path has to be specified in the fourth argument
-    between quotes: ’surprise’ in case of an unexpected path or
-    ’perfect_foresight’ for a perfectly anticipated path. The fifth
+    between quotes: ``'surprise'`` in case of an unexpected path or
+    ``'perfect_foresight'`` for a perfectly anticipated path. The fifth
     argument indicates the period where the path of the endogenous
     variable is constrained using a dates class (see :ref:`dates class
     members <dates-members>`). The last argument contains the
@@ -10895,8 +10895,8 @@ computed with the command ``det_cond_forecast``:
     argument. By default, the past values of the variables are equal
     to their steady-state values. The initial date of the forecast can
     be provided in the third argument. By default, the forecast will
-    start at the first date indicated in the ``init_plan
-    command``. This function returns a dset containing the historical
+    start at the first date indicated in the ``init_plan``
+    command. This function returns a dataset containing the historical
     and forecast values for the endogenous and exogenous variables.
 
 
