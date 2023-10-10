@@ -27,12 +27,17 @@ function print_bytecode_dynamic_model()
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-global options_
+
+global M_ options_ oo_
+
 if options_.bytecode
+    z = repmat(oo_.steady_state, 1 , M_.maximum_lead + M_.maximum_lag + 1);
+    zx = repmat([oo_.exo_steady_state; oo_.exo_det_steady_state]', M_.maximum_lead + M_.maximum_lag + 1, 1);
+
     if options_.block
-        bytecode('print','dynamic','block_decomposed');
+        bytecode('print', 'dynamic', 'block_decomposed', z, zx, M_.params, oo_.steady_state, 1);
     else
-        bytecode('print','dynamic');
+        bytecode('print', 'dynamic', z, zx, M_.params, oo_.steady_state, 1);
     end
 else
     disp('You have to use bytecode option in model command to use print_bytecode_dynamic_model');

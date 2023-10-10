@@ -27,12 +27,14 @@ function print_bytecode_static_model()
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-global options_
+
+global M_ options_ oo_
+
 if options_.bytecode
     if options_.block
-        bytecode('print','static','block_decomposed');
+        bytecode('print', 'static', 'block_decomposed', oo_.steady_state, [oo_.exo_steady_state; oo_.exo_det_steady_state], M_.params);
     else
-        bytecode('print','static');
+        bytecode('print', 'static', oo_.steady_state, [oo_.exo_steady_state; oo_.exo_det_steady_state], M_.params);
     end
 else
     disp('You have to use bytecode option in model command to use print_bytecode_static_model');

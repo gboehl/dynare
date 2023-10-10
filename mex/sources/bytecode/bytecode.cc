@@ -51,7 +51,6 @@ deblank(string x)
 void
 Get_Arguments_and_global_variables(int nrhs,
                                    const mxArray *prhs[],
-                                   int &count_array_argument,
                                    double *yd[], size_t &row_y, size_t &col_y,
                                    double *xd[], size_t &row_x, size_t &col_x,
                                    double *params[],
@@ -60,11 +59,12 @@ Get_Arguments_and_global_variables(int nrhs,
                                    mxArray *block_structur[],
                                    bool &steady_state, bool &block_decomposed,
                                    bool &evaluate, int &block,
-                                   mxArray *M_[], mxArray *oo_[], mxArray *options_[], bool &global_temporary_terms,
+                                   mxArray *M_[], mxArray *options_[], bool &global_temporary_terms,
                                    bool &print,
                                    mxArray *GlobalTemporaryTerms[],
                                    bool *extended_path, mxArray *ep_struct[])
 {
+  int count_array_argument {0};
   size_t pos;
   *extended_path = false;
   for (int i = 0; i < nrhs; i++)
@@ -151,7 +151,7 @@ Get_Arguments_and_global_variables(int nrhs,
               throw FatalException{"In main, unknown argument : " + Get_Argument(prhs[i])};
           }
     }
-  if (count_array_argument > 0 && count_array_argument < 5)
+  if (count_array_argument < 5)
     {
       if (count_array_argument == 3 && steady_state)
         periods = 1;
@@ -162,11 +162,6 @@ Get_Arguments_and_global_variables(int nrhs,
   if (!*M_)
     throw FatalException{"In main, global variable not found: M_"};
 
-  /* Gets variables and parameters from global workspace of Matlab */
-  *oo_ = mexGetVariable("global", "oo_");
-  if (!*oo_)
-    throw FatalException{"In main, global variable not found: oo_"};
-
   *options_ = mexGetVariable("global", "options_");
   if (!*options_)
     throw FatalException{"In main, global variable not found: options_"};
@@ -176,7 +171,7 @@ Get_Arguments_and_global_variables(int nrhs,
 void
 mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  mxArray *M_, *oo_, *options_;
+  mxArray *M_, *options_;
   mxArray *GlobalTemporaryTerms;
   mxArray *block_structur = nullptr;
   size_t i, row_y = 0, col_y = 0, row_x = 0, col_x = 0;
@@ -190,7 +185,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   int block = -1;
   double *params = nullptr;
   double *yd = nullptr, *xd = nullptr;
-  int count_array_argument = 0;
   bool global_temporary_terms = false;
   bool print = false; // Whether the “print” command is requested
   int verbosity {1}; // Corresponds to options_.verbosity
@@ -212,7 +206,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   try
     {
-      Get_Arguments_and_global_variables(nrhs, prhs, count_array_argument,
+      Get_Arguments_and_global_variables(nrhs, prhs,
                                          &yd, row_y, col_y,
                                          &xd, row_x, col_x,
                                          &params,
@@ -220,7 +214,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                          periods,
                                          &block_structur,
                                          steady_state, block_decomposed, evaluate, block,
-                                         &M_, &oo_, &options_, global_temporary_terms,
+                                         &M_, &options_, global_temporary_terms,
                                          print, &GlobalTemporaryTerms,
                                          &extended_path, &extended_path_struct);
     }
@@ -231,13 +225,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 #ifdef DEBUG
   mexPrintf("**************************************\n");
 #endif
-  if (!count_array_argument)
-    {
-      int field = mxGetFieldNumber(M_, "params");
-      if (field < 0)
-        mexErrMsgTxt("params is not a field of M_");
-      params = mxGetPr(mxGetFieldByNumber(M_, 0, field));
-    }
 
   BasicSymbolTable symbol_table;
   vector<string> dates;
@@ -382,34 +369,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
     }
 
-  int field_steady_state = mxGetFieldNumber(oo_, "steady_state");
-  if (field_steady_state < 0)
-    mexErrMsgTxt("steady_state is not a field of oo_");
-  int field_exo_steady_state = mxGetFieldNumber(oo_, "exo_steady_state");
-  if (field_exo_steady_state < 0)
-    mexErrMsgTxt("exo_steady_state is not a field of oo_");
-
   if (!steady_state)
     {
-      int field_endo_simul = mxGetFieldNumber(oo_, "endo_simul");
-      if (field_endo_simul < 0)
-        mexErrMsgTxt("endo_simul is not a field of oo_");
-
-      int field_exo_simul = mxGetFieldNumber(oo_, "exo_simul");
-      if (field_exo_simul < 0)
-        mexErrMsgTxt("exo_simul is not a field of oo_");
-
-      if (!count_array_argument)
-        {
-          mxArray *endo_sim_arr = mxGetFieldByNumber(oo_, 0, field_endo_simul);
-          yd = mxGetPr(endo_sim_arr);
-          row_y = mxGetM(endo_sim_arr);
-          col_y = mxGetN(endo_sim_arr);
-          mxArray *exo_sim_arr = mxGetFieldByNumber(oo_, 0, field_exo_simul);
-          xd = mxGetPr(exo_sim_arr);
-          row_x = mxGetM(exo_sim_arr);
-          col_x = mxGetN(exo_sim_arr);
-        }
       int field = mxGetFieldNumber(M_, "maximum_lag");
       if (field >= 0)
         y_kmin = static_cast<int>(floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field)))));
@@ -425,39 +386,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         y_decal = max(0, y_kmin-static_cast<int>(floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field))))));
       else
         mexErrMsgTxt("maximum_endo_lag is not a field of M_");
-
-      if (!count_array_argument)
-        {
-          int field = mxGetFieldNumber(options_, "periods");
-          if (field >= 0)
-            periods = static_cast<int>(floor(*(mxGetPr(mxGetFieldByNumber(options_, 0, field)))));
-          else
-            mexErrMsgTxt("options_ is not a field of options_");
-        }
-
-      if (!steady_yd)
-        {
-          mxArray *steady_state_arr = mxGetFieldByNumber(oo_, 0, field_steady_state);
-          steady_yd = mxGetPr(steady_state_arr);
-          steady_row_y = mxGetM(steady_state_arr);
-          steady_col_y = mxGetN(steady_state_arr);
-        }
     }
-  else
-    {
-      if (!count_array_argument)
-        {
-          mxArray *steady_state_arr = mxGetFieldByNumber(oo_, 0, field_steady_state);
-          yd = mxGetPr(steady_state_arr);
-          row_y = mxGetM(steady_state_arr);
-          col_y = mxGetN(steady_state_arr);
 
-          mxArray *exo_steady_state_arr = mxGetFieldByNumber(oo_, 0, field_exo_steady_state);
-          xd = mxGetPr(exo_steady_state_arr);
-          row_x = mxGetM(exo_steady_state_arr);
-          col_x = mxGetN(exo_steady_state_arr);
-        }
-    }
   int field = mxGetFieldNumber(options_, "verbosity");
   if (field >= 0)
     verbosity = static_cast<int>(mxGetScalar(mxGetFieldByNumber(options_, 0, field)));
