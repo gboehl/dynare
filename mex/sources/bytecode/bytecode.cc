@@ -545,10 +545,10 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   string file_name = fname;
   mxFree(fname);
 
-  if (stack_solve_algo == 7 && !steady_state)
+  if (stack_solve_algo == 7 && !steady_state && !print)
     mexErrMsgTxt("Bytecode: Can't use option stack_solve_algo=7");
 
-  if (steady_state && !evaluate && (solve_algo < 5 || solve_algo > 8))
+  if (steady_state && !evaluate && !print && (solve_algo < 5 || solve_algo > 8))
     mexErrMsgTxt("Bytecode: solve_algo must be between 5 and 8 when using the internal steady state solver");
 
   size_t size_of_direction = col_y*row_y*sizeof(double);
