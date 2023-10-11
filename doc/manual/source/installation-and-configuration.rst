@@ -95,14 +95,20 @@ With MATLAB
 ^^^^^^^^^^^
 
 To install Dynare for use with MATLAB, execute the automated installer called
-``dynare-x.y.pkg`` (where *x.y* is the version number), and follow the
-instructions. The default installation directory is
-``/Applications/Dynare/x.y``. After installation, this directory will contain
-several sub-directories, among which are ``matlab``, ``mex``, and ``doc``.
+``dynare-x.y-arch.pkg`` (where *x.y* is the version number and *arch* is either arm64 for Apple Silicon or x86_64 for Intel architectures),
+and follow the instructions.
+This installation does not require administrative privileges.
+If for some reason admin rights are requested, use *Change Install Location* and select *Install for me only*.
+The default installation directory is ``/Applications/Dynare/x.y-arch``.
+Installing into ``/Applications/dynare`` might fail if you have older versions of Dynare already installed in ``/Applications/Dynare``.
+To fix this, modify the ownership by executing the following command in Terminal.app::
 
-Note that several versions of Dynare can coexist (by default in
-``/Applications/Dynare``), as long as you correctly adjust your path
-settings (see :ref:`words-warning`).
+  sudo chown -R "$USER":staff /Applications/Dynare
+
+Alternatively, you can modify the installation path in the automated installed using *Customize* and *Location*.
+After installation, the folder will contain several sub-directories, among which are ``matlab``, ``mex``, and ``doc``.
+Several versions of Dynare can coexist (by default in ``/Applications/Dynare``),
+as long as you correctly adjust your path settings (see :ref:`words-warning`).
 
 It is recommended to install the Xcode Command Line Tools (this is an Apple product)
 and GCC via Homebrew_ (see :ref:`prerequisites-macos`).
@@ -189,17 +195,17 @@ Additionally, to make MATLAB aware that you agree to the terms of Xcode, run the
   defaults read com.apple.dt.Xcode IDEXcodeVersionForAgreedToGMLicense
 
 Otherwise you will see a warning that Xcode is installed, but its license has not been accepted.
+You can check this e.g. by running the following command in the MATLAB command window::
 
-We recommend making use of optimized compilation flags when using :opt:`use_dll` and for this you need to install GCC via Homebrew_::
+  mex -setup
+
+Moreover, we recommend making use of optimized compilation flags when using :opt:`use_dll` and for this you need to install GCC via Homebrew_::
+  
   brew install gcc
 
-If you already have installed GCC, Dynare will automatically prefer it for :opt:`use_dll` if the binaries are in /usr/local/bin.
-Otherwise, it will fall back to Clang in /usr/bin/clang.
-
-In versions prior to 5.5, the macOS pkg installer required administrative rights to install Dynare, this is no longer the case.
-However, if you aim to install Dynare in ``/Applications/Dynare``, you will need to modify the ownership of this folder.
-To do this, execute the following command::
-  sudo chown -R $USER:staff /Applications/Dynare
+If you already have installed GCC, Dynare will automatically prefer it for :opt:`use_dll`
+if the binaries are either in ``/opt/homebrew/bin`` on Apple Silicon (arm64) or in ``/usr/local/bin`` on Intel (x86_64) systems.
+Otherwise, it will fall back to Clang in ``/usr/bin/clang``, which works both on arm64 and x86_64 systems.
 
 With Octave
 ^^^^^^^^^^^
