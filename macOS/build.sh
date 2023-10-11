@@ -80,6 +80,7 @@ ln -s /usr/local/opt/gcc/lib/gcc/$GCC_VERSION/libquadmath.a $QUADMATH_DIR
 ##
 ## NB: In Homebrew, -static-libgfortran is implied by -static-libgcc (see “gfortran -dumpspecs”)
 ## NB2: We use the hack for libquadmath in LDFLAGS
+## NB3: The -Wl,-ld_classic flag is a workaround for a bug in XCode 15
 cd "$ROOTDIR"
 [[ -f configure ]] || autoreconf -si
 ./configure \
@@ -88,7 +89,7 @@ cd "$ROOTDIR"
   CC=$CC \
   CXX=$CXX \
   CPPFLAGS=-I/usr/local/include \
-  LDFLAGS="-static-libgcc -L$QUADMATH_DIR" \
+  LDFLAGS="-static-libgcc -L$QUADMATH_DIR -Wl,-ld_classic" \
   LEX=/usr/local/opt/flex/bin/flex \
   YACC=/usr/local/opt/bison/bin/bison \
   --with-gsl="$LIB64"/gsl \
@@ -170,7 +171,7 @@ make clean
   CC=$CC \
   CXX=$CXX \
   CPPFLAGS=-I/usr/local/include \
-  LDFLAGS="-static-libgcc -L$QUADMATH_DIR" \
+  LDFLAGS="-static-libgcc -L$QUADMATH_DIR -Wl,-ld_classic" \
   --with-gsl="$LIB64"/gsl \
   --with-matio="$LIB64"/matio \
   --with-slicot="$LIB64"/Slicot/with-underscore \
