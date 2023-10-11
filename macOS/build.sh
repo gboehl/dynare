@@ -41,8 +41,9 @@ ln -s /usr/local/opt/gcc/lib/gcc/$GCC_VERSION/libquadmath.a $QUADMATH_DIR
 ##
 cd "$ROOTDIR"
 
+# NB: the addition of -Wl,-ld_classic is a workaround for https://github.com/mesonbuild/meson/issues/12282 (see also the native file)
 common_meson_opts=(-Dbuild_for=matlab -Dbuildtype=release -Dprefer_static=true -Dfortran_args="[ '-B', '$LIB64/Slicot/' ]" \
-                   -Dc_link_args="[ '-L$QUADMATH_DIR' ]" -Dcpp_link_args="[ '-L$QUADMATH_DIR' ]" -Dfortran_link_args="[ '-L$QUADMATH_DIR' ]" \
+                   -Dc_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" -Dcpp_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" -Dfortran_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" \
                    --native-file scripts/homebrew-native.ini)
 
 # Build for MATLAB ⩾ R2018a
