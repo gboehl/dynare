@@ -147,10 +147,10 @@ exo = [oo_.exo_steady_state; oo_.exo_det_steady_state];
 for b=1:nb
     if options_.bytecode
         if nb == 1
-            [res, jacob] = bytecode(dr.ys, exo, M_.params, dr.ys, 1, exo, ...
+            [res, jacob] = bytecode(M_, options_, dr.ys, exo, M_.params, dr.ys, 1, exo, ...
                                     'evaluate', 'static');
         else
-            [res, jacob] = bytecode(dr.ys, exo, M_.params, dr.ys, 1, exo, ...
+            [res, jacob] = bytecode(M_, options_, dr.ys, exo, M_.params, dr.ys, 1, exo, ...
                                     'evaluate', 'static', 'block_decomposed', ['block=' ...
                                 int2str(b)]);
         end
@@ -275,7 +275,7 @@ z = repmat(dr.ys,1,klen);
 
 if options_.order == 1
     if (options_.bytecode)
-        [~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
+        [~, loc_dr] = bytecode('dynamic','evaluate', M_, options_, z, exo_simul, ...
                                M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x loc_dr.g1_xd];
     else
@@ -284,7 +284,7 @@ if options_.order == 1
     end
 elseif options_.order >= 2
     if (options_.bytecode)
-        [~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
+        [~, loc_dr] = bytecode('dynamic','evaluate', M_, options_, z, exo_simul, ...
                                M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x];
     else

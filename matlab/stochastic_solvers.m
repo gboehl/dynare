@@ -103,7 +103,7 @@ it_ = M_.maximum_lag + 1;
 z = repmat(dr.ys,1,klen);
 if local_order == 1
     if (options_.bytecode)
-        [~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
+        [~, loc_dr] = bytecode('dynamic','evaluate', M_, options_, z, exo_simul, ...
                                M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x loc_dr.g1_xd];
     else

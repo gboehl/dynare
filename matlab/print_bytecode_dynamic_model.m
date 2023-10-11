@@ -35,9 +35,9 @@ if options_.bytecode
     zx = repmat([oo_.exo_steady_state; oo_.exo_det_steady_state]', M_.maximum_lead + M_.maximum_lag + 1, 1);
 
     if options_.block
-        bytecode('print', 'dynamic', 'block_decomposed', z, zx, M_.params, oo_.steady_state, 1);
+        bytecode('print', 'dynamic', 'block_decomposed', M_, options_, z, zx, M_.params, oo_.steady_state, 1);
     else
-        bytecode('print', 'dynamic', z, zx, M_.params, oo_.steady_state, 1);
+        bytecode('print', 'dynamic', M_, options_, z, zx, M_.params, oo_.steady_state, 1);
     end
 else
     disp('You have to use bytecode option in model command to use print_bytecode_dynamic_model');

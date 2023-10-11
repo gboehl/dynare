@@ -56,13 +56,13 @@ Get_Arguments_and_global_variables(int nrhs,
                                    double *params[],
                                    double *steady_yd[], size_t &steady_row_y, size_t &steady_col_y,
                                    unsigned int &periods,
-                                   mxArray *block_structur[],
+                                   mxArray **block_structur,
                                    bool &steady_state, bool &block_decomposed,
                                    bool &evaluate, int &block,
-                                   mxArray *M_[], mxArray *options_[], bool &global_temporary_terms,
+                                   const mxArray **M_, const mxArray **options_, bool &global_temporary_terms,
                                    bool &print,
-                                   mxArray *GlobalTemporaryTerms[],
-                                   bool *extended_path, mxArray *ep_struct[])
+                                   mxArray **GlobalTemporaryTerms,
+                                   bool *extended_path, mxArray **ep_struct)
 {
   int count_array_argument {0};
   size_t pos;
@@ -78,30 +78,36 @@ Get_Arguments_and_global_variables(int nrhs,
           switch (count_array_argument)
             {
             case 0:
+              *M_ = prhs[i];
+              break;
+            case 1:
+              *options_ = prhs[i];
+              break;
+            case 2:
               *yd = mxGetPr(prhs[i]);
               row_y = mxGetM(prhs[i]);
               col_y = mxGetN(prhs[i]);
               break;
-            case 1:
+            case 3:
               *xd = mxGetPr(prhs[i]);
               row_x = mxGetM(prhs[i]);
               col_x = mxGetN(prhs[i]);
               break;
-            case 2:
+            case 4:
               *params = mxGetPr(prhs[i]);
               break;
-            case 3:
+            case 5:
               *steady_yd = mxGetPr(prhs[i]);
               steady_row_y = mxGetM(prhs[i]);
               steady_col_y = mxGetN(prhs[i]);
               break;
-            case 4:
+            case 6:
               periods = static_cast<int>(mxGetScalar(prhs[i]));
               break;
-            case 5:
+            case 7:
               *block_structur = mxDuplicateArray(prhs[i]);
               break;
-            case 6:
+            case 8:
               global_temporary_terms = true;
               *GlobalTemporaryTerms = mxDuplicateArray(prhs[i]);
               break;
@@ -151,27 +157,25 @@ Get_Arguments_and_global_variables(int nrhs,
               throw FatalException{"In main, unknown argument : " + Get_Argument(prhs[i])};
           }
     }
-  if (count_array_argument < 5)
+  if (steady_state)
     {
-      if (count_array_argument == 3 && steady_state)
+      if (count_array_argument < 5)
+        throw FatalException{"In a static context, the following arguments have to be indicated: M_, options_, y, x, params"};
+      if (count_array_argument < 7)
         periods = 1;
-      else
-        throw FatalException{"In main, missing arguments. All the following arguments have to be indicated y, x, params, ys, periods"};
     }
-  *M_ = mexGetVariable("global", "M_");
-  if (!*M_)
-    throw FatalException{"In main, global variable not found: M_"};
-
-  *options_ = mexGetVariable("global", "options_");
-  if (!*options_)
-    throw FatalException{"In main, global variable not found: options_"};
+  else
+    {
+      if (count_array_argument < 7)
+        throw FatalException{"In a dynamic context, the following arguments have to be indicated: M_, options_, y, x, params, steady_state, periods"};
+    }
 }
 
 /* The gateway routine */
 void
 mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  mxArray *M_, *options_;
+  const mxArray *M_, *options_;
   mxArray *GlobalTemporaryTerms;
   mxArray *block_structur = nullptr;
   size_t i, row_y = 0, col_y = 0, row_x = 0, col_x = 0;
@@ -226,7 +230,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   mexPrintf("**************************************\n");
 #endif
 
-  BasicSymbolTable symbol_table;
+  BasicSymbolTable symbol_table{M_};
   vector<string> dates;
 
   if (extended_path)

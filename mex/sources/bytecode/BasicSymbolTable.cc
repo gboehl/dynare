@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2022 Dynare Team
+ * Copyright © 2007-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -21,12 +21,8 @@
 
 #include "dynmex.h"
 
-BasicSymbolTable::BasicSymbolTable()
+BasicSymbolTable::BasicSymbolTable(const mxArray *M_)
 {
-  mxArray *M_ = mexGetVariable("global", "M_");
-  if (!M_)
-    mexErrMsgTxt("Can't find global variable M_");
-
   auto get_field_names = [&](const char *field_name, SymbolType type)
   {
     vector<string> r;

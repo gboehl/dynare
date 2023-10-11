@@ -162,9 +162,9 @@ else
                 save_options_dynatol_f = options_.dynatol.f;
                 options_.dynatol.f = 1e-7;
                 if options_.block
-                    [endo, exo] = bytecode('extended_path', plan, 'block_decomposed', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
+                    [endo, exo] = bytecode('extended_path', plan, 'block_decomposed', M_, options_, oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
                 else
-                    [endo, exo] = bytecode('extended_path', plan, oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
+                    [endo, exo] = bytecode('extended_path', plan, M_, options_, oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
                 end
                 options_.dynatol.f = save_options_dynatol_f;
 
@@ -473,9 +473,9 @@ if pf && ~surprise
                 data1 = M_;
                 if (options_.bytecode)
                     if options_.block
-                        [~, data1]= bytecode('dynamic','block_decomposed','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                        [~, data1]= bytecode('dynamic','block_decomposed','evaluate', M_, options_, z, zx, M_.params, oo_.steady_state, k, data1);
                     else
-                        [~, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                        [~, data1]= bytecode('dynamic','evaluate', M_, options_, z, zx, M_.params, oo_.steady_state, k, data1);
                     end
                 else
                     [~, g1b] = feval([M_.fname '.dynamic'], z', zx, M_.params, oo_.steady_state, k);
@@ -740,9 +740,9 @@ else
                     data1 = M_;
                     if (options_.bytecode)
                         if options_.block
-                            [~, data1]= bytecode('dynamic','block_decomposed','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                            [~, data1]= bytecode('dynamic','block_decomposed','evaluate', M_, options_, z, zx, M_.params, oo_.steady_state, k, data1);
                         else
-                            [~, data1]= bytecode('dynamic','evaluate', z, zx, M_.params, oo_.steady_state, k, data1);
+                            [~, data1]= bytecode('dynamic','evaluate', M_, options_, z, zx, M_.params, oo_.steady_state, k, data1);
                         end
                     else
                         [~, g1b] = feval([M_.fname '.dynamic'], z', zx, M_.params, oo_.steady_state, k);

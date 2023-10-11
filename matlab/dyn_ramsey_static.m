@@ -137,7 +137,7 @@ end
 % Compute the value of the Lagrange multipliers that minimizes the norm of the
 % residuals, given the other endogenous
 if options_.bytecode
-    res = bytecode('static', xx, exo_ss, M.params, 'evaluate');
+    res = bytecode('static', M, options, xx, exo_ss, M.params, 'evaluate');
 else
     res = feval([M.fname '.sparse.static_resid'], xx, exo_ss, M.params);
 end
@@ -167,7 +167,7 @@ end
 function result = check_static_model(ys,exo_ss,M,options_)
 result = false;
 if (options_.bytecode)
-    [res, ~] = bytecode('static', ys, exo_ss, M.params, 'evaluate');
+    [res, ~] = bytecode('static', M, options, ys, exo_ss, M.params, 'evaluate');
 else
     res = feval([M.fname '.sparse.static_resid'], ys, exo_ss, M.params);
 end

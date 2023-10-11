@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2022 Dynare Team
+ * Copyright © 2007-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -25,6 +25,8 @@
 #include <map>
 #include <utility>
 
+#include "dynmex.h"
+
 #include "Bytecode.hh"
 
 using namespace std;
@@ -32,7 +34,7 @@ using namespace std;
 class BasicSymbolTable
 {
 public:
-  BasicSymbolTable();
+  BasicSymbolTable(const mxArray *M_);
   string getName(SymbolType type, int tsid) const;
   pair<SymbolType, int> getIDAndType(const string &name) const;
   size_t maxEndoNameLength() const;

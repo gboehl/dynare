@@ -62,7 +62,7 @@ if options_.block
     end
     if options_.bytecode
         try
-            y = bytecode('dynamic', 'block_decomposed', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);
+            y = bytecode('dynamic', 'block_decomposed', M_, options_, oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);
             success = true;
         catch ME
             if options_.verbosity >= 1
@@ -77,7 +77,7 @@ if options_.block
 else
     if options_.bytecode
         try
-            y = bytecode('dynamic', oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state, 1, periods+2), periods);
+            y = bytecode('dynamic', M_, options_, oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state, 1, periods+2), periods);
             success = true;
         catch ME
             if options_.verbosity >= 1
@@ -131,7 +131,7 @@ end
 % Some solvers do not compute the maximum error, so do it here if needed
 if nargout > 2 && isempty(maxerror)
     if options_.bytecode
-        residuals = bytecode('dynamic', 'evaluate', y, oo_.exo_simul, M_.params, oo_.steady_state, periods);
+        residuals = bytecode('dynamic', 'evaluate', M_, options_, y, oo_.exo_simul, M_.params, oo_.steady_state, periods);
     else
         ny = size(y, 1);
         if M_.maximum_lag > 0

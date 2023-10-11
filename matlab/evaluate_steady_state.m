@@ -395,9 +395,9 @@ elseif options.bytecode
     if options.solve_algo >= 5 && options.solve_algo <= 8
         try
             if options.block
-                ys = bytecode('static', 'block_decomposed', ys_init, exo_ss, params);
+                ys = bytecode('static', 'block_decomposed', M, options, ys_init, exo_ss, params);
             else
-                ys = bytecode('static', ys_init, exo_ss, params);
+                ys = bytecode('static', M, options, ys_init, exo_ss, params);
             end
         catch ME
             if options.verbosity >= 1
@@ -416,7 +416,7 @@ elseif options.bytecode
                 [ys(mfs_idx), errorflag] = dynare_solve(@block_bytecode_mfs_steadystate, ...
                                                         ys(mfs_idx), options.steady.maxit, ...
                                                         options.solve_tolf, options.solve_tolx, ...
-                                                        options, b, ys, exo_ss, params, T, M);
+                                                        options, b, ys, exo_ss, params, T, M, options);
                 if errorflag
                     check = 1;
                     break
@@ -425,7 +425,7 @@ elseif options.bytecode
             % Compute endogenous if the block is of type evaluate forward/backward or if there are recursive variables in a solve block.
             % Also update the temporary terms vector (needed for the dynare_solve case)
             try
-                [~, ~, ys, T] = bytecode(ys, exo_ss, params, ys, 1, ys, T, 'evaluate', 'static', ...
+                [~, ~, ys, T] = bytecode(M, options, ys, exo_ss, params, ys, 1, ys, T, 'evaluate', 'static', ...
                                          'block_decomposed', ['block = ' int2str(b)]);
             catch ME
                 if options.verbosity >= 1
@@ -438,7 +438,7 @@ elseif options.bytecode
     else
         [ys, check] = dynare_solve(@bytecode_steadystate, ys_init, ...
                                    options.steady.maxit, options.solve_tolf, options.solve_tolx, ...
-                                   options, exo_ss, params);
+                                   options, exo_ss, params, M, options);
     end
 end
 
@@ -465,7 +465,7 @@ if M.static_and_dynamic_models_differ
     if options.bytecode
         z = repmat(ys,1,M.maximum_lead + M.maximum_lag + 1);
         zx = repmat(exo_ss', M.maximum_lead + M.maximum_lag + 1, 1);
-        r = bytecode('dynamic','evaluate', z, zx, params, ys, 1);
+        r = bytecode('dynamic','evaluate', M, options, z, zx, params, ys, 1);
     else
         r = feval([M.fname '.sparse.dynamic_resid'], repmat(ys, 3, 1), exo_ss, params, ys);
     end
@@ -513,13 +513,13 @@ y_all(mfs_idx) = y;
                        M.block_structure_stat.block(b).g1_sparse_colval, ...
                        M.block_structure_stat.block(b).g1_sparse_colptr, T);
 
-function [r, g1] = bytecode_steadystate(y, exo, params)
+function [r, g1] = bytecode_steadystate(y, exo, params, M, options)
 % Wrapper around the static file, for bytecode (without block)
-[r, g1] = bytecode(y, exo, params, y, 1, exo, 'evaluate', 'static');
+[r, g1] = bytecode(M, options, y, exo, params, y, 1, exo, 'evaluate', 'static');
 
-function [r, g1] = block_bytecode_mfs_steadystate(y, b, y_all, exo, params, T, M)
+function [r, g1] = block_bytecode_mfs_steadystate(y, b, y_all, exo, params, T, M, options)
 % Wrapper around the static files, for block without bytecode
 mfs_idx = M.block_structure_stat.block(b).variable(end-M.block_structure_stat.block(b).mfs+1:end);
 y_all(mfs_idx) = y;
-[r, g1] = bytecode(y_all, exo, params, y_all, 1, y_all, T, 'evaluate', 'static', 'block_decomposed', ['block = ' int2str(b) ]);
+[r, g1] = bytecode(M, options, y_all, exo, params, y_all, 1, y_all, T, 'evaluate', 'static', 'block_decomposed', ['block = ' int2str(b) ]);
 g1 = g1(:,end-M.block_structure_stat.block(b).mfs+1:end); % Make Jacobian square if mfs>0

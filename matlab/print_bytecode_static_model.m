@@ -32,9 +32,9 @@ global M_ options_ oo_
 
 if options_.bytecode
     if options_.block
-        bytecode('print', 'static', 'block_decomposed', oo_.steady_state, [oo_.exo_steady_state; oo_.exo_det_steady_state], M_.params);
+        bytecode('print', 'static', 'block_decomposed', M_, options_, oo_.steady_state, [oo_.exo_steady_state; oo_.exo_det_steady_state], M_.params);
     else
-        bytecode('print', 'static', oo_.steady_state, [oo_.exo_steady_state; oo_.exo_det_steady_state], M_.params);
+        bytecode('print', 'static', M_, options_, oo_.steady_state, [oo_.exo_steady_state; oo_.exo_det_steady_state], M_.params);
     end
 else
     disp('You have to use bytecode option in model command to use print_bytecode_static_model');
