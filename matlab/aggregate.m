@@ -274,9 +274,9 @@ for i=1:rows(elist)
         fprintf(fid, '\t%s %s\n', elist{i,1}, elist{i,2});
     end
 end
+fprintf(fid, ';\n\n');
 if exist('plist', 'var') && ~isempty(plist)
     % Print list of parameters.
-    fprintf(fid, ';\n\n');
     fprintf(fid, 'parameters\n');
     for i=1:length(plist)
         fprintf(fid, '\t%s\n', plist{i});
@@ -296,8 +296,8 @@ if exist('xlist', 'var') && ~isempty(xlist)
             fprintf(fid, '\t%s %s\n', xlist{i,1}, xlist{i,2});
         end
     end
+    fprintf(fid, ';\n');
 end
-fprintf(fid, ';\n');
 skipline(1, fid)
 % Provide an interface to flip endogenous and exogenous variables. Active if only macrovariable
 % InvertModel is set to True. The calls to the change_type command must be provided in the file
