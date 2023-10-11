@@ -8,7 +8,7 @@
   <license file="gpl-3.0-standalone.html" mime-type="text/html" />
   <domains enable_anywhere="true" enable_currentUserHome="true"/>
   <pkg-ref id="default" />
-  <options customize="allow" require-scripts="false" hostArchitectures="x86_64" />
+  <options customize="allow" require-scripts="false" hostArchitectures="x86_64,arm64" />
   <choices-outline>
     <line choice="default" />
   </choices-outline>

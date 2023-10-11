@@ -476,7 +476,7 @@ You can also choose a specific version of Dynare by checking out the correspondi
 
 - Configure Dynare from the source directory:
 ```sh
-arch -$ARCH meson setup --native-file scripts/homebrew-native.ini -Dmatlab_path=/Applications/MATLAB_R2022b_Beta.app -Dbuildtype=debugoptimized -Dfortran_args="['-B','$DYNAREDIR/slicot/lib']" build-matlab
+arch -$ARCH meson setup --native-file scripts/homebrew-native-$ARCH.ini -Dmatlab_path=/Applications/MATLAB_R2022b_Beta.app -Dbuildtype=debugoptimized -Dfortran_args="['-B','$DYNAREDIR/slicot/lib']" build-matlab
 ```
 where you need to adapt the path to MATLAB.
 Similarly, if you don't want to compile for Octave, replace the `-Dmatlab_path` option by `-Dbuild_for=octave`, and change the build directory to `build-octave`.

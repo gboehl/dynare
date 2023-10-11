@@ -20,9 +20,32 @@
 set -ex
 
 ROOTDIR=$(pwd)/..
+##
+## Set settings based on architecture
+##
+path_remove ()  { export $1="`echo -n ${!1} | awk -v RS=: -v ORS=: '$1 != "'$2'"' | sed 's/:$//'`"; }
+path_prepend () { path_remove $1 $2; export $1="$2:${!1}"; }
+PKG_ARCH=$1
+if [[ $PKG_ARCH == arm64 ]]; then
+    BREWDIR=/opt/homebrew
+    # Make sure /opt/homebrew/bin is set first in PATH (as it might come last)
+    path_prepend PATH /opt/homebrew/bin
+    MATLAB_ARCH=maca64
+else
+    BREWDIR=/usr/local
+    # Remove /opt/homebrew/bin from PATH, so it does not intervene with the x86_64 compilations
+    path_remove PATH /opt/homebrew/bin
+    MATLAB_ARCH=maci64
+    # On x86_64 we need to differentiate between older and newer MATLAB versions
+    MATLAB_PATH_OLD=/Applications/MATLAB_R2016b.app
+fi
+MATLAB_PATH_NEW=/Applications/"$PKG_ARCH"/MATLAB_R2023b.app
+
+# Append texbin to PATH to access latexmk and friends
+path_prepend PATH /Library/TeX/texbin
 
 # Set dependency directory
-LIB64="$ROOTDIR"/macOS/deps/lib64
+LIB64="$ROOTDIR"/macOS/deps/"$PKG_ARCH"/lib64
 
 ## Hack for statically linking libquadmath, similar to the one used in
 ## deps/Makefile for several libraries (there is no -static-libquadmath flag,
@@ -32,9 +55,10 @@ LIB64="$ROOTDIR"/macOS/deps/lib64
 ## - the macOS linker is different from GNU ld and does not have the equivalent of -Bstatic/-Bdynamic
 ## - libgfortran.spec does not include --as-needed on macOS, hence it will link the library anyways
 ## Also, it does not seem possible to override libgfortran.spec with the --specs option.
-GCC_VERSION=$(sed -En "/^c[[:space:]]*=/s/c[[:space:]]*=[[:space:]]*'gcc-([0-9]+)'/\1/p" "$ROOTDIR"/scripts/homebrew-native.ini)
+GCC_VERSION=$(sed -n "s|c = '$(BREWDIR)/bin/gcc-\([0-9]*\)'|\1|p" "$ROOTDIR"/scripts/homebrew-native-$PKG_ARCH.ini)
+
 QUADMATH_DIR=$(mktemp -d)
-ln -s /usr/local/opt/gcc/lib/gcc/$GCC_VERSION/libquadmath.a $QUADMATH_DIR
+ln -s $BREWDIR/opt/gcc/lib/gcc/$GCC_VERSION/libquadmath.a $QUADMATH_DIR
 
 ##
 ## Compile Dynare
@@ -44,19 +68,21 @@ cd "$ROOTDIR"
 # NB: the addition of -Wl,-ld_classic is a workaround for https://github.com/mesonbuild/meson/issues/12282 (see also the native file)
 common_meson_opts=(-Dbuild_for=matlab -Dbuildtype=release -Dprefer_static=true -Dfortran_args="[ '-B', '$LIB64/Slicot/' ]" \
                    -Dc_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" -Dcpp_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" -Dfortran_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" \
-                   --native-file scripts/homebrew-native.ini)
+                   --native-file scripts/homebrew-native-$PKG_ARCH.ini)
 
-# Build for MATLAB ⩾ R2018a
-meson setup "${common_meson_opts[@]}" -Dmatlab_path=/Applications/x86_64/MATLAB_R2023b.app build-matlab
-meson compile -v -C build-matlab
+# Build for MATLAB ⩾ R2018a (x86_64) and MATLAB ⩾ R2023b (arm64)
+arch -$PKG_ARCH meson setup "${common_meson_opts[@]}" -Dmatlab_path="$MATLAB_PATH_NEW" build-matlab --wipe
+arch -$PKG_ARCH meson compile -v -C build-matlab
 
-# Build for MATLAB < R2018a
-meson setup "${common_meson_opts[@]}" -Dmatlab_path=/Applications/MATLAB_R2016b.app build-old-matlab
-meson compile -v -C build-old-matlab
+if [[ $PKG_ARCH == x86_64 ]]; then
+    # Build for MATLAB < R2018a
+    arch -$PKG_ARCH meson setup "${common_meson_opts[@]}" -Dmatlab_path="$MATLAB_PATH_OLD" build-old-matlab --wipe
+    arch -$PKG_ARCH meson compile -v -C build-old-matlab
+fi
 
 # If not in CI, build the docs
 if [[ -z $CI ]]; then
-    meson compile -v -C build-matlab doc
+    arch -$PKG_ARCH meson compile -v -C build-matlab doc
     ln -s build-matlab build-doc
 fi
 
@@ -86,16 +112,23 @@ else
     # Get the first component, truncate it to 5 characters, and add the date
     LOCATION=$(echo "$VERSION" | cut -f1 -d"-" | cut -c 1-5)-"$DATE"
 fi
+# Add architecture to LOCATION and VERSION
+VERSION="$VERSION"-"$PKG_ARCH"
+LOCATION="$LOCATION"-"$PKG_ARCH"
 
 NAME=dynare-"$VERSION"
 PKGFILES="$ROOTDIR"/macOS/pkg/"$NAME"
 mkdir -p \
       "$PKGFILES"/preprocessor \
-      "$PKGFILES"/mex/matlab/maci64-8.3-9.3 \
-      "$PKGFILES"/mex/matlab/maci64-9.4-23.2 \
       "$PKGFILES"/doc \
       "$PKGFILES"/scripts \
       "$PKGFILES"/contrib/ms-sbvar/TZcode
+if [[ $PKG_ARCH == x86_64 ]]; then
+    mkdir -p "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-8.3-9.3 \
+             "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-9.4-23.2
+else
+    mkdir -p "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-23.2
+fi      
 
 cp -p  "$ROOTDIR"/NEWS.md                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/COPYING                                            "$PKGFILES"
@@ -112,8 +145,12 @@ cp -p  "$ROOTDIR"/build-matlab/preprocessor/src/dynare-preprocessor  "$PKGFILES"
 mkdir -p                                                             "$PKGFILES"/matlab/preprocessor64
 ln -sf ../../preprocessor/dynare-preprocessor                        "$PKGFILES"/matlab/preprocessor64/dynare_m
 
-cp -L  "$ROOTDIR"/build-matlab/*.mexmaci64                           "$PKGFILES"/mex/matlab/maci64-9.4-23.2
-cp -L  "$ROOTDIR"/build-old-matlab/*.mexmaci64                       "$PKGFILES"/mex/matlab/maci64-8.3-9.3
+if [[ $PKG_ARCH == x86_64 ]]; then
+    cp -L  "$ROOTDIR"/build-matlab/*.mex"$MATLAB_ARCH"               "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-9.4-23.2
+    cp -L  "$ROOTDIR"/build-old-matlab/*.mex"$MATLAB_ARCH"           "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-8.3-9.3
+else
+    cp -L  "$ROOTDIR"/build-matlab/*.mex"$MATLAB_ARCH"               "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-23.2
+fi
 
 cp -p  "$ROOTDIR"/scripts/dynare.el                                  "$PKGFILES"/scripts
 cp -pr "$ROOTDIR"/contrib/ms-sbvar/TZcode/MatlabFiles                "$PKGFILES"/contrib/ms-sbvar/TZcode
@@ -124,13 +161,13 @@ cp     "$ROOTDIR"/build-doc/preprocessor/doc/*.pdf                   "$PKGFILES"
 cp -r  "$ROOTDIR"/build-doc/dynare-manual.html                       "$PKGFILES"/doc
 
 mkdir -p                                                             "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
-cp -p  "$ROOTDIR"/macOS/deps/lib64/x13as/x13as                       "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
+cp -p  "$ROOTDIR"/macOS/deps/$PKG_ARCH/lib64/x13as/x13as             "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
 
 
 cd "$ROOTDIR"/macOS/pkg
 
 # Dynare option
-pkgbuild --root "$PKGFILES" --identifier org.dynare."$VERSION" --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
+arch -$PKG_ARCH pkgbuild --root "$PKGFILES" --identifier org.dynare."$VERSION" --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
 
 # Create distribution.xml by replacing variables in distribution_template.xml
 sed -e "s/VERSION_NO_SPACE/$VERSION/g" \
@@ -148,7 +185,7 @@ sed -e "s/GCC_VERSION/$GCC_VERSION/g" \
     "$ROOTDIR"/macOS/conclusion_template.html > "$ROOTDIR"/macOS/conclusion.html
 
 # Create installer
-productbuild --distribution distribution.xml --resources "$ROOTDIR"/macOS --package-path ./"$NAME".pkg "$NAME"-productbuild.pkg
+arch -$PKG_ARCH productbuild --distribution distribution.xml --resources "$ROOTDIR"/macOS --package-path ./"$NAME".pkg "$NAME"-productbuild.pkg
 
 # Cleanup
 rm -f ./distribution.xml

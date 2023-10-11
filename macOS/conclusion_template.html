@@ -39,7 +39,7 @@
       For this, follow <a href="https://brew.sh" target="_blank" rel="noopener noreferrer">https://brew.sh</a> to install Homebrew and then type the following into Terminal.app:</p>
       <code>brew install gcc@GCC_VERSION</code>
       
-      <p>If you already have installed gcc-GCC_VERSION, Dynare will automatically prefer it for use_dll if the binaries are in /usr/local/bin/gcc-GCC_VERSION. Otherwise, it will fall back to Clang in /usr/bin/gcc.</p>
+      <p>If you already have installed gcc-GCC_VERSION, Dynare will automatically prefer it for use_dll if the binaries are either in /opt/homebrew/bin/gcc-GCC_VERSION (arm64) or in /usr/local/bin/gcc-GCC_VERSION (x86_64). Otherwise, it will fall back to Clang in /usr/bin/gcc (for both arm64 and x86_64).</p>
     </main>
   </body>
 </html>
