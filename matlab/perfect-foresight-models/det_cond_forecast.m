@@ -162,7 +162,7 @@ else
                 save_options_dynatol_f = options_.dynatol.f;
                 options_.dynatol.f = 1e-7;
                 if options_.block
-                    [endo, exo] = bytecode('extended_path', 'block_decomposed', plan, oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
+                    [endo, exo] = bytecode('extended_path', plan, 'block_decomposed', oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
                 else
                     [endo, exo] = bytecode('extended_path', plan, oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, options_.periods);
                 end
