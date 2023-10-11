@@ -205,6 +205,8 @@ while step > options_.simul.homotopy_min_step_size
         step = new_share - current_share;
     end
 
+    iter_time_counter = tic;
+
     steady_success = create_scenario(new_share);
 
     if steady_success
@@ -232,6 +234,8 @@ while step > options_.simul.homotopy_min_step_size
         per_block_status = [];
     end
 
+    iter_time_elapsed = toc(iter_time_counter);
+
     if options_.no_homotopy || (iteration == 1 && success && new_share == 1)
         % Skip homotopy
         if success
@@ -247,8 +251,8 @@ while step > options_.simul.homotopy_min_step_size
 
         if ~options_.noprint
             fprintf('\nEntering the homotopy method iterations...\n')
-            fprintf('\nIter. \t | Share \t | Status \t | Max. residual\n')
-            fprintf('++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
+            fprintf('\nIter. \t | Share \t | Status \t | Max. residual\t | Duration (sec)\n')
+            fprintf('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
         end
 
         % Disable warnings if homotopy
@@ -262,7 +266,7 @@ while step > options_.simul.homotopy_min_step_size
     if success
         % Successful step
         if ~options_.noprint
-            fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_share, 'succeeded', maxerror)
+            fprintf('%i \t | %1.5f \t | %s \t | %e \t | %.1f\n', iteration, new_share, 'succeeded', maxerror, iter_time_elapsed)
         end
         current_share = new_share;
         if current_share >= options_.simul.homotopy_max_completion_share
@@ -280,18 +284,18 @@ while step > options_.simul.homotopy_min_step_size
         step = step / 2;
         if ~options_.noprint
             if ~steady_success
-                fprintf('%i \t | %1.5f \t | %s\n', iteration, new_share, 'failed (in endval steady)')
+                fprintf('%i \t | %1.5f \t | %s \t\t | %.1f\n', iteration, new_share, 'failed (in endval steady)', iter_time_elapsed)
             elseif isreal(maxerror)
-                fprintf('%i \t | %1.5f \t | %s \t | %e\n', iteration, new_share, 'failed', maxerror)
+                fprintf('%i \t | %1.5f \t | %s \t | %e \t | %.1f\n', iteration, new_share, 'failed', maxerror, iter_time_elapsed)
             else
-                fprintf('%i \t | %1.5f \t | %s \t | %s\n', iteration, new_share, 'failed', 'Complex')
+                fprintf('%i \t | %1.5f \t | %s \t | %s \t | %.1f\n', iteration, new_share, 'failed', 'Complex', iter_time_elapsed)
             end
         end
     end
 end
 
 if did_homotopy && ~options_.noprint
-    fprintf('++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
+    fprintf('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
 end
 
 %If simulated paths are complex, take real part and recompute the residuals to check whether this is actually a solution
@@ -332,10 +336,12 @@ elseif options_.simul.homotopy_linearization_fallback && current_share > 0
 elseif options_.simul.homotopy_marginal_linearization_fallback > 0 && current_share > options_.simul.homotopy_marginal_linearization_fallback
     saved_endo_simul = oo_.endo_simul;
     new_share = current_share - options_.simul.homotopy_marginal_linearization_fallback;
+    extra_simul_time_counter = tic;
     new_success = create_scenario(new_share);
     if new_success
         [oo_.endo_simul, new_success] = perfect_foresight_solver_core(M_, options_, oo_);
     end
+    extra_simul_time_elapsed = toc(extra_simul_time_counter);
     if new_success
         oo_.endo_simul = saved_endo_simul + (saved_endo_simul - oo_.endo_simul)*(1-current_share)/options_.simul.homotopy_marginal_linearization_fallback;
         oo_.exo_simul = exoorig;
@@ -348,11 +354,11 @@ elseif options_.simul.homotopy_marginal_linearization_fallback > 0 && current_sh
         maxerror = recompute_maxerror(oo_.endo_simul, oo_, M_, options_);
 
         if ~options_.noprint
-            fprintf('Perfect foresight solution found for %.1f%% of the shock, then extrapolation was performed using marginal linearization\n\n', current_share*100)
+            fprintf('Perfect foresight solution found for %.1f%% of the shock, then extrapolation was performed using marginal linearization (extra simulation took %.1f seconds)\n\n', current_share*100, extra_simul_time_elapsed)
         end
         oo_.deterministic_simulation.homotopy_marginal_linearization = true;
     else
-        fprintf('perfect_foresight_solver: marginal linearization failed, unable to find solution for %.1f%% of the shock. Try to modify the value of homotopy_marginal_linearization_fallback option\n\n', new_share*100)
+        fprintf('perfect_foresight_solver: marginal linearization failed, unable to find solution for %.1f%% of the shock (extra simulation took %.1f seconds). Try to modify the value of homotopy_marginal_linearization_fallback option\n\n', new_share*100, extra_simul_time_elapsed)
     end
     oo_.deterministic_simulation.status = new_success;
 else
