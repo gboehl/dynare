@@ -1,17 +1,17 @@
 function [series, p] = histvalf_initvalf(caller, DynareModel, options)
 
-% Handles options for histvalf() and initvalf()
+% Handles options for histval_file and initval_file
 %
 % INPUTS
 % - caller           [char]      row array, name of calling function
 % - DynareModel      [struct]    model description, a.k.a M_
-% - options          [struct]    options specific to initivalf
+% - options          [struct]    options specific to histval_file and initval_file
 %
 % OUTPUTS
 % - series           [dseries]   selected data from a file or a dseries
 % - p                [integer]   number of periods (excluding the initial and terminal conditions)
 
-% Copyright © 2003-2022 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
