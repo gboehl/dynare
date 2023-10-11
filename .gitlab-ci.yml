@@ -100,7 +100,8 @@ pkg_windows:
 pkg_macOS:
   stage: pkg
   script:
-    - meson rewrite kwargs set project / version "$VERSION"
+    # Enforce the arm64 meson for rewrite, as a workaround to https://github.com/mesonbuild/meson/issues/12282
+    - env PATH="/opt/homebrew/bin:$PATH" meson rewrite kwargs set project / version "$VERSION"
     - ln -s ~/tarballs macOS/deps/
     - arch -x86_64 make -C macOS
   cache:
