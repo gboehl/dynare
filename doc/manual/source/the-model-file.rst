@@ -4253,8 +4253,8 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
            x = 1.1;
          end;
 
-.. command:: perfect_foresight_with_expectation_solver ;
-             perfect_foresight_with_expectation_solver (OPTIONS...);
+.. command:: perfect_foresight_with_expectation_errors_solver ;
+             perfect_foresight_with_expectation_errors_solver (OPTIONS...);
 
     |br| Computes the perfect foresight simulation with expectation errors
     of the model.
