@@ -249,7 +249,7 @@ CheckPath('graphs',options_mom_.dirname);
 options_mom_.mom.compute_derivs = false; % flag to compute derivs in objective function (might change for GMM with either analytic_standard_errors or analytic_jacobian (dependent on optimizer))
 options_mom_.mom.vector_output = false;  % specifies whether the objective function returns a vector
 % decision rule
-oo_.dr = set_state_space(oo_.dr,M_,options_mom_); % get state-space representation
+oo_.dr = set_state_space(oo_.dr,M_); % get state-space representation
 oo_.mom.obs_var = []; % create index of observed variables in DR order
 for i = 1:options_mom_.obs_nbr
     oo_.mom.obs_var = [oo_.mom.obs_var; find(strcmp(options_mom_.varobs{i}, M_.endo_names(oo_.dr.order_var)))];
@@ -316,7 +316,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
 end
 
 % check for calibrated covariances before updating parameters
-estim_params_ = check_for_calibrated_covariances(xparam0,estim_params_,M_);
+estim_params_ = check_for_calibrated_covariances(estim_params_,M_);
 
 % checks on parameter calibration and initialization
 xparam_calib = get_all_parameters(estim_params_,M_); % get calibrated parameters

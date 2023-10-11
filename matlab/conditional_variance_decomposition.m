@@ -1,4 +1,5 @@
 function [ConditionalVarianceDecomposition, ConditionalVarianceDecomposition_ME]= conditional_variance_decomposition(M_,options_,dr, Steps, SubsetOfVariables)
+% [ConditionalVarianceDecomposition, ConditionalVarianceDecomposition_ME]= conditional_variance_decomposition(M_,options_,dr, Steps, SubsetOfVariables)
 % This function computes the conditional variance decomposition of a given state space model
 % for a subset of endogenous variables.
 %
@@ -88,7 +89,11 @@ end
 % Measurement error
 
 if ~all(diag(M_.H)==0)
-    [observable_pos,index_subset,index_observables]=intersect(SubsetOfVariables,options_.varobs_id,'stable');
+    if isoctave && octave_ver_less_than('8.4') %Octave bug #60347
+        [observable_pos,index_subset,index_observables]=intersect_stable(SubsetOfVariables,options_.varobs_id);
+    else
+        [observable_pos,index_subset,index_observables]=intersect(SubsetOfVariables,options_.varobs_id,'stable');
+    end
     ME_Variance=diag(M_.H);
 
     ConditionalVarianceDecomposition_ME = zeros(length(observable_pos),length(Steps),number_of_state_innovations+1);

@@ -1,0 +1,27 @@
+{
+  "_schemaVersion": "1.0.0",
+  "dynare":
+  {
+     "inputs":
+     [
+        {"name":"fname", "kind":"required", "type":["file=*.mod,*.dyn"], "purpose":"Model file"},
+        {"name":"options", "kind":"flag", "type":["char", "choices={'debug', 'noclearall', 'onlyclearglobals', 'savemacro[=macro_file]', 'onlymacro', 'linemacro', 'notmpterms', 'nolog', 'warn_uninit', 'console', 'nograph', 'nointeractive', 'parallel[=cluster_name]', 'conffile=parallel_config_path_and_filename', 'parallel_slave_open_mode', 'parallel_test', 'parallel_use_psexec=true|false', '-D<variable>[=<value>]', '-I/path', 'nostrict', 'stochastic', 'fast', 'minimal_workspace', 'compute_xrefs', 'output=second|third', 'params_derivs_order=0|1|2', 'transform_unary_ops', 'exclude_eqs=<equation_tag_list_or_file>', 'include_eqs=<equation_tag_list_or_file>', 'json=parse|check|transform|compute', 'jsonstdout', 'onlyjson', 'jsonderivsimple', 'nopathchange', 'nopreprocessoroutput', 'mexext=<extension>', 'matlabroot=<path>', 'onlymodel', 'notime', 'use_dll', 'nocommutativity'}"],  "repeating":true}
+     ]
+  },
+  "internals":
+  {
+     "inputs":
+     [
+        {"name":"flag", "kind":"required", "type":["char", "choices={'--test'}"], "purpose":"Test routine"},
+        {"name":"fname", "kind":"required", "type":["file=*.m"], "purpose":"Routine name"}
+     ]
+  }, 
+  "internals":
+  {
+     "inputs":
+     [
+        {"name":"flag", "kind":"required", "type":["char", "choices={'--display-mh-history','--load-mh-history'}"], "purpose":"Model file"},
+        {"name":"fname", "kind":"required", "type":["file=*.mod,*.dyn"], "purpose":"Model name"}
+     ]
+  }
+}

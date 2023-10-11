@@ -105,7 +105,7 @@ if isfield(options_.osr,'maxit') || isfield(options_.osr,'tolf')
     end
 end
 
-oo_.dr = set_state_space(oo_.dr,M_,options_);
+oo_.dr = set_state_space(oo_.dr,M_);
 par_0 = M_.params(i_params);
 inv_order_var = oo_.dr.inv_order_var;
 

@@ -1,0 +1,10 @@
+{
+  "_schemaVersion": "1.0.0",
+  "prior":
+  {
+     "inputs":
+     [
+        {"name":"options", "kind":"flag", "type":["char", "choices={'table', 'moments', 'moments(distribution)', 'optimize', 'simulate', 'plot'}"],  "repeating":true}
+     ]
+  }
+}

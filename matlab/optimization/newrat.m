@@ -82,11 +82,12 @@ if ischar(func0)
 end
 
 [fval0,exit_flag,gg,hh]=penalty_objective_function(x,func0,penalty,varargin{:});
+fval=fval0;
 if ~exit_flag
+    igg=NaN(nx);
     disp_verbose('Bad initial parameter.',Verbose)
     return
 end
-fval=fval0;
 
 % initialize mr_gstep and mr_hessian
 

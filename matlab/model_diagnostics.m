@@ -1,10 +1,10 @@
-function model_diagnostics(M,options,oo)
-% function model_diagnostics(M,options,oo)
+function model_diagnostics(M_,options_,oo_)
+% function model_diagnostics(M_,options_,oo_)
 %   computes various diagnostics on the model
 % INPUTS
-%   M         [matlab structure] Definition of the model.
-%   options   [matlab structure] Global options.
-%   oo        [matlab structure] Results
+%   M_         [matlab structure] Definition of the model.
+%   options_   [matlab structure] Global options.
+%   oo_        [matlab structure] Results
 %
 % OUTPUTS
 %   none
@@ -33,22 +33,22 @@ function model_diagnostics(M,options,oo)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-endo_names = M.endo_names;
-lead_lag_incidence = M.lead_lag_incidence;
-maximum_endo_lag = M.maximum_endo_lag;
+endo_names = M_.endo_names;
+lead_lag_incidence = M_.lead_lag_incidence;
+maximum_endo_lag = M_.maximum_endo_lag;
 
-if options.ramsey_policy
+if options_.ramsey_policy
     %test whether specification matches
-    inst_nbr = size(options.instruments,1);
+    inst_nbr = size(options_.instruments,1);
     if inst_nbr~=0
-        implied_inst_nbr = M.ramsey_orig_endo_nbr - M.ramsey_orig_eq_nbr;
+        implied_inst_nbr = M_.ramsey_orig_endo_nbr - M_.ramsey_orig_eq_nbr;
         if inst_nbr>implied_inst_nbr
             warning('You have specified more steady state instruments than there are omitted equations. While there are use cases for this setup, it is rather unusual. Check whether this is desired.')
         elseif inst_nbr<implied_inst_nbr
             warning('You have specified fewer steady state instruments than there are omitted equations. While there are use cases for this setup, it is rather unusual. Check whether this is desired.')
         end
     else
-        if options.steadystate_flag
+        if options_.steadystate_flag
             warning('You have specified a steady state file, but not provided steady state instruments. In this case, you typically need to make sure to provide all steady state values, including the ones for the planner''s instrument(s).')
         end
     end
@@ -57,20 +57,20 @@ end
 problem_dummy=0;
 
 %naming conflict in steady state file
-if options.steadystate_flag == 1
-    if strmatch('ys',M.endo_names,'exact') 
+if options_.steadystate_flag == 1
+    if strmatch('ys',M_.endo_names,'exact') 
         disp(['MODEL_DIAGNOSTICS: using the name ys for an endogenous variable will typically conflict with the internal naming in user-defined steady state files.'])
         problem_dummy=1;
     end
-    if strmatch('ys',M.param_names,'exact')
+    if strmatch('ys',M_.param_names,'exact')
         disp(['MODEL_DIAGNOSTICS: using the name ys for a parameter will typically conflict with the internal naming in user-defined steady state files.'])
         problem_dummy=1;
     end
-    if strmatch('M_',M.endo_names,'exact') 
+    if strmatch('M_',M_.endo_names,'exact') 
         disp(['MODEL_DIAGNOSTICS: using the name M_ for an endogenous variable will typically conflict with the internal naming in user-defined steady state files.'])
         problem_dummy=1;
     end
-    if strmatch('M_',M.param_names,'exact')
+    if strmatch('M_',M_.param_names,'exact')
         disp(['MODEL_DIAGNOSTICS: using the name M_ for a parameter will typically conflict with the internal naming in user-defined steady state files.'])
         problem_dummy=1;
     end
@@ -94,24 +94,24 @@ end
 %
 info = 0;
 
-if M.exo_nbr == 0
-    oo.exo_steady_state = [] ;
+if M_.exo_nbr == 0
+    oo_.exo_steady_state = [] ;
 end
 
 
-info=test_for_deep_parameters_calibration(M);
+info=test_for_deep_parameters_calibration(M_);
 if info
     problem_dummy=1;
 end
 
 % check if ys is steady state
-options.debug=true; %locally set debug option to true
-if options.logged_steady_state %if steady state was previously logged, undo this
-    oo.dr.ys=exp(oo.dr.ys);
-    oo.steady_state=exp(oo.steady_state);
-    options.logged_steady_state=0;
+options_.debug=true; %locally set debug option to true
+if options_.logged_steady_state %if steady state was previously logged, undo this
+    oo_.dr.ys=exp(oo_.dr.ys);
+    oo_.steady_state=exp(oo_.steady_state);
+    options_.logged_steady_state=0;
 end
-[dr.ys,M.params,check1]=evaluate_steady_state(oo.steady_state,[oo.exo_steady_state; oo.exo_det_steady_state],M,options,options.steadystate.nocheck);
+[dr.ys,M_.params,check1]=evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,options_.steadystate.nocheck);
 
 % testing for problem
 if check1(1)
@@ -137,35 +137,35 @@ end
 % singular Jacobian of static model
 %
 singularity_problem = 0;
-if ~options.block
+if ~options_.block
     nb = 1;
 else
-    nb = length(M.block_structure_stat.block);
+    nb = length(M_.block_structure_stat.block);
 end
 
-exo = [oo.exo_steady_state; oo.exo_det_steady_state];
+exo = [oo_.exo_steady_state; oo_.exo_det_steady_state];
 for b=1:nb
-    if options.bytecode
+    if options_.bytecode
         if nb == 1
-            [res, jacob] = bytecode(dr.ys, exo, M.params, dr.ys, 1, exo, ...
+            [res, jacob] = bytecode(dr.ys, exo, M_.params, dr.ys, 1, exo, ...
                                     'evaluate', 'static');
         else
-            [res, jacob] = bytecode(dr.ys, exo, M.params, dr.ys, 1, exo, ...
+            [res, jacob] = bytecode(dr.ys, exo, M_.params, dr.ys, 1, exo, ...
                                     'evaluate', 'static', 'block_decomposed', ['block=' ...
                                 int2str(b)]);
         end
     else
-        if options.block
-            T = NaN(M.block_structure_stat.tmp_nbr, 1);
-            fh_static = str2func(sprintf('%s.sparse.block.static_%d', M.fname, b));
-            [~, ~,~, jacob] = fh_static(dr.ys, exo, M.params, M.block_structure_stat.block(b).g1_sparse_rowval, ...
-                M.block_structure_stat.block(b).g1_sparse_colval, ...
-                M.block_structure_stat.block(b).g1_sparse_colptr, T);
+        if options_.block
+            T = NaN(M_.block_structure_stat.tmp_nbr, 1);
+            fh_static = str2func(sprintf('%s.sparse.block.static_%d', M_.fname, b));
+            [~, ~,~, jacob] = fh_static(dr.ys, exo, M_.params, M_.block_structure_stat.block(b).g1_sparse_rowval, ...
+                M_.block_structure_stat.block(b).g1_sparse_colval, ...
+                M_.block_structure_stat.block(b).g1_sparse_colptr, T);
             n_vars_jacob=size(jacob,2);
         else
-            [res, T_order, T] = feval([M.fname '.sparse.static_resid'], dr.ys, exo, M.params);
-            jacob = feval([M.fname '.sparse.static_g1'], dr.ys, exo, M.params, M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr, T_order, T);
-            n_vars_jacob=M.endo_nbr;
+            [res, T_order, T] = feval([M_.fname '.sparse.static_resid'], dr.ys, exo, M_.params);
+            jacob = feval([M_.fname '.sparse.static_g1'], dr.ys, exo, M_.params, M_.static_g1_sparse_rowval, M_.static_g1_sparse_colval, M_.static_g1_sparse_colptr, T_order, T);
+            n_vars_jacob=M_.endo_nbr;
         end
         jacob=full(jacob);
     end
@@ -173,19 +173,19 @@ for b=1:nb
         problem_dummy=1;
         [infrow,infcol]=find(isinf(jacob) | isnan(jacob));
         fprintf('\nMODEL_DIAGNOSTICS: The Jacobian of the static model contains Inf or NaN. The problem arises from: \n\n')
-        display_problematic_vars_Jacobian(infrow,infcol,M,dr.ys,'static','MODEL_DIAGNOSTICS: ')
+        display_problematic_vars_Jacobian(infrow,infcol,M_,dr.ys,'static','MODEL_DIAGNOSTICS: ')
     end
     if any(any(~isreal(jacob)))
         problem_dummy=1;
         [imagrow,imagcol]=find(abs(imag(jacob))>1e-15);
         fprintf('\nMODEL_DIAGNOSTICS: The Jacobian of the static model contains imaginary parts. The problem arises from: \n\n')
-        display_problematic_vars_Jacobian(imagrow,imagcol,M,dr.ys,'static','MODEL_DIAGNOSTICS: ')
+        display_problematic_vars_Jacobian(imagrow,imagcol,M_,dr.ys,'static','MODEL_DIAGNOSTICS: ')
     end
     try
-        if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options.jacobian_tolerance)
+        if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options_.jacobian_tolerance)
             rank_jacob = rank(jacob); %can sometimes fail
         else
-            rank_jacob = rank(jacob,options.jacobian_tolerance); %can sometimes fail
+            rank_jacob = rank(jacob,options_.jacobian_tolerance); %can sometimes fail
         end
     catch
         rank_jacob=size(jacob,1);
@@ -197,10 +197,10 @@ for b=1:nb
               'singular'])
         disp(['MODEL_DIAGNOSTICS:  there is ' num2str(n_vars_jacob-rank_jacob) ...
               ' collinear relationships between the variables and the equations'])
-        if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options.jacobian_tolerance)
+        if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options_.jacobian_tolerance)
             ncol = null(jacob);
         else
-            ncol = null(jacob,options.jacobian_tolerance); %can sometimes fail
+            ncol = null(jacob,options_.jacobian_tolerance); %can sometimes fail
         end
         n_rel = size(ncol,2);
         for i = 1:n_rel
@@ -214,16 +214,16 @@ for b=1:nb
                     break
                 end
             end
-            if options.block && ~options.bytecode
-                fprintf('%s\n',endo_names{M.block_structure_stat.block(b).variable(k)})
+            if options_.block && ~options_.bytecode
+                fprintf('%s\n',endo_names{M_.block_structure_stat.block(b).variable(k)})
             else
                 fprintf('%s\n',endo_names{k})
             end
         end
-        if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options.jacobian_tolerance)
+        if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options_.jacobian_tolerance)
             neq = null(jacob'); %can sometimes fail
         else
-            neq = null(jacob',options.jacobian_tolerance); %can sometimes fail
+            neq = null(jacob',options_.jacobian_tolerance); %can sometimes fail
         end
         n_rel = size(neq,2);
         for i = 1:n_rel
@@ -237,8 +237,8 @@ for b=1:nb
                     break
                 end
             end
-            if options.block && ~options.bytecode
-                disp(M.block_structure_stat.block(b).equation(k))
+            if options_.block && ~options_.bytecode
+                disp(M_.block_structure_stat.block(b).equation(k))
             else
                 disp(k')
             end
@@ -248,9 +248,9 @@ end
 
 if singularity_problem
     try
-        options_check=options;
+        options_check=options_;
         options_check.noprint=1;
-        [eigenvalues_] = check(M, options_check, oo);
+        [eigenvalues_] = check(M_, options_check, oo_);
         if any(abs(abs(eigenvalues_)-1)<1e-6)
             fprintf('MODEL_DIAGNOSTICS:  The singularity seems to be (partly) caused by the presence of a unit root\n')
             fprintf('MODEL_DIAGNOSTICS:  as the absolute value of one eigenvalue is in the range of +-1e-6 to 1.\n')
@@ -265,32 +265,32 @@ if singularity_problem
 end
 
 %%check dynamic Jacobian
-klen = M.maximum_lag + M.maximum_lead + 1;
-exo_simul = [repmat(oo.exo_steady_state',klen,1) repmat(oo.exo_det_steady_state',klen,1)];
-iyv = M.lead_lag_incidence';
+klen = M_.maximum_lag + M_.maximum_lead + 1;
+exo_simul = [repmat(oo_.exo_steady_state',klen,1) repmat(oo_.exo_det_steady_state',klen,1)];
+iyv = M_.lead_lag_incidence';
 iyv = iyv(:);
 iyr0 = find(iyv) ;
-it_ = M.maximum_lag + 1;
+it_ = M_.maximum_lag + 1;
 z = repmat(dr.ys,1,klen);
 
-if options.order == 1
-    if (options.bytecode)
+if options_.order == 1
+    if (options_.bytecode)
         [~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                               M.params, dr.ys, 1);
+                               M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x loc_dr.g1_xd];
     else
-        [~,jacobia_] = feval([M.fname '.dynamic'],z(iyr0),exo_simul, ...
-                             M.params, dr.ys, it_);
+        [~,jacobia_] = feval([M_.fname '.dynamic'],z(iyr0),exo_simul, ...
+                             M_.params, dr.ys, it_);
     end
-elseif options.order >= 2
-    if (options.bytecode)
+elseif options_.order >= 2
+    if (options_.bytecode)
         [~, loc_dr] = bytecode('dynamic','evaluate', z,exo_simul, ...
-                               M.params, dr.ys, 1);
+                               M_.params, dr.ys, 1);
         jacobia_ = [loc_dr.g1 loc_dr.g1_x];
     else
-        [~,jacobia_,hessian1] = feval([M.fname '.dynamic'],z(iyr0),...
+        [~,jacobia_,hessian1] = feval([M_.fname '.dynamic'],z(iyr0),...
                                       exo_simul, ...
-                                      M.params, dr.ys, it_);
+                                      M_.params, dr.ys, it_);
     end
 end
 
@@ -298,14 +298,14 @@ if any(any(isinf(jacobia_) | isnan(jacobia_)))
     problem_dummy=1;
     [infrow,infcol]=find(isinf(jacobia_) | isnan(jacobia_));
     fprintf('\nMODEL_DIAGNOSTICS: The Jacobian of the dynamic model contains Inf or NaN. The problem arises from: \n\n')
-    display_problematic_vars_Jacobian(infrow,infcol,M,dr.ys,'dynamic','MODEL_DIAGNOSTICS: ')
+    display_problematic_vars_Jacobian(infrow,infcol,M_,dr.ys,'dynamic','MODEL_DIAGNOSTICS: ')
 end
 if any(any(~isreal(jacobia_)))
     [imagrow,imagcol]=find(abs(imag(jacobia_))>1e-15);
     if ~isempty(imagrow)
         problem_dummy=1;
         fprintf('\nMODEL_DIAGNOSTICS: The Jacobian of the dynamic model contains imaginary parts. The problem arises from: \n\n')
-        display_problematic_vars_Jacobian(imagrow,imagcol,M,dr.ys,'dynamic','MODEL_DIAGNOSTICS: ')
+        display_problematic_vars_Jacobian(imagrow,imagcol,M_,dr.ys,'dynamic','MODEL_DIAGNOSTICS: ')
     end
 end
 if exist('hessian1','var')

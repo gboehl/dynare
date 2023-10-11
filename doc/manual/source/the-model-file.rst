@@ -4498,6 +4498,11 @@ Computing the stochastic solution
        Don’t print moments of the endogenous variables (printing them
        is the default).
 
+    .. option:: nomodelsummary
+
+       Don’t print the model summary and the covariance of the exogenous shocks (printing them
+       is the default).
+
     .. option:: nograph
 
        Do not create graphs (which implies that they are not saved to

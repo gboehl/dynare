@@ -77,7 +77,7 @@ DynareOptions.stack_solve_algo = ep.stack_solve_algo;
 dr = struct();
 if ep.init
     DynareOptions.order = 1;
-    DynareResults.dr=set_state_space(dr,DynareModel,DynareOptions);
+    DynareResults.dr=set_state_space(dr,DynareModel);
     [DynareResults.dr,Info,DynareModel.params] = resol(0,DynareModel,DynareOptions,DynareResults.dr,DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
 end
 
@@ -103,7 +103,7 @@ end
 % hybrid correction
 pfm.hybrid_order = ep.stochastic.hybrid_order;
 if pfm.hybrid_order
-    DynareResults.dr = set_state_space(DynareResults.dr, DynareModel, DynareOptions);
+    DynareResults.dr = set_state_space(DynareResults.dr, DynareModel);
     options = DynareOptions;
     options.order = pfm.hybrid_order;
     [pfm.dr, DynareModel.params] = resol(0, DynareModel, options, DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);

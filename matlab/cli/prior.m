@@ -135,7 +135,7 @@ if ismember('moments', varargin) % Prior simulations (2nd order moments).
     check_model(Model);
     % Compute state space representation of the model.
     oo__ = oo_;
-    oo__.dr = set_state_space(oo__.dr, Model, options_);
+    oo__.dr = set_state_space(oo__.dr, Model);
     % Solve model
     [T,R,~,info,oo__.dr, Model.params] = dynare_resolve(Model , options_ , oo__.dr, oo__.steady_state, oo__.exo_steady_state, oo__.exo_det_steady_state,'restrict');
     if ~info(1)

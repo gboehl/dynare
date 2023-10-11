@@ -109,7 +109,7 @@ if strcmpi(flag,'--load-mh-history') || strcmpi(flag,'--display-mh-history')
         assignin('caller','mcmc_informations',o);
     else
         oo = load_first_mh_history_file([dname filesep 'metropolis'],fname);
-        local = load([fname '_results'],'bayestopt_');
+        local = load([dname filesep 'Output' filesep fname '_results'],'bayestopt_');
         names = local.bayestopt_.name; %evalin('base','bayestopt_.name');
         str = ['MCMC set-up for ' fname ' mod file'];
         ltr = length(str);

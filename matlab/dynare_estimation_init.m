@@ -163,7 +163,7 @@ end
 
 %check for calibrated covariances before updating parameters
 if ~isempty(estim_params_) && ~(isfield(estim_params_,'nvx') && sum(estim_params_.nvx+estim_params_.nvn+estim_params_.ncx+estim_params_.ncn+estim_params_.np)==0)
-    estim_params_=check_for_calibrated_covariances(xparam1,estim_params_,M_);
+    estim_params_=check_for_calibrated_covariances(estim_params_,M_);
 end
 
 %%read out calibration that was set in mod-file and can be used for initialization
@@ -268,7 +268,7 @@ else% Yes!
 end
 
 % Get informations about the variables of the model.
-dr = set_state_space(oo_.dr,M_,options_);
+dr = set_state_space(oo_.dr,M_);
 oo_.dr = dr;
 nstatic = M_.nstatic;          % Number of static variables.
 npred = M_.nspred;             % Number of predetermined variables.
