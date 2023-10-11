@@ -1,5 +1,18 @@
-function [y, success, maxerror, per_block_status] = solve_block_decomposed_problem(options_, M_, oo_)
+function [y, success, maxerror, per_block_status] = solve_block_decomposed_problem(y, exo_simul, steady_state, options_, M_)
 % Computes deterministic simulation with block option without bytecode
+%
+% INPUTS
+%   y                [matrix]    initial path of endogenous (typically oo_.endo_simul)
+%   exo_simul        [matrix]    path of exogenous
+%   steady_state     [vector]    value used for the STEADY_STATE() operator
+%   options_         [struct]    global options structure
+%   M_               [struct]    global model structure
+%
+% OUTPUTS
+%   y                [matrix]    computed path of endogenous
+%   success          [boolean]   true in case of convergence, false otherwise
+%   maxerror         [double]    ∞-norm of the residual
+%   per_block_status [struct]    vector structure with per-block information about convergence
 
 % Copyright © 2020-2023 Dynare Team
 %
@@ -39,7 +52,6 @@ if options_.verbosity
     skipline()
 end
 
-y=oo_.endo_simul;
 T=NaN(M_.block_structure.dyn_tmp_nbr, options_.periods+M_.maximum_lag+M_.maximum_lead);
 
 maxerror = 0;
@@ -70,7 +82,7 @@ for blk = 1:nblocks
             else % Static model
                 y3n = [ NaN(M_.endo_nbr, 1); y(:, it_); NaN(M_.endo_nbr, 1) ]
             end
-            [y3n, T(:, it_)] = fh_dynamic(y3n, oo_.exo_simul(it_, :), M_.params, oo_.steady_state, ...
+            [y3n, T(:, it_)] = fh_dynamic(y3n, exo_simul(it_, :), M_.params, steady_state, ...
                                           M_.block_structure.block(blk).g1_sparse_rowval, ...
                                           M_.block_structure.block(blk).g1_sparse_colval, ...
                                           M_.block_structure.block(blk).g1_sparse_colptr, T(:, it_));
@@ -84,10 +96,10 @@ for blk = 1:nblocks
            M_.block_structure.block(blk).Simulation_Type == 6 || ... % solveForwardComplete
            M_.block_structure.block(blk).Simulation_Type == 7        % solveBackwardComplete
         is_forward = M_.block_structure.block(blk).Simulation_Type == 3 || M_.block_structure.block(blk).Simulation_Type == 6;
-        [y, T, success, maxblkerror, iter] = solve_one_boundary(fh_dynamic, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, is_forward, true, false, M_, options_);
+        [y, T, success, maxblkerror, iter] = solve_one_boundary(fh_dynamic, y, exo_simul, M_.params, steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, is_forward, true, false, M_, options_);
     elseif M_.block_structure.block(blk).Simulation_Type == 5 || ... % solveTwoBoundariesSimple
            M_.block_structure.block(blk).Simulation_Type == 8        % solveTwoBoundariesComplete
-        [y, T, success, maxblkerror, iter] = solve_two_boundaries(fh_dynamic, y, oo_.exo_simul, M_.params, oo_.steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, options_, M_);
+        [y, T, success, maxblkerror, iter] = solve_two_boundaries(fh_dynamic, y, exo_simul, M_.params, steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, options_, M_);
     end
 
     tmp = y(M_.block_structure.block(blk).variable, :);

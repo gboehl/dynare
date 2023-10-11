@@ -72,7 +72,7 @@ if options_.block
             success = false;
         end
     else
-        [y, success, maxerror, per_block_status] = solve_block_decomposed_problem(options_, M_, oo_);
+        [y, success, maxerror, per_block_status] = solve_block_decomposed_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, options_, M_);
     end
 else
     if options_.bytecode
