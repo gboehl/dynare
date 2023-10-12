@@ -168,7 +168,7 @@ else # Octave build
   octave_exe = find_program('octave', required : not meson.is_cross_build(), disabler : true)
   mkoctfile_exe = find_program('mkoctfile')
   octave_minimal_version = '6.2.0'
-  octave_version = run_command(mkoctfile_exe, '-v', check : true).stdout().replace('mkoctfile, version ', '')
+  octave_version = run_command(mkoctfile_exe, '-v', check : true).stdout().replace('mkoctfile, version ', '').strip()
 
   if octave_version.version_compare('<' + octave_minimal_version)
     error('Octave is too old (version ' + octave_version + '), please upgrade to version ' + octave_minimal_version + ' at least.')
