@@ -146,7 +146,6 @@ test_matlab:
       - build-matlab/meson-logs/testlog.txt
     when: always
   needs: [ "build_matlab" ]
-  when: manual
 
 test_old_matlab:
   stage: test
