@@ -17,10 +17,18 @@
 
 include versions.mk
 
-GCC_VERSION = $(shell sed -En "/^c[[:space:]]*=/s/c[[:space:]]*=[[:space:]]*'gcc-([0-9]+)'/\1/p" ../../scripts/homebrew-native.ini)
+# settings for different architectures
+DEPS_ARCH ?= x86_64 # use x86_64 by default
+
+BREWDIR := $(if $(filter arm64,$(DEPS_ARCH)),/opt/homebrew,/usr/local)
+
+GCC_VERSION = $(shell sed -En "/^c[[:space:]]*=/s/c[[:space:]]*=[[:space:]]*'.*gcc-([0-9]+)'/\1/p" ../../scripts/homebrew-native-$(DEPS_ARCH).ini)
+
 ROOT_PATH = $(realpath .)
 
 WGET_OPTIONS := --no-verbose --no-use-server-timestamps --retry-connrefused --retry-on-host-error
+
+NTHREADS=$(shell sysctl -n hw.perflevel0.physicalcpu)
 
 .PHONY: all build build-slicot build-x13as \
 	clean-lib clean-libslicot clean-x13as-bin \
@@ -41,34 +49,34 @@ clean-tar: clean-slicot-tar clean-x13as-tar
 clean-all: clean-lib clean-src clean-tar
 
 #
-# Slicot
+# slicot
 #
 tarballs/slicot-$(SLICOT_VERSION).tar.gz:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://deb.debian.org/debian/pool/main/s/slicot/slicot_$(SLICOT_VERSION).orig.tar.gz
 
-sources64/slicot-$(SLICOT_VERSION): tarballs/slicot-$(SLICOT_VERSION).tar.gz
-	rm -rf sources64/slicot-*
+$(DEPS_ARCH)/sources64/slicot-$(SLICOT_VERSION): tarballs/slicot-$(SLICOT_VERSION).tar.gz
+	rm -rf $(DEPS_ARCH)/sources64/slicot-*
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
 	touch $@
 
-lib64/Slicot/libslicot64_pic.a: sources64/slicot-$(SLICOT_VERSION)
-	make -C $< FORTRAN=gfortran LOADER=gfortran SLICOTLIB=../libslicot64_pic.a OPTS="-O2 -g -fdefault-integer-8" lib
+$(DEPS_ARCH)/lib64/slicot/libslicot64_pic.a: $(DEPS_ARCH)/sources64/slicot-$(SLICOT_VERSION)
+	make -C $< FORTRAN=$(BREWDIR)/bin/gfortran LOADER=$(BREWDIR)/bin/gfortran SLICOTLIB=../libslicot64_pic.a OPTS="-O2 -g -fdefault-integer-8" lib -j$(NTHREADS)
 	strip -S $</libslicot64_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot64_pic.a $@
 
-build-slicot: lib64/Slicot/libslicot64_pic.a
+build-slicot: $(DEPS_ARCH)/lib64/slicot/libslicot64_pic.a
 
 clean-slicot-tar:
 	rm -f tarballs/slicot-$(SLICOT_VERSION).tar.gz
 
 clean-slicot-src:
-	rm -rf sources64/slicot-$(SLICOT_VERSION)
+	rm -rf $(DEPS_ARCH)/sources64/slicot-$(SLICOT_VERSION)
 
 clean-libslicot:
-	rm -rf lib64/Slicot
+	rm -rf $(DEPS_ARCH)/lib64/slicot
 
 clean-slicot-all: clean-slicot-src clean-slicot-tar clean-libslicot
 
@@ -81,12 +89,12 @@ tarballs/x13as_asciisrc-v$(X13AS_VERSION).tar.gz:
 	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/program-archives/x13as_asciisrc-v$(X13AS_VERSION).tar.gz
 
-sources64/x13as-$(X13AS_VERSION): tarballs/x13as_asciisrc-v$(X13AS_VERSION).tar.gz
-	rm -rf sources64/x13as-*
+$(DEPS_ARCH)/sources64/x13as-$(X13AS_VERSION): tarballs/x13as_asciisrc-v$(X13AS_VERSION).tar.gz
+	rm -rf $(DEPS_ARCH)/sources64/x13as-*
 	mkdir -p $@
 	tar xf $< --directory $@
 
-lib64/x13as/x13as: sources64/x13as-$(X13AS_VERSION)
+$(DEPS_ARCH)/lib64/x13as/x13as: $(DEPS_ARCH)/sources64/x13as-$(X13AS_VERSION)
 	# Statically link x13as (see #1865).
 	# Using -static is not possible, it does not work under Darwin.
 	# Implement an ugly workaround in the absence of -static-libquadmath flag.
@@ -97,20 +105,21 @@ lib64/x13as/x13as: sources64/x13as-$(X13AS_VERSION)
 	# gfortran as the linker with -static-libgfortran and
 	# -static-libquadmath flags, and drop the GCC_VERSION variable.
 	cd $< && sed -i '' 's/-static//g' makefile.gf
-	make -C $< -f makefile.gf FC=gfortran LINKER=gcc-$(GCC_VERSION) FFLAGS="-O2 -std=legacy" LDFLAGS=-static-libgcc LIBS="/usr/local/lib/gcc/$(GCC_VERSION)/libgfortran.a /usr/local/lib/gcc/$(GCC_VERSION)/libquadmath.a" PROGRAM=x13as
+	make -C $< -f makefile.gf FC=$(BREWDIR)/bin/gfortran LINKER=$(BREWDIR)/bin/gcc-$(GCC_VERSION) FFLAGS="-O2 -std=legacy" LDFLAGS=-static-libgcc LIBS="$(BREWDIR)/lib/gcc/$(GCC_VERSION)/libgfortran.a $(BREWDIR)/lib/gcc/$(GCC_VERSION)/libquadmath.a" PROGRAM=x13as -j$(NTHREADS)
+
 	strip $</x13as
 	mkdir -p $(dir $@)
 	cp $</x13as $@
 
-build-x13as: lib64/x13as/x13as
+build-x13as: $(DEPS_ARCH)/lib64/x13as/x13as
 
 clean-x13as-tar:
 	rm -f tarballs/x13as_asciisrc-v$(X13AS_VERSION).tar.gz
 
 clean-x13as-src:
-	rm -rf sources64/x13as-$(X13AS_VERSION)
+	rm -rf $(DEPS_ARCH)/sources64/x13as-$(X13AS_VERSION)
 
 clean-x13as-bin:
-	rm -rf lib64/x13as
+	rm -rf $(DEPS_ARCH)/lib64/x13as
 
 clean-x13as-all: clean-x13as-tar clean-x13as-src clean-x13as-bin

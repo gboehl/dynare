@@ -103,7 +103,7 @@ If you want a certain version (e.g. 5.x) , then add `--single-branch --branch 5.
 
 If you want to compile for MATLAB, please run the following (after adapting the path to MATLAB):
 ```sh
-meson setup -Dmatlab_path=/usr/local/MATLAB/R2023a -Dbuildtype=debugoptimized build-matlab
+meson setup -Dmatlab_path=/usr/local/MATLAB/R2023b -Dbuildtype=debugoptimized build-matlab
 ```
 The build directory will thus be `build-matlab`.
 
@@ -269,7 +269,7 @@ Now use the following commands if using MATLAB (adapt them for Octave, see above
 cd /home/$USER/dynare
 git clone --recurse-submodules https://git.dynare.org/dynare/dynare.git unstable
 cd unstable
-meson setup -Dmatlab_path=/usr/local/MATLAB/R2020b -Dfortran_args="[ '-B', '/home/$USER/dynare/slicot']" -Dbuildtype=debugoptimized build-matlab
+meson setup -Dmatlab_path=/usr/local/MATLAB/R2023b -Dfortran_args="[ '-B', '/home/$USER/dynare/slicot']" -Dbuildtype=debugoptimized build-matlab
 meson compile -C build-matlab
 ```
 
@@ -405,26 +405,29 @@ export PATH="$BREWDIR/bin:$PATH"
 ```
 
 
-- Install required Homebrew packages and link sphinx-doc:
+- Install required Homebrew packages:
 ```sh
-arch -$ARCH $BREWDIR/bin/brew install meson bison flex boost gcc gsl libmatio veclibfort octave sphinx-doc docutils wget
+arch -$ARCH $BREWDIR/bin/brew install meson bison flex boost gcc gsl libmatio veclibfort octave sphinx-doc docutils wget pkg-config git-lfs
 ```
-If you want to build the documentation, you need to link sphinx-doc:
+If you are installing `git-lfs` for the first time, you need to run `git lfs install` once after installing it.
+
+- Link the sphinx-doc package to be able to compile the documentation:
 ```sh
 arch -$ARCH $BREWDIR/bin/brew link --force sphinx-doc
 ```
 
-- Install [MacTeX](http://www.tug.org/mactex/index.html) using the universal installer, if you want to build the documentation. MacTeX runs natively on both ARM and Intel machines. On Apple Silicon, it is advised to symlink `pdflatex` and `bibtex` into `/usr/local/bin`:
+- Install [MacTeX](http://www.tug.org/mactex/index.html) using the universal installer, if you want to build the documentation. MacTeX runs natively on both ARM and Intel machines. On Apple Silicon, it is advised to symlink `pdflatex`, `bibtex` and `latexmk` into `/usr/local/bin`:
 ```sh
 sudo ln -s /Library/TeX/texbin/pdflatex /usr/local/bin/pdflatex
 sudo ln -s /Library/TeX/texbin/bibtex /usr/local/bin/bibtex
+sudo ln -s /Library/TeX/texbin/latexmk /usr/local/bin/latexmk
 ```
+If you don't have admin privileges, then you can also symlink them into `$HOME/.local/bin` and add this folder to your PATH.
+
 - Install MATLAB and additional toolboxes.
 We recommend, but don't require, the following: Optimization, Global Optimization, Statistics and Machine Learning, Econometrics, and Control System.
-For Apple Silicon: MATLAB offers a native Apple silicon version of R2022b as an open beta. You can sign up and install it (including a suitable Java 8 JRE, e.g. Amazon Corretto 8) using
-[the official instructions](https://de.mathworks.com/support/apple-silicon-r2022b-beta.html).
-Unfortunately, this version does not support yet the Optimization, Global Optimization and Econometrics toolboxes.
-If you need these, please run the Intel version (under Rosetta 2) instead.
+For Apple Silicon: MATLAB offers a native Apple silicon version (arm64) as of version R2023b, see [the official instructions](https://de.mathworks.com/support/requirements/apple-silicon.html) how to install it.
+You can also run the Intel version (x86_64) under Rosetta 2.
 Don't forget to run MATLAB at least once to make sure you have a valid license.
 
 - Create a folder for Dynare and its dependencies
@@ -444,7 +447,6 @@ cp slicot.a $DYNAREDIR/slicot/lib/libslicot_pic.a
 make clean
 make -j$(sysctl -n hw.ncpu) FORTRAN=$BREWDIR/bin/gfortran OPTS="-O2 -fdefault-integer-8" LOADER=gfortran lib
 cp slicot.a $DYNAREDIR/slicot/lib/libslicot64_pic.a
-cd $HOME/dynare
 ```
 
 - Compile and install the X-13ARIMA-SEATS Seasonal Adjustment Program
@@ -455,11 +457,11 @@ curl -O https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/progra
 tar xf x13as_asciisrc-v1-1-b60.tar.gz
 sed -i '' 's/-static//g' makefile.gf
 make -j$(sysctl -n hw.ncpu) -f makefile.gf FC=$BREWDIR/bin/gfortran LINKER=$BREWDIR/bin/gcc-13 FFLAGS="-O2 -std=legacy" LDFLAGS=-static-libgcc LIBS="$BREWDIR/lib/gcc/current/libgfortran.a /$BREWDIR/lib/gcc/current/libquadmath.a" PROGRAM=x13as
-mkdir -p $HOME/.local/bin
-cp x13as $HOME/.local/bin/x13as
-cd ;
+sudo cp $DYNAREDIR/x13as/x13as /usr/local/bin/x13as
+cd $DYNAREDIR
 x13as
 ```
+Alternatively, if you don't have admin privileges you can install it into `$HOME/.local/bin` and add this folder to your PATH.
 
 ### Compile Dynare from source
 The following commands will download the Dynare source code and compile
@@ -468,42 +470,46 @@ folder where you want Dynare installed.
 
 - Prepare the Dynare sources for the unstable version:
 ```sh
-mkdir -p $DYNAREDIR/unstable
 git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git $DYNAREDIR/unstable
 cd $DYNAREDIR/unstable
 ```
-You can also choose a specific version of Dynare by checking out the corresponding branch or a specific tag with git.
+If you want a certain version (e.g. 5.x) , then add `--single-branch --branch 5.x` to the git clone command.
 
 - Configure Dynare from the source directory:
 ```sh
-arch -$ARCH meson setup --native-file scripts/homebrew-native.ini -Dmatlab_path=/Applications/MATLAB_R2022b_Beta.app -Dbuildtype=debugoptimized -Dfortran_args="['-B','$DYNAREDIR/slicot/lib']" build-matlab
+export BUILDDIR=build-matlab
+export MATLABPATH=/Applications/MATLAB_R2023b.app
+arch -$ARCH meson setup --native-file scripts/homebrew-native-$ARCH.ini -Dmatlab_path=$MATLABPATH -Dbuildtype=debugoptimized -Dfortran_args="['-B','$DYNAREDIR/slicot/lib']" $BUILDDIR
 ```
 where you need to adapt the path to MATLAB.
-Similarly, if you don't want to compile for Octave, replace the `-Dmatlab_path` option by `-Dbuild_for=octave`, and change the build directory to `build-octave`.
+Similarly, if you want to compile for Octave, replace the `-Dmatlab_path` option by `-Dbuild_for=octave`, and change the build directory to `build-octave`.
 
 - Compile:
 ```sh
-arch -$ARCH meson compile -C <builddir>
+arch -$ARCH meson compile -C $BUILDDIR
 ```
-where `<builddir>` is either `build-matlab` or `build-octave`.
-
 If no errors occured, you are done. Dynare is now ready to use.
-If you additionally want to compile the documentation run:
+
+- If you additionally want to compile the documentation run:
 ```sh
-arch -$ARCH meson compile -C <builddir> doc
+arch -$ARCH meson compile -C $BUILDDIR doc
 ```
+
+- Optionally, run the testsuite:
+```sh
+arch -$ARCH meson test -C $BUILDDIR --num-processes=$(sysctl -n hw.perflevel0.physicalcpu)
+```
+where `--num-processes` specifies the number of parallel processes to use for the testsuite (here set to the number of performance cores on your mac).
 
 ### Optional: pass the full PATH to MATLAB to run system commands
 If you start MATLAB from a terminal, you will get the PATH inherited from the shell.
 However, when you click on the application icon in macOS, you are not running at the terminal level:
 the program is run by launcher, which does not go through a shell login session.
 In other words, you get the system default PATH which includes `/usr/bin:/bin:/usr/sbin:/sbin`, but not `/usr/local/bin` or `$HOME/.local/bin`.
-So if you want to use system commands like `pdflatex` or `x13as` you should either call them by their full path (e.g `/Library/TeX/texbin/pdflatex`)
-or append the PATH in MATLAB by running `setenv('PATH', [getenv('PATH') ':/usr/local/bin:$HOME/.local/bin:/Library/TeX/texbin']);`.
-Alternatively, you can create a `startup.m` file or change the system default PATH in the `/etc/paths` file.
+So if you want to use system commands like `pdflatex`, `latexmk` or `x13as` you should either call them by their full path (e.g `/Library/TeX/texbin/pdflatex`)
+or append the PATH by running `setenv('PATH', [getenv('PATH') ':/usr/local/bin:$HOME/.local/bin:/Library/TeX/texbin']);` in your MATLAB command line once,
+e.g. by adding this to your mod file. Alternatively, you can create a `startup.m` file or change the system default PATH in the `/etc/paths` file.
 
-Last tested on:
-- macOS Ventura 13.3.1 (MacBook Air M1, MacBook Pro M2 MAX, M2 Virtual Machine using Parallels, Intel Virtual Machine using Quickemu)
 
 ## Docker
 We offer a variety of pre-configured Docker containers for Dynare, pre-configured with Octave and MATLAB including all recommended toolboxes.

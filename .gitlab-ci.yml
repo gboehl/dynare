@@ -97,18 +97,38 @@ pkg_windows:
     expire_in: 3 days
   needs: [ "build_doc" ]
 
-pkg_macOS:
+pkg_macOS_x86_64:
   stage: pkg
   script:
     # Enforce the arm64 meson for rewrite, as a workaround to https://github.com/mesonbuild/meson/issues/12282
     - env PATH="/opt/homebrew/bin:$PATH" meson rewrite kwargs set project / version "$VERSION"
-    - ln -s ~/tarballs macOS/deps/
-    - arch -x86_64 make -C macOS
+    - ln -s ~/tarballs macOS/deps/x86_64
+    - make -C macOS build-x86_64
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
-      - macOS/deps/sources64/
-      - macOS/deps/lib64/
+      - macOS/deps/x86_64/sources64/
+      - macOS/deps/x86_64/lib64/
+  tags:
+    - macOS
+  artifacts:
+    paths:
+      - macOS/pkg/*
+    expire_in: 3 days
+  needs: [ "build_doc" ]
+
+pkg_macOS_arm64:
+  stage: pkg
+  script:
+    # Enforce the arm64 meson for rewrite, as a workaround to https://github.com/mesonbuild/meson/issues/12282
+    - env PATH="/opt/homebrew/bin:$PATH" meson rewrite kwargs set project / version "$VERSION"
+    - ln -s ~/tarballs macOS/deps/arm64
+    - make -C macOS build-arm64
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - macOS/deps/arm64/sources64/
+      - macOS/deps/arm64/lib64/
   tags:
     - macOS
   artifacts:
@@ -126,6 +146,7 @@ test_matlab:
       - build-matlab/meson-logs/testlog.txt
     when: always
   needs: [ "build_matlab" ]
+  when: manual
 
 test_old_matlab:
   stage: test
@@ -200,12 +221,12 @@ deploy_snapshot_unstable:
     - pkg_source
     - pkg_windows
     - sign_windows
-    - pkg_macOS
+    - pkg_macOS_x86_64
   script:
     - cp build-src/meson-dist/*.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
     - f=(windows/exe-signed/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe
     - f=(windows/7z/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-7z/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-7z/dynare-latest-win.7z
     - f=(windows/zip/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip
-    - f=(macOS/pkg/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/macos/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/macos/dynare-latest-macos.pkg
+    - f=(macOS/pkg/*-x86_64.pkg) && cp ${f[0]} /srv/www.dynare.org/snapshot/macos/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/macos/dynare-latest-macos.pkg
     - ~/update-snapshot-list.sh
     - curl -X POST -F token="$WEBSITE_PIPELINE_TRIGGER_TOKEN" -F ref=master https://git.dynare.org/api/v4/projects/40/trigger/pipeline
