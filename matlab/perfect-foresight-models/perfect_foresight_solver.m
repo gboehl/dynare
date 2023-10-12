@@ -249,35 +249,24 @@ while step > options_.simul.homotopy_min_step_size
         if success
             current_share = new_share;
         end
-        did_homotopy = false;
         break
     end
 
-    if iteration == 1
-        % First iteration failed, so we enter homotopy
-        did_homotopy = true;
-
-        if ~options_.noprint
-            fprintf('\nEntering the homotopy method iterations...\n')
-            fprintf('\nIter. \t | Share \t | Status \t | Max. residual\t | Duration (sec)\n')
-            fprintf('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
-        end
-
-        % Disable warnings if homotopy
-        warning_old_state = warning;
-        warning off all
-        % Do not print anything
-        oldverbositylevel = options_.verbosity;
-        options_.verbosity = 0;
+    if iteration == 1 && ~options_.noprint
+        fprintf('\nEntering the homotopy method iterations...\n')
+        iter_summary_table = { sprintf('\nIter. \t | Share \t | Status \t | Max. residual\t | Duration (sec)\n'),
+                               sprintf('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n') };
     end
 
     if success
         % Successful step
         if ~options_.noprint
-            fprintf('%i \t | %1.5f \t | %s \t | %e \t | %.1f\n', iteration, new_share, 'succeeded', maxerror, iter_time_elapsed)
+            iter_summary_table{end+1} = sprintf('%i \t | %1.5f \t | %s \t | %e \t | %.1f\n', iteration, new_share, 'succeeded', maxerror, iter_time_elapsed);
         end
         current_share = new_share;
         if current_share >= options_.simul.homotopy_max_completion_share
+            % Print the iterations summary table for the last time, to show convergence
+            fprintf('%s', iter_summary_table{:})
             break
         end
         success_counter = success_counter + 1;
@@ -292,18 +281,17 @@ while step > options_.simul.homotopy_min_step_size
         step = step / 2;
         if ~options_.noprint
             if ~steady_success
-                fprintf('%i \t | %1.5f \t | %s \t\t | %.1f\n', iteration, new_share, 'failed (in endval steady)', iter_time_elapsed)
+                iter_summary_table{end+1} = sprintf('%i \t | %1.5f \t | failed (in endval steady) \t\t | %.1f\n', iteration, new_share, iter_time_elapsed);
             elseif isreal(maxerror)
-                fprintf('%i \t | %1.5f \t | %s \t | %e \t | %.1f\n', iteration, new_share, 'failed', maxerror, iter_time_elapsed)
+                iter_summary_table{end+1} = sprintf('%i \t | %1.5f \t | failed \t | %e \t | %.1f\n', iteration, new_share, maxerror, iter_time_elapsed);
             else
-                fprintf('%i \t | %1.5f \t | %s \t | %s \t | %.1f\n', iteration, new_share, 'failed', 'Complex', iter_time_elapsed)
+                iter_summary_table{end+1} = sprintf('%i \t | %1.5f \t | failed \t | Complex \t | %.1f\n', iteration, new_share, iter_time_elapsed);
             end
         end
     end
-end
 
-if did_homotopy && ~options_.noprint
-    fprintf('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
+    % Print the iterations summary table at every iteration
+    fprintf('%s', iter_summary_table{:})
 end
 
 %If simulated paths are complex, take real part and recompute the residuals to check whether this is actually a solution
@@ -318,6 +306,8 @@ if ~isreal(endo_simul(:)) % cannot happen with bytecode or the perfect_foresight
         disp('Simulation terminated with imaginary parts in the residuals or endogenous variables.')
     end
 end
+
+fprintf('\n')
 
 % Do linearization if needed and requested, and put results and solver status information in oo_
 if current_share == 1
@@ -404,12 +394,6 @@ if ~isempty(solver_iter)
 end
 if ~isempty(per_block_status)
     oo_.deterministic_simulation.block = per_block_status;
-end
-
-% Must come after marginal linearization
-if did_homotopy
-    options_.verbosity = oldverbositylevel;
-    warning(warning_old_state);
 end
 
 dyn2vec(M_, oo_, options_);
