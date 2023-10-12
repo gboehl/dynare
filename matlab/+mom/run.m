@@ -530,8 +530,7 @@ if any(bayestopt_laplace.pshape > 0) % prior specified
     end
 end
 
-% Check for calibrated covariances before updating parameters
-estim_params_ = check_for_calibrated_covariances(xparam0,estim_params_,M_);
+estim_params_ = check_for_calibrated_covariances(estim_params_,M_);
 
 % Checks on parameter calibration and initialization
 xparam1_calib = get_all_parameters(estim_params_,M_); %get calibrated parameters
