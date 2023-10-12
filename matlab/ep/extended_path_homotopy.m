@@ -35,7 +35,7 @@ if ismember(method, [1, 2])
         oo.endo_simul(:,1) = oo.steady_state + weight*(endo_simul0(:,1) - oo.steady_state);
         oo.exo_simul = bsxfun(@plus, weight*exo_simul, (1-weight)*transpose(oo.exo_steady_state));
         if order==0
-            [endo_simul_new, success] = perfect_foresight_solver_core(M, options, oo);
+            [endo_simul_new, success] = perfect_foresight_solver_core(oo.endo_simul, oo.exo_simul, oo.steady_state, oo.exo_steady_state, M, options);
         else
             switch(algo)
               case 0
@@ -102,7 +102,7 @@ if isequal(method, 3) || (isequal(method, 2) && noconvergence)
         oo.endo_simul = endo_simul;
         oo.exo_simul = bsxfun(@plus, weight*exo_simul, (1-weight)*transpose(oo.exo_steady_state));
         if order==0
-            [endo_simul_new, success] = perfect_foresight_solver_core(M, options, oo);
+            [endo_simul_new, success] = perfect_foresight_solver_core(oo.endo_simul, oo.exo_simul, oo.steady_state, oo.exo_steady_state, M, options);
         else
             switch(algo)
               case 0

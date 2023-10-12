@@ -226,7 +226,7 @@ while step > options_.simul.homotopy_min_step_size
         end
 
         % Solve for the paths of the endogenous variables.
-        [oo_.endo_simul, success, maxerror, solver_iter, per_block_status] = perfect_foresight_solver_core(M_, options_, oo_);
+        [oo_.endo_simul, success, maxerror, solver_iter, per_block_status] = perfect_foresight_solver_core(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
     else
         success = false;
         maxerror = NaN;
@@ -339,7 +339,7 @@ elseif options_.simul.homotopy_marginal_linearization_fallback > 0 && current_sh
     extra_simul_time_counter = tic;
     new_success = create_scenario(new_share);
     if new_success
-        [oo_.endo_simul, new_success] = perfect_foresight_solver_core(M_, options_, oo_);
+        [oo_.endo_simul, new_success] = perfect_foresight_solver_core(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
     end
     extra_simul_time_elapsed = toc(extra_simul_time_counter);
     if new_success

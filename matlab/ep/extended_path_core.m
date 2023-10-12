@@ -56,7 +56,7 @@ if order == 0
     options.lmmcp = olmmcp;
     options.solve_algo = solve_algo;
     options.stack_solve_algo = stack_solve_algo;
-    [endogenousvariablespaths, info_convergence] = perfect_foresight_solver_core(M, options, oo);
+    [endogenousvariablespaths, info_convergence] = perfect_foresight_solver_core(oo.endo_simul, oo.exo_simul, oo.steady_state, oo.exo_steady_state, M, options);
 else
     switch(algo)
         case 0

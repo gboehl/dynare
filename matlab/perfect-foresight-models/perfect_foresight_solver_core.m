@@ -1,11 +1,14 @@
-function [y, success, maxerror, iter, per_block_status] = perfect_foresight_solver_core(M_, options_, oo_)
+function [y, success, maxerror, iter, per_block_status] = perfect_foresight_solver_core(y, exo_simul, steady_state, exo_steady_state, M_, options_)
 
 % Core function calling solvers for perfect foresight model
 %
 % INPUTS
+% - y                   [matrix] initial path of endogenous (typically oo_.endo_simul)
+% - exo_simul           [matrix] path of exogenous
+% - steady_state        [vector] steady state of endogenous variables
+% - exo_steady_state    [vector] steady state of exogenous variables
 % - M_                  [struct] contains a description of the model.
 % - options_            [struct] contains various options.
-% - oo_                 [struct] contains results
 %
 % OUTPUTS
 % - y                   [double array] path for the endogenous variables (solution)
@@ -62,50 +65,48 @@ if options_.block
     end
     if options_.bytecode
         try
-            y = bytecode('dynamic', 'block_decomposed', M_, options_, oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state,1, periods+2), periods);
+            y = bytecode('dynamic', 'block_decomposed', M_, options_, y, exo_simul, M_.params, repmat(steady_state,1, periods+2), periods);
             success = true;
         catch ME
             if options_.verbosity >= 1
                 disp(ME.message)
             end
-            y = oo_.endo_simul; % Set something for y, need for computing maxerror
             success = false;
         end
     else
-        [y, success, maxerror, per_block_status] = solve_block_decomposed_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, options_, M_);
+        [y, success, maxerror, per_block_status] = solve_block_decomposed_problem(y, exo_simul, steady_state, options_, M_);
     end
 else
     if options_.bytecode
         try
-            y = bytecode('dynamic', M_, options_, oo_.endo_simul, oo_.exo_simul, M_.params, repmat(oo_.steady_state, 1, periods+2), periods);
+            y = bytecode('dynamic', M_, options_, y, exo_simul, M_.params, repmat(steady_state, 1, periods+2), periods);
             success = true;
         catch ME
             if options_.verbosity >= 1
                 disp(ME.message)
             end
-            y = oo_.endo_simul; % Set something for y, need for computing maxerror
             success = false;
         end
     else
         if M_.maximum_endo_lead == 0 && M_.maximum_endo_lag>0 && ~options_.lmmcp.status % Purely backward model
-            [y, success] = sim1_purely_backward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+            [y, success] = sim1_purely_backward(y, exo_simul, steady_state, M_, options_);
         elseif M_.maximum_endo_lag == 0 && M_.maximum_endo_lead>0 && ~options_.lmmcp.status % Purely forward model
-            [y, success] = sim1_purely_forward(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+            [y, success] = sim1_purely_forward(y, exo_simul, steady_state, M_, options_);
         elseif M_.maximum_endo_lag == 0 && M_.maximum_endo_lead == 0 && ~options_.lmmcp.status % Purely static model
-            [y, success] = sim1_purely_static(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+            [y, success] = sim1_purely_static(y, exo_simul, steady_state, M_, options_);
         else % General case
             switch options_.stack_solve_algo
               case 0
                 if options_.linear_approximation
-                    [y, success, maxerror] = sim1_linear(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
+                    [y, success, maxerror] = sim1_linear(y, exo_simul, steady_state, exo_steady_state, M_, options_);
                 else
-                    [y, success, maxerror, iter] = sim1(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+                    [y, success, maxerror, iter] = sim1(y, exo_simul, steady_state, M_, options_);
                 end
               case {1 6}
                 if options_.linear_approximation
                     error('Invalid value of stack_solve_algo option!')
                 end
-                [y, success, maxerror, iter] = sim1_lbj(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+                [y, success, maxerror, iter] = sim1_lbj(y, exo_simul, steady_state, M_, options_);
               case 7
                 if options_.linear_approximation
                     if isequal(options_.solve_algo, 10) 
@@ -117,9 +118,9 @@ else
                             warning('It would be more efficient to set option solve_algo equal to 0!')
                         end
                     end
-                    [y, success] = solve_stacked_linear_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
+                    [y, success] = solve_stacked_linear_problem(y, exo_simul, steady_state, exo_steady_state, M_, options_);
                 else
-                    [y, success, maxerror] = solve_stacked_problem(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, M_, options_);
+                    [y, success, maxerror] = solve_stacked_problem(y, exo_simul, steady_state, M_, options_);
                 end
               otherwise
                 error('Invalid value of stack_solve_algo option!')
@@ -131,7 +132,7 @@ end
 % Some solvers do not compute the maximum error, so do it here if needed
 if nargout > 2 && isempty(maxerror)
     if options_.bytecode
-        residuals = bytecode('dynamic', 'evaluate', M_, options_, y, oo_.exo_simul, M_.params, oo_.steady_state, periods);
+        residuals = bytecode('dynamic', 'evaluate', M_, options_, y, exo_simul, M_.params, steady_state, periods);
     else
         ny = size(y, 1);
         if M_.maximum_lag > 0
@@ -146,7 +147,7 @@ if nargout > 2 && isempty(maxerror)
         end
         yy = y(:,M_.maximum_lag+(1:periods));
 
-        residuals = perfect_foresight_problem(yy(:), y0, yT, oo_.exo_simul, M_.params, oo_.steady_state, periods, M_, options_);
+        residuals = perfect_foresight_problem(yy(:), y0, yT, exo_simul, M_.params, steady_state, periods, M_, options_);
     end
     maxerror = max(max(abs(residuals)));
 end
