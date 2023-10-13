@@ -6,13 +6,14 @@
   <welcome file="welcome.html" mime-type="text/html" />
   <conclusion file="conclusion.html" mime-type="text/html" />
   <license file="gpl-3.0-standalone.html" mime-type="text/html" />
+  <domains enable_anywhere="true" enable_currentUserHome="true"/>
   <pkg-ref id="default" />
   <options customize="allow" require-scripts="false" hostArchitectures="x86_64" />
   <choices-outline>
     <line choice="default" />
   </choices-outline>
-  <choice id="default" title="Dynare" description="Dynare Required Files" start_enabled="false" enabled="false">
-    <pkg-ref id="org.dynare" />
+  <choice id="default" title="Dynare" description="Dynare Required Files" start_enabled="false" enabled="false" customLocation="/Applications/Dynare/dynare-LOCATION">
+    <pkg-ref id="org.dynare.VERSION_NO_SPACE" />
   </choice>  
-  <pkg-ref id="org.dynare" version="VERSION_NO_SPACE">dynare-VERSION_NO_SPACE.pkg</pkg-ref>
+  <pkg-ref id="org.dynare.VERSION_NO_SPACE" version="VERSION_NO_SPACE">dynare-VERSION_NO_SPACE.pkg</pkg-ref>
 </installer-gui-script>
