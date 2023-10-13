@@ -99,6 +99,10 @@ for test_file in "${test_files[@]}"; do
     if [[ $build_for == matlab ]]; then
         "$matlab_octave_exe" "${matlab_batch_flags[@]}" "$test_arg"
     else
+        unset XDG_SESSION_TYPE # Ensure that Wayland will not be used if in a desktop session
+        # We cannot use the --no-window-system option, and we have to use xvfb
+        # See the following Octave bug: https://savannah.gnu.org/bugs/?62101
+        # (this affects at least tests/shock_decomposition/ls2003_plot.mod)
         xvfb-run -a "$matlab_octave_exe" --no-init-file --silent --no-history "$test_arg"
     fi
 done
