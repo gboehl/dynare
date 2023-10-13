@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="1">
-  <title>Dynare VERSION_READ</title>
+  <title>Dynare VERSION_NO_SPACE</title>
   <background file="background.png" scaling="tofit" mime-type="image/png" alignment="topleft" />
   <background-darkAqua file="background.png" scaling="tofit" mime-type="image/png" alignment="topleft" />
   <welcome file="welcome.html" mime-type="text/html" />
+  <conclusion file="conclusion.html" mime-type="text/html" />
   <license file="gpl-3.0-standalone.html" mime-type="text/html" />
-  <pkg-ref id="org.dynare" />
+  <pkg-ref id="default" />
   <options customize="allow" require-scripts="false" hostArchitectures="x86_64" />
   <choices-outline>
-    <line choice="org.dynare" />
-    <line choice="org.dynare.gcc" />
+    <line choice="default" />
   </choices-outline>
-  <choice id="org.dynare" title="Dynare" description="Dynare Required Files" start_enabled="false" enabled="false">
+  <choice id="default" title="Dynare" description="Dynare Required Files" start_enabled="false" enabled="false">
     <pkg-ref id="org.dynare" />
-  </choice>
-  <choice id="org.dynare.gcc" title="GCC for `use_dll`" description="This is necessary for the use of Dynare with the `use_dll` option. NB: This takes a few minutes and requires an active internet connection.">
-    <pkg-ref id="org.dynare.gcc" />
-  </choice>
+  </choice>  
   <pkg-ref id="org.dynare" version="VERSION_NO_SPACE">dynare-VERSION_NO_SPACE.pkg</pkg-ref>
-  <pkg-ref id="org.dynare.gcc" version="VERSION_NO_SPACE">dynare-VERSION_NO_SPACE-gcc.pkg</pkg-ref>
 </installer-gui-script>

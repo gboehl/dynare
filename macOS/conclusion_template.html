@@ -1,0 +1,44 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Postinstallation Recommendations</title>
+    <style>
+      .center-text {
+        text-align: center;
+      }
+      .bold-text {
+        font-weight: bold;
+      }
+      code {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }      
+    </style>
+  </head>
+  
+  <body>
+    <header class="center-text">
+      <h1>Postinstallation Recommendations</h1>      
+    </header>
+
+    <main>
+      <p class="bold-text">Xcode Command Line Tools</p>
+      <p>Dynare highly benefits from installing Xcode Command Line Tools (an Apple product). To install the Xcode Command Line Tools type the following into Terminal.app:</p>
+      <code>
+      xcode-select --install
+      </code>
+
+      <p class="bold-text">Compilation Environment for use_dll option</p>
+      <p>Dynare ships a compilation environment that can be used with the use_dll option. To install this environment correctly, the Xcode Command Line Tools are sufficient.</p>
+      <p>However, we recommend making use of optimized compilation flags and for this you need to install gcc-GCC_VERSION via Homebrew.
+      For this, follow <a href="https://brew.sh" target="_blank" rel="noopener noreferrer">https://brew.sh</a> to install Homebrew and then type the following into Terminal.app:</p>
+      <code>brew install gcc@GCC_VERSION</code>
+      
+      <p>If you already have installed gcc-GCC_VERSION, Dynare will automatically prefer it for use_dll if the binaries are in /usr/local/bin/gcc-GCC_VERSION. Otherwise, it will fall back to Clang in /usr/bin/gcc.</p>
+    </main>
+  </body>
+</html>

@@ -188,28 +188,28 @@ cd "$ROOTDIR"/macOS/pkg
 # Dynare option
 pkgbuild --root "$PKGFILES" --identifier org.dynare --version "$VERSION" --install-location /Applications/Dynare/"$LOCATION" "$NAME".pkg
 
-# GCC option
-# Create dummy payload for GCC package; otherwise the size is displayed as 0 bytes in the installer
-dd if=/dev/zero of="$ROOTDIR"/macOS/brewfiles/dummy  bs=1m  count=800
-pkgbuild --root "$ROOTDIR"/macOS/brewfiles --identifier org.dynare.gcc --version "$VERSION" --scripts "$ROOTDIR"/macOS/scripts --install-location /Applications/Dynare/"$LOCATION" "$NAME"-gcc.pkg
+# Create distribution.xml by replacing variables in distribution_template.xml
+sed -e "s/VERSION_NO_SPACE/$VERSION/g" \
+    "$ROOTDIR"/macOS/distribution_template.xml > distribution.xml
 
-# Replace variables in displayed files
-sed "s/VERSION_READ/$VERSION/g" "$ROOTDIR"/macOS/distribution_template.xml > distribution_tmp.xml
-sed "s/VERSION_NO_SPACE/$VERSION/g" distribution_tmp.xml > distribution.xml
-sed "s/GCC_BINARY/$CC/g" "$ROOTDIR"/macOS/welcome_template.html > "$ROOTDIR"/macOS/welcome.html
-sed "s/VERSION_NO_SPACE/$VERSION/g" "$ROOTDIR"/macOS/welcome.html > "$ROOTDIR"/macOS/welcome_tmp.html
-sed "s/DATE/$DATELONG/g" "$ROOTDIR"/macOS/welcome_tmp.html > "$ROOTDIR"/macOS/welcome.html
+# Create welcome.html by replacing variables in welcome_template.html
+sed -e "s/VERSION_NO_SPACE/$VERSION/g" \
+    -e "s/DATE/$DATELONG/g" \
+    -e "s/GCC_VERSION/$GCC_VERSION/g" \
+    "$ROOTDIR"/macOS/welcome_template.html > "$ROOTDIR"/macOS/welcome.html
+
+# Create conclusion.html by replacing variables in conclusion_template.html
+sed -e "s/GCC_VERSION/$GCC_VERSION/g" \
+    "$ROOTDIR"/macOS/conclusion_template.html > "$ROOTDIR"/macOS/conclusion.html
 
 # Create installer
 productbuild --distribution distribution.xml --resources "$ROOTDIR"/macOS --package-path ./"$NAME".pkg "$NAME"-new.pkg
 
 # cleanup
-rm -f ./*.xml
+rm -f ./distribution.xml
 rm -rf "$PKGFILES"
-rm -f "$NAME"-gcc.pkg
-rm -f "$ROOTDIR"/macOS/brewfiles/dummy
 rm -f "$ROOTDIR"/macOS/welcome.html
-rm -f "$ROOTDIR"/macOS/welcome_tmp.html
+rm -f "$ROOTDIR"/macOS/conclusion.html
 
 # Final pkg
 mv "$NAME"-new.pkg "$NAME".pkg

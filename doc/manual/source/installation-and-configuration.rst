@@ -104,20 +104,8 @@ Note that several versions of Dynare can coexist (by default in
 ``/Applications/Dynare``), as long as you correctly adjust your path
 settings (see :ref:`words-warning`).
 
-By default, the installer installs a version of GCC (for use with :opt:`use_dll`)
-in the installation directory, under the ``.brew`` folder. To do so, it also
-installs a version of Homebrew_ in the same folder and
-Xcode Command Line Tools (this is an Apple product) in a system folder.
-
-All of this requires a bit of time and hard disk space. The amount of time it
-takes will depend on your computing power and internet connection. To reduce
-the time the Dynare installer takes, you can install Xcode Command Line Tools
-yourself (see :ref:`prerequisites-macos`). Dynare, Homebrew, and GCC use
-about 600 MB of disk space while the Xcode Command Line Tools require about 400
-MB.
-
-If you do not use the :opt:`use_dll` option, you have the choice to forgo the
-installation of GCC and hence Dynare will only take about 50 MB of disk space.
+It is recommended to install the Xcode Command Line Tools (this is an Apple product)
+and gcc via Homebrew_ (see :ref:`prerequisites-macos`).
 
 With Octave
 ^^^^^^^^^^^
@@ -195,6 +183,12 @@ been installed on a system folder. To install the Xcode Command Line Tools
 yourself, simply type ``xcode-select --install`` into the Terminal
 (``/Applications/Utilities/Terminal.app``) prompt.
 
+We recommend making use of optimized compilation flags when using :opt:`use_dll` and for this you need to install gcc via Homebrew_::
+  brew install gcc
+
+If you already have installed gcc, Dynare will automatically prefer it for :opt:`use_dll` if the binaries are in /usr/local/bin.
+Otherwise, it will fall back to Clang in /usr/bin/gcc.
+    
 With Octave
 ^^^^^^^^^^^
 
