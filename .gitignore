@@ -159,9 +159,11 @@ dynare++/64-bit/
 # MacOS stuff
 .DS_Store
 macOS/pkg/
-macOS/deps/sources64/
+macOS/deps/arm64/sources64/
+macOS/deps/x86_64/sources64/
 macOS/deps/tarballs/
-macOS/deps/lib64/
+macOS/deps/arm64/lib64/
+macOS/deps/x86_64/lib64/
 
 # Emacs stuff
 scripts/dynare.elc

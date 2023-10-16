@@ -15,22 +15,28 @@
 # You should have received a copy of the GNU General Public License
 # along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-.PHONY: all deps clean-deps clean clean-all build
+ARCHS = arm64 x86_64
+BUILDS = $(addprefix build-, $(ARCHS))
+DEPS = $(addprefix deps-, $(ARCHS))
+CLEAN_DEPS = $(addprefix clean-deps-, $(ARCHS))
+CLEAN_ALL = $(addprefix clean-all-, $(ARCHS))
 
-NTHREADS=$(shell sysctl -n hw.ncpu)
+.PHONY: all $(BUILDS) $(DEPS) clean-pkg $(CLEAN_DEPS) $(CLEAN_ALL) clean-all
 
-all: build
+all: $(BUILDS)
 
-deps:
-	make -C deps -j$(NTHREADS)
+$(BUILDS): build-%: deps-%
+	./build.sh $*
 
-clean-deps:
-	make -C deps clean-all
+$(DEPS): deps-%:
+	make -C deps DEPS_ARCH=$*
 
-clean:
+$(CLEAN_DEPS): clean-deps-%:
+	make -C deps clean-all DEPS_ARCH=$*
+
+clean-pkg:
 	rm -rf pkg
 
-clean-all: clean-deps clean
+$(CLEAN_ALL): clean-all-%: clean-deps-% clean-pkg
 
-build: deps
-	./build.sh
+clean-all: $(CLEAN_ALL)
