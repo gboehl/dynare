@@ -509,7 +509,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                           markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
                           solve_algo, global_temporary_terms, print, GlobalTemporaryTerms,
                           steady_state, block_decomposed, col_x, col_y, symbol_table, verbosity};
-  double *pind;
   bool r;
   vector<int> blocks;
 
@@ -527,7 +526,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       mexErrMsgTxt(feh.message.c_str());
     }
 
-  bool dont_store_a_structure = false;
   if (nlhs > 0)
     {
       if (evaluate)
@@ -549,6 +547,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             {
               int jacob_field_number = 0, jacob_exo_field_number = 0,
                 jacob_exo_det_field_number = 0;
+              bool dont_store_a_structure {false};
               if (!block_structur)
                 {
                   const char *field_names[] = {"g1", "g1_x", "g1_xd"};
@@ -590,14 +589,14 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
           else
             {
               plhs[1] = mxCreateDoubleMatrix(static_cast<int>(row_x), static_cast<int>(col_x), mxREAL);
-              pind = mxGetPr(plhs[1]);
+              double *pind = mxGetPr(plhs[1]);
               for (i = 0; i < row_x*col_x; i++)
                 pind[i] = x[i];
             }
           if (nlhs > 2)
             {
               plhs[2] = mxCreateDoubleMatrix(static_cast<int>(row_y), static_cast<int>(col_y), mxREAL);
-              pind = mxGetPr(plhs[2]);
+              double *pind = mxGetPr(plhs[2]);
               for (i = 0; i < row_y*col_y; i++)
                 pind[i] = y[i];
               if (nlhs > 3)
