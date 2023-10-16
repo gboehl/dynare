@@ -530,14 +530,13 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       if (evaluate)
         {
           vector<double> residual = interprete.get_residual();
-          plhs[0] = mxCreateDoubleMatrix(static_cast<int>(residual.size()/periods),
-                                         periods, mxREAL);
+          plhs[0] = mxCreateDoubleMatrix(residual.size()/periods, periods, mxREAL);
           std::copy(residual.begin(), residual.end(), mxGetPr(plhs[0]));
         }
       else
         {
           int out_periods = extended_path ? max_periods + y_kmin : col_y;
-          plhs[0] = mxCreateDoubleMatrix(static_cast<int>(row_y), out_periods, mxREAL);
+          plhs[0] = mxCreateDoubleMatrix(row_y, out_periods, mxREAL);
           std::copy_n(y, row_y*out_periods, mxGetPr(plhs[0]));
         }
       if (nlhs > 1)
@@ -587,14 +586,14 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             }
           else
             {
-              plhs[1] = mxCreateDoubleMatrix(static_cast<int>(row_x), static_cast<int>(col_x), mxREAL);
+              plhs[1] = mxCreateDoubleMatrix(row_x, col_x, mxREAL);
               double *pind = mxGetPr(plhs[1]);
               for (i = 0; i < row_x*col_x; i++)
                 pind[i] = x[i];
             }
           if (nlhs > 2)
             {
-              plhs[2] = mxCreateDoubleMatrix(static_cast<int>(row_y), static_cast<int>(col_y), mxREAL);
+              plhs[2] = mxCreateDoubleMatrix(row_y, col_y, mxREAL);
               double *pind = mxGetPr(plhs[2]);
               for (i = 0; i < row_y*col_y; i++)
                 pind[i] = y[i];
@@ -602,7 +601,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                 {
                   mxArray *GlobalTemporaryTerms = interprete.get_Temporary_Terms();
                   size_t nb_temp_terms = mxGetM(GlobalTemporaryTerms);
-                  plhs[3] = mxCreateDoubleMatrix(static_cast<int>(nb_temp_terms), 1, mxREAL);
+                  plhs[3] = mxCreateDoubleMatrix(nb_temp_terms, 1, mxREAL);
                   pind = mxGetPr(plhs[3]);
                   double *tt = mxGetPr(GlobalTemporaryTerms);
                   for (i = 0; i < nb_temp_terms; i++)
