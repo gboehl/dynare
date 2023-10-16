@@ -503,7 +503,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     + (steady_state ? "static" : "dynamic") + ".cod"};
   Evaluate evaluator {codfile, steady_state, symbol_table};
 
-  Interpreter interprete {evaluator, params, y, ya, x, steady_yd, direction, static_cast<int>(row_y), row_x,
+  Interpreter interprete {evaluator, params, y, ya, x, steady_yd, direction, static_cast<int>(row_y), static_cast<int>(row_x),
                           periods, y_kmin, y_kmax, maxit_, solve_tolf, y_decal,
                           markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
                           solve_algo, global_temporary_terms, print, GlobalTemporaryTerms,
