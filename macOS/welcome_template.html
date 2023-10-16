@@ -33,7 +33,7 @@
       <p class="bold-text">Troubleshooting installing in /Applications/Dynare</p>
       <p>In versions prior to 5.5, the macOS pkg installer required administrative rights to install Dynare, this is no longer the case. However, if you aim to install Dynare in /Applications/Dynare, you will need to modify the ownership of this folder. To do this, execute the following command in Terminal.app:</p>
       <code>
-      sudo chown -R $USER:staff /Applications/Dynare
+      sudo chown -R "$USER":staff /Applications/Dynare
       </code>
       <p>Alternatively, install Dynare in a different folder or simply delete (or move) /Applications/Dynare before installing Dynare.</p>
     </main>
