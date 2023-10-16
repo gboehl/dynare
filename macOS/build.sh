@@ -18,6 +18,7 @@
 # along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 set -ex
+#exec > >(tee build-logfile.log) 2>&1 # uncomment for debugging
 
 ROOTDIR=$(pwd)/..
 ##
