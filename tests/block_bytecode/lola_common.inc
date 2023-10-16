@@ -153,7 +153,7 @@ NBRYb=NBR_iss/(phii_iss*gdp_iss);
 
 
 @#if block
-model(block, mfs=@{mfs});
+model(block, mfs=@{mfs}, static_mfs=@{mfs});
 @#else
 model;
 @#endif

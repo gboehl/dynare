@@ -1048,8 +1048,8 @@ The model is declared inside a ``model`` block:
 
     .. option:: mfs = INTEGER
 
-        Controls the handling of minimum feedback set of endogenous
-        variables. Only available with option ``block``. Possible
+        Controls the handling of minimum feedback set of endogenous variables
+        for the dynamic model. Only available with option ``block``. Possible
         values:
 
         ``0``
@@ -1063,7 +1063,7 @@ The model is declared inside a ``model`` block:
             normalized (i.e. of the form :math:`x=f(Y)` where
             :math:`x` does not appear in :math:`Y`) are potentially
             recursive variables. All the other variables are forced to
-            belong to the set of feedback variables. (Default)
+            belong to the set of feedback variables.
 
         ``2``
 
@@ -1080,6 +1080,14 @@ The model is declared inside a ``model`` block:
             normalized are potential recursive variables. All the
             other variables are forced to belong to the set of
             feedback variables.
+
+       |br| Default value is ``1``.
+
+    .. option:: static_mfs
+
+        Controls the handling of minimum feedback set of endogenous variables
+        for the static model. Only available with option ``block``. See the
+        ``mfs`` option for the possible values. Default value is ``0``.
 
     .. option:: no_static
 
