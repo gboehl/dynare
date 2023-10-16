@@ -399,20 +399,20 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mexErrMsgTxt("verbosity is not a field of options_");
 
   if (!steady_state)
-    field = mxGetFieldNumber(options_, "simul");
-  else
-    field = mxGetFieldNumber(options_, "steady");
-  mxArray *temporaryfield;
-  if (field >= 0)
-    temporaryfield = mxGetFieldByNumber(options_, 0, field);
+    {
+      field = mxGetFieldNumber(options_, "simul");
+      if (field < 0)
+        mexErrMsgTxt("simul is not a field of options_");
+    }
   else
     {
-      if (!steady_state)
-        mexErrMsgTxt("simul is not a field of options_");
-      else
+      field = mxGetFieldNumber(options_, "steady");
+      if (field < 0)
         mexErrMsgTxt("steady is not a field of options_");
     }
-  field = mxGetFieldNumber(temporaryfield, "maxit");
+  mxArray *temporarystruct {mxGetFieldByNumber(options_, 0, field)};
+
+  field = mxGetFieldNumber(temporarystruct, "maxit");
   if (field < 0)
     {
       if (!steady_state)
@@ -420,7 +420,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       else
         mexErrMsgTxt("maxit is not a field of options_.steady");
     }
-  int maxit_ = static_cast<int>(floor(*mxGetPr(mxGetFieldByNumber(temporaryfield, 0, field))));
+  int maxit_ = static_cast<int>(floor(*mxGetPr(mxGetFieldByNumber(temporarystruct, 0, field))));
+
   field = mxGetFieldNumber(options_, "markowitz");
   if (field < 0)
     mexErrMsgTxt("markowitz is not a field of options_");
@@ -433,43 +434,41 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (field < 0)
     mexErrMsgTxt("stack_solve_algo is not a field of options_");
   int stack_solve_algo = static_cast<int>(*mxGetPr(mxGetFieldByNumber(options_, 0, field)));
-  int solve_algo;
-  double solve_tolf;
 
-  if (steady_state)
-    {
-      int field = mxGetFieldNumber(options_, "solve_algo");
-      if (field >= 0)
-        solve_algo = static_cast<int>(*mxGetPr(mxGetFieldByNumber(options_, 0, field)));
-      else
-        mexErrMsgTxt("solve_algo is not a field of options_");
-      field = mxGetFieldNumber(options_, "solve_tolf");
-      if (field >= 0)
-        solve_tolf = *mxGetPr(mxGetFieldByNumber(options_, 0, field));
-      else
-        mexErrMsgTxt("solve_tolf is not a field of options_");
-    }
-  else
-    {
-      solve_algo = stack_solve_algo;
-      int field = mxGetFieldNumber(options_, "dynatol");
-      mxArray *dynatol;
-      if (field >= 0)
-        dynatol = mxGetFieldByNumber(options_, 0, field);
-      else
-        mexErrMsgTxt("dynatol is not a field of options_");
-      field = mxGetFieldNumber(dynatol, "f");
-      if (field >= 0)
-        solve_tolf = *mxGetPr(mxGetFieldByNumber(dynatol, 0, field));
-      else
-        mexErrMsgTxt("f is not a field of options_.dynatol");
-    }
+  field = mxGetFieldNumber(options_, "solve_algo");
+  if (field < 0)
+    mexErrMsgTxt("solve_algo is not a field of options_");
+  int solve_algo = static_cast<int>(*mxGetPr(mxGetFieldByNumber(options_, 0, field)));
+
+  /* Solver tolerance with respect to the residual. Equals options_.solve_tolf
+     in the static case, or options_.dynatol.f in the dynamic case */
+  double solve_tolf { [options_, steady_state]()
+  {
+    if (steady_state)
+      {
+        int field {mxGetFieldNumber(options_, "solve_tolf")};
+        if (field < 0)
+          mexErrMsgTxt("solve_tolf is not a field of options_");
+        return *mxGetPr(mxGetFieldByNumber(options_, 0, field));
+      }
+    else
+      {
+        int field {mxGetFieldNumber(options_, "dynatol")};
+        if (field < 0)
+          mexErrMsgTxt("dynatol is not a field of options_");
+        mxArray *dynatol {mxGetFieldByNumber(options_, 0, field)};
+        field = mxGetFieldNumber(dynatol, "f");
+        if (field < 0)
+          mexErrMsgTxt("f is not a field of options_.dynatol");
+        return *mxGetPr(mxGetFieldByNumber(dynatol, 0, field));
+      }
+  }() };
+
   field = mxGetFieldNumber(M_, "fname");
-  mxArray *mxa;
-  if (field >= 0)
-    mxa = mxGetFieldByNumber(M_, 0, field);
-  else
+  if (field < 0)
     mexErrMsgTxt("fname is not a field of M_");
+  mxArray *mxa {mxGetFieldByNumber(M_, 0, field)};
+
   size_t buflen = mxGetM(mxa) * mxGetN(mxa) + 1;
   char *fname = static_cast<char *>(mxCalloc(buflen+1, sizeof(char)));
   size_t status = mxGetString(mxa, fname, static_cast<int>(buflen));
