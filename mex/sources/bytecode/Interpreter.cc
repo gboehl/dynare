@@ -28,7 +28,7 @@
 constexpr double BIG = 1.0e+8, SMALL = 1.0e-5;
 
 Interpreter::Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
-                         double *direction_arg, size_t y_size_arg,
+                         double *direction_arg, int y_size_arg,
                          size_t nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
                          int maxit_arg_, double solve_tolf_arg, int y_decal_arg, double markowitz_c_arg,
                          string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,

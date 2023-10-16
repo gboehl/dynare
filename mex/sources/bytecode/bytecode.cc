@@ -55,7 +55,7 @@ Get_Arguments_and_global_variables(int nrhs,
                                    double *xd[], size_t &row_x, size_t &col_x,
                                    double *params[],
                                    double *steady_yd[], size_t &steady_row_y, size_t &steady_col_y,
-                                   unsigned int &periods,
+                                   int &periods,
                                    mxArray **block_structur,
                                    bool &steady_state, bool &block_decomposed,
                                    bool &evaluate, int &block,
@@ -181,7 +181,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   size_t i, row_y = 0, col_y = 0, row_x = 0, col_x = 0;
   size_t steady_row_y, steady_col_y;
   int y_kmin = 0, y_kmax = 0, y_decal = 0;
-  unsigned int periods = 1;
+  int periods {1};
   double *direction;
   bool steady_state = false;
   bool block_decomposed {false};
@@ -503,11 +503,11 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     + (steady_state ? "static" : "dynamic") + ".cod"};
   Evaluate evaluator {codfile, steady_state, symbol_table};
 
-  Interpreter interprete {evaluator, params, y, ya, x, steady_yd, direction, row_y, row_x,
+  Interpreter interprete {evaluator, params, y, ya, x, steady_yd, direction, static_cast<int>(row_y), row_x,
                           periods, y_kmin, y_kmax, maxit_, solve_tolf, y_decal,
                           markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
                           solve_algo, global_temporary_terms, print, GlobalTemporaryTerms,
-                          steady_state, block_decomposed, col_x, col_y, symbol_table, verbosity};
+                          steady_state, block_decomposed, static_cast<int>(col_x), static_cast<int>(col_y), symbol_table, verbosity};
   bool r;
   vector<int> blocks;
 
@@ -531,7 +531,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         {
           vector<double> residual = interprete.get_residual();
           plhs[0] = mxCreateDoubleMatrix(static_cast<int>(residual.size()/periods),
-                                         static_cast<int>(periods), mxREAL);
+                                         periods, mxREAL);
           std::copy(residual.begin(), residual.end(), mxGetPr(plhs[0]));
         }
       else
