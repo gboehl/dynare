@@ -82,6 +82,7 @@ doc/internals/ltxpng
 *.mexw64
 *.mexmaci
 *.mexmaci64
+*.mexmaca64
 /mex/matlab/
 /mex/octave/
 

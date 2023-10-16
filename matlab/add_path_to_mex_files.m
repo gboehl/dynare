@@ -89,6 +89,15 @@ else
             end
         end
     end
+    if strcmp(computer, 'MACA64')
+        tmp = [dynareroot '../mex/matlab/maca64-23.2/'];
+        if exist(tmp, 'dir')
+            mexpath = tmp;
+            if modifypath
+                addpath(mexpath);
+            end
+        end
+    end
     % Add generic MATLAB path (with higher priority than the previous ones)
     if exist('mexpath')
         mexpath = { mexpath; [dynareroot '../mex/matlab/'] };
