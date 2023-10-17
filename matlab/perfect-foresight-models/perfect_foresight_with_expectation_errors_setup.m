@@ -117,6 +117,8 @@ else
                         oo_.pfwee.shocks_info(exo_id, prds, p) = oo_.pfwee.shocks_info(exo_id, prds, p) + M_.learnt_shocks(j).value;
                     case 'multiply'
                         oo_.pfwee.shocks_info(exo_id, prds, p) = oo_.pfwee.shocks_info(exo_id, prds, p) .* M_.learnt_shocks(j).value;
+                    case 'multiply_steady_state'
+                        oo_.pfwee.shocks_info(exo_id, prds, p) = oo_.pfwee.terminal_info(exo_id, p) * M_.learnt_shocks(j).value;
                     otherwise
                         error('Unknown type in M_.learnt_shocks')
                 end

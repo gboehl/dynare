@@ -1,5 +1,5 @@
 /* Tests perfect_foresight_with_expectation_errors_{setup,solver}
-   using the shocks(learnt_in=…) and endval(learnt_in=…) syntax */
+   using the shocks(learnt_in=…), mshocks(learnt_in=…) and endval(learnt_in=…) syntax */
 
 var c k;
 varexo x;
@@ -45,8 +45,14 @@ end;
 
 shocks(learnt_in = 3);
   var x;
-  periods 3 7;
-  values 1.4 1.5;
+  periods 3;
+  values 1.4;
+end;
+
+mshocks(learnt_in = 3);
+  var x;
+  periods 7;
+  values (1.5/1.2); // 1.2 is the terminal steady as anticipated in period 3
 end;
 
 endval(learnt_in = 3);
@@ -106,7 +112,7 @@ oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 
 // Information arriving in period 3 (temp shocks + permanent shock in future)
 oo_.exo_simul(4,1) = 1.4;
-oo_.exo_simul(8,1) = 1.5;
+oo_.exo_simul(8,1) = (1.5/1.3)*1.3;
 oo_.exo_steady_state = 1.1+0.1;
 oo_.exo_simul(end, 1) = oo_.exo_steady_state;
 oo_.steady_state = evaluate_steady_state(oo_.steady_state, oo_.exo_steady_state, M_, options_, true);

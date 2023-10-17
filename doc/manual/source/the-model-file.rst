@@ -4050,7 +4050,7 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
     can be replaced by the ``multiply`` keyword.
 
     The ``overwrite`` option says that this block cancels and replaces previous
-    ``shocks`` blocks that have the same ``learnt_in`` option.
+    ``shocks`` and ``mshocks`` blocks that have the same ``learnt_in`` option.
 
     Note that a ``shocks(learnt_in=1)`` block is equivalent to a regular
     :bck:`shocks` block.
@@ -4123,6 +4123,49 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
 
     Those values will be the realized ones, unless there is another
     ``endval(learnt_in=p)`` block with ``p>3``.
+
+.. block:: mshocks(learnt_in=INTEGER) ;
+           mshocks(learnt_in=INTEGER,overwrite) ;
+
+    |br| The ``mshocks(learnt_in=INTEGER)`` syntax can be used to specify temporary
+    shocks that are learnt in a specific period, specified in a multiplicative
+    way. It should contain one or more occurences of the following group of
+    three lines, with the same semantics as a regular :bck:`mshocks` block::
+
+      var VARIABLE_NAME;
+      periods INTEGER[:INTEGER] [[,] INTEGER[:INTEGER]]...;
+      values DOUBLE | (EXPRESSION)  [[,] DOUBLE | (EXPRESSION) ]...;
+
+    As in the regular :bck:`mshocks` block (without the ``learnt_in`` option),
+    the values are interpreted as a multiplicative factor over the steady state
+    value of the exogenous variable, either the initial steady state as given
+    by ``initval`` if there is no ``endval`` block, or the terminal steady
+    state if there is an ``endval`` block. Note that in the latter case, it is
+    the terminal steady state as anticipated from the period given in the
+    ``learnt_in`` option that is used for the computation.
+
+    The ``overwrite`` option says that this block cancels and replaces previous
+    ``shocks`` and ``mshocks`` blocks that have the same ``learnt_in`` option.
+
+    Note that a ``mshocks(learnt_in=1)`` block is equivalent to a regular
+    :bck:`mshocks` block.
+
+    *Example*
+
+    ::
+
+        mshocks(learnt_in=2);
+          var x;
+          periods 3:4;
+          values 1.1;
+        end;
+
+    This syntax means that from the perspective of period 2, ``x`` in periods 3
+    and 4 is expected to be equal to 1.1 times its steady state. If there is no
+    ``endval`` block, the initial steady state as given by ``initval`` is used;
+    if there is an ``endval`` block, the terminal steady state as anticipated
+    from the perspective of period 2 is used (as specified in the relevant
+    ``endval(learnt_in=…`` block)).
 
 .. command:: perfect_foresight_with_expectation_errors_setup ;
              perfect_foresight_with_expectation_errors_setup (OPTIONS...);
