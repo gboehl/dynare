@@ -4031,7 +4031,7 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
 .. block:: shocks(learnt_in=INTEGER) ;
            shocks(learnt_in=INTEGER,overwrite) ;
 
-    |br| The ``shocks(learnt_in=INTEGER)`` can be used to specify temporary
+    |br| The ``shocks(learnt_in=INTEGER)`` syntax can be used to specify temporary
     shocks that are learnt in a specific period. It should contain one or more
     occurences of the following group of three lines, with the same semantics
     as a regular :bck:`shocks` block::
@@ -4045,9 +4045,9 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
     to the values that were expected from the perspective of the previous
     period. If the new information consists of an addition to the
     previously-anticipated value, the ``values`` keyword can be replaced by the
-    ``add`` keyword; similarly, if the new information consists of an addition to the
-    previously-anticipated value, the ``values`` keyword can be replaced by the
-    ``multiply`` keyword.
+    ``add`` keyword; similarly, if the new information consists of a
+    multiplication of the previously-anticipated value, the ``values`` keyword
+    can be replaced by the ``multiply`` keyword.
 
     The ``overwrite`` option says that this block cancels and replaces previous
     ``shocks`` blocks that have the same ``learnt_in`` option.
