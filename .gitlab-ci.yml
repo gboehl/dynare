@@ -100,16 +100,22 @@ pkg_windows:
     expire_in: 3 days
   needs: [ "build_doc" ]
 
-pkg_macOS:
+pkg_macOS_arm64:
   stage: pkg
   script:
-    - ln -s ~/tarballs macOS/deps/
-    - arch -x86_64 make -C macOS
-  cache:
-    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    - make -C macOS build-arm64
+  tags:
+    - macOS
+  artifacts:
     paths:
-      - macOS/deps/sources64/
-      - macOS/deps/lib64/
+      - macOS/pkg/*
+    expire_in: 3 days
+  needs: [ "build_doc" ]
+
+pkg_macOS_x86_64:
+  stage: pkg
+  script:
+    - make -C macOS build-x86_64
   tags:
     - macOS
   artifacts:
@@ -230,13 +236,13 @@ deploy_release_stable:
     - pkg_source
     - pkg_windows
     - sign_windows
-    - pkg_macOS
+    - pkg_macOS_x86_64
   script:
     - cp *.tar.xz /srv/www.dynare.org/release/source/
     - cp windows/exe-signed/* /srv/www.dynare.org/release/windows/
     - cp windows/7z/* /srv/www.dynare.org/release/windows-7z/
     - cp windows/zip/* /srv/www.dynare.org/release/windows-zip/
-    - cp macOS/pkg/* /srv/www.dynare.org/release/macos/
+    - cp macOS/pkg/*-x86_64.pkg /srv/www.dynare.org/release/macos/
     - ~/update-release-list.sh
     - curl -X POST -F token="$WEBSITE_PIPELINE_TRIGGER_TOKEN" -F ref=master https://git.dynare.org/api/v4/projects/40/trigger/pipeline
 
@@ -251,11 +257,11 @@ deploy_beta_stable:
   dependencies:
     - pkg_source
     - pkg_windows
-    - pkg_macOS
+    - pkg_macOS_x86_64
   script:
     - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/cepremap-comodo-sectigo-code-signing.p12 -n Dynare -i https://www.dynare.org -t http://timestamp.comodoca.com -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
     - cp *.tar.xz /srv/www.dynare.org/beta/source/
     - cp windows/exe/* /srv/www.dynare.org/beta/windows/
     - cp windows/7z/* /srv/www.dynare.org/beta/windows-7z/
     - cp windows/zip/* /srv/www.dynare.org/beta/windows-zip/
-    - cp macOS/pkg/* /srv/www.dynare.org/beta/macos/
+    - cp macOS/pkg/*-x86_64.pkg /srv/www.dynare.org/beta/macos/

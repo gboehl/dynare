@@ -313,7 +313,7 @@ cd /home/$USER/dynare
 git clone --recurse-submodules https://git.dynare.org/dynare/dynare.git unstable
 cd unstable
 autoreconf -si
-./configure --with-slicot=/home/$USER/dynare/slicot --with-matlab=/usr/local/MATLAB/R2020b
+./configure --with-slicot=/home/$USER/dynare/slicot --with-matlab=/usr/local/MATLAB/R2023b
 make -j$(($(nproc)+1)) #rule of thumb: one more than CPUs as shown by e.g. lscpu
 ```
 
@@ -402,117 +402,154 @@ currently not supported.
 
 ## macOS
 Dynare supports both Intel and Apple Silicon chips and is compiled from source
-using a [Homebrew](https://brew.sh/) toolchain. However, if you have a *M1*, *M1 PRO*
-or *M1 MAX* processor, you need to make sure that you are not using the ARM
-Homebrew packages. This is due to the fact that although MATLAB runs natively on
-Intel, it is not yet available in an ARM version and therefore must be run with the
-Intel compatibility layer called Rosetta 2. Accordingly, if you are on Apple Silicon
-you need to compile Dynare under Rosetta 2 as well and use the Intel packages from
-Homebrew. You can check this by e.g. running `which brew` which should point to
-`/usr/local/bin/brew` and not to `/opt/homebrew/bin/brew`. In the steps below, we
-create a temporary alias to ensure that `brew` points to the Intel packages.
+using a [Homebrew](https://brew.sh/) toolchain. If you have an Apple silicon processor
+(*M1/M2 PRO/MAX/ULTRA*), you can compile Dynare both for Intel's `x86_64` (using Rosetta 2)
+as well as Apple's native `arm64` platform by using the corresponding Homebrew packages.
+If you have an Intel chip you can only compile for `x86_64`.
 
-For the following steps open Terminal.app and enter the commands listed below.
+You can check the platform of your current Homebrew installation by e.g. running
+`which brew` which should point to `/opt/homebrew/bin/brew` for `arm64` and to
+`/usr/local/bin/brew` for `x86_64` systems. In the steps below, we
+create a temporary environment variable `BREWDIR` to ensure that the correct packages are used.
+
+The following commands install all requirements and Dynare from source.
+They should be entered at the command prompt in Terminal.app.
 
 
 ### Preparatory work
-
-- Install Rosetta 2 (Apple Silicon only):
-```sh
-softwareupdate --install-rosetta --agree-to-license
-```
 
 - Install the Xcode Command Line Tools:
 ```sh
 xcode-select --install
 ```
 
+- Install Rosetta 2 (Apple Silicon only):
+```sh
+softwareupdate --install-rosetta --agree-to-license
+```
+
 - Install [Homebrew](https://brew.sh/):
-```sh
-arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-The prefix `arch -x86_64` makes sure that you are using Rosetta 2 to install Homebrew.
+Create environment variables for which platform you want to compile for, i.e. either `arm64` or `x86_64`:
 
-- Apple Silicon only: Make a (temporary) alias to run `brew` under Rosetta 2:
+For `arm64` run the following commands:
 ```sh
-alias brew='arch -x86_64 /usr/local/bin/brew'
-which brew
-#brew: aliased to arch -x86_64 /usr/local/bin/brew
+export ARCH=arm64
+export BREWDIR=/opt/homebrew
 ```
 
-- Install required Homebrew packages and link sphinx-doc:
+For `x86_64` run the following commands:
 ```sh
-brew install automake bison flex boost gcc gsl libmatio veclibfort octave sphinx-doc wget
-brew link --force sphinx-doc
+export ARCH=x86_64
+export BREWDIR=/usr/local
 ```
 
-- Install [MacTeX](http://www.tug.org/mactex/index.html) using the universal installer. MacTeX runs natively on both ARM and Intel machines. On Apple Silicon, we need to put `pdflatex` and `bibtex` into our path:
+Install Homebrew using the environment variables:
 ```sh
-ln -s /Library/TeX/texbin/pdflatex /usr/local/bin/pdflatex
-ln -s /Library/TeX/texbin/bibtex /usr/local/bin/bibtex
+arch -$ARCH /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
-Alternatively, if you don’t want to install MacTeX, you should pass the `--disable-doc` flag to the `configure` command below.
+The prefix `arch -arm64` or `arch -x86_64` makes sure that you are installing the correct packages.
+Don't forget to run the displayed commands (**Next steps**) in the terminal to add Homebrew to your PATH.
 
-- Install MATLAB and additional toolboxes. We recommend, but don't require, the following: Optimization, Global Optimization, Statistics and Machine Learning, Econometrics, and Control System. As there is no ARM version of MATLAB yet,  Rosetta 2 will be used on Apple Silicon machines. Don't forget to run MATLAB at least once to make sure you have a valid license.
-
-- Compile and install SLICOT, needed for the `kalman_steady_state` MEX file.
+If you have both Homebrew installations installed, make sure that you are accessing the correct packages by temporarily (!) prepending it to the path:
 ```sh
-mkdir -p $HOME/dynare/slicot
-cd $HOME/dynare/slicot
-wget https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
+export PATH="$BREWDIR/bin:$PATH"
+```
+
+- Install required Homebrew packages:
+```sh
+arch -$ARCH $BREWDIR/bin/brew install automake bison flex boost gcc gsl libmatio veclibfort octave sphinx-doc wget git-lfs
+```
+If you are installing `git-lfs` for the first time, you need to run `git lfs install` once after installing it.
+
+- Link the sphinx-doc package to be able to compile the documentation:
+```sh
+arch -$ARCH $BREWDIR/bin/brew link --force sphinx-doc
+```
+
+- Install [MacTeX](http://www.tug.org/mactex/index.html) using the universal installer, if you want to build the documentation. MacTeX runs natively on both ARM and Intel machines. On Apple Silicon, it is advised to symlink `pdflatex`, `bibtex` and `latexmk` into `/usr/local/bin`:
+```sh
+sudo ln -s /Library/TeX/texbin/pdflatex /usr/local/bin/pdflatex
+sudo ln -s /Library/TeX/texbin/bibtex /usr/local/bin/bibtex
+sudo ln -s /Library/TeX/texbin/latexmk /usr/local/bin/latexmk
+```
+If you don't have admin privileges, then you can also symlink them into `$HOME/.local/bin` and add this folder to your PATH.
+If you don’t want to install MacTeX, you should pass the `--disable-doc` flag to the `configure` command below.
+
+- Install MATLAB and additional toolboxes.
+We recommend, but don't require, the following: Optimization, Global Optimization, Statistics and Machine Learning, Econometrics, and Control System.
+For Apple Silicon: MATLAB offers a native Apple silicon version (arm64) as of version R2023b, see [the official instructions](https://de.mathworks.com/support/requirements/apple-silicon.html) how to install it.
+You can also run the Intel version (x86_64) under Rosetta 2.
+Don't forget to run MATLAB at least once to make sure you have a valid license.
+
+- Create a folder for Dynare and its dependencies
+```sh
+export DYNAREDIR=$HOME/dynare
+```
+
+- Compile and install SLICOT
+```sh
+mkdir -p $DYNAREDIR/slicot/lib
+cd $DYNAREDIR/slicot
+curl -O https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
 tar xf slicot_5.0+20101122.orig.tar.gz
 cd slicot-5.0+20101122
-make -j$(sysctl -n hw.ncpu) FORTRAN=gfortran OPTS="-O2" LOADER=gfortran lib
-cp slicot.a /usr/local/lib/libslicot_pic.a
+make -j$(sysctl -n hw.ncpu) FORTRAN=$BREWDIR/bin/gfortran OPTS="-O2" LOADER=gfortran lib
+cp slicot.a $DYNAREDIR/slicot/lib/libslicot_pic.a
 make clean
-make -j$(sysctl -n hw.ncpu) FORTRAN=gfortran OPTS="-O2 -fdefault-integer-8" LOADER=gfortran lib
-cp slicot.a /usr/local/lib/libslicot64_pic.a
-cd $HOME/dynare
+make -j$(sysctl -n hw.ncpu) FORTRAN=$BREWDIR/bin/gfortran OPTS="-O2 -fdefault-integer-8" LOADER=gfortran lib
+cp slicot.a $DYNAREDIR/slicot/lib/libslicot64_pic.a
 ```
 
 - Compile and install the X-13ARIMA-SEATS Seasonal Adjustment Program
 ```sh
-mkdir -p $HOME/dynare/x13as
-cd $HOME/dynare/x13as
+mkdir -p $DYNAREDIR/x13as
+cd $DYNAREDIR/x13as
 curl -O https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/program-archives/x13as_asciisrc-v1-1-b60.tar.gz
 tar xf x13as_asciisrc-v1-1-b60.tar.gz
 sed -i '' 's/-static//g' makefile.gf
-make -j$(sysctl -n hw.ncpu) -f makefile.gf FC=gfortran LINKER=gfortran FFLAGS="-O2 -std=legacy" PROGRAM=x13as
-cp x13as /usr/local/bin/x13as
-cd ;
+make -j$(sysctl -n hw.ncpu) -f makefile.gf FC=$BREWDIR/bin/gfortran LINKER=$BREWDIR/bin/gcc-13 FFLAGS="-O2 -std=legacy" LDFLAGS=-static-libgcc LIBS="$BREWDIR/lib/gcc/current/libgfortran.a /$BREWDIR/lib/gcc/current/libquadmath.a" PROGRAM=x13as
+sudo cp $DYNAREDIR/x13as/x13as /usr/local/bin/x13as
+cd $DYNAREDIR
 x13as
 ```
+Alternatively, if you don't have admin privileges you can install it into `$HOME/.local/bin` and add this folder to your PATH.
+
 
 ### Compile Dynare from source
 The following commands will download the Dynare source code and compile
 it. They should be entered at the command prompt in Terminal.app from the
-folder where you want Dynare installed. Apple Silicon: make sure `brew`
-points towards `/usr/local/bin/brew` (see above).
+folder where you want Dynare installed.
 
 - Prepare the Dynare sources for the unstable version:
 ```sh
-mkdir -p $HOME/dynare/unstable
-git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git $HOME/dynare/unstable
-cd $HOME/dynare/unstable
-arch -x86_64 autoreconf -si
+git clone --recurse-submodules https://git.dynare.org/Dynare/dynare.git $DYNAREDIR/unstable
+cd $DYNAREDIR/unstable
+arch -$ARCH autoreconf -si
 ```
-You can also choose a specific version of Dynare by checking out the corresponding branch or a specific tag with git.
+If you want a certain version (e.g. 5.x) , then add `--single-branch --branch 5.x` to the git clone command.
 
 - Configure Dynare from the source directory:
 ```sh
-arch -x86_64 ./configure CC=gcc-13 CXX=g++-13 CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib LEX=/usr/local/opt/flex/bin/flex YACC=/usr/local/opt/bison/bin/bison --with-matlab=/Applications/MATLAB_R2021b.app
+arch -$ARCH ./configure CC=gcc-13 CXX=g++-13 CPPFLAGS=-I$BREWDIR/include LDFLAGS=-L$BREWDIR/lib LEX=$BREWDIR/opt/flex/bin/flex YACC=$BREWDIR/opt/bison/bin/bison --with-slicot=$DYNAREDIR/slicot --with-matlab=/Applications/MATLAB_R2023b.app
 ```
 where you need to adapt the path to MATLAB. If you don’t have MATLAB, simply replace `--with-matlab=<…>` by `--disable-matlab`. Check the output of the command whether Dynare is configured for building everything except the internal docs of Dynare, Dynare++ and M2HTML.
 
 - Compile:
 ```sh
-arch -x86_64 make -j$(sysctl -n hw.ncpu)
+arch -$ARCH make -j$(sysctl -n hw.ncpu)
+```
+If no errors occured, you are done. Dynare is now ready to use.
+
+- If you additionally want to compile the documentation run:
+```sh
+arch -$ARCH make pdf html
 ```
 
 ### Optional: pass the full PATH to MATLAB to run system commands
-If you start MATLAB from a terminal, you will get the PATH inherited from the shell. However, when you click on the icon in macOS, you are not running at the terminal: the program is run by launcher, which does not go through a shell login session. You get the system default PATH which includes `/usr/bin:/bin:/usr/sbin:/sbin`, but not `/usr/local/bin` or `$HOME/.local/bin`. So if you want to use system commands like `pdflatex` or `x13as` you should either call them by their full path (e.g `/Library/TeX/texbin/pdflatex`) or append the PATH in MATLAB by running `setenv('PATH', [getenv('PATH') ':/usr/local/bin:$HOME/.local/bin:/Library/TeX/texbin']);`. Alternatively, you can create a `startup.m` file or change the system default PATH in the `/etc/paths` file.
-
-Tested on
-- macOS Monterey 12.1 (Apple M1 Virtual Machine)
-- macOS Monterey 12.1 (MacBook Air Intel)
-- macOS Monterey 12.1 (MacBook Air M1)
+If you start MATLAB from a terminal, you will get the PATH inherited from the shell.
+However, when you click on the application icon in macOS, you are not running at the terminal level:
+the program is run by launcher, which does not go through a shell login session.
+In other words, you get the system default PATH which includes `/usr/bin:/bin:/usr/sbin:/sbin`, but not `/usr/local/bin` or `$HOME/.local/bin`.
+So if you want to use system commands like `pdflatex`, `latexmk` or `x13as` you should either call them by their full path (e.g `/Library/TeX/texbin/pdflatex`)
+or append the PATH by running `setenv('PATH', [getenv('PATH') ':/usr/local/bin:$HOME/.local/bin:/Library/TeX/texbin']);` in your MATLAB command line once,
+e.g. by adding this to your mod file. Alternatively, you can create a `startup.m` file or change the system default PATH in the `/etc/paths` file.

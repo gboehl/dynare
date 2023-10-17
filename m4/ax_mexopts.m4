@@ -1,4 +1,4 @@
-dnl Copyright © 2009-2021 Dynare Team
+dnl Copyright © 2009-2023 Dynare Team
 dnl
 dnl This file is part of Dynare.
 dnl
@@ -56,7 +56,7 @@ case ${MATLAB_ARCH} in
     OPENMP_LDFLAGS="-Wl,-Bstatic,--whole-archive -lgomp -Wl,-Bdynamic,--no-whole-archive"
     ax_mexopts_ok="yes"
     ;;
-  maci64)
+  mac[[ai]]64)
     MATLAB_DEFS="-DNDEBUG"
     MATLAB_CFLAGS="-fno-common -fexceptions"
     MATLAB_CXXFLAGS="-fno-common -fexceptions"
@@ -66,7 +66,7 @@ case ${MATLAB_ARCH} in
     # This -L flag is put here, hence later on the linker command line, so as
     # to avoid linking against the HDF5 shipped by MATLAB (which would
     # otherwise override the HDF5 from Homebrew)
-    MATLAB_LIBS="-L$MATLAB/bin/maci64 -lmx -lmex -lmat -lmwlapack -lmwblas"
+    MATLAB_LIBS="-L$MATLAB/bin/${MATLAB_ARCH} -lmx -lmex -lmat -lmwlapack -lmwblas"
     ax_mexopts_ok="yes"
     ;;
   *)
