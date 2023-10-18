@@ -75,7 +75,7 @@ BasicSymbolTable::getName(SymbolType type, int tsid) const
     {
       mexErrMsgTxt(("Unknown symbol with ID " + to_string(tsid) + " and type " + to_string(static_cast<int>(type))).c_str());
     }
-  exit(EXIT_FAILURE); // Silence GCC warning
+  __builtin_unreachable(); // Silence GCC warning
 }
 
 pair<SymbolType, int>
@@ -89,7 +89,7 @@ BasicSymbolTable::getIDAndType(const string &name) const
     {
       mexErrMsgTxt(("Unknown symbol: " + name).c_str());
     }
-  exit(EXIT_FAILURE); // Silence GCC warning
+  __builtin_unreachable(); // Silence GCC warning
 }
 
 size_t
