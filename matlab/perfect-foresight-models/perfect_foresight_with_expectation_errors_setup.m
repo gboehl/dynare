@@ -78,7 +78,7 @@ else
             if ~M_.det_shocks(i).multiplicative
                 oo_.pfwee.shocks_info(exo_id, prds, 1) = v;
             else
-                oo_.pfwee.shocks_info(exo_id, prds, 1) = oo_.pfwee.shocks_info(exo_id, prds, 1) .* v;
+                oo_.pfwee.shocks_info(exo_id, prds, 1) = oo_.exo_steady_state(exo_id) * v;
             end
         end
     end

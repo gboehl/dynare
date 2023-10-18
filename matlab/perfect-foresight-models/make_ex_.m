@@ -89,13 +89,13 @@ if isfield(M_, 'det_shocks')
             if ~M_.det_shocks(i).multiplicative
                 oo_.exo_simul(k,ivar) = v;
             else
-                oo_.exo_simul(k,ivar) = oo_.exo_simul(k,ivar) .* v;
+                oo_.exo_simul(k,ivar) = oo_.exo_steady_state(ivar) * v;
             end
         else
             if ~M_.det_shocks(i).multiplicative
                 oo_.exo_det_simul(k,ivar) = v;
             else
-                oo_.exo_det_simul(k,ivar) = oo_.exo_det_simul(k,ivar) .* v;
+                oo_.exo_det_simul(k,ivar) = oo_.exo_det_steady_state(ivar) * v;
             end
         end
     end
