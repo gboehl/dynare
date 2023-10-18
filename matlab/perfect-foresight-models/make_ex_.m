@@ -86,16 +86,25 @@ if isfield(M_, 'det_shocks')
         ivar = M_.det_shocks(i).exo_id;
         v = M_.det_shocks(i).value;
         if ~M_.det_shocks(i).exo_det
-            if ~M_.det_shocks(i).multiplicative
-                oo_.exo_simul(k,ivar) = v;
-            else
-                oo_.exo_simul(k,ivar) = oo_.exo_steady_state(ivar) * v;
+            switch M_.det_shocks(i).type
+                case 'level'
+                    oo_.exo_simul(k,ivar) = v;
+                case 'multiply_steady_state'
+                    oo_.exo_simul(k,ivar) = oo_.exo_steady_state(ivar) * v;
+                case 'multiply_initial_steady_state'
+                    if isempty(ex0_)
+                        error('Option relative_to_initval of mshocks block cannot be used without an endval block')
+                    end
+                    oo_.exo_simul(k,ivar) = ex0_(ivar) * v;
             end
         else
-            if ~M_.det_shocks(i).multiplicative
-                oo_.exo_det_simul(k,ivar) = v;
-            else
-                oo_.exo_det_simul(k,ivar) = oo_.exo_det_steady_state(ivar) * v;
+            switch M_.det_shocks(i).type
+                case 'level'
+                    oo_.exo_det_simul(k,ivar) = v;
+                case 'multiply_steady_state'
+                    oo_.exo_det_simul(k,ivar) = oo_.exo_det_steady_state(ivar) * v;
+                case 'multiply_initial_steady_state'
+                    error('Option relative_to_initval of mshocks block cannot be used with a deterministic exogenous variable')
             end
         end
     end

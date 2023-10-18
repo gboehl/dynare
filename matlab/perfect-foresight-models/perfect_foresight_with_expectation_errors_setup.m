@@ -75,10 +75,16 @@ else
         exo_id = M_.det_shocks(i).exo_id;
         v = M_.det_shocks(i).value;
         if ~M_.det_shocks(i).exo_det
-            if ~M_.det_shocks(i).multiplicative
-                oo_.pfwee.shocks_info(exo_id, prds, 1) = v;
-            else
-                oo_.pfwee.shocks_info(exo_id, prds, 1) = oo_.exo_steady_state(exo_id) * v;
+            switch M_.det_shocks(i).type
+                case 'level'
+                    oo_.pfwee.shocks_info(exo_id, prds, 1) = v;
+                case 'multiply_steady_state'
+                    oo_.pfwee.shocks_info(exo_id, prds, 1) = oo_.exo_steady_state(exo_id) * v;
+                case 'multiply_initial_steady_state'
+                    if isempty(ex0_)
+                        error('Option relative_to_initval of mshocks block cannot be used without an endval block')
+                    end
+                    oo_.pfwee.shocks_info(exo_id, prds, 1) = ex0_(exo_id) * v;
             end
         end
     end

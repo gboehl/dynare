@@ -2738,14 +2738,19 @@ blocks.
         forecast;
 
 .. block:: mshocks ;
-           mshocks(overwrite);
+           mshocks (OPTIONS...);
 
     |br| The purpose of this block is similar to that of the
     ``shocks`` block for deterministic shocks, except that the numeric
     values given will be interpreted in a multiplicative way. For
     example, if a value of ``1.05`` is given as shock value for some
-    exogenous at some date, it means 5% above its steady state value
-    (as given by the last ``initval`` or ``endval`` block).
+    exogenous at some date, it means 5% above its steady state value.
+
+    If no ``endval`` block is present, the steady state as specified in the
+    ``initval`` block is used as the basis for the multiplication. If an
+    ``endval`` block is present, the terminal steady state as specified in the
+    ``endval`` block will be used as the basis for the multiplication (unless
+    the ``relative_to_initval`` option is passed).
 
     The syntax is the same as ``shocks`` in a deterministic context.
 
@@ -2756,7 +2761,17 @@ blocks.
     * on deterministic exogenous variables with a non-zero steady
       state, in a stochastic setup.
 
-    See above for the meaning of the ``overwrite`` option.
+    *Options*
+
+    .. option:: overwrite
+
+       Same meaning as in the :bck:`shocks` block.
+
+    .. option:: relative_to_initval
+
+       If an ``endval`` block is present, the initial steady state as specified
+       in the ``initval`` block will be used as the basis for multiplication
+       (instead of the terminal steady state).
 
 .. block:: heteroskedastic_shocks ;
            heteroskedastic_shocks(overwrite);
@@ -4125,7 +4140,7 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
     ``endval(learnt_in=p)`` block with ``p>3``.
 
 .. block:: mshocks(learnt_in=INTEGER) ;
-           mshocks(learnt_in=INTEGER,overwrite) ;
+           mshocks(learnt_in=INTEGER,OPTIONS...) ;
 
     |br| The ``mshocks(learnt_in=INTEGER)`` syntax can be used to specify temporary
     shocks that are learnt in a specific period, specified in a multiplicative
@@ -4138,17 +4153,26 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
 
     As in the regular :bck:`mshocks` block (without the ``learnt_in`` option),
     the values are interpreted as a multiplicative factor over the steady state
-    value of the exogenous variable, either the initial steady state as given
-    by ``initval`` if there is no ``endval`` block, or the terminal steady
-    state if there is an ``endval`` block. Note that in the latter case, it is
-    the terminal steady state as anticipated from the period given in the
-    ``learnt_in`` option that is used for the computation.
+    value of the exogenous variable (the latter being taken either from the
+    ``initval`` or ``endval``, see :bck:`mshocks` for the details).
 
-    The ``overwrite`` option says that this block cancels and replaces previous
-    ``shocks`` and ``mshocks`` blocks that have the same ``learnt_in`` option.
+    If the terminal steady state as specified in the ``endval`` block is used
+    as a basis for the multiplication, its value as anticipated from the period
+    given in the ``learnt_in`` option will be used.
 
     Note that a ``mshocks(learnt_in=1)`` block is equivalent to a regular
     :bck:`mshocks` block.
+
+    *Options*
+
+    .. option:: overwrite
+
+       This block cancels and replaces previous ``shocks`` and ``mshocks``
+       blocks that have the same ``learnt_in`` option.
+
+    .. option:: relative_to_initval
+
+       Same meaning as in the regular :bck:`mshocks` block.
 
     *Example*
 

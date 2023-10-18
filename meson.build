@@ -1265,6 +1265,7 @@ mod_and_m_tests = [
   { 'test' : [ 'deterministic_simulations/ramst_a.mod' ] },
   { 'test' : [ 'deterministic_simulations/ramst_mshocks.mod' ] },
   { 'test' : [ 'deterministic_simulations/ramst_mshocks_vec.mod' ] },
+  { 'test' : [ 'deterministic_simulations/ramst_mshocks_relative_to_initval.mod' ] },
   { 'test' : [ 'deterministic_simulations/predetermined_variables.mod' ] },
   { 'test' : [ 'deterministic_simulations/histval_det.mod' ] },
   { 'test' : [ 'deterministic_simulations/ramst_vec.mod' ] },

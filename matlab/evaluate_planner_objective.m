@@ -396,8 +396,8 @@ if ~isempty(M_.det_shocks)
             'evaluate_planner_objective: Note that they will be ignored.\n'])
     end
     shock_indices=find(periods==1);
-    if any([M_.det_shocks(shock_indices).multiplicative])
-        fprintf(['\nevaluate_planner_objective: Shock values need to be specified as additive.\n'])
+    if any(cellfun(@(x) ~strcmp(x, 'level'), { M_.det_shocks(shock_indices).type }))
+        fprintf(['\nevaluate_planner_objective: Shock values need to be specified in level.\n'])
     end
     u([M_.det_shocks(shock_indices).exo_id])=[M_.det_shocks(shock_indices).value];
 else
