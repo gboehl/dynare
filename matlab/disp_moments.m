@@ -28,6 +28,7 @@ function oo_=disp_moments(y,var_list,M_,options_,oo_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+zero_moments_tolerance=1e-10;
 warning_old_state = warning;
 warning off
 
@@ -68,7 +69,7 @@ if ~all(M_.H==0)
         y_ME_only_filtered=get_filtered_time_series(y_ME_only,mean(y_ME_only),options_);
         s2_ME = mean(y_ME.*y_ME);
         s_ME = sqrt(s2_ME);
-        zero_variance_ME_var_index=index_subset(abs(s_ME')<options_.zero_moments_tolerance);
+        zero_variance_ME_var_index=index_subset(abs(s_ME')<zero_moments_tolerance);
     end
 end
 
@@ -85,7 +86,7 @@ oo_.var = y'*y/size(y,1);
 oo_.skewness = (mean(y.^3)./s2.^1.5)';
 oo_.kurtosis = (mean(y.^4)./(s2.*s2)-3)';
 
-zero_variance_var_index=find(abs(s)<options_.zero_moments_tolerance);
+zero_variance_var_index=find(abs(s)<zero_moments_tolerance);
 oo_.skewness(zero_variance_var_index)=NaN;
 oo_.kurtosis(zero_variance_var_index)=NaN;
 s(zero_variance_var_index)=0;
