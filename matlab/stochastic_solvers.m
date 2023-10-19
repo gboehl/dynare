@@ -85,6 +85,9 @@ if M_.maximum_endo_lead==0 && M_.exo_det_nbr~=0
 end
 
 if options_.k_order_solver
+    if options_.bytecode
+        warning('Option "bytecode" is ignored when computing perturbation solution at higher order')
+    end
     orig_order = options_.order;
     options_.order = local_order;
     dr = set_state_space(dr,M_);
@@ -112,12 +115,11 @@ if local_order == 1
     end
 elseif local_order == 2
     if (options_.bytecode)
-        error('Option "bytecode" is incompatible with order = 2')
-    else
-        [~,jacobia_,hessian1] = feval([M_.fname '.dynamic'],z(iyr0),...
-                                      exo_simul, ...
-                                      M_.params, dr.ys, it_);
+        warning('Option "bytecode" is ignored when computing perturbation solution at order = 2')
     end
+    [~,jacobia_,hessian1] = feval([M_.fname '.dynamic'],z(iyr0),...
+                                  exo_simul, ...
+                                  M_.params, dr.ys, it_);
     [infrow,infcol]=find(isinf(hessian1));
     if options_.debug
         if ~isempty(infrow)
