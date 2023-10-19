@@ -169,7 +169,7 @@ private:
   pair<bool, vector<int>> MainLoop(const string &bin_basename, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local);
   void Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditional_local_type &vector_table_conditional_local);
   void Simulate_Newton_One_Boundary(bool forward);
-  void fixe_u(double **u, int u_count_int, int max_lag_plus_max_lead_plus_1);
+  void fixe_u();
   void Read_SparseMatrix(const string &file_name, int Size, int periods, int y_kmin, int y_kmax, bool two_boundaries, int stack_solve_algo, int solve_algo);
   void Singular_display(int block, int Size);
   void End_Solver();

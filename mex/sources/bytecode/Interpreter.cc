@@ -290,7 +290,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
     case BlockSimulationType::solveForwardComplete:
       if (initialization)
         {
-          fixe_u(&u, u_count_int, u_count_int);
+          fixe_u();
           Read_SparseMatrix(bin_base_name, size, 1, 0, 0, false, stack_solve_algo, solve_algo);
         }
 #ifdef DEBUG
@@ -385,7 +385,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
     case BlockSimulationType::solveBackwardComplete:
       if (initialization)
         {
-          fixe_u(&u, u_count_int, u_count_int);
+          fixe_u();
           Read_SparseMatrix(bin_base_name, size, 1, 0, 0, false, stack_solve_algo, solve_algo);
         }
       r = static_cast<double *>(mxMalloc(size*sizeof(double)));
@@ -420,7 +420,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
     case BlockSimulationType::solveTwoBoundariesComplete:
       if (initialization)
         {
-          fixe_u(&u, u_count_int, u_count_int);
+          fixe_u();
           Read_SparseMatrix(bin_base_name, size, periods, y_kmin, y_kmax, true, stack_solve_algo, solve_algo);
         }
       u_count = u_count_int*(periods+y_kmax+y_kmin);
@@ -495,7 +495,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
         evaluate_a_block(true, single_block, bin_base_name);
       else
         {
-          fixe_u(&u, u_count_int, u_count_int);
+          fixe_u();
           Read_SparseMatrix(bin_base_name, size, 1, 0, 0, false, stack_solve_algo, solve_algo);
         }
       Per_u_ = 0;
@@ -517,7 +517,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
         evaluate_a_block(true, single_block, bin_base_name);
       else
         {
-          fixe_u(&u, u_count_int, u_count_int);
+          fixe_u();
           Read_SparseMatrix(bin_base_name, size, 1, 0, 0, false, stack_solve_algo, solve_algo);
         }
       Per_u_ = 0;
@@ -546,7 +546,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
         evaluate_a_block(true, single_block, bin_base_name);
       else
         {
-          fixe_u(&u, u_count_int, u_count_int);
+          fixe_u();
           Read_SparseMatrix(bin_base_name, size, periods, y_kmin, y_kmax, true, stack_solve_algo, solve_algo);
         }
       u_count = u_count_int*(periods+y_kmax+y_kmin);
@@ -5021,18 +5021,18 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
 }
 
 void
-Interpreter::fixe_u(double **u, int u_count_int, int max_lag_plus_max_lead_plus_1)
+Interpreter::fixe_u()
 {
   u_count = u_count_int * periods;
   u_count_alloc = 2*u_count;
 #ifdef DEBUG
   mexPrintf("fixe_u : alloc(%d double)\n", u_count_alloc);
 #endif
-  *u = static_cast<double *>(mxMalloc(u_count_alloc*sizeof(double)));
-  test_mxMalloc(*u, __LINE__, __FILE__, __func__, u_count_alloc*sizeof(double));
+  u = static_cast<double *>(mxMalloc(u_count_alloc*sizeof(double)));
+  test_mxMalloc(u, __LINE__, __FILE__, __func__, u_count_alloc*sizeof(double));
 #ifdef DEBUG
-  mexPrintf("*u=%d\n", *u);
+  mexPrintf("u=%d\n", u);
 #endif
-  fill_n(*u, u_count_alloc, 0);
-  u_count_init = max_lag_plus_max_lead_plus_1;
+  fill_n(u, u_count_alloc, 0);
+  u_count_init = u_count_int;
 }
