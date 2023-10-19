@@ -1298,8 +1298,8 @@ Interpreter::Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM, boo
   u_count = u_count1;
 }
 
-void
-Interpreter::Init_Matlab_Sparse_Simple(int Size, const map<tuple<int, int, int>, int> &IM, const mxArray *A_m, const mxArray *b_m, bool &zero_solution, const mxArray *x0_m) const
+bool
+Interpreter::Init_Matlab_Sparse_Simple(const mxArray *A_m, const mxArray *b_m, const mxArray *x0_m) const
 {
   double *b = mxGetPr(b_m);
   if (!b)
@@ -1325,20 +1325,17 @@ Interpreter::Init_Matlab_Sparse_Simple(int Size, const map<tuple<int, int, int>,
   unsigned int NZE = 0;
   int last_var = 0;
   double cum_abs_sum = 0;
-  for (int i = 0; i < Size; i++)
+  for (int i = 0; i < size; i++)
     {
       b[i] = u[i];
       cum_abs_sum += fabs(b[i]);
       x0[i] = y[i];
     }
-  if (cum_abs_sum < 1e-20)
-    zero_solution = true;
-  else
-    zero_solution = false;
+  bool zero_solution {cum_abs_sum < 1e-20};
 
   Aj[0] = 0;
   last_var = 0;
-  for (auto &[key, index] : IM)
+  for (auto &[key, index] : IM_i)
     {
       auto &[var, ignore, eq] = key;
       if (var != last_var)
@@ -1347,10 +1344,10 @@ Interpreter::Init_Matlab_Sparse_Simple(int Size, const map<tuple<int, int, int>,
           last_var = var;
         }
 #ifdef DEBUG
-      if (index < 0 || index >= u_count_alloc || index > Size + Size*Size)
+      if (index < 0 || index >= u_count_alloc || index > size + size*size)
         throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(index)
                              + ") out of range for u vector max = "
-                             + to_string(Size+Size*Size)
+                             + to_string(size+size*size)
                              + " allocated = " + to_string(u_count_alloc)};
       if (NZE >= max_nze)
         throw FatalException{"In Init_Matlab_Sparse_Simple, exceeds the capacity of A_m sparse matrix"};
@@ -1359,10 +1356,10 @@ Interpreter::Init_Matlab_Sparse_Simple(int Size, const map<tuple<int, int, int>,
       Ai[NZE] = eq;
       NZE++;
 #ifdef DEBUG
-      if (eq < 0 || eq >= Size)
+      if (eq < 0 || eq >= size)
         throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(eq)
                              + ") out of range for b vector"};
-      if (var < 0 || var >= Size)
+      if (var < 0 || var >= size)
         throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(var)
                              + ") out of range for index_vara vector"};
       if (index_vara[var] < 0 || index_vara[var] >= y_size)
@@ -1372,7 +1369,9 @@ Interpreter::Init_Matlab_Sparse_Simple(int Size, const map<tuple<int, int, int>,
                              +" (0)"};
 #endif
     }
-  Aj[Size] = NZE;
+  Aj[size] = NZE;
+
+  return zero_solution;
 }
 
 void
@@ -4603,7 +4602,7 @@ Interpreter::Simulate_One_Boundary(int block_num, int y_size, int size)
           A_m = mxCreateSparse(size, size, min(static_cast<int>(IM_i.size()*2), size * size), mxREAL);
           if (!A_m)
             throw FatalException{"In Simulate_One_Boundary, can't allocate A_m matrix"};
-          Init_Matlab_Sparse_Simple(size, IM_i, A_m, b_m, zero_solution, x0_m);
+          zero_solution = Init_Matlab_Sparse_Simple(A_m, b_m, x0_m);
         }
       else
         {

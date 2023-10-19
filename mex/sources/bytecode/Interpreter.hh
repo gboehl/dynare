@@ -178,7 +178,7 @@ private:
   void Init_GE();
   void Init_Matlab_Sparse(mxArray *A_m, mxArray *b_m, const mxArray *x0_m) const;
   tuple<SuiteSparse_long *, SuiteSparse_long *, double *, double *> Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditional_local_type &vector_table_conditional_local) const;
-  void Init_Matlab_Sparse_Simple(int Size, const map<tuple<int, int, int>, int> &IM, const mxArray *A_m, const mxArray *b_m, bool &zero_solution, const mxArray *x0_m) const;
+  bool Init_Matlab_Sparse_Simple(const mxArray *A_m, const mxArray *b_m, const mxArray *x0_m) const;
   void Init_UMFPACK_Sparse_Simple(int Size, const map<tuple<int, int, int>, int> &IM, SuiteSparse_long **Ap, SuiteSparse_long **Ai, double **Ax, double **b, bool &zero_solution, const mxArray *x0_m) const;
   void Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM, bool &zero_solution);
   void End_GE();
