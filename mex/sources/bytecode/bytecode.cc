@@ -442,7 +442,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   /* Solver tolerance with respect to the residual. Equals options_.solve_tolf
      in the static case, or options_.dynatol.f in the dynamic case */
-  double solve_tolf { [options_, steady_state]()
+  double solve_tolf { [options_, steady_state]
   {
     if (steady_state)
       {
