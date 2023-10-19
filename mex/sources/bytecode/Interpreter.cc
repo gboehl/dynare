@@ -668,7 +668,7 @@ Interpreter::check_for_controlled_exo_validity(int current_block, const vector<s
 pair<bool, vector<int>>
 Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local)
 {
-  initializeTemporaryTerms(global_temporary_terms);
+  initializeTemporaryTerms();
 
   int nb_blocks {evaluator.get_block_number()};
 
@@ -930,7 +930,7 @@ Interpreter::compute_blocks(const string &file_name, bool evaluate, int block)
 }
 
 void
-Interpreter::initializeTemporaryTerms(bool global_temporary_terms)
+Interpreter::initializeTemporaryTerms()
 {
   int ntt { evaluator.getNumberOfTemporaryTerms() };
 

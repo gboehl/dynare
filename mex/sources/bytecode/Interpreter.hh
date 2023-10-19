@@ -161,7 +161,7 @@ private:
   void solve_simple_one_periods();
   void solve_simple_over_periods(bool forward);
   void compute_complete_2b();
-  void initializeTemporaryTerms(bool global_temporary_terms);
+  void initializeTemporaryTerms();
   void evaluate_a_block(bool initialization, bool single_block, const string &bin_base_name);
   int simulate_a_block(const vector_table_conditional_local_type &vector_table_conditional_local, bool single_block, const string &bin_base_name);
   string elastic(string str, unsigned int len, bool left);
