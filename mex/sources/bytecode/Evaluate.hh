@@ -154,7 +154,7 @@ public:
   }
 
   int
-  get_block_number() const
+  getTotalBlockNumber() const
   {
     return nb_blocks;
   }

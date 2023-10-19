@@ -670,7 +670,7 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
 {
   initializeTemporaryTerms();
 
-  int nb_blocks {evaluator.get_block_number()};
+  int nb_blocks {evaluator.getTotalBlockNumber()};
 
   if (block >= nb_blocks)
     throw FatalException {"Interpreter::MainLoop: Input argument block = " + to_string(block+1)
