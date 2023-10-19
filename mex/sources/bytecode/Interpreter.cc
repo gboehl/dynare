@@ -584,7 +584,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
                 copy_n(y_save, y_size*(periods+y_kmax+y_kmin), y);
               u_count = u_count_saved;
               int prev_iter = iter;
-              Simulate_Newton_Two_Boundaries(block_num, y_size, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, vector_table_conditional_local);
+              Simulate_Newton_Two_Boundaries(cvg, vector_table_conditional_local);
               iter++;
               if (iter > prev_iter)
                 {
@@ -608,7 +608,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
           compute_complete_2b();
 
           cvg = false;
-          Simulate_Newton_Two_Boundaries(block_num, y_size, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, vector_table_conditional_local);
+          Simulate_Newton_Two_Boundaries(cvg, vector_table_conditional_local);
           max_res = 0; max_res_idx = 0;
         }
       slowc = 1; // slowc is modified when stack_solve_algo=4, so restore it
@@ -4783,7 +4783,7 @@ Interpreter::preconditioner_print_out(string s, int preconditioner, bool ss)
 }
 
 void
-Interpreter::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax,int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, const vector_table_conditional_local_type &vector_table_conditional_local)
+Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditional_local_type &vector_table_conditional_local)
 {
   double top = 0.5;
   double bottom = 0.1;
@@ -4806,7 +4806,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, in
           for (int j = 0; j < y_size; j++)
             {
               bool select = false;
-              for (int i = 0; i < Size; i++)
+              for (int i = 0; i < size; i++)
                 if (j == index_vara[i])
                   {
                     select = true;
@@ -4824,7 +4824,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, in
             throw FatalException{"In Simulate_Newton_Two_Boundaries, the initial values of endogenous variables are too far from the solution. Change them!"};
           else
             throw FatalException{"In Simulate_Newton_Two_Boundaries, dynare cannot improve the simulation in block "
-                                 + to_string(blck+1) + " at time " + to_string(it_+1)
+                                 + to_string(block_num+1) + " at time " + to_string(it_+1)
                                  + " (variable " + to_string(index_vara[max_res_idx]+1)
                                  + " = " + to_string(max_res) + ")"};
         }
@@ -4958,44 +4958,44 @@ Interpreter::Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, in
   else
     {
       if (stack_solve_algo == 5)
-        Init_GE(periods, y_kmin, y_kmax, Size, IM_i);
+        Init_GE(periods, y_kmin, y_kmax, size, IM_i);
       else
         {
-          x0_m = mxCreateDoubleMatrix(periods*Size, 1, mxREAL);
+          x0_m = mxCreateDoubleMatrix(periods*size, 1, mxREAL);
           if (!x0_m)
             throw FatalException{"In Simulate_Newton_Two_Boundaries, can't allocate x0_m vector"};
           if (stack_solve_algo == 0 || stack_solve_algo == 4)
-            Init_UMFPACK_Sparse(periods, y_kmin, y_kmax, Size, IM_i, &Ap, &Ai, &Ax, &b, x0_m, vector_table_conditional_local, blck);
+            Init_UMFPACK_Sparse(periods, y_kmin, y_kmax, size, IM_i, &Ap, &Ai, &Ax, &b, x0_m, vector_table_conditional_local, block_num);
           else
             {
-              b_m = mxCreateDoubleMatrix(periods*Size, 1, mxREAL);
+              b_m = mxCreateDoubleMatrix(periods*size, 1, mxREAL);
               if (!b_m)
                 throw FatalException{"In Simulate_Newton_Two_Boundaries, can't allocate b_m vector"};
               if (stack_solve_algo != 0 && stack_solve_algo != 4)
                 {
-                  A_m = mxCreateSparse(periods*Size, periods*Size, IM_i.size()* periods*2, mxREAL);
+                  A_m = mxCreateSparse(periods*size, periods*size, IM_i.size()* periods*2, mxREAL);
                   if (!A_m)
                     throw FatalException{"In Simulate_Newton_Two_Boundaries, can't allocate A_m matrix"};
                 }
-              Init_Matlab_Sparse(periods, y_kmin, y_kmax, Size, IM_i, A_m, b_m, x0_m);
+              Init_Matlab_Sparse(periods, y_kmin, y_kmax, size, IM_i, A_m, b_m, x0_m);
             }
         }
       if (stack_solve_algo == 0 || stack_solve_algo == 4)
         {
-          Solve_LU_UMFPack(Ap, Ai, Ax, b, Size * periods, Size, slowc, true, 0, vector_table_conditional_local);
+          Solve_LU_UMFPack(Ap, Ai, Ax, b, size * periods, size, slowc, true, 0, vector_table_conditional_local);
           mxDestroyArray(x0_m);
         }
       else if (stack_solve_algo == 1 || stack_solve_algo == 6)
         {
-          Solve_Matlab_Relaxation(A_m, b_m, Size, slowc);
+          Solve_Matlab_Relaxation(A_m, b_m, size, slowc);
           mxDestroyArray(x0_m);
         }
       else if (stack_solve_algo == 2)
-        Solve_Matlab_GMRES(A_m, b_m, Size, slowc, blck, true, 0, x0_m);
+        Solve_Matlab_GMRES(A_m, b_m, size, slowc, block_num, true, 0, x0_m);
       else if (stack_solve_algo == 3)
-        Solve_Matlab_BiCGStab(A_m, b_m, Size, slowc, blck, true, 0, x0_m, 1);
+        Solve_Matlab_BiCGStab(A_m, b_m, size, slowc, block_num, true, 0, x0_m, 1);
       else if (stack_solve_algo == 5)
-        Solve_ByteCode_Symbolic_Sparse_GaussianElimination(Size, symbolic, blck);
+        Solve_ByteCode_Symbolic_Sparse_GaussianElimination(size, symbolic, block_num);
     }
   using FloatSeconds = chrono::duration<double, chrono::seconds::period>;
   auto t2 { chrono::high_resolution_clock::now() };
