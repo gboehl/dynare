@@ -164,7 +164,7 @@ private:
   void initializeTemporaryTerms();
   void evaluate_a_block(bool initialization, bool single_block, const string &bin_base_name);
   int simulate_a_block(const vector_table_conditional_local_type &vector_table_conditional_local, bool single_block, const string &bin_base_name);
-  string elastic(string str, unsigned int len, bool left);
+  static string elastic(string str, unsigned int len, bool left);
   void check_for_controlled_exo_validity(int current_block, const vector<s_plan> &sconstrained_extended_path);
   pair<bool, vector<int>> MainLoop(const string &bin_basename, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local);
   void Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax, int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, const vector_table_conditional_local_type &vector_table_conditional_local);
