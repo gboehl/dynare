@@ -1480,37 +1480,37 @@ Interpreter::find_int_date(const vector<pair<int, double>> &per_value, int value
     return -1;
 }
 
-void
-Interpreter::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Size, const map<tuple<int, int, int>, int> &IM, SuiteSparse_long **Ap, SuiteSparse_long **Ai, double **Ax, double **b, const mxArray *x0_m, const vector_table_conditional_local_type &vector_table_conditional_local, int block_num) const
+tuple<SuiteSparse_long *, SuiteSparse_long *, double *, double *>
+Interpreter::Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditional_local_type &vector_table_conditional_local) const
 {
-  int n = periods * Size;
-  *b = static_cast<double *>(mxMalloc(n * sizeof(double)));
-  if (!(*b))
+  int n = periods * size;
+  double *b = static_cast<double *>(mxMalloc(n * sizeof(double)));
+  if (!b)
     throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve b vector"};
   double *x0 = mxGetPr(x0_m);
   if (!x0)
     throw FatalException{"In Init_UMFPACK_Sparse_Simple, can't retrieve x0 vector"};
-  *Ap = static_cast<SuiteSparse_long *>(mxMalloc((n+1) * sizeof(SuiteSparse_long)));
-  test_mxMalloc(*Ap, __LINE__, __FILE__, __func__, (n+1) * sizeof(SuiteSparse_long));
-  if (!(*Ap))
+  SuiteSparse_long *Ap = static_cast<SuiteSparse_long *>(mxMalloc((n+1) * sizeof(SuiteSparse_long)));
+  test_mxMalloc(Ap, __LINE__, __FILE__, __func__, (n+1) * sizeof(SuiteSparse_long));
+  if (!Ap)
     throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ap index vector"};
-  size_t prior_nz = IM.size() * periods;
-  *Ai = static_cast<SuiteSparse_long *>(mxMalloc(prior_nz * sizeof(SuiteSparse_long)));
-  test_mxMalloc(*Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
-  if (!(*Ai))
+  size_t prior_nz = IM_i.size() * periods;
+  SuiteSparse_long *Ai = static_cast<SuiteSparse_long *>(mxMalloc(prior_nz * sizeof(SuiteSparse_long)));
+  test_mxMalloc(Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
+  if (!Ai)
     throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ai index vector"};
-  *Ax = static_cast<double *>(mxMalloc(prior_nz * sizeof(double)));
-  test_mxMalloc(*Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
-  if (!(*Ax))
+  double *Ax = static_cast<double *>(mxMalloc(prior_nz * sizeof(double)));
+  test_mxMalloc(Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
+  if (!Ax)
     throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve Ax matrix"};
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
   unsigned int NZE = 0;
   int last_var = 0;
-  for (int i = 0; i < periods*Size; i++)
+  for (int i = 0; i < periods*size; i++)
     {
-      (*b)[i] = 0;
-      x0[i] = y[index_vara[Size*y_kmin+i]];
+      b[i] = 0;
+      x0[i] = y[index_vara[size*y_kmin+i]];
     }
   double *jacob_exo;
   int row_x = 0;
@@ -1534,22 +1534,22 @@ Interpreter::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Size, 
   bool fliped = false;
   bool fliped_exogenous_derivatives_updated = false;
   int flip_exo;
-  (*Ap)[0] = 0;
+  Ap[0] = 0;
   for (int t = 0; t < periods; t++)
     {
       last_var = -1;
       int var = 0;
-      for (auto &[key, value] : IM)
+      for (auto &[key, value] : IM_i)
         {
           var = get<0>(key);
-          int eq = get<2>(key)+Size*t;
+          int eq = get<2>(key)+size*t;
           int lag = -get<1>(key);
           int index = value + (t-lag) * u_count_init;
           if (var != last_var)
             {
-              (*Ap)[1+last_var + t * Size] = NZE;
+              Ap[1+last_var + t * size] = NZE;
               last_var = var;
-              if (var < Size*(periods+y_kmax))
+              if (var < size*(periods+y_kmax))
                 {
                   if (t == 0 && vector_table_conditional_local.size())
                     {
@@ -1564,7 +1564,7 @@ Interpreter::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Size, 
             }
           if (fliped)
             {
-              if (t == 0 && var < (periods+y_kmax)*Size
+              if (t == 0 && var < (periods+y_kmax)*size
                   && lag == 0 && vector_table_conditional_local.size())
                 {
                   flip_exo = vector_table_conditional_local[var].var_exo;
@@ -1578,23 +1578,23 @@ Interpreter::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Size, 
                         {
                           if (jacob_exo[k + row_x*flip_exo] != 0)
                             {
-                              (*Ax)[NZE] = jacob_exo[k + row_x*flip_exo];
-                              (*Ai)[NZE] = k;
+                              Ax[NZE] = jacob_exo[k + row_x*flip_exo];
+                              Ai[NZE] = k;
                               NZE++;
 
 #ifdef DEBUG
-                              if (local_index < 0 || local_index >= Size * periods)
+                              if (local_index < 0 || local_index >= size * periods)
                                 throw FatalException{"In Init_UMFPACK_Sparse, index ("
                                                      + to_string(local_index)
                                                      + ") out of range for b vector"};
                               if (k + row_x*flip_exo < 0 || k + row_x*flip_exo >= row_x * col_x)
                                 throw FatalException{"In Init_UMFPACK_Sparse, index ("
-                                                     + to_string(var+Size*(y_kmin+t+lag))
+                                                     + to_string(var+size*(y_kmin+t+lag))
                                                      + ") out of range for jacob_exo vector"};
                               if (t+y_kmin+flip_exo*nb_row_x < 0
                                   || t+y_kmin+flip_exo*nb_row_x >= nb_row_x * this->col_x)
                                 throw FatalException{"In Init_UMFPACK_Sparse, index ("
-                                                     + to_string(index_vara[var+Size*(y_kmin+t+lag)])
+                                                     + to_string(index_vara[var+size*(y_kmin+t+lag)])
                                                      + ") out of range for x vector max="
                                                      + to_string(nb_row_x * this->col_x)};
 #endif
@@ -1605,7 +1605,7 @@ Interpreter::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Size, 
                 }
             }
 
-          if (var < (periods+y_kmax)*Size)
+          if (var < (periods+y_kmax)*size)
             {
               int ti_y_kmin = -min(t, y_kmin);
               int ti_y_kmax = min(periods-(t+1), y_kmax);
@@ -1619,53 +1619,53 @@ Interpreter::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Size, 
 #endif
                   if (!fliped)
                     {
-                      (*Ax)[NZE] = u[index];
-                      (*Ai)[NZE] = eq - lag * Size;
+                      Ax[NZE] = u[index];
+                      Ai[NZE] = eq - lag * size;
                       NZE++;
                     }
                   else /*if (fliped)*/
                     {
 #ifdef DEBUG
-                      if (eq - lag * Size < 0 || eq  - lag * Size >= Size * periods)
+                      if (eq - lag * size < 0 || eq  - lag * size >= size * periods)
                         throw FatalException{"In Init_UMFPACK_Sparse, index ("
-                                             + to_string(eq  - lag * Size)
+                                             + to_string(eq  - lag * size)
                                              + ") out of range for b vector"};
-                      if (var+Size*(y_kmin+t) < 0
-                          || var+Size*(y_kmin+t) >= Size*(periods+y_kmin+y_kmax))
+                      if (var+size*(y_kmin+t) < 0
+                          || var+size*(y_kmin+t) >= size*(periods+y_kmin+y_kmax))
                         throw FatalException{"In Init_UMFPACK_Sparse, index ("
-                                             + to_string(var+Size*(y_kmin+t))
+                                             + to_string(var+size*(y_kmin+t))
                                              + ") out of range for index_vara vector"};
-                      if (index_vara[var+Size*(y_kmin+t)] < 0
-                          || index_vara[var+Size*(y_kmin+t)] >= y_size*(periods+y_kmin+y_kmax))
+                      if (index_vara[var+size*(y_kmin+t)] < 0
+                          || index_vara[var+size*(y_kmin+t)] >= y_size*(periods+y_kmin+y_kmax))
                         throw FatalException{"In Init_UMFPACK_Sparse, index ("
-                                             + to_string(index_vara[var+Size*(y_kmin+t)])
+                                             + to_string(index_vara[var+size*(y_kmin+t)])
                                              + ") out of range for y vector max="
                                              + to_string(y_size*(periods+y_kmin+y_kmax))};
 #endif
-                      (*b)[eq - lag * Size] += u[index] * y[index_vara[var+Size*(y_kmin+t)]];
+                      b[eq - lag * size] += u[index] * y[index_vara[var+size*(y_kmin+t)]];
                     }
 
                 }
               if (lag > ti_y_kmax || lag < ti_y_kmin)
                 {
 #ifdef DEBUG
-                  if (eq < 0 || eq >= Size * periods)
+                  if (eq < 0 || eq >= size * periods)
                     throw FatalException{"In Init_UMFPACK_Sparse, index ("
                                          + to_string(eq)
                                          + ") out of range for b vector"};
-                  if (var+Size*(y_kmin+t+lag) < 0
-                      || var+Size*(y_kmin+t+lag) >= Size*(periods+y_kmin+y_kmax))
+                  if (var+size*(y_kmin+t+lag) < 0
+                      || var+size*(y_kmin+t+lag) >= size*(periods+y_kmin+y_kmax))
                     throw FatalException{"In Init_UMFPACK_Sparse, index ("
-                                         + to_string(var+Size*(y_kmin+t+lag))
+                                         + to_string(var+size*(y_kmin+t+lag))
                                          + ") out of range for index_vara vector"};
-                  if (index_vara[var+Size*(y_kmin+t+lag)] < 0
-                      || index_vara[var+Size*(y_kmin+t+lag)] >= y_size*(periods+y_kmin+y_kmax))
+                  if (index_vara[var+size*(y_kmin+t+lag)] < 0
+                      || index_vara[var+size*(y_kmin+t+lag)] >= y_size*(periods+y_kmin+y_kmax))
                     throw FatalException{"In Init_UMFPACK_Sparse, index ("
-                                         + to_string(index_vara[var+Size*(y_kmin+t+lag)])
+                                         + to_string(index_vara[var+size*(y_kmin+t+lag)])
                                          + ") out of range for y vector max="
                                          + to_string(y_size*(periods+y_kmin+y_kmax))};
 #endif
-                  (*b)[eq] += u[index+lag*u_count_init]*y[index_vara[var+Size*(y_kmin+t+lag)]];
+                  b[eq] += u[index+lag*u_count_init]*y[index_vara[var+size*(y_kmin+t+lag)]];
                 }
             }
           else /* ...and store it in the u vector*/
@@ -1674,31 +1674,33 @@ Interpreter::Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Size, 
               if (index < 0 || index >= u_count_alloc)
                 throw FatalException{"In Init_UMFPACK_Sparse, index (" + to_string(index)
                                      + ") out of range for u vector"};
-              if (eq < 0 || eq >= (Size*periods))
+              if (eq < 0 || eq >= (size*periods))
                 throw FatalException{"In Init_UMFPACK_Sparse, index (" + to_string(eq)
                                      + ") out of range for b vector"};
 #endif
-              (*b)[eq] += u[index];
+              b[eq] += u[index];
             }
         }
     }
-  (*Ap)[Size*periods] = NZE;
+  Ap[size*periods] = NZE;
 #ifdef DEBUG
-  mexPrintf("*Ax = [");
+  mexPrintf("Ax = [");
   for (int i = 0; i < static_cast<int>(NZE); i++)
-    mexPrintf("%f ", (*Ax)[i]);
+    mexPrintf("%f ", Ax[i]);
   mexPrintf("]\n");
 
-  mexPrintf("*Ap = [");
+  mexPrintf("Ap = [");
   for (int i = 0; i < n+1; i++)
-    mexPrintf("%d ", (*Ap)[i]);
+    mexPrintf("%d ", Ap[i]);
   mexPrintf("]\n");
 
-  mexPrintf("*Ai = [");
+  mexPrintf("Ai = [");
   for (int i = 0; i < static_cast<int>(NZE); i++)
-    mexPrintf("%d ", (*Ai)[i]);
+    mexPrintf("%d ", Ai[i]);
   mexPrintf("]\n");
 #endif
+
+  return { Ap, Ai, Ax, b };
 }
 
 void
@@ -4790,7 +4792,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
   auto t1 { chrono::high_resolution_clock::now() };
   nop1 = 0;
   mxArray *b_m = nullptr, *A_m = nullptr, *x0_m = nullptr;
-  double *Ax = nullptr, *b;
+  double *Ax {nullptr}, *b {nullptr};
   SuiteSparse_long *Ap = nullptr, *Ai = nullptr;
 
   if (isnan(res1) || isinf(res1) || (res2 > 12*g0 && iter > 0))
@@ -4961,7 +4963,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
           if (!x0_m)
             throw FatalException{"In Simulate_Newton_Two_Boundaries, can't allocate x0_m vector"};
           if (stack_solve_algo == 0 || stack_solve_algo == 4)
-            Init_UMFPACK_Sparse(periods, y_kmin, y_kmax, size, IM_i, &Ap, &Ai, &Ax, &b, x0_m, vector_table_conditional_local, block_num);
+            tie(Ap, Ai, Ax, b) = Init_UMFPACK_Sparse(x0_m, vector_table_conditional_local);
           else
             {
               b_m = mxCreateDoubleMatrix(periods*size, 1, mxREAL);
