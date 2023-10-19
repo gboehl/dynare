@@ -210,7 +210,6 @@ private:
   int At_Col(int c, int lag, NonZeroElem **first) const;
   int NRow(int r) const;
   int NCol(int c) const;
-  int Union_Row(int row1, int row2) const;
   int Get_u();
   void Delete_u(int pos);
   void Clear_u();

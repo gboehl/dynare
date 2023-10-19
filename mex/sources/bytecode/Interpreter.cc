@@ -986,39 +986,6 @@ Interpreter::At_Row(int r, NonZeroElem **first) const
 }
 
 int
-Interpreter::Union_Row(int row1, int row2) const
-{
-  NonZeroElem *first1, *first2;
-  int n1 = At_Row(row1, &first1);
-  int n2 = At_Row(row2, &first2);
-  int i1 = 0, i2 = 0, nb_elem = 0;
-  while (i1 < n1 && i2 < n2)
-    {
-      if (first1->c_index == first2->c_index)
-        {
-          nb_elem++;
-          i1++;
-          i2++;
-          first1 = first1->NZE_R_N;
-          first2 = first2->NZE_R_N;
-        }
-      else if (first1->c_index < first2->c_index)
-        {
-          nb_elem++;
-          i1++;
-          first1 = first1->NZE_R_N;
-        }
-      else
-        {
-          nb_elem++;
-          i2++;
-          first2 = first2->NZE_R_N;
-        }
-    }
-  return nb_elem;
-}
-
-int
 Interpreter::At_Pos(int r, int c, NonZeroElem **first) const
 {
   *first = FNZE_R[r];
