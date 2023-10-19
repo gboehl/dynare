@@ -2631,27 +2631,27 @@ Interpreter::compute_block_time(int Per_u_, bool evaluate, bool no_derivatives)
 }
 
 bool
-Interpreter::compute_complete(bool no_derivatives, double &_res1, double &_res2, double &_max_res, int &_max_res_idx)
+Interpreter::compute_complete(bool no_derivatives)
 {
   bool result;
   res1 = 0;
   compute_block_time(0, false, no_derivatives);
   if (!(isnan(res1) || isinf(res1)))
     {
-      _res1 = 0;
-      _res2 = 0;
-      _max_res = 0;
+      res1 = 0;
+      res2 = 0;
+      max_res = 0;
       for (int i = 0; i < size; i++)
         {
           double rr;
           rr = r[i];
           if (max_res < fabs(rr))
             {
-              _max_res = fabs(rr);
-              _max_res_idx = i;
+              max_res = fabs(rr);
+              max_res_idx = i;
             }
-          _res2 += rr*rr;
-          _res1 += fabs(rr);
+          res2 += rr*rr;
+          res1 += fabs(rr);
         }
       result = true;
     }
@@ -2675,7 +2675,7 @@ Interpreter::compute_complete(double lambda, double *crit)
         }
       Per_u_ = 0;
       Per_y_ = 0;
-      if (compute_complete(true, res1, res2, max_res, max_res_idx))
+      if (compute_complete(true))
         res2_ = res2;
       else
         return false;
@@ -2692,7 +2692,7 @@ Interpreter::compute_complete(double lambda, double *crit)
         {
           Per_u_ = (it_-y_kmin)*u_count_int;
           Per_y_ = it_*y_size;
-          if (compute_complete(true, res1, res2, max_res, max_res_idx))
+          if (compute_complete(true))
             {
               res2_ += res2;
               res1_ += res1;
@@ -4473,7 +4473,7 @@ Interpreter::Check_and_Correct_Previous_Iteration(int y_size, int size)
               int eq = index_vara[i];
               y[eq+it_*y_size] = ya[eq+it_*y_size] + slowc_save * direction[eq+it_*y_size];
             }
-          compute_complete(true, res1, res2, max_res, max_res_idx);
+          compute_complete(true);
         }
 
       while (res2 > g0 && slowc_save > 1e-1)
@@ -4485,7 +4485,7 @@ Interpreter::Check_and_Correct_Previous_Iteration(int y_size, int size)
               int eq = index_vara[i];
               y[eq+it_*y_size] = ya[eq+it_*y_size] + slowc_save * direction[eq+it_*y_size];
             }
-          compute_complete(true, res1, res2, max_res, max_res_idx);
+          compute_complete(true);
         }
       if (verbosity >= 2)
         mexPrintf("Error: Simulation diverging, trying to correct it using slowc=%f\n", slowc_save);
@@ -4494,7 +4494,7 @@ Interpreter::Check_and_Correct_Previous_Iteration(int y_size, int size)
           int eq = index_vara[i];
           y[eq+it_*y_size] = ya[eq+it_*y_size] + slowc_save * direction[eq+it_*y_size];
         }
-      compute_complete(false, res1, res2, max_res, max_res_idx);
+      compute_complete(false);
     }
   else
     for (int i = 0; i < size; i++)
@@ -4654,7 +4654,7 @@ bool
 Interpreter::solve_linear(int block_num, int y_size, int size, int iter)
 {
   bool cvg = false;
-  compute_complete(false, res1, res2, max_res, max_res_idx);
+  compute_complete(false);
   cvg = (max_res < solve_tolf);
   if (!cvg || isnan(res1) || isinf(res1))
     {

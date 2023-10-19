@@ -231,7 +231,7 @@ private:
   static mxArray *subtract_A_B(const mxArray *A_m, const mxArray *B_m);
 
   void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
-  bool compute_complete(bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
+  bool compute_complete(bool no_derivatives);
 
   bool compute_complete(double lambda, double *crit);
 
