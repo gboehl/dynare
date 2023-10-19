@@ -1832,25 +1832,25 @@ Interpreter::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Size, c
 }
 
 void
-Interpreter::Init_GE(int periods, int y_kmin, int y_kmax, int Size, const map<tuple<int, int, int>, int> &IM)
+Interpreter::Init_GE()
 {
   double tmp_b = 0.0;
-  pivot = static_cast<int *>(mxMalloc(Size*periods*sizeof(int)));
-  test_mxMalloc(pivot, __LINE__, __FILE__, __func__, Size*periods*sizeof(int));
-  pivot_save = static_cast<int *>(mxMalloc(Size*periods*sizeof(int)));
-  test_mxMalloc(pivot_save, __LINE__, __FILE__, __func__, Size*periods*sizeof(int));
-  pivotk = static_cast<int *>(mxMalloc(Size*periods*sizeof(int)));
-  test_mxMalloc(pivotk, __LINE__, __FILE__, __func__, Size*periods*sizeof(int));
-  pivotv = static_cast<double *>(mxMalloc(Size*periods*sizeof(double)));
-  test_mxMalloc(pivotv, __LINE__, __FILE__, __func__, Size*periods*sizeof(double));
-  pivotva = static_cast<double *>(mxMalloc(Size*periods*sizeof(double)));
-  test_mxMalloc(pivotva, __LINE__, __FILE__, __func__, Size*periods*sizeof(double));
-  b = static_cast<int *>(mxMalloc(Size*periods*sizeof(int)));
-  test_mxMalloc(b, __LINE__, __FILE__, __func__, Size*periods*sizeof(int));
-  line_done = static_cast<bool *>(mxMalloc(Size*periods*sizeof(bool)));
-  test_mxMalloc(line_done, __LINE__, __FILE__, __func__, Size*periods*sizeof(bool));
+  pivot = static_cast<int *>(mxMalloc(size*periods*sizeof(int)));
+  test_mxMalloc(pivot, __LINE__, __FILE__, __func__, size*periods*sizeof(int));
+  pivot_save = static_cast<int *>(mxMalloc(size*periods*sizeof(int)));
+  test_mxMalloc(pivot_save, __LINE__, __FILE__, __func__, size*periods*sizeof(int));
+  pivotk = static_cast<int *>(mxMalloc(size*periods*sizeof(int)));
+  test_mxMalloc(pivotk, __LINE__, __FILE__, __func__, size*periods*sizeof(int));
+  pivotv = static_cast<double *>(mxMalloc(size*periods*sizeof(double)));
+  test_mxMalloc(pivotv, __LINE__, __FILE__, __func__, size*periods*sizeof(double));
+  pivotva = static_cast<double *>(mxMalloc(size*periods*sizeof(double)));
+  test_mxMalloc(pivotva, __LINE__, __FILE__, __func__, size*periods*sizeof(double));
+  b = static_cast<int *>(mxMalloc(size*periods*sizeof(int)));
+  test_mxMalloc(b, __LINE__, __FILE__, __func__, size*periods*sizeof(int));
+  line_done = static_cast<bool *>(mxMalloc(size*periods*sizeof(bool)));
+  test_mxMalloc(line_done, __LINE__, __FILE__, __func__, size*periods*sizeof(bool));
   mem_mngr.init_CHUNK_BLCK_SIZE(u_count);
-  int i = (periods+y_kmax+1)*Size*sizeof(NonZeroElem *);
+  int i = (periods+y_kmax+1)*size*sizeof(NonZeroElem *);
   FNZE_R = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(FNZE_R, __LINE__, __FILE__, __func__, i);
   FNZE_C = static_cast<NonZeroElem **>(mxMalloc(i));
@@ -1859,18 +1859,18 @@ Interpreter::Init_GE(int periods, int y_kmin, int y_kmax, int Size, const map<tu
   test_mxMalloc(temp_NZE_R, __LINE__, __FILE__, __func__, i);
   auto **temp_NZE_C = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(temp_NZE_C, __LINE__, __FILE__, __func__, i);
-  i = (periods+y_kmax+1)*Size*sizeof(int);
+  i = (periods+y_kmax+1)*size*sizeof(int);
   NbNZRow = static_cast<int *>(mxMalloc(i));
   test_mxMalloc(NbNZRow, __LINE__, __FILE__, __func__, i);
   NbNZCol = static_cast<int *>(mxMalloc(i));
   test_mxMalloc(NbNZCol, __LINE__, __FILE__, __func__, i);
 
-  for (int i = 0; i < periods*Size; i++)
+  for (int i = 0; i < periods*size; i++)
     {
       b[i] = 0;
       line_done[i] = false;
     }
-  for (int i = 0; i < (periods+y_kmax+1)*Size; i++)
+  for (int i = 0; i < (periods+y_kmax+1)*size; i++)
     {
       FNZE_C[i] = nullptr;
       FNZE_R[i] = nullptr;
@@ -1887,20 +1887,20 @@ Interpreter::Init_GE(int periods, int y_kmin, int y_kmax, int Size, const map<tu
       int ti_y_kmax = min(periods-(t+1), y_kmax);
       int eq = -1;
       //pragma omp ordered
-      for (auto &[key, value] : IM)
+      for (auto &[key, value] : IM_i)
         {
           int var = get<1>(key);
-          if (eq != get<0>(key)+Size*t)
+          if (eq != get<0>(key)+size*t)
             tmp_b = 0;
-          eq = get<0>(key)+Size*t;
+          eq = get<0>(key)+size*t;
           int lag = get<2>(key);
-          if (var < (periods+y_kmax)*Size)
+          if (var < (periods+y_kmax)*size)
             {
               lag = get<2>(key);
               if (lag <= ti_y_kmax && lag >= ti_y_kmin) /*Build the index for sparse matrix containing the jacobian : u*/
                 {
                   nnz++;
-                  var += Size*t;
+                  var += size*t;
                   NbNZRow[eq]++;
                   NbNZCol[var]++;
                   NonZeroElem *first = mem_mngr.mxMalloc_NZE();
@@ -1924,9 +1924,9 @@ Interpreter::Init_GE(int periods, int y_kmin, int y_kmax, int Size, const map<tu
               else /*Build the additive terms ooutside the simulation periods related to the first lags and the last leads...*/
                 {
                   if (lag < ti_y_kmin)
-                    tmp_b += u[value+u_count_init*t]*y[index_vara[var+Size*(y_kmin+t)]];
+                    tmp_b += u[value+u_count_init*t]*y[index_vara[var+size*(y_kmin+t)]];
                   else
-                    tmp_b += u[value+u_count_init*t]*y[index_vara[var+Size*(y_kmin+t)]];
+                    tmp_b += u[value+u_count_init*t]*y[index_vara[var+size*(y_kmin+t)]];
                 }
             }
           else /* ...and store it in the u vector*/
@@ -4954,7 +4954,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
   else
     {
       if (stack_solve_algo == 5)
-        Init_GE(periods, y_kmin, y_kmax, size, IM_i);
+        Init_GE();
       else
         {
           x0_m = mxCreateDoubleMatrix(periods*size, 1, mxREAL);
