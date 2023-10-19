@@ -635,7 +635,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
 }
 
 void
-Interpreter::check_for_controlled_exo_validity(int current_block, const vector<s_plan> &sconstrained_extended_path)
+Interpreter::check_for_controlled_exo_validity(const vector<s_plan> &sconstrained_extended_path)
 {
   vector<int> exogenous {evaluator.getCurrentBlockExogenous()};
   vector<int> endogenous {evaluator.getCurrentBlockEndogenous()};
@@ -646,18 +646,18 @@ Interpreter::check_for_controlled_exo_validity(int current_block, const vector<s
         throw FatalException{"\nThe conditional forecast involving as constrained variable "
             + symbol_table.getName(SymbolType::endogenous, it.exo_num)
             + " and as endogenized exogenous " + symbol_table.getName(SymbolType::exogenous, it.var_num)
-            + " that do not appear in block=" + to_string(current_block+1)
+            + " that do not appear in block=" + to_string(block_num+1)
             + ")\nYou should not use block in model options"};
       else if (find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()
                && find(exogenous.begin(), exogenous.end(), it.var_num) != exogenous.end()
                && (type == BlockSimulationType::evaluateForward
                    || type == BlockSimulationType::evaluateBackward))
         throw FatalException{"\nThe conditional forecast cannot be implemented for the block="
-            + to_string(current_block+1) + ") that has to be evaluated instead to be solved\nYou should not use block in model options"};
+            + to_string(block_num+1) + ") that has to be evaluated instead to be solved\nYou should not use block in model options"};
       else if (find(previous_block_exogenous.begin(), previous_block_exogenous.end(), it.var_num)
                != previous_block_exogenous.end())
         throw FatalException{"\nThe conditional forecast involves in the block "
-            + to_string(current_block+1) + " the endogenized exogenous "
+            + to_string(block_num+1) + " the endogenized exogenous "
             + symbol_table.getName(SymbolType::exogenous, it.var_num)
             + " that appear also in a previous block\nYou should not use block in model options"};
     }
@@ -712,7 +712,7 @@ Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool
       u_count_int = evaluator.getCurrentBlockUCount();
 
       if (constrained)
-        check_for_controlled_exo_validity(current_block, sconstrained_extended_path);
+        check_for_controlled_exo_validity(sconstrained_extended_path);
       if (print)
         {
           if (steady_state)
