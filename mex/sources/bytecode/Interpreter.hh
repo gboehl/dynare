@@ -23,33 +23,219 @@
 #include <vector>
 #include <string>
 #include <cstddef>
+#include <utility>
+#include <map>
+#include <tuple>
+#include <stack>
+#include <fstream>
 
+#include "dynumfpack.h"
 #include "dynmex.h"
 
 #include "ErrorHandling.hh"
-#include "SparseMatrix.hh"
+#include "Mem_Mngr.hh"
+#include "Evaluate.hh"
 
 using namespace std;
 
+struct t_save_op_s
+{
+  short int lag, operat;
+  int first, second;
+};
+
+struct s_plan
+{
+  string var, exo;
+  int var_num, exo_num;
+  vector<pair<int, double>> per_value;
+  vector<double> value;
+};
+
+struct table_conditional_local_type
+{
+  bool is_cond;
+  int var_exo, var_endo;
+  double constrained_value;
+};
+using vector_table_conditional_local_type = vector<table_conditional_local_type>;
+using table_conditional_global_type = map<int, vector_table_conditional_local_type>;
+
+constexpr int IFLD = 0, IFDIV = 1, IFLESS = 2, IFSUB = 3, IFLDZ = 4, IFMUL = 5, IFSTP = 6, IFADD = 7;
+constexpr double eps = 1e-15, very_big = 1e24;
+constexpr int alt_symbolic_count_max = 1;
+constexpr double mem_increasing_factor = 1.1;
+
 constexpr int NO_ERROR_ON_EXIT {0}, ERROR_ON_EXIT {1};
 
-class Interpreter : public dynSparseMatrix
+class Interpreter
 {
 private:
+  double g0, gp0, glambda2;
+  int try_at_iteration;
+
+  void *Symbolic {nullptr}, *Numeric {nullptr};
+
+  const BasicSymbolTable &symbol_table;
+  const bool steady_state; // Whether this is a static or dynamic model
+
+  // Whether to use the block-decomposed version of the bytecode file
+  bool block_decomposed;
+
+  Evaluate &evaluator;
+
+  fstream SaveCode;
+
+  Mem_Mngr mem_mngr;
+  vector<int> u_liste;
+  int *NbNZRow, *NbNZCol;
+  NonZeroElem **FNZE_R, **FNZE_C;
+  int u_count_init;
+
+  int *pivot, *pivotk, *pivot_save;
+  double *pivotv, *pivotva;
+  int *b;
+  bool *line_done;
+  bool symbolic, alt_symbolic;
+  int alt_symbolic_count;
+  double markowitz_c_s;
+  double res1a;
+  long int nop1;
+  map<tuple<int, int, int>, int> IM_i;
+  int u_count_alloc, u_count_alloc_save;
+  double slowc, slowc_save, prev_slowc_save, markowitz_c;
+  int *index_equa; // Actually unused
+  int u_count, tbreak_g;
+  int iter;
+  int start_compare;
+  int restart;
+  double lu_inc_tol;
+
+  SuiteSparse_long *Ap_save, *Ai_save;
+  double *Ax_save, *b_save;
+
+  int stack_solve_algo, solve_algo;
+  int minimal_solving_periods;
+  int Per_u_, Per_y_;
+  int maxit_;
+  double *direction;
+  double solve_tolf;
+  // 1-norm error, square of 2-norm error, ∞-norm error
+  double res1, res2, max_res;
+  int max_res_idx;
+  int *index_vara;
+
+  double *y, *ya;
+  int y_size;
+  double *T;
+  int nb_row_x;
+  int y_kmin, y_kmax, periods;
+  double *x, *params;
+  double *u;
+  double *steady_y;
+  double *g1, *r, *res;
+  vector<mxArray *> jacobian_block, jacobian_exo_block, jacobian_det_exo_block;
+  mxArray *GlobalTemporaryTerms;
+  int it_;
+  map<int, double> TEF;
+  map<pair<int, int>, double> TEFD;
+  map<tuple<int, int, int>, double> TEFDD;
+
+  // Information about the current block
+  int block_num; // Index of the current block
+  int size; // Size of the current block
+  BlockSimulationType type;
+  bool is_linear;
+  int u_count_int;
+  vector<Block_contain_type> Block_Contain;
+
+  int verbosity; // Corresponds to options_.verbosity
+
   vector<int> previous_block_exogenous;
   bool global_temporary_terms;
   bool print; // Whether the “print” command is requested
   int col_x, col_y;
   vector<double> residual;
+
   void evaluate_over_periods(bool forward);
   void solve_simple_one_periods();
   void solve_simple_over_periods(bool forward);
   void compute_complete_2b(bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx);
   void initializeTemporaryTerms(bool global_temporary_terms);
-protected:
   void evaluate_a_block(bool initialization, bool single_block, const string &bin_base_name);
   int simulate_a_block(const vector_table_conditional_local_type &vector_table_conditional_local, bool single_block, const string &bin_base_name);
   string elastic(string str, unsigned int len, bool left);
+  void check_for_controlled_exo_validity(int current_block, const vector<s_plan> &sconstrained_extended_path);
+  pair<bool, vector<int>> MainLoop(const string &bin_basename, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local);
+  void Simulate_Newton_Two_Boundaries(int blck, int y_size, int y_kmin, int y_kmax, int Size, int periods, bool cvg, int minimal_solving_periods, int stack_solve_algo, const vector_table_conditional_local_type &vector_table_conditional_local);
+  void Simulate_Newton_One_Boundary(bool forward);
+  void fixe_u(double **u, int u_count_int, int max_lag_plus_max_lead_plus_1);
+  void Read_SparseMatrix(const string &file_name, int Size, int periods, int y_kmin, int y_kmax, bool two_boundaries, int stack_solve_algo, int solve_algo);
+  void Singular_display(int block, int Size);
+  void End_Solver();
+  static int find_exo_num(const vector<s_plan> &sconstrained_extended_path, int value);
+  static int find_int_date(const vector<pair<int, double>> &per_value, int value);
+  void Init_GE(int periods, int y_kmin, int y_kmax, int Size, const map<tuple<int, int, int>, int> &IM);
+  void Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Size, const map<tuple<int, int, int>, int> &IM, mxArray *A_m, mxArray *b_m, const mxArray *x0_m) const;
+  void Init_UMFPACK_Sparse(int periods, int y_kmin, int y_kmax, int Size, const map<tuple<int, int, int>, int> &IM, SuiteSparse_long **Ap, SuiteSparse_long **Ai, double **Ax, double **b, const mxArray *x0_m, const vector_table_conditional_local_type &vector_table_conditional_local, int block_num) const;
+  void Init_Matlab_Sparse_Simple(int Size, const map<tuple<int, int, int>, int> &IM, const mxArray *A_m, const mxArray *b_m, bool &zero_solution, const mxArray *x0_m) const;
+  void Init_UMFPACK_Sparse_Simple(int Size, const map<tuple<int, int, int>, int> &IM, SuiteSparse_long **Ap, SuiteSparse_long **Ai, double **Ax, double **b, bool &zero_solution, const mxArray *x0_m) const;
+  void Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM, bool &zero_solution);
+  void End_GE();
+  bool mnbrak(double *ax, double *bx, double *cx, double *fa, double *fb, double *fc);
+  bool golden(double ax, double bx, double cx, double tol, double solve_tolf, double *xmin);
+  void Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool symbolic, int Block_number);
+  bool Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int it_);
+  void Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Size, double slowc_l);
+  static void Print_UMFPack(const SuiteSparse_long *Ap, const SuiteSparse_long *Ai, const double *Ax, int n);
+  static void Printfull_UMFPack(const SuiteSparse_long *Ap, const SuiteSparse_long *Ai, const double *Ax, const double *b, int n);
+  static void PrintM(int n, const double *Ax, const mwIndex *Ap, const mwIndex *Ai);
+  void Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_, const vector_table_conditional_local_type &vector_table_conditional_local);
+  void Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_);
+
+  void End_Matlab_LU_UMFPack();
+  void Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double slowc, int block, bool is_two_boundaries, int it_, mxArray *x0_m);
+  void Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, double slowc, int block, bool is_two_boundaries, int it_, mxArray *x0_m, int precond);
+  void Check_and_Correct_Previous_Iteration(int y_size, int size);
+  bool Simulate_One_Boundary(int blck, int y_size, int size);
+  bool solve_linear(int block_num, int y_size, int size, int iter);
+  void solve_non_linear(int block_num, int y_size, int size);
+  string preconditioner_print_out(string s, int preconditioner, bool ss);
+  bool compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, int periods, long nop4, int Size);
+  void Insert(int r, int c, int u_index, int lag_index);
+  void Delete(int r, int c);
+  int At_Row(int r, NonZeroElem **first) const;
+  int At_Pos(int r, int c, NonZeroElem **first) const;
+  int At_Col(int c, NonZeroElem **first) const;
+  int At_Col(int c, int lag, NonZeroElem **first) const;
+  int NRow(int r) const;
+  int NCol(int c) const;
+  int Union_Row(int row1, int row2) const;
+  int Get_u();
+  void Delete_u(int pos);
+  void Clear_u();
+
+  int complete(int beg_t, int Size, int periods, int *b);
+  void bksub(int tbreak, int last_period, int Size, double slowc_l);
+  void simple_bksub(int it_, int Size, double slowc_l);
+  // Computes Aᵀ where A is are sparse. The result is sparse.
+  static mxArray *Sparse_transpose(const mxArray *A_m);
+  // Computes Aᵀ·B where A and B are sparse. The result is sparse.
+  static mxArray *Sparse_mult_SAT_SB(const mxArray *A_m, const mxArray *B_m);
+  // Computes Aᵀ·B where A is sparse and B is dense. The result is sparse.
+  static mxArray *Sparse_mult_SAT_B(const mxArray *A_m, const mxArray *B_m);
+  // Computes Aᵀ·B where A is sparse and B is dense. The result is dense.
+  static mxArray *mult_SAT_B(const mxArray *A_m, const mxArray *B_m);
+  // Computes A−B where A and B are sparse. The result is sparse.
+  static mxArray *Sparse_subtract_SA_SB(const mxArray *A_m, const mxArray *B_m);
+  // Computes A−B where A and B are dense. The result is dense.
+  static mxArray *subtract_A_B(const mxArray *A_m, const mxArray *B_m);
+
+  void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
+  bool compute_complete(bool no_derivatives, double &res1, double &res2, double &max_res, int &max_res_idx);
+
+  bool compute_complete(double lambda, double *crit);
+
 public:
   Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
               double *direction_arg, int y_size_arg,
@@ -60,8 +246,7 @@ public:
               bool steady_state_arg, bool block_decomposed_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg, int verbosity_arg);
   pair<bool, vector<int>> extended_path(const string &file_name, bool evaluate, int block, int nb_periods, const vector<s_plan> &sextended_path, const vector<s_plan> &sconstrained_extended_path, const vector<string> &dates, const table_conditional_global_type &table_conditional_global);
   pair<bool, vector<int>> compute_blocks(const string &file_name, bool evaluate, int block);
-  void check_for_controlled_exo_validity(int current_block, const vector<s_plan> &sconstrained_extended_path);
-  pair<bool, vector<int>> MainLoop(const string &bin_basename, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local);
+  void Close_SaveCode();
 
   inline mxArray *
   get_jacob(int block_num) const

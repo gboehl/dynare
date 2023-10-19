@@ -311,7 +311,6 @@ shared_module('block_trust_region', block_trust_region_src, kwargs : mex_kwargs,
 bytecode_src = [ 'mex/sources/bytecode/bytecode.cc',
                  'mex/sources/bytecode/Interpreter.cc',
                  'mex/sources/bytecode/Mem_Mngr.cc',
-                 'mex/sources/bytecode/SparseMatrix.cc',
                  'mex/sources/bytecode/Evaluate.cc',
                  'mex/sources/bytecode/BasicSymbolTable.cc' ]
 preprocessor_headers_dep = declare_dependency(include_directories : include_directories('preprocessor/src'))
