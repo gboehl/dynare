@@ -254,9 +254,15 @@ else
 end
 
 pTic = tic;
-[status, result] = system(command);
+if preprocessoroutput
+    status = system(command); %immediately flush output
+else
+    [status, result] = system(command); %save output for output in case of failure
+    if status ~= 0 || preprocessoroutput
+        disp(result)
+    end
+end
 if status ~= 0 || preprocessoroutput
-    disp(result)
     pToc = toc(pTic);
     dprintf('Preprocessing time: %s.', dynsec2hms(pToc))
     if nargout
