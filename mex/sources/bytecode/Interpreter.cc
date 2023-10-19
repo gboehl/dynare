@@ -193,18 +193,17 @@ Interpreter::solve_simple_over_periods(bool forward)
 }
 
 void
-Interpreter::compute_complete_2b(bool no_derivatives, double *_res1, double *_res2, double *_max_res, int *_max_res_idx)
+Interpreter::compute_complete_2b()
 {
   res1 = 0;
-  *_res1 = 0;
-  *_res2 = 0;
-  *_max_res = 0;
+  res2 = 0;
+  max_res = 0;
   for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
     {
       Per_u_ = (it_-y_kmin)*u_count_int;
       Per_y_ = it_*y_size;
       int shift = (it_-y_kmin) * size;
-      compute_block_time(Per_u_, false, no_derivatives);
+      compute_block_time(Per_u_, false, false);
       if (!(isnan(res1) || isinf(res1)))
         for (int i = 0; i < size; i++)
           {
@@ -213,17 +212,16 @@ Interpreter::compute_complete_2b(bool no_derivatives, double *_res1, double *_re
             res[i+shift] = rr;
             if (max_res < fabs(rr))
               {
-                *_max_res = fabs(rr);
-                *_max_res_idx = i;
+                max_res = fabs(rr);
+                max_res_idx = i;
               }
-            *_res2 += rr*rr;
-            *_res1 += fabs(rr);
+            res2 += rr*rr;
+            res1 += fabs(rr);
           }
       else
         return;
     }
   it_ = periods+y_kmin-1; // Do not leave it_ in inconsistent state
-  return;
 }
 
 void
@@ -579,7 +577,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
                 for (auto & it1 : vector_table_conditional_local)
                   if (it1.is_cond)
                     y[it1.var_endo + y_kmin * size] = it1.constrained_value;
-              compute_complete_2b(false, &res1, &res2, &max_res, &max_res_idx);
+              compute_complete_2b();
               if (!(isnan(res1) || isinf(res1)))
                 cvg = (max_res < solve_tolf);
               if (isnan(res1) || isinf(res1) || (stack_solve_algo == 4 && iter > 0))
@@ -607,7 +605,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
           res2 = 0;
           max_res = 0; max_res_idx = 0;
 
-          compute_complete_2b(false, &res1, &res2, &max_res, &max_res_idx);
+          compute_complete_2b();
 
           cvg = false;
           Simulate_Newton_Two_Boundaries(block_num, y_size, y_kmin, y_kmax, size, periods, cvg, minimal_solving_periods, stack_solve_algo, vector_table_conditional_local);
