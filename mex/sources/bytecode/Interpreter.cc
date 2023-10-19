@@ -3119,26 +3119,22 @@ Interpreter::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Si
 }
 
 void
-Interpreter::End_Matlab_LU_UMFPack()
-{
-  if (Symbolic)
-    {
-      umfpack_dl_free_symbolic(&Symbolic);
-      Symbolic = nullptr;
-    }
-  if (Numeric)
-    {
-      umfpack_dl_free_numeric(&Numeric);
-      Numeric = nullptr;
-    }
-}
-
-void
 Interpreter::End_Solver()
 {
   if (((stack_solve_algo == 0 || stack_solve_algo == 4) && !steady_state)
       || (solve_algo == 6 && steady_state))
-    End_Matlab_LU_UMFPack();
+    {
+      if (Symbolic)
+        {
+          umfpack_dl_free_symbolic(&Symbolic);
+          Symbolic = nullptr;
+        }
+      if (Numeric)
+        {
+          umfpack_dl_free_numeric(&Numeric);
+          Numeric = nullptr;
+        }
+    }
 }
 
 void
