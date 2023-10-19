@@ -978,39 +978,37 @@ Interpreter::NCol(int c) const
   return NbNZCol[c];
 }
 
-int
-Interpreter::At_Row(int r, NonZeroElem **first) const
+pair<int, NonZeroElem *>
+Interpreter::At_Row(int r) const
 {
-  *first = FNZE_R[r];
-  return NbNZRow[r];
+  return { NbNZRow[r], FNZE_R[r] };
 }
 
-int
-Interpreter::At_Pos(int r, int c, NonZeroElem **first) const
+NonZeroElem *
+Interpreter::At_Pos(int r, int c) const
 {
-  *first = FNZE_R[r];
-  while ((*first)->c_index != c)
-    *first = (*first)->NZE_R_N;
-  return NbNZRow[r];
+  NonZeroElem* first {FNZE_R[r]};
+  while (first->c_index != c)
+    first = first->NZE_R_N;
+  return first;
 }
 
-int
-Interpreter::At_Col(int c, NonZeroElem **first) const
+pair<int, NonZeroElem *>
+Interpreter::At_Col(int c) const
 {
-  *first = FNZE_C[c];
-  return NbNZCol[c];
+  return { NbNZCol[c], FNZE_C[c] };
 }
 
-int
-Interpreter::At_Col(int c, int lag, NonZeroElem **first) const
+pair<int, NonZeroElem *>
+Interpreter::At_Col(int c, int lag) const
 {
-  *first = FNZE_C[c];
+  NonZeroElem *first {FNZE_C[c]};
   int i = 0;
-  while ((*first)->lag_index != lag && *first)
-    *first = (*first)->NZE_C_N;
-  if (*first)
+  while (first->lag_index != lag && first)
+    first = first->NZE_C_N;
+  if (first)
     {
-      NonZeroElem *firsta = *first;
+      NonZeroElem *firsta {first};
       if (!firsta->NZE_C_N)
         i++;
       else
@@ -1024,7 +1022,7 @@ Interpreter::At_Col(int c, int lag, NonZeroElem **first) const
             i++;
         }
     }
-  return i;
+  return { i, first };
 }
 
 void
@@ -2161,7 +2159,8 @@ Interpreter::complete(int beg_t, int Size, int periods, int *b)
     {
       long pos = pivot[j];
       NonZeroElem *first;
-      long nb_var = At_Row(pos, &first);
+      long nb_var;
+      tie(nb_var, first) = At_Row(pos);
       first = first->NZE_R_N;
       nb_var--;
       save_code[nop] = IFLDZ;
@@ -2211,7 +2210,8 @@ Interpreter::complete(int beg_t, int Size, int periods, int *b)
     {
       long pos = pivot[j];
       NonZeroElem *first;
-      long nb_var = At_Row(pos, &first);
+      long nb_var;
+      tie(nb_var, first) = At_Row(pos);
       first = first->NZE_R_N;
       nb_var--;
       diff[nopa] = 0;
@@ -2306,8 +2306,7 @@ Interpreter::bksub(int tbreak, int last_period, int Size, double slowc_l)
         {
           int j = i+cal;
           int pos = pivot[i+Size];
-          NonZeroElem *first;
-          int nb_var = At_Row(pos, &first);
+          auto [nb_var, first] = At_Row(pos);
           first = first->NZE_R_N;
           nb_var--;
           int eq = index_vara[j]+y_size;
@@ -2332,8 +2331,7 @@ Interpreter::simple_bksub(int it_, int Size, double slowc_l)
   for (int i = Size-1; i >= 0; i--)
     {
       int pos = pivot[i];
-      NonZeroElem *first;
-      int nb_var = At_Row(pos, &first);
+      auto [nb_var, first] = At_Row(pos);
       first = first->NZE_R_N;
       nb_var--;
       int eq = index_vara[i];
@@ -3578,8 +3576,7 @@ Interpreter::Singular_display(int block, int Size)
     pind[j] = 0.0;
   for (int ii = 0; ii < Size; ii++)
     {
-      NonZeroElem *first;
-      int nb_eq = At_Col(ii, &first);
+      auto [nb_eq, first] = At_Col(ii);
       for (int j = 0; j < nb_eq; j++)
         {
           int k = first->u_index;
@@ -3659,8 +3656,7 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
     {
       /*finding the max-pivot*/
       double piv = 0, piv_abs = 0;
-      NonZeroElem *first;
-      int nb_eq = At_Col(i, &first);
+      auto [nb_eq, first] = At_Col(i);
       int l = 0;
       int N_max = 0;
       bool one = false;
@@ -3789,7 +3785,8 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
       line_done[pivj] = true;
 
       /*divide all the non zeros elements of the line pivj by the max_pivot*/
-      int nb_var = At_Row(pivj, &first);
+      int nb_var;
+      tie(nb_var, first) = At_Row(pivj);
       for (int j = 0; j < nb_var; j++)
         {
           u[first->u_index] /= piv;
@@ -3797,9 +3794,8 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
         }
       u[b[pivj]] /= piv;
       /*subtract the elements on the non treated lines*/
-      nb_eq = At_Col(i, &first);
-      NonZeroElem *first_piva;
-      int nb_var_piva = At_Row(pivj, &first_piva);
+      tie(nb_eq, first) = At_Col(i);
+      auto [nb_var_piva, first_piva] = At_Row(pivj);
       int nb_eq_todo = 0;
       for (int j = 0; j < nb_eq && first; j++)
         {
@@ -3815,8 +3811,7 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
 
           int nb_var_piv = nb_var_piva;
           NonZeroElem *first_piv = first_piva;
-          NonZeroElem *first_sub;
-          int nb_var_sub = At_Row(row, &first_sub);
+          auto [nb_var_sub, first_sub] = At_Row(row);
           int l_sub = 0, l_piv = 0;
           int sub_c_index = first_sub->c_index, piv_c_index = first_piv->c_index;
           while (l_sub < nb_var_sub || l_piv < nb_var_piv)
@@ -3939,8 +3934,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
         {
           /*finding the max-pivot*/
           double piv = 0, piv_abs = 0;
-          NonZeroElem *first;
-          int nb_eq = At_Col(i, 0, &first);
+          auto [nb_eq, first] = At_Col(i, 0);
           if ((symbolic && t <= start_compare) || !symbolic)
             {
               int l = 0, N_max = 0;
@@ -4053,7 +4047,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
             {
               pivj = pivot[i-Size]+Size;
               pivot[i] = pivj;
-              At_Pos(pivj, i, &first);
+              first = At_Pos(pivj, i);
               pivk = first->u_index;
               piv = u[pivk];
               piv_abs = fabs(piv);
@@ -4081,7 +4075,8 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                     throw FatalException{"In Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system"};
                 }
               /*divide all the non zeros elements of the line pivj by the max_pivot*/
-              int nb_var = At_Row(pivj, &first);
+              int nb_var;
+              tie(nb_var, first) = At_Row(pivj);
               for (int j = 0; j < nb_var; j++)
                 {
                   u[first->u_index] /= piv;
@@ -4109,9 +4104,8 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
               save_op_s->lag = 0;
               nop += 2;
               // Subtract the elements on the non treated lines
-              nb_eq = At_Col(i, &first);
-              NonZeroElem *first_piva;
-              int nb_var_piva = At_Row(pivj, &first_piva);
+              tie(nb_eq, first) = At_Col(i);
+              auto [nb_var_piva, first_piva] = At_Row(pivj);
 
               int nb_eq_todo = 0;
               for (int j = 0; j < nb_eq && first; j++)
@@ -4139,8 +4133,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
 
                   int nb_var_piv = nb_var_piva;
                   NonZeroElem *first_piv = first_piva;
-                  NonZeroElem *first_sub;
-                  int nb_var_sub = At_Row(row, &first_sub);
+                  auto [nb_var_sub, first_sub] = At_Row(row);
                   int l_sub = 0;
                   int l_piv = 0;
                   int sub_c_index = first_sub->c_index;
@@ -4262,7 +4255,8 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                     throw FatalException{"In Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system"};
                 }
               // Divide all the non zeros elements of the line pivj by the max_pivot
-              int nb_var = At_Row(pivj, &first);
+              int nb_var;
+              tie(nb_var, first) = At_Row(pivj);
               for (int j = 0; j < nb_var; j++)
                 {
                   u[first->u_index] /= piv;
@@ -4272,9 +4266,8 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
               u[b[pivj]] /= piv;
               nop += 2;
               // Subtract the elements on the non treated lines
-              nb_eq = At_Col(i, &first);
-              NonZeroElem *first_piva;
-              int nb_var_piva = At_Row(pivj, &first_piva);
+              tie(nb_eq, first) = At_Col(i);
+              auto [nb_var_piva, first_piva] = At_Row(pivj);
 
               int nb_eq_todo = 0;
               for (int j = 0; j < nb_eq && first; j++)
@@ -4291,8 +4284,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                   nop += 2;
                   int nb_var_piv = nb_var_piva;
                   NonZeroElem *first_piv = first_piva;
-                  NonZeroElem *first_sub;
-                  int nb_var_sub = At_Row(row, &first_sub);
+                  auto [nb_var_sub, first_sub] = At_Row(row);
                   int l_sub = 0;
                   int l_piv = 0;
                   int sub_c_index = first_sub->c_index;

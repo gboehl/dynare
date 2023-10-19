@@ -204,10 +204,10 @@ private:
   bool compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, int periods, long nop4, int Size);
   void Insert(int r, int c, int u_index, int lag_index);
   void Delete(int r, int c);
-  int At_Row(int r, NonZeroElem **first) const;
-  int At_Pos(int r, int c, NonZeroElem **first) const;
-  int At_Col(int c, NonZeroElem **first) const;
-  int At_Col(int c, int lag, NonZeroElem **first) const;
+  pair<int, NonZeroElem *> At_Row(int r) const;
+  NonZeroElem *At_Pos(int r, int c) const;
+  pair<int, NonZeroElem *> At_Col(int c) const;
+  pair<int, NonZeroElem *> At_Col(int c, int lag) const;
   int NRow(int r) const;
   int NCol(int c) const;
   int Get_u();
