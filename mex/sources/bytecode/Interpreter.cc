@@ -1729,7 +1729,7 @@ Interpreter::PrintM(int n, const double *Ax, const mwIndex *Ap, const mwIndex *A
 }
 
 void
-Interpreter::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Size, const map<tuple<int, int, int>, int> &IM, mxArray *A_m, mxArray *b_m, const mxArray *x0_m) const
+Interpreter::Init_Matlab_Sparse(mxArray *A_m, mxArray *b_m, const mxArray *x0_m) const
 {
   double *b = mxGetPr(b_m);
 
@@ -1752,27 +1752,27 @@ Interpreter::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Size, c
     ya[i] = y[i];
   unsigned int NZE = 0;
   int last_var = 0;
-  for (int i = 0; i < periods*Size; i++)
+  for (int i = 0; i < periods*size; i++)
     {
       b[i] = 0;
-      x0[i] = y[index_vara[Size*y_kmin+i]];
+      x0[i] = y[index_vara[size*y_kmin+i]];
     }
   Aj[0] = 0;
   for (int t = 0; t < periods; t++)
     {
       last_var = 0;
-      for (auto &[key, value] : IM)
+      for (auto &[key, value] : IM_i)
         {
           int var = get<0>(key);
           if (var != last_var)
             {
-              Aj[1+last_var + t * Size] = NZE;
+              Aj[1+last_var + t * size] = NZE;
               last_var = var;
             }
-          int eq = get<2>(key)+Size*t;
+          int eq = get<2>(key)+size*t;
           int lag = -get<1>(key);
           int index = value + (t-lag)*u_count_init;
-          if (var < (periods+y_kmax)*Size)
+          if (var < (periods+y_kmax)*size)
             {
               int ti_y_kmin = -min(t, y_kmin);
               int ti_y_kmax = min(periods-(t +1), y_kmax);
@@ -1781,37 +1781,37 @@ Interpreter::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Size, c
               if (lag <= ti_new_y_kmax && lag >= ti_new_y_kmin) /*Build the index for sparse matrix containing the jacobian : u*/
                 {
 #ifdef DEBUG
-                  if (index < 0 || index >= u_count_alloc || index > Size + Size*Size)
+                  if (index < 0 || index >= u_count_alloc || index > size + size*size)
                     throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(index)
                                          + ") out of range for u vector max = "
-                                         + to_string(Size+Size*Size) + " allocated = "
+                                         + to_string(size+size*size) + " allocated = "
                                          + to_string(u_count_alloc)};
                   if (NZE >= prior_nz)
                     throw FatalException{"In Init_Matlab_Sparse, exceeds the capacity of allocated sparse matrix"};
 #endif
                   A[NZE] = u[index];
-                  Ai[NZE] = eq - lag * Size;
+                  Ai[NZE] = eq - lag * size;
                   NZE++;
                 }
               if (lag > ti_y_kmax || lag < ti_y_kmin)
                 {
 #ifdef DEBUG
-                  if (eq < 0 || eq >= Size * periods)
+                  if (eq < 0 || eq >= size * periods)
                     throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(eq)
                                          + ") out of range for b vector"};
-                  if (var+Size*(y_kmin+t+lag) < 0
-                      || var+Size*(y_kmin+t+lag) >= Size*(periods+y_kmin+y_kmax))
+                  if (var+size*(y_kmin+t+lag) < 0
+                      || var+size*(y_kmin+t+lag) >= size*(periods+y_kmin+y_kmax))
                     throw FatalException{"In Init_Matlab_Sparse, index ("
-                                         + to_string(var+Size*(y_kmin+t+lag))
+                                         + to_string(var+size*(y_kmin+t+lag))
                                          + ") out of range for index_vara vector"};
-                  if (index_vara[var+Size*(y_kmin+t+lag)] < 0
-                      || index_vara[var+Size*(y_kmin+t+lag)] >= y_size*(periods+y_kmin+y_kmax))
+                  if (index_vara[var+size*(y_kmin+t+lag)] < 0
+                      || index_vara[var+size*(y_kmin+t+lag)] >= y_size*(periods+y_kmin+y_kmax))
                     throw FatalException{"In Init_Matlab_Sparse, index ("
-                                         + to_string(index_vara[var+Size*(y_kmin+t+lag)])
+                                         + to_string(index_vara[var+size*(y_kmin+t+lag)])
                                          + ") out of range for y vector max="
                                          + to_string(y_size*(periods+y_kmin+y_kmax))};
 #endif
-                  b[eq] += u[index+lag*u_count_init]*y[index_vara[var+Size*(y_kmin+t+lag)]];
+                  b[eq] += u[index+lag*u_count_init]*y[index_vara[var+size*(y_kmin+t+lag)]];
                 }
             }
           else /* ...and store it in the u vector*/
@@ -1820,7 +1820,7 @@ Interpreter::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Size, c
               if (index < 0 || index >= u_count_alloc)
                 throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(index)
                                      + ") out of range for u vector"};
-              if (eq < 0 || eq >= (Size*periods))
+              if (eq < 0 || eq >= (size*periods))
                 throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(eq)
                                      + ") out of range for b vector"};
 #endif
@@ -1828,7 +1828,7 @@ Interpreter::Init_Matlab_Sparse(int periods, int y_kmin, int y_kmax, int Size, c
             }
         }
     }
-  Aj[Size*periods] = NZE;
+  Aj[size*periods] = NZE;
 }
 
 void
@@ -4973,7 +4973,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
                   if (!A_m)
                     throw FatalException{"In Simulate_Newton_Two_Boundaries, can't allocate A_m matrix"};
                 }
-              Init_Matlab_Sparse(periods, y_kmin, y_kmax, size, IM_i, A_m, b_m, x0_m);
+              Init_Matlab_Sparse(A_m, b_m, x0_m);
             }
         }
       if (stack_solve_algo == 0 || stack_solve_algo == 4)
