@@ -3560,22 +3560,22 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, double 
 }
 
 void
-Interpreter::Singular_display(int block, int Size)
+Interpreter::Singular_display()
 {
   bool zero_solution;
-  Simple_Init(Size, IM_i, zero_solution);
-  mxArray *rhs[] = { mxCreateDoubleMatrix(Size, Size, mxREAL) };
+  Simple_Init(size, IM_i, zero_solution);
+  mxArray *rhs[] = { mxCreateDoubleMatrix(size, size, mxREAL) };
   double *pind = mxGetPr(rhs[0]);
-  for (int j = 0; j < Size * Size; j++)
+  for (int j = 0; j < size * size; j++)
     pind[j] = 0.0;
-  for (int ii = 0; ii < Size; ii++)
+  for (int ii = 0; ii < size; ii++)
     {
       auto [nb_eq, first] = At_Col(ii);
       for (int j = 0; j < nb_eq; j++)
         {
           int k = first->u_index;
           int jj = first->r_index;
-          pind[ii * Size + jj] = u[k];
+          pind[ii * size + jj] = u[k];
           first = first->NZE_C_N;
         }
     }
@@ -3585,18 +3585,18 @@ Interpreter::Singular_display(int block, int Size)
   mxArray *SVD_s = lhs[1];
   double *SVD_ps = mxGetPr(SVD_s);
   double *SVD_pu = mxGetPr(SVD_u);
-  for (int i = 0; i < Size; i++)
-    if (abs(SVD_ps[i * (1 + Size)]) < 1e-12)
+  for (int i = 0; i < size; i++)
+    if (abs(SVD_ps[i * (1 + size)]) < 1e-12)
       {
         mexPrintf(" The following equations form a linear combination:\n    ");
         double max_u = 0;
-        for (int j = 0; j < Size; j++)
-          if (abs(SVD_pu[j + i * Size]) > abs(max_u))
-            max_u = SVD_pu[j + i * Size];
+        for (int j = 0; j < size; j++)
+          if (abs(SVD_pu[j + i * size]) > abs(max_u))
+            max_u = SVD_pu[j + i * size];
         vector<int> equ_list;
-        for (int j = 0; j < Size; j++)
+        for (int j = 0; j < size; j++)
           {
-            double rr = SVD_pu[j + i * Size] / max_u;
+            double rr = SVD_pu[j + i * size] / max_u;
             if (rr < -1e-10)
               {
                 equ_list.push_back(j);
@@ -3624,9 +3624,9 @@ Interpreter::Singular_display(int block, int Size)
   mxDestroyArray(lhs[0]);
   mxDestroyArray(lhs[1]);
   mxDestroyArray(lhs[2]);
-  if (block > 1)
+  if (block_num > 1)
     throw FatalException{"In Solve_ByteCode_Sparse_GaussianElimination, singular system in block "
-                         + to_string(block+1)};
+                         + to_string(block_num+1)};
   else
     throw FatalException{"In Solve_ByteCode_Sparse_GaussianElimination, singular system"};
 }
@@ -4658,7 +4658,7 @@ Interpreter::solve_linear(int block_num, int y_size, int size, int iter)
         Check_and_Correct_Previous_Iteration(y_size, size);
       bool singular_system = Simulate_One_Boundary(block_num, y_size, size);
       if (singular_system && verbosity >= 1)
-        Singular_display(block_num, size);
+        Singular_display();
     }
   return cvg;
 }

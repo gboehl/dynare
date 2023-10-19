@@ -171,7 +171,7 @@ private:
   void Simulate_Newton_One_Boundary(bool forward);
   void fixe_u();
   void Read_SparseMatrix(const string &file_name, int periods, int y_kmin, int y_kmax, bool two_boundaries);
-  void Singular_display(int block, int Size);
+  void Singular_display();
   void End_Solver();
   static int find_exo_num(const vector<s_plan> &sconstrained_extended_path, int value);
   static int find_int_date(const vector<pair<int, double>> &per_value, int value);
