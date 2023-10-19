@@ -39,14 +39,10 @@ dynSparseMatrix::dynSparseMatrix(Evaluate &evaluator_arg, int y_size_arg, int y_
   verbosity {verbosity_arg}
 {
   pivotva = nullptr;
-  g_save_op = nullptr;
-  g_nop_all = 0;
   mem_mngr.init_Mem();
   symbolic = true;
   alt_symbolic = false;
   alt_symbolic_count = 0;
-  max_u = 0;
-  min_u = 0x7FFFFFFF;
   res1a = 9.0e60;
   tbreak_g = 0;
   start_compare = 0;
@@ -358,8 +354,6 @@ dynSparseMatrix::Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM,
   test_mxMalloc(line_done, __LINE__, __FILE__, __func__, Size*sizeof(bool));
 
   mem_mngr.init_CHUNK_BLCK_SIZE(u_count);
-  g_save_op = nullptr;
-  g_nop_all = 0;
   int i = Size*sizeof(NonZeroElem *);
   FNZE_R = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(FNZE_R, __LINE__, __FILE__, __func__, i);
@@ -980,8 +974,6 @@ dynSparseMatrix::Init_GE(int periods, int y_kmin, int y_kmax, int Size, const ma
   line_done = static_cast<bool *>(mxMalloc(Size*periods*sizeof(bool)));
   test_mxMalloc(line_done, __LINE__, __FILE__, __func__, Size*periods*sizeof(bool));
   mem_mngr.init_CHUNK_BLCK_SIZE(u_count);
-  g_save_op = nullptr;
-  g_nop_all = 0;
   int i = (periods+y_kmax+1)*Size*sizeof(NonZeroElem *);
   FNZE_R = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(FNZE_R, __LINE__, __FILE__, __func__, i);
@@ -3570,7 +3562,6 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
                     }
                 }
             }
-          nop2 = nop1;
           nop1 = nop;
         }
     }
@@ -3579,7 +3570,6 @@ dynSparseMatrix::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bo
   mxFree(pivj_v);
   mxFree(pivk_v);
   mxFree(NR);
-  nop_all += nop;
   if (symbolic)
     {
       if (save_op)
@@ -3746,8 +3736,6 @@ dynSparseMatrix::Simulate_One_Boundary(int block_num, int y_size, int size)
           if (!A_m)
             throw FatalException{"In Simulate_One_Boundary, can't allocate A_m matrix"};
           Init_Matlab_Sparse_Simple(size, IM_i, A_m, b_m, zero_solution, x0_m);
-          A_m_save = mxDuplicateArray(A_m);
-          b_m_save = mxDuplicateArray(b_m);
         }
       else
         {

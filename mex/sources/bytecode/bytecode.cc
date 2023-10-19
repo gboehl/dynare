@@ -180,7 +180,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   mxArray *block_structur = nullptr;
   size_t i, row_y = 0, col_y = 0, row_x = 0, col_x = 0;
   size_t steady_row_y, steady_col_y;
-  int y_kmin = 0, y_kmax = 0, y_decal = 0;
+  int y_kmin = 0, y_kmax = 0;
   int periods {1};
   double *direction;
   bool steady_state = false;
@@ -385,11 +385,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         y_kmax = static_cast<int>(floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field)))));
       else
         mexErrMsgTxt("maximum_lead is not a field of M_");
-      field = mxGetFieldNumber(M_, "maximum_endo_lag");
-      if (field >= 0)
-        y_decal = max(0, y_kmin-static_cast<int>(floor(*(mxGetPr(mxGetFieldByNumber(M_, 0, field))))));
-      else
-        mexErrMsgTxt("maximum_endo_lag is not a field of M_");
     }
 
   int field = mxGetFieldNumber(options_, "verbosity");
@@ -504,8 +499,8 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   Evaluate evaluator {codfile, steady_state, symbol_table};
 
   Interpreter interprete {evaluator, params, y, ya, x, steady_yd, direction, static_cast<int>(row_y), static_cast<int>(row_x),
-                          periods, y_kmin, y_kmax, maxit_, solve_tolf, y_decal,
-                          markowitz_c, file_name, minimal_solving_periods, stack_solve_algo,
+                          periods, y_kmin, y_kmax, maxit_, solve_tolf,
+                          markowitz_c, minimal_solving_periods, stack_solve_algo,
                           solve_algo, global_temporary_terms, print, GlobalTemporaryTerms,
                           steady_state, block_decomposed, static_cast<int>(col_x), static_cast<int>(col_y), symbol_table, verbosity};
   bool r;

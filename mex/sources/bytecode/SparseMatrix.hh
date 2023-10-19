@@ -145,17 +145,10 @@ protected:
 
   Evaluate &evaluator;
 
-  stack<double> Stack;
-  int nb_prologue_table_u, nb_first_table_u, nb_middle_table_u, nb_last_table_u;
-  int nb_prologue_table_y, nb_first_table_y, nb_middle_table_y, nb_last_table_y;
-  int middle_count_loop;
   fstream SaveCode;
-  string filename;
-  int max_u, min_u;
 
   Mem_Mngr mem_mngr;
   vector<int> u_liste;
-  map<pair<int, int>, NonZeroElem *> Mapped_Array;
   int *NbNZRow, *NbNZCol;
   NonZeroElem **FNZE_R, **FNZE_C;
   int u_count_init;
@@ -166,29 +159,21 @@ protected:
   bool *line_done;
   bool symbolic, alt_symbolic;
   int alt_symbolic_count;
-  int *g_save_op;
-  int first_count_loop;
-  int g_nop_all;
   double markowitz_c_s;
   double res1a;
-  long int nop_all, nop1, nop2;
+  long int nop1;
   map<tuple<int, int, int>, int> IM_i;
   int u_count_alloc, u_count_alloc_save;
-  vector<double *> jac;
-  double *jcb;
   double slowc, slowc_save, prev_slowc_save, markowitz_c;
-  int y_decal;
-  int *index_equa;
+  int *index_equa; // Actually unused
   int u_count, tbreak_g;
   int iter;
   int start_compare;
   int restart;
-  double g_lambda1, g_lambda2, gp_0;
   double lu_inc_tol;
 
   SuiteSparse_long *Ap_save, *Ai_save;
   double *Ax_save, *b_save;
-  mxArray *A_m_save, *b_m_save;
 
   int stack_solve_algo, solve_algo;
   int minimal_solving_periods;

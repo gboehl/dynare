@@ -30,8 +30,8 @@ constexpr double BIG = 1.0e+8, SMALL = 1.0e-5;
 Interpreter::Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
                          double *direction_arg, int y_size_arg,
                          int nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
-                         int maxit_arg_, double solve_tolf_arg, int y_decal_arg, double markowitz_c_arg,
-                         string &filename_arg, int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
+                         int maxit_arg_, double solve_tolf_arg, double markowitz_c_arg,
+                         int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
                          bool global_temporary_terms_arg, bool print_arg, mxArray *GlobalTemporaryTerms_arg,
                          bool steady_state_arg, bool block_decomposed_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg, int verbosity_arg)
 : dynSparseMatrix {evaluator_arg, y_size_arg, y_kmin_arg, y_kmax_arg, steady_state_arg, block_decomposed_arg, periods_arg, minimal_solving_periods_arg, symbol_table_arg, verbosity_arg}
@@ -48,9 +48,7 @@ Interpreter::Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_
   solve_tolf = solve_tolf_arg;
   slowc = 1;
   slowc_save = 1;
-  y_decal = y_decal_arg;
   markowitz_c = markowitz_c_arg;
-  filename = filename_arg;
   T = nullptr;
   minimal_solving_periods = minimal_solving_periods_arg;
   stack_solve_algo = stack_solve_algo_arg;
