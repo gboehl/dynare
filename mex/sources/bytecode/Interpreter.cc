@@ -1374,30 +1374,30 @@ Interpreter::Init_Matlab_Sparse_Simple(const mxArray *A_m, const mxArray *b_m, c
   return zero_solution;
 }
 
-void
-Interpreter::Init_UMFPACK_Sparse_Simple(int Size, const map<tuple<int, int, int>, int> &IM, SuiteSparse_long **Ap, SuiteSparse_long **Ai, double **Ax, double **b, bool &zero_solution, const mxArray *x0_m) const
+tuple<bool, SuiteSparse_long *, SuiteSparse_long *, double *, double *>
+Interpreter::Init_UMFPACK_Sparse_Simple(const mxArray *x0_m) const
 {
-  *b = static_cast<double *>(mxMalloc(Size * sizeof(double)));
-  test_mxMalloc(*b, __LINE__, __FILE__, __func__, Size * sizeof(double));
-  if (!(*b))
+  double *b = static_cast<double *>(mxMalloc(size * sizeof(double)));
+  test_mxMalloc(b, __LINE__, __FILE__, __func__, size * sizeof(double));
+  if (!b)
     throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve b vector"};
   double *x0 = mxGetPr(x0_m);
   if (!x0)
     throw FatalException{"In Init_UMFPACK_Sparse_Simple, can't retrieve x0 vector"};
-  *Ap = static_cast<SuiteSparse_long *>(mxMalloc((Size+1) * sizeof(SuiteSparse_long)));
-  test_mxMalloc(*Ap, __LINE__, __FILE__, __func__, (Size+1) * sizeof(SuiteSparse_long));
-  if (!(*Ap))
+  SuiteSparse_long *Ap = static_cast<SuiteSparse_long *>(mxMalloc((size+1) * sizeof(SuiteSparse_long)));
+  test_mxMalloc(Ap, __LINE__, __FILE__, __func__, (size+1) * sizeof(SuiteSparse_long));
+  if (!Ap)
     throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ap index vector"};
-  size_t prior_nz = IM.size();
-  *Ai = static_cast<SuiteSparse_long *>(mxMalloc(prior_nz * sizeof(SuiteSparse_long)));
-  test_mxMalloc(*Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
-  if (!(*Ai))
+  size_t prior_nz = IM_i.size();
+  SuiteSparse_long *Ai = static_cast<SuiteSparse_long *>(mxMalloc(prior_nz * sizeof(SuiteSparse_long)));
+  test_mxMalloc(Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
+  if (!Ai)
     throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ai index vector"};
-  *Ax = static_cast<double *>(mxMalloc(prior_nz * sizeof(double)));
-  test_mxMalloc(*Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
-  if (!(*Ax))
+  double *Ax = static_cast<double *>(mxMalloc(prior_nz * sizeof(double)));
+  test_mxMalloc(Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
+  if (!Ax)
     throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve Ax matrix"};
-  for (int i = 0; i < Size; i++)
+  for (int i = 0; i < size; i++)
     {
       int eq = index_vara[i];
       ya[eq+it_*y_size] = y[eq+it_*y_size];
@@ -1408,44 +1408,41 @@ Interpreter::Init_UMFPACK_Sparse_Simple(int Size, const map<tuple<int, int, int>
   unsigned int NZE = 0;
   int last_var = 0;
   double cum_abs_sum = 0;
-  for (int i = 0; i < Size; i++)
+  for (int i = 0; i < size; i++)
     {
-      (*b)[i] = u[i];
-      cum_abs_sum += fabs((*b)[i]);
+      b[i] = u[i];
+      cum_abs_sum += fabs(b[i]);
       x0[i] = y[i];
     }
-  if (cum_abs_sum < 1e-20)
-    zero_solution = true;
-  else
-    zero_solution = false;
+  bool zero_solution {cum_abs_sum < 1e-20};
 
-  (*Ap)[0] = 0;
+  Ap[0] = 0;
   last_var = 0;
-  for (auto &[key, index] : IM)
+  for (auto &[key, index] : IM_i)
     {
       auto &[var, ignore, eq] = key;
       if (var != last_var)
         {
-          (*Ap)[1+last_var] = NZE;
+          Ap[1+last_var] = NZE;
           last_var = var;
         }
 #ifdef DEBUG
-      if (index < 0 || index >= u_count_alloc || index > Size + Size*Size)
+      if (index < 0 || index >= u_count_alloc || index > size + size*size)
         throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(index)
                              + ") out of range for u vector max = "
-                             + to_string(Size+Size*Size)
+                             + to_string(size+size*size)
                              + " allocated = " + to_string(u_count_alloc)};
       if (NZE >= max_nze)
         throw FatalException{"In Init_Matlab_Sparse_Simple, exceeds the capacity of A_m sparse matrix"};
 #endif
-      (*Ax)[NZE] = u[index];
-      (*Ai)[NZE] = eq;
+      Ax[NZE] = u[index];
+      Ai[NZE] = eq;
       NZE++;
 #ifdef DEBUG
-      if (eq < 0 || eq >= Size)
+      if (eq < 0 || eq >= size)
         throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(eq)
                              + ") out of range for b vector"};
-      if (var < 0 || var >= Size)
+      if (var < 0 || var >= size)
         throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(var)
                              + ") out of range for index_vara vector"};
       if (index_vara[var] < 0 || index_vara[var] >= y_size)
@@ -1455,7 +1452,9 @@ Interpreter::Init_UMFPACK_Sparse_Simple(int Size, const map<tuple<int, int, int>
                              + " (0)"};
 #endif
     }
-  (*Ap)[Size] = NZE;
+  Ap[size] = NZE;
+
+  return { zero_solution, Ap, Ai, Ax, b };
 }
 
 int
@@ -4606,7 +4605,7 @@ Interpreter::Simulate_One_Boundary(int block_num, int y_size, int size)
         }
       else
         {
-          Init_UMFPACK_Sparse_Simple(size, IM_i, &Ap, &Ai, &Ax, &b, zero_solution, x0_m);
+          tie(zero_solution, Ap, Ai, Ax, b) = Init_UMFPACK_Sparse_Simple(x0_m);
           if (Ap_save[size] != Ap[size])
             {
               mxFree(Ai_save);
