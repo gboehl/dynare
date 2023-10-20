@@ -187,9 +187,6 @@ private:
   void Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic);
   bool Solve_ByteCode_Sparse_GaussianElimination();
   void Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m);
-  static void Print_UMFPack(const SuiteSparse_long *Ap, const SuiteSparse_long *Ai, const double *Ax, int n);
-  static void Printfull_UMFPack(const SuiteSparse_long *Ap, const SuiteSparse_long *Ai, const double *Ax, const double *b, int n);
-  static void PrintM(int n, const double *Ax, const mwIndex *Ap, const mwIndex *Ai);
   void Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_, const vector_table_conditional_local_type &vector_table_conditional_local);
   void Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_);
 

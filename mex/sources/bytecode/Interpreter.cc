@@ -1703,33 +1703,6 @@ Interpreter::Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditi
 }
 
 void
-Interpreter::PrintM(int n, const double *Ax, const mwIndex *Ap, const mwIndex *Ai)
-{
-  int nnz = Ap[n];
-  auto *A = static_cast<double *>(mxMalloc(n * n * sizeof(double)));
-  test_mxMalloc(A, __LINE__, __FILE__, __func__, n * n * sizeof(double));
-  fill_n(A, n * n, 0);
-  int k = 0;
-  for (int i = 0; i < n; i++)
-    for (int j = Ap[i]; j < static_cast<int>(Ap[i + 1]); j++)
-      {
-        int row = Ai[j];
-        A[row * n + i] = Ax[j];
-        k++;
-      }
-  if (nnz != k)
-    mexPrintf("Problem nnz(%d) != number of elements(%d)\n", nnz, k);
-  mexPrintf("----------------------\n");
-  for (int i = 0; i < n; i++)
-    {
-      for (int j = 0; j < n; j++)
-        mexPrintf("%-6.3f ", A[i * n + j]);
-      mexPrintf("\n");
-    }
-  mxFree(A);
-}
-
-void
 Interpreter::Init_Matlab_Sparse(const mxArray *A_m, const mxArray *b_m, const mxArray *x0_m) const
 {
   double *b = mxGetPr(b_m);
@@ -3154,33 +3127,6 @@ Interpreter::End_Solver()
           Numeric = nullptr;
         }
     }
-}
-
-void
-Interpreter::Printfull_UMFPack(const SuiteSparse_long *Ap, const SuiteSparse_long *Ai, const double *Ax, const double *b, int n)
-{
-  double A[n*n];
-  for (int i = 0; i < n*n; i++)
-    A[i] = 0;
-  int k = 0;
-  for (int i = 0; i < n; i++)
-    for (int j = Ap[i]; j < Ap[i+1]; j++)
-      A[Ai[j] * n + i] = Ax[k++];
-  for (int i = 0; i < n; i++)
-    {
-      for (int j = 0; j < n; j++)
-        mexPrintf("%4.1f ", A[i*n+j]);
-      mexPrintf("     %6.3f\n", b[i]);
-    }
-}
-
-void
-Interpreter::Print_UMFPack(const SuiteSparse_long *Ap, const SuiteSparse_long *Ai, const double *Ax, int n)
-{
-  int k = 0;
-  for (int i = 0; i < n; i++)
-    for (int j = Ap[i]; j < Ap[i+1]; j++)
-      mexPrintf("(%d, %d)    %f\n", Ai[j]+1, i+1, Ax[k++]);
 }
 
 void
