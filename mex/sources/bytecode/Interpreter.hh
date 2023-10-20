@@ -180,7 +180,7 @@ private:
   tuple<SuiteSparse_long *, SuiteSparse_long *, double *, double *> Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditional_local_type &vector_table_conditional_local) const;
   bool Init_Matlab_Sparse_Simple(const mxArray *A_m, const mxArray *b_m, const mxArray *x0_m) const;
   tuple<bool, SuiteSparse_long *, SuiteSparse_long *, double *, double *> Init_UMFPACK_Sparse_Simple(const mxArray *x0_m) const;
-  void Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM, bool &zero_solution);
+  bool Simple_Init();
   void End_GE();
   tuple<bool, double, double, double, double> mnbrak(double &ax, double &bx);
   pair<bool, double> golden(double ax, double bx, double cx, double tol);

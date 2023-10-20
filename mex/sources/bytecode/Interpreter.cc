@@ -1214,26 +1214,26 @@ Interpreter::Read_SparseMatrix(const string &file_name, bool two_boundaries)
     SaveCode.read(reinterpret_cast<char *>(&index_equa[j]), sizeof(*index_equa));
 }
 
-void
-Interpreter::Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM, bool &zero_solution)
+bool
+Interpreter::Simple_Init()
 {
-  pivot = static_cast<int *>(mxMalloc(Size*sizeof(int)));
-  test_mxMalloc(pivot, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  pivot_save = static_cast<int *>(mxMalloc(Size*sizeof(int)));
-  test_mxMalloc(pivot_save, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  pivotk = static_cast<int *>(mxMalloc(Size*sizeof(int)));
-  test_mxMalloc(pivotk, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  pivotv = static_cast<double *>(mxMalloc(Size*sizeof(double)));
-  test_mxMalloc(pivotv, __LINE__, __FILE__, __func__, Size*sizeof(double));
-  pivotva = static_cast<double *>(mxMalloc(Size*sizeof(double)));
-  test_mxMalloc(pivotva, __LINE__, __FILE__, __func__, Size*sizeof(double));
-  b = static_cast<int *>(mxMalloc(Size*sizeof(int)));
-  test_mxMalloc(b, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  line_done = static_cast<bool *>(mxMalloc(Size*sizeof(bool)));
-  test_mxMalloc(line_done, __LINE__, __FILE__, __func__, Size*sizeof(bool));
+  pivot = static_cast<int *>(mxMalloc(size*sizeof(int)));
+  test_mxMalloc(pivot, __LINE__, __FILE__, __func__, size*sizeof(int));
+  pivot_save = static_cast<int *>(mxMalloc(size*sizeof(int)));
+  test_mxMalloc(pivot_save, __LINE__, __FILE__, __func__, size*sizeof(int));
+  pivotk = static_cast<int *>(mxMalloc(size*sizeof(int)));
+  test_mxMalloc(pivotk, __LINE__, __FILE__, __func__, size*sizeof(int));
+  pivotv = static_cast<double *>(mxMalloc(size*sizeof(double)));
+  test_mxMalloc(pivotv, __LINE__, __FILE__, __func__, size*sizeof(double));
+  pivotva = static_cast<double *>(mxMalloc(size*sizeof(double)));
+  test_mxMalloc(pivotva, __LINE__, __FILE__, __func__, size*sizeof(double));
+  b = static_cast<int *>(mxMalloc(size*sizeof(int)));
+  test_mxMalloc(b, __LINE__, __FILE__, __func__, size*sizeof(int));
+  line_done = static_cast<bool *>(mxMalloc(size*sizeof(bool)));
+  test_mxMalloc(line_done, __LINE__, __FILE__, __func__, size*sizeof(bool));
 
   mem_mngr.init_CHUNK_BLCK_SIZE(u_count);
-  int i = Size*sizeof(NonZeroElem *);
+  int i = size*sizeof(NonZeroElem *);
   FNZE_R = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(FNZE_R, __LINE__, __FILE__, __func__, i);
   FNZE_C = static_cast<NonZeroElem **>(mxMalloc(i));
@@ -1242,12 +1242,12 @@ Interpreter::Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM, boo
   test_mxMalloc(temp_NZE_R, __LINE__, __FILE__, __func__, i);
   auto **temp_NZE_C = static_cast<NonZeroElem **>(mxMalloc(i));
   test_mxMalloc(temp_NZE_C, __LINE__, __FILE__, __func__, i);
-  i = Size*sizeof(int);
+  i = size*sizeof(int);
   NbNZRow = static_cast<int *>(mxMalloc(i));
   test_mxMalloc(NbNZRow, __LINE__, __FILE__, __func__, i);
   NbNZCol = static_cast<int *>(mxMalloc(i));
   test_mxMalloc(NbNZCol, __LINE__, __FILE__, __func__, i);
-  for (i = 0; i < Size; i++)
+  for (i = 0; i < size; i++)
     {
       line_done[i] = false;
       FNZE_C[i] = nullptr;
@@ -1257,8 +1257,8 @@ Interpreter::Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM, boo
       NbNZRow[i] = 0;
       NbNZCol[i] = 0;
     }
-  int u_count1 = Size;
-  for (auto &[key, value] : IM)
+  int u_count1 = size;
+  for (auto &[key, value] : IM_i)
     {
       auto &[eq, var, lag] = key;
       if (lag == 0) /*Build the index for sparse matrix containing the jacobian : u*/
@@ -1286,19 +1286,18 @@ Interpreter::Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM, boo
         }
     }
   double cum_abs_sum = 0;
-  for (int i = 0; i < Size; i++)
+  for (int i = 0; i < size; i++)
     {
       b[i] = i;
       cum_abs_sum += fabs(u[i]);
     }
-  if (cum_abs_sum < 1e-20)
-    zero_solution = true;
-  else
-    zero_solution = false;
+  bool zero_solution { cum_abs_sum < 1e-20 };
 
   mxFree(temp_NZE_R);
   mxFree(temp_NZE_C);
   u_count = u_count1;
+
+  return zero_solution;
 }
 
 bool
@@ -3501,8 +3500,7 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, bool is_two_bound
 void
 Interpreter::Singular_display()
 {
-  bool zero_solution;
-  Simple_Init(size, IM_i, zero_solution);
+  Simple_Init();
   mxArray *rhs[] = { mxCreateDoubleMatrix(size, size, mxREAL) };
   double *pind = mxGetPr(rhs[0]);
   for (int j = 0; j < size * size; j++)
@@ -4522,7 +4520,7 @@ Interpreter::Simulate_One_Boundary()
   bool zero_solution;
 
   if ((solve_algo == 5 && steady_state) || (stack_solve_algo == 5 && !steady_state))
-    Simple_Init(size, IM_i, zero_solution);
+    zero_solution = Simple_Init();
   else
     {
       x0_m = mxCreateDoubleMatrix(size, 1, mxREAL);
