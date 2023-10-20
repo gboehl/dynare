@@ -2714,110 +2714,115 @@ Interpreter::compute_complete(double lambda)
   return { true, crit };
 }
 
-bool
-Interpreter::mnbrak(double *ax, double *bx, double *cx, double *fa, double *fb, double *fc)
+tuple<bool, double, double, double, double>
+Interpreter::mnbrak(double &ax, double &bx)
 {
   constexpr double GOLD = 1.618034;
   constexpr double GLIMIT = 100.0;
   constexpr double TINY = 1.0e-20;
 
+  constexpr tuple failval = { false, numeric_limits<double>::quiet_NaN(),
+                              numeric_limits<double>::quiet_NaN(),
+                              numeric_limits<double>::quiet_NaN(),
+                              numeric_limits<double>::quiet_NaN() };
+
   auto sign = [](double a, double b) { return b >= 0.0 ? fabs(a) : -fabs(a); };
 
-  bool success;
-
   if (verbosity >= 2)
-    mexPrintf("bracketing *ax=%f, *bx=%f\n", *ax, *bx);
+    mexPrintf("bracketing ax=%f, bx=%f\n", ax, bx);
 
-  tie(success, *fa) = compute_complete(*ax);
+  auto [success, fa] = compute_complete(ax);
   if (!success)
-    return false;
+    return failval;
 
-  tie(success, *fb) = compute_complete(*bx);
-  if (!success)
-    return false;
+  auto [success2, fb] = compute_complete(bx);
+  if (!success2)
+    return failval;
 
-  if (*fb > *fa)
+  if (fb > fa)
     {
-      swap(*ax, *bx);
-      swap(*fa, *fb);
+      swap(ax, bx);
+      swap(fa, fb);
     }
 
-  *cx = (*bx)+GOLD*(*bx-*ax);
-  tie(success, *fc) = compute_complete(*cx);
-  if (!success)
-    return false;
+  double cx = bx+GOLD*(bx-ax);
+  auto [success3, fc] = compute_complete(cx);
+  if (!success3)
+    return failval;
 
-  while (*fb > *fc)
+  while (fb > fc)
     {
-      double r = (*bx-*ax)*(*fb-*fc);
-      double q = (*bx-*cx)*(*fb-*fa);
-      double u = (*bx)-((*bx-*cx)*q-(*bx-*ax)*r)
+      double r = (bx-ax)*(fb-fc);
+      double q = (bx-cx)*(fb-fa);
+      double u = bx-((bx-cx)*q-(bx-ax)*r)
         /(2.0*sign(fmax(fabs(q-r), TINY), q-r));
-      double ulim = (*bx)+GLIMIT*(*cx-*bx);
+      double ulim = bx+GLIMIT*(cx-bx);
       double fu;
-      if ((*bx-u)*(u-*cx) > 0.0)
+      if ((bx-u)*(u-cx) > 0.0)
         {
           tie(success, fu) = compute_complete(u);
           if (!success)
-            return false;
-          if (fu < *fc)
+            return failval;
+          if (fu < fc)
             {
-              *ax = (*bx);
-              *bx = u;
-              *fa = (*fb);
-              *fb = fu;
-              return true;
+              ax = bx;
+              bx = u;
+              fa = fb;
+              fb = fu;
+              goto success;
             }
-          else if (fu > *fb)
+          else if (fu > fb)
             {
-              *cx = u;
-              *fc = fu;
-              return true;
+              cx = u;
+              fc = fu;
+              goto success;
             }
-          u = (*cx)+GOLD*(*cx-*bx);
+          u = cx+GOLD*(cx-bx);
           tie(success, fu) = compute_complete(u);
           if (!success)
-            return false;
+            return failval;
         }
-      else if ((*cx-u)*(u-ulim) > 0.0)
+      else if ((cx-u)*(u-ulim) > 0.0)
         {
           tie(success, fu) = compute_complete(u);
           if (!success)
-            return false;
-          if (fu < *fc)
+            return failval;
+          if (fu < fc)
             {
-              *bx = *cx;
-              *cx = u;
-              u = *cx+GOLD*(*cx-*bx);
-              *fb = *fc;
-              *fc = fu;
+              bx = cx;
+              cx = u;
+              u = cx+GOLD*(cx-bx);
+              fb = fc;
+              fc = fu;
               tie(success, fu) = compute_complete(u);
               if (!success)
-                return false;
+                return failval;
             }
         }
-      else if ((u-ulim)*(ulim-*cx) >= 0.0)
+      else if ((u-ulim)*(ulim-cx) >= 0.0)
         {
           u = ulim;
           tie(success, fu) = compute_complete(u);
           if (!success)
-            return false;
+            return failval;
         }
       else
         {
-          u = (*cx)+GOLD*(*cx-*bx);
+          u = cx+GOLD*(cx-bx);
           tie(success, fu) = compute_complete(u);
           if (!success)
-            return false;
+            return failval;
         }
-      *ax = *bx;
-      *bx = *cx;
-      *cx = u;
-      *fa = *fb;
-      *fb = *fc;
-      *fc = fu;
+      ax = bx;
+      bx = cx;
+      cx = u;
+      fa = fb;
+      fb = fc;
+      fc = fu;
     }
-  return true;
+
+ success:
+  return { true, cx, fa, fb, fc };
 }
 
 bool
@@ -5023,9 +5028,10 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
     }
   if (!steady_state && stack_solve_algo == 4)
     {
-      double ax = -0.1, bx = 1.1, cx = 0.5, fa, fb, fc, xmin;
+      double ax = -0.1, bx = 1.1, xmin;
 
-      if (!mnbrak(&ax, &bx, &cx, &fa, &fb, &fc))
+      auto [success, cx, fa, fb, fc] = mnbrak(ax, bx);
+      if (!success)
         return;
       if (!golden(ax, bx, cx, 1e-1, solve_tolf, &xmin))
         return;

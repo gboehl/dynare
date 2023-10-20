@@ -182,7 +182,7 @@ private:
   tuple<bool, SuiteSparse_long *, SuiteSparse_long *, double *, double *> Init_UMFPACK_Sparse_Simple(const mxArray *x0_m) const;
   void Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM, bool &zero_solution);
   void End_GE();
-  bool mnbrak(double *ax, double *bx, double *cx, double *fa, double *fb, double *fc);
+  tuple<bool, double, double, double, double> mnbrak(double &ax, double &bx);
   bool golden(double ax, double bx, double cx, double tol, double solve_tolf, double *xmin);
   void Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool symbolic, int Block_number);
   bool Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int it_);
