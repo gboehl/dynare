@@ -1978,7 +1978,7 @@ Interpreter::End_GE()
 }
 
 bool
-Interpreter::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, int periods, long nop4, int Size)
+Interpreter::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, long nop4)
 {
   long nop = nop4/2;
   double r = 0.0;
@@ -2022,8 +2022,8 @@ Interpreter::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, int
   if (OK)
     {
       for (int i = beg_t; i < periods; i++)
-        for (int j = 0; j < Size; j++)
-          pivot[i*Size+j] = pivot[(i-1)*Size+j]+Size;
+        for (int j = 0; j < size; j++)
+          pivot[i*size+j] = pivot[(i-1)*size+j]+size;
       if (max_save_ops_first >= u_count_alloc)
         {
           u_count_alloc += max_save_ops_first;
@@ -4330,7 +4330,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
                 }
               else if (save_opa && save_opaa)
                 {
-                  if (compare(save_op, save_opa, save_opaa, t, periods, nop, size))
+                  if (compare(save_op, save_opa, save_opaa, t, nop))
                     {
                       tbreak = t;
                       tbreak_g = tbreak;

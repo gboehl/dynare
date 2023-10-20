@@ -197,7 +197,7 @@ private:
   bool solve_linear(bool do_check_and_correct);
   void solve_non_linear();
   string preconditioner_print_out(string s, int preconditioner, bool ss);
-  bool compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, int periods, long nop4, int Size);
+  bool compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, long nop4);
   void Insert(int r, int c, int u_index, int lag_index);
   void Delete(int r, int c);
   pair<int, NonZeroElem *> At_Row(int r) const;
