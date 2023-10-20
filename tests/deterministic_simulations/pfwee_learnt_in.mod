@@ -100,7 +100,7 @@ perfect_foresight_solver(true);
 % Information arriving in period 2 (temp shock now + permanent shock in future)
 oo_.exo_simul(3,1) = 1.3;
 oo_.exo_steady_state = 1.1;
-oo_.exo_simul(end, 1) = oo_.exo_steady_state;
+oo_.exo_simul(4:end, 1) = oo_.exo_steady_state;
 oo_.steady_state = evaluate_steady_state(oo_.steady_state, oo_.exo_steady_state, M_, options_, true);
 oo_.endo_simul(:, end) = oo_.steady_state;
 options_.periods = 6;
@@ -116,7 +116,8 @@ oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 oo_.exo_simul(4,1) = 1.4;
 oo_.exo_steady_state = 1.1+0.1;
 oo_.exo_simul(8,1) = (1.5/1.2)*oo_.exo_steady_state;
-oo_.exo_simul(end, 1) = oo_.exo_steady_state;
+oo_.exo_simul(5:7, 1) = oo_.exo_steady_state;
+oo_.exo_simul(9:end, 1) = oo_.exo_steady_state;
 oo_.steady_state = evaluate_steady_state(oo_.steady_state, oo_.exo_steady_state, M_, options_, true);
 oo_.endo_simul(:, end) = oo_.steady_state;
 options_.periods = 5;
@@ -129,10 +130,10 @@ oo_.endo_simul = [ saved_endo oo_.endo_simul ];
 oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 
 % Information arriving in period 6 (temp shocks + permanent shock)
-oo_.exo_simul(7,1) = 1*0.8;
+oo_.exo_simul(7,1) = (1.1+0.1)*0.8;
 oo_.exo_simul(8,1) = 1.5*0.8;
 oo_.exo_steady_state = (1.1+0.1)*0.75;
-oo_.exo_simul(end, 1) = oo_.exo_steady_state;
+oo_.exo_simul(9:end, 1) = oo_.exo_steady_state;
 oo_.steady_state = evaluate_steady_state(oo_.steady_state, oo_.exo_steady_state, M_, options_, true);
 oo_.endo_simul(:, end) = oo_.steady_state;
 options_.periods = 2;

@@ -4110,6 +4110,17 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
     Note that an ``endval(learnt_in=1)`` block is equivalent to a regular
     :bck:`endval` block.
 
+    Also note that, similarly to the regular :bck:`endval` block, any variable
+    specified in this block will jump to its new value in the same period as
+    the one in which the information is learnt; and, from the perspective of
+    that period, the variable is expected by agents to remain to that value
+    until the end of the simulation. In particular, this means that any
+    temporary shock that may have been anticipated on that variable (as
+    specified through a ``shocks(learnt_in=...)`` block for a previous
+    informational period) will be overridden; if this is not the desired
+    behaviour, then the temporary shock will have to be reinstated through
+    another ``shocks(learnt_in=...)`` block.
+
     It is possible to express the terminal condition by specifying the level of
     the exogenous variable (using an equal symbol, as in a regular
     :bck:`endval` blocks without the ``learnt_in`` option). But it is also
@@ -4138,6 +4149,14 @@ and ``endval`` blocks which are given a special ``learnt_in`` option.
 
     Those values will be the realized ones, unless there is another
     ``endval(learnt_in=p)`` block with ``p>3``.
+
+    The three variables will jump to their new value in period 3 and, from the
+    perspective of period 3, they are expected by agents to remain there until
+    the end of the simulation. In particular, any temporary shock on either
+    ``x``, ``y`` or ``z`` specified through a regular ``shocks`` block or
+    through a ``shocks(learnt_in=2)`` block will be overridden. If this is not
+    the desired behaviour, a ``shocks(learnt_in=3)`` block will have to be
+    added to reinstate the temporary shock.
 
 .. block:: mshocks(learnt_in=INTEGER) ;
            mshocks(learnt_in=INTEGER,OPTIONS...) ;

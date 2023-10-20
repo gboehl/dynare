@@ -92,6 +92,7 @@ else
     %% Construct information sets for subsequent informational periods
     for p = 2:periods
         oo_.pfwee.terminal_info(:, p) = oo_.pfwee.terminal_info(:, p-1);
+        oo_.pfwee.shocks_info(:, :, p) = oo_.pfwee.shocks_info(:, :, p-1);
         if ~isempty(M_.learnt_endval)
             idx = find([M_.learnt_endval.learnt_in] == p);
             for i = 1:length(idx)
@@ -101,15 +102,15 @@ else
                     case 'level'
                         oo_.pfwee.terminal_info(exo_id, p) = M_.learnt_endval(j).value;
                     case 'add'
-                        oo_.pfwee.terminal_info(exo_id, p) = oo_.pfwee.terminal_info(exo_id, p) + M_.learnt_endval(j).value;
+                        oo_.pfwee.terminal_info(exo_id, p) = oo_.pfwee.terminal_info(exo_id, p-1) + M_.learnt_endval(j).value;
                     case 'multiply'
-                        oo_.pfwee.terminal_info(exo_id, p) = oo_.pfwee.terminal_info(exo_id, p) * M_.learnt_endval(j).value;
+                        oo_.pfwee.terminal_info(exo_id, p) = oo_.pfwee.terminal_info(exo_id, p-1) * M_.learnt_endval(j).value;
                     otherwise
                         error('Unknown type in M_.learnt_endval')
                 end
+                oo_.pfwee.shocks_info(exo_id, p:end, p) = oo_.pfwee.terminal_info(exo_id, p);
             end
         end
-        oo_.pfwee.shocks_info(:, :, p) = oo_.pfwee.shocks_info(:, :, p-1);
         if ~isempty(M_.learnt_shocks)
             idx = find([M_.learnt_shocks.learnt_in] == p);
             for i = 1:length(idx)
@@ -120,9 +121,9 @@ else
                     case 'level'
                         oo_.pfwee.shocks_info(exo_id, prds, p) = M_.learnt_shocks(j).value;
                     case 'add'
-                        oo_.pfwee.shocks_info(exo_id, prds, p) = oo_.pfwee.shocks_info(exo_id, prds, p) + M_.learnt_shocks(j).value;
+                        oo_.pfwee.shocks_info(exo_id, prds, p) = oo_.pfwee.shocks_info(exo_id, prds, p-1) + M_.learnt_shocks(j).value;
                     case 'multiply'
-                        oo_.pfwee.shocks_info(exo_id, prds, p) = oo_.pfwee.shocks_info(exo_id, prds, p) .* M_.learnt_shocks(j).value;
+                        oo_.pfwee.shocks_info(exo_id, prds, p) = oo_.pfwee.shocks_info(exo_id, prds, p-1) .* M_.learnt_shocks(j).value;
                     case 'multiply_steady_state'
                         oo_.pfwee.shocks_info(exo_id, prds, p) = oo_.pfwee.terminal_info(exo_id, p) * M_.learnt_shocks(j).value;
                     otherwise
