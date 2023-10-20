@@ -2115,21 +2115,21 @@ Interpreter::compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, lon
 }
 
 int
-Interpreter::complete(int beg_t, int Size, int periods, int *b)
+Interpreter::complete(int beg_t)
 {
   double yy = 0.0;
 
-  int size_of_save_code = (1+y_kmax)*Size*(Size+1+4)/2*4;
+  int size_of_save_code = (1+y_kmax)*size*(size+1+4)/2*4;
   int *save_code = static_cast<int *>(mxMalloc(size_of_save_code*sizeof(int)));
   test_mxMalloc(save_code, __LINE__, __FILE__, __func__, size_of_save_code*sizeof(int));
-  int size_of_diff = (1+y_kmax)*Size*(Size+1+4);
+  int size_of_diff = (1+y_kmax)*size*(size+1+4);
   int *diff = static_cast<int *>(mxMalloc(size_of_diff*sizeof(int)));
   test_mxMalloc(diff, __LINE__, __FILE__, __func__, size_of_diff*sizeof(int));
   long cal_y = y_size*y_kmin;
 
-  long i = (beg_t+1)*Size-1;
+  long i = (beg_t+1)*size-1;
   long nop = 0;
-  for (long j = i; j > i-Size; j--)
+  for (long j = i; j > i-size; j--)
     {
       long pos = pivot[j];
       NonZeroElem *first;
@@ -2178,9 +2178,9 @@ Interpreter::complete(int beg_t, int Size, int periods, int *b)
 #endif
       nop += 4;
     }
-  i = beg_t*Size-1;
+  i = beg_t*size-1;
   long nop1 = 0, nopa = 0;
-  for (long j = i; j > i-Size; j--)
+  for (long j = i; j > i-size; j--)
     {
       long pos = pivot[j];
       NonZeroElem *first;
@@ -2263,23 +2263,23 @@ Interpreter::complete(int beg_t, int Size, int periods, int *b)
 }
 
 void
-Interpreter::bksub(int tbreak, int last_period, int Size, double slowc_l)
+Interpreter::bksub(int tbreak, int last_period)
 {
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     y[i] = ya[i];
   if (symbolic && tbreak)
-    last_period = complete(tbreak, Size, periods, b);
+    last_period = complete(tbreak);
   else
     last_period = periods;
   for (int t = last_period+y_kmin-1; t >= y_kmin; t--)
     {
-      int ti = (t-y_kmin)*Size;
-      int cal = y_kmin*Size;
+      int ti = (t-y_kmin)*size;
+      int cal = y_kmin*size;
       int cal_y = y_size*y_kmin;
-      for (int i = ti-1; i >= ti-Size; i--)
+      for (int i = ti-1; i >= ti-size; i--)
         {
           int j = i+cal;
-          int pos = pivot[i+Size];
+          int pos = pivot[i+size];
           auto [nb_var, first] = At_Row(pos);
           first = first->NZE_R_N;
           nb_var--;
@@ -2292,7 +2292,7 @@ Interpreter::bksub(int tbreak, int last_period, int Size, double slowc_l)
             }
           yy = -(yy+y[eq]+u[b[pos]]);
           direction[eq] = yy;
-          y[eq] += slowc_l*yy;
+          y[eq] += slowc*yy;
         }
     }
 }
@@ -4386,11 +4386,10 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
     }
 
   // The backward substitution
-  double slowc_lbx = slowc;
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
   slowc_save = slowc;
-  bksub(tbreak, last_period, size, slowc_lbx);
+  bksub(tbreak, last_period);
   End_GE();
 }
 

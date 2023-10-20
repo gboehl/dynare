@@ -210,8 +210,8 @@ private:
   void Delete_u(int pos);
   void Clear_u();
 
-  int complete(int beg_t, int Size, int periods, int *b);
-  void bksub(int tbreak, int last_period, int Size, double slowc_l);
+  int complete(int beg_t);
+  void bksub(int tbreak, int last_period);
   void simple_bksub(int it_, int Size, double slowc_l);
   // Computes Aᵀ where A is are sparse. The result is sparse.
   static mxArray *Sparse_transpose(const mxArray *A_m);
