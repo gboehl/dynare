@@ -226,7 +226,7 @@ private:
   // Computes A−B where A and B are dense. The result is dense.
   static mxArray *subtract_A_B(const mxArray *A_m, const mxArray *B_m);
 
-  void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
+  void compute_block_time(int my_Per_u_, bool evaluate, bool no_derivatives);
   bool compute_complete(bool no_derivatives);
 
   pair<bool, double> compute_complete(double lambda);

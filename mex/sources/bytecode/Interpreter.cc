@@ -2577,7 +2577,7 @@ Interpreter::Sparse_transpose(const mxArray *A_m)
 }
 
 void
-Interpreter::compute_block_time(int Per_u_, bool evaluate, bool no_derivatives)
+Interpreter::compute_block_time(int my_Per_u_, bool evaluate, bool no_derivatives)
 {
 #ifdef DEBUG
   mexPrintf("compute_block_time\n");
@@ -2595,7 +2595,7 @@ Interpreter::compute_block_time(int Per_u_, bool evaluate, bool no_derivatives)
 
   try
     {
-      evaluator.evaluateBlock(it_, y, ya, y_size, x, nb_row_x, params, steady_y, u, Per_u_, T, periods+y_kmin+y_kmax, TEF, TEFD, TEFDD, r, g1, jacob, jacob_exo, jacob_exo_det, evaluate, no_derivatives);
+      evaluator.evaluateBlock(it_, y, ya, y_size, x, nb_row_x, params, steady_y, u, my_Per_u_, T, periods+y_kmin+y_kmax, TEF, TEFD, TEFDD, r, g1, jacob, jacob_exo, jacob_exo_det, evaluate, no_derivatives);
     }
   catch (FloatingPointException &e)
     {
