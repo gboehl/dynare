@@ -3906,7 +3906,7 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
 }
 
 void
-Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool symbolic, int Block_number)
+Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
 {
   /*Triangularisation at each period of a block using a simple gaussian Elimination*/
   int *save_op = nullptr, *save_opa = nullptr, *save_opaa = nullptr;
@@ -3916,16 +3916,16 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
   int pivj = 0, pivk = 0;
   int tbreak = 0, last_period = periods;
 
-  double *piv_v = static_cast<double *>(mxMalloc(Size*sizeof(double)));
-  test_mxMalloc(piv_v, __LINE__, __FILE__, __func__, Size*sizeof(double));
-  int *pivj_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
-  test_mxMalloc(pivj_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  int *pivk_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
-  test_mxMalloc(pivk_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  int *NR = static_cast<int *>(mxMalloc(Size*sizeof(int)));
-  test_mxMalloc(NR, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  NonZeroElem **bc = static_cast<NonZeroElem **>(mxMalloc(Size*sizeof(NonZeroElem *)));
-  test_mxMalloc(bc, __LINE__, __FILE__, __func__, Size*sizeof(NonZeroElem *));
+  double *piv_v = static_cast<double *>(mxMalloc(size*sizeof(double)));
+  test_mxMalloc(piv_v, __LINE__, __FILE__, __func__, size*sizeof(double));
+  int *pivj_v = static_cast<int *>(mxMalloc(size*sizeof(int)));
+  test_mxMalloc(pivj_v, __LINE__, __FILE__, __func__, size*sizeof(int));
+  int *pivk_v = static_cast<int *>(mxMalloc(size*sizeof(int)));
+  test_mxMalloc(pivk_v, __LINE__, __FILE__, __func__, size*sizeof(int));
+  int *NR = static_cast<int *>(mxMalloc(size*sizeof(int)));
+  test_mxMalloc(NR, __LINE__, __FILE__, __func__, size*sizeof(int));
+  NonZeroElem **bc = static_cast<NonZeroElem **>(mxMalloc(size*sizeof(NonZeroElem *)));
+  test_mxMalloc(bc, __LINE__, __FILE__, __func__, size*sizeof(NonZeroElem *));
 
   for (int t = 0; t < periods; t++)
     {
@@ -3942,8 +3942,8 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
         }
       nop = 0;
       Clear_u();
-      int ti = t*Size;
-      for (int i = ti; i < Size+ti; i++)
+      int ti = t*size;
+      for (int i = ti; i < size+ti; i++)
         {
           /*finding the max-pivot*/
           double piv = 0, piv_abs = 0;
@@ -4058,7 +4058,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
             }
           else
             {
-              pivj = pivot[i-Size]+Size;
+              pivj = pivot[i-size]+size;
               pivot[i] = pivj;
               first = At_Pos(pivj, i);
               pivk = first->u_index;
@@ -4081,9 +4081,9 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
               nop += 2;
               if (piv_abs < eps)
                 {
-                  if (Block_number > 1)
+                  if (block_num > 1)
                     throw FatalException{"In Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system in block "
-                                         + to_string(Block_number+1)};
+                                         + to_string(block_num+1)};
                   else
                     throw FatalException{"In Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system"};
                 }
@@ -4163,14 +4163,14 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                           if (first_sub)
                             sub_c_index = first_sub->c_index;
                           else
-                            sub_c_index = Size*periods;
+                            sub_c_index = size*periods;
                           l_sub++;
                         }
                       else if (sub_c_index > piv_c_index || l_sub >= nb_var_sub)
                         {
                           // There is an nonzero element at row pivot but not at the current row=> insert a negative element in the current row
                           int tmp_u_count = Get_u();
-                          int lag = first_piv->c_index/Size-row/Size;
+                          int lag = first_piv->c_index/size-row/size;
                           Insert(row, first_piv->c_index, tmp_u_count, lag);
                           u[tmp_u_count] = -u[first_piv->u_index]*first_elem;
                           if (nop+2 >= nopa)
@@ -4188,7 +4188,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                           if (first_piv)
                             piv_c_index = first_piv->c_index;
                           else
-                            piv_c_index = Size*periods;
+                            piv_c_index = size*periods;
                           l_piv++;
                         }
                       else /*first_sub->c_index==first_piv->c_index*/
@@ -4203,13 +4203,13 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                               if (first_sub)
                                 sub_c_index = first_sub->c_index;
                               else
-                                sub_c_index = Size*periods;
+                                sub_c_index = size*periods;
                               l_sub++;
                               first_piv = first_piv->NZE_R_N;
                               if (first_piv)
                                 piv_c_index = first_piv->c_index;
                               else
-                                piv_c_index = Size*periods;
+                                piv_c_index = size*periods;
                               l_piv++;
                             }
                           else
@@ -4230,13 +4230,13 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                               if (first_sub)
                                 sub_c_index = first_sub->c_index;
                               else
-                                sub_c_index = Size*periods;
+                                sub_c_index = size*periods;
                               l_sub++;
                               first_piv = first_piv->NZE_R_N;
                               if (first_piv)
                                 piv_c_index = first_piv->c_index;
                               else
-                                piv_c_index = Size*periods;
+                                piv_c_index = size*periods;
                               l_piv++;
                             }
                         }
@@ -4261,9 +4261,9 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
               nop += 2;
               if (piv_abs < eps)
                 {
-                  if (Block_number > 1)
+                  if (block_num > 1)
                     throw FatalException{"In Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system in block "
-                                         + to_string(Block_number+1)};
+                                         + to_string(block_num+1)};
                   else
                     throw FatalException{"In Solve_ByteCode_Symbolic_Sparse_GaussianElimination, singular system"};
                 }
@@ -4313,7 +4313,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                           if (first_sub)
                             sub_c_index = first_sub->c_index;
                           else
-                            sub_c_index = Size*periods;
+                            sub_c_index = size*periods;
                           l_sub++;
                         }
                       else if (sub_c_index > piv_c_index || l_sub >= nb_var_sub)
@@ -4322,7 +4322,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                              at the current row ⇒ insert a negative element in the
                              current row */
                           int tmp_u_count = Get_u();
-                          int lag = first_piv->c_index/Size-row/Size;
+                          int lag = first_piv->c_index/size-row/size;
                           Insert(row, first_piv->c_index, tmp_u_count, lag);
                           u[tmp_u_count] = -u[first_piv->u_index]*first_elem;
                           nop += 3;
@@ -4330,7 +4330,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                           if (first_piv)
                             piv_c_index = first_piv->c_index;
                           else
-                            piv_c_index = Size*periods;
+                            piv_c_index = size*periods;
                           l_piv++;
                         }
                       else /*first_sub->c_index==first_piv->c_index*/
@@ -4345,13 +4345,13 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                               if (first_sub)
                                 sub_c_index = first_sub->c_index;
                               else
-                                sub_c_index = Size*periods;
+                                sub_c_index = size*periods;
                               l_sub++;
                               first_piv = first_piv->NZE_R_N;
                               if (first_piv)
                                 piv_c_index = first_piv->c_index;
                               else
-                                piv_c_index = Size*periods;
+                                piv_c_index = size*periods;
                               l_piv++;
                             }
                           else
@@ -4362,13 +4362,13 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                               if (first_sub)
                                 sub_c_index = first_sub->c_index;
                               else
-                                sub_c_index = Size*periods;
+                                sub_c_index = size*periods;
                               l_sub++;
                               first_piv = first_piv->NZE_R_N;
                               if (first_piv)
                                 piv_c_index = first_piv->c_index;
                               else
-                                piv_c_index = Size*periods;
+                                piv_c_index = size*periods;
                               l_piv++;
                             }
                         }
@@ -4410,7 +4410,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
                 }
               else if (save_opa && save_opaa)
                 {
-                  if (compare(save_op, save_opa, save_opaa, t, periods, nop, Size))
+                  if (compare(save_op, save_opa, save_opaa, t, periods, nop, size))
                     {
                       tbreak = t;
                       tbreak_g = tbreak;
@@ -4470,7 +4470,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool s
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
   slowc_save = slowc;
-  bksub(tbreak, last_period, Size, slowc_lbx);
+  bksub(tbreak, last_period, size, slowc_lbx);
   End_GE();
 }
 
@@ -5010,7 +5010,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
       else if (stack_solve_algo == 3)
         Solve_Matlab_BiCGStab(A_m, b_m, size, slowc, block_num, true, 0, x0_m, 1);
       else if (stack_solve_algo == 5)
-        Solve_ByteCode_Symbolic_Sparse_GaussianElimination(size, symbolic, block_num);
+        Solve_ByteCode_Symbolic_Sparse_GaussianElimination(symbolic);
     }
   using FloatSeconds = chrono::duration<double, chrono::seconds::period>;
   auto t2 { chrono::high_resolution_clock::now() };
