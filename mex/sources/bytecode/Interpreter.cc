@@ -1301,23 +1301,23 @@ Interpreter::Simple_Init()
 }
 
 bool
-Interpreter::Init_Matlab_Sparse_Simple(const mxArray *A_m, const mxArray *b_m, const mxArray *x0_m) const
+Interpreter::Init_Matlab_Sparse_One_Boundary(const mxArray *A_m, const mxArray *b_m, const mxArray *x0_m) const
 {
   double *b = mxGetPr(b_m);
   if (!b)
-    throw FatalException{"In Init_Matlab_Sparse_Simple, can't retrieve b vector"};
+    throw FatalException{"In Init_Matlab_Sparse_One_Boundary, can't retrieve b vector"};
   double *x0 = mxGetPr(x0_m);
   if (!x0)
-    throw FatalException{"In Init_Matlab_Sparse_Simple, can't retrieve x0 vector"};
+    throw FatalException{"In Init_Matlab_Sparse_One_Boundary, can't retrieve x0 vector"};
   mwIndex *Ai = mxGetIr(A_m);
   if (!Ai)
-    throw FatalException{"In Init_Matlab_Sparse_Simple, can't allocate Ai index vector"};
+    throw FatalException{"In Init_Matlab_Sparse_One_Boundary, can't allocate Ai index vector"};
   mwIndex *Aj = mxGetJc(A_m);
   if (!Aj)
-    throw FatalException{"In Init_Matlab_Sparse_Simple, can't allocate Aj index vector"};
+    throw FatalException{"In Init_Matlab_Sparse_One_Boundary, can't allocate Aj index vector"};
   double *A = mxGetPr(A_m);
   if (!A)
-    throw FatalException{"In Init_Matlab_Sparse_Simple, can't retrieve A matrix"};
+    throw FatalException{"In Init_Matlab_Sparse_One_Boundary, can't retrieve A matrix"};
 
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
@@ -1347,25 +1347,25 @@ Interpreter::Init_Matlab_Sparse_Simple(const mxArray *A_m, const mxArray *b_m, c
         }
 #ifdef DEBUG
       if (index < 0 || index >= u_count_alloc || index > size + size*size)
-        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(index)
+        throw FatalException{"In Init_Matlab_Sparse_One_Boundary, index (" + to_string(index)
                              + ") out of range for u vector max = "
                              + to_string(size+size*size)
                              + " allocated = " + to_string(u_count_alloc)};
       if (NZE >= max_nze)
-        throw FatalException{"In Init_Matlab_Sparse_Simple, exceeds the capacity of A_m sparse matrix"};
+        throw FatalException{"In Init_Matlab_Sparse_One_Boundary, exceeds the capacity of A_m sparse matrix"};
 #endif
       A[NZE] = u[index];
       Ai[NZE] = eq;
       NZE++;
 #ifdef DEBUG
       if (eq < 0 || eq >= size)
-        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(eq)
+        throw FatalException{"In Init_Matlab_Sparse_One_Boundary, index (" + to_string(eq)
                              + ") out of range for b vector"};
       if (var < 0 || var >= size)
-        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(var)
+        throw FatalException{"In Init_Matlab_Sparse_One_Boundary, index (" + to_string(var)
                              + ") out of range for index_vara vector"};
       if (index_vara[var] < 0 || index_vara[var] >= y_size)
-        throw FatalException{"In Init_Matlab_Sparse_Simple, index ("
+        throw FatalException{"In Init_Matlab_Sparse_One_Boundary, index ("
                              + to_string(index_vara[var])
                              + ") out of range for y vector max=" + to_string(y_size)
                              +" (0)"};
@@ -1377,28 +1377,28 @@ Interpreter::Init_Matlab_Sparse_Simple(const mxArray *A_m, const mxArray *b_m, c
 }
 
 tuple<bool, SuiteSparse_long *, SuiteSparse_long *, double *, double *>
-Interpreter::Init_UMFPACK_Sparse_Simple(const mxArray *x0_m) const
+Interpreter::Init_UMFPACK_Sparse_One_Boundary(const mxArray *x0_m) const
 {
   double *b = static_cast<double *>(mxMalloc(size * sizeof(double)));
   test_mxMalloc(b, __LINE__, __FILE__, __func__, size * sizeof(double));
   if (!b)
-    throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve b vector"};
+    throw FatalException{"In Init_UMFPACK_Sparse_One_Boundary, can't retrieve b vector"};
   double *x0 = mxGetPr(x0_m);
   if (!x0)
-    throw FatalException{"In Init_UMFPACK_Sparse_Simple, can't retrieve x0 vector"};
+    throw FatalException{"In Init_UMFPACK_Sparse_One_Boundary, can't retrieve x0 vector"};
   SuiteSparse_long *Ap = static_cast<SuiteSparse_long *>(mxMalloc((size+1) * sizeof(SuiteSparse_long)));
   test_mxMalloc(Ap, __LINE__, __FILE__, __func__, (size+1) * sizeof(SuiteSparse_long));
   if (!Ap)
-    throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ap index vector"};
+    throw FatalException{"In Init_UMFPACK_Sparse_One_Boundary, can't allocate Ap index vector"};
   size_t prior_nz = IM_i.size();
   SuiteSparse_long *Ai = static_cast<SuiteSparse_long *>(mxMalloc(prior_nz * sizeof(SuiteSparse_long)));
   test_mxMalloc(Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
   if (!Ai)
-    throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ai index vector"};
+    throw FatalException{"In Init_UMFPACK_Sparse_One_Boundary, can't allocate Ai index vector"};
   double *Ax = static_cast<double *>(mxMalloc(prior_nz * sizeof(double)));
   test_mxMalloc(Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
   if (!Ax)
-    throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve Ax matrix"};
+    throw FatalException{"In Init_UMFPACK_Sparse_One_Boundary, can't retrieve Ax matrix"};
   for (int i = 0; i < size; i++)
     {
       int eq = index_vara[i];
@@ -1430,25 +1430,25 @@ Interpreter::Init_UMFPACK_Sparse_Simple(const mxArray *x0_m) const
         }
 #ifdef DEBUG
       if (index < 0 || index >= u_count_alloc || index > size + size*size)
-        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(index)
+        throw FatalException{"In Init_UMFPACK_Sparse_One_Boundary, index (" + to_string(index)
                              + ") out of range for u vector max = "
                              + to_string(size+size*size)
                              + " allocated = " + to_string(u_count_alloc)};
       if (NZE >= max_nze)
-        throw FatalException{"In Init_Matlab_Sparse_Simple, exceeds the capacity of A_m sparse matrix"};
+        throw FatalException{"In Init_UMFPACK_Sparse_One_Boundary, exceeds the capacity of A_m sparse matrix"};
 #endif
       Ax[NZE] = u[index];
       Ai[NZE] = eq;
       NZE++;
 #ifdef DEBUG
       if (eq < 0 || eq >= size)
-        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(eq)
+        throw FatalException{"In Init_UMFPACK_Sparse_One_Boundary, index (" + to_string(eq)
                              + ") out of range for b vector"};
       if (var < 0 || var >= size)
-        throw FatalException{"In Init_Matlab_Sparse_Simple, index (" + to_string(var)
+        throw FatalException{"In Init_UMFPACK_Sparse_One_Boundary, index (" + to_string(var)
                              + ") out of range for index_vara vector"};
       if (index_vara[var] < 0 || index_vara[var] >= y_size)
-        throw FatalException{"In Init_Matlab_Sparse_Simple, index ("
+        throw FatalException{"In Init_UMFPACK_Sparse_One_Boundary, index ("
                              + to_string(index_vara[var])
                              + ") out of range for y vector max=" + to_string(y_size)
                              + " (0)"};
@@ -1481,28 +1481,28 @@ Interpreter::find_int_date(const vector<pair<int, double>> &per_value, int value
 }
 
 tuple<SuiteSparse_long *, SuiteSparse_long *, double *, double *>
-Interpreter::Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditional_local_type &vector_table_conditional_local) const
+Interpreter::Init_UMFPACK_Sparse_Two_Boundaries(const mxArray *x0_m, const vector_table_conditional_local_type &vector_table_conditional_local) const
 {
   int n = periods * size;
   double *b = static_cast<double *>(mxMalloc(n * sizeof(double)));
   if (!b)
-    throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve b vector"};
+    throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, can't retrieve b vector"};
   double *x0 = mxGetPr(x0_m);
   if (!x0)
-    throw FatalException{"In Init_UMFPACK_Sparse_Simple, can't retrieve x0 vector"};
+    throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, can't retrieve x0 vector"};
   SuiteSparse_long *Ap = static_cast<SuiteSparse_long *>(mxMalloc((n+1) * sizeof(SuiteSparse_long)));
   test_mxMalloc(Ap, __LINE__, __FILE__, __func__, (n+1) * sizeof(SuiteSparse_long));
   if (!Ap)
-    throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ap index vector"};
+    throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, can't allocate Ap index vector"};
   size_t prior_nz = IM_i.size() * periods;
   SuiteSparse_long *Ai = static_cast<SuiteSparse_long *>(mxMalloc(prior_nz * sizeof(SuiteSparse_long)));
   test_mxMalloc(Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
   if (!Ai)
-    throw FatalException{"In Init_UMFPACK_Sparse, can't allocate Ai index vector"};
+    throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, can't allocate Ai index vector"};
   double *Ax = static_cast<double *>(mxMalloc(prior_nz * sizeof(double)));
   test_mxMalloc(Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
   if (!Ax)
-    throw FatalException{"In Init_UMFPACK_Sparse, can't retrieve Ax matrix"};
+    throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, can't retrieve Ax matrix"};
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
   unsigned int NZE = 0;
@@ -1584,16 +1584,16 @@ Interpreter::Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditi
 
 #ifdef DEBUG
                               if (local_index < 0 || local_index >= size * periods)
-                                throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, index ("
                                                      + to_string(local_index)
                                                      + ") out of range for b vector"};
                               if (k + row_x*flip_exo < 0 || k + row_x*flip_exo >= row_x * col_x)
-                                throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, index ("
                                                      + to_string(var+size*(y_kmin+t+lag))
                                                      + ") out of range for jacob_exo vector"};
                               if (t+y_kmin+flip_exo*nb_row_x < 0
                                   || t+y_kmin+flip_exo*nb_row_x >= nb_row_x * this->col_x)
-                                throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                                throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, index ("
                                                      + to_string(index_vara[var+size*(y_kmin+t+lag)])
                                                      + ") out of range for x vector max="
                                                      + to_string(nb_row_x * this->col_x)};
@@ -1615,7 +1615,7 @@ Interpreter::Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditi
                 {
 #ifdef DEBUG
                   if (NZE >= prior_nz)
-                    throw FatalException{"In Init_UMFPACK_Sparse, exceeds the capacity of allocated sparse matrix"};
+                    throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, exceeds the capacity of allocated sparse matrix"};
 #endif
                   if (!fliped)
                     {
@@ -1627,17 +1627,17 @@ Interpreter::Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditi
                     {
 #ifdef DEBUG
                       if (eq - lag * size < 0 || eq  - lag * size >= size * periods)
-                        throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                        throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, index ("
                                              + to_string(eq  - lag * size)
                                              + ") out of range for b vector"};
                       if (var+size*(y_kmin+t) < 0
                           || var+size*(y_kmin+t) >= size*(periods+y_kmin+y_kmax))
-                        throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                        throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, index ("
                                              + to_string(var+size*(y_kmin+t))
                                              + ") out of range for index_vara vector"};
                       if (index_vara[var+size*(y_kmin+t)] < 0
                           || index_vara[var+size*(y_kmin+t)] >= y_size*(periods+y_kmin+y_kmax))
-                        throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                        throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, index ("
                                              + to_string(index_vara[var+size*(y_kmin+t)])
                                              + ") out of range for y vector max="
                                              + to_string(y_size*(periods+y_kmin+y_kmax))};
@@ -1650,17 +1650,17 @@ Interpreter::Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditi
                 {
 #ifdef DEBUG
                   if (eq < 0 || eq >= size * periods)
-                    throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                    throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, index ("
                                          + to_string(eq)
                                          + ") out of range for b vector"};
                   if (var+size*(y_kmin+t+lag) < 0
                       || var+size*(y_kmin+t+lag) >= size*(periods+y_kmin+y_kmax))
-                    throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                    throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, index ("
                                          + to_string(var+size*(y_kmin+t+lag))
                                          + ") out of range for index_vara vector"};
                   if (index_vara[var+size*(y_kmin+t+lag)] < 0
                       || index_vara[var+size*(y_kmin+t+lag)] >= y_size*(periods+y_kmin+y_kmax))
-                    throw FatalException{"In Init_UMFPACK_Sparse, index ("
+                    throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, index ("
                                          + to_string(index_vara[var+size*(y_kmin+t+lag)])
                                          + ") out of range for y vector max="
                                          + to_string(y_size*(periods+y_kmin+y_kmax))};
@@ -1672,10 +1672,10 @@ Interpreter::Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditi
             {
 #ifdef DEBUG
               if (index < 0 || index >= u_count_alloc)
-                throw FatalException{"In Init_UMFPACK_Sparse, index (" + to_string(index)
+                throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, index (" + to_string(index)
                                      + ") out of range for u vector"};
               if (eq < 0 || eq >= (size*periods))
-                throw FatalException{"In Init_UMFPACK_Sparse, index (" + to_string(eq)
+                throw FatalException{"In Init_UMFPACK_Sparse_Two_Boundaries, index (" + to_string(eq)
                                      + ") out of range for b vector"};
 #endif
               b[eq] += u[index];
@@ -1704,24 +1704,24 @@ Interpreter::Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditi
 }
 
 void
-Interpreter::Init_Matlab_Sparse(const mxArray *A_m, const mxArray *b_m, const mxArray *x0_m) const
+Interpreter::Init_Matlab_Sparse_Two_Boundaries(const mxArray *A_m, const mxArray *b_m, const mxArray *x0_m) const
 {
   double *b = mxGetPr(b_m);
 
   if (!b)
-    throw FatalException{"In Init_Matlab_Sparse, can't retrieve b vector"};
+    throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, can't retrieve b vector"};
   double *x0 = mxGetPr(x0_m);
   if (!x0)
-    throw FatalException{"In Init_Matlab_Sparse_Simple, can't retrieve x0 vector"};
+    throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, can't retrieve x0 vector"};
   mwIndex *Aj = mxGetJc(A_m);
   if (!Aj)
-    throw FatalException{"In Init_Matlab_Sparse, can't allocate Aj index vector"};
+    throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, can't allocate Aj index vector"};
   mwIndex *Ai = mxGetIr(A_m);
   if (!Ai)
-    throw FatalException{"In Init_Matlab_Sparse, can't allocate Ai index vector"};
+    throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, can't allocate Ai index vector"};
   double *A = mxGetPr(A_m);
   if (!A)
-    throw FatalException{"In Init_Matlab_Sparse, can't retrieve A matrix"};
+    throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, can't retrieve A matrix"};
 
   for (int i = 0; i < y_size*(periods+y_kmin); i++)
     ya[i] = y[i];
@@ -1757,12 +1757,12 @@ Interpreter::Init_Matlab_Sparse(const mxArray *A_m, const mxArray *b_m, const mx
                 {
 #ifdef DEBUG
                   if (index < 0 || index >= u_count_alloc || index > size + size*size)
-                    throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(index)
+                    throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, index (" + to_string(index)
                                          + ") out of range for u vector max = "
                                          + to_string(size+size*size) + " allocated = "
                                          + to_string(u_count_alloc)};
                   if (NZE >= prior_nz)
-                    throw FatalException{"In Init_Matlab_Sparse, exceeds the capacity of allocated sparse matrix"};
+                    throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, exceeds the capacity of allocated sparse matrix"};
 #endif
                   A[NZE] = u[index];
                   Ai[NZE] = eq - lag * size;
@@ -1772,16 +1772,16 @@ Interpreter::Init_Matlab_Sparse(const mxArray *A_m, const mxArray *b_m, const mx
                 {
 #ifdef DEBUG
                   if (eq < 0 || eq >= size * periods)
-                    throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(eq)
+                    throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, index (" + to_string(eq)
                                          + ") out of range for b vector"};
                   if (var+size*(y_kmin+t+lag) < 0
                       || var+size*(y_kmin+t+lag) >= size*(periods+y_kmin+y_kmax))
-                    throw FatalException{"In Init_Matlab_Sparse, index ("
+                    throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, index ("
                                          + to_string(var+size*(y_kmin+t+lag))
                                          + ") out of range for index_vara vector"};
                   if (index_vara[var+size*(y_kmin+t+lag)] < 0
                       || index_vara[var+size*(y_kmin+t+lag)] >= y_size*(periods+y_kmin+y_kmax))
-                    throw FatalException{"In Init_Matlab_Sparse, index ("
+                    throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, index ("
                                          + to_string(index_vara[var+size*(y_kmin+t+lag)])
                                          + ") out of range for y vector max="
                                          + to_string(y_size*(periods+y_kmin+y_kmax))};
@@ -1793,10 +1793,10 @@ Interpreter::Init_Matlab_Sparse(const mxArray *A_m, const mxArray *b_m, const mx
             {
 #ifdef DEBUG
               if (index < 0 || index >= u_count_alloc)
-                throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(index)
+                throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, index (" + to_string(index)
                                      + ") out of range for u vector"};
               if (eq < 0 || eq >= (size*periods))
-                throw FatalException{"In Init_Matlab_Sparse, index (" + to_string(eq)
+                throw FatalException{"In Init_Matlab_Sparse_Two_Boundaries, index (" + to_string(eq)
                                      + ") out of range for b vector"};
 #endif
               b[eq] += u[index];
@@ -1807,7 +1807,7 @@ Interpreter::Init_Matlab_Sparse(const mxArray *A_m, const mxArray *b_m, const mx
 }
 
 void
-Interpreter::Init_GE()
+Interpreter::Init_Gaussian_Elimination()
 {
   double tmp_b = 0.0;
   pivot = static_cast<int *>(mxMalloc(size*periods*sizeof(int)));
@@ -1960,7 +1960,7 @@ Interpreter::Clear_u()
 }
 
 void
-Interpreter::End_GE()
+Interpreter::End_Gaussian_Elimination()
 {
   mem_mngr.Free_All();
   mxFree(FNZE_R);
@@ -3813,7 +3813,7 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination()
 
   slowc_save = slowc;
   simple_bksub();
-  End_GE();
+  End_Gaussian_Elimination();
   mxFree(piv_v);
   mxFree(pivj_v);
   mxFree(pivk_v);
@@ -4387,7 +4387,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
     ya[i] = y[i];
   slowc_save = slowc;
   bksub(tbreak, last_period);
-  End_GE();
+  End_Gaussian_Elimination();
 }
 
 void
@@ -4536,11 +4536,11 @@ Interpreter::Simulate_One_Boundary()
           A_m = mxCreateSparse(size, size, min(static_cast<int>(IM_i.size()*2), size * size), mxREAL);
           if (!A_m)
             throw FatalException{"In Simulate_One_Boundary, can't allocate A_m matrix"};
-          zero_solution = Init_Matlab_Sparse_Simple(A_m, b_m, x0_m);
+          zero_solution = Init_Matlab_Sparse_One_Boundary(A_m, b_m, x0_m);
         }
       else
         {
-          tie(zero_solution, Ap, Ai, Ax, b) = Init_UMFPACK_Sparse_Simple(x0_m);
+          tie(zero_solution, Ap, Ai, Ax, b) = Init_UMFPACK_Sparse_One_Boundary(x0_m);
           if (Ap_save[size] != Ap[size])
             {
               mxFree(Ai_save);
@@ -4889,14 +4889,14 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
   else
     {
       if (stack_solve_algo == 5)
-        Init_GE();
+        Init_Gaussian_Elimination();
       else
         {
           x0_m = mxCreateDoubleMatrix(periods*size, 1, mxREAL);
           if (!x0_m)
             throw FatalException{"In Simulate_Newton_Two_Boundaries, can't allocate x0_m vector"};
           if (stack_solve_algo == 0 || stack_solve_algo == 4)
-            tie(Ap, Ai, Ax, b) = Init_UMFPACK_Sparse(x0_m, vector_table_conditional_local);
+            tie(Ap, Ai, Ax, b) = Init_UMFPACK_Sparse_Two_Boundaries(x0_m, vector_table_conditional_local);
           else
             {
               b_m = mxCreateDoubleMatrix(periods*size, 1, mxREAL);
@@ -4908,7 +4908,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
                   if (!A_m)
                     throw FatalException{"In Simulate_Newton_Two_Boundaries, can't allocate A_m matrix"};
                 }
-              Init_Matlab_Sparse(A_m, b_m, x0_m);
+              Init_Matlab_Sparse_Two_Boundaries(A_m, b_m, x0_m);
             }
         }
       if (stack_solve_algo == 0 || stack_solve_algo == 4)
