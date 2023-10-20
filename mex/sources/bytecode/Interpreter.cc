@@ -3273,7 +3273,7 @@ Interpreter::Solve_LU_UMFPack_One_Boundary(SuiteSparse_long *Ap, SuiteSparse_lon
 }
 
 void
-Interpreter::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double slowc, int block, bool is_two_boundaries, int it_, mxArray *x0_m)
+Interpreter::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, bool is_two_boundaries, mxArray *x0_m)
 {
   size_t n = mxGetM(A_m);
   const char *field_names[] = {"droptol", "type"};
@@ -3282,36 +3282,36 @@ Interpreter::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double slo
   mxSetFieldByNumber(Setup, 0, 0, mxCreateDoubleScalar(lu_inc_tol));
   mxSetFieldByNumber(Setup, 0, 1, mxCreateString("ilutp"));
   mxArray *lhs0[2];
-  mxArray *rhs0[] = { A_m, Setup };
+   mxArray *rhs0[] = { A_m, Setup };
   if (mexCallMATLAB(std::extent_v<decltype(lhs0)>, lhs0, std::extent_v<decltype(rhs0)>, rhs0, "ilu"))
     throw FatalException("In GMRES, the incomplete LU decomposition (ilu) has failed");
   mxArray *L1 = lhs0[0];
   mxArray *U1 = lhs0[1];
   /*[za,flag1] = gmres(g1a,b,Blck_size,1e-6,Blck_size*periods,L1,U1);*/
-  mxArray *rhs[] = { A_m, b_m, mxCreateDoubleScalar(Size), mxCreateDoubleScalar(1e-6),
+  mxArray *rhs[] = { A_m, b_m, mxCreateDoubleScalar(size), mxCreateDoubleScalar(1e-6),
     mxCreateDoubleScalar(static_cast<double>(n)), L1, U1, x0_m };
   mxArray *lhs[2];
   mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs, "gmres");
   mxArray *z = lhs[0];
   mxArray *flag = lhs[1];
-  double *flag1 = mxGetPr(flag);
+  double flag1 { mxGetScalar(flag) };
   mxDestroyArray(rhs0[1]);
   mxDestroyArray(rhs[2]);
   mxDestroyArray(rhs[3]);
   mxDestroyArray(rhs[4]);
   mxDestroyArray(rhs[5]);
   mxDestroyArray(rhs[6]);
-  if (*flag1 > 0)
+  if (flag1 > 0)
     {
-      if (*flag1 == 1)
+      if (flag1 == 1)
         mexWarnMsgTxt(("Error in bytecode: No convergence inside GMRES, in block "
-                       + to_string(block+1)).c_str());
-      else if (*flag1 == 2)
+                       + to_string(block_num+1)).c_str());
+      else if (flag1 == 2)
         mexWarnMsgTxt(("Error in bytecode: Preconditioner is ill-conditioned, in block "
-                       + to_string(block+1)).c_str());
-      else if (*flag1 == 3)
+                       + to_string(block_num+1)).c_str());
+      else if (flag1 == 3)
         mexWarnMsgTxt(("Error in bytecode: GMRES stagnated (Two consecutive iterates were the same.), in block "
-                       + to_string(block+1)).c_str());
+                       + to_string(block_num+1)).c_str());
       lu_inc_tol /= 10;
     }
   else
@@ -3320,7 +3320,7 @@ Interpreter::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, int Size, double slo
       if (is_two_boundaries)
         for (int i = 0; i < static_cast<int>(n); i++)
           {
-            int eq = index_vara[i+Size*y_kmin];
+            int eq = index_vara[i+size*y_kmin];
             double yy = -(res[i] + y[eq]);
             direction[eq] = yy;
             y[eq] += slowc * yy;
@@ -4575,7 +4575,7 @@ Interpreter::Simulate_One_Boundary(int block_num, int y_size, int size)
       if ((solve_algo == 5 && steady_state) || (stack_solve_algo == 5 && !steady_state))
         singular_system = Solve_ByteCode_Sparse_GaussianElimination();
       else if ((solve_algo == 7 && steady_state) || (stack_solve_algo == 2 && !steady_state))
-        Solve_Matlab_GMRES(A_m, b_m, size, slowc, block_num, false, it_, x0_m);
+        Solve_Matlab_GMRES(A_m, b_m, false, x0_m);
       else if ((solve_algo == 8 && steady_state) || (stack_solve_algo == 3 && !steady_state))
         Solve_Matlab_BiCGStab(A_m, b_m, size, slowc, block_num, false, it_, x0_m, preconditioner);
       else if ((solve_algo == 6 && steady_state) || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4 || stack_solve_algo == 6) && !steady_state))
@@ -4928,7 +4928,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
           mxDestroyArray(x0_m);
         }
       else if (stack_solve_algo == 2)
-        Solve_Matlab_GMRES(A_m, b_m, size, slowc, block_num, true, 0, x0_m);
+        Solve_Matlab_GMRES(A_m, b_m, true, x0_m);
       else if (stack_solve_algo == 3)
         Solve_Matlab_BiCGStab(A_m, b_m, size, slowc, block_num, true, 0, x0_m, 1);
       else if (stack_solve_algo == 5)
