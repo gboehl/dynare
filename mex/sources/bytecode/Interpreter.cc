@@ -24,6 +24,7 @@
 #include <cfenv>
 #include <type_traits>
 #include <chrono>
+#include <limits>
 
 #include "Interpreter.hh"
 
@@ -2660,8 +2661,8 @@ Interpreter::compute_complete(bool no_derivatives)
   return result;
 }
 
-bool
-Interpreter::compute_complete(double lambda, double *crit)
+pair<bool, double>
+Interpreter::compute_complete(double lambda)
 {
   double res1_ = 0, res2_ = 0, max_res_ = 0;
   int max_res_idx_ = 0;
@@ -2678,7 +2679,7 @@ Interpreter::compute_complete(double lambda, double *crit)
       if (compute_complete(true))
         res2_ = res2;
       else
-        return false;
+        return { false, numeric_limits<double>::quiet_NaN() };
     }
   else
     {
@@ -2703,14 +2704,14 @@ Interpreter::compute_complete(double lambda, double *crit)
                 }
             }
           else
-            return false;
+            return { false, numeric_limits<double>::quiet_NaN() };
         }
       it_ = periods+y_kmin-1; // Do not leave it_ in inconsistent state
     }
   if (verbosity >= 2)
     mexPrintf("  lambda=%e, res2=%e\n", lambda, res2_);
-  *crit = res2_/2;
-  return true;
+  double crit {res2_/2};
+  return { true, crit };
 }
 
 bool
@@ -2722,20 +2723,30 @@ Interpreter::mnbrak(double *ax, double *bx, double *cx, double *fa, double *fb, 
 
   auto sign = [](double a, double b) { return b >= 0.0 ? fabs(a) : -fabs(a); };
 
+  bool success;
+
   if (verbosity >= 2)
     mexPrintf("bracketing *ax=%f, *bx=%f\n", *ax, *bx);
-  if (!compute_complete(*ax, fa))
+
+  tie(success, *fa) = compute_complete(*ax);
+  if (!success)
     return false;
-  if (!compute_complete(*bx, fb))
+
+  tie(success, *fb) = compute_complete(*bx);
+  if (!success)
     return false;
+
   if (*fb > *fa)
     {
       swap(*ax, *bx);
       swap(*fa, *fb);
     }
+
   *cx = (*bx)+GOLD*(*bx-*ax);
-  if (!compute_complete(*cx, fc))
+  tie(success, *fc) = compute_complete(*cx);
+  if (!success)
     return false;
+
   while (*fb > *fc)
     {
       double r = (*bx-*ax)*(*fb-*fc);
@@ -2746,7 +2757,8 @@ Interpreter::mnbrak(double *ax, double *bx, double *cx, double *fa, double *fb, 
       double fu;
       if ((*bx-u)*(u-*cx) > 0.0)
         {
-          if (!compute_complete(u, &fu))
+          tie(success, fu) = compute_complete(u);
+          if (!success)
             return false;
           if (fu < *fc)
             {
@@ -2763,12 +2775,14 @@ Interpreter::mnbrak(double *ax, double *bx, double *cx, double *fa, double *fb, 
               return true;
             }
           u = (*cx)+GOLD*(*cx-*bx);
-          if (!compute_complete(u, &fu))
+          tie(success, fu) = compute_complete(u);
+          if (!success)
             return false;
         }
       else if ((*cx-u)*(u-ulim) > 0.0)
         {
-          if (!compute_complete(u, &fu))
+          tie(success, fu) = compute_complete(u);
+          if (!success)
             return false;
           if (fu < *fc)
             {
@@ -2777,20 +2791,23 @@ Interpreter::mnbrak(double *ax, double *bx, double *cx, double *fa, double *fb, 
               u = *cx+GOLD*(*cx-*bx);
               *fb = *fc;
               *fc = fu;
-              if (!compute_complete(u, &fu))
+              tie(success, fu) = compute_complete(u);
+              if (!success)
                 return false;
             }
         }
       else if ((u-ulim)*(ulim-*cx) >= 0.0)
         {
           u = ulim;
-          if (!compute_complete(u, &fu))
+          tie(success, fu) = compute_complete(u);
+          if (!success)
             return false;
         }
       else
         {
           u = (*cx)+GOLD*(*cx-*bx);
-          if (!compute_complete(u, &fu))
+          tie(success, fu) = compute_complete(u);
+          if (!success)
             return false;
         }
       *ax = *bx;
@@ -2811,7 +2828,7 @@ Interpreter::golden(double ax, double bx, double cx, double tol, double solve_to
   if (verbosity >= 2)
     mexPrintf("golden\n");
   int iter = 0, max_iter = 100;
-  double f1, f2, x1, x2;
+  double x1, x2;
   double x0 = ax;
   double x3 = cx;
   if (fabs(cx-bx) > fabs(bx-ax))
@@ -2824,9 +2841,11 @@ Interpreter::golden(double ax, double bx, double cx, double tol, double solve_to
       x2 = bx;
       x1 = bx-C*(bx-ax);
     }
-  if (!compute_complete(x1, &f1))
+  auto [success, f1] = compute_complete(x1);
+  if (!success)
     return false;
-  if (!compute_complete(x2, &f2))
+  auto [success2, f2] = compute_complete(x2);
+  if (!success2)
     return false;
   while (fabs(x3-x0) > tol*(fabs(x1)+fabs(x2)) && f1 > solve_tolf && f2 > solve_tolf
          && iter < max_iter && abs(x1 - x2) > 1e-4)
@@ -2837,7 +2856,8 @@ Interpreter::golden(double ax, double bx, double cx, double tol, double solve_to
           x1 = x2;
           x2 = R*x1+C*x3;
           f1 = f2;
-          if (!compute_complete(x2, &f2))
+          tie(success, f2) = compute_complete(x2);
+          if (!success)
             return false;
         }
       else
@@ -2846,7 +2866,8 @@ Interpreter::golden(double ax, double bx, double cx, double tol, double solve_to
           x2 = x1;
           x1 = R*x2+C*x0;
           f2 = f1;
-          if (!compute_complete(x1, &f1))
+          tie(success, f1) = compute_complete(x1);
+          if (!success)
             return false;
         }
       iter++;

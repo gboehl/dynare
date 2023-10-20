@@ -232,7 +232,7 @@ private:
   void compute_block_time(int Per_u_, bool evaluate, bool no_derivatives);
   bool compute_complete(bool no_derivatives);
 
-  bool compute_complete(double lambda, double *crit);
+  pair<bool, double> compute_complete(double lambda);
 
 public:
   Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_arg, double *ya_arg, double *x_arg, double *steady_y_arg,
