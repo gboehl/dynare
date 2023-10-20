@@ -292,7 +292,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
       if (initialization)
         {
           fixe_u();
-          Read_SparseMatrix(bin_base_name, 1, 0, 0, false);
+          Read_SparseMatrix(bin_base_name, false);
         }
 #ifdef DEBUG
       mexPrintf("in SOLVE FORWARD COMPLETE r = mxMalloc(%d*sizeof(double))\n", size);
@@ -387,7 +387,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
       if (initialization)
         {
           fixe_u();
-          Read_SparseMatrix(bin_base_name, 1, 0, 0, false);
+          Read_SparseMatrix(bin_base_name, false);
         }
       r = static_cast<double *>(mxMalloc(size*sizeof(double)));
       test_mxMalloc(r, __LINE__, __FILE__, __func__, size*sizeof(double));
@@ -422,7 +422,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
       if (initialization)
         {
           fixe_u();
-          Read_SparseMatrix(bin_base_name, periods, y_kmin, y_kmax, true);
+          Read_SparseMatrix(bin_base_name, true);
         }
       u_count = u_count_int*(periods+y_kmax+y_kmin);
       r = static_cast<double *>(mxMalloc(size*sizeof(double)));
@@ -497,7 +497,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
       else
         {
           fixe_u();
-          Read_SparseMatrix(bin_base_name, 1, 0, 0, false);
+          Read_SparseMatrix(bin_base_name, false);
         }
       Per_u_ = 0;
 
@@ -519,7 +519,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
       else
         {
           fixe_u();
-          Read_SparseMatrix(bin_base_name, 1, 0, 0, false);
+          Read_SparseMatrix(bin_base_name, false);
         }
       Per_u_ = 0;
 
@@ -548,7 +548,7 @@ Interpreter::simulate_a_block(const vector_table_conditional_local_type &vector_
       else
         {
           fixe_u();
-          Read_SparseMatrix(bin_base_name, periods, y_kmin, y_kmax, true);
+          Read_SparseMatrix(bin_base_name, true);
         }
       u_count = u_count_int*(periods+y_kmax+y_kmin);
       r = static_cast<double *>(mxMalloc(size*sizeof(double)));
@@ -1119,7 +1119,7 @@ Interpreter::Close_SaveCode()
 }
 
 void
-Interpreter::Read_SparseMatrix(const string &file_name, int periods, int y_kmin, int y_kmax, bool two_boundaries)
+Interpreter::Read_SparseMatrix(const string &file_name, bool two_boundaries)
 {
   unsigned int eq, var;
   int lag;
@@ -1198,11 +1198,13 @@ Interpreter::Read_SparseMatrix(const string &file_name, int periods, int y_kmin,
       else
         throw FatalException{"Invalid value for solve_algo or stack_solve_algo"};
     }
-  index_vara = static_cast<int *>(mxMalloc(size*(periods+y_kmin+y_kmax)*sizeof(int)));
-  test_mxMalloc(index_vara, __LINE__, __FILE__, __func__, size*(periods+y_kmin+y_kmax)*sizeof(int));
+
+  int index_vara_size { size*(two_boundaries ? periods+y_kmin+y_kmax : 1) };
+  index_vara = static_cast<int *>(mxMalloc(index_vara_size*sizeof(int)));
+  test_mxMalloc(index_vara, __LINE__, __FILE__, __func__, index_vara_size*sizeof(int));
   for (int j = 0; j < size; j++)
     SaveCode.read(reinterpret_cast<char *>(&index_vara[j]), sizeof(*index_vara));
-  if (periods+y_kmin+y_kmax > 1)
+  if (two_boundaries)
     for (int i = 1; i < periods+y_kmin+y_kmax; i++)
       for (int j = 0; j < size; j++)
         index_vara[j+size*i] = index_vara[j+size*(i-1)] + y_size;
