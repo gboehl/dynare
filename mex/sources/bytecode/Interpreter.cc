@@ -3130,8 +3130,9 @@ Interpreter::End_Solver()
 }
 
 void
-Interpreter::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_, const vector_table_conditional_local_type &vector_table_conditional_local)
+Interpreter::Solve_LU_UMFPack_Two_Boundaries(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, const vector_table_conditional_local_type &vector_table_conditional_local)
 {
+  int n { size*periods };
   SuiteSparse_long sys = 0;
   double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
 
@@ -3168,67 +3169,49 @@ Interpreter::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double
 
   if (vector_table_conditional_local.size())
     {
-      if (is_two_boundaries)
-        for (int t = 0; t < n / Size; t++)
-          if (t == 0)
-            {
-              for (int i = 0; i < Size; i++)
-                {
-                  bool fliped = vector_table_conditional_local[i].is_cond;
-                  if (fliped)
-                    {
-                      int eq = index_vara[i+Size*(y_kmin)];
-                      int flip_exo = vector_table_conditional_local[i].var_exo;
-                      double yy = -(res[i] + x[y_kmin + flip_exo*nb_row_x]);
-                      direction[eq] = 0;
-                      x[flip_exo*nb_row_x + y_kmin] += slowc_l * yy;
-                    }
-                  else
-                    {
-                      int eq = index_vara[i+Size*(y_kmin)];
-                      double yy = -(res[i] + y[eq]);
-                      direction[eq] = yy;
-                      y[eq] += slowc_l * yy;
-                    }
-                }
-            }
-          else
-            {
-              for (int i = 0; i < Size; i++)
-                {
-                  int eq = index_vara[i+Size*(t + y_kmin)];
-                  double yy = -(res[i + Size * t] + y[eq]);
-                  direction[eq] = yy;
-                  y[eq] += slowc_l * yy;
-                }
-            }
-      else
-        for (int i = 0; i < n; i++)
+      for (int t = 0; t < periods; t++)
+        if (t == 0)
           {
-            int eq = index_vara[i];
-            double yy = -(res[i] + y[eq+it_*y_size]);
-            direction[eq] = yy;
-            y[eq+it_*y_size] += slowc_l * yy;
+            for (int i = 0; i < size; i++)
+              {
+                bool fliped = vector_table_conditional_local[i].is_cond;
+                if (fliped)
+                  {
+                    int eq = index_vara[i+size*(y_kmin)];
+                    int flip_exo = vector_table_conditional_local[i].var_exo;
+                    double yy = -(res[i] + x[y_kmin + flip_exo*nb_row_x]);
+                    direction[eq] = 0;
+                    x[flip_exo*nb_row_x + y_kmin] += slowc * yy;
+                  }
+                else
+                  {
+                    int eq = index_vara[i+size*(y_kmin)];
+                    double yy = -(res[i] + y[eq]);
+                    direction[eq] = yy;
+                    y[eq] += slowc * yy;
+                  }
+              }
+          }
+        else
+          {
+            for (int i = 0; i < size; i++)
+              {
+                int eq = index_vara[i+size*(t + y_kmin)];
+                double yy = -(res[i + size * t] + y[eq]);
+                direction[eq] = yy;
+                y[eq] += slowc * yy;
+              }
           }
     }
   else
     {
-      if (is_two_boundaries)
-        for (int i = 0; i < n; i++)
-          {
-            int eq = index_vara[i+Size*y_kmin];
-            double yy = -(res[i] + y[eq]);
-            direction[eq] = yy;
-            y[eq] += slowc_l * yy;
-          }
-      else
-        for (int i = 0; i < n; i++)
-          {
-            int eq = index_vara[i];
-            double yy = -(res[i] + y[eq+it_*y_size]);
-            direction[eq] = yy;
-            y[eq+it_*y_size] += slowc_l * yy;
-          }
+      for (int i = 0; i < n; i++)
+        {
+          int eq = index_vara[i+size*y_kmin];
+          double yy = -(res[i] + y[eq]);
+          direction[eq] = yy;
+          y[eq] += slowc * yy;
+        }
     }
 
   mxFree(Ap);
@@ -4934,7 +4917,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
         }
       if (stack_solve_algo == 0 || stack_solve_algo == 4)
         {
-          Solve_LU_UMFPack(Ap, Ai, Ax, b, size * periods, size, slowc, true, 0, vector_table_conditional_local);
+          Solve_LU_UMFPack_Two_Boundaries(Ap, Ai, Ax, b, vector_table_conditional_local);
           mxDestroyArray(x0_m);
         }
       else if (stack_solve_algo == 1 || stack_solve_algo == 6)
