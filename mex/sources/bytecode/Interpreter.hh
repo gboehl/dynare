@@ -191,7 +191,7 @@ private:
   void Solve_LU_UMFPack_One_Boundary(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b);
 
   void Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, bool is_two_boundaries, mxArray *x0_m);
-  void Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, double slowc, int block, bool is_two_boundaries, int it_, mxArray *x0_m, int precond);
+  void Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, bool is_two_boundaries, mxArray *x0_m, int precond);
   void Check_and_Correct_Previous_Iteration(int y_size, int size);
   bool Simulate_One_Boundary(int blck, int y_size, int size);
   bool solve_linear(int block_num, int y_size, int size, int iter);

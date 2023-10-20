@@ -3342,7 +3342,7 @@ Interpreter::Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, bool is_two_boundari
 }
 
 void
-Interpreter::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, double slowc, int block, bool is_two_boundaries, int it_, mxArray *x0_m, int preconditioner)
+Interpreter::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, bool is_two_boundaries, mxArray *x0_m, int preconditioner)
 {
   /* precond = 0  => Jacobi
      precond = 1  => Incomplet LU decomposition*/
@@ -3435,8 +3435,7 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, double 
           mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs, "bicgstab");
           z = lhs[0];
           mxArray *flag = lhs[1];
-          double *flag1 = mxGetPr(flag);
-          flags = flag1[0];
+          flags = mxGetScalar(flag);
           mxDestroyArray(flag);
           mxDestroyArray(rhs[2]);
           mxDestroyArray(rhs[3]);
@@ -3451,8 +3450,7 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, double 
           mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs, "bicgstab");
           z = lhs[0];
           mxArray *flag = lhs[1];
-          double *flag1 = mxGetPr(flag);
-          flags = flag1[0];
+          flags = mxGetScalar(flag);
           mxDestroyArray(flag);
           mxDestroyArray(rhs[2]);
           mxDestroyArray(rhs[3]);
@@ -3465,13 +3463,13 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, double 
     {
       if (flags == 1)
         mexWarnMsgTxt(("Error in bytecode: No convergence inside BiCGStab, in block "
-                       + to_string(block+1)).c_str());
+                       + to_string(block_num+1)).c_str());
       else if (flags == 2)
         mexWarnMsgTxt(("Error in bytecode: Preconditioner is ill-conditioned, in block "
-                       + to_string(block+1)).c_str());
+                       + to_string(block_num+1)).c_str());
       else if (flags == 3)
         mexWarnMsgTxt(("Error in bytecode: BiCGStab stagnated (Two consecutive iterates were the same.), in block "
-                       + to_string(block+1)).c_str());
+                       + to_string(block_num+1)).c_str());
       lu_inc_tol /= 10;
     }
   else
@@ -3480,7 +3478,7 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, int Size, double 
       if (is_two_boundaries)
         for (int i = 0; i < static_cast<int>(n); i++)
           {
-            int eq = index_vara[i+Size*y_kmin];
+            int eq = index_vara[i+size*y_kmin];
             double yy = -(res[i] + y[eq]);
             direction[eq] = yy;
             y[eq] += slowc * yy;
@@ -4577,7 +4575,7 @@ Interpreter::Simulate_One_Boundary(int block_num, int y_size, int size)
       else if ((solve_algo == 7 && steady_state) || (stack_solve_algo == 2 && !steady_state))
         Solve_Matlab_GMRES(A_m, b_m, false, x0_m);
       else if ((solve_algo == 8 && steady_state) || (stack_solve_algo == 3 && !steady_state))
-        Solve_Matlab_BiCGStab(A_m, b_m, size, slowc, block_num, false, it_, x0_m, preconditioner);
+        Solve_Matlab_BiCGStab(A_m, b_m, false, x0_m, preconditioner);
       else if ((solve_algo == 6 && steady_state) || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4 || stack_solve_algo == 6) && !steady_state))
         {
           Solve_LU_UMFPack_One_Boundary(Ap, Ai, Ax, b);
@@ -4930,7 +4928,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
       else if (stack_solve_algo == 2)
         Solve_Matlab_GMRES(A_m, b_m, true, x0_m);
       else if (stack_solve_algo == 3)
-        Solve_Matlab_BiCGStab(A_m, b_m, size, slowc, block_num, true, 0, x0_m, 1);
+        Solve_Matlab_BiCGStab(A_m, b_m, true, x0_m, 1);
       else if (stack_solve_algo == 5)
         Solve_ByteCode_Symbolic_Sparse_GaussianElimination(symbolic);
     }
