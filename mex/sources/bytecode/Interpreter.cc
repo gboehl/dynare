@@ -4395,7 +4395,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
 }
 
 void
-Interpreter::Check_and_Correct_Previous_Iteration(int y_size, int size)
+Interpreter::Check_and_Correct_Previous_Iteration()
 {
   if (isnan(res1) || isinf(res1) || (res2 > g0 && iter > 0))
     {
@@ -4441,7 +4441,7 @@ Interpreter::Check_and_Correct_Previous_Iteration(int y_size, int size)
 }
 
 bool
-Interpreter::Simulate_One_Boundary(int block_num, int y_size, int size)
+Interpreter::Simulate_One_Boundary()
 {
   mxArray *b_m = nullptr, *A_m = nullptr, *x0_m = nullptr;
   SuiteSparse_long *Ap = nullptr, *Ai = nullptr;
@@ -4586,16 +4586,16 @@ Interpreter::Simulate_One_Boundary(int block_num, int y_size, int size)
 }
 
 bool
-Interpreter::solve_linear(int block_num, int y_size, int size, int iter)
+Interpreter::solve_linear(bool do_check_and_correct)
 {
   bool cvg = false;
   compute_complete(false);
   cvg = (max_res < solve_tolf);
   if (!cvg || isnan(res1) || isinf(res1))
     {
-      if (iter)
-        Check_and_Correct_Previous_Iteration(y_size, size);
-      bool singular_system = Simulate_One_Boundary(block_num, y_size, size);
+      if (do_check_and_correct)
+        Check_and_Correct_Previous_Iteration();
+      bool singular_system = Simulate_One_Boundary();
       if (singular_system && verbosity >= 1)
         Singular_display();
     }
@@ -4603,7 +4603,7 @@ Interpreter::solve_linear(int block_num, int y_size, int size, int iter)
 }
 
 void
-Interpreter::solve_non_linear(int block_num, int y_size, int size)
+Interpreter::solve_non_linear()
 {
   max_res_idx = 0;
   bool cvg = false;
@@ -4611,7 +4611,7 @@ Interpreter::solve_non_linear(int block_num, int y_size, int size)
   glambda2 = g0 = very_big;
   while (!cvg && iter < maxit_)
     {
-      cvg = solve_linear(block_num, y_size, size, iter);
+      cvg = solve_linear(iter > 0);
       g0 = res2;
       iter++;
     }
@@ -4653,27 +4653,27 @@ Interpreter::Simulate_Newton_One_Boundary(bool forward)
     {
       it_ = 0;
       if (!is_linear)
-        solve_non_linear(block_num, y_size, size);
+        solve_non_linear();
       else
-        solve_linear(block_num, y_size, size, 0);
+        solve_linear(false);
     }
   else if (forward)
     {
       if (!is_linear)
         for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
-          solve_non_linear(block_num, y_size, size);
+          solve_non_linear();
       else
         for (it_ = y_kmin; it_ < periods+y_kmin; it_++)
-          solve_linear(block_num, y_size, size, 0);
+          solve_linear(false);
     }
   else
     {
       if (!is_linear)
         for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
-          solve_non_linear(block_num, y_size, size);
+          solve_non_linear();
       else
         for (it_ = periods+y_kmin-1; it_ >= y_kmin; it_--)
-          solve_linear(block_num, y_size, size, 0);
+          solve_linear(false);
     }
   if ((solve_algo == 6 && steady_state)
       || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4 || stack_solve_algo == 6) && !steady_state))

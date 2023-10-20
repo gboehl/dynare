@@ -192,10 +192,10 @@ private:
 
   void Solve_Matlab_GMRES(mxArray *A_m, mxArray *b_m, bool is_two_boundaries, mxArray *x0_m);
   void Solve_Matlab_BiCGStab(mxArray *A_m, mxArray *b_m, bool is_two_boundaries, mxArray *x0_m, int precond);
-  void Check_and_Correct_Previous_Iteration(int y_size, int size);
-  bool Simulate_One_Boundary(int blck, int y_size, int size);
-  bool solve_linear(int block_num, int y_size, int size, int iter);
-  void solve_non_linear(int block_num, int y_size, int size);
+  void Check_and_Correct_Previous_Iteration();
+  bool Simulate_One_Boundary();
+  bool solve_linear(bool do_check_and_correct);
+  void solve_non_linear();
   string preconditioner_print_out(string s, int preconditioner, bool ss);
   bool compare(int *save_op, int *save_opa, int *save_opaa, int beg_t, int periods, long nop4, int Size);
   void Insert(int r, int c, int u_index, int lag_index);
