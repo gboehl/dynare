@@ -67,7 +67,7 @@ while info_period <= periods
 
     options_.periods = sim_length;
 
-    perfect_foresight_solver;
+    perfect_foresight_solver(true);
 
     if ~oo_.deterministic_simulation.status
         error('perfect_foresight_with_expectation_errors_solver: failed to compute solution for information available at period %d\n', info_period)

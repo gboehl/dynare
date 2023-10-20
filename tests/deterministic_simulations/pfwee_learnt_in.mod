@@ -91,11 +91,13 @@ oo_.exo_steady_state = orig_exo_steady_state;
 
 perfect_foresight_setup;
 
-// Information arriving in period 1 (temp shock now and tomorrow)
-oo_.exo_simul(2:3,1) = 1.2;
-perfect_foresight_solver;
+verbatim;
 
-// Information arriving in period 2 (temp shock now + permanent shock in future)
+% Information arriving in period 1 (temp shock now and tomorrow)
+oo_.exo_simul(2:3,1) = 1.2;
+perfect_foresight_solver(true);
+
+% Information arriving in period 2 (temp shock now + permanent shock in future)
 oo_.exo_simul(3,1) = 1.3;
 oo_.exo_steady_state = 1.1;
 oo_.exo_simul(end, 1) = oo_.exo_steady_state;
@@ -106,11 +108,11 @@ saved_endo = oo_.endo_simul(:, 1);
 saved_exo = oo_.exo_simul(1, :);
 oo_.endo_simul = oo_.endo_simul(:, 2:end);
 oo_.exo_simul = oo_.exo_simul(2:end, :);
-perfect_foresight_solver;
+perfect_foresight_solver(true);
 oo_.endo_simul = [ saved_endo oo_.endo_simul ];
 oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 
-// Information arriving in period 3 (temp shocks + permanent shock in future)
+% Information arriving in period 3 (temp shocks + permanent shock in future)
 oo_.exo_simul(4,1) = 1.4;
 oo_.exo_steady_state = 1.1+0.1;
 oo_.exo_simul(8,1) = (1.5/1.2)*oo_.exo_steady_state;
@@ -122,11 +124,11 @@ saved_endo = oo_.endo_simul(:, 1:2);
 saved_exo = oo_.exo_simul(1:2, :);
 oo_.endo_simul = oo_.endo_simul(:, 3:end);
 oo_.exo_simul = oo_.exo_simul(3:end, :);
-perfect_foresight_solver;
+perfect_foresight_solver(true);
 oo_.endo_simul = [ saved_endo oo_.endo_simul ];
 oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 
-// Information arriving in period 6 (temp shocks + permanent shock)
+% Information arriving in period 6 (temp shocks + permanent shock)
 oo_.exo_simul(7,1) = 1*0.8;
 oo_.exo_simul(8,1) = 1.5*0.8;
 oo_.exo_steady_state = (1.1+0.1)*0.75;
@@ -138,7 +140,7 @@ saved_endo = oo_.endo_simul(:, 1:5);
 saved_exo = oo_.exo_simul(1:5, :);
 oo_.endo_simul = oo_.endo_simul(:, 6:end);
 oo_.exo_simul = oo_.exo_simul(6:end, :);
-perfect_foresight_solver;
+perfect_foresight_solver(true);
 oo_.endo_simul = [ saved_endo oo_.endo_simul ];
 oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 
@@ -147,3 +149,5 @@ oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 if any(any(pfwee_simul-oo_.endo_simul ~= 0))
     error('Error in perfect_foresight_with_expectation_errors')
 end
+
+end; // verbatim

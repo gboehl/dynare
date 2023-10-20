@@ -1,8 +1,10 @@
-function perfect_foresight_solver()
+function perfect_foresight_solver(no_error_if_learnt_in_is_present)
 % Computes deterministic simulations
 %
 % INPUTS
-%   None
+%   no_error_if_learnt_in_is_present [boolean, optional]
+%       if true, then do not error out if a shocks(learnt_in=…) or endval(learnt_in=…)
+%       block is present
 %
 % OUTPUTS
 %   none
@@ -32,6 +34,13 @@ function perfect_foresight_solver()
 global M_ options_ oo_ ys0_ ex0_
 
 check_input_arguments(options_, M_, oo_);
+
+if nargin == 0
+    no_error_if_learnt_in_is_present = false;
+end
+if (~isempty(M_.learnt_shocks) || ~isempty(M_.learnt_endval)) && ~no_error_if_learnt_in_is_present
+    error('A shocks(learnt_in=...) or endval(learnt_in=...) block is present. You want to call perfect_foresight_with_expectations_error_setup and perfect_foresight_with_expectations_error_solver.')
+end
 
 periods = options_.periods;
 
