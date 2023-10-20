@@ -212,7 +212,7 @@ private:
 
   int complete(int beg_t);
   void bksub(int tbreak, int last_period);
-  void simple_bksub(int it_, int Size, double slowc_l);
+  void simple_bksub();
   // Computes Aᵀ where A is are sparse. The result is sparse.
   static mxArray *Sparse_transpose(const mxArray *A_m);
   // Computes Aᵀ·B where A and B are sparse. The result is sparse.

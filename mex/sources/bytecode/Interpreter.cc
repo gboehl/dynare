@@ -2298,11 +2298,11 @@ Interpreter::bksub(int tbreak, int last_period)
 }
 
 void
-Interpreter::simple_bksub(int it_, int Size, double slowc_l)
+Interpreter::simple_bksub()
 {
   for (int i = 0; i < y_size; i++)
     y[i+it_*y_size] = ya[i+it_*y_size];
-  for (int i = Size-1; i >= 0; i--)
+  for (int i = size-1; i >= 0; i--)
     {
       int pos = pivot[i];
       auto [nb_var, first] = At_Row(pos);
@@ -2317,7 +2317,7 @@ Interpreter::simple_bksub(int it_, int Size, double slowc_l)
         }
       yy = -(yy+y[eq+it_*y_size]+u[b[pos]]);
       direction[eq+it_*y_size] = yy;
-      y[eq+it_*y_size] += slowc_l*yy;
+      y[eq+it_*y_size] += slowc*yy;
     }
 }
 
@@ -3810,12 +3810,11 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination()
           u[b[row]] -= u[b[pivj]]*first_elem;
         }
     }
-  double slowc_lbx = slowc;
   for (int i = 0; i < y_size; i++)
     ya[i+it_*y_size] = y[i+it_*y_size];
 
   slowc_save = slowc;
-  simple_bksub(it_, size, slowc_lbx);
+  simple_bksub();
   End_GE();
   mxFree(piv_v);
   mxFree(pivj_v);
