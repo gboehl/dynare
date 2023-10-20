@@ -3238,10 +3238,10 @@ Interpreter::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double
 }
 
 void
-Interpreter::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, int n, int Size, double slowc_l, bool is_two_boundaries, int it_)
+Interpreter::Solve_LU_UMFPack_One_Boundary(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b)
 {
   SuiteSparse_long sys = 0;
-  double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
+  double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[size];
 
   umfpack_dl_defaults(Control);
   SuiteSparse_long status = 0;
@@ -3249,7 +3249,7 @@ Interpreter::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double
     {
       if (Symbolic)
         umfpack_dl_free_symbolic(&Symbolic);
-      status = umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info);
+      status = umfpack_dl_symbolic(size, size, Ap, Ai, Ax, &Symbolic, Control, Info);
       if (status != UMFPACK_OK)
         {
           umfpack_dl_report_info(Control, Info);
@@ -3274,22 +3274,13 @@ Interpreter::Solve_LU_UMFPack(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double
       throw FatalException{"umfpack_dl_solve failed"};
     }
 
-  if (is_two_boundaries)
-    for (int i = 0; i < n; i++)
-      {
-        int eq = index_vara[i+Size*y_kmin];
-        double yy = -(res[i] + y[eq]);
-        direction[eq] = yy;
-        y[eq] += slowc_l * yy;
-      }
-  else
-    for (int i = 0; i < n; i++)
-      {
-        int eq = index_vara[i];
-        double yy = -(res[i] + y[eq+it_*y_size]);
-        direction[eq] = yy;
-        y[eq+it_*y_size] += slowc_l * yy;
-      }
+  for (int i = 0; i < size; i++)
+    {
+      int eq = index_vara[i];
+      double yy = -(res[i] + y[eq+it_*y_size]);
+      direction[eq] = yy;
+      y[eq+it_*y_size] += slowc * yy;
+    }
   mxFree(Ap);
   mxFree(Ai);
   mxFree(Ax);
@@ -4604,7 +4595,7 @@ Interpreter::Simulate_One_Boundary(int block_num, int y_size, int size)
         Solve_Matlab_BiCGStab(A_m, b_m, size, slowc, block_num, false, it_, x0_m, preconditioner);
       else if ((solve_algo == 6 && steady_state) || ((stack_solve_algo == 0 || stack_solve_algo == 1 || stack_solve_algo == 4 || stack_solve_algo == 6) && !steady_state))
         {
-          Solve_LU_UMFPack(Ap, Ai, Ax, b, size, size, slowc, false, it_);
+          Solve_LU_UMFPack_One_Boundary(Ap, Ai, Ax, b);
           mxDestroyArray(x0_m);
         }
     }
