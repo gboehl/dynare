@@ -2883,7 +2883,7 @@ Interpreter::golden(double ax, double bx, double cx, double tol)
 }
 
 void
-Interpreter::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Size, double slowc_l)
+Interpreter::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m)
 {
   double *b_m_d = mxGetPr(b_m);
   if (!b_m_d)
@@ -2906,38 +2906,38 @@ Interpreter::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Si
      ⎢    … …⎥   ⎢ …⎥
      ⎝      …⎠   ⎝ …⎠
   */
-  mxArray *B1 = mxCreateSparse(Size, Size, Size*Size, mxREAL);
+  mxArray *B1 = mxCreateSparse(size, size, size*size, mxREAL);
   mwIndex *B1_i = mxGetIr(B1);
   mwIndex *B1_j = mxGetJc(B1);
   double *B1_d = mxGetPr(B1);
-  mxArray *C1 = mxCreateSparse(Size, Size, Size*Size, mxREAL);
+  mxArray *C1 = mxCreateSparse(size, size, size*size, mxREAL);
   mwIndex *C1_i = mxGetIr(C1);
   mwIndex *C1_j = mxGetJc(C1);
   double *C1_d = mxGetPr(C1);
-  mxArray *A2 = mxCreateSparse(Size, Size, Size*Size, mxREAL);
+  mxArray *A2 = mxCreateSparse(size, size, size*size, mxREAL);
   mwIndex *A2_i = mxGetIr(A2);
   mwIndex *A2_j = mxGetJc(A2);
   double *A2_d = mxGetPr(A2);
-  mxArray *B2 = mxCreateSparse(Size, Size, Size*Size, mxREAL);
+  mxArray *B2 = mxCreateSparse(size, size, size*size, mxREAL);
   mwIndex *B2_i = mxGetIr(B2);
   mwIndex *B2_j = mxGetJc(B2);
   double *B2_d = mxGetPr(B2);
-  mxArray *A3 = mxCreateSparse(Size, Size, Size*Size, mxREAL);
+  mxArray *A3 = mxCreateSparse(size, size, size*size, mxREAL);
   mwIndex *A3_i = mxGetIr(A3);
   mwIndex *A3_j = mxGetJc(A3);
   double *A3_d = mxGetPr(A3);
 
-  mxArray *b1 = mxCreateDoubleMatrix(Size, 1, mxREAL);
+  mxArray *b1 = mxCreateDoubleMatrix(size, 1, mxREAL);
   double *b1_d = mxGetPr(b1);
-  mxArray *b2 = mxCreateDoubleMatrix(Size, 1, mxREAL);
+  mxArray *b2 = mxCreateDoubleMatrix(size, 1, mxREAL);
   double *b2_d = mxGetPr(b2);
 
   unsigned int nze = 0; // Counter in nonzero elements of A
   unsigned int B1_nze = 0, C1_nze = 0, A2_nze = 0, B2_nze = 0, A3_nze = 0; // Same for submatrices
 
-  for (size_t var = 0; var < 2*Size; var++) // Iterate over columns of A
+  for (size_t var = 0; var < static_cast<size_t>(2*size); var++) // Iterate over columns of A
     {
-      if (var < Size)
+      if (var < static_cast<size_t>(size))
         {
           b1_d[var] = b_m_d[var];
 
@@ -2946,48 +2946,48 @@ Interpreter::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Si
         }
       else
         {
-          b2_d[var - Size] = b_m_d[var];
+          b2_d[var - size] = b_m_d[var];
 
-          C1_j[var - Size] = C1_nze;
-          B2_j[var - Size] = B2_nze;
-          A3_j[var - Size] = A3_nze;
+          C1_j[var - size] = C1_nze;
+          B2_j[var - size] = B2_nze;
+          A3_j[var - size] = A3_nze;
         }
 
       while (static_cast<unsigned int>(A_m_j[var+1]) > nze)
         {
           size_t eq = A_m_i[nze];
-          if (var < Size)
+          if (var < static_cast<size_t>(size))
             {
-              if (eq < Size)
+              if (eq < static_cast<size_t>(size))
                 {
                   B1_i[B1_nze] = eq;
                   B1_d[B1_nze] = A_m_d[nze];
                   B1_nze++;
                 }
-              else // Here we know that eq < 2*Size, because of the structure of A
+              else // Here we know that eq < 2*size, because of the structure of A
                 {
-                  A2_i[A2_nze] = eq - Size;
+                  A2_i[A2_nze] = eq - size;
                   A2_d[A2_nze] = A_m_d[nze];
                   A2_nze++;
                 }
             }
-          else if (var < 2*Size)
+          else if (var < static_cast<size_t>(2*size))
             {
-              if (eq < Size)
+              if (eq < static_cast<size_t>(size))
                 {
                   C1_i[C1_nze] = eq;
                   C1_d[C1_nze] = A_m_d[nze];
                   C1_nze++;
                 }
-              else if (eq < 2*Size)
+              else if (eq < static_cast<size_t>(2*size))
                 {
-                  B2_i[B2_nze] = eq - Size;
+                  B2_i[B2_nze] = eq - size;
                   B2_d[B2_nze] = A_m_d[nze];
                   B2_nze++;
                 }
-              else // Here we know that eq < 3*Size, because of the structure of A
+              else // Here we know that eq < 3*size, because of the structure of A
                 {
-                  A3_i[A3_nze] = eq - 2*Size;
+                  A3_i[A3_nze] = eq - 2*size;
                   A3_d[A3_nze] = A_m_d[nze];
                   A3_nze++;
                 }
@@ -2995,11 +2995,11 @@ Interpreter::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Si
           nze++;
         }
     }
-  B1_j[Size] = B1_nze;
-  C1_j[Size] = C1_nze;
-  A2_j[Size] = A2_nze;
-  B2_j[Size] = B2_nze;
-  A3_j[Size] = A3_nze;
+  B1_j[size] = B1_nze;
+  C1_j[size] = C1_nze;
+  A2_j[size] = A2_nze;
+  B2_j[size] = B2_nze;
+  A3_j[size] = A3_nze;
 
   vector<pair<mxArray *, mxArray *>> triangular_form;
   mxArray *d1 = nullptr;
@@ -3054,52 +3054,52 @@ Interpreter::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Si
         {
           // Update C1, B2, A3, b2
           C1_nze = B2_nze = A3_nze = 0;
-          for (size_t var = (t+1)*Size; var < (t+2)*Size; var++)
+          for (size_t var = (t+1)*size; var < static_cast<size_t>((t+2)*size); var++)
             {
-              b2_d[var - (t+1)*Size] = b_m_d[var];
+              b2_d[var - (t+1)*size] = b_m_d[var];
 
-              C1_j[var - (t+1)*Size] = C1_nze;
-              B2_j[var - (t+1)*Size] = B2_nze;
-              A3_j[var - (t+1)*Size] = A3_nze;
+              C1_j[var - (t+1)*size] = C1_nze;
+              B2_j[var - (t+1)*size] = B2_nze;
+              A3_j[var - (t+1)*size] = A3_nze;
 
               while (static_cast<unsigned int>(A_m_j[var+1]) > nze)
                 {
                   size_t eq = A_m_i[nze];
-                  if (eq < (t+1) * Size)
+                  if (eq < static_cast<size_t>((t+1) * size))
                     {
-                      C1_i[C1_nze] = eq - t*Size;
+                      C1_i[C1_nze] = eq - t*size;
                       C1_d[C1_nze] = A_m_d[nze];
                       C1_nze++;
                     }
-                  else if (eq < (t+2)*Size)
+                  else if (eq < static_cast<size_t>((t+2)*size))
                     {
-                      B2_i[B2_nze] = eq - (t+1)*Size;
+                      B2_i[B2_nze] = eq - (t+1)*size;
                       B2_d[B2_nze] = A_m_d[nze];
                       B2_nze++;
                     }
                   else
                     {
-                      A3_i[A3_nze] = eq - (t+2)*Size;
+                      A3_i[A3_nze] = eq - (t+2)*size;
                       A3_d[A3_nze] = A_m_d[nze];
                       A3_nze++;
                     }
                   nze++;
                 }
             }
-          C1_j[Size] = C1_nze;
-          B2_j[Size] = B2_nze;
-          A3_j[Size] = A3_nze;
+          C1_j[size] = C1_nze;
+          B2_j[size] = B2_nze;
+          A3_j[size] = A3_nze;
         }
     }
 
   // At this point, d1 contains the solution for the last period
   double *d1_d = mxGetPr(d1);
-  for (unsigned i = 0; i < Size; i++)
+  for (int i = 0; i < size; i++)
     {
-      int eq = index_vara[i+Size*(y_kmin+periods-1)];
+      int eq = index_vara[i+size*(y_kmin+periods-1)];
       double yy = -(d1_d[i] + y[eq]);
       direction[eq] = yy;
-      y[eq] += slowc_l * yy;
+      y[eq] += slowc * yy;
     }
 
   // Perform backward iteration to compute the solution for other periods
@@ -3116,12 +3116,12 @@ Interpreter::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Si
       d1_d = mxGetPr(d1);
       mxDestroyArray(d1_next);
       mxDestroyArray(tmp);
-      for (unsigned i = 0; i < Size; i++)
+      for (int i = 0; i < size; i++)
         {
-          int eq = index_vara[i+Size*(y_kmin+t)];
+          int eq = index_vara[i+size*(y_kmin+t)];
           double yy = -(d1_d[i] + y[eq]);
           direction[eq] = yy;
-          y[eq] += slowc_l * yy;
+          y[eq] += slowc * yy;
         }
     }
 
@@ -5002,7 +5002,7 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
         }
       else if (stack_solve_algo == 1 || stack_solve_algo == 6)
         {
-          Solve_Matlab_Relaxation(A_m, b_m, size, slowc);
+          Solve_Matlab_Relaxation(A_m, b_m);
           mxDestroyArray(x0_m);
         }
       else if (stack_solve_algo == 2)
