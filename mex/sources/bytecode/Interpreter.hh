@@ -183,7 +183,7 @@ private:
   void Simple_Init(int Size, const map<tuple<int, int, int>, int> &IM, bool &zero_solution);
   void End_GE();
   tuple<bool, double, double, double, double> mnbrak(double &ax, double &bx);
-  bool golden(double ax, double bx, double cx, double tol, double solve_tolf, double *xmin);
+  pair<bool, double> golden(double ax, double bx, double cx, double tol);
   void Solve_ByteCode_Symbolic_Sparse_GaussianElimination(int Size, bool symbolic, int Block_number);
   bool Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int it_);
   void Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m, unsigned int Size, double slowc_l);

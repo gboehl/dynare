@@ -2825,9 +2825,10 @@ Interpreter::mnbrak(double &ax, double &bx)
   return { true, cx, fa, fb, fc };
 }
 
-bool
-Interpreter::golden(double ax, double bx, double cx, double tol, double solve_tolf, double *xmin)
+pair<bool, double>
+Interpreter::golden(double ax, double bx, double cx, double tol)
 {
+  constexpr pair failval = { false, numeric_limits<double>::quiet_NaN() };
   const double R = 0.61803399;
   const double C = (1.0-R);
   if (verbosity >= 2)
@@ -2848,10 +2849,10 @@ Interpreter::golden(double ax, double bx, double cx, double tol, double solve_to
     }
   auto [success, f1] = compute_complete(x1);
   if (!success)
-    return false;
+    return failval;
   auto [success2, f2] = compute_complete(x2);
   if (!success2)
-    return false;
+    return failval;
   while (fabs(x3-x0) > tol*(fabs(x1)+fabs(x2)) && f1 > solve_tolf && f2 > solve_tolf
          && iter < max_iter && abs(x1 - x2) > 1e-4)
     {
@@ -2863,7 +2864,7 @@ Interpreter::golden(double ax, double bx, double cx, double tol, double solve_to
           f1 = f2;
           tie(success, f2) = compute_complete(x2);
           if (!success)
-            return false;
+            return failval;
         }
       else
         {
@@ -2873,20 +2874,12 @@ Interpreter::golden(double ax, double bx, double cx, double tol, double solve_to
           f2 = f1;
           tie(success, f1) = compute_complete(x1);
           if (!success)
-            return false;
+            return failval;
         }
       iter++;
     }
-  if (f1 < f2)
-    {
-      *xmin = x1;
-      return true;
-    }
-  else
-    {
-      *xmin = x2;
-      return true;
-    }
+  double xmin { f1 < f2 ? x1 : x2 };
+  return { true, xmin };
 }
 
 void
@@ -5028,12 +5021,13 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
     }
   if (!steady_state && stack_solve_algo == 4)
     {
-      double ax = -0.1, bx = 1.1, xmin;
+      double ax = -0.1, bx = 1.1;
 
       auto [success, cx, fa, fb, fc] = mnbrak(ax, bx);
       if (!success)
         return;
-      if (!golden(ax, bx, cx, 1e-1, solve_tolf, &xmin))
+      auto [success2, xmin] = golden(ax, bx, cx, 1e-1);
+      if (!success2)
         return;
       slowc = xmin;
       if (verbosity >= 1)
