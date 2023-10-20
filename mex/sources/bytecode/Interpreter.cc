@@ -1730,7 +1730,7 @@ Interpreter::PrintM(int n, const double *Ax, const mwIndex *Ap, const mwIndex *A
 }
 
 void
-Interpreter::Init_Matlab_Sparse(mxArray *A_m, mxArray *b_m, const mxArray *x0_m) const
+Interpreter::Init_Matlab_Sparse(const mxArray *A_m, const mxArray *b_m, const mxArray *x0_m) const
 {
   double *b = mxGetPr(b_m);
 

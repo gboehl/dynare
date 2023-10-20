@@ -176,7 +176,7 @@ private:
   static int find_exo_num(const vector<s_plan> &sconstrained_extended_path, int value);
   static int find_int_date(const vector<pair<int, double>> &per_value, int value);
   void Init_GE();
-  void Init_Matlab_Sparse(mxArray *A_m, mxArray *b_m, const mxArray *x0_m) const;
+  void Init_Matlab_Sparse(const mxArray *A_m, const mxArray *b_m, const mxArray *x0_m) const;
   tuple<SuiteSparse_long *, SuiteSparse_long *, double *, double *> Init_UMFPACK_Sparse(const mxArray *x0_m, const vector_table_conditional_local_type &vector_table_conditional_local) const;
   bool Init_Matlab_Sparse_Simple(const mxArray *A_m, const mxArray *b_m, const mxArray *x0_m) const;
   tuple<bool, SuiteSparse_long *, SuiteSparse_long *, double *, double *> Init_UMFPACK_Sparse_Simple(const mxArray *x0_m) const;
