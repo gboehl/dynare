@@ -3651,21 +3651,21 @@ Interpreter::Singular_display()
 }
 
 bool
-Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int it_)
+Interpreter::Solve_ByteCode_Sparse_GaussianElimination()
 {
   int pivj = 0, pivk = 0;
-  NonZeroElem **bc = static_cast<NonZeroElem **>(mxMalloc(Size*sizeof(*bc)));
-  test_mxMalloc(bc, __LINE__, __FILE__, __func__, Size*sizeof(*bc));
-  double *piv_v = static_cast<double *>(mxMalloc(Size*sizeof(double)));
-  test_mxMalloc(piv_v, __LINE__, __FILE__, __func__, Size*sizeof(double));
-  int *pivj_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
-  test_mxMalloc(pivj_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  int *pivk_v = static_cast<int *>(mxMalloc(Size*sizeof(int)));
-  test_mxMalloc(pivk_v, __LINE__, __FILE__, __func__, Size*sizeof(int));
-  int *NR = static_cast<int *>(mxMalloc(Size*sizeof(int)));
-  test_mxMalloc(NR, __LINE__, __FILE__, __func__, Size*sizeof(int));
+  NonZeroElem **bc = static_cast<NonZeroElem **>(mxMalloc(size*sizeof(*bc)));
+  test_mxMalloc(bc, __LINE__, __FILE__, __func__, size*sizeof(*bc));
+  double *piv_v = static_cast<double *>(mxMalloc(size*sizeof(double)));
+  test_mxMalloc(piv_v, __LINE__, __FILE__, __func__, size*sizeof(double));
+  int *pivj_v = static_cast<int *>(mxMalloc(size*sizeof(int)));
+  test_mxMalloc(pivj_v, __LINE__, __FILE__, __func__, size*sizeof(int));
+  int *pivk_v = static_cast<int *>(mxMalloc(size*sizeof(int)));
+  test_mxMalloc(pivk_v, __LINE__, __FILE__, __func__, size*sizeof(int));
+  int *NR = static_cast<int *>(mxMalloc(size*sizeof(int)));
+  test_mxMalloc(NR, __LINE__, __FILE__, __func__, size*sizeof(int));
 
-  for (int i = 0; i < Size; i++)
+  for (int i = 0; i < size; i++)
     {
       /*finding the max-pivot*/
       double piv = 0, piv_abs = 0;
@@ -3721,8 +3721,8 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
             {
               if (verbosity >= 1)
                 {
-                  if (blck > 1)
-                    mexPrintf("Error: singular system in Simulate_NG in block %d\n", blck+1);
+                  if (block_num > 1)
+                    mexPrintf("Error: singular system in Simulate_NG in block %d\n", block_num+1);
                   else
                     mexPrintf("Error: singular system in Simulate_NG");
                 }
@@ -3730,9 +3730,9 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
             }
           else
             {
-              if (blck > 1)
+              if (block_num > 1)
                 throw FatalException{"In Solve_ByteCode_Sparse_GaussianElimination, singular system in block "
-                                     + to_string(blck+1)};
+                                     + to_string(block_num+1)};
               else
                 throw FatalException{"In Solve_ByteCode_Sparse_GaussianElimination, singular system"};
             }
@@ -3834,7 +3834,7 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
                 if (first_sub)
                   sub_c_index = first_sub->c_index;
                 else
-                  sub_c_index = Size;
+                  sub_c_index = size;
                 l_sub++;
               }
             else if (sub_c_index > piv_c_index || l_sub >= nb_var_sub)
@@ -3846,7 +3846,7 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
                 if (first_piv)
                   piv_c_index = first_piv->c_index;
                 else
-                  piv_c_index = Size;
+                  piv_c_index = size;
                 l_piv++;
               }
             else
@@ -3861,13 +3861,13 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
                     if (first_sub)
                       sub_c_index = first_sub->c_index;
                     else
-                      sub_c_index = Size;
+                      sub_c_index = size;
                     l_sub++;
                     first_piv = first_piv->NZE_R_N;
                     if (first_piv)
                       piv_c_index = first_piv->c_index;
                     else
-                      piv_c_index = Size;
+                      piv_c_index = size;
                     l_piv++;
                   }
                 else
@@ -3877,13 +3877,13 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
                     if (first_sub)
                       sub_c_index = first_sub->c_index;
                     else
-                      sub_c_index = Size;
+                      sub_c_index = size;
                     l_sub++;
                     first_piv = first_piv->NZE_R_N;
                     if (first_piv)
                       piv_c_index = first_piv->c_index;
                     else
-                      piv_c_index = Size;
+                      piv_c_index = size;
                     l_piv++;
                   }
               }
@@ -3895,7 +3895,7 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination(int Size, int blck, int i
     ya[i+it_*y_size] = y[i+it_*y_size];
 
   slowc_save = slowc;
-  simple_bksub(it_, Size, slowc_lbx);
+  simple_bksub(it_, size, slowc_lbx);
   End_GE();
   mxFree(piv_v);
   mxFree(pivj_v);
@@ -4651,7 +4651,7 @@ Interpreter::Simulate_One_Boundary(int block_num, int y_size, int size)
   else
     {
       if ((solve_algo == 5 && steady_state) || (stack_solve_algo == 5 && !steady_state))
-        singular_system = Solve_ByteCode_Sparse_GaussianElimination(size, block_num, it_);
+        singular_system = Solve_ByteCode_Sparse_GaussianElimination();
       else if ((solve_algo == 7 && steady_state) || (stack_solve_algo == 2 && !steady_state))
         Solve_Matlab_GMRES(A_m, b_m, size, slowc, block_num, false, it_, x0_m);
       else if ((solve_algo == 8 && steady_state) || (stack_solve_algo == 3 && !steady_state))
