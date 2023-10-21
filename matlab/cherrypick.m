@@ -197,13 +197,6 @@ try
                 end
             end
         end
-        if ~isempty(istar)
-            % Note that auxlhs and rhs are already defined in the previous block, it is not possible to be here if isempty(ispac) is true.
-            auxlhs{end+1} = M_.endo_names{M_.pac.(ispac.name).ec.vars(M_.pac.(ispac.name).ec.istarget)};
-            rhs{end+1} = M_.aux_vars(strmatch(auxlhs{end}, M_.endo_names, 'exact')==[M_.aux_vars(:).endo_index]).orig_expr;
-            rhs{end} = remove_aux_variables_from_expression(rhs{end}, M_);
-            RHS = strrep(RHS, sprintf('pac_target_nonstationary(model_name = %s)', ispac.name), sprintf('%s(-1)', auxlhs{end}));
-        end
         % Print equation for unrolled PAC/VAR-expectation and update
         % list of parameters and endogenous variables (if any).
         if ~isempty(rhs)
