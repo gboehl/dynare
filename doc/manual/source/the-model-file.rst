@@ -3117,6 +3117,13 @@ After computation, the steady state is available in the following variable:
     ordered in the order of declaration used in the ``var`` command (which
     is also the order used in ``M_.endo_names``).
 
+.. matvar:: oo_.exo_steady_state
+
+    Contains the steady state of the exogenous variables, as declared by the
+    previous ``initval`` or ``endval`` block. Exogenous variables are
+    ordered in the order of declaration used in the ``varexo`` command (which
+    is also the order used in ``M_.exo_names``).
+
 .. matcomm:: get_mean ('ENDOGENOUS_NAME' [, 'ENDOGENOUS_NAME']... );
 
     Returns the steady of state of the given endogenous variable(s), as it is
