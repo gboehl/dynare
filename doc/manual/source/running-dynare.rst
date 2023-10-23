@@ -409,9 +409,11 @@ by the ``dynare`` command.
 
     .. option:: fast
 
-        Only useful with model option :opt:`use_dll`. Don’t recompile the
-        MEX files when running again the same model file and the lists
-        of variables and the equations haven’t changed. We use a 32
+        Don’t rewrite the output files otherwise written to the disk by the preprocessor 
+        when re-running the same model file while the lists of variables and the equations 
+        haven’t changed. Note that the whole model still needs to be preprocessed. This option 
+        is most useful with model option :opt:`use_dll`, because 
+        the time-consuming compilation of the MEX files will be skipped. We use a 32
         bit checksum, stored in ``<model filename>/checksum``. There
         is a very small probability that the preprocessor misses a
         change in the model. In case of doubt, re-run without the fast

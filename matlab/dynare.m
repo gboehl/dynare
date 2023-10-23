@@ -184,6 +184,7 @@ preprocessoroutput = ~ismember('nopreprocessoroutput', varargin) && ...
 nolog = ismember('nolog', varargin) || ismember('nolog', file_opts);
 onlymacro = ismember('onlymacro', varargin) || ismember('onlymacro', file_opts);
 onlyjson = ismember('onlyjson', varargin) || ismember('onlyjson', file_opts);
+fast = ismember('fast', varargin) || ismember('fast', file_opts);
 
 % Start journal
 diary off
@@ -234,11 +235,13 @@ end
 % On MATLAB+Windows, the +folder may be locked by MATLAB, preventing its
 % removal by the preprocessor.
 % Trying to delete it here will actually fail, but surprisingly this allows
-% the preprocessor to actually remove the folder (see ModFile::writeOutputFiles())
+% the preprocessor to actually remove the folder (see ModFile::writeMOutput())
 % For an instance of this bug, see:
 % https://forum.dynare.org/t/issue-with-dynare-preprocessor-4-6-1/15448/1
-if ispc && ~isoctave && exist(['+',fname(1:end-4)],'dir')
-    [~,~]=rmdir(['+', fname(1:end-4)],'s');
+if ~fast
+    if ispc && ~isoctave && exist(['+',fname(1:end-4)],'dir')
+        [~,~]=rmdir(['+', fname(1:end-4)],'s');
+    end
 end
 
 % Under Windows, make sure the MEX file is unloaded (in the use_dll case),
@@ -254,9 +257,15 @@ else
 end
 
 pTic = tic;
-[status, result] = system(command);
+if preprocessoroutput
+    status = system(command); %immediately flush output
+else
+    [status, result] = system(command); %save output for output in case of failure
+    if status ~= 0 || preprocessoroutput
+        disp(result)
+    end
+end
 if status ~= 0 || preprocessoroutput
-    disp(result)
     pToc = toc(pTic);
     dprintf('Preprocessing time: %s.', dynsec2hms(pToc))
     if nargout
