@@ -1,3 +1,62 @@
+Announcement for Dynare 5.5 (on 2023-10-23)
+===========================================
+
+We are pleased to announce the release of Dynare 5.5.
+
+This maintenance release fixes various bugs.
+
+The Windows, macOS and source packages are already available for download at
+[the Dynare website](https://www.dynare.org/download/).
+
+All users are strongly encouraged to upgrade.
+
+This release is compatible with MATLAB versions ranging from 8.3 (R2014a) to
+23.2 (R2023b), and with GNU Octave version 8.3.0 (under Windows).
+
+Note for macOS users with an Apple Silicon processor: this is the first Dynare
+release that comes with native Apple Silicon (arm64) support under MATLAB.
+Please download the corresponding package, to be used with MATLAB R2023b for
+Apple Silicon.
+
+Here is a list of the problems identified in version 5.4 and that have been
+fixed in version 5.5:
+
+* In a stochastic context, results could be incorrect if an endogenous with a
+  lead ⩾ 2 or an exogenous with a lead ⩾ 1 appeared in the argument(s) of a
+  call to a (nonlinear) external function
+* With the `use_dll` option of the `model` block, the expression `sign(x)`
+  would evaluate to ±1 instead of 0 if `x=0`
+* If the guess value given to the `steady` command was such that the residuals
+  were all below tolerance, except some that are `NaN`, then this guess value
+  was incorrectly accepted as the solution to the steady state problem
+* The `method_of_moments` command with GMM was ignoring the
+  `analytic_standard_errors` option when using `mode_compute=4`
+* Homotopy with the `extended_path` command at `order=0` was broken
+* The `parallel_use_psexec` command-line option was ignored
+* With the `bytecode` option of the `model` block, using the operators `abs()`,
+  `cbrt()` and `sign()` would lead to a crash
+* The `fast` command-line option was broken under MATLAB with Windows
+* Ramsey steady state computation could fail if an `expectation` or `diff`
+  operator was present in the model
+* A crash could occur if some external function call was present in an
+  auxiliary variable
+* The `endogenous_prior` option of the `estimation` command could erroneously
+  display a warning message about missing observations
+* The `model_comparison` command would crash if the `.mod` file name had less
+  than four characters
+* The `shock_decomposition` command would overwrite previously stored smoother
+  results
+* The `x13` interface in dseries did not handle missing values, particularly at
+  the beginning of a series
+* The `x13` interface in dseries would occasionally crash under Windows with
+  segmentation violations
+* OccBin: estimation would crash if a previous `shocks(surprise)` simulation
+  was conducted
+* The `internals` command would not find the location of the `_results.mat`
+  file
+* The `prior optimize` command would not work with `mode_compute=5`
+
+
 Announcement for Dynare 5.4 (on 2023-03-22)
 ===========================================
 
