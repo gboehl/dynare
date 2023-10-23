@@ -236,13 +236,15 @@ deploy_release_stable:
     - pkg_source
     - pkg_windows
     - sign_windows
+    - pkg_macOS_arm64
     - pkg_macOS_x86_64
   script:
     - cp *.tar.xz /srv/www.dynare.org/release/source/
     - cp windows/exe-signed/* /srv/www.dynare.org/release/windows/
     - cp windows/7z/* /srv/www.dynare.org/release/windows-7z/
     - cp windows/zip/* /srv/www.dynare.org/release/windows-zip/
-    - cp macOS/pkg/*-x86_64.pkg /srv/www.dynare.org/release/macos/
+    - cp macOS/pkg/*-arm64.pkg /srv/www.dynare.org/release/macos-arm64/
+    - cp macOS/pkg/*-x86_64.pkg /srv/www.dynare.org/release/macos-x86_64/
     - ~/update-release-list.sh
     - curl -X POST -F token="$WEBSITE_PIPELINE_TRIGGER_TOKEN" -F ref=master https://git.dynare.org/api/v4/projects/40/trigger/pipeline
 
@@ -258,10 +260,12 @@ deploy_beta_stable:
     - pkg_source
     - pkg_windows
     - sign_windows
+    - pkg_macOS_arm64
     - pkg_macOS_x86_64
   script:
     - cp *.tar.xz /srv/www.dynare.org/beta/source/
     - cp windows/exe-signed/* /srv/www.dynare.org/beta/windows/
     - cp windows/7z/* /srv/www.dynare.org/beta/windows-7z/
     - cp windows/zip/* /srv/www.dynare.org/beta/windows-zip/
-    - cp macOS/pkg/*-x86_64.pkg /srv/www.dynare.org/beta/macos/
+    - cp macOS/pkg/*-arm64.pkg /srv/www.dynare.org/release/macos-arm64/
+    - cp macOS/pkg/*-x86_64.pkg /srv/www.dynare.org/beta/macos-x86_64/
