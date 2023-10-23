@@ -17,7 +17,7 @@ function perfect_foresight_with_expectation_errors_setup
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ oo_ options_ ys0_ ex0_
+global M_ oo_ options_
 
 if ~isempty(M_.endo_histval)
     error('perfect_foresight_with_expectation_errors_setup: cannot be used in conjunction with histval')
@@ -33,7 +33,7 @@ oo_.pfwee.terminal_info = NaN(M_.exo_nbr, periods); % 2nd dimension is informati
 oo_.pfwee.shocks_info = NaN(M_.exo_nbr, periods, periods); % 2nd dimension is real time, 3rd dimension is informational time
 
 if exist(options_.datafile, 'file')
-    if ~isempty(M_.det_shocks) || ~isempty(M_.learnt_shocks) || ~isempty(ys0_) || ~isempty(M_.learnt_endval)
+    if ~isempty(M_.det_shocks) || ~isempty(M_.learnt_shocks) || ~isempty(oo_.initial_steady_state) || ~isempty(M_.learnt_endval)
         warning('perfect_foresight_with_expectation_errors_setup: since you passed the datafile option, the contents of shocks and endval blocks will be ignored')
     end
     %% Read CSV file
@@ -81,10 +81,10 @@ else
                 case 'multiply_steady_state'
                     oo_.pfwee.shocks_info(exo_id, prds, 1) = oo_.exo_steady_state(exo_id) * v;
                 case 'multiply_initial_steady_state'
-                    if isempty(ex0_)
+                    if isempty(oo_.initial_exo_steady_state)
                         error('Option relative_to_initval of mshocks block cannot be used without an endval block')
                     end
-                    oo_.pfwee.shocks_info(exo_id, prds, 1) = ex0_(exo_id) * v;
+                    oo_.pfwee.shocks_info(exo_id, prds, 1) = oo_.initial_exo_steady_state(exo_id) * v;
             end
         end
     end
@@ -135,13 +135,13 @@ else
 end
 
 % Build initial paths for endos and exos (only initial conditions are set, the rest is NaN)
-if isempty(ys0_)
+if isempty(oo_.initial_steady_state)
     oo_.endo_simul = repmat(oo_.steady_state, 1, M_.maximum_lag+periods+M_.maximum_lead);
 else
-    oo_.endo_simul = [repmat(ys0_, 1, M_.maximum_lag) repmat(oo_.steady_state, 1, periods+M_.maximum_lead)];
+    oo_.endo_simul = [repmat(oo_.initial_steady_state, 1, M_.maximum_lag) repmat(oo_.steady_state, 1, periods+M_.maximum_lead)];
 end
-if isempty(ex0_)
+if isempty(oo_.initial_exo_steady_state)
     oo_.exo_simul = repmat(oo_.exo_steady_state', M_.maximum_lag+periods+M_.maximum_lead, 1);
 else
-    oo_.exo_simul = [repmat(ex0_', M_.maximum_lag, 1); repmat(oo_.exo_steady_state', periods+M_.maximum_lead, 1)];
+    oo_.exo_simul = [repmat(oo_.initial_exo_steady_state', M_.maximum_lag, 1); repmat(oo_.exo_steady_state', periods+M_.maximum_lead, 1)];
 end

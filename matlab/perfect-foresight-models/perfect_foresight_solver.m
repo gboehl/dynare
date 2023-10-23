@@ -31,7 +31,7 @@ function perfect_foresight_solver(no_error_if_learnt_in_is_present)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ options_ oo_ ys0_ ex0_
+global M_ options_ oo_
 
 check_input_arguments(options_, M_, oo_);
 
@@ -103,13 +103,13 @@ lastperiods = M_.maximum_lag+periods+(1:M_.maximum_lead);
 
 % Create base scenario for homotopy, which corresponds to the initial steady
 % state (i.e. a known solution to the perfect foresight problem, assuming that
-% oo_.steady_state/ys0_ effectively contains a steady state)
-if isempty(ys0_)
+% oo_.steady_state/oo_.initial_steady_state effectively contains a steady state)
+if isempty(oo_.initial_steady_state)
     endobase = repmat(oo_.steady_state, 1,M_.maximum_lag+periods+M_.maximum_lead);
     exobase = repmat(oo_.exo_steady_state',M_.maximum_lag+periods+M_.maximum_lead,1);
 else
-    endobase = repmat(ys0_, 1, M_.maximum_lag+periods+M_.maximum_lead);
-    exobase = repmat(ex0_', M_.maximum_lag+periods+M_.maximum_lead, 1);
+    endobase = repmat(oo_.initial_steady_state, 1, M_.maximum_lag+periods+M_.maximum_lead);
+    exobase = repmat(oo_.initial_exo_steady_state', M_.maximum_lag+periods+M_.maximum_lead, 1);
 end
 
 % Determine whether to recompute the final steady state (either because
@@ -117,7 +117,7 @@ end
 % terminal condition is a steady state)
 if options_.simul.endval_steady
     recompute_final_steady_state = true;
-elseif ~isempty(ys0_)
+elseif ~isempty(oo_.initial_steady_state)
     recompute_final_steady_state = true;
     for j = lastperiods
         endval_resid = evaluate_static_model(oo_.endo_simul(:,j), oo_.exo_simul(j,:)', M_.params, M_, options_);
@@ -398,7 +398,7 @@ function [steady_success, endo_simul, exo_simul, steady_state, exo_steady_state]
 %   steady_state     [vector]    steady state of endogenous corresponding to the scenario (equal to the input if terminal steady state not recomputed)
 %   exo_steady_state [vector]    steady state of exogenous corresponding to the scenario (equal to the input if terminal steady state not recomputed)
 
-global M_ options_ oo_ ys0_
+global M_ options_ oo_
 
 % Compute convex combination for the path of exogenous
 exo_simul = exoorig*share + exobase*(1-share);
@@ -432,10 +432,10 @@ if recompute_final_steady_state
         [endo_simul(:, j), ~, info] = evaluate_steady_state(endo_simul(:, j), exo_simul(j, :)', M_, options_, true);
         if info(1)
             % If this fails, then try again using the initial steady state as guess value
-            if isempty(ys0_)
+            if isempty(oo_.initial_steady_state)
                 guess_value = oo_.steady_state;
             else
-                guess_value = ys0_;
+                guess_value = oo_.initial_steady_state;
             end
             [endo_simul(:, j), ~, info] = evaluate_steady_state(guess_value, exo_simul(j, :)', M_, options_, true);
             if info(1)

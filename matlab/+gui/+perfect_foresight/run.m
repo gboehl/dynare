@@ -30,7 +30,7 @@ function run(json)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ options_ oo_ ys0_ ex0_
+global M_ options_ oo_
 
 %% Check Inputs
 if nargin ~= 1 || ~ischar(json)
@@ -64,12 +64,12 @@ end
 
 %% ENDVAL instructions
 % initialize exogenous shocks to zero and compute final ss unless there is a permanent shock
-ys0_ = [];
-ex0_ = [];
+oo_.initial_steady_state = [];
+oo_.initial_exo_steady_state = [];
 M_.det_shocks = [];
 if ~isempty(jm.anticipated_permanent_shocks) || ~isempty(jm.endval_endo)
-    ys0_= oo_.steady_state;
-    ex0_ = oo_.exo_steady_state;
+    oo_.initial_steady_state= oo_.steady_state;
+    oo_.initial_exo_steady_state = oo_.exo_steady_state;
     for i = 1:length(jm.endval_endo)
         oo_.steady_state(jm.endval_endo(i).id) = jm.endval_endo(i).value;
     end
@@ -152,10 +152,10 @@ end
 
 % surprise shocks present
 % in case there are unanticipated shocks...
-if isempty(ys0_)
+if isempty(oo_.initial_steady_state)
     yy = oo_.steady_state;
 else
-    yy = ys0_;
+    yy = oo_.initial_steady_state;
 end
 
 if mapkeys(1) ~= 1

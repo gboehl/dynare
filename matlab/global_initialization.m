@@ -11,7 +11,7 @@ function global_initialization()
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2003-2018 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,7 +28,7 @@ function global_initialization()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global oo_ M_ options_ estim_params_ bayestopt_ estimation_info ex0_ ys0_ dataset_ dataset_info
+global oo_ M_ options_ estim_params_ bayestopt_ estimation_info dataset_ dataset_info
 estim_params_ = [];
 bayestopt_ = [];
 dataset_=[];
@@ -86,13 +86,13 @@ estimation_info.joint_parameter = {'index','domain','interval','mean','median','
 
 oo_.exo_simul = [];
 oo_.endo_simul = [];
-ys0_ = [];
-ex0_ = [];
 oo_.dr = [];
 oo_.exo_steady_state = [];
 oo_.exo_det_steady_state = [];
 oo_.exo_det_simul = [];
 oo_.initval_series = dseries();
+oo_.initial_steady_state = [];
+oo_.initial_exo_steady_state = [];
 
 oo_.gui.ran_estimation = false;
 oo_.gui.ran_stoch_simul = false;

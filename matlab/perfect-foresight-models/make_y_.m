@@ -10,7 +10,7 @@ function oo_=make_y_(M_, options_, oo_)
 % OUTPUTS
 % - oo_         [struct]   Updated dynare results structure
 
-% Copyright © 1996-2020 Dynare Team
+% Copyright © 1996-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,21 +27,19 @@ function oo_=make_y_(M_, options_, oo_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global ys0_
-
 if isempty(oo_.steady_state)
     oo_.steady_state = zeros(M_.endo_nbr,1);
 end
 
 if isempty(oo_.initval_series)
     if isempty(M_.endo_histval)
-        if isempty(ys0_)
+        if isempty(oo_.initial_steady_state)
             oo_.endo_simul = repmat(oo_.steady_state, 1, M_.maximum_lag+options_.periods+M_.maximum_lead);
         else
-            oo_.endo_simul = [repmat(ys0_, 1, M_.maximum_lag) repmat(oo_.steady_state, 1,options_.periods+M_.maximum_lead)];
+            oo_.endo_simul = [repmat(oo_.initial_steady_state, 1, M_.maximum_lag) repmat(oo_.steady_state, 1,options_.periods+M_.maximum_lead)];
         end
     else
-        if ~isempty(ys0_)
+        if ~isempty(oo_.initial_steady_state)
             error('histval and endval cannot be used simultaneously')
         end
         % the first NaNs take care of the case where there are lags > 1 on
@@ -54,7 +52,7 @@ else
     oo_.endo_simul = y(M_.orig_maximum_lag - M_.maximum_lag + 1:M_.orig_maximum_lag + options_.periods + ...
                        M_.maximum_lead, :)';
     if ~isempty(M_.endo_histval)
-        if ~isempty(ys0_)
+        if ~isempty(oo_.initial_steady_state)
             error('histval and endval cannot be used simultaneously')
         end
         oo_.endo_simul(:,1:M_.maximum_lag) ...

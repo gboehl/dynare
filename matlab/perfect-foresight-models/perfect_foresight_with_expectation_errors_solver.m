@@ -17,7 +17,7 @@ function perfect_foresight_with_expectation_errors_solver
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ oo_ options_ ys0_
+global M_ oo_ options_
 
 % Same for periods (it will be modified before calling perfect_foresight_solver if constants_simulation_length option is false)
 periods = options_.periods;

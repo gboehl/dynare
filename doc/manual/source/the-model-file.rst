@@ -4015,6 +4015,23 @@ speed-up on large models.
     ``1+M_.maximum_lag``, and the total number of rows is
     ``M_.maximum_lag+periods+M_.maximum_lead``.
 
+.. matvar:: oo_.initial_steady_state
+
+    If a permanent shock is simulated through the use of both ``initval`` and
+    ``endval`` blocks, this variable contains the initial steady state, as
+    determined by the ``initval`` block (when followed by a ``steady``
+    command). This variable has the same structure as :mvar:`oo_.steady_state`
+    (and this latter variable contains the terminal steady state, if the
+    ``endval`` block is followed by a ``steady`` command).
+
+.. matvar:: oo_.initial_exo_steady_state
+
+    If a permanent shock is simulated through the use of both ``initval`` and
+    ``endval`` blocks, this variable contains the initial steady state of the
+    exogenous variables, as specified in the ``initval`` block. This variable
+    has the same structure as :mvar:`oo_.exo_steady_state` (and this latter
+    variable contains the terminal steady state of the exogenous variables).
+
 .. matvar:: M_.maximum_lag
 
     |br| The maximum number of lags in the model. Note that this value is

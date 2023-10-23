@@ -28,7 +28,7 @@ function steady()
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ oo_ options_ ex0_
+global M_ oo_ options_
 
 test_for_deep_parameters_calibration(M_);
 
@@ -64,12 +64,12 @@ if options_.homotopy_mode ~= 0
 
     % If the “from_initval_to_endval” option was passed to the “homotopy_setup” block, add the relevant homotopy information
     if options_.homotopy_from_initval_to_endval
-        if isempty(ex0_)
+        if isempty(oo_.initial_exo_steady_state)
             error('HOMOTOPY_SETUP: the from_initval_to_endval option cannot be used without an endval block')
         end
         for i = 1:M_.exo_nbr
             if ~any(hv(:,1)==1 & hv(:,2)==i) % Do not overwrite information manually specified by the user
-                hv = vertcat(hv, [ 1 i ex0_(i) oo_.exo_steady_state(i)]);
+                hv = vertcat(hv, [ 1 i oo_.initial_exo_steady_state(i) oo_.exo_steady_state(i)]);
             end
         end
     end
