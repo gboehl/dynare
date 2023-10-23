@@ -194,7 +194,7 @@ test_dynare++:
 sign_windows:
   stage: sign
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^5\.[0-9]+$/'
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^5/'
       when: on_success
     - when: never
   tags:
@@ -257,11 +257,11 @@ deploy_beta_stable:
   dependencies:
     - pkg_source
     - pkg_windows
+    - sign_windows
     - pkg_macOS_x86_64
   script:
-    - f=(windows/exe/*) && osslsigncode sign -pkcs12 ~/cepremap-comodo-sectigo-code-signing.p12 -n Dynare -i https://www.dynare.org -t http://timestamp.comodoca.com -in ${f[0]} -out ${f[0]}.signed && mv ${f[0]}.signed ${f[0]}
     - cp *.tar.xz /srv/www.dynare.org/beta/source/
-    - cp windows/exe/* /srv/www.dynare.org/beta/windows/
+    - cp windows/exe-signed/* /srv/www.dynare.org/beta/windows/
     - cp windows/7z/* /srv/www.dynare.org/beta/windows-7z/
     - cp windows/zip/* /srv/www.dynare.org/beta/windows-zip/
     - cp macOS/pkg/*-x86_64.pkg /srv/www.dynare.org/beta/macos/
