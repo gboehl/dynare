@@ -1697,7 +1697,7 @@ in this case ``initval`` is used to specify the terminal conditions.
         jumps. In the example above, consumption will display a large
         jump from :math:`t=0` to :math:`t=1` and capital will jump
         from :math:`t=200` to :math:`t=201` when using :comm:`rplot`
-        or manually plotting ``oo_.endo_val``.
+        or manually plotting ``oo_.endo_simul``.
 
 
 .. block:: histval ;
