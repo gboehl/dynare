@@ -62,7 +62,7 @@ $(DEPS_ARCH)/sources64/slicot-$(SLICOT_VERSION): tarballs/slicot-$(SLICOT_VERSIO
 	touch $@
 
 $(DEPS_ARCH)/lib64/slicot/libslicot64_pic.a: $(DEPS_ARCH)/sources64/slicot-$(SLICOT_VERSION)
-	make -C $< FORTRAN=$(BREWDIR)/bin/gfortran LOADER=$(BREWDIR)/bin/gfortran SLICOTLIB=../libslicot64_pic.a OPTS="-O2 -g -fdefault-integer-8" lib -j$(NTHREADS)
+	make -C $< FORTRAN=$(BREWDIR)/bin/gfortran LOADER=$(BREWDIR)/bin/gfortran SLICOTLIB=../libslicot64_pic.a OPTS="-O3 -fdefault-integer-8" lib -j$(NTHREADS)
 	strip -S $</libslicot64_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot64_pic.a $@
@@ -105,7 +105,7 @@ $(DEPS_ARCH)/lib64/x13as/x13as: $(DEPS_ARCH)/sources64/x13as-$(X13AS_VERSION)
 	# gfortran as the linker with -static-libgfortran and
 	# -static-libquadmath flags, and drop the GCC_VERSION variable.
 	cd $< && sed -i '' 's/-static//g' makefile.gf
-	make -C $< -f makefile.gf FC=$(BREWDIR)/bin/gfortran LINKER=$(BREWDIR)/bin/gcc-$(GCC_VERSION) FFLAGS="-O2 -std=legacy" LDFLAGS=-static-libgcc LIBS="$(BREWDIR)/lib/gcc/$(GCC_VERSION)/libgfortran.a $(BREWDIR)/lib/gcc/$(GCC_VERSION)/libquadmath.a" PROGRAM=x13as -j$(NTHREADS)
+	make -C $< -f makefile.gf FC=$(BREWDIR)/bin/gfortran LINKER=$(BREWDIR)/bin/gcc-$(GCC_VERSION) FFLAGS="-O3 -std=legacy" LDFLAGS=-static-libgcc LIBS="$(BREWDIR)/lib/gcc/$(GCC_VERSION)/libgfortran.a $(BREWDIR)/lib/gcc/$(GCC_VERSION)/libquadmath.a" PROGRAM=x13as -j$(NTHREADS)
 
 	strip $</x13as
 	mkdir -p $(dir $@)
