@@ -65,7 +65,7 @@ if options_.block
     end
     if options_.bytecode
         try
-            y = bytecode('dynamic', 'block_decomposed', M_, options_, y, exo_simul, M_.params, repmat(steady_state,1, periods+2), periods);
+            y = bytecode('dynamic', 'block_decomposed', M_, options_, y, exo_simul, M_.params, steady_state, periods);
             success = true;
         catch ME
             if options_.verbosity >= 1

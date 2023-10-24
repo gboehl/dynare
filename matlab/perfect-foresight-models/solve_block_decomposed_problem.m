@@ -58,11 +58,8 @@ maxerror = 0;
 nblocks = length(M_.block_structure.block);
 per_block_status = struct('success', cell(1, nblocks), 'error', cell(1, nblocks), 'iterations', cell(1, nblocks));
 
-funcname = [ M_.fname '.dynamic'];
-
 for blk = 1:nblocks
-    recursive_size = M_.block_structure.block(blk).endo_nbr - M_.block_structure.block(blk).mfs;
-    y_index = M_.block_structure.block(blk).variable((recursive_size+1):end);
+    y_index = M_.block_structure.block(blk).variable(end-M_.block_structure.block(blk).mfs+1:end);
     fh_dynamic = str2func(sprintf('%s.sparse.block.dynamic_%d', M_.fname, blk));
 
     if M_.block_structure.block(blk).Simulation_Type == 1 || ... % evaluateForward
