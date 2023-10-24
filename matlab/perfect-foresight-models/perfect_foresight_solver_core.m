@@ -77,7 +77,7 @@ if options_.block
         [y, success, maxerror, per_block_status] = solve_block_decomposed_problem(y, exo_simul, steady_state, options_, M_);
     end
 else
-    if options_.bytecode
+    if options_.bytecode && ~ismember(options_.stack_solve_algo, [1 6])
         try
             y = bytecode('dynamic', M_, options_, y, exo_simul, M_.params, repmat(steady_state, 1, periods+2), periods);
             success = true;

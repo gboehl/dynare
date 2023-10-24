@@ -48,7 +48,18 @@ isf1 = [nyp+ny+1:nyf+nyp+ny+1];
 stop = false;
 iz = [1:ny+nyp+nyf];
 
-dynamicmodel = sprintf('%s.dynamic', M.fname);
+function [r, g1] = bytecode_wrapper(y, xpath, params, ys, it_)
+    ypath = NaN(ny, 3);
+    ypath(find(lead_lag_incidence')) = y;
+    [r, s] = bytecode('dynamic', 'evaluate', M, options, ypath, xpath(it_+(-1:1), :), params, ys, 1);
+    g1 = s.g1;
+end
+
+if options.bytecode
+    dynamicmodel = @bytecode_wrapper;
+else
+    dynamicmodel = str2func(sprintf('%s.dynamic', M.fname));
+end
 
 verbose = options.verbosity;
 
@@ -66,14 +77,14 @@ for iter = 1:options.simul.maxit
     c = zeros(ny*options.periods, nrc);
     it_ = it_init;
     z = [endogenousvariables(iyp,it_-1) ; endogenousvariables(:,it_) ; endogenousvariables(iyf,it_+1)];
-    [d1, jacobian] = feval(dynamicmodel, z, exogenousvariables, M.params, steadystate, it_);
+    [d1, jacobian] = dynamicmodel(z, exogenousvariables, M.params, steadystate, it_);
     jacobian = [jacobian(:,iz), -d1];
     ic = [1:ny];
     icp = iyp;
     c (ic,:) = jacobian(:,is)\jacobian(:,isf1);
     for it_ = it_init+(1:options.periods-1)
         z = [endogenousvariables(iyp,it_-1) ; endogenousvariables(:,it_) ; endogenousvariables(iyf,it_+1)];
-        [d1, jacobian] = feval(dynamicmodel, z, exogenousvariables, M.params, steadystate, it_);
+        [d1, jacobian] = dynamicmodel(z, exogenousvariables, M.params, steadystate, it_);
         jacobian = [jacobian(:,iz), -d1];
         jacobian(:,[isf nrs]) = jacobian(:,[isf nrs])-jacobian(:,isp)*c(icp,:);
         ic = ic + ny;
@@ -116,6 +127,8 @@ if verbose
     skipline()
 end
 
+end
+
 function d = bksup1(c,ny,jcf,iyf,periods)
 % Solves deterministic models recursively by backsubstitution for one lead/lag
 %
@@ -137,3 +150,5 @@ for i = 2:periods
 end
 
 d = c(:,jcf);
+
+end
