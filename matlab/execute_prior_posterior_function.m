@@ -70,7 +70,7 @@ elseif strcmpi(type,'prior')
         end
     end
     if exist([M_.fname '_prior_restrictions.m'])
-        warning('prior_function currently does not support endogenous prior restrictions. They will be ignored. Consider using a prior_function with nobs=1.')
+        warning('prior_function currently does not support endogenous prior restrictions. They will be ignored. Consider using a posterior_function with nobs=1.')
     end
     Prior = dprior(bayestopt_, options_.prior_trunc);
 else
