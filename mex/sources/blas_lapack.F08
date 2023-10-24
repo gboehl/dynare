@@ -145,6 +145,38 @@ module lapack
        integer(blint), intent(out) :: sdim, info
      end subroutine dgges
 
+     subroutine dgecon(norm, n, a, lda, anorm, rcond, work, iwork, info)
+       import :: blint, real64
+       implicit none
+       character, intent(in) :: norm
+       integer(blint), intent(in) :: n, lda
+       real(real64), dimension(*), intent(in) :: a
+       real(real64), intent(in) :: anorm
+       real(real64), intent(out) :: rcond
+       real(real64), dimension(*), intent(out) :: work
+       integer(blint), dimension(*), intent(out) :: iwork
+       integer(blint), intent(out) :: info
+     end subroutine dgecon
+
+     subroutine dgetrf(m, n, a, lda, ipiv, info)
+       import :: blint, real64
+       implicit none
+       integer(blint), intent(in) :: m, n, lda
+       real(real64), dimension(*), intent(inout) :: a
+       integer(blint), dimension(*), intent(out) :: ipiv
+       integer(blint), intent(out) :: info
+     end subroutine dgetrf
+
+     subroutine dgetri(n, a, lda, ipiv, work, lwork, info)
+       import :: blint, real64
+       implicit none
+       integer(blint), intent(in) :: n, lda, lwork
+       real(real64), dimension(*), intent(inout) :: a
+       integer(blint), dimension(*), intent(in):: ipiv
+       real(real64), dimension(*), intent(out) :: work
+       integer(blint), intent(out) :: info
+     end subroutine dgetri
+
      subroutine dpotrf(uplo, n, a, lda, info)
        import :: blint, real64
        implicit none
@@ -163,6 +195,14 @@ module lapack
        real(real64), dimension(*), intent(out) :: work
        real(real64) :: dlange
      end function dlange
+
+     function ilaenv(ispec, name, opts, n1, n2, n3, n4)
+       import :: blint  
+       implicit none
+       integer(blint) :: ispec, n1, n2, n3, n4
+       character(len=*), intent(in) :: name, opts
+       integer(blint) :: ilaenv
+     end function ilaenv
   end interface
 
 contains

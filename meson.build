@@ -353,6 +353,8 @@ shared_module('qmc_sequence', qmc_sequence_src, kwargs : qmc_sequence_mex_kwargs
 
 shared_module('kalman_steady_state', 'mex/sources/kalman_steady_state/kalman_steady_state.cc', kwargs : mex_kwargs, dependencies : slicot_dep)
 
+shared_module('kalman_filter_mex', [ 'mex/sources/kalman_filter/kalman_filter.f08' ] + mex_blas_fortran_iface,
+              kwargs : mex_kwargs, dependencies : [ blas_dep, lapack_dep ])
 
 ## k-order simulation stuff
 
@@ -1752,6 +1754,7 @@ mod_and_m_tests = [
   { 'test' : [ 'cyclereduction.m' ] },
   { 'test' : [ 'logarithmicreduction.m' ] },
   { 'test' : [ 'riccatiupdate.m' ] },
+  { 'test' : [ 'kalman/likelihood/test_kalman_mex.m' ] },
   { 'test' : [ 'contribs.m' ],
     'extra' : [ 'sandbox.mod',
                 'simulateddata.m' ] },
