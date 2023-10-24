@@ -299,11 +299,6 @@ Copyright: 2004-2009 John Burkardt
            2023 Dynare Team
 License: LGPL-3+
 
-Files: macOS/brewfiles/*
-Copyright: 2009-2019 Homebrew contributors
-           2019-2021 Dynare Team
-License: BSD-2-clause
-
 Files: preprocessor/doc/macroprocessor/*
 Copyright: 2008-2021 Dynare Team
 License: CC-BY-SA-4.0
