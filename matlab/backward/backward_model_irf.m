@@ -1,5 +1,5 @@
 function [deviations, baseline, irfs] = backward_model_irf(initialcondition, innovationbaseline, listofshocks, listofvariables, varargin)
-
+% [deviations, baseline, irfs] = backward_model_irf(initialcondition, innovationbaseline, listofshocks, listofvariables, varargin)
 % Returns impulse response functions.
 %
 % INPUTS

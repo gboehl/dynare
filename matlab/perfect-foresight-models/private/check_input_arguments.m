@@ -1,9 +1,13 @@
-function check_input_arguments(DynareOptions, DynareModel, DynareResults)
-%function check_input_arguments(DynareOptions, DynareModel, DynareResults)
+function check_input_arguments(options_, M_, oo_)
+%function check_input_arguments(options_, M_, oo_)
 %Conducts checks for inconsistent/missing inputs to deterministic
 %simulations
+% Inputs:
+%   options_            [structure] describing the options
+%   M_                  [structure] describing the model
+%   oo_                 [structure] storing the results
 
-% Copyright © 2015-2022 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -20,34 +24,34 @@ function check_input_arguments(DynareOptions, DynareModel, DynareResults)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if DynareOptions.stack_solve_algo < 0 || DynareOptions.stack_solve_algo > 7
+if options_.stack_solve_algo < 0 || options_.stack_solve_algo > 7
     error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: stack_solve_algo must be between 0 and 7')
 end
 
-if ~DynareOptions.block && ~DynareOptions.bytecode && DynareOptions.stack_solve_algo ~= 0 ...
-        && DynareOptions.stack_solve_algo ~= 1 && DynareOptions.stack_solve_algo ~= 6 ...
-        && DynareOptions.stack_solve_algo ~= 7
+if ~options_.block && ~options_.bytecode && options_.stack_solve_algo ~= 0 ...
+        && options_.stack_solve_algo ~= 1 && options_.stack_solve_algo ~= 6 ...
+        && options_.stack_solve_algo ~= 7
     error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: you must use stack_solve_algo={0,1,6,7} when not using block nor bytecode option')
 end
 
-if DynareOptions.block && ~DynareOptions.bytecode && DynareOptions.stack_solve_algo == 5
+if options_.block && ~options_.bytecode && options_.stack_solve_algo == 5
     error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: you can''t use stack_solve_algo = 5 without bytecode option')
 end
 
-if isempty(DynareResults.endo_simul) || any(size(DynareResults.endo_simul) ~= [ DynareModel.endo_nbr, DynareModel.maximum_lag+DynareOptions.periods+DynareModel.maximum_lead ])
+if isempty(oo_.endo_simul) || any(size(oo_.endo_simul) ~= [ M_.endo_nbr, M_.maximum_lag+options_.periods+M_.maximum_lead ])
 
-    if DynareOptions.initval_file
-        fprintf('PERFECT_FORESIGHT_SOLVER: ''oo_.endo_simul'' has wrong size. Check whether your initval-file provides %d periods.',DynareModel.maximum_endo_lag+DynareOptions.periods+DynareModel.maximum_endo_lead)
+    if options_.initval_file
+        fprintf('PERFECT_FORESIGHT_SOLVER: ''oo_.endo_simul'' has wrong size. Check whether your initval-file provides %d periods.',M_.maximum_endo_lag+options_.periods+M_.maximum_endo_lead)
         error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: ''oo_.endo_simul'' has wrong size. Did you run ''perfect_foresight_setup'' ?')
     else
         error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: ''oo_.endo_simul'' has wrong size. Did you run ''perfect_foresight_setup'' ?')
     end
 end
 
-if (DynareModel.exo_nbr > 0) && ...
-        (isempty(DynareResults.exo_simul) || any(size(DynareResults.exo_simul) ~= [ DynareModel.maximum_lag+DynareOptions.periods+DynareModel.maximum_lead, DynareModel.exo_nbr ]))
-    if DynareOptions.initval_file
-        fprintf('PERFECT_FORESIGHT_SOLVER: ''oo_.exo_simul'' has wrong size. Check whether your initval-file provides %d periods.',DynareModel.maximum_endo_lag+DynareOptions.periods+DynareModel.maximum_endo_lead)
+if (M_.exo_nbr > 0) && ...
+        (isempty(oo_.exo_simul) || any(size(oo_.exo_simul) ~= [ M_.maximum_lag+options_.periods+M_.maximum_lead, M_.exo_nbr ]))
+    if options_.initval_file
+        fprintf('PERFECT_FORESIGHT_SOLVER: ''oo_.exo_simul'' has wrong size. Check whether your initval-file provides %d periods.',M_.maximum_endo_lag+options_.periods+M_.maximum_endo_lead)
         error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: ''oo_.exo_simul'' has wrong size.')
     else
         error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: ''oo_.exo_simul'' has wrong size. Did you run ''perfect_foresight_setup'' ?')

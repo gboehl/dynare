@@ -1,13 +1,19 @@
-function [fval,info,exit_flag,fake_1,fake_2] = minus_logged_prior_density(xparams,pshape,p6,p7,p3,p4,DynareOptions,DynareModel,EstimatedParams,DynareResults)
+function [fval,info,exit_flag,fake_1,fake_2] = minus_logged_prior_density(xparams,pshape,p6,p7,p3,p4,options_,M_,estim_params_,oo_)
+% [fval,info,exit_flag,fake_1,fake_2] = minus_logged_prior_density(xparams,pshape,p6,p7,p3,p4,options_,M_,estim_params_,oo_)
 % Evaluates minus the logged prior density.
 %
 % INPUTS
-%   xparams    [double]   vector of parameters.
-%   pshape     [integer]  vector specifying prior densities shapes.
-%   p6         [double]   vector, first hyperparameter.
-%   p7         [double]   vector, second hyperparameter.
-%   p3         [double]   vector, prior's lower bound.
-%   p4         [double]   vector, prior's upper bound.
+%   xparams             [double]   vector of parameters.
+%   pshape              [integer]  vector specifying prior densities shapes.
+%   p6                  [double]   vector, first hyperparameter.
+%   p7                  [double]   vector, second hyperparameter.
+%   p3                  [double]   vector, prior's lower bound.
+%   p4                  [double]   vector, prior's upper bound.
+%   prior_sup_bound     [double]   vector, prior's upper bound.
+%   options_            [structure] describing the options
+%   M_                  [structure] describing the model
+%   estim_params_       [structure] characterizing parameters to be estimated
+%   oo_                 [structure] storing the results
 %
 % OUTPUTS
 %   f          [double]  value of minus the logged prior density.
@@ -41,7 +47,7 @@ info = zeros(4,1);
 %------------------------------------------------------------------------------
 
 % Return, with endogenous penalty, if some parameters are smaller than the lower bound of the prior domain.
-if ~isequal(DynareOptions.mode_compute,1) && any(xparams<p3)
+if ~isequal(options_.mode_compute,1) && any(xparams<p3)
     k = find(xparams<p3);
     fval = Inf;
     exit_flag = 0;
@@ -51,7 +57,7 @@ if ~isequal(DynareOptions.mode_compute,1) && any(xparams<p3)
 end
 
 % Return, with endogenous penalty, if some parameters are greater than the upper bound of the prior domain.
-if ~isequal(DynareOptions.mode_compute,1) && any(xparams>p4)
+if ~isequal(options_.mode_compute,1) && any(xparams>p4)
     k = find(xparams>p4);
     fval = Inf;
     exit_flag = 0;
@@ -61,13 +67,13 @@ if ~isequal(DynareOptions.mode_compute,1) && any(xparams>p4)
 end
 
 % Get the diagonal elements of the covariance matrices for the structural innovations (Q) and the measurement error (H).
-DynareModel = set_all_parameters(xparams,EstimatedParams,DynareModel);
+M_ = set_all_parameters(xparams,estim_params_,M_);
 
-Q = DynareModel.Sigma_e;
-H = DynareModel.H;
+Q = M_.Sigma_e;
+H = M_.H;
 
 % Test if Q is positive definite.
-if ~issquare(Q) || EstimatedParams.ncx || isfield(EstimatedParams,'calibrated_covariances')
+if ~issquare(Q) || estim_params_.ncx || isfield(estim_params_,'calibrated_covariances')
     % Try to compute the cholesky decomposition of Q (possible iff Q is positive definite)
     [Q_is_positive_definite, penalty] = ispd(Q);
     if ~Q_is_positive_definite
@@ -78,22 +84,22 @@ if ~issquare(Q) || EstimatedParams.ncx || isfield(EstimatedParams,'calibrated_co
         info(4) = penalty;
         return
     end
-    if isfield(EstimatedParams,'calibrated_covariances')
+    if isfield(estim_params_,'calibrated_covariances')
         correct_flag=check_consistency_covariances(Q);
         if ~correct_flag
-            penalty = sum(Q(EstimatedParams.calibrated_covariances.position).^2);
+            penalty = sum(Q(estim_params_.calibrated_covariances.position).^2);
             fval = Inf;
             exit_flag = 0;
             info(1) = 71;
             info(4) = penalty;
-            return
+            return4
         end
     end
 
 end
 
 % Test if H is positive definite.
-if ~issquare(H) || EstimatedParams.ncn || isfield(EstimatedParams,'calibrated_covariances_ME')
+if ~issquare(H) || estim_params_.ncn || isfield(estim_params_,'calibrated_covariances_ME')
     [H_is_positive_definite, penalty] = ispd(H);
     if ~H_is_positive_definite
         % The variance-covariance matrix of the measurement errors is not definite positive. We have to compute the eigenvalues of this matrix in order to build the endogenous penalty.
@@ -103,10 +109,10 @@ if ~issquare(H) || EstimatedParams.ncn || isfield(EstimatedParams,'calibrated_co
         info(4) = penalty;
         return
     end
-    if isfield(EstimatedParams,'calibrated_covariances_ME')
+    if isfield(estim_params_,'calibrated_covariances_ME')
         correct_flag=check_consistency_covariances(H);
         if ~correct_flag
-            penalty = sum(H(EstimatedParams.calibrated_covariances_ME.position).^2);
+            penalty = sum(H(estim_params_.calibrated_covariances_ME.position).^2);
             fval = Inf;
             exit_flag = 0;
             info(1) = 72;
@@ -121,7 +127,7 @@ end
 % 2. Check BK and steady state
 %-----------------------------
 
-[~,info] = resol(0,DynareModel,DynareOptions,DynareResults.dr,DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
+[~,info] = resol(0,M_,options_,oo_.dr,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)

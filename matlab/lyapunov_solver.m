@@ -1,5 +1,5 @@
-function P=lyapunov_solver(T,R,Q,DynareOptions)
-% function P=lyapunov_solver(T,R,Q,DynareOptions)
+function P=lyapunov_solver(T,R,Q,options_)
+% function P=lyapunov_solver(T,R,Q,options_)
 % Solves the Lyapunov equation P-T*P*T' = R*Q*R' arising in a state-space
 % system, where P is the variance of the states
 %
@@ -7,7 +7,7 @@ function P=lyapunov_solver(T,R,Q,DynareOptions)
 %   T               [double]    n*n matrix.
 %   R               [double]    n*m matrix.
 %   Q               [double]    m*m matrix.
-%   DynareOptions   [structure] Dynare options
+%   options_        [structure] Dynare options
 %
 % Outputs
 %   P               [double]    n*n matrix.
@@ -15,11 +15,11 @@ function P=lyapunov_solver(T,R,Q,DynareOptions)
 % Algorithms
 %   Default, if none of the other algorithms is selected:
 %       Reordered Schur decomposition (Bartels-Stewart algorithm)
-%   DynareOptions.lyapunov_fp == true
+%   options_.lyapunov_fp == true
 %       iteration-based fixed point algorithm
-%   DynareOptions.lyapunov_db == true
+%   options_.lyapunov_db == true
 %       doubling algorithm
-%   DynareOptions.lyapunov_srs == true
+%   options_.lyapunov_srs == true
 %       Square-root solver for discrete-time Lyapunov equations (requires Matlab System Control toolbox
 %       or Octave control package)
 
@@ -40,14 +40,14 @@ function P=lyapunov_solver(T,R,Q,DynareOptions)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if DynareOptions.lyapunov_fp
-    P = lyapunov_symm(T,R*Q*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, 3, DynareOptions.debug);
-elseif DynareOptions.lyapunov_db
-    [P, errorflag] = disclyap_fast(T,R*Q*R',DynareOptions.lyapunov_doubling_tol);
+if options_.lyapunov_fp
+    P = lyapunov_symm(T,R*Q*R',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold, 3, options_.debug);
+elseif options_.lyapunov_db
+    [P, errorflag] = disclyap_fast(T,R*Q*R',options_.lyapunov_doubling_tol);
     if errorflag %use Schur-based method
-        P = lyapunov_symm(T,R*Q*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
+        P = lyapunov_symm(T,R*Q*R',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold, [], options_.debug);
     end
-elseif DynareOptions.lyapunov_srs
+elseif options_.lyapunov_srs
     % works only with Matlab System Control toolbox or Octave control package,
     if isoctave
         if ~user_has_octave_forge_package('control')
@@ -62,7 +62,7 @@ elseif DynareOptions.lyapunov_srs
     R_P = dlyapchol(T,chol_Q);
     P = R_P' * R_P;
 else
-    P = lyapunov_symm(T,R*Q*R',DynareOptions.lyapunov_fixed_point_tol,DynareOptions.qz_criterium,DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
+    P = lyapunov_symm(T,R*Q*R',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold, [], options_.debug);
 end
 
 return % --*-- Unit tests --*--
@@ -92,7 +92,7 @@ tmp2=randn(m_large,m_large);
 Q_large=tmp2*tmp2';
 R_large=randn(n_large,m_large);
 
-% DynareOptions.lyapunov_fp == 1
+% options_.lyapunov_fp == 1
 options_.lyapunov_fp = true;
 try
    Pstar1_small = lyapunov_solver(T_small,R_small,Q_small,options_);
@@ -102,7 +102,7 @@ catch
    t(1) = 0;
 end
 
-% Dynareoptions.lyapunov_db == 1
+% options_.lyapunov_db == 1
 options_.lyapunov_fp = false;
 options_.lyapunov_db = true;
 try
@@ -113,7 +113,7 @@ catch
    t(2) = 0;
 end
 
-% Dynareoptions.lyapunov_srs == 1
+% options_.lyapunov_srs == 1
 if (isoctave && user_has_octave_forge_package('control')) || (~isoctave && user_has_matlab_license('control_toolbox'))
     options_.lyapunov_db = false;
     options_.lyapunov_srs = true;

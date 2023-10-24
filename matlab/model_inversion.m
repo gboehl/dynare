@@ -1,16 +1,16 @@
 function [endogenousvariables, exogenousvariables] = model_inversion(constraints, ...
                                                   exogenousvariables, ...
-                                                  initialconditions, DynareModel, DynareOptions, DynareOutput)
+                                                  initialconditions, M_, options_, oo_)
 % function [endogenousvariables, exogenousvariables] = model_inversion(constraints, ...
 %                                                   exogenousvariables, ...
-%                                                   initialconditions, DynareModel, DynareOptions, DynareOutput)
+%                                                   initialconditions, M_, options_, oo_)
 % INPUTS
 % - constraints         [dseries]        with N constrained endogenous variables from t1 to t2.
 % - exogenousvariables  [dseries]        with Q exogenous variables.
 % - initialconditions   [dseries]        with M endogenous variables starting before t1 (M initialcond must contain at least the state variables).
-% - DynareModel         [struct]         M_, Dynare global structure containing informations related to the model.
-% - DynareOptions       [struct]         options_, Dynare global structure containing all the options.
-% - DynareOutput        [struct]         oo_, Dynare global structure containing all the options.
+% - M_                  [struct]         Dynare global structure containing informations related to the model.
+% - options_            [struct]         Dynare global structure containing all the options.
+% - oo_                 [struct]         Dynare global structure containing all the options.
 %
 % OUTPUTS
 % - endogenousvariables          [dseries]
@@ -18,7 +18,7 @@ function [endogenousvariables, exogenousvariables] = model_inversion(constraints
 %
 % REMARKS
 
-% Copyright © 2018-2021 Dynare Team
+% Copyright © 2018-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -51,7 +51,7 @@ if ~isempty(initialconditions) && ~isdseries(initialconditions)
     error('model_inversion: Third input argument must be a dseries object!')
 end
 
-if ~isstruct(DynareModel)
+if ~isstruct(M_)
     error('model_inversion: Last input argument must be structures (M_)!')
 end
 
@@ -71,29 +71,29 @@ if exogenousvariables.vobs>constraints.vobs
     observed_exogenous_variables_flag = true;
 end
 
-if DynareModel.maximum_lag
+if M_.maximum_lag
     % Add auxiliary variables in initialconditions object.
-    initialconditions = checkdatabase(initialconditions, DynareModel, true, false);
+    initialconditions = checkdatabase(initialconditions, M_, true, false);
 end
 
 % Get the list of endogenous and exogenous variables.
-endo_names = DynareModel.endo_names;
-exo_names = DynareModel.exo_names;
+endo_names = M_.endo_names;
+exo_names = M_.exo_names;
 
 exogenousvariables = exogenousvariables{exo_names{:}};
 
 % Use specidalized routine if the model is backward looking.
-if ~DynareModel.maximum_lead
-    if DynareModel.maximum_lag
+if ~M_.maximum_lead
+    if M_.maximum_lag
         [endogenousvariables, exogenousvariables] = ...
             backward_model_inversion(constraints, exogenousvariables, initialconditions, ...
                                      endo_names, exo_names, freeinnovations, ...
-                                     DynareModel, DynareOptions, DynareOutput);
+                                     M_, options_, oo_);
     else
         [endogenousvariables, exogenousvariables] = ...
             static_model_inversion(constraints, exogenousvariables, ...
                                    endo_names, exo_names, freeinnovations, ...
-                                   DynareModel, DynareOptions, DynareOutput);
+                                   M_, options_, oo_);
     end
     return
 end

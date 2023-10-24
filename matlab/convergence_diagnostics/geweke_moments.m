@@ -1,11 +1,11 @@
-function [results_vec, results_struct] = geweke_moments(draws,Dynareoptions)
-%[results_vec, results_struct] = geweke_moments(draws,Dynareoptions)
+function [results_vec, results_struct] = geweke_moments(draws,options_)
+%[results_vec, results_struct] = geweke_moments(draws,options_)
 % PURPOSE: computes Gewke's convergence diagnostics NSE and RNE
 %          (numerical std error and relative numerical efficiencies)
 
 % INPUTS
 %   draws            [ndraws by 1 vector]
-%   Dynareoptions    [structure]
+%   options_         [structure]
 %
 % OUTPUTS
 %   results_vec
@@ -22,7 +22,7 @@ function [results_vec, results_struct] = geweke_moments(draws,Dynareoptions)
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright © 2013-2017 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -56,7 +56,7 @@ function [results_vec, results_struct] = geweke_moments(draws,Dynareoptions)
 
 ndraw = size(draws,1);
 n_groups=100;
-taper_steps=Dynareoptions.convergence.geweke.taper_steps;
+taper_steps=options_.convergence.geweke.taper_steps;
 results_vec=zeros(1,4+2*length(taper_steps));
 
 ns = floor(ndraw/n_groups); %step_size

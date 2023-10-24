@@ -1,5 +1,5 @@
-function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,dr] = non_linear_dsge_likelihood(xparam1,dataset_,dataset_info,options_,M_,EstimatedParameters,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
-% [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,dr] = non_linear_dsge_likelihood(xparam1,dataset_,dataset_info,options_,M_,EstimatedParameters,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,dr] = non_linear_dsge_likelihood(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+% [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,dr] = non_linear_dsge_likelihood(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % Evaluates the posterior kernel of a dsge model using a non linear filter.
 %
 % INPUTS
@@ -8,7 +8,7 @@ function [fval,info,exit_flag,DLIK,Hess,ys,trend_coeff,M_,options_,bayestopt_,dr
 % - dataset_info            [struct]              Matlab's structure describing the dataset
 % - options_                [struct]              Matlab's structure describing the options
 % - M_                      [struct]              Matlab's structure describing the M_
-% - EstimatedParameters     [struct]              Matlab's structure describing the estimated_parameters
+% - estim_params_           [struct]              Matlab's structure describing the estimated_parameters
 % - bayestopt_              [struct]              Matlab's structure describing the priors
 % - BoundsInfo              [struct]              Matlab's structure specifying the bounds on the paramater values
 % - dr                      [structure]           Reduced form model.
@@ -71,9 +71,9 @@ end
 % 1. Get the structural parameters & define penalties
 %------------------------------------------------------------------------------
 
-M_ = set_all_parameters(xparam1,EstimatedParameters,M_);
+M_ = set_all_parameters(xparam1,estim_params_,M_);
 
-[fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, M_, EstimatedParameters, BoundsInfo);
+[fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, BoundsInfo);
 if info(1)
     return
 end

@@ -15,13 +15,14 @@ function [x,fval,exitflag] = simplex_optimization_routine(objective_function,x,o
 %                                                       for verbose output
 %  o varargin               [cell of structures]      Structures to be passed to the objective function.
 %
-%     varargin{1} --> DynareDataset
-%     varargin{2} --> DatasetInfo
-%     varargin{3} --> DynareOptions
-%     varargin{4} --> Model
-%     varargin{5} --> EstimatedParameters
-%     varargin{6} --> BayesInfo
-%     varargin{1} --> DynareResults
+%     varargin{1} --> dataset_
+%     varargin{2} --> dataset_info
+%     varargin{3} --> options_
+%     varargin{4} --> M_
+%     varargin{5} --> estim_params_
+%     varargin{6} --> bayestopt_
+%     varargin{7} --> BoundsInfo
+%     varargin{8} --> oo_
 %
 % OUTPUTS
 %  o x                      [double]                  n*1 vector, estimate of the optimal inputs.

@@ -1,5 +1,5 @@
 function forecasts = backward_model_forecast(initialcondition, listofvariables, periods, withuncertainty)
-
+%function forecasts = backward_model_forecast(initialcondition, listofvariables, periods, withuncertainty)
 % Returns unconditional forecasts.
 %
 % INPUTS

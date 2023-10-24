@@ -5,22 +5,22 @@ function [llik,parameters] = evaluate_likelihood(parameters,M_,estim_params_,oo_
 % INPUTS
 %    o parameters  a string ('posterior mode','posterior mean','posterior median','prior mode','prior mean') or a vector of values for
 %                  the (estimated) parameters of the model.
-%    o M_          [structure]  Definition of the model
-%    o estim_params_ [structure] characterizing parameters to be estimated
-%    o oo_         [structure]  Storage of results
-%    o options_    [structure]  Options
-%    o bayestopt_  [structure]  describing the priors
+%    o M_               [structure]  Definition of the model
+%    o estim_params_    [structure] characterizing parameters to be estimated
+%    o oo_              [structure]  Storage of results
+%    o options_         [structure]  Options
+%    o bayestopt_       [structure]  describing the priors
 %
 % OUTPUTS
-%    o ldens       [double]  value of the sample logged density at parameters.
-%    o parameters  [double]  vector of values for the estimated parameters.
+%    o ldens            [double]  value of the sample logged density at parameters.
+%    o parameters       [double]  vector of values for the estimated parameters.
 %
 % SPECIAL REQUIREMENTS
 %    None
 %
 % REMARKS
 % [1] This function cannot evaluate the likelihood of a dsge-var model...
-% [2] This function use persistent variables for the dataset and the description of the missing observations. Consequently, if this function
+% [2] This function use persistent variables for the dataset_ and the description of the missing observations. Consequently, if this function
 %     is called more than once (by changing the value of parameters) the sample *must not* change.
 
 % Copyright © 2009-2023 Dynare Team
@@ -40,7 +40,7 @@ function [llik,parameters] = evaluate_likelihood(parameters,M_,estim_params_,oo_
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-persistent dataset dataset_info
+persistent dataset_ dataset_info
 
 if nargin==0
     parameters = 'posterior mode';
@@ -69,8 +69,8 @@ if ischar(parameters)
     end
 end
 
-if isempty(dataset)
-    [dataset, dataset_info] = makedataset(options_);
+if isempty(dataset_)
+    [dataset_, dataset_info] = makedataset(options_);
 end
 options_=select_qz_criterium_value(options_);
 
@@ -88,9 +88,9 @@ end
 
 
 if options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter
-    llik = -occbin.IVF_posterior(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+    llik = -occbin.IVF_posterior(parameters,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 else
-    llik = -dsge_likelihood(parameters,dataset,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+    llik = -dsge_likelihood(parameters,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,bounds,oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 end
 ldens = evaluate_prior(parameters,M_,estim_params_,oo_,options_,bayestopt_);
 llik = llik - ldens;

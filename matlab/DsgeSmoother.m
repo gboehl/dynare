@@ -227,7 +227,7 @@ elseif options_.lik_init == 5            % Old diffuse Kalman filter only for th
     end
     R_tmp = R(stable, :);
     T_tmp = T(stable,stable);
-    Pstar_tmp=lyapunov_solver(T_tmp,R_tmp,Q,DynareOptions);
+    Pstar_tmp=lyapunov_solver(T_tmp,R_tmp,Q,options_);
     Pstar(stable, stable) = Pstar_tmp;
     Pinf  = [];
 end

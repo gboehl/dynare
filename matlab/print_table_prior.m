@@ -1,8 +1,14 @@
-function print_table_prior(lb, ub, DynareOptions, ModelInfo, BayesInfo, EstimationInfo)
-
+function print_table_prior(lb, ub, options_, M_, bayestopt_, estim_params_)
+% print_table_prior(lb, ub, options_, M_, bayestopt_, estim_params_)
 % This routine prints in the command window some descriptive statistics about the prior distribution.
+% Inputs:
+%  o lb             [double]    lower bound    
+%  o ub             [double]    upper bound
+%  o M_             [structure] Definition of the model
+%  o bayestopt_     [structure] describing the priors
+%  o estim_params_  [structure] characterizing parameters to be estimated
 
-% Copyright © 2015-2017 Dynare Team
+% Copyright © 2015-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,7 +34,7 @@ PriorNames = strvcat(PriorNames,'Inverted Gamma -- 2');
 PriorNames = strvcat(PriorNames,'Dirichlet');
 PriorNames = strvcat(PriorNames,'Weibull');
 
-n = size(BayesInfo.name,1); % Numbe rof estimated parameters.
+n = size(bayestopt_.name,1); % Numbe rof estimated parameters.
 
 l1 = printline(10, '-');
 T1 = strvcat(l1, 'PARAMETER ');
@@ -38,15 +44,15 @@ l2 = printline(133, '-');
 T2 = strvcat(l2, sprintf('Prior shape      \t Prior mean \t Prior mode \t Prior std. \t Prior lb \t Prior ub \t Prior HPD lb \t Prior HPH ub'));
 T2 = strvcat(T2, l2);
 
-prior_trunc_backup = DynareOptions.prior_trunc ;
-DynareOptions.prior_trunc = (1-DynareOptions.prior_interval)/2 ;
-PriorIntervals = prior_bounds(BayesInfo, DynareOptions.prior_trunc) ;
-DynareOptions.prior_trunc = prior_trunc_backup ;
+prior_trunc_backup = options_.prior_trunc ;
+options_.prior_trunc = (1-options_.prior_interval)/2 ;
+PriorIntervals = prior_bounds(bayestopt_, options_.prior_trunc) ;
+options_.prior_trunc = prior_trunc_backup ;
 
 RESIZE = false;
 
-for i=1:size(BayesInfo.name,1)
-    [Name,tmp] = get_the_name(i,1,ModelInfo,EstimationInfo,DynareOptions);
+for i=1:size(bayestopt_.name,1)
+    [Name,tmp] = get_the_name(i,1,M_,estim_params_,options_);
     if length(Name)>size(T1,2)
         resize = true;
     else
@@ -59,14 +65,14 @@ for i=1:size(BayesInfo.name,1)
         T1(1,:) = l1;
         T1(3,:) = l1;
     end
-    PriorShape = PriorNames(BayesInfo.pshape(i),:);
-    PriorMean = BayesInfo.p1(i);
-    PriorMode = BayesInfo.p5(i);
-    PriorStandardDeviation = BayesInfo.p2(i);
-    switch BayesInfo.pshape(i)
+    PriorShape = PriorNames(bayestopt_.pshape(i),:);
+    PriorMean = bayestopt_.p1(i);
+    PriorMode = bayestopt_.p5(i);
+    PriorStandardDeviation = bayestopt_.p2(i);
+    switch bayestopt_.pshape(i)
       case { 1 , 5 }
-        LowerBound = BayesInfo.p3(i);
-        UpperBound = BayesInfo.p4(i);
+        LowerBound = bayestopt_.p3(i);
+        UpperBound = bayestopt_.p4(i);
         if ~isinf(lb(i))
             LowerBound=max(LowerBound,lb(i));
         end
@@ -74,7 +80,7 @@ for i=1:size(BayesInfo.name,1)
             UpperBound=min(UpperBound,ub(i));
         end
       case { 2 , 4 , 6 , 8}
-        LowerBound = BayesInfo.p3(i);
+        LowerBound = bayestopt_.p3(i);
         if ~isinf(lb(i))
             LowerBound=max(LowerBound,lb(i));
         end
@@ -84,18 +90,18 @@ for i=1:size(BayesInfo.name,1)
             UpperBound = Inf;
         end
       case 3
-        if isinf(BayesInfo.p3(i)) && isinf(lb(i))
+        if isinf(bayestopt_.p3(i)) && isinf(lb(i))
             LowerBound = -Inf;
         else
-            LowerBound = BayesInfo.p3(i);
+            LowerBound = bayestopt_.p3(i);
             if ~isinf(lb(i))
                 LowerBound=max(LowerBound,lb(i));
             end
         end
-        if isinf(BayesInfo.p4(i)) && isinf(ub(i))
+        if isinf(bayestopt_.p4(i)) && isinf(ub(i))
             UpperBound = Inf;
         else
-            UpperBound = BayesInfo.p4(i);
+            UpperBound = bayestopt_.p4(i);
             if ~isinf(ub(i))
                 UpperBound=min(UpperBound,ub(i));
             end

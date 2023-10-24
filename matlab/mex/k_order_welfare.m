@@ -1,10 +1,10 @@
-% W = k_order_welfare(dr, DynareModel, DynareOptions)
+% W = k_order_welfare(dr, M_, options_)
 % computes a k-th order approximation of welfare
 %
 % INPUTS
 % dr:              struct   describing the reduced form solution of the model.
-% DynareModel:     struct   jobs's parameters
-% DynareOptions:   struct   job's options
+% M_:              struct   jobs's parameters
+% options_:        struct   job's options
 %
 % OUTPUTS
 %
