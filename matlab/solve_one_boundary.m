@@ -1,5 +1,5 @@
 function [y, T, success, max_res, iter] = solve_one_boundary(fh, y, x, params, steady_state, T, ...
-                                                             y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M, options)
+                                                             y_index_eq, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo, is_forward, is_dynamic, verbose, M_, options_)
 % Computes the deterministic simulation or the steady state for a block of equations containing
 % only lags or only leads (but not both).
 %
@@ -27,6 +27,8 @@ function [y, T, success, max_res, iter] = solve_one_boundary(fh, y, x, params, s
 %                                       If false, the block is solved backward
 %   is_dynamic          [logical]       Whether this is a deterministic simulation
 %   verbose             [logical]       Whether iterations are to be printed
+%   M_                  [structure]     storing the model information
+%   options_            [structure]     storing the options
 %
 % OUTPUTS
 %   y                   [matrix]        All endogenous variables of the model
@@ -78,15 +80,15 @@ for it_=start:incr:finish
     g1=spalloc( Blck_size, Blck_size, nze);
     while ~(cvg || iter>maxit_)
         if is_dynamic
-            [yy, T(:, it_), r, g1] = fh(dynendo(y, it_, M), x(it_, :), params, steady_state, ...
-                                        M.block_structure.block(Block_Num).g1_sparse_rowval, ...
-                                        M.block_structure.block(Block_Num).g1_sparse_colval, ...
-                                        M.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
-            y(:, it_) = yy(M.endo_nbr+(1:M.endo_nbr));
+            [yy, T(:, it_), r, g1] = fh(dynendo(y, it_, M_), x(it_, :), params, steady_state, ...
+                                        M_.block_structure.block(Block_Num).g1_sparse_rowval, ...
+                                        M_.block_structure.block(Block_Num).g1_sparse_colval, ...
+                                        M_.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
+            y(:, it_) = yy(M_.endo_nbr+(1:M_.endo_nbr));
         else
-            [y, T, r, g1] = fh(y, x, params, M.block_structure_stat.block(Block_Num).g1_sparse_rowval, ...
-                               M.block_structure_stat.block(Block_Num).g1_sparse_colval, ...
-                               M.block_structure_stat.block(Block_Num).g1_sparse_colptr, T);
+            [y, T, r, g1] = fh(y, x, params, M_.block_structure_stat.block(Block_Num).g1_sparse_rowval, ...
+                               M_.block_structure_stat.block(Block_Num).g1_sparse_colval, ...
+                               M_.block_structure_stat.block(Block_Num).g1_sparse_colptr, T);
         end
         if ~isreal(r)
             max_res=(-(max(max(abs(r))))^2)^0.5;
@@ -96,9 +98,9 @@ for it_=start:incr:finish
         if verbose
             disp(['iteration : ' int2str(iter+1) ' => ' num2str(max_res) ' time = ' int2str(it_)])
             if is_dynamic
-                disp([char(M.endo_names{y_index_eq}) repmat(' ', numel(y_index_eq), 1) num2str([y(y_index_eq, it_) r g1])])
+                disp([char(M_.endo_names{y_index_eq}) repmat(' ', numel(y_index_eq), 1) num2str([y(y_index_eq, it_) r g1])])
             else
-                disp([char(M.endo_names{y_index_eq}) repmat(' ', numel(y_index_eq), 1) num2str([y(y_index_eq) r g1])])
+                disp([char(M_.endo_names{y_index_eq}) repmat(' ', numel(y_index_eq), 1) num2str([y(y_index_eq) r g1])])
             end
         end
         if ~isreal(max_res) || isnan(max_res)
@@ -182,15 +184,15 @@ for it_=start:incr:finish
                 p = -g1\r ;
                 [ya,f,r,check]=lnsrch1(ya,f,g,p,stpmax, ...
                                        @lnsrch1_wrapper_one_boundary,nn, ...
-                                       nn, options.solve_tolx, y_index_eq, fh, Block_Num, y, x, params, steady_state, T(:, it_), it_, M);
+                                       nn, options_.solve_tolx, y_index_eq, fh, Block_Num, y, x, params, steady_state, T(:, it_), it_, M_);
                 dx = ya - y(y_index_eq, it_);
                 y(y_index_eq, it_) = ya;
                 %% Recompute temporary terms, since they are not given as output of lnsrch1
-                [~, T(:, it_)] = fh(dynendo(y, it_, M), x(it_, :), params, steady_state, ...
-                                    M.block_structure.block(Block_Num).g1_sparse_rowval, ...
-                                    M.block_structure.block(Block_Num).g1_sparse_colval, ...
-                                    M.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
-            elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0 || stack_solve_algo==6)) || (~is_dynamic && options.solve_algo==6)
+                [~, T(:, it_)] = fh(dynendo(y, it_, M_), x(it_, :), params, steady_state, ...
+                                    M_.block_structure.block(Block_Num).g1_sparse_rowval, ...
+                                    M_.block_structure.block(Block_Num).g1_sparse_colval, ...
+                                    M_.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
+            elseif (is_dynamic && (stack_solve_algo==1 || stack_solve_algo==0 || stack_solve_algo==6)) || (~is_dynamic && options_.solve_algo==6)
                 if verbose && ~is_dynamic
                     disp('steady: Sparse LU ')
                 end
@@ -201,7 +203,7 @@ for it_=start:incr:finish
                 else
                     y(y_index_eq) = ya;
                 end
-            elseif (stack_solve_algo==2 && is_dynamic) || (options.solve_algo==7 && ~is_dynamic)
+            elseif (stack_solve_algo==2 && is_dynamic) || (options_.solve_algo==7 && ~is_dynamic)
                 flag1=1;
                 if verbose && ~is_dynamic
                     disp('steady: GMRES ')
@@ -230,7 +232,7 @@ for it_=start:incr:finish
                         end
                     end
                 end
-            elseif (stack_solve_algo==3 && is_dynamic) || (options.solve_algo==8 && ~is_dynamic)
+            elseif (stack_solve_algo==3 && is_dynamic) || (options_.solve_algo==8 && ~is_dynamic)
                 flag1=1;
                 if verbose && ~is_dynamic
                     disp('steady: BiCGStab')
@@ -263,7 +265,7 @@ for it_=start:incr:finish
                 if is_dynamic
                     error(['options_.stack_solve_algo = ' num2str(stack_solve_algo) ' not implemented'])
                 else
-                    error(['options_.solve_algo = ' num2str(options.solve_algo) ' not implemented'])
+                    error(['options_.solve_algo = ' num2str(options_.solve_algo) ' not implemented'])
                 end
             end
             iter=iter+1;
@@ -286,20 +288,20 @@ end
 success = true;
 
 
-function y3n = dynendo(y, it_, M)
+function y3n = dynendo(y, it_, M_)
     if it_ > 1 && it_ < size(y, 2)
-        y3n = reshape(y(:, it_+(-1:1)), 3*M.endo_nbr, 1);
+        y3n = reshape(y(:, it_+(-1:1)), 3*M_.endo_nbr, 1);
     elseif it_ > 1 % Purely backward model (in last period)
-        y3n = [ reshape(y(:, it_+(-1:0)), 2*M.endo_nbr, 1); NaN(M_.endo_nbr, 1) ];
+        y3n = [ reshape(y(:, it_+(-1:0)), 2*M_.endo_nbr, 1); NaN(M_.endo_nbr, 1) ];
     elseif it_ < size(y, 2) % Purely forward model (in first period)
-        y3n = [ NaN(M_.endo_nbr, 1); reshape(y(:, it_+(0:1)), 2*M.endo_nbr, 1) ];
+        y3n = [ NaN(M_.endo_nbr, 1); reshape(y(:, it_+(0:1)), 2*M_.endo_nbr, 1) ];
     else % Static model
         y3n = [ NaN(M_.endo_nbr, 1); y(:, it_); NaN(M_.endo_nbr, 1) ]
     end
 
-function r = lnsrch1_wrapper_one_boundary(ya, y_index, fh, Block_Num, y, x, params, steady_state, T, it_, M)
+function r = lnsrch1_wrapper_one_boundary(ya, y_index, fh, Block_Num, y, x, params, steady_state, T, it_, M_)
     y(y_index, it_) = ya;
-    [~, ~, r] = fh(dynendo(y, it_, M), x(it_, :), params, steady_state, ...
-                   M.block_structure.block(Block_Num).g1_sparse_rowval, ...
-                   M.block_structure.block(Block_Num).g1_sparse_colval, ...
-                   M.block_structure.block(Block_Num).g1_sparse_colptr, T);
+    [~, ~, r] = fh(dynendo(y, it_, M_), x(it_, :), params, steady_state, ...
+                   M_.block_structure.block(Block_Num).g1_sparse_rowval, ...
+                   M_.block_structure.block(Block_Num).g1_sparse_colval, ...
+                   M_.block_structure.block(Block_Num).g1_sparse_colptr, T);

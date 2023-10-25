@@ -1,4 +1,4 @@
-function pruned_state_space = pruned_state_space_system(M, options, dr, indy, nlags, useautocorr, compute_derivs)
+function pruned_state_space = pruned_state_space_system(M_, options_, dr, indy, nlags, useautocorr, compute_derivs)
 % Set up the pruned state space ABCD representation:
 %   z =      c + A*z(-1) + B*inov
 %   y = ys + d + C*z(-1) + D*inov
@@ -10,8 +10,8 @@ function pruned_state_space = pruned_state_space_system(M, options, dr, indy, nl
 %   Econometrics and Statistics, Volume 6, Pages 44-56.
 % =========================================================================
 % INPUTS
-%   M:              [structure] storing the model information
-%   options:        [structure] storing the options
+%   M_:             [structure] storing the model information
+%   options_:       [structure] storing the options
 %   dr:             [structure] storing the results from perturbation approximation
 %   indy:           [vector]    index of control variables in DR order
 %   nlags:          [integer]   number of lags in autocovariances and autocorrelations
@@ -244,19 +244,19 @@ function pruned_state_space = pruned_state_space_system(M, options, dr, indy, nl
 persistent QPu COMBOS4 Q6Pu COMBOS6 K_u_xx K_u_ux K_xx_x
 
 %% Auxiliary indices and objects
-order = options.order;
-if isempty(options.qz_criterium)
+order = options_.order;
+if isempty(options_.qz_criterium)
     % set default value for qz_criterium: if there are no unit roots one can use 1.0
     % If they are possible, you may have have multiple unit roots and the accuracy 
     % decreases when computing the eigenvalues in lyapunov_symm. Hence, we normally use 1+1e-6
     % Note that unit roots are only possible at first-order, at higher order we set it to 1
-    options.qz_criterium = 1+1e-6;
+    options_.qz_criterium = 1+1e-6;
 end
-indx = [M.nstatic+(1:M.nspred) M.endo_nbr+(1:size(dr.ghx,2)-M.nspred)]';
+indx = [M_.nstatic+(1:M_.nspred) M_.endo_nbr+(1:size(dr.ghx,2)-M_.nspred)]';
 if isempty(indy)
-    indy = (1:M.endo_nbr)'; %by default select all variables in DR order
+    indy = (1:M_.endo_nbr)'; %by default select all variables in DR order
 end
-u_nbr    = M.exo_nbr;
+u_nbr    = M_.exo_nbr;
 x_nbr    = length(indx);
 y_nbr    = length(indy);
 Yss      = dr.ys(dr.order_var);
@@ -264,7 +264,7 @@ hx       = dr.ghx(indx,:);
 gx       = dr.ghx(indy,:);
 hu       = dr.ghu(indx,:);
 gu       = dr.ghu(indy,:);
-E_uu     = M.Sigma_e; %this is E[u*u']
+E_uu     = M_.Sigma_e; %this is E[u*u']
 
 if compute_derivs
     stderrparam_nbr = length(dr.derivs.indpstderr);
@@ -350,7 +350,7 @@ end
 % Auxiliary state vector z is defined by:          z    = [xf]
 % Auxiliary innovations vector inov is defined by: inov = [u]
 z_nbr       = x_nbr;
-inov_nbr    = M.exo_nbr;
+inov_nbr    = M_.exo_nbr;
 A           = hx;
 B           = hu;
 c           = zeros(x_nbr,1);
@@ -364,9 +364,9 @@ E_xf        = zeros(x_nbr,1);
 
 lyapunov_symm_method = 1; %method=1 to initialize persistent variables
 [Var_z,Schur_u] = lyapunov_symm(A, Om_z,... %at first-order this algorithm is well established and also used in th_autocovariances.m
-                                options.lyapunov_fixed_point_tol, options.qz_criterium, options.lyapunov_complex_threshold,...
+                                options_.lyapunov_fixed_point_tol, options_.qz_criterium, options_.lyapunov_complex_threshold,...
                                 lyapunov_symm_method,...       
-                                options.debug); %we use Schur_u to take care of (possible) nonstationary VAROBS variables in moment computations
+                                options_.debug); %we use Schur_u to take care of (possible) nonstationary VAROBS variables in moment computations
 %find stationary vars
 stationary_vars = (1:y_nbr)';
 if ~isempty(Schur_u)
@@ -375,7 +375,7 @@ if ~isempty(Schur_u)
     end
     %base this only on first order, because if first-order is stable so are the higher-order pruned systems
     x = abs(gx*Schur_u);
-    stationary_vars = find(all(x < options.schur_vec_tol,2));
+    stationary_vars = find(all(x < options_.schur_vec_tol,2));
 end
 
 if compute_derivs == 1
@@ -394,21 +394,21 @@ if compute_derivs == 1
         if jp1 <= stderrparam_nbr+corrparam_nbr
             dOm_z_jp1 = B*dVarinov(:,:,jp1)*B';
             dVar_z(:,:,jp1) = lyapunov_symm(A, dOm_z_jp1,...
-                                           options.lyapunov_fixed_point_tol,options.qz_criterium,options.lyapunov_complex_threshold,...
+                                           options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,...
                                            lyapunov_symm_method,...
-                                           options.debug);
+                                           options_.debug);
         else
             dOm_z_jp1  = dB(:,:,jp1)*Varinov*B' + B*Varinov*dB(:,:,jp1)';
             dVar_z(:,:,jp1) = lyapunov_symm(A, dA(:,:,jp1)*Var_z*A' + A*Var_z*dA(:,:,jp1)' + dOm_z_jp1,...
-                                           options.lyapunov_fixed_point_tol,options.qz_criterium,options.lyapunov_complex_threshold,...
+                                           options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,...
                                            lyapunov_symm_method,...
-                                           options.debug);
+                                           options_.debug);
         end
     end
 end
 
 if order > 1
-    options.qz_criterium = 1; %pruned state space has no unit roots
+    options_.qz_criterium = 1; %pruned state space has no unit roots
     % Some common and useful objects for order > 1
     E_xfxf   = Var_z;
     if compute_derivs
@@ -491,13 +491,13 @@ if order > 1
     Om_z        = B*Varinov*transpose(B);
 
     lyapunov_symm_method = 1; %method=1 to initialize persistent variables (if errorflag)
-    [Var_z, errorflag] = disclyap_fast(A,Om_z,options.lyapunov_doubling_tol);
+    [Var_z, errorflag] = disclyap_fast(A,Om_z,options_.lyapunov_doubling_tol);
     if errorflag %use Schur-based method
         fprintf('PRUNED_STATE_SPACE_SYSTEM: error flag in disclyap_fast at order=2, use lyapunov_symm\n');
         Var_z = lyapunov_symm(A,Om_z,...
-                              options.lyapunov_fixed_point_tol,options.qz_criterium,options.lyapunov_complex_threshold,...
+                              options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,...
                               lyapunov_symm_method,...
-                              options.debug);
+                              options_.debug);
         lyapunov_symm_method = 2; %in the following we can reuse persistent variables
     end
     % Make sure some stuff is zero due to Gaussianity
@@ -575,12 +575,12 @@ if order > 1
             dE_xs(:,jp2) = invIx_hx*( dhx_jp2*E_xs + 1/2*dhxx_jp2*E_xfxf(:) + 1/2*hxx*dE_xfxf_jp2(:) + dc(id_z2_xs,jp2) );
             dOm_z_jp2    = dB(:,:,jp2)*Varinov*B' + B*dVarinov(:,:,jp2)*B' + B*Varinov*dB(:,:,jp2)';
             
-            [dVar_z(:,:,jp2), errorflag] = disclyap_fast(A, dA(:,:,jp2)*Var_z*A' + A*Var_z*dA(:,:,jp2)' + dOm_z_jp2, options.lyapunov_doubling_tol);
+            [dVar_z(:,:,jp2), errorflag] = disclyap_fast(A, dA(:,:,jp2)*Var_z*A' + A*Var_z*dA(:,:,jp2)' + dOm_z_jp2, options_.lyapunov_doubling_tol);
             if errorflag
                 dVar_z(:,:,jp2) = lyapunov_symm(A, dA(:,:,jp2)*Var_z*A' + A*Var_z*dA(:,:,jp2)' + dOm_z_jp2,...
-                                               options.lyapunov_fixed_point_tol,options.qz_criterium,options.lyapunov_complex_threshold,...
+                                               options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,...
                                                lyapunov_symm_method,...
-                                               options.debug);
+                                               options_.debug);
                 if lyapunov_symm_method == 1
                     lyapunov_symm_method = 2; %now we can reuse persistent schur
                 end
@@ -817,13 +817,13 @@ if order > 1
         Om_z = B*Varinov*transpose(B) + Binovzlag1A + transpose(Binovzlag1A);
 
         lyapunov_symm_method = 1; %method=1 to initialize persistent variables
-        [Var_z, errorflag] = disclyap_fast(A,Om_z,options.lyapunov_doubling_tol);        
+        [Var_z, errorflag] = disclyap_fast(A,Om_z,options_.lyapunov_doubling_tol);        
         if errorflag %use Schur-based method
             fprintf('PRUNED_STATE_SPACE_SYSTEM: error flag in disclyap_fast at order=3, use lyapunov_symm\n');
             Var_z = lyapunov_symm(A,Om_z,...
-                                    options.lyapunov_fixed_point_tol,options.qz_criterium,options.lyapunov_complex_threshold,...
+                                    options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,...
                                     lyapunov_symm_method,...
-                                    options.debug);
+                                    options_.debug);
             lyapunov_symm_method = 2; %we can now make use of persistent variables from shur
         end
         %make sure some stuff is zero due to Gaussianity
@@ -998,12 +998,12 @@ if order > 1
                 dBinovzlag1A_jp3 = dB(:,:,jp3)*E_inovzlag1*transpose(A) + B*dE_inovzlag1(:,:,jp3)*transpose(A) + B*E_inovzlag1*transpose(dA(:,:,jp3));
                 dOm_z_jp3 = dB(:,:,jp3)*Varinov*transpose(B) + B*dVarinov(:,:,jp3)*transpose(B) + B*Varinov*transpose(dB(:,:,jp3)) + dBinovzlag1A_jp3 + transpose(dBinovzlag1A_jp3);
                 
-                [dVar_z(:,:,jp3), errorflag] = disclyap_fast(A, dA(:,:,jp3)*Var_z*A' + A*Var_z*dA(:,:,jp3)' + dOm_z_jp3, options.lyapunov_doubling_tol);
+                [dVar_z(:,:,jp3), errorflag] = disclyap_fast(A, dA(:,:,jp3)*Var_z*A' + A*Var_z*dA(:,:,jp3)' + dOm_z_jp3, options_.lyapunov_doubling_tol);
                 if errorflag
                     dVar_z(:,:,jp3) = lyapunov_symm(A, dA(:,:,jp3)*Var_z*A' + A*Var_z*dA(:,:,jp3)' + dOm_z_jp3,...
-                                                    options.lyapunov_fixed_point_tol,options.qz_criterium,options.lyapunov_complex_threshold,...
+                                                    options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,...
                                                     lyapunov_symm_method,...
-                                                    options.debug);
+                                                    options_.debug);
                     if lyapunov_symm_method == 1
                         lyapunov_symm_method = 2; %now we can reuse persistent schur
                     end

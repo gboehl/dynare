@@ -1,6 +1,6 @@
-function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,options)
+function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M_,options_)
 
-% function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,options)
+% function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M_,options_)
 % Evaluates the static model
 %
 % INPUTS
@@ -8,8 +8,8 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 %                                                 state
 %   exo_ss                    vector           exogenous steady state
 %   params                    vector           parameters
-%   M                         struct           model structure
-%   options                   struct           options
+%   M_                        struct           model structure
+%   options_                  struct           options
 %
 % OUTPUTS
 %   residuals                 vector           residuals when ys is not
@@ -38,18 +38,18 @@ function [residuals,check1,jacob] = evaluate_static_model(ys,exo_ss,params,M,opt
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 check1 = 0;
-if options.bytecode
+if options_.bytecode
     if nargout<3
-        [residuals]= bytecode('evaluate', 'static', M, options, ys, ...
+        [residuals]= bytecode('evaluate', 'static', M_, options_, ys, ...
                          exo_ss, params, ys, 1);
     else
-        [residuals, junk]= bytecode('evaluate', 'static', M, options, ys, ...
+        [residuals, junk]= bytecode('evaluate', 'static', M_, options_, ys, ...
             exo_ss, params, ys, 1);
         jacob = junk.g1;
     end      
 else
-    [residuals, T_order, T] = feval([M.fname '.sparse.static_resid'], ys, exo_ss, params);
+    [residuals, T_order, T] = feval([M_.fname '.sparse.static_resid'], ys, exo_ss, params);
     if nargout >= 3
-        jacob = feval([M.fname '.sparse.static_g1'], ys, exo_ss, params, M.static_g1_sparse_rowval, M.static_g1_sparse_colval, M.static_g1_sparse_colptr, T_order, T);
+        jacob = feval([M_.fname '.sparse.static_g1'], ys, exo_ss, params, M_.static_g1_sparse_rowval, M_.static_g1_sparse_colval, M_.static_g1_sparse_colptr, T_order, T);
     end
 end

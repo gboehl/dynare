@@ -1,5 +1,5 @@
-function out = identification_numerical_objective(params, outputflag, estim_params, M, options, indpmodel, indpstderr, indvar, useautocorr, nlags, grid_nbr, dr, steady_state, exo_steady_state, exo_det_steady_state)
-%function out = identification_numerical_objective(params, outputflag, %estim_params, M, options, indpmodel, indpstderr, indvar, useautocorr, nlags, grid_nbr, dr, steady_state, exo_steady_state, exo_det_steady_state)
+function out = identification_numerical_objective(params, outputflag, estim_params_, M_, options_, indpmodel, indpstderr, indvar, useautocorr, nlags, grid_nbr, dr, steady_state, exo_steady_state, exo_det_steady_state)
+% out = identification_numerical_objective(params, outputflag, estim_params_, M_, options_, indpmodel, indpstderr, indvar, useautocorr, nlags, grid_nbr, dr, steady_state, exo_steady_state, exo_det_steady_state)
 % -------------------------------------------------------------------------
 % Objective function to compute numerically the Jacobians used for identification analysis
 % Previously this function was called thet2tau.m
@@ -8,9 +8,9 @@ function out = identification_numerical_objective(params, outputflag, estim_para
 %   params:                 [vector]        parameter values at which to evaluate objective function
 %                                           stderr parameters come first, corr parameters second, model parameters third
 %   outputflag:             [integer]       flag which objective to compute (see below)
-%   estim_params:           [structure]     storing the estimation information
-%   M:                      [structure]     storing the model information
-%   options:                [structure]     storing the options
+%   estim_params_:          [structure]     storing the estimation information
+%   M_:                     [structure]     storing the model information
+%   options_:               [structure]     storing the options
 %   indpmodel:              [vector]        Index of model parameters
 %   indpstderr:             [vector]        Index of stderr parameters
 %   indvar:                 [vector]        Index of selected or observed variables
@@ -35,7 +35,7 @@ function out = identification_numerical_objective(params, outputflag, estim_para
 %   * get_identification_jacobians.m (previously getJJ.m)
 % -------------------------------------------------------------------------
 % This function calls
-%   * [M.fname,'.dynamic']
+%   * [M_.fname,'.dynamic']
 %   * dyn_vech
 %   * resol
 %   * vec
@@ -61,26 +61,26 @@ function out = identification_numerical_objective(params, outputflag, estim_para
 %% Update stderr, corr and model parameters
 %note that if no estimated_params_block is given, then all stderr and model parameters are selected but no corr parameters
 if length(params) > length(indpmodel)
-    if isempty(indpstderr)==0 && isempty(estim_params.var_exo) %if there are stderr parameters but no estimated_params_block
+    if isempty(indpstderr)==0 && isempty(estim_params_.var_exo) %if there are stderr parameters but no estimated_params_block
         %provide temporary necessary information for stderr parameters
-        estim_params.nvx = length(indpstderr);
-        estim_params.var_exo = indpstderr';
+        estim_params_.nvx = length(indpstderr);
+        estim_params_.var_exo = indpstderr';
     end
-    if isempty(indpmodel)==0 && isempty(estim_params.param_vals) %if there are model parameters but no estimated_params_block
+    if isempty(indpmodel)==0 && isempty(estim_params_.param_vals) %if there are model parameters but no estimated_params_block
         %provide temporary necessary information for model parameters
-        estim_params.np = length(indpmodel);
-        estim_params.param_vals = indpmodel';
+        estim_params_.np = length(indpmodel);
+        estim_params_.param_vals = indpmodel';
     end
-    M = set_all_parameters(params,estim_params,M); %this function can only be used if there is some information in estim_params
+    M_ = set_all_parameters(params,estim_params_,M_); %this function can only be used if there is some information in estim_params_
 else
     %if there are only model parameters, we don't need to use set_all_parameters
-    M.params(indpmodel) = params;
+    M_.params(indpmodel) = params;
 end
 
 %% compute Kalman transition matrices and steady state with updated parameters
-[dr,info,M.params] = compute_decision_rules(M,options,dr, steady_state, exo_steady_state, exo_det_steady_state);
-options = rmfield(options,'options_ident');
-pruned = pruned_state_space_system(M, options, dr, indvar, nlags, useautocorr, 0);
+[dr,info,M_.params] = compute_decision_rules(M_,options_,dr, steady_state, exo_steady_state, exo_det_steady_state);
+options_ = rmfield(options_,'options_ident');
+pruned = pruned_state_space_system(M_, options_, dr, indvar, nlags, useautocorr, 0);
 
 %% out = [vech(cov(Y_t,Y_t)); vec(cov(Y_t,Y_{t-1}); ...; vec(cov(Y_t,Y_{t-nlags})] of indvar variables, in DR order. This is Iskrev (2010)'s J matrix.
 if outputflag == 1    

@@ -1,7 +1,7 @@
-function M = set_all_parameters(xparam1,estim_params,M)
+function M_ = set_all_parameters(xparam1,estim_params_,M_)
 
 %@info:
-%! @deftypefn {Function File} {@var{M} =} dseries (@var{xparams1},@var{estim_params},@var{M})
+%! @deftypefn {Function File} {@var{M_} =} dseries (@var{xparams1},@var{estim_params_},@var{M_})
 %! @anchor{set_all_parameters}
 %! @sp 1
 %! Update parameter values (deep parameters and covariance matrices).
@@ -11,16 +11,16 @@ function M = set_all_parameters(xparam1,estim_params,M)
 %! @table @ @var
 %! @item xparam1
 %! N*1 vector of doubles, the values of the N estimated parameters.
-%! @item estim_params
+%! @item estim_params_
 %! Dynare structure describing the estimated parameters.
-%! @item M
+%! @item M_
 %! Dynare structure describing the model.
 %! @end table
 %! @sp 1
 %! @strong{Outputs}
 %! @sp 1
 %! @table @ @var
-%! @item M
+%! @item M_
 %! Dynare structure describing the model, with updated parameters and covariances matrices.
 %! @end table
 %! @sp 2
@@ -50,21 +50,21 @@ function M = set_all_parameters(xparam1,estim_params,M)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-nvx = estim_params.nvx;
-ncx = estim_params.ncx;
-nvn = estim_params.nvn;
-ncn = estim_params.ncn;
-np = estim_params.np;
+nvx = estim_params_.nvx;
+ncx = estim_params_.ncx;
+nvn = estim_params_.nvn;
+ncn = estim_params_.ncn;
+np = estim_params_.np;
 if nvx || ncx
-    Sigma_e = M.Sigma_e;
-    Correlation_matrix = M.Correlation_matrix;
+    Sigma_e = M_.Sigma_e;
+    Correlation_matrix = M_.Correlation_matrix;
 end
-H = M.H;
-Correlation_matrix_ME = M.Correlation_matrix_ME;
+H = M_.H;
+Correlation_matrix_ME = M_.Correlation_matrix_ME;
 % setting shocks variance on the diagonal of Covariance matrix; used later
 % for updating covariances
 if nvx
-    var_exo = estim_params.var_exo;
+    var_exo = estim_params_.var_exo;
     for i=1:nvx
         k =var_exo(i,1);
         Sigma_e(k,k) = xparam1(i)^2;
@@ -77,7 +77,7 @@ offset = nvx;
 % for updating covariances
 if nvn
     for i=1:nvn
-        k = estim_params.nvn_observable_correspondence(i,1);
+        k = estim_params_.nvn_observable_correspondence(i,1);
         H(k,k) = xparam1(i+offset)^2;
     end
 end
@@ -87,7 +87,7 @@ offset = nvx+nvn;
 
 % setting shocks covariances
 if ncx
-    corrx = estim_params.corrx;
+    corrx = estim_params_.corrx;
     for i=1:ncx
         k1 = corrx(i,1);
         k2 = corrx(i,2);
@@ -100,7 +100,7 @@ offset = nvx+nvn+ncx;
 
 % setting measurement error covariances
 if ncn
-    corrn_observable_correspondence = estim_params.corrn_observable_correspondence;
+    corrn_observable_correspondence = estim_params_.corrn_observable_correspondence;
     for i=1:ncn
         k1 = corrn_observable_correspondence(i,1);
         k2 = corrn_observable_correspondence(i,2);
@@ -114,29 +114,29 @@ offset = nvx+ncx+nvn+ncn;
 % setting structural parameters
 %
 if np
-    M.params(estim_params.param_vals(:,1)) = xparam1(offset+1:end);
+    M_.params(estim_params_.param_vals(:,1)) = xparam1(offset+1:end);
 end
 
-% updating matrices in M
+% updating matrices in M_
 if nvx || ncx
     %build covariance matrix from correlation matrix and variances already on
     %diagonal
     Sigma_e = diag(sqrt(diag(Sigma_e)))*Correlation_matrix*diag(sqrt(diag(Sigma_e)));
     %if calibrated covariances, set them now to their stored value
-    if isfield(estim_params,'calibrated_covariances')
-        Sigma_e(estim_params.calibrated_covariances.position)=estim_params.calibrated_covariances.cov_value;
+    if isfield(estim_params_,'calibrated_covariances')
+        Sigma_e(estim_params_.calibrated_covariances.position)=estim_params_.calibrated_covariances.cov_value;
     end
-    M.Sigma_e = Sigma_e;
-    M.Correlation_matrix=Correlation_matrix;
+    M_.Sigma_e = Sigma_e;
+    M_.Correlation_matrix=Correlation_matrix;
 end
 if nvn || ncn
     %build covariance matrix from correlation matrix and variances already on
     %diagonal
     H = diag(sqrt(diag(H)))*Correlation_matrix_ME*diag(sqrt(diag(H)));
     %if calibrated covariances, set them now to their stored value
-    if isfield(estim_params,'calibrated_covariances_ME')
-        H(estim_params.calibrated_covariances_ME.position)=estim_params.calibrated_covariances_ME.cov_value;
+    if isfield(estim_params_,'calibrated_covariances_ME')
+        H(estim_params_.calibrated_covariances_ME.position)=estim_params_.calibrated_covariances_ME.cov_value;
     end
-    M.H = H;
-    M.Correlation_matrix_ME=Correlation_matrix_ME;
+    M_.H = H;
+    M_.Correlation_matrix_ME=Correlation_matrix_ME;
 end

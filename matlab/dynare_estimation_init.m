@@ -335,29 +335,29 @@ if options_.analytic_derivation
     options_.analytic_derivation = 1;
     if estim_params_.np || isfield(options_,'identification_check_endogenous_params_with_no_prior')
         % check if steady state changes param values
-        M=M_;
+        M_local=M_;
         if isfield(options_,'identification_check_endogenous_params_with_no_prior')
-            M.params = M.params*1.01; %vary parameters
+            M_local.params = M_local.params*1.01; %vary parameters
         else
-            M.params(estim_params_.param_vals(:,1)) = xparam1(estim_params_.nvx+estim_params_.ncx+estim_params_.nvn+estim_params_.ncn+1:end); %set parameters
-            M.params(estim_params_.param_vals(:,1)) = M.params(estim_params_.param_vals(:,1))*1.01; %vary parameters
+            M_local.params(estim_params_.param_vals(:,1)) = xparam1(estim_params_.nvx+estim_params_.ncx+estim_params_.nvn+estim_params_.ncn+1:end); %set parameters
+            M_local.params(estim_params_.param_vals(:,1)) = M_local.params(estim_params_.param_vals(:,1))*1.01; %vary parameters
         end
         if options_.diffuse_filter || options_.steadystate.nocheck
             steadystate_check_flag = 0;
         else
             steadystate_check_flag = 1;
         end
-        [tmp1, params] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M,options_,steadystate_check_flag);
-        change_flag=any(find(params-M.params));
+        [tmp1, params] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_local,options_,steadystate_check_flag);
+        change_flag=any(find(params-M_local.params));
         if change_flag
             skipline()
             if any(isnan(params))
                 disp('After computing the steadystate, the following parameters are still NaN: '),
-                disp(char(M.param_names(isnan(params))))
+                disp(char(M_local.param_names(isnan(params))))
             end
-            if any(find(params(~isnan(params))-M.params(~isnan(params))))
+            if any(find(params(~isnan(params))-M_local.params(~isnan(params))))
                 disp('The steadystate file changed the values for the following parameters: '),
-                disp(char(M.param_names(find(params(~isnan(params))-M.params(~isnan(params))))))
+                disp(char(M_local.param_names(find(params(~isnan(params))-M_local.params(~isnan(params))))))
             end
             disp('The derivatives of jacobian and steady-state will be computed numerically'),
             disp('(re-set options_.analytic_derivation_mode= -2)'),
@@ -414,21 +414,21 @@ else
 end
 
 %check steady state at initial parameters
-M = M_;
+M_local = M_;
 nvx = estim_params_.nvx;
 ncx = estim_params_.ncx;
 nvn = estim_params_.nvn;
 ncn = estim_params_.ncn;
 if estim_params_.np
-    M.params(estim_params_.param_vals(:,1)) = xparam1(nvx+ncx+nvn+ncn+1:end);
+    M_local.params(estim_params_.param_vals(:,1)) = xparam1(nvx+ncx+nvn+ncn+1:end);
 end
-[oo_.steady_state, params,info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M,options_,steadystate_check_flag);
+[oo_.steady_state, params,info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_local,options_,steadystate_check_flag);
 
 if info(1)
     fprintf('\ndynare_estimation_init:: The steady state at the initial parameters cannot be computed.\n')
     if options_.debug
-        M.params=params;
-        plist = list_of_parameters_calibrated_as_NaN(M);
+        M_local.params=params;
+        plist = list_of_parameters_calibrated_as_NaN(M_local);
         if ~isempty(plist)
             message = ['dynare_estimation_init:: Some of the parameters are NaN (' ];
             for i=1:length(plist)
@@ -440,7 +440,7 @@ if info(1)
             end
         end
         fprintf('%s\n',message)
-        plist = list_of_parameters_calibrated_as_Inf(M);
+        plist = list_of_parameters_calibrated_as_Inf(M_local);
         if ~isempty(plist)
             message = ['dynare_estimation_init:: Some of the parameters are Inf (' ];
             for i=1:length(plist)
@@ -526,9 +526,9 @@ end
 
 if (options_.occbin.likelihood.status && options_.occbin.likelihood.inversion_filter) || (options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter)
     if isempty(options_.occbin.likelihood.IVF_shock_observable_mapping)
-        options_.occbin.likelihood.IVF_shock_observable_mapping=find(diag(M.Sigma_e)~=0);
+        options_.occbin.likelihood.IVF_shock_observable_mapping=find(diag(M_local.Sigma_e)~=0);
     else
-        zero_var_shocks=find(diag(M.Sigma_e)==0);
+        zero_var_shocks=find(diag(M_local.Sigma_e)==0);
         if any(ismember(options_.occbin.likelihood.IVF_shock_observable_mapping,zero_var_shocks))
             error('IVF-filter: an observable is mapped to a zero variance shock.')
         end

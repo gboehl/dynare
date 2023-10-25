@@ -1,5 +1,5 @@
-function [endogenousvariables, success, ERR] = sim1_linear(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M, options)
-
+function [endogenousvariables, success, ERR] = sim1_linear(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M_, options_)
+% [endogenousvariables, success, ERR] = sim1_linear(endogenousvariables, exogenousvariables, steadystate_y, steadystate_x, M_, options_)
 % Solves a linear approximation of a perfect foresight model using sparse matrix.
 %
 % INPUTS
@@ -7,8 +7,8 @@ function [endogenousvariables, success, ERR] = sim1_linear(endogenousvariables, 
 % - exogenousvariables  [double] T*M array, paths for the exogenous variables.
 % - steadystate_y       [double] N*1 array, steady state for the endogenous variables.
 % - steadystate_x       [double] M*1 array, steady state for the exogenous variables.
-% - M                   [struct] contains a description of the model.
-% - options             [struct] contains various options.
+% - M_                  [struct] contains a description of the model.
+% - options_            [struct] contains various options.
 %
 % OUTPUTS
 % - endogenousvariables [double] N*T array, paths for the endogenous variables (solution of the perfect foresight model).
@@ -21,7 +21,7 @@ function [endogenousvariables, success, ERR] = sim1_linear(endogenousvariables, 
 % - T is the number of periods (including initial and/or terminal conditions).
 %
 % REMARKS
-% - The structure `M` describing the structure of the model, must contain the
+% - The structure `M_` describing the structure of the model, must contain the
 % following informations:
 %  + lead_lag_incidence, incidence matrix (given by the preprocessor).
 %  + endo_nbr, number of endogenous variables (including aux. variables).
@@ -31,7 +31,7 @@ function [endogenousvariables, success, ERR] = sim1_linear(endogenousvariables, 
 %  + params, values of model's parameters.
 %  + fname, name of the model.
 %  + NNZDerivatives, number of non zero elements in the jacobian of the dynamic model.
-% - The structure `options`, must contain the following options:
+% - The structure `options_`, must contain the following options:
 %  + verbosity, controls the quantity of information displayed.
 %  + periods, the number of periods in the perfect foresight model.
 %  + debug.
@@ -56,15 +56,15 @@ function [endogenousvariables, success, ERR] = sim1_linear(endogenousvariables, 
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-verbose = options.verbosity;
+verbose = options_.verbosity;
 
-lead_lag_incidence = M.lead_lag_incidence;
+lead_lag_incidence = M_.lead_lag_incidence;
 
-ny = M.endo_nbr;
-nx = M.exo_nbr;
+ny = M_.endo_nbr;
+nx = M_.exo_nbr;
 
-maximum_lag = M.maximum_lag;
-max_lag = M.maximum_endo_lag;
+maximum_lag = M_.maximum_lag;
+max_lag = M_.maximum_endo_lag;
 
 nyp = nnz(lead_lag_incidence(1,:));
 ny0 = nnz(lead_lag_incidence(2,:));
@@ -72,9 +72,9 @@ nyf = nnz(lead_lag_incidence(3,:));
 
 nd = nyp+ny0+nyf; % size of y (first argument passed to the dynamic file).
 
-periods = options.periods;
+periods = options_.periods;
 
-params = M.params;
+params = M_.params;
 
 % Indices in A.
 ip   = find(lead_lag_incidence(1,:)');
@@ -108,32 +108,32 @@ if verbose
     skipline()
 end
 
-dynamicmodel = str2func([M.fname,'.dynamic']);
+dynamicmodel = str2func([M_.fname,'.dynamic']);
 
 z = steadystate_y([ip; ic; in]);
-x = repmat(transpose(steadystate_x), 1+M.maximum_exo_lag+M.maximum_exo_lead, 1);
+x = repmat(transpose(steadystate_x), 1+M_.maximum_exo_lag+M_.maximum_exo_lead, 1);
 
 % Evaluate the Jacobian of the dynamic model at the deterministic steady state.
-[d1, jacobian] = dynamicmodel(z, x, params, steadystate_y, M.maximum_exo_lag+1);
-if options.debug
+[d1, jacobian] = dynamicmodel(z, x, params, steadystate_y, M_.maximum_exo_lag+1);
+if options_.debug
     column=find(all(jacobian==0,1));
     if ~isempty(column)
         fprintf('The dynamic Jacobian is singular. The problem derives from:\n')
         for iter=1:length(column)
-            [var_row,var_index]=find(M.lead_lag_incidence==column(iter));            
+            [var_row,var_index]=find(M_.lead_lag_incidence==column(iter));            
             if var_row==2
-                fprintf('The derivative with respect to %s being 0 for all equations.\n',M.endo_names{var_index})
+                fprintf('The derivative with respect to %s being 0 for all equations.\n',M_.endo_names{var_index})
             elseif var_row==1
-                fprintf('The derivative with respect to the lag of %s being 0 for all equations.\n',M.endo_names{var_index})
+                fprintf('The derivative with respect to the lag of %s being 0 for all equations.\n',M_.endo_names{var_index})
             elseif var_row==3
-                fprintf('The derivative with respect to the lead of %s being 0 for all equations.\n',M.endo_names{var_index})
+                fprintf('The derivative with respect to the lead of %s being 0 for all equations.\n',M_.endo_names{var_index})
             end            
         end
     end   
 end
 
 % Check that the dynamic model was evaluated at the steady state.
-if ~options.steadystate.nocheck &&  max(abs(d1))>options.solve_tolf
+if ~options_.steadystate.nocheck &&  max(abs(d1))>options_.solve_tolf
     error('Jacobian is not evaluated at the steady state!')
 end
 
@@ -155,7 +155,7 @@ iv  = 1:length(vv);
 res = zeros(periods*ny, 1);
 
 % Initialize the sparse Jacobian.
-iA = zeros(periods*M.NNZDerivatives(1), 3);
+iA = zeros(periods*M_.NNZDerivatives(1), 3);
 
 h2 = clock;
 i_rows = (1:ny)';
@@ -190,7 +190,7 @@ end
 % Evaluation of the maximum residual at the initial guess (steady state for the endogenous variables).
 err = max(abs(res));
 
-if options.debug
+if options_.debug
     fprintf('\nLargest absolute residual at iteration %d: %10.3f\n', 1, err);
     if any(isnan(res)) || any(isinf(res)) || any(isnan(Y)) || any(isinf(Y))
         fprintf('\nWARNING: NaN or Inf detected in the residuals or endogenous variables.\n');
@@ -239,7 +239,7 @@ end
 
 if any(isnan(res)) || any(isinf(res)) || any(isnan(Y)) || any(isinf(Y)) || ~isreal(res) || ~isreal(Y)
     success = false; % NaN or Inf occurred
-    endogenousvariables = reshape(Y, ny, periods+maximum_lag+M.maximum_lead);
+    endogenousvariables = reshape(Y, ny, periods+maximum_lag+M_.maximum_lead);
     if verbose
         skipline()
         if ~isreal(res) || ~isreal(Y)
@@ -251,7 +251,7 @@ if any(isnan(res)) || any(isinf(res)) || any(isnan(Y)) || any(isinf(Y)) || ~isre
     end
 else
     success = true; % Convergency obtained.
-    endogenousvariables = bsxfun(@plus, reshape(Y, ny, periods+maximum_lag+M.maximum_lead), steadystate_y);
+    endogenousvariables = bsxfun(@plus, reshape(Y, ny, periods+maximum_lag+M_.maximum_lead), steadystate_y);
 end
 
 if verbose

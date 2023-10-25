@@ -1,5 +1,5 @@
-function DERIVS = get_perturbation_params_derivs(M, options, estim_params, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indpmodel, indpstderr, indpcorr, d2flag)
-% DERIVS = get_perturbation_params_derivs(M, options, estim_params, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indpmodel, indpstderr, indpcorr, d2flag)
+function DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indpmodel, indpstderr, indpcorr, d2flag)
+% DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indpmodel, indpstderr, indpcorr, d2flag)
 % previously getH.m in dynare 4.5
 % -------------------------------------------------------------------------
 % Computes derivatives (with respect to parameters) of
@@ -16,14 +16,14 @@ function DERIVS = get_perturbation_params_derivs(M, options, estim_params, dr, e
 %
 % =========================================================================
 % INPUTS
-%   M:                      [structure]             storing the model information
-%   options:                [structure]             storing the options
-%   estim_params:           [structure]             storing the estimation information
+%   M_:                     [structure]             storing the model information
+%   options_:               [structure]             storing the options
+%   estim_params_:          [structure]             storing the estimation information
 %   dr                      [structure]             Reduced form model.
 %   endo_steady_state       [vector]                steady state value for endogenous variables
 %   exo_steady_state        [vector]                steady state value for exogenous variables
 %   exo_det_steady_state    [vector]                steady state value for exogenous deterministic variables                                    
-%   indpmodel:              [modparam_nbr by 1]     index of selected (estimated) parameters in M.params;
+%   indpmodel:              [modparam_nbr by 1]     index of selected (estimated) parameters in M_.params;
 %                                                   corresponds to model parameters (no stderr and no corr) 
 %                                                   in estimated_params block
 %   indpstderr:             [stderrparam_nbr by 1]  index of selected (estimated) standard errors,
@@ -126,40 +126,40 @@ function DERIVS = get_perturbation_params_derivs(M, options, estim_params, dr, e
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
-% Get fields from M
-Correlation_matrix = M.Correlation_matrix;
-dname              = M.dname;
-dynamic_tmp_nbr    = M.dynamic_tmp_nbr;
-endo_nbr           = M.endo_nbr;
-exo_nbr            = M.exo_nbr;
-exo_det_nbr        = M.exo_det_nbr;
-fname              = M.fname;
-lead_lag_incidence = M.lead_lag_incidence;
-nfwrd              = M.nfwrd;
-npred              = M.npred;
-nspred             = M.nspred;
-nstatic            = M.nstatic;
-params             = M.params;
-param_nbr          = M.param_nbr;
-Sigma_e            = M.Sigma_e;
+% Get fields from M_
+Correlation_matrix = M_.Correlation_matrix;
+dname              = M_.dname;
+dynamic_tmp_nbr    = M_.dynamic_tmp_nbr;
+endo_nbr           = M_.endo_nbr;
+exo_nbr            = M_.exo_nbr;
+exo_det_nbr        = M_.exo_det_nbr;
+fname              = M_.fname;
+lead_lag_incidence = M_.lead_lag_incidence;
+nfwrd              = M_.nfwrd;
+npred              = M_.npred;
+nspred             = M_.nspred;
+nstatic            = M_.nstatic;
+params             = M_.params;
+param_nbr          = M_.param_nbr;
+Sigma_e            = M_.Sigma_e;
 
-% Get fields from options
-analytic_derivation_mode = options.analytic_derivation_mode;
+% Get fields from options_
+analytic_derivation_mode = options_.analytic_derivation_mode;
     % analytic_derivation_mode: select method to compute Jacobians, default is 0
     % *  0: efficient sylvester equation method to compute analytical derivatives as in Ratto & Iskrev (2012)
     % *  1: kronecker products method to compute analytical derivatives as in Iskrev (2010), only for order=1
     % * -1: numerical two-sided finite difference method to compute numerical derivatives of all output arguments using function get_perturbation_params_derivs_numerical_objective.m
     % * -2: numerical two-sided finite difference method to compute numerically dYss, dg1, dg2, dg3, d2Yss and d2g1, the other output arguments are computed analytically as in kronflag=0
-gstep        = options.gstep;
-order        = options.order;
-if isempty(options.qz_criterium)
+gstep        = options_.gstep;
+order        = options_.order;
+if isempty(options_.qz_criterium)
     % set default value for qz_criterium: if there are no unit roots one can use 1.0
     % If they are possible, you may have have multiple unit roots and the accuracy 
     % decreases when computing the eigenvalues in lyapunov_symm. Hence, we normally use 1+1e-6
-    options = select_qz_criterium_value(options);
+    options_ = select_qz_criterium_value(options_);
 end
-qz_criterium = options.qz_criterium;
-threads_BC   = options.threads.kronecker.sparse_hessian_times_B_kronecker_C;
+qz_criterium = options_.qz_criterium;
+threads_BC   = options_.threads.kronecker.sparse_hessian_times_B_kronecker_C;
 
 % Get fields from dr
 ghx = dr.ghx;
@@ -187,7 +187,7 @@ if exo_det_nbr > 0
 end
 if order > 1 && analytic_derivation_mode == 1
     %analytic derivatives using Kronecker products is implemented only at first-order, at higher order we reset to analytic derivatives with sylvester equations
-    %options.analytic_derivation_mode = 0; fprintf('As order > 1, reset ''analytic_derivation_mode'' to 0\n');
+    %options_.analytic_derivation_mode = 0; fprintf('As order > 1, reset ''analytic_derivation_mode'' to 0\n');
     analytic_derivation_mode = 0; fprintf('As order > 1, reset ''analytic_derivation_mode'' to 0\n');
 end
 
@@ -227,35 +227,35 @@ else %normal models
 end
 
 if analytic_derivation_mode < 0
-    %Create auxiliary estim_params blocks if not available for numerical derivatives, estim_params_model contains only model parameters
+    %Create auxiliary estim_params_ blocks if not available for numerical derivatives, estim_params_model contains only model parameters
     estim_params_model.np = length(indpmodel);
     estim_params_model.param_vals(:,1) = indpmodel;
     estim_params_model.nvx = 0; estim_params_model.ncx = 0; estim_params_model.nvn = 0; estim_params_model.ncn = 0;
-    modparam1 = get_all_parameters(estim_params_model, M);  %get all selected model parameters
-    if ~isempty(indpstderr) && isempty(estim_params.var_exo) %if there are stderr parameters but no estimated_params_block
+    modparam1 = get_all_parameters(estim_params_model, M_);  %get all selected model parameters
+    if ~isempty(indpstderr) && isempty(estim_params_.var_exo) %if there are stderr parameters but no estimated_params_block
         %provide temporary necessary information for stderr parameters
-        estim_params.nvx = length(indpstderr);
-        estim_params.var_exo(:,1) = indpstderr;
+        estim_params_.nvx = length(indpstderr);
+        estim_params_.var_exo(:,1) = indpstderr;
     end
-    if ~isempty(indpcorr) && isempty(estim_params.corrx) %if there are corr parameters but no estimated_params_block
+    if ~isempty(indpcorr) && isempty(estim_params_.corrx) %if there are corr parameters but no estimated_params_block
         %provide temporary necessary information for stderr parameters
-        estim_params.ncx = size(indpcorr,1);
-        estim_params.corrx(:,1:2) = indpcorr;
+        estim_params_.ncx = size(indpcorr,1);
+        estim_params_.corrx(:,1:2) = indpcorr;
     end
-    if ~isfield(estim_params,'nvn') %stderr of measurement errors not yet
-        estim_params.nvn = 0;
-        estim_params.var_endo = [];
+    if ~isfield(estim_params_,'nvn') %stderr of measurement errors not yet
+        estim_params_.nvn = 0;
+        estim_params_.var_endo = [];
     end
-    if ~isfield(estim_params,'ncn') %corr of measurement errors not yet
-        estim_params.ncn = 0;
-        estim_params.corrn = [];
+    if ~isfield(estim_params_,'ncn') %corr of measurement errors not yet
+        estim_params_.ncn = 0;
+        estim_params_.corrn = [];
     end
-    if ~isempty(indpmodel) && isempty(estim_params.param_vals) %if there are model parameters but no estimated_params_block
+    if ~isempty(indpmodel) && isempty(estim_params_.param_vals) %if there are model parameters but no estimated_params_block
         %provide temporary necessary information for model parameters
-        estim_params.np = length(indpmodel);
-        estim_params.param_vals(:,1) = indpmodel;
+        estim_params_.np = length(indpmodel);
+        estim_params_.param_vals(:,1) = indpmodel;
     end
-    xparam1 = get_all_parameters(estim_params, M);  %get all selected stderr, corr, and model parameters in estimated_params block, stderr and corr come first, then model parameters
+    xparam1 = get_all_parameters(estim_params_, M_);  %get all selected stderr, corr, and model parameters in estimated_params block, stderr and corr come first, then model parameters
 end
 if d2flag
     modparam_nbr2 = modparam_nbr*(modparam_nbr+1)/2; %number of unique entries of selected model parameters only in second-order derivative matrix
@@ -295,7 +295,7 @@ if analytic_derivation_mode == -1
 % - perturbation solution matrices: dghx, dghu, dghxx, dghxu, dghuu, dghs2, dghxxx, dghxxu, dghxuu, dghuuu, dghxss, dghuss
 
     %Parameter Jacobian of covariance matrix and solution matrices (wrt selected stderr, corr and model paramters)
-    dSig_gh         = fjaco(numerical_objective_fname, xparam1, 'perturbation_solution', estim_params, M, options, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+    dSig_gh         = fjaco(numerical_objective_fname, xparam1, 'perturbation_solution', estim_params_, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
     ind_Sigma_e     = (1:exo_nbr^2);
     ind_ghx         = ind_Sigma_e(end) + (1:endo_nbr*nspred);
     ind_ghu         = ind_ghx(end) + (1:endo_nbr*exo_nbr);
@@ -348,16 +348,16 @@ if analytic_derivation_mode == -1
     end
 
     %Parameter Jacobian of dynamic model derivatives (wrt selected model parameters only)
-    dYss_g = fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M, options, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+    dYss_g = fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
     ind_Yss = 1:endo_nbr;
-    if options.discretionary_policy || options.ramsey_policy
-        ind_g1 = ind_Yss(end) + (1:M.eq_nbr*yy0ex0_nbr);
+    if options_.discretionary_policy || options_.ramsey_policy
+        ind_g1 = ind_Yss(end) + (1:M_.eq_nbr*yy0ex0_nbr);
     else
         ind_g1 = ind_Yss(end) + (1:endo_nbr*yy0ex0_nbr);
     end
     DERIVS.dYss = dYss_g(ind_Yss, :); %in tensor notation, wrt selected model parameters only
-    if options.discretionary_policy || options.ramsey_policy
-        DERIVS.dg1 = reshape(dYss_g(ind_g1,:),[M.eq_nbr, yy0ex0_nbr, modparam_nbr]); %in tensor notation, wrt selected model parameters only
+    if options_.discretionary_policy || options_.ramsey_policy
+        DERIVS.dg1 = reshape(dYss_g(ind_g1,:),[M_.eq_nbr, yy0ex0_nbr, modparam_nbr]); %in tensor notation, wrt selected model parameters only
     else
         DERIVS.dg1 = reshape(dYss_g(ind_g1,:),[endo_nbr, yy0ex0_nbr, modparam_nbr]); %in tensor notation, wrt selected model parameters only
     end
@@ -373,9 +373,9 @@ if analytic_derivation_mode == -1
     if d2flag
         % Hessian (wrt paramters) of steady state and first-order solution matrices ghx and Om
         % note that hessian_sparse.m (contrary to hessian.m) does not take symmetry into account, but focuses already on unique values
-        options.order = 1; %make sure only first order
-        d2Yss_KalmanA_Om = hessian_sparse(numerical_objective_fname, xparam1, gstep, 'Kalman_Transition', estim_params, M, options, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
-        options.order = order; %make sure to set back
+        options_.order = 1; %make sure only first order
+        d2Yss_KalmanA_Om = hessian_sparse(numerical_objective_fname, xparam1, gstep, 'Kalman_Transition', estim_params_, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+        options_.order = order; %make sure to set back
         ind_KalmanA = ind_Yss(end) + (1:endo_nbr^2);
         DERIVS.d2KalmanA = d2Yss_KalmanA_Om(ind_KalmanA, indp2tottot2);               %only unique elements
         DERIVS.d2Om      = d2Yss_KalmanA_Om(ind_KalmanA(end)+1:end , indp2tottot2);   %only unique elements
@@ -404,9 +404,9 @@ if analytic_derivation_mode == -2
     if d2flag
         % computation of d2Yss and d2g1
         % note that hessian_sparse does not take symmetry into account, i.e. compare hessian_sparse.m to hessian.m, but focuses already on unique values, which are duplicated below
-        options.order = 1; %d2flag requires only first order
-        d2Yss_g1 = hessian_sparse(numerical_objective_fname, modparam1, gstep, 'dynamic_model', estim_params_model, M, options, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);  % d2flag requires only first-order
-        options.order = order; %make sure to set back the order
+        options_.order = 1; %d2flag requires only first order
+        d2Yss_g1 = hessian_sparse(numerical_objective_fname, modparam1, gstep, 'dynamic_model', estim_params_model, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);  % d2flag requires only first-order
+        options_.order = order; %make sure to set back the order
         d2Yss = reshape(full(d2Yss_g1(1:endo_nbr,:)), [endo_nbr modparam_nbr modparam_nbr]); %put into tensor notation
         for j=1:endo_nbr
             d2Yss(j,:,:) = dyn_unvech(dyn_vech(d2Yss(j,:,:))); %add duplicate values to full hessian
@@ -431,7 +431,7 @@ if analytic_derivation_mode == -2
     end
 
     %Parameter Jacobian of dynamic model derivatives (wrt selected model parameters only)
-    dYss_g  = fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M, options, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+    dYss_g  = fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
     ind_Yss = 1:endo_nbr;
     ind_g1  = ind_Yss(end) + (1:endo_nbr*yy0ex0_nbr);
     dYss    = dYss_g(ind_Yss,:); %in tensor notation, wrt selected model parameters only

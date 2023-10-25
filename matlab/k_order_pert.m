@@ -1,4 +1,4 @@
-function [dr,info] = k_order_pert(dr,M,options)
+function [dr,info] = k_order_pert(dr,M_,options_)
 % Compute decision rules using the k-order DLL from Dynare++
 
 % Copyright © 2009-2023 Dynare Team
@@ -20,18 +20,18 @@ function [dr,info] = k_order_pert(dr,M,options)
 
 info = 0;
 
-order = options.order;
+order = options_.order;
 
-if order>1 && options.loglinear
+if order>1 && options_.loglinear
     error('The loglinear-option currently only works at order 1')
 end
-if M.maximum_endo_lead == 0 && order>1
+if M_.maximum_endo_lead == 0 && order>1
     error(['2nd and 3rd order approximation not implemented for purely ' ...
            'backward models'])
 end
 
 try
-    [dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,M,options);
+    [dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,M_,options_);
 catch ME
     disp(ME.message)
     info(1)=9;
@@ -44,7 +44,7 @@ for i = 0:order
     gname = [ 'g_' num2str(i) ];
     dr.(gname) = dynpp_derivs.(gname);
 end
-if options.pruning
+if options_.pruning
    dr.pruning = dynpp_derivs.pruning;
 end
 
@@ -54,8 +54,8 @@ end
 dr.ghx = dyn_derivs.gy;
 dr.ghu = dyn_derivs.gu;
 
-if options.loglinear
-    k = find(dr.kstate(:,2) <= M.maximum_endo_lag+1);
+if options_.loglinear
+    k = find(dr.kstate(:,2) <= M_.maximum_endo_lag+1);
     klag = dr.kstate(k,[1 2]);
     k1 = dr.order_var;
     dr.ghx = repmat(1./dr.ys(k1),1,size(dr.ghx,2)).*dr.ghx.* ...

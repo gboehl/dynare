@@ -1,7 +1,7 @@
-function [dr,info]=AIM_first_order_solver(jacobia,M,dr,qz_criterium)
+function [dr,info]=AIM_first_order_solver(jacobia,M_,dr,qz_criterium)
 
 %@info:
-%! @deftypefn {Function File} {[@var{dr},@var{info}] =} AIM_first_order_solver (@var{jacobia},@var{M},@var{dr},@var{qz_criterium})
+%! @deftypefn {Function File} {[@var{dr},@var{info}] =} AIM_first_order_solver (@var{jacobia},@var{M_},@var{dr},@var{qz_criterium})
 %! @anchor{AIM_first_order_solver}
 %! @sp 1
 %! Computes the first order reduced form of the DSGE model using AIM.
@@ -11,7 +11,7 @@ function [dr,info]=AIM_first_order_solver(jacobia,M,dr,qz_criterium)
 %! @table @ @var
 %! @item jacobia
 %! Matrix containing the Jacobian of the model
-%! @item M
+%! @item M_
 %! Matlab's structure describing the model (initialized by @code{dynare}).
 %! @item dr
 %! Matlab's structure describing the reduced form solution of the model.
@@ -70,20 +70,20 @@ function [dr,info]=AIM_first_order_solver(jacobia,M,dr,qz_criterium)
 
 info = 0;
 
-[dr,aimcode]=dynAIMsolver1(jacobia,M,dr);
+[dr,aimcode]=dynAIMsolver1(jacobia,M_,dr);
 
 if aimcode ~=1
     info(1) = convertAimCodeToInfo(aimCode); %convert to be in the 100 range
     info(2) = 1.0e+8;
     return
 end
-A = kalman_transition_matrix(dr,M.nstatic+(1:M.nspred), 1:M.nspred);
+A = kalman_transition_matrix(dr,M_.nstatic+(1:M_.nspred), 1:M_.nspred);
 dr.eigval = eig(A);
 disp(dr.eigval)
 nd = size(dr.kstate,1);
 nba = nd-sum( abs(dr.eigval) < qz_criterium );
 
-nsfwrd = M.nsfwrd;
+nsfwrd = M_.nsfwrd;
 
 if nba ~= nsfwrd
     temp = sort(abs(dr.eigval));

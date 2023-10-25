@@ -1,15 +1,16 @@
-function k = get_all_variables_but_lagged_leaded_exogenous(M)
+function k = get_all_variables_but_lagged_leaded_exogenous(M_)
+% k = get_all_variables_but_lagged_leaded_exogenous(M_)
 % returns indices of all endogenous variables in declaration order except
 % lagged and leaded exogenous
 %
 % INPUT
-% M: model structure
+% M_: model structure
 %
 % OUTPUT
 % k: vector of variable indices
 %
 
-% Copyright © 2011-2017 Dynare Team
+% Copyright © 2011-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -26,10 +27,10 @@ function k = get_all_variables_but_lagged_leaded_exogenous(M)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if isempty(M.aux_vars)
-    k = 1:M.endo_nbr;
+if isempty(M_.aux_vars)
+    k = 1:M_.endo_nbr;
 else
-    type = [M.aux_vars.type];
-    k = [1:M.orig_endo_nbr, M.orig_endo_nbr ...
+    type = [M_.aux_vars.type];
+    k = [1:M_.orig_endo_nbr, M_.orig_endo_nbr ...
          + find((type ~= 2) & (type ~= 3))];
 end
